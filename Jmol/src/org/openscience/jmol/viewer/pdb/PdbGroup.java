@@ -231,4 +231,9 @@ public class PdbGroup {
       ? "" + (seqcode >> 8)
       : "" + (seqcode >> 8) + (char)(' ' + (seqcode & 0xFF));
   }
+
+  public boolean isProline() {
+    // this is the index into JmolConstants.predefinedGroup3Names
+    return groupID == 14;
+  }
 }

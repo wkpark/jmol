@@ -29,13 +29,14 @@ import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
 public class PdbPolymer {
 
   public PdbChain chain;
-  int count;
-  PdbGroup[] groups;
+  public int count;
+  public PdbGroup[] groups;
   int[] atomIndices;
   BitSet atomSet;
 
@@ -114,7 +115,7 @@ public class PdbPolymer {
       midPoint.set(groups[groupIndex].structure.
                    getStructureMidPoint(groupIndex));
       /*
-        System.out.println("" + groupIndex + "isHelixOrSheet" +
+        System.out.println("" + groupIndex} + "isHelixOrSheet" +
         midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
     } else if (groupIndex > 0 &&
@@ -184,5 +185,138 @@ public class PdbPolymer {
       }
     }
     return atomSet;
+  }
+
+  public boolean isProtein() {
+    return true;
+  }
+
+  public void calcHydrogenBonds() {
+    if (isProtein())
+      calcProteinMainchainHydrogenBonds();
+    else
+      calcNucleicMainchainHydrogenBonds();
+  }
+
+
+  Vector3f vectorPreviousOC = new Vector3f();
+  Point3f aminoHydrogenPoint = new Point3f();
+
+  void calcProteinMainchainHydrogenBonds() {
+    Point3f carbonPoint;
+    Point3f oxygenPoint;
+    
+    for (int i = 0; i < count; ++i) {
+      PdbGroup residue = groups[i];
+      /****************************************************************
+       * This does not acount for the first nitrogen in the chain
+       * is there some way to predict where it's hydrogen is?
+       * mth 20031219
+       ****************************************************************/
+      if (i > 0 && !residue.isProline()) {
+        Point3f nitrogenPoint = residue.getNitrogenAtom().point3f;
+        aminoHydrogenPoint.add(nitrogenPoint, vectorPreviousOC);
+        bondAminoHydrogen(i, aminoHydrogenPoint);
+      }
+      carbonPoint = residue.getCarbonylCarbonAtom().point3f;
+      oxygenPoint = residue.getCarbonylOxygenAtom().point3f;
+      vectorPreviousOC.sub(carbonPoint, oxygenPoint);
+    }
+  }
+
+  private final static float maxHbondAlphaDistance = 9;
+  private final static float maxHbondAlphaDistance2 =
+    maxHbondAlphaDistance * maxHbondAlphaDistance;
+  private final static float minimumHbondDistance2 = 0.5f;
+  private final static double QConst = -332 * 0.42 * 0.2 * 1000;
+
+  void bondAminoHydrogen(int indexSource, Point3f hydrogenPoint) {
+    PdbGroup source = groups[indexSource];
+    Point3f sourceAlphaPoint = source.getAlphaCarbonPoint();
+    Point3f sourceNitrogenPoint = source.getNitrogenAtom().point3f;
+    int energyMin1 = 0;
+    int energyMin2 = 0;
+    int indexMin1 = -1;
+    int indexMin2 = -1;
+    for (int i = count; --i >= 0; ) {
+      if ((i == indexSource || (i+1) == indexSource) || (i-1) == indexSource) {
+        System.out.println(" i=" +i + " indexSource=" + indexSource);
+        continue;
+      }
+      PdbGroup target = groups[i];
+      Point3f targetAlphaPoint = target.getAlphaCarbonPoint();
+      float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
+      if (dist2 > maxHbondAlphaDistance2)
+        continue;
+      int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
+      System.out.println("HbondEnergy=" + energy);
+      if (energy < energyMin1) {
+        energyMin1 = energy;
+        indexMin1 = i;
+      } else if (energy < energyMin2) {
+        energyMin2 = energy;
+        indexMin2 = i;
+      }
+    }
+    if (indexMin1 >= 0) {
+      createResidueHydrogenBond(indexSource, indexMin1);
+      if (indexMin2 >= 0)
+        createResidueHydrogenBond(indexSource, indexMin2);
+    }
+  }
+
+  int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
+                      PdbGroup target) {
+    Point3f targetOxygenPoint = target.getCarbonylOxygenAtom().point3f;
+    float distOH2 = targetOxygenPoint.distanceSquared(hydrogenPoint);
+    if (distOH2 < minimumHbondDistance2)
+      return -9900;
+
+    Point3f targetCarbonPoint = target.getCarbonylCarbonAtom().point3f;
+    float distCH2 = targetCarbonPoint.distanceSquared(hydrogenPoint);
+    if (distCH2 < minimumHbondDistance2)
+      return -9900;
+
+    float distCN2 = targetCarbonPoint.distanceSquared(nitrogenPoint);
+    if (distCN2 < minimumHbondDistance2)
+      return -9900;
+
+    float distON2 = targetOxygenPoint.distanceSquared(nitrogenPoint);
+    if (distON2 < minimumHbondDistance2)
+      return -9900;
+
+    double distOH = Math.sqrt(distOH2);
+    double distCH = Math.sqrt(distCH2);
+    double distCN = Math.sqrt(distCN2);
+    double distON = Math.sqrt(distON2);
+
+    int energy =
+      (int)((QConst/distOH - QConst/distCH + QConst/distCN - QConst/distON));
+
+    /*
+    System.out.println(" distOH=" + distOH +
+                       " distCH=" + distCH +
+                       " distCN=" + distCN +
+                       " distON=" + distON +
+                       " energy=" + energy);
+    */
+    if (energy < -9900)
+      return -9900;
+    if (energy > -500)
+      return 0;
+    return energy;
+  }
+
+  void createResidueHydrogenBond(int indexAmino,
+                                 int indexCarbonyl) {
+    System.out.println("createResidueHydrogenBond(" + indexAmino +
+                       "," + indexCarbonyl);
+    Atom nitrogen = groups[indexAmino].getNitrogenAtom();
+    Atom oxygen = groups[indexCarbonyl].getCarbonylOxygenAtom();
+    Frame frame = chain.model.file.frame;
+    frame.addHydrogenBond(nitrogen, oxygen);
+  }
+
+  void calcNucleicMainchainHydrogenBonds() {
   }
 }

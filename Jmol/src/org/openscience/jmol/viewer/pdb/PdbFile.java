@@ -160,6 +160,7 @@ public class PdbFile {
   }
 
   public int getModelCount() {
+
     return modelCount;
   }
 
@@ -181,5 +182,10 @@ public class PdbFile {
 
   public int getChainCount() {
     return models[0].getChainCount();
+  }
+
+  public void calcHydrogenBonds() {
+    for (int i = modelCount; --i >= 0; )
+      models[i].calcHydrogenBonds();
   }
 }

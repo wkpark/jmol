@@ -110,4 +110,9 @@ public class PdbModel {
     }
     return atomSet;
   }
+
+  void calcHydrogenBonds() {
+    for (int i = chainCount; --i >= 0; )
+      chains[i].calcHydrogenBonds();
+  }
 }

@@ -149,6 +149,10 @@ public class Frame {
     }
   }
 
+  public void addHydrogenBond(Atom atom1, Atom atom2) {
+    addBond(atom1.bondMutually(atom2, JmolConstants.BOND_HYDROGEN));
+  }
+
   private void addBond(Bond bond) {
     if (bond == null)
       return;
@@ -765,9 +769,17 @@ public class Frame {
   
   boolean hbondsCalculated;
 
+  boolean useRasMolHbondsCalculation = true;
+
   public void calcHbonds() {
     if (hbondsCalculated)
       return;
+    hbondsCalculated = true;
+    if (useRasMolHbondsCalculation) {
+      if (pdbFile != null)
+        pdbFile.calcHydrogenBonds();
+      return;
+    }
     initializeBspf();
     long timeBegin, timeEnd;
     if (showRebondTimes)
@@ -802,7 +814,6 @@ public class Frame {
       timeEnd = System.currentTimeMillis();
       System.out.println("Time to hbond=" + (timeEnd - timeBegin));
     }
-    hbondsCalculated = true;
   }
 
 

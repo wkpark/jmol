@@ -180,4 +180,9 @@ public class PdbChain {
     }
     return atomSet;
   }
+
+  public void calcHydrogenBonds() {
+    if (polymer != null)
+      polymer.calcHydrogenBonds();
+  }
 }

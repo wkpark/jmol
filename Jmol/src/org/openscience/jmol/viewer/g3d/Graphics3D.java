@@ -217,9 +217,19 @@ final public class Graphics3D {
     }
   }
 
-  public void fillScreenedCircleCentered(short colixFill,
-                                         int x, int y, int z, int diameter) {
-    fillCircleCentered(colixFill, x, y, z, diameter);
+  public void fillScreenedCircleCentered(short colixFill, int diameter, 
+                                         int x, int y, int z) {
+    if (diameter == 0)
+      return;
+    int r = (diameter + 1) / 2;
+    argbCurrent = Colix.getArgb(colixFill);
+    if (x >= r && x + r < width && y >= r && y + r < height) {
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, true);
+      circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
+    } else {
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter, true);
+      circle3d.plotCircleCenteredClipped(x, y, z, diameter);
+    }
   }
 
   public void fillCircleCentered(short colixFill,
@@ -229,9 +239,9 @@ final public class Graphics3D {
     int r = (diameter + 1) / 2;
     argbCurrent = Colix.getArgb(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, false);
     } else {
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter, false);
     }
   }
 
@@ -498,7 +508,11 @@ final public class Graphics3D {
     if (y + heightFill > height)
       heightFill = height - y;
     while (--height >= 0)
-      plotPixelsUnclipped(width, x, y++, z);
+      plotPixelsUnclipped(width, x, y++, z, false);
+  }
+
+  public void drawPixel(Point3i point) {
+    plotPixelClipped(point.x, point.y, point.z);
   }
 
   /****************************************************************
@@ -559,25 +573,33 @@ final public class Graphics3D {
     }
   }
 
-  void plotPixelsClipped(int count, int x, int y, int z) {
+  void plotPixelsClipped(int count, int x, int y, int z, boolean tScreened) {
     if (y < 0 || y >= height || x >= width)
       return;
     if (x < 0) {
       count += x; // x is negative, so this is subtracting -x
-      if (count < 0)
+      if (count <= 0)
         return;
       x = 0;
     }
     if (count + x > width)
       count = width - x;
     int offsetPbuf = y * width + x;
-    while (--count >= 0) {
+    int offsetMax = offsetPbuf + count;
+    int step = 1;
+    if (tScreened) {
+      step = 2;
+      if (((x ^ y) & 1) != 0)
+        if (++offsetPbuf == offsetMax)
+          return;
+    }
+    do {
       if (z < zbuf[offsetPbuf]) {
         zbuf[offsetPbuf] = (short)z;
         pbuf[offsetPbuf] = argbCurrent;
       }
-      ++offsetPbuf;
-    }
+      offsetPbuf += step;
+    } while (offsetPbuf < offsetMax);
   }
 
   void plotPixelsClipped(int argb, int count, int x, int y,
@@ -619,14 +641,28 @@ final public class Graphics3D {
     //    System.out.println("");
   }
 
-  void plotPixelsUnclipped(int count, int x, int y, int z) {
+  void plotPixelsUnclipped(int count, int x, int y, int z, boolean tScreened) {
     int offsetPbuf = y * width + x;
-    while (--count >= 0) {
-      if (z < zbuf[offsetPbuf]) {
-        zbuf[offsetPbuf] = (short)z;
-        pbuf[offsetPbuf] = argbCurrent;
+    if (! tScreened) {
+      while (--count >= 0) {
+        if (z < zbuf[offsetPbuf]) {
+          zbuf[offsetPbuf] = (short)z;
+          pbuf[offsetPbuf] = argbCurrent;
+        }
+        ++offsetPbuf;
       }
-      ++offsetPbuf;
+    } else {
+      int offsetMax = offsetPbuf + count;
+      if (((x ^ y) & 1) != 0)
+        if (++offsetPbuf == offsetMax)
+          return;
+      do {
+        if (z < zbuf[offsetPbuf]) {
+          zbuf[offsetPbuf] = (short)z;
+          pbuf[offsetPbuf] = argbCurrent;
+        }
+        offsetPbuf += 2;
+      } while (offsetPbuf < offsetMax);
     }
   }
 

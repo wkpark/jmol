@@ -85,7 +85,7 @@ public class AtomRenderer {
       if (halowidth < 4) halowidth = 4;
       if (halowidth > 10) halowidth = 10;
       int halodiameter = diameter + 2 * halowidth;
-      g3d.fillScreenedCircleCentered(colixSelection, x, y, z, halodiameter);
+      g3d.fillScreenedCircleCentered(colixSelection, halodiameter, x, y, z);
     }
   }
 }

@@ -115,30 +115,36 @@ final public class Circle3D {
     g3d.plotPixelUnclipped(xCenter-dy, yCenter-dx, zCenter);
   }
 
-  private void plot8FilledCircleCenteredClipped(int dx, int dy) {
+  private void plot8FilledCircleCenteredClipped(int dx, int dy,
+                                                boolean tScreened) {
     g3d.plotPixelsClipped(2*dx+1-sizeCorrection,
-                           xCenter-dx, yCenter+dy-sizeCorrection, zCenter);
+                           xCenter-dx, yCenter+dy-sizeCorrection, zCenter,
+                          tScreened);
     g3d.plotPixelsClipped(2*dx+1-sizeCorrection,
-                      xCenter-dx, yCenter-dy, zCenter);
+                          xCenter-dx, yCenter-dy, zCenter, tScreened);
     g3d.plotPixelsClipped(2*dy+1-sizeCorrection,
-                      xCenter-dy, yCenter+dx-sizeCorrection, zCenter);
+                          xCenter-dy, yCenter+dx-sizeCorrection, zCenter,
+                          tScreened);
     g3d.plotPixelsClipped(2*dy+1-sizeCorrection,
-                      xCenter-dy, yCenter-dx, zCenter);
+                          xCenter-dy, yCenter-dx, zCenter, tScreened);
   }
 
-  private void plot8FilledCircleCenteredUnclipped(int dx, int dy) {
+  private void plot8FilledCircleCenteredUnclipped(int dx, int dy,
+                                                  boolean tScreened) {
     g3d.plotPixelsUnclipped(2*dx+1-sizeCorrection,
-                             xCenter-dx, yCenter+dy-sizeCorrection, zCenter);
+                            xCenter-dx, yCenter+dy-sizeCorrection, zCenter,
+                            tScreened);
     g3d.plotPixelsUnclipped(2*dx+1-sizeCorrection,
-                             xCenter-dx, yCenter-dy, zCenter);
+                            xCenter-dx, yCenter-dy, zCenter, tScreened);
     g3d.plotPixelsUnclipped(2*dy+1-sizeCorrection,
-                             xCenter-dy, yCenter+dx-sizeCorrection, zCenter);
+                            xCenter-dy, yCenter+dx-sizeCorrection, zCenter,
+                            tScreened);
     g3d.plotPixelsUnclipped(2*dy+1-sizeCorrection,
-                             xCenter-dy, yCenter-dx, zCenter);
+                            xCenter-dy, yCenter-dx, zCenter, tScreened);
   }
 
   void plotFilledCircleCenteredClipped(int xCenter, int yCenter, int zCenter,
-                                       int diameter) {
+                                       int diameter, boolean tScreened) {
     int r = diameter / 2;
     this. sizeCorrection = 1 - (diameter & 1);
     this.xCenter = xCenter;
@@ -150,7 +156,7 @@ final public class Circle3D {
     int yChange = 1;
     int radiusError = 0;
     while (x >= y) {
-      plot8FilledCircleCenteredClipped(x, y);
+      plot8FilledCircleCenteredClipped(x, y, tScreened);
       ++y;
       radiusError += yChange;
       yChange += 2;
@@ -163,8 +169,8 @@ final public class Circle3D {
   }
 
   void plotFilledCircleCenteredUnclipped(int xCenter, int yCenter, int zCenter,
-                                       int d) {
-    int r = d / 2;
+                                       int diameter, boolean tScreened) {
+    int r = diameter / 2;
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.zCenter = zCenter;
@@ -174,7 +180,7 @@ final public class Circle3D {
     int yChange = 1;
     int radiusError = 0;
     while (x >= y) {
-      plot8FilledCircleCenteredUnclipped(x, y);
+      plot8FilledCircleCenteredUnclipped(x, y, tScreened);
       ++y;
       radiusError += yChange;
       yChange += 2;

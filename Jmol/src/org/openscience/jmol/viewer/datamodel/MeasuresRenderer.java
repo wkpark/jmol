@@ -105,6 +105,8 @@ class MeasuresRenderer extends ShapeRenderer {
   }
 
   void renderDistance(Atom atomA, Atom atomB, short colix) {
+    if (! (atomA.isVisible() && atomB.isVisible()))
+      return;
     int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
     int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA, atomB.getScreenX(), atomB.getScreenY(), zB,
@@ -128,6 +130,8 @@ class MeasuresRenderer extends ShapeRenderer {
 
   void renderAngle(Atom atomA, Atom atomB, Atom atomC,
                    short colix, boolean renderArcs) {
+    if (! (atomA.isVisible() && atomB.isVisible() && atomC.isVisible()))
+      return;
     g3d.setColix(colix);
     int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
@@ -184,6 +188,9 @@ class MeasuresRenderer extends ShapeRenderer {
 
   void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
                      short colix, boolean renderArcs) {
+    if (! (atomA.isVisible() && atomB.isVisible() &&
+           atomC.isVisible() && atomD.isVisible()))
+      return;
     int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
     int zC = atomC.getScreenZ() - atomC.getScreenD() - 10;

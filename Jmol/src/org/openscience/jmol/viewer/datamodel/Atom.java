@@ -35,9 +35,9 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-public class Atom implements Bspt.Tuple {
+public final class Atom implements Bspt.Tuple {
 
-  public final static byte VISIBLE_FLAG = 1;
+  public final static byte VISIBLE_FLAG = 0x01;
 
   public int atomIndex;
   Frame frame; // maybe we can get rid of this ...
@@ -360,6 +360,10 @@ public class Atom implements Bspt.Tuple {
 
   public int getFormalCharge() {
     return formalChargeAndFlags >> 4;
+  }
+
+  public boolean isVisible() {
+    return (formalChargeAndFlags & VISIBLE_FLAG) != 0;
   }
 
   public float getPartialCharge() {

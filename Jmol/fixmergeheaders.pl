@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# mth 2003 06 02
+# mth 2003-06-02
 #
 # cd to the Jmol directory and run me in order to resolve
 # cvs conflicts in the headers of .java files after a merge

@@ -63,6 +63,7 @@ public class JmolPopupAwt extends PopupMenu {
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
     addMenuItems("popupMenu", this);
+    addVersionAndDate();
     parent.add(this);
     rbWords = null;
     component = viewer.getAwtComponent();
@@ -130,6 +131,14 @@ public class JmolPopupAwt extends PopupMenu {
         menu.add(mi);
       }
     }
+  }
+
+  void addVersionAndDate() {
+    addSeparator();
+    MenuItem mi = new MenuItem("Jmol " + JmolConstants.version);
+    add(mi);
+    mi = new MenuItem(JmolConstants.date);
+    add(mi);
   }
 
   private String getValue(String key) {

@@ -60,9 +60,19 @@ public class JmolPopupSwing extends JPopupMenu {
     mil = new MenuItemListener();
     cmil = new CheckboxMenuItemListener();
     addMenuItems("popupMenu", this);
+    addVersionAndDate();
     rbWords = null;
     component = viewer.getAwtComponent();
   }
+
+  void addVersionAndDate() {
+    addSeparator();
+    JMenuItem jmi = new JMenuItem("Jmol " + JmolConstants.version);
+    add(jmi);
+    jmi = new JMenuItem(JmolConstants.date);
+    add(jmi);
+  }
+
 
   public void showSwing(int x, int y) {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {

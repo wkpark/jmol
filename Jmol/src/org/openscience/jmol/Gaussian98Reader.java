@@ -19,9 +19,14 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
-import java.util.Vector;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
+import java.util.Vector;
+import javax.swing.event.EventListenerList;
 
 /**
  * A reader for Gaussian98 output.
@@ -54,14 +59,28 @@ public class Gaussian98Reader implements ChemFileReader {
   }
 
   /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  /**
    * Read the Gaussian98 output.
    *
    * @return a ChemFile with the coordinates, energies, and vibrations.
    * @exception IOException if an I/O error occurs
    */
-  public ChemFile read() throws IOException, Exception {
+  public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
     String levelOfTheory = null;
@@ -71,7 +90,7 @@ public class Gaussian98Reader implements ChemFileReader {
       if (line.indexOf("Standard orientation:") >= 0) {
 
         // Found a set of coordinates
-        frame = new ChemFrame();
+        frame = new ChemFrame(bondsEnabled);
         readCoordinates(frame);
         break;
       }
@@ -87,7 +106,8 @@ public class Gaussian98Reader implements ChemFileReader {
           // Found a set of coordinates
           // Add current frame to file and create a new one.
           file.addFrame(frame);
-          frame = new ChemFrame();
+          fireFrameRead();
+          frame = new ChemFrame(bondsEnabled);
           readCoordinates(frame);
         } else if (line.indexOf("SCF Done:") >= 0) {
 
@@ -112,6 +132,7 @@ public class Gaussian98Reader implements ChemFileReader {
 
       // Add current frame to file
       file.addFrame(frame);
+      fireFrameRead();
     }
     return file;
   }
@@ -123,10 +144,9 @@ public class Gaussian98Reader implements ChemFileReader {
    * @exception IOException  if an I/O error occurs
    */
   private void readCoordinates(ChemFrame frame)
-          throws IOException, Exception {
+            throws IOException {
 
-    String line;
-    line = input.readLine();
+    String line = input.readLine();
     line = input.readLine();
     line = input.readLine();
     line = input.readLine();
@@ -135,7 +155,7 @@ public class Gaussian98Reader implements ChemFileReader {
       if ((line == null) || (line.indexOf("-----") >= 0)) {
         break;
       }
-      int atomicNumber;
+      int atomicNumber = 0;
       StringReader sr = new StringReader(line);
       StreamTokenizer token = new StreamTokenizer(sr);
       token.nextToken();
@@ -157,9 +177,9 @@ public class Gaussian98Reader implements ChemFileReader {
       token.nextToken();
 
       // ignore third token
-      double x;
-      double y;
-      double z;
+      double x = 0.0;
+      double y = 0.0;
+      double z = 0.0;
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         x = token.nval;
       } else {
@@ -186,7 +206,7 @@ public class Gaussian98Reader implements ChemFileReader {
    * @exception IOException  if an I/O error occurs
    */
   private void readFrequencies(ChemFrame frame)
-          throws IOException, Exception {
+          throws IOException {
 
     String line;
     line = input.readLine();
@@ -312,6 +332,49 @@ public class Gaussian98Reader implements ChemFileReader {
     }
     return st1.nextToken() + "/" + st1.nextToken();
   }
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
+    }
+  }
+ 
 
   /**
    * The source for Gaussian98 data.

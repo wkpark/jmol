@@ -20,6 +20,7 @@
 package org.openscience.miniJmol;
 
 import org.openscience.cdopi.ANIMATIONCDO;
+import org.openscience.cdopi.CDOAcceptedObjects;
 import java.util.Vector;
 import org.openscience.jmol.FortranFormat;
 
@@ -27,7 +28,7 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   private Vector allFrames;
   private ChemFrame currentFrame;
-  private int frameNo;
+  private int frameNumber;
 
   private String atomType;
   private String atomX;
@@ -37,7 +38,7 @@ public final class JMolCDO extends ANIMATIONCDO {
   public JMolCDO() {
     allFrames = new Vector();
     currentFrame = new ChemFrame();
-    frameNo = 0;
+    frameNumber = 0;
   }
 
   public void startDocument() {
@@ -60,6 +61,8 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.startAnimation();
     } else if (type.equals("Frame")) {
       this.startFrame();
+    } else if (type.equals("Crystal")) {
+      // assume frame has been started       
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at StartObject -> "
               + type);
@@ -80,6 +83,7 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.endAnimation();
     } else if (type.equals("Frame")) {
       this.endFrame();
+    } else if (type.equals("Crystal")) {
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at EndObject -> "
               + type);
@@ -101,6 +105,9 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.setAnimationProperty(proptype, propvalue);
     } else if (type.equals("Frame")) {
       this.setFrameProperty(proptype, propvalue);
+    } else if (type.equals("Crystal")) {
+
+      // need not to anything yet
     } else {
       System.err.println(
               "DEBUG: unknown CDO Object Type at SetObjectProperty -> "
@@ -109,25 +116,22 @@ public final class JMolCDO extends ANIMATIONCDO {
   }
 
   public void startAnimation() {
-    System.out.println("startAnimation");
   }
 
   public void endAnimation() {
   }
 
   public void startFrame() {
-    System.out.println("startFrame");
-    frameNo++;
+    ++frameNumber;
     currentFrame = new ChemFrame();
   }
 
   public void endFrame() {
-    System.out.println("endFrame");
     allFrames.addElement(currentFrame);
   }
 
   public void setFrameProperty(String type, String value) {
-    System.out.println("setFrameProperty: " + type + "=" + value);
+
     if (type.equals("title")) {
       currentFrame.setInfo(value);
     }
@@ -147,7 +151,6 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   public void startAtom() {
 
-    System.out.println("startAtom");
     atomType = "";
     atomX = "";
     atomY = "";
@@ -156,8 +159,6 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   public void endAtom() {
 
-    System.out.println("endAtom: " + atomType + " " + atomX + " " + atomY
-            + " " + atomZ);
     double x = FortranFormat.atof(atomX.trim());
     double y = FortranFormat.atof(atomY.trim());
     double z = FortranFormat.atof(atomZ.trim());
@@ -170,7 +171,6 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   public void setAtomProperty(String type, String value) {
 
-    System.out.println("setAtomProp: " + type + "=" + value);
     if (type.equals("type")) {
       atomType = value;
     }
@@ -209,4 +209,15 @@ public final class JMolCDO extends ANIMATIONCDO {
 
   public void endBond() {
   }
+
+  public CDOAcceptedObjects acceptObjects() {
+
+    CDOAcceptedObjects objects = super.acceptObjects();
+    objects.add("Crystal");
+    objects.add("a-axis");
+    objects.add("b-axis");
+    objects.add("c-axis");
+    return objects;
+  }
+
 }

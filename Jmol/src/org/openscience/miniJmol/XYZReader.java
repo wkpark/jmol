@@ -29,20 +29,61 @@ import org.openscience.jmol.FortranFormat;
 import javax.swing.event.EventListenerList;
 
 /**
- * XYZ files may contain multiple ChemFrame objects, and may have charges
- * and vector information contained along with atom types and coordinates.
- * XYZ files <em>must</em> have a number of atoms at the beginning of each
- * line then another line (which may be blank) to identify each frame.
+ * A reader for XYZ Cartesian molecular model (XMol) files.
+ * XMol is a closed source program similar in scope to Jmol.
+ * Details on XMol are available at http://www.msc.edu/docs/xmol/
+ *
+ * <p> XYZ files reference molecular geometris using a simple
+ * cartesian coordinate system. Each XYZ file can contain multiple
+ * frames for the purposes of animation.  Each frame in the animation
+ * is represented by a two line header, followed by one line for each atom.
+ *
+ * <p> The first line of a frame's header is the number of atoms in
+ * that frame.  Only the integer is read, it may be preceded by white
+ * space, and anything on the line after the integer is ignored.
+ *
+ * <p> The second line of the header is the "info" string for the
+ * frame.  The info line may be blank, or it may contain information
+ * pertinent to that step, but it must exist, and it may only be one
+ * line long.
+ *
+ * <p> Each line describing a single atom contains 4, 5, 7, 8, or
+ * possibly more fields separated by white space.  The first 4 fields
+ * are always the same: the atom's type (a short string of
+ * alphanumeric characters), and its x-, y-, and z-positions.
+ * Optionally, extra fields may be used to specify a charge for the
+ * atom, and/or a vector associated with the atoms.  If an input line
+ * contains five or eight fields, the fifth field is interpreted as
+ * the atom's charge; otherwise, a charge of zero is assumed.  If an
+ * input line contains seven or eight fields, the last three fields
+ * are interpreted as the components of a vector.  These components
+ * should be specified in angstroms.  If there are more than eight
+ * fields, only the first 4 are parsed by the reader, and all
+ * additional fields are ignored.
+ *
+ * <p>The XYZ format contains no connectivity information.  Jmol
+ * attempts to generate connectivity information using the covalent
+ * radii of the specified atomic types.  If the distance between two
+ * atoms is less than the sum of their covalent radii (times a fudge
+ * factor), they are considered bonded.
+ *
+ * <p> This reader was developed without the assistance or approval of
+ * anyone from Network Computing Services, Inc. (the authors of XMol).
+ * If you have problems, please contact the author of this code, not
+ * the developers of XMol.
+ *
+ * @author J. Daniel Gezelter (gezelter.1@nd.edu)
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class XYZReader implements ChemFileReader {
 
   /**
-   * Creates an XYZ file reader.
+   * Create an XYZ output reader.
    *
    * @param input source of XYZ data
    */
   public XYZReader(Reader input) {
-    this.input = new BufferedReader(input, 1024);
+    this.input = new BufferedReader(input);
   }
 
   /**
@@ -60,24 +101,20 @@ public class XYZReader implements ChemFileReader {
   }
   
   /**
-   * Read the XYZ file.
+   * Read the XYZ output.
+   *
+   * @return a ChemFile with the coordinates, charges, vectors, etc.
    */
   public ChemFile read() throws IOException {
 
-    int fr = 0;
     ChemFile file = new ChemFile(bondsEnabled);
 
     while (true) {
-      fr++;
-      ChemFrame cf = readFrame(fr);
+      ChemFrame cf = readFrame();
       if (cf == null) {
         break;
       }
       file.addFrame(cf);
-      Enumeration propIter = cf.getFrameProps().elements();
-      while (propIter.hasMoreElements()) {
-        file.addProperty((String) propIter.nextElement());
-      }
     }
     return file;
   }
@@ -85,7 +122,7 @@ public class XYZReader implements ChemFileReader {
   /**
    * Parses the next section of the XYZ file into a ChemFrame.
    */
-  public ChemFrame readFrame(int frameNum) throws IOException {
+  public ChemFrame readFrame() throws IOException {
 
     int na = 0;
     String info = "";

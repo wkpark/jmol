@@ -26,9 +26,31 @@ import org.openscience.jmol.FortranFormat;
 import java.util.Vector;
 
 /**
- * PDB files contain a single ChemFrame object.  Only the END, ATOM and
- * HETATM command strings are processed for now, and the ATOM and HETATM
- * entries are only used for coordinate information.
+ * A reader for PDB (Protein Data Bank) files.
+ *
+ * <p>PDB files are a very widely used method of communicating
+ * structural information about biomolecules.  The column position of a
+ * field within a given line governs how that field is interpreted.
+ *
+ * <p>Only the END, ATOM and HETATM command strings are processed for
+ * now, and the ATOM and HETATM entries are used only for coordinate
+ * information.  We would, of course, gladly accept code donations
+ * that parse more of the detailed information contained within PDB
+ * files.
+ *
+ * <p>A full specification of the PDB format is available at:
+ *    http://www.rcsb.org/pdb/docs/format/pdbguide2.2/guide2.2_frame.html
+ *
+ * <p>PDB files also contain only a single frame.
+ *
+ * <p> This reader was developed without the assistance or approval of
+ * anyone from Brookhaven National Labs or the Research Collaboratory
+ * for Structural Bioinformatics.  If you have problems, please
+ * contact the author of this code, not the operators of the Protein
+ * Data Bank.
+ *
+ * @author J. Daniel Gezelter (gezelter.1@nd.edu)
+ * @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class PDBReader implements ChemFileReader {
 
@@ -38,7 +60,7 @@ public class PDBReader implements ChemFileReader {
    * @param input source of PDB data
    */
   public PDBReader(Reader input) {
-    this.input = new BufferedReader(input, 1024);
+    this.input = new BufferedReader(input);
   }
 
   /**

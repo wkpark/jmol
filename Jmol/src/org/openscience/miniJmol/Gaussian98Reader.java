@@ -84,7 +84,6 @@ public class Gaussian98Reader implements ChemFileReader {
     ChemFrame frame = null;
     String line = input.readLine();
     String levelOfTheory = null;
-    int frameNum = 1;
 
     // Find first set of coordinates
     while (input.ready() && (line != null)) {
@@ -92,8 +91,7 @@ public class Gaussian98Reader implements ChemFileReader {
 
         // Found a set of coordinates
         frame = new ChemFrame(bondsEnabled);
-        readCoordinates(frame, frameNum);
-        frameNum++;
+        readCoordinates(frame);
         break;
       }
       line = input.readLine();
@@ -110,8 +108,7 @@ public class Gaussian98Reader implements ChemFileReader {
           file.addFrame(frame);
           fireFrameRead();
           frame = new ChemFrame(bondsEnabled);
-          readCoordinates(frame, frameNum);
-          frameNum++;
+          readCoordinates(frame);
         } else if (line.indexOf("SCF Done:") >= 0) {
 
           // Found an energy
@@ -137,7 +134,7 @@ public class Gaussian98Reader implements ChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readCoordinates(ChemFrame frame, int frameNum)
+  private void readCoordinates(ChemFrame frame)
             throws IOException {
 
     String line = input.readLine();

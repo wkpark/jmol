@@ -19,7 +19,9 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * A factory for creating ChemFileReaders.
@@ -43,7 +45,7 @@ public abstract class ReaderFactory {
   public static ChemFileReader createReader(Reader input) throws IOException {
 
     BufferedReader buffer = new BufferedReader(input);
-    String line;
+    String line = null;
 
     if (buffer.markSupported()) {
 
@@ -52,14 +54,16 @@ public abstract class ReaderFactory {
        * up the other tests below
        */
       buffer.mark(255);
-      line = buffer.readLine();
+      line = getLine(buffer);
       buffer.reset();
 
-      /* an integer-valued first line is a special test for XYZ files */
+      // An integer on the first line is a special test for XYZ files
       try {
-        Integer i = new Integer(line.trim());
+        new Integer(line.trim());
         return new XYZReader(buffer);
       } catch (NumberFormatException nfe) {
+
+        // Integer not found on first line; therefore not a XYZ file
       }
 
       /* This line wasn't an integer, so move on to the rest of
@@ -106,4 +110,24 @@ public abstract class ReaderFactory {
     }
     return null;
   }
+
+  static String getLine(BufferedReader buffer) throws IOException {
+
+    StringBuffer sb1 = new StringBuffer();
+    int c1 = buffer.read();
+    while ((c1 > 0)
+            && ((c1 == '\n') || (c1 == '\r') || (c1 == ' ')
+              || (c1 == '\t'))) {
+      c1 = buffer.read();
+    }
+    while ((c1 > 0) && (c1 != '\n') && (c1 != '\r') && (c1 != '>')) {
+      sb1.append((char) c1);
+      c1 = buffer.read();
+    }
+    if (c1 == '>') {
+      sb1.append((char) c1);
+    }
+    return sb1.toString();
+  }
 }
+

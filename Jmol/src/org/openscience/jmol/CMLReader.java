@@ -21,12 +21,17 @@ package org.openscience.jmol;
 
 import java.io.Reader;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.Enumeration;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
-import org.openscience.cdopi.*;
-import org.openscience.cml.*;
+import java.util.Vector;
+import org.xml.sax.InputSource;
+import org.xml.sax.Parser;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.DocumentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.ParserFactory;
+import org.openscience.cml.CMLHandler;
+import javax.swing.event.EventListenerList;
+import org.openscience.jmol.DTDResolver;
 
 /**
  * CML files contain a single ChemFrame object.
@@ -44,6 +49,20 @@ public class CMLReader implements ChemFileReader {
   }
 
   /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  /**
    * Read the CML data.
    */
   public ChemFile read() throws IOException {
@@ -59,26 +78,64 @@ public class CMLReader implements ChemFileReader {
       parser.setEntityResolver(resolver);
       parser.setDocumentHandler(handler);
       parser.parse(source);
-      ChemFile file = new ChemFile();
+      ChemFile file = new ChemFile(bondsEnabled);
       Enumeration framesIter =
         ((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
       while (framesIter.hasMoreElements()) {
-        System.err.println("New Frame!!!!!!!");
-
-        ChemFrame frame = (ChemFrame) framesIter.nextElement();
-
-        file.addFrame(frame);
-
+        file.addFrame((ChemFrame) framesIter.nextElement());
+        fireFrameRead();
       }
       return file;
     } catch (ClassNotFoundException ex) {
-      throw new IOException(ex.toString());
+      throw new IOException("CMLReader exception: " + ex);
     } catch (InstantiationException ex) {
-      throw new IOException(ex.toString());
+      throw new IOException("CMLReader exception: " + ex);
     } catch (SAXException ex) {
-      throw new IOException(ex.toString());
+      throw new IOException("CMLReader exception: " + ex);
     } catch (IllegalAccessException ex) {
-      throw new IOException(ex.toString());
+      throw new IOException("CMLReader exception: " + ex);
+    }
+  }
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
     }
   }
 

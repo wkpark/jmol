@@ -140,12 +140,21 @@ public class ChemFrame {
    * @param na the number of atoms in the frame
    */
   public ChemFrame(int na) {
+    this(na, true);
+  }
+  
+  public ChemFrame(int na, boolean bondsEnabled) {
 
     atoms = new Atom[na];
     pickedAtoms = new boolean[na];
     for (int i = 0; i < na; i++) {
       pickedAtoms[i] = false;
     }
+    this.bondsEnabled = bondsEnabled;
+  }
+
+  public ChemFrame(boolean bondsEnabled) {
+    this(100, bondsEnabled);
   }
 
   /**
@@ -153,7 +162,7 @@ public class ChemFrame {
    *
    */
   public ChemFrame() {
-    this(100);
+    this(true);
   }
 
   /**
@@ -255,8 +264,7 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(String name, float x, float y, float z)
-          throws Exception {
+  public int addAtom(String name, float x, float y, float z) {
     return addAtom(BaseAtomType.get(name), x, y, z);
   }
 
@@ -269,8 +277,7 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(BaseAtomType type, float x, float y, float z)
-          throws Exception {
+  public int addAtom(BaseAtomType type, float x, float y, float z) {
 
     int i = numberAtoms;
     if (i >= atoms.length) {
@@ -300,8 +307,7 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(int atomicNumber, float x, float y, float z)
-          throws Exception {
+  public int addAtom(int atomicNumber, float x, float y, float z) {
 
     BaseAtomType baseType = BaseAtomType.get(atomicNumber);
     if (baseType == null) {
@@ -916,5 +922,7 @@ public class ChemFrame {
    * Renderer for bonds.
    */
   private BondRenderer bondRenderer = new BondRenderer();
+
+  private boolean bondsEnabled;
 }
 

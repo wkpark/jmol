@@ -57,7 +57,6 @@ public abstract class ReaderFactory {
       line = getLine(buffer);
       buffer.reset();
 
-
       // An integer on the first line is a special test for XYZ files
       try {
         new Integer(line.trim());

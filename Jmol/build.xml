@@ -142,6 +142,13 @@
 	 compile for the 1.1 jvm, we need to specify that the source
 	 version is 1.3. (Note that we cannot use source=1.4 because
 	 of assertions)
+
+	 miguel 20041121
+	 I do not know recall exactly what I meant by the statement
+	 in (parentheses) above. I *think* that what I was saying
+	 is that if you say 'source=1.4' then one also cannot
+	 generate code for a 1.1 jvm, because of the special
+	 support for assertions (which were introduced in 1.4). 
     -->
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
 	   debug="${debug}" deprecation="${deprecation}"

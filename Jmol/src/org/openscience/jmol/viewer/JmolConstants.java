@@ -1515,55 +1515,149 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   public final static String[] specialAtomNames = {
-    "N",  // 0
-    "CA",
-    "C",
-    "O", // 3
-    // note that these entries are really no longer used
-    // remove them when we rearrange the specialAtomName
-    // and redefine the predefined set expressions
-    "N", // imposter N
-    "C", // imposter CA
-    "C", // imposter C
-    "O", // imposter O
+	
+    // First 32 entries are reserved for
+    // null + 31 'distinguishing atoms'
+    // see definitions below
+    null, // 0
     
-    "P",   //  8
-    "O1P",
-    "O2P", // 10
-    "O3P",
-    "O5*",
-    "O4*",
-    "O3*",
-    "O2*", // 15
-    "C5*",
-    "C4*",
-    "C3*",
-    "C2*",
-    "C1*", // 20
-    "1H5*",
-    "2H5*",
-    "H4*",
-    "H3*",
-    "1H2*", // 25
-    "2H2*",
-    "H1*",
-    "H5T",
-    "H3T",
-    "2HO*", // 30
+    // protein backbone
+    //
+    "N",   //  1	//  1 - amino nitrogen
+    "CA",  //  2	//  3 - alpha carbon
+    "C",   //  3	//  4 - carbonyl carbon
+    "O",   //  4	//  5 - carbonyl oxygen
 
-    "C6",   // 31
+    // nucleic acid backbone phosphate
+    //
+    "P",   //  5	// 12 - phosphate phosphorus
+    "O1P", //  6 // 13 - first equivalent oxygen on phosphorus of phosphate
+    "O2P", //  7 // 14 - second equivalent oxygen on phosphorus of phosphate
+    
+    
+    // nucleic acid backbone sugar
+    //
+    "O5*", //  8	// 15 - sugar 5' oxygen
+    "C5*", //  9	// 16 - sugar 5' carbon
+    "C4*", // 10	// 17 - sugar ring 4' carbon
+    "O4*", // 11	// 18 - sugar ring 4' oxygen
+    "C3*", // 12	// 19 - sugar ring 3' carbon
+    "O3*", // 13	// 20 - sugar 3' oxygen
+    "C2*", // 14	// 21 - sugar ring 2' carbon
+    "C1*", // 15	// 22 - sugar ring 1' carbon
 
-    "N1",   // 32
-    "N2",   // 33
-    "N3",   // 34
-    "N4",   // 35
-    "N6",   // 36
-    "O2",   // 37
-    "O4",   // 38
-    "O6",   // 39
+    // reserved for future expansion ... lipids & carbohydrates
+    null, null, null, null, // 16 - 19
+    null, null, null, null, // 20 - 23
+    null, null, null, null, // 24 - 27
+    null, null, null, null, // 28 - 31
+
+    
+    // anything that could be considered part of the 'backbone'
+    // goes in this next group
+    
+    // protein backbone
+    //
+    "OXT", // 32	//  6 - second carbonyl oxygen, C-terminus only
+
+    // protein backbone hydrogens
+    //
+    "H",   // 33 	//  2 - amino hydrogen
+    // these appear on the N-terminus end of 1ALE & 1LCD
+    "1H",  // 34        // N-terminus hydrogen
+    "2H",  // 35        // second N-terminus Hydrogen
+    "3H",  // 36        // third N-terminus Hydrogen
+    "HA",  // 37	// 33 - H on alpha carbon
+    "1HA", // 38	// 34 - H on alpha carbon in Gly only
+    "2HA",  // 39  	// 1ALE calls the two GLY hdrogens 1HA & 2HA
+
+    null,  // 40
+    null,  // 41
+    null,  // 42
+    null,  // 43
+    null,  // 44
+    null,  // 45
+    null,  // 46
+    null,  // 47
+    null,  // 48
+    null,  // 49
+
+    "O2*", // 50	// 23 - sugar 2' oxygen, unique to RNA
+
+    // nucleic acid backbone hydrogens
+    //
+    "1H5*", // 51 	// 37 - first  equivalent H on sugar 5' carbon
+    "2H5*", // 52	// 38 - second  equivalent H on sugar 5' carbon 
+    "H4*",  // 53	// 39 - H on sugar ring 4' carbon
+    "H3*",  // 54	// 40 - H on sugar ring 3' carbon
+    "1H2*", // 55	// 41 - first equivalent H on sugar ring 2' carbon
+    "2H2*", // 56	// 42 - second equivalent H on sugar ring 2' carbon
+    "2HO*", // 57	// 43 - H on sugar 2' oxygen, unique to RNA 
+    "H1*",  // 58	// 44 - H on sugar ring 1' carbon 
+    "H5T",  // 59	// 45 - 5' terminus 
+    "H3T",  // 60	// 46 - 3' terminus
+    null,   // 61
+    null,   // 62
+    null,   // 63
+   
+    // everything before this (not 0, but 1 - 63) is backbone
+
+    // nucleic acide bases
+    //
+    "N1",   // 64
+    "C2",   // 65
+    "N3",   // 66
+    "C4",   // 67
+    "C5",   // 68
+    "C6",   // 69 -- currently defined as the nucleotide wing
+            // this determines the vector for the sheet
+            // could be changed if necessary
+
+    // pyrimidine O2
+    //
+    "O2",   // 70
+
+    // purine stuff
+    //
+    "N7",   // 71
+    "C8",   // 72
+    "N9",   // 73
+
+    // nucleic acid base ring functional groups
+    //
+    "O4",  // 74	// 24 - base carbonyl O4, only in U and T
+    "O6",  // 75	// 25 - base carbonyl O6, only in G and I
+    "N4",  // 76	// 26 - base ring N4, unique to C
+    "C5M", // 77	// 27 - base methyl carbon, unique to T
+    "N6",  // 78	// 28 - base amino N6, unique to A
+    "N2",  // 79	// 29 - base amino N2, unique to G
+    "S4",  // 80	// 30 - base thiol sulfur, unique to thio-U
+
   };
 
-  public final static int ATOMID_MAINCHAIN_MAX = 4;
+  // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
+  public final int ATOMID_MASK_REQUIRED_ATOMS_PROTEIN = 0x0F << 1;
+  // this is entries 5 through through 15 ... 11 bits
+  public final int ATOMID_MASK_REQUIRED_ATOMS_NUCLEOTIDE = 0x07FF << 5;
+  // this is the MAX of the backbone ... everything < MAX is backbone
+  public final int ATOMID_BACKBONE_MAX = 64;
+
+  public final static int ATOMID_DEFINING_PROTEIN_MAX = 5;
+  public final static int ATOMID_DEFINING_NUCLEOTIDE_MAX = 16;
+
+  public final static int ATOMID_NUCLEOTIDE_PHOSPHORUS = 5;
+  public final static int ATOMID_RNA_O2PRIME = 50;
+  public final static int ATOMID_N1 = 64;
+  public final static int ATOMID_N3 = 66;
+  public final static int ATOMID_O2 = 70;
+  public final static int ATOMID_O4 = 74;
+  public final static int ATOMID_O6 = 75;
+  public final static int ATOMID_N4 = 76;
+  public final static int ATOMID_N6 = 78;
+  public final static int ATOMID_N2 = 79;
+  public final static int ATOMID_NUCLEOTIDE_WING = 69;
+
+  /*
   // some pdbfiles do not have sidechain atoms labeled properly
   // we call these MAINCHAIN_IMPOSTERS
   // the residue will accept the first atom with the proper name
@@ -1584,8 +1678,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     
   public final static int ATOMID_NUCLEOTIDE_MAX = 40;
 
-  public final static short RESID_AMINO_MAX = 22;
+  */
 
+  ////////////////////////////////////////////////////////////////
+  // GROUP_ID related stuff for special groupIDs
+  ////////////////////////////////////////////////////////////////
+  
   /****************************************************************
    * PDB file format spec says that the 'residue name' must be
    * right-justified. However, Eric Martz says that some files
@@ -1607,9 +1705,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int GROUPID_GUANINE_2_LAST = 57;
   
 
+  public final static short GROUPID_AMINO_MAX = 23;
+
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
-    "", // this is the null group ... it really should be entry 0
+    "", //  0 this is the null group
     
     "ALA", // 1
     "ARG",

@@ -518,10 +518,11 @@ public final class Atom implements Bspt.Tuple {
   
   private static Hashtable htAtom = new Hashtable();
   static {
-    // this loop *must* run in reverse direction because of
-    // protein mainchain imposters
-    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; )
-      htAtom.put(JmolConstants.specialAtomNames[i], new Integer(i));
+    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
+      String specialAtomName = JmolConstants.specialAtomNames[i];
+      if (specialAtomName != null)
+        htAtom.put(JmolConstants.specialAtomNames[i], new Integer(i));
+    }
   }
 
   byte lookupSpecialAtomID(String atomName) {
@@ -530,7 +531,7 @@ public final class Atom implements Bspt.Tuple {
       if (boxedAtomID != null)
         return (byte)(boxedAtomID.intValue());
     }
-    return -1;
+    return 0;
   }
 
   String formatLabel(String strFormat) {

@@ -206,17 +206,19 @@ final public class Group {
                        " atom.atomName=" + atom.atomName);
     */
     byte specialAtomID = atom.getSpecialAtomID();
-    if (specialAtomID < 0)
+    if (specialAtomID <= 0)
       return;
-    if (specialAtomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
+    if (specialAtomID < JmolConstants.ATOMID_DEFINING_PROTEIN_MAX) {
       if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
         atom.demoteSpecialAtomImposter();
       return;
     }
-    if (specialAtomID < JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
+    /*
+    if (specialAtomID < JmolConstants.ATOMID_DEFINING_NUCLEOTIDE_MAX) {
       registerNucleicAtomIndex(specialAtomID, atom.atomIndex);
       return;
     }
+    */
   }
 
   boolean registerMainchainAtomIndex(short atomid, int atomIndex) {
@@ -225,12 +227,12 @@ final public class Group {
       for (int i = 4; --i >= 0; )
         mainchainIndices[i] = -1;
     }
-    if (mainchainIndices[atomid] != -1) {
+    if (mainchainIndices[atomid - 1] != -1) {
       // my residue already has a mainchain atom with this atomid
       // I must be an imposter
       return false;
     }
-    mainchainIndices[atomid] = atomIndex;
+    mainchainIndices[atomid - 1] = atomIndex;
     return true;
   }
 
@@ -351,8 +353,9 @@ final public class Group {
     }
   }
 
+  /*
   void registerNucleicAtomIndex(short atomid, int atomIndex) {
-    if (atomid == 8) {
+    if (atomid == JmolConstants.ATOMID_NUCLEOTIDE_PHOSPHORUS) {
       if (atomIndexNucleotidePhosphorus < 0) {
         ++nucleicCount;
         atomIndexNucleotidePhosphorus = atomIndex;
@@ -366,9 +369,8 @@ final public class Group {
       }
       return;
     }
-    if (atomid == 15) {
+    if (atomid == JmolConstants.ATOMID_RNA_O2PRIME)
       atomIndexRnaO2Prime = atomIndex;
-    }
     if (atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MIN &&
         atomid < JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
       if (nucleotideIndices == null)
@@ -388,6 +390,7 @@ final public class Group {
     for (int i = nucleotideIndices.length; --i >= 0; )
       nucleotideIndices[i] = -1;
   }
+  */
 
   Atom getNucleotidePhosphorusAtom() {
     return getAtomIndex(atomIndexNucleotidePhosphorus);
@@ -406,6 +409,8 @@ final public class Group {
   }
 
   Atom getNucleotideAtomID(int atomid) {
+    return null;
+    /*
     if (atomid < JmolConstants.ATOMID_NUCLEOTIDE_MIN ||
         atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
       System.out.println("getNucleotideAtomID out of bounds");
@@ -418,6 +423,7 @@ final public class Group {
                          " nucleotideIndices[" + index + "]=" +
                          nucleotideIndices[index]);
     return atom;
+    */
   }
 
   Atom getAtomIndex(int atomIndex) {
@@ -452,6 +458,7 @@ final public class Group {
   }
 
   void dumpNucleotideIndices() {
+    /*
     System.out.println("dumpNucleotideIndices(" + this + "," + groupID + ")");
     if (nucleotideIndices == null) {
       System.out.println("  nucleotideIndices=null");
@@ -462,6 +469,7 @@ final public class Group {
                          JmolConstants.specialAtomNames[JmolConstants.ATOMID_NUCLEOTIDE_MIN + i] + ":" + nucleotideIndices[i] + " ");
       System.out.println("\n");
     }
+    */
   }
 
   public String toString() {

@@ -97,7 +97,7 @@ abstract public class JmolPopup {
   
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
     removeAll(aaresiduesComputedMenu);
-    for (int i = 0; i < JmolConstants.RESID_AMINO_MAX; ++i) {
+    for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i) {
       if (groupsPresentBitSet.get(i)) {
         String aaresidueName = JmolConstants.predefinedGroup3Names[i];
         String script = "select " + aaresidueName;

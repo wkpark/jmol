@@ -40,7 +40,7 @@ final public class Graphics3D {
 
   JmolViewer viewer;
   Platform3D platform;
-  boolean forcePlatformAWT = true;
+  boolean forcePlatformAWT = false;
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;

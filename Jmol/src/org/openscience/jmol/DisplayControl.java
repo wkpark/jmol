@@ -598,9 +598,11 @@ final public class DisplayControl {
   public void setMouseDragged(boolean mouseDragged) {
     if (wireframeRotation && this.mouseDragged != mouseDragged)
       setFastRendering(mouseDragged);
-    if (this.mouseDragged && !mouseDragged && // hmmm ... a little too complex
-        useGraphics2D && wantsAntialias && !wantsAntialiasAlways)
+    if (this.mouseDragged && !mouseDragged) {
+      if ((useGraphics2D && wantsAntialias && !wantsAntialiasAlways) ||
+          (bondDrawMode == SHADING))
         recalc();
+    }
     this.mouseDragged = mouseDragged;
   }
 

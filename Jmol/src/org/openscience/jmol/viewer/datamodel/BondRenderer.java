@@ -102,33 +102,32 @@ class BondRenderer extends Renderer {
     }
     bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {
-    case Bond.BACKBONE:
-      bondOrder = 1;
     case 1:
     case 2:
     case 3:
       renderCylinder();
       break;
-    case Bond.STEREO_NEAR:
-    case Bond.STEREO_FAR:
+    case JmolConstants.BOND_STEREO_NEAR:
+    case JmolConstants.BOND_STEREO_FAR:
       renderTriangle(bond);
       break;
-    case Bond.HYDROGEN:
+    case JmolConstants.BOND_HYDROGEN:
       renderDotted();
     }
   }
 
   int getRenderBondOrder(int order) {
-    if ((order & Bond.SULFUR) != 0)
-      order &= ~Bond.SULFUR;
-    if ((order & Bond.COVALENT) != 0) {
+    if ((order & JmolConstants.BOND_SULFUR) != 0)
+      order &= ~JmolConstants.BOND_SULFUR;
+    if ((order & JmolConstants.BOND_COVALENT) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
           (modeMultipleBond == JmolConstants.MULTIBOND_SMALL &&
-           marBond > JmolConstants.marMultipleBondSmallMaximum))
-          // there used to be a test here for order == -1 ? why ? 
+           marBond > JmolConstants.marMultipleBondSmallMaximum)) {
+          // there used to be a test here for order == -1 ? why ?
         return 1;
+      }
     }
     return order;
   }

@@ -753,32 +753,6 @@ public class Frame {
         }
       }
       iter.release();
-
-      // FIXME mth 2003 11 30
-      // get this out of here and implement it more like like trace
-      // alpha carbon mechanims is not consistent
-
-      // Protein backbone bonds
-      if (hasPdbRecords) {
-        PdbAtom pdbatom = atom.getPdbAtom();
-        if (pdbatom != null) {
-          char chainThis = pdbatom.getChainID();
-          if (chainThis == chainLast) {
-            if (pdbatom.getName().equals("CA")) {
-              if (atomLastCA != null) {
-		  bondAtoms(atom, atomLastCA,
-				 Bond.BACKBONE);
-              }
-              atomLastCA = atom;
-            }
-          } else {
-            chainLast = chainThis;
-            atomLastCA = null;
-          }
-        } else {
-          chainLast = '?';
-        }
-      }
     }
 
     if (showRebondTimes) {
@@ -839,7 +813,7 @@ public class Frame {
           continue;
         if (atom.isBonded(atomNear))
           continue;
-        addBond(atom.bondMutually(atomNear, Bond.HYDROGEN));
+        addBond(atom.bondMutually(atomNear, JmolConstants.BOND_HYDROGEN));
         System.out.println("adding an hbond between " + atom.atomIndex +
                            " & " + atomNear.atomIndex);
       }

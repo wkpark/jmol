@@ -601,8 +601,9 @@ final public class JmolViewer {
   // note that colorBond could be null -- meaning inherit atom color
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
-    distributionManager.setColix(Colix.getColix(colorBond),
-                                 bondIteratorSelected(Bond.COVALENT));
+    distributionManager
+      .setColix(Colix.getColix(colorBond),
+                bondIteratorSelected(JmolConstants.BOND_COVALENT));
     refresh();
   }
 
@@ -1153,24 +1154,29 @@ final public class JmolViewer {
   }
 
   public void setStyleMarBondScript(byte style, short mar) {
-    distributionManager.setStyleMar(style, mar,
-                                    bondIteratorSelected(Bond.COVALENT));
+    distributionManager
+      .setStyleMar(style, mar,
+                   bondIteratorSelected(JmolConstants.BOND_COVALENT));
   }
 
   public void setStyleMarSsBondScript(byte style, short mar) {
-    distributionManager.setStyleMar(style, mar,
-                                    bondIteratorSelected(Bond.SULFUR));
+    distributionManager
+      .setStyleMar(style, mar,
+                   bondIteratorSelected(JmolConstants.BOND_SULFUR));
   }
 
   public void setStyleMarHBondScript(byte style, short mar) {
     getFrame().calcHbonds();
-    distributionManager.setStyleMar(style, mar,
-                                    bondIteratorSelected(Bond.HYDROGEN));
+    distributionManager
+      .setStyleMar(style, mar,
+                   bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
   public void setStyleMarBackboneScript(byte style, short mar) {
+    /*
     distributionManager.setStyleMar(style, mar,
                                     bondIteratorSelected(Bond.BACKBONE));
+    */
   }
 
   public void setStyleBondScript(byte style, byte bondType) {
@@ -1178,8 +1184,10 @@ final public class JmolViewer {
   }
 
   public void setStyleBackboneScript(byte style) {
+    /*
     distributionManager.setStyle(style,
                                  bondIteratorSelected(Bond.BACKBONE));
+    */
   }
 
   public void setColorAtomScript(byte palette, Color color) {
@@ -1188,23 +1196,28 @@ final public class JmolViewer {
   }
 
   public void setColorBondScript(Color color) {
-    distributionManager.setColix(Colix.getColix(color),
-                                 bondIteratorSelected(Bond.COVALENT));
+    distributionManager
+      .setColix(Colix.getColix(color),
+                bondIteratorSelected(JmolConstants.BOND_COVALENT));
   }
 
   public void setColorSsBondScript(Color color) {
-    distributionManager.setColix(Colix.getColix(color),
-                                 bondIteratorSelected(Bond.SULFUR));
+    distributionManager
+      .setColix(Colix.getColix(color),
+                bondIteratorSelected(JmolConstants.BOND_SULFUR));
   }
 
   public void setColorHBondScript(Color color) {
-    distributionManager.setColix(Colix.getColix(color),
-                                 bondIteratorSelected(Bond.HYDROGEN));
+    distributionManager
+      .setColix(Colix.getColix(color),
+                bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
   public void setColorBackboneScript(Color color) {
+    /*
     distributionManager.setColix(Colix.getColix(color),
                                  bondIteratorSelected(Bond.BACKBONE));
+    */
   }
 
   public void setLabelScript(String strLabel) {
@@ -1534,8 +1547,8 @@ final public class JmolViewer {
 
   public void setStyleBond(byte style) {
     styleManager.setStyleBond(style);
-    distributionManager.setStyle(style,
-                                 bondIteratorSelected(Bond.COVALENT));
+    distributionManager
+      .setStyle(style, bondIteratorSelected(JmolConstants.BOND_COVALENT));
     refresh();
   }
 
@@ -1545,8 +1558,8 @@ final public class JmolViewer {
 
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
-    distributionManager.setMar(marBond,
-                               bondIteratorSelected(Bond.COVALENT));
+    distributionManager
+      .setMar(marBond, bondIteratorSelected(JmolConstants.BOND_COVALENT));
     refresh();
   }
 

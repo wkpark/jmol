@@ -88,9 +88,9 @@ final public class JmolConstants {
   public final static byte BOND_STEREO_NEAR = (1 << 2) | 1;
   public final static byte BOND_STEREO_FAR  = (1 << 2) | 2;
   public final static byte BOND_AROMATIC    = (1 << 3) | 1;
-  public final static byte BOND_SULFUR      = (1 << 4) | 1;
+  public final static byte BOND_SULFUR      = (1 << 4);
   public final static byte BOND_HYDROGEN    = (1 << 5);
-  public final static byte BOND_BACKBONE    = (1 << 6);
+  public final static byte BOND_ALL         = (byte)0xFF;
 
   /**
    * The default atomicSymbols. Presumably the only entry which may cause

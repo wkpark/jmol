@@ -219,7 +219,7 @@ public class Atom implements Bspt.Tuple {
       return 0;
     int n = 0;
     for (int i = bonds.length; --i >= 0; )
-      if ((bonds[i].order & Bond.COVALENT) != 0)
+      if ((bonds[i].order & JmolConstants.BOND_COVALENT) != 0)
         ++n;
     return n;
   }

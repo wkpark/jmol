@@ -34,22 +34,6 @@ import java.awt.Rectangle;
 public class Bond {
 
   /*
-  public final static byte COVALENT = 1 << 4;
-  public final static byte IONIC    = 1 << 5;
-  public final static byte HYDROGEN = 1 << 6;
-  public final static byte BACKBONE = 1 << 7;
-
-  public final static byte SINGLE =     1;
-  public final static byte DOUBLE =     2;
-  public final static byte TRIPLE =     3;
-  public final static byte STEREO_IN =  4;
-  public final static byte STEREO_OUT = 5;
-  public final static byte AROMATIC =   6;
-  public final static byte SULPHUR =    7;
-
-  public final static byte COVALENT_MASK = 7;
-  */
-
   public final static byte COVALENT    = 3;
   public final static byte STEREO      = (1 << 2);
   public final static byte STEREO_NEAR = (1 << 2) | 1;
@@ -57,9 +41,9 @@ public class Bond {
   public final static byte AROMATIC    = (1 << 3) | 1;
   public final static byte SULFUR      = 1 << 4;
   public final static byte HYDROGEN    = 1 << 5;
-  public final static byte BACKBONE    = 1 << 6;
 
   public final static byte ALL         = (byte)0xFF;
+  */
 
   public Atom atom1;
   public Atom atom2;
@@ -77,7 +61,7 @@ public class Bond {
     this.atom1 = atom1;
     this.atom2 = atom2;
     if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16)
-      order |= SULFUR;
+      order |= JmolConstants.BOND_SULFUR;
     this.order = (byte)order;
     this.style = style;
     this.mar = mar;
@@ -85,23 +69,16 @@ public class Bond {
   }
 
   public Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
-    this(atom1, atom2, order,
-         (order == BACKBONE
-          ? JmolConstants.STYLE_NONE
-          : viewer.getStyleBond()),
+    this(atom1, atom2, order, viewer.getStyleBond(),
          viewer.getMarBond(), viewer.getColixBond());
   }
 
   public boolean isCovalent() {
-    return (order & COVALENT) != 0;
+    return (order & JmolConstants.BOND_COVALENT) != 0;
   }
 
   public boolean isStereo() {
-    return (order & STEREO) != 0;
-  }
-
-  public boolean isBackbone() {
-    return (order & BACKBONE) != 0;
+    return (order & JmolConstants.BOND_STEREO) != 0;
   }
 
   public void deleteAtomReferences() {

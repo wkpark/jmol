@@ -159,4 +159,17 @@ public class NucleicMonomer extends Monomer {
     return getSpecialAtomPoint(interestingNucleicAtomIDs, specialAtomID);
   }
 
+  void getBaseRing6Points(Point3f[] ring6Points) {
+    for (int i = 6; --i >= 0; )
+      ring6Points[i] = getAtomPointFromOffsetIndex(i + 3);
+  }
+
+  final static byte[] ring5OffsetIndexes = {6, 7, 10, 11, 12};
+
+  boolean maybeGetBaseRing5Points(Point3f[] ring5Points) {
+    if (isPurine)
+      for (int i = 5; --i >= 0; )
+        ring5Points[i] = getAtomPointFromOffsetIndex(ring5OffsetIndexes[i]);
+    return isPurine;
+  }
 }

@@ -540,6 +540,19 @@ final public class Graphics3D {
     triangle3d.fillTriangleNoisy();
   }
 
+  public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
+    
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
+    t = triangle3d.ay;
+    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
+    t = triangle3d.az;
+    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
+
+    triangle3d.fillTriangleNoisy();
+  }
+
   public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
     int[] t;
     t = triangle3d.ax;
@@ -560,8 +573,8 @@ final public class Graphics3D {
     v.z = s1.z - s2.z;
   }
 
-  void calcSurfaceShade(short colix, Point3i screenA,
-                        Point3i screenB, Point3i screenC) {
+  public void calcSurfaceShade(short colix, Point3i screenA,
+                               Point3i screenB, Point3i screenC) {
     diff(vectorAB, screenB, screenA);
     diff(vectorAC, screenC, screenA);
     vectorNormal.cross(vectorAB, vectorAC);
@@ -575,8 +588,8 @@ final public class Graphics3D {
 
   int foo = 0;
 
-  void calcSurfaceShade(short colix, Point3f screenA,
-                        Point3f screenB, Point3f screenC) {
+  public void calcSurfaceShade(short colix, Point3f screenA,
+                               Point3f screenB, Point3f screenC) {
     vectorAB.sub(screenB, screenA);
     vectorAC.sub(screenC, screenA);
     vectorNormal.cross(vectorAB, vectorAC);

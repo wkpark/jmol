@@ -124,11 +124,14 @@ class CartoonRenderer extends MpsRenderer {
             render2StrandSegment(monomerCount, group, colix, mads, i);
           else
             render2StrandArrowhead(monomerCount, group, colix, mads, i);
-        }
-        else
+        } else {
           renderRopeSegment(colix, mads, i,
                             monomerCount, monomers,
                             leadMidpointScreens, isSpecials);
+          if (isNucleicPolymer)
+            renderNucleicBaseStep((NucleicMonomer)group, colix, mads[i],
+                                  leadMidpointScreens[i]);
+        }
         lastWasSpecial = isSpecial;
       }
     viewer.freeTempScreens(ribbonTopScreens);
@@ -187,4 +190,54 @@ class CartoonRenderer extends MpsRenderer {
                     );
   }
 
+  final Point3f[] ring6Points = new Point3f[6];
+  final Point3i[] ring6Screens = new Point3i[6];
+  final Point3f[] ring5Points = new Point3f[5];
+  final Point3i[] ring5Screens = new Point3i[5];
+
+  {
+    ring6Screens[5] = new Point3i();
+    for (int i = 5; --i >= 0; ) {
+      ring5Screens[i] = new Point3i();
+      ring6Screens[i] = new Point3i();
+    }
+  }
+
+  void renderNucleicBaseStep(NucleicMonomer nucleotide,
+                             short colix, short mad, Point3i backboneScreen) {
+    //    System.out.println("render nucleic base step:" + nucleotide);
+    nucleotide.getBaseRing6Points(ring6Points);
+    viewer.transformPoints(ring6Points, ring6Screens);
+    renderRing6(colix);
+    boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(ring5Points);
+    Point3i stepScreen;
+    if (hasRing5) {
+      viewer.transformPoints(ring5Points, ring5Screens);
+      renderRing5();
+      stepScreen = ring5Screens[3];
+    } else {
+      stepScreen = ring6Screens[5];
+    }
+    //    g3d.fillSphereCentered(Graphics3D.YELLOW, 15, pScreen);
+    g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL,
+                     viewer.scaleToScreen(backboneScreen.z,
+                                          mad > 1 ? mad / 2 : mad),
+                     backboneScreen, stepScreen);
+  }
+
+  void renderRing6(short colix) {
+    g3d.calcSurfaceShade(colix,
+                         ring6Screens[0], ring6Screens[2], ring6Screens[4]);
+    g3d.fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
+    g3d.fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
+    g3d.fillTriangle(ring6Screens[0], ring6Screens[4], ring6Screens[5]);
+    g3d.fillTriangle(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
+  }
+
+  void renderRing5() {
+    // shade was calculated previously by renderRing6();
+    g3d.fillTriangle(ring5Screens[0], ring5Screens[2], ring5Screens[3]);
+    g3d.fillTriangle(ring5Screens[0], ring5Screens[1], ring5Screens[2]);
+    g3d.fillTriangle(ring5Screens[0], ring5Screens[3], ring5Screens[4]);
+  }
 }

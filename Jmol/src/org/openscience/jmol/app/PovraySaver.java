@@ -689,6 +689,104 @@ public class PovraySaver {
   	            (float) (results1[i].z + zA * results2[i].z));
   	      }
   	      controls = points;
+  	    } else {
+  	      Point3f[] points = new Point3f[length + 2];
+  	      points[0] = new Point3f(
+  	          2 * path[0].x - path[1].x,
+			  2 * path[0].y - path[1].y,
+			  2 * path[0].z - path[1].z);
+  	      points[1] = new Point3f(path[0]);
+  	      points[2] = new Point3f(path[1]);
+  	      points[3] = new Point3f(
+  	          2 * path[1].x - path[0].x,
+			  2 * path[1].y - path[0].y,
+			  2 * path[1].z - path[0].z);
+  	      controls = points;
+  	    }
+  	    
+  	  } else {
+  	    if (length > 3) {
+  	    
+    	  // Create vectors for computations
+    	  Point3d[] values = new Point3d[length + 2];
+    	  Point3d[] results1 = new Point3d[length + 2];
+    	  Point3d[] results2 = new Point3d[length + 2];
+    	  Point3d[] results3 = new Point3d[length + 2];
+    	  Point3f[] points = new Point3f[length + 2];
+
+  	      // Initialize vectors for computations
+  	      for (int i = 0; i < length - 1; i++) {
+  	        values[i] = new Point3d(
+  	            6 * path[i].x, 6 * path[i].y, 6 * path[i].z);
+  	        points[i] = new Point3f(0, 0, 0);
+  	        results1[i] = new Point3d(0, 0, 0);
+  	        results2[i] = new Point3d(0, 0, 0);
+  	        results3[i] = new Point3d(0, 0, 0);
+  	      }
+  	      results2[0].set(1, 1, 1);
+  	      results3[0].set(1, 1, 1);
+
+  	      // Computation of control points
+  	      for (int i = 2; i < length - 1; i++) {
+  	        results1[i].x = values[i - 2].x - results1[i - 2].x - 4 * results1[i - 1].x;
+  	        results1[i].y = values[i - 2].y - results1[i - 2].y - 4 * results1[i - 1].y;
+  	        results1[i].z = values[i - 2].z - results1[i - 2].z - 4 * results1[i - 1].z;
+  	        results2[i].x = - results2[i - 2].x - 4 * results2[i - 1].x;
+  	        results2[i].y = - results2[i - 2].y - 4 * results2[i - 1].y;
+  	        results2[i].z = - results2[i - 2].z - 4 * results2[i - 1].z;
+  	        results3[i].x = - results3[i - 2].x - 4 * results3[i - 1].x;
+  	        results3[i].y = - results3[i - 2].y - 4 * results3[i - 1].y;
+  	        results3[i].z = - results3[i - 2].z - 4 * results3[i - 1].z;
+  	      }
+          double ax1 = 1 + results2[length - 3].x + 4 * results2[length - 2].x;
+          double ay1 = 1 + results2[length - 3].y + 4 * results2[length - 2].y;
+          double az1 = 1 + results2[length - 3].z + 4 * results2[length - 2].z;
+          double ax2 = 4 + results2[length - 2].x;
+          double ay2 = 4 + results2[length - 2].y;
+          double az2 = 4 + results2[length - 2].z;
+          double bx1 = 1 + results3[length - 3].x + 4 * results3[length - 2].x;
+          double by1 = 1 + results3[length - 3].y + 4 * results3[length - 2].y;
+          double bz1 = 1 + results3[length - 3].z + 4 * results3[length - 2].z;
+          double bx2 = 1 + results3[length - 2].x;
+          double by2 = 1 + results3[length - 2].y;
+          double bz2 = 1 + results3[length - 2].z;
+          double cx1 = values[length - 3].x - results1[length - 3].x - 4 * results1[length - 2].x;
+          double cy1 = values[length - 3].y - results1[length - 3].y - 4 * results1[length - 2].y;
+          double cz1 = values[length - 3].z - results1[length - 3].z - 4 * results1[length - 2].z;
+          double cx2 = values[length - 2].x - results1[length - 2].x;
+          double cy2 = values[length - 2].y - results1[length - 2].y;
+          double cz2 = values[length - 2].z - results1[length - 2].z;
+          points[0].set(
+              (float) ((cx1 * bx2 - cx2 * bx1) / (ax1 * bx2 - ax2 * bx1)),
+			  (float) ((cy1 * by2 - cy2 * by1) / (ay1 * by2 - ay2 * by1)),
+			  (float) ((cz1 * bz2 - cz2 * bz1) / (az1 * bz2 - az2 * bz1)));
+          points[1].set(
+              (float) ((cx1 * ax2 - cx2 * ax1) / (ax2 * bx1 - ax1 * bx2)),
+			  (float) ((cy1 * ay2 - cy2 * ay1) / (ay2 * by1 - ay1 * by2)),
+			  (float) ((cz1 * az2 - cz2 * az1) / (az2 * bz1 - az1 * bz2)));
+          for (int i = 2; i < length - 1; i++) {
+          	points[i].set(
+          	    (float) (results1[i].x + results2[i].x * points[0].x + results3[i].x * points[1].x),
+				(float) (results1[i].y + results2[i].y * points[0].y + results3[i].y * points[1].y),
+				(float) (results1[i].z + results2[i].z * points[0].z + results3[i].z * points[1].z));
+          }
+          points[length - 1] = new Point3f(points[0]);
+          points[length    ] = new Point3f(points[1]);
+          points[length + 1] = new Point3f(points[2]);
+          controls = points;
+  	    } else {
+  	      Point3f[] points = new Point3f[4];
+  	      points[0] = new Point3f(
+  	          2 * path[0].x - path[1].x,
+			  2 * path[0].y - path[1].y,
+			  2 * path[0].z - path[1].z);
+  	      points[1] = new Point3f(path[0]);
+  	      points[2] = new Point3f(path[1]);
+  	      points[3] = new Point3f(
+  	          2 * path[1].x - path[0].x,
+			  2 * path[1].y - path[0].y,
+			  2 * path[1].z - path[0].z);
+  	      controls = points;
   	    }
   	  }
   	}

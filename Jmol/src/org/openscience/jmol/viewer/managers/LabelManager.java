@@ -154,6 +154,8 @@ public class LabelManager {
       }
     }
     strLabel += strFormat.substring(ich);
+    if (strLabel.length() == 0)
+      strLabel = null;
     return strLabel;
   }
 }

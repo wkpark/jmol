@@ -356,10 +356,6 @@ final public class JmolViewer {
     return transformManager.modeSlab;
   }
 
-  public int getSlabValue() {
-    return transformManager.slabValue;
-  }
-
   public Matrix4f getPovRotateMatrix() {
     return transformManager.getPovRotateMatrix();
   }
@@ -454,6 +450,10 @@ final public class JmolViewer {
 
   public int getScreenHeight() {
     return screenHeight;
+  }
+
+  public void setSlabValue(int slabValue) {
+    g3d.setSlabValue(slabValue);
   }
   
   /****************************************************************

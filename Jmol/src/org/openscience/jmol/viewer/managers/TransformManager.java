@@ -241,7 +241,6 @@ public class TransformManager {
 
   public boolean slabEnabled = false;
   public int modeSlab;
-  public int slabValue;
   public int slabPercentSetting = 100;
 
   public boolean getSlabEnabled() {
@@ -257,12 +256,10 @@ public class TransformManager {
     if (percent == 0)
       percent = (pixels < 0) ? -1 : 1;
     slabPercentSetting += percent;
-    calcSlab();
   }
 
   public void slabToPercent(int percentSlab) {
     slabPercentSetting = percentSlab;
-    calcSlab();
   }
 
   public void slabByPercent(int percentSlab) {
@@ -270,13 +267,11 @@ public class TransformManager {
     if (delta == 0)
       delta = (percentSlab < 0) ? -1 : 1;
     slabPercentSetting += delta;
-    calcSlab();
   }
 
   public void setSlabEnabled(boolean slabEnabled) {
     if (this.slabEnabled != slabEnabled) {
       this.slabEnabled = slabEnabled;
-      calcSlab();
     }
   }
 
@@ -288,7 +283,8 @@ public class TransformManager {
     return modeSlab;
   }
 
-  private void calcSlab() {
+  private int calcSlabValue() {
+    int slab = 0;
     if (slabEnabled) {
       if (slabPercentSetting < 0)
         slabPercentSetting = 0;
@@ -299,8 +295,9 @@ public class TransformManager {
       // a slab percentage of 0 should map to -diameter
       int radius =
         (int)(viewer.getRotationRadius() * scalePixelsPerAngstrom);
-      slabValue = (int)((-100+slabPercentSetting) * 2*radius / 100);
+      slab = (int)((100-slabPercentSetting) * 2 * radius / 100);
     }
+    return slab;
   }
 
   /****************************************************************
@@ -440,6 +437,7 @@ public class TransformManager {
   public void calcTransformMatrices() {
     calcPointTransformMatrix();
     calcVectorTransformMatrix();
+    viewer.setSlabValue(calcSlabValue());
   }
 
   private void calcPointTransformMatrix() {

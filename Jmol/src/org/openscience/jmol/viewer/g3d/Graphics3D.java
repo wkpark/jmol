@@ -52,6 +52,7 @@ final public class Graphics3D {
   boolean tPaintingInProgress;
 
   int width,height;
+  int slab;
   int xLast, yLast;
   int[] pbuf;
   short[] zbuf;
@@ -119,6 +120,12 @@ final public class Graphics3D {
     
     //    pbuf4 = new int[size4];
     //    zbuf4 = new short[size4];
+  }
+
+  public void setSlabValue(int slab) {
+    this.slab = slab;
+    System.out.println("width=" + width + " height=" + height +
+                       " slab=" + slab);
   }
 
   private void downSample() {
@@ -194,9 +201,11 @@ final public class Graphics3D {
 
   public void drawCircleCentered(short colix, int diameter,
                                  int x, int y, int z) {
+    if (z < slab)
+      return;
     int r = (diameter + 1) / 2;
     argbCurrent = Colix.getArgb(colix);
-    if (x >= r && x + r < width && y >= r && y + r < height) {
+    if ((x >= r && x + r < width) && (y >= r && y + r < height)) {
       switch (diameter) {
       case 2:
         plotPixelUnclipped(  x, y-1, z);
@@ -227,7 +236,7 @@ final public class Graphics3D {
 
   public void fillScreenedCircleCentered(short colixFill, int diameter, 
                                          int x, int y, int z) {
-    if (diameter == 0)
+    if (diameter == 0 || z < slab)
       return;
     int r = (diameter + 1) / 2;
     argbCurrent = Colix.getArgb(colixFill);
@@ -242,7 +251,7 @@ final public class Graphics3D {
 
   public void fillCircleCentered(short colixFill,
                                  int x, int y, int z, int diameter) {
-    if (diameter == 0)
+    if (diameter == 0 || z < slab)
       return;
     int r = (diameter + 1) / 2;
     argbCurrent = Colix.getArgb(colixFill);
@@ -255,6 +264,8 @@ final public class Graphics3D {
 
   public void fillSphereCentered(short colix, int diameter,
                                  int x, int y, int z) {
+    if (z < slab)
+      return;
     if (diameter <= 1) {
       if (diameter == 1)
         plotPixelClipped(colix, x, y, z);
@@ -275,6 +286,8 @@ final public class Graphics3D {
 
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
+    if (z < slab)
+      return;
     argbCurrent = Colix.getArgb(colix);
     Text3D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(), z,
                 argbCurrent, str, fontCurrent, this);
@@ -350,12 +363,14 @@ final public class Graphics3D {
 
   public void drawLine(Point3i pointA, Point3i pointB) {
     line3d.drawLine(argbCurrent,
-                    pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z, false);
+                    pointA.x, pointA.y, pointA.z,
+                    pointB.x, pointB.y, pointB.z, false);
   }
 
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
     line3d.drawLine(Colix.getArgb(colix),
-                    pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z, true);
+                    pointA.x, pointA.y, pointA.z,
+                    pointB.x, pointB.y, pointB.z, true);
   }
 
   public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -516,10 +531,7 @@ final public class Graphics3D {
 
 
   void plotPixelClipped(int x, int y, int z) {
-    if (x < 0 || x >= width ||
-        y < 0 || y >= height
-        //        || z < 0 || z >= 8192
-        )
+    if (x < 0 || x >= width || y < 0 || y >= height || z < slab)
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
@@ -529,10 +541,7 @@ final public class Graphics3D {
   }
 
   void plotPixelClipped(int argb, int x, int y, int z) {
-    if (x < 0 || x >= width ||
-        y < 0 || y >= height
-        //        || z < 0 || z >= 8192
-        )
+    if (x < 0 || x >= width || y < 0 || y >= height || z < slab)
       return;
     int offset = y * width + x;
     if (z < zbuf[offset]) {
@@ -542,10 +551,7 @@ final public class Graphics3D {
   }
 
   void forcePixel(Color co, int x, int y) {
-    if (x < 0 || x >= width ||
-        y < 0 || y >= height
-        //        || z < 0 || z >= 8192
-        )
+    if (x < 0 || x >= width || y < 0 || y >= height)
       return;
     int offset = y * width + x;
     zbuf[offset] = 0;
@@ -569,7 +575,7 @@ final public class Graphics3D {
   }
 
   void plotPixelsClipped(int count, int x, int y, int z, boolean tScreened) {
-    if (y < 0 || y >= height || x >= width)
+    if (y < 0 || y >= height || x >= width || z < slab)
       return;
     if (x < 0) {
       count += x; // x is negative, so this is subtracting -x
@@ -604,7 +610,8 @@ final public class Graphics3D {
     System.out.println("plotPixelsClipped count=" + count + "x,y,z=" +
                        x + "," + y + "," + zAtLeft + " -> " + zPastRight);
     */
-    if (count <= 0 || y < 0 || y >= height || x >= width)
+    if (count <= 0 || y < 0 || y >= height || x >= width ||
+        (zAtLeft < slab && zPastRight < slab))
       return;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
@@ -626,7 +633,7 @@ final public class Graphics3D {
     while (--count >= 0) {
       int z = zScaled >> 10;
       //      System.out.print(" " + z);
-      if (z < zbuf[offsetPbuf]) {
+      if (z < zbuf[offsetPbuf] && z >= slab) {
         zbuf[offsetPbuf] = (short)z;
         pbuf[offsetPbuf] = argb;
       }
@@ -663,7 +670,7 @@ final public class Graphics3D {
 
   void plotPixelsClipped(int[] pixels, int offset, int count,
                          int x, int y, int z) {
-    if (y < 0 || y >= height || x >= width)
+    if (y < 0 || y >= height || x >= width || z < slab)
       return;
     if (x < 0) {
       count += x; // x is negative, so this is subtracting -x
@@ -729,10 +736,7 @@ final public class Graphics3D {
       int z = coordinates[--i];
       int y = coordinates[--i];
       int x = coordinates[--i];
-      if (x < 0 || x >= width ||
-          y < 0 || y >= height
-          //        || z < 0 || z >= 8192
-          )
+      if (x < 0 || x >= width || y < 0 || y >= height || z < slab)
         continue;
       int offset = y * width + x;
       if (z < zbuf[offset]) {
@@ -749,10 +753,7 @@ final public class Graphics3D {
       int z = coordinates[--i];
       int y = coordinates[--i];
       int x = coordinates[--i];
-      if (x < 0 || x >= width ||
-          y < 0 || y >= height
-          //        || z < 0 || z >= 8192
-          )
+      if (x < 0 || x >= width || y < 0 || y >= height || z < slab)
         continue;
       int offset = y * width + x;
       if (z < zbuf[offset]) {

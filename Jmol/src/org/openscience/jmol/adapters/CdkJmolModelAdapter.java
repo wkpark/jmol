@@ -121,7 +121,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public String getModelName(Object clientFile) {
-    return null;
+      return "model name goes here";
   }
 
   public int getFrameCount(Object clientFile) {

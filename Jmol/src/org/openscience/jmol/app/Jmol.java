@@ -1430,11 +1430,13 @@ public class Jmol extends JPanel {
       System.out.println("notifyFileLoaded(" + fullPathName + "," +
                          fileName + "," + modelName + "," +
                          (clientFile != null));
-      String title = modelName;
-      if (title == null)
-        title = fileName;
-      if (title == null)
-        title = "Jmol";
+      String title = "Jmol";
+      if (modelName != null && fileName != null)
+	  title = fileName + " - " + modelName;
+      else if (fileName != null)
+	  title = fileName;
+      else if (modelName != null)
+	  title = modelName;
       frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
       pcs.firePropertyChange(chemFileProperty, null, clientFile);

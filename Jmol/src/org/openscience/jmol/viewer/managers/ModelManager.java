@@ -96,7 +96,7 @@ public class ModelManager {
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
-      modelName = viewer.getModelName(clientFile);
+      modelName = getModelName(clientFile);
       if (modelName != null) {
         modelName = modelName.trim();
         if (modelName.length() == 0)

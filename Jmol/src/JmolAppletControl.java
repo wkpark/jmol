@@ -25,12 +25,11 @@
 
 import java.applet.*;
 import java.awt.Graphics;
-import java.awt.TextArea;
-import java.awt.ScrollPane;
+import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.Component;
 import java.awt.Button;
-import netscape.javascript.*;
 import java.util.Enumeration;
 
 public class JmolAppletControl extends Applet {
@@ -48,111 +47,168 @@ public class JmolAppletControl extends Applet {
     return parameterInfo;
   }
 
+  private final static int typeChimePush =   0;
+  private final static int typeChimeToggle = 1;
+  private final static int typeChimeRadio =  2;
 
-  JSObject win;
+  // put these in lower case
+  private final static String[] typeNames =
+  {"chimepush", "chimetoggle", "chimeradio"};
+
   String myName;
   AppletContext context;
   String targetName;
-  TextArea text;
-  ScrollPane scrollPane;
+  String typeName;
+  int type;
+  int width;
+  int height;
+  String script;
+  String altScript;
+  //  JmolApplet jmolApplet;
 
-  Button kickButton;
-  Button alertButton;
-  Button callButton;
+  String groupName;
+  boolean toggleState;
 
+  Button awtButton;
+  Component myControl;
+
+  private String getParam(String paramName) {
+    String value = getParameter(paramName);
+    if (value != null) {
+      value = value.trim();
+      if (value.length() == 0)
+        value = null;
+    }
+    return value;
+  }
+  
+  private String getParamLowerCase(String paramName) {
+    String value = getParameter(paramName);
+    if (value != null) {
+      value = value.trim().toLowerCase();
+      if (value.length() == 0)
+        value = null;
+    }
+    return value;
+  }
+  
   public void init() {
-    win = JSObject.getWindow(this);
-    myName = getParameter("name");
-    setName(myName);
-    targetName = getParameter("target");
     context = getAppletContext();
-    //    add(new JmolButton(), "center");
+    myName = getParam("name");
+    targetName = getParam("target");
+    typeName = getParamLowerCase("type");
+    for (type = typeNames.length;
+         --type >= 0 && ! (typeNames[type].equals(typeName)); )
+      {}
+    groupName = getParamLowerCase("group");
+    String buttonState = getParamLowerCase("state");
+    toggleState = (buttonState != null &&
+                   (buttonState.equals("on") ||
+                    buttonState.equals("true") ||
+                    buttonState.equals("pushed") ||
+                    buttonState.equals("checked") ||
+                    buttonState.equals("1")));
+    script = getParam("script");
+    altScript = getParam("altScript");
+    try {
+      width = Integer.parseInt(getParam("width"));
+      height = Integer.parseInt(getParam("height"));
+    } catch (NumberFormatException e) {
+    }
+    setLayout(new GridLayout(1, 1));
+    allocateControl();
+  }
 
-    kickButton = new Button("kick" + targetName);
-    kickButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          text.append("kickButton pressed\n");
-          kickTarget();
-        }
-      }
-                                 );
-    add(kickButton);
+  int clickCount;
 
-    alertButton = new Button("alert");
-    alertButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          alertJavaScript();
-        }
-      }
-                                 );
-    add(alertButton);
-
-    callButton = new Button("call");
-    callButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          callJavaScript();
-        }
-      }
-                                 );
-    add(callButton);
-
-    scrollPane = new ScrollPane();
-    text = new TextArea();
-    scrollPane.add(text);
-    add(scrollPane);
+  private void allocateControl() {
+    switch (type) {
+    case typeChimePush:
+      allocateChimePush();
+      break;
+    case typeChimeToggle:
+      allocateChimeToggle();
+      break;
+    case typeChimeRadio:
+      allocateChimeRadio();
+      break;
+    }
+    if (myControl == null)
+      myControl = new Button("?");
+    add(myControl);
     validate();
   }
 
-  void kickTarget() {
-    Applet target = context.getApplet(targetName);
-    if (target == null)
-      return;
-    if (target instanceof JmolAppletControl) {
-      JmolAppletControl controlsTarget = (JmolAppletControl)target;
-      controlsTarget.takeThat();
-    }
-  }
-
-  String message="Hello Universe! ";
-  int i = 0;
-
-  public void takeThat() {
-    text.append("Ouch!\n");
-  }
-
-  void alertJavaScript() {
-    text.append("" + win.eval("alert('alert from " + myName + "!')"));
-  }
-
-  void callJavaScript() {
-    text.append("" + win.call("listener", new String[] { myName }));
-  }
-
-  /*
-  public void paint(Graphics g) {
-    g.drawString(message + i++, 20, 30);
-    g.drawString("win=" + win, 20, 45);
-    g.drawString("targetName=" + targetName, 20, 60);
-    int y = 75;
-    for (Enumeration enum = context.getApplets(); enum.hasMoreElements(); ) {
-      Applet applet = (Applet)enum.nextElement();
-      String appletName = applet.getName();
-      Class appletClass = applet.getClass();
-      g.drawString("I see " + appletName + ", a " + appletClass,
-                   20, y);
-      y += 15;
-      if (! myName.equals(appletName) &&
-          appletClass == JmolAppletControl.class) {
-        g.drawString("I will kick him!", 20, y);
-        y += 15;
+  private void allocateChimePush() {
+    awtButton = new Button("X");
+    awtButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          context.showStatus("click " + (++clickCount));
+          runScript();
+        }
       }
+                                  );
+    toggleState = true;
+    myControl = awtButton;
+  }
+
+  private void allocateChimeToggle() {
+    awtButton = new Button(toggleState ? "X" : "");
+    awtButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          toggleState = !toggleState;
+          awtButton.setLabel(toggleState ? "X" : "");
+          runScript();
+        }
+      }
+                                  );
+    myControl = awtButton;
+  }
+
+  private void allocateChimeRadio() {
+    awtButton = new Button(toggleState ? "X" : "");
+    awtButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          if (! toggleState) {
+            notifyRadioPeers();
+            toggleState = true;
+            awtButton.setLabel("X");
+            runScript();
+          }
+        }
+      }
+                                  );
+    myControl = awtButton;
+  }
+
+  private void notifyRadio(String radioGroupName) {
+    if (type != typeChimeRadio ||
+        radioGroupName == null ||
+        ! radioGroupName.equals(groupName))
+      return;
+    if (toggleState) {
+      toggleState = false;
+      awtButton.setLabel("");
+      runScript();
     }
   }
-  */
 
-  public void setMessage(String message) {
-    this.message = message;
-    text.append("I am " + myName + "\n");
+  private void notifyRadioPeers() {
+    System.out.println("notifyRadioPeers()");
+    for (Enumeration enum = context.getApplets(); enum.hasMoreElements(); ) {
+      Object peer = enum.nextElement();
+      if (! (peer instanceof JmolAppletControl))
+        continue;
+      JmolAppletControl controlPeer = (JmolAppletControl)peer;
+      controlPeer.notifyRadio(groupName);
+    }
+  }
+
+  private void runScript() {
+    String scriptToRun = (toggleState ? script : altScript);
+    if (scriptToRun == null)
+      return;
+    System.out.println("runScript:" + scriptToRun);
   }
 }
 

@@ -45,7 +45,8 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     super(fr, "About Jmol", true);
 
     try {
-      URL aboutURL = ClassLoader.getSystemResource(jrh.getString("aboutURL"));
+      URL aboutURL = this.getClass().getClassLoader().getResource(jrh.getString("aboutURL"));
+      // URL aboutURL = ClassLoader.getSystemResource(jrh.getString("aboutURL"));
       if (aboutURL != null) {
         html = new JEditorPane(aboutURL);
       } else {

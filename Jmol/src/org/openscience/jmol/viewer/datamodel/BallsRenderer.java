@@ -56,7 +56,7 @@ class BallsRenderer extends ShapeRenderer {
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showHydrogens = viewer.getShowHydrogens();
-    colixLabel = viewer.getColixLabel();
+    colixLabel = viewer.getColixShape(JmolConstants.SHAPE_LABELS);
     isLabelAtomColor = colixLabel == 0;
     labelOffsetX = viewer.getLabelOffsetX();
     labelOffsetY = viewer.getLabelOffsetY();

@@ -28,6 +28,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
+import java.awt.Color;
 import java.util.BitSet;
 
 /****************************************************************
@@ -53,6 +54,24 @@ abstract public class Mcps extends Shape {
     initialize();
     for (int m = models.length; --m >= 0; )
       models[m].setColix(palette, colix, bsSelected);
+  }
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
+    byte palette = 0;
+    short colix = 0;
+    if (propertyName.equals("colorScheme")) {
+      if (value == null)
+        return;
+      palette = viewer.getPalette((String)value);
+    } else if (propertyName.equals("color")) {
+      palette = JmolConstants.PALETTE_COLOR;
+      colix = viewer.getColix((Color)value);
+    } else {
+      return;
+    }
+    initialize();
+    for (int m = models.length; --m >= 0; )
+      models[m].setColix(palette, colix, bs);
   }
 
   abstract Chain allocateMcpsChain(PdbPolymer polymer);

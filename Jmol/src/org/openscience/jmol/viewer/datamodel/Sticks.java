@@ -43,6 +43,12 @@ public class Sticks extends Shape {
   
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
+    if (propertyName.equals("color")) {
+      short colix = viewer.getColix((Color)value);
+      setColixBond(colix, JmolConstants.BOND_COVALENT, bsSelected);
+      return;
+    }
+
     byte bondTypeMask;
     if (propertyName.startsWith("ssbond")) {
       bondTypeMask = JmolConstants.BOND_SULFUR_MASK;
@@ -60,7 +66,7 @@ public class Sticks extends Shape {
       short mad = (short)((Integer)value).intValue();
       setMadBond(mad, bondTypeMask, bsSelected);
     } else if (propertyName.endsWith("Color")) {
-      short colix = frame.g3d.getColix((Color)value);
+      short colix = viewer.getColix((Color)value);
       setColixBond(colix, bondTypeMask, bsSelected);
     } else {
       System.out.println("Sticks does not recognize propertyName:" +

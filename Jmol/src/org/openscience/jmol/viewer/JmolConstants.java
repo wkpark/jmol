@@ -54,6 +54,9 @@ final public class JmolConstants {
   public final static byte PALETTE_CHAIN      = 5;
   public final static byte PALETTE_MAX        = 6;
 
+  public final static String[] colorSchemes =
+    { "cpk", "charge", "structure", "amino", "shapely", "chain" };
+
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;
   public final static byte AXES_BBOX = 2;

@@ -34,6 +34,7 @@ import javax.vecmath.AxisAngle4f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
+import java.awt.Color;
 
 /****************************************************************
  * The Dots and DotsRenderer classes implement vanderWaals and Connolly
@@ -185,6 +186,30 @@ public class Dots extends Shape {
           ? viewer.getColixAtomPalette(frame.getAtomAt(i), palette)
           : colix;
       }
+    }
+  }
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
+    int atomCount = frame.atomCount;
+    Atom[] atoms = frame.atoms;
+    if (propertyName.equals("color")) {
+      short colix = viewer.getColix((Color)value);
+      for (int i = atomCount; --i >= 0; )
+        if (bs.get(i))
+          colixes[i] = colix;
+      return;
+    }
+    if (propertyName.equals("colorScheme")) {
+      if (value != null) {
+        byte palette = viewer.getPalette((String)value);
+        for (int i = atomCount; --i >= 0; ) {
+          if (bs.get(i)) {
+            Atom atom = atoms[i];
+            atom.setColixAtom(viewer.getColixAtomPalette(atom, palette));
+          }
+        }
+      }
+      return;
     }
   }
 

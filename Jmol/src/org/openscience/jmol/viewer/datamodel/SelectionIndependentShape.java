@@ -26,7 +26,8 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+
+import java.awt.Color;
 import java.util.BitSet;
 
 abstract public class SelectionIndependentShape extends Shape {
@@ -41,6 +42,11 @@ abstract public class SelectionIndependentShape extends Shape {
   public void setColix(byte palette, short colix, BitSet bsSelected) {
     if (palette == JmolConstants.PALETTE_COLOR)
       this.colix = colix;
+  }
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
+    if (propertyName.equals("color"))
+      colix = viewer.getColix((Color)value);
   }
 }
 

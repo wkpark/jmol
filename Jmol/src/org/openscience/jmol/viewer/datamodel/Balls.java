@@ -25,6 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+import java.awt.Color;
 import java.util.BitSet;
 
 public class Balls extends Shape {
@@ -46,5 +47,28 @@ public class Balls extends Shape {
                         ? viewer.getColixAtomPalette(atom, palette) : colix);
         atom.setColixAtom(colixT);
       }
+  }
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
+    int atomCount = frame.atomCount;
+    Atom[] atoms = frame.atoms;
+    if (propertyName.equals("color")) {
+      short colix = viewer.getColix((Color)value);
+      for (int i = atomCount; --i >= 0; )
+        if (bs.get(i))
+          atoms[i].setColixAtom(colix);
+      return;
+    }
+    if (propertyName.equals("colorScheme")) {
+      if (value != null) {
+        byte palette = viewer.getPalette((String)value);
+        for (int i = atomCount; --i >= 0; ) {
+          Atom atom = atoms[i];
+          if (bs.get(i))
+            atom.setColixAtom(viewer.getColixAtomPalette(atom, palette));
+        }
+      }
+      return;
+    }
   }
 }

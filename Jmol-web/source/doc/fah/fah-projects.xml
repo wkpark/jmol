@@ -2443,7 +2443,7 @@
     credit="77" frames="100" code="A" contact="spark7"/>
 
   <!-- Projects 1900 to 1999 -->
-  <fah_proj number="1900" name="p1900_32 water molecules"
+  <fah_proj number="1900" name="p1900_32 water molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
     credit="185" frames="100" code="Q" contact="NA"/>
     

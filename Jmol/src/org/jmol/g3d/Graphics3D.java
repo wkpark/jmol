@@ -317,17 +317,17 @@ final public class Graphics3D {
 
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
-    drawString(str, font3dCurrent, colix, xBaseline, yBaseline, z);
+    drawString(str, font3dCurrent, colix, (short)0, xBaseline, yBaseline, z);
   }
   
-  public void drawString(String str, Font3D font3d, short colix,
+  public void drawString(String str, Font3D font3d, short colix, short bgcolix,
                          int xBaseline, int yBaseline, int z) {
     font3dCurrent = font3d;
     argbCurrent = getArgb(colix);
     if (z < slab)
       return;
     Text3D.plot(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(),
-                z, argbCurrent, str, font3dCurrent, this);
+                z, argbCurrent, getArgb(bgcolix), str, font3dCurrent, this);
   }
 
   public void setFontOfSize(int fontsize) {

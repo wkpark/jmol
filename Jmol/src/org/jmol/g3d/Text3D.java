@@ -185,7 +185,7 @@ class Text3D {
     return text3d;
   }
 
-  static void plot(int x, int y, int z, int argb,
+  static void plot(int x, int y, int z, int argb, int argbBackground,
                    String text, Font3D font3d, Graphics3D g3d) {
     Text3D text3d = getText3D(text, font3d, g3d.platform);
     int[] bitmap = text3d.bitmap;
@@ -196,12 +196,15 @@ class Text3D {
       return;
     if (x < 0 || x + textWidth > g3d.width ||
         y < 0 || y + textHeight > g3d.height)
-      plotClipped(x, y, z, argb, g3d, textWidth, textHeight, bitmap);
+      plotClipped(x, y, z, argb, argbBackground,
+                  g3d, textWidth, textHeight, bitmap);
     else
-      plotUnclipped(x, y, z, argb, g3d, textWidth, textHeight, bitmap);
+      plotUnclipped(x, y, z, argb, argbBackground,
+                    g3d, textWidth, textHeight, bitmap);
   }
 
-  static void plotUnclipped(int x, int y, int z, int argb, Graphics3D g3d,
+  static void plotUnclipped(int x, int y, int z, int argb, int argbBackground,
+                            Graphics3D g3d,
                             int textWidth, int textHeight, int[] bitmap) {
     int offset = 0;
     int shiftregister = 0;
@@ -214,16 +217,16 @@ class Text3D {
       while (j < textWidth) {
         if ((offset & 31) == 0)
           shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0) {
+        if (shiftregister == 0 && argbBackground == 0) {
           int skip = 32 - (offset & 31);
           j += skip;
           offset += skip;
           pbufOffset += skip;
         } else {
-          if (shiftregister < 0) {
+          if (shiftregister < 0 || argbBackground != 0) {
             if (z < zbuf[pbufOffset]) {
               zbuf[pbufOffset] = (short)z;
-              pbuf[pbufOffset] = argb;
+              pbuf[pbufOffset] = shiftregister < 0 ? argb : argbBackground;
             }
           }
           shiftregister <<= 1;
@@ -240,7 +243,8 @@ class Text3D {
     }
   }
   
-  static void plotClipped(int x, int y, int z, int argb, Graphics3D g3d,
+  static void plotClipped(int x, int y, int z, int argb, int argbBackground,
+                          Graphics3D g3d,
                           int textWidth, int textHeight, int[] bitmap) {
     int offset = 0;
     int shiftregister = 0;
@@ -249,13 +253,14 @@ class Text3D {
       while (j < textWidth) {
         if ((offset & 31) == 0)
           shiftregister = bitmap[offset >> 5];
-        if (shiftregister == 0) {
+        if (shiftregister == 0 && argbBackground == 0) {
           int skip = 32 - (offset & 31);
           j += skip;
           offset += skip;
         } else {
-          if (shiftregister < 0)
-            g3d.plotPixelClipped(argb, x + j, y + i, z);
+          if (shiftregister < 0 || argbBackground != 0)
+            g3d.plotPixelClipped(shiftregister < 0 ? argb : argbBackground,
+                                 x + j, y + i, z);
           shiftregister <<= 1;
           ++offset;
           ++j;

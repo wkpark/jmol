@@ -28,6 +28,33 @@
       To recognize specific contributions, the developer's initials are noted
       next to the changes.
       
+<changes version="jmol-7">
+  <change contributor="MTH">
+    Reimplementation of rebonding algorithm using BST.
+  </change>
+  <change contributor="FD">
+    Added VASP reader.
+  </change>
+  <change contributor="JRK">
+    Added Gaussian 03 reader.
+  </change>
+  <change contributor="EW">
+    Fixed reading of frequencies in Jaguar 4.2.77 output files (bug #749430).
+  </change>
+  <change contributor="EW">
+    Fixed reading of frequencies in AcesII output files (bug #740967).
+  </change>
+  <change contributor="CR2">
+    Added new window option (feature #743640).
+  </change>
+  <change contributor="FD">
+    Fixed reading of some ABINIT output files (feature #746494).
+  </change>
+  <change contributor="EW">
+    Fixed some JavaDoc.
+  </change>
+</changes>
+
 <changes version="jmol-6">
   <change contributor="MTH">
     Reimplementation of rendering with perspective depth support

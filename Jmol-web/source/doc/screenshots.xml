@@ -15,6 +15,13 @@
       <screenshot image="images/screenshot3.jpg">
         Vibration animation of methanol with vectors displayed.
       </screenshot>
+      <screenshot image="images/screenshot4.jpg">
+        Display of an crystal structure.
+      </screenshot>
+      <screenshot image="images/screenshot5.jpg">
+        Display of bounding box and axes of coordinates space.
+        Note the transparency of the yellow halo around selected atoms.
+      </screenshot>
     </screenshots>
   </section>
 

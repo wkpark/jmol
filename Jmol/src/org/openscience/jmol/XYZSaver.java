@@ -63,15 +63,15 @@ public class XYZSaver extends FileSaver {
 
     try {
 
-      String s1 = new Integer(cf.getNumberOfAtoms()).toString() + "\n";
+      String s1 = new Integer(cf.getNumberOfAtoms()).toString();
       w.write(s1, 0, s1.length());
+      w.newLine();
 
       String s2 = cf.getInfo();
-      if (s2 == null) {
-        w.newLine();
-      } else {
-        w.write(s2 + "\n", 0, s2.length() + 1);
+      if (s2 != null) {
+        w.write(s2, 0, s2.length());
       }
+      w.newLine();
 
       // Loop through the atoms and write them out:
 
@@ -94,8 +94,9 @@ public class XYZSaver extends FileSaver {
           Point3f vector = a.getVector();
           st = st + "\t" + vector.x + "\t" + vector.y + "\t" + vector.z;
         }
-        st = st + "\n";
+        st = st;
         w.write(st, 0, st.length());
+        w.newLine();
 
       }
 

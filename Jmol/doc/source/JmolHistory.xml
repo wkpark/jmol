@@ -29,6 +29,12 @@
   </change>
 </changes>
 
+<changes version="jmol-1.2">
+  <changes>
+    Fixed line separator for XYZ output. (bug #519101)
+  </changes>
+</changes>
+
 <changes version="jmol-1.1">
   <change>
     Bugfix release

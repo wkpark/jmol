@@ -226,9 +226,14 @@ public class Frame {
     }
   }
   
+  public void setGraphicShow(int refGraphic, boolean show) {
+    if (show)
+      checkGraphic(refGraphic);
+    if (graphics[refGraphic] != null)
+      graphics[refGraphic].setShow(show);
+  }
+
   public void setGraphicMad(int refGraphic, short mad, BitSet bsSelected) {
-    System.out.println("setGraphicMad(" + refGraphic + ","
-                       + mad + ")");
     if (mad != 0)
       checkGraphic(refGraphic);
     if (graphics[refGraphic] != null)
@@ -274,21 +279,6 @@ public class Frame {
       strands = new Strands(viewer, this);
     if (strands != null)
       strands.setColix(palette, colix, bsSelected);
-  }
-
-  public void setModeAxes(byte modeAxes) {
-    if (modeAxes != JmolConstants.AXES_NONE)
-      checkGraphic(JmolConstants.GRAPHIC_AXES);
-    if (graphics[JmolConstants.GRAPHIC_AXES] != null)
-      ((Axes)graphics[JmolConstants.GRAPHIC_AXES]).setMode(modeAxes);
-  }
-
-  public void setShowBoundingBox(boolean showBoundingBox) {
-    if (showBoundingBox)
-      checkGraphic(JmolConstants.GRAPHIC_BBOX);
-    if (graphics[JmolConstants.GRAPHIC_BBOX] != null)
-      ((Bbox)graphics[JmolConstants.GRAPHIC_BBOX])
-        .setShowBoundingBox(showBoundingBox);
   }
 
   Point3f centerBoundingBox;

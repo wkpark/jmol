@@ -45,7 +45,7 @@ class BboxRenderer extends Renderer {
 
   void render() {
     Bbox bbox = (Bbox)graphic;
-    if (! bbox.showBoundingBox)
+    if (! bbox.show)
       return;
     for (int i = 8; --i >= 0; )
       viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);

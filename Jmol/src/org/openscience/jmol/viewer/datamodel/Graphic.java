@@ -29,6 +29,7 @@ import java.util.BitSet;
 
 abstract public interface Graphic {
 
+  abstract public void setShow(boolean show);
   abstract public void setMad(short mad, BitSet bsSelected);
   abstract public void setColix(byte palette, short colix, BitSet bsSelected);
 }

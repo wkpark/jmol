@@ -1207,6 +1207,10 @@ final public class JmolViewer {
     getFrame().setDotsOn(dotsOn, selectionManager.bsSelection);
   }
 
+  public void setGraphicShow(int refGraphic, boolean show) {
+    getFrame().setGraphicShow(refGraphic, show);
+  }
+
   public void setGraphicMad(int refGraphic, short mad) {
     getFrame().setGraphicMad(refGraphic, mad, selectionManager.bsSelection);
   }

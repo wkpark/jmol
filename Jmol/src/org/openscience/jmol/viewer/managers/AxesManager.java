@@ -41,13 +41,15 @@ public class AxesManager {
   public byte modeAxes = JmolConstants.AXES_NONE;
   public void setModeAxes(byte modeAxes) {
     this.modeAxes = modeAxes;
-    viewer.getFrame().setModeAxes(modeAxes);
+    // for now, break axes so that it either shows or doesn't
+    viewer.setGraphicShow(JmolConstants.GRAPHIC_AXES,
+                          modeAxes != JmolConstants.AXES_NONE);
   }
 
   public boolean showBoundingBox = false;
   public void setShowBoundingBox(boolean showBoundingBox) {
     this.showBoundingBox = showBoundingBox;
-    viewer.getFrame().setShowBoundingBox(showBoundingBox);
+    viewer.setGraphicShow(JmolConstants.GRAPHIC_BBOX, showBoundingBox);
   }
 
   public short colixAxes;

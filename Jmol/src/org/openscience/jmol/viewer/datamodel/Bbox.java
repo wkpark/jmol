@@ -62,11 +62,11 @@ class Bbox implements Graphic {
       bboxPoints[i] = new Point3f();
   }
 
-  boolean showBoundingBox;
+  boolean show;
 
-  void setShowBoundingBox(boolean showBoundingBox) {
-    this.showBoundingBox = showBoundingBox;
-    if (! showBoundingBox)
+  public void setShow(boolean show) {
+    this.show = show;
+    if (! show)
       return;
     Point3f pointOrigin = viewer.getBoundingBoxCenter();
     Point3f pointCorner = viewer.getBoundingBoxCorner();

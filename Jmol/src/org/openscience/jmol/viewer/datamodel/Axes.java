@@ -57,8 +57,8 @@ public class Axes implements Graphic {
       axisPoints[i] = new Point3f();
   }
 
-  public void setMode(byte mode) {
-    this.mode = mode;
+  public void setShow(boolean show) {
+    this.mode = (show ? JmolConstants.AXES_BBOX : JmolConstants.AXES_NONE);
     if (mode == JmolConstants.AXES_NONE)
       return;
     System.out.println("setting originPoint!");

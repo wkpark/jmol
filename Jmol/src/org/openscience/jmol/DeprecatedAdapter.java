@@ -34,6 +34,7 @@ import java.io.Reader;
 import java.io.IOException;
 import org.openscience.jmol.io.ReaderFactory;
 import org.openscience.jmol.io.ChemFileReader;
+import java.util.Iterator;
 
 public class DeprecatedAdapter implements JmolClientAdapter {
   AtomColorer[] colorSchemes;
@@ -87,6 +88,101 @@ public class DeprecatedAdapter implements JmolClientAdapter {
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
     return ((ChemFile)clientFile).getFrame(frameNumber).getJmolFrame();
+  }
+
+  /****************************************************************
+   * The frame related methods
+   ****************************************************************/
+
+  public int getAtomCount(Object clientFile, int frameNumber) {
+    return ((ChemFile)clientFile).getFrame(frameNumber).getAtomCount();
+  }
+
+  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
+    return false;
+  }
+
+  public Iterator getAtomIterator(Object clientFile, int frameNumber) {
+    return new AtomIterator();
+  }
+
+  public Iterator getCovalentBondIterator(Object clientFile, int frameNumber) {
+    return new CovalentBondIterator();
+  }
+
+  public Iterator getAssociationIterator(Object clientFile, int frameNumber) {
+    return new AssociationIterator();
+  }
+
+  public Iterator getVectorIterator(Object clientFile, int frameNumber) {
+    return new VectorIterator();
+  }
+
+  public Iterator getCrystalCellIterator(Object clientFile, int frameNumber) {
+    return new CrystalCellIterator();
+  }
+
+  /****************************************************************
+   * the frame iterators
+   ****************************************************************/
+  class AtomIterator implements Iterator {
+    public boolean hasNext() {
+      return false;
+    }
+    public Object next() {
+      return null;
+    }
+    public void remove() {
+      throw new NullPointerException();
+    }
+  }
+
+  class CovalentBondIterator implements Iterator {
+    public boolean hasNext() {
+      return false;
+    }
+    public Object next() {
+      return null;
+    }
+    public void remove() {
+      throw new NullPointerException();
+    }
+  }
+
+  class AssociationIterator implements Iterator {
+    public boolean hasNext() {
+      return false;
+    }
+    public Object next() {
+      return null;
+    }
+    public void remove() {
+      throw new NullPointerException();
+    }
+  }
+
+  class VectorIterator implements Iterator {
+    public boolean hasNext() {
+      return false;
+    }
+    public Object next() {
+      return null;
+    }
+    public void remove() {
+      throw new NullPointerException();
+    }
+  }
+
+  class CrystalCellIterator implements Iterator {
+    public boolean hasNext() {
+      return false;
+    }
+    public Object next() {
+      return null;
+    }
+    public void remove() {
+      throw new NullPointerException();
+    }
   }
 
   /****************************************************************

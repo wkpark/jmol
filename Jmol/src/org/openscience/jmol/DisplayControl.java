@@ -51,6 +51,7 @@ import java.awt.Component;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
+import java.util.Iterator;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4d;
@@ -1646,6 +1647,34 @@ final public class DisplayControl {
 
   public String getModelName(Object clientFile) {
     return clientAdapter.getModelName(clientFile);
+  }
+
+  public int getAtomCount(Object clientFile, int frameNumber) {
+    return clientAdapter.getAtomCount(clientFile, frameNumber);
+  }
+
+  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
+    return clientAdapter.hasPdbRecords(clientFile, frameNumber);
+  }
+
+  public Iterator getAtomIterator(Object clientFile, int frameNumber) {
+    return clientAdapter.getAtomIterator(clientFile, frameNumber);
+  }
+
+  public Iterator getCovalentBondIterator(Object clientFile, int frameNumber) {
+    return clientAdapter.getCovalentBondIterator(clientFile, frameNumber);
+  }
+
+  public Iterator getAssociationIterator(Object clientFile, int frameNumber) {
+    return clientAdapter.getAssociationIterator(clientFile, frameNumber);
+  }
+
+  public Iterator getVectorIterator(Object clientFile, int frameNumber) {
+    return clientAdapter.getVectorIterator(clientFile, frameNumber);
+  }
+
+  public Iterator getCrystalCellIterator(Object clientFile, int frameNumber) {
+    return clientAdapter.getCrystalCellIterator(clientFile, frameNumber);
   }
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {

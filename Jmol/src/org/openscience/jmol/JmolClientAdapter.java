@@ -29,12 +29,21 @@ import org.openscience.jmol.ProteinProp;
 import org.openscience.jmol.render.JmolFrame;
 import java.io.Reader;
 import java.awt.Color;
+import java.util.Iterator;
 
 public interface JmolClientAdapter {
 
   public Object openReader(DisplayControl control, String name, Reader reader);
   public int getFrameCount(Object clientFile);
   public String getModelName(Object clientFile);
+
+  public int getAtomCount(Object clientFile, int frameNumber);
+  public boolean hasPdbRecords(Object clientFile, int frameNumber);
+  public Iterator getAtomIterator(Object clientFile, int frameNumber);
+  public Iterator getCovalentBondIterator(Object clientFile, int frameNumber);
+  public Iterator getAssociationIterator(Object clientFile, int frameNumber);
+  public Iterator getVectorIterator(Object clientFile, int frameNumber);
+  public Iterator getCrystalCellIterator(Object clientFile, int frameNumber);
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber);
 

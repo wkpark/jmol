@@ -616,6 +616,12 @@ public class Frame {
     bspf = null;
   }
 
+  int getBsptCount() {
+    if (bspf == null)
+      initializeBspf();
+    return bspf.getBsptCount();
+  }
+
   private final WithinIterator withinAtomIterator = new WithinIterator();
   private final WithinIterator withinPointIterator = new WithinIterator();
   private final PointWrapper pointWrapper = new PointWrapper();
@@ -644,7 +650,7 @@ public class Frame {
       this.center = center;
       this.radius = radius;
       iterCurrent = null;
-      bsptIndexLast = bspf.getBsptCount();
+      bsptIndexLast = getBsptCount();
     }
 
     public boolean hasNext() {
@@ -665,7 +671,7 @@ public class Frame {
 
     public void release() {
       iterCurrent = null;
-      for (int i = bspf.getBsptCount(); --i >= 0; ) {
+      for (int i = getBsptCount(); --i >= 0; ) {
         Bspt.SphereIterator iter = bspf.getSphereIterator(i);
         if (iter != null)
           iter.release();

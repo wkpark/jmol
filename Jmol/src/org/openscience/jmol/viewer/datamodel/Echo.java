@@ -122,11 +122,18 @@ public class Echo extends Shape {
         currentText = bottomText;
         return;
       }
+
+      if ("none".equals(target)) {
+        currentText = null;
+        return;
+      }
       System.out.println("unrecognized target:" + target);
       return;
     }
 
     if ("align".equals(propertyName)) {
+      if (currentText == null)
+        return;
       String align = (String)value;
       if ("left".equals(align)) {
         currentText.align = LEFT;

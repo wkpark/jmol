@@ -634,6 +634,11 @@ public class Eval implements Runnable {
       badArgumentCount();
   }
 
+  void checkLength34() throws ScriptException {
+    if (statementLength < 3 || statementLength > 4)
+      badArgumentCount();
+  }
+
   void checkLength2() throws ScriptException {
     checkStatementLength(2);
   }
@@ -1327,6 +1332,7 @@ public class Eval implements Runnable {
     case Token.boundbox:
     case Token.unitcell:
     case Token.frank:
+    case Token.echo:
       colorObject(tok, 2);
       break;
     case Token.identifier:
@@ -1414,6 +1420,9 @@ public class Eval implements Runnable {
     case Token.frank:
       shapeType = JmolConstants.SHAPE_FRANK;
       break;
+    case Token.echo:
+      shapeType = JmolConstants.SHAPE_ECHO;
+      break;
     case Token.monitor:
       shapeType = JmolConstants.SHAPE_MEASURES;
       break;
@@ -1434,11 +1443,15 @@ public class Eval implements Runnable {
     variables.put(variable, statement);
   }
 
+  boolean echoShapeActive = false;
+
   void echo() throws ScriptException {
+    String text = "";
     if (statementLength == 2 && statement[1].tok == Token.string)
-      viewer.scriptEcho((String)statement[1].value);
-    else
-      viewer.scriptEcho("");
+      text = (String)statement[1].value;
+    if (echoShapeActive)
+      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "echo", text);
+    viewer.scriptEcho(text);
   }
 
   void label() throws ScriptException {
@@ -2374,13 +2387,35 @@ public class Eval implements Runnable {
   }
 
   void setEcho() throws ScriptException {
-    System.out.println("setEcho() called");
-    viewer.setShapeSize(JmolConstants.SHAPE_ECHO, 1);
-    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "target", "top");
-    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "color", Color.blue);
-    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "echo", "top!");
+    String propertyName = "target";
+    String propertyValue = null;
+    checkLength34();
+    echoShapeActive = true;
+    switch (statement[2].tok) {
+    case Token.off:
+      echoShapeActive = false;
+      propertyName = "off";
+      break;
+    case Token.none:
+      echoShapeActive = false;
+    case Token.identifier:
+      propertyValue=(String)statement[2].value;
+      break;
+    default:
+      keywordExpected();
+    }
+    viewer.setShapeSize(JmolConstants.SHAPE_ECHO, 1); // the echo package
+    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO,
+                            propertyName, propertyValue);
+    if (statementLength == 4) {
+      int tok = statement[3].tok;
+      if (tok != Token.identifier && tok != Token.center)
+        keywordExpected();
+      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO,
+                              "align", (String)statement[3].value);
+    }
   }
-
+  
   void setFontsize() throws ScriptException {
     int fontsize = 13;
     if (statementLength == 3) {

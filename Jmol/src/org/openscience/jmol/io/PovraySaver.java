@@ -191,15 +191,153 @@ public class PovraySaver {
         "  sphere{<X2,Y2,Z2>,RADIUS\n" +
         "   pigment{rgb<R2,G2,B2>}}\n" +
         "#end\n\n");
-    out("#macro wire1(X1,Y1,Z1,X2,Y2,Z2,R,G,B)\n" +
+    out("#macro wire1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
         " cylinder{<X1,Y1,Z1>,<X2,Y2,Z2>,wireRadius\n" +
         "  pigment{rgb<R,G,B>}}\n" +
         "#end\n\n");
-    out("#macro wire2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,R1,G1,B1,R2,G2,B2)\n" +
+    out("#macro wire2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,RADIUS,R1,G1,B1,R2,G2,B2)\n" +
         " cylinder{<X1, Y1, Z1>, <XC, YC, ZC>, wireRadius\n" +
         "  pigment{rgb<R1, G1, B1>}}\n" +
         " cylinder{<XC, YC, ZC>, <X2, Y2, Z2>, wireRadius\n" +
         "  pigment{rgb<R2,G2,B2>}}\n" +
+        "#end\n\n");
+    out("#macro dblbond1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 3/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "bond1(X1+offX,Y1+offY,Z1,X2+offX,Y2+offY,Z2,RADIUS,R,G,B)\n" +
+        "bond1(X1-offX,Y1-offY,Z1,X2-offX,Y2-offY,Z2,RADIUS,R,G,B)\n" +
+        "#end\n\n");
+    out("#macro dblbond2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,"+
+        "RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 3/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "bond2(X1+offX,Y1+offY,Z1,XC+offX,YC+offY,ZC,X2+offX,Y2+offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "bond2(X1-offX,Y1-offY,Z1,XC-offX,YC-offY,ZC,X2-offX,Y2-offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#end\n\n");
+    out("#macro trpbond1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 5/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "bond1(X1+offX,Y1+offY,Z1,X2+offX,Y2+offY,Z2,RADIUS,R,G,B)\n" +
+        "bond1(X1     ,Y1     ,Z1,X2     ,Y2     ,Z2,RADIUS,R,G,B)\n" +
+        "bond1(X1-offX,Y1-offY,Z1,X2-offX,Y2-offY,Z2,RADIUS,R,G,B)\n" +
+        "#end\n\n");
+    out("#macro trpbond2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,"+
+        "RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 5/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "bond2(X1+offX,Y1+offY,Z1,XC+offX,YC+offY,ZC,X2+offX,Y2+offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "bond2(X1     ,Y1     ,Z1,XC     ,YC     ,ZC,X2     ,Y2     ,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "bond2(X1-offX,Y1-offY,Z1,XC-offX,YC-offY,ZC,X2-offX,Y2-offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#end\n\n");
+    out("#macro dblwire1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 3/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "wire1(X1+offX,Y1+offY,Z1,X2+offX,Y2+offY,Z2,RADIUS,R,G,B)\n" +
+        "wire1(X1-offX,Y1-offY,Z1,X2-offX,Y2-offY,Z2,RADIUS,R,G,B)\n" +
+        "#end\n\n");
+    out("#macro dblwire2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,"+
+        "RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 3/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "wire2(X1+offX,Y1+offY,Z1,XC+offX,YC+offY,ZC,X2+offX,Y2+offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "wire2(X1-offX,Y1-offY,Z1,XC-offX,YC-offY,ZC,X2-offX,Y2-offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#end\n\n");
+    out("#macro trpwire1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 5/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "wire1(X1+offX,Y1+offY,Z1,X2+offX,Y2+offY,Z2,RADIUS,R,G,B)\n" +
+        "wire1(X1     ,Y1     ,Z1,X2     ,Y2     ,Z2,RADIUS,R,G,B)\n" +
+        "wire1(X1-offX,Y1-offY,Z1,X2-offX,Y2-offY,Z2,RADIUS,R,G,B)\n" +
+        "#end\n\n");
+    out("#macro trpwire2(X1,Y1,Z1,XC,YC,ZC,X2,Y2,Z2,"+
+        "RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "#local dx = X2 - X1;\n" +
+        "#local dy = Y2 - Y1;\n" +
+        "#local mag2d = sqrt(dx*dx + dy*dy);\n" +
+        "#local separation = 5/2 * RADIUS;\n" +
+        "#if (dx + dy)\n" +
+        " #local offX = separation * dy / mag2d;\n" +
+        " #local offY = separation * -dx / mag2d;\n" +
+        "#else\n" +
+        " #local offX = 0;\n" +
+        " #local offY = separation;\n" +
+        "#end\n" +
+        "wire2(X1+offX,Y1+offY,Z1,XC+offX,YC+offY,ZC,X2+offX,Y2+offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "wire2(X1     ,Y1     ,Z1,XC     ,YC     ,ZC,X2     ,Y2     ,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
+        "wire2(X1-offX,Y1-offY,Z1,XC-offX,YC-offY,ZC,X2-offX,Y2-offY,Z2,\n"+
+        "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
         "#end\n\n");
   }
 
@@ -242,14 +380,23 @@ public class PovraySaver {
     float r1 = color1.getRed() / 255f;
     float g1 = color1.getGreen() / 255f;
     float b1 = color1.getBlue() / 255f;
+    int order = viewer.getBondOrder(i) & 3;
     
+    if (order == 2)
+      out("dbl");
+    else if (order == 3)
+      out("trp");
+
+    if (radius > 0) {
+      out("bond");
+    } else {
+      out("wire");
+      radius = -radius;
+    }
+
     if (color1.equals(color2)) {
-      if (radius > 0)
-        out("bond1("+x1+","+y1+","+z1+","+x2+","+y2+","+z2+",\n" +
-            "      "+radius+","+r1+","+g1+","+b1+")\n");
-      else
-        out("wire1("+x1+","+y1+","+z1+","+x2+","+y2+","+z2+",\n" +
-            "      "+r1+","+g1+","+b1+")\n");
+      out("1("+x1+","+y1+","+z1+","+x2+","+y2+","+z2+",\n" +
+          "      "+radius+","+r1+","+g1+","+b1+")\n");
     } else {
       pointC.set(point1);
       pointC.add(point2);
@@ -260,14 +407,9 @@ public class PovraySaver {
       float r2 = color2.getRed() / 255f;
       float g2 = color2.getGreen() / 255f;
       float b2 = color2.getBlue() / 255f;
-      if (radius > 0)
-        out("bond2("+x1+","+y1+","+z1+","+xC+","+yC+","+zC+",\n" +
-            "      "+x2+","+y2+","+z2+","+radius+",\n" +
-            "      "+r1+","+g1+","+b1+","+r2+","+g2+","+b2+")\n");
-      else
-        out("wire2("+x1+","+y1+","+z1+","+xC+","+yC+","+zC+",\n" +
-            "      "+x2+","+y2+","+z2+",\n" +
-            "      "+r1+","+g1+","+b1+","+r2+","+g2+","+b2+")\n");
+      out("2("+x1+","+y1+","+z1+","+xC+","+yC+","+zC+",\n" +
+          "      "+x2+","+y2+","+z2+","+radius+",\n" +
+          "      "+r1+","+g1+","+b1+","+r2+","+g2+","+b2+")\n");
     }
   }
 }

@@ -1650,6 +1650,10 @@ final public class JmolViewer {
     return modelManager.getBondRadius(i);
   }
 
+  public byte getBondOrder(int i) {
+    return modelManager.getBondOrder(i);
+  }
+
   public Color getBondColor1(int i) {
     return Colix.getColor(modelManager.getBondColix1(i));
   }

@@ -394,6 +394,10 @@ public class ModelManager {
     return frame.bondShapes[i].getRadius();
   }
 
+  public byte getBondOrder(int i) {
+    return frame.bondShapes[i].getOrder();
+  }
+
   public short getBondColix1(int i) {
     return frame.bondShapes[i].getColix1();
   }

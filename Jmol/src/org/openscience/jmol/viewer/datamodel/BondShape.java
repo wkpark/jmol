@@ -108,14 +108,15 @@ public class BondShape {
   }
 
   public double getRadius() {
-    switch (style) {
-    case JmolViewer.NONE:
-      return 0;
-    case JmolViewer.WIREFRAME:
-      return -1;
-    default:
-      return mar/1000.0;
-    }
+    if (style == JmolViewer.NONE) return 0;
+    double radius = mar/1000.0;
+    if (style == JmolViewer.WIREFRAME)
+      return -radius;
+    return radius;
+  }
+
+  public byte getOrder() {
+    return order;
   }
 
   public short getColix1() {

@@ -127,7 +127,15 @@ public class DisplayPanel extends JPanel
     String vers = System.getProperty("java.version");
     antialiasCapable = vers.compareTo("1.2") >= 0;
     (new File("jmolbug.log")).delete();
+      try {
+        out = new PrintStream(new FileOutputStream("jmolbug.log", true));
+      } catch (Exception ex) {
+        System.out.println("error opening jmolbug.log:" + ex.getMessage());
+        out = System.out;
+      }
   }
+  private PrintStream out;
+  private boolean paintDumpState = false;
 
   public void setChemFile(ChemFile cf) {
     this.cf = cf;
@@ -328,6 +336,8 @@ public class DisplayPanel extends JPanel
         // track with the mouse cursor
 
         // a change in the x coordinate generates a rotation about the y axis
+        out.println("rotate prevx,prevy x,y" + prevx +"," + prevy +
+                    " " + x + "," + y);
         float ytheta = (float)Math.PI * (x - prevx) / minScreenDimension;
         matrixTemp.rotY(ytheta);
         matrixRotate.mul(matrixTemp, matrixRotate);
@@ -335,6 +345,7 @@ public class DisplayPanel extends JPanel
         float xtheta = (float)Math.PI * (y - prevy) / minScreenDimension;
         matrixTemp.rotX(xtheta);
         matrixRotate.mul(matrixTemp, matrixRotate);
+        out.println("Rotate matrixRotate=" + matrixRotate);
       }
 
       if (modeMouse == XLATE) {
@@ -432,6 +443,18 @@ public class DisplayPanel extends JPanel
       g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
 
       Matrix4f matrix = getViewTransformMatrix();
+      if (paintDumpState) {
+        out.println("\npaint after home & transform ----------------");
+        out.println("dimCurrent=" + dimCurrent);
+        out.println("chemframe.getRadius()=" + chemframe.getRadius());
+        out.println("chemframe.getCenter()=" + chemframe.getCenter());
+        out.println("scalePixelsPerAngstrom=" + scalePixelsPerAngstrom);
+        out.println("matrixRotate=" + matrixRotate);
+        out.println("matrixTranslate=" + matrixTranslate);
+        out.println("matrixView=" + getViewTransformMatrix());
+        chemframe.dumpAtoms(out);
+        paintDumpState = false;
+      }
       settings.setAtomZOffset(dimCurrent.width / 2);
 
       frameRenderer.paint(g2d, chemframe, settings, matrix);
@@ -895,7 +918,7 @@ public class DisplayPanel extends JPanel
         System.out.println("error opening jmolbug.log:" + ex.getMessage());
         out = System.out;
       }
-      out.println("Before home ---------------");
+      out.println("\nBefore home ---------------");
       out.println("dimCurrent=" + dimCurrent);
       out.println("chemframe.getRadius()=" + chemframe.getRadius());
       out.println("chemframe.getCenter()=" + chemframe.getCenter());
@@ -905,16 +928,7 @@ public class DisplayPanel extends JPanel
       out.println("matrixView=" + getViewTransformMatrix());
       chemframe.dumpAtoms(out);
       homePosition();
-      out.println("After home ----------------");
-      out.println("dimCurrent=" + dimCurrent);
-      out.println("chemframe.getRadius()=" + chemframe.getRadius());
-      out.println("chemframe.getCenter()=" + chemframe.getCenter());
-      out.println("scalePixelsPerAngstrom=" + scalePixelsPerAngstrom);
-      out.println("matrixRotate=" + matrixRotate);
-      out.println("matrixTranslate=" + matrixRotate);
-      out.println("matrixView=" + getViewTransformMatrix());
-      chemframe.dumpAtoms(out);
-      out.println("---------------------------");
+      paintDumpState = true;
       repaint();
     }
   }

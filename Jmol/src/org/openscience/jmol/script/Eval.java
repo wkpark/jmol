@@ -280,6 +280,12 @@ public class Eval implements Runnable {
       case Token.slab:
         slab();
         break;
+      case Token.spacefill:
+        spacefill();
+        break;
+      case Token.wireframe:
+        wireframe();
+        break;
         // not implemented
       case Token.backbone:
       case Token.bond:
@@ -300,7 +306,6 @@ public class Eval implements Runnable {
       case Token.save:
       case Token.set:
       case Token.show:
-      case Token.spacefill:
       case Token.ssbonds:
       case Token.star:
       case Token.stereo:
@@ -308,7 +313,6 @@ public class Eval implements Runnable {
       case Token.structure:
       case Token.trace:
       case Token.unbond:
-      case Token.wireframe:
       case Token.write:
       case Token.zap:
         // chime extended commands
@@ -356,6 +360,10 @@ public class Eval implements Runnable {
 
   void booleanOrPercentExpected() throws ScriptException {
     evalError("boolean or percent expected");
+  }
+
+  void booleanOrNumberExpected() throws ScriptException {
+    evalError("boolean or number expected");
   }
 
   void integerExpected() throws ScriptException {
@@ -879,5 +887,64 @@ public class Eval implements Runnable {
     default:
       booleanOrPercentExpected();
     }
+  }
+
+  void spacefill() throws ScriptException {
+    int tok = statement[1].tok;
+    byte style = DisplayControl.SHADING;
+    int mad = -100; // cpk with no args goes to 100%
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      mad = -20; // for better interactions with menu usage
+      style = DisplayControl.NONE;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        outOfRange();
+      mad = radiusRasMol * 4 * 2;
+      break;
+    case Token.decimal:
+      double angstroms = ((Double)statement[1].value).doubleValue();
+      if (angstroms >= 2)
+        outOfRange();
+      mad = (int)(angstroms * 2 * 1000);
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    control.setStyleMadAtomScript(style, mad);
+  }
+
+  void wireframe() throws ScriptException {
+    int tok = statement[1].tok;
+    byte style = DisplayControl.WIREFRAME;
+    int mad = 100;
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      style = DisplayControl.NONE;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        outOfRange();
+      mad = radiusRasMol * 4 * 2;
+      style = DisplayControl.SHADING;
+      break;
+    case Token.decimal:
+      double angstroms = ((Double)statement[1].value).doubleValue();
+      if (angstroms >= 2)
+        outOfRange();
+      mad = (int)(angstroms * 2 * 1000);
+      style = DisplayControl.SHADING;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    control.setStyleMadBondScript(style, mad);
   }
 }

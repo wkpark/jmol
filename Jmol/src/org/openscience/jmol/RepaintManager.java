@@ -121,10 +121,10 @@ public class RepaintManager {
   public boolean repaintPending;
 
   public void setHoldRepaint(boolean holdRepaint) {
-    if (this.holdRepaint != holdRepaint) {
-      this.holdRepaint = holdRepaint;
-      if (!holdRepaint && repaintPending)
-        control.awtComponent.repaint();
+    this.holdRepaint = holdRepaint;
+    if (!holdRepaint) {
+      repaintPending = true;
+      control.awtComponent.repaint();
     }
   }
 

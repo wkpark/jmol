@@ -848,6 +848,34 @@ final public class DisplayControl {
   }
 
   /****************************************************************
+   * routines for script support
+   ****************************************************************/
+  private JmolAtomIterator iterAtomScript() {
+    if (! modelManager.haveFile || selectionManager.isEmpty())
+      return iterNull;
+    return modelManager.getChemFrameIterator(selectionManager.bsSelection);
+  }
+
+  private JmolAtomIterator iterBondScript() {
+    if (!modelManager.haveFile || selectionManager.isEmpty())
+      return iterNull;
+    return modelManager.getChemFrameIterator(selectionManager.bsSelection,
+                                             false);
+  }
+
+  public void setStyleMadAtomScript(byte style, int mad) {
+    distributor.setStyleMadAtom(style, mad, iterAtomScript());
+  }
+
+  public void setStyleMadBondScript(byte style, int mad) {
+    distributor.setStyleMadBond(style, mad, iterBondScript());
+  }
+
+  public void setStyleBondScript(byte style) {
+    distributor.setStyleBond(style, iterBondScript());
+  }
+
+  /****************************************************************
    * delegated to StyleManager
    ****************************************************************/
 

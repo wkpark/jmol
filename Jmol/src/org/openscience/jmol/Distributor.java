@@ -65,6 +65,11 @@ public class Distributor {
       iter.nextAtom().atomShape.setMadAtom(madAtom);
   }
 
+  public void setStyleMadAtom(byte style, int mad, JmolAtomIterator iter) {
+    while (iter.hasNext())
+      iter.nextAtom().atomShape.setStyleMadAtom(style, mad);
+  }
+
   public void setStyleBond(byte styleBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       if (iter.allBonds())
@@ -80,6 +85,15 @@ public class Distributor {
         iter.nextAtom().atomShape.setMadAllBonds(madBond);
       else
         iter.nextAtom().atomShape.setMadBond(madBond, iter.indexBond());
+    }
+  }
+
+  public void setStyleMadBond(byte style, int mad, JmolAtomIterator iter) {
+    while (iter.hasNext()) {
+      if (iter.allBonds())
+        iter.nextAtom().atomShape.setStyleMadAllBonds(style, mad);
+      else
+        iter.nextAtom().atomShape.setStyleMadBond(style, mad,iter.indexBond());
     }
   }
 

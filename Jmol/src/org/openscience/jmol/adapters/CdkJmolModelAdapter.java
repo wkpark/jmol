@@ -50,6 +50,7 @@ import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
 
 import org.openscience.cdk.tools.AtomTypeFactory;
+import org.openscience.cdk.tools.SetOfMoleculesManipulator;
 
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -114,6 +115,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
         // could not configure atoms... what to do?
         System.err.println(exception.toString());
         exception.printStackTrace();
+    } catch (CDKException exception) {
+        // could not configure atoms... what to do?
+        System.err.println(exception.toString());
+        exception.printStackTrace();
     }
     return chemFile;
   }
@@ -155,8 +160,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
     Crystal crystal = chemModel.getCrystal();
     if (setOfMolecules != null) {
-        Molecule molecule = setOfMolecules.getMolecule(0);
-        return molecule;
+        return SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
     } else if (crystal != null) {
         return crystal;
     } else {

@@ -61,15 +61,17 @@
 </command></term><listitem><para>Sets the color of atom-related objects based on a previously selected atom set to a specific color, a color scheme, or back to its default color (NONE).
 </para></listitem></varlistentry><varlistentry><term><command>color [atom-associated-object] [temperature-mode]
 </command></term><listitem><para>Color atoms based on a crystallographic B-factor or "temperature" scale. Colors range from blue (least positional variability within the crystal) through white to red (most positional variability). Using a fixed scale (parameter "fixedTemperature") allows direct comparison between two structures. Using a relative scale (parameter "temperture" or "relativeTemperature") sets the blue-red range to match the range of varibility in the model itself.
+</para></listitem></varlistentry><varlistentry><term><command>color [color-scheme]
+</command></term><listitem><para>Sets the selected atom set to a color based on a particular color scheme.
 </para></listitem></varlistentry><varlistentry><term><command>color [object-with-text] [RGB-color]
 </command></term><listitem><para>Sets the color of various objects.
 </para></listitem></varlistentry><varlistentry><term><command>color atoms CPK
-</command></term><listitem><para>Sets selected atom colors to the standard Jmol "cpk" color scheme.
+</command></term><listitem><para>Sets selected atom colors to the default "cpk" color scheme (either Jmol or Rasmol).
 </para></listitem></varlistentry><varlistentry><term><command>color dots [RGB-color]
 </command></term><listitem><para>Sets the color of the molecular surface dots.
 </para></listitem></varlistentry><varlistentry><term><command>color hbonds TYPE
 </command></term><listitem><para>Colors hydrogen bonds specifically in proteins based on how many residues one end is from the other. Note that to get this effect, one must first execute "hbonds ON" and then issue "color hbonds TYPE". The colors assigned are based on the number of basepairs between the interacting H atoms. This TENDS to indicate secondary structure, but is not perfect.The correlation between color and offset are as follows:ColorOffsetgreen-4cyan-3white+2magenta+3 (turns)red+4 (alpha-helix)orange+5yellowother (e.g. beta-pleated sheet)
-</para></listitem></varlistentry></variablelist><variablelist><title>Definitions</title><varlistentry><term><option>[atom-associated-object]</option></term><listitem><para>is an object related to an atom -- atom, bond, label, hbonds, monitor, ssbonds, vectors</para></listitem></varlistentry><varlistentry><term><option>[color-scheme]</option></term><listitem><para>is to color based on a scheme -- (color), amino, chain, formalCharge, partialCharge, shapely, structure, NONE</para></listitem></varlistentry><varlistentry><term><option>[Rasmol-structure]</option></term><listitem><para>is atom, backbone, cartoon, mesh, ribbon, rocket, strands, trace</para></listitem></varlistentry><varlistentry><term><option>[RGB-color]</option></term><listitem><para>is a name of a color or a color triple, eg [255,0,255] -- (color)</para></listitem></varlistentry><varlistentry><term><option>[object-with-text]</option></term><listitem><para>is axes, echo, hover, label, monitor, unitcell</para></listitem></varlistentry><varlistentry><term><option>[temperature-mode]</option></term><listitem><para>is "fixedTemperature" or "relativeTemperature"</para></listitem></varlistentry></variablelist></section>
+</para></listitem></varlistentry></variablelist><variablelist><title>Definitions</title><varlistentry><term><option>[atom-associated-object]</option></term><listitem><para>is an object related to an atom -- atom, bond, label, hbonds, monitor, ssbonds, vectors</para></listitem></varlistentry><varlistentry><term><option>[color-scheme]</option></term><listitem><para>is to color based on a scheme -- (color), amino, chain, formalCharge, partialCharge, monomer, shapely, structure, NONE</para></listitem></varlistentry><varlistentry><term><option>[Rasmol-structure]</option></term><listitem><para>is atom, backbone, cartoon, mesh, ribbon, rocket, strands, trace</para></listitem></varlistentry><varlistentry><term><option>[RGB-color]</option></term><listitem><para>is a name of a color or a color triple, eg [255,0,255] -- (color)</para></listitem></varlistentry><varlistentry><term><option>[object-with-text]</option></term><listitem><para>is axes, echo, hover, label, monitor, unitcell</para></listitem></varlistentry><varlistentry><term><option>[temperature-mode]</option></term><listitem><para>is "fixedTemperature" or "relativeTemperature"</para></listitem></varlistentry></variablelist></section>
 
 <section><title>cpk or spacefill
 </title><para>Renders selected atoms as shaded spheres. A boolean value renders the spheres with the vanderWaals radius. A decimal value specifies the sphere radius in Angstroms. An integer followed by "%" specifies sphere radius as a percentage of the Van der Waals radius. 
@@ -243,13 +245,11 @@
 </command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>set ssbonds SIDECHAIN
 </command></term><listitem><para></para></listitem></varlistentry></variablelist></section>
 
-<section><title>set (colors)
-</title><para>The set color command sets the scheme by which atoms are colored. 
-</para><variablelist><title>Examples</title><varlistentry><term><command>set color JMOL
-</command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>set color RASMOL
-</command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>set color [RGB-color]
-</command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>set color [color-scheme]
-</command></term><listitem><para></para></listitem></varlistentry></variablelist><variablelist><title>Definitions</title><varlistentry><term><option>[RGB-color]</option></term><listitem><para>is a name of a color or a color triple, eg [255,0,255] -- (color)</para></listitem></varlistentry><varlistentry><term><option>[color-scheme]</option></term><listitem><para>is to color based on a scheme -- (color), amino, chain, formalCharge, partialCharge, shapely, structure, NONE</para></listitem></varlistentry></variablelist></section>
+<section><title>set (default color scheme)
+</title><para>Sets the default color scheme to be the traditional Rasmol scheme or the newer, more subtle, Jmol scheme. This command does not actually change the display unless the default color scheme ("CPK") is currently displayed.
+</para><variablelist><title>Examples</title><varlistentry><term><command>set defaultColors JMOL
+</command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>set defaultColors RASMOL
+</command></term><listitem><para></para></listitem></varlistentry></variablelist></section>
 
 <section><title>set (highlights)
 </title><para>This command group allows for annotation and highlighting of atoms in terms of labels and "halos."
@@ -291,6 +291,28 @@
 </command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>set spin [x or y or z] [degrees-per-second]
 </command></term><listitem><para></para></listitem></varlistentry></variablelist><variablelist><title>Definitions</title><varlistentry><term><option>[specular-percent]</option></term><listitem><para>is an (integer)[0 to 100]</para></listitem></varlistentry><varlistentry><term><option>[specular-power]</option></term><listitem><para>is an (integer)</para></listitem></varlistentry><varlistentry><term><option>[ambient-percent]</option></term><listitem><para>is an (integer)[0 to 100]</para></listitem></varlistentry><varlistentry><term><option>[diffuse-percent]</option></term><listitem><para>is an (integer)[0 to 100]</para></listitem></varlistentry><varlistentry><term><option>[viewing-distance]</option></term><listitem><para>is the apparent distance from the model to the user in arbitrary units -- (integer), (decimal)</para></listitem></varlistentry><varlistentry><term><option>[x or y or z]</option></term><listitem><para>is x, y, z</para></listitem></varlistentry><varlistentry><term><option>[degrees-per-second]</option></term><listitem><para>is an (integer)</para></listitem></varlistentry><varlistentry><term><option>[frames-per-second]</option></term><listitem><para>is an (integer)</para></listitem></varlistentry></variablelist></section>
 
+<section><title>set (picking)
+</title><para>The set picking command determines the response to clicking of atoms by the user. 
+</para><variablelist><title>Examples</title><varlistentry><term><command>set picking ANGLE
+</command></term><listitem><para>Turns picking on and returns atom identities and angle involving three atoms.
+</para></listitem></varlistentry><varlistentry><term><command>set picking ATOM
+</command></term><listitem><para>When the user clicks an atom, the selection of that atom is toggled on or off.
+</para></listitem></varlistentry><varlistentry><term><command>set picking CENTER
+</command></term><listitem><para>When the user clicks an atom, that atom is set to be the center of rotation.
+</para></listitem></varlistentry><varlistentry><term><command>set picking CHAIN
+</command></term><listitem><para>When the user clicks an atom, the selection of the chain associated with that atom is toggled on or off.
+</para></listitem></varlistentry><varlistentry><term><command>set picking DISTANCE
+</command></term><listitem><para>Turns picking on and returns atom identities and distance between two atoms.
+</para></listitem></varlistentry><varlistentry><term><command>set picking GROUP
+</command></term><listitem><para>When the user clicks an atom, the selection of the group associated with that atom is toggled on or off.
+</para></listitem></varlistentry><varlistentry><term><command>set picking LABEL
+</command></term><listitem><para>When the user clicks an atom, the label of that atom is toggled on or off.
+</para></listitem></varlistentry><varlistentry><term><command>set picking TORSION
+</command></term><listitem><para>Turns picking on and returns atom identities and torsion angle (dihedral angle) involving four atoms.
+</para></listitem></varlistentry><varlistentry><term><command>set picking on/off
+</command></term><listitem><para>Turns picking on and off. When turned ON, picking information is sent both to the status line and to the pickcallback function, if defined. Additional information may be sent to the messagecallback function. 
+</para></listitem></varlistentry></variablelist></section>
+
 <section><title>set (visibility)
 </title><para>This command group turns on or off specific sets of atoms and axes/cell-related options.
 </para><variablelist><title>Examples</title><varlistentry><term><command>set axes [line-width-or-type]
@@ -318,12 +340,24 @@
 
 <section><title>show
 </title><para>"show" sends information about the model to the messageCallback function and to the Java Console
-</para><variablelist><title>Examples</title><varlistentry><term><command>show model
-</command></term><listitem><para>Delivers the total number of models in the set.
+</para><variablelist><title>Examples</title><varlistentry><term><command>show boundbox
+</command></term><listitem><para>Delivers the coordinates of the center coordinate and a directional vector defining a box just perfectly enclosing the model. The vector is determined by taking the min and max values for the atom along each cartesian axis. The center is the geometric center of the model, not the default center of rotation (which is the mean atom position). The eight corners of the boundbox are found by adding the center point to the vector, with all possible combinations of +/- component cectors. The length of a side of the boundbox is determined by doubling the appropriate component of the vector. So, for example, the length of the boundbox along the x-axis is (2*vectorX). Units are in Angstroms. Output is in the form boundbox: (centerX, centerY, centerZ) (vectorX, vectorY, vectorZ)
+</para></listitem></varlistentry><varlistentry><term><command>show center
+</command></term><listitem><para>Delivers the coordinates of the center of the model. Units are in Angstroms. Output is in the form center: (centerX, centerY, centerZ)
+</para></listitem></varlistentry><varlistentry><term><command>show file
+</command></term><listitem><para>Delivers the entire contents of the file for the current model. 
+</para></listitem></varlistentry><varlistentry><term><command>show file filepath
+</command></term><listitem><para>Delivers the entire contents of the specified file on the server from which the applet was loaded. The filename must be relative to the current page (not necessarily the directory containing the applet) and must be enclosed in quotation marks.
+</para></listitem></varlistentry><varlistentry><term><command>show model
+</command></term><listitem><para>Delivers properties associated with the currently loaded model. Output includes information about all of the models in the set. This command is still in development. The exact form and content of the output is subject to change (and suggestion).
 </para></listitem></varlistentry><varlistentry><term><command>show orientation
 </command></term><listitem><para>Delivers the orientation of the model. Output consists of both a "moveTo" command and an alternative sequence of "reset; rotate z; rotate y; rotate z" commands that would result in the current orientation. Thus, this command allows reading and restoring specific user-specified orientations.
 </para></listitem></varlistentry><varlistentry><term><command>show pdbheader
 </command></term><listitem><para>Delivers the PDB file header.
+</para></listitem></varlistentry><varlistentry><term><command>show transform
+</command></term><listitem><para>Delivers the current 3x3 transformation matrix (rotation only). 
+</para></listitem></varlistentry><varlistentry><term><command>show zoom
+</command></term><listitem><para>Delivers the current zoom setting. Output is in the form of the zoom command: "zoom n" where "n" is an integer percent of "normal" zoom.
 </para></listitem></varlistentry></variablelist></section>
 
 <section><title>slab
@@ -387,7 +421,7 @@
 </para><variablelist><title>Examples</title></variablelist></section>
 
 <section><title>zoom
-</title><para> Allows you to enlarge (or shrink) the molecule. "zoom off" disables zooming, while "zoom on" turns it back on to the current zoom setting. A percentage value specifies the zoom relative to 100, the default value. The default zoom in Jmol is calculated so that all molecules are completely visible on the screen through all rotations using the default vanderWaals rendering percentage.
+</title><para> Allows enlarging or shrinking of the displayed model. A percentage value specifies the zoom relative to 100, the default value, which in Jmol is calculated so that all atoms are completely visible on the screen through all rotations using the default vanderWaals rendering percentage. The command "zoom OFF" disables mouse-based zooming and zooms to 100. The command "zoom ON" re-enables zooming at the current zoom setting. If the zoom has been turned off, setting the the zoom using, for example, "zoom 50," though it sets the "current zoom setting," has no effect until the next "zoom ON" command is given. 
 </para><variablelist><title>Examples</title><varlistentry><term><command>zoom [percent-zoom]
 </command></term><listitem><para></para></listitem></varlistentry><varlistentry><term><command>zoom on/off
 </command></term><listitem><para></para></listitem></varlistentry></variablelist><variablelist><title>Definitions</title><varlistentry><term><option>[percent-zoom]</option></term><listitem><para>is an (integer)[5 to 2000]</para></listitem></varlistentry></variablelist></section>

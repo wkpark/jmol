@@ -279,6 +279,7 @@ public class ChemFrame {
    */
   public int addAtom(BaseAtomType type, float x, float y, float z) {
 
+    clearBounds();
     int i = numberAtoms;
     if (i >= atoms.length) {
       increaseArraySizes(2 * atoms.length);
@@ -319,6 +320,8 @@ public class ChemFrame {
    * Deletes an Atom from the frame
    */
   public void deleteAtom(int atomID) {
+    
+    clearBounds();
     for (int i=atomID; i<numberAtoms; i++) {
       atoms[i] = atoms[i+1];
     }
@@ -346,28 +349,46 @@ public class ChemFrame {
   public Atom[] getAtoms() {
     return atoms;
   }
-
+  
   public float getXMin() {
+    if (min == null) {
+      findBounds();
+    }
     return min.x;
   }
 
   public float getXMax() {
+    if (max == null) {
+      findBounds();
+    }
     return max.x;
   }
 
   public float getYMin() {
+    if (min == null) {
+      findBounds();
+    }
     return min.y;
   }
 
   public float getYMax() {
+    if (max == null) {
+      findBounds();
+    }
     return max.y;
   }
 
   public float getZMin() {
+    if (min == null) {
+      findBounds();
+    }
     return min.z;
   }
 
   public float getZMax() {
+    if (max == null) {
+      findBounds();
+    }
     return max.z;
   }
 
@@ -621,25 +642,32 @@ public class ChemFrame {
     return -1;
   }
 
-  /**
-   * Find the bounds of this model.
-   */
-  public void findBounds() {
-    findBB();
-  }
-  
   public Point3f getMinimumBounds() {
-    return min;
+    if (min == null) {
+      findBounds();
+    }
+    return new Point3f(min);
   }
 
   public Point3f getMaximumBounds() {
-    return max;
+    if (max == null) {
+      findBounds();
+    }
+    return new Point3f(max);
   }
 
   /**
+   * Clears the bounds cache for this model.
+   */
+  private void clearBounds() {
+    min = null;
+    max = null;
+  }
+  
+  /**
    * Find the bounds of this model.
    */
-  public void findBB() {
+  private void findBounds() {
 
     if ((atoms == null) || (numberAtoms <= 0)) {
       return;

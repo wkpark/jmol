@@ -181,7 +181,6 @@ public class PovraySaver extends FileSaver {
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
 
-    cf.findBB();
     dx = (cf.getXMax() - cf.getXMin());
     dy = (cf.getXMax() - cf.getYMin());
     dz = (cf.getZMax() - cf.getZMin());

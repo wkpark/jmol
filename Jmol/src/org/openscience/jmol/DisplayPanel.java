@@ -193,7 +193,6 @@ public class DisplayPanel extends JPanel
 
   public void init() {
 
-    md.findBB();
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
@@ -951,7 +950,6 @@ public class DisplayPanel extends JPanel
       tmat.setIdentity();
       zmat.setIdentity();
       if (md != null) {
-        md.findBB();
         xmin = md.getXMin();
         xmax = md.getXMax();
         ymin = md.getYMin();
@@ -1026,5 +1024,6 @@ public class DisplayPanel extends JPanel
       amat.rotZ(Math.toRadians(angle));
     }
   }
+
 }
 

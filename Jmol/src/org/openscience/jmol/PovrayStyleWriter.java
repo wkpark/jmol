@@ -304,7 +304,6 @@ public class PovrayStyleWriter {
     BaseAtomType a = cf.getAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
 
-    cf.findBB();
     double c_x = (cf.getXMax() + cf.getXMin()) / 2.0;
     double c_y = (cf.getYMax() + cf.getYMin()) / 2.0;
     double c_z = (cf.getZMax() + cf.getZMin()) / 2.0;
@@ -340,7 +339,6 @@ public class PovrayStyleWriter {
   public void writeBond(BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
           throws IOException {
 
-    cf.findBB();
     float c_x = (cf.getXMax() + cf.getXMin()) / 2.0f;
     float c_y = (cf.getYMax() + cf.getYMin()) / 2.0f;
     float c_z = (cf.getZMax() + cf.getZMin()) / 2.0f;

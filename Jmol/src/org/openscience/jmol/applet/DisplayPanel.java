@@ -368,7 +368,6 @@ public class DisplayPanel extends Canvas
 
   public void init() {
 
-    md.findBounds();
     useMinBound = md.getMinimumBounds();
     useMaxBound = md.getMaximumBounds();
     updateSizes();

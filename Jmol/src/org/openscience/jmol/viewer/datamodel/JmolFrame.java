@@ -324,7 +324,9 @@ public class JmolFrame {
     if (atomShapeCount <= 0)
       return;
 
-    viewer.calcViewTransformMatrix();
+    viewer.calcTransformMatrices();
+
+    g3d.transform();
 
     AtomRenderer atomRenderer = viewer.atomRenderer;
     for (int i = atomShapeCount; --i >= 0; ) {

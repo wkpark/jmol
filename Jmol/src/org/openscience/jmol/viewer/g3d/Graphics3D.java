@@ -89,6 +89,10 @@ final public class Graphics3D {
     this.dots3d = new Dots3D(viewer, this);
   }
 
+  public void transform() {
+    dots3d.transform();
+  }
+
   public void setSize(int width, int height) {
     width1 = this.width = width;
     xLast1 = xLast = width1 - 1;
@@ -572,7 +576,8 @@ final public class Graphics3D {
     }
   }
 
-  void plotPixelsClipped(int argb, int count, int x, int y, int zAtLeft, int zAtRight) {
+  void plotPixelsClipped(int argb, int count, int x, int y,
+                         int zAtLeft, int zAtRight) {
     if (y < 0 || y >= height || x >= width)
       return;
     // scale the z coordinates;
@@ -673,6 +678,25 @@ final public class Graphics3D {
       line3d.plotLineDeltaUnclipped(argb1, x, y, z, dx, dy, dz);
     else 
       line3d.plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
+  }
+
+  public void plotPoints(short colix, int count, int[] coordinates) {
+    int argb = argbCurrent = Colix.getArgb(colix);
+    for (int i = count * 3; i > 0; ) {
+      int z = coordinates[--i];
+      int y = coordinates[--i];
+      int x = coordinates[--i];
+      if (x < 0 || x >= width ||
+          y < 0 || y >= height
+          //        || z < 0 || z >= 8192
+          )
+        continue;
+      int offset = y * width + x;
+      if (z < zbuf[offset]) {
+        zbuf[offset] = (short)z;
+        pbuf[offset] = argb;
+      }
+    }
   }
 }
 

@@ -406,37 +406,59 @@ public class TransformManager {
    TRANSFORMATIONS
   ****************************************************************/
 
-  public final Matrix4d matrixTransform = new Matrix4d();
+  public final Matrix4d matrixPointTransform = new Matrix4d();
+  public final Matrix4d matrixVectorTransform = new Matrix4d();
   private final Point3d point3dScreenTemp = new Point3d();
   private final Point3i point3iScreenTemp = new Point3i();
   private final Matrix4d matrixTemp = new Matrix4d();
   private final Vector3d vectorTemp = new Vector3d();
 
-  public void calcViewTransformMatrix() {
+  public void calcTransformMatrices() {
+    calcPointTransformMatrix();
+    calcVectorTransformMatrix();
+  }
+
+  private void calcPointTransformMatrix() {
     // you absolutely *must* watch the order of these operations
-    matrixTransform.setIdentity();
+    matrixPointTransform.setIdentity();
     // first, translate the coordinates back to the center
     vectorTemp.set(viewer.getRotationCenter());
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
-    matrixTransform.sub(matrixTemp);
+    matrixPointTransform.sub(matrixTemp);
     // now, multiply by angular rotations
-    // this is *not* the same as  matrixTransform.mul(matrixRotate);
-    matrixTransform.mul(matrixRotate, matrixTransform);
+    // this is *not* the same as  matrixPointTransform.mul(matrixRotate);
+    matrixPointTransform.mul(matrixRotate, matrixPointTransform);
     // now shift so that all z coordinates are >= 0
     // this is important for scaling
     vectorTemp.x = 0;
     vectorTemp.y = 0;
     vectorTemp.z = viewer.getRotationRadius();
     matrixTemp.setTranslation(vectorTemp);
-    matrixTransform.sub(matrixTemp);
+    matrixPointTransform.sub(matrixTemp);
     // now scale to screen coordinates
     matrixTemp.set(-scalePixelsPerAngstrom); // invert y & z
     matrixTemp.m00=scalePixelsPerAngstrom; // preserve x
-    matrixTransform.mul(matrixTemp, matrixTransform);
+    matrixPointTransform.mul(matrixTemp, matrixPointTransform);
     // note that the image is still centered at 0, 0
     // translations come later (to deal with perspective)
     // and all z coordinates are >= 0
+  }
+
+  private void calcVectorTransformMatrix() {
+    matrixVectorTransform.setIdentity();
+    // first, translate the coordinates back to the center
+    vectorTemp.set(viewer.getRotationCenter());
+    matrixTemp.setZero();
+    matrixTemp.setTranslation(vectorTemp);
+    matrixVectorTransform.sub(matrixTemp);
+    // now, multiply by angular rotations
+    // this is *not* the same as  matrixVectorTransform.mul(matrixRotate);
+    matrixVectorTransform.mul(matrixRotate, matrixVectorTransform);
+    // now scale to screen coordinates
+    matrixTemp.set(-scalePixelsPerAngstrom); // invert y & z
+    matrixTemp.m00=scalePixelsPerAngstrom; // preserve x
+    matrixVectorTransform.mul(matrixTemp, matrixVectorTransform);
   }
 
   public Matrix4d getUnscaledTransformMatrix() {
@@ -451,7 +473,7 @@ public class TransformManager {
   }
 
   public Point3i transformPoint(Point3d pointAngstroms) {
-    matrixTransform.transform(pointAngstroms, point3dScreenTemp);
+    matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
     int z = (int)(point3dScreenTemp.z + 0.5);
     if (z < 0) {
       System.out.println("WARNING! DANGER! z < 0! transformPoint()");
@@ -466,6 +488,21 @@ public class TransformManager {
     point3iScreenTemp.x = (int)(point3dScreenTemp.x + xTranslation);
     point3iScreenTemp.y = (int)(point3dScreenTemp.y + yTranslation);
     return point3iScreenTemp;
+  }
+
+  public void transformVector(Vector3d vectorAngstroms,
+                              Vector3d vectorTransformed) {
+    matrixVectorTransform.transform(vectorAngstroms, vectorTransformed);
+  }
+
+  public void transformVector(Point3d pointAngstroms,
+                              Point3d vectorAngstroms,
+                              double scale,
+                              Point3i results) {
+    point3dScreenTemp.set(vectorAngstroms);
+    point3dScreenTemp.scaleAdd(scale, pointAngstroms);
+    Point3i pointT = transformPoint(point3dScreenTemp);
+    results.set(pointT);
   }
 
   /****************************************************************

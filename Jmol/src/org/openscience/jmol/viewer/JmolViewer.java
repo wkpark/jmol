@@ -44,6 +44,7 @@ import java.util.Vector;
 import java.util.BitSet;
 import java.util.Iterator;
 import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
@@ -388,12 +389,17 @@ final public class JmolViewer {
     return transformManager.getUnscaledTransformMatrix();
   }
 
-  public void calcViewTransformMatrix() {
-    transformManager.calcViewTransformMatrix();
+  public void calcTransformMatrices() {
+    transformManager.calcTransformMatrices();
   }
 
   public Point3i transformPoint(Point3d pointAngstroms) {
     return transformManager.transformPoint(pointAngstroms);
+  }
+
+  public void transformVector(Vector3d vectorAngstroms,
+                              Vector3d vectorTransformed) {
+    transformManager.transformVector(vectorAngstroms, vectorTransformed);
   }
 
   public double scaleToScreen(int z, double sizeAngstroms) {

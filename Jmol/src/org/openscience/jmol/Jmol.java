@@ -886,28 +886,27 @@ public class Jmol extends JPanel {
             mi.setSelected(true);
           }
         }
+      } else if (itemKeys[i].equals("-")) {
+        menu.addSeparator();
       } else {
-        if (itemKeys[i].equals("-")) {
-          menu.addSeparator();
-        } else {
-
-          // Check to see if it is a popup menu:
-          String popup = JmolResourceHandler.getInstance().getString("Jmol."
-                           + itemKeys[i] + popupSuffix);
-          if (popup != null) {
-            if (popup.equals("prop")) {
-              apm = new AtomPropsMenu(JmolResourceHandler.getInstance()
-                  .getString("Jmol." + itemKeys[i] + "Label"), control);
-              menu.add(apm);
-            } else {
-              JMenu pm;
-              pm = createMenu(itemKeys[i], true);
-              menu.add(pm);
-            }
+        // Check to see if it is a popup menu:
+        String popup = JmolResourceHandler.getInstance().
+          getString("Jmol." + itemKeys[i] + popupSuffix);
+        if (popup != null) {
+          if (popup.equals("prop")) {
+            apm =
+              new AtomPropsMenu(JmolResourceHandler.getInstance()
+                                .getString("Jmol." + itemKeys[i] + "Label"),
+                                control);
+            menu.add(apm);
           } else {
-            JMenuItem mi = createMenuItem(itemKeys[i], false);
-            menu.add(mi);
+            JMenu pm;
+            pm = createMenu(itemKeys[i], true);
+            menu.add(pm);
           }
+        } else {
+          JMenuItem mi = createMenuItem(itemKeys[i], false);
+          menu.add(mi);
         }
       }
     }

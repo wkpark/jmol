@@ -720,25 +720,9 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("Jmol.wireframerotation",
                        control.getWireframeRotation());
     guimap.setSelected("Jmol.perspective", control.getPerspectiveDepth());
-    guimap.setSelected("Jmol.bonds", control.getShowBonds());
-    guimap.setSelected("Jmol.atoms", control.getShowAtoms());
     guimap.setSelected("Jmol.hydrogens", control.getShowHydrogens());
     guimap.setSelected("Jmol.vectors", control.getShowVectors());
     guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
-    final String[] modeLabel =
-      {"Jmol.plain", "Jmol.symbols", "Jmol.types", "Jmol.numbers"};
-    guimap.setSelected(modeLabel[control.getStyleLabel()], true);
-    final String[] modeAtom =
-      {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe",
-       "Jmol.ainvisible", "Jmol.anone"};
-    guimap.setSelected(modeAtom[control.getStyleAtom()], true);
-    final String[] modeBond =
-      {"Jmol.bquickdraw", "Jmol.bshading", "Jmol.bwireframe",
-       "Jmol.bbox", "Jmol.bnone"};
-    guimap.setSelected(modeBond[control.getStyleBond()], true);
-    final String[] modeColor =
-      {"Jmol.actype", "Jmol.accharge"};
-    guimap.setSelected(modeColor[control.getModeAtomColorProfile()], true);
   }
 
   public Action[] getActions() {

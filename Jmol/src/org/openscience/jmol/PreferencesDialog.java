@@ -75,8 +75,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean graphics2D;
   private static boolean antialias;
   private static boolean antialiasAlways;
-  private static boolean showAtoms;
-  private static boolean showBonds;
   private static boolean showHydrogens;
   private static boolean showVectors;
   private static boolean showMeasurements;
@@ -114,7 +112,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
-  private JCheckBox cB, cA, cH, cV, cM;
+  private JCheckBox cH, cV, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbDarkerOutline, cbIsLabelAtomColor, cbIsBondAtomColor;
   private JCheckBox cbGraphics2D, cbAntialias, cbAntialiasAlways;
@@ -139,8 +137,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private static void defaults() {
 
-    props.put("showAtoms", "true");
-    props.put("showBonds", "true");
     props.put("showHydrogens", "true");
     props.put("showVectors", "true");
     props.put("showMeasurements", "true");
@@ -284,13 +280,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     disp.add(filler, constraints);
 
     JPanel showPanel = new JPanel();
-    showPanel.setLayout(new GridLayout(2, 3));
+    showPanel.setLayout(new GridLayout(1, 3));
     showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.showLabel")));
-    cA = guimap.newJCheckBox("Prefs.showAtoms", control.getShowAtoms());
-    cA.addItemListener(checkBoxListener);
-    cB = guimap.newJCheckBox("Prefs.showBonds", control.getShowBonds());
-    cB.addItemListener(checkBoxListener);
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
                              control.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
@@ -299,8 +291,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cM = guimap.newJCheckBox("Prefs.showMeasurements",
                              control.getShowMeasurements());
     cM.addItemListener(checkBoxListener);
-    showPanel.add(cA);
-    showPanel.add(cB);
     showPanel.add(cH);
     showPanel.add(cV);
     showPanel.add(cM);
@@ -1185,8 +1175,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbAntialias.setSelected(control.getWantsAntialias());
     cbAntialiasAlways.setSelected(control.getWantsAntialiasAlways());
 
-    cB.setSelected(control.getShowBonds());
-    cA.setSelected(control.getShowAtoms());
     cH.setSelected(control.getShowHydrogens());
     cV.setSelected(control.getShowVectors());
     cM.setSelected(control.getShowMeasurements());
@@ -1262,8 +1250,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     graphics2D = Boolean.getBoolean("graphics2D");
     antialias = Boolean.getBoolean("antialias");
     antialiasAlways = Boolean.getBoolean("antialiasAlways");
-    showAtoms = Boolean.getBoolean("showAtoms");
-    showBonds = Boolean.getBoolean("showBonds");
     showHydrogens = Boolean.getBoolean("showHydrogens");
     showVectors = Boolean.getBoolean("showVectors");
     showMeasurements = Boolean.getBoolean("showMeasurements");
@@ -1321,8 +1307,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setWantsAntialiasAlways(antialiasAlways);
     control.setBondFudge(BondFudge);
     control.setAutoBond(AutoBond);
-    control.setShowAtoms(showAtoms);
-    control.setShowBonds(showBonds);
     control.setShowHydrogens(showHydrogens);
     control.setShowVectors(showVectors);
     control.setShowMeasurements(showMeasurements);
@@ -1368,15 +1352,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       String key = guimap.getKey(cb);
       boolean isSelected = cb.isSelected();
       String strSelected = isSelected ? "true" : "false";
-      if (key.equals("Prefs.showAtoms")) {
-        showAtoms = isSelected;
-        control.setShowAtoms(showAtoms);
-        props.put("showAtoms", strSelected);
-      } else if (key.equals("Prefs.showBonds")) {
-        showBonds = isSelected;
-        control.setShowBonds(showBonds);
-        props.put("showBonds", strSelected);
-      } else if (key.equals("Prefs.showHydrogens")) {
+      if (key.equals("Prefs.showHydrogens")) {
         showHydrogens = isSelected;
         control.setShowHydrogens(showHydrogens);
         props.put("showHydrogens", strSelected);

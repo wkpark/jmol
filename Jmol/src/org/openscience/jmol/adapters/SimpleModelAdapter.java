@@ -190,8 +190,12 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return ((Model)clientFile).notionalUnitcell;
   }
 
-  public float[][] getCrystalScaleMatrix(Object clientFile, int frameNumber) {
+  public float[] getCrystalScaleMatrix(Object clientFile, int frameNumber) {
     return ((Model)clientFile).crystalScaleMatrix;
+  }
+
+  public float[] getCrystalScaleTranslate(Object clientFile, int frameNumber) {
+    return ((Model)clientFile).crystalScaleTranslate;
   }
 
   /****************************************************************
@@ -363,7 +367,8 @@ abstract class Model {
   String errorMessage;
   String fileHeader;
   float[] notionalUnitcell;
-  float[][] crystalScaleMatrix;
+  float[] crystalScaleMatrix;
+  float[] crystalScaleTranslate;
 
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
@@ -753,18 +758,21 @@ class PdbModel extends Model {
   }
 
   void scale(int n) throws Exception {
-    float[] row = new float[4];
-    crystalScaleMatrix[n] = row;
-    row[0] = getFloat(10, 10);
-    row[1] = getFloat(20, 10);
-    row[2] = getFloat(30, 10);
-    row[3] = getFloat(45, 10);
+    crystalScaleMatrix[n*3 + 0] = getFloat(10, 10);
+    crystalScaleMatrix[n*3 + 1] = getFloat(20, 10);
+    crystalScaleMatrix[n*3 + 2] = getFloat(30, 10);
+    float translation = getFloat(45, 10);
+    if (translation != 0) {
+      if (crystalScaleTranslate == null)
+        crystalScaleTranslate = new float[3];
+      crystalScaleTranslate[n] = translation;
+    }
   }
 
   void scale1() {
     System.out.println("scale1 seen");
     try {
-      crystalScaleMatrix = new float[3][];
+      crystalScaleMatrix = new float[9];
       scale(0);
     } catch (Exception e) {
       crystalScaleMatrix = null;

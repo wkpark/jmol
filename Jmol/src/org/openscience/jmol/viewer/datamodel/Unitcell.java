@@ -27,6 +27,8 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
 public class Unitcell extends Shape {
@@ -41,8 +43,11 @@ public class Unitcell extends Shape {
 
   public void initShape() {
     float[] notionalUnitcell = frame.notionalUnitcell;
-    float[][] crystalScaleMatrix = frame.crystalScaleMatrix;
-    dumpCellData(notionalUnitcell, crystalScaleMatrix);
+    Matrix3f crystalScaleMatrix = frame.crystalScaleMatrix;
+    Vector3f crystalTranslateVector = frame.crystalTranslateVector;
+    Matrix3f matrixUnitcellToOrthogonal = frame.matrixUnitcellToOrthogonal;
+    dumpCellData(notionalUnitcell, crystalScaleMatrix,
+                 crystalTranslateVector, matrixUnitcellToOrthogonal);
     hasUnitcell = notionalUnitcell != null;
     if (hasUnitcell) {
       float a = this.a = notionalUnitcell[0];
@@ -101,7 +106,10 @@ public class Unitcell extends Shape {
     }
   }
 
-  void dumpCellData(float[] notionalUnitcell, float[][] crystalScaleMatrix) {
+  void dumpCellData(float[] notionalUnitcell,
+                    Matrix3f crystalScaleMatrix,
+                    Vector3f crystalTranslateVector,
+                    Matrix3f matrixUnitcellToOrthogonal) {
     if (notionalUnitcell == null) {
       System.out.println("notional unitcell is null");
       return;
@@ -111,16 +119,8 @@ public class Unitcell extends Shape {
       System.out.print(" " + notionalUnitcell[i]);
     System.out.println("");
 
-    if (crystalScaleMatrix == null) {
-      System.out.println("scale matrix is null");
-      return;
-    }
-
-    System.out.print("scale matrix:\n");
-    for (int i = 0; i < 3; ++i) {
-      for (int j = 0; j < 4; ++j)
-        System.out.print(" " + crystalScaleMatrix[i][j]);
-      System.out.println("");
-    }
+    System.out.println("scale matrix:\n" + crystalScaleMatrix);
+    System.out.println("translate vector:\n" + crystalTranslateVector);
+    System.out.println("inverted matrix:\n" + matrixUnitcellToOrthogonal);
   }
 }

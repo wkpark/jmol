@@ -98,9 +98,13 @@ public class FrameBuilder {
                                                           frameNumber));
     frame.setCrystalScaleMatrix(adapter.getCrystalScaleMatrix(clientFile,
                                                               frameNumber));
+    frame.setCrystalScaleTranslate(adapter.
+                                   getCrystalScaleTranslate(clientFile,
+                                                            frameNumber));
 
     if (hasPdbRecords) {
-      String[] structures = adapter.getPdbStructureRecords(clientFile, frameNumber);
+      String[] structures =
+        adapter.getPdbStructureRecords(clientFile, frameNumber);
       if (structures != null && structures.length > 0)
         frame.pdbFile.setStructureRecords(structures);
     }

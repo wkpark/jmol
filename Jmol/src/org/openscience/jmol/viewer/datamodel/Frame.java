@@ -29,6 +29,8 @@ import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.pdb.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Vector3f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
@@ -52,7 +54,9 @@ public class Frame {
   int bondCount = 0;
   public Bond[] bonds;
   public float[] notionalUnitcell;
-  public float[][] crystalScaleMatrix;
+  public Matrix3f crystalScaleMatrix;
+  public Vector3f crystalTranslateVector;
+  public Matrix3f matrixUnitcellToOrthogonal;
 
   public Frame(JmolViewer viewer, int atomCount,
                    int modelType, boolean hasPdbRecords) {
@@ -837,27 +841,31 @@ public class Frame {
       this.notionalUnitcell = notionalUnitcell;
   }
 
-  public void setCrystalScaleMatrix(float[][] crystalScaleMatrix) {
+  public void setCrystalScaleMatrix(float[] crystalScaleMatrix) {
     if (crystalScaleMatrix == null)
       return;
-    if (crystalScaleMatrix.length != 3) {
-      System.out.println("crystalScaleMatrix length incorrect:" + 
+    if (crystalScaleMatrix.length != 9) {
+      System.out.println("crystalScaleMatrix.length != 9 :" + 
                         crystalScaleMatrix);
       return;
     }
-    for (int i = 3; --i >= 0; ) {
-      float[] row = crystalScaleMatrix[i];
-      if (row == null || row.length != 4) {
-        System.out.println("bad crystalScaleMatrix row:" +
-                           crystalScaleMatrix);
-        return;
-      }
+    this.crystalScaleMatrix = new Matrix3f(crystalScaleMatrix);
+    matrixUnitcellToOrthogonal = new Matrix3f();
+    matrixUnitcellToOrthogonal.invert(this.crystalScaleMatrix);
+  }
+
+  public void setCrystalScaleTranslate(float[] crystalScaleTranslate) {
+    if (crystalScaleTranslate == null)
+      return;
+    if (crystalScaleTranslate.length != 3) {
+      System.out.println("crystalScaleTranslate.length != 3 :" + 
+                         crystalScaleTranslate);
+      return;
     }
-    this.crystalScaleMatrix = crystalScaleMatrix;
+    this.crystalTranslateVector = new Vector3f(crystalScaleTranslate);
   }
 
   public ShapeRenderer getRenderer(int refShape) {
     return frameRenderer.getRenderer(refShape);
   }
-
 }

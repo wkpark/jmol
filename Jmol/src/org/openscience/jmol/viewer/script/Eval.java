@@ -138,6 +138,7 @@ public class Eval implements Runnable {
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
+    System.out.println("loadScript succeeded");
     return true;
   }
 

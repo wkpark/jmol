@@ -773,7 +773,8 @@ final public class JmolViewer {
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
     // but perhaps not if we are in the midst of executing a script?
-    eval = null;
+    if (eval != null)
+      eval.clearDefinitionsAndLoadPredefined();
     setStructuralChange();
     popHoldRepaint();
   }

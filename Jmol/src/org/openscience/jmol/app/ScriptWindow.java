@@ -145,6 +145,7 @@ public final class ScriptWindow extends JDialog
     } else if (source == runButton) {
       executeCommand();
     } else if (source == haltButton) {
+      System.out.println("calling viewer.haltScriptExecution();");
       viewer.haltScriptExecution();
     }
   }

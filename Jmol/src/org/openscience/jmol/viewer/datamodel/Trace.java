@@ -72,7 +72,7 @@ public class Trace {
     }
   }
 
-  public void setColor(byte palette, short colix, BitSet bsSelected) {
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
     initialize();

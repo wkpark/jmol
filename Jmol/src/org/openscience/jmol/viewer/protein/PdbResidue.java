@@ -166,11 +166,11 @@ public class PdbResidue {
     return getMainchainAtom(1);
   }
 
-  public Atom getCarboxylCarbonAtom() {
+  public Atom getCarbonylCarbonAtom() {
     return getMainchainAtom(2);
   }
 
-  public Atom getCarboxylOxygenAtom() {
+  public Atom getCarbonylOxygenAtom() {
     return getMainchainAtom(3);
   }
 

@@ -1440,6 +1440,9 @@ public class Eval implements Runnable {
     case Token.solvent:
       setSolvent();
       break;
+    case Token.strands:
+      setStrands();
+      break;
 
       /*
     case Token.spacefill:
@@ -1465,7 +1468,6 @@ public class Eval implements Runnable {
     case Token.specular:
     case Token.specpower:
     case Token.ssbonds:
-    case Token.strands:
     case Token.transparent:
     case Token.unitcell:
     case Token.vectps:
@@ -1861,6 +1863,18 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setSolventProbeRadius(probeRadius);
+  }
+
+  void setStrands() throws ScriptException {
+    int strandCount = 5;
+    if (statement.length == 3) {
+      if (statement[2].tok != Token.integer)
+        integerExpected();
+      strandCount = statement[2].intValue;
+      if (strandCount < 0 || strandCount > 20)
+        numberOutOfRange();
+    }
+    viewer.setStrandsCount(strandCount);
   }
 
   /*

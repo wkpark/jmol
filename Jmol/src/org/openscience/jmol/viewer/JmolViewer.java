@@ -1175,7 +1175,7 @@ final public class JmolViewer {
   }
 
   public void setTraceColor(byte palette, Color color) {
-    getFrame().setTraceColor(palette, Colix.getColix(color),
+    getFrame().setTraceColix(palette, Colix.getColix(color),
                              selectionManager.bsSelection);
   }
 
@@ -1185,8 +1185,22 @@ final public class JmolViewer {
   }
 
   public void setStrandsColor(byte palette, Color color) {
-    getFrame().setStrandsColor(palette, Colix.getColix(color),
+    getFrame().setStrandsColix(palette, Colix.getColix(color),
                                selectionManager.bsSelection);
+  }
+
+  int strandsCount = 5;
+
+  public void setStrandsCount(int strandsCount) {
+    if (strandsCount < 0)
+      strandsCount = 0;
+    if (strandsCount > 20)
+      strandsCount = 20;
+    this.strandsCount = strandsCount;
+  }
+
+  public int getStrandsCount() {
+    return strandsCount;
   }
 
   boolean rasmolHydrogenSetting = true;

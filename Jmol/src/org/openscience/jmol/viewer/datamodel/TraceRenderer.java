@@ -108,8 +108,7 @@ class TraceRenderer extends Renderer {
 
   void render1Segment(short colix) {
     g3d.fillHermite(colix, diameterBeg, diameterMid, diameterEnd,
-                    s0.x, s0.y, s0.z, s1.x, s1.y, s1.z,
-                    s2.x, s2.y, s2.z, s3.x, s3.y, s3.z);
+                    s0, s1, s2, s3);
   }
 }
 

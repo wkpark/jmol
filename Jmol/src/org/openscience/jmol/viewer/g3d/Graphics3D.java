@@ -272,6 +272,10 @@ final public class Graphics3D {
     }
   }
 
+  public void fillSphereCentered(short colix, int diameter, Point3i screen) {
+    fillSphereCentered(colix, diameter, screen.x, screen.y, screen.z);
+  }
+
   public void drawRect(short colix, int x, int y, int width, int height) {
     int argb = Colix.getArgb(colix);
     int xRight = x + width;
@@ -513,17 +517,31 @@ final public class Graphics3D {
   }
 
   public void fillHermite(short colix, int diameterBeg, int diameterMid, int diameterEnd,
+                          Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
+    hermite3d.render(true, colix, diameterBeg, diameterMid, diameterEnd,
+                     s0.x, s0.y, s0.z, s1.x, s1.y, s1.z,
+                     s2.x, s2.y, s2.z, s3.x, s3.y, s3.z);
+  }
+  
+  public void fillHermite(short colix, int diameterBeg, int diameterMid, int diameterEnd,
                           int x0, int y0, int z0, int x1, int y1, int z1,
                           int x2, int y2, int z2, int x3, int y3, int z3) {
     hermite3d.render(true, colix, diameterBeg, diameterMid, diameterEnd,
                      x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3);
   }
-
+  
   public void drawHermite(short colix, 
                           int x0, int y0, int z0, int x1, int y1, int z1,
                           int x2, int y2, int z2, int x3, int y3, int z3) {
     hermite3d.render(false, colix, 0, 0, 0,
                      x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3);
+  }
+  
+  public void drawHermite(short colix, 
+                          Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
+    hermite3d.render(false, colix, 0, 0, 0,
+                     s0.x, s0.y, s0.z, s1.x, s1.y, s1.z,
+                     s2.x, s2.y, s2.z, s3.x, s3.y, s3.z);
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {

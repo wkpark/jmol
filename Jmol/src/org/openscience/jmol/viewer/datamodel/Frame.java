@@ -209,11 +209,11 @@ public class Frame {
       trace.setMad(mad, bsSelected);
   }
   
-  public void setTraceColor(byte palette, short colix, BitSet bsSelected) {
+  public void setTraceColix(byte palette, short colix, BitSet bsSelected) {
     if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && trace == null)
       trace = new Trace(viewer, this);
     if (trace != null)
-      trace.setColor(palette, colix, bsSelected);
+      trace.setColix(palette, colix, bsSelected);
   }
   
   Strands strands;
@@ -225,11 +225,11 @@ public class Frame {
       strands.setMad(mad, bsSelected);
   }
   
-  public void setStrandsColor(byte palette, short colix, BitSet bsSelected) {
+  public void setStrandsColix(byte palette, short colix, BitSet bsSelected) {
     if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && strands == null)
       strands = new Strands(viewer, this);
     if (strands != null)
-      strands.setColor(palette, colix, bsSelected);
+      strands.setColix(palette, colix, bsSelected);
   }
   
   Axes axes;

@@ -30,6 +30,7 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.protein.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
 class StrandsRenderer extends Renderer {
@@ -38,13 +39,43 @@ class StrandsRenderer extends Renderer {
     this.viewer = viewer;
   }
 
-  Point3i s0 = new Point3i();
-  Point3i s1 = new Point3i();
-  Point3i s2 = new Point3i();
-  Point3i s3 = new Point3i();
-  int diameterBeg, diameterMid, diameterEnd;
-
   Strands strands;
+  Point3f pointT = new Point3f();
+
+  Point3i[] screensT = new Point3i[0];
+  Point3i[] getTempScreens(int minLen) {
+    if (screensT.length < minLen) {
+      Point3i[] t = new Point3i[minLen];
+      System.arraycopy(screensT, 0, t, 0, screensT.length);
+      for (int i = screensT.length; i < t.length; ++i)
+        t[i] = new Point3i();
+      screensT = t;
+    }
+    return screensT;
+  }
+
+  Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
+                   short[] mads, float offsetFraction) {
+    Point3i[] screens = getTempScreens(centers.length);
+    if (offsetFraction == 0) {
+      for (int i = centers.length; --i >= 0; )
+        viewer.transformPoint(centers[i], screens[i]);
+    } else {
+      offsetFraction /= 1000;
+      for (int i = centers.length; --i >= 0; ) {
+        pointT.set(vectors[i]);
+        float scale = mads[i] * offsetFraction;
+        pointT.scaleAdd(scale, centers[i]);
+        viewer.transformPoint(pointT, screens[i]);
+      }
+    }
+    return screens;
+  }
+
+  int strandCount;
+  float halfStrandCount;
+  float strandSeparation;
+  float baseOffset;
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     this.frame = frame;
@@ -52,70 +83,56 @@ class StrandsRenderer extends Renderer {
     this.rectClip = rectClip;
     this.strands = frame.strands;
 
+    strandCount = viewer.getStrandsCount();
+    strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
+    baseOffset = ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
+
     if (strands == null || !strands.initialized)
       return;
     PdbMolecule pdbMolecule = strands.pdbMolecule;
     short[][] madsChains = strands.madsChains;
     short[][] colixesChains = strands.colixesChains;
+    Point3f[][] centersChains = strands.centersChains;
+    Vector3f[][] vectorsChains = strands.vectorsChains;
     for (int i = strands.chainCount; --i >= 0; ) {
-      render1Chain(pdbMolecule.getMainchain(i), madsChains[i], colixesChains[i]);
+      Point3f[] centers = centersChains[i];
+      if (centers != null)
+        render1Chain(pdbMolecule.getMainchain(i), centers,
+                     vectorsChains[i], madsChains[i], colixesChains[i]);
     }
   }
   
-  int mainchainLast;
-
-  void render1Chain(PdbResidue[] mainchain, short[] mads, short[] colixes) {
-    mainchainLast = mainchain.length - 1;
-    for (int i = mainchain.length; --i >= 0; ) {
-      Atom alpha = mainchain[i].getAlphaCarbonAtom();
-      int x = alpha.x, y = alpha.y, z = alpha.z;
-      short colix = colixes[i];
-      if (colix == 0)
-        colix = alpha.colixAtom;
-      calcSegmentPoints(mainchain, i, 0, mads);
-      render1Segment(Colix.BLUE);
-      calcSegmentPoints(mainchain, i, 1, mads);
-      render1Segment(Colix.GREEN);
-      calcSegmentPoints(mainchain, i, 2, mads);
-      render1Segment(Colix.YELLOW);
-      calcSegmentPoints(mainchain, i, 3, mads);
-      render1Segment(Colix.RED);
+  void render1Chain(PdbResidue[] mainchain, Point3f[] centers, Vector3f[] vectors,
+                    short[] mads, short[] colixes) {
+    Point3i[] screens;
+    for (int i = strandCount >> 1; --i >= 0; ) {
+      float f = (i * strandSeparation) + baseOffset;
+      screens = calcScreens(centers, vectors, mads, f);
+      render1Strand(mainchain, mads, colixes, screens);
+      screens = calcScreens(centers, vectors, mads, -f);
+      render1Strand(mainchain, mads, colixes, screens);
+    }
+    if ((strandCount & 1) != 0) {
+      screens = calcScreens(centers, vectors, mads, 0f);
+      render1Strand(mainchain, mads, colixes, screens);
     }
   }
 
-  void calcSegmentPoints(PdbResidue[] mainchain, int i, int iAtom, short[] mads) {
-    int iPrev = i - 1, iNext = i + 1, iNext2 = i + 2;
-    if (iPrev < 0)
-      iPrev = 0;
-    if (iNext > mainchainLast)
-      iNext = mainchainLast;
-    if (iNext2 > mainchainLast)
-      iNext2 = mainchainLast;
-    calc(mainchain, iPrev,  iAtom, s0);
-    calc(mainchain, i,      iAtom, s1);
-    calc(mainchain, iNext,  iAtom, s2);
-    calc(mainchain, iNext2, iAtom, s3);
+  void render1Strand(PdbResidue[] mainchain, short[] mads,
+                     short[] colixes, Point3i[] screens) {
+    for (int i = colixes.length; --i >= 0; )
+      if (mads[i] > 0)
+        render1StrandSegment(mainchain[i], colixes[i], mads, screens, i);
   }
 
-  void calc(PdbResidue[] mainchain, int i, int iAtom, Point3i dest) {
-    Atom atom = mainchain[i].getMainchainAtom(iAtom);
-    dest.x = atom.x;
-    dest.y = atom.y;
-    dest.z = atom.z;
-  }
-
-  void calcAverage(PdbResidue[] mainchain, int iA, int iB, Point3i dest) {
-    Atom atomA = mainchain[iA].getAlphaCarbonAtom();
-    Atom atomB = mainchain[iB].getAlphaCarbonAtom();
-    dest.x = (atomA.x + atomB.x) / 2;
-    dest.y = (atomA.y + atomB.y) / 2;
-    dest.z = (atomA.z + atomB.z) / 2;
-  }
-
-  void render1Segment(short colix) {
-    g3d.drawHermite(colix,
-                    s0.x, s0.y, s0.z, s1.x, s1.y, s1.z,
-                    s2.x, s2.y, s2.z, s3.x, s3.y, s3.z);
+  void render1StrandSegment(PdbResidue residue, short colix,
+                            short[] mads, Point3i[] screens, int i) {
+    int iLast = mads.length - 1;
+    int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
+    int iNext = i + 1; if (iNext > iLast) iNext = iLast;
+    int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
+    if (colix == 0)
+      colix = residue.getAlphaCarbonAtom().colixAtom;
+    g3d.drawHermite(colix, screens[iPrev], screens[i], screens[iNext], screens[iNext2]);
   }
 }
-

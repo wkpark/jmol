@@ -44,6 +44,18 @@ public class Strands {
   int chainCount;
   short[][] madsChains;
   short[][] colixesChains;
+  Point3f[][] centersChains;
+  Vector3f[][] vectorsChains;
+
+  /****************************************************************
+   * M. Carson and C.E. Bugg (1986)
+   * Algorithm for Ribbon Models of Proteins. J.Mol.Graphics 4:121-122.
+   * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
+   ****************************************************************/
+  Vector3f vectorA = new Vector3f();
+  Vector3f vectorB = new Vector3f();
+  Vector3f vectorC = new Vector3f();
+  Vector3f vectorD = new Vector3f();
   
 
   Strands(JmolViewer viewer, Frame frame) {
@@ -59,6 +71,8 @@ public class Strands {
     initialize();
     for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
       short[] mads = madsChains[i];
+      if (mads == null)
+        continue;
       PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
@@ -68,15 +82,19 @@ public class Strands {
             mads[j] = mad;
           }
       }
+      // the last one in the chain needs to set the size for the following point
+      mads[mainchain.length] = mads[mainchain.length-1];
     }
   }
 
-  public void setColor(byte palette, short colix, BitSet bsSelected) {
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
     initialize();
     for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
       short[] colixes = colixesChains[i];
+      if (colixes == null)
+        continue;
       PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
@@ -92,12 +110,50 @@ public class Strands {
       chainCount = pdbMolecule.getChainCount();
       madsChains = new short[chainCount][];
       colixesChains = new short[chainCount][];
+      centersChains = new Point3f[chainCount][];
+      vectorsChains = new Vector3f[chainCount][];
       for (int i = chainCount; --i >= 0; ) {
         int chainLength = pdbMolecule.getMainchain(i).length;
-        madsChains[i] = new short[chainLength];
-        colixesChains[i] = new short[chainLength];
+        System.out.println("chainLength=" + chainLength);
+        if (chainLength > 1) {
+          colixesChains[i] = new short[chainLength];
+          madsChains[i] = new short[chainLength + 1];
+          centersChains[i] = new Point3f[chainLength + 1];
+          vectorsChains[i] = new Vector3f[chainLength + 1];
+          calcCentersAndVectors(pdbMolecule.getMainchain(i),
+                                centersChains[i], vectorsChains[i]);
+        }
       }
       initialized = true;
     }
+  }
+
+  void calcCentersAndVectors(PdbResidue[] mainchain,
+                             Point3f[] centers, Vector3f[] vectors) {
+    Point3f alphaPointPrev, alphaPoint;
+    centers[0] = alphaPointPrev = alphaPoint =
+      mainchain[0].getAlphaCarbonAtom().point3f;
+    int lastIndex = mainchain.length - 1;
+    Vector3f previousVectorD = null;
+    for (int i = 1; i <= lastIndex; ++i) {
+      alphaPointPrev = alphaPoint;
+      alphaPoint = mainchain[i].getAlphaCarbonAtom().point3f;
+      Point3f center = new Point3f(alphaPoint);
+      center.add(alphaPointPrev);
+      center.scale(0.5f);
+      centers[i] = center;
+      vectorA.sub(alphaPoint, alphaPointPrev);
+      vectorB.sub(mainchain[i-1].getCarbonylOxygenAtom().point3f, alphaPointPrev);
+      vectorC.cross(vectorA, vectorB);
+      vectorD.cross(vectorC, vectorA);
+      vectorD.normalize();
+      if (previousVectorD != null &&
+          previousVectorD.angle(vectorD) > Math.PI/2)
+        vectorD.scale(-1);
+      previousVectorD = vectors[i] = new Vector3f(vectorD);
+    }
+    centers[mainchain.length] = alphaPointPrev;
+    vectors[0] = vectors[1];
+    vectors[mainchain.length] = vectors[lastIndex];
   }
 }

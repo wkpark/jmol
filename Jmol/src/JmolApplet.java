@@ -205,7 +205,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       }
     return defaultValue;
   }
-
+  /*
   private double getValue(String propertyName, double defaultValue) {
     String stringValue = getValue(propertyName, null);
     if (stringValue != null)
@@ -217,7 +217,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       }
     return defaultValue;
   }
-
+  */
   private String getValueLowerCase(String paramName, String defaultValue) {
     String value = getValue(paramName, defaultValue);
     if (value != null) {
@@ -413,12 +413,12 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     update(g);
   }
 
-  private final static Color frankColor = Color.gray;
-  private final static String frankString = "Jmol";
-  private final static String frankFontName = "Serif";
-  private final static int frankFontStyle = Font.BOLD;
-  private final static int frankFontSize = 14;
-  private final static int frankMargin = 4;
+  //private final static Color frankColor = Color.gray;
+  //private final static String frankString = "Jmol";
+  //private final static String frankFontName = "Serif";
+  //private final static int frankFontStyle = Font.BOLD;
+  //private final static int frankFontSize = 14;
+  //private final static int frankMargin = 4;
   Font frankFont;
   int frankWidth;
   int frankDescent;
@@ -537,8 +537,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       if (inlineNewlineChar != 0) {
         int len = strModel.length();
         int i;
-        for (i = 0; i < len && strModel.charAt(0) == ' '; ++i)
-          ;
+        for (i = 0; i < len && strModel.charAt(0) == ' '; ++i) {
+        }
         if (i < len && strModel.charAt(i) == inlineNewlineChar)
           strModel = strModel.substring(i + 1);
         strModel = strModel.replace(inlineNewlineChar, '\n');

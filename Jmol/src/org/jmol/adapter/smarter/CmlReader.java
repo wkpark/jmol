@@ -182,15 +182,15 @@ class CmlReader extends ModelReader {
                              String qName, Attributes atts)
       throws SAXException
     {
-      /*
+      /* */
         System.out.println("startElement(" + namespaceURI + "," + localName +
         "," + qName + "," + atts +  ")");
-      */
-      if ("molecule".equals(qName)) {
+      /* */
+      if ("molecule".equals(localName)) {
         ++moleculeCount;
         return;
       }
-      if ("atom".equals(qName)) {
+      if ("atom".equals(localName)) {
         elementContext = ATOM;
         atom = new Atom();
         for (int i = atts.getLength(); --i >= 0; ) {
@@ -213,7 +213,7 @@ class CmlReader extends ModelReader {
         atom.modelNumber = moleculeCount;
         return;
       }
-      if ("atomArray".equals(qName)) {
+      if ("atomArray".equals(localName)) {
         atomCount = 0;
         for (int i = atts.getLength(); --i >= 0; ) {
           String attLocalName = atts.getLocalName(i);
@@ -244,7 +244,7 @@ class CmlReader extends ModelReader {
           atomArray[j].modelNumber = moleculeCount;
         return;
       }
-      if ("bond".equals(qName)) {
+      if ("bond".equals(localName)) {
         //  <bond atomRefs2="a20 a21" id="b41" order="2"/>
         int order = -1;
         for (int i = atts.getLength(); --i >= 0; ) {
@@ -260,7 +260,7 @@ class CmlReader extends ModelReader {
           model.newBond(tokens[0], tokens[1], order);
         return;
       }
-      if ("bondArray".equals(qName)) {
+      if ("bondArray".equals(localName)) {
         bondCount = 0;
         for (int i = atts.getLength(); --i >= 0; ) {
           String attLocalName = atts.getLocalName(i);
@@ -281,12 +281,12 @@ class CmlReader extends ModelReader {
         }
         return;
       }
-      if ("crystal".equals(qName)) {
+      if ("crystal".equals(localName)) {
         elementContext = CRYSTAL;
         notionalUnitcell = new float[6];
         return;
       }
-      if ("scalar".equals(qName)) {
+      if ("scalar".equals(localName)) {
         for (int i = atts.getLength(); --i >= 0; ) {
           String attLocalName = atts.getLocalName(i);
           String attValue = atts.getValue(i);
@@ -307,7 +307,7 @@ class CmlReader extends ModelReader {
         System.out.println("endElement(" + uri + "," + localName +
         "," + qName + ")");
       */
-      if ("atom".equals(qName)) {
+      if ("atom".equals(localName)) {
         if (atom.elementSymbol != null &&
             ! Float.isNaN(atom.z)) {
           model.addAtomWithMappedName(atom);
@@ -316,12 +316,12 @@ class CmlReader extends ModelReader {
         elementContext = UNSET;
         return;
       }
-      if ("crystal".equals(qName)) {
+      if ("crystal".equals(localName)) {
         elementContext = UNSET;
         model.notionalUnitcell = notionalUnitcell;
         return;
       }
-      if ("scalar".equals(qName)) {
+      if ("scalar".equals(localName)) {
         if (elementContext == CRYSTAL) {
           System.out.println("CRYSTAL atts.title: " + title);
           int i = 6;
@@ -341,7 +341,8 @@ class CmlReader extends ModelReader {
         chars = null;
         return;
       }
-      if ("atomArray".equals(qName)) {
+      if ("atomArray".equals(localName)) {
+        System.out.println("adding atomArray:" + atomCount);
         for (int i = 0; i < atomCount; ++i) {
           Atom atom = atomArray[i];
           if (atom.elementSymbol != null &&
@@ -350,7 +351,7 @@ class CmlReader extends ModelReader {
         }
         return;
       }
-      if ("bondArray".equals(qName)) {
+      if ("bondArray".equals(localName)) {
         System.out.println("adding bondArray:" + bondCount);
         for (int i = 0; i < bondCount; ++i)
           model.addBond(bondArray[i]);

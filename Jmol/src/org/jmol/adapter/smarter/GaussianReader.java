@@ -73,9 +73,6 @@ class GaussianReader extends ModelReader {
   // offset of coordinates within 'Standard orientation:'
   int coordinateBase = 34;
 
-  // number of lines to skip after 'Frequencies --' to get to the vectors
-  int frequencyLineSkipCount = 6;
-
   void setGaussian94Offsets() {
     /*
                    Standard orientation:
@@ -86,7 +83,6 @@ class GaussianReader extends ModelReader {
     1          6           0.000000    0.000000    1.043880
     */
     coordinateBase = 23;
-    frequencyLineSkipCount = 6;
   }
 
   void setGaussian98Offsets() {
@@ -99,12 +95,10 @@ class GaussianReader extends ModelReader {
     1          6             0        0.852764   -0.020119    0.050711
     */
     coordinateBase = 34;
-    frequencyLineSkipCount = 6;
   }
 
   void setGaussian03Offsets() {
     coordinateBase = 34;
-    frequencyLineSkipCount = 7;
   }
 
 
@@ -148,7 +142,7 @@ class GaussianReader extends ModelReader {
       return;
     do {
       // FIXME deal with frequency line here
-      discardLines(reader, frequencyLineSkipCount);
+      discardLinesThroughStartsWith(reader, " Atom AN");
       for (int i = 0; i < atomCount; ++i) {
         line = reader.readLine();
         int atomCenterNumber = parseInt(line, 0, 4);

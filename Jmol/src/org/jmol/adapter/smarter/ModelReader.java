@@ -266,6 +266,12 @@ abstract class ModelReader {
     for (int i = nLines; --i >= 0; )
       reader.readLine();
   }
-  
-}
 
+  void discardLinesThroughStartsWith(BufferedReader reader, String startsWith)
+    throws Exception {
+    String line;
+    while ((line = reader.readLine()) != null &&
+           !line.startsWith(startsWith))
+      {}
+  }
+}

@@ -70,7 +70,10 @@ class FoldingXyzReader extends AtomSetCollectionReader {
   void readAtoms(BufferedReader reader,
                  int modelAtomCount) throws Exception {
   	// Stores bond informations
-  	int[][] bonds = new int[modelAtomCount][];
+  	int[][] bonds = new int[modelAtomCount + 1][];
+  	for (int i = 0; i <= modelAtomCount; ++i) {
+  	  bonds[i] = null;
+  	}
   	
     for (int i = 0; i <= modelAtomCount; ++i) {
       String line = reader.readLine();
@@ -100,7 +103,6 @@ class FoldingXyzReader extends AtomSetCollectionReader {
 	    atom.x = parseFloat(line, ichNextParse);
 	    atom.y = parseFloat(line, ichNextParse);
 	    atom.z = parseFloat(line, ichNextParse);
-	    //parseInt(line, ichNextParse);
 	    
 	    // Memorise bond informations
 	    int bondCount = 0;
@@ -124,10 +126,10 @@ class FoldingXyzReader extends AtomSetCollectionReader {
       // Decide if first bond is relevant
       int incorrectBonds = 0;
       for (int origin = 0; origin < bonds.length; origin++) {
-      	if (bonds[origin].length > 0) {
+      	if ((bonds[origin] != null) && (bonds[origin].length > 0)) {
           boolean correct = false;
           int destination = bonds[origin][0];
-          if ((destination >= 0) && (destination < bonds.length)) {
+          if ((destination >= 0) && (destination < bonds.length) && (bonds[destination] != null)) {
             for (int j = 0; j < bonds[destination].length; j++) {
               if (bonds[destination][j] == origin) {
                 correct = true;
@@ -143,18 +145,20 @@ class FoldingXyzReader extends AtomSetCollectionReader {
       // Create bond
       int start = (incorrectBonds * 5) > bonds.length ? 1 : 0;
       for (int origin = start; origin < bonds.length; origin++) {
-        for (int i = 0; i < bonds[origin].length; i++) {
-          boolean correct = false;
-          int destination = bonds[origin][i];
-          if ((destination >= 0) && (destination < bonds.length)) {
-          	for (int j = start; j < bonds[destination].length; j++) {
-          	  if (bonds[destination][j] == origin) {
-          	  	correct = true;
-          	  }
-          	}
-          }
-          if (correct && (destination > origin)) {
-          	atomSetCollection.addNewBond(origin, destination);
+        if (bonds[origin] != null) {
+          for (int i = 0; i < bonds[origin].length; i++) {
+            boolean correct = false;
+            int destination = bonds[origin][i];
+            if ((destination >= 0) && (destination < bonds.length) && (bonds[destination] != null)) {
+              for (int j = start; j < bonds[destination].length; j++) {
+                if (bonds[destination][j] == origin) {
+          	      correct = true;
+                }
+              }
+            }
+            if (correct && (destination > origin)) {
+            	atomSetCollection.addNewBond(origin, destination);
+            }
           }
         }
       }

@@ -202,6 +202,10 @@ public class ChemFrame extends AtomContainer {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
+  public int addAtom(String name, double x, double y, double z) {
+    return addAtom(BaseAtomType.get(name, name), x, y, z, null);
+  }
+
   public int addAtom(String name, double x, double y, double z,
                      ProteinProp pprop) {
     return addAtom(BaseAtomType.get(name, name), x, y, z, pprop);

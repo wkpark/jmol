@@ -199,7 +199,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
 
     dihedral = toDegrees(Math.acos(cosang));
     double dot  =  ijx*cx + ijy*cy + ijz*cz;
-    double absDot =  Math.abs(d);
+    double absDot =  Math.abs(dot);
     dihedral = (dot/absDot > 0) ? dihedral : -dihedral;
     computed = true;
   }

@@ -655,9 +655,6 @@ public class DisplayPanel extends JPanel
     if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       control.setClientFile("DisplayPanel", (ChemFile) event.getNewValue());
       setRotateMode();
-    } else if (event.getPropertyName().
-               equals(DisplayControl.PROP_CHEM_FRAME)) {
-      control.setFrame((ChemFrame) event.getNewValue());
     }
   }
 

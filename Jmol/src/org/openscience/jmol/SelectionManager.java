@@ -69,7 +69,7 @@ public class SelectionManager {
   public boolean isEmpty() {
     if (empty != UNKNOWN)
       return empty == TRUE;
-    for (int i = control.numberOfAtoms(); --i >= 0; )
+    for (int i = control.getAtomCount(); --i >= 0; )
       if (bsSelection.get(i)) {
         empty = FALSE;
         return false;
@@ -79,7 +79,7 @@ public class SelectionManager {
   }
 
   public void selectAll() {
-    int count = control.numberOfAtoms();
+    int count = control.getAtomCount();
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0; )
       bsSelection.set(i);
@@ -93,7 +93,7 @@ public class SelectionManager {
   public void delete(int iDeleted) {
     if (empty == TRUE)
       return;
-    int numAfterDelete = control.numberOfAtoms() - 1;
+    int numAfterDelete = control.getAtomCount() - 1;
     for (int i = iDeleted; i < numAfterDelete; ++i) {
       if (bsSelection.get(i + 1))
         bsSelection.set(i);
@@ -111,7 +111,7 @@ public class SelectionManager {
 
   public void invertSelection() {
     empty = TRUE;
-    for (int i = control.numberOfAtoms(); --i >= 0; )
+    for (int i = control.getAtomCount(); --i >= 0; )
       if (bsSelection.get(i)) {
         bsSelection.clear(i);
       } else {
@@ -123,7 +123,7 @@ public class SelectionManager {
   public void excludeSelectionSet(BitSet setExclude) {
     if (empty == TRUE)
       return;
-    for (int i = control.numberOfAtoms(); --i >= 0; )
+    for (int i = control.getAtomCount(); --i >= 0; )
       if (setExclude.get(i))
         bsSelection.clear(i);
     empty = UNKNOWN;

@@ -81,12 +81,12 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
   public int getFrameCount(Object clientFile) {
-    return 0;
+    return ((ChemFile)clientFile).getNumberOfFrames();
   }
 
 
   public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
-    return null;
+    return ((ChemFile)clientFile).getFrame(frameNumber).getJmolFrame();
   }
 
   /****************************************************************

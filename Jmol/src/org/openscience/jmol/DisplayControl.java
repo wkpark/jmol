@@ -735,7 +735,6 @@ final public class DisplayControl {
    ****************************************************************/
 
   public static final String PROP_CHEM_FILE = "chemFile";
-  public static final String PROP_CHEM_FRAME = "chemFrame";
 
   public void setClientFile(String name, Object clientFile) {
     pushHoldRepaint();
@@ -774,10 +773,6 @@ final public class DisplayControl {
 
   public JmolFrame getJmolFrame() {
     return modelManager.getJmolFrame();
-  }
-
-  public ChemFrame getFrame() {
-    return modelManager.chemframe;
   }
 
   public double getRotationRadius() {
@@ -822,21 +817,8 @@ final public class DisplayControl {
     refresh();
   }
 
-  public void setFrame(ChemFrame frame) {
-    modelManager.setFrame(frame);
-    selectAll();
-    recalcAxes();
-    clearMeasurements();
-    structuralChange = true;
-    refresh();
-  }
-
   public int getCurrentFrameNumber() {
     return modelManager.getCurrentFrameNumber();
-  }
-
-  public int numberOfAtoms() {
-    return modelManager.numberOfAtoms();
   }
 
   public int getAtomCount() {

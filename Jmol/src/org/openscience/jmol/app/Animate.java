@@ -624,7 +624,8 @@ public class Animate extends JDialog implements ActionListener,
   synchronized void setFrame(int which, boolean setSlider) {
 
     control.setFrame(which);
-    ChemFrame frame = control.getFrame();
+    ChemFile file = (ChemFile)control.getClientFile();
+    ChemFrame frame = file.getFrame(control.getCurrentFrameNumber());
     String inf = frame.getInfo();
     if (inf != null) {
       infoLabel.setText(inf);

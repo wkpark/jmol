@@ -93,7 +93,7 @@ public class RepaintManager {
 
   public boolean enableAntialiasing() {
     return wantsAntialias
-      && (control.numberOfAtoms() <= maxAntialiasCount)
+      && (control.getAtomCount() <= maxAntialiasCount)
       && (!inMotion || wantsAntialiasAlways);
   }
 

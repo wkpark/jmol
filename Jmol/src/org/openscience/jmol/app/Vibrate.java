@@ -390,7 +390,6 @@ public class Vibrate extends JDialog implements ActionListener,
   private void setFrame(int which, boolean setSlider) {
 
     control.setFrame(which);
-    ChemFrame frame = control.getFrame();
     if (setSlider) {
       progressSlider.setValue(which + 1);
     }

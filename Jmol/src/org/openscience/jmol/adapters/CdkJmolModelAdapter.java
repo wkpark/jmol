@@ -334,7 +334,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
      * Returns the color for a certain atom type
      */
     public Color getAtomColor(org.openscience.cdk.Atom atom) {
-      return (Color)atom.getProperty("org.openscience.jmol.color");
+      return (Color)atom.getProperty("org.openscience.cdk.renderer.color");
     }
   }
 

@@ -142,7 +142,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
       bat.setExactMass(at.getExactMass());
       bat.setVanderwaalsRadius(at.getVanderwaalsRadius());
       bat.setCovalentRadius(at.getCovalentRadius());
-      Object o = at.getProperty("org.openscience.jmol.color");
+      Object o = at.getProperty("org.openscience.cdk.renderer.color");
       if (o != null && o instanceof Color) {
           bat.color = (Color)o;
       };

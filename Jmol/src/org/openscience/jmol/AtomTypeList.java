@@ -274,7 +274,7 @@ public class AtomTypeList {
             atom.setBondOrderSum(at.getBondOrderSum());
             atom.setVanderwaalsRadius(at.getVanderwaalsRadius());
             atom.setCovalentRadius(at.getCovalentRadius());
-            atom.setProperty("org.openscience.jmol.color", at.getColor());
+            atom.setProperty("org.openscience.cdk.renderer.color", at.getColor());
             if (at.getAtomicNumber() != 0) {
                 atom.setAtomicNumber(at.getAtomicNumber());
             } else {

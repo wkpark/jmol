@@ -295,6 +295,15 @@ abstract class MouseManager {
     case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
       viewer.rotateZBy(-deltaX);
       break;
+    case CTRL_ALT_LEFT:
+      /*
+       * miguel 2004 11 23
+       * CTRL_ALT_LEFT *should* work on the mac
+       * however, Apple has a bug in that mouseDragged events
+       * do not get passed through if the CTL button is held down
+       *
+       * I submitted a bug to apple
+       */
     case CTRL_RIGHT:
       viewer.translateXYBy(deltaX, deltaY);
       break;

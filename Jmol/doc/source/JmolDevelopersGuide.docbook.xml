@@ -71,6 +71,21 @@ Jmol source code should be written in a style which adheres to
 </para>
 </chapter>
 
+<chapter id="Packaging">
+<title>Packaging</title>
+<para>
+Distribution packages will be made for any platform for which a
+developer promises to provide support. File used to create packages
+should be commited to CVS under the Jmol/packaging
+directory. Currently the following packages are available:
+<itemizedlist>
+<listitem><para> .zip, .tar.gz, RPM (by Bradley Smith) </para></listitem>
+<listitem><para> Debian (by Egon Willighagen) </para></listitem>
+<listitem><para> MacOS (by Dan Gezelter) </para></listitem>
+</itemizedlist>
+</para>
+</chapter>
+
 </book>
 
 

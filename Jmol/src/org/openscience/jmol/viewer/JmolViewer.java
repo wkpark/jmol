@@ -1244,13 +1244,11 @@ final public class JmolViewer {
   }
 
   public void setPendingMeasurement(int[] atomCountPlusIndices) {
-    setShapeSize(JmolConstants.SHAPE_MEASURES, 1);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "pending",
                      atomCountPlusIndices);
   }
 
   public void defineMeasurement(int[] atomCountPlusIndices) {
-    setShapeSize(JmolConstants.SHAPE_MEASURES, 1);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "define",
                      atomCountPlusIndices);
   }
@@ -1265,7 +1263,6 @@ final public class JmolViewer {
   }
 
   public void toggleMeasurement(int[] atomCountPlusIndices) {
-    setShapeSize(JmolConstants.SHAPE_MEASURES, 1);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
                      atomCountPlusIndices);
   }
@@ -1289,6 +1286,7 @@ final public class JmolViewer {
   public void setAnimationFps(int fps) {
     repaintManager.setAnimationFps(fps);
   }
+
   public int getAnimationFps() {
     return repaintManager.animationFps;
   }

@@ -39,7 +39,7 @@ import java.awt.FontMetrics;
 class MeasuresRenderer extends ShapeRenderer {
 
   short colixDistance;
-  boolean showMeasurementLabels;
+  boolean showMeasurementNumbers;
   short measurementMad;
   Font3D font3d;
 
@@ -51,8 +51,10 @@ class MeasuresRenderer extends ShapeRenderer {
 
     colixDistance = measures.colix;
     measurementMad = measures.mad;
+    System.out.println("MeasuresRenderer.render: measurementMad=" +
+                       measurementMad);
     font3d = measures.font3d;
-    showMeasurementLabels = viewer.getShowMeasurementLabels();
+    showMeasurementNumbers = measures.showMeasurementNumbers;
     
     for (int i = measures.measurementCount; --i >= 0; )
       renderMeasurement(measures.measurements[i], colixDistance);
@@ -88,7 +90,6 @@ class MeasuresRenderer extends ShapeRenderer {
       g3d.drawDashedLine(colix, 4, 2, x1, y1, z1, x2, y2, z2);
       return 1;
     } else {
-      System.out.println("drawSegment cylinder");
       int widthPixels = measurementMad;
       if (measurementMad >= 20)
         widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
@@ -206,7 +207,7 @@ class MeasuresRenderer extends ShapeRenderer {
   }
 
   void paintMeasurementString(int x, int y, int z, int radius, short colix) {
-    if (! showMeasurementLabels)
+    if (! showMeasurementNumbers)
       return;
     String strMeasurement = measurement.strMeasurement;
     if (strMeasurement == null)

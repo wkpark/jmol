@@ -134,10 +134,10 @@ final public class Frame {
     findGroupsPresent();
     mmset.freeze();
 
-    checkShape(JmolConstants.SHAPE_BALLS);
-    checkShape(JmolConstants.SHAPE_STICKS);
+    loadShape(JmolConstants.SHAPE_BALLS);
+    loadShape(JmolConstants.SHAPE_STICKS);
     if (fileHasHbonds)
-      checkShape(JmolConstants.SHAPE_HSTICKS);
+      loadShape(JmolConstants.SHAPE_HSTICKS);
   }
 
   void hackAtomSerialNumbersForAnimations() {
@@ -234,8 +234,9 @@ final public class Frame {
     return hasVibrationVectors;
   }
 
-  Shape allocateShape(int shapeType) {
-    String classBase = JmolConstants.shapeClassBases[shapeType];
+  Shape allocateShape(int shapeID) {
+    String classBase = JmolConstants.shapeClassBases[shapeID];
+    //    System.out.println("Frame.allocateShape(" + classBase + ")");
     String className = "org.openscience.jmol.viewer.datamodel." + classBase;
 
     try {
@@ -253,29 +254,30 @@ final public class Frame {
 
   final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
 
-  void checkShape(int shapeType) {
-    if (shapes[shapeType] == null) {
-      shapes[shapeType] = allocateShape(shapeType);
+  void loadShape(int shapeID) {
+    if (shapes[shapeID] == null) {
+      shapes[shapeID] = allocateShape(shapeID);
     }
   }
-  
-  public void setShapeSize(int shapeType, int size, BitSet bsSelected) {
+
+  public void setShapeSize(int shapeID, int size, BitSet bsSelected) {
     if (size != 0)
-      checkShape(shapeType);
-    if (shapes[shapeType] != null)
-      shapes[shapeType].setSize(size, bsSelected);
+      loadShape(shapeID);
+    if (shapes[shapeID] != null)
+      shapes[shapeID].setSize(size, bsSelected);
   }
 
-  public void setShapeProperty(int shapeType, String propertyName,
+  public void setShapeProperty(int shapeID, String propertyName,
                                Object value, BitSet bsSelected) {
-    if (shapes[shapeType] != null)
-      shapes[shapeType].setProperty(propertyName, value, bsSelected);
+    loadShape(shapeID);
+    if (shapes[shapeID] != null)
+      shapes[shapeID].setProperty(propertyName, value, bsSelected);
   }
 
-  public Object getShapeProperty(int shapeType,
+  public Object getShapeProperty(int shapeID,
                                  String propertyName, int index) {
-    return (shapes[shapeType] == null
-            ? null : shapes[shapeType].getProperty(propertyName, index));
+    return (shapes[shapeID] == null
+            ? null : shapes[shapeID].getProperty(propertyName, index));
   }
 
   Point3f averageAtomPoint;
@@ -800,8 +802,8 @@ final public class Frame {
 
   // FIXME mth 2004 05 04 - do NOT pass a null in here
   // figure out what to do about the g3d when allocating a shape renderer
-  ShapeRenderer getRenderer(int shapeType) {
-    return frameRenderer.getRenderer(shapeType, null);
+  ShapeRenderer getRenderer(int shapeID) {
+    return frameRenderer.getRenderer(shapeID, null);
   }
 
   void doUnitcellStuff() {

@@ -29,7 +29,8 @@ import org.jmol.api.ModelAdapter;
 import java.io.BufferedReader;
 
 /**
- * Support for .hin, Hyperchem's native file format.
+ * Support for .hin, HyperChem's native file format.
+ * http://www.hyper.com
  * <p />
  * Record format is:
  * <code>

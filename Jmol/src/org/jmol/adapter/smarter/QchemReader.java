@@ -27,9 +27,9 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 /**
- * A reader for Q-chem 2.1
- * Q-chem  is a quantum chemistry program developed
- * by Q-chem, Inc. (http://www.q-chem.com/)
+ * A reader for Q-Chem 2.1
+ * Q-Chem  is a quantum chemistry program developed
+ * by Q-Chem, Inc. (http://www.q-chem.com/)
  *
  * <p> Molecular coordinates and normal coordinates of
  * vibrations are read. 

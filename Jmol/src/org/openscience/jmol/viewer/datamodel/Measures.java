@@ -39,6 +39,7 @@ public class Measures extends Shape {
 
   short mad = (short)-1;
   short colix = Graphics3D.WHITE;
+  boolean showMeasurementNumbers = true;
   Font3D font3d;
 
   void initShape() {
@@ -113,10 +114,12 @@ public class Measures extends Shape {
 
   void setSize(int size, BitSet bsSelected) {
     mad = (short)size;
+    System.out.println("Measures.setSize(" + size + ")");
+    //    throw new NullPointerException();
   }
 
   public void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
+                          BitSet bsSelected){ 
     if ("color".equals(propertyName))
       {
         System.out.println("Measures.color set to:" + value);
@@ -133,6 +136,8 @@ public class Measures extends Shape {
       { pending((int[])value); }
     else if ("clear".equals(propertyName))
       { clear(); }
+    else if ("showMeasurementNumbers".equals(propertyName))
+      { showMeasurementNumbers = ((Boolean)value).booleanValue(); }
     else
       return;
     viewer.notifyMeasurementsChanged();

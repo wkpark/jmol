@@ -49,15 +49,31 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
      *
      * @param s amplitude scale factor
      */
-    public static void setScale(double s) {
-        scale = s;
+    public static void setAmplitudeScale(double s) {
+        amplitudeScale = s;
     }
     
     /**
      * Gets the scale factor for the amplitude of vibrations.
      */
-    public static double getScale() {
-        return scale;
+    public static double getAmplitudeScale() {
+        return amplitudeScale;
+    }
+    
+    /**
+     * Sets the scale factor for the atomic force vectors of vibrations.
+     *
+     * @param s vector scale factor
+     */
+    public static void setVectorScale(double s) {
+        vectorScale = s;
+    }
+    
+    /**
+     * Gets the scale factor for the atomic force vectors of vibrations.
+     */
+    public static double getVectorScale() {
+        return vectorScale;
     }
     
     /**
@@ -306,13 +322,17 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
             int numberVerticies = inputFrame.getNvert();
             ChemFrame newFrame = new ChemFrame(numberVerticies);
             for (int i = 0; i < numberVerticies; ++i) {
-                double scaling = scale * Math.sin(2.0 * Math.PI * n /
+                double scaling = amplitudeScale * Math.sin(2.0 * Math.PI * n /
                                                   numberFrames);
                 AtomType atomType = inputFrame.getAtomType(i);
                 double[] coord = inputFrame.getVertCoords(i);
                 double[] force = vib.getAtomVector(i);
+                double[] forceVector = new double[3];
+				forceVector[0] = vectorScale * force[0];
+				forceVector[1] = vectorScale * force[1];
+				forceVector[2] = vectorScale * force[2];
                 Vector newProps = new Vector();
-                newProps.addElement(new VProperty(force));
+                newProps.addElement(new VProperty(forceVector));
                 coord[0] += force[0] * scaling;
                 coord[1] += force[1] * scaling;
                 coord[2] += force[2] * scaling;
@@ -747,7 +767,11 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     /**
      * Scale factor for the amplitude of vibrations.
      */
-    private static double scale = 0.7;
+    private static double amplitudeScale = 0.7;
+    /**
+     * Scale factor for the atomic force vectors of vibrations.
+     */
+    private static double vectorScale = 1.0;
     /**
      * Sets the number of frames to be created for the vibration animations.
      */

@@ -81,7 +81,8 @@ public class Preferences extends JDialog {
     private static float   FieldOfView;
     private static double  MessageTime;
     private static double  SphereFactor;
-    private static double  VibrationScale;
+    private static double  VibrateAmplitudeScale;
+    private static double  VibrateVectorScale;
     private static int     VibrationFrames;
     private displayPanel display;
     private static JmolResourceHandler jrh, defaults;
@@ -91,7 +92,9 @@ public class Preferences extends JDialog {
     private JComboBox aRender, aLabel, aProps, bRender;
     private JSlider mtSlider, fovSlider, sfSlider;
     private JSlider bfSlider, bwSlider, ahSlider, arSlider;
-    private JSlider vsSlider, vfSlider;
+    private JSlider vasSlider;
+	private JSlider vvsSlider;
+	private JSlider vfSlider;
     private JCheckBox cB, cA, cV, cH, cD, cX, cBB;
     private static Properties props;
     
@@ -143,7 +146,8 @@ public class Preferences extends JDialog {
         props.put("textColor", "0");
         props.put("vectorColor", "0");
         props.put("AutoTimeout", "15.0");
-        props.put("VibrationScale", "0.7");
+        props.put("VibrateAmplitudeScale", "0.7");
+        props.put("VibrateVectorScale", "1.0");
         props.put("VibrationFrames", "20");
         props = new Properties(props);
     }        
@@ -886,45 +890,85 @@ public class Preferences extends JDialog {
         notePanel.add(noteLabel,BorderLayout.CENTER);
         vibratePanel.add(notePanel);
 
-        JPanel vsPanel = new JPanel();
-        vsPanel.setLayout(new BorderLayout());
-        vsPanel.setBorder(new TitledBorder(jrh.getString("vibScaleLabel")));
-        vsSlider = new JSlider(JSlider.HORIZONTAL, 0, 200, 
-                               (int) (100.0*Vibrate.getScale()));
-        vsSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-        vsSlider.setPaintTicks(true);
-        vsSlider.setMajorTickSpacing(40);
-        vsSlider.setPaintLabels(true);
-        vsSlider.getLabelTable().put(new Integer(0), 
+        JPanel vasPanel = new JPanel();
+        vasPanel.setLayout(new BorderLayout());
+        vasPanel.setBorder(new TitledBorder(jrh.getString("vibAmplitudeScaleLabel")));
+        vasSlider = new JSlider(JSlider.HORIZONTAL, 0, 200, 
+                               (int) (100.0*Vibrate.getAmplitudeScale()));
+        vasSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+        vasSlider.setPaintTicks(true);
+        vasSlider.setMajorTickSpacing(40);
+        vasSlider.setPaintLabels(true);
+        vasSlider.getLabelTable().put(new Integer(0), 
                                      new JLabel("0.0", JLabel.CENTER));
-        vsSlider.setLabelTable( vsSlider.getLabelTable() );
-        vsSlider.getLabelTable().put(new Integer(40), 
+        vasSlider.setLabelTable( vasSlider.getLabelTable() );
+        vasSlider.getLabelTable().put(new Integer(40), 
                                      new JLabel("0.4", JLabel.CENTER));
-        vsSlider.setLabelTable( vsSlider.getLabelTable() );
-        vsSlider.getLabelTable().put(new Integer(80), 
+        vasSlider.setLabelTable( vasSlider.getLabelTable() );
+        vasSlider.getLabelTable().put(new Integer(80), 
                                      new JLabel("0.8", JLabel.CENTER));
-        vsSlider.setLabelTable( vsSlider.getLabelTable() );
-        vsSlider.getLabelTable().put(new Integer(120), 
+        vasSlider.setLabelTable( vasSlider.getLabelTable() );
+        vasSlider.getLabelTable().put(new Integer(120), 
                                      new JLabel("1.2", JLabel.CENTER));
-        vsSlider.setLabelTable( vsSlider.getLabelTable() );
-        vsSlider.getLabelTable().put(new Integer(160), 
+        vasSlider.setLabelTable( vasSlider.getLabelTable() );
+        vasSlider.getLabelTable().put(new Integer(160), 
                                      new JLabel("1.6", JLabel.CENTER));
-        vsSlider.setLabelTable( vsSlider.getLabelTable() );
-        vsSlider.getLabelTable().put(new Integer(200), 
+        vasSlider.setLabelTable( vasSlider.getLabelTable() );
+        vasSlider.getLabelTable().put(new Integer(200), 
                                      new JLabel("2.0", JLabel.CENTER));
-        vsSlider.setLabelTable( vsSlider.getLabelTable() );
+        vasSlider.setLabelTable( vasSlider.getLabelTable() );
 
-        vsSlider.addChangeListener(new ChangeListener() {
+        vasSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
-                VibrationScale = source.getValue()/100.0;
-                Vibrate.setScale(VibrationScale);
-                props.put("VibrationScale", 
-                          Double.toString(VibrationScale));
+                VibrateAmplitudeScale = source.getValue()/100.0;
+                Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
+                props.put("VibrateAmplitudeScale", 
+                          Double.toString(VibrateAmplitudeScale));
             }
         });
-        vsPanel.add(vsSlider,BorderLayout.SOUTH);
-        vibratePanel.add(vsPanel);
+        vasPanel.add(vasSlider,BorderLayout.SOUTH);
+        vibratePanel.add(vasPanel);
+
+        JPanel vvsPanel = new JPanel();
+        vvsPanel.setLayout(new BorderLayout());
+        vvsPanel.setBorder(new TitledBorder(jrh.getString("vibVectorScaleLabel")));
+        vvsSlider = new JSlider(JSlider.HORIZONTAL, 0, 200, 
+                               (int) (100.0*Vibrate.getVectorScale()));
+        vvsSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+        vvsSlider.setPaintTicks(true);
+        vvsSlider.setMajorTickSpacing(40);
+        vvsSlider.setPaintLabels(true);
+        vvsSlider.getLabelTable().put(new Integer(0), 
+                                     new JLabel("0.0", JLabel.CENTER));
+        vvsSlider.setLabelTable( vvsSlider.getLabelTable() );
+        vvsSlider.getLabelTable().put(new Integer(40), 
+                                     new JLabel("0.4", JLabel.CENTER));
+        vvsSlider.setLabelTable( vvsSlider.getLabelTable() );
+        vvsSlider.getLabelTable().put(new Integer(80), 
+                                     new JLabel("0.8", JLabel.CENTER));
+        vvsSlider.setLabelTable( vvsSlider.getLabelTable() );
+        vvsSlider.getLabelTable().put(new Integer(120), 
+                                     new JLabel("1.2", JLabel.CENTER));
+        vvsSlider.setLabelTable( vvsSlider.getLabelTable() );
+        vvsSlider.getLabelTable().put(new Integer(160), 
+                                     new JLabel("1.6", JLabel.CENTER));
+        vvsSlider.setLabelTable( vvsSlider.getLabelTable() );
+        vvsSlider.getLabelTable().put(new Integer(200), 
+                                     new JLabel("2.0", JLabel.CENTER));
+        vvsSlider.setLabelTable( vvsSlider.getLabelTable() );
+
+        vvsSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                JSlider source = (JSlider)e.getSource();
+                VibrateVectorScale = source.getValue()/100.0;
+                Vibrate.setVectorScale(VibrateVectorScale);
+                props.put("VibrateVectorScale", 
+                          Double.toString(VibrateVectorScale));
+            }
+        });
+        vvsPanel.add(vvsSlider,BorderLayout.SOUTH);
+        vibratePanel.add(vvsPanel);
 
         JPanel vfPanel = new JPanel();
         vfPanel.setLayout(new BorderLayout());
@@ -1023,7 +1067,8 @@ public class Preferences extends JDialog {
         tButton.setBackground(textColor);
         vButton.setBackground(vectorColor);
         // Vibrate panel controls
-        vsSlider.setValue((int) (100.0 * Vibrate.getScale()));
+        vasSlider.setValue((int) (100.0 * Vibrate.getAmplitudeScale()));
+        vvsSlider.setValue((int) (100.0 * Vibrate.getVectorScale()));
         vfSlider.setValue(Vibrate.getNumberFrames());
         
         SavePressed();
@@ -1062,7 +1107,8 @@ public class Preferences extends JDialog {
         FieldOfView = new Float(props.getProperty("FieldOfView")).floatValue();
         MessageTime = new Double(props.getProperty("MessageTime")).doubleValue();
         SphereFactor = new Double(props.getProperty("SphereFactor")).doubleValue();
-        VibrationScale = new Double(props.getProperty("VibrationScale")).doubleValue();
+        VibrateAmplitudeScale = new Double(props.getProperty("VibrateAmplitudeScale")).doubleValue();
+        VibrateVectorScale = new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
         display.getSettings().setOutlineColor(outlineColor);            
         display.getSettings().setPickedColor(pickedColor);
@@ -1088,7 +1134,8 @@ public class Preferences extends JDialog {
         display.getSettings().setShowBonds(ShowBonds);
         display.getSettings().setShowHydrogens(ShowHydrogens);
         display.getSettings().setShowVectors(ShowVectors);
-        Vibrate.setScale(VibrationScale);
+        Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
+        Vibrate.setVectorScale(VibrateVectorScale);
         Vibrate.setNumberFrames(VibrationFrames);        
     }
 

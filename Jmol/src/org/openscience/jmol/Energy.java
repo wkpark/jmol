@@ -50,6 +50,7 @@ public class Energy extends PhysicalProperty {
      */
     public Energy(double e) {
         super("Energy", new Double(e));
+        System.out.println("New ENERGY set!!!!!!!!!!!!!!!!!!!!!!");
     }
 
 }

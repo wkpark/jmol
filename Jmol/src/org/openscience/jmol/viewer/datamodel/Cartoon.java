@@ -85,7 +85,7 @@ public class Cartoon {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))
           colixes[j] =
-            (colix == 0
+            (palette != JmolConstants.PALETTE_CPK
              ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
              : colix);
       }

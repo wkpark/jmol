@@ -240,6 +240,14 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
     }
   }
 
+  public void bondMutually(Atom atom2, int bondOrder) {
+    if (isBondedAtom(atom2))
+      return;
+    addBondedAtom(atom2, bondOrder);
+    atom2.addBondedAtom(this, bondOrder);
+    getAtomShape().bondMutually(atom2.getAtomShape(), bondOrder, control);
+  }
+
   public boolean isBondedAtom(Atom toAtom) {
     if (bondedAtoms != null)
       for (int i = bondedAtoms.length; --i >= 0; )
@@ -265,7 +273,7 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
   public void clearBondedAtoms() {
     bondedAtoms = null;
     bondOrders = null;
-    atomShape = null;
+    getAtomShape().clearBonds();
   }
 
   public int getBondOrder(Atom atom2) {
@@ -287,10 +295,13 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
   private AtomShape atomShape;
 
   public AtomShape getAtomShape() {
-    if (atomShape == null) {
-      atomShape = new AtomShape(this, control);
-    }
+    if (atomShape == null)
+      atomShape = new AtomShape(this, getAtomicNumber() == 1, control);
     return atomShape;
+  }
+
+  public boolean isSelected() {
+    return control.isSelected(atomNumber);
   }
 
   public void delete() {
@@ -317,8 +328,7 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
     int iNew = 0;
     for (int i = 0; i < bondedAtoms.length; ++i) {
       if (bondedAtoms[i] == atomDeleted) {
-        if (atomShape != null)
-          atomShape.deleteBond(i);
+        getAtomShape().deleteBondedAtomShape(atomDeleted.getAtomShape());
       } else {
         bondedAtomsNew[iNew] = bondedAtoms[i];
         if (bondOrders != null && bondOrders.length > i)

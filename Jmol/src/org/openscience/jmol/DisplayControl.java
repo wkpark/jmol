@@ -31,6 +31,7 @@ import org.openscience.jmol.render.ChemFrameRenderer;
 import org.openscience.jmol.render.MeasureRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
+import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.script.Eval;
 import org.openscience.jmol.g25d.Graphics25D;
 import org.openscience.jmol.g25d.Colix;
@@ -448,7 +449,7 @@ final public class DisplayControl {
 
   public void setModeAtomColorProfile(byte mode) {
     colorManager.setModeAtomColorProfile(mode);
-    distributor.setColixAtom(mode, Colix.NULL, iterAtom());
+    distributor.setColixAtom(mode, Colix.NULL, iterAtomSelected());
     refresh();
   }
 
@@ -603,7 +604,7 @@ final public class DisplayControl {
   // note that colorBond could be null -- meaning inherit atom color
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
-    distributor.setColixBond(Colix.getColix(colorBond), iterBond());
+    distributor.setColix(Colix.getColix(colorBond), BondShape.COVALENT);
     refresh();
   }
 
@@ -1177,47 +1178,47 @@ final public class DisplayControl {
   }
 
   public void setStyleMarAtomScript(byte style, short mar) {
-    distributor.setStyleMarAtom(style, mar, iterAtom());
+    distributor.setStyleMarAtom(style, mar, iterAtomSelected());
   }
 
   public void setStyleAtomScript(byte style) {
-    distributor.setStyleAtom(style, iterAtom());
+    distributor.setStyleAtom(style, iterAtomSelected());
   }
 
   public void setStyleMarBondScript(byte style, short mar) {
-    distributor.setStyleMarBond(style, mar, iterBond());
+    distributor.setStyleMar(style, mar, BondShape.COVALENT);
   }
 
   public void setStyleMarBackboneScript(byte style, short mar) {
-    distributor.setStyleMarBackbone(style, mar, iterBond());
+    distributor.setStyleMar(style, mar, BondShape.BACKBONE);
   }
 
   public void setStyleBondScript(byte style) {
-    distributor.setStyleBond(style, iterBond());
+    distributor.setStyle(style, BondShape.COVALENT);
   }
 
   public void setStyleBackboneScript(byte style) {
-    distributor.setStyleBackbone(style, iterBond());
+    distributor.setStyle(style, BondShape.BACKBONE);
   }
 
   public void setColorAtomScript(byte mode, Color color) {
-    distributor.setColixAtom(mode, Colix.getColix(color), iterAtom());
+    distributor.setColixAtom(mode, Colix.getColix(color), iterAtomSelected());
   }
 
   public void setColorBondScript(Color color) {
-    distributor.setColixBond(Colix.getColix(color), iterBond());
+    distributor.setColix(Colix.getColix(color), BondShape.COVALENT);
   }
 
   public void setColorBackboneScript(Color color) {
-    distributor.setColixBackbone(Colix.getColix(color), iterBond());
+    distributor.setColix(Colix.getColix(color), BondShape.BACKBONE);
   }
 
   public void setLabelScript(String strLabel) {
-    distributor.setLabel(strLabel, iterAtom());
+    distributor.setLabel(strLabel, iterAtomSelected());
   }
 
   public void setMarDots(short marDots) {
-    distributor.setColixMarDots(colorManager.colixDots, marDots, iterAtom());
+    distributor.setColixMarDots(colorManager.colixDots, marDots, iterAtomSelected());
   }
 
   boolean rasmolHydrogenSetting = true;
@@ -1348,23 +1349,15 @@ final public class DisplayControl {
    */
 
   JmolAtomIterator iterNull = new JmolAtomIterator();
-  private JmolAtomIterator iterAtom() {
+  public JmolAtomIterator iterAtomSelected() {
     if (! modelManager.haveFile || selectionManager.isEmpty())
       return iterNull;
     return modelManager.getChemFrameIterator(selectionManager.bsSelection);
   }
 
-  private JmolAtomIterator iterBond() {
-    if (!modelManager.haveFile || selectionManager.isEmpty())
-      return iterNull;
-    return modelManager.getChemFrameIterator(selectionManager.bsSelection,
-                                             bondSelectionModeOr);
-  }
-
-
   public void setStyleAtom(byte style) {
     styleManager.setStyleAtom(style);
-    distributor.setStyleAtom(style, iterAtom());
+    distributor.setStyleAtom(style, iterAtomSelected());
     refresh();
   }
 
@@ -1374,7 +1367,7 @@ final public class DisplayControl {
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
-    distributor.setMarAtom((short)-percentVdwAtom, iterAtom());
+    distributor.setMarAtom((short)-percentVdwAtom, iterAtomSelected());
     refresh();
   }
 
@@ -1388,7 +1381,7 @@ final public class DisplayControl {
 
   public void setStyleBond(byte style) {
     styleManager.setStyleBond(style);
-    distributor.setStyleBond(style, iterBond());
+    distributor.setStyle(style, BondShape.COVALENT);
     refresh();
   }
 
@@ -1398,7 +1391,7 @@ final public class DisplayControl {
 
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
-    distributor.setMarBond(marBond, iterBond());
+    distributor.setMar(marBond, BondShape.COVALENT);
     refresh();
   }
 
@@ -1550,7 +1543,7 @@ final public class DisplayControl {
 
   public void setStyleLabel(byte style) {
     labelManager.setStyleLabel(style);
-    distributor.setStyleLabel(style, iterAtom());
+    distributor.setStyleLabel(style, iterAtomSelected());
     refresh();
   }
 

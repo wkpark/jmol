@@ -566,10 +566,8 @@ public class ChemFrame extends AtomContainer {
         int order = getBondOrder(atom, myCovalentRadius,
                                  atomNear, atomNear.getCovalentRadius(),
                                  e.foundDistance2());
-        if (order > 0) {
-          atom.addBondedAtom(atomNear, order);
-          atomNear.addBondedAtom(atom, order);
-        }
+        if (order > 0)
+          atom.bondMutually(atomNear, order);
       }
     }
   }
@@ -642,13 +640,9 @@ public class ChemFrame extends AtomContainer {
 
     Atom atomI = (Atom)getAtomAt(i);
     Atom atomJ = (Atom)getAtomAt(j);
-    //    if (! atomI.isBondedAtom(atomJ)) {
-      ((Atom)getAtomAt(i)).addBondedAtom((Atom)getAtomAt(j), bondOrder);
-      ((Atom)getAtomAt(j)).addBondedAtom((Atom)getAtomAt(i), bondOrder);
-      //      System.out.println("not bonded yet!");
-      //    } else {
-      //      System.out.println("already bonded!");
-      //    }
+    ((Atom)getAtomAt(i)).addBondedAtom((Atom)getAtomAt(j), bondOrder);
+    ((Atom)getAtomAt(j)).addBondedAtom((Atom)getAtomAt(i), bondOrder);
+    atomI.getAtomShape().bondMutually(atomJ.getAtomShape(), bondOrder, control);
   }
 
   /**

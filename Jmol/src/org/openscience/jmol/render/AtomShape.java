@@ -37,6 +37,7 @@ import javax.vecmath.Point3i;
 public class AtomShape extends Shape {
 
   public Atom atom;
+  public boolean isHydrogen;
   public byte styleAtom;
   public short marAtom;
   public short colixAtom;
@@ -44,20 +45,34 @@ public class AtomShape extends Shape {
   public short marDots = 0;
   public short colixDots;
   public int diameterDots = 0;
+  public BondShape[] bonds;
+  /*
   public int numBonds;
   public byte[] bondOrders;
   public short[] bondWidths;  // after a delete operation, these arrays
   public byte[] styleBonds; // will be longer than numBonds
   public short[] marBonds;
   public short[] acolixBonds;
+  */
   public String strLabel;
   
-  public AtomShape(Atom atom,
+  public AtomShape(Atom atom, boolean isHydrogen,
                    byte styleAtom, short marAtom, short colixAtom,
-                   byte styleBond, short marBond, short colixBond,
+                   //byte styleBond, short marBond, short colixBond,
                    String strLabel) {
+    this.isHydrogen = isHydrogen;
     this.atom = atom;
+    this.colixAtom = colixAtom;
+    this.strLabel = strLabel;
+    this.colixDots = 0;
+    this.marDots = 0;
+    setStyleMarAtom(styleAtom, marAtom);
+    /*
     numBonds = atom.getBondedCount();
+    bonds = new BondShape[numBonds];
+    for (int n = numBonds; --n >= 0; ) {
+      bonds[n] = new BondShape(
+    }
     bondOrders = new byte[numBonds];
     fixBondOrders();
 
@@ -65,18 +80,16 @@ public class AtomShape extends Shape {
     styleBonds = new byte[numBonds];
     marBonds = new short[numBonds];
     acolixBonds = new short[numBonds];
-    setStyleMarAtom(styleAtom, marAtom);
     setStyleMarAllBonds(styleBond, marBond);
     setStyleMarAllBackbones(DisplayControl.NONE, (short)0);
     setColixAllBonds(colixBond);
-    this.colixAtom = colixAtom;
-    this.strLabel = strLabel;
+    */
   }
 
-  public AtomShape(Atom atom, DisplayControl c) {
-    this(atom,
+  public AtomShape(Atom atom, boolean isHydrogen, DisplayControl c) {
+    this(atom, isHydrogen,
          c.getStyleAtom(), c.getMarAtom(), c.getColixAtom(atom),
-         c.getStyleBond(), c.getMarBond(), c.getColixBond(),
+         //c.getStyleBond(), c.getMarBond(), c.getColixBond(),
          c.getLabelAtom(atom));
   }
 
@@ -84,18 +97,84 @@ public class AtomShape extends Shape {
     return "Atom shape for " + atom + ": z = " + z;
   }
 
-  public void deleteBond(int i) {
-    --numBonds;
-    int numAbove = numBonds - i;
-    if (numAbove > 0) {
-      System.arraycopy(bondOrders, i+1, bondOrders, i, numAbove);
-      System.arraycopy(bondWidths, i+1, bondWidths, i, numAbove);
-      System.arraycopy(styleBonds, i+1, styleBonds, i, numAbove);
-      System.arraycopy(marBonds,   i+1, marBonds,   i, numAbove);
-      System.arraycopy(acolixBonds, i+1, acolixBonds, i, numAbove);
+  public boolean isBonded(AtomShape atomShapeOther) {
+    if (bonds != null)
+      for (int i = bonds.length; --i >= 0; ) {
+        BondShape bond = bonds[i];
+        if ((bond.atomShape1 == atomShapeOther) ||
+            (bond.atomShape2 == atomShapeOther))
+          return true;
+      }
+    return false;
+  }
+
+  public boolean isSelected() {
+    return atom.isSelected();
+  }
+
+  public void bondMutually(AtomShape atomShapeOther, int order,
+                           DisplayControl control) {
+    if (isBonded(atomShapeOther))
+      return;
+    BondShape bondShape = new BondShape(this, atomShapeOther, order, control);
+    addBond(bondShape);
+    atomShapeOther.addBond(bondShape);
+  }
+
+  private void addBond(BondShape bondShape) {
+    int i = 0;
+    if (bonds == null) {
+      bonds = new BondShape[1];
+    } else {
+      i = bonds.length;
+      BondShape[] bondsNew = new BondShape[i + 1];
+      System.arraycopy(bonds, 0, bondsNew, 0, i);
+      bonds = bondsNew;
+    }
+    bonds[i] = bondShape;
+  }
+
+  public void deleteBondedAtomShape(AtomShape atomShapeToDelete) {
+    if (bonds == null)
+      return;
+    for (int i = bonds.length; --i >= 0; ) {
+      BondShape bond = bonds[i];
+      AtomShape atomShapeBonded =
+        (bond.atomShape1 != this) ? bond.atomShape1 : bond.atomShape2;
+      if (atomShapeBonded == atomShapeToDelete) {
+        deleteBond(i);
+        return;
+      }
     }
   }
 
+  public void deleteBond(BondShape bondShape) {
+    for (int i = bonds.length; --i >= 0; )
+      if (bonds[i] == bondShape) {
+        deleteBond(i);
+        return;
+      }
+  }
+
+  public void deleteBond(int i) {
+    int newLength = bonds.length - 1;
+    if (newLength == 0) {
+      bonds = null;
+      return;
+    }
+    BondShape[] bondsNew = new BondShape[newLength];
+    int j = 0;
+    for ( ; j < i; ++j)
+      bondsNew[j] = bonds[j];
+    for ( ; j < newLength; ++j)
+      bondsNew[j] = bonds[j + 1];
+  }
+
+  public void clearBonds() {
+    bonds = null;
+  }
+
+  /*
   private void fixBondOrders() {
     Atom[] bondedAtoms = atom.getBondedAtoms();
     for (int i = numBonds; --i >= 0 ; ) {
@@ -103,6 +182,7 @@ public class AtomShape extends Shape {
       bondOrders[i] = (byte) atom.getBondOrder(atomOther);
     }
   }
+  */
 
   /*
    * What is a MAR?
@@ -153,107 +233,12 @@ public class AtomShape extends Shape {
     return marAtom / 4;
   }
 
-  public void setStyleAllBonds(byte styleBond) {
-    for (int i = numBonds; --i >= 0; )
-      if (bondOrders[i] > 0)
-        styleBonds[i] = styleBond;
-  }
-
-  public void setStyleAllBackbones(byte styleBackbone) {
-    for (int i = numBonds; --i >= 0; )
-      if (bondOrders[i] == -1)
-        styleBonds[i] = styleBackbone;
-  }
-
-  public void setMarAllBonds(short marBond) {
-    for (int i = numBonds; --i >= 0; )
-      if (bondOrders[i] > 0)
-        marBonds[i] = marBond;
-  }
-
-  public void setMarAllBackbones(short marBackbone) {
-    for (int i = numBonds; --i >= 0; )
-      if (bondOrders[i] == -1)
-        marBonds[i] = marBackbone;
-  }
-
-  public void setStyleMarAllBonds(byte styleBond, short marBond) {
-    for (int i = numBonds; --i >= 0; ) {
-      if (bondOrders[i] > 0) {
-        styleBonds[i] = styleBond;
-        marBonds[i] = marBond;
-      }
-    }
-  }
-
-  public void setStyleMarAllBackbones(byte styleBackbone, short marBackbone) {
-    for (int i = numBonds; --i >= 0; ) {
-      if (bondOrders[i] == -1) {
-        styleBonds[i] = styleBackbone;
-        marBonds[i] = marBackbone;
-      }
-    }
-  }
-
-  public void setStyleBond(byte styleBond, int indexBond) {
-    if (bondOrders[indexBond] > 0) 
-      styleBonds[indexBond] = styleBond;
-  }
-
-  public void setMarBond(short marBond, int indexBond) {
-    if (bondOrders[indexBond] > 0)
-      marBonds[indexBond] = marBond;
-  }
-
-  public void setStyleMarBond(byte styleBond, short marBond, int indexBond) {
-    if (bondOrders[indexBond] > 0) {
-      styleBonds[indexBond] = styleBond;
-      marBonds[indexBond] = marBond;
-    }
-  }
-
-  public void setStyleBackbone(byte styleBond, int indexBond) {
-    if (bondOrders[indexBond] == -1)
-      styleBonds[indexBond] = styleBond;
-  }
-
-  public void setMarBackbone(short marBackbone, int indexBackbone) {
-    if (bondOrders[indexBackbone] == -1)
-      marBonds[indexBackbone] = marBackbone;
-  }
-
-  public void setStyleMarBackbone(byte styleBackbone,
-                                  short marBackbone, int indexBackbone) {
-    if (bondOrders[indexBackbone] == -1) {
-      styleBonds[indexBackbone] = styleBackbone;
-      marBonds[indexBackbone] = marBackbone;
-    }
+  public BondShape[] getBonds() {
+    return bonds;
   }
 
   public void setColixAtom(short colixAtom) {
     this.colixAtom = colixAtom;
-  }
-
-  public void setColixAllBonds(short colixBond) {
-    for (int i = numBonds; --i >= 0; )
-      if (bondOrders[i] > 0)
-        acolixBonds[i] = colixBond;
-  }
-
-  public void setColixBond(short colixBond, int indexBond) {
-    if (bondOrders[indexBond] > 0)
-      acolixBonds[indexBond] = colixBond;
-  }
-
-  public void setColixAllBackbones(short colixBackbone) {
-    for (int i = numBonds; --i >= 0; )
-      if (bondOrders[i] == -1)
-        acolixBonds[i] = colixBackbone;
-  }
-
-  public void setColixBackbone(short colixBackbone, int indexBackbone) {
-    if (bondOrders[indexBackbone] == -1)
-      acolixBonds[indexBackbone] = colixBackbone;
   }
 
   public void setLabel(String strLabel) {
@@ -269,12 +254,14 @@ public class AtomShape extends Shape {
     diameter = control.scaleToScreen(z, marAtom * 2);
     if (marDots > 0)
       diameterDots = control.scaleToScreen(z, marDots * 2);
+    /*
     for (int i = numBonds; --i >= 0; )
       bondWidths[i] = (short)control.scaleToScreen(z, marBonds[i] * 2);
+    */
   }
 
   public void render(Graphics25D g25d, DisplayControl control) {
-    if (!control.getShowHydrogens() && atom.isHydrogen())
+    if (isHydrogen && !control.getShowHydrogens())
       return;
     if (control.getShowBonds())
       renderBonds(control);
@@ -285,27 +272,19 @@ public class AtomShape extends Shape {
   }
 
   public void renderBonds(DisplayControl control) {
-    Atom[] bondedAtoms = atom.getBondedAtoms();
-    if (bondedAtoms == null)
+    if (bonds == null)
       return;
-    for (int i = numBonds; --i >= 0 ; ) {
-      Atom atomOther = bondedAtoms[i];
-      AtomShape atomShapeOther = atomOther.getAtomShape();
+    for (int i = bonds.length; --i >= 0; ) {
+      BondShape bond = bonds[i];
+      AtomShape atomShapeOther =
+        (bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1;
       int zOther = atomShapeOther.z;
-      if ((control.getShowHydrogens() || !atomOther.isHydrogen()) &&
+      if ((!atomShapeOther.isHydrogen || control.getShowHydrogens()) &&
           ((z < zOther) ||
-           (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
+           (z==zOther && (bond.atomShape1 == this))) &&
           isBondClipVisible(control.bondRenderer.clip,
-                            x, y, atomShapeOther.x, atomShapeOther.y)) {
-        Atom[] otherAtomBonds = atomOther.getBondedAtoms();
-        for (int j = atomShapeOther.numBonds; --j >= 0; ) {
-          if (otherAtomBonds[j] == atom) {
-            control.bondRenderer.render(this, i, atomShapeOther, j,
-                                        bondOrders[i]);
-            // FIXME implement atom.getBondOrder(int indexBond)
-          }
-        }
-      }
+                            x, y, atomShapeOther.x, atomShapeOther.y))
+        bond.render(control);
     }
   }
 
@@ -372,6 +351,4 @@ public class AtomShape extends Shape {
     */
     return visible;
   }
-
 }
-

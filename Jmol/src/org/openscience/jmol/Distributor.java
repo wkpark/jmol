@@ -25,6 +25,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.BondShape;
 import org.openscience.cdk.renderer.color.AtomColorer;
 
 public class Distributor {
@@ -56,74 +57,31 @@ public class Distributor {
       iter.nextAtom().getAtomShape().setStyleMarAtom(style, mar);
   }
 
-  public void setStyleBond(byte styleBond, JmolAtomIterator iter) {
+  public void setStyle(byte styleBond, byte bondType) {
+    BondShapeIterator iter = new BondShapeIterator(bondType);
+    while (iter.hasNext())
+      iter.nextBondShape().setStyle(styleBond);
+  }
+
+  public void setMar(short marBond, byte bondType) {
+    BondShapeIterator iter = new BondShapeIterator(bondType);
+    while (iter.hasNext())
+      iter.nextBondShape().setMar(marBond);
+  }
+
+  public void setStyleMar(byte style, short mar, byte bondType) {
+    BondShapeIterator iter = new BondShapeIterator(bondType);
     while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setStyleAllBonds(styleBond);
-      else
-        atomShape.setStyleBond(styleBond, iter.indexBond());
+      BondShape bond = iter.nextBondShape();
+      bond.setStyle(style);
+      bond.setMar(mar);
     }
   }
 
-  public void setMarBond(short marBond, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setMarAllBonds(marBond);
-      else
-        atomShape.setMarBond(marBond, iter.indexBond());
-    }
-  }
-
-  public void setStyleMarBond(byte style, short mar, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setStyleMarAllBonds(style, mar);
-      else
-        atomShape.setStyleMarBond(style, mar,iter.indexBond());
-    }
-  }
-
-  public void setStyleBackbone(byte styleBackbone, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setStyleAllBackbones(styleBackbone);
-      else
-        atomShape.setStyleBackbone(styleBackbone, iter.indexBond());
-    }
-  }
-
-  public void setStyleMarBackbone(byte style,short mar,JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setStyleMarAllBackbones(style, mar);
-      else
-        atomShape.setStyleMarBackbone(style, mar,iter.indexBond());
-    }
-  }
-
-  public void setColixBond(short colixBond, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setColixAllBonds(colixBond);
-      else
-        atomShape.setColixBond(colixBond, iter.indexBond());
-    }
-  }
-
-  public void setColixBackbone(short colixBackbone, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      AtomShape atomShape = iter.nextAtom().getAtomShape();
-      if (iter.allBonds())
-        atomShape.setColixAllBackbones(colixBackbone);
-      else
-        atomShape.setColixBackbone(colixBackbone, iter.indexBond());
-    }
+  public void setColix(short colixBond, byte bondType) {
+    BondShapeIterator iter = new BondShapeIterator(bondType);
+    while (iter.hasNext())
+      iter.nextBondShape().setColix(colixBond);
   }
 
   public void setColixAtom(byte mode, short colix, JmolAtomIterator iter) {
@@ -161,4 +119,52 @@ public class Distributor {
     }
   }
 
+  class BondShapeIterator {
+
+    JmolAtomIterator iterAtomSelected;
+    boolean bondSelectionModeOr;
+    AtomShape atomShapeCurrent;
+    BondShape[] bondsCurrent;
+    BondShape bondCurrent;
+    int ibondCurrent;
+    int bondType;
+
+    BondShapeIterator(byte bondType) {
+      this.bondType = bondType;
+      iterAtomSelected = control.iterAtomSelected();
+      bondSelectionModeOr = control.getBondSelectionModeOr();
+    }
+
+    public boolean hasNext() {
+      while (true) {
+        if (atomShapeCurrent != null) {
+          while (bondsCurrent != null && ibondCurrent < bondsCurrent.length) {
+            bondCurrent = bondsCurrent[ibondCurrent++];
+            if ((bondCurrent.order & bondType) != 0) {
+              if (bondSelectionModeOr)
+                return true;
+              AtomShape atomShapeOther =
+                (bondCurrent.atomShape1 != atomShapeCurrent) ?
+                bondCurrent.atomShape1 : bondCurrent.atomShape2;
+              if (atomShapeOther.isSelected())
+                return true;
+            }
+          }
+          bondCurrent = null;
+          atomShapeCurrent = null;
+        }
+        if (! iterAtomSelected.hasNext())
+          return false;
+        atomShapeCurrent = iterAtomSelected.nextAtom().getAtomShape();
+        bondsCurrent = atomShapeCurrent.getBonds();
+        bondCurrent = null;
+        ibondCurrent = 0;
+      }
+    }
+    
+    public BondShape nextBondShape() {
+      return bondCurrent;
+    }
+  }
 }
+

@@ -464,6 +464,7 @@ public class Token {
     "amino",        new Token(amino,           "amino"),
     "hetero",       new Token(hetero,          "hetero"),
     "hydrogen",     new Token(hydrogen,        "hydrogen"),
+    "hydrogens",    null,
     "selected",     new Token(selected,        "selected"),
     "solvent",      new Token(solvent,         "solvent"),
 

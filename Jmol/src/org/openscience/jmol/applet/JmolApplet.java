@@ -149,9 +149,15 @@ public class JmolApplet extends java.applet.Applet
         ReaderProgress readerProgress = new ReaderProgress(this);
         if ((getParameter("FORMAT") != null)
                 && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")) {
-          String cmlString = convertEscapeChars(model);
+          StringBuffer cmlString = new StringBuffer();
+          cmlString.append(convertEscapeChars(model));
+          for (int i = 0; i < cmlString.length(); ++i) {
+            if (cmlString.charAt(i) == '>') {
+              cmlString.insert(i+1, '\n');
+            }
+          }
           cfr = ReaderFactory
-                  .createReader(new java.io.StringReader(cmlString));
+                  .createReader(new java.io.StringReader(cmlString.toString()));
           readerProgress.setFileName("CML string");
         } else {
           java.net.URL modelURL = null;

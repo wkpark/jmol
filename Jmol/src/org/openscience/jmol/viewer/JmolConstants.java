@@ -1594,9 +1594,24 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
    * So a 'group3' can now be less than 3 characters long.
    ****************************************************************/
 
+  public final static int GROUPID_PROLINE = 15;
+  public final static int GROUPID_PURINE_MIN = 24;
+  public final static int GROUPID_PURINE_LAST = 29;
+  public final static int GROUPID_PYRIMIDINE_MIN = 30;
+  public final static int GROUPID_PYRIMIDINE_LAST = 35;
+  public final static int GROUPID_GUANINE = 26;
+  public final static int GROUPID_PLUS_GUANINE = 27;
+  public final static int GROUPID_GUANINE_1_MIN = 40;
+  public final static int GROUPID_GUANINE_1_LAST = 46;
+  public final static int GROUPID_GUANINE_2_MIN = 55;
+  public final static int GROUPID_GUANINE_2_LAST = 57;
+  
+
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
-    "ALA", // 0
+    "", // this is the null group ... it really should be entry 0
+    
+    "ALA", // 1
     "ARG",
     "ASN",
     "ASP",
@@ -1610,83 +1625,81 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "LYS",
     "MET",
     "PHE",
-    "PRO",
+    "PRO", // 15 Proline
     "SER",
     "THR",
     "TRP",
     "TYR",
     "VAL",
-    "ASX", // 20 ASP/ASN ambiguous
-    "GLX", // 21 GLU/GLN ambiguous
-    "UNK", // 22 unknown -- 22
+    "ASX", // 21 ASP/ASN ambiguous
+    "GLX", // 22 GLU/GLN ambiguous
+    "UNK", // 23 unknown -- 23
 
     // if you change these numbers you *must* update
     // the predefined sets in script.Token.java
 
-    "A", // 23
+    "A", // 24 the purines
     "+A",
-    "G", // 25
+    "G", // 26
     "+G",
-    "I", // 27
+    "I", // 28
     "+I",
-    "C", // 29
+    "C", // 30 the pyrimidines
     "+C",
-    "T", // 31
+    "T", // 32
     "+T",
-    "U", // 33
+    "U", // 34
     "+U",
 
-    "1MA", // 35
+    "1MA", // 36
     "AMO",
     "5MC",
     "OMC",
-    "1MG",
-    "2MG", // 40
+    "1MG", // 40
+    "2MG",
     "M2G",
     "7MG",
     "G7M",
-    "OMG",
-    "YG", // 45
+    "OMG", // 45
+    "YG",
     "QUO",
     "H2U",
     "5MU",
-    "4SU",
-    "PSU", // 50
+    "4SU", // 50
+    "PSU",
     
     "AMP",
     "ADP",
     "ATP",
     
-    "GMP",
-    "GDP", // 55
+    "GMP", // 55
+    "GDP",
     "GTP",
     
     "IMP",
     "IDP",
-    "ITP",
+    "ITP", // 60
     
-    "CMP", // 60
+    "CMP",
     "CDP",
     "CTP",
     
     "TMP",
-    "TDP",
-    "TTP", // 65
+    "TDP", // 65
+    "TTP",
     
     "UMP",
     "UDP",
-    "UTP", // 68
+    "UTP", // 69
 
     // water && solvent
-    "HOH", // 69
-    "DOD", // 70
-    "WAT", // 71
+    "HOH", // 70
+    "DOD", // 71
+    "WAT", // 72
     // ions && solvent
-    "PO4", // 72 phosphate ions
-    "SO4", // 73 sulphate ions
+    "PO4", // 73 phosphate ions
+    "SO4", // 74 sulphate ions
 
-    "", // this is the null group ... it really should be entry 0
-    
   };
 
   public final static String DEFAULT_FONTFACE = "SansSerif";

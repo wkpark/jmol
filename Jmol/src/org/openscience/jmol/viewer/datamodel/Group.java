@@ -336,7 +336,7 @@ final public class Group {
 
   public boolean isProline() {
     // this is the index into JmolConstants.predefinedGroup3Names
-    return groupID == 14;
+    return groupID == JmolConstants.GROUPID_PROLINE;
   }
 
   public void selectAtoms(BitSet bs) {
@@ -425,24 +425,28 @@ final public class Group {
   }
 
   Atom getPurineN1() {
-    Atom n1 = ((groupID >= 23 && groupID <= 28)
+    Atom n1 = ((groupID >= JmolConstants.GROUPID_PURINE_MIN &&
+                groupID <= JmolConstants.GROUPID_PURINE_LAST)
                ? getNucleotideAtomID(JmolConstants.ATOMID_N1)
                : null);
     return n1;
   }
 
   Atom getPyrimidineN3() {
-    return ((groupID >= 29 && groupID <= 34)
+    return ((groupID >= JmolConstants.GROUPID_PYRIMIDINE_MIN &&
+             groupID <= JmolConstants.GROUPID_PYRIMIDINE_LAST)
             ? getNucleotideAtomID(JmolConstants.ATOMID_N3)
             : null);
   }
             
   boolean isGuanine() {
     //    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
-    return (groupID == 25 ||
-            groupID == 26 ||
-            groupID >= 39 && groupID <= 45 ||
-            groupID >= 54 && groupID <= 56);
+    return (groupID == JmolConstants.GROUPID_GUANINE ||
+            groupID == JmolConstants.GROUPID_PLUS_GUANINE ||
+            (groupID >= JmolConstants.GROUPID_GUANINE_1_MIN &&
+             groupID <= JmolConstants.GROUPID_GUANINE_1_LAST) ||
+            (groupID >= JmolConstants.GROUPID_GUANINE_2_MIN &&
+             groupID <= JmolConstants.GROUPID_GUANINE_2_LAST));
   }
 
   void dumpNucleotideIndices() {

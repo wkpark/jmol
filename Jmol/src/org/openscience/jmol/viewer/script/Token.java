@@ -574,27 +574,26 @@ public class Token {
   };
 
   static String[] predefinitions = {
-    "@a _g=23,_g=24,_g>=35 & _g<=36,_g>=51 & _g<=53",
+    "@a _g=24,_g=25,_g=36,_g=37,_g>=52 & _g<=54",
     "@at a,t",
     "@acidic asp,glu",
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",
     "@alpha _a=1", // rasmol doc says "approximately *.CA" - whatever?
-    "@amino _g<=22",
+    "@amino _g>0 & _g<=23",
     "@aromatic his,phe,trp,tyr",
-    //    "@backbone amino & _a<=3,nucleic & _a>=4 & _a<=15",
-    "@backbone amino & _a<=3,nucleic & (_a>=8 & _a<=30)",
+    "@backbone amino & _a<=4,nucleic & (_a>=9 & _a<=31)",
     "@base nucleic & !backbone",
     "@basic arg,his,lys",
     "@bonded _bondedcount>0",
     "@buried ala,cys,ile,leu,met,phe,trp,val",
-    "@c _g=29,_g=30,_g>=37 & _g<=38,_g>=60 & _g<=62",
+    "@c _g=30,_g=31,_g=38,_g=39,_g>=61 & _g<=63",
     "@cg c,g",
     "@charged acidic,basic",
     "@cyclic his,phe,pro,trp,tyr",
     //    "@cystine",
-    "@dna nucleic & !within(group,(_a=15,_a=30))",
-    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
+    "@dna nucleic & !within(group,(_a=16,_a=31))",
+    "@g _g=26,_g=27,_g>=40 & _g<=46,_g>=55 & _g<=57",
     "@helix _structure=3",
     //    "@hetero", handled specially
     // doc on hydrophobic is inconsistent
@@ -603,8 +602,8 @@ public class Token {
     // table says this
     "@hoh water",
     "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
-    "@i _g=27,_g=28,_g>=57 & _g<=59",
-    "@ions _g=69,_g=70",
+    "@i _g=28,_g=29,_g>=58 & _g<=60",
+    "@ions _g=70,_g=71",
     "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
     "@ligand hetero & !solvent",
     "@mainchain backbone",
@@ -617,19 +616,19 @@ public class Token {
     "@polar amino&!hydrophobic",
     "@positive basic",
     "@protein amino", // + common post-translational modifications ??
-    "@purine _g>=23 & _g<=28",
-    "@pyrimidine _g>=29 & _g<=34",
+    "@purine _g>=24 & _g<=29",
+    "@pyrimidine _g>=30 & _g<=35",
     // selected - special and is handled at runtime
     "@rna nucleic & within(group,_a=15)",
     "@sheet _structure=2",
     "@sidechain (protein,nucleic) & !backbone", // doc & code inconsistent
     "@small ala,gly,ser",
-    "@solvent _g>=69 & _g<=73", // water or ions
+    "@solvent _g>=70 & _g<=74", // water or ions
     "@surface !buried",
-    "@t _g=31,_g=32,_g>=63 & _g<=65",
+    "@t _g=32,_g=33,_g>=64 & _g<=66",
     "@turn _structure=1",
-    "@u _g=33,_g=34,_g>=47 & _g<=50,_g>=66 & _g<=68",
-    "@water _g=69,_g=70,_g=71",
+    "@u _g=34,_g=35,_g>=48 & _g<=51,_g>=67 & _g<=69",
+    "@water _g>=70 & _g<=72",
 
   };
 

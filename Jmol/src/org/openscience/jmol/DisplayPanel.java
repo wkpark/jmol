@@ -241,10 +241,6 @@ public class DisplayPanel extends JPanel
     return control.getBackgroundColor();
   }
 
-  public static boolean isChanging() {
-    return control.isMouseDragged();
-  }
-
   public void paint(Graphics g) {
     if (showPaintTime)
       startPaintClock();

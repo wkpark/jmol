@@ -131,7 +131,7 @@ public class AtomShape implements Shape {
     outlineColor = control.getOutlineColor();
     pickedColor = control.getPickedColor();
     backgroundColor = control.getBackgroundColor();
-    mouseDragged = control.isMouseDragged();
+    mouseDragged = control.mouseDragged;
     if (control.getAtomColorProfile() == DisplayControl.ATOMCHARGE) {
         colorProfile = new ChargeColorProfile();
     } else {
@@ -638,36 +638,19 @@ public class AtomShape implements Shape {
     }
   }
   
+  private static final float[] lightSource = { -1.0f, -1.0f, 2.0f };
   private void loadShadedSphereCache(Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
     ballImages.put(color, shadedImages);
     boolean oldJvm = false;
     if (oldJvm) {
       for (int d = minCachedSize; d < maxCachedSize; ++d) {
-        shadedImages[d] = sphereSetup(color, d+2,
-                                      control.getLightSource(), false);
+        shadedImages[d] = sphereSetup(color, d+2, lightSource, false);
       }
-      shadedImages[0] = sphereSetup(color, scalableSize,
-                                    control.getLightSource(), false);
+      shadedImages[0] = sphereSetup(color, scalableSize, lightSource, false);
       return;
     }
-    /*
-    for (int d = minCachedSize; d < maxCachedSize; ++d) {
-      shadedImages[d] = sphereSetup(color, d+2, settings, false);
-      BufferedImage bi = new BufferedImage(d+2, d+2,
-                                           BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g2 = bi.createGraphics();
-      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                          RenderingHints.VALUE_ANTIALIAS_ON);
-      g2.drawImage(shadedImages[d], 0, 0, null);
-      applyCircleMask(g2, d, 1);
-      shadedImages[d] = bi;
-    }
-    shadedImages[0] = sphereSetup(color, scalableSize, settings, false);
-    return;
-    */
-    shadedImages[0] = sphereSetup(color, scalableSize,
-                                  control.getLightSource(), false);
+    shadedImages[0] = sphereSetup(color, scalableSize, lightSource, false);
     for (int d = minCachedSize; d < maxCachedSize; ++d) {
       BufferedImage bi = new BufferedImage(d+2, d+2,
                                            BufferedImage.TYPE_INT_ARGB);

@@ -237,9 +237,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * the given matrix.
    */
   public void transform(DisplayControl control) {
-
-    Matrix4f transformationMatrix = control.getTransformMatrix();
-    transformationMatrix.transform(getPosition(), screenPosition);
+    control.matrixTransform.transform(getPosition(), screenPosition);
     screenX = (int)screenPosition.x;
     screenY = (int)screenPosition.y;
     screenZ = (int)screenPosition.z;

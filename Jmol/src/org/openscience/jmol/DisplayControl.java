@@ -44,26 +44,30 @@ final public class DisplayControl {
   public static final int ATOMTYPE = DisplaySettings.ATOMTYPE;
   public static final int ATOMCHARGE = DisplaySettings.ATOMCHARGE;
 
-  public DisplayPanel panel;
-  public DisplaySettings settings;
-
-  private Dimension dimCurrent;
-  private int minScreenDimension;
-
-  public float scalePixelsPerAngstrom;
-  private float scaleDefaultPixelsPerAngstrom;
-  public float zoomScale;
+  
+  // while these variables are public, they should be considered *read-only*
+  // to write these variables you *must* use the appropriate set function
+  // they are currently used by Atom and AtomShape for transforms & rendering
+  public boolean mouseDragged = false;
   public int xTranslation;
   public int yTranslation;
-  public float cameraDepth = 3;
-  public static int cameraZ = 750;
+  public int cameraZ = 750;
+  public final Matrix4f matrixTransform = new Matrix4f();
 
+  private DisplayPanel panel;
+  private DisplaySettings settings;
+
+  private int minScreenDimension;
+  private Dimension dimCurrent;
+  private float scalePixelsPerAngstrom;
+  private float scaleDefaultPixelsPerAngstrom;
+  private float zoomScale;
+  private float cameraDepth = 3;
   private final Matrix4f matrixRotate = new Matrix4f();
-  private final Matrix4f matrixViewTransform = new Matrix4f();
   private final Matrix4f matrixTemp = new Matrix4f();
   private final Vector3f vectorTemp = new Vector3f();
-
   private boolean perspectiveDepth = true;
+  private boolean structuralChange = false;
 
   DisplayControl(DisplayPanel panel, DisplaySettings settings) {
     this.panel = panel;
@@ -355,33 +359,33 @@ final public class DisplayControl {
 
   public void calcViewTransformMatrix() {
     // you absolutely *must* watch the order of these operations
-    matrixViewTransform.setIdentity();
+    matrixTransform.setIdentity();
     // first, translate the coordinates back to the center
     vectorTemp.set(getFrame().getRotationCenter());
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
-    matrixViewTransform.sub(matrixTemp);
+    matrixTransform.sub(matrixTemp);
     // now, multiply by angular rotations
-    // this is *not* the same as  matrixViewTransform.mul(matrixRotate);
-    matrixViewTransform.mul(matrixRotate, matrixViewTransform);
+    // this is *not* the same as  matrixTransform.mul(matrixRotate);
+    matrixTransform.mul(matrixRotate, matrixTransform);
     // now shift so that all z coordinates are <= 0
     // this is important for scaling
     vectorTemp.x = 0;
     vectorTemp.y = 0;
     vectorTemp.z = getFrame().getRotationRadius();
     matrixTemp.setTranslation(vectorTemp);
-    matrixViewTransform.sub(matrixTemp);
+    matrixTransform.sub(matrixTemp);
     // now scale to screen coordinates
     matrixTemp.set(scalePixelsPerAngstrom);
     matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
-    matrixViewTransform.mul(matrixTemp, matrixViewTransform);
+    matrixTransform.mul(matrixTemp, matrixTransform);
     // note that the image is still centered at 0, 0
     // translations come later (to deal with perspective)
     // and all z coordinates are <= 0
   }
 
   public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
-    matrixViewTransform.transform(pointAngstroms, pointScreen);
+    matrixTransform.transform(pointAngstroms, pointScreen);
     if (perspectiveDepth) {
       int depth = cameraZ - (int)pointScreen.z;
       pointScreen.x = (((int)pointScreen.x * cameraZ) / depth) + xTranslation;
@@ -390,18 +394,6 @@ final public class DisplayControl {
       pointScreen.x += xTranslation;
       pointScreen.y += yTranslation;
     }
-  }
-
-  public Matrix4f getTransformMatrix() {
-    return matrixViewTransform;
-  }
-
-  public int xTranslation() {
-    return xTranslation;
-  }
-
-  public int yTranslation() {
-    return yTranslation;
   }
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -482,14 +474,17 @@ final public class DisplayControl {
                            RenderingHints.VALUE_RENDER_QUALITY);
     }
   }
+
+  private BasicStroke dottedStroke = null;
   public void maybeDottedStroke(Graphics g) {
     if (antialiasCapable) {
+      if (dottedStroke == null) {
+        dottedStroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
+                                       BasicStroke.JOIN_ROUND, 0,
+                                       new float[] {3, 3}, 0);
+      }
       Graphics2D g2 = (Graphics2D) g;
-      BasicStroke dotted =
-        new BasicStroke(1, BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_ROUND, 0,
-                        new float[] {3, 3}, 0);
-      g2.setStroke(dotted);
+      g2.setStroke(dottedStroke);
     }
   }
 
@@ -562,17 +557,12 @@ final public class DisplayControl {
     recalc();
   }
 
-  private boolean mouseDragged = false;
   public void setMouseDragged(boolean mouseDragged) {
     if (wireframeRotation && this.mouseDragged != mouseDragged)
       settings.setFastRendering(mouseDragged);
     if (this.mouseDragged && !mouseDragged)
       recalc();
     this.mouseDragged = mouseDragged;
-  }
-
-  public boolean isMouseDragged() {
-    return mouseDragged;
   }
 
   private boolean antialiasCapable = false;
@@ -694,11 +684,15 @@ final public class DisplayControl {
     return pixelSize;
   }
 
-  public float[] getLightSource() {
-    return settings.getLightSourceVector();
-  }
-
   public Font getMeasureFont(int size) {
     return new Font("Helvetica", Font.PLAIN, size);
+  }
+
+  public boolean hasStructuralChange() {
+    return structuralChange;
+  }
+
+  public void resetStructuralChanges() {
+    structuralChange = false;
   }
 }

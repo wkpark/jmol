@@ -39,6 +39,7 @@ import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
@@ -47,26 +48,22 @@ import javax.vecmath.Vector3d;
  *  @author  J. Daniel Gezelter
  */
 public class DisplayPanel extends JPanel
-    implements Runnable, MeasurementListListener, PropertyChangeListener {
+    implements MeasurementListListener, PropertyChangeListener {
 
-  public static int X_AXIS = 1;
-  public static int Y_AXIS = 2;
-  public static int Z_AXIS = 3;
+  public final static int X_AXIS = 1;
+  public final static int Y_AXIS = 2;
+  public final static int Z_AXIS = 3;
 
-  private boolean painted = false;
-  private boolean initialized = false;
   private boolean haveFile = false;
-  private boolean rubberband = false;
+  private boolean rubberbandSelectionMode = false;
   private int bx, by, rtop, rbottom, rleft, rright;
   private int nframes = 0;
   private static int prevx, prevy, outx, outy;
   private static Matrix4d amat = new Matrix4d();    // Matrix to do mouse angular rotations.
   private static Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
   private static Matrix4d zmat = new Matrix4d();    // Matrix to do zooming.
-  float[] quat = new float[4];
-  double[] mtmp;
-  String[] names;
-  Color[] colors;
+
+  private static Dimension dimCurrent = null;
   ChemFile cf;
   ChemFrame md;
   private float xfac, xmin, xmax, ymin, ymax, zmin, zmax;
@@ -82,10 +79,10 @@ public class DisplayPanel extends JPanel
   private static Color backgroundColor = null;
   StatusBar status;
 
+  private boolean antialiasCapable = false;
   //Added T.GREY for moveDraw support- should be true while mouse is dragged
   private boolean mouseDragged = false;
-  private boolean WireFrameRotation = false;
-  private boolean movingDrawMode = false;
+  private boolean wireFrameRotation = false;
   private Measure m = null;
   private MeasurementList mlist = null;
   protected DisplaySettings settings;
@@ -110,14 +107,15 @@ public class DisplayPanel extends JPanel
   }
 
   public void start() {
-    new Thread(this).start();
     AtomType.setJPanel(this);
     this.addMouseListener(new MyAdapter());
     this.addMouseMotionListener(new MyMotionAdapter());
+    RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
+    String vers = System.getProperty("java.version");
+    antialiasCapable = vers.compareTo("1.2") >= 0;
   }
 
   public void setChemFile(ChemFile cf) {
-
     this.cf = cf;
     haveFile = true;
     nframes = cf.getNumberOfFrames();
@@ -126,6 +124,10 @@ public class DisplayPanel extends JPanel
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
+    // transform matrices must be initialized to identity
+    amat.setIdentity();
+    tmat.setIdentity();
+    zmat.setIdentity();
     init();
   }
 
@@ -161,7 +163,6 @@ public class DisplayPanel extends JPanel
    *  Returns transform matrix assosiated with the current viewing transform.
    */
   public Matrix4d getViewTransformMatrix() {
-
     Matrix4d viewMatrix = new Matrix4d();
     viewMatrix.setIdentity();
     Matrix4d matrix = new Matrix4d();
@@ -177,8 +178,8 @@ public class DisplayPanel extends JPanel
     viewMatrix.mul(tmat, viewMatrix);
     viewMatrix.mul(zmat, viewMatrix);
     matrix.setZero();
-    matrix.setTranslation(new Vector3d(getSize().width / 2,
-        getSize().height / 2, getSize().width / 2));
+    matrix.setTranslation(new Vector3d(dimCurrent.width / 2,
+        dimCurrent.height / 2, dimCurrent.width / 2));
     viewMatrix.add(matrix);
     return viewMatrix;
   }
@@ -203,8 +204,8 @@ public class DisplayPanel extends JPanel
     if (zw > xw) {
       xw = zw;
     }
-    float f1 = getSize().width / xw;
-    float f2 = getSize().height / xw;
+    float f1 = dimCurrent.width / xw;
+    float f2 = dimCurrent.height / xw;
     if (f1 < f2) {
       xfac = f1;
     } else {
@@ -214,7 +215,6 @@ public class DisplayPanel extends JPanel
     settings.setAtomScreenScale(xfac);
     settings.setBondScreenScale(xfac);
     settings.setVectorScreenScale(xfac);
-    repaint();
   }
 
   public void setFrame(int fr) {
@@ -241,19 +241,6 @@ public class DisplayPanel extends JPanel
     return md;
   }
 
-  public void run() {
-
-    try {
-      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    repaint();
-  }
-
-  public void stop() {
-  }
-
   public void mlistChanged(MeasurementListEvent mle) {
     MeasurementList source = (MeasurementList) mle.getSource();
     mlist = source;
@@ -269,7 +256,7 @@ public class DisplayPanel extends JPanel
       prevy = e.getY();
 
       if (mode == PICK) {
-        rubberband = true;
+        rubberbandSelectionMode = true;
         bx = e.getX();
         rright = bx;
         rleft = bx;
@@ -308,21 +295,13 @@ public class DisplayPanel extends JPanel
 
     public void mouseReleased(MouseEvent e) {
 
-      if (mouseDragged && WireFrameRotation) {
+      if (mouseDragged) {
         settings.setFastRendering(false);
-        movingDrawMode = false;
-        if (painted) {
-          painted = false;
-          repaint();
-        }
         mouseDragged = false;
+        repaint();
       }
-
-      outx = e.getX();
-      outy = e.getY();
-
       if (mode == PICK) {
-        rubberband = false;
+        rubberbandSelectionMode = false;
         repaint();
       }
 
@@ -336,27 +315,13 @@ public class DisplayPanel extends JPanel
       int x = e.getX();
       int y = e.getY();
 
-      if (WireFrameRotation) {
+      mouseDragged = true;
+      if (wireFrameRotation) {
         settings.setFastRendering(true);
-        movingDrawMode = true;
-        mouseDragged = true;
       }
       if (mode == ROTATE) {
-
-        /*
-        float[] spin_quat = new float[4];
-        Trackball tb = new Trackball(spin_quat,
-                                (2.0f*x - getSize().width) / getSize().width,
-                                (getSize().height-2.0f*y) / getSize().height,
-                                (2.0f*prevx - getSize().width) / getSize().width,
-                                (getSize().height-2.0f*prevy) / getSize().height);
-
-        tb.add_quats(spin_quat, quat, quat);
-        tb.build_rotmatrix(amat, quat);
-
-        */
-        double xtheta = (y - prevy) * (2.0 * Math.PI / getSize().width);
-        double ytheta = (x - prevx) * (2.0 * Math.PI / getSize().height);
+        double xtheta = (y - prevy) * (2.0 * Math.PI / dimCurrent.width);
+        double ytheta = (x - prevx) * (2.0 * Math.PI / dimCurrent.height);
         Matrix4d matrix = new Matrix4d();
         matrix.rotX(xtheta);
         amat.mul(matrix, amat);
@@ -373,8 +338,8 @@ public class DisplayPanel extends JPanel
       }
 
       if (mode == ZOOM) {
-        float xs = 1.0f + (float) (x - prevx) / (float) getSize().width;
-        float ys = 1.0f + (float) (prevy - y) / (float) getSize().height;
+        float xs = 1.0f + (float) (x - prevx) / (float) dimCurrent.width;
+        float ys = 1.0f + (float) (prevy - y) / (float) dimCurrent.height;
         float s = (xs + ys) / 2.0f;
         Matrix4d matrix = new Matrix4d();
         matrix.setElement(0, 0, s);
@@ -412,16 +377,12 @@ public class DisplayPanel extends JPanel
             settings.clearPickedAtoms();
             settings.addPickedAtoms(selectedAtoms);
           }
-          repaint();
         }
       }
 
-      if (painted) {
-        painted = false;
-        repaint();
-      }
       prevx = x;
       prevy = y;
+      repaint();
     }
   }
 
@@ -444,20 +405,8 @@ public class DisplayPanel extends JPanel
   }
 
   public void paint(Graphics g) {
-
+    Graphics2D g2d = (Graphics2D) g;
     long millisBegin = System.currentTimeMillis();
-    if (settings.isAntiAliased() && !movingDrawMode) {
-      String vers = System.getProperty("java.version");
-      if (vers.compareTo("1.2") >= 0) {
-
-        //comment out the next 5 lines if compiling under 1.1
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-            RenderingHints.VALUE_RENDER_QUALITY);
-      }
-    }
 
     if (backgroundColor == null) {
       setBackgroundColor();
@@ -466,38 +415,29 @@ public class DisplayPanel extends JPanel
     Color bg = backgroundColor;
     Color fg = getForeground();
 
-    if (md == null) {
-      g.setColor(bg);
-      g.fillRect(0, 0, getSize().width, getSize().height);
-    } else {
-      if (!initialized) {
+    dimCurrent = getSize();
 
-        /*
-          start with the unit matrix
-        */
-        amat.setIdentity();
-        tmat.setIdentity();
-        zmat.setIdentity();
-        quat[0] = 0.0f;
-        quat[1] = 0.0f;
-        quat[2] = 0.0f;
-        quat[3] = 1.0f;
-        initialized = true;
+    g2d.setColor(bg);
+    g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
+    if (md != null) {
+      if (antialiasCapable && settings.isAntiAliased() && !mouseDragged) {
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                             RenderingHints.VALUE_RENDER_QUALITY);
       }
+      g2d.setColor(bg);
+      g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
+
       Matrix4d matrix = getViewTransformMatrix();
-      settings.setAtomZOffset(getSize().width / 2);
+      settings.setAtomZOffset(dimCurrent.width / 2);
 
-      g.setColor(bg);
-      g.fillRect(0, 0, getSize().width, getSize().height);
-      g.setColor(fg);
-
-      frameRenderer.paint(g, md, settings, matrix);
-      measureRenderer.paint(g, md, settings);
-      if (rubberband) {
-        g.setColor(fg);
-        g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
+      frameRenderer.paint(g2d, md, settings, matrix);
+      measureRenderer.paint(g2d, md, settings);
+      if (rubberbandSelectionMode) {
+        g2d.setColor(fg);
+        g2d.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
       }
-      painted = true;
       int time = (int)(System.currentTimeMillis() - millisBegin);
       recordTime(time);
       showTimes();
@@ -507,14 +447,10 @@ public class DisplayPanel extends JPanel
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
   MeasureRenderer measureRenderer = new MeasureRenderer();
 
-  public boolean isPainting() {
-    return !painted;
-  }
-
   public Image takeSnapshot() {
 
-    Image snapImage = createImage(this.getSize().width,
-                        this.getSize().height);
+    Image snapImage = createImage(this.dimCurrent.width,
+                        this.dimCurrent.height);
     Graphics snapGraphics = snapImage.getGraphics();
     paint(snapGraphics);
     return snapImage;
@@ -981,8 +917,8 @@ public class DisplayPanel extends JPanel
         if (zw > xw) {
           xw = zw;
         }
-        float f1 = getSize().width / xw;
-        float f2 = getSize().height / xw;
+        float f1 = dimCurrent.width / xw;
+        float f2 = dimCurrent.height / xw;
         if (f1 < f2) {
           xfac = f1;
         } else {
@@ -1006,7 +942,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      WireFrameRotation = cbmi.isSelected();
+      wireFrameRotation = cbmi.isSelected();
     }
   }
 

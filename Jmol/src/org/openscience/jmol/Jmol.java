@@ -217,6 +217,9 @@ class Jmol extends JPanel {
             frame.addWindowListener(new AppCloser());
             frame.pack();
             frame.setSize(500, 600);
+            ImageIcon jmolIcon = jrh.getIcon("icon");
+            Image iconImage = jmolIcon.getImage();
+            frame.setIconImage(iconImage);
             splash.showStatus("Launching main frame...");
             frame.show();
         } catch (Throwable t) {
@@ -257,6 +260,7 @@ class Jmol extends JPanel {
      */
     public void openFile(File theFile, String typeHint) {
         if(theFile != null) {
+            frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             try {
                 FileInputStream is = new FileInputStream(theFile);
                 
@@ -291,6 +295,7 @@ class Jmol extends JPanel {
 					chemicalShifts.setChemFile(cf, apm);
                 }
 
+                frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             } catch(java.io.FileNotFoundException e2) {
                 JOptionPane.showMessageDialog(Jmol.this, 
                                               ("File not found: " +
@@ -302,6 +307,8 @@ class Jmol extends JPanel {
             } catch(Exception exc) {
                 System.out.println(exc.toString());
                 exc.printStackTrace();
+            }finally{
+                frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
             return;
         }

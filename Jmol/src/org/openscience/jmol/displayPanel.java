@@ -83,6 +83,7 @@ public class displayPanel extends JPanel
     //Added T.GREY for moveDraw support- should be true while mouse is dragged
     private boolean mouseDragged = false;
     private boolean WireFrameRotation = false;
+    private boolean movingDrawMode = false;
     private Measure m = null;
     private MeasurementList mlist = null;
     private DisplaySettings settings;
@@ -236,6 +237,7 @@ public class displayPanel extends JPanel
             //NEW LINE T.GREY
             if(mouseDragged && WireFrameRotation){
                 md.setMovingDrawMode(false);
+                movingDrawMode = false;
                 if (painted) {
                     painted = false;
                     repaint();
@@ -261,6 +263,7 @@ public class displayPanel extends JPanel
             //NEW LINE T.GREY
             if (WireFrameRotation) {
                 md.setMovingDrawMode(true);
+                movingDrawMode = true;
                 mouseDragged = true;            
             }
             if (mode == ROTATE) {
@@ -368,7 +371,7 @@ public class displayPanel extends JPanel
     }
 
     public void paint(Graphics g) {
-        if (AntiAliased) {
+        if (AntiAliased && !movingDrawMode) {
             String vers = System.getProperty("java.version");
             if (vers.compareTo("1.2") >= 0) {
             //comment out the next 5 lines if compiling under 1.1

@@ -34,12 +34,12 @@ class Leaf extends Element {
   Leaf(Bspt bspt) {
     this.bspt = bspt;
     count = 0;
-    tuples = new Tuple[bspt.leafCountMax];
+    tuples = new Tuple[Bspt.leafCountMax];
   }
     
   Leaf(Bspt bspt, Leaf leaf, int countToKeep) {
     this(bspt);
-    for (int i = countToKeep; i < bspt.leafCountMax; ++i) {
+    for (int i = countToKeep; i < Bspt.leafCountMax; ++i) {
       tuples[count++] = leaf.tuples[i];
       leaf.tuples[i] = null;
     }
@@ -64,7 +64,7 @@ class Leaf extends Element {
   }
 
   Element addTuple(int level, Tuple tuple) {
-    if (count < bspt.leafCountMax) {
+    if (count < Bspt.leafCountMax) {
       tuples[count++] = tuple;
       return this;
     }

@@ -40,17 +40,17 @@ class Node extends Element {
     this.bspt = bspt;
     if (level == bspt.treeDepth) {
       bspt.treeDepth = level + 1;
-      if (bspt.treeDepth >= bspt.MAX_TREE_DEPTH)
+      if (bspt.treeDepth >= Bspt.MAX_TREE_DEPTH)
         System.out.println("BSPT tree depth too great:" + bspt.treeDepth);
     }
-    if (leafLE.count != bspt.leafCountMax)
+    if (leafLE.count != Bspt.leafCountMax)
       throw new NullPointerException();
     eleLE = leafLE;
     dim = level % bspt.dimMax;
     leafLE.sort(dim);
-    splitValue = leafLE.tuples[bspt.leafCountMax/2 - 1].getDimensionValue(dim);
-    eleGE = new Leaf(bspt, leafLE, bspt.leafCountMax/2);
-    count = bspt.leafCountMax;
+    splitValue = leafLE.tuples[Bspt.leafCountMax/2 - 1].getDimensionValue(dim);
+    eleGE = new Leaf(bspt, leafLE, Bspt.leafCountMax/2);
+    count = Bspt.leafCountMax;
   }
   
   Element addTuple(int level, Tuple tuple) {

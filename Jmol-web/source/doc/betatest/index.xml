@@ -70,9 +70,9 @@
       </section>
     </section>
     
-    <section title="Jmol10pre13">
+    <section title="Jmol10pre14">
       <p>
-	Jmol version 10 pre-release 13 was released on Sun 15 Aug 2004.
+	Jmol version 10 pre-release 14 was released on Tue 21 Sep 2004.
 	This release includes the following:
 	<ul>
 	  <li>
@@ -80,13 +80,25 @@
 	    for Macintosh Safari support
 	  </li>
 	  <li>
-	    support for color by temperature
+	    support for color by fixedTemperature
 	  </li>
 	  <li>
-	    enhancement of menu entries for force vector support
+	    initial support for Spartan output
 	  </li>
 	  <li>
-	    improved support for reading Gaussian 03 output
+	    initial support for some other file format
+	    that I have forgotton
+	  </li>
+	  <li>
+	    dot surfaces can now be generated on subsets
+	    of the atoms
+	  </li>
+	  <li>
+	    separate scaling of atom force vectors and vibration
+	    amplitude
+	  </li>
+	  <li>
+	    more things that I have forgotton
 	  </li>
 	</ul>
 	The following areas will not be supported in the initial
@@ -100,17 +112,17 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre13.zip">
+	<a href="Jmol10pre14.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre13.zip
+	    Jmol10pre14.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre12.zip">
+	<a href="Jmol10pre13.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre12.zip
+	    <i>Give me the old code</i> Jmol10pre13.zip
 	  </font>
 	</a>
       </p>
@@ -120,7 +132,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre13.zip</b>
+	format as .zip : <b>jar xf Jmol10pre14.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

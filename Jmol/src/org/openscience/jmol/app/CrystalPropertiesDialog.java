@@ -116,7 +116,7 @@ public class CrystalPropertiesDialog extends JDialog
   String[] applyToList = new String[2];
 
   //Crystal Box fields
-  JCheckBox origAtomsOnlyCKB;
+  JComboBox translationTypeCBO;
   Vector jAtomBox_VEC_TXF = new Vector(2);
   Vector jAtomBox_VEC_LBL = new Vector(2);
   Vector jBondBox_VEC_TXF = new Vector(2);
@@ -419,22 +419,22 @@ public class CrystalPropertiesDialog extends JDialog
 
 
   /**
-   * Make usage or not of atomBox, bondBox, unitBox 
-   * Depends of origAtomsOnlyCKB state
+   * Make usage or not of atomBox 
+   * Depends of translationTypeCBO state
    */
-  protected void setCrystalBoxState() {
+  protected void setTranslationState() {
 
     //Set what is editable depending on the checkbox value
-    if (origAtomsOnlyCKB.isSelected()) {
-      for (int i = 0; i < 2; i++) {
-        ((JTextField) (jAtomBox_VEC_TXF.elementAt(i))).setEditable(false);
-      }
-    } else {
+    if (translationTypeCBO.getSelectedIndex() == CrystalBox.CRYSTAL ) {
       for (int i = 0; i < 2; i++) {
         ((JTextField) (jAtomBox_VEC_TXF.elementAt(i))).setEditable(true);
       }
+    } else {
+      for (int i = 0; i < 2; i++) {
+        ((JTextField) (jAtomBox_VEC_TXF.elementAt(i))).setEditable(false);
+      }
     }
-  }    //end setCrystalBoxState
+  }    //end setTranslationState
   
   
   /**
@@ -759,15 +759,28 @@ public class CrystalPropertiesDialog extends JDialog
     JPanel jCrystBoxPanel = new JPanel();
     jCrystBoxPanel.setLayout(gridbag);
 
-    origAtomsOnlyCKB = new JCheckBox
-      (resources.getString("Crystprop.origatomCheckBox"));
-    origAtomsOnlyCKB.addItemListener(new ItemListener() {
-	
-	public void itemStateChanged(ItemEvent e) {
-	  setCrystalBoxState();
+
+
+
+
+    String[] translationTypeStrings = {
+	resources.translate("Original atoms"),   // CrystalBox.ORIGINAL=0
+	resources.translate("Fit in unit cell"), // CrystalBox.INBOX=1
+	resources.translate("Set Range")         // CrystalBox.CRYSTAL=2
+    };
+    translationTypeCBO = new JComboBox(translationTypeStrings);
+    translationTypeCBO.setSelectedIndex(0);
+    translationTypeCBO.addActionListener(new ActionListener() {
+
+	public void actionPerformed(ActionEvent e) {
+	  //        JComboBox cb = (JComboBox) e.getSource();
+	  //int primVTypeIndex = cb.getSelectedIndex();
+	  setTranslationState();//FIX
 	}
       });
-    
+
+
+
     JPanel jAtomBoxPanel = new JPanel();
     jAtomBoxPanel
       .setBorder(new TitledBorder
@@ -833,8 +846,8 @@ public class CrystalPropertiesDialog extends JDialog
     c.fill = GridBagConstraints.NONE;
     c.gridheight = 4;
     c.gridwidth= GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(origAtomsOnlyCKB, c);
-    jAtomBoxPanel.add(origAtomsOnlyCKB);
+    gridbag.setConstraints(translationTypeCBO, c);
+    jAtomBoxPanel.add(translationTypeCBO);
     c.gridwidth = 2;
     gridbag.setConstraints((JLabel) jAtomBox_VEC_LBL.elementAt(0), c);
     jAtomBoxPanel.add((JLabel) jAtomBox_VEC_LBL.elementAt(0));
@@ -917,7 +930,7 @@ public class CrystalPropertiesDialog extends JDialog
     double[][] bondBox = crystalBox.getBondBox();
     double[][] unitBox = crystalBox.getUnitBox();
     
-    origAtomsOnlyCKB.setSelected(crystalBox.getOrigAtomsOnly());
+    translationTypeCBO.setSelectedIndex(crystalBox.getTranslationType());
 
     ((JTextField) (jAtomBox_VEC_TXF.elementAt(0)))
       .setText((float)atomBox[0][0] + ", " + (float)atomBox[0][1] 
@@ -1818,7 +1831,11 @@ public class CrystalPropertiesDialog extends JDialog
 	
 	//set Crystal Box
 	crystalBox = crystalFile.getCrystalBox(i);
-	crystalBox.setOrigAtomsOnly(origAtomsOnlyCKB.isSelected());
+	
+	// Set the translation type
+	// ORIGINAL, INBOX or CRYSTAL
+	crystalBox.setTranslationType(translationTypeCBO.getSelectedIndex());
+
 	if (crystalBox_ApplyToWhichFrameCBO.getSelectedIndex() == 0
 	    | ((crystalBox_ApplyToWhichFrameCBO.getSelectedIndex() == 1) 
 	       && (i == currentFrameIndex))) {

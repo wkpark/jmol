@@ -317,79 +317,102 @@ public class CrystalFile extends ChemFile {
 
 
   
-  private void generateAtoms(Vector crystalFAtomRedPos,
-      CrystalFrame crystalFrame, Vector frameEquivAtoms[]) {
+    private void generateAtoms(Vector crystalFAtomRedPos,
+			       CrystalFrame crystalFrame, Vector frameEquivAtoms[]) {
 
-    double[][] unitCellAtomRedPos = unitCellBoxS.getReducedPos();
-    double[][] atomBox = crystalBoxS.getAtomBox();
-    int natom = unitCellBoxS.getAtomCount();
-    int mina, minb, minc, maxa, maxb, maxc;
-    Matrix3d op = new Matrix3d();
-
-
-    //Operator "op" needed to transform atomic crystal 
-    //coordinate (atomCrystCoord) in cartesian atomic 
-    //position (atomPos) 
-
-    op.transpose(MathUtil.arrayToMatrix3d(unitCellBoxS.getRprimd()));
-
-
-    int atomCrystalIndex = 0;
-    for (int at = 0; at < natom; at++) {
-
-      frameEquivAtoms[at] = new Vector(1);
-
-      //Check for atomBox
-      // Determines the base vector multiplicators
-      if (crystalBoxS.getOrigAtomsOnly()) {
-	mina = 0;
-	maxa = 0;
-	minb = 0;
-	maxb = 0;
-	minc = 0;
-	maxc = 0;
-      } else {
-	mina = MathUtil.intSup(atomBox[0][0] - unitCellAtomRedPos[at][0]);
-	maxa = MathUtil.intInf(atomBox[1][0] - unitCellAtomRedPos[at][0]);
-	minb = MathUtil.intSup(atomBox[0][1] - unitCellAtomRedPos[at][1]);
-	maxb = MathUtil.intInf(atomBox[1][1] - unitCellAtomRedPos[at][1]);
-	minc = MathUtil.intSup(atomBox[0][2] - unitCellAtomRedPos[at][2]);
-	maxc = MathUtil.intInf(atomBox[1][2] - unitCellAtomRedPos[at][2]);
-      }
-      
-      for (int i = mina; i <= maxa; i++) {
-        for (int j = minb; j <= maxb; j++) {
-          for (int k = minc; k <= maxc; k++) {
-
-            double[] newAtomRedPos = new double[3];
-            newAtomRedPos[0] = unitCellAtomRedPos[at][0] + i;
-            newAtomRedPos[1] = unitCellAtomRedPos[at][1] + j;
-            newAtomRedPos[2] = unitCellAtomRedPos[at][2] + k;
-
-            crystalFAtomRedPos.addElement(newAtomRedPos);
-
-            double[] newAtomCartPos = new double[3];
-            newAtomCartPos = MathUtil.mulVec(op, newAtomRedPos);
-
-            BaseAtomType bat = unitCellBoxS.getBaseAtomType(at);
-            crystalFrame.addAtom(bat.getAtomicNumber(),
-				 newAtomCartPos[0], newAtomCartPos[1], newAtomCartPos[2]);
-	    
-	    
-            (frameEquivAtoms[at]).addElement(new Integer(atomCrystalIndex));
-
-            atomCrystalIndex++;
-
-          }    //end k
-        }      //end j
-      }        //end i
-    }          //end for at
-
-  }            //end generateAtoms()
-
-
+	double[][] unitCellAtomRedPos = unitCellBoxS.getReducedPos();
+	double[][] atomBox = crystalBoxS.getAtomBox();
+	int natom = unitCellBoxS.getAtomCount();
+	int mina, minb, minc, maxa, maxb, maxc;
+	Matrix3d op = new Matrix3d();
+	
+	
+	//Operator "op" needed to transform atomic crystal 
+	//coordinate (atomCrystCoord) in cartesian atomic 
+	//position (atomPos) 
+	
+	op.transpose(MathUtil.arrayToMatrix3d(unitCellBoxS.getRprimd()));
+	
+	
+	int atomCrystalIndex = 0;
+	
+	switch(crystalBoxS.getTranslationType()) {
+	case CrystalBox.CRYSTAL:
+	    for (int at = 0; at < natom; at++) {
+		frameEquivAtoms[at] = new Vector(1);
+		//Check for atomBox
+		// Determines the base vector multiplicators
+		mina = MathUtil.intSup(atomBox[0][0] - unitCellAtomRedPos[at][0]);
+		maxa = MathUtil.intInf(atomBox[1][0] - unitCellAtomRedPos[at][0]);
+		minb = MathUtil.intSup(atomBox[0][1] - unitCellAtomRedPos[at][1]);
+		maxb = MathUtil.intInf(atomBox[1][1] - unitCellAtomRedPos[at][1]);
+		minc = MathUtil.intSup(atomBox[0][2] - unitCellAtomRedPos[at][2]);
+		maxc = MathUtil.intInf(atomBox[1][2] - unitCellAtomRedPos[at][2]);
+		for (int i = mina; i <= maxa; i++) {
+		    for (int j = minb; j <= maxb; j++) {
+			for (int k = minc; k <= maxc; k++) {
+			    double[] newAtomRedPos = new double[3];
+			    newAtomRedPos[0] = unitCellAtomRedPos[at][0] + i;
+			    newAtomRedPos[1] = unitCellAtomRedPos[at][1] + j;
+			    newAtomRedPos[2] = unitCellAtomRedPos[at][2] + k;
+			    crystalFAtomRedPos.addElement(newAtomRedPos);
+			    double[] newAtomCartPos = new double[3];
+			    newAtomCartPos = MathUtil.mulVec(op, newAtomRedPos);
+			    BaseAtomType bat = unitCellBoxS.getBaseAtomType(at);
+			    crystalFrame.addAtom(bat.getAtomicNumber(),
+						 newAtomCartPos[0], newAtomCartPos[1], newAtomCartPos[2]);
+			    (frameEquivAtoms[at]).addElement(new Integer(atomCrystalIndex));
+			    atomCrystalIndex++;
+			}    //end k
+		    }      //end j
+		}        //end i
+	    }          //end for at
+	    break;
+	case CrystalBox.ORIGINAL:
+	    for (int at = 0; at < natom; at++) {
+		frameEquivAtoms[at] = new Vector(1);
+		//Check for atomBox
+		// Determines the base vector multiplicators
+		double[] newAtomRedPos = new double[3];
+		newAtomRedPos[0] = unitCellAtomRedPos[at][0];
+		newAtomRedPos[1] = unitCellAtomRedPos[at][1];
+		newAtomRedPos[2] = unitCellAtomRedPos[at][2];
+		crystalFAtomRedPos.addElement(newAtomRedPos);
+		double[] newAtomCartPos = new double[3];
+		newAtomCartPos = MathUtil.mulVec(op, newAtomRedPos);
+		BaseAtomType bat = unitCellBoxS.getBaseAtomType(at);
+		crystalFrame.addAtom(bat.getAtomicNumber(),
+				     newAtomCartPos[0], newAtomCartPos[1], newAtomCartPos[2]);
+		(frameEquivAtoms[at]).addElement(new Integer(atomCrystalIndex));
+		atomCrystalIndex++;
+	    }          //end for at
+	    break;
+	case CrystalBox.INBOX:
+	    for (int at = 0; at < natom; at++) {
+		frameEquivAtoms[at] = new Vector(1);
+		//Check for atomBox
+		// Determines the base vector multiplicators
+		double[] newAtomRedPos = new double[3];
+		newAtomRedPos[0] = unitCellAtomRedPos[at][0];
+		newAtomRedPos[1] = unitCellAtomRedPos[at][1];
+		newAtomRedPos[2] = unitCellAtomRedPos[at][2];
+		crystalFAtomRedPos.addElement(newAtomRedPos);
+		double[] newAtomCartPos = new double[3];
+		newAtomCartPos = MathUtil.mulVec(op, newAtomRedPos);
+		BaseAtomType bat = unitCellBoxS.getBaseAtomType(at);
+		crystalFrame.addAtom(bat.getAtomicNumber(),
+				     newAtomCartPos[0], newAtomCartPos[1], newAtomCartPos[2]);
+		(frameEquivAtoms[at]).addElement(new Integer(atomCrystalIndex));
+		atomCrystalIndex++;
+	    }          //end for at
+	    break;
+	}  //end switch
+	
+    }            //end generateAtoms()
+    
+    
   private Vector generateUnitBoxFrame() {
-
+	
     double[][] unitBox = crystalBoxS.getUnitBox();
     int mina, minb, minc, maxa, maxb, maxc;
     Matrix3d op = new Matrix3d();

@@ -33,14 +33,18 @@ package org.openscience.jmol;
  */
 public class CrystalBox {
 
+
+  public final static int ORIGINAL=0;
+  public final static int INBOX=1;
+  public final static int CRYSTAL=2;
+
+  private int translationType=0;
+
   private double[][] atomBox;
   private double[][] bondBox;
   private double[][] unitBox;
 
-  // if true, consider only the atoms as there are given
-  // in unitCellBox. Do not effectue any translation.
-  private boolean origAtomsOnly = false;
-
+  
   /**
    * Two different parallepipedic clipping boxes can be combined.
    * The *atom box* determines how many atoms are included in the frame.
@@ -101,6 +105,26 @@ public class CrystalBox {
 
   }
 
+
+  /**
+   * Return the type of translation that will be done on the
+   * original atoms
+   *
+   * There are 3 possibilities
+   *
+   * AtomBox.CRYSTAL : a "complete" crystal base on the atomBox range
+   * AtomBox.ORIGINAL: original atoms without any translation
+   * AtomBox.INBOX: original atoms with a translation to fit in the unit cell
+   *
+   **/
+  public int getTranslationType() {
+    return translationType;
+  }
+
+  public void setTranslationType(int translationType) {
+    this.translationType = translationType; 
+  }
+
   /**
    * Describe <code>setAtomBox</code> method here.
    *
@@ -129,11 +153,6 @@ public class CrystalBox {
   }
 
   
-  public void setOrigAtomsOnly(boolean origAtomsOnly) {
-    this.origAtomsOnly = origAtomsOnly;
-  }
-
-
   /**
    * Describe <code>getAtomBox</code> method here.
    *
@@ -161,8 +180,5 @@ public class CrystalBox {
     return unitBox;
   }
 
-  public boolean getOrigAtomsOnly() {
-    return origAtomsOnly;
-  }
 
 }

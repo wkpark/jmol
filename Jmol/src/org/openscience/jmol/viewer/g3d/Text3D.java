@@ -111,10 +111,15 @@ public class Text3D {
   }
 
   void rasterize() {
+    long time, timeBegin = System.currentTimeMillis();
     int[] pixels = new int[size];
     PixelGrabber pixelGrabber = new PixelGrabber(img, 0, 0, width, height,
                                                  pixels, 0, width);
+    time = System.currentTimeMillis() - timeBegin;
+    System.out.println("after allocating PixelGrabber time=" + time);
     pixelGrabber.startGrabbing();
+    time = System.currentTimeMillis() - timeBegin;
+    System.out.println("after startGrabbing time=" + time);
     // shifter error checking
     boolean[] bits = new boolean[size];
     for (int i = 0; i < size; ++i)
@@ -136,6 +141,9 @@ public class Text3D {
       bitmap[offset >> 5] = shifter;
     }
 
+    time = System.currentTimeMillis() - timeBegin;
+    System.out.println("after building bitmap time=" + time);
+
     // error checking
     for (offset = 0; offset < size; ++offset, shifter <<= 1) {
       if ((offset & 31) == 0)
@@ -152,6 +160,9 @@ public class Text3D {
         }
       }
     }
+    time = System.currentTimeMillis() - timeBegin;
+    System.out.println("after errorChecking time=" + time);
+
     // error checking
   }
 
@@ -163,13 +174,17 @@ public class Text3D {
 
   synchronized static Text3D getText3D(String text, Font font,
                                          Component component) {
+    long timeBegin = System.currentTimeMillis();
     int size = font.getSize();
     Text3D[] at25d = (Text3D[])htText.get(text);
     if (at25d != null) {
       if (size <= at25d.length) {
         Text3D t25d = at25d[size - 1];
-        if (t25d != null)
+        if (t25d != null) {
+          long time = System.currentTimeMillis() - timeBegin;
+          System.out.println(text + " cached " + time + " ms");
           return t25d;
+        }
       } else {
         Text3D[] at25dNew = new Text3D[size + 8];
         System.arraycopy(at25d, 0, at25dNew, 0, at25d.length);
@@ -180,7 +195,11 @@ public class Text3D {
       at25d = new Text3D[size + 8];
       htText.put(text, at25d);
     }
-    return at25d[size - 1] = new Text3D(text, font, component);
+    Text3D text3d = new Text3D(text, font, component);
+    at25d[size - 1] = text3d;
+    long time = System.currentTimeMillis() - timeBegin;
+    System.out.println(text + " -> " + time + " ms");
+    return text3d;
   }
 
   public static void plot(int x, int y, int z, int argb,

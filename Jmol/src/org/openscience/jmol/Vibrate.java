@@ -259,7 +259,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       frameCombo.removeAllItems();
     }
     frameIds.removeAllElements();
-    for (int i = 0; i < inputFile.nFrames(); ++i) {
+    for (int i = 0; i < inputFile.getNumberFrames(); ++i) {
       ChemFrame frame2 = inputFile.getFrame(i);
       if (frame2.getNumberVibrations() > 0) {
         hasVibrations = true;
@@ -351,9 +351,9 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
           ex.printStackTrace();
         }
       }
-      vibFile.frames.addElement(newFrame);
+      vibFile.addFrame(newFrame);
     }
-    progressSlider.setMaximum(vibFile.nFrames());
+    progressSlider.setMaximum(vibFile.getNumberFrames());
     currentFrame = 0;
   }
 
@@ -406,7 +406,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
   public void run() {
 
     while (playing) {
-      if (currentFrame < vibFile.nFrames() - 1) {
+      if (currentFrame < vibFile.getNumberFrames() - 1) {
         currentFrame++;
       } else {
         currentFrame = 0;
@@ -443,12 +443,12 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       }
       if (arg.equals("ff")) {
         stop();
-        currentFrame = vibFile.nFrames() - 1;
+        currentFrame = vibFile.getNumberFrames() - 1;
         setFrame(currentFrame, true);
       }
       if (arg.equals("next")) {
         stop();
-        if (currentFrame < vibFile.nFrames() - 1) {
+        if (currentFrame < vibFile.getNumberFrames() - 1) {
           currentFrame++;
         }
         setFrame(currentFrame, true);

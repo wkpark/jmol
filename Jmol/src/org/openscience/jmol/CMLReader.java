@@ -67,7 +67,7 @@ public class CMLReader implements ChemFileReader {
 
         ChemFrame frame = (ChemFrame) framesIter.nextElement();
 
-        file.frames.addElement(frame);
+        file.addFrame(frame);
 
       }
       return file;

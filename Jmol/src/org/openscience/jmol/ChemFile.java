@@ -19,26 +19,29 @@
  */
 package org.openscience.jmol;
 
-import java.io.*;
 import java.util.Vector;
-import java.util.HashSet;
 import java.util.Enumeration;
+import java.util.HashSet;
 
 public class ChemFile {
 
-  /**@shapeType AggregationLink
-  @associates <b>ChemFrame</b>*/
-  Vector frames;
-  int nframes = 0;
-  Vector AtomPropertyList = new Vector();
-  Vector FramePropertyList = new Vector();
+  private Vector frames = new Vector(1);
+  private boolean bondsEnabled = true;
+  private Vector propertyList = new Vector();
 
   /**
    * Very simple class that should be subclassed for each different
    * kind of file that can be read by Jmol.
    */
   public ChemFile() {
-    frames = new Vector(1);
+  }
+
+  public ChemFile(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+
+  public boolean getBondsEnabled() {
+    return bondsEnabled;
   }
 
   /**
@@ -49,19 +52,49 @@ public class ChemFile {
    * @param whichframe which frame to return
    */
   public ChemFrame getFrame(int whichframe) {
-    return (ChemFrame) frames.elementAt(whichframe);
+    if (whichframe < frames.size()) {
+      return (ChemFrame) frames.elementAt(whichframe);
+    }
+    return null;
   }
 
   /**
-   * returns the number of frames in this file
+   * Adds a frame to this file.
+   *
+   * @param frame the frame to be added
    */
-  public int nFrames() {
+  public void addFrame(ChemFrame frame) {
+    frames.addElement(frame);
+  }
+
+  /**
+   * Returns the number of frames in this file.
+   */
+  public int getNumberFrames() {
     return frames.size();
   }
 
   /**
-   * returns the vector containing the descriptive list of Physical
-   * properties that this file contains.
+   * Returns a list of descriptions for physical properties
+   * contained by this file.
+   */
+  public Vector getPropertyList() {
+    return propertyList;
+  }
+
+  /**
+   * Adds a property description to the property list.
+   *
+   * @param prop the property description
+   */
+  public void addProperty(String prop) {
+    if (propertyList.indexOf(prop) < 0) {
+      propertyList.addElement(prop);
+    }
+  }
+
+  /**
+   * Returns a list of the names of atom properties on frames in this file.
    */
   public Vector getAtomPropertyList() {
     HashSet descriptions = new HashSet();
@@ -80,11 +113,20 @@ public class ChemFile {
   }
 
   /**
-   * returns the vector containing the descriptive list of Frame
-   * properties that this file contains.
+   * Returns a list of the names of frame properties in this file.
    */
   public Vector getFramePropertyList() {
-    return FramePropertyList;
+    HashSet descriptions = new HashSet();
+    Enumeration frameIter = frames.elements();
+    while (frameIter.hasMoreElements()) {
+      ChemFrame frame = (ChemFrame) frameIter.nextElement();
+      Enumeration properties = frame.getFrameProperties().elements();
+      while (properties.hasMoreElements()) {
+        PhysicalProperty property = (PhysicalProperty) properties.nextElement();
+        descriptions.add(property.getDescriptor());
+      }
+    }
+    return new Vector(descriptions);
   }
 
 }

@@ -45,7 +45,7 @@ public class CMLSaver extends FileSaver {
     super(cf, out);
     mode = MODEL;
     frame_count = 0;
-    frames = cf.nFrames();
+    frames = cf.getNumberFrames();
   }
 
   public synchronized void writeFile() throws IOException {

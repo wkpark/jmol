@@ -146,7 +146,7 @@ public class XYZReader implements ChemFileReader {
 
         }
       }
-      file.frames.addElement(frame);
+      file.addFrame(frame);
       line = input.readLine();
     }
     return file;

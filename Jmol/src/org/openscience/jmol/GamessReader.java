@@ -97,7 +97,7 @@ public class GamessReader implements ChemFileReader {
           // In which case, it is a duplicate of the initial
           // coordinates.
           if (!initialFrame) {
-            file.frames.addElement(frame);
+            file.addFrame(frame);
           } else {
             initialFrame = false;
           }
@@ -118,7 +118,7 @@ public class GamessReader implements ChemFileReader {
       }
 
       // Add current frame to file
-      file.frames.addElement(frame);
+      file.addFrame(frame);
     }
     return file;
   }

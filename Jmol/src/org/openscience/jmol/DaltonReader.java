@@ -62,7 +62,7 @@ class DaltonReader implements ChemFileReader {
         readAtomTypes();
       } else if (line.trim().startsWith("Molecular geometry")) {
         if (frame != null) {
-          file.frames.addElement(frame);
+          file.addFrame(frame);
         }
         frame = new ChemFrame();
         readCoordinates(frame);
@@ -73,7 +73,7 @@ class DaltonReader implements ChemFileReader {
     }
 
     // Add current frame to file
-    file.frames.addElement(frame);
+    file.addFrame(frame);
 
     return file;
   }

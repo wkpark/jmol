@@ -74,28 +74,36 @@ class CalculateChemicalShifts extends AbstractAction {
   public void setChemFile(ChemFile file, AtomPropsMenu menu) {
 
     setEnabled(false);
-
+    
     propertiesMenu = menu;
     chemFile = file;
     if (chemFile == null) {
       return;
     }
-
     if (shieldings == null) {
       return;
     }
-    Vector atomProperties = chemFile.getAtomPropertyList();
-    for (int i = 0; i < atomProperties.size(); ++i) {
-      Object prop = atomProperties.elementAt(i);
-      if (prop instanceof String) {
-        String propName = (String) prop;
-        if ((propName.indexOf("Shielding") >= 0)
-                || (propName.indexOf("shielding") >= 0)) {
-          setEnabled(true);
-          break;
+    
+    boolean foundShielding = false;
+    for (int frameIndex = 0;
+          !foundShielding && frameIndex < chemFile.getNumberFrames();
+          ++frameIndex) {
+      ChemFrame frame = chemFile.getFrame(frameIndex);
+      for (int atomIndex = 0;
+            !foundShielding && atomIndex < frame.getNumberOfAtoms();
+            ++atomIndex) {
+        Atom atom = frame.getAtomAt(atomIndex);
+        Vector properties = atom.getProperties();
+        for (int propertyIndex = 0;
+              !foundShielding && propertyIndex < properties.size();
+              ++propertyIndex) {
+          if (properties.elementAt(propertyIndex) instanceof NMRShielding) {
+            foundShielding = true;
+          }
         }
       }
     }
+    setEnabled(foundShielding);
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -107,7 +115,7 @@ class CalculateChemicalShifts extends AbstractAction {
     if (referenceShielding == null) {
       return;
     }
-    for (int f = 0; f < chemFile.nFrames(); ++f) {
+    for (int f = 0; f < chemFile.getNumberFrames(); ++f) {
       ChemFrame frame = chemFile.getFrame(f);
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         String element = frame.getAtomAt(i).getType().getName();

@@ -51,7 +51,7 @@ public class TestGaussian98Reader extends TestCase {
 
     try {
       ChemFile cf1 = reader1.read();
-      assertEquals(8, cf1.nFrames());
+      assertEquals(8, cf1.getNumberFrames());
       assertEquals(
               "SCF Done:  E(UHF) =  -304.909591195     A.U. after   38 cycles",
                 cf1.getFrame(0).getInfo());

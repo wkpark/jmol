@@ -50,7 +50,7 @@ class JaguarReader implements ChemFileReader {
         line = input.readLine();
         line = input.readLine();
         if (frame != null) {
-          file.frames.addElement(frame);
+          file.addFrame(frame);
         }
         frame = new ChemFrame();
         readCoordinates(frame);
@@ -63,7 +63,7 @@ class JaguarReader implements ChemFileReader {
     }
 
     // Add current frame to file
-    file.frames.addElement(frame);
+    file.addFrame(frame);
 
     return file;
   }

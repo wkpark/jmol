@@ -114,7 +114,7 @@ public class DisplayPanel extends JPanel
 
     this.cf = cf;
     haveFile = true;
-    nframes = cf.nFrames();
+    nframes = cf.getNumberFrames();
     this.md = cf.getFrame(0);
     Measurement.setChemFrame(md);
     if (mlist != null) {

@@ -69,7 +69,7 @@ class MopacReader implements ChemFileReader {
             frame.setInfo(line.trim());
             frameInfo = null;
           }
-          file.frames.addElement(frame);
+          file.addFrame(frame);
         }
         frame = new ChemFrame();
         readCoordinates(frame);
@@ -83,7 +83,7 @@ class MopacReader implements ChemFileReader {
     }
 
     // Add current frame to file
-    file.frames.addElement(frame);
+    file.addFrame(frame);
 
     return file;
   }

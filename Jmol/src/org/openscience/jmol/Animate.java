@@ -64,7 +64,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
   private void restoreInFile() {
 
-    nframes = inFile.nFrames();
+    nframes = inFile.getNumberFrames();
     cf = inFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
@@ -86,7 +86,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
     ChemFrame fromFrame = inFile.getFrame(frameNumber);
 
     // Add first frame
-    newFile.frames.addElement(fromFrame);
+    newFile.addFrame(fromFrame);
     ++frameNumber;
     ChemFrame toFrame;
     while (frameNumber < nframes) {
@@ -126,11 +126,11 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
       // Add interpolated frames
       for (int i = 0; i < numberExtraFrames; i++) {
-        newFile.frames.addElement(extraFrames[i]);
+        newFile.addFrame(extraFrames[i]);
       }
 
       // Add original frame
-      newFile.frames.addElement(toFrame);
+      newFile.addFrame(toFrame);
 
       // Increment to next frame
       fromFrame = toFrame;
@@ -138,7 +138,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
     }
 
     haveFile = true;
-    nframes = newFile.nFrames();
+    nframes = newFile.getNumberFrames();
     cf = newFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;

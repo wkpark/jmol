@@ -82,7 +82,7 @@ public class ADFReader implements ChemFileReader {
 
           // Found set of coordinates
           // Add current frame to file and create a new one.
-          file.frames.addElement(frame);
+          file.addFrame(frame);
           frame = new ChemFrame();
           readCoordinates(frame);
         } else if (line.indexOf("Energy:") >= 0) {
@@ -98,7 +98,7 @@ public class ADFReader implements ChemFileReader {
       }
 
       // Add current frame to file
-      file.frames.addElement(frame);
+      file.addFrame(frame);
     }
     return file;
   }

@@ -101,7 +101,7 @@ public class PDBReader implements ChemFileReader {
       }
 
       if (command.equalsIgnoreCase("END")) {
-        file.frames.addElement(frame);
+        file.addFrame(frame);
         return file;
       }
 
@@ -109,7 +109,7 @@ public class PDBReader implements ChemFileReader {
     }
 
     // No END marker, so just wrap things up as if we had seen one:
-    file.frames.addElement(frame);
+    file.addFrame(frame);
     return file;
   }
 

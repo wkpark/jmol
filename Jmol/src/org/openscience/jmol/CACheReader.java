@@ -101,7 +101,7 @@ public class CACheReader implements ChemFileReader {
 
     // Add current frame to file
     try {
-      file.frames.addElement(frame);
+      file.addFrame(frame);
     } catch (Exception e) {
       System.out.println("Error adding frame to ChemFile: " + e);
       e.printStackTrace();

@@ -254,14 +254,14 @@ class Surface extends Shape {
   /*
    * radius and diameter of the probe. 0 == no probe
    */
-  private float radiusP, diameterP;
+  float radiusP, diameterP;
 
   /*
    * these state variables are set by the routines below
    */
-  private int indexI, indexJ, indexK;
+  int indexI, indexJ, indexK;
   private Atom atomI, atomJ, atomK;
-  private Point3f centerI, centerJ, centerK;
+  Point3f centerI, centerJ, centerK;
   private float radiusI, radiusJ, radiusK;
   private float radiiIP2, radiiJP2, radiiKP2;
   private float distanceIJ2, distanceIK2, distanceJK2;
@@ -452,8 +452,8 @@ class Surface extends Shape {
     float outerAngle;
     AxisAngle4f aaRotate;
     short colixI, colixJ;
-    int cavityCount;
-    Cavity[] cavities;
+    int cavityCountT;
+    Cavity[] cavitiesT;
     Vector3f outerVector;
     float outerRadians;
     Point3f[][] stripPointArrays;
@@ -528,17 +528,17 @@ class Surface extends Shape {
     }
 
     void addCavity(Cavity cavity) {
-      if (cavities == null)
-        cavities = new Cavity[4];
-      else if (cavityCount == cavities.length)
-        cavities = (Cavity[])Util.doubleLength(cavities);
-      cavities[cavityCount++] = cavity;
+      if (cavitiesT == null)
+        cavitiesT = new Cavity[4];
+      else if (cavityCountT == cavitiesT.length)
+        cavitiesT = (Cavity[])Util.doubleLength(cavitiesT);
+      cavitiesT[cavityCountT++] = cavity;
     }
       
     void checkAngles() {
-      for (int i = cavityCount; --i >= 0; ) {
+      for (int i = cavityCountT; --i >= 0; ) {
         float cavityAngle = -999;
-        Cavity cavity = cavities[i];
+        Cavity cavity = cavitiesT[i];
         if (cavity.ixI == ixI) {
           if (cavity.ixJ == ixJ)
             cavityAngle = cavity.radiansIJ;
@@ -562,7 +562,7 @@ class Surface extends Shape {
 
     void whyIsThisCavityHere(int cavityIndex) {
       
-      Cavity cavity = cavities[cavityIndex];
+      Cavity cavity = cavitiesT[cavityIndex];
       System.out.println("torus ixI=" + ixI + " ixJ=" + ixJ +
                          " cavity ixI=" + cavity.ixI +
                          " ixJ=" + cavity.ixJ + " ixK=" + cavity.ixK);
@@ -618,7 +618,7 @@ class Surface extends Shape {
     }
     Point3f center = calcTorusCenter();
 
-    float holeRadius = radius - radiusP;
+    //float holeRadius = radius - radiusP;
     for (int n = neighborCount; --n >= 0; ) {
       int k = neighborIndexes[n];
       if (k == indexJ)

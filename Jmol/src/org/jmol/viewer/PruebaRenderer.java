@@ -24,7 +24,6 @@
  */
 package org.jmol.viewer;
 
-import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
@@ -38,7 +37,7 @@ class PruebaRenderer extends ShapeRenderer {
     short colix = prueba.colix;
 
     int vertexCount = g3d.getGeodesicVertexCount(level);
-    Vector3f[] vectors = g3d.getGeodesicVertexVectors();
+    //Vector3f[] vectors = g3d.getGeodesicVertexVectors();
     Vector3f[] tvs = g3d.getTransformedVertexVectors();
     Point3i[] screens = viewer.allocTempScreens(vertexCount);
     short[] geodesicFaceVertexes = g3d.getGeodesicFaceVertexes(level);

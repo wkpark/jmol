@@ -290,9 +290,9 @@ class SurfaceRenderer extends ShapeRenderer {
       viewer.transformPoint(points[i], screens[i]);
 
     short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
-    short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
-    short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
-    short colixCenter = Graphics3D.RED;
+    //short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
+    //short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
+    //short colixCenter = Graphics3D.RED;
                         
     Point3i screenCenter = screens[0];
     short normixCenter = normixes[0];

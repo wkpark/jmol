@@ -103,7 +103,7 @@ class Surface extends Shape {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
-  final static int segmentsPerFullCircle = 20;
+  final static int segmentsPerFullCircle = 10;
   private final static float radiansPerSegment =
     2*(float)Math.PI/segmentsPerFullCircle;
 

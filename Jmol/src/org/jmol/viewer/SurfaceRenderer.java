@@ -176,18 +176,23 @@ class SurfaceRenderer extends ShapeRenderer {
     for (int i = 0; i < stripCount; ++i) {
       Point3f[] strip = torus.stripPointArrays[i];
       short[] normixes = torus.stripNormixesArrays[i];
-      for (int j = 0; j < strip.length; ++j) {
+      int stripLength = strip.length;
+      for (int j = stripLength; --j >= 0; )
         viewer.transformPoint(strip[j], screensTorusStrip[j]);
-        if (i > 0 && j > 0) {
+      if (i > 0) {
+        for (int j = stripLength; --j >= 0; ) {
+          int k = j - 1;
+          if (k < 0)
+            k = stripLength - 1;
           g3d.fillQuadrilateral(colix, false,
-                                screensTorusStripLast[j - 1],
-                                normixesLast[j - 1],
+                                screensTorusStripLast[k],
+                                normixesLast[k],
                                 screensTorusStripLast[j],
                                 normixesLast[j],
                                 screensTorusStrip[j],
                                 normixes[j],
-                                screensTorusStrip[j - 1],
-                                normixes[j - 1]);
+                                screensTorusStrip[k],
+                                normixes[k]);
         }
       }
       normixesLast = normixes;

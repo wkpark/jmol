@@ -32,7 +32,7 @@ import java.io.PrintStream;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class ChemFrame implements Transformable {
+public class ChemFrame {
 
   // This stuff can vary for each frame in the dynamics:
 
@@ -351,19 +351,6 @@ public class ChemFrame implements Transformable {
   }
 
   /**
-   * Transform all the points in this model
-   */
-  public void transform(DisplayControl control) {
-
-    if (numberAtoms <= 0) {
-      return;
-    }
-    for (int i = 0; i < numberAtoms; ++i) {
-      atoms[i].transform(control);
-    }
-  }
-
-  /**
    * Find all atoms within designated region.
    *
    * @param x1 the x coordinate of point 1 of the region's bounding rectangle
@@ -461,13 +448,16 @@ public class ChemFrame implements Transformable {
   }
 
   void calculateAtomVectorMagnitudeRange() {
-    minAtomVectorMagnitude = maxAtomVectorMagnitude = 0;
+    minAtomVectorMagnitude = maxAtomVectorMagnitude = -1;
     for (int i = 0; i < numberAtoms; ++i) {
+      if (!atoms[i].hasVector())
+        continue;
       double magnitude=atoms[i].getVectorMagnitude();
       if (magnitude > maxAtomVectorMagnitude) {
         maxAtomVectorMagnitude = magnitude;
-      } else if ((magnitude < minAtomVectorMagnitude) ||
-                 (minAtomVectorMagnitude == 0f)) {
+      }
+      if ((magnitude < minAtomVectorMagnitude) ||
+          (minAtomVectorMagnitude == -1)) {
         minAtomVectorMagnitude = magnitude;
       }
     }

@@ -52,7 +52,6 @@ public class ArrowLine {
   public ArrowLine(Graphics gc, DisplayControl control,
                    double x1, double y1, double x2, double y2,
                    boolean arrowStart, boolean arrowEnd, double scaling) {
-
     this.scaling = scaling;
     this.arrowStart = arrowStart;
     this.arrowEnd = arrowEnd;

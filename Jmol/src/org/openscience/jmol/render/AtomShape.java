@@ -68,7 +68,6 @@ public class AtomShape implements Shape {
   public int y;
   public int z;
   public int diameter;
-  public Point3d screenVector;
   
   public AtomShape(Atom atom) {
     this.atom = atom;
@@ -116,11 +115,6 @@ public class AtomShape implements Shape {
     }
     x += control.xTranslation;
     y += control.yTranslation;
-    if (atom.hasVector()) {
-      if (screenVector == null)
-        screenVector = new Point3d();
-      control.transformPoint(atom.getScaledVector(), screenVector);
-    }
   }
 
   public int getZ() {

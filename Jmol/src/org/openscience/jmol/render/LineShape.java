@@ -7,7 +7,7 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 
-class LineShape implements Shape, Transformable {
+class LineShape implements Shape {
 
   Point3d origPoint;
   Point3d endPoint;

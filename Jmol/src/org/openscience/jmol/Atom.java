@@ -173,6 +173,10 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   public Point3d getScaledVector() {
+    if (vector == null) {
+      System.out.println("(vector == null) in getScaledVector");
+      return null;
+    }
     Point3d vectorScaled = new Point3d();
     vectorScaled.scaleAdd(2.0, vector, getPosition());
     return vectorScaled;
@@ -197,17 +201,11 @@ public class Atom extends org.openscience.cdk.Atom {
    * Returns the atom's on-screen vibrational vector. Note: the atom must
    * first be transformed. Otherwise, a point at the origin is returned.
    */
+  /*
   public Point3d getScreenVector() {
     return atomShape.screenVector;
   }
-
-  /**
-   * Sets the atom's screen position by transforming the atom's position by
-   * the given matrix.
-   */
-  public void transform(DisplayControl control) {
-    atomShape.transform(control);
-  }
+  */
 
   /**
      * Adds an atom to this atom's bonded list.

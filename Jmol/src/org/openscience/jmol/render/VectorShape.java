@@ -6,7 +6,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 
-public class VectorShape implements Shape, Transformable {
+public class VectorShape implements Shape {
 
   Point3d origPoint;
   Point3d endPoint;

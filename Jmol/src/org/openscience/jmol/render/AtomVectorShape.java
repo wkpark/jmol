@@ -11,6 +11,7 @@ public class AtomVectorShape implements Shape {
   DisplayControl control;
   double minMagnitude;
   double magnitudeRange;
+  final Point3d screenVector = new Point3d();
   
   AtomVectorShape(Atom atom, DisplayControl control,
                   double minMagnitude, double magnitudeRange) {
@@ -30,20 +31,24 @@ public class AtomVectorShape implements Shape {
   }
 
   public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
-    if (control.getShowVectors()) {
-      if (atom.getVector() != null) {
-        double magnitude = atom.getVector().distance(zeroPoint);
-        double scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;
-        ArrowLine al =
-          new ArrowLine(g, control, atom.getScreenX(), atom.getScreenY(),
-                        atom.getScreenVector().x, atom.getScreenVector().y,
-                        false, true, scaling);
-      }
+    // FIXME I think that much/all of this could be moved to instance creation
+    double magnitude = atom.getVector().distance(zeroPoint);
+    double scaling = 1;
+    if (magnitudeRange>0) {
+      scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;
     }
+    ArrowLine al =
+      new ArrowLine(g, control, atom.getScreenX(), atom.getScreenY(),
+                    (int)screenVector.x, (int)screenVector.y,
+                    false, true, scaling);
+  }
+
+  public void transform(DisplayControl control) {
+    control.transformPoint(atom.getScaledVector(), screenVector);
   }
   
   public int getZ() {
-    return atom.getScreenZ() + 1;
+    return (atom.getScreenZ() + (int)screenVector.z) / 2;
   }
   
   /**

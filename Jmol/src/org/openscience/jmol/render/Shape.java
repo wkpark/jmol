@@ -36,6 +36,8 @@ public interface Shape {
 
   public void render(Graphics g, Rectangle rectClip, DisplayControl control);
 
+  public void transform(DisplayControl control);
+
   public int getZ();
 
 }

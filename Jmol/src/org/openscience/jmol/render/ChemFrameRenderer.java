@@ -61,8 +61,6 @@ public class ChemFrameRenderer {
       previousFrameHashCode = hcFrame;
       previousNumberAtoms = numAtoms;
       shapesList.clear();
-      transformables.clear();
-      transformables.add(frame);
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = frame.getAtomAt(i);
         shapesList.add(atom.getAtomShape());
@@ -73,7 +71,7 @@ public class ChemFrameRenderer {
         boolean showHydrogens = control.getShowHydrogens();
         for (int i = 0; i < numAtoms; ++i) {
           Atom atom = frame.getAtomAt(i);
-          if (showHydrogens || !atom.isHydrogen()) {
+          if (atom.hasVector() && (showHydrogens || !atom.isHydrogen())) {
             shapesList.add(new AtomVectorShape(atom, control,
                                                minAtomVectorMagnitude,
                                                atomVectorRange));
@@ -91,7 +89,6 @@ public class ChemFrameRenderer {
               new Point3d(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
                 true);
           shapesList.add(vector);
-          transformables.add(vector);
         }
         
         // The full primitive cell
@@ -103,19 +100,17 @@ public class ChemFrameRenderer {
               new LineShape((Point3d) boxEdges.elementAt(i),
                             (Point3d) boxEdges.elementAt(i + 1));
             shapesList.add(line);
-            transformables.add(line);
           }
         }
       }
       shapes = (Shape[]) shapesList.toArray(new Shape[0]);
     }
     
-    Iterator iter = transformables.listIterator();
     control.calcViewTransformMatrix();
-    while (iter.hasNext()) {
-      Transformable t1 = (Transformable) iter.next();
-      t1.transform(control);
+    for (int i = 0; i < shapes.length; ++i) {
+      shapes[i].transform(control);
     }
+
     if (control.jvm12orGreater)
       UseJavaSort.sortShapes(shapes);
     else
@@ -131,8 +126,6 @@ public class ChemFrameRenderer {
 
   private Shape[] shapes = null;
   private final ArrayList shapesList = new ArrayList();
-  
-  private final ArrayList transformables = new ArrayList();
   
   /**
    * Point for calculating lengths of vectors.

@@ -20,12 +20,13 @@ org/openscience/jmol/WireframeBondRenderer.java
 org/openscience/jmol/LineBondRenderer.java
 org/openscience/jmol/ShadingBondRenderer.java
 org/openscience/jmol/RendererUtilities.java
-org/openscience/jmol/HeapSorter.java
+org/openscience/jmol/UseJavaSort.java
 org/openscience/jmol/ArrowLine.java
 org/openscience/jmol/ChemFrameRenderer.java
 org/openscience/jmol/applet/DisplayPanel.java
 org/openscience/jmol/applet/JmolSimpleBean.java
 org/openscience/jmol/applet/JmolApplet.java
+org/openscience/jmol/applet/NonJavaSort.java
 org/openscience/jmol/FortranFormat.java
 org/openscience/jmol/AtomTypeSet.java
 org/openscience/jmol/StatusDisplay.java

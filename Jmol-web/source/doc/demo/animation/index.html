@@ -14,12 +14,13 @@
 	  <td>
 	    <h2>Jmol animations</h2>
 	    <script>
-	      var script="wireframe; cpk off; trace; color trace honeydew;" +
+	      var script="load movie.pdb.gz; wireframe; cpk off; trace;" +
+	      "color trace honeydew;" +
 	      "anim mode palindrome; anim on";
-	      jmolApplet(300, "movie.pdb.gz", script);
+	      jmolApplet(300, null, script);
 	    </script>
 	  </td>
-	  
+
 	  <td>
 	    
 	    A simple cyclohexane chair animation as a multi-frame .xyz file<br />

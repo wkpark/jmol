@@ -3,6 +3,8 @@
   <body>
     <title>Jmol</title>
 
+    <script src="jmol/Jmol.js"></script>
+
     <header>
       <p>
 	Jmol is a free, open source molecule viewer for students,
@@ -24,6 +26,12 @@
 	  </li>
 	</ul>
       </p>
+
+    <script>
+      jmolInitialize("jmol");
+      jmolApplet(200, "demo/ribbons/1D68.pdb.gz");
+    </script>
+
     </header>
 
     <section title="Jmol v9 information">

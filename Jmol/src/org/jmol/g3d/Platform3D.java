@@ -43,11 +43,15 @@ abstract class Platform3D {
   Image imageOffscreen;
   Graphics gOffscreen;
 
+  final static boolean useClearingThread = true;
+
   ClearingThread clearingThread;
 
   final void initialize() {
-    clearingThread = new ClearingThread();
-    clearingThread.start();
+    if (useClearingThread) {
+      clearingThread = new ClearingThread();
+      clearingThread.start();
+    }
   }
 
   final static short ZBUFFER_BACKGROUND = 32767;
@@ -82,12 +86,19 @@ abstract class Platform3D {
   abstract void clearScreenBuffer(int argbBackground);
   
   final void clearScreenBuffer() {
-    clearingThread.clearThreaded();
-    clearingThread.waitUntilCleared();
+    if (useClearingThread) {
+      clearingThread.clearThreaded();
+      clearingThread.waitUntilCleared();
+    } else {
+      clearScreenBuffer(argbBackground);
+    }
   }
 
   final void clearScreenBufferThreaded() {
-    clearingThread.clearThreaded();
+    if (useClearingThread)
+      clearingThread.clearThreaded();
+    else
+      clearScreenBuffer();
   }
   
   void notifyEndOfRendering() {

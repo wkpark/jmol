@@ -46,7 +46,7 @@ public class Hover extends Shape {
   private final static String FONTSTYLE = "Plain";
   private final static int FONTSIZE = 16;
 
-  int atomIndex;
+  int atomIndex = -1;
   Font3D font3d;
   String labelFormat = "%U";
   short colixBackground;

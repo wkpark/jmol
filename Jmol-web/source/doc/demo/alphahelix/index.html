@@ -1,0 +1,59 @@
+<html>
+<head><title>jmol applet alpha-helix demo</title>
+</head>
+<body>
+<table border="1">
+<tr>
+<td>
+<h2>alpha helix</h2>
+<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="../jmol" width="400" height="400" mayscript="true" >
+	<param name="emulate"   value="chime" />
+        <param name="load"      value="alphahelix.pdb.gz" />
+</applet>
+</td>
+
+<td>
+<script>
+var doc = document;
+function writeScriptControl(script) {
+  doc.writeln('<applet code="JmolAppletControl" archive="JmolApplet.jar"');
+  doc.writeln('  codebase="../jmol"');
+  doc.writeln('  height="20" width="400" mayscript="true" >');
+  doc.writeln('  <param name="type"   value="button" />');
+  doc.writeln('  <param name="target" value="jmol" />');
+  doc.writeln('  <param name="label"  value="' + script + '" />');
+  doc.writeln('  <param name="script" value="' + script + '" />');
+  doc.writeln('</applet>');
+  }
+
+writeScriptControl('select *; cpk off; wireframe');
+writeScriptControl(
+'select *; cpk off; wireframe; select backbone; wireframe 0.3');
+writeScriptControl('select *; cpk off; wireframe; select backbone; cpk 100%');
+writeScriptControl('select *; cpk off; wireframe 0.3');
+writeScriptControl('select *; restrict backbone; cpk off; wireframe 0.3');
+writeScriptControl('select *; restrict backbone; cpk 100%');
+writeScriptControl('select *; wireframe 0.3; select backbone; cpk 100%');
+doc.writeln('<hr />');
+writeScriptControl('trace 0.5; color trace orange');
+writeScriptControl('trace off');
+doc.writeln('<hr />');
+writeScriptControl('select alpha; label %a; color label white');
+writeScriptControl('select alpha; label %n; color label white');
+writeScriptControl('select *; label off');
+doc.writeln('<hr />');
+writeScriptControl('color atoms cpk');
+writeScriptControl('color atoms amino');
+doc.writeln('<hr />');
+writeScriptControl('backbone 0.3; color backbone yellowgreen');
+writeScriptControl('backbone off');
+
+</script>
+
+</td>
+
+</tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<html>
+<head><title>jmol applet alpha-helix demo</title>
+</head>
+<body>
+<table border="1">
+<tr>
+<td>
+<h2>&alpha;</h2>
+<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="../jmol" width="300" height="300" mayscript="true" >
+	<param name="emulate"   value="chime" />
+        <param name="load"      value="caffeine.xyz.gz" />
+</applet>
+</td>
+
+<td>
+<script>
+var doc = document;
+function writeAminoControl(basename, label) {
+  doc.writeln('<td>');
+  doc.writeln('<applet code="JmolAppletControl" archive="JmolApplet.jar"');
+  doc.writeln('  codebase="../jmol"');
+  doc.writeln('  height="14" width="14" mayscript="true" >');
+  doc.writeln('  <param name="type"   value="chimePush" />');
+  doc.writeln('  <param name="target" value="jmol" />');
+  doc.writeln('  <param name="script" value="load ' +
+              basename + '.pdb.gz" />');
+  doc.writeln('</applet>');
+  doc.writeln(label);
+  doc.writeln('</td>');
+  }
+doc.writeln('<table border=0><tr>');
+  writeAminoControl('ala', 'ala - alanine');
+  writeAminoControl('arg', 'arg - arginine');
+  writeAminoControl('asn', 'asn - asparagine');
+  writeAminoControl('asp', 'asp - aspartate');
+doc.writeln('</tr><tr>');
+  writeAminoControl('cys', 'cys - cystine');
+  writeAminoControl('gln', 'gln - glutamine');
+  writeAminoControl('glu', 'glu - glutamate');
+  writeAminoControl('gly', 'gly - glycine');
+doc.writeln('</tr><tr>');
+  writeAminoControl('his', 'his - histidine');
+  writeAminoControl('ile', 'ile - isoleucine');
+  writeAminoControl('leu', 'leu - leucine');
+  writeAminoControl('lys', 'lys - lysine');
+doc.writeln('</tr><tr>');
+  writeAminoControl('met', 'met - methionine');
+  writeAminoControl('phe', 'phe - phenylalanine');
+  writeAminoControl('pro', 'pro - proline');
+  writeAminoControl('ser', 'ser - serine');
+doc.writeln('</tr><tr>');
+  writeAminoControl('thr', 'thr - threonine');
+  writeAminoControl('trp', 'trp - tryptophan');
+  writeAminoControl('tyr', 'tyr - tyrosine');
+  writeAminoControl('val', 'val - valine');
+doc.writeln("</tr></table>")
+
+function writeScriptControl(script) {
+  doc.writeln('<applet code="JmolAppletControl" archive="JmolApplet.jar"');
+  doc.writeln('  codebase="../jmol"');
+  doc.writeln('  height="20" width="300" mayscript="true" >');
+  doc.writeln('  <param name="type"   value="button" />');
+  doc.writeln('  <param name="target" value="jmol" />');
+  doc.writeln('  <param name="label"  value="' + script + '" />');
+  doc.writeln('  <param name="script" value="' + script + '" />');
+  doc.writeln('</applet>');
+  }
+
+writeScriptControl('select backbone; wireframe 0.25');
+  
+</script>
+
+</td>
+
+</tr>
+</table>
+</body>
+</html>

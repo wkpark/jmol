@@ -41,7 +41,6 @@ public class PovraySaver {
   BufferedWriter bw;
   JmolViewer viewer;
   
-  Matrix4f rotationMatrix;
   Matrix4f transformMatrix;
 
   public PovraySaver(JmolViewer viewer, OutputStream out) {
@@ -58,7 +57,6 @@ public class PovraySaver {
     zoom *= 1.1f; // for some reason I need a little more margin
     zoom /= viewer.getZoomPercent() / 100f;
 
-    rotationMatrix = viewer.getPovRotateMatrix();
     transformMatrix = viewer.getUnscaledTransformMatrix();
     int screenWidth = viewer.getScreenWidth();
     int screenHeight = viewer.getScreenHeight();

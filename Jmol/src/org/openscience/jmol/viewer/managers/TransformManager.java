@@ -538,35 +538,4 @@ public class TransformManager {
     matrixVectorTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
-  /*
-  public void transformVector(Point3f pointAngstroms,
-                              Point3f vectorAngstroms,
-                              float scale,
-                              Point3i results) {
-    point3dScreenTemp.set(vectorAngstroms);
-    point3dScreenTemp.scaleAdd(scale, pointAngstroms);
-    Point3i pointT = transformPoint(point3dScreenTemp);
-    results.set(pointT);
-  }
-  */
-
-  /****************************************************************
-   exports for POV rendering
-  ****************************************************************/
-
-  public Matrix4f getPovRotateMatrix() {
-    return new Matrix4f(matrixRotate);
-  }
-
-  public Matrix4f getPovTranslateMatrix() {
-    Matrix4f matrixPovTranslate = new Matrix4f();
-    matrixPovTranslate.setIdentity();
-    matrixPovTranslate.get(vectorTemp);
-    vectorTemp.x = (xTranslation-width/2) / scalePixelsPerAngstrom;
-    vectorTemp.y = -(yTranslation-height/2)
-      / scalePixelsPerAngstrom; // invert y axis
-    vectorTemp.z = 0;
-    matrixPovTranslate.set(vectorTemp);
-    return matrixPovTranslate;
-  }
 }

@@ -356,14 +356,6 @@ final public class JmolViewer {
     return transformManager.modeSlab;
   }
 
-  public Matrix4f getPovRotateMatrix() {
-    return transformManager.getPovRotateMatrix();
-  }
-
-  public Matrix4f getPovTranslateMatrix() {
-    return transformManager.getPovTranslateMatrix();
-  }
-
   public Matrix4f getUnscaledTransformMatrix() {
     return transformManager.getUnscaledTransformMatrix();
   }

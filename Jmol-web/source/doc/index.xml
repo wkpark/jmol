@@ -16,7 +16,11 @@
       </p>
     </header>
 
-    <section title="Features">
+    <section title="Jmol v$VERSION$ Features">
+      <p>
+        Jmol v$VERSION$ is the current stable release and has these
+        features:
+      </p>
       <ul>
         <li>Available as both a Java application
           and as a web browser applet</li>
@@ -47,6 +51,7 @@
           <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html" TARGET="_top">GAMESS</a>,
           <a href="http://www.gaussian.com/" TARGET="_top">Gaussian 90/92/94/96/98/03</a>,
           <a href="http://www.bioinformatics.org/ghemical/" TARGET="_top">Ghemical</a>,
+          HIN,
           <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a>,
           <a href="http://www.mdli.com/">MDL molfiles</a>,
           MOPAC 7/97/2002,

@@ -3,7 +3,7 @@
   <body>
     <title>Jmol Changes</title>
 
-    <!-- $ID: $ -->
+    <!-- $Id$ -->
     
     <section title="Contributors">
       Improvements to Jmol are thanks to many talented developers.
@@ -25,6 +25,7 @@
 <contributor id="CR2"><name>Carl Resnikoff</name><email>carl@resnikoff.net</email></contributor>
 <contributor id="AS"><name>Agust&#x00ED; S&#x00E1;nchez</name><email>asanc@users.sourceforge.net</email></contributor>
 <contributor id="CPY"><name>Chih-Peng Yang</name><email>cpyang@siraya.net</email></contributor>
+<contributor id="RG"><name>Rajarshi Guha</name><email>rxg218@psu.edu</email></contributor>
 </contributors>
     </section>
 
@@ -32,6 +33,37 @@
       To recognize specific contributions, the developer's initials are noted
       next to the changes.
       
+<changes version="jmol-9">
+  <change contributor="EW">
+    Activated a plugin architecture for CDK plugins.
+  </change>
+  <change contributor="EW">
+    Fixed a number of IO bugs (closes #783663, #823957 and #826934)
+  </change>
+  <change contributor="EW">
+    Fixed run target in Ant build.xml.
+  </change>
+  <change contributor="EW">
+    Added feedback on memory usage to statusbar.
+  </change>
+  <change contributor="RG">
+    Added reader and writer for HIN (HyperChem) format
+  </change>
+  <change contributor="EW">
+    Added help button in script window.
+  </change>
+  <change contributor="EW">
+    Added license item in help menu.
+  </change>
+  <change contributor="EW">
+    Fixed calculation of unit cell angles in crystal property box
+    (closes #865393 and #863644).
+  </change>
+  <change contributor="EW">
+    Fixed reading of unit cell angles from ShelX files.
+  </change>
+</changes>
+
 <changes version="jmol-8">
   <change contributor="EW">
     Made detection of MDL mol files more flexible,

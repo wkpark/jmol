@@ -10,8 +10,8 @@
       </p>
       <p>
       We recommend that you read the
-      <a href="doc/applet/">Jmol Applet Guide</a> and the
-      <a href="doc/guide/">Jmol Guide</a>
+      <a href="../docs/JmolAppletGuide.html">Jmol Applet Guide</a> and the
+      <a href="../docs/JmolUserGuide/">Jmol User Guide</a>
       for additional documentation about the applet and the
       Jmol scripting capabilities.
       </p>
@@ -40,7 +40,7 @@
       You will normally specify the parameter with name="load" in order
       to load a molecule. You may also use JavaScript to dynamically
       load molecules into the applet. See the
-      <a href="scripting.html">Scripting</a> page for more information.
+      <a href="../scripting">Scripting</a> page for more information.
 
 <appletExample>
 <![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
@@ -323,7 +323,7 @@
 </appletExample>
       </p>
 
-      <p>The <a href="scripting.html">Scripting</a> page demonstrates
+      <p>The <a href="../scripting">Scripting</a> page demonstrates
         additional examples.
       </p>
 
@@ -337,7 +337,7 @@
       <p>
         The list:
         <ul>
-          <li><a href="http://www-woc.sci.kun.nl">Dutch Dictionary on Organic Chemistry</a></li>
+          <li><a href="http://www.woc.sci.kun.nl">Dutch Dictionary on Organic Chemistry</a></li>
           <li><a href="http://www.ebi.ac.uk/msd-srv/chempdb/">MSD ligand chemistry</a></li>
         </ul>
       </p>

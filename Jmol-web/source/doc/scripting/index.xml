@@ -23,7 +23,7 @@
       </p>
       <p>
         A description of the Jmol implementation of the scripting language
-	is available as part of the <a href="doc/guide/">Jmol Guide</a>. 
+	is available as part of the <a href="../docs/JmolUserGuide">Jmol User Guide</a>. 
       </p>
       <p>
         For smaller scripts and small molecules the transition from
@@ -49,9 +49,7 @@
       </p>
       <p>
         For additional examples and documentation on Jmol applet scripting
-	see the <a href="applet.html">Applet web page</a>, the
-	<a href="doc/applet/">Jmol Applet Guide</a> and the
-	<a href="doc/guide/">Jmol Guide</a>.
+	see the <a href="../applet">Applet web page</a>.
       </p>
     </header>
 

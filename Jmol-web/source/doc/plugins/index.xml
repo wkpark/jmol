@@ -13,13 +13,15 @@
       </p>
       <p>
         Both Jmol $VERSION$ and Jmol 10 support plugins. The latter needs to 
-        be started as <i>java -Dmodel=cdk -jar jmol.jar</i>.
+        be started as <i>java -Dmodel=cdk -jar jmol.jar</i>. The first cannot run
+        all plugins though, e.g. the DirBrowser plugin does not work.
+        The RSSViewer plugin does work in both versions.
       </p>
     </section>
     
     <section title="Default Plugins">
       <p>
-        Jmol $VERSION$ by default includes the DirBrowser plugin.
+        Jmol v10 by default includes the DirBrowser plugin.
       </p>
     </section>
     

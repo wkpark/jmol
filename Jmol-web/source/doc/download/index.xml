@@ -25,7 +25,8 @@
             <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">jmol v$VERSION$</a>
           </li>
       </ul>
-      Binary and source packages are available, as well as Debian GNU/Linux, and Suse/RedHat Linux packages.
+      With some delay, binary and source packages are available, 
+      as well as Debian GNU/Linux (see below), and Suse/RedHat Linux packages.
       </p>
       <h4>Debian Apt-get</h4>
       <p>

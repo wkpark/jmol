@@ -8,6 +8,13 @@
       Most of the functionality of the Jmol application is available
       for use as web browser applet. 
       </p>
+      <p>
+      We recommend that you read the
+      <a href="doc/applet/">Jmol Applet Guide</a> and the
+      <a href="doc/guide/">Jmol Guide</a>
+      for additional documentation about the applet and the
+      Jmol scripting capabilities.
+      </p>
     </header>
 
     <section title="Requirements">

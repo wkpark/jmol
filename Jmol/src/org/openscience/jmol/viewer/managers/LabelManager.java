@@ -135,6 +135,15 @@ public class LabelManager {
       case 'e':
         strLabel += atom.getAtomicSymbol();
         break;
+      case 'x':
+        strLabel += atom.getAtomX();
+        break;
+      case 'y':
+        strLabel += atom.getAtomY();
+        break;
+      case 'z':
+        strLabel += atom.getAtomZ();
+        break;
       case 'C':
         int charge = atom.getAtomicCharge();
         if (charge > 0)

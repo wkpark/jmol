@@ -277,13 +277,11 @@ final public class JmolConstants {
       }
       htElementMap = map;
     }
-    if (elementSymbol == null) {
-      System.out.println("elementNumberFromSymbol(null) ?");
+    if (elementSymbol == null)
       return 0;
-    }
     Integer boxedAtomicNumber = (Integer)htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
-	return (byte)boxedAtomicNumber.intValue();
+      return (byte)boxedAtomicNumber.intValue();
     System.out.println("" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }

@@ -2,8 +2,7 @@
  * $Author$
  * $Date$
  * $Revision$
- * modified by Rene Kanters to use the split functions as opposed to 
- *  index determined parsing...
+ * modified by Rene Kanters 10/17/2004
  *
  * Copyright (C) 2004  The Jmol Development Team
  *
@@ -41,9 +40,12 @@ class GaussianReader extends ModelReader {
   
   private int atomCount  = 0;  // the number of atoms in the last read model
   private int modelCount = 0;  // the number of models I have
+  private int lastModelEnd = 0; // last atom index of last model
+                                // need this (since I can not use model.atoms.length)
+  
   // it looks like model numbers really need to start with 1 and not 0 otherwise
   // a single frequency calculation can not go to the first frequency
-  
+
   
   Model readModel(BufferedReader reader) throws Exception {
 
@@ -51,17 +53,25 @@ class GaussianReader extends ModelReader {
 
     try {
       String line;
-      int lineNum=0;
+      int lineNum = 0;
       while ((line = reader.readLine()) != null) {
         if (line.indexOf("Standard orientation:") >= 0) {
-          modelCount++;     // reading the next model
           readAtoms(reader);
-          System.out.println("Read model number " + modelCount);
+          System.out.println("Interpret Standard orientation: " + modelCount);
+        } else if (line.indexOf("Z-Matrix orientation:") >= 0) {
+          readAtoms(reader);
+          System.out.println("Interpret Z-Matrix orientation: " + modelCount);
         } else if (line.startsWith(" Harmonic frequencies")) {
+          // NB this only works for the standard orientation of the molecule
+          // since it does not list the values for the dummy atoms in the z-matrix
           readFrequencies(reader);
+          System.out.println("Interpreting Harmonic frequencies");
         } else if (line.startsWith(" Total atomic charges:") ||
                    line.startsWith(" Mulliken atomic charges:")) {
+          // NB this only works for the standard orientation of the molecule
+          // since it does not list the values for the dummy atoms in the z-matrix
           readPartialCharges(reader);
+          System.out.println("Interpret  Mulliken atomic charges:");
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
             firstCoordinateOffset = 2;
@@ -85,31 +95,32 @@ class GaussianReader extends ModelReader {
   */
 
   // GAUSSIAN 04 format
-  /* Standard orientation:
-     ----------------------------------------------------------
-     Center     Atomic              Coordinates (Angstroms)
-     Number     Number             X           Y           Z
-     ----------------------------------------------------------
-     1          6           0.000000    0.000000    1.043880
-     ##SNIP##    
-     ---------------------------------------------------------------------
+  /*                 Standard orientation:
+                     ----------------------------------------------------------
+                     Center     Atomic              Coordinates (Angstroms)
+                     Number     Number             X           Y           Z
+                     ----------------------------------------------------------
+                     1          6           0.000000    0.000000    1.043880
+                     ##SNIP##    
+                     ---------------------------------------------------------------------
   */
 
   // GAUSSIAN 98 and 03 format
-  /* Standard orientation:                         
-     ---------------------------------------------------------------------
-     Center     Atomic     Atomic              Coordinates (Angstroms)
-     Number     Number      Type              X           Y           Z
-     ---------------------------------------------------------------------
-     1          6             0        0.852764   -0.020119    0.050711
-     ##SNIP##
-     ---------------------------------------------------------------------
+  /*                    Standard orientation:                         
+                        ---------------------------------------------------------------------
+                        Center     Atomic     Atomic              Coordinates (Angstroms)
+                        Number     Number      Type              X           Y           Z
+                        ---------------------------------------------------------------------
+                        1          6             0        0.852764   -0.020119    0.050711
+                        ##SNIP##
+                        ---------------------------------------------------------------------
   */
 
   private void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 4);
     String line;
     String tokens[];
+    modelCount++;     // reading the next model
     atomCount = 0; // we have no atoms for this model yet
     while ((line = reader.readLine()) != null &&
            !line.startsWith(" --")) {
@@ -117,12 +128,15 @@ class GaussianReader extends ModelReader {
       Atom atom = model.addNewAtom();
       atom.modelNumber = modelCount;  // associate that current model number
       atom.elementNumber = (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
+      if (atom.elementNumber < 0)
+        atom.elementNumber = 0; // dummy atoms have -1 -> 0
       int offset = firstCoordinateOffset;
       atom.x = parseFloat(tokens[offset]);
       atom.y = parseFloat(tokens[++offset]);
       atom.z = parseFloat(tokens[++offset]);
       ++atomCount;
     }
+    lastModelEnd += atomCount;
   }
 
   /* SAMPLE FREQUENCY OUTPUT */
@@ -174,7 +188,7 @@ class GaussianReader extends ModelReader {
   private void readFrequencies(BufferedReader reader) throws Exception {
     String line, tokens[];
     int nNewModels = 0;           // number of new models to make
-    boolean firstTime = true;    // flag for first time through
+    boolean firstTime = true;     // flag for first time through
     int modelNumber = modelCount; // tracks the first model the frequencies are for
 
     if (modelNumber < 1)
@@ -193,19 +207,19 @@ class GaussianReader extends ModelReader {
       
       // determine the number of frequencies to interpret in this set of lines
       int nFreq = tokens.length - 2; // Frequencies and -- come in as two tokens
-      System.out.println("Detected " + nFreq + " frequencies in line\n  "+line);
+      //      System.out.println("Detected " + nFreq + " frequencies in line\n  "+line);
       
       // determine and duplicate the number of models needed to put the vectors on
       if (firstTime) {
-        modelNumber--;        // use the first model to put the vectors on
-        nNewModels = nFreq-1; // so I need to create 1 model less than the # of freqs
-        firstTime = false;    // really do this only the first time
+        modelNumber--;          // use the first model to put the vectors on
+        nNewModels = nFreq - 1; // so I need to create 1 model less than the # of freqs
+        firstTime = false;      // really do this only the first time
       } else {
         nNewModels = nFreq;   // I need to create new models for every frequency
       }
-
       for (int i = nNewModels; --i >= 0; )
         duplicateLastModel();
+      int firstModelAtom = lastModelEnd - nFreq * atomCount;
       
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith(reader, " Atom AN");
@@ -214,8 +228,9 @@ class GaussianReader extends ModelReader {
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(reader.readLine());
         int atomCenterNumber = parseInt(tokens[0]);
-        for (int j = 0, offset = FREQ_FIRST_VECTOR_OFFSET; j < nFreq; ++j) {
-          Atom atom = model.atoms[(modelNumber+j)*atomCount + atomCenterNumber-1];
+        for (int j = 0, offset=FREQ_FIRST_VECTOR_OFFSET; j < nFreq; ++j) {
+          int atomOffset = firstModelAtom+j*atomCount + atomCenterNumber - 1 ;
+          Atom atom = model.atoms[atomOffset];
           atom.vectorX = parseFloat(tokens[offset++]);
           atom.vectorY = parseFloat(tokens[offset++]);
           atom.vectorZ = parseFloat(tokens[offset++]);
@@ -240,20 +255,24 @@ class GaussianReader extends ModelReader {
   */
   void readPartialCharges(BufferedReader reader) throws Exception {
     discardLines(reader, 1);
-    String charge;
-    for (int i = 0; i < atomCount ; ++i)
-      model.atoms[(modelCount-1)*atomCount+i].partialCharge =
+    for (int i = atomCount, atomOffset = lastModelEnd - atomCount; --i >= 0; ++atomOffset)
+      model.atoms[atomOffset].partialCharge =
         parseFloat(getTokens(reader.readLine())[2]);
   }
 
-  // duplicate the last model 
+  // duplicate the last model
+  /* NB with the possibility of having z-matrix orientations in the list
+     I can not rely on a fixed length for each of the models, so I need to walk
+     back
+  */
+
   private void duplicateLastModel() {
     Atom[] atoms = model.atoms;
-    int offset = atomCount*(modelCount-1);
     modelCount++;  // new count of models is increased
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atomNew = model.newCloneAtom(atoms[offset+i]);
+    for (int i = atomCount, atomOffset = lastModelEnd - atomCount; --i >= 0; ++atomOffset) {
+      Atom atomNew = model.newCloneAtom(atoms[atomOffset]);
       atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
     }
+    lastModelEnd += atomCount;
   }
 }

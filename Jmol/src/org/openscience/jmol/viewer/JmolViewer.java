@@ -708,6 +708,14 @@ final public class JmolViewer {
     transformManager.setVectorScale(scale);
   }
 
+  public void setVibrationScale(float scale) {
+    transformManager.setVibrationScale(scale);
+  }
+
+  public float getVibrationScale() {
+    return transformManager.vibrationScale;
+  }
+
   public void setColorBackground(Color bg) {
     colorManager.setColorBackground(bg);
     refresh();

@@ -2114,10 +2114,24 @@ public class Eval implements Runnable {
     case Token.decimal:
       period = floatParameter(1);
       break;
+    case Token.identifier:
+      String cmd = (String)statement[1].value;
+      if (cmd.equalsIgnoreCase("scale")) {
+        vibrationScale();
+        return;
+      }
     default:
       unrecognizedSubcommand();
     }
     viewer.setVibrationPeriod(period);
+  }
+
+  void vibrationScale() throws ScriptException {
+    checkLength3();
+    float scale = floatParameter(2);
+    if (scale < -10 || scale > 10)
+      numberOutOfRange();
+    viewer.setVibrationScale(scale);
   }
 
   void animationDirection() throws ScriptException {

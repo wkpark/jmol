@@ -651,7 +651,7 @@ public class TransformManager {
     if (! vibrationOn || vibrationVector == null)
       matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     else {
-      point3fVibrationTemp.scaleAdd(vibrationScale, vibrationVector,
+      point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
                                     pointAngstroms);
       matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
     }
@@ -693,7 +693,7 @@ public class TransformManager {
   boolean vibrationOn;
   public float vibrationPeriod;
   int vibrationPeriodMs;
-  float vibrationScale;
+  float vibrationAmplitude;
   public float vibrationRadians;
   
   public void setVibrationPeriod(float period) {
@@ -710,13 +710,19 @@ public class TransformManager {
 
   public void setVibrationT(float t) {
     vibrationRadians = t * twoPI;
-    vibrationScale = (float)Math.cos(vibrationRadians) * vectorScale;
+    vibrationAmplitude = (float)Math.cos(vibrationRadians) * vibrationScale;
   }
 
   public float vectorScale = 1f;
   public void setVectorScale(float scale) {
     if (scale >= -10 && scale <= 10)
       vectorScale = scale;
+  }
+
+  public float vibrationScale = 1f;
+  public void setVibrationScale(float scale) {
+    if (scale >= -10 && scale <= 10)
+      vibrationScale = scale;
   }
 
   public int spinX, spinY = 30, spinZ, spinFps = 30;

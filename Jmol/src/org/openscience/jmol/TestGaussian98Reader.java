@@ -34,8 +34,10 @@ public class TestGaussian98Reader extends TestCase {
 	public void setUp() {
 		try {
 			AtomTypeSet ats1 = new AtomTypeSet();
-			ats1.load(new FileInputStream("Data/AtomTypes"));
-			reader1 = new Gaussian98Reader(new FileReader("../../../../samples/g98.out"));
+			ats1.load(new FileInputStream(System.getProperty("jmol.home")
+										  + "/src/org/openscience/jmol/Data/AtomTypes"));
+			reader1 = new Gaussian98Reader(new FileReader(System.getProperty("jmol.home")
+														  + "/samples/g98.out"));
 		} catch (IOException ex) {
 			throw new RuntimeException("unable to open Gaussian98 test file");
 		} 

@@ -86,7 +86,8 @@ public class TestAtomTypeSet extends TestCase {
 	 */
 	public void testLoad() {
 		try {
-			ats1.load(new FileInputStream("Data/AtomTypes"));
+			ats1.load(new FileInputStream(System.getProperty("jmol.home")
+										  + "/src/org/openscience/jmol/Data/AtomTypes"));
 			assertEquals(138, ats1.size());
 			assert(ats1.contains(BaseAtomType.get("CAR")));
 		} catch (IOException ex) {

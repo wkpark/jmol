@@ -58,6 +58,16 @@
 	  </a>
 	  - St. Olaf College, USA
 	</li>
+	<li>
+	  <a href="http://www.cem.msu.edu/~reusch/vtxtindex.htm">
+	    Virtual Textbook of Organic Chemistry
+	  </a>
+	  - Michigan State University, USA <br />
+	  <i>
+	    Because this is a large site the Jmol references
+	    may be difficult to find ... but they are in there.
+	  </i>
+	</li>
       </ul>
     </section>
 
@@ -70,8 +80,14 @@
       <ul>
 	<li>
 	  <a href="http://www.charite.de/bioinf/strap">
-	    STRAP - Structural Alignment Program for Proteins
+	    STRAP Structural Alignment Program for Proteins
 	  </a>
+	</li>
+	<li>
+	  <a href="http://www.efamily.org.uk/software/dasclients/spice/">
+	    SPICE-DAS
+	  </a>
+	  - Wellcome Trust Sanger Institute, UK
 	</li>
       </ul>
     </section>

@@ -280,7 +280,7 @@ class Dots extends Shape {
     int[] map = mapNull;
     if (indexLast >= 0) {
       int count = indexLast + 1;
-      map = new int[indexLast + 1];
+      map = new int[count];
       System.arraycopy(geodesicMap, 0, map, 0, count);
     }
     dotsConvexMaps[indexI] = map;

@@ -94,9 +94,9 @@ class Surface extends Shape {
   int cavityCount;
   Cavity[] cavities;
   int torusCount;
-  Torus[] tori;
+  Torus[] toruses;
 
-  Hashtable htTori;
+  Hashtable htToruses;
 
   int indexI, indexJ, indexK;
   Atom atomI, atomJ, atomK;
@@ -126,8 +126,8 @@ class Surface extends Shape {
       surfaceConvexMax = 0;
       surfaceConvexMaps = null;
       torusCount = 0;
-      htTori = null;
-      tori = null;
+      htToruses = null;
+      toruses = null;
       cavityCount = 0;
       cavities = null;
       radiusP = viewer.getCurrentSolventProbeRadius();
@@ -139,8 +139,8 @@ class Surface extends Shape {
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
           surfaceConvexMaps[i] = null;
-      deleteUnnecessaryTori();
-      deleteUnnecessaryCavities();
+      deleteUnusedToruses();
+      deleteUnusedCavities();
     }
     // now, calculate surface for selected atoms
     if (mad != 0) {
@@ -153,7 +153,7 @@ class Surface extends Shape {
           setAtomI(i);
           getNeighbors(bsSelected);
           calcConvexMap();
-          calcTori();
+          calcToruses();
           calcCavities();
         }
     }
@@ -188,7 +188,7 @@ class Surface extends Shape {
     if ("colorSaddle" == propertyName) {
       short colix = g3d.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
-        Torus torus = tori[i];
+        Torus torus = toruses[i];
         if (bs.get(torus.indexII))
           torus.colixI = colix;
         if (bs.get(torus.indexJJ))
@@ -219,7 +219,7 @@ class Surface extends Shape {
           }
         }
         for (int i = torusCount; --i >= 0; ) {
-          Torus torus = tori[i];
+          Torus torus = toruses[i];
           if (bs.get(torus.indexII))
             torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexII],
                                                       palette);
@@ -280,7 +280,7 @@ class Surface extends Shape {
     int[] map = mapNull;
     if (indexLast >= 0) {
       int count = indexLast + 1;
-      map = new int[indexLast + 1];
+      map = new int[count];
       System.arraycopy(geodesicMap, 0, map, 0, count);
     }
     surfaceConvexMaps[indexI] = map;
@@ -362,13 +362,14 @@ class Surface extends Shape {
     */
   }
 
-  void calcTori() {
+  void calcToruses() {
+    System.out.println("calcToruses! radiusP=" + radiusP);
     if (radiusP == 0)
       return;
-    if (htTori == null) {
+    if (htToruses == null) {
       torusCount = 0;
-      tori = new Torus[32];
-      htTori = new Hashtable();
+      toruses = new Torus[32];
+      htToruses = new Hashtable();
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
       if (indexI >= neighborIndices[iJ])
@@ -377,33 +378,31 @@ class Surface extends Shape {
       torusIJ = getTorus(atomI, atomJ);
       if (torusIJ == null)
         continue;
-      calcTorusProbeMap(torusIJ);
-      if (torusIJ.probeMap == 0)
-        continue;
-      if (torusCount == tori.length)
-        tori = (Torus[])Util.doubleLength(tori);
-      tori[torusCount++] = torusIJ;
+      if (torusCount == toruses.length)
+        toruses = (Torus[])Util.doubleLength(toruses);
+      toruses[torusCount++] = torusIJ;
     }
+    System.out.println("torusCount=" + torusCount);
   }
 
-  void deleteUnnecessaryTori() {
+  void deleteUnusedToruses() {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
-      Torus torus = tori[i];
+      Torus torus = toruses[i];
       if (surfaceConvexMaps[torus.indexII] == null &&
           surfaceConvexMaps[torus.indexJJ] == null) {
         torusDeleted = true;
-        tori[i] = null;
+        toruses[i] = null;
       }
     }
     if (torusDeleted) {
       int iDestination = 0;
       for (int iSource = 0; iSource < torusCount; ++iSource) {
-        if (tori[iSource] != null)
-          tori[iDestination++] = tori[iSource];
+        if (toruses[iSource] != null)
+          toruses[iDestination++] = toruses[iSource];
       }
       for (int i = torusCount; --i >= iDestination; )
-        tori[i] = null;
+        toruses[i] = null;
       torusCount = iDestination;
     }
   }
@@ -411,32 +410,6 @@ class Surface extends Shape {
   final Matrix3f matrixT = new Matrix3f();
   final Matrix3f matrixT1 = new Matrix3f();
   final AxisAngle4f aaT = new AxisAngle4f();
-
-  void calcTorusProbeMap(Torus torus) {
-    long probeMap = ~0;
-
-    float stepAngle = 2 * (float)Math.PI / 64;
-    aaT.set(torus.axisVector, 0);
-    int iLastNeighbor = 0;
-    for (int a = 64; --a >= 0; ) {
-      aaT.angle = a * stepAngle;
-      matrixT.set(aaT);
-      matrixT.transform(torus.radialVector, pointT);
-      pointT.add(torus.center);
-      int iStart = iLastNeighbor;
-      do {
-        if (neighbors[iLastNeighbor].atomIndex != torus.indexJJ) {
-          if (pointT.distanceSquared(neighborCenters[iLastNeighbor])
-              < neighborPlusProbeRadii2[iLastNeighbor]) {
-            probeMap &= ~(1L << (63 - a));
-            break;
-          }
-        }
-        iLastNeighbor = (iLastNeighbor + 1) % neighborCount;
-      } while (iLastNeighbor != iStart);
-    }
-    torus.probeMap = probeMap;
-  }
 
   final Vector3f vectorT = new Vector3f();
   final Vector3f vectorT1 = new Vector3f();
@@ -457,7 +430,6 @@ class Surface extends Shape {
     Vector3f tangentVector;
     Vector3f outerRadial;
     float outerAngle;
-    long probeMap;
     AxisAngle4f aaRotate;
     short colixI, colixJ;
 
@@ -535,7 +507,7 @@ class Surface extends Shape {
     if (indexI >= indexJ)
       throw new NullPointerException();
     Long key = new Long(((long)indexI << 32) + indexJ);
-    Object value = htTori.get(key);
+    Object value = htToruses.get(key);
     if (value != null) {
       if (value instanceof Torus) {
         Torus torus = (Torus)value;
@@ -545,12 +517,12 @@ class Surface extends Shape {
     }
     float radius = calcTorusRadius();
     if (radius == 0) {
-      htTori.put(key, Boolean.FALSE);
+      htToruses.put(key, Boolean.FALSE);
       return null;
     }
     Point3f center = calcTorusCenter();
     Torus torus = new Torus(centerI, indexI, centerJ, indexJ, center, radius);
-    htTori.put(key, torus);
+    htToruses.put(key, torus);
     return torus;
   }
 
@@ -606,7 +578,7 @@ class Surface extends Shape {
     }
   }
 
-  void deleteUnnecessaryCavities() {
+  void deleteUnusedCavities() {
     boolean cavityDeleted = false;
     for (int i = cavityCount; --i >= 0; ) {
       Cavity cavity = cavities[i];

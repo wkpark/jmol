@@ -75,18 +75,15 @@ class SurfaceRenderer extends ShapeRenderer {
           renderConvex(atom, colixesConvex[i], map);
       }
     }
-    Surface.Torus[] tori = surface.tori;
+    Surface.Torus[] toruses = surface.toruses;
     for (int i = surface.torusCount; --i >= 0; ) {
-      Surface.Torus torus = tori[i];
+      Surface.Torus torus = toruses[i];
       if (displayModelIndex < 0 ||
           displayModelIndex == atoms[torus.indexII].modelIndex)
         renderTorus(torus, atoms, colixesConvex, surfaceConvexMaps);
     }
+
     Surface.Cavity[] cavities = surface.cavities;
-    if (false) {
-      System.out.println("concave surface rendering currently disabled");
-      return;
-    }
     for (int i = surface.cavityCount; --i >= 0; ) {
       Surface.Cavity cavity = cavities[i];
       if (displayModelIndex < 0 ||
@@ -153,8 +150,6 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
-    if (true)
-      return;
     if (surfaceConvexMaps[torus.indexII] != null)
       renderTorusHalf(torus,
                       getColix(torus.colixI, colixes, atoms, torus.indexII),
@@ -175,7 +170,7 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorusHalf(Surface.Torus torus, short colix, boolean renderJHalf) {
     g3d.setColix(colix);
-    long probeMap = torus.probeMap;
+    long probeMap = -1;
 
     int torusDotCount1 =
       (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));

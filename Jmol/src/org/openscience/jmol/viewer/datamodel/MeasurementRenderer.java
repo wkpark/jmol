@@ -37,7 +37,7 @@ import javax.vecmath.AxisAngle4f;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-class MeasurementRenderer extends Renderer {
+class MeasurementRenderer extends ShapeRenderer {
 
   MeasurementRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     setViewerFrameRenderer(viewer, frameRenderer);

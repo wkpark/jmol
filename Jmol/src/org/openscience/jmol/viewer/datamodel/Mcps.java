@@ -31,9 +31,9 @@ import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
 /****************************************************************
- * Mcpg stands for Model-Chain-Polymer-Graphic
+ * Mcps stands for Model-Chain-Polymer-Shape
  ****************************************************************/
-abstract public class Mcpg extends Graphic {
+abstract public class Mcps extends Shape {
 
   PdbFile pdbFile;
 
@@ -55,7 +55,7 @@ abstract public class Mcpg extends Graphic {
       models[m].setColix(palette, colix, bsSelected);
   }
 
-  abstract Chain allocateMcpgChain(PdbPolymer polymer);
+  abstract Chain allocateMcpsChain(PdbPolymer polymer);
 
   void initialize() {
     if (models == null) {
@@ -70,7 +70,7 @@ abstract public class Mcpg extends Graphic {
     return models.length;
   }
 
-  Model getMcpgModel(int i) {
+  Model getMcpsModel(int i) {
     return models[i];
   }
 
@@ -80,7 +80,7 @@ abstract public class Mcpg extends Graphic {
     Model(PdbModel model) {
       chains = new Chain[model.getChainCount()];
       for (int i = chains.length; --i >= 0; )
-        chains[i] = allocateMcpgChain(model.getChain(i).getPolymer());
+        chains[i] = allocateMcpsChain(model.getChain(i).getPolymer());
     }
     
     public void setMad(short mad, BitSet bsSelected) {
@@ -103,7 +103,7 @@ abstract public class Mcpg extends Graphic {
       return chains.length;
     }
 
-    Chain getMcpgChain(int i) {
+    Chain getMcpsChain(int i) {
       return chains[i];
     }
   }

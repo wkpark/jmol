@@ -82,7 +82,7 @@ import java.awt.Rectangle;
  *
  ****************************************************************/
 
-public class Dots extends Graphic {
+public class Dots extends Shape {
 
   DotsRenderer dotsRenderer;
 
@@ -120,7 +120,7 @@ public class Dots extends Graphic {
 
     
   public void initGraphic() {
-    dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.GRAPHIC_DOTS);
+    dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
     bsDotsOn = new BitSet();
     geodesicVertices = dotsRenderer.geodesic.vertices;
     geodesicCount = geodesicVertices.length;

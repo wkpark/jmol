@@ -304,7 +304,7 @@ public class Eval implements Runnable {
       Token token = statement[0];
       switch (token.tok) {
       case Token.backbone:
-        proteinGraphic(JmolConstants.GRAPHIC_BACKBONE);
+        proteinGraphic(JmolConstants.SHAPE_BACKBONE);
         break;
       case Token.background:
         background();
@@ -392,13 +392,13 @@ public class Eval implements Runnable {
         // for now, just let ribbons and strands do the same thing
         System.out.println("sorry - ribbons not implemented, using strands");
       case Token.strands:
-        proteinGraphic(JmolConstants.GRAPHIC_STRANDS);
+        proteinGraphic(JmolConstants.SHAPE_STRANDS);
         break;
       case Token.trace:
-        proteinGraphic(JmolConstants.GRAPHIC_TRACE);
+        proteinGraphic(JmolConstants.SHAPE_TRACE);
         break;
       case Token.cartoon:
-        proteinGraphic(JmolConstants.GRAPHIC_CARTOON);
+        proteinGraphic(JmolConstants.SHAPE_CARTOON);
         break;
       case Token.spin:
         spin();
@@ -1262,28 +1262,28 @@ public class Eval implements Runnable {
       viewer.setColorAtomScript(palette, color);
       return;
     }
-    int refGraphic = 0;
+    int refShape = 0;
     switch(tokObject) {
     case Token.trace:
-      refGraphic = JmolConstants.GRAPHIC_TRACE;
+      refShape = JmolConstants.SHAPE_TRACE;
       break;
     case Token.backbone:
-      refGraphic = JmolConstants.GRAPHIC_BACKBONE;
+      refShape = JmolConstants.SHAPE_BACKBONE;
       break;
     case Token.ribbons:
     case Token.strands:
-      refGraphic = JmolConstants.GRAPHIC_STRANDS;
+      refShape = JmolConstants.SHAPE_STRANDS;
       break;
     case Token.cartoon:
-      refGraphic = JmolConstants.GRAPHIC_CARTOON;
+      refShape = JmolConstants.SHAPE_CARTOON;
       break;
     case Token.dots:
-      refGraphic = JmolConstants.GRAPHIC_DOTS;
+      refShape = JmolConstants.SHAPE_DOTS;
       break;
     default:
       unrecognizedColorObject();
     }
-    viewer.setGraphicColor(refGraphic, palette, color);
+    viewer.setShapeColor(refShape, palette, color);
   }
 
   Hashtable variables = new Hashtable();
@@ -1850,7 +1850,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setGraphicShow(JmolConstants.GRAPHIC_DOTS, dotsOn);
+    viewer.setShapeShow(JmolConstants.SHAPE_DOTS, dotsOn);
   }
 
   void proteinGraphic(int graphicType) throws ScriptException {
@@ -1877,7 +1877,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setGraphicMad(graphicType, mad);
+    viewer.setShapeMad(graphicType, mad);
   }
 
   void spin() throws ScriptException {
@@ -1969,7 +1969,7 @@ public class Eval implements Runnable {
       setScale3d();
       break;
     case Token.unitcell:
-      setGraphicShow(JmolConstants.GRAPHIC_UNITCELL);
+      setShapeShow(JmolConstants.SHAPE_UNITCELL);
       break;
       // not implemented
     case Token.backfade:
@@ -2033,7 +2033,7 @@ public class Eval implements Runnable {
   }
 
   void setFrank() throws ScriptException {
-    viewer.setGraphicShow(JmolConstants.GRAPHIC_FRANK, getSetBoolean());
+    viewer.setShapeShow(JmolConstants.SHAPE_FRANK, getSetBoolean());
   }
 
 
@@ -2231,8 +2231,8 @@ public class Eval implements Runnable {
     viewer.setScaleAngstromsPerInch(angstromsPerInch);
   }
 
-  void setGraphicShow(int graphic) throws ScriptException {
-    viewer.setGraphicShow(graphic, getSetBoolean());
+  void setShapeShow(int graphic) throws ScriptException {
+    viewer.setShapeShow(graphic, getSetBoolean());
   }
 
   /****************************************************************

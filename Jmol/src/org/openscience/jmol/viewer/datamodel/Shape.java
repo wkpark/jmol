@@ -24,42 +24,40 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
-
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.g3d.Shade3D;
-import java.awt.Rectangle;
 
-abstract class Renderer {
+import javax.vecmath.Point3f;
+import java.util.BitSet;
+
+abstract public class Shape {
 
   JmolViewer viewer;
-  FrameRenderer frameRenderer;
-
-  final void setViewerFrameRenderer(JmolViewer viewer,
-                                    FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
-    initRenderer();
-  }
-
-  void initRenderer() {
-  }
-
-  Graphics3D g3d;
-  Rectangle rectClip;
   Frame frame;
-  Graphic graphic;
+  boolean show;
 
-  void render(Graphics3D g3d, Rectangle rectClip,
-              Frame frame, Graphic graphic) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
+  final public void setViewerFrame(JmolViewer viewer, Frame frame) {
+    this.viewer = viewer;
     this.frame = frame;
-    this.graphic = graphic;
-    render();
+    initGraphic();
   }
 
-  abstract void render();
-}
+  public void initGraphic() {
+  }
 
+  public void setShow(boolean show) {
+    this.show = show;
+  }
+
+  final public boolean getShow() {
+    return show;
+  }
+
+  public void setMad(short mad, BitSet bsSelected) {
+  }
+
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+  }
+
+  public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
+  }
+}

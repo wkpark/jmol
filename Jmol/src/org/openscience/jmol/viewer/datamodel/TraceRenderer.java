@@ -32,7 +32,7 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class TraceRenderer extends McpgRenderer {
+class TraceRenderer extends McpsRenderer {
 
   void render() {
     super.render();
@@ -40,7 +40,7 @@ class TraceRenderer extends McpgRenderer {
     alphas = null;
   }
 
-  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+  void renderMcpsChain(Mcps.Chain mcpgChain) {
     Trace.Chain traceChain = (Trace.Chain)mcpgChain;
     render1Chain(traceChain.polymerCount,
                  traceChain.polymerGroups,

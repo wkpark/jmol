@@ -32,10 +32,10 @@ import org.openscience.jmol.viewer.g3d.Colix;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class UnitcellRenderer extends Renderer {
+class UnitcellRenderer extends ShapeRenderer {
 
   void render() {
-    Unitcell unitcell = (Unitcell)graphic;
+    Unitcell unitcell = (Unitcell)shape;
     if (! unitcell.show || ! unitcell.hasUnitcell)
       return;
     Point3i[] screens = frameRenderer.getTempScreens(8);

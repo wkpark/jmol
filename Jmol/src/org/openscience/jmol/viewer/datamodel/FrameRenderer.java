@@ -44,13 +44,13 @@ public class FrameRenderer {
   MeasurementRenderer measurementRenderer;
   LineRenderer lineRenderer;
 
-  Renderer[] renderers;
+  ShapeRenderer[] renderers;
 
   public FrameRenderer(JmolViewer viewer) {
     this.viewer = viewer;
     atomRenderer = new AtomRenderer(viewer, this);
     bondRenderer = new BondRenderer(viewer, this);
-    renderers = new Renderer[JmolConstants.GRAPHIC_MAX];
+    renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
   }
 
   public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
@@ -68,11 +68,11 @@ public class FrameRenderer {
       measurementRenderer.render(g3d, rectClip, frame, null);
     }
 
-    for (int i = 0; i < JmolConstants.GRAPHIC_MAX; ++i) {
-      Graphic graphic = frame.graphics[i];
-      if (graphic == null)
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape == null)
         continue;
-      getRenderer(i).render(g3d, rectClip, frame, graphic);
+      getRenderer(i).render(g3d, rectClip, frame, shape);
     }
 
     if (frame.lineCount > 0) {
@@ -82,20 +82,20 @@ public class FrameRenderer {
     }
   }
 
-  Renderer getRenderer(int refGraphic) {
-    if (renderers[refGraphic] == null)
-      renderers[refGraphic] = allocateRenderer(refGraphic);
-    return renderers[refGraphic];
+  ShapeRenderer getRenderer(int refShape) {
+    if (renderers[refShape] == null)
+      renderers[refShape] = allocateRenderer(refShape);
+    return renderers[refShape];
   }
 
-  Renderer allocateRenderer(int refGraphic) {
+  ShapeRenderer allocateRenderer(int refShape) {
     String classBase =
-      JmolConstants.graphicClassBases[refGraphic] + "Renderer";
+      JmolConstants.shapeClassBases[refShape] + "Renderer";
     String className = "org.openscience.jmol.viewer.datamodel." + classBase;
 
     try {
-      Class graphicClass = Class.forName(className);
-      Renderer renderer = (Renderer)graphicClass.newInstance();
+      Class shapeClass = Class.forName(className);
+      ShapeRenderer renderer = (ShapeRenderer)shapeClass.newInstance();
       renderer.setViewerFrameRenderer(viewer, this);
       return renderer;
     } catch (Exception e) {

@@ -34,7 +34,7 @@ import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 
-class Bbox extends Graphic {
+class Bbox extends Shape {
 
   final Point3f[] bboxPoints = new Point3f[8];
   {

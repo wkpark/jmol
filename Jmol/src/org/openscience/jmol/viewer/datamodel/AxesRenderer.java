@@ -33,7 +33,7 @@ import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class AxesRenderer extends Renderer {
+class AxesRenderer extends ShapeRenderer {
 
   final static int axisFontsize = 14;
 
@@ -42,7 +42,7 @@ class AxesRenderer extends Renderer {
 
   
   void render() {
-    Axes axes = (Axes)graphic;
+    Axes axes = (Axes)shape;
     if (axes.mode == JmolConstants.AXES_NONE)
       return;
     final Point3i[] axisScreens = frameRenderer.getTempScreens(7);

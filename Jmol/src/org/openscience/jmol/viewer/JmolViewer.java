@@ -1299,26 +1299,26 @@ final public class JmolViewer {
     return selectionManager.bsSelection;
   }
 
-  public void setGraphicShow(int refGraphic, boolean show) {
-    getFrame().setGraphicShow(refGraphic, show);
+  public void setShapeShow(int refGraphic, boolean show) {
+    getFrame().setShapeShow(refGraphic, show);
   }
 
-  public boolean getGraphicShow(int refGraphic) {
-    return getFrame().getGraphicShow(refGraphic);
+  public boolean getShapeShow(int refShape) {
+    return getFrame().getShapeShow(refShape);
   }
 
-  public void setGraphicMad(int refGraphic, short mad) {
-    getFrame().setGraphicMad(refGraphic, mad,
-                             refGraphic <
-                             JmolConstants.GRAPHIC_MIN_SELECTION_INDEPENDENT
+  public void setShapeMad(int refShape, short mad) {
+    getFrame().setShapeMad(refShape, mad,
+                             refShape <
+                             JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
                              : null);
   }
 
-  public void setGraphicColor(int refGraphic, byte palette, Color color) {
-    getFrame().setGraphicColix(refGraphic, palette, Colix.getColix(color),
-                             refGraphic <
-                             JmolConstants.GRAPHIC_MIN_SELECTION_INDEPENDENT
+  public void setShapeColor(int refShape, byte palette, Color color) {
+    getFrame().setShapeColix(refShape, palette, Colix.getColix(color),
+                             refShape <
+                             JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
                              : null);
   }
@@ -1433,7 +1433,7 @@ final public class JmolViewer {
     if (key.equals("showBoundingBox"))
       return getShowBoundingBox();
     if (key.equals("showUnitcell"))
-      return getGraphicShow(JmolConstants.GRAPHIC_UNITCELL);
+      return getShapeShow(JmolConstants.SHAPE_UNITCELL);
     if (key.equals("showHydrogens"))
       return getShowHydrogens();
     if (key.equals("showVectors"))
@@ -1470,7 +1470,7 @@ final public class JmolViewer {
     if (key.equals("showBoundingBox"))
       { setShowBoundingBox(value); return; }
     if (key.equals("showUnitcell"))
-      { setGraphicShow(JmolConstants.GRAPHIC_UNITCELL, value); return; }
+      { setShapeShow(JmolConstants.SHAPE_UNITCELL, value); return; }
     if (key.equals("showHydrogens"))
       { setShowHydrogens(value); return; }
     if (key.equals("showHydrogens"))

@@ -32,9 +32,9 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class BackboneRenderer extends McpgRenderer {
+class BackboneRenderer extends McpsRenderer {
 
-  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+  void renderMcpsChain(Mcps.Chain mcpgChain) {
     renderTraceChain((Backbone.Chain)mcpgChain);
   }
   

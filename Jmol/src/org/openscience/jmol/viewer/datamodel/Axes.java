@@ -34,7 +34,7 @@ import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 
-public class Axes extends Graphic {
+public class Axes extends Shape {
 
   final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),

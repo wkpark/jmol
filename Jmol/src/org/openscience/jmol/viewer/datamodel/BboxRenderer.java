@@ -31,7 +31,7 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class BboxRenderer extends Renderer {
+class BboxRenderer extends ShapeRenderer {
 
   final Point3i[] bboxScreen = new Point3i[8];
   {
@@ -40,7 +40,7 @@ class BboxRenderer extends Renderer {
   }
 
   void render() {
-    Bbox bbox = (Bbox)graphic;
+    Bbox bbox = (Bbox)shape;
     if (! bbox.show)
       return;
     for (int i = 8; --i >= 0; )

@@ -24,40 +24,29 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
+
 import org.openscience.jmol.viewer.*;
-
+import org.openscience.jmol.viewer.g3d.*;
+import org.openscience.jmol.viewer.pdb.*;
+import java.awt.Rectangle;
 import javax.vecmath.Point3f;
-import java.util.BitSet;
+import javax.vecmath.Point3i;
 
-abstract public class Graphic {
+abstract class McpsRenderer extends ShapeRenderer {
 
-  JmolViewer viewer;
-  Frame frame;
-  boolean show;
-
-  final public void setViewerFrame(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
-    initGraphic();
+  void render() {
+    if (shape == null)
+      return;
+    Mcps mcps = (Mcps)shape;
+    for (int m = mcps.getModelCount(); --m >= 0; ) {
+      Mcps.Model model = mcps.getMcpsModel(m);
+      for (int c = model.getChainCount(); --c >= 0; ) {
+        Mcps.Chain mcpsChain = model.getMcpsChain(c);
+        if (mcpsChain.polymerCount >= 2)
+          renderMcpsChain(mcpsChain);
+      }
+    }
   }
 
-  public void initGraphic() {
-  }
-
-  public void setShow(boolean show) {
-    this.show = show;
-  }
-
-  final public boolean getShow() {
-    return show;
-  }
-
-  public void setMad(short mad, BitSet bsSelected) {
-  }
-
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-  }
-
-  public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
-  }
+  abstract void renderMcpsChain(Mcps.Chain mcpsChain);
 }

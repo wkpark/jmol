@@ -195,57 +195,57 @@ public class Frame {
     addBond(atom1.bondMutually(atom2, order));
   }
 
-  Graphic allocateGraphic(int refGraphic) {
-    String classBase = JmolConstants.graphicClassBases[refGraphic];
+  Shape allocateShape(int refShape) {
+    String classBase = JmolConstants.shapeClassBases[refShape];
     String className = "org.openscience.jmol.viewer.datamodel." + classBase;
 
     try {
-      Class graphicClass = Class.forName(className);
-      Graphic graphic = (Graphic)graphicClass.newInstance();
-      graphic.setViewerFrame(viewer, this);
-      return graphic;
+      Class shapeClass = Class.forName(className);
+      Shape shape = (Shape)shapeClass.newInstance();
+      shape.setViewerFrame(viewer, this);
+      return shape;
     } catch (Exception e) {
-      System.out.println("Could not instantiate graphic:" + classBase +
+      System.out.println("Could not instantiate shape:" + classBase +
                          "\n" + e);
       e.printStackTrace();
     }
     return null;
   }
 
-  final Graphic[] graphics = new Graphic[JmolConstants.GRAPHIC_MAX];
+  final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
 
-  void checkGraphic(int refGraphic) {
-    if (graphics[refGraphic] == null) {
-      graphics[refGraphic] = allocateGraphic(refGraphic);
+  void checkShape(int refShape) {
+    if (shapes[refShape] == null) {
+      shapes[refShape] = allocateShape(refShape);
     }
   }
   
-  public void setGraphicShow(int refGraphic, boolean show) {
+  public void setShapeShow(int refShape, boolean show) {
     if (show)
-      checkGraphic(refGraphic);
-    if (graphics[refGraphic] != null)
-      graphics[refGraphic].setShow(show);
+      checkShape(refShape);
+    if (shapes[refShape] != null)
+      shapes[refShape].setShow(show);
   }
 
-  public boolean getGraphicShow(int refGraphic) {
-    if (graphics[refGraphic] == null)
+  public boolean getShapeShow(int refShape) {
+    if (shapes[refShape] == null)
       return false;
-    return graphics[refGraphic].getShow();
+    return shapes[refShape].getShow();
   }
 
-  public void setGraphicMad(int refGraphic, short mad, BitSet bsSelected) {
+  public void setShapeMad(int refShape, short mad, BitSet bsSelected) {
     if (mad != 0)
-      checkGraphic(refGraphic);
-    if (graphics[refGraphic] != null)
-      graphics[refGraphic].setMad(mad, bsSelected);
+      checkShape(refShape);
+    if (shapes[refShape] != null)
+      shapes[refShape].setMad(mad, bsSelected);
   }
 
-  public void setGraphicColix(int refGraphic, byte palette,
+  public void setShapeColix(int refShape, byte palette,
                               short colix, BitSet bsSelected) {
     if (palette != JmolConstants.PALETTE_CPK || colix != 0)
-      checkGraphic(refGraphic);
-    if (graphics[refGraphic] != null)
-      graphics[refGraphic].setColix(palette, colix, bsSelected);
+      checkShape(refShape);
+    if (shapes[refShape] != null)
+      shapes[refShape].setColix(palette, colix, bsSelected);
   }
 
   Point3f centerBoundingBox;
@@ -330,8 +330,8 @@ public class Frame {
     }
     Point3f pointMax = new Point3f(maxX, maxY, maxZ);
     Point3f pointMin = new Point3f(minX, minY, minZ);
-    for (int i = JmolConstants.GRAPHIC_MAX; --i >= 0; ) {
-      Graphic g = graphics[i];
+    for (int i = JmolConstants.SHAPE_MAX; --i >= 0; ) {
+      Shape g = shapes[i];
       if (g != null)
         g.checkBoundsMinMax(pointMin, pointMax);
     }
@@ -856,8 +856,8 @@ public class Frame {
     this.crystalScaleMatrix = crystalScaleMatrix;
   }
 
-  public Renderer getRenderer(int refGraphic) {
-    return frameRenderer.getRenderer(refGraphic);
+  public ShapeRenderer getRenderer(int refShape) {
+    return frameRenderer.getRenderer(refShape);
   }
 
 }

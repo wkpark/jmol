@@ -217,7 +217,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       loadInline(getValue("loadInline", null));
       script(getValue("script", null));
 
-      viewer.setGraphicShow(JmolConstants.GRAPHIC_FRANK, 
+      viewer.setShapeShow(JmolConstants.SHAPE_FRANK, 
                             getBooleanValue("frank", true));
 
       animFrameCallback = getValue("AnimFrameCallback", null);

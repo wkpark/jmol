@@ -32,13 +32,13 @@ import org.openscience.jmol.viewer.pdb.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class Cartoon extends Mcpg {
+public class Cartoon extends Mcps {
 
-  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }
 
-  class Chain extends Mcpg.Chain {
+  class Chain extends Mcps.Chain {
 
     Chain(PdbPolymer polymer) {
       super(polymer);

@@ -39,7 +39,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-class DotsRenderer extends Renderer {
+class DotsRenderer extends ShapeRenderer {
 
   boolean perspectiveDepth;
   short colixConcave;
@@ -70,7 +70,7 @@ class DotsRenderer extends Renderer {
 
 
     geodesic.transform();
-    Dots dots = (Dots)graphic;
+    Dots dots = (Dots)shape;
     if (dots == null)
       return;
     Atom[] atoms = frame.atoms;

@@ -1702,19 +1702,19 @@ final public class JmolConstants {
     
   };
 
-  public final static int GRAPHIC_BACKBONE = 0;
-  public final static int GRAPHIC_TRACE    = 1;
-  public final static int GRAPHIC_CARTOON  = 2;
-  public final static int GRAPHIC_STRANDS  = 3;
-  public final static int GRAPHIC_DOTS     = 4;
-  public final static int GRAPHIC_MIN_SELECTION_INDEPENDENT = 5;
-  public final static int GRAPHIC_AXES     = 5;
-  public final static int GRAPHIC_BBOX     = 6;
-  public final static int GRAPHIC_UNITCELL = 7;
-  public final static int GRAPHIC_FRANK    = 8;
-  public final static int GRAPHIC_MAX      = 9;
+  public final static int SHAPE_BACKBONE = 0;
+  public final static int SHAPE_TRACE    = 1;
+  public final static int SHAPE_CARTOON  = 2;
+  public final static int SHAPE_STRANDS  = 3;
+  public final static int SHAPE_DOTS     = 4;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 5;
+  public final static int SHAPE_AXES     = 5;
+  public final static int SHAPE_BBOX     = 6;
+  public final static int SHAPE_UNITCELL = 7;
+  public final static int SHAPE_FRANK    = 8;
+  public final static int SHAPE_MAX      = 9;
 
-  public final static String[] graphicClassBases = {
+  public final static String[] shapeClassBases = {
     "Backbone", "Trace", "Cartoon", "Strands", "Dots",
     "Axes", "Bbox", "Unitcell", "Frank",
   };
@@ -1736,7 +1736,7 @@ final public class JmolConstants {
       System.out.println("charge color table length");
       throw new NullPointerException();
     }
-    if (graphicClassBases.length != GRAPHIC_MAX) {
+    if (shapeClassBases.length != SHAPE_MAX) {
       System.out.println("graphicBaseClasses wrong length");
       throw new NullPointerException();
     }

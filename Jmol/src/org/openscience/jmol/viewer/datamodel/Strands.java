@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class Strands extends Mcpg {
+public class Strands extends Mcps {
 
   /****************************************************************
    * M. Carson and C.E. Bugg (1986)
@@ -41,11 +41,11 @@ public class Strands extends Mcpg {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    ****************************************************************/
 
-  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }
 
-  class Chain extends Mcpg.Chain {
+  class Chain extends Mcps.Chain {
     Point3f[] centers;
     Vector3f[] vectors;
 

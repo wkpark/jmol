@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-class CartoonRenderer extends McpgRenderer {
+class CartoonRenderer extends McpsRenderer {
 
   Point3i s0 = new Point3i();
   Point3i s1 = new Point3i();
@@ -43,7 +43,7 @@ class CartoonRenderer extends McpgRenderer {
 
   Cartoon cartoon;
 
-  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+  void renderMcpsChain(Mcps.Chain mcpgChain) {
     Cartoon.Chain cartoonChain = (Cartoon.Chain)mcpgChain;
     render1Chain(cartoonChain.polymer,
                  cartoonChain.mads, cartoonChain.colixes);

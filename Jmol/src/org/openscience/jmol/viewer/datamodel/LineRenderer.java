@@ -31,7 +31,7 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class LineRenderer extends Renderer {
+class LineRenderer extends ShapeRenderer {
 
   LineRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     setViewerFrameRenderer(viewer, frameRenderer);

@@ -26,27 +26,40 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.pdb.*;
+import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.Colix;
+import org.openscience.jmol.viewer.g3d.Shade3D;
 import java.awt.Rectangle;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
-abstract class McpgRenderer extends Renderer {
+abstract class ShapeRenderer {
 
-  void render() {
-    if (graphic == null)
-      return;
-    Mcpg mcpg = (Mcpg)graphic;
-    for (int m = mcpg.getModelCount(); --m >= 0; ) {
-      Mcpg.Model model = mcpg.getMcpgModel(m);
-      for (int c = model.getChainCount(); --c >= 0; ) {
-        Mcpg.Chain mcpgChain = model.getMcpgChain(c);
-        if (mcpgChain.polymerCount >= 2)
-          renderMcpgChain(mcpgChain);
-      }
-    }
+  JmolViewer viewer;
+  FrameRenderer frameRenderer;
+
+  final void setViewerFrameRenderer(JmolViewer viewer,
+                                    FrameRenderer frameRenderer) {
+    this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
+    initRenderer();
   }
 
-  abstract void renderMcpgChain(Mcpg.Chain mcpgChain);
+  void initRenderer() {
+  }
+
+  Graphics3D g3d;
+  Rectangle rectClip;
+  Frame frame;
+  Shape shape;
+
+  void render(Graphics3D g3d, Rectangle rectClip,
+              Frame frame, Shape shape) {
+    this.g3d = g3d;
+    this.rectClip = rectClip;
+    this.frame = frame;
+    this.shape = shape;
+    render();
+  }
+
+  abstract void render();
 }
+

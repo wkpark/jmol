@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-class StrandsRenderer extends McpgRenderer {
+class StrandsRenderer extends McpsRenderer {
 
   Strands strands;
   Point3f pointT = new Point3f();
@@ -74,7 +74,7 @@ class StrandsRenderer extends McpgRenderer {
   float strandSeparation;
   float baseOffset;
 
-  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+  void renderMcpsChain(Mcps.Chain mcpgChain) {
     Strands.Chain strandsChain = (Strands.Chain)mcpgChain;
     polymerCount = strandsChain.polymerCount;
 

@@ -31,7 +31,7 @@ import org.openscience.jmol.viewer.g3d.Colix;
 
 import java.awt.Rectangle;
 
-class BondRenderer extends Renderer {
+class BondRenderer extends ShapeRenderer {
 
   BondRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     setViewerFrameRenderer(viewer, frameRenderer);

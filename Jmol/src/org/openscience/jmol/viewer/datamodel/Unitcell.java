@@ -29,7 +29,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class Unitcell extends Graphic {
+public class Unitcell extends Shape {
 
   boolean hasUnitcell;
   float a,b,c,alpha,beta,gamma;

@@ -30,13 +30,13 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Backbone extends Mcpg {
+public class Backbone extends Mcps {
 
-  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }
 
-  class Chain extends Mcpg.Chain {
+  class Chain extends Mcps.Chain {
 
     Chain(PdbPolymer polymer) {
       super(polymer);

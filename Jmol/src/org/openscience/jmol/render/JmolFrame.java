@@ -516,9 +516,14 @@ public class JmolFrame {
           if (iAtomShape == atomShapeCount)
             return false;
           iAtomShapeCurrent = iAtomShape++;
-          atomShapeCurrent=atomShapes[iAtomShapeCurrent];
-          bondsCurrent = atomShapeCurrent.bonds;
-          iBondShape = 0;
+          if (bsSelected.get(iAtomShapeCurrent)) {
+            atomShapeCurrent=atomShapes[iAtomShapeCurrent];
+            bondsCurrent = atomShapeCurrent.bonds;
+            iBondShape = 0;
+          } else {
+            atomShapeCurrent = null;
+            bondsCurrent = null;
+          }
         }
         for ( ; iBondShape < bondsCurrent.length; ++iBondShape) {
           BondShape bondShape = bondsCurrent[iBondShape];

@@ -46,13 +46,12 @@ public class RepaintManager {
 
   public int displayModelID = 0;
   int displayModelIndex = -1;
-  int modelCount;
   public boolean setDisplayModelID(int modelID) {
     int i = -1;
     if (modelID != 0) {
       Frame frame = viewer.getFrame();
       short[] ids = frame.modelIDs;
-      i = modelCount = frame.modelCount;
+      i = frame.modelCount;
       while ((--i >= 0) && (ids[i] != modelID))
         ;
       if (i < 0)
@@ -66,8 +65,15 @@ public class RepaintManager {
 
   void setDisplayModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
-    this.displayModelIndex = modelIndex;
-    this.displayModelID = frame.modelIDs[modelIndex];
+    try {
+      this.displayModelIndex = modelIndex;
+      this.displayModelID = frame.modelIDs[modelIndex];
+    } catch (Exception ex) {
+      System.out.println("modelIndex=" + modelIndex +
+                         "\nframe.modelIDs.length=" + frame.modelIDs.length +
+                         "viewer.getModelCount()=" + viewer.getModelCount() +
+                         "frame.modelCount=" + frame.modelCount);
+    }
   }
 
   public int animationDirection = 1;
@@ -104,11 +110,6 @@ public class RepaintManager {
     this.animationReplayDelay = ms;
   }
 
-  public boolean isAnimating = false;
-  public void setAnimate(boolean animate) {
-    this.isAnimating = animate;
-  }
-
   public boolean setAnimationRelative(int direction) {
     if (displayModelID == 0)
       return false;
@@ -122,6 +123,7 @@ public class RepaintManager {
                        " animationReplayMode=" + animationReplayMode +
                        " animationDirection=" + animationDirection);
     */
+    int modelCount = viewer.getModelCount();
     if (modelIndexNext == modelCount) {
       switch (animationReplayMode) {
       case 0:
@@ -241,5 +243,65 @@ public class RepaintManager {
                     band.x, band.y, band.width, band.height);
     g3d.endRendering();
     notifyRepainted();
+  }
+
+  
+  public boolean animationOn = false;
+  AnimationThread animationThread;
+  public void setAnimationOn(boolean animationOn) {
+    int modelCount = viewer.getModelCount();
+    if (modelCount <= 1)
+      animationOn = false;
+    if (animationOn) {
+      setDisplayModelIndex(animationDirection == 1 ? 0 : modelCount - 1);
+      if (animationThread == null) {
+        animationThread = new AnimationThread();
+        animationThread.start();
+      }
+    } else {
+      if (animationThread != null) {
+        animationThread.interrupt();
+        animationThread = null;
+      }
+    }
+    this.animationOn = animationOn;
+  }
+
+  class AnimationThread extends Thread implements Runnable {
+    public void run() {
+      int myFps = animationFps;
+      int i = 0;
+      requestRepaintAndWait();
+      long timeBegin = System.currentTimeMillis();
+      while (! isInterrupted()) {
+        if (myFps != animationFps) {
+          myFps = animationFps;
+          i = 0;
+          timeBegin = System.currentTimeMillis();
+        }
+        if (! setAnimationNext()) {
+          setAnimationOn(false);
+          return;
+        }
+        ++i;
+        int targetTime = i * 1000 / myFps;
+        int currentTime = (int)(System.currentTimeMillis() - timeBegin);
+        int sleepTime = targetTime - currentTime;
+        if (sleepTime < 0)
+          continue;
+        refresh();
+        currentTime = (int)(System.currentTimeMillis() - timeBegin);
+        sleepTime = targetTime - currentTime;
+        if (sleepTime > 0) {
+          try {
+            Thread.sleep(sleepTime);
+          } catch (InterruptedException e) {
+            //            System.out.println("interrupt caught!");
+            break;
+          }
+        }
+      }
+      
+    }
   }
 }

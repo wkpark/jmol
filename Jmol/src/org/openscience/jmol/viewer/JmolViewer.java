@@ -1172,15 +1172,15 @@ final public class JmolViewer {
     return repaintManager.animationReplayDelay;
   }
 
-  public void setAnimate(boolean animate) {
-    boolean wasAnimating = repaintManager.isAnimating;
-    repaintManager.setAnimate(animate);
-    if (animate != wasAnimating)
+  public void setAnimationOn(boolean animationOn) {
+    boolean wasAnimating = repaintManager.animationOn;
+    repaintManager.setAnimationOn(animationOn);
+    if (animationOn != wasAnimating)
       refresh();
   }
 
-  public boolean isAnimating() {
-    return repaintManager.isAnimating;
+  public boolean isAnimationOn() {
+    return repaintManager.animationOn;
   }
 
   public void setAnimationNext() {

@@ -1831,7 +1831,7 @@ public class Eval implements Runnable {
     case Token.on:
       animate = true;
     case Token.off:
-      viewer.setAnimate(animate);
+      viewer.setAnimationOn(animate);
       break;
     case Token.information:
       showAnimation();

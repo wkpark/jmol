@@ -35,6 +35,7 @@ public class CMLFile extends ChemFile {
         Parser parser = ParserFactory.makeParser(pClass);
         EntityResolver resolver = new DTDResolver();
         DocumentHandler handler = new CMLHandler((CDOInterface)new JMolCDO());
+	handler.setDebug();
         parser.setEntityResolver(resolver);
         parser.setDocumentHandler(handler);
         parser.parse(input);

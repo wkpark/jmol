@@ -238,6 +238,22 @@ public class ChemFrame {
         if (!found) frameProps.addElement(property);
     }
 
+    public void setCellAxis(String axis, String fract, float x) {
+	int index = -1;
+	if (fract.equals("x")) index = 0;
+	if (fract.equals("y")) index = 1;
+	if (fract.equals("z")) index = 2;
+	if (index != -1) {
+	    if (axis.equals("a-axis")) {
+		cellaxes[3+index] = x;
+	    } else if (axis.equals("b-axis")) {
+		cellaxes[6+index] = x;
+	    } else if (axis.equals("c-axis")) {
+		cellaxes[9+index] = x;
+	    }
+	}	
+    }
+
     /** 
      * returns a Vector containing the list of PhysicalProperty descriptors
      * present for the atoms in this frame

@@ -43,6 +43,8 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.startAnimation();
     } else if (type.equals("Frame")) {
       this.startFrame();
+    } else if (type.equals("Crystal")) {
+	// assume frame has been started       
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at StartObject -> " + type);
     }
@@ -61,6 +63,7 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.endAnimation();
     } else if (type.equals("Frame")) {
       this.endFrame();
+    } else if (type.equals("Crystal")) {
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at EndObject -> " + type);
     }
@@ -79,6 +82,10 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.setAnimationProperty(proptype, propvalue);
     } else if (type.equals("Frame")) {
       this.setFrameProperty(proptype, propvalue);
+    } else if (type.equals("Crystal")) {
+	// need not to anything yet
+    } else if (type.equals("a-axis") || type.equals("b-axis") || type.equals("c-axis")) {
+	currentFrame.setCellAxis(type, proptype, Float.parseFloat(propvalue)); 
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at SetObjectProperty -> " + type);
     }
@@ -164,4 +171,14 @@ public final class JMolCDO extends ANIMATIONCDO {
     }
     public void endBond() {
     }
+
+    public CDOAcceptedObjects acceptObjects() {
+	CDOAcceptedObjects objects = super.acceptObjects();
+	objects.add("Crystal");
+	objects.add("a-axis");
+	objects.add("b-axis");
+	objects.add("c-axis");
+	return objects;
+    }
+	
 }

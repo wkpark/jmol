@@ -60,6 +60,7 @@ public class ChemFrameRenderer {
 			}
 		}
 
+    BondRenderer bondRenderer = getBondRenderer(settings);
     for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
       int j = atomReferences[i].index;
       Atom atom = frame.getAtoms()[j];
@@ -112,6 +113,21 @@ public class ChemFrameRenderer {
     }
 
   }
+
+  private BondRenderer getBondRenderer(DisplaySettings settings) {
+    BondRenderer renderer;
+    if (settings.getFastRendering()
+        || settings.getBondDrawMode() == DisplaySettings.LINE) {
+      renderer = lineBondRenderer;
+    } else if (settings.getBondDrawMode() == DisplaySettings.SHADING) {
+      renderer = shadingBondRenderer;
+    } else if (settings.getBondDrawMode() == DisplaySettings.WIREFRAME) {
+      renderer = wireframeBondRenderer;
+    } else {
+      renderer = quickdrawBondRenderer;
+    }
+    return renderer;
+  }
   
   /**
    * Renderer for atoms.
@@ -121,7 +137,10 @@ public class ChemFrameRenderer {
   /**
    * Renderer for bonds.
    */
-  private BondRenderer bondRenderer = new BondRenderer();
+  private BondRenderer quickdrawBondRenderer = new QuickdrawBondRenderer();
+  private BondRenderer lineBondRenderer = new LineBondRenderer();
+  private BondRenderer shadingBondRenderer = new ShadingBondRenderer();
+  private BondRenderer wireframeBondRenderer = new WireframeBondRenderer();
   
 	class AtomReference {
 		int index = 0;

@@ -791,7 +791,7 @@
   <fah_proj number="586" name="p586_BBA5/POL3" file="y"
     server="171.64.122.113" atoms="12200" preferred="32" deadline="47"
     credit="215" frames="100" code="A" contact="ymrhee"/>
-  <fah_proj number="587" name="p587_BBA5_pf"
+  <fah_proj number="587" name="p587_BBA5_pf" file="y"
     server="171.65.103.148" atoms="385" preferred="36" deadline="53"
     credit="186" frames="250" code="T" contact="ymrhee"/>
   <fah_proj number="588" name="p588_BBA5/m20"
@@ -1973,7 +1973,7 @@
   <fah_proj number="1245" name="p1245_fsunf_305_99p_M25" file="y"
     server="171.65.103.155" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1246" name="p1246_fsnat_305K_3P-RF"
+  <fah_proj number="1246" name="p1246_fsnat_305K_3P-RF" file="y"
     server="171.64.122.116" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1247" name="p1247_fsunf_305K_3P-RF"

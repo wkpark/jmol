@@ -419,6 +419,93 @@ animation. With Animate the animation can be viewed.
           Currently accepted formats are PDB, CML and XYZ.
         </para>
       </section>
+      <section>
+        <title>exit</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>exit</command>
+	  </cmdsynopsis>
+	</para>
+        <para>
+          If given from script window, closes this window.
+        </para>
+      </section>
+    </section>
+    <section>
+      <title>Display Commands</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Colour Commands</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Manipulation Commands</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Scripted Commands</title>
+      <section>
+        <title>echo</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>echo</command>
+            <arg><replaceable>string</replaceable></arg>
+	  </cmdsynopsis>
+	</para>
+        <para>
+	  Prints a text to the output.
+	</para>
+      </section>
+      <section>
+        <title>refresh</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>refresh</command>
+	  </cmdsynopsis>
+	</para>
+        <para>
+          Redraws the structure.
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Atom Expressions</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Predefined Sets</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Rendering Commands</title>
+      <section>
+        <title>set shadows</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>set shadows</command>
+            <group> 
+	      <arg>true</arg>
+	      <arg>false</arg>
+	    </group>
+	  </cmdsynopsis>
+	</para>
+        <para>
+	  Turns on shading when rendering.
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Export Commands</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Misc. Commands</title>
+      <para> </para>
+    </section>
+    <section>
+      <title>Colour Schemes</title>
+      <para> </para>
     </section>
   </chapter>
 

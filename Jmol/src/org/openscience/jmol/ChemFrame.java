@@ -210,6 +210,31 @@ public class ChemFrame extends AtomContainer {
     return numberOfAtoms++;
   }
 
+  public int addAtom(Atom type, double x, double y, double z) {
+      return addAtom(type, x, y, z, null);
+  }
+
+  public int addAtom(Atom type, double x, double y, double z,
+                     ProteinProp pprop) {
+    clearBounds();
+    int i = numberOfAtoms;
+    if (i >= atoms.length) {
+      setAtomArraySize(2 * atoms.length);
+    }
+
+    atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
+    Jmol.atomTypeTable.configure(atoms[i]);
+    if (DisplayControl.control.getAutoBond()) {
+      for (int j = 0; j < i; j++) {
+        if (Atom.closeEnoughToBond(atoms[i], atoms[j],
+                                   DisplayControl.control.getBondFudge())) {
+          addBond(i, j);
+        }
+      }
+    }
+    return numberOfAtoms++;
+  }
+
   /**
    * Adds an atom to the frame and finds all bonds between the
    * new atom and pre-existing atoms in the frame

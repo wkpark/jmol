@@ -41,7 +41,7 @@ public class CrystalFrame extends ChemFrame {
   private Vector boxEdges; //Vector of Point3d
   
   public CrystalFrame() {
-    
+    super();
   }
 
   public CrystalFrame(int na) {

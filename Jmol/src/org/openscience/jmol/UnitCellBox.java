@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.app.Jmol;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix3d;
 import java.lang.reflect.Array;
@@ -299,7 +305,7 @@ public class UnitCellBox {
    * @return a <code>BaseAtomType</code> value
    */
   public BaseAtomType getAtomType(int atindex) {
-    return (BaseAtomType.get(atomType[atindex]));
+    return Jmol.atomTypeTable.get(atindex);
   }
 
 

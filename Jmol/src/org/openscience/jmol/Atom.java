@@ -52,6 +52,20 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
+   * Creates an atom with the given type.
+   *
+   * @param the type of this atom.
+   */
+  public Atom(Atom atom, int atomNumber,
+              double x, double y, double z, ProteinProp pprop) {
+    super(atom.getSymbol(), new Point3d(x, y, z));
+    super.setID(atom.getID());
+    this.atomType = new AtomType(atom);
+    this.atomNumber = atomNumber;
+    this.pprop = pprop;
+  }
+
+  /**
    * Returns the atom's number.
    */
   public int getAtomNumber() {

@@ -61,6 +61,13 @@ public class AtomType {
     baseType = at.baseType;
   }
 
+  public AtomType(Atom atom) {
+    baseType = BaseAtomType.get(atom.getID(), atom.getSymbol(), 
+                                atom.getAtomicNumber(), atom.getExactMass(),
+                                atom.getVanderwaalsRadius(),
+                                atom.getCovalentRadius());
+  }
+  
   /**
    * Constructs an AtomType from the BaseAtomType.
    * @param at base atom type

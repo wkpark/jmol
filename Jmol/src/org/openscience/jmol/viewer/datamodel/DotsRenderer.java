@@ -86,8 +86,6 @@ public class DotsRenderer {
     BitSet bsDotsOn = dots.bsDotsOn;
     int[] mapNull = dots.mapNull;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
-    System.out.println("rendering and dotsConvexCount=" +
-		       dots.dotsConvexCount);
     for (int i = dots.dotsConvexCount; --i >= 0; ) {
 	if (! bsDotsOn.get(i))
 	    continue;

@@ -139,7 +139,7 @@ public class Dots {
 			continue;
 		    dotsConvexMaps[i] = calcConvexMap(atomShapes[i]);
 		    calcTori(i);
-		    calcCavities(i);
+		    //		    calcCavities(i);
 		}
 	} else {
 	    bsDotsOn.andNot(bsSelected);
@@ -374,9 +374,6 @@ public class Dots {
       this.radius = radius;
       this.axisVector = axisVector;
 
-      axisVector.normalize();
-      axisVector.scale(probeRadius);
-
       if (axisVector.x == 0)
 	  radialVector = new Vector3f(radius, 0, 0);
       else if (axisVector.y == 0)
@@ -428,7 +425,7 @@ public class Dots {
     }
     Point3f center = calcTorusCenter(atomI, atomJ);
     Vector3f axisVector = new Vector3f(atomI.point3f);
-    axisVector.sub(center);
+    axisVector.sub(atomJ.point3f);
     Torus torus = new Torus(atomI, atomJ, center, radius, axisVector);
     htTori.put(key, torus);
     return torus;

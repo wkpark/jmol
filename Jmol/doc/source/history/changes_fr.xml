@@ -36,6 +36,9 @@
   <change contributor="EW">
     Ajout du support pour les fichiers smol Spartan '04.
   </change>
+  <change contributor="NV">
+    Ajout de la commande substructure pour la recherche de structure SMILES.
+  </change>
 </changes>
 
 <changes version="jmol-10">

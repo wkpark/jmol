@@ -28,6 +28,9 @@
   <change contributor="EW">
     Added support for Spartan '04 smol files.
   </change>
+  <change contributor="NV">
+    Added substructure command for SMILES pattern matching.
+  </change>
 </changes>
 
 <changes version="jmol-10">

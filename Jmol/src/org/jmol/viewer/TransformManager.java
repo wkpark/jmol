@@ -305,7 +305,6 @@ class TransformManager {
     if (rY != 0) {
       sb.append("; rotate y");
       truncate1(sb, rY);
-      sb.append(';');
     }
     if (rZ2 != 0) {
       sb.append("; rotate z");

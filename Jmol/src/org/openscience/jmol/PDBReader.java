@@ -122,7 +122,13 @@ public class PDBReader extends DefaultChemFileReader {
         Hashtable tmp = new Hashtable(10);
         while (linet.hasMoreTokens()) {
           String connectedAtom = linet.nextToken();
-          Integer neighbour = new Integer(connectedAtom);
+          Integer neighbour = null;
+          try {
+            neighbour = new Integer(connectedAtom);
+          } catch (NumberFormatException ex) {
+            // If a token is not an integer, skip remaining tokens.
+            break;
+          }
           if (tmp.containsKey(neighbour)) {
             tmp.put(neighbour,
                 new Integer(((Integer) tmp.get(neighbour)).intValue() + 1));
@@ -137,8 +143,6 @@ public class PDBReader extends DefaultChemFileReader {
           int atomj = neighbour.intValue();
           int bondorder = ((Integer) tmp.get(neighbour)).intValue();
           frame.addBond(atomi - 1, atomj - 1, bondorder);
-          System.out.println("Stored bond: " + atomi + " " + atomj + " "
-              + bondorder);
         }
       } else if (command.equalsIgnoreCase("END")) {
         file.addFrame(frame);

@@ -205,8 +205,7 @@ public class ModelManager {
   }
 
   public void deleteAtom(int atomIndex) {
-    Object clientAtom = frame.deleteAtom(atomIndex);
-    //    modelAdapter.notifyAtomDeleted(clientAtom);
+    frame.deleteAtom(atomIndex);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -237,6 +236,7 @@ public class ModelManager {
     return modelAdapter.getModelHeader(clientFile);
   }
 
+  /*
   public int getAtomicNumber(Object clientAtom) {
     int atomicNumber = modelAdapter.getAtomicNumber(clientAtom);
     if (atomicNumber < -1 ||
@@ -270,44 +270,11 @@ public class ModelManager {
   public int getPdbModelNumber(Object clientAtom) {
     return modelAdapter.getPdbModelNumber(clientAtom);
   }
+  */
 
   public float solventProbeRadius = 0;
   public void setSolventProbeRadius(float radius) {
     this.solventProbeRadius = radius;
-  }
-
-  /****************************************************************
-   * default values if not supplied by client
-   * note that atomicSymbols are stored in the JmolClientAdapter
-   ****************************************************************/
-
-  private static Hashtable htAtomicMap;
-  private int mapAtomicSymbolToAtomicNumber(Object clientAtom) {
-    if (htAtomicMap == null) {
-      Hashtable map = new Hashtable();
-      for (int atomicNumber = JmolConstants.atomicNumberMax;
-           --atomicNumber >= 0; ) {
-        String symbol = JmolConstants.atomicSymbols[atomicNumber];
-        Integer boxed = new Integer(atomicNumber);
-        map.put(symbol, boxed);
-        if (symbol.length() == 2) {
-          symbol =
-            "" + symbol.charAt(0) + Character.toUpperCase(symbol.charAt(1));
-          map.put(symbol, boxed);
-        }
-      }
-      htAtomicMap = map;
-    }
-    String atomicSymbol = modelAdapter.getAtomicSymbol(clientAtom);
-    if (atomicSymbol == null) {
-      System.out.println("JmolModelAdapter.getAtomicSymbol() returned null");
-      return 0;
-    }
-    Integer boxedAtomicNumber = (Integer)htAtomicMap.get(atomicSymbol);
-    if (boxedAtomicNumber != null)
-	return boxedAtomicNumber.intValue();
-    System.out.println("" + atomicSymbol + "' is not a recognized symbol");
-    return 0;
   }
 
   ////////////////////////////////////////////////////////////////

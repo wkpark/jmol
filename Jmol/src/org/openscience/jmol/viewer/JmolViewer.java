@@ -975,16 +975,6 @@ final public class JmolViewer {
     return modelManager.getBondCount();
   }
 
-  public float getAtomX(Object clientAtom) {
-      return modelAdapter.getAtomX(clientAtom);
-  }
-  public float getAtomY(Object clientAtom) {
-      return modelAdapter.getAtomY(clientAtom);
-  }
-  public float getAtomZ(Object clientAtom) {
-      return modelAdapter.getAtomZ(clientAtom);
-  }
-
   public int findNearestAtomIndex(int x, int y) {
     return modelManager.findNearestAtomIndex(x, y);
   }
@@ -1774,32 +1764,6 @@ final public class JmolViewer {
 
   public String getModelName(Object clientFile) {
     return modelManager.getModelName(clientFile);
-  }
-
-  public int getAtomicNumber(Object clientAtom) {
-    return modelManager.getAtomicNumber(clientAtom);
-  }
-
-  /*
-  public String getAtomicSymbol(Atom atom) {
-    return modelManager.getAtomicSymbol(atom);
-  }
-  */
-
-  public int getAtomicCharge(Object clientAtom) {
-    return modelManager.getAtomicCharge(clientAtom);
-  }
-
-  public String getAtomTypeName(Atom atom) {
-    return modelManager.getAtomTypeName(atom);
-  }
-
-  public String getPdbAtomRecord(Object clientAtom) {
-    return modelManager.getPdbAtomRecord(clientAtom);
-  }
-
-  public short getPdbModelID(Object clientAtom) {
-    return (short)modelManager.getPdbModelNumber(clientAtom);
   }
 
   public short getColixAtom(Atom atom) {

@@ -65,7 +65,15 @@ public class FrameBuilder {
     for (JmolModelAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile, frameNumber);
          iterAtom.hasNext(); ) {
-      frame.addAtom(iterAtom.next());
+      byte atomicNumber = (byte)iterAtom.getAtomicNumber();
+      if (atomicNumber <= 0)
+        atomicNumber = JmolConstants.
+          atomicNumberFromAtomicSymbol(iterAtom.getAtomicSymbol());
+      frame.addAtom(iterAtom.getUniqueID(), atomicNumber,
+                    iterAtom.getAtomicCharge(), iterAtom.getAtomTypeName(),
+                    iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
+                    (short)iterAtom.getPdbModelNumber(),
+                    iterAtom.getPdbAtomRecord());
     }
 
     {

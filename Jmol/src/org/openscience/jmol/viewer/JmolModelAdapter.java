@@ -181,9 +181,37 @@ public abstract class JmolModelAdapter {
    ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
-    public abstract Object next();
-  }
 
+    abstract public Object getUniqueID();
+
+    public int getAtomicNumber() {
+      return -1;
+    }
+
+    public String getAtomicSymbol() {
+      return null;
+    }
+
+    public String getAtomTypeName() {
+      return null;
+    }
+
+    public int getAtomicCharge() {
+      return 0;
+    }
+
+    abstract public float getX();
+    abstract public float getY();
+    abstract public float getZ();
+
+    public String getPdbAtomRecord() {
+      return null;
+    }
+
+    public int getPdbModelNumber(){
+      return -1;
+    }
+  }
 
   /****************************************************************
    * BondIterator is used to enumerate all the bonds
@@ -239,60 +267,6 @@ public abstract class JmolModelAdapter {
     public abstract float getPoint2Z();
   }
   
-  /**
-   * Returns the atomicNumber of the clientAtom previously returned by
-   * an AtomIterator.
-   *
-   * If suppliesAtomicNumber() returns false or if getAtomicNumber(clientAtom)
-   * returns -1 then the JmolViewer will automatically look up the atomicNumber
-   * using the String returned by getAtomicSymbol(clientAtom)
-   *
-   * Note that for a given molecule, either getAtomicNumber(clientAtom) or
-   * getAtomicSymbol(clientAtom) must return a value.
-   * @see #suppliesAtomicNumber()
-   * @see #getAtomIterator(Object clientFile, int frameNumber)
-   * @see #getAtomicSymbol(Object clientAtom)
-   */
-  abstract public int getAtomicNumber(Object clientAtom);
-
-  /**
-   * Returns the atomic charge of the clientAtom previously returned by
-   * an AtomIterator.
-   *
-   * The client must implement this ... although it can always return 0
-   */
-  abstract public int getAtomicCharge(Object clientAtom);
-
-  /**
-   * Returns the atomicSymbol of the clientAtom previously returned by
-   * an AtomIterator.
-   *
-   * If suppliesAtomicSymbol() returns false or if getAtomicSymbol(clientAtom)
-   * returns null then the JmolViewer will automatically look up the atomicSymbol
-   * using the getAtomicNumber(clientAtom)
-   *
-   * Note that for a given molecule, either getAtomicNumber(clientAtom) or
-   * getAtomicSymbol(clientAtom) must return a value.
-   */
-  abstract public String getAtomicSymbol(Object clientAtom);
-
-  /**
-   * This method allows one to return an atom type name (such as alpha carbon)
-   * as separate from the atomicSymbol
-   *
-   * If getAtomTypeName returns null then the JmolViewer will substitute the
-   * atomicSymbol
-   */
-  abstract public String getAtomTypeName(Object clientAtom);
-
-  /*
-   * Returns the coordinates of the atom.
-   * Coordinates are absolute values in Angstroms.
-   */
-  abstract public float getAtomX(Object clientAtom);
-  abstract public float getAtomY(Object clientAtom);
-  abstract public float getAtomZ(Object clientAtom);
-
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then individual
    * PDB records for individual <code>clientAtom</code>s are returned here.

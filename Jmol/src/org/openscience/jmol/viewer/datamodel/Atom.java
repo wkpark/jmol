@@ -39,7 +39,6 @@ public class Atom implements Bspt.Tuple {
   public final static byte VISIBLE_FLAG = 1;
 
   public int atomIndex;
-  public Object clientAtom;
   public PdbAtom pdbAtom;
   Frame frame;
   public Point3f point3f;
@@ -51,31 +50,27 @@ public class Atom implements Bspt.Tuple {
   short colixAtom;
   Bond[] bonds;
 
+  /* move these out of here */
+  String atomTypeName;
   String strLabel;
 
   public Atom(Frame frame, int atomIndex,
-              PdbFile pdbFile, Object clientAtom) {
+              byte atomicNumber, int atomicCharge, String atomTypeName,
+              float x, float y, float z,
+              PdbFile pdbFile, short pdbModelID, String pdbAtomRecord) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
-    this.clientAtom = clientAtom;
-    this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
-    this.chargeAndFlags = (byte)(viewer.getAtomicCharge(clientAtom) << 4);
+    this.atomicNumber = atomicNumber;
+    this.chargeAndFlags = (byte)(atomicCharge << 4);
+    this.atomTypeName = atomTypeName;
     this.colixAtom = viewer.getColixAtom(this);
     setMarAtom(viewer.getMarAtom());
-    this.point3f = new Point3f(viewer.getAtomX(clientAtom),
-			       viewer.getAtomY(clientAtom),
-			       viewer.getAtomZ(clientAtom));
+    this.point3f = new Point3f(x, y, z);
     if (pdbFile != null)
       pdbAtom =
-        pdbFile.allocatePdbAtom(atomIndex,
-                                viewer.getPdbModelID(clientAtom),
-                                viewer.getPdbAtomRecord(clientAtom));
+        pdbFile.allocatePdbAtom(atomIndex, pdbModelID, pdbAtomRecord);
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
-  }
-
-  public Object getClientAtom() {
-    return clientAtom;
   }
 
   public boolean isBonded(Atom atomOther) {
@@ -269,7 +264,11 @@ public class Atom implements Bspt.Tuple {
   }
 
   public String getAtomTypeName() {
-    return frame.viewer.getAtomTypeName(this);
+    if (atomTypeName != null)
+      return atomTypeName;
+    if (pdbAtom != null)
+      return pdbAtom.getAtomPrettyName();
+    return JmolConstants.atomicSymbols[atomicNumber];
   }
 
   public int getAtomicCharge() {
@@ -383,12 +382,9 @@ public class Atom implements Bspt.Tuple {
     return (short)(pdbAtom.temperature * 10);
   }
 
-  public Object markDeleted() {
+  public void markDeleted() {
     deleteAllBonds();
     marAtom = JmolConstants.MAR_DELETED;
     x = y = z = diameter = 0;
-    Object clientAtom = this.clientAtom;
-    this.clientAtom = null;
-    return clientAtom;
   }
 }

@@ -94,17 +94,21 @@ final public class Frame {
       pdbFile.freeze();
   }
 
-  public Atom addAtom(Object clientAtom) {
+  public Atom addAtom(Object atomUid,
+                      byte atomicNumber, int atomicCharge,
+                      String atomTypeName, float x, float y, float z,
+                      short pdbModelID, String pdbAtomRecord) {
     if (atomCount == atoms.length) {
       Atom[] newAtoms =
         new Atom[atoms.length + growthIncrement];
       System.arraycopy(atoms, 0, newAtoms, 0, atoms.length);
       atoms = newAtoms;
     }
-    Atom atom = new Atom(this, atomCount, pdbFile, clientAtom);
+    Atom atom = new Atom(this, atomCount,
+                         atomicNumber, atomicCharge, atomTypeName, x, y, z,
+                         pdbFile, pdbModelID, pdbAtomRecord);
     atoms[atomCount++] = atom;
-    if (htAtomMap != null)
-      htAtomMap.put(clientAtom, atom);
+    htAtomMap.put(atomUid, atom);
     if (bspf != null)
       bspf.addTuple(atom.getModelID(), atom);
     float bondingRadius = atom.getBondingRadiusFloat();
@@ -148,17 +152,7 @@ final public class Frame {
     return hasPdbRecords;
   }
 
-  private Hashtable htAtomMap = null;
-
-  private void initAtomMap() {
-    if (htAtomMap == null) {
-      htAtomMap = new Hashtable();
-      for (int i = atomCount; --i >= 0; ) {
-        Atom atom = atoms[i];
-        htAtomMap.put(atom.getClientAtom(), atom);
-      }
-    }
-  }
+  private Hashtable htAtomMap = new Hashtable();
 
   public void addHydrogenBond(Atom atom1, Atom atom2) {
     addBond(atom1.bondMutually(atom2, JmolConstants.BOND_HYDROGEN));
@@ -176,14 +170,12 @@ final public class Frame {
     bonds[bondCount++] = bond;
   }
 
-  public void bondAtoms(Object clientAtom1, Object clientAtom2,
+  public void bondAtoms(Object atomUid1, Object atomUid2,
                              int order) {
-    if (htAtomMap == null)
-      initAtomMap();
-    Atom atom1 = (Atom)htAtomMap.get(clientAtom1);
+    Atom atom1 = (Atom)htAtomMap.get(atomUid1);
     if (atom1 == null)
       return;
-    Atom atom2 = (Atom)htAtomMap.get(clientAtom2);
+    Atom atom2 = (Atom)htAtomMap.get(atomUid2);
     if (atom2 == null)
       return;
     addBond(atom1.bondMutually(atom2, order));
@@ -191,8 +183,6 @@ final public class Frame {
 
   public void bondAtoms(Atom atom1, Object clientAtom2,
                              int order) {
-    if (htAtomMap == null)
-      initAtomMap();
     Atom atom2 = (Atom)htAtomMap.get(clientAtom2);
     if (atom2 == null)
       return;
@@ -856,9 +846,9 @@ final public class Frame {
     bondCount = indexNoncovalent;
   }
 
-  public Object deleteAtom(int atomIndex) { // returns the clientAtom
+  public void deleteAtom(int atomIndex) {
     clearBspf();
-    return atoms[atomIndex].markDeleted();
+    atoms[atomIndex].markDeleted();
   }
 
   public float getMaxVanderwaalsRadius() {

@@ -179,17 +179,26 @@ public class SimpleModelAdapter extends JmolModelAdapter {
   class AtomIterator extends JmolModelAdapter.AtomIterator {
     Model model;
     int iatom;
+    Atom atom;
 
     AtomIterator(Model model) {
       this.model = model;
       iatom = 0;
     }
     public boolean hasNext() {
-      return iatom < model.atomCount;
+      if (iatom >= model.atomCount)
+        return false;
+      atom = model.atoms[iatom++];
+      return true;
     }
-    public Object next() {
-      return model.atoms[iatom++];
-    }
+    public Object getUniqueID() { return atom; }
+    public String getAtomicSymbol() { return atom.atomicSymbol; }
+    public int getAtomicCharge() { return atom.atomicCharge; }
+    public float getX() { return atom.x; }
+    public float getY() { return atom.y; }
+    public float getZ() { return atom.z; }
+    public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
+    public int getPdbModelNumber() { return atom.pdbModelNumber; }
   }
 
   class BondIterator extends JmolModelAdapter.BondIterator {

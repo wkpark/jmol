@@ -206,17 +206,30 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
   class AtomIterator extends JmolModelAdapter.AtomIterator {
     AtomContainer atomContainer;
     int atomCount, iatom;
+    Atom atom;
     AtomIterator(AtomContainer atomContainer) {
       this.atomContainer = atomContainer;
       atomCount = atomContainer.getAtomCount();
       iatom = 0;
     }
     public boolean hasNext() {
-      return iatom < atomCount;
+      if (iatom >= atomCount)
+        return false;
+      atom = atomContainer.getAtomAt(iatom++);
+      return true;
     }
-    public Object next() {
-      return atomContainer.getAtomAt(iatom++);
+
+    public Object getUniqueID() { return atom; }
+    public int getAtomicNumber() { return atom.getAtomicNumber(); }
+    public String getAtomicSymbol() { return atom.getSymbol(); }
+    public float getX() { return (float)atom.getX3D(); }
+    public float getY() { return (float)atom.getY3D(); }
+    public float getZ() { return (float)atom.getZ3D(); }
+    public String getPdbAtomRecord() {
+      return (String)atom.getProperty("pdb.record");
     }
+    public int getPdbModelNumber() { return 0; }
+
   }
 
   class CovalentBondIterator extends JmolModelAdapter.BondIterator {

@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol.viewer;
 
+import java.util.Hashtable;
+
 final public class JmolConstants {
 
   // for now, just update this by hand
@@ -222,6 +224,36 @@ final public class JmolConstants {
     "Uuo",// 118
     */
   };
+
+  private static Hashtable htAtomicMap;
+
+  public static byte atomicNumberFromAtomicSymbol(String atomicSymbol) {
+    if (htAtomicMap == null) {
+      Hashtable map = new Hashtable();
+      for (int atomicNumber = atomicNumberMax; --atomicNumber >= 0; ) {
+        String symbol = JmolConstants.atomicSymbols[atomicNumber];
+        Integer boxed = new Integer(atomicNumber);
+        map.put(symbol, boxed);
+        if (symbol.length() == 2) {
+          symbol =
+            "" + symbol.charAt(0) + Character.toUpperCase(symbol.charAt(1));
+          map.put(symbol, boxed);
+        }
+      }
+      htAtomicMap = map;
+    }
+    if (atomicSymbol == null) {
+      System.out.println("atomicNumberFromAtomicSymbol(null) ?");
+      return 0;
+    }
+    Integer boxedAtomicNumber = (Integer)htAtomicMap.get(atomicSymbol);
+    if (boxedAtomicNumber != null)
+	return (byte)boxedAtomicNumber.intValue();
+    System.out.println("" + atomicSymbol + "' is not a recognized symbol");
+    return 0;
+  }
+
+
   /**
    * one larger than the last atomicNumber, same as atomicSymbols.length
    */

@@ -41,6 +41,62 @@ import java.net.URL;
 import java.util.PropertyResourceBundle;
 import java.util.MissingResourceException;
 
+/*
+  these are *required*
+  I may make them mandatory, otherwise the JmolApplet may not load :-)
+
+   [param name="progressbar" value="true" /]
+   [param name="progresscolor" value="blue" /]
+   [param name="boxmessage" value="your-favorite-message" /]
+   [param name="boxbgcolor" value="#112233" /]
+   [param name="boxfgcolor" value="#778899" /]  
+
+   // load should *never* have an http server name
+   // it will fail unless the applet is signed
+   // must be a path relative to the html page
+   // can be absolute on the server ... starting with '/'
+   [param name="load"       value="relative-pathname-with-no-http://" /]
+
+   [param name="loadInline" value="
+| do
+| it
+| this
+| way
+" /]
+
+   [param name="script"             value="your-script" /]
+
+   // this one flips the orientation and uses RasMol/Chime colors
+   [param name="emulate"    value="chime" /]
+
+   // I have thought about making this boxbgcolor ... what do you think?
+   [param name="bgcolor"    value="#AABBCC" /]
+
+   // the Jmol frank
+   [param name="frank"      value="false" /]
+
+   // if you don't give me a good reason to keep these two,
+   // I am going to remove them
+   [param name="vdwPercent" value="20" /]
+   [param name="perspectiveDepth" value="true" /]
+
+   // for verbose MessageCallback
+   [param name="debugscript"      value="true" /]
+
+
+   // this is *required* if you want the applet to be able to
+   // call your callbacks
+
+   mayscript="true" is required as an applet tag
+
+   [param name="AnimFrameCallback"  value="yourJavaScriptMethodName" /]
+   [param name="LoadStructCallback" value="yourJavaScriptMethodName" /]
+   [param name="MessageCallback"    value="yourJavaScriptMethodName" /]
+   [param name="PauseCallback"      value="yourJavaScriptMethodName" /]
+   [param name="PickCallback"       value="yourJavaScriptMethodName" /]
+
+*/
+
 public class JmolApplet extends Applet implements JmolStatusListener {
 
   JmolViewer viewer;

@@ -31,18 +31,18 @@ import java.io.BufferedReader;
  * The JmolModelAdapter interface defines the API used by the JmolViewer to
  * read external files and fetch atom properties necessary for rendering.
  *
- * A client of the JmolViewer implements this interface on top of their existing
- * molecular model representation. The JmolViewer then requests information
- * from the implementation using this API. 
+ * A client of the JmolViewer implements this interface on top of their
+ * existing molecular model representation. The JmolViewer then requests
+ * information from the implementation using this API. 
  *
  * Jmol will automatically calculate some atom properties if the client
  * is not capable or does not want to supply them.
  *
- * Note: If you are seeing pink atoms that have lots of bonds, then your methods
- * for getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom) are probably
- * returning stray values. Therefore, these atoms are getting mapped to
- * element 0 (Xx), which has color pink and a relatively large covalent bonding
- * radius. 
+ * Note: If you are seeing pink atoms that have lots of bonds, then your
+ * methods for getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom)
+ * are probably returning stray values. Therefore, these atoms are getting
+ * mapped to element 0 (Xx), which has color pink and a relatively large
+ * covalent bonding radius. 
  * @see JmolViewer
  ****************************************************************/
 public interface JmolModelAdapter {
@@ -69,9 +69,10 @@ public interface JmolModelAdapter {
    * A client which implements getAtomicSymbol() may still choose to
    * return the value null, thereby asking Jmol to map to the appropriate
    * atomic symbol by using getAtomicNumber()
-   * The default atomic symbol table is included in this file for user reference
-   * Note that either getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom)
-   * must be implemented.
+   * The default atomic symbol table is included in this file for user
+   * reference
+   * Note that either getAtomicNumber(clientAtom) or
+   * getAtomicSymbol(clientAtom) must be implemented.
    * @see #getAtomicSymbol(Object clientAtom)
    * @see #getAtomicNumber(Object clientAtom)
    */
@@ -86,9 +87,10 @@ public interface JmolModelAdapter {
 
   /**
    * Whether or not this client implements getVanderwaalsRadius(clientAtom)
-   * If not, then the atomic number is used to look up vanderwaals Radius values
-   * in a default table. Default values are taken from OpenBabel.
-   * The default vanderwaals radius table is included in this file for reference.
+   * If not, then the atomic number is used to look up vanderwaals Radius
+   * values in a default table. Default values are taken from OpenBabel.
+   * The default vanderwaals radius table is included in this file for
+   * reference.
    * @see #getVanderwaalsRadius(Object clientAtom)
    */
   public boolean suppliesVanderwaalsRadius();
@@ -125,8 +127,9 @@ public interface JmolModelAdapter {
    *
    * The return value is an object which represents a <code>clientFile</code>.
    * This <code>clientFile</code> will be passed back in to other methods.
-   * If the return value is <code>instanceof String</code> then it is considered
-   * an error condition and the returned String is the error message
+   * If the return value is <code>instanceof String</code> then it is
+   * considered an error condition and the returned String is the error
+   * message. 
    */
   public Object openBufferedReader(JmolViewer viewer, String name,
                                    BufferedReader bufferedReader);
@@ -225,16 +228,31 @@ public interface JmolModelAdapter {
      * returns the second atom of a bond
      */
     public abstract Object getAtom2();
+
     /**
-     * returns the order of the bond. Bond order can be 1, 2, 3, AROMATIC,
-     * BACKBONE, or HYDROGEN
+     * returns the order of the bond. Bond order can be 1, 2, 3,
+     * or a value from the extended bond definition table
      */
     public abstract int getOrder();
+
   }
 
   /**
-   * returns two endpoints which represent the endpoints of a line. For vectors,
-   * the arrowhead is at Point2
+   * Extended Bond Definition Types
+   *
+   */
+  public final static byte COVALENT    = 3;
+  public final static byte STEREO      = (1 << 2);
+  public final static byte STEREO_NEAR = (1 << 2) | 1;
+  public final static byte STEREO_FAR  = (1 << 2) | 2;
+  public final static byte AROMATIC    = (1 << 3) | 1;
+  public final static byte SULFUR      = (1 << 4) | 1;
+  public final static byte HYDROGEN    = (1 << 5);
+  public final static byte BACKBONE    = (1 << 6);
+
+  /**
+   * returns two endpoints which represent the endpoints of a line.
+   * For vectors, the arrowhead is at Point2
    */
   public abstract class LineIterator {
     public abstract boolean hasNext();
@@ -249,9 +267,9 @@ public interface JmolModelAdapter {
     public abstract float getPoint1Y();
     public abstract float getPoint1Z();
     /**
-     * The end of the line or vector. Note that a 'vector' is not really a 'vector'.
-     * It is just a line with an arrowhead. Therefore, Point2 is an absolute
-     * position in 3d space
+     * The end of the line or vector. Note that a 'vector' is not really
+     * a 'vector'. It is just a line with an arrowhead. Therefore, Point2
+     * is an absolute position in 3d space
      */
     public abstract float getPoint2X();
     public abstract float getPoint2Y();

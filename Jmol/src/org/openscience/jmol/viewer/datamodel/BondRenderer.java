@@ -88,6 +88,8 @@ public class BondRenderer {
       return;
     x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
     x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
+    dx = x2 - x1;
+    dy = y2 - y1;
     width = viewer.scaleToScreen((z1 + z2)/2, bondShape.mar * 2);
     marBond = bondShape.mar;
     colix1 = colix2 = bondShape.colix;
@@ -96,27 +98,39 @@ public class BondRenderer {
       colix2 = atomShape2.colixAtom;
     }
     bondOrder = getRenderBondOrder(bondShape.order);
-
-    renderBond();
+    switch(bondOrder) {
+    case 1:
+    case 2:
+    case 3:
+    case BondShape.BACKBONE:
+      renderCylinder();
+      break;
+    case BondShape.STEREO_NEAR:
+    case BondShape.STEREO_FAR:
+      renderTriangle(bondShape);
+      break;
+    case BondShape.HYDROGEN:
+      renderDotted();
+    }
   }
 
   int getRenderBondOrder(int order) {
-    if (order == 1 || order == BondShape.BACKBONE ||
-        !showMultipleBonds ||
-        modeMultipleBond == JmolViewer.MB_NEVER ||
-        (modeMultipleBond == JmolViewer.MB_SMALL &&
-         marBond > JmolViewer.marMultipleBondSmallMaximum) ||
-        order == -1)
-      return 1;
+    if ((order & BondShape.COVALENT) != 0) {
+      if (order == 1 ||
+          !showMultipleBonds ||
+          modeMultipleBond == JmolViewer.MB_NEVER ||
+          (modeMultipleBond == JmolViewer.MB_SMALL &&
+           marBond > JmolViewer.marMultipleBondSmallMaximum))
+          // there used to be a test here for order == -1 ? why ? 
+        return 1;
+    }
     return order;
   }
 
-  private void renderBond() {
+  private void renderCylinder() {
     boolean lineBond = (styleBond == viewer.WIREFRAME ||
                         wireframeRotating ||
                         width <= 1);
-    dx = x2 - x1;
-    dy = y2 - y1;
     if (dx == 0 && dy == 0) {
       if (! lineBond) {
         int space = width / 8 + 3;
@@ -233,5 +247,45 @@ public class BondRenderer {
     */
     return visible;
   }
+
+  private void renderDotted() {
+    if (dx == 0 && dy == 0)
+      return;
+    g3d.drawDottedLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
+  }
+
+  private void renderTriangle(BondShape bondShape) {
+    // for now, only colix1 and always solid
+    int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
+    float dist =
+      bondShape.atomShape1.point3f.distance(bondShape.atomShape2.point3f);
+    int wideWidthPixels = (int)(viewer.scaleToScreen(z2, dist) / 3);
+    int dxWide, dyWide;
+    if (mag2d == 0) {
+      dxWide = 0;
+      dyWide = wideWidthPixels;
+    } else {
+      dxWide = wideWidthPixels * -dy / mag2d;
+      dyWide = wideWidthPixels * dx / mag2d;
+    }
+    /*
+    System.out.println("rendering a triangle of color:" + colix1);
+    System.out.println("" + x1 + "," + y1 + "," + z1 + " -> " +
+                       x2 + "," + y2 + "," + z2 + " -> ");
+    System.out.println("wideWidthPixesl=" + wideWidthPixels +
+                       " dxWide=" + dxWide + " dyWide=" + dyWide);
+    */
+    int xWideUp = x2 + dxWide/2;
+    int xWideDn = xWideUp - dxWide;
+    int yWideUp = y2 + dyWide/2;
+    int yWideDn = yWideUp - dyWide;
+    /*
+    System.out.println("up=" + xWideUp + "," + yWideUp +
+                       " dn=" + xWideDn + "," + yWideDn);
+    */
+    g3d.fillTriangle(colix1, x1, y1, z1,
+                     xWideUp, yWideUp, z2, xWideDn, yWideDn, z2);
+  }
 }
+
 

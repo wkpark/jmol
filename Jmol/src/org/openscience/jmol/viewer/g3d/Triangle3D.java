@@ -61,14 +61,14 @@ public class Triangle3D {
     int iMidY = (iMinY + 1) % 3;
     int iMaxY = (iMinY + 2) % 3;
     if (ay[iMidY] > ay[iMaxY]) { int t = iMidY; iMidY = iMaxY; iMaxY = t; }
-    /*
+
     System.out.println("----fillTriangle\n" +
                        " iMinY=" + iMinY + " iMidY=" + iMidY +
                        " iMaxY=" + iMaxY + "\n" +
                        "  minY=" + ax[iMinY] + "," + ay[iMinY] + "\n" +
                        "  midY=" + ax[iMidY] + "," + ay[iMidY] + "\n" +
                        "  maxY=" + ax[iMaxY] + "," + ay[iMaxY] + "\n");
-    */
+
     if (ay[iMinY] < ay[iMidY]) {
       // there is an upper triangle
       if (ay[iMidY] == ay[iMaxY]) {
@@ -103,12 +103,12 @@ public class Triangle3D {
 
   void fillUpper(int iTop, int iLeft, int iRight) {
     if (ax[iLeft] > ax[iRight]) { int t = iLeft; iLeft = iRight; iRight = t; }
-    /*
+
     System.out.println("fillUpper\n" +
                        "   top=" + ax[iTop] + "," + ay[iTop] + "\n" +
                        "  left=" + ax[iLeft] + "," + ay[iLeft] + "\n" +
                        " right=" + ax[iRight] + "," + ay[iRight] + "\n");
-    */
+
     int nLines = ay[iLeft] - ay[iTop] + 1;
     if (nLines > axLeft.length)
       reallocRasterArrays(nLines);
@@ -119,12 +119,12 @@ public class Triangle3D {
 
   void fillLower(int iLeft, int iRight, int iBottom) {
     if (ax[iLeft] > ax[iRight]) { int t = iLeft; iLeft = iRight; iRight = t; }
-    /*
+
     System.out.println("fillLower\n" +
                        "  left=" + ax[iLeft] + "," + ay[iLeft] + "\n" +
                        " right=" + ax[iRight] + "," + ay[iRight] + "\n" +
                        "bottom=" + ax[iBottom] + "," + ay[iBottom] + "\n");
-    */
+
     int nLines = ay[iBottom] - ay[iLeft] + 1;
     if (nLines > axLeft.length)
       reallocRasterArrays(nLines);
@@ -138,11 +138,11 @@ public class Triangle3D {
     int xTop = ax[iTop], zTop = az[iTop];
     int xBot = ax[iBot], zBot = az[iBot];
     int dx = xBot - xTop, dz = zBot - zTop;
-    /*
+
     System.out.println("xTop=" + xTop +
                        " xBot=" + xBot + " dy=" + dy
                        );
-    */
+
     axRaster[0] = xTop;
     azRaster[0] = zTop;
 

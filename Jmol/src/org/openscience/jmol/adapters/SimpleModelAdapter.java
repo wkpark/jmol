@@ -406,10 +406,12 @@ class JmeModel extends Model {
       int atomIndex1 = Integer.parseInt(tokenizer.nextToken());
       int atomIndex2 = Integer.parseInt(tokenizer.nextToken());
       int order = Integer.parseInt(tokenizer.nextToken());
-      System.out.println("bond " + atomIndex1 + "->" + atomIndex2+" "+order);
-      // por ahora, no esteroquimica
-      if (order < 1)
-        order = 1;
+      System.out.println("bond "+atomIndex1+"->"+atomIndex2+" "+order);
+      if (order < 1) {
+        System.out.println("Stereo found:" + order);
+        order = ((order == -1)
+                 ? JmolModelAdapter.STEREO_NEAR : JmolModelAdapter.STEREO_FAR);
+      }
       bonds[i] = new Bond(atomIndex1-1, atomIndex2-1, order);
     }
   }

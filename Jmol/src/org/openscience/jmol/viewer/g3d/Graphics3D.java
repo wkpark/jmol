@@ -391,6 +391,21 @@ final public class Graphics3D {
     line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, true);
   }
 
+  public void drawDottedLine(short colix1, short colix2,
+                             int x1, int y1, int z1, int x2, int y2, int z2) {
+    int argb1 = Colix.getArgb(colix1);
+    if (colix1 == colix2) {
+      line3d.drawLine(argb1, x1, y1, z1, x2, y2, z2, true);
+      return;
+    }
+    int xMid = (x1 + x2) / 2;
+    int yMid = (y1 + y2) / 2;
+    int zMid = (z1 + z2) / 2;
+    line3d.drawLine(argb1, x1, y1, z1, xMid, yMid, zMid, true);
+    line3d.drawLine(Colix.getArgb(colix2), xMid, yMid, zMid, x2, y2, z2, true);
+  }
+  
+
   public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, true);
   }
@@ -407,11 +422,11 @@ final public class Graphics3D {
   public void drawLine(short colix1, short colix2,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb1 = Colix.getArgb(colix1);
-    int argb2 = Colix.getArgb(colix2);
-    if (argb1 == argb2) {
+    if (colix1 == colix2) {
       line3d.drawLine(argb1, x1, y1, z1, x2, y2, z2, false);
       return;
     }
+    int argb2 = Colix.getArgb(colix2);
     if (x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
         y1 < 0 || y1 >= height || y2 < 0 || y2 >= height) {
       int xMid = (x1 + x2) / 2;
@@ -455,17 +470,32 @@ final public class Graphics3D {
     fillPolygon4(colixFill, ax, ay, az);
   }
 
-  public void fillTriangle(short colix, int x0, int y0, int z0,
-                           int x1, int y1, int z1, int x2, int y2, int z2) {
+  public void fillTriangle(short colix, int xA, int yA, int zA,
+                           int xB, int yB, int zB, int xC, int yC, int zC) {
+    System.out.println("fillTriangle:" + xA + "," + yA + "," + zA + "->" +
+                       xB + "," + yB + "," + zB + "->" +
+                       xC + "," + yC + "," + zC);
+    argbCurrent = Colix.getArgb(colix);
     int[] t;
     t = triangle3d.ax;
-    t[0] = x0; t[1] = x1; t[2] = x2;
+    t[0] = xA; t[1] = xB; t[2] = xC;
     t = triangle3d.ay;
-    t[0] = y0; t[1] = y1; t[2] = y2;
+    t[0] = yA; t[1] = yB; t[2] = yC;
     t = triangle3d.az;
-    t[0] = z0; t[1] = z1; t[2] = z2;
+    t[0] = zA; t[1] = zB; t[2] = zC;
 
     triangle3d.fillTriangle();
+  }
+
+  public void drawTriangle(short colix, int xA, int yA, int zA,
+                           int xB, int yB, int zB, int xC, int yC, int zC) {
+    System.out.println("drawTriangle:" + xA + "," + yA + "," + zA + "->" +
+                       xB + "," + yB + "," + zB + "->" +
+                       xC + "," + yC + "," + zC);
+    int argb = Colix.getArgb(colix);
+    line3d.drawLine(argb, xA, yA, zA, xB, yB, zB, false);
+    line3d.drawLine(argb, xA, yA, zA, xC, yC, zC, false);
+    line3d.drawLine(argb, xB, yB, zB, xC, yC, zC, false);
   }
 
   public void fillCylinder(short colix1, short colix2, int w,

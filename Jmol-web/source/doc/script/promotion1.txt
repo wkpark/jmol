@@ -67,13 +67,13 @@ delay 4
 script script/dna.txt
 set echo off;
 set echo top center; font echo 20; color echo khaki
-echo "Primary school, secondary school"
+echo "Secondary school, university"
 delay 2;
 set echo middle center; font echo 20; color echo coral
-echo "college, university, research,"
+echo "research, chemical database"
 delay 2;
 set echo bottom center; font echo 20; color echo gold
-echo "chemical database ... you need"
+echo "... all need ..."
 delay 2;
 #
 set echo off;

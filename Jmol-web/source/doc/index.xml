@@ -38,9 +38,13 @@
     </section>
 
     <section title="Jmol Version 10 will soon be released">
-      <script>
-	jmolApplet(300, "script script/promotion1.txt");
-      </script>
+      <table border="1" width="300">
+	<tr><td>
+	  <script>
+	    jmolApplet(300, "script script/promotion1.txt");
+	  </script>
+	</td></tr>
+      </table>
       <p>
 	Jmol Version 10 will be released before the end of December 2004.
       </p>

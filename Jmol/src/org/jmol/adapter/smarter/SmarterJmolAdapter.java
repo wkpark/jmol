@@ -89,10 +89,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return ((AtomSetCollection)clientFile).atomSetCollectionProperties;
   }
 
-  public String getFileHeader(Object clientFile) {
-    return ((AtomSetCollection)clientFile).fileHeader;
-  }
-  
   public int getAtomSetCount(Object clientFile) {
     return ((AtomSetCollection)clientFile).atomSetCount;
   }

@@ -47,7 +47,6 @@ class ModelManager {
   String fullPathName;
   String fileName;
   String modelSetName;
-  String modelFileHeader;
   //  int frameCount = 0;
   boolean haveFile = false;
   //  int currentFrameNumber;
@@ -57,7 +56,7 @@ class ModelManager {
   void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
     if (clientFile == null) {
-      fullPathName = fileName = modelSetName = modelFileHeader = null;
+      fullPathName = fileName = modelSetName = null;
       frame = null;
       haveFile = false;
     } else {
@@ -71,7 +70,6 @@ class ModelManager {
       }
       if (modelSetName == null)
         modelSetName = fileName;
-      modelFileHeader = adapter.getFileHeader(clientFile);
       frame = new Frame(viewer, adapter, clientFile);
       haveFile = true;
     }
@@ -114,8 +112,8 @@ class ModelManager {
     return frame == null ? false : frame.modelHasVibrationVectors(modelIndex);
   }
 
-  String getModelFileHeader() {
-    return modelFileHeader;
+  String getModelSetTypeName() {
+    return frame == null ? null : frame.getModelSetTypeName();
   }
 
   int getModelCount() {

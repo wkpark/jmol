@@ -51,50 +51,41 @@ class PdbReader extends AtomSetCollectionReader {
     atomSetCollection.pdbStructureRecords = new String[32];
     StringBuffer sbHeader = new StringBuffer();
     initialize();
-    boolean accumulatingHeader = true;
     while ((line = reader.readLine()) != null) {
       lineLength = line.length();
       if (line.startsWith("ATOM  ") ||
           line.startsWith("HETATM")) {
         atom();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("CONECT")) {
         conect();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("HELIX ") ||
           line.startsWith("SHEET ") ||
           line.startsWith("TURN  ")) {
         structure();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("MODEL ")) {
         model();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("CRYST1")) {
         cryst1();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("SCALE1")) {
         scale1();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("SCALE2")) {
         scale2();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("SCALE3")) {
         scale3();
-        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("EXPDTA")) {
@@ -109,16 +100,11 @@ class PdbReader extends AtomSetCollectionReader {
         atomSetCollection.setCollectionName(line.substring(62, 66));
         continue;
       }
-      if (accumulatingHeader) {
-        sbHeader.append(line);
-        sbHeader.append("\n");
-      }
     }
     serialMap = null;
     if (isNMRdata)
       atomSetCollection.notionalUnitcell =
         atomSetCollection.pdbScaleMatrix = atomSetCollection.pdbScaleTranslate = null;
-    atomSetCollection.fileHeader = "" + sbHeader;
     return atomSetCollection;
   }
 

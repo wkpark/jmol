@@ -50,7 +50,6 @@ class AtomSetCollection {
   Properties[] atomSetProperties = new Properties[16];
 
   String errorMessage;
-  String fileHeader;
 
   String spaceGroup;
   float wavelength = Float.NaN;

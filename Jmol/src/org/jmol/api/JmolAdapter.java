@@ -137,16 +137,6 @@ public abstract class JmolAdapter {
   }
 
   /**
-   * Get the file header.
-   *
-   * <p>This is currently only used for the script command 'show pdbheader'
-   * Other than for pdb files, the client can return <code>null</code>
-   * @param clientFile The client file
-   * @return The file header or <code>null</code>
-   */
-  public String getFileHeader(Object clientFile) { return null; }
-
-  /**
    * Get number of atomSets in the file.
    *
    * <p>NOTE WARNING:

@@ -377,7 +377,7 @@ public final class Atom implements Bspt.Tuple {
     int[] atomSerials = group.chain.frame.atomSerials;
     if (atomSerials != null)
       return atomSerials[atomIndex];
-    if (group.chain.frame.modelTypeName == "xyz" &&
+    if (group.chain.frame.modelSetTypeName == "xyz" &&
         group.chain.frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
     return atomIndex + 1;

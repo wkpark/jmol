@@ -2963,8 +2963,32 @@ public class Eval implements Runnable {
     viewer.scriptStatus(str);
   }
 
+  final static String[] pdbRecords = { "ATOM  ", "HELIX ", "SHEET ", "TURN  ",
+                                       "MODEL ", "SCALE",  "HETATM", "SEQRES",
+                                       "DBREF ", };
+
   void showPdbHeader() {
-    showString(viewer.getModelFileHeader());
+    if ("pdb" != viewer.getModelSetTypeName()) {
+      showString("!Not a pdb file!");
+      return;
+    }
+    String modelFile = viewer.getCurrentFileAsString();
+    int ichMin = modelFile.length();
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      int ichFound = -1;
+      String strRecord = pdbRecords[i];
+      if (modelFile.startsWith(strRecord))
+        ichFound = 0;
+      else {
+        String strSearch = "\n" + strRecord;
+        ichFound = modelFile.indexOf(strSearch);
+        if (ichFound >= 0)
+          ++ichFound;
+      }
+      if (ichFound >= 0 && ichFound < ichMin)
+        ichMin = ichFound;
+    }
+    showString(modelFile.substring(0, ichMin));
   }
 
   void showModel() {

@@ -1040,8 +1040,8 @@ final public class JmolViewer {
     return modelManager.getModelSetName();
   }
 
-  public String getModelFileHeader() {
-    return modelManager.getModelFileHeader();
+  public String getModelSetTypeName() {
+    return modelManager.getModelSetTypeName();
   }
 
   public boolean haveFrame() {

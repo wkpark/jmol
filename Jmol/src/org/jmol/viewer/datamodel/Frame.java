@@ -43,8 +43,8 @@ final public class Frame {
   final FrameRenderer frameRenderer;
   // NOTE: these strings are interned and are lower case
   // therefore, we can do == comparisions against string constants
-  // if (modelTypeName == "xyz")
-  final String modelTypeName;
+  // if (modelSetTypeName == "xyz")
+  final String modelSetTypeName;
   final Mmset mmset;
   final Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
@@ -103,8 +103,8 @@ final public class Frame {
     String fileTypeName = adapter.getFileTypeName(clientFile);
     // NOTE: these strings are interned and are lower case
     // therefore, we can do == comparisions against string constants
-    // if (modelTypeName == "xyz") { }
-    this.modelTypeName = fileTypeName.toLowerCase().intern();
+    // if (modelSetTypeName == "xyz") { }
+    this.modelSetTypeName = fileTypeName.toLowerCase().intern();
     mmset = new Mmset(this);
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.getGraphics3D();
@@ -609,6 +609,10 @@ final public class Frame {
     return mmset.getModelName(modelIndex);
   }
 
+  public String getModelSetTypeName() {
+    return modelSetTypeName;
+  }
+
   public Properties getModelProperties(int modelIndex) {
     return mmset.getModelProperties(modelIndex);
   }
@@ -1044,7 +1048,7 @@ final public class Frame {
     // perform bonding if necessary
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
-          (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
+          (modelSetTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);
     }
   }

@@ -37,9 +37,9 @@ public class Frame {
 
   public JmolViewer viewer;
   public FrameRenderer frameRenderer;
-  // the maximum CovalentRadius seen in this set of atoms
+  // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
-  float maxCovalentRadius = 0;
+  float maxBondingRadius = 0;
   float maxVanderwaalsRadius = 0;
   // whether or not this frame has any protein properties
   int modelType;
@@ -96,9 +96,9 @@ public class Frame {
       htAtomMap.put(clientAtom, atom);
     if (bspf != null)
       bspf.addTuple(atom.getModelID(), atom);
-    float covalentRadius = atom.getCovalentRadiusFloat();
-    if (covalentRadius > maxCovalentRadius)
-      maxCovalentRadius = covalentRadius;
+    float bondingRadius = atom.getBondingRadiusFloat();
+    if (bondingRadius > maxBondingRadius)
+      maxBondingRadius = bondingRadius;
     float vdwRadius = atom.getVanderwaalsRadiusFloat();
     if (vdwRadius > maxVanderwaalsRadius)
       maxVanderwaalsRadius = vdwRadius;
@@ -722,16 +722,16 @@ public class Frame {
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       // Covalent bonds
-      float myCovalentRadius = atom.getCovalentRadiusFloat();
+      float myBondingRadius = atom.getBondingRadiusFloat();
       float searchRadius =
-        myCovalentRadius + maxCovalentRadius + bondTolerance;
+        myBondingRadius + maxBondingRadius + bondTolerance;
       Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelID());
       iter.initializeHemisphere(atom, searchRadius);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
         if (atomNear != atom) {
-          int order = getBondOrder(atom, myCovalentRadius,
-                                   atomNear, atomNear.getCovalentRadiusFloat(),
+          int order = getBondOrder(atom, myBondingRadius,
+                                   atomNear, atomNear.getBondingRadiusFloat(),
                                    iter.foundDistance2());
           if (order > 0)
             addBond(atom.bondMutually(atomNear, order));
@@ -746,14 +746,14 @@ public class Frame {
     }
   }
 
-  private int getBondOrder(Atom atomA, float covalentRadiusA,
-                           Atom atomB, float covalentRadiusB,
+  private int getBondOrder(Atom atomA, float bondingRadiusA,
+                           Atom atomB, float bondingRadiusB,
                            float distance2) {
-    //            System.out.println(" radiusA=" + covalentRadiusA +
-    //                               " radiusB=" + covalentRadiusB +
+    //            System.out.println(" radiusA=" + bondingRadiusA +
+    //                               " radiusB=" + bondingRadiusB +
     //                         " distance2=" + distance2 +
     //                         " tolerance=" + bondTolerance);
-    float maxAcceptable = covalentRadiusA + covalentRadiusB + bondTolerance;
+    float maxAcceptable = bondingRadiusA + bondingRadiusB + bondTolerance;
     float maxAcceptable2 = maxAcceptable * maxAcceptable;
     if (distance2 < minBondDistance2) {
       //System.out.println("less than minBondDistance");

@@ -44,7 +44,7 @@ public class Atom implements Bspt.Tuple {
   short x, y, z;
   short diameter;
   public byte atomicNumber;
-  byte atomicCharge;
+  public byte atomicCharge;
   byte styleAtom;
   short marAtom;
   short colixAtom;
@@ -323,12 +323,12 @@ public class Atom implements Bspt.Tuple {
     return frame.viewer.getVanderwaalsMar(this) / 1000f;
   }
 
-  public short getCovalentMar() {
-    return frame.viewer.getCovalentMar(this);
+  public short getBondingMar() {
+    return frame.viewer.getBondingMar(this);
   }
 
-  public float getCovalentRadiusFloat() {
-    return frame.viewer.getCovalentMar(this) / 1000f;
+  public float getBondingRadiusFloat() {
+    return frame.viewer.getBondingMar(this) / 1000f;
   }
 
   public short getColix() {

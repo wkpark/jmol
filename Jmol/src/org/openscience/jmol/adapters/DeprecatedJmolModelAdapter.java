@@ -66,7 +66,7 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
   public boolean suppliesAtomicSymbol() { return true; }
   public boolean suppliesAtomTypeName() { return true; }
   public boolean suppliesVanderwaalsRadius() { return true; }
-  public boolean suppliesCovalentRadius() { return true; }
+  public boolean suppliesBondingRadius() { return true; }
   public boolean suppliesAtomArgb() { return true; }
   
   /****************************************************************
@@ -321,12 +321,12 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public float getVanderwaalsRadius(Object clientAtom) {
-    return (float)((Atom)clientAtom).getVanderwaalsRadius();
+  public int getVanderwaalsRadiusMilliAngstroms(Object clientAtom) {
+    return (int)(((Atom)clientAtom).getVanderwaalsRadius() * 1000);
   }
 
-  public float getCovalentRadius(Object clientAtom) {
-    return (float)((Atom)clientAtom).getCovalentRadius();
+  public int getBondingRadiusMilliAngstroms(Object clientAtom) {
+    return (int)(((Atom)clientAtom).getCovalentRadius() * 1000);
   }
 
   public float getAtomX(Object clientAtom) {

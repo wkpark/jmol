@@ -44,7 +44,7 @@ public class ModelManager {
   boolean suppliesAtomicSymbol;
   boolean suppliesAtomTypeName;
   boolean suppliesVanderwaalsRadius;
-  boolean suppliesCovalentRadius;
+  boolean suppliesBondingRadius;
   final Frame nullFrame;
 
   public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
@@ -56,12 +56,7 @@ public class ModelManager {
     suppliesAtomicSymbol = modelAdapter.suppliesAtomicSymbol();
     suppliesAtomTypeName = modelAdapter.suppliesAtomTypeName();
     suppliesVanderwaalsRadius = modelAdapter.suppliesVanderwaalsRadius();
-    suppliesCovalentRadius = modelAdapter.suppliesCovalentRadius();
-
-    if (JmolConstants.vanderwaalsMars.length != JmolConstants.atomicNumberMax)
-      System.out.println("WARNING! vanderwaalsRadii.length not consistent");
-    if (JmolConstants.covalentMars.length != JmolConstants.atomicNumberMax)
-      System.out.println("WARNING! covalentRadii.length not consistent");
+    suppliesBondingRadius = modelAdapter.suppliesBondingRadius();
   }
 
   public Object clientFile;
@@ -280,23 +275,43 @@ public class ModelManager {
 
   public short getVanderwaalsMar(Atom atom) {
     if (suppliesVanderwaalsRadius) {
-      float vanderwaalsRadius =
-        modelAdapter.getVanderwaalsRadius(atom.clientAtom);
+      int vanderwaalsRadius =
+        modelAdapter.getVanderwaalsRadiusMilliAngstroms(atom.clientAtom);
       if (vanderwaalsRadius > 0)
-        return (short)(vanderwaalsRadius * 1000);
-      System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
+        return (short)vanderwaalsRadius;
+      System.out.println("JmolClientAdapter." +
+                         "getVanderwaalsRadiusMilliAngstroms() returned " +
                          vanderwaalsRadius);
     }
     return JmolConstants.vanderwaalsMars[atom.atomicNumber];
   }
 
-  public short getCovalentMar(Atom atom) {
-    if (suppliesCovalentRadius) {
-      float covalentRadius = modelAdapter.getCovalentRadius(atom.clientAtom);
-      if (covalentRadius > 0)
-        return (short)(covalentRadius * 1000);
-      System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
-                         covalentRadius);
+  public short getBondingMar(Atom atom) {
+    if (suppliesBondingRadius) {
+      int bondingRadius =
+        modelAdapter.getBondingRadiusMilliAngstroms(atom.clientAtom);
+      if (bondingRadius > 0)
+        return (short)bondingRadius;
+      System.out.println("JmolClientAdapter." +
+                         "getBondingRadiusMilliAngstroms() returned " +
+                         bondingRadius);
+    }
+    if (atom.atomicCharge != 0) {
+      // ionicLookupTable is a sorted table of ionic keys
+      // lookup doing a binary search
+      // when found, return the corresponding value in ionicMars
+      // if not found, just return covalent radius
+      short ionic = (short)((atom.atomicNumber << 4)+(atom.atomicCharge + 4));
+      int iMin = 0, iMax = JmolConstants.ionicLookupTable.length;
+      while (iMin != iMax) {
+        int iMid = (iMin + iMax) / 2;
+        if (ionic < JmolConstants.ionicLookupTable[iMid])
+          iMax = iMid;
+        else if (ionic > JmolConstants.ionicLookupTable[iMid])
+          iMin = iMid + 1;
+        else
+          return JmolConstants.ionicMars[iMid];
+      }
     }
     return JmolConstants.covalentMars[atom.atomicNumber];
   }

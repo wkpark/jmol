@@ -43,7 +43,7 @@ public class SimpleModelAdapter implements JmolModelAdapter {
   public boolean suppliesAtomicSymbol() { return true; }
   public boolean suppliesAtomTypeName() { return false; }
   public boolean suppliesVanderwaalsRadius() { return false; }
-  public boolean suppliesCovalentRadius() { return false; }
+  public boolean suppliesBondingRadius() { return false; }
   public boolean suppliesAtomArgb() { return false; }
   
   /****************************************************************
@@ -255,11 +255,11 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return null;
   }
 
-  public float getVanderwaalsRadius(Object clientAtom) {
+  public int getVanderwaalsRadiusMilliAngstroms(Object clientAtom) {
     return 0;
   }
 
-  public float getCovalentRadius(Object clientAtom) {
+  public int getBondingRadiusMilliAngstroms(Object clientAtom) {
     return 0;
   }
 

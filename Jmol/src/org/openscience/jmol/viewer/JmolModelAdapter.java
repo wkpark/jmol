@@ -96,13 +96,13 @@ public interface JmolModelAdapter {
   public boolean suppliesVanderwaalsRadius();
 
   /**
-   * Whether or not this client implements getCovalentRadius(clientAtom)
+   * Whether or not this client implements getBondingRadius(clientAtom)
    * If not, then the atomic number is used to look up covalent bonding radius
    * values in a default table. Default values are taken from OpenBabel.
    * The default covalent radius table is included in this file for reference.
-   * @see #getCovalentRadius(Object clientAtom)
+   * @see #getBondingRadius(Object clientAtom)
    */
-  public boolean suppliesCovalentRadius();
+  public boolean suppliesBondingRadius();
 
   /**
    * Whether or not this client implements getAtomArgb(clientAtom, colorScheme)
@@ -319,27 +319,28 @@ public interface JmolModelAdapter {
   /**
    * The vanderwaalsRadius is used for spacefill rendering. 
    *
-   * If suppliesVanderwallsRadius() returns false or getVanderwaalsRadius(clientAtom)
+   * If suppliesVanderwallsRadius() returns false or
+   * getVanderwaalsRadiusMilliAngstroms(clientAtom)
    * returns 0 then the JmolViewer will lookup the value in its own table.
    * The table of values is taken from OpenBabel.
    * @see #suppliesVanderwaalsRadius()
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
    * @see #vanderwaalsRadii
    */
-  public float getVanderwaalsRadius(Object clientAtom);
+  public int getVanderwaalsRadiusMilliAngstroms(Object clientAtom);
 
   /**
-   * The covalentRadius is used for automatically calculating bonds between
+   * The bondingRadius is used for automatically calculating bonds between
    * atoms when no bonds are specified by the client package. 
    *
-   * If suppliesCovalentRadius() returns false or getCovalentRadius(clientAtom)
+   * If suppliesBondingRadius() returns false
+   * or getBondingRadiusMilliAngstroms(clientAtom)
    * returns 0 then the JmolViewer will lookup the value in its own table.
    * The table of values is taken from OpenBabel.
-   * @see #suppliesCovalentRadius()
+   * @see #suppliesBondingRadius()
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
-   * @see #covalentRadii
    */
-  public float getCovalentRadius(Object clientAtom);
+  public int getBondingRadiusMilliAngstroms(Object clientAtom);
 
   /**
    * Returns the coordinates of the atom.

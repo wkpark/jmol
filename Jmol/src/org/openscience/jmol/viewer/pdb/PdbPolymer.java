@@ -138,6 +138,9 @@ public class PdbPolymer {
 
   void addSecondaryStructure(byte type,
                              short startResidueID, short endResidueID) {
+    //    System.out.println("PdbPolymer.addSecondaryStructure(" +
+    //                       type + "," + startResidueID + "," +
+    // endResidueID +")");
     int polymerIndexStart, polymerIndexEnd;
     if ((polymerIndexStart = getIndex(startResidueID)) == -1 ||
         (polymerIndexEnd = getIndex(endResidueID)) == -1)

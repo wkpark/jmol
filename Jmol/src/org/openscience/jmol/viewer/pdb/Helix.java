@@ -33,6 +33,8 @@ public class Helix extends PdbStructure {
   Helix(PdbPolymer polymer, int polymerIndex, int polymerCount) {
     super(polymer, JmolConstants.SECONDARY_STRUCTURE_HELIX,
           polymerIndex, polymerCount);
+    //    System.out.println("new Helix('" + polymer.chain.chainID + "'," +
+    //                       polymerIndex + "," + polymerCount + ")");
   }
 
   // copied from sheet -- not correct

@@ -30,60 +30,19 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Trace extends Mcg {
+public class Trace extends Mcpg {
 
   Trace(JmolViewer viewer, Frame frame) {
     super(viewer, frame);
   }
   
-  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
-    return new Chain(pdbChain);
+  Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
+    return new Chain(polymer);
   }
 
-  class Chain extends Mcg.Chain {
-    int mainchainLength;
-    PdbGroup[] mainchain;
-    Frame frame;
-    short[] colixes;
-    short[] mads;
-
-    Chain(PdbChain pdbChain) {
-      super(pdbChain);
-      frame = pdbChain.model.file.frame;
-      mainchain = pdbChain.getMainchain();
-      mainchainLength = mainchain.length;
-      if (mainchainLength > 0) {
-        colixes = new short[mainchainLength];
-        mads = new short[mainchainLength + 1];
-      }
-    }
-
-    public void setMad(short mad, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
-          if (mad < 0) {
-            // -2.0 angstrom diameter -> -4000 milliangstroms diameter
-            if (mad == -4000)
-              mads[i] = 1000; // trace temperature goes here
-            else
-              mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 1500 : 500);
-          } else {
-            mads[i] = mad;
-          }
-      }
-      if (mainchainLength > 0)
-        mads[mainchainLength] = mads[mainchainLength - 1];
-    }
-
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        int atomIndex = mainchain[i].getAlphaCarbonIndex();
-        if (bsSelected.get(atomIndex))
-          colixes[i] =
-            palette > JmolConstants.PALETTE_CPK
-            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
-            : colix;
-      }
+  class Chain extends Mcpg.Chain {
+    Chain(PdbPolymer polymer) {
+      super(polymer);
     }
   }
 }

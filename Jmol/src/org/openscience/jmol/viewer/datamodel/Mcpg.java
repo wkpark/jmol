@@ -132,11 +132,32 @@ abstract public class Mcpg implements Graphic {
       }
     }
     
-    abstract public void setMad(short mad, BitSet bsSelected);
-    
-    abstract public void setColix(byte palette, short colix,
-                                  BitSet bsSelected);
-  }
+    public void setMad(short mad, BitSet bsSelected) {
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
+        if (bsSelected.get(atomIndices[i])) {
+          if (mad < 0) {
+            mads[i] = (short)(polymerGroups[i].isHelixOrSheet() ? 1500 : 500);
+          } else {
+            mads[i] = mad;
+          }
+        }
+      }
+      if (polymerCount > 1)
+        mads[polymerCount] = mads[polymerCount - 1];
+    }
 
+    public void setColix(byte palette, short colix, BitSet bsSelected) {
+      int[] atomIndices = polymer.getAtomIndices();
+      for (int i = polymerCount; --i >= 0; ) {
+        int atomIndex = atomIndices[i];
+        if (bsSelected.get(atomIndex))
+          colixes[i] =
+            palette > JmolConstants.PALETTE_CPK
+            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+            : colix;
+      }
+    }
+  }
 }
 

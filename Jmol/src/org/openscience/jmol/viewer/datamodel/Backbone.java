@@ -59,18 +59,5 @@ public class Backbone extends Mcpg {
           mads[i] = mad;
       }
     }
-
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
-      boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
-      int[] atomIndices = polymer.getAtomIndices();
-      for (int i = polymerCount; --i >= 0; ) {
-        int atomIndex = atomIndices[i];
-        if (bsSelected.get(atomIndex))
-          colixes[i] =
-            palette > JmolConstants.PALETTE_CPK
-            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
-            : colix;
-      }
-    }
   }
 }

@@ -32,7 +32,7 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class TraceRenderer extends McgRenderer {
+class TraceRenderer extends McpgRenderer {
 
   TraceRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     super(viewer, frameRenderer);
@@ -44,42 +44,41 @@ class TraceRenderer extends McgRenderer {
     alphas = null;
   }
 
-  void renderMcgChain(Mcg.Chain mcgChain) {
-    renderTraceChain((Trace.Chain)mcgChain);
-  }
-  
-  void renderTraceChain(Trace.Chain traceChain) {
-    render1Chain(traceChain.mainchain, traceChain.mads, traceChain.colixes);
+  void renderMcpgChain(Mcpg.Chain mcpgChain) {
+    Trace.Chain traceChain = (Trace.Chain)mcpgChain;
+    render1Chain(traceChain.polymerCount,
+                 traceChain.polymerGroups,
+                 traceChain.mads,
+                 traceChain.colixes);
   }
 
-  int mainchainLength;
   Point3i[] screens;
   Atom[] alphas;
   
-  void render1Chain(PdbGroup[] mainchain, short[] mads, short[] colixes) {
-    mainchainLength = mainchain.length;
-    if (mainchainLength > 0) {
-      calcMidPoints(mainchain);
-      for (int i = mainchainLength; --i >= 0; ) {
+  void render1Chain(int count, PdbGroup[] groups,
+                    short[] mads, short[] colixes) {
+    if (count > 0) {
+      calcMidPoints(count, groups);
+      for (int i = count; --i >= 0; ) {
         short colix = colixes[i];
         if (colix == 0)
           colix = alphas[i].colixAtom;
-        render1Segment(colix, mads, i);
+        render1Segment(colix, mads, i, count);
       }
     }
   }
 
-  void calcMidPoints(PdbGroup[] mainchain) {
-    screens = frameRenderer.getTempScreens(mainchainLength + 1);
-    alphas = frameRenderer.getTempAtoms(mainchainLength);
-    Atom atomPrev = alphas[0] = mainchain[0].getAlphaCarbonAtom();
+  void calcMidPoints(int count, PdbGroup[] groups) {
+    screens = frameRenderer.getTempScreens(count + 1);
+    alphas = frameRenderer.getTempAtoms(count);
+    Atom atomPrev = alphas[0] = groups[0].getAlphaCarbonAtom();
     setScreen(atomPrev, screens[0]);
-    for (int i = 1; i < mainchainLength; ++i) {
-        Atom atomThis = alphas[i] = mainchain[i].getAlphaCarbonAtom();
+    for (int i = 1; i < count; ++i) {
+        Atom atomThis = alphas[i] = groups[i].getAlphaCarbonAtom();
         calcAverageScreen(atomPrev, atomThis, screens[i]);
         atomPrev = atomThis;
     }
-    setScreen(atomPrev, screens[mainchainLength]);
+    setScreen(atomPrev, screens[count]);
   }
 
   void setScreen(Atom atom, Point3i dest) {
@@ -94,10 +93,10 @@ class TraceRenderer extends McgRenderer {
     dest.z = (atomA.z + atomB.z) / 2;
   }
 
-  void render1Segment(short colix, short[] mads, int i) {
+  void render1Segment(short colix, short[] mads, int i, int count) {
     int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > mainchainLength) iNext1 = mainchainLength;
-    int iNext2 = i + 2; if (iNext2 > mainchainLength) iNext2 = mainchainLength;
+    int iNext1 = i + 1; if (iNext1 > count) iNext1 = count;
+    int iNext2 = i + 2; if (iNext2 > count) iNext2 = count;
     
     int madThis = mads[i];
     int madBeg = (mads[iPrev1] + madThis) / 2;

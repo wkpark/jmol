@@ -66,17 +66,5 @@ public class Cartoon extends Mcpg {
       if (polymerCount > 1)
         mads[polymerCount] = mads[polymerCount - 1];
     }
-
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
-      int[] atomIndices = polymer.getAtomIndices();
-      for (int i = polymerCount; --i >= 0; ) {
-        if (bsSelected.get(atomIndices[i]))
-          colixes[i] =
-            palette > JmolConstants.PALETTE_CPK
-            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndices[i]),
-                                         palette)
-            : colix;
-      }
-    }
   }
 }

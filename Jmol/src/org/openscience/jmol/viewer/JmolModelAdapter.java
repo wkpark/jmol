@@ -150,6 +150,13 @@ public interface JmolModelAdapter {
    */
   public String getModelName(Object clientFile);
 
+  /**
+   * We may need the file header.
+   * This is currently only used for the script command 'show pdbheader'
+   * Other than for pdb files, the client can return <code>null</code>
+   */
+  public String getModelHeader(Object clientFile);
+
   /****************************************************************
    * frame related
    ****************************************************************/

@@ -151,6 +151,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
+  public String getModelHeader(Object clientFile) {
+    return null;
+  }
+
   public int getFrameCount(Object clientFile) {
     return ((ChemFile)clientFile).getChemSequenceCount();
   }

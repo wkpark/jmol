@@ -103,6 +103,10 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
+  public String getModelHeader(Object clientFile) {
+    return null;
+  }
+
   public int getFrameCount(Object clientFile) {
     return ((ChemFile)clientFile).getNumberOfFrames();
   }

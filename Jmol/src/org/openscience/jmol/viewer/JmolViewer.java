@@ -907,6 +907,10 @@ final public class JmolViewer {
     return modelManager.getModelName();
   }
 
+  public String getModelHeader() {
+    return modelManager.getModelHeader();
+  }
+
   public boolean haveFile() {
     return modelManager.haveFile;
   }

@@ -226,11 +226,12 @@ public class Token {
   // zoom
   // chime show parameters
   final static int residue      = showparam | 10;
-  //  final static int model        = showparam | 11 | expression;
+  // model
   // mlp
   // list
   // spin
-  final static int all                  = showparam | 13 | expression;
+  final static int all          = showparam | 11 | expression;
+  final static int pdbheader    = showparam | 12 | expression;
 
   // atom expression operators
   final static int leftparen    = expression |  0;
@@ -439,6 +440,7 @@ public class Token {
     // chime show parameters
     "residue",      new Token(residue,         "residue"),
     "model",        new Token(model,           "model"),
+    "pdbheader",    new Token(pdbheader,       "pdbheader"),
 
     // atom expressions
     "(",            new Token(leftparen, "("),

@@ -145,6 +145,10 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return ((Model)clientFile).modelName;
   }
 
+  public String getModelHeader(Object clientFile) {
+    return ((Model)clientFile).fileHeader;
+  }
+
   public int getFrameCount(Object clientFile) {
     return 1;
   }
@@ -351,6 +355,7 @@ abstract class Model {
   Atom[] atoms;
   Bond[] bonds;
   String errorMessage;
+  String fileHeader;
 
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
@@ -500,29 +505,38 @@ class PdbModel extends Model {
     atoms = new Atom[512];
     bonds = new Bond[32];
     pdbStructureRecords = new String[32];
+    fileHeader = "";
+    boolean accumulatingHeader = true;
     while ((line = reader.readLine()) != null) {
       if (line.startsWith("ATOM  ") ||
           line.startsWith("HETATM")) {
         atom();
+        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("CONECT")) {
         conect();
+        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("HELIX ") ||
           line.startsWith("SHEET ") ||
           line.startsWith("TURN  ")) {
         structure();
+        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("MODEL ")) {
         model();
+        accumulatingHeader = false;
         continue;
       }
       if (line.startsWith("HEADER") && line.length() >= 66) {
         setModelName(line.substring(62, 66));
         continue;
+      }
+      if (accumulatingHeader) {
+        fileHeader += line + '\n';
       }
     }
     serialMap = null;

@@ -380,6 +380,9 @@ public class Eval implements Runnable {
       case Token.hbonds:
         hbonds();
         break;
+      case Token.show:
+        show();
+        break;
 
         // not implemented
       case Token.bond:
@@ -391,7 +394,6 @@ public class Eval implements Runnable {
       case Token.print:
       case Token.renumber:
       case Token.save:
-      case Token.show:
       case Token.star:
       case Token.stereo:
       case Token.structure:
@@ -1482,94 +1484,6 @@ public class Eval implements Runnable {
     viewer.setInMotion(false);
   }
 
-  void set() throws ScriptException {
-    switch(statement[1].tok) {
-    case Token.axes:
-      setAxes();
-      break;
-    case Token.bondmode:
-      setBondmode();
-      break;
-    case Token.bonds:
-      setBonds();
-      break;
-    case Token.boundbox:
-      setBoundbox();
-      break;
-    case Token.display:
-      setDisplay();
-      break;
-    case Token.fontsize:
-      setFontsize();
-      break;
-    case Token.hetero:
-      setHetero();
-      break;
-    case Token.hydrogen:
-      setHydrogen();
-      break;
-    case Token.monitor:
-      setMonitor();
-      break;
-    case Token.debugscript:
-      setDebugScript();
-      break;
-    case Token.property:
-      setProperty();
-      break;
-    case Token.solvent:
-      setSolvent();
-      break;
-    case Token.strands:
-      setStrands();
-      break;
-    case Token.specular:
-      setSpecular();
-      break;
-    case Token.specpower:
-      setSpecPower();
-      break;
-    case Token.ambient:
-      setAmbient();
-      break;
-    case Token.diffuse:
-      setDiffuse();
-      break;
-    case Token.spin:
-      setSpin();
-      break;
-    case Token.ssbonds:
-      setSsbonds();
-      break;
-    case Token.hbonds:
-      setHbonds();
-      break;
-
-      // not implemented
-    case Token.backfade:
-    case Token.cartoon:
-    case Token.hourglass:
-    case Token.kinemage:
-    case Token.menus:
-    case Token.mouse:
-    case Token.picking:
-    case Token.radius:
-    case Token.shadow:
-    case Token.slabmode:
-    case Token.transparent:
-    case Token.unitcell:
-    case Token.vectps:
-    case Token.write:
-      notImplemented(1);
-      break;
-    case Token.background:
-    case Token.stereo:
-      setspecialShouldNotBeHere();
-    default:
-      unrecognizedSetParameter();
-    }
-  }
-
   void slab() throws ScriptException {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
@@ -1856,6 +1770,94 @@ public class Eval implements Runnable {
    * SET implementations
    ****************************************************************/
 
+  void set() throws ScriptException {
+    switch(statement[1].tok) {
+    case Token.axes:
+      setAxes();
+      break;
+    case Token.bondmode:
+      setBondmode();
+      break;
+    case Token.bonds:
+      setBonds();
+      break;
+    case Token.boundbox:
+      setBoundbox();
+      break;
+    case Token.display:
+      setDisplay();
+      break;
+    case Token.fontsize:
+      setFontsize();
+      break;
+    case Token.hetero:
+      setHetero();
+      break;
+    case Token.hydrogen:
+      setHydrogen();
+      break;
+    case Token.monitor:
+      setMonitor();
+      break;
+    case Token.debugscript:
+      setDebugScript();
+      break;
+    case Token.property:
+      setProperty();
+      break;
+    case Token.solvent:
+      setSolvent();
+      break;
+    case Token.strands:
+      setStrands();
+      break;
+    case Token.specular:
+      setSpecular();
+      break;
+    case Token.specpower:
+      setSpecPower();
+      break;
+    case Token.ambient:
+      setAmbient();
+      break;
+    case Token.diffuse:
+      setDiffuse();
+      break;
+    case Token.spin:
+      setSpin();
+      break;
+    case Token.ssbonds:
+      setSsbonds();
+      break;
+    case Token.hbonds:
+      setHbonds();
+      break;
+
+      // not implemented
+    case Token.backfade:
+    case Token.cartoon:
+    case Token.hourglass:
+    case Token.kinemage:
+    case Token.menus:
+    case Token.mouse:
+    case Token.picking:
+    case Token.radius:
+    case Token.shadow:
+    case Token.slabmode:
+    case Token.transparent:
+    case Token.unitcell:
+    case Token.vectps:
+    case Token.write:
+      notImplemented(1);
+      break;
+    case Token.background:
+    case Token.stereo:
+      setspecialShouldNotBeHere();
+    default:
+      unrecognizedSetParameter();
+    }
+  }
+
   void setAxes() throws ScriptException {
     if (statement.length != 3)
       badArgumentCount();
@@ -2058,5 +2060,47 @@ public class Eval implements Runnable {
       invalidArgument();
     }
     viewer.setHbondsBackbone(hbondsBackbone);
+  }
+
+  /****************************************************************
+   * SHOW implementations
+   ****************************************************************/
+
+  void show() throws ScriptException {
+    switch(statement[1].tok) {
+    case Token.pdbheader:
+      showPdbHeader();
+      break;
+
+      // not implemented
+    case Token.center:
+    case Token.zoom:
+    case Token.spin:
+    case Token.list:
+    case Token.mlp:
+    case Token.information:
+    case Token.phipsi:
+    case Token.ramprint:
+    case Token.rotation:
+    case Token.group:
+    case Token.chain:
+    case Token.atom:
+    case Token.sequence:
+    case Token.symmetry:
+    case Token.translation:
+    case Token.residue:
+    case Token.all:
+    case Token.model:
+    case Token.selected:
+      notImplemented(1);
+      break;
+
+    default:
+      unrecognizedSetParameter();
+    }
+  }
+
+  void showPdbHeader() {
+    System.out.println("pdbHeader=" + viewer.getModelHeader());
   }
 }

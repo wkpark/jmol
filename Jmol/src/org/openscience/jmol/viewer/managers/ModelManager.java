@@ -63,6 +63,7 @@ public class ModelManager {
   public String fullPathName;
   public String fileName;
   public String modelName;
+  public String modelHeader;
   public int frameCount = 0;
   public int atomCount = 0;
   public boolean haveFile = false;
@@ -75,7 +76,7 @@ public class ModelManager {
     Object clientFilePrevious = this.clientFile;
     this.clientFile = clientFile;
     if (clientFile == null) {
-      fullPathName = fileName = modelName = null;
+      fullPathName = fileName = modelName = modelHeader = null;
       frameCount = 0;
       currentFrameNumber = -1;
       frame = null;
@@ -91,7 +92,9 @@ public class ModelManager {
         if (modelName.length() == 0)
           modelName = null;
       }
-      frameCount = viewer.getFrameCount(clientFile);
+      modelName = getModelName(clientFile);
+      modelHeader = getModelHeader(clientFile);
+      frameCount = getFrameCount(clientFile);
       frames = new Frame[frameCount];
       haveFile = true;
     }
@@ -108,6 +111,10 @@ public class ModelManager {
 
   public String getModelName() {
     return modelName;
+  }
+
+  public String getModelHeader() {
+    return modelHeader;
   }
 
   public float getRotationRadius() {
@@ -230,6 +237,10 @@ public class ModelManager {
 
   public String getModelName(Object clientFile) {
     return modelAdapter.getModelName(clientFile);
+  }
+
+  public String getModelHeader(Object clientFile) {
+    return modelAdapter.getModelHeader(clientFile);
   }
 
   public int getAtomicNumber(Object clientAtom) {

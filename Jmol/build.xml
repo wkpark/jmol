@@ -207,6 +207,7 @@
         <exclude name="swing.jar" />
         <exclude name="junit.jar" />
         <exclude name="saxon.jar" />
+        <exclude name="gnujaxp-saxonly.jar" />
         <exclude name="baysmith-io.jar" />
       </fileset>
     </copy>
@@ -271,6 +272,7 @@
         <exclude name="swing.jar" />
         <exclude name="junit.jar" />
         <exclude name="saxon.jar" />
+        <exclude name="baysmith-io.jar" />
       </fileset>
     </copy>
     <mkdir dir="${dist.dir}/jmol-jws-${version}/images" />

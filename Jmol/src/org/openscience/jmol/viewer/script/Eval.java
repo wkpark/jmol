@@ -210,32 +210,61 @@ public class Eval implements Runnable {
     variables.clear();
 
     int cPredef = Token.predefinitions.length;
-    for (int iPredef = 0; iPredef < cPredef; iPredef++) {
-      String script = Token.predefinitions[iPredef];
-      if (compiler.compile("#predefinitions", script)) {
-        Token [][] aatoken = compiler.getAatokenCompiled();
-        if (aatoken.length != 1) {
-          viewer.scriptStatus("predefinition does not have exactly 1 command:"
-                             + script);
-          continue;
-        }
-        Token[] statement = aatoken[0];
-        if (statement.length > 2) {
-          int tok = statement[1].tok;
-          if (tok == Token.identifier ||
-              (tok & Token.predefinedset) == Token.predefinedset) {
-            String variable = (String)statement[1].value;
-            variables.put(variable, statement);
-          } else {
-            viewer.scriptStatus("invalid variable name:" + script);
-          }
+    for (int iPredef = 0; iPredef < cPredef; iPredef++)
+      predefine(Token.predefinitions[iPredef]);
+    // hydrogen is handled specially, so don't define it
+    for (int i = JmolConstants.elementNames.length; --i > 1; ) {
+      String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
+      predefine(definition);
+    }
+    for (int j = JmolConstants.alternateElementNumbers.length; --j >= 0; ) {
+      String definition =
+        "@" + JmolConstants.alternateElementNames[j] +
+        " _e=" + JmolConstants.alternateElementNumbers[j];
+      predefine(definition);
+    }
+  }
+
+  void predefineElements() {
+    // the name 'hydrogen' handled specially
+    for (int i = JmolConstants.elementNames.length; --i > 1; ) {
+      String definition = "@" + JmolConstants.elementNames[i] + " _e=" + i;
+      if (! compiler.compile("#element", definition)) {
+        System.out.println("element definition error:" + definition);
+        continue;
+      }
+      Token [][] aatoken = compiler.getAatokenCompiled();
+      Token[] statement = aatoken[0];
+      int tok = statement[1].tok;
+      String variable = (String)statement[1].value;
+      variables.put(variable, statement);
+    }
+  }
+
+  void predefine(String script) {
+    if (compiler.compile("#predefine", script)) {
+      Token [][] aatoken = compiler.getAatokenCompiled();
+      if (aatoken.length != 1) {
+        viewer.scriptStatus("predefinition does not have exactly 1 command:"
+                            + script);
+        return;
+      }
+      Token[] statement = aatoken[0];
+      if (statement.length > 2) {
+        int tok = statement[1].tok;
+        if (tok == Token.identifier ||
+            (tok & Token.predefinedset) == Token.predefinedset) {
+          String variable = (String)statement[1].value;
+          variables.put(variable, statement);
         } else {
-          viewer.scriptStatus("bad statement length:" + script);
+          viewer.scriptStatus("invalid variable name:" + script);
         }
       } else {
-        viewer.scriptStatus("predefined set compile error:" + script +
-                           "\ncompile error:" + compiler.getErrorMessage());
+        viewer.scriptStatus("bad predefinition length:" + script);
       }
+    } else {
+      viewer.scriptStatus("predefined set compile error:" + script +
+                          "\ncompile error:" + compiler.getErrorMessage());
     }
   }
 

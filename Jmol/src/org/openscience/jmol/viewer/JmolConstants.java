@@ -227,6 +227,131 @@ final public class JmolConstants {
    */
   public final static int atomicNumberMax = atomicSymbols.length;
 
+  public final static String elementNames[] = {
+    "unknown",
+    "hydrogen",
+    "helium",
+    "lithium",
+    "beryllium",
+    "barium",
+    "carbon",
+    "nitrogen",
+    "oxygen",
+    "fluorine",
+    "neon",
+    "sodium",
+    "magnesium",
+    "aluminum",  //US  //    "aluminium", //UK
+    "silicon",
+    "phosphorus",
+    "sulfur",   //US   //    "sulphur",   //UK
+    "chlorine",
+    "argon",
+    "potassium",
+    "calcium",
+    "scandium",
+    "titanium",
+    "vanadium",
+    "chromium",
+    "manganese",
+    "iron",
+    "cobolt",
+    "nickel",
+    "copper",
+    "zinc",
+    "gallium",
+    "germanium",
+    "arsenic",
+    "selenium",
+    "bromine",
+    "krypton",
+    "rubidium",
+    "strontium",
+    "yttrium",
+    "zirconium",
+    "niobioum",
+    "molybdenum",
+    "technetium",
+    "ruthenium",
+    "rhodium",
+    "palladium",
+    "silver",
+    "cadmium",
+    "indium",
+    "tin",
+    "antimony",
+    "tellurium",
+    "iodine",
+    "xenon",
+    "cesium", // caesium
+    "barium",
+    "lanthanum",
+    "cerium",
+    "praseodymium",
+    "neodymium",
+    "promethium",
+    "samarium",
+    "europium",
+    "gadolinium",
+    "terbium",
+    "dysprosium",
+    "holmium", // 67
+    "erbium",
+    "thulium",
+    "ytterbium",
+    "lutetium",
+    "hafnium", //72
+    "tantalum",
+    "tungsten",
+    "rhenium",
+    "osmium",
+    "iridium",
+    "platinum",
+    "gold",
+    "mercury",
+    "thallium",
+    "lead",
+    "bismuth",
+    "polonium",
+    "astatine",
+    "radon", // 86
+    "francium", // 87
+    "radium",
+    "actinium",
+    "thorium",
+    "protactinium",
+    "uranium",
+    "neptunium",
+    "plutonium",
+    "americium",
+    "curium",
+    "berkelium",
+    "californium",
+    "einsteinium",
+    "fermium",
+    "mendelvium",
+    "nobelium",
+    "lawrencium",
+    "rutherfordium",
+    "dubnium",
+    "seaborgium",
+    "bohrium",
+    "hassium",
+    "meitnerium" // 109
+  };
+
+  public final static byte[] alternateElementNumbers = {
+    13,
+    16,
+    55,
+  };
+
+  public final static String[] alternateElementNames = {
+    "aluminium",
+    "sulphur",
+    "caesium",
+  };
+
   /**
    * Default table of van der Waals Radii.
    * values are stored as MAR -- Milli Angstrom Radius
@@ -1000,11 +1125,13 @@ final public class JmolConstants {
   static {
     // if the length of these tables is all the same then the
     // java compiler should eliminate all of this code.
-    if ((atomicSymbols.length != vanderwaalsMars.length) ||
+    if ((atomicSymbols.length != elementNames.length) ||
+        (atomicSymbols.length != vanderwaalsMars.length) ||
         (atomicSymbols.length != covalentMars.length) ||
         (atomicSymbols.length != argbsCpk.length)) {
       System.out.println("ERROR!!! Element table length mismatch:" +
                          "\n atomicSymbols.length=" + atomicSymbols.length +
+                         "\n elementNames.length=" + elementNames.length +
                          "\n vanderwaalsMars.length=" + vanderwaalsMars.length+
                          "\n covalentMars.length=" + covalentMars.length +
                          "\n argbsCpk.length=" + argbsCpk.length);

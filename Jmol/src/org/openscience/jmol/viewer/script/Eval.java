@@ -458,6 +458,10 @@ public class Eval implements Runnable {
         moveto();
         break;
 
+      case Token.bondorder:
+        bondorder();
+        break;
+
         // not implemented
       case Token.bond:
       case Token.clipboard:
@@ -3015,5 +3019,35 @@ public class Eval implements Runnable {
     viewer.translateToXPercent(xTrans);
     viewer.translateToYPercent(yTrans);
     viewer.setRotation(matrixEnd);
+  }
+
+  void bondorder() throws ScriptException {
+    Token tokenArg = statement[1];
+    int order;
+    switch (tokenArg.tok) {
+    case Token.integer:
+      order = tokenArg.intValue;
+      if (order < 0 || order > 3)
+        invalidArgument();
+      break;
+    case Token.hbonds:
+      order = JmolConstants.BOND_H_REGULAR;
+      break;
+    case Token.decimal:
+      float f = ((Float)tokenArg.value).floatValue();
+      if (f == (int)f) {
+        order = (int)f;
+        if (order < 0 || order > 3)
+          invalidArgument();
+      } else if (f == 0.5f)
+        order = JmolConstants.BOND_H_REGULAR;
+      else if (f == 1.5f)
+        order = JmolConstants.BOND_AROMATIC;
+      else
+        invalidArgument();
+      break;
+    default:
+      invalidArgument();
+    }
   }
 }

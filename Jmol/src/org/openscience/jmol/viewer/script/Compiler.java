@@ -655,7 +655,8 @@ class Compiler {
   private boolean compileCommand(Vector ltoken) {
     Token tokenCommand = (Token)ltoken.firstElement();
     int tokCommand = tokenCommand.tok;
-    if ((tokenCommand.intValue & Token.onDefault1) != 0 && ltoken.size() == 1)
+    if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1 &&
+        ltoken.size() == 1)
       ltoken.addElement(Token.tokenOn);
     if (tokCommand == Token.set) {
       int size = ltoken.size();

@@ -171,6 +171,7 @@ public class Token {
   final static int rocket       = command | 86;
   final static int surface      = command | predefinedset | 87;
   final static int moveto       = command | 88 | negativenums;
+  final static int bondorder    = command | 89;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -376,6 +377,7 @@ public class Token {
     "echo",              new Token(echo,     varArgCount, "echo"),
     "exit",              new Token(exit,               0, "exit"),
     "hbonds",            new Token(hbonds,    onDefault1, "hbonds"),
+    "hbond",             null,
     "help",              new Token(help,     varArgCount, "help"),
     "label",             new Token(label,              1, "label"),
     "labels",            null,
@@ -440,6 +442,7 @@ public class Token {
     "rockets",           null,
     "surface",           new Token(surface,  varArgCount, "surface"),
     "moveto",            new Token(moveto,   varArgCount, "moveto"),
+    "bondorder",         new Token(bondorder,          1, "bondorder"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2003-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -271,6 +271,7 @@ public class Token {
   final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
   final static int occupancy    = atomproperty | 10;
+  final static int polymerLength= atomproperty | 11;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -534,6 +535,7 @@ public class Token {
     "_a",           null,
     "_structure",   new Token(_structure, "_structure"),
     "occupancy",    new Token(occupancy, "occupancy"),
+    "polymerlength",new Token(polymerLength, "polymerlength"),
 
     "off",          new Token(off, 0, "off"),
     "false",        null,

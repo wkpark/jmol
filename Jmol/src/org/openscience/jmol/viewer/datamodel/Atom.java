@@ -420,6 +420,10 @@ public final class Atom implements Bspt.Tuple {
     return group;
   }
 
+  public int getPolymerLength() {
+    return group.getPolymerLength();
+  }
+
   /*
   Polymer getPolymer() {
     return group.polymer;
@@ -570,76 +574,80 @@ public final class Atom implements Bspt.Tuple {
         --ich; // a percent sign at the end of the string
         break;
       }
+      String strT = "";
       char ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strLabel += getAtomNumber();
+        strT = "" + getAtomNumber();
         break;
       case 'a':
-        strLabel += getAtomName();
+        strT = getAtomName();
         break;
       case 'e':
-        strLabel += JmolConstants.elementSymbols[elementNumber];
+        strT = JmolConstants.elementSymbols[elementNumber];
         break;
       case 'x':
-        strLabel += point3f.x;
+        strT = "" + point3f.x;
         break;
       case 'y':
-        strLabel += point3f.y;
+        strT = "" + point3f.y;
         break;
       case 'z':
-        strLabel += point3f.z;
+        strT = "" + point3f.z;
         break;
       case 'X':
-        strLabel += atomIndex;
+        strT = "" + atomIndex;
         break;
       case 'C':
         int formalCharge = getFormalCharge();
         if (formalCharge > 0)
-          strLabel += "" + formalCharge + "+";
+          strT = "" + formalCharge + "+";
         else if (formalCharge < 0)
-          strLabel += "" + -formalCharge + "-";
+          strT = "" + -formalCharge + "-";
         else
-          strLabel += "0";
+          strT = "0";
         break;
       case 'P':
         float partialCharge = getPartialCharge();
         if (Float.isNaN(partialCharge))
-          strLabel += "?";
+          strT = "?";
         else
-          strLabel += partialCharge;
+          strT = "" + partialCharge;
         break;
       case 'V':
-        strLabel += getVanderwaalsRadiusFloat();
+        strT = "" + getVanderwaalsRadiusFloat();
         break;
       case 'I':
-        strLabel += getBondingRadiusFloat();
+        strT = "" + getBondingRadiusFloat();
         break;
       case 'b': // these two are the same
       case 't':
-        strLabel += (getBfactor100() / 100.0);
+        strT = "" + (getBfactor100() / 100.0);
         break;
       case 'q':
-        strLabel += occupancy;
+        strT = "" + occupancy;
         break;
       case 'c': // these two are the same
       case 's':
-        strLabel += getChainID();
+        strT = "" + getChainID();
+        break;
+      case 'L':
+        strT = "" + getPolymerLength();
         break;
       case 'M':
-        strLabel += "/" + getModelID();
+        strT = "/" + getModelID();
         break;
       case 'm':
-        strLabel += "<X>";
+        strT = "<X>";
         break;
       case 'n':
-        strLabel += getGroup3();
+        strT = getGroup3();
         break;
       case 'r':
-        strLabel += getSeqcodeString();
+        strT = getSeqcodeString();
         break;
       case 'U':
-        strLabel += getIdentity();
+        strT = getIdentity();
         break;
       case '{': // client property name
         int ichCloseBracket = strFormat.indexOf('}', ich);
@@ -647,14 +655,15 @@ public final class Atom implements Bspt.Tuple {
           String propertyName = strFormat.substring(ich, ichCloseBracket);
           String value = getClientAtomStringProperty(propertyName);
           if (value != null)
-            strLabel += value;
+            strT = value;
           ich = ichCloseBracket + 1;
           break;
         }
         // malformed will fall into
       default:
-        strLabel += "%" + ch;
+        strT = "%" + ch;
       }
+      strLabel += strT;
     }
     strLabel += strFormat.substring(ich);
     if (strLabel.length() == 0)

@@ -60,6 +60,9 @@ public class NucleicMonomer extends Monomer {
     -JmolConstants.ATOMID_H5T_TERMINUS, // 20 H5T terminus
     -JmolConstants.ATOMID_O5T_TERMINUS, // 21 O5T terminus
     JmolConstants.ATOMID_O5_PRIME       // 22 O5' terminus
+
+    -JmolConstants.ATOMID_H3T_TERMINUS, // 23 H3T terminus
+    JmolConstants.ATOMID_O3_PRIME       // 24 O3' terminus
   };
 
   static Monomer
@@ -169,6 +172,14 @@ public class NucleicMonomer extends Monomer {
 
   Point3f getAtomPoint(byte specialAtomID) {
     return getSpecialAtomPoint(interestingNucleicAtomIDs, specialAtomID);
+  }
+
+  Atom getInitiatorAtom() {
+    return getLeadAtom();
+  }
+
+  Atom getTerminatorAtom() {
+    return getAtomFromOffsetIndex(offsets[23] != -1 ? 23 : 24);
   }
 
   void getBaseRing6Points(Point3f[] ring6Points) {

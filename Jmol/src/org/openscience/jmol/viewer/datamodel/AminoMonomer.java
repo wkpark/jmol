@@ -88,6 +88,14 @@ public class AminoMonomer extends AlphaMonomer {
     return getWingAtomPoint();
   }
 
+  Atom getInitiatorAtom() {
+    return getNitrogenAtom();
+  }
+
+  Atom getTerminatorAtom() {
+    return getAtomFromOffsetIndex(offsets[4] != -1 ? 4 : 3);
+  }
+
   ////////////////////////////////////////////////////////////////
 
   Atom getAtom(byte specialAtomID) {

@@ -160,11 +160,14 @@ abstract class Mps extends Shape {
       this.madTurnRandom = (short)madTurnRandom;
       this.madDnaRna = (short)madDnaRna;
 
-      monomerCount = polymer == null ? 0 : polymer.getCount();
+      // FIXME
+      // I don't think that polymer can ever be null for this thing
+      // so stop checking for null and see if it explodes
+      monomerCount = polymer == null ? 0 : polymer.count;
       if (monomerCount > 0) {
         colixes = new short[monomerCount];
         mads = new short[monomerCount + 1];
-        monomers = polymer.getMonomers();
+        monomers = polymer.monomers;
 
         leadMidpoints = polymer.getLeadMidpoints();
         wingVectors = polymer.getWingVectors();

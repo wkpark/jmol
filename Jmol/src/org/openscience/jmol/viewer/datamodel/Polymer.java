@@ -92,7 +92,7 @@ abstract class Polymer {
       if (firstNonMainchain == i)
         ++firstNonMainchain;
     }
-    if (count < 2)
+    if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
     for (int i = 0, j = 0; i < chain.groupCount; ++i) {
@@ -123,7 +123,7 @@ abstract class Polymer {
       if (firstNonMainchain == i)
         ++firstNonMainchain;
     }
-    if (count < 2)
+    if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
     for (int i = 0, j = 0; i < chain.groupCount; ++i) {
@@ -152,7 +152,7 @@ abstract class Polymer {
         continue;
       ++count;
     }
-    if (count < 2)
+    if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
     for (int i = 0, j = 0; i < chain.groupCount; ++i) {
@@ -175,14 +175,6 @@ abstract class Polymer {
     return monomers[0].getChainID();
   }
 
-  int getCount() {
-    return count;
-  }
-  
-  Monomer[] getMonomers() {
-    return monomers;
-  }
-  
   int[] getLeadAtomIndices() {
     if (atomIndices == null) {
       atomIndices = new int[count];
@@ -202,6 +194,14 @@ abstract class Polymer {
 
   final Point3f getLeadPoint(int monomerIndex) {
     return monomers[monomerIndex].getLeadAtomPoint();
+  }
+
+  final Point3f getInitiatorPoint() {
+    return monomers[0].getInitiatorAtom().point3f;
+  }
+
+  final Point3f getTerminatorPoint() {
+    return monomers[count - 1].getTerminatorAtom().point3f;
   }
 
   final Atom getLeadAtom(int monomerIndex) {
@@ -258,7 +258,8 @@ abstract class Polymer {
     Vector3f vectorD = new Vector3f();
     
     Point3f leadPointPrev, leadPoint;
-    leadMidpoints[0] = leadPointPrev = leadPoint = getLeadPoint(0);
+    leadMidpoints[0] = getInitiatorPoint();
+    leadPoint = getLeadPoint(0);
     Vector3f previousVectorD = null;
     for (int i = 1; i < count; ++i) {
       leadPointPrev = leadPoint;
@@ -279,7 +280,7 @@ abstract class Polymer {
         previousVectorD = wingVectors[i] = new Vector3f(vectorD);
       }
     }
-    leadMidpoints[count] = getLeadPoint(count - 1);
+    leadMidpoints[count] = getTerminatorPoint();
     if (! hasWingPoints) {
       // auto-calculate wing vectors based upon lead atom positions only
       // seems to work like a charm! :-)

@@ -48,6 +48,10 @@ abstract class Monomer extends Group {
     this.polymer = polymer;
   }
 
+  public int getPolymerLength() {
+    return polymer == null ? 0 : polymer.count;
+  }
+
   ////////////////////////////////////////////////////////////////
 
   static byte[] scanForOffsets(int firstAtomIndex,
@@ -184,6 +188,9 @@ abstract class Monomer extends Group {
   final Point3f getWingAtomPoint() {
     return getAtomPointFromOffsetIndex(1);
   }
+
+  abstract Atom getInitiatorAtom();
+  abstract Atom getTerminatorAtom();
 
   /**
    * Selects LeadAtom when this Monomer is clicked ... iff it is

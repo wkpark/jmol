@@ -86,6 +86,14 @@ public class AlphaMonomer extends Monomer {
             : null);
   }
 
+  Atom getInitiatorAtom() {
+    return getLeadAtom();
+  }
+
+  Atom getTerminatorAtom() {
+    return getLeadAtom();
+  }
+
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
   }

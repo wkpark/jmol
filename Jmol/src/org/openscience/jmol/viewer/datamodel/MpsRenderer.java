@@ -91,7 +91,7 @@ abstract class MpsRenderer extends ShapeRenderer {
     int diameterMid =
       viewer.scaleToScreen(monomers[i].getLeadAtom().getScreenZ(),
                            madThis);
-    g3d.fillHermite(colix, 4,
+    g3d.fillHermite(colix, monomers[i].isNucleicMonomer() ? 4 : 7,
                     diameterBeg, diameterMid, diameterEnd,
                     leadMidpointScreens[iPrev1], leadMidpointScreens[i],
                     leadMidpointScreens[iNext1], leadMidpointScreens[iNext2]);

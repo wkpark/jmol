@@ -1184,6 +1184,9 @@ public class Eval implements Runnable {
       case Token.occupancy:
         propertyValue = atom.getOccupancy();
         break;
+      case Token.polymerLength:
+        propertyValue = atom.getPolymerLength();
+        break;
       case Token.resno:
         propertyValue = atom.getSeqcode();
         if (propertyValue == -1)

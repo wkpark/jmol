@@ -107,6 +107,10 @@ public class Group {
     return chain.chainID;
   }
 
+  public int getPolymerLength() {
+    return 0;
+  }
+
   byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }

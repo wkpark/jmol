@@ -54,6 +54,11 @@
       <replacefilter token="$$VERSION$$" value="${version}"/>
     </replace>
 
+    <!-- Use Prerelease version for Jmol-fah -->
+    <replace dir="${build.html}/fah" includes="*.html">
+      <replacefilter token="[root]/jmol" value="../jmolPrerelease" />
+    </replace>
+
   	<!-- Replace paths -->
     <replace dir="${build.html}" includes="*.html">
       <replacefilter token="[images]"   value="images" />

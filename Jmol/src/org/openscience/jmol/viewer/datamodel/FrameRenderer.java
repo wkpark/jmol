@@ -38,6 +38,7 @@ public class FrameRenderer {
   AtomRenderer atomRenderer;
   BondRenderer bondRenderer;
   LabelRenderer labelRenderer;
+  MeasurementRenderer measurementRenderer;
   DotsRenderer dotsRenderer;
   ArcTest arctest;
   Gtest gtest;
@@ -48,6 +49,7 @@ public class FrameRenderer {
     atomRenderer = new AtomRenderer(viewer);
     bondRenderer = new BondRenderer(viewer);
     labelRenderer = new LabelRenderer(viewer);
+    measurementRenderer = new MeasurementRenderer(viewer);
     dotsRenderer = new DotsRenderer(viewer);
     arctest = new ArcTest(viewer);
     gtest = new Gtest(viewer);
@@ -58,6 +60,7 @@ public class FrameRenderer {
     atomRenderer.setGraphicsContext(g3d, rectClip);
     bondRenderer.setGraphicsContext(g3d, rectClip);
     labelRenderer.setGraphicsContext(g3d, rectClip);
+    measurementRenderer.setGraphicsContext(g3d, rectClip, frame);
     dotsRenderer.setGraphicsContext(g3d, rectClip, frame);
     arctest.setGraphicsContext(g3d, rectClip, frame);
     gtest.setGraphicsContext(g3d, rectClip, frame);
@@ -108,7 +111,7 @@ public class FrameRenderer {
     for (int i = frame.measurementShapeCount; --i >= 0; ) {
       MeasurementShape measurementShape = frame.measurementShapes[i];
       measurementShape.transform(viewer);
-      measurementShape.render(g3d, viewer);
+      measurementRenderer.render(measurementShape);
     }
 
     if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {

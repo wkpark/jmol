@@ -887,10 +887,6 @@ final public class JmolViewer {
     return modelManager.getBondCount();
   }
 
-    public Point3f getPoint3f(int atomIndex) {
-	return modelManager.getPoint3f(atomIndex);
-    }
-
   public float getAtomX(Object clientAtom) {
       return modelAdapter.getAtomX(clientAtom);
   }

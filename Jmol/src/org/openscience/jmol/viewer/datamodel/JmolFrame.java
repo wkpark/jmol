@@ -109,6 +109,10 @@ public class JmolFrame {
     return atomShapes[atomIndex];
   }
 
+  public Point3f getAtomPoint3f(int atomIndex) {
+    return atomShapes[atomIndex].getPoint3f();
+  }
+
   public PdbAtom getPdbAtom(int atomIndex) {
     return atomShapes[atomIndex].pdbatom;
   }
@@ -380,7 +384,8 @@ public class JmolFrame {
   int measurementShapeCount = 0;
   MeasurementShape[] measurementShapes = null;
 
-  public void addMeasurementShape(MeasurementShape shape) {
+  public void addMeasurementShape(int count, int[] atomIndices) {
+    MeasurementShape measureNew = new MeasurementShape(this, count, atomIndices);
     if (measurementShapes == null ||
         measurementShapeCount == measurementShapes.length) {
       MeasurementShape[] newShapes =
@@ -391,7 +396,7 @@ public class JmolFrame {
                          newShapes, 0, measurementShapeCount);
       measurementShapes = newShapes;
     }
-    measurementShapes[measurementShapeCount++] = shape;
+    measurementShapes[measurementShapeCount++] = measureNew;
   }
 
   public void clearMeasurementShapes() {

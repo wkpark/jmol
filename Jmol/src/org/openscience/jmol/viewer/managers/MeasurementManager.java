@@ -89,8 +89,7 @@ public class MeasurementManager {
       if (measurementShapes[i].sameAs(count, atomIndices))
         return;
     }
-    frame.addMeasurementShape(new MeasurementShape(viewer, count,
-                                                   atomIndices));
+    frame.addMeasurementShape(count, atomIndices);
   }
 
   public boolean deleteMeasurement(int measurementIndex) {

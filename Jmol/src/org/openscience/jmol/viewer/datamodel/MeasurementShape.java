@@ -33,9 +33,6 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-
 public class MeasurementShape extends LineShape {
 
   public int[] atomIndices;
@@ -47,9 +44,9 @@ public class MeasurementShape extends LineShape {
   AxisAngle4f aa, aaT;
   Matrix3f matrixT;
 
-  public MeasurementShape(JmolViewer viewer, int count, int[] atomIndices) {
-    Point3f point1 = viewer.getPoint3f(atomIndices[0]);
-    Point3f point2 = viewer.getPoint3f(atomIndices[1]);
+  public MeasurementShape(JmolFrame frame, int count, int[] atomIndices) {
+    Point3f point1 = frame.getAtomPoint3f(atomIndices[0]);
+    Point3f point2 = frame.getAtomPoint3f(atomIndices[1]);
     Point3f point3 = null;
     Point3f point4 = null;
     this.count = count;
@@ -61,7 +58,7 @@ public class MeasurementShape extends LineShape {
       pointEnd = point2;
       break;
     case 3:
-      point3 = viewer.getPoint3f(atomIndices[2]);
+      point3 = frame.getAtomPoint3f(atomIndices[2]);
       vector21 = new Vector3f(point1);
       vector21.sub(point2);
       Vector3f vector23 = new Vector3f(point3);
@@ -92,8 +89,8 @@ public class MeasurementShape extends LineShape {
       matrixT = new Matrix3f();
       break;
     case 4:
-      point3 = viewer.getPoint3f(atomIndices[2]);
-      point4 = viewer.getPoint3f(atomIndices[3]);
+      point3 = frame.getAtomPoint3f(atomIndices[2]);
+      point4 = frame.getAtomPoint3f(atomIndices[3]);
       float dihedral = computeDihedral(point1, point2, point3, point4);
       strMeasurement = formatAngle(dihedral);
 
@@ -112,41 +109,6 @@ public class MeasurementShape extends LineShape {
     System.arraycopy(atomIndices, 0, this.atomIndices, 0, count);
   }
 
-  public void render(Graphics3D g3d, JmolViewer viewer) {
-    if (count == 3) {
-      renderArc(g3d, viewer);
-    } else {
-      g3d.drawDottedLine(viewer.getColixDistance(),
-                         x, y, z, xEnd, yEnd, zEnd);
-    }
-    if (viewer.getShowMeasurementLabels())
-      paintMeasurementString(g3d, viewer);
-  }
-
-  public void renderArc(Graphics3D g3d, JmolViewer viewer) {
-    g3d.setColix(viewer.getColixDistance());
-    // this needs to vary based upon pixelsPerAngstrom
-    int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
-    float stepAngle = aa.angle / dotCount;
-    aaT.set(aa);
-    for (int i = dotCount; --i >= 0; ) {
-      aaT.angle = i * stepAngle;
-      matrixT.set(aaT);
-      pointT.set(vector21);
-      pointT.scale(0.75f);
-      matrixT.transform(pointT);
-      pointT.add(center);
-      g3d.plotPoint(viewer.transformPoint(pointT));
-    }
-    int xC, yC, zC;
-    Point3i pointC = viewer.transformPoint(center);
-    g3d.drawDottedLine(viewer.getColixDistance(),
-                       pointC.x, pointC.y, pointC.z, x, y, z);
-    g3d.drawDottedLine(viewer.getColixDistance(),
-                       pointC.x, pointC.y, pointC.z, xEnd, yEnd, zEnd);
-  }
-
-
   String formatDistance(float dist) {
     dist = (int)(dist * 1000 + 0.5f);
     dist /= 1000;
@@ -157,17 +119,6 @@ public class MeasurementShape extends LineShape {
     angle = (int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f));
     angle /= 10;
     return "" + angle + '\u00B0';
-  }
-
-  void paintMeasurementString(Graphics3D g3d, JmolViewer viewer) {
-    Font font = viewer.getMeasureFont(10);
-    g3d.setFont(font);
-    FontMetrics fontMetrics = g3d.getFontMetrics(font);
-    int j = fontMetrics.stringWidth(strMeasurement);
-    int xT = (x + xEnd) / 2;
-    int yT = (y + yEnd) / 2;
-    int zT = (z + zEnd) / 2;
-    g3d.drawString(strMeasurement, viewer.getColixDistance(), xT, yT, zT);
   }
 
   public int[] getAtomList() {

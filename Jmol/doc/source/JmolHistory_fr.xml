@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : JmolHistory.docbook.xml (v 1.46)
+  Translated from default version : JmolHistory.docbook.xml (v 1.47)
 -->
 <history>
 <contributors>
@@ -106,7 +106,7 @@
     Ajout du rendu des polyh&#00E8;dres.
   </change>
   <change contributor="ST">
-    Ajout du Drag-and-Drop &#00E0; l'application.
+    Ajout du Drag-and-Drop &#00E0; l'application pour les JVM 1.5 et ult&#x00E9;rieures.
   </change>
 </changes>
 

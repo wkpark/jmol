@@ -52,13 +52,17 @@ public class PropertyGraph extends JDialog {
         this.inputFile = inputFile;
         
         // Check for graphable properties
-        Vector plist = inputFile.getFramePropertyList();
-        Enumeration els = plist.elements();
-        while (els.hasMoreElements()) {
-          PhysicalProperty p = (PhysicalProperty)els.nextElement();
-          System.err.println("Prop found: " + p.toString());
-          if (p instanceof Energy) {
-            hasGraphableProperties = true;
+        // Note the ChemFile.getFramePropertyList doesn't work!
+        for (int i = 1; i < inputFile.nFrames(); i++) {
+          ChemFrame f = inputFile.getFrame(i);          
+          Vector plist = f.getFrameProps();
+          Enumeration els = plist.elements();
+          while (els.hasMoreElements()) {
+            PhysicalProperty p = (PhysicalProperty)els.nextElement();
+            System.err.println("Prop found: " + p.toString());
+            if (p.getDescriptor().equals("Energy")) {
+              hasGraphableProperties = true;
+            }
           }
         }
 

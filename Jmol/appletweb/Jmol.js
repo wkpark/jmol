@@ -31,13 +31,12 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
 
-function jmolInitialize(codebaseDirectory, unsupportedBrowserURL, noJavaURL) {
+function jmolInitialize(codebaseDirectory) {
   if (! codebaseDirectory) {
     alert("codebaseDirectory is a required parameter to jmolInitialize");
     codebaseDirectory = ".";
   }
   jmolSetCodebase(codebaseDirectory);
-  jmolCheckBrowser(unsupportedBrowserURL) && jmolCheckJava(noJavaURL);
   jmolOnloadResetForms();
   _jmol.initialized = true;
 }
@@ -229,20 +228,13 @@ function jmolSetTarget(targetSuffix) {
 
 function jmolScript(script, targetSuffix) {
   if (script) {
+    _jmolCheckBrowser();
     var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
-//    while (! _jmol.ready[target])
-//      alert("The Jmol applet " + target + " is not loaded yet");
-//    if (! _jmol.ready[target])
-//      alert("The Jmol applet " + target + " is not loaded yet");
-//    if (document.applets[target] && ! document.applets[target].isActive())
-//       alert("The Jmol applet " + target + " is not yet active");
-//    else {
-      var applet = _jmolFindApplet(target);
-      if (applet)
-        return applet.script(script);
-      else
-        alert("could not find applet " + target);
-//    }
+    var applet = _jmolFindApplet(target);
+    if (applet)
+      return applet.script(script);
+    else
+      alert("could not find applet " + target);
   }
 }
 
@@ -289,30 +281,26 @@ function jmolSetCodebase(codebase) {
     alert("jmolCodebase=" + _jmol.codebase);
 }
 
-function jmolCheckBrowser(unsupportedBrowserURL) {
-  if (_jmol.isBrowserCompliant)
-    return true;
-  if (unsupportedBrowserURL)
-    location.href = unsupportedBrowserURL;
-  else {
-    alert("Your web browser is not fully compatible with Jmol\n\n" +
-          "brower: " + _jmol.browser +
-          "   version: " + _jmol.browserVersion +
-          "   os: " + _jmol.os +
-          "\n\n" + _jmol.ua);
+function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
+  if (typeof action == "string") {
+    action = action.toLowerCase();
+    if (action != "alert" && action != "redirect" && action != "popup")
+      action = null;
   }
-  return false;
-}
-
-function jmolCheckJava(noJavaURL) {
-  if (_jmol.isJavaCompliant)
-    return true;
-  if (noJavaURL)
-    location.href = noJavaURL;
+  if (typeof action != "string")
+    alert("jmolCheckBrowser(action, urlOrMessage, nowOrLater)\n\n" +
+          "action must be 'alert', 'redirect', or 'popup'");
   else {
-    alert("it seems that Java is not installed or is disabled");
+    if (typeof urlOrMessage != "string")
+      alert("jmolCheckBrowser(action, urlOrMessage, nowOrLater)\n\n" +
+            "urlOrMessage must be a string");
+    else {
+      _jmol.checkBrowserAction = action;
+      _jmol.checkBrowserUrlOrMessage = urlOrMessage;
+    }
   }
-  return false;
+  if (typeof nowOrLater == "string" && nowOrLater.toLowerCase() == "now")
+    _jmolCheckBrowser();
 }
 
 function jmolOnloadResetForms() {
@@ -447,6 +435,10 @@ isFullyCompliant: false,
 initialized: false,
 initChecked: false,
 
+browserChecked: false,
+checkBrowserAction: "alert",
+checkBrowserUrlOrMessage: null,
+
 previousOnloadHandler: null,
 ready: {}
 }
@@ -488,7 +480,7 @@ with (_jmol) {
 
   if (os != "mac") {
     isBrowserCompliant = hasGetElementById || isNetscape47Win;
-  } else {
+  } else { // mac is the problem child :-(
     if (browser == "mozilla" && browserVersion >= 5) {
       // miguel 2004 11 17
       // checking the plugins array does not work because
@@ -497,6 +489,8 @@ with (_jmol) {
       eval("try {var v = java.lang.System.getProperty('java.version');" +
            " _jmol.isBrowserCompliant = v >= '1.4.2';" +
            " } catch (e) { }");
+    } else if (browser == "opera" && browserVersion <= 7.54) {
+      isBrowserCompliant = false;
     } else {
       isBrowserCompliant = hasGetElementById &&
         !((browser == "msie") ||
@@ -561,6 +555,43 @@ function _jmolInitCheck() {
     return;
   alert("jmolInitialize({codebase}, {badBrowseURL}, {badJavaURL})\n" +
         "  must be called before any other Jmol.js functions");
+}
+
+function _jmolCheckBrowser() {
+  with (_jmol) {
+    if (browserChecked)
+      return;
+    browserChecked = true;
+  
+    if (isFullyCompliant)
+      return true;
+
+    if (checkBrowserAction == "redirect")
+      location.href = checkBrowserUrlOrMessage;
+    else if (checkBrowserAction == "popup")
+      _jmolPopup(checkBrowserUrlOrMessage);
+    else {
+      var msg = checkBrowserUrlOrMessage;
+      if (msg == null)
+        msg = "Your web browser is not fully compatible with Jmol\n\n" +
+              "brower: " + browser +
+              "   version: " + browserVersion +
+              "   os: " + os +
+              "\n\n" + ua;
+      alert(msg);
+    }
+  }
+  return false;
+}
+
+function _jmolPopup(url) {
+  var popup = window.open(url, "Jmol Popup",
+                          "left=150,top=150,height=400,width=600," +
+                          "directories=yes,location=yes,menubar=yes," +
+                          "toolbar=yes," +
+                          "resizable=yes,scrollbars=yes,status=yes");
+  if (popup.focus)
+    poup.focus();
 }
 
 function _jmolReadyCallback(name) {

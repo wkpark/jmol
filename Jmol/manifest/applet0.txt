@@ -1,5 +1,5 @@
 Main-Class: JmolApplet
 
-Name: org/jmol/appletwrapper
+Name: org/jmol/appletwrapper/
 Sealed: true
 

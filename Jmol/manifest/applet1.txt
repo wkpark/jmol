@@ -1,6 +1,6 @@
 
-Name: org/jmol/api
+Name: org/jmol/api/
 Sealed: false
 
-Name: org/jmol/applet
+Name: org/jmol/applet/
 Sealed: true

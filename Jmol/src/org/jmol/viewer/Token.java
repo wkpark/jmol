@@ -167,6 +167,7 @@ class Token {
   final static int moveto       = command | 88 | negativenums;
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
+  final static int pmesh        = command | 91;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -447,6 +448,7 @@ class Token {
     "moveto",            new Token(moveto,   varArgCount, "moveto"),
     "bondorder",         new Token(bondorder,          1, "bondorder"),
     "console",           new Token(console,   onDefault1, "console"),
+    "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

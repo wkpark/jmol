@@ -1,3 +1,7 @@
 
-Name: org/openscience/jmol
+Name: org/openscience/jmol/
 Sealed: true
+
+Name: org/openscience/jmol/ui/
+Sealed: true
+

@@ -61,9 +61,9 @@ abstract class AtomSetCollectionReader {
     return parseFloatChecked(str, ichStart, ichMax);
   }
 
-  static float[] decimalScale =
+  final static float[] decimalScale =
   {0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f, 0.000001f, 0.0000001f, 0.00000001f};
-  static float[] tensScale =
+  final static float[] tensScale =
   {10, 100, 1000, 10000, 100000, 1000000};
 
   float parseFloatChecked(String str, int ichStart, int ichMax) {

@@ -1,2 +1,2 @@
 
-Name: javax/vecmath
+Name: javax/vecmath/

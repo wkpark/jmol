@@ -163,7 +163,7 @@ class Eval implements Runnable {
   boolean loadScriptFileInternal(String filename) {
     Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
     if (! (t instanceof InputStream))
-      return LoadError((String) t);
+      return loadError((String) t);
     BufferedReader reader =
       new BufferedReader(new InputStreamReader((InputStream) t));
     StringBuffer script = new StringBuffer();
@@ -177,24 +177,24 @@ class Eval implements Runnable {
       }
     } catch (IOException e) {
 	try{reader.close();}catch(IOException ioe){}
-      return IOError(filename);
+      return ioError(filename);
     }
     try{reader.close();}catch(IOException ioe){}
     return loadScript(filename, script.toString());
   }
 
-  boolean LoadError(String msg) {
+  boolean loadError(String msg) {
     error = true;
     errorMessage = msg;
     return false;
   }
 
-  boolean FileNotFound(String filename) {
-    return LoadError("file not found:" + filename);
+  boolean fileNotFound(String filename) {
+    return loadError("file not found:" + filename);
   }
 
-  boolean IOError(String filename) {
-    return LoadError("io error reading:" + filename);
+  boolean ioError(String filename) {
+    return loadError("io error reading:" + filename);
   }
 
   public String toString() {
@@ -467,6 +467,10 @@ class Eval implements Runnable {
         console();
         break;
 
+      case Token.pmesh:
+        pmesh();
+        break;
+
         // not implemented
       case Token.bond:
       case Token.clipboard:
@@ -665,6 +669,10 @@ class Eval implements Runnable {
 
   void errorLoadingScript(String msg) throws ScriptException {
     evalError("error loading script -> " + msg);
+  }
+
+  void fileNotFoundException(String filename) throws ScriptException {
+    evalError("file not found : " + filename);
   }
 
   void notImplemented(int itoken) {
@@ -2393,7 +2401,7 @@ class Eval implements Runnable {
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover,
+   Token.hover, Token.pmesh,
    Token.prueba,
   };
 
@@ -3235,5 +3243,22 @@ class Eval implements Runnable {
 
   void console() {
     viewer.showConsole(statement[1].tok == Token.on);
+  }
+
+  void pmesh() throws ScriptException {
+    if (statementLength < 2 || statementLength > 3)
+      badArgumentCount();
+    if (statement[1].tok != Token.string)
+      filenameExpected();
+    String filename = (String)statement[1].value;
+    Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
+    System.out.println("t=" + t);
+    if (t instanceof String)
+      fileNotFoundException(filename + ":" + t);
+    BufferedReader br =
+      new BufferedReader(new InputStreamReader((InputStream)t));
+    viewer.setShapeSize(JmolConstants.SHAPE_PMESH, 1);
+    viewer.setShapeProperty(JmolConstants.SHAPE_PMESH,
+                            "bufferedreader", br);
   }
 }

@@ -58,14 +58,17 @@
       </section>
     </section>
       
-    <section title="Jmol10pre4">
+    <section title="Jmol10pre5">
       <p>
-	Jmol version 10 pre-release 4 is now released. This release includes
+	Jmol version 10 pre-release 5 is now released. This release includes
 	the following enhancements:
 	<ul>
-	  <li>basic support for multiple models in .pdb files</li>
-	  <li>basic support for ssbonds</li>
-	  <li>parser recognizes hetero group names</li>
+	  <li>support for ssbonds</li>
+	  <li>support for hbonds</li>
+	  <li>more flexible parsing of .pdb files</li>
+	  <li>support for pdb inseration codes</li>
+	  <li>adoption of the RasMol/Chime cpk coloring scheme</li>
+	  <li>implemention of the DRuMS coloring scheme</li>
 	  <li>bug fixes</li>
 	</ul>
 	This release continues to have the
@@ -79,12 +82,19 @@
 	  </li>
 	  <li>Will not render isosurfaces</li>
 	  <li>Does not handle nucleotide graphic shapes</li>
-	  <li>Does not handle .pdb insertion codes</li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre4.zip"
-	   ><font size="+1"><i>Give me the code!</i> Jmol10pre4.zip</font></a>
+	<i>
+	  At this point, we feel obligated to admit that this is not a formal
+	  <strong>beta test.</strong> We have made substantial changes to the
+	  code; changes that go far beyond a beta test. But we are continuing
+	  to develop and enhance the code, regardless of what we call it.
+	</i>
+      </p>
+      <p>
+	<a href="Jmol10pre5.zip"
+	   ><font size="+1"><i>Give me the code!</i> Jmol10pre5.zip</font></a>
       </p>
       <p>
 	Unzip the code using the tool of your choice. It will unzip into
@@ -92,7 +102,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre4.zip</b>
+	format as .zip : <b>jar xf Jmol10pre5.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

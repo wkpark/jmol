@@ -35,70 +35,20 @@ import java.awt.image.DataBufferInt;
 import java.awt.FontMetrics;
 import java.awt.Font;
 
-final public class Swing3D implements Platform3D{
+final public class Swing3D extends Platform3D {
 
-  int width, height;
-  BufferedImage bi;
-  WritableRaster wr;
-  DataBuffer db;
-  DataBufferInt dbi;
-  int[] pbuf;
-
-  Graphics2D gOffscreen;
-  BufferedImage biOffscreen;
-  int widthOffscreen;
-  int heightOffscreen;
-
-  public void allocateImage(int width, int height) {
-    this.width = width;
-    this.height = height;
-    if (bi != null)
-      bi.flush();
-    bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    wr = bi.getRaster();
-    db = wr.getDataBuffer();
-    dbi = (DataBufferInt) db;
-    pbuf = dbi.getData();
+  public void allocatePixelBuf() {
+    BufferedImage bi =
+      new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    WritableRaster wr = bi.getRaster();
+    DataBuffer db = wr.getDataBuffer();
+    DataBufferInt dbi = (DataBufferInt) db;
+    pixelBuf = dbi.getData();
+    imagePixelBuf = bi;
   }
 
-  public Image getImage() {
-    return bi;
+  Image allocateOffscreenImage(int width, int height) {
+    return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
   }
 
-  public int[] getPbuf() {
-    return pbuf;
-  }
-
-  public void notifyEndOfRendering() {
-  }
-
-  public FontMetrics getFontMetrics(Font font) {
-    if (gOffscreen == null)
-      checkOffscreenSize(16, 64);
-    return gOffscreen.getFontMetrics(font);
-  }
-
-  public void checkOffscreenSize(int width, int height) {
-    if (width <= widthOffscreen && height <= heightOffscreen)
-      return;
-    if (biOffscreen != null) {
-      gOffscreen.dispose();
-      biOffscreen.flush();
-    }
-    if (width > widthOffscreen)
-      widthOffscreen = (width + 63) & ~63;
-    if (height > heightOffscreen)
-      heightOffscreen = (width + 15) & ~15;
-    biOffscreen = new BufferedImage(widthOffscreen, heightOffscreen,
-                                    BufferedImage.TYPE_INT_RGB);
-    gOffscreen = biOffscreen.createGraphics();
-  }
-
-  public Graphics getGraphicsOffscreen() {
-    return gOffscreen;
-  }
-
-  public Image getImageOffscreen() {
-    return biOffscreen;
-  }
 }

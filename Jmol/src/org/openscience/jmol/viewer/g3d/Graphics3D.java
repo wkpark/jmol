@@ -102,9 +102,8 @@ final public class Graphics3D {
       zbuf = zbuf1 = zbuf4 = null;
       return;
     }
-    platform.allocateImage(width, height);
 
-    pbuf = pbuf1 = platform.getPbuf();
+    pbuf = pbuf1 = platform.allocatePixelBuf(width, height);
     zbuf = zbuf1 = new short[size1];
     
     //    pbuf4 = new int[size4];
@@ -136,7 +135,7 @@ final public class Graphics3D {
   }
 
   public Image getScreenImage() {
-    return platform.getImage();
+    return platform.imagePixelBuf;
   }
 
   public void setColor(Color color) {

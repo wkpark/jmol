@@ -29,13 +29,49 @@ import java.awt.Image;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-public interface Platform3D {
-  public void allocateImage(int width, int height);
-  public Image getImage();
-  public int[] getPbuf();
-  public void notifyEndOfRendering();
-  public FontMetrics getFontMetrics(Font font);
-  public void checkOffscreenSize(int width, int height);
-  public Graphics getGraphicsOffscreen();
-  public Image getImageOffscreen();
+abstract public class Platform3D {
+
+  int width, height;
+  Image imagePixelBuf;
+  int[] pixelBuf;
+  int widthOffscreen, heightOffscreen;
+  Image imageOffscreen;
+  Graphics gOffscreen;
+
+  abstract void allocatePixelBuf();
+
+  public int[] allocatePixelBuf(int width, int height) {
+    this.width = width;
+    this.height = height;
+    if (imagePixelBuf != null)
+      imagePixelBuf.flush();
+    allocatePixelBuf();
+    return pixelBuf;
+  }
+
+  public void notifyEndOfRendering() {
+  }
+
+  public FontMetrics getFontMetrics(Font font) {
+    if (gOffscreen == null)
+      checkOffscreenSize(16, 64);
+    return gOffscreen.getFontMetrics(font);
+  }
+
+  abstract Image allocateOffscreenImage(int width, int height);
+
+  public void checkOffscreenSize(int width, int height) {
+    if (width <= widthOffscreen && height <= heightOffscreen)
+      return;
+    if (imageOffscreen != null) {
+      gOffscreen.dispose();
+      imageOffscreen.flush();
+    }
+    if (width > widthOffscreen)
+      widthOffscreen = (width + 63) & ~63;
+    if (height > heightOffscreen)
+      heightOffscreen = (width + 15) & ~15;
+    imageOffscreen = allocateOffscreenImage(widthOffscreen, heightOffscreen);
+    gOffscreen = imageOffscreen.getGraphics();
+  }
 }

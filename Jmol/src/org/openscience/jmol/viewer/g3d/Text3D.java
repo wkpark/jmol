@@ -61,7 +61,7 @@ public class Text3D {
   public Text3D(String text, Font font, Platform3D platform) {
     calcMetrics(text, font, platform);
     platform.checkOffscreenSize(width, height);
-    renderImage(text, font, platform);
+    renderOffscreen(text, font, platform);
     rasterize(platform);
   }
 
@@ -103,8 +103,8 @@ public class Text3D {
     size = width*height;
   }
 
-  void renderImage(String text, Font font, Platform3D platform) {
-    Graphics g = platform.getGraphicsOffscreen();
+  void renderOffscreen(String text, Font font, Platform3D platform) {
+    Graphics g = platform.gOffscreen;
     g.setColor(Color.black);
     g.fillRect(0, 0, width, height);
     g.setColor(Color.white);
@@ -113,26 +113,14 @@ public class Text3D {
   }
 
   void rasterize(Platform3D platform) {
-    long time, timeBegin = System.currentTimeMillis();
-    PixelGrabber pixelGrabber = new PixelGrabber(platform.getImageOffscreen(),
+    PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen,
                                                  0, 0, width, height, true);
-    time = System.currentTimeMillis() - timeBegin;
-    System.out.println("after allocating PixelGrabber time=" + time);
     try {
       pixelGrabber.grabPixels();
     } catch (InterruptedException e) {
       System.out.println("Que? 7748");
     }
-    time = System.currentTimeMillis() - timeBegin;
-    System.out.println("after startGrabbing time=" + time);
-
     int pixels[] = (int[])pixelGrabber.getPixels();
-
-    // shifter error checking
-    boolean[] bits = new boolean[size];
-    for (int i = 0; i < size; ++i)
-      bits[i] = (pixels[i] & 0x00FFFFFF) != 0;
-    //
 
     int bitmapSize = (size + 31) >> 5;
     bitmap = new int[bitmapSize];
@@ -149,29 +137,30 @@ public class Text3D {
       bitmap[offset >> 5] = shifter;
     }
 
-    time = System.currentTimeMillis() - timeBegin;
-    System.out.println("after building bitmap time=" + time);
-
-    // error checking
-    for (offset = 0; offset < size; ++offset, shifter <<= 1) {
-      if ((offset & 31) == 0)
-        shifter = bitmap[offset >> 5];
-      if (shifter < 0) {
-        if (!bits[offset]) {
-          System.out.println("false positive @" + offset);
-          System.out.println("size = " + size);
-        }
-      } else {
-        if (bits[offset]) {
-          System.out.println("false negative @" + offset);
-          System.out.println("size = " + size);
+    if (false) {
+      // error checking
+      // shifter error checking
+      boolean[] bits = new boolean[size];
+      for (int i = 0; i < size; ++i)
+        bits[i] = (pixels[i] & 0x00FFFFFF) != 0;
+      //
+      for (offset = 0; offset < size; ++offset, shifter <<= 1) {
+        if ((offset & 31) == 0)
+          shifter = bitmap[offset >> 5];
+        if (shifter < 0) {
+          if (!bits[offset]) {
+            System.out.println("false positive @" + offset);
+            System.out.println("size = " + size);
+          }
+        } else {
+          if (bits[offset]) {
+            System.out.println("false negative @" + offset);
+            System.out.println("size = " + size);
+          }
         }
       }
+      // error checking
     }
-    time = System.currentTimeMillis() - timeBegin;
-    System.out.println("after errorChecking time=" + time);
-
-    // error checking
   }
 
   static Hashtable htText = new Hashtable();
@@ -182,17 +171,13 @@ public class Text3D {
 
   synchronized static Text3D getText3D(String text, Font font,
                                          Platform3D platform) {
-    long timeBegin = System.currentTimeMillis();
     int size = font.getSize();
     Text3D[] at25d = (Text3D[])htText.get(text);
     if (at25d != null) {
       if (size <= at25d.length) {
         Text3D t25d = at25d[size - 1];
-        if (t25d != null) {
-          long time = System.currentTimeMillis() - timeBegin;
-          System.out.println(text + " cached " + time + " ms");
+        if (t25d != null)
           return t25d;
-        }
       } else {
         Text3D[] at25dNew = new Text3D[size + 8];
         System.arraycopy(at25d, 0, at25dNew, 0, at25d.length);
@@ -205,21 +190,73 @@ public class Text3D {
     }
     Text3D text3d = new Text3D(text, font, platform);
     at25d[size - 1] = text3d;
-    long time = System.currentTimeMillis() - timeBegin;
-    System.out.println(text + " -> " + time + " ms");
     return text3d;
   }
 
   public static void plot(int x, int y, int z, int argb,
                           String text, Font font, Graphics3D g3d) {
     Text3D text25d = getText3D(text, font, g3d.platform);
+    int[] bitmap = text25d.bitmap;
+    int textWidth = text25d.width;
+    int textHeight = text25d.height;
+    if (x + textWidth < 0 || x > g3d.width ||
+        y + textHeight < 0 || y > g3d.height)
+      return;
+    if (x < 0 || x + textWidth > g3d.width ||
+        y < 0 || y + textHeight > g3d.height)
+      plotClipped(x, y, z, argb, g3d, textWidth, textHeight, bitmap);
+    else
+      plotUnclipped(x, y, z, argb, g3d, textWidth, textHeight, bitmap);
+  }
+
+  static void plotUnclipped(int x, int y, int z, int argb, Graphics3D g3d,
+                            int textWidth, int textHeight, int[] bitmap) {
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
-    while (i < text25d.height) {
-      while (j < text25d.width) {
+    short[] zbuf = g3d.zbuf;
+    int[] pbuf = g3d.pbuf;
+    int screenWidth = g3d.width;
+    int pbufOffset = y * screenWidth + x;
+    while (i < textHeight) {
+      while (j < textWidth) {
         if ((offset & 31) == 0)
-          shiftregister = text25d.bitmap[offset >> 5];
+          shiftregister = bitmap[offset >> 5];
+        if (shiftregister == 0) {
+          int skip = 32 - (offset & 31);
+          j += skip;
+          offset += skip;
+          pbufOffset += skip;
+        } else {
+          if (shiftregister < 0) {
+            if (z < zbuf[pbufOffset]) {
+              zbuf[pbufOffset] = (short)z;
+              pbuf[pbufOffset] = argb;
+            }
+          }
+          shiftregister <<= 1;
+          ++offset;
+          ++j;
+          ++pbufOffset;
+        }
+      }
+      while (j >= textWidth) {
+        ++i;
+        j -= textWidth;
+        pbufOffset += (screenWidth - textWidth);
+      }
+    }
+  }
+  
+  static void plotClipped(int x, int y, int z, int argb, Graphics3D g3d,
+                          int textWidth, int textHeight, int[] bitmap) {
+    int offset = 0;
+    int shiftregister = 0;
+    int i = 0, j = 0;
+    while (i < textHeight) {
+      while (j < textWidth) {
+        if ((offset & 31) == 0)
+          shiftregister = bitmap[offset >> 5];
         if (shiftregister == 0) {
           int skip = 32 - (offset & 31);
           j += skip;
@@ -232,11 +269,10 @@ public class Text3D {
           ++j;
         }
       }
-      while (j >= text25d.width) {
+      while (j >= textWidth) {
         ++i;
-        j -= text25d.width;
+        j -= textWidth;
       }
     }
   }
 }
-

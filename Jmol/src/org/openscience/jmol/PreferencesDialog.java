@@ -142,7 +142,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("showMeasurements", "true");
     props.put("wireframeRotation", "false");
     props.put("perspectiveDepth", "true");
-    props.put("showDarkerOutline", "false");
+    props.put("showDarkerOutline", "true");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
     props.put("graphics2D", "true");
@@ -150,13 +150,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("antialiasAlways", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
-    props.put("styleAtom", "0");
-    props.put("styleBond", "0");
+    props.put("styleAtom", "1");
+    props.put("styleBond", "1");
     props.put("styleLabel", "0");
     props.put("AtomPropsMode", "");
     props.put("percentVdwAtom", "20");
     props.put("AutoBond", "true");
-    props.put("marBond", "50");
+    props.put("marBond", "100");
     props.put("BondFudge", "1.12");
     props.put("ArrowHeadSize", "1.0");
     props.put("ArrowHeadRadius", "1.0");

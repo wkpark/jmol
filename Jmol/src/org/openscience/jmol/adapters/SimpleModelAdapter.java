@@ -475,6 +475,9 @@ class MolModel extends Model {
 
 class PdbModel extends Model {
   String line;
+  // index into atoms array + 1
+  // so that 0 can be used for the null value
+  int[] serialMap = new int[512];
 
   PdbModel(BufferedReader reader) throws Exception {
     atoms = new Atom[512];
@@ -501,6 +504,7 @@ class PdbModel extends Model {
         continue;
       }
     }
+    serialMap = null;
   }
 
   void atom() {
@@ -518,6 +522,7 @@ class PdbModel extends Model {
                         ? line.substring(13, 14)
                         : line.substring(12, 14));
       }
+      int serial = Integer.parseInt(line.substring(6, 11).trim());
       float x =
         Float.valueOf(line.substring(30, 38).trim()).floatValue();
       float y =
@@ -529,7 +534,14 @@ class PdbModel extends Model {
         System.arraycopy(atoms, 0, t, 0, atomCount);
         atoms = t;
       }
+      if (serial >= serialMap.length) {
+        int[] t = new int[serial + 500];
+        System.arraycopy(serialMap, 0, t, 0, serialMap.length);
+        serialMap = t;
+      }
       atoms[atomCount++] = new Atom(atomicSymbol, x, y, z, line);
+      // note that values are +1 in this serial map
+      serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {
       System.out.println("bad record:" + line);
     }
@@ -542,28 +554,32 @@ class PdbModel extends Model {
       bonds = t;
     }
     try {
-      int conectAtom = Integer.parseInt(line.substring(6, 11).trim()) - 1;
+      int sourceSerial = Integer.parseInt(line.substring(6, 11).trim());
+      int sourceIndex = serialMap[sourceSerial] - 1;
+      if (sourceIndex < 0)
+        return;
       for (int i = 0; i < 4; ++i) {
-        int conectTarget = getConectTarget(i);
-        if (conectTarget == -1)
+        int targetSerial = getTargetSerial(i);
+        if (targetSerial == -1)
           return;
-        --conectTarget;
+        int targetIndex = serialMap[targetSerial] - 1;
+        if (targetIndex < 0)
+          return;
         if (bondCount > 0) {
           Bond bond = bonds[bondCount - 1];
-          if (bond.atomIndex1 == conectAtom &&
-              bond.atomIndex2 == conectTarget) {
+          if (bond.atomIndex1 == sourceIndex &&
+              bond.atomIndex2 == targetIndex) {
             ++bond.order;
             continue;
           }
         }
-        bonds[bondCount++] = new Bond(conectAtom, conectTarget, 1);
+        bonds[bondCount++] = new Bond(sourceIndex, targetIndex, 1);
       }
-    } catch (NumberFormatException e) {
-    } catch (StringIndexOutOfBoundsException e) {
+    } catch (Exception e) {
     }
   }
 
-  int getConectTarget(int i) {
+  int getTargetSerial(int i) {
     int offset = i * 5 + 11;
     int offsetEnd = offset + 5;
     if (offsetEnd <= line.length()) {

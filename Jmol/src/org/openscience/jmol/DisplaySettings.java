@@ -495,7 +495,7 @@ public class DisplaySettings implements Cloneable {
   public void setShowHydrogens(boolean sh) {
     showHydrogens = sh;
   }
-  public void setDarkerOutline(boolean showDarkerOutline) {
+  public void setShowDarkerOutline(boolean showDarkerOutline) {
     this.showDarkerOutline = showDarkerOutline;
   }
 

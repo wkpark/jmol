@@ -73,10 +73,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private static boolean AutoBond;
   private static boolean Perspective;
-  private static boolean ShowAtoms;
-  private static boolean ShowBonds;
-  private static boolean ShowHydrogens;
-  private static boolean ShowVectors;
+  private static boolean showAtoms;
+  private static boolean showBonds;
+  private static boolean showHydrogens;
+  private static boolean showVectors;
+  private static boolean showDarkerOutline;
   private static Color backgroundColor;
   private static Color outlineColor;
   private static Color pickedColor;
@@ -108,6 +109,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vvsSlider;
   private JSlider vfSlider;
   private JCheckBox cB, cA, cV, cH;
+  private JCheckBox cbDarkerOutline;
   private static Properties props;
 
   // The actions:
@@ -129,10 +131,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private static void defaults() {
 
-    props.put("ShowAtoms", "true");
-    props.put("ShowBonds", "true");
-    props.put("ShowHydrogens", "true");
-    props.put("ShowVectors", "false");
+    props.put("showAtoms", "true");
+    props.put("showBonds", "true");
+    props.put("showHydrogens", "true");
+    props.put("showVectors", "false");
+    props.put("showDarkerOutline", "false");
     props.put("AntiAliased", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
@@ -834,6 +837,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     outlinePanel
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.outlineLabel")));
+
+    cbDarkerOutline =
+      new JCheckBox(JmolResourceHandler.getInstance()
+                    .getString("Prefs.showDarkerOutlineLabel"),
+                    display.getSettings().getShowDarkerOutline());
+    cbDarkerOutline.addItemListener(checkBoxListener);
+    outlinePanel.add(cbDarkerOutline, BorderLayout.NORTH);
+
     oButton = new JButton();
     oButton.setBackground(outlineColor);
     oButton.setToolTipText(JmolResourceHandler.getInstance()
@@ -1131,6 +1142,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     // Color panel controls:
     bButton.setBackground(backgroundColor);
+    cbDarkerOutline.setSelected(display.getSettings().getShowDarkerOutline());
     oButton.setBackground(outlineColor);
     pButton.setBackground(pickedColor);
     tButton.setBackground(textColor);
@@ -1177,10 +1189,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     AutoBond = Boolean.getBoolean("AutoBond");
     Perspective = Boolean.getBoolean("Perspective");
-    ShowAtoms = Boolean.getBoolean("ShowAtoms");
-    ShowBonds = Boolean.getBoolean("ShowBonds");
-    ShowHydrogens = Boolean.getBoolean("ShowHydrogens");
-    ShowVectors = Boolean.getBoolean("ShowVectors");
+    showAtoms = Boolean.getBoolean("showAtoms");
+    showBonds = Boolean.getBoolean("showBonds");
+    showHydrogens = Boolean.getBoolean("showHydrogens");
+    showVectors = Boolean.getBoolean("showVectors");
+    showDarkerOutline = Boolean.getBoolean("showDarkerOutline");
     backgroundColor = Color.getColor("backgroundColor");
     outlineColor = Color.getColor("outlineColor");
     pickedColor = Color.getColor("pickedColor");
@@ -1226,11 +1239,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     display.getSettings().setAntiAliased(Boolean.getBoolean("AntiAliased"));
     ChemFrame.setBondFudge(BondFudge);
     ChemFrame.setAutoBond(AutoBond);
-    display.getSettings().setShowAtoms(ShowAtoms);
-    display.getSettings().setDrawBondsToAtomCenters(!ShowAtoms);
-    display.getSettings().setShowBonds(ShowBonds);
-    display.getSettings().setShowHydrogens(ShowHydrogens);
-    display.getSettings().setShowVectors(ShowVectors);
+    display.getSettings().setShowAtoms(showAtoms);
+    display.getSettings().setDrawBondsToAtomCenters(!showAtoms);
+    display.getSettings().setShowBonds(showBonds);
+    display.getSettings().setShowHydrogens(showHydrogens);
+    display.getSettings().setShowVectors(showVectors);
+    display.getSettings().setShowDarkerOutline(showDarkerOutline);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1269,29 +1283,37 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       JCheckBox cb = (JCheckBox) e.getSource();
       if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.cBLabel"))) {
-        ShowBonds = cb.isSelected();
-        display.getSettings().setShowBonds(ShowBonds);
-        props.put("ShowBonds", new Boolean(ShowBonds).toString());
+            .getString("Prefs.showBondsLabel"))) {
+        showBonds = cb.isSelected();
+        display.getSettings().setShowBonds(showBonds);
+        props.put("showBonds", new Boolean(showBonds).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.cALabel"))) {
-        ShowAtoms = cb.isSelected();
-        display.getSettings().setShowAtoms(ShowAtoms);
-        display.getSettings().setDrawBondsToAtomCenters(!ShowAtoms);
-        props.put("ShowAtoms", new Boolean(ShowAtoms).toString());
+            .getString("Prefs.showAtomsLabel"))) {
+        showAtoms = cb.isSelected();
+        display.getSettings().setShowAtoms(showAtoms);
+        display.getSettings().setDrawBondsToAtomCenters(!showAtoms);
+        props.put("showAtoms", new Boolean(showAtoms).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.cVLabel"))) {
-        ShowVectors = cb.isSelected();
-        display.getSettings().setShowVectors(ShowVectors);
-        props.put("ShowVectors", new Boolean(ShowVectors).toString());
+            .getString("Prefs.showVectorsLabel"))) {
+        showVectors = cb.isSelected();
+        display.getSettings().setShowVectors(showVectors);
+        props.put("showVectors", new Boolean(showVectors).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.cHLabel"))) {
-        ShowHydrogens = cb.isSelected();
-        display.getSettings().setShowHydrogens(ShowHydrogens);
-        props.put("ShowHydrogens", new Boolean(ShowHydrogens).toString());
+            .getString("Prefs.showHydrogensLabel"))) {
+        showHydrogens = cb.isSelected();
+        display.getSettings().setShowHydrogens(showHydrogens);
+        props.put("showHydrogens", new Boolean(showHydrogens).toString());
+      } else if (cb.getText()
+                 .equals(JmolResourceHandler.getInstance().
+                         getString("Prefs.showDarkerOutlineLabel"))) {
+        showDarkerOutline = cb.isSelected();
+        display.getSettings().setShowDarkerOutline(showDarkerOutline);
+        props.put("showDarkerOutline",
+                  new Boolean(showDarkerOutline).toString());
+        oButton.setEnabled(!showDarkerOutline);
       }
       display.repaint();
     }

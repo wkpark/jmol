@@ -47,12 +47,14 @@ import java.util.Enumeration;
  */
 public class AtomSetChooser extends JDialog
 implements TreeSelectionListener, PropertyChangeListener,
-ActionListener, ChangeListener {
+ActionListener, ChangeListener, Runnable {
   
   // I use this to make sure that a script gets a decimal.
   // Some script commands act different depending on whether the number is
   // a decimal or an integer.
   private static DecimalFormat threeDigits = new DecimalFormat("0.000");
+  
+  private Thread animThread = null;
   
   private JTextArea propertiesTextArea;
   private JTree tree;
@@ -60,6 +62,7 @@ ActionListener, ChangeListener {
   private JmolViewer viewer;
   private JSlider selectSlider;
   private JLabel infoLabel;
+  private JSlider fpsSlider;
   private JSlider amplitudeSlider;
   private JSlider periodSlider;
   private JSlider scaleSlider;
@@ -93,6 +96,10 @@ ActionListener, ChangeListener {
   int indexes[];
   int currentIndex=-1;
   
+  /**
+   * Maximum value for the fps slider.
+   */
+  private static final int FPS_MAX = 30;
   /**
    * Precision of the vibration scale slider
    */
@@ -233,8 +240,29 @@ ActionListener, ChangeListener {
     selectSlider.setSnapToTicks(true);
     cpsPanel.add(selectSlider, BorderLayout.SOUTH);
     collectionPanel.add(cpsPanel);
+    // panel with controller and fps
+    JPanel row = new JPanel();
+    collectionPanel.add(row);
+    row.setLayout(new BoxLayout(row,BoxLayout.X_AXIS));
     // VCR-like play controller
-    collectionPanel.add(createVCRController("collection"));
+    row.add(createVCRController("collection"));
+    // fps slider
+    JPanel fpsPanel = new JPanel();
+    row.add(fpsPanel);
+    int fps = viewer.getAnimationFps();
+    if (fps > FPS_MAX)
+      fps = FPS_MAX;
+    fpsPanel.setLayout(new BorderLayout());
+    fpsPanel.setBorder(new TitledBorder(
+        JmolResourceHandler.translateX("AtomSetChooser.collection.fps.label")));
+    fpsSlider = new JSlider(0,FPS_MAX,fps);
+    fpsSlider.setMajorTickSpacing(5);
+    fpsSlider.setMinorTickSpacing(1);
+    fpsSlider.setPaintTicks(true);
+    fpsSlider.setSnapToTicks(true);
+    fpsSlider.addChangeListener(this);
+    fpsPanel.add(fpsSlider, BorderLayout.SOUTH);
+
     //////////////////////////////////////////////////////////
     // The vector panel
     //////////////////////////////////////////////////////////
@@ -332,10 +360,11 @@ ActionListener, ChangeListener {
       btn.setMargin(inset);
       btn.setActionCommand(section+"."+action);
       btn.addActionListener(this);
-      if (idx>0)
-        controlPanel.add(Box.createHorizontalGlue());
+//      if (idx>0)
+//        controlPanel.add(Box.createHorizontalGlue());
       controlPanel.add(btn);
     }
+    controlPanel.add(Box.createHorizontalGlue());
     return controlPanel;
   }
   
@@ -426,7 +455,6 @@ ActionListener, ChangeListener {
     return idx;
   }
   
-  // FIXME the play and pause for the collection are not working the way they should
   public void actionPerformed (ActionEvent e) {
     String cmd = e.getActionCommand();
     String parts[]=cmd.split("\\.");
@@ -435,30 +463,26 @@ ActionListener, ChangeListener {
       cmd = parts[1];
       if (section.equals("collection")) {
         if (REWIND.equals(cmd)) {
+          if (animThread != null)
+            animThread = null;
           setAtomSet(indexes[0], true);
         } else if (PREVIOUS.equals(cmd)) {
           if (currentIndex>0) {
             setAtomSet(indexes[currentIndex-1], true);
           }
         } else if (PLAY.equals(cmd)) {
-          StringBuffer command = new StringBuffer();
-          int maxIndex = indexes.length;
-          String delay = ";delay "+1.0/viewer.getAnimationFps()+";";
-          for (int i=0; i<maxIndex; i++) {
-            command.append("frame "+
-                viewer.getModelNumber(indexes[(currentIndex+i)%maxIndex])
-                + delay);
+          if (animThread == null) {
+            animThread = new Thread(this,"Animation");
+            animThread.start();
           }
-          viewer.evalStringQuiet(command+"loop");
         } else if (PAUSE.equals(cmd)) {
-          // since I don't think I can get the current frame I will go back to
-          // the first one when I 'paused'
-          viewer.haltScriptExecution();
-          setAtomSet(indexes[0],true);
+           animThread = null;
         } else if (NEXT.equals(cmd)) {
           if (currentIndex<=(indexes.length-1)) 
             setAtomSet(indexes[currentIndex+1], true);
         } else if (FF.equals(cmd)) {
+          if (animThread != null)
+            animThread = null;
           setAtomSet(indexes[indexes.length-1], true);
         }       
       } else if (section.equals("vector")) {
@@ -506,7 +530,12 @@ ActionListener, ChangeListener {
     int value = ((JSlider)src).getValue();
     if (src == selectSlider) {
       setAtomSet(indexes[value], false);
-    } else if (src == radiusSlider) {
+    } else if (src == fpsSlider) {
+      if (value == 0)
+        fpsSlider.setValue(1);  // make sure I never set it to 0...
+      else
+        viewer.setAnimationFps(value);
+    }  else if (src == radiusSlider) {
       viewer.evalStringQuiet("vector " + threeDigits.format(value*RADIUS_PRECISION));
     } else if (src == scaleSlider) {
 //      viewer.setVectorScale(value*SCALE_PRECISION); // no update: use script
@@ -530,6 +559,8 @@ ActionListener, ChangeListener {
       Enumeration e = properties.propertyNames();
       while (e.hasMoreElements()) {
         String propertyName = (String)e.nextElement();
+        if (propertyName.startsWith("."))
+          continue; // skip the 'hidden' ones
         propertiesTextArea.append((needLF?"\n ":" ") 
             + propertyName + "=" + properties.getProperty(propertyName));
         needLF = true;
@@ -635,6 +666,31 @@ ActionListener, ChangeListener {
     String eventName = propertyChangeEvent.getPropertyName();
     if (eventName.equals(Jmol.chemFileProperty)) {
       createTreeModel(); // all I need to do is to recreate the tree model
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Runnable#run()
+   */
+  public void run() {
+    Thread myThread = Thread.currentThread();
+    myThread.setPriority(Thread.MIN_PRIORITY);
+    while (animThread == myThread) {
+      // since user can change the tree selection, I need to treat
+      // all variables as volatile.
+      if (currentIndex >= 0) {
+        currentIndex = (++currentIndex)%indexes.length;
+        setAtomSet(indexes[currentIndex],true);
+        try {
+          // sleep for the amount of time required for the fps setting
+          // NB the viewer's fps setting is never 0, so I could
+          // set it directly, but just in case this behavior changes later...
+          int fps = viewer.getAnimationFps();
+          Thread.sleep((int) (1000.0/(fps==0?1:fps)));
+        } catch (InterruptedException e) {
+          e.printStackTrace(); // show what went wrong
+        }
+      }
     }
   }
 }

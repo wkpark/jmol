@@ -94,6 +94,8 @@
   <target name="html_lang">
 
     <!-- Generate index.<lang>.html files -->
+    <echo message="Generating ${lang_value} html files..."/>
+
     <style
       basedir="${doc.dir}"
       destdir="${build.html}"

@@ -71,7 +71,7 @@ class CartoonRenderer extends Renderer {
       if (colix == 0)
         colix = residue.getAlphaCarbonAtom().colixAtom;
       if (residue.isHelixOrSheet()) {
-        renderSpecialSegment(residue, colix, mads[i]);
+        renderSpecialSegment(residue, i, colix, mads[i]);
       } else {
         calcSegmentPoints(mainchain, i, mads);
         render1Segment(colix);
@@ -152,21 +152,21 @@ class CartoonRenderer extends Renderer {
   Point3i screenB = new Point3i();
   Point3i screenC = new Point3i();
 
-  void renderSpecialSegment(PdbResidue residue, short colix, short mad) {
-    int resNumber = residue.resNumber;
+  void renderSpecialSegment(PdbResidue residue, int residueIndex,
+                            short colix, short mad) {
     PdbStructure structure = residue.structure;
     if (tPending) {
       if (structure == structurePending &&
-          resNumber == endPending + 1 &&
           mad == madPending &&
-          colix == colixPending) {
-        ++endPending;
+          colix == colixPending &&
+          residueIndex == endIndexPending + 1) {
+        ++endIndexPending;
         return;
       }
       renderPending();
     }
     structurePending = structure;
-    beginPending = endPending = resNumber;
+    startIndexPending = endIndexPending = residueIndex;
     colixPending = colix;
     madPending = mad;
     tPending = true;
@@ -174,25 +174,27 @@ class CartoonRenderer extends Renderer {
 
   boolean tPending;
   PdbStructure structurePending;
-  int beginPending;
-  int endPending;
+  int startIndexPending;
+  int endIndexPending;
   short madPending;
   short colixPending;
 
   void renderPending() {
     if (tPending) {
       Point3f[] segments = structurePending.getSegments();
-      int residueNumberStart = structurePending.getResidueNumberStart();
-      int iStart = beginPending - residueNumberStart;
-      int iEnd = endPending - residueNumberStart + 1;
-      boolean tEnd = (iEnd == structurePending.getResidueCount());
+      int indexStructureStart = structurePending.getStartResidueIndex();
+      int indexStart = startIndexPending - indexStructureStart;
+      int indexEnd = endIndexPending - indexStructureStart;
+      boolean tEnd = (indexEnd == structurePending.getResidueCount() - 1);
       if (structurePending instanceof Helix)
-        renderPendingHelix(segments[iStart],
-                           segments[iEnd - 1], segments[iEnd],
+        renderPendingHelix(segments[indexStart],
+                           segments[indexEnd - 1],
+                           segments[indexEnd],
                            tEnd);
       else
-        renderPendingSheet(segments[iStart],
-                           segments[iEnd - 1], segments[iEnd],
+        renderPendingSheet(segments[indexStart],
+                           segments[indexEnd - 1],
+                           segments[indexEnd],
                            tEnd);
       tPending = false;
     }
@@ -208,7 +210,7 @@ class CartoonRenderer extends Renderer {
         viewer.scaleToScreen(screenC.z, madPending + (madPending >> 2));
       g3d.fillCone(colixPending, Graphics3D.ENDCAPS_FLAT, capDiameter,
                    screenC, screenB);
-      if (beginPending == endPending)
+      if (startIndexPending == endIndexPending)
         return;
       Point3i t = screenB;
       screenB = screenC;

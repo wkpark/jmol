@@ -59,18 +59,23 @@ public class ScriptWindow extends JDialog
 
     super(frame, "Rasmol Scripts", false);
     this.control = control;
-    getContentPane().setLayout(new BorderLayout());
+    layoutWindow(getContentPane());
+    setSize(300, 400);
+    setLocationRelativeTo(frame);
+  }
+
+  void layoutWindow(Container container) {
+    container.setLayout(new BorderLayout());
 
     console = new ConsoleTextPane(this);
     console.setPrompt();
-    getContentPane().add(new JScrollPane(console), BorderLayout.CENTER);
+    container.add(new JScrollPane(console), BorderLayout.CENTER);
 
+    JPanel buttonPanel = new JPanel();
+    container.add(buttonPanel, BorderLayout.SOUTH);
     closeButton = new JButton("Close");
     closeButton.addActionListener(this);
-    getContentPane().add(closeButton, BorderLayout.SOUTH);
-
-    setSize(300, 400);
-    setLocationRelativeTo(frame);
+    buttonPanel.add(closeButton);
   }
 
   public void scriptEcho(String strEcho) {

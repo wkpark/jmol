@@ -235,6 +235,7 @@ public class ColorManager {
 
   public short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
+    int index;
     switch (palette) {
     case JmolConstants.PALETTE_NONE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -250,56 +251,37 @@ public class ColorManager {
         Using colors other than these would make the shading
         calculations more difficult
       */
-      float partialCharge = atom.getPartialCharge();
-      if (Float.isNaN(partialCharge) ||
-          partialCharge == 0) {
-        argb = 0xFFFFFFFF; // white
-      } else if (partialCharge < 0) {
-        if (partialCharge < -1)
-          partialCharge = -1;
-        int byteVal = 0xFF - ((int)(255 * -partialCharge) & 0xFF);
-        argb = 0xFFFF0000 | (byteVal << 8) | byteVal;
-      } else { // partialCharge > 0
-        if (partialCharge > 1)
-          partialCharge = 1;
-        int byteVal = 0xFF - ((int)(255 * partialCharge) & 0xFF);
-        argb = 0xFF0000FF | (byteVal << 16) | (byteVal << 8);
-      }
+      index = quantize(-1, 1, atom.getPartialCharge(),
+                       JmolConstants.argbsRwbScale.length);
+      argb = JmolConstants.argbsRwbScale[index];
       break;
     case JmolConstants.PALETTE_TEMPERATURE:
       Frame frame = viewer.getFrame();
-      int bfactor100Lo = frame.getBfactor100Lo();
-      int bfactor100Hi = frame.getBfactor100Hi();
-      int bfactorRange = bfactor100Hi - bfactor100Lo;
-      if (bfactorRange == 0)
-        argb = 0xFFFFFFFF;
-      else {
-        argb = 0xFF800080;
-      }
+      index = quantize(frame.getBfactor100Lo(), frame.getBfactor100Hi(),
+                       atom.getBfactor100(),
+                       JmolConstants.argbsRwbScale.length);
+      index = JmolConstants.argbsRwbScale.length - 1 - index;
+      argb = JmolConstants.argbsRwbScale[index];
       break;
     case JmolConstants.PALETTE_FORMALCHARGE:
-      int i = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
-      argb = JmolConstants.argbsCharge[i];
+      index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
+      argb = JmolConstants.argbsCharge[index];
       break;
     case JmolConstants.PALETTE_STRUCTURE:
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
       break;
     case JmolConstants.PALETTE_AMINO:
-      {
-        int index = atom.getGroupID();
-        if (index >= JmolConstants.GROUPID_AMINO_MAX)
-          index = 0;
-        argb = JmolConstants.argbsAmino[index];
-        break;
-      }
+      index = atom.getGroupID();
+      if (index >= JmolConstants.GROUPID_AMINO_MAX)
+        index = 0;
+      argb = JmolConstants.argbsAmino[index];
+      break;
     case JmolConstants.PALETTE_SHAPELY:
-      {
-        int index = atom.getGroupID();
-        if (index >= JmolConstants.GROUPID_AMINO_MAX)
-          index = 0;
-        argb = JmolConstants.argbsShapely[index];
-        break;
-      }
+      index = atom.getGroupID();
+      if (index >= JmolConstants.GROUPID_AMINO_MAX)
+        index = 0;
+      argb = JmolConstants.argbsShapely[index];
+      break;
     case JmolConstants.PALETTE_CHAIN:
       int chain = atom.getChainID() & 0x1F;
       if (chain >= JmolConstants.argbsChainAtom.length)
@@ -316,8 +298,8 @@ public class ColorManager {
 
   int quantize(float lo, float hi, float val, int segmentCount) {
     float range = hi - lo;
-    if (range <= 0)
-      return (segmentCount + 1) / 2;
+    if (range <= 0 || Float.isNaN(val))
+      return segmentCount / 2;
     float t = val - lo;
     if (t <= 0)
       return 0;

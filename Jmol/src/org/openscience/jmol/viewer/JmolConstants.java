@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre12b";
+  public final static String version = "10pre12c";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1525,6 +1525,40 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF4848FF, // 5
     0xFF2424FF, // 6
     0xFF0000FF, // 7
+  };
+
+  public final static int[] argbsRwbScale = {
+    0xFFFF0000, // red
+    0xFFFF1010, //
+    0xFFFF2020, //
+    0xFFFF3030, //
+    0xFFFF4040, //
+    0xFFFF5050, //
+    0xFFFF6060, //
+    0xFFFF7070, //
+    0xFFFF8080, //
+    0xFFFF9090, //
+    0xFFFFA0A0, //
+    0xFFFFB0B0, //
+    0xFFFFC0C0, //
+    0xFFFFD0D0, //
+    0xFFFFE0E0, //
+    0xFFFFFFFF, // white
+    0xFFE0E0FF, //
+    0xFFD0D0FF, //
+    0xFFC0C0FF, //
+    0xFFB0B0FF, //
+    0xFFA0A0FF, //
+    0xFF9090FF, //
+    0xFF8080FF, //
+    0xFF7070FF, //
+    0xFF6060FF, //
+    0xFF5050FF, //
+    0xFF4040FF, //
+    0xFF3030FF, //
+    0xFF2020FF, //
+    0xFF1010FF, //
+    0xFF0000FF, // blue
   };
 
   public final static String[] specialAtomNames = {

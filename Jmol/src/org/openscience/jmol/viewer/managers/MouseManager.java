@@ -134,6 +134,7 @@ public abstract class MouseManager {
 
   final static int LEFT = 16;
   final static int MIDDLE = Event.ALT_MASK;  // 8
+  final static int ALT = Event.ALT_MASK;     // 8
   final static int RIGHT = Event.META_MASK;  // 4
   final static int CTRL = Event.CTRL_MASK;   // 2
   final static int SHIFT = Event.SHIFT_MASK; // 1
@@ -145,6 +146,7 @@ public abstract class MouseManager {
   final static int CTRL_RIGHT = CTRL | RIGHT;
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
+  final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
 
   void mouseClicked(int x, int y, int modifiers) {
     if (logMouseEvents)
@@ -161,8 +163,8 @@ public abstract class MouseManager {
     if (logMouseEvents)
       System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
-    if ((modifiers & CTRL_SHIFT_RIGHT) == RIGHT &&
-        (modifiersWhenPressed & CTRL_SHIFT_RIGHT) == RIGHT) {
+    if ((modifiers & CTRL_ALT_SHIFT_RIGHT) == RIGHT &&
+        (modifiersWhenPressed & CTRL_ALT_SHIFT_RIGHT) == RIGHT) {
       // mth 2003 05 27
       // the reason I am checking for RIGHT is because e.isPopupTrigger()
       // was failing on some platforms

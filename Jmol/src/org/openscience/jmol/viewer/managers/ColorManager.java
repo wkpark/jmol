@@ -203,6 +203,7 @@ public class ColorManager {
     else
       colorBackground = bg;
     colixBackground = g3d.getColix(colorBackground);
+    g3d.setBackground(colixBackground);
   }
 
   public Color colorAxes = new Color(128, 128, 0);

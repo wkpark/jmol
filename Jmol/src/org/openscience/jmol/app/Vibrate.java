@@ -26,8 +26,6 @@ package org.openscience.jmol.app;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.*;
-import org.openscience.jmol.io.CMLSaver;
-import org.openscience.jmol.io.XYZSaver;
 import java.io.File;
 import javax.vecmath.Point3d;
 import java.awt.Container;
@@ -566,16 +564,10 @@ public class Vibrate extends JDialog implements ActionListener,
             try {
               if (ft.getType().equals("XYZ (xmol)")) {
                 FileOutputStream os = new FileOutputStream(theFile);
-                XYZSaver xyzs = new XYZSaver(vibFile, os);
-                xyzs.writeFile();
-                os.flush();
-                os.close();
+                System.err.println("FIXME: this should use the CDK XYZWriter");
               } else if (ft.getType().equals("CML")) {
                 FileOutputStream os = new FileOutputStream(theFile);
-                CMLSaver cs = new CMLSaver(vibFile, os);
-                cs.writeFile();
-                os.flush();
-                os.close();
+                System.err.println("FIXME: this should use the CDK CMLWriter");
               } else if (ft.getType().equals("PDB")) {
                 javax.swing.JOptionPane.showMessageDialog(null,
                     "The PDB format is not currently supported."

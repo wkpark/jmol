@@ -112,67 +112,6 @@ public abstract class ReaderFactory {
       String line4 = buffer.readLine();
       buffer.reset();
 
-      // If the fourth line contains the MDL Ctab version tag or
-      // contains two integers in the first 6 characters and the
-      // rest of the line only contains whitespace and digits,
-      // the file is identified as an MDL file
-      if (line4 != null) {
-        boolean mdlFile = false;
-        if (line4.trim().endsWith("V2000")) {
-          mdlFile = true;
-        } else if (line4.trim().endsWith("v2000")) {
-            System.err.println("WARNING: MDL molfile uses 'v2000' string as found in the NIST database");
-            mdlFile = true;
-        } else if (line4.length() >= 6) {
-          try {
-            String atomCountString = line4.substring(0, 3).trim();
-            String bondCountString = line4.substring(3, 6).trim();
-            new Integer(atomCountString);
-            new Integer(bondCountString);
-            mdlFile = true;
-            if (line4.length() > 6) {
-              String remainder = line4.substring(6).trim();
-              for (int i = 0; i < remainder.length(); ++i) {
-                char c = remainder.charAt(i);
-                if (!(Character.isDigit(c) || Character.isWhitespace(c))) {
-                  mdlFile = false;
-                }
-              }
-            }
-          } catch (NumberFormatException nfe) {
-            // Integer not found on first line; therefore not a MDL file
-          }
-        }
-        if (mdlFile) {
-          System.out.println("ReaderFactory: MdlReader");
-          return new org.openscience.jmol.io.MdlReader(viewer, buffer);
-        }
-      }
-
-      // An integer on the first line is a special test for XYZ files
-      boolean xyzFile = false;
-      if (line != null) {
-        StringTokenizer tokenizer = new StringTokenizer(line.trim());
-        try {
-          int tokenCount = tokenizer.countTokens();
-          if (tokenCount == 1) {
-            new Integer(tokenizer.nextToken());
-            xyzFile = true;
-          } else if (tokenCount == 2) {
-            new Integer(tokenizer.nextToken());
-            if ("Bohr".equalsIgnoreCase(tokenizer.nextToken())) {
-              xyzFile = true;
-            }
-          }
-        } catch (NumberFormatException nfe) {
-          // Integer not found on first line; therefore not a XYZ file
-        }
-      }
-      if (xyzFile) {
-        System.out.println("ReaderFactory: XYZReader");
-        return new XYZReader(viewer, buffer);
-      }
-
     } else {
       line = buffer.readLine();
     }
@@ -180,7 +119,7 @@ public abstract class ReaderFactory {
     /* Search file for a line containing an identifying keyword */
     while (buffer.ready() && (line != null)) {
       if (line.indexOf("Gaussian 03:") >= 0) {
-        System.out.println("ReaderFactory: Gaussian03Reader");
+        System.out.println(": Gaussian03Reader");
         return new Gaussian03Reader(viewer, buffer);
       } else if (line.indexOf("Gaussian 98:") >= 0) {
         System.out.println("ReaderFactory: Gaussian98Reader");
@@ -226,11 +165,6 @@ public abstract class ReaderFactory {
       } else if (line.startsWith("molstruct")) {
         System.out.println("ReaderFactory: CACheReader");
         return new CACheReader(viewer, buffer);
-      } else if (line.startsWith("ZERR ") ||
-                 line.startsWith("TITL ")) {
-        buffer.reset();
-        System.out.println("ReaderFactory: ShelXReader");
-        return new ShelXReader(viewer, buffer);
       }
       line = buffer.readLine();
     }

@@ -35,9 +35,7 @@ import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
-import org.openscience.jmol.io.XYZSaver;
 import org.openscience.jmol.ui.JmolPopup;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
@@ -1271,17 +1269,13 @@ public class Jmol extends JPanel {
             FileOutputStream os = new FileOutputStream(file);
 
             if (fileTyper.getType().equals("XYZ (xmol)")) {
-              XYZSaver xyzs = new XYZSaver((ChemFile)viewer.getClientFile(),
-                                           os);
-              xyzs.writeFile();
+                System.err.println("FIXME: this should use the CDK XYZWriter");
             } else if (fileTyper.getType().equals("PDB")) {
               PdbSaver ps = new PdbSaver((ChemFile)viewer.getClientFile(),
                                          os);
               ps.writeFile();
             } else if (fileTyper.getType().equals("CML")) {
-              CMLSaver cs = new CMLSaver((ChemFile)viewer.getClientFile(),
-                                         os);
-              cs.writeFile();
+                System.err.println("FIXME: this should use the CDK CMLWriter");
             } else {
             }
 

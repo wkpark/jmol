@@ -1911,7 +1911,6 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    System.out.println("setShapeSize(vecors)");
     viewer.setShapeSize(JmolConstants.SHAPE_VECTORS, mad);
   }
 

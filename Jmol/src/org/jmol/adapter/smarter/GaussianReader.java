@@ -47,12 +47,15 @@ class GaussianReader extends ModelReader {
           break;
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system")
-              >= 0) {
+              >= 0)
             setGaussian94Offsets();
-          } else if (line.indexOf("This is part of the Gaussian(R) 98 program")
-                     >= 0) {
+          else if (line.indexOf("This is part of the Gaussian(R) 98 program.")
+                   >= 0)
             setGaussian98Offsets();
-          }
+          else if (line.indexOf("This is the Gaussian(R) 03 program.")
+                   >= 0)
+            setGaussian03Offsets();
+            
         }
         ++lineNum;
       }
@@ -66,12 +69,13 @@ class GaussianReader extends ModelReader {
     return model;
   }
 
-  // offset of coordinates 
-
+  // offset of coordinates within 'Standard orientation:'
   int coordinateBase = 34;
 
+  // number of lines to skip after 'Frequencies --' to get to the vectors
+  int frequencyLineSkipCount = 6;
+
   void setGaussian94Offsets() {
-    coordinateBase = 23;
     /*
                    Standard orientation:
  ----------------------------------------------------------
@@ -80,10 +84,11 @@ class GaussianReader extends ModelReader {
  ----------------------------------------------------------
     1          6           0.000000    0.000000    1.043880
     */
+    coordinateBase = 23;
+    frequencyLineSkipCount = 6;
   }
 
   void setGaussian98Offsets() {
-    coordinateBase = 34;
     /*
                          Standard orientation:                         
  ---------------------------------------------------------------------
@@ -92,6 +97,13 @@ class GaussianReader extends ModelReader {
  ---------------------------------------------------------------------
     1          6             0        0.852764   -0.020119    0.050711
     */
+    coordinateBase = 34;
+    frequencyLineSkipCount = 6;
+  }
+
+  void setGaussian03Offsets() {
+    coordinateBase = 34;
+    frequencyLineSkipCount = 7;
   }
 
 
@@ -119,13 +131,17 @@ class GaussianReader extends ModelReader {
 
   int baseAtomCount;
   void readFrequencies(BufferedReader reader) throws Exception {
-    discardLines(reader, 4);
     baseAtomCount = model.atomCount;
     int modelNumber = 1;
     String line;
     while ((line = reader.readLine()) != null &&
-           line.startsWith(" Frequencies --")) {
-      discardLines(reader, 6);
+           ! line.startsWith(" Frequencies --"))
+      ;
+    if (line == null)
+      return;
+    do {
+      // FIXME deal with frequency line here
+      discardLines(reader, frequencyLineSkipCount);
       for (int i = 0; i < baseAtomCount; ++i) {
         line = reader.readLine();
         int atomCenterNumber = parseInt(line, 0, 4);
@@ -137,8 +153,9 @@ class GaussianReader extends ModelReader {
         }
       }
      discardLines(reader, 2);
-      modelNumber += 3;
-    }
+     modelNumber += 3;
+    } while ((line = reader.readLine()) != null &&
+             (line.startsWith(" Frequencies --")));
   }
 
   void recordAtomVector(int modelNumber, int atomCenterNumber,

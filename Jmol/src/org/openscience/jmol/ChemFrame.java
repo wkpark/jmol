@@ -536,6 +536,7 @@ public class ChemFrame {
     public synchronized void paint(Graphics g, DisplaySettings settings) {
         if (vert == null || nvert <= 0)
             return;
+        boolean drawHydrogen = settings.getShowHydrogens();
         transform();
         int v[] = tvert;
         int zs[] = ZsortMap;
@@ -586,6 +587,10 @@ public class ChemFrame {
                 int na = nBpA[j/3];
                 for (int k = 0; k < na; k++) {
                     int which = inBonds[j/3][k];
+                    if (!drawHydrogen && bonds[which].bindsHydrogen()) {
+			// tricky... just pretend it has already been drawn
+			bondDrawn[which] = true;
+		    }
                     if (!bondDrawn[which]) {
                         int l;
                         if (bondEnd1[which] == j/3) {
@@ -607,8 +612,13 @@ public class ChemFrame {
             }
             //Added by T.GREY for quick-draw on move support
             if (settings.getShowAtoms() && !doingMoveDraw)
-                atoms[j/3].paint(g, settings, v[j], v[j + 1], v[j + 2], j/3 + 1, 
-                                 aProps[j/3], pickedAtoms[j/3]);
+		// don't paint if atom is a hydrogen and !showhydrogens
+		if (!drawHydrogen && (atoms[j/3].getBaseAtomType().getAtomicNumber() == 1)) {
+		    // atom is an hydrogen and should not be painted
+		} else {
+		    atoms[j/3].paint(g, settings, v[j], v[j + 1], v[j + 2], j/3 + 1, 
+				     aProps[j/3], pickedAtoms[j/3]);
+		}
             
             if (settings.getShowVectors() && hasVectors) {
                 ArrowLine al = new ArrowLine(g, v[j], v[j+1], 

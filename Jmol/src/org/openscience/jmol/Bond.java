@@ -63,6 +63,15 @@ public class Bond {
         resetColors();
     }        
 
+    public boolean bindsHydrogen() {
+        if (at1.getBaseAtomType().getAtomicNumber() == 1 ||
+	    at2.getBaseAtomType().getAtomicNumber() == 1) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
     /* added to enforce recoloring of bonds when atom's
      * is changed.
     **/

@@ -348,7 +348,9 @@ public class Atom implements Bspt.Tuple {
     return pdbAtom.getChainID();
   }
 
-  public int getTemperature() {
+  // This is called temperature100 because it is stored as an integer
+  // 100 times the temperature/bfactor value
+  public int getTemperature100() {
     if (pdbAtom == null)
       return 0;
     return pdbAtom.temperature;

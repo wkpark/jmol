@@ -2025,6 +2025,9 @@ public class Eval implements Runnable {
     case Token.temperature:
       mad = -3;
       break;
+    case Token.displacement:
+      mad = -4;
+      break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)

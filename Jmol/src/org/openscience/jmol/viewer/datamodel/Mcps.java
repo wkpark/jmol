@@ -166,18 +166,24 @@ abstract class Mcps extends Shape {
           return madHelixSheet;
         return madTurnRandom;
       case -3: // trace temperature
-        if (! hasTemperatureRange)
-          calcTemperatureRange();
-        Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
-        PdbAtom pdbAtom = atom.getPdbAtom();
-        int temperature = pdbAtom.getTemperature(); // scaled by 1000
-        int scaled = temperature - temperatureMin;
-        if (range == 0)
-          return (short)0;
-        float percentile = scaled / floatRange;
-        if (percentile < 0 || percentile > 1)
-          System.out.println("Que ha ocurrido? " + percentile);
-        return (short)((1500 * percentile) + 500);
+        {
+          if (! hasTemperatureRange)
+            calcTemperatureRange();
+          Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
+          int temperature = atom.getTemperature100(); // scaled by 1000
+          int scaled = temperature - temperatureMin;
+          if (range == 0)
+            return (short)0;
+          float percentile = scaled / floatRange;
+          if (percentile < 0 || percentile > 1)
+            System.out.println("Que ha ocurrido? " + percentile);
+          return (short)((1750 * percentile) + 250);
+        }
+      case -4: // trace displacement
+        {
+          Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
+          return calcMeanPositionalDisplacement(atom.getTemperature100());
+        }
       }
       System.out.println("unrecognized Mcps.getSpecial(" +
                          mad + ")");
@@ -191,9 +197,10 @@ abstract class Mcps extends Shape {
 
     void calcTemperatureRange() {
       temperatureMin = temperatureMax =
-        polymerGroups[0].getAlphaCarbonAtom().getTemperature();
+        polymerGroups[0].getAlphaCarbonAtom().getTemperature100();
       for (int i = polymerCount; --i > 0; ) {
-        int temperature = polymerGroups[i].getAlphaCarbonAtom().getTemperature();
+        int temperature =
+          polymerGroups[i].getAlphaCarbonAtom().getTemperature100();
         if (temperature < temperatureMin)
           temperatureMin = temperature;
         else if (temperature > temperatureMax)
@@ -226,6 +233,95 @@ abstract class Mcps extends Shape {
             : colix;
       }
     }
+
+    /****************************************************************
+     * the distance that we are returning is the
+     * mean positional displacement in milliAngstroms
+     * see below
+     ****************************************************************/
+    private final static double eightPiSquared100 = 8 * Math.PI * Math.PI * 100;
+    short calcMeanPositionalDisplacement(int bFactor100) {
+      return (short)(Math.sqrt(bFactor100/eightPiSquared100) * 1000);
+    }
   }
+/****************************************************************
+http://www.rcsb.org/pdb/lists/pdb-l/200303/000609.html
+
+pdb-l: temperature factor; occupancy
+Bernhard Rupp br@llnl.gov
+Thu, 27 Mar 2003 08:01:29 -0800
+
+* Previous message: pdb-l: temperature factor; occupancy
+* Next message: pdb-l: Structural alignment?
+* Messages sorted by: [ date ] [ thread ] [ subject ] [ author ]
+
+Isotropic B is defined as 8*pi**2<u**2>.
+
+Meaning: eight pi squared =79
+
+so B=79*mean square displacement (from rest position) of the atom.
+
+as u is in Angstrom, B must be in Angstrom squared.
+
+example: B=79A**2
+
+thus, u=sqrt([79/79]) = 1 A mean positional displacement for atom.
+
+
+See also 
+
+http://www-structure.llnl.gov/Xray/comp/comp_scat_fac.htm#Atomic
+
+for more examples.
+
+BR
+
+
+> -----Original Message-----
+> From: pdb-l-admin@sdsc.edu [mailto:pdb-l-admin@sdsc.edu] On 
+> Behalf Of Philipp Heuser
+> Sent: Thursday, March 27, 2003 6:05 AM
+> To: pdb-l@sdsc.edu
+> Subject: pdb-l: temperature factor; occupancy
+> 
+> 
+> Hi all!
+> 
+> Does anyone know where to find proper definitions for the 
+> temperature factors 
+> and the values for occupancy?
+> 
+> Alright I do know, that the atoms with high temperature 
+> factors are more 
+> disordered than others, but what does a temperature factor of 
+> a specific 
+> value mean exactly.
+> 
+> 
+> Thanks in advance!
+> 
+> Philipp
+> 
+> 
+> -- 
+> *************************************
+> Philipp Heuser
+> 
+> CUBIC - Cologne University Bioinformatics Center
+> Institute of Biochemistry       
+> University of Cologne                    
+> 
+> Zuelpicher Str. 47                       
+> D-50674 Cologne, GERMANY       
+> 
+> Phone :  Office +49-221/470-7427 
+> Fax:     Office +49-221/470-5092
+> *************************************
+> 
+> TO UNSUBSCRIBE OR CHANGE YOUR SUBSCRIPTION OPTIONS, please 
+> see https://lists.sdsc.edu/mailman/listinfo.cgi/pdb-l . 
+> 
+****************************************************************/
+
 }
 

@@ -304,6 +304,7 @@ public class Token {
   final static int direction    = misc | 31;
   final static int fps          = misc | 32;
   final static int jmol         = misc | 33;
+  final static int displacement = misc | 34;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -536,6 +537,7 @@ public class Token {
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),
     "jmol",         new Token(jmol,            "jmol"),
+    "displacement", new Token(displacement,    "displacement"),
 
   };
 

@@ -90,8 +90,8 @@ public class ShadedSphereRenderer {
       Image sphere = shadedImages[diameter];
       if (sphere == null)
         sphere = loadShadedSphereCache(control, color, shadedImages, diameter);
-      // images in the cache have a clear margin of 1
-      g.drawImage(sphere, xUpperLeft - 1, yUpperLeft - 1, null);
+      int margin = control.getUseGraphics2D() ? 1 : 0;
+      g.drawImage(sphere, xUpperLeft - margin, yUpperLeft - margin, null);
       return;
     }
     Image imgSphere = shadedImages[0];
@@ -129,10 +129,12 @@ public class ShadedSphereRenderer {
                                       Image[] shadedImages, int diameter) {
     Image imgSphere;
     if (! control.getUseGraphics2D()) {
+      // note that if we are not using Graphics2D then there is no margin
       Component component = control.getAwtComponent();
       imgSphere = shadedImages[diameter] =
-        sphereSetup(component, color, diameter+2, lightSource);
+        sphereSetup(component, color, diameter, lightSource);
     } else {
+      // but if we *are* then there is a margin of one
       BufferedImage bi = new BufferedImage(diameter+2, diameter+2,
                                            BufferedImage.TYPE_INT_ARGB);
       Graphics2D g2 = bi.createGraphics();

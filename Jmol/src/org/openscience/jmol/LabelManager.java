@@ -97,6 +97,7 @@ public class LabelManager {
   public String getLabelAtom(String strFormat, Atom atom) {
     if (strFormat == null || strFormat.equals(""))
       return null;
+    ProteinProp pprop = atom.getProteinProp();
     String strLabel = "";
     String strExpansion = "";
     int ich = 0;
@@ -111,6 +112,7 @@ public class LabelManager {
         --ich; // a percent sign at the end of the string
         break;
       }
+      strExpansion = "";
       ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
@@ -122,20 +124,24 @@ public class LabelManager {
         break;
       case 'b': // these two are the same
       case 't':
-        strExpansion = "<temp>";
+        if (pprop != null)
+          strExpansion = "" + pprop.getTemperature();
         break;
       case 'c': // these two are the same
       case 's':
-        strExpansion = "<chain>";
+        if (pprop != null)
+          strExpansion = pprop.getChain();
         break;
       case 'm':
-        strExpansion = "<A>";
+        strExpansion = "<X>";
         break;
       case 'n':
-        strExpansion = "<ALA>";
+        if (pprop != null)
+          strExpansion = "" + pprop.getResidue();
         break;
       case 'r':
-        strExpansion = "<#>";
+        if (pprop != null)
+          strExpansion = "" + pprop.getResno();
         break;
       default:
         strExpansion = "" + ch;

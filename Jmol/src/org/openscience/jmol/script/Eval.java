@@ -655,11 +655,13 @@ public class Eval implements Runnable {
         propertyValue = atom.getAtomicNumber();
         break;
       case Token.temperature:
+        propertyValue = getTemperature(atom);
+        break;
       case Token.resno:
-        // FIXME -- what is resno?
-        propertyValue = -1;
+        propertyValue = getResno(atom);
         break;
       case Token.radius:
+        // FIXME -- should this be the currently displayed radius?
         propertyValue = (int)(atom.getVdwRadius() * 250);
         break;
       case Token.bondedcount:
@@ -725,6 +727,20 @@ public class Eval implements Runnable {
         return true;
     }
     return false;
+  }
+
+  int getResno(Atom atom) {
+    ProteinProp pprop = atom.getProteinProp();
+    if (pprop == null)
+      return 0;
+    return pprop.getResno();
+  }
+
+  int getTemperature(Atom atom) {
+    ProteinProp pprop = atom.getProteinProp();
+    if (pprop == null)
+      return 0;
+    return pprop.getTemperature();
   }
 
   Color getColorParam(int itoken) throws ScriptException {

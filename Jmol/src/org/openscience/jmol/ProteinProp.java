@@ -56,6 +56,30 @@ public class ProteinProp {
     return recordPdb.substring(17, 20);
   }
 
+  public int getResno() {
+    int chain = 0;
+    try {
+      chain = Integer.parseInt(recordPdb.substring(22, 26).trim());
+    } catch (NumberFormatException e) {
+      System.out.println("Resno is not an integer:" + recordPdb);
+    }
+    return chain;
+  }
+
+  public int getTemperature() {
+    double temp = 0;
+    try {
+      temp = Double.parseDouble(recordPdb.substring(60, 66).trim());
+    } catch (NumberFormatException e) {
+      System.out.println("temp is not a decimal:" + recordPdb);
+    }
+    return (int)(temp * 100);
+  }
+
+  public String getChain() {
+    return recordPdb.substring(21, 22);
+  }
+
   public boolean isAmino() {
     return iResidue != -1 && iResidue < 23;
   }

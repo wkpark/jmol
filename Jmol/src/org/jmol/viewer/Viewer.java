@@ -317,6 +317,10 @@ final public class Viewer extends JmolViewer {
     refresh();
   }
 
+  boolean getZoomEnabled() {
+    return transformManager.zoomEnabled;
+  }
+
   boolean getSlabEnabled() {
     return transformManager.slabEnabled;
   }

@@ -2938,9 +2938,14 @@ class Eval implements Runnable {
     case Token.file:
       showFile();
       break;
+    case Token.boundbox:
+      showBoundbox();
+      break;
+    case Token.zoom:
+      showZoom();
+      break;
 
       // not implemented
-    case Token.zoom:
     case Token.spin:
     case Token.list:
     case Token.mlp:
@@ -3053,11 +3058,22 @@ class Eval implements Runnable {
   }
 
   void showTransform() {
-    showString("Transform:\n" + viewer.getTransformText());
+    showString("transform:\n" + viewer.getTransformText());
   }
 
   void showCenter() {
-    showString("center = " + viewer.getCenter());
+    showString("center: " + viewer.getCenter());
+  }
+
+  void showZoom() {
+    showString("zoom " + (viewer.getZoomEnabled()
+                           ? ("" + viewer.getZoomPercentSetting())
+                           : "off"));
+  }
+
+  void showBoundbox() {
+    showString("boundbox: " + viewer.getBoundingBoxCenter() +
+               " " + viewer.getBoundingBoxCornerVector());
   }
 
   AxisAngle4f aaMoveTo;

@@ -59,6 +59,8 @@ final public class Group {
                   int sequenceNumber, char insertionCode, String group3) {
     this.chain = chain;
     this.seqcode = getSeqcode(sequenceNumber, insertionCode);
+    if (group3 == null)
+      group3 = "";
     this.groupID = getGroupID(group3);
   }
 
@@ -170,6 +172,8 @@ final public class Group {
   }
 
   static short getGroupID(String group3) {
+    if (group3 == null)
+      return -1;
     short groupID = lookupGroupID(group3);
     return (groupID != -1) ? groupID : addGroup3Name(group3);
   }
@@ -313,15 +317,21 @@ final public class Group {
   }
 
   public static int getSeqcode(int sequenceNumber, char insertionCode) {
+    if (sequenceNumber == Integer.MIN_VALUE)
+      return sequenceNumber;
     if (insertionCode >= 'a' && insertionCode <= 'z')
       insertionCode -= 'a' - 'A';
-    return (sequenceNumber << 8) + ((insertionCode - ' ') & 0xFF);
+    else if (insertionCode < 'A' || insertionCode > 'Z')
+      insertionCode = '\0';
+    return (sequenceNumber << 8) + insertionCode;
   }
 
   public static String getSeqcodeString(int seqcode) {
+    if (seqcode == Integer.MIN_VALUE)
+      return null;
     return (seqcode & 0xFF) == 0
       ? "" + (seqcode >> 8)
-      : "" + (seqcode >> 8) + '^' + (char)(' ' + (seqcode & 0xFF));
+      : "" + (seqcode >> 8) + '^' + (char)(seqcode & 0xFF);
   }
 
   public boolean isProline() {

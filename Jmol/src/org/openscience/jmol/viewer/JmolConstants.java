@@ -1683,7 +1683,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "WAT", // 71
     // ions && solvent
     "PO4", // 72 phosphate ions
-    "SO4", // 73 sulphate ions 
+    "SO4", // 73 sulphate ions
+
+    "", // this is the null group ... it really should be entry 0
     
   };
 

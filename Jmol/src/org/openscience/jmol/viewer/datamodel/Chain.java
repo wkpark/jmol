@@ -43,6 +43,10 @@ final public class Chain {
 
   public Chain(PdbModel pdbmodel, char chainID) {
     this.pdbmodel = pdbmodel;
+    if (!((chainID >= 'A' && chainID <= 'Z') ||
+          (chainID >= 'a' && chainID <= 'z') ||
+          (chainID >= '0' && chainID <= '9')))
+      chainID = 0;
     this.chainID = chainID;
   }
 

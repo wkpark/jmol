@@ -74,7 +74,7 @@ public final class Atom implements Bspt.Tuple {
               float bfactor,
               float x, float y, float z,
               boolean isHetero, int atomSerial, char chainID,
-              String group3, int sequenceNumber, char insertionCode,
+              String group3, int groupSequenceNumber, char groupInsertionCode,
               float vibrationX, float vibrationY, float vibrationZ,
               PdbFile pdbFile) {
     /*
@@ -86,20 +86,9 @@ public final class Atom implements Bspt.Tuple {
                        bfactor + "," +
                        x + "," + y + "," + z + "," +
                        isHetero + "," + atomSerial + "," + chainID + "," +
-                       group3 + "," + sequenceNumber + ","
-                       + insertionCode + "," + pdbFile);
+                       group3 + "," + groupSequenceNumber + ","
+                       + groupInsertionCode + "," + pdbFile);
     */
-    ////////////////////////////////////////////////////////////////
-    // these do *not* belong here ... but are here temporarily
-    if (group3 == null)
-      group3 = "";
-    if (sequenceNumber < 0)
-      sequenceNumber = -1;
-    if (chainID == '\0')
-      chainID = ' ';
-    if (insertionCode == '\0')
-      insertionCode = ' ';
-    ////////////////////////////////////////////////////////////////
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
@@ -126,7 +115,7 @@ public final class Atom implements Bspt.Tuple {
     // this does not belong here
     // put it in the higher level and pass in the group
     group = pdbFile.registerAtom(this, modelNumber, chainID,
-                                 sequenceNumber, insertionCode, group3);
+                                 groupSequenceNumber, groupInsertionCode, group3);
     if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
         !Float.isNaN(vibrationZ)) {
       vibrationVector = new Vector3f(vibrationX, vibrationY, vibrationZ);

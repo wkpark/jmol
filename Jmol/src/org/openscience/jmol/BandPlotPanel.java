@@ -14,7 +14,7 @@ public class BandPlotPanel extends JPanel {
       Graphics2D g2 = (Graphics2D) g;
       bpg2r.setGraphics2D(g2);
       super.paintComponent(g2); //paint background
-      setBackground(Color.WHITE);
+      setBackground(Color.white);
       bpg2r.render();
     }
   } 

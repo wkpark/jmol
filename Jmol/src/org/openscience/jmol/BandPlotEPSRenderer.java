@@ -258,8 +258,16 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
 	// java and in the regexp itself.
 	// *the paranthesis must be escaped in regexp.
 	tokenPS=(String)token;
+
+        /*
+          replaceAll is only available in JVM 1.4 and greater
+          see substitute routine below
+          I have not tested this, so please confirm that it works properly
 	tokenPS=tokenPS.replaceAll("\\(","\\\\(");
 	tokenPS=tokenPS.replaceAll("\\)","\\\\)");
+        */
+        tokenPS=replaceCharString(tokenPS, '(', "\\(");
+        tokenPS=replaceCharString(tokenPS, ')', "\\)");
 	  
 	psLine=psLine +
 	  "/" + fontPS + " findfont " +
@@ -274,5 +282,20 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
     psLine = psLine + " grestore ";
     writeLine(psLine);
   }
-  
+
+  String replaceCharString(String strOld, char charOld, String substrNew) {
+    // FIXME - mth 2003 01 07 - confirm that this works
+    // I wrote this as a replacement for the replaceAll code because
+    // replaceAll is only available on JVM >= 1.4
+    // I have not tested this code to convirm that it works
+    String strNew = "";
+    int ichStart = 0;
+    int ichMatch;
+    while ((ichMatch = strOld.indexOf(charOld, ichStart)) != -1) {
+      strNew += strOld.substring(ichStart, ichMatch) + substrNew;
+      ++ichStart;
+    }
+    strNew += strOld.substring(ichStart);
+    return strNew;
+  }
 }

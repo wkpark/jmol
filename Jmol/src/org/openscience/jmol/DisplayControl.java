@@ -298,7 +298,7 @@ final public class DisplayControl {
     return propertyMode;
   }
 
-  private final SelectionSet setPicked = new SelectionSet();
+  private SelectionSet setPicked = new SelectionSet();
 
   public void addSelection(Atom atom) {
     setPicked.addSelection(atom.getAtomNumber());
@@ -346,6 +346,11 @@ final public class DisplayControl {
 
   public boolean isSelected(Atom atom) {
     return setPicked.isSelected(atom.getAtomNumber());
+  }
+
+  public void setSelectionSet(SelectionSet set) {
+    setPicked = set;
+    recalc();
   }
 
   public double getScalePixelsPerAngstrom() {
@@ -592,6 +597,10 @@ final public class DisplayControl {
     structuralChange = true;
     clearSelection();
     recalc();
+  }
+
+  public int numberOfAtoms() {
+    return (chemframe == null) ? 0 : chemframe.getNumberOfAtoms();
   }
 
   public void mlistChanged(MeasurementListEvent mle) {
@@ -916,5 +925,15 @@ final public class DisplayControl {
       htTransparent.put(color, transparent);
     }
     return transparent;
+  }
+
+  public boolean openFile(String filename) {
+    return Jmol.openFilename(filename);
+  }
+
+  public void scriptEcho(String str) {
+    // FIXME -- if there is a script window it should go there
+    // for an applet it needs to go someplace else
+    System.out.println(str);
   }
 }

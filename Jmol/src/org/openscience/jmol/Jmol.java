@@ -30,8 +30,8 @@ import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.io.XYZSaver;
 import org.openscience.jmol.script.ScriptWindow;
-import org.openscience.jmol.script.RasMolScriptHandler;
-import org.openscience.jmol.script.RasMolScriptException;
+import org.openscience.jmol.script.ScriptException;
+import org.openscience.jmol.script.Eval;
 import org.openscience.cdk.tools.IsotopeFactory;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
@@ -261,7 +261,8 @@ public class Jmol extends JPanel {
     addPropertyChangeListener(openFileProperty, recentFiles);
     splash.showStatus(resourceHandler
         .translate("Initializing Script Window..."));
-    scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
+    scriptWindow = new ScriptWindow(control, frame);
+    //scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
     splash.showStatus(resourceHandler
         .translate("Initializing Property Graph..."));
     pg = new PropertyGraph(frame);
@@ -368,21 +369,18 @@ public class Jmol extends JPanel {
     return window;
   }
 
+  static Jmol jmol;
+
   public static void main(String[] args) {
 
     // Read the first argument as a file name:
     File initialFile = null;
-    File script = null;
+    String scriptFilename = null;
 
     if (args.length == 2) {
       String s = args[0];
-      if (s.equals("-script")) {
-        script = new File(getUserDirectory(), args[1]);
-        if (!script.exists()) {
-          System.out.println("Script not found: " + script.toString());
-          System.exit(1);
-        }
-      }
+      if (s.equals("-script"))
+        scriptFilename = args[1];
     }
     if (args.length == 1) {
 
@@ -403,43 +401,27 @@ public class Jmol extends JPanel {
       }
 
       frame = new JFrame();
-      Jmol window = getJmol(frame);
+      jmol = getJmol(frame);
 
       // Open a file if on is given as an argument
       if (initialFile != null) {
-        window.openFile(initialFile);
+        jmol.openFile(initialFile);
       }
 
       // Oke, by now it is time to execute the script
-      if (script != null) {
+      if (scriptFilename != null) {
+        System.out.println("Executing script: " + scriptFilename);
+        jmol.splash
+          .showStatus(JmolResourceHandler.getInstance()
+                      .getString("Executing script..."));
+        Eval eval = new Eval(control);
         try {
-          System.out.println("Executing script: " + script.toString());
-          window.splash
-              .showStatus(JmolResourceHandler.getInstance()
-                .getString("Executing script..."));
-          RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
-          BufferedReader reader = new BufferedReader(new FileReader(script));
-          String command = reader.readLine();
-          while (command != null) {
-            try {
-              scripthandler.handle(command);
-              command = reader.readLine();
-            } catch (RasMolScriptException e) {
-
-              // error in script. no user feedback at this moment
-              System.out.println(e.toString());
-              command = null;
-            }
-          }
-        } catch (FileNotFoundException e) {
-
-          // since this is tested earlier, this should not happen
-        } catch (IOException e) {
-
+          eval.executeFile(scriptFilename);
+        } catch (ScriptException e) {
           // just stop handling the script
+          // or should we exit here?
         }
       }
-
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
       t.printStackTrace();
@@ -472,12 +454,18 @@ public class Jmol extends JPanel {
 
   }
 
+  public static boolean openFilename(String filename) {
+    return jmol.openFile(new File(getUserDirectory(), filename));
+  }
+
+
   /**
    * Opens a file.
    *
    * @param file the file to open.
    */
-  public void openFile(File file) {
+  public boolean openFile(File file) {
+    boolean successFlag = false;
 
     if (file != null) {
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -493,7 +481,7 @@ public class Jmol extends JPanel {
         currentFile = file;
 
         firePropertyChange(openFileProperty, oldFile, currentFile);
-
+        successFlag = true;
       } catch (java.io.FileNotFoundException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
             "Unable to find file \"" + file + "\"", "File not found",
@@ -512,8 +500,8 @@ public class Jmol extends JPanel {
       } finally {
         frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       }
-      return;
     }
+    return successFlag;
   }
 
   /**

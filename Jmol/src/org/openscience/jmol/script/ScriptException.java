@@ -21,10 +21,9 @@ package org.openscience.jmol.script;
 
 import org.openscience.jmol.JmolException;
 
-public class RasMolScriptException extends JmolException {
+public class ScriptException extends JmolException {
 
-  public RasMolScriptException(String message) {
-    super("RasMolScriptHandler.handle()", message);
+  public ScriptException(String message) {
+    super("ScriptException:", message);
   }
-
 }

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -18,6 +17,8 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.script;
+
+import org.openscience.jmol.DisplayControl;
 
 import java.awt.BorderLayout;
 import javax.swing.JButton;
@@ -43,12 +44,14 @@ public class ScriptWindow extends JDialog
   private JTextArea output;
   private JTextField input;
   private JButton closeButton;
-  private RasMolScriptHandler scriptHandler;
+  DisplayControl control;
+  Eval eval;
 
-  public ScriptWindow(JFrame frame, RasMolScriptHandler scriptHandler) {
+  public ScriptWindow(DisplayControl control, JFrame frame) {
 
     super(frame, "Rasmol Scripts", false);
-    this.scriptHandler = scriptHandler;
+    this.control = control;
+    this.eval = new Eval(control);
     getContentPane().setLayout(new BorderLayout());
     output = new JTextArea(20, 30);
     output.setEditable(false);
@@ -56,7 +59,7 @@ public class ScriptWindow extends JDialog
     JScrollPane scrollPane = new JScrollPane(output);
     getContentPane().add(scrollPane, BorderLayout.NORTH);
 
-    scriptHandler.setOutput(output);
+    //scriptHandler.setOutput(output);
 
     input = new JTextField();
     input.addActionListener(this);
@@ -80,13 +83,9 @@ public class ScriptWindow extends JDialog
 
       // execute script
       try {
-        scriptHandler.handle(command);
-      } catch (RasMolScriptException rasmolerror) {
-        output.append(rasmolerror.getMessage());
-        output.append("\n");
-      } catch (Exception exp) {
-        output.append("Error: " + exp.toString());
-        output.append("\n");
+        eval.executeString(command);
+      } catch (ScriptException se) {
+        System.out.println("ScriptException thrown:" + se.getMessage());
       }
 
       // return prompt

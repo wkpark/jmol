@@ -44,10 +44,11 @@ import java.util.Vector;
 import javax.swing.JOptionPane;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
 
 public class JmolEditBus implements CDKEditBus {
 
-    private final static String APIVersion = "1.7";
+    private final static String APIVersion = "1.8";
     
     private JmolViewer viewer = null;
     
@@ -59,8 +60,8 @@ public class JmolEditBus implements CDKEditBus {
         return this.APIVersion;
     }
     
-    public void showChemFile(String file) {
-        viewer.openStringInline(file);
+    public void showChemFile(Reader file) {
+        viewer.openReader("", "", file);
     }
 
     public void showChemFile(ChemFile file) {

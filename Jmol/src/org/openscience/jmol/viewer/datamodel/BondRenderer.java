@@ -49,12 +49,14 @@ public class BondRenderer {
     colixSelection = viewer.getColixSelection();
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
+    showHydrogens = viewer.getShowHydrogens();
   }
 
   boolean fastRendering;
   short colixSelection;
   boolean showMultipleBonds;
   byte modeMultipleBond;
+  boolean showHydrogens;
 
   int x1, y1, z1;
   int x2, y2, z2;
@@ -62,7 +64,6 @@ public class BondRenderer {
   int mag2d, mag2d2;
   short colix1, colix2;
   int width;
-  byte styleAtom1, styleAtom2;
   int bondOrder;
   byte styleBond;
   short marBond;
@@ -76,36 +77,27 @@ public class BondRenderer {
     g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
-  public void render(AtomShape atomShape1, AtomShape atomShape2, int order,
-                     byte style, short mar, short colix, int width) {
-    if (style == JmolViewer.NONE)
+  public void render(BondShape bondShape) {
+    styleBond = bondShape.style;
+    if (styleBond == JmolViewer.NONE)
       return;
-    if (atomShape1.z > atomShape2.z) {
-      AtomShape t = atomShape1;
-      atomShape1 = atomShape2;
-      atomShape2 = t;
-    }
-    styleAtom1 = atomShape1.styleAtom;
-    styleAtom2 = atomShape2.styleAtom;
-    styleBond = style;
-    marBond = mar;
+    AtomShape atomShape1 = bondShape.atomShape1;
+    AtomShape atomShape2 = bondShape.atomShape2;
+    if (!showHydrogens && (atomShape1.atomicNumber == 1 ||
+                           atomShape2.atomicNumber == 1))
+      return;
     x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
     x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
-    this.width = width;
-    colix1 = colix2 = colix;
-    if (colix == 0) {
+    width = viewer.scaleToScreen((z1 + z2)/2, bondShape.mar * 2);
+    marBond = bondShape.mar;
+    colix1 = colix2 = bondShape.colix;
+    if (colix1 == 0) {
       colix1 = atomShape1.colixAtom;
       colix2 = atomShape2.colixAtom;
     }
+    bondOrder = getRenderBondOrder(bondShape.order);
 
-    bondOrder = getRenderBondOrder(order);
-
-    /*
-    if (viewer.hasSelectionHalo(atomShape1.atom, index1))
-      renderHalo();
-    */
-    if (styleBond != JmolViewer.NONE)
-      renderBond();
+    renderBond();
   }
 
   int getRenderBondOrder(int order) {
@@ -195,6 +187,51 @@ public class BondRenderer {
   void stepAxisCoordinates() {
     xAxis1 += dxStep; yAxis1 += dyStep;
     xAxis2 += dxStep; yAxis2 += dyStep;
+  }
+
+  Rectangle rectTemp = new Rectangle();
+  private boolean isClipVisible(int x1, int y1, int x2, int y2) {
+    // this is not actually correct, but quick & dirty
+    int xMin, width, yMin, height;
+    if (x1 < x2) {
+      xMin = x1;
+      width = x2 - x1;
+    } else if (x2 < x1) {
+      xMin = x2;
+      width = x1 - x2;
+    } else {
+      xMin = x1;
+      width = 1;
+    }
+    if (y1 < y2) {
+      yMin = y1;
+      height = y2 - y1;
+    } else if (y2 < y1) {
+      yMin = y2;
+      height = y1 - y2;
+    } else {
+      yMin = y1;
+      height = 1;
+    }
+    // there are some problems with this quick&dirty implementation
+    // so I am going to throw in some slop
+    xMin -= 5;
+    yMin -= 5;
+    width += 10;
+    height += 10;
+    rectTemp.x = xMin;
+    rectTemp.y = yMin;
+    rectTemp.width = width;
+    rectTemp.height = height;
+    boolean visible = clip.intersects(rectTemp);
+    /*
+    System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +
+                       " & " + clip.x + "," + clip.y +
+                       " W " + clip.width + " H " + clip.height +
+                       "->" + visible);
+    visible = true;
+    */
+    return visible;
   }
 }
 

@@ -42,8 +42,6 @@ public class JmolFrame {
   // whether or not this frame has any protein properties
   public boolean hasPdbRecords;
 
-  Shape[] shapes;
-
   final static int growthIncrement = 128;
   int atomShapeCount = 0;
   AtomShape[] atomShapes;
@@ -317,70 +315,49 @@ public class JmolFrame {
   public void render(Graphics3D g3d, JmolViewer viewer) {
     if (atomShapeCount <= 0)
       return;
-    if (shapes == null || viewer.hasStructuralChange()) {
-      AtomShape[] atomShapes = this.atomShapes;
-      LineShape[] lineShapes = this.lineShapes;
-      MeasurementShape[] measurementShapes = this.measurementShapes;
-      Shape[] axisShapes = null;
-      int axisShapeCount = 0;
-      Shape[] bboxShapes = null;
-      int bboxShapeCount = 0;
-      if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {
-        axisShapes = viewer.getAxes().getShapes();
-        axisShapeCount = axisShapes.length;
-      }
-      if (viewer.getShowBoundingBox()) {
-        bboxShapes = viewer.getBoundingBox().getBboxShapes();
-        bboxShapeCount = bboxShapes.length;
-      }
-      int shapeCount =
-        atomShapeCount + lineShapeCount + crystalCellLineCount +
-        measurementShapeCount +
-        axisShapeCount + bboxShapeCount;
-      shapes = new Shape[shapeCount];
-      int i = 0;
-
-      System.arraycopy(atomShapes, 0, shapes, i, atomShapeCount);
-      i += atomShapeCount;
-
-      if (lineShapes != null) {
-        System.arraycopy(lineShapes, 0, shapes, i, lineShapeCount);
-        i += lineShapeCount;
-      }
-      if (crystalCellLines != null) {
-        System.arraycopy(crystalCellLines, 0, shapes, i, crystalCellLineCount);
-        i += crystalCellLineCount;
-      }
-      if (measurementShapes != null) {
-        System.arraycopy(measurementShapes, 0,
-                         shapes, i, measurementShapeCount);
-        i += measurementShapeCount;
-      }
-      if (axisShapes != null) {
-        System.arraycopy(axisShapes, 0, shapes, i, axisShapeCount);
-        i += axisShapeCount;
-      }
-      if (bboxShapes != null) {
-        System.arraycopy(bboxShapes, 0, shapes, i, bboxShapeCount);
-        i += bboxShapeCount;
-      }
-    }
 
     viewer.calcViewTransformMatrix();
 
-    for (int i = 0; i < shapes.length; ++i)
-      shapes[i].transform(viewer);
-    
-    /*
-    if (viewer.jvm12orGreater) {
-      UseJavaSort.sortShapes(shapes);
-    } else {
-      NonJavaSort.sortShapes(shapes);
+    AtomRenderer atomRenderer = viewer.atomRenderer;
+    for (int i = atomShapeCount; --i >= 0; ) {
+      AtomShape atomShape = atomShapes[i];
+      atomShape.transform(viewer);
+      atomRenderer.render(atomShape);
     }
-    */
-    
-    for (int i = shapes.length; --i >= 0 ; )
-      shapes[i].render(g3d, viewer);
+
+    BondRenderer bondRenderer = viewer.bondRenderer;
+    for (int i = bondShapeCount; --i >= 0; )
+      bondRenderer.render(bondShapes[i]);
+
+    for (int i = lineShapeCount; --i >= 0; ) {
+      LineShape lineShape = lineShapes[i];
+      lineShape.transform(viewer);
+      lineShape.render(g3d, viewer);
+    }
+
+    for (int i = crystalCellLineCount; --i >= 0; ) {
+      LineShape cellLine = crystalCellLines[i];
+      cellLine.transform(viewer);
+      cellLine.render(g3d, viewer);
+    }
+
+    if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {
+      Shape[] axisShapes = viewer.getAxes().getShapes();
+      for (int i = axisShapes.length; --i >= 0; ) {
+        Shape axisShape = axisShapes[i];
+        axisShape.transform(viewer);
+        axisShape.render(g3d, viewer);
+      }
+    }
+
+    if (viewer.getShowBoundingBox()) {
+      Shape[] bboxShapes = viewer.getBoundingBox().getBboxShapes();
+      for (int i = bboxShapes.length; --i >= 0; ) {
+        Shape bboxShape = bboxShapes[i];
+        bboxShape.transform(viewer);
+        bboxShape.render(g3d, viewer);
+      }
+    }
   }
 
   final static int lineGrowthIncrement = 16;
@@ -513,66 +490,43 @@ public class JmolFrame {
   }
 
   public BondShapeIterator getBondIterator(byte bondType, BitSet bsSelected) {
-    return new SelectedCovalentBondIterator(bondType, bsSelected);
+    return new SelectedBondShapeIterator(bondType, bsSelected);
   }
 
-  class SelectedCovalentBondIterator implements BondShapeIterator {
-    BitSet bsSelected;
-    int bondType;
+  class SelectedBondShapeIterator implements BondShapeIterator {
 
-    int iAtomShape;
-    boolean tHaveAtom;
+    byte bondType;
     int iBondShape;
-    int iAtomShapeCurrent;
-    AtomShape atomShapeCurrent;
-    BondShape[] bondsCurrent;
+    BitSet bsSelected;
     boolean bondSelectionModeOr;
 
-    SelectedCovalentBondIterator(byte bondType, BitSet bsSelected) {
+    SelectedBondShapeIterator(byte bondType, BitSet bsSelected) {
       this.bondType = bondType;
       this.bsSelected = bsSelected;
-      iAtomShape = iBondShape = 0;
+      iBondShape = 0;
       bondSelectionModeOr = viewer.getBondSelectionModeOr();
     }
 
     public boolean hasNext() {
-      while (true) {
-        while (atomShapeCurrent == null ||
-               bondsCurrent == null ||
-               iBondShape == bondsCurrent.length) {
-          if (iAtomShape == atomShapeCount)
-            return false;
-          iAtomShapeCurrent = iAtomShape++;
-          if (bsSelected.get(iAtomShapeCurrent)) {
-            atomShapeCurrent=atomShapes[iAtomShapeCurrent];
-            bondsCurrent = atomShapeCurrent.bonds;
-            iBondShape = 0;
-          } else {
-            atomShapeCurrent = null;
-            bondsCurrent = null;
-          }
-        }
-        for ( ; iBondShape < bondsCurrent.length; ++iBondShape) {
-          BondShape bondShape = bondsCurrent[iBondShape];
-          if ((bondShape.order & bondType) == 0)
-            continue;
-          AtomShape atomShapeOther =
-            (bondShape.atomShape1 != atomShapeCurrent ?
-             bondShape.atomShape1 : bondShape.atomShape2);
-          boolean tOtherSelected = bsSelected.get(atomShapeOther.getAtomIndex());
-          if (bondSelectionModeOr) {
-            if (!tOtherSelected || bondShape.atomShape1 == atomShapeCurrent)
-              return true;
-          } else {
-            if (tOtherSelected && bondShape.atomShape1 == atomShapeCurrent)
-              return true;
-          }
+      for ( ; iBondShape < atomShapeCount; ++iBondShape) {
+        BondShape bondShape = bondShapes[iBondShape];
+        if ((bondShape.order & bondType) == 0)
+          continue;
+        int atomIndex1 = bondShape.atomShape1.getAtomIndex();
+        int atomIndex2 = bondShape.atomShape2.getAtomIndex();
+        if (bondSelectionModeOr) {
+          if (bsSelected.get(atomIndex1) || bsSelected.get(atomIndex2))
+            return true;
+        } else {
+          if (bsSelected.get(atomIndex1) && bsSelected.get(atomIndex2))
+            return true;
         }
       }
+      return false;
     }
 
     public BondShape next() {
-      return bondsCurrent[iBondShape++];
+      return bondShapes[iBondShape++];
     }
   }
 

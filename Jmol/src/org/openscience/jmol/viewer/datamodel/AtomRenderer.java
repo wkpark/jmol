@@ -40,6 +40,7 @@ public class AtomRenderer {
   Rectangle clip;
   int minX, maxX, minY, maxY;
   boolean fastRendering;
+  boolean showHydrogens;
   short colixSelection;
 
 
@@ -54,6 +55,7 @@ public class AtomRenderer {
 
     fastRendering = viewer.getFastRendering();
     colixSelection = viewer.getColixSelection();
+    showHydrogens = viewer.getShowHydrogens();
   }
 
   byte styleAtom;
@@ -61,6 +63,8 @@ public class AtomRenderer {
   short colix;
 
   public void render(AtomShape atomShape) {
+    if (!showHydrogens && atomShape.atomicNumber == 1)
+      return;
     styleAtom = atomShape.styleAtom;
     x = atomShape.x;
     y = atomShape.y;
@@ -72,11 +76,12 @@ public class AtomRenderer {
         y + radius < minY ||
         y - radius >= maxY)
       return;
-
     colix = atomShape.colixAtom;
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);
     renderAtom();
+    if (atomShape.strLabel != null)
+      viewer.labelRenderer.render(atomShape);
     if (viewer.hasSelectionHalo(atomShape))
       renderHalo();
   }

@@ -35,11 +35,12 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
 
-public class AtomShape extends Shape implements Bspt.Tuple {
+public class AtomShape implements Bspt.Tuple {
 
   public Object clientAtom;
   JmolFrame frame;
   Point3d point3d;
+  int x, y, z;
   byte atomicNumber;
   byte styleAtom;
   private short atomIndex = -1;
@@ -163,16 +164,6 @@ public class AtomShape extends Shape implements Bspt.Tuple {
   }
 
   /*
-  private void fixBondOrders() {
-    Atom[] bondedAtoms = atom.getBondedAtoms();
-    for (int i = numBonds; --i >= 0 ; ) {
-      Atom atomOther = bondedAtoms[i];
-      bondOrders[i] = (byte) atom.getBondOrder(atomOther);
-    }
-  }
-  */
-
-  /*
    * What is a MAR?
    *  - just a term that I made up
    *  - an abbreviation for Milli Angstrom Radius
@@ -258,108 +249,7 @@ public class AtomShape extends Shape implements Bspt.Tuple {
     diameter = viewer.scaleToScreen(z, marAtom * 2);
     if (marDots > 0)
       diameterDots = viewer.scaleToScreen(z, marDots * 2);
-    /*
-    for (int i = numBonds; --i >= 0; )
-      bondWidths[i] = (short)viewer.scaleToScreen(z, marBonds[i] * 2);
-    */
   }
-
-  public void render(Graphics3D g3d, JmolViewer viewer) {
-    if (atomicNumber == 1 && !viewer.getShowHydrogens())
-      return;
-    renderBonds(viewer);
-    if (isClipVisible(viewer.atomRenderer.clip))
-      viewer.atomRenderer.render(this);
-    if (strLabel != null)
-      viewer.labelRenderer.render(this);
-  }
-
-  public void renderBonds(JmolViewer viewer) {
-    if (bonds == null)
-      return;
-    for (int i = bonds.length; --i >= 0; ) {
-      BondShape bond = bonds[i];
-      AtomShape atomShapeOther =
-        (bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1;
-      int zOther = atomShapeOther.z;
-      if ((atomShapeOther.atomicNumber != 1 || viewer.getShowHydrogens()) &&
-          ((z < zOther) ||
-           (z==zOther && (bond.atomShape1 == this))) &&
-          isBondClipVisible(viewer.bondRenderer.clip,
-                            x, y, atomShapeOther.x, atomShapeOther.y))
-        bond.render(viewer);
-    }
-  }
-
-  static Rectangle rectTemp = new Rectangle();
-  boolean isClipVisible(Rectangle clip) {
-    int radius = diameter / 2;
-    rectTemp.x = x - radius;
-    rectTemp.y = y - radius;
-    rectTemp.width = diameter;
-    rectTemp.height = diameter;
-    //    rectTemp.setRect(x - radius, y - radius, diameter, diameter);
-    // note that this is not correct if the atom is selected
-    // because the halo may be visible while the atom is not
-    boolean visible = clip.intersects(rectTemp);
-    /*
-    System.out.println("isClipVisible -> " + visible);
-    System.out.println(" x=" + x + " y=" + y + " diameter=" + diameter);
-    visible = true;
-    */
-    return visible;
-  }
-
-  private boolean isBondClipVisible(Rectangle clip,
-                                    int x1, int y1, int x2, int y2) {
-    // this is not actually correct, but quick & dirty
-    int xMin, width, yMin, height;
-    if (x1 < x2) {
-      xMin = x1;
-      width = x2 - x1;
-    } else if (x2 < x1) {
-      xMin = x2;
-      width = x1 - x2;
-    } else {
-      xMin = x1;
-      width = 1;
-    }
-    if (y1 < y2) {
-      yMin = y1;
-      height = y2 - y1;
-    } else if (y2 < y1) {
-      yMin = y2;
-      height = y1 - y2;
-    } else {
-      yMin = y1;
-      height = 1;
-    }
-    // there are some problems with this quick&dirty implementation
-    // so I am going to throw in some slop
-    xMin -= 5;
-    yMin -= 5;
-    width += 10;
-    height += 10;
-    rectTemp.x = xMin;
-    rectTemp.y = yMin;
-    rectTemp.width = width;
-    rectTemp.height = height;
-    boolean visible = clip.intersects(rectTemp);
-    /*
-    System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +
-                       " & " + clip.x + "," + clip.y +
-                       " W " + clip.width + " H " + clip.height +
-                       "->" + visible);
-    visible = true;
-    */
-    return visible;
-  }
-
-  /*
-   * mth 2003 07 30
-   * These routines are currently going through the Atom
-   * but soon they will go through an interface which defines their behavior
-   */
 
   public int getAtomicNumber() {
     return frame.viewer.getAtomicNumber(clientAtom);

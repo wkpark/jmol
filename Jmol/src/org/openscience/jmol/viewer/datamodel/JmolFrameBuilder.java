@@ -77,7 +77,7 @@ public class JmolFrameBuilder {
                                iterAssoc.getOrder());
         }
     }
-      
+
     {
       JmolModelAdapter.LineIterator iterVector =
         adapter.getVectorIterator(clientFile, frameNumber);

@@ -248,6 +248,22 @@ public class ColorManager {
       // therefore, a changable colix is allocated in this case
       short id = atom.elementNumber;
       return g3d.getChangableColix(id, argbsCpk[id]);
+    case JmolConstants.PALETTE_PARTIALCHARGE:
+      /*
+      // here a reasonable color should be picked
+      // because I do not know how those 0xFF stuff can be calculated
+      // I use the int color scheme :)
+      int i = 4;
+      float charge = atom.getAtomicPartialCharge();
+      if (charge < 0) {
+          // assume charges in [-1,0>
+          charge = charge*JmolConstants.CHARGE_MIN;
+      } else if (charge > 0) {
+          // assume charges in <0,1]
+          charge = charge*JmolConstants.CHARGE_MAX;
+      } */
+      argb = JmolConstants.argbsCharge[4];
+      break;
     case JmolConstants.PALETTE_CHARGE:
       int i = atom.getAtomicCharge() - JmolConstants.CHARGE_MIN;
       argb = JmolConstants.argbsCharge[i];

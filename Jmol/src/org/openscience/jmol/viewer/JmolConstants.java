@@ -49,14 +49,15 @@ final public class JmolConstants {
   public final static byte STYLE_WIREFRAME = 1;
   public final static byte STYLE_SHADED    = 2;
     
-  public final static byte PALETTE_COLOR      =-1;
-  public final static byte PALETTE_CPK        = 0;
-  public final static byte PALETTE_CHARGE     = 1;
-  public final static byte PALETTE_STRUCTURE  = 2;
-  public final static byte PALETTE_AMINO      = 3;
-  public final static byte PALETTE_SHAPELY    = 4;
-  public final static byte PALETTE_CHAIN      = 5;
-  public final static byte PALETTE_MAX        = 6;
+  public final static byte PALETTE_COLOR         =-1;
+  public final static byte PALETTE_CPK           = 0;
+  public final static byte PALETTE_CHARGE        = 1;
+  public final static byte PALETTE_STRUCTURE     = 2;
+  public final static byte PALETTE_AMINO         = 3;
+  public final static byte PALETTE_SHAPELY       = 4;
+  public final static byte PALETTE_CHAIN         = 5;
+  public final static byte PALETTE_MAX           = 6;
+  public final static byte PALETTE_PARTIALCHARGE = 7;
 
   public final static String[] colorSchemes =
     { "cpk", "charge", "structure", "amino", "shapely", "chain" };

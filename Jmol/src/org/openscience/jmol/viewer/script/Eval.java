@@ -1349,6 +1349,9 @@ public class Eval implements Runnable {
     case Token.charge:
       palette = JmolConstants.PALETTE_CHARGE;
       break;
+    case Token.partialCharge:
+      palette = JmolConstants.PALETTE_PARTIALCHARGE;
+      break;
     case Token.structure:
       palette = JmolConstants.PALETTE_STRUCTURE;
       break;

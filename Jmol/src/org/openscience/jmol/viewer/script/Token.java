@@ -216,6 +216,7 @@ public class Token {
   final static int diffuse      = setparam | 31;
   final static int labeloffset  = setparam | 32;
   final static int frank        = setparam | 33;
+  final static int partialCharge= setparam | 34;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -446,6 +447,7 @@ public class Token {
     "diffuse",      new Token(diffuse,         "diffuse"),
     "labeloffset",  new Token(labeloffset,     "labeloffset"),
     "frank",        new Token(frank,           "frank"),
+    "partialCharge",new Token(partialCharge,   "partialCharge"),
   
     // show parameters
     "information",  new Token(information,     "information"),

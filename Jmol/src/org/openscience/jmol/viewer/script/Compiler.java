@@ -1139,28 +1139,37 @@ class Compiler {
       tokenNext();
       return true;
     }
-    if (tokPeek() == Token.colon) // null chain followed by model spec
+    if (tokPeek() == Token.colon) // null chain followed by model spec    
       return true;
-    Token tokenChain = tokenNext();
-    int tokChain = tokenChain.tok;
+    Token tokenChain;
     char chain;
-    if (tokChain == Token.integer) {
+    switch (tokPeek()) {
+    case Token.colon:
+    case Token.nada:
+    case Token.dot:
+      chain = '\0';
+      break;
+    case Token.integer:
+      tokenChain = tokenNext();
       if (tokenChain.intValue < 0 || tokenChain.intValue > 9)
         return invalidChainSpecification();
       chain = (char)('0' + tokenChain.intValue);
-    } else if (tokChain == Token.identifier ||
-               tokChain == Token.x ||
-               tokChain == Token.y ||
-               tokChain == Token.z) {
+      break;
+    case Token.identifier:
+    case Token.x:
+    case Token.y:
+    case Token.z:
+      tokenChain = tokenNext();
       String strChain = (String)tokenChain.value;
       if (strChain.length() != 1)
         return invalidChainSpecification();
       chain = strChain.charAt(0);
       if (chain == '?')
         return true;
-    } else
+      break;
+    default:
       return invalidChainSpecification();
-
+    }
     return generateResidueSpecCode(new Token(Token.spec_chain,
                                              chain, "spec_chain"));
   }

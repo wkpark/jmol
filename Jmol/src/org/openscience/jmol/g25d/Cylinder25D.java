@@ -508,7 +508,7 @@ public class Cylinder25D {
      ****************************************************************/
 
     void calcLineFactors() {
-      int radius = diameter / 2;
+      int radius = (diameter + 1) / 2; // add one here to control rounding properly
       /*
       System.out.println("dy=" + dy + " dx=" + dx + " mag2d=" + mag2d +
                          " diameter=" + diameter);

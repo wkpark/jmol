@@ -241,9 +241,9 @@ public class BondRenderer {
 
   void cylinderBond() {
     int w = (width1 + width2) / 2;
-    drawEndCaps(w);
     g25d.fillCylinder(colix1, colix2, w,
                       xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
+    drawEndCaps(w);
   }
 
 

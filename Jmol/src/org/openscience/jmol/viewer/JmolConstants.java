@@ -879,8 +879,10 @@ final public class JmolConstants {
    * Default table of CPK atom colors.
    * Used when the client does not implement
    * getAtomColor(clientAtom, colorScheme)
-   * I didn't know what color to define for many of the atoms,
-   * so I made them HotPink.
+   * 
+   * mth 2004 01 13
+   * these colors are now the RasMol colors ... using this as a starting
+   * point, we can make changes
    */
   public final static int[] argbsCpk = {
     0xFFFF1493, // Xx 0

@@ -246,7 +246,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       } else {
         viewer.setJmolDefaults();
       }
-
+      viewer.setColorBackground(getValue("bgcolor", "black"));
       viewer.setDebugScript(getBooleanValue("debugscript", false));
       
       load(getValue("load", null));

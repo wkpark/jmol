@@ -91,7 +91,6 @@ abstract class Mps extends Shape {
   }
 
   void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
-    System.out.println("Mps.findNearestAtomIndex()");
     for (int i = mpsmodels.length; --i >= 0; )
       mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
   }

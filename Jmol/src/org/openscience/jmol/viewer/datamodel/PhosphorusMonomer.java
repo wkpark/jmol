@@ -27,61 +27,46 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
 
-public class AlphaMonomer extends Monomer {
+public class PhosphorusMonomer extends Monomer {
 
-  final static byte[] alphaOffsets = { 0 };
+  final static byte[] phosphorusOffsets = { 0 };
 
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
                         int[] specialAtomIndexes, Atom[] atoms) {
+    //    System.out.println("PhosphorusMonomer.validateAndAllocate");
     if (firstIndex != lastIndex ||
-        specialAtomIndexes[JmolConstants.ATOMID_ALPHA_CARBON] != firstIndex)
+        specialAtomIndexes[JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS]
+        != firstIndex)
       return null;
-    return new AlphaMonomer(chain, group3, seqcode,
-                            firstIndex, lastIndex, alphaOffsets);
+    return new PhosphorusMonomer(chain, group3, seqcode,
+                            firstIndex, lastIndex, phosphorusOffsets);
   }
   
   ////////////////////////////////////////////////////////////////
 
-  AlphaMonomer(Chain chain, String group3, int seqcode,
+  PhosphorusMonomer(Chain chain, String group3, int seqcode,
                int firstAtomIndex, int lastAtomIndex,
                byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
   }
 
-  boolean isAlphaMonomer() { return true; }
-
-  ProteinStructure proteinStructure;
-  void setStructure(ProteinStructure proteinStructure) {
-    this.proteinStructure = proteinStructure;
-  }
-
-  ProteinStructure getProteinStructure() { return proteinStructure; }
+  boolean isPhosphorusMonomer() { return true; }
 
   byte getProteinStructureType() {
-    return proteinStructure == null ? 0 : proteinStructure.type;
-  }
-
-  boolean isHelix() {
-    return proteinStructure != null &&
-      proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
-  }
-
-  boolean isHelixOrSheet() {
-    return proteinStructure != null &&
-      proteinStructure.type >= JmolConstants.PROTEIN_STRUCTURE_SHEET;
+    return 0;
   }
 
   Atom getAtom(byte specialAtomID) {
-    return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+    return (specialAtomID == JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS
             ? getLeadAtom()
             : null);
   }
 
   Point3f getAtomPoint(byte specialAtomID) {
-    return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
+    return (specialAtomID == JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS
             ? getLeadAtomPoint()
             : null);
   }
@@ -89,12 +74,11 @@ public class AlphaMonomer extends Monomer {
   boolean isConnectedAfter(Monomer possiblyPreviousMonomer) {
     if (possiblyPreviousMonomer == null)
       return true;
-    if (! (possiblyPreviousMonomer instanceof AlphaMonomer))
+    if (! (possiblyPreviousMonomer instanceof PhosphorusMonomer))
       return false;
+    // 1PN8 73:d and 74:d are 7.001 angstroms apart
     float distance =
       getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
-    // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
-    return distance <= 4.2f;
+    return distance <= 7.1f;
   }
-
 }

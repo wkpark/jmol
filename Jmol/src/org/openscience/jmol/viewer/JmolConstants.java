@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre13a";
+  public final static String version = "10pre13b";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1563,9 +1563,20 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static String[] specialAtomNames = {
 	
-    // First 32 entries are reserved for
-    // null + 31 'distinguishing atoms'
-    // see definitions below
+    ////////////////////////////////////////////////////////////////
+    // The ordering of these entries can be changed ... BUT ...
+    // the offsets must be kept consistent with the ATOMID definitions
+    // below.
+    //
+    // null is entry 0
+    // The first 32 entries are reserved for null + 31 'distinguishing atoms'
+    // see definitions below. 32 is magical because bits are used in an
+    // int to distinguish groups. If we need more then we can go to 64
+    // bits by using a long ... but code must change.
+    //
+    // All entries less than 64 are backbone entries
+    // But the number 64 is not magical and could be easily changed
+    ////////////////////////////////////////////////////////////////
     null, // 0
     
     // protein backbone
@@ -1584,9 +1595,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "O3'", //  9 - sugar 3' oxygen
     "C2'", // 10 - sugar ring 2' carbon
     "C1'", // 11 - sugar ring 1' carbon
+    // Phosphorus is not required for a nucleic group because
+    // at the terminus it could have H5T or O5T ...
+    "P",   // 12 - phosphate phosphorus
+
+    // ... But we need to distinguish phosphorus separately because
+    // it could be found in phosphorus-only nucleic polymers
+    
 
     // reserved for future expansion ... lipids & carbohydrates
-    null, null, null, null, // 12 - 15
+    null, null, null,       // 13 - 15
     null, null, null, null, // 16 - 19
     null, null, null, null, // 20 - 23
     null, null, null, null, // 24 - 27
@@ -1619,34 +1637,31 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // Terminal nuclic acid
     "H5T", // 45 - 5' terminus hydrogen which replaces P + O1P + O2P
-    "O5T", // 46 - 5' terminus hydrogen which replaces P + O1P + O2P
-    // nucleic acid backbone phosphate
-    "P",   // 47 - phosphate phosphorus
-    "O1P", // 48 - first equivalent oxygen on phosphorus of phosphate
-    "O2P", // 49 - second equivalent oxygen on phosphorus of phosphate
-    
-
-    "O4'", // 50 - sugar ring 4' oxygen ... not present in +T ... maybe others
-    "O2'", // 51 - sugar 2' oxygen, unique to RNA
+    "O5T", // 46 - 5' terminus oxygen which replaces P + O1P + O2P
+    "O1P", // 47 - first equivalent oxygen on phosphorus of phosphate
+    "O2P", // 48 - second equivalent oxygen on phosphorus of phosphate
+    "O4'", // 49 - sugar ring 4' oxygen ... not present in +T ... maybe others
+    "O2'", // 50 - sugar 2' oxygen, unique to RNA
 
     // nucleic acid backbone hydrogens
     //
-    "1H5'", // 52 - first  equivalent H on sugar 5' carbon
-    "2H5'", // 53 - second  equivalent H on sugar 5' carbon 
-    "H4'",  // 54 - H on sugar ring 4' carbon
-    "H3'",  // 55 - H on sugar ring 3' carbon
-    "1H2'", // 56 - first equivalent H on sugar ring 2' carbon
-    "2H2'", // 57 - second equivalent H on sugar ring 2' carbon
-    "2HO'", // 58 - H on sugar 2' oxygen, unique to RNA 
-    "H1'",  // 59 - H on sugar ring 1' carbon 
+    "1H5'", // 51 - first  equivalent H on sugar 5' carbon
+    "2H5'", // 52 - second  equivalent H on sugar 5' carbon 
+    "H4'",  // 53 - H on sugar ring 4' carbon
+    "H3'",  // 54 - H on sugar ring 3' carbon
+    "1H2'", // 55 - first equivalent H on sugar ring 2' carbon
+    "2H2'", // 56 - second equivalent H on sugar ring 2' carbon
+    "2HO'", // 57 - H on sugar 2' oxygen, unique to RNA 
+    "H1'",  // 58 - H on sugar ring 1' carbon 
     //
-    "H3T",  // 60 - 3' terminus hydrogen
+    "H3T",  // 59 - 3' terminus hydrogen
     //
+    null,   // 60
     null,   // 61
     null,   // 62
     null,   // 63
    
-    // everything before this (not 0, but 1 - 63) is backbone
+    // everything before this (1 - 63, but not 0) is backbone
 
     // nucleic acid bases
     //
@@ -1692,18 +1707,23 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   //     so that we can store negative numbers
   ////////////////////////////////////////////////////////////////
 
+  ////////////////////////////////////////////////////////////////
+  // keep this table in order to make it easier to maintain
+  ////////////////////////////////////////////////////////////////
+
+  // atomID 0 => nothing special, just an ordinary atom
   public final static byte ATOMID_AMINO_NITROGEN  = 1;
   public final static byte ATOMID_ALPHA_CARBON    = 2;
   public final static byte ATOMID_CARBONYL_CARBON = 3;
   public final static byte ATOMID_CARBONYL_OXYGEN = 4;
   public final static byte ATOMID_O5_PRIME        = 5;
   public final static byte ATOMID_O3_PRIME        = 9;
+  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 12;
   public final static byte ATOMID_TERMINATING_OXT = 32;
   public final static byte ATOMID_H5T_TERMINUS    = 45;
   public final static byte ATOMID_O5T_TERMINUS    = 46;
-  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 47;
-  public final static byte ATOMID_RNA_O2PRIME     = 51;
-  public final static byte ATOMID_H3T_TERMINUS    = 60;
+  public final static byte ATOMID_RNA_O2PRIME     = 50;
+  public final static byte ATOMID_H3T_TERMINUS    = 59;
   public final static byte ATOMID_N1 = 64;
   public final static byte ATOMID_C2 = 65;
   public final static byte ATOMID_N3 = 66;
@@ -1731,33 +1751,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_ALPHA_ONLY_MASK = 1 << ATOMID_ALPHA_CARBON;
   // this is entries 5 through through 11 ... 7 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x7F << 5;
+  // this is for nucleic groups that only contain a phosphorus
+  public final static int ATOMID_PHOSPHORUS_ONLY_MASK =
+    1 << ATOMID_NUCLEIC_PHOSPHORUS;
 
   // this is the MAX of the backbone ... everything < MAX is backbone
   public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 32;
   public final static int ATOMID_BACKBONE_MAX = 64;
-
-  /*
-  // some pdbfiles do not have sidechain atoms labeled properly
-  // we call these MAINCHAIN_IMPOSTERS
-  // the residue will accept the first atom with the proper name
-  // others will get their atomid changed
-  public final static int ATOMID_MAINCHAIN_IMPOSTERS = 4;
-
-  public final static int ATOMID_NUCLEOTIDE_WING = 31;
-
-  public final static int ATOMID_NUCLEOTIDE_MIN = 32;
-  public final static int ATOMID_N1 = 32;
-  public final static int ATOMID_N2 = 33;
-  public final static int ATOMID_N3 = 34;
-  public final static int ATOMID_N4 = 35;
-  public final static int ATOMID_N6 = 36;
-  public final static int ATOMID_O2 = 37;
-  public final static int ATOMID_O4 = 38;
-  public final static int ATOMID_O6 = 39;
-    
-  public final static int ATOMID_NUCLEOTIDE_MAX = 40;
-
-  */
 
   ////////////////////////////////////////////////////////////////
   // GROUP_ID related stuff for special groupIDs

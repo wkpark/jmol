@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
 
-public class NucleicMonomer extends Monomer {
+public class NucleicMonomer extends PhosphorusMonomer {
 
   // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
@@ -173,10 +173,6 @@ public class NucleicMonomer extends Monomer {
 
   Point3f getAtomPoint(byte specialAtomID) {
     return getSpecialAtomPoint(interestingNucleicAtomIDs, specialAtomID);
-  }
-
-  Atom getInitiatorAtom() {
-    return getLeadAtom();
   }
 
   Atom getTerminatorAtom() {

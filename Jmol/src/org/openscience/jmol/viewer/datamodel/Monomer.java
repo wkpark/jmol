@@ -88,13 +88,10 @@ abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
-  boolean isAminoMonomer() { return false; }
-  boolean isAlphaMonomer() { return false; }
-  boolean isNucleicMonomer() { return false; }
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
-  final public boolean isProtein() { return isAlphaMonomer(); }
-  final public boolean isNucleic() { return isNucleicMonomer(); }
+  final public boolean isProtein() {return this instanceof AlphaMonomer;}
+  final public boolean isNucleic() {return this instanceof PhosphorusMonomer;}
 
   ////////////////////////////////////////////////////////////////
 
@@ -193,8 +190,13 @@ abstract class Monomer extends Group {
     return getAtomPointFromOffsetIndex(1);
   }
 
-  abstract Atom getInitiatorAtom();
-  abstract Atom getTerminatorAtom();
+  Atom getInitiatorAtom() {
+    return getLeadAtom();
+  }
+  
+  Atom getTerminatorAtom() {
+    return getLeadAtom();
+  }
 
   abstract boolean isConnectedAfter(Monomer possiblyPreviousMonomer);
 
@@ -202,6 +204,7 @@ abstract class Monomer extends Group {
    * Selects LeadAtom when this Monomer is clicked ... iff it is
    * closer to the user.
    */
-  abstract void findNearestAtomIndex(int x, int y, Closest closest,
-                                     short madBegin, short madEnd);
+  void findNearestAtomIndex(int x, int y, Closest closest,
+                            short madBegin, short madEnd) {
+  }
 }

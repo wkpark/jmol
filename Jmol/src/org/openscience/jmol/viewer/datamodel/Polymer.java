@@ -74,6 +74,11 @@ abstract class Polymer {
       //      System.out.println("a NucleicPolymer");
       return new NucleicPolymer(monomers);
     }
+    monomers = getPhosphorusMonomers(groups, firstGroupIndex);
+    if (monomers != null) {
+      //      System.out.println("an AlphaPolymer");
+      return new PhosphorusPolymer(monomers);
+    }
     System.out.println("Polymer.allocatePolymer() ... why am I here?");
     throw new NullPointerException();
   }
@@ -119,6 +124,28 @@ abstract class Polymer {
     Monomer[] monomers = new Monomer[count];
     for (int j = 0; j < count; ++j)
       monomers[j] = (AminoMonomer)groups[firstGroupIndex + j];
+    return monomers;
+  }
+
+  static Monomer[] getPhosphorusMonomers(Group[] groups, int firstGroupIndex) {
+    PhosphorusMonomer previous = null;
+    int count = 0;
+    for (int i = firstGroupIndex; i < groups.length; ++i, ++count) {
+      Group group = groups[i];
+      if (! (group instanceof PhosphorusMonomer))
+        break;
+      PhosphorusMonomer current = (PhosphorusMonomer)group;
+      if (current.polymer != null)
+        break;
+      if (! current.isConnectedAfter(previous))
+        break;
+      previous = current;
+    }
+    if (count == 0)
+      return null;
+    Monomer[] monomers = new Monomer[count];
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (PhosphorusMonomer)groups[firstGroupIndex + j];
     return monomers;
   }
 
@@ -198,15 +225,23 @@ abstract class Polymer {
     return monomers[polymerIndex].getWingAtomPoint();
   }
   
-  abstract void addSecondaryStructure(byte type,
-                                      char chainIdStart, int startSeqcode,
-                                      char chainIdEnd, int endSeqcode);
+  void addSecondaryStructure(byte type,
+                             char startChainID, int startSeqcode,
+                             char endChainID, int endSeqcode) {
+  }
 
   void calculateStructures() { }
 
-  abstract boolean isProtein();
+  /*
+  boolean isProtein() { return monomers[0].isProtein(); }
+    return false;
+  }
+  */
 
-  abstract void calcHydrogenBonds();
+  boolean isNucleic() { return monomers[0].isNucleic(); }
+
+  void calcHydrogenBonds() {
+  }
 
   Point3f[] getLeadMidpoints() {
     if (leadMidpoints == null)

@@ -58,12 +58,17 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
     return screens;
   }
 
-  boolean isNucleicPolymer;
+  boolean isNucleic;
 
   void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Ribbons.Schain strandsChain = (Ribbons.Schain)mpspolymer;
     if (strandsChain.wingVectors != null) {
-      isNucleicPolymer = strandsChain.polymer instanceof NucleicPolymer;
+      // note that we are not treating a PhosphorusPolymer
+      // as nucleic because we are not calculating the wing
+      // vector correctly.
+      // if/when we do that then this test will become
+      // isNucleic = strandsChain.polymer.isNucleic();
+      isNucleic = strandsChain.polymer instanceof NucleicPolymer;
       render1Chain(strandsChain.monomerCount,
                    strandsChain.monomers,
                    strandsChain.leadMidpoints,
@@ -81,9 +86,9 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
     Point3i[] ribbonBottomScreens;
 
     ribbonTopScreens = calcScreens(centers, vectors, mads,
-                             isNucleicPolymer ? 1f : 0.5f);
+                             isNucleic ? 1f : 0.5f);
     ribbonBottomScreens = calcScreens(centers, vectors, mads,
-                                isNucleicPolymer ? 0f : -0.5f);
+                                isNucleic ? 0f : -0.5f);
     render2Strand(monomerCount, monomers, mads, colixes,
                   ribbonTopScreens, ribbonBottomScreens);
     viewer.freeTempScreens(ribbonTopScreens);
@@ -112,7 +117,7 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
       colix = monomer.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
-    g3d.drawHermite(true, colix, isNucleicPolymer ? 4 : 7,
+    g3d.drawHermite(true, colix, isNucleic ? 4 : 7,
                     ribbonTopScreens[iPrev], ribbonTopScreens[i],
                     ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
                     ribbonBottomScreens[iPrev], ribbonBottomScreens[i],

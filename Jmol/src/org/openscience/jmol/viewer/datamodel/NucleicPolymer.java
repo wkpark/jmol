@@ -39,15 +39,6 @@ public class NucleicPolymer extends Polymer {
 
   boolean hasWingPoints() { return true; }
 
-  void addSecondaryStructure(byte type,
-                             char startChainID, int startSeqcode,
-                             char endChainID, int endSeqcode) {
-  }
-
-  public boolean isProtein() {
-    return false;
-  }
-
   public void calcHydrogenBonds() {
     for (int i = model.getPolymerCount(); --i >= 0; ) {
       Polymer otherPolymer = model.getPolymer(i);

@@ -16,6 +16,7 @@
 1NE6 - ?
 1OHG - large spiral
 1OLD - dna with something hanging off of it
+1PN8 - phosphorus-only
 233D - dna with something strange
 2CYH - ?
 3DFR - ?

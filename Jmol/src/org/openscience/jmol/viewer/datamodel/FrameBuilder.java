@@ -309,13 +309,11 @@ final public class FrameBuilder {
   void distinguishAndPropogateGroup(int groupIndex,
                                     Chain chain, String group3, int seqcode,
                                     int firstAtomIndex, int maxAtomIndex) {
-    /*
-    System.out.println("distinguish & propogate group:" +
-                       " group3:" + group3 +
-                       " seqcode:" + Group.getSeqcodeString(seqcode) +
-                       " firstAtomIndex:" + firstAtomIndex +
-                       " maxAtomIndex:" + maxAtomIndex);
-    */
+    //    System.out.println("distinguish & propogate group:" +
+    //                       " group3:" + group3 +
+    //                       " seqcode:" + Group.getSeqcodeString(seqcode) +
+    //                       " firstAtomIndex:" + firstAtomIndex +
+    //                       " maxAtomIndex:" + maxAtomIndex);
     int distinguishingBits = 0;
     // clear previous specialAtomIndexes
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )
@@ -342,8 +340,7 @@ final public class FrameBuilder {
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
                                                specialAtomIndexes, atoms);
-    } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
-               JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+    } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
       //      System.out.println("AlphaMonomer.validateAndAllocate");
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
@@ -353,8 +350,14 @@ final public class FrameBuilder {
       group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
                                                  firstAtomIndex, lastAtomIndex,
                                                  specialAtomIndexes, atoms);
+    } else if (distinguishingBits ==
+               JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
+      // System.out.println("PhosphorusMonomer.validateAndAllocate");
+      group =
+        PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
+                                              firstAtomIndex, lastAtomIndex,
+                                              specialAtomIndexes, atoms);
     }
-
     if (group == null)
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
 

@@ -76,8 +76,8 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  * @param hugeCMLString The whole of the molecule CML as a single string.
  */
     public void setModelToRenderFromCMLString(String hugeCMLString){
-        java.io.InputStream is = new java.io.StringBufferInputStream(hugeCMLString);
-        cf = loadModel(is,"CML");
+        java.io.Reader r = new java.io.StringReader(hugeCMLString);
+        cf = loadModel(r, "CML");
         modelReady = true;
         ready = areWeReady();
      }
@@ -90,8 +90,8 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
     public void setModelToRenderFromURL(java.net.URL modelURL, String type) throws IllegalStateException, java.io.IOException{
         if(modelURL != null && type != null) {
-              java.io.InputStream is = modelURL.openStream();
-              cf = loadModel(is,type);
+              java.io.Reader r = new java.io.InputStreamReader(modelURL.openStream());
+              cf = loadModel(r, type);
               modelReady = true;
               ready = areWeReady();
         }else{
@@ -443,8 +443,8 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 
     private ChemFile loadModelFromURL(String URL, String type){
        if(URL != null && type != null) {
-              java.io.InputStream is = getStreamForFile(URL);
-              return loadModel(is,type);
+              java.io.Reader r = new java.io.InputStreamReader(getStreamForFile(URL));
+              return loadModel(r, type);
        }else{
            throw new RuntimeException("Null string passed to loadModelFromURL");
        }
@@ -452,30 +452,32 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 
     private ChemFile loadModelFromFile(String file, String type) throws java.io.FileNotFoundException{
        if(file != null && type != null) {
-              java.io.InputStream is = new java.io.FileInputStream(file);
-              return loadModel(is,type);
+              java.io.Reader r = new java.io.FileReader(file);
+              return loadModel(r, type);
        }else{
            throw new RuntimeException("Null string passed to loadModelFromFile");
        }
     }
 
-    private ChemFile loadModel(java.io.InputStream myStream, String type){
+    private ChemFile loadModel(java.io.Reader myReader, String type){
           if (!typesReady){
             System.out.println("Atom properties file defaulting to 'AtomTypes' in working directory");
             setAtomPropertiesFromFile("AtomTypes");
           }
-          try {                        
+          try {
+			  ChemFileReader reader = null;
               if (type.equalsIgnoreCase("PDB")) {
-                  return new PDBFile(myStream);
+				  reader = new PDBFile(myReader);
               }else if (type.equalsIgnoreCase("CML")) {
-                  return new CMLFile(myStream); 
-//              } else if(type.equalsIgnoreCase("GAUSSIAN")){
-//                  return new GaussianFile(myStream, false);
+				  reader = new CMLFile(myReader);
               }else if(type.equalsIgnoreCase("XYZ")) {
-                  return new XYZFile(myStream);
+				  reader = new XYZFile(myReader);
+              }else if(type.equalsIgnoreCase("Gaussian98")) {
+				  reader = new Gaussian98Reader(myReader);
               } else {
                   throw new RuntimeException("Unknown file type in loadModel: "+type);
               }
+			  return reader.read();
           }catch (java.lang.Exception e){
               throw new RuntimeException("Sorry! Unhelpful Exception in loadModel: "+e);
           }

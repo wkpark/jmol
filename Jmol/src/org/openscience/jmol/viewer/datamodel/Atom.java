@@ -316,7 +316,7 @@ public class Atom implements Bspt.Tuple {
   }
   
   public String getPdbAtomName4() {
-    return atomName;
+    return atomName == null ? "" : atomName;
   }
 
   public String getGroup3() {
@@ -337,7 +337,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public boolean isAtomNameMatch(String strPattern) {
-    int cchAtomName = atomName.length();
+    int cchAtomName = atomName == null ? 0 : atomName.length();
     int cchPattern = strPattern.length();
     int ich;
     for (ich = 0; ich < cchPattern; ++ich) {
@@ -594,7 +594,7 @@ public class Atom implements Bspt.Tuple {
         strLabel += getAtomNumber();
         break;
       case 'a':
-        strLabel += atomName;
+        strLabel += getAtomName();
         break;
       case 'e':
         strLabel += JmolConstants.elementSymbols[elementNumber];
@@ -673,7 +673,7 @@ public class Atom implements Bspt.Tuple {
 
   public String getInfo() {
     StringBuffer info = new StringBuffer();
-    info.append(atomName);
+    info.append(getAtomName());
     String group3 = getGroup3();
     if (group3 != null) {
       info.append(' ');

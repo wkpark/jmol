@@ -1349,8 +1349,7 @@ final public class Graphics3D {
         pbuf[offsetPbuf] = (0xFF000000 |
                             (rScaled & 0xFF0000) |
                             (gScaled & 0xFF00) |
-                            (bScaled >> 8) & 0xFF);
-          
+                            ((bScaled >> 8) & 0xFF));
       }
       ++offsetPbuf;
       zScaled += zIncrementScaled;

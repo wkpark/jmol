@@ -384,11 +384,6 @@ class Normix3D {
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform(vertexVectors[i], tv);
-      float length = tv.length();
-      if (length > 1.01 || length < .99) {
-        System.out.println("transformed length=" + length);
-      }
-      tv.normalize();
       intensities[i] = (tv.z >= 0
                         ? Shade3D.calcIntensity(tv.x, -tv.y, tv.z)
                         : Shade3D.calcIntensity(-tv.x, tv.y, -tv.z));

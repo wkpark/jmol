@@ -565,11 +565,11 @@ function _testBrowserCheck() {
           document.writeln(" indexJava=" + indexJava +
                            " indexPlugin=" + indexPlugin);
           if (indexJava >= 0 && indexPlugin >= 0) {
-            var versionString = desc.substring(indexPlugin + 8);
-            var indexSpace = versionString.indexOf(' ');
-            if (indexSpace > 0)
-              versionString = versionString.substring(0, indexSpace);
-            document.writeln(" FOUND JAVA " + versionString);
+	    var match = desc.match(/\d\.\d+\.\d+/);
+	    if (match) {
+              versionString = match[0];
+	      document.writeln(" FOUND JAVA " + versionString);
+            }
           }
         }
       }
@@ -579,4 +579,3 @@ function _testBrowserCheck() {
   }
   document.writeln("</pre>");
 }
-                                                                                

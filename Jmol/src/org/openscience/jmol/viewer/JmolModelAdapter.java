@@ -25,7 +25,6 @@
 
 package org.openscience.jmol.viewer;
 
-import javax.vecmath.Point3d;
 import java.io.BufferedReader;
 import java.awt.Color;
 import java.util.Iterator;
@@ -248,13 +247,17 @@ public interface JmolModelAdapter {
     /**
      * The start of the line or vector
      */
-    public abstract Point3d getPoint1();
+    public abstract float getPoint1X();
+    public abstract float getPoint1Y();
+    public abstract float getPoint1Z();
     /**
      * The end of the line or vector. Note that a 'vector' is not really a 'vector'.
      * It is just a line with an arrowhead. Therefore, Point2 is an absolute
      * position in 3d space
      */
-    public abstract Point3d getPoint2();
+    public abstract float getPoint2X();
+    public abstract float getPoint2Y();
+    public abstract float getPoint2Z();
   }
   
   /**
@@ -318,7 +321,7 @@ public interface JmolModelAdapter {
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
    * @see #vanderwaalsRadii
    */
-  public double getVanderwaalsRadius(Object clientAtom);
+  public float getVanderwaalsRadius(Object clientAtom);
 
   /**
    * The covalentRadius is used for automatically calculating bonds between
@@ -331,13 +334,16 @@ public interface JmolModelAdapter {
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
    * @see #covalentRadii
    */
-  public double getCovalentRadius(Object clientAtom);
+  public float getCovalentRadius(Object clientAtom);
 
   /**
-   * Returns the coordinates of the atom in javax.vecmath.Point3d format.
+   * Returns the coordinates of the atom.
    * Coordinates are absolute values in Angstroms.
    */
-  public Point3d getPoint3d(Object clientAtom);
+  public float getAtomX(Object clientAtom);
+  public float getAtomY(Object clientAtom);
+  public float getAtomZ(Object clientAtom);
+
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then individual
    * PDB records for individual <code>clientAtom</code>s are returned here.

@@ -65,7 +65,9 @@ public class AtomShape implements Bspt.Tuple {
         pprop = new ProteinProp(pdbRecord);
     }
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
-    this.point3d = viewer.getPoint3d(clientAtom);
+    this.point3d = new Point3d(viewer.getAtomX(clientAtom),
+			       viewer.getAtomY(clientAtom),
+			       viewer.getAtomZ(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 

@@ -1316,10 +1316,10 @@ public class Eval implements Runnable {
     long timeBegin = System.currentTimeMillis();
     int timePerStep = 1000 / fps;
     int totalSteps = fps * secondsTotal;
-    double radiansPerDegreePerStep = Math.PI / 180 / totalSteps;
-    double radiansXStep = radiansPerDegreePerStep * dRotX;
-    double radiansYStep = radiansPerDegreePerStep * dRotY;
-    double radiansZStep = radiansPerDegreePerStep * dRotZ;
+    float radiansPerDegreePerStep = (float)Math.PI / 180 / totalSteps;
+    float radiansXStep = radiansPerDegreePerStep * dRotX;
+    float radiansYStep = radiansPerDegreePerStep * dRotY;
+    float radiansZStep = radiansPerDegreePerStep * dRotZ;
     viewer.setInMotion(true);
     if (totalSteps == 0)
       totalSteps = 1; // to catch a zero secondsTotal parameter

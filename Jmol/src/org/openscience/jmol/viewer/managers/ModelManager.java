@@ -276,9 +276,9 @@ public class ModelManager {
     return getAtomicSymbol(atomicNumber, clientAtom);
   }
 
-  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
+  public float getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
     if (suppliesVanderwaalsRadius) {
-      double vanderwaalsRadius = jmolModelAdapter.getVanderwaalsRadius(clientAtom);
+      float vanderwaalsRadius = jmolModelAdapter.getVanderwaalsRadius(clientAtom);
       if (vanderwaalsRadius > 0)
         return vanderwaalsRadius;
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
@@ -287,19 +287,15 @@ public class ModelManager {
     return JmolModelAdapter.vanderwaalsRadii[atomicNumber];
   }
 
-  public double getCovalentRadius(int atomicNumber, Object clientAtom) {
+  public float getCovalentRadius(int atomicNumber, Object clientAtom) {
     if (suppliesCovalentRadius) {
-      double covalentRadius = jmolModelAdapter.getCovalentRadius(clientAtom);
+      float covalentRadius = jmolModelAdapter.getCovalentRadius(clientAtom);
       if (covalentRadius > 0)
         return covalentRadius;
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
                          covalentRadius);
     }
     return JmolModelAdapter.covalentRadii[atomicNumber];
-  }
-
-  public Point3d getPoint3d(Object clientAtom) {
-    return jmolModelAdapter.getPoint3d(clientAtom);
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

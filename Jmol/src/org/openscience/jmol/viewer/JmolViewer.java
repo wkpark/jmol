@@ -195,15 +195,15 @@ final public class JmolViewer {
     refresh();
   }
 
-  public void rotateToX(double angleRadians) {
+  public void rotateToX(float angleRadians) {
     transformManager.rotateToX(angleRadians);
     refresh();
   }
-  public void rotateToY(double angleRadians) {
+  public void rotateToY(float angleRadians) {
     transformManager.rotateToY(angleRadians);
     refresh();
   }
-  public void rotateToZ(double angleRadians) {
+  public void rotateToZ(float angleRadians) {
     transformManager.rotateToZ(angleRadians);
     refresh();
   }
@@ -218,15 +218,15 @@ final public class JmolViewer {
     rotateToZ(toRadians(angleDegrees));
   }
 
-  public void rotateByX(double angleRadians) {
+  public void rotateByX(float angleRadians) {
     transformManager.rotateByX(angleRadians);
     refresh();
   }
-  public void rotateByY(double angleRadians) {
+  public void rotateByY(float angleRadians) {
     transformManager.rotateByY(angleRadians);
     refresh();
   }
-  public void rotateByZ(double angleRadians) {
+  public void rotateByZ(float angleRadians) {
     transformManager.rotateByZ(angleRadians);
     refresh();
   }
@@ -240,8 +240,8 @@ final public class JmolViewer {
     rotateByZ(toRadians(angleDegrees));
   }
 
-  public static double toRadians(int degrees) {
-    return degrees / 360.0 * 2 * Math.PI;
+  public static float toRadians(int degrees) {
+    return degrees / (360 * 2 * (float)Math.PI);
   }
 
   public void rotate(AxisAngle4d axisAngle) {
@@ -829,8 +829,18 @@ final public class JmolViewer {
     return modelManager.getBondCount();
   }
 
-  public Point3d getPoint3d(int atomIndex) {
-    return modelManager.getPoint3d(atomIndex);
+    public Point3d getPoint3d(int atomIndex) {
+	return modelManager.getPoint3d(atomIndex);
+    }
+
+  public float getAtomX(Object clientAtom) {
+      return jmolModelAdapter.getAtomX(clientAtom);
+  }
+  public float getAtomY(Object clientAtom) {
+      return jmolModelAdapter.getAtomY(clientAtom);
+  }
+  public float getAtomZ(Object clientAtom) {
+      return jmolModelAdapter.getAtomZ(clientAtom);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -1605,16 +1615,12 @@ final public class JmolViewer {
     return modelManager.getAtomTypeName(atomicNumber, clientAtom);
   }
 
-  public double getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
+  public float getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
     return modelManager.getVanderwaalsRadius(atomicNumber, clientAtom);
   }
 
-  public double getCovalentRadius(int atomicNumber, Object clientAtom) {
+  public float getCovalentRadius(int atomicNumber, Object clientAtom) {
     return modelManager.getCovalentRadius(atomicNumber, clientAtom);
-  }
-
-  public Point3d getPoint3d(Object clientAtom) {
-    return modelManager.getPoint3d(clientAtom);
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

@@ -695,11 +695,11 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   public void rotate(int axis, double angle) {
     if (axis == X_AXIS) {
-      viewer.rotateToX(Math.toRadians(angle));
+      viewer.rotateToX((float)Math.toRadians(angle));
     } else if (axis == Y_AXIS) {
-      viewer.rotateToY(Math.toRadians(angle));
+      viewer.rotateToY((float)Math.toRadians(angle));
     } else if (axis == Z_AXIS) {
-      viewer.rotateToZ(Math.toRadians(angle));
+      viewer.rotateToZ((float)Math.toRadians(angle));
     }
   }
 }

@@ -30,8 +30,8 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
 
 import java.awt.Color;
-import javax.vecmath.Point3d;
 import java.io.BufferedReader;
+import javax.vecmath.Point3d;
 
 // client-specific imports
 import org.openscience.jmol.ChemFrame;
@@ -231,12 +231,26 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
       point2.scaleAdd(2, point1);
       atom = null;
     }
-    public Point3d getPoint1() {
-      return point1;
-    }
-    public Point3d getPoint2() {
-      return point2;
-    }
+      public float getPoint1X() {
+	  return (float)point1.x;
+      }
+      public float getPoint1Y() {
+	  return (float)point1.y;
+      }
+      public float getPoint1Z() {
+	  return (float)point1.z;
+      }
+      
+      public float getPoint2X() {
+	  return (float)point2.x;
+      }
+      public float getPoint2Y() {
+	  return (float)point2.y;
+      }
+      public float getPoint2Z() {
+	  return (float)point2.z;
+      }
+      
   }
 
 
@@ -263,11 +277,23 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
       point1 = (Point3d)boxEdges.elementAt(ibox++);
       point2 = (Point3d)boxEdges.elementAt(ibox++);
     }
-    public Point3d getPoint1() {
-      return point1;
+    public float getPoint1X() {
+      return (float)point1.x;
     }
-    public Point3d getPoint2() {
-      return point2;
+    public float getPoint1Y() {
+      return (float)point1.y;
+    }
+    public float getPoint1Z() {
+      return (float)point1.z;
+    }
+    public float getPoint2X() {
+      return (float)point2.x;
+    }
+    public float getPoint2Y() {
+      return (float)point2.y;
+    }
+    public float getPoint2Z() {
+      return (float)point2.z;
     }
   }
 
@@ -288,16 +314,24 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public double getVanderwaalsRadius(Object clientAtom) {
-    return ((Atom)clientAtom).getVanderwaalsRadius();
+  public float getVanderwaalsRadius(Object clientAtom) {
+    return (float)((Atom)clientAtom).getVanderwaalsRadius();
   }
 
-  public double getCovalentRadius(Object clientAtom) {
-    return ((Atom)clientAtom).getCovalentRadius();
+  public float getCovalentRadius(Object clientAtom) {
+    return (float)((Atom)clientAtom).getCovalentRadius();
   }
 
-  public Point3d getPoint3d(Object clientAtom) {
-    return ((Atom)clientAtom).getPoint3D();
+  public float getAtomX(Object clientAtom) {
+    return (float)((Atom)clientAtom).getPoint3D().x;
+  }
+
+  public float getAtomY(Object clientAtom) {
+    return (float)((Atom)clientAtom).getPoint3D().y;
+  }
+
+  public float getAtomZ(Object clientAtom) {
+    return (float)((Atom)clientAtom).getPoint3D().z;
   }
 
   public String getPdbAtomRecord(Object clientAtom){

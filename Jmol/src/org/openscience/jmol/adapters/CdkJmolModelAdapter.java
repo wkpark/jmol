@@ -266,16 +266,22 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public double getVanderwaalsRadius(Object clientAtom) {
-    return ((Atom)clientAtom).getVanderwaalsRadius();
+  public float getVanderwaalsRadius(Object clientAtom) {
+    return (float)((Atom)clientAtom).getVanderwaalsRadius();
   }
 
-  public double getCovalentRadius(Object clientAtom) {
-    return ((Atom)clientAtom).getCovalentRadius();
+  public float getCovalentRadius(Object clientAtom) {
+    return (float)((Atom)clientAtom).getCovalentRadius();
   }
 
-  public Point3d getPoint3d(Object clientAtom) {
-    return ((Atom)clientAtom).getPoint3D();
+  public float getAtomX(Object clientAtom) {
+    return (float)((Atom)clientAtom).getX3D();
+  }
+  public float getAtomY(Object clientAtom) {
+    return (float)((Atom)clientAtom).getY3D();
+  }
+  public float getAtomZ(Object clientAtom) {
+    return (float)((Atom)clientAtom).getZ3D();
   }
 
   public String getPdbAtomRecord(Object clientAtom){

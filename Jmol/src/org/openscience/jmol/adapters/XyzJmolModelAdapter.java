@@ -30,7 +30,6 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
 
 import java.awt.Color;
-import javax.vecmath.Point3d;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
@@ -142,17 +141,26 @@ public class XyzJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
-  public double getVanderwaalsRadius(Object clientAtom) {
+  public float getVanderwaalsRadius(Object clientAtom) {
     return 0;
   }
 
-  public double getCovalentRadius(Object clientAtom) {
+  public float getCovalentRadius(Object clientAtom) {
     return 0;
   }
 
-  public Point3d getPoint3d(Object clientAtom) {
-    return ((XyzAtom)clientAtom).point3d;
+  public float getAtomX(Object clientAtom) {
+      return ((XyzAtom)clientAtom).x;
   }
+
+  public float getAtomY(Object clientAtom) {
+      return ((XyzAtom)clientAtom).y;
+  }
+
+  public float getAtomZ(Object clientAtom) {
+      return ((XyzAtom)clientAtom).z;
+  }
+
 
   public String getPdbAtomRecord(Object clientAtom){
     return null;
@@ -163,12 +171,14 @@ public class XyzJmolModelAdapter implements JmolModelAdapter {
   }
 
   class XyzAtom {
-    String atomicSymbol;
-    Point3d point3d;
-    XyzAtom(String atomicSymbol, double x, double y, double z) {
-      this.atomicSymbol = atomicSymbol;
-      point3d = new Point3d(x, y, z);
-    }
+      String atomicSymbol;
+      float x, y, z;
+      XyzAtom(String atomicSymbol, float x, float y, float z) {
+	  this.atomicSymbol = atomicSymbol;
+	  this.x = x;
+	  this.y = y;
+	  this.z = z;
+      }
   }
 
   class Xyz {
@@ -208,9 +218,9 @@ public class XyzJmolModelAdapter implements JmolModelAdapter {
       for (int i = 0; i < atomCount; ++i) {
         StringTokenizer tokenizer = new StringTokenizer(reader.readLine(), "\t ");
         String atomicSymbol = tokenizer.nextToken();
-        double x = Double.valueOf(tokenizer.nextToken()).doubleValue();
-        double y = Double.valueOf(tokenizer.nextToken()).doubleValue();
-        double z = Double.valueOf(tokenizer.nextToken()).doubleValue();
+        float x = Float.valueOf(tokenizer.nextToken()).floatValue();
+        float y = Float.valueOf(tokenizer.nextToken()).floatValue();
+        float z = Float.valueOf(tokenizer.nextToken()).floatValue();
         atoms[i] = new XyzAtom(atomicSymbol, x, y, z);
       }
     }

@@ -83,8 +83,13 @@ public class JmolFrameBuilder {
       if (iterVector != null)
         while (iterVector.hasNext()) {
           iterVector.moveNext();
-          frame.addLineShape(new ArrowLineShape(iterVector.getPoint1(),
-                                                iterVector.getPoint2()));
+	  Point3d point1 = new Point3d(iterVector.getPoint1X(),
+				       iterVector.getPoint1Y(),
+				       iterVector.getPoint1Z());
+	  Point3d point2 = new Point3d(iterVector.getPoint2X(),
+				       iterVector.getPoint2Y(),
+				       iterVector.getPoint2Z());
+          frame.addLineShape(new ArrowLineShape(point1, point2));
         }
     }
 
@@ -94,12 +99,17 @@ public class JmolFrameBuilder {
       if (iterCell != null)
         for (int i = 0; iterCell.hasNext(); ++i) {
           iterCell.moveNext();
+	  Point3d point1 = new Point3d(iterCell.getPoint1X(),
+				       iterCell.getPoint1Y(),
+				       iterCell.getPoint1Z());
+	  Point3d point2 = new Point3d(iterCell.getPoint2X(),
+				       iterCell.getPoint2Y(),
+				       iterCell.getPoint2Z());
           LineShape line;
           if (i < 3)
-            line = new ArrowLineShape(iterCell.getPoint1(),
-                                      iterCell.getPoint2());
+	      line = new ArrowLineShape(point1, point2);
           else
-            line = new LineShape(iterCell.getPoint1(), iterCell.getPoint2());
+	      line = new LineShape(point1, point2);
           frame.addCrystalCellLine(line);
         }
     }

@@ -87,8 +87,6 @@ public class Balls extends Shape {
         championIndex = i;
       }
     }
-    closest.atomIndex = championIndex;
-    if (championIndex >= 0)
-      closest.z = frame.atoms[championIndex].getScreenZ();
+    closest.atom = champion;
   }
 }

@@ -403,16 +403,18 @@ final public class Frame {
   final Closest closest = new Closest();
 
   public int findNearestAtomIndex(int x, int y) {
-    closest.atomIndex = -1;
+    closest.atom = null;
     for (int i = 0; i < shapes.length; ++i) {
       Shape shape = shapes[i];
       if (shape != null) {
         shapes[i].findNearestAtomIndex(x, y, closest);
-        if (closest.atomIndex >= 0)
+        if (closest.atom != null)
           break;
       }
     }
-    return closest.atomIndex;
+    int closestIndex = (closest.atom == null ? -1 : closest.atom.atomIndex);
+    closest.atom = null;
+    return closestIndex;
   }
 
   // jvm < 1.4 does not have a BitSet.clear();

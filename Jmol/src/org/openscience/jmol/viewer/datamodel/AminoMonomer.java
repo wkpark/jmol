@@ -72,6 +72,10 @@ public class AminoMonomer extends AlphaMonomer {
     return getAtomPointFromOffsetIndex(2);
   }
 
+  Atom getCarbonylCarbonAtom() {
+    return getAtomFromOffsetIndex(3);
+  }
+
   Point3f getCarbonylCarbonAtomPoint() {
     return getAtomPointFromOffsetIndex(3);
   }
@@ -97,7 +101,11 @@ public class AminoMonomer extends AlphaMonomer {
   ////////////////////////////////////////////////////////////////
 
   void findNearestAtomIndex(int x, int y, Closest closest) {
-    System.out.println("Amino.findNearestAtomIndex(...)");
+    Atom competitor = closest.atom;
+    Atom alpha = getLeadAtom();
+    if (alpha.isCursorOnTop(x, y, 8, competitor) ||
+        getNitrogenAtom().isCursorOnTop(x, y, 8, competitor) ||
+        getCarbonylCarbonAtom().isCursorOnTop(x, y, 8, competitor))
+      closest.atom = alpha;
   }
-
 }

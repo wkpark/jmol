@@ -36,6 +36,9 @@ public class AppletWrapper extends Applet {
   int preloadThreadCount;
   String[] preloadClassNames;
 
+  int preloadClassIndex;
+  String previousClassName;
+
   WrappedApplet wrappedApplet;
   int percentage;
   long startTime;
@@ -52,9 +55,10 @@ public class AppletWrapper extends Applet {
   }
 
   public void init() {
-    
     startTime = System.currentTimeMillis();
-    new Thread(new WrappedAppletLoader(this, wrappedAppletClassName)).start();
+    new WrappedAppletLoader(this, wrappedAppletClassName).start();
+    for (int i = preloadThreadCount; --i >= 0; )
+      new ClassPreloader(this).start();
   }
   
   public void update(Graphics g) {
@@ -77,7 +81,10 @@ public class AppletWrapper extends Applet {
   }
 
   public void paint(Graphics g) {
-    //    System.out.println("paint called");
+    if (wrappedApplet != null) {
+      wrappedApplet.paint(g);
+      return;
+    }
     update(g);
   }
 
@@ -102,6 +109,19 @@ public class AppletWrapper extends Applet {
   public void loadInline(String strModel) {
     if (wrappedApplet != null)
       wrappedApplet.loadInline(strModel);
+  }
+
+  synchronized String getNextPreloadClassName() {
+    if (preloadClassNames == null ||
+        preloadClassIndex == preloadClassNames.length)
+      return null;
+    String className = preloadClassNames[preloadClassIndex++];
+    if (className.charAt(0) == '.') {
+      int lastDot = previousClassName.lastIndexOf('.');
+      String previousPackageName = previousClassName.substring(0, lastDot);
+      className = previousPackageName + className;
+    }
+    return previousClassName = className;
   }
 }
 

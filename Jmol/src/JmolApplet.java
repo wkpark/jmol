@@ -34,11 +34,20 @@
 public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
 
   public JmolApplet() {
-    super("org.jmol.applet.Jmol", 4, preloadClasses);
+    super("org.jmol.applet.Jmol", 3, preloadClasses);
   }
 
   private final static String[] preloadClasses = {
-    "javax.vecmath.Point3f",
-  };
+    "javax.vecmath.Point3f+",
+    ".Vector3f+", ".Matrix3f+", ".Point3i+",
 
+    "org.jmol.g3d.Graphics3D",
+    ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix", ".Shade3D",
+
+    "org.jmol.adapter.smarter.SmarterJmolAdapter",
+    ".Atom", ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader",
+    ".Resolver",
+
+    "org.openscience.jmol.ui.JmolPopup",
+  };
 }

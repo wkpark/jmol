@@ -25,7 +25,7 @@
 
 package org.jmol.appletwrapper;
 
-class WrappedAppletLoader implements Runnable {
+class WrappedAppletLoader extends Thread {
     
   AppletWrapper appletWrapper;
   String wrappedAppletClassName;

@@ -33,6 +33,7 @@ public interface WrappedApplet {
   public void init();
   public String getAppletInfo();
   public void update(Graphics g);
+  public void paint(Graphics g);
   public boolean handleEvent(Event e);
 
   public void scriptButton(JSObject buttonWindow, String buttonName,

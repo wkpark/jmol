@@ -65,9 +65,8 @@ public class DisplayPanel extends JPanel
 
   private static Dimension dimCurrent = null;
   ChemFile cf;
-  ChemFrame md;
-  private float xfac, xmin, xmax, ymin, ymax, zmin, zmax;
-  private float scalefudge = 1;
+  ChemFrame chemframe;
+  private float xfac;
   public static final int ROTATE = 0;
   public static final int ZOOM = 1;
   public static final int XLATE = 2;
@@ -75,15 +74,15 @@ public class DisplayPanel extends JPanel
   public static final int DEFORM = 4;
   public static final int MEASURE = 5;
   public static final int DELETE = 6;
-  private int mode = ROTATE;
+  private int modeMouse = ROTATE;
   private static Color backgroundColor = null;
-  StatusBar status;
+  private StatusBar status;
 
   private boolean antialiasCapable = false;
   //Added T.GREY for moveDraw support- should be true while mouse is dragged
   private boolean mouseDragged = false;
   private boolean wireFrameRotation = false;
-  private Measure m = null;
+  private Measure measure = null;
   private MeasurementList mlist = null;
   protected DisplaySettings settings;
 
@@ -96,15 +95,15 @@ public class DisplayPanel extends JPanel
   }
 
   public int getMode() {
-    return mode;
+    return modeMouse;
   }
 
-  public void setMode(int mode) {
-    this.mode = mode;
+  public void setMode(int modeMouse) {
+    this.modeMouse = modeMouse;
   }
 
-  public void setMeasure(Measure m) {
-    this.m = m;
+  public void setMeasure(Measure measure) {
+    this.measure = measure;
   }
 
   public void start() {
@@ -120,16 +119,12 @@ public class DisplayPanel extends JPanel
     this.cf = cf;
     haveFile = true;
     nframes = cf.getNumberOfFrames();
-    this.md = cf.getFrame(0);
-    Measurement.setChemFrame(md);
+    this.chemframe = cf.getFrame(0);
+    Measurement.setChemFrame(chemframe);
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
-    // transform matrices must be initialized to identity
-    amat.setIdentity();
-    tmat.setIdentity();
-    zmat.setIdentity();
-    init();
+    homePosition();
   }
 
   /**
@@ -166,17 +161,20 @@ public class DisplayPanel extends JPanel
   public Matrix4d getViewTransformMatrix() {
     Matrix4d viewMatrix = new Matrix4d();
     viewMatrix.setIdentity();
-    Matrix4d matrix = new Matrix4d();
-    matrix.setTranslation(new Vector3d(-(xmin + xmax) / 2,
-        -(ymin + ymax) / 2, -(zmin + zmax) / 2));
-    viewMatrix.add(matrix);
+    Matrix4d matrix = new Matrix4d(); // initialized to zero
+    // first, translate the coordinates back to the center
+    matrix.setTranslation(new Vector3d(chemframe.getCenter()));
+    viewMatrix.sub(matrix);
+    // now, multiply by angular rotations
     viewMatrix.mul(amat, viewMatrix);
+
     matrix.setIdentity();
     matrix.setElement(0, 0, xfac);
     matrix.setElement(1, 1, -xfac);
     matrix.setElement(2, 2, xfac);
     viewMatrix.mul(matrix, viewMatrix);
     viewMatrix.mul(tmat, viewMatrix);
+    // I don't think this goes here
     viewMatrix.mul(zmat, viewMatrix);
     matrix.setZero();
     matrix.setTranslation(new Vector3d(dimCurrent.width / 2,
@@ -185,37 +183,28 @@ public class DisplayPanel extends JPanel
     return viewMatrix;
   }
 
-  public void init() {
+  public void homePosition() {
+    amat.setIdentity();
+    tmat.setIdentity();
+    zmat.setIdentity();
+    int minScreen = dimCurrent.width;
+    if (dimCurrent.height < minScreen)
+      minScreen = dimCurrent.height;
+    // ensure that rotations don't leave some atoms off the screen
+    // note that this radius is to furthest outside edge of an atom
+    // given the current VDW radius setting. 
+    // leave a very small margin - only 1 on top and 1 on bottom
+    if (minScreen > 2)
+      minScreen -= 2;
+    xfac = minScreen / 2 / chemframe.getRadius();
 
-    if (mlist != null) {
-      mlistChanged(new MeasurementListEvent(mlist));
-    }
-    xmin = md.getXMin();
-    xmax = md.getXMax();
-    ymin = md.getYMin();
-    ymax = md.getYMax();
-    zmin = md.getZMin();
-    zmax = md.getZMax();
-    float xw = xmax - xmin;
-    float yw = ymax - ymin;
-    float zw = zmax - zmin;
-    if (yw > xw) {
-      xw = yw;
-    }
-    if (zw > xw) {
-      xw = zw;
-    }
-    float f1 = dimCurrent.width / xw;
-    float f2 = dimCurrent.height / xw;
-    if (f1 < f2) {
-      xfac = f1;
-    } else {
-      xfac = f2;
-    }
-    xfac *= 0.7f * scalefudge;
     settings.setAtomScreenScale(xfac);
     settings.setBondScreenScale(xfac);
     settings.setVectorScreenScale(xfac);
+    if ((modeMouse == ZOOM) || (modeMouse == XLATE)) {
+      Jmol.setRotateButton();
+      modeMouse = ROTATE;
+    }
   }
 
   public void setFrame(int fr) {
@@ -229,8 +218,7 @@ public class DisplayPanel extends JPanel
   }
 
   private void setFrame(ChemFrame frame) {
-
-    md = frame;
+    chemframe = frame;
     Measurement.setChemFrame(frame);
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
@@ -239,14 +227,15 @@ public class DisplayPanel extends JPanel
   }
 
   public ChemFrame getFrame() {
-    return md;
+    return chemframe;
   }
 
   public void mlistChanged(MeasurementListEvent mle) {
     MeasurementList source = (MeasurementList) mle.getSource();
     mlist = source;
-    md.updateMlists(mlist.getDistanceList(), mlist.getAngleList(),
-        mlist.getDihedralList());
+    chemframe.updateMlists(mlist.getDistanceList(),
+                           mlist.getAngleList(),
+                           mlist.getDihedralList());
   }
 
   class MyAdapter extends MouseAdapter {
@@ -256,7 +245,7 @@ public class DisplayPanel extends JPanel
       prevx = e.getX();
       prevy = e.getY();
 
-      if (mode == PICK) {
+      if (modeMouse == PICK) {
         rubberbandSelectionMode = true;
         bx = e.getX();
         rright = bx;
@@ -271,10 +260,10 @@ public class DisplayPanel extends JPanel
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        Atom atom = md.getNearestAtom(e.getX(), e.getY(),
+        Atom atom = chemframe.getNearestAtom(e.getX(), e.getY(),
             getViewTransformMatrix());
         if (atom != null) {
-          if (mode == PICK) {
+          if (modeMouse == PICK) {
             if (e.isShiftDown()) {
               settings.addPickedAtom(atom);
             } else {
@@ -282,12 +271,12 @@ public class DisplayPanel extends JPanel
               settings.addPickedAtom(atom);
             }
             repaint();
-          } else if (mode == DELETE) {
-            md.deleteAtom(atom);
+          } else if (modeMouse == DELETE) {
+            chemframe.deleteAtom(atom);
             repaint();
             status.setStatus(2, "Atom deleted");
-          } else if (mode == MEASURE) {
-            m.firePicked(atom.getAtomNumber());
+          } else if (modeMouse == MEASURE) {
+            measure.firePicked(atom.getAtomNumber());
           }
         }
       }
@@ -301,7 +290,7 @@ public class DisplayPanel extends JPanel
         mouseDragged = false;
         repaint();
       }
-      if (mode == PICK) {
+      if (modeMouse == PICK) {
         rubberbandSelectionMode = false;
         repaint();
       }
@@ -320,7 +309,7 @@ public class DisplayPanel extends JPanel
       if (wireFrameRotation) {
         settings.setFastRendering(true);
       }
-      if (mode == ROTATE) {
+      if (modeMouse == ROTATE) {
         double xtheta = (y - prevy) * (2.0 * Math.PI / dimCurrent.width);
         double ytheta = (x - prevx) * (2.0 * Math.PI / dimCurrent.height);
         Matrix4d matrix = new Matrix4d();
@@ -330,7 +319,7 @@ public class DisplayPanel extends JPanel
         amat.mul(matrix, amat);
       }
 
-      if (mode == XLATE) {
+      if (modeMouse == XLATE) {
         float dx = (x - prevx);
         float dy = (y - prevy);
         Matrix4d matrix = new Matrix4d();
@@ -338,7 +327,7 @@ public class DisplayPanel extends JPanel
         tmat.add(matrix);
       }
 
-      if (mode == ZOOM) {
+      if (modeMouse == ZOOM) {
         float xs = 1.0f + (float) (x - prevx) / (float) dimCurrent.width;
         float ys = 1.0f + (float) (prevy - y) / (float) dimCurrent.height;
         float s = (xs + ys) / 2.0f;
@@ -354,7 +343,7 @@ public class DisplayPanel extends JPanel
         settings.setVectorScreenScale(xfac);
       }
 
-      if (mode == PICK) {
+      if (modeMouse == PICK) {
         if (x < bx) {
           rleft = x;
           rright = bx;
@@ -370,8 +359,9 @@ public class DisplayPanel extends JPanel
           rbottom = y;
         }
         if (haveFile) {
-          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright,
-              rbottom, getViewTransformMatrix());
+          Atom[] selectedAtoms =
+            chemframe.findAtomsInRegion(rleft, rtop, rright, rbottom,
+                                        getViewTransformMatrix());
           if (e.isShiftDown()) {
             settings.addPickedAtoms(selectedAtoms);
           } else {
@@ -388,8 +378,8 @@ public class DisplayPanel extends JPanel
   }
 
   public void rebond() throws Exception {
-    if (md != null) {
-      md.rebond();
+    if (chemframe != null) {
+      chemframe.rebond();
     }
   }
 
@@ -420,7 +410,7 @@ public class DisplayPanel extends JPanel
 
     g2d.setColor(bg);
     g2d.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
-    if (md != null) {
+    if (chemframe != null) {
       if (antialiasCapable && settings.isAntiAliased() && !mouseDragged) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
@@ -433,8 +423,8 @@ public class DisplayPanel extends JPanel
       Matrix4d matrix = getViewTransformMatrix();
       settings.setAtomZOffset(dimCurrent.width / 2);
 
-      frameRenderer.paint(g2d, md, settings, matrix);
-      measureRenderer.paint(g2d, md, settings);
+      frameRenderer.paint(g2d, chemframe, settings, matrix);
+      measureRenderer.paint(g2d, chemframe, settings);
       if (rubberbandSelectionMode) {
         g2d.setColor(fg);
         g2d.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
@@ -555,7 +545,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (haveFile) {
-        settings.addPickedAtoms(md.getAtoms());
+        settings.addPickedAtoms(chemframe.getAtoms());
         repaint();
       }
     }
@@ -702,12 +692,10 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      // switch mode;
-      if (m.isShowing()) {
-        mode = MEASURE;
+      if (measure.isShowing()) {
+        modeMouse = MEASURE;
       } else {
-        mode = PICK;
+        modeMouse = PICK;
       }
       status.setStatus(1, "Select Atoms");
     }
@@ -721,9 +709,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      // switch mode;
-      mode = DELETE;
+      modeMouse = DELETE;
       status.setStatus(1, "Delete Atoms");
     }
   }
@@ -736,9 +722,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      // switch mode;
-      mode = ROTATE;
+      modeMouse = ROTATE;
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -751,9 +735,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      // switch mode;
-      mode = ZOOM;
+      modeMouse = ZOOM;
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -766,9 +748,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      // switch mode;
-      mode = XLATE;
+      modeMouse = XLATE;
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -898,38 +878,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      amat.setIdentity();
-      tmat.setIdentity();
-      zmat.setIdentity();
-      if (md != null) {
-        xmin = md.getXMin();
-        xmax = md.getXMax();
-        ymin = md.getYMin();
-        ymax = md.getYMax();
-        zmin = md.getZMin();
-        zmax = md.getZMax();
-        float xw = xmax - xmin;
-        float yw = ymax - ymin;
-        float zw = zmax - zmin;
-        if (yw > xw) {
-          xw = yw;
-        }
-        if (zw > xw) {
-          xw = zw;
-        }
-        float f1 = dimCurrent.width / xw;
-        float f2 = dimCurrent.height / xw;
-        if (f1 < f2) {
-          xfac = f1;
-        } else {
-          xfac = f2;
-        }
-        xfac *= 0.7f * scalefudge;
-        settings.setAtomScreenScale(xfac);
-        settings.setBondScreenScale(xfac);
-        settings.setVectorScreenScale(xfac);
-      }
+      homePosition();
       repaint();
     }
   }

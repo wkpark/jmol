@@ -83,6 +83,8 @@ public class ChemFrame implements Transformable {
 
   private Point3f min;
   private Point3f max;
+  private Point3f center;
+  private float radius;
 
   static void setBondFudge(float bf) {
     bondFudge = bf;
@@ -258,19 +260,6 @@ public class ChemFrame implements Transformable {
   /**
    * Deletes an Atom from the frame
    */
-  public void deleteAtom(int atomID) {
-    clearBounds();
-    for (int i = atomID; i < numberAtoms -1; i++) {
-      atoms[i] = atoms[i + 1];
-    }
-    atoms[numberAtoms - 1] = null;
-    numberAtoms--;
-    rebond();
-  }
-
-  /**
-   * Deletes an Atom from the frame
-   */
   public void deleteAtom(Atom a) {
     clearBounds();
     // deteremine atomID
@@ -298,45 +287,43 @@ public class ChemFrame implements Transformable {
     return numberAtoms;
   }
 
+  public float getRadius() {
+    findBounds();
+    return radius;
+  }
+
+  public Point3f getCenter() {
+    findBounds();
+    return center;
+  }
+
   public float getXMin() {
-    if (min == null) {
-      findBounds();
-    }
+    findBounds();
     return min.x;
   }
 
   public float getXMax() {
-    if (max == null) {
-      findBounds();
-    }
+    findBounds();
     return max.x;
   }
 
   public float getYMin() {
-    if (min == null) {
-      findBounds();
-    }
+    findBounds();
     return min.y;
   }
 
   public float getYMax() {
-    if (max == null) {
-      findBounds();
-    }
+    findBounds();
     return max.y;
   }
 
   public float getZMin() {
-    if (min == null) {
-      findBounds();
-    }
+    findBounds();
     return min.z;
   }
 
   public float getZMax() {
-    if (max == null) {
-      findBounds();
-    }
+    findBounds();
     return max.z;
   }
 
@@ -455,36 +442,21 @@ public class ChemFrame implements Transformable {
     return smallest;
   }
 
-  public Point3f getMinimumBounds() {
-    if (min == null) {
-      findBounds();
-    }
-    return new Point3f(min);
-  }
-
-  public Point3f getMaximumBounds() {
-    if (max == null) {
-      findBounds();
-    }
-    return new Point3f(max);
-  }
-
   /**
    * Clears the bounds cache for this model.
    */
   private void clearBounds() {
     min = null;
     max = null;
+    radius = 0.0f;
   }
 
   /**
    * Find the bounds of this model.
    */
   private void findBounds() {
-
-    if ((atoms == null) || (numberAtoms <= 0)) {
+    if ((max != null) || (atoms == null) || (numberAtoms <= 0))
       return;
-    }
 
     min = new Point3f(atoms[0].getPosition());
     max = new Point3f(min);
@@ -510,6 +482,19 @@ public class ChemFrame implements Transformable {
       if (z > max.z) {
         max.z = z;
       }
+    }
+    center = new Point3f((min.x + max.x) / 2,
+                         (min.y + max.y) / 2,
+                         (min.z + max.z) / 2);
+    radius = 0.0f;
+    float atomSphereFactor = (float) Jmol.settings.getAtomSphereFactor();
+    for (int i = 0; i < numberAtoms; ++i) {
+      Atom atom = atoms[i];
+      Point3f posAtom = atom.getPosition();
+      float distAtom = center.distance(posAtom);
+      distAtom += (atom.getType().getVdwRadius() * atomSphereFactor);
+      if (distAtom > radius)
+        radius = distAtom;
     }
   }
 

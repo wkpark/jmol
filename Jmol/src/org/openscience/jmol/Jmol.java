@@ -113,8 +113,10 @@ class Jmol extends JPanel {
 
   private JScrollPane scroller;
   private JViewport port;
-  static DisplayPanel display;
-  StatusBar status;
+
+  public static final DisplaySettings settings = new DisplaySettings();
+  public static DisplayPanel display;
+  private StatusBar status;
   private AtomPropsMenu apm;
   static AtomTypeTable atomTypeTable;
   private PreferencesDialog preferencesDialog;
@@ -140,7 +142,8 @@ class Jmol extends JPanel {
   /**
    * Button group for toggle buttons in the toolbar.
    */
-  ButtonGroup toolbarButtonGroup = new ButtonGroup();
+  static AbstractButton buttonRotate = null;
+  static ButtonGroup toolbarButtonGroup = new ButtonGroup();
 
   static File UserPropsFile;
   static File UserAtypeFile;
@@ -153,8 +156,6 @@ class Jmol extends JPanel {
   }
 
   private static JFrame consoleframe;
-
-  protected DisplaySettings settings = new DisplaySettings();
 
   private JmolResourceHandler resourceHandler;
 
@@ -772,6 +773,8 @@ class Jmol extends JPanel {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
         b = new JToggleButton(ii);
+        if (key.equals("rotate"))
+          buttonRotate = b;
         toolbarButtonGroup.add(b);
         String isSelectedString =
           JmolResourceHandler.getInstance().getString("Jmol." + key
@@ -810,6 +813,11 @@ class Jmol extends JPanel {
     }
 
     return b;
+  }
+
+  public static void setRotateButton() {
+    if (buttonRotate != null)
+      buttonRotate.setSelected(true);
   }
 
   /**

@@ -105,9 +105,9 @@ class NWChemReader extends ModelReader {
 			Atom atom = model.addNewAtom();
 			atom.modelNumber = modelCount;  // associate that current model number
 			atom.atomName = fixTag(tokens[1]);
-			atom.x = Float.parseFloat(tokens[3]);
-			atom.y = Float.parseFloat(tokens[4]);
-			atom.z = Float.parseFloat(tokens[5]);
+			atom.x = parseFloat(tokens[3]);
+			atom.y = parseFloat(tokens[4]);
+			atom.z = parseFloat(tokens[5]);
 			++atomCount;
     }
 		lastModelEnd += atomCount;
@@ -138,15 +138,15 @@ class NWChemReader extends ModelReader {
 			Atom atom = model.addNewAtom();
 			atom.modelNumber = modelCount;  // associate that current model number
 			atom.atomName = fixTag(tokens[1]);
-			atom.x = Float.parseFloat(tokens[2])*AU2ANGSTROM;
-			atom.y = Float.parseFloat(tokens[3])*AU2ANGSTROM;
-			atom.z = Float.parseFloat(tokens[4])*AU2ANGSTROM;
+			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
+			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
+			atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
 			// Keep gradients in a.u. (larger value that way)
 			// need to multiply with -1 so the direction is in the direction the
 			// atom needs to move to lower the energy
-			atom.vectorX = -Float.parseFloat(tokens[5]);
-			atom.vectorY = -Float.parseFloat(tokens[6]);
-			atom.vectorZ = -Float.parseFloat(tokens[7]);
+			atom.vectorX = -parseFloat(tokens[5]);
+			atom.vectorY = -parseFloat(tokens[6]);
+			atom.vectorZ = -parseFloat(tokens[7]);
 			++atomCount;
     }
 		lastModelEnd += atomCount;
@@ -235,9 +235,9 @@ class NWChemReader extends ModelReader {
 			Atom atom = model.addNewAtom();
 			atom.modelNumber = modelCount;
 			atom.elementSymbol = tokens[0];
-			atom.x = Float.parseFloat(tokens[2])*AU2ANGSTROM;
-			atom.y = Float.parseFloat(tokens[3])*AU2ANGSTROM;
-			atom.z = Float.parseFloat(tokens[4])*AU2ANGSTROM;
+			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
+			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
+			atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
 			++atomCount;
     } while ( ((line=reader.readLine())!=null) && line.indexOf("---")<0 );  
     lastModelEnd += atomCount;
@@ -266,7 +266,7 @@ class NWChemReader extends ModelReader {
       } else {
         nNewModels = nFreq;   // I need to create new models for every frequency
       }
-      for (int i=1; i <= nNewModels; i++)
+      for (int i = nNewModels; --i >= 0; )
         duplicateLastModel();
       int firstModelAtom = lastModelEnd - nFreq*atomCount;
       
@@ -281,7 +281,7 @@ class NWChemReader extends ModelReader {
           try {
             int atomOffset = firstModelAtom+j*atomCount + i/3;
             Atom atom = model.atoms[atomOffset];
-            float val = Float.parseFloat(tokens[j+1]);
+            float val = parseFloat(tokens[j+1]);
             switch (i%3) {
               case 0:
                 atom.vectorX = val;

@@ -27,6 +27,8 @@ package org.openscience.jmol.app;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -44,7 +46,8 @@ import org.jmol.api.JmolViewer;
  */
 public class FilePreview extends JPanel implements PropertyChangeListener {
 
-  private JCheckBox active = null;
+  JCheckBox active = null;
+  JFileChooser chooser = null;
   private JmolPanel display = null;
 
   /**
@@ -54,12 +57,23 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
    */
   public FilePreview(JFileChooser fileChooser, JmolAdapter modelAdapter) {
     super();
+    chooser = fileChooser;
 
     // Create a box to do the layout
     Box box = Box.createVerticalBox();
 
     // Add a checkbox to activate / deactivate preview
     active = new JCheckBox("Preview", false);
+    active.addActionListener(new ActionListener()
+      {
+        public void actionPerformed(ActionEvent e) {
+          if (active.isSelected()) {
+            updatePreview(chooser.getSelectedFile());
+          } else {
+            updatePreview(null);
+          }
+        }
+      });
     box.add(active);
 
     // Add a preview area
@@ -81,12 +95,22 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     if (active.isSelected()) {
       String prop = evt.getPropertyName();
       if (JFileChooser.SELECTED_FILE_CHANGED_PROPERTY.equals(prop)) {
-        File file = (File) evt.getNewValue();
-        if (file != null) {
-          display.getViewer().evalStringQuiet("load " + file.getAbsolutePath());
-          display.repaint();
-        }
+        updatePreview((File) evt.getNewValue());
       }
+    }
+  }
+  
+  /**
+   * Update preview
+   * 
+   * @param file File selected
+   */
+  void updatePreview(File file) {
+    if (file != null) {
+      display.getViewer().evalStringQuiet("load " + file.getAbsolutePath());
+      display.repaint();
+    } else {
+      display.getViewer().evalStringQuiet("zap");
     }
   }
 }

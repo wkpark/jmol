@@ -32,6 +32,10 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 ////////////////////////////////////////////////////////////////
 
 function jmolInitialize(codebaseDirectory) {
+  if (_jmol.initialized) {
+    alert("jmolInitialize() should only be called *ONCE* within a page");
+    return;
+  }
   if (! codebaseDirectory) {
     alert("codebaseDirectory is a required parameter to jmolInitialize");
     codebaseDirectory = ".";

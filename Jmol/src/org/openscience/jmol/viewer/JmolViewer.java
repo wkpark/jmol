@@ -1199,6 +1199,22 @@ final public class JmolViewer {
                 bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
+  public void setSsbondsBackbone(boolean ssbondsBackbone) {
+    styleManager.setSsbondsBackbone(ssbondsBackbone);
+  }
+
+  public boolean getSsbondsBackbone() {
+    return styleManager.ssbondsBackbone;
+  }
+
+  public void setHbondsBackbone(boolean hbondsBackbone) {
+    styleManager.setHbondsBackbone(hbondsBackbone);
+  }
+
+  public boolean getHbondsBackbone() {
+    return styleManager.hbondsBackbone;
+  }
+
   public void setLabelScript(String strLabel) {
     distributionManager.setLabel(strLabel, atomIteratorSelected());
   }

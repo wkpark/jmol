@@ -1524,6 +1524,12 @@ public class Eval implements Runnable {
     case Token.spin:
       setSpin();
       break;
+    case Token.ssbonds:
+      setSsbonds();
+      break;
+    case Token.hbonds:
+      setHbonds();
+      break;
 
       /*
     case Token.spacefill:
@@ -1537,7 +1543,6 @@ public class Eval implements Runnable {
     case Token.ambient:
     case Token.backfade:
     case Token.cartoon:
-    case Token.hbonds:
     case Token.hourglass:
     case Token.kinemage:
     case Token.menus:
@@ -1547,7 +1552,6 @@ public class Eval implements Runnable {
     case Token.shadow:
     case Token.slabmode:
     case Token.specpower:
-    case Token.ssbonds:
     case Token.transparent:
     case Token.unitcell:
     case Token.vectps:
@@ -2116,4 +2120,36 @@ public class Eval implements Runnable {
     viewer.setStyleBondScript(JmolConstants.STYLE_SHADED);
   }
   */
+
+  void setSsbonds() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    boolean ssbondsBackbone = false;
+    switch(statement[2].tok) {
+    case Token.backbone:
+      ssbondsBackbone = true;
+      break;
+    case Token.sidechain:
+      break;
+    default:
+      invalidArgument();
+    }
+    viewer.setSsbondsBackbone(ssbondsBackbone);
+  }
+
+  void setHbonds() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    boolean hbondsBackbone = false;
+    switch(statement[2].tok) {
+    case Token.backbone:
+      hbondsBackbone = true;
+      break;
+    case Token.sidechain:
+      break;
+    default:
+      invalidArgument();
+    }
+    viewer.setHbondsBackbone(hbondsBackbone);
+  }
 }

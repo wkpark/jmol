@@ -166,4 +166,14 @@ public class StyleManager {
   public void setShowFrank(boolean showFrank) {
     this.showFrank = showFrank;
   }
+
+  public boolean ssbondsBackbone;
+  public void setSsbondsBackbone(boolean ssbondsBackbone) {
+    this.ssbondsBackbone = ssbondsBackbone;
+  }
+
+  public boolean hbondsBackbone;
+  public void setHbondsBackbone(boolean hbondsBackbone) {
+    this.hbondsBackbone = hbondsBackbone;
+  }
 }

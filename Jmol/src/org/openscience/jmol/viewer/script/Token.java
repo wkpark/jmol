@@ -302,6 +302,7 @@ public class Token {
   final static int hydrogen    = predefinedset | 2 | setparam;
   final static int selected    = predefinedset | 3 | showparam;
   final static int solvent     = predefinedset | 4 | setparam;
+  final static int sidechain   = predefinedset | 5;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -513,6 +514,7 @@ public class Token {
     "selected",     new Token(selected,        "selected"),
     "solvent",      new Token(solvent,         "solvent"),
     "%",            new Token(percent,         "%"),
+    "sidechain",    new Token(sidechain,       "sidechain"),
 
   };
 

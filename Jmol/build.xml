@@ -247,12 +247,7 @@
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}" >
       <fileset dir=".">
-        <include name="build.xml" />
-        <include name="jmol" />
-        <include name="jmol.mac" />
-        <include name="jmol.bat" />
-        <include name="*.txt" />
-        <include name="build.xml" />
+        <include name="*" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${source.dir}" >

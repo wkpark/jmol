@@ -36,24 +36,29 @@ class GuiMap {
 
   Hashtable map = new Hashtable();
 
-  JMenu newJMenu(String key) {
-    return new KeyJMenu(key);
-  }
-  JMenuItem newJMenuItem(String key) {
+  String getLabel(String key) {
     String label =
       JmolResourceHandler.getInstance().getString(key+"Label");
     if (label == null)
       label = key;
-    return new KeyJMenuItem(key, label);
+    return label;
+  }
+
+  JMenu newJMenu(String key) {
+    return new KeyJMenu(key, getLabel(key));
+  }
+
+  JMenuItem newJMenuItem(String key) {
+    return new KeyJMenuItem(key, getLabel(key));
   }
   JCheckBoxMenuItem newJCheckBoxMenuItem(String key, boolean isChecked) {
-    return new KeyJCheckBoxMenuItem(key, isChecked);
+    return new KeyJCheckBoxMenuItem(key, getLabel(key), isChecked);
   }
   JRadioButtonMenuItem newJRadioButtonMenuItem(String key) {
-    return new KeyJRadioButtonMenuItem(key);
+    return new KeyJRadioButtonMenuItem(key, getLabel(key));
   }
   JCheckBox newJCheckBox(String key, boolean isChecked) {
-    return new KeyJCheckBox(key, isChecked);
+    return new KeyJCheckBox(key, getLabel(key), isChecked);
   }
 
   Object get(String key) {
@@ -79,9 +84,8 @@ class GuiMap {
 
   class KeyJMenu extends JMenu implements GetKey {
     String key;
-    KeyJMenu(String key) {
-      super(JmolResourceHandler.
-            getInstance().getString(key+"Label"));
+    KeyJMenu(String key, String label) {
+      super(label);
       this.key = key;
       map.put(key, this);
     }
@@ -105,9 +109,8 @@ class GuiMap {
   class KeyJCheckBoxMenuItem
     extends JCheckBoxMenuItem implements GetKey {
     String key;
-    KeyJCheckBoxMenuItem(String key, boolean isChecked) {
-      super(JmolResourceHandler.
-            getInstance().getString(key+"Label"), isChecked);
+    KeyJCheckBoxMenuItem(String key, String label, boolean isChecked) {
+      super(label, isChecked);
       this.key = key;
       map.put(key, this);
     }
@@ -119,9 +122,8 @@ class GuiMap {
   class KeyJRadioButtonMenuItem
     extends JRadioButtonMenuItem implements GetKey {
     String key;
-    KeyJRadioButtonMenuItem(String key) {
-      super(JmolResourceHandler.
-            getInstance().getString(key+"Label"));
+    KeyJRadioButtonMenuItem(String key, String label) {
+      super(label);
       this.key = key;
       map.put(key, this);
     }
@@ -133,9 +135,8 @@ class GuiMap {
   class KeyJCheckBox
     extends JCheckBox implements GetKey {
     String key;
-    KeyJCheckBox(String key, boolean isChecked) {
-      super(JmolResourceHandler.
-            getInstance().getString(key+"Label"), isChecked);
+    KeyJCheckBox(String key, String label, boolean isChecked) {
+      super(label, isChecked);
       this.key = key;
       map.put(key, this);
     }

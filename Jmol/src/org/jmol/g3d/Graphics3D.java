@@ -24,7 +24,7 @@
  */
 package org.jmol.g3d;
 
-import org.openscience.jmol.viewer.*;
+import org.jmol.viewer.*;
 
 import java.awt.Component;
 import java.awt.Graphics;

@@ -34,10 +34,6 @@ import java.util.BitSet;
 
 public class Cartoon extends Mcpg {
 
-  Cartoon(JmolViewer viewer, Frame frame) {
-    super(viewer, frame);
-  }
-  
   Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }

@@ -34,9 +34,7 @@ import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 
-public class Axes implements Graphic {
-
-  JmolViewer viewer;
+public class Axes extends Graphic {
 
   final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
@@ -50,9 +48,7 @@ public class Axes implements Graphic {
   byte mode;
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
-
-  public Axes(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
+  {
     for (int i = 6; --i >= 0; )
       axisPoints[i] = new Point3f();
   }

@@ -1152,4 +1152,8 @@ final public class JmolConstants {
   public final static int GRAPHIC_CARTOON  = 4;
   public final static int GRAPHIC_STRANDS  = 5;
   public final static int GRAPHIC_MAX = 6;
+
+  public final static String[] graphicClassBases = {
+    "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands"
+  };
 }

@@ -41,10 +41,6 @@ public class Strands extends Mcpg {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    ****************************************************************/
 
-  Strands(JmolViewer viewer, Frame frame) {
-    super(viewer, frame);
-  }
-
   Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }

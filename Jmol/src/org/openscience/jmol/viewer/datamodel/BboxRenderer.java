@@ -39,10 +39,6 @@ class BboxRenderer extends Renderer {
       bboxScreen[i] = new Point3i();
   }
 
-  BboxRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   void render() {
     Bbox bbox = (Bbox)graphic;
     if (! bbox.show)

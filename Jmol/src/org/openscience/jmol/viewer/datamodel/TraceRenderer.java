@@ -34,10 +34,6 @@ import javax.vecmath.Point3i;
 
 class TraceRenderer extends McpgRenderer {
 
-  TraceRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   void render() {
     super.render();
     screens = null;

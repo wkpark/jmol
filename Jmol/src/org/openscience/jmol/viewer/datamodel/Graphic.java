@@ -24,10 +24,23 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
+import org.openscience.jmol.viewer.*;
 
 import java.util.BitSet;
 
-abstract public interface Graphic {
+abstract public class Graphic {
+
+  JmolViewer viewer;
+  Frame frame;
+
+  final public void setViewerFrame(JmolViewer viewer, Frame frame) {
+    this.viewer = viewer;
+    this.frame = frame;
+    initGraphic();
+  }
+
+  public void initGraphic() {
+  }
 
   abstract public void setShow(boolean show);
   abstract public void setMad(short mad, BitSet bsSelected);

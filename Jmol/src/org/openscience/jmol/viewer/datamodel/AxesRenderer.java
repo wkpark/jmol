@@ -35,10 +35,6 @@ import javax.vecmath.Point3i;
 
 class AxesRenderer extends Renderer {
 
-  AxesRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   final static int axisFontsize = 14;
 
   String[] axisLabels = { "+X", "+Y", "+Z",

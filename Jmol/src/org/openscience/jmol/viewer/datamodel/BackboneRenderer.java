@@ -34,10 +34,6 @@ import javax.vecmath.Point3i;
 
 class BackboneRenderer extends McpgRenderer {
 
-  BackboneRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   void renderMcpgChain(Mcpg.Chain mcpgChain) {
     renderTraceChain((Backbone.Chain)mcpgChain);
   }

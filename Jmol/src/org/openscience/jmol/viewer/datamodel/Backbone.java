@@ -32,10 +32,6 @@ import java.util.BitSet;
 
 public class Backbone extends Mcpg {
 
-  Backbone(JmolViewer viewer, Frame frame) {
-    super(viewer, frame);
-  }
-
   Mcpg.Chain allocateMcpgChain(PdbPolymer polymer) {
     return new Chain(polymer);
   }

@@ -35,10 +35,6 @@ import javax.vecmath.Point3i;
 
 class StrandsRenderer extends McpgRenderer {
 
-  StrandsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   Strands strands;
   Point3f pointT = new Point3f();
 

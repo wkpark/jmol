@@ -99,19 +99,17 @@ public class FrameRenderer {
   }
 
   Renderer allocateRenderer(int refGraphic) {
-    switch(refGraphic) {
-    case JmolConstants.GRAPHIC_BACKBONE:
-      return new BackboneRenderer(viewer, this);
-    case JmolConstants.GRAPHIC_TRACE:
-      return new TraceRenderer(viewer, this);
-    case JmolConstants.GRAPHIC_AXES:
-      return new AxesRenderer(viewer, this);
-    case JmolConstants.GRAPHIC_BBOX:
-      return new BboxRenderer(viewer, this);
-    case JmolConstants.GRAPHIC_CARTOON:
-      return new CartoonRenderer(viewer, this);
-    case JmolConstants.GRAPHIC_STRANDS:
-      return new StrandsRenderer(viewer, this);
+    String classBase =
+      JmolConstants.graphicClassBases[refGraphic] + "Renderer";
+    String className = "org.openscience.jmol.viewer.datamodel." + classBase;
+
+    try {
+      Class graphicClass = Class.forName(className);
+      Renderer renderer = (Renderer)graphicClass.newInstance();
+      renderer.setViewerFrameRenderer(viewer, this);
+      return renderer;
+    } catch (Exception e) {
+      System.out.println("Could not instantiate renderer:" + classBase);
     }
     return null;
   }

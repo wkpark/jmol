@@ -34,7 +34,7 @@ import java.awt.Rectangle;
 class BondRenderer extends Renderer {
 
   BondRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
+    setViewerFrameRenderer(viewer, frameRenderer);
   }
 
   boolean wireframeRotating;

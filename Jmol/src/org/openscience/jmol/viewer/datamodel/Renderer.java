@@ -36,9 +36,14 @@ abstract class Renderer {
   JmolViewer viewer;
   FrameRenderer frameRenderer;
 
-  Renderer(JmolViewer viewer, FrameRenderer frameRenderer) {
+  final void setViewerFrameRenderer(JmolViewer viewer,
+                                    FrameRenderer frameRenderer) {
     this.viewer = viewer;
     this.frameRenderer = frameRenderer;
+    initRenderer();
+  }
+
+  void initRenderer() {
   }
 
   Graphics3D g3d;

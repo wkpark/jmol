@@ -203,19 +203,16 @@ public class Frame {
   }
 
   Graphic allocateGraphic(int refGraphic) {
-    switch (refGraphic) {
-    case JmolConstants.GRAPHIC_BACKBONE:
-      return new Backbone(viewer, this);
-    case JmolConstants.GRAPHIC_TRACE:
-      return new Trace(viewer, this);
-    case JmolConstants.GRAPHIC_AXES:
-      return new Axes(viewer, this);
-    case JmolConstants.GRAPHIC_BBOX:
-      return new Bbox(viewer, this);
-    case JmolConstants.GRAPHIC_CARTOON:
-      return new Cartoon(viewer, this);
-    case JmolConstants.GRAPHIC_STRANDS:
-      return new Strands(viewer, this);
+    String classBase = JmolConstants.graphicClassBases[refGraphic];
+    String className = "org.openscience.jmol.viewer.datamodel." + classBase;
+
+    try {
+      Class graphicClass = Class.forName(className);
+      Graphic graphic = (Graphic)graphicClass.newInstance();
+      graphic.setViewerFrame(viewer, this);
+      return graphic;
+    } catch (Exception e) {
+      System.out.println("Could not instantiate graphic:" + classBase);
     }
     return null;
   }

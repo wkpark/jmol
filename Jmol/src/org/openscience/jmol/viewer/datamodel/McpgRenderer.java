@@ -34,10 +34,6 @@ import javax.vecmath.Point3i;
 
 abstract class McpgRenderer extends Renderer {
 
-  McpgRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   void render() {
     if (graphic == null)
       return;

@@ -34,11 +34,13 @@ import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 
-class Bbox implements Graphic {
-
-  JmolViewer viewer;
+class Bbox extends Graphic {
 
   final Point3f[] bboxPoints = new Point3f[8];
+  {
+    for (int i = 8; --i >= 0; )
+      bboxPoints[i] = new Point3f();
+  }
 
   final static Point3f[] unitBboxPoints = {
     new Point3f( 1, 1, 1),
@@ -55,12 +57,6 @@ class Bbox implements Graphic {
   // by XORing each of the three bits of my index
   final static byte edges[] =
   {0, 1, 0, 2, 0, 4, 1, 3, 1, 5, 2, 3, 2, 6, 3, 7, 4, 5, 4, 6, 5, 7, 6, 7};
-
-  Bbox(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    for (int i = 8; --i >= 0; )
-      bboxPoints[i] = new Point3f();
-  }
 
   boolean show;
 

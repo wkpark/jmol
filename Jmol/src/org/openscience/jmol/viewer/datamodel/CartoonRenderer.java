@@ -35,10 +35,6 @@ import javax.vecmath.Vector3f;
 
 class CartoonRenderer extends McpgRenderer {
 
-  CartoonRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
   Point3i s0 = new Point3i();
   Point3i s1 = new Point3i();
   Point3i s2 = new Point3i();

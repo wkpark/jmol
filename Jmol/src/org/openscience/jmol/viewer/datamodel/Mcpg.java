@@ -33,20 +33,16 @@ import java.util.BitSet;
 /****************************************************************
  * Mcpg stands for Model-Chain-Polymer-Graphic
  ****************************************************************/
-abstract public class Mcpg implements Graphic {
+abstract public class Mcpg extends Graphic {
 
-  JmolViewer viewer;
-  Frame frame;
   PdbFile pdbFile;
 
   Model[] models;
 
-  Mcpg(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
+  final public void initGraphic() {
     pdbFile = frame.pdbFile;
   }
-  
+
   public void setShow(boolean show) {
   }
 

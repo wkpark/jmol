@@ -40,7 +40,7 @@ class PdbReader extends ModelReader {
 
   boolean isNMRdata;
 
-  Hashtable htFormul;
+  final Hashtable htFormul = new Hashtable();
 
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
@@ -122,7 +122,7 @@ class PdbReader extends ModelReader {
   }
 
   void initialize() {
-    htFormul = null; // throw away old FORMUL records
+    htFormul.clear();
     currentGroup3 = null;
   }
 
@@ -145,8 +145,7 @@ class PdbReader extends ModelReader {
         htElementsInCurrentGroup = null;
       } else if (! group3.equals(currentGroup3)) {
         currentGroup3 = group3;
-        htElementsInCurrentGroup =
-          htFormul == null ? null : (Hashtable)htFormul.get(group3);
+        htElementsInCurrentGroup = (Hashtable)htFormul.get(group3);
       }
 
       ////////////////////////////////////////////////////////////////
@@ -429,7 +428,6 @@ class PdbReader extends ModelReader {
 
   void formul() {
     String groupName = parseToken(line, 12, 15);
-    // does not currently deal with continuations
     String formula = parseTrimmed(line, 19, 70);
     int ichLeftParen = formula.indexOf('(');
     if (ichLeftParen >= 0) {
@@ -438,31 +436,21 @@ class PdbReader extends ModelReader {
         return; // invalid formula;
       formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
     }
-    Hashtable htElementsInGroup = new Hashtable();
+    Hashtable htElementsInGroup = (Hashtable)htFormul.get(groupName);
+    if (htElementsInGroup == null)
+      htFormul.put(groupName, htElementsInGroup = new Hashtable());
     // now, look for atom names in the formula
     ichNextParse = 0;
     String elementWithCount;
-    boolean hasEntries = false;
     while ((elementWithCount = parseToken(formula, ichNextParse)) != null) {
       if (elementWithCount.length() < 2)
-        break;
+        continue;
       char chFirst = elementWithCount.charAt(0);
       char chSecond = elementWithCount.charAt(1);
-      if (! Atom.isValidFirstSymbolChar(chFirst))
-        break;
-      if (! Atom.isValidElementSymbolNoCaseSecondChar(chFirst, chSecond)) {
-        // single letter element symbol
-        htElementsInGroup.put("" + chFirst, Boolean.TRUE);
-      } else {
-        // two letter element symbol;
+      if (Atom.isValidElementSymbolNoCaseSecondChar(chFirst, chSecond))
         htElementsInGroup.put("" + chFirst + chSecond, Boolean.TRUE);
-      }
-      hasEntries = true;
-    }
-    if (hasEntries) {
-      if (htFormul == null)
-        htFormul = new Hashtable();
-      htFormul.put(groupName, htElementsInGroup);
+      else if (Atom.isValidElementSymbol(chFirst))
+        htElementsInGroup.put("" + chFirst, Boolean.TRUE);
     }
   }
 }

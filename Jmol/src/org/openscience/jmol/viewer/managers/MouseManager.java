@@ -235,6 +235,10 @@ public abstract class MouseManager {
         viewer.notifyPicked(nearestAtomIndex);
       }
       break;
+    case ALT_LEFT:
+    case MIDDLE:
+      viewer.homePosition();
+      break;
     }
   }
 

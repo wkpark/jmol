@@ -44,10 +44,10 @@ function jmolSetColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
 
 }
 
-function jmolSetCodeBase(codeBase) {
-  _jmol.codebase = codeBase ? codebase : ".";
+function jmolSetCodebase(codebase) {
+  _jmol.codebase = codebase ? codebase : ".";
   if (_jmol.debugAlert)
-    alert("jmolCodeBase=" + jmolCodeBase);
+    alert("jmolCodebase=" + _jmol.codebas);
 }
 
 function jmolApplet(size, modelFilename, script, nameSuffix) {

@@ -71,7 +71,7 @@ final public class Mmset {
   }
 
   void calculateStructures() {
-    System.out.println("Mmset.calculateStructures()");
+    //    System.out.println("Mmset.calculateStructures()");
     for (int i = modelCount; --i >= 0; )
       models[i].calculateStructures();
   }
@@ -100,7 +100,7 @@ final public class Mmset {
   }
 
   void setModelCount(int modelCount) {
-    System.out.println("setModelCount(" + modelCount + ")");
+    //    System.out.println("setModelCount(" + modelCount + ")");
     if (this.modelCount != 0)
       throw new NullPointerException();
     this.modelCount = modelCount;

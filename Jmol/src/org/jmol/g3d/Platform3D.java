@@ -85,13 +85,10 @@ abstract class Platform3D {
   abstract Image allocateImage();
 
   void allocateBuffers(int width, int height, boolean tFsaa4) {
-    System.out.println("allocateBuffers(" + width + "," +
-                       height + "," + tFsaa4 + ")");
     windowWidth = width;
     windowHeight = height;
     windowSize = width * height;
     if (tFsaa4) {
-      System.out.println("I am doubling!");
       bufferWidth = width * 2;
       bufferHeight = height * 2;
     } else {
@@ -102,8 +99,10 @@ abstract class Platform3D {
     zBuffer = new short[bufferSize];
     pBuffer = new int[bufferSize];
     imagePixelBuffer = allocateImage();
+    /*
     System.out.println("  width:" + width + " bufferWidth=" + bufferWidth +
-                       "\nheight:" + height + "bufferHeight=" + bufferHeight);
+                       "\nheight:" + height + " bufferHeight=" + bufferHeight);
+    */
   }
 
   void releaseBuffers() {

@@ -198,6 +198,8 @@ final public class Frame {
   }
 
   void dumpAtomSetNameDiagnostics(Object clientFile) {
+    if (true)
+      return;
     int frameModelCount = getModelCount();
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
     System.out.println("----------------\n" +
@@ -261,9 +263,7 @@ final public class Frame {
                float vectorX, float vectorY, float vectorZ,
                Object clientAtomReference) {
     if (modelIndex != currentModelIndex) {
-      System.out.println("modelIndex=" + modelIndex);
       currentModel = mmset.getModel(modelIndex);
-      System.out.println("currentModel=" + currentModel);
       currentModelIndex = modelIndex;
       currentChainID = '\uFFFF';
     }

@@ -45,18 +45,22 @@ public class AminoPolymer extends AlphaPolymer {
 
   boolean hbondsAlreadyCalculated;
 
+  final static boolean debugHbonds = false;
+
   void calcHydrogenBonds() {
     if (! hbondsAlreadyCalculated) {
       allocateHbondDataStructures();
       calcProteinMainchainHydrogenBonds();
       hbondsAlreadyCalculated = true;
 
-      System.out.println("calcHydrogenBonds");
-      for (int i = 0; i < count; ++i) {
-        System.out.println("  min1Indexes=" + min1Indexes[i] +
-                           "\nmin1Energies=" + min1Energies[i] +
-                           "\nmin2Indexes=" + min2Indexes[i] +
+      if (debugHbonds) {
+        System.out.println("calcHydrogenBonds");
+        for (int i = 0; i < count; ++i) {
+          System.out.println("  min1Indexes=" + min1Indexes[i] +
+                             "\nmin1Energies=" + min1Energies[i] +
+                             "\nmin2Indexes=" + min2Indexes[i] +
                            "\nmin2Energies=" + min2Energies[i]);
+        }
       }
     }
   }
@@ -119,17 +123,16 @@ public class AminoPolymer extends AlphaPolymer {
     int indexMin1 = -1;
     int indexMin2 = -1;
     for (int i = count; --i >= 0; ) {
-      if ((i == indexDonor || (i+1) == indexDonor) || (i-1) == indexDonor) {
-        //        System.out.println(" i=" +i + " indexDonor=" + indexDonor);
+      if ((i == indexDonor || (i+1) == indexDonor) || (i-1) == indexDonor)
         continue;
-      }
       AminoMonomer target = (AminoMonomer)monomers[i];
       Point3f targetAlphaPoint = target.getLeadAtomPoint();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 > maxHbondAlphaDistance2)
         continue;
       int energy = calcHbondEnergy(sourceNitrogenPoint, hydrogenPoint, target);
-      //      System.out.println("HbondEnergy=" + energy);
+      if (debugHbonds)
+        System.out.println("HbondEnergy=" + energy);
       if (energy < energyMin1) {
         energyMin2 = energyMin1;
         indexMin2 = indexMin1;
@@ -181,13 +184,12 @@ public class AminoPolymer extends AlphaPolymer {
     int energy =
       (int)((QConst/distOH - QConst/distCH + QConst/distCN - QConst/distON));
 
-    /*
-    System.out.println(" distOH=" + distOH +
-                       " distCH=" + distCH +
-                       " distCN=" + distCN +
-                       " distON=" + distON +
-                       " energy=" + energy);
-    */
+    if (debugHbonds)
+      System.out.println(" distOH=" + distOH +
+                         " distCH=" + distCH +
+                         " distCN=" + distCN +
+                         " distON=" + distON +
+                         " energy=" + energy);
     if (energy < -9900)
       return -9900;
     if (energy > -500)
@@ -199,14 +201,13 @@ public class AminoPolymer extends AlphaPolymer {
                                  int indexCarbonylGroup) {
     int order;
     int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
-    /*
-    System.out.println("aminoBackboneHbondOffset=" +
-                       aminoBackboneHbondOffset +
-                       " amino:" +
-                       monomers[indexAminoGroup].getSeqcodeString() +
-                       " carbonyl:" +
-                       monomers[indexCarbonylGroup].getSeqcodeString());
-    */
+    if (debugHbonds) 
+      System.out.println("aminoBackboneHbondOffset=" +
+                         aminoBackboneHbondOffset +
+                         " amino:" +
+                         monomers[indexAminoGroup].getSeqcodeString() +
+                         " carbonyl:" +
+                         monomers[indexCarbonylGroup].getSeqcodeString());
     switch (aminoBackboneHbondOffset) {
     case 2:
       order = JmolConstants.BOND_H_PLUS_2;
@@ -229,8 +230,9 @@ public class AminoPolymer extends AlphaPolymer {
     default:
       order = JmolConstants.BOND_H_REGULAR;
     }
-    //    System.out.println("createResidueHydrogenBond(" + indexAminoGroup +
-    //                       "," + indexCarbonylGroup);
+    if (debugHbonds)
+      System.out.println("createResidueHydrogenBond(" + indexAminoGroup +
+                         "," + indexCarbonylGroup);
     AminoMonomer donor = (AminoMonomer)monomers[indexAminoGroup];
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
@@ -272,9 +274,10 @@ public class AminoPolymer extends AlphaPolymer {
 
     findSheets(structureTags);
 
-    for (int i = 0; i < count; ++i)
-      System.out.println("" + i + ":" + structureTags[i] +
-                         " " + min1Indexes[i] + " " + min2Indexes[i]);
+    if (debugHbonds)
+      for (int i = 0; i < count; ++i)
+        System.out.println("" + i + ":" + structureTags[i] +
+                           " " + min1Indexes[i] + " " + min2Indexes[i]);
     iStart = 0;
 
     while (iStart < count) {
@@ -288,7 +291,8 @@ public class AminoPolymer extends AlphaPolymer {
             iMax < count - 1 && structureTags[iMax + 1] != 0);
            ++iMax)
         { }
-      System.out.println("I found a string of " + (iMax - iStart));
+      if (debugHbonds)
+        System.out.println("I found a string of " + (iMax - iStart));
       if (iMax - iStart >= 3)
         addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
                               iStart, iMax - 1);
@@ -321,13 +325,16 @@ public class AminoPolymer extends AlphaPolymer {
     for (int a = 0; a < count; ++a)
       for (int b = 0; b < count; ++b) {
         if (isHbonded(a+1, b) && isHbonded(b, a-1)) {
-          System.out.println("parallel found");
+          if (debugHbonds)
+            System.out.println("parallel found");
           structureTags[a+1] = structureTags[b] = structureTags[a-1] = 'p';
         } else if (isHbonded(a, b) && isHbonded(b, a)) {
-          System.out.println("antiparallel found");
+          if (debugHbonds)
+            System.out.println("antiparallel found");
           structureTags[a] = structureTags[b] = 'a';
         } else if (isHbonded(a+1, b-1) && isHbonded(b+1, a-1)) {
-          System.out.println("Antiparallel found");
+          if (debugHbonds)
+            System.out.println("Antiparallel found");
           structureTags[a+1] = structureTags[b-1] =
             structureTags[b+1] = structureTags[a-1] = 'A';
         }

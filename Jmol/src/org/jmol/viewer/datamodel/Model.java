@@ -63,7 +63,7 @@ final class Model {
   }
 
   void calculateStructures() {
-    System.out.println("Model.calculateStructures");
+    //    System.out.println("Model.calculateStructures");
     for (int i = polymerCount; --i >= 0; )
       polymers[i].calculateStructures();
   }

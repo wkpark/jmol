@@ -31,7 +31,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import freeware.PrintfFormat;
+//import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
@@ -48,7 +48,7 @@ public class MeasurementShape extends LineShape
     Point3d point4 = null;
     switch (count) {
     case 2:
-      strMeasurement = distanceFormat.sprintf(point1.distance(point2));
+      strMeasurement = formatDistance(point1.distance(point2));;
 
       pointOrigin = point1;
       pointEnd = point2;
@@ -60,7 +60,7 @@ public class MeasurementShape extends LineShape
       Vector3d vector32 = new Vector3d(point3);
       vector32.sub(point2);
       double angle = toDegrees(vector12.angle(vector32));
-      strMeasurement = angleFormat.sprintf(angle);
+      strMeasurement = formatAngle(angle);
 
       pointOrigin = new Point3d(point2);
       pointOrigin.add(point1);
@@ -73,7 +73,7 @@ public class MeasurementShape extends LineShape
       point3 = viewer.getPoint3d(atomIndices[2]);
       point4 = viewer.getPoint3d(atomIndices[3]);
       double dihedral = computeDihedral(point1, point2, point3, point4);
-      strMeasurement = dihedralFormat.sprintf(dihedral);
+      strMeasurement = formatAngle(dihedral);
 
       pointOrigin = new Point3d(point1);
       pointOrigin.add(point2);
@@ -100,14 +100,23 @@ public class MeasurementShape extends LineShape
   /**
    * The format used for displaying distance values.
    */
+  /*
   private static PrintfFormat distanceFormat =
     new PrintfFormat("%0.3f \u00c5");
   private static PrintfFormat angleFormat = new PrintfFormat("%0.1f\u00b0");
   private static PrintfFormat dihedralFormat = new PrintfFormat("%0.1f\u00b0");
-  
+  */
   
   String formatDistance(double dist) {
-    return distanceFormat.sprintf(dist);
+    dist = (int)(dist * 1000 + .5);
+    dist /= 1000;
+    return "" + dist + '\u00C5';
+  }
+
+  String formatAngle(double angle) {
+    angle = (int)(angle * 10 + (angle >= 0 ? 0.5 : -0.5));
+    angle /= 10;
+    return "" + angle + '\u00B0';
   }
 
   void paintMeasurementString(Graphics3D g3d, JmolViewer viewer) {

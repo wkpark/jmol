@@ -84,7 +84,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener
         }
             JScrollPane scroller = new JScrollPane() {
                 public Dimension getPreferredSize() {
-                    return new Dimension(400,400);
+                    return new Dimension(500,400);
                 }
                 public float getAlignmentX() {
                     return LEFT_ALIGNMENT;

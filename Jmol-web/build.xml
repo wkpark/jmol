@@ -1,6 +1,6 @@
 <project default="doc" basedir=".">
 
-  <property name="version" value="4" />
+  <property name="version" value="5" />
   <property name="applet-version" value="4" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />

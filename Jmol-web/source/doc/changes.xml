@@ -18,6 +18,7 @@
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
+<contributor id="MH"><name>Miguel Howard</name></contributor>
 </contributors>
     </section>
 
@@ -25,6 +26,48 @@
       To recognize specific contributions, the developer's initials are noted
       next to the changes.
       
+<changes version="jmol-5">
+  <change contributor="EW">
+    Internationalized Jmol and added Dutch translation.
+  </change>
+  <change contributor="BS">
+    Fix for reading some of MOPAC 2002 files. (Files without a blank line after
+    the coordinates.)
+  </change>
+  <change contributor="BS">
+    Fix reading of large PDB files. Multiple models are read into separate
+    frames.
+  </change>
+  <change contributor="BS">
+    Improved reading of PDB atom types by using element from first two columns
+    of atom name.
+  </change>
+  <change contributor="BS">
+    Temporary removal of defective parsing CONECT fields by PDB reader. Once
+    fixed, the feature will be reinstated.
+  </change>
+  <change contributor="FD">
+    Crystal properties dialog, and unit cell visualization has been added.
+  </change>
+  <change contributor="FD">
+    ABINIT energy data reading is added.
+  </change>
+  <change contributor="EW">
+    Added reader for ShelX97 files containing a crystal structure.
+  </change>
+  <change contributor="MH">
+    Translated the Jmol GUI into Spanish.
+  </change>
+  <change contributor="EW">
+    Fixed the PropertyGraph. Data is no longer duplicated on reopening the dialog
+    and data of previous file is deleted when opening a new one.
+  </change>
+  <change contributor="EW">
+    Fixed NullPointerException in deleting atom, and bug in determining wether
+    the ChemFrameRenderer should update its cache.
+  </change>
+</changes>
+
 <changes version="jmol-4">
   <change contributor="BS">
     Reading of MOPAC 97 and 2002 files. Formerly, only MOPAC 7 files worked.
@@ -397,10 +440,10 @@
       by Erich Gamma and Kent Beck.
       </li>
     
-      <li><a href="http://www.openscience.org/~egonw/cml/">Java CML Filter
-      Library</a> (http://www.openscience.org/~egonw/cml/)<br/>
-      Copyright &#169; 2000,2001 by
-      <a href="mailto:egonw@sci.kun.nl">Egon Willighagen</a> (egonw@sci.kun.nl).
+      <li><a href="http://cdk.sf.net/">The Chemical Development Kit</a> 
+      (http://cdk.sf.net/)<br/>
+      Copyright &#169; 2000-2002 by
+      the CDK project.
       </li>
     
       <li><a href="http://www.microstar.com/aelfred.html">AElfred</a>

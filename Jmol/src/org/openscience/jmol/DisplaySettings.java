@@ -116,7 +116,23 @@ public class DisplaySettings {
     public int getBondDrawMode() {
         return bondDrawMode;
     } 
+
+	public float getBondWidth() {
+		return bondWidth;
+	}
     
+	public void setBondWidth(float width) {
+		bondWidth = width;
+	}
+    
+	public float getBondScreenScale() {
+		return bondScreenScale;
+	}
+
+	public void setBondScreenScale(float scale) {
+		bondScreenScale = scale;
+	}
+
     /**
      * Sets the color used for outlining atoms and bonds in QUICKDRAW
      * and WIREFRAME drawing modes.
@@ -236,6 +252,10 @@ public class DisplaySettings {
      * Display style for drawing bonds.
      */
     private int bondDrawMode = QUICKDRAW;
+
+	private float bondWidth = 0.1f;
+
+	private float bondScreenScale;
     
     /**
      * Color used for outlining atoms and bonds in QUICKDRAW and
@@ -362,4 +382,176 @@ public class DisplaySettings {
     public boolean getShowHydrogens() {
         return ShowHydrogens;
     }
+
+    /**
+     * Returns the on-screen radius of an atom with the given radius.
+     *
+     * @param z z position in screen space
+     */ 
+    public float getCircleRadius(int z, double radius) {
+        double raw = radius*atomSphereFactor;
+        float depth = (float)(z - atomZOffset) / (2.0f*atomZOffset);
+        float tmp = atomScreenScale * ((float)raw + atomDepthFactor*depth);
+        return tmp < 0.0f ? 1.0f : tmp;
+    }
+
+	/**
+	 * Gets the light source vector.
+	 */
+    public float[] getLightSourceVector() {
+        return lightSource;
+    }
+
+    /**
+	 * Place the light source for shaded atoms to the upper right of
+	 * the atoms and out of the plane.
+	 */
+    private float[] lightSource = { 1.0f, -1.0f, 2.0f};
+
+	/**
+	 * Gets flag for whether to draw bonds to atom centers.
+	 */
+    public boolean getDrawBondsToAtomCenters() {
+        return drawBondsToAtomCenters;
+    }
+
+	/**
+	 * Sets flag for whether to draw bonds to atom centers.
+	 */
+    public void setDrawBondsToAtomCenters(boolean on) {
+        drawBondsToAtomCenters = on;
+    }
+
+	/**
+	 * Toggles flag for whether to draw bonds to atom centers.
+	 */
+    public void toggleDrawBondsToAtomCenters() {
+        drawBondsToAtomCenters = !drawBondsToAtomCenters;
+    }
+
+	/**
+	 * Flag for whether to draw bonds to the center of atoms.
+	 */
+	private boolean drawBondsToAtomCenters = false;
+
+	/**
+	 * Gets the vector screen scale.
+	 */
+	public float getVectorScreenScale() {
+		return vectorScreenScale;
+	}
+
+	/**
+	 * Sets the vector screen scale.
+	 * @param scale  the screen scale
+	 */
+	public void setVectorScreenScale(float scale) {
+		vectorScreenScale = scale;
+	}
+
+	/**
+	 * Vector screen scale.
+	 */
+	private float vectorScreenScale;
+
+	/**
+	 * Gets the atom screen scale.
+	 */
+	public float getAtomScreenScale() {
+		return atomScreenScale;
+	}
+
+	/**
+	 * Sets the atom screen scale.
+	 * @param scale  the screen scale
+	 */
+	public void setAtomScreenScale(float scale) {
+		atomScreenScale = scale;
+	}
+
+	/**
+	 * Atom screen scale.
+	 */
+	private float atomScreenScale;
+
+	/**
+	 * Sets the atom z offset.
+	 * @param z  the z offset
+	 */
+	public void setAtomZOffset(int z) {
+		atomZOffset = z;
+	} 
+
+	/**
+	 * Gets the atom z offset.
+	 */
+	public int getAtomZOffset() {
+		return atomZOffset;
+	} 
+
+	/**
+	 * Atom z offset.
+	 */
+    private int atomZOffset = 1;
+
+	/**
+	 * Sets the atom depth factor.
+	 * @param z  the z offset
+	 */
+	public void setAtomDepthFactor(float f) {
+		atomDepthFactor = f;
+	} 
+
+	/**
+	 * Gets the atom depth factor.
+	 */
+	public float getAtomDepthFactor() {
+		return atomDepthFactor;
+	} 
+
+	/**
+	 * Atom depth factor.
+	 */
+    private float atomDepthFactor = 0.33f;
+
+	/**
+	 * Sets the atom sphere factor.
+	 * @param z  the z offset
+	 */
+	public void setAtomSphereFactor(double d) {
+		atomSphereFactor = d;
+	} 
+
+	/**
+	 * Gets the atom sphere factor.
+	 */
+	public double getAtomSphereFactor() {
+		return atomSphereFactor;
+	} 
+
+	/**
+	 * Atom sphere factor.
+	 */
+    private double atomSphereFactor = 0.2;
+
+	/**
+	 * Sets the fast rendering flag.
+	 * @param b  whether to do fast rendering
+	 */
+	public void setFastRendering(boolean b) {
+		doFastRendering = b;
+	} 
+
+	/**
+	 * Gets the fast rendering flag.
+	 */
+	public boolean getFastRendering() {
+		return doFastRendering;
+	} 
+
+	/**
+	 * Flag for fast rendering.
+	 * Added by T.GREY for quick drawing on atom movement.
+	 */
+    private boolean doFastRendering = false;
 }

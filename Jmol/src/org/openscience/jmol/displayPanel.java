@@ -152,9 +152,9 @@ public class displayPanel extends JPanel
         float f1 = getSize().width / xw;
         float f2 = getSize().height / xw; 
         xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;        
-        AtomType.setScreenScale(xfac);
-        Bond.setScreenScale(xfac);
-        ChemFrame.setScreenScale(xfac);
+        settings.setAtomScreenScale(xfac);
+        settings.setBondScreenScale(xfac);
+        settings.setVectorScreenScale(xfac);
         repaint();
     }
 
@@ -302,9 +302,9 @@ public class displayPanel extends JPanel
                 zmat.scale(s, s, s);
                 mat.mult(zmat);
                 xfac *= s*s;
-                AtomType.setScreenScale(xfac);
-                Bond.setScreenScale(xfac);
-                ChemFrame.setScreenScale(xfac);
+                settings.setAtomScreenScale(xfac);
+                settings.setBondScreenScale(xfac);
+                settings.setVectorScreenScale(xfac);
             }
             
             if (mode == PICK) {
@@ -413,7 +413,7 @@ public class displayPanel extends JPanel
             ChemFrame.mattranslate(getSize().width / 2, 
                                    getSize().height / 2, 
                                    getSize().width / 2);
-            AtomType.setZoffset(getSize().width/2);
+            settings.setAtomZOffset(getSize().width/2);
 
             g.setColor(bg);
             g.fillRect(0,0,getSize().width,getSize().height); 
@@ -493,7 +493,7 @@ public class displayPanel extends JPanel
         
         public void actionPerformed(ActionEvent e) {            
             settings.toggleAtoms();
-            Bond.toggleBondsToAtomCenters();
+            settings.toggleDrawBondsToAtomCenters();
             repaint();
         }
     }
@@ -841,8 +841,8 @@ public class displayPanel extends JPanel
             float f1 = getSize().width / xw;
             float f2 = getSize().height / xw; 
             xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;        
-            AtomType.setScreenScale(xfac);
-            Bond.setScreenScale(xfac);
+            settings.setAtomScreenScale(xfac);
+            settings.setBondScreenScale(xfac);
             repaint();
         }
     }

@@ -49,41 +49,12 @@ import javax.swing.*;
 public class Bond {
 
     private static JPanel jpanel;
-    private static float screenScale;
-    private static boolean bondsToAtomCenters = false;
-    private static float Smoothness=0.7f;
-    private static double bondwidth = 0.1;   /* static vars, once for each 
-                                                class, not once per instance
-                                                of class */   
+
     private AtomType at1, at2;
     private Color col1, col2;
     
     public static void setJPanel(JPanel jp) {
         jpanel = jp;
-    }
-
-    public static void setScreenScale(float ss) {
-        screenScale = ss;
-    }
-
-    public static void setBondWidth(double bw) {
-        bondwidth = bw;
-    }
-
-    public static double getBondWidth() {
-        return bondwidth;
-    }
-
-    public static void toggleBondsToAtomCenters() {
-        bondsToAtomCenters = !bondsToAtomCenters;
-    }
-
-    public static void setBondsToAtomCenters(boolean btac) {
-        bondsToAtomCenters = btac;
-    }
-
-    public static boolean getBondsToAtomCenters() {
-        return bondsToAtomCenters;
     }
 
     public Bond(AtomType at1, AtomType at2) {
@@ -118,12 +89,12 @@ public class Bond {
             Math.sqrt(run2+rise2+zdiff*zdiff);
 
         //Added by T.GREY- fudges bonds to atom centres for quick draw mode
-        if (bondsToAtomCenters || useLine) {
+        if (settings.getDrawBondsToAtomCenters() || useLine) {
             r1 = 0.0;
             r2 = 0.0;
         } else {
-            r1 = costheta*(double)at1.getCircleRadius(z1);
-            r2 = costheta*(double)at2.getCircleRadius(z2);
+            r1 = costheta*(double)settings.getCircleRadius(z1, at1.getBaseAtomType().getVdwRadius());
+            r2 = costheta*(double)settings.getCircleRadius(z2, at2.getBaseAtomType().getVdwRadius());
         }
 
         double bl2 = run*run + rise*rise;
@@ -173,7 +144,7 @@ public class Bond {
             return;
 	}
         
-        double halfbw = 0.5 * bondwidth * screenScale;
+        double halfbw = 0.5 * settings.getBondWidth() * settings.getBondScreenScale();
 
         if (halfbw >= 0.5) {
             

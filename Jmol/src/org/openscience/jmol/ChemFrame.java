@@ -44,7 +44,7 @@ import java.util.*;
 
 public class ChemFrame {
     private static float bondFudge       = 1.12f;
-    private static float ScreenScale;
+//      private static float ScreenScale;
     private static boolean AutoBond      = true;
     private static Matrix3D mat;
     /* 
@@ -118,14 +118,14 @@ public class ChemFrame {
         return doingMoveDraw;
     }
 
-    /**
-     * Sets the screen scaling factor for zooming.
-     *
-     * @param ss the screenscale factor
-     */
-    public static void setScreenScale(float ss) {
-        ScreenScale = ss;
-    }
+//      /**
+//       * Sets the screen scaling factor for zooming.
+//       *
+//       * @param ss the screenscale factor
+//       */
+//      public static void setScreenScale(float ss) {
+//          ScreenScale = ss;
+//      }
 
     static void setBondFudge(float bf) {
         bondFudge = bf;
@@ -610,14 +610,14 @@ public class ChemFrame {
                 atoms[j/3].paint(g, settings, v[j], v[j + 1], v[j + 2], j/3 + 1, 
                                  aProps[j/3], pickedAtoms[j/3]);
             
-                if (settings.getShowVectors() && hasVectors) {
-                    ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
-                                                 tvect[j], tvect[j+1], 
-                                                 false, true,
-                                                 0, 
-                                                 3+(int)(tvect[j+2]/ScreenScale));
-                }
-                
+            if (settings.getShowVectors() && hasVectors) {
+                ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
+                                             tvect[j], tvect[j+1], 
+                                             false, true,
+                                             0, 
+                                             3+(int)(tvect[j+2]/settings.getVectorScreenScale()));
+            }
+            
         }
 
         if (dlist != null) {

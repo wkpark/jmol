@@ -485,7 +485,7 @@ public class Preferences extends JDialog {
                                     JLabel.CENTER);
         sfPanel.add(sfLabel,BorderLayout.NORTH);
         sfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 
-                               (int) (100.0 * AtomType.getSphereFactor()));
+                               (int) (100.0 * display.getSettings().getAtomSphereFactor()));
         sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
         sfSlider.setPaintTicks(true);
         sfSlider.setMajorTickSpacing(20);
@@ -495,7 +495,7 @@ public class Preferences extends JDialog {
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
                 SphereFactor = source.getValue() / 100.0;
-                AtomType.setSphereFactor(SphereFactor);
+                display.getSettings().setAtomSphereFactor(SphereFactor);
                 props.put("SphereFactor", Double.toString(SphereFactor));
                 display.repaint();
             }
@@ -564,7 +564,7 @@ public class Preferences extends JDialog {
                                     JLabel.CENTER);
         bwPanel.add(bwLabel,BorderLayout.NORTH);
         bwSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 
-                               (int) (100.0 * Bond.getBondWidth()));
+                               (int) (100.0 * display.getSettings().getBondWidth()));
         bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
         bwSlider.setPaintTicks(true);
         bwSlider.setMajorTickSpacing(20);
@@ -593,7 +593,7 @@ public class Preferences extends JDialog {
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
                 BondWidth = source.getValue() / 100.0;
-                Bond.setBondWidth(BondWidth);
+                display.getSettings().setBondWidth((float)BondWidth);
                 props.put("BondWidth", Double.toString(BondWidth));
                 display.repaint();
             }
@@ -1007,11 +1007,11 @@ public class Preferences extends JDialog {
         // Atom panel controls:
         aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
         aLabel.setSelectedIndex(display.getSettings().getLabelMode());
-        sfSlider.setValue((int) (100.0 * AtomType.getSphereFactor()));
+        sfSlider.setValue((int) (100.0 * display.getSettings().getAtomSphereFactor()));
         // Bond panel controls:
         bRender.setSelectedIndex(display.getSettings().getBondDrawMode());        
         abYes.setSelected(ChemFrame.getAutoBond());
-        bwSlider.setValue((int) (100.0 * Bond.getBondWidth()));
+        bwSlider.setValue((int) (100.0 * display.getSettings().getBondWidth()));
         bfSlider.setValue((int) (50.0 * ChemFrame.getBondFudge()));
         // Vector panel controls:
         ahSlider.setValue((int) (100.0f * ArrowLine.getLengthScale()));
@@ -1067,11 +1067,11 @@ public class Preferences extends JDialog {
         display.getSettings().setOutlineColor(outlineColor);            
         display.getSettings().setPickedColor(pickedColor);
         display.getSettings().setTextColor(textColor);
-        AtomType.setSphereFactor(SphereFactor);
+        display.getSettings().setAtomSphereFactor(SphereFactor);
         display.getSettings().setAtomDrawMode(AtomRenderMode);
         display.getSettings().setLabelMode(AtomLabelMode);
         display.getSettings().setPropertyMode(AtomPropsMode);
-        Bond.setBondWidth(BondWidth);
+        display.getSettings().setBondWidth((float)BondWidth);
         display.getSettings().setBondDrawMode(BondRenderMode);
         ArrowLine.setVectorColor(vectorColor);
         ArrowLine.setRadiusScale(ArrowHeadRadiusScale);
@@ -1084,7 +1084,7 @@ public class Preferences extends JDialog {
         ChemFrame.setBondFudge(BondFudge);
         ChemFrame.setAutoBond(AutoBond);
         display.getSettings().setShowAtoms(ShowAtoms);
-        Bond.setBondsToAtomCenters(!ShowAtoms);
+        display.getSettings().setDrawBondsToAtomCenters(!ShowAtoms);
         display.getSettings().setShowBonds(ShowBonds);
         display.getSettings().setShowHydrogens(ShowHydrogens);
         display.getSettings().setShowVectors(ShowVectors);
@@ -1138,7 +1138,7 @@ public class Preferences extends JDialog {
             } else if(cb.getText().equals(jrh.getString("cALabel"))) {
                 ShowAtoms = cb.isSelected();
                 display.getSettings().setShowAtoms(ShowAtoms);
-                Bond.setBondsToAtomCenters(!ShowAtoms);
+                display.getSettings().setDrawBondsToAtomCenters(!ShowAtoms);
                 props.put("ShowAtoms", new Boolean(ShowAtoms).toString());
             } else if(cb.getText().equals(jrh.getString("cVLabel"))) {
                 ShowVectors = cb.isSelected();

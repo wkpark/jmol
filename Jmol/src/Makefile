@@ -1,6 +1,6 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-           JAVA_HOME= /usr/local/jdk1.2.2
+           JAVA_HOME= /usr/local/java/jdk1.2.2
                JIKES= /usr/local/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
                 JAVA= $(JAVA_HOME)/bin/java
@@ -101,7 +101,6 @@ APPLET_SOURCES = org/openscience/miniJmol/JmolApplet.java \
 		org/openscience/miniJmol/ChemFile.java \
 		org/openscience/miniJmol/ChemFrame.java \
 		org/openscience/miniJmol/DTDResolver.java \
-		org/openscience/miniJmol/DisplaySettings.java \
 		org/openscience/miniJmol/JMolCDO.java \
 		org/openscience/miniJmol/JmolBeanTest.java \
 		org/openscience/miniJmol/JmolSimpleBean.java \
@@ -121,7 +120,8 @@ APPLET_CLASSES = $(APPLET_SOURCES:%.java=%.class)
 
 APPLET_JMOL_SOURCES = org/openscience/jmol/FortranFormat.java \
 		org/openscience/jmol/PhysicalProperty.java \
-		org/openscience/jmol/ChemFileReader.java
+		org/openscience/jmol/ChemFileReader.java \
+		org/openscience/jmol/DisplaySettings.java
 
 APPLET_JMOL_CLASSES = $(APPLET_JMOL_SOURCES:%.java=%.class)
 
@@ -141,7 +141,7 @@ TEST_CLASSES = $(TEST_SOURCES:%.java=%.class)
 #
 %.class: %.java
 	@echo "compiling $*"
-	$(JIKES) -classpath $(CLASSPATH) -O -deprecation $<
+	$(JAVAC) -classpath $(CLASSPATH) -O -deprecation $<
 
 all: archive applet_archive
 

@@ -74,18 +74,7 @@ public class AtomType {
     
     private BaseAtomType baseType;
     private static JPanel jpanel;
-    /* 
-       Place the light source for shaded atoms to the upper right of the
-       atoms and out of the plane:
-    */
-    private static float lightsource[] = { 1.0f, -1.0f, 2.0f};
 
-    private static float screenScale = 1.0f;
-    private static int zOffset = 1;
-    private static float depthFactor = 0.33f;
-    private static double sphereFactor = 0.2;  /* static vars, once for each 
-                                                  class, not once per instance
-                                                  of class */
     /**
      * Pool of atom images for shaded renderings.
      */
@@ -100,31 +89,6 @@ public class AtomType {
         jpanel = jp;
     }
     
-    /**
-     * Sets the scale at which the molecules will be drawn
-     *
-     * @param ss the screen scale
-     */
-    public static void setScreenScale(float ss) {
-        screenScale = ss;
-    }
-
-    public static void setZoffset(int z) {
-        zOffset = z;
-    }
-
-    public static void setDepthFactor(float df) {
-        depthFactor = df;
-    }
-
-    public static void setSphereFactor(double sf) {
-        sphereFactor = sf;
-    }    
-
-    public static double getSphereFactor() {
-        return sphereFactor;
-    }
-
     /**
      * Constructor
      *
@@ -164,7 +128,7 @@ public class AtomType {
         return (int) (bg + (fg - bg) * fgfactor);
     }
     
-    private static Image SphereSetup(Color ballColor) {
+    private static Image SphereSetup(DisplaySettings settings, Color ballColor) {
         float v1[] = new float[3];
         float v2[] = new float[3];
         byte b = 40;
@@ -173,7 +137,7 @@ public class AtomType {
         // Create our own version of an IndexColorModel:
         int model[] = new int[i*i];
         // Normalize the lightsource vector:
-        lightsource = normalize(lightsource);
+        float[] lightsource = normalize(settings.getLightSourceVector());
         for (int k1 = -b; k1 <= b; k1++) {
             for (int k2 = -b; k2 <= b; k2++) {
                 j++;
@@ -234,7 +198,7 @@ public class AtomType {
     public void paint(Graphics gc, DisplaySettings settings, 
                       int x, int y, int z, int n, 
                       Vector props, boolean picked) {
-        int diameter = (int) (2.0f*getCircleRadius(z));
+        int diameter = (int) (2.0f*settings.getCircleRadius(z, baseType.getVdwRadius()));
         int radius = diameter >> 1;
 
         if (picked) {
@@ -253,7 +217,7 @@ public class AtomType {
             if (ballImages.containsKey(baseType.getColor())) {
                 shadedImage = (Image)ballImages.get(baseType.getColor());
             } else {
-                shadedImage = SphereSetup(baseType.getColor());
+                shadedImage = SphereSetup(settings, baseType.getColor());
                 ballImages.put(baseType.getColor(), shadedImage);
             }
             gc.drawImage(shadedImage, x - radius, y - radius, diameter,
@@ -316,18 +280,6 @@ public class AtomType {
         
     }
     
-    /**
-     * returns the on-screen radius of this Atom
-     *
-     * @param z z position in screen space
-     */ 
-    public float getCircleRadius(int z) {
-        double raw = baseType.getVdwRadius()*sphereFactor;
-        float depth = (float)(z - zOffset) / (2.0f*zOffset);
-        float tmp = screenScale * ((float)raw + depthFactor*depth);
-        return tmp < 0.0f ? 1.0f : tmp;
-    }
-
     private static float[] normalize(float v[]) {
         float len = (float) Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
         float v2[] = new float[3];

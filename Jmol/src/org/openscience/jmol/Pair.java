@@ -81,7 +81,7 @@ public class Pair {
      * @param z1 the screen-transformed z coordinate of atom 1
      * @param z2 the screen-transformed z coordinate of atom 2
      */
-    public float getAvgRadius(int z1, int z2) {
-        return (ata.getCircleRadius(z1) + atb.getCircleRadius(z2))/2.0f;
+    public float getAvgRadius(DisplaySettings settings, int z1, int z2) {
+        return (settings.getCircleRadius(z1, ata.getBaseAtomType().getVdwRadius()) + settings.getCircleRadius(z2, atb.getBaseAtomType().getVdwRadius()))/2.0f;
     }          
 }

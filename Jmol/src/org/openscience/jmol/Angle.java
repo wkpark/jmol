@@ -95,7 +95,7 @@ class Angle extends Measurement implements MeasurementInterface {
                                   int x3, int y3, int z3) {
         
         Font font = new Font("Helvetica", Font.PLAIN, 
-                             (int)(getAvgRadius(z1,z2,z3)));
+                             (int)(getAvgRadius(settings, z1,z2,z3)));
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
         g.setColor(settings.getTextColor());
@@ -112,16 +112,16 @@ class Angle extends Measurement implements MeasurementInterface {
         g.drawString(s, xloc, yloc);
     }   
 
-    public float getAvgRadius(int z1, int z2, int z3) {
+    public float getAvgRadius(DisplaySettings settings, int z1, int z2, int z3) {
         if (cf == null) return 0.0f;
         
-        AtomType a = cf.getAtomType(Atoms[0]);
-        AtomType b = cf.getAtomType(Atoms[1]);
-        AtomType c = cf.getAtomType(Atoms[2]);
+        BaseAtomType a = cf.getAtomType(Atoms[0]).getBaseAtomType();
+        BaseAtomType b = cf.getAtomType(Atoms[1]).getBaseAtomType();
+        BaseAtomType c = cf.getAtomType(Atoms[2]).getBaseAtomType();
         
-        return (a.getCircleRadius(z1) + 
-                b.getCircleRadius(z2) + 
-                c.getCircleRadius(z3))/3.0f;
+        return (settings.getCircleRadius(z1, a.getVdwRadius()) + 
+                settings.getCircleRadius(z2, b.getVdwRadius()) + 
+                settings.getCircleRadius(z3, c.getVdwRadius()))/3.0f;
     }          
 
     public int[] getAtomList() {

@@ -84,7 +84,7 @@ class Distance extends Measurement implements MeasurementInterface {
         double rise  = (double) (y2 - y1);
         double m = rise/run;
         Font font = new Font("Helvetica", Font.PLAIN, 
-                             (int)(getAvgRadius(z1,z2)));
+                             (int)(getAvgRadius(settings, z1,z2)));
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
         g.setColor(settings.getTextColor());
@@ -101,13 +101,13 @@ class Distance extends Measurement implements MeasurementInterface {
         }
     }   
 
-    public float getAvgRadius(int z1, int z2) {
+    public float getAvgRadius(DisplaySettings settings, int z1, int z2) {
         if (cf == null) return 0.0f;
         
-        AtomType a = cf.getAtomType(Atoms[0]);
-        AtomType b = cf.getAtomType(Atoms[1]);
+        BaseAtomType a = cf.getAtomType(Atoms[0]).getBaseAtomType();
+        BaseAtomType b = cf.getAtomType(Atoms[1]).getBaseAtomType();
         
-        return (a.getCircleRadius(z1) + b.getCircleRadius(z2))/2.0f;
+        return (settings.getCircleRadius(z1, a.getVdwRadius()) + settings.getCircleRadius(z2, b.getVdwRadius()))/2.0f;
     }          
 
     

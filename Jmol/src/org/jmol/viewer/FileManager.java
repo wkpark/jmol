@@ -22,9 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 import org.jmol.api.JmolAdapter;
 
 import java.net.URL;
@@ -61,7 +60,7 @@ import org.openscience.dadml.filereaders.DBLISTFileReader;
 import org.openscience.dadml.tools.DBDEFInfo;
 */
 
-public class FileManager {
+class FileManager {
 
   JmolViewer viewer;
   JmolAdapter modelAdapter;
@@ -82,12 +81,12 @@ public class FileManager {
   private FileOpenThread fileOpenThread;
 
 
-  public FileManager(JmolViewer viewer, JmolAdapter modelAdapter) {
+  FileManager(JmolViewer viewer, JmolAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
   }
 
-  public void openFile(String name) {
+  void openFile(String name) {
     System.out.println("FileManager.openFile(" + name + ")");
     nameAsGiven = name;
     openErrorMessage = fullPathName = fileName = null;
@@ -100,7 +99,7 @@ public class FileManager {
     fileOpenThread.run();
   }
 
-  public void openStringInline(String strModel) {
+  void openStringInline(String strModel) {
     openErrorMessage = null;
     fullPathName = fileName = "string";
     fileOpenThread = new FileOpenThread(fullPathName,
@@ -108,7 +107,7 @@ public class FileManager {
     fileOpenThread.run();
   }
 
-  public void openReader(String fullPathName, String name, Reader reader) {
+  void openReader(String fullPathName, String name, Reader reader) {
     openErrorMessage = null;
     fullPathName = fullPathName;
     fileName = name;
@@ -116,7 +115,7 @@ public class FileManager {
     fileOpenThread.run();
   }
 
-  public Object waitForClientFileOrErrorMessage() {
+  Object waitForClientFileOrErrorMessage() {
     Object clientFile = null;
     if (fileOpenThread != null) {
       clientFile = fileOpenThread.clientFile;
@@ -131,15 +130,15 @@ public class FileManager {
     return clientFile;
   }
 
-  public String getFullPathName() {
+  String getFullPathName() {
     return fullPathName != null ? fullPathName : nameAsGiven;
   }
 
-  public String getFileName() {
+  String getFileName() {
     return fileName != null ? fileName : nameAsGiven;
   }
 
-  public void setAppletContext(URL documentBase, URL codeBase,
+  void setAppletContext(URL documentBase, URL codeBase,
                                String jmolAppletProxy) {
     appletDocumentBase = documentBase;
     System.out.println("appletDocumentBase=" + documentBase);
@@ -233,7 +232,7 @@ public class FileManager {
   }
 
   /* ***************************************************************
-  public URL resolveLink(URI dadmlRI) {
+  URL resolveLink(URI dadmlRI) {
     System.out.println("Resolving URI: " + dadmlRI);
     
     boolean found = false; // this is true when a structure is downloaded
@@ -312,7 +311,7 @@ public class FileManager {
   }
   ****************************************************************/
   
-  public Object getInputStreamOrErrorMessageFromName(String name) {
+  Object getInputStreamOrErrorMessageFromName(String name) {
     String errorMessage = null;
     int iurlPrefix;
     for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0; )

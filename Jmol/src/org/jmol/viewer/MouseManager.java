@@ -22,9 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 
 import java.awt.Component;
 import java.awt.Cursor;
@@ -32,7 +31,7 @@ import java.awt.Rectangle;
 import java.awt.Event;
 import java.util.BitSet;
 
-public abstract class MouseManager {
+abstract class MouseManager {
 
   final static int HOVER_TIME = 1000;
 
@@ -42,7 +41,7 @@ public abstract class MouseManager {
   Thread hoverWatcherThread;
 
   int previousDragX, previousDragY;
-  public int xCurrent, yCurrent;
+  int xCurrent, yCurrent;
   long timeCurrent;
   
   int modifiersWhenPressed;
@@ -57,14 +56,14 @@ public abstract class MouseManager {
 
   private static final boolean logMouseEvents = false;
 
-  public MouseManager(Component component, JmolViewer viewer) {
+  MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
     this.viewer = viewer;
     hoverWatcherThread = new Thread(new HoverWatcher());
     hoverWatcherThread.start();
   }
 
-  public Rectangle getRubberBand() {
+  Rectangle getRubberBand() {
     if (!rubberbandSelectionMode)
       return null;
     return rectRubber;
@@ -192,7 +191,7 @@ public abstract class MouseManager {
   int previousClickModifiers, previousClickCount;
   long previousClickTime;
 
-  public void clearClickCount() {
+  void clearClickCount() {
     previousClickX = -1;
   }
 
@@ -343,7 +342,7 @@ mol is a collaboratively developed visualization an    return ROTATE;
     return modeMouse;
   }
 
-  public void mouseDragged(int x, int y, int modifiers) {
+  void mouseDragged(int x, int y, int modifiers) {
     xCurrent = x; yCurrent = y;
     wasDragged = true;
     viewer.setInMotion(true);
@@ -432,7 +431,7 @@ mol is a collaboratively developed visualization an    return ROTATE;
   }
   
 
-  public abstract boolean handleOldJvm10Event(Event e);
+  abstract boolean handleOldJvm10Event(Event e);
 
   // note that these two may *not* be consistent
   // this term refers to the count of what has actually been selected

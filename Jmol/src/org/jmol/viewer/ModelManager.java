@@ -22,9 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 import org.jmol.api.JmolAdapter;
 import org.jmol.viewer.datamodel.Frame;
 import org.jmol.viewer.datamodel.FrameBuilder;
@@ -37,7 +36,7 @@ import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
 import java.awt.Color;
 
-public class ModelManager {
+class ModelManager {
 
   final JmolViewer viewer;
   final JmolAdapter modelAdapter;
@@ -45,24 +44,24 @@ public class ModelManager {
   final Frame nullFrame;
   final FrameBuilder frameBuilder;
 
-  public ModelManager(JmolViewer viewer, JmolAdapter modelAdapter) {
+  ModelManager(JmolViewer viewer, JmolAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
     nullFrame = new Frame(viewer, "null");
     frameBuilder = new FrameBuilder(viewer, modelAdapter);
   }
 
-  public String fullPathName;
-  public String fileName;
-  public String modelSetName;
-  public String modelFileHeader;
-  //  public int frameCount = 0;
-  public boolean haveFile = false;
-  //  public int currentFrameNumber;
-  public Frame frame;
-  //  public Frame[] frames;
+  String fullPathName;
+  String fileName;
+  String modelSetName;
+  String modelFileHeader;
+  //  int frameCount = 0;
+  boolean haveFile = false;
+  //  int currentFrameNumber;
+  Frame frame;
+  //  Frame[] frames;
   
-  public void setClientFile(String fullPathName, String fileName,
+  void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
     if (clientFile == null) {
       fullPathName = fileName = modelSetName = modelFileHeader = null;
@@ -83,82 +82,82 @@ public class ModelManager {
     }
   }
 
-  public String getClientAtomStringProperty(Object clientAtom,
+  String getClientAtomStringProperty(Object clientAtom,
                                             String propertyName) {
     return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
 
-  public Frame getFrame() {
+  Frame getFrame() {
     return (frame == null) ? nullFrame : frame;
   }
 
-  public JmolAdapter getExportJmolAdapter() {
+  JmolAdapter getExportJmolAdapter() {
     return (frame == null) ? null : frame.getExportJmolAdapter();
   }
 
-  public String getModelSetName() {
+  String getModelSetName() {
     return modelSetName;
   }
 
-  public String getModelFileHeader() {
+  String getModelFileHeader() {
     return modelFileHeader;
   }
 
-  public int getModelCount() {
+  int getModelCount() {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
-  public int getModelNumber(int modelIndex) {
+  int getModelNumber(int modelIndex) {
     return (frame == null) ? -1 : frame.getModelNumber(modelIndex);
   }
 
-  public String getModelName(int modelIndex) {
+  String getModelName(int modelIndex) {
     return (frame == null) ? null : frame.getModelName(modelIndex);
   }
 
-  public int getModelNumberIndex(int modelNumber) {
+  int getModelNumberIndex(int modelNumber) {
     return (frame == null) ? -1 : frame.getModelNumberIndex(modelNumber);
   }
 
-  public boolean hasVibrationVectors() {
+  boolean hasVibrationVectors() {
     return frame.hasVibrationVectors();
   }
 
-  public float getRotationRadius() {
+  float getRotationRadius() {
     return (frame == null) ? 1 : frame.getRotationRadius();
   }
 
-  public void increaseRotationRadius(float increaseInAngstroms) {
+  void increaseRotationRadius(float increaseInAngstroms) {
     if (frame != null)
       frame.increaseRotationRadius(increaseInAngstroms);
   }
 
-  public Point3f getBoundingBoxCenter() {
+  Point3f getBoundingBoxCenter() {
     return (frame == null) ? null : frame.getBoundingBoxCenter();
   }
 
-  public Vector3f getBoundingBoxCornerVector() {
+  Vector3f getBoundingBoxCornerVector() {
     return (frame == null) ? null : frame.getBoundingBoxCornerVector();
   }
 
-  public int getChainCount() {
+  int getChainCount() {
     return (frame == null) ? 0 : frame.getChainCount();
   }
 
-  public int getGroupCount() {
+  int getGroupCount() {
     return (frame == null) ? 0 : frame.getGroupCount();
   }
 
-  public int getAtomCount() {
+  int getAtomCount() {
     return (frame == null) ? 0 : frame.getAtomCount();
   }
 
-  public int getBondCount() {
+  int getBondCount() {
     return (frame == null) ? 0 : frame.getBondCount();
   }
 
   private final Point3f pointT = new Point3f();
-  public void setCenterBitSet(BitSet bsCenter) {
+  void setCenterBitSet(BitSet bsCenter) {
     if (frame == null)
       return;
     Point3f center = null;
@@ -180,65 +179,65 @@ public class ModelManager {
     frame.setRotationCenter(center);
   }
 
-  public void setRotationCenter(Point3f center) {
+  void setRotationCenter(Point3f center) {
     if (frame != null)
       frame.setRotationCenter(center);
   }
 
-  public Point3f getRotationCenter() {
+  Point3f getRotationCenter() {
     return (frame == null ? null : frame.getRotationCenter());
   }
 
-  public boolean autoBond = true;
+  boolean autoBond = true;
 
-  public void rebond() {
+  void rebond() {
     if (frame != null)
       frame.rebond();
   }
 
-  public void setAutoBond(boolean ab) {
+  void setAutoBond(boolean ab) {
     autoBond = ab;
   }
 
   // angstroms of slop ... from OpenBabel ... mth 2003 05 26
-  public float bondTolerance = 0.45f;
-  public void setBondTolerance(float bondTolerance) {
+  float bondTolerance = 0.45f;
+  void setBondTolerance(float bondTolerance) {
     this.bondTolerance = bondTolerance;
   }
 
   // minimum acceptable bonding distance ... from OpenBabel ... mth 2003 05 26
-  public float minBondDistance = 0.4f;
-  public void setMinBondDistance(float minBondDistance) {
+  float minBondDistance = 0.4f;
+  void setMinBondDistance(float minBondDistance) {
     this.minBondDistance = minBondDistance;
   }
 
   /*
-  public void deleteAtom(int atomIndex) {
+  void deleteAtom(int atomIndex) {
     frame.deleteAtom(atomIndex);
   }
   */
 
-  public boolean frankClicked(int x, int y) {
+  boolean frankClicked(int x, int y) {
     return (getShapeSize(JmolConstants.SHAPE_FRANK) != 0 &&
             frame.frankClicked(x, y));
   }
 
-  public int findNearestAtomIndex(int x, int y) {
+  int findNearestAtomIndex(int x, int y) {
     return (frame == null) ? -1 : frame.findNearestAtomIndex(x, y);
   }
 
-  public BitSet findAtomsInRectangle(Rectangle rectRubber) {
+  BitSet findAtomsInRectangle(Rectangle rectRubber) {
     return frame.findAtomsInRectangle(rectRubber);
   }
 
   // FIXME mth 2004 02 23 -- this does *not* belong here
-  public float solventProbeRadius = 1.2f;
-  public void setSolventProbeRadius(float radius) {
+  float solventProbeRadius = 1.2f;
+  void setSolventProbeRadius(float radius) {
     this.solventProbeRadius = radius;
   }
 
-  public boolean solventOn = false;
-  public void setSolventOn(boolean solventOn) {
+  boolean solventOn = false;
+  void setSolventOn(boolean solventOn) {
     this.solventOn = solventOn;
   }
 
@@ -249,19 +248,19 @@ public class ModelManager {
   int[] shapeSizes = new int[JmolConstants.SHAPE_MAX];
   Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
-  public void setShapeSize(int shapeType, int size, BitSet bsSelected) {
+  void setShapeSize(int shapeType, int size, BitSet bsSelected) {
     shapeSizes[shapeType] = size;
     if (frame != null)
       frame.setShapeSize(shapeType, size, bsSelected);
   }
   
-  public int getShapeSize(int shapeType) {
+  int getShapeSize(int shapeType) {
     return shapeSizes[shapeType];
   }
   
   private static final Object NULL_SURROGATE = new Object();
 
-  public void setShapeProperty(int shapeType, String propertyName,
+  void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
     Hashtable props = shapeProperties[shapeType];
     if (props == null)
@@ -280,7 +279,7 @@ public class ModelManager {
       frame.setShapeProperty(shapeType, propertyName, value, bsSelected);
   }
 
-  public Object getShapeProperty(int shapeType, String propertyName,
+  Object getShapeProperty(int shapeType, String propertyName,
                                  int index) {
     Object value = null;
     if (frame != null)
@@ -296,15 +295,15 @@ public class ModelManager {
     return value;
   }
 
-  public int getAtomIndexFromAtomNumber(int atomNumber) {
+  int getAtomIndexFromAtomNumber(int atomNumber) {
     return (frame == null) ? -1 : frame.getAtomIndexFromAtomNumber(atomNumber);
   }
 
-  public BitSet getElementsPresentBitSet() {
+  BitSet getElementsPresentBitSet() {
     return (frame == null) ? null : frame.getElementsPresentBitSet();
   }
 
-  public BitSet getGroupsPresentBitSet() {
+  BitSet getGroupsPresentBitSet() {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }
 
@@ -312,12 +311,12 @@ public class ModelManager {
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////
 
-  public String getAtomInfo(int i) {
+  String getAtomInfo(int i) {
     return frame.getAtomAt(i).getInfo();
   }
 
 /*
-public String getAtomInfoChime(int i) {
+String getAtomInfoChime(int i) {
     Atom atom = frame.atoms[i];
     PdbAtom pdbAtom = atom.pdbAtom;
     if (pdbAtom == null)
@@ -328,67 +327,67 @@ public String getAtomInfoChime(int i) {
   }
 */
 
-  public String getElementSymbol(int i) {
+  String getElementSymbol(int i) {
     return frame.getAtomAt(i).getElementSymbol();
   }
 
-  public int getElementNumber(int i) {
+  int getElementNumber(int i) {
     return frame.getAtomAt(i).getElementNumber();
   }
 
-  public String getAtomName(int i) {
+  String getAtomName(int i) {
     return frame.getAtomAt(i).getAtomName();
   }
 
-  public int getAtomNumber(int i) {
+  int getAtomNumber(int i) {
     return frame.getAtomAt(i).getAtomNumber();
   }
 
-  public float getAtomX(int i) {
+  float getAtomX(int i) {
     return frame.getAtomAt(i).getAtomX();
   }
 
-  public float getAtomY(int i) {
+  float getAtomY(int i) {
     return frame.getAtomAt(i).getAtomY();
   }
 
-  public float getAtomZ(int i) {
+  float getAtomZ(int i) {
     return frame.getAtomAt(i).getAtomZ();
   }
 
-  public Point3f getAtomPoint3f(int i) {
+  Point3f getAtomPoint3f(int i) {
     return frame.getAtomAt(i).getPoint3f();
   }
 
-  public float getAtomRadius(int i) {
+  float getAtomRadius(int i) {
     return frame.getAtomAt(i).getRadius();
   }
 
-  public short getAtomColix(int i) {
+  short getAtomColix(int i) {
     return frame.getAtomAt(i).getColix();
   }
 
-  public Point3f getBondPoint3f1(int i) {
+  Point3f getBondPoint3f1(int i) {
     return frame.getBondAt(i).atom1.getPoint3f();
   }
 
-  public Point3f getBondPoint3f2(int i) {
+  Point3f getBondPoint3f2(int i) {
     return frame.getBondAt(i).atom2.getPoint3f();
   }
 
-  public float getBondRadius(int i) {
+  float getBondRadius(int i) {
     return frame.getBondAt(i).getRadius();
   }
 
-  public short getBondOrder(int i) {
+  short getBondOrder(int i) {
     return frame.getBondAt(i).getOrder();
   }
 
-  public short getBondColix1(int i) {
+  short getBondColix1(int i) {
     return frame.getBondAt(i).getColix1();
   }
 
-  public short getBondColix2(int i) {
+  short getBondColix2(int i) {
     return frame.getBondAt(i).getColix2();
   }
 }

@@ -22,17 +22,16 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 
 import javax.vecmath.*;
 
-public class TempManager {
+class TempManager {
 
   JmolViewer viewer;
 
-  public TempManager(JmolViewer viewer) {
+  TempManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
@@ -80,7 +79,7 @@ public class TempManager {
   final short[] lengthsFreePoints = new short[freePointsSize];
   final Point3f[][] freePoints = new Point3f[freePointsSize][];
 
-  public Point3f[] allocTempPoints(int size) {
+  Point3f[] allocTempPoints(int size) {
     Point3f[] tempPoints;
     int iFit = findBestFit(size, lengthsFreePoints);
     if (iFit > 0) {
@@ -93,7 +92,7 @@ public class TempManager {
     return tempPoints;
   }
 
-  public void freeTempPoints(Point3f[] tempPoints) {
+  void freeTempPoints(Point3f[] tempPoints) {
     int iFree = findShorter(tempPoints.length, lengthsFreePoints);
     if (iFree >= 0)
       freePoints[iFree] = tempPoints;
@@ -106,7 +105,7 @@ public class TempManager {
   final short[] lengthsFreeScreens = new short[freeScreensSize];
   final Point3i[][] freeScreens = new Point3i[freeScreensSize][];
 
-  public Point3i[] allocTempScreens(int size) {
+  Point3i[] allocTempScreens(int size) {
     Point3i[] tempScreens;
     int iFit = findBestFit(size, lengthsFreeScreens);
     if (iFit > 0) {
@@ -119,7 +118,7 @@ public class TempManager {
     return tempScreens;
   }
 
-  public void freeTempScreens(Point3i[] tempScreens) {
+  void freeTempScreens(Point3i[] tempScreens) {
     int iFree = findShorter(tempScreens.length, lengthsFreeScreens);
     if (iFree >= 0)
       freeScreens[iFree] = tempScreens;
@@ -132,7 +131,7 @@ public class TempManager {
   final short[] lengthsFreeBooleans = new short[freeBooleansSize];
   final boolean[][] freeBooleans = new boolean[freeBooleansSize][];
 
-  public boolean[] allocTempBooleans(int size) {
+  boolean[] allocTempBooleans(int size) {
     boolean[] tempBooleans;
     int iFit = findBestFit(size, lengthsFreeBooleans);
     if (iFit > 0) {
@@ -143,7 +142,7 @@ public class TempManager {
     return tempBooleans;
   }
 
-  public void freeTempBooleans(boolean[] tempBooleans) {
+  void freeTempBooleans(boolean[] tempBooleans) {
     int iFree = findShorter(tempBooleans.length, lengthsFreeBooleans);
     if (iFree >= 0)
       freeBooleans[iFree] = tempBooleans;

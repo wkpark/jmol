@@ -22,13 +22,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 import java.awt.Component;
 
-public class MouseWrapper14 {
-  public static MouseManager alloc(Component component, JmolViewer viewer) {
-    return new MouseManager14(component, viewer);
+class MouseWrapper11 {
+  static MouseManager alloc(Component component, JmolViewer viewer) {
+    return new MouseManager11(component, viewer);
   }
 }

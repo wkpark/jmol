@@ -22,72 +22,71 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 
 import java.awt.Color;
 
-public class StyleManager {
+class StyleManager {
 
   JmolViewer viewer;
 
-  public StyleManager(JmolViewer viewer) {
+  StyleManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  public int percentVdwAtom = 20;
-  public void setPercentVdwAtom(int percentVdwAtom) {
+  int percentVdwAtom = 20;
+  void setPercentVdwAtom(int percentVdwAtom) {
     this.percentVdwAtom = percentVdwAtom;
   }
 
-  public short marBond = 100;
-  public void setMarBond(short marBond) {
+  short marBond = 100;
+  void setMarBond(short marBond) {
     this.marBond = marBond;
   }
 
-  public byte modeMultipleBond = JmolConstants.MULTIBOND_SMALL;
-  public void setModeMultipleBond(byte modeMultipleBond) {
+  byte modeMultipleBond = JmolConstants.MULTIBOND_SMALL;
+  void setModeMultipleBond(byte modeMultipleBond) {
     this.modeMultipleBond = modeMultipleBond;
   }
 
-  public boolean showMultipleBonds = true;
-  public void setShowMultipleBonds(boolean showMultipleBonds) {
+  boolean showMultipleBonds = true;
+  void setShowMultipleBonds(boolean showMultipleBonds) {
     this.showMultipleBonds = showMultipleBonds;
   }
 
-  public boolean showAtoms = true;
-  public void setShowAtoms(boolean showAtoms) {
+  boolean showAtoms = true;
+  void setShowAtoms(boolean showAtoms) {
     this.showAtoms = showAtoms;
   }
 
-  public boolean showBonds = true;
-  public void setShowBonds(boolean showBonds) {
+  boolean showBonds = true;
+  void setShowBonds(boolean showBonds) {
     this.showBonds = showBonds;
   }
 
-  public boolean showHydrogens = true;
-  public void setShowHydrogens(boolean showHydrogens) {
+  boolean showHydrogens = true;
+  void setShowHydrogens(boolean showHydrogens) {
     this.showHydrogens = showHydrogens;
   }
 
-  public boolean showVectors = true;
-  public void setShowVectors(boolean showVectors) {
+  boolean showVectors = true;
+  void setShowVectors(boolean showVectors) {
     this.showVectors = showVectors;
   }
 
-  public boolean showMeasurements = true;
-  public void setShowMeasurements(boolean showMeasurements) {
+  boolean showMeasurements = true;
+  void setShowMeasurements(boolean showMeasurements) {
     this.showMeasurements = showMeasurements;
   }
 
-  public boolean showMeasurementLabels = true;
-  public void setShowMeasurementLabels(boolean showMeasurementLabels) {
+  boolean showMeasurementLabels = true;
+  void setShowMeasurementLabels(boolean showMeasurementLabels) {
     this.showMeasurementLabels = showMeasurementLabels;
   }
 
-  public String measureDistanceUnits = "nanometers";
-  public boolean setMeasureDistanceUnits(String units) {
+  String measureDistanceUnits = "nanometers";
+  boolean setMeasureDistanceUnits(String units) {
     if (units.equalsIgnoreCase("angstroms"))
       measureDistanceUnits = "angstroms";
     else if (units.equalsIgnoreCase("nanometers"))
@@ -99,18 +98,18 @@ public class StyleManager {
     return true;
   }
 
-  public String propertyStyleString = "";
-  public void setPropertyStyleString(String s) {
+  String propertyStyleString = "";
+  void setPropertyStyleString(String s) {
     propertyStyleString = s;
   }
 
-  public boolean wireframeRotation = false;
-  public void setWireframeRotation(boolean wireframeRotation) {
+  boolean wireframeRotation = false;
+  void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
   }
 
-  public boolean zeroBasedXyzRasmol = false;
-  public void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
+  boolean zeroBasedXyzRasmol = false;
+  void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
     this.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
   }
 
@@ -124,14 +123,14 @@ public class StyleManager {
     viewer.setMarBond((short)150);
   }
 
-  public void setJmolDefaults() {
+  void setJmolDefaults() {
     setCommonDefaults();
     viewer.setColorScheme("jmol");
     viewer.setAxesOrientationRasmol(false);
     setZeroBasedXyzRasmol(false);
   }
 
-  public void setRasmolDefaults() {
+  void setRasmolDefaults() {
     setCommonDefaults();
     viewer.setColorScheme("rasmol");
     viewer.setAxesOrientationRasmol(true);
@@ -140,18 +139,18 @@ public class StyleManager {
     viewer.setMarBond((short)1);
   }
 
-  public boolean showFrank;
-  public void setShowFrank(boolean showFrank) {
+  boolean showFrank;
+  void setShowFrank(boolean showFrank) {
     this.showFrank = showFrank;
   }
 
-  public boolean ssbondsBackbone;
-  public void setSsbondsBackbone(boolean ssbondsBackbone) {
+  boolean ssbondsBackbone;
+  void setSsbondsBackbone(boolean ssbondsBackbone) {
     this.ssbondsBackbone = ssbondsBackbone;
   }
 
-  public boolean hbondsBackbone;
-  public void setHbondsBackbone(boolean hbondsBackbone) {
+  boolean hbondsBackbone;
+  void setHbondsBackbone(boolean hbondsBackbone) {
     this.hbondsBackbone = hbondsBackbone;
   }
 
@@ -159,14 +158,14 @@ public class StyleManager {
    * label related
    ****************************************************************/
 
-  public int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
-  public void setLabelFontSize(int points) {
+  int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
+  void setLabelFontSize(int points) {
     this.pointsLabelFontSize = points <= 0 ? JmolConstants.LABEL_DEFAULT_FONTSIZE : points;
   }
 
-  public int labelOffsetX = JmolConstants.LABEL_DEFAULT_X_OFFSET;
-  public int labelOffsetY = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
-  public void setLabelOffset(int offsetX, int offsetY) {
+  int labelOffsetX = JmolConstants.LABEL_DEFAULT_X_OFFSET;
+  int labelOffsetY = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+  void setLabelOffset(int offsetX, int offsetY) {
     labelOffsetX = offsetX;
     labelOffsetY = offsetY;
   }

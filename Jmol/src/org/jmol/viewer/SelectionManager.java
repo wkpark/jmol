@@ -22,21 +22,20 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 import java.util.BitSet;
 
-public class SelectionManager {
+class SelectionManager {
 
   JmolViewer viewer;
 
-  public SelectionManager(JmolViewer viewer) {
+  SelectionManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
   private final BitSet bsNull = new BitSet();
-  public final BitSet bsSelection = new BitSet();
+  final BitSet bsSelection = new BitSet();
   // this is a tri-state. the value -1 means unknown
   final static int TRUE = 1;
   final static int FALSE = 0;
@@ -44,18 +43,18 @@ public class SelectionManager {
   int empty = TRUE;
 
 
-  public void addSelection(int atomIndex) {
+  void addSelection(int atomIndex) {
     bsSelection.set(atomIndex);
     empty = FALSE;
   }
 
-  public void addSelection(BitSet set) {
+  void addSelection(BitSet set) {
     bsSelection.or(set);
     if (empty == TRUE)
       empty = UNKNOWN;
   }
 
-  public void toggleSelection(int atomIndex) {
+  void toggleSelection(int atomIndex) {
     if (bsSelection.get(atomIndex))
       bsSelection.clear(atomIndex);
     else
@@ -63,11 +62,11 @@ public class SelectionManager {
     empty = (empty == TRUE) ? FALSE : UNKNOWN;
   }
 
-  public boolean isSelected(int atomIndex) {
+  boolean isSelected(int atomIndex) {
     return bsSelection.get(atomIndex);
   }
 
-  public boolean isEmpty() {
+  boolean isEmpty() {
     if (empty != UNKNOWN)
       return empty == TRUE;
     for (int i = viewer.getAtomCount(); --i >= 0; )
@@ -79,19 +78,19 @@ public class SelectionManager {
     return true;
   }
 
-  public void selectAll() {
+  void selectAll() {
     int count = viewer.getAtomCount();
     empty = (count == 0) ? TRUE : FALSE;
     for (int i = count; --i >= 0; )
       bsSelection.set(i);
   }
 
-  public void clearSelection() {
+  void clearSelection() {
     bsSelection.and(bsNull);
     empty = TRUE;
   }
 
-  public void delete(int iDeleted) {
+  void delete(int iDeleted) {
     if (empty == TRUE)
       return;
     int numAfterDelete = viewer.getAtomCount() - 1;
@@ -104,19 +103,19 @@ public class SelectionManager {
     empty = UNKNOWN;
   }
 
-  public void setSelection(int atomIndex) {
+  void setSelection(int atomIndex) {
     bsSelection.and(bsNull);
     bsSelection.set(atomIndex);
     empty = FALSE;
   }
 
-  public void setSelectionSet(BitSet set) {
+  void setSelectionSet(BitSet set) {
     bsSelection.and(bsNull);
     bsSelection.or(set);
     empty = UNKNOWN;
   }
 
-  public void toggleSelectionSet(BitSet bs) {
+  void toggleSelectionSet(BitSet bs) {
     /*
       toggle each one independently
     for (int i = viewer.getAtomCount(); --i >= 0; )
@@ -143,7 +142,7 @@ public class SelectionManager {
     }
   }
 
-  public void invertSelection() {
+  void invertSelection() {
     empty = TRUE;
     for (int i = viewer.getAtomCount(); --i >= 0; )
       if (bsSelection.get(i)) {
@@ -154,7 +153,7 @@ public class SelectionManager {
       }
   }
 
-  public void excludeSelectionSet(BitSet setExclude) {
+  void excludeSelectionSet(BitSet setExclude) {
     if (empty == TRUE)
       return;
     for (int i = viewer.getAtomCount(); --i >= 0; )
@@ -163,7 +162,7 @@ public class SelectionManager {
     empty = UNKNOWN;
   }
 
-  public int getSelectionCount() {
+  int getSelectionCount() {
     // FIXME mth 2003 11 16
     // very inefficient ... but works for now
     // need to implement our own bitset that keeps track of the count

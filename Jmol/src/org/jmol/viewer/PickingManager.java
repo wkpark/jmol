@@ -22,15 +22,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 import org.jmol.viewer.datamodel.Atom;
 import org.jmol.viewer.datamodel.Frame;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class PickingManager {
+class PickingManager {
 
   JmolViewer viewer;
 
@@ -41,11 +40,11 @@ public class PickingManager {
 
   int[] countPlusIndexes = new int[5];
 
-  public PickingManager(JmolViewer viewer) {
+  PickingManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  public void atomPicked(int atomIndex, boolean shiftKey) {
+  void atomPicked(int atomIndex, boolean shiftKey) {
     if (atomIndex == -1)
       return;
     Frame frame = viewer.getFrame();
@@ -148,7 +147,7 @@ public class PickingManager {
     }
   }
 
-  public void setPickingMode(int pickingMode) {
+  void setPickingMode(int pickingMode) {
     this.pickingMode = pickingMode;
     queuedAtomCount = 0;
     System.out.println("setPickingMode(" +

@@ -22,9 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -33,9 +32,9 @@ import java.awt.Component;
 import java.awt.Event;
 import java.util.BitSet;
 
-public class MouseManager10 extends MouseManager {
+class MouseManager10 extends MouseManager {
 
-  public MouseManager10(Component component, JmolViewer viewer) {
+  MouseManager10(Component component, JmolViewer viewer) {
     super(component, viewer);
   }
 
@@ -46,7 +45,7 @@ public class MouseManager10 extends MouseManager {
 
   int xWhenPressed, yWhenPressed, modifiersWhenPressed;
 
-  public boolean handleOldJvm10Event(Event e) {
+  boolean handleOldJvm10Event(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers, clickCount = e.clickCount;
     long time = e.when;
     modifiers = applyLeftMouse(modifiers);

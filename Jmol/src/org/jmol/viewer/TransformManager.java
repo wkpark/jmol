@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
 import org.jmol.viewer.*;
 import java.awt.Dimension;
@@ -33,15 +33,15 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-public class TransformManager {
+class TransformManager {
 
   JmolViewer viewer;
 
-  public TransformManager(JmolViewer viewer) {
+  TransformManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  public void homePosition() {
+  void homePosition() {
     matrixRotate.setIdentity();         // no rotations
     //    setSlabEnabled(false);              // no slabbing
     //    slabToPercent(100);
@@ -57,10 +57,10 @@ public class TransformManager {
   // this matrix only holds rotations ... no translations
   // however, it cannot be a Matrix3f because we need to multiply it by
   // a matrix4f which contains translations
-  public final Matrix3f matrixRotate = new Matrix3f();
+  final Matrix3f matrixRotate = new Matrix3f();
   private final Matrix3f matrixTemp3 = new Matrix3f();
 
-  public void rotateXYBy(int xDelta, int yDelta) {
+  void rotateXYBy(int xDelta, int yDelta) {
     rotateXRadians(yDelta * radiansPerDegree);
     rotateYRadians(xDelta * radiansPerDegree);
     /*
@@ -81,7 +81,7 @@ public class TransformManager {
     */
   }
 
-  public void rotateZBy(int zDelta) {
+  void rotateZBy(int zDelta) {
     rotateZRadians((float)Math.PI * zDelta / 180);
     /*
     float rotateAccelerator = 1.1f;
@@ -90,32 +90,32 @@ public class TransformManager {
     */
   }
 
-  public void rotateFront() {
+  void rotateFront() {
     matrixRotate.setIdentity();
   }
 
-  public void rotateToX(float angleRadians) {
+  void rotateToX(float angleRadians) {
     matrixRotate.rotX(angleRadians);
   }
-  public void rotateToY(float angleRadians) {
+  void rotateToY(float angleRadians) {
     matrixRotate.rotY(angleRadians);
   }
-  public void rotateToZ(float angleRadians) {
+  void rotateToZ(float angleRadians) {
     matrixRotate.rotZ(angleRadians);
   }
 
-  public synchronized void rotateXRadians(float angleRadians) {
+  synchronized void rotateXRadians(float angleRadians) {
     matrixTemp3.rotX(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
     //    System.out.println("rotateXRadius matrixRotate=\n" + matrixRotate);
   }
-  public synchronized void rotateYRadians(float angleRadians) {
+  synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotY(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
-  public synchronized void rotateZRadians(float angleRadians) {
+  synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotZ(angleRadians);
@@ -125,23 +125,23 @@ public class TransformManager {
   final static float radiansPerDegree = (float)(2 * Math.PI / 360);
   final static float degreesPerRadian = (float)(360 / (2 * Math.PI));
 
-  public void rotateZRadiansScript(float angleRadians) {
+  void rotateZRadiansScript(float angleRadians) {
     matrixTemp3.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
-  public void rotate(AxisAngle4f axisAngle) {
+  void rotate(AxisAngle4f axisAngle) {
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
-  public void rotateAxisAngle(float x, float y, float z, float degrees) {
+  void rotateAxisAngle(float x, float y, float z, float degrees) {
     axisangleT.set(x, y, z, degrees * radiansPerDegree);
     rotate(axisangleT);
   }
 
-  public void rotateTo(float x, float y, float z, float degrees) {
+  void rotateTo(float x, float y, float z, float degrees) {
     if (degrees < .01 && degrees > -.01) {
       matrixRotate.setIdentity();
     } else {
@@ -150,7 +150,7 @@ public class TransformManager {
     }
   }
 
-  public void rotateTo(AxisAngle4f axisAngle) {
+  void rotateTo(AxisAngle4f axisAngle) {
     if (axisAngle.angle < .01 && axisAngle.angle > -.01)
       matrixRotate.setIdentity();
     else
@@ -160,43 +160,43 @@ public class TransformManager {
   /****************************************************************
    TRANSLATIONS
   ****************************************************************/
-  public int xTranslation;
-  public int yTranslation;
+  int xTranslation;
+  int yTranslation;
 
-  public void translateXYBy(int xDelta, int yDelta) {
+  void translateXYBy(int xDelta, int yDelta) {
     xTranslation += xDelta;
     yTranslation += yDelta;
   }
 
-  public void translateToXPercent(int percent) {
+  void translateToXPercent(int percent) {
     // FIXME -- what is the proper RasMol interpretation of this with zooming?
     xTranslation = (width/2) + width * percent / 100;
   }
 
-  public void translateToYPercent(int percent) {
+  void translateToYPercent(int percent) {
     yTranslation = (height/2) + height * percent / 100;
   }
 
-  public void translateToZPercent(int percent) {
+  void translateToZPercent(int percent) {
     // FIXME who knows what this should be? some type of zoom?
   }
 
-  public int getTranslationXPercent() {
+  int getTranslationXPercent() {
     return (xTranslation - width/2) * 100 / width;
   }
 
-  public int getTranslationYPercent() {
+  int getTranslationYPercent() {
     return (yTranslation - height/2) * 100 / height;
   }
 
-  public int getTranslationZPercent() {
+  int getTranslationZPercent() {
     return 0;
   }
 
   final AxisAngle4f axisangleT = new AxisAngle4f();
   final Vector3f vectorT = new Vector3f();
 
-  public String getOrientationText() {
+  String getOrientationText() {
     return getMoveToText() + "\nOR\n" + getRotateZyzText();
   }
 
@@ -356,19 +356,19 @@ public class TransformManager {
   }
   */
 
-  public void getAxisAngle(AxisAngle4f axisAngle) {
+  void getAxisAngle(AxisAngle4f axisAngle) {
     axisAngle.set(matrixRotate);
   }
 
-  public String getTransformText() {
+  String getTransformText() {
     return "matrixRotate=\n" + matrixRotate;
   }
 
-  public void setRotation(Matrix3f matrixRotation) {
+  void setRotation(Matrix3f matrixRotation) {
     this.matrixRotate.set(matrixRotation);
   }
 
-  public void getRotation(Matrix3f matrixRotation) {
+  void getRotation(Matrix3f matrixRotation) {
     // hmm ... I suppose that there could be a race condiditon here
     // if matrixRotate is being modified while this is called
     matrixRotation.set(this.matrixRotate);
@@ -377,14 +377,14 @@ public class TransformManager {
   /****************************************************************
    ZOOM
   ****************************************************************/
-  public boolean zoomEnabled = true;
+  boolean zoomEnabled = true;
   // zoomPercent is the current displayed zoom value
-  public int zoomPercent = 100;
+  int zoomPercent = 100;
   // zoomPercentSetting is the current setting of zoom
   // if zoom is not enabled then the two values will be different
-  public int zoomPercentSetting = 100;
+  int zoomPercentSetting = 100;
 
-  public void zoomBy(int pixels) {
+  void zoomBy(int pixels) {
     if (pixels > 20)
       pixels = 20;
     else if (pixels < -20)
@@ -396,20 +396,20 @@ public class TransformManager {
     zoomToPercent(percent);
   }
 
-  public int getZoomPercent() {
+  int getZoomPercent() {
     return zoomPercent;
   }
 
-  public int getZoomPercentSetting() {
+  int getZoomPercentSetting() {
     return zoomPercentSetting;
   }
 
-  public void zoomToPercent(int percentZoom) {
+  void zoomToPercent(int percentZoom) {
     zoomPercentSetting = percentZoom;
     calcZoom();
   }
 
-  public void zoomByPercent(int percentZoom) {
+  void zoomByPercent(int percentZoom) {
     int delta = percentZoom * zoomPercentSetting / 100;
     if (delta == 0)
       delta = (percentZoom < 0) ? -1 : 1;
@@ -427,14 +427,14 @@ public class TransformManager {
       zoomPercent / 100;
   }
 
-  public void setZoomEnabled(boolean zoomEnabled) {
+  void setZoomEnabled(boolean zoomEnabled) {
     if (this.zoomEnabled != zoomEnabled) {
       this.zoomEnabled = zoomEnabled;
       calcZoom();
     }
   }
 
-  public void setScaleAngstromsPerInch(float angstromsPerInch) {
+  void setScaleAngstromsPerInch(float angstromsPerInch) {
     scalePixelsPerAngstrom =
       scaleDefaultPixelsPerAngstrom = 72 / angstromsPerInch;
   }
@@ -457,65 +457,65 @@ public class TransformManager {
   */
 
   /*
-  public final static int SLABREJECT = 0;
-  public final static int SLABHALF = 1;
-  public final static int SLABHOLLOW = 2;
-  public final static int SLABSOLID = 3;
-  public final static int SLABSECTION = 4;
+  final static int SLABREJECT = 0;
+  final static int SLABHALF = 1;
+  final static int SLABHOLLOW = 2;
+  final static int SLABSOLID = 3;
+  final static int SLABSECTION = 4;
   */
 
-  public boolean slabEnabled = false;
-  public int modeSlab;
-  public int slabPercentSetting = 100;
-  public int depthPercentSetting = 0;
+  boolean slabEnabled = false;
+  int modeSlab;
+  int slabPercentSetting = 100;
+  int depthPercentSetting = 0;
 
   private int slabValue;
   private int depthValue;
 
-  public boolean getSlabEnabled() {
+  boolean getSlabEnabled() {
     return slabEnabled;
   }
 
-  public int getSlabPercentSetting() {
+  int getSlabPercentSetting() {
     return slabPercentSetting;
   }
 
-  public void slabBy(int pixels) {
+  void slabBy(int pixels) {
     int percent = pixels * slabPercentSetting / minScreenDimension;
     if (percent == 0)
       percent = (pixels < 0) ? -1 : 1;
     slabPercentSetting += percent;
   }
 
-  public void slabToPercent(int percentSlab) {
+  void slabToPercent(int percentSlab) {
     slabPercentSetting =
       percentSlab < 0 ? 0 : percentSlab > 100 ? 100 : percentSlab;
   }
 
-  public void slabByPercent(int percentSlab) {
+  void slabByPercent(int percentSlab) {
     int delta = percentSlab * slabPercentSetting / 100;
     if (delta == 0)
       delta = (percentSlab < 0) ? -1 : 1;
     slabPercentSetting += delta;
   }
 
-  public void setSlabEnabled(boolean slabEnabled) {
+  void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
   }
 
   // depth is an extension added by OpenRasMol
   // it represents the 'back' of the slab plane
-  public void depthToPercent(int percentDepth) {
+  void depthToPercent(int percentDepth) {
     depthPercentSetting =
       percentDepth < 0 ? 0 : percentDepth > 100 ? 100 : percentDepth;
   }
   
   // miguel 24 sep 2004 - as I recall, this slab mode stuff is not implemented
-  public void setModeSlab(int modeSlab) {
+  void setModeSlab(int modeSlab) {
     this.modeSlab = modeSlab;
   }
 
-  public int getModeSlab() {
+  int getModeSlab() {
     return modeSlab;
   }
 
@@ -542,25 +542,25 @@ public class TransformManager {
   /****************************************************************
    PERSPECTIVE
   ****************************************************************/
-  public boolean perspectiveDepth = true;
-  public float cameraDepth = 3;
+  boolean perspectiveDepth = true;
+  float cameraDepth = 3;
   int cameraDistance = 1000;        // prevent divide by zero on startup
   float cameraDistanceFloat = 1000; // prevent divide by zero on startup
 
-  public void setPerspectiveDepth(boolean perspectiveDepth) {
+  void setPerspectiveDepth(boolean perspectiveDepth) {
     this.perspectiveDepth = perspectiveDepth;
     scaleFitToScreen();
   }
 
-  public boolean getPerspectiveDepth() {
+  boolean getPerspectiveDepth() {
     return perspectiveDepth;
   }
 
-  public void setCameraDepth(float depth) {
+  void setCameraDepth(float depth) {
     cameraDepth = depth;
   }
 
-  public float getCameraDepth() {
+  float getCameraDepth() {
     return cameraDepth;
   }
 
@@ -568,20 +568,20 @@ public class TransformManager {
    SCREEN SCALING
   ****************************************************************/
   boolean tOversample;
-  public int width,height;
-  public int width1, height1, width4, height4;
-  public int minScreenDimension;
-  public float scalePixelsPerAngstrom;
-  public float scaleDefaultPixelsPerAngstrom;
+  int width,height;
+  int width1, height1, width4, height4;
+  int minScreenDimension;
+  float scalePixelsPerAngstrom;
+  float scaleDefaultPixelsPerAngstrom;
 
-  public void setScreenDimension(int width, int height) {
+  void setScreenDimension(int width, int height) {
     this.width1 = this.width = width;
     this.width4 = width + width;
     this.height1 = this.height = height;
     this.height4 = height + height;
   }
 
-  public void setOversample(boolean tOversample) {
+  void setOversample(boolean tOversample) {
     if (this.tOversample == tOversample)
       return;
     this.tOversample = tOversample;
@@ -595,7 +595,7 @@ public class TransformManager {
     scaleFitToScreen();
   }
 
-  public void scaleFitToScreen() {
+  void scaleFitToScreen() {
     if (width == 0 || height == 0 || !viewer.haveFrame())
       return;
     // translate to the middle of the screen
@@ -633,7 +633,7 @@ public class TransformManager {
    * scalings
    ****************************************************************/
 
-  public float scaleToScreen(int z, float sizeAngstroms) {
+  float scaleToScreen(int z, float sizeAngstroms) {
     // all z's are >= 0
     // so the more positive z is, the smaller the screen scale
     float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
@@ -642,14 +642,14 @@ public class TransformManager {
     return pixelSize;
   }
 
-  public float scaleToPerspective(int z, float sizeAngstroms) {
+  float scaleToPerspective(int z, float sizeAngstroms) {
     return (perspectiveDepth
             // mth 2004 04 02 ... what the hell is this ... must be a bug
             ? (sizeAngstroms * cameraDistance) / + z // <-- ??
             : sizeAngstroms);
   }
 
-  public short scaleToScreen(int z, int milliAngstroms) {
+  short scaleToScreen(int z, int milliAngstroms) {
     if (milliAngstroms == 0)
       return 0;
     int pixelSize = (int)(milliAngstroms * scalePixelsPerAngstrom / 1000);
@@ -664,7 +664,7 @@ public class TransformManager {
    TRANSFORMATIONS
   ****************************************************************/
 
-  public final Matrix4f matrixTransform = new Matrix4f();
+  final Matrix4f matrixTransform = new Matrix4f();
   private final Point3f point3fVibrationTemp = new Point3f();
   private final Point3f point3fScreenTemp = new Point3f();
   private final Point3i point3iScreenTemp = new Point3i();
@@ -677,12 +677,12 @@ public class TransformManager {
    * And rotations about the y axis are left-handed
    * setting this flag makes Jmol mimic this behavior
    ****************************************************************/
-  public boolean axesOrientationRasmol = false;
-  public void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
+  boolean axesOrientationRasmol = false;
+  void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
     this.axesOrientationRasmol = axesOrientationRasmol;
   }
 
-  public void calcTransformMatrices() {
+  void calcTransformMatrices() {
     calcTransformMatrix();
     calcSlabAndDepthValues();
     viewer.setSlabAndDepthValues(slabValue, depthValue);
@@ -690,10 +690,10 @@ public class TransformManager {
     minimumZ = Integer.MAX_VALUE;
   }
 
-  public boolean increaseRotationRadius;
+  boolean increaseRotationRadius;
   int minimumZ;
 
-  public float getRotationRadiusIncrease() {
+  float getRotationRadiusIncrease() {
     System.out.println("TransformManager.getRotationRadiusIncrease()");
     System.out.println("minimumZ=" + minimumZ);
     // add one more pixel just for good luck;
@@ -744,7 +744,7 @@ public class TransformManager {
     // translations come later (to deal with perspective)
   }
 
-  public Matrix4f getUnscaledTransformMatrix() {
+  Matrix4f getUnscaledTransformMatrix() {
     Matrix4f unscaled = new Matrix4f();
     unscaled.setIdentity();
     vectorTemp.set(viewer.getRotationCenter());
@@ -756,16 +756,16 @@ public class TransformManager {
     return unscaled;
   }
 
-  public void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
+  void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
     for (int i = count; --i >= 0; )
       screens[i].set(transformPoint(angstroms[i]));
   }
 
-  public void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
+  void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
     pointScreen.set(transformPoint(pointAngstroms));
   }
 
-  public Point3i transformPoint(Point3f pointAngstroms) {
+  Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
 
     int z = (int)point3fScreenTemp.z;
@@ -794,7 +794,7 @@ public class TransformManager {
     return point3iScreenTemp;
   }
 
-  public void transformPoint(Point3f pointAngstroms, Point3f screen) {
+  void transformPoint(Point3f pointAngstroms, Point3f screen) {
     matrixTransform.transform(pointAngstroms, screen);
 
     float z = screen.z;
@@ -819,7 +819,7 @@ public class TransformManager {
     }
   }
 
-  public Point3i transformPoint(Point3f pointAngstroms,
+  Point3i transformPoint(Point3f pointAngstroms,
                                 Vector3f vibrationVector) {
     if (! vibrationOn || vibrationVector == null)
       matrixTransform.transform(pointAngstroms, point3fScreenTemp);
@@ -851,12 +851,12 @@ public class TransformManager {
     return point3iScreenTemp;
   }
 
-  public void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
+  void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
                              Point3i pointScreen) {
     pointScreen.set(transformPoint(pointAngstroms, vibrationVector));
   }
 
-  public void transformVector(Vector3f vectorAngstroms,
+  void transformVector(Vector3f vectorAngstroms,
                               Vector3f vectorTransformed) {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
@@ -864,12 +864,12 @@ public class TransformManager {
   ////////////////////////////////////////////////////////////////
 
   boolean vibrationOn;
-  public float vibrationPeriod;
+  float vibrationPeriod;
   int vibrationPeriodMs;
   float vibrationAmplitude;
-  public float vibrationRadians;
+  float vibrationRadians;
   
-  public void setVibrationPeriod(float period) {
+  void setVibrationPeriod(float period) {
     if (period <= 0) {
       this.vibrationPeriod = 0;
       this.vibrationPeriodMs = 0;
@@ -881,40 +881,40 @@ public class TransformManager {
     }
   }
 
-  public void setVibrationT(float t) {
+  void setVibrationT(float t) {
     vibrationRadians = t * twoPI;
     vibrationAmplitude = (float)Math.cos(vibrationRadians) * vibrationScale;
   }
 
-  public float vectorScale = 1f;
-  public void setVectorScale(float scale) {
+  float vectorScale = 1f;
+  void setVectorScale(float scale) {
     if (scale >= -10 && scale <= 10)
       vectorScale = scale;
   }
 
-  public float vibrationScale = 1f;
-  public void setVibrationScale(float scale) {
+  float vibrationScale = 1f;
+  void setVibrationScale(float scale) {
     if (scale >= -10 && scale <= 10)
       vibrationScale = scale;
   }
 
-  public int spinX, spinY = 30, spinZ, spinFps = 30;
+  int spinX, spinY = 30, spinZ, spinFps = 30;
 
   final static float twoPI = (float)(2 * Math.PI);
 
-  public void setSpinX(int value) {
+  void setSpinX(int value) {
     spinX = value;
     //    System.out.println("spinX=" + spinX);
   }
-  public void setSpinY(int value) {
+  void setSpinY(int value) {
     spinY = value;
     //    System.out.println("spinY=" + spinY);
   }
-  public void setSpinZ(int value) {
+  void setSpinZ(int value) {
     spinZ = value;
     //    System.out.println("spinZ=" + spinZ);
   }
-  public void setSpinFps(int value) {
+  void setSpinFps(int value) {
     if (value <= 0)
       value = 1;
     else if (value > 50)
@@ -922,9 +922,9 @@ public class TransformManager {
     spinFps = value;
     //    System.out.println("spinFps=" + spinFps);
   }
-  public boolean spinOn;
+  boolean spinOn;
   SpinThread spinThread;
-  public void setSpinOn(boolean spinOn) {
+  void setSpinOn(boolean spinOn) {
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread();
@@ -986,7 +986,7 @@ public class TransformManager {
    * Vibration support
    ****************************************************************/
                                                                  
-  public void clearVibration() {
+  void clearVibration() {
     setVibrationOn(false);
   }
 

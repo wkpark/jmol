@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.*;
-import org.jmol.viewer.managers.*;
 import org.jmol.viewer.datamodel.*;
 
 import org.jmol.viewer.script.Eval;

@@ -22,24 +22,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
-
-import org.jmol.viewer.*;
+package org.jmol.viewer;
 
 import java.awt.Component;
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-public class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  public MouseManager14(Component component, JmolViewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
-  public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+class MouseWrapper14 {
+  static MouseManager alloc(Component component, JmolViewer viewer) {
+    return new MouseManager14(component, viewer);
   }
 }

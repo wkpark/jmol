@@ -22,9 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
-import org.jmol.viewer.*;
 
 import java.awt.Component;
 import java.awt.Event;
@@ -32,16 +31,16 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public class MouseManager11 extends MouseManager
+class MouseManager11 extends MouseManager
   implements MouseListener, MouseMotionListener {
 
-  public MouseManager11(Component component, JmolViewer viewer) {
+  MouseManager11(Component component, JmolViewer viewer) {
     super(component, viewer);
     component.addMouseListener(this);
     component.addMouseMotionListener(this);
   }
 
-  public boolean handleOldJvm10Event(Event e) {
+  boolean handleOldJvm10Event(Event e) {
     System.out.println("MouseManager11 does not handle events");
     return false;
   }

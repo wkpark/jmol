@@ -15,17 +15,16 @@
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Lesser General License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.jmol.viewer.managers;
+package org.jmol.viewer;
 
 import org.jmol.g3d.*;
-import org.jmol.viewer.*;
 import org.jmol.viewer.datamodel.FrameRenderer;
 import org.jmol.viewer.datamodel.Frame;
 
@@ -35,19 +34,19 @@ import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Rectangle;
 
-public class RepaintManager {
+class RepaintManager {
 
   JmolViewer viewer;
-  public FrameRenderer frameRenderer;
+  FrameRenderer frameRenderer;
 
-  public RepaintManager(JmolViewer viewer) {
+  RepaintManager(JmolViewer viewer) {
     this.viewer = viewer;
     frameRenderer = new FrameRenderer(viewer);
   }
 
-  public int displayModelIndex = 0;
+  int displayModelIndex = 0;
 
-  public boolean setDisplayModelIndex(int modelIndex) {
+  boolean setDisplayModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
     if (modelIndex < 0 || modelIndex >= frame.getModelCount())
       displayModelIndex = -1;
@@ -58,9 +57,9 @@ public class RepaintManager {
     return true;
   }
 
-  public int animationDirection = 1;
+  int animationDirection = 1;
   int currentDirection = 1;
-  public void setAnimationDirection(int animationDirection) {
+  void setAnimationDirection(int animationDirection) {
     if (animationDirection == 1 || animationDirection == -1) {
       this.animationDirection = currentDirection = animationDirection;
     }
@@ -68,8 +67,8 @@ public class RepaintManager {
       System.out.println("invalid animationDirection:" + animationDirection);
   }
 
-  public int animationFps = 10;
-  public void setAnimationFps(int animationFps) {
+  int animationFps = 10;
+  void setAnimationFps(int animationFps) {
     if (animationFps >= 1 && animationFps <= 50)
       this.animationFps = animationFps;
     else
@@ -79,11 +78,11 @@ public class RepaintManager {
   // 0 = once
   // 1 = loop
   // 2 = palindrome
-  public int animationReplayMode = 0;
-  public float firstFrameDelay, lastFrameDelay;
+  int animationReplayMode = 0;
+  float firstFrameDelay, lastFrameDelay;
   int firstFrameDelayMs, lastFrameDelayMs;
 
-  public void setAnimationReplayMode(int animationReplayMode,
+  void setAnimationReplayMode(int animationReplayMode,
                                      float firstFrameDelay,
                                      float lastFrameDelay) {
     System.out.println("animationReplayMode=" + animationReplayMode);
@@ -97,7 +96,7 @@ public class RepaintManager {
       System.out.println("invalid animationReplayMode:" + animationReplayMode);
   }
 
-  public boolean setAnimationRelative(int direction) {
+  boolean setAnimationRelative(int direction) {
     if (displayModelIndex < 0)
       return false;
     int modelIndexNext = displayModelIndex + (direction * currentDirection);
@@ -142,22 +141,22 @@ public class RepaintManager {
     return true;
   }
 
-  public boolean setAnimationNext() {
+  boolean setAnimationNext() {
     return setAnimationRelative(animationDirection);
   }
 
-  public boolean setAnimationPrevious() {
+  boolean setAnimationPrevious() {
     return setAnimationRelative(-animationDirection);
   }
 
-  public boolean wireframeRotating = false;
-  public void setWireframeRotating(boolean wireframeRotating) {
+  boolean wireframeRotating = false;
+  void setWireframeRotating(boolean wireframeRotating) {
     this.wireframeRotating = wireframeRotating;
   }
 
-  public boolean inMotion = false;
+  boolean inMotion = false;
 
-  public void setInMotion(boolean inMotion) {
+  void setInMotion(boolean inMotion) {
     if (this.inMotion != inMotion && viewer.getWireframeRotation()) {
       setWireframeRotating(inMotion);
       if (!inMotion)
@@ -166,20 +165,20 @@ public class RepaintManager {
     this.inMotion = inMotion;
   }
 
-  public Image takeSnapshot() {
+  Image takeSnapshot() {
     return null;
     //return awtComponent.takeSnapshot();
   }
 
-  public int holdRepaint = 0;
-  public boolean repaintPending;
+  int holdRepaint = 0;
+  boolean repaintPending;
 
-  public void pushHoldRepaint() {
+  void pushHoldRepaint() {
     ++holdRepaint;
     //    System.out.println("pushHoldRepaint:" + holdRepaint);
   }
 
-  public void popHoldRepaint() {
+  void popHoldRepaint() {
     --holdRepaint;
     //    System.out.println("popHoldRepaint:" + holdRepaint);
     if (holdRepaint <= 0) {
@@ -190,12 +189,12 @@ public class RepaintManager {
     }
   }
 
-  public void forceRefresh() {
+  void forceRefresh() {
     repaintPending = true;
     viewer.awtComponent.repaint();
   }
 
-  public void refresh() {
+  void refresh() {
     if (repaintPending)
       return;
     repaintPending = true;
@@ -204,7 +203,7 @@ public class RepaintManager {
     }
   }
 
-  public synchronized void requestRepaintAndWait() {
+  synchronized void requestRepaintAndWait() {
     viewer.awtComponent.repaint();
     try {
       wait();
@@ -212,7 +211,7 @@ public class RepaintManager {
     }
   }
 
-  public synchronized void notifyRepainted() {
+  synchronized void notifyRepainted() {
     repaintPending = false;
     notify();
   }
@@ -220,11 +219,11 @@ public class RepaintManager {
   final Rectangle rectOversample = new Rectangle();
   boolean tOversample;
 
-  public void setOversample(boolean tOversample) {
+  void setOversample(boolean tOversample) {
     this.tOversample = tOversample;
   }
 
-  public void render(Graphics3D g3d, Rectangle rectClip,
+  void render(Graphics3D g3d, Rectangle rectClip,
                      Frame frame, int displayModelID) {
     frameRenderer.render(g3d, rectClip, frame, displayModelID);
     viewer.checkCameraDistance();
@@ -238,7 +237,7 @@ public class RepaintManager {
    * Animation support
    ****************************************************************/
   
-  public void clearAnimation() {
+  void clearAnimation() {
     setAnimationOn(false);
     setDisplayModelIndex(0);
     setAnimationDirection(1);
@@ -246,9 +245,9 @@ public class RepaintManager {
     setAnimationReplayMode(0, 0, 0);
   }
 
-  public boolean animationOn = false;
+  boolean animationOn = false;
   AnimationThread animationThread;
-  public void setAnimationOn(boolean animationOn) {
+  void setAnimationOn(boolean animationOn) {
     if (! animationOn || ! viewer.haveFrame()) {
       if (animationThread != null) {
         animationThread.interrupt();

@@ -84,7 +84,6 @@ final public class JmolViewer {
   public StyleManager styleManager;
   public LabelManager labelManager;
   public MeasurementManager measurementManager;
-  public DistributionManager distributionManager;
   public Eval eval;
   public Graphics3D g3d;
 
@@ -128,7 +127,6 @@ final public class JmolViewer {
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
     measurementManager = new MeasurementManager(this);
-    distributionManager = new DistributionManager(this);
 
   
   }
@@ -499,10 +497,6 @@ final public class JmolViewer {
 
   public void setModeAtomColorProfile(byte palette) {
     colorManager.setPaletteDefault(palette);
-    /*
-    distributionManager.setColixAtom(palette, (short)0, // FIXME Colix.NULL,
-                                     atomIteratorSelected());
-    */
     refresh();
   }
 
@@ -643,15 +637,6 @@ final public class JmolViewer {
 
   public Color getColorFromString(String colorName) {
     return colorManager.getColorFromString(colorName);
-  }
-
-  // note that colorBond could be null -- meaning inherit atom color
-  public void setColorBond(Color colorBond) {
-    colorManager.setColorBond(colorBond);
-    distributionManager
-      .setColix(g3d.getColix(colorBond),
-                bondIteratorSelected(JmolConstants.BOND_COVALENT));
-    refresh();
   }
 
   public Color getColorBond() {
@@ -1321,50 +1306,21 @@ final public class JmolViewer {
       eval.haltExecution();
   }
 
-  public void setMarBond(short mar, byte bondTypeMask) {
-    distributionManager
-      .setMarBond(mar, bondIteratorSelected(bondTypeMask));
-  }
-
-  public void setMarBondAll(short mar) {
-    setMarBond(mar, JmolConstants.BOND_ALL_MASK);
-  }
-
-  public void setMarBond(short mar) {
-    setMarBond(mar, JmolConstants.BOND_COVALENT);
-  }
-  
-  public void setMarSsBond(short mar) {
-    setMarBond(mar, JmolConstants.BOND_SULFUR_MASK);
-  }
-
-  public void setMarHBond(short mar) {
-    getFrame().calcHbonds();
-    setMarBond(mar, JmolConstants.BOND_HYDROGEN);
-  }
-
   public void setColorAtomScript(byte palette, Color color) {
     setShapeColor(JmolConstants.SHAPE_BALLS, palette, color);
   }
 
   public void setColorBondScript(Color color) {
-    distributionManager
-      .setColix(g3d.getColix(color),
-                bondIteratorSelected(JmolConstants.BOND_COVALENT));
+    setShapeColor(JmolConstants.SHAPE_STICKS,
+                  JmolConstants.PALETTE_COLOR, color);
   }
 
   public void setColorSsBondScript(Color color) {
-    colorManager.setColorSsbond(color);
-    distributionManager
-      .setColix(g3d.getColix(color),
-                bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "ssbondColor", color);
   }
-
+  
   public void setColorHBondScript(Color color) {
-    colorManager.setColorHbond(color);
-    distributionManager
-      .setColix(g3d.getColix(color),
-                bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondColor", color);
   }
 
   public void setSsbondsBackbone(boolean ssbondsBackbone) {
@@ -1705,18 +1661,12 @@ final public class JmolViewer {
     return styleManager.percentVdwAtom;
   }
 
-  public void setMarBondDefault(short milliAngstromsRadius) {
-    styleManager.setMarBond(milliAngstromsRadius);
-    setMarBond(milliAngstromsRadius);
-    refresh();
-  }
-
   public short getMadAtom() {
     return (short)-styleManager.percentVdwAtom;
   }
 
-  public short getMarBond() {
-    return styleManager.marBond;
+  public short getMadBond() {
+    return (short)(styleManager.marBond * 2);
   }
 
   public void setModeMultipleBond(byte modeMultipleBond) {

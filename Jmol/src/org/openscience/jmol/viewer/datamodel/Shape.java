@@ -51,6 +51,7 @@ abstract public class Shape {
 
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
+    System.out.println("unassigned property:" + propertyName + ":" + value);
   }
 
   public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {

@@ -39,6 +39,7 @@ final public class Frame {
 
   public JmolViewer viewer;
   public FrameRenderer frameRenderer;
+  Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
   float maxBondingRadius = 0;
@@ -75,7 +76,8 @@ final public class Frame {
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
-    
+    this.g3d = viewer.g3d;
+
     checkShape(JmolConstants.SHAPE_BALLS);
     checkShape(JmolConstants.SHAPE_STICKS);
   }

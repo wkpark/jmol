@@ -25,5 +25,58 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+import org.openscience.jmol.viewer.*;
+
+import java.awt.Color;
+import java.util.BitSet;
+
 public class Sticks extends Shape {
+
+  public void setMad(short mad, BitSet bsSelected) {
+    setMadBond(mad, JmolConstants.BOND_COVALENT, bsSelected);
+  }
+  
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+    setColixBond(colix, JmolConstants.BOND_COVALENT, bsSelected);
+  }
+  
+  public void setProperty(String propertyName, Object value,
+                          BitSet bsSelected) {
+    byte bondTypeMask;
+    if (propertyName.startsWith("ssbond")) {
+      bondTypeMask = JmolConstants.BOND_SULFUR_MASK;
+    } else if (propertyName.startsWith("hbond")) {
+      frame.calcHbonds();
+      bondTypeMask = JmolConstants.BOND_HYDROGEN;
+    } else if (propertyName.startsWith("all")) {
+      bondTypeMask = JmolConstants.BOND_ALL_MASK;
+    } else {
+      System.out.println("Sticks does not recognize propertyName:" +
+                         propertyName);
+      return;
+    }
+    if (propertyName.endsWith("Mad")) {
+      short mad = (short)((Integer)value).intValue();
+      setMadBond(mad, bondTypeMask, bsSelected);
+    } else if (propertyName.endsWith("Color")) {
+      short colix = frame.g3d.getColix((Color)value);
+      setColixBond(colix, bondTypeMask, bsSelected);
+    } else {
+      System.out.println("Sticks does not recognize propertyName:" +
+                         propertyName);
+      return;
+    }
+  }
+
+  void setMadBond(short mad, byte bondTypeMask, BitSet bs) {
+    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+    while (iter.hasNext())
+      iter.next().setMad(mad);
+  }
+
+  void setColixBond(short colix, byte bondTypeMask, BitSet bs) {
+    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+    while (iter.hasNext())
+      iter.next().setColix(colix);
+  }
 }

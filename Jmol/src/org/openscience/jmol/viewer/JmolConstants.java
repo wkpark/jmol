@@ -74,7 +74,7 @@ final public class JmolConstants {
   public final static byte MULTIBOND_SMALL =     2;
   public final static byte MULTIBOND_ALWAYS =    3;
 
-  public final static short marMultipleBondSmallMaximum = 250;
+  public final static short madMultipleBondSmallMaximum = 500;
 
   /**
    * listing of model types

@@ -1440,7 +1440,7 @@ public class Eval implements Runnable {
     viewer.invertSelection();
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
-    viewer.setMarBondAll((short)0);
+    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)0);
     viewer.setBondSelectionModeOr(bondmode);
     viewer.setLabelScript(null);
 
@@ -1746,83 +1746,85 @@ public class Eval implements Runnable {
 
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
-    short mar = 1;
+    short mad = 1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      mar = 0;
+      mad = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol > 750)
         numberOutOfRange();
-      mar = (short)(radiusRasMol * 4);
+      mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms > 3)
         numberOutOfRange();
-      mar = (short)(angstroms * 1000);
+      mad = (short)(angstroms * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setMarBond(mar);
+    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, mad);
   }
 
   void ssbonds() throws ScriptException {
     int tok = statement[1].tok;
-    short mar = 1;
+    short mad = 1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      mar = 0;
+      mad = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      mar = (short)(radiusRasMol * 4);
+      mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
-      mar = (short)(angstroms * 1000);
+      mad = (short)(angstroms * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setMarSsBond(mar);
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "ssbondMad",
+                            new Integer(mad));
   }
 
   void hbonds() throws ScriptException {
     int tok = statement[1].tok;
-    short mar = 1;
+    short mad = 1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      mar = 0;
+      mad = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      mar = (short)(radiusRasMol * 4);
+      mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
-      mar = (short)(angstroms * 1000);
+      mad = (short)(angstroms * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setMarHBond(mar);
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondMad",
+                            new Integer(mad));
   }
 
   void animation() throws ScriptException {

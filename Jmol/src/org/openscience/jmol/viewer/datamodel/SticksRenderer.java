@@ -51,7 +51,7 @@ class SticksRenderer extends ShapeRenderer {
   short colixA, colixB;
   int width;
   int bondOrder;
-  short marBond;
+  short madBond;
   
   private void renderHalo() {
     int x = (xA + xB) / 2, y = (yA + yB) / 2, z = (zA + zB) / 2;
@@ -93,7 +93,7 @@ class SticksRenderer extends ShapeRenderer {
   }
 
   void render(Bond bond) {
-    if ((marBond = bond.mar) == 0)
+    if ((madBond = bond.mad) == 0)
       return;
     int order = bond.order;
     Atom atomA = bond.atom1;
@@ -125,7 +125,7 @@ class SticksRenderer extends ShapeRenderer {
     xB = atomB.x; yB = atomB.y; zB = atomB.z;
     dx = xB - xA;
     dy = yB - yA;
-    width = viewer.scaleToScreen((zA + zB)/2, bond.mar * 2);
+    width = viewer.scaleToScreen((zA + zB)/2, bond.mad);
     colixA = colixB = bond.colix;
     if (colixA == 0) {
       colixA = atomA.colixAtom;
@@ -168,7 +168,7 @@ class SticksRenderer extends ShapeRenderer {
           !showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
           (modeMultipleBond == JmolConstants.MULTIBOND_SMALL &&
-           marBond > JmolConstants.marMultipleBondSmallMaximum)) {
+           madBond > JmolConstants.madMultipleBondSmallMaximum)) {
           // there used to be a test here for order == -1 ? why ?
         return 1;
       }

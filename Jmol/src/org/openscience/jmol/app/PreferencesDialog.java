@@ -487,7 +487,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bondRadiusExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
 
-    bwSlider = new JSlider(0, 250,viewer.getMarBond());
+    bwSlider = new JSlider(0, 250,viewer.getMadBond()/2);
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(50);
@@ -506,7 +506,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         marBond = (short)source.getValue();
-        viewer.setMarBondDefault(marBond);
+        //        viewer.setMarBondDefault(marBond);
+        viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)(marBond * 2));
         currentProperties.put("marBond", "" + marBond);
       }
     });
@@ -751,7 +752,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.bondChooserTitle"), colorBond);
         colorBond = color;
         eButton.setBackground(colorBond);
-        viewer.setColorBond(colorBond);
+        //        viewer.setColorBond(colorBond);
         currentProperties.put("colorBond", "" + colorBond.getRGB());
       }
     };
@@ -996,7 +997,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     // Bond panel controls:
     abYes.setSelected(viewer.getAutoBond());
-    bwSlider.setValue(viewer.getMarBond());
+    bwSlider.setValue(viewer.getMadBond()/2);
     bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
     btSlider.setValue((int) (100 * viewer.getBondTolerance()));
 
@@ -1095,11 +1096,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     //    viewer.setColorOutline(colorOutline);
     viewer.setColorSelection(colorSelection);
     viewer.setColorLabel(isLabelAtomColor ? null : colorText);
-    viewer.setColorBond(isBondAtomColor ? null : colorBond);
+    //    viewer.setColorBond(isBondAtomColor ? null : colorBond);
     viewer.setPercentVdwAtom(percentVdwAtom);
     //    viewer.setStyleLabel(styleLabel);
     //viewer.setPropertyStyleString(AtomPropsMode);
-    viewer.setMarBondDefault(marBond);
+    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)(marBond * 2));
     viewer.setColorVector(colorVector);
     viewer.setColorMeasurement(colorMeasurement);
     viewer.setColorBackground(colorBackground);
@@ -1172,7 +1173,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         tButton.setEnabled(!isLabelAtomColor);
       } else if (key.equals("Prefs.isBondAtomColor")) {
         isBondAtomColor = isSelected;
-        viewer.setColorBond(isBondAtomColor ? null : colorBond);
+        //        viewer.setColorBond(isBondAtomColor ? null : colorBond);
         currentProperties.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.wireframeRotation")) {

@@ -59,7 +59,7 @@ public class JmolFrameBuilder {
         adapter.getCovalentBondIterator(clientFile, frameNumber);
       if (iterCovalent != null)
         while (iterCovalent.hasNext()) {
-          iterCovalent.next();
+          iterCovalent.moveNext();
           frame.bondAtomShapes(iterCovalent.getAtom1(),
                                iterCovalent.getAtom2(),
                                iterCovalent.getOrder());
@@ -71,7 +71,7 @@ public class JmolFrameBuilder {
         adapter.getAssociationBondIterator(clientFile, frameNumber);
       if (iterAssoc != null)
         while (iterAssoc.hasNext()) {
-          iterAssoc.next();
+          iterAssoc.moveNext();
           frame.bondAtomShapes(iterAssoc.getAtom1(),
                                iterAssoc.getAtom2(),
                                iterAssoc.getOrder());
@@ -83,7 +83,7 @@ public class JmolFrameBuilder {
         adapter.getVectorIterator(clientFile, frameNumber);
       if (iterVector != null)
         while (iterVector.hasNext()) {
-          iterVector.next();
+          iterVector.moveNext();
           frame.addLineShape(new ArrowLineShape(iterVector.getPoint1(),
                                                 iterVector.getPoint2()));
         }
@@ -94,7 +94,7 @@ public class JmolFrameBuilder {
         adapter.getCrystalCellIterator(clientFile, frameNumber);
       if (iterCell != null)
         for (int i = 0; iterCell.hasNext(); ++i) {
-          iterCell.next();
+          iterCell.moveNext();
           LineShape line;
           if (i < 3)
             line = new ArrowLineShape(iterCell.getPoint1(),

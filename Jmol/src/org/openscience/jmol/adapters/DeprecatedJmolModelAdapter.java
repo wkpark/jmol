@@ -190,11 +190,10 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
       }
       return true;
     }
-    public Object next() {
+    public void moveNext() {
       atom2 = atom.getBondedAtom(ibond);
       order = atom.getBondOrder(ibond);
       ++ibond;
-      return null;
     }
     public Object getAtom1() {
       return atom;
@@ -226,12 +225,11 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
       }
       return true;
     }
-    public Object next() {
+    public void moveNext() {
       point1 = atom.getPoint3D();
       point2 = new Point3d(atom.getVector());
       point2.scaleAdd(2, point1);
       atom = null;
-      return null;
     }
     public Point3d getPoint1() {
       return point1;
@@ -261,10 +259,9 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
       return (boxEdges != null && ibox < boxEdges.size());
     }
 
-    public Object next() {
+    public void moveNext() {
       point1 = (Point3d)boxEdges.elementAt(ibox++);
       point2 = (Point3d)boxEdges.elementAt(ibox++);
-      return null;
     }
     public Point3d getPoint1() {
       return point1;

@@ -23,7 +23,14 @@
  *  02111-1307  USA.
  */
 
-/**
+package org.openscience.jmol.viewer;
+
+import javax.vecmath.Point3d;
+import java.io.Reader;
+import java.awt.Color;
+import java.util.Iterator;
+
+/****************************************************************
  * The JmolModelAdapter interface defines the API used by the JmolViewer to
  * read external files and fetch atom properties necessary for rendering.
  *
@@ -33,18 +40,17 @@
  *
  * Jmol will automatically calculate some atom properties if the client
  * is not capable or does not want to supply them.
+ *
+ * Note: If you are seeing pink atoms that have lots of bonds, then your methods
+ * for getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom) are probably
+ * returning stray values. Therefore, these atoms are getting mapped to
+ * element 0 (Xx), which has color pink and a relatively large covalent bonding
+ * radius. 
  * @see JmolViewer
- */
+ ****************************************************************/
+public interface JmolModelAdapter {
   
 
-package org.openscience.jmol.viewer;
-
-import javax.vecmath.Point3d;
-import java.io.Reader;
-import java.awt.Color;
-import java.util.Iterator;
-
-public interface JmolModelAdapter {
   /****************************************************************
    * the capabilities
    ****************************************************************/
@@ -54,7 +60,8 @@ public interface JmolModelAdapter {
    * getAtomicSymbol(clientAtom).
    * A client which implements getAtomicNumber() may still choose to
    * return the value -1, thereby asking Jmol to map using getAtomicSymbol()
-   * @see getAtomicSymbol(Object clientAtom)
+   * @see #getAtomicNumber(Object clientAtom)
+   * @see #getAtomicSymbol(Object clientAtom)
    */
   public boolean suppliesAtomicNumber();
 
@@ -68,6 +75,8 @@ public interface JmolModelAdapter {
    * The default atomic symbol table is included in this file for user reference
    * Note that either getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom)
    * must be implemented.
+   * @see #getAtomicSymbol(Object clientAtom)
+   * @see #getAtomicNumber(Object clientAtom)
    */
   public boolean suppliesAtomicSymbol();
 
@@ -82,7 +91,8 @@ public interface JmolModelAdapter {
    * Whether or not this client implements getVanderwaalsRadius(clientAtom)
    * If not, then the atomic number is used to look up vanderwaals Radius values
    * in a default table. Default values are taken from OpenBabel.
-   * The default vanderwaals radius table is included in this file for user reference
+   * The default vanderwaals radius table is included in this file for reference.
+   * @see #getVanderwaalsRadius(Object clientAtom)
    */
   public boolean suppliesVanderwaalsRadius();
 
@@ -90,7 +100,8 @@ public interface JmolModelAdapter {
    * Whether or not this client implements getCovalentRadius(clientAtom)
    * If not, then the atomic number is used to look up covalent bonding radius
    * values in a default table. Default values are taken from OpenBabel.
-   * The default covalent radius table is included in this file for user reference
+   * The default covalent radius table is included in this file for reference.
+   * @see #getCovalentRadius(Object clientAtom)
    */
   public boolean suppliesCovalentRadius();
 
@@ -98,7 +109,8 @@ public interface JmolModelAdapter {
    * Whether or not this client implements getAtomColor(clientAtom, colorScheme)
    * If not, then the atomic number is used to look up colors in a
    * default table.
-   * The default atom colors table is included in this file for user reference
+   * The default atom colors table is included in this file for reference.
+   * @see #getAtomColor(Object clientAtom, int colorScheme)
    */
   public boolean suppliesAtomColor();
 
@@ -106,67 +118,250 @@ public interface JmolModelAdapter {
   /*****************************************************************
    * file related
    ****************************************************************/
+  /**
+   * Given the opened reader, return an object which represents the file
+   * contents. The parameter <code>name</code> is assumed to be the
+   * file name or URL which is the source of reader. Note that this 'file'
+   * may have been automatically decompressed. Also note that the name
+   * may be 'String', representing a string constant. Therefore, few
+   * assumptions should be made about the <code>name</code> parameter.
+   *
+   * The return value is an object which represents a <code>clientFile</code>.
+   * This <code>clientFile</code> will be passed back in to other methods.
+   * If the return value is <code>instanceof String</code> then it is considered
+   * an error condition and the returned String is the error message
+   */
   public Object openReader(JmolViewer viewer, String name, Reader reader);
+
+  /**
+   * The number of frames in this file. Used for animations, etc.
+   */
   public int getFrameCount(Object clientFile);
+
+  /**
+   * Some file formats contain a formal name of the molecule in the file.
+   * If this method returns <code>null</code> then the JmolViewer will
+   * automatically supply the file/URL name as a default.
+   */
   public String getModelName(Object clientFile);
 
   /****************************************************************
    * frame related
    ****************************************************************/
+  /**
+   * The number of atoms contained in the specified frame.
+   */
   public int getAtomCount(Object clientFile, int frameNumber);
+  /**
+   * Whether or not this frame has records in the .pdb format as specified
+   * by the Protein Data Bank.
+   * @see <a href='http://www.rcsb.org/pdb'>www.rcsb.org/pdb</a>
+   */
   public boolean hasPdbRecords(Object clientFile, int frameNumber);
+  /**
+   * Returns an AtomIterator used to retrieve all the atoms in the file.
+   * This method may not return <code>null</code>.
+   * @see AtomIterator
+   */
   public AtomIterator getAtomIterator(Object clientFile, int frameNumber);
+  /**
+   * Returns a BondIterator. If this method returns <code>null</code> and no
+   * bonds are defined then the JmolViewer will automatically apply its
+   * rebonding code to build covalent bonds between atoms.
+   * @see BondIterator
+   */
   public BondIterator getCovalentBondIterator(Object clientFile,
                                               int frameNumber);
+  /**
+   * This method is used to return associations between atoms. Associations are
+   * non-covalent bonds between atoms.
+   * This method is provided for convenience of implementation. The client may
+   * choose to return all associatoins as part of getCovalentBondIterator
+   * @see BondIterator
+   */
   public BondIterator getAssociationBondIterator(Object clientFile,
                                                  int frameNumber);
+  /**
+   * This method returns all vectors which are part of the molecule file.
+   * Vectors are directional and have an arrowhead.
+   * @see LineIterator
+   */
   public LineIterator getVectorIterator(Object clientFile, int frameNumber);
+
+  /**
+   * This method returns the list of lines which define the crystal cell.
+   * The first three lines returned are rendered as vectors.
+   * The center of the crystal cell as defined by these lines is assumed
+   * to be the default center of rotation for the rendered molecule.
+   * @see LineIterator
+   */
   public LineIterator getCrystalCellIterator(Object clientFile,
                                              int frameNumber);
 
 
-  // Java 1.1 does not have java.util.Iterator
-  // and I don't want to use Enumerator
-  // so we will define our own AtomIterator
+  /****************************************************************
+   * AtomIterator is used to enumerate all the <code>clientAtom</code>
+   * objects in a specified frame. 
+   * Note that Java 1.1 does not have java.util.Iterator
+   * so we will define our own AtomIterator
+   ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
     public abstract Object next();
   }
 
+  /****************************************************************
+   * BondIterator is used to enumerate all the bonds
+   ****************************************************************/
   public abstract class BondIterator {
     public abstract boolean hasNext();
-    public abstract Object next();
+    /**
+     * Note that the moveNext() method does not return a value
+     */
+    public abstract void moveNext();
+    /**
+     * returns the first atom of a bond
+     */
     public abstract Object getAtom1();
+    /**
+     * returns the second atom of a bond
+     */
     public abstract Object getAtom2();
+    /**
+     * returns the order of the bond. Bond order can be 1, 2, 3, AROMATIC,
+     * BACKBONE, or HYDROGEN
+     */
     public abstract int getOrder();
   }
 
+  /**
+   * returns two endpoints which represent the endpoints of a line. For vectors,
+   * the arrowhead is at Point2
+   */
   public abstract class LineIterator {
     public abstract boolean hasNext();
-    public abstract Object next();
+    /**
+     * Note that the next() method does not return a value
+     */
+    public abstract void moveNext();
+    /**
+     * The start of the line or vector
+     */
     public abstract Point3d getPoint1();
+    /**
+     * The end of the line or vector. Note that a 'vector' is not really a 'vector'.
+     * It is just a line with an arrowhead. Therefore, Point2 is an absolute
+     * position in 3d space
+     */
     public abstract Point3d getPoint2();
   }
   
-  /****************************************************************
-   * atom properties
-   ****************************************************************/
+  /**
+   * The CPK color scheme
+   */
   public final static int COLORSCHEME_CPK = 0;
+  /**
+   * A color scheme based upon atomic charge
+   */
   public final static int COLORSCHEME_CHARGE = 1;
+  /**
+   * The number of color schemes, zero based
+   */
   public final static int COLORSCHEME_MAX = 2;
 
+  /**
+   * Returns the atomicNumber of the clientAtom previously returned by
+   * an AtomIterator.
+   *
+   * If suppliesAtomicNumber() returns false or if getAtomicNumber(clientAtom)
+   * returns -1 then the JmolViewer will automatically look up the atomicNumber
+   * using the String returned by getAtomicSymbol(clientAtom)
+   *
+   * Note that for a given molecule, either getAtomicNumber(clientAtom) or
+   * getAtomicSymbol(clientAtom) must return a value.
+   * @see #suppliesAtomicNumber()
+   * @see #getAtomIterator(Object clientFile, int frameNumber)
+   * @see #getAtomicSymbol(Object clientAtom)
+   */
   public int getAtomicNumber(Object clientAtom);
+
+  /**
+   * Returns the atomicSymbol of the clientAtom previously returned by
+   * an AtomIterator.
+   *
+   * If suppliesAtomicSymbol() returns false or if getAtomicSymbol(clientAtom)
+   * returns null then the JmolViewer will automatically look up the atomicSymbol
+   * using the getAtomicNumber(clientAtom)
+   *
+   * Note that for a given molecule, either getAtomicNumber(clientAtom) or
+   * getAtomicSymbol(clientAtom) must return a value.
+   */
   public String getAtomicSymbol(Object clientAtom);
+
+  /**
+   * This method allows one to return an atom type name (such as alpha carbon)
+   * as separate from the atomicSymbol
+   *
+   * If getAtomTypeName returns null then the JmolViewer will substitute the
+   * atomicSymbol
+   */
   public String getAtomTypeName(Object clientAtom);
+
+  /**
+   * The vanderwaalsRadius is used for spacefill rendering. 
+   *
+   * If suppliesVanderwallsRadius() returns false or getVanderwaalsRadius(clientAtom)
+   * returns 0 then the JmolViewer will lookup the value in its own table.
+   * The table of values is taken from OpenBabel.
+   * @see #suppliesVanderwaalsRadius()
+   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
+   * @see #vanderwaalsRadii
+   */
   public double getVanderwaalsRadius(Object clientAtom);
+
+  /**
+   * The covalentRadius is used for automatically calculating bonds between
+   * atoms when no bonds are specified by the client package. 
+   *
+   * If suppliesCovalentRadius() returns false or getCovalentRadius(clientAtom)
+   * returns 0 then the JmolViewer will lookup the value in its own table.
+   * The table of values is taken from OpenBabel.
+   * @see #suppliesCovalentRadius()
+   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
+   * @see #covalentRadii
+   */
   public double getCovalentRadius(Object clientAtom);
+
+  /**
+   * Returns the coordinates of the atom in javax.vecmath.Point3d format.
+   * Coordinates are absolute values in Angstroms.
+   */
   public Point3d getPoint3d(Object clientAtom);
+  /**
+   * If hasPdbRecords(clientFile, frameNumber) returns true then individual
+   * PDB records for individual <code>clientAtom</code>s are returned here.
+   * The returned String is the exact string of the ATOM or HETATM from the .pdb
+   * file.
+   * @see #hasPdbRecords(Object clientFile, int frameNumber)
+   */
   public String getPdbAtomRecord(Object clientAtom);
+  /**
+   * If suppliesAtomColors() returns false or if
+   * getAtomColor(clientAtom, colorScheme) returns null then the atom color
+   * is looked up in internal tables maintained by JmolViewer
+   * @see #suppliesAtomColor()
+   * @see #atomColors
+   */
   public Color getAtomColor(Object clientAtom, int colorScheme);
 
-  /****************************************************************
+  /*
+   ****************************************************************
    * these tables are here so that a client can have easy access to them
    ****************************************************************/
+  /**
+   * The default atomicSymbols. Presumably the only entry which may cause
+   * confusion is element 0, whose symbol we have defined as "Xx". 
+   */
   public final static String[] atomicSymbols = {
     "Xx", // 0
     "H",  // 1
@@ -290,11 +485,19 @@ public interface JmolModelAdapter {
     "Uuo",// 118
     */
   };
+  /**
+   * one larger than the last atomicNumber, same as atomicSymbols.length
+   */
   public final static int atomicNumberMax = atomicSymbols.length;
 
-  // vanderwaalsRadius and covalentRadius taken from OpenBabel
-
-  final static float[] vanderwaalsRadii = {
+  /**
+   * Default table of vanderwaalsRadii. Used when the client does not choose
+   * to implement getVanderwaalsRadius(clientAtom).
+   * Used for spacefill rendering of atoms.
+   * Values taken from OpenBabel.
+   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
+   */
+  public final static float[] vanderwaalsRadii = {
     1f,      //   0  Xx big enough to see
     1.2f,    //   1  H
     1.4f,    //   2  He
@@ -407,8 +610,15 @@ public interface JmolModelAdapter {
     1.7f,    // 109  Mt
   };
 
-  final static float[] covalentRadii = {
-    1f,      //   0  Xx big enough to cause trouble
+  /**
+   * Default table of covalentRadii. Used when the client does not choose
+   * to implement getCovalentRadius(clientAtom).
+   * Used for bonding atoms when the client does not supply bonds. 
+   * Values taken from OpenBabel.
+   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
+   */
+  public final static float[] covalentRadii = {
+    2f,      //   0  Xx big enough to cause trouble
     0.23f,   //   1  H
     0.93f,   //   2  He
     0.68f,   //   3  Li
@@ -520,14 +730,17 @@ public interface JmolModelAdapter {
     1.6f,    // 109  Mt
   };
 
-  // these colors are the current jmol default colors
+  public final static Color color190_190_190 = new Color(190, 190, 190);
+  public final static Color color165_42_42 = new Color(165, 42, 42);
+  public final static Color color255_165_0 = new Color(255, 165, 0);
 
-  final static Color color190_190_190 = new Color(190, 190, 190);
-  final static Color color165_42_42 = new Color(165, 42, 42);
-  final static Color color255_165_0 = new Color(255, 165, 0);
-
-  Color[] atomColors = {
-    new Color(255,20,147),  // Xx	0
+  /**
+   * Default table of CPK atom colors.
+   * Used when the client does not implement getAtomColor(clientAtom, colorScheme)
+   * I didn't know what color to define for many of the atoms, so I made them pink.
+   */
+  public Color[] atomColors = {
+    Color.pink,             // new Color(255,20,147),  // Xx	0
     new Color(250,235,215), // H	1
     new Color(255,192,203), // He	2
     new Color(178,34,34),   // Li	3

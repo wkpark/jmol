@@ -191,10 +191,9 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     public boolean hasNext() {
       return (ibond < bonds.length);
     }
-    public Object next() {
+    public void moveNext() {
       bond = bonds[ibond++];
       bondedAtoms = bond.getAtoms();
-      return null;
     }
     public Object getAtom1() {
       return (bondedAtoms.length == 2) ? bondedAtoms[0] : null;

@@ -258,10 +258,26 @@ class CifReader extends ModelReader {
       return;
     }
 
-    for (; line != null &&
-           (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#';
-         line = reader.readLine()) {
+    for (; line != null; line = reader.readLine()) {
+      int lineLength = line.length();
+      if (lineLength == 0)
+        break;
+      char chFirst = line.charAt(0);
+      if (chFirst == '#' ||
+          chFirst == '_' ||
+          line.startsWith("loop_"))
+        break;
+      if (chFirst == ' ') {
+        int i;
+        for (i = lineLength; --i >= 0 && line.charAt(i) == ' '; )
+          ;
+        if (i < 0)
+          break;
+      }
+      //      logger.log("line:" + line);
+      //      logger.log("of length = " + line.length());
+      if (line.length() == 1)
+        System.out.println("char value is " + (chFirst + 0));
       tokenizer.setString(line);
       //      logger.log("reading an atom");
       Atom atom = model.addNewAtom();
@@ -269,6 +285,8 @@ class CifReader extends ModelReader {
         if (! tokenizer.hasMoreTokens())
           tokenizer.setString(reader.readLine());
         String field = tokenizer.nextToken();
+        if (field == null)
+          System.out.println("field == null!");
         switch (fieldTypes[i]) {
         case NONE:
           break;

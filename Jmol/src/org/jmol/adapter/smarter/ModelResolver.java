@@ -65,7 +65,7 @@ class ModelResolver {
   static String determineModelReader(BufferedReader bufferedReader,
                                      ModelAdapter.Logger logger) throws Exception {
     String[] lines = new String[4];
-    LimitedLineReader llr = new LimitedLineReader(bufferedReader, 2048);
+    LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)
       lines[i] = llr.readLineWithNewline();
     if (lines[3].length() >= 6) {
@@ -205,27 +205,30 @@ class LimitedLineReader {
   }
 
   String readLineWithNewline() {
-    int ich = ichCurrent;
-    char ch = 0;
+    // mth 2004 10 17
     // for now, I am going to put in a hack here
     // we have some CIF files with many lines of '#' comments
     // I believe that for all formats we can flush if the first
     // char of the line is a #
     // if this becomes a problem then we will need to adjust
-    while (ich < cchBuf) {
-      while (ich < cchBuf && (ch = buf[ich++]) != '\r' && ch != '\n')
+    while (ichCurrent < cchBuf) {
+      int ichBeginningOfLine = ichCurrent;
+      char ch = 0;
+      while (ichCurrent < cchBuf &&
+             (ch = buf[ichCurrent++]) != '\r' && ch != '\n')
         ;
-      if (ich < cchBuf && ch == '\r' && buf[ich] == '\n')
-        ++ich;
-      int cchLine = ich - ichCurrent;
-      if (cchBuf > 0 && buf[ich] == '#') // flush comment lines;
+      if (ch == '\r' && ichCurrent < cchBuf && buf[ichCurrent] == '\n')
+        ++ichCurrent;
+      int cchLine = ichCurrent - ichBeginningOfLine;
+      if (buf[ichBeginningOfLine] == '#') // flush comment lines;
         continue;
-      if (cchBuf == 0)
-        break;
       StringBuffer sb = new StringBuffer(cchLine);
-      sb.append(buf, ichCurrent, cchLine);
-      ichCurrent = ich;
+      sb.append(buf, ichBeginningOfLine, cchLine);
       return "" + sb;
+    }
+    if (true) {
+      System.out.println("input buffer is too small for ModelResolver");
+      throw new NullPointerException();
     }
     return "";
   }

@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -79,15 +79,15 @@ class TraceRenderer extends McpsRenderer {
   }
 
   void setScreen(Atom atom, Point3i dest) {
-    dest.x = atom.x;
-    dest.y = atom.y;
-    dest.z = atom.z;
+    dest.x = atom.getScreenX();
+    dest.y = atom.getScreenY();
+    dest.z = atom.getScreenZ();
   }
 
   void calcAverageScreen(Atom atomA, Atom atomB, Point3i dest) {
-    dest.x = (atomA.x + atomB.x) / 2;
-    dest.y = (atomA.y + atomB.y) / 2;
-    dest.z = (atomA.z + atomB.z) / 2;
+    dest.x = (atomA.getScreenX() + atomB.getScreenX()) / 2;
+    dest.y = (atomA.getScreenY() + atomB.getScreenY()) / 2;
+    dest.z = (atomA.getScreenZ() + atomB.getScreenZ()) / 2;
   }
 
   void render1Segment(short colix, short[] mads, int i, int count) {
@@ -100,7 +100,7 @@ class TraceRenderer extends McpsRenderer {
     int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
     int madEnd = (mads[iNext1] + madThis) / 2;
     int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
-    int diameterMid = viewer.scaleToScreen(alphas[i].z, madThis);
+    int diameterMid = viewer.scaleToScreen(alphas[i].getScreenZ(), madThis);
     g3d.fillHermite(colix, 7, diameterBeg, diameterMid, diameterEnd,
                     screens[iPrev1], screens[i],
                     screens[iNext1], screens[iNext2]);

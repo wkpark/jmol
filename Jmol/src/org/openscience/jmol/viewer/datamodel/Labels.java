@@ -25,8 +25,8 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolConstants;
-import org.openscience.jmol.viewer.g3d.Font3D;
+import org.openscience.jmol.viewer.*;
+import org.jmol.g3d.*;
 
 import java.awt.Color;
 import java.util.BitSet;
@@ -57,7 +57,7 @@ public class Labels extends Shape {
           if (colixes == null || i >= colixes.length) {
             if (colix == 0)
               continue;
-            colixes = ensureMinimumLengthArray(colixes, i + 1);
+            colixes = Util.ensureLength(colixes, i + 1);
           }
           colixes[i] = colix;
         }
@@ -72,7 +72,7 @@ public class Labels extends Shape {
           if (strings == null || i >= strings.length) {
             if (label == null)
               continue;
-            strings = ensureMinimumLengthArray(strings, i + 1);
+            strings = Util.ensureLength(strings, i + 1);
           }
           strings[i] = label;
         }
@@ -86,7 +86,7 @@ public class Labels extends Shape {
         return;
       }
       byte bid = g3d.getFont3D(fontsize).bid;
-      fontBids = ensureMinimumLengthArray(fontBids, frame.atomCount);
+      fontBids = Util.ensureLength(fontBids, frame.atomCount);
       for (int i = frame.atomCount; --i >= 0; )
         fontBids[i] = bid;
       return;
@@ -99,7 +99,7 @@ public class Labels extends Shape {
           if (fontBids == null || i >= fontBids.length) {
             if (bid == defaultFont3D.bid)
               continue;
-            fontBids = ensureMinimumLengthArray(fontBids, i + 1);
+            fontBids = Util.ensureLength(fontBids, i + 1);
           }
           fontBids[i] = bid;
         }
@@ -118,42 +118,11 @@ public class Labels extends Shape {
           if (offsets == null || i >= offsets.length) {
             if (offset == 0)
               continue;
-            offsets = ensureMinimumLengthArray(offsets, i + 1);
+            offsets = Util.ensureLength(offsets, i + 1);
           }
           offsets[i] = (short)offset;
         }
       return;
     }
   }
-
-  static String[] ensureMinimumLengthArray(String[] stringArray, int minimumLength) {
-    if (stringArray == null)
-      return new String[minimumLength];
-    if (stringArray.length >= minimumLength)
-      return stringArray;
-    String[] t = new String[minimumLength];
-    System.arraycopy(stringArray, 0, t, 0, stringArray.length);
-    return t;
-  }
-
-  static short[] ensureMinimumLengthArray(short[] shortArray, int minimumLength) {
-    if (shortArray == null)
-      return new short[minimumLength];
-    if (shortArray.length >= minimumLength)
-      return shortArray;
-    short[] t = new short[minimumLength];
-    System.arraycopy(shortArray, 0, t, 0, shortArray.length);
-    return t;
-  }
-
-  static byte[] ensureMinimumLengthArray(byte[] byteArray, int minimumLength) {
-    if (byteArray == null)
-      return new byte[minimumLength];
-    if (byteArray.length >= minimumLength)
-      return byteArray;
-    byte[] t = new byte[minimumLength];
-    System.arraycopy(byteArray, 0, t, 0, byteArray.length);
-    return t;
-  }
-
 }

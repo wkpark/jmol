@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -25,20 +25,40 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.*;
-import javax.vecmath.Point3f;
+import org.openscience.jmol.viewer.JmolConstants;
+
+import java.awt.Color;
 import java.util.BitSet;
 
-class Cartoon extends Mcps {
+public class Vectors extends Shape {
 
-  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
-    return new Chain(polymer);
+  String[] strings;
+  short[] mads;
+  short[] colixes;
+
+  void initShape() {
+    if (frame.atomCount > 0) {
+      mads = new short[frame.atomCount];
+      colixes = new short[frame.atomCount];
+    }
   }
 
-  class Chain extends Mcps.Chain {
+  public void setSize(int size, BitSet bsSelected) {
+    short mad = (short)size;
+    Atom[] atoms = frame.atoms;
+    for (int i = frame.atomCount; --i >= 0; )
+      if (bsSelected.get(i))
+        mads[i] = mad;
+  }
 
-    Chain(PdbPolymer polymer) {
-      super(polymer, -2, 3000, 500);
+  public void setProperty(String propertyName, Object value,
+                          BitSet bsSelected) {
+    Atom[] atoms = frame.atoms;
+    if ("color" == propertyName) {
+      short colix = g3d.getColix(value);
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i))
+          colixes[i] = colix;
     }
   }
 }

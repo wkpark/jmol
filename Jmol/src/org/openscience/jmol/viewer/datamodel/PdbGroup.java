@@ -139,12 +139,8 @@ final public class PdbGroup {
   }
 
   synchronized static short addGroup3Name(String group3) {
-    if (group3NameCount == group3Names.length) {
-      String[] t;
-      t = new String[group3NameCount * 2];
-      System.arraycopy(group3Names, 0, t, 0, group3NameCount);
-      group3Names = t;
-    }
+    if (group3NameCount == group3Names.length)
+      group3Names = Util.doubleLength(group3Names);
     short groupID = group3NameCount++;
     group3Names[groupID] = group3;
     htGroup.put(group3, new Short(groupID));

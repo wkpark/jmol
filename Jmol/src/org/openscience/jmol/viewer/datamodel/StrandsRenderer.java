@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -37,21 +37,9 @@ class StrandsRenderer extends McpsRenderer {
   Strands strands;
   Point3f pointT = new Point3f();
 
-  Point3i[] screensT = new Point3i[0];
-  Point3i[] getTempScreens(int minLen) {
-    if (screensT.length < minLen) {
-      Point3i[] t = new Point3i[minLen];
-      System.arraycopy(screensT, 0, t, 0, screensT.length);
-      for (int i = screensT.length; i < t.length; ++i)
-        t[i] = new Point3i();
-      screensT = t;
-    }
-    return screensT;
-  }
-
   Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
                    short[] mads, float offsetFraction) {
-    Point3i[] screens = getTempScreens(centers.length);
+    Point3i[] screens = frameRenderer.getTempScreens(centers.length);
     if (offsetFraction == 0) {
       for (int i = centers.length; --i >= 0; )
         viewer.transformPoint(centers[i], screens[i]);

@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -153,7 +153,7 @@ class CartoonRenderer extends McpsRenderer {
       madEnd = (mads[iNext1] + madThis) / 2;
     int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
     int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
-    int diameterMid = viewer.scaleToScreen(alphas[i].z, madThis);
+    int diameterMid = viewer.scaleToScreen(alphas[i].getScreenZ(), madThis);
     g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
                     screens[iPrev1], screens[i],
                     screens[iNext1], screens[iNext2]);

@@ -26,8 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Font3D;
+import org.jmol.g3d.*;
 
 import java.util.BitSet;
 
@@ -65,11 +64,10 @@ public class Measures extends Shape {
     if (isDefined(atomCountPlusIndices))
       return;
     Measurement measureNew = new Measurement(frame, atomCountPlusIndices);
-    if (measurementCount == measurements.length) {
-      Measurement[] t = new Measurement[measurementCount + measurementGrowthIncrement];
-      System.arraycopy(measurements, 0, t, 0, measurementCount);
-      measurements = t;
-    }
+    if (measurementCount == measurements.length)
+      measurements =(Measurement[])Util.setLength(measurements,
+                                                  measurementCount +
+                                                  measurementGrowthIncrement);
     measurements[measurementCount++] = measureNew;
   }
   

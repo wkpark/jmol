@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.jmol.g3d.*;
 import java.awt.Rectangle;
 
 class BallsRenderer extends ShapeRenderer {
@@ -68,38 +68,31 @@ class BallsRenderer extends ShapeRenderer {
   void render(Atom atom) {
     if (!showHydrogens && atom.elementNumber == 1)
       return;
+    long xyzd = atom.xyzd;
+    int diameter = Xyzd.getD(xyzd);
     boolean hasHalo = viewer.hasSelectionHalo(atom);
-    int diameter = atom.diameter;
     if (diameter == 0 && !hasHalo) {
       atom.chargeAndFlags &= ~Atom.VISIBLE_FLAG;
       return;
     }
+    // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
     atom.chargeAndFlags |= Atom.VISIBLE_FLAG;
-    int effectiveDiameter = diameter;
+
+    if (!wireframeRotating)
+      g3d.fillSphereCentered(atom.colixAtom, xyzd);
+    else
+      g3d.drawCircleCentered(atom.colixAtom, xyzd);
+
     if (hasHalo) {
       int halowidth = diameter / 4;
       if (halowidth < 4) halowidth = 4;
       if (halowidth > 10) halowidth = 10;
-      effectiveDiameter = diameter + 2 * halowidth;
-    }
-    int effectiveRadius = (effectiveDiameter + 1) / 2;
-    int x = atom.x;
-    int y = atom.y;
-    int z = atom.z;
-    if (x + effectiveRadius < minX ||
-        x - effectiveRadius >= maxX ||
-        y + effectiveRadius < minY ||
-        y - effectiveRadius >= maxY)
-      return;
-
-    if (!wireframeRotating)
-      g3d.fillSphereCentered(atom.colixAtom, diameter, x, y, z);
-    else
-      g3d.drawCircleCentered(atom.colixAtom, diameter, x, y, z);
-
-    if (viewer.hasSelectionHalo(atom))
+      int haloDiameter = diameter + 2 * halowidth;
       g3d.fillScreenedCircleCentered(colixSelection,
-                                     effectiveDiameter, x, y, z);
+                                     haloDiameter,
+                                     Xyzd.getX(xyzd), Xyzd.getY(xyzd),
+                                     Xyzd.getZ(xyzd));
+    }
   }
 
 }

@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
@@ -286,19 +286,10 @@ public class Dots extends Shape {
           centerI.distanceSquared(neighbor.point3f))
         continue;
       if (neighborCount == neighbors.length) {
-        Atom[] neighborsNew = new Atom[2 * neighborCount];
-        System.arraycopy(neighbors, 0, neighborsNew, 0, neighborCount);
-        neighbors = neighborsNew;
-        int[] indicesNew = new int[2 * neighborCount];
-        System.arraycopy(neighborIndices, 0, indicesNew, 0, neighborCount);
-        neighborIndices = indicesNew;
-        Point3f[] centersNew = new Point3f[2 * neighborCount];
-        System.arraycopy(neighborCenters, 0, centersNew, 0, neighborCount);
-        neighborCenters = centersNew;
-        float[] radiiNew = new float[2 * neighborCount];
-        System.arraycopy(neighborPlusProbeRadii2, 0, radiiNew, 0,
-                         neighborCount);
-        neighborPlusProbeRadii2 = radiiNew;
+        neighbors = (Atom[])Util.doubleLength(neighbors);
+        neighborIndices = Util.doubleLength(neighborIndices);
+        neighborCenters = (Point3f[])Util.doubleLength(neighborCenters);
+        neighborPlusProbeRadii2 = Util.doubleLength(neighborPlusProbeRadii2);
       }
       neighbors[neighborCount] = neighbor;
       neighborCenters[neighborCount] = neighbor.point3f;
@@ -340,11 +331,8 @@ public class Dots extends Shape {
       calcTorusProbeMap(torusIJ);
       if (torusIJ.probeMap == 0)
         continue;
-      if (torusCount == tori.length) {
-        Torus[] t = new Torus[torusCount * 2];
-        System.arraycopy(tori, 0, t, 0, torusCount);
-        tori = t;
-      }
+      if (torusCount == tori.length)
+        tori = (Torus[])Util.doubleLength(tori);
       tori[torusCount++] = torusIJ;
     }
   }
@@ -569,11 +557,8 @@ public class Dots extends Shape {
   }
 
   void addCavity(Cavity cavity) {
-    if (cavityCount == cavities.length) {
-      Cavity[] t = new Cavity[2 * cavityCount];
-      System.arraycopy(cavities, 0, t, 0, cavityCount);
-      cavities = t;
-    }
+    if (cavityCount == cavities.length)
+      cavities = (Cavity[])Util.doubleLength(cavities);
     cavities[cavityCount++] = cavity;
   }
 

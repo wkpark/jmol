@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.*;
 import java.awt.Color;
 import java.util.BitSet;
 

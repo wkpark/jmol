@@ -26,12 +26,13 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.Xyzd;
 
 import java.awt.Rectangle;
 import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
 public class Atom implements Bspt.Tuple {
@@ -43,12 +44,14 @@ public class Atom implements Bspt.Tuple {
   PdbGroup group; // ... if everybody has a group
   short modelNumber; // we want this here for the BallsRenderer
   public Point3f point3f;
-  short x, y, z;
-  short diameter;
+  long xyzd;
+  //  private short x, y, z;
+  //  private short diameter;
   public byte elementNumber;
   byte chargeAndFlags;
   // maybe move this out of here ... the value is almost always 100
   byte occupancy;
+  Vector3f vibrationVector;
   short bfactor100;
   short madAtom;
   short colixAtom;
@@ -71,6 +74,7 @@ public class Atom implements Bspt.Tuple {
               float x, float y, float z,
               boolean isHetero, int atomSerial, char chainID,
               String group3, int sequenceNumber, char insertionCode,
+              float vibrationX, float vibrationY, float vibrationZ,
               PdbFile pdbFile) {
     /*
     System.out.println("new Atom(" + modelNumber + "," +
@@ -119,6 +123,11 @@ public class Atom implements Bspt.Tuple {
     // put it in the higher level and pass in the group
     group = pdbFile.registerAtom(this, modelNumber, chainID,
                                  sequenceNumber, insertionCode, group3);
+    if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
+        !Float.isNaN(vibrationZ)) {
+      vibrationVector = new Vector3f(vibrationX, vibrationY, vibrationZ);
+      System.out.println("I see an atom with a vibration:" + vibrationVector);
+    }
   }
   
   public boolean isBonded(Atom atomOther) {
@@ -147,9 +156,7 @@ public class Atom implements Bspt.Tuple {
       bonds = new Bond[1];
     } else {
       i = bonds.length;
-      Bond[] bondsNew = new Bond[i + 1];
-      System.arraycopy(bonds, 0, bondsNew, 0, i);
-      bonds = bondsNew;
+      bonds = (Bond[])Util.setLength(bonds, i + 1);
     }
     bonds[i] = bond;
   }
@@ -272,34 +279,21 @@ public class Atom implements Bspt.Tuple {
     frame.setLabel(strLabel, atomIndex);
   }
 
+  final static int MIN_Z = 100;
+  final static int MAX_Z = 14383;
+
   public void transform(JmolViewer viewer) {
     if (madAtom == JmolConstants.MAR_DELETED)
       return;
-    Point3i screen = viewer.transformPoint(point3f);
-    int t;
-
-    t = screen.x;
-    x = ((t < Short.MIN_VALUE)
-         ? Short.MIN_VALUE
-         : ((t > Short.MAX_VALUE)
-            ? Short.MAX_VALUE
-            : (short)t));
-
-    t = screen.y;
-    y = ((t < Short.MIN_VALUE)
-         ? Short.MIN_VALUE
-         : ((t > Short.MAX_VALUE)
-            ? Short.MAX_VALUE
-            : (short)t));
-
-    t = screen.z;
-    z = ((t < Short.MIN_VALUE)
-         ? Short.MIN_VALUE
-         : ((t > Short.MAX_VALUE)
-            ? Short.MAX_VALUE
-            : (short)t));
-    
-    diameter = viewer.scaleToScreen(z, madAtom);
+    Point3i screen = viewer.transformPoint(point3f, vibrationVector);
+    int z = screen.z;
+    z = ((z < MIN_Z)
+         ? MIN_Z
+         : ((z > MAX_Z)
+            ? MAX_Z
+            : z));
+    int diameter = viewer.scaleToScreen(z, madAtom);
+    xyzd = Xyzd.getXyzd(screen.x, screen.y, z, diameter);
   }
 
   public int getElementNumber() {
@@ -479,7 +473,7 @@ public class Atom implements Bspt.Tuple {
   public void markDeleted() {
     deleteAllBonds();
     madAtom = JmolConstants.MAR_DELETED;
-    x = y = z = diameter = 0;
+    xyzd = Xyzd.NaN;
   }
 
   public byte getSecondaryStructureType() {
@@ -729,4 +723,10 @@ public class Atom implements Bspt.Tuple {
     }
     return "" + info;
   }
+
+  ////////////////////////////////////////////////////////////////
+  int getScreenX() { return Xyzd.getX(xyzd); }
+  int getScreenY() { return Xyzd.getY(xyzd); }
+  int getScreenZ() { return Xyzd.getZ(xyzd); }
+  int getScreenD() { return Xyzd.getD(xyzd); }
 }

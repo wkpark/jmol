@@ -26,8 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Font3D;
+import org.jmol.g3d.*;
 
 class LabelsRenderer extends ShapeRenderer {
 
@@ -83,14 +82,14 @@ class LabelsRenderer extends ShapeRenderer {
                    int labelOffsetX, int labelOffsetY) {
     /*
       left over from when font sizes changed;
-      Font font = viewer.getLabelFont(atom.diameter);
+      Font font = viewer.getLabelFont(atom.getScreenD());
       if (font == null)
       return;
       g3d.setFont(font);
     */
 
     int xOffset, yOffset, zLabel;
-    zLabel = atom.z - atom.diameter / 2 - 2;
+    zLabel = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
     if (zLabel < 0) zLabel = 0;
 
     if (labelOffsetX > 0) {
@@ -115,7 +114,9 @@ class LabelsRenderer extends ShapeRenderer {
     }
     g3d.drawString(strLabel,
                    colix == 0 ? atom.colixAtom : colix,
-                   atom.x + xOffset, atom.y - yOffset, zLabel);
+                   atom.getScreenX() + xOffset,
+                   atom.getScreenY() - yOffset,
+                   zLabel);
   }
 
 }

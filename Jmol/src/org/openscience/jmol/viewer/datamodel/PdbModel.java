@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.JmolConstants;
+import org.openscience.jmol.viewer.*;
 
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -50,11 +50,7 @@ final public class PdbModel {
   }
 
   public void freeze() {
-    if (chainCount != chains.length) {
-      PdbChain[] t = new PdbChain[chainCount];
-      System.arraycopy(chains, 0, t, 0, chainCount);
-      chains = t;
-    }
+    chains = (PdbChain[])Util.setLength(chains, chainCount);
     for (int i = chainCount; --i >= 0; )
       chains[i].freeze();
   }
@@ -94,11 +90,8 @@ final public class PdbModel {
     PdbChain chain = getChain(chainID);
     if (chain != null)
       return chain;
-    if (chainCount == chains.length) {
-      PdbChain[] t = new PdbChain[chainCount * 2];
-      System.arraycopy(chains, 0, t, 0, chainCount);
-      chains = t;
-    }
+    if (chainCount == chains.length)
+      chains = (PdbChain[])Util.doubleLength(chains);
     return chains[chainCount++] = new PdbChain(this, chainID);
   }
   

@@ -26,8 +26,8 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.jmol.api.ModelAdapter;
+import org.jmol.g3d.Graphics3D;
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
@@ -114,21 +114,15 @@ final public class Frame {
                       float x, float y, float z,
                       boolean isHetero, int atomSerial, char chainID,
                       String group3, int sequenceNumber, char insertionCode,
+                      float vectorX, float vectorY, float vectorZ,
                       Object clientAtomReference) {
     if (modelNumber != lastModelNumber) {
-      if (modelCount == modelIDs.length) {
-      short[] newModelIDs = new short[atoms.length + 20];
-      System.arraycopy(modelIDs, 0, newModelIDs, 0, modelIDs.length);
-      modelIDs = newModelIDs;
-      }
+      if (modelCount == modelIDs.length)
+        modelIDs = Util.setLength(modelIDs, modelCount + 20);
       lastModelNumber = modelIDs[modelCount++] = (short)modelNumber;
     }
-    if (atomCount == atoms.length) {
-      Atom[] newAtoms =
-        new Atom[atoms.length + growthIncrement];
-      System.arraycopy(atoms, 0, newAtoms, 0, atoms.length);
-      atoms = newAtoms;
-    }
+    if (atomCount == atoms.length)
+      atoms = (Atom[])Util.setLength(atoms, atomCount + growthIncrement);
     Atom atom = new Atom(this, atomCount,
                          modelNumber, 
                          atomicNumber,
@@ -139,17 +133,15 @@ final public class Frame {
                          x, y, z,
                          isHetero, atomSerial, chainID,
                          group3, sequenceNumber, insertionCode,
+                         vectorX, vectorY, vectorZ,
                          pdbFile);
     atoms[atomCount] = atom;
     if (clientAtomReference != null) {
       if (clientAtomReferences == null)
         clientAtomReferences = new Object[atoms.length];
-      else if (clientAtomReferences.length <= atomCount) {
-        Object[] t = new Object[atoms.length];
-        System.arraycopy(clientAtomReferences, 0, t, 0,
-                         clientAtomReferences.length);
-        clientAtomReferences = t;
-      }
+      else if (clientAtomReferences.length <= atomCount)
+        clientAtomReferences =
+          (Object[])Util.setLength(clientAtomReferences, atoms.length);
       clientAtomReferences[atomCount] = clientAtomReference;
     }
     ++atomCount;
@@ -218,12 +210,8 @@ final public class Frame {
   private void addBond(Bond bond) {
     if (bond == null)
       return;
-    if (bondCount == bonds.length) {
-      Bond[] newBonds =
-        new Bond[bonds.length + growthIncrement];
-      System.arraycopy(bonds, 0, newBonds, 0, bonds.length);
-      bonds = newBonds;
-    }
+    if (bondCount == bonds.length)
+      bonds = (Bond[])Util.setLength(bonds, bondCount + growthIncrement);
     bonds[bondCount++] = bond;
   }
 
@@ -475,48 +463,6 @@ final public class Frame {
   int measurementCount = 0;
   Measurement[] measurements = null;
 
-  /*
-  public void addMeasurement(int count, int[] atomIndices) {
-    // turn on the display of measures
-    setShapeSize(JmolConstants.SHAPE_MEASURES, 1, null);
-
-    Measurement measureNew = new Measurement(this, count, atomIndices);
-    if (measurements == null ||
-        measurementCount == measurements.length) {
-      Measurement[] newShapes =
-        new Measurement[measurementCount +
-                             measurementGrowthIncrement];
-      if (measurements != null)
-        System.arraycopy(measurements, 0,
-                         newShapes, 0, measurementCount);
-      measurements = newShapes;
-    }
-    measurements[measurementCount++] = measureNew;
-
-  }
-
-  public void clearMeasurements() {
-    measurementCount = 0;
-    measurements = null;
-  }
-
-  public void deleteMeasurement(int imeasurement) {
-    System.arraycopy(measurements, imeasurement+1,
-                     measurements, imeasurement,
-                     measurementCount - imeasurement - 1);
-    --measurementCount;
-    measurements[measurementCount] = null;
-  }
-
-  public int getMeasurementCount() {
-    return measurementCount;
-  }
-
-  public Measurement[] getMeasurements() {
-    return measurements;
-  }
-  */
-
   /****************************************************************
    * selection handling
    ****************************************************************/
@@ -549,11 +495,11 @@ final public class Frame {
       Atom atom = atoms[i];
       if ((atom.chargeAndFlags & Atom.VISIBLE_FLAG) == 0)
         continue;
-      int dx = atom.x - x;
+      int dx = atom.getScreenX() - x;
       int dx2 = dx * dx;
       if (dx2 > r2Nearest)
         continue;
-      int dy = atom.y - y;
+      int dy = atom.getScreenY() - y;
       int dy2 = dy * dy;
       if (dy2 + dx2 > r2Nearest)
         continue;
@@ -562,7 +508,7 @@ final public class Frame {
       indexNearest = i;
     }
     int rNearest = (int)Math.sqrt(r2Nearest);
-    return (rNearest > atomNearest.diameter/2 + selectionPixelLeeway)
+    return (rNearest > atomNearest.getScreenD()/2 + selectionPixelLeeway)
       ? -1
       : indexNearest;
   }
@@ -575,7 +521,7 @@ final public class Frame {
     bsFoundRectangle.and(bsEmpty);
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      if (rect.contains(atom.x, atom.y))
+      if (rect.contains(atom.getScreenX(), atom.getScreenY()))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;

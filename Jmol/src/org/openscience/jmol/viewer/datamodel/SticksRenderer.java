@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.jmol.g3d.*;
 
 import java.awt.Rectangle;
 
@@ -120,9 +120,11 @@ class SticksRenderer extends ShapeRenderer {
 
   void render(Bond bond, Atom atomA, Atom atomB) {
     this.atomA = atomA;
-    xA = atomA.x; yA = atomA.y; zA = atomA.z;
+    long xyzd = atomA.xyzd;
+    xA = Xyzd.getX(xyzd); yA = Xyzd.getY(xyzd); zA = Xyzd.getZ(xyzd);
     this.atomB = atomB;
-    xB = atomB.x; yB = atomB.y; zB = atomB.z;
+    xyzd = atomB.xyzd;
+    xB = Xyzd.getX(xyzd); yB = Xyzd.getY(xyzd); zB = Xyzd.getZ(xyzd);
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB)/2, bond.mad);
@@ -371,8 +373,8 @@ class SticksRenderer extends ShapeRenderer {
     Atom atomC = findAromaticNeighbor(bond);
     if (atomC == null)
       return 1;
-    int dxAC = atomC.x - xA;
-    int dyAC = atomC.y - yA;
+    int dxAC = atomC.getScreenX() - xA;
+    int dyAC = atomC.getScreenY() - yA;
     return (dx * dyAC - dy * dxAC) >= 0 ? 2 : 1;
   }
 

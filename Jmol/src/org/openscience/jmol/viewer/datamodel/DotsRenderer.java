@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.jmol.g3d.Graphics3D;
 import java.awt.Rectangle;
 
 import java.util.Hashtable;
@@ -124,7 +124,8 @@ class DotsRenderer extends ShapeRenderer {
   void renderConvex(Atom atom, short colix, int[] visibilityMap) {
     geodesic.calcScreenPoints(visibilityMap,
                               atom.getVanderwaalsRadiusFloat(),
-                              atom.x, atom.y, atom.z);
+                              atom.getScreenX(), atom.getScreenY(),
+                              atom.getScreenZ());
     if (geodesic.screenCoordinateCount > 0)
       g3d.plotPoints(colix == 0 ? atom.colixAtom : colix,
                      geodesic.screenCoordinateCount,

@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -48,9 +48,11 @@ class BackboneRenderer extends McpsRenderer {
       if (mads[i] == 0)
         continue;
       Atom atomA = frame.getAtomAt(atomIndices[i]);
-      int xA = atomA.x, yA = atomA.y, zA = atomA.z;
+      int xA = atomA.getScreenX(), yA = atomA.getScreenY(),
+        zA = atomA.getScreenZ();
       Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-      int xB = atomB.x, yB = atomB.y, zB = atomB.z; 
+      int xB = atomB.getScreenX(), yB = atomB.getScreenY(),
+        zB = atomB.getScreenZ(); 
       short colixA = colixes[i];
       if (colixA == 0)
         colixA = atomA.colixAtom;

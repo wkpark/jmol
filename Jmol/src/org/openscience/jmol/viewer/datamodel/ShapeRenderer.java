@@ -25,8 +25,8 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+import org.jmol.g3d.Graphics3D;
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Rectangle;
 
 abstract class ShapeRenderer {

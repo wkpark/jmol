@@ -24,8 +24,7 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Font3D;
+import org.jmol.g3d.*;
 import java.awt.FontMetrics;
 
 public class Frank extends SelectionIndependentShape {

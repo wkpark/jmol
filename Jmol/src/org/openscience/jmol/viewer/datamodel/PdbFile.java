@@ -56,7 +56,7 @@ final public class PdbFile {
     */
     if (structureCount == structures.length)
       structures =
-        (Structure[])JmolViewer.setLength(structures, structureCount + 10);
+        (Structure[])Util.setLength(structures, structureCount + 10);
     structures[structureCount++] =
       new Structure(structureType, chainID,
                     PdbGroup.getSeqcode(startSequenceNumber,
@@ -77,13 +77,8 @@ final public class PdbFile {
       if (modelNumbers[i] == modelNumber)
         return pdbmodels[i];
     if (modelCount == pdbmodels.length) {
-      int[] tNumbers = new int[modelCount * 2];
-      System.arraycopy(modelNumbers, 0, tNumbers, 0, modelCount);
-      modelNumbers = tNumbers;
-
-      PdbModel[] t = new PdbModel[modelCount * 2];
-      System.arraycopy(pdbmodels, 0, t, 0, modelCount);
-      pdbmodels = t;
+      pdbmodels = (PdbModel[])Util.doubleLength(pdbmodels);
+      modelNumbers = Util.doubleLength(modelNumbers);
     }
     modelNumbers[modelCount] = modelNumber;
     return pdbmodels[modelCount++] = new PdbModel(this, modelNumber);

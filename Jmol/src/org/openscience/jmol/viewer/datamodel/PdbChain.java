@@ -47,11 +47,7 @@ final public class PdbChain {
   }
 
   void freeze() {
-    if (groupCount != groups.length) {
-      PdbGroup[] t = new PdbGroup[groupCount];
-      System.arraycopy(groups, 0, t, 0, groupCount);
-      groups = t;
-    }
+    groups = (PdbGroup[])Util.setLength(groups, groupCount);
     polymer = new PdbPolymer(this);
   }
   
@@ -59,11 +55,8 @@ final public class PdbChain {
                          String group3) {
     PdbGroup group = new PdbGroup(this, sequenceNumber, insertionCode, group3);
 
-    if (groupCount == groups.length) {
-      PdbGroup[] t = new PdbGroup[groupCount * 2];
-      System.arraycopy(groups, 0, t, 0, groupCount);
-      groups = t;
-    }
+    if (groupCount == groups.length)
+      groups = (PdbGroup[])Util.doubleLength(groups);
     return groups[groupCount++] = group;
   }
 

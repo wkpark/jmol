@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.*;
+import org.jmol.g3d.*;
 import java.awt.FontMetrics;
 
 class HoverRenderer extends ShapeRenderer {
@@ -36,7 +36,7 @@ class HoverRenderer extends ShapeRenderer {
       return;
     Atom atom = frame.getAtomAt(hover.atomIndex);
     System.out.println("hover on atom:" + hover.atomIndex + " @ " +
-                       atom.x + "," + atom.y);
+                       atom.getScreenX() + "," + atom.getScreenY());
     String msg = atom.formatLabel(hover.labelFormat);
     Font3D font3d = hover.font3d;
     FontMetrics fontMetrics = font3d.fontMetrics;
@@ -48,8 +48,8 @@ class HoverRenderer extends ShapeRenderer {
     short colixForeground = hover.colixForeground;
     int width = msgWidth + 8;
     int height = msgHeight + 8;
-    int x = atom.x + 4;
-    int y = atom.y - height - 4;
+    int x = atom.getScreenX() + 4;
+    int y = atom.getScreenY() - height - 4;
 
     int msgX = x + 4;
     int msgYBaseline = y + 4 + ascent;

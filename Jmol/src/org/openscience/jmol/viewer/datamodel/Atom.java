@@ -30,6 +30,7 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 
 import java.awt.Rectangle;
+import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -39,7 +40,7 @@ public class Atom implements Bspt.Tuple {
   public final static byte VISIBLE_FLAG = 1;
 
   public int atomIndex;
-  public PdbAtom pdbAtom;
+  PdbAtom pdbAtom;
   short modelNumber;
   char chainID;
   Frame frame;
@@ -56,13 +57,14 @@ public class Atom implements Bspt.Tuple {
   Bond[] bonds;
 
   boolean isHetero; // pack this bit someplace
+
+  /* move these out of here */
   int atomSerial;
   String group3;
   int sequenceNumber;
   char insertionCode;
-
-  /* move these out of here */
   String atomName;
+  short atomID = -1;
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
@@ -98,8 +100,10 @@ public class Atom implements Bspt.Tuple {
     this.group3 = group3;
     this.sequenceNumber = sequenceNumber;
     this.insertionCode = insertionCode;
-    if (pdbFile != null)
+    if (pdbFile != null) {
+      atomID = lookupAtomID(atomName);
       pdbAtom = pdbFile.allocatePdbAtom(this);
+    }
     //    this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
   
@@ -295,8 +299,6 @@ public class Atom implements Bspt.Tuple {
   public String getAtomName() {
     if (atomName != null)
       return atomName;
-    if (pdbAtom != null)
-      return pdbAtom.getAtomPrettyName();
     return JmolConstants.elementSymbols[elementNumber];
   }
 
@@ -458,5 +460,113 @@ public class Atom implements Bspt.Tuple {
     deleteAllBonds();
     madAtom = JmolConstants.MAR_DELETED;
     x = y = z = diameter = 0;
+  }
+
+  public byte getSecondaryStructureType() {
+    if (pdbAtom != null)
+      return pdbAtom.group.getStructureType();
+    return 0;
+  }
+
+  public short getGroupID() {
+    if (pdbAtom != null)
+      return pdbAtom.group.groupID;
+    return -1;
+  }
+
+  public String getSeqcodeString() {
+    if (pdbAtom != null)
+      return pdbAtom.group.getSeqcodeString();
+    return null;
+  }
+
+  public int getModelID() {
+    if (pdbAtom != null)
+      return pdbAtom.group.chain.pdbmodel.modelNumber;
+    return 1;
+  }
+
+  public short getAtomID() {
+    return atomID;
+  }
+
+  public String getAtomPrettyName() {
+    return atomPrettyNames[atomID];
+  }
+
+  public final static short atomIDMainchainMax = 3;
+  
+  private static Hashtable htAtom = new Hashtable();
+  public static String[] atomNames = new String[128];
+  private static String[] atomPrettyNames = new String[128];
+  private static short atomIDMax = 0;
+  
+  static {
+    // this loop *must* run in forward direction;
+    for (int i = 0; i < JmolConstants.predefinedAtomNames4.length; ++i)
+      addAtomName(JmolConstants.predefinedAtomNames4[i]);
+  }
+  
+  // this requires a 4 letter name, in PDB format
+  // only here for transition purposes
+  static String calcPrettyName(String name) {
+    char chBranch = name.charAt(3);
+    char chRemote = name.charAt(2);
+    switch (chRemote) {
+    case 'A':
+      chRemote = '\u03B1';
+      break;
+    case 'B':
+      chRemote = '\u03B2';
+      break;
+    case 'C':
+    case 'G':
+      chRemote = '\u03B3';
+      break;
+    case 'D':
+      chRemote = '\u03B4';
+      break;
+    case 'E':
+      chRemote = '\u03B5';
+      break;
+    case 'Z':
+      chRemote = '\u03B6';
+      break;
+    case 'H':
+      chRemote = '\u03B7';
+    }
+    String pretty = name.substring(0, 2).trim();
+    if (chBranch != ' ')
+      pretty += "" + chRemote + chBranch;
+    else
+      pretty += chRemote;
+    return pretty;
+  }
+  
+  synchronized static short addAtomName(String name) {
+    String prettyName = calcPrettyName(name);
+    if (atomIDMax == atomNames.length) {
+      String[] t;
+      t = new String[atomIDMax * 2];
+      System.arraycopy(atomNames, 0, t, 0, atomIDMax);
+      atomNames = t;
+      t = new String[atomIDMax * 2];
+      System.arraycopy(atomPrettyNames, 0, t, 0, atomIDMax);
+      atomPrettyNames = t;
+    }
+    short atomID = atomIDMax++;
+    atomNames[atomID] = name;
+    atomPrettyNames[atomID] = prettyName;
+    // if already exists then this is an imposter entry
+    if (htAtom.get(name) == null)
+      htAtom.put(name, new Short(atomID));
+    return atomID;
+  }
+
+  short lookupAtomID(String strAtom) {
+    Short boxedAtomID = (Short)htAtom.get(strAtom);
+    if (boxedAtomID != null)
+      return boxedAtomID.shortValue();
+    return addAtomName(strAtom);
   }
 }

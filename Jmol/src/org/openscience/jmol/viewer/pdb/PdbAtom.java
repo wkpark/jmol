@@ -32,12 +32,14 @@ import java.util.Hashtable;
 public class PdbAtom {
 
   public PdbGroup group;
+  private Atom atom;
   public short atomID;
 
   public PdbAtom(PdbGroup group, Atom atom) {
     this.group = group;
+    this.atom = atom;
     String t = atom.getPdbAtomName4();
-    atomID = lookupAtomID(t);
+    atomID = atom.getAtomID();
   }
   
   public boolean isGroup3(String group3) {
@@ -65,11 +67,11 @@ public class PdbAtom {
   }
 
   public String getAtomName() {
-    return atomNames[atomID];
+    return atom.getAtomName();
   }
 
   public String getAtomPrettyName() {
-    return atomPrettyNames[atomID];
+    return atom.getAtomPrettyName();
   }
 
   public boolean isGroup3Match(String strWildcard) {
@@ -82,7 +84,7 @@ public class PdbAtom {
       System.err.println("atom wildcard length > 4 : " + strPattern);
       return false;
     }
-    String strAtomName = atomNames[atomID];
+    String strAtomName = Atom.atomNames[atomID];
     int cchAtomName = strAtomName.length();
     int ichAtomName = 0;
     while (strAtomName.charAt(ichAtomName) == ' ')
@@ -125,81 +127,8 @@ public class PdbAtom {
     return group.polymer;
   }
 
-  public int getSecondaryStructureType() {
+  public byte getSecondaryStructureType() {
     return group.getStructureType();
   }
   
-  public final static short atomIDMainchainMax = 3;
-  
-  private static Hashtable htAtom = new Hashtable();
-  static String[] atomNames = new String[128];
-  static String[] atomPrettyNames = new String[128];
-  static short atomIDMax = 0;
-
-  static {
-    // this loop *must* run in forward direction;
-    for (int i = 0; i < JmolConstants.predefinedAtomNames4.length; ++i)
-      addAtomName(JmolConstants.predefinedAtomNames4[i]);
-  }
-
-  static String calcPrettyName(String name) {
-    char chBranch = name.charAt(3);
-    char chRemote = name.charAt(2);
-    switch (chRemote) {
-    case 'A':
-      chRemote = '\u03B1';
-      break;
-    case 'B':
-      chRemote = '\u03B2';
-      break;
-    case 'C':
-    case 'G':
-      chRemote = '\u03B3';
-      break;
-    case 'D':
-      chRemote = '\u03B4';
-      break;
-    case 'E':
-      chRemote = '\u03B5';
-      break;
-    case 'Z':
-      chRemote = '\u03B6';
-      break;
-    case 'H':
-      chRemote = '\u03B7';
-    }
-    String pretty = name.substring(0, 2).trim();
-    if (chBranch != ' ')
-      pretty += "" + chRemote + chBranch;
-    else
-      pretty += chRemote;
-    return pretty;
-  }
-
-  synchronized static short addAtomName(String name) {
-    String prettyName = calcPrettyName(name);
-    if (atomIDMax == atomNames.length) {
-      String[] t;
-      t = new String[atomIDMax * 2];
-      System.arraycopy(atomNames, 0, t, 0, atomIDMax);
-      atomNames = t;
-      t = new String[atomIDMax * 2];
-      System.arraycopy(atomPrettyNames, 0, t, 0, atomIDMax);
-      atomPrettyNames = t;
-    }
-    short atomID = atomIDMax++;
-    atomNames[atomID] = name;
-    atomPrettyNames[atomID] = prettyName;
-    // if already exists then this is an imposter entry
-    if (htAtom.get(name) == null)
-      htAtom.put(name, new Short(atomID));
-    return atomID;
-  }
-
-  short lookupAtomID(String strAtom) {
-    Short boxedAtomID = (Short)htAtom.get(strAtom);
-    if (boxedAtomID != null)
-      return boxedAtomID.shortValue();
-    return addAtomName(strAtom);
-  }
 }

@@ -279,12 +279,16 @@ public class ModelManager {
 
   public String getAtomInfo(int i) {
     Atom atom = frame.atoms[i];
-    PdbAtom pdbAtom = atom.pdbAtom;
-    if (pdbAtom == null)
-      return "Atom: " + atom.getElementSymbol() + " " + atom.getAtomNumber();
+    String info =
+      "Atom: " + atom.getElementSymbol() + " " + atom.getAtomNumber() +
+      " " + atom.getGroup3() + " " + atom.getSeqcodeString() +
+      " Chain:" + atom.getChainID() + " Model:" + atom.getModelID();
+    return info;
+    /*
     return "Atom: " + pdbAtom.getAtomName() + " " + atom.getAtomNumber() +
       " " + pdbAtom.getGroup3() + " " + pdbAtom.getSeqcodeString() +
       " Chain:" + pdbAtom.getChainID() + " Model: " + pdbAtom.getModelID();
+    */
   }
 
 /*

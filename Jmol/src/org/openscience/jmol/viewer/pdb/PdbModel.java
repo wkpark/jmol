@@ -34,7 +34,7 @@ import java.util.Vector;
 final public class PdbModel {
 
   PdbFile pdbfile;
-  int modelNumber;
+  public int modelNumber;
 
   private int chainCount = 0;
   private PdbChain[] chains = new PdbChain[8];

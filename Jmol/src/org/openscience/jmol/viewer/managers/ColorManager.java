@@ -294,7 +294,6 @@ public class ColorManager {
 
   public short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
-    PdbAtom pdbatom = atom.pdbAtom;
     switch (palette) {
     case JmolConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
@@ -306,35 +305,34 @@ public class ColorManager {
       argb = JmolConstants.argbsCharge[i];
       break;
     case JmolConstants.PALETTE_STRUCTURE:
-      if (pdbatom != null)
-        argb = JmolConstants.
-          argbsPdbStructure[pdbatom.getSecondaryStructureType()];
+      argb = JmolConstants.
+        argbsPdbStructure[atom.getSecondaryStructureType()];
       break;
     case JmolConstants.PALETTE_AMINO:
-      if (pdbatom != null) {
-        int groupID = pdbatom.getGroupID();
-        argb = ((groupID < JmolConstants.argbsPdbAmino.length)
+      {
+        int groupID = atom.getGroupID();
+        argb = ((groupID >= 0 &&
+                groupID < JmolConstants.argbsPdbAmino.length)
                 ? JmolConstants.argbsPdbAmino[groupID]
                 : JmolConstants.argbPdbAminoDefault);
+        break;
       }
-      break;
     case JmolConstants.PALETTE_SHAPELY:
-      if (pdbatom != null) {
-        int groupID = pdbatom.getGroupID();
-        argb = ((groupID < JmolConstants.argbsPdbShapely.length)
+      {
+        int groupID = atom.getGroupID();
+        argb = ((groupID >= 0 &&
+                 groupID < JmolConstants.argbsPdbShapely.length)
                 ? JmolConstants.argbsPdbShapely[groupID]
                 : JmolConstants.argbPdbShapelyDefault);
+        break;
       }
-      break;
     case JmolConstants.PALETTE_CHAIN:
-      if (pdbatom != null) {
-        int chain = pdbatom.getChainID() & 0x1F;
-        if (chain >= JmolConstants.argbsPdbChainAtom.length)
-          chain = chain % JmolConstants.argbsPdbChainAtom.length;
-        argb = (atom.isHetero()
-                ? JmolConstants.argbsPdbChainHetero
-                : JmolConstants.argbsPdbChainAtom)[chain];
-      }
+      int chain = atom.getChainID() & 0x1F;
+      if (chain >= JmolConstants.argbsPdbChainAtom.length)
+        chain = chain % JmolConstants.argbsPdbChainAtom.length;
+      argb = (atom.isHetero()
+              ? JmolConstants.argbsPdbChainHetero
+              : JmolConstants.argbsPdbChainAtom)[chain];
       break;
     }
     if (argb == 0)

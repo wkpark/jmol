@@ -20,42 +20,47 @@ package org.openscience.jmol;
 
 public class SelectionSet {
 
-  private IntSet pickedAtoms = new IntSet();
+  int[] set = new int[16];
+  int count = 0;
 
-  public IntSet getPickedAtoms() {
-    return pickedAtoms;
+  public int[] getSelection() {
+    int[] result = new int[count];
+    System.arraycopy(set, 0, result, 0, count);
+    return result;
   }
   
-  public void addPickedAtom(Atom atom) {
-    pickedAtoms.add(atom.getAtomNumber());
+  public void addSelection(int num) {
+     if (! isSelected(num)) {
+       if (count == set.length) {
+         int[] setNew = new int[count * 2];
+         System.arraycopy(set, 0, setNew, 0, count);
+         set = setNew;
+       }
+       set[count++] = num;
+     }
   }
   
-  public void addPickedAtoms(Atom[] atoms) {
-    for (int i = 0; i < atoms.length; ++i) {
-      pickedAtoms.add(atoms[i].getAtomNumber());
-    }
+  public void removeSelection(int num) {
+    for (int i = 0; i < count; ++i)
+      if (set[i] == num) {
+        System.arraycopy(set, i+1, set, i, count - i);
+        --count;
+        return;
+      }
   }
   
-  public void removePickedAtom(Atom atom) {
-    pickedAtoms.remove(atom.getAtomNumber());
-  }
-  
-  public void removePickedAtoms(Atom[] atoms) {
-    for (int i = 0; i < atoms.length; ++i) {
-      pickedAtoms.remove(atoms[i].getAtomNumber());
-    }
-  }
-  
-  public void clearPickedAtoms() {
-    pickedAtoms.clear();
+  public void clearSelection() {
+    count = 0;
   }
 
-  public int countPickedAtoms() {
-    return pickedAtoms.size();
+  public int countSelection() {
+    return count;
   }
 
-  public boolean isAtomPicked(Atom atom) {
-    return pickedAtoms.contains(atom.getAtomNumber());
+  public boolean isSelected(int num) {
+    for (int i = 0; i < count; ++i)
+      if (set[i] == num)
+        return true;
+    return false;
   }
 }
-

@@ -144,10 +144,18 @@ public class DisplayPanel extends JPanel
         Atom atom = control.getFrame().getNearestAtom(e.getX(), e.getY());
         switch (modeMouse) {
         case PICK:
-          if (!e.isShiftDown())
-            control.clearPickedAtoms();
-          if (atom != null)
-            control.addPickedAtom(atom);
+          if (atom == null) {
+            control.clearSelection();
+            break;
+          }
+          if (!e.isShiftDown()) {
+            int selectionCount = control.countSelection();
+            boolean wasSelected = control.isSelected(atom);
+            control.clearSelection();
+            if (selectionCount == 1 && wasSelected)
+              break;
+          }
+          control.toggleSelection(atom);
           break;
         case DELETE:
           if (atom != null) {
@@ -212,10 +220,10 @@ public class DisplayPanel extends JPanel
           Atom[] selectedAtoms =
             control.getFrame().findAtomsInRegion(rleft, rtop, rright, rbottom);
           if (e.isShiftDown()) {
-            control.addPickedAtoms(selectedAtoms);
+            control.addSelection(selectedAtoms);
           } else {
-            control.clearPickedAtoms();
-            control.addPickedAtoms(selectedAtoms);
+            control.clearSelection();
+            control.addSelection(selectedAtoms);
           }
         }
         break;
@@ -387,7 +395,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (control.haveFile()) {
-        control.addPickedAtoms(control.getFrame().getAtoms());
+        control.addSelection(control.getFrame().getAtoms());
         repaint();
       }
     }
@@ -403,7 +411,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (control.haveFile()) {
-        control.clearPickedAtoms();
+        control.clearSelection();
         repaint();
       }
     }

@@ -557,11 +557,14 @@ public class AtomShape implements Shape {
     int diameter = atom.screenDiameter;
     int radius = diameter >> 1;
 
-    if (!wireframeRotation && control.isAtomPicked(atom)) {
-      int halo = radius + 5;
-      int halo2 = 2 * halo;
+    if (!wireframeRotation && control.isSelected(atom)) {
+      int halowidth = diameter / 3;
+      if (halowidth < 2)
+        halowidth = 2;
+      int halodiameter = diameter + 2 * halowidth;
+      int haloradius = radius + halowidth;
       g.setColor(pickedColor);
-      g.fillOval(x - halo, y - halo, halo2, halo2);
+      g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
     Color color = colorProfile.getColor(atom);
     g.setColor(color);

@@ -144,8 +144,19 @@ final public class DisplayControl {
     recalc();
   }
 
+  private Color colorOpaquePicked = null;
+  private Color colorTransparentPicked = null;
   public Color getPickedColor() {
-    return settings.getPickedColor();
+    Color pickedCurrent = settings.getPickedColor();
+    if (colorTransparentPicked == null ||
+        colorOpaquePicked != pickedCurrent) {
+      colorTransparentPicked = colorOpaquePicked = pickedCurrent;
+      if (useGraphics2D) {
+        int rgba = (pickedCurrent.getRGB() & 0x00FFFFFF) | 0x80000000;
+        colorTransparentPicked = new Color(rgba, true);
+      }
+    }
+    return colorTransparentPicked;
   }
 
   public void setTextColor(Color c) {
@@ -272,41 +283,48 @@ final public class DisplayControl {
 
   private final SelectionSet setPicked = new SelectionSet();
 
-  public void addPickedAtom(Atom atom) {
-    setPicked.addPickedAtom(atom);
+  public void addSelection(Atom atom) {
+    setPicked.addSelection(atom.getAtomNumber());
     recalc();
   }
 
-  public void removePickedAtom(Atom atom) {
-    setPicked.removePickedAtom(atom);
+  public void removeSelection(Atom atom) {
+    setPicked.removeSelection(atom.getAtomNumber());
     recalc();
   }
 
-  public void addPickedAtoms(Atom[] atoms) {
-    setPicked.addPickedAtoms(atoms);
+  public void toggleSelection(Atom atom) {
+    int atomNum = atom.getAtomNumber();
+    if (setPicked.isSelected(atomNum))
+      setPicked.removeSelection(atomNum);
+    else
+      setPicked.addSelection(atomNum);
     recalc();
   }
 
-  public void removePickedAtoms(Atom[] atoms) {
-    setPicked.removePickedAtoms(atoms);
+  public void addSelection(Atom[] atoms) {
+    for (int i = 0; i < atoms.length; ++i)
+      setPicked.addSelection(atoms[i].getAtomNumber());
     recalc();
   }
 
-  public IntSet getPickedAtoms() {
-    return setPicked.getPickedAtoms();
-  }
-  
-  public void clearPickedAtoms() {
-    setPicked.clearPickedAtoms();
+  public void removeSelection(Atom[] atoms) {
+    for (int i = 0; i < atoms.length; ++i)
+      setPicked.removeSelection(atoms[i].getAtomNumber());
     recalc();
   }
 
-  public int countPickedAtoms() {
-    return setPicked.countPickedAtoms();
+  public void clearSelection() {
+    setPicked.clearSelection();
+    recalc();
   }
 
-  public boolean isAtomPicked(Atom atom) {
-    return setPicked.isAtomPicked(atom);
+  public int countSelection() {
+    return setPicked.countSelection();
+  }
+
+  public boolean isSelected(Atom atom) {
+    return setPicked.isSelected(atom.getAtomNumber());
   }
 
   public float getScalePixelsPerAngstrom() {
@@ -585,7 +603,7 @@ final public class DisplayControl {
     if (this.wantsGraphics2D != wantsGraphics2D) {
       this.wantsGraphics2D = wantsGraphics2D;
       useGraphics2D = supportsGraphics2D && wantsGraphics2D;
-      flushImageCache();
+      flushCachedImages();
       recalc();
     }
   }
@@ -665,7 +683,7 @@ final public class DisplayControl {
   }
 
   public void setCenterAsSelected() {
-    int[] picked = getPickedAtoms().elements();
+    int[] picked = setPicked.getSelection();
     Point3f center = null;
     if (picked.length > 0) {
       // just take the average of all the points
@@ -675,7 +693,7 @@ final public class DisplayControl {
       center.scale(1.0f / picked.length); // just divide by the quantity
     }
     getFrame().setRotationCenter(center);
-    clearPickedAtoms();
+    clearSelection();
     scaleFitToScreen();
     recalc();
   }
@@ -712,7 +730,8 @@ final public class DisplayControl {
   }
 
   public final Hashtable imageCache = new Hashtable();
-  private void flushImageCache() {
+  private void flushCachedImages() {
     imageCache.clear();
+    colorTransparentPicked = null;
   }
 }

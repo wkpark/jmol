@@ -1,11 +1,13 @@
 <chapter>
   <title>Supported Browsers</title>
+
   <para>
     The applet is tested and working with Internet Explorer, Netscape,
     Opera, Mozilla (and derivatives) and Konqueror on various platforms.
     Test results are given below. But be advised that this table
     (like most documentation) is often out of date. 
   </para>
+
   <para>
     If you find problems with the browser/operating system/jvm combination
     of your choice, please send an email to jmol-users@lists.sf.net, stating
@@ -13,80 +15,141 @@
     of the browser, the operating system, and the java virtual machine
     that is used.
   </para>
+
   <section>
     <title>Testing results</title>
+
     <para>
       The JmolApplet has been tested successfully with the following system
       configurations:
-      <itemizedlist>
-	<listitem>
-		<para>Win32 (98/ME/2K/XP)</para>
-	  <itemizedlist>
-	    <listitem><para>Microsoft Internet Explorer with Microsoft JVM</para></listitem>
-	    <listitem><para>Microsoft Internet Explorer with Sun Java Plugin &gt;= 1.4</para></listitem>
-	    <listitem><para>Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis></para></listitem>
-	    <listitem><para>Netscape 7 with Sun Java Plugin &gt;= 1.4</para></listitem>
-	    <listitem><para>Mozilla with Sun Java Plugin &gt;= 1.4</para></listitem>
-	    <listitem><para>Firefox 1.0 with Sun Java Plugin &gt;= 1.4</para></listitem>
-	    <listitem><para>Opera 7.5.4 with Sun Java Plugin &gt;= 1.4</para></listitem>
-	  </itemizedlist>
-	</listitem>
-	<listitem>
-	  <para>Mac OS X 10.3.3 or greater</para>
-	  <para>
-	    Mac OS X prior to 10.3.3 did not support LiveConnect
-	    communications between JavaScript and Java
-	  </para>
-	  <itemizedlist>
-	    <listitem>
-	      <para>Safari 1.2 (v125)</para>
-	      <para>
-		Previous versions of OSX &amp; Safari have significant problems.
-		Even subsequent versions have problems. Lets hope that
-		Apple can keep things stable.
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>Netscape 7.2 with javaplugin.sourceforge.net installed</para>
-	    </listitem>
-	    <listitem>
-	      <para>Mozilla 1.7.3 with javaplugin.sourceforge.net installed</para>
-	    </listitem>
-	    <listitem>
-	      <para>Firefox 1.0 with javaplugin.sourceforge.net installed</para>
-	    </listitem>
-	    <listitem>
-	      <para>Opera 7.5.4</para>
-	      <para>
-		all versions of Opera OSX up through 7.5.4 are
-		completely broken
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-	</listitem>
-	<listitem>
-	  <para>Linux/Unix</para>
-	  <itemizedlist>
-	    <listitem><para>Mozilla 1.6 + Sun Java &gt;= 1.4</para></listitem>
-	    <listitem><para>Firefox 1.0 + Sun Java &gt;= 1.4</para></listitem>
-	    <listitem>
-	      <para>Konqueror 3.3</para>
-	      <para>
-		all versions of Konqueror up through 3.3 are broken
-	      </para>
-	    </listitem>
-	  </itemizedlist>
-	</listitem>
-	<listitem>
-	  <para>Mac OS 9</para>
-	  <itemizedlist>
-	    <listitem>
-	      <para>Netscape 4.7*
-	      <emphasis>marginal performance with limited functionality</emphasis></para>
-	    </listitem>
-	  </itemizedlist>
-	</listitem>
-      </itemizedlist>
     </para>
+    
+    <itemizedlist>
+      <listitem>
+        <para>
+          Win32 (98/ME/2K/XP)
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Microsoft Internet Explorer with Microsoft JVM
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Microsoft Internet Explorer with Sun Java Plugin &gt;= 1.4
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Netscape 7 with Sun Java Plugin &gt;= 1.4
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Mozilla with Sun Java Plugin &gt;= 1.4
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Firefox 1.0 with Sun Java Plugin &gt;= 1.4
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Opera 7.5.4 with Sun Java Plugin &gt;= 1.4
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          Mac OS X 10.3.3 or greater
+        </para>
+        <para>
+          Mac OS X prior to 10.3.3 did not support LiveConnect
+          communications between JavaScript and Java
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Safari 1.2 (v125)
+            </para>
+            <para>
+              Previous versions of OSX &amp; Safari have significant problems.
+              Even subsequent versions have problems. Lets hope that
+              Apple can keep things stable.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Netscape 7.2 with javaplugin.sourceforge.net installed
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Mozilla 1.7.3 with javaplugin.sourceforge.net installed
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Firefox 1.0 with javaplugin.sourceforge.net installed
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Opera 7.5.4
+            </para>
+            <para>
+              all versions of Opera OSX up through 7.5.4 are
+              completely broken
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          Linux/Unix
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Mozilla 1.6 + Sun Java &gt;= 1.4
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Firefox 1.0 + Sun Java &gt;= 1.4
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Konqueror 3.3
+            </para>
+            <para>
+              all versions of Konqueror up through 3.3 are broken
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <para>
+          Mac OS 9
+        </para>
+        <itemizedlist>
+          <listitem>
+            <para>
+              Netscape 4.7* <emphasis>marginal performance with limited
+              functionality</emphasis>
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </itemizedlist>
   </section>
 </chapter>

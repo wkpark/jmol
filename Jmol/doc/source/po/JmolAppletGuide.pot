@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol GUIDE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 21:31+0100\n"
+"POT-Creation-Date: 2005-02-10 22:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,116 +32,116 @@ msgstr ""
 msgid "Supported Browsers"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:3 
+#: ../JmolAppletGuide.docbook.xml:4 
 msgid "The applet is tested and working with Internet Explorer, Netscape, Opera, Mozilla (and derivatives) and Konqueror on various platforms. Test results are given below. But be advised that this table (like most documentation) is often out of date."
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:9 
+#: ../JmolAppletGuide.docbook.xml:11 
 msgid "If you find problems with the browser/operating system/jvm combination of your choice, please send an email to jmol-users@lists.sf.net, stating the exact error (most browsers have a Java Console), and the versions of the browser, the operating system, and the java virtual machine that is used."
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:17 
+#: ../JmolAppletGuide.docbook.xml:20 
 msgid "Testing results"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:23 
-msgid "Win32 (98/ME/2K/XP)"
-msgstr ""
-
-#: ../JmolAppletGuide.docbook.xml:25 
-msgid "Microsoft Internet Explorer with Microsoft JVM"
-msgstr ""
-
-#: ../JmolAppletGuide.docbook.xml:26 
-msgid "Microsoft Internet Explorer with Sun Java Plugin &gt;= 1.4"
-msgstr ""
-
-#: ../JmolAppletGuide.docbook.xml:27 
-msgid "Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis>"
-msgstr ""
-
-#: ../JmolAppletGuide.docbook.xml:28 
-msgid "Netscape 7 with Sun Java Plugin &gt;= 1.4"
+#: ../JmolAppletGuide.docbook.xml:22 
+msgid "The JmolApplet has been tested successfully with the following system configurations:"
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:29 
+msgid "Win32 (98/ME/2K/XP)"
+msgstr ""
+
+#: ../JmolAppletGuide.docbook.xml:34 
+msgid "Microsoft Internet Explorer with Microsoft JVM"
+msgstr ""
+
+#: ../JmolAppletGuide.docbook.xml:39 
+msgid "Microsoft Internet Explorer with Sun Java Plugin &gt;= 1.4"
+msgstr ""
+
+#: ../JmolAppletGuide.docbook.xml:44 
+msgid "Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis>"
+msgstr ""
+
+#: ../JmolAppletGuide.docbook.xml:49 
+msgid "Netscape 7 with Sun Java Plugin &gt;= 1.4"
+msgstr ""
+
+#: ../JmolAppletGuide.docbook.xml:54 
 msgid "Mozilla with Sun Java Plugin &gt;= 1.4"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:30 
+#: ../JmolAppletGuide.docbook.xml:59 
 msgid "Firefox 1.0 with Sun Java Plugin &gt;= 1.4"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:31 
+#: ../JmolAppletGuide.docbook.xml:64 
 msgid "Opera 7.5.4 with Sun Java Plugin &gt;= 1.4"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:35 
+#: ../JmolAppletGuide.docbook.xml:71 
 msgid "Mac OS X 10.3.3 or greater"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:36 
+#: ../JmolAppletGuide.docbook.xml:74 
 msgid "Mac OS X prior to 10.3.3 did not support LiveConnect communications between JavaScript and Java"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:42 
+#: ../JmolAppletGuide.docbook.xml:80 
 msgid "Safari 1.2 (v125)"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:43 
+#: ../JmolAppletGuide.docbook.xml:83 
 msgid "Previous versions of OSX &amp; Safari have significant problems. Even subsequent versions have problems. Lets hope that Apple can keep things stable."
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:50 
+#: ../JmolAppletGuide.docbook.xml:90 
 msgid "Netscape 7.2 with javaplugin.sourceforge.net installed"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:53 
+#: ../JmolAppletGuide.docbook.xml:95 
 msgid "Mozilla 1.7.3 with javaplugin.sourceforge.net installed"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:56 
+#: ../JmolAppletGuide.docbook.xml:100 
 msgid "Firefox 1.0 with javaplugin.sourceforge.net installed"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:59 
+#: ../JmolAppletGuide.docbook.xml:105 
 msgid "Opera 7.5.4"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:60 
+#: ../JmolAppletGuide.docbook.xml:108 
 msgid "all versions of Opera OSX up through 7.5.4 are completely broken"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:68 
+#: ../JmolAppletGuide.docbook.xml:116 
 msgid "Linux/Unix"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:70 
+#: ../JmolAppletGuide.docbook.xml:121 
 msgid "Mozilla 1.6 + Sun Java &gt;= 1.4"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:71 
+#: ../JmolAppletGuide.docbook.xml:126 
 msgid "Firefox 1.0 + Sun Java &gt;= 1.4"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:73 
+#: ../JmolAppletGuide.docbook.xml:131 
 msgid "Konqueror 3.3"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:74 
+#: ../JmolAppletGuide.docbook.xml:134 
 msgid "all versions of Konqueror up through 3.3 are broken"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:81 
+#: ../JmolAppletGuide.docbook.xml:141 
 msgid "Mac OS 9"
 msgstr ""
 
-#: ../JmolAppletGuide.docbook.xml:84 
+#: ../JmolAppletGuide.docbook.xml:146 
 msgid "Netscape 4.7* <emphasis>marginal performance with limited functionality</emphasis>"
-msgstr ""
-
-#: ../JmolAppletGuide.docbook.xml:18 
-msgid "The JmolApplet has been tested successfully with the following system configurations: <placeholder-1/>"
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:2 
@@ -157,7 +157,7 @@ msgid "If you have older CPU with a newer/upgraded operating system, (like Mac O
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:12 
-msgid "<emphasis>No specialized video hardware is required. </emphasis>"
+msgid "<emphasis>No specialized video hardware is required.</emphasis>"
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:2 
@@ -185,7 +185,7 @@ msgid "Jmol Applet Usage"
 msgstr ""
 
 #: ../JmolAppletGuide.docbook.xml:3 
-msgid "Use the Jmol.js JavaScript library as documented in <ulink url=\"http://www.jmol.org/jslibrary\"> www.jmol.org/jslibrary </ulink>"
+msgid "Use the Jmol.js JavaScript library as documented in <ulink url=\"http://www.jmol.org/jslibrary\"/>"
 msgstr ""
 
 #. Put one translator per line, in the form of NAME <EMAIL>, YEAR1, YEAR2.

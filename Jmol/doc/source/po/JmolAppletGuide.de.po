@@ -38,7 +38,7 @@ msgstr ""
 msgid "Supported Browsers"
 msgstr "Unterstützte Browser"
 
-#: ../JmolAppletGuide.docbook.xml:3
+#: ../JmolAppletGuide.docbook.xml:4
 msgid ""
 "The applet is tested and working with Internet Explorer, Netscape, Opera, "
 "Mozilla (and derivatives) and Konqueror on various platforms. Test results "
@@ -51,7 +51,7 @@ msgstr ""
 "Resultate (wie bei den meisten Dokumentationen) nicht aktuell sein müssen "
 "und es möglicherweise auch nicht sind."
 
-#: ../JmolAppletGuide.docbook.xml:9
+#: ../JmolAppletGuide.docbook.xml:11
 msgid ""
 "If you find problems with the browser/operating system/jvm combination of "
 "your choice, please send an email to jmol-users@lists.sf.net, stating the "
@@ -64,47 +64,55 @@ msgstr ""
 "Fehlermeldung (die meisten Browser verfügen über eine Java-Konsole), die "
 "Version des verwendeten Browsers, Betriebssystems und der JVM mit."
 
-#: ../JmolAppletGuide.docbook.xml:17
+#: ../JmolAppletGuide.docbook.xml:20
 msgid "Testing results"
 msgstr "Testresultate"
 
-#: ../JmolAppletGuide.docbook.xml:23
+#: ../JmolAppletGuide.docbook.xml:22
+msgid ""
+"The JmolApplet has been tested successfully with the following system "
+"configurations:"
+msgstr ""
+"JmolApplet wurde mit den folgenden System-Konfigurationen erfolgreich "
+"getestet:"
+
+#: ../JmolAppletGuide.docbook.xml:29
 msgid "Win32 (98/ME/2K/XP)"
 msgstr "Win32 (98/ME/2K/XP)"
 
-#: ../JmolAppletGuide.docbook.xml:25
+#: ../JmolAppletGuide.docbook.xml:34
 msgid "Microsoft Internet Explorer with Microsoft JVM"
 msgstr "Microsoft Internet Explorer mit Microsoft JVM"
 
-#: ../JmolAppletGuide.docbook.xml:26
+#: ../JmolAppletGuide.docbook.xml:39
 msgid "Microsoft Internet Explorer with Sun Java Plugin &gt;= 1.4"
 msgstr "Microsoft Internet Explorer mit Sun Java Plugin &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:27
+#: ../JmolAppletGuide.docbook.xml:44
 msgid "Netscape 4.7/4.8 <emphasis>(slow performance)</emphasis>"
 msgstr "Netscape 4.7/4.8 <emphasis>(sehr langsam)</emphasis>"
 
-#: ../JmolAppletGuide.docbook.xml:28
+#: ../JmolAppletGuide.docbook.xml:49
 msgid "Netscape 7 with Sun Java Plugin &gt;= 1.4"
 msgstr "Netscape 7 mit Sun Java Plugin &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:29
+#: ../JmolAppletGuide.docbook.xml:54
 msgid "Mozilla with Sun Java Plugin &gt;= 1.4"
 msgstr "Mozilla mit Sun Java Plugin &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:30
+#: ../JmolAppletGuide.docbook.xml:59
 msgid "Firefox 1.0 with Sun Java Plugin &gt;= 1.4"
 msgstr "Firefox 1.0 mit Sun Java Plugin &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:31
+#: ../JmolAppletGuide.docbook.xml:64
 msgid "Opera 7.5.4 with Sun Java Plugin &gt;= 1.4"
 msgstr "Opera 7.5.4 mit Sun Java Plugin &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:35
+#: ../JmolAppletGuide.docbook.xml:71
 msgid "Mac OS X 10.3.3 or greater"
 msgstr "Mac OS X 10.3.3 oder höher"
 
-#: ../JmolAppletGuide.docbook.xml:36
+#: ../JmolAppletGuide.docbook.xml:74
 msgid ""
 "Mac OS X prior to 10.3.3 did not support LiveConnect communications between "
 "JavaScript and Java"
@@ -112,11 +120,11 @@ msgstr ""
 "Mac OS X Versionen vor 10.3.3 unterstützen nicht die LiveConnect-"
 "Kommunikation zwischen JavaScript und Java"
 
-#: ../JmolAppletGuide.docbook.xml:42
+#: ../JmolAppletGuide.docbook.xml:80
 msgid "Safari 1.2 (v125)"
 msgstr "Safari 1.2 (v125)"
 
-#: ../JmolAppletGuide.docbook.xml:43
+#: ../JmolAppletGuide.docbook.xml:83
 msgid ""
 "Previous versions of OSX &amp; Safari have significant problems. Even "
 "subsequent versions have problems. Lets hope that Apple can keep things "
@@ -126,66 +134,58 @@ msgstr ""
 "neuere Versionen zeigen sich nicht problemfrei. Es bleibt zu hoffen, dass "
 "Apple diese Dinge in den Griff bekommt."
 
-#: ../JmolAppletGuide.docbook.xml:50
+#: ../JmolAppletGuide.docbook.xml:90
 msgid "Netscape 7.2 with javaplugin.sourceforge.net installed"
 msgstr "Netscape 7.2 mit installiertem Plugin von javaplugin.sourceforge.net"
 
-#: ../JmolAppletGuide.docbook.xml:53
+#: ../JmolAppletGuide.docbook.xml:95
 msgid "Mozilla 1.7.3 with javaplugin.sourceforge.net installed"
 msgstr "Mozilla 1.7.3 mit installiertem Plugin von javaplugin.sourceforge.net"
 
-#: ../JmolAppletGuide.docbook.xml:56
+#: ../JmolAppletGuide.docbook.xml:100
 msgid "Firefox 1.0 with javaplugin.sourceforge.net installed"
 msgstr "Firefox 1.0 mit installiertem Plugin von javaplugin.sourceforge.net"
 
-#: ../JmolAppletGuide.docbook.xml:59
+#: ../JmolAppletGuide.docbook.xml:105
 msgid "Opera 7.5.4"
 msgstr "Opera 7.5.4"
 
-#: ../JmolAppletGuide.docbook.xml:60
+#: ../JmolAppletGuide.docbook.xml:108
 msgid "all versions of Opera OSX up through 7.5.4 are completely broken"
 msgstr ""
 "Alle Versionen von Opera für OSX bis einschließlich 7.5.4 sind völlig kaputt."
 
-#: ../JmolAppletGuide.docbook.xml:68
+#: ../JmolAppletGuide.docbook.xml:116
 msgid "Linux/Unix"
 msgstr "Linux/Unix"
 
-#: ../JmolAppletGuide.docbook.xml:70
+#: ../JmolAppletGuide.docbook.xml:121
 msgid "Mozilla 1.6 + Sun Java &gt;= 1.4"
 msgstr "Mozilla 1.6 + Sun Java &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:71
+#: ../JmolAppletGuide.docbook.xml:126
 msgid "Firefox 1.0 + Sun Java &gt;= 1.4"
 msgstr "Firefox 1.0 + Sun Java &gt;= 1.4"
 
-#: ../JmolAppletGuide.docbook.xml:73
+#: ../JmolAppletGuide.docbook.xml:131
 msgid "Konqueror 3.3"
 msgstr "Konqueror 3.3"
 
-#: ../JmolAppletGuide.docbook.xml:74
+#: ../JmolAppletGuide.docbook.xml:134
 msgid "all versions of Konqueror up through 3.3 are broken"
 msgstr "Alle Versionen von Konqueror bis einschließlich 3.3 sind kaputt."
 
-#: ../JmolAppletGuide.docbook.xml:81
+#: ../JmolAppletGuide.docbook.xml:141
 msgid "Mac OS 9"
 msgstr "Mac OS 9"
 
-#: ../JmolAppletGuide.docbook.xml:84
+#: ../JmolAppletGuide.docbook.xml:146
 msgid ""
 "Netscape 4.7* <emphasis>marginal performance with limited functionality</"
 "emphasis>"
 msgstr ""
 "Netscape 4.7* <emphasis>schlechte Performance mit eingeschränkter "
 "Funktionalität</emphasis>"
-
-#: ../JmolAppletGuide.docbook.xml:18
-msgid ""
-"The JmolApplet has been tested successfully with the following system "
-"configurations: <placeholder-1/>"
-msgstr ""
-"JmolApplet wurde mit den folgenden System-Konfigurationen erfolgreich "
-"getestet: <placeholder-1/>"
 
 #: ../JmolAppletGuide.docbook.xml:2
 msgid "Hardware and OS Requirements"
@@ -211,9 +211,9 @@ msgstr ""
 "mehr ist in diesem Fall besser."
 
 #: ../JmolAppletGuide.docbook.xml:12
-msgid "<emphasis>No specialized video hardware is required. </emphasis>"
+msgid "<emphasis>No specialized video hardware is required.</emphasis>"
 msgstr ""
-"<emphasis>Es wird keine spezielle Graik-/Video-Hardware benötigt. </emphasis>"
+"<emphasis>Es wird keine spezielle Graik-/Video-Hardware benötigt.</emphasis>"
 
 #: ../JmolAppletGuide.docbook.xml:2
 msgid "Web Server configuration for the JmolApplet"
@@ -262,11 +262,10 @@ msgstr "Gebrauch des Jmol Applets"
 #: ../JmolAppletGuide.docbook.xml:3
 msgid ""
 "Use the Jmol.js JavaScript library as documented in <ulink url=\"http://www."
-"jmol.org/jslibrary\"> www.jmol.org/jslibrary </ulink>"
+"jmol.org/jslibrary\"/>"
 msgstr ""
 "Benutzen Sie die JavaScript-Bibliothek Jmol.js, wie in der Dokumentation "
-"unter <ulink url=\"http://www.jmol.org/jslibrary\"> www.jmol.org/jslibrary </"
-"ulink> beschrieben."
+"unter <ulink url=\"http://www.jmol.org/jslibrary\" /> beschrieben."
 
 #. Put one translator per line, in the form of NAME <EMAIL>, YEAR1, YEAR2.
 #: ../JmolAppletGuide.docbook.xml:0

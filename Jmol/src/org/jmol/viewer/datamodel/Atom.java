@@ -387,7 +387,40 @@ public final class Atom implements Bspt.Tuple {
     return JmolConstants.getBondingMar(elementNumber,
                                        formalChargeAndFlags >> 4);
   }
-  
+
+  int getMaximumValence() {
+    return JmolConstants.getMaximumValence(elementNumber,
+                                           formalChargeAndFlags >> 4);
+  }
+
+  int getCurrentValence() {
+    int currentValence = 0;
+    for (int i = (bonds == null ? 0 : bonds.length); --i >= 0; )
+      currentValence += bonds[i].order & JmolConstants.BOND_COVALENT;
+    return currentValence;
+  }
+
+  // find the longest bond to discard
+  // but return null if atomChallenger is longer than any
+  // established bonds
+  // note that this algorithm works when maximum valence == 0
+  Bond getLongestBondToDiscard(Atom atomChallenger) {
+    float dist2Longest = point3f.distanceSquared(atomChallenger.point3f);
+    Bond bondLongest = null;
+    for (int i = bonds.length; --i >= 0; ) {
+      Bond bond = bonds[i];
+      Atom atomOther = bond.atom1 != this ? bond.atom1 : bond.atom2;
+      float dist2 = point3f.distanceSquared(atomOther.point3f);
+      if (dist2 > dist2Longest) {
+        bondLongest = bond;
+        dist2Longest = dist2;
+      }
+    }
+    //    System.out.println("atom at " + point3f + " suggests discard of " +
+    //                       bondLongest + " dist2=" + dist2Longest);
+    return bondLongest;
+  }
+
   float getBondingRadiusFloat() {
     return getBondingMar() / 1000f;
   }

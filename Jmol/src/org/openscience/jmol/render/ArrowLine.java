@@ -46,6 +46,7 @@ public class ArrowLine {
 
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
+  static int[] zpoints = new int[4];
 
   /*
   public ArrowLine(Graphics gc, double x1, double y1, double x2, double y2,
@@ -138,17 +139,20 @@ public class ArrowLine {
 
     xpoints[0] = (int) (x1 + px * ctheta - py * stheta);
     ypoints[0] = (int) (y1 + px * stheta + py * ctheta);
+    zpoints[0] = (int) z2;
 
     xpoints[1] = (int) (x1 + lx * ctheta - ly * stheta);
     ypoints[1] = (int) (y1 + lx * stheta + ly * ctheta);
+    zpoints[1] = (int) z2;
 
     xpoints[2] = (int) (x1 + mx * ctheta - my * stheta);
     ypoints[2] = (int) (y1 + mx * stheta + my * ctheta);
+    zpoints[2] = (int) z2;
 
     xpoints[3] = (int) (x1 + rx * ctheta - ry * stheta);
     ypoints[3] = (int) (y1 + rx * stheta + ry * ctheta);
-    // FIXME mth 2003 06 09
-    g25d.fillPolygon4(color, color, xpoints, ypoints, null);
+    zpoints[3] = (int) z2;
+    g25d.fillPolygon4(color, xpoints, ypoints, zpoints);
   }
 }
 

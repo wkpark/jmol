@@ -493,7 +493,7 @@ public class Jmol extends JPanel {
       mi = guimap.newJRadioButtonMenuItem("Jmol."+cmd);
     } else {
       String checked = JmolResourceHandler.getInstance().getString("Jmol."
-                         + cmd + checkSuffix);
+                         + cmd + "Check");
       if (checked != null) {
         boolean c = false;
         if (checked.equals("true")) {
@@ -505,14 +505,14 @@ public class Jmol extends JPanel {
       }
     }
     String mnem = JmolResourceHandler.getInstance().getString("Jmol." + cmd
-                    + mnemonicSuffix);
+                    + "Mnemonic");
     if (mnem != null) {
       char mn = mnem.charAt(0);
       mi.setMnemonic(mn);
     }
 
     ImageIcon f = JmolResourceHandler.getInstance().getIcon("Jmol." + cmd
-                    + imageSuffix);
+                    + "Image");
     if (f != null) {
       mi.setHorizontalTextPosition(JButton.RIGHT);
       mi.setIcon(f);
@@ -594,7 +594,7 @@ public class Jmol extends JPanel {
   protected AbstractButton createToolbarButton(String key) {
 
     ImageIcon ii = JmolResourceHandler.getInstance().getIcon("Jmol." + key
-                     + imageSuffix);
+                     + "Image");
     AbstractButton b = new JButton(ii);
     String isToggleString =
       JmolResourceHandler.getInstance().getString("Jmol." + key + "Toggle");
@@ -629,7 +629,7 @@ public class Jmol extends JPanel {
     }
 
     String tip = JmolResourceHandler.getInstance().getString("Jmol." + key
-                   + tipSuffix);
+                   + "Tip");
     if (tip != null) {
       b.setToolTipText(tip);
     }
@@ -697,7 +697,7 @@ public class Jmol extends JPanel {
                 menuBar.add(m);
             }
             String mnem = JmolResourceHandler.getInstance().getString("Jmol."
-                + menuKeys[i] + mnemonicSuffix);
+                + menuKeys[i] + "Mnemonic");
             if (mnem != null) {
                 char mn = mnem.charAt(0);
                 m.setMnemonic(mn);
@@ -714,7 +714,7 @@ public class Jmol extends JPanel {
           menuBar.add(m);
       }
       String mnem = JmolResourceHandler.getInstance().getString("Jmol."
-          + menuKey + mnemonicSuffix);
+          + menuKey + "Mnemonic");
       if (mnem != null) {
           char mn = mnem.charAt(0);
           m.setMnemonic(mn);
@@ -731,7 +731,7 @@ public class Jmol extends JPanel {
     String[] itemKeys;
     if (isPopup) {
       itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol."
-          + key + popupSuffix));
+          + key + "Popup"));
     } else {
       itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol."
           + key));
@@ -745,7 +745,7 @@ public class Jmol extends JPanel {
 
       // Check to see if it is a radio group:
       String radiogroup = JmolResourceHandler.getInstance().getString("Jmol."
-                            + itemKeys[i] + radioSuffix);
+                            + itemKeys[i] + "Radio");
       if (radiogroup != null) {
 
         // Get the list of items in the radio group:
@@ -753,7 +753,7 @@ public class Jmol extends JPanel {
 
         // See what is the selected member of the radio group:
         String si = JmolResourceHandler.getInstance().getString("Jmol."
-                      + itemKeys[i] + selectedSuffix);
+                      + itemKeys[i] + "Selected");
 
         // Create the button group:
         ButtonGroup bg = new ButtonGroup();
@@ -773,7 +773,7 @@ public class Jmol extends JPanel {
       } else {
         // Check to see if it is a popup menu:
         String popup = JmolResourceHandler.getInstance().
-          getString("Jmol." + itemKeys[i] + popupSuffix);
+          getString("Jmol." + itemKeys[i] + "Popup");
         if (popup != null) {
           if (popup.equals("prop")) {
             apm =
@@ -826,54 +826,6 @@ public class Jmol extends JPanel {
   private JMenuBar menubar;
   private JToolBar toolbar;
 
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for an image.
-   */
-  private static final String imageSuffix = "Image";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for a label.
-   */
-  public static final String labelSuffix = "Label";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for a checkbox menu item.
-   */
-  private static final String checkSuffix = "Check";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for a radio group.
-   */
-  private static final String radioSuffix = "Radio";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for a selected member of a radio group.
-   */
-  private static final String selectedSuffix = "Selected";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for a popup menu.
-   */
-  private static final String popupSuffix = "Popup";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for tooltip text.
-   */
-  private static final String tipSuffix = "Tooltip";
-
-  /**
-   * Suffix applied to the key used in resource file
-   * lookups for Mnemonics.
-   */
-  private static final String mnemonicSuffix = "Mnemonic";
 
   private static final String newwinAction = "newwin";
   private static final String openAction = "open";

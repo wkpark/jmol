@@ -77,7 +77,7 @@ class GuiMap {
     String key;
     KeyJMenu(String key) {
       super(JmolResourceHandler.
-            getInstance().getString(key+Jmol.labelSuffix));
+            getInstance().getString(key+"Label"));
       this.key = key;
       map.put(key, this);
     }
@@ -90,7 +90,7 @@ class GuiMap {
     String key;
     KeyJMenuItem(String key) {
       super(JmolResourceHandler.
-            getInstance().getString(key+Jmol.labelSuffix));
+            getInstance().getString(key+"Label"));
       this.key = key;
       map.put(key, this);
     }
@@ -104,7 +104,7 @@ class GuiMap {
     String key;
     KeyJCheckBoxMenuItem(String key, boolean isChecked) {
       super(JmolResourceHandler.
-            getInstance().getString(key+Jmol.labelSuffix), isChecked);
+            getInstance().getString(key+"Label"), isChecked);
       this.key = key;
       map.put(key, this);
     }
@@ -118,7 +118,7 @@ class GuiMap {
     String key;
     KeyJRadioButtonMenuItem(String key) {
       super(JmolResourceHandler.
-            getInstance().getString(key+Jmol.labelSuffix));
+            getInstance().getString(key+"Label"));
       this.key = key;
       map.put(key, this);
     }
@@ -132,7 +132,7 @@ class GuiMap {
     String key;
     KeyJCheckBox(String key, boolean isChecked) {
       super(JmolResourceHandler.
-            getInstance().getString(key+Jmol.labelSuffix), isChecked);
+            getInstance().getString(key+"Label"), isChecked);
       this.key = key;
       map.put(key, this);
     }

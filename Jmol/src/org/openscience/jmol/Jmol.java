@@ -913,7 +913,8 @@ class Jmol extends JPanel {
                             ChemFileReader reader = new PDBReader(new InputStreamReader(is)); 
                             cf = reader.read();
                         } else if (ft.getType().equals("CML")) {
-                            cf = new CMLFile(is); 
+							ChemFileReader reader = new CMLReader(new InputStreamReader(is));
+                            cf = reader.read();
                         } else if(ft.getType().equals("Gaussian log file")){
                             cf = new GaussianFile(is, ft.computeShifts());
                         } else if(ft.getType().equals("XYZ (xmol)")) {

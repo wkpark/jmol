@@ -216,6 +216,22 @@ public class Frame {
       trace.setColix(palette, colix, bsSelected);
   }
   
+  Cartoon cartoon;
+
+  public void setCartoonMad(short mad, BitSet bsSelected) {
+    if (mad != 0 && cartoon == null)
+      cartoon = new Cartoon(viewer, this);
+    if (cartoon != null)
+      cartoon.setMad(mad, bsSelected);
+  }
+  
+  public void setCartoonColix(byte palette, short colix, BitSet bsSelected) {
+    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && cartoon == null)
+      cartoon = new Cartoon(viewer, this);
+    if (cartoon != null)
+      cartoon.setColix(palette, colix, bsSelected);
+  }
+  
   Strands strands;
 
   public void setStrandsMad(short mad, BitSet bsSelected) {
@@ -226,7 +242,8 @@ public class Frame {
   }
   
   public void setStrandsColix(byte palette, short colix, BitSet bsSelected) {
-    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && strands == null)
+    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) &&
+        strands == null)
       strands = new Strands(viewer, this);
     if (strands != null)
       strands.setColix(palette, colix, bsSelected);

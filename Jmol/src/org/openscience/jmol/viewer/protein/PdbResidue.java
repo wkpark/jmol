@@ -30,16 +30,11 @@ import java.util.Hashtable;
 
 public class PdbResidue {
 
-  public final static byte STRUCTURE_NONE = 0;
-  public final static byte STRUCTURE_HELIX = 1;
-  public final static byte STRUCTURE_SHEET = 2;
-  public final static byte STRUCTURE_TURN = 3;
-
+  public PdbStructure structure;
   public PdbMolecule pdbmolecule;
   public char chainID;
   public short resNumber;
   public short resid;
-  public byte structureType = STRUCTURE_NONE;
   int[] mainchainIndices;
 
   public PdbResidue(PdbMolecule pdbmolecule, char chainID,
@@ -50,8 +45,12 @@ public class PdbResidue {
     this.resid = resid;
   }
 
-  public void setStructureType(byte structureType) {
-    this.structureType = structureType;
+  public void setStructure(PdbStructure structure) {
+    this.structure = structure;
+  }
+
+  public byte getStructureType() {
+    return structure == null ? 0 : structure.type;
   }
 
   public static boolean isResidue3(short resid, String residue3) {
@@ -90,8 +89,14 @@ public class PdbResidue {
     return chainID;
   }
 
+  public boolean isHelix() {
+    return structure != null &&
+      structure.type == JmolConstants.SECONDARY_STRUCTURE_HELIX;
+  }
+
   public boolean isHelixOrSheet() {
-    return structureType == STRUCTURE_HELIX || structureType == STRUCTURE_SHEET;
+    return structure != null &&
+      structure.type >= JmolConstants.SECONDARY_STRUCTURE_SHEET;
   }
 
   /****************************************************************

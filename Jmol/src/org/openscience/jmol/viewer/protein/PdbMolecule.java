@@ -59,21 +59,21 @@ public class PdbMolecule {
       return;
     for (int i = structureRecords.length; --i >= 0; ) {
       String structureRecord = structureRecords[i];
-      byte type = PdbResidue.STRUCTURE_NONE;
+      byte type = JmolConstants.SECONDARY_STRUCTURE_NONE;
       int chainIDIndex = 19;
       int startIndex = 0;
       int endIndex = 0;
       if (structureRecord.startsWith("HELIX ")) {
-        type = PdbResidue.STRUCTURE_HELIX;
+        type = JmolConstants.SECONDARY_STRUCTURE_HELIX;
         startIndex = 21;
         endIndex = 33;
       } else if (structureRecord.startsWith("SHEET ")) {
-        type = PdbResidue.STRUCTURE_SHEET;
+        type = JmolConstants.SECONDARY_STRUCTURE_SHEET;
         chainIDIndex = 21;
         startIndex = 22;
         endIndex = 33;
       } else if (structureRecord.startsWith("TURN  ")) {
-        type = PdbResidue.STRUCTURE_TURN;
+        type = JmolConstants.SECONDARY_STRUCTURE_TURN;
         startIndex = 20;
         endIndex = 31;
       } else
@@ -96,19 +96,7 @@ public class PdbMolecule {
         System.out.println("secondary structure record error");
         continue;
       }
-      PdbStructure structure;
-      switch(type) {
-      case PdbResidue.STRUCTURE_HELIX:
-        structure = new Helix(chain, start, end);
-        break;
-      case PdbResidue.STRUCTURE_SHEET:
-        structure = new Sheet(chain, start, end);
-        break;
-      case PdbResidue.STRUCTURE_TURN:
-        structure = new Turn(chain, start, end);
-        break;
-      }
-      chain.propogateSecondaryStructure(type, start, end);
+      chain.addSecondaryStructure(type, start, end);
     }
   }
 

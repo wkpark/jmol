@@ -27,10 +27,12 @@ package org.openscience.jmol.viewer.protein;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import java.util.Hashtable;
+import javax.vecmath.Point3f;
 
 public class PdbChain {
 
   public char chainID;
+  int firstResidueNumber;
   int residueCount;
   PdbResidue[] residues = new PdbResidue[16];
   PdbResidue[] mainchain;
@@ -46,14 +48,35 @@ public class PdbChain {
       residues = t;
     }
   }
-
+  
   void addResidue(PdbResidue residue) {
-    if (residueCount == residues.length) {
-      PdbResidue[] t = new PdbResidue[residueCount * 2];
+    int residueNumber = residue.resNumber;
+    if (residueCount == 0)
+      firstResidueNumber = residueNumber;
+    int residueIndex = residueNumber - firstResidueNumber;
+    if (residueIndex < 0) {
+      System.out.println("residue out of sequence?");
+      return;
+    }
+    if (residueIndex >= residues.length) {
+      PdbResidue[] t = new PdbResidue[residueIndex * 2];
       System.arraycopy(residues, 0, t, 0, residueCount);
       residues = t;
     }
-    residues[residueCount++] = residue;
+    residues[residueIndex] = residue;
+    if (residueIndex >= residueCount)
+      residueCount = residueIndex + 1;
+  }
+
+  PdbResidue getResidue(int residueNumber) {
+    int residueIndex = residueNumber - firstResidueNumber;
+    if (residueIndex < 0 || residueIndex >= residueCount)
+      return null;
+    return residues[residueIndex];
+  }
+
+  Point3f getResiduePoint(int residueNumber) {
+    return getResidue(residueNumber).getAlphaCarbonAtom().point3f;
   }
 
   int mainchainHelper(boolean addResidues) {
@@ -88,6 +111,38 @@ public class PdbChain {
     return mainchain;
   }
 
+  void addSecondaryStructure(byte type,
+                             int startResidueNumber, int endResidueNumber) {
+    for (int i = startResidueNumber; i <= endResidueNumber; ++i)
+      if (getResidue(i) == null) {
+        System.out.println("structure definition error");
+        return;
+      }
+    PdbStructure structure;
+    switch(type) {
+    case JmolConstants.SECONDARY_STRUCTURE_HELIX:
+      structure = new Helix(this, startResidueNumber, endResidueNumber);
+      break;
+    case JmolConstants.SECONDARY_STRUCTURE_SHEET:
+      structure = new Sheet(this, startResidueNumber, endResidueNumber);
+      break;
+    case JmolConstants.SECONDARY_STRUCTURE_TURN:
+      structure = new Turn(this, startResidueNumber, endResidueNumber);
+      break;
+    default:
+      System.out.println("unrecognized secondary structure type");
+      return;
+    }
+    for (int i = residueCount; --i >= 0; ) {
+      PdbResidue residue = residues[i];
+      int resNumber = residue.resNumber;
+      if (resNumber >= startResidueNumber && resNumber <= endResidueNumber)
+        residue.setStructure(structure);
+    }
+    
+  }
+    
+  /*
   void propogateSecondaryStructure(byte type, int startResidueNumber,
                                    int endResidueNumber) {
     for (int i = residueCount; --i >= 0; ) {
@@ -97,4 +152,5 @@ public class PdbChain {
         residue.setStructureType(type);
     }
   }
+  */
 }

@@ -371,9 +371,11 @@ public class Eval implements Runnable {
       case Token.trace:
         trace();
         break;
+      case Token.cartoon:
+        cartoon();
+        break;
         // not implemented
       case Token.bond:
-      case Token.cartoon:
       case Token.clipboard:
       case Token.connect:
       case Token.hbonds:
@@ -983,7 +985,8 @@ public class Eval implements Runnable {
   void color() throws ScriptException {
     if (statement.length > 3 || statement.length < 2)
       badArgumentCount();
-    switch (statement[1].tok) {
+    int tok = statement[1].tok;
+    switch (tok) {
     case Token.colorRGB:
     case Token.spacefill:
     case Token.amino:
@@ -995,9 +998,6 @@ public class Eval implements Runnable {
     case Token.charge:
     case Token.user:
       colorObject(Token.atom, 1);
-      break;
-    case Token.atom:
-      colorObject(Token.atom, 2);
       break;
     case Token.bond:
     case Token.bonds:
@@ -1012,11 +1012,11 @@ public class Eval implements Runnable {
     case Token.backbone:
       viewer.setColorBackboneScript(getColorOrNoneParam(2));
       break;
+    case Token.atom:
     case Token.trace:
-      colorObject(Token.trace, 2);
-      break;
     case Token.strands:
-      colorObject(Token.strands, 2);
+    case Token.cartoon:
+      colorObject(tok, 2);
       break;
     case Token.identifier:
 	String str = (String)statement[1].value;
@@ -1083,6 +1083,9 @@ public class Eval implements Runnable {
       break;
     case Token.strands:
       viewer.setStrandsColor(palette, color);
+      break;
+    case Token.cartoon:
+      viewer.setCartoonColor(palette, color);
       break;
     default:
       unrecognizedColorObject();
@@ -1747,6 +1750,33 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setStrandsWidth(width);
+  }
+
+  void cartoon() throws ScriptException {
+    float width = 0;
+    int tok = statement[1].tok;
+    switch (tok) {
+    case Token.on:
+      width = -1; // means take default
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int widthRasMol = statement[1].intValue;
+      if (widthRasMol >= 500)
+        numberOutOfRange();
+      width = widthRasMol * 4 / 1000f;
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[1].value).floatValue();
+      if (angstroms > 4)
+        numberOutOfRange();
+      width = angstroms;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setCartoonRadius(width);
   }
 
   /****************************************************************

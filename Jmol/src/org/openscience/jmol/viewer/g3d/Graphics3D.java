@@ -480,24 +480,23 @@ final public class Graphics3D {
   }
 
   public final static byte ENDCAPS_NONE = 0;
-  public final static byte ENDCAPS_FLAT = 1;
-  public final static byte ENDCAPS_SPHERICAL = 2;
+  public final static byte ENDCAPS_OPEN = 1;
+  public final static byte ENDCAPS_FLAT = 2;
+  public final static byte ENDCAPS_SPHERICAL = 3;
 
   public void fillCylinder(short colixA, short colixB, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
-    if (viewer.getTestFlag1())
-      endcaps = ENDCAPS_NONE;
-    if (viewer.getTestFlag2())
-      endcaps = ENDCAPS_FLAT;
-    if (viewer.getTestFlag3())
-      endcaps = ENDCAPS_SPHERICAL;
     cylinder3d.render(colixA, colixB, endcaps, diameter,
                       xA, yA, zA, xB - xA, yB - yA, zB - zA);
-    /*
-    fillCone(colixA, endcaps, 4 * diameter,
-             xA+100, yA+100, zA, xB+100, yB+100, zB);
-    */
+  }
+
+  public void fillCylinder(short colix, byte endcaps, int diameter,
+                           Point3i screenA, Point3i screenB) {
+    cylinder3d.render(colix, colix, endcaps, diameter,
+                      screenA.x, screenA.y, screenA.z,
+                      screenB.x - screenA.x, screenB.y - screenA.y,
+                      screenB.z - screenA.z);
   }
 
   public void fillCone(short colix, byte endcap, int diameter,

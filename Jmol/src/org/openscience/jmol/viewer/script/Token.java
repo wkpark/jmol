@@ -302,7 +302,7 @@ public class Token {
     "backbone",          new Token(backbone,  onDefault1, "backbone"),
     "background",        new Token(background,         1, "background"),
     "bond",              new Token(bond,     varArgCount, "bond"),
-    "cartoon",           new Token(cartoon,  varArgCount, "cartoon"),
+    "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
     "center",            new Token(center,   varArgCount,  "center"),
     "centre",            null,
     "clipboard",         new Token(clipboard,          0, "clipboard"),

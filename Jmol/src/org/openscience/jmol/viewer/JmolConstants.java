@@ -1060,4 +1060,9 @@ final public class JmolConstants {
     
   };
 
+  public final static byte SECONDARY_STRUCTURE_NONE = 0;
+  public final static byte SECONDARY_STRUCTURE_TURN = 1;
+  public final static byte SECONDARY_STRUCTURE_SHEET = 2;
+  public final static byte SECONDARY_STRUCTURE_HELIX = 3;
+
 }

@@ -50,7 +50,7 @@ public class Cylinder3D {
   private int evenCorrection;
   private int diameter;
   private byte endcaps;
-  private boolean tEndcapNone;
+  private boolean tEndcapOpen;
   private int xEndcap, yEndcap, zEndcap;
   private int argbEndcap;
 
@@ -156,14 +156,14 @@ public class Cylinder3D {
     int x = xRaster[i];
     int y = yRaster[i];
     int z = zRaster[i];
-    if (tEndcapNone) {
+    if (tEndcapOpen) {
       g3d.plotPixelClipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
       g3d.plotPixelClipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);
     }
     g3d.plotLineDelta(shadesA[iUp], shadesB[iUp],
                       xA + x, yA + y, zA - z,
                       dxB, dyB, dzB);
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL) {
+    if (endcaps == Graphics3D.ENDCAPS_OPEN) {
       g3d.plotLineDelta(shadesA[0], shadesB[0],
                         xA - x, yA - y, zA + z,
                         dxB, dyB, dzB);
@@ -344,7 +344,7 @@ public class Cylinder3D {
     int xUp = xA + x, yUp = yA + y, zUp = zA - z;
     int xDn = xA - x, yDn = yA - y, zDn = zA + z;
 
-    if (tEndcapNone) {
+    if (tEndcapOpen) {
       g3d.plotPixelClipped(argbEndcap, xUp, yUp, zUp);
       g3d.plotPixelClipped(argbEndcap, xDn, yDn, zDn);
     }
@@ -362,7 +362,7 @@ public class Cylinder3D {
   }
 
   void calcArgbEndcap(boolean tCylinder) {
-    tEndcapNone = false;
+    tEndcapOpen = false;
     if ((endcaps == Graphics3D.ENDCAPS_SPHERICAL) ||
         (dzB == 0) ||
         (!tCylinder && dzB < 0))
@@ -383,7 +383,6 @@ public class Cylinder3D {
     if (intensityEndcap > 44) // limit specular glare on endcap
       intensityEndcap = 44;
     argbEndcap = shadesEndcap[intensityEndcap];
-    tEndcapNone = (endcaps == Graphics3D.ENDCAPS_NONE);
-    //    System.out.println("tEndcapNone=" + tEndcapNone);
+    tEndcapOpen = (endcaps == Graphics3D.ENDCAPS_OPEN);
   }
 }

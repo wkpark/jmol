@@ -136,50 +136,16 @@ public class PdbAtom {
     return atomNumber;
   }
 
+  /*
   public void setStructureType(byte type) {
     if (residue != null)
       residue.structureType = type;
   }
+  */
 
   public int getProteinStructureType() {
-    return residue != null ? residue.structureType : PdbResidue.STRUCTURE_NONE;
+    return residue == null ? 0 : residue.getStructureType();
   }
-
-  /*
-    "N",   "N",  // 0
-    "CA",  "C\u03B1",
-    "C",   "C",
-    "O",   "O", // 3
-    "C'",  "C'", // 4
-    "OT",  "OT", 
-    "S",   "S",
-    "P",   "P", // 7
-    "O1P", "O1P",
-    "O2P", "O2P",
-    "O5*", "O5'",
-    "C5*", "C5'",
-    "C4*", "C4'",
-    "O4*", "O4'",
-    "C3*", "C3'",
-    "O3*", "O3'",
-    "C2*", "C2'",
-    "O2*", "O2'",
-    "C1*", "C1'", // 18
-    "CA2", "C\u03B12",
-    "SG",  "S\u03B3",
-    "N1",  "N1",
-    "N2",  "N2",
-    "N3",  "N3",
-    "N4",  "N4",
-    "N6",  "N6",
-    "O2",  "O2",
-    "O4",  "O4",
-    "O6",  "O6", // 28
-    // kludge for now -- need to come up with a better scheme
-    "CB",  "C\u03B2", // 29
-    "CG2", "C\u03B32",
-    "OG1", "O\u03B31",
-  */
 
   public final static short atomidMainchainMax = 3;
 

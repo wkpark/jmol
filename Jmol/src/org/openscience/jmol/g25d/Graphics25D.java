@@ -55,7 +55,8 @@ final public class Graphics25D {
   boolean capable = false;
   boolean usePbuf;
 
-  int argbDraw, argbFill;
+  int argbCurrent;
+  Font fontCurrent;
 
   public Graphics25D(DisplayControl control) {
     this.control = control;
@@ -106,7 +107,7 @@ final public class Graphics25D {
   }
 
   public void setColor(Color color) {
-    argbDraw = color.getRGB();
+    argbCurrent = color.getRGB();
     g.setColor(color);
   }
 
@@ -170,7 +171,7 @@ final public class Graphics25D {
       }
       return;
     }
-    argbDraw = color.getRGB();
+    argbCurrent = color.getRGB();
     if (x >= r && x + r < width && y >= r && y + r < height) {
       if (diameter <= 2) {
         if (diameter == 1) {
@@ -212,7 +213,7 @@ final public class Graphics25D {
       g.fillOval(x - r, y - r, diameter, diameter);
       return;
     }
-    argbDraw = colorFill.getRGB();
+    argbCurrent = colorFill.getRGB();
     if (x >= r && x + r < width && y >= r && y + r < width) {
       plotFilledCircleCenteredUnclipped(x, y, z, diameter);
     } else {
@@ -233,7 +234,7 @@ final public class Graphics25D {
       g.drawOval(x, y, diameter, diameter);
       return;
     }
-    argbDraw = colorOutline.getRGB();
+    argbCurrent = colorOutline.getRGB();
     if (x >= r && x + r < width && y >= r && y + r < height) {
       if (diameter <= 2) {
         if (diameter == 1) {
@@ -247,7 +248,7 @@ final public class Graphics25D {
         }
       } else {
         plotCircleCenteredUnclipped(x, y, z, diameter);
-        argbDraw = colorFill.getRGB();
+        argbCurrent = colorFill.getRGB();
         plotFilledCircleCenteredUnclipped(x, y, z, diameter);
       }
     } else {
@@ -263,7 +264,7 @@ final public class Graphics25D {
         }
       } else {
         plotCircleCenteredClipped(x, y, z, diameter);
-        argbDraw = colorFill.getRGB();
+        argbCurrent = colorFill.getRGB();
         plotFilledCircleCenteredClipped(x, y, z, diameter);
       }
     }
@@ -276,7 +277,9 @@ final public class Graphics25D {
       shadedSphereRenderer.render(this, x - r, y - r, z,
                                   diameter, colorFill, colorOutline);
     else
-      sphere25d.render(x-r, y-r, z, diameter, colorFill);
+      sphere25d.paintSphereShape(x, y, z, diameter, colorFill);
+      //      sphere25d.plotSphere(x, y, z, diameter, colorFill);
+      //      sphere25d.render(x-r, y-r, z, diameter, colorFill);
   }
 
   public void drawRect(int x, int y, int width, int height) {
@@ -293,7 +296,12 @@ final public class Graphics25D {
   }
 
   public void drawString(String str, int xBaseline, int yBaseline) {
-    g.drawString(str, xBaseline, yBaseline);
+    if (! usePbuf) {
+      g.drawString(str, xBaseline, yBaseline);
+      return;
+    }
+    Text25D.plot(xBaseline, yBaseline, 100, argbCurrent,
+                 str, fontCurrent, this, control.getAwtComponent());
   }
 
   public void enableAntialiasing(boolean enableAntialiasing) {
@@ -309,6 +317,7 @@ final public class Graphics25D {
   }
 
   public void setFont(Font font) {
+    fontCurrent = font;
     g.setFont(font);
   }
 
@@ -388,7 +397,7 @@ final public class Graphics25D {
       int offset = y * width + x;
       if (z < zbuf[offset]) {
         zbuf[offset] = (short)z;
-        pbuf[offset] = argbDraw;
+        pbuf[offset] = argbCurrent;
       }
     }
   }
@@ -468,7 +477,20 @@ final public class Graphics25D {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
-      pbuf[offset] = argbDraw;
+      pbuf[offset] = argbCurrent;
+    }
+  }
+
+  void plotPixelClipped(int argb, int x, int y, int z) {
+    if (x < 0 || x >= width ||
+        y < 0 || y >= height
+        //        || z < 0 || z >= 8192
+        )
+      return;
+    int offset = y * width + x;
+    if (z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = argb;
     }
   }
 
@@ -487,7 +509,7 @@ final public class Graphics25D {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
-      pbuf[offset] = argbDraw;
+      pbuf[offset] = argbCurrent;
     }
   }
 
@@ -506,7 +528,7 @@ final public class Graphics25D {
     while (--count >= 0) {
       if (z < zbuf[offsetPbuf]) {
         zbuf[offsetPbuf] = (short)z;
-        pbuf[offsetPbuf] = argbDraw;
+        pbuf[offsetPbuf] = argbCurrent;
       }
       ++offsetPbuf;
     }
@@ -517,7 +539,7 @@ final public class Graphics25D {
     while (--count >= 0) {
       if (z < zbuf[offsetPbuf]) {
         zbuf[offsetPbuf] = (short)z;
-        pbuf[offsetPbuf] = argbDraw;
+        pbuf[offsetPbuf] = argbCurrent;
       }
       ++offsetPbuf;
     }
@@ -570,7 +592,7 @@ final public class Graphics25D {
     int offset = y1 * width + x1;
     if (z1 < zbuf[offset]) {
       zbuf[offset] = (short)z1;
-      pbuf[offset] = argbDraw;
+      pbuf[offset] = argbCurrent;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -614,7 +636,7 @@ final public class Graphics25D {
         int zCurrent = zCurrentScaled >> 10;
         if (zCurrent < zbuf[offset]) {
           zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = argbDraw;
+          pbuf[offset] = argbCurrent;
         }
       } while (--n > 0);
       return;
@@ -637,7 +659,7 @@ final public class Graphics25D {
       int zCurrent = zCurrentScaled >> 10;
       if (zCurrent < zbuf[offset]) {
         zbuf[offset] = (short)zCurrent;
-        pbuf[offset] = argbDraw;
+        pbuf[offset] = argbCurrent;
       }
     } while (--n > 0);
   }

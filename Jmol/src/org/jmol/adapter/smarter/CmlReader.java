@@ -62,10 +62,6 @@ class CmlReader extends ModelReader {
   }
 
   class CmlHandler extends DefaultHandler {
-    public InputSource resolveEntity(String publicId, String systemId) {
-      System.out.println("resolveEntity(" + publicId + "," + systemId + ")");
-      return null;
-    }
 
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts)
@@ -79,6 +75,25 @@ class CmlReader extends ModelReader {
                            String qName) throws SAXException {
       System.out.println("endElement(" + uri + "," + localName +
                          "," + qName + ")");
+    }
+    
+    // Methods for entity resolving, e.g. getting an DTD resolved
+    
+    public InputSource resolveEntity(String name, String publicId,
+                                     String baseURI, String systemId) {
+      System.out.println("Not resolving this:");
+      System.out.println("      name: " + name);
+      System.out.println("  systemID: " + systemId);
+      System.out.println("  publicID: " + publicId);
+      System.out.println("   baseURI: " + baseURI);
+      return null;
+    }
+
+    public InputSource resolveEntity (String publicId, String systemId) {
+      System.out.println("Not resolving this:");
+      System.out.println("  publicID: " + publicId);
+      System.out.println("  systemID: " + systemId);
+      return null;
     }
   }
 }

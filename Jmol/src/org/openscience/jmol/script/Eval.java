@@ -356,13 +356,15 @@ public class Eval implements Runnable {
       case Token.animate:
         animate();
         break;
+      case Token.dots:
+        dots();
+        break;
         // not implemented
       case Token.backbone:
       case Token.bond:
       case Token.cartoon:
       case Token.clipboard:
       case Token.connect:
-      case Token.dots:
       case Token.hbonds:
       case Token.help:
       case Token.molecule:
@@ -971,9 +973,11 @@ public class Eval implements Runnable {
     case Token.label:
       control.setColorLabel(getColorOrNoneParam(2));
       break;
+    case Token.dots:
+      control.setColorDots(getColorOrNoneParam(2));
+      break;
     case Token.backbone:
     case Token.ribbons:
-    case Token.dots:
     case Token.hbonds:
     case Token.ssbonds:
       notImplemented(1);
@@ -1112,8 +1116,18 @@ public class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
-    if (statement[2].tok != Token.integer)
-      integerExpected();
+    if (statement.length < 2)
+      axisExpected();
+    switch (statement[1].tok) {
+    case Token.x:
+    case Token.y:
+    case Token.z:
+      break;
+    default:
+      axisExpected();
+    }
+    if (statement.length != 3 || statement[2].tok != Token.integer)
+        integerExpected();
     int degrees = statement[2].intValue;
     switch (statement[1].tok) {
     case Token.x:
@@ -1125,8 +1139,6 @@ public class Eval implements Runnable {
     case Token.z:
       control.rotateByZ(degrees);
       break;
-    default:
-      axisExpected();
     }
   }
 
@@ -1578,6 +1590,34 @@ public class Eval implements Runnable {
       }
     }
     control.setInMotion(false);
+  }
+
+  void dots() throws ScriptException {
+    short marDots = 0;
+    switch (statement[1].tok) {
+    case Token.on:
+      marDots = -100;
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500 || radiusRasMol < -100)
+        numberOutOfRange();
+      marDots = (short)radiusRasMol;
+      if (radiusRasMol > 0)
+        marDots *= 4;
+      break;
+    case Token.decimal:
+      double angstroms = ((Double)statement[1].value).doubleValue();
+      if (angstroms >= 2)
+        numberOutOfRange();
+      marDots = (short)(angstroms * 1000);
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    control.setMarDots(marDots);
   }
 
   /****************************************************************

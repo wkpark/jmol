@@ -35,11 +35,30 @@ import java.util.Hashtable;
 
 public class Cylinder25D {
 
+  static int foo = 0;
+
+
   DisplayControl control;
   Graphics25D g25d;
   public Cylinder25D(DisplayControl control, Graphics25D g25d) {
     this.control = control;
     this.g25d = g25d;
+  }
+
+  void test(Color color, int diameter, int x, int y, int z,
+            int dx, int dy, int dz) {
+    CylinderShape cs = new CylinderShape(diameter * 2,
+                                         x, y, z,
+                                         dx, dy, dz);
+    cs.render(Color.green, x, y, z, dx, dy, dz);
+  }
+
+  void renderClipped0(Color color, int diameter, int x, int y, int z,
+            int dx, int dy, int dz) {
+    CylinderShape cs = new CylinderShape(diameter,
+                                         x, y, z,
+                                         dx, dy, dz);
+    cs.render(color, x, y, z, dx, dy, dz);
   }
 
   void renderClipped(Color color, int diameter, int x1, int y1, int z1,
@@ -159,7 +178,6 @@ public class Cylinder25D {
   }
 
 
-
   private void normalize(double v[]) {
 
     double mag = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
@@ -196,4 +214,353 @@ public class Cylinder25D {
     vDiff[2] = v1[2] - v2[2];
   }
 
+  class CylinderShape {
+    int _2a;
+    int _2b;
+    int dxTheta;
+    int dyTheta;
+
+    long A, B, C, F;
+    long twoA, twoB, twoC, _Adiv4, _Bdiv4;
+    double scaleFactor;
+
+    double radius3d2; // radius 3d squared
+
+    int xN, yN, xNE, yNE, xE, yE, xSE, ySE, xS, yS;
+
+    int ibRaster;
+    byte[] raster; // this raster stores quads of <x,y,z,shade>
+
+    int xOrigin, yOrigin, zOrigin;
+
+    public CylinderShape(int diameter, int xOrigin, int yOrigin, int zOrigin,
+                         int dx, int dy, int dz) {
+      radius3d2 = (diameter*diameter) / 4.0;
+      int mag2d2 = dx*dx + dy*dy;
+      int mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
+      int mag3d2 = mag2d2 + dz*dz;
+      int mag3d = (int)(Math.sqrt(mag3d2) + 0.5);
+      this._2a = diameter;
+      this._2b = diameter - diameter * mag2d / mag3d;
+
+      this.dxTheta = dx;
+      this.dyTheta = -dy;
+
+      this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
+
+      /*
+      System.out.println("origin="+xOrigin+","+yOrigin+","+zOrigin+
+                         " diam=" + diameter);
+      */
+      ellipse0a();
+      calcCriticalPoints();
+      allocRaster();
+      rasterize();
+    }
+
+    void allocRaster() {
+      ibRaster = 0;
+      raster = new byte[16 * 4];
+    }
+
+    void reallocRaster() {
+      byte[] t = new byte[2 * raster.length];
+      System.arraycopy(raster, 0, t, 0, ibRaster);
+      raster = t;
+    }
+
+    void ellipse0a() {
+      int dx2 = dxTheta*dxTheta;
+      int dy2 = dyTheta*dyTheta;
+      int dx2_plus_dy2=dx2+dy2;
+
+      long _4a2 = _2a*_2a;
+      long _4b2 = _2b*_2b;
+
+      long tmpA = (_4a2*dx2 + _4b2*dy2);
+      long tmpB = (_4a2*dy2 + _4b2*dx2);
+      long tmpC = -((_4a2 - _4b2)*(dxTheta*dyTheta));
+      long tmpF = -(_4a2*_4b2) * dx2_plus_dy2;
+
+      _Adiv4 = tmpA;
+      A = tmpA * 4;
+      twoA = A * 2;
+
+      _Bdiv4 = tmpB;
+      B = tmpB * 4;
+      twoB = B * 2;
+
+      C = tmpC * 4;
+      twoC = C * 2;
+
+      F = tmpF;
+
+      scaleFactor = 4 * Math.sqrt(dx2_plus_dy2);
+
+      /*
+      System.out.println("ellipse0a");
+      System.out.println(" _2a=" + _2a + " _2b=" + _2b);
+      System.out.println("angle: " +
+                         " A=" + A + " B=" + B + " C=" + C + " F=" + F +
+                         " A/4=" + _Adiv4 + " B/4=" + _Bdiv4);
+      */
+    }
+
+    void calcCriticalPoints() {
+      //    g.setColor(transBlue);
+      //    int yN = (int)Math.sqrt(A*F/(C*C-A*B));
+      //    int xN = (int)(-C/A*yN);
+      double sqrtA = Math.sqrt(A);
+      double dblxN = -C/sqrtA;
+      double dblyN = sqrtA;
+      dblxN /= scaleFactor;
+      dblyN /= scaleFactor;
+      xN = (int)(dblxN + (dblxN < 0 ? -0.5 : 0.5));
+      yN = (int)(dblyN + (dblyN < 0 ? -0.5 : 0.5));
+      //System.out.println("N: " + dblxN + "," + dblyN + " " + xN + "," + yN);
+
+      double sqrtAplusBminus2C = Math.sqrt(A + B - 2*C);
+      double dblxNE = (B - C)/sqrtAplusBminus2C;
+      double dblyNE = (A - C)/sqrtAplusBminus2C;
+      dblxNE /= scaleFactor;
+      dblyNE /= scaleFactor;
+      xNE = (int)(dblxNE + (dblxNE < 0 ? -0.5 : 0.5));
+      yNE = (int)(dblyNE + (dblyNE < 0 ? -0.5 : 0.5));
+      //System.out.println("NE:" + dblxNE +","+ dblyNE + " " + xNE+"," + yNE);
+
+      double sqrtB = Math.sqrt(B);
+      double dblxE = sqrtB;
+      dblxE /= scaleFactor;
+      double dblyE = -C/sqrtB;
+      dblyE /= scaleFactor;
+      xE = (int)(dblxE + (dblxE < 0 ? -0.5 : 0.5));
+      yE = (int)(dblyE + (dblyE < 0 ? -0.5 : 0.5));
+      //System.out.println("E: " + dblxE + "," + dblyE + " " + xE + "," + yE);
+
+      double sqrtAplusBplus2C = Math.sqrt(A + B + 2*C);
+      double dblxSE = (B + C)/sqrtAplusBplus2C;
+      dblxSE /= scaleFactor;
+      double dblySE = -(A + C)/sqrtAplusBplus2C;
+      dblySE /= scaleFactor;
+      xSE = (int)(dblxSE + (dblxSE < 0 ? -0.5 : 0.5));
+      ySE = (int)(dblySE + (dblySE < 0 ? -0.5 : 0.5));
+      //System.out.println("SE:" + dblxSE +","+ dblySE + " " + xSE+"," + ySE);
+
+      yS = -yN;
+      xS = -xN;
+
+      /*
+      System.out.println("  N=" + xN  + "," + yN  +
+                       " NE=" + xNE + "," + yNE +
+                       "  E=" + xE  + "," + yE  +
+                       " SE=" + xSE + "," + ySE +
+                       "  S=" + xS  + "," + yS);
+      */
+    }
+
+    long eval(int x, int y) {
+      long n = A*x*x + B*y*y+2*C*x*y + F;
+      System.out.println("eval " +x+"," +y + " -> " + n);
+      return n;
+    }
+
+    long evalNextMidpointNNE(int x, int y) {
+      long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y - 1)+ F +
+        (twoA-C)*x + (twoC-B)*y + _Bdiv4;
+      /*
+      assert
+        n == A*x*x + B*y*y + 2*C*x*y+ F + (2*A-C)*x + (2*C-B)*y + A - C + B/4;
+      */
+      return n;
+    }
+
+    long evalNextMidpointENE(int x, int y) {
+      long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y - 1)+ F +
+        (A-twoC)*x + (C-twoB)*y + _Adiv4;
+      /*
+      assert
+        n == A*x*x + B*y*y + 2*C*x*y+ F + (A-2*C)*x + (C-2*B)*y + B - C + A/4;
+      */
+      return n;
+    }
+
+    long evalNextMidpointESE(int x, int y) {
+      long n = A*(x*x) + B*(y*y + 1) + C*(2*x*y + 1)+ F +
+        -(A+twoC)*x - (twoB+C)*y + _Adiv4;
+      /*
+      long m =
+        A*x*x + B*y*y + 2*C*x*y+ F - (A+2*C)*x - (2*B+C)*y + B + C + A/4;
+      assert m==n;
+      */
+      return n;
+    }
+
+    long evalNextMidpointSSE(int x, int y) {
+      long n = A*(x*x + 1) + B*(y*y) + C*(2*x*y + 1)+ F +
+        -(twoA+C)*x - (B+twoC)*y + _Bdiv4;
+      /*
+      assert
+        n == A*x*x + B*y*y + 2*C*x*y+ F - (2*A+C)*x - (B+2*C)*y + A + C + B/4;
+      */
+      return n;
+    }
+
+    void rasterize() {
+      int xCurrent = xN;
+      int yCurrent = yN;
+      recordCoordinate(xCurrent, yCurrent);
+
+      // NNE octant
+      //assert xCurrent == xN && yCurrent == yN;
+      if (xCurrent != xNE || yCurrent != yNE) {
+        long discriminator = evalNextMidpointNNE(xN, yN);
+        int xStop = xNE - 1;
+        while (xCurrent < xStop && yCurrent > yNE) {
+          ++xCurrent;
+          if (discriminator < 0) {
+            discriminator += A*(2*xCurrent + 1) + C*(2*yCurrent - 1);
+          } else {
+            recordCoordinate(xCurrent, yCurrent);
+            --yCurrent;
+            discriminator += (A-C)*(2*xCurrent + 1) + (C-B)*2*yCurrent;
+          }
+          //assert discriminator == evalNextMidpointNNE(xCurrent, yCurrent);
+          recordCoordinate(xCurrent, yCurrent);
+        }
+        while (yCurrent > yNE || xCurrent < xNE) {
+          if (yCurrent > yNE)
+            --yCurrent;
+          else if (xCurrent < xNE)
+            ++xCurrent;
+          recordCoordinate(xCurrent, yCurrent);
+        }
+      }
+
+
+      // ENE octant
+      //assert xCurrent == xNE && yCurrent == yNE;
+      if (xCurrent != xE || yCurrent != yE) {
+        long discriminator = evalNextMidpointENE(xNE, yNE);
+        int yStop = yE + 1;
+        while (yCurrent > yStop && xCurrent < xE) {
+          --yCurrent;
+          if (discriminator < 0) {
+            recordCoordinate(xCurrent, yCurrent);
+            ++xCurrent;
+            discriminator += (A-C)*2*xCurrent + (C-B)*(2*yCurrent - 1);
+          } else {
+            discriminator += -( C*(2*xCurrent + 1) + B*(2*yCurrent - 1) );
+          }
+          //assert discriminator == evalNextMidpointENE(xCurrent, yCurrent);
+          recordCoordinate(xCurrent, yCurrent);
+        }
+        while (yCurrent > yE || xCurrent < xE) {
+          if (yCurrent > yE)
+            --yCurrent;
+          else if (xCurrent < xE)
+            ++xCurrent;
+          recordCoordinate(xCurrent, yCurrent);
+        }
+      }
+
+
+      // ESE octant
+      //assert xCurrent == xE && yCurrent == yE;
+      if (xCurrent != xSE || yCurrent != ySE) {
+        long discriminator = evalNextMidpointESE(xE, yE);
+        int yStop = ySE + 1;
+        while (yCurrent > yStop && xCurrent > xSE) {
+          --yCurrent;
+          if (discriminator < 0) {
+            discriminator += -( C*(2*xCurrent - 1) + B*(2*yCurrent - 1) );
+          } else {
+            recordCoordinate(xCurrent, yCurrent);
+            --xCurrent;
+            discriminator += -( (A+C)*2*xCurrent + (B+C)*(2*yCurrent - 1) );
+          }
+          //assert discriminator == evalNextMidpointESE(xCurrent, yCurrent);
+          recordCoordinate(xCurrent, yCurrent);
+        }
+        while (yCurrent > ySE || xCurrent > xSE) {
+          if (yCurrent > ySE)
+            --yCurrent;
+          else if (xCurrent > xSE)
+            --xCurrent;
+          recordCoordinate(xCurrent, yCurrent);
+        }
+      }
+
+      // SSE octant
+      //assert xCurrent == xSE && yCurrent == ySE;
+      if (xCurrent != xS || yCurrent != yS) {
+        long discriminator = evalNextMidpointSSE(xSE, ySE);
+        int xStop = xS + 1;
+        while (xCurrent > xStop && yCurrent > yS) {
+          --xCurrent;
+          if (discriminator < 0) {
+            recordCoordinate(xCurrent, yCurrent);
+            --yCurrent;
+            discriminator += -( (A+C)*(2*xCurrent - 1) + 2*(B+C)*yCurrent );
+          } else {
+            discriminator += -( A*(2*xCurrent - 1) + C*(2*yCurrent - 1) );
+          }
+          //assert discriminator == evalNextMidpointSSE(xCurrent, yCurrent);
+          recordCoordinate(xCurrent, yCurrent);
+        }
+        while (xCurrent > xS || yCurrent > yS) {
+          if (xCurrent > xS)
+            --xCurrent;
+          else if (yCurrent > yS)
+            --yCurrent;
+          recordCoordinate(xCurrent, yCurrent);
+        }
+      }
+
+      //assert xCurrent == xS && yCurrent == yS;
+    }
+
+    void render0(Color color, int x, int y, int z, int dx, int dy, int dz) {
+      int[] shades = Shade25D.getShades(color);
+      for (int i = 0; i < ibRaster; i += 4) {
+        g25d.setColor(shades[raster[i+3]]);
+        g25d.plotLineDelta(x + raster[i],
+                           y + raster[i+1],
+                           z + raster[i+2], dx, dy, dz);
+        g25d.plotLineDelta(x - raster[i],
+                           y - raster[i+1],
+                           z - raster[i+2], dx, dy, dz);
+      }
+    }
+
+    void render(Color color, int x, int y, int z, int dx, int dy, int dz) {
+      int[] shades = Shade25D.getShades(color);
+      for (int i = 0; i < ibRaster; i += 4) {
+        g25d.setColor(shades[raster[i+3]]);
+        g25d.plotPixelClipped(x + raster[i],
+                              y + raster[i+1],
+                              z + raster[i+2]);
+        g25d.plotPixelClipped(x - raster[i],
+                              y - raster[i+1],
+                              z - raster[i+2]);
+      }
+    }
+
+    void recordCoordinate(int x, int y) {
+      int z = 0;
+      double t = radius3d2 - (x*x + y*y);
+      if (t > 0)
+        z = (int)(Math.sqrt(t) + 0.5);
+      if (foo == Shade25D.shadeMax)
+        foo = 0;
+      byte shade = (byte) foo;
+      ++foo;
+      //      System.out.println("record " + x + "," + y + "," + z);
+      if (ibRaster == raster.length)
+        reallocRaster();
+      raster[ibRaster++] = (byte)x;
+      raster[ibRaster++] = (byte)y;
+      raster[ibRaster++] = (byte)z;
+      raster[ibRaster++] = shade;
+    }
+  }
 }

@@ -121,4 +121,16 @@ public class Distributor {
       atom.getAtomShape().setLabel(control.getLabelAtom(strLabel, atom));
     }
   }
+
+  public void setColorMarDots(Color colorDots, short marDots,
+                              JmolAtomIterator iter) {
+    Color colorT = colorDots;
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      if (colorDots == null)
+        colorT = control.getColorAtom(atom);
+      atom.getAtomShape().setColorMarDots(colorT, marDots);
+    }
+  }
+
 }

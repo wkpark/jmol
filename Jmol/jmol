@@ -17,4 +17,4 @@ else
   echo jmol.jar not found
   exit
 fi
-$command -jar $jarpath $@
+$command -ea -jar $jarpath $@

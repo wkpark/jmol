@@ -42,7 +42,10 @@ public class AtomShape extends Shape {
   public short marAtom;
   public Color colorAtom;
   public int diameter;
-  public int numBonds;    
+  public short marDots = 0;
+  public Color colorDots;
+  public int diameterDots = 0;
+  public int numBonds;
   public int[] bondWidths;  // after a delete operation, these arrays
   public byte[] styleBonds; // will be longer than numBonds
   public short[] marBonds;
@@ -102,7 +105,7 @@ public class AtomShape extends Shape {
    * represents a percentage of the vdw radius of that atom.
    * This is converted to a normal MAR as soon as possible
    *
-   * (I know everyone hates bytes & shorts, but I like them ...
+   * (I know almost everyone hates bytes & shorts, but I like them ...
    *  gives me some tiny level of type-checking ...
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
@@ -116,17 +119,21 @@ public class AtomShape extends Shape {
       marAtom = (short)((-10 * marAtom) * atom.getVanderwaalsRadius());
     this.marAtom = marAtom;
   }
-        
+
   public void setStyleMarAtom(byte styleAtom, short marAtom) {
     this.styleAtom = styleAtom;
-    if (marAtom < 0) {
-      // a percentage of the atom vdw
-      // radius * 2 * 1000 * -marAtom / 100
+    if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) * atom.getVanderwaalsRadius());
-    }
     this.marAtom = marAtom;
   }
         
+  public void setColorMarDots(Color colorDots, short marDots) {
+    this.colorDots = colorDots;
+    if (marDots < 0)
+      marDots = (short)((-10 * marDots) * atom.getVanderwaalsRadius());
+    this.marDots = marDots;
+  }
+
   public int getRasMolRadius() {
     if (styleAtom == DisplayControl.NONE)
       return 0;
@@ -187,29 +194,27 @@ public class AtomShape extends Shape {
     y = screen.y;
     z = screen.z;
     diameter = control.scaleToScreen(z, marAtom * 2);
+    if (marDots > 0)
+      diameterDots = control.scaleToScreen(z, marDots * 2);
     for (int i = numBonds; --i >= 0; )
       bondWidths[i] = control.scaleToScreen(z, marBonds[i] * 2);
   }
 
   public void render(Graphics25D g25d, DisplayControl control) {
-    if (!control.getShowHydrogens() && atom.isHydrogen()) {
+    if (!control.getShowHydrogens() && atom.isHydrogen())
       return;
-    }
-    if (control.getShowBonds()) {
+    if (control.getShowBonds())
       renderBonds(control);
-    }
-    if (control.getShowAtoms() && isClipVisible(control.atomRenderer.clip)) {
+    if (control.getShowAtoms() && isClipVisible(control.atomRenderer.clip))
       control.atomRenderer.render(this);
-    }
     if (strLabel != null)
       control.labelRenderer.render(this);
   }
 
   public void renderBonds(DisplayControl control) {
     Atom[] bondedAtoms = atom.getBondedAtoms();
-    if (bondedAtoms == null) {
+    if (bondedAtoms == null)
       return;
-    }
     for (int i = numBonds; --i >= 0 ; ) {
       Atom atomOther = bondedAtoms[i];
       AtomShape atomShapeOther = atomOther.getAtomShape();

@@ -482,6 +482,10 @@ final public class DisplayControl {
     refresh();
   }
 
+  public void setColorDots(Color c) {
+    colorManager.setColorDots(c);
+  }
+
   public Color getColorLabel() {
     return colorManager.colorLabel;
   }
@@ -1176,6 +1180,10 @@ final public class DisplayControl {
 
   public void setLabelScript(String strLabel) {
     distributor.setLabel(strLabel, iterAtom());
+  }
+
+  public void setMarDots(short marDots) {
+    distributor.setColorMarDots(colorManager.colorDots, marDots, iterAtom());
   }
 
   boolean rasmolHydrogenSetting = true;

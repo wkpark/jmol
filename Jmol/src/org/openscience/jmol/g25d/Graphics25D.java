@@ -45,6 +45,7 @@ final public class Graphics25D {
   Sphere25D sphere25d;
   Triangle25D triangle25d;
   Cylinder25D cylinder25d;
+  Dots25D dots25d;
   Image img;
   Graphics g;
   int width,height,size;
@@ -76,6 +77,7 @@ final public class Graphics25D {
     this.sphere25d = new Sphere25D(control, this);
     this.triangle25d = new Triangle25D(control, this);
     this.cylinder25d = new Cylinder25D(control, this);
+    this.dots25d = new Dots25D(control, this);
   }
 
   public void setEnabled(boolean value) {
@@ -120,6 +122,14 @@ final public class Graphics25D {
       return;
     }
     argbCurrent = color.getRGB();
+  }
+
+  public void setColor(int argb) {
+    if (! usePbuf) {
+      g.setColor(new Color(argb));
+      return;
+    }
+    argbCurrent = argb;
   }
 
   int[] imageBuf = new int[256];
@@ -285,10 +295,24 @@ final public class Graphics25D {
     }
   }
 
+  public void drawDotsCentered(Color colorDots, 
+                               int x, int y, int z, int diameterDots) {
+    if (! usePbuf)
+      return;
+    /*
+    int r = diameterVdw / 2;
+    int argbDots = colorDots.getRGB();
+    for (int i = -r; i < r; i += 5)
+      for (int j = -r; j < r; j += 5)
+        plotPixelClipped(argbDots, x + i, y + j, z - r);
+    */
+    dots25d.render(colorDots, diameterDots, x, y, z);
+  }
+
   public void fillSphereCentered(Color colorOutline, Color colorFill,
                                  int x, int y, int z, int diameter) {
     int r = (diameter + 1) / 2;
-    if (! usePbuf) 
+    if (! usePbuf)
       shadedSphereRenderer.render(x - r, y - r, z,
                                   diameter, colorFill, colorOutline);
     else
@@ -502,6 +526,8 @@ final public class Graphics25D {
   public void fillCylinder(Color color,
                            int x1, int y1, int z1, int w1,
                            int x2, int y2, int z2, int w2) {
+    cylinder25d.test(color, (w1 + w2) / 2,
+                     x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
     cylinder25d.renderClipped(color, (w1 + w2) / 2,
                               x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
@@ -695,6 +721,14 @@ final public class Graphics25D {
   
   void plotLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     plotLineDeltaUnclipped(x1, y1, z1, x2-x1, y2-y1, z2-z1);
+  }
+
+  void plotLineDelta(int x, int y, int z, int dx, int dy, int dz) {
+    if (x < 0 || x >= width || x + dx < 0 || x + dx > width ||
+        y < 0 || y >= height || y + dy < 0 || y + dy >= height)
+      drawLine(x, y, z, x+dx, y+dy, z+dz);
+    else
+      plotLineDeltaUnclipped(x, y, z, dx, dy, dz);
   }
 
   void plotLineDeltaUnclipped(int x1, int y1, int z1, int dx, int dy, int dz) {

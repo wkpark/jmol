@@ -61,11 +61,13 @@ public class AtomRenderer {
     fastRendering = control.getFastRendering();
     useGraphics2D = control.getUseGraphics2D();
     colorSelection = control.getColorSelection();
+    g25dEnabled = control.getGraphics25DEnabled();
   }
 
   boolean fastRendering;
   boolean useGraphics2D;
   Color colorSelection;
+  boolean g25dEnabled;
 
   Atom atom;
   int x;
@@ -94,6 +96,8 @@ public class AtomRenderer {
     colorOutline = control.getColorAtomOutline(styleAtom, color);
     if (control.hasSelectionHalo(atom))
       renderHalo();
+    if (atomShape.marDots > 0)
+      renderDots(atomShape.colorDots, atomShape.diameterDots);
     if (styleAtom != DisplayControl.NONE &&
         styleAtom != DisplayControl.INVISIBLE)
       renderAtom();
@@ -106,6 +110,10 @@ public class AtomRenderer {
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
     g25d.fillCircleCentered(colorSelection, x, y, z+1, halodiameter);
+  }
+
+  private void renderDots(Color colorDots, int diameterDots) {
+    g25d.drawDotsCentered(colorDots, x, y, z, diameterDots);
   }
 
   private void renderAtom() {

@@ -91,8 +91,13 @@ public class ColorManager {
   }
 
   public Color colorLabel = Color.black;
-  public void setColorLabel (Color c) {
+  public void setColorLabel(Color c) {
     colorLabel = c;
+  }
+
+  public Color colorDots = Color.blue;
+  public void setColorDots(Color c) {
+    colorDots = c;
   }
 
   public Color colorDistance = Color.black;

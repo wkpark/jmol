@@ -719,5 +719,28 @@ public class ChemFrame {
   public boolean[] getPickedAtoms() {
     return pickedAtoms;
   }
+
+  /**
+   * Adds a bond between the two atoms given.
+   *
+   * @param i index to the first atom in the bond.
+   * @param j index to the second atom in the bond.
+   */
+  public void addBond(int i, int j) {
+
+    atoms[i].addBondedAtom(atoms[j]);
+    atoms[j].addBondedAtom(atoms[i]);
+  }
+
+  /**
+   * Clears all bonds from all atoms.
+   */
+  public void clearBonds() {
+
+    for (int i = 0; i < numberAtoms; i++) {
+      atoms[i].clearBondedAtoms();
+    }
+  }
+  
 }
 

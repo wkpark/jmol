@@ -85,7 +85,7 @@ public class SmarterModelAdapter extends ModelAdapter {
    * The frame related methods
    ****************************************************************/
 
-  public int getAtomCount(Object clientFile) {
+  public int getEstimatedAtomCount(Object clientFile) {
     return ((Model)clientFile).atomCount;
   }
 
@@ -187,13 +187,13 @@ public class SmarterModelAdapter extends ModelAdapter {
       bond = bonds[ibond++];
       return true;
     }
-    public Object getAtomUid1() {
+    public Object getAtomUniqueID1() {
       return atoms[bond.atomIndex1];
     }
-    public Object getAtomUid2() {
+    public Object getAtomUniqueID2() {
       return atoms[bond.atomIndex2];
     }
-    public int getOrder() {
+    public int getEncodedOrder() {
       return bond.order;
     }
   }

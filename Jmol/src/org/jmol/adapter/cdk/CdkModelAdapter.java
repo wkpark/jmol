@@ -163,7 +163,7 @@ public class CdkModelAdapter extends ModelAdapter {
     }
   }
 
-  public int getAtomCount(Object clientFile) {
+  public int getEstimatedAtomCount(Object clientFile) {
     return getAtomContainer(clientFile).getAtomCount();
   }
 
@@ -272,13 +272,13 @@ public class CdkModelAdapter extends ModelAdapter {
       bondedAtoms = bond.getAtoms();
       return true;
     }
-    public Object getAtomUid1() {
+    public Object getAtomUniqueID1() {
       return (bondedAtoms.length == 2) ? bondedAtoms[0] : null;
     }
-    public Object getAtomUid2() {
+    public Object getAtomUniqueID2() {
       return (bondedAtoms.length == 2) ? bondedAtoms[1] : null;
     }
-    public int getOrder() {
+    public int getEncodedOrder() {
       return (int)bond.getOrder();
     }
   }

@@ -129,10 +129,10 @@ public abstract class ModelAdapter {
   }
 
   /**
-   * The number of atoms contained in the file.
+   * The estimated number of atoms contained in the file.
    * Just return -1 if you don't know (or don't want to figure it out)
    */
-  abstract public int getAtomCount(Object clientFile);
+  abstract public int getEstimatedAtomCount(Object clientFile);
 
   /**
    * This method returns the parameters that define a crystal unitcell
@@ -216,9 +216,9 @@ public abstract class ModelAdapter {
 
   public abstract class BondIterator {
     public abstract boolean hasNext();
-    public abstract Object getAtomUid1();
-    public abstract Object getAtomUid2();
-    public abstract int getOrder();
+    public abstract Object getAtomUniqueID1();
+    public abstract Object getAtomUniqueID2();
+    public abstract int getEncodedOrder();
   }
 
   /****************************************************************

@@ -48,7 +48,7 @@ final public class FrameBuilder {
   public Frame buildFrame(Object clientFile) {
     long timeBegin = System.currentTimeMillis();
     String fileTypeName = adapter.getFileTypeName(clientFile);
-    initializeBuild(adapter.getAtomCount(clientFile));
+    initializeBuild(adapter.getEstimatedAtomCount(clientFile));
 
     Frame frame = new Frame(viewer, fileTypeName);
 
@@ -94,9 +94,9 @@ final public class FrameBuilder {
         adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext())
-          bondAtoms(iterBond.getAtomUid1(),
-                    iterBond.getAtomUid2(),
-                    iterBond.getOrder());
+          bondAtoms(iterBond.getAtomUniqueID1(),
+                    iterBond.getAtomUniqueID2(),
+                    iterBond.getEncodedOrder());
     }
 
     ModelAdapter.StructureIterator iterStructure =

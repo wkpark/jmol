@@ -50,7 +50,7 @@ final public class FrameExportModelAdapter extends ModelAdapter {
     return viewer.getModelSetName();
   }
 
-  public int getAtomCount(Object clientFile) {
+  public int getEstimatedAtomCount(Object clientFile) {
     return frame.atomCount;
   }
 
@@ -98,8 +98,12 @@ final public class FrameExportModelAdapter extends ModelAdapter {
       bond = frame.bonds[ibond++];
       return true;
     }
-    public Object getAtomUid1() { return new Integer(bond.atom1.atomIndex); }
-    public Object getAtomUid2() { return new Integer(bond.atom2.atomIndex); }
-    public int getOrder() { return bond.order; }
+    public Object getAtomUniqueID1(){
+      return new Integer(bond.atom1.atomIndex);
+    }
+    public Object getAtomUniqueID2() {
+      return new Integer(bond.atom2.atomIndex);
+    }
+    public int getEncodedOrder() { return bond.order; }
   }
 }

@@ -136,7 +136,7 @@ public class Animate extends JDialog implements ActionListener,
 
       // Linearly interpolate new coordinates for extra frames
       for (int k = 0; k < numberVertices; ++k) {
-        Atom atom = fromFrame.getAtomAt(k);
+        Atom atom = (org.openscience.jmol.Atom)fromFrame.getAtomAt(k);
         double[] fromCoord = fromFrame.getAtomCoords(k);
         double[] toCoord = toFrame.getAtomCoords(k);
         double[] step = new double[3];

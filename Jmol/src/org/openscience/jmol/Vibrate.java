@@ -409,7 +409,7 @@ public class Vibrate extends JDialog implements ActionListener,
       for (int i = 0; i < numberVerticies; ++i) {
         double scaling = amplitudeScale
                            * Math.sin(2.0 * Math.PI * n / numberFrames);
-        Atom atom = inputFrame.getAtomAt(i);
+        Atom atom = (org.openscience.jmol.Atom)inputFrame.getAtomAt(i);
         double[] coord = inputFrame.getAtomCoords(i);
         double[] force = vib.getAtomVector(i);
         double[] forceVector = new double[3];
@@ -422,7 +422,7 @@ public class Vibrate extends JDialog implements ActionListener,
         try {
           int atomIndex = newFrame.addAtom(atom.getType(), coord[0],
                                            coord[1], coord[2]);
-          newFrame.getAtomAt(atomIndex)
+          ((org.openscience.jmol.Atom)newFrame.getAtomAt(atomIndex))
               .setVector(new Point3d(forceVector[0],
                                      forceVector[1], forceVector[2]));
         } catch (Exception ex) {

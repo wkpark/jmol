@@ -340,7 +340,7 @@ public class Measure extends JDialog {
       }
     }
     ChemFrame cf = display.getFrame();
-    Atom a = cf.getAtomAt(measured);
+    Atom a = (org.openscience.jmol.Atom)cf.getAtomAt(measured);
     double[] c = cf.getAtomCoords(measured);
     selection[currentAtom] = measured;
 

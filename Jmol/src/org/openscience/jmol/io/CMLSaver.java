@@ -135,7 +135,7 @@ public class CMLSaver extends FileSaver {
       ids.append("a");
       ids.append(Integer.toString(i));
 
-      Atom a = cf.getAtomAt(i);
+      Atom a = (org.openscience.jmol.Atom)cf.getAtomAt(i);
       if (elementTypes.length() > 0) {
         elementTypes.append(" ");
       }

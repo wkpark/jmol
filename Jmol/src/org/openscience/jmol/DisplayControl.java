@@ -798,7 +798,7 @@ final public class DisplayControl {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(getFrame().getAtomAt(i).getPosition());
+      center.add(((org.openscience.jmol.Atom)getFrame().getAtomAt(i)).getPosition());
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity

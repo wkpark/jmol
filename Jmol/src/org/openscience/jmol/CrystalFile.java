@@ -1,5 +1,29 @@
-
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
 package org.openscience.jmol;
+
 import org.openscience.jmol.util.*;
 import java.util.Vector;
 import javax.vecmath.Point3d;
@@ -108,10 +132,11 @@ public class CrystalFile extends ChemFile {
       String info = frame.getInfo();
 
       for (int at = 0; at < natom; at++) {
-        cartPos[at][0] = frame.getAtomAt(at).getPosition().x;
-        cartPos[at][1] = frame.getAtomAt(at).getPosition().y;
-        cartPos[at][2] = frame.getAtomAt(at).getPosition().z;
-        atomType[at] = frame.getAtomAt(at).getType().getAtomicNumber();
+        Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(at);
+        cartPos[at][0] = atom.getPosition().x;
+        cartPos[at][1] = atom.getPosition().y;
+        cartPos[at][2] = atom.getPosition().z;
+        atomType[at] = atom.getType().getAtomicNumber();
       }
       
       UnitCellBox unitCellBoxS = new UnitCellBox(rprim, acell, true,
@@ -473,9 +498,10 @@ public class CrystalFile extends ChemFile {
         numberBondedAtoms++;
         for (int j = i; j < numberAtoms; j++) {
 
-          if (Atom.closeEnoughToBond(crystalFrame.getAtomAt(i),
-              crystalFrame.getAtomAt(j),
-                                     DisplayControl.control.getBondFudge())) {
+          if (Atom.closeEnoughToBond(
+              (org.openscience.jmol.Atom)crystalFrame.getAtomAt(i),
+              (org.openscience.jmol.Atom)crystalFrame.getAtomAt(j),
+              DisplayControl.control.getBondFudge())) {
 
             redPos = ((double[]) crystalRedPos.elementAt(j));
             if ((redPos[0] >= bondBox[0][0]) && (redPos[0] <= bondBox[1][0])

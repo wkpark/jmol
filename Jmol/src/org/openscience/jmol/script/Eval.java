@@ -416,7 +416,7 @@ public class Eval implements Runnable {
     int numberOfAtoms = control.numberOfAtoms();
     ChemFrame frame = control.getFrame();
     for (int i = 0; i < numberOfAtoms; ++i) {
-      Atom atom = frame.getAtomAt(i);
+      Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
         propertyValue = i;

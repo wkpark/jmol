@@ -94,7 +94,7 @@ public class PdbSaver extends FileSaver {
       buffer.append(hetatmRecordName);
       buffer.append(serialFormat.sprintf(atomNumber));
       buffer.append(' ');
-      Atom atom = cf.getAtomAt(i);
+      Atom atom = (org.openscience.jmol.Atom)cf.getAtomAt(i);
       buffer.append(atomNameFormat.sprintf(atom.getID()));
       buffer.append(" MOL          ");
       Point3d position = atom.getPosition();

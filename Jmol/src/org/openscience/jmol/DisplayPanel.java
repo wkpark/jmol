@@ -274,7 +274,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (control.haveFile()) {
-        control.addSelection(control.getFrame().getAtoms());
+        control.addSelection((org.openscience.jmol.Atom[])control.getFrame().getAtoms());
         repaint();
       }
     }

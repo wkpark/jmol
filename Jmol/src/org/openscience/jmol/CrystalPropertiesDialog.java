@@ -1,11 +1,10 @@
-/**
- * Copyright 2002 The Jmol Development Team
+/* Copyright 2002 The Jmol Development Team
  * $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -24,8 +23,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-
 package org.openscience.jmol;
+
 import  org.openscience.jmol.util.*;
 
 import javax.swing.table.AbstractTableModel;
@@ -377,7 +376,7 @@ public class CrystalPropertiesDialog extends JDialog
       Object[][] basisVectorData = new Object[natom][5];
       Atom atom;
       for (int i = 0; i < natom; i++) {
-        atom = chemFile.getFrame(currentFrameIndex).getAtomAt(i);
+        atom = (org.openscience.jmol.Atom)chemFile.getFrame(currentFrameIndex).getAtomAt(i);
         basisVectorData[i][0] = new String(String.valueOf(i));
         basisVectorData[i][1] = new String(atom.getID());
         basisVectorData[i][2] = new Double(atom.getPosition().x);

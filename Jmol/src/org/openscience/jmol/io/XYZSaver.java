@@ -89,7 +89,7 @@ public class XYZSaver extends FileSaver {
 
       for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
-        Atom a = cf.getAtomAt(i);
+        Atom a = (org.openscience.jmol.Atom)cf.getAtomAt(i);
         st = a.getID();
 
         double[] pos = cf.getAtomCoords(i);

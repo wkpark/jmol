@@ -59,7 +59,7 @@ public class ChemFrameRenderer {
       previousNumberAtoms = numAtoms;
       shapesVector.removeAllElements();
       for (int i = 0; i < numAtoms; ++i) {
-        Atom atom = frame.getAtomAt(i);
+        Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
         shapesVector.addElement(atom.getAtomShape());
       }
       if (control.getShowVectors()) {
@@ -67,7 +67,7 @@ public class ChemFrameRenderer {
         double atomVectorRange = frame.getAtomVectorRange();
         boolean showHydrogens = control.getShowHydrogens();
         for (int i = 0; i < numAtoms; ++i) {
-          Atom atom = frame.getAtomAt(i);
+          Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
           if (atom.hasVector() && (showHydrogens || !atom.isHydrogen())) {
             shapesVector.addElement(new AtomVectorShape(atom, control,
                                                         minAtomVectorMagnitude,

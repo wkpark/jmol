@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -22,6 +21,9 @@ package org.openscience.jmol;
 import java.util.Vector;
 import java.util.Enumeration;
 
+/**
+ * This class constitutes a sequence of ChemFrames.
+ **/
 public class ChemFile {
 
   private Vector frames = new Vector(1);
@@ -115,7 +117,7 @@ public class ChemFile {
       ChemFrame frame = (ChemFrame) frameIter.nextElement();
       if (frame.getNumberOfAtoms() > 0) {
         Enumeration properties =
-          frame.getAtomAt(0).getProperties().elements();
+          ((org.openscience.jmol.Atom)frame.getAtomAt(0)).getProperties().elements();
         while (properties.hasMoreElements()) {
           PhysicalProperty property =
             (PhysicalProperty) properties.nextElement();

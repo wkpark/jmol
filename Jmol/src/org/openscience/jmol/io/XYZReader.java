@@ -167,7 +167,8 @@ public class XYZReader extends DefaultChemFileReader {
             vect[0] = FortranFormat.atof(st.nextToken());
             vect[1] = FortranFormat.atof(st.nextToken());
             vect[2] =  FortranFormat.atof(st.nextToken());
-            frame.getAtomAt(atomIndex).setVector(new Point3d(vect));
+            ((org.openscience.jmol.Atom)frame.getAtomAt(atomIndex)).
+                setVector(new Point3d(vect));
           }
 
         }

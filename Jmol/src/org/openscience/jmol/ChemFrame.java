@@ -18,6 +18,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.cdk.AtomContainer;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
@@ -32,7 +33,7 @@ import java.io.PrintStream;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class ChemFrame {
+public class ChemFrame extends AtomContainer {
 
   // This stuff can vary for each frame in the dynamics:
 
@@ -335,11 +336,11 @@ public class ChemFrame {
    *  @param index the index of the atom.
    *  @return the atom at the given index.
    */
-  public Atom getAtomAt(int index) {
+  public org.openscience.cdk.Atom getAtomAt(int index) {
     return atoms[index];
   }
 
-  public Atom[] getAtoms() {
+  public org.openscience.cdk.Atom[] getAtoms() {
     Atom[] result = new Atom[numberAtoms];
     System.arraycopy(atoms, 0, result, 0, result.length);
     return result;

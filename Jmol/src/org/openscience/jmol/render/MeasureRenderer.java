@@ -49,7 +49,8 @@ public class MeasureRenderer {
         int l = al[0];
         int j = al[1];
         try {
-          d.paint(g, control, frame.getAtomAt(l), frame.getAtomAt(j));
+          d.paint(g, control, (org.openscience.jmol.Atom)frame.getAtomAt(l), 
+                              (org.openscience.jmol.Atom)frame.getAtomAt(j));
         } catch (Exception ex) {
         }
       }
@@ -64,7 +65,9 @@ public class MeasureRenderer {
         int k = al[2];
         try {
           an.paint(g, control,
-                   frame.getAtomAt(l), frame.getAtomAt(j), frame.getAtomAt(k));
+                   (org.openscience.jmol.Atom)frame.getAtomAt(l), 
+                   (org.openscience.jmol.Atom)frame.getAtomAt(j), 
+                   (org.openscience.jmol.Atom)frame.getAtomAt(k));
         } catch (Exception ex) {
         }
       }
@@ -80,8 +83,10 @@ public class MeasureRenderer {
         int m = dhl[3];
         try {
           dh.paint(g, control,
-                   frame.getAtomAt(l), frame.getAtomAt(j),
-                   frame.getAtomAt(k), frame.getAtomAt(m));
+                   (org.openscience.jmol.Atom)frame.getAtomAt(l), 
+                   (org.openscience.jmol.Atom)frame.getAtomAt(j),
+                   (org.openscience.jmol.Atom)frame.getAtomAt(k), 
+                   (org.openscience.jmol.Atom)frame.getAtomAt(m));
         } catch (Exception ex) {
         }
       }

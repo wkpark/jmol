@@ -276,7 +276,7 @@ public class Gaussian94Reader extends DefaultChemFileReader {
       }
       double shielding = Double.valueOf(st1.nextToken()).doubleValue();
       NMRShielding ns1 = new NMRShielding(shielding);
-      frame.getAtomAt(atomIndex).addProperty(ns1);
+      ((org.openscience.jmol.Atom)frame.getAtomAt(atomIndex)).addProperty(ns1);
       ++atomIndex;
     }
   }

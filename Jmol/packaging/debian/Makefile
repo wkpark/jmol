@@ -6,7 +6,7 @@ LIBS     = ${DESTDIR}/usr/share/java
 EXTRA    = ${DESTDIR}/usr/share/jmol/lib
 HTMLDOC  = ${DESTDIR}/usr/share/doc/jmol/html
 
-VERSION=2
+VERSION=3
 
 CLASSPATH=`find /tmp/jmol-${VERSION}/jars -name "*.jar" | tr '\n' ':'`
 
@@ -26,7 +26,7 @@ install:
 	@install ./jmol ${BIN}
 	@install ./jars/jmol.jar ${LIBS}
 	@install ./jars/*jar ${EXTRA}
-	@install ./generatedSource/org/openscience/jmol/Data/guide/* ${HTMLDOC}
+	@install ./src/org/openscience/jmol/Data/guide/* ${HTMLDOC}
 
 setup: clean
 	@echo "Building package for version ${VERSION}"
@@ -39,8 +39,8 @@ setup: clean
 
 guide:
 	@echo "Compiling Jmol guide..."
-	cd /tmp/jmol-${VERSION}/generatedSource/org/openscience/jmol/Data/guide; xsltproc /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/html/chunk.xsl ../../../../../../doc/source/JMolGuide.docbook.xml
+	mkdir -p /tmp/jmol-${VERSION}/src/org/openscience/jmol/Data/guide/
+	cd /tmp/jmol-${VERSION}/src/org/openscience/jmol/Data/guide; xsltproc --nonet --novalid /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/html/chunk.xsl ../../../../../../doc/source/JMolGuide.docbook.xml
 
 deb: setup guide
-	mkdir -p /tmp/jmol-${VERSION}/generatedSource/org/openscience/jmol/Data/guide/
 	cd /tmp/jmol-${VERSION}; dpkg-buildpackage -rfakeroot

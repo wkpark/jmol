@@ -1,4 +1,15 @@
 To generate Debian packages, do:
 
-1. copy $JMOL_CVSDIR/jmol/jmol-$VERSION.source.tar.gz to /tmp
-2. in $JMOL_CVSDIR/jmol/packaging/debian type make
+1. in $JMOL_CVSDIR/jmol type:
+
+   ant -Ddocbook.dir=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh sourcedist.tar.gz
+   cp jmol-$VERSION.source.tar.gz /tmp
+
+   where $VERSION is substituted by the current version
+
+2. in $JMOL_CVSDIR/jmol/packaging/debian update for version the files
+
+   VERSION, build.xml, changelog
+
+3. in $JMOL_CVSDIR/jmol/packaging/debian type:
+   make

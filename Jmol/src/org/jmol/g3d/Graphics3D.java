@@ -506,6 +506,12 @@ final public class Graphics3D {
     triangle3d.fillTriangleNoisy();
   }
 
+  public void fillTriangle(short colix, Point3f screenA,
+                           Point3f screenB, Point3f screenC) {
+    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
+    fillTriangle(screenA, screenB, screenC);
+  }
+
   public void fillQuadrilateral(int argb,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {

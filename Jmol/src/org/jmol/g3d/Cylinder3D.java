@@ -49,6 +49,8 @@ class Cylinder3D {
   private boolean tEndcapOpen;
   private int xEndcap, yEndcap, zEndcap;
   private int argbEndcap;
+  private short colixEndcap;
+  private int intensityEndcap;
 
   private float radius, radius2, cosTheta, cosPhi, sinPhi;
 
@@ -299,7 +301,7 @@ class Cylinder3D {
         System.out.println("endcap y="+y+" xMin="+xMin+" xMax="+xMax);
       */
       int count = xMax - xMin + 1;
-      g3d.setColorArgb(argbEndcap);
+      g3d.setColorNoisy(colixEndcap, intensityEndcap);
       g3d.plotNoisyPixelsClipped(count,
                                  xT + xMin,  yT + y, zT - zXMin - 1,
                                  zT - zXMax - 1);
@@ -372,20 +374,22 @@ class Cylinder3D {
         (!tCylinder && dzB < 0))
       return;
     xEndcap = xA; yEndcap = yA; zEndcap = zA;
-    int intensityEndcap;
     int[] shadesEndcap;
     if (dzB >= 0) {
       intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
+      colixEndcap = colixA;
       shadesEndcap = shadesA;
       //      System.out.println("endcap is A");
     } else {
       intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB);
+      colixEndcap = colixB;
       shadesEndcap = shadesB;
       xEndcap += dxB; yEndcap += dyB; zEndcap += dzB;
       //      System.out.println("endcap is B");
     }
-    if (intensityEndcap > 44) // limit specular glare on endcap
-      intensityEndcap = 44;
+    // limit specular glare on endcap
+    if (intensityEndcap > Graphics3D.intensitySpecularSurfaceLimit)
+      intensityEndcap = Graphics3D.intensitySpecularSurfaceLimit;
     argbEndcap = shadesEndcap[intensityEndcap];
     tEndcapOpen = (endcaps == Graphics3D.ENDCAPS_OPEN);
   }

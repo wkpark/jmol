@@ -288,11 +288,11 @@ class CartoonRenderer extends McpsRenderer {
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
     int argb = calcSurfaceArgb(0, 1, 4);
-    g3d.fillTriangle(argb,
+    g3d.fillTriangle(colixPending,
                      screenCorners[0],
                      screenCorners[1],
                      screenCorners[4]);
-    g3d.fillTriangle(argb,
+    g3d.fillTriangle(colixPending,
                      screenCorners[2],
                      screenCorners[3],
                      screenCorners[5]);
@@ -302,7 +302,7 @@ class CartoonRenderer extends McpsRenderer {
       int i2 = arrowHeadFaces[i + 2];
       int i3 = arrowHeadFaces[i + 3];
       argb = calcSurfaceArgb(i0, i1, i3);
-      g3d.fillQuadrilateral(argb,
+      g3d.fillQuadrilateral(colixPending,
                             screenCorners[i0],
                             screenCorners[i1],
                             screenCorners[i2],
@@ -352,7 +352,7 @@ class CartoonRenderer extends McpsRenderer {
       int i2 = boxFaces[i * 4 + 2];
       int i3 = boxFaces[i * 4 + 3];
       int argb = calcSurfaceArgb(i0, i1, i3);
-      g3d.fillQuadrilateral(argb,
+      g3d.fillQuadrilateral(colixPending,
                             screenCorners[i0],
                             screenCorners[i1],
                             screenCorners[i2],
@@ -376,10 +376,10 @@ class CartoonRenderer extends McpsRenderer {
     7, 3, 1, 5 };
 
   final Point3f[] corners = new Point3f[8];
-  final Point3i[] screenCorners = new Point3i[8];
+  final Point3f[] screenCorners = new Point3f[8];
   {
     for (int i = 8; --i >= 0; ) {
-      screenCorners[i] = new Point3i();
+      screenCorners[i] = new Point3f();
       corners[i] = new Point3f();
     }
   }

@@ -558,6 +558,31 @@ public class TransformManager {
     return point3iScreenTemp;
   }
 
+  public void transformPoint(Point3f pointAngstroms, Point3f screen) {
+    matrixTransform.transform(pointAngstroms, screen);
+
+    float z = screen.z;
+    if (z < cameraDistance) {
+      System.out.println("need to back up the camera");
+      increaseRotationRadius = true;
+      if (z < minimumZ)
+        minimumZ = (int)z;
+      if (z <= 0) {
+        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
+        z = 1;
+      }
+    }
+    screen.z = z;
+    if (perspectiveDepth) {
+      float perspectiveFactor = cameraDistanceFloat / z;
+      screen.x = screen.x * perspectiveFactor + xTranslation;
+      screen.y = screen.y * perspectiveFactor + yTranslation;
+    } else {
+      screen.x += xTranslation;
+      screen.y += yTranslation;
+    }
+  }
+
   public Point3i transformPoint(Point3f pointAngstroms,
                                 Vector3f vibrationVector) {
     if (! vibrationOn || vibrationVector == null)

@@ -388,6 +388,10 @@ final public class JmolViewer {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
 
+  public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
+    transformManager.transformPoint(pointAngstroms, pointScreen);
+  }
+
   public void transformPoints(Point3f[] pointsAngstroms, Point3i[] pointsScreens) {
     transformManager.transformPoints(pointsAngstroms.length,
                                      pointsAngstroms, pointsScreens);

@@ -42,8 +42,7 @@ public class ChemFrameRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  public void paint(Graphics g, Rectangle rectClip,
-                    DisplayControl control) {
+  public void paint(Graphics g, DisplayControl control) {
     ChemFrame frame = control.getFrame();
     int numAtoms = frame.getNumberOfAtoms();
     if (numAtoms <= 0) {
@@ -116,7 +115,7 @@ public class ChemFrameRenderer {
         if (shapes[i].z > slabValue)
           continue;
       }
-      shapes[i].render(g, rectClip, control);
+      shapes[i].render(g, control);
     }
   }
 

@@ -140,7 +140,7 @@ public class DisplayPanel extends JPanel
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
       control.setGraphicsContext(g, rectClip);
-      frameRenderer.paint(g, rectClip, control);
+      frameRenderer.paint(g, control);
       // FIXME -- measurements rendered incorrectly
       // this is in the wrong spot because the display of measurements
       // needs to take z-order into account

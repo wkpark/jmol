@@ -2,7 +2,6 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 
 public class AtomVectorShape extends Shape {
@@ -24,7 +23,7 @@ public class AtomVectorShape extends Shape {
     return "Atom vector shape for " + atom + ": z = " + z;
   }
 
-  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
+  public void render(Graphics g, DisplayControl control) {
     // FIXME I think that much/all of this could be moved to instance creation
     double magnitude = atom.getVector().distance(zeroPoint);
     double scaling = 1;

@@ -103,7 +103,7 @@ class AppletCanvas extends Canvas {
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
       control.setGraphicsContext(g, rectClip);
-      frameRenderer.paint(g, rectClip, control);
+      frameRenderer.paint(g, control);
       measureRenderer.paint(g, rectClip, control);
       Rectangle rect = control.getRubberBandSelection();
       if (rect != null) {

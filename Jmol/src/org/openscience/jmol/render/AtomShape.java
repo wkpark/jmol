@@ -84,19 +84,19 @@ public class AtomShape extends Shape {
     bondWidth = control.screenBondWidth(z);
   }
 
-  public void render(Graphics g, Rectangle clip, DisplayControl control) {
+  public void render(Graphics g, DisplayControl control) {
     if (!control.showHydrogens && atom.isHydrogen()) {
       return;
     }
     if (control.showBonds) {
-      renderBonds(g, clip, control);
+      renderBonds(g, control);
     }
-    if (control.showAtoms && isClipVisible(clip)) {
+    if (control.showAtoms && isClipVisible(control.atomRenderer.clip)) {
       control.atomRenderer.render(this);
     }
   }
 
-  public void renderBonds(Graphics g, Rectangle clip, DisplayControl control) {
+  public void renderBonds(Graphics g, DisplayControl control) {
     Atom[] bondedAtoms = atom.getBondedAtoms();
     if (bondedAtoms == null) {
       return;
@@ -108,7 +108,8 @@ public class AtomShape extends Shape {
       if ((control.showHydrogens || !atomOther.isHydrogen()) &&
           ((z > zOther) ||
            (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
-          isBondClipVisible(clip, x, y, atomShapeOther.x, atomShapeOther.y)) {
+          isBondClipVisible(control.bondRenderer.clip,
+                            x, y, atomShapeOther.x, atomShapeOther.y)) {
         control.bondRenderer.render(this, atomShapeOther,
                                     atom.getBondOrder(atomOther));
       }

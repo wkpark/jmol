@@ -3,7 +3,6 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 
 public class VectorShape extends LineShape {
@@ -22,7 +21,7 @@ public class VectorShape extends LineShape {
     return "Primitive vector shape";
   }
 
-  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
+  public void render(Graphics g, DisplayControl control) {
     double scaling = 1.0;
     ArrowLine al = new ArrowLine(g, control, x, y, xEnd, yEnd,
                                  arrowStart, arrowEnd, scaling);

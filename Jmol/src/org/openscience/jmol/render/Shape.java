@@ -41,8 +41,7 @@ public abstract class Shape {
   // of z are <= 0 ... 0 is at the surface of the screen and
   // more negative is further back away from the screen
 
-  abstract public void render(Graphics g, Rectangle rectClip,
-                              DisplayControl control);
+  abstract public void render(Graphics g, DisplayControl control);
 
   abstract public void transform(DisplayControl control);
 }

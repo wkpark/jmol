@@ -35,7 +35,7 @@ class LineShape extends Shape {
       z = zEnd;
   }
   
-  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
+  public void render(Graphics g, DisplayControl control) {
     g.setColor(control.getColorVector());
     g.drawLine(x, y, xEnd, yEnd);
   }

@@ -2,11 +2,11 @@ Summary: A molecular viewer and editor.
 Name: jmol
 Version: @version@
 Release: @release@
-Copyright: GPL
+Copyright: LGPL
 Group: Applications/Science
 Packager: Bradley A. Smith <bradley@baysmith.com>
 Source0: jmol-@version@.source.tar.gz
-Source1: docbook-xsl-1.40.tar.gz
+Source1: docbook-xsl-1.55.0.tar.gz
 BuildArchitectures: noarch
 BuildRoot: /var/tmp/%{name}-buildroot
 
@@ -43,6 +43,7 @@ install -m 755 jars/gnujaxp.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/jas.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/multi.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/vecmath1.1-1.12.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
+install -m 755 jars/itext-0.94.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 
 %clean
 rm -rf $RPM_BUILD_ROOT

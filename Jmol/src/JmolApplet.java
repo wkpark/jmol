@@ -34,7 +34,10 @@
 public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
 
   public JmolApplet() {
-    super("org.jmol.applet.Jmol", 3, preloadClasses, "jmol75x29x8.gif");
+    super("org.jmol.applet.Jmol",
+          "jmol75x29x8.gif",
+          "Loading Jmol applet ...",
+          3, preloadClasses);
   }
 
   private final static String[] preloadClasses = {

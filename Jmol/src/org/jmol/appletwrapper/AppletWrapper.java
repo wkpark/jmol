@@ -33,32 +33,55 @@ import java.net.URL;
 
 public class AppletWrapper extends Applet {
 
-  String wrappedAppletClassName;
-  int preloadThreadCount;
-  String[] preloadClassNames;
+  private String wrappedAppletClassName;
+  private String preloadImageName;
+  private String preloadTextMessage;
+  private int preloadThreadCount;
+  private String[] preloadClassNames;
 
-  int preloadClassIndex;
-  String previousClassName;
+  private int preloadClassIndex;
+  private String previousClassName;
 
-  boolean needToLoadImage;
-  String preloadImageName;
-  Image preloadImage;
-  boolean preloadImageReadyForDisplay;
-  MediaTracker mediaTracker;
+  private boolean needToCompleteInitialization;
+
+  private boolean preloadImageReadyForDisplay;
+  private boolean preloadImagePainted;
+  private Image preloadImage;
+  private int preloadImageHeight;
+  private MediaTracker mediaTracker;
+
+  private Color bgcolor;
+  private Color textColor;
 
   WrappedApplet wrappedApplet;
-  int percentage;
-  long startTime;
+
+  private long startTime;
+  private int clockX;
+  private int clockBaseline;
+  private int clockWidth;
+
+
+  private static String fontFace = "sansserif";
+  private static int fontSizeDivisor = 18;
+  private int fontSize;
+  private Font font;
+  private FontMetrics fontMetrics;
+  private int fontAscent;
+  private int fontDescent;
+  private int fontHeight;
+    
 
   public AppletWrapper(String wrappedAppletClassName,
+                       String preloadImageName,
+                       String preloadTextMessage,
                        int preloadThreadCount,
-                       String[] preloadClassNames,
-                       String preloadImageName) {
+                       String[] preloadClassNames) {
     this.wrappedAppletClassName = wrappedAppletClassName;
+    this.preloadImageName = preloadImageName;
+    this.preloadTextMessage = preloadTextMessage;
     this.preloadThreadCount = preloadThreadCount;
     this.preloadClassNames = preloadClassNames;
-    this.preloadImageName = preloadImageName;
-    needToLoadImage = preloadImageName != null;
+    needToCompleteInitialization = true;
   }
 
   public String getAppletInfo() {
@@ -76,12 +99,73 @@ public class AppletWrapper extends Applet {
     if (wrappedApplet != null) {
       mediaTracker = null;
       preloadImage = null;
+      fontMetrics = null;
 
       wrappedApplet.update(g);
       return;
     }
-    if (needToLoadImage) {
-      needToLoadImage = false;
+    Dimension dim = size(); // deprecated, but use it for old JVMs
+
+    if (needToCompleteInitialization)
+      completeInitialization(g, dim);
+
+    g.setColor(bgcolor);
+    g.fillRect(0, 0, dim.width, dim.height);
+    g.setColor(textColor);
+
+    int imageBottom = 0;
+
+    if (!preloadImageReadyForDisplay && mediaTracker != null)
+      preloadImageReadyForDisplay = mediaTracker.checkID(0, true);
+
+    if (preloadImageReadyForDisplay) {
+      int imageHeight = preloadImage.getHeight(null);
+      if (imageHeight > 0) {
+        if (10 + imageHeight + fontHeight <= dim.height) {
+          g.drawImage(preloadImage, 10, 10, null);
+          preloadImagePainted = true;
+          imageBottom = 10 + imageHeight;
+        }
+      }
+    }
+
+    int messageBaseline = imageBottom + fontAscent;
+    if (messageBaseline < dim.height/2)
+      messageBaseline = dim.height / 2;
+    else if (messageBaseline >= dim.height)
+      messageBaseline = dim.height - 1;
+    g.setFont(font);
+    g.drawString(preloadTextMessage, 10, messageBaseline);
+
+    long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+    String clockText = "" + elapsedTime + " seconds";
+    clockWidth = fontMetrics.stringWidth(clockText);
+    clockX = dim.width - clockWidth - 5;
+    if (clockX < 0)
+      clockX = 0;
+    clockBaseline = dim.height - 5;
+    g.drawString(clockText, clockX, clockBaseline);
+  }
+  
+  public void paint(Graphics g) {
+    if (wrappedApplet != null) {
+      wrappedApplet.paint(g);
+      return;
+    }
+    update(g);
+  }
+
+  void repaintClock() {
+    if (! preloadImagePainted || clockBaseline == 0)
+      repaint();
+    else
+      repaint(clockX, clockBaseline - fontAscent, clockWidth, fontHeight);
+  }
+
+      
+  private void completeInitialization(Graphics g, Dimension dim) {
+    needToCompleteInitialization = false;
+    if (preloadImageName != null) {
       try {
         System.out.println("loadImage:" + preloadImageName);
         URL urlImage =
@@ -94,37 +178,81 @@ public class AppletWrapper extends Applet {
           System.out.println("preloadImage=" + preloadImage);
           mediaTracker = new MediaTracker(this);
           mediaTracker.addImage(preloadImage, 0);
+          mediaTracker.checkID(0, true);
         }
       } catch (Exception e) {
         System.out.println("getImage failed: " + e);
       }
     }
+    String bgcolorName = getParameter("boxbgcolor");
+    if (bgcolorName == null)
+      bgcolorName = getParameter("bgcolor");
+    bgcolor = getColorFromName(bgcolorName);
+    textColor = getContrastingBlackOrWhite(bgcolor);
 
-    g.setColor(Color.black);
-    g.fillRect(0, 0, 1000, 1000);
-    
-    g.setColor(Color.white);
-    
-    g.drawString("applet wrapper test", 15, 20);
+    fontSize = dim.height / fontSizeDivisor;
+    if (fontSize < 7)
+      fontSize = 7;
+    if (fontSize > 30)
+      fontSize = 30;
 
-    long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
-
-    g.drawString("" + elapsedTime + " seconds", 15, 40);
-
-    if (preloadImageReadyForDisplay)
-      g.drawImage(preloadImage, 15, 50, null);
-    else if (mediaTracker != null)
-      preloadImageReadyForDisplay = mediaTracker.checkID(0);
-  }
-
-  public void paint(Graphics g) {
-    if (wrappedApplet != null) {
-      wrappedApplet.paint(g);
-      return;
+    while (true) {
+      font = new Font(fontFace, Font.PLAIN, fontSize);
+      fontMetrics = g.getFontMetrics(font);
+      if (fontMetrics.stringWidth(preloadTextMessage) + 10 < dim.width)
+        break;
+      if (fontSize < 8)
+        break;
+      fontSize -= 2;
     }
-    update(g);
+    fontHeight = fontMetrics.getHeight();
+    fontAscent = fontMetrics.getAscent();
   }
 
+  private final static String[] colorNames = {
+    "aqua", "black", "blue", "fuchsia",
+    "gray", "green", "lime", "maroon",
+    "navy", "olive", "purple", "red",
+    "silver", "teal", "white", "yellow"
+  };
+
+  private final static Color[] colors = {
+    Color.cyan, Color.black, Color.blue, Color.magenta,
+    Color.gray, new Color(0,128,0), Color.green, new Color(128,0,0),
+    new Color(0,0,128), new Color(128,128,0), new Color(128,0,128), Color.red,
+    Color.lightGray, new Color(0,128,128), Color.white, Color.yellow
+  };
+  
+
+  private Color getColorFromName(String strColor) {
+    if (strColor != null) {
+      if (strColor.length() == 7 && strColor.charAt(0) == '#') {
+        try {
+          int red = Integer.parseInt(strColor.substring(1, 3), 16);
+          int grn = Integer.parseInt(strColor.substring(3, 5), 16);
+          int blu = Integer.parseInt(strColor.substring(5, 7), 16);
+          return new Color(red, grn, blu);
+        } catch (NumberFormatException e) {
+        }
+      } else {
+        strColor = strColor.toLowerCase().intern();
+        for (int i = colorNames.length; --i >= 0; )
+          if (strColor == colorNames[i])
+            return colors[i];
+      }
+    }
+    return Color.black;
+  }
+
+  private Color getContrastingBlackOrWhite(Color color) {
+    // return a grayscale value 0-FF using NTSC color luminance algorithm
+    int argb = color.getRGB();
+    int grayscale = ((2989 * (argb >> 16) & 0xFF) +
+                     (5870 * (argb >> 8) & 0xFF) +
+                     (1140 * (argb & 0xFF)) + 500) / 1000;
+    return grayscale < 128 ? Color.white : Color.black;
+  }
+  
   public boolean handleEvent(Event e) {
     if (wrappedApplet != null)
       return wrappedApplet.handleEvent(e);
@@ -161,4 +289,3 @@ public class AppletWrapper extends Applet {
     return previousClassName = className;
   }
 }
-

@@ -264,7 +264,7 @@ public class JmolApplet extends Applet {
       String scriptParam = getValue("script", "");
       String loadParam = getValue("load", null);
       if (loadParam != null)
-        scriptParam = loadParam + ";" + scriptParam;
+        scriptParam = "load " + loadParam + ";" + scriptParam;
       script(scriptParam);
     }
     viewer.popHoldRepaint();

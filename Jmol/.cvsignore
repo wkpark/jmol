@@ -6,4 +6,6 @@ javadoc
 jmol.jar
 JmolApplet.jar
 packaging/rpm/dist
-.bak
+*.bak
+*.deprecated
+*~

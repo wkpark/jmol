@@ -82,6 +82,7 @@ class SurfaceRenderer extends ShapeRenderer {
     }
     Surface.Torus[] toruses = surface.toruses;
     for (int i = surface.torusCount; --i >= 0; ) {
+    //for (int i = 1; --i >= 0; ) {
       Surface.Torus torus = toruses[i];
       if (displayModelIndex < 0 ||
           displayModelIndex == atoms[torus.ixI].modelIndex)
@@ -149,6 +150,7 @@ class SurfaceRenderer extends ShapeRenderer {
   Point3f pointT1 = new Point3f();
   Matrix3f matrixT = new Matrix3f();
   Matrix3f matrixT1 = new Matrix3f();
+  Matrix3f matrixT2 = new Matrix3f();
   Matrix3f matrixRot = new Matrix3f();
   AxisAngle4f aaT = new AxisAngle4f();
   AxisAngle4f aaT1 = new AxisAngle4f();
@@ -157,6 +159,10 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
+    if (true) {
+      renderTorus1(torus, atoms, colixes, convexSurfaceMaps);
+      return;
+    }
     if (false) {
       if (convexSurfaceMaps[torus.ixI] != null)
         renderTorusHalf(torus,
@@ -180,10 +186,8 @@ class SurfaceRenderer extends ShapeRenderer {
       for (int j = stripLength; --j >= 0; )
         viewer.transformPoint(strip[j], screensTorusStrip[j]);
       if (i > 0) {
-        for (int j = stripLength; --j >= 0; ) {
+        for (int j = stripLength; --j > 0; ) { // .GT. not .GE.
           int k = j - 1;
-          if (k < 0)
-            k = stripLength - 1;
           g3d.fillQuadrilateral(colix, false,
                                 screensTorusStripLast[k],
                                 normixesLast[k],
@@ -199,6 +203,151 @@ class SurfaceRenderer extends ShapeRenderer {
       Point3i[] t = screensTorusStripLast;
       screensTorusStripLast = screensTorusStrip;
       screensTorusStrip = t;
+    }
+  }
+
+  void renderTorus1(Surface.Torus torus,
+                    Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
+    if (false)
+      if (torus.ixI != 0 || torus.ixJ != 2)
+        return;
+    if (torus.torusCavities == null) {
+      renderFullTorus(torus, atoms, colixes, convexSurfaceMaps);
+      return;
+    }
+
+    Point3i screen = viewer.transformPoint(torus.center);
+    g3d.fillSphereCentered(Graphics3D.RED, 10, screen);
+
+    for (int c = 0; c < (torus.torusCavityCount & ~1); c += 2) {
+      boolean rightHanded = torus.rightHandeds[c];
+      int d = c + 1;
+      screen =
+        viewer.transformPoint(torus.torusCavities[c].getPoint(torus.ixI));
+      g3d.fillSphereCentered(Graphics3D.GREEN, 10, screen);
+
+      screen =
+        viewer.transformPoint(torus.torusCavities[c].getPoint(torus.ixJ));
+      g3d.fillSphereCentered(Graphics3D.BLUE, 10, screen);
+
+      screen = viewer.transformPoint(torus.torusCavities[c].probeCenter);
+      g3d.fillSphereCentered(Graphics3D.YELLOW, 10, screen);
+
+      screen = viewer.transformPoint(torus.torusCavities[d].probeCenter);
+      g3d.fillSphereCentered(Graphics3D.HOTPINK, 15, screen);
+
+      Vector3f vA = new Vector3f();
+      vA.sub(torus.torusCavities[c].probeCenter, torus.center);
+      Vector3f vB = new Vector3f();
+      vB.sub(torus.torusCavities[d].probeCenter, torus.center);
+
+      Vector3f outerVectorA = new Vector3f();
+      outerVectorA.sub(torus.torusCavities[c].getPoint(torus.ixI),
+                       torus.torusCavities[c].probeCenter);
+      float innerAngle = getAngle(rightHanded, vA, vB, torus.axisVector);
+      int innerSegmentCount =
+        (int)((innerAngle < 0 ? -innerAngle : innerAngle)
+              / Surface.radiansPerSegment);
+      if (innerSegmentCount == 0)
+        ++innerSegmentCount;
+      
+      float actualRadiansPerInnerSegment = innerAngle / innerSegmentCount;
+      
+      
+      Vector3f vT = new Vector3f();
+      Point3f pT = new Point3f();
+      Point3f pTO = new Point3f();
+      
+      Vector3f vTO = new Vector3f();
+
+      vTO.set(outerVectorA);
+      //    matrixT.transform(outerVectorA, vTO);
+      pT.add(torus.torusCavities[c].probeCenter, vTO);
+      screen = viewer.transformPoint(pT);
+      g3d.fillSphereCentered(Graphics3D.ORANGE, 5, screen);
+
+    
+      int outerSegmentCount =
+        (int)(torus.outerRadians / Surface.radiansPerSegment);
+      if (outerSegmentCount == 0)
+        ++outerSegmentCount;
+      float actualRadiansPerOuterSegment =
+        torus.outerRadians / outerSegmentCount;
+      
+      aaT.set(torus.axisVector, 0);
+      vTO.cross(torus.axisVector, vA);
+      aaT1.set(vTO, 0);
+      for (int i = 0; i <= innerSegmentCount; ++i) {
+        matrixT.set(aaT);
+        matrixT.transform(vA, vT);
+        pT.add(torus.center, vT);
+        screen = viewer.transformPoint(pT);
+        g3d.fillSphereCentered(rightHanded ? g3d.PINK : g3d.LIME,
+                               10, screen);
+        
+        matrixT.transform(outerVectorA, vTO);
+        pTO.add(pT, vTO);
+        screen = viewer.transformPoint(pTO);
+        g3d.fillSphereCentered(Graphics3D.ORANGE, 5, screen);
+        
+        aaT1.angle = 0;
+        for (int j = 0; j <= outerSegmentCount; ++j) {
+          matrixT1.set(aaT1);
+          matrixT1.transform(outerVectorA, vTO);
+          matrixT.transform(vTO);
+          pTO.add(pT, vTO);
+          screen = viewer.transformPoint(pTO);
+          g3d.fillSphereCentered(Graphics3D.MAGENTA, 5, screen);
+          
+          aaT1.angle += actualRadiansPerOuterSegment;
+        }
+        aaT.angle += actualRadiansPerInnerSegment;
+      }
+    }
+  }
+  
+  void renderFullTorus(Surface.Torus torus, Atom[] atoms,
+                       short[] colixes, int[][] convexSurfaceMaps) {
+    final int innerSegmentCount = Surface.segmentsPerFullCircle;
+    final float radiansPerSegment = Surface.radiansPerSegment;
+
+    Vector3f vT = new Vector3f();
+    Point3f pT = new Point3f();
+    Point3f pTO = new Point3f();
+
+    Vector3f vTO = new Vector3f();
+
+    int outerSegmentCount =
+      (int)(torus.outerRadians / Surface.radiansPerSegment);
+    if (outerSegmentCount == 0)
+      ++outerSegmentCount;
+    float actualRadiansPerOuterSegment =
+      torus.outerRadians / outerSegmentCount;
+
+    aaT.set(torus.axisVector, 0);
+    vTO.cross(torus.axisVector, torus.radialVector);
+    aaT1.set(vTO, 0);
+    for (int i = 0; i <= innerSegmentCount; ++i) {
+      matrixT.set(aaT);
+      matrixT.transform(torus.radialVector, vT);
+      pT.add(torus.center, vT);
+      Point3i screen;
+      screen = viewer.transformPoint(pT);
+      g3d.fillSphereCentered(Graphics3D.PINK, 10, screen);
+
+      aaT1.angle = 0;
+      for (int j = 0; j <= outerSegmentCount; ++j) {
+        matrixT1.set(aaT1);
+        matrixT1.transform(torus.outerVector, vTO);
+        matrixT.transform(vTO);
+        pTO.add(pT, vTO);
+        screen = viewer.transformPoint(pTO);
+        g3d.fillSphereCentered(j == 0 ? Graphics3D.ORANGE : Graphics3D.MAGENTA,
+                               5, screen);
+
+        aaT1.angle += actualRadiansPerOuterSegment;
+      }
+      aaT.angle += radiansPerSegment;
     }
   }
 
@@ -286,6 +435,10 @@ class SurfaceRenderer extends ShapeRenderer {
                     Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
     Point3f[] points = cavity.points;
     short[] normixes = cavity.normixes;
+    if (screens.length < points.length) {
+      viewer.freeTempScreens(screens);
+      screens = viewer.allocTempScreens(points.length);
+    }
     for (int i = points.length; --i >= 0; )
       viewer.transformPoint(points[i], screens[i]);
 
@@ -318,6 +471,31 @@ class SurfaceRenderer extends ShapeRenderer {
       return 0;
     int maxMapped = bitmap.length << 5;
     return maxMapped < geodesicVertexCount ? maxMapped : geodesicVertexCount;
+  }
+
+  final Vector3f vectorRightT = new Vector3f();
+  final Matrix3f matrixRightT = new Matrix3f();
+  final AxisAngle4f aaRightT = new AxisAngle4f();
+
+  final float getAngle(boolean rightHanded,
+                       Vector3f vA, Vector3f vB, Vector3f axis) {
+    float angle = vA.angle(vB);
+    float longerAngle = (float)(2 * Math.PI) - angle;
+    if (! rightHanded) {
+      angle = -angle;
+      longerAngle = -longerAngle;
+    }
+    aaRightT.set(axis, angle);
+    matrixRightT.set(aaRightT);
+    matrixRightT.transform(vA, vectorRightT);
+    float dotAngle = vectorRightT.dot(vB);
+    aaRightT.angle = longerAngle;
+    matrixRightT.set(aaRightT);
+    matrixRightT.transform(vA, vectorRightT);
+    float dotLongerAngle = vectorRightT.dot(vB);
+    if (dotLongerAngle > dotAngle)
+      angle = longerAngle;
+    return angle;
   }
 }
 

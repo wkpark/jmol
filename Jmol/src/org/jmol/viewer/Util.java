@@ -75,6 +75,10 @@ final class Util {
     return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
+  static boolean[] doubleLength(boolean[] array) {
+    return setLength(array, (array == null ? 16 : 2 * array.length));
+  }
+
   static Object setLength(Object array, int newLength) {
     Object t =
       Array.newInstance(array.getClass().getComponentType(), newLength);
@@ -126,6 +130,16 @@ final class Util {
 
   static byte[] setLength(byte[] array, int newLength) {
     byte[] t = new byte[newLength];
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
+                       oldLength < newLength ? oldLength : newLength);
+    }
+    return t;
+  }
+
+  static boolean[] setLength(boolean[] array, int newLength) {
+    boolean[] t = new boolean[newLength];
     if (array != null) {
       int oldLength = array.length;
       System.arraycopy(array, 0, t, 0, 

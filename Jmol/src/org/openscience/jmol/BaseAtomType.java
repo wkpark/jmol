@@ -50,7 +50,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * @param mass the atomic mass
    * @param vdwRadius the van der Waals radius (helps determine drawing size)
    * @param covalentRadius the covalent radius (helps determine bonding)
-   * @param color the color for drawing
    * @return the atom type corresponding to the name.
    */
   public static BaseAtomType get(String name, String root, int atomicNumber,
@@ -124,7 +123,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * @param mass the atomic mass
    * @param vdwRadius the van der Waals radius (helps determine drawing size)
    * @param covalentRadius the covalent radius (helps determine bonding)
-   * @param color the color for drawing
    */
   public void set(String root, int atomicNumber, double mass,
       double vdwRadius, double covalentRadius) {

@@ -39,7 +39,7 @@ public class Atom extends org.openscience.cdk.Atom {
   /**
    * Creates an atom with the given type.
    *
-   * @param the type of this atom.
+   * @param atom the type of this atom.
    */
   public Atom(JmolViewer viewer, Atom atom, int atomNumber,
               double x, double y, double z, String pdbRecord) {

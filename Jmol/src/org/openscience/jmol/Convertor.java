@@ -106,7 +106,7 @@ public class Convertor {
      * Conversion includes:
      *   - atoms
      *
-     * @param   atom    class to be converted
+     * @param   mol     class to be converted
      * @return          converted class in CDK
      **/
     public static AtomContainer

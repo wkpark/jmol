@@ -27,7 +27,7 @@ molecular dynamics (microcanonical ensemble), and Langevin dynamics
 
 2) Why do we need another Molecule Viewer?
 
-There are really two reasons:
+There are really three reasons:
 
   1. Animation. We do chemical dynamics, and we need to see what our
      simulations look like at different times. We weren't aware of any
@@ -41,6 +41,9 @@ There are really two reasons:
      restricted to a UNIX/X environment, and Jmol works anywhere that you
      can get a Java 1.1 VM to run.
 
+  3. Normal modes.  Jmol animates normal modes computed via a number 
+     of other ab initio software packages.
+
 3) How far along is Jmol?
 
 Jmol is beta software.  Many things work: it can be used as an
@@ -49,14 +52,18 @@ precalculated normal modes from many ab initio quantum chemistry
 programs (Gaussian, GAMESS, ACES2, ADF) it can read PDB files and a
 wide range of ab initio quantum chemistry log files, and it can 
 output GIFs, JPGs and PPMs of what is displayed on screen.  
-PostScript output is of very high quality if you are using Java2.
+PostScript output is of very high quality if you are using Java2.  It
+can measure distances, angles, and dihedrals for any frame in 
+the animation, and it is a generally useful tool for the chemical 
+sciences.
 
 4) Is Jmol an Applet? Can it be run from inside a web browser?
 
 No. Jmol is a Java-based application. It reads and writes files on the
 local disk which contain information about atomic coordinates. Applets
 are not permitted to write local files, so we made Jmol an application
-instead.
+instead.  An applet version of Jmol is under development and should
+be available for general release when Jmol reaches version 0.7.
 
 5) What do I need to run Jmol?
 
@@ -77,6 +84,11 @@ don't necessarily need to have it.
 The canonical distribution site for Jmol is:
 
     http://www.openscience.org/jmol
+
+We also have a temporary anonymous CVS server that you can use as follows:
+
+    cvs -d :pserver:anoncvs@www.nmrshiftdb.org:/usr/local/cvsroot login
+    cvs -d :pserver:anoncvs@www.nmrshiftdb.org:/usr/local/cvsroot checkout Jmol
 
 8) Who is working on Jmol?
 

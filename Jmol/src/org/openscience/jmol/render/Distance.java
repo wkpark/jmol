@@ -52,7 +52,7 @@ public class Distance extends Measurement implements MeasurementInterface {
   private void paintDistLine(Graphics g, DisplayControl control,
                              Atom atom1, Atom atom2) {
     control.maybeDottedStroke(g);
-    g.setColor(control.colorDistance);
+    g.setColor(control.getColorDistance());
     g.drawLine(atom1.getScreenX(), atom1.getScreenY(),
 	       atom2.getScreenX(), atom2.getScreenY());
   }
@@ -74,7 +74,7 @@ public class Distance extends Measurement implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.colorText);
+    g.setColor(control.getColorText());
     String s = distanceFormat.sprintf(getDistance());
     int j = fontMetrics.stringWidth(s);
 

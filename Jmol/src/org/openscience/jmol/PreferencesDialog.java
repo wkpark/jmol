@@ -381,14 +381,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cRender = new JComboBox();
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cATChoice"));
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cCChoice"));
-    cRender.setSelectedIndex(control.getAtomColorProfile());
+    cRender.setSelectedIndex(control.getModeAtomColorProfile());
     cRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomColorProfile = source.getSelectedIndex();
-        control.setAtomColorProfile(AtomColorProfile);
+        control.setModeAtomColorProfile(AtomColorProfile);
         props.put("AtomColorProfile", Integer.toString(AtomColorProfile));
       }
     });

@@ -137,7 +137,7 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
 
     w.write("background { color " +
-            povrayColor(control.colorBackground) + " }\n");
+            povrayColor(control.getColorBackground()) + " }\n");
     w.write("\n");
 
     w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");

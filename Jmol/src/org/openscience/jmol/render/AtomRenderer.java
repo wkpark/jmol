@@ -372,7 +372,7 @@ public class AtomRenderer {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     int k = fontMetrics.getAscent();
-    g.setColor(control.colorText);
+    g.setColor(control.getColorText());
     
     String label = null;
     switch (control.modeLabel) {
@@ -405,7 +405,7 @@ public class AtomRenderer {
           // screen:
           font = new Font("Helvetica", Font.PLAIN, radius / 2);
           g.setFont(font);
-          g.setColor(control.colorText);
+          g.setColor(control.getColorText());
           s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);

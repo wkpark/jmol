@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -23,10 +23,6 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol;
-
-import org.openscience.cdk.renderer.color.AtomColorer;
-import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
-import org.openscience.jmol.render.AtomColors;
 
 import java.awt.Image;
 import java.awt.Color;
@@ -59,9 +55,15 @@ import org.openscience.jmol.io.ReaderFactory;
 final public class DisplayControl {
 
   public static DisplayControl control;
+  ColorManager colorManager;
+  TransformManager transformManager;
+  SelectionManager selectionManager;
 
   public DisplayControl() {
     control = this;
+    colorManager = new ColorManager(this);
+    transformManager = new TransformManager(this);
+    selectionManager = new SelectionManager();
   }
 
   public final static int NOLABELS =  0;
@@ -79,26 +81,9 @@ final public class DisplayControl {
   // to write these variables you *must* use the appropriate set function
   // they are currently used by Atom and AtomShape for transforms & rendering
   public boolean inMotion = false;
-  public int xTranslation;
-  public int yTranslation;
-  public int cameraZ = 750;
-  public final Matrix4d matrixTransform = new Matrix4d();
-  private final Point3d point3dScreenTemp = new Point3d();
 
   private Component panel;
 
-  private int minScreenDimension;
-  private Dimension dimCurrent;
-  private double scalePixelsPerAngstrom;
-  private double scaleDefaultPixelsPerAngstrom;
-  private boolean zoomEnabled = true;
-  private int zoomPercent = 100;
-  private int zoomPercentSetting = 100;
-  private double cameraDepth = 3;
-  public final Matrix4d matrixRotate = new Matrix4d();
-  private final Matrix4d matrixTemp = new Matrix4d();
-  private final Vector3d vectorTemp = new Vector3d();
-  private boolean perspectiveDepth = true;
   private boolean structuralChange = false;
 
   public void setAwtComponent(Component component) {
@@ -125,23 +110,6 @@ final public class DisplayControl {
     }
   }
 
-  AtomColorer colorProfile = AtomColors.getInstance();
-  public int atomColorProfile = ATOMTYPE;
-  public void setAtomColorProfile(int mode) {
-    if (atomColorProfile != mode) {
-      atomColorProfile = mode;
-      if (mode == ATOMTYPE)
-        colorProfile = AtomColors.getInstance();
-      else
-        colorProfile = new PartialAtomicChargeColors();
-      recalc();
-    }
-  }
-
-  public int getAtomColorProfile() {
-    return atomColorProfile;
-  }
-
   public int modeBondDraw = QUICKDRAW;
   public void setModeBondDraw(int mode) {
     if (modeBondDraw != mode) {
@@ -155,54 +123,8 @@ final public class DisplayControl {
     this.percentAngstromBond = percentAngstromBond;
     recalc();
   }
-
-  public Color colorOutline = Color.black;
-  public void setColorOutline(Color c) {
-    colorOutline = c;
-    recalc();
-  }
-
-  private Color colorSelection = Color.orange;
-  private Color colorSelectionTransparent;
-  public void setColorSelection(Color c) {
-    if (colorSelection == null || !colorSelection.equals(c)) {
-      colorSelection = c;
-      colorSelectionTransparent = null;
-      recalc();
-    }
-  }
-  public Color getColorSelection() {
-    if (colorSelectionTransparent == null) {
-      colorSelectionTransparent = 
-        useGraphics2D ? getColorTransparent(colorSelection) : colorSelection;
-    }
-    return colorSelectionTransparent;
-  }
-
-  public Color colorRubberband = Color.pink;
-
-  public Color colorText = Color.black;
-  public void setColorText(Color c) {
-    colorText = c;
-    recalc();
-  }
-
-  public Color colorDistance = Color.black;
-  public void setColorDistance(Color c) {
-    colorDistance = c;
-    recalc();
-  }
-
-  public Color colorAngle = Color.black;
-  public void setColorAngle(Color c) {
-    colorAngle = c;
-    recalc();
-  }
-
-  public Color colorDihedral = Color.black;
-  public void setColorDihedral(Color c) {
-    colorDihedral = c;
-    recalc();
+  public int getPercentAngstromBond() {
+    return percentAngstromBond;
   }
 
   public boolean showAtoms = true;
@@ -283,6 +205,10 @@ final public class DisplayControl {
     recalc();
   }
 
+  public int getPercentVdwAtom() {
+    return percentVdwAtom;
+  }
+
   public boolean fastRendering = false;
   public void setFastRendering(boolean fastRendering) {
     if (this.fastRendering != fastRendering) {
@@ -303,352 +229,13 @@ final public class DisplayControl {
     return propertyMode;
   }
 
-  private final BitSet bsNull = new BitSet();
-  private final BitSet bsSelection = new BitSet();
-
-  public void addSelection(Atom atom) {
-    bsSelection.set(atom.getAtomNumber());
-    recalc();
-  }
-
-  public void removeSelection(Atom atom) {
-    bsSelection.clear(atom.getAtomNumber());
-    recalc();
-  }
-
-  public void toggleSelection(Atom atom) {
-    int atomNum = atom.getAtomNumber();
-    if (bsSelection.get(atomNum))
-      bsSelection.clear(atomNum);
-    else
-      bsSelection.set(atomNum);
-    recalc();
-  }
-
-  public void addSelection(Atom[] atoms) {
-    for (int i = 0; i < atoms.length; ++i)
-      bsSelection.set(atoms[i].getAtomNumber());
-    recalc();
-  }
-
-  public void removeSelection(Atom[] atoms) {
-    for (int i = 0; i < atoms.length; ++i)
-      bsSelection.clear(atoms[i].getAtomNumber());
-    recalc();
-  }
-
-  public void clearSelection() {
-    bsSelection.and(bsNull);
-    recalc();
-  }
-
-  public int countSelection() {
-    int count = 0;
-    for (int i = 0, size = bsSelection.size(); i < size; ++i)
-      if (bsSelection.get(i))
-        ++count;
-    return count;
-  }
-
-  public boolean isSelected(Atom atom) {
-    return bsSelection.get(atom.getAtomNumber());
-  }
-
-  public void setSelectionSet(BitSet set) {
-    bsSelection.and(bsNull);
-    bsSelection.or(set);
-    recalc();
-  }
-
-  public BitSet getSelectionSet() {
-    return bsSelection;
-  }
-
-  public void translateXYBy(int xDelta, int yDelta) {
-    xTranslation += xDelta;
-    yTranslation += yDelta;
-    recalc();
-  }
-
-  public void rotateXYBy(int xDelta, int yDelta) {
-    // what fraction of PI radians do you want to rotate?
-    // the full screen width corresponds to a PI (180 degree) rotation
-    // if you grab an atom near the outside edge of the molecule,
-    // you can essentially "pull it" across the screen and it will
-    // track with the mouse cursor
-
-    // the accelerator is just a slop factor ... it felt a litte slow to me
-    double rotateAccelerator = 1.1f;
-
-    // a change in the x coordinate generates a rotation about the y axis
-    double ytheta = Math.PI * xDelta / minScreenDimension;
-    rotateByY(ytheta * rotateAccelerator);
-    double xtheta = Math.PI * yDelta / minScreenDimension;
-    rotateByX(xtheta * rotateAccelerator);
-    recalc();
-  }
-
-  public void rotateZBy(int zDelta) {
-    double rotateAccelerator = 1.1f;
-    double ztheta = Math.PI * zDelta / minScreenDimension;
-    rotateByZ(ztheta * rotateAccelerator);
-    recalc();
-  }
-
-  public void zoomBy(int pixels) {
-    int percent = pixels * zoomPercentSetting / minScreenDimension;
-    if (percent == 0)
-      percent = (pixels < 0) ? -1 : 1;
-    zoomByPercent(percent);
-  }
-
-  public int getZoomPercent() {
-    return zoomPercent;
-  }
-
-  public int getZoomPercentSetting() {
-    return zoomPercentSetting;
-  }
-
-  public void zoomToPercent(int percent) {
-    zoomPercentSetting = percent;
-    calcZoom();
-  }
-
-  public void zoomByPercent(int percent) {
-    zoomPercentSetting += percent;
-    calcZoom();
-  }
-
-  private void calcZoom() {
-    if (zoomPercentSetting < 10)
-      zoomPercentSetting = 10;
-    if (zoomPercentSetting > 1000)
-      zoomPercentSetting = 1000;
-    zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
-    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom *
-      zoomPercent / 100;
-    recalc();
-  }
-
-  public void setZoomEnabled(boolean zoomEnabled) {
-    if (this.zoomEnabled != zoomEnabled) {
-      this.zoomEnabled = zoomEnabled;
-      calcZoom();
-    }
-  }
-
-  public final static int SLABREJECT = 0;
-  public final static int SLABHALF = 1;
-  public final static int SLABHOLLOW = 2;
-  public final static int SLABSOLID = 3;
-  public final static int SLABSECTION = 4;
-
-  public boolean slabEnabled = false;
-  public int modeSlab;
-  public int slabValue;
-  public int slabPercentSetting = 100;
-
-  public boolean getSlabEnabled() {
-    return slabEnabled;
-  }
-
-  public int getSlabPercentSetting() {
-    return slabPercentSetting;
-  }
-
-  public void slabBy(int pixels) {
-    int percent = pixels * slabPercentSetting / minScreenDimension;
-    if (percent == 0)
-      percent = (pixels < 0) ? -1 : 1;
-    slabPercentSetting += percent;
-    calcSlab();
-  }
-
-  public void slabToPercent(int percentSlab) {
-    slabPercentSetting = percentSlab;
-    calcSlab();
-  }
-
-  public void setSlabEnabled(boolean slabEnabled) {
-    if (this.slabEnabled != slabEnabled) {
-      this.slabEnabled = slabEnabled;
-      calcSlab();
-    }
-  }
-
-  public void setModeSlab(int modeSlab) {
-    this.modeSlab = modeSlab;
-  }
-
-  public int getModeSlab() {
-    return modeSlab;
-  }
-
-  private void calcSlab() {
-    if (slabEnabled) {
-      if (slabPercentSetting < 0)
-        slabPercentSetting = 0;
-      else if (slabPercentSetting > 100)
-        slabPercentSetting = 100;
-      // all transformed z coordinates are negative
-      // a slab percentage of 100 should map to zero
-      // a slab percentage of 0 should map to -diameter
-      int radius =
-        (int)(chemframe.getRotationRadius() * scalePixelsPerAngstrom);
-      slabValue = (int)((-100+slabPercentSetting) * 2*radius / 100);
-      recalc();
-    }
-  }
-
-  private int getSlabValue() {
-    return slabValue;
-  }
-
-  public Matrix4d getPovRotateMatrix() {
-    return new Matrix4d(matrixRotate);
-  }
-
-  public Matrix4d getPovTranslateMatrix() {
-    Matrix4d matrixPovTranslate = new Matrix4d();
-    matrixPovTranslate.setIdentity();
-    matrixPovTranslate.get(vectorTemp);
-    vectorTemp.x = (xTranslation-dimCurrent.width/2) / scalePixelsPerAngstrom;
-    vectorTemp.y = -(yTranslation-dimCurrent.height/2)
-      / scalePixelsPerAngstrom; // invert y axis
-    vectorTemp.z = 0;
-    matrixPovTranslate.set(vectorTemp);
-    return matrixPovTranslate;
-  }
-
-  public void calcViewTransformMatrix() {
-    // you absolutely *must* watch the order of these operations
-    matrixTransform.setIdentity();
-    // first, translate the coordinates back to the center
-    vectorTemp.set(chemframe.getRotationCenter());
-    matrixTemp.setZero();
-    matrixTemp.setTranslation(vectorTemp);
-    matrixTransform.sub(matrixTemp);
-    // now, multiply by angular rotations
-    // this is *not* the same as  matrixTransform.mul(matrixRotate);
-    matrixTransform.mul(matrixRotate, matrixTransform);
-    // now shift so that all z coordinates are <= 0
-    // this is important for scaling
-    vectorTemp.x = 0;
-    vectorTemp.y = 0;
-    vectorTemp.z = chemframe.getRotationRadius();
-    matrixTemp.setTranslation(vectorTemp);
-    matrixTransform.sub(matrixTemp);
-    // now scale to screen coordinates
-    matrixTemp.set(scalePixelsPerAngstrom);
-    matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
-    matrixTransform.mul(matrixTemp, matrixTransform);
-    // note that the image is still centered at 0, 0
-    // translations come later (to deal with perspective)
-    // and all z coordinates are <= 0
-  }
-
-  public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
-    pointScreen.set(transformPoint(pointAngstroms));
-  }
-
-  public Point3d transformPoint(Point3d pointAngstroms) {
-    matrixTransform.transform(pointAngstroms, point3dScreenTemp);
-    if (perspectiveDepth) {
-      int depth = cameraZ - (int)point3dScreenTemp.z;
-      point3dScreenTemp.x =
-        (((int)point3dScreenTemp.x * cameraZ) / depth) + xTranslation;
-      point3dScreenTemp.y =
-        (((int)point3dScreenTemp.y * cameraZ) / depth) + yTranslation;
-    } else {
-      point3dScreenTemp.x += xTranslation;
-      point3dScreenTemp.y += yTranslation;
-    }
-    return point3dScreenTemp;
-  }
-
-  public void setPerspectiveDepth(boolean perspectiveDepth) {
-    this.perspectiveDepth = perspectiveDepth;
-    scaleFitToScreen();
-    recalc();
-  }
-
-  public boolean getPerspectiveDepth() {
-    return perspectiveDepth;
-  }
-
-  public void setCameraDepth(double depth) {
-    cameraDepth = depth;
-  }
-
-  public double getCameraDepth() {
-    return cameraDepth;
-  }
-
-  public int getCameraZ() {
-    return cameraZ;
-  }
-
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
     // figure out the interaction with the current holdRepaint setting
     setCenter(null);
     clearSelection();
-    scaleFitToScreen();
-    matrixRotate.setIdentity();         // no rotations
-    setSlabEnabled(false);              // no slabbing
-    slabToPercent(100);
-    setZoomEnabled(true);
-    zoomToPercent(100);
+    transformManager.homePosition();
     recalc();
-  }
-
-  public void setScreenDimension(Dimension dimCurrent) {
-    this.dimCurrent = dimCurrent;
-  }
-
-  public Dimension getScreenDimension() {
-    return dimCurrent;
-  }
-
-  public void scaleFitToScreen() {
-    if (dimCurrent == null || chemframe == null)  {
-      // FIXME -- what is proper startup sequence in this case? 
-      return;
-    }
-
-    // FIXME perspective view resize - mth dec 2003
-    // there is some problem with perspective view with the screen is
-    // resized larger. only shows up in perspective view. things are being
-    // displayed larger than they should be. that is, rotations can go
-    // off the edge of the screen. goes away when home is hit
-
-    // translate to the middle of the screen
-    xTranslation = dimCurrent.width / 2;
-    yTranslation = dimCurrent.height / 2;
-    // find smaller screen dimension
-    minScreenDimension = dimCurrent.width;
-    if (dimCurrent.height < minScreenDimension)
-      minScreenDimension = dimCurrent.height;
-    // ensure that rotations don't leave some atoms off the screen
-    // note that this radius is to the furthest outside edge of an atom
-    // given the current VDW radius setting. it is currently *not*
-    // recalculated when the vdw radius settings are changed
-    // leave a very small margin - only 1 on top and 1 on bottom
-    if (minScreenDimension > 2)
-      minScreenDimension -= 2;
-    scalePixelsPerAngstrom =
-      minScreenDimension / 2 / chemframe.getRotationRadius();
-    if (perspectiveDepth) {
-      double scaleFactor = (cameraZ + minScreenDimension/2) / (double)cameraZ;
-      scaleFactor += .02f; // don't know why I need this, but seems I do -- mth
-      scalePixelsPerAngstrom *= scaleFactor;
-    }
-    // these are important!
-    scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
-    zoomPercentSetting = zoomPercent = 100;
-    zoomEnabled = true;
-    cameraZ = (int)cameraDepth * minScreenDimension;
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
@@ -710,6 +297,14 @@ final public class DisplayControl {
     return chemframe;
   }
 
+  public double getRotationRadius() {
+    return chemframe.getRotationRadius();
+  }
+
+  public Point3d getRotationCenter() {
+    return chemframe.getRotationCenter();
+  }
+
   public void setFrame(int fr) {
     if (haveFile && fr >= 0 && fr < nframes) {
         setFrame(chemfile.getFrame(fr));
@@ -741,14 +336,6 @@ final public class DisplayControl {
                            mlist.getDihedralList());
   }
 
-  public Color colorBackground = Color.white;
-  public void setColorBackground(Color bg) {
-    if (bg == null)
-      colorBackground = Color.getColor("colorBackground");
-    else
-      colorBackground = bg;
-    recalc();
-  }
 
   public boolean wireframeRotation = false;
   public void setWireframeRotation(boolean wireframeRotation) {
@@ -807,66 +394,6 @@ final public class DisplayControl {
     //return panel.takeSnapshot();
   }
 
-  public void rotateFront() {
-    matrixRotate.setIdentity();
-    recalc();
-  }
-
-  public void rotateToX(double angleRadians) {
-    matrixRotate.rotX(angleRadians);
-    recalc();
-  }
-  public void rotateToY(double angleRadians) {
-    matrixRotate.rotY(angleRadians);
-    recalc();
-  }
-  public void rotateToZ(double angleRadians) {
-    matrixRotate.rotZ(angleRadians);
-    recalc();
-  }
-
-  public void rotateToX(int angleDegrees) {
-    rotateToX(Math.toRadians(angleDegrees));
-  }
-  public void rotateToY(int angleDegrees) {
-    rotateToY(Math.toRadians(angleDegrees));
-  }
-  public void rotateToZ(int angleDegrees) {
-    rotateToZ(Math.toRadians(angleDegrees));
-  }
-
-  public void rotateByX(double angleRadians) {
-    matrixTemp.rotX(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
-    recalc();
-  }
-  public void rotateByY(double angleRadians) {
-    matrixTemp.rotY(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
-    recalc();
-  }
-  public void rotateByZ(double angleRadians) {
-    matrixTemp.rotZ(angleRadians);
-    matrixRotate.mul(matrixTemp, matrixRotate);
-    recalc();
-  }
-  public void rotateByX(int angleDegrees) {
-    rotateByX(Math.toRadians(angleDegrees));
-  }
-  public void rotateByY(int angleDegrees) {
-    rotateByY(Math.toRadians(angleDegrees));
-  }
-  public void rotateByZ(int angleDegrees) {
-    rotateByZ(Math.toRadians(angleDegrees));
-  }
-
-  public void rotate(AxisAngle4d axisAngle) {
-    matrixTemp.setIdentity();
-    matrixTemp.setRotation(axisAngle);
-    matrixRotate.mul(matrixTemp, matrixRotate);
-    recalc();
-  }
-
   public void setCenter(Point3d center) {
     chemframe.setRotationCenter(center);
   }
@@ -921,6 +448,7 @@ final public class DisplayControl {
     int numberOfAtoms = numberOfAtoms();
     int countSelected = 0;
     Point3d  center = new Point3d(); // defaults to 0,00,
+    BitSet bsSelection = getSelectionSet();
     for (int i = 0; i < numberOfAtoms; ++i) {
       if (!bsSelection.get(i))
         continue;
@@ -936,35 +464,6 @@ final public class DisplayControl {
     clearSelection();
     scaleFitToScreen();
     recalc();
-  }
-
-  public int screenAtomDiameter(int z, Atom atom) {
-    double vdwRadius = atom.getVdwRadius();
-    if (z > 0)
-      System.out.println("--?QUE? no way that z > 0--");
-    if (vdwRadius <= 0)
-      System.out.println("--?QUE? vdwRadius=" + vdwRadius);
-    int d = (int)(2 * vdwRadius *
-                  scalePixelsPerAngstrom * percentVdwAtom / 100);
-    if (perspectiveDepth)
-      d = (d * cameraZ) / (cameraZ - z);
-    return d;
-  }
-
-  public int screenBondWidth(int z) {
-    int w = (int)(scalePixelsPerAngstrom * percentAngstromBond / 100);
-    if (perspectiveDepth)
-      w = (w * cameraZ) / (cameraZ - z);
-    return w;
-  }
-
-  public double scaleToScreen(int z, double sizeAngstroms) {
-    // all z's are <= 0
-    // so the more negative z is, the smaller the screen scale
-    double pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
-    if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraZ) / (cameraZ - z);
-    return pixelSize;
   }
 
   public boolean hasStructuralChange() {
@@ -993,7 +492,7 @@ final public class DisplayControl {
   public final Hashtable imageCache = new Hashtable();
   private void flushCachedImages() {
     imageCache.clear();
-    colorSelectionTransparent = null;
+    colorManager.flushCachedColors();
   }
 
   // FIXME NEEDSWORK -- bond binding stuff
@@ -1028,15 +527,9 @@ final public class DisplayControl {
   }
 
   // FIXME NEEDSWORK -- arrow vector stuff
-  public Color colorVector = Color.black;
   private double arrowHeadSize = 10.0f;
   private double arrowHeadRadius = 1.0f;
   private double arrowLengthScale = 1.0f;
-
-  public void setColorVector(Color c) {
-    colorVector = c;
-    recalc();
-  }
 
   public void setArrowHeadSize(double ls) {
     arrowHeadSize = 10.0f * ls;
@@ -1071,48 +564,6 @@ final public class DisplayControl {
 
   public double getArrowHeadRadius() {
     return arrowHeadRadius;
-  }
-
-  public Color getColorAtom(Atom atom) {
-    Color color = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
-    if (modeTransparentColors)
-      color = getColorTransparent(color);
-    return color;
-  }
-
-  public Color getColorAtomOutline(Color color) {
-    Color outline = (showDarkerOutline || modeAtomDraw == SHADING)
-      ? getDarker(color) : colorOutline;
-    if (modeTransparentColors)
-      outline = getColorTransparent(outline);
-    return outline;
-  }
-
-  private Hashtable htDarker = new Hashtable();
-  public Color getDarker(Color color) {
-    Color darker = (Color) htDarker.get(color);
-    if (darker == null) {
-      darker = color.darker();
-      htDarker.put(color, darker);
-    }
-    return darker;
-  }
-
-  private boolean modeTransparentColors = false;
-  public void setModeTransparentColors(boolean modeTransparentColors) {
-    this.modeTransparentColors = modeTransparentColors;
-  }
-
-  private final static int transparency = 0x60;
-  private Hashtable htTransparent = new Hashtable();
-  public Color getColorTransparent(Color color) {
-    Color transparent = (Color) htTransparent.get(color);
-    if (transparent == null) {
-      int argb = (color.getRGB() & 0x00FFFFFF) | (transparency << 24);
-      transparent = new Color (argb, true);
-      htTransparent.put(color, transparent);
-    }
-    return transparent;
   }
 
   URL appletDocumentBase = null;
@@ -1204,32 +655,105 @@ final public class DisplayControl {
     System.out.println(str);
   }
 
+  /****************************************************************
+   delegated to TransformManager
+  ****************************************************************/
+
+  public void rotateXYBy(int xDelta, int yDelta) {
+    transformManager.rotateXYBy(xDelta, yDelta);
+    recalc();
+  }
+
+  public void rotateZBy(int zDelta) {
+    transformManager.rotateZBy(zDelta);
+    recalc();
+  }
+
+  public void rotateFront() {
+    transformManager.rotateFront();
+    recalc();
+  }
+
+  public void rotateToX(double angleRadians) {
+    transformManager.rotateToX(angleRadians);
+    recalc();
+  }
+  public void rotateToY(double angleRadians) {
+    transformManager.rotateToY(angleRadians);
+    recalc();
+  }
+  public void rotateToZ(double angleRadians) {
+    transformManager.rotateToZ(angleRadians);
+    recalc();
+  }
+
+  public void rotateToX(int angleDegrees) {
+    rotateToX(Math.toRadians(angleDegrees));
+  }
+  public void rotateToY(int angleDegrees) {
+    rotateToY(Math.toRadians(angleDegrees));
+  }
+  public void rotateToZ(int angleDegrees) {
+    rotateToZ(Math.toRadians(angleDegrees));
+  }
+
+  public void rotateByX(double angleRadians) {
+    transformManager.rotateByX(angleRadians);
+    recalc();
+  }
+  public void rotateByY(double angleRadians) {
+    transformManager.rotateByY(angleRadians);
+    recalc();
+  }
+  public void rotateByZ(double angleRadians) {
+    transformManager.rotateByZ(angleRadians);
+    recalc();
+  }
+  public void rotateByX(int angleDegrees) {
+    rotateByX(Math.toRadians(angleDegrees));
+  }
+  public void rotateByY(int angleDegrees) {
+    rotateByY(Math.toRadians(angleDegrees));
+  }
+  public void rotateByZ(int angleDegrees) {
+    rotateByZ(Math.toRadians(angleDegrees));
+  }
+
+  public void rotate(AxisAngle4d axisAngle) {
+    transformManager.rotate(axisAngle);
+    recalc();
+  }
+
+  public void translateXYBy(int xDelta, int yDelta) {
+    transformManager.translateXYBy(xDelta, yDelta);
+    recalc();
+  }
+
   public void translateToXPercent(int percent) {
-    // FIXME -- what is the proper RasMol interpretation of this with zooming?
-    xTranslation = (dimCurrent.width/2) + dimCurrent.width * percent / 100;
+    transformManager.translateToXPercent(percent);
     recalc();
   }
 
   public void translateToYPercent(int percent) {
-    yTranslation = (dimCurrent.height/2) + dimCurrent.height * percent / 100;
+    transformManager.translateToYPercent(percent);
     recalc();
   }
 
   public void translateToZPercent(int percent) {
-    // FIXME who knows what this should be? some type of zoom?
+    transformManager.translateToZPercent(percent);
     recalc();
   }
 
   public int getTranslationXPercent() {
-    return (xTranslation - dimCurrent.width/2) * 100 / dimCurrent.width;
+    return transformManager.getTranslationXPercent();
   }
 
   public int getTranslationYPercent() {
-    return (yTranslation - dimCurrent.height/2) * 100 / dimCurrent.height;
+    return transformManager.getTranslationYPercent();
   }
 
   public int getTranslationZPercent() {
-    return 0;
+    return transformManager.getTranslationZPercent();
   }
 
   public void translateByXPercent(int percent) {
@@ -1244,35 +768,300 @@ final public class DisplayControl {
     translateToZPercent(getTranslationZPercent() + percent);
   }
 
+  public void zoomBy(int pixels) {
+    transformManager.zoomBy(pixels);
+    recalc();
+  }
+
+  public int getZoomPercent() {
+    return transformManager.zoomPercent;
+  }
+
+  public int getZoomPercentSetting() {
+    return transformManager.zoomPercentSetting;
+  }
+
+  public void zoomToPercent(int percent) {
+    transformManager.zoomToPercent(percent);
+    recalc();
+  }
+
+  public void zoomByPercent(int percent) {
+    transformManager.zoomByPercent(percent);
+    recalc();
+  }
+
+  public void setZoomEnabled(boolean zoomEnabled) {
+    transformManager.setZoomEnabled(zoomEnabled);
+    recalc();
+  }
+
+  public boolean getSlabEnabled() {
+    return transformManager.slabEnabled;
+  }
+
+  public int getSlabPercentSetting() {
+    return transformManager.slabPercentSetting;
+  }
+
+  public void slabBy(int pixels) {
+    transformManager.slabBy(pixels);
+    recalc();
+  }
+
+  public void slabToPercent(int percentSlab) {
+    transformManager.slabToPercent(percentSlab);
+    recalc();
+  }
+
+  public void setSlabEnabled(boolean slabEnabled) {
+    transformManager.setSlabEnabled(slabEnabled);
+    recalc();
+  }
+
+  public void setModeSlab(int modeSlab) {
+    transformManager.setModeSlab(modeSlab);
+    recalc();
+  }
+
+  public int getModeSlab() {
+    return transformManager.modeSlab;
+  }
+
+  public int getSlabValue() {
+    return transformManager.slabValue;
+  }
+
+  public Matrix4d getPovRotateMatrix() {
+    return transformManager.getPovRotateMatrix();
+  }
+
+  public Matrix4d getPovTranslateMatrix() {
+    return transformManager.getPovTranslateMatrix();
+  }
+
+  public void calcViewTransformMatrix() {
+    transformManager.calcViewTransformMatrix();
+  }
+
+  public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
+    transformManager.transformPoint(pointAngstroms, pointScreen);
+  }
+
+  public Point3d transformPoint(Point3d pointAngstroms) {
+    return transformManager.transformPoint(pointAngstroms);
+  }
+
+  public int screenAtomDiameter(int z, Atom atom) {
+    return transformManager.screenAtomDiameter(z, atom, percentVdwAtom);
+  }
+
+  public int screenBondWidth(int z) {
+    return transformManager.screenBondWidth(z, percentAngstromBond);
+  }
+
+  public double scaleToScreen(int z, double sizeAngstroms) {
+    return transformManager.scaleToScreen(z, sizeAngstroms);
+  }
+
+  public void setScreenDimension(Dimension dimCurrent) {
+    transformManager.setScreenDimension(dimCurrent);
+  }
+
+  public Dimension getScreenDimension() {
+    return transformManager.dimCurrent;
+  }
+
+  public void scaleFitToScreen() {
+    transformManager.scaleFitToScreen();
+  }
+
+  public void setPerspectiveDepth(boolean perspectiveDepth) {
+    transformManager.setPerspectiveDepth(perspectiveDepth);
+  }
+
+  public boolean getPerspectiveDepth() {
+    return transformManager.perspectiveDepth;
+  }
+
+  public void setCameraDepth(double depth) {
+    transformManager.setCameraDepth(depth);
+  }
+
+  public double getCameraDepth() {
+    return transformManager.cameraDepth;
+  }
+
+  public int getCameraZ() {
+    return transformManager.cameraZ;
+  }
+
+  /****************************************************************
+   delegated to ColorManager
+  ****************************************************************/
+
+  public void setModeAtomColorProfile(int mode) {
+    colorManager.setModeAtomColorProfile(mode);
+    recalc();
+  }
+
+  public int getModeAtomColorProfile() {
+    return colorManager.modeAtomColorProfile;
+  }
+
+  public void setColorOutline(Color c) {
+    colorManager.setColorOutline(c);
+    recalc();
+  }
+
+  public Color getColorOutline() {
+    return colorManager.colorOutline;
+  }
+
+  public void setColorSelection(Color c) {
+    colorManager.setColorSelection(c);
+    recalc();
+  }
+
+  public Color getColorSelection() {
+    return colorManager.getColorSelection();
+  }
+
+  public Color getColorRubberband() {
+    return colorManager.colorRubberband;
+  }
+
+  public void setColorText(Color c) {
+    colorManager.setColorText(c);
+    recalc();
+  }
+  public Color getColorText() {
+    return colorManager.colorText;
+  }
+
+  public void setColorDistance(Color c) {
+    colorManager.setColorDistance(c);
+    recalc();
+  }
+
+  public Color getColorDistance() {
+    return colorManager.colorDistance;
+  }
+
+  public void setColorAngle(Color c) {
+    colorManager.setColorAngle(c);
+    recalc();
+  }
+
+  public Color getColorAngle() {
+    return colorManager.colorAngle;
+  }
+
+  public void setColorDihedral(Color c) {
+    colorManager.setColorDihedral(c);
+    recalc();
+  }
+  public Color getColorDihedral() {
+    return colorManager.colorDihedral;
+  }
+
+  public void setColorVector(Color c) {
+    colorManager.setColorVector(c);
+    recalc();
+  }
+
+  public Color getColorVector() {
+    return colorManager.colorVector;
+  }
+
+  public void setColorBackground(Color bg) {
+    colorManager.setColorBackground(bg);
+    recalc();
+  }
+
+  public Color getColorBackground() {
+    return colorManager.colorBackground;
+  }
+  
   public void setColorBackground(String colorName) {
-    setColorBackground(getColorFromHexString(colorName));
+    colorManager.setColorBackground(colorName);
   }
 
   public void setColorForeground(String colorName) {
-    // what is this supposed to do?
-    // setColorForeground(getColorFromHexString(colorName));
+    colorManager.setColorForeground(colorName);
   }
 
-  public Color getColorFromHexString(String colourName) {
-
-    if ((colourName == null) || (colourName.length() != 7)) {
-      throw new IllegalArgumentException("Colour name: " + colourName
-          + " is either null ot not seven chars long");
-    }
-    java.awt.Color colour = null;
-    try {
-      String rdColour = "0x" + colourName.substring(1, 3);
-      String gnColour = "0x" + colourName.substring(3, 5);
-      String blColour = "0x" + colourName.substring(5, 7);
-      int red = (Integer.decode(rdColour)).intValue();
-      int green = (Integer.decode(gnColour)).intValue();
-      int blue = (Integer.decode(blColour)).intValue();
-      colour = new java.awt.Color(red, green, blue);
-    } catch (NumberFormatException e) {
-      System.out.println("MDLView: Error extracting colour, using white");
-      colour = Color.white;
-    }
-    return colour;
+  public Color getColorFromHexString(String colorName) {
+    return colorManager.getColorFromHexString(colorName);
+  }
+  public Color getColorAtom(Atom atom) {
+    return colorManager.getColorAtom(atom);
   }
 
+  public Color getColorAtomOutline(Color color) {
+    return colorManager.getColorAtomOutline(color);
+  }
+
+  public Color getDarker(Color color) {
+    return colorManager.getDarker(color);
+  }
+
+  public void setModeTransparentColors(boolean modeTransparentColors) {
+    colorManager.setModeTransparentColors(modeTransparentColors);
+  }
+
+  public Color getColorTransparent(Color color) {
+    return colorManager.getColorTransparent(color);
+  }
+
+  /****************************************************************
+   delegated to SelectionManager
+  ****************************************************************/
+
+  public void addSelection(Atom atom) {
+    selectionManager.addSelection(atom);
+    recalc();
+  }
+
+  public void removeSelection(Atom atom) {
+    selectionManager.removeSelection(atom);
+    recalc();
+  }
+
+  public void toggleSelection(Atom atom) {
+    selectionManager.toggleSelection(atom);
+    recalc();
+  }
+
+  public void addSelection(Atom[] atoms) {
+    selectionManager.addSelection(atoms);
+    recalc();
+  }
+
+  public void removeSelection(Atom[] atoms) {
+    selectionManager.removeSelection(atoms);
+    recalc();
+  }
+
+  public void clearSelection() {
+    selectionManager.clearSelection();
+    recalc();
+  }
+
+  public int countSelection() {
+    return selectionManager.countSelection();
+  }
+
+  public boolean isSelected(Atom atom) {
+    return selectionManager.isSelected(atom);
+  }
+
+  public void setSelectionSet(BitSet set) {
+    selectionManager.setSelectionSet(set);
+    recalc();
+  }
+
+  public BitSet getSelectionSet() {
+    return selectionManager.bsSelection;
+  }
 }

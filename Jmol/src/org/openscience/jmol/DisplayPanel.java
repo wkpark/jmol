@@ -141,7 +141,7 @@ public class DisplayPanel extends JPanel
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    g.setColor(control.colorBackground);
+    g.setColor(control.getColorBackground());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
       control.maybeEnableAntialiasing(g);
@@ -153,7 +153,7 @@ public class DisplayPanel extends JPanel
         measureRenderer.paint(g, rectClip, control);
       Rectangle rect = mouseman.getRubberBand();
       if (rect != null) {
-        g.setColor(control.colorRubberband);
+        g.setColor(control.getColorRubberband());
         g.drawRect(rect.x, rect.y, rect.width, rect.height);
       }
       if (showPaintTime)
@@ -355,7 +355,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setAtomColorProfile(DisplayControl.ATOMCHARGE);
+      control.setModeAtomColorProfile(DisplayControl.ATOMCHARGE);
       repaint();
     }
   }
@@ -368,7 +368,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setAtomColorProfile(DisplayControl.ATOMTYPE);
+      control.setModeAtomColorProfile(DisplayControl.ATOMTYPE);
       repaint();
     }
   }
@@ -695,7 +695,7 @@ public class DisplayPanel extends JPanel
     guimap.setSelected(modeBond[control.modeBondDraw], true);
     final String[] modeColor =
       {"Jmol.actype", "Jmol.accharge"};
-    guimap.setSelected(modeColor[control.atomColorProfile], true);
+    guimap.setSelected(modeColor[control.getModeAtomColorProfile()], true);
   }
 
   public Action[] getActions() {

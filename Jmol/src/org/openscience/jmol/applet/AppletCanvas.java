@@ -105,7 +105,7 @@ class AppletCanvas extends Canvas {
   MeasureRenderer measureRenderer = new MeasureRenderer();
 
   void renderBuffer(Graphics g) {
-    g.setColor(control.colorBackground);
+    g.setColor(control.getColorBackground());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
       control.maybeEnableAntialiasing(g);
@@ -113,7 +113,7 @@ class AppletCanvas extends Canvas {
       measureRenderer.paint(g, rectClip, control);
       Rectangle rect = mouseman.getRubberBand();
       if (rect != null) {
-        g.setColor(control.colorRubberband);
+        g.setColor(control.getColorRubberband());
         g.drawRect(rect.x, rect.y, rect.width, rect.height);
       }
     }

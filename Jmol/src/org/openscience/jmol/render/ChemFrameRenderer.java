@@ -115,9 +115,11 @@ public class ChemFrameRenderer {
       NonJavaSort.sortShapes(shapes);
     }
                               
+    boolean slabEnabled = control.getSlabEnabled();
+    int slabValue = control.getSlabValue();
     for (int i = 0; i < shapes.length; ++i) {
-      if (control.slabEnabled) {
-        if (shapes[i].z > control.slabValue)
+      if (slabEnabled) {
+        if (shapes[i].z > slabValue)
           continue;
       }
       shapes[i].render(g, rectClip, control);

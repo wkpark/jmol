@@ -77,7 +77,7 @@ public class ArrowLine {
 
   public void paint(Graphics gc, DisplayControl control) {
 
-    gc.setColor(control.colorVector);
+    gc.setColor(control.getColorVector());
 
     double arrowLengthScale = control.getArrowLengthScale();
     double arrowHeadRadius = control.getArrowHeadRadius();

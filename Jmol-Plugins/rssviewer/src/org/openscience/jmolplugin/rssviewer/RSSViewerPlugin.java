@@ -24,10 +24,13 @@
  */
 package org.openscience.jmol.plugin;
 
+import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.io.ChemicalRSSReader;
+import org.openscience.cdk.tools.ChemModelManipulator;
+import org.openscience.cdk.tools.MFAnalyser;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,6 +47,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.Dimension;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.table.AbstractTableModel;
@@ -139,10 +143,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
                         for (int i=0; i<models.length; i++) {
                             ChemModel model = models[i];
                             channelContent.insertBlankRow(i);
-                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_TITLE, i, 0);
-                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_DATE, i, 1);
-                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_DESCRIPTION, i, 4);
-                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_LINK, i, 5);
+                            channelContent.setValueAt(models[i], i);
                         }
                     }
                 }
@@ -170,7 +171,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
         JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 treePanel, contentPane);
         RSSViewerPanel.add(splitter);
-        // RSSViewerPanel.validate();
+        RSSViewerPanel.validate();
         
         return RSSViewerPanel;
     };
@@ -185,44 +186,26 @@ public class RSSViewerPlugin implements JmolPluginInterface {
     
     class RSSContentModel extends AbstractTableModel {
 
-        private Vector titles;
-        private Vector dates;
-        private Vector times;
-        private Vector formulas;
-        private Vector descs;
-        private Vector links;
+        private Vector models;
         
         final String[] columnNames = {
             "title", "date", "time", "chemFormula", "description", "link"
         };
     
         public RSSContentModel() {
-            titles = new Vector();
-            dates = new Vector();
-            times = new Vector();
-            formulas = new Vector();
-            descs = new Vector();
-            links = new Vector();
+            models = new Vector();
         }
     
         public void setValueAt(Object value, int row, int column) {
-            if (row > getRowCount() || column > getColumnCount()) {
+            return;
+        }
+        
+        public void setValueAt(ChemModel model, int row) {
+            if (row > getRowCount()) {
                 return; // skip everything outside current table
             }
-            if (column == 0) {
-                titles.setElementAt(value.toString(), row);
-            } else if (column == 1) {
-                dates.setElementAt(value.toString(), row);
-            } else if (column == 2) {
-                times.setElementAt(value.toString(), row);
-            } else if (column == 3) {
-                formulas.setElementAt(value.toString(), row);
-            } else if (column == 4) {
-                descs.setElementAt(value.toString(), row);
-            } else if (column == 5) {
-                links.setElementAt(value.toString(), row);
-            }
-            fireTableCellUpdated(row, column);
+            models.setElementAt(model, row);
+            fireTableCellUpdated(row, 1);
         }
     
         public int getColumnCount() {
@@ -230,7 +213,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
         }
     
         public int getRowCount() {
-            return titles.size();
+            return models.size();
         }
     
         public String getColumnName(int col) {
@@ -250,18 +233,26 @@ public class RSSViewerPlugin implements JmolPluginInterface {
             if (row > getRowCount()-1 || column > getColumnCount()-1) {
                 return "Error"; // skip everything outside current table
             }
+            // "title", "date", "time", "chemFormula", "description", "link"
+            ChemModel model = (ChemModel)models.elementAt(row);
+            if (model == null) {
+                return "";
+            }
             if (column == 0) {
-                return titles.elementAt(row);
+                return model.getProperty(ChemicalRSSReader.RSS_ITEM_TITLE);
             } else if (column == 1) {
-                return dates.elementAt(row);
+                return model.getProperty(ChemicalRSSReader.RSS_ITEM_DATE);
             } else if (column == 2) {
-                return times.elementAt(row);
+                return "";
             } else if (column == 3) {
-                return formulas.elementAt(row);
+                AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
+                System.out.println(container);
+                MFAnalyser analyser = new MFAnalyser(container);
+                return analyser.getMolecularFormula();
             } else if (column == 4) {
-                return descs.elementAt(row);
+                return model.getProperty(ChemicalRSSReader.RSS_ITEM_DESCRIPTION);
             } else if (column == 5) {
-                return links.elementAt(row);
+                return model.getProperty(ChemicalRSSReader.RSS_ITEM_LINK);
             }
             return "Error";
         }
@@ -271,22 +262,12 @@ public class RSSViewerPlugin implements JmolPluginInterface {
         }
 
         public void cleanTable() {
-            titles.clear();
-            dates.clear();
-            times.clear();
-            formulas.clear();
-            descs.clear();
-            links.clear();
+            models.clear();
             fireTableDataChanged();
         }
 
         private void insertBlankRow(int row) {
-            titles.addElement("");
-            dates.addElement("");
-            times.addElement("");
-            formulas.addElement("");
-            descs.addElement("");
-            links.addElement("");
+            models.addElement(null);
             fireTableRowsInserted(row+1, row+1);
         }
 

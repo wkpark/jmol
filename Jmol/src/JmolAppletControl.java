@@ -74,7 +74,6 @@ public class JmolAppletControl extends Applet {
   String label;
   String altScript;
   String buttonCallback;
-  JSObject jsoWindow;
 
   String groupName;
   boolean toggleState;
@@ -142,8 +141,6 @@ public class JmolAppletControl extends Applet {
                   ? Color.black
                   : ColorManager.getColorFromString(colorName));
     buttonCallback = getParam("buttoncallback");
-    if (buttonCallback != null)
-      jsoWindow = JSObject.getWindow(this);
 
     setLayout(new GridLayout(1, 1));
     add(allocateControl());

@@ -92,11 +92,16 @@ class ModelResolver {
       } catch (NumberFormatException nfe) {
       }
     }
-    for (int i = pdbRecords.length; --i >= 0; ) {
-      String recordTag = pdbRecords[i];
-      for (int j = lines.length; --j >= 0; )
-        if (lines[j].startsWith(recordTag))
-          return "Pdb";
+    // run these loops forward ... easier for people to understand
+    for (int i = 0; i < startsWithRecords.length; ++i) {
+      String[] recordTags = startsWithRecords[i];
+      for (int j = 0; j < recordTags.length; ++j) {
+        String recordTag = recordTags[j];
+        for (int k = 0; k < lines.length; ++k) {
+          if (lines[k].startsWith(recordTag))
+            return startsWithFormats[i];
+        }
+      }
     }
     for (int i = cmlRecords.length; --i >= 0; ) {
       String cmlTag = cmlRecords[i];
@@ -104,17 +109,14 @@ class ModelResolver {
         if (lines[j].indexOf(cmlTag) != -1)
           return "Cml";
     }
-    for (int i = shelxRecords.length; --i >= 0; ) {
-      String shelxTag = shelxRecords[i];
-      for (int j = lines.length; --j >= 0; )
-        if (lines[j].startsWith(shelxTag))
-          return "Shelx";
-    }
     if (lines[1] == null || lines[1].trim().length() == 0)
       return "Jme"; // this is really quite broken :-)
     return null;
   }
 
+  /****************************************************************
+   * these test lines that startWith one of these strings
+   ****************************************************************/
   final static String[] pdbRecords = {
     "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
@@ -128,9 +130,22 @@ class ModelResolver {
     "ATOM  ", "HETATM", "MODEL ",
   };
 
+  final static String[] shelxRecords =
+  { "TITL ", "ZERR ", "LATT ", "SYMM ", "CELL " };
+
+  final static String[] cifRecords =
+  { "data_" };
+
+  final static String[][] startsWithRecords =
+  { pdbRecords, shelxRecords, cifRecords, };
+
+  final static String[] startsWithFormats =
+  { "Pdb", "Shelx", "Cif" };
+
+  /****************************************************************
+   * end of startsWith tables
+   ****************************************************************/
+
   final static String[] cmlRecords =
   { "<atom", "<molecule", "<reaction", "<cml", "<bond", "\"cml.dtd\""};
-
-  final static String[] shelxRecords =
-  {"TITL ", "ZERR ", "LATT ", "SYMM ", "CELL "};
 }

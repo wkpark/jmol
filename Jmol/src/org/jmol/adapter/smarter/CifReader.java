@@ -65,10 +65,8 @@ public class CifReader extends ModelReader {
       if (firstChar == '#')
         continue;
       if ((firstChar != '_') &&
-          ! line.startsWith("loop")) {
-        logger.log("skipping unrecognized line", line);
+          ! line.startsWith("loop_"))
         continue;
-      }
       /* determine CIF command */
       int spaceIndex = line.indexOf(' ');
       if (spaceIndex == -1)
@@ -88,25 +86,58 @@ public class CifReader extends ModelReader {
       }
       // skip command
     }
+    checkUnitcell();
     return model;
   }
   
+
+  final static boolean isMatch(String str1, String str2) {
+    int cch = str1.length();
+    if (str2.length() != cch)
+      return false;
+    for (int i = cch; --i >= 0; ) {
+      char ch1 = str1.charAt(i);
+      char ch2 = str2.charAt(i);
+      if (ch1 == ch2)
+        continue;
+      if ((ch1 == '_' || ch1 == '.') &&
+          (ch2 == '_' || ch2 == '.'))
+        continue;
+      if (ch1 <= 'Z' && ch1 >= 'A')
+        ch1 += 'a' - 'A';
+      else if (ch2 <= 'Z' && ch2 >= 'A')
+        ch2 += 'a' - 'A';
+      if (ch1 != ch2)
+        return false;
+    }
+    return true;
+  }
+  
+
   final static String[] cellParamNames =
-  {"_cell.length_a", "_cell.length_b", "_cell.length_c",
-   "_cell.angle_alpha", "_cell.angle_beta", "_cell.angle.gamma"};
+  {"_cell_length_a", "_cell_length_b", "_cell_length_c",
+   "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"};
 
   void processCellParameter(String command, String line, int spaceIndex) {
     for (int i = cellParamNames.length; --i >= 0; )
-      if (command.equals(cellParamNames[i])) {
+      if (isMatch(command, cellParamNames[i])) {
         notionalUnitcell[i] = parseFloat(line, spaceIndex);
         return;
       }
   }
+
+  void checkUnitcell() {
+    for (int i = 6; --i >= 0; ) {
+      if (Float.isNaN(notionalUnitcell[i]))
+        return;
+    }
+    model.notionalUnitcell = notionalUnitcell;
+  }
   
   private void processLoopBlock() throws Exception {
     String line = reader.readLine().trim();
-    if (line.startsWith("_atom")) {
-      processAtomLoopBlock(line);
+    if (line.startsWith("_atom_site")) {
+      processAtomSiteLoopBlock(line);
       return;
     }
     logger.log("Skipping loop block");
@@ -120,57 +151,71 @@ public class CifReader extends ModelReader {
     }
   }
 
+  final static byte NONE = 0;
+  final static byte SYMBOL = 1;
+  final static byte LABEL = 2;
+  final static byte FRACT_X = 3;
+  final static byte FRACT_Y = 4;
+  final static byte FRACT_Z = 5;
+  final static byte CARTN_X = 6;
+  final static byte CARTN_Y = 7;
+  final static byte CARTN_Z = 8;
+  final static byte OCCUPANCY = 9;
+  final static byte ATOM_PROPERTY_MAX = 10;
+  
+
   final static String[] atomFields = {
-    null, // this will not match 
-    "_atom_site.type_symbol",
-    "_atom_site_label",
-    "_atom_site_label_atom_id",
-    "_atom_site_fract_x",
-    "_atom_site_fract_y",
-    "_atom_site_fract_z",
-    "_atom_site.Cartn_x",
-    "_atom_site.Cartn_y",
-    "_atom_site.Cartn_z",
+    "_atom_site_type_symbol",
+    "_atom_site_label", "_atom_site_label_atom_id",
+    "_atom_site_fract_x", "_atom_site_fract_y", "_atom_site_fract_z",
+    "_atom_site.Cartn_x", "_atom_site.Cartn_y", "_atom_site.Cartn_z",
+    "_atom_site_occupancy",
   };
 
-  final static int NONE = 0;
-  final static int SYMBOL = 1;
-  final static int LABEL = 2;
-  final static int FRACT_X = 3;
-  final static int FRACT_Y = 4;
-  final static int FRACT_Z = 5;
-  final static int CARTN_X = 6;
-  final static int CARTN_Y = 7;
-  final static int CARTN_Z = 8;
+  final static byte[] atomFieldMap = {
+    SYMBOL,
+    LABEL, LABEL,
+    FRACT_X, FRACT_Y, FRACT_Z,
+    CARTN_X, CARTN_Y, CARTN_Z,
+    OCCUPANCY,
+  };
 
-  void processAtomLoopBlock(String firstLine) throws Exception {
+  static {
+    if (atomFieldMap.length != atomFields.length)
+      atomFields[100] = "explode";
+  }
+
+  void processAtomSiteLoopBlock(String firstLine) throws Exception {
     String line = firstLine;
     int fieldCount = 0;
     int[] fieldTypes = new int[100]; // should be enough
-    boolean[] fieldReferencedFlags = new boolean[atomFields.length];
+    boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
+    outer_loop:
     for (;
          line != null && line.length() > 0 && line.charAt(0) == '_';
          ++fieldCount, line = reader.readLine().trim()) {
-      for (int i = atomFields.length; --i > 0; ) // only > 0, not >= 0
-        if (line.equals(atomFields[i])) {
-          fieldReferencedFlags[i] = true;
-          fieldTypes[fieldCount] = i;
-          break;
+      for (int i = atomFields.length; --i >= 0; )
+        if (isMatch(line, atomFields[i])) {
+          int atomProperty = atomFieldMap[i];
+          atomPropertyReferenced[atomProperty] = true;
+          fieldTypes[fieldCount] = atomProperty;
+          continue outer_loop;
         }
       logger.log("unrecognized atom field", line);
     }
 
     // now that headers are parsed, check to see if we want
     // cartesian or fractional coordinates;
-    if (fieldReferencedFlags[CARTN_X]) {
+    if (atomPropertyReferenced[CARTN_X]) {
       for (int i = FRACT_X; i < FRACT_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
-    } else if (fieldReferencedFlags[FRACT_X]) {
+    } else if (atomPropertyReferenced[FRACT_X]) {
       model.coordinatesAreFractional = true;
       for (int i = CARTN_X; i < CARTN_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else {
-      logger.log("no atom coordinates found?");
+      logger.log("?que? no atom coordinates found");
+      skipUntilEmptyOrCommentLine(line);
       return;
     }
 
@@ -185,8 +230,7 @@ public class CifReader extends ModelReader {
       Atom atom = model.newAtom();
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokenizer.nextToken();
-        logger.log("Parsing col,token: " + i + "=" + field);
-        switch (i) {
+        switch (fieldTypes[i]) {
         case NONE:
           break;
         case SYMBOL:
@@ -206,6 +250,12 @@ public class CifReader extends ModelReader {
         case CARTN_Z:
         case FRACT_Z:
           atom.z = parseFloat(field);
+          break;
+        case OCCUPANCY:
+          float floatOccupancy = parseFloat(field);
+          if (! Float.isNaN(floatOccupancy))
+            atom.occupancy = (int)(floatOccupancy * 100);
+          break;
         }
       }
     }

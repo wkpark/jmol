@@ -243,6 +243,8 @@ class AtomSetCollection {
   
   /**
    * Sets a property for the AtomSetCollection
+   * @param key The poperty key.
+   * @param value The property value.
    */
   void setAtomSetCollectionProperty(String key, String value) {
     atomSetCollectionProperties.setProperty(key,value);
@@ -298,7 +300,7 @@ class AtomSetCollection {
   * Sets a property for the AtomSet
   *
   * @param key The key for the property
-  # @param value The value to be associated with the key
+  * @param value The value to be associated with the key
   */
   void setAtomSetProperty(String key, String value) {
     setAtomSetProperty(key, value, currentAtomSetIndex);
@@ -308,8 +310,8 @@ class AtomSetCollection {
   * Sets the a property for the an AtomSet
   *
   * @param key The key for the property
-  # @param value The value to be associated with the key
-  * @param atomSetIndex The index of the AtomSet that needs the association
+  * @param value The value for the property
+  * @param atomSetIndex The index of the AtomSet to get the property
   */
   void setAtomSetProperty(String key, String value, int atomSetIndex) {
     // lazy instantiation of the Properties object

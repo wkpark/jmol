@@ -26,6 +26,7 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * Reader for Gaussian 94/98/03 output files.
@@ -92,6 +93,7 @@ class GaussianReader extends AtomSetCollectionReader {
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    * @return The AtomSetCollection representing the interpreted Gaussian text.
+   * @throws Exception If an error occurs
    **/
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
     throws Exception {
@@ -171,6 +173,7 @@ class GaussianReader extends AtomSetCollectionReader {
    * @param line The input line containing SCF Done:.
    * @param nOrientations The number of orientations read that need to have
    *           these results associated with them.
+   * @throws Exception If an error occurs
    **/
   private void readSCFDone(BufferedReader reader,
                            String line,
@@ -306,13 +309,14 @@ class GaussianReader extends AtomSetCollectionReader {
    * are set as properties for each of the frequency type AtomSet generated.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
+   * @throws Exception If no frequences were encountered
+   * @throws IOException If an I/O error occurs
    **/
-  private void readFrequencies(BufferedReader reader) throws Exception {
+  private void readFrequencies(BufferedReader reader) throws Exception, IOException {
     String line;
     String[] tokens; String[] symmetries; String[] frequencies;
     String[] red_masses; String[] frc_consts; String[] intensities;
-    boolean firstTime = true;     // flag for first time through
-
+ 
     while ((line = reader.readLine()) != null &&
             line.indexOf(":")<0)
       ;
@@ -331,21 +335,10 @@ class GaussianReader extends AtomSetCollectionReader {
       red_masses = getTokens(discardLinesUntilStartsWith(reader," Red. masses"), 15);
       frc_consts = getTokens(discardLinesUntilStartsWith(reader," Frc consts"), 15);
       intensities = getTokens(discardLinesUntilStartsWith(reader," IR Inten"), 15);
-      int frequencyCount = frequencies.length;        // 
 
-      int numNewModels = frequencyCount;
-      // temporarily do not put the vectors on the last orientation, but clone it
-      // this was getting to tricky/ugly if one needs to make sure that the first
-      // time through the atomSetName and frequencies are properly set
-/*
-      if (firstTime) {
-        // so I need to create 1 model less than the # of freqs
-        --numNewModels;
-        firstTime = false;      // really do this only the first time
-        atomSetCollection.setAtomSetName(scfEnergy+" "+tokens[0]);
-      }
-*/
-      for (int i = 0; i < numNewModels; ++i) {
+      int frequencyCount = frequencies.length;
+
+      for (int i = 0; i < frequencyCount; ++i) {
         atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetName(
            symmetries[i] + " " +
@@ -371,7 +364,6 @@ class GaussianReader extends AtomSetCollectionReader {
       discardLinesUntilStartsWith(reader, " Atom AN");
       
       // read the displacement vectors for every atom and frequency
-      // if a NoSymmetry 
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(reader.readLine());
         int atomCenterNumber = parseInt(tokens[0]);
@@ -397,7 +389,13 @@ class GaussianReader extends AtomSetCollectionReader {
      6  Br  -0.080946
  Sum of Mulliken charges=   0.00000
 */
-  void readPartialCharges(BufferedReader reader) throws Exception {
+  
+/**
+ * Reads partial charges and assigns them to the last atom set 
+ * @param reader The reader from which to read the charges
+ * @throws Exception When an I/O error or discardlines error occurs
+ */
+void readPartialCharges(BufferedReader reader) throws Exception {
     discardLines(reader, 1);
     for (int i = atomSetCollection.getLastAtomSetAtomIndex();
          i < atomSetCollection.atomCount;

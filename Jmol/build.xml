@@ -340,7 +340,6 @@
   </target>
 
   <target name="clean">
-    <delete dir="${generatedSource.dir}"/>
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete>
@@ -348,6 +347,12 @@
         <include name="jmol.jar" />
         <include name="jmol-applet.jar" />
       </fileset>
+    </delete>
+  </target>
+
+  <target name="spotless" depends="clean">
+    <delete dir="${generatedSource.dir}"/>
+    <delete>
       <fileset dir=".">
         <include name="jmol-*.zip" />
         <include name="jmol-*.tar.gz" />
@@ -357,7 +362,7 @@
     <delete dir="${dist.dir}"/>
     <delete dir="${sourcedist.dir}"/>
   </target>
-
+  
   <target name="run" depends="classes">
     <java fork="true" classname="org.openscience.jmol.Jmol">
       <classpath location="classes" />

@@ -194,13 +194,13 @@
   <fah_proj number="235" name="p235_c28MUre99p" file="y"
     server="171.64.122.127" atoms="18111" preferred="45" deadline="67"
     credit="239" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="236" name="p236_c24MUre99p"
+  <fah_proj number="236" name="p236_c24MUre99p" file="y"
     server="171.64.122.127" atoms="16841" preferred="36" deadline="52"
     credit="185" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="237" name="p237_c21MUre99p" file="y"
     server="171.64.122.127" atoms="17240" preferred="31" deadline="46"
     credit="160" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="238" name="p238_c20MUre99p"
+  <fah_proj number="238" name="p238_c20MUre99p" file="y"
     server="171.64.122.127" atoms="17368" preferred="29" deadline="42"
     credit="148" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="239" name="p239_NTL8MUre99p" file="y"
@@ -1386,9 +1386,15 @@
   <fah_proj number="876" name="p876_p53mut876" file="y"
     server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
     credit="136" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="877" name="p877_p53mut877"
+  <fah_proj number="877" name="p877_p53mut877" file="y"
     server="171.65.103.157" atoms="12223" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="878" name="p878_p53dimer878"
+    server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="879" name="p879_p53dimer879" file="y"
+    server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
 
   <!-- Projects 900 to 999 -->
   <fah_proj number="901"
@@ -2377,7 +2383,7 @@
   <fah_proj number="1475" name="p1475_tet1_03_1" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
-  <fah_proj number="1476" name="p1476_tet1_03_1"
+  <fah_proj number="1476" name="p1476_tet_2nm"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
 
@@ -2561,8 +2567,11 @@
   <fah_proj number="1901" name="p1901_32_water_molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
     credit="125" frames="100" code="Q" contact="NA"/>
-  <fah_proj number="1902" name="p1902_32_water_molecules"
+  <fah_proj number="1902" name="p1902_32_water_molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
     credit="125" frames="100" code="Q" contact="NA"/>
+  <fah_proj number="1910" name="p1910_ALA-depeptide" file="y"
+    server="171.64.122.113" atoms="118" preferred="29" deadline="43"
+    credit="450" frames="100" code="Q" contact="NA"/>
     
 </fah_projects>

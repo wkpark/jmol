@@ -80,6 +80,7 @@
 	  <li>cartoons which are more RasMol-like</li>
 	  <li>support for nucleotide chain graphic shapes</li>
 	  <li>support for nucleotide chain hbonds</li>
+	  <li>applet support for 'loadInline' molecular models</li>
 	  <li>improved support for CML files</li>
 	  <li>improved support for Gaussian output</li>
 	  <li>bug fixes</li>

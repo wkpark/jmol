@@ -59,6 +59,9 @@ public class TransformManager {
   public final Matrix4f matrixRotate = new Matrix4f();
 
   public void rotateXYBy(int xDelta, int yDelta) {
+    rotateByX((float)Math.PI * yDelta / 180);
+    rotateByY((float)Math.PI * xDelta / 180);
+    /*
     // what fraction of PI radians do you want to rotate?
     // the full screen width corresponds to a PI (180 degree) rotation
     // if you grab an atom near the outside edge of the molecule,
@@ -73,12 +76,16 @@ public class TransformManager {
     rotateByY(ytheta * rotateAccelerator);
     float xtheta = (float)Math.PI * yDelta / minScreenDimension;
     rotateByX(xtheta * rotateAccelerator);
+    */
   }
 
   public void rotateZBy(int zDelta) {
+    rotateByZ((float)Math.PI * zDelta / 180);
+    /*
     float rotateAccelerator = 1.1f;
     float ztheta = (float)Math.PI * zDelta / minScreenDimension;
     rotateByZ(ztheta * rotateAccelerator);
+    */
   }
 
   public void rotateFront() {

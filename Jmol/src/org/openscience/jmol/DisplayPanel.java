@@ -28,12 +28,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseMotionAdapter;
+import javax.swing.event.MenuListener;
+import javax.swing.event.MenuEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 
@@ -77,12 +80,6 @@ public class DisplayPanel extends JPanel
     if (System.getProperty("painttime", "false").equals("true"))
       showPaintTime = true;
   }
-
-  /*
-  public DisplaySettings getSettings() {
-    return control.getSettings();
-  }
-  */
 
   public DisplayControl getDisplayControl() {
     return control;
@@ -844,6 +841,33 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  MenuListener menuListener = new MenuListener() {
+      public void menuSelected(MenuEvent e) {
+        JMenu jm = (JMenu) e.getSource();
+        String menuText = jm.getText();
+        String displayLabel =
+          JmolResourceHandler.getInstance().getString("Jmol.displayLabel");
+        if (menuText.equals(displayLabel)) {
+          setDisplayMenuState();
+        }
+      }
+      public void menuDeselected(MenuEvent e) {
+      }
+      public void menuCanceled(MenuEvent e) {
+      }
+    };
+
+  public MenuListener getMenuListener() {
+    return menuListener;
+  }
+
+  private void setDisplayMenuState() {
+    // Arrrrgh - I give up
+    // with the current menu construction scheme I don't see an easy way to
+    // set the state of the checkboxes to be consistent with the preferences
+    // dialog box
+  }
+
   public Action[] getActions() {
 
     Action[] defaultActions = {
@@ -857,7 +881,7 @@ public class DisplayPanel extends JPanel
       symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,
       vectorsAction, hydrogensAction, selectallAction, deselectallAction,
       homeAction, wireframerotationAction,
-      acchargeAction, actypeAction
+      acchargeAction, actypeAction,
     };
     return defaultActions;
   }

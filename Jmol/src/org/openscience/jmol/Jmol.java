@@ -111,6 +111,8 @@ import javax.swing.JToolBar;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.event.MenuListener;
+import javax.swing.event.MenuEvent;
 
 /**
  * The main class in Jmol.
@@ -979,6 +981,7 @@ public class Jmol extends JPanel {
         }
       }
     }
+    menu.addMenuListener(display.getMenuListener());
     return menu;
   }
 

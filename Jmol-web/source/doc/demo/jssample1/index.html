@@ -2,30 +2,36 @@
   <head>
     <title>Sample Jmol.js usage</title>
     <script src="../jmol/Jmol.js"></script>
-    <script>jmolSetCodebase("../jmol"); jmolSetAppletColor("pink");</script>
+    <script>
+      jmolSetCodebase("../jmol");
+      jmolSetAppletColor("aliceblue");
+    </script>
   </head>
   <body>
     <form> <!-- Netscape 4 requires that INPUT tags be enclosed in FORM tags -->
-      <script> <!-- applet size is 400 pixels by 400 pixels -->
-	jmolApplet(400, "caffeine.xyz");
-	jmolHtml("<br />atoms ");
+      <script>
+	<!-- applet size is 200 pixels by 200 pixels -->
+	jmolApplet(200, "caffeine.xyz");
+	jmolBr();
+	jmolHtml("atoms ");
 	jmolRadioGroup([
           ["spacefill off",  "off"],
-	  ["spacefill 20%",  "20% vdw", "checked"],
-	  ["spacefill 100%", "100% vdw"]
-	]);
-	jmolHtml("<br />bonds ");
-	jmolRadioGroup([
-	  ["wireframe on", "line"],
-	  ["wireframe 0.15", "0.15 Angstroms", "checked"],
-	  ["wireframe 0.25", "0.25 Angstroms"]
+	  ["spacefill 20%",  "20%", "checked"],
+	  ["spacefill 100%", "100%"]
 	]);
 	jmolBr();
-	jmolButton("reset", "Press to reset to original orientation");
+	jmolHtml("bonds ");
+	jmolRadioGroup([
+	  ["wireframe on", "line"],
+	  ["wireframe 0.15", "0.15", "checked"],
+	  ["wireframe 0.25", "0.25"]
+	]);
+	jmolBr();
+	jmolButton("reset", "Reset to original orientation");
 	jmolBr();
 	jmolCheckbox("spin on", "spin off", "spin");
 	jmolBr();
-	jmolLink("move 360 0 0 0 0 0 0 0 3", "Click to rotate once about the x axis");
+	jmolLink("move 360 0 0 0 0 0 0 0 2", "Rotate once about the x axis");
       </script>
     </form>
   </body>

@@ -233,30 +233,25 @@ class Atom implements Cloneable {
   };
 
   static boolean isValidElementSymbol(char ch) {
-    if (ch >= 'a' && ch <= 'z')
-      ch -= 'a' - 'A';
-    else if (ch < 'A' || ch > 'Z')
-      return false;
-    return elementCharMasks[ch - 'A'] < 0;
+    return ch >= 'A' && ch <= 'Z' && elementCharMasks[ch - 'A'] < 0;
   }
 
   static boolean isValidElementSymbol(char chFirst, char chSecond) {
-    if (chFirst >= 'a' && chFirst <= 'z')
-      chFirst -= 'a' - 'A';
-    else if (chFirst < 'A' || chFirst > 'Z')
+    if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z')
       return false;
+    return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
+  }
+
+  static boolean isValidElementSymbolNoCaseSecondChar(char chFirst,
+                                                      char chSecond) {
     if (chSecond >= 'A' && chSecond <= 'Z')
       chSecond += 'a' - 'A';
-    else if (chSecond < 'a' || chSecond > 'z')
+    if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z')
       return false;
     return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
   }
 
   static boolean isValidFirstSymbolChar(char ch) {
-    if (ch >= 'a' && ch <= 'z')
-      ch -= 'a' - 'A';
-    else if (ch < 'A' || ch > 'Z')
-      return false;
-    return elementCharMasks[ch - 'A'] != 0;
+    return ch >= 'A' && ch <= 'Z' && elementCharMasks[ch - 'A'] != 0;
   }
 }

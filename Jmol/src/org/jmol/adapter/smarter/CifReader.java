@@ -188,21 +188,21 @@ class CifReader extends ModelReader {
   // atom data
   ////////////////////////////////////////////////////////////////
 
-  final static byte NONE      = 0;
-  final static byte SYMBOL    = 1;
-  final static byte LABEL     = 2;
-  final static byte FRACT_X   = 3;
-  final static byte FRACT_Y   = 4;
-  final static byte FRACT_Z   = 5;
-  final static byte CARTN_X   = 6;
-  final static byte CARTN_Y   = 7;
-  final static byte CARTN_Z   = 8;
-  final static byte OCCUPANCY = 9;
-  final static byte B_ISO     = 10;
-  final static byte COMP_ID   = 11;
-  final static byte ASYM_ID   = 12;
-  final static byte SEQ_ID    = 13;
-  final static byte INS_CODE  = 14;
+  final static byte NONE        = 0;
+  final static byte TYPE_SYMBOL = 1;
+  final static byte LABEL       = 2;
+  final static byte FRACT_X     = 3;
+  final static byte FRACT_Y     = 4;
+  final static byte FRACT_Z     = 5;
+  final static byte CARTN_X     = 6;
+  final static byte CARTN_Y     = 7;
+  final static byte CARTN_Z     = 8;
+  final static byte OCCUPANCY   = 9;
+  final static byte B_ISO       = 10;
+  final static byte COMP_ID     = 11;
+  final static byte ASYM_ID     = 12;
+  final static byte SEQ_ID      = 13;
+  final static byte INS_CODE    = 14;
   final static byte ATOM_PROPERTY_MAX = 15;
   
 
@@ -221,7 +221,7 @@ class CifReader extends ModelReader {
   // or, even better, move that code out of the ModelReader
 
   final static byte[] atomFieldMap = {
-    SYMBOL,
+    TYPE_SYMBOL,
     LABEL, LABEL,
     FRACT_X, FRACT_Y, FRACT_Z,
     CARTN_X, CARTN_Y, CARTN_Z,
@@ -272,8 +272,19 @@ class CifReader extends ModelReader {
         switch (fieldTypes[i]) {
         case NONE:
           break;
-        case SYMBOL:
-          atom.elementSymbol = field;
+        case TYPE_SYMBOL:
+          String elementSymbol;
+          if (field.length() < 2) {
+            elementSymbol = field;
+          } else {
+            char ch0 = field.charAt(0);
+            char ch1 = field.charAt(1);
+            if (Atom.isValidElementSymbol(ch0, ch1))
+              elementSymbol = "" + ch0 + ch1;
+            else
+              elementSymbol = "" + ch0;
+          }
+          atom.elementSymbol = elementSymbol;
           break;
         case LABEL:
           atom.atomName = field;

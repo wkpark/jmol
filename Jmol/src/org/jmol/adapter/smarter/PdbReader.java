@@ -230,14 +230,14 @@ class PdbReader extends ModelReader {
       char ch77 = line.charAt(77);
       if (ch76 == ' ' && Atom.isValidElementSymbol(ch77))
         return "" + ch77;
-      if (Atom.isValidElementSymbol(ch76, ch77))
+      if (Atom.isValidElementSymbolNoCaseSecondChar(ch76, ch77))
         return "" + ch76 + ch77;
     }
     char ch12 = line.charAt(12);
     char ch13 = line.charAt(13);
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
-        Atom.isValidElementSymbol(ch12, ch13))
+        Atom.isValidElementSymbolNoCaseSecondChar(ch12, ch13))
       return "" + ch12 + ch13;
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch13) != null) &&
@@ -450,7 +450,7 @@ class PdbReader extends ModelReader {
       char chSecond = elementWithCount.charAt(1);
       if (! Atom.isValidFirstSymbolChar(chFirst))
         break;
-      if (! Atom.isValidElementSymbol(chFirst, chSecond)) {
+      if (! Atom.isValidElementSymbolNoCaseSecondChar(chFirst, chSecond)) {
         // single letter element symbol
         htElementsInGroup.put("" + chFirst, Boolean.TRUE);
       } else {

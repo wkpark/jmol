@@ -57,7 +57,7 @@ public class PovrayDialog extends JDialog {
   private DisplayControl control;
   private ChemFile currentFile;
   private boolean callPovray = true;
-  private boolean doAntiAlias = false;
+  private boolean doAntiAlias = true;
   private boolean displayWhileRendering = true;
   String savePath;
   String basename = "I'm a bug";

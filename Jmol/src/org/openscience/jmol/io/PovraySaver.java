@@ -166,7 +166,7 @@ public class PovraySaver extends FileSaver {
         for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
           // don't write out if atom is a hydrogen and !showhydrogens
           if (drawHydrogen
-              || (cf.getJmolAtomAt(i).getType().getAtomicNumber() != 1)) {
+              || (cf.getJmolAtomAt(i).getAtomicNumber() != 1)) {
             style.writeAtom(w, i, cf);
           }
         }

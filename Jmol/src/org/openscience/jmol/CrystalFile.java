@@ -136,7 +136,7 @@ public class CrystalFile extends ChemFile {
         cartPos[at][0] = atom.getPosition().x;
         cartPos[at][1] = atom.getPosition().y;
         cartPos[at][2] = atom.getPosition().z;
-        atomType[at] = atom.getType().getAtomicNumber();
+        atomType[at] = atom.getAtomicNumber();
       }
       
       UnitCellBox unitCellBoxS = new UnitCellBox(rprim, acell, true,

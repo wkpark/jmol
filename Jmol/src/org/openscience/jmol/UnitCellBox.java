@@ -154,7 +154,7 @@ public class UnitCellBox {
     Atom atom;
     for (int i=0; i < chemFrame.getNumberOfAtoms(); i++) {
       atom = (org.openscience.jmol.Atom)chemFrame.getAtomAt(i);
-      atomType[i] = atom.getType().getAtomicNumber();
+      atomType[i] = atom.getAtomicNumber();
       atomPos[i][0] = atom.getPosition().x;
       atomPos[i][1] = atom.getPosition().y;
       atomPos[i][2] = atom.getPosition().z;

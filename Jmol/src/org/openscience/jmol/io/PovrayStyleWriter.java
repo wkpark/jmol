@@ -207,10 +207,6 @@ public class PovrayStyleWriter {
 
     //Holy cow. Well, we should now know what types there are
     for (int j = 0; j < numTypes; j++) {
-      BaseAtomType at = cf.getJmolAtomAt(indexOfExampleAtom[j]).getType();
-      // FIXME mth -- this needs to come out for v6
-      // I am leaving it in until we fix the getVdwRadius() problem
-      System.out.println("at.getVdwRadius()->" + at.getVdwRadius());
       String def =
         "//****************************************************\n"
           + "// DEFINE " + typeName[j] + " MACROS\n"
@@ -227,7 +223,9 @@ public class PovrayStyleWriter {
           + "    }\n" + "  }\n" + "#end\n" + "#macro make_" + typeName[j]
           + "_atom " + "(center_x, center_y, center_z)\n" + "  sphere{\n"
           + "    < center_x, center_y, center_z>,\n" + "    "
-          + (atomSphereFactor * at.getVdwRadius()) + "\n" + "    texture{\n"
+          + (atomSphereFactor *
+             cf.getJmolAtomAt(indexOfExampleAtom[j]).getVdwRadius())
+          + "\n" + "    texture{\n"
           + "      pigment{ " + povrayColor(cf, indexOfExampleAtom[j])
           + " }\n" + "      finish{\n" + "        ambient .2\n"
           + "        diffuse .6\n" + "        specular 1\n"

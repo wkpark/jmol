@@ -45,7 +45,7 @@ class MolReader extends AtomSetCollectionReader {
     String firstLine = reader.readLine();
     if (firstLine.startsWith("$MDL")) {
       processRgHeader(reader, firstLine);
-      String line;
+      //String line;
       while (!reader.readLine().startsWith("$CTAB"))
         { }
       processCtab(reader);

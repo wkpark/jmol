@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.plugin;
 
+import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.io.ChemicalRSSReader;
@@ -57,6 +58,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
 
     private Vector channels = null;
     private JTree rssTree = null;
+    private RSSContentModel channelContent = null;
     
     public void start() {
         channels = new Vector();
@@ -130,21 +132,45 @@ public class RSSViewerPlugin implements JmolPluginInterface {
                     }
                     if (channelItems != null) {
                         System.out.println("YES!");
+                        System.out.println("Clearing current table...");
+                        channelContent.cleanTable();
+                        ChemModel[] models = channelItems.getChemModels();
+                        System.out.println("#items = " + models.length);
+                        for (int i=0; i<models.length; i++) {
+                            ChemModel model = models[i];
+                            channelContent.insertBlankRow(i);
+                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_TITLE, i, 0);
+                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_DATE, i, 1);
+                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_DESCRIPTION, i, 4);
+                            transferRSSProperty(model, ChemicalRSSReader.RSS_ITEM_LINK, i, 5);
+                        }
                     }
                 }
             }
+            
+            private void transferRSSProperty(ChemModel model, String propertyName, int row, int column) {
+                Object property = model.getProperty(propertyName);
+                if (property != null) {
+                    channelContent.setValueAt(property, row, column);
+                    System.out.println("Transfered data: " + property.toString());
+                }
+            }
         });
+        rssTree.validate();
         JScrollPane treePanel = new JScrollPane(rssTree);
+        treePanel.validate();
         
         // A table showing the entries in the channel
-        JTable channelTable = new JTable(new RSSContentModel());
+        channelContent = new RSSContentModel();
+        JTable channelTable = new JTable(channelContent);
+        channelTable.validate();
         JScrollPane contentPane = new JScrollPane(channelTable);
+        contentPane.validate();
         
         JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                 treePanel, contentPane);
-                
         RSSViewerPanel.add(splitter);
-        RSSViewerPanel.validate();
+        // RSSViewerPanel.validate();
         
         return RSSViewerPanel;
     };
@@ -159,11 +185,44 @@ public class RSSViewerPlugin implements JmolPluginInterface {
     
     class RSSContentModel extends AbstractTableModel {
 
+        private Vector titles;
+        private Vector dates;
+        private Vector times;
+        private Vector formulas;
+        private Vector descs;
+        private Vector links;
+        
         final String[] columnNames = {
-            "title", "date", "time", "chemFormula"
+            "title", "date", "time", "chemFormula", "description", "link"
         };
     
         public RSSContentModel() {
+            titles = new Vector();
+            dates = new Vector();
+            times = new Vector();
+            formulas = new Vector();
+            descs = new Vector();
+            links = new Vector();
+        }
+    
+        public void setValueAt(Object value, int row, int column) {
+            if (row > getRowCount() || column > getColumnCount()) {
+                return; // skip everything outside current table
+            }
+            if (column == 0) {
+                titles.setElementAt(value.toString(), row);
+            } else if (column == 1) {
+                dates.setElementAt(value.toString(), row);
+            } else if (column == 2) {
+                times.setElementAt(value.toString(), row);
+            } else if (column == 3) {
+                formulas.setElementAt(value.toString(), row);
+            } else if (column == 4) {
+                descs.setElementAt(value.toString(), row);
+            } else if (column == 5) {
+                links.setElementAt(value.toString(), row);
+            }
+            fireTableCellUpdated(row, column);
         }
     
         public int getColumnCount() {
@@ -171,7 +230,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
         }
     
         public int getRowCount() {
-            return 1;
+            return titles.size();
         }
     
         public String getColumnName(int col) {
@@ -187,13 +246,50 @@ public class RSSViewerPlugin implements JmolPluginInterface {
             }
         }
     
-        public Object getValueAt(int row, int col) {
-            return new String("empty");
+        public Object getValueAt(int row, int column) {
+            if (row > getRowCount()-1 || column > getColumnCount()-1) {
+                return "Error"; // skip everything outside current table
+            }
+            if (column == 0) {
+                return titles.elementAt(row);
+            } else if (column == 1) {
+                return dates.elementAt(row);
+            } else if (column == 2) {
+                return times.elementAt(row);
+            } else if (column == 3) {
+                return formulas.elementAt(row);
+            } else if (column == 4) {
+                return descs.elementAt(row);
+            } else if (column == 5) {
+                return links.elementAt(row);
+            }
+            return "Error";
         }
     
         public boolean isCellEditable(int row, int col) {
             return false;
         }
+
+        public void cleanTable() {
+            titles.clear();
+            dates.clear();
+            times.clear();
+            formulas.clear();
+            descs.clear();
+            links.clear();
+            fireTableDataChanged();
+        }
+
+        private void insertBlankRow(int row) {
+            titles.addElement("");
+            dates.addElement("");
+            times.addElement("");
+            formulas.addElement("");
+            descs.addElement("");
+            links.addElement("");
+            fireTableRowsInserted(row+1, row+1);
+        }
+
     }
     
     private Properties readProperties() {

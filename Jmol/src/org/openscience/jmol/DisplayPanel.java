@@ -299,6 +299,8 @@ public class DisplayPanel extends JPanel
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
   private PerspectiveAction perspectiveAction = new PerspectiveAction();
+  private UseGraphics2DAction useGraphics2DAction = new UseGraphics2DAction();
+  private DoubleBufferAction doubleBufferAction = new DoubleBufferAction();
   private Test1Action test1Action = new Test1Action();
   private Test2Action test2Action = new Test2Action();
   private Test3Action test3Action = new Test3Action();
@@ -678,6 +680,36 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class UseGraphics2DAction extends AbstractAction {
+
+    public UseGraphics2DAction() {
+      super("usegraphics2d");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setWantsGraphics2D(cbmi.isSelected());
+    }
+  }
+
+  class DoubleBufferAction extends AbstractAction {
+
+    public DoubleBufferAction() {
+      super("doublebuffer");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      RepaintManager.currentManager(null).
+        setDoubleBufferingEnabled(cbmi.isSelected());
+      System.out.println("isDoubleBufferingEnabled()=" +
+                         RepaintManager.currentManager(null).
+                         isDoubleBufferingEnabled());
+    }
+  }
+
   class Test1Action extends AbstractAction {
 
     public Test1Action() {
@@ -813,6 +845,7 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction, perspectiveAction,
+      useGraphics2DAction, doubleBufferAction,
       test1Action, test2Action, test3Action, test4Action,
       aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
       bshadingAction, blineAction, bwireframeAction, plainAction,

@@ -577,7 +577,7 @@ final public class DisplayControl {
   public void setSupportsGraphics2D(boolean supportsGraphics2D) {
     this.supportsGraphics2D = supportsGraphics2D;
     useGraphics2D = supportsGraphics2D && wantsGraphics2D;
-    // kludge for now
+    // kludge for now -- doesn't work with dynamic preference panel changes
     wantsAntialiased = settings.isAntiAliased();
   }
 

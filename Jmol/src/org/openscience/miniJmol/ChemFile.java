@@ -44,11 +44,14 @@ import java.util.Vector;
 
 public class ChemFile {
     
-    /**@shapeType AggregationLink
-    @associates <b>ChemFrame</b>*/
-    Vector frames;
-    int nframes = 0;
-    Vector PropertyList = new Vector();
+    /**
+	 * Frames contained by this file.
+	 *
+	 * @shapeType AggregationLink
+	 * @associates <b>ChemFrame</b>
+	 */
+    private Vector frames;
+    private Vector propertyList = new Vector();
     /**
      * Very simple class that should be subclassed for each different
      * kind of file that can be read by Jmol.
@@ -72,19 +75,38 @@ public class ChemFile {
     }
 
     /**
-     * returns the number of frames in this file
+     * Adds a frame to this file.
+	 *
+	 * @param frame the frame to be added
      */
-    public int nFrames() {
+    public void addFrame(ChemFrame frame) {
+		frames.addElement(frame);
+    }
+    
+    /**
+     * Returns the number of frames in this file.
+     */
+    public int getNumberFrames() {
         return frames.size();
     }
     
     /**
-     * returns the vector containing the descriptive list of Physical
-     * properties that this file contains.  
-     */
+     * Returns a list of descriptions for physical properties
+     * contained by this file.
+	 */
     public Vector getPropertyList() {
-        return PropertyList;
+        return propertyList;
     }
-    
+
+    /**
+	 * Adds a property description to the property list.
+	 *
+	 * @param prop the property description
+	 */
+	public void addProperty(String prop) {
+		if (propertyList.indexOf(prop) < 0) {
+			propertyList.addElement(prop);
+		}
+	}
 }
 

@@ -236,84 +236,9 @@ public class ChemFrame extends AtomContainer {
   }
 
   public double getGeometricRadius() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getGeometricRadius();
-    }
-    findBounds();
-    return radiusBoundingBox;
-  }
-
-  public Point3d getBoundingBoxCenter() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getBoundingBoxCenter();
-    }
-    findBounds();
-    return centerBoundingBox;
-  }
-
-  public Point3d getBoundingBoxCorner() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getBoundingBoxCorner();
-    }
-    findBounds();
-    return cornerBoundingBox;
-  }
-
-  public Point3d getRotationCenter() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getRotationCenter();
-    }
-    findBounds();
-    return centerRotation;
-  }
-
-  public double getRotationRadius() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      return jmframe.getRotationRadius();
-    }
-    findBounds();
-    return radiusRotation;
-  }
-
-  public void setRotationCenter(Point3d newCenterOfRotation) {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      jmframe.setRotationCenter(newCenterOfRotation);
-      return;
-    }
-    if (newCenterOfRotation != null) {
-      centerRotation = newCenterOfRotation;
-      radiusRotation = calcRadius(centerRotation);
-    } else {
-      centerRotation = centerBoundingBox;
-      radiusRotation = radiusBoundingBox;
-    }
-  }
-
-  public double getMinAtomVectorMagnitude() {
-    findBounds();
-    return minAtomVectorMagnitude;
-  }
-
-  public double getMaxAtomVectorMagnitude() {
-    findBounds();
-    return maxAtomVectorMagnitude;
-  }
-
-  public double getAtomVectorRange() {
-    findBounds();
-    return maxAtomVectorMagnitude - minAtomVectorMagnitude;
+    if (jmframe == null)
+      buildJmolFrame();
+    return jmframe.getGeometricRadius();
   }
 
   /**
@@ -351,77 +276,19 @@ public class ChemFrame extends AtomContainer {
     return coords;
   }
 
-  final static int selectionPixelLeeway = 5;
-
-  public int findNearestAtomIndex(int x, int y) {
-    /*
-     * FIXME
-     * mth - this code has problems
-     * 1. doesn't take radius of atom into account until too late
-     * 2. doesn't take Z dimension into account, so it could select an atom
-     *    which is behind the one the user wanted
-     * 3. doesn't take into account the fact that hydrogens could be hidden
-     *    you can select a region and get extra hydrogens
-     */
-    if (getAtomCount() <= 0)
-      return -1;
-    Atom atomNearest = null;
-    int indexNearest = -1;
-    int r2Nearest = Integer.MAX_VALUE;
-    Atom[] atoms = getJmolAtoms();
-    for (int i = 0; i < atoms.length; ++i) {
-      Atom atom = atoms[i];
-      int dx = atom.getScreenX() - x;
-      int dx2 = dx * dx;
-      if (dx2 > r2Nearest)
-        continue;
-      int dy = atom.getScreenY() - y;
-      int dy2 = dy * dy;
-      if (dy2 + dx2 > r2Nearest)
-        continue;
-      atomNearest = atom; // this will definitely happen the first time through
-      r2Nearest = dx2 + dy2;
-      indexNearest = i;
-    }
-    int rNearest = (int)Math.sqrt(r2Nearest);
-    return (rNearest > atomNearest.getScreenRadius() + selectionPixelLeeway)
-      ? -1
-      : indexNearest;
-  }
-    
-  // jvm < 1.4 does not have a BitSet.clear();
-  // so in order to clear you "and" with an empty bitset.
-  private final BitSet bsEmpty = new BitSet();
-  private final BitSet bsFoundRectangle = new BitSet();
-  public BitSet findAtomsInRectangle(Rectangle rect) {
-    bsFoundRectangle.and(bsEmpty);
-    Atom[] atoms = getJmolAtoms();
-    for (int i = 0; i < atoms.length; ++i) {
-      AtomShape atomShape = atoms[i].getAtomShape();
-      if (rect.contains(atomShape.x, atomShape.y))
-        bsFoundRectangle.set(i);
-    }
-    return bsFoundRectangle;
-  }
-
   /**
    * Clears the bounds cache for this model.
    */
   private void clearBounds() {
-    if (control.getUseJmolFrame()) {
-      if (jmframe == null)
-        buildJmolFrame();
-      jmframe.clearBounds();
-      return;
-    }
-    centerBoundingBox = centerRotation = null;
-    radiusBoundingBox = radiusRotation =
-      minAtomVectorMagnitude = maxAtomVectorMagnitude = atomVectorRange = 0f;
+    if (jmframe == null)
+      buildJmolFrame();
+    jmframe.clearBounds();
   }
 
   /**
    * Find the bounds of this model.
    */
+
   private void findBounds() {
     if ((centerBoundingBox != null) || (atoms == null) || (getAtomCount() <= 0))
       return;
@@ -688,7 +555,6 @@ public class ChemFrame extends AtomContainer {
     Atom atomJ = (Atom)getAtomAt(j);
     ((Atom)getAtomAt(i)).addBondedAtom((Atom)getAtomAt(j), bondOrder);
     ((Atom)getAtomAt(j)).addBondedAtom((Atom)getAtomAt(i), bondOrder);
-    atomI.getAtomShape().bondMutually(atomJ.getAtomShape(), bondOrder, control);
   }
 
   /**
@@ -713,8 +579,7 @@ public class ChemFrame extends AtomContainer {
     jmframe = new JmolFrame(control);
     for (int i = getAtomCount(); --i >= 0; ) {
       Atom jmolAtom = getJmolAtomAt(i);
-      AtomShape atomShape =
-        new AtomShape(jmolAtom, jmolAtom.isHydrogen(), control);
+      AtomShape atomShape = new AtomShape(jmframe, jmolAtom);
       jmframe.addAtomShape(atomShape);
       Atom[] bondedAtoms = jmolAtom.getBondedAtoms();
       if (bondedAtoms != null)

@@ -36,8 +36,9 @@ import javax.vecmath.Point3i;
 
 public class AtomShape extends Shape {
 
-  public JmolAtom atom;
+  public JmolFrame frame;
   public short atomIndex = -1;
+  public JmolAtom atom;
   public boolean isHydrogen;
   public byte styleAtom;
   public short marAtom;
@@ -50,9 +51,10 @@ public class AtomShape extends Shape {
 
   public String strLabel;
   
-  public AtomShape(JmolAtom atom, boolean isHydrogen,
+  public AtomShape(JmolFrame frame, JmolAtom atom, boolean isHydrogen,
                    byte styleAtom, short marAtom, short colixAtom,
                    String strLabel) {
+    this.frame = frame;
     this.atom = atom;
     this.isHydrogen = isHydrogen;
     this.colixAtom = colixAtom;
@@ -62,10 +64,12 @@ public class AtomShape extends Shape {
     setStyleMarAtom(styleAtom, marAtom);
   }
 
-  public AtomShape(JmolAtom atom, boolean isHydrogen, DisplayControl c) {
-    this(atom, isHydrogen,
-         c.getStyleAtom(), c.getMarAtom(), c.getColixAtom(atom),
-         c.getLabelAtom(atom));
+  public AtomShape(JmolFrame frame, JmolAtom atom) {
+    this(frame, atom, frame.control.getAtomicNumber(atom) == 1,
+         frame.control.getStyleAtom(),
+         frame.control.getMarAtom(),
+         frame.control.getColixAtom(atom),
+         frame.control.getLabelAtom(atom));
   }
 
   public void setAtomIndex(int atomIndex) {
@@ -76,10 +80,6 @@ public class AtomShape extends Shape {
     if (atomIndex == -1)
       throw new IndexOutOfBoundsException();
     return atomIndex;
-  }
-
-  public String toString() {
-    return "Atom shape for " + atom + ": z = " + z;
   }
 
   public boolean isBonded(AtomShape atomShapeOther) {
@@ -93,15 +93,17 @@ public class AtomShape extends Shape {
     return false;
   }
 
+  /*
   public boolean isSelected() {
-    return atom.isSelected();
+    return frame.control.isSelected(this);
   }
+  */
 
-  public void bondMutually(AtomShape atomShapeOther, int order,
-                           DisplayControl control) {
+  public void bondMutually(AtomShape atomShapeOther, int order) {
     if (isBonded(atomShapeOther))
       return;
-    BondShape bondShape = new BondShape(this, atomShapeOther, order, control);
+    BondShape bondShape = new BondShape(this, atomShapeOther, order,
+                                        frame.control);
     addBond(bondShape);
     atomShapeOther.addBond(bondShape);
   }
@@ -348,11 +350,11 @@ public class AtomShape extends Shape {
    * but soon they will go through an interface which defines their behavior
    */
 
-  Point3d getPoint3d() {
+  public Point3d getPoint3d() {
     return atom.getPoint3D();
   }
 
-  double getVanderwaalsRadius() {
+  public double getVanderwaalsRadius() {
     return atom.getVanderwaalsRadius();
   }
 }

@@ -35,7 +35,7 @@ import java.awt.Rectangle;
 
 public class JmolFrame {
 
-  DisplayControl control;
+  public DisplayControl control;
   Shape[] shapes;
 
   public JmolFrame(DisplayControl control) {
@@ -60,6 +60,10 @@ public class JmolFrame {
       htAtomMap.put(atomShape.atom, atomShape);
   }
 
+  public AtomShape getAtomAt(int atomIndex) {
+    return atomShapes[atomIndex];
+  }
+
   private Hashtable htAtomMap = null;
 
   private void initAtomMap() {
@@ -81,7 +85,7 @@ public class JmolFrame {
     AtomShape atomShape2 = (AtomShape)htAtomMap.get(atom2);
     if (atomShape2 == null)
       return;
-    atomShape1.bondMutually(atomShape2, order, control);
+    atomShape1.bondMutually(atomShape2, order);
   }
 
   public void bondAtomShapes(AtomShape atomShape1, JmolAtom atom2, int order) {
@@ -90,11 +94,11 @@ public class JmolFrame {
     AtomShape atomShape2 = (AtomShape)htAtomMap.get(atom2);
     if (atomShape2 == null)
       return;
-    atomShape1.bondMutually(atomShape2, order, control);
+    atomShape1.bondMutually(atomShape2, order);
   }
 
   public void bondAtomShapes(AtomShape atomShape1, AtomShape atomShape2, int order) {
-    atomShape1.bondMutually(atomShape2, order, control);
+    atomShape1.bondMutually(atomShape2, order);
   }
 
   private Point3d centerBoundingBox;
@@ -244,6 +248,7 @@ public class JmolFrame {
     if (shapes == null || control.hasStructuralChange()) {
       AtomShape[] atomShapes = this.atomShapes;
       LineShape[] lineShapes = this.lineShapes;
+      MeasurementShape[] measurementShapes = this.measurementShapes;
       Shape[] axisShapes = null;
       int axisShapeCount = 0;
       Shape[] bboxShapes = null;
@@ -257,7 +262,8 @@ public class JmolFrame {
         bboxShapeCount = bboxShapes.length;
       }
       int shapeCount =
-        atomShapeCount + lineShapeCount + axisShapeCount + bboxShapeCount;
+        atomShapeCount + lineShapeCount + measurementShapeCount +
+        axisShapeCount + bboxShapeCount;
       shapes = new Shape[shapeCount];
       int i = 0;
 
@@ -267,6 +273,11 @@ public class JmolFrame {
       if (lineShapes != null) {
         System.arraycopy(lineShapes, 0, shapes, i, lineShapeCount);
         i += lineShapeCount;
+      }
+      if (measurementShapes != null) {
+        System.arraycopy(measurementShapes, 0,
+                         shapes, i, measurementShapeCount);
+        i += measurementShapeCount;
       }
       if (axisShapes != null) {
         System.arraycopy(axisShapes, 0, shapes, i, axisShapeCount);
@@ -331,11 +342,6 @@ public class JmolFrame {
         shapes[i].render(g25d, control);
       }
     }
-
-    // measures probably should be dealt with just like other shapes
-    // but just leave it for now
-    if (control.getShowMeasurements())
-      control.measureRenderer.render(g25d, control);
   }
 
   final static int lineGrowthIncrement = 16;
@@ -350,6 +356,24 @@ public class JmolFrame {
       lineShapes = newShapes;
     }
     lineShapes[lineShapeCount++] = shape;
+  }
+
+  final static int measurementGrowthIncrement = 16;
+  private int measurementShapeCount = 0;
+  private MeasurementShape[] measurementShapes = null;
+
+  public void addMeasurementShape(MeasurementShape shape) {
+    if (measurementShapes == null ||
+        measurementShapeCount == measurementShapes.length) {
+      MeasurementShape[] newShapes =
+        new MeasurementShape[measurementShapeCount +
+                             measurementGrowthIncrement];
+      if (measurementShapes != null)
+        System.arraycopy(measurementShapes, 0,
+                         newShapes, 0, measurementShapeCount);
+      measurementShapes = newShapes;
+    }
+    measurementShapes[measurementShapeCount++] = shape;
   }
 
   /****************************************************************

@@ -24,10 +24,8 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.Atom;
-import org.openscience.jmol.render.Distance;
-import org.openscience.jmol.render.Angle;
-import org.openscience.jmol.render.Dihedral;
+import org.openscience.jmol.render.JmolFrame;
+import org.openscience.jmol.render.MeasurementShape;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -72,27 +70,50 @@ public class MeasurementManager {
   }
 
   public void defineMeasure(int iatom1, int iatom2) {
-    ChemFrame cf = control.getFrame();
-    Distance dist = new Distance(iatom1, cf.getJmolAtomAt(iatom1),
-                                 iatom2, cf.getJmolAtomAt(iatom2));
-    distanceMeasurements.addElement(dist);
+    JmolFrame frame = control.getJmolFrame();
+    MeasurementShape meas =
+      new MeasurementShape(iatom1, frame.getAtomAt(iatom1).getPoint3d(),
+                           iatom2, frame.getAtomAt(iatom2).getPoint3d());
+    frame.addMeasurementShape(meas);
+    distanceMeasurements.addElement(meas);
   }
 
   public void defineMeasure(int iatom1, int iatom2, int iatom3) {
-    ChemFrame cf = control.getFrame();
-    Angle angle = new Angle(iatom1, cf.getJmolAtomAt(iatom1),
-                            iatom2, cf.getJmolAtomAt(iatom2),
-                            iatom3, cf.getJmolAtomAt(iatom3));
-    angleMeasurements.addElement(angle);
+    JmolFrame frame = control.getJmolFrame();
+    MeasurementShape meas =
+      new MeasurementShape(iatom1, frame.getAtomAt(iatom1).getPoint3d(),
+                           iatom2, frame.getAtomAt(iatom2).getPoint3d(),
+                           iatom3, frame.getAtomAt(iatom3).getPoint3d());
+    frame.addMeasurementShape(meas);
+    angleMeasurements.addElement(meas);
   }
 
   public void defineMeasure(int iatom1, int iatom2, int iatom3, int iatom4) {
-    ChemFrame cf = control.getFrame();
-    Dihedral dihedral = new Dihedral(iatom1, cf.getJmolAtomAt(iatom1),
-                                     iatom2, cf.getJmolAtomAt(iatom2),
-                                     iatom3, cf.getJmolAtomAt(iatom3),
-                                     iatom4, cf.getJmolAtomAt(iatom4));
-    dihedralMeasurements.addElement(dihedral);
+    JmolFrame frame = control.getJmolFrame();
+    MeasurementShape meas =
+      new MeasurementShape(iatom1, frame.getAtomAt(iatom1).getPoint3d(),
+                           iatom2, frame.getAtomAt(iatom2).getPoint3d(),
+                           iatom3, frame.getAtomAt(iatom3).getPoint3d(),
+                           iatom4, frame.getAtomAt(iatom4).getPoint3d());
+    frame.addMeasurementShape(meas);
+    dihedralMeasurements.addElement(meas);
+  }
+
+  public boolean deleteMeasurement(MeasurementShape measurement) {
+    return true;
+  }
+
+  public boolean deleteMatchingMeasurement(int atom1, int atom2) {
+    return true;
+  }
+
+  public boolean deleteMatchingMeasurement(int atom1, int atom2, int atom3) {
+    return true;
+  }
+
+  public boolean deleteMatchingMeasurement(int atom1, int atom2,
+                                           int atom3, int atom4) {
+    return true;
   }
 
 }

@@ -38,6 +38,9 @@ public class LineShape extends Shape {
   Point3d pointEnd;
   int xEnd, yEnd, zEnd;
 
+  public LineShape() {
+  }
+
   public LineShape(Point3d pointOrigin, Point3d pointEnd) {
     this.pointOrigin = pointOrigin;
     this.pointEnd = pointEnd;

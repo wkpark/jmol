@@ -349,10 +349,11 @@ public class Measure extends JDialog implements MeasureWatcher {
     switch (measure) {
     case ANGLE :
       if (action == ADD) {
-        mlist.addAngle(selection[0], selection[1], selection[2]);
+        control.defineMeasure(selection[0], selection[1], selection[2]);
       } else {
-        boolean ok = mlist.deleteMatchingAngle(selection[0], selection[1],
-                       selection[2]);
+        boolean ok =
+          control.deleteMatchingMeasurement(selection[0], selection[1],
+                                            selection[2]);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 
@@ -366,11 +367,12 @@ public class Measure extends JDialog implements MeasureWatcher {
 
     case DIHEDRAL :
       if (action == ADD) {
-        mlist.addDihedral(selection[0], selection[1],
-                          selection[2], selection[3]);
+        control.defineMeasure(selection[0], selection[1],
+                              selection[2], selection[3]);
       } else {
-        boolean ok = mlist.deleteMatchingDihedral(selection[0], selection[1],
-                       selection[2], selection[3]);
+        boolean ok =
+          control.deleteMatchingMeasurement(selection[0], selection[1],
+                                            selection[2], selection[3]);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 
@@ -384,9 +386,10 @@ public class Measure extends JDialog implements MeasureWatcher {
 
     default :
       if (action == ADD) {
-        mlist.addDistance(selection[0], selection[1]);
+        control.defineMeasure(selection[0], selection[1]);
       } else {
-        boolean ok = mlist.deleteMatchingDistance(selection[0], selection[1]);
+        boolean ok =
+          control.deleteMatchingMeasurement(selection[0], selection[1]);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 

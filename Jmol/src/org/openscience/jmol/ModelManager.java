@@ -37,9 +37,12 @@ import java.beans.PropertyChangeSupport;
 public class ModelManager {
 
   DisplayControl control;
+  final JmolFrame nullJmolFrame;
+
 
   public ModelManager(DisplayControl control) {
     this.control = control;
+    this.nullJmolFrame = new JmolFrame(control);
   }
 
   public boolean haveFile = false;
@@ -65,6 +68,10 @@ public class ModelManager {
                            chemfilePrevious, chemfile);
   }
 
+  public JmolFrame getJmolFrame() {
+    return (chemframe == null) ? nullJmolFrame : chemframe.getJmolFrame();
+  }
+
   public ChemFile getChemFile() {
     return chemfile;
   }
@@ -79,19 +86,19 @@ public class ModelManager {
   }
 
   public double getRotationRadius() {
-    return chemfile.getFrame(0).getRotationRadius();
+    return chemframe.getJmolFrame().getRotationRadius();
   }
 
   public Point3d getRotationCenter() {
-    return chemfile.getFrame(0).getRotationCenter();
+    return chemframe.getJmolFrame().getRotationCenter();
   }
 
   public Point3d getBoundingBoxCenter() {
-    return haveFile ? chemframe.getBoundingBoxCenter() : null;
+    return haveFile ? chemframe.getJmolFrame().getBoundingBoxCenter() : null;
   }
 
   public Point3d getBoundingBoxCorner() {
-    return haveFile ? chemframe.getBoundingBoxCorner() : null;
+    return haveFile ? chemframe.getJmolFrame().getBoundingBoxCorner() : null;
   }
   
 
@@ -145,11 +152,11 @@ public class ModelManager {
     } else {
       center = null;
     }
-    chemframe.setRotationCenter(center);
+    chemframe.getJmolFrame().setRotationCenter(center);
   }
 
   public void setRotationCenter(Point3d center) {
-    chemframe.setRotationCenter(center);
+    chemframe.getJmolFrame().setRotationCenter(center);
   }
 
   // FIXME NEEDSWORK -- bond binding stuff
@@ -202,21 +209,11 @@ public class ModelManager {
   }
 
   public int findNearestAtomIndex(int x, int y) {
-    if (control.getUseJmolFrame())
-      return control.getJmolFrame().findNearestAtomIndex(x, y);
-    return chemframe.findNearestAtomIndex(x, y);
+    return chemframe.getJmolFrame().findNearestAtomIndex(x, y);
   }
 
   public BitSet findAtomsInRectangle(Rectangle rectRubber) {
-    if (control.getUseJmolFrame())
-      return control.getJmolFrame().findAtomsInRectangle(rectRubber);
-    return chemframe.findAtomsInRectangle(rectRubber);
-    /*
-    return chemframe.findAtomsInRegion(rectRubber.x,
-                                       rectRubber.y,
-                                       rectRubber.x + rectRubber.width,
-                                       rectRubber.y + rectRubber.height);
-    */
+    return chemframe.getJmolFrame().findAtomsInRectangle(rectRubber);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener pcl) {

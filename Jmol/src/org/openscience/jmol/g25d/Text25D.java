@@ -66,6 +66,8 @@ public class Text25D {
     calcMetrics(text, font);
     checkImageBufferSize(component, width, height);
     renderImage(text, font);
+    System.out.println("text:" + text +
+                       " appears to have been rendered properly");
     rasterize();
   }
 
@@ -97,11 +99,13 @@ public class Text25D {
   }
 
   void calcMetrics(String text, Font font) {
+    System.out.println("calcMetrics(" + text + "," + font + ")");
     FontMetrics fontMetrics = g.getFontMetrics(font);
     ascent = fontMetrics.getAscent();
     height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
     size = width*height;
+    System.out.println("CalcMetrics width=" + width + " height=" + height);
   }
 
   void renderImage(String text, Font font) {
@@ -114,6 +118,10 @@ public class Text25D {
 
   void rasterize() {
     int[] pixels = new int[size];
+    System.out.println("img == null : " + (img == null));
+    System.out.println("PixelGrabber(width="  + width +
+                       " height=" + height +
+                       " pixels size=" + size);
     PixelGrabber pixelGrabber = new PixelGrabber(img, 0, 0, width, height,
                                                  pixels, 0, width);
     pixelGrabber.startGrabbing();

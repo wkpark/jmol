@@ -93,9 +93,7 @@ public class AtomRenderer {
     yUpperLeft = y - radius;
     colix = atomShape.colixAtom;
     colixOutline = control.getColixAtomOutline(styleAtom, colix);
-    int atomIndex =
-      control.getUseJmolFrame() ? atomShape.getAtomIndex() : atom.getAtomNumber();
-    if (control.hasSelectionHalo(atomIndex))
+    if (control.hasSelectionHalo(atomShape))
       renderHalo();
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);

@@ -31,7 +31,4 @@ public interface JmolAtom {
   int getAtomicNumber();
   double getVanderwaalsRadius();
   Point3d getPoint3D();
-  // just for now
-  boolean isSelected();
-  int getAtomNumber();
   }

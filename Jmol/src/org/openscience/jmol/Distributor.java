@@ -64,33 +64,6 @@ public class Distributor {
       iter.nextAtom().getAtomShape().setStyleMarAtom(style, mar);
   }
 
-  public void setStyle(byte styleBond, byte bondType) {
-    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
-    while (iter.hasNext())
-      iter.nextBondShape().setStyle(styleBond);
-  }
-
-  public void setMar(short marBond, byte bondType) {
-    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
-    while (iter.hasNext())
-      iter.nextBondShape().setMar(marBond);
-  }
-
-  public void setStyleMar(byte style, short mar, byte bondType) {
-    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
-    while (iter.hasNext()) {
-      BondShape bond = iter.nextBondShape();
-      bond.setStyle(style);
-      bond.setMar(mar);
-    }
-  }
-
-  public void setColix(short colixBond, byte bondType) {
-    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
-    while (iter.hasNext())
-      iter.nextBondShape().setColix(colixBond);
-  }
-
   public void setColixAtom(byte mode, short colix, JmolAtomIterator iter) {
     boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
@@ -123,54 +96,6 @@ public class Distributor {
       if (colixDots == 0)
         colixT = control.getColixAtom(atom);
       atom.getAtomShape().setColixMarDots(colixT, marDots);
-    }
-  }
-
-  class ChemframeBondIterator {
-
-    JmolAtomIterator iterAtomSelected;
-    boolean bondSelectionModeOr;
-    AtomShape atomShapeCurrent;
-    BondShape[] bondsCurrent;
-    BondShape bondCurrent;
-    int ibondCurrent;
-    int bondType;
-
-    ChemframeBondIterator(byte bondType) {
-      this.bondType = bondType;
-      iterAtomSelected = control.iterAtomSelected();
-      bondSelectionModeOr = control.getBondSelectionModeOr();
-    }
-
-    public boolean hasNext() {
-      while (true) {
-        if (atomShapeCurrent != null) {
-          while (bondsCurrent != null && ibondCurrent < bondsCurrent.length) {
-            bondCurrent = bondsCurrent[ibondCurrent++];
-            if ((bondCurrent.order & bondType) != 0) {
-              if (bondSelectionModeOr)
-                return true;
-              AtomShape atomShapeOther =
-                (bondCurrent.atomShape1 != atomShapeCurrent) ?
-                bondCurrent.atomShape1 : bondCurrent.atomShape2;
-              if (atomShapeOther.isSelected())
-                return true;
-            }
-          }
-          bondCurrent = null;
-          atomShapeCurrent = null;
-        }
-        if (! iterAtomSelected.hasNext())
-          return false;
-        atomShapeCurrent = iterAtomSelected.nextAtom().getAtomShape();
-        bondsCurrent = atomShapeCurrent.getBonds();
-        bondCurrent = null;
-        ibondCurrent = 0;
-      }
-    }
-    
-    public BondShape nextBondShape() {
-      return bondCurrent;
     }
   }
 

@@ -27,12 +27,13 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
-import org.openscience.jmol.render.ChemFrameRenderer;
+//import org.openscience.jmol.render.ChemFrameRenderer;
 import org.openscience.jmol.render.JmolFrame;
-import org.openscience.jmol.render.MeasureRenderer;
+//import org.openscience.jmol.render.MeasureRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.MeasurementShape;
 import org.openscience.jmol.render.AtomShapeIterator;
 import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.render.BondShapeIterator;
@@ -79,8 +80,8 @@ final public class DisplayControl {
   public LabelManager labelManager;
   public AxesManager axesManager;
   public MeasurementManager measurementManager;
-  public ChemFrameRenderer frameRenderer;
-  public MeasureRenderer measureRenderer;
+  //  public ChemFrameRenderer frameRenderer;
+  //  public MeasureRenderer measureRenderer;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
   public LabelRenderer labelRenderer;
@@ -114,8 +115,8 @@ final public class DisplayControl {
     measurementManager = new MeasurementManager(this);
     distributor = new Distributor(this);
 
-    frameRenderer = new ChemFrameRenderer();
-    measureRenderer = new MeasureRenderer();
+    //    frameRenderer = new ChemFrameRenderer();
+    //    measureRenderer = new MeasureRenderer();
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
     labelRenderer = new LabelRenderer(this);
@@ -452,10 +453,7 @@ final public class DisplayControl {
 
   public void setModeAtomColorProfile(byte mode) {
     colorManager.setModeAtomColorProfile(mode);
-    if (useJmolFrame)
-      distributor.setColixAtom(mode, Colix.NULL, atomIteratorSelected());
-    else
-      distributor.setColixAtom(mode, Colix.NULL, iterAtomSelected());
+    distributor.setColixAtom(mode, Colix.NULL, atomIteratorSelected());
     refresh();
   }
 
@@ -622,11 +620,8 @@ final public class DisplayControl {
   // note that colorBond could be null -- meaning inherit atom color
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
-    if (useJmolFrame)
-      distributor.setColix(Colix.getColix(colorBond),
-                           bondIteratorSelected(BondShape.COVALENT));
-    else
-      distributor.setColix(Colix.getColix(colorBond), BondShape.COVALENT);
+    distributor.setColix(Colix.getColix(colorBond),
+                         bondIteratorSelected(BondShape.COVALENT));
     refresh();
   }
 
@@ -673,32 +668,37 @@ final public class DisplayControl {
     refresh();
   }
 
+  public boolean isSelected(AtomShape atomShape) {
+    return isSelected(atomShape.getAtomIndex());
+  }
+
   public boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
   }
 
-  public boolean hasSelectionHalo(int atomIndex) {
+  public boolean hasSelectionHalo(AtomShape atomShape) {
     return
       selectionHaloEnabled &&
       !repaintManager.fastRendering &&
-      selectionManager.isSelected(atomIndex);
+      isSelected(atomShape);
   }
 
+  /*
   public boolean hasBondSelectionHalo(AtomShape atomShape, int bondIndex) {
     if (!selectionHaloEnabled || repaintManager.fastRendering)
       return false;
-    int atomIndex =
-      useJmolFrame ? atomShape.getAtomIndex() : atomShape.atom.getAtomNumber();
-    boolean isAtomSelected = isSelected(atomIndex);
+    boolean isAtomSelected = isSelected(atomShape);
     if (bondSelectionModeOr && isAtomSelected)
       return true;
     if (!bondSelectionModeOr && !isAtomSelected)
       return false;
+    // FIXME 
     int atomIndexOther = atomShape.getBondedAtomIndex(bondIndex);
     boolean isOtherSelected =
       selectionManager.isSelected(atomIndexOther);
     return isOtherSelected;
   }
+  */
 
   public boolean selectionHaloEnabled = false;
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
@@ -852,7 +852,7 @@ final public class DisplayControl {
   }
 
   public JmolFrame getJmolFrame() {
-    return modelManager.chemframe.getJmolFrame();
+    return modelManager.getJmolFrame();
   }
 
   public ChemFrame getFrame() {
@@ -1076,6 +1076,24 @@ final public class DisplayControl {
       measureWatcher.firePicked(iatom);
   }
 
+  public boolean deleteMeasurement(MeasurementShape measurement) {
+    return measurementManager.deleteMeasurement(measurement);
+  }
+
+  public boolean deleteMatchingMeasurement(int atom1, int atom2) {
+    return measurementManager.deleteMatchingMeasurement(atom1, atom2);
+  }
+
+  public boolean deleteMatchingMeasurement(int atom1, int atom2, int atom3) {
+    return measurementManager.deleteMatchingMeasurement(atom1, atom2, atom3);
+  }
+
+  public boolean deleteMatchingMeasurement(int atom1, int atom2,
+                                           int atom3, int atom4) {
+    return measurementManager.deleteMatchingMeasurement(atom1, atom2,
+                                                        atom3, atom4);
+  }
+
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
@@ -1218,88 +1236,53 @@ final public class DisplayControl {
   }
 
   public void setStyleMarAtomScript(byte style, short mar) {
-    if (useJmolFrame)
-      distributor.setStyleMarAtom(style, mar, atomIteratorSelected());
-    else
-      distributor.setStyleMarAtom(style, mar, iterAtomSelected());
+    distributor.setStyleMarAtom(style, mar, atomIteratorSelected());
   }
 
   public void setStyleAtomScript(byte style) {
-    if (useJmolFrame)
-      distributor.setStyleAtom(style, atomIteratorSelected());
-    else
-      distributor.setStyleAtom(style, iterAtomSelected());
+    distributor.setStyleAtom(style, atomIteratorSelected());
   }
 
   public void setStyleMarBondScript(byte style, short mar) {
-    if (useJmolFrame)
-      distributor.setStyleMar(style, mar,
-                              bondIteratorSelected(BondShape.COVALENT));
-    else
-      distributor.setStyleMar(style, mar, BondShape.COVALENT);
+    distributor.setStyleMar(style, mar,
+                            bondIteratorSelected(BondShape.COVALENT));
   }
 
   public void setStyleMarBackboneScript(byte style, short mar) {
-    if (useJmolFrame)
-      distributor.setStyleMar(style, mar,
-                              bondIteratorSelected(BondShape.BACKBONE));
-    else
-      distributor.setStyleMar(style, mar, BondShape.BACKBONE);
+    distributor.setStyleMar(style, mar,
+                            bondIteratorSelected(BondShape.BACKBONE));
   }
 
   public void setStyleBondScript(byte style) {
-    if (useJmolFrame)
-      distributor.setStyle(style, bondIteratorSelected(BondShape.COVALENT));
-    else
-      distributor.setStyle(style, BondShape.COVALENT);
+    distributor.setStyle(style, bondIteratorSelected(BondShape.COVALENT));
   }
 
   public void setStyleBackboneScript(byte style) {
-    if (useJmolFrame)
-      distributor.setStyle(style, bondIteratorSelected(BondShape.BACKBONE));
-    else
-      distributor.setStyle(style, BondShape.BACKBONE);
+    distributor.setStyle(style, bondIteratorSelected(BondShape.BACKBONE));
   }
 
   public void setColorAtomScript(byte mode, Color color) {
-    if (useJmolFrame)
-      distributor.setColixAtom(mode, Colix.getColix(color),
-                               atomIteratorSelected());
-    else
-      distributor.setColixAtom(mode, Colix.getColix(color),
-                               iterAtomSelected());
+    distributor.setColixAtom(mode, Colix.getColix(color),
+                             atomIteratorSelected());
   }
 
   public void setColorBondScript(Color color) {
-    if (useJmolFrame)
-      distributor.setColix(Colix.getColix(color),
-                           bondIteratorSelected(BondShape.COVALENT));
-    else
-      distributor.setColix(Colix.getColix(color), BondShape.COVALENT);
+    distributor.setColix(Colix.getColix(color),
+                         bondIteratorSelected(BondShape.COVALENT));
   }
 
   public void setColorBackboneScript(Color color) {
-    if (useJmolFrame)
-      distributor.setColix(Colix.getColix(color),
-                           bondIteratorSelected(BondShape.BACKBONE));
-    else
-      distributor.setColix(Colix.getColix(color), BondShape.BACKBONE);
+    distributor.setColix(Colix.getColix(color),
+                         bondIteratorSelected(BondShape.BACKBONE));
   }
 
   public void setLabelScript(String strLabel) {
-    if (useJmolFrame)
-      distributor.setLabel(strLabel, atomIteratorSelected());
-    else
-      distributor.setLabel(strLabel, iterAtomSelected());
+    distributor.setLabel(strLabel, atomIteratorSelected());
   }
 
   public void setMarDots(short marDots) {
-    if (useJmolFrame)
-      distributor.setColixMarDots(colorManager.colixDots, marDots,
-                                  atomIteratorSelected());
-    else
-      distributor.setColixMarDots(colorManager.colixDots, marDots,
-                                  iterAtomSelected());
+    distributor.setColixMarDots(colorManager.colixDots, marDots,
+                                atomIteratorSelected());
   }
 
   boolean rasmolHydrogenSetting = true;
@@ -1368,14 +1351,10 @@ final public class DisplayControl {
       return getShowMeasurements();
     if (key.equals("showSelections"))
       return getSelectionHaloEnabled();
-    if (key.equals("useGraphics25D"))
-      return getGraphics25DEnabled();
     if (key.equals("oversampleAlways"))
       return getOversampleAlwaysEnabled();
     if (key.equals("oversampleStopped"))
       return getOversampleStoppedEnabled();
-    if (key.equals("useJmolFrame"))
-      return getUseJmolFrame();
     System.out.println("control.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1400,14 +1379,10 @@ final public class DisplayControl {
       { setShowMeasurements(value); return ; }
     if (key.equals("showSelections"))
       { setSelectionHaloEnabled(value); return ; }
-    if (key.equals("useGraphics25D"))
-      { setGraphics25DEnabled(value); return; }
     if (key.equals("oversampleAlways"))
       { setOversampleAlwaysEnabled(value); return; }
     if (key.equals("oversampleStopped"))
       { setOversampleStoppedEnabled(value); return; }
-    if (key.equals("useJmolFrame"))
-      { setUseJmolFrame(value); return; }
     System.out.println("control.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }
@@ -1450,22 +1425,29 @@ final public class DisplayControl {
    * JmolFrame
    ****************************************************************/
 
-  public boolean useJmolFrame = false;
-  public void setUseJmolFrame(boolean value) {
-    setStructuralChange();
-    useJmolFrame = value;
-  }
-  public boolean getUseJmolFrame() {
-    return useJmolFrame;
-  }
-
   private AtomShapeIterator atomIteratorSelected() {
     return getJmolFrame().getAtomIterator(selectionManager.bsSelection);
   }
 
   private BondShapeIterator bondIteratorSelected(byte bondType) {
-    return getJmolFrame().getBondIterator(bondType,
-                                          selectionManager.bsSelection);
+    return
+      getJmolFrame().getBondIterator(bondType, selectionManager.bsSelection);
+  }
+
+  final AtomShapeIterator nullAtomShapeIterator =
+    new NullAtomShapeIterator();
+
+  class NullAtomShapeIterator implements AtomShapeIterator {
+    public boolean hasNext() { return false; }
+    public AtomShape next() { return null; }
+  }
+
+  final BondShapeIterator nullBondShapeIterator =
+    new NullBondShapeIterator();
+
+  class NullBondShapeIterator implements BondShapeIterator {
+    public boolean hasNext() { return false; }
+    public BondShape next() { return null; }
   }
 
   /****************************************************************
@@ -1484,19 +1466,9 @@ final public class DisplayControl {
    *    * possibly set the setting for some things
    */
 
-  JmolAtomIterator iterNull = new JmolAtomIterator();
-  public JmolAtomIterator iterAtomSelected() {
-    if (! modelManager.haveFile || selectionManager.isEmpty())
-      return iterNull;
-    return modelManager.getChemFrameIterator(selectionManager.bsSelection);
-  }
-
   public void setStyleAtom(byte style) {
     styleManager.setStyleAtom(style);
-    if (useJmolFrame)
-      distributor.setStyleAtom(style, atomIteratorSelected());
-    else
-      distributor.setStyleAtom(style, iterAtomSelected());
+    distributor.setStyleAtom(style, atomIteratorSelected());
     refresh();
   }
 
@@ -1506,10 +1478,7 @@ final public class DisplayControl {
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
-    if (useJmolFrame)
-      distributor.setMarAtom((short)-percentVdwAtom, atomIteratorSelected());
-    else
-      distributor.setMarAtom((short)-percentVdwAtom, iterAtomSelected());
+    distributor.setMarAtom((short)-percentVdwAtom, atomIteratorSelected());
     refresh();
   }
 
@@ -1523,10 +1492,7 @@ final public class DisplayControl {
 
   public void setStyleBond(byte style) {
     styleManager.setStyleBond(style);
-    if (useJmolFrame)
-      distributor.setStyle(style, bondIteratorSelected(BondShape.COVALENT));
-    else
-      distributor.setStyle(style, BondShape.COVALENT);
+    distributor.setStyle(style, bondIteratorSelected(BondShape.COVALENT));
     refresh();
   }
 
@@ -1536,10 +1502,7 @@ final public class DisplayControl {
 
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
-    if (useJmolFrame)
-      distributor.setMar(marBond, bondIteratorSelected(BondShape.COVALENT));
-    else
-      distributor.setMar(marBond, BondShape.COVALENT);
+    distributor.setMar(marBond, bondIteratorSelected(BondShape.COVALENT));
     refresh();
   }
 
@@ -1691,10 +1654,7 @@ final public class DisplayControl {
 
   public void setStyleLabel(byte style) {
     labelManager.setStyleLabel(style);
-    if (useJmolFrame)
-      distributor.setStyleLabel(style, atomIteratorSelected());
-    else
-      distributor.setStyleLabel(style, iterAtomSelected());
+    distributor.setStyleLabel(style, atomIteratorSelected());
     refresh();
   }
 
@@ -1807,4 +1767,19 @@ final public class DisplayControl {
     return axesManager.colixAxesText;
   }
 
+  /****************************************************************
+   * Jmol Adapter routines - for now they are here
+   ****************************************************************/
+
+  public int getAtomicNumber(JmolAtom atom) {
+    return atom.getAtomicNumber();
+  }
+
+  public double getVanderwaalsRadius(JmolAtom atom) {
+    return atom.getVanderwaalsRadius();
+  }
+
+  public Point3d getPoint3d(JmolAtom atom) {
+    return atom.getPoint3D();
+  }
 }

@@ -25,9 +25,10 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.render.Angle;
-import org.openscience.jmol.render.Distance;
-import org.openscience.jmol.render.Dihedral;
+import org.openscience.jmol.render.MeasurementShape;
+//import org.openscience.jmol.render.Angle;
+//import org.openscience.jmol.render.Distance;
+//import org.openscience.jmol.render.Dihedral;
 
 import java.io.File;
 import javax.swing.JTree;
@@ -280,60 +281,6 @@ public class MeasurementList extends JDialog {
     notifyControl();
   }
 
-  public boolean deleteMatchingDistance(int i1, int i2) {
-
-    Enumeration e = distanceList.elements();
-    while (e.hasMoreElements()) {
-      Distance d = (Distance) e.nextElement();
-      if (d.sameAs(i1, i2)) {
-        distanceList.removeElement(d);
-        distances.update();
-        treeModel.reload(distances);
-        notifyControl();
-        return true;
-      }
-    }
-
-    // No match found, return a failure.
-    return false;
-  }
-
-  public boolean deleteMatchingAngle(int i1, int i2, int i3) {
-
-    Enumeration e = angleList.elements();
-    while (e.hasMoreElements()) {
-      Angle a = (Angle) e.nextElement();
-      if (a.sameAs(i1, i2, i3)) {
-        angleList.removeElement(a);
-        angles.update();
-        treeModel.reload(angles);
-        notifyControl();
-        return true;
-      }
-    }
-
-    // No match found, return a failure.
-    return false;
-  }
-
-  public boolean deleteMatchingDihedral(int i1, int i2, int i3, int i4) {
-
-    Enumeration e = dihedralList.elements();
-    while (e.hasMoreElements()) {
-      Dihedral dh = (Dihedral) e.nextElement();
-      if (dh.sameAs(i1, i2, i3, i4)) {
-        dihedralList.removeElement(dh);
-        dihedrals.update();
-        treeModel.reload(dihedrals);
-        notifyControl();
-        return true;
-      }
-    }
-
-    // No match found, return a failure.
-    return false;
-  }
-
   protected void centerDialog() {
 
     Dimension screenSize = this.getToolkit().getScreenSize();
@@ -361,24 +308,9 @@ public class MeasurementList extends JDialog {
     }
 
     Object nodeInfo = node.getUserObject();
+    MeasurementShape measure = (MeasurementShape) nodeInfo;
     String mType = nodeInfo.getClass().getName();
-    if (mType.endsWith("Distance")) {
-      Distance d = (Distance) nodeInfo;
-      int[] at = d.getAtomList();
-      boolean b = deleteMatchingDistance(at[0], at[1]);
-    } else {
-      if (mType.endsWith("Angle")) {
-        Angle a = (Angle) nodeInfo;
-        int[] at = a.getAtomList();
-        boolean b = deleteMatchingAngle(at[0], at[1], at[2]);
-      } else {
-        if (mType.endsWith("Dihedral")) {
-          Dihedral dh = (Dihedral) nodeInfo;
-          int[] at = dh.getAtomList();
-          boolean b = deleteMatchingDihedral(at[0], at[1], at[2], at[3]);
-        }
-      }
-    }
+    control.deleteMeasurement(measure);
   }
 
   public void enableActions() {

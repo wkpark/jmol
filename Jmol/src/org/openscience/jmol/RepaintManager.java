@@ -159,17 +159,7 @@ public class RepaintManager {
                            rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
       control.setGraphicsContext(g25d, rectClip);
-
-      if (control.getUseJmolFrame()) {
-        control.getJmolFrame().render(g25d, control);
-      } else {
-        control.frameRenderer.paint(g25d, control);
-        // FIXME -- measurements rendered incorrectly
-        // this is in the wrong spot because the display of measurements
-        // needs to take z-order into account
-        if (control.getShowMeasurements())
-          control.measureRenderer.render(g25d, control);
-      }
+      control.getJmolFrame().render(g25d, control);
 
       Rectangle band = control.getRubberBandSelection();
       if (band != null)

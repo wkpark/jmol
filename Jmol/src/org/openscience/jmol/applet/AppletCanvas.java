@@ -26,8 +26,8 @@ package org.openscience.jmol.applet;
 
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.render.ChemFrameRenderer;
-import org.openscience.jmol.render.MeasureRenderer;
+//import org.openscience.jmol.render.ChemFrameRenderer;
+//import org.openscience.jmol.render.MeasureRenderer;
 
 import java.awt.Color;
 import java.awt.Graphics;

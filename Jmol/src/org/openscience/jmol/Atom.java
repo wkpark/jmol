@@ -248,7 +248,6 @@ public class Atom extends org.openscience.cdk.Atom
       return;
     addBondedAtom(atom2, bondOrder);
     atom2.addBondedAtom(this, bondOrder);
-    getAtomShape().bondMutually(atom2.getAtomShape(), bondOrder, control);
   }
 
   public boolean isBondedAtom(Atom toAtom) {
@@ -276,11 +275,11 @@ public class Atom extends org.openscience.cdk.Atom
   public void clearBondedAtoms() {
     bondedAtoms = null;
     bondOrders = null;
-    getAtomShape().clearBonds();
   }
 
   public int getBondOrder(int i) {
-    return (bondOrders==null || bondOrders.length <= i) ? 1 : bondOrders[i] + 1;
+    return
+      (bondOrders==null || bondOrders.length <= i) ? 1 : bondOrders[i] + 1;
   }
 
   public int getBondOrder(Atom atom2) {
@@ -303,7 +302,7 @@ public class Atom extends org.openscience.cdk.Atom
 
   public AtomShape getAtomShape() {
     if (atomShape == null)
-      atomShape = new AtomShape(this, getAtomicNumber() == 1, control);
+      throw new NullPointerException();
     return atomShape;
   }
 
@@ -355,6 +354,7 @@ public class Atom extends org.openscience.cdk.Atom
    * Position in screen space.
    */
 
+
   public int getScreenX() {
     return atomShape == null ? 0 : atomShape.x;
   }
@@ -374,6 +374,7 @@ public class Atom extends org.openscience.cdk.Atom
   public int getScreenRadius() {
     return atomShape == null ? 0 : atomShape.diameter / 2;
   }
+
 
   /**
    * An array of atoms to which this atom is bonded;

@@ -1057,7 +1057,7 @@ final public class JmolConstants {
     0xFFCC80FF, // Li 3
     0xFFC2FF00, // Be 4
     0xFFFFB5B5, // B  5
-    0xFF808080, // C  6
+    0xFF909090, // C  6 - changed from ghemical
     0xFF3050F8, // N  7 - changed from ghemical
     0xFFFF0D0D, // O  8
     0xFF90E050, // F  9 - changed from ghemical

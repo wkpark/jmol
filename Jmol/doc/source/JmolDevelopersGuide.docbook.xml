@@ -61,6 +61,16 @@ directory, and then the jmol.bat script can be executed. For example:
 
 </para>
 </chapter>
+
+<chapter id="Coding Standard">
+<title>Coding Standard</title>
+<para>
+Jmol source code should be written in a style which adheres to
+<ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">
+"The Elements of Java Style" by Vermeulen, et al</ulink>.
+</para>
+</chapter>
+
 </book>
 
 

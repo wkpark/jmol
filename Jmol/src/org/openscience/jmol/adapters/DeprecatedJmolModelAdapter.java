@@ -48,7 +48,13 @@ import java.io.IOException;
 
 import java.util.Vector;
 
-public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
+/****************************************************************
+ * mth 2004 02 22
+ * THIS CODE IS FULLY DEPRECATED AND IS NO LONGER IN USE
+ ****************************************************************/
+
+
+public class DeprecatedJmolModelAdapter {
   AtomColorer[] colorSchemes;
 
   public DeprecatedJmolModelAdapter() {

@@ -26,7 +26,6 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.JmolStatusListener;
 
-import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
 import org.openscience.jmol.adapters.CdkJmolModelAdapter;
 import org.openscience.jmol.adapters.SimpleModelAdapter;
 
@@ -172,9 +171,6 @@ public class Jmol extends JPanel {
     if (adapter.equals("simple")) {
       System.out.println("using Simple Model Adapter");
       modelAdapter = new SimpleModelAdapter();
-    } else if (adapter.equals("jmol")) {
-      System.out.println("using jmol Deprecated Model Adapter");
-      modelAdapter = new DeprecatedJmolModelAdapter();
     } else if (adapter.equals("cdk")) {
       System.out.println("using CDK Model Adapter");
       modelAdapter = new CdkJmolModelAdapter();

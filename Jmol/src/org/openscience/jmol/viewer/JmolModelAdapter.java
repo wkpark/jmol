@@ -85,34 +85,6 @@ public interface JmolModelAdapter {
    */
   public boolean suppliesAtomTypeName();
 
-  /**
-   * Whether or not this client implements getVanderwaalsRadius(clientAtom)
-   * If not, then the atomic number is used to look up vanderwaals Radius
-   * values in a default table. Default values are taken from OpenBabel.
-   * The default vanderwaals radius table is included in this file for
-   * reference.
-   * @see #getVanderwaalsRadius(Object clientAtom)
-   */
-  public boolean suppliesVanderwaalsRadius();
-
-  /**
-   * Whether or not this client implements getBondingRadius(clientAtom)
-   * If not, then the atomic number is used to look up covalent bonding radius
-   * values in a default table. Default values are taken from OpenBabel.
-   * The default covalent radius table is included in this file for reference.
-   * @see #getBondingRadius(Object clientAtom)
-   */
-  public boolean suppliesBondingRadius();
-
-  /**
-   * Whether or not this client implements getAtomArgb(clientAtom, colorScheme)
-   * If not, then the atomic number is used to look up colors in a
-   * default table.
-   * The default atom colors table is included in this file for reference.
-   * @see #getAtomArgb(Object clientAtom, int colorScheme)
-   */
-  public boolean suppliesAtomArgb();
-
   /*****************************************************************
    * file related
    ****************************************************************/
@@ -326,33 +298,7 @@ public interface JmolModelAdapter {
    */
   public String getAtomTypeName(Object clientAtom);
 
-  /**
-   * The vanderwaalsRadius is used for spacefill rendering. 
-   *
-   * If suppliesVanderwallsRadius() returns false or
-   * getVanderwaalsRadiusMilliAngstroms(clientAtom)
-   * returns 0 then the JmolViewer will lookup the value in its own table.
-   * The table of values is taken from OpenBabel.
-   * @see #suppliesVanderwaalsRadius()
-   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
-   * @see #vanderwaalsRadii
-   */
-  public int getVanderwaalsRadiusMilliAngstroms(Object clientAtom);
-
-  /**
-   * The bondingRadius is used for automatically calculating bonds between
-   * atoms when no bonds are specified by the client package. 
-   *
-   * If suppliesBondingRadius() returns false
-   * or getBondingRadiusMilliAngstroms(clientAtom)
-   * returns 0 then the JmolViewer will lookup the value in its own table.
-   * The table of values is taken from OpenBabel.
-   * @see #suppliesBondingRadius()
-   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
-   */
-  public int getBondingRadiusMilliAngstroms(Object clientAtom);
-
-  /**
+  /*
    * Returns the coordinates of the atom.
    * Coordinates are absolute values in Angstroms.
    */
@@ -376,21 +322,6 @@ public interface JmolModelAdapter {
    * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
   public int getPdbModelNumber(Object clientAtom);
-
-  /**
-   * If suppliesAtomArgb() returns false or if
-   * getAtomArgb(clientAtom, colorScheme) returns 0 then the atom color
-   * is looked up in internal tables maintained by JmolViewer
-   * @see #suppliesAtomArgb()
-   * @see #atomColors
-   */
-  public int getAtomArgb(Object clientAtom, int colorScheme);
-
-  /**
-   * This method gets called when the user deletes an atom.
-   * In some cases, the client may want to update its own data structures.
-   */
-  public void notifyAtomDeleted(Object clientAtom);
 
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then structural

@@ -989,6 +989,28 @@ final public class JmolConstants {
     920,  // "Am",95,4,0.92,920
   };
 
+  public static short getBondingMar(int atomicNumber, int charge) {
+    if (charge != 0) {
+      // ionicLookupTable is a sorted table of ionic keys
+      // lookup doing a binary search
+      // when found, return the corresponding value in ionicMars
+      // if not found, just return covalent radius
+      short ionic = (short)((atomicNumber << 4)+(charge + 4));
+      int iMin = 0, iMax = ionicLookupTable.length;
+      while (iMin != iMax) {
+        int iMid = (iMin + iMax) / 2;
+        if (ionic < ionicLookupTable[iMid])
+          iMax = iMid;
+        else if (ionic > ionicLookupTable[iMid])
+          iMin = iMid + 1;
+        else
+          return ionicMars[iMid];
+      }
+    }
+    return covalentMars[atomicNumber];
+  }
+
+
   /**
    * Default table of CPK atom colors.
    * Used when the client does not implement

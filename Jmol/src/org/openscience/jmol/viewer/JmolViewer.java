@@ -1794,14 +1794,6 @@ final public class JmolViewer {
     return modelManager.getAtomTypeName(atom);
   }
 
-  public short getVanderwaalsMar(Atom atom) {
-    return modelManager.getVanderwaalsMar(atom);
-  }
-
-  public short getBondingMar(Atom atom) {
-    return modelManager.getBondingMar(atom);
-  }
-
   public String getPdbAtomRecord(Object clientAtom) {
     return modelManager.getPdbAtomRecord(clientAtom);
   }

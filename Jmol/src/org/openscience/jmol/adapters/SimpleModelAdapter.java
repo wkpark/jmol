@@ -42,9 +42,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
   public boolean suppliesAtomicNumber() { return false; }
   public boolean suppliesAtomicSymbol() { return true; }
   public boolean suppliesAtomTypeName() { return false; }
-  public boolean suppliesVanderwaalsRadius() { return false; }
-  public boolean suppliesBondingRadius() { return false; }
-  public boolean suppliesAtomArgb() { return false; }
   
   /****************************************************************
    * the file related methods
@@ -266,14 +263,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return null;
   }
 
-  public int getVanderwaalsRadiusMilliAngstroms(Object clientAtom) {
-    return 0;
-  }
-
-  public int getBondingRadiusMilliAngstroms(Object clientAtom) {
-    return 0;
-  }
-
   public float getAtomX(Object clientAtom) {
     return ((Atom)clientAtom).x;
   }
@@ -306,16 +295,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return t;
   }
 
-  public int getAtomArgb(Object clientAtom, int colorScheme) {
-    return 0;
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // notifications
-  ////////////////////////////////////////////////////////////////
-  public void notifyAtomDeleted(Object clientAtom) {
-    // insert CDK code here
-  }
 }
 
 class Atom {

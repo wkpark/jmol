@@ -48,9 +48,6 @@ import org.openscience.cdk.exception.CDKException;
 
 import org.openscience.cdk.geometry.CrystalGeometryTools;
 
-import org.openscience.cdk.renderer.color.AtomColorer;
-import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
-
 import org.openscience.cdk.tools.AtomTypeFactory;
 import org.openscience.cdk.tools.SetOfMoleculesManipulator;
 import org.openscience.cdk.tools.ChemFileManipulator;
@@ -61,14 +58,8 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class CdkJmolModelAdapter implements JmolModelAdapter {
-  AtomColorer[] colorSchemes;
 
   public CdkJmolModelAdapter() {
-    colorSchemes = new AtomColorer[JmolConstants.PALETTE_MAX];
-    colorSchemes[JmolConstants.PALETTE_CPK] =
-      new DefaultCdkAtomColors();
-    colorSchemes[JmolConstants.PALETTE_CHARGE] =
-      new PartialAtomicChargeColors();
   }
 
   /****************************************************************
@@ -77,9 +68,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   public boolean suppliesAtomicNumber() { return true; }
   public boolean suppliesAtomicSymbol() { return true; }
   public boolean suppliesAtomTypeName() { return true; }
-  public boolean suppliesVanderwaalsRadius() { return true; }
-  public boolean suppliesBondingRadius() { return true; }
-  public boolean suppliesAtomArgb() { return true; }
   
   /****************************************************************
    * the file related methods
@@ -325,14 +313,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getAtomTypeName();
   }
 
-  public int getVanderwaalsRadiusMilliAngstroms(Object clientAtom) {
-    return (int)(((Atom)clientAtom).getVanderwaalsRadius() * 1000);
-  }
-
-  public int getBondingRadiusMilliAngstroms(Object clientAtom) {
-    return (int)(((Atom)clientAtom).getCovalentRadius() * 1000);
-  }
-
   public float getAtomX(Object clientAtom) {
     return (float)((Atom)clientAtom).getX3D();
   }
@@ -363,24 +343,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     String[] t = new String[structureVector.size()];
     structureVector.copyInto(t);
     return t;
-  }
-
-  public int getAtomArgb(Object clientAtom, int colorScheme) {
-    if (colorScheme >= colorSchemes.length ||
-        colorSchemes[colorScheme] == null)
-      return 0;
-    Color color = colorSchemes[colorScheme].getAtomColor((Atom)clientAtom);
-    return color == null ? 0 : color.getRGB();
-  }
-
-  class DefaultCdkAtomColors implements AtomColorer {
-
-    /**
-     * Returns the color for a certain atom type
-     */
-    public Color getAtomColor(org.openscience.cdk.Atom atom) {
-      return (Color)atom.getProperty("org.openscience.cdk.renderer.color");
-    }
   }
 
   class CrystalCellIterator extends JmolModelAdapter.LineIterator {

@@ -39,13 +39,12 @@ public class ColorManager {
 
   JmolViewer viewer;
   JmolModelAdapter modelAdapter;
-  boolean suppliesAtomArgb;
+
   public byte paletteDefault = JmolConstants.PALETTE_CPK;
 
   public ColorManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
-    suppliesAtomArgb = modelAdapter.suppliesAtomArgb();
     if (JmolConstants.argbsCpk.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! argbsCpk.length not consistent");
   }
@@ -261,12 +260,6 @@ public class ColorManager {
   public short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
     PdbAtom pdbatom = atom.pdbAtom;
-    if (suppliesAtomArgb) {
-      argb = modelAdapter.getAtomArgb(atom.clientAtom, palette);
-      if (argb != 0)
-        return Colix.getColix(argb);
-      System.out.println("JmolModelAdapter.getColorAtom returned null");
-    }
     switch (palette) {
     case JmolConstants.PALETTE_CPK:
       argb = JmolConstants.argbsCpk[atom.atomicNumber];

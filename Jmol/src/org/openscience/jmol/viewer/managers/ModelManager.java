@@ -56,8 +56,6 @@ public class ModelManager {
     suppliesAtomicNumber = modelAdapter.suppliesAtomicNumber();
     suppliesAtomicSymbol = modelAdapter.suppliesAtomicSymbol();
     suppliesAtomTypeName = modelAdapter.suppliesAtomTypeName();
-    suppliesVanderwaalsRadius = modelAdapter.suppliesVanderwaalsRadius();
-    suppliesBondingRadius = modelAdapter.suppliesBondingRadius();
   }
 
   public Object clientFile;
@@ -217,7 +215,7 @@ public class ModelManager {
 
   public void deleteAtom(int atomIndex) {
     Object clientAtom = frame.deleteAtom(atomIndex);
-    modelAdapter.notifyAtomDeleted(clientAtom);
+    //    modelAdapter.notifyAtomDeleted(clientAtom);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -289,50 +287,6 @@ public class ModelManager {
       return atom.pdbAtom.getAtomPrettyName();
     }
     return JmolConstants.atomicSymbols[atom.atomicNumber];
-  }
-
-  public short getVanderwaalsMar(Atom atom) {
-    if (suppliesVanderwaalsRadius) {
-      int vanderwaalsRadius =
-        modelAdapter.getVanderwaalsRadiusMilliAngstroms(atom.clientAtom);
-      if (vanderwaalsRadius > 0)
-        return (short)vanderwaalsRadius;
-      System.out.println("JmolClientAdapter." +
-                         "getVanderwaalsRadiusMilliAngstroms() returned " +
-                         vanderwaalsRadius);
-    }
-    return JmolConstants.vanderwaalsMars[atom.atomicNumber];
-  }
-
-  public short getBondingMar(Atom atom) {
-    if (suppliesBondingRadius) {
-      int bondingRadius =
-        modelAdapter.getBondingRadiusMilliAngstroms(atom.clientAtom);
-      if (bondingRadius > 0)
-        return (short)bondingRadius;
-      System.out.println("JmolClientAdapter." +
-                         "getBondingRadiusMilliAngstroms() returned " +
-                         bondingRadius);
-    }
-    int charge = atom.getAtomicCharge();
-    if (charge != 0) {
-      // ionicLookupTable is a sorted table of ionic keys
-      // lookup doing a binary search
-      // when found, return the corresponding value in ionicMars
-      // if not found, just return covalent radius
-      short ionic = (short)((atom.atomicNumber << 4)+(charge + 4));
-      int iMin = 0, iMax = JmolConstants.ionicLookupTable.length;
-      while (iMin != iMax) {
-        int iMid = (iMin + iMax) / 2;
-        if (ionic < JmolConstants.ionicLookupTable[iMid])
-          iMax = iMid;
-        else if (ionic > JmolConstants.ionicLookupTable[iMid])
-          iMin = iMid + 1;
-        else
-          return JmolConstants.ionicMars[iMid];
-      }
-    }
-    return JmolConstants.covalentMars[atom.atomicNumber];
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

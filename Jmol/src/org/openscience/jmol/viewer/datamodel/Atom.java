@@ -309,19 +309,19 @@ public class Atom implements Bspt.Tuple {
   // store the vdw & covalent mars in the atom when the atom is created
   // then you can eliminate all the calls involving the model manager
   public short getVanderwaalsMar() {
-    return frame.viewer.getVanderwaalsMar(this);
+    return JmolConstants.vanderwaalsMars[atomicNumber];
   }
 
   public float getVanderwaalsRadiusFloat() {
-    return frame.viewer.getVanderwaalsMar(this) / 1000f;
+    return JmolConstants.vanderwaalsMars[atomicNumber] / 1000f;
   }
 
   public short getBondingMar() {
-    return frame.viewer.getBondingMar(this);
+    return JmolConstants.getBondingMar(atomicNumber, chargeAndFlags >> 4);
   }
 
   public float getBondingRadiusFloat() {
-    return frame.viewer.getBondingMar(this) / 1000f;
+    return getBondingMar() / 1000f;
   }
 
   public short getColix() {

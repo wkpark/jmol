@@ -31,11 +31,7 @@ import java.awt.Rectangle;
 
 import java.util.Hashtable;
 import java.util.BitSet;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.AxisAngle4f;
+import javax.vecmath.*;
 
 class DotsRenderer extends ShapeRenderer {
 

@@ -27,14 +27,9 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.jmol.g3d.Graphics3D;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.AxisAngle4f;
+import javax.vecmath.*;
 import java.util.Hashtable;
 import java.util.BitSet;
-import java.awt.Rectangle;
-import java.awt.Color;
 
 /****************************************************************
  * The Dots and DotsRenderer classes implement vanderWaals and Connolly
@@ -118,7 +113,6 @@ public class Dots extends Shape {
 
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
-
     
   void initShape() {
     dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
@@ -325,8 +319,10 @@ public class Dots extends Shape {
       htTori = new Hashtable();
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
+      /*
       if (indexI >= neighborIndices[iJ])
         continue;
+      */
       setNeighborJ(iJ);
       torusIJ = getTorus(atomI, indexI, atomJ, indexJ);
       if (torusIJ == null)
@@ -426,13 +422,13 @@ public class Dots extends Shape {
       pointT.set(center);
       pointT.add(radialVector);
 
-      outerRadial = new Vector3f(centerI);
-      outerRadial.sub(pointT);
+      outerRadial = new Vector3f();
+      outerRadial.sub(centerI, pointT);
       outerRadial.normalize();
       outerRadial.scale(radiusP);
 
       vectorT.sub(centerJ, pointT);
-      outerAngle = vectorT.angle(outerRadial);
+      outerAngle = vectorT.angle(outerRadial) / 2;
       
       float angle = vectorZ.angle(axisVector);
       if (angle == 0) {
@@ -460,8 +456,6 @@ public class Dots extends Shape {
   final static Boolean boxedFalse = new Boolean(false);
 
   Torus getTorus(Atom atomI, int indexI, Atom atomJ, int indexJ) {
-    if (indexI >= indexJ)
-      throw new NullPointerException();
     Long key = new Long(((long)indexI << 32) + indexJ);
     Object value = htTori.get(key);
     if (value != null) {

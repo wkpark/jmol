@@ -648,14 +648,13 @@ public class Eval implements Runnable {
     return false;
   }
 
-  short getSetBooleanOrMad() throws ScriptException {
+  short getSetAxesTypeMad() throws ScriptException {
     int tok = statement[2].tok;
-    short mad = -1;
+    short mad = 0;
     switch (tok) {
     case Token.on:
-      break;
+      mad = 1;
     case Token.off:
-      mad = 0;
       break;
     case Token.integer:
       int diameterPixels = statement[2].intValue;
@@ -668,6 +667,9 @@ public class Eval implements Runnable {
       if (angstroms >= 2)
         numberOutOfRange();
       mad = (short)(angstroms * 1000 * 2);
+      break;
+    case Token.dotted:
+      mad = -1;
       break;
     default:
       booleanOrNumberExpected();
@@ -2044,22 +2046,22 @@ public class Eval implements Runnable {
 
   void setAxes() throws ScriptException {
     viewer.setShapeMad(JmolConstants.SHAPE_AXES,
-                       getSetBooleanOrMad());
+                       getSetAxesTypeMad());
   }
 
   void setBoundbox() throws ScriptException {
     viewer.setShapeMad(JmolConstants.SHAPE_BBCAGE,
-                       getSetBooleanOrMad());
+                       getSetAxesTypeMad());
   }
 
   void setUnitcell() throws ScriptException {
     viewer.setShapeMad(JmolConstants.SHAPE_UCCAGE,
-                       getSetBooleanOrMad());
+                       getSetAxesTypeMad());
   }
 
   void setFrank() throws ScriptException {
     viewer.setShapeMad(JmolConstants.SHAPE_FRANK,
-                       getSetBooleanOrMad());
+                       getSetAxesTypeMad());
   }
 
   void setBondmode() throws ScriptException {

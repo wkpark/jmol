@@ -301,6 +301,7 @@ public class Token {
   final static int spec_model           = misc | 26;
   final static int spec_atom            = misc | 27;
   final static int percent      = misc | 28;
+  final static int dotted       = misc | 29;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -524,6 +525,7 @@ public class Token {
     "selected",     new Token(selected,        "selected"),
     "solvent",      new Token(solvent,         "solvent"),
     "%",            new Token(percent,         "%"),
+    "dotted",       new Token(dotted,          "dotted"),
     "sidechain",    new Token(sidechain,       "sidechain"),
 
   };

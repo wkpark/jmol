@@ -1676,17 +1676,18 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_STRANDS  = 9;
   public final static int SHAPE_MESH     = 10;
   public final static int SHAPE_RIBBONS  = 11;
+  public final static int SHAPE_ROCKETS  = 12;
     
 
-  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 12;
-  public final static int SHAPE_AXES     = 12;
-  public final static int SHAPE_BBCAGE   = 13;
-  public final static int SHAPE_UCCAGE   = 14;
-  public final static int SHAPE_FRANK    = 15;
-  public final static int SHAPE_ECHO     = 16;
-  public final static int SHAPE_HOVER    = 17;
-  public final static int SHAPE_PRUEBA   = 18;
-  public final static int SHAPE_MAX      = 19;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 13;
+  public final static int SHAPE_AXES     = 13;
+  public final static int SHAPE_BBCAGE   = 14;
+  public final static int SHAPE_UCCAGE   = 15;
+  public final static int SHAPE_FRANK    = 16;
+  public final static int SHAPE_ECHO     = 17;
+  public final static int SHAPE_HOVER    = 18;
+  public final static int SHAPE_PRUEBA   = 19;
+  public final static int SHAPE_MAX      = 20;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Labels", "Vectors", "Measures",
@@ -1694,6 +1695,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Backbone", "Trace",
     "Cartoon",
     "Strands", "Mesh", "Ribbons",
+    "Rockets",
     "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
     "Prueba"
   };

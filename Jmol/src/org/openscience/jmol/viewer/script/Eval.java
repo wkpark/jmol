@@ -417,6 +417,9 @@ public class Eval implements Runnable {
       case Token.cartoon:
         proteinShape(JmolConstants.SHAPE_CARTOON);
         break;
+      case Token.rocket:
+        proteinShape(JmolConstants.SHAPE_ROCKETS);
+        break;
       case Token.spin:
         spin();
         break;
@@ -1316,6 +1319,7 @@ public class Eval implements Runnable {
     case Token.ribbon:
     case Token.prueba:
     case Token.cartoon:
+    case Token.rocket:
     case Token.dots:
     case Token.axes:
     case Token.boundbox:
@@ -2244,6 +2248,7 @@ public class Eval implements Runnable {
   {Token.atom, Token.bonds, Token.label, Token.vector,
    Token.monitor, Token.dots, Token.backbone,
    Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbon,
+   Token.rocket,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
    Token.hover,
    Token.prueba,

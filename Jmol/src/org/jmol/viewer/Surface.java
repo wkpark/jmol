@@ -134,6 +134,7 @@ class Surface extends Shape {
     }
     // now, calculate surface for selected atoms
     if (mad != 0) {
+      long timeBegin = System.currentTimeMillis();
       if (convexSurfaceMaps == null) {
         convexSurfaceMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
@@ -149,6 +150,8 @@ class Surface extends Shape {
             calcConvexMapI();
         }
       saveToruses();
+      long timeElapsed = System.currentTimeMillis() - timeBegin;
+      System.out.println("Surface construction time = " + timeElapsed + " ms");
     }
     if (convexSurfaceMaps == null)
       surfaceConvexMax = 0;
@@ -411,10 +414,12 @@ class Surface extends Shape {
   final AxisAngle4f aaT = new AxisAngle4f();
 
   static final Vector3f vectorNull = new Vector3f();
+  static final Vector3f vectorX = new Vector3f(1, 0, 0);
+  static final Vector3f vectorY = new Vector3f(0, 1, 0);
+  static final Vector3f vectorZ = new Vector3f(0, 0, 1);
+
   final Vector3f vectorT = new Vector3f();
   final Vector3f vectorT1 = new Vector3f();
-  final Vector3f vectorZ = new Vector3f(0, 0, 1);
-  final Vector3f vectorX = new Vector3f(1, 0, 0);
 
   final Point3f pointTorusP = new Point3f();
   final Vector3f vectorPI = new Vector3f();
@@ -547,7 +552,8 @@ class Surface extends Shape {
   }
 
   Torus createTorus(int indexA, Point3f centerA, int indexB, Point3f centerB,
-                    Point3f torusCenterAB, float torusRadius) {
+                    Point3f torusCenterAB, float torusRadius,
+                    boolean fullTorus) {
     if (indexA >= indexB)
       throw new NullPointerException();
     Long key = new Long(((long)indexA << 32) + indexB);
@@ -556,6 +562,8 @@ class Surface extends Shape {
     Torus torus = new Torus(indexA, centerA, indexB, centerB,
                             torusCenterAB, torusRadius);
     htToruses.put(key, torus);
+    convexSurfaceMaps[indexA] = calculateMyConvexSurfaceMap; 
+    convexSurfaceMaps[indexB] = calculateMyConvexSurfaceMap; 
     return torus;
   }
 
@@ -622,6 +630,9 @@ class Surface extends Shape {
     return (float)(0.5*Math.sqrt(t2)*Math.sqrt(t3)/Math.sqrt(distanceAB2));
   }
 
+  final Vector3f normalizedRadialVectorT = new Vector3f();
+  final Point3f torusProbePointT = new Point3f();
+
   void calcCavitiesI() {
     if (radiusP == 0)
       return;
@@ -644,11 +655,22 @@ class Surface extends Shape {
           continue;
         getCavitiesIJK();
       }
-      // check for a full torus between I & J
-      // if found, then calculate the convex surfaces of both I & J
-      // for now, just calc them :-(
-      convexSurfaceMaps[indexI] = calculateMyConvexSurfaceMap; 
-      convexSurfaceMaps[indexJ] = calculateMyConvexSurfaceMap; 
+      if (getTorus(indexI, indexJ) == null) {
+        // check for a full torus with no cavities between I & J
+        if (vectorIJ.z == 0)
+          normalizedRadialVectorT.set(vectorZ);
+        else {
+          normalizedRadialVectorT.set(-vectorIJ.y, vectorIJ.x, 0);
+          normalizedRadialVectorT.normalize();
+        }
+        float torusRadiusIJ = calcTorusRadius(radiusI, radiusJ, distanceIJ2);
+        torusProbePointT.scaleAdd(torusRadiusIJ, 
+                                  normalizedRadialVectorT, torusCenterIJ);
+        if (checkProbeNotIJ(torusProbePointT)) {
+          createTorus(indexI, centerI, indexJ, centerJ,
+                      torusCenterIJ, torusRadiusIJ, true);
+        }
+      }
     }
   }
 
@@ -703,7 +725,7 @@ class Surface extends Shape {
     boolean cavityAdded = false;
     for (int i = -1; i <= 1; i += 2) {
       cavityProbe.scaleAdd(i * probeHeight, normalIJK, probeBaseIJK);
-      if (checkProbeIJK(cavityProbe)) {
+      if (checkProbeNotIJK(cavityProbe)) {
         addCavity(new Cavity(cavityProbe));
         cavityAdded = true;
       }
@@ -713,26 +735,23 @@ class Surface extends Shape {
       if (torusIJ == null)
         torusIJ = createTorus(indexI, centerI, indexJ, centerJ,
                               torusCenterIJ,
-                              calcTorusRadius(radiusI, radiusJ, distanceIJ2));
+                              calcTorusRadius(radiusI, radiusJ, distanceIJ2),
+                              false);
       Torus torusIK = getTorus(indexI, indexK);
       if (torusIK == null)
         torusIK = createTorus(indexI, centerI, indexK, centerK,
                               torusCenterIK,
-                              calcTorusRadius(radiusI, radiusK, distanceIK2));
+                              calcTorusRadius(radiusI, radiusK, distanceIK2),
+                              false);
       Torus torusJK = getTorus(indexJ, indexK);
       if (torusJK == null) {
         calcTorusCenter(centerJ, radiiJP2, centerK, radiiKP2, distanceJK2,
                         torusCenterJK);
         torusJK = createTorus(indexJ, centerJ, indexK, centerK,
                               torusCenterJK,
-                              calcTorusRadius(radiusJ, radiusK, distanceJK2));
+                              calcTorusRadius(radiusJ, radiusK, distanceJK2),
+                              false);
       }
-      if (convexSurfaceMaps[indexI] == null)
-        convexSurfaceMaps[indexI] = calculateMyConvexSurfaceMap;
-      if (convexSurfaceMaps[indexJ] == null)
-        convexSurfaceMaps[indexJ] = calculateMyConvexSurfaceMap;
-      if (convexSurfaceMaps[indexK] == null)
-        convexSurfaceMaps[indexK] = calculateMyConvexSurfaceMap;
     }
   }
 
@@ -782,7 +801,20 @@ class Surface extends Shape {
   }
   */
 
-  boolean checkProbeIJK(Point3f cavityProbe) {
+  boolean checkProbeNotIJ(Point3f cavityProbe) {
+    for (int i = neighborCount; --i >= 0; ) {
+      int neighborIndex = neighborIndexes[i];
+      if (neighborIndex == indexI ||
+          neighborIndex == indexJ)
+        continue;
+      if (cavityProbe.distanceSquared(neighborCenters[i]) <
+          neighborPlusProbeRadii2[i])
+        return false;
+    }
+    return true;
+  }
+  
+  boolean checkProbeNotIJK(Point3f cavityProbe) {
     for (int i = neighborCount; --i >= 0; ) {
       int neighborIndex = neighborIndexes[i];
       if (neighborIndex == indexI ||

@@ -303,7 +303,6 @@ public class PovrayStyleWriter {
   public void writeAtom(BufferedWriter w, int atomIndex, ChemFrame cf)
       throws IOException {
 
-    BaseAtomType a = cf.getJmolAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
 
     double c_x = cf.getRotationCenter().x;

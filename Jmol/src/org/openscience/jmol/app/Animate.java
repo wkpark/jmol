@@ -152,8 +152,7 @@ public class Animate extends JDialog implements ActionListener,
           newCoord[1] = fromCoord[1] + (i + 1) * step[1];
           newCoord[2] = fromCoord[2] + (i + 1) * step[2];
           try {
-            extraFrames[i].addAtom(atom.getType(), newCoord[0],
-                newCoord[1], newCoord[2]);
+            extraFrames[i].addAtom(atom, newCoord[0], newCoord[1], newCoord[2]);
           } catch (Exception ex) {
             System.out.println(ex);
             ex.printStackTrace();

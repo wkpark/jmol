@@ -84,15 +84,6 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * Returns this atom's base type.
-   *
-   * @return the base type of this atom.
-   */
-  public BaseAtomType getType() {
-    return baseAtomType;
-  }
-
-  /**
    * Returns whether this atom is a hydrogen atom.
    *
    * @return true if this atom is a hydrogen atom.

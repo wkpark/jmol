@@ -33,7 +33,7 @@ import java.util.StringTokenizer;
  * CAChe, not babel or MAC versions. This will be fixed shortly with a "smarter" version. 
  * See source code comments below. 
  * 
- * @author Charles R. Fulton (linuxwv@firstlinux.net)
+ * @author Charles R. Fulton (fultoncr@ucarb.com)
  * @version 1.0
  *
  */
@@ -53,9 +53,7 @@ public class CACheReader implements ChemFileReader
 	public CACheReader(Reader input) 
 	{
 		this.input = new BufferedReader(input);
-		System.out.println("-----------------------------------");
-		System.out.println("|   Parsing CAChe Molstruct File  |");
-		System.out.println("-----------------------------------");
+		System.out.println("Parsing CAChe Molstruct File");
 	}
 
 	/**
@@ -71,7 +69,7 @@ public class CACheReader implements ChemFileReader
 		String line = input.readLine();
 		System.out.println(line);
 
-		// -- Get other stuff before object_classes start -- //
+		// -- Get all of the stuff before object_classes start -- //
 
 		//String writtenby = null;  // mopac,dgauss,etc
 		//String datadictver = null; // version of Data Dictionary used
@@ -80,23 +78,19 @@ public class CACheReader implements ChemFileReader
 
 
 		// ################################################################################## //
+		// -- initial brute force reader
 		// -- just trying to get xyz coordinates for now
 		// -- later will implement object_class & property methods
-		// -- read file in
 		// -- look for "object_class" (e.g. object_class atom)
 		// -- now look for "property X" (e.g. Property anum)
-		// -- now parse lines until seeing property_flags line
- 		// -- store all properties into an hashtable (e.g. anum -> 7)
-		// -- then when line that starts with "ID"
-		// -- starting assigning values into the various properties..
-		// -- this should be pretty much generic for all object_class - property_flags blocks
+		// -- now parse lines until seeing the next "object_class" line (might want to use property_flags later)
 		// ################################################################################## //
 		
 		while (input.ready() && line != null)
 		{
 			if (line.indexOf("ID dflag sym anum chrg xyz_coordinates") >=0)
 			{
-				// where we store property data
+				// frame is where we store property data
 				frame = new ChemFrame();
 				try 
 				{
@@ -136,26 +130,19 @@ public class CACheReader implements ChemFileReader
 			System.out.println(line); // should only print out from object_class - property_flags
 
 			if (line == null || line.indexOf("property_flags:") >= 0)
-			{
-				break;
+			{								// will probably need to change this, because some object_classes 
+				break;						// use the property_flags block. (e.g. basis sets)
 			}
 			
 			int anum;
 			StringReader sr = new StringReader(line);
 			StreamTokenizer token = new StreamTokenizer(sr);
 
-			System.out.println("let's look at token values");
-			System.out.println(token);
-
 			// ignore first 4 tokens
 			token.nextToken(); // ID
-			System.out.println(token);
 			token.nextToken(); // dflag1 
-			System.out.println(token); // ** for some reason it's breaking up '0x9' into two tokens
 			token.nextToken(); // dflag2
-			System.out.println(token);
 			token.nextToken(); // sym
-			System.out.println(token);
 			
 			if (token.nextToken() == StreamTokenizer.TT_NUMBER)
 			{

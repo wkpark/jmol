@@ -69,6 +69,8 @@ public class AminoPolymer extends AlphaPolymer {
     min1Energies = new short[count];
     min2Indexes = new short[count];
     min2Energies = new short[count];
+    for (int i = count; --i >= 0; )
+      min1Indexes[i] = min2Indexes[i] = -1;
   }
 
   void freeHbondDataStructures() {
@@ -138,7 +140,6 @@ public class AminoPolymer extends AlphaPolymer {
         indexMin2 = i;
       }
     }
-    min1Indexes[indexDonor] = min2Indexes[indexDonor] = -1;
     if (indexMin1 >= 0) {
       mainchainHbondOffsets[indexDonor] = (short)(indexDonor - indexMin1);
       min1Indexes[indexDonor] = (short)indexMin1;
@@ -250,21 +251,47 @@ public class AminoPolymer extends AlphaPolymer {
     char[] structureTags = new char[count];
 
     findHelixes(structureTags);
-    findSheets(structureTags);
-
     int iStart = 0;
     while (iStart < count) {
-      if (structureTags[iStart] != '4') {
+      if (structureTags[iStart] == 0) {
         ++iStart;
         continue;
       }
       int iMax;
       for (iMax = iStart + 1;
-           iMax < count && structureTags[iMax] == '4';
+           iMax < count && structureTags[iMax] != 0;
            ++iMax)
         { }
       addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
                             iStart, iMax - 1);
+      iStart = iMax;
+    }
+
+    for (int i = count; --i >= 0; )
+      structureTags[i] = 0;
+
+    findSheets(structureTags);
+
+    for (int i = 0; i < count; ++i)
+      System.out.println("" + i + ":" + structureTags[i] +
+                         " " + min1Indexes[i] + " " + min2Indexes[i]);
+    iStart = 0;
+
+    while (iStart < count) {
+      if (structureTags[iStart] == 0) {
+        ++iStart;
+        continue;
+      }
+      int iMax;
+      for (iMax = iStart + 1;
+           (iMax < count && structureTags[iMax] != 0 ||
+            iMax < count - 1 && structureTags[iMax + 1] != 0);
+           ++iMax)
+        { }
+      System.out.println("I found a string of " + (iMax - iStart));
+      if (iMax - iStart >= 3)
+        addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
+                              iStart, iMax - 1);
       iStart = iMax;
     }
   }
@@ -293,14 +320,16 @@ public class AminoPolymer extends AlphaPolymer {
   void findSheets(char[] structureTags) {
     for (int a = 0; a < count; ++a)
       for (int b = 0; b < count; ++b) {
-        if (isHbonded(a+1, b) && isHbonded(b, a-1) ||
-            isHbonded(b+1, a) && isHbonded(a, b-1)) {
+        if (isHbonded(a+1, b) && isHbonded(b, a-1)) {
           System.out.println("parallel found");
-        }
-
-        if (isHbonded(a, b) && isHbonded(b, a) ||
-            isHbonded(a+1, b-1) && isHbonded(b+1, a-1)) {
+          structureTags[a+1] = structureTags[b] = structureTags[a-1] = 'p';
+        } else if (isHbonded(a, b) && isHbonded(b, a)) {
           System.out.println("antiparallel found");
+          structureTags[a] = structureTags[b] = 'a';
+        } else if (isHbonded(a+1, b-1) && isHbonded(b+1, a-1)) {
+          System.out.println("Antiparallel found");
+          structureTags[a+1] = structureTags[b-1] =
+            structureTags[b+1] = structureTags[a-1] = 'A';
         }
       }
   }

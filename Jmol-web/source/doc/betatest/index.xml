@@ -70,10 +70,9 @@
       </section>
     </section>
     
-    <section title="Jmol10pre18">
+    <section title="Jmol10pre19">
       <p>
-	Jmol version 10 pre-release 18 was released on Sun 21 Nov 2004.
-	This release includes the following:
+	Jmol version 10 pre-release 19 was released on Mon 22 Nov 2004.
 	<ul>
 	  <li>
 	    Internal repackaging of code
@@ -82,18 +81,30 @@
 	    work on Jmol.js JavaScript library
 	  </li>
 	  <li>
-	    bug fixes
+	    povray output dialog box has additional features
+	  </li>
+	  <li>
+	    Fonts on OSX inside browsers are not ugly anymore
+	  </li>
+	  <li>
+	    Hover color and font have changed.
+	  </li>
+	  <li>
+	    other bug fixes
 	  </li>
 	</ul>
+	-->
       </p>
+<!-- 
       <p>
-	<a href="Jmol10pre18.zip">
+	<a href="Jmol10pre19.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre18.zip
+	    Jmol10pre19.zip
 	  </font>
 	</a>
       </p>
+      -->
       <p>
 	<a href="Jmol10pre16.zip">
 	  <font size="-1">

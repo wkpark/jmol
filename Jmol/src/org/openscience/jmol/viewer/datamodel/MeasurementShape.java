@@ -24,7 +24,6 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.MeasurementInterface;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
@@ -35,8 +34,7 @@ import javax.vecmath.Vector3f;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-public class MeasurementShape extends LineShape
-  implements MeasurementInterface {
+public class MeasurementShape extends LineShape {
 
   public int[] atomIndices;
   public String strMeasurement;

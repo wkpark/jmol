@@ -140,24 +140,39 @@
     <property name="build.compiler" value="javac1.1" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
            debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}"
-	   target="1.1" includesfile="applet.classes"
+	   optimize="${optimization}" target="1.1"
+	   includesfile="applet.classes"
 	   classpathref="applet-project.class.path" />
-    <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-           debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}"
-	   target="1.1" includes="JmolApplet.java"
-	   classpathref="applet-project.class.path" />
+    <!-- mth tried to use exclude and excludefiles, but it did not work -->
+    <delete includeEmptyDirs="true">
+      <fileset dir="${applet.classes.dir}/org/openscience/jmol">
+        <include name="*.class" />
+        <include name="io/" />
+        <include name="util/" />
+        <exclude name="adapters/SimpleModelAdapter.class" />
+      </fileset>
+    </delete>
+	
+    <!-- delete stuff we do not want to ship with the applet -->
+    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cmlCore.xsd"/>
+    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/data/cml1_0_1.xsd"/>
+    <delete file="${appletjars.dir}/org/openscience/cdk/io/cml/tools/jmol_atomtypes.txt"/>
+    <delete file="${appletjars.dir}/org/openscience/cdk/config/log4j.properties"/>
+
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
+      <!-- DEPRECATED I think
         <include name="**/*.dtd" />
         <include name="**/*.txt" />
+	-->
 	<include name="**/ui/*.properties" />
       </fileset>
+      <!-- DEPRECATED I think
       <fileset dir="${source.dir}/org/openscience/jmol/applet">
         <include name="Data/AtomTypes.txt" />
         <include name="Data/cml1_0.dtd.txt" />
       </fileset>
+      -->
     </copy>
   </target>
 
@@ -233,8 +248,10 @@
          unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
+<!-- Commented out for testing small applet
     <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-saxonly.jar"/>
+-->
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
         <include name="**/Point3f.class"/>

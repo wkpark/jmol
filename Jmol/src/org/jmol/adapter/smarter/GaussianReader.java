@@ -127,7 +127,6 @@ class GaussianReader extends AtomSetCollectionReader {
  
   /**
    * Interprets the SCF Done: section.
-   *
    * @param line The input line.
    * @param nOrientations The number of orientations read that need to have
    *           these results associated with them.
@@ -153,8 +152,10 @@ class GaussianReader extends AtomSetCollectionReader {
   }
   
   /**
-   * Sets the same properties for the last atomSets
-   * @param
+   * Sets the same properties for the last atomSets.
+   * @param key The key for the property
+   * @param value The value of the property
+   * @param n The number of last AtomSets that need these set
    */
   private void setAtomSetProperties(String key, String value, int n) {
     for (int asci=atomSetCollection.currentAtomSetIndex; --n >= 0; --asci) {
@@ -251,7 +252,9 @@ class GaussianReader extends AtomSetCollectionReader {
   /**
    * Interprets the Harmonic frequencies section.
    *
-   * The vectors are added to a clone of the last read AtomSet.
+   * <p>The vectors are added to a clone of the last read AtomSet.
+   * Only the Frequencies, reducede masses, force constants and IR intensities
+   * are set a properties for each of the frequency type AtomSet generated.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    **/

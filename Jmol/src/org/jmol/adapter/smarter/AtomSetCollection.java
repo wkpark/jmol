@@ -262,6 +262,7 @@ class AtomSetCollection {
 
   /**
   * Sets the name for the current AtomSet
+  *
   * @param atomSetName The name to be associated with the current AtomSet
   */
   void setAtomSetName(String atomSetName) {
@@ -270,15 +271,17 @@ class AtomSetCollection {
   
   /**
   * Sets the name for an AtomSet
+  *
   * @param atomSetName The number to be associated with the AtomSet
-  * @param atomsetIndex The index of the AtomSet that needs the association
+  * @param atomSetIndex The index of the AtomSet that needs the association
   */
   void setAtomSetName(String atomSetName, int atomSetIndex) {
     atomSetNames[atomSetIndex] = atomSetName;
   }
 
   /**
-  * Sets the number for the current AtomSet.
+  * Sets the number for the current AtomSet
+  *
   * @param atomSetNumber The number for the current AtomSet.
   */
   void setAtomSetNumber(int atomSetNumber) {
@@ -287,8 +290,9 @@ class AtomSetCollection {
   
   /**
   * Sets a property for the AtomSet
-  * @param atomSetNumber The number for the AtomSet
-  * @param atomSetIndex The index of the AtomSet that needs the association
+  *
+  * @param key The key for the property
+  # @param value The value to be associated with the key
   */
   void setAtomSetProperty(String key, String value) {
     setAtomSetProperty(key, value, currentAtomSetIndex);
@@ -296,6 +300,7 @@ class AtomSetCollection {
 
   /**
   * Sets the a property for the an AtomSet
+  *
   * @param key The key for the property
   # @param value The value to be associated with the key
   * @param atomSetIndex The index of the AtomSet that needs the association

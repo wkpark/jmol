@@ -112,6 +112,10 @@
 	  <srcfiles dir="doc/source"
 		    includes="JmolDevelopersGuide_fr.docbook.xml"/>
 	</uptodate>
+	<uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
+	  <srcfiles dir="doc/source"
+		    includes="JmolDevelopersGuide_de.docbook.xml"/>
+	</uptodate>
       </and>
     </condition>
 
@@ -127,7 +131,7 @@
 	</uptodate>
 	<uptodate targetfile="build/doc/JmolAppletGuide_de.html">
 	  <srcfiles dir="doc/source"
-		    includes="JmolAppletGuide_de.docbook.xml, applet/*_de.docbook.xml"/>
+		    includes="JmolAppletGuide_de.docbook.xml"/>
 	</uptodate>
       </and>
     </condition>

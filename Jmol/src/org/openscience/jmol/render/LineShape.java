@@ -32,13 +32,13 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
 
-class LineShape extends Shape {
+public class LineShape extends Shape {
 
   Point3d pointOrigin;
   Point3d pointEnd;
   int xEnd, yEnd, zEnd;
 
-  LineShape(Point3d pointOrigin, Point3d pointEnd) {
+  public LineShape(Point3d pointOrigin, Point3d pointEnd) {
     this.pointOrigin = pointOrigin;
     this.pointEnd = pointEnd;
   }

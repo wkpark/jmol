@@ -28,6 +28,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
+import java.lang.reflect.Array;
 
 abstract class ModelReader {
   Model model;
@@ -195,6 +196,23 @@ abstract class ModelReader {
     if (ich == ichStart && (ichLast + 1) == ichMax)
       return str;
     return str.substring(ich, ichLast + 1);
+  }
+
+  static Object setLength(Object array, int newLength) {
+    Object t =
+      Array.newInstance(array.getClass().getComponentType(), newLength);
+    int oldLength = Array.getLength(array);
+    System.arraycopy(array, 0, t, 0,
+                     oldLength < newLength ? oldLength : newLength);
+    return t;
+  }
+
+  static int[] setLength(int[] array, int newLength) {
+    int oldLength = array.length;
+    int[] t = new int[newLength];
+    System.arraycopy(array, 0, t, 0, 
+                     oldLength < newLength ? oldLength : newLength);
+    return t;
   }
 }
 

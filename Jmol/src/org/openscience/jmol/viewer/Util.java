@@ -86,7 +86,7 @@ final public class Util {
 
   public static String[] setLength(String[] array, int newLength) {
     int oldLength = array.length;
-    String[] t = (String[])Array.newInstance(Float.TYPE, newLength);
+    String[] t = new String[newLength];
     System.arraycopy(array, 0, t, 0, 
                      oldLength < newLength ? oldLength : newLength);
     return t;
@@ -94,7 +94,7 @@ final public class Util {
   
   public static float[] setLength(float[] array, int newLength) {
     int oldLength = array.length;
-    float[] t = (float[])Array.newInstance(Float.TYPE, newLength);
+    float[] t = new float[newLength];
     System.arraycopy(array, 0, t, 0, 
                      oldLength < newLength ? oldLength : newLength);
     return t;
@@ -102,7 +102,7 @@ final public class Util {
   
   public static int[] setLength(int[] array, int newLength) {
     int oldLength = array.length;
-    int[] t = (int[])Array.newInstance(Integer.TYPE, newLength);
+    int[] t = new int[newLength];
     System.arraycopy(array, 0, t, 0, 
                      oldLength < newLength ? oldLength : newLength);
     return t;
@@ -118,7 +118,7 @@ final public class Util {
 
   public static byte[] setLength(byte[] array, int newLength) {
     int oldLength = array.length;
-    byte[] t = (byte[])Array.newInstance(Byte.TYPE, newLength);
+    byte[] t = new byte[newLength];
     System.arraycopy(array, 0, t, 0, 
                      oldLength < newLength ? oldLength : newLength);
     return t;

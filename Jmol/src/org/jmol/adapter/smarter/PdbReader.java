@@ -198,11 +198,8 @@ class PdbReader extends ModelReader {
       float y = parseFloat(line, 38, 46);
       float z = parseFloat(line, 46, 54);
       /****************************************************************/
-      if (serial >= serialMap.length) {
-        int[] t = new int[serial + 500];
-        System.arraycopy(serialMap, 0, t, 0, serialMap.length);
-        serialMap = t;
-      }
+      if (serial >= serialMap.length)
+        serialMap = setLength(serialMap, serial + 500);
       Atom atom = model.newAtom();
       atom.modelNumber = currentModelNumber;
       atom.elementSymbol = elementSymbol;

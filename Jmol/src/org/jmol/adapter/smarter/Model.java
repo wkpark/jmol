@@ -25,6 +25,7 @@
 
 package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
+import java.util.Hashtable;
 
 class Model {
   String modelTypeName;
@@ -70,31 +71,39 @@ class Model {
     addAtom(atom);
     return atom;
   }
-  
+
   void addAtom(Atom atom) {
-    if (atomCount == atoms.length) {
-      Atom[] t = new Atom[atomCount + 512];
-      System.arraycopy(atoms, 0, t, 0, atomCount);
-      atoms = t;
-    }
+    if (atomCount == atoms.length)
+      atoms = (Atom[])ModelReader.setLength(atoms, atomCount + 512);
     atoms[atomCount++] = atom;
   }
 
+  Bond newBond(int atomIndex1, int atomIndex2) {
+    Bond bond = new Bond(atomIndex1, atomIndex2, 1);
+    addBond(bond);
+    return bond;
+  }
+
+  Bond newBond(String atomName1, String atomName2) {
+    int atomIndex1 = getAtomNameIndex(atomName1);
+    if (atomIndex1 < 0)
+      return null;
+    int atomIndex2 = getAtomNameIndex(atomName2);
+    if (atomIndex2 < 0)
+      return null;
+    return newBond(atomIndex1, atomIndex2);
+  }
+
   void addBond(Bond bond) {
-    if (bondCount == bonds.length) {
-      Bond[] t = new Bond[bondCount + 1024];
-      System.arraycopy(bonds, 0, t, 0, bondCount);
-      bonds = t;
-    }
+    if (bondCount == bonds.length)
+      bonds = (Bond[])ModelReader.setLength(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;
   }
 
   void addStructure(Structure structure) {
-    if (structureCount == structures.length) {
-      Structure[] t = new Structure[structureCount + 32];
-      System.arraycopy(structures, 0, t, 0, structureCount);
-      structures = t;
-    }
+    if (structureCount == structures.length)
+      structures = (Structure[])ModelReader.setLength(structures,
+                                                      structureCount + 32);
     structures[structureCount++] = structure;
   }
 
@@ -104,5 +113,23 @@ class Model {
       if (modelName.length() > 0)
         this.modelName = modelName;
     }
+  }
+
+  Hashtable atomNameMap = new Hashtable();
+
+  void mapAtomName(Atom atom) {
+    if (atom.atomName != null && atoms[atomCount - 1] != atom)
+      atomNameMap.put(atom.atomName, new Integer(atomCount - 1));
+  }
+
+  void mapAtomName(String atomName, int atomIndex) {
+    atomNameMap.put(atomName, new Integer(atomIndex));
+  }
+
+  int getAtomNameIndex(String atomName) {
+    Object value = atomNameMap.get(atomName);
+    if (value == null)
+      return -1;
+    return ((Integer)value).intValue();
   }
 }

@@ -151,6 +151,10 @@ public class CifReader extends ModelReader {
       processAtomSiteLoopBlock();
       return;
     }
+    if (line.startsWith("_geom_bond")) {
+      processGeomBondLoopBlock();
+      return;
+    }
     if (line.startsWith("_struct_conf") &&
         !line.startsWith("_struct_conf_type")) {
       processStructConfLoopBlock();
@@ -173,6 +177,10 @@ public class CifReader extends ModelReader {
     }
   }
   
+  ////////////////////////////////////////////////////////////////
+  // atom data
+  ////////////////////////////////////////////////////////////////
+
   final static byte NONE      = 0;
   final static byte SYMBOL    = 1;
   final static byte LABEL     = 2;
@@ -260,6 +268,7 @@ public class CifReader extends ModelReader {
           break;
         case LABEL:
           atom.atomName = field;
+          model.mapAtomName(atom);
           break;
         case CARTN_X:
         case FRACT_X:
@@ -331,6 +340,71 @@ public class CifReader extends ModelReader {
     }
     return fieldCount;
   }
+
+  ////////////////////////////////////////////////////////////////
+  // bond data
+  ////////////////////////////////////////////////////////////////
+
+  final static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 1;
+  final static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 2;
+  //  final static byte GEOM_BOND_DISTANCE          = 3;
+  final static byte GEOM_BOND_PROPERTY_MAX      = 3;
+
+  final static String[] geomBondFields = {
+    "_geom_bond_atom_site_label_1",
+    "_geom_bond_atom_site_label_2",
+    //    "_geom_bond_distance",
+  };
+
+  final static byte[] geomBondFieldMap = {
+    GEOM_BOND_ATOM_SITE_LABEL_1,
+    GEOM_BOND_ATOM_SITE_LABEL_2,
+    //    GEOM_BOND_DISTANCE,
+  };
+
+  void processGeomBondLoopBlock() throws Exception {
+    int[] fieldTypes = new int[100]; // should be enough
+    boolean[] propertyReferenced = new boolean[GEOM_BOND_PROPERTY_MAX];
+    int fieldCount = parseLoopParameters(geomBondFields,
+                                         geomBondFieldMap,
+                                         fieldTypes,
+                                         propertyReferenced);
+    for (int i = GEOM_BOND_PROPERTY_MAX; --i > 0; ) // only > 0, not >= 0
+      if (! propertyReferenced[i]) {
+        logger.log("?que? missing _geom_bond property:" + i);
+        skipUntilEmptyOrCommentLine();
+        return;
+      }
+
+    for (; line != null &&
+           (line = line.trim()).length() > 0 &&
+           line.charAt(0) != '#';
+         line = reader.readLine()) {
+      tokenizer.setString(line);
+      Bond bond = new Bond();
+      for (int i = 0; i < fieldCount; ++i) {
+        if (! tokenizer.hasMoreTokens())
+          tokenizer.setString(reader.readLine());
+        String field = tokenizer.nextToken();
+        switch (fieldTypes[i]) {
+        case NONE:
+          break;
+        case GEOM_BOND_ATOM_SITE_LABEL_1:
+          bond.atomIndex1 = model.getAtomNameIndex(field);
+          break;
+        case GEOM_BOND_ATOM_SITE_LABEL_2:
+          bond.atomIndex2 = model.getAtomNameIndex(field);
+          break;
+        }
+      }
+      if (bond.atomIndex1 >= 0 && bond.atomIndex2 >= 0)
+        model.addBond(bond);
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // helix and turn structure data
+  ////////////////////////////////////////////////////////////////
 
   final static byte CONF_TYPE_ID     = 1;
   final static byte BEG_ASYM_ID      = 2;
@@ -420,6 +494,10 @@ public class CifReader extends ModelReader {
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // sheet structure data
+  ////////////////////////////////////////////////////////////////
+
   // note that the conf_id is not used
   final static byte STRUCT_SHEET_RANGE_PROPERTY_MAX = 8;
 
@@ -490,6 +568,10 @@ public class CifReader extends ModelReader {
       model.addStructure(structure);
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // special tokenizer class
+  ////////////////////////////////////////////////////////////////
 
   class SpaceAndSingleQuoteTokenizer {
     String str;

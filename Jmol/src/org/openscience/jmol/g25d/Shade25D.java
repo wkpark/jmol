@@ -32,15 +32,19 @@ import java.util.Hashtable;
 
 public class Shade25D {
 
-  public static final byte shadeNormal = 64;
-  public static final byte shadeDarker = 56;
-  public static final int shadeMax = 128;
+  public final static byte shadeAmbient = 0;
+  public static final byte shadeNormal = 24;
+  public static final byte shadeDarker = 16;
+  public static final int shadeMax = 64;
   public static final float[] vectLightSource = {-1, -1, 1.5f};
   public static final float[] vectViewer = {0, 0, 1};
   public static int exponentSpecular = 5;
   public static final float intensityDiffuseSource = 0.6f;
-  public static final float intensitySpecularSource = 0.8f;
-  public static final float intensityAmbient = 0.6f;
+  public static final float intensitySpecularSource = 0.4f;
+  public static final float intensityAmbient = 0;
+  public final static float ambientFraction = 0.6f;
+  public final static float ambientRange = 1 - ambientFraction;
+  public final static float intenseFraction = 0.95f;
   static boolean tInitialized;
   
   static synchronized void initialize() {
@@ -51,21 +55,22 @@ public class Shade25D {
     tInitialized = true;
   }
 
-  static final int minNormalCache = -4;
-  static final int maxNormalCache = 4;
+  static final int minNormalCache = -5;
+  static final int maxNormalCache = 5;
   static final int numCache = maxNormalCache - minNormalCache + 1;
+  // z is positive only
+  // x & y are over full range
   static final int numCache2 = numCache * numCache;
-  static final int numCache3 = numCache2 * numCache;
-  static final byte[] shadeCache = new byte[numCache3];
+  static final byte[] shadeCache = new byte[(maxNormalCache + 1) * numCache2];
 
   static void initializeCache() {
-    for (int x = minNormalCache; x <= maxNormalCache; ++x)
+    for (int z = 0; z <= maxNormalCache; ++z)
       for (int y = minNormalCache; y <= maxNormalCache; ++y)
-        for (int z = minNormalCache; z <= maxNormalCache; ++z) {
+        for (int x = minNormalCache; x <= maxNormalCache; ++x) {
           int offsetCache =
-            (x-minNormalCache) * numCache2 +
+            z * numCache2 +
             (y-minNormalCache) * numCache +
-            (z-minNormalCache);
+            (x-minNormalCache);
           shadeCache[offsetCache] = calcIntensity(x, y, z);
         }
   }
@@ -112,18 +117,22 @@ public class Shade25D {
     int blu = rgb         & 0xFF;
 
     shades[shadeNormal] = rgb(red, grn, blu);
-    for (int i = shadeNormal; --i >= 0; ) {
-      shades[i] = rgb(red * i / shadeNormal,
-                      grn * i / shadeNormal,
-                      blu * i / shadeNormal);
+    for (int i = 0; i < shadeNormal; ++i) {
+      float fraction = ambientFraction + ambientRange*i/shadeNormal;
+      shades[i] = rgb((int)(red*fraction + 0.5f),
+                      (int)(grn*fraction + 0.5f),
+                      (int)(blu*fraction + 0.5f));
     }
 
     int nSteps = shadeMax - shadeNormal - 1;
+    float redRange = (255 - red) * intenseFraction;
+    float grnRange = (255 - grn) * intenseFraction;
+    float bluRange = (255 - blu) * intenseFraction;
+
     for (int i = 1; i <= nSteps; ++i) {
-      int redT = red + (255 - red) * i / nSteps;
-      int grnT = grn + (255 - grn) * i / nSteps;
-      int bluT = blu + (255 - blu) * i / nSteps;
-      shades[shadeNormal + i] = rgb(redT, grnT, bluT);
+      shades[shadeNormal + i] = rgb(red + (int)(redRange * i / nSteps + 0.5f),
+                                    grn + (int)(grnRange * i / nSteps + 0.5f),
+                                    blu + (int)(bluRange * i / nSteps + 0.5f));
     }
   }
 
@@ -153,13 +162,15 @@ public class Shade25D {
 
 
   public static byte getIntensity(int x, int y, int z) {
+    if (z < 0)
+      return shadeAmbient; // this isn't really true, but we never see back surfaces
     if (x <= maxNormalCache && x >= minNormalCache &&
         y <= maxNormalCache && y >= minNormalCache &&
         z <= maxNormalCache && z >= minNormalCache) {
       int offsetCache =
-        (x-minNormalCache) * numCache2 +
+        z * numCache2 +
         (y-minNormalCache) * numCache +
-        (z-minNormalCache);
+        (x-minNormalCache);
       return shadeCache[offsetCache];
     }
     return calcIntensity(x, y, z);
@@ -192,7 +203,7 @@ public class Shade25D {
     }
     float intensity =
       intensitySpecular + intensityDiffuse + intensityAmbient;
-    int shade = (int)(shadeNormal * intensity + 0.5f);
+    int shade = (int)(shadeMax * intensity + 0.5f);
     if (shade >= shadeMax) shade = shadeMax-1;
     return (byte)shade;
   }

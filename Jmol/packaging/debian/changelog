@@ -1,11 +1,32 @@
+jmol (10.00+cvs20050203-4) unstable; urgency=low
+
+  * Move package back to contrib in accordance to Debian Policy version
+    3.6.1.1 Chapter 2.2.2. 
+
+ -- Daniel Leidert (dale) <daniel.leidert@wgdd.de>  Sat,  5 Feb 2005 01:27:45 +0100
+
+jmol (10.00+cvs20050203-3) unstable; urgency=low
+
+  * Fixed: jmol-applet not working
+    - compiled with Sun Java 1.4.2_06
+    - added JmolApplet[0-6].jar to package
+  * Changed: location of JmolAppletProx.cgi to /usr/lib/cgi-bin
+  * Fixed: path to JmolAppletProx.cgi in JmolApplet.properties
+  * Changed: chime2jmol.pl is provided as /usr/bin/chime2jmol
+  * Added: manpage for chime2jmol
+  * Added: jmol-applet documentation on how to setup a server
+  * Added: website demo.html and file caffeine.xyz.gz as samples
+
+ -- Daniel Leidert (dale) <daniel.leidert@wgdd.de>  Fri,  4 Feb 2005 20:20:51 +0100
+
 jmol (10.00+cvs20050203-2) unstable; urgency=low
 
   * Fix my stupidity: 
     - Added postinst/postrm for registering the mime type.
     - Fixed API documentation not in libjmol-java-doc.
-    - Added Added Missing x-jmol.desktop.
+    - Added Missing x-jmol.desktop. 
   * Added TODO to jmol-applet.
-  * Move all desktop data files into desktop/.
+  * Move all desktop data files into debian/desktop.
 
  -- Daniel Leidert (dale) <daniel.leidert@wgdd.de>  Thu,  3 Feb 2005 12:38:57 +0100
 

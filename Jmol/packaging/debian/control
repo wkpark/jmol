@@ -2,12 +2,12 @@ Source: jmol
 Section: contrib/science
 Priority: optional
 Maintainer: Daniel Leidert (dale) <daniel.leidert@wgdd.de>
-Build-Depends-Indep: debhelper (>= 4.0.0), ant (>= 1.6), docbook-xml (>= 4.2), docbook-xsl (>= 1.66), dpatch, gcj-3.3 | java-compiler, java2-compiler-dummy | java2-compiler, libcommons-cli-java, libitext-java, libsaxon-java, xsltproc
+Build-Depends-Indep: debhelper (>= 4.0.0), ant (>= 1.6), docbook-xml (>= 4.2), docbook-xsl (>= 1.66), dpatch, java2-compiler-dummy | java2-compiler, libcommons-cli-java, libitext-java, libsaxon-java, xsltproc
 Standards-Version: 3.6.1.1
 
 Package: jmol
 Architecture: all
-Section: non-free/science
+Section: contrib/science
 Depends: j2re1.4 | java2-runtime, libcommons-cli-java, libitext-java
 Recommends: chemicalmime
 Suggests: libcdk-java-dirbrowser
@@ -30,8 +30,9 @@ Description: chemical 3D viewer and animator for molecules and crystals
 
 Package: jmol-applet
 Architecture: all
-Section: non-free/web
+Section: contrib/web
 Depends: j2re1.4 | java-runtime | java2-runtime
+Suggests: perl-base (>= 5.8.4)
 Description: applet for molecules and crystals based on jmol
  Jmol-applet provides most of the functionality of the Jmol application as
  an web browser applet. For more info see http://jmol.sourceforge.net/applet/.
@@ -54,7 +55,7 @@ Description: applet for molecules and crystals based on jmol
 
 Package: libjmol-java
 Architecture: all
-Section: non-free/libs
+Section: contrib/libs
 Depends: j2re1.4 | java2-runtime
 Suggests: libjmol-java-doc
 Description: jmol APIS and IO java libraries

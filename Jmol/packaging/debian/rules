@@ -27,11 +27,9 @@ build: build-stamp
 
 build-stamp: patch
 	dh_testdir
-	cd debian && xsltproc $(DOCBOOK_DIR)/manpages/docbook.xsl jmol.1.xml
-	$(ANT) $(JAVADFLAGS) -Dbuild.compiler=gcj applet-jar
-	$(ANT) $(JAVADFLAGS) jar
-	$(ANT) $(JAVADFLAGS) io-jar apis-jar
-	$(ANT) $(JAVADFLAGS) doc
+	cp appletweb/chime2jmol.pl appletweb/chime2jmol
+	cd debian && xsltproc $(DOCBOOK_DIR)/manpages/docbook.xsl *.[12345678].xml
+	$(ANT) $(JAVADFLAGS) jar applet-jar io-jar apis-jar doc
 	touch build-stamp
 
 clean: unpatch
@@ -39,8 +37,8 @@ clean: unpatch
 	dh_testroot
 	rm -f build-stamp configure-stamp patch-stamp
 	$(ANT) spotless
-	-rm -f debian/jmol.1
-	-rm *.jar
+	-rm -f debian/*.[12345678]
+	-rm *.jar appletweb/chime2jmol
 	dh_clean 
 
 install: build
@@ -65,12 +63,14 @@ binary-indep: build install
 	dh_installmenu -i
 	dh_installmime -i
 	dh_installman -i
+	dh_installexamples -i
 	dh_link -i
 #	dh_javadoc -i -plibcdk-java-doc
 	dh_strip -i
 	dh_compress -i
+	gzip debian/jmol-applet/usr/share/doc/jmol-applet/examples/caffeine.xyz
 	dh_fixperms -i
-#	dh_perl -i
+	dh_perl -i
 	dh_installdeb -i
 	dh_gencontrol -i
 	dh_md5sums -i

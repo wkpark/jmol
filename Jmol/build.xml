@@ -161,10 +161,14 @@
     </copy>
   </target>
 
-  <target name="check.appjars" id="check.appjars">
-    <uptodate property="appjars.uptodate"
-      targetfile="${appjars.dir}">
+  <target name="check.cdkjars" id="check.cdkjars">
+    <uptodate property="cdkjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdk">
       <srcfiles dir="${lib.dir}" includes="jmolcdk.jar"/>
+    </uptodate>
+  </target>
+  
+  <target name="check.libjars" id="check.libjars">
+    <uptodate property="libjars.uptodate" targetfile="${appjars.dir}">
       <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
       <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
       <srcfiles dir="${lib.dir}" includes="gnujaxp.jar"/>
@@ -175,10 +179,15 @@
     </uptodate>
   </target>
   
-  <target name="appjars" id="appjars" depends="check.appjars" unless="appjars.uptodate">
-    <delete dir="${appjars.dir}"/>
+  <target name="appjars" id="appjars" depends="libjars, cdkjars"/>
+  
+  <target name="cdkjars" id="cdkjars" depends="check.cdkjars" unless="cdkjars.uptodate">
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+  </target>
+
+  <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">
+    <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/gnujaxp.jar"/>

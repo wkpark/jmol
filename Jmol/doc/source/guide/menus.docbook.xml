@@ -690,10 +690,11 @@
             A very basic text formatting alows to combine greek and latin characters. Greek 
             characters are obtained by preceding the text with \S, latin characters by \N.
             If nothing is specified, latin characters are assumed. Superscript characters are obtained
-            with a ^.
+            with a ^. All characters following this symbol are formated in superscript. To come back to the
+            normal mode use _. Multiple combinations of ^ or _ are possible.
             </para>
             <para>
-            For example : \S l \N \ ( \S m \N m^-1 ).
+            For example : \S l \N \ ( \S m \N m^-1_ ).
             </para>
            </section>
 	 </section>

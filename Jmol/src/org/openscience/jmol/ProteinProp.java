@@ -24,13 +24,20 @@
  */
 package org.openscience.jmol;
 
+import java.util.Hashtable;
+
 public class ProteinProp {
 
-  // FIXME mth -- a very quick & dirty implementation to get something running
+  // FIXME mth -- a very quick/dirty/ugly implementation
+  // just to get some complex queries running
   public String recordPdb;
+  int iResidue;
 
   public ProteinProp(String recordPdb) {
     this.recordPdb = recordPdb;
+
+    Integer resInt = (Integer)htResidue.get(recordPdb.substring(17, 20));
+    iResidue = (resInt != null) ? resInt.intValue() : -1;
   }
 
   public boolean isHetero() {
@@ -47,5 +54,51 @@ public class ProteinProp {
 
   public String getResidue() {
     return recordPdb.substring(17, 20);
+  }
+
+  public boolean isAmino() {
+    return iResidue != -1 && iResidue < 23;
+  }
+
+  static String[] residues = {
+    // tabel taken from rasmol source molecule.h
+          "ALA", /* 8.4% */     "GLY", /* 8.3% */
+          "LEU", /* 8.0% */     "SER", /* 7.5% */
+          "VAL", /* 7.1% */     "THR", /* 6.4% */
+          "LYS", /* 5.8% */     "ASP", /* 5.5% */
+          "ILE", /* 5.2% */     "ASN", /* 4.9% */
+          "GLU", /* 4.9% */     "PRO", /* 4.4% */
+          "ARG", /* 3.8% */     "PHE", /* 3.7% */
+          "GLN", /* 3.5% */     "TYR", /* 3.5% */
+          "HIS", /* 2.3% */     "CYS", /* 2.0% */
+          "MET", /* 1.8% */     "TRP", /* 1.4% */
+
+          "ASX", "GLX", "PCA", "HYP",
+
+    /*===================*/
+    /*  DNA Nucleotides  */
+    /*===================*/
+          "  A", "  C", "  G", "  T",
+
+    /*===================*/
+    /*  RNA Nucleotides  */
+    /*===================*/
+          "  U", " +U", "  I", "1MA", 
+          "5MC", "OMC", "1MG", "2MG", 
+          "M2G", "7MG", "OMG", " YG", 
+          "H2U", "5MU", "PSU",
+
+    /*=================*/
+    /*  Miscellaneous  */ 
+    /*=================*/
+          "UNK", "ACE", "FOR", "HOH",
+          "DOD", "SO4", "PO4", "NAD",
+          "COA", "NAP", "NDP"  };
+
+  private static Hashtable htResidue = new Hashtable();
+  static {
+    for (int i = 0; i < residues.length; ++i) {
+      htResidue.put(residues[i], new Integer(i));
+    }
   }
 }

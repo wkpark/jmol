@@ -527,9 +527,14 @@ public class Eval implements Runnable {
         bs = stack[sp++] = new BitSet();
         comparatorInstruction(instruction, bs);
         break;
+      case Token.amino:
+        stack[sp++] = getAllAminosSet();
+        break;
+      case Token.water:
+        stack[sp++] = getResidueSet("HOH");
+          break;
       case Token.backbone:
       case Token.alpha:
-      case Token.amino:
       case Token.cystine:
       case Token.helix:
       case Token.ions:
@@ -539,14 +544,13 @@ public class Eval implements Runnable {
       case Token.sidechain:
       case Token.solvent:
       case Token.turn:
-      case Token.water:
         System.out.println("expression instruction not implemented:" +
                            instruction.value);
         stack[sp++] = new BitSet();
         break;
       default:
         if ((instruction.tok & Token.aminoacidset) == Token.aminoacidset) {
-          stack[sp++] = getAminoSet(instruction);
+          stack[sp++] = getResidueSet((String)instruction.value);
           break;
         }
         unrecognizedExpression();
@@ -588,8 +592,18 @@ public class Eval implements Runnable {
     return bsHetero;
   }
 
-  BitSet getAminoSet(Token tokenAmino) {
-    String strResidue = (String)tokenAmino.value;
+  BitSet getAllAminosSet() {
+    ChemFrame frame = control.getFrame();
+    BitSet bsAllAminos = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop != null && pprop.isAmino())
+        bsAllAminos.set(i);
+    }
+    return bsAllAminos;
+  }
+
+  BitSet getResidueSet(String strResidue) {
     ChemFrame frame = control.getFrame();
     BitSet bsAmino = new BitSet();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
@@ -902,6 +916,7 @@ public class Eval implements Runnable {
     control.setStyleBondScript(DisplayControl.NONE);
     control.setBondSelectionModeOr(bondmode);
     control.setStyleAtomScript(DisplayControl.NONE);
+    control.setLabelScript(null);
     // also need to turn off backbones, ribbons, strands, cartoons
     control.invertSelection();
   }

@@ -5,11 +5,10 @@
 <table border="1">
 <tr>
 <td>
-<h2>&alpha;</h2>
+<h2>amino acids</h2>
 <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="../jmol" width="300" height="300" mayscript="true" >
+        codebase="../jmol" width="350" height="350" mayscript="true" >
 	<param name="emulate"   value="chime" />
-        <param name="load"      value="caffeine.xyz.gz" />
 </applet>
 </td>
 
@@ -59,7 +58,7 @@ doc.writeln("</tr></table>")
 function writeScriptControl(script) {
   doc.writeln('<applet code="JmolAppletControl" archive="JmolApplet.jar"');
   doc.writeln('  codebase="../jmol"');
-  doc.writeln('  height="20" width="300" mayscript="true" >');
+  doc.writeln('  height="20" width="150" mayscript="true" >');
   doc.writeln('  <param name="type"   value="button" />');
   doc.writeln('  <param name="target" value="jmol" />');
   doc.writeln('  <param name="label"  value="' + script + '" />');
@@ -67,8 +66,35 @@ function writeScriptControl(script) {
   doc.writeln('</applet>');
   }
 
-writeScriptControl('select backbone; wireframe 0.25');
+doc.writeln('<br /><hr />');
+
+writeScriptControl('select *');
+writeScriptControl('select mainchain');
+writeScriptControl('select sidechain');
+doc.writeln('<br /><hr />');
+
+writeScriptControl('wireframe on');
+writeScriptControl('wireframe 0.1');
+writeScriptControl('wireframe 0.2');
+doc.writeln('<br /><hr />');
+
+writeScriptControl('cpk off');
+writeScriptControl('cpk 20%');
+writeScriptControl('cpk on');
+doc.writeln('<br /><hr />');
+
+writeScriptControl('label %a');
+writeScriptControl('label %r');
+writeScriptControl('label off');
+doc.writeln('<br /><hr />');
+writeScriptControl('color label white');
+writeScriptControl('color label none');
+doc.writeln('<br /><hr />');
   
+writeScriptControl('color atoms cpk');
+writeScriptControl('color atoms amino');
+doc.writeln('<br />');
+
 </script>
 
 </td>

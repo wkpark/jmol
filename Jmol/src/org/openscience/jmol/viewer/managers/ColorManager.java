@@ -255,6 +255,12 @@ public class ColorManager {
           argb = JmolModelAdapter.argbPdbShapelyDefault;
       }
       break;
+    case JmolModelAdapter.COLORSCHEME_PDB_CHAIN:
+      if (atom.pdbatom != null) {
+        int chain = atom.pdbatom.getChain() & 0x0F;
+        argb = JmolModelAdapter.argbsPdbChain[chain];
+      }
+      break;
     case JmolModelAdapter.COLORSCHEME_CHARGE:
       break;
     }

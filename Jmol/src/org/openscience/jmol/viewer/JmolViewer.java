@@ -148,6 +148,7 @@ final public class JmolViewer {
   public final static byte STRUCTURE  = 2;
   public final static byte AMINO      = 3;
   public final static byte SHAPELY    = 4;
+  public final static byte CHAIN      = 5;
 
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
@@ -1129,8 +1130,8 @@ final public class JmolViewer {
                                  bondIteratorSelected(BondShape.BACKBONE));
   }
 
-  public void setColorAtomScript(byte mode, Color color) {
-    distributionManager.setColixAtom(mode, Colix.getColix(color),
+  public void setColorAtomScript(byte scheme, Color color) {
+    distributionManager.setColixAtom(scheme, Colix.getColix(color),
                                      atomIteratorSelected());
   }
 

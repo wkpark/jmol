@@ -772,65 +772,66 @@ public interface JmolModelAdapter {
    * I didn't know what color to define for many of the atoms, so I made them pink.
    */
   public final static int[] argbsCpk = {
-    0xFFFF6575, // pink       Xx   0
-    0xFFFAEBD7, // offwhite    H   1
-    0xFFFFC0CB, //            He   2
-    0xFFB22222, //            Li   3
-    0xFF228B22, //            Be   4
-    0xFF00FF00, // green       B   5
-    0xFFC0C0C0, // grey        C   6
-    0xFF00C0FF, //             N   7
-    0xFFFF0000, // red         O   8
-    0xFFDAA520, //             F   9
-    0xFFFF69B4, //            Ne  10
-    0xFF0000FF, // blue       Na  11
-    0xFF228B22, //            Mg  12
-    0xFFBEBEBE, // grey       Al  13
-    0xFFDAA520, //            Si  14
-    0xFFFFA500, //             P  15
-    0xFFFFFF00, // yellow      S  16
-    0xFF00FF00, // green      Cl  17
-    0xFFFFC0CB, //            Ar  18
-    0xFFFF1493, //             K  19
-    0xFF808080, // mid grey   Ca  20
-    0xFFBEBEBE, // grey       Sc  21
-    0xFFBEBEBE, // grey       Ti  22
-    0xFFBEBEBE, // grey        V  23
-    0xFFBEBEBE, // grey       Cr  24
-    0xFFBEBEBE, // grey       Mn  25
-    0xFFFFA500, //            Fe  26
-    0xFFA52A2A, //            Co  27
-    0xFFA52A2A, //            Ni  28
-    0xFFA52A2A, //            Cu  29
-    0xFFA52A2A, //            Zn  30
-    0xFFA52A2A, //            Ga  31
-    0xFF556B2F, //            Ge  32
-    0xFFFDF5E6, //            As  33
-    0xFF98FB98, //            Se  34
-    0xFFA52A2A, //            Br  35
-    0xFF32CD32, //            Kr  36
-    0xFFA52A2A, //            Rb  37
-    0xFFBEBEBE, //            Sr  38
-    0xFFBEBEBE, //            Y	  9
-    0xFFBEBEBE, //            Zr  40
-    0xFFBEBEBE, //            Nb  41
-    0xFFFF7F50, //            Mo  42
-    0xFFBEBEBE, //            Tc  43
-    0xFFBEBEBE, //            Ru  44
-    0xFFBEBEBE, //            Rh  45
-    0xFFBEBEBE, //            Pd  46
-    0xFFBEBEBE, //            Ag  47
-    0xFFFF8C00, //            Cd  48
-    0xFFBEBEBE, //            In  49
-    0xFFBEBEBE, //            Sn  50
-    0xFFBEBEBE, //            Sb  51
-    0xFFBEBEBE, //            Te  52
-    0xFFA020F0, //             I  53
-    0xFFFF69B4, //            Xe  54
-    0xFFA52A2A, //            Cs  55
-    0xFFBEBEBE, //            Ba  56
-    0xFFBEBEBE, //            La  57
-    0xFFFF6575, //            Ce  58
+    0xFFFF69B4, // HotPink        Xx   0
+    0xFFFAEBD7, // AntiqueWhite    H   1
+    0xFFFFC0CB, // pink           He   2
+    0xFFB22222, // firebrick      Li   3
+    0xFF228B22, // ForestGreen    Be   4
+    0xFF00FF00, // green           B   5
+    //    0xFF708090, // SlateGray       C   6
+    0xFF404040, // grey25          C   6
+    0xFF00BFFF, // DeepSkyBlue     N   7
+    0xFFEE0000, // red2            O   8
+    0xFFDAA520, // goldenrod       F   9 change me
+    0xFFFF69B4, // HotPink        Ne  10 change me
+    0xFF0000FF, // blue           Na  11
+    0xFF228B22, // ForestGreen    Mg  12
+    0xFFBFBFBF, // grey75         Al  13
+    0xFFDAA520, // goldenrod      Si  14
+    0xFFFFA500, // orange          P  15
+    0xFFFFFF00, // yellow          S  16
+    0xFF00FF00, // green          Cl  17
+    0xFFFFC0CB, // HotPink        Ar  18 change me
+    0xFFFF1493, // DeepPink        K  19
+    0xFF7F7F7F, // grey50         Ca  20
+    0xFFBFBFBF, // grey75         Sc  21
+    0xFFBFBFBF, // grey75         Ti  22
+    0xFFBFBFBF, // grey75          V  23
+    0xFFBFBFBF, // grey75         Cr  24
+    0xFFBFBFBF, // grey75         Mn  25
+    0xFFFFA500, // orange         Fe  26
+    0xFFA52A2A, // brown          Co  27
+    0xFFA52A2A, // brown          Ni  28
+    0xFFA52A2A, // brown          Cu  29
+    0xFFA52A2A, // brown          Zn  30
+    0xFFA52A2A, // brown          Ga  31
+    0xFF556B2F, // DarkOliveGreen Ge  32
+    0xFFFDF5E6, // OldLace        As  33
+    0xFF98FB98, // PaleGreen      Se  34
+    0xFFA52A2A, // brown          Br  35
+    0xFF32CD32, // LimeGreen      Kr  36
+    0xFFA52A2A, // brown          Rb  37
+    0xFFBFBFBF, // grey75         Sr  38
+    0xFFBFBFBF, // grey75         Y	  9
+    0xFFBFBFBF, // grey75         Zr  40
+    0xFFBFBFBF, // grey75         Nb  41
+    0xFFFF7F50, // coral          Mo  42
+    0xFFBFBFBF, // grey75         Tc  43
+    0xFFBFBFBF, // grey75         Ru  44
+    0xFFBFBFBF, // grey75         Rh  45
+    0xFFBFBFBF, // grey75         Pd  46
+    0xFFBFBFBF, // grey75         Ag  47
+    0xFFFF8C00, // DarkOrange     Cd  48
+    0xFFBFBFBF, // grey75         In  49
+    0xFFBFBFBF, // grey75         Sn  50
+    0xFFBFBFBF, // grey75         Sb  51
+    0xFFBFBFBF, // grey75         Te  52
+    0xFFA020F0, // purple          I  53
+    0xFFFF69B4, // HotPink        Xe  54
+    0xFFA52A2A, // brown          Cs  55
+    0xFFBFBFBF, // grey75         Ba  56
+    0xFFBFBFBF, // grey75         La  57
+    0xFFFF6575, // ??         Ce  58
     0xFFFF6575, //            Pr  59
     0xFFFF6575, //            Nd  60
     0xFFFF6575, //            Pm  61
@@ -843,19 +844,19 @@ public interface JmolModelAdapter {
     0xFFFF6575, //            Er  68
     0xFFFF6575, //            Tm  69
     0xFFFF6575, //            Yb  70
-    0xFFBEBEBE, //            Lu  71
-    0xFFBEBEBE, //            Hf  72
-    0xFFBEBEBE, //            Ta  73
-    0xFF40E0D0, //             W  74
-    0xFFBEBEBE, //            Re  75
-    0xFFBEBEBE, //            Os  76
-    0xFFBEBEBE, //            Ir  77
-    0xFFBEBEBE, //            Pt  78
-    0xFFFFD700, //            Au  79
-    0xFFBEBEBE, //            Hg  80
-    0xFFBEBEBE, //            Tl  81
-    0xFFBEBEBE, //            Pb  82
-    0xFFFFB5C5, //            Bi  83
+    0xFFBFBFBF, // grey75         Lu  71
+    0xFFBFBFBF, // grey75         Hf  72
+    0xFFBFBFBF, // grey75         Ta  73
+    0xFF40E0D0, // turquoise       W  74
+    0xFFBFBFBF, // grey75         Re  75
+    0xFFBFBFBF, // grey75         Os  76
+    0xFFBFBFBF, // grey75         Ir  77
+    0xFFBFBFBF, // grey75         Pt  78
+    0xFFFFD700, // gold           Au  79
+    0xFFBFBFBF, // grey75         Hg  80
+    0xFFBFBFBF, // grey75         Tl  81
+    0xFFBFBFBF, // grey75         Pb  82
+    0xFFFFB5C5, // pink1          Bi  83
     0xFFFF6575, //            Po  84
     0xFFFF6575, //            At  85
     0xFFFF6575, //            Rn  86
@@ -892,13 +893,14 @@ public interface JmolModelAdapter {
    * so I made them pink.
    */
   public final static int[] argbsPdbStructure = {
-    0xFFFFFFFF, // white      STRUCTURE_NONE
-    0xFFF00080, // magenta    STRUCTURE_HELIX
-    0xFFFFFF00, // yellow     STRUCTURE_SHEET
-    0xFF6080FF, // light blue STRUCTURE_TURN
+    0xFFFFFFFF, // white       STRUCTURE_NONE
+    0xFFEE00EE, // magenta2    STRUCTURE_HELIX
+    0xFFFFFF00, // yellow      STRUCTURE_SHEET
+    0xFF4876FF, // RoyalBlue1  STRUCTURE_TURN
   };
 
   public final static int[] argbsPdbAmino = {
+    // note that these are the rasmol colors and names, not xwindows
     0xFFC8C8C8, // darkGrey   "ALA", /* 8.4% */
     0xFFEBEBEB, // lightGrey  "GLY", /* 8.3% */
     0xFF0F820F, // green      "LEU", /* 8.0% */
@@ -930,6 +932,7 @@ public interface JmolModelAdapter {
   public final static int argbPdbShapelySpecial =  0xFF5E005E;
   public final static int argbPdbShapelyDefault =  0xFFFF00FF;
   public final static int[] argbsPdbShapely = {
+    // these are rasmol values, not xwindows colors
     0xFF8CFF8C, // "ALA", /* 8.4% */
     0xFFFFFFFF, // "GLY", /* 8.3% */
     0xFF455E45, // "LEU", /* 8.0% */
@@ -962,19 +965,29 @@ public interface JmolModelAdapter {
     0xFFA0FFA0, // T
   };
 
+  /**
+   * colors used for chains
+   * as currently implemented, this array must be of length 16
+   */
+
   public final static int[] argbsPdbChain = {
+    // xwindows colors
+    // ' '->0 'A'->1, 'B'->2
+    0xFFFA8072, // salmon
     0xFFFF0000, // red
     0xFF00FF00, // lime
     0xFF0000FF, // blue
     0xFFFFFF00, // yellow
-    0xFFFF00FF, // magenta or cyan?
-    0xFF00FFFF, // cyan or magenta?
-    0xFF800000, // maroon
-    0xFF008000, // green
-    0xFF000080, // navy
-    0xFF808000, // olive
-    0xFF800080, // purple
-    0xFF008080, // teal
-    0xFF808080, // silver or lightGrey
+    0xFFFF00FF, // magenta
+    0xFF00FFFF, // cyan
+    0xFFFFA500, // orange
+    0xFF87CEEB, // SkyBlue
+    0xFF8B0000, // red4
+    0xFF006400, // DarkGreen
+    0xFF000080, // NavyBlue
+    0xFFA020F0, // purple
+    0xFF40E0D0, // turquoise
+    0xFF6B8E23, // OliveDrab
+    0xFF00FF7F, // SpringGreen
   };
 }

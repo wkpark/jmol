@@ -1039,8 +1039,10 @@ public class Eval implements Runnable {
     case Token.shapely:
       scheme = JmolViewer.SHAPELY;
       break;
-
     case Token.chain:
+      scheme = JmolViewer.CHAIN;
+      break;
+
     case Token.group:
     case Token.temperature:
     case Token.user:

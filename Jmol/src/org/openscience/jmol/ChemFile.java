@@ -163,34 +163,5 @@ public class ChemFile {
     }
     return descriptions;
   }
-
-  public JmolAtomIterator getJmolAtomIterator() {
-    return new ChemFileIterator();
-  }
-
-  class ChemFileIterator extends JmolAtomIterator {
-    int iframe = 0;
-    org.openscience.cdk.Atom[] frameAtoms;
-    int iatom = 0;
-
-    public ChemFileIterator() {
-      if (frames.length > 0)
-        frameAtoms = frames[0].getAtoms();
-    }
-
-    public boolean hasNext() {
-      while (iframe < frames.length && iatom == frameAtoms.length) {
-        if (++iframe < frames.length) {
-          frameAtoms = frames[iframe].getAtoms();
-          iatom = 0;
-        }
-      }
-      return iframe < frames.length;
-    }
-
-    public Atom nextAtom() {
-      return new Atom(control, frameAtoms[iatom++]);
-    }
-  }
 }
 

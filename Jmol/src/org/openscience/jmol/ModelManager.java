@@ -202,10 +202,6 @@ public class ModelManager {
     chemframe.deleteAtom(atomIndex);
   }
 
-  public JmolAtomIterator getChemFileIterator() {
-    return chemfile.getJmolAtomIterator();
-  }
-
   public int findNearestAtomIndex(int x, int y) {
     return chemframe.getJmolFrame().findNearestAtomIndex(x, y);
   }

@@ -39,7 +39,7 @@ import java.io.BufferedReader;
  * is not capable or does not want to supply them.
  *
  * Note: If you are seeing pink atoms that have lots of bonds, then your
- * methods for getAtomicNumber(clientAtom) or getAtomicSymbol(clientAtom)
+ * methods for getElementNumber(clientAtom) or getElementSymbol(clientAtom)
  * are probably returning stray values. Therefore, these atoms are getting
  * mapped to element 0 (Xx), which has color pink and a relatively large
  * covalent bonding radius. 
@@ -165,8 +165,8 @@ public abstract class JmolModelAdapter {
     public abstract boolean hasNext();
     public int getModelNumber(){ return 1; }
     abstract public Object getUniqueID();
-    public int getAtomicNumber() { return -1; }
-    public String getAtomicSymbol() { return null; }
+    public int getElementNumber() { return -1; }
+    public String getElementSymbol() { return null; }
     public String getAtomTypeName() { return null; }
     public int getAtomicCharge() { return 0; }
     abstract public float getX();

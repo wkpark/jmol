@@ -112,8 +112,8 @@ class SticksRenderer extends ShapeRenderer {
         atomB = getBackboneAtom(atomB);
       }
     }
-    if (!showHydrogens && (atomA.atomicNumber == 1 ||
-                           atomB.atomicNumber == 1))
+    if (!showHydrogens && (atomA.elementNumber == 1 ||
+                           atomB.elementNumber == 1))
       return;
     render(bond, atomA, atomB);
   }

@@ -249,6 +249,10 @@ public class ModelManager {
     return null;
   }
 
+  public int getAtomIndexFromAtomNumber(int atomNumber) {
+    return (frame == null) ? -1 : frame.getAtomIndexFromAtomNumber(atomNumber);
+  }
+
   ////////////////////////////////////////////////////////////////
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////
@@ -257,7 +261,7 @@ public class ModelManager {
     Atom atom = frame.atoms[i];
     PdbAtom pdbAtom = atom.pdbAtom;
     if (pdbAtom == null)
-      return "Atom: " + atom.getAtomicSymbol() + " " + atom.getAtomno();
+      return "Atom: " + atom.getElementSymbol() + " " + atom.getAtomNumber();
     return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomSerial() +
       " " + pdbAtom.getGroup3() + " " + pdbAtom.getSeqcodeString() +
       " Chain:" + pdbAtom.getChainID() + " Model: " + pdbAtom.getModelID();
@@ -275,8 +279,20 @@ public String getAtomInfoChime(int i) {
   }
 */
 
-  public String getAtomicSymbol(int i) {
-    return frame.atoms[i].getAtomicSymbol();
+  public String getElementSymbol(int i) {
+    return frame.atoms[i].getElementSymbol();
+  }
+
+  public int getElementNumber(int i) {
+    return frame.atoms[i].getElementNumber();
+  }
+
+  public String getAtomName(int i) {
+    return frame.atoms[i].getAtomName();
+  }
+
+  public int getAtomNumber(int i) {
+    return frame.atoms[i].getAtomNumber();
   }
 
   public float getAtomX(int i) {

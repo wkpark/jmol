@@ -90,7 +90,7 @@ class BallsRenderer extends ShapeRenderer {
   }
 
   void render(Atom atom) {
-    if (!showHydrogens && atom.atomicNumber == 1)
+    if (!showHydrogens && atom.elementNumber == 1)
       return;
     boolean hasHalo = viewer.hasSelectionHalo(atom);
     int diameter = atom.diameter;

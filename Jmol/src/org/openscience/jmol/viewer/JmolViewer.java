@@ -1067,6 +1067,10 @@ final public class JmolViewer {
     refresh();
   }
 
+  public int getAtomIndexFromAtomNumber(int atomNumber) {
+    return modelManager.getAtomIndexFromAtomNumber(atomNumber);
+  }
+
   /****************************************************************
    * delegated to MeasurementManager
    ****************************************************************/
@@ -1879,8 +1883,20 @@ final public class JmolViewer {
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////
 
-  public String getAtomicSymbol(int i) {
-    return modelManager.getAtomicSymbol(i);
+  public String getElementSymbol(int i) {
+    return modelManager.getElementSymbol(i);
+  }
+
+  public int getElementNumber(int i) {
+    return modelManager.getElementNumber(i);
+  }
+
+  public String getAtomName(int i) {
+    return modelManager.getAtomName(i);
+  }
+
+  public int getAtomNumber(int i) {
+    return modelManager.getAtomNumber(i);
   }
 
   public float getAtomX(int i) {

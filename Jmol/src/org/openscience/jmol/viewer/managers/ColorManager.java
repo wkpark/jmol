@@ -297,7 +297,7 @@ public class ColorManager {
     case JmolConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
-      short id = atom.atomicNumber;
+      short id = atom.elementNumber;
       return g3d.getChangableColix(id, argbsCpk[id]);
     case JmolConstants.PALETTE_CHARGE:
       int i = atom.getAtomicCharge() - JmolConstants.CHARGE_MIN;

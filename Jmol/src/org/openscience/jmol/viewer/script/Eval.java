@@ -827,7 +827,7 @@ public class Eval implements Runnable {
     BitSet bsHydrogen = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       Atom atom = frame.getAtomAt(i);
-      if (atom.getAtomicNumber() == 1)
+      if (atom.getElementNumber() == 1)
         bsHydrogen.set(i);
     }
     return bsHydrogen;
@@ -992,10 +992,10 @@ public class Eval implements Runnable {
       Atom atom = frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
-        propertyValue = atom.getAtomno();
+        propertyValue = atom.getAtomNumber();
         break;
       case Token.elemno:
-        propertyValue = atom.getAtomicNumber();
+        propertyValue = atom.getElementNumber();
         break;
       case Token.temperature:
         propertyValue = atom.getBfactor100();
@@ -1418,8 +1418,9 @@ public class Eval implements Runnable {
       Token token = statement[i + 1];
       if (token.tok != Token.integer)
         integerExpected();
-      int atomIndex = token.intValue - 1; // atoms start at 1
-      if (atomIndex < 0 || atomIndex >= numAtoms)
+      int atomNumber = token.intValue;
+      int atomIndex = viewer.getAtomIndexFromAtomNumber(atomNumber);
+      if (atomIndex == -1)
         badAtomNumber();
       args[i] = atomIndex;
     }

@@ -217,7 +217,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     }
     public int getModelNumber() { return atom.modelNumber; }
     public Object getUniqueID() { return atom; }
-    public String getAtomicSymbol() { return atom.elementSymbol; }
+    public String getElementSymbol() { return atom.elementSymbol; }
     public int getAtomicCharge() { return atom.atomicCharge; }
     public float getX() { return atom.x; }
     public float getY() { return atom.y; }

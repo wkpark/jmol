@@ -60,13 +60,13 @@ public class Labels extends Shape {
       int ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strLabel += atom.getAtomno();
+        strLabel += atom.getAtomNumber();
         break;
       case 'a':
-        strLabel += atom.getAtomTypeName();
+        strLabel += atom.getAtomName();
         break;
       case 'e':
-        strLabel += atom.getAtomicSymbol();
+        strLabel += atom.getElementSymbol();
         break;
       case 'x':
         strLabel += atom.getAtomX();

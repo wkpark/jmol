@@ -78,8 +78,8 @@ final public class FrameExportModelAdapter extends JmolModelAdapter {
       return true;
     }
     public Object getUniqueID() { return new Integer(iatom); }
-    public int getAtomicNumber() { return atom.atomicNumber; }
-    public String getAtomicSymbol() { return atom.getAtomicSymbol(); }
+    public int getElementNumber() { return atom.elementNumber; }
+    public String getElementSymbol() { return atom.getElementSymbol(); }
     public int getAtomicCharge() { return atom.getAtomicCharge(); }
     public float getX() { return atom.getAtomX(); }
     public float getY() { return atom.getAtomY(); }

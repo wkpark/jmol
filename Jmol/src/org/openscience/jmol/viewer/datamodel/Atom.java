@@ -45,7 +45,7 @@ public class Atom implements Bspt.Tuple {
   public Point3f point3f;
   short x, y, z;
   short diameter;
-  public byte atomicNumber;
+  public byte elementNumber;
   byte chargeAndFlags;
   short bfactor100;
   short madAtom;
@@ -53,24 +53,24 @@ public class Atom implements Bspt.Tuple {
   Bond[] bonds;
 
   /* move these out of here */
-  String atomTypeName;
+  String atomName;
   String strLabel;
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
-              byte atomicNumber, int atomicCharge, float bfactor,
-              String atomTypeName,
+              byte elementNumber, int atomicCharge, float bfactor,
+              String atomName,
               float x, float y, float z,
               PdbFile pdbFile, String pdbAtomRecord) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
     this.modelNumber = (short)modelNumber;
-    this.atomicNumber = atomicNumber;
+    this.elementNumber = elementNumber;
     this.chargeAndFlags = (byte)(atomicCharge << 4);
     this.bfactor100 =
       (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
-    this.atomTypeName = atomTypeName;
+    this.atomName = atomName;
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
@@ -262,33 +262,33 @@ public class Atom implements Bspt.Tuple {
     diameter = viewer.scaleToScreen(z, madAtom);
   }
 
-  public int getAtomicNumber() {
-    return atomicNumber;
+  public int getElementNumber() {
+    return elementNumber;
   }
 
-  public String getAtomicSymbol() {
-    return JmolConstants.atomicSymbols[atomicNumber];
+  public String getElementSymbol() {
+    return JmolConstants.elementSymbols[elementNumber];
   }
 
-  public String getAtomTypeName() {
-    if (atomTypeName != null)
-      return atomTypeName;
+  public String getAtomName() {
+    if (atomName != null)
+      return atomName;
     if (pdbAtom != null)
       return pdbAtom.getAtomPrettyName();
-    return JmolConstants.atomicSymbols[atomicNumber];
+    return JmolConstants.elementSymbols[elementNumber];
   }
 
-  public int getAtomicCharge() {
-    return chargeAndFlags >> 4;
-  }
-
-  public int getAtomno() {
+  public int getAtomNumber() {
     if (pdbAtom != null)
       return pdbAtom.getAtomSerial();
     if (frame.modelType == JmolConstants.MODEL_TYPE_XYZ &&
         frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
     return atomIndex + 1;
+  }
+
+  public int getAtomicCharge() {
+    return chargeAndFlags >> 4;
   }
 
   public Point3f getPoint3f() {
@@ -317,15 +317,15 @@ public class Atom implements Bspt.Tuple {
   // store the vdw & covalent mars in the atom when the atom is created
   // then you can eliminate all the calls involving the model manager
   public short getVanderwaalsMar() {
-    return JmolConstants.vanderwaalsMars[atomicNumber];
+    return JmolConstants.vanderwaalsMars[elementNumber];
   }
 
   public float getVanderwaalsRadiusFloat() {
-    return JmolConstants.vanderwaalsMars[atomicNumber] / 1000f;
+    return JmolConstants.vanderwaalsMars[elementNumber] / 1000f;
   }
 
   public short getBondingMar() {
-    return JmolConstants.getBondingMar(atomicNumber, chargeAndFlags >> 4);
+    return JmolConstants.getBondingMar(elementNumber, chargeAndFlags >> 4);
   }
   
   public float getBondingRadiusFloat() {

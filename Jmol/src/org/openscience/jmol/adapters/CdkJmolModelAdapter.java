@@ -228,8 +228,8 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     }
 
     public Object getUniqueID() { return atom; }
-    public int getAtomicNumber() { return atom.getAtomicNumber(); }
-    public String getAtomicSymbol() { return atom.getSymbol(); }
+    public int getElementNumber() { return atom.getAtomicNumber(); }
+    public String getElementSymbol() { return atom.getSymbol(); }
     public float getX() { return (float)atom.getX3D(); }
     public float getY() { return (float)atom.getY3D(); }
     public float getZ() { return (float)atom.getZ3D(); }

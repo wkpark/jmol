@@ -105,10 +105,10 @@ final public class JmolConstants {
   public final static byte BOND_ALL_MASK      = (byte)0xFF;
 
   /**
-   * The default atomicSymbols. Presumably the only entry which may cause
+   * The default elementSymbols. Presumably the only entry which may cause
    * confusion is element 0, whose symbol we have defined as "Xx". 
    */
-  public final static String[] atomicSymbols = {
+  public final static String[] elementSymbols = {
     "Xx", // 0
     "H",  // 1
     "He", // 2
@@ -232,14 +232,14 @@ final public class JmolConstants {
     */
   };
 
-  private static Hashtable htAtomicMap;
+  private static Hashtable htElementMap;
 
-  public static byte atomicNumberFromAtomicSymbol(String atomicSymbol) {
-    if (htAtomicMap == null) {
+  public static byte elementNumberFromSymbol(String elementSymbol) {
+    if (htElementMap == null) {
       Hashtable map = new Hashtable();
-      for (int atomicNumber = atomicNumberMax; --atomicNumber >= 0; ) {
-        String symbol = JmolConstants.atomicSymbols[atomicNumber];
-        Integer boxed = new Integer(atomicNumber);
+      for (int elementNumber = elementNumberMax; --elementNumber >= 0; ) {
+        String symbol = elementSymbols[elementNumber];
+        Integer boxed = new Integer(elementNumber);
         map.put(symbol, boxed);
         if (symbol.length() == 2) {
           symbol =
@@ -247,24 +247,24 @@ final public class JmolConstants {
           map.put(symbol, boxed);
         }
       }
-      htAtomicMap = map;
+      htElementMap = map;
     }
-    if (atomicSymbol == null) {
-      System.out.println("atomicNumberFromAtomicSymbol(null) ?");
+    if (elementSymbol == null) {
+      System.out.println("elementNumberFromSymbol(null) ?");
       return 0;
     }
-    Integer boxedAtomicNumber = (Integer)htAtomicMap.get(atomicSymbol);
+    Integer boxedAtomicNumber = (Integer)htElementMap.get(elementSymbol);
     if (boxedAtomicNumber != null)
 	return (byte)boxedAtomicNumber.intValue();
-    System.out.println("" + atomicSymbol + "' is not a recognized symbol");
+    System.out.println("" + elementSymbol + "' is not a recognized symbol");
     return 0;
   }
 
 
   /**
-   * one larger than the last atomicNumber, same as atomicSymbols.length
+   * one larger than the last elementNumber, same as elementSymbols.length
    */
-  public final static int atomicNumberMax = atomicSymbols.length;
+  public final static int elementNumberMax = elementSymbols.length;
 
   public final static String elementNames[] = {
     "unknown",
@@ -1028,13 +1028,13 @@ final public class JmolConstants {
     920,  // "Am",95,4,0.92,920
   };
 
-  public static short getBondingMar(int atomicNumber, int charge) {
+  public static short getBondingMar(int elementNumber, int charge) {
     if (charge != 0) {
       // ionicLookupTable is a sorted table of ionic keys
       // lookup doing a binary search
       // when found, return the corresponding value in ionicMars
       // if not found, just return covalent radius
-      short ionic = (short)((atomicNumber << 4)+(charge + 4));
+      short ionic = (short)((elementNumber << 4)+(charge + 4));
       int iMin = 0, iMax = ionicLookupTable.length;
       while (iMin != iMax) {
         int iMid = (iMin + iMax) / 2;
@@ -1046,7 +1046,7 @@ final public class JmolConstants {
           return ionicMars[iMid];
       }
     }
-    return covalentMars[atomicNumber];
+    return covalentMars[elementNumber];
   }
 
 
@@ -1202,12 +1202,12 @@ final public class JmolConstants {
   static {
     // if the length of these tables is all the same then the
     // java compiler should eliminate all of this code.
-    if ((atomicSymbols.length != elementNames.length) ||
-        (atomicSymbols.length != vanderwaalsMars.length) ||
-        (atomicSymbols.length != covalentMars.length) ||
-        (atomicSymbols.length != argbsCpk.length)) {
+    if ((elementSymbols.length != elementNames.length) ||
+        (elementSymbols.length != vanderwaalsMars.length) ||
+        (elementSymbols.length != covalentMars.length) ||
+        (elementSymbols.length != argbsCpk.length)) {
       System.out.println("ERROR!!! Element table length mismatch:" +
-                         "\n atomicSymbols.length=" + atomicSymbols.length +
+                         "\n elementSymbols.length=" + elementSymbols.length +
                          "\n elementNames.length=" + elementNames.length +
                          "\n vanderwaalsMars.length=" + vanderwaalsMars.length+
                          "\n covalentMars.length=" + covalentMars.length +

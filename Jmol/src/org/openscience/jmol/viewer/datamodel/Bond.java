@@ -58,7 +58,7 @@ public class Bond {
       throw new NullPointerException();
     this.atom1 = atom1;
     this.atom2 = atom2;
-    if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16)
+    if (atom1.elementNumber == 16 && atom2.elementNumber == 16)
       order |= JmolConstants.BOND_SULFUR_MASK;
     this.order = (byte)order;
     this.mad = mad;

@@ -147,6 +147,23 @@ final public class Frame {
     return atom;
   }
 
+  public int getAtomIndexFromAtomNumber(int atomNumber) {
+    if (hasPdbRecords) {
+      for (int i = atomCount; --i >= 0; ) {
+        PdbAtom pdbAtom = atoms[i].pdbAtom;
+        if (pdbAtom != null && pdbAtom.getAtomSerial() == atomNumber)
+          return i;
+      }
+    } else if (modelType == JmolConstants.MODEL_TYPE_XYZ &&
+               viewer.getZeroBasedXyzRasmol() &&
+               atomNumber >= 0 && atomNumber < atomCount) {
+      return atomNumber;
+    } else if (atomNumber >= 1 && atomNumber <= atomCount) {
+      return atomNumber - 1;
+    }
+    return -1;
+  }
+
   public int getModelCount() {
     return modelCount;
   }
@@ -767,16 +784,16 @@ final public class Frame {
       timeBegin = System.currentTimeMillis();
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
-      int atomicNumber = atom.atomicNumber;
-      if (atomicNumber != 7 && atomicNumber != 8)
+      int elementNumber = atom.elementNumber;
+      if (elementNumber != 7 && elementNumber != 8)
         continue;
       float searchRadius = hbondMax;
       Bspt.SphereIterator iter = bspf.getSphereIterator(atom.getModelNumber());
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
         Atom atomNear = (Atom)iter.nextElement();
-        int atomicNumberNear = atomNear.atomicNumber;
-        if (atomicNumberNear != 7 && atomicNumberNear != 8)
+        int elementNumberNear = atomNear.elementNumber;
+        if (elementNumberNear != 7 && elementNumberNear != 8)
           continue;
         if (atomNear == atom)
           continue;

@@ -275,7 +275,7 @@ public class MeasurementTable extends JDialog {
     if (pickedAtomCount == 3)
       measureButtonLabel = "Angle";
     else if (pickedAtomCount == 4)
-      measureButtonLabel = "Dihedral Angle";
+      measureButtonLabel = "Torsion Angle";
     measureButton.setLabel(measureButtonLabel);
     measureButton.setVisible(pickedAtomCount >= 2);
     pickingTableModel.fireTableDataChanged();
@@ -318,7 +318,10 @@ public class MeasurementTable extends JDialog {
         return viewer.getMeasurementString(row);
       int[] indices = viewer.getMeasurementIndices(row);
       int i = col-1;
-      return (i < indices.length ? new Integer(indices[i]) : null);
+      if (i >= indices.length)
+        return null;
+      int atomIndex = indices[i];
+      return "" + viewer.getAtomNumber(atomIndex) + " " + viewer.getAtomName(atomIndex);
     }
 
     public boolean isCellEditable(int row, int col) { return false; }
@@ -329,8 +332,8 @@ public class MeasurementTable extends JDialog {
 
   class PickingTableModel extends AbstractTableModel {
     final String[] pickingHeaders = {
-            JmolResourceHandler.getInstance().translate("Atom"),
-            JmolResourceHandler.getInstance().translate("Symbol"),
+            JmolResourceHandler.getInstance().translate("Number"),
+            JmolResourceHandler.getInstance().translate("Name"),
             "x", "y", "z"};
 
     public String getColumnName(int col) { 
@@ -350,9 +353,9 @@ public class MeasurementTable extends JDialog {
       if (row < pickedAtomCount)
         switch(col) {
         case 0:
-          return new Integer(pickedAtoms[row]);
+          return new Integer(viewer.getAtomNumber(pickedAtoms[row]));
         case 1:
-          return viewer.getAtomicSymbol(pickedAtoms[row]);
+          return viewer.getAtomName(pickedAtoms[row]);
         case 2:
           return new Float(viewer.getAtomX(pickedAtoms[row]));
         case 3:

@@ -118,7 +118,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       
       load(getParameter("load"));
       loadInline(getParameter("loadInline"));
-      rasmolScript(getParameter("rasmolScript"));
+      script(getParameter("script"));
     }
     control.popHoldRepaint();
   }

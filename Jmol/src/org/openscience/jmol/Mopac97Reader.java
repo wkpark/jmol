@@ -107,8 +107,10 @@ class Mopac97Reader extends DefaultChemFileReader {
       StringReader sr = new StringReader(line);
       StreamTokenizer token = new StreamTokenizer(sr);
 
-      // Ignore first token
-      token.nextToken();
+      // Ignore first token; must be a number.
+      if (token.nextToken() != StreamTokenizer.TT_NUMBER) {
+        break;
+      }
       int atomicNumber = 0;
       String atomName = null;
       double x;

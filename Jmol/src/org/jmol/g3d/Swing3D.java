@@ -45,10 +45,10 @@ final class Swing3D extends Platform3D {
   Image allocateImage() {
     SinglePixelPackedSampleModel sppsm =
       new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT,
-                                       width,
-                                       height,
+                                       windowWidth,
+                                       windowHeight,
                                        sampleModelBitMasks);
-    DataBufferInt dbi = new DataBufferInt(pBuffer, size);
+    DataBufferInt dbi = new DataBufferInt(pBuffer, windowSize);
     WritableRaster wr =
       Raster.createWritableRaster(sppsm, dbi, null);
     BufferedImage bi = new BufferedImage(rgbColorModel, wr, false, null);
@@ -58,5 +58,4 @@ final class Swing3D extends Platform3D {
   Image allocateOffscreenImage(int width, int height) {
     return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
   }
-
 }

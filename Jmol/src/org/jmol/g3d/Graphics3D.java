@@ -50,15 +50,12 @@ final public class Graphics3D {
   boolean tFullSceneAntialiasing;
   boolean tPaintingInProgress;
 
+  int windowWidth, windowHeight;
   int width,height;
   int slab, depth;
   int xLast, yLast;
   int[] pbuf;
   short[] zbuf;
-
-  int width1, height1, size1;
-  int[] pbuf1;
-  short[] zbuf1;
 
   short colixBackground;
   int argbBackground;
@@ -84,15 +81,13 @@ final public class Graphics3D {
   }
   
   public void setSize(Dimension dim) {
-    if (dim.width == width && dim.height == height)
+    if (dim.width == windowWidth && dim.height == windowHeight)
       return;
-    width1 = width = dim.width;
-    xLast = width1 - 1;
-    height1 = height = dim.height;
-    yLast = height - 1;
-    size1 = width1 * height1;
-    pbuf = pbuf1 = null;
-    zbuf = zbuf1 = null;
+    windowWidth = dim.width;
+    windowHeight = dim.height;
+    width = -1; height = -1;
+    pbuf = null;
+    zbuf = null;
     platform.releaseBuffers();
   }
 
@@ -388,9 +383,13 @@ final public class Graphics3D {
       endRendering();
     currentlyRendering = true;
     if (pbuf == null) {
-      platform.allocateBuffers(width, height);
-      pbuf = pbuf1 = platform.pBuffer;
-      zbuf = zbuf1 = platform.zBuffer;
+      platform.allocateBuffers(windowWidth, windowHeight, false);
+      pbuf = platform.pBuffer;
+      zbuf = platform.zBuffer;
+      width = windowWidth;
+      xLast = width - 1;
+      height = windowHeight;
+      yLast = height - 1;
     }
     /*
     if (tFullSceneAntialiasing && zbuf4 != null) {

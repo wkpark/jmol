@@ -92,12 +92,13 @@ final class Awt3D extends Platform3D implements ImageProducer {
   public void startProduction(ImageConsumer ic) {
     if (this.ic != ic) {
       this.ic = ic;
-      ic.setDimensions(width, height);
+      ic.setDimensions(windowWidth, windowHeight);
       ic.setHints(ImageConsumer.TOPDOWNLEFTRIGHT |
                   ImageConsumer.COMPLETESCANLINES |
                   ImageConsumer.SINGLEPASS);
     }
-    ic.setPixels(0, 0, width, height, colorModelRGB, pBuffer, 0, width);
+    ic.setPixels(0, 0, windowWidth, windowHeight, colorModelRGB,
+                 pBuffer, 0, windowWidth);
     ic.imageComplete(ImageConsumer.SINGLEFRAMEDONE);
   }
 }

@@ -36,8 +36,9 @@ import java.awt.Image;
  */ 
 abstract class Platform3D {
 
-  int width, height;
-  int size;
+  int windowWidth, windowHeight, windowSize;
+  int bufferWidth, bufferHeight, bufferSize;
+
   Image imagePixelBuffer;
   int[] pBuffer;
   short[] zBuffer;
@@ -83,17 +84,30 @@ abstract class Platform3D {
 
   abstract Image allocateImage();
 
-  void allocateBuffers(int width, int height) {
-    this.width = width;
-    this.height = height;
-    size = width * height;
-    zBuffer = new short[size];
-    pBuffer = new int[size];
+  void allocateBuffers(int width, int height, boolean tFsaa4) {
+    System.out.println("allocateBuffers(" + width + "," +
+                       height + "," + tFsaa4 + ")");
+    windowWidth = width;
+    windowHeight = height;
+    windowSize = width * height;
+    if (tFsaa4) {
+      System.out.println("I am doubling!");
+      bufferWidth = width * 2;
+      bufferHeight = height * 2;
+    } else {
+      bufferWidth = width;
+      bufferHeight = height;
+    }
+    bufferSize = bufferWidth * bufferHeight;
+    zBuffer = new short[bufferSize];
+    pBuffer = new int[bufferSize];
     imagePixelBuffer = allocateImage();
+    System.out.println("  width:" + width + " bufferWidth=" + bufferWidth +
+                       "\nheight:" + height + "bufferHeight=" + bufferHeight);
   }
 
   void releaseBuffers() {
-    width = height = size = -1;
+    windowWidth = windowHeight = bufferWidth = bufferHeight = bufferSize = -1;
     if (imagePixelBuffer != null) {
       imagePixelBuffer.flush();
       imagePixelBuffer = null;
@@ -111,14 +125,14 @@ abstract class Platform3D {
   }
 
   boolean hasContent() {
-    for (int i = size; --i >= 0; )
+    for (int i = bufferSize; --i >= 0; )
       if (zBuffer[i] != ZBUFFER_BACKGROUND)
         return true;
     return false;
   }
 
   void clearScreenBuffer(int argbBackground) {
-    for (int i = size; --i >= 0; ) {
+    for (int i = bufferSize; --i >= 0; ) {
       zBuffer[i] = ZBUFFER_BACKGROUND;
       pBuffer[i] = argbBackground;
     }

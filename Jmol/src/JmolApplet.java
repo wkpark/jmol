@@ -184,7 +184,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void notifyFileNotLoaded(String fileName, String errorMsg) {
-    showStatus("File Error->" + errorMsg);
+    showStatus("File Error:" + errorMsg);
   }
 
   public void setStatusMessage(String statusMessage) {

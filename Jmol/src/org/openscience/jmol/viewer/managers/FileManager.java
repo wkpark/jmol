@@ -75,12 +75,11 @@ public class FileManager {
     try {
       if (appletDocumentBase != null) {
         // we are running as an applet
+        System.out.println("an applet will try to open the URL:" + name);
         if (i < urlPrefixes.length)
           if (appletProxy != null)
             name = appletProxy + "?url=" + URLEncoder.encode(name);
-        System.out.println("an applet will try to open the URL:" + name);
         url = new URL(appletDocumentBase, name);
-        System.out.println("url becomes:" + url);
       } else {
         url = (i < urlPrefixes.length
                ? new URL(name)
@@ -101,7 +100,7 @@ public class FileManager {
           System.out.println("getting ready to open url=" + url);
           InputStream is = url.openStream();
           return is;
-        } catch (Exception e) {
+        } catch (IOException e) {
           System.out.println("error doing a url.openStream:" + e.getMessage());
           errorMessage = e.getMessage();
         }

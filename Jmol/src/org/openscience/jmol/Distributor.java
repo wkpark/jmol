@@ -39,17 +39,17 @@ public class Distributor {
 
   public void initializeAtomShapes() {
     byte styleAtom = control.getStyleAtom();
-    int madAtom = -control.getPercentVdwAtom();
+    short marAtom = control.getMarAtom();
     byte styleBond = control.getStyleBond();
-    int madBond = control.getPercentAngstromBond() * 10;
+    short marBond = control.getMarBond();
     Color colorBond = control.getColorBond();
     JmolAtomIterator iter = control.getChemFileIterator();
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
       atom.setAtomShape(new AtomShape(atom,
-                                      styleAtom, madAtom,
+                                      styleAtom, marAtom,
                                       control.getColorAtom(atom),
-                                      styleBond, madBond,
+                                      styleBond, marBond,
                                       colorBond,
                                       control.getLabelAtom(atom)));
     }
@@ -60,14 +60,14 @@ public class Distributor {
       iter.nextAtom().atomShape.setStyleAtom(styleAtom);
   }
 
-  public void setMadAtom(int madAtom, JmolAtomIterator iter) {
+  public void setMarAtom(short marAtom, JmolAtomIterator iter) {
     while (iter.hasNext())
-      iter.nextAtom().atomShape.setMadAtom(madAtom);
+      iter.nextAtom().atomShape.setMarAtom(marAtom);
   }
 
-  public void setStyleMadAtom(byte style, int mad, JmolAtomIterator iter) {
+  public void setStyleMarAtom(byte style, short mar, JmolAtomIterator iter) {
     while (iter.hasNext())
-      iter.nextAtom().atomShape.setStyleMadAtom(style, mad);
+      iter.nextAtom().atomShape.setStyleMarAtom(style, mar);
   }
 
   public void setStyleBond(byte styleBond, JmolAtomIterator iter) {
@@ -79,21 +79,21 @@ public class Distributor {
     }
   }
 
-  public void setMadBond(int madBond, JmolAtomIterator iter) {
+  public void setMarBond(short marBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       if (iter.allBonds())
-        iter.nextAtom().atomShape.setMadAllBonds(madBond);
+        iter.nextAtom().atomShape.setMarAllBonds(marBond);
       else
-        iter.nextAtom().atomShape.setMadBond(madBond, iter.indexBond());
+        iter.nextAtom().atomShape.setMarBond(marBond, iter.indexBond());
     }
   }
 
-  public void setStyleMadBond(byte style, int mad, JmolAtomIterator iter) {
+  public void setStyleMarBond(byte style, short mar, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       if (iter.allBonds())
-        iter.nextAtom().atomShape.setStyleMadAllBonds(style, mad);
+        iter.nextAtom().atomShape.setStyleMarAllBonds(style, mar);
       else
-        iter.nextAtom().atomShape.setStyleMadBond(style, mad,iter.indexBond());
+        iter.nextAtom().atomShape.setStyleMarBond(style, mar,iter.indexBond());
     }
   }
 

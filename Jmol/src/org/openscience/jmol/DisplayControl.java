@@ -146,12 +146,6 @@ final public class DisplayControl {
     colorManager.flushCachedColors();
   }
 
-  public void scriptEcho(String str) {
-    // FIXME -- if there is a script window it should go there
-    // for an applet it needs to go someplace else
-    System.out.println(str);
-  }
-
   /****************************************************************
    * delegated to TransformManager
    ****************************************************************/
@@ -354,6 +348,7 @@ final public class DisplayControl {
     return transformManager.transformPoint(pointAngstroms);
   }
 
+  /*
   public int screenAtomDiameter(int z, Atom atom) {
     return transformManager.screenAtomDiameter(z, atom,
                                                styleManager.percentVdwAtom);
@@ -363,6 +358,7 @@ final public class DisplayControl {
     return transformManager.screenBondWidth(z,
                                             styleManager.percentAngstromBond);
   }
+  */
 
   public double scaleToScreen(int z, double sizeAngstroms) {
     return transformManager.scaleToScreen(z, sizeAngstroms);
@@ -850,6 +846,12 @@ final public class DisplayControl {
   /****************************************************************
    * routines for script support
    ****************************************************************/
+  public void scriptEcho(String str) {
+    // FIXME -- if there is a script window it should go there
+    // for an applet it needs to go someplace else
+    System.out.println(str);
+  }
+
   private JmolAtomIterator iterAtomScript() {
     if (! modelManager.haveFile || selectionManager.isEmpty())
       return iterNull;
@@ -863,12 +865,12 @@ final public class DisplayControl {
                                              false);
   }
 
-  public void setStyleMadAtomScript(byte style, int mad) {
-    distributor.setStyleMadAtom(style, mad, iterAtomScript());
+  public void setStyleMarAtomScript(byte style, short mar) {
+    distributor.setStyleMarAtom(style, mar, iterAtomScript());
   }
 
-  public void setStyleMadBondScript(byte style, int mad) {
-    distributor.setStyleMadBond(style, mad, iterBondScript());
+  public void setStyleMarBondScript(byte style, short mar) {
+    distributor.setStyleMarBond(style, mar, iterBondScript());
   }
 
   public void setStyleBondScript(byte style) {
@@ -922,12 +924,16 @@ final public class DisplayControl {
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
-    distributor.setMadAtom(-percentVdwAtom, iterAtomMenu());
+    distributor.setMarAtom((short)-percentVdwAtom, iterAtomMenu());
     refresh();
   }
 
   public int getPercentVdwAtom() {
     return styleManager.percentVdwAtom;
+  }
+
+  public short getMarAtom() {
+    return (short)-styleManager.percentVdwAtom;
   }
 
   public void setStyleBond(byte style) {
@@ -940,14 +946,14 @@ final public class DisplayControl {
     return styleManager.styleBond;
   }
 
-  public void setPercentAngstromBond(int percentAngstromBond) {
-    styleManager.setPercentAngstromBond(percentAngstromBond);
-    distributor.setMadBond(percentAngstromBond * 10, iterBondMenu());
+  public void setMarBond(short marBond) {
+    styleManager.setMarBond(marBond);
+    distributor.setMarBond(marBond, iterBondMenu());
     refresh();
   }
 
-  public int getPercentAngstromBond() {
-    return styleManager.percentAngstromBond;
+  public short getMarBond() {
+    return styleManager.marBond;
   }
 
   public void setShowAtoms(boolean showAtoms) {

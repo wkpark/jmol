@@ -423,9 +423,12 @@ public class ChemFrame extends AtomContainer {
       : indexNearest;
   }
     
-  BitSet bsFoundRectangle = new BitSet();
+  // jvm < 1.4 does not have a BitSet.clear();
+  // so in order to clear you "and" with an empty bitset.
+  private final BitSet bsEmpty = new BitSet();
+  private final BitSet bsFoundRectangle = new BitSet();
   public BitSet findAtomsInRectangle(Rectangle rect) {
-    bsFoundRectangle.clear();
+    bsFoundRectangle.and(bsEmpty);
     for (int i = 0; i < numberOfAtoms; ++i) {
       if (rect.contains(atoms[i].atomShape.x, atoms[i].atomShape.y))
         bsFoundRectangle.set(i);

@@ -37,28 +37,28 @@ public class AtomShape extends Shape {
 
   public Atom atom;
   public byte styleAtom;
-  public int madAtom;
+  public short marAtom;
   public Color colorAtom;
   public int diameter;
   public int numBonds;
   public int[] bondWidths;
   public byte[] styleBonds;
-  public int[] madBonds;
+  public short[] marBonds;
   public Color[] colorBonds;
   public String strLabel;
   
   public AtomShape(Atom atom,
-                   byte styleAtom, int madAtom, Color colorAtom,
-                   byte styleBond, int madBond, Color colorBond,
+                   byte styleAtom, short marAtom, Color colorAtom,
+                   byte styleBond, short marBond, Color colorBond,
                    String strLabel) {
     this.atom = atom;
     numBonds = atom.getBondedCount();
     bondWidths = new int[numBonds];
     styleBonds = new byte[numBonds];
-    madBonds = new int[numBonds];
+    marBonds = new short[numBonds];
     colorBonds = new Color[numBonds];
-    setStyleMadAtom(styleAtom, madAtom);
-    setStyleMadAllBonds(styleBond, madBond);
+    setStyleMarAtom(styleAtom, marAtom);
+    setStyleMarAllBonds(styleBond, marBond);
     setColorAllBonds(colorBond);
     this.colorAtom = colorAtom;
     this.strLabel = strLabel;
@@ -69,38 +69,38 @@ public class AtomShape extends Shape {
   }
 
   /*
-   * What is a MAD?
+   * What is a MAR?
    *  - just a term that I made up
    *  - an abbreviation for Milli Angstrom Diameter
    * that is
-   *  - a *diameter* of either a bond or an atom
+   *  - a *radius* of either a bond or an atom
    *  - in *millis*, or thousandths of an *angstrom*
    *  - stored as an integer
    *
-   * However! In the case of an atom diameter, if the parameter
+   * However! In the case of an atom radius, if the parameter
    * gets passed in as a negative number, then that number
    * represents a percentage of the vdw radius of that atom.
-   * This is converted to a normal MAD as soon as possible
+   * This is converted to a normal MAR as soon as possible
    */
 
   public void setStyleAtom(byte styleAtom) {
     this.styleAtom = styleAtom;
   }
 
-  public void setMadAtom(int madAtom) {
-    if (madAtom < 0)
-      madAtom = (int)((-20 * madAtom) * atom.getVdwRadius());
-    this.madAtom = madAtom;
+  public void setMarAtom(short marAtom) {
+    if (marAtom < 0)
+      marAtom = (short)((-10 * marAtom) * atom.getVdwRadius());
+    this.marAtom = marAtom;
   }
         
-  public void setStyleMadAtom(byte styleAtom, int madAtom) {
+  public void setStyleMarAtom(byte styleAtom, short marAtom) {
     this.styleAtom = styleAtom;
-    if (madAtom < 0) {
+    if (marAtom < 0) {
       // a percentage of the atom vdw
-      // radius * 2 * 1000 * -madAtom / 100
-      madAtom = (int)((-20 * madAtom) * atom.getVdwRadius());
+      // radius * 2 * 1000 * -marAtom / 100
+      marAtom = (short)((-10 * marAtom) * atom.getVdwRadius());
     }
-    this.madAtom = madAtom;
+    this.marAtom = marAtom;
   }
         
   public void setStyleAllBonds(byte styleBond) {
@@ -108,15 +108,15 @@ public class AtomShape extends Shape {
       styleBonds[i] = styleBond;
   }
 
-  public void setMadAllBonds(int madBond) {
+  public void setMarAllBonds(short marBond) {
     for (int i = numBonds; --i >= 0; )
-      madBonds[i] = madBond;
+      marBonds[i] = marBond;
   }
 
-  public void setStyleMadAllBonds(byte styleBond, int madBond) {
+  public void setStyleMarAllBonds(byte styleBond, short marBond) {
     for (int i = numBonds; --i >= 0; ) {
       styleBonds[i] = styleBond;
-      madBonds[i] = madBond;
+      marBonds[i] = marBond;
     }
   }
 
@@ -124,13 +124,13 @@ public class AtomShape extends Shape {
     styleBonds[indexBond] = styleBond;
   }
 
-  public void setMadBond(int madBond, int indexBond) {
-    madBonds[indexBond] = madBond;
+  public void setMarBond(short marBond, int indexBond) {
+    marBonds[indexBond] = marBond;
   }
 
-  public void setStyleMadBond(byte styleBond, int madBond, int indexBond) {
+  public void setStyleMarBond(byte styleBond, short marBond, int indexBond) {
     styleBonds[indexBond] = styleBond;
-    madBonds[indexBond] = madBond;
+    marBonds[indexBond] = marBond;
   }
 
   public void setColorAtom(Color colorAtom) {
@@ -156,9 +156,9 @@ public class AtomShape extends Shape {
     x = (int)screen.x;
     y = (int)screen.y;
     z = (int)screen.z;
-    diameter = control.scaleToScreen(z, madAtom);
+    diameter = control.scaleToScreen(z, marAtom * 2);
     for (int i = numBonds; --i >= 0; )
-      bondWidths[i] = control.scaleToScreen(z, madBonds[i]);
+      bondWidths[i] = control.scaleToScreen(z, marBonds[i] * 2);
   }
 
   public void render(Graphics g, DisplayControl control) {

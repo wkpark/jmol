@@ -53,18 +53,9 @@ public class StyleManager {
     this.styleBond = styleBond;
   }
 
-  public int percentAngstromBond = 10;
-  public void setPercentAngstromBond(int percentAngstromBond) {
-    this.percentAngstromBond = percentAngstromBond;
-  }
-
-  public void setColorBond(Color colorBond, JmolAtomIterator iter) {
-    while (iter.hasNext()) {
-      if (iter.allBonds())
-        iter.nextAtom().atomShape.setColorAllBonds(colorBond);
-      else
-        iter.nextAtom().atomShape.setColorBond(colorBond, iter.indexBond());
-    }
+  public short marBond = 50;
+  public void setMarBond(short marBond) {
+    this.marBond =marBond;
   }
 
   public boolean showAtoms = true;

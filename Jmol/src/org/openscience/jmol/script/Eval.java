@@ -892,36 +892,36 @@ public class Eval implements Runnable {
   void spacefill() throws ScriptException {
     int tok = statement[1].tok;
     byte style = DisplayControl.SHADING;
-    int mad = -100; // cpk with no args goes to 100%
+    short mar = -100; // cpk with no args goes to 100%
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      mad = -20; // for better interactions with menu usage
+      mar = -10; // for better interactions with menu usage
       style = DisplayControl.NONE;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         outOfRange();
-      mad = radiusRasMol * 4 * 2;
+      mar = (short)(radiusRasMol * 4);
       break;
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();
       if (angstroms >= 2)
         outOfRange();
-      mad = (int)(angstroms * 2 * 1000);
+      mar = (short)(angstroms * 1000);
       break;
     default:
       booleanOrNumberExpected();
     }
-    control.setStyleMadAtomScript(style, mad);
+    control.setStyleMarAtomScript(style, mar);
   }
 
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
     byte style = DisplayControl.WIREFRAME;
-    int mad = 100;
+    short mar = 100;
     switch (tok) {
     case Token.on:
       break;
@@ -932,19 +932,19 @@ public class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         outOfRange();
-      mad = radiusRasMol * 4 * 2;
+      mar = (short)(radiusRasMol * 4);
       style = DisplayControl.SHADING;
       break;
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();
       if (angstroms >= 2)
         outOfRange();
-      mad = (int)(angstroms * 2 * 1000);
+      mar = (short)(angstroms * 1000);
       style = DisplayControl.SHADING;
       break;
     default:
       booleanOrNumberExpected();
     }
-    control.setStyleMadBondScript(style, mad);
+    control.setStyleMarBondScript(style, mar);
   }
 }

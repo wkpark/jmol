@@ -100,7 +100,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double ArrowHeadRadius;
   private static double ArrowLengthScale;
   private static double BondFudge;
-  private static int percentAngstromBond;
+  private static short marBond;
   private static double FieldOfView;
   private static int percentVdwAtom;
   private static double VibrateAmplitudeScale;
@@ -160,7 +160,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("AtomPropsMode", "");
     props.put("percentVdwAtom", "20");
     props.put("AutoBond", "true");
-    props.put("percentAngstromBond", "10");
+    props.put("marBond", "50");
     props.put("BondFudge", "1.12");
     props.put("ArrowHeadSize", "1.0");
     props.put("ArrowHeadRadius", "1.0");
@@ -593,40 +593,27 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       new JLabel(JmolResourceHandler.getInstance()
         .getString("Prefs.bondWidthExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
-    bwSlider =
-      new JSlider(JSlider.HORIZONTAL, 0, 100,control.getPercentAngstromBond());
+    bwSlider = new JSlider(0, 250,control.getMarBond());
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
-    bwSlider.setMajorTickSpacing(20);
-    bwSlider.setMinorTickSpacing(10);
+    bwSlider.setMajorTickSpacing(50);
+    bwSlider.setMinorTickSpacing(25);
     bwSlider.setPaintLabels(true);
-    bwSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    bwSlider.setLabelTable(bwSlider.getLabelTable());
-    bwSlider.getLabelTable().put(new Integer(20),
-        new JLabel("0.2", JLabel.CENTER));
-    bwSlider.setLabelTable(bwSlider.getLabelTable());
-    bwSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
-    bwSlider.setLabelTable(bwSlider.getLabelTable());
-    bwSlider.getLabelTable().put(new Integer(60),
-        new JLabel("0.6", JLabel.CENTER));
-    bwSlider.setLabelTable(bwSlider.getLabelTable());
-    bwSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
-    bwSlider.setLabelTable(bwSlider.getLabelTable());
-    bwSlider.getLabelTable().put(new Integer(100),
-        new JLabel("1.0", JLabel.CENTER));
-    bwSlider.setLabelTable(bwSlider.getLabelTable());
-
+    for (int i = 0; i <= 250; i += 50) {
+      String label = "" + (1000 + i);
+      label = "0." + label.substring(1);
+      bwSlider.getLabelTable().put(new Integer(i),
+                                   new JLabel(label, JLabel.CENTER));
+      bwSlider.setLabelTable(bwSlider.getLabelTable());
+    }
     bwSlider.addChangeListener(new ChangeListener() {
 
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        percentAngstromBond = source.getValue();
-        control.setPercentAngstromBond(percentAngstromBond);
-        props.put("percentAngstromBond", "" + percentAngstromBond);
+        marBond = (short)source.getValue();
+        control.setMarBond(marBond);
+        props.put("marBond", "" + marBond);
       }
     });
 
@@ -1215,7 +1202,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     // Bond panel controls:
     bRender.setSelectedIndex(control.getStyleBond());
     abYes.setSelected(control.getAutoBond());
-    bwSlider.setValue(control.getPercentAngstromBond());
+    bwSlider.setValue(control.getMarBond());
     bfSlider.setValue((int) (50.0 * control.getBondFudge()));
 
     // Vector panel controls:
@@ -1305,8 +1292,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     ArrowLengthScale =
         new Double(props.getProperty("ArrowLengthScale")).doubleValue();
     BondFudge = new Double(props.getProperty("BondFudge")).doubleValue();
-    percentAngstromBond =
-      Integer.parseInt(props.getProperty("percentAngstromBond"));
+    marBond = Short.parseShort(props.getProperty("marBond"));
     FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
     percentVdwAtom =
       Integer.parseInt(props.getProperty("percentVdwAtom"));
@@ -1323,8 +1309,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setStyleAtom(styleAtom);
     control.setStyleLabel(styleLabel);
     control.setPropertyStyleString(AtomPropsMode);
-    control.setPercentAngstromBond(percentAngstromBond);
     control.setStyleBond(styleBond);
+    control.setMarBond(marBond);
     control.setColorVector(colorVector);
     control.setArrowHeadRadius(ArrowHeadRadius);
     control.setArrowHeadSize(ArrowHeadSize);

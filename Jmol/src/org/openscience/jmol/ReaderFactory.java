@@ -49,10 +49,17 @@ public abstract class ReaderFactory {
 
     if (buffer.markSupported()) {
 
-      /* The mark and reset on the buffer, is so that we can read
-       * the first few lines for XYZ, CML, or MDL files without screwing
-       * up the other tests below
-       */
+      // The mark and reset on the buffer, is so that we can read
+      // without screwing up the other tests below
+      buffer.mark(255);
+      line = getLine(buffer);
+      buffer.reset();
+      
+      // If XML, assume CML.
+      if (line.startsWith("<?xml")) {
+        return new CMLReader(buffer);
+      }
+
       buffer.mark(1024);
       line = buffer.readLine();
       buffer.readLine();
@@ -71,14 +78,9 @@ public abstract class ReaderFactory {
         new Integer(line.trim());
         return new XYZReader(buffer);
       } catch (NumberFormatException nfe) {
-
         // Integer not found on first line; therefore not a XYZ file
       }
 
-      // If XML, assume CML.
-      if (line.startsWith("<?xml")) {
-        return new CMLReader(buffer);
-      }
     } else {
       line = buffer.readLine();
     }
@@ -117,5 +119,31 @@ public abstract class ReaderFactory {
     return null;
   }
 
+  /**
+   * Reads a line with special XML character handling. Any whitespace characters at
+   * the beginning of the line are ignored. The end-tag character '>' is
+   * considered an end-of-line character.
+   *
+   * @param buffer the input from which to read.
+   * @return the line read.
+   */
+  static String getLine(BufferedReader buffer) throws IOException {
+
+    StringBuffer sb1 = new StringBuffer();
+    int c1 = buffer.read();
+    while ((c1 > 0)
+            && ((c1 == '\n') || (c1 == '\r') || (c1 == ' ')
+              || (c1 == '\t'))) {
+      c1 = buffer.read();
+    }
+    while ((c1 > 0) && (c1 != '\n') && (c1 != '\r') && (c1 != '>')) {
+      sb1.append((char) c1);
+      c1 = buffer.read();
+    }
+    if (c1 == '>') {
+      sb1.append((char) c1);
+    }
+    return sb1.toString();
+  }
 }
 

@@ -513,7 +513,7 @@ class PdbModel extends Model {
         pdbStructureRecords[pdbStructureRecordCount++] = line;
         continue;
       }
-      if (line.startsWith("HEADER")) {
+      if (line.startsWith("HEADER") && line.length() >= 66) {
         setModelName(line.substring(62, 66));
         continue;
       }

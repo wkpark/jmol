@@ -104,6 +104,11 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
 
     // Check for graphable properties
 
+    // FIXME mth 2003 08 14
+    /*
+      this code temporarily removed because
+      ChemFile.getFramePropertyList() is going away ... for now
+
     Vector filePL = inputFile.getFramePropertyList();
 
     for (int j = 0; j < filePL.size(); j++) {
@@ -128,6 +133,7 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
     } else {
       graphAction.setEnabled(false);
     }
+    */
   }
 
   public void findData() {

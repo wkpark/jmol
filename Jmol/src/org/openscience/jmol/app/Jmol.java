@@ -559,7 +559,7 @@ public class Jmol extends JPanel {
 
     ChemFile oldChemFile = control.getChemFile();
     control.setChemFile(chemFile);
-    apm.replaceList(chemFile.getAtomPropertyList());
+    //    apm.replaceList(chemFile.getAtomPropertyList());
     mlist.clear();
   }
 

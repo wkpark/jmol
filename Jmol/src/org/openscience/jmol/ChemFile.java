@@ -126,6 +126,13 @@ public class ChemFile {
   /**
    * Returns a list of the names of atom properties on frames in this file.
    */
+  /*
+    FIXME mth 2003 08 14
+
+    this code is still used by app/CalculateChemicalShifts.java
+
+    commented out for the transition to cdk chemfile
+
   public Vector getAtomPropertyList() {
 
     Vector descriptions = new Vector();
@@ -145,10 +152,17 @@ public class ChemFile {
     }
     return descriptions;
   }
-
+  */
   /**
    * Returns a list of the names of frame properties in this file.
    */
+  /*
+    FIXME mth 2003 08 
+    this code is still used by app/PropertyGraph.java
+
+    but is removed for the transition to cdk
+    
+
   public Vector getFramePropertyList() {
 
     Vector descriptions = new Vector();
@@ -165,5 +179,6 @@ public class ChemFile {
     }
     return descriptions;
   }
+  */
 }
 

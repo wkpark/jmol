@@ -154,12 +154,22 @@ class CalculateChemicalShifts extends AbstractAction implements
       }
     }
 
+    // just put here as a warning flag; 
+    throw new NullPointerException();
+    /*
+      FIXME MTH 2003 08 14
+      This code is temporarily commented out as part of the transition
+      to using the CDK.
+      ChemFile.getAtomPropertyList() is going away ... to be replaced
+      by something else
+
     Vector filePL = chemFile.getAtomPropertyList();
     if (filePL.indexOf(propertyLabel) < 0) {
       filePL.addElement(propertyLabel);
     }
 
     propertiesMenu.replaceList(chemFile.getAtomPropertyList());
+    */
   }
 
   public void propertyChange(PropertyChangeEvent event) {

@@ -89,24 +89,17 @@ public class DotsRenderer {
     Dots.Torus[] tori = dots.tori;
     if (tori == null)
       return;
-    Dots.Torus torus;
-    for (int i = 0; i < tori.length && (torus = tori[i]) != null; ++i)
-      renderTorus(torus);
-    if (true)
-      return;
-    AtomShape[] triples = dots.triples;
-    if (triples == null)
-      return;
-    int i = 0;
-    AtomShape atomI, atomJ, atomK;
-    g3d.setColix(viewer.getColixDistance());
-    while ((atomI = triples[i++]) != null) {
-      atomJ = triples[i++];
-      atomK = triples[i++];
-      g3d.plotPoint(viewer.transformPoint(dots.getTorus(atomI, atomJ).center));
-      g3d.plotPoint(viewer.transformPoint(dots.getTorus(atomI, atomK).center));
-      g3d.plotPoint(viewer.transformPoint(dots.getTorus(atomJ, atomK).center));
+    for (int i = dots.torusCount; --i >= 0; )
+	renderTorus(tori[i]);
+    Dots.Cavity[] cavities = dots.cavities;
+    if (true) {
+	System.out.println("concave surface rendering currently disabled");
+	return;
     }
+    if (cavities == null)
+      return;
+    for (int i = dots.cavityCount; --i >= 0; )
+	renderCavity(cavities[i]);
   }
 
   public void renderConvex(AtomShape atomShape, int[] visibilityMap) {
@@ -178,6 +171,32 @@ public class DotsRenderer {
 	    }
 	}
 	return dotCount;
+    }
+
+    void renderCavity(Dots.Cavity cavity) {
+	g3d.drawCircleCentered(colixConcave, 20,
+			       viewer.transformPoint(cavity.baseIJK));
+	Point3i screen;
+	int diameter;
+	int z;
+	if (cavity.pointAbove != null) {
+	    screen = viewer.transformPoint(cavity.pointAbove);
+	    g3d.drawCircleCentered(colixConcave, 10, screen);
+	    diameter =
+		(int)(0.5f + 2 *
+		      viewer.scaleToScreen(screen.z,
+					   viewer.getSolventProbeRadius()));
+	    g3d.drawCircleCentered(colixConcave, diameter, screen);
+	}
+	if (cavity.pointBelow != null) {
+	    screen = viewer.transformPoint(cavity.pointBelow);
+	    g3d.drawCircleCentered(colixConcave, 10, screen);
+	    diameter =
+		(int)(0.5f + 2 *
+		      viewer.scaleToScreen(screen.z,
+					   viewer.getSolventProbeRadius()));
+	    g3d.drawCircleCentered(colixConcave, diameter, screen);
+	}
     }
 
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

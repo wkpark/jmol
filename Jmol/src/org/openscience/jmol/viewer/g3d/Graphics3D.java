@@ -190,6 +190,10 @@ final public class Graphics3D {
     }
   }
 
+    public void drawCircleCentered(short colix, int diameter, Point3i center) {
+	drawCircleCentered(colix, diameter, center.x, center.y, center.z);
+    }
+
   public void drawCircleCentered(short colix, int diameter,
                                  int x, int y, int z) {
     if (diameter == 0)
@@ -389,6 +393,10 @@ final public class Graphics3D {
 
   public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, true);
+  }
+
+  public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
+    line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, false);
   }
 
   public void drawLine(short colix,

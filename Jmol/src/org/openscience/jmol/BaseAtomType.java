@@ -134,8 +134,8 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
     super.setSymbol(root);
     super.setAtomicNumber(atomicNumber);
     super.setExactMass(mass);
-    this.vdwRadius = vdwRadius;
-    this.covalentRadius = covalentRadius;
+    super.setVanderwaalsRadius(vdwRadius);
+    super.setCovalentRadius(covalentRadius);
   }
 
   /**
@@ -152,34 +152,18 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
     BaseAtomType at = get(localName, root);
     at.setAtomicNumber(Integer.parseInt(st1.nextToken()));
     at.setExactMass(Double.valueOf(st1.nextToken()).doubleValue());
-    at.vdwRadius = Double.valueOf(st1.nextToken()).doubleValue();
-    at.covalentRadius = Double.valueOf(st1.nextToken()).doubleValue();
+    at.setVanderwaalsRadius(Double.valueOf(st1.nextToken()).doubleValue());
+    at.setCovalentRadius(Double.valueOf(st1.nextToken()).doubleValue());
     at.color = new Color(Integer.parseInt(st1.nextToken()),
         Integer.parseInt(st1.nextToken()), Integer.parseInt(st1.nextToken()));
     return at;
   }
 
   /**
-   * Returns the covalent radius.
-   */
-  public double getCovalentRadius() {
-    return covalentRadius;
-  }
-
-  /**
-   * Sets the covalent radius.
-   *
-   * @param cr the covalent radius
-   */
-  public void setCovalentRadius(double cr) {
-    this.covalentRadius = cr;
-  }
-
-  /**
    * Returns the Van derWaals radius.
    */
   public double getVdwRadius() {
-    return vdwRadius;
+    return super.getVanderwaalsRadius();
   }
 
   /**
@@ -188,7 +172,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * @param vr the Van derWaals Radius
    */
   public void setVdwRadius(double vr) {
-    this.vdwRadius = vr;
+    super.setVanderwaalsRadius(vr);
   }
 
   /**
@@ -210,12 +194,12 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
     boolean rootEqual = getSymbol().equals(at.getSymbol());
     boolean atomicNumberEqual = (atomicNumber == at.getAtomicNumber());
     boolean massEqual = (Double.doubleToLongBits(at.getExactMass())
-                          == Double.doubleToLongBits(at.getExactMass()));
-    boolean vdwRadiiEqual = (Double.doubleToLongBits(vdwRadius)
-                              == Double.doubleToLongBits(at.vdwRadius));
+                      == Double.doubleToLongBits(at.getExactMass()));
+    boolean vdwRadiiEqual = (Double.doubleToLongBits(getVanderwaalsRadius())
+                          == Double.doubleToLongBits(at.getVanderwaalsRadius()));
     boolean covalentRadiiEqual =
-      (Double.doubleToLongBits(covalentRadius)
-        == Double.doubleToLongBits(at.covalentRadius));
+          (Double.doubleToLongBits(getCovalentRadius())
+        == Double.doubleToLongBits(at.getCovalentRadius()));
     boolean colorEqual = color.equals(at.color);
     return (nameEqual && rootEqual && atomicNumberEqual && massEqual
         && vdwRadiiEqual && covalentRadiiEqual && colorEqual);
@@ -235,9 +219,9 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
       result = 37 * result + getAtomicNumber();
       long longHashValue = Double.doubleToLongBits(getExactMass());
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
-      longHashValue = Double.doubleToLongBits(vdwRadius);
+      longHashValue = Double.doubleToLongBits(getVanderwaalsRadius());
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
-      longHashValue = Double.doubleToLongBits(covalentRadius);
+      longHashValue = Double.doubleToLongBits(getCovalentRadius());
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
       result = 37 * result + color.hashCode();
       hashCode = result;
@@ -254,7 +238,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * Returns a String representation of this atom type.
    */
   public String toString() {
-
     StringBuffer sb1 = new StringBuffer();
     sb1.append(getID());
     sb1.append('\t');
@@ -264,9 +247,9 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
     sb1.append('\t');
     sb1.append(Double.toString(getExactMass()));
     sb1.append('\t');
-    sb1.append(Double.toString(vdwRadius));
+    sb1.append(Double.toString(getVanderwaalsRadius()));
     sb1.append('\t');
-    sb1.append(Double.toString(covalentRadius));
+    sb1.append(Double.toString(getCovalentRadius()));
     sb1.append('\t');
     sb1.append(Integer.toString(color.getRed()));
     sb1.append('\t');
@@ -275,16 +258,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
     sb1.append(Integer.toString(color.getBlue()));
     return sb1.toString();
   }
-
-  /**
-   * Van der Waals radius.
-   */
-  protected double vdwRadius;
-
-  /**
-   * Covalent radius.
-   */
-  protected double covalentRadius;
 
   /**
    * Draw color.

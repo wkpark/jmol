@@ -134,7 +134,7 @@ public class RecentFilesDialog extends JDialog
 		try {
 			java.io.FileOutputStream out =
 				new java.io.FileOutputStream(Jmol.HistoryPropsFile);
-			props.store(out, Jmol.HistroyFileHeader);
+			props.store(out, Jmol.HistoryFileHeader);
 		} catch (java.io.IOException e) {
 			System.err.println("Error saving history!! " + e);
 		}

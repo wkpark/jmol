@@ -123,6 +123,32 @@ public class DisplayPanel extends JPanel
 		init();
 	}
 
+    /**
+     * returns the rotation matrix.  This is added for camera and
+     * light source rotation in PovRay.
+     */
+    public Matrix4d getAmat() {
+        return amat;
+    }
+    /**
+     * returns the translation matrix.  This is added for camera and
+     * light source rotation in PovRay.
+     */
+    public Matrix4d getTmat() {
+        return tmat;
+    }
+    /**
+     * returns the zoom matrix.  This is added for camera and
+     * light source rotation in PovRay.
+     */
+    public Matrix4d getZmat() {
+        return zmat;
+    }
+    
+    public float getXfac(){
+        return xfac;
+    }
+
 	/**
 	 *  Returns transform matrix assosiated with the current viewing transform.
 	 */

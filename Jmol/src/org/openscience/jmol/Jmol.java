@@ -89,7 +89,7 @@ class Jmol extends JPanel {
 	}
 
 	/** Header at top of Jmol history file **/
-	static String HistroyFileHeader = "Jmol's persistant values";
+	static String HistoryFileHeader = "Jmol's persistent values";
 
 	Jmol(Splash splash) {
 

@@ -27,109 +27,243 @@ package org.openscience.jmol.app;
 
 import org.jmol.viewer.*;
 
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.Dimension;
 import java.beans.*;
-
 import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.event.*;
 import javax.swing.tree.*;
+import javax.swing.border.*;
+
+import java.awt.*;
+import java.awt.event.*;
+
 import java.util.Properties;
 import java.util.Enumeration;
 
 /**
  * A JDialog that allows for choosing an Atomset to view.
  * 
+ * @author Ren&eacute; Kanters, University of Richmond
+ */
+/**
  * @author rkanters
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AtomSetChooser extends JDialog
   implements TreeSelectionListener, PropertyChangeListener,
-  ActionListener {
-  
-  private JTextArea propertiesPane;
+  ActionListener, ChangeListener {
+
+  private JTextArea propertiesTextArea;
   private JTree tree;
   private DefaultTreeModel treeModel;
   private JmolViewer viewer;
-  private JButton firstFrequencyButton;
-  private JButton nextFrequencyButton;
-  private JButton previousFrequencyButton;
+  private JSlider selectSlider;
+  private JLabel infoLabel = new JLabel(" ");
+  private JSlider amplitudeSlider;
+  private JSlider periodSlider;
   
-  private int currentAtomSetIndex; // should really be determined from the viewer...
-   
+  // Strings for the commands of the buttons and the determination
+  // of the tooltips and images associated with them
+  static final String REWIND="rewind";
+  static final String PREVIOUS="prev";
+  static final String PLAY="play";
+  static final String PAUSE="pause";
+  static final String NEXT="next";
+  static final String FF="ff";
+  
+  private int atomSetCollectionIndexes[];
+  
   public AtomSetChooser(JmolViewer viewer, JFrame frame) {
     super(frame,"AtomSetChooser", false);
     this.viewer = viewer;
+    
+    // initialize the treeModel
+    treeModel = new DefaultTreeModel(new DefaultMutableTreeNode("No AtomSets"));
+
     layoutWindow(getContentPane());
-    setSize(300,200);
+    pack();
     setLocationRelativeTo(frame);
   }
   
   private void layoutWindow(Container container) {
-    // setup the container like the TreeDemo.java from the Java Tutorial
-    container.setLayout(new BorderLayout());
-
-    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("No AtomSets");
-    treeModel = new DefaultTreeModel(rootNode);
+     
+    // user a BoxLayout to do a vertical arrangement
+    container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+    
+    // the top panel with the tree and properties
+    JPanel treePanel = new JPanel();
+    treePanel.setLayout(new BorderLayout());
     tree = new JTree(treeModel);
+    tree.setVisibleRowCount(5);
     // only allow single selection (may want to change this later?)
-    tree.getSelectionModel().setSelectionMode
-            (TreeSelectionModel.SINGLE_TREE_SELECTION);
+    tree.getSelectionModel().setSelectionMode(
+        TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.addTreeSelectionListener(this);
+    treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
     
-    // create the scroll pane and add the tree to it.
-    JScrollPane treeView = new JScrollPane(tree);
-    
-    // create the properties pane.
-    propertiesPane = new JTextArea();
-    propertiesPane.setEditable(false);
-    JScrollPane propertiesView = new JScrollPane(propertiesPane);
-    
+    // create the properties panel.
+    JPanel propertiesPanel = new JPanel();
+    propertiesPanel.setLayout(new BorderLayout());
+    propertiesPanel.setBorder(new TitledBorder("Properties"));
+    propertiesTextArea = new JTextArea();
+    propertiesTextArea.setEditable(false);
+    propertiesPanel.add(new JScrollPane(propertiesTextArea), BorderLayout.CENTER);
+        
     // create the split pane with the treeView and propertiesView
-    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-    container.add(splitPane,BorderLayout.CENTER);
+    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT); 
+    splitPane.setTopComponent(treePanel);
+    splitPane.setBottomComponent(propertiesPanel);
+    splitPane.setResizeWeight(1.0);
+    
+    JPanel astPanel = new JPanel();
+    astPanel.setLayout(new BorderLayout());
+    astPanel.setBorder(new TitledBorder("Atom Set Tree"));
+    astPanel.add(splitPane, BorderLayout.CENTER);
+    container.add(astPanel);
+    
+    // The collection chooser/controller/feedback area
+    JPanel collectionPanel = new JPanel();
+    collectionPanel.setLayout(new BoxLayout(collectionPanel, BoxLayout.Y_AXIS));
+    collectionPanel.setBorder(new TitledBorder("Collection"));
+    
+    JPanel cpsPanel = new JPanel();
+    cpsPanel.setLayout(new BorderLayout());
+    cpsPanel.setBorder(new TitledBorder("Select"));
+    selectSlider = new JSlider();
+    selectSlider.addChangeListener(this);
+    cpsPanel.add(selectSlider); // no need for CENTER...
+    collectionPanel.add(cpsPanel);
+    
+    JPanel infoPanel = new JPanel();
+    infoPanel.setLayout(new BorderLayout());
+    infoPanel.setBorder(new TitledBorder("Info"));
+    infoPanel.add(infoLabel);
+    collectionPanel.add(infoPanel);
+    
+    JPanel controlPanel = new JPanel();
+    controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
+    controlPanel.setBorder(new TitledBorder("Controller"));
+    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
+    Insets inset = new Insets(1,1,1,1);
+    for (int i=buttons.length, idx=0; --i>=0; idx++) {
+      String action = buttons[idx];
+      JButton btn = new JButton(
+          JmolResourceHandler.getInstance().getIconX(
+              "AtomSetChooser."+action+"Image")
+      );
+      btn.setMargin(inset);
+      btn.setToolTipText(
+          JmolResourceHandler.getInstance().getStringX(
+              "AtomSetChooser."+action+"Tooltip")
+      );
+      btn.setActionCommand(action);
+      btn.addActionListener(this);
+      controlPanel.add(btn);
+    }
+    controlPanel.add(Box.createHorizontalGlue());
+    collectionPanel.add(controlPanel);
+    container.add(collectionPanel);
+    
+    JPanel vectorPanel = new JPanel();
+    vectorPanel.setLayout(new BoxLayout(vectorPanel, BoxLayout.Y_AXIS));
+    vectorPanel.setBorder(new TitledBorder("Vectors"));
+    JPanel checkBoxPanel= new JPanel();
+    JCheckBox vibrateCheckBox = new JCheckBox("Vibrate");
+    vibrateCheckBox.setActionCommand("vibrate");
+    checkBoxPanel.add(vibrateCheckBox);
+    JCheckBox gradientCheckBox = new JCheckBox("Gradient");
+    gradientCheckBox.setActionCommand("gradient");
+    checkBoxPanel.add(gradientCheckBox);
+    checkBoxPanel.add(Box.createHorizontalGlue());
+    vectorPanel.add(checkBoxPanel);
+    
+    JPanel amplitudePanel = new JPanel();
+    amplitudePanel.setLayout(new BorderLayout());
+    amplitudePanel.setBorder(new TitledBorder("Amplitude"));
+    amplitudeSlider = new JSlider();
+    amplitudePanel.add(amplitudeSlider);
+    vectorPanel.add(amplitudePanel);
 
-    splitPane.setTopComponent(treeView);
-    splitPane.setBottomComponent(propertiesView);
-   
-    // set the dimensions of the views
-    treeView.setMinimumSize(new Dimension(100, 50));
-    propertiesView.setMinimumSize(new Dimension(100,0));
-    splitPane.setDividerLocation(120);
-    splitPane.setPreferredSize(new Dimension(300,200));
-    
-    // now we are ready to add the split frame
- 
-    JPanel buttonPanel = new JPanel();
-    container.add(buttonPanel, BorderLayout.SOUTH);
-    buttonPanel.add(new JLabel("Frequencies:"));
-    
-    firstFrequencyButton = new JButton("First");
-    firstFrequencyButton.addActionListener(this);
-    buttonPanel.add(firstFrequencyButton);
-    
-    nextFrequencyButton = new JButton("Next");
-    nextFrequencyButton.addActionListener(this);
-    buttonPanel.add(nextFrequencyButton);
-    
-    previousFrequencyButton = new JButton("Previous");
-	previousFrequencyButton.addActionListener(this);
-    buttonPanel.add(previousFrequencyButton);
- 
+    JPanel periodPanel = new JPanel();
+    periodPanel.setLayout(new BorderLayout());
+    periodPanel.setBorder(new TitledBorder("Prediod"));
+    periodSlider = new JSlider();
+    periodPanel.add(periodSlider);
+    vectorPanel.add(periodPanel);
+    container.add(vectorPanel);
   }
   
+  public void valueChanged(TreeSelectionEvent e) {
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+                    tree.getLastSelectedPathComponent();
+    try {
+        if (node.isLeaf()) {
+          selectAtomSet((AtomSet) node);
+        } else // selected branch
+          selectAtomSetCollection(node);
+    }
+    catch (Exception exception) {
+      System.out.println(exception.getMessage());
+      exception.printStackTrace();
+      }
+  }
+  
+  public void selectAtomSet(AtomSet node) {
+    setAtomSetCollectionIndexes((DefaultMutableTreeNode) node.getParent());
+    showAtomSet(node.getAtomSetIndex());
+  }
+  
+  public void selectAtomSetCollection(DefaultMutableTreeNode node) {
+    setAtomSetCollectionIndexes(node);
+    showAtomSet(atomSetCollectionIndexes[0]);
+    if (node == treeModel.getRoot())
+      showProperties(viewer.getModelSetProperties());
+    else
+      propertiesTextArea.setText("Collection has " +
+          node.getLeafCount() + " AtomSets");
+  }
+
+  /**
+   * Show atom set in viewer, info and properties
+   * @param atomSetIndex Index of atom set to be shown
+   */
+  public void showAtomSet(int atomSetIndex) {
+    viewer.setDisplayModelIndex(atomSetIndex);
+    infoLabel.setText(viewer.getModelName(atomSetIndex));
+    showProperties(viewer.getModelProperties(atomSetIndex));
+  }
+ 
+  public void setAtomSetCollectionIndexes(DefaultMutableTreeNode node) {
+    int atomSetCount = node.getLeafCount();
+    atomSetCollectionIndexes = new int[atomSetCount];
+    Enumeration e = node.depthFirstEnumeration();
+    int idx=0;
+    while (e.hasMoreElements()) {
+      node = (DefaultMutableTreeNode) e.nextElement();
+      if (node.isLeaf())
+        atomSetCollectionIndexes[idx++]= ((AtomSet) node).getAtomSetIndex();
+    }
+    System.out.print("Indexes: ");
+    for (int i=0; i<atomSetCount; i++)
+      System.out.print(" "+atomSetCollectionIndexes[i]);
+    System.out.println();
+  }
+  
+  // this is for the frequencies, but should be for the list of atomsets
+  // that are currently in the selection of the tree
   public void actionPerformed (ActionEvent e) {
-    Object source = e.getSource();
-    if (source == firstFrequencyButton) {
+    String cmd = e.getActionCommand();
+    if (REWIND.equals(cmd)) {
       findFrequency(0,1);
-    } else if (source == previousFrequencyButton) {
-      findFrequency(currentAtomSetIndex-1,-1);
-    } else if (source == nextFrequencyButton) {
-      findFrequency(currentAtomSetIndex+1,1);
+    } else if (PREVIOUS.equals(cmd)) {
+      findFrequency(viewer.getDisplayModelIndex()-1,-1);
+    } else if (NEXT.equals(cmd)) {
+      findFrequency(viewer.getDisplayModelIndex()+1,1);
+    } else if (FF.equals(cmd)) {
+      findFrequency(viewer.getModelCount()-1,-1);
     }
   }
-  
   
   /**
    * Has the viewer show a particular frame with frequencies
@@ -148,41 +282,16 @@ public class AtomSetChooser extends JDialog
     }
     
     if (foundFrequency) {
-      viewer.evalStringQuiet("vibration on; frame "+viewer.getModelNumber(index));
-      currentAtomSetIndex = index;
+      viewer.evalStringQuiet("vibration on;");
+      viewer.setDisplayModelIndex(index);
       showProperties(viewer.getModelProperties(index));
     } else {
       System.out.println("Frequency not found.");
     }
   }
-  
-  public void valueChanged(TreeSelectionEvent e) {
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                    tree.getLastSelectedPathComponent();
-    
-    if (node ==  null) return;
-    
-    // not the prettiest solution to the problem that a starting out
-    // tree has a root leaf that is not an AtomSet, so the cast
-    // goes wrong...
-    try {
-    	  if (node.isLeaf()) {
-    	  	int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
-    	  	currentAtomSetIndex = atomSetIndex; // u
-    	  	int atomSetNumber = viewer.getModelNumber(atomSetIndex);
-    	  	// show the model in the viewer
-    	  	viewer.evalStringQuiet("frame " + atomSetNumber);
-    	  	// show the properties in the properties pane
-    	  	showProperties(viewer.getModelProperties(atomSetIndex));
-    	  } else { // selected branch
-    	    if (node == treeModel.getRoot())
-    	      showProperties(viewer.getModelSetProperties());
-    	    else
-    	      propertiesPane.setText("Collection has " +
-    	  			node.getLeafCount() + " AtomSets");
-    	  }
-    }
-    catch (Exception exception) {}
+ 
+  // TODO implement the slider state changes
+  public void stateChanged(ChangeEvent e) {
   }
   
   /**
@@ -191,20 +300,19 @@ public class AtomSetChooser extends JDialog
    * @param properties Properties to be shown.
    */
   public void showProperties(Properties properties) {
-    propertiesPane.setText("Properties:");
-    if (properties == null) {
-       propertiesPane.append(" null");
-    } else {
+    boolean needLF = false;
+    propertiesTextArea.setText("");
+    if (properties != null) {
       Enumeration e = properties.propertyNames();
       while (e.hasMoreElements()) {
         String propertyName = (String)e.nextElement();
-        propertiesPane.append("\n " + propertyName + "=" +
-        		properties.getProperty(propertyName));
+        propertiesTextArea.append((needLF?"\n ":" ") 
+            + propertyName + "=" + properties.getProperty(propertyName));
+        needLF = true;
       }
     }
   }
 
-  
   /**
    * Creates the treeModel of the AtomSets available in the JmolViewer
    */

@@ -148,7 +148,7 @@ public class RepaintManager {
     }
   }
 
-  public void notifyRepainted() {
+  public synchronized void notifyRepainted() {
     repaintPending = false;
     notify();
   }

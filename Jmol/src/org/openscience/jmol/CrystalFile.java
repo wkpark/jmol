@@ -1,4 +1,3 @@
-
 package org.openscience.jmol;
 
 import java.util.Vector;
@@ -409,7 +408,6 @@ public class CrystalFile extends ChemFile {
         for (int k = intSup(unitBox[0][2]); k <= intInf(unitBox[1][2]) - 1;
             k++) {
 
-          System.out.println("ijk: " + i + " " + " " + j + " " + k);
           for (int l = 0; l < boxEdgesTemplate.size(); l++) {
             redEdge[0] = ((Point3f) boxEdgesTemplate.elementAt(l)).x + i;
             redEdge[1] = ((Point3f) boxEdgesTemplate.elementAt(l)).y + j;

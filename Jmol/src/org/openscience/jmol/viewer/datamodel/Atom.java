@@ -41,7 +41,7 @@ public class Atom implements Bspt.Tuple {
   public PdbAtom pdbAtom;
   Frame frame;
   public Point3f point3f;
-  int x, y, z;
+  short x, y, z;
   short diameter;
   public byte atomicNumber;
   byte styleAtom;
@@ -239,9 +239,29 @@ public class Atom implements Bspt.Tuple {
 
   public void transform(JmolViewer viewer) {
     Point3i screen = viewer.transformPoint(point3f);
-    x = screen.x;
-    y = screen.y;
-    z = screen.z;
+    int t;
+
+    t = screen.x;
+    x = ((t < Short.MIN_VALUE)
+         ? Short.MIN_VALUE
+         : ((t > Short.MAX_VALUE)
+            ? Short.MAX_VALUE
+            : (short)t));
+
+    t = screen.y;
+    y = ((t < Short.MIN_VALUE)
+         ? Short.MIN_VALUE
+         : ((t > Short.MAX_VALUE)
+            ? Short.MAX_VALUE
+            : (short)t));
+
+    t = screen.z;
+    z = ((t < Short.MIN_VALUE)
+         ? Short.MIN_VALUE
+         : ((t > Short.MAX_VALUE)
+            ? Short.MAX_VALUE
+            : (short)t));
+    
     diameter = viewer.scaleToScreen(z, marAtom * 2);
   }
 

@@ -150,6 +150,8 @@
 	  if (os == "mac" && browser == "opera" && browserVersion <= 7.54)
 	    { msg = msgMacOpera754OrLess; state = "red"; break; }
 	  if ((os == "win" && browser == "msie") ||
+	      (os == "win" && browser == "mozilla" && browserVersion >= 5) ||
+	      (os == "win" && browser == "opera" && browserVersion >= 7.54) ||
 	      ((os == "linux" || os == "unix") &&
 	       browser == "mozilla" && browserVersion >= 5))
 	    { state = "green"; break; }
@@ -161,7 +163,7 @@
 			 "</code>" +
 			 " running on <code>" + os + "</code></font></p>");
         document.writeln("<table bgcolor='" + state + "' border='1'>" +
-	                 "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+	                 "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
 			 "</td></tr></table>");
         if (msg == "")
 	  msg == msgOK;

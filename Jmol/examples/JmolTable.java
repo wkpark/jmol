@@ -1,11 +1,3 @@
-/* Copyright (C) 2004 The Jmol Development Team
- * Author: 
- *
- * Compile: javac -classpath ./Jmol.jar molview.java
- * Run    : java -cp ./:./Jmol.jar molview FILE1 FILE2 FILE3 ....
- *
- */
-
 /* $RCSfile$
  * $Author$
  * $Date$

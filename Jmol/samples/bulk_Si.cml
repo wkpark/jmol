@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE molecule SYSTEM "CML-1999-05-15.dtd" []>
+<molecule class="3d">
+ <crystal>
+  <!--
+   "ITC" refers to the space group number
+   in the International Tables for Crystallography
+   -->
+  <string builtin="spacegroup" convention="ITC">123</string>
+  <float builtin="acell" units="angstrom">5.291772083000</float>
+  <float builtin="bcell" units="angstrom">5.291772083000</float>
+  <float builtin="ccell" units="angstrom">5.291772083000</float>
+  <float builtin="alpha" units="degrees">90.000000000000</float>
+  <float builtin="beta"  units="degrees">90.000000000000</float>
+  <float builtin="gamma" units="degrees">90.000000000000</float>
+ </crystal>
+ <symmetry>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 1 0 0.000000000000
+    0 0 1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 -1 0 0.000000000000
+    0 0 -1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 1 0 0.000000000000
+    0 0 -1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 -1 0 0.000000000000
+    0 0 1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 -1 0 0.000000000000
+    0 0 1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 1 0 0.000000000000
+    0 0 -1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 -1 0 0.000000000000
+    0 0 -1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 1 0 0.000000000000
+    0 0 1 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 0 1 0.000000000000
+    0 1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 0 -1 0.000000000000
+    0 -1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 0 -1 0.000000000000
+    0 1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 0 1 0.000000000000
+    0 -1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 0 1 0.000000000000
+    0 -1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 0 -1 0.000000000000
+    0 1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    1 0 0 0.000000000000
+    0 0 -1 0.000000000000
+    0 -1 0 0.000000000000
+  </floatMatrix>
+  <floatMatrix builtin="symOp" rows="4" columns="3">
+    -1 0 0 0.000000000000
+    0 0 1 0.000000000000
+    0 1 0 0.000000000000
+  </floatMatrix>
+ </symmetry>
+ <atomArray>
+  <stringArray builtin="elementType">
+    H H
+  </stringArray>
+  <stringArray builtin="xFract">
+    -0.070000000000 0.070000000000
+  </stringArray>
+  <stringArray builtin="yFract">
+    0.000000000000 0.000000000000
+  </stringArray>
+  <stringArray builtin="zFract">
+    0.000000000000 0.000000000000
+  </stringArray>
+ </atomArray>
+</molecule>

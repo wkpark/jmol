@@ -1,5 +1,5 @@
 
-Copyright 2001 The Jmol Development Team
+Copyright 2002 The Jmol Development Team
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,9 @@ JUnit
   Used for unit testing. Distributed by the IBM Public License (see
   doc/ibm.license.html). See http://www.junit.org/.
 
-Java CML Filter Library
-  Used for CML reading and writing. Distributed by GNU Public License (see
-  doc/gpl.license, and requires providing the source code (see
-  doc/jcfl-1.2.6-source.tar.gz). See http://www.openscience.org/~egonw/cml/.
+The Chemical Development Kit
+  Used for reading and writing CML and ShelX. Distributed by Lesser GNU Public License 
+  See http://cdk.sf.net/.
 
 AElfred
   Used for XML parsing. Distributed free and without warranty.

@@ -97,7 +97,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
         System.out.println("" + e);
       }
     }
-    loadPopupMenuAsBackgroundTask();
   }
     
   PropertyResourceBundle appletProperties = null;
@@ -171,6 +170,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
+      // should the popupMenu be loaded ?
+      boolean popupMenu = getBooleanValue("popupMenu", true);
+      if (popupMenu)
+        loadPopupMenuAsBackgroundTask();
+
       emulate = getValueLowerCase("emulate", "jmol");
       if (emulate.equals("chime")) {
         viewer.setRasmolDefaults();
@@ -179,7 +183,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       } else {
         viewer.setJmolDefaults();
         viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
-        viewer.setColorBackground(getValue("bgcolor", "snow"));
+        viewer.setColorBackground(getValue("bgcolor", "black"));
         viewer.setWireframeRotation(getBooleanValue("wireframeRotation",
                                                     false));
         viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));

@@ -1,0 +1,54 @@
+#!/bin/sh
+#
+# Set JMOL_HOME and JAVA_HOME to match the appropriate installation 
+# directories on your system:
+#
+JMOL_HOME=/home/maul/gezelter/gezelter/java/jmol
+#JMOL_HOME=/usr/local/jmol-0.6
+#
+# Solaris:
+# JAVA_HOME=/usr/local/jdk1.1.8
+JAVA_HOME=/usr/local/jdk1.2.2
+#JAVA_HOME=/usr/java
+#
+# AIX:
+# JAVA_HOME=/usr/jdk_base
+#
+# IRIX:
+#JAVA_HOME=/usr/java
+# These 3 lines may or may not be helpful under IRIX:
+#JAVA_JIT_NO_GRA=true
+#JAVA_JIT_NO_FAST_JNI=true
+#export JAVA_JIT_NO_GRA JAVA_JIT_NO_FAST_JNI
+#
+# If you JDK doesn't implement native threads, comment out the next 2 lines:
+#
+THREADS_FLAG=native
+export THREADS_FLAG
+#
+# If you have a specific JIT that you want to try, enable it here
+# (otherwise, comment out the next 2 lines):
+#
+JAVA_COMPILER=sunwjit
+export JAVA_COMPILER
+#
+# This classpath line should be OK for JDK 1.2.  Comment it out if you have 1.1
+#
+CLASSPATH=${JMOL_HOME}/jars/jmol.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar
+#
+# This classpath line should be OK for JDK 1.1.  Comment it out if you have 1.2
+#
+#CLASSPATH=$JMOL_HOME/jars/jmol.jar:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:$JMOL_HOME/jars/swing.jar:$JMOL_HOME/jars/multi.jar:$JMOL_HOME/jars/sax.jar:$JMOL_HOME/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar
+#
+####################################################################
+#
+# You shouldn't need to change anything else.
+#
+export JMOL_HOME
+export JAVA_HOME
+export CLASSPATH
+#
+PATH=${PATH}:${JAVA_HOME}/bin
+export PATH
+#
+$JAVA_HOME/bin/java -Djmol.home=$JMOL_HOME org.openscience.jmol.Jmol

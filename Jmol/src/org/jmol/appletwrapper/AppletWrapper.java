@@ -74,6 +74,9 @@ public class AppletWrapper extends Applet {
   
   public void update(Graphics g) {
     if (wrappedApplet != null) {
+      mediaTracker = null;
+      preloadImage = null;
+
       wrappedApplet.update(g);
       return;
     }
@@ -97,10 +100,10 @@ public class AppletWrapper extends Applet {
       }
     }
 
-    g.setColor(Color.yellow);
+    g.setColor(Color.black);
     g.fillRect(0, 0, 1000, 1000);
     
-    g.setColor(Color.black);
+    g.setColor(Color.white);
     
     g.drawString("applet wrapper test", 15, 20);
 

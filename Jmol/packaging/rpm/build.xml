@@ -3,7 +3,7 @@
 	<property name="name" value="jmol" />
 	<property name="version" value="1" />
 	<property name="release" value="1" />
-	<property name="jmol.dir" value=".." />
+	<property name="jmol.dir" value="../.." />
 	<property name="dist.dir" value="dist" />
 	
 	<target name="main" depends="init,dist"/>
@@ -17,8 +17,6 @@
 		<filter token="release" value="${release}" />
 		<copy filtering="yes" file="${name}.spec"
 			tofile="${dist.dir}/${name}-${version}.spec" />
-		<ant antfile="build.xml" dir="${jmol.dir}"
-			target="sourcedist.tar.gz" />
 		<copy todir="${dist.dir}" >
 			<fileset dir="${jmol.dir}">
 				<include name="*.source.tar.gz" />

@@ -193,7 +193,9 @@ public class Atom implements Bspt.Tuple {
 
   public void setMarAtom(short marAtom) {
     if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
-    if (marAtom < 0)
+    if (marAtom == -1000) // temperature
+      marAtom = getPdbTemperatureMar();
+    else if (marAtom < 0)
       marAtom =
         (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
@@ -202,7 +204,9 @@ public class Atom implements Bspt.Tuple {
   public void setStyleMarAtom(byte styleAtom, short marAtom) {
     if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
     this.styleAtom = styleAtom;
-    if (marAtom < 0)
+    if (marAtom == -1000) // temperature
+      marAtom = getPdbTemperatureMar();
+    else if (marAtom < 0)
       marAtom =
         (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
@@ -364,6 +368,15 @@ public class Atom implements Bspt.Tuple {
     if (pdbAtom == null)
       return null;
     return pdbAtom.group.chain.model;
+  }
+
+  short getPdbTemperatureMar() {
+    // some .pdb files have a radius (measured in angstroms) stored in the
+    // TEMPERATURE field of the .pdb file format
+    if (pdbAtom == null)
+      return 0;
+    // the temperature field is in 100th, but we want *milli* angstroms
+    return (short)(pdbAtom.temperature * 10);
   }
 
   public Object markDeleted() {

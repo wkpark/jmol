@@ -1531,14 +1531,6 @@ public class Eval implements Runnable {
       setHbonds();
       break;
 
-      /*
-    case Token.spacefill:
-      setSpacefill();
-      break;
-    case Token.bond:
-      setBond();
-      break;
-      */
       // not implemented
     case Token.ambient:
     case Token.backfade:
@@ -1628,6 +1620,9 @@ public class Eval implements Runnable {
       break;
     case Token.wireframe:
       style = JmolConstants.STYLE_WIREFRAME;
+      break;
+    case Token.temperature:
+      mar = -1000;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
@@ -2031,95 +2026,6 @@ public class Eval implements Runnable {
       unrecognizedSetParameter();
     }
   }
-
-  /*
-  void setWireframerotation() throws ScriptException {
-    viewer.setWireframeRotation(getSetBoolean());
-  }
-
-  void setPerspectivedepth() throws ScriptException {
-    viewer.setPerspectiveDepth(getSetBoolean());
-  }
-
-  void setShowHydrogens() throws ScriptException {
-    viewer.setShowHydrogens(getSetBoolean());
-  }
-
-  void setShowVectors() throws ScriptException {
-    viewer.setShowVectors(getSetBoolean());
-  }
-
-  void setShowMeasurements() throws ScriptException {
-    viewer.setShowMeasurements(getSetBoolean());
-  }
-
-  void setShowSelections() throws ScriptException {
-    viewer.setSelectionHaloEnabled(getSetBoolean());
-  }
-
-  */
-
-  /*
-  void setSpacefill() throws ScriptException {
-    byte style = JmolConstants.STYLE_SHADED;
-    if (statement.length == 3) {
-      switch (statement[2].tok) {
-      case Token.wireframe:
-        style = JmolConstants.STYLE_WIREFRAME;
-        break;
-      case Token.identifier:
-        String str = (String)statement[2].value;
-        if (str.equalsIgnoreCase("shaded"))
-          break;
-        if (str.equals("quickdraw")) {
-          style = JmolViewer.QUICKDRAW;
-          break;
-        }
-        if (str.equals("invisible")) {
-          style = JmolViewer.INVISIBLE;
-          break;
-        }
-        if (str.equals("none")) {
-          style = JmolConstants.STYLE_NONE;
-          break;
-        }
-      default:
-        unrecognizedStyleParameter();
-      }
-    }
-    viewer.setStyleAtomScript(JmolConstants.STYLE_SHADED);
-  }
-
-  void setBond() throws ScriptException {
-    byte style = JmolConstants.STYLE_SHADED;
-    if (statement.length == 3) {
-      switch (statement[2].tok) {
-      case Token.wireframe:
-        style = JmolConstants.STYLE_WIREFRAME;
-        break;
-      case Token.identifier:
-        String str = (String)statement[2].value;
-        if (str.equalsIgnoreCase("shaded"))
-          break;
-        if (str.equals("quickdraw")) {
-          style = JmolViewer.QUICKDRAW;
-          break;
-        }
-        if (str.equals("box")) {
-          style = JmolViewer.BOX;
-          break;
-        }
-        if (str.equals("none")) {
-          style = JmolConstants.STYLE_NONE;
-          break;
-        }
-      default:
-        unrecognizedStyleParameter();
-      }
-    }
-    viewer.setStyleBondScript(JmolConstants.STYLE_SHADED);
-  }
-  */
 
   void setSsbonds() throws ScriptException {
     if (statement.length != 3)

@@ -121,7 +121,7 @@ final public class JmolViewer {
       mouseManager = MouseWrapper12.alloc(awtComponent, this);
     else
       mouseManager = new MouseManager10(awtComponent, this);
-    fileManager = new FileManager(this);
+    fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
@@ -868,6 +868,10 @@ final public class JmolViewer {
     openClientFile(fullPathName, fileName, clientFile);
     notifyFileLoaded(fullPathName, fileName,
                      modelManager.getModelName(), clientFile);
+    System.gc();
+    System.runFinalization();
+    System.gc();
+    System.runFinalization();
     return null;
   }
 
@@ -893,10 +897,6 @@ final public class JmolViewer {
     popHoldRepaint();
   }
 
-  public Object getClientFile() {
-    return modelManager.getClientFile();
-  }
-
   public void clear() {
     modelManager.setClientFile(null, null, null);
     clearMeasurements();
@@ -917,6 +917,11 @@ final public class JmolViewer {
 
   public boolean haveFrame() {
     return modelManager.frame != null;
+  }
+
+  public Object getClientFile() {
+    // DEPRECATED - use getExportModelAdapter()
+    return null;
   }
 
   public JmolModelAdapter getExportModelAdapter() {
@@ -1752,22 +1757,6 @@ final public class JmolViewer {
 
   public int getLabelOffsetY() {
     return labelManager.labelOffsetY;
-  }
-
-  /****************************************************************
-   * JmolClientAdapter routines
-   ****************************************************************/
-
-  public JmolModelAdapter getJmolModelAdapter() {
-    return modelAdapter;
-  }
-
-  public int getFrameCount(Object clientFile) {
-    return modelManager.getFrameCount(clientFile);
-  }
-
-  public String getModelName(Object clientFile) {
-    return modelManager.getModelName(clientFile);
   }
 
   public short getColixAtom(Atom atom) {

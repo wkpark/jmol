@@ -48,6 +48,7 @@ import org.openscience.jmol.io.ReaderFactory;
 public class FileManager {
 
   JmolViewer viewer;
+  JmolModelAdapter modelAdapter;
   private String openErrorMessage;
 
   // for applet proxy
@@ -65,8 +66,9 @@ public class FileManager {
   private FileOpenThread fileOpenThread;
 
 
-  public FileManager(JmolViewer viewer) {
+  public FileManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
+    this.modelAdapter = modelAdapter;
   }
 
   public void openFile(String name) {
@@ -265,15 +267,16 @@ public class FileManager {
     }
 
     private void openReader(Reader reader) {
-      Object clientFile = viewer.getJmolModelAdapter()
-        .openBufferedReader(viewer, fullPathName, new BufferedReader(reader));
+      Object clientFile =
+        modelAdapter.openBufferedReader(viewer,
+                                        fullPathName,
+                                        new BufferedReader(reader));
       if (clientFile instanceof String)
         errorMessage = (String)clientFile;
       else
         this.clientFile = clientFile;
     }
   }
-
 }
 
 class MonitorInputStream extends FilterInputStream {

@@ -27,22 +27,29 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
 
-public class FrameBuilder {
+final public class FrameBuilder {
 
-  JmolViewer viewer;
+  final JmolViewer viewer;
+  final JmolModelAdapter adapter;
   Object clientFile;
-  int frameNumber;
+  final int frameNumber;
 
   public FrameBuilder(JmolViewer viewer,
-                          Object clientFile, int frameNumber) {
+                      JmolModelAdapter adapter,
+                      Object clientFile,
+                      int frameNumber) {
     this.viewer = viewer;
+    this.adapter = adapter;
     this.clientFile = clientFile;
     this.frameNumber = frameNumber;
   }
 
+  protected void finalize() {
+    System.out.println("FrameBuilder.finalize() called!");
+  }
+
   public Frame buildFrame() {
     long timeBegin = System.currentTimeMillis();
-    JmolModelAdapter adapter = viewer.getJmolModelAdapter();
     int atomCount = adapter.getAtomCount(clientFile, frameNumber);
     int modelType = adapter.getModelType(clientFile);
     boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
@@ -96,6 +103,8 @@ public class FrameBuilder {
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;
     System.out.println("Build a frame:" + msToBuild + " ms");
+    adapter.finish(clientFile);
+    clientFile = null;
     return frame;
   }
 }

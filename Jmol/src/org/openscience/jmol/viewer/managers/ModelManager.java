@@ -49,7 +49,6 @@ public class ModelManager {
     this.nullFrame = new Frame(viewer);
   }
 
-  public Object clientFile;
   public String fullPathName;
   public String fileName;
   public String modelName;
@@ -63,8 +62,6 @@ public class ModelManager {
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
-    Object clientFilePrevious = this.clientFile;
-    this.clientFile = clientFile;
     if (clientFile == null) {
       fullPathName = fileName = modelName = modelHeader = null;
       frameCount = 0;
@@ -76,23 +73,25 @@ public class ModelManager {
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
-      modelName = getModelName(clientFile);
+      modelName = modelAdapter.getModelName(clientFile);
       if (modelName != null) {
         modelName = modelName.trim();
         if (modelName.length() == 0)
           modelName = null;
       }
-      modelName = getModelName(clientFile);
-      modelHeader = getModelHeader(clientFile);
-      frameCount = getFrameCount(clientFile);
+      modelName = modelAdapter.getModelName(clientFile);
+      modelHeader = modelAdapter.getModelHeader(clientFile);
+      frameCount = modelAdapter.getFrameCount(clientFile);
       frames = new Frame[frameCount];
+      for (int i = 0; i < frameCount; ++i) {
+        // FIXME mth 2004 02 23 - allocate one FrameBuilder and reuse it
+        frames[i] =
+          new FrameBuilder(viewer, modelAdapter, clientFile, i).buildFrame();
+      }
+
       haveFile = true;
     }
     viewer.notifyFileLoaded(fullPathName, fileName, modelName, clientFile);
-  }
-
-  public Object getClientFile() {
-    return clientFile;
   }
 
   public Frame getFrame() {
@@ -143,10 +142,6 @@ public class ModelManager {
     if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
       currentFrameNumber = frameNumber;
       frame = frames[frameNumber];
-      if (frame == null)
-        frame = frames[frameNumber] =
-          new FrameBuilder(viewer, clientFile, frameNumber)
-          .buildFrame();
       atomCount = frame.getAtomCount();
     }
   }
@@ -220,62 +215,7 @@ public class ModelManager {
     return frame.findAtomsInRectangle(rectRubber);
   }
 
-  /****************************************************************
-   * JmolModelAdapter routines
-   ****************************************************************/
-
-  public JmolModelAdapter getJmolModelAdapter() {
-    return modelAdapter;
-  }
-
-  public int getFrameCount(Object clientFile) {
-    return modelAdapter.getFrameCount(clientFile);
-  }
-
-  public String getModelName(Object clientFile) {
-    return modelAdapter.getModelName(clientFile);
-  }
-
-  public String getModelHeader(Object clientFile) {
-    return modelAdapter.getModelHeader(clientFile);
-  }
-
-  /*
-  public int getAtomicNumber(Object clientAtom) {
-    int atomicNumber = modelAdapter.getAtomicNumber(clientAtom);
-    if (atomicNumber < -1 ||
-        atomicNumber >= JmolConstants.atomicNumberMax) {
-      System.out.println("JmolModelAdapter.getAtomicNumber() returned " +
-                         atomicNumber);
-      return 0;
-    }
-    if (atomicNumber >= 0)
-      return atomicNumber;
-    return mapAtomicSymbolToAtomicNumber(clientAtom);
-  }
-
-  public int getAtomicCharge(Object clientAtom) {
-    return modelAdapter.getAtomicCharge(clientAtom);
-  }
-
-  public String getAtomTypeName(Atom atom) {
-    String atomTypeName = modelAdapter.getAtomTypeName(atom.clientAtom);
-    if (atomTypeName != null)
-      return atomTypeName;
-    if (atom.pdbAtom != null)
-      return atom.pdbAtom.getAtomPrettyName();
-    return JmolConstants.atomicSymbols[atom.atomicNumber];
-  }
-
-  public String getPdbAtomRecord(Object clientAtom) {
-    return modelAdapter.getPdbAtomRecord(clientAtom);
-  }
-
-  public int getPdbModelNumber(Object clientAtom) {
-    return modelAdapter.getPdbModelNumber(clientAtom);
-  }
-  */
-
+  // FIXME mth 2004 02 23 -- this does *not* belong here
   public float solventProbeRadius = 0;
   public void setSolventProbeRadius(float radius) {
     this.solventProbeRadius = radius;

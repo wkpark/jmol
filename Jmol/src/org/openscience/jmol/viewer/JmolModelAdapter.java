@@ -70,6 +70,8 @@ public abstract class JmolModelAdapter {
     return null;
   }
 
+  public void finish(Object clientFile) {}
+
   /**
    * returns the type of this model
    public final static int MODEL_TYPE_OTHER = 0;

@@ -46,6 +46,10 @@ public class SimpleModelAdapter extends JmolModelAdapter {
   final static int JME = 2;
   final static int PDB = 3;
 
+  public void finish(Object clientFile) {
+    ((Model)clientFile).finish();
+  }
+
   public Object openBufferedReader(JmolViewer viewer,
                                    String name, BufferedReader bufferedReader) {
     System.out.println("SimpleModelAdapter reading:" + name);
@@ -267,7 +271,6 @@ class Atom {
     this.pdbModelNumber = model;
     this.pdbAtomRecord = pdb;
   }
-
 }
 
 class Bond {
@@ -297,7 +300,18 @@ abstract class Model {
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
 
-    void setModelName(String modelName) {
+  protected void finalize() {
+    System.out.println("SimpleModelAdapter.Model.finalize() called");
+  }
+
+  void finish() {
+    atoms = null;
+    bonds = null;
+    notionalUnitcell = pdbScaleMatrix = pdbScaleTranslate = null;
+    pdbStructureRecords = null;
+  }
+
+  void setModelName(String modelName) {
     if (modelName != null) {
       modelName.trim();
       if (modelName.length() > 0)

@@ -104,7 +104,8 @@ public class AtomShape implements Shape {
   private static int labelMode;
   private static boolean mouseDragged;
   private static DisplayControl control;
-  private static float halfBondWidth;
+  private static float bondWidthAngstroms;
+  private static float bondSeparationAngstroms;
   private static boolean showDarkerOutline;
   private static Color outlineColor;
   private static Color pickedColor;
@@ -124,7 +125,8 @@ public class AtomShape implements Shape {
     labelMode = control.getLabelMode();
     wireframeRotation = control.getFastRendering();
     drawBondsToAtomCenters = control.getDrawBondsToAtomCenters();
-    halfBondWidth = control.scaleToScreen(0, 0.5f * control.getBondWidth());
+    bondWidthAngstroms = control.getBondWidth();
+    bondSeparationAngstroms = (bondWidthAngstroms * 3) / 2;
     showDarkerOutline = control.getShowDarkerOutline();
     outlineColor = control.getOutlineColor();
     pickedColor = control.getPickedColor();
@@ -222,6 +224,7 @@ public class AtomShape implements Shape {
         (atomDrawMode != DisplayControl.WIREFRAME) &&
         (magnitude2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
+
     // technically, we should draw a bond (actually little more than a dot)
     // when:
     //  atomDrawMode == DisplayControl.WIREFRAME
@@ -277,6 +280,11 @@ public class AtomShape implements Shape {
     int y2Bond = y2 - ((radius2Bond - arcFactor) * dy) / magnitude;
     int x1Edge;
     int y1Edge;
+    // technically, this bond width is not correct, but ...
+    // just take the average of the two z's and don't worry about it
+    int avgZ = (z1 + z2) / 2;
+    float halfBondWidth
+      = control.scaleToScreen(avgZ, bondWidthAngstroms/2);
     if ((atomDrawMode == DisplayControl.WIREFRAME) && showCoveredBonds) {
       x1Edge = x1Bond;
       y1Edge = y1Bond;

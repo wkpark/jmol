@@ -92,10 +92,12 @@ class JmolPanel extends JPanel {
     return viewer;
   }
 
+  final Dimension currentSize = new Dimension();
+
   public void paint(Graphics g) {
-    viewer.setScreenDimension(getSize());
+    viewer.setScreenDimension(getSize(currentSize));
     Rectangle rectClip = new Rectangle();
     g.getClipBounds(rectClip);
-    viewer.renderScreenImage(g, getSize(), rectClip);
+    viewer.renderScreenImage(g, currentSize, rectClip);
   }
 }

@@ -201,23 +201,24 @@ public class JmolTable {
 
 
 class JmolPanel extends JPanel {
-    JmolViewer viewer;
-    ModelAdapter adapter;
-    JmolPanel() {
-        adapter = new SmarterModelAdapter(null);
-        viewer = new JmolViewer(this, adapter);
-    }
-
-    public JmolViewer getViewer() {
-        return viewer;
-    }
-
-    public void paint(Graphics g) {
-        viewer.setScreenDimension(getSize());
-        Rectangle rectClip = new Rectangle();
-        g.getClipBounds(rectClip);
-        viewer.renderScreenImage(g, getSize(), rectClip);
-    }
+  JmolViewer viewer;
+  ModelAdapter adapter;
+  JmolPanel() {
+    adapter = new SmarterModelAdapter(null);
+    viewer = new JmolViewer(this, adapter);
+  }
+  
+  public JmolViewer getViewer() {
+    return viewer;
+  }
+  
+  final Dimension currentSize = new Dimension();
+  public void paint(Graphics g) {
+    viewer.setScreenDimension(getSize(currentSize));
+    Rectangle rectClip = new Rectangle();
+    g.getClipBounds(rectClip);
+    viewer.renderScreenImage(g, currentSize, rectClip);
+  }
 }
 
 

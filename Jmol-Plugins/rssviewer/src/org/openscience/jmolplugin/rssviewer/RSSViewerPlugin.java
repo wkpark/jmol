@@ -24,6 +24,7 @@
  */
 package org.openscience.cdk.applications.plugin;
 
+import org.openscience.cdk.Atom;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.ChemSequence;
@@ -50,10 +51,14 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
 import javax.swing.ListSelectionModel;
 import javax.swing.JTabbedPane;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
 import javax.swing.event.*;
 import javax.swing.table.AbstractTableModel;
 
@@ -74,6 +79,7 @@ public class RSSViewerPlugin implements CDKPluginInterface {
     private RSSContentModel aggregatedContent = null;
     private SortedTableModel sortedAggregatedContent = null;
     private JPanel pluginPanel = null;
+    private JComboBox elementFilter = null;
     
     public void setEditBus(CDKEditBus editBus) {
         this.editBus = editBus;
@@ -173,13 +179,30 @@ public class RSSViewerPlugin implements CDKPluginInterface {
         aggregatedRowSM.addListSelectionListener(
             new RSSChannelItemsTableListener(sortedAggregatedContent, aggregatedContent)
         );
+        JScrollPane scrollableTable = new JScrollPane(aggregatedTable);
+        JPanel filterPane = new JPanel();
+        JLabel filterName = new JLabel("Filter: contains element ");
+        Vector elements = new Vector();
+        elements.add("");
+        elements.add("C");
+        elements.add("N");
+        elements.add("Cr");
+        elementFilter = new JComboBox(elements);
+        JButton applyFilter = new JButton("Apply");
+        applyFilter.addActionListener(new ApplyFilterListener());
+        filterPane.add(filterName);
+        filterPane.add(elementFilter);
+        filterPane.add(applyFilter);
+        
+        JPanel aggregatedPane = new JPanel(new BorderLayout());
+        aggregatedPane.add(filterPane, BorderLayout.NORTH);
+        aggregatedPane.add(scrollableTable, BorderLayout.CENTER);
 
         channelTable.validate();
         JTabbedPane tabbedPane = new JTabbedPane();
         JScrollPane contentPane = new JScrollPane(channelTable);
-        JScrollPane aggregatedPane = new JScrollPane(aggregatedTable);
         contentPane.validate();
-        tabbedPane.addTab("View Channel", null, contentPane, "Displays the content of one RSS channel");
+        tabbedPane.addTab("Single Channel", null, contentPane, "Displays the content of one RSS channel");
         tabbedPane.addTab("Aggregated", null, aggregatedPane, "Displays the contents of all RSS channels");
         
         JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -193,6 +216,7 @@ public class RSSViewerPlugin implements CDKPluginInterface {
     private void fillAggregatedTable() {
         // put all channels into the aggregated table
         if (aggregatedContent != null) { // ok, JPanel is set up
+            aggregatedContent.cleanTable();
             Enumeration channels = this.channels.elements();
             while (channels.hasMoreElements()) {
                 RSSChannel channel = (RSSChannel)channels.nextElement();
@@ -366,8 +390,29 @@ public class RSSViewerPlugin implements CDKPluginInterface {
             int itemsAlreadyInTable = channelContent.getRowCount();
             for (int i=0; i<models.length; i++) {
                 ChemModel model = models[i];
-                channelContent.insertBlankRow(i+itemsAlreadyInTable);
-                channelContent.setValueAt(models[i], i+itemsAlreadyInTable);
+                boolean passedFilter = false;
+                // apply filter
+                Atom[] modelAtoms = ChemModelManipulator.getAllInOneContainer(model).getAtoms();
+                String mustContainElement = elementFilter.getSelectedItem().toString();
+                if (mustContainElement.length() > 0) {
+                    // filter is set
+                    for (int j=0; j<modelAtoms.length; j++) {
+                        Atom atom = modelAtoms[j];
+                        if (atom.getSymbol().equals(mustContainElement)) {
+                            passedFilter = true;
+                            j = modelAtoms.length;
+                        }
+                    }
+                } else {
+                    // filter is not set
+                    passedFilter = true;
+                }
+                if (passedFilter) {
+                    // filter not set
+                    int lastLine = channelContent.getRowCount();
+                    channelContent.insertBlankRow(lastLine);
+                    channelContent.setValueAt(models[i], lastLine);
+                }
             }
         }
     }
@@ -446,6 +491,16 @@ public class RSSViewerPlugin implements CDKPluginInterface {
         }
     }
     
+    class ApplyFilterListener implements ActionListener {
+        
+        public ApplyFilterListener() {
+        }
+        
+        public void actionPerformed(ActionEvent e) {
+            fillAggregatedTable();
+        }
+    }
+
     class RSSChannel {
         
         private URL url;

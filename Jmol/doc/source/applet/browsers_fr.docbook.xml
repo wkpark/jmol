@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : browsers.docbook.xml (v 1.4)
+  Translated from default version : browsers.docbook.xml (v 1.5)
 -->
 <chapter>
   <title>Navigateurs Support&eacute;s</title>
@@ -26,89 +26,83 @@
       les configurations syst&egrave;me suivantes:
       <itemizedlist>
         <listitem>
-          <para>
-            Win32 (98/ME/2K/XP)
+          <para>Win32 (98/ME/2K/XP)</para>
             <itemizedlist>
               <listitem><para>
                 Microsoft Internet Explorer avec JVM Microsoft
               </para></listitem>
               <listitem><para>
-                Microsoft Internet Explorer avec Plugin Java Sun >= 1.4
+                Microsoft Internet Explorer avec Plugin Java Sun &gt;= 1.4
               </para></listitem>
               <listitem><para>
                 Netscape 4.7/4.8 <emphasis>(faibles performances)</emphasis>
               </para></listitem>
               <listitem><para>
-                Netscape 7 avec Plugin Java Sun >= 1.4
+                Netscape 7 avec Plugin Java Sun &gt;= 1.4
               </para></listitem>
               <listitem><para>
-                Mozilla avec Plugin Java Sun >= 1.4
+                Mozilla avec Plugin Java Sun &gt;= 1.4
               </para></listitem>
-              <listitem>
-                Firefox 1.0 avec Plugin Java Sun >= 1.4
-              </listitem>
-              <listitem>
-                Opera 7.5.4 avec Plugin Java Sun >= 1.4
-              </listitem>
+              <listitem><para>
+                Firefox 1.0 avec Plugin Java Sun &gt;= 1.4
+              </para></listitem>
+              <listitem><para>
+                Opera 7.5.4 avec Plugin Java Sun &gt;= 1.4
+              </para></listitem>
             </itemizedlist>
-          </para>
         </listitem>
         <listitem>
-          <para>
-            Mac OS X 10.3 ou sup&eacute;rieur
+          <para>Mac OS X 10.3 ou sup&eacute;rieur</para>
             <para>
               Les versions de Mac OS X ant&eacute;rieures &agrave; 10.3.3
               ne supportent pas les communications LiveConnect entre
               JavaScript et Java
             </para>
             <itemizedlist>
-              <listitem><para>
-                Safari 1.2 (v125)
+              <listitem>
+              	<para>Safari 1.2 (v125)</para>
                 <para>
                   Les versions p&eacute;c&eacute;dentes de OSX &amp; Safari
                   ont des probl&egrave;mes significatifs. M&ecirc;me les
                   versions suivantes ont des probl&egrave;mes.
                   Esp&eacute;rons qu'Apple puisse les garder stables.
                 </para>
-              </para></listitem>
-              <listitem>
-                Netscape 7.2 avec javaplugin.sourceforge.net install&eacute;
               </listitem>
               <listitem>
-                Mozilla 1.7.3 avec javaplugin.sourceforge.net install&eacute;
+                <para>Netscape 7.2 avec javaplugin.sourceforge.net install&eacute;</para>
               </listitem>
               <listitem>
-                Firefox 1.0 avec javaplugin.sourceforge.net install&eacute;
+                <para>Mozilla 1.7.3 avec javaplugin.sourceforge.net install&eacute;</para>
               </listitem>
               <listitem>
-                Opera 7.5.4
+                <para>Firefox 1.0 avec javaplugin.sourceforge.net install&eacute;</para>
+              </listitem>
+              <listitem>
+                <para>Opera 7.5.4</para>
                 <para>
                   toutes les versions d'Opera OSX jusqu'&agrave; 7.5.4 sont
                   compl&egrave;tement inutilisables
                 </para>
               </listitem>
             </itemizedlist>
-          </para>
         </listitem>
         <listitem>
-          <para>
-            Linux/Unix
+          <para>Linux/Unix</para>
             <itemizedlist>
               <listitem>
-                Mozilla 1.6 + Java Sun >= 1.4
+                <para>Mozilla 1.6 + Java Sun &gt;= 1.4</para>
               </listitem>
               <listitem>
-                Firefox 1.0 + Java Sun >= 1.4
+                <para>Firefox 1.0 + Java Sun &gt;= 1.4</para>
               </listitem>
               <listitem>
-                Konqueror 3.3
+                <para>Konqueror 3.3</para>
                 <para>
                   toutes les versions de Konqueror jusqu'&agrave; 3.3
                   sont inutilisables
                 </para>
               </listitem>
             </itemizedlist>
-          </para>
         </listitem>
         <listitem>
           <para>

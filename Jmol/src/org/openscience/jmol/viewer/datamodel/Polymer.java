@@ -304,4 +304,14 @@ abstract class Polymer {
     wingVectors[0] = wingVectors[1];
     wingVectors[count] = wingVectors[count - 1];
   }
+
+  void findNearestAtomIndex(int xMouse, int yMouse,
+                            Closest closest, short[] mads) {
+    for (int i = count; --i >= 0; ) {
+      if (mads[i] > 0 || mads[i + 1] > 0)
+        monomers[i].findNearestAtomIndex(xMouse, yMouse, closest,
+                                         mads[i], mads[i + 1]);
+    }
+  }
 }
+

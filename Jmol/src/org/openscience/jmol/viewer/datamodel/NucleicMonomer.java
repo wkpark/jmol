@@ -184,4 +184,8 @@ public class NucleicMonomer extends Monomer {
         ring5Points[i] = getAtomPointFromOffsetIndex(ring5OffsetIndexes[i]);
     return isPurine;
   }
+
+  void findNearestAtomIndex(int x, int y, Closest closest,
+                            short madBegin, short madEnd) {
+  }
 }

@@ -100,14 +100,23 @@ public class AminoMonomer extends AlphaMonomer {
 
   ////////////////////////////////////////////////////////////////
 
-  /*
-  void findNearestAtomIndex(int x, int y, Closest closest) {
+  void findNearestAtomIndex(int x, int y, Closest closest,
+                            short madBegin, short madEnd) {
+    JmolViewer viewer = chain.frame.viewer;
     Atom competitor = closest.atom;
+    Atom nitrogen = getNitrogenAtom();
+    int diameterBegin = viewer.scaleToScreen(nitrogen.getScreenZ(), madBegin);
+    if (diameterBegin < 4)
+      diameterBegin = 4;
+    Atom ccarbon = getCarbonylCarbonAtom();
+    int diameterEnd =  viewer.scaleToScreen(nitrogen.getScreenZ(), madEnd);
+    if (diameterEnd < 4)
+      diameterEnd = 4;
     Atom alpha = getLeadAtom();
-    if (alpha.isCursorOnTop(x, y, 8, competitor) ||
-        getNitrogenAtom().isCursorOnTop(x, y, 8, competitor) ||
-        getCarbonylCarbonAtom().isCursorOnTop(x, y, 8, competitor))
+    if (alpha.isCursorOnTop(x, y,
+                            (diameterBegin + diameterEnd) / 4, competitor) ||
+        nitrogen.isCursorOnTop(x, y, diameterBegin / 2, competitor) ||
+        ccarbon.isCursorOnTop(x, y, diameterEnd / 2, competitor))
       closest.atom = alpha;
   }
-  */
 }

@@ -26,7 +26,6 @@
 package org.jmol.appletwrapper;
 
 import java.awt.*;
-import java.awt.event.*;
 import netscape.javascript.JSObject;
 
 public interface WrappedApplet {

@@ -33,7 +33,6 @@ import java.io.Reader;
 import java.io.IOException;
 import org.openscience.jmol.io.ReaderFactory;
 import org.openscience.jmol.io.ChemFileReader;
-import java.util.Iterator;
 import java.util.Vector;
 
 public class DeprecatedAdapter implements JmolClientAdapter {
@@ -104,7 +103,8 @@ public class DeprecatedAdapter implements JmolClientAdapter {
             chemFrame.getJmolAtomAt(0).getPdbRecord() != null);
   }
 
-  public Iterator getAtomIterator(Object clientFile, int frameNumber) {
+  public JmolClientAdapter.AtomIterator
+    getAtomIterator(Object clientFile, int frameNumber) {
     return new AtomIterator(getChemFrame(clientFile, frameNumber));
   }
 
@@ -131,7 +131,7 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   /****************************************************************
    * the frame iterators
    ****************************************************************/
-  class AtomIterator implements Iterator {
+  class AtomIterator extends JmolClientAdapter.AtomIterator {
     ChemFrame chemFrame;
     int atomCount, iatom;
     AtomIterator(ChemFrame chemFrame) {
@@ -144,9 +144,6 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     }
     public Object next() {
       return chemFrame.getAtomAt(iatom++);
-    }
-    public void remove() {
-      throw new NullPointerException();
     }
   }
 

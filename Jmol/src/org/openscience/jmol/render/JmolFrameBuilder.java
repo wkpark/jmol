@@ -26,7 +26,6 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.JmolClientAdapter;
-import java.util.Iterator;
 import javax.vecmath.Point3d;
 
 public class JmolFrameBuilder {
@@ -49,7 +48,8 @@ public class JmolFrameBuilder {
     boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
 
     JmolFrame frame = new JmolFrame(control, atomCount, hasPdbRecords);
-    for (Iterator iterAtom = adapter.getAtomIterator(clientFile, frameNumber);
+    for (JmolClientAdapter.AtomIterator iterAtom =
+           adapter.getAtomIterator(clientFile, frameNumber);
          iterAtom.hasNext(); ) {
       frame.addAtom(iterAtom.next());
     }

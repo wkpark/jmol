@@ -38,7 +38,7 @@ public interface JmolClientAdapter {
 
   public int getAtomCount(Object clientFile, int frameNumber);
   public boolean hasPdbRecords(Object clientFile, int frameNumber);
-  public Iterator getAtomIterator(Object clientFile, int frameNumber);
+  public AtomIterator getAtomIterator(Object clientFile, int frameNumber);
   public BondIterator getCovalentBondIterator(Object clientFile,
                                               int frameNumber);
   public BondIterator getAssociationBondIterator(Object clientFile,
@@ -59,6 +59,14 @@ public interface JmolClientAdapter {
   public Point3d getPoint3d(Object clientAtom);
   public String getPdbAtomRecord(Object clientAtom);
   public Color getColor(int atomicNumber, Object clientAtom, int colorScheme);
+
+  // Java 1.1 does not have java.util.Iterator
+  // and I don't want to use Enumerator
+  // so we will define our own AtomIterator
+  public abstract class AtomIterator {
+    public abstract boolean hasNext();
+    public abstract Object next();
+  }
 
   public abstract class BondIterator {
     public abstract boolean hasNext();

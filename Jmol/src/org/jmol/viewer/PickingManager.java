@@ -24,9 +24,7 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.viewer.datamodel.Atom;
 import org.jmol.viewer.datamodel.Frame;
-import javax.vecmath.Point3f;
 import java.util.BitSet;
 
 class PickingManager {

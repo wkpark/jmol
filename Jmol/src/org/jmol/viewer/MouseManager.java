@@ -29,7 +29,6 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.Event;
-import java.util.BitSet;
 
 abstract class MouseManager {
 

@@ -24,9 +24,6 @@
  */
 package org.jmol.viewer;
 
-
-import java.awt.Color;
-
 class StyleManager {
 
   JmolViewer viewer;

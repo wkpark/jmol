@@ -34,9 +34,6 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Enumeration;
 import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Matrix4f;
-
-import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix3f;
 
 class Context {

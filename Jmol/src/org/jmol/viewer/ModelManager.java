@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.viewer.datamodel.Frame;
-import org.jmol.viewer.datamodel.Atom;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -34,7 +33,6 @@ import java.util.Properties;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
-import java.awt.Color;
 
 class ModelManager {
 

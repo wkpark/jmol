@@ -27,7 +27,6 @@ package org.jmol.viewer.script;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.viewer.datamodel.Group;
 
-import java.util.Hashtable;
 import java.util.Vector;
 
 class Compiler {

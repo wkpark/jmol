@@ -25,12 +25,8 @@
 package org.jmol.viewer;
 
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Event;
-import java.util.BitSet;
 
 class MouseManager10 extends MouseManager {
 

@@ -30,7 +30,6 @@ import org.jmol.viewer.datamodel.*;
 
 import org.jmol.viewer.script.Eval;
 
-import java.lang.reflect.Array;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Color;
@@ -38,11 +37,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
-import java.awt.Cursor;
 import java.util.Hashtable;
-import java.util.Vector;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.Properties;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -51,9 +47,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
-import java.io.InputStream;
 import java.io.Reader;
-import java.io.File;
 
 /****************************************************************
  * The JmolViewer can be used to render client molecules. Clients

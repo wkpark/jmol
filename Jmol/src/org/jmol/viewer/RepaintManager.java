@@ -29,9 +29,6 @@ import org.jmol.viewer.datamodel.FrameRenderer;
 import org.jmol.viewer.datamodel.Frame;
 
 import java.awt.Image;
-import java.awt.Graphics;
-import java.awt.Dimension;
-import java.awt.Component;
 import java.awt.Rectangle;
 
 class RepaintManager {

@@ -24,8 +24,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.viewer.*;
-import java.awt.Dimension;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;

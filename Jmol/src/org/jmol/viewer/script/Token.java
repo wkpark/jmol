@@ -25,7 +25,6 @@
 
 package org.jmol.viewer.script;
 
-import org.jmol.viewer.JmolConstants;
 import java.util.Hashtable;
 
 public class Token {

@@ -30,89 +30,27 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Backbone {
-
-  JmolViewer viewer;
-  Frame frame;
-  PdbFile pdbFile;
-
-  Bmodel[] bmodels;
+public class Backbone extends Mcg {
 
   Backbone(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
-    pdbFile = frame.pdbFile;
+    super(viewer, frame);
   }
 
-  public void setMad(short mad, BitSet bsSelected) {
-    initialize();
-    for (int m = bmodels.length; --m >= 0; )
-      bmodels[m].setMad(mad, bsSelected);
+  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
+    return new Chain(pdbChain);
   }
 
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    initialize();
-    for (int m = bmodels.length; --m >= 0; )
-      bmodels[m].setColix(palette, colix, bsSelected);
-  }
-
-  void initialize() {
-    if (bmodels == null) {
-      int tmodelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
-      bmodels = new Bmodel[tmodelCount];
-      for (int i = tmodelCount; --i >= 0; )
-        bmodels[i] = new Bmodel(pdbFile.getModel(i));
-    }
-  }
-
-  int getBmodelCount() {
-    return bmodels.length;
-  }
-
-  Bmodel getBmodel(int i) {
-    return bmodels[i];
-  }
-
-  class Bmodel {
-    PdbModel model;
-    Bchain[] bchains;
-    
-    Bmodel(PdbModel model) {
-      this.model = model;
-      bchains = new Bchain[model.getChainCount()];
-      for (int i = bchains.length; --i >= 0; )
-        bchains[i] = new Bchain(model.getChain(i));
-    }
-    
-    public void setMad(short mad, BitSet bsSelected) {
-      for (int i = bchains.length; --i >= 0; )
-        bchains[i].setMad(mad, bsSelected);
-    }
-
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = bchains.length; --i >= 0; )
-        bchains[i].setColix(palette, colix, bsSelected);
-    }
-
-    int getBchainCount() {
-      return bchains.length;
-    }
-
-    Bchain getBchain(int i) {
-      return bchains[i];
-    }
-  }
-
-  class Bchain {
-    PdbChain chain;
+  class Chain extends Mcg.Chain {
     int mainchainLength;
-    int[] atomIndices;
+    PdbGroup[] mainchain;
+    Frame frame;
     short[] colixes;
     short[] mads;
+    int[] atomIndices;
 
-    Bchain(PdbChain chain) {
-      this.chain = chain;
-      PdbGroup[] mainchain = chain.getMainchain();
+    Chain(PdbChain pdbChain) {
+      super(pdbChain);
+      PdbGroup[] mainchain = pdbChain.getMainchain();
       mainchainLength = mainchain.length;
       if (mainchainLength < 2) {
         // this is somewhat important ... 
@@ -141,7 +79,7 @@ public class Backbone {
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      Frame frame = chain.model.file.frame;
+      Frame frame = pdbChain.model.file.frame;
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       for (int i = mainchainLength; --i >= 0; ) {
         int atomIndex = atomIndices[i];
@@ -154,4 +92,3 @@ public class Backbone {
     }
   }
 }
-

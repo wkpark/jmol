@@ -28,31 +28,28 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
+import java.awt.Rectangle;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
-class BackboneRenderer extends Renderer {
+class BackboneRenderer extends McgRenderer {
 
   BackboneRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
-  Backbone backbone;
-
-  void render() {
-    this.backbone = frame.backbone;
-    if (backbone == null)
-      return;
-    for (int m = backbone.getBmodelCount(); --m >= 0; ) {
-      Backbone.Bmodel bmodel = backbone.getBmodel(m);
-      for (int c = bmodel.getBchainCount(); --c >= 0; ) {
-        Backbone.Bchain bchain = bmodel.getBchain(c);
-        if (bchain.mainchainLength > 0)
-          render1Chain(bchain.atomIndices, bchain.mads, bchain.colixes);
-      }
-    }
+  void renderMcgChain(Mcg.Chain mcgChain) {
+    renderTraceChain((Backbone.Chain)mcgChain);
   }
   
+  void renderTraceChain(Backbone.Chain backboneChain) {
+    render1Chain(backboneChain.atomIndices,
+                 backboneChain.mads, backboneChain.colixes);
+  }
+
   void render1Chain(int[] atomIndices, short[] mads, short[] colixes) {
+    if (mads == null)
+      return;
     for (int i = mads.length; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
@@ -76,4 +73,3 @@ class BackboneRenderer extends Renderer {
     }
   }
 }
-

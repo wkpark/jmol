@@ -70,33 +70,18 @@
       </section>
     </section>
     
-    <section title="Jmol10pre11">
+    <section title="Jmol10pre12">
       <p>
-	Jmol version 10 pre-release 11 was released on Thu 10 Jun 2004.
-	This release includes
-	the following enhancements:
+	Jmol version 10 pre-release 12 was released on Wed 04 Aug 2004.
+	This release includes the following enhancements:
 	<ul>
 	  <li>
-	    Redesigned group handling to recognize modified residues.
+	    initial release of the Jmol.js JavaScript library
+	    to simplify creation of web pages
 	  </li>
-	  <li>redefinition of almost all nucleic sets</li>
-	  <li>redefinition protein and backbone sets</li>
-	  <li>graphic objects now extend to the terminal atoms</li>
-	  <li>support for base platelets in nucleotide cartoons</li>
-	  <li>support for HIN files</li>
-	  <li>initial support for Ghemical files</li>
-	  <li>improved support for CIF/mmCIF files</li>
-	  <li>minor changes to force vectors &amp; vibrations</li>
-	  <li>minor changes to animations</li>
 	  <li>
-	    clicking on a schematic shape returns the alpha carbon of the group
+	    bug fixes
 	  </li>
-	  <li>smaller memory footprint</li>
-	  <li>
-	    JmolApplet now <i>requires</i> the use of the
-	    <code>progressbar</code> param
-	  </li>
-	  <li>bug fixes</li>
 	</ul>
 	The following areas will not be supported in the initial
 	public release of Jmol v10. 
@@ -109,17 +94,17 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre11.zip">
+	<a href="Jmol10pre12.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre11.zip
+	    Jmol10pre12.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre10.zip">
+	<a href="Jmol10pre11.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre10.zip
+	    <i>Give me the old code</i> Jmol10pre11.zip
 	  </font>
 	</a>
       </p>
@@ -129,7 +114,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre11.zip</b>
+	format as .zip : <b>jar xf Jmol10pre12.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

@@ -158,7 +158,8 @@ public class Token {
   final static int spin         = command | 53 | setparam | showparam | bool;
   final static int list         = command | 54 | showparam;
   final static int display3d    = command | 55;
-  final static int animation    = command | 56;
+  // jmol commands
+  final static int animate      = command | 100;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -205,12 +206,13 @@ public class Token {
   final static int mlp          = setparam | 26 | showparam;
   final static int molsurface   = setparam | 27;
   final static int debugscript  = setparam | 28;
-  final static int scale3d      = setparam | 29;
+  final static int fps          = setparam | 29;
+  final static int scale3d      = setparam | 30;
   // jmol extensions
-  final static int property     = setparam | 30;
-  final static int diffuse      = setparam | 31;
-  final static int labeloffset  = setparam | 32;
-  final static int frank        = setparam | 33;
+  final static int property     = setparam | 31;
+  final static int diffuse      = setparam | 32;
+  final static int labeloffset  = setparam | 33;
+  final static int frank        = setparam | 34;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -300,10 +302,6 @@ public class Token {
   final static int spec_atom            = misc | 27;
   final static int percent      = misc | 28;
   final static int dotted       = misc | 29;
-  final static int mode         = misc | 30;
-  final static int direction    = misc | 31;
-  final static int fps          = misc | 32;
-  final static int frame        = misc | 33;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -387,8 +385,8 @@ public class Token {
     "spin",              new Token(spin,      onDefault1, "spin"),
     "list",              new Token(list,     varArgCount, "list"),
     "display3d",         new Token(display3d,  "display3d"),
-    "animation",         new Token(animation,  "animation"),
-    "anim",              null,
+  // jmol extended commands
+    "animate",           new Token(animate, "animate"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),
@@ -436,7 +434,6 @@ public class Token {
   
     // show parameters
     "information",  new Token(information,     "information"),
-    "info",         null,
     "phipsi",       new Token(phipsi,          "phipsi"),
     "ramprint",     new Token(ramprint,        "ramprint"),
     "rotation",     new Token(rotation,        "rotation"),
@@ -530,7 +527,6 @@ public class Token {
     "%",            new Token(percent,         "%"),
     "dotted",       new Token(dotted,          "dotted"),
     "sidechain",    new Token(sidechain,       "sidechain"),
-    "mode",         new Token(mode,            "mode"),
 
   };
 
@@ -575,10 +571,10 @@ public class Token {
     "@sidechain protein and !backbone", // doc & code inconsistent
     "@base nucleic and !backbone",
     "@small ala,gly,ser",
-    "@solvent _g>=69 & _g<=72", // water or ions
+    "@solvent _g>=69 & _g<=73", // water or ions
     "@surface !buried",
     "@turn _structure=1",
-    "@water _g=69,_g=70",
+    "@water _g=69,_g=70,_g=71",
     "@hoh water",
 
     "@nucleic _g>=23 & _g<=68",

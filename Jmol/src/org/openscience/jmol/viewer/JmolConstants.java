@@ -1750,9 +1750,10 @@ final public class JmolConstants {
     // water && solvent
     "HOH", // 69
     "DOD", // 70
+    "WAT", // 71
     // ions && solvent
-    "PO4", // 71 phosphate ions
-    "SO4", // 72 sulphate ions 
+    "PO4", // 72 phosphate ions
+    "SO4", // 73 sulphate ions 
     
   };
 

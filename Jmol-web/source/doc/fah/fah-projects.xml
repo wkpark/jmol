@@ -1292,6 +1292,9 @@
   <fah_proj number="873" name="p873_p53dimer873" file="y"
     server="171.65.103.157" atoms="12173" preferred="6" deadline="9"
     credit="31" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="874" name="p874_p53dimer874" file="y"
+    server="171.65.103.157" atoms="12230" preferred="30" deadline="45"
+    credit="155" frames="100" code="G" contact="ltchong"/>
 
   <!-- Projects 900 to 999 -->
   <fah_proj number="901"

@@ -527,7 +527,7 @@ public class Token {
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
     "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
-    "@ions _resid=29,_resid=30",
+    "@ions _resid=49,_resid=50",
     "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
     "@ligand hetero & !solvent",
     "@medium asn,asp,cys,pro,thr,val",
@@ -535,51 +535,28 @@ public class Token {
     // is h basic or neutral
     "@negative acidic",
     "@neutral amino&!(acidic,basic)",
-    "@nucleic a,c,g,t",
     "@polar amino&!hydrophobic",
     "@positive basic",
     "@protein amino", // + common post-translational modifications ??
-    "@purine a,g",
-    "@pyrimidine c,t",
     // selected - special and is handled at runtime
     "@sheet _structure=2",
     "@sidechain (protein or nucleic) and !backbone", // doc & code inconsistent
     "@small ala,gly,ser",
-    "@solvent _resid>=27 & _resid<=30", // water or ions
+    "@solvent _resid>=47 & _resid<=50", // water or ions
     "@surface !buried",
     "@turn _structure=1",
-    "@water _resid=27,_resid=28",
+    "@water _resid=47,_resid=48",
     "@hoh water",
 
-    "@a _resid=23",
-    "@c _resid=24",
-    "@g _resid=25",
-    "@t _resid=26",
-
-    /*
-      eliminated because some of these conflict with nucleic acids
-
-    "@a ala",
-    "@r arg",
-    "@n asn",
-    "@d asp",
-    "@c cys",
-    "@e glu",
-    "@q gln",
-    "@g gly",
-    "@h his",
-    "@i ile",
-    "@l leu",
-    "@k lys",
-    "@m met",
-    "@f phe",
-    "@p pro",
-    "@s ser",
-    "@t thr",
-    "@w trp",
-    "@y tyr",
-    "@v val",
-    */
+    "@nucleic _resid>=23 & _resid<=46",
+    "@purine _resid>=23 & _resid<=28",
+    "@pyrimidine _resid>=29 & _resid<=34",
+    "@a _resid=23,_resid=24",
+    "@c _resid=29,_resid=30",
+    "@g _resid=25,_resid=26",
+    "@t _resid=31,_resid=32",
+    "@u _resid=33,_resid=34",
+    "@i _resid=27,_resid=28",
 
     // "@hydrogen _e=1", handled specially
     "@helium _e=2",

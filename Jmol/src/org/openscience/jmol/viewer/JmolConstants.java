@@ -1049,19 +1049,43 @@ final public class JmolConstants {
     "GLX", // 21 GLU/GLN ambiguous
     "UNK", // 22 unknown -- 22
 
-    "  A", // 23
-    "  C",
-    "  G",
-    "  T", // 26
-
     // if you change these numbers you *must* update
     // the predefined sets in script.Token.java
+
+    "  A", // 23
+    " +A",
+    "  G", // 25
+    " +G",
+    "  I", // 27
+    " +I",
+    "  C", // 29
+    " +C",
+    "  T", // 31
+    " +T",
+    "  U", // 33
+    " +U",
+
+    "1MA", // 35
+    "5MC",
+    "OMC",
+    "1MG",
+    "2MG",
+    "M2G", // 40
+    "7MG",
+    "OMG",
+    " YG",
+    "H2U",
+    "5MU",
+    "PSU", // 46
+    
+    
+
     // water && solvent
-    "HOH", // 27
-    "DOD", // 28
+    "HOH", // 47
+    "DOD", // 48
     // ions && solvent
-    "PO4", // 29 phosphate ions
-    "SO4", // 30 sulphate ions 
+    "PO4", // 49 phosphate ions
+    "SO4", // 50 sulphate ions 
     
   };
 

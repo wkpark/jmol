@@ -551,7 +551,7 @@ public class TransformManager {
     matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
-  public int spinX, spinY, spinZ, spinFps = 30;
+  public int spinX, spinY = 30, spinZ, spinFps = 30;
 
   final static float radiansPerDegree = (float)(2 * Math.PI / 360);
 
@@ -570,8 +570,8 @@ public class TransformManager {
   public void setSpinFps(int value) {
     if (value <= 0)
       value = 1;
-    else if (value > 30)
-      value = 30;
+    else if (value > 50)
+      value = 50;
     spinFps = value;
     //    System.out.println("spinFps=" + spinFps);
   }

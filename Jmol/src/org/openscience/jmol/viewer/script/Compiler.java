@@ -174,7 +174,7 @@ class Compiler {
         if (lookingAtSeqcode()) {
           int seqNum =
             Integer.parseInt(script.substring(ichToken,
-                                              ichToken + cchToken - 1));
+                                              ichToken + cchToken - 2));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
           int seqcode = PdbGroup.getSeqcode(seqNum, insertionCode);
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
@@ -414,11 +414,14 @@ class Compiler {
     char ch = ' ';
     while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
       ++ichT;
-    if (ichT == ichToken || ichT == cchScript || ch < 'A' || ch > 'Z')
+    if (ichT == ichToken || ichT + 2 > cchScript || ch != '^')
+      return false;
+    ch = script.charAt(++ichT);
+    if (! ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')))
       return false;
     ++ichT;
     cchToken = ichT - ichToken;
-    return cchToken > 0;
+    return true;
   }
 
   boolean lookingAtPositiveInteger() {

@@ -44,6 +44,10 @@ class BondRenderer extends Renderer {
   boolean showHydrogens;
   byte endcaps;
 
+  boolean ssbondsBackbone;
+  boolean hbondsBackbone;
+  boolean bondsBackbone;
+
   Atom atomA, atomB;
   int xA, yA, zA;
   int xB, yB, zB;
@@ -75,6 +79,10 @@ class BondRenderer extends Renderer {
     modeMultipleBond = viewer.getModeMultipleBond();
     showHydrogens = viewer.getShowHydrogens();
 
+    ssbondsBackbone = viewer.getSsbondsBackbone();
+    hbondsBackbone = viewer.getHbondsBackbone();
+    bondsBackbone = hbondsBackbone | ssbondsBackbone;
+
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; )
       render(bonds[i]);
@@ -84,12 +92,23 @@ class BondRenderer extends Renderer {
     styleBond = bond.style;
     if (styleBond == JmolConstants.STYLE_NONE)
       return;
-    atomA = bond.atom1;
-    atomB = bond.atom2;
-    if (!showHydrogens && (atomA.atomicNumber == 1 ||
-                           atomB.atomicNumber == 1))
-      return;
+    int order = bond.order;
+    Atom atomA, atomB;
+    if (bondsBackbone &&
+        ((ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) ||
+         (hbondsBackbone && (order & JmolConstants.BOND_HYDROGEN) != 0))) {
+      atomA = getBackboneAtom(bond.atom1);
+      atomB = getBackboneAtom(bond.atom2);
+    } else {
+      atomA = bond.atom1;
+      atomB = bond.atom2;
+      if (!showHydrogens && (atomA.atomicNumber == 1 ||
+                             atomB.atomicNumber == 1))
+        return;
+    }
+    this.atomA = atomA;
     xA = atomA.x; yA = atomA.y; zA = atomA.z;
+    this.atomB = atomB;
     xB = atomB.x; yB = atomB.y; zB = atomB.z;
     dx = xB - xA;
     dy = yB - yA;
@@ -100,7 +119,7 @@ class BondRenderer extends Renderer {
       colixA = atomA.colixAtom;
       colixB = atomB.colixAtom;
     }
-    bondOrder = getRenderBondOrder(bond.order);
+    bondOrder = getRenderBondOrder(order);
     switch(bondOrder) {
     case 1:
     case 2:
@@ -118,6 +137,15 @@ class BondRenderer extends Renderer {
     case JmolConstants.BOND_HYDROGEN:
       renderHbondDashed();
     }
+  }
+    
+  Atom getBackboneAtom(Atom atom) {
+    if (atom.pdbAtom != null) {
+      Atom alpha = atom.pdbAtom.group.getAlphaCarbonAtom();
+      if (alpha != null)
+        return alpha;
+    }
+    return atom;
   }
 
   int getRenderBondOrder(int order) {
@@ -333,8 +361,8 @@ class BondRenderer extends Renderer {
     Atom atomC = findAromaticNeighbor(bond);
     if (atomC == null)
       return 1;
-    int dxAC = atomC.x - atomA.x;
-    int dyAC = atomC.y - atomA.y;
+    int dxAC = atomC.x - xA;
+    int dyAC = atomC.y - yA;
     return (dx * dyAC - dy * dxAC) >= 0 ? 2 : 1;
   }
 

@@ -74,17 +74,24 @@ final public class Graphics3D {
   public Graphics3D(JmolViewer viewer) {
     this.viewer = viewer;
     jvm12orGreater = viewer.jvm12orGreater;
-    //    if (jvm12orGreater && !forcePlatformAWT) {
-    //      platform = new Swing3D();
-    //    } else {
+    if (jvm12orGreater && !forcePlatformAWT) {
+      platform = allocateSwing3D();
+    } else {
       platform = new Awt3D(viewer.getAwtComponent());
-      //    }
+    }
     this.line3d = new Line3D(viewer, this);
     this.circle3d = new Circle3D(viewer, this);
     this.sphere3d = new Sphere3D(viewer, this);
     this.triangle3d = new Triangle3D(viewer, this);
     this.cylinder3d = new Cylinder3D(viewer, this);
     this.hermite3d = new Hermite3D(viewer, this);
+  }
+
+  private Platform3D allocateSwing3D() {
+    // this method is necessary in order to prevent Swing-related
+    // classes from getting touched on the MacOS9 platform
+    // otherwise the Mac crashes *badly* when the classes are not found
+    return new Swing3D();
   }
 
   public void setSize(int width, int height) {

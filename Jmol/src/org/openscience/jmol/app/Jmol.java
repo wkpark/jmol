@@ -30,8 +30,6 @@ import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.io.XYZSaver;
-import org.openscience.jmol.script.ScriptWindow;
-import org.openscience.jmol.script.Eval;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
@@ -263,6 +261,7 @@ public class Jmol extends JPanel {
         .translate("Initializing Script Window..."));
     scriptWindow = new ScriptWindow(control, frame);
     //scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
+    control.setJmolStatusListener(new MyJmolStatusListener());
     splash.showStatus(resourceHandler
         .translate("Initializing Property Graph..."));
     pg = new PropertyGraph(frame);
@@ -411,9 +410,7 @@ public class Jmol extends JPanel {
         jmol.splash
           .showStatus(JmolResourceHandler.getInstance()
                       .getString("Executing script..."));
-        Eval eval = jmol.control.getEval();
-        if (eval.loadScriptFile(scriptFilename))
-          eval.run();
+        jmol.control.evalFile(scriptFilename);
       }
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
@@ -1415,5 +1412,19 @@ public class Jmol extends JPanel {
     }
   }
 
-}
+  class MyJmolStatusListener implements JmolStatusListener {
+    public void setStatusMessage(String statusMessage) {
+      System.out.println("setStatusMessage:" + statusMessage);
+    }
 
+    public void scriptEcho(String strEcho) {
+      if (scriptWindow != null)
+        scriptWindow.scriptEcho(strEcho);
+    }
+
+    public void notifyScriptTermination(String strStatus, int msWalltime) {
+      if (scriptWindow != null)
+        scriptWindow.notifyScriptTermination(strStatus, msWalltime);
+    }
+  }
+}

@@ -16,9 +16,10 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.script;
+package org.openscience.jmol.app;
 
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.script.Eval;
 
 import java.awt.BorderLayout;
 import javax.swing.JButton;
@@ -30,13 +31,6 @@ import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-/**
- * Window for entering script commands. Also displays errors which may result.
- * The processing of script commands is delegated to a
- * <code>RasMolScriptHandler</code>.
- *
- * @author Bradley A. Smith (bradley@baysmith.com)
- */
 public class ScriptWindow extends JDialog
     implements ActionListener {
 
@@ -44,13 +38,11 @@ public class ScriptWindow extends JDialog
   private JTextField input;
   private JButton closeButton;
   DisplayControl control;
-  Eval eval;
 
   public ScriptWindow(DisplayControl control, JFrame frame) {
 
     super(frame, "Rasmol Scripts", false);
     this.control = control;
-    this.eval = control.getEval();
     getContentPane().setLayout(new BorderLayout());
     output = new JTextArea(20, 30);
     output.setEditable(false);
@@ -70,6 +62,21 @@ public class ScriptWindow extends JDialog
     pack();
   }
 
+  public void scriptEcho(String strEcho) {
+    if (strEcho != null) {
+      output.append(strEcho);
+      output.append("\n");
+    }
+  }
+
+  public void notifyScriptTermination(String strMsg, int msWalltime) {
+    if (strMsg != null) {
+      output.append(strMsg);
+      output.append("\n");
+    }
+    output.append("> ");
+  }
+
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == closeButton) {
@@ -81,21 +88,18 @@ public class ScriptWindow extends JDialog
       output.append("\n");
       input.setText(null);
 
-      // execute script
-      if (eval.loadScriptString(command))
-        eval.start();
-      else {
-        output.append(eval.errorMessage);
-        output.append("\n");
+      String strErrorMessage = control.evalString(command);
+      if (strErrorMessage != null) {
+        output.append(strErrorMessage);
+        output.append("\n> ");
+      } else {
+        output.append("!!");
       }
-
-      // return prompt
-      output.append("> ");
     }
   }
 
   public void hide() {
-    eval.haltExecution();
+    //    eval.haltExecution();
     super.hide();
   }
 }

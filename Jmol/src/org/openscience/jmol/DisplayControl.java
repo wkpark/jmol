@@ -1068,12 +1068,6 @@ final public class DisplayControl {
     return null;
   }
 
-  public void scriptEcho(String str) {
-    // FIXME -- if there is a script window it should go there
-    // for an applet it needs to go someplace else
-    System.out.println(str);
-  }
-
   public void setStyleMarAtomScript(byte style, short mar) {
     distributor.setStyleMarAtom(style, mar, iterAtom());
   }
@@ -1132,9 +1126,12 @@ final public class DisplayControl {
     eval.resetTerminationNotification();
     if (jmolStatusListener != null)
       jmolStatusListener.notifyScriptTermination(strErrorMessage, msWalltime);
-    System.out.println("terminated with message:" + strErrorMessage +
-                       " in " + msWalltime + " ms");
     }
+
+  public void scriptEcho(String strEcho) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.scriptEcho(strEcho);
+  }
 
   /****************************************************************
    * delegated to StyleManager

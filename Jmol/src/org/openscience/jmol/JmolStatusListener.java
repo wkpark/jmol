@@ -20,6 +20,10 @@
 package org.openscience.jmol;
 
 public interface JmolStatusListener {
-  void setStatusMessage(String statusMessage);
-  void notifyScriptTermination(String statusMessage, int msWalltime);
+  public void setStatusMessage(String statusMessage);
+
+  public void scriptEcho(String strEcho);
+
+  public void notifyScriptTermination(String statusMessage, int msWalltime);
+  
 }

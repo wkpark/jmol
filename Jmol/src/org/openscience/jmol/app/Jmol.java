@@ -68,7 +68,6 @@ public class Jmol extends JPanel {
   private DisplayPanel display;
   private StatusBar status;
   private AtomPropsMenu apm;
-  public static AtomTypeTable atomTypeTable;
   private PreferencesDialog preferencesDialog;
   private Animate anim;
   private Vibrate vib;
@@ -109,7 +108,6 @@ public class Jmol extends JPanel {
   static ButtonGroup toolbarButtonGroup = new ButtonGroup();
 
   static File UserPropsFile;
-  static File UserAtypeFile;
   private static HistoryFile historyFile;
 
   Splash splash;
@@ -138,7 +136,6 @@ public class Jmol extends JPanel {
                       ".jmol");
     ujmoldir.mkdirs();
     UserPropsFile = new File(ujmoldir, "properties");
-    UserAtypeFile = new File(ujmoldir, "jmol_atomtypes.txt");
     historyFile = new HistoryFile(new File(ujmoldir, "history"),
         "Jmol's persistent values");
   }
@@ -333,10 +330,6 @@ public class Jmol extends JPanel {
     
     // cache the current directory to speed up Jmol window creation
     currentDir = getUserDirectory();
-    
-    splash.showStatus(jrh.translate("Reading AtomTypes..."));
-    AtomTypeList atl = AtomTypeList.getInstance(UserAtypeFile);
-    atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
     
     Jmol window = new Jmol(splash, frame, null);
     frame.show();
@@ -786,7 +779,6 @@ public class Jmol extends JPanel {
   private static final String vibAction = "vibrate";
   private static final String whatsnewAction = "whatsnew";
   private static final String uguideAction = "uguide";
-  private static final String atompropsAction = "atomprops";
   private static final String printActionProperty = "print";
   private static final String recentFilesAction = "recentFiles";
   private static final String povrayActionProperty = "povray";
@@ -816,7 +808,7 @@ public class Jmol extends JPanel {
     new OpenUrlAction(), saveAction, printAction, exportAction,
     new CloseAction(), new ExitAction(), new AboutAction(),
     new WhatsNewAction(),
-    new UguideAction(), new AtompropsAction(), new ConsoleAction(),
+    new UguideAction(), new ConsoleAction(),
     chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
     new ScriptWindowAction(), viewMeasurementTableAction
   };
@@ -892,17 +884,6 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
       HelpDialog hd = new HelpDialog(frame);
       hd.show();
-    }
-  }
-
-  class AtompropsAction extends AbstractAction {
-
-    public AtompropsAction() {
-      super(atompropsAction);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      atomTypeTable.show();
     }
   }
 

@@ -1395,31 +1395,42 @@ final public class JmolViewer {
   }
 
   public void setShapeShow(int shapeType, boolean show) {
-    getFrame().setShapeMad(shapeType, (short)(show ? -1 : 0), null);
-    refresh();
+    setShapeMad(shapeType, (short)(show ? -1 : 0));
   }
   
   public boolean getShapeShow(int shapeType) {
-    return getFrame().getShapeMad(shapeType) != 0;
+    return getShapeMad(shapeType) != 0;
   }
-
+  
   public void setShapeMad(int shapeType, short mad) {
-    getFrame().setShapeMad(shapeType, mad,
+    modelManager.setShapeMad(shapeType, mad,
                              shapeType <
                              JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
                              : null);
     refresh();
   }
-
-  public void setShapeColor(int shapeType, byte palette, Color color) {
-    getFrame().setShapeColix(shapeType, palette, g3d.getColix(color),
-                             shapeType <
-                             JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
-                             ? selectionManager.bsSelection
-                             : null);
+  
+  public short getShapeMad(int shapeType) {
+    return modelManager.getShapeMad(shapeType);
   }
-
+  
+  public void setShapeColor(int shapeType, byte palette, Color color) {
+    modelManager.setShapeColix(shapeType, palette, g3d.getColix(color),
+                               shapeType <
+                               JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
+                               ? selectionManager.bsSelection
+                               : null);
+  }
+  
+  public byte getShapePalette(int shapeType) {
+    return modelManager.getShapePalette(shapeType);
+  }
+  
+  public short getShapeColix(int shapeType) {
+    return modelManager.getShapeColix(shapeType);
+  }
+  
   int strandsCount = 5;
 
   public void setStrandsCount(int strandsCount) {

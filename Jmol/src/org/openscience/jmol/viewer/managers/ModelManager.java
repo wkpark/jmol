@@ -200,6 +200,41 @@ public class ModelManager {
     this.solventProbeRadius = radius;
   }
 
+  /****************************************************************
+   * shape support
+   ****************************************************************/
+
+  short[] shapeMads = new short[JmolConstants.SHAPE_MAX];
+  byte[] shapePalettes = new byte[JmolConstants.SHAPE_MAX];
+  short[] shapeColixes = new short[JmolConstants.SHAPE_MAX];
+
+  public void setShapeMad(int shapeType, short mad, BitSet bsSelected) {
+    shapeMads[shapeType] = mad;
+    if (frame != null)
+      frame.setShapeMad(shapeType, mad, bsSelected);
+  }
+  
+  public short getShapeMad(int shapeType) {
+    return shapeMads[shapeType];
+  }
+  
+  public void setShapeColix(int shapeType, byte palette, 
+                            short colix, BitSet bsSelected) {
+    shapePalettes[shapeType] = palette;
+    shapeColixes[shapeType] = colix;
+    if (frame != null)
+      frame.setShapeColix(shapeType, palette, colix, bsSelected);
+  }
+  
+  public byte getShapePalette(int shapeType) {
+    return shapePalettes[shapeType];
+  }
+  
+  public short getShapeColix(int shapeType) {
+    return shapeColixes[shapeType];
+  }
+  
+  
   ////////////////////////////////////////////////////////////////
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////

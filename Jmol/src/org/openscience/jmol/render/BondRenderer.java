@@ -316,17 +316,18 @@ public class BondRenderer {
     case DisplayControl.SHADING:
       if (width1 > 4) {
         boolean firstPass = true;
-        int numPasses = calcNumShadeSteps();
         Color[] shades = getShades(color, Color.black);
+        int numPasses = calcNumShadeSteps();
         for (int i = numPasses; --i >= 0; ) {
           Color shade = shades[i * maxShade / numPasses];
           if (firstPass) {
             drawInside(g, shade, 2, axPoly, ayPoly);
             firstPass = false;
+          } else {
+            stepPolygon();
+            g.setColor(shade);
           }
-          g.setColor(shade);
           g.fillPolygon(axPoly, ayPoly, 4);
-          stepPolygon();
         }
         break;
       } // else fall into QUICKDRAW
@@ -765,20 +766,22 @@ public class BondRenderer {
 
     step = 0;
     lenMax = Math.max(Math.max(lenLTop, lenLBot), Math.max(lenRTop, lenRBot));
+    if (lenMax < 1)
+      control.logError("BondRenderer calculation error #3465 :^)");
     return lenMax;
   }
 
   void stepPolygon() {
     ++step;
-    int dxStepLTop = dxLTop * step / (lenMax - 1);
-    int dyStepLTop = dyLTop * step / (lenMax - 1);
-    int dxStepLBot = dxLBot * step / (lenMax - 1);
-    int dyStepLBot = dyLBot * step / (lenMax - 1);
+    int dxStepLTop = dxLTop * step / lenMax;
+    int dyStepLTop = dyLTop * step / lenMax;
+    int dxStepLBot = dxLBot * step / lenMax;
+    int dyStepLBot = dyLBot * step / lenMax;
 
-    int dxStepRTop = dxRTop * step / (lenMax - 1);
-    int dyStepRTop = dyRTop * step / (lenMax - 1);
-    int dxStepRBot = dxRBot * step / (lenMax - 1);
-    int dyStepRBot = dyRBot * step / (lenMax - 1);
+    int dxStepRTop = dxRTop * step / lenMax;
+    int dyStepRTop = dyRTop * step / lenMax;
+    int dxStepRBot = dxRBot * step / lenMax;
+    int dyStepRBot = dyRBot * step / lenMax;
 
     axPoly[0] = xL + dxStepLTop;
     ayPoly[0] = yL + dyStepLTop;

@@ -285,6 +285,9 @@ public class Eval implements Runnable {
       case Token.move:
         move();
         break;
+      case Token.restrict:
+        restrict();
+        break;
       case Token.set:
         set();
         break;
@@ -310,7 +313,6 @@ public class Eval implements Runnable {
       case Token.pause:
       case Token.print:
       case Token.renumber:
-      case Token.restrict:
       case Token.ribbons:
       case Token.save:
       case Token.show:
@@ -418,6 +420,10 @@ public class Eval implements Runnable {
     evalError("number out of range");
   }
 
+  void badAtomNumber() throws ScriptException {
+    evalError("bad atom number");
+  }
+
   void errorLoadingScript(String msg) throws ScriptException {
     evalError("error loading script -> " + msg);
   }
@@ -474,12 +480,7 @@ public class Eval implements Runnable {
         break;
       case Token.opNot:
         bs = stack[sp - 1];
-        for (int i = 0; i < numberOfAtoms; ++i) {
-          if (bs.get(i))
-            bs.clear(i);
-          else
-            bs.set(i);
-        }
+        notSet(bs);
         break;
       case Token.hyphen:
         int min = instruction.intValue;
@@ -495,7 +496,11 @@ public class Eval implements Runnable {
         stack[sp++] = copyBitSet(control.getSelectionSet());
         break;
       case Token.hydrogen:
-        System.out.println("hydrogen is here"); 
+        stack[sp++] = getHydrogenSet();
+        break;
+      case Token.hetero:
+        stack[sp++] = getHeteroSet();
+        break;
       case Token.identifier:
         String variable = (String)instruction.value;
         BitSet value = lookupValue(variable, false);
@@ -517,7 +522,6 @@ public class Eval implements Runnable {
       case Token.amino:
       case Token.cystine:
       case Token.helix:
-      case Token.hetero:
       case Token.ions:
       case Token.ligand:
       case Token.protein:
@@ -541,6 +545,33 @@ public class Eval implements Runnable {
     if (sp != 1)
       evalError("atom expression compiler error - stack over/underflow");
     return stack[0];
+  }
+
+  void notSet(BitSet bs) {
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      if (bs.get(i))
+        bs.clear(i);
+      else
+        bs.set(i);
+    }
+  }
+
+  BitSet getHydrogenSet() {
+    ChemFrame frame = control.getFrame();
+    BitSet bsHydrogen = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      Atom atom = frame.getJmolAtomAt(i);
+      if (atom.getAtomicNumber() == 1)
+        bsHydrogen.set(i);
+    }
+    return bsHydrogen;
+  }
+
+  BitSet getHeteroSet() {
+    ChemFrame frame = control.getFrame();
+    BitSet bsHetero = new BitSet();
+    System.out.println("hetero set not implemented");
+    return bsHetero;
   }
 
   BitSet getAminoSet(Token tokenAmino) {
@@ -786,21 +817,19 @@ public class Eval implements Runnable {
       if (statement[i].tok != Token.integer)
         integerExpected();
     }
-    int arg1 = statement[1].intValue;
-    int arg2 = statement[2].intValue;
-    // FIXME -- this has a bug because the atom numbers are wrong
-    // problem is actually in DisplayControl.defineDistanceMeasure
-    switch(statement.length) {
-    case 3:
-      control.defineMeasure(arg1, arg2);
-      break;
-    case 4:
-      control.defineMeasure(arg1, arg2, statement[3].intValue);
-      break;
-    case 5:
-      control.defineMeasure(arg1, arg2, statement[3].intValue,
-                            statement[4].intValue);
+    int argCount = statement.length - 1;
+    int numAtoms = control.numberOfAtoms();
+    int[] args = new int[argCount];
+    for (int i = 0; i < argCount; ++i) {
+      Token token = statement[i + 1];
+      if (token.tok != Token.integer)
+        integerExpected();
+      int atomIndex = token.intValue - 1; // atoms start at 1
+      if (atomIndex < 0 || atomIndex >= numAtoms)
+        badAtomNumber();
+      args[i] = atomIndex;
     }
+    control.defineMeasure(args);
   }
 
   void refresh() throws ScriptException {
@@ -809,6 +838,18 @@ public class Eval implements Runnable {
 
   void reset() throws ScriptException {
     control.homePosition();
+  }
+
+  void restrict() throws ScriptException {
+    select();
+    control.invertSelection();
+    boolean bondmode = control.getBondSelectionModeOr();
+    control.setBondSelectionModeOr(true);
+    control.setStyleBondScript(DisplayControl.NONE);
+    control.setBondSelectionModeOr(bondmode);
+    control.setStyleAtomScript(DisplayControl.NONE);
+    // also need to turn off backbones, ribbons, strands, cartoons
+    control.invertSelection();
   }
 
   void rotate() throws ScriptException {
@@ -842,10 +883,13 @@ public class Eval implements Runnable {
   }
 
   void select() throws ScriptException {
+    // NOTE this is called by restrict()
     if (statement.length == 1) {
-      // FIXME -- what is behavior when there are no arguments to select
-      // doc says behavior is dependent upon hetero and hydrogen parameters
       control.selectAll();
+      if (!control.getRasmolHydrogenSetting())
+        control.excludeSelectionSet(getHydrogenSet());
+      if (!control.getRasmolHeteroSetting())
+        control.excludeSelectionSet(getHeteroSet());
     } else {
       control.setSelectionSet(expression(statement, 1));
     }
@@ -1009,17 +1053,23 @@ public class Eval implements Runnable {
     case Token.fontsize:
       setFontsize();
       break;
+    case Token.hetero:
+      setHetero();
+      break;
+    case Token.hydrogen:
+      setHydrogen();
+      break;
+    case Token.monitor:
+      setMonitor();
+      break;
       // not implemented
     case Token.ambient:
     case Token.backfade:
     case Token.cartoon:
     case Token.hbonds:
-    case Token.hetero:
     case Token.hourglass:
-    case Token.hydrogen:
     case Token.kinemage:
     case Token.menus:
-    case Token.monitor:
     case Token.mouse:
     case Token.picking:
     case Token.radius:
@@ -1215,5 +1265,50 @@ public class Eval implements Runnable {
         numberOutOfRange();
     }
     control.setLabelFontSize(fontsize);
+  }
+
+  void setHetero() throws ScriptException {
+    boolean heteroSetting = false;
+    if (statement.length != 3)
+      badArgumentCount();
+    switch (statement[2].tok) {
+    case Token.on:
+      heteroSetting = true;
+    case Token.off:
+      break;
+    default:
+      booleanExpected();
+    }
+    control.setRasmolHeteroSetting(heteroSetting);
+  }
+
+  void setHydrogen() throws ScriptException {
+    boolean hydrogenSetting = false;
+    if (statement.length != 3)
+      badArgumentCount();
+    switch (statement[2].tok) {
+    case Token.on:
+      hydrogenSetting = true;
+    case Token.off:
+      break;
+    default:
+      booleanExpected();
+    }
+    control.setRasmolHydrogenSetting(hydrogenSetting);
+  }
+
+  void setMonitor() throws ScriptException {
+    boolean showMeasurementLabels = false;
+    if (statement.length != 3)
+      badArgumentCount();
+    switch (statement[2].tok) {
+    case Token.on:
+      showMeasurementLabels = true;
+    case Token.off:
+      break;
+    default:
+      booleanExpected();
+    }
+    control.setShowMeasurementLabels(showMeasurementLabels);
   }
 }

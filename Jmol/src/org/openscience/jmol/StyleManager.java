@@ -93,6 +93,11 @@ public class StyleManager {
     this.showMeasurements = showMeasurements;
   }
 
+  public boolean showMeasurementLabels = true;
+  public void setShowMeasurementLabels(boolean showMeasurementLabels) {
+    this.showMeasurementLabels = showMeasurementLabels;
+  }
+
   public Font getMeasureFont(int size) {
     return new Font("Helvetica", Font.PLAIN, size);
   }

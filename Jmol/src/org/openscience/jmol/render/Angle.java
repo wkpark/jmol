@@ -40,10 +40,11 @@ public class Angle extends Measurement implements MeasurementInterface {
     compute();
   }
 
-  public void paint(Graphics g, DisplayControl control,
+  public void paint(Graphics g, DisplayControl control, boolean showLabel,
                     Atom atom1, Atom atom2, Atom atom3) throws Exception {
     paintAngleLine(g, control, atom1, atom2, atom3);
-    paintAngleString(g, control, atom1, atom2, atom3);
+    if (showLabel)
+      paintAngleString(g, control, atom1, atom2, atom3);
   }
 
   private void paintAngleLine(Graphics g, DisplayControl control,

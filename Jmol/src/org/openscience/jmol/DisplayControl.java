@@ -155,6 +155,10 @@ final public class DisplayControl {
     colorManager.flushCachedColors();
   }
 
+  public void logError(String strMsg) {
+    System.out.println("strMsg");
+  }
+
   /****************************************************************
    * delegated to TransformManager
    ****************************************************************/
@@ -636,6 +640,16 @@ final public class DisplayControl {
     refresh();
   }
 
+  public void invertSelection() {
+    selectionManager.invertSelection();
+    // only used from a script, so I do not think a refresh() is necessary
+  }
+
+  public void excludeSelectionSet(BitSet set) {
+    selectionManager.excludeSelectionSet(set);
+    // only used from a script, so I do not think a refresh() is necessary
+  }
+
   public BitSet getSelectionSet() {
     return selectionManager.bsSelection;
   }
@@ -775,6 +789,11 @@ final public class DisplayControl {
     modelManager.setCenterAsSelected();
     clearSelection();
     scaleFitToScreen();
+    refresh();
+  }
+
+  public void defineMeasure(int[] atomIndices) {
+    modelManager.defineMeasure(atomIndices);
     refresh();
   }
 
@@ -939,6 +958,10 @@ final public class DisplayControl {
     distributor.setStyleMarAtom(style, mar, iterAtomScript());
   }
 
+  public void setStyleAtomScript(byte style) {
+    distributor.setStyleAtom(style, iterAtomScript());
+  }
+
   public void setStyleMarBondScript(byte style, short mar) {
     distributor.setStyleMarBond(style, mar, iterBondScript());
   }
@@ -957,6 +980,24 @@ final public class DisplayControl {
 
   public void setLabelScript(String strLabel) {
     distributor.setLabel(strLabel, iterAtomScript());
+  }
+
+  boolean rasmolHydrogenSetting = true;
+  public void setRasmolHydrogenSetting(boolean b) {
+    rasmolHydrogenSetting = b;
+  }
+  
+  public boolean getRasmolHydrogenSetting() {
+    return rasmolHydrogenSetting;
+  }
+
+  boolean rasmolHeteroSetting = true;
+  public void setRasmolHeteroSetting(boolean b) {
+    rasmolHeteroSetting = b;
+  }
+  
+  public boolean getRasmolHeteroSetting() {
+    return rasmolHeteroSetting;
   }
 
   /****************************************************************
@@ -1107,6 +1148,16 @@ final public class DisplayControl {
   public boolean getShowMeasurements() {
     return styleManager.showMeasurements;
   }
+
+  public void setShowMeasurementLabels(boolean showMeasurementLabels) {
+    styleManager.setShowMeasurementLabels(showMeasurementLabels);
+    refresh();
+  }
+
+  public boolean getShowMeasurementLabels() {
+    return styleManager.showMeasurementLabels;
+  }
+
 
   public Font getMeasureFont(int size) {
     return styleManager.getMeasureFont(size);

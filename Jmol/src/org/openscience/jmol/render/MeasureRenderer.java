@@ -41,6 +41,7 @@ public class MeasureRenderer {
   public synchronized void paint(Graphics g, Rectangle rectClip,
                                  DisplayControl control) {
     ChemFrame frame = control.getFrame();
+    boolean showMeasurementLabels = control.getShowMeasurementLabels();
     if (frame.getDistanceMeasurements() != null) {
       Enumeration e = frame.getDistanceMeasurements().elements();
       while (e.hasMoreElements()) {
@@ -49,8 +50,9 @@ public class MeasureRenderer {
         int l = al[0];
         int j = al[1];
         try {
-          d.paint(g, control, (org.openscience.jmol.Atom)frame.getAtomAt(l), 
-                              (org.openscience.jmol.Atom)frame.getAtomAt(j));
+          d.paint(g, control, showMeasurementLabels,
+                  frame.getJmolAtomAt(l), 
+                  frame.getJmolAtomAt(j));
         } catch (Exception ex) {
         }
       }
@@ -64,10 +66,10 @@ public class MeasureRenderer {
         int j = al[1];
         int k = al[2];
         try {
-          an.paint(g, control,
-                   (org.openscience.jmol.Atom)frame.getAtomAt(l), 
-                   (org.openscience.jmol.Atom)frame.getAtomAt(j), 
-                   (org.openscience.jmol.Atom)frame.getAtomAt(k));
+          an.paint(g, control, showMeasurementLabels,
+                   frame.getJmolAtomAt(l), 
+                   frame.getJmolAtomAt(j), 
+                   frame.getJmolAtomAt(k));
         } catch (Exception ex) {
         }
       }
@@ -82,11 +84,11 @@ public class MeasureRenderer {
         int k = dhl[2];
         int m = dhl[3];
         try {
-          dh.paint(g, control,
-                   (org.openscience.jmol.Atom)frame.getAtomAt(l), 
-                   (org.openscience.jmol.Atom)frame.getAtomAt(j),
-                   (org.openscience.jmol.Atom)frame.getAtomAt(k), 
-                   (org.openscience.jmol.Atom)frame.getAtomAt(m));
+          dh.paint(g, control, showMeasurementLabels,
+                   frame.getJmolAtomAt(l), 
+                   frame.getJmolAtomAt(j),
+                   frame.getJmolAtomAt(k), 
+                   frame.getJmolAtomAt(m));
         } catch (Exception ex) {
         }
       }

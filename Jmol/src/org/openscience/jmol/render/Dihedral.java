@@ -46,11 +46,12 @@ public class Dihedral extends Measurement implements MeasurementInterface {
     compute();
   }
 
-  public void paint(Graphics g, DisplayControl control,
+  public void paint(Graphics g, DisplayControl control, boolean showLabel,
                     Atom atom1, Atom atom2,
                     Atom atom3, Atom atom4) throws Exception {
     paintDihedralLine(g, control, atom1, atom2, atom3, atom4);
-    paintDihedralString(g, control, atom1, atom2, atom3, atom4);
+    if (showLabel)
+      paintDihedralString(g, control, atom1, atom2, atom3, atom4);
   }
 
   private void paintDihedralLine(Graphics g, DisplayControl control,

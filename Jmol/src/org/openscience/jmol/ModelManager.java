@@ -156,6 +156,22 @@ public class ModelManager {
     autoBond = ab;
   }
 
+  public void defineMeasure(int[] atoms) {
+    switch (atoms.length) {
+    case 2:
+      defineMeasure(atoms[0], atoms[1]);
+      break;
+    case 3:
+      defineMeasure(atoms[0], atoms[1], atoms[2]);
+      break;
+    case 4:
+      defineMeasure(atoms[0], atoms[1], atoms[2], atoms[3]);
+      break;
+    default:
+      control.logError("unrecognized number of args to defineMeasure");
+    }
+  }
+
   public void defineMeasure(int atom1, int atom2) {
     mlist.addDistance(atom1, atom2);
   }

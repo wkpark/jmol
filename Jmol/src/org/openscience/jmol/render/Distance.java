@@ -43,10 +43,11 @@ public class Distance extends Measurement implements MeasurementInterface {
     compute();
   }
 
-  public void paint(Graphics g, DisplayControl control,
+  public void paint(Graphics g, DisplayControl control, boolean showLabel,
                     Atom atom1, Atom atom2) throws Exception {
     paintDistLine(g, control, atom1, atom2);
-    paintDistString(g, control, atom1, atom2);
+    if (showLabel)
+      paintDistString(g, control, atom1, atom2);
   }
 
   private void paintDistLine(Graphics g, DisplayControl control,

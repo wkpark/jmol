@@ -108,4 +108,24 @@ public class SelectionManager {
     bsSelection.or(set);
     empty = UNKNOWN;
   }
+
+  public void invertSelection() {
+    empty = TRUE;
+    for (int i = control.numberOfAtoms(); --i >= 0; )
+      if (bsSelection.get(i)) {
+        bsSelection.clear(i);
+      } else {
+        bsSelection.set(i);
+        empty = FALSE;
+      }
+  }
+
+  public void excludeSelectionSet(BitSet setExclude) {
+    if (empty == TRUE)
+      return;
+    for (int i = control.numberOfAtoms(); --i >= 0; )
+      if (setExclude.get(i))
+        bsSelection.clear(i);
+    empty = UNKNOWN;
+  }
 }

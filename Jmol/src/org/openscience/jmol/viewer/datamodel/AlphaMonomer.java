@@ -101,7 +101,8 @@ public class AlphaMonomer extends Monomer {
       return false;
     float distance =
       getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
-    return distance <= 6;
+    // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
+    return distance <= 4.2f;
   }
 
   void findNearestAtomIndex(int x, int y, Closest closest,

@@ -213,8 +213,10 @@ public class Eval implements Runnable {
   }
 
   public void clearDefinitionsAndLoadPredefined() {
-    // FIXME mth -- need to call this when a new file is loaded!
     variables.clear();
+
+    if (true)
+      return;
 
     int cPredef = Token.predefinitions.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++) {
@@ -550,14 +552,6 @@ public class Eval implements Runnable {
       case Token.none:
         stack[sp++] = new BitSet();
         break;
-      case Token.integer:
-        stack[sp++] = getResidueSet(instruction.intValue);
-        break;
-      case Token.hyphen:
-        int min = instruction.intValue;
-        int last = ((Integer)instruction.value).intValue();
-        stack[sp++] = getResidueSet(min, last);
-        break;
       case Token.opOr:
         bs = stack[--sp];
         stack[sp-1].or(bs);
@@ -589,6 +583,11 @@ public class Eval implements Runnable {
         break;
       case Token.spec_number:
         stack[sp++] = getSpecNumber(instruction.intValue);
+        break;
+      case Token.spec_number_range:
+        int min = instruction.intValue;
+        int last = ((Integer)instruction.value).intValue();
+        stack[sp++] = getSpecNumberRange(min, last);
         break;
       case Token.spec_chain:
         stack[sp++] = getSpecChain((char)instruction.intValue);
@@ -669,31 +668,6 @@ public class Eval implements Runnable {
     return bsResidue;
   }
 
-  BitSet getResidueSet(int resno) {
-    JmolFrame frame = viewer.getJmolFrame();
-    BitSet bsResidue = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom != null && pdbatom.getResno() == resno)
-        bsResidue.set(i);
-    }
-    return bsResidue;
-  }
-
-  BitSet getResidueSet(int resnoMin, int resnoLast) {
-    JmolFrame frame = viewer.getJmolFrame();
-    BitSet bsResidue = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      int atomResno = pdbatom.getResno();
-      if (atomResno >= resnoMin && atomResno <= resnoLast)
-        bsResidue.set(i);
-    }
-    return bsResidue;
-  }
-
   BitSet getSpecName(String resNameSpec) {
     BitSet bsRes = new BitSet();
     if (resNameSpec.length() != 3) {
@@ -722,6 +696,20 @@ public class Eval implements Runnable {
         bsResno.set(i);
     }
     return bsResno;
+  }
+
+  BitSet getSpecNumberRange(int resnoMin, int resnoLast) {
+    JmolFrame frame = viewer.getJmolFrame();
+    BitSet bsResidue = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
+      if (pdbatom == null)
+        continue;
+      int atomResno = pdbatom.getResno();
+      if (atomResno >= resnoMin && atomResno <= resnoLast)
+        bsResidue.set(i);
+    }
+    return bsResidue;
   }
 
   BitSet getSpecChain(char chain) {

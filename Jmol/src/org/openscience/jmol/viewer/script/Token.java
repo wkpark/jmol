@@ -276,10 +276,12 @@ public class Token {
   final static int shapely      = misc | 18;
   final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
-  final static int spec_name     = misc | 21;
-  final static int spec_number   = misc | 22;
-  final static int spec_chain    = misc | 23;
-  final static int spec_atom     = misc | 24;
+  final static int spec_name            = misc | 21;
+  final static int spec_number          = misc | 22;
+  final static int spec_number_range    = misc | 23;
+  final static int spec_chain           = misc | 24;
+  final static int spec_model           = misc | 25;
+  final static int spec_atom            = misc | 26;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;

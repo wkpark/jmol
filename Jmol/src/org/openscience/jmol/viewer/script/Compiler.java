@@ -44,6 +44,11 @@ class Compiler {
   
   final boolean logMessages = false;
 
+  private void log(String message) {
+    if (logMessages)
+      System.out.println(message);
+  }
+
   public boolean compile(String filename, String script) {
     this.filename = filename;
     this.script = script;
@@ -289,24 +294,19 @@ class Compiler {
   */
 
   boolean lookingAtLeadingWhitespace() {
-    if (logMessages)
-      System.out.println("lookingAtLeadingWhitespace");
+    log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
     char ch;
     while (ichT < cchScript &&
            ((ch = script.charAt(ichT)) == ' ' || ch == '\t'))
       ++ichT;
     cchToken = ichT - ichToken;
-    if (logMessages)
-      System.out.println("leadingWhitespace cchScript=" + cchScript +
-                         " cchToken=" + cchToken);
+    log("leadingWhitespace cchScript=" + cchScript + " cchToken=" + cchToken);
     return cchToken > 0;
   }
 
   boolean lookingAtComment() {
-    if (logMessages)
-      System.out.println("lookingAtComment ichToken=" + ichToken +
-                         " cchToken=" + cchToken);
+    log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
     if (ichToken == cchScript || script.charAt(ichToken) != '#')
       return false;
     int ichT = ichToken + 1;
@@ -319,8 +319,7 @@ class Compiler {
   }
 
   boolean lookingAtEndOfLine() {
-    if (logMessages)
-      System.out.println("lookingAtEndOfLine");
+    log("lookingAtEndOfLine");
     if (ichToken == cchScript)
       return true;
     int ichT = ichToken;
@@ -381,8 +380,7 @@ class Compiler {
            (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != '\n')
       ++ichT;
     cchToken = ichT - ichToken;
-    if (logMessages)
-      System.out.println("lookingAtSpecialString cchToken=" + cchToken);
+    log("lookingAtSpecialString cchToken=" + cchToken);
     return cchToken > 0;
   }
 
@@ -525,7 +523,7 @@ class Compiler {
   private boolean residueSpecificationExpected() {
     return compileError("3 letter residue specification expected");
   }
-  private boolean resnoSpecificationExpected() {
+  private boolean resnumSpecificationExpected() {
     return compileError("residue number specification expected");
   }
   private boolean invalidResidueNameSpecification(String strResName) {
@@ -533,6 +531,9 @@ class Compiler {
   }
   private boolean invalidChainSpecification() {
     return compileError("invalid chain specification");
+  }
+  private boolean invalidModelSpecification() {
+    return compileError("invalid model specification");
   }
   private boolean invalidAtomSpecification() {
     return compileError("invalid atom specification");
@@ -589,14 +590,11 @@ class Compiler {
 
     clauseNot        ::= NOT clauseNot | clausePrimitive
 
-    clausePrimitive  ::= clauseInteger |
-                         clauseComparator |
+    clausePrimitive  ::= clauseComparator |
                          clauseWithin |
-                         clauseWildcard |
-                         none |
+                         clauseResidueSpec |
+                         none | all |
                          ( clauseOr )
-
-    clauseInteger    ::= integer | integer - integer
 
     clauseComparator ::= atomproperty comparatorop integer
 
@@ -604,11 +602,13 @@ class Compiler {
 
     clauseDistance   ::= integer | decimal
 
-    clauseWildcard   ::= clauseResSpec { . clauseAtomSpec}
+    clauseResidueSpec::= { clauseResNameSpec }
+                         { clauseResNumSpec }
+                         { chainSpec }
+                         { modelSpec }
+                         { clauseAtomSpec }
 
-    clauseResSpec    ::= clauseResName {clauseResNo} {clauseChain}
-
-    clauseResName    ::= * | [ identifier ] | identifier
+    clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
 
     // question marks are part of identifiers
     // they get split up and dealt with as wildcards at runtime
@@ -616,11 +616,15 @@ class Compiler {
     // in with the identifier and also split out at runtime
     // iff a variable of that name does not exist
 
-    clauseResNo      ::= * | {-} integer
+    resNamePattern   ::= up to 3 alphanumeric chars with * and ?
 
-    clauseChain      ::= * | {:} integer | identifier
+    clauseResNumSpec ::= * | {-} integer { - {-} integer}
 
-    clauseAtomSpec   ::= identifier
+    clauseChainSpec  ::= {:} * | identifier | integer
+
+    clauseModelSpec  ::= {:} * | integer
+
+    clauseAtomSpec   ::= . * | . identifier
   */
 
   private boolean compileExpression() {
@@ -704,8 +708,6 @@ class Compiler {
 
   boolean clausePrimitive() {
     switch (tokPeek()) {
-    case Token.integer:
-      return clauseInteger();
     case Token.atomno:
     case Token.elemno:
     case Token.resno:
@@ -717,18 +719,20 @@ class Compiler {
       return clauseComparator();
     case Token.within:
       return clauseWithin();
-    default:
-      int tok = tokPeek();
-      if ((tok & Token.predefinedset) != Token.predefinedset)
-        break;
-    case Token.all:
-    case Token.none:
-      return addTokenToPostfix(tokenNext());
+    case Token.hyphen: // selecting a negative residue spec
+    case Token.integer:
     case Token.asterisk:
     case Token.leftsquare:
     case Token.identifier:
     case Token.colon:
-      return clauseWildcard();
+      return clauseResidueSpec();
+    case Token.all:
+    case Token.none:
+      return addTokenToPostfix(tokenNext());
+    default:
+      int tok = tokPeek();
+      if ((tok & Token.predefinedset) != Token.predefinedset)
+        break;
     case Token.leftparen:
       tokenNext();
       if (! clauseOr())
@@ -738,22 +742,6 @@ class Compiler {
       return true;
     }
     return unrecognizedExpressionToken();
-  }
-
-  boolean clauseInteger() {
-    Token tokenInt1 = tokenNext();
-    if (tokPeek() != Token.hyphen)
-      return addTokenToPostfix(tokenInt1);
-    tokenNext();
-    Token tokenInt2 = tokenNext();
-    if (tokenInt2.tok != Token.integer)
-      return integerExpectedAfterHyphen();
-    int min = tokenInt1.intValue;
-    int max = tokenInt2.intValue;
-    if (max < min) {
-      int intT = max; max = min; min = intT;
-    }
-    return addTokenToPostfix(new Token(Token.hyphen, min, new Integer(max)));
   }
 
   boolean clauseComparator() {
@@ -795,39 +783,64 @@ class Compiler {
     return addTokenToPostfix(new Token(Token.within, distance));
   }
 
-  boolean clauseWildcard() {
-    if (! clauseResSpec())
-      return false;
-    if (tokPeek() == Token.dot) {
+  boolean clauseResidueSpec() {
+    boolean specSeen = false;
+    int tok = tokPeek();
+    if (tok == Token.asterisk ||
+        tok == Token.leftsquare ||
+        tok == Token.identifier) {
+      log("I see a residue name");
+      if (! clauseResNameSpec())
+        return false;
+      specSeen = true;
+      tok = tokPeek();
+    }
+    if (tok == Token.asterisk ||
+        tok == Token.hyphen ||
+        tok == Token.integer) {
+      log("I see a residue number");
+      if (! clauseResNumSpec())
+        return false;
+      if (specSeen)
+        addTokenToPostfix(Token.tokenAnd);
+      specSeen = true;
+      tok = tokPeek();
+    }
+    if (tok == Token.colon ||
+        tok == Token.asterisk ||
+        tok == Token.identifier ||
+        tok == Token.integer) {
+      if (! clauseChainSpec())
+        return false;
+      if (specSeen)
+        addTokenToPostfix(Token.tokenAnd);
+      specSeen = true;
+      tok = tokPeek();
+    }
+    if (tok == Token.colon ||
+        tok == Token.asterisk ||
+        tok == Token.integer) {
+      if (! clauseModelSpec())
+        return false;
+      if (specSeen)
+        addTokenToPostfix(Token.tokenAnd);
+      specSeen = true;
+      tok = tokPeek();
+    }
+    if (tok == Token.dot) {
       if (!clauseAtomSpec())
         return false;
+      if (specSeen)
+        addTokenToPostfix(Token.tokenAnd);
+      specSeen = true;
+      tok = tokPeek();
     }
+    if (!specSeen)
+      return residueSpecificationExpected();
     return true;
   }
 
-  boolean clauseResSpec() {
-    if (! clauseResName())
-      return false;
-    int tokPeek = tokPeek();
-    if (tokPeek == Token.asterisk ||
-        tokPeek == Token.integer ||
-        tokPeek == Token.hyphen) {
-      if (! clauseResNo())
-        return false;
-      tokPeek = tokPeek();
-    }
-    if (tokPeek == Token.colon ||
-        tokPeek == Token.identifier ||
-        tokPeek == Token.asterisk) {
-      System.out.println("tokPeek=" + tokPeek +
-                         " " + atokenInfix[itokenInfix]);
-      if (! clauseChain())
-        return false;
-    }
-    return true;
-  }
-
-  boolean clauseResName() {
+  boolean clauseResNameSpec() {
     int tokPeek = tokPeek();
     if (tokPeek == Token.asterisk || tokPeek == Token.colon) {
       if (tokPeek == Token.asterisk)
@@ -840,6 +853,7 @@ class Compiler {
       if (tokenIdent.tok != Token.identifier)
         return residueSpecificationExpected();
       String strSpec = (String)tokenIdent.value;
+      // FIXME mth -- maybe need to deal with asterisks here too
       if (strSpec.length() != 3)
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
@@ -856,29 +870,45 @@ class Compiler {
   }
 
   boolean processIdentifier(Token tokenIdent) {
+    // OK, the kludge here is that in the general case, it is not
+    // possible to distinguish between an identifier and an atom expression
     if (tokenIdent.tok != Token.identifier)
       return identifierOrResidueSpecificationExpected();
     String strToken = (String)tokenIdent.value;
+    log("processing identifier:" + strToken);
     int cchToken = strToken.length();
-    if (cchToken < 3 ||
-        (cchToken > 3 && !Character.isDigit(strToken.charAt(3))))
+
+    // too short to be an atom specification? 
+    if (cchToken < 3)
       return addTokenToPostfix(tokenIdent);
-    for (int i = 4; i < cchToken - 1; ++i) {
+    // has characters where there should be digits?
+    // but don't look at last character because it could be chain spec
+    for (int i = 3; i < cchToken-1; ++i)
       if (!Character.isDigit(strToken.charAt(i)))
         return addTokenToPostfix(tokenIdent);
-    }
+    log("still here looking at:" + strToken);
+
+    // still might be an identifier ... so be careful
     int resno = -1;
     char chain = '?';
     if (cchToken > 3) {
+      // let's take a look at the last character
       String strResno;
-      chain = strToken.charAt(cchToken-1);
-      if (Character.isDigit(chain)) {
-        chain = '?';
+      char chLast = strToken.charAt(cchToken-1);
+      log("the last character is:" + chLast);
+      if (Character.isDigit(chLast)) {
         strResno = strToken.substring(3);
+        log("strResNo=" + strResno);
       } else {
+        chain = chLast;
         strResno = strToken.substring(3, cchToken - 1);
       }
-      resno = Integer.parseInt(strResno);
+      try {
+        resno = Integer.parseInt(strResno);
+        log("I parsed resno=" + resno);
+      } catch (NumberFormatException e) {
+        return addTokenToPostfix(tokenIdent);
+      }
     }
     String strUpper3 = strToken.substring(0, 3).toUpperCase();
     byte resid;
@@ -893,7 +923,12 @@ class Compiler {
     } else {
       return addTokenToPostfix(tokenIdent);
     }
+    log(" I see a residue name:" + strUpper3 +
+                       " resno=" + resno +
+                       " chain=" + chain);
+
     if (resno != -1) {
+      
       addTokenToPostfix(new Token(Token.spec_number, resno, "spec_number"));
       addTokenToPostfix(Token.tokenAnd);
     }
@@ -904,31 +939,57 @@ class Compiler {
     return true;
   }
 
-  boolean clauseResNo() {
+  boolean clauseResNumSpec() {
+    log("clauseResNumSpec()");
     if (tokPeek() == Token.asterisk) {
-      tokenNext(); // nothing to do in this case
-      return true;
+      tokenNext();
+      return addTokenToPostfix(Token.tokenAll);
     }
-    boolean negative = false;
+    boolean negativeInt1 = false;
     if (tokPeek() == Token.hyphen) {
       tokenNext();
-      negative = true;
+      negativeInt1 = true;
     }
-    Token tokenResno = tokenNext();
-    if (tokenResno.tok != Token.integer)
-      return resnoSpecificationExpected();
-    int resnoSpec = (negative) ? -tokenResno.intValue : tokenResno.intValue;
-    addTokenToPostfix(new Token(Token.spec_number, resnoSpec, "spec_number"));
-    return addTokenToPostfix(Token.tokenAnd);
+    Token tokenInt1 = tokenNext();
+    if (tokenInt1.tok != Token.integer)
+      return resnumSpecificationExpected();
+    int resNum1 = (negativeInt1 ? -tokenInt1.intValue : tokenInt1.intValue);
+    log("resNum1=" + resNum1);
+    if (tokPeek() != Token.hyphen)
+      return addTokenToPostfix(new Token(Token.spec_number,
+                                         resNum1, "spec_number"));
+    log("seems to be a range");
+    tokenNext(); // throw away range hyphen
+    // now look for negative int hyphen
+    boolean negativeInt2 = false;
+    if (tokPeek() == Token.hyphen) {
+      tokenNext();
+      negativeInt2 = true;
+    }
+    Token tokenInt2 = tokenNext();
+    if (tokenInt2.tok != Token.integer)
+      return resnumSpecificationExpected();
+    int resNum2 = (negativeInt2 ? -tokenInt2.intValue : tokenInt2.intValue);
+    log("resNum2=" + resNum2);
+
+    int min = resNum1;
+    int max = resNum2;
+    if (max < min) {
+      int intT = max; max = min; min = intT;
+    }
+    return addTokenToPostfix(new Token(Token.spec_number_range,
+                                       min, new Integer(max)));
   }
 
-  boolean clauseChain() {
-    char chain;
+  boolean clauseChainSpec() {
+    if (tokPeek() == Token.colon)
+      tokenNext();
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      return addTokenToPostfix(Token.tokenAll);
+    }
     Token tokenChain = tokenNext();
-    if (tokenChain.tok == Token.asterisk)
-      return true;
-    if (tokenChain.tok == Token.colon)
-      tokenChain = tokenNext();
+    char chain;
     if (tokenChain.tok == Token.integer) {
       if (tokenChain.intValue < 0 || tokenChain.intValue > 9)
         return invalidChainSpecification();
@@ -939,11 +1000,26 @@ class Compiler {
         return invalidChainSpecification();
       chain = strChain.charAt(0);
       if (chain == '?')
-        return true;
+        return addTokenToPostfix(Token.tokenAll);
     } else
       return invalidChainSpecification();
-    addTokenToPostfix(new Token(Token.spec_chain, chain, "spec_chain"));
-    return addTokenToPostfix(Token.tokenAnd);
+
+    return addTokenToPostfix(new Token(Token.spec_chain, chain, "spec_chain"));
+  }
+
+  boolean clauseModelSpec() {
+    if (tokPeek() == Token.colon)
+      tokenNext();
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      return addTokenToPostfix(Token.tokenAll);
+    }
+    Token tokenModel = tokenNext();
+    if (tokenModel.tok != Token.integer)
+      return invalidModelSpecification();
+    return
+      addTokenToPostfix(new Token(Token.spec_model,
+                                  tokenModel.intValue, "spec_model"));
   }
 
   boolean clauseAtomSpec() {
@@ -954,8 +1030,7 @@ class Compiler {
       return true;
     if (tokenAtomSpec.tok != Token.identifier)
       return invalidAtomSpecification();
-    addTokenToPostfix(new Token(Token.spec_atom, tokenAtomSpec.value));
-    return addTokenToPostfix(Token.tokenAnd);
+    return addTokenToPostfix(new Token(Token.spec_atom, tokenAtomSpec.value));
   }
 
   boolean compileColorParam() {

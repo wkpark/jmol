@@ -48,7 +48,7 @@ abstract class ModelReader {
   float parseFloat(String str, int ich) {
     int cch = str.length();
     if (ich >= cch)
-      return Integer.MIN_VALUE;
+      return Float.NaN;
     return parseFloatChecked(str, ich, cch);
   }
 
@@ -57,7 +57,7 @@ abstract class ModelReader {
     if (ichMax > cch)
       ichMax = cch;
     if (ichStart >= ichMax)
-      return Integer.MIN_VALUE;
+      return Float.NaN;
     return parseFloatChecked(str, ichStart, ichMax);
   }
 

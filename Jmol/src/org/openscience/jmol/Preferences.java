@@ -41,10 +41,8 @@ public class Preferences extends JDialog {
   private static boolean ShowBonds;
   private static boolean ShowHydrogens;
   private static boolean ShowVectors;
-  private static boolean ShowDummies;
   private static boolean ShowAxes;
   private static boolean ShowCellAxes;
-  private static boolean ShowBoundingBox;
   private static Color backgroundColor;
   private static Color outlineColor;
   private static Color pickedColor;
@@ -76,7 +74,7 @@ public class Preferences extends JDialog {
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
-  private JCheckBox cB, cA, cV, cH, cD, cX, cXX, cBB;
+  private JCheckBox cB, cA, cV, cH, cX, cXX;
   private static Properties props;
 
   // The actions:
@@ -106,10 +104,8 @@ public class Preferences extends JDialog {
     props.put("ShowBonds", "true");
     props.put("ShowHydrogens", "true");
     props.put("ShowVectors", "false");
-    props.put("ShowDummies", "false");
     props.put("ShowAxes", "false");
     props.put("ShowCellAxes", "false");
-    props.put("ShowBoundingBox", "false");
     props.put("MessageTime", "5.0");
     props.put("AntiAliased", "false");
     props.put("Perspective", "false");
@@ -349,25 +345,17 @@ public class Preferences extends JDialog {
     cH = new JCheckBox(jrh.getString("cHLabel"),
             display.getSettings().getShowHydrogens());
     cH.addItemListener(checkBoxListener);
-    cD = new JCheckBox(jrh.getString("cDLabel"), false);
-    cD.addItemListener(checkBoxListener);
     cX = new JCheckBox(jrh.getString("cXLabel"),
             display.getSettings().getShowAxes());
     cX.addItemListener(checkBoxListener);
     cXX = new JCheckBox(jrh.getString("cXXLabel"),
             display.getSettings().getShowCellAxes());
     cXX.addItemListener(checkBoxListener);
-    cBB = new JCheckBox(jrh.getString("cBBLabel"), false);
-    cBB.addItemListener(checkBoxListener);
-    cD.setEnabled(false);
-    cBB.setEnabled(false);
     choicesPanel.add(cB);
     choicesPanel.add(cA);
-    choicesPanel.add(cBB);
     choicesPanel.add(cX);
     choicesPanel.add(cV);
     choicesPanel.add(cH);
-    choicesPanel.add(cD);
     choicesPanel.add(cXX);
 
     JPanel fovPanel = new JPanel();
@@ -1145,10 +1133,8 @@ public class Preferences extends JDialog {
     ShowBonds = Boolean.getBoolean("ShowBonds");
     ShowHydrogens = Boolean.getBoolean("ShowHydrogens");
     ShowVectors = Boolean.getBoolean("ShowVectors");
-    ShowDummies = Boolean.getBoolean("ShowDummies");
     ShowAxes = Boolean.getBoolean("ShowAxes");
     ShowCellAxes = Boolean.getBoolean("ShowCellAxes");
-    ShowBoundingBox = Boolean.getBoolean("ShowBoundingBox");
     backgroundColor = Color.getColor("backgroundColor");
     outlineColor = Color.getColor("outlineColor");
     pickedColor = Color.getColor("pickedColor");
@@ -1267,9 +1253,6 @@ public class Preferences extends JDialog {
         ShowHydrogens = cb.isSelected();
         display.getSettings().setShowHydrogens(ShowHydrogens);
         props.put("ShowHydrogens", new Boolean(ShowHydrogens).toString());
-      } else if (cb.getText().equals(jrh.getString("cDLabel"))) {
-        ShowDummies = cb.isSelected();
-        props.put("ShowDummies", new Boolean(ShowDummies).toString());
       } else if (cb.getText().equals(jrh.getString("cXLabel"))) {
         ShowAxes = cb.isSelected();
         display.getSettings().setShowAxes(ShowAxes);
@@ -1278,9 +1261,6 @@ public class Preferences extends JDialog {
         ShowCellAxes = cb.isSelected();
         display.getSettings().setShowCellAxes(ShowCellAxes);
         props.put("ShowCellAxes", new Boolean(ShowCellAxes).toString());
-      } else if (cb.getText().equals(jrh.getString("cBBLabel"))) {
-        ShowBoundingBox = cb.isSelected();
-        props.put("ShowBoundingBox", new Boolean(ShowBoundingBox).toString());
       }
       display.repaint();
     }

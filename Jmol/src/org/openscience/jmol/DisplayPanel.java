@@ -778,7 +778,7 @@ public class DisplayPanel extends JPanel
 
       // switch mode;
       mode = ROTATE;
-      status.setStatus(1, "Rotate Camera");
+      status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
 
@@ -793,7 +793,7 @@ public class DisplayPanel extends JPanel
 
       // switch mode;
       mode = ZOOM;
-      status.setStatus(1, "Zoom Camera");
+      status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
 
@@ -808,7 +808,7 @@ public class DisplayPanel extends JPanel
 
       // switch mode;
       mode = XLATE;
-      status.setStatus(1, "Translate Camera");
+      status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
 

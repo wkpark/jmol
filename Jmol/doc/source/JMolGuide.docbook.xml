@@ -66,31 +66,34 @@
         <para> </para>
       </section>
       <section>
-        <title>Save</title>
-        <para> </para>
-      </section>
-      <section>
         <title>Save As...</title>
         <para> </para>
       </section>
       <section>
-        <title>Export Image</title>
-        <para>
-          Jmol can export images of the following types:
-          <itemizedlist>
-            <listitem><para>GIF</para></listitem>
-            <listitem><para>JPG</para></listitem>
-            <listitem><para>PPM</para></listitem>
-          </itemizedlist>
-        </para>
-        <para>
-          Note that GIF pictures can only be exported if the
-          displayed image is 8 bit.
-        </para>
-      </section>
-      <section>
-        <title>Revert</title>
-        <para> </para>
+        <title>Export</title>
+
+        <section>
+          <title>Export -&gt; Export Image...</title>
+          <para>
+            Jmol can export images of the following types:
+            <itemizedlist>
+              <listitem><para>GIF</para></listitem>
+              <listitem><para>JPG</para></listitem>
+              <listitem><para>PPM</para></listitem>
+            </itemizedlist>
+          </para>
+          <para>
+            Note that GIF pictures can only be exported if the
+            displayed image is 8 bit.
+          </para>
+        </section>
+
+        <section>
+          <title>Export -&gt; Render in pov-ray...</title>
+          <para>
+          For high quality images, Jmol interfaces with the POV-Ray ray tracer.
+          </para>
+        </section>
       </section>
       <section>
         <title>Print</title>
@@ -114,27 +117,11 @@
     <section>
       <title>The Edit menu</title>
       <section>
-        <title>Undo</title>
-        <para> </para>
-      </section>
-      <section>
-        <title>Redo</title>
-        <para> </para>
-      </section>
-      <section>
         <title>Select All</title>
         <para> </para>
       </section>
       <section>
         <title>Deselect All</title>
-        <para> </para>
-      </section>
-      <section>
-        <title>Rebond Atoms</title>
-        <para> </para>
-      </section>
-      <section>
-        <title>Command...</title>
         <para> </para>
       </section>
       <section>
@@ -252,15 +239,7 @@
 	<para> </para>
       </section>
       <section>
-        <title>Dummy Atoms</title>
-	<para> </para>
-      </section>
-      <section>
         <title>Axes</title>
-	<para> </para>
-      </section>
-      <section>
-        <title>Boundary Box</title>
 	<para> </para>
       </section>
     </section>
@@ -284,14 +263,6 @@
       </section>
       <section>
         <title>Left</title>
-	<para> </para>
-      </section>
-      <section>
-        <title>Split...</title>
-	<para> </para>
-      </section>
-      <section>
-        <title>Set Split...</title>
 	<para> </para>
       </section>
     </section>
@@ -353,7 +324,10 @@ animation. With Animate the animation can be viewed.
       </section>
       <section>
         <title>Vibrate...</title>
-	<para> </para>
+<para>
+If the document contains frequency information, the vibrational modes can
+be animated with "Vibrate...".
+</para>
       </section>
       <section>
         <title>Graph...</title>
@@ -361,14 +335,6 @@ animation. With Animate the animation can be viewed.
           is viewed. This option currently only works when reading a
           CML animation with energies given for each frame.</para>
         <para>An example file is supplied: conformeren.cml.</para>
-      </section>
-      <section>
-        <title>Bounding Box...</title>
-	<para> </para>
-      </section>
-      <section>
-        <title>IPC...</title>
-	<para> </para>
       </section>
     </section>
     <section>

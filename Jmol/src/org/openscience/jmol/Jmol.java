@@ -26,7 +26,6 @@ import java.io.*;
 import java.io.File;
 import java.util.*;
 
-import javax.swing.undo.*;
 import javax.swing.event.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
@@ -796,14 +795,6 @@ class Jmol extends JPanel {
 
 
   /**
-   * Listener for the edits on the current document.
-   */
-  protected UndoableEditListener undoHandler = new UndoHandler();
-
-  /** UndoManager that we add edits to. */
-  protected UndoManager undo = new UndoManager();
-
-  /**
    * Suffix applied to the key used in resource file
    * lookups for an image.
    */
@@ -866,7 +857,7 @@ class Jmol extends JPanel {
   public static final String openAction = "open";
   public static final String newAction = "new";
   public static final String closeAction = "close";
-  public static final String saveAction = "save";
+  public static final String saveasAction = "saveas";
   public static final String exportAction = "export";
   public static final String exitAction = "exit";
   public static final String aboutAction = "about";
@@ -882,26 +873,11 @@ class Jmol extends JPanel {
   public static final String povrayAction = "povray";
   public static final String scriptAction = "script";
 
-  class UndoHandler implements UndoableEditListener {
-
-    /**
-     * Messaged when the Document has created an edit, the edit is
-     * added to <code>undo</code>, an instance of UndoManager.
-     */
-    public void undoableEditHappened(UndoableEditEvent e) {
-      undo.addEdit(e.getEdit());
-      undoAction.update();
-      redoAction.update();
-    }
-  }
-
 
   // --- action implementations -----------------------------------
 
   private CalculateChemicalShifts chemicalShifts =
     new CalculateChemicalShifts();
-  private UndoAction undoAction = new UndoAction();
-  private RedoAction redoAction = new RedoAction();
 
   /**
    * Actions defined by the Jmol class
@@ -910,7 +886,7 @@ class Jmol extends JPanel {
     new NewAction(), new OpenAction(), new CloseAction(), new SaveAction(),
     new PrintAction(), new ExportAction(), new ExitAction(),
     new AboutAction(), new WhatsNewAction(), new UguideAction(),
-    new AtompropsAction(), undoAction, redoAction, new ConsoleAction(),
+    new AtompropsAction(), new ConsoleAction(),
     chemicalShifts, new RecentFilesAction(), new PovrayAction(),
     new ScriptAction()
   };
@@ -1002,70 +978,6 @@ class Jmol extends JPanel {
     }
   }
 
-  class UndoAction extends AbstractAction {
-
-    public UndoAction() {
-      super("Undo");
-      this.setEnabled(false);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-
-      try {
-        undo.undo();
-      } catch (CannotUndoException ex) {
-        status.setStatus(1, "Unable to undo:");
-        status.setStatus(2, ex.toString());
-        ex.printStackTrace();
-      }
-      update();
-      redoAction.update();
-    }
-
-    protected void update() {
-
-      if (undo.canUndo()) {
-        this.setEnabled(true);
-        putValue(Action.NAME, undo.getUndoPresentationName());
-      } else {
-        this.setEnabled(false);
-        putValue(Action.NAME, "Undo");
-      }
-    }
-  }
-
-  class RedoAction extends AbstractAction {
-
-    public RedoAction() {
-      super("Redo");
-      this.setEnabled(false);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-
-      try {
-        undo.redo();
-      } catch (CannotRedoException ex) {
-        status.setStatus(1, "Unable to redo:");
-        status.setStatus(2, ex.toString());
-        ex.printStackTrace();
-      }
-      update();
-      undoAction.update();
-    }
-
-    protected void update() {
-
-      if (undo.canRedo()) {
-        this.setEnabled(true);
-        putValue(Action.NAME, undo.getRedoPresentationName());
-      } else {
-        this.setEnabled(false);
-        putValue(Action.NAME, "Redo");
-      }
-    }
-  }
-
   class OpenAction extends NewAction {
 
     OpenAction() {
@@ -1128,7 +1040,7 @@ class Jmol extends JPanel {
   class SaveAction extends AbstractAction {
 
     SaveAction() {
-      super(saveAction);
+      super(saveasAction);
     }
 
     public void actionPerformed(ActionEvent e) {

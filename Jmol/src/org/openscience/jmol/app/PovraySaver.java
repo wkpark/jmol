@@ -34,6 +34,8 @@ import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
 
@@ -599,14 +601,15 @@ public class PovraySaver {
 
   void writePolymer(int modelIndex, int i) throws IOException {
     Point3f[] points = viewer.getPolymerLeadMidPoints(modelIndex, i);
-    if (points != null) {
+    Point3f[] controls = computeControlPoints(points);
+    if (controls != null) {
       out("sphere_sweep {\n");
-      out(" linear_spline\n");
-      out(" " + points.length + "\n");
-      for (int j = 0; j < points.length; j++) {
-        Point3f point = points[j];
+      out(" b_spline\n");
+      out(" " + controls.length + "\n");
+      for (int j = 0; j < controls.length; j++) {
+        Point3f point = controls[j];
         transformMatrix.transform(point, point1);
-        double d = 0.3; //TODO
+        double d = 0.2; //TODO
         out(" <" + point1.x + "," + point1.y + "," + point1.z + ">," + d + "\n");
       }
       Color color = Color.BLUE; //TODO
@@ -616,5 +619,79 @@ public class PovraySaver {
       out(" pigment{rgb<" + r + "," + g + "," + b + ">}\n");
       out("}\n");
     }
+  }
+  
+  /**
+   * Computes the control points of a b-spline that goes through a set of points
+   * 
+   * @param path Set of n points to go through
+   * @return Set of n+2 control points
+   */
+  Point3f[] computeControlPoints(Point3f[] path) {
+  	// NOTE :
+  	// I digged this code out from a program I wrote more than ten years ago
+  	// The program was in C++ and with not many comments
+  	// I don't remember well how it is working
+  	// Hence the lack of explanations in the code :-)
+  	Point3f[] controls = null;
+  	if ((path != null) && (path.length >= 2)) {
+  	
+  	  // Determine if it is a closed loop
+  	  int length = path.length;
+  	  boolean loop =
+  	    (path[0].x == path[length - 1].x) &&
+		(path[0].y == path[length - 1].y) &&
+		(path[0].z == path[length - 1].z);
+  	  
+  	  if (!loop) {
+  	    if (length > 2) {
+  	    
+  	      // Create vectors for computations
+  	      Point3d[] values = new Point3d[length + 2];
+  	      Point3d[] results1 = new Point3d[length + 2];
+  	      Point3d[] results2 = new Point3d[length + 2];
+  	      
+  	      // Initialize vectors for computations
+  	      values[0] = new Point3d(path[0]);
+  	      for (int i = 0; i < length; i++) {
+  	        values[i + 1] = new Point3d(
+  	            6 * path[i].x, 6 * path[i].y, 6 * path[i].z);
+  	      }
+  	      values[length + 1] = new Point3d(
+  	          values[length].x / 6.0, values[length].y / 6.0, values[length].z / 6.0);
+  	      
+  	      for (int i = 0; i < length + 2; i++) {
+  	      	results1[i] = new Point3d(0, 0, 0);
+  	      	results2[i] = new Point3d(0, 0, 0);
+  	      }
+  	      results2[0].set(1, 1, 1);
+  	      results1[1].set(values[0]);
+  	      
+  	      // Computation of control points
+  	      for (int i = 2; i < length + 2; i++) {
+  	        results1[i].x = values[i - 1].x - 4 * results1[i - 1].x - results1[i - 2].x;
+  	        results1[i].y = values[i - 1].y - 4 * results1[i - 1].y - results1[i - 2].y;
+  	        results1[i].z = values[i - 1].z - 4 * results1[i - 1].z - results1[i - 2].z;
+  	        results2[i].x = -4 * results2[i - 1].x - results2[i - 2].x;
+  	        results2[i].y = -4 * results2[i - 1].y - results2[i - 2].y;
+  	        results2[i].z = -4 * results2[i - 1].z - results2[i - 2].z;
+  	      }
+  	      double xA = (values[length + 1].x - results1[length].x) / results2[length].x;
+  	      double yA = (values[length + 1].y - results1[length].y) / results2[length].y;
+  	      double zA = (values[length + 1].z - results1[length].z) / results2[length].z;
+  	      
+  	      // Creation of the control points array
+  	      Point3f[] points = new Point3f[length + 2];
+  	      for (int i = 0; i < length + 2; i++) {
+  	        points[i] = new Point3f(
+  	            (float) (results1[i].x + xA * results2[i].x),
+  	            (float) (results1[i].y + yA * results2[i].y),
+  	            (float) (results1[i].z + zA * results2[i].z));
+  	      }
+  	      controls = points;
+  	    }
+  	  }
+  	}
+  	return controls;
   }
 }

@@ -400,12 +400,12 @@ final public class JmolViewer {
     refresh();
   }
 
-  public void setOrientationRasMolChime(boolean orientationRasMolChime) {
-    transformManager.setOrientationRasMolChime(orientationRasMolChime);
+  public void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
+    transformManager.setAxesOrientationRasmol(axesOrientationRasmol);
     refresh();
   }
-  public boolean getOrientationRasMolChime() {
-    return transformManager.orientationRasMolChime;
+  public boolean getAxesOrientationRasmol() {
+    return transformManager.axesOrientationRasmol;
   }
 
   public boolean getPerspectiveDepth() {
@@ -1521,35 +1521,37 @@ final public class JmolViewer {
    ****************************************************************/
 
   public boolean getBooleanProperty(String key) {
-    if (key.equals("wireframeRotation"))
+    if (key.equalsIgnoreCase("wireframeRotation"))
       return getWireframeRotation();
-    if (key.equals("perspectiveDepth"))
+    if (key.equalsIgnoreCase("perspectiveDepth"))
       return getPerspectiveDepth();
-    if (key.equals("showAxes"))
+    if (key.equalsIgnoreCase("showAxes"))
       return getShapeShow(JmolConstants.SHAPE_AXES);
-    if (key.equals("showBoundingBox"))
+    if (key.equalsIgnoreCase("showBoundingBox"))
       return getShapeShow(JmolConstants.SHAPE_BBCAGE);
-    if (key.equals("showUnitcell"))
+    if (key.equalsIgnoreCase("showUnitcell"))
       return getShapeShow(JmolConstants.SHAPE_UCCAGE);
-    if (key.equals("showHydrogens"))
+    if (key.equalsIgnoreCase("showHydrogens"))
       return getShowHydrogens();
-    if (key.equals("showVectors"))
+    if (key.equalsIgnoreCase("showVectors"))
       return getShowVectors();
-    if (key.equals("showMeasurements"))
+    if (key.equalsIgnoreCase("showMeasurements"))
       return getShowMeasurements();
-    if (key.equals("showSelections"))
+    if (key.equalsIgnoreCase("showSelections"))
       return getSelectionHaloEnabled();
-    if (key.equals("oversampleAlways"))
+    if (key.equalsIgnoreCase("oversampleAlways"))
       return getOversampleAlwaysEnabled();
-    if (key.equals("oversampleStopped"))
+    if (key.equalsIgnoreCase("oversampleStopped"))
       return getOversampleStoppedEnabled();
-    if (key.equals("orientationRasMolChime"))
-      return getOrientationRasMolChime();
-    if (key.equals("testFlag1"))
+    if (key.equalsIgnoreCase("axesOrientationRasmol"))
+      return getAxesOrientationRasmol();
+    if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
+      return getZeroBasedXyzRasmol();
+    if (key.equalsIgnoreCase("testFlag1"))
       return getTestFlag1();
-    if (key.equals("testFlag2"))
+    if (key.equalsIgnoreCase("testFlag2"))
       return getTestFlag2();
-    if (key.equals("testFlag3"))
+    if (key.equalsIgnoreCase("testFlag3"))
       return getTestFlag3();
     System.out.println("viewer.getBooleanProperty(" +
                        key + ") - unrecognized");
@@ -1558,37 +1560,39 @@ final public class JmolViewer {
 
   public void setBooleanProperty(String key, boolean value) {
     refresh();
-    if (key.equals("wireframeRotation"))
+    if (key.equalsIgnoreCase("wireframeRotation"))
       { setWireframeRotation(value); return; }
-    if (key.equals("perspectiveDepth"))
+    if (key.equalsIgnoreCase("perspectiveDepth"))
       { setPerspectiveDepth(value); return; }
-    if (key.equals("showAxes"))
+    if (key.equalsIgnoreCase("showAxes"))
       { setShapeShow(JmolConstants.SHAPE_AXES, value); return; }
-    if (key.equals("showBoundingBox"))
+    if (key.equalsIgnoreCase("showBoundingBox"))
       { setShapeShow(JmolConstants.SHAPE_BBCAGE, value); return; }
-    if (key.equals("showUnitcell"))
+    if (key.equalsIgnoreCase("showUnitcell"))
       { setShapeShow(JmolConstants.SHAPE_UCCAGE, value); return; }
-    if (key.equals("showHydrogens"))
+    if (key.equalsIgnoreCase("showHydrogens"))
       { setShowHydrogens(value); return; }
-    if (key.equals("showHydrogens"))
+    if (key.equalsIgnoreCase("showHydrogens"))
       { setShowHydrogens(value); return; }
-    if (key.equals("showVectors"))
+    if (key.equalsIgnoreCase("showVectors"))
       { setShowVectors(value); return; }
-    if (key.equals("showMeasurements"))
+    if (key.equalsIgnoreCase("showMeasurements"))
       { setShowMeasurements(value); return; }
-    if (key.equals("showSelections"))
+    if (key.equalsIgnoreCase("showSelections"))
       { setSelectionHaloEnabled(value); return; }
-    if (key.equals("oversampleAlways"))
+    if (key.equalsIgnoreCase("oversampleAlways"))
       { setOversampleAlwaysEnabled(value); return; }
-    if (key.equals("oversampleStopped"))
+    if (key.equalsIgnoreCase("oversampleStopped"))
       { setOversampleStoppedEnabled(value); return; }
-    if (key.equals("orientationRasMolChime"))
-      { setOrientationRasMolChime(value); return; }
-    if (key.equals("testFlag1"))
+    if (key.equalsIgnoreCase("axesOrientationRasmol"))
+      { setAxesOrientationRasmol(value); return; }
+    if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
+      { setZeroBasedXyzRasmol(value); return; }
+    if (key.equalsIgnoreCase("testFlag1"))
       { setTestFlag1(value); return; }
-    if (key.equals("testFlag2"))
+    if (key.equalsIgnoreCase("testFlag2"))
       { setTestFlag2(value); return; }
-    if (key.equals("testFlag3"))
+    if (key.equalsIgnoreCase("testFlag3"))
       { setTestFlag3(value); return; }
     System.out.println("viewer.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
@@ -1802,6 +1806,15 @@ final public class JmolViewer {
   }
   public boolean getShowFrank() {
     return styleManager.showFrank;
+  }
+
+
+  public void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
+    styleManager.setZeroBasedXyzRasmol(zeroBasedXyzRasmol);
+  }
+
+  public boolean getZeroBasedXyzRasmol() {
+    return styleManager.zeroBasedXyzRasmol;
   }
 
 

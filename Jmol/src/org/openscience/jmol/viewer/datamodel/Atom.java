@@ -281,8 +281,10 @@ public class Atom implements Bspt.Tuple {
   public int getAtomno() {
     if (pdbAtom != null)
       return pdbAtom.getAtomSerial();
-    return atomIndex +
-      (frame.modelType == JmolConstants.MODEL_TYPE_XYZ ? 0 : 1);
+    if (frame.modelType == JmolConstants.MODEL_TYPE_XYZ &&
+        frame.viewer.getZeroBasedXyzRasmol())
+      return atomIndex;
+    return atomIndex + 1;
   }
 
   public Point3f getPoint3f() {

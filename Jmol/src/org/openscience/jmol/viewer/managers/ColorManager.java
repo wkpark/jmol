@@ -54,6 +54,10 @@ public class ColorManager {
     System.out.println("setting color scheme to:" + colorScheme);
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
+      viewer.setColorBackground("snow");
+      viewer.setColorMeasurement(Color.black);
+      viewer.setColorLabel(Color.black);
+      viewer.setColorDots(null);
     } else if (colorScheme.equals("rasmol")) {
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
       argbsCpk = new int[JmolConstants.argbsCpk.length];
@@ -66,6 +70,10 @@ public class ColorManager {
         argbsCpk[atomNo] = argb;
         g3d.changeColixArgb((short)atomNo, argb);
       }
+      viewer.setColorBackground(Color.black);
+      viewer.setColorMeasurement(Color.white);
+      viewer.setColorLabel(null);
+      viewer.setColorDots(null);
     } else {
       System.out.println("unrecognized color scheme");
       return;
@@ -198,15 +206,15 @@ public class ColorManager {
     colixBackground = g3d.getColix(colorBackground);
   }
 
-  public Color colorAxes = Color.gray;
-  public short colixAxes = Graphics3D.GRAY;
+  public Color colorAxes = new Color(128, 128, 0);
+  public short colixAxes = Graphics3D.OLIVE;
   public void setColorAxes(Color color) {
     colorAxes = color;
     colixAxes = g3d.getColix(color);
   }
 
-  public Color colorAxesText = Color.gray;
-  public short colixAxesText = Graphics3D.GRAY;
+  public Color colorAxesText = colorAxes;
+  public short colixAxesText = Graphics3D.OLIVE;
   public void setColorAxesText(Color color) {
     colorAxesText = color;
     colixAxesText = g3d.getColix(color);

@@ -2186,6 +2186,9 @@ public class Eval implements Runnable {
     case Token.write:
       notImplemented(1);
       break;
+    case Token.identifier:
+      viewer.setBooleanProperty((String)statement[1].value, getSetBoolean());
+      break;
     case Token.background:
     case Token.stereo:
       setspecialShouldNotBeHere();

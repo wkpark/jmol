@@ -68,8 +68,8 @@ public class JmolPopupSwing extends JPopupMenu {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       JCheckBoxMenuItem jcbmi = (JCheckBoxMenuItem)htCheckbox.get(key);
-      //      System.out.println("found:" + key);
       boolean b = viewer.getBooleanProperty(key);
+      //System.out.println("found:" + key + " & it is:" + b);
       jcbmi.setState(b);
     }
     show(component, x, y);
@@ -85,7 +85,7 @@ public class JmolPopupSwing extends JPopupMenu {
 
   class CheckboxMenuItemListener implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
-      //  System.out.println("CheckboxMenuItemListener() " + e.getSource());
+      //System.out.println("CheckboxMenuItemListener() " + e.getSource());
       JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem)e.getSource();
       viewer.setBooleanProperty(jcmi.getActionCommand(), jcmi.getState());
     }
@@ -121,6 +121,7 @@ public class JmolPopupSwing extends JPopupMenu {
         String word = getWord(item);
         JMenuItem jmi;
         if (item.endsWith("Checkbox")) {
+          //System.out.println("I see a cheeckbox named:" + item);
           JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(word);
           String basename = item.substring(0, item.length() - 8);
           jcmi.setActionCommand(basename);

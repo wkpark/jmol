@@ -1386,7 +1386,7 @@ final public class JmolConstants {
     "dimgray",              // 696969
     "dodgerblue",           // 1E90FF
     "firebrick",            // B22222
-    "floralwhite",          // FFFAF0
+    "floralwhite",          // FFFAF0 16775920
     "forestgreen",          // 228B22
     "fuchsia",              // FF00FF
     "gainsboro",            // DCDCDC
@@ -1469,7 +1469,7 @@ final public class JmolConstants {
     "skyblue",              // 87CEEB
     "slateblue",            // 6A5ACD
     "slategray",            // 708090
-    "snow",                 // FFFAFA
+    "snow",                 // FFFAFA 16775930
     "springgreen",          // 00FF7F
     "steelblue",            // 4682B4
     "tan",                  // D2B48C
@@ -1479,7 +1479,7 @@ final public class JmolConstants {
     "turquoise",            // 40E0D0
     "violet",               // EE82EE
     "wheat",                // F5DEB3
-    "white",                // FFFFFF
+    "white",                // FFFFFF 16777215
     "whitesmoke",           // F5F5F5
     "yellow",               // FFFF00
     "yellowgreen",          // 9ACD32

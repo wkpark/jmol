@@ -107,6 +107,11 @@ public class StyleManager {
     this.wireframeRotation = wireframeRotation;
   }
 
+  public boolean zeroBasedXyzRasmol = false;
+  public void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
+    this.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
+  }
+
   void setCommonDefaults() {
     viewer.zoomToPercent(100);
     viewer.setPercentVdwAtom(20);
@@ -114,23 +119,23 @@ public class StyleManager {
     viewer.setPerspectiveDepth(true);
     viewer.setBondTolerance(0.45f);
     viewer.setMinBondDistance(0.40f);
-    viewer.setMarBond((short)100);
+    viewer.setMarBond((short)150);
   }
 
   public void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setColorBackground(Color.white);
-    viewer.setColorMeasurement(Color.black);
-    viewer.setColorLabel(Color.black);
+    viewer.setColorScheme("jmol");
+    viewer.setAxesOrientationRasmol(false);
+    setZeroBasedXyzRasmol(false);
   }
 
   public void setRasmolDefaults() {
     setCommonDefaults();
-    viewer.setColorBackground(Color.black);
-    viewer.setColorMeasurement(Color.white);
+    viewer.setColorScheme("rasmol");
+    viewer.setAxesOrientationRasmol(true);
+    setZeroBasedXyzRasmol(true);
     viewer.setPercentVdwAtom(0);
     viewer.setMarBondDefault((short)1);
-    viewer.setColorLabel(null);
   }
 
   public boolean showFrank;

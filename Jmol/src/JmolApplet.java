@@ -65,33 +65,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     "Jmol Applet.  Part of the OpenScience project. " +
     "See jmol.sourceforge.net for more information";
 
-  /*
-
-  private static String[][] paramInfo = {
-    { "bgcolor", "color",
-      "Background color to HTML color name or #RRGGBB" },
-    { "style", "SHADED, QUICKDRAW or WIREFRAME",
-      "One of the three possible rendering styles" },
-    { "label", "NONE, SYMBOL or NUMBER",
-      "Select style for atom labels" },
-    { "atomTypes", "url", "URL of custom Atomtypes file, " +
-      "or leave blank to use the default atom definitions" },
-    { "wireframeRotation", "ON or OFF",
-      "Switch to wireframe during rotations for better performance" },
-    { "load", "url",
-      "URL of the chemical data" },
-    { "loadInline", "fileformat",
-      "Inline representation of chemical data" },
-    { "script", "string",
-      "Inline RasMol/Chime script commands " +
-      "separated by newlines or semicolons" }
-  };
-  public String[][] getParameterInfo() {
-    return paramInfo;
-  }
-
-  */
-
   public void init() {
     htmlName = getParameter("name");
     String ms = getParameter("mayscript");
@@ -205,7 +178,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       } else {
         viewer.setJmolDefaults();
         viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
-        viewer.setColorBackground(getValue("bgcolor", "white"));
+        viewer.setColorBackground(getValue("bgcolor", "snow"));
         viewer.setWireframeRotation(getBooleanValue("wireframeRotation",
                                                     false));
         viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));

@@ -84,7 +84,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private boolean perspectiveDepth;
   private boolean showAxes;
   private boolean showBoundingBox;
-  private boolean orientationRasMolChime;
+  private boolean axesOrientationRasmol;
   private boolean isLabelAtomColor;
   private boolean isBondAtomColor;
   private Color colorBackground;
@@ -114,7 +114,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cH, cV, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
-  private JCheckBox cbOrientationRasMolChime;
+  private JCheckBox cbAxesOrientationRasmol;
   private JCheckBox cbIsLabelAtomColor, cbIsBondAtomColor;
   private Properties originalSystemProperties;
   private Properties jmolDefaultProperties;
@@ -133,15 +133,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "perspectiveDepth",               "true",
     "showAxes",                       "false",
     "showBoundingBox",                "false",
-    "orientationRasMolChime",         "true",
+    "axesOrientationRasmol",          "false",
     "styleLabel",                     "0",
     "percentVdwAtom",                 "20",
     "autoBond",                       "true",
-    "marBond",                        "100",
+    "marBond",                        "150",
     "minBondDistance",                "0.40",
     "bondTolerance",                  "0.45",
     "colorSelection",                 "16762880",
-    "colorBackground",                "16777215",
+    "colorBackground",                "16775930", // snow
     "isLabelAtomColor",               "false",
     "colorText",                      "0",
     "isBondAtomColor",                "true",
@@ -160,6 +160,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "colorMeasurement",               "16777215",
     "percentVdwAtom",                 "0",
     "marBond",                        "1",
+    "axesOrientationRasmol",          "true",
   };
 
   private JmolViewer viewer;
@@ -290,9 +291,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
-    cbOrientationRasMolChime =
-      guimap.newJCheckBox("Prefs.orientationRasMolChime",
-                          viewer.getOrientationRasMolChime());
+    cbAxesOrientationRasmol =
+      guimap.newJCheckBox("Prefs.axesOrientationRasmol",
+                          viewer.getAxesOrientationRasmol());
 
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -304,8 +305,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     axesPanel.setBorder(new TitledBorder(""));
     axesPanel.setLayout(new GridLayout(1, 1));
 
-    cbOrientationRasMolChime.addItemListener(checkBoxListener);
-    axesPanel.add(cbOrientationRasMolChime);
+    cbAxesOrientationRasmol.addItemListener(checkBoxListener);
+    axesPanel.add(cbAxesOrientationRasmol);
 
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -985,7 +986,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbShowBoundingBox.setSelected(viewer.
                                   getShapeShow(JmolConstants.SHAPE_BBCAGE));
 
-    cbOrientationRasMolChime.setSelected(viewer.getOrientationRasMolChime());
+    cbAxesOrientationRasmol.setSelected(viewer.getAxesOrientationRasmol());
 
     // Atom panel controls: 
     aLabel.setSelectedIndex(viewer.getStyleLabel());
@@ -1065,7 +1066,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     perspectiveDepth = Boolean.getBoolean("perspectiveDepth");
     showAxes = Boolean.getBoolean("showAxes");
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
-    orientationRasMolChime = Boolean.getBoolean("orientationRasMolChime");
+    axesOrientationRasmol = Boolean.getBoolean("axesOrientationRasmol");
     colorBackground = Color.getColor("colorBackground");
     colorSelection = Color.getColor("colorSelection");
     isLabelAtomColor = Boolean.getBoolean("isLabelAtomColor");
@@ -1110,7 +1111,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setPerspectiveDepth(perspectiveDepth);
     viewer.setShapeShow(JmolConstants.SHAPE_AXES, showAxes);
     viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, showBoundingBox);
-    viewer.setOrientationRasMolChime(orientationRasMolChime);
+    viewer.setAxesOrientationRasmol(axesOrientationRasmol);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1188,10 +1189,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         showBoundingBox = isSelected;
         viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, isSelected);
         currentProperties.put("showBoundingBox", strSelected);
-      } else if (key.equals("Prefs.orientationRasMolChime")) {
-        orientationRasMolChime = isSelected;
-        viewer.setOrientationRasMolChime(isSelected);
-        currentProperties.put("orientationRasMolChime", strSelected);
+      } else if (key.equals("Prefs.axesOrientationRasmol")) {
+        axesOrientationRasmol = isSelected;
+        viewer.setAxesOrientationRasmol(isSelected);
+        currentProperties.put("axesOrientationRasmol", strSelected);
       }
     }
   };

@@ -100,13 +100,13 @@ public class TransformManager {
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
   public synchronized void rotateByY(float angleRadians) {
-    if (orientationRasMolChime)
+    if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp.rotY(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
   public synchronized void rotateByZ(float angleRadians) {
-    if (orientationRasMolChime)
+    if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
@@ -436,9 +436,14 @@ public class TransformManager {
   private final Vector3f vectorTemp = new Vector3f();
 
 
-  public boolean orientationRasMolChime = true;
-  public void setOrientationRasMolChime(boolean orientationRasMolChime) {
-    this.orientationRasMolChime = orientationRasMolChime;
+  /****************************************************************
+   * RasMol has the +Y axis pointing down
+   * And rotations about the y axis are left-handed
+   * setting this flag makes Jmol mimic this behavior
+   ****************************************************************/
+  public boolean axesOrientationRasmol = false;
+  public void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
+    this.axesOrientationRasmol = axesOrientationRasmol;
   }
 
   public void calcTransformMatrices() {
@@ -483,7 +488,7 @@ public class TransformManager {
       cameraDistanceFloat / scalePixelsPerAngstrom;
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
-    if (orientationRasMolChime)
+    if (axesOrientationRasmol)
       matrixTransform.add(matrixTemp); // make all z positive
     else
       matrixTransform.sub(matrixTemp); // make all z negative
@@ -491,7 +496,7 @@ public class TransformManager {
     // now scale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
-    if (! orientationRasMolChime) {
+    if (! axesOrientationRasmol) {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
     }

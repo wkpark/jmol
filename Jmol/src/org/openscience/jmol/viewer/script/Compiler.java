@@ -211,7 +211,8 @@ class Compiler {
               ltoken.removeAllElements();
               break;
             }
-            if ((token.tok & Token.setparam) == 0)
+            if ((token.tok & Token.setparam) == 0 &&
+                token.tok != Token.identifier)
               return cannotSet(ident);
           }
           break;

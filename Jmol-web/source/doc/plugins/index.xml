@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Plugins for the Jmol Applications</title>
+    
+    <section title="What are plugins?">
+      <p>
+        Plugins are small jar files which extend the functionality of
+        the core Jmol program.
+        A full list of plugins can be found at the 
+        <a href="http://cdk.sourceforge.net/plugins.html">CDK Plugins</a>
+        website, which also explains where these plugins are installed.
+      </p>
+    </section>
+    
+    <section title="Default Plugins">
+      <p>
+        Jmol $VERSION$ by default includes the DirBrowser plugin.
+      </p>
+    </section>
+    
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

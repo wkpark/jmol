@@ -1,28 +1,13 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE molecule SYSTEM "http://www.xml-cml.org/dtd/cml1_0_1.dtd" []>
-<molecule id="METHANOL">
-  <atom id="a1">
-    <string builtin="elementType">C</string>
-    <coordinate3 builtin="xyz3" unitsRef="units.pm">-0.748 -0.015 0.024</coordinate3>
-  </atom>
-  <atom id="a2">
-    <string builtin="elementType">O</string>
-    <coordinate3 builtin="xyz3" unitsRef="units.pm">0.558 0.420 -0.278</coordinate3>
-  </atom>
-  <atom id="a3">  
-    <string builtin="elementType">H</string>     
-    <coordinate3 builtin="xyz3" unitsRef="units.pm">-1.263 0.202 -0.901</coordinate3> 
-  </atom>
-  <atom id="a4">
-    <string builtin="elementType">H</string>
-    <coordinate3 builtin="xyz3" unitsRef="units.pm">-0.699 -0.934 0.609</coordinate3>
-  </atom>
-  <atom id="a5">
-    <string builtin="elementType">H</string>
-    <coordinate3 builtin="xyz3" unitsRef="units.pm">0.716 1.404 0.137</coordinate3>
-  </atom>
-  <atom id="a6">
-    <string builtin="elementType">H</string>
-    <coordinate3 builtin="xyz3" unitsRef="units.pm">-1.263 0.754 0.600</coordinate3>
-  </atom>
+<molecule id="METHANOL" xmlns="http://www.xml-cml.org/schema/cml2/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.xml-cml.org/schema/cml2/core cmlAll.xsd">
+  <atomArray>
+    <atom id="a1" elementType="C" x3="-0.748" y3="-0.015" z3="0.024"/>
+    <atom id="a2" elementType="O" x3="0.558" y3="0.420" z3="-0.278"/>
+    <atom id="a3" elementType="H" x3="-1.263" y3="0.202" z3="-0.901"/>
+    <atom id="a4" elementType="H" x3="-0.699" y3="-0.934" z3="0.609"/>
+    <atom id="a5" elementType="H" x3="0.716" y3="1.404" z3="0.137"/>
+    <atom id="a6" elementType="H" x3="-1.263" y3="0.754" z3="0.600"/>
+  </atomArray>
 </molecule>

@@ -76,7 +76,7 @@
   </xsl:template>
 
   <xsl:template match="url">
-    <a href="{.}"><xsl:copy-of select="."/></a>
+    <a href="{.}"><xsl:copy-of select="text()"/></a>
   </xsl:template>
 
   <xsl:template match="email">

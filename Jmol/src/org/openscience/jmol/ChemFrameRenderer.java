@@ -64,40 +64,12 @@ public class ChemFrameRenderer {
       transformables.add(frame);
       double maxMagnitude = -1.0;
       double minMagnitude = Double.MAX_VALUE;
-      boolean showAtoms = settings.getShowAtoms();
       boolean showHydrogens = settings.getShowHydrogens();
-      boolean showLabels =
-        settings.getLabelMode() != DisplaySettings.NOLABELS;
-      boolean showBonds = settings.getShowBonds();
       boolean showVectors = settings.getShowVectors();
     
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = frame.getAtomAt(i);
-        if (showAtoms && (showHydrogens || !atom.isHydrogen())) {
-          // AtomShape should be associated with the Atom so that
-          // we are not always allocating new ones
-          // maybe settings shouldn't be passed here
-          // i.e. shapesList.addElement(atom.getShape({settings}));
-          shapesList.add(new AtomShape(atom, settings));
-          // the AtomLabel shape should really be integrated into the
-          if (showLabels) 
-            shapesList.add(new AtomLabelShape(atom, settings));
-        }
-        if (showBonds) {
-          // bonds should also be part of the atom rendering. separating
-          // them from the atoms just increases the size of the sort and
-          // the iteration overhead
-          // plus, bonds are currently only half a bond. That means that
-          // there are 2 to 3 times as many BondShapes as AtomShapes
-          Enumeration bondIter = atom.getBondedAtoms();
-          while (bondIter.hasMoreElements()) {
-            Atom otherAtom = (Atom) bondIter.nextElement();
-            if (showHydrogens || !otherAtom.isHydrogen()) {
-              shapesList.add(new BondShape(atom, otherAtom, settings));
-            }
-          }
-        }
-
+        shapesList.add(new AtomShape(atom));
         if (showVectors) {
           Point3f vector = atom.getVector();
           if (vector != null) {
@@ -170,6 +142,7 @@ public class ChemFrameRenderer {
                   }
                 }
                 );
+    AtomShape.prepareRendering(g, settings);
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
     }

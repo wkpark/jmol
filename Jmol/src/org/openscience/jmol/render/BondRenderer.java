@@ -173,10 +173,22 @@ public class BondRenderer {
       else
         polyBond(styleBond);
       if (--bondOrder == 0)
-        return;
+        break;
       stepAxisCoordinates();
     }
+    if (showAtomCenters) {
+      g.setColor(transparentGreen);
+      g.drawLine(x1 + 5, y1, x1 - 5, y1);
+      g.drawLine(x1, y1 + 5, x1, y1 - 5);
+      g.drawOval(x1-5, y1-5, 10, 10);
+      g.drawLine(x2 + 5, y2, x2 - 5, y2);
+      g.drawLine(x2, y2 + 5, x2, y2 - 5);
+      g.drawOval(x2-5, y2-5, 10, 10);
+    }
   }
+
+  private final static Color transparentGreen = new Color(0x8000FF00, true);
+  private final static boolean showAtomCenters = false;
 
   int[] axPoly = new int[4];
   int[] ayPoly = new int[4];
@@ -269,24 +281,25 @@ public class BondRenderer {
     }
   }
 
-  int offset1, offset2, doffset;
-  void lineBond1(int offset1, int offset2) {
-    this.offset1 = offset1;
-    this.offset2 = offset2;
-    doffset = offset2 - offset1;
-    calcAxisCoordinates();
-    calcSurfaceIntersections();
-    calcExitPoint();
-    if (sameColor || distanceExit >= mag2dLine / 2 ) {
-      if (distanceExit < mag2dLine)
-        drawLineInside(g, color2, xExit, yExit, xSurface2, ySurface2);
-      return;
-    }
-    int xMid = (xAxis1 + xAxis2) / 2;
-    int yMid = (yAxis1 + yAxis2) / 2;
-    drawLineInside(g, color1, xExit, yExit, xMid, yMid);
-    drawLineInside(g, color2, xMid, yMid, xSurface2, ySurface2);
+  void drawEndCaps() {
+    drawEndCap(xAxis1, yAxis1, width1, color1, outline1);
+    drawEndCap(xAxis2, yAxis2, width2, color2, outline2);
   }
+
+  void drawEndCap(int x, int y, int diameter, Color color, Color outline) {
+    if (styleBond == DisplayControl.QUICKDRAW) {
+      int radiusCap, xUpperLeft, yUpperLeft;
+      radiusCap = (diameter+1) / 2;
+      xUpperLeft = x - radiusCap;
+      yUpperLeft = y - radiusCap;
+      g.setColor(color);
+      g.fillOval(xUpperLeft, yUpperLeft, diameter, diameter);
+      g.setColor(outline);
+      g.drawOval(xUpperLeft, yUpperLeft, diameter, diameter);
+    }
+  }
+
+  int offset1, offset2, doffset;
 
   void drawInside(Graphics g, Color color, int width, int[] ax, int[] ay) {
     // mth dec 2002
@@ -312,98 +325,106 @@ public class BondRenderer {
       drawInside1(g, !top, ax[iSW], ay[iSW], ax[iSE], ay[iSE]);
   }
 
+  private final static boolean applyDrawInsideCorrection = true;
+
   void drawInside1(Graphics g, boolean top, int x1, int y1, int x2, int y2) {
-    int dx = x2 - x1, dy = y2 - y1;
-    if (dy >= 0) {
-      if (dy == 0) {
-        if (top) {
-          --x2;
-        } else {
-          --y1; --x2; --y2;
+    if (applyDrawInsideCorrection) {
+      int dx = x2 - x1, dy = y2 - y1;
+      if (dy >= 0) {
+        if (dy == 0) {
+          if (top) {
+            --x2;
+          } else {
+            --y1; --x2; --y2;
+          }
+        } else if (3*dy < dx) {
+          if (top) {
+            ++y1; --x2;
+          } else {
+            --x2; --y2;
+          }
+        } else if (dy < dx) {
+          if (! top) {
+            --x2; --y2;
+          }
+        } else if (dx == 0) {
+          if (top) {
+            --x1; --x2; --y2;
+          } else {
+            --y2;
+          }
+        } else if (3*dx < dy) {
+          if (top) {
+            --x1; --x2; --y2;
+          } else {
+            --y2;
+          }
+        } else if (dx == dy) {
+          if (top) {
+            ++y1; --x2;
+            g.drawLine(x1, y1, x2, y2);
+            --x1; --x2;
+          } else {
+            g.drawLine(x1+1, y1, x2, y2-1);
+            --x2; --y2;
+          }
         }
-      } else if (3*dy < dx) {
-        if (top) {
-          ++y1; --x2;
-        } else {
-          --x2; --y2;
-        }
-      } else if (dy < dx) {
-        if (! top) {
-          --x2; --y2;
-        }
-      } else if (dx == 0) {
-        if (top) {
-          --x1; --x2; --y2;
-        } else {
-          --y2;
-        }
-      } else if (3*dx < dy) {
-        if (top) {
-          --x1; --x2; --y2;
-        } else {
-          --y2;
-        }
-      } else if (dx == dy) {
-        if (top) {
-          ++y1; --x2;
-          g.drawLine(x1, y1, x2, y2);
-          --x1; --x2;
-        } else {
-          g.drawLine(x1+1, y1, x2, y2-1);
-          --x2; --y2;
-        }
-      }
-    } else {
-      if (dx == 0) {
-        if (top) {
-          --y1;
-        } else {
-          --x1; --y1; --x2;
-        }
-      } else if (3*dx < -dy) {
-        if (top) {
-          --y1;
-        } else {
-          --x1; --y1; --x2;
-        }
-      } else if (dx > -dy*3) {
-        if (top){
-          --x2; ++y2;
-        } else {
-          --y1; --x2;
-        }
-      } else if (dx == -dy) {
-        if (!top) {
-          --x2; ++y2;
+      } else {
+        if (dx == 0) {
+          if (top) {
+            --y1;
+          } else {
+            --x1; --y1; --x2;
+          }
+        } else if (3*dx < -dy) {
+          if (top) {
+            --y1;
+          } else {
+            --x1; --y1; --x2;
+          }
+        } else if (dx > -dy*3) {
+          if (top){
+            --x2; ++y2;
+          } else {
+            --y1; --x2;
+          }
+        } else if (dx == -dy) {
+          if (!top) {
+            --x2; ++y2;
+          }
         }
       }
     }
     g.drawLine(x1, y1, x2, y2);
   }
 
+  private final static boolean applyLineInsideCorrection = true;
+
   void drawLineInside(Graphics g, Color co, int x1, int y1, int x2, int y2) {
-    if (x2 < x1) {
-      int xT = x1; x1 = x2; x2 = xT;
-      int yT = y1; y1 = y2; y2 = yT;
-    }
-    int dx = x2 - x1, dy = y2 - y1;
-    if (dy >= 0) {
-      if (dy <= dx)
-        --x2;
-      if (dx <= dy)
-        --y2;
-    } else {
-      if (-dy <= dx)
-        --x2;
-      if (dx <= -dy)
-        --y1;
+    if (applyLineInsideCorrection) {
+      if (x2 < x1) {
+        int xT = x1; x1 = x2; x2 = xT;
+        int yT = y1; y1 = y2; y2 = yT;
+      }
+      int dx = x2 - x1, dy = y2 - y1;
+      if (dy >= 0) {
+        if (dy <= dx)
+          --x2;
+        if (dx <= dy)
+          --y2;
+      } else {
+        if (-dy <= dx)
+          --x2;
+        if (dx <= -dy)
+          --y1;
+      }
     }
     g.setColor(co);
     g.drawLine(x1, y1, x2, y2);
   }
 
   private final Hashtable htShades = new Hashtable();
-  final static int maxShade = 16;
+  private final static int maxShade = 16;
   Color[] getShades(Color color, Color darker) {
     Color[] shades = (Color[])htShades.get(color);
     if (shades == null) {
@@ -453,8 +474,8 @@ public class BondRenderer {
   // accurate rounds each point to the nearest pixel
   // regular makes regular steps along the axis
   // this propogates errors, but the distances between the lines are fixed
-  static final boolean accurateMethod = false;
-  boolean showAxis = false;
+  private static final boolean accurateMethod = false;
+  private static final boolean showAxis = false;
 
   int lines, steps, halfSteps, currentStep;
   int dxWidth1, dyWidth1, dxWidth2, dyWidth2;
@@ -487,10 +508,10 @@ public class BondRenderer {
       xAxis2 = x2 - dxWidth2*halfSteps;
       yAxis2 = y2 - dyWidth2*halfSteps;
       if (steps % 2 == 1) {
-        xAxis1 -= dxWidth1/2;
-        yAxis1 -= dyWidth2/2;
-        xAxis2 -= dxWidth2/2;
-        yAxis2 -= dyWidth2/2;
+        xAxis1 -= (dxWidth1+1)/2;
+        yAxis1 -= (dyWidth1+1)/2;
+        xAxis2 -= (dxWidth2+1)/2;
+        yAxis2 -= (dyWidth2+1)/2;
       }
     }
     calcLineSlope();
@@ -579,8 +600,8 @@ public class BondRenderer {
     ySurface2 = yAxis2 + dySlice2;
 
     if (showAxis) {
-      dot(xSurface1, ySurface1, Color.red);
-      dot(xSurface2, ySurface2, Color.red);
+      dot(xSurface1, ySurface1, Color.blue);
+      dot(xSurface2, ySurface2, Color.blue);
     }
   }
 

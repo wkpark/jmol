@@ -90,7 +90,7 @@ public class AtomRenderer {
       y = atomShape.y;
       z = atomShape.z;
       diameter = atomShape.diameter;
-      radius = diameter / 2;
+      radius = (diameter + 1) / 2;
       xUpperLeft = x - radius;
       yUpperLeft = y - radius;
       color = atomShape.colorAtom;
@@ -106,7 +106,7 @@ public class AtomRenderer {
       if (halowidth < 2)
         halowidth = 2;
       int halodiameter = diameter + 2 * halowidth;
-      int haloradius = halodiameter / 2;
+      int haloradius = (halodiameter + 1) / 2;
       g.setColor(colorSelection);
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
@@ -273,7 +273,7 @@ public class AtomRenderer {
     }
     g2ShadingBuffer.drawImage(image, 0, 0, size, size, null);
     applyCircleMask(g2ShadingBuffer, diameter, margin);
-    int radius = diameter / 2;
+    int radius = (diameter + 1) / 2;
     int xUpperLeft = x - radius - margin;
     int yUpperLeft = y - radius - margin;
     g2.setClip(xUpperLeft, yUpperLeft, size, size);

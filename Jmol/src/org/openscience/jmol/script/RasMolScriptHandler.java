@@ -46,11 +46,13 @@ import java.io.FileReader;
 public class RasMolScriptHandler {
 
   private Jmol program;
+  private DisplayControl control;
   private JTextArea output;
   private boolean autoRefresh = false;
 
   public RasMolScriptHandler(Jmol program) {
     this.program = program;
+    this.control = program.control;
     this.output = null;
   }
 
@@ -144,7 +146,7 @@ public class RasMolScriptHandler {
           throw new RasMolScriptException("Error: omitted parameter.");
         }
       } else if (word.equals("refresh")) {
-        program.display.repaint();
+        control.refresh();
       } else if (word.equals("background")) {
         if (st.hasMoreElements()) {
           setBackgroundColor((String) st.nextElement());
@@ -155,8 +157,7 @@ public class RasMolScriptHandler {
         if (st.hasMoreElements()) {
           select((String) st.nextElement());
         } else {
-          int[] selectedAtoms =
-            program.settings.getPickedAtoms().elements();
+          int[] selectedAtoms = control.getSelection();
           print("Selected atoms: ");
           for (int i = 0; i < selectedAtoms.length; ++i) {
             int atom = selectedAtoms[i];
@@ -201,14 +202,14 @@ public class RasMolScriptHandler {
           if (axis.equals("x") || axis.equals("y") || axis.equals("z")) {
             if (st.hasMoreElements()) {
               String angle = (String) st.nextElement();
-              float f = Float.parseFloat(angle);
-              int axisCode = DisplayPanel.X_AXIS;
-              if (axis.equals("y")) {
-                axisCode = DisplayPanel.Y_AXIS;
+              int degrees = (int)Float.parseFloat(angle);
+              if (axis.equals("x")) {
+                control.rotateByX(degrees);
+              } else if (axis.equals("y")) {
+                control.rotateByY(degrees);
               } else if (axis.equals("z")) {
-                axisCode = DisplayPanel.Z_AXIS;
+                control.rotateByZ(degrees);
               }
-              program.display.rotate(axisCode, f);
             } else {
               throw new RasMolScriptException(
                   "Error: angle and axis omitted.");
@@ -226,7 +227,7 @@ public class RasMolScriptHandler {
         throw new RasMolScriptException("Unrecognized command: " + command);
       }
       if (autoRefresh) {
-        program.display.repaint();
+        control.refresh();
       }
     }
   }
@@ -239,13 +240,13 @@ public class RasMolScriptHandler {
       if (val) {
 
         // turn shading on
-        program.settings.setAtomDrawMode(DisplaySettings.SHADING);
-        program.settings.setBondDrawMode(DisplaySettings.SHADING);
+        control.setAtomDrawMode(DisplayControl.SHADING);
+        control.setBondDrawMode(DisplayControl.SHADING);
       } else {
 
         // turn shading off
-        program.settings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
-        program.settings.setBondDrawMode(DisplaySettings.QUICKDRAW);
+        control.setAtomDrawMode(DisplayControl.QUICKDRAW);
+        control.setBondDrawMode(DisplayControl.QUICKDRAW);
       }
     } else if (param.equals("autorefresh")) {
       try {
@@ -266,15 +267,15 @@ public class RasMolScriptHandler {
 
         // "label true" does not yet work
       } else {
-        program.display.settings.setLabelMode(DisplaySettings.NOLABELS);
+        control.setLabelMode(DisplayControl.NOLABELS);
       }
     } catch (RasMolScriptException e) {
 
       // this is a checkBoolean exception
       if (type.equals("%a")) {
-        program.display.settings.setLabelMode(DisplaySettings.SYMBOLS);
+        control.setLabelMode(DisplayControl.SYMBOLS);
       } else if (type.equals("%i")) {
-        program.display.settings.setLabelMode(DisplaySettings.NUMBERS);
+        control.setLabelMode(DisplayControl.NUMBERS);
       }
     }
   }
@@ -282,12 +283,12 @@ public class RasMolScriptHandler {
   private void list(String objectType) throws RasMolScriptException {
 
     if (objectType.equals("atoms")) {
-      for (int i = 0; i < program.display.getFrame().getNumberOfAtoms(); i++) {
+      for (int i = 0; i < control.getFrame().getNumberOfAtoms(); i++) {
         StringBuffer sb = new StringBuffer();
         sb.append("  ");
         sb.append(i + 1);
         sb.append(" ");
-        sb.append(program.display.getFrame().getAtomAt(i).getSymbol());
+        sb.append(control.getFrame().getAtomAt(i).getSymbol());
         println(sb.toString());
       }
     } else {
@@ -299,16 +300,16 @@ public class RasMolScriptHandler {
   private void select(String value) throws RasMolScriptException {
 
     if (value.equals("all") || value.equals("*")) {
-      program.settings.addPickedAtoms(program.display.getFrame().getAtoms());
+      control.addSelection(control.getFrame().getAtoms());
     } else if (value.equals("none")) {
-      program.settings.clearPickedAtoms();
+      control.clearSelection();
     } else if (value.indexOf(',') != -1) {
       StringTokenizer st = new StringTokenizer(value, ",");
       while (st.hasMoreElements()) {
         String subexpr = (String) st.nextElement();
         try {
           int atom = Integer.parseInt(subexpr);
-          program.display.getSettings().addPickedAtom(program.display.getFrame().getAtomAt(atom));
+          control.addSelection(control.getFrame().getAtomAt(atom));
         } catch (NumberFormatException e) {
           throw new RasMolScriptException("Error: invalid expression: "
               + subexpr);
@@ -317,7 +318,7 @@ public class RasMolScriptHandler {
     } else {
       try {
         int atom = Integer.parseInt(value);
-        program.display.getSettings().addPickedAtom(program.display.getFrame().getAtomAt(atom));
+        control.addSelection(control.getFrame().getAtomAt(atom));
       } catch (NumberFormatException e) {
         throw new RasMolScriptException("Error: invalid expression: "
             + value);
@@ -362,11 +363,10 @@ public class RasMolScriptHandler {
     if (object.equals("atom")) {
 
       // give selected atoms new colour
-      int[] selectedAtoms =
-        program.display.getSettings().getPickedAtoms().elements();
+      int[] selectedAtoms = control.getSelection();
       for (int i = 0; i < selectedAtoms.length; ++i) {
         int atom = selectedAtoms[i];
-        program.display.getFrame().getAtomAt(atom - 1).setColor(this.getColor(value));
+        control.getFrame().getAtomAt(atom - 1).setColor(this.getColor(value));
       }
 
     } else {
@@ -375,7 +375,7 @@ public class RasMolScriptHandler {
   }
 
   private void setBackgroundColor(String value) throws RasMolScriptException {
-    program.display.setBackgroundColor(this.getColor(value));
+    control.setBackgroundColor(this.getColor(value));
   }
 
   private boolean checkBoolean(String value) throws RasMolScriptException {

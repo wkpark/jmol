@@ -538,7 +538,7 @@ public class ChemFrame implements Transformable {
     //
     // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
     float radius = 0.0f;
-    float atomSphereFactor = (float) Jmol.settings.getAtomSphereFactor();
+    float atomSphereFactor = (float) Jmol.control.getAtomSphereFactor();
     for (int i = 0; i < numberAtoms; ++i) {
       Atom atom = atoms[i];
       Point3f posAtom = atom.getPosition();

@@ -314,6 +314,10 @@ final public class DisplayControl {
     recalc();
   }
 
+  public int[] getSelection() {
+    return setPicked.getSelection();
+  }
+
   public void clearSelection() {
     setPicked.clearSelection();
     recalc();
@@ -681,6 +685,12 @@ final public class DisplayControl {
   public void setCenter(Point3f center) {
     getFrame().setRotationCenter(center);
   }
+
+  public void refresh() {
+  // this is here temporarily while I figure out what to do in scripting
+    recalc();
+  }
+  
 
   public void setCenterAsSelected() {
     int[] picked = setPicked.getSelection();

@@ -89,7 +89,6 @@ public class AtomPropsMenu extends JMenu {
       } else {
         settings.setPropertyMode(rbmi.getText());
       }
-      Jmol.display.repaint();
     }
   };
 

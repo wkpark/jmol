@@ -122,9 +122,10 @@ public class Jmol extends JPanel {
   private JScrollPane scroller;
   private JViewport port;
 
-  public static final DisplaySettings settings = new DisplaySettings();
-  public static DisplayPanel display;
   public static DisplayControl control;
+
+  private final DisplaySettings settings = new DisplaySettings();
+  private DisplayPanel display;
   private StatusBar status;
   private AtomPropsMenu apm;
   static AtomTypeTable atomTypeTable;

@@ -30,7 +30,7 @@ import java.io.IOException;
 /**
  * A reader for XYZ Cartesian molecular model (XMol) files.
  * XMol is a closed source program similar in scope to Jmol.
- * Details on XMol are available at http://www.msc.edu/docs/xmol/
+ * Details on XMol were once available at http://www.msc.edu/docs/xmol/.
  *
  * <p> XYZ files reference molecular geometris using a simple
  * cartesian coordinate system. Each XYZ file can contain multiple
@@ -71,9 +71,20 @@ import java.io.IOException;
  * If you have problems, please contact the author of this code, not
  * the developers of XMol.
  *
+ * <p> An extension has been made to the format to allow specifying coordinates
+ * in Bohr. If the first line contains the word "Bohr", the coorinates are
+ * converted from Bohr to Angstroms.
+ *
  * @author J. Daniel Gezelter (gezelter.1@nd.edu)
- * @version 1.0 */
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ */
 public class XYZReader extends DefaultChemFileReader {
+
+  /**
+   * Scaling factor for converting atomic coordinates from
+   * units of Bohr to Angstroms.
+   */
+  public static final double angstromPerBohr = 0.529177249;
 
   /**
    * Create an XYZ output reader.
@@ -103,6 +114,12 @@ public class XYZReader extends DefaultChemFileReader {
 
       String sn = st.nextToken();
       na = Integer.parseInt(sn);
+      boolean readingBohr = false;
+      if (st.hasMoreTokens()) {
+        if ("Bohr".equalsIgnoreCase(st.nextToken())) {
+          readingBohr = true;
+        }
+      }
       info = input.readLine();
       System.out.println(info);
 
@@ -126,9 +143,9 @@ public class XYZReader extends DefaultChemFileReader {
           String sy = st.nextToken();
           String sz = st.nextToken();
 
-          x = FortranFormat.atof(sx);
-          y = FortranFormat.atof(sy);
-          z = FortranFormat.atof(sz);
+          x = convertToDouble(sx, readingBohr);
+          y = convertToDouble(sy, readingBohr);
+          z = convertToDouble(sz, readingBohr);
 
           int atomIndex = frame.addAtom(aname, (float) x, (float) y,
                             (float) z);
@@ -154,4 +171,13 @@ public class XYZReader extends DefaultChemFileReader {
     }
     return file;
   }
+  
+  private double convertToDouble(String numberString, boolean readingBohr) {
+    double result = FortranFormat.atof(numberString);
+    if (readingBohr) {
+      result *= angstromPerBohr;
+    }
+    return result;
+  }
+  
 }

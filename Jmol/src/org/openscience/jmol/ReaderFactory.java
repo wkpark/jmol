@@ -22,6 +22,7 @@ package org.openscience.jmol;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 /**
  * A factory for creating ChemFileReaders.
@@ -83,7 +84,10 @@ public abstract class ReaderFactory {
       // An integer on the first line is a special test for XYZ files
       try {
         if (line != null) {
-          new Integer(line.trim());
+          StringTokenizer tokenizer = new StringTokenizer(line.trim());
+          if (tokenizer.hasMoreTokens()) {
+            new Integer(tokenizer.nextToken());
+          }
           return new XYZReader(buffer);
         }
       } catch (NumberFormatException nfe) {

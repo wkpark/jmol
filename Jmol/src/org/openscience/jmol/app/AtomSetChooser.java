@@ -363,7 +363,9 @@ ActionListener, ChangeListener, Runnable {
     controlPanel.setBorder(new TitledBorder(
         JmolResourceHandler.translateX("AtomSetChooser."+section+".VCR.label")));
     Insets inset = new Insets(1,1,1,1);
-    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
+// take out the save functionality until the XYZ file can properly be created
+//    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF,SAVE};
+    String buttons[] = {REWIND,PREVIOUS,PLAY,PAUSE,NEXT,FF};
     for (int i=buttons.length, idx=0; --i>=0; idx++) {
       String action = buttons[idx];
       // the icon and tool tip come from 

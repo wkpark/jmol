@@ -31,8 +31,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-import java.awt.FontMetrics;
-
 class MeasuresRenderer extends ShapeRenderer {
 
   short colix;
@@ -207,9 +205,6 @@ class MeasuresRenderer extends ShapeRenderer {
     String strMeasurement = measurement.strMeasurement;
     if (strMeasurement == null)
       return;
-    FontMetrics fontMetrics = font3d.fontMetrics;
-    //FIXME: Is the next line useful ?
-    /*int j = */fontMetrics.stringWidth(strMeasurement);
     int xT = x + radius/2 + 2;
     int yT = y - radius/2;
     int zT = z - radius - 2;

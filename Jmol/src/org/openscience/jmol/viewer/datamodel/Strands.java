@@ -30,6 +30,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.protein.*;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
 public class Strands {
@@ -43,6 +44,7 @@ public class Strands {
   int chainCount;
   short[][] madsChains;
   short[][] colixesChains;
+  
 
   Strands(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;

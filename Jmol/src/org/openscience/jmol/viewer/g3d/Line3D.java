@@ -308,10 +308,10 @@ final class Line3D {
     if (dx == 0 && dy == 0)
       return;
 
-    // int xCurrent = x;
-    // int yCurrent = y;
+    int xCurrent = x;
+    int yCurrent = y;
     int xIncrement = 1;
-    // int yIncrement = 1;
+    int yIncrement = 1;
     int yOffsetIncrement = width;
 
     if (dx < 0) {
@@ -320,7 +320,7 @@ final class Line3D {
     }
     if (dy < 0) {
       dy = -dy;
-      // yIncrement = -1;
+      yIncrement = -1;
       yOffsetIncrement = -width;
     }
     int twoDx = dx + dx, twoDy = dy + dy;
@@ -334,19 +334,23 @@ final class Line3D {
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
       for (int n = dx - 1; --n >= 0; ) {
-        // xCurrent += xIncrement;
+        xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
         twoDxAccumulatedYError += twoDy;
         if (twoDxAccumulatedYError > dx) {
-          // yCurrent += yIncrement;
+          yCurrent += yIncrement;
           offset += yOffsetIncrement;
           twoDxAccumulatedYError -= twoDx;
         }
-        int zCurrent = zCurrentScaled >> 10;
-        if (flipFlop && zCurrent >= slab && zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = argb;
+        if (flipFlop &&
+            xCurrent >= 0 && xCurrent < width &&
+            yCurrent >= 0 && yCurrent < height) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = argb;
+          }
         }
         flipFlop = !flipFlop;
       }
@@ -357,19 +361,23 @@ final class Line3D {
     int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
     int twoDyAccumulatedXError = 0;
     for (int n = dy - 1; --n > 0; ) {
-      // yCurrent += yIncrement;
+      yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
       twoDyAccumulatedXError += twoDx;
       if (twoDyAccumulatedXError > dy) {
-        // xCurrent += xIncrement;
+        xCurrent += xIncrement;
         offset += xIncrement;
         twoDyAccumulatedXError -= twoDy;
       }
-      int zCurrent = zCurrentScaled >> 10;
-      if (flipFlop && zCurrent >= slab && zCurrent < zbuf[offset]) {
-        zbuf[offset] = (short)zCurrent;
-        pbuf[offset] = argb;
+      if (flipFlop &&
+          xCurrent >= 0 && xCurrent < width &&
+          yCurrent >= 0 && yCurrent < height) {
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] = argb;
+        }
       }
       flipFlop = !flipFlop;
     }

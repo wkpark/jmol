@@ -79,12 +79,15 @@ public class JmolAppletRegistry {
       JmolApplet targetJmolApplet = (JmolApplet)target;
       targetJmolApplet.scriptButton(jsoWindow, name, script, buttonCallback);
     } else {
-      if (mayScript) 
+      if (! mayScript) {
+        System.out.println("WARNING!! mayscript not specified");
+      } else if (jsoTop == null) {
+        System.out.println("jsoTop == null ?");
+      } else {
         jsoTop.call("runJmolAppletScript",
                     new Object[] { targetName, jsoWindow, name,
                                    script, buttonCallback });
-      else
-        System.out.println("WARNING!! mayscript not specified");
+      }
     }
   }
 
@@ -124,10 +127,10 @@ public class JmolAppletRegistry {
     "  return;" +
     " }" +
     " a.scriptButton(w,n,s,b);" +
-    "}";
+    "}\n";
 
   void checkInJavascript(String name, Applet applet) {
-    if (name != null && jsoWindow != null) {
+    if (jsoWindow != null) {
       jsoTop = (JSObject)jsoWindow.getMember("top");
       Object t;
       t = jsoTop.eval("top.runJmolAppletScript == undefined");

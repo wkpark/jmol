@@ -466,7 +466,7 @@
       <title>CVS Branches</title>
       <para>
         Sometimes it is convenient to have separate branches to work on.
-        One for an uncoming release, and one branch for the unstable version.
+        One for an upcoming release, and one branch for the unstable version.
         Minor bug fixes can then go into the stable branch, while major
         changes can go into the unstable branch. This section explains how
         to access, use, and create branches.

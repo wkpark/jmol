@@ -73,6 +73,7 @@ public class PDBReader extends DefaultChemFileReader {
 
     ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = new ChemFrame();
+    ChemFrame.setAutoBond(false);
     boolean bondsCleared = false;
     StringTokenizer st;
 
@@ -83,7 +84,7 @@ public class PDBReader extends DefaultChemFileReader {
       String command;
 
       try {
-        command = new String(line.substring(0, 6).trim());
+        command = line.substring(0, 6).trim();
       } catch (StringIndexOutOfBoundsException sioobe) {
         break;
       }
@@ -91,15 +92,34 @@ public class PDBReader extends DefaultChemFileReader {
       if (command.equalsIgnoreCase("ATOM")
           || command.equalsIgnoreCase("HETATM")) {
 
-        String atype = new String(line.substring(12, 16).trim());
-        String sx = new String(line.substring(30, 38).trim());
-        String sy = new String(line.substring(38, 46).trim());
-        String sz = new String(line.substring(46, 54).trim());
+        // First two columns of atom name are the element.
+        String atype = "";
+        if (Character.isDigit(line.charAt(12))) {
+          atype = line.substring(13, 14);
+        } else {
+          atype = line.substring(12, 14).trim();
+        }
+        
+        String sx = line.substring(30, 38).trim();
+        String sy = line.substring(38, 46).trim();
+        String sz = line.substring(46, 54).trim();
 
         double x = FortranFormat.atof(sx);
         double y = FortranFormat.atof(sy);
         double z = FortranFormat.atof(sz);
         frame.addAtom(atype, (float) x, (float) y, (float) z);
+/*
+ * The following code for processing CONECT records has several defects.
+ * 1. It uses a StringTokenizer to parse the CONECT record. This is
+ *   incorrect because PDB records are fixed field widths. There may
+ *   be no whitespace between fields.
+ * 2. It assumes that the atom serial numbers are equal to the atom
+ *   index - 1. Atom serial numbers are not necessarily sequential, and
+ *   do not necessarily start with 1.
+ *
+ * Once the defects have been corrected, the functionality will be
+ * reintroduced.
+ *
       } else if (command.equalsIgnoreCase("CONECT")) {
 
         // read connectivity information
@@ -108,17 +128,17 @@ public class PDBReader extends DefaultChemFileReader {
           bondsCleared = true;
         }
 
-        String atom = new String(line.substring(6, 11).trim());
-        String connectedAtoms = new String(line.substring(12).trim());
+        String atom = line.substring(6, 11).trim();
+        String connectedAtoms = line.substring(12).trim();
         StringTokenizer linet = new StringTokenizer(connectedAtoms);
 
-        /* Though not mentioned in PDB's specifications, adhere to Rasmol's
-         * custom to define double/triple bonds by mentioning bonds with
-         * double bonded atoms twice or with triple bonded atoms three times.
-         *
-         * E.g.: CONECT  3 4 4
-         * would be a double bond between atoms 3 and 4
-         */
+        // Though not mentioned in PDB's specifications, adhere to Rasmol's
+        // custom to define double/triple bonds by mentioning bonds with
+        // double bonded atoms twice or with triple bonded atoms three times.
+        //
+        // E.g.: CONECT  3 4 4
+        // would be a double bond between atoms 3 and 4
+        //
         Hashtable tmp = new Hashtable(10);
         while (linet.hasMoreTokens()) {
           String connectedAtom = linet.nextToken();
@@ -144,9 +164,25 @@ public class PDBReader extends DefaultChemFileReader {
           int bondorder = ((Integer) tmp.get(neighbour)).intValue();
           frame.addBond(atomi - 1, atomj - 1, bondorder);
         }
-      } else if (command.equalsIgnoreCase("END")) {
+*/
+      } else if (command.equalsIgnoreCase("MODEL")) {
+        frame.setInfo(line.trim());
+      } else if (command.equalsIgnoreCase("ENDMDL")) {
+        ChemFrame.setAutoBond(true);
+        frame.rebond();
         file.addFrame(frame);
         fireFrameRead();
+        
+        frame = new ChemFrame();
+        ChemFrame.setAutoBond(false);
+        
+      } else if (command.equalsIgnoreCase("END")) {
+        ChemFrame.setAutoBond(true);
+        if (frame.getNumberOfAtoms() > 0) {
+          frame.rebond();
+          file.addFrame(frame);
+          fireFrameRead();
+        }
         return file;
       }
 
@@ -154,8 +190,12 @@ public class PDBReader extends DefaultChemFileReader {
     }
 
     // No END marker, so just wrap things up as if we had seen one:
-    file.addFrame(frame);
-    fireFrameRead();
+    ChemFrame.setAutoBond(true);
+    if (frame.getNumberOfAtoms() > 0) {
+      frame.rebond();
+      file.addFrame(frame);
+      fireFrameRead();
+    }
     return file;
   }
 }

@@ -19,6 +19,22 @@
   <change contributor="EW">
     Internationalized Jmol and added Dutch translation.
   </change>
+  <change contributor="BS">
+    Fix for reading some of MOPAC 2002 files. (Files without a blank line after
+    the coordinates.)
+  </change>
+  <change contributor="BS">
+    Fix reading of large PDB files. Multiple models are read into separate
+    frames.
+  </change>
+  <change contributor="BS">
+    Improved reading of PDB atom types by using element from first two columns
+    of atom name.
+  </change>
+  <change contributor="BS">
+    Temporary removal of defective parsing CONECT fields by PDB reader. Once
+    fixed, the feature will be reinstated.
+  </change>
 </changes>
 
 <changes version="jmol-4">

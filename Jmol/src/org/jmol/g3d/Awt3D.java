@@ -26,6 +26,7 @@
 package org.jmol.g3d;
 
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageProducer;
 import java.awt.image.ImageConsumer;
@@ -71,6 +72,10 @@ final class Awt3D extends Platform3D implements ImageProducer {
     Image img = component.createImage(width, height);
     //    System.out.println("img=" + img);
     return img;
+  }
+
+  Graphics getGraphics(Image image) {
+    return image.getGraphics();
   }
 
   public synchronized void addConsumer(ImageConsumer ic) {

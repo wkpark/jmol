@@ -164,6 +164,7 @@ abstract class Platform3D {
   }
 
   abstract Image allocateOffscreenImage(int width, int height);
+  abstract Graphics getGraphics(Image imageOffscreen);
   
   void checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
@@ -177,7 +178,7 @@ abstract class Platform3D {
     if (height > heightOffscreen)
       heightOffscreen = (height + 15) & ~15;
     imageOffscreen = allocateOffscreenImage(widthOffscreen, heightOffscreen);
-    gOffscreen = imageOffscreen.getGraphics();
+    gOffscreen = getGraphics(imageOffscreen);
   }
 
   class ClearingThread extends Thread implements Runnable {

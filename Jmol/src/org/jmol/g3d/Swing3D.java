@@ -25,6 +25,9 @@
 
 package org.jmol.g3d;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Image;
 import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
@@ -57,5 +60,21 @@ final class Swing3D extends Platform3D {
 
   Image allocateOffscreenImage(int width, int height) {
     return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+  }
+
+  Graphics getGraphics(Image image) {
+    BufferedImage bi = (BufferedImage) image;
+    Graphics2D g2d = bi.createGraphics();
+    // miguel 20041122
+    // we need to turn off text antialiasing on OSX when
+    // running in a web browser
+    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                         RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+    // I don't know if we need these or not, but cannot hurt to have them
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                         RenderingHints.VALUE_ANTIALIAS_OFF);
+    g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                         RenderingHints.VALUE_RENDER_SPEED);
+    return g2d;
   }
 }

@@ -31,9 +31,9 @@ import java.util.BitSet;
 
 class Hover extends Shape {
 
-  private final static String FONTFACE = "Serif";
+  private final static String FONTFACE = "SansSerif";
   private final static String FONTSTYLE = "Plain";
-  private final static int FONTSIZE = 16;
+  private final static int FONTSIZE = 12;
 
   int atomIndex = -1;
   Font3D font3d;

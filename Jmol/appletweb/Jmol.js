@@ -36,6 +36,8 @@ modelbase: ".",
 
 appletCount: 0,
 
+targetSuffix: 0,
+targetText: "",
 scripts: []
 };
 
@@ -68,11 +70,12 @@ function jmolSetCodeBase(codeBase) {
 
 function jmolApplet(size, modelFilename, script, nameSuffix) {
   with (_jmol) {
-    var nm = "jmol" + (nameSuffix ? nameSuffix : appletCount);
+    if (! nameSuffix)
+      nameSuffix = appletCount;
     ++appletCount;
     var sz = _jmolGetAppletSize(size);
     var t;
-    t = "<applet name='" + nm + "' id='" + nm + 
+    t = "<applet name='jmol" + nameSuffix + "' id='jmol" + nameSuffix + 
         "' code='JmolApplet' archive='JmolApplet.jar'\n" +
         "  codebase=" + codebase + "\n" +
         "  width='" + sz[0] + "' height='" + sz[1] +
@@ -94,6 +97,7 @@ function jmolApplet(size, modelFilename, script, nameSuffix) {
     if (script)
       t += "  <param name='script' value='" + script + "' />\n";
     t += "</applet>\n";
+    jmolSetTarget(nameSuffix);
     if (debugAlert)
       alert("jmolApplet(" + size + "," + modelFilename + "," +
             script + "," + name + " ->\n" + t);
@@ -146,35 +150,86 @@ function _jmolAddScript(script) {
   return index;
 }
 
-function jmolButton(script, label, targetSuffix) {
+function jmolSetTarget(targetSuffix) {
+  _jmol.targetSuffix = targetSuffix;
+  _jmol.targetText = targetSuffix ? ",\"" + targetSuffix + "\"" : "";
+}
+
+function jmolButton(script, label) {
   var scriptIndex = _jmolAddScript(script);
-  var targetText = targetSuffix ? ",\"" + targetSuffix + "\"" : "";
   if (! label)
     label = script.substring(0, 32);
   var t = "<input type='button' value='" + label +
-          "' onClick='jmolScript(_jmol.scripts[" +
-          scriptIndex + "]" + targetText + ")' />";
+          "' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
+          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
+          ");return true' onMouseout='_jmolMouseOut()' />";
   document.open();
   document.write(t);
   document.close();
 }
 
-function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked, targetSuffix) {
+function _jmolClick(scriptIndex, targetSuffix) {
+  jmolScript(_jmol.scripts[scriptIndex], targetSuffix);
+}
+
+function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
+                      isChecked) {
   if (! scriptWhenChecked && scriptWhenUnchecked) {
     alert("jmolCheckbox requires two scripts");
     return;
   }
-  var scriptChecked = _jmolAddScript(scriptWhenChecked);
-  var scriptUnchecked = _jmolAddScript(scriptWhenUnchecked);
-  var t = "<input type='checkbox' onClick='_jmolCheckboxEvent(this," +
-          scriptChecked + "," + scriptUnchecked + "," + targetSuffix + ")' />";
+  var indexChecked = _jmolAddScript(scriptWhenChecked);
+  var indexUnchecked = _jmolAddScript(scriptWhenUnchecked);
+  var t = "<input type='checkbox' onClick='_jmolCbClick(this," +
+          indexChecked + "," + indexUnchecked + "," + _jmol.targetSuffix +
+          ")' onMouseover='_jmolCbOver(this," + indexChecked + "," + indexUnchecked +
+          ");return true' onMouseout='_jmolMouseOut()' " +
+	  (isChecked ? "checked " : "") + "/>";
   document.open();
   document.write(t);
   document.close();
 }
 
-function _jmolCheckboxEvent(ckbox, whenChecked, whenUnchecked, targetSuffix) {
+function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
   jmolScript(_jmol.scripts[ckbox.checked ? whenChecked : whenUnchecked],
              targetSuffix);
 }
 
+function _jmolCbOver(ckbox, whenChecked, whenUnchecked) {
+  window.status = _jmol.scripts[ckbox.checked ? whenUnchecked : whenChecked];
+}
+
+function jmolRadio(groupName, isChecked, script) {
+  if (! groupName) {
+    alert("jmolRadio requires a group name");
+    return;
+  }
+  var scriptIndex = _jmolAddScript(script);
+  var t = "<input name='" + groupName +
+          "' type='radio' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
+          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
+          ");return true' onMouseout='_jmolMouseOut()' " +
+	  (isChecked ? "checked " : "") + "/>";
+  document.open();
+  document.write(t);
+  document.close();
+}
+
+function jmolLink(text, script) {
+  var scriptIndex = _jmolAddScript(script);
+  var t = "<a href='javascript:_jmolClick(" + scriptIndex + _jmol.targetText +
+          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
+          ");return true' onMouseout='_jmolMouseOut()' >" + text + "</a>";
+  document.open();
+  document.write(t);
+  document.close();
+}
+
+function _jmolMouseOver(scriptIndex) {
+  window.status = _jmol.scripts[scriptIndex];
+}
+
+function _jmolMouseOut() {
+  window.status = " ";
+  return true;
+}

@@ -19,10 +19,7 @@
  */
 package org.openscience.jmol;
 
-/**
- *  Allows a function to produce a status message to an
- *  unknown component.
-*/
-public interface StatusDisplay {
+public interface JmolStatusListener {
   void setStatusMessage(String statusMessage);
+  void notifyScriptTermination(String statusMessage, int msWalltime);
 }

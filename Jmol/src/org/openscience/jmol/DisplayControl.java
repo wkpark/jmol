@@ -1019,14 +1019,11 @@ final public class DisplayControl {
   }
 
   public void render(Graphics g, Rectangle rectClip) {
-    if (eval.hasTerminationNotification()) {
-      System.out.println("terminated with message:" +
-                         eval.getErrorMessage() +
-                         " in " + eval.getExecutionWalltime() + " ms");
-      eval.resetTerminationNotification();
-    }
+    if (eval.hasTerminationNotification())
+      manageScriptTermination();
     repaintManager.render(g, rectClip);
   }
+
 
   /****************************************************************
    * routines for java12
@@ -1122,6 +1119,22 @@ final public class DisplayControl {
   public boolean getRasmolHeteroSetting() {
     return rasmolHeteroSetting;
   }
+
+  JmolStatusListener jmolStatusListener;
+
+  public void setJmolStatusListener(JmolStatusListener jmolStatusListener) {
+    this.jmolStatusListener = jmolStatusListener;
+  }
+
+  public void manageScriptTermination() {
+    String strErrorMessage = eval.getErrorMessage();
+    int msWalltime = eval.getExecutionWalltime();
+    eval.resetTerminationNotification();
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyScriptTermination(strErrorMessage, msWalltime);
+    System.out.println("terminated with message:" + strErrorMessage +
+                       " in " + msWalltime + " ms");
+    }
 
   /****************************************************************
    * delegated to StyleManager

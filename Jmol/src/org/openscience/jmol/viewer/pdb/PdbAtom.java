@@ -31,7 +31,6 @@ import java.util.Hashtable;
 public class PdbAtom {
 
   public PdbGroup group;
-  public String name;
   public short atomID;
   public int atomSerial;
   public boolean isHetero;
@@ -41,7 +40,6 @@ public class PdbAtom {
     isHetero = recordPdb.startsWith("HETATM");
 
     String t = recordPdb.substring(12, 16);
-    name = t.trim();
     atomID = lookupAtomID(t);
     atomSerial = -999999;
     try {
@@ -58,10 +56,6 @@ public class PdbAtom {
     return group.isGroup3(group3);
   }
   
-  public String getName() {
-    return name;
-  }
-
   public String getGroup3() {
     return group.getGroup3();
   }

@@ -162,10 +162,6 @@ class ConsoleTextPane extends JTextPane {
     consoleDoc.setPrompt();
   }
 
-  public void appendCommand(String strCommand) {
-    consoleDoc.appendCommand(strCommand);
-  }
-
   public void appendNewline() {
     consoleDoc.appendNewline();
   }
@@ -240,48 +236,36 @@ class ConsoleDocument extends DefaultStyledDocument {
     }
   }
 
-  void outputError(String strError) {
+  void outputBeforePrompt(String str, SimpleAttributeSet attribute) {
     try {
-      super.insertString(positionBeforePrompt.getOffset(), strError, attError);
-      super.insertString(positionBeforePrompt.getOffset(), "\n", attError);
+      Position caretPosition = createPosition(consoleTextPane.getCaretPosition());
+      super.insertString(positionBeforePrompt.getOffset(), str, attribute);
+      super.insertString(positionBeforePrompt.getOffset(), "\n", attribute);
       offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
+      consoleTextPane.setCaretPosition(caretPosition.getOffset());
     } catch (BadLocationException e) {
     }
+  }
+
+  void outputError(String strError) {
+    outputBeforePrompt(strError, attError);
   }
 
   void outputErrorForeground(String strError) {
     try {
       super.insertString(getLength(), strError, attError);
       super.insertString(getLength(), "\n", attError);
+      consoleTextPane.setCaretPosition(getLength());
     } catch (BadLocationException e) {
     }
   }
 
   void outputEcho(String strEcho) {
-    try {
-      super.insertString(positionBeforePrompt.getOffset(), strEcho, attEcho);
-      super.insertString(positionBeforePrompt.getOffset(), "\n", attEcho);
-      offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
-    } catch (BadLocationException e) {
-    }
+    outputBeforePrompt(strEcho, attEcho);
   }
 
   void outputStatus(String strStatus) {
-    try {
-      super.insertString(positionBeforePrompt.getOffset(),strStatus,attStatus);
-      super.insertString(positionBeforePrompt.getOffset(), "\n", attStatus);
-      offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
-    } catch (BadLocationException e) {
-    }
-  }
-
-  void appendCommand(String strCommand) {
-    try {
-      super.insertString(getLength(), strCommand, attUserInput);
-      super.insertString(getLength(), "\n", attUserInput);
-      consoleTextPane.setCaretPosition(getLength());
-    } catch (BadLocationException e) {
-    }
+    outputBeforePrompt(strStatus, attStatus);
   }
 
   void appendNewline() {

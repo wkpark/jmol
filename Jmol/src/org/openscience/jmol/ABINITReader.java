@@ -64,8 +64,12 @@ public class ABINITReader extends DefaultChemFileReader {
   // Factor conversion bohr to angstrom
   private static final float angstromPerBohr = 0.529177249f;
 
-  // This variable will be used to parse the input file
+  // This variable is used to parse the input file
   private StringTokenizer st;
+  private String fieldVal;
+  private int repVal = 0;
+
+  private BufferedReader inputBuffer;
 
   /**
    * Creates a new <code>ABINITReader</code> instance.
@@ -74,6 +78,7 @@ public class ABINITReader extends DefaultChemFileReader {
    */
   public ABINITReader(Reader input) {
     super(input);
+    this.inputBuffer = (BufferedReader) input;
   }
 
 
@@ -103,14 +108,14 @@ public class ABINITReader extends DefaultChemFileReader {
      * same line and within the first three lines.
      */
 
-    input.mark(1024);
+    inputBuffer.mark(1024);
     for (int i = 0; i < 3; i++) {
-      if (input.ready()) {
-        line = input.readLine();
+      if (inputBuffer.ready()) {
+        line = inputBuffer.readLine();
         if ((line.indexOf("ABINIT") >= 0) && (line.indexOf("Version") >= 0)) {
 
           //This is an output file
-          input.reset();
+          inputBuffer.reset();
           System.out.println("We have an abinit *output* file");
           crystalFile = readAbinitOutput();
           return crystalFile;
@@ -118,8 +123,8 @@ public class ABINITReader extends DefaultChemFileReader {
       }
     }
 
-    //We don't we an output file so we have an input file
-    input.reset();
+    //We don't have an output file so we have an input file
+    inputBuffer.reset();
     System.out.println("We have an abinit *input* file");
     crystalFile = readAbinitInput();
     return crystalFile;
@@ -136,84 +141,71 @@ public class ABINITReader extends DefaultChemFileReader {
     CrystalFile crystalFile = new CrystalFile();
     int natom = 1;
     int ntype = 1;
-    float acell[] = new float[3];
-    float[][] rprim = new float[3][3];
+    float acell[] = null;
+    float[][] rprim = null;
+    float[] angdeg = null;
     String info = "";
-    String sn;
     String line;
 
-    info = input.readLine();
+    info = inputBuffer.readLine();
     System.out.println(info);
 
 
 
     //Check if this is a multidataset file. Multidataset is not yet supported
-    input.mark(1024 * 1024);
-    line = input.readLine();
-    st = new StringTokenizer(line, " \t");
-    sn = nextAbinitToken(input);
+    inputBuffer.mark(1024 * 1024);
 
-    while (sn != null) {
-      if (sn.equals("ndtset")) {
-        sn = nextAbinitToken(input);
-        if (FortranFormat.atof(sn) > 1) {
+    nextAbinitInputToken(true);
+
+    while (fieldVal != null) {
+      if (fieldVal.equals("ndtset")) {
+        nextAbinitInputToken(false);
+        if (FortranFormat.atof(fieldVal) > 1) {
           System.out.println("ABINITReader: multidataset not supported");
           return crystalFile;
         }
       }
-      sn = nextAbinitToken(input);
+      nextAbinitInputToken(false);
     }
-    input.reset();
+    inputBuffer.reset();
 
     //First pass through the file (get variables of known dimension)
-    input.mark(1024 * 1024);
-    line = input.readLine();
-    st = new StringTokenizer(line, " \t");
-    sn = nextAbinitToken(input);
+    inputBuffer.mark(1024 * 1024);
+    nextAbinitInputToken(true);
 
-    while (sn != null) {
-      if (sn.equals("acell")) {
+    while (fieldVal != null) {
+      if (fieldVal.equals("acell")) {
+        acell = new float[3];
         for (int i = 0; i < 3; i++) {
-
-          sn = nextAbinitToken(input);
-          int index = sn.indexOf("*");
-          if (index >= 0)    //Test if number format of type i*f
-          {
-            int times = Integer.parseInt(sn.substring(0, index));
-            double value = FortranFormat.atof(sn.substring(index + 1));
-            for (int j = i; j < i + times; j++) {
-              acell[j] = (float) value;
-            }
-            i = i + times - 1;
-          } else {
-            acell[i] = (float) FortranFormat.atof(sn);
-          }
+          nextAbinitInputToken(false);
+          acell[i] = (float) FortranFormat.atof(fieldVal)
+              * (float) angstromPerBohr;    //in angstrom
         }
-      } else if (sn.equals("rprim")) {
+      } else if (fieldVal.equals("rprim")) {
+        rprim = new float[3][3];
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
-            sn = nextAbinitToken(input);
-            rprim[i][j] = (float) FortranFormat.atof(sn);
-
+            nextAbinitInputToken(false);
+            rprim[i][j] = (float) FortranFormat.atof(fieldVal);
           }
         }
-      } else if (sn.equals("ntype")) {
-        sn = nextAbinitToken(input);
-        ntype = Integer.parseInt(sn);
-      } else if (sn.equals("natom")) {
-        sn = nextAbinitToken(input);
-        natom = Integer.parseInt(sn);
+      } else if (fieldVal.equals("angdeg")) {
+        angdeg = new float[3];
+        for (int i = 0; i < 3; i++) {
+          nextAbinitInputToken(false);
+          angdeg[i] = (float) FortranFormat.atof(fieldVal);
+        }
+      } else if (fieldVal.equals("ntype")) {
+        nextAbinitInputToken(false);
+        ntype = Integer.parseInt(fieldVal);
+      } else if (fieldVal.equals("natom")) {
+        nextAbinitInputToken(false);
+        natom = Integer.parseInt(fieldVal);
       }
 
       // It is unnecessary to scan the end of the line. 
       // Go directly to the next line
-      if (input.ready()) {
-        line = input.readLine();
-        st = new StringTokenizer(line, " \t");
-        sn = nextAbinitToken(input);
-      } else {
-        sn = null;
-      }
+      nextAbinitInputToken(true);
     }
 
 
@@ -222,90 +214,69 @@ public class ABINITReader extends DefaultChemFileReader {
     int[] zatnum = (int[]) Array.newInstance(int.class, ntype);
     int[] type = (int[]) Array.newInstance(int.class, natom);
 
-    //ChemFrame frame = new ChemFrame(natom);
+
     int[] dims = {
       natom, 3
     };
-    float[][] xangst = (float[][]) Array.newInstance(float.class, dims);
-
-    float[][] xred = (float[][]) Array.newInstance(float.class, dims);
+    float[][] xangst = null;
+    float[][] xred = null;
 
     //Second pass through the file
-    input.reset();
-    sn = nextAbinitToken(input);
+    inputBuffer.reset();
+    nextAbinitInputToken(true);
 
-    while (sn != null) {
-      if (sn.equals("zatnum")) {
+    while (fieldVal != null) {
+      if (fieldVal.equals("zatnum")) {
         for (int i = 0; i < ntype; i++) {
-          sn = nextAbinitToken(input);
-          zatnum[i] = Integer.parseInt(sn);
+          nextAbinitInputToken(false);
+          zatnum[i] = Integer.parseInt(fieldVal);
         }
-      } else if (sn.equals("type")) {
+      } else if (fieldVal.equals("type")) {
         for (int i = 0; i < natom; i++) {
-          sn = nextAbinitToken(input);
-          int index = sn.indexOf("*");
-          if (index >= 0)    //Test if number format of type i*i
-          {
-            int times = Integer.parseInt(sn.substring(0, index));
-            int value = Integer.parseInt(sn.substring(index + 1));
-            for (int j = i; j < i + times; j++) {
-              type[j] = value;
-            }
-            i = i + times - 1;
-          } else {
-            type[i] = Integer.parseInt(sn);
-          }
+          nextAbinitInputToken(false);
+          type[i] = Integer.parseInt(fieldVal);
         }
-      } else if (sn.equals("xangst")) {
+      } else if (fieldVal.equals("xangst")) {
+        xangst = (float[][]) Array.newInstance(float.class, dims);
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
-            sn = nextAbinitToken(input);
-            xangst[i][j] = (float) FortranFormat.atof(sn);
+            nextAbinitInputToken(false);
+            xangst[i][j] = (float) FortranFormat.atof(fieldVal);
           }
         }
-      } else if (sn.equals("xcart")) {
+      } else if (fieldVal.equals("xcart")) {
+        xangst = (float[][]) Array.newInstance(float.class, dims);
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
-            sn = nextAbinitToken(input);
-            xangst[i][j] = (float) FortranFormat.atof(sn) * angstromPerBohr;
+            nextAbinitInputToken(false);
+            xangst[i][j] = (float) FortranFormat.atof(fieldVal)
+                * angstromPerBohr;
           }
         }
-      } else if (sn.equals("xred")) {
+      } else if (fieldVal.equals("xred")) {
+        xred = (float[][]) Array.newInstance(float.class, dims);
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
-            sn = nextAbinitToken(input);
-            xred[i][j] = (float) FortranFormat.atof(sn);
+            nextAbinitInputToken(false);
+            xred[i][j] = (float) FortranFormat.atof(fieldVal);
           }
-          xangst[i][0] =
-              (xred[i][0] * rprim[0][0] + xred[i][1] * rprim[1][0] + xred[i][2] * rprim[2][0])
-                * acell[0] * angstromPerBohr;
-          xangst[i][1] =
-              (xred[i][0] * rprim[0][1] + xred[i][1] * rprim[1][1] + xred[i][2] * rprim[2][1])
-                * acell[1] * angstromPerBohr;
-          xangst[i][2] =
-              (xred[i][0] * rprim[0][2] + xred[i][1] * rprim[1][2] + xred[i][2] * rprim[2][2])
-                * acell[2] * angstromPerBohr;
         }
       }
 
       // It is unnecessary to scan the end of the line. 
       // Go directly to the next line
-      if (input.ready()) {
-        line = input.readLine();
-        st = new StringTokenizer(line, " \t");
-        sn = nextAbinitToken(input);
-      } else {
-        sn = null;
-      }
+      nextAbinitInputToken(true);
 
     }
 
+    //Set default value if needed
+    if (acell == null) {                 //set acell to 1 bohr
+      acell = new float[3];
+      acell[0] = 1 * angstromPerBohr;    //in angstrom    
+      acell[1] = 1 * angstromPerBohr;
+      acell[2] = 1 * angstromPerBohr;
+    }
 
-
-    //Convert acell from bohr to angstrom
-    acell[0] = acell[0] * (float) angstromPerBohr;
-    acell[1] = acell[1] * (float) angstromPerBohr;
-    acell[2] = acell[2] * (float) angstromPerBohr;
 
     //set the atom type
     int[] atomType = new int[natom];
@@ -314,12 +285,44 @@ public class ABINITReader extends DefaultChemFileReader {
     }
 
     //Store unit cell info
-    crystalFile.setUnitCellBox(new UnitCellBox(rprim, acell, true, atomType,
-        xangst));
+    UnitCellBox unitCellBox = new UnitCellBox();
+    if (rprim != null) {
+      if (xangst != null) {
+        unitCellBox = new UnitCellBox(rprim, acell, true, atomType, xangst);
+      } else if (xred != null) {
+        unitCellBox = new UnitCellBox(rprim, acell, false, atomType, xred);
+      }
+
+    } else if (angdeg != null) {
+      if (xangst != null) {
+        unitCellBox = new UnitCellBox(acell, angdeg, true, atomType, xangst);
+      } else if (xred != null) {
+        unitCellBox = new UnitCellBox(acell, angdeg, false, atomType, xred);
+      }
+
+
+    } else if ((rprim == null) && (angdeg == null)) {
+      rprim = new float[3][3];
+      rprim[0][0] = 1;
+      rprim[0][1] = 0;
+      rprim[0][2] = 0;
+      rprim[1][0] = 0;
+      rprim[1][1] = 1;
+      rprim[1][2] = 0;
+      rprim[2][0] = 0;
+      rprim[2][1] = 0;
+      rprim[2][2] = 1;
+      if (xangst != null) {
+        unitCellBox = new UnitCellBox(rprim, acell, true, atomType, xangst);
+      } else if (xred != null) {
+        unitCellBox = new UnitCellBox(rprim, acell, false, atomType, xred);
+      }
+    }
+    unitCellBox.setInfo(info);
+    crystalFile.setUnitCellBox(unitCellBox);
     crystalFile.setCrystalBox(new CrystalBox());    //use defaults value
     crystalFile.generateCrystalFrame();
 
-    //fireFrameRead();
     return crystalFile;
 
   }
@@ -338,7 +341,6 @@ public class ABINITReader extends DefaultChemFileReader {
     float[] acell = new float[3];
     float[][] rprim = new float[3][3];
     String info = "";
-    String sn;
     String line;
     int count = 0;
 
@@ -348,41 +350,48 @@ public class ABINITReader extends DefaultChemFileReader {
     /*
      * The reading of the output file is essentially the same as the
      * reading of an output file except that the output file can
-     * contain several frames
+     * contain several frames and there is no need to consider
+     * to parse things such as "integer*float".
      */
 
     //First pass through the file (get variables of known dimension)
-    input.mark(1024 * 1024);
-    line = input.readLine();
-    st = new StringTokenizer(line, " \t");
-    sn = nextAbinitToken(input);
 
-    while (sn != null) {
-      if (sn.equals("acell")) {
+    //Skip the beginning of the files and go to "-outvars:"
+    nextAbinitToken(true);
+    while (!fieldVal.equals("-outvars:")) {
+      nextAbinitToken(true);
+    }
+
+
+    inputBuffer.mark(1024 * 1024);
+
+    // Read the value of preprocessed input variables
+    while (fieldVal != null) {
+      if (fieldVal.equals("acell")) {
+        acell = new float[3];
         for (int i = 0; i < 3; i++) {
-
-          sn = nextAbinitToken(input);
-          acell[i] = (float) FortranFormat.atof(sn);
+          nextAbinitToken(false);
+          acell[i] = (float) FortranFormat.atof(fieldVal)
+              * (float) angstromPerBohr;    //in angstrom
         }
-
-        count++;    //We found acell
-
-      } else if (sn.equals("rprim")) {
+        count++;                            //We found acell
+      } else if (fieldVal.equals("rprim")) {
+        rprim = new float[3][3];
         for (int i = 0; i < 3; i++) {
           for (int j = 0; j < 3; j++) {
-            sn = nextAbinitToken(input);
-            rprim[i][j] = (float) FortranFormat.atof(sn);
+            nextAbinitToken(false);
+            rprim[i][j] = (float) FortranFormat.atof(fieldVal);
           }
         }
-        count++;    //We found rprim
-      } else if (sn.equals("ntype")) {
-        sn = nextAbinitToken(input);
-        ntype = Integer.parseInt(sn);
-        count++;    //We found ntype
-      } else if (sn.equals("natom")) {
-        sn = nextAbinitToken(input);
-        natom = Integer.parseInt(sn);
-        count++;    //We found natom
+        count++;                            //We found rprim
+      } else if (fieldVal.equals("ntype")) {
+        nextAbinitToken(false);
+        ntype = Integer.parseInt(fieldVal);
+        count++;                            //We found ntype
+      } else if (fieldVal.equals("natom")) {
+        nextAbinitToken(false);
+        natom = Integer.parseInt(fieldVal);
+        count++;                            //We found natom
       }
 
       //No need to countinue, we have found all of the searched keyword
@@ -392,15 +401,9 @@ public class ABINITReader extends DefaultChemFileReader {
 
       // It is unnecessary to scan the end of the line. 
       // Go directly to the next line
-      if (input.ready()) {
-        line = input.readLine();
-        st = new StringTokenizer(line, " \t");
-        sn = nextAbinitToken(input);
-      } else {
-        sn = null;
-      }
+      nextAbinitToken(true);
 
-    }
+    }                                       //end while
 
 
     //Initialize dynamic variables
@@ -410,25 +413,24 @@ public class ABINITReader extends DefaultChemFileReader {
       natom, 3
     };
     float[][] xangst = (float[][]) Array.newInstance(float.class, dims);
-
     float[][] xred = (float[][]) Array.newInstance(float.class, dims);
 
     //Second pass through the file
-    input.reset();
-    sn = nextAbinitToken(input);
+    inputBuffer.reset();
+    nextAbinitToken(true);
 
     count = 0;
-    while (sn != null) {
-      if (sn.equals("zatnum")) {
+    while (fieldVal != null) {
+      if (fieldVal.equals("zatnum")) {
         for (int i = 0; i < ntype; i++) {
-          sn = nextAbinitToken(input);
-          zatnum[i] = (int) FortranFormat.atof(sn);
+          nextAbinitToken(false);
+          zatnum[i] = (int) FortranFormat.atof(fieldVal);
         }
         count++;
-      } else if (sn.equals("type")) {
+      } else if (fieldVal.equals("type")) {
         for (int i = 0; i < natom; i++) {
-          sn = nextAbinitToken(input);
-          type[i] = Integer.parseInt(sn);
+          nextAbinitToken(false);
+          type[i] = Integer.parseInt(fieldVal);
         }
         count++;
       }
@@ -441,77 +443,77 @@ public class ABINITReader extends DefaultChemFileReader {
 
       // It is unnecessary to scan the end of the line. 
       // Go directly to the next line
-      if (input.ready()) {
-        line = input.readLine();
-        st = new StringTokenizer(line, " \t");
-        sn = nextAbinitToken(input);
-      } else {
-        sn = null;
-      }
+      nextAbinitToken(true);
 
     }    //end while
 
 
-    //Convert acell from bohr to angstrom
-    acell[0] = acell[0] * (float) angstromPerBohr;
-    acell[1] = acell[1] * (float) angstromPerBohr;
-    acell[2] = acell[2] * (float) angstromPerBohr;
 
+    String frameSep = "BROYDEN";
 
     //We start reading the frames
-    while (sn != null) {
-      if (sn.equals("NUMBER"))                          // Get the step number
-      {
-        info = nextAbinitToken(input);
-      } else if (sn.equals("Cartesian")
-          && nextAbinitToken(input).equals("coordinates")) {
-
-        //ChemFrame frame = new ChemFrame(natom);
-        //frame.setInfo("Step number: " + info);
-
-        //Go to next line
-        if (input.ready()) {
-          line = input.readLine();
-          st = new StringTokenizer(line, " \t");
+    while (fieldVal != null) {
+      if (fieldVal.equals(frameSep)) {
+        info = fieldVal;
+        nextAbinitToken(false);    //"STEP"
+        info = info + " " + fieldVal;
+        nextAbinitToken(false);    //"NUMBER"
+        info = info + " " + fieldVal;
+        nextAbinitToken(false);    // NUMBER
+        info = info + " " + fieldVal;
+        System.out.println(info);
+      } else if (fieldVal.equals("acell=")) {
+        acell = new float[3];
+        for (int i = 0; i < 3; i++) {
+          nextAbinitToken(false);
+          acell[i] = (float) FortranFormat.atof(fieldVal) * angstromPerBohr;    //in angstrom
         }
+      } else if (fieldVal.equals("rprim=")) {
+        rprim = new float[3][3];
+        for (int i = 0; i < 3; i++) {
+          for (int j = 0; j < 3; j++) {
+            nextAbinitToken(false);
+            rprim[i][j] = (float) FortranFormat.atof(fieldVal);
+          }
+        }
+      } else if (fieldVal.equals("Cartesian")
+          && nextAbinitToken(false).equals("coordinates")) {
 
+
+
+        nextAbinitToken(false);    //read "(bohr)"
         for (int i = 0; i < natom; i++) {
           for (int j = 0; j < 3; j++) {
-            sn = nextAbinitToken(input);
-            xangst[i][j] = (float) FortranFormat.atof(sn) * angstromPerBohr;
+            nextAbinitToken(false);
+            xangst[i][j] = (float) FortranFormat.atof(fieldVal)
+                * angstromPerBohr;
           }
-
-
         }
 
-
+        //Set the atom types
         int[] atomType = new int[natom];
         for (int i = 0; i < natom; i++) {
           atomType[i] = zatnum[type[i] - 1];
         }
 
         //Store unit cell info
-        crystalFile.setUnitCellBox(new UnitCellBox(rprim, acell, true,
-            atomType, xangst));
-        crystalFile.setCrystalBox(new CrystalBox());    //use defaults value
+        UnitCellBox unitCellBox = new UnitCellBox(rprim, acell, true,
+                                    atomType, xangst);
+        unitCellBox.setInfo(info);
+        crystalFile.setUnitCellBox(unitCellBox);
+
+        //use defaults value
+        crystalFile.setCrystalBox(new CrystalBox());
         crystalFile.generateCrystalFrame();
 
-        //fireFrameRead();
-      }
+
+      }                            //end if "Cartesian coordinates"
 
 
       // It is unnecessary to scan the end of the line. 
       // Go directly to the next line
-      if (input.ready()) {
-        line = input.readLine();
-        st = new StringTokenizer(line, " \t");
-        sn = nextAbinitToken(input);
-      } else {
-        sn = null;
-      }
-    }
-
-
+      nextAbinitToken(true);
+    }                              //end while
 
     return crystalFile;
   }
@@ -524,28 +526,78 @@ public class ABINITReader extends DefaultChemFileReader {
    * @return a <code>String</code> value
    * @exception IOException if an error occurs
    */
-  public String nextAbinitToken(BufferedReader input) throws IOException {
+  public String nextAbinitToken(boolean newLine) throws IOException {
 
     String line;
-    String sn;
-    while (!st.hasMoreTokens() && input.ready()) {
-      line = input.readLine();
+
+    if (newLine) {    //We ignore the end of the line and go to the following line
+      if (inputBuffer.ready()) {
+        line = inputBuffer.readLine();
+        st = new StringTokenizer(line, " \t");
+      }
+    }
+
+    while (!st.hasMoreTokens() && inputBuffer.ready()) {
+      line = inputBuffer.readLine();
       st = new StringTokenizer(line, " \t");
     }
     if (st.hasMoreTokens()) {
-      sn = st.nextToken();
-      if (sn.startsWith("#")) {
-        line = input.readLine();
-        if (input.ready()) {
-          st = new StringTokenizer(line, " \t");
-          sn = nextAbinitToken(input);
-        }
+      fieldVal = st.nextToken();
+      if (fieldVal.startsWith("#")) {
+        nextAbinitToken(true);
       }
     } else {
-      sn = null;
+      fieldVal = null;
+    }
+    return this.fieldVal;
+  }
+
+
+  /**
+   * Put the next abinit token in <code>fieldVal</code>.
+   * If <code>newLine</code> is <code>true</code>, the end of the line
+   * is skiped. <br>
+   * The first invocation of this method should be done with
+   * <code>newLine</code> is <code>true</code>.
+   *
+   */
+  public void nextAbinitInputToken(boolean newLine) throws IOException {
+
+    String line;
+
+    if (newLine) {    //We ignore the end of the line and go to the following line
+      repVal = 0;
+      if (inputBuffer.ready()) {
+        line = inputBuffer.readLine();
+        st = new StringTokenizer(line, " \t");
+      }
     }
 
-    return sn;
+
+    if (repVal != 0) {
+      repVal--;
+    } else {
+      while (!st.hasMoreTokens() && inputBuffer.ready()) {
+        line = inputBuffer.readLine();
+        st = new StringTokenizer(line, " \t");
+      }
+      if (st.hasMoreTokens()) {
+        fieldVal = st.nextToken();
+        int index = fieldVal.indexOf("*");
+        if (index >= 0) {
+
+          //We have a format integer*float
+          repVal = Integer.parseInt(fieldVal.substring(0, index));
+          fieldVal = fieldVal.substring(index + 1);
+          repVal--;
+        }
+        if (fieldVal.startsWith("#")) {    //We have a comment
+          nextAbinitInputToken(true);      //Skip the end of the line
+        }
+      } else {
+        fieldVal = null;
+      }
+    }
   }
 
 }

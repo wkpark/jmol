@@ -153,7 +153,7 @@ final public class Graphics3D {
     argbCurrent = Colix.getArgb(colix);
   }
 
-  int[] imageBuf = new int[256];
+  int[] imageBuf = new int[0];
 
   public void drawImage(Image image, int x, int y, int z) {
     int imageWidth = image.getWidth(null);
@@ -184,45 +184,42 @@ final public class Graphics3D {
     }
   }
 
-    public void drawCircleCentered(short colix, int diameter, Point3i center) {
-	drawCircleCentered(colix, diameter, center.x, center.y, center.z);
-    }
-
   public void drawCircleCentered(short colix, int diameter,
                                  int x, int y, int z) {
-    if (diameter == 0)
-      return;
     int r = (diameter + 1) / 2;
     argbCurrent = Colix.getArgb(colix);
     if (x >= r && x + r < width && y >= r && y + r < height) {
-      if (diameter <= 2) {
-        if (diameter == 1) {
-          plotPixelUnclipped(x, y, z);
-        } else {
-          plotPixelUnclipped(x, y, z);
-          plotPixelUnclipped(x-1, y, z);
-          --y;
-          plotPixelUnclipped(x, y, z);
-          plotPixelUnclipped(x-1, y, z);
-        }
-      } else {
+      switch (diameter) {
+      case 2:
+        plotPixelUnclipped(  x, y-1, z);
+        plotPixelUnclipped(x-1, y-1, z);
+        plotPixelUnclipped(x-1,   y, z);
+      case 1:
+        plotPixelUnclipped(x, y, z);
+      case 0:
+        break;
+      default:
         circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
       }
     } else {
-      if (diameter <= 2) {
-        if (diameter == 1) {
-          plotPixelClipped(x, y, z);
-        } else {
-          plotPixelClipped(x, y, z);
-          plotPixelClipped(x-1, y, z);
-          --y;
-          plotPixelClipped(x, y, z);
-          plotPixelClipped(x-1, y, z);
-        }
-      } else {
-        circle3d.plotCircleCenteredClipped(x , y , z, diameter);
+      switch (diameter) {
+      case 2:
+        plotPixelClipped(  x, y-1, z);
+        plotPixelClipped(x-1, y-1, z);
+        plotPixelClipped(x-1,   y, z);
+      case 1:
+        plotPixelClipped(x, y, z);
+      case 0:
+        break;
+      default:
+        circle3d.plotCircleCenteredClipped(x, y, z, diameter);
       }
     }
+  }
+
+  public void fillScreenedCircleCentered(short colixFill,
+                                         int x, int y, int z, int diameter) {
+    fillCircleCentered(colixFill, x, y, z, diameter);
   }
 
   public void fillCircleCentered(short colixFill,
@@ -238,50 +235,14 @@ final public class Graphics3D {
     }
   }
 
-  public void fillCircleCentered(short colixOutline, short colixFill,
-                                 int x, int y, int z, int diameter) {
-    if (diameter == 0)
-      return;
-    int r = (diameter + 1) / 2;
-    argbCurrent = Colix.getArgb(colixOutline);
-    if (x >= r && x + r < width && y >= r && y + r < height) {
-      if (diameter <= 2) {
-        if (diameter == 1) {
-          plotPixelUnclipped(x, y, z);
-        } else {
-          plotPixelUnclipped(x, y, z);
-          plotPixelUnclipped(x-1, y, z);
-          --y;
-          plotPixelUnclipped(x, y, z);
-          plotPixelUnclipped(x-1, y, z);
-        }
-      } else {
-        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
-        argbCurrent = Colix.getArgb(colixFill);
-        circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
-      }
-    } else {
-      if (diameter <= 2) {
-        if (diameter == 1) {
-          plotPixelClipped(x, y, z);
-        } else {
-          plotPixelClipped(x, y, z);
-          plotPixelClipped(x-1, y, z);
-          --y;
-          plotPixelClipped(x, y, z);
-          plotPixelClipped(x-1, y, z);
-        }
-      } else {
-        circle3d.plotCircleCenteredClipped(x, y, z, diameter);
-        argbCurrent = Colix.getArgb(colixFill);
-        circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
-      }
-    }
-  }
-
   public void fillSphereCentered(short colix, int diameter,
                                  int x, int y, int z) {
-    sphere3d.render(colix, diameter, x, y, z);
+    if (diameter <= 1) {
+      if (diameter == 1)
+        plotPixelClipped(colix, x, y, z);
+    } else {
+      sphere3d.render(colix, diameter, x, y, z);
+    }
   }
 
   public void drawRect(short colix, int x, int y, int width, int height) {
@@ -301,19 +262,6 @@ final public class Graphics3D {
                  z, argbCurrent,
                  str, fontCurrent, this, viewer.getAwtComponent());
   }
-
-  public void enableAntialiasing(boolean enableAntialiasing) {
-    //    viewer.java12.enableAntialiasing(g, enableAntialiasing);
-  }
-
-  public void dottedStroke() {
-    //    viewer.java12.dottedStroke(g);
-  }
-
-  public void defaultStroke() {
-    //    viewer.java12.defaultStroke(g);
-  }
-
 
   public void setFont(Font font) {
     if (fontCurrent != font) {

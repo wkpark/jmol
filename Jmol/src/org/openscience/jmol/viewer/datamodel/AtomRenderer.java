@@ -58,50 +58,34 @@ public class AtomRenderer {
     showHydrogens = viewer.getShowHydrogens();
   }
 
-  byte styleAtom;
-  int x, y, z, diameter;
-  short colix;
-
   public void render(AtomShape atomShape) {
     if (!showHydrogens && atomShape.atomicNumber == 1)
       return;
-    styleAtom = atomShape.styleAtom;
+    byte styleAtom = atomShape.styleAtom;
     if (styleAtom <= JmolViewer.NONE)
       return;
-    x = atomShape.x;
-    y = atomShape.y;
-    z = atomShape.z;
-    diameter = atomShape.diameter;
+    int x = atomShape.x;
+    int y = atomShape.y;
+    int z = atomShape.z;
+    int diameter = atomShape.diameter;
     int radius = (diameter + 1) / 2;
     if (x + radius < minX ||
         x - radius >= maxX ||
         y + radius < minY ||
         y - radius >= maxY)
       return;
-    colix = atomShape.colixAtom;
-    renderAtom();
-    if (viewer.hasSelectionHalo(atomShape))
-      renderHalo();
-  }
 
-  private void renderHalo() {
-    int halowidth = diameter / 4;
-    if (halowidth < 4) halowidth = 4;
-    if (halowidth > 10) halowidth = 10;
-    int halodiameter = diameter + 2 * halowidth;
-    g3d.fillCircleCentered(colixSelection, x, y, z, halodiameter);
-  }
+    if (styleAtom == JmolViewer.SHADED && !wireframeRotating)
+      g3d.fillSphereCentered(atomShape.colixAtom, diameter, x, y, z);
+    else
+      g3d.drawCircleCentered(atomShape.colixAtom, diameter, x, y, z);
 
-  private void renderDots(short colixDots, int diameterDots) {
-    //    g3d.drawDotsCentered(colixDots, x, y, z, diameterDots);
-  }
-
-  private void renderAtom() {
-    if (diameter > 0) {
-      if (styleAtom == JmolViewer.SHADED && !wireframeRotating)
-        g3d.fillSphereCentered(colix, diameter, x, y, z);
-      else
-        g3d.drawCircleCentered(colix, diameter, x, y, z);
+    if (viewer.hasSelectionHalo(atomShape)) {
+      int halowidth = diameter / 4;
+      if (halowidth < 4) halowidth = 4;
+      if (halowidth > 10) halowidth = 10;
+      int halodiameter = diameter + 2 * halowidth;
+      g3d.fillScreenedCircleCentered(colixSelection, x, y, z, halodiameter);
     }
   }
 }

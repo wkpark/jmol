@@ -181,11 +181,6 @@ public class Sphere3D {
   */
   
   void render(short colix, int diameter, int x, int y, int z) {
-    if (diameter <= 1) {
-      if (diameter == 1)
-        g3d.plotPixelClipped(colix, x, y, z);
-      return;
-    }
     int radius = (diameter + 1) >> 1;
     int[] shades = Colix.getShades(colix);
     if (diameter >= maxSphereCache) {

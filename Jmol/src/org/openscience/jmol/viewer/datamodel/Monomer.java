@@ -38,8 +38,6 @@ abstract class Monomer extends Group {
   byte leadAtomOffset;
   byte wingAtomOffset = -1;
 
-  short aminoBackboneHbondOffset = 0;
-
   Monomer(Chain chain, String group3,
           int sequenceNumber, char insertionCode,
           int firstAtomIndex, int lastAtomIndex) {
@@ -217,16 +215,6 @@ abstract class Monomer extends Group {
   
   public String toString() {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
-  }
-
-  ////////////////////////////////////////////////////////////////
-
-  void setAminoBackboneHbondOffset(int aminoBackboneHbondOffset) {
-    this.aminoBackboneHbondOffset = (short)aminoBackboneHbondOffset;
-  }
-  
-  int getAminoBackboneHbondOffset() {
-    return aminoBackboneHbondOffset;
   }
 
 }

@@ -139,4 +139,18 @@ public class AminoMonomer extends AlphaMonomer {
   Point3f getCarbonylOxygenAtomPoint() {
     return getWingAtomPoint();
   }
+
+  ////////////////////////////////////////////////////////////////
+
+  short aminoBackboneHbondOffset = 0;
+
+  void setAminoBackboneHbondOffset(int aminoBackboneHbondOffset) {
+    this.aminoBackboneHbondOffset = (short)aminoBackboneHbondOffset;
+  }
+  
+  int getAminoBackboneHbondOffset() {
+    return aminoBackboneHbondOffset;
+  }
+
+
 }

@@ -24,7 +24,8 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-public interface BondShapeIterator {
+public interface AtomIterator {
   public boolean hasNext();
-  public BondShape next();
+  public Atom next();
+  public void release();
 }

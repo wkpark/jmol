@@ -25,22 +25,15 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.datamodel.Axes;
-import org.openscience.jmol.viewer.datamodel.BoundingBox;
 import org.openscience.jmol.viewer.g3d.Colix;
 
 public class AxesManager {
 
   JmolViewer viewer;
 
-  public Axes axes;
-  public BoundingBox bbox;
-
   public AxesManager(JmolViewer viewer) {
     this.viewer = viewer;
 
-    axes = new Axes(viewer);
-    bbox = new BoundingBox(viewer);
     setColixAxes(Colix.LIGHTGRAY);
     setColixAxesText(Colix.LIGHTGRAY);
   }
@@ -48,21 +41,13 @@ public class AxesManager {
   public byte modeAxes = JmolViewer.AXES_NONE;
   public void setModeAxes(byte modeAxes) {
     this.modeAxes = modeAxes;
-    recalc();
+    viewer.getFrame().setModeAxes(modeAxes);
   }
 
   public boolean showBoundingBox = false;
   public void setShowBoundingBox(boolean showBoundingBox) {
     this.showBoundingBox = showBoundingBox;
-    recalc();
-  }
-
-  public void recalc() {
-    if (viewer.haveFile()) {
-      axes.recalc(modeAxes);
-      if (showBoundingBox)
-        bbox.recalc();
-    }
+    viewer.getFrame().setShowBoundingBox(showBoundingBox);
   }
 
   public short colixAxes;

@@ -25,8 +25,8 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
-import org.openscience.jmol.viewer.datamodel.MeasurementShape;
+import org.openscience.jmol.viewer.datamodel.Frame;
+import org.openscience.jmol.viewer.datamodel.Measurement;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -38,73 +38,73 @@ import java.beans.PropertyChangeSupport;
 public class MeasurementManager {
 
   JmolViewer viewer;
-  JmolFrame frame;
+  Frame frame;
 
   public MeasurementManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  public void setJmolFrame(JmolFrame frame) {
+  public void setFrame(Frame frame) {
     this.frame = frame;
     if (frame != null)
-      frame.clearMeasurementShapes();
+      frame.clearMeasurements();
   }
 
   public void clearMeasurements() {
     if (frame != null)
-      frame.clearMeasurementShapes();
+      frame.clearMeasurements();
   }
 
   public int getMeasurementCount() {
-    return (frame == null) ? 0 : frame.getMeasurementShapeCount();
+    return (frame == null) ? 0 : frame.getMeasurementCount();
   }
 
   public int[] getMeasurementIndices(int measurementIndex) {
-    return frame.getMeasurementShapes()[measurementIndex].atomIndices;
+    return frame.getMeasurements()[measurementIndex].atomIndices;
   }
 
   public String getMeasurementString(int measurementIndex) {
-    return frame.getMeasurementShapes()[measurementIndex].strMeasurement;
+    return frame.getMeasurements()[measurementIndex].strMeasurement;
   }
 
-  public MeasurementShape[] getMeasurements(int count) {
+  public Measurement[] getMeasurements(int count) {
     int numFound = 0;
-    int measurementShapeCount = frame.getMeasurementShapeCount();
-    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
-    for (int i = measurementShapeCount; --i >= 0; )
-      if (measurementShapes[i].atomIndices.length == count)
+    int measurementCount = frame.getMeasurementCount();
+    Measurement[] measurements = frame.getMeasurements();
+    for (int i = measurementCount; --i >= 0; )
+      if (measurements[i].atomIndices.length == count)
         ++numFound;
-    MeasurementShape[] foundMeasurements = new MeasurementShape[numFound];
+    Measurement[] foundMeasurements = new Measurement[numFound];
     for (int i = 0, j = 0; i < numFound; ++i, ++j) {
-      while (measurementShapes[j].atomIndices.length != count)
+      while (measurements[j].atomIndices.length != count)
         ++j;
-      foundMeasurements[i] = measurementShapes[j];
+      foundMeasurements[i] = measurements[j];
     }
     return foundMeasurements;
   }
 
   public void defineMeasurement(int count, int[] atomIndices) {
-    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
-    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
-      if (measurementShapes[i].sameAs(count, atomIndices))
+    Measurement[] measurements = frame.getMeasurements();
+    for (int i = frame.getMeasurementCount(); --i >= 0; ) {
+      if (measurements[i].sameAs(count, atomIndices))
         return;
     }
-    frame.addMeasurementShape(count, atomIndices);
+    frame.addMeasurement(count, atomIndices);
   }
 
   public boolean deleteMeasurement(int measurementIndex) {
     if (measurementIndex < 0 ||
-        measurementIndex >= frame.getMeasurementShapeCount())
+        measurementIndex >= frame.getMeasurementCount())
       return false;
-    frame.deleteMeasurementShape(measurementIndex);
+    frame.deleteMeasurement(measurementIndex);
     return true;
   }
 
-  public boolean deleteMeasurement(MeasurementShape measurementShape) {
-    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
-    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
-      if (measurementShapes[i] == measurementShape) {
-        frame.deleteMeasurementShape(i);
+  public boolean deleteMeasurement(Measurement measurement) {
+    Measurement[] measurements = frame.getMeasurements();
+    for (int i = frame.getMeasurementCount(); --i >= 0; ) {
+      if (measurements[i] == measurement) {
+        frame.deleteMeasurement(i);
         return true;
       }
     }
@@ -112,10 +112,10 @@ public class MeasurementManager {
   }
 
   public boolean deleteMeasurement(int count, int[] atomIndices) {
-    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
-    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
-      if (measurementShapes[i].sameAs(count, atomIndices)) {
-        frame.deleteMeasurementShape(i);
+    Measurement[] measurements = frame.getMeasurements();
+    for (int i = frame.getMeasurementCount(); --i >= 0; ) {
+      if (measurements[i].sameAs(count, atomIndices)) {
+        frame.deleteMeasurement(i);
         return true;
       }
     }
@@ -123,17 +123,17 @@ public class MeasurementManager {
   }
 
   public void deleteMeasurements(int count) {
-    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
-    for (int i = frame.getMeasurementShapeCount(); --i >= 0; )
-      if (measurementShapes[i].atomIndices.length == count)
-        frame.deleteMeasurementShape(i);
+    Measurement[] measurements = frame.getMeasurements();
+    for (int i = frame.getMeasurementCount(); --i >= 0; )
+      if (measurements[i].atomIndices.length == count)
+        frame.deleteMeasurement(i);
   }
 
   public boolean deleteMeasurementsReferencing(int atomIndexDeleted) {
     boolean measurementDeleted = false;
-    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
-    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
-      int[] atomIndices = measurementShapes[i].atomIndices;
+    Measurement[] measurements = frame.getMeasurements();
+    for (int i = frame.getMeasurementCount(); --i >= 0; ) {
+      int[] atomIndices = measurements[i].atomIndices;
       for (int j = atomIndices.length; --j >= 0; )
         if (atomIndices[j] == atomIndexDeleted) {
           deleteMeasurement(i);

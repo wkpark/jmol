@@ -85,7 +85,7 @@ import java.awt.Rectangle;
 public class Dots {
 
   JmolViewer viewer;
-  JmolFrame frame;
+  Frame frame;
   DotsRenderer dotsRenderer;
 
   BitSet bsDotsOn;
@@ -105,7 +105,7 @@ public class Dots {
   Hashtable htTori;
 
   int indexI, indexJ, indexK;
-  AtomShape atomI, atomJ, atomK;
+  Atom atomI, atomJ, atomK;
   Point3f centerI, centerJ, centerK;
   float radiusI, radiusJ, radiusK;
   float radiusP, diameterP;
@@ -120,7 +120,7 @@ public class Dots {
   final Point3f pointT1 = new Point3f();
 
     
-  Dots(JmolViewer viewer, JmolFrame frame, DotsRenderer dotsRenderer) {
+  Dots(JmolViewer viewer, Frame frame, DotsRenderer dotsRenderer) {
     this.viewer = viewer;
     this.frame = frame;
     this.dotsRenderer = dotsRenderer;
@@ -141,19 +141,19 @@ public class Dots {
       radiusP = viewer.getSolventProbeRadius();
       diameterP = 2 * radiusP;
     }
-    int atomShapeCount = frame.atomShapeCount;
+    int atomCount = frame.atomCount;
     dotsConvexCount = 0;
     if (dotsOn) {
       bsDotsOn.or(bsSelected);
       if (dotsConvexMaps == null)
-        dotsConvexMaps = new int[atomShapeCount][];
-      else if (dotsConvexMaps.length < atomShapeCount) {
-        int[][] t = new int[atomShapeCount][];
+        dotsConvexMaps = new int[atomCount][];
+      else if (dotsConvexMaps.length < atomCount) {
+        int[][] t = new int[atomCount][];
         System.arraycopy(dotsConvexMaps, 0, t, 0,
                          dotsConvexMaps.length);
         dotsConvexMaps = t;
       }
-      for (int i = atomShapeCount; --i >= 0; )
+      for (int i = atomCount; --i >= 0; )
         if (bsDotsOn.get(i)) {
           if (i >= dotsConvexCount)
             dotsConvexCount = i + 1;
@@ -168,11 +168,11 @@ public class Dots {
     } else {
       // turn off the selected dots
       // 1.1 jvm does not have BitSet.andNot()
-      for (int i = atomShapeCount; --i >= 0; )
+      for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
           bsDotsOn.clear(i);
       int i;
-      for (i = atomShapeCount; --i >= 0 && !bsDotsOn.get(i); )
+      for (i = atomCount; --i >= 0 && !bsDotsOn.get(i); )
         {}
       dotsConvexCount = i+1;
     }
@@ -180,7 +180,7 @@ public class Dots {
 
   void setAtomI(int indexI) {
     this.indexI = indexI;
-    atomI = frame.atomShapes[indexI];
+    atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
     radiusI = atomI.getVanderwaalsRadius();
     radiiIP2 = radiusI + radiusP;
@@ -242,18 +242,18 @@ public class Dots {
 
   // I have no idea what this number should be
   int neighborCount;
-  AtomShape[] neighbors = new AtomShape[16];
+  Atom[] neighbors = new Atom[16];
   int[] neighborIndices = new int[16];
   Point3f[] neighborCenters = new Point3f[16];
   float[] neighborPlusProbeRadii2 = new float[16];
   
   void getNeighbors() {
-    AtomShapeIterator iter =
+    AtomIterator iter =
       frame.getWithinIterator(atomI, radiusI + diameterP +
                               frame.getMaxVanderwaalsRadius());
     neighborCount = 0;
     while (iter.hasNext()) {
-      AtomShape neighbor = iter.next();
+      Atom neighbor = iter.next();
       if (neighbor == atomI)
         continue;
       float neighborRadius = neighbor.getVanderwaalsRadius();
@@ -263,7 +263,7 @@ public class Dots {
           centerI.distanceSquared(neighbor.point3f))
         continue;
       if (neighborCount == neighbors.length) {
-        AtomShape[] neighborsNew = new AtomShape[2 * neighborCount];
+        Atom[] neighborsNew = new Atom[2 * neighborCount];
         System.arraycopy(neighbors, 0, neighborsNew, 0, neighborCount);
         neighbors = neighborsNew;
         int[] indicesNew = new int[2 * neighborCount];
@@ -434,7 +434,7 @@ public class Dots {
 
   final static Boolean boxedFalse = new Boolean(false);
 
-  Torus getTorus(AtomShape atomI, int indexI, AtomShape atomJ, int indexJ) {
+  Torus getTorus(Atom atomI, int indexI, Atom atomJ, int indexJ) {
     if (indexI >= indexJ)
       throw new NullPointerException();
     Long key = new Long(((long)indexI << 32) + indexJ);

@@ -46,25 +46,22 @@ class MeasurementRenderer extends Renderer {
   short colixDistance;
   boolean showMeasurementLabels;
 
-  MeasurementShape measurement;
+  Measurement measurement;
 
-  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                 JmolFrame frame) {
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     this.g3d = g3d;
     this.rectClip = rectClip;
     this.frame = frame;
 
     colixDistance = viewer.getColixDistance();
     showMeasurementLabels = viewer.getShowMeasurementLabels();
+
+    Measurement[] measurements = frame.measurements;
+    for (int i = frame.measurementCount; --i >= 0; )
+      render(measurements[i]);
   }
 
-  void render(Object objMeasurements) {
-    MeasurementShape[] measurementShapes = (MeasurementShape[])objMeasurements;
-    for (int i = frame.measurementShapeCount; --i >= 0; )
-      render(measurementShapes[i]);
-  }
-
-  void render(MeasurementShape measurement) {
+  void render(Measurement measurement) {
     this.measurement = measurement;
     switch(measurement.count) {
     case 2:
@@ -82,8 +79,8 @@ class MeasurementRenderer extends Renderer {
   }
 
   void renderDistance() {
-    AtomShape atomA = frame.getAtomAt(measurement.atomIndices[0]);
-    AtomShape atomB = frame.getAtomAt(measurement.atomIndices[1]);
+    Atom atomA = frame.getAtomAt(measurement.atomIndices[0]);
+    Atom atomB = frame.getAtomAt(measurement.atomIndices[1]);
     int diamMax = atomA.diameter;
     if (atomB.diameter > diamMax)
       diamMax = atomB.diameter;
@@ -101,10 +98,10 @@ class MeasurementRenderer extends Renderer {
                            
 
   void renderDihedral() {
-    AtomShape atomA = frame.getAtomAt(measurement.atomIndices[0]);
-    AtomShape atomB = frame.getAtomAt(measurement.atomIndices[1]);
-    AtomShape atomC = frame.getAtomAt(measurement.atomIndices[2]);
-    AtomShape atomD = frame.getAtomAt(measurement.atomIndices[3]);
+    Atom atomA = frame.getAtomAt(measurement.atomIndices[0]);
+    Atom atomB = frame.getAtomAt(measurement.atomIndices[1]);
+    Atom atomC = frame.getAtomAt(measurement.atomIndices[2]);
+    Atom atomD = frame.getAtomAt(measurement.atomIndices[3]);
     int diamMax = atomA.diameter;
     if (atomB.diameter > diamMax)
       diamMax = atomB.diameter;
@@ -138,9 +135,9 @@ class MeasurementRenderer extends Renderer {
 
   void renderAngle() {
     g3d.setColix(colixDistance);
-    AtomShape atomA = frame.getAtomAt(measurement.atomIndices[0]);
-    AtomShape atomB = frame.getAtomAt(measurement.atomIndices[1]);
-    AtomShape atomC = frame.getAtomAt(measurement.atomIndices[2]);
+    Atom atomA = frame.getAtomAt(measurement.atomIndices[0]);
+    Atom atomB = frame.getAtomAt(measurement.atomIndices[1]);
+    Atom atomC = frame.getAtomAt(measurement.atomIndices[2]);
     int diamMax = atomA.diameter;
     if (atomB.diameter > diamMax)
       diamMax = atomB.diameter;

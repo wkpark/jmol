@@ -28,27 +28,26 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
 import javax.vecmath.Point3f;
 
-public class JmolFrameBuilder {
+public class FrameBuilder {
 
   JmolViewer viewer;
   Object clientFile;
   int frameNumber;
 
-  public JmolFrameBuilder(JmolViewer viewer,
+  public FrameBuilder(JmolViewer viewer,
                           Object clientFile, int frameNumber) {
     this.viewer = viewer;
     this.clientFile = clientFile;
     this.frameNumber = frameNumber;
   }
 
-  public JmolFrame buildJmolFrame() {
+  public Frame buildFrame() {
     JmolModelAdapter adapter = viewer.getJmolModelAdapter();
     int atomCount = adapter.getAtomCount(clientFile, frameNumber);
     int modelType = adapter.getModelType(clientFile);
     boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
 
-    JmolFrame frame = new JmolFrame(viewer, atomCount,
-                                    modelType, hasPdbRecords);
+    Frame frame = new Frame(viewer, atomCount, modelType, hasPdbRecords);
     for (JmolModelAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile, frameNumber);
          iterAtom.hasNext(); ) {
@@ -61,7 +60,7 @@ public class JmolFrameBuilder {
       if (iterCovalent != null)
         while (iterCovalent.hasNext()) {
           iterCovalent.moveNext();
-          frame.bondAtomShapes(iterCovalent.getAtom1(),
+          frame.bondAtoms(iterCovalent.getAtom1(),
                                iterCovalent.getAtom2(),
                                iterCovalent.getOrder());
         }
@@ -73,9 +72,9 @@ public class JmolFrameBuilder {
       if (iterAssoc != null)
         while (iterAssoc.hasNext()) {
           iterAssoc.moveNext();
-          frame.bondAtomShapes(iterAssoc.getAtom1(),
-                               iterAssoc.getAtom2(),
-                               iterAssoc.getOrder());
+          frame.bondAtoms(iterAssoc.getAtom1(),
+                          iterAssoc.getAtom2(),
+                          iterAssoc.getOrder());
         }
     }
 
@@ -91,7 +90,7 @@ public class JmolFrameBuilder {
 	  Point3f point2 = new Point3f(iterVector.getPoint2X(),
 				       iterVector.getPoint2Y(),
 				       iterVector.getPoint2Z());
-          frame.addLineShape(new ArrowLineShape(point1, point2));
+          frame.addLineShape(new Line(point1, point2, true));
         }
     }
 
@@ -107,11 +106,11 @@ public class JmolFrameBuilder {
 	  Point3f point2 = new Point3f(iterCell.getPoint2X(),
 				       iterCell.getPoint2Y(),
 				       iterCell.getPoint2Z());
-          LineShape line;
+          Line line;
           if (i < 3)
-	      line = new ArrowLineShape(point1, point2);
+	      line = new Line(point1, point2, true);
           else
-	      line = new LineShape(point1, point2);
+	      line = new Line(point1, point2);
           frame.addCrystalCellLine(line);
         }
     }

@@ -54,7 +54,7 @@ public class PovraySaver {
   }
 
   public void writeFrame() throws IOException {
-    float zoom = (float)viewer.getJmolFrame().getRotationRadius() * 2;
+    float zoom = (float)viewer.getFrame().getRotationRadius() * 2;
     zoom *= 1.1f; // for some reason I need a little more margin
     zoom /= viewer.getZoomPercent() / 100f;
 

@@ -33,15 +33,12 @@ import java.util.BitSet;
 public class Trace {
 
   JmolViewer viewer;
-  JmolFrame frame;
-  TraceRenderer traceRenderer;
+  Frame frame;
   boolean hasPdbRecords;
     
-  Trace(JmolViewer viewer, JmolFrame frame,
-        TraceRenderer traceRenderer) {
+  Trace(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
-    this.traceRenderer = traceRenderer;
     hasPdbRecords = frame.hasPdbRecords;
   }
 

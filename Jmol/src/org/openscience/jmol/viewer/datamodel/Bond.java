@@ -31,7 +31,7 @@ import org.openscience.jmol.viewer.g3d.Colix;
 
 import java.awt.Rectangle;
 
-public class BondShape {
+public class Bond {
 
   /*
   public final static byte COVALENT = 1 << 4;
@@ -61,35 +61,34 @@ public class BondShape {
 
   public final static byte ALL         = (byte)0xFF;
 
-  public AtomShape atomShape1;
-  public AtomShape atomShape2;
+  public Atom atom1;
+  public Atom atom2;
   byte order;
   byte style;
   short mar;
   short colix;
 
-  public BondShape(AtomShape atomShape1, AtomShape atomShape2,
-                   int order, byte style, short mar, short colix) {
-    if (atomShape1 == null)
+  public Bond(Atom atom1, Atom atom2,
+              int order, byte style, short mar, short colix) {
+    if (atom1 == null)
       throw new NullPointerException();
-    if (atomShape2 == null)
+    if (atom2 == null)
       throw new NullPointerException();
-    this.atomShape1 = atomShape1;
-    this.atomShape2 = atomShape2;
+    this.atom1 = atom1;
+    this.atom2 = atom2;
     this.order = (byte)order;
     this.style = style;
     this.mar = mar;
     this.colix = colix;
   }
 
-  public BondShape(AtomShape atomShape1, AtomShape atomShape2, int order,
-                   JmolViewer viewer) {
-    if (atomShape1 == null)
+  public Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
+    if (atom1 == null)
       throw new NullPointerException();
-    if (atomShape2 == null)
+    if (atom2 == null)
       throw new NullPointerException();
-    this.atomShape1 = atomShape1;
-    this.atomShape2 = atomShape2;
+    this.atom1 = atom1;
+    this.atom2 = atom2;
     this.order = (byte)order;
     this.style = (order == BACKBONE
                   ? JmolViewer.NONE
@@ -111,11 +110,11 @@ public class BondShape {
   }
 
   public void deleteAtomReferences() {
-    if (atomShape1 != null)
-      atomShape1.deleteBond(this);
-    if (atomShape2 != null)
-      atomShape2.deleteBond(this);
-    atomShape1 = atomShape2 = null;
+    if (atom1 != null)
+      atom1.deleteBond(this);
+    if (atom2 != null)
+      atom2.deleteBond(this);
+    atom1 = atom2 = null;
   }
 
   public void setStyle(byte style) {
@@ -148,11 +147,11 @@ public class BondShape {
   }
 
   public short getColix1() {
-    return (colix != 0 ? colix : atomShape1.colixAtom);
+    return (colix != 0 ? colix : atom1.colixAtom);
   }
 
   public short getColix2() {
-    return (colix != 0 ? colix : atomShape2.colixAtom);
+    return (colix != 0 ? colix : atom2.colixAtom);
   }
 }
 

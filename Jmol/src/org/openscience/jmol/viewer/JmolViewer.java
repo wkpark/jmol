@@ -621,7 +621,7 @@ final public class JmolViewer {
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
     distributionManager.setColix(Colix.getColix(colorBond),
-                                 bondIteratorSelected(BondShape.COVALENT));
+                                 bondIteratorSelected(Bond.COVALENT));
     refresh();
   }
 
@@ -652,19 +652,19 @@ final public class JmolViewer {
     refresh();
   }
 
-  public boolean isSelected(AtomShape atomShape) {
-    return isSelected(atomShape.getAtomIndex());
+  public boolean isSelected(Atom atom) {
+    return isSelected(atom.getAtomIndex());
   }
 
   public boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
   }
 
-  public boolean hasSelectionHalo(AtomShape atomShape) {
+  public boolean hasSelectionHalo(Atom atom) {
     return
       selectionHaloEnabled &&
       !repaintManager.wireframeRotating &&
-      isSelected(atomShape);
+      isSelected(atom);
   }
 
   public boolean selectionHaloEnabled = false;
@@ -830,8 +830,8 @@ final public class JmolViewer {
     return modelManager.haveFile;
   }
 
-  public JmolFrame getJmolFrame() {
-    return modelManager.getJmolFrame();
+  public Frame getFrame() {
+    return modelManager.getFrame();
   }
 
   public float getRotationRadius() {
@@ -868,9 +868,8 @@ final public class JmolViewer {
 
   public void setFrame(int frameNumber) {
     modelManager.setFrame(frameNumber);
-    measurementManager.setJmolFrame(getJmolFrame());
+    measurementManager.setFrame(getFrame());
     selectAll();
-    recalcAxes();
     structuralChange = true;
     refresh();
   }
@@ -1010,7 +1009,7 @@ final public class JmolViewer {
 
   public boolean deleteMeasurement(Object measurement) {
     boolean deleted =
-      measurementManager.deleteMeasurement((MeasurementShape)measurement);
+      measurementManager.deleteMeasurement((Measurement)measurement);
     if (deleted)
       refresh();
     return deleted;
@@ -1084,7 +1083,7 @@ final public class JmolViewer {
   public Image renderScreenImage(Rectangle rectClip) {
     if (eval.hasTerminationNotification())
       manageScriptTermination();
-    repaintManager.render(g3d, rectClip, modelManager.getJmolFrame());
+    repaintManager.render(g3d, rectClip, modelManager.getFrame());
     return g3d.getScreenImage();
   }
 
@@ -1144,17 +1143,17 @@ final public class JmolViewer {
 
   public void setStyleMarBondScript(byte style, short mar) {
     distributionManager.setStyleMar(style, mar,
-                                    bondIteratorSelected(BondShape.COVALENT));
+                                    bondIteratorSelected(Bond.COVALENT));
   }
 
   public void setStyleMarBackboneScript(byte style, short mar) {
     distributionManager.setStyleMar(style, mar,
-                                    bondIteratorSelected(BondShape.BACKBONE));
+                                    bondIteratorSelected(Bond.BACKBONE));
   }
 
   public void setStyleBondScript(byte style) {
     distributionManager.setStyle(style,
-                                 bondIteratorSelected(BondShape.COVALENT));
+                                 bondIteratorSelected(Bond.COVALENT));
   }
 
   public void setStyleBondScript(byte style, byte bondType) {
@@ -1163,7 +1162,7 @@ final public class JmolViewer {
 
   public void setStyleBackboneScript(byte style) {
     distributionManager.setStyle(style,
-                                 bondIteratorSelected(BondShape.BACKBONE));
+                                 bondIteratorSelected(Bond.BACKBONE));
   }
 
   public void setColorAtomScript(byte scheme, Color color) {
@@ -1173,12 +1172,12 @@ final public class JmolViewer {
 
   public void setColorBondScript(Color color) {
     distributionManager.setColix(Colix.getColix(color),
-                                 bondIteratorSelected(BondShape.COVALENT));
+                                 bondIteratorSelected(Bond.COVALENT));
   }
 
   public void setColorBackboneScript(Color color) {
     distributionManager.setColix(Colix.getColix(color),
-                                 bondIteratorSelected(BondShape.BACKBONE));
+                                 bondIteratorSelected(Bond.BACKBONE));
   }
 
   public void setLabelScript(String strLabel) {
@@ -1186,11 +1185,11 @@ final public class JmolViewer {
   }
 
   public void setDotsOn(boolean dotsOn) {
-    getJmolFrame().setDotsOn(dotsOn, selectionManager.bsSelection);
+    getFrame().setDotsOn(dotsOn, selectionManager.bsSelection);
   }
 
   public void setTrace(float radius) {
-    getJmolFrame().setTrace(radius, selectionManager.bsSelection);
+    getFrame().setTrace(radius, selectionManager.bsSelection);
   }
 
   boolean rasmolHydrogenSetting = true;
@@ -1380,33 +1379,33 @@ final public class JmolViewer {
   }
 
   /****************************************************************
-   * JmolFrame
+   * Frame
    ****************************************************************/
 
-  private AtomShapeIterator atomIteratorSelected() {
-    return getJmolFrame().getAtomIterator(selectionManager.bsSelection);
+  private AtomIterator atomIteratorSelected() {
+    return getFrame().getAtomIterator(selectionManager.bsSelection);
   }
 
-  private BondShapeIterator bondIteratorSelected(byte bondType) {
+  private BondIterator bondIteratorSelected(byte bondType) {
     return
-      getJmolFrame().getBondIterator(bondType, selectionManager.bsSelection);
+      getFrame().getBondIterator(bondType, selectionManager.bsSelection);
   }
 
-  final AtomShapeIterator nullAtomShapeIterator =
-    new NullAtomShapeIterator();
+  final AtomIterator nullAtomIterator =
+    new NullAtomIterator();
 
-  class NullAtomShapeIterator implements AtomShapeIterator {
+  class NullAtomIterator implements AtomIterator {
     public boolean hasNext() { return false; }
-    public AtomShape next() { return null; }
+    public Atom next() { return null; }
     public void release() {}
   }
 
-  final BondShapeIterator nullBondShapeIterator =
-    new NullBondShapeIterator();
+  final BondIterator nullBondIterator =
+    new NullBondIterator();
 
-  class NullBondShapeIterator implements BondShapeIterator {
+  class NullBondIterator implements BondIterator {
     public boolean hasNext() { return false; }
-    public BondShape next() { return null; }
+    public Bond next() { return null; }
   }
 
   /****************************************************************
@@ -1453,7 +1452,7 @@ final public class JmolViewer {
   public void setStyleBond(byte style) {
     styleManager.setStyleBond(style);
     distributionManager.setStyle(style,
-                                 bondIteratorSelected(BondShape.COVALENT));
+                                 bondIteratorSelected(Bond.COVALENT));
     refresh();
   }
 
@@ -1464,7 +1463,7 @@ final public class JmolViewer {
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
     distributionManager.setMar(marBond,
-                               bondIteratorSelected(BondShape.COVALENT));
+                               bondIteratorSelected(Bond.COVALENT));
     refresh();
   }
 
@@ -1570,19 +1569,19 @@ final public class JmolViewer {
     return labelManager.styleLabel;
   }
 
-  public String getLabelAtom(AtomShape atomShape, int atomIndex) {
+  public String getLabelAtom(Atom atom, int atomIndex) {
     return labelManager.getLabelAtom(labelManager.styleLabel,
-                                     atomShape, atomIndex);
+                                     atom, atomIndex);
   }
 
-  public String getLabelAtom(byte styleLabel, AtomShape atomShape,
+  public String getLabelAtom(byte styleLabel, Atom atom,
                              int atomIndex) {
-    return labelManager.getLabelAtom(styleLabel, atomShape, atomIndex);
+    return labelManager.getLabelAtom(styleLabel, atom, atomIndex);
   }
 
-  public String getLabelAtom(String strLabel, AtomShape atomShape,
+  public String getLabelAtom(String strLabel, Atom atom,
                              int atomIndex) {
-    return labelManager.getLabelAtom(strLabel, atomShape, atomIndex);
+    return labelManager.getLabelAtom(strLabel, atom, atomIndex);
   }
 
   public void setLabelFontSize(int points) {
@@ -1598,20 +1597,6 @@ final public class JmolViewer {
     return labelManager.getFontOfSize(points);
   }
   
-  /*
-  public void renderStringOffset(String str, short colix, int points,
-                                 int x, int y, int z,
-                                 int xOffset, int yOffset) {
-    labelRenderer.renderStringOffset(str, colix, points,
-                                     x, y, z, xOffset, yOffset);
-  }
-
-  public void renderStringOutside(String str, short colix, int pointsFontsize,
-                                  int x, int y, int z) {
-    labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);
-  }
-  */
-
   /****************************************************************
    * delegated to AxesManager
    ****************************************************************/
@@ -1638,14 +1623,6 @@ final public class JmolViewer {
     return axesManager.modeAxes;
   }
 
-  public void recalcAxes() {
-    axesManager.recalc();
-  }
-
-  public Axes getAxes() {
-    return axesManager.axes;
-  }
-
   public void setShowBoundingBox(boolean showBoundingBox) {
     axesManager.setShowBoundingBox(showBoundingBox);
     structuralChange = true;
@@ -1654,10 +1631,6 @@ final public class JmolViewer {
 
   public boolean getShowBoundingBox() {
     return axesManager.showBoundingBox;
-  }
-
-  public BoundingBox getBoundingBox() {
-    return axesManager.bbox;
   }
 
   public short getColixAxes() {
@@ -1688,31 +1661,31 @@ final public class JmolViewer {
     return modelManager.getAtomicNumber(clientAtom);
   }
 
-  public String getAtomicSymbol(AtomShape atomShape) {
-    return modelManager.getAtomicSymbol(atomShape);
+  public String getAtomicSymbol(Atom atom) {
+    return modelManager.getAtomicSymbol(atom);
   }
 
-  public String getAtomTypeName(AtomShape atomShape) {
-    return modelManager.getAtomTypeName(atomShape);
+  public String getAtomTypeName(Atom atom) {
+    return modelManager.getAtomTypeName(atom);
   }
 
-  public float getVanderwaalsRadius(AtomShape atomShape) {
-    return modelManager.getVanderwaalsRadius(atomShape);
+  public float getVanderwaalsRadius(Atom atom) {
+    return modelManager.getVanderwaalsRadius(atom);
   }
 
-  public float getCovalentRadius(AtomShape atomShape) {
-    return modelManager.getCovalentRadius(atomShape);
+  public float getCovalentRadius(Atom atom) {
+    return modelManager.getCovalentRadius(atom);
   }
 
   public String getPdbAtomRecord(Object clientAtom) {
     return modelManager.getPdbAtomRecord(clientAtom);
   }
 
-  public short getColixAtom(AtomShape atom) {
+  public short getColixAtom(Atom atom) {
     return colorManager.getColixAtom(atom);
   }
 
-  public short getColixAtomScheme(AtomShape atom, byte scheme) {
+  public short getColixAtomScheme(Atom atom, byte scheme) {
     return colorManager.getColixAtomScheme(atom, scheme);
   }
 

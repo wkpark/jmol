@@ -33,14 +33,11 @@ import java.util.BitSet;
 public class Ribbons {
 
   JmolViewer viewer;
-  JmolFrame frame;
-  RibbonsRenderer ribbonsRenderer;
+  Frame frame;
     
-  Ribbons(JmolViewer viewer, JmolFrame frame,
-          RibbonsRenderer ribbonsRenderer) {
+  Ribbons(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
-    this.ribbonsRenderer = ribbonsRenderer;
   }
 
   public void setRibbons(int ribbonType, BitSet bsSelected) {

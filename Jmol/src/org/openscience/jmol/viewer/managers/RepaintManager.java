@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.datamodel.FrameRenderer;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
+import org.openscience.jmol.viewer.datamodel.Frame;
 
 import java.awt.Image;
 import java.awt.Graphics;
@@ -108,7 +108,7 @@ public class RepaintManager {
     this.tOversample = tOversample;
   }
 
-  public void render(Graphics3D g3d, Rectangle rectClip, JmolFrame frame) {
+  public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     g3d.beginRendering(tOversample);
     if (tOversample) {
       rectOversample.x = rectClip.x << 1;

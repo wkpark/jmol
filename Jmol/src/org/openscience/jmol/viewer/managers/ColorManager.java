@@ -26,7 +26,7 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
-import org.openscience.jmol.viewer.datamodel.AtomShape;
+import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 import org.openscience.jmol.viewer.script.Token;
@@ -527,11 +527,11 @@ public class ColorManager {
     return Color.pink;
   }
 
-  public short getColixAtom(AtomShape atom) {
+  public short getColixAtom(Atom atom) {
     return getColixAtomScheme(atom, schemeDefault);
   }
 
-  public short getColixAtomScheme(AtomShape atom, byte scheme) {
+  public short getColixAtomScheme(Atom atom, byte scheme) {
     int argb = 0;
     PdbAtom pdbatom = atom.pdbatom;
     if (suppliesAtomArgb) {

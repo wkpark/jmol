@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.datamodel.AtomShape;
+import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 
 import java.awt.Font;
@@ -83,15 +83,14 @@ public class LabelManager {
     this.pointsLabelFontSize = points <= 0 ? 13 : points;
   }
 
-  public String getLabelAtom(byte styleLabel, AtomShape atomShape,
-                             int atomIndex) {
+  public String getLabelAtom(byte styleLabel, Atom atom, int atomIndex) {
     String label = null;
     switch (styleLabel) {
     case JmolViewer.SYMBOLS:
-      label = atomShape.getAtomicSymbol();
+      label = atom.getAtomicSymbol();
       break;
     case JmolViewer.TYPES:
-      label = atomShape.getAtomTypeName();
+      label = atom.getAtomTypeName();
        break;
     case JmolViewer.NUMBERS:
       label = "" + (atomIndex + 1);
@@ -100,11 +99,10 @@ public class LabelManager {
     return label;
   }
 
-  public String getLabelAtom(String strFormat, AtomShape atomShape,
-                             int atomIndex) {
+  public String getLabelAtom(String strFormat, Atom atom, int atomIndex) {
     if (strFormat == null || strFormat.equals(""))
       return null;
-    PdbAtom pdbatom = atomShape.getPdbAtom();
+    PdbAtom pdbatom = atom.getPdbAtom();
     String strLabel = "";
     int cch = strFormat.length();
     int ich, ichPercent;
@@ -118,13 +116,13 @@ public class LabelManager {
       int ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strLabel += atomShape.getAtomno();
+        strLabel += atom.getAtomno();
         break;
       case 'a':
-        strLabel += atomShape.getAtomTypeName();
+        strLabel += atom.getAtomTypeName();
         break;
       case 'e':
-        strLabel += atomShape.getAtomicSymbol();
+        strLabel += atom.getAtomicSymbol();
         break;
       case 'b': // these two are the same
       case 't':

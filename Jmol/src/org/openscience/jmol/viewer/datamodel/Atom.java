@@ -36,24 +36,24 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class AtomShape implements Bspt.Tuple {
+public class Atom implements Bspt.Tuple {
 
   private short atomIndex = -1;
   public byte atomicNumber;
   public Object clientAtom;
   public PdbAtom pdbatom;
-  JmolFrame frame;
+  Frame frame;
   Point3f point3f;
   int x, y, z;
   byte styleAtom;
   short marAtom;
   short colixAtom;
   short diameter;
-  BondShape[] bonds;
+  Bond[] bonds;
 
   String strLabel;
 
-  public AtomShape(JmolFrame frame, int atomIndex, Object clientAtom) {
+  public Atom(Frame frame, int atomIndex, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = (short)atomIndex;
@@ -80,48 +80,47 @@ public class AtomShape implements Bspt.Tuple {
     return atomIndex & 0xFFFF;
   }
 
-  public boolean isBonded(AtomShape atomShapeOther) {
+public boolean isBonded(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
-        BondShape bond = bonds[i];
-        if ((bond.atomShape1 == atomShapeOther) ||
-            (bond.atomShape2 == atomShapeOther))
+        Bond bond = bonds[i];
+        if ((bond.atom1 == atomOther) ||
+            (bond.atom2 == atomOther))
           return true;
       }
     return false;
   }
 
-  public BondShape bondMutually(AtomShape atomShapeOther, int order) {
-    if (isBonded(atomShapeOther))
+  public Bond bondMutually(Atom atomOther, int order) {
+    if (isBonded(atomOther))
       return null;
-    BondShape bondShape = new BondShape(this, atomShapeOther, order,
-                                        frame.viewer);
-    addBond(bondShape);
-    atomShapeOther.addBond(bondShape);
-    return bondShape;
+    Bond bond = new Bond(this, atomOther, order, frame.viewer);
+    addBond(bond);
+    atomOther.addBond(bond);
+    return bond;
   }
 
-  private void addBond(BondShape bondShape) {
+  private void addBond(Bond bond) {
     int i = 0;
     if (bonds == null) {
-      bonds = new BondShape[1];
+      bonds = new Bond[1];
     } else {
       i = bonds.length;
-      BondShape[] bondsNew = new BondShape[i + 1];
+      Bond[] bondsNew = new Bond[i + 1];
       System.arraycopy(bonds, 0, bondsNew, 0, i);
       bonds = bondsNew;
     }
-    bonds[i] = bondShape;
+    bonds[i] = bond;
   }
 
-  public void deleteBondedAtomShape(AtomShape atomShapeToDelete) {
+  public void deleteBondedAtom(Atom atomToDelete) {
     if (bonds == null)
       return;
     for (int i = bonds.length; --i >= 0; ) {
-      BondShape bond = bonds[i];
-      AtomShape atomShapeBonded =
-        (bond.atomShape1 != this) ? bond.atomShape1 : bond.atomShape2;
-      if (atomShapeBonded == atomShapeToDelete) {
+      Bond bond = bonds[i];
+      Atom atomBonded =
+        (bond.atom1 != this) ? bond.atom1 : bond.atom2;
+      if (atomBonded == atomToDelete) {
         deleteBond(i);
         return;
       }
@@ -139,9 +138,9 @@ public class AtomShape implements Bspt.Tuple {
     }
   }
 
-  public void deleteBond(BondShape bondShape) {
+  public void deleteBond(Bond bond) {
     for (int i = bonds.length; --i >= 0; )
-      if (bonds[i] == bondShape) {
+      if (bonds[i] == bond) {
         deleteBond(i);
         return;
       }
@@ -153,7 +152,7 @@ public class AtomShape implements Bspt.Tuple {
       bonds = null;
       return;
     }
-    BondShape[] bondsNew = new BondShape[newLength];
+    Bond[] bondsNew = new Bond[newLength];
     int j = 0;
     for ( ; j < i; ++j)
       bondsNew[j] = bonds[j];
@@ -167,10 +166,10 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public int getBondedAtomIndex(int bondIndex) {
-    BondShape bond = bonds[bondIndex];
-    return (((bond.atomShape1 == this)
-             ? bond.atomShape2
-             : bond.atomShape1).atomIndex & 0xFFFF);
+    Bond bond = bonds[bondIndex];
+    return (((bond.atom1 == this)
+             ? bond.atom2
+             : bond.atom1).atomIndex & 0xFFFF);
   }
 
   /*
@@ -223,12 +222,12 @@ public class AtomShape implements Bspt.Tuple {
       return 0;
     int n = 0;
     for (int i = bonds.length; --i >= 0; )
-      if ((bonds[i].order & BondShape.COVALENT) != 0)
+      if ((bonds[i].order & Bond.COVALENT) != 0)
         ++n;
     return n;
   }
 
-  public BondShape[] getBonds() {
+  public Bond[] getBonds() {
     return bonds;
   }
 

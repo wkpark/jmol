@@ -22,53 +22,35 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.g3d.Shade3D;
-import java.awt.Rectangle;
 
-import java.util.Hashtable;
-import javax.vecmath.Vector3f;
+import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.AxisAngle4f;
-import javax.vecmath.Quat4f;
 
-public class Gtest {
+public class Line {
 
-  JmolViewer viewer;
-  Graphics3D g3d;
-  JmolFrame frame;
+  Point3f pointOrigin;
+  Point3f pointEnd;
+  boolean tArrowHead;
+  float headWidthAngstroms;
 
-  public Gtest(JmolViewer viewer) {
-    this.viewer = viewer;
+  public Line(Point3f pointOrigin, Point3f pointEnd) {
+    this.pointOrigin = pointOrigin;
+    this.pointEnd = pointEnd;
   }
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                 JmolFrame frame) {
-    this.g3d = g3d;
-    this.frame = frame;
+  public Line(Point3f pointOrigin, Point3f pointEnd, boolean tArrowHead) {
+    this.pointOrigin = pointOrigin;
+    this.pointEnd = pointEnd;
+    this.tArrowHead = tArrowHead;
+    if (tArrowHead)
+      headWidthAngstroms =
+	(float)pointOrigin.distance(pointEnd) / widthDivisor;
   }
-
-  void transform() {
-    //    System.out.println("Gtest.transform()");
-  }
-
-  int xOrigin, yOrigin, zOrigin;
-
-  public void render() {
-    //    System.out.println("Gtest.render()");
-
-    //    g3d.fillTriangle(Colix.BLUE, 10, 10, 80, 25, 10, 150, 25, 20, 150);
-    
-    //    g3d.fillTriangle(Colix.RED, 0, 0, 90, 0, 20, 90, 35, 10, 90);
-    
-
-  }
-
+  final static int widthDivisor = 8;
 }
+

@@ -37,19 +37,6 @@ class BondRenderer extends Renderer {
     this.viewer = viewer;
   }
 
-  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                 JmolFrame frame) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
-    this.frame = frame;
-
-    wireframeRotating = viewer.getWireframeRotating();
-    colixSelection = viewer.getColixSelection();
-    showMultipleBonds = viewer.getShowMultipleBonds();
-    modeMultipleBond = viewer.getModeMultipleBond();
-    showHydrogens = viewer.getShowHydrogens();
-  }
-
   boolean wireframeRotating;
   short colixSelection;
   boolean showMultipleBonds;
@@ -75,52 +62,62 @@ class BondRenderer extends Renderer {
     g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
-  void render(Object objBondShapes) {
-    BondShape[] bondShapes = (BondShape[])objBondShapes;
-    for (int i = frame.bondShapeCount; --i >= 0; )
-      render(bondShapes[i]);
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    this.g3d = g3d;
+    this.rectClip = rectClip;
+    this.frame = frame;
+
+    wireframeRotating = viewer.getWireframeRotating();
+    colixSelection = viewer.getColixSelection();
+    showMultipleBonds = viewer.getShowMultipleBonds();
+    modeMultipleBond = viewer.getModeMultipleBond();
+    showHydrogens = viewer.getShowHydrogens();
+
+    Bond[] bonds = frame.bonds;
+    for (int i = frame.bondCount; --i >= 0; )
+      render(bonds[i]);
   }
 
-  void render(BondShape bondShape) {
-    styleBond = bondShape.style;
+  void render(Bond bond) {
+    styleBond = bond.style;
     if (styleBond == JmolViewer.NONE)
       return;
-    AtomShape atomShape1 = bondShape.atomShape1;
-    AtomShape atomShape2 = bondShape.atomShape2;
-    if (!showHydrogens && (atomShape1.atomicNumber == 1 ||
-                           atomShape2.atomicNumber == 1))
+    Atom atom1 = bond.atom1;
+    Atom atom2 = bond.atom2;
+    if (!showHydrogens && (atom1.atomicNumber == 1 ||
+                           atom2.atomicNumber == 1))
       return;
-    x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
-    x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
+    x1 = atom1.x; y1 = atom1.y; z1 = atom1.z;
+    x2 = atom2.x; y2 = atom2.y; z2 = atom2.z;
     dx = x2 - x1;
     dy = y2 - y1;
-    width = viewer.scaleToScreen((z1 + z2)/2, bondShape.mar * 2);
-    marBond = bondShape.mar;
-    colix1 = colix2 = bondShape.colix;
+    width = viewer.scaleToScreen((z1 + z2)/2, bond.mar * 2);
+    marBond = bond.mar;
+    colix1 = colix2 = bond.colix;
     if (colix1 == 0) {
-      colix1 = atomShape1.colixAtom;
-      colix2 = atomShape2.colixAtom;
+      colix1 = atom1.colixAtom;
+      colix2 = atom2.colixAtom;
     }
-    bondOrder = getRenderBondOrder(bondShape.order);
+    bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {
-    case BondShape.BACKBONE:
+    case Bond.BACKBONE:
       bondOrder = 1;
     case 1:
     case 2:
     case 3:
       renderCylinder();
       break;
-    case BondShape.STEREO_NEAR:
-    case BondShape.STEREO_FAR:
-      renderTriangle(bondShape);
+    case Bond.STEREO_NEAR:
+    case Bond.STEREO_FAR:
+      renderTriangle(bond);
       break;
-    case BondShape.HYDROGEN:
+    case Bond.HYDROGEN:
       renderDotted();
     }
   }
 
   int getRenderBondOrder(int order) {
-    if ((order & BondShape.COVALENT) != 0) {
+    if ((order & Bond.COVALENT) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||
           modeMultipleBond == JmolViewer.MB_NEVER ||
@@ -261,7 +258,7 @@ class BondRenderer extends Renderer {
 
   private static float wideWidthAngstroms = 0.4f;
 
-  private void renderTriangle(BondShape bondShape) {
+  private void renderTriangle(Bond bond) {
     // for now, always solid
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
     int wideWidthPixels = (int)viewer.scaleToScreen(z2, wideWidthAngstroms);

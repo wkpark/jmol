@@ -32,134 +32,142 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
+
 public class FrameRenderer {
 
   JmolViewer viewer;
-  private AtomRenderer atomRenderer;
-  private BondRenderer bondRenderer;
-  private LabelRenderer labelRenderer;
-  private MeasurementRenderer measurementRenderer;
-  private DotsRenderer dotsRenderer;
-  private RibbonsRenderer ribbonsRenderer;
-  private TraceRenderer traceRenderer;
-  ArcTest arctest;
-  Gtest gtest;
+  AtomRenderer atomRenderer;
+  BondRenderer bondRenderer;
+  MeasurementRenderer measurementRenderer;
+  DotsRenderer dotsRenderer;
+  RibbonsRenderer ribbonsRenderer;
+  TraceRenderer traceRenderer;
+  AxesRenderer axesRenderer;
+  BboxRenderer bboxRenderer;
+  LineRenderer lineRenderer;
+  CellLineRenderer cellLineRenderer;
 
   public FrameRenderer(JmolViewer viewer) {
     this.viewer = viewer;
     atomRenderer = new AtomRenderer(viewer);
     bondRenderer = new BondRenderer(viewer);
-    labelRenderer = new LabelRenderer(viewer);
-    measurementRenderer = new MeasurementRenderer(viewer);
-    //    dotsRenderer = new DotsRenderer(viewer);
-    //    ribbonsRenderer = new RibbonsRenderer(viewer);
-    //    traceRenderer = new TraceRenderer(viewer);
   }
   
-  private void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                  JmolFrame frame) {
-    atomRenderer.setGraphicsContext(g3d, rectClip, frame);
-    bondRenderer.setGraphicsContext(g3d, rectClip, frame);
-    labelRenderer.setGraphicsContext(g3d, rectClip, frame);
-    measurementRenderer.setGraphicsContext(g3d, rectClip, frame);
-    if (dotsRenderer != null)
-      dotsRenderer.setGraphicsContext(g3d, rectClip, frame);
-    if (ribbonsRenderer != null)
-      ribbonsRenderer.setGraphicsContext(g3d, rectClip, frame);
-    if (traceRenderer != null)
-      traceRenderer.setGraphicsContext(g3d, rectClip, frame);
-  }
+  public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
 
-  public void render(Graphics3D g3d, Rectangle rectClip, JmolFrame frame) {
-    setGraphicsContext(g3d, rectClip, frame);
-
-    if (frame.atomShapeCount <= 0)
+    if (frame.atomCount <= 0)
       return;
 
     viewer.calcTransformMatrices();
 
-    AtomShape[] atomShapes = frame.atomShapes;
-    atomRenderer.transform(atomShapes);
-    atomRenderer.render(atomShapes);
-    labelRenderer.transform(atomShapes);
-    labelRenderer.render(atomShapes);
-    BondShape[] bondShapes = frame.bondShapes;
-    bondRenderer.transform(bondShapes);
-    bondRenderer.render(bondShapes);
-    
-    if (frame.measurementShapeCount > 0) {
-      measurementRenderer.render(frame.measurementShapes);
+    atomRenderer.render(g3d, rectClip, frame);
+    bondRenderer.render(g3d, rectClip, frame);
+    if (frame.measurementCount > 0) {
+      if (measurementRenderer == null)
+        measurementRenderer = new MeasurementRenderer(viewer);
+      measurementRenderer.render(g3d, rectClip, frame);
     }
-
     if (frame.dots != null) {
-      dotsRenderer.transform(frame.dots);
-      dotsRenderer.render(frame.dots);
+      if (dotsRenderer == null)
+        dotsRenderer = new DotsRenderer(viewer);
+      dotsRenderer.render(g3d, rectClip, frame);
     }
     if (frame.ribbons != null) {
-      ribbonsRenderer.transform(frame.ribbons);
-      ribbonsRenderer.render(frame.ribbons);
+      if (ribbonsRenderer == null)
+        ribbonsRenderer = new RibbonsRenderer(viewer);
+      ribbonsRenderer.render(g3d, rectClip, frame);
     }
     if (frame.trace != null) {
-      traceRenderer.transform(frame.trace);
-      traceRenderer.render(frame.trace);
+      if (traceRenderer == null)
+        traceRenderer = new TraceRenderer(viewer);
+      traceRenderer.render(g3d, rectClip, frame);
+    }
+    if (frame.axes != null) {
+      if (axesRenderer == null)
+        axesRenderer = new AxesRenderer(viewer);
+      axesRenderer.render(g3d, rectClip, frame);
+    }
+    if (frame.bbox != null) {
+      if (bboxRenderer == null)
+        bboxRenderer = new BboxRenderer(viewer);
+      bboxRenderer.render(g3d, rectClip, frame);
     }
 
-    for (int i = frame.lineShapeCount; --i >= 0; ) {
-      LineShape lineShape = frame.lineShapes[i];
-      lineShape.transform(viewer);
-      lineShape.render(g3d, viewer);
+    if (frame.lineCount > 0) {
+      if (lineRenderer == null)
+        lineRenderer = new LineRenderer(viewer);
+      lineRenderer.render(g3d, rectClip, frame);
     }
 
-    for (int i = frame.crystalCellLineCount; --i >= 0; ) {
-      LineShape cellLine = frame.crystalCellLines[i];
-      cellLine.transform(viewer);
-      cellLine.render(g3d, viewer);
-    }
-
-    if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {
-      Axes axes = viewer.getAxes();
-      axes.transform();
-      axes.render(g3d);
-    }
-
-    if (viewer.getShowBoundingBox()) {
-      BoundingBox bbox = viewer.getBoundingBox();
-      bbox.transform();
-      bbox.render(g3d);
+    if (frame.cellLineCount > 0) {
+      if (cellLineRenderer == null)
+        cellLineRenderer = new CellLineRenderer(viewer);
+      cellLineRenderer.render(g3d, rectClip, frame);
     }
   }
 
+  /*
   public void renderStringOffset(String str, short colix, int points,
                                  int x, int y, int z,
                                  int xOffset, int yOffset) {
-    labelRenderer.renderStringOffset(str, colix, points,
-                                     x, y, z, xOffset, yOffset);
+    Font font = viewer.getFontOfSize(points);
+    g3d.setFont(font);
+    FontMetrics fontMetrics = g3d.getFontMetrics(font);
+    int strHeight = fontMetrics.getAscent();
+    strHeight -= 2; // this should not be necessary, but looks like it is;
+    if (yOffset > 0)
+      y += yOffset + strHeight;
+    else if (yOffset == 0)
+      y += strHeight / 2;
+    else
+      y += yOffset;
+    if (xOffset > 0)
+      x += xOffset;
+    else if (xOffset == 0)
+      x -= fontMetrics.stringWidth(str) / 2;
+    else
+      x += xOffset - fontMetrics.stringWidth(str);
+    g3d.drawString(str, colix, x, y, z);
   }
+  */
   
   public void renderStringOutside(String str, short colix, int pointsFontsize,
-                                  Point3i screen) {
-    labelRenderer.renderStringOutside(str, colix, pointsFontsize,
-                                      screen.x, screen.y, screen.z);
+                                  Point3i screen, Graphics3D g3d) {
+    renderStringOutside(str, colix, pointsFontsize,
+                        screen.x, screen.y, screen.z, g3d);
   }
 
   public void renderStringOutside(String str, short colix, int pointsFontsize,
-                                  int x, int y, int z) {
-    labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);
+                                  int x, int y, int z, Graphics3D g3d) {
+    g3d.setColix(colix);
+    Font font = viewer.getFontOfSize(pointsFontsize);
+    g3d.setFont(font);
+    FontMetrics fontMetrics = g3d.getFontMetrics(font);
+    int strAscent = fontMetrics.getAscent();
+    int strWidth = fontMetrics.stringWidth(str);
+    int xStrCenter, yStrCenter;
+    int xCenter = viewer.getBoundingBoxCenterX();
+    int yCenter = viewer.getBoundingBoxCenterY();
+    int dx = x - xCenter;
+    int dy = y - yCenter;
+    if (dx == 0 && dy == 0) {
+      xStrCenter = x;
+      yStrCenter = y;
+    } else {
+      int dist = (int) Math.sqrt(dx*dx + dy*dy);
+      xStrCenter = xCenter + ((dist + 2 + (strWidth + 1) / 2) * dx / dist);
+      yStrCenter = yCenter + ((dist + 3 + (strAscent + 1)/ 2) * dy / dist);
+    }
+    int xStrBaseline = xStrCenter - strWidth / 2;
+    int yStrBaseline = yStrCenter + strAscent / 2;
+    g3d.drawString(str, colix, xStrBaseline, yStrBaseline, z);
   }
 
   public DotsRenderer getDotsRenderer() {
     if (dotsRenderer == null)
       dotsRenderer = new DotsRenderer(viewer);
     return dotsRenderer;
-  }
-  public RibbonsRenderer getRibbonsRenderer() {
-    if (ribbonsRenderer == null)
-      ribbonsRenderer = new RibbonsRenderer(viewer);
-    return ribbonsRenderer;
-  }
-  public TraceRenderer getTraceRenderer() {
-    if (traceRenderer == null)
-      traceRenderer = new TraceRenderer(viewer);
-    return traceRenderer;
   }
 }

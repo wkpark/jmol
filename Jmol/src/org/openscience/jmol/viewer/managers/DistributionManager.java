@@ -25,10 +25,10 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.datamodel.AtomShape;
-import org.openscience.jmol.viewer.datamodel.AtomShapeIterator;
-import org.openscience.jmol.viewer.datamodel.BondShape;
-import org.openscience.jmol.viewer.datamodel.BondShapeIterator;
+import org.openscience.jmol.viewer.datamodel.Atom;
+import org.openscience.jmol.viewer.datamodel.AtomIterator;
+import org.openscience.jmol.viewer.datamodel.Bond;
+import org.openscience.jmol.viewer.datamodel.BondIterator;
 
 public class DistributionManager {
 
@@ -42,65 +42,65 @@ public class DistributionManager {
    * the JmolFrame guys
    ****************************************************************/
 
-  public void setStyleAtom(byte styleAtom, AtomShapeIterator iter) {
+  public void setStyleAtom(byte styleAtom, AtomIterator iter) {
     while (iter.hasNext())
       iter.next().setStyleAtom(styleAtom);
   }
 
-  public void setMarAtom(short marAtom, AtomShapeIterator iter) {
+  public void setMarAtom(short marAtom, AtomIterator iter) {
     while (iter.hasNext())
       iter.next().setMarAtom(marAtom);
   }
 
-  public void setStyleMarAtom(byte style, short mar, AtomShapeIterator iter) {
+  public void setStyleMarAtom(byte style, short mar, AtomIterator iter) {
     while (iter.hasNext())
       iter.next().setStyleMarAtom(style, mar);
   }
 
-  public void setStyle(byte styleBond, BondShapeIterator iter) {
+  public void setStyle(byte styleBond, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setStyle(styleBond);
   }
 
-  public void setMar(short marBond, BondShapeIterator iter) {
+  public void setMar(short marBond, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setMar(marBond);
   }
 
-  public void setStyleMar(byte style, short mar, BondShapeIterator iter) {
+  public void setStyleMar(byte style, short mar, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setStyleMar(style, mar);
   }
 
-  public void setColix(short colixBond, BondShapeIterator iter) {
+  public void setColix(short colixBond, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setColix(colixBond);
   }
 
-  public void setColixAtom(byte scheme, short colix, AtomShapeIterator iter) {
+  public void setColixAtom(byte scheme, short colix, AtomIterator iter) {
     boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
-      AtomShape atomShape = iter.next();
+      Atom atom = iter.next();
       short colixT = (useColorProfile
-                      ? viewer.getColixAtomScheme(atomShape, scheme) : colix);
-      atomShape.setColixAtom(colixT);
+                      ? viewer.getColixAtomScheme(atom, scheme) : colix);
+      atom.setColixAtom(colixT);
     }
   }
 
-  public void setStyleLabel(byte styleLabel, AtomShapeIterator iter) {
+  public void setStyleLabel(byte styleLabel, AtomIterator iter) {
     while (iter.hasNext()) {
-      AtomShape atomShape = iter.next();
-      atomShape.setLabel(viewer.getLabelAtom(styleLabel,
-                                              atomShape,
-                                              atomShape.getAtomIndex()));
+      Atom atom = iter.next();
+      atom.setLabel(viewer.getLabelAtom(styleLabel,
+                                              atom,
+                                              atom.getAtomIndex()));
     }
   }
 
-  public void setLabel(String strLabel, AtomShapeIterator iter) {
+  public void setLabel(String strLabel, AtomIterator iter) {
     while (iter.hasNext()) {
-      AtomShape atomShape = iter.next();
-      atomShape.setLabel(viewer.getLabelAtom(strLabel, atomShape,
-                                              atomShape.getAtomIndex()));
+      Atom atom = iter.next();
+      atom.setLabel(viewer.getLabelAtom(strLabel, atom,
+                                              atom.getAtomIndex()));
     }
   }
 }

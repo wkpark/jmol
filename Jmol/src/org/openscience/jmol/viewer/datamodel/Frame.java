@@ -35,7 +35,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
-public class JmolFrame {
+public class Frame {
 
   public JmolViewer viewer;
   public FrameRenderer frameRenderer;
@@ -49,83 +49,83 @@ public class JmolFrame {
   PdbMolecule pdbmolecule;
 
   final static int growthIncrement = 128;
-  int atomShapeCount = 0;
-  public AtomShape[] atomShapes;
-  int bondShapeCount = 0;
-  public BondShape[] bondShapes;
+  int atomCount = 0;
+  public Atom[] atoms;
+  int bondCount = 0;
+  public Bond[] bonds;
 
-  public JmolFrame(JmolViewer viewer, int atomCount,
+  public Frame(JmolViewer viewer, int atomCount,
                    int modelType, boolean hasPdbRecords) {
     this.viewer = viewer;
     this.modelType = modelType;
     this.hasPdbRecords = hasPdbRecords;
     if (hasPdbRecords)
       pdbmolecule = new PdbMolecule(this);
-    atomShapes = new AtomShape[atomCount];
-    bondShapes = new BondShape[atomCount * 2];
+    atoms = new Atom[atomCount];
+    bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
   }
 
-  public JmolFrame(JmolViewer viewer, int modelType, boolean hasPdbRecords) {
+  public Frame(JmolViewer viewer, int modelType, boolean hasPdbRecords) {
     this(viewer, growthIncrement, modelType, hasPdbRecords);
   }
 
-  public JmolFrame(JmolViewer viewer) {
+  public Frame(JmolViewer viewer) {
     this(viewer, JmolModelAdapter.MODEL_TYPE_OTHER, false);
   }
 
   public void finalize() {
     htAtomMap = null;
-    if (bondShapeCount == 0 && viewer.getAutoBond())
+    if (bondCount == 0 && viewer.getAutoBond())
       rebond();
     if (hasPdbRecords)
-      pdbmolecule.finalize(atomShapeCount);
+      pdbmolecule.finalize(atomCount);
   }
 
-  public AtomShape addAtom(Object clientAtom) {
-    if (atomShapeCount == atomShapes.length) {
-      AtomShape[] newAtomShapes =
-        new AtomShape[atomShapes.length + growthIncrement];
-      System.arraycopy(atomShapes, 0, newAtomShapes, 0, atomShapes.length);
-      atomShapes = newAtomShapes;
+  public Atom addAtom(Object clientAtom) {
+    if (atomCount == atoms.length) {
+      Atom[] newAtoms =
+        new Atom[atoms.length + growthIncrement];
+      System.arraycopy(atoms, 0, newAtoms, 0, atoms.length);
+      atoms = newAtoms;
     }
-    AtomShape atomShape = new AtomShape(this, atomShapeCount, clientAtom);
-    atomShapes[atomShapeCount++] = atomShape;
+    Atom atom = new Atom(this, atomCount, clientAtom);
+    atoms[atomCount++] = atom;
     if (htAtomMap != null)
-      htAtomMap.put(clientAtom, atomShape);
+      htAtomMap.put(clientAtom, atom);
     if (bspt != null)
-      bspt.addTuple(atomShape);
-    float covalentRadius = atomShape.getCovalentRadius();
+      bspt.addTuple(atom);
+    float covalentRadius = atom.getCovalentRadius();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
-    float vdwRadius = atomShape.getVanderwaalsRadius();
+    float vdwRadius = atom.getVanderwaalsRadius();
     if (vdwRadius > maxVanderwaalsRadius)
       maxVanderwaalsRadius = vdwRadius;
-    return atomShape;
+    return atom;
   }
 
   public int getAtomCount() {
-    return atomShapeCount;
+    return atomCount;
   }
 
-  public AtomShape getAtomAt(int atomIndex) {
-    return atomShapes[atomIndex];
+  public Atom getAtomAt(int atomIndex) {
+    return atoms[atomIndex];
   }
 
   public Point3f getAtomPoint3f(int atomIndex) {
-    return atomShapes[atomIndex].getPoint3f();
+    return atoms[atomIndex].getPoint3f();
   }
 
   public PdbAtom getPdbAtom(int atomIndex) {
-    return atomShapes[atomIndex].pdbatom;
+    return atoms[atomIndex].pdbatom;
   }
 
   public int getBondCount() {
-    return bondShapeCount;
+    return bondCount;
   }
 
-  public BondShape getBondAt(int bondIndex) {
-    return bondShapes[bondIndex];
+  public Bond getBondAt(int bondIndex) {
+    return bonds[bondIndex];
   }
 
   public boolean hasPdbRecords() {
@@ -137,51 +137,51 @@ public class JmolFrame {
   private void initAtomMap() {
     if (htAtomMap == null) {
       htAtomMap = new Hashtable();
-      for (int i = atomShapeCount; --i >= 0; ) {
-        AtomShape atomShape = atomShapes[i];
-        htAtomMap.put(atomShape.getClientAtom(), atomShape);
+      for (int i = atomCount; --i >= 0; ) {
+        Atom atom = atoms[i];
+        htAtomMap.put(atom.getClientAtom(), atom);
       }
     }
   }
 
-  private void addBondShape(BondShape bondShape) {
-    if (bondShape == null)
+  private void addBond(Bond bond) {
+    if (bond == null)
       return;
-    if (bondShapeCount == bondShapes.length) {
-      BondShape[] newBondShapes =
-        new BondShape[bondShapes.length + growthIncrement];
-      System.arraycopy(bondShapes, 0, newBondShapes, 0, bondShapes.length);
-      bondShapes = newBondShapes;
+    if (bondCount == bonds.length) {
+      Bond[] newBonds =
+        new Bond[bonds.length + growthIncrement];
+      System.arraycopy(bonds, 0, newBonds, 0, bonds.length);
+      bonds = newBonds;
     }
-    bondShapes[bondShapeCount++] = bondShape;
+    bonds[bondCount++] = bond;
   }
 
-  public void bondAtomShapes(Object clientAtom1, Object clientAtom2,
+  public void bondAtoms(Object clientAtom1, Object clientAtom2,
                              int order) {
     if (htAtomMap == null)
       initAtomMap();
-    AtomShape atomShape1 = (AtomShape)htAtomMap.get(clientAtom1);
-    if (atomShape1 == null)
+    Atom atom1 = (Atom)htAtomMap.get(clientAtom1);
+    if (atom1 == null)
       return;
-    AtomShape atomShape2 = (AtomShape)htAtomMap.get(clientAtom2);
-    if (atomShape2 == null)
+    Atom atom2 = (Atom)htAtomMap.get(clientAtom2);
+    if (atom2 == null)
       return;
-    addBondShape(atomShape1.bondMutually(atomShape2, order));
+    addBond(atom1.bondMutually(atom2, order));
   }
 
-  public void bondAtomShapes(AtomShape atomShape1, Object clientAtom2,
+  public void bondAtoms(Atom atom1, Object clientAtom2,
                              int order) {
     if (htAtomMap == null)
       initAtomMap();
-    AtomShape atomShape2 = (AtomShape)htAtomMap.get(clientAtom2);
-    if (atomShape2 == null)
+    Atom atom2 = (Atom)htAtomMap.get(clientAtom2);
+    if (atom2 == null)
       return;
-    addBondShape(atomShape1.bondMutually(atomShape2, order));
+    addBond(atom1.bondMutually(atom2, order));
   }
 
-  public void bondAtomShapes(AtomShape atomShape1, AtomShape atomShape2,
+  public void bondAtoms(Atom atom1, Atom atom2,
                              int order) {
-    addBondShape(atomShape1.bondMutually(atomShape2, order));
+    addBond(atom1.bondMutually(atom2, order));
   }
 
   Dots dots;
@@ -197,7 +197,7 @@ public class JmolFrame {
 
   public void setRibbons(int ribbonType, BitSet bsSelected) {
     if (ribbonType != 0 && ribbons == null)
-      ribbons = new Ribbons(viewer, this, frameRenderer.getRibbonsRenderer());
+      ribbons = new Ribbons(viewer, this);
     if (ribbons != null)
       ribbons.setRibbons(ribbonType, bsSelected);
   }
@@ -206,9 +206,25 @@ public class JmolFrame {
 
   public void setTrace(float radius, BitSet bsSelected) {
     if (radius != 0 && trace == null)
-      trace = new Trace(viewer, this, frameRenderer.getTraceRenderer());
+      trace = new Trace(viewer, this);
     if (trace != null)
       trace.setTrace(radius, bsSelected);
+  }
+
+  Axes axes;
+  public void setModeAxes(byte modeAxes) {
+    if (modeAxes != JmolViewer.AXES_NONE && axes == null)
+      axes = new Axes(viewer);
+    if (axes != null)
+      axes.setMode(modeAxes);
+  }
+
+  Bbox bbox;
+  public void setShowBoundingBox(boolean showBoundingBox) {
+    if (showBoundingBox && bbox == null)
+      bbox = new Bbox(viewer);
+    if (bbox != null)
+      bbox.setShowBoundingBox(showBoundingBox);
   }
 
   Point3f centerBoundingBox;
@@ -258,7 +274,7 @@ public class JmolFrame {
   }
 
   private void findBounds() {
-    if ((centerBoundingBox != null) || (atomShapeCount <= 0))
+    if ((centerBoundingBox != null) || (atomCount <= 0))
       return;
     calcBoundingBox();
     centerRotation = centerBoundingBox;
@@ -272,15 +288,15 @@ public class JmolFrame {
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
     float minX, minY, minZ, maxX, maxY, maxZ;
     Point3f point;
-    if (crystalCellLineCount == 0) { // non-crystal, so find extremes of atoms
-      point = atomShapes[0].getPoint3f();
+    if (cellLineCount == 0) { // non-crystal, so find extremes of atoms
+      point = atoms[0].getPoint3f();
       minX = maxX = point.x;
       minY = maxY = point.y;
       minZ = maxZ = point.z;
       
-      for (int i = atomShapeCount; --i > 0; ) {
+      for (int i = atomCount; --i > 0; ) {
         // note that the 0 element was set above
-        point = atomShapes[i].getPoint3f();
+        point = atoms[i].getPoint3f();
         float t;
         t = point.x;
         if (t < minX) { minX = t; }
@@ -293,12 +309,12 @@ public class JmolFrame {
         else if (t > maxZ) { maxZ = t; }
       }
     } else { // a crystal cell, so use center of crystal cell box
-      point = crystalCellLines[0].getPoint1();
+      point = cellLines[0].pointOrigin;
       minX = maxX = point.x;
       minY = maxY = point.y;
       minZ = maxZ = point.z;
-      for (int i = crystalCellLineCount; --i >= 0; ) {
-        point = crystalCellLines[i].getPoint1();
+      for (int i = cellLineCount; --i >= 0; ) {
+        point = cellLines[i].pointOrigin;
         int j = 0;
         do {
           float t;
@@ -311,7 +327,7 @@ public class JmolFrame {
           t = point.z;
           if (t < minZ) { minZ = t; }
           else if (t > maxZ) { maxZ = t; }
-          point = crystalCellLines[i].getPoint2();
+          point = cellLines[i].pointEnd;
         } while (j++ == 0);
       }
     }
@@ -325,11 +341,11 @@ public class JmolFrame {
 
   private float calcRadius(Point3f center) {
     float radius = 0;
-    for (int i = atomShapeCount; --i >= 0; ) {
-      AtomShape atomShape = atomShapes[i];
-      Point3f posAtom = atomShape.getPoint3f();
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      Point3f posAtom = atom.getPoint3f();
       float distAtom = center.distance(posAtom);
-      float radiusVdw = atomShape.getVanderwaalsRadius();
+      float radiusVdw = atom.getVanderwaalsRadius();
       float distVdw = distAtom + radiusVdw;
       
       if (distVdw > radius)
@@ -347,23 +363,23 @@ public class JmolFrame {
       }
       */
     }
-    for (int i = lineShapeCount; --i >= 0; ) {
-      LineShape ls = lineShapes[i];
+    for (int i = lineCount; --i >= 0; ) {
+      Line line = lines[i];
       float distLineEnd;
-      distLineEnd = center.distance(ls.getPoint1());
+      distLineEnd = center.distance(line.pointOrigin);
       if (distLineEnd > radius)
         radius = distLineEnd;
-      distLineEnd = center.distance(ls.getPoint2());
+      distLineEnd = center.distance(line.pointEnd);
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
-    for (int i = crystalCellLineCount; --i >= 0; ) {
-      LineShape ls = crystalCellLines[i];
+    for (int i = cellLineCount; --i >= 0; ) {
+      Line cellLine = cellLines[i];
       float distLineEnd;
-      distLineEnd = center.distance(ls.getPoint1());
+      distLineEnd = center.distance(cellLine.pointOrigin);
       if (distLineEnd > radius)
         radius = distLineEnd;
-      distLineEnd = center.distance(ls.getPoint2());
+      distLineEnd = center.distance(cellLine.pointEnd);
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
@@ -371,74 +387,73 @@ public class JmolFrame {
   }
 
   final static int lineGrowthIncrement = 16;
-  int lineShapeCount = 0;
-  LineShape[] lineShapes = null;
+  int lineCount = 0;
+  Line[] lines = null;
 
-  public void addLineShape(LineShape shape) {
-    if (lineShapes == null || lineShapeCount == lineShapes.length) {
-      LineShape[] newShapes =
-        new LineShape[lineShapeCount + lineGrowthIncrement];
-      if (lineShapes != null)
-        System.arraycopy(lineShapes, 0, newShapes, 0, lineShapeCount);
-      lineShapes = newShapes;
+  public void addLineShape(Line line) {
+    if (lines == null || lineCount == lines.length) {
+      Line[] newLines =
+        new Line[lineCount + lineGrowthIncrement];
+      if (lines != null)
+        System.arraycopy(lines, 0, newLines, 0, lineCount);
+      lines = newLines;
     }
-    lineShapes[lineShapeCount++] = shape;
+    lines[lineCount++] = line;
   }
 
-  int crystalCellLineCount = 0;
-  LineShape[] crystalCellLines = null;
+  int cellLineCount = 0;
+  Line[] cellLines = null;
 
-  public void addCrystalCellLine(LineShape line) {
-    if (crystalCellLines == null ||
-        crystalCellLineCount == crystalCellLines.length) {
-      LineShape[] newShapes =
-        new LineShape[crystalCellLineCount + lineGrowthIncrement];
-      if (crystalCellLines != null)
-        System.arraycopy(crystalCellLines, 0, newShapes, 0,
-                         crystalCellLineCount);
-      crystalCellLines = newShapes;
+  public void addCrystalCellLine(Line line) {
+    if (cellLines == null ||
+        cellLineCount == cellLines.length) {
+      Line[] newLines = new Line[cellLineCount + lineGrowthIncrement];
+      if (cellLines != null)
+        System.arraycopy(cellLines, 0, newLines, 0,
+                         cellLineCount);
+      cellLines = newLines;
     }
-    crystalCellLines[crystalCellLineCount++] = line;
+    cellLines[cellLineCount++] = line;
   }
 
   final static int measurementGrowthIncrement = 16;
-  int measurementShapeCount = 0;
-  MeasurementShape[] measurementShapes = null;
+  int measurementCount = 0;
+  Measurement[] measurements = null;
 
-  public void addMeasurementShape(int count, int[] atomIndices) {
-    MeasurementShape measureNew = new MeasurementShape(this, count, atomIndices);
-    if (measurementShapes == null ||
-        measurementShapeCount == measurementShapes.length) {
-      MeasurementShape[] newShapes =
-        new MeasurementShape[measurementShapeCount +
+  public void addMeasurement(int count, int[] atomIndices) {
+    Measurement measureNew = new Measurement(this, count, atomIndices);
+    if (measurements == null ||
+        measurementCount == measurements.length) {
+      Measurement[] newShapes =
+        new Measurement[measurementCount +
                              measurementGrowthIncrement];
-      if (measurementShapes != null)
-        System.arraycopy(measurementShapes, 0,
-                         newShapes, 0, measurementShapeCount);
-      measurementShapes = newShapes;
+      if (measurements != null)
+        System.arraycopy(measurements, 0,
+                         newShapes, 0, measurementCount);
+      measurements = newShapes;
     }
-    measurementShapes[measurementShapeCount++] = measureNew;
+    measurements[measurementCount++] = measureNew;
   }
 
-  public void clearMeasurementShapes() {
-    measurementShapeCount = 0;
-    measurementShapes = null;
+  public void clearMeasurements() {
+    measurementCount = 0;
+    measurements = null;
   }
 
-  public void deleteMeasurementShape(int imeasurement) {
-    System.arraycopy(measurementShapes, imeasurement+1,
-                     measurementShapes, imeasurement,
-                     measurementShapeCount - imeasurement - 1);
-    --measurementShapeCount;
-    measurementShapes[measurementShapeCount] = null;
+  public void deleteMeasurement(int imeasurement) {
+    System.arraycopy(measurements, imeasurement+1,
+                     measurements, imeasurement,
+                     measurementCount - imeasurement - 1);
+    --measurementCount;
+    measurements[measurementCount] = null;
   }
 
-  public int getMeasurementShapeCount() {
-    return measurementShapeCount;
+  public int getMeasurementCount() {
+    return measurementCount;
   }
 
-  public MeasurementShape[] getMeasurementShapes() {
-    return measurementShapes;
+  public Measurement[] getMeasurements() {
+    return measurements;
   }
 
   /****************************************************************
@@ -456,27 +471,27 @@ public class JmolFrame {
      * 3. doesn't take into account the fact that hydrogens could be hidden
      *    you can select a region and get extra hydrogens
      */
-    if (atomShapeCount == 0)
+    if (atomCount == 0)
       return -1;
-    AtomShape atomShapeNearest = null;
+    Atom atomNearest = null;
     int indexNearest = -1;
     int r2Nearest = Integer.MAX_VALUE;
-    for (int i = atomShapeCount; --i >= 0; ) {
-      AtomShape atomShape = atomShapes[i];
-      int dx = atomShape.x - x;
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      int dx = atom.x - x;
       int dx2 = dx * dx;
       if (dx2 > r2Nearest)
         continue;
-      int dy = atomShape.y - y;
+      int dy = atom.y - y;
       int dy2 = dy * dy;
       if (dy2 + dx2 > r2Nearest)
         continue;
-      atomShapeNearest = atomShape; // will definitely happen the first time through
+      atomNearest = atom; // will definitely happen the first time through
       r2Nearest = dx2 + dy2;
       indexNearest = i;
     }
     int rNearest = (int)Math.sqrt(r2Nearest);
-    return (rNearest > atomShapeNearest.diameter/2 + selectionPixelLeeway)
+    return (rNearest > atomNearest.diameter/2 + selectionPixelLeeway)
       ? -1
       : indexNearest;
   }
@@ -487,70 +502,70 @@ public class JmolFrame {
   final BitSet bsFoundRectangle = new BitSet();
   public BitSet findAtomsInRectangle(Rectangle rect) {
     bsFoundRectangle.and(bsEmpty);
-    for (int i = atomShapeCount; --i >= 0; ) {
-      AtomShape atomShape = atomShapes[i];
-      if (rect.contains(atomShape.x, atomShape.y))
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      if (rect.contains(atom.x, atom.y))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;
   }
 
-  public AtomShapeIterator getAtomIterator(BitSet bsSelected) {
-    return new SelectedAtomShapeIterator(bsSelected);
+  public AtomIterator getAtomIterator(BitSet bsSelected) {
+    return new SelectedAtomIterator(bsSelected);
   }
 
-  class SelectedAtomShapeIterator implements AtomShapeIterator {
+  class SelectedAtomIterator implements AtomIterator {
 
-    int iAtomShape;
+    int iAtom;
     BitSet bsSelected;
 
-    SelectedAtomShapeIterator(BitSet bsSelected) {
+    SelectedAtomIterator(BitSet bsSelected) {
       this.bsSelected = bsSelected;
-      iAtomShape = 0;
+      iAtom = 0;
     }
 
     public boolean hasNext() {
-      for ( ; iAtomShape < atomShapeCount; ++iAtomShape)
-        if (bsSelected.get(iAtomShape))
+      for ( ; iAtom < atomCount; ++iAtom)
+        if (bsSelected.get(iAtom))
           return true;
       return false;
     }
 
-    public AtomShape next() {
-      return atomShapes[iAtomShape++];
+    public Atom next() {
+      return atoms[iAtom++];
     }
 
     public void release() {
     }
   }
 
-  public BondShapeIterator getBondIterator(byte bondType, BitSet bsSelected) {
-    return new SelectedBondShapeIterator(bondType, bsSelected);
+  public BondIterator getBondIterator(byte bondType, BitSet bsSelected) {
+    return new SelectedBondIterator(bondType, bsSelected);
   }
 
-  class SelectedBondShapeIterator implements BondShapeIterator {
+  class SelectedBondIterator implements BondIterator {
 
     byte bondType;
-    int iBondShape;
+    int iBond;
     BitSet bsSelected;
     boolean bondSelectionModeOr;
 
-    SelectedBondShapeIterator(byte bondType, BitSet bsSelected) {
+    SelectedBondIterator(byte bondType, BitSet bsSelected) {
       this.bondType = bondType;
       this.bsSelected = bsSelected;
-      iBondShape = 0;
+      iBond = 0;
       bondSelectionModeOr = viewer.getBondSelectionModeOr();
     }
 
     public boolean hasNext() {
-      for ( ; iBondShape < bondShapeCount; ++iBondShape) {
-        BondShape bondShape = bondShapes[iBondShape];
-        if ((bondShape.order & bondType) == 0)
+      for ( ; iBond < bondCount; ++iBond) {
+        Bond bond = bonds[iBond];
+        if ((bond.order & bondType) == 0)
           continue;
         boolean isSelected1 =
-          bsSelected.get(bondShape.atomShape1.getAtomIndex());
+          bsSelected.get(bond.atom1.getAtomIndex());
         boolean isSelected2 =
-          bsSelected.get(bondShape.atomShape2.getAtomIndex());
+          bsSelected.get(bond.atom2.getAtomIndex());
         if ((!bondSelectionModeOr & isSelected1 & isSelected2) ||
             (bondSelectionModeOr & (isSelected1 | isSelected2)))
           return true;
@@ -558,8 +573,8 @@ public class JmolFrame {
       return false;
     }
 
-    public BondShape next() {
-      return bondShapes[iBondShape++];
+    public Bond next() {
+      return bonds[iBond++];
     }
   }
 
@@ -569,8 +584,8 @@ public class JmolFrame {
   private Bspt getBspt() {
     if (bspt == null) {
       bspt = new Bspt(3);
-      for (int i = atomShapeCount; --i >= 0; ) {
-        AtomShape atom = atomShapes[i];
+      for (int i = atomCount; --i >= 0; ) {
+        Atom atom = atoms[i];
         if (atom.styleAtom >= JmolViewer.NONE) // don't add deleted atoms
           bspt.addTuple(atom);
       }
@@ -592,19 +607,19 @@ public class JmolFrame {
   private WithinIterator withinPointIterator = new WithinIterator();
   private PointWrapper pointWrapper = new PointWrapper();
 
-  public AtomShapeIterator getWithinIterator(AtomShape atomCenter,
+  public AtomIterator getWithinIterator(Atom atomCenter,
                                              float radius) {
     withinAtomIterator.initialize(atomCenter, radius);
     return withinAtomIterator;
   }
 
-  public AtomShapeIterator getWithinIterator(Point3f point, float radius) {
+  public AtomIterator getWithinIterator(Point3f point, float radius) {
     pointWrapper.setPoint(point);
     withinPointIterator.initialize(pointWrapper, radius);
     return withinPointIterator;
   }
 
-  class WithinIterator implements AtomShapeIterator {
+  class WithinIterator implements AtomIterator {
 
     Bspt.SphereIterator iter;
 
@@ -617,8 +632,8 @@ public class JmolFrame {
       return iter.hasMoreElements();
     }
 
-    public AtomShape next() {
-      return (AtomShape)iter.nextElement();
+    public Atom next() {
+      return (Atom)iter.nextElement();
     }
 
     public void release() {
@@ -654,14 +669,14 @@ public class JmolFrame {
 
     char chainLast = '?';
     int indexLastCA = -1;
-    AtomShape atomLastCA = null;
+    Atom atomLastCA = null;
 
     Bspt bspt = getBspt();
     long timeBegin, timeEnd;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
-    for (int i = atomShapeCount; --i >= 0; ) {
-      AtomShape atom = atomShapes[i];
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
       // Covalent bonds
       float myCovalentRadius = atom.getCovalentRadius();
       float searchRadius =
@@ -669,13 +684,13 @@ public class JmolFrame {
       Bspt.SphereIterator iter = getSphereIterator();
       iter.initialize(atom, searchRadius);
       while (iter.hasMoreElements()) {
-        AtomShape atomNear = (AtomShape)iter.nextElement();
+        Atom atomNear = (Atom)iter.nextElement();
         if (atomNear != atom) {
           int order = getBondOrder(atom, myCovalentRadius,
                                    atomNear, atomNear.getCovalentRadius(),
                                    iter.foundDistance2());
           if (order > 0)
-            addBondShape(atom.bondMutually(atomNear, order));
+            addBond(atom.bondMutually(atomNear, order));
         }
       }
       iter.release();
@@ -688,8 +703,8 @@ public class JmolFrame {
           if (chainThis == chainLast) {
             if (pdbatom.getName().equals("CA")) {
               if (atomLastCA != null) {
-		  bondAtomShapes(atom, atomLastCA,
-				 BondShape.BACKBONE);
+		  bondAtoms(atom, atomLastCA,
+				 Bond.BACKBONE);
               }
               atomLastCA = atom;
             }
@@ -709,8 +724,8 @@ public class JmolFrame {
     }
   }
 
-  private int getBondOrder(AtomShape atomA, float covalentRadiusA,
-                           AtomShape atomB, float covalentRadiusB,
+  private int getBondOrder(Atom atomA, float covalentRadiusA,
+                           Atom atomB, float covalentRadiusB,
                            float distance2) {
     //            System.out.println(" radiusA=" + covalentRadiusA +
     //                               " radiusB=" + covalentRadiusB +
@@ -730,46 +745,46 @@ public class JmolFrame {
   }
 
   public void deleteAllBonds() {
-    for (int i = bondShapeCount; --i >= 0; ) {
-      bondShapes[i].deleteAtomReferences();
-      bondShapes[i] = null;
+    for (int i = bondCount; --i >= 0; ) {
+      bonds[i].deleteAtomReferences();
+      bonds[i] = null;
     }
-    bondShapeCount = 0;
+    bondCount = 0;
   }
 
-  public void deleteBond(BondShape bond) {
+  public void deleteBond(Bond bond) {
     // what a disaster ... I hate doing this
-    for (int i = bondShapeCount; --i >= 0; ) {
-      if (bondShapes[i] == bond) {
-        bondShapes[i].deleteAtomReferences();
-        System.arraycopy(bondShapes, i+1, bondShapes, i,
-                         bondShapeCount - i - 1);
-        --bondShapeCount;
-        bondShapes[bondShapeCount] = null;
+    for (int i = bondCount; --i >= 0; ) {
+      if (bonds[i] == bond) {
+        bonds[i].deleteAtomReferences();
+        System.arraycopy(bonds, i+1, bonds, i,
+                         bondCount - i - 1);
+        --bondCount;
+        bonds[bondCount] = null;
       }
     }
   }
 
   public void deleteCovalentBonds() {
     int indexNoncovalent = 0;
-    for (int i = 0; i < bondShapeCount; ++i) {
-      BondShape bond = bondShapes[i];
+    for (int i = 0; i < bondCount; ++i) {
+      Bond bond = bonds[i];
       if (! bond.isCovalent()) {
         if (i != indexNoncovalent) {
-          bondShapes[indexNoncovalent++] = bond;
-          bondShapes[i] = null;
+          bonds[indexNoncovalent++] = bond;
+          bonds[i] = null;
         }
       } else {
         bond.deleteAtomReferences();
-        bondShapes[i] = null;
+        bonds[i] = null;
       }
     }
-    bondShapeCount = indexNoncovalent;
+    bondCount = indexNoncovalent;
   }
 
   public Object deleteAtom(int atomIndex) { // returns the clientAtom
     clearBspt();
-    return atomShapes[atomIndex].markDeleted();
+    return atoms[atomIndex].markDeleted();
   }
 
   public float getMaxVanderwaalsRadius() {

@@ -24,30 +24,7 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-
-import java.awt.Rectangle;
-
-/**
- * Provides an interface for graphical components so that
- * proper depth rendering occurs using z-buffering. Improper
- * depth rendering will still occur for spatially intersecting
- * shapes. This is an unavoidable limitation of the pseudo-3D
- * rendering implemented here.
- *
- * @author Bradley A. Smith (bradley@baysmith.com)
- */
-public abstract class Shape {
-
-  // screen coordinates after transformation
-  public int x, y, z;
-  // note that this z is used for the z-order sort process
-  // remember that for perspective depth calculations all values
-  // of z are <= 0 ... 0 is at the surface of the screen and
-  // more negative is further back away from the screen
-
-  abstract public void render(Graphics3D g3d, JmolViewer viewer);
-
-  abstract public void transform(JmolViewer viewer);
+public interface BondIterator {
+  public boolean hasNext();
+  public Bond next();
 }

@@ -32,12 +32,11 @@ import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class BoundingBox {
+class Bbox {
 
   JmolViewer viewer;
 
   final Point3f[] bboxPoints = new Point3f[8];
-  final Point3i[] bboxScreen = new Point3i[8];
 
   final static Point3f[] unitBboxPoints = {
     new Point3f( 1, 1, 1),
@@ -55,15 +54,18 @@ public class BoundingBox {
   final static byte edges[] =
   {0, 1, 0, 2, 0, 4, 1, 3, 1, 5, 2, 3, 2, 6, 3, 7, 4, 5, 4, 6, 5, 7, 6, 7};
 
-  public BoundingBox(JmolViewer viewer) {
+  Bbox(JmolViewer viewer) {
     this.viewer = viewer;
-    for (int i = 8; --i >= 0; ) {
+    for (int i = 8; --i >= 0; )
       bboxPoints[i] = new Point3f();
-      bboxScreen[i] = new Point3i();
-    }
   }
 
-  public void recalc() {
+  boolean showBoundingBox;
+
+  void setShowBoundingBox(boolean showBoundingBox) {
+    this.showBoundingBox = showBoundingBox;
+    if (! showBoundingBox)
+      return;
     Point3f pointOrigin = viewer.getBoundingBoxCenter();
     Point3f pointCorner = viewer.getBoundingBoxCorner();
     for (int i = 0; i < 8; ++i) {
@@ -74,16 +76,5 @@ public class BoundingBox {
       bboxPoint.z *= pointCorner.z;
       bboxPoint.add(pointOrigin);
     }
-  }
-
-  public void transform() {
-    for (int i = 8; --i >= 0; )
-      viewer.transformPoint(bboxPoints[i], bboxScreen[i]);
-  }
-
-  public void render(Graphics3D g3d) {
-    short colix = viewer.getColixAxes();
-    for (int i = 0; i < 24; i += 2)
-      g3d.drawDottedLine(colix, bboxScreen[edges[i]], bboxScreen[edges[i+1]]);
   }
 }

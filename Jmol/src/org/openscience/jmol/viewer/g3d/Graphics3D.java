@@ -398,20 +398,16 @@ final public class Graphics3D {
     }
   }
 
-  public void drawPolygon4(short colix, int[] ax, int[] ay, int[] az) {
-    int argb = Colix.getArgb(colix);
-    line3d.drawLine(argb, ax[0], ay[0], az[0], ax[3], ay[3], az[3], false);
+  public void drawPolygon4(int[] ax, int[] ay, int[] az) {
+    line3d.drawLine(argbCurrent,
+                    ax[0], ay[0], az[0], ax[3], ay[3], az[3], false);
     for (int i = 3; --i >= 0; )
-      line3d.drawLine(argb, ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1],
-                      false);
+      line3d.drawLine(argbCurrent,
+                      ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1], false);
   }
 
-  public void fillPolygon4(short colixFill,
-                           int[] ax, int[] ay, int[] az) {
-    // draw and then fill
-    // make up for some deficiencies in the fill code
-    drawPolygon4(colixFill, ax, ay, az);
-    argbCurrent = Colix.getArgb(colixFill);
+  public void drawfillPolygon4(int[] ax, int[] ay, int[] az) {
+    drawPolygon4(ax, ay, az);
     System.arraycopy(ax, 0, triangle3d.ax, 0, 3);
     System.arraycopy(ay, 0, triangle3d.ay, 0, 3);
     System.arraycopy(az, 0, triangle3d.az, 0, 3);
@@ -420,12 +416,6 @@ final public class Graphics3D {
     triangle3d.ay[1] = ay[3];
     triangle3d.az[1] = az[3];
     triangle3d.fillTriangle();
-  }
-
-  public void fillPolygon4(short colixOutline, short colixFill,
-                           int[] ax, int[] ay, int[] az) {
-    drawPolygon4(colixOutline, ax, ay, az);
-    fillPolygon4(colixFill, ax, ay, az);
   }
 
   public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,

@@ -26,9 +26,9 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
-import org.openscience.jmol.viewer.datamodel.JmolFrameBuilder;
-import org.openscience.jmol.viewer.datamodel.AtomShape;
+import org.openscience.jmol.viewer.datamodel.Frame;
+import org.openscience.jmol.viewer.datamodel.FrameBuilder;
+import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 
 import java.util.BitSet;
@@ -46,13 +46,13 @@ public class ModelManager {
   boolean suppliesAtomTypeName;
   boolean suppliesVanderwaalsRadius;
   boolean suppliesCovalentRadius;
-  final JmolFrame nullJmolFrame;
+  final Frame nullFrame;
 
 
   public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
-    this.nullJmolFrame = new JmolFrame(viewer);
+    this.nullFrame = new Frame(viewer);
 
     suppliesAtomicNumber = modelAdapter.suppliesAtomicNumber();
     suppliesAtomicSymbol = modelAdapter.suppliesAtomicSymbol();
@@ -74,8 +74,8 @@ public class ModelManager {
   public int atomCount = 0;
   public boolean haveFile = false;
   public int currentFrameNumber;
-  public JmolFrame frame;
-  public JmolFrame[] frames;
+  public Frame frame;
+  public Frame[] frames;
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
@@ -99,7 +99,7 @@ public class ModelManager {
           modelName = null;
       }
       frameCount = viewer.getFrameCount(clientFile);
-      frames = new JmolFrame[frameCount];
+      frames = new Frame[frameCount];
       haveFile = true;
     }
     viewer.notifyFileLoaded(fullPathName, fileName, modelName, clientFile);
@@ -109,8 +109,8 @@ public class ModelManager {
     return clientFile;
   }
 
-  public JmolFrame getJmolFrame() {
-    return (frame == null) ? nullJmolFrame : frame;
+  public Frame getFrame() {
+    return (frame == null) ? nullFrame : frame;
   }
 
   public String getModelName() {
@@ -147,8 +147,8 @@ public class ModelManager {
       frame = frames[frameNumber];
       if (frame == null)
         frame = frames[frameNumber] =
-          new JmolFrameBuilder(viewer, clientFile, frameNumber)
-          .buildJmolFrame();
+          new FrameBuilder(viewer, clientFile, frameNumber)
+          .buildFrame();
       atomCount = frame.getAtomCount();
     }
   }
@@ -254,48 +254,48 @@ public class ModelManager {
     return mapAtomicSymbolToAtomicNumber(clientAtom);
   }
 
-  public String getAtomicSymbol(AtomShape atomShape) {
+  public String getAtomicSymbol(Atom atom) {
     if (suppliesAtomicSymbol) {
-      String atomicSymbol = modelAdapter.getAtomicSymbol(atomShape.clientAtom);
+      String atomicSymbol = modelAdapter.getAtomicSymbol(atom.clientAtom);
       if (atomicSymbol != null)
         return atomicSymbol;
       System.out.println("JmolModelAdapter.getAtomicSymbol returned null");
     }
-    return JmolModelAdapter.atomicSymbols[atomShape.atomicNumber];
+    return JmolModelAdapter.atomicSymbols[atom.atomicNumber];
   }
 
-  public String getAtomTypeName(AtomShape atomShape) {
+  public String getAtomTypeName(Atom atom) {
     if (suppliesAtomTypeName) {
-      String atomTypeName = modelAdapter.getAtomTypeName(atomShape.clientAtom);
+      String atomTypeName = modelAdapter.getAtomTypeName(atom.clientAtom);
       if (atomTypeName != null)
         return atomTypeName;
     }
-    if (atomShape.pdbatom != null) {
-      return atomShape.pdbatom.getAtomName();
+    if (atom.pdbatom != null) {
+      return atom.pdbatom.getAtomName();
     }
-    return getAtomicSymbol(atomShape);
+    return getAtomicSymbol(atom);
   }
 
-  public float getVanderwaalsRadius(AtomShape atomShape) {
+  public float getVanderwaalsRadius(Atom atom) {
     if (suppliesVanderwaalsRadius) {
-      float vanderwaalsRadius = modelAdapter.getVanderwaalsRadius(atomShape.clientAtom);
+      float vanderwaalsRadius = modelAdapter.getVanderwaalsRadius(atom.clientAtom);
       if (vanderwaalsRadius > 0)
         return vanderwaalsRadius;
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
                          vanderwaalsRadius);
     }
-    return JmolModelAdapter.vanderwaalsRadii[atomShape.atomicNumber];
+    return JmolModelAdapter.vanderwaalsRadii[atom.atomicNumber];
   }
 
-  public float getCovalentRadius(AtomShape atomShape) {
+  public float getCovalentRadius(Atom atom) {
     if (suppliesCovalentRadius) {
-      float covalentRadius = modelAdapter.getCovalentRadius(atomShape.clientAtom);
+      float covalentRadius = modelAdapter.getCovalentRadius(atom.clientAtom);
       if (covalentRadius > 0)
         return covalentRadius;
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
                          covalentRadius);
     }
-    return JmolModelAdapter.covalentRadii[atomShape.atomicNumber];
+    return JmolModelAdapter.covalentRadii[atom.atomicNumber];
   }
 
   public String getPdbAtomRecord(Object clientAtom) {
@@ -349,54 +349,54 @@ public class ModelManager {
   ////////////////////////////////////////////////////////////////
 
   public String getAtomicSymbol(int i) {
-    return frame.atomShapes[i].getAtomicSymbol();
+    return frame.atoms[i].getAtomicSymbol();
   }
 
   public float getAtomX(int i) {
-    return frame.atomShapes[i].getAtomX();
+    return frame.atoms[i].getAtomX();
   }
 
   public float getAtomY(int i) {
-    return frame.atomShapes[i].getAtomY();
+    return frame.atoms[i].getAtomY();
   }
 
   public float getAtomZ(int i) {
-    return frame.atomShapes[i].getAtomZ();
+    return frame.atoms[i].getAtomZ();
   }
 
   public Point3f getAtomPoint3f(int i) {
-    return frame.atomShapes[i].getPoint3f();
+    return frame.atoms[i].getPoint3f();
   }
 
   public float getAtomRadius(int i) {
-    return frame.atomShapes[i].getRadius();
+    return frame.atoms[i].getRadius();
   }
 
   public short getAtomColix(int i) {
-    return frame.atomShapes[i].getColix();
+    return frame.atoms[i].getColix();
   }
 
   public Point3f getBondPoint3f1(int i) {
-    return frame.bondShapes[i].atomShape1.getPoint3f();
+    return frame.bonds[i].atom1.getPoint3f();
   }
 
   public Point3f getBondPoint3f2(int i) {
-    return frame.bondShapes[i].atomShape2.getPoint3f();
+    return frame.bonds[i].atom2.getPoint3f();
   }
 
   public float getBondRadius(int i) {
-    return frame.bondShapes[i].getRadius();
+    return frame.bonds[i].getRadius();
   }
 
   public byte getBondOrder(int i) {
-    return frame.bondShapes[i].getOrder();
+    return frame.bonds[i].getOrder();
   }
 
   public short getBondColix1(int i) {
-    return frame.bondShapes[i].getColix1();
+    return frame.bonds[i].getColix1();
   }
 
   public short getBondColix2(int i) {
-    return frame.bondShapes[i].getColix2();
+    return frame.bonds[i].getColix2();
   }
 }

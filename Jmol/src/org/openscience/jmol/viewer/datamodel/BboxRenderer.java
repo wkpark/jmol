@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -31,48 +31,26 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class LineShape extends Shape {
+class BboxRenderer {
 
-  Point3f pointOrigin;
-  Point3f pointEnd;
-  int xEnd, yEnd, zEnd;
+  JmolViewer viewer;
 
-  public LineShape() {
+  final Point3i[] bboxScreen = new Point3i[8];
+
+  BboxRenderer(JmolViewer viewer) {
+    this.viewer = viewer;
+    for (int i = 8; --i >= 0; )
+      bboxScreen[i] = new Point3i();
   }
 
-  public LineShape(Point3f pointOrigin, Point3f pointEnd) {
-    this.pointOrigin = pointOrigin;
-    this.pointEnd = pointEnd;
-  }
-
-  public Point3f getPoint1() {
-    return pointOrigin;
-  }
-
-  public Point3f getPoint2() {
-    return pointEnd;
-  }
-
-  public String toString() {
-    return "Primitive line shape";
-  }
-
-  public void transform(JmolViewer viewer) {
-    Point3i screen = viewer.transformPoint(pointOrigin);
-    x = screen.x;
-    y = screen.y;
-    z = screen.z;
-    screen = viewer.transformPoint(pointEnd);
-    xEnd = screen.x;
-    yEnd = screen.y;
-    zEnd = screen.z;
-    // z = (z + zEnd) / 2;
-    if (zEnd > z)
-      z = zEnd;
-  }
-  
-  public void render(Graphics3D g3d, JmolViewer viewer) {
-    g3d.drawLine(viewer.getColixVector(), x, y, z, xEnd, yEnd, zEnd);
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    Bbox bbox = frame.bbox;
+    for (int i = 8; --i >= 0; )
+      viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);
+    short colix = viewer.getColixAxes();
+    for (int i = 0; i < 24; i += 2)
+      g3d.drawDottedLine(colix,
+                         bboxScreen[bbox.edges[i]],
+                         bboxScreen[bbox.edges[i+1]]);
   }
 }
-

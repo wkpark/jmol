@@ -62,26 +62,23 @@ class DotsRenderer extends Renderer {
 
   }
 
-  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                 JmolFrame frame) {
-    super.setGraphicsContext(g3d, rectClip, frame);
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    this.g3d = g3d;
+    this.rectClip = rectClip;
+    this.frame = frame;
     perspectiveDepth = viewer.getPerspectiveDepth();
     colixConcave = viewer.getColixDotsConcave();
     colixConvex = viewer.getColixDotsConvex();
     colixSaddle = viewer.getColixDotsSaddle();
     pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
-  }
 
-  void transform(Object objDots) {
+
     geodesic.transform();
-  }
-
-  void render(Object objDots) {
-    Dots dots = (Dots)objDots;
+    Dots dots = frame.dots;
     if (dots == null)
       return;
-    AtomShape[] atomShapes = frame.atomShapes;
+    Atom[] atoms = frame.atoms;
     BitSet bsDotsOn = dots.bsDotsOn;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     for (int i = dots.dotsConvexCount; --i >= 0; ) {
@@ -89,7 +86,7 @@ class DotsRenderer extends Renderer {
         continue;
       int[] map = dotsConvexMaps[i];
       if (map != null && map != mapNull)
-        renderConvex(atomShapes[i], map);
+        renderConvex(atoms[i], map);
     }
     Dots.Torus[] tori = dots.tori;
     if (tori == null)
@@ -130,12 +127,12 @@ class DotsRenderer extends Renderer {
     }
   }
 
-  void renderConvex(AtomShape atomShape, int[] visibilityMap) {
+  void renderConvex(Atom atom, int[] visibilityMap) {
     geodesic.calcScreenPoints(visibilityMap,
-                              atomShape.getVanderwaalsRadius(),
-                              atomShape.x, atomShape.y, atomShape.z);
+                              atom.getVanderwaalsRadius(),
+                              atom.x, atom.y, atom.z);
     if (geodesic.screenCoordinateCount > 0)
-      g3d.plotPoints(colixConvex == 0 ? atomShape.colixAtom : colixConvex,
+      g3d.plotPoints(colixConvex == 0 ? atom.colixAtom : colixConvex,
                      geodesic.screenCoordinateCount,
                      geodesic.screenCoordinates);
   }

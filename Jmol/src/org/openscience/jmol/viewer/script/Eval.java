@@ -25,10 +25,10 @@
 package org.openscience.jmol.viewer.script;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
-import org.openscience.jmol.viewer.datamodel.AtomShape;
-import org.openscience.jmol.viewer.datamodel.AtomShapeIterator;
-import org.openscience.jmol.viewer.datamodel.BondShape;
+import org.openscience.jmol.viewer.datamodel.Frame;
+import org.openscience.jmol.viewer.datamodel.Atom;
+import org.openscience.jmol.viewer.datamodel.AtomIterator;
+import org.openscience.jmol.viewer.datamodel.Bond;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -636,7 +636,7 @@ public class Eval implements Runnable {
   }
 
   BitSet getHeteroSet() {
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsHetero = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -649,10 +649,10 @@ public class Eval implements Runnable {
   BitSet getHydrogenSet() {
     if (logMessages)
       viewer.scriptStatus("getHydrogenSet()");
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsHydrogen = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      AtomShape atom = frame.getAtomAt(i);
+      Atom atom = frame.getAtomAt(i);
       if (atom.getAtomicNumber() == 1)
         bsHydrogen.set(i);
     }
@@ -660,7 +660,7 @@ public class Eval implements Runnable {
   }
 
   BitSet getResidueSet(String strResidue) {
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -676,7 +676,7 @@ public class Eval implements Runnable {
       viewer.scriptStatus("residue name spec != 3 :" + resNameSpec);
       return bsRes;
     }
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
@@ -689,7 +689,7 @@ public class Eval implements Runnable {
 
   BitSet getSpecResid(int resid) {
     BitSet bsRes = new BitSet();
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
@@ -701,7 +701,7 @@ public class Eval implements Runnable {
   }
 
   BitSet getSpecNumber(int number) {
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsResno = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -714,7 +714,7 @@ public class Eval implements Runnable {
   }
 
   BitSet getSpecNumberRange(int resnoMin, int resnoLast) {
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -729,7 +729,7 @@ public class Eval implements Runnable {
 
   BitSet getSpecChain(char chain) {
     chain = Character.toUpperCase(chain);
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsChain = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -743,7 +743,7 @@ public class Eval implements Runnable {
 
   BitSet getSpecAtom(String atomSpec) {
     atomSpec = atomSpec.toUpperCase();
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsAtom = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -756,7 +756,7 @@ public class Eval implements Runnable {
   }
 
   BitSet getResidueWildcard(String strWildcard) {
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -800,9 +800,9 @@ public class Eval implements Runnable {
     int propertyValue = 0;
     int comparisonValue = ((Integer)instruction.value).intValue();
     int numberOfAtoms = viewer.getAtomCount();
-    JmolFrame frame = viewer.getJmolFrame();
+    Frame frame = viewer.getFrame();
     for (int i = 0; i < numberOfAtoms; ++i) {
-      AtomShape atom = frame.getAtomAt(i);
+      Atom atom = frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
         propertyValue = atom.getAtomno();
@@ -865,32 +865,32 @@ public class Eval implements Runnable {
 
   void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
     float distance = ((Float)instruction.value).floatValue();
-    JmolFrame frame = viewer.getJmolFrame();
-    AtomShapeIterator iterSelected = frame.getAtomIterator(bs);
+    Frame frame = viewer.getFrame();
+    AtomIterator iterSelected = frame.getAtomIterator(bs);
     while (iterSelected.hasNext()) {
-      AtomShapeIterator iterWithin =
+      AtomIterator iterWithin =
         frame.getWithinIterator(iterSelected.next(), distance);
       while (iterWithin.hasNext())
         bsResult.set(iterWithin.next().getAtomIndex());
     }
   }
 
-  int getResno(AtomShape atom) {
+  int getResno(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
     return (pdbatom == null) ? -1 : pdbatom.getResno();
   }
 
-  int getTemperature(AtomShape atom) {
+  int getTemperature(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
     return (pdbatom == null) ? -1 : pdbatom.getTemperature();
   }
 
-  int getResID(AtomShape atom) {
+  int getResID(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
     return (pdbatom == null) ? -1 : pdbatom.getResID();
   }
 
-  int getAtomID(AtomShape atom) {
+  int getAtomID(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
     return (pdbatom == null) ? -1 : pdbatom.getAtomID();
   }
@@ -1154,7 +1154,7 @@ public class Eval implements Runnable {
     viewer.invertSelection();
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
-    viewer.setStyleBondScript(JmolViewer.NONE, BondShape.ALL);
+    viewer.setStyleBondScript(JmolViewer.NONE, Bond.ALL);
     viewer.setBondSelectionModeOr(bondmode);
     viewer.setStyleAtomScript(JmolViewer.NONE);
     viewer.setLabelScript(null);

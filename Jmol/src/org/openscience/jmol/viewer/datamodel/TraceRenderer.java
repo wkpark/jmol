@@ -29,6 +29,7 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.g3d.Shade3D;
+import java.awt.Rectangle;
 
 class TraceRenderer extends Renderer {
 
@@ -36,8 +37,8 @@ class TraceRenderer extends Renderer {
     this.viewer = viewer;
   }
 
-  void render(Object objTrace) {
-    Trace trace = (Trace)objTrace;
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    Trace trace = frame.trace;
     if (trace != null)
       g3d.drawLine(Colix.GREEN, 0, 0, 0, 10, 10, 0);
   }

@@ -23,15 +23,15 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.viewer.protein;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
+import org.openscience.jmol.viewer.datamodel.Frame;
 import java.util.Hashtable;
 import java.util.Vector;
 
 public class PdbMolecule {
-  JmolFrame frame;
+  Frame frame;
   String[] structureRecords;
 
-  public PdbMolecule(JmolFrame frame) {
+  public PdbMolecule(Frame frame) {
     this.frame = frame;
   }
 

@@ -29,6 +29,9 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Rectangle;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
+
 class AtomRenderer extends Renderer {
 
   AtomRenderer(JmolViewer viewer) {
@@ -39,10 +42,11 @@ class AtomRenderer extends Renderer {
   boolean wireframeRotating;
   boolean showHydrogens;
   short colixSelection;
+  short colixLabel;
+  boolean isLabelAtomColor;
 
 
-  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                 JmolFrame frame) {
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     this.g3d = g3d;
     this.rectClip = rectClip;
     this.frame = frame;
@@ -55,30 +59,29 @@ class AtomRenderer extends Renderer {
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showHydrogens = viewer.getShowHydrogens();
+    colixLabel = viewer.getColixLabel();
+    isLabelAtomColor = colixLabel == 0;
+
+    Atom[] atoms = frame.atoms;
+    for (int i = frame.atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      atom.transform(viewer);
+      render(atom);
+      if (atom.strLabel != null)
+        renderLabel(atom);
+    }
   }
 
-  void transform(Object objAtomShapes) {
-    AtomShape[] atomShapes = (AtomShape[])objAtomShapes;
-    for (int i = frame.atomShapeCount; --i >= 0; )
-      atomShapes[i].transform(viewer);
-  }
-
-  void render(Object objAtomShapes) {
-    AtomShape[] atomShapes = (AtomShape[])objAtomShapes;
-    for (int i = frame.atomShapeCount; --i >= 0; )
-      render(atomShapes[i]);
-  }
-
-  void render(AtomShape atomShape) {
-    if (!showHydrogens && atomShape.atomicNumber == 1)
+  void render(Atom atom) {
+    if (!showHydrogens && atom.atomicNumber == 1)
       return;
-    byte styleAtom = atomShape.styleAtom;
+    byte styleAtom = atom.styleAtom;
     if (styleAtom <= JmolViewer.NONE)
       return;
-    int x = atomShape.x;
-    int y = atomShape.y;
-    int z = atomShape.z;
-    int diameter = atomShape.diameter;
+    int x = atom.x;
+    int y = atom.y;
+    int z = atom.z;
+    int diameter = atom.diameter;
     int radius = (diameter + 1) / 2;
     if (x + radius < minX ||
         x - radius >= maxX ||
@@ -87,11 +90,11 @@ class AtomRenderer extends Renderer {
       return;
 
     if (styleAtom == JmolViewer.SHADED && !wireframeRotating)
-      g3d.fillSphereCentered(atomShape.colixAtom, diameter, x, y, z);
+      g3d.fillSphereCentered(atom.colixAtom, diameter, x, y, z);
     else
-      g3d.drawCircleCentered(atomShape.colixAtom, diameter, x, y, z);
+      g3d.drawCircleCentered(atom.colixAtom, diameter, x, y, z);
 
-    if (viewer.hasSelectionHalo(atomShape)) {
+    if (viewer.hasSelectionHalo(atom)) {
       int halowidth = diameter / 4;
       if (halowidth < 4) halowidth = 4;
       if (halowidth > 10) halowidth = 10;
@@ -99,4 +102,22 @@ class AtomRenderer extends Renderer {
       g3d.fillScreenedCircleCentered(colixSelection, halodiameter, x, y, z);
     }
   }
+
+  void renderLabel(Atom atom) {
+    String strLabel = atom.strLabel;
+    Font font = viewer.getLabelFont(atom.diameter);
+    if (font == null)
+      return;
+    g3d.setFont(font);
+
+    int zLabel = atom.z - atom.diameter/2 - 2;
+    if (zLabel < 0) zLabel = 0;
+    g3d.drawString(strLabel,
+                   isLabelAtomColor ? atom.colixAtom : colixLabel,
+                   atom.x + 4,
+                   atom.y - 4,
+                   zLabel
+                   );
+  }
+
 }

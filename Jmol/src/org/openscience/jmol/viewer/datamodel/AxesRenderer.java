@@ -27,52 +27,44 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
+import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class Axes {
+class AxesRenderer extends Renderer {
 
-  JmolViewer viewer;
-
-  final static Point3f[] unitAxisPoints = {
-    new Point3f( 1, 0, 0),
-    new Point3f( 0, 1, 0),
-    new Point3f( 0, 0, 1),
-    new Point3f(-1, 0, 0),
-    new Point3f( 0,-1, 0),
-    new Point3f( 0, 0,-1)
-  };
-
-  byte modeAxes;
-  final Point3f originPoint = new Point3f();
-  final Point3f[] axisPoints = new Point3f[6];
-
-  public Axes(JmolViewer viewer) {
+  AxesRenderer(JmolViewer viewer) {
     this.viewer = viewer;
     for (int i = 6; --i >= 0; )
-      axisPoints[i] = new Point3f();
+      axisScreens[i] = new Point3i();
   }
 
-  public void setMode(byte modeAxes) {
-    this.modeAxes = modeAxes;
-    if (modeAxes == JmolViewer.AXES_NONE)
-      return;
-    originPoint.set(viewer.getBoundingBoxCenter());
-    Point3f corner = viewer.getBoundingBoxCorner();
+  final Point3i originScreen = new Point3i();
+  final Point3i[] axisScreens = new Point3i[6];
+
+  final static int axisFontsize = 14;
+
+  String[] axisLabels = { "+X", "+Y", "+Z",
+                          null, null, null };
+
+  
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    Axes axes = frame.axes;
+    viewer.transformPoint(axes.originPoint, originScreen);
+    for (int i = 6; --i >= 0; )
+      viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);
+
+    short colixAxes = viewer.getColixAxes();
+    short colixAxesText = viewer.getColixAxesText();
+    FrameRenderer frameRenderer = viewer.getFrameRenderer();
     for (int i = 6; --i >= 0; ) {
-      Point3f axisPoint = axisPoints[i];
-      axisPoint.set(unitAxisPoints[i]);
-      if (modeAxes == JmolViewer.AXES_BBOX) {
-        // we have just set the axisPoint to be a unit on a single axis
-        // therefor only one of these values (x, y, or z) will be nonzero
-        // it will have value 1 or -1
-        axisPoint.x *= corner.x;
-        axisPoint.y *= corner.y;
-        axisPoint.z *= corner.z;
-      }
-      axisPoint.add(originPoint);
+      g3d.drawDottedLine(colixAxes, originScreen, axisScreens[i]);
+      String label = axisLabels[i];
+      if (label != null)
+        frameRenderer.renderStringOutside(label, colixAxesText,
+                                          axisFontsize, axisScreens[i], g3d);
     }
   }
 }

@@ -33,7 +33,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-public class MeasurementShape {
+public class Measurement {
 
   public int count;
   public int[] atomIndices;
@@ -42,7 +42,7 @@ public class MeasurementShape {
   AxisAngle4f aa;
   Point3f pointArc;
   
-  public MeasurementShape(JmolFrame frame, int count, int[] atomIndices) {
+  public Measurement(Frame frame, int count, int[] atomIndices) {
     Point3f pointA = frame.getAtomPoint3f(atomIndices[0]);
     Point3f pointB = frame.getAtomPoint3f(atomIndices[1]);
     Point3f pointC = null;

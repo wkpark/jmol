@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -24,8 +24,20 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-public interface AtomShapeIterator {
-  public boolean hasNext();
-  public AtomShape next();
-  public void release();
+import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.g3d.Graphics3D;
+
+import java.awt.Rectangle;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
+
+class CellLineRenderer extends LineRenderer {
+
+  CellLineRenderer(JmolViewer viewer) {
+    this.viewer = viewer;
+  }
+
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    render(g3d, rectClip, frame, frame.cellLineCount, frame.cellLines);
+  }
 }

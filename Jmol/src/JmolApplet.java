@@ -29,7 +29,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
-import java.awt.event.ComponentListener;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -127,7 +126,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   public void setStatusMessage(String statusMessage) {
-    showStatus(statusMessage);
+    if (statusMessage != null)
+      showStatus(statusMessage);
   }
 
   //METHODS FOR JAVASCRIPT

@@ -196,22 +196,43 @@ public class TransformManager {
   final AxisAngle4f axisangleT = new AxisAngle4f();
   final Vector3f vectorT = new Vector3f();
 
-  public String getAxisAngleText() {
-    axisangleT.set(matrixRotate);
-    float degrees = axisangleT.angle * degreesPerRadian;
-    if (degrees < 0.01f)
-      return "0 0 0 0";
-    vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
-    vectorT.normalize();
-    return (""  + Math.round(vectorT.x * 1000) / 1000f +
-            " " + Math.round(vectorT.y * 1000) / 1000f +
-            " " + Math.round(vectorT.z * 1000) / 1000f +
-            " " + Math.round(degrees * 10) / 10f +
-            " " + getRotateXyzText());
-            
+  public String getOrientationText() {
+    return getMoveToText() + "\nOR\n" + getRotateText();
   }
 
-  String getRotateXyzText() {
+  String getMoveToText() {
+    axisangleT.set(matrixRotate);
+    float degrees = axisangleT.angle * degreesPerRadian;
+    StringBuffer sb = new StringBuffer();
+    sb.append("moveTo 1");
+    if (degrees < 0.01f) {
+      sb.append(" 0 0 0 0");
+    } else {
+      vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
+      vectorT.normalize();
+      truncate3(sb, vectorT.x);
+      truncate3(sb, vectorT.y);
+      truncate3(sb, vectorT.z);
+      truncate1(sb, degrees);
+    }
+    int zoom = getZoomPercent();
+    int tX = getTranslationXPercent();
+    int tY = getTranslationYPercent();
+    if (zoom != 100 || tX != 0 || tY != 0) {
+      sb.append(" ");
+      sb.append(zoom);
+    }
+    if (tX != 0 || tY != 0) {
+      sb.append(" ");
+      sb.append(tX);
+      sb.append(" ");
+      sb.append(tY);
+    }
+    return "" + sb;
+  }
+
+  String getRotateText() {
+    StringBuffer sb = new StringBuffer();
     float m20 = matrixRotate.m20;
     float rY = -(float)Math.asin(m20) * degreesPerRadian;
     float rX, rZ;
@@ -225,7 +246,54 @@ public class TransformManager {
       rZ = (float)Math.atan2(matrixRotate.m10, matrixRotate.m00) *
         degreesPerRadian;
     }
-    return "rX=" + rX + " rY=" + rY + " rZ=" + rZ;
+    sb.append("reset");
+    if (rX != 0) {
+      sb.append("; rotate x");
+      truncate1(sb, rX);
+    }
+    if (rY != 0) {
+      sb.append("; rotate y");
+      truncate1(sb, rY);
+    }
+    if (rZ != 0) {
+      sb.append("; rotate z");
+      truncate1(sb, rZ);
+    }
+    sb.append(";");
+    int zoom = getZoomPercent();
+    if (zoom != 100) {
+      sb.append(" zoom ");
+      sb.append(zoom);
+      sb.append(";");
+    }
+    int tX = getTranslationXPercent();
+    if (tX != 0) {
+      sb.append(" translate x ");
+      sb.append(tX);
+      sb.append(";");
+    }
+    int tY = getTranslationYPercent();
+    if (tY != 0) {
+      sb.append(" translate y ");
+      sb.append(tY);
+      sb.append(";");
+    }
+    return "" + sb;
+  }
+
+  static void truncate1(StringBuffer sb, float val) {
+    sb.append(" ");
+    sb.append(Math.round(val * 10) / 10f);
+  }
+
+  static void truncate2(StringBuffer sb, float val) {
+    sb.append(" ");
+    sb.append(Math.round(val * 100) / 100f);
+  }
+
+  static void truncate3(StringBuffer sb, float val) {
+    sb.append(" ");
+    sb.append(Math.round(val * 1000) / 1000f);
   }
 
   public void getAxisAngle(AxisAngle4f axisAngle) {

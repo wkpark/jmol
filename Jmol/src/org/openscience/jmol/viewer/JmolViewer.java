@@ -559,8 +559,8 @@ final public class JmolViewer {
     return transformManager.spinOn;
   }
 
-  public String getAxisAngleText() {
-    return transformManager.getAxisAngleText();
+  public String getOrientationText() {
+    return transformManager.getOrientationText();
   }
 
   public void getAxisAngle(AxisAngle4f axisAngle) {

@@ -1841,7 +1841,7 @@ public class Eval implements Runnable {
         maxAccel = statement[11].intValue;
     }
 
-    int zoom = viewer.getZoomPercentSetting();
+    int zoom = viewer.getZoomPercent();
     int slab = viewer.getSlabPercentSetting();
     int transX = viewer.getTranslationXPercent();
     int transY = viewer.getTranslationYPercent();
@@ -2829,8 +2829,8 @@ public class Eval implements Runnable {
     case Token.animation:
       showAnimation();
       break;
-    case Token.axisangle:
-      showAxisAngle();
+    case Token.orientation:
+      showOrientation();
       break;
     case Token.transform:
       showTransform();
@@ -2883,8 +2883,8 @@ public class Eval implements Runnable {
     showString("show animation information goes here");
   }
 
-  void showAxisAngle() {
-    showString("moveTo " + viewer.getAxisAngleText());
+  void showOrientation() {
+    showString(viewer.getOrientationText());
   }
 
   void showTransform() {
@@ -2913,6 +2913,8 @@ public class Eval implements Runnable {
     float axisZ = floatParameter(4);
     float degrees = floatParameter(5);
     int zoom = statementLength >= 7 ? intParameter(6) : 100;
+    int xTrans = statementLength >= 8 ? intParameter(7) : 0;
+    int yTrans = statementLength >= 9 ? intParameter(8) : 0;
 
     if (aaMoveTo == null) {
       aaMoveTo = new AxisAngle4f();
@@ -2969,6 +2971,10 @@ public class Eval implements Runnable {
       long targetTime = System.currentTimeMillis();
       int zoomStart = viewer.getZoomPercent();
       int zoomDelta = zoom - zoomStart;
+      int xTransStart = viewer.getTranslationXPercent();
+      int xTransDelta = xTrans - xTransStart;
+      int yTransStart = viewer.getTranslationYPercent();
+      int yTransDelta = yTrans - yTransStart;
       for (int i = 1; i < totalSteps; ++i) {
 
         viewer.getRotation(matrixStart);
@@ -2981,6 +2987,8 @@ public class Eval implements Runnable {
         matrixStep.set(aaStep);
         matrixStep.mul(matrixStart);
         viewer.zoomToPercent(zoomStart + (zoomDelta * i / totalSteps));
+        viewer.translateToXPercent(xTransStart + (xTransDelta*i/totalSteps));
+        viewer.translateToYPercent(yTransStart + (yTransDelta*i/totalSteps));
         viewer.setRotation(matrixStep);
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
@@ -3004,6 +3012,8 @@ public class Eval implements Runnable {
       }
     }
     viewer.zoomToPercent(zoom);
+    viewer.translateToXPercent(xTrans);
+    viewer.translateToYPercent(yTrans);
     viewer.setRotation(matrixEnd);
   }
 }

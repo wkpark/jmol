@@ -27,16 +27,6 @@
       </p>
     </section>
 
-    <section title="Downloading the applet">
-      <p>To use the applet, you must first download the applet distribution and
-      extract the files. It can be downloaded from <a
-      href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
-      </p>
-
-      <p>JmolApplet.jar contains all the classes needed to support the
-      Jmol applet. No other jar files are needed. </p>
-    </section>
-
     <section title="Creating a Web page">
       <p>To use the Jmol applet in a web page, use the HTML standard
       &lt;APPLET&gt; element. The <b>code</b>, <b>archive</b>, <b>width</b>

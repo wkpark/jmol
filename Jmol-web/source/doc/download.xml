@@ -11,7 +11,7 @@
 
     </section>
 
-    <section title="Downloading the current release">
+    <section title="Downloading the application">
       <p>The current release is version $VERSION$.</p>
       <p>It can be downloaded using the following links:
       <ul>
@@ -21,6 +21,27 @@
       </ul>
       Binary and source packages are available, as well as Debian GNU/Linux, and Suse/RedHat Linux packages.
       </p>
+      <h4>Debian Apt-get</h4>
+      <p>
+        Debian users can also apt-get the package from 
+        <a href="http://mentors.debian.net/">mentors.debian.net</a> by adding:
+        <pre><tt>
+deb http://mentors.debian.net/debian unstable main contrib
+deb-src http://mentors.debian.net/debian unstable main contrib
+        </tt></pre>
+        to /etc/apt/sources.list, and doing 'apt-get update &amp;&amp; apt-get install jmol/unstable'.
+      </p>
+    </section>
+
+    <section title="Downloading the applet">
+      <p>The current release is version $VERSION$.</p>
+      <p>To use the applet, you must first download the applet distribution and
+      extract the files. It can be downloaded from <a
+      href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
+      </p>
+
+      <p>JmolApplet.jar contains all the classes needed to support the
+      Jmol applet. No other jar files are needed. </p>
     </section>
 
     <section title="CVS Access">

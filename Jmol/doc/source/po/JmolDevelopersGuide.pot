@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: jmol GUIDE\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-02-10 00:14+0100\n"
+"POT-Creation-Date: 2005-02-10 21:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -226,7 +226,7 @@ msgid "If your code is changing then do not put in comments. <emphasis>Bad/outda
 msgstr ""
 
 #: ../JmolDevelopersGuide.docbook.xml:270 
-msgid "You may want to look at <ulink url=\"http://www.amazon.com/exec/obidos/ASIN/0521777682\">»The Elements of Java Style« by Vermeulen, et al</ulink>"
+msgid "You may want to look at <ulink url=\"http://www.amazon.com/exec/obidos/ASIN/0521777682\">The Elements of Java Style by Vermeulen, et al</ulink>"
 msgstr ""
 
 #: ../JmolDevelopersGuide.docbook.xml:280 

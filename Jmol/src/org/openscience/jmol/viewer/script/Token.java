@@ -275,9 +275,9 @@ public class Token {
 
   final static int dash         = misc |  0; //backbone
   final static int user         = misc |  1; //cpk & star
-  final static int x            = misc |  2;
-  final static int y            = misc | 3 | predefinedset;
-  final static int z            = misc |  4;
+  final static int x            = misc |  2 | expression;
+  final static int y            = misc | 3 | expression | predefinedset;
+  final static int z            = misc |  4 | expression;
   final static int none         = misc |  5 | expression;
   final static int normal       = misc |  7;
   final static int rasmol       = misc |  8;

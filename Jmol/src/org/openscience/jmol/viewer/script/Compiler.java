@@ -195,49 +195,50 @@ class Compiler {
         Token token = (Token) Token.map.get(ident);
         if (token == null)
           token = new Token(Token.identifier, ident);
+        int tok = token.tok;
         switch (tokCommand) {
         case Token.nada:
           ichCurrentCommand = ichToken;
           tokenCommand = token;
-          tokCommand = token.tok;
+          tokCommand = tok;
           if ((tokCommand & Token.command) == 0)
             return commandExpected();
           break;
         case Token.set:
           if (ltoken.size() == 1) {
-            if ((token.tok & Token.setspecial) != 0) {
+            if ((tok & Token.setspecial) != 0) {
               tokenCommand = token;
-              tokCommand = token.tok;
+              tokCommand = tok;
               ltoken.removeAllElements();
               break;
             }
-            if ((token.tok & Token.setparam) == 0 &&
-                token.tok != Token.identifier)
+            if ((tok & Token.setparam) == 0 &&
+                tok != Token.identifier)
               return cannotSet(ident);
           }
           break;
         case Token.show:
-          if ((token.tok & Token.showparam) == 0)
+          if ((tok & Token.showparam) == 0)
             return cannotShow(ident);
           break;
         case Token.define:
           if (ltoken.size() == 1) {
             // we are looking at the variable name
-            if (token.tok != Token.identifier &&
-                (token.tok & Token.predefinedset) != Token.predefinedset)
+            if (tok != Token.identifier &&
+                (tok & Token.predefinedset) != Token.predefinedset)
               return invalidExpressionToken(ident);
           } else {
             // we are looking at the expression
-            if (token.tok != Token.identifier &&
-                (token.tok & (Token.expression | Token.predefinedset)) == 0)
+            if (tok != Token.identifier &&
+                (tok & (Token.expression | Token.predefinedset)) == 0)
               return invalidExpressionToken(ident);
           }
           break;
         case Token.center:
         case Token.restrict:
         case Token.select:
-          if ((token.tok != Token.identifier) &&
-              (token.tok & (Token.expression | Token.predefinedset)) == 0)
+          if (tok != Token.identifier &&
+              (tok & (Token.expression | Token.predefinedset)) == 0)
             return invalidExpressionToken(ident);
           break;
         }
@@ -754,8 +755,16 @@ class Compiler {
     itokenInfix = itoken;
     if (! clauseOr())
       return false;
-    if (itokenInfix != atokenInfix.length)
+    if (itokenInfix != atokenInfix.length) {
+      /*
+      System.out.println("itokenInfix=" + itokenInfix + " atokenInfix.length="
+                         + atokenInfix.length);
+      for (int i = 0; i < atokenInfix.length; ++i) {
+        System.out.println("" + i + ":" + atokenInfix[i]);
+      }
+      */
       return endOfExpressionExpected();
+    }
     atokenCommand = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenCommand);
     return true;
@@ -824,6 +833,9 @@ class Compiler {
     case Token.asterisk:
     case Token.leftsquare:
     case Token.identifier:
+    case Token.x:
+    case Token.y:
+    case Token.z:
     case Token.colon:
       return clauseResidueSpec();
     default:
@@ -908,7 +920,10 @@ class Compiler {
     int tok = tokPeek();
     if (tok == Token.asterisk ||
         tok == Token.leftsquare ||
-        tok == Token.identifier) {
+        tok == Token.identifier ||
+        tok == Token.x ||
+        tok == Token.y ||
+        tok == Token.z) {
       log("I see a residue name");
       if (! clauseResNameSpec())
         return false;
@@ -928,6 +943,9 @@ class Compiler {
     if (tok == Token.colon ||
         tok == Token.asterisk ||
         tok == Token.identifier ||
+        tok == Token.x ||
+        tok == Token.y ||
+        tok == Token.z ||
         tok == Token.integer) {
       if (! clauseChainSpec())
         return false;
@@ -1107,12 +1125,16 @@ class Compiler {
     if (tokPeek() == Token.colon) // null chain followed by model spec
       return true;
     Token tokenChain = tokenNext();
+    int tokChain = tokenChain.tok;
     char chain;
-    if (tokenChain.tok == Token.integer) {
+    if (tokChain == Token.integer) {
       if (tokenChain.intValue < 0 || tokenChain.intValue > 9)
         return invalidChainSpecification();
       chain = (char)('0' + tokenChain.intValue);
-    } else if (tokenChain.tok == Token.identifier) {
+    } else if (tokChain == Token.identifier ||
+               tokChain == Token.x ||
+               tokChain == Token.y ||
+               tokChain == Token.z) {
       String strChain = (String)tokenChain.value;
       if (strChain.length() != 1)
         return invalidChainSpecification();

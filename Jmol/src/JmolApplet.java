@@ -30,6 +30,8 @@ import org.openscience.jmol.adapters.SimpleModelAdapter;
 //import org.openscience.jmol.adapters.CdkJmolModelAdapter;
 import org.openscience.jmol.ui.JmolPopup;
 
+import netscape.javascript.JSObject;
+
 import java.applet.*;
 import java.awt.Canvas;
 import java.awt.Graphics;
@@ -49,6 +51,15 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   JmolViewer viewer;
   JmolPopup jmolpopup;
   String htmlName;
+
+  JSObject jsoWindow;
+  JSObject jsoDocument;
+
+  String animFrameCallback;
+  String loadStructCallback;
+  String messageCallback;
+  String pauseCallback;
+  String pickCallback;
 
   private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
 
@@ -107,6 +118,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
     setLayout(new java.awt.BorderLayout());
     add(canvas, "Center");
+
+    jsoWindow = JSObject.getWindow(this);
+    jsoDocument = (JSObject)jsoWindow.getMember("document");
   }
 
   PropertyResourceBundle appletProperties = null;
@@ -185,6 +199,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void notifyFileLoaded(String fullPathName, String fileName,
                                String modelName, Object clientFile) {
+    if (loadStructCallback != null)
+      jsoWindow.call(loadStructCallback, new Object[] {htmlName});
   }
 
   public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
@@ -192,7 +208,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void setStatusMessage(String statusMessage) {
-    if (statusMessage != null)
+    if (statusMessage == null)
+      return;
+    if (messageCallback != null)
+      jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
+    else
       showStatus(statusMessage);
   }
 
@@ -202,7 +222,18 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void scriptStatus(String strStatus) {
   }
 
+  boolean buttonCallbackNotificationPending;
+  String buttonCallback;
+  String buttonName;
+  JSObject buttonWindow;
+
   public void notifyScriptTermination(String errorMessage, int msWalltime) {
+    showStatus("Jmol script completed");
+    if (buttonCallbackNotificationPending) {
+      System.out.println("!!!! calling back " + buttonCallback);
+      buttonCallbackAfter[0] = buttonName;
+      buttonWindow.call(buttonCallback, buttonCallbackAfter);
+    }
   }
 
   public void handlePopupMenu(MouseEvent e) {
@@ -264,8 +295,32 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.setWireframeRotation(wireframeRotation);
   }
 
+  private final Object[] buttonCallbackBefore = { null, new Boolean(false)};
+  private final Object[] buttonCallbackAfter = { null, new Boolean(true)};
+
+  public void scriptButton(String script, JSObject buttonWindow,
+                           String buttonCallback, String buttonName) {
+    System.out.println(htmlName + " button:" + buttonName +
+                       " script:" + script +
+                       " buttonCallback:" + buttonCallback);
+    if (buttonCallback != null) {
+      System.out.println("!!!! calling back " + buttonCallback);
+      buttonCallbackBefore[0] = buttonName;
+      buttonWindow.call(buttonCallback, buttonCallbackBefore);
+
+      buttonCallbackNotificationPending = true;
+      this.buttonCallback = buttonCallback;
+      this.buttonWindow = buttonWindow;
+      this.buttonName = buttonName;
+    } else {
+      buttonCallbackNotificationPending = false;
+    }
+    script(script);
+  }
+
   public void script(String script) {
     System.out.println(htmlName + " will try to run:\n-----" + script + "\n-----\n");
+    setStatusMessage("Jmol script executing...");
     String strError = viewer.evalString(script);
     setStatusMessage(strError);
   }

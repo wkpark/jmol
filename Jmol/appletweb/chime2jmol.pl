@@ -13,8 +13,11 @@ $p->parse_file(shift || die) || die $!;
 my ($previous, $embed, $tokens);
 my $tokenCount;
 
-my ($name, $width, $height, $bgcolor);
-my $src;
+# common to both plugins and buttons
+my ($name, $width, $height, $bgcolor, $src);
+# plug-in specific
+my ($loadStructCallback, $messageCallback, $pauseCallback, $pickCallback);
+# button-specific
 my ($type, $button, $buttonCallback, $target, $script, $altscript);
 
 sub handleEmbed {
@@ -26,6 +29,12 @@ sub handleEmbed {
     $height = getParameter('height');
     $bgcolor = getParameter('bgcolor');
     $src = getParameter('src');
+
+    $loadStructCallback = getParameter('LoadStructCallback');
+    $messageCallback = getParameter('MessageCallback');
+    $pauseCallback = getParameter('pauseCallback');
+    $pickCallback = getParameter('pickCallback');
+
     $type = getParameter('type');
     $button = getParameter('button');
     $buttonCallback = getParameter('ButtonCallBack');
@@ -67,19 +76,31 @@ sub writeCommentedEmbed {
 
 sub writeJmolApplet {
     print
-	"  <applet name=$name code='JmolApplet' archive='JmolApplet.jar'\n"
+	"  <applet name=$name code=JmolApplet archive=JmolApplet.jar\n"
 	if $name;
     print
-	"  <applet code='JmolApplet' archive='JmolApplet.jar'\n"
+	"  <applet code=JmolApplet archive=JmolApplet.jar\n"
 	unless $name;
     print
-	"          width=$width height=$height >\n";
+	"          width=$width height=$height mayscript >\n";
     print
-	"    <param name='bgcolor' value=$bgcolor >\n" if $bgcolor;
+	"    <param name=bgcolor value=$bgcolor >\n" if $bgcolor;
     print
-	"    <param name='load' value=$src >\n" if $src;
+	"    <param name=load    value=$src >\n" if $src;
     print
-	"    <param name='script' value=$script >\n" if $script;
+	"    <param name=script  value=$script >\n" if $script;
+    print
+	"    <param name=LoadStructCallback value=$loadStructCallback >\n"
+	if $loadStructCallback;
+    print
+	"    <param name=MessageCallback    value=$messageCallback >\n"
+	if $messageCallback;
+    print
+	"    <param name=PauseCallback      value=$pauseCallback >\n"
+	if $pauseCallback;
+    print
+	"    <param name=PickCallback       value=$pickCallback >\n"
+	if $pickCallback;
     print
 	"  </applet>\n";
 }
@@ -94,26 +115,31 @@ sub writeButtonControl {
 	$controlType = "'chimeRadio'";
 	$group = $1;
     }
+    my $buttonScript = $script || $src;
     print
-	"  <applet name=$name code='JmolAppletControl' archive='JmolApplet.jar'\n"
+	"  <applet name=$name code=JmolAppletControl".
+	" archive=JmolApplet.jar\n"
 	if $name;
     print
-	"  <applet code='JmolAppletControl' archive='JmolApplet.jar'\n"
+	"  <applet code=JmolAppletControl archive=JmolApplet.jar\n"
 	unless $name;
     print
-	"          width=$width height=$height >\n";
+	"          width=$width height=$height mayscript >\n";
     print
-	"    <param name='target'    value=$target >\n".
-	"    <param name='type'      value=$controlType >\n";
+	"    <param name=target value=$target >\n".
+	"    <param name=type   value=$controlType >\n";
     print
-	"    <param name='group'     value=$group >\n"
+	"    <param name=group  value=$group >\n"
 	if $group;
     print
-	"    <param name='script'    value=$script >\n"
-	if $script;
+	"    <param name=script value=$buttonScript >\n"
+	if $buttonScript;
     print
-	"    <param name='altscript' value=$altscript >\n"
+	"    <param name=altscript value=$altscript >\n"
 	if $altscript;
+    print
+	"    <param name=ButtonCallback value=$buttonCallback >\n"
+	if $buttonCallback;
     print
 	"  </applet>\n";
 }

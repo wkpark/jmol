@@ -30,6 +30,8 @@ import java.awt.event.*;
 import java.util.*;
 import org.openscience.jmol.viewer.managers.ColorManager;
 
+import netscape.javascript.JSObject;
+
 public class JmolAppletControl extends Applet {
 
   private final static String[][] parameterInfo = {
@@ -67,7 +69,8 @@ public class JmolAppletControl extends Applet {
   String script;
   String label;
   String altScript;
-  //  JmolApplet jmolApplet;
+  String buttonCallback;
+  JSObject jsoWindow;
 
   String groupName;
   boolean toggleState;
@@ -131,6 +134,10 @@ public class JmolAppletControl extends Applet {
     setForeground(colorName == null
                   ? Color.black
                   : ColorManager.getColorFromString(colorName));
+    buttonCallback = getParam("buttoncallback");
+    if (buttonCallback != null)
+      jsoWindow = JSObject.getWindow(this);
+
     setLayout(new GridLayout(1, 1));
     allocateControl();
     logWarnings();
@@ -272,7 +279,7 @@ public class JmolAppletControl extends Applet {
       return;
     }
     JmolApplet targetJmolApplet = (JmolApplet)targetApplet;
-    targetJmolApplet.script(scriptToRun);
+    targetJmolApplet.scriptButton(scriptToRun, jsoWindow, buttonCallback, myName);
   }
 }
 

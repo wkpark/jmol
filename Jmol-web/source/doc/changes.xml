@@ -24,6 +24,12 @@
       To recognize specific contributions, the developer's initials are noted
       next to the changes.
       
+      <changes version="jmol-4">
+        <change contributor="BS">
+          Reading of MOPAC 97 files. Formerly, only MOPAC 7 files worked.
+        </change>
+      </changes>
+      
       <changes version="jmol-3">
         <change contributor="CR">
           Export of BMP and PNG images.

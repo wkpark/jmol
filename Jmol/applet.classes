@@ -45,7 +45,8 @@ org/openscience/jmol/ADFReader.java
 org/openscience/jmol/DaltonReader.java
 org/openscience/jmol/AtomicSymbol.java
 org/openscience/jmol/JaguarReader.java
-org/openscience/jmol/MopacReader.java
+org/openscience/jmol/Mopac7Reader.java
+org/openscience/jmol/Mopac97Reader.java
 org/openscience/jmol/PDBReader.java
 org/openscience/jmol/CACheReader.java
 org/openscience/jmol/ReaderFactory.java

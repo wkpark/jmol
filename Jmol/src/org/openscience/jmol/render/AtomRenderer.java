@@ -107,8 +107,8 @@ public class AtomRenderer {
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
-    g25d.setColor(colorSelection);
-    g25d.fillCircle(x - haloradius, y - haloradius, z+1, halodiameter);
+    g25d.fillCircle(colorSelection,
+                    x - haloradius, y - haloradius, z+1, halodiameter);
   }
 
   private void renderAtom() {
@@ -131,11 +131,11 @@ public class AtomRenderer {
       }
       return;
     }
-    g25d.setColor(color);
-    if (!fastRendering && styleAtom != DisplayControl.WIREFRAME) {
-      g25d.fillCircle(xUpperLeft, yUpperLeft, z, diameter);
-      g25d.setColor(colorOutline);
+    if (fastRendering || styleAtom == DisplayControl.WIREFRAME) {
+      g25d.drawCircle(color, xUpperLeft, yUpperLeft, z, diameter);
+    } else {
+      g25d.fillCircle(colorOutline, color,
+                      xUpperLeft, yUpperLeft, z, diameter);
     }
-    g25d.drawCircle(xUpperLeft, yUpperLeft, z-1, diameter);
   }
 }

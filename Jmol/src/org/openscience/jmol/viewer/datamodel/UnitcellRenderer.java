@@ -42,10 +42,15 @@ class UnitcellRenderer extends Renderer {
     for (int i = 8; --i >= 0; )
       viewer.transformPoint(unitcell.vertices[i], screens[i]);
     short colix = viewer.getColixAxes();
-    for (int i = 0; i < 24; i += 2)
-      g3d.drawDottedLine(colix,
-                         screens[Bbox.edges[i]],
-                         screens[Bbox.edges[i+1]]);
+    for (int i = 0; i < 24; i += 2) {
+      Point3i screenA = screens[Bbox.edges[i]];
+      Point3i screenB = screens[Bbox.edges[i+1]];
+      if (i < 6) {
+        g3d.drawLine(colix, screenA, screenB);
+      } else {
+        g3d.drawDottedLine(colix, screenA, screenB);
+      }
+    }
 
     g3d.drawString("a=" + unitcell.a, colix, 5, 15, 0);
     g3d.drawString("b=" + unitcell.b, colix, 5, 30, 0);

@@ -41,22 +41,31 @@ public class Unitcell extends Graphic {
     float[] notionalUnitcell = frame.notionalUnitcell;
     hasUnitcell = notionalUnitcell != null;
     if (hasUnitcell) {
+      /****************************************************************
+       * someone needs to fix this code
+       * all you have to do is calculate the correct
+       * points for the vertices
+       ****************************************************************/
       a = notionalUnitcell[0];
       b = notionalUnitcell[1];
       c = notionalUnitcell[2];
       alpha = notionalUnitcell[3];
       beta  = notionalUnitcell[4];
       gamma = notionalUnitcell[5];
+      // these vertices are wrong, but it is the best that mth can do
       vertices = new Point3f[] {
-        new Point3f(  0,  0,  0),
-        new Point3f(  0,  0, 10),
-        new Point3f(  0, 10,  0),
-        new Point3f(  0, 10, 10),
-        new Point3f( 10,  0,  0),
-        new Point3f( 10,  0, 10),
-        new Point3f( 10, 10,  0),
-        new Point3f( 10, 10, 10),
+        new Point3f(0, 0, 0),
+        new Point3f(0, 0, a),
+        new Point3f(0, b, 0),
+        new Point3f(0, b, a),
+        new Point3f(c, 0, 0),
+        new Point3f(c, 0, a),
+        new Point3f(c, b, 0),
+        new Point3f(c, b, a),
       };
+      /****************************************************************
+       * all your changes should be above this line
+       ****************************************************************/
     }
   }
 

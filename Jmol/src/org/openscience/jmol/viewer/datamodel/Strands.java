@@ -56,6 +56,23 @@ public class Strands extends Mcps {
         calcCentersAndVectors(polymerCount, polymerGroups, centers, vectors);
       }
     }
+
+    short getMadSpecial(short mad, int groupIndex) {
+      switch (mad) {
+      case -1: // strands on
+      case -2: // strands structure
+        int structureType = polymerGroups[groupIndex].getStructureType();
+        if (structureType == JmolConstants.SECONDARY_STRUCTURE_SHEET ||
+            structureType == JmolConstants.SECONDARY_STRUCTURE_HELIX)
+          return (short)1500;
+        return (short)500;
+      }
+      System.out.println("unrecognized parameter to Strands.getMadSpecial(" +
+                         mad + ")");
+      return 0;
+    }
+
+
   }
 
   Vector3f vectorA = new Vector3f();

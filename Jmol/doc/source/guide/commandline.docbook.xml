@@ -30,8 +30,13 @@
         In addition to the above command line options there is also one
         important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
         With this option the GUI language can be set. At this moment
-        these languages are supported: <literal>en</literal>, <literal>es</literal>, and 
-        <literal>nl</literal>.
+        these languages are supported:
+        <literal>de</literal>,
+        <literal>en</literal>,
+        <literal>es</literal>,
+        <literal>fr</literal>,
+        <literal>nl</literal>, and
+        <literal>pl</literal>.
       </para>
       <para>
         Alternatively, you can also use the <envar>LANG</envar> environment

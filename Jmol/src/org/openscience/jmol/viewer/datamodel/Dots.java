@@ -139,7 +139,7 @@ public class Dots {
 			continue;
 		    dotsConvexMaps[i] = calcConvexMap(atomShapes[i]);
 		    calcTori(i);
-		    //		    calcCavities(i);
+		    calcCavities(i);
 		}
 	} else {
 	    bsDotsOn.andNot(bsSelected);
@@ -179,20 +179,20 @@ public class Dots {
     setAllBits(bitmap, dotCount);
     if (neighborCount == 0)
       return;
-    int iNeighborLast = 0;
     float fullRadius = vdwRadius + probeRadius;
+    int iLastUsed = 0;
     for (int iDot = dotCount; --iDot >= 0; ) {
       pointT.set(vertices[iDot]);
       pointT.scaleAdd(fullRadius, myCenter);
-      int iStart = iNeighborLast;
+      int iStart = iLastUsed;
       do {
-        if (pointT.distanceSquared(neighborCenters[iNeighborLast]) <
-            neighborPlusProbeRadii2[iNeighborLast]) {
+        if (pointT.distanceSquared(neighborCenters[iLastUsed])
+	    < neighborPlusProbeRadii2[iLastUsed]) {
           clearBit(bitmap, iDot);
           break;
         }
-        iNeighborLast = (iNeighborLast + 1) % neighborCount;
-      } while (iNeighborLast != iStart);
+        iLastUsed = (iLastUsed + 1) % neighborCount;
+      } while (iLastUsed != iStart);
     }
   }
 
@@ -275,6 +275,8 @@ public class Dots {
 	}
     }
 
+    // note that this routine assumes that getNeighbors was already
+    // called previously (by calcConvexMap)
     void calcTori(int indexI) {
 	if (probeRadius == 0)
 	    return;
@@ -320,24 +322,23 @@ public class Dots {
 	setAllBits(probeMap, torusProbePositionCount);
 	float stepAngle = 2 * (float)Math.PI / torusProbePositionCount;
 	aaT.set(torus.axisVector, 0);
-	int iNeighborLast = 0;
+	int iLastUsed = 0;
 	for (int a = torusProbePositionCount; --a >= 0; ) {
 	    aaT.angle = a * stepAngle;
 	    matrixT.set(aaT);
 	    matrixT.transform(torus.radialVector, pointT);
 	    pointT.add(torus.center);
-
-	    int iStart = iNeighborLast;
+	    int iStart = iLastUsed;
 	    do {
-		if (neighbors[iNeighborLast].getAtomIndex() != torus.j) {
-		    if (pointT.distanceSquared(neighborCenters[iNeighborLast]) <
-			neighborPlusProbeRadii2[iNeighborLast]) {
+		if (neighbors[iLastUsed].getAtomIndex() != torus.j) {
+		    if (pointT.distanceSquared(neighborCenters[iLastUsed])
+			< neighborPlusProbeRadii2[iLastUsed]) {
 			clearBit(probeMap, a);
 			break;
 		    }
 		}
-		iNeighborLast = (iNeighborLast + 1) % neighborCount;
-	    } while (iNeighborLast != iStart);
+		iLastUsed = (iLastUsed + 1) % neighborCount;
+	    } while (iLastUsed != iStart);
 	}
 	int indexLast;
 	for (indexLast = probeMap.length;
@@ -524,6 +525,8 @@ public class Dots {
 	System.out.println("cavityCount=" + cavityCount);
     }
 
+    // note that this routine assumes that getNeighbors was already
+    // called previously (by calcConvexMap)
     void calcCavities(int indexI) {
 	if (probeRadius == 0)
 	    return;
@@ -535,7 +538,6 @@ public class Dots {
 	AtomShape[] atomShapes = frame.atomShapes;
 	AtomShape atomI = atomShapes[indexI];
 	float vdwRadiusI = atomI.getVanderwaalsRadius();
-	getNeighbors(atomI, vdwRadiusI);
 	for (int iJ = neighborCount; --iJ >= 0; ) {
 	    AtomShape atomJ = neighbors[iJ];
 	    int indexJ = atomJ.getAtomIndex();
@@ -571,6 +573,21 @@ public class Dots {
 	}
     }
 
+    boolean checkProbePosition(Point3f probeCenter,
+			       int indexI, int indexJ, int indexK) {
+	for (int i = neighborCount; --i >= 0; ) {
+	    int neighborIndex = neighbors[i].getAtomIndex();
+	    if (neighborIndex == indexI ||
+		neighborIndex == indexJ ||
+		neighborIndex == indexK)
+		continue;
+	    if (probeCenter.distanceSquared(neighborCenters[i]) <
+		neighborPlusProbeRadii2[i])
+		return false;
+	}
+	return true;
+    }
+
     Cavity getCavity(AtomShape atomI, int indexI,
 		     AtomShape atomJ, int indexJ,
 		     AtomShape atomK, int indexK) {
@@ -583,7 +600,11 @@ public class Dots {
 	    System.out.println("null torus found?");
 	    return null;
 	}
-	return new Cavity(atomI, atomJ, atomK, torusIJ, torusIK, torusJK);
+	Cavity cavity =
+	    new Cavity(atomI, atomJ, atomK, torusIJ, torusIK, torusJK);
+	if (cavity.baseAbove == null && cavity.baseBelow == null)
+	    return null;
+	return cavity;
     }
 
     final Vector3f uIJ = new Vector3f();
@@ -591,13 +612,17 @@ public class Dots {
     final Vector3f uIJK = new Vector3f();
     final Vector3f uTB = new Vector3f();
 
+    final Point3f pointProbe = new Point3f();
+
     class Cavity {
 	AtomShape atomI, atomJ, atomK;
 	Torus torusIJ, torusIK, torusJK;
 	Point3f baseIJK;
 	float heightIJK;
-	Point3f pointAbove;
-	Point3f pointBelow;
+	Point3f centerAbove;
+	Point3f centerBelow;
+	Point3f baseAbove;
+	Point3f baseBelow;
 	
 
 	Cavity(AtomShape atomI, AtomShape atomJ, AtomShape atomK,
@@ -609,12 +634,27 @@ public class Dots {
 	    calcBase();
 	    calcHeight();
 	    if (heightIJK > 0) {
-		pointAbove = new Point3f(uIJK);
-		pointAbove.scaleAdd(heightIJK, baseIJK);
-		pointBelow = new Point3f(uIJK);
-		pointBelow.scaleAdd(-heightIJK, baseIJK);
-		System.out.println("pointAbove=" + pointAbove +
-				   " pointBelow=" + pointBelow);
+		int indexI = atomI.getAtomIndex();
+		int indexJ = atomJ.getAtomIndex();
+		int indexK = atomK.getAtomIndex();
+		pointProbe.set(uIJK);
+		pointProbe.scaleAdd(heightIJK, baseIJK);
+		if (checkProbePosition(pointProbe, indexI, indexJ, indexK)) {
+		    centerAbove = new Point3f(pointProbe);
+		    baseAbove = new Point3f(uIJK);
+		    baseAbove.scaleAdd(heightIJK - probeRadius, baseIJK);
+		}
+		pointProbe.set(uIJK);
+		pointProbe.scaleAdd(-heightIJK, baseIJK);
+		if (checkProbePosition(pointProbe, indexI, indexJ, indexK)) {
+		    centerBelow = new Point3f(pointProbe);
+		    baseBelow = new Point3f(uIJK);
+		    baseBelow.scaleAdd(-(heightIJK - probeRadius), baseIJK);
+		}
+		System.out.println(" centerAbove=" + centerAbove +
+				   " baseAbove=" + baseAbove + 
+				   " centerBelow=" + centerBelow +
+				   " baseBelow=" + baseBelow);
 	    }
 	}
 
@@ -643,7 +683,7 @@ public class Dots {
 
 	void calcHeight() {
 	    float rI = atomI.getVanderwaalsRadius();
-	    float rP = viewer.getSolventProbeRadius();
+	    float rP = probeRadius;
 	    float hypotenuse = rI + rP;
 	    float hypotenuse2 = hypotenuse*hypotenuse;
 	    vectorT.sub(baseIJK, atomI.point3f);

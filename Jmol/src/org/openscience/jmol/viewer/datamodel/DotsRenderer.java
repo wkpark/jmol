@@ -110,7 +110,7 @@ public class DotsRenderer {
 	renderTorus(tori[i]);
     }
     Dots.Cavity[] cavities = dots.cavities;
-    if (true) {
+    if (false) {
 	System.out.println("concave surface rendering currently disabled");
 	return;
     }
@@ -192,28 +192,18 @@ public class DotsRenderer {
     }
 
     void renderCavity(Dots.Cavity cavity) {
-	g3d.drawCircleCentered(colixConcave, 20,
-			       viewer.transformPoint(cavity.baseIJK));
+	//	g3d.drawCircleCentered(colixConcave, 20,
+	//			       viewer.transformPoint(cavity.baseIJK));
 	Point3i screen;
 	int diameter;
 	int z;
-	if (cavity.pointAbove != null) {
-	    screen = viewer.transformPoint(cavity.pointAbove);
+	if (cavity.baseAbove != null) {
+	    screen = viewer.transformPoint(cavity.baseAbove);
 	    g3d.drawCircleCentered(colixConcave, 10, screen);
-	    diameter =
-		(int)(0.5f + 2 *
-		      viewer.scaleToScreen(screen.z,
-					   viewer.getSolventProbeRadius()));
-	    g3d.drawCircleCentered(colixConcave, diameter, screen);
 	}
-	if (cavity.pointBelow != null) {
-	    screen = viewer.transformPoint(cavity.pointBelow);
+	if (cavity.baseBelow != null) {
+	    screen = viewer.transformPoint(cavity.baseBelow);
 	    g3d.drawCircleCentered(colixConcave, 10, screen);
-	    diameter =
-		(int)(0.5f + 2 *
-		      viewer.scaleToScreen(screen.z,
-					   viewer.getSolventProbeRadius()));
-	    g3d.drawCircleCentered(colixConcave, diameter, screen);
 	}
     }
 

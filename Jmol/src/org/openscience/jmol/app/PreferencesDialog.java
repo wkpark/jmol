@@ -48,7 +48,6 @@ import javax.swing.JSlider;
 import javax.swing.AbstractAction;
 import javax.swing.JDialog;
 import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.Box;
 import javax.swing.JTabbedPane;
 import javax.swing.ButtonGroup;
@@ -59,6 +58,7 @@ import javax.swing.JLabel;
 import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.border.TitledBorder;
@@ -67,7 +67,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private boolean autoBond;
   private boolean showHydrogens;
-  private boolean showVectors;
+  //private boolean showVectors;
   private boolean showMeasurements;
   private boolean wireframeRotation;
   private boolean perspectiveDepth;
@@ -82,7 +82,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private Color colorBond;
   private Color colorVector;
   private Color colorMeasurement;
-  private byte modeAtomColorProfile;
+  //private byte modeAtomColorProfile;
   private float minBondDistance;
   private float bondTolerance;
   private short marBond;
@@ -92,13 +92,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   //  private int VibrationFrames;
   private JButton bButton, pButton, tButton, eButton, vButton;
   private JButton measurementColorButton;
-  private JRadioButton pYes, pNo, abYes, abNo;
-  private JComboBox aProps, cRender;
+  private JRadioButton /*pYes, pNo, */abYes, abNo;
+  //private JComboBox aProps, cRender;
   private JSlider vdwPercentSlider;
   private JSlider bdSlider, bwSlider, btSlider;
-  private JSlider vasSlider;
-  private JSlider vvsSlider;
-  private JSlider vfSlider;
+  //private JSlider vasSlider;
+  //private JSlider vvsSlider;
+  //private JSlider vfSlider;
   private JCheckBox cH, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
@@ -319,10 +319,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     sfPanel.setBorder(new TitledBorder(JmolResourceHandler
         .getStringX("Prefs.atomSizeLabel")));
     JLabel sfLabel = new JLabel(JmolResourceHandler
-        .getStringX("Prefs.atomSizeExpl"), JLabel.CENTER);
+        .getStringX("Prefs.atomSizeExpl"), SwingConstants.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     vdwPercentSlider =
-      new JSlider(JSlider.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
+      new JSlider(SwingConstants.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
     vdwPercentSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     vdwPercentSlider.setPaintTicks(true);
     vdwPercentSlider.setMajorTickSpacing(20);
@@ -407,7 +407,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getStringX("Prefs.bondRadiusLabel")));
     JLabel bwLabel =
       new JLabel(JmolResourceHandler
-        .getStringX("Prefs.bondRadiusExpl"), JLabel.CENTER);
+        .getStringX("Prefs.bondRadiusExpl"), SwingConstants.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
 
     bwSlider = new JSlider(0, 250,viewer.getMadBond()/2);
@@ -420,7 +420,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       String label = "" + (1000 + i);
       label = "0." + label.substring(1);
       bwSlider.getLabelTable().put(new Integer(i),
-                                   new JLabel(label, JLabel.CENTER));
+                                   new JLabel(label, SwingConstants.CENTER));
       bwSlider.setLabelTable(bwSlider.getLabelTable());
     }
     bwSlider.addChangeListener(new ChangeListener() {
@@ -447,10 +447,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getStringX("Prefs.bondToleranceLabel")));
     JLabel btLabel =
       new JLabel(JmolResourceHandler
-        .getStringX("Prefs.bondToleranceExpl"), JLabel.CENTER);
+        .getStringX("Prefs.bondToleranceExpl"), SwingConstants.CENTER);
     btPanel.add(btLabel, BorderLayout.NORTH);
 
-    btSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
+    btSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
         (int) (100 * viewer.getBondTolerance()));
     btSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     btSlider.setPaintTicks(true);
@@ -458,22 +458,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btSlider.setMinorTickSpacing(10);
     btSlider.setPaintLabels(true);
     btSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
     btSlider.getLabelTable().put(new Integer(20),
-        new JLabel("0.2", JLabel.CENTER));
+        new JLabel("0.2", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
     btSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
     btSlider.getLabelTable().put(new Integer(60),
-        new JLabel("0.6", JLabel.CENTER));
+        new JLabel("0.6", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
     btSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
     btSlider.getLabelTable().put(new Integer(100),
-        new JLabel("1.0", JLabel.CENTER));
+        new JLabel("1.0", SwingConstants.CENTER));
     btSlider.setLabelTable(btSlider.getLabelTable());
 
     btSlider.addChangeListener(new ChangeListener() {
@@ -501,10 +501,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getStringX("Prefs.minBondDistanceLabel")));
     JLabel bdLabel =
       new JLabel(JmolResourceHandler
-        .getStringX("Prefs.minBondDistanceExpl"), JLabel.CENTER);
+        .getStringX("Prefs.minBondDistanceExpl"), SwingConstants.CENTER);
     bdPanel.add(bdLabel, BorderLayout.NORTH);
 
-    bdSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
+    bdSlider = new JSlider(SwingConstants.HORIZONTAL, 0, 100,
         (int) (100 * viewer.getMinBondDistance()));
     bdSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bdSlider.setPaintTicks(true);
@@ -512,22 +512,22 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdSlider.setMinorTickSpacing(10);
     bdSlider.setPaintLabels(true);
     bdSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
     bdSlider.getLabelTable().put(new Integer(20),
-        new JLabel("0.2", JLabel.CENTER));
+        new JLabel("0.2", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
     bdSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
     bdSlider.getLabelTable().put(new Integer(60),
-        new JLabel("0.6", JLabel.CENTER));
+        new JLabel("0.6", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
     bdSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
     bdSlider.getLabelTable().put(new Integer(100),
-        new JLabel("1.0", JLabel.CENTER));
+        new JLabel("1.0", SwingConstants.CENTER));
     bdSlider.setLabelTable(bdSlider.getLabelTable());
 
     bdSlider.addChangeListener(new ChangeListener() {
@@ -988,7 +988,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     autoBond = Boolean.getBoolean("autoBond");
     showHydrogens = Boolean.getBoolean("showHydrogens");
-    showVectors = Boolean.getBoolean("showVectors");
+    //showVectors = Boolean.getBoolean("showVectors");
     showMeasurements = Boolean.getBoolean("showMeasurements");
     wireframeRotation = Boolean.getBoolean("wireframeRotation");
     perspectiveDepth = Boolean.getBoolean("perspectiveDepth");

@@ -56,6 +56,8 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
   
   /**
    * If url is null, then the default help url is taken.
+   * @param fr
+   * @param url
    */
   public HelpDialog(JFrame fr, URL url) {
     super(fr, "Jmol Help", false);

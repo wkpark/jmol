@@ -82,21 +82,19 @@ final class CommandHistory
    private String getCommand() {
        if (pos == 0) {
            return "";
-       } else {
-           int size = commandList.size();
-           if (size > 0){
-               if (pos == (size+1)) {
-                 return ""; // just beyond last one: ""
-               } else if (pos > size) {
-                   pos = 1; // roll around to first command
-               } else if (pos < 0) {
-                   pos = size; // roll around to last command
-               }
-               return (String) commandList.get(pos-1);
-           } else {
-               return "";
-           }
        }
+       int size = commandList.size();
+       if (size > 0){
+           if (pos == (size+1)) {
+               return ""; // just beyond last one: ""
+           } else if (pos > size) {
+               pos = 1; // roll around to first command
+           } else if (pos < 0) {
+               pos = size; // roll around to last command
+           }
+           return (String) commandList.get(pos-1);
+       }
+       return "";
    }
 
    /**

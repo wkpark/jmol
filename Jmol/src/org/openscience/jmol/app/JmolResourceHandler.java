@@ -103,12 +103,11 @@ class JmolResourceHandler {
       URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
       if (imageUrl != null) {
         return new ImageIcon(imageUrl);
-      } else {
-        /*
-        System.err.println("Warning: unable to load " + resourceName
-            + " for icon " + key + ".");
-        */
       }
+      /*
+      System.err.println("Warning: unable to load " + resourceName
+          + " for icon " + key + ".");
+      */
     }
     return null;
   }
@@ -130,8 +129,10 @@ class JmolResourceHandler {
   }
 
   /**
-   * A wrapper for easy detection which strins in the
+   * A wrapper for easy detection which strings in the
    * source code are localized.
+   * @param text Text to translate
+   * @return Translated text
    */
   private synchronized String translate(String text) {
     StringTokenizer st = new StringTokenizer(text, " ");

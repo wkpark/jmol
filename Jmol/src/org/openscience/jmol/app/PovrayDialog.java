@@ -470,6 +470,7 @@ public class PovrayDialog extends JDialog {
 
     /**
      * Closes the dialog when window closing event occurs.
+     * @param e Event
      */
     public void windowClosing(WindowEvent e) {
       cancelPressed();

@@ -867,7 +867,6 @@ class Huffman
             val.addElement(valDCchrominance);
             val.addElement(valACchrominance);
             initHuf();
-	    code=code;
             ImageWidth=Width;
             ImageHeight=Height;
 
@@ -876,6 +875,11 @@ class Huffman
    /**
    * HuffmanBlockEncoder run length encodes and Huffman encodes the quantized
    * data.
+   * @param outStream
+   * @param zigzag
+   * @param prec
+   * @param DCcode
+   * @param ACcode
    **/
 
         public void HuffmanBlockEncoder(BufferedOutputStream outStream, int zigzag[], int prec, int DCcode, int ACcode)

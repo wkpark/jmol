@@ -209,8 +209,8 @@ public class MeasurementTable extends JDialog {
     public String getColumnName(int col) { 
       return measurementHeaders[col];
     } 
-   public int getRowCount() { return viewer.getMeasurementCount(); }
-    public int getColumnCount() { return 5; };
+    public int getRowCount() { return viewer.getMeasurementCount(); }
+    public int getColumnCount() { return 5; }
 
     public Class getColumnClass(int col) {
       return stringClass;

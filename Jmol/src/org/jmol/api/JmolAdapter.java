@@ -93,7 +93,8 @@ public abstract class JmolAdapter {
   public void finish(Object clientFile) {}
 
   /**
-   * returns the type of this file or molecular model, if known
+   * @param clientFile
+   * @return The type of this file or molecular model, if known
    */
   public String getFileTypeName(Object clientFile) { return "unknown"; }
 
@@ -101,6 +102,8 @@ public abstract class JmolAdapter {
    * Some file formats contain a formal name of the molecule in the file.
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
+   * @param clientFile
+   * @return Formal name of the molecule
    */
   public String getAtomSetCollectionName(Object clientFile) { return null; }
 
@@ -108,6 +111,8 @@ public abstract class JmolAdapter {
    * Get the properties for this atomSetCollection
    *
    * Not yet implemented everywhere, it is in the smarterJmolAdapter
+   * @param clientFile
+   * @return Properties
    */
   public Properties getAtomSetCollectionProperties(Object clientFile) {
     return null;
@@ -118,6 +123,8 @@ public abstract class JmolAdapter {
    *
    * <p>This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>
+   * @param clientFile
+   * @return File header
    */
   public String getFileHeader(Object clientFile) { return null; }
 
@@ -126,6 +133,8 @@ public abstract class JmolAdapter {
    *
    * <p>NOTE WARNING:
    * <br>Not yet implemented everywhere, it is in the smarterJmolAdapter
+   * @param clientFile
+   * @return Number of atomSets
    */
   public int getAtomSetCount(Object clientFile) { return 1; }
 
@@ -136,6 +145,9 @@ public abstract class JmolAdapter {
    * a 1-based atomSet number.
    *<p>
    * <i>Note that this is not currently implemented in PdbReader</i>
+   * @param clientFile
+   * @param atomSetIndex
+   * @return Number identifying the atomSet
    */
   public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
     return atomSetIndex + 1;
@@ -143,6 +155,9 @@ public abstract class JmolAdapter {
 
   /**
    * The name of each atomSet
+   * @param clientFile
+   * @param atomSetIndex
+   * @return Name of the atomSet
    */
   public String getAtomSetName(Object clientFile, int atomSetIndex) {
     return "" + getAtomSetNumber(clientFile, atomSetIndex);
@@ -150,6 +165,9 @@ public abstract class JmolAdapter {
 
   /**
    * The properties for each atomSet
+   * @param clientFile
+   * @param atomSetIndex
+   * @return Properties of the atomSet
    */
   public Properties getAtomSetProperties(Object clientFile, int atomSetIndex) {
     return null;
@@ -158,10 +176,12 @@ public abstract class JmolAdapter {
   /**
    * The estimated number of atoms contained in the file.
    * Just return -1 if you don't know (or don't want to figure it out)
+   * @param clientFile
+   * @return Estimated number of atoms
    */
   abstract public int getEstimatedAtomCount(Object clientFile);
 
-  /**
+  /*
    * This method returns the parameters that define a crystal unitcell
    * the parameters are returned in a float[] in the following order
    * a, b, c, alpha, beta, gamma
@@ -186,6 +206,8 @@ public abstract class JmolAdapter {
   /**
    * Returns an AtomIterator used to retrieve all the atoms in the file.
    * This method may not return <code>null</code>.
+   * @param clientFile
+   * @return AtomIterator
    * @see AtomIterator
    */
   abstract public AtomIterator getAtomIterator(Object clientFile);
@@ -193,14 +215,17 @@ public abstract class JmolAdapter {
    * Returns a BondIterator. If this method returns <code>null</code> and no
    * bonds are defined then the JmolViewer will automatically apply its
    * rebonding code to build bonds between atoms.
+   * @param clientFile
+   * @return BondIterator
    * @see BondIterator
    */
   public BondIterator getBondIterator(Object clientFile) { return null; }
 
   /**
    * Returns a StructureIterator or <code>null</code>
+   * @param clientFile
+   * @return StructureIterator
    */
-
   public StructureIterator getStructureIterator(Object clientFile) {
     return null;
   }

@@ -51,7 +51,9 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   private JList fileList;
   java.util.Properties props;
 
-  /** Creates a hidden recent files dialog **/
+  /** Creates a hidden recent files dialog
+   * @param boss 
+   */
   public RecentFilesDialog(java.awt.Frame boss) {
 
     super(boss, JmolResourceHandler
@@ -108,6 +110,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   /**
    * Adds this file to the history. If already present,
    * this file is premoted to the top position.
+   * @param name Name of the file
    */
   public void addFile(String name) {
 

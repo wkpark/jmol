@@ -1,10 +1,18 @@
 <project default="html" basedir=".">
 
+  <!-- Contributions -->
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="./ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
   <property name="version" value="10.00" />
   <property name="jmol-doc-dir" value="../Jmol-HEAD" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
   <property name="build.html" value="${build.dir}/html" />
+  <property name="all.languages" value="de,en,et,fr,hu,it,nl,pt" />
 
   <target name="clean">
     <delete dir="${build.dir}"/>
@@ -26,30 +34,13 @@
     </copy>
 
     <!-- Generate index html files for each language -->
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="de"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="en"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="et"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="fr"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="hu"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="it"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="nl"/>
-  	</antcall>
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="pt"/>
-  	</antcall>
+    <for list="${all.languages}" delimiter="," param="current.language">
+      <sequential>
+        <antcall target="html_lang">
+          <param name="lang_value" value="@{current.language}"/>
+        </antcall>
+      </sequential>
+    </for>
   	
     <!-- Copy other files -->
     <copy todir="${build.html}" overwrite="yes"> 

@@ -53,6 +53,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.Dimension;
 import java.awt.event.*;
 import javax.swing.ListSelectionModel;
+import javax.swing.JTabbedPane;
 import javax.swing.event.*;
 import javax.swing.table.AbstractTableModel;
 
@@ -70,12 +71,15 @@ public class RSSViewerPlugin implements CDKPluginInterface {
     private JTree rssTree = null;
     private RSSContentModel channelContent = null;
     private SortedTableModel sortedContent = null;
+    private RSSContentModel aggregatedContent = null;
+    private SortedTableModel sortedAggregatedContent = null;
+    private JPanel pluginPanel = null;
     
     public void setEditBus(CDKEditBus editBus) {
         this.editBus = editBus;
     }
     
-    public void start() {
+    public RSSViewerPlugin() {
         channels = new Vector();
         Properties props = readProperties();
         int rssChannels = 0;
@@ -90,19 +94,29 @@ public class RSSViewerPlugin implements CDKPluginInterface {
             System.out.println("No channels found");
         }
         for (int i=0; i<rssChannels; i++) {
-            String channel = props.getProperty("Channel" + new Integer(i).toString(), "");
-            if (channel.length() == 0) {
+            String url = props.getProperty("Channel" + new Integer(i).toString(), "");
+            String title = props.getProperty("Channel" + new Integer(i).toString() + "Title", "");
+            if (url.length() == 0) {
                 System.out.println("Could not find URL for " + i + "th channel");
             } else {
                 try {
-                    URL rssURL = new URL(channel);
-                    channels.addElement(rssURL);
-                    System.out.println("Added RSS channel: " + channel);
+                    URL rssURL = new URL(url);
+                    RSSChannel channel = new RSSChannel(rssURL, title);
+                    channels.addElement(channel);
+                    System.out.println("Added RSS channel: " + url);
                 } catch (Exception exception) {
-                    System.out.println("URL for " + i + "th channel is not valid: " + channel);
+                    System.out.println("URL for " + i + "th channel is not valid: " + url);
                 }
             }
         }
+    }
+    
+    public void start() {
+        // fill the aggregated table
+        if (aggregatedContent == null) {
+            aggregatedContent = new RSSContentModel();
+        }
+        fillAggregatedTable();
     }
     
     public void stop() {
@@ -118,98 +132,76 @@ public class RSSViewerPlugin implements CDKPluginInterface {
     }
     
     public JPanel getPluginPanel() {
+        if (pluginPanel == null) {
+            pluginPanel = createPanel();
+        }
+        return pluginPanel;
+    }
+        
+    private JPanel createPanel() {
         JPanel RSSViewerPanel = new JPanel();
         
         // The Channel list (possibly grouped, therefor a tree)
         rssTree = new JTree(createChannelTree());
-        rssTree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode)rssTree.getLastSelectedPathComponent();
-                
-                if (node == null) return;
-                
-                Object nodeInfo = node.getUserObject();
-                if (nodeInfo instanceof RSSChannelNode) {
-                    RSSChannelNode rssNode = (RSSChannelNode)nodeInfo;
-                    System.out.println("Should load this RSS now: " + nodeInfo.toString());
-                    ChemSequence channelItems = null;
-                    try {
-                        InputStream is = rssNode.getURL().openStream();
-                        InputStreamReader isReader = new InputStreamReader(is);
-                        ChemicalRSSReader reader = new ChemicalRSSReader(isReader);
-                        channelItems = (ChemSequence)reader.read(new ChemSequence());
-                    } catch (CDKException exception) {
-                        System.out.println("Error while reading RSS file");
-                        exception.printStackTrace();
-                    } catch (IOException exception) {
-                        System.out.println("IOException while reading RSS file");
-                        exception.printStackTrace();
-                    }
-                    if (channelItems != null) {
-                        System.out.println("YES!");
-                        System.out.println("Clearing current table...");
-                        channelContent.cleanTable();
-                        ChemModel[] models = channelItems.getChemModels();
-                        System.out.println("#items = " + models.length);
-                        for (int i=0; i<models.length; i++) {
-                            ChemModel model = models[i];
-                            channelContent.insertBlankRow(i);
-                            channelContent.setValueAt(models[i], i);
-                        }
-                    }
-                }
-            }
-            
-            private void transferRSSProperty(ChemModel model, String propertyName, int row, int column) {
-                Object property = model.getProperty(propertyName);
-                if (property != null) {
-                    channelContent.setValueAt(property, row, column);
-                    System.out.println("Transfered data: " + property.toString());
-                }
-            }
-        });
+        rssTree.addTreeSelectionListener(
+            new RSSChannelTreeListener()
+        );
         rssTree.validate();
         JScrollPane treePanel = new JScrollPane(rssTree);
         treePanel.validate();
         
-        // A table showing the entries in the channel
+        // A table showing the entries in one channel
         channelContent = new RSSContentModel();
         sortedContent = new SortedTableModel(channelContent);
         JTable channelTable = new JTable(sortedContent);
         sortedContent.addMouseListenerToHeaderInTable(channelTable);
         channelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListSelectionModel rowSM = channelTable.getSelectionModel();
-        rowSM.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                // Ignore extra messages
-                if (e.getValueIsAdjusting()) return;
-                
-                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-                if (lsm.isSelectionEmpty()) {
-                    // no rows are selected
-                } else {
-                    int selectedRow = lsm.getMinSelectionIndex();
-                    ChemModel model = channelContent.getValueAt(sortedContent.getSortedIndex(selectedRow));
-                    ChemSequence sequence = new ChemSequence();
-                    sequence.addChemModel(model);
-                    ChemFile file = new ChemFile();
-                    file.addChemSequence(sequence);
-                    editBus.showChemFile(file);
-                }
-            }
-        });
+        rowSM.addListSelectionListener(
+            new RSSChannelItemsTableListener(sortedContent, channelContent)
+        );
+
+        // A table showing the entries of all aggregated channels
+        if (aggregatedContent == null) {
+            aggregatedContent = new RSSContentModel();
+        }
+        sortedAggregatedContent = new SortedTableModel(aggregatedContent);
+        JTable aggregatedTable = new JTable(sortedAggregatedContent);
+        sortedAggregatedContent.addMouseListenerToHeaderInTable(aggregatedTable);
+        aggregatedTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        ListSelectionModel aggregatedRowSM = aggregatedTable.getSelectionModel();
+        aggregatedRowSM.addListSelectionListener(
+            new RSSChannelItemsTableListener(sortedAggregatedContent, aggregatedContent)
+        );
 
         channelTable.validate();
+        JTabbedPane tabbedPane = new JTabbedPane();
         JScrollPane contentPane = new JScrollPane(channelTable);
+        JScrollPane aggregatedPane = new JScrollPane(aggregatedTable);
         contentPane.validate();
+        tabbedPane.addTab("View Channel", null, contentPane, "Displays the content of one RSS channel");
+        tabbedPane.addTab("Aggregated", null, aggregatedPane, "Displays the contents of all RSS channels");
         
         JSplitPane splitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                treePanel, contentPane);
+                treePanel, tabbedPane);
         RSSViewerPanel.add(splitter);
         RSSViewerPanel.validate();
         
         return RSSViewerPanel;
     };
+    
+    private void fillAggregatedTable() {
+        // put all channels into the aggregated table
+        if (aggregatedContent != null) { // ok, JPanel is set up
+            Enumeration channels = this.channels.elements();
+            while (channels.hasMoreElements()) {
+                RSSChannel channel = (RSSChannel)channels.nextElement();
+                parseChannelIntoTable(aggregatedContent, channel.getURL());
+            }
+        } else {
+            // should give some warning
+        }
+    }
     
     public JPanel getPluginConfigPanel() {
         return null;
@@ -284,13 +276,17 @@ public class RSSViewerPlugin implements CDKPluginInterface {
                 return analyser.getMolecularFormula();
             } else if (column == 3) {
                 int dim = 0;
-                if (GeometryTools.has2DCoordinates(container)) {
-                    dim += 2;
+                if (container.getAtomCount() > 0) {
+                    if (GeometryTools.has2DCoordinates(container)) {
+                        dim += 2;
+                    }
+                    if (GeometryTools.has3DCoordinates(container)) {
+                        dim += 3;
+                    }
+                    return dim + "D";
+                } else {
+                    return "";
                 }
-                if (GeometryTools.has3DCoordinates(container)) {
-                    dim += 3;
-                }
-                return dim + "D";
             }
             return "Error";
         }
@@ -337,34 +333,137 @@ public class RSSViewerPlugin implements CDKPluginInterface {
     private DefaultMutableTreeNode createChannelTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("Channels");
         if (channels != null) {
-            Enumeration urls = channels.elements();
-            while (urls.hasMoreElements()) {
-                URL url = (URL)urls.nextElement();
+            Enumeration channelEnum = channels.elements();
+            while (channelEnum.hasMoreElements()) {
+                RSSChannel channel = (RSSChannel)channelEnum.nextElement();
                 DefaultMutableTreeNode node = new DefaultMutableTreeNode();
-                node.setUserObject(new RSSChannelNode(url));
+                node.setUserObject(new RSSChannelNode(channel));
                 root.add(node);
             }
         }
         return root;
     }
     
+    private void parseChannelIntoTable(RSSContentModel channelContent, URL url) {
+        System.out.println("Should load this RSS now: " + url.toString());
+        ChemSequence channelItems = null;
+        try {
+            InputStream is = url.openStream();
+            InputStreamReader isReader = new InputStreamReader(is);
+            ChemicalRSSReader reader = new ChemicalRSSReader(isReader);
+            channelItems = (ChemSequence)reader.read(new ChemSequence());
+        } catch (CDKException exception) {
+            System.out.println("Error while reading RSS file");
+            exception.printStackTrace();
+        } catch (IOException exception) {
+            System.out.println("IOException while reading RSS file");
+            exception.printStackTrace();
+        }
+        if (channelItems != null) {
+            System.out.println("YES!");
+            ChemModel[] models = channelItems.getChemModels();
+            System.out.println("#items = " + models.length);
+            int itemsAlreadyInTable = channelContent.getRowCount();
+            for (int i=0; i<models.length; i++) {
+                ChemModel model = models[i];
+                channelContent.insertBlankRow(i+itemsAlreadyInTable);
+                channelContent.setValueAt(models[i], i+itemsAlreadyInTable);
+            }
+        }
+    }
+    
     class RSSChannelNode {
         
-        URL url = null;
+        RSSChannel channel = null;
         
-        RSSChannelNode(URL channel) {
-            this.url = channel;
+        RSSChannelNode(RSSChannel channel) {
+            this.channel = channel;
         }
         
         public String toString() {
-            return url.toString();
+            String stringRepresentation = channel.getURL().toString();
+            if (channel.getTitle().length() > 0) {
+                stringRepresentation = channel.getTitle();
+            }
+            return stringRepresentation;
         }
 
         public URL getURL() {
-            return url;
+            return channel.getURL();
         }
     }
 
+    class RSSChannelTreeListener implements TreeSelectionListener {
+        public void valueChanged(TreeSelectionEvent e) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode)rssTree.getLastSelectedPathComponent();
+            
+            if (node == null) return;
+            
+            Object nodeInfo = node.getUserObject();
+            if (nodeInfo instanceof RSSChannelNode) {
+                RSSChannelNode rssNode = (RSSChannelNode)nodeInfo;
+                channelContent.cleanTable();
+                parseChannelIntoTable(channelContent, rssNode.getURL());
+            }
+        }
+        
+        private void transferRSSProperty(ChemModel model, String propertyName, int row, int column) {
+            Object property = model.getProperty(propertyName);
+            if (property != null) {
+                channelContent.setValueAt(property, row, column);
+                System.out.println("Transfered data: " + property.toString());
+            }
+        }
+    }
+    
+    class RSSChannelItemsTableListener implements ListSelectionListener {
+        
+        private SortedTableModel sortedModelContent = null;
+        private RSSContentModel modelContent = null;
+        
+        public RSSChannelItemsTableListener(SortedTableModel sortedModelContent, 
+                                            RSSContentModel modelContent) {
+            this.modelContent = modelContent;
+            this.sortedModelContent = sortedModelContent;
+        }
+        
+        public void valueChanged(ListSelectionEvent e) {
+            // Ignore extra messages
+            if (e.getValueIsAdjusting()) return;
+            
+            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+            if (lsm.isSelectionEmpty()) {
+                // no rows are selected
+            } else {
+                int selectedRow = lsm.getMinSelectionIndex();
+                ChemModel model = modelContent.getValueAt(sortedModelContent.getSortedIndex(selectedRow));
+                ChemSequence sequence = new ChemSequence();
+                sequence.addChemModel(model);
+                ChemFile file = new ChemFile();
+                file.addChemSequence(sequence);
+                editBus.showChemFile(file);
+            }
+        }
+    }
+    
+    class RSSChannel {
+        
+        private URL url;
+        private String title;
+        
+        public RSSChannel(URL url, String title) {
+            this.url = url;
+            this.title = title;
+        }
+        
+        public URL getURL() {
+            return this.url;
+        }
+        
+        public String getTitle() {
+            return this.title;
+        }
+    }
 }
 
 

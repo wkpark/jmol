@@ -12,6 +12,7 @@
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
   <property name="docbook.dir" value="${user.dir}/../docbook-xsl" />
+  <property name="keystore.name" value="${user.dir}/jmol.keystore" />
 
   <path id="project.class.path">
     <fileset dir="${lib.dir}">
@@ -45,6 +46,7 @@
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
       <srcfiles dir="${source.dir}" includes="**/*.java" />
     </uptodate>
+    <available file="${keystore.name}" property="keystore.present" />
   </target>
 
   <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
@@ -206,6 +208,56 @@
       </fileset>
     </copy>
   </target>
+
+  <target name="check.jws" depends="setup" unless="keystore.present" >
+    <echo message="Keystore '${keystore.name}' not found." />
+    <echo message="Please set with the argument '-Dkeystore.name=file'." />
+    <antcall target="initFailure" />
+  </target>
+
+  <target name="dist-jws" depends="check.jws,dist" >
+    <copy todir="${dist.dir}/jmol-jws-${version}" >
+      <fileset dir="${source.dir}">
+        <include name="jmol.jnlp" />
+      </fileset>
+    </copy>
+    <mkdir dir="${dist.dir}/jmol-jws-${version}/${lib.dir}" />
+    <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
+      <fileset dir="${lib.dir}">
+        <include name="*.jar" />
+        <exclude name="jmol-applet.jar" />
+        <exclude name="gnujaxp-saxonly.jar" />
+        <exclude name="swing.jar" />
+        <exclude name="junit.jar" />
+        <exclude name="saxon.jar" />
+      </fileset>
+    </copy>
+    <mkdir dir="${dist.dir}/jmol-jws-${version}/images" />
+    <copy todir="${dist.dir}/jmol-jws-${version}/images" flatten="yes" >
+      <fileset dir="${source.dir}">
+        <include name="**/icon.jpg" />
+      </fileset>
+    </copy>
+    <ant antfile="../../build.xml" dir="${dist.dir}/jmol-jws-${version}"
+        target="internal-dist-jws-sign" />
+  </target>
+  
+  <!--
+    This target should be only used internally within the build.xml. It is a
+    workaround for a bugs in the fileset feature of the signjar task. See bugs
+    5230 and 6988.
+  -->
+  <target name="internal-dist-jws-sign" >
+    <signjar alias="${keystore.alias}" 
+        storepass="${keystore.password}" 
+        keystore="${keystore.name}" >
+      <fileset dir="../jmol-jws-${version}">
+        <include name="**/*.jar" />
+        <exclude name="**/.AppleDouble/**" />
+      </fileset>
+    </signjar>
+  </target>
+  
 
   <target name="dist.zip" depends="dist">
     <zip zipfile="jmol-${version}.zip" basedir="${dist.dir}"

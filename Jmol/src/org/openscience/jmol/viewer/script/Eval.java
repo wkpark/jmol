@@ -1356,6 +1356,9 @@ public class Eval implements Runnable {
   }
 
   void colorObject(int tokObject, int itoken) throws ScriptException {
+    // I do not like this 'palette' scheme
+    // I need to change it so that you can pass either a java.awt.Color
+    // or an object that uniquely identifies the various palettes
     byte palette = JmolConstants.PALETTE_CPK;
     Color color = null;
     switch (statement[itoken].tok) {
@@ -1428,6 +1431,9 @@ public class Eval implements Runnable {
       shapeType = JmolConstants.SHAPE_ECHO;
       break;
     case Token.monitor:
+      // monitor is broken (and others probably also)
+      // unless the PALETTE is color when you say 'none'
+      palette = JmolConstants.PALETTE_COLOR;
       shapeType = JmolConstants.SHAPE_MEASURES;
       break;
     default:

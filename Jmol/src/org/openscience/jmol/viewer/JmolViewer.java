@@ -519,6 +519,7 @@ final public class JmolViewer {
   public Color getColorSelection() {
     return colorManager.getColorSelection();
   }
+
   public short getColixSelection() {
     return colorManager.getColixSelection();
   }
@@ -532,16 +533,17 @@ final public class JmolViewer {
     setShapeColorProperty(JmolConstants.SHAPE_LABELS, color);
     refresh();
   }
-
+  
   public void setColorDots(Color color) {
     setColorDotsConvex(color);
     setColorDotsConcave(color);
     setColorDotsSaddle(color);
   }
-
+  
   public void setColorDotsSaddle(Color color) {
     colorManager.setColorDotsSaddle(color);
   }
+
   public short getColixDotsSaddle() {
     return colorManager.colixDotsSaddle;
   }

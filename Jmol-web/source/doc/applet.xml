@@ -47,8 +47,8 @@
       this HTML was used to display the applet seen below.
 
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="200" HEIGHT="200">
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="caffeine.xyz"/>
 </APPLET>]]>
 </appletExample>
@@ -59,9 +59,8 @@
       listed in the archive parameter.
       
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-      cdk-cml.jar,gnujaxp-saxonly.jar"
-    WIDTH="200" HEIGHT="200">
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
 </APPLET>]]>
 </appletExample>
@@ -75,11 +74,9 @@
       embedded rather than in a file.
       
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-      cdk-cml.jar,gnujaxp-saxonly.jar"
-    WIDTH="200" HEIGHT="200">
-  <PARAM NAME="format" VALUE="cmlString"/>
-  <PARAM NAME="model" VALUE="&lt;?xml version=&quot;1.0&quot; ?&gt;
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="loadInline" VALUE="&lt;?xml version=&quot;1.0&quot; ?&gt;
 &lt;!DOCTYPE molecule
   SYSTEM &quot;http://www.xml-cml.org/dtd/cml1_0.dtd&quot; []&gt;
 &lt;molecule id=&quot;METHANOL&quot;&gt;
@@ -104,32 +101,36 @@
 </APPLET>]]>
 </appletExample>
       </p>
+    </section>
 
-      <p><a href="applet2.html">More applet examples</a>.</p>
-      </section>
+    <section title="More applet examples">
+      <p>Examples of the applets showing animations can be 
+      found <a href="applet2.html">here</a>. Also the 
+      <a href="scripting.html">Scripting</a> page uses applets in the examples.</p>
+    </section>
 
     <section title="Applet parameters">
       <p>The following parameters control the appearance and behavior of the
       applet. All parameter names and values are case insensitive.
       </p>
       <appletParameterList>
-        <param name="model">
-          A file relative to the HTML page
-          or escaped CML data (&lt;, &gt;, &quot; written as &amp;lt;,
-          &amp;gt;, &amp;quot;).
+        <param name="load">
+          A file relative to the HTML page.
         </param>
         
-        <param name="format">
-          When reading embedded CML data, the format must be specified with a
-          value of "cmlString".
+        <param name="loadInline">
+          Escaped CML data (&lt;, &gt;, &quot; written as &amp;lt;, &amp;gt;, &amp;quot;).
         </param>
         
-        <param name="bcolour">
+        <param name="bgcolor">
           The background colour
-        </param>
-        
-        <param name="fcolour">
-        The foreground colour for labels, etc.
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="bgcolor" VALUE="grey"/>
+</APPLET>]]>
+</appletExample>
         </param>
         
         <param name="style">
@@ -139,21 +140,37 @@
             <li>QUICKDRAW</li>
             <li>WIREFRAME</li>
           </ul>
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="style" VALUE="QUICKDRAW"/>
+</APPLET>]]>
+</appletExample>
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="style" VALUE="WIREFRAME"/>
+</APPLET>]]>
+</appletExample>
         </param>
         
-        <param name="atomLabels">
+        <param name="label">
           The labels to display for atoms.  One of:
           <dl>
             <dt>NONE</dt> <dd>do not display labels.</dd>
             <dt>SYMBOLS</dt> <dd>the atomic symbols for the atoms.</dd>
-            <dt>TYPES</dt> <dd>the atom types (or names) read from the input file.</dd>
             <dt>NUMBERS</dt> <dd>the numbers of the atoms.</dd>
           </dl>
           The default value is NONE.
-        </param>
-        
-        <param name="atomTypes">
-          The location of the "AtomTypes" file relative to the HTML page.
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="label" VALUE="NUMBERS"/>
+</APPLET>]]>
+</appletExample>
         </param>
         
         <param name="wireframeRotation">
@@ -162,43 +179,26 @@
             <li>ON</li>
             <li>OFF</li>
           </ul>
-        </param>
-        
-        <param name="zoom">
-          Changes the initial zoom. "1" is the default.
-        </param>
-        
-        <param name="atomSize">
-          Changes the size of the atoms.  "1" is the default.
-        </param>
-        
-        <param name="bonds">
-          Specifies if bonds are drawn initially, and if they can be selected
-          by the user. One of:
-          <ul>
-            <li>ON</li>
-            <li>OFF</li>
-            <li>NEVER</li>
-          </ul>
-        </param>
-        
-        <param name="customViews">
-          Specifies custom actions to be performed by custom buttons. An
-          example: Button1 { HOME; FRAME=n; ROTATE=y,x,z; ZOOM=n; TRANSLATE=x,y
-          }  Button2 { HOME; ZOOM=n; ... } ...
-        </param>
+        <appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="wireframeRotation" VALUE="ON"/>
+</APPLET>]]>
+</appletExample>
+</param>
+
       </appletParameterList>
     </section>
     
     <section title="Using the applet">
       <p>The following keys and mouse actions control the applet:
         <ul>
-          <li>S - cycles through the various drawing styles for atoms and bonds</li>
-          <li>L - cycles through the various labeling modes for the atoms</li>
-          <li>B - toggles the bonds off and on</li>
-          <li>Mouse - rotates the molecule</li>
-          <li>Shift-Mouse - Zooms in and out</li>
-          <li>Ctrl-Mouse - Translates the molecule</li>
+          <li>Left Mouse Button - rotates the molecule in x and y dimensions</li>
+          <li>Shift-Right Mouse Button - rotates the molecule in the z dimension</li>
+          <li>Ctrl-Right Mouse Button - translates the molecule</li>
+          <li>Shift-Left Mouse Button - zooms in and out</li>
+          <li>Ctrl-Left Mouse Button - controls the slab [if selected through scripting]</li>
         </ul>
       </p>
     </section>

@@ -7,10 +7,176 @@
       <p>
         Both the application and the applet support scripting. The examples below
         use the applet, but those scripts can be used in the application too.
+        The scripting in Jmol is compatible with Rasmol and Chime scripts, so transition
+        from Chime to Jmol should be easy.
       </p>
     </header>
 
+    <section title="Scripting with Forms">
+      <p>
+        This examples shows some of the scripting available.
+<appletExample>
+<![CDATA[<APPLET NAME="jmol" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="caffeine.xyz"/>
+</APPLET>
+<br>
+<a href="javascript:document.jmol.setStyle('WIREFRAME')">
+WIREFRAME</a>
+<a href="javascript:document.jmol.setStyle('SHADED')">
+SHADED</a>
+<a href="javascript:document.jmol.setStyle('QUICKDRAW')">
+QUICKDRAW</a>
+<br>
+<a href="javascript:document.jmol.load('aspirina.mol');">
+aspirina.mol</a>
+<a href="javascript:document.jmol.load('bulk_si.in');">
+bulk_si.in</a>
+<a href="javascript:document.jmol.load('caffeine.xyz');">
+caffeine.xyz</a>
+<a href="javascript:document.jmol.load('dna.xyz');">
+dna.xyz</a>
+<a href="javascript:document.jmol.load('estron.cml');">
+estron.cml</a>
+<br>
+<a href="javascript:document.jmol.script('background blue ; move 90 180 -45 0 0 0 0 0 5; 
+center 1 ; move 0 0 360 100 0 0 0 0 2 ; delay 2 ; reset; background white')">move</a>
+<a href="javascript:document.jmol.script('script move.spt');">
+move off of server</a>
+<a href="javascript:document.jmol.script('load aspirina.mol')">
+load aspirina via script</a>
+<a href="javascript:document.jmol.script('source testscript.spt')">
+run test script off of server</a>
+<br>
+<a href="javascript:document.jmol.setWireframeRotation(true)">
+setWireframeRotation(true)</a>
+<a href="javascript:document.jmol.setWireframeRotation(false)">
+setWireframeRotation(false)</a>
+<br>
+<a href="javascript:document.jmol.setPerspectiveDepth(true)">
+setPerspectiveDepth(true)</a>
+<a href="javascript:document.jmol.setPerspectiveDepth(false)">
+setPerspectiveDepth(false)</a>
+<br>
+<a href="javascript:document.jmol.script('background black')">
+background black</a>
+<a href="javascript:document.jmol.script('background grey')">
+background grey</a>
+<a href="javascript:document.jmol.script('background [222,222,222]')">
+background [222,222,222]</a>
+<a href="javascript:document.jmol.script('background white')">
+background white</a>]]>
+</appletExample>
+      </p>
+    </section>
 
+    <section title="Basic Scripting">
+      <p>
+        This examples shows more advanced interaction of a HTML page with
+        the applet.
+<appletExample>
+<![CDATA[
+<script>
+function run(script) {
+  document.jmol2.script(script);
+}
+
+function addToScript(script) {
+  fullscript = document.area.script.value;
+  fullscript += script + '\n';
+  document.area.script.value = fullscript;
+  }
+  
+function linkScript(script) {
+  document.write('<a href="javascript:addToScript(');
+  document.write("'" + script + "'");
+  document.write(')\">');
+  document.write(script);
+  document.writeln('</a>&nbsp;&nbsp');
+}
+
+function br() {
+  document.write("<br>");
+}
+
+</script>
+<table border=1>
+<tr><td width=350 align=right>
+<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar"
+        width="350" height="350" align="left">
+    <param name="bgcolor" value="black">
+</applet>
+</td>
+<td>
+Enter your RasMol/Chime script here
+<form name="area">
+<textarea name="script" cols=40 rows=10></textarea><br>
+<input type="reset"  value="Clear Script">
+<input type="button" value="Execute Script"
+  onClick="run(document.area.script.value)">
+</form>
+<br>
+</td></tr></table>
+
+<script>
+linkScript('load aspirina.mol');
+linkScript('load caffeine.xyz');
+linkScript('load dna.xyz');
+linkScript('load estron.cml');
+br();
+linkScript('set display selected');
+linkScript('set display normal');
+linkScript('set bondmode or');
+linkScript('set bondmode and');
+br();
+linkScript('color atoms purple');
+linkScript('color bonds green');
+linkScript('color yellow');
+linkScript('color atoms [100, 150, 200]');
+br();
+linkScript('select all');
+linkScript('select none');
+linkScript('select atomno=1,atomno=2');
+linkScript('select elemno=1');
+linkScript('select hydrogens');
+linkScript('select carbons');
+br();
+linkScript('delay .1');
+linkScript('delay .5');
+linkScript('delay');
+linkScript('delay 5');
+linkScript('refresh');
+br();
+linkScript('reset');
+linkScript('rotate x 15');
+linkScript('rotate y 15');
+linkScript('rotate z 15');
+linkScript('move 360 0 0 0 0 0 0 0 4');
+linkScript('move 0 360 0 0 0 0 0 0 4');
+linkScript('move 0 0 360 0 0 0 0 0 4');
+br();
+linkScript('translate x 50');
+linkScript('translate x 0');
+linkScript('translate x -50');
+linkScript('move 0 0 0 0 50 -50 0 0 4');
+linkScript('move 0 0 0 0 -50 50 0 0 4');
+br();
+linkScript('zoom 50');
+linkScript('zoom 200');
+linkScript('move 0 0 0 100 0 0 0 0 4');
+br();
+linkScript('set boundbox on');
+linkScript('set boundbox off');
+linkScript('set axes on');
+linkScript('set axes off');
+br();
+linkScript('monitor 1 4');
+</script>
+]]>
+</appletExample>
+      </p>
+    </section>
+    
   </body>
 </document>
 

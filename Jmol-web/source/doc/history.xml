@@ -21,15 +21,30 @@
         Jmol open source.  Although it has not
         completely met the goal of functionally replacing XMol, Jmol duplicates many
         of the most useful features, and in some ways, it has surpassed XMol
-        functionality. In time, Jmol will hopefully include even more advanced
+        functionality. In time, Jmol was hoped to include even more advanced
         features.
       </p>
 
       <p>
         Jmol was started as an OpenScience project which is dedicated to
         writing and releasing free and open source scientific software. For more
-        information about the project, go to
+        information about the OpenScience project, go to
         <url>http://www.openscience.org/</url>.
+      </p>
+      
+      <p>
+        Later, Bradley A. Smith took over the project and did a lot of work in 
+        streamlining the project as well as the software. Under his leadership
+        new releases found its way to the user base, and many new features were
+        added, some of which contributed by users.
+      </p>
+      
+      <p>
+        In the end of 2002, Egon Willighagen became the new project leader and a
+        start was made with integrating Jmol with <a href="http://cdk.sf.net/">The
+        Chemical Development Kit</a>, something that was already planned in September
+        2000 by Dan, Egon and Christoph Steinbeck. In the same period Miguel Howard
+        completely rewrote the graphical engine of Jmol.
       </p>
     </section>
 

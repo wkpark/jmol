@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Jmol Documentation</title>
+    
+    <header>
+      <p>
+        There are three documents describing both the Jmol software and the project.
+      </p>
+    </header>
+
+    <section title="The Jmol Guide">
+      <p>
+        The <a href="doc/guide/">Jmol Guide</a> describes the Jmol application.
+      </p>
+    </section>
+
+    <section title="The Jmol Applet Guide">
+      <p>
+        The <a href="doc/appletguide/">Jmol Applet Guide</a> describes the Jmol applet.
+      </p>
+    </section>
+
+    <section title="The Jmol Developers Guide">
+      <p>
+        The <a href="doc/devel/">Jmol Developers Guide</a> describes how Jmol is developed and/or
+        how certain things are done in the Jmol development.
+      </p>
+    </section>
+
+    </body>
+</document>
+

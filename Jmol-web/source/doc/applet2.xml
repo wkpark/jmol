@@ -1,9 +1,13 @@
 <?xml version="1.0"?>
 <document>
   <body>
-    <title>Jmol Applet</title>
+    <title>More Applet Examples</title>
 
-    <section title="More examples of applets using CML">
+    <header>
+      <p>This page gives more examples on how to use the applet.</p>
+    </header>
+    
+    <section title="Examples of Animations">
       <p>A carbon-cation rearrangement reaction
 
 <appletExample>
@@ -25,7 +29,9 @@
 ]]>
 </appletExample>
       </p>
-
+    </section>
+    
+    <section title="Examples with other file formats">
       <p>Caffeine in MDL mol file format
       
 <appletExample>

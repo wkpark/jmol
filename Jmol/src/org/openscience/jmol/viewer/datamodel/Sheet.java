@@ -29,9 +29,11 @@ import javax.vecmath.Vector3f;
 
 public class Sheet extends AminoStructure {
 
+  AminoPolymer aminopolymer;
   Sheet(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
     super(aminopolymer, JmolConstants.SECONDARY_STRUCTURE_SHEET,
           polymerIndex, polymerCount);
+    this.aminopolymer = aminopolymer;
   }
 
   void calcAxis() {

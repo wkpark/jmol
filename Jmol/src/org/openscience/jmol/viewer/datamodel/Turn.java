@@ -27,8 +27,8 @@ import org.openscience.jmol.viewer.JmolConstants;
 
 public class Turn extends AminoStructure {
 
-  Turn(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
-    super(aminopolymer, JmolConstants.SECONDARY_STRUCTURE_TURN,
+  Turn(AlphaCarbonPolymer acpolymer, int polymerIndex, int polymerCount) {
+    super(acpolymer, JmolConstants.SECONDARY_STRUCTURE_TURN,
           polymerIndex, polymerCount);
   }
 }

@@ -41,6 +41,17 @@ abstract public class Polymer {
   private int[] atomIndices;
 
   static Polymer allocatePolymer(Chain chain) {
+    Group[] polymerGroups;
+    polymerGroups = getAminoGroups(chain);
+    if (polymerGroups != null)
+      return new AminoPolymer(chain, polymerGroups);
+    polymerGroups = getAlphaCarbonGroups(chain);
+    if (polymerGroups != null)
+      return new AlphaCarbonPolymer(chain, polymerGroups);
+    return null;
+  }
+
+  static Group[] getAminoGroups(Chain chain) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     int count = 0;
@@ -61,7 +72,33 @@ abstract public class Polymer {
         continue;
       groups[j++] = group;
     }
-    return new AminoPolymer(chain, groups);
+    System.out.println("is an AminoPolymer");
+    return groups;
+  }
+
+  static Group[] getAlphaCarbonGroups(Chain chain) {
+    Group[] chainGroups = chain.groups;
+    int firstNonMainchain = 0;
+    int count = 0;
+    for (int i = 0; i < chain.groupCount; ++i ) {
+      Group group = chainGroups[i];
+      if (! group.hasAlphaCarbon())
+        continue;
+      ++count;
+      if (firstNonMainchain == i)
+        ++firstNonMainchain;
+    }
+    if (count < 2)
+      return null;
+    Group[] groups = new Group[count];
+    for (int i = 0, j = 0; i < chain.groupCount; ++i) {
+      Group group = chainGroups[i];
+      if (! group.hasAlphaCarbon())
+        continue;
+      groups[j++] = group;
+    }
+    System.out.println("is an AlphaCarbonPolymer");
+    return groups;
   }
 
   Polymer(Chain chain, Group[] groups) {

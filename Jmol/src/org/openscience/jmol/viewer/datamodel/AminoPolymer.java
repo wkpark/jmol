@@ -32,95 +32,15 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class AminoPolymer extends Polymer {
+public class AminoPolymer extends AlphaCarbonPolymer {
 
   AminoPolymer(Chain chain, Group[] groups) {
     super(chain, groups);
   }
 
-  public Atom getAlphaCarbonAtom(int groupIndex) {
-    return groups[groupIndex].getAlphaCarbonAtom();
-  }
-
-  public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
-    return getAlphaCarbonAtom(groupIndex).point3f;
-  }
-
   // to get something other than the alpha carbon atom
   public Point3f getResiduePoint(int groupIndex, int mainchainIndex) {
     return groups[groupIndex].getMainchainAtom(mainchainIndex).point3f;
-  }
-
-  public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {
-    if (groupIndex == count) {
-      --groupIndex;
-    } else if (groupIndex > 0) {
-      midPoint.set(groups[groupIndex].getAlphaCarbonPoint());
-      midPoint.add(groups[groupIndex-1].getAlphaCarbonPoint());
-      midPoint.scale(0.5f);
-      return;
-    }
-    midPoint.set(groups[groupIndex].getAlphaCarbonPoint());
-  }
-
-  public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
-    if (groupIndex < count &&
-        groups[groupIndex].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex].aminostructure.
-                   getStructureMidPoint(groupIndex));
-      /*
-        System.out.println("" + groupIndex} + "isHelixOrSheet" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
-    } else if (groupIndex > 0 &&
-               groups[groupIndex - 1].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex - 1].aminostructure.
-                   getStructureMidPoint(groupIndex));
-      /*
-        System.out.println("" + groupIndex + "previous isHelixOrSheet" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
-    } else {
-      getAlphaCarbonMidPoint(groupIndex, midPoint);
-      /*
-        System.out.println("" + groupIndex + "the alpha carbon midpoint" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
-    }
-  }
-
-  void addSecondaryStructure(byte type,
-                             int startSeqcode, int endSeqcode) {
-    int polymerIndexStart, polymerIndexEnd;
-    if ((polymerIndexStart = getIndex(startSeqcode)) == -1 ||
-        (polymerIndexEnd = getIndex(endSeqcode)) == -1)
-      return;
-    int structureCount = polymerIndexEnd - polymerIndexStart + 1;
-    if (structureCount < 1) {
-      System.out.println("structure definition error");
-      return;
-    }
-    AminoStructure aminostructure;
-    switch(type) {
-    case JmolConstants.SECONDARY_STRUCTURE_HELIX:
-      aminostructure = new Helix(this, polymerIndexStart, structureCount);
-      break;
-    case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-      aminostructure = new Sheet(this, polymerIndexStart, structureCount);
-      break;
-    case JmolConstants.SECONDARY_STRUCTURE_TURN:
-      aminostructure = new Turn(this, polymerIndexStart, structureCount);
-      break;
-    default:
-      System.out.println("unrecognized secondary structure type");
-      return;
-    }
-    for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
-      groups[i].setStructure(aminostructure);
-  }
-
-  public boolean isProtein() {
-    return true;
   }
 
   public void calcHydrogenBonds() {

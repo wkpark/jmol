@@ -244,6 +244,10 @@ final public class Group {
     return getMainchainAtom(1).point3f;
   }
 
+  boolean hasAlphaCarbon() {
+    return (mainchainIndices != null) && (mainchainIndices[1] != -1);
+  }
+
   boolean hasFullMainchain() {
     if (mainchainIndices == null)
       return false;

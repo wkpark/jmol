@@ -29,7 +29,7 @@ import javax.vecmath.Vector3f;
 
 public abstract class AminoStructure {
 
-  AminoPolymer aminopolymer;
+  AlphaCarbonPolymer acpolymer;
   byte type;
   int polymerIndex;
   int polymerCount;
@@ -38,9 +38,9 @@ public abstract class AminoStructure {
   Vector3f axisUnitVector;
   Point3f[] segments;
 
-  AminoStructure(AminoPolymer aminopolymer, byte type,
+  AminoStructure(AlphaCarbonPolymer acpolymer, byte type,
                  int polymerIndex, int polymerCount) {
-    this.aminopolymer = aminopolymer;
+    this.acpolymer = acpolymer;
     this.type = type;
     this.polymerIndex = polymerIndex;
     this.polymerCount = polymerCount;
@@ -62,7 +62,7 @@ public abstract class AminoStructure {
     segments[0] = axisA;
     for (int i = polymerCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
-      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + i, point);
+      acpolymer.getAlphaCarbonMidPoint(polymerIndex + i, point);
       projectOntoAxis(point);
     }
     for (int i = 0; i < segments.length; ++i) {
@@ -77,14 +77,14 @@ public abstract class AminoStructure {
   boolean lowerNeighborIsHelixOrSheet() {
     if (polymerIndex == 0)
       return false;
-    return aminopolymer.groups[polymerIndex - 1].isHelixOrSheet();
+    return acpolymer.groups[polymerIndex - 1].isHelixOrSheet();
   }
 
   boolean upperNeighborIsHelixOrSheet() {
     int upperNeighborIndex = polymerIndex + polymerCount;
-    if (upperNeighborIndex == aminopolymer.count)
+    if (upperNeighborIndex == acpolymer.count)
       return false;
-    return aminopolymer.groups[upperNeighborIndex].isHelixOrSheet();
+    return acpolymer.groups[upperNeighborIndex].isHelixOrSheet();
   }
 
   final Vector3f vectorProjection = new Vector3f();
@@ -106,7 +106,7 @@ public abstract class AminoStructure {
   }
 
   public int getIndex(Group group) {
-    Group[] groups = aminopolymer.groups;
+    Group[] groups = acpolymer.groups;
     int i;
     for (i = polymerCount; --i >= 0; )
       if (groups[polymerIndex + i] == group)

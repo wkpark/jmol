@@ -311,7 +311,7 @@ class CmlReader extends ModelReader {
             notionalUnitcell[i] = parseFloat(chars);
         } else if (elementContext == ATOM) {
           if ("jmol:charge".equals(dictRef)) {
-            // atom.partialCharge = parseFloat(chars);
+            atom.partialCharge = parseFloat(chars);
           }
         }
         keepChars = false;

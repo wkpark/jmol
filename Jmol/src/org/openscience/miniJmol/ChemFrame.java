@@ -40,6 +40,7 @@
 package org.openscience.miniJmol;
 
 import org.openscience.jmol.PhysicalProperty;
+import org.openscience.jmol.DisplaySettings;
 import java.awt.Graphics;
 import java.util.*;
 import javax.vecmath.Point3f;

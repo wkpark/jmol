@@ -19,6 +19,7 @@
  */
 package org.openscience.miniJmol;
 
+import org.openscience.jmol.DisplaySettings;
 import java.util.*;
 import java.awt.Graphics;
 import java.awt.*;

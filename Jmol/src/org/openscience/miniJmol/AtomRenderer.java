@@ -21,6 +21,7 @@
 package org.openscience.miniJmol;
 
 import org.openscience.jmol.PhysicalProperty;
+import org.openscience.jmol.DisplaySettings;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.Vector;

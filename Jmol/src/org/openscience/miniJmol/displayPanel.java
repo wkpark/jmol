@@ -39,6 +39,7 @@
 
 package org.openscience.miniJmol;
 
+import org.openscience.jmol.DisplaySettings;
 import java.awt.*;
 import java.awt.event.*;
 import javax.vecmath.Point3f;

@@ -39,6 +39,7 @@
  */
 package org.openscience.miniJmol;
 
+import org.openscience.jmol.DisplaySettings;
 import java.util.Hashtable;
 import java.awt.Component;
 import java.awt.Container;

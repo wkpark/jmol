@@ -104,10 +104,10 @@ public class JmolApplet extends java.applet.Applet implements java.awt.event.Mou
       }
 
       private void verifyFormat(String format){
-         if (format.equals("CML")||format.equals("CMLSTRING")||format.equals("XYZ")||format.equals("PDB")){
+         if (format.equals("CML")||format.equals("CMLSTRING")||format.equals("XYZ")||format.equals("PDB")||format.equals("GAUSSIAN98")){
              return;
          }else{
-             throw new RuntimeException("Format: "+format+" is not a valid value (CML, CMLSTRING, XYZ, PDB)");
+             throw new RuntimeException("Format: "+format+" is not a valid value (CML, CMLSTRING, XYZ, PDB, GAUSSIAN98)");
          }
       }
 /**Converts the html escape chars in the input and replaces them with the required chars. Handles &lt; &gt and &quot; **/

@@ -170,8 +170,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     initializeProperties();
 
-    JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-    this.setTitle(jrh.translate("Preferences"));
+    this.setTitle(JmolResourceHandler.translateX("Preferences"));
 
     initVariables();
     commands = new Hashtable();
@@ -189,33 +188,33 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel bonds = buildBondPanel();
     JPanel colors = buildColorsPanel();
     //    JPanel vibrate = buildVibratePanel();
-    tabs.addTab(jrh.getString("Prefs.displayLabel"), null, disp);
-    tabs.addTab(jrh.getString("Prefs.atomsLabel"), null, atoms);
-    tabs.addTab(jrh.getString("Prefs.bondsLabel"), null, bonds);
-    tabs.addTab(jrh.getString("Prefs.colorsLabel"), null, colors);
-    //    tabs.addTab(jrh.getString("Prefs.vibrateLabel"), null, vibrate);
+    tabs.addTab(JmolResourceHandler.getStringX("Prefs.displayLabel"), null, disp);
+    tabs.addTab(JmolResourceHandler.getStringX("Prefs.atomsLabel"), null, atoms);
+    tabs.addTab(JmolResourceHandler.getStringX("Prefs.bondsLabel"), null, bonds);
+    tabs.addTab(JmolResourceHandler.getStringX("Prefs.colorsLabel"), null, colors);
+    //    tabs.addTab(JmolResourceHandler.getStringX("Prefs.vibrateLabel"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    jmolDefaultsButton = new JButton(jrh.getString("Prefs.jmolDefaultsLabel"));
+    jmolDefaultsButton = new JButton(JmolResourceHandler.getStringX("Prefs.jmolDefaultsLabel"));
     jmolDefaultsButton.addActionListener(this);
     buttonPanel.add(jmolDefaultsButton);
 
     rasmolDefaultsButton =
-      new JButton(jrh.getString("Prefs.rasmolDefaultsLabel"));
+      new JButton(JmolResourceHandler.getStringX("Prefs.rasmolDefaultsLabel"));
     rasmolDefaultsButton.addActionListener(this);
     buttonPanel.add(rasmolDefaultsButton);
 
-    cancelButton = new JButton(jrh.getString("Prefs.cancelButton"));
+    cancelButton = new JButton(JmolResourceHandler.getStringX("Prefs.cancelButton"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
 
-    applyButton = new JButton(jrh.getString("Prefs.applyButton"));
+    applyButton = new JButton(JmolResourceHandler.getStringX("Prefs.applyButton"));
     applyButton.addActionListener(this);
     buttonPanel.add(applyButton);
 
-    okButton = new JButton(jrh.getString("Prefs.okLabel"));
+    okButton = new JButton(JmolResourceHandler.getStringX("Prefs.okLabel"));
     okButton.addActionListener(this);
     buttonPanel.add(okButton);
     getRootPane().setDefaultButton(okButton);
@@ -239,8 +238,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     JPanel showPanel = new JPanel();
     showPanel.setLayout(new GridLayout(1, 3));
-    showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.showLabel")));
+    showPanel.setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.showLabel")));
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
                              viewer.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
@@ -331,10 +330,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     JPanel sfPanel = new JPanel();
     sfPanel.setLayout(new BorderLayout());
-    sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.atomSizeLabel")));
-    JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
+    sfPanel.setBorder(new TitledBorder(JmolResourceHandler
+        .getStringX("Prefs.atomSizeLabel")));
+    JLabel sfLabel = new JLabel(JmolResourceHandler
+        .getStringX("Prefs.atomSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     vdwPercentSlider =
       new JSlider(JSlider.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
@@ -386,14 +385,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel autobondPanel = new JPanel();
     autobondPanel.setLayout(new BoxLayout(autobondPanel, BoxLayout.Y_AXIS));
     autobondPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.autoBondLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.autoBondLabel")));
     ButtonGroup abGroup = new ButtonGroup();
     abYes =
-        new JRadioButton(JmolResourceHandler.getInstance()
-          .getString("Prefs.abYesLabel"));
-    abNo = new JRadioButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.abNoLabel"));
+        new JRadioButton(JmolResourceHandler.getStringX("Prefs.abYesLabel"));
+    abNo = new JRadioButton(JmolResourceHandler.getStringX("Prefs.abNoLabel"));
     abGroup.add(abYes);
     abGroup.add(abNo);
     autobondPanel.add(abYes);
@@ -420,11 +417,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     JPanel bwPanel = new JPanel();
     bwPanel.setLayout(new BorderLayout());
-    bwPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondRadiusLabel")));
+    bwPanel.setBorder(new TitledBorder(JmolResourceHandler
+        .getStringX("Prefs.bondRadiusLabel")));
     JLabel bwLabel =
-      new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondRadiusExpl"), JLabel.CENTER);
+      new JLabel(JmolResourceHandler
+        .getStringX("Prefs.bondRadiusExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
 
     bwSlider = new JSlider(0, 250,viewer.getMadBond()/2);
@@ -460,11 +457,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     // Bond Tolerance Slider
     JPanel btPanel = new JPanel();
     btPanel.setLayout(new BorderLayout());
-    btPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondToleranceLabel")));
+    btPanel.setBorder(new TitledBorder(JmolResourceHandler
+        .getStringX("Prefs.bondToleranceLabel")));
     JLabel btLabel =
-      new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondToleranceExpl"), JLabel.CENTER);
+      new JLabel(JmolResourceHandler
+        .getStringX("Prefs.bondToleranceExpl"), JLabel.CENTER);
     btPanel.add(btLabel, BorderLayout.NORTH);
 
     btSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
@@ -514,11 +511,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     // minimum bond distance slider
     JPanel bdPanel = new JPanel();
     bdPanel.setLayout(new BorderLayout());
-    bdPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.minBondDistanceLabel")));
+    bdPanel.setBorder(new TitledBorder(JmolResourceHandler
+        .getStringX("Prefs.minBondDistanceLabel")));
     JLabel bdLabel =
-      new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.minBondDistanceExpl"), JLabel.CENTER);
+      new JLabel(JmolResourceHandler
+        .getStringX("Prefs.minBondDistanceExpl"), JLabel.CENTER);
     bdPanel.add(bdLabel, BorderLayout.NORTH);
 
     bdSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
@@ -575,20 +572,20 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel backgroundPanel = new JPanel();
     backgroundPanel.setLayout(new BorderLayout());
     backgroundPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.bgLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.bgLabel")));
     bButton = new JButton();
     bButton.setBackground(colorBackground);
-    bButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.bgToolTip"));
+    bButton.setToolTipText(JmolResourceHandler
+        .getStringX("Prefs.bgToolTip"));
     ActionListener startBackgroundChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color =
           JColorChooser
-            .showDialog(bButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.bgChooserTitle"), colorBackground);
+            .showDialog(bButton, JmolResourceHandler
+              .getStringX("Prefs.bgChooserTitle"), colorBackground);
         colorBackground = color;
         bButton.setBackground(colorBackground);
         viewer.setColorBackground(colorBackground);
@@ -603,20 +600,20 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel pickedPanel = new JPanel();
     pickedPanel.setLayout(new BorderLayout());
     pickedPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.pickedLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.pickedLabel")));
     pButton = new JButton();
     pButton.setBackground(colorSelection);
-    pButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.pickedToolTip"));
+    pButton.setToolTipText(JmolResourceHandler
+        .getStringX("Prefs.pickedToolTip"));
     ActionListener startPickedChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color =
           JColorChooser
-            .showDialog(pButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.pickedChooserTitle"), colorSelection);
+            .showDialog(pButton, JmolResourceHandler
+              .getStringX("Prefs.pickedChooserTitle"), colorSelection);
         colorSelection = color;
         pButton.setBackground(colorSelection);
         viewer.setColorSelection(colorSelection);
@@ -631,8 +628,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel textPanel = new JPanel();
     textPanel.setLayout(new BorderLayout());
     textPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.textLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.textLabel")));
 
     isLabelAtomColor = viewer.getColorLabel() == null;
     cbIsLabelAtomColor =
@@ -642,8 +639,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     tButton = new JButton();
     tButton.setBackground(colorText);
-    tButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.textToolTip"));
+    tButton.setToolTipText(JmolResourceHandler
+        .getStringX("Prefs.textToolTip"));
     tButton.setEnabled(!isLabelAtomColor);
     ActionListener startTextChooser = new ActionListener() {
 
@@ -651,8 +648,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         Color color =
           JColorChooser
-            .showDialog(tButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.textChooserTitle"), colorText);
+            .showDialog(tButton, JmolResourceHandler
+              .getStringX("Prefs.textChooserTitle"), colorText);
         colorText = color;
         tButton.setBackground(colorText);
         viewer.setColorLabel(colorText);
@@ -667,8 +664,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel bondPanel = new JPanel();
     bondPanel.setLayout(new BorderLayout());
     bondPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.bondLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.bondLabel")));
 
     isBondAtomColor = viewer.getColorBond() == null;
     cbIsBondAtomColor =
@@ -678,8 +675,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     eButton = new JButton();
     eButton.setBackground(colorBond);
-    eButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.textToolTip"));
+    eButton.setToolTipText(JmolResourceHandler
+                           .getStringX("Prefs.textToolTip"));
     eButton.setEnabled(!isBondAtomColor);
     ActionListener startBondChooser = new ActionListener() {
 
@@ -687,8 +684,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         Color color =
           JColorChooser
-            .showDialog(eButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.bondChooserTitle"), colorBond);
+          .showDialog(eButton,
+                      JmolResourceHandler.getStringX("Prefs.bondChooserTitle"),
+                      colorBond);
         colorBond = color;
         eButton.setBackground(colorBond);
         viewer.setColorBond(colorBond);
@@ -703,20 +701,20 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel vectorPanel = new JPanel();
     vectorPanel.setLayout(new BorderLayout());
     vectorPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.vectorLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.vectorLabel")));
     vButton = new JButton();
     vButton.setBackground(colorVector);
-    vButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.vectorToolTip"));
+    vButton.setToolTipText(JmolResourceHandler
+        .getStringX("Prefs.vectorToolTip"));
     ActionListener startVectorChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color =
           JColorChooser
-            .showDialog(vButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.vectorChooserTitle"), colorVector);
+            .showDialog(vButton, JmolResourceHandler
+              .getStringX("Prefs.vectorChooserTitle"), colorVector);
         colorVector = color;
         vButton.setBackground(colorVector);
         viewer.setColorVector(colorVector);
@@ -732,12 +730,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel measurementColorPanel = new JPanel();
     measurementColorPanel.setLayout(new BorderLayout());
     measurementColorPanel
-      .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-                                  .getString("Prefs.measurementColorLabel")));
+      .setBorder(new TitledBorder(JmolResourceHandler
+                                  .getStringX("Prefs.measurementColorLabel")));
     measurementColorButton = new JButton();
     measurementColorButton.setBackground(colorVector);
-    measurementColorButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.measurementColorToolTip"));
+    measurementColorButton.setToolTipText(JmolResourceHandler
+        .getStringX("Prefs.measurementColorToolTip"));
     ActionListener startMeasurementColorChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -745,8 +743,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         Color color =
           JColorChooser
             .showDialog(measurementColorButton,
-                        JmolResourceHandler.getInstance()
-                        .getString("Prefs.measurementColorChooserTitle"),
+                        JmolResourceHandler
+                        .getStringX("Prefs.measurementColorChooserTitle"),
                         colorMeasurement);
         colorMeasurement = color;
         measurementColorButton.setBackground(colorMeasurement);
@@ -773,16 +771,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     notePanel.setLayout(new BorderLayout());
     notePanel.setBorder(new EtchedBorder());
     JLabel noteLabel =
-      new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.vibNoteLabel"));
+      new JLabel(JmolResourceHandler
+        .getStringX("Prefs.vibNoteLabel"));
     notePanel.add(noteLabel, BorderLayout.CENTER);
     vibratePanel.add(notePanel);
 
     JPanel vasPanel = new JPanel();
     vasPanel.setLayout(new BorderLayout());
     vasPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.vibAmplitudeScaleLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.vibAmplitudeScaleLabel")));
     vasSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
         (int) (100.0 * Vibrate.getAmplitudeScale()));
     vasSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -825,8 +823,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel vvsPanel = new JPanel();
     vvsPanel.setLayout(new BorderLayout());
     vvsPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.vibVectorScaleLabel")));
+        .setBorder(new TitledBorder(JmolResourceHandler
+          .getStringX("Prefs.vibVectorScaleLabel")));
     vvsSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
         (int) (100.0 * Vibrate.getVectorScale()));
     vvsSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -867,8 +865,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     JPanel vfPanel = new JPanel();
     vfPanel.setLayout(new BorderLayout());
-    vfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.vibFrameLabel")));
+    vfPanel.setBorder(new TitledBorder(JmolResourceHandler
+        .getStringX("Prefs.vibFrameLabel")));
 
     vfSlider = new JSlider(JSlider.HORIZONTAL, 0, 50,
         Vibrate.getNumberFrames());

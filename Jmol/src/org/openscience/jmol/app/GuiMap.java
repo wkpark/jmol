@@ -38,7 +38,7 @@ class GuiMap {
 
   String getLabel(String key) {
     String label =
-      JmolResourceHandler.getInstance().getString(key+"Label");
+      JmolResourceHandler.getStringX(key+"Label");
     if (label == null)
       label = key;
     return label;

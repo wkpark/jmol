@@ -66,14 +66,13 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     try {
       URL aboutURL =
         this.getClass().getClassLoader()
-          .getResource(JmolResourceHandler.getInstance()
-            .getString("About.aboutURL"));
+          .getResource(JmolResourceHandler.getStringX("About.aboutURL"));
       if (aboutURL != null) {
         html = new JEditorPane(aboutURL);
       } else {
         html = new JEditorPane("text/plain",
             "Unable to find url '"
-              + JmolResourceHandler.getInstance().getString("About.aboutURL")
+              + JmolResourceHandler.getStringX("About.aboutURL")
                 + "'.");
       }
       html.setEditable(false);
@@ -102,8 +101,7 @@ public class AboutDialog extends JDialog implements HyperlinkListener {
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
     JButton ok =
-      new JButton(JmolResourceHandler.getInstance()
-        .getString("About.okLabel"));
+      new JButton(JmolResourceHandler.getStringX("About.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

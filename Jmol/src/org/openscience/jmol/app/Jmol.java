@@ -282,6 +282,7 @@ public class Jmol extends JPanel {
 
   public static Jmol getJmol(JFrame frame) {
     ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
+    System.out.println("splash_image=" + splash_image);
     Splash splash = new Splash(frame, splash_image);
     splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     splash.showStatus(JmolResourceHandler
@@ -687,8 +688,8 @@ public class Jmol extends JPanel {
             JMenu m = createMenu(menuKeys[i]);
             if (m != null)
                 menuBar.add(m);
-            String mnem = JmolResourceHandler.
-              getInstance().getString(menuKeys[i] + "Mnemonic");
+            String mnem = JmolResourceHandler
+              .getStringX(menuKeys[i] + "Mnemonic");
             if (mnem != null) {
                 char mn = mnem.charAt(0);
                 m.setMnemonic(mn);
@@ -718,8 +719,7 @@ public class Jmol extends JPanel {
   protected JMenu createMenu(String key) {
 
     // Get list of items from resource file:
-    String[] itemKeys = tokenize(JmolResourceHandler.
-                                 getInstance().getString(key));
+    String[] itemKeys = tokenize(JmolResourceHandler.getStringX(key));
 
     // Get label associated with this menu:
     JMenu menu = guimap.newJMenu(key);

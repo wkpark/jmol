@@ -83,22 +83,20 @@ public final class ScriptWindow extends JDialog
     JPanel buttonPanel = new JPanel();
     container.add(buttonPanel, BorderLayout.SOUTH);
 
-    JmolResourceHandler resources = JmolResourceHandler.getInstance();
-    
-    closeButton = new JButton(resources.translate("Close"));
+    closeButton = new JButton(JmolResourceHandler.translateX("Close"));
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
 
-    runButton = new JButton(resources.translate("Run"));
+    runButton = new JButton(JmolResourceHandler.translateX("Run"));
     runButton.addActionListener(this);
     buttonPanel.add(runButton);
 
-    haltButton = new JButton(resources.translate("Halt"));
+    haltButton = new JButton(JmolResourceHandler.translateX("Halt"));
     haltButton.addActionListener(this);
     buttonPanel.add(haltButton);
     haltButton.setEnabled(false);
 
-    helpButton = new JButton(resources.translate("Help"));
+    helpButton = new JButton(JmolResourceHandler.translateX("Help"));
     helpButton.addActionListener(this);
     buttonPanel.add(helpButton);
   }

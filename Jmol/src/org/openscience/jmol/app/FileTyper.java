@@ -54,9 +54,9 @@ public class FileTyper extends JPanel
   private boolean useFileExtension = true;
 
   private String[] choices = {
-    JmolResourceHandler.getInstance().getString("FileTyper.XYZ"),
-    JmolResourceHandler.getInstance().getString("FileTyper.PDB"),
-    JmolResourceHandler.getInstance().getString("FileTyper.CML"),
+    JmolResourceHandler.getStringX("FileTyper.XYZ"),
+    JmolResourceHandler.getStringX("FileTyper.PDB"),
+    JmolResourceHandler.getStringX("FileTyper.CML"),
   };
 
   // Default is the first one:
@@ -87,12 +87,12 @@ public class FileTyper extends JPanel
 
 
     useFileExtensionCheckBox =
-        new JCheckBox(JmolResourceHandler.getInstance()
-          .getString("FileTyper.useFileExtensionCheckBox"), useFileExtension);
+        new JCheckBox(JmolResourceHandler
+          .getStringX("FileTyper.useFileExtensionCheckBox"), useFileExtension);
     useFileExtensionCheckBox.addItemListener(this);
     String mnemonic =
-      JmolResourceHandler.getInstance()
-        .getString("FileTyper.useFileExtensionMnemonic");
+      JmolResourceHandler
+        .getStringX("FileTyper.useFileExtensionMnemonic");
     if ((mnemonic != null) && (mnemonic.length() > 0)) {
       useFileExtensionCheckBox.setMnemonic(mnemonic.charAt(0));
     }
@@ -102,8 +102,7 @@ public class FileTyper extends JPanel
 
     gridBagConstraints = new GridBagConstraints();
     fileTypeLabel =
-        new JLabel(JmolResourceHandler.getInstance()
-          .getString("FileTyper.fileTypeLabel"));
+        new JLabel(JmolResourceHandler.getStringX("FileTyper.fileTypeLabel"));
     fileTypeLabel.setForeground(Color.black);
     fileTypePanel.add(fileTypeLabel, gridBagConstraints);
     fileTypeComboBox = new JComboBox(choices);

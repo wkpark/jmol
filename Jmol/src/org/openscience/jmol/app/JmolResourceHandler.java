@@ -83,7 +83,7 @@ class JmolResourceHandler {
     return getInstance().getString(key);
   }
 
-  public static ImageIcon getIconX(String key) {
+  public static ImageIcon getIconX(String key){ 
     return getInstance().getIcon(key);
   }
 
@@ -91,7 +91,7 @@ class JmolResourceHandler {
     return getInstance().translate(key);
   }
 
-  public synchronized ImageIcon getIcon(String key) {
+  private synchronized ImageIcon getIcon(String key) {
 
     String resourceName = null;
     try {
@@ -105,16 +105,18 @@ class JmolResourceHandler {
       if (imageUrl != null) {
         return new ImageIcon(imageUrl);
       } else {
+        /*
         System.err.println("Warning: unable to load " + resourceName
             + " for icon " + key + ".");
+        */
       }
     }
     return null;
   }
 
-  public synchronized String getString(String key) {
+  private synchronized String getString(String key) {
 
-    String result = key;
+    String result = null;
     try {
       result = stringsResourceBundle.getString(key);
     } catch (MissingResourceException e) {
@@ -125,14 +127,14 @@ class JmolResourceHandler {
       } catch (MissingResourceException e) {
       }
     }
-    return result;
+    return result != null ? result : key;
   }
 
   /**
    * A wrapper for easy detection which strins in the
    * source code are localized.
    */
-  public synchronized String translate(String text) {
+  private synchronized String translate(String text) {
     StringTokenizer st = new StringTokenizer(text, " ");
     StringBuffer key = new StringBuffer();
     while (st.hasMoreTokens()) {

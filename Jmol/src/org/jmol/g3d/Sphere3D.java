@@ -261,7 +261,6 @@ class Sphere3D {
   final static byte[] sphereIntensities = new byte[256 * 256];
 
   void calcSphereShading() {
-    System.out.println("calcSphereShading");
     if (! sphereShadingCalculated) {
       float xF = -127.5f;
       for (int i = 0; i < 256; ++xF, ++i) {
@@ -276,13 +275,6 @@ class Sphere3D {
           sphereIntensities[(j << 8) + i] = intensity;
         }
       }
-      int min = 127, max = -127;
-      for (int i = 65536; --i >= 0; )
-        if (sphereIntensities[i] < min)
-          min = sphereIntensities[i];
-        else if (sphereIntensities[i] > max)
-          max = sphereIntensities[i];
-      System.out.println(" min=" + min + " max=" + max);
       sphereShadingCalculated = true;
     }
   }

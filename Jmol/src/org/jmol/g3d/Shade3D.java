@@ -65,13 +65,13 @@ final class Shade3D {
   // set specular 0-100
   static float intensitySpecular = 0.22f;
   // set specpower -5
-  static int specularExponent = 5;
+  static int specularExponent = 6;
   // set specpower 0-100
-  static float intenseFraction = 0.5f;
+  static float intenseFraction = 0.4f;
   // set diffuse 0-100
-  static float intensityDiffuse = 0.8f;
+  static float intensityDiffuse = 0.84f;
   // set ambient 0-100
-  static float ambientFraction = 0.5f;
+  static float ambientFraction = 0.45f;
 
   static int[] getShades(int rgb) {
     int[] shades = new int[shadeMax];
@@ -213,7 +213,6 @@ final class Shade3D {
     seed = t = ((t << 16) + (t << 1) + t) & 0x7FFFFFFF;
     return t >> 23;
   }
-
 
   static void setSpecular(boolean specular) {
     specularOn = specular;

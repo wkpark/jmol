@@ -72,12 +72,18 @@ class StrandsRenderer extends Renderer {
       short colix = colixes[i];
       if (colix == 0)
         colix = alpha.colixAtom;
-      calcSegmentPoints(mainchain, i, mads);
-      render1Segment(colix);
+      calcSegmentPoints(mainchain, i, 0, mads);
+      render1Segment(Colix.BLUE);
+      calcSegmentPoints(mainchain, i, 1, mads);
+      render1Segment(Colix.GREEN);
+      calcSegmentPoints(mainchain, i, 2, mads);
+      render1Segment(Colix.YELLOW);
+      calcSegmentPoints(mainchain, i, 3, mads);
+      render1Segment(Colix.RED);
     }
   }
 
-  void calcSegmentPoints(PdbResidue[] mainchain, int i, short[] mads) {
+  void calcSegmentPoints(PdbResidue[] mainchain, int i, int iAtom, short[] mads) {
     int iPrev = i - 1, iNext = i + 1, iNext2 = i + 2;
     if (iPrev < 0)
       iPrev = 0;
@@ -85,14 +91,14 @@ class StrandsRenderer extends Renderer {
       iNext = mainchainLast;
     if (iNext2 > mainchainLast)
       iNext2 = mainchainLast;
-    calc(mainchain, iPrev, s0);
-    calc(mainchain, i, s1);
-    calc(mainchain, iNext, s2);
-    calc(mainchain, iNext2, s3);
+    calc(mainchain, iPrev,  iAtom, s0);
+    calc(mainchain, i,      iAtom, s1);
+    calc(mainchain, iNext,  iAtom, s2);
+    calc(mainchain, iNext2, iAtom, s3);
   }
 
-  void calc(PdbResidue[] mainchain, int i, Point3i dest) {
-    Atom atom = mainchain[i].getAlphaCarbonAtom();
+  void calc(PdbResidue[] mainchain, int i, int iAtom, Point3i dest) {
+    Atom atom = mainchain[i].getMainchainAtom(iAtom);
     dest.x = atom.x;
     dest.y = atom.y;
     dest.z = atom.z;

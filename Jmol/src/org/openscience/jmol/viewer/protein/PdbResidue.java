@@ -151,7 +151,7 @@ public class PdbResidue {
     return mainchainIndices[1];
   }
 
-  Atom getAtom(int i) {
+  public Atom getMainchainAtom(int i) {
     int j;
     if (mainchainIndices == null || (j = mainchainIndices[i]) == -1)
       return null;
@@ -159,18 +159,19 @@ public class PdbResidue {
   }
 
   public Atom getNitrogenAtom() {
-    return getAtom(0);
+    return getMainchainAtom(0);
   }
 
   public Atom getAlphaCarbonAtom() {
-    return getAtom(1);
+    return getMainchainAtom(1);
   }
 
   public Atom getCarboxylCarbonAtom() {
-    return getAtom(2);
+    return getMainchainAtom(2);
   }
 
   public Atom getCarboxylOxygenAtom() {
-    return getAtom(3);
+    return getMainchainAtom(3);
   }
+
 }

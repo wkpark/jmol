@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,45 +19,46 @@
  */
 package org.openscience.jmol;
 
-import java.io.PrintStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.text.*;
-import java.util.*;
-import java.net.*;
-import java.awt.Image;
-import java.awt.Toolkit;
+import java.net.URL;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 import javax.swing.ImageIcon;
 
+/**
+ * Provides access to resources (for example, strings and images). This class is
+ * a singleton which is retrieved by the getInstance method.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ */
 class JmolResourceHandler {
 
-  private static ResourceBundle rb;
-  private String baseKey;
+  private static JmolResourceHandler instance;
 
-  public static void initialize(String resources) {
-    JmolResourceHandler.rb = ResourceBundle.getBundle(resources);
+  private ResourceBundle resourceBundle;
+
+  private JmolResourceHandler() {
+    resourceBundle = ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
   }
 
-  JmolResourceHandler(String string) {
-    baseKey = string;
+  public static JmolResourceHandler getInstance() {
+    if (instance == null) {
+      instance = new JmolResourceHandler();
+    }
+    return instance;
   }
+  
+  public synchronized ImageIcon getIcon(String key) {
 
-  synchronized ImageIcon getIcon(String key) {
-
-    String iname = null;    // Image name
+    String imageName = null;
     String resourceName = null;
     try {
-      resourceName = rb.getString(getQualifiedKey(key));
-      iname = "org/openscience/jmol/images/" + resourceName;
+      resourceName = resourceBundle.getString(key);
+      imageName = "org/openscience/jmol/images/" + resourceName;
     } catch (MissingResourceException e) {
-
-      // Ignore
     }
-    if (iname != null) {
-      // URL imageUrl = ClassLoader.getSystemResource(iname);
-      URL imageUrl = this.getClass().getClassLoader().getResource(iname);      
+    
+    if (imageName != null) {
+      URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
       if (imageUrl != null) {
         return new ImageIcon(imageUrl);
       } else {
@@ -67,35 +68,26 @@ class JmolResourceHandler {
     }
     return null;
   }
-
-  synchronized String getString(String string) {
-
-    String ret = null;
+  
+  public synchronized String getString(String key) {
+    
+    String result = null;
     try {
-      ret = rb.getString(getQualifiedKey(string));
+      result = resourceBundle.getString(key);
     } catch (MissingResourceException e) {
     }
-    if (ret != null) {
-      return ret;
-    }
-    return null;
+    return result;
   }
-
-  synchronized Object getObject(String string) {
-
-    Object o = null;
+  
+  public synchronized Object getObject(String key) {
+    
+    Object result = null;
     try {
-      o = rb.getObject(getQualifiedKey(string));
+      result = resourceBundle.getObject(key);
     } catch (MissingResourceException e) {
     }
-    if (o != null) {
-      return o;
-    }
-    return null;
+    return result;
   }
-
-  synchronized String getQualifiedKey(String string) {
-    return baseKey + "." + string;
-  }
-
+  
 }
+

@@ -33,25 +33,19 @@ import java.net.MalformedURLException;
 
 public class HelpDialog extends JDialog implements HyperlinkListener {
 
-  private static JmolResourceHandler jrh;
   JEditorPane html;
-
-  static {
-    jrh = new JmolResourceHandler("Help");
-  }
 
   public HelpDialog(JFrame fr) {
 
     super(fr, "Jmol Help", true);
 
     try {
-      URL helpURL = this.getClass().getClassLoader().getResource(jrh.getString("helpURL"));
-      // URL helpURL = ClassLoader.getSystemResource(jrh.getString("helpURL"));
+      URL helpURL = this.getClass().getClassLoader().getResource(JmolResourceHandler.getInstance().getString("Help.helpURL"));
       if (helpURL != null) {
         html = new JEditorPane(helpURL);
       } else {
         html = new JEditorPane("text/plain",
-                "Unable to find url '" + jrh.getString("helpURL") + "'.");
+                "Unable to find url '" + JmolResourceHandler.getInstance().getString("Help.helpURL") + "'.");
       }
       html.setEditable(false);
       html.addHyperlinkListener(this);
@@ -78,7 +72,7 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok = new JButton(jrh.getString("okLabel"));
+    JButton ok = new JButton(JmolResourceHandler.getInstance().getString("Help.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

@@ -54,8 +54,6 @@ public class Measure extends JDialog {
   private DisplayPanel display;
   private MeasurementList mlist;
 
-  private static JmolResourceHandler jrh;
-
   // The actions:
 
   private DistanceAction distanceAction = new DistanceAction();
@@ -68,30 +66,27 @@ public class Measure extends JDialog {
   private MeasureTableModel mtm = new MeasureTableModel();
   private JTable table = new JTable();
 
-  static {
-    jrh = new JmolResourceHandler("Measure");
-  }
-  private JButton mButton = new JButton(jrh.getString("deleteLabel"));
+  private JButton mButton = new JButton(JmolResourceHandler.getInstance().getString("Measure.deleteLabel"));
   private TitledBorder mBorder = new TitledBorder(" ");
 
 
   class MeasureTableModel extends AbstractTableModel {
 
     final String[] columnNames = {
-      " ", jrh.getString("atomnLabel"), jrh.getString("atomidentLabel"),
-      jrh.getString("xLabel"), jrh.getString("yLabel"),
-      jrh.getString("zLabel")
+      " ", JmolResourceHandler.getInstance().getString("Measure.atomnLabel"), JmolResourceHandler.getInstance().getString("Measure.atomidentLabel"),
+      JmolResourceHandler.getInstance().getString("Measure.xLabel"), JmolResourceHandler.getInstance().getString("Measure.yLabel"),
+      JmolResourceHandler.getInstance().getString("Measure.zLabel")
     };
 
     final Object[][] data = {
       {
-        jrh.getString("atomaLabel"), " ", " ", " ", " ", " "
+        JmolResourceHandler.getInstance().getString("Measure.atomaLabel"), " ", " ", " ", " ", " "
       }, {
-        jrh.getString("atombLabel"), " ", " ", " ", " ", " "
+        JmolResourceHandler.getInstance().getString("Measure.atombLabel"), " ", " ", " ", " ", " "
       }, {
-        jrh.getString("atomcLabel"), " ", " ", " ", " ", " "
+        JmolResourceHandler.getInstance().getString("Measure.atomcLabel"), " ", " ", " ", " ", " "
       }, {
-        jrh.getString("atomdLabel"), " ", " ", " ", " ", " "
+        JmolResourceHandler.getInstance().getString("Measure.atomdLabel"), " ", " ", " ", " ", " "
       }
     };
     public int getColumnCount() {
@@ -202,7 +197,7 @@ public class Measure extends JDialog {
     });
     buttonPanel.add(mButton);
     mButton.setEnabled(false);
-    JButton cancel = new JButton(jrh.getString("cancelLabel"));
+    JButton cancel = new JButton(JmolResourceHandler.getInstance().getString("Measure.cancelLabel"));
     cancel.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -234,21 +229,21 @@ public class Measure extends JDialog {
     mtm.fireTableDataChanged();
     switch (measure) {
     case ANGLE :
-      mBorder.setTitle(jrh.getString("infoString3"));
+      mBorder.setTitle(JmolResourceHandler.getInstance().getString("Measure.infoString3"));
       break;
 
     case DIHEDRAL :
-      mBorder.setTitle(jrh.getString("infoString4"));
+      mBorder.setTitle(JmolResourceHandler.getInstance().getString("Measure.infoString4"));
       break;
 
     default :
-      mBorder.setTitle(jrh.getString("infoString2"));
+      mBorder.setTitle(JmolResourceHandler.getInstance().getString("Measure.infoString2"));
       break;
     }
     if (action == DELETE) {
-      mButton.setText(jrh.getString("deleteLabel"));
+      mButton.setText(JmolResourceHandler.getInstance().getString("Measure.deleteLabel"));
     } else {
-      mButton.setText(jrh.getString("addLabel"));
+      mButton.setText(JmolResourceHandler.getInstance().getString("Measure.addLabel"));
     }
     oldMode = display.getMode();
     display.setMode(DisplayPanel.MEASURE);

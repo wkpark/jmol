@@ -40,7 +40,6 @@ public class MeasurementList extends JDialog {
   protected EventListenerList listenerList = new EventListenerList();
 
   private DisplayPanel display;
-  private static JmolResourceHandler jrh;
   protected DefaultMutableTreeNode top;
   protected ListNode distances, angles, dihedrals;
   protected DefaultTreeModel treeModel;
@@ -58,10 +57,6 @@ public class MeasurementList extends JDialog {
   private CMeasureAction cmeasureAction = new CMeasureAction();
   private ViewMListAction viewmlistAction = new ViewMListAction();
   private Hashtable commands;
-
-  static {
-    jrh = new JmolResourceHandler("MeasurementList");
-  }
 
   /**
    * Constructor
@@ -86,12 +81,12 @@ public class MeasurementList extends JDialog {
     JPanel mPanel = new JPanel();
     mPanel.setLayout(new BorderLayout());
 
-    top = new DefaultMutableTreeNode(jrh.getString("mLabel"));
+    top = new DefaultMutableTreeNode(JmolResourceHandler.getInstance().getString("MeasurementList.mLabel"));
     treeModel = new DefaultTreeModel(top);
 
-    distances = new ListNode(jrh.getString("distanceLabel"), distanceList);
-    angles = new ListNode(jrh.getString("angleLabel"), angleList);
-    dihedrals = new ListNode(jrh.getString("dihedralLabel"), dihedralList);
+    distances = new ListNode(JmolResourceHandler.getInstance().getString("MeasurementList.distanceLabel"), distanceList);
+    angles = new ListNode(JmolResourceHandler.getInstance().getString("MeasurementList.angleLabel"), angleList);
+    dihedrals = new ListNode(JmolResourceHandler.getInstance().getString("MeasurementList.dihedralLabel"), dihedralList);
 
     treeModel.insertNodeInto(distances, top, top.getChildCount());
     treeModel.insertNodeInto(angles, top, top.getChildCount());

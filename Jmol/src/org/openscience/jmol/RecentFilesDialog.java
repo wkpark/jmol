@@ -20,12 +20,12 @@
 package org.openscience.jmol;
 
 import javax.swing.*;
+import java.util.ResourceBundle;
 
 public class RecentFilesDialog extends JDialog
         implements java.awt.event.WindowListener,
           java.awt.event.ActionListener {
 
-  private static JmolResourceHandler jrh;
   private boolean ready = false;
   private String fileName = null;
   private String fileType = null;
@@ -35,22 +35,20 @@ public class RecentFilesDialog extends JDialog
   private String[] files = new String[MAX_FILES];
   private String[] fileTypes = new String[MAX_FILES];
   private JList fileList;
-  private static JmolResourceHandler rch =
-    new JmolResourceHandler("RecentFiles");
   java.util.Properties props;
 
   /** Creates a hidden recent files dialog **/
   public RecentFilesDialog(java.awt.Frame boss) {
 
-    super(boss, rch.getString("windowTitle"), true);
+    super(boss, JmolResourceHandler.getInstance().getString("RecentFiles.windowTitle"), true);
     props = new java.util.Properties();
     getFiles();
     getContentPane().setLayout(new java.awt.BorderLayout());
     JPanel buttonPanel = new JPanel();
-    okButton = new JButton(rch.getString("okLabel"));
+    okButton = new JButton(JmolResourceHandler.getInstance().getString("RecentFiles.okLabel"));
     okButton.addActionListener(this);
     buttonPanel.add(okButton);
-    cancelButton = new JButton(rch.getString("cancelLabel"));
+    cancelButton = new JButton(JmolResourceHandler.getInstance().getString("RecentFiles.cancelLabel"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
     getContentPane().add("South", buttonPanel);

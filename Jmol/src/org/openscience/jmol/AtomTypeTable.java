@@ -57,7 +57,6 @@ import java.beans.PropertyChangeEvent;
 public class AtomTypeTable extends JDialog implements ActionListener {
 
   private boolean DEBUG = false;
-  private static JmolResourceHandler jrh;
   private static String SAU = "org/openscience/jmol/Data/AtomTypes";
 
   /*
@@ -72,10 +71,6 @@ public class AtomTypeTable extends JDialog implements ActionListener {
   AtomTypesModel atModel;
 
   //static BaseAtomType defaultAtomType;
-
-  static {
-    jrh = new JmolResourceHandler("AtomTypeTable");
-  }
 
   public AtomTypeTable(JFrame fr, File UAF) {
 
@@ -97,7 +92,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
   public AtomTypeTable(JFrame fr) {
 
-    super(fr, jrh.getString("Title"), true);
+    super(fr, JmolResourceHandler.getInstance().getString("AtomTypeTable.Title"), true);
 
     // Create a model of the data.
     atModel = new AtomTypesModel();
@@ -108,8 +103,8 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     // Change sort icon when sort properties change.
     sorter.addPropertyChangeListener(new PropertyChangeListener() {
 
-      ImageIcon iconUp = jrh.getIcon("upImage");
-      ImageIcon iconDown = jrh.getIcon("downImage");
+      ImageIcon iconUp = JmolResourceHandler.getInstance().getIcon("AtomTypeTable.upImage");
+      ImageIcon iconDown = JmolResourceHandler.getInstance().getIcon("AtomTypeTable.downImage");
 
       public void propertyChange(PropertyChangeEvent event) {
 
@@ -170,7 +165,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton save = new JButton(jrh.getString("saveLabel"));
+    JButton save = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.saveLabel"));
     save.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -178,7 +173,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       }
     });
     buttonPanel.add(save);
-    JButton revert = new JButton(jrh.getString("revertLabel"));
+    JButton revert = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.revertLabel"));
     revert.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -186,7 +181,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       }
     });
     buttonPanel.add(revert);
-    JButton cancel = new JButton(jrh.getString("cancelLabel"));
+    JButton cancel = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.cancelLabel"));
     cancel.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -194,7 +189,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       }
     });
     buttonPanel.add(cancel);
-    JButton OK = new JButton(jrh.getString("OKLabel"));
+    JButton OK = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.OKLabel"));
     OK.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -205,15 +200,15 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
     JToolBar toolbar = new JToolBar();
 
-    JButton natb = new JButton(jrh.getIcon("newAtypeImage"));
+    JButton natb = new JButton(JmolResourceHandler.getInstance().getIcon("AtomTypeTable.newAtypeImage"));
     natb.setMargin(new Insets(1, 1, 1, 1));
-    natb.setToolTipText(jrh.getString("newAtypeTooltip"));
+    natb.setToolTipText(JmolResourceHandler.getInstance().getString("AtomTypeTable.newAtypeTooltip"));
     natb.setActionCommand("newatype");
     natb.addActionListener(this);
 
-    JButton datb = new JButton(jrh.getIcon("delAtypeImage"));
+    JButton datb = new JButton(JmolResourceHandler.getInstance().getIcon("AtomTypeTable.delAtypeImage"));
     datb.setMargin(new Insets(1, 1, 1, 1));
-    datb.setToolTipText(jrh.getString("delAtypeTooltip"));
+    datb.setToolTipText(JmolResourceHandler.getInstance().getString("AtomTypeTable.delAtypeTooltip"));
     datb.setActionCommand("delatype");
     datb.addActionListener(this);
 

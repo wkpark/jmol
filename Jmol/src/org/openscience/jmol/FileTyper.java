@@ -32,14 +32,10 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
   private JFileChooser myChooser;
   private JComboBox cb;
   private static boolean UseFileExtensions = true;
-  private static JmolResourceHandler jrh;
 
-  static {
-    jrh = new JmolResourceHandler("FileTyper");
-  }
   private String[] Choices = {
-    jrh.getString("Automatic"), jrh.getString("XYZ"), jrh.getString("PDB"),
-    jrh.getString("CML"), jrh.getString("GhemicalMM")
+    JmolResourceHandler.getInstance().getString("FileTyper.Automatic"), JmolResourceHandler.getInstance().getString("FileTyper.XYZ"), JmolResourceHandler.getInstance().getString("FileTyper.PDB"),
+    JmolResourceHandler.getInstance().getString("FileTyper.CML"), JmolResourceHandler.getInstance().getString("FileTyper.GhemicalMM")
   };
 
   // Default is the first one:
@@ -76,7 +72,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
 
     JPanel cbPanel = new JPanel();
     cbPanel.setLayout(new FlowLayout());
-    cbPanel.setBorder(new TitledBorder(jrh.getString("Title")));
+    cbPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("FileTyper.Title")));
     cb = new JComboBox();
     for (int i = 0; i < Choices.length; i++) {
       cb.addItem(Choices[i]);

@@ -312,10 +312,6 @@ public class PropertyGraph extends JDialog implements ActionListener {
    */
   private Vector actionStates = null;
 
-  /**
-   * Resource handler for loading interface strings and icons.
-   */
-  private static JmolResourceHandler jrh = new JmolResourceHandler("Graph");
 }
 
 class ArrayDataSource implements ScatterPlotSource {

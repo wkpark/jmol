@@ -33,25 +33,19 @@ import java.net.MalformedURLException;
 
 public class WhatsNewDialog extends JDialog implements HyperlinkListener {
 
-  private static JmolResourceHandler jrh;
   JEditorPane html;
-
-  static {
-    jrh = new JmolResourceHandler("WhatsNew");
-  }
 
   public WhatsNewDialog(JFrame fr) {
 
     super(fr, "What's New in Jmol", true);
 
     try {
-      URL changeLogURL = this.getClass().getClassLoader().getResource(jrh.getString("changeLogURL"));
-      //URL changeLogURL = ClassLoader.getSystemResource(jrh.getString("changeLogURL"));
+      URL changeLogURL = this.getClass().getClassLoader().getResource(JmolResourceHandler.getInstance().getString("WhatsNew.changeLogURL"));
       if (changeLogURL != null) {
         html = new JEditorPane(changeLogURL);
       } else {
         html = new JEditorPane("text/plain",
-                "Unable to find url '" + jrh.getString("changeLogURL")
+                "Unable to find url '" + JmolResourceHandler.getInstance().getString("WhatsNew.changeLogURL")
                   + "'.");
       }
       html.setEditable(false);
@@ -79,7 +73,7 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok = new JButton(jrh.getString("okLabel"));
+    JButton ok = new JButton(JmolResourceHandler.getInstance().getString("WhatsNew.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

@@ -107,54 +107,54 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
     JPanel framePanel = new JPanel();
     framePanel.setLayout(new BoxLayout(framePanel, BoxLayout.X_AXIS));
-    framePanel.setBorder(new TitledBorder(jrh.getString("frameLabel")));
+    framePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Vibrate.frameLabel")));
     frameCombo.addItemListener(new FrameComboItemListener());
     framePanel.add(frameCombo);
     container.add(framePanel);
     JPanel vibPanel = new JPanel();
     vibPanel.setLayout(new BoxLayout(vibPanel, BoxLayout.X_AXIS));
-    vibPanel.setBorder(new TitledBorder(jrh.getString("vibrationLabel")));
+    vibPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Vibrate.vibrationLabel")));
     vibCombo.addItemListener(new VibComboItemListener());
     vibPanel.add(vibCombo);
     container.add(vibPanel);
     JPanel progressPanel = new JPanel();
     progressPanel.setLayout(new BorderLayout());
-    progressPanel.setBorder(new TitledBorder(jrh.getString("progressLabel")));
+    progressPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Vibrate.progressLabel")));
     progressSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     progressSlider.addChangeListener(new ProgressSliderChangeListener());
     progressPanel.add(progressSlider);
     container.add(progressPanel);
     JPanel rcPanel = new JPanel();
     rcPanel.setLayout(new BoxLayout(rcPanel, BoxLayout.X_AXIS));
-    rcPanel.setBorder(new TitledBorder(jrh.getString("controlsLabel")));
-    JButton rwb = new JButton(jrh.getIcon("rewindImage"));
+    rcPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Vibrate.controlsLabel")));
+    JButton rwb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.rewindImage"));
     rwb.setMargin(new Insets(1, 1, 1, 1));
-    rwb.setToolTipText(jrh.getString("rewindTooltip"));
+    rwb.setToolTipText(JmolResourceHandler.getInstance().getString("Vibrate.rewindTooltip"));
     rwb.setActionCommand("rewind");
     rwb.addActionListener(this);
-    JButton plb = new JButton(jrh.getIcon("playImage"));
+    JButton plb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.playImage"));
     plb.setMargin(new Insets(1, 1, 1, 1));
-    plb.setToolTipText(jrh.getString("playTooltip"));
+    plb.setToolTipText(JmolResourceHandler.getInstance().getString("Vibrate.playTooltip"));
     plb.setActionCommand("play");
     plb.addActionListener(this);
-    JButton pb = new JButton(jrh.getIcon("pauseImage"));
+    JButton pb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.pauseImage"));
     pb.setMargin(new Insets(1, 1, 1, 1));
-    pb.setToolTipText(jrh.getString("pauseTooltip"));
+    pb.setToolTipText(JmolResourceHandler.getInstance().getString("Vibrate.pauseTooltip"));
     pb.setActionCommand("pause");
     pb.addActionListener(this);
-    JButton nb = new JButton(jrh.getIcon("nextImage"));
+    JButton nb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.nextImage"));
     nb.setMargin(new Insets(1, 1, 1, 1));
-    nb.setToolTipText(jrh.getString("nextTooltip"));
+    nb.setToolTipText(JmolResourceHandler.getInstance().getString("Vibrate.nextTooltip"));
     nb.setActionCommand("next");
     nb.addActionListener(this);
-    JButton prb = new JButton(jrh.getIcon("prevImage"));
+    JButton prb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.prevImage"));
     prb.setMargin(new Insets(1, 1, 1, 1));
-    prb.setToolTipText(jrh.getString("prevTooltip"));
+    prb.setToolTipText(JmolResourceHandler.getInstance().getString("Vibrate.prevTooltip"));
     prb.setActionCommand("prev");
     prb.addActionListener(this);
-    JButton ffb = new JButton(jrh.getIcon("ffImage"));
+    JButton ffb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.ffImage"));
     ffb.setMargin(new Insets(1, 1, 1, 1));
-    ffb.setToolTipText(jrh.getString("ffTooltip"));
+    ffb.setToolTipText(JmolResourceHandler.getInstance().getString("Vibrate.ffTooltip"));
     ffb.setActionCommand("ff");
     ffb.addActionListener(this);
     rcPanel.add(rwb);
@@ -174,7 +174,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     // Values in milliseconds, labels in seconds
     JPanel speedPanel = new JPanel();
     speedPanel.setLayout(new BorderLayout());
-    speedPanel.setBorder(new TitledBorder(jrh.getString("speedLabel")));
+    speedPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Vibrate.speedLabel")));
     JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 10);
     speedSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     speedSlider.setPaintTicks(true);
@@ -197,9 +197,9 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     c.fill = GridBagConstraints.BOTH;
     c.weightx = 1.0;
     c.weighty = 1.0;
-    savePanel.setBorder(new TitledBorder(jrh.getString("saveLabel")));
+    savePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Vibrate.saveLabel")));
 
-    JButton snmb = new JButton(jrh.getIcon("saveImage"));
+    JButton snmb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.saveImage"));
     snmb.setMargin(new Insets(1, 1, 1, 1));
     snmb.setActionCommand("save");
     snmb.addActionListener(this);
@@ -208,13 +208,13 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     gridbag.setConstraints(snmb, c);
     savePanel.add(snmb);
 
-    JLabel snml = new JLabel(jrh.getString("saveTooltip"));
+    JLabel snml = new JLabel(JmolResourceHandler.getInstance().getString("Vibrate.saveTooltip"));
     c.gridx = 1;
     c.gridwidth = GridBagConstraints.REMAINDER;
     gridbag.setConstraints(snml, c);
     savePanel.add(snml);
 
-    JButton sgb = new JButton(jrh.getIcon("movieImage"));
+    JButton sgb = new JButton(JmolResourceHandler.getInstance().getIcon("Vibrate.movieImage"));
     sgb.setMargin(new Insets(1, 1, 1, 1));
     sgb.setActionCommand("movie");
     sgb.addActionListener(this);
@@ -225,7 +225,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
     gridbag.setConstraints(sgb, c);
     savePanel.add(sgb);
 
-    JLabel sgl = new JLabel(jrh.getString("movieTooltip"));
+    JLabel sgl = new JLabel(JmolResourceHandler.getInstance().getString("Vibrate.movieTooltip"));
     c.gridx = 1;
     c.gridwidth = GridBagConstraints.REMAINDER;
     gridbag.setConstraints(sgl, c);
@@ -838,11 +838,6 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
    * Sets the number of frames to be created for the vibration animations.
    */
   private static int numberFrames = 20;
-
-  /**
-   * Resource handler for loading interface strings and icons.
-   */
-  private static JmolResourceHandler jrh = new JmolResourceHandler("Vibrate");
 
   /**
    * FileChooser for saving normal mode files.

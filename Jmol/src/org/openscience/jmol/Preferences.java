@@ -63,7 +63,6 @@ public class Preferences extends JDialog {
   private static double VibrateVectorScale;
   private static int VibrationFrames;
   private DisplayPanel display;
-  private static JmolResourceHandler jrh, defaults;
   private JButton bButton, oButton, pButton, tButton, vButton;
   private JRadioButton ceYes, ceNo, ufeYes, ufeNo, aaYes, aaNo;
   private JRadioButton pYes, pNo, abYes, abNo;
@@ -82,8 +81,6 @@ public class Preferences extends JDialog {
   private Hashtable commands;
 
   static {
-    jrh = new JmolResourceHandler("Prefs");
-    defaults = new JmolResourceHandler("Defaults");
     props = System.getProperties();
     defaults();
     try {
@@ -152,17 +149,17 @@ public class Preferences extends JDialog {
     JPanel vectors = buildVectorsPanel();
     JPanel colors = buildColorsPanel();
     JPanel vibrate = buildVibratePanel();
-    tabs.addTab(jrh.getString("generalLabel"), null, general);
-    tabs.addTab(jrh.getString("displayLabel"), null, disp);
-    tabs.addTab(jrh.getString("atomsLabel"), null, atoms);
-    tabs.addTab(jrh.getString("bondsLabel"), null, bonds);
-    tabs.addTab(jrh.getString("vectorsLabel"), null, vectors);
-    tabs.addTab(jrh.getString("colorsLabel"), null, colors);
-    tabs.addTab(jrh.getString("vibrateLabel"), null, vibrate);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.generalLabel"), null, general);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.displayLabel"), null, disp);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.atomsLabel"), null, atoms);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.bondsLabel"), null, bonds);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.vectorsLabel"), null, vectors);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.colorsLabel"), null, colors);
+    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.vibrateLabel"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton save = new JButton(jrh.getString("saveLabel"));
+    JButton save = new JButton(JmolResourceHandler.getInstance().getString("Prefs.saveLabel"));
     save.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -170,7 +167,7 @@ public class Preferences extends JDialog {
       }
     });
     buttonPanel.add(save);
-    JButton reset = new JButton(jrh.getString("resetLabel"));
+    JButton reset = new JButton(JmolResourceHandler.getInstance().getString("Prefs.resetLabel"));
     reset.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -178,7 +175,7 @@ public class Preferences extends JDialog {
       }
     });
     buttonPanel.add(reset);
-    JButton ok = new JButton(jrh.getString("okLabel"));
+    JButton ok = new JButton(JmolResourceHandler.getInstance().getString("Prefs.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -208,11 +205,11 @@ public class Preferences extends JDialog {
 
     JPanel cePanel = new JPanel();
     cePanel.setLayout(new BoxLayout(cePanel, BoxLayout.Y_AXIS));
-    cePanel.setBorder(new TitledBorder(jrh.getString("ceLabel")));
+    cePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.ceLabel")));
     ButtonGroup ceGroup = new ButtonGroup();
-    ceYes = new JRadioButton(jrh.getString("ceYesLabel"));
+    ceYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ceYesLabel"));
     ceYes.addItemListener(radioButtonListener);
-    ceNo = new JRadioButton(jrh.getString("ceNoLabel"));
+    ceNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ceNoLabel"));
     ceNo.addItemListener(radioButtonListener);
     ceGroup.add(ceYes);
     ceGroup.add(ceNo);
@@ -229,10 +226,10 @@ public class Preferences extends JDialog {
 
     JPanel ufePanel = new JPanel();
     ufePanel.setLayout(new BoxLayout(ufePanel, BoxLayout.Y_AXIS));
-    ufePanel.setBorder(new TitledBorder(jrh.getString("ufeLabel")));
+    ufePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.ufeLabel")));
     ButtonGroup ufeGroup = new ButtonGroup();
-    ufeYes = new JRadioButton(jrh.getString("ufeYesLabel"));
-    ufeNo = new JRadioButton(jrh.getString("ufeNoLabel"));
+    ufeYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ufeYesLabel"));
+    ufeNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ufeNoLabel"));
     ufeYes.addItemListener(radioButtonListener);
     ufeNo.addItemListener(radioButtonListener);
     ufeGroup.add(ufeYes);
@@ -251,8 +248,8 @@ public class Preferences extends JDialog {
 
     JPanel mtPanel = new JPanel();
     mtPanel.setLayout(new BorderLayout());
-    mtPanel.setBorder(new TitledBorder(jrh.getString("mtLabel")));
-    JLabel mtLabel = new JLabel(jrh.getString("mtExpl"), JLabel.CENTER);
+    mtPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.mtLabel")));
+    JLabel mtLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.mtExpl"), JLabel.CENTER);
     mtPanel.add(mtLabel, BorderLayout.NORTH);
     mtSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) MessageTime);
     mtSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -288,10 +285,10 @@ public class Preferences extends JDialog {
 
     JPanel aaPanel = new JPanel();
     aaPanel.setLayout(new BoxLayout(aaPanel, BoxLayout.Y_AXIS));
-    aaPanel.setBorder(new TitledBorder(jrh.getString("aaLabel")));
+    aaPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aaLabel")));
     ButtonGroup aaGroup = new ButtonGroup();
-    aaYes = new JRadioButton(jrh.getString("aaYesLabel"));
-    aaNo = new JRadioButton(jrh.getString("aaNoLabel"));
+    aaYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.aaYesLabel"));
+    aaNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.aaNoLabel"));
     aaYes.addItemListener(radioButtonListener);
     aaNo.addItemListener(radioButtonListener);
     aaGroup.add(aaYes);
@@ -313,10 +310,10 @@ public class Preferences extends JDialog {
 
     JPanel pPanel = new JPanel();
     pPanel.setLayout(new BoxLayout(pPanel, BoxLayout.Y_AXIS));
-    pPanel.setBorder(new TitledBorder(jrh.getString("pLabel")));
+    pPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.pLabel")));
     ButtonGroup pGroup = new ButtonGroup();
-    pYes = new JRadioButton(jrh.getString("pYesLabel"));
-    pNo = new JRadioButton(jrh.getString("pNoLabel"));
+    pYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.pYesLabel"));
+    pNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.pNoLabel"));
     pYes.addItemListener(radioButtonListener);
     pNo.addItemListener(radioButtonListener);
     pGroup.add(pYes);
@@ -330,17 +327,17 @@ public class Preferences extends JDialog {
 
     JPanel choicesPanel = new JPanel();
     choicesPanel.setLayout(new GridLayout(0, 4));
-    choicesPanel.setBorder(new TitledBorder(jrh.getString("cLabel")));
-    cB = new JCheckBox(jrh.getString("cBLabel"),
+    choicesPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.cLabel")));
+    cB = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cBLabel"),
             display.getSettings().getShowBonds());
     cB.addItemListener(checkBoxListener);
-    cA = new JCheckBox(jrh.getString("cALabel"),
+    cA = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cALabel"),
             display.getSettings().getShowAtoms());
     cA.addItemListener(checkBoxListener);
-    cV = new JCheckBox(jrh.getString("cVLabel"),
+    cV = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cVLabel"),
             display.getSettings().getShowVectors());
     cV.addItemListener(checkBoxListener);
-    cH = new JCheckBox(jrh.getString("cHLabel"),
+    cH = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cHLabel"),
             display.getSettings().getShowHydrogens());
     cH.addItemListener(checkBoxListener);
     choicesPanel.add(cB);
@@ -350,8 +347,8 @@ public class Preferences extends JDialog {
 
     JPanel fovPanel = new JPanel();
     fovPanel.setLayout(new BorderLayout());
-    fovPanel.setBorder(new TitledBorder(jrh.getString("fovLabel")));
-    JLabel fovLabel = new JLabel(jrh.getString("fovExpl"), JLabel.CENTER);
+    fovPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.fovLabel")));
+    JLabel fovLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.fovExpl"), JLabel.CENTER);
     fovPanel.add(fovLabel, BorderLayout.NORTH);
     fovSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, (int) FieldOfView);
     fovSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -390,12 +387,12 @@ public class Preferences extends JDialog {
 
     JPanel renderPanel = new JPanel();
     renderPanel.setLayout(new BoxLayout(renderPanel, BoxLayout.Y_AXIS));
-    renderPanel.setBorder(new TitledBorder(jrh
-            .getString("aRenderStyleLabel")));
+    renderPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+            .getString("Prefs.aRenderStyleLabel")));
     aRender = new JComboBox();
-    aRender.addItem(jrh.getString("aQDChoice"));
-    aRender.addItem(jrh.getString("aSChoice"));
-    aRender.addItem(jrh.getString("aWFChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.aQDChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.aSChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.aWFChoice"));
     renderPanel.add(aRender);
     aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
     aRender.addItemListener(new ItemListener() {
@@ -414,12 +411,12 @@ public class Preferences extends JDialog {
 
     JPanel labelPanel = new JPanel();
     labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
-    labelPanel.setBorder(new TitledBorder(jrh.getString("aLabelStyleLabel")));
+    labelPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aLabelStyleLabel")));
     aLabel = new JComboBox();
-    aLabel.addItem(jrh.getString("aPLChoice"));
-    aLabel.addItem(jrh.getString("aSLChoice"));
-    aLabel.addItem(jrh.getString("aTLChoice"));
-    aLabel.addItem(jrh.getString("aNLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aPLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aSLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aTLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aNLChoice"));
     labelPanel.add(aLabel);
     aLabel.setSelectedIndex(display.getSettings().getLabelMode());
     aLabel.addItemListener(new ItemListener() {
@@ -439,12 +436,12 @@ public class Preferences extends JDialog {
 
     JPanel propsPanel = new JPanel();
     propsPanel.setLayout(new BoxLayout(propsPanel, BoxLayout.Y_AXIS));
-    propsPanel.setBorder(new TitledBorder(jrh.getString("aPropsStyleLabel")));
+    propsPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aPropsStyleLabel")));
     aProps = new JComboBox();
-    aProps.addItem(jrh.getString("apPChoice"));
-    aProps.addItem(jrh.getString("apCChoice"));
-    aProps.addItem(jrh.getString("apNChoice"));
-    aProps.addItem(jrh.getString("apUChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apPChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apCChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apNChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apUChoice"));
     propsPanel.add(aProps);
     aProps.setSelectedItem(display.getSettings().getPropertyMode());
     aProps.addItemListener(new ItemListener() {
@@ -464,8 +461,8 @@ public class Preferences extends JDialog {
 
     JPanel sfPanel = new JPanel();
     sfPanel.setLayout(new BorderLayout());
-    sfPanel.setBorder(new TitledBorder(jrh.getString("aSizeLabel")));
-    JLabel sfLabel = new JLabel(jrh.getString("aSizeExpl"), JLabel.CENTER);
+    sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aSizeLabel")));
+    JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.aSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     sfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
             (int) (100.0 * display.getSettings().getAtomSphereFactor()));
@@ -506,13 +503,13 @@ public class Preferences extends JDialog {
 
     JPanel renderPanel = new JPanel();
     renderPanel.setLayout(new BoxLayout(renderPanel, BoxLayout.Y_AXIS));
-    renderPanel.setBorder(new TitledBorder(jrh
-            .getString("bRenderStyleLabel")));
+    renderPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+            .getString("Prefs.bRenderStyleLabel")));
     bRender = new JComboBox();
-    bRender.addItem(jrh.getString("bQDChoice"));
-    bRender.addItem(jrh.getString("bSChoice"));
-    bRender.addItem(jrh.getString("bWFChoice"));
-    bRender.addItem(jrh.getString("bLChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bQDChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bSChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bWFChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bLChoice"));
     bRender.setSelectedIndex(display.getSettings().getBondDrawMode());
     bRender.addItemListener(new ItemListener() {
 
@@ -531,10 +528,10 @@ public class Preferences extends JDialog {
 
     JPanel autobondPanel = new JPanel();
     autobondPanel.setLayout(new BoxLayout(autobondPanel, BoxLayout.Y_AXIS));
-    autobondPanel.setBorder(new TitledBorder(jrh.getString("autoBondLabel")));
+    autobondPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.autoBondLabel")));
     ButtonGroup abGroup = new ButtonGroup();
-    abYes = new JRadioButton(jrh.getString("abYesLabel"));
-    abNo = new JRadioButton(jrh.getString("abNoLabel"));
+    abYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.abYesLabel"));
+    abNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.abNoLabel"));
     abGroup.add(abYes);
     abGroup.add(abNo);
     autobondPanel.add(abYes);
@@ -563,8 +560,8 @@ public class Preferences extends JDialog {
 
     JPanel bwPanel = new JPanel();
     bwPanel.setLayout(new BorderLayout());
-    bwPanel.setBorder(new TitledBorder(jrh.getString("bondWidthLabel")));
-    JLabel bwLabel = new JLabel(jrh.getString("bondWidthExpl"),
+    bwPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.bondWidthLabel")));
+    JLabel bwLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.bondWidthExpl"),
                        JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
     bwSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
@@ -613,7 +610,7 @@ public class Preferences extends JDialog {
 
     JPanel bfPanel = new JPanel();
     bfPanel.setLayout(new BorderLayout());
-    bfPanel.setBorder(new TitledBorder(jrh.getString("bondFudgeLabel")));
+    bfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.bondFudgeLabel")));
     bfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
             (int) (50.0 * ChemFrame.getBondFudge()));
     bfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -676,12 +673,12 @@ public class Preferences extends JDialog {
 
     JPanel sample = new JPanel();
     sample.setLayout(new BorderLayout());
-    sample.setBorder(new TitledBorder(jrh.getString("sampleLabel")));
+    sample.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.sampleLabel")));
     vPanel.add(sample);
 
     JPanel ahPanel = new JPanel();
     ahPanel.setLayout(new BorderLayout());
-    ahPanel.setBorder(new TitledBorder(jrh.getString("ahLabel")));
+    ahPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.ahLabel")));
     ahSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
             (int) (100.0f * ArrowLine.getArrowHeadSize()));
     ahSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -724,7 +721,7 @@ public class Preferences extends JDialog {
 
     JPanel arPanel = new JPanel();
     arPanel.setLayout(new BorderLayout());
-    arPanel.setBorder(new TitledBorder(jrh.getString("arLabel")));
+    arPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.arLabel")));
     arSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
             (int) (100.0f * ArrowLine.getArrowHeadRadius()));
     arSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -766,7 +763,7 @@ public class Preferences extends JDialog {
 
     JPanel alPanel = new JPanel();
     alPanel.setLayout(new BorderLayout());
-    alPanel.setBorder(new TitledBorder(jrh.getString("alLabel")));
+    alPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.alLabel")));
     alSlider = new JSlider(JSlider.HORIZONTAL, -200, 200,
             (int) (100.0f * ArrowLine.getLengthScale()));
     alSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -826,16 +823,16 @@ public class Preferences extends JDialog {
 
     JPanel backgroundPanel = new JPanel();
     backgroundPanel.setLayout(new BorderLayout());
-    backgroundPanel.setBorder(new TitledBorder(jrh.getString("bgLabel")));
+    backgroundPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.bgLabel")));
     bButton = new JButton();
     bButton.setBackground(backgroundColor);
-    bButton.setToolTipText(jrh.getString("bgToolTip"));
+    bButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.bgToolTip"));
     ActionListener startBackgroundChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color = JColorChooser.showDialog(bButton,
-                        jrh.getString("bgChooserTitle"), backgroundColor);
+                        JmolResourceHandler.getInstance().getString("Prefs.bgChooserTitle"), backgroundColor);
         backgroundColor = color;
         bButton.setBackground(backgroundColor);
         DisplayPanel.setBackgroundColor(backgroundColor);
@@ -851,16 +848,16 @@ public class Preferences extends JDialog {
 
     JPanel outlinePanel = new JPanel();
     outlinePanel.setLayout(new BorderLayout());
-    outlinePanel.setBorder(new TitledBorder(jrh.getString("outlineLabel")));
+    outlinePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.outlineLabel")));
     oButton = new JButton();
     oButton.setBackground(outlineColor);
-    oButton.setToolTipText(jrh.getString("outlineToolTip"));
+    oButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.outlineToolTip"));
     ActionListener startOutlineChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color = JColorChooser.showDialog(oButton,
-                        jrh.getString("outlineChooserTitle"), outlineColor);
+                        JmolResourceHandler.getInstance().getString("Prefs.outlineChooserTitle"), outlineColor);
         outlineColor = color;
         oButton.setBackground(outlineColor);
         display.getSettings().setOutlineColor(outlineColor);
@@ -875,16 +872,16 @@ public class Preferences extends JDialog {
 
     JPanel pickedPanel = new JPanel();
     pickedPanel.setLayout(new BorderLayout());
-    pickedPanel.setBorder(new TitledBorder(jrh.getString("pickedLabel")));
+    pickedPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.pickedLabel")));
     pButton = new JButton();
     pButton.setBackground(pickedColor);
-    pButton.setToolTipText(jrh.getString("pickedToolTip"));
+    pButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.pickedToolTip"));
     ActionListener startPickedChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color = JColorChooser.showDialog(pButton,
-                        jrh.getString("pickedChooserTitle"), pickedColor);
+                        JmolResourceHandler.getInstance().getString("Prefs.pickedChooserTitle"), pickedColor);
         pickedColor = color;
         pButton.setBackground(pickedColor);
         display.getSettings().setPickedColor(pickedColor);
@@ -899,16 +896,16 @@ public class Preferences extends JDialog {
 
     JPanel textPanel = new JPanel();
     textPanel.setLayout(new BorderLayout());
-    textPanel.setBorder(new TitledBorder(jrh.getString("textLabel")));
+    textPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.textLabel")));
     tButton = new JButton();
     tButton.setBackground(textColor);
-    tButton.setToolTipText(jrh.getString("textToolTip"));
+    tButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.textToolTip"));
     ActionListener startTextChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color = JColorChooser.showDialog(tButton,
-                        jrh.getString("textChooserTitle"), textColor);
+                        JmolResourceHandler.getInstance().getString("Prefs.textChooserTitle"), textColor);
         textColor = color;
         tButton.setBackground(textColor);
         display.getSettings().setTextColor(textColor);
@@ -923,16 +920,16 @@ public class Preferences extends JDialog {
 
     JPanel vectorPanel = new JPanel();
     vectorPanel.setLayout(new BorderLayout());
-    vectorPanel.setBorder(new TitledBorder(jrh.getString("vectorLabel")));
+    vectorPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.vectorLabel")));
     vButton = new JButton();
     vButton.setBackground(vectorColor);
-    vButton.setToolTipText(jrh.getString("vectorToolTip"));
+    vButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.vectorToolTip"));
     ActionListener startVectorChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
         Color color = JColorChooser.showDialog(vButton,
-                        jrh.getString("vectorChooserTitle"), vectorColor);
+                        JmolResourceHandler.getInstance().getString("Prefs.vectorChooserTitle"), vectorColor);
         vectorColor = color;
         vButton.setBackground(vectorColor);
         ArrowLine.setVectorColor(vectorColor);
@@ -956,14 +953,14 @@ public class Preferences extends JDialog {
     JPanel notePanel = new JPanel();
     notePanel.setLayout(new BorderLayout());
     notePanel.setBorder(new EtchedBorder());
-    JLabel noteLabel = new JLabel(jrh.getString("vibNoteLabel"));
+    JLabel noteLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.vibNoteLabel"));
     notePanel.add(noteLabel, BorderLayout.CENTER);
     vibratePanel.add(notePanel);
 
     JPanel vasPanel = new JPanel();
     vasPanel.setLayout(new BorderLayout());
-    vasPanel.setBorder(new TitledBorder(jrh
-            .getString("vibAmplitudeScaleLabel")));
+    vasPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+            .getString("Prefs.vibAmplitudeScaleLabel")));
     vasSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
             (int) (100.0 * Vibrate.getAmplitudeScale()));
     vasSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -1005,8 +1002,8 @@ public class Preferences extends JDialog {
 
     JPanel vvsPanel = new JPanel();
     vvsPanel.setLayout(new BorderLayout());
-    vvsPanel.setBorder(new TitledBorder(jrh
-            .getString("vibVectorScaleLabel")));
+    vvsPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+            .getString("Prefs.vibVectorScaleLabel")));
     vvsSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
             (int) (100.0 * Vibrate.getVectorScale()));
     vvsSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -1047,7 +1044,7 @@ public class Preferences extends JDialog {
 
     JPanel vfPanel = new JPanel();
     vfPanel.setLayout(new BorderLayout());
-    vfPanel.setBorder(new TitledBorder(jrh.getString("vibFrameLabel")));
+    vfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.vibFrameLabel")));
 
     vfSlider = new JSlider(JSlider.HORIZONTAL, 0, 50,
             Vibrate.getNumberFrames());
@@ -1280,20 +1277,20 @@ public class Preferences extends JDialog {
     public void itemStateChanged(ItemEvent e) {
 
       JCheckBox cb = (JCheckBox) e.getSource();
-      if (cb.getText().equals(jrh.getString("cBLabel"))) {
+      if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cBLabel"))) {
         ShowBonds = cb.isSelected();
         display.getSettings().setShowBonds(ShowBonds);
         props.put("ShowBonds", new Boolean(ShowBonds).toString());
-      } else if (cb.getText().equals(jrh.getString("cALabel"))) {
+      } else if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cALabel"))) {
         ShowAtoms = cb.isSelected();
         display.getSettings().setShowAtoms(ShowAtoms);
         display.getSettings().setDrawBondsToAtomCenters(!ShowAtoms);
         props.put("ShowAtoms", new Boolean(ShowAtoms).toString());
-      } else if (cb.getText().equals(jrh.getString("cVLabel"))) {
+      } else if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cVLabel"))) {
         ShowVectors = cb.isSelected();
         display.getSettings().setShowVectors(ShowVectors);
         props.put("ShowVectors", new Boolean(ShowVectors).toString());
-      } else if (cb.getText().equals(jrh.getString("cHLabel"))) {
+      } else if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cHLabel"))) {
         ShowHydrogens = cb.isSelected();
         display.getSettings().setShowHydrogens(ShowHydrogens);
         props.put("ShowHydrogens", new Boolean(ShowHydrogens).toString());
@@ -1310,38 +1307,38 @@ public class Preferences extends JDialog {
     public void itemStateChanged(ItemEvent e) {
 
       JRadioButton rb = (JRadioButton) e.getSource();
-      if (rb.getText().equals(jrh.getString("ceYesLabel"))) {
+      if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ceYesLabel"))) {
         ConfirmExit = rb.isSelected();
         props.put("ConfirmExit", new Boolean(ConfirmExit).toString());
-      } else if (rb.getText().equals(jrh.getString("ceNoLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ceNoLabel"))) {
         ConfirmExit = !rb.isSelected();
         props.put("ConfirmExit", new Boolean(ConfirmExit).toString());
-      } else if (rb.getText().equals(jrh.getString("aaYesLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.aaYesLabel"))) {
         AntiAliased = rb.isSelected();
         display.setAntiAliased(AntiAliased);
         props.put("AntiAliased", new Boolean(AntiAliased).toString());
         display.repaint();
-      } else if (rb.getText().equals(jrh.getString("aaNoLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.aaNoLabel"))) {
         AntiAliased = !rb.isSelected();
         display.setAntiAliased(AntiAliased);
         props.put("AntiAliased", new Boolean(AntiAliased).toString());
         display.repaint();
-      } else if (rb.getText().equals(jrh.getString("ufeYesLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ufeYesLabel"))) {
         UseFileExtensions = rb.isSelected();
         FileTyper.setUseFileExtensions(UseFileExtensions);
         props.put("UseFileExtensions",
                 new Boolean(UseFileExtensions).toString());
-      } else if (rb.getText().equals(jrh.getString("ufeNoLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ufeNoLabel"))) {
         UseFileExtensions = !rb.isSelected();
         FileTyper.setUseFileExtensions(UseFileExtensions);
         props.put("UseFileExtensions",
                 new Boolean(UseFileExtensions).toString());
-      } else if (rb.getText().equals(jrh.getString("pYesLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.pYesLabel"))) {
         Perspective = rb.isSelected();
         DisplayPanel.setPerspective(Perspective);
         props.put("Perspective", new Boolean(Perspective).toString());
         display.repaint();
-      } else if (rb.getText().equals(jrh.getString("pNoLabel"))) {
+      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.pNoLabel"))) {
         Perspective = !rb.isSelected();
         DisplayPanel.setPerspective(Perspective);
         props.put("Perspective", new Boolean(Perspective).toString());

@@ -11,6 +11,7 @@
 1EBL - ?
 1GFL - green florescent
 1IHA - ?
+1JGQ - alpha carbon only + phosphorus only + dna
 1LCD - multiple conformations
 1MBO - has strange FORMUL records because the HEM is on two lines
 1NE6 - ?

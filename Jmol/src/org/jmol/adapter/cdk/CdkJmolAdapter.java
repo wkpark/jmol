@@ -223,6 +223,7 @@ public class CdkJmolAdapter extends JmolAdapter {
       if (iatom == atomCount)
         return false;
       atom = atomContainer.getAtomAt(iatom++);
+      System.out.println("CDK atom: " + atom);
       return true;
     }
 
@@ -234,6 +235,36 @@ public class CdkJmolAdapter extends JmolAdapter {
     public float getZ() { return (float)atom.getZ3d(); }
     public String getPdbAtomRecord() {
       return (String)atom.getProperty("pdb.record");
+    }
+    public char getChainID() {
+        String chainID = (String)atom.getProperty("pdb.chainID");
+        System.out.println("chainID: " + chainID);
+        if (chainID != null && chainID.length() > 0) {
+            return chainID.charAt(0);
+        } else {
+            return super.getChainID();
+        }
+    }
+    public String getGroup3() {
+        String resName = (String)atom.getProperty("pdb.resName");
+        System.out.println("resName: " + resName);
+        if (resName != null && resName.length() > 0) {
+            return resName.trim();
+        } else {
+            return super.getGroup3();
+        }
+    }
+    public int getSequenceNumber() {
+        String sequence = (String)atom.getProperty("pdb.resSeq");
+        System.out.println("sequence: " + sequence);
+        try {
+            int sequenceInt = Integer.parseInt((String)atom.getProperty("pdb.resSeq"));
+            System.out.println("     int: " + sequenceInt);
+            return sequenceInt;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return super.getSequenceNumber();
     }
     public Object getClientAtomReference() {
       return atom;

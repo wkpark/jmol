@@ -85,6 +85,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean perspectiveDepth;
   private static boolean showAxes;
   private static boolean showBoundingBox;
+  private static boolean orientationRasMolChime;
   private static boolean isLabelAtomColor;
   private static boolean isBondAtomColor;
   private static Color colorBackground;
@@ -117,6 +118,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cH, cV, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
+  private JCheckBox cbOrientationRasMolChime;
   private JCheckBox cbDarkerOutline, cbIsLabelAtomColor, cbIsBondAtomColor;
   private static Properties props;
 
@@ -146,6 +148,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("perspectiveDepth", "true");
     props.put("showAxes", "false");
     props.put("showBoundingBox", "false");
+    props.put("orientationRasMolChime", "true");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
     props.put("Perspective", "false");
@@ -265,6 +268,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     disp.add(showPanel, constraints);
 
     JPanel fooPanel = new JPanel();
+    fooPanel.setBorder(new TitledBorder(""));
     fooPanel.setLayout(new GridLayout(2, 1));
 
     cbWireframeRotation =
@@ -290,13 +294,29 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
-
+    cbOrientationRasMolChime =
+      guimap.newJCheckBox("Prefs.orientationRasMolChime",
+                          viewer.getOrientationRasMolChime());
 
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.weightx = 1.0;
     disp.add(fooPanel, constraints);
+
+    JPanel axesPanel = new JPanel();
+    axesPanel.setBorder(new TitledBorder(""));
+    axesPanel.setLayout(new GridLayout(1, 1));
+
+    cbOrientationRasMolChime.addItemListener(checkBoxListener);
+    axesPanel.add(cbOrientationRasMolChime);
+
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    disp.add(axesPanel, constraints);
+
 
 
     JLabel filler = new JLabel();
@@ -1021,6 +1041,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
     cbShowAxes.setSelected(viewer.getShowAxes());
     cbShowBoundingBox.setSelected(viewer.getShowBoundingBox());
+    cbOrientationRasMolChime.setSelected(viewer.getOrientationRasMolChime());
 
     // Atom panel controls: 
     aRender.setSelectedIndex(viewer.getStyleAtom());
@@ -1087,6 +1108,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     perspectiveDepth = Boolean.getBoolean("perspectiveDepth");
     showAxes = Boolean.getBoolean("showAxes");
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
+    orientationRasMolChime = Boolean.getBoolean("orientationRasMolChime");
     colorBackground = Color.getColor("colorBackground");
     colorOutline = Color.getColor("colorOutline");
     colorSelection = Color.getColor("colorSelection");
@@ -1136,6 +1158,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setPerspectiveDepth(perspectiveDepth);
     viewer.setShowAxes(showAxes);
     viewer.setShowBoundingBox(showBoundingBox);
+    viewer.setOrientationRasMolChime(orientationRasMolChime);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1211,8 +1234,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         props.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        viewer.setShowBoundingBox(showBoundingBox);
+        viewer.setShowBoundingBox(isSelected);
         props.put("showBoundingBox", strSelected);
+      } else if (key.equals("Prefs.orientationRasMolChime")) {
+        orientationRasMolChime = isSelected;
+        viewer.setOrientationRasMolChime(isSelected);
+        props.put("orientationRasMolChime", strSelected);
       }
     }
   };

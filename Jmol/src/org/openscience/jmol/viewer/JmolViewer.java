@@ -244,12 +244,6 @@ final public class JmolViewer {
   public void rotateByZ(int angleDegrees) {
     rotateByZ(angleDegrees * radiansPerDegree);
   }
-  /**
-   * note that RasMol is not consistent in its rotations
-   * In order to be 'backwards-compatible' we need a special
-   * rotateZ command to be script-compatible
-   * see manager/TransformManager.java for more details
-   */
   public void rotateByZScript(int angleDegrees) {
     transformManager.rotateByZScript(angleDegrees * radiansPerDegree);
     refresh();

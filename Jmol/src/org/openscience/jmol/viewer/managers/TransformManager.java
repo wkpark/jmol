@@ -100,16 +100,21 @@ public class TransformManager {
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
   public void rotateByY(float angleRadians) {
+    if (orientationRasMolChime)
+      angleRadians = -angleRadians;
     matrixTemp.rotY(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
   public void rotateByZ(float angleRadians) {
+    if (orientationRasMolChime)
+      angleRadians = -angleRadians;
     matrixTemp.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
 
   public void rotateByZScript(float angleRadians) {
-    rotateByZ(orientationRasMolChime ? -angleRadians : angleRadians);
+    matrixTemp.rotZ(angleRadians);
+    matrixRotate.mul(matrixTemp, matrixRotate);
   }
 
   public void rotate(AxisAngle4f axisAngle) {
@@ -427,7 +432,7 @@ public class TransformManager {
   private final Vector3f vectorTemp = new Vector3f();
 
 
-  public boolean orientationRasMolChime = false;
+  public boolean orientationRasMolChime = true;
   public void setOrientationRasMolChime(boolean orientationRasMolChime) {
     this.orientationRasMolChime = orientationRasMolChime;
   }
@@ -442,11 +447,7 @@ public class TransformManager {
     matrixPointTransform.setIdentity();
     // first, translate the coordinates back to the center
     vectorTemp.set(viewer.getRotationCenter());
-    if (orientationRasMolChime) {
-      matrixPointTransform.m11 = matrixPointTransform.m22 = -1;
-      vectorTemp.y = -vectorTemp.y;
-      vectorTemp.z = -vectorTemp.z;
-    }
+
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixPointTransform.sub(matrixTemp);
@@ -462,12 +463,18 @@ public class TransformManager {
     vectorTemp.z = viewer.getRotationRadius();
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
-    matrixPointTransform.sub(matrixTemp);
+    if (orientationRasMolChime)
+      matrixPointTransform.add(matrixTemp); // make all z positive
+    else
+      matrixPointTransform.sub(matrixTemp); // make all z negative
+
     // now scale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
-    matrixTemp.m11 = // invert Y because of screen coordinates
-      matrixTemp.m22 = -scalePixelsPerAngstrom; // make Z positive for zbuf
+    if (! orientationRasMolChime) {
+      // negate y (for screen) and z (for zbuf)
+      matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
+    }
     matrixPointTransform.mul(matrixTemp, matrixPointTransform);
     // note that the image is still centered at 0, 0 in the xy plane
     // all z coordinates are (should be) >= 0
@@ -478,11 +485,6 @@ public class TransformManager {
     matrixVectorTransform.setIdentity();
     // first, translate the coordinates back to the center
     vectorTemp.set(viewer.getRotationCenter());
-    if (orientationRasMolChime) {
-      matrixPointTransform.m11 = matrixPointTransform.m22 = -1;
-      vectorTemp.y = -vectorTemp.y;
-      vectorTemp.z = -vectorTemp.z;
-    }
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixVectorTransform.sub(matrixTemp);
@@ -492,8 +494,10 @@ public class TransformManager {
     // now scale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
-    matrixTemp.m11 = // invert Y because of screen coordinates
-      matrixTemp.m22 = -scalePixelsPerAngstrom; // invert Z to make them positive for zbuf
+    if (! orientationRasMolChime) {
+      // negate y (for screen) and z (for zbuf)
+      matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
+    }
     matrixVectorTransform.mul(matrixTemp, matrixVectorTransform);
   }
 
@@ -513,37 +517,7 @@ public class TransformManager {
   }
 
   public Point3i transformPoint(Point3f pointAngstroms) {
-    if (viewer.testFlag1) {
-      point3dScreenTemp.set(pointAngstroms);
-      //        System.out.println("Transforming:" + pointAngstroms);
-      vectorTemp.set(viewer.getRotationCenter());
-        //        System.out.println("rotationCenter:" + vectorTemp);
-      if (orientationRasMolChime) {
-        point3dScreenTemp.y = -point3dScreenTemp.y;
-        point3dScreenTemp.z = -point3dScreenTemp.z;
-
-        vectorTemp.y = -vectorTemp.y;
-        vectorTemp.z = -vectorTemp.z;
-      }
-      point3dScreenTemp.sub(vectorTemp);
-      //        System.out.println("reset to center:" + point3dScreenTemp);
-      matrixRotate.transform(point3dScreenTemp);
-      //        System.out.println("rotated:" + point3dScreenTemp);
-      vectorTemp.x = 0;
-      vectorTemp.y = 0;
-      vectorTemp.z = viewer.getRotationRadius();
-      point3dScreenTemp.sub(vectorTemp);
-
-      matrixTemp.setZero();
-      matrixTemp.set(scalePixelsPerAngstrom);
-      matrixTemp.m11 = // invert y because screen goes down
-        matrixTemp.m22 = -scalePixelsPerAngstrom; // but invert Z to make them positive
-
-      matrixTemp.transform(point3dScreenTemp);
-      System.out.println("scaled and z made positive:" + point3dScreenTemp);
-    } else {
-      matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
-    }
+    matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
 
     int z = (int)(point3dScreenTemp.z + 0.5);
     if (z < 0) {

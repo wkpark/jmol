@@ -1961,6 +1961,9 @@ public class Eval implements Runnable {
     case Token.scale3d:
       setScale3d();
       break;
+    case Token.unitcell:
+      setGraphicShow(JmolConstants.GRAPHIC_UNITCELL);
+      break;
       // not implemented
     case Token.backfade:
     case Token.cartoon:
@@ -1973,7 +1976,6 @@ public class Eval implements Runnable {
     case Token.shadow:
     case Token.slabmode:
     case Token.transparent:
-    case Token.unitcell:
     case Token.vectps:
     case Token.write:
       notImplemented(1);
@@ -2205,6 +2207,10 @@ public class Eval implements Runnable {
       numberExpected();
     }
     viewer.setScaleAngstromsPerInch(angstromsPerInch);
+  }
+
+  void setGraphicShow(int graphic) throws ScriptException {
+    viewer.setGraphicShow(graphic, getSetBoolean());
   }
 
   /****************************************************************

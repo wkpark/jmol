@@ -1704,9 +1704,10 @@ final public class JmolConstants {
   public final static int GRAPHIC_BBOX     = 3;
   public final static int GRAPHIC_CARTOON  = 4;
   public final static int GRAPHIC_STRANDS  = 5;
-  public final static int GRAPHIC_MAX = 6;
+  public final static int GRAPHIC_UNITCELL = 6;
+  public final static int GRAPHIC_MAX      = 7;
 
   public final static String[] graphicClassBases = {
-    "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands"
+    "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands", "Unitcell"
   };
 }

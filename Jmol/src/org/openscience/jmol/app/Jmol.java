@@ -366,6 +366,7 @@ public class Jmol extends JPanel {
             + "1.1.2 or higher version VM!!!");
       }
 
+      /*
       // Adding console frame to grab System.out & System.err
       consoleframe = new JFrame("Jmol Console");
       try {
@@ -380,6 +381,7 @@ public class Jmol extends JPanel {
           java.awt.BorderLayout.CENTER);
           errorTextArea.append("Could not create ConsoleTextArea: " + e);
       }
+      */
 
       // Get a Jmol frame
       JFrame jmolFrame = new JFrame();

@@ -53,13 +53,6 @@ class NWChemReader extends AtomSetCollectionReader {
    **/
   private int atomCount  = 0;  // the number of atoms in the last read model
   
-  /**
-   * The number of AtomSets read. Used for assigning the modelNumber in the Atoms.
-   **/
-  private int modelCount = 0;  // the number of models I have  
-  // it looks like model numbers really need to start with 1 and not 0 otherwise
-  // a single frequency calculation can not go to the first frequency
-  
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
     atomSetCollection = new AtomSetCollection("nwchem");
@@ -109,6 +102,8 @@ class NWChemReader extends AtomSetCollectionReader {
 
   /**
    * Reads the output coordinates section into a new AtomSet.
+   * @param reader BufferedReader associated with the NWChem output text.
+   * @throws Exception If an error occurs.
    **/
   private void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 3); // skip blank line, titles and dashes
@@ -147,6 +142,8 @@ class NWChemReader extends AtomSetCollectionReader {
    * <p>One could consider not adding a new AtomSet for this, but just
    * adding the gradient vectors to the last AtomSet read (if that was
    * indeed the same nuclear arrangement).
+   * @param reader BufferedReader associated with the NWChem output text.
+   * @throws Exception If an error occurs.
    **/
   private void readGradients(BufferedReader reader) throws Exception {
     discardLines(reader, 3); // skip blank line, titles and dashes
@@ -245,6 +242,8 @@ class NWChemReader extends AtomSetCollectionReader {
    *
    * <p>Attaches the vibration vectors of the projected frequencies to
    * duplicates of the atom information in the frequency section.
+   * @param reader BufferedReader associated with the NWChem output text.
+   * @throws Exception If an error occurs.
    **/
   private void readFrequencies(BufferedReader reader) throws Exception {
     String line, tokens[];

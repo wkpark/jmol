@@ -88,6 +88,12 @@ import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 
+import java.awt.Graphics2D;
+import java.awt.*;
+import java.awt.geom.*;
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.*;
+
 /**
  * The main class in Jmol.
  *
@@ -266,6 +272,7 @@ class Jmol extends JPanel {
     addPropertyChangeListener(moleculeProperty, saveAction);
     addPropertyChangeListener(moleculeProperty, exportAction);
     addPropertyChangeListener(moleculeProperty, povrayAction);
+    addPropertyChangeListener(moleculeProperty, pdfAction);
     addPropertyChangeListener(moleculeProperty, printAction);
   }
 
@@ -1059,6 +1066,7 @@ class Jmol extends JPanel {
   private static final String printActionProperty = "print";
   private static final String recentFilesAction = "recentFiles";
   private static final String povrayActionProperty = "povray";
+  private static final String pdfActionProperty = "pdf";
   private static final String scriptAction = "script";
 
 
@@ -1070,6 +1078,7 @@ class Jmol extends JPanel {
   private SaveAction saveAction = new SaveAction();
   private ExportAction exportAction = new ExportAction();
   private PovrayAction povrayAction = new PovrayAction();
+  private PdfAction pdfAction = new PdfAction();
   private PrintAction printAction = new PrintAction();
 
   /**
@@ -1079,7 +1088,7 @@ class Jmol extends JPanel {
     new NewAction(), new OpenAction(), saveAction, printAction, exportAction,
     new ExitAction(), new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new AtompropsAction(), new ConsoleAction(),
-    chemicalShifts, new RecentFilesAction(), povrayAction, new ScriptAction()
+    chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction, new ScriptAction()
   };
 
   class ConsoleAction extends AbstractAction {
@@ -1167,8 +1176,10 @@ class Jmol extends JPanel {
 
     if (pg != null) {
       display.print(pg);
-      pg.dispose();    // Flushes the print job
+      // Flush the print job
+      pg.dispose();
     }
+    
   }
 
   class OpenAction extends NewAction {
@@ -1368,6 +1379,53 @@ class Jmol extends JPanel {
                           currentFileName.lastIndexOf("."));
       PovrayDialog pvsd = new PovrayDialog(frame, display, getCurrentFile(),
                             basename);
+    }
+
+  }
+
+  class PdfAction extends MoleculeDependentAction {
+
+    public PdfAction() {
+      super(pdfActionProperty);
+      setEnabled(false);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      exportChooser.setAccessory(null);
+
+      int retval = exportChooser.showSaveDialog(Jmol.this);
+      if (retval == 0) {
+        File theFile = exportChooser.getSelectedFile();
+
+        if (theFile != null) {
+          Document document = new Document();
+      
+          try {
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(theFile));
+        
+            document.open();
+        
+            int w = display.getWidth();
+            int h = display.getHeight();
+            PdfContentByte cb = writer.getDirectContent();
+            PdfTemplate tp = cb.createTemplate(w, h);
+            Graphics2D g2 = tp.createGraphics(w, h);
+            g2.setStroke(new BasicStroke(0.1f));
+            tp.setWidth(w);
+            tp.setHeight(h);
+        
+            display.print(g2);
+            g2.dispose();
+            cb.addTemplate(tp, 72, 720-h);
+          } catch(DocumentException de) {
+              System.err.println(de.getMessage());
+          } catch(IOException ioe) {
+              System.err.println(ioe.getMessage());
+          }
+      
+          document.close();
+        }
+      }
     }
 
   }

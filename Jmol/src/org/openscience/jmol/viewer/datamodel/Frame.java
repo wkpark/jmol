@@ -637,9 +637,9 @@ public class Frame {
     bspf = null;
   }
 
-  private WithinIterator withinAtomIterator = new WithinIterator();
-  private WithinIterator withinPointIterator = new WithinIterator();
-  private PointWrapper pointWrapper = new PointWrapper();
+  private final WithinIterator withinAtomIterator = new WithinIterator();
+  private final WithinIterator withinPointIterator = new WithinIterator();
+  private final PointWrapper pointWrapper = new PointWrapper();
 
   public AtomIterator getWithinIterator(Atom atomCenter,
                                              float radius) {
@@ -665,7 +665,7 @@ public class Frame {
       this.center = center;
       this.radius = radius;
       iterCurrent = null;
-      int bsptIndexLast = bspf.getBsptCount();
+      bsptIndexLast = bspf.getBsptCount();
     }
 
     public boolean hasNext() {

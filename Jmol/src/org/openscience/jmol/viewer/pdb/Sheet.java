@@ -29,28 +29,28 @@ import javax.vecmath.Vector3f;
 
 public class Sheet extends PdbStructure {
 
-  Sheet(PdbChain chain, short startResidueID, int residueCount) {
-    super(chain, JmolConstants.SECONDARY_STRUCTURE_SHEET,
-          startResidueID, residueCount);
+  Sheet(PdbPolymer polymer, int polymerIndex, int polymerCount) {
+    super(polymer, JmolConstants.SECONDARY_STRUCTURE_SHEET,
+          polymerIndex, polymerCount);
   }
 
   void calcAxis() {
     if (axisA != null)
       return;
     axisA = new Point3f();
-    chain.getAlphaCarbonMidPoint(startResidueIndex + 1, axisA);
+    polymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
     axisB = new Point3f();
-    chain.getAlphaCarbonMidPoint(endResidueIndex, axisB);
+    polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    chain.getAlphaCarbonMidPoint(startResidueIndex, tempA);
+    polymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
     projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    chain.getAlphaCarbonMidPoint(startResidueIndex + residueCount, tempB);
+    polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
@@ -63,11 +63,11 @@ public class Sheet extends PdbStructure {
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
-      vectorCOSum.sub(chain.getResiduePoint(startResidueIndex, 3),
-                      chain.getResiduePoint(startResidueIndex, 2));
-      for (int i = residueCount; --i > 0; ) {
-        vectorCO.sub(chain.getResiduePoint(startResidueIndex + i, 3),
-                     chain.getResiduePoint(startResidueIndex + i, 2));
+      vectorCOSum.sub(polymer.getResiduePoint(polymerIndex, 3),
+                      polymer.getResiduePoint(polymerIndex, 2));
+      for (int i = polymerCount; --i > 0; ) {
+        vectorCO.sub(polymer.getResiduePoint(polymerIndex + i, 3),
+                     polymer.getResiduePoint(polymerIndex + i, 2));
         if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)
           vectorCOSum.add(vectorCO);
         else
@@ -92,25 +92,4 @@ public class Sheet extends PdbStructure {
       calcSheetUnitVectors();
     return heightUnitVector;
   }
-
-  /*
-
-    Vector3f vectorT = new Vector3f();
-    float projectedLength;
-
-    axisB = new Point3f();
-    chain.getAlphaCarbonMidPoint(residueEnd + 1, axisB);
-    vectorT.sub(axisB, tempA);
-    projectedLength = vectorT.dot(axisUnitVector);
-    axisB.set(axisUnitVector);
-    axisB.scaleAdd(projectedLength, tempA);
-
-    axisA = new Point3f();
-    chain.getAlphaCarbonMidPoint(residueStart, axisA);
-    vectorT.sub(axisA, tempB);
-    projectedLength = vectorT.dot(axisUnitVector);
-    axisA.set(axisUnitVector);
-    axisA.scaleAdd(projectedLength, tempB);
-
-  */
 }

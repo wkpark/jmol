@@ -128,4 +128,41 @@ public class PdbPolymer {
       */
     }
   }
+
+  public int getIndex(short groupSequence) {
+    for (int i = count; --i >= 0; )
+      if (groups[i].groupSequence == groupSequence)
+        return i;
+    return -1;
+  }
+
+  void addSecondaryStructure(byte type,
+                             short startResidueID, short endResidueID) {
+    int polymerIndexStart, polymerIndexEnd;
+    if ((polymerIndexStart = getIndex(startResidueID)) == -1 ||
+        (polymerIndexEnd = getIndex(endResidueID)) == -1)
+      return;
+    int structureCount = polymerIndexEnd - polymerIndexStart + 1;
+    if (structureCount < 1) {
+      System.out.println("structure definition error");
+      return;
+    }
+    PdbStructure structure;
+    switch(type) {
+    case JmolConstants.SECONDARY_STRUCTURE_HELIX:
+      structure = new Helix(this, polymerIndexStart, structureCount);
+      break;
+    case JmolConstants.SECONDARY_STRUCTURE_SHEET:
+      structure = new Sheet(this, polymerIndexStart, structureCount);
+      break;
+    case JmolConstants.SECONDARY_STRUCTURE_TURN:
+      structure = new Turn(this, polymerIndexStart, structureCount);
+      break;
+    default:
+      System.out.println("unrecognized secondary structure type");
+      return;
+    }
+    for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
+      groups[i].setStructure(structure);
+  }
 }

@@ -61,10 +61,13 @@ class CartoonRenderer extends McpgRenderer {
       if (colix == 0)
         colix = alphas[i].colixAtom;
       PdbGroup group = polymerGroups[i];
-      if (group.isHelixOrSheet())
+      if (group.isHelixOrSheet()) {
+        //        System.out.println("renderSpecialSegment[" + i + "]");
         renderSpecialSegment(group, colix, mads[i]);
-      else
+      } else {
+        //        System.out.println("renderRopeSegment[" + i + "]");
         renderRopeSegment(colix, mads, i);
+      }
     }
     renderPending();
   }
@@ -96,7 +99,7 @@ class CartoonRenderer extends McpgRenderer {
       PdbGroup residue = polymerGroups[i];
       if (isSpecials[i] = residue.isHelixOrSheet()) {
         PdbStructure structure = residue.structure;
-        point.set(i - 1 != structure.getStartResidueIndex()
+        point.set(i - 1 != structure.getPolymerIndex()
                   ? structure.getAxisStartPoint()
                   : structure.getAxisEndPoint());
 
@@ -204,14 +207,16 @@ class CartoonRenderer extends McpgRenderer {
     if (tPending) {
       Point3f[] segments = structurePending.getSegments();
       boolean tEnd =
-        (endIndexPending == structurePending.getResidueCount() - 1);
+        (endIndexPending == structurePending.getPolymerCount() - 1);
 
-      System.out.println("structurePending.getResidueCount()=" +
-                         structurePending.getResidueCount());
+      /*
+      System.out.println("structurePending.getPolymerCount()=" +
+                         structurePending.getPolymerCount());
       System.out.println("segments.length=" + segments.length);
       System.out.println(" startIndexPending=" + startIndexPending +
                          " endIndexPending=" + endIndexPending);
-
+      System.out.println("tEnd=" + tEnd);
+      */
       if (structurePending instanceof Helix)
         renderPendingHelix(segments[startIndexPending],
                            segments[endIndexPending],

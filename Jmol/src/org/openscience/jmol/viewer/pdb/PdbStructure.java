@@ -29,21 +29,21 @@ import javax.vecmath.Vector3f;
 
 public abstract class PdbStructure {
 
-  PdbChain chain;
+  PdbPolymer polymer;
   byte type;
-  short startResidueID;
-  int residueCount;
+  int polymerIndex;
+  int polymerCount;
   Point3f center;
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
   Point3f[] segments;
 
-  PdbStructure(PdbChain chain, byte type,
-               short startResidueID, int residueCount) {
-    this.chain = chain;
+  PdbStructure(PdbPolymer polymer, byte type,
+               int polymerIndex, int polymerCount) {
+    this.polymer = polymer;
     this.type = type;
-    this.startResidueID = startResidueID;
-    this.residueCount = residueCount;
+    this.polymerIndex = polymerIndex;
+    this.polymerCount = polymerCount;
   }
 
   void calcAxis() {
@@ -53,20 +53,24 @@ public abstract class PdbStructure {
     if (segments != null)
       return;
     calcAxis();
+    /*
     System.out.println("axisA=" + axisA.x + "," + axisA.y + "," + axisA.z);
     System.out.println("axisB=" + axisB.x + "," + axisB.y + "," + axisB.z);
-    segments = new Point3f[residueCount + 1];
-    segments[residueCount] = axisB;
+    */
+    segments = new Point3f[polymerCount + 1];
+    segments[polymerCount] = axisB;
     segments[0] = axisA;
-    for (int i = residueCount; --i > 0; ) {
+    for (int i = polymerCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
-      chain.getAlphaCarbonMidPoint(chain.getIndex(startResidueID) + i, point);
+      polymer.getAlphaCarbonMidPoint(polymerIndex + i, point);
       projectOntoAxis(point);
     }
     for (int i = 0; i < segments.length; ++i) {
       Point3f point = segments[i];
+      /*
       System.out.println("segment[" + i + "]=" +
                          point.x + "," + point.y + "," + point.z);
+      */
     }
   }
 
@@ -80,22 +84,27 @@ public abstract class PdbStructure {
     point.scaleAdd(projectedLength, axisA);
   }
 
-  public int getResidueCount() {
-    return residueCount;
+  public int getPolymerCount() {
+    return polymerCount;
   }
 
-  public int getStartResidueIndex() {
-    return chain.getIndex(startResidueID);
+  public int getPolymerIndex() {
+    return polymerIndex;
+  }
+
+  public int getIndex(PdbGroup group) {
+    PdbGroup[] groups = polymer.groups;
+    int i;
+    for (i = polymerCount; --i >= 0; )
+      if (groups[polymerIndex + i] == group)
+        break;
+    return i;
   }
 
   public Point3f[] getSegments() {
     if (segments == null)
       calcSegments();
     return segments;
-  }
-
-  public int getIndex(PdbGroup group) {
-    return group.getSequence() - startResidueID;
   }
 
   public Point3f getAxisStartPoint() {
@@ -108,7 +117,7 @@ public abstract class PdbStructure {
     return axisB;
   }
 
-  public Point3f getStructureMidPoint(int residueIndex) {
+  public Point3f getStructureMidPoint(int index) {
     if (segments == null)
       calcSegments();
     /*
@@ -117,12 +126,6 @@ public abstract class PdbStructure {
                        residueIndex + ") -> " +
                        point.x + "," + point.y + "," + point.z);
     */
-    return segments[residueIndex - startResidueIndex];
+    return segments[index];
   }
-  /****************************************************************
-   * For goodness sake FIXME -- I am completely broken
-   * mth 2003 12 10
-   ****************************************************************/
-  int startResidueIndex;
-  int endResidueIndex;
 }

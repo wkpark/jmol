@@ -137,31 +137,9 @@ public class PdbChain {
 
   void addSecondaryStructure(byte type,
                              short startResidueID, short endResidueID) {
-    int structureCount = endResidueID - startResidueID + 1;
-    if (structureCount < 1 ||
-        startResidueID < firstGroupSequence || 
-        endResidueID >= (firstGroupSequence + groupCount)) {
-      System.out.println("structure definition error");
-      return;
-    }
-    PdbStructure structure;
-    switch(type) {
-    case JmolConstants.SECONDARY_STRUCTURE_HELIX:
-      structure = new Helix(this, startResidueID, structureCount);
-      break;
-    case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-      structure = new Sheet(this, startResidueID, structureCount);
-      break;
-    case JmolConstants.SECONDARY_STRUCTURE_TURN:
-      structure = new Turn(this, startResidueID, structureCount);
-      break;
-    default:
-      System.out.println("unrecognized secondary structure type");
-      return;
-    }
-    int structureIndex = getIndex(startResidueID);
-    for (int i = structureIndex + structureCount; --i >= structureIndex; )
-      groups[i].setStructure(structure);
+    if (polymer == null)
+      polymer = new PdbPolymer(this);
+    polymer.addSecondaryStructure(type, startResidueID, endResidueID);
   }
 
   public int getIndex(short groupID) {

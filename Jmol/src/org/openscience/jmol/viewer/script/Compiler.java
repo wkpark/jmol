@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.script;
 import org.openscience.jmol.viewer.managers.ColorManager;
-import org.openscience.jmol.viewer.pdb.PdbGroup;
+import org.openscience.jmol.viewer.datamodel.PdbGroup;
 
 import java.util.Hashtable;
 import java.util.Vector;

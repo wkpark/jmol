@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.pdb;
+package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.JmolConstants;
 
 public class Turn extends PdbStructure {

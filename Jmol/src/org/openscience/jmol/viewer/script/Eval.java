@@ -26,7 +26,6 @@ package org.openscience.jmol.viewer.script;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.*;
-import org.openscience.jmol.viewer.pdb.*;
 import org.openscience.jmol.viewer.g3d.Font3D;
 import java.io.*;
 import java.awt.Color;

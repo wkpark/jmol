@@ -27,7 +27,6 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
 class Trace extends Mcps {

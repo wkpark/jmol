@@ -689,7 +689,20 @@
     <section>
       <title>script &lt;filename | url&gt;</title>
       <para>
-	Loads and executes the specified script file/url.
+	Loads and executes the specified script file/url. The
+	hash/pound/sharp character (#) character marks a comment to the
+	end of the line. The semicolon character (;) separates multiple
+	statements on the same line. A script file may load another script
+	file, up to 10 deep.
+      </para>
+      <para>
+	The command *source* is a synonym for *script*.
+      </para>
+    </section>
+    <section>
+      <title>set &lt;parameter%gt; {&lt;value&gt;}</title>
+      <para>
+	See separate section for set parameters.
       </para>
     </section>
     <section>

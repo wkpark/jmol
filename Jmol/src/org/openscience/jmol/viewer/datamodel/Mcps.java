@@ -39,7 +39,7 @@ abstract public class Mcps extends Shape {
 
   Model[] models;
 
-  final public void initGraphic() {
+  final public void initShape() {
     pdbFile = frame.pdbFile;
   }
 

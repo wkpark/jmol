@@ -57,7 +57,7 @@ import java.util.MissingResourceException;
    // can be absolute on the server ... starting with '/'
    [param name="load"       value="relative-pathname-with-no-http://" /]
 
-   [param name="inline" value="
+   [param name="loadInline" value="
 | do
 | it
 | this
@@ -262,7 +262,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       viewer.setDebugScript(getBooleanValue("debugscript", false));
       
       load(getValue("load", null));
-      loadInline(getValue("inline", null));
+      loadInline(getValue("loadInline", null));
       if (getBooleanValue("frank", true))
         viewer.setShapeSize(JmolConstants.SHAPE_FRANK, -1);
 
@@ -595,7 +595,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   char inlineNewlineChar = '|';
 
   public void loadInline(String strModel) {
-    System.out.println("loadInline called!:" + strModel);
     if (strModel != null) {
       if (inlineNewlineChar != 0) {
         int len = strModel.length();

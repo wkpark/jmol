@@ -2,10 +2,10 @@ JmolApplet.java
 JmolAppletControl.java
 JmolAppletRegistry.java
 org/openscience/jmol/applet/*.java
-org/openscience/jmol/viewer/*.java
-org/openscience/jmol/viewer/**/*.java
 org/openscience/jmol/ui/*.java
 org/openscience/jmol/ui/*.properties
+org/jmol/viewer/*.java
+org/jmol/viewer/**/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/g3d/*.java
 

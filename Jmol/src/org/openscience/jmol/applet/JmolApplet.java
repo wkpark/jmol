@@ -271,7 +271,7 @@ public class JmolApplet extends java.applet.Applet
   public static final int SHADED = 3;
 
   static String[] drawModeNames = {
-    "WIREFRANE", "QUICKDRAW", "HALFSHADED", "SHADED"
+    "WIREFRAME", "QUICKDRAW", "HALFSHADED", "SHADED"
   };
 
   /**

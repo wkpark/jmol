@@ -64,11 +64,11 @@ class SurfaceRenderer extends ShapeRenderer {
     geodesicFaceNormixes =
       g3d.getGeodesicFaceNormixes(surface.geodesicRenderingLevel);
     Atom[] atoms = frame.atoms;
-    int[][] surfaceConvexMaps = surface.surfaceConvexMaps;
+    int[][] convexSurfaceMaps = surface.convexSurfaceMaps;
     short[] colixesConvex = surface.colixesConvex;
     int displayModelIndex = this.displayModelIndex;
     for (int i = surface.surfaceConvexMax; --i >= 0; ) {
-      int[] map = surfaceConvexMaps[i];
+      int[] map = convexSurfaceMaps[i];
       if (map != null && map != mapNull) {
         Atom atom = atoms[i];
         if (displayModelIndex < 0 || displayModelIndex == atom.modelIndex)
@@ -80,7 +80,7 @@ class SurfaceRenderer extends ShapeRenderer {
       Surface.Torus torus = toruses[i];
       if (displayModelIndex < 0 ||
           displayModelIndex == atoms[torus.indexII].modelIndex)
-        renderTorus(torus, atoms, colixesConvex, surfaceConvexMaps);
+        renderTorus(torus, atoms, colixesConvex, convexSurfaceMaps);
     }
 
     Surface.Cavity[] cavities = surface.cavities;
@@ -88,7 +88,7 @@ class SurfaceRenderer extends ShapeRenderer {
       Surface.Cavity cavity = cavities[i];
       if (displayModelIndex < 0 ||
           displayModelIndex == atoms[cavity.ixI].modelIndex)
-        renderCavity(cavities[i], atoms, colixesConvex, surfaceConvexMaps);
+        renderCavity(cavities[i], atoms, colixesConvex, convexSurfaceMaps);
     }
     viewer.freeTempScreens(screens);
     screens = null;
@@ -149,12 +149,12 @@ class SurfaceRenderer extends ShapeRenderer {
   static final float torusStepAngle = 2 * (float)Math.PI / 64;
 
   void renderTorus(Surface.Torus torus,
-                   Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
-    if (surfaceConvexMaps[torus.indexII] != null)
+                   Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
+    if (convexSurfaceMaps[torus.indexII] != null)
       renderTorusHalf(torus,
                       getColix(torus.colixI, colixes, atoms, torus.indexII),
                       false);
-    if (surfaceConvexMaps[torus.indexJJ] != null)
+    if (convexSurfaceMaps[torus.indexJJ] != null)
       renderTorusHalf(torus,
                       getColix(torus.colixJ, colixes, atoms, torus.indexJJ),
                       true);
@@ -241,7 +241,7 @@ class SurfaceRenderer extends ShapeRenderer {
   }
 
   void renderCavity(Surface.Cavity cavity,
-                    Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
+                    Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
     Point3f[] points = cavity.points;
     short[] normixes = cavity.normixes;
     for (int i = points.length; --i >= 0; )

@@ -85,11 +85,12 @@ class Surface extends Shape {
   int geodesicRenderingLevel = 1;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
-  int[][] surfaceConvexMaps;
+  int[][] convexSurfaceMaps;
   short[] colixesConvex;
   Vector3f[] geodesicVertexVectors;
   int geodesicVertexCount;
   int[] geodesicMap;
+  private final static int[] calculateMyConvexSurfaceMap = new int[0];
   final static int[] mapNull = new int[0];
 
   int cavityCount;
@@ -113,7 +114,7 @@ class Surface extends Shape {
     this.mad = mad;
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
       surfaceConvexMax = 0;
-      surfaceConvexMaps = null;
+      convexSurfaceMaps = null;
       torusCount = 0;
       htToruses = null;
       toruses = null;
@@ -124,36 +125,37 @@ class Surface extends Shape {
     }
     int atomCount = frame.atomCount;
     // always delete old surfaces for selected atoms
-    if (surfaceConvexMaps != null) {
+    if (convexSurfaceMaps != null) {
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
-          surfaceConvexMaps[i] = null;
+          convexSurfaceMaps[i] = null;
       deleteUnusedToruses();
       deleteUnusedCavities();
     }
     // now, calculate surface for selected atoms
     if (mad != 0) {
-      if (surfaceConvexMaps == null) {
-        surfaceConvexMaps = new int[atomCount][];
+      if (convexSurfaceMaps == null) {
+        convexSurfaceMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
       }
       if (radiusP > 0 && htToruses == null)
         htToruses = new Hashtable();
-      for (int i = atomCount; --i >= 0; )
+      for (int i = 0; i < atomCount; ++i) // make this loop count up
         if (bsSelected.get(i)) {
           setAtomI(i);
           getNeighbors(bsSelected);
-          calcConvexMap();
           calcCavitiesI();
+          if (convexSurfaceMaps[i] == calculateMyConvexSurfaceMap)
+            calcConvexMapI();
         }
       saveToruses();
     }
-    if (surfaceConvexMaps == null)
+    if (convexSurfaceMaps == null)
       surfaceConvexMax = 0;
     else {
       // update this count to speed up surfaceRenderer
       int i;
-      for (i = atomCount; --i >= 0 && surfaceConvexMaps[i] == null; )
+      for (i = atomCount; --i >= 0 && convexSurfaceMaps[i] == null; )
         {}
       surfaceConvexMax = i + 1;
     }
@@ -279,8 +281,8 @@ class Surface extends Shape {
     distanceJK2 = centerK.distanceSquared(centerJ);
   }
 
-  void calcConvexMap() {
-    calcConvexBits();
+  void calcConvexMapI() {
+    calcConvexBitsI();
     int indexLast;
     for (indexLast = geodesicMap.length;
          --indexLast >= 0 && geodesicMap[indexLast] == 0; )
@@ -291,10 +293,10 @@ class Surface extends Shape {
       map = new int[count];
       System.arraycopy(geodesicMap, 0, map, 0, count);
     }
-    surfaceConvexMaps[indexI] = map;
+    convexSurfaceMaps[indexI] = map;
   }
 
-  void calcConvexBits() {
+  void calcConvexBitsI() {
     setAllBits(geodesicMap, geodesicVertexCount);
     if (neighborCount == 0)
       return;
@@ -385,8 +387,8 @@ class Surface extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
-      if (surfaceConvexMaps[torus.indexII] == null &&
-          surfaceConvexMaps[torus.indexJJ] == null) {
+      if (convexSurfaceMaps[torus.indexII] == null &&
+          convexSurfaceMaps[torus.indexJJ] == null) {
         torusDeleted = true;
         toruses[i] = null;
       }
@@ -645,9 +647,9 @@ class Surface extends Shape {
     boolean cavityDeleted = false;
     for (int i = cavityCount; --i >= 0; ) {
       Cavity cavity = cavities[i];
-      if (surfaceConvexMaps[cavity.ixI] == null &&
-          surfaceConvexMaps[cavity.ixJ] == null &&
-          surfaceConvexMaps[cavity.ixK] == null) {
+      if (convexSurfaceMaps[cavity.ixI] == null &&
+          convexSurfaceMaps[cavity.ixJ] == null &&
+          convexSurfaceMaps[cavity.ixK] == null) {
         cavityDeleted = true;
         cavities[i] = null;
       }
@@ -719,6 +721,12 @@ class Surface extends Shape {
                               torusCenterJK,
                               calcTorusRadius(radiusJ, radiusK, distanceJK2));
       }
+      if (convexSurfaceMaps[indexI] == null)
+        convexSurfaceMaps[indexI] = calculateMyConvexSurfaceMap;
+      if (convexSurfaceMaps[indexJ] == null)
+        convexSurfaceMaps[indexJ] = calculateMyConvexSurfaceMap;
+      if (convexSurfaceMaps[indexK] == null)
+        convexSurfaceMaps[indexK] = calculateMyConvexSurfaceMap;
     }
   }
 

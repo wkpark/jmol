@@ -70,27 +70,16 @@
       </section>
     </section>
     
-    <section title="Jmol10pre17">
+    <section title="Jmol10pre18">
       <p>
-	Jmol version 10 pre-release 17 was released on Mon 15 Nov 2004.
+	Jmol version 10 pre-release 18 was released on Sun 21 Nov 2004.
 	This release includes the following:
 	<ul>
 	  <li>
-	    Implementation of 'set picking *'
+	    Internal repackaging of code
 	  </li>
 	  <li>
-	    reduced memory consumption
-	  </li>
-	  <li>
-	    Rendering of large spheres is several times faster
-	  </li>
-	  <li>
-	    Rendering of small spheres is 10-20% faster
-	  </li>
-	  <li>
-	    Initial support for hierarchical management of
-	    molecular models in
-	    computational chemistry files
+	    work on Jmol.js JavaScript library
 	  </li>
 	  <li>
 	    bug fixes
@@ -98,10 +87,10 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre17.zip">
+	<a href="Jmol10pre18.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre17.zip
+	    Jmol10pre18.zip
 	  </font>
 	</a>
       </p>
@@ -118,7 +107,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre16.zip</b>
+	format as .zip : <b>jar xf Jmol10pre18.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

@@ -477,6 +477,25 @@
 	</p>
       </section>
 
+      <section title="jmolInitializeBypass">
+	<code>jmolInitializeBypass()</code>
+	<p>
+	  This routine can be called if you wish to bypass the
+	  normal Jmol.js JavaScript library initialization. It
+	  simply sets a flag so that the other library entry
+	  points do not complain that the library was not
+	  initialized.
+	</p>
+	<p>
+	  The normal <code>jmolInitialize()</code> routine
+	  calls <code>jmolSetCodeBase()</code>,
+	  <code>jmolCheckBrowser()</code>, and
+	  <code>jmolOnloadResetForms()</code>. This routine
+	  exists to support the <i>rare</i> case where someone
+	  wants to bypass this normal initialization sequence. 
+	</p>
+      </section>
+
       <section title="jmolSetCodebase">
 	<code>jmolSetCodebase(directory)</code>
 	<p>

@@ -49,6 +49,7 @@
 	<ul>
 	  <li><a href="[root]/demo/jssample0">Very simple example</a></li>
 	  <li><a href="[root]/demo/jssample1">Example that includes UI controls</a></li>
+	  <li><a href="[root]/demo/jssample2">Load molecular models inline</a></li>
 	</ul>
       </p>
     </section>

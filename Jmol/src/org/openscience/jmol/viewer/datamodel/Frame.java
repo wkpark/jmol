@@ -109,6 +109,10 @@ public class Frame {
     return atomCount;
   }
 
+  public Atom[] getAtoms() {
+    return atoms;
+  }
+
   public Atom getAtomAt(int atomIndex) {
     return atoms[atomIndex];
   }

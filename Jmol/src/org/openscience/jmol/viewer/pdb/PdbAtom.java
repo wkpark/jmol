@@ -140,6 +140,18 @@ public class PdbAtom {
     return group.chain.chainID;
   }
 
+  public PdbModel getPdbModel() {
+    return group.chain.model;
+  }
+
+  public PdbChain getPdbChain() {
+    return group.chain;
+  }
+
+  public PdbPolymer getPdbPolymer() {
+    return group.polymer;
+  }
+
   public int getAtomSerial() {
     return atomSerial;
   }

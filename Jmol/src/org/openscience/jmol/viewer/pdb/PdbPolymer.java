@@ -26,8 +26,10 @@ package org.openscience.jmol.viewer.pdb;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
+import org.openscience.jmol.viewer.datamodel.Frame;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
+import java.util.BitSet;
 
 public class PdbPolymer {
 
@@ -35,6 +37,7 @@ public class PdbPolymer {
   int count;
   PdbGroup[] groups;
   int[] atomIndices;
+  BitSet atomSet;
 
   public PdbPolymer(PdbChain chain) {
     this.chain = chain;
@@ -63,6 +66,8 @@ public class PdbPolymer {
         groups[j++] = group;
       }
     }
+    for (int i = count; --i >= 0; )
+      groups[i].setPolymer(this);
   }
 
   public int getCount() {
@@ -165,5 +170,19 @@ public class PdbPolymer {
     }
     for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
       groups[i].setStructure(structure);
+  }
+
+  public BitSet getAtomSet() {
+    if (atomSet == null) {
+      BitSet bs = atomSet = new BitSet();
+      Frame frame = chain.model.file.frame;
+      Atom[] atoms = frame.getAtoms();
+      for (int i = frame.getAtomCount(); --i >= 0; ) {
+        Atom atom = atoms[i];
+        if (atom.getPdbPolymer() == this)
+          bs.set(i);
+      }
+    }
+    return atomSet;
   }
 }

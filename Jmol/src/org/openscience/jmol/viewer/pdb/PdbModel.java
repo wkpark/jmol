@@ -30,11 +30,13 @@ import org.openscience.jmol.viewer.JmolConstants;
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.BitSet;
 
 public class PdbModel {
 
   public PdbFile file;
   public short modelID;
+  BitSet atomSet;
 
   int chainCount = 0;
   PdbChain[] chains = new PdbChain[8];
@@ -95,4 +97,17 @@ public class PdbModel {
     return chains[chainIndex].getMainchain();
   }
 
+  public BitSet getAtomSet() {
+    if (atomSet == null) {
+      BitSet bs = atomSet = new BitSet();
+      Frame frame = file.frame;
+      Atom[] atoms = frame.getAtoms();
+      for (int i = frame.getAtomCount(); --i >= 0; ) {
+        Atom atom = atoms[i];
+        if (atom.getPdbModel() == this)
+          bs.set(i);
+      }
+    }
+    return atomSet;
+  }
 }

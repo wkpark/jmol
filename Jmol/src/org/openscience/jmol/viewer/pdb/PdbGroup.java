@@ -33,6 +33,7 @@ public class PdbGroup {
 
   public PdbStructure structure;
   public PdbChain chain;
+  public PdbPolymer polymer;
   public int seqcode;
   public short groupID;
   int[] mainchainIndices;
@@ -41,6 +42,10 @@ public class PdbGroup {
     this.chain = chain;
     this.seqcode = seqcode;
     this.groupID = getGroupID(group3);
+  }
+
+  public void setPolymer(PdbPolymer polymer) {
+    this.polymer = polymer;
   }
 
   public void setStructure(PdbStructure structure) {

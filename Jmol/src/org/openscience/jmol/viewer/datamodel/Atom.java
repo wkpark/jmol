@@ -306,14 +306,44 @@ public class Atom implements Bspt.Tuple {
     return radius;
   }
 
-  public PdbAtom getPdbAtom() {
-    return pdbAtom;
-  }
-
   public short getModelID() {
     if (pdbAtom == null)
       return 0;
     return pdbAtom.getModelID();
+  }
+
+  public char getChainID() {
+    if (pdbAtom == null)
+      return (char)0;
+    return pdbAtom.getChainID();
+  }
+
+  public PdbAtom getPdbAtom() {
+    return pdbAtom;
+  }
+
+  public PdbGroup getPdbGroup() {
+    if (pdbAtom == null)
+      return null;
+    return pdbAtom.group;
+  }
+
+  public PdbPolymer getPdbPolymer() {
+    if (pdbAtom == null)
+      return null;
+    return pdbAtom.group.polymer;
+  }
+
+  public PdbChain getPdbChain() {
+    if (pdbAtom == null)
+      return null;
+    return pdbAtom.group.chain;
+  }
+
+  public PdbModel getPdbModel() {
+    if (pdbAtom == null)
+      return null;
+    return pdbAtom.group.chain.model;
   }
 
   public Object markDeleted() {

@@ -30,15 +30,15 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Trace {
+public class Backbone {
 
   JmolViewer viewer;
   Frame frame;
   PdbFile pdbFile;
 
-  Tmodel[] tmodels;
+  Bmodel[] bmodels;
 
-  Trace(JmolViewer viewer, Frame frame) {
+  Backbone(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
     pdbFile = frame.pdbFile;
@@ -46,101 +46,105 @@ public class Trace {
 
   public void setMad(short mad, BitSet bsSelected) {
     initialize();
-    for (int m = tmodels.length; --m >= 0; )
-      tmodels[m].setMad(mad, bsSelected);
+    for (int m = bmodels.length; --m >= 0; )
+      bmodels[m].setMad(mad, bsSelected);
   }
 
   public void setColix(byte palette, short colix, BitSet bsSelected) {
     initialize();
-    for (int m = tmodels.length; --m >= 0; )
-      tmodels[m].setColix(palette, colix, bsSelected);
+    for (int m = bmodels.length; --m >= 0; )
+      bmodels[m].setColix(palette, colix, bsSelected);
   }
 
   void initialize() {
-    if (tmodels == null) {
+    if (bmodels == null) {
       int tmodelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
-      tmodels = new Tmodel[tmodelCount];
+      bmodels = new Bmodel[tmodelCount];
       for (int i = tmodelCount; --i >= 0; )
-        tmodels[i] = new Tmodel(pdbFile.getModel(i));
+        bmodels[i] = new Bmodel(pdbFile.getModel(i));
     }
   }
 
-  int getTmodelCount() {
-    return tmodels.length;
+  int getBmodelCount() {
+    return bmodels.length;
   }
 
-  Tmodel getTmodel(int i) {
-    return tmodels[i];
+  Bmodel getBmodel(int i) {
+    return bmodels[i];
   }
 
-  class Tmodel {
+  class Bmodel {
     PdbModel model;
-    Tchain[] tchains;
+    Bchain[] bchains;
     
-    Tmodel(PdbModel model) {
+    Bmodel(PdbModel model) {
       this.model = model;
-      tchains = new Tchain[model.getChainCount()];
-      for (int i = tchains.length; --i >= 0; )
-        tchains[i] = new Tchain(model.getChain(i));
+      bchains = new Bchain[model.getChainCount()];
+      for (int i = bchains.length; --i >= 0; )
+        bchains[i] = new Bchain(model.getChain(i));
     }
     
     public void setMad(short mad, BitSet bsSelected) {
-      for (int i = tchains.length; --i >= 0; )
-        tchains[i].setMad(mad, bsSelected);
+      for (int i = bchains.length; --i >= 0; )
+        bchains[i].setMad(mad, bsSelected);
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = tchains.length; --i >= 0; )
-        tchains[i].setColix(palette, colix, bsSelected);
+      for (int i = bchains.length; --i >= 0; )
+        bchains[i].setColix(palette, colix, bsSelected);
     }
 
-    int getTchainCount() {
-      return tchains.length;
+    int getBchainCount() {
+      return bchains.length;
     }
 
-    Tchain getTchain(int i) {
-      return tchains[i];
+    Bchain getBchain(int i) {
+      return bchains[i];
     }
   }
 
-  class Tchain {
+  class Bchain {
     PdbChain chain;
     int mainchainLength;
-    PdbGroup[] mainchain;
+    int[] atomIndices;
     short[] colixes;
     short[] mads;
 
-    Tchain(PdbChain chain) {
+    Bchain(PdbChain chain) {
       this.chain = chain;
-      mainchain = chain.getMainchain();
+      PdbGroup[] mainchain = chain.getMainchain();
       mainchainLength = mainchain.length;
-      if (mainchainLength > 0) {
-        colixes = new short[mainchainLength];
-        mads = new short[mainchainLength + 1];
+      if (mainchainLength < 2) {
+        // this is somewhat important ... 
+        // don't accept a chain of length 1
+        mainchainLength = 0;
+        return;
       }
+      atomIndices = new int[mainchainLength];
+      for (int i = mainchainLength; --i >= 0; )
+        atomIndices[i] = mainchain[i].getAlphaCarbonIndex();
+      colixes = new short[mainchainLength];
+      mads = new short[mainchainLength - 1];
     }
 
     public void setMad(short mad, BitSet bsSelected) {
-      for (int i = mainchainLength; --i >= 0; ) {
-        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
-          if (mad < 0) {
-            // -2.0 angstrom diameter -> -4000 milliangstroms diameter
-            if (mad == -4000)
-              mads[i] = 1000; // trace temperature goes here
-            else
-              mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 1500 : 500);
-          } else {
-            mads[i] = mad;
-          }
+      boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
+      for (int i = mainchainLength - 1; --i >= 0; ) {
+        if ((bsSelected.get(atomIndices[i]) &&
+             bsSelected.get(atomIndices[i + 1]))
+            ||
+            (bondSelectionModeOr &&
+             (bsSelected.get(atomIndices[i]) ||
+              bsSelected.get(atomIndices[i + 1]))))
+          mads[i] = mad;
       }
-      if (mainchainLength > 0)
-        mads[mainchainLength] = mads[mainchainLength - 1];
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
       Frame frame = chain.model.file.frame;
+      boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       for (int i = mainchainLength; --i >= 0; ) {
-        int atomIndex = mainchain[i].getAlphaCarbonIndex();
+        int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex))
           colixes[i] =
             palette > JmolConstants.PALETTE_CPK

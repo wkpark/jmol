@@ -232,7 +232,7 @@ public class FileManager {
     fileName = file.getName();
   }
 
-  /****************************************************************
+  /* ***************************************************************
   public URL resolveLink(URI dadmlRI) {
     System.out.println("Resolving URI: " + dadmlRI);
     

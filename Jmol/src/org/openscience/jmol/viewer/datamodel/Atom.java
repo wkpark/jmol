@@ -505,7 +505,7 @@ public final class Atom implements Bspt.Tuple {
     specialAtomID = -1;
   }
   
-  /****************************************************************
+  /* ***************************************************************
    * disabled until I figure out how to generate pretty names
    * without breaking inorganic compounds
 

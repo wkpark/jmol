@@ -163,10 +163,8 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
         float f1 = getSize().width / xw;
         float f2 = getSize().height / xw; 
         xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomScreenScale(xfac);
-          cf.getFrame(i).setBondScreenScale(xfac);
-        }
+		settings.setBondScreenScale(xfac);
+		settings.setAtomScreenScale(xfac);
         for (int i=0;i<nframes;i++){
           cf.getFrame(i).setScreenScale(xfac);
         }
@@ -303,9 +301,9 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
                 zmat.scale(s, s, s);
                 mat.mult(zmat);
                 xfac *= s*s;
+				settings.setBondScreenScale(xfac);
+				settings.setAtomScreenScale(xfac);
         for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomScreenScale(xfac);
-          cf.getFrame(i).setBondScreenScale(xfac);
           cf.getFrame(i).setScreenScale(xfac);
         }
             }
@@ -439,9 +437,9 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
             cf.getFrame(i).mattranslate(getSize().width / 2, 
                                    getSize().height / 2, 
                                    getSize().width / 2);
-            cf.getFrame(i).setZoffset(getSize().width/2);
         }
-
+		   settings.setAtomZOffset(getSize().width/2);
+			
             g.setColor(bg);
             g.fillRect(0,0,getSize().width,getSize().height); 
             g.setColor(fg);
@@ -585,8 +583,8 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
       }else if (command.equals(showAtomsCommand)){
         for (int i=0;i<nframes;i++){
           cf.getFrame(i).toggleAtoms();
-          cf.getFrame(i).toggleBondsToAtomCenters();
         }
+		settings.toggleDrawBondsToAtomCenters();
       }else if (command.equals(showVectorsCommand)){
         for (int i=0;i<nframes;i++){
           cf.getFrame(i).toggleVectors();
@@ -641,10 +639,8 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
             float f1 = getSize().width / xw;
             float f2 = getSize().height / xw; 
             xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;        
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomScreenScale(xfac);
-          cf.getFrame(i).setBondScreenScale(xfac);
-        }
+			settings.setBondScreenScale(xfac); 
+			settings.setAtomScreenScale(xfac);
       }else if (command.equals(labelsNoneCommand)){
         for (int i=0;i<nframes;i++){
           cf.getFrame(i).setLabelMode(AtomType.NOLABELS);
@@ -689,8 +685,8 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
     public void showAtoms(boolean doWe){
           for (int i=0;i<nframes;i++){
             cf.getFrame(i).setShowAtoms(doWe);
-            cf.getFrame(i).setBondsToAtomCenters(!doWe);
           }
+		  settings.setDrawBondsToAtomCenters(!doWe);
       if (painted){
         painted = false;
       }

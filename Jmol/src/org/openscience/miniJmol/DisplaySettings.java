@@ -223,6 +223,136 @@ public class DisplaySettings {
 	} 
 
 	/**
+	 * Sets the bond width.
+	 * @param width  the bond width
+	 */
+	public void setBondWidth(float width) {
+		bondWidth = width;
+	} 
+
+	/**
+	 * Gets the bond width.
+	 */
+	public float getBondWidth() {
+		return bondWidth;
+	} 
+
+	/**
+	 * Sets the bond screen scale.
+	 * @param scale  the screen scale
+	 */
+	public void setBondScreenScale(float scale) {
+		bondScreenScale = scale;
+	} 
+
+	/**
+	 * Gets the bond screen scale.
+	 */
+	public float getBondScreenScale() {
+		return bondScreenScale;
+	} 
+
+	/**
+	 * Toggles flag for whether to draw bonds to atom centers.
+	 */
+    public void toggleDrawBondsToAtomCenters() {
+        drawBondsToAtomCenters = !drawBondsToAtomCenters;
+    }
+
+	/**
+	 * Sets flag for whether to draw bonds to atom centers.
+	 */
+    public void setDrawBondsToAtomCenters(boolean on) {
+        drawBondsToAtomCenters = on;
+    }
+
+	/**
+	 * Gets flag for whether to draw bonds to atom centers.
+	 */
+    public boolean getDrawBondsToAtomCenters() {
+        return drawBondsToAtomCenters;
+    }
+
+	/**
+	 * Gets the light source vector.
+	 */
+    public float[] getLightSourceVector() {
+        return lightSource;
+    }
+
+	/**
+	 * Sets the scale at which atoms will be drawn.
+	 * @param scale  the screen scale
+	 */
+	public void setAtomScreenScale(float scale) {
+		atomScreenScale = scale;
+	} 
+
+	/**
+	 * Gets the scale at which atoms will be drawn.
+	 */
+	public float getAtomScreenScale() {
+		return atomScreenScale;
+	} 
+
+	/**
+	 * Sets the atom z offset.
+	 * @param z  the z offset
+	 */
+	public void setAtomZOffset(int z) {
+		atomZOffset = z;
+	} 
+
+	/**
+	 * Gets the atom z offset.
+	 */
+	public int getAtomZOffset() {
+		return atomZOffset;
+	} 
+
+	/**
+	 * Sets the atom depth factor.
+	 * @param z  the z offset
+	 */
+	public void setAtomDepthFactor(float f) {
+		atomDepthFactor = f;
+	} 
+
+	/**
+	 * Gets the atom depth factor.
+	 */
+	public float getAtomDepthFactor() {
+		return atomDepthFactor;
+	} 
+
+	/**
+	 * Sets the atom sphere factor.
+	 * @param z  the z offset
+	 */
+	public void setAtomSphereFactor(double d) {
+		atomSphereFactor = d;
+	} 
+
+	/**
+	 * Gets the atom sphere factor.
+	 */
+	public double getAtomSphereFactor() {
+		return atomSphereFactor;
+	} 
+
+    /**
+     * Returns the on-screen radius of an atom with the given radius.
+     *
+     * @param z z position in screen space
+     */ 
+    public float getCircleRadius(int z, double radius) {
+        double raw = radius*atomSphereFactor;
+        float depth = (float)(z - atomZOffset) / (2.0f*atomZOffset);
+        float tmp = atomScreenScale * ((float)raw + atomDepthFactor*depth);
+        return tmp < 0.0f ? 1.0f : tmp;
+    }
+
+	/**
 	 * Display style for labels.
 	 */
 	private int labelMode = NOLABELS;
@@ -272,4 +402,45 @@ public class DisplaySettings {
 	 * Color of the line drawn for dihedral measurements.
 	 */
 	private Color dihedralColor = Color.black;
+
+	/**
+	 * Bond screen scale.
+	 */
+	private float bondScreenScale;
+
+	/**
+	 * Bond width.
+	 */
+	private float bondWidth = 0.1f;
+
+	/**
+	 * Flag for whether to draw bonds to the center of atoms.
+	 */
+	private boolean drawBondsToAtomCenters = false;
+
+    /**
+	 * Place the light source for shaded atoms to the upper right of
+	 * the atoms and out of the plane.
+	 */
+    private float[] lightSource = { 1.0f, -1.0f, 2.0f};
+
+	/**
+	 * The scale at which atoms will be drawn.
+	 */
+    private float atomScreenScale = 1.0f;
+
+	/**
+	 * Atom z offset.
+	 */
+    private int atomZOffset = 1;
+
+	/**
+	 * Atom depth factor.
+	 */
+    private float atomDepthFactor = 0.33f;
+
+	/**
+	 * Atom sphere factor.
+	 */
+    private double atomSphereFactor = 0.2;
 }

@@ -668,32 +668,6 @@ public class ChemFrame {
         */
     }
 
-    public void setAtomScreenScale(float ss){
-         for (int i=0;i<nvert;i++){
-             atoms[i].setScreenScale(ss);
-         }
-    }
-    public void setBondScreenScale(float ss){
-         for (int i=0;i<nbonds;i++){
-             bonds[i].setScreenScale(ss);
-         }
-    }
-    public void toggleBondsToAtomCenters(){
-         for (int i=0;i<nbonds;i++){
-             bonds[i].toggleBondsToAtomCenters();
-         }
-    }
-    public void setBondsToAtomCenters(boolean b){
-         for (int i=0;i<nbonds;i++){
-             bonds[i].setBondsToAtomCenters(b);
-         }
-    }
-    public void setZoffset(int zo){
-         for (int i=0;i<nvert;i++){
-             atoms[i].setZoffset(zo);
-         }
-    }
-    
     /** 
      * Add all atoms in this frame to the list of picked atoms
      */

@@ -48,72 +48,6 @@ import javax.swing.*;
 
 public class Bond {
 
-    private float screenScale;
-    private boolean bondsToAtomCenters = false;
-    private float Smoothness=0.7f;
-    private double bondwidth = 0.1;   /* static vars, once for each 
-                                                class, not once per instance
-                                                of class */   
-    private AtomType at1, at2;
-    private Color col1, col2;
-    
-    public void setScreenScale(float ss) {
-        screenScale = ss;
-    }
-
-    public void setBondWidth(double bw) {
-        bondwidth = bw;
-    }
-
-    public double getBondWidth() {
-        return bondwidth;
-    }
-
-//      public void setQuickDraw() {
-//          DrawMode = DisplaySettings.QUICKDRAW;
-//      }
-
-//      public void setShading() {
-//          DrawMode = DisplaySettings.SHADING;
-//      }
-
-//      public void setLine() {
-//          DrawMode = DisplaySettings.LINE;
-//      }
-
-//      public void setWireFrame() {
-//          DrawMode = DisplaySettings.WIREFRAME;
-//      }
-
-//      public void setRenderMode(int i) {
-//          DrawMode = i;
-//      }
-
-//      public int getRenderMode() {
-//          return DrawMode;
-//      }
-
-    public void toggleBondsToAtomCenters() {
-        bondsToAtomCenters = !bondsToAtomCenters;
-    }
-
-    public void setBondsToAtomCenters(boolean btac) {
-        bondsToAtomCenters = btac;
-    }
-
-    public boolean getBondsToAtomCenters() {
-        return bondsToAtomCenters;
-    }
-
-//      public void setOutlineColor(Color c) {
-//          outlineColor = c;
-//      }
-
-//      public Color getOutlineColor() {
-//          return outlineColor;
-//      }
-
-
     public Bond(AtomType at1, AtomType at2) {
         this.at1 = at1;
         this.at2 = at2;
@@ -122,14 +56,7 @@ public class Bond {
     }        
 
     public void paint(Graphics gc, int x1, int y1, int z1, 
-                      int x2, int y2, int z2, DisplaySettings settings) {
-        paint(gc, x1, y1, z1, x2, y2, z2, settings, false);
-    }
-
-    //useLine added by T.GREY- enforces line mode!
-    public void paint(Graphics gc, int x1, int y1, int z1, 
-                      int x2, int y2, int z2, DisplaySettings settings, boolean useLine) {
-        
+                      int x2, int y2, int z2, DisplaySettings settings, boolean forceLineBonds) {
         int xmp = (x1+x2)/2;        
         int ymp = (y1+y2)/2;
 
@@ -145,13 +72,12 @@ public class Bond {
         double costheta = Math.sqrt(run2+rise2) /
             Math.sqrt(run2+rise2+zdiff*zdiff);
 
-        //Added by T.GREY- fudges bonds to atom centres for quick draw mode
-        if (bondsToAtomCenters || useLine) {
+        if (settings.getDrawBondsToAtomCenters() || forceLineBonds) {
             r1 = 0.0;
             r2 = 0.0;
         } else {
-            r1 = costheta*(double)at1.getCircleRadius(z1);
-            r2 = costheta*(double)at2.getCircleRadius(z2);
+            r1 = costheta*(double)settings.getCircleRadius(z1, at1.getBaseAtomType().getVdwRadius());
+            r2 = costheta*(double)settings.getCircleRadius(z2, at2.getBaseAtomType().getVdwRadius());
         }
 
         double bl2 = run*run + rise*rise;
@@ -192,8 +118,7 @@ public class Bond {
             dy2 = -(int) Math.round(ddx2*m);
         }
 
-        // Duck out quickly if just line mode:
-	if (settings.getBondDrawMode() == DisplaySettings.LINE || useLine){
+	if (settings.getBondDrawMode() == DisplaySettings.LINE || forceLineBonds){
             gc.setColor(col1);
             gc.drawLine(x1+dx1, y1+dy1, xmp, ymp);
             gc.setColor(col2);
@@ -201,7 +126,7 @@ public class Bond {
             return;
 	}
         
-        double halfbw = 0.5 * bondwidth * screenScale;
+        double halfbw = 0.5 * settings.getBondWidth() * settings.getBondScreenScale();
 
         if (halfbw >= 0.5) {
             
@@ -249,7 +174,6 @@ public class Bond {
             case DisplaySettings.SHADING:
                 for (int i = (int)(2.0*halfbw); i > -1 ; i--) {
                     double len = i / (2.0*halfbw);
-                    // System.out.println("len = " + len);
                     int R1 = (int) ((float)col1.getRed()   * (1.0f - len));
                     int G1 = (int) ((float)col1.getGreen() * (1.0f - len));
                     int B1 = (int) ((float)col1.getBlue()  * (1.0f - len));
@@ -290,17 +214,7 @@ public class Bond {
 
                     gc.fillPolygon(polya);
 
-                    //gc.drawLine(x1 + dx1 + dXi, y1 + dy1 + dYi,
-                    //            xmp + dXi, ymp + dYi);
-                    //gc.drawLine(xmp - dXi, ymp - dYi,
-                    //            x1 + dx1 - dXi, y1 + dy1 - dYi);
-
                     gc.setColor(new Color(model2));
-
-                    //gc.drawLine(x2 + dx2 + dXi, y2 + dy2 + dYi, 
-                    //            xmp + dXi, ymp + dYi);
-                    //gc.drawLine(xmp - dXi, ymp - dYi, 
-                    //            x2 + dx2 - dXi, y2 + dy2 - dYi);
 
                     xpoints[0] = (x2+dx2) + dXi;
                     ypoints[0] = (y2+dy2) + dYi;
@@ -337,4 +251,10 @@ public class Bond {
             gc.drawLine(x2+dx2, y2+dy2, xmp, ymp);
         }                
     }    
+
+    private AtomType at1;
+	private AtomType at2;
+    private Color col1;
+	private Color col2;
+    
 }

@@ -468,14 +468,14 @@ cvs checkout -r b6 -d Jmol-6 Jmol
 > cd ~/data/SF/Jmol/Jmol-HEAD
 > cvs update -j b6
 > cd ~/data/SF/Jmol/Jmol-6
-> cvs tag merged-with-HEAD-20030508
+> cvs tag b6-merged-20030725
           </programlisting>
           Changes made after this merger to branch b6, can then be merged with HEAD with:
           <programlisting>
 > cd ~/data/SF/Jmol/Jmol-HEAD
-> cvs update -j merged-with-HEAD-20030508 -j b6
+> cvs update -j b6-merged-20030725 -j b6
 > cd ~/data/SF/Jmol/Jmol-6
-> cvs tag merged-with-HEAD-20030709
+> cvs tag b6-merged-20031011
           </programlisting>
         </para>
       </section>

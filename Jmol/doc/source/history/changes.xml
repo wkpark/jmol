@@ -25,6 +25,9 @@
     Added the DADMLBrowser plugin allowing retrieving chemical information from
     the internet by queries on indices and URIs like dadml://any/pdbid?1CRN.
   </change>
+  <change contributor="EW">
+    Added support for Spartan '04 smol files.
+  </change>
 </changes>
 
 <changes version="jmol-10">

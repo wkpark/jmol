@@ -165,13 +165,17 @@ class Resolver {
   final static String[] nwchemRecords =
   {" argument  1"};
 
+  final static String[] spartanSmolRecords =
+  {"INPUT="};
+
   final static String[][] startsWithRecords =
   { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
-    jaguarRecords, hinRecords , mdlRecords, nwchemRecords};
+    jaguarRecords, hinRecords , mdlRecords, nwchemRecords,
+    spartanSmolRecords};
 
   final static String[] startsWithFormats =
   { "Pdb", "Shelx", "Cif", "GhemicalMM",
-    "Jaguar", "Hin", "Mol", "NWChem" };
+    "Jaguar", "Hin", "Mol", "NWChem", "SpartanSmol" };
 
   ////////////////////////////////////////////////////////////////
   // contains formats

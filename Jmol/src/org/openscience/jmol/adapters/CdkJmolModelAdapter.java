@@ -35,6 +35,7 @@ import java.io.BufferedReader;
 
 // client-specific imports
 import org.openscience.cdk.ChemFile;
+import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.SetOfMolecules;
@@ -121,7 +122,23 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public String getModelName(Object clientFile) {
-      return "model name goes here";
+      if (clientFile instanceof ChemFile) {
+          Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);
+          if (title != null) {
+              System.out.println("Setting model name to title");
+              return title.toString();
+          } else {
+              // try to recurse
+              AtomContainer container = getAtomContainer((ChemFile)clientFile, 0);
+              if (container != null) {
+                  Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
+                  if (moleculeTitle != null) {
+                      return moleculeTitle.toString();
+                  }
+              }
+          }
+      }
+      return null;
   }
 
   public int getFrameCount(Object clientFile) {

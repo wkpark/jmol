@@ -46,6 +46,7 @@ public class Cylinder25D {
   private int[] shades2;
   private int xOrigin, yOrigin, zOrigin;
   private int dx, dy, dz;
+  private boolean tEvenDiameter;
   
   public void render(short colix1, short colix2, int diameter,
                      int xOrigin, int yOrigin, int zOrigin,
@@ -54,6 +55,7 @@ public class Cylinder25D {
     this.dx = dx; this.dy = dy; this.dz = dz;
     this.shades1 = Colix.getShades(colix1);
     this.shades2 = Colix.getShades(colix2);
+    this.tEvenDiameter = (diameter & 1) == 0;
     
     float radius = diameter / 2.0f;
     float radius2 = radius*radius;
@@ -88,9 +90,15 @@ public class Cylinder25D {
   }
 
   private void plotRotatedPoint(float xF, float yF, float zF) {
-    int x = (int)(xF + (xF < 0 ? -0.5f : 0.5f));
-    int y = (int)(yF + (yF < 0 ? -0.5f : 0.5f));
-    int z = (int)(zF + (zF < 0 ? -0.5f : 0.5f));
+    int x, y, z;
+    if (tEvenDiameter) {
+      x = (int)(xF + (xF < 0 ? -1 : 0));
+      y = (int)(yF + (yF < 0 ? -1 : 0));
+    } else {
+      x = (int)(xF + (xF < 0 ? -0.5f : 0.5f));
+      y = (int)(yF + (yF < 0 ? -0.5f : 0.5f));
+    }
+    z = (int)(zF + 0.5f);
     int intensity = Shade25D.calcIntensity(xF, yF, zF);
     if (x == xLast && y == yLast) {
       zLast += z;

@@ -351,7 +351,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setShowAtoms(!control.getShowAtoms());
-      control.setDrawBondsToAtomCenters(!control.getDrawBondsToAtomCenters());
       repaint();
     }
   }

@@ -1217,7 +1217,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setBondFudge(BondFudge);
     control.setAutoBond(AutoBond);
     control.setShowAtoms(showAtoms);
-    control.setDrawBondsToAtomCenters(!showAtoms);
     control.setShowBonds(showBonds);
     control.setShowHydrogens(showHydrogens);
     control.setShowVectors(showVectors);
@@ -1269,7 +1268,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
             .getString("Prefs.showAtomsLabel"))) {
         showAtoms = cb.isSelected();
         control.setShowAtoms(showAtoms);
-        control.setDrawBondsToAtomCenters(!showAtoms);
         props.put("showAtoms", new Boolean(showAtoms).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()

@@ -97,7 +97,6 @@ public class AtomShape implements Shape {
   private static boolean showHydrogens;
   private static boolean showBonds;
   private static boolean wireframeRotation;
-  private static boolean drawBondsToAtomCenters;
   private static int bondDrawMode;
   private static int atomDrawMode;
   private static int labelMode;
@@ -123,7 +122,6 @@ public class AtomShape implements Shape {
     showBonds = control.getShowBonds();
     labelMode = control.getLabelMode();
     wireframeRotation = control.getFastRendering();
-    drawBondsToAtomCenters = control.getDrawBondsToAtomCenters();
     bondWidthAngstroms = control.getBondWidth();
     bondSeparationAngstroms = (bondWidthAngstroms * 3) / 2;
     showDarkerOutline = control.getShowDarkerOutline();
@@ -219,20 +217,11 @@ public class AtomShape implements Shape {
     int magnitude2 = dx2 + dy2;
     if ((magnitude2 <= 2) || (wireframeRotation && magnitude2 <= 49))
       return; // also avoid divide by zero when magnitude == 0
-    if (showAtoms &&
-        (atomDrawMode != DisplayControl.WIREFRAME) &&
-        (magnitude2 <= 16))
+    if (showAtoms && (magnitude2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
-
-    // technically, we should draw a bond (actually little more than a dot)
-    // when:
-    //  atomDrawMode == DisplayControl.WIREFRAME
-    //  && showCoveredBonds == true
-    //  && and the centers of the bonds are very close
-    //  && the diameter of the atom1 is >= 3
-    // ... but I'm not going to do it right now
-    if ( //fastRendering || // fastRendering isn't any faster this way
-        ((bondDrawMode == DisplayControl.LINE) && drawBondsToAtomCenters)) {
+    if (!showAtoms &&
+        (wireframeRotation || (bondDrawMode == DisplayControl.LINE))) {
+      // the trivial case of no atoms and only lines
       if (color1.equals(color2)) {
         g.setColor(color1);
         g.drawLine(x1, y1, x2, y2);
@@ -246,12 +235,8 @@ public class AtomShape implements Shape {
       }
       return;
     }
-    int z1 = atom1.screenZ;
-    int z2 = atom2.screenZ;
-    int dz = z2 - z1;
-    int dz2 = dz * dz;
     int diameter1, radius1, diameter2, radius2;
-    if (drawBondsToAtomCenters) {
+    if (!showAtoms) {
       diameter1 = radius1 = diameter2 = radius2 = 0;
     } else {
       diameter1 = atom1.screenDiameter;
@@ -260,6 +245,10 @@ public class AtomShape implements Shape {
       radius2 = diameter2 >> 1;
     }
 
+    int z1 = atom1.screenZ;
+    int z2 = atom2.screenZ;
+    int dz = z2 - z1;
+    int dz2 = dz * dz;
     int magnitude = (int) Math.sqrt(magnitude2);
     int bondOrder = Bond.getBondOrder(atom1, atom2);
     double cosine = magnitude / Math.sqrt(magnitude2 + dz2);

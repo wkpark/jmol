@@ -252,15 +252,6 @@ final public class DisplayControl {
     return settings.getShowDarkerOutline();
   }
 
-  public void setDrawBondsToAtomCenters(boolean drawToCenters) {
-    settings.setDrawBondsToAtomCenters(drawToCenters);
-    recalc();
-  }
-
-  public boolean getDrawBondsToAtomCenters() {
-    return settings.getDrawBondsToAtomCenters();
-  }
-
   public void setAtomSphereFactor(double f) {
     settings.setAtomSphereFactor(f);
     recalc();

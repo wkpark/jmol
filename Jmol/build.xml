@@ -264,7 +264,7 @@ support for assertions (which were introduced in 1.4).
         <uptodate targetfile="${appjars.dir}/org/openscience/cdkplugin">
           <srcfiles dir="${plugin.dir}" includes="dirbrowser.jar"/>
         </uptodate>
-        <uptodate targetfile="build/pluginjars.tmestamp"
+        <uptodate targetfile="build/pluginjars.timestamp"
                   srcfile="${appjars.dir}/org/openscience/cdkplugin"/>
       </and>
     </condition>
@@ -305,10 +305,10 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="pluginjars" id="pluginjars" depends="check.pluginjars" unless="pluginjars.uptodate">
-    <delete file="build/pluginjars.tmestamp"/>
+    <delete file="build/pluginjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${plugin.dir}/dirbrowser.jar"/>
-    <touch file="build/pluginjars.tmestamp"/>
+    <touch file="build/pluginjars.timestamp"/>
   </target>
 
   <target name="libjars" id="libjars" depends="check.libjars" unless="libjars.uptodate">

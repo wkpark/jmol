@@ -31,6 +31,8 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  *  A sorted table model. The objects in the model must implement the Comparable
@@ -43,48 +45,10 @@ public class SortedTableModel extends ListeningTableModel {
   Integer[] indexes;
   List sortingColumns = new ArrayList();
   boolean ascending = true;
-  CompareRows comparator = new CompareRows();
-  HeapSorter sorter = new HeapSorter(comparator);
 
   public SortedTableModel(TableModel model) {
     super(model);
     initializeIndexes();
-  }
-
-  class CompareRows implements HeapSorter.Comparator {
-
-    public int compare(Object r1, Object r2) {
-
-      int row1 = ((Integer) r1).intValue();
-      int row2 = ((Integer) r2).intValue();
-      int result = 0;
-      int level = 0;
-      while ((result == 0) && (level < sortingColumns.size())) {
-        int column = ((Integer) sortingColumns.get(level)).intValue();
-        Object o1 = model.getValueAt(row1, column);
-        Object o2 = model.getValueAt(row2, column);
-        if ((o1 == null) && (o2 == null)) {
-
-          // Null objects are equal.
-          return 0;
-        } else if (o1 == null) {
-
-          // Null is less than anything.
-          return -1;
-        } else if (o2 == null) {
-
-          // Anything is greather than null.
-          return 1;
-        }
-
-        result = ((Comparable) o1).compareTo(o2);
-        ++level;
-      }
-      if (!ascending) {
-        result = -result;
-      }
-      return result;
-    }
   }
 
   public void initializeIndexes() {
@@ -102,9 +66,42 @@ public class SortedTableModel extends ListeningTableModel {
   }
 
   void sort() {
-    sorter.sort(indexes);
+    System.out.println("We are sorting!");
+    Arrays.sort(indexes,
+                new Comparator() {
 
+                  public int compare(Object r1, Object r2) {
+
+                    int row1 = ((Integer) r1).intValue();
+                    int row2 = ((Integer) r2).intValue();
+                    int result = 0;
+                    int level = 0;
+                    while ((result == 0) && (level < sortingColumns.size())) {
+                      int column =
+                        ((Integer) sortingColumns.get(level)).intValue();
+                      Object o1 = model.getValueAt(row1, column);
+                      Object o2 = model.getValueAt(row2, column);
+                      if ((o1 == null) && (o2 == null)) {
+                        // Null objects are equal.
+                        return 0;
+                      } else if (o1 == null) {
+                        // Null is less than anything.
+                        return -1;
+                      } else if (o2 == null) {
+                        // Anything is greather than null.
+                        return 1;
+                      }
+                      result = ((Comparable) o1).compareTo(o2);
+                      ++level;
+                    }
+                    if (!ascending) {
+                      result = -result;
+                    }
+                    return result;
+                  }
+                });
   }
+
 
   /**
    *  Returns the object at the given indices.

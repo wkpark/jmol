@@ -994,7 +994,7 @@ final public class DisplayControl {
     appletDocumentBase = base;
   }
 
-  // mth jan 2003 -- there must be a better way to do this!?
+  // mth jan 2003 -- there must be a better way for me to do this!?
   final String[] urlPrefixes = {"http:", "https:", "ftp:"};
 
   public String openFile(String filename) {

@@ -616,6 +616,7 @@ public class Eval implements Runnable {
   }
 
   void move() throws ScriptException {
+    // FIXME -- mth - move does not disable antialiasing during rotation
     if (statement.length < 10 || statement.length > 12)
       badArgumentCount();
     for (int i = 1; i < statement.length; ++i)

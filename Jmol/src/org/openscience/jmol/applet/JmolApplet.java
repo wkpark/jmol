@@ -133,7 +133,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   public void initApplication() {
-
     control.setShowBonds(true);
     control.setShowAtoms(true);
     control.zoomToPercent(100);
@@ -171,7 +170,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
     String wfr = getParameter("WIREFRAMEROTATION");
     if (wfr != null &&
-        (wfr.equalsIgnoreCase("on") || wfr.equalsIgnoreCase("true"))) {
+        (wfr.equalsIgnoreCase("on") || wfr.equalsIgnoreCase("true")))
       control.setWireframeRotation(true);
 
     setBackgroundColor(getParameter("BCOLOR"));
@@ -240,7 +239,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
       myBean.setLabelRenderingStyle(atomLabels);
       }
     */
-    }
   }
 
   public String[][] getParameterInfo() {
@@ -560,7 +558,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * @param atomTypesFile The filename of the properties we want.
    */
   public void setAtomPropertiesFromFile(String atomTypesFile) {
-
     try {
       InputStream atis = null;
       if (atomTypesFile == null || atomTypesFile.length() == 0) {
@@ -575,7 +572,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
                            atomTypesFile);
         return;
       }
-      System.out.println("reading atom properties from " + atomTypesFile);
       AtomTypeSet ats1 = new AtomTypeSet();
       ats1.load(atis);
     } catch (IOException e) {

@@ -70,7 +70,8 @@ public class ChemFrame extends AtomContainer {
     atoms = new Atom[na];
     this.bondsEnabled = bondsEnabled;
     try {
-      System.out.println("Here we go!");
+      // FIXME mth -- egon, should there only be one instance of the
+      // AtomTypeFactory?
         atomTypeFactory = new AtomTypeFactory(
                   "org/openscience/cdk/config/jmol_atomtypes.txt");
     } catch (Exception exc) {

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2001  The Jmol Development Team
  *
@@ -5,12 +6,12 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
@@ -25,53 +26,55 @@ import java.io.*;
  *
  * @author  Bradley A. Smith (bradley@baysmith.com)
  */
-public abstract class ReaderFactory  {
-    /**
-     * Creates a ChemFileReader of the type determined by
-     * reading the input. The input is read line-by-line
-     * until a line containing an identifying string is
-     * found.
-     *
-     * @return  If the input type is determined, a 
-     *   ChemFileReader subclass is returned; otherwise,
-     *   null is returned.
-     * @exception IOException  if an I/O error occurs
-     */
-    public static ChemFileReader createReader(Reader input) throws IOException {
-        BufferedReader buffer = new BufferedReader(input);
-        String line;
-        String line2;
+public abstract class ReaderFactory {
+
+	/**
+	 * Creates a ChemFileReader of the type determined by
+	 * reading the input. The input is read line-by-line
+	 * until a line containing an identifying string is
+	 * found.
+	 *
+	 * @return  If the input type is determined, a
+	 *   ChemFileReader subclass is returned; otherwise,
+	 *   null is returned.
+	 * @exception IOException  if an I/O error occurs
+	 */
+	public static ChemFileReader createReader(Reader input)
+			throws IOException {
+
+		BufferedReader buffer = new BufferedReader(input);
+		String line;
 
 		if (buffer.markSupported()) {
+
 			/* The mark and reset on the buffer, is so that we can read
 			 * the first line line to test for XYZ files without screwing
-			 * up the other tests below 
+			 * up the other tests below
 			 */
 			buffer.mark(255);
 			line = buffer.readLine();
-			line2 = buffer.readLine();
 			buffer.reset();
-			
+
 			/* an integer-valued first line is a special test for XYZ files */
 			try {
 				Integer i = new Integer(line.trim());
-				return new XYZReader(buffer); 
-			} catch(NumberFormatException nfe) {
+				return new XYZReader(buffer);
+			} catch (NumberFormatException nfe) {
 			}
-			
+
 			/* This line wasn't an integer, so move on to the rest of
 			   our filters */
-			
-			/* Test for CML */
-			if (line.startsWith("<?xml") && line2.indexOf("cml.dtd") >=0) {
-				return new CMLReader(buffer); 
+
+			// If XML, assume CML.
+			if (line.startsWith("<?xml")) {
+				return new CMLReader(buffer);
 			}
 		} else {
 			line = buffer.readLine();
 		}
 
 		/* Search file for a line containing an identifying keyword */
-		while (buffer.ready() && line != null) {
+		while (buffer.ready() && (line != null)) {
 			if (line.indexOf("Gaussian 98:") >= 0) {
 				return new Gaussian98Reader(buffer);
 			} else if (line.indexOf("Gaussian 95:") >= 0) {

@@ -1,8 +1,6 @@
 
 /*
- * ReaderFactory.java
- *
- * Copyright (C) 1999  Bradley A. Smith
+ * Copyright (C) 2001  The Jmol Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,8 +26,7 @@ import java.io.IOException;
  * A factory for creating ChemFileReaders.
  * The type of reader created is determined from the input.
  *
- * @author  Bradley A. Smith (yeldar@home.com);
- * @version 1.0
+ * @author  Bradley A. Smith (bradley@baysmith.com)
  */
 public abstract class ReaderFactory {
 
@@ -58,7 +55,6 @@ public abstract class ReaderFactory {
 			 */
 			buffer.mark(255);
 			line = getLine(buffer);
-			String line2 = getLine(buffer);
 			buffer.reset();
 
 
@@ -67,17 +63,15 @@ public abstract class ReaderFactory {
 				new Integer(line.trim());
 				return new XYZReader(buffer);
 			} catch (NumberFormatException nfe) {
+
 				// Integer not found on first line; therefore not a XYZ file
 			}
 
 			/* This line wasn't an integer, so move on to the rest of
 			   our filters */
 
-			/* Test for CML */
-			if (line.startsWith("<?xml")
-					&& ((line.indexOf("cml.dtd") >= 0)
-						|| ((line2 != null)
-							&& (line2.indexOf("cml.dtd") >= 0)))) {
+			// If XML, assume CML.
+			if (line.startsWith("<?xml")) {
 				return new CMLReader(buffer);
 			}
 		} else {

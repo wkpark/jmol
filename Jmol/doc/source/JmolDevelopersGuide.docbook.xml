@@ -118,7 +118,7 @@
       A Jmol release consists of both the application
       <emphasis>and</emphasis> the applet. Both must work as expected.
     </para>
-    <section>
+    <section id="testing">
       <title>Testing before release</title>
       <para>
         In the <filename class="directory">samples/</filename>
@@ -402,6 +402,85 @@
     </para>
   </chapter>
 
+  <chapter id="CVS">
+    <title>Working with Jmol's CVS</title>
+    <para>
+      This section gives information on how to work with Jmol's CVS
+      at SourceForge.
+    </para>
+    <section id="tagging">
+      <title>Tagging CVS</title>
+      <para>
+        It is important to tag CVS when a distribution was made. This makes it
+        possible to later retrieve the exact source code from CVS in that release.
+        This can be done with
+        <command>cvs tag <parameter>tag-name</parameter></command>
+        in the directory where the CVS files are stored.
+      </para>
+    </section>
+    <section id="branching">
+      <title>CVS Branches</title>
+      <para>
+        Sometimes it is convenient to have separate branches to work on.
+        One for an uncoming release, and one branch for the unstable version.
+        Minor bug fixes can then go into the stable branch, while major
+        changes can go into the unstable branch. This section explains how
+        to access, use, and create branches.
+      </para>
+      <section id="branch_access">
+        <title>Accessing a branch</title>
+        <para>
+          The command <command>cvs checkout <parameter>module</parameter></command>
+          by default gets the source code from the HEAD branch, which is
+          the unstable branch of Jmol.
+        </para>
+        <para>
+          Accessing a specific branch can be done with, e.g. the b6 branch:
+          <programlisting>
+cvs checkout -r b6 -d Jmol-6 Jmol
+          </programlisting>
+          This will check out a copy of the Jmol module from the b6 branch into
+          a directory called <filename class="directory">Jmol-6</filename>.
+        </para>
+        <para>
+          To determine to which branch a specific locally stored file belongs,
+          you can do <command>cvs status <parameter>file</parameter></command>.
+        </para>
+      </section>
+      <section id="branch_creating">
+        <title>Creating a branch</title>
+        <para>
+          A branch of HEAD can be created with the <command>cvs rtag -b -r 
+          HEAD <parameter>branch-name</parameter> 
+          <parameter>module</parameter></command> command.
+        </para>
+      </section>
+      <section id="branch_merging">
+        <title>Merging branches</title>
+        <para>
+          Bug fixes which have been commited to a branch can be merged to the HEAD
+          branch. To do this, check out (or update) a HEAD branch, and type in that
+          directory <command>cvs update -j <parameter>branch-to-merge</parameter></command>.
+          After this the branch from which the changes were merged with HEAD should
+          be tagged, to make it possible to merge later changes with HEAD too.
+          For example, a session might look like:
+          <programlisting>
+> cd ~/data/SF/Jmol/Jmol-HEAD
+> cvs update -j b6
+> cd ~/data/SF/Jmol/Jmol-6
+> cvs tag merged-with-HEAD-20030508
+          </programlisting>
+          Changes made after this merger to branch b6, can then be merged with HEAD with:
+          <programlisting>
+> cd ~/data/SF/Jmol/Jmol-HEAD
+> cvs update -j merged-with-HEAD-20030508 -j b6
+> cd ~/data/SF/Jmol/Jmol-6
+> cvs tag merged-with-HEAD-20030709
+          </programlisting>
+        </para>
+      </section>
+    </section>
+  </chapter>
 </book>
 
 

@@ -127,23 +127,28 @@ public class FileManager {
     if (name == null)
       return;
     if (appletDocumentBase != null) {
+      // This code is only for the applet
       isURL = true;
       try {
         URL url = new URL(appletDocumentBase, name);
         fullPathName = url.toString();
-        fileName = url.getFile();
+        // we add one to lastIndexOf(), so don't worry about -1 return value
+        fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
+                                          fullPathName.length());
       } catch (MalformedURLException e) {
         errorMessage = e.getMessage();
       }
       return;
     }
+    // This code is for the app
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
         isURL = true;
         try {
           URL url = new URL(name);
           fullPathName = url.toString();
-          fileName = url.getFile();
+          fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
+                                            fullPathName.length());
         } catch (MalformedURLException e) {
           errorMessage = e.getMessage();
         }

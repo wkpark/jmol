@@ -26,6 +26,9 @@ package org.openscience.jmol.app;
 
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ResourceBundle;
 import javax.swing.AbstractButton;
@@ -44,7 +47,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     WindowListener {
 
   private boolean ready = false;
-  private String fileName = null;
+  private String selectedFileName = null;
   private static final int MAX_FILES = 10;
   private JButton okButton;
   private JButton cancelButton;
@@ -72,9 +75,27 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
     getContentPane().add("South", buttonPanel);
+
     fileList = new JList(files);
     fileList.setSelectedIndex(0);
     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+    MouseListener dblClickListener = new MouseAdapter() {
+        public void mouseClicked(MouseEvent e) {
+          if (e.getClickCount() == 2) {
+            int dblClickIndex = fileList.locationToIndex(e.getPoint());
+            System.out.println("dblClickIndex=" + dblClickIndex);
+            if (dblClickIndex >= 0 &&
+                dblClickIndex < files.length &&
+                files[dblClickIndex] != null) {
+              selectedFileName = files[dblClickIndex];
+              close();
+            }
+          }
+        }
+      };
+    fileList.addMouseListener(dblClickListener);
+
     getContentPane().add("Center", fileList);
     setLocationRelativeTo(boss);
     pack();
@@ -108,7 +129,8 @@ class RecentFilesDialog extends JDialog implements ActionListener,
       return;
     }
 
-    //present so shift files below current position up one, removing current position
+    //present so shift files below current position up one,
+    //removing current position
     if (currentPosition > 0) {
       for (int i = currentPosition; i < MAX_FILES - 1; i++) {
         files[i] = files[i + 1];
@@ -144,7 +166,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
    *   @return String The name of the file picked or null if the action was aborted.
   **/
   public String getFile() {
-    return fileName;
+    return selectedFileName;
   }
 
   public void windowClosing(java.awt.event.WindowEvent e) {
@@ -153,7 +175,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   }
 
   void cancel() {
-    fileName = null;
+    selectedFileName = null;
   }
 
   void close() {
@@ -166,7 +188,7 @@ class RecentFilesDialog extends JDialog implements ActionListener,
     if (e.getSource() == okButton) {
       int fileIndex = fileList.getSelectedIndex();
       if (fileIndex < files.length) {
-        fileName = files[fileIndex];
+        selectedFileName = files[fileIndex];
         close();
       }
     } else if (e.getSource() == cancelButton) {
@@ -196,6 +218,6 @@ class RecentFilesDialog extends JDialog implements ActionListener,
 
   public void notifyFileOpen(String fullPathName) {
     if (fullPathName != null)
-      addFile(fileName);
+      addFile(fullPathName);
   }
 }

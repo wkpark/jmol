@@ -403,6 +403,7 @@ class Surface extends Shape {
   final Matrix3f matrixT1 = new Matrix3f();
   final AxisAngle4f aaT = new AxisAngle4f();
 
+  static final Vector3f vectorNull = new Vector3f();
   final Vector3f vectorT = new Vector3f();
   final Vector3f vectorT1 = new Vector3f();
   final Vector3f vectorZ = new Vector3f(0, 0, 1);
@@ -745,6 +746,7 @@ class Surface extends Shape {
       vectorT.add(vectorPK);
       vectorT.normalize();
       points[0].scaleAdd(radiusP, vectorT, probeIJK);
+      vectorT.sub(vectorNull, vectorT);
       normixes[0] = g3d.getNormix(vectorT);
 
       addSegments(radiansIJ, segmentsIJ, vectorPI, vectorPJ,
@@ -773,6 +775,7 @@ class Surface extends Shape {
         vectorT.set(v1);
         matrixT.transform(vectorT, vectorT1);
         points[j].scaleAdd(radiusP, vectorT1, probeIJK);
+        vectorT1.sub(vectorNull, vectorT1);
         normixes[j] = g3d.getNormix(vectorT1);
       }
     }

@@ -144,6 +144,8 @@ public class CrystalPropertiesDialog extends JDialog
     GridBagConstraints c = new GridBagConstraints();
     container.setLayout(gridbag);
 
+    JmolResourceHandler resources = JmolResourceHandler.getInstance();
+
 
     //****************
     //* Tabbed Panel
@@ -153,28 +155,25 @@ public class CrystalPropertiesDialog extends JDialog
 
     Component panel1 = makePrimVectorsPanel();
     tabbedPane
-        .addTab(JmolResourceHandler.getInstance()
-          .getString("Crystprop.primVLabel"), JmolResourceHandler
-            .getInstance()
-              .getIcon("Crystprop.primVImage"), panel1, JmolResourceHandler
-                .getInstance().getString("Crystprop.primVToolTip"));
+        .addTab(resources.getString("Crystprop.primVLabel"), 
+                resources.getIcon("Crystprop.primVImage"), 
+                panel1, 
+                resources.getString("Crystprop.primVToolTip"));
     tabbedPane.setSelectedIndex(0);
 
     Component panel2 = makeCrystalBoxPanel();
-    tabbedPane.addTab(
-        JmolResourceHandler.getInstance().getString(
-          "Crystprop.crystalboxLabel"), JmolResourceHandler.getInstance()
-            .getIcon(
-              "Crystprop.crystalboxImage"), panel2, JmolResourceHandler
-                .getInstance().getString("Crystprop.crystalboxToolTip"));
+    tabbedPane
+         .addTab(resources.getString("Crystprop.crystalboxLabel"), 
+                 resources.getIcon("Crystprop.crystalboxImage"), 
+                 panel2, 
+                 resources.getString("Crystprop.crystalboxToolTip"));
 
     Component panel3 = makeBasisVPanel();
     tabbedPane
-        .addTab(JmolResourceHandler.getInstance()
-          .getString("Crystprop.basisVLabel"), JmolResourceHandler
-            .getInstance()
-              .getIcon("Crystprop.basisVImage"), panel3, JmolResourceHandler
-                .getInstance().getString("Crystprop.basisVToolTip"));
+        .addTab(resources.getString("Crystprop.basisVLabel"), 
+                resources.getIcon("Crystprop.basisVImage"), 
+                panel3, 
+                resources.getString("Crystprop.basisVToolTip"));
 
 
 
@@ -194,10 +193,10 @@ public class CrystalPropertiesDialog extends JDialog
     jConfirmPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
     //The "Commit Changes" button
-    JButton jApplyButton = new JButton("Apply");
-    JButton jOkButton = new JButton("OK");
-    JButton jCancelButton = new JButton("Cancel");
-    JButton jReadButton = new JButton("Read current frame");
+    JButton jApplyButton = new JButton(resources.translate("Apply"));
+    JButton jOkButton = new JButton(resources.translate("OK"));
+    JButton jCancelButton = new JButton(resources.translate("Cancel"));
+    JButton jReadButton = new JButton(resources.translate("Read current frame"));
 
     jApplyButton.addActionListener(new ActionListener() {
 
@@ -317,9 +316,10 @@ public class CrystalPropertiesDialog extends JDialog
     } else {               //is not a crystal
       if (index == 1) {
         baseVTypeList.setSelectedIndex(0);
-        popup("You must define the primitive vectors to use lattice coordinates");
-        System.out.println(
-            "You must define the primitive vectors to use lattice coordinates");
+        String message = JmolResourceHandler.getInstance()
+          .translate("You must define the primitive vectors to use lattice coordinates");
+        popup(message);
+        System.out.println(message);
       }
 
       int natom = chemFile.getFrame(currentFrame).getNumberOfAtoms();
@@ -381,6 +381,8 @@ public class CrystalPropertiesDialog extends JDialog
    */
   protected Component makePrimVectorsPanel() {
 
+    JmolResourceHandler resources = JmolResourceHandler.getInstance();
+
     GridBagLayout gridbag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     c.weightx = 1.0;
@@ -397,7 +399,8 @@ public class CrystalPropertiesDialog extends JDialog
     jPrimVType.setLayout(gridbag);
 
     String[] primVTypeStrings = {
-      "Cartesian", "Crystallographic"
+      resources.translate("Cartesian"),
+      resources.translate("Crystallographic")
     };
     primVTypeList = new JComboBox(primVTypeStrings);
     primVTypeList.setSelectedIndex(0);
@@ -410,14 +413,15 @@ public class CrystalPropertiesDialog extends JDialog
       }
     });
 
-    JLabel jPrimVTypeLabel = new JLabel("Representation: ",
-                               SwingConstants.LEFT);
+    JLabel jPrimVTypeLabel = new JLabel(resources
+        .translate("Representation") + ": ",
+        SwingConstants.LEFT);
 
 
     //The jCart subPanel (level 1)
     JPanel jCart = new JPanel();
     jCart.setLayout(gridbag);
-    jCart.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+    jCart.setBorder(new TitledBorder(resources
         .getString("Crystprop.cartesianLabel")));
 
 
@@ -632,6 +636,8 @@ public class CrystalPropertiesDialog extends JDialog
    */
   protected Component makeCrystalBoxPanel() {
 
+    JmolResourceHandler resources = JmolResourceHandler.getInstance();
+
     GridBagLayout gridbag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
 
@@ -653,16 +659,20 @@ public class CrystalPropertiesDialog extends JDialog
 
 
     jAtomBox.addElement(new JTextField(15));
-    jAtomBoxLabel.addElement(new JLabel("Minimum atom box coordinate: ",
+    jAtomBoxLabel.addElement(new JLabel(resources
+        .translate("Minimum atom box coordinate") + ": ",
         SwingConstants.LEFT));
     jAtomBox.addElement(new JTextField(15));
-    jAtomBoxLabel.addElement(new JLabel("Maximum atom box coordinate: ",
+    jAtomBoxLabel.addElement(new JLabel(resources
+        .translate("Maximum atom box coordinate") + ": ",
         SwingConstants.LEFT));
     jBondBox.addElement(new JTextField(15));
-    jBondBoxLabel.addElement(new JLabel("Minimum bond box coordinate: ",
+    jBondBoxLabel.addElement(new JLabel(resources
+        .translate("Minimum bond box coordinate") + ": ",
         SwingConstants.LEFT));
     jBondBox.addElement(new JTextField(15));
-    jBondBoxLabel.addElement(new JLabel("Maximum bond box coordinate: ",
+    jBondBoxLabel.addElement(new JLabel(resources
+        .translate("Maximum bond box coordinate") + ": ",
         SwingConstants.LEFT));
 
 
@@ -746,6 +756,8 @@ public class CrystalPropertiesDialog extends JDialog
    */
   protected Component makeBasisVPanel() {
 
+    JmolResourceHandler resources = JmolResourceHandler.getInstance();
+    
     GridBagLayout gridbag = new GridBagLayout();
     GridBagConstraints c = new GridBagConstraints();
     c.weightx = 1.0;
@@ -756,7 +768,8 @@ public class CrystalPropertiesDialog extends JDialog
 
 
     String[] baseVTypeStrings = {
-      "Cartesian", "Lattice"
+      resources.translate("Cartesian"),
+      resources.translate("Lattice")
     };
     baseVTypeList = new JComboBox(baseVTypeStrings);
     baseVTypeList.setSelectedIndex(0);
@@ -783,7 +796,8 @@ public class CrystalPropertiesDialog extends JDialog
 
 
     String[] baseApplyToList = {
-      "Apply to all frames", "Apply to current frame"
+      resources.translate("Apply to all frames"),
+      resources.translate("Apply to current frame")
     };
     baseApplyTo = new JComboBox(baseApplyToList);
     baseApplyTo.setSelectedIndex(1);
@@ -833,9 +847,12 @@ public class CrystalPropertiesDialog extends JDialog
 
   class BasisVTableModel extends AbstractTableModel {
 
-
     private String[] columnNames = {
-      "Atom Number", "Atom Type", "x", "y", "z"
+      JmolResourceHandler.getInstance().translate("Atom Number"),
+      JmolResourceHandler.getInstance().translate("Atom Type"),
+      "x",
+      "y",
+      "z"
     };
     private Object[][] data = {
     };
@@ -1114,8 +1131,10 @@ public class CrystalPropertiesDialog extends JDialog
 
     currentFrame = Animate.currentFrame;
     String s = new String("(" + currentFrame + ")");
-    applyToList[0] = "Apply to all frames";
-    applyToList[1] = "Apply to current frame " + s;
+    applyToList[0] = JmolResourceHandler.getInstance()
+        .translate("Apply to all frames");
+    applyToList[1] = JmolResourceHandler.getInstance()
+        .translate("Apply to current frame ") + s;
 
     primApplyTo.addItem(applyToList[0]);
     primApplyTo.addItem(applyToList[1]);
@@ -1179,9 +1198,10 @@ public class CrystalPropertiesDialog extends JDialog
           try {
             matrix[i][j] = Float.parseFloat(sn);
           } catch (NumberFormatException e) {
-            System.out.println(
-                "Ooups! The value you entered in the field is not a valid number.");
-            popup("Ooups! The value you entered in the field is not a valid number.");
+            String message = JmolResourceHandler.getInstance()
+                .translate("Ooups! The value you entered in the field is not a valid number.");
+            System.out.println(message);
+            popup(message);
 
             matrix[i][j] = 1f;
           }
@@ -1213,9 +1233,10 @@ public class CrystalPropertiesDialog extends JDialog
         try {
           vect[i] = Float.parseFloat(sn);
         } catch (NumberFormatException e) {
-          System.out.println(
-              "Ooups! The value you entered in the field is not a valid number");
-          popup("Ooups! The value you entered in the field is not a valid number");
+            String message = JmolResourceHandler.getInstance()
+                .translate("Ooups! The value you entered in the field is not a valid number.");
+            System.out.println(message);
+            popup(message);
           vect[i] = 1f;
         }
 

@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : changes.xml (v 1.1)
+  Translated from default version : changes.xml (v 1.2)
 -->
 <changes version="jmol-10.??">
   <change contributor="EW">
@@ -27,6 +27,11 @@
   </change>
   <change contributor="ST">
     Ajout du Drag-and-Drop &#x00E0; l'application pour les JVM 1.5 et ult&#x00E9;rieures.
+  </change>
+  <change contributor="EW">
+    Ajout du plugin DADMLBrowser qui permet de r&#x00E9;cup&#x00E9;rer des informations
+    chimiques sur internet avec des requ&#x00EA;tes sur des indices et des URIs telles
+    que dadml://any/pdbid?1CRN.
   </change>
 </changes>
 

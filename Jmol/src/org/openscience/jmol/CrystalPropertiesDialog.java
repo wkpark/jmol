@@ -411,25 +411,6 @@ public class CrystalPropertiesDialog extends JDialog
   
   
   /**
-   * Make usage or not of atomBox, bondBox, unitBox 
-   * Depends of origAtomsOnly state
-   */
-  protected void setCrystalBoxState() {
-
-    //Set what is editable depending on the checkbox value
-    if (origAtomsOnly.isSelected()) {
-      for (int i = 0; i < 2; i++) {
-        ((JTextField) (jAtomBox.elementAt(i))).setEditable(false);
-      }
-    } else {
-      for (int i = 0; i < 2; i++) {
-        ((JTextField) (jAtomBox.elementAt(i))).setEditable(true);
-      }
-    }
-  }    //end setCrystalBoxState
-  
-  
-  /**
    * Describe <code>makePrimVectorsPanel</code> method here.
    *
    * @return a <code>Component</code> value
@@ -1266,18 +1247,18 @@ public class CrystalPropertiesDialog extends JDialog
       System.out.println("Table Updated");
       
     }
-    
+
   }    //end class EnergyLinesTableModel
-  
+
   class EnergyLineTableModel extends AbstractTableModel {
-    
+
     private String[] columnNames = {
       JmolResourceHandler.getInstance().translate("Point Number"),
       "kx", "ky", "kz" };
     private Object[][] data = {
     };
-    
-    
+
+
     public void setData(Object[][] data) {
       this.data = data;
     }
@@ -1297,114 +1278,6 @@ public class CrystalPropertiesDialog extends JDialog
     public Object getValueAt(int row, int col) {
       return data[row][col];
     }
-
-  class EnergyLinesTableModel extends AbstractTableModel {
-
-    private String[] columnNames = {
-      JmolResourceHandler.getInstance().translate("Line Number"),
-      JmolResourceHandler.getInstance().translate("Origin"),
-      JmolResourceHandler.getInstance().translate("End"),
-      JmolResourceHandler.getInstance().translate("Number Of Points")
-    };
-    private Object[][] data = {
-    };
-
-
-    public void setData(Object[][] data) {
-      this.data = data;
-    }
-
-    public int getColumnCount() {
-      return columnNames.length;
-    }
-    
-    public int getRowCount() {
-      return data.length;
-    }
-
-    public String getColumnName(int col) {
-      return columnNames[col];
-    }
-    
-    public Object getValueAt(int row, int col) {
-      return data[row][col];
-    }
-    
-    public Class getColumnClass(int c) {
-      return getValueAt(0, c).getClass();
-    }
-    
-    public boolean isCellEditable(int row, int col) {
-      
-      //Note that the data/cell address is constant,
-      //no matter where the cell appears onscreen.
-      if (col < 5) {    //no cell editable
-        return false;
-      } else {
-        return true;
-      }
-    }
-    
-    public void setValueAt(Object value, int row, int col) {
-      data[row][col] = value;
-      fireTableCellUpdated(row, col);
-      System.out.println("Table Updated");
-      
-    }
-    
-  }    //end class EnergyLinesTableModel
-  
-  class EnergyLineTableModel extends AbstractTableModel {
-    
-    private String[] columnNames = {
-      JmolResourceHandler.getInstance().translate("Point Number"),
-      "kx", "ky", "kz" };
-    private Object[][] data = {
-    };
-    
-    
-    public void setData(Object[][] data) {
-      this.data = data;
-    }
-
-    public int getColumnCount() {
-      return columnNames.length;
-    }
-
-    public int getRowCount() {
-      return data.length;
-    }
-
-    public String getColumnName(int col) {
-      return columnNames[col];
-    }
-
-    public Object getValueAt(int row, int col) {
-      return data[row][col];
-    }
-
-    public Class getColumnClass(int c) {
-      return getValueAt(0, c).getClass();
-    }
-
-    public boolean isCellEditable(int row, int col) {
-
-      //Note that the data/cell address is constant,
-      //no matter where the cell appears onscreen.
-      if (col < 5) {    //no cell editable
-        return false;
-      } else {
-        return true;
-      }
-    }
-    
-    public void setValueAt(Object value, int row, int col) {
-      data[row][col] = value;
-      fireTableCellUpdated(row, col);
-      System.out.println("Table Updated");
-
-    }
-
   }    //end class EnergyLineTableModel
 
   private void commitChange() {
@@ -1478,7 +1351,7 @@ public class CrystalPropertiesDialog extends JDialog
       crystalFile.setCrystalBox(crystalBox);
 
       if (((primApplyTo.getSelectedIndex() == 1) 
-	   && (boxApplyTo.getSelectedIndex() == 1) 
+	   && (boxApplyTo.getSelectedIndex() == 1)
 	   && (i == currentFrameIndex))
           | !((primApplyTo.getSelectedIndex() == 1)
 	      && (boxApplyTo.getSelectedIndex() == 1))) {
@@ -1874,9 +1747,6 @@ public class CrystalPropertiesDialog extends JDialog
     //}
   }
 
-
 }    //end calls CrystalPropertiesDialog
-
-
 
 

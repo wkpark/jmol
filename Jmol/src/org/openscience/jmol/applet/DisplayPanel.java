@@ -75,7 +75,7 @@ public class DisplayPanel extends Canvas
   String[] names;
   Color[] colors;
   ChemFile cf;
-  ChemFrame md = null;
+  ChemFrame chemframe = null;
   private float xfac0 = 1;    // Zoom factor determined by screen size/initial settings.
   private float xfac = 1;                    // Zoom as performed by the user
   private float xfac2 = 1;                   // Square of zoom performed by the user
@@ -352,15 +352,16 @@ public class DisplayPanel extends Canvas
     painted = false;
     haveFile = true;
     nframes = cf.getNumberOfFrames();
-    this.md = cf.getFrame(0);
+    this.chemframe = cf.getFrame(0);
     init();
     setFrame(0);
   }
 
   public void init() {
 
-    useMinBound = md.getMinimumBounds();
-    useMaxBound = md.getMaximumBounds();
+    // FIXME !!!!! 2002-11-19
+    // useMinBound = chemframe.getMinimumBounds();
+    // useMaxBound = chemframe.getMaximumBounds();
     updateSizes();
     Point3f size = new Point3f();
     size.sub(useMaxBound, useMinBound);
@@ -392,7 +393,7 @@ public class DisplayPanel extends Canvas
 
     frameLabel = newLabel;
     if ((frameIndex != -1) && (frameLabel != null)) {
-      frameLabel.setText(md.getInfo());
+      frameLabel.setText(chemframe.getInfo());
       frameLabel.setSize(frameLabel.getPreferredSize());
     }
   }
@@ -405,10 +406,10 @@ public class DisplayPanel extends Canvas
 
     if (haveFile) {
       if (fr < nframes) {
-        md = cf.getFrame(fr);
+        chemframe = cf.getFrame(fr);
         frameIndex = fr;
         if (frameLabel != null) {
-          frameLabel.setText(md.getInfo());
+          frameLabel.setText(chemframe.getInfo());
           frameLabel.setSize(frameLabel.getPreferredSize());
         }
       }
@@ -418,7 +419,7 @@ public class DisplayPanel extends Canvas
   }
 
   public ChemFrame getFrame() {
-    return md;
+    return chemframe;
   }
 
   /**
@@ -456,7 +457,7 @@ public class DisplayPanel extends Canvas
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        Atom atom = md.getNearestAtom(e.getX(), e.getY(), mat);
+        Atom atom = chemframe.getNearestAtom(e.getX(), e.getY(), mat);
         if (pickingMode == MULTIPLEPICK) {
           settings.addPickedAtom(atom);
         } else {
@@ -562,7 +563,7 @@ public class DisplayPanel extends Canvas
           rbottom = y;
         }
         if (haveFile) {
-          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright,
+          Atom[] selectedAtoms = chemframe.findAtomsInRegion(rleft, rtop, rright,
               rbottom, mat);
           if (e.isShiftDown()) {
             settings.addPickedAtoms(selectedAtoms);
@@ -597,8 +598,8 @@ public class DisplayPanel extends Canvas
   }
 
   public void rebond() throws Exception {
-    if (md != null) {
-      md.rebond();
+    if (chemframe != null) {
+      chemframe.rebond();
     }
   }
 
@@ -665,7 +666,7 @@ public class DisplayPanel extends Canvas
     Color bg = backgroundColor;
     Color fg = getForeground();
 
-    if (md == null) {
+    if (chemframe == null) {
       g.setColor(bg);
       g.fillRect(0, 0, drawWidth, drawHeight);
     } else {
@@ -702,9 +703,9 @@ public class DisplayPanel extends Canvas
         g.fillRect(0, 0, drawWidth, drawHeight);
         g.setColor(fg);
 
-        chemFrameRenderer.paint(g, md, settings, mat);
+        chemFrameRenderer.paint(g, chemframe, settings, mat);
 
-        //md.paint(g, settings);
+        //chemframe.paint(g, settings);
         if (rubberband) {
           g.setColor(fg);
           g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);

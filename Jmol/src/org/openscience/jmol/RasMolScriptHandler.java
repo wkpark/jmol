@@ -280,12 +280,12 @@ class RasMolScriptHandler {
   private void list(String objectType) throws RasMolScriptException {
 
     if (objectType.equals("atoms")) {
-      for (int i = 0; i < program.display.md.getNumberOfAtoms(); i++) {
+      for (int i = 0; i < program.display.chemframe.getNumberOfAtoms(); i++) {
         StringBuffer sb = new StringBuffer();
         sb.append("  ");
         sb.append(i + 1);
         sb.append(" ");
-        sb.append(program.display.md.getAtomAt(i).getType().getRoot());
+        sb.append(program.display.chemframe.getAtomAt(i).getType().getRoot());
         println(sb.toString());
       }
     } else {
@@ -297,7 +297,7 @@ class RasMolScriptHandler {
   private void select(String value) throws RasMolScriptException {
 
     if (value.equals("all") || value.equals("*")) {
-      program.display.getSettings().addPickedAtoms(program.display.md.getAtoms());
+      program.display.getSettings().addPickedAtoms(program.display.chemframe.getAtoms());
     } else if (value.equals("none")) {
       program.display.getSettings().clearPickedAtoms();
     } else if (value.indexOf(',') != -1) {
@@ -306,7 +306,7 @@ class RasMolScriptHandler {
         String subexpr = (String) st.nextElement();
         try {
           int atom = Integer.parseInt(subexpr);
-          program.display.getSettings().addPickedAtom(program.display.md.getAtomAt(atom));
+          program.display.getSettings().addPickedAtom(program.display.chemframe.getAtomAt(atom));
         } catch (NumberFormatException e) {
           throw new RasMolScriptException("Error: invalid expression: "
               + subexpr);
@@ -315,7 +315,7 @@ class RasMolScriptHandler {
     } else {
       try {
         int atom = Integer.parseInt(value);
-        program.display.getSettings().addPickedAtom(program.display.md.getAtomAt(atom));
+        program.display.getSettings().addPickedAtom(program.display.chemframe.getAtomAt(atom));
       } catch (NumberFormatException e) {
         throw new RasMolScriptException("Error: invalid expression: "
             + value);
@@ -364,7 +364,7 @@ class RasMolScriptHandler {
         program.display.getSettings().getPickedAtoms().elements();
       for (int i = 0; i < selectedAtoms.length; ++i) {
         int atom = selectedAtoms[i];
-        program.display.md.getAtomAt(atom - 1).setColor(this.getColor(value));
+        program.display.chemframe.getAtomAt(atom - 1).setColor(this.getColor(value));
       }
 
     } else {

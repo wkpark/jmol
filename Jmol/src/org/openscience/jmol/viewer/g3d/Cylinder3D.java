@@ -131,12 +131,10 @@ public class Cylinder3D {
       if ((xRaster[iMid] == xRaster[iLower]) &&
           (yRaster[iMid] == yRaster[iLower])) {
         intensityUp[iLower] = (intensityUp[iLower] + intensityUp[iMid]) / 2;
-        intensityDn[iLower] = (intensityDn[iLower] + intensityDn[iMid]) / 2;
         tLower = tMid;
       } else if ((xRaster[iMid] == xRaster[iUpper]) &&
                (yRaster[iMid] == yRaster[iUpper])) {
         intensityUp[iUpper] = (intensityUp[iUpper] + intensityUp[iMid]) / 2;
-        intensityDn[iUpper] = (intensityDn[iUpper] + intensityDn[iMid]) / 2;
         tUpper = tMid;
       } else {
         interpolate(iLower, iMid);
@@ -149,11 +147,11 @@ public class Cylinder3D {
   }
 
   void plotRaster(int i) {
-    int iUp = intensityUp[i], iDn = intensityDn[i];
+    int iUp = intensityUp[i];
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +
-                       " iUp=" + iUp + " iDn=" + iDn);
+                       " iUp=" + iUp);
     */
     int x = xRaster[i];
     int y = yRaster[i];
@@ -165,8 +163,8 @@ public class Cylinder3D {
     g3d.plotLineDelta(shadesA[iUp], shadesB[iUp],
                       xA + x, yA + y, zA - z,
                       dxB, dyB, dzB);
-    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL || dzB >= 0) {
-      g3d.plotLineDelta(shadesA[iDn], shadesB[iDn],
+    if (endcaps != Graphics3D.ENDCAPS_SPHERICAL) {
+      g3d.plotLineDelta(shadesA[0], shadesB[0],
                         xA - x, yA - y, zA + z,
                         dxB, dyB, dzB);
     }
@@ -193,7 +191,6 @@ public class Cylinder3D {
       zRaster = realloc(zRaster);
       tRaster = realloc(tRaster);
       intensityUp = realloc(intensityUp);
-      intensityDn = realloc(intensityDn);
     }
     return rasterCount++;
   }
@@ -205,7 +202,6 @@ public class Cylinder3D {
   int[] yRaster = new int[32];
   int[] zRaster = new int[32];
   int[] intensityUp = new int[32];
-  int[] intensityDn = new int[32];
 
   void calcRotatedPoint(float t, int i) {
     tRaster[i] = t;
@@ -217,12 +213,16 @@ public class Cylinder3D {
     double z2 = radius2 - (xR*xR + yR*yR);
     double zR = (z2 > 0 ? Math.sqrt(z2) : 0);
 
-    xRaster[i] = (int)xR;
-    yRaster[i] = (int)yR;
+    if (tEvenDiameter) {
+      xRaster[i] = (int)(xR - 0.5);
+      yRaster[i] = (int)(yR - 0.5);
+    } else {
+      xRaster[i] = (int)(xR);
+      yRaster[i] = (int)(yR);
+    }
     zRaster[i] = (int)(zR + 0.5);
 
     intensityUp[i] = Shade3D.calcIntensity((float)xR, (float)yR, (float)zR);
-    intensityDn[i] = Shade3D.calcIntensity((float)-xR, (float)-yR, (float)-zR);
 
     /*
     System.out.println("calcRotatedPoint(" + t + "," + i + ")" + " -> " +
@@ -297,7 +297,7 @@ public class Cylinder3D {
       /*
         System.out.println("endcap y="+y+" xMin="+xMin+" xMax="+xMax);
       */
-      int count = xMax - xMin;
+      int count = xMax - xMin + 1;
       g3d.plotPixelsClipped(argbEndcap, count,
                             xT + xMin,  yT + y, zT - zXMin - 1,
                             zT - zXMax - 1);
@@ -348,16 +348,16 @@ public class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, xUp, yUp, zUp);
       g3d.plotPixelClipped(argbEndcap, xDn, yDn, zDn);
     }
-    int iUp = intensityUp[i], iDn = intensityDn[i];
+    int iUp = intensityUp[i];
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +
-                       " iUp=" + iUp + " iDn=" + iDn);
+                       " iUp=" + iUp);
     */
     g3d.plotLineDelta(shadesA[iUp],
                       xUp, yUp, zUp, xTip - xUp, yTip - yUp, zTip - zUp);
     if (! (endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0))
-      g3d.plotLineDelta(shadesA[iDn],
+      g3d.plotLineDelta(shadesA[0],
                         xDn, yDn, zDn, xTip - xDn, yTip - yDn, zTip - zDn);
   }
 

@@ -32,7 +32,7 @@ class PickingManager {
 
   int pickingMode = JmolConstants.PICKING_IDENT;
 
-  boolean chimeStylePicking = false;
+  boolean chimeStylePicking = true;
 
   int queuedAtomCount = 0;
   int[] queuedAtomIndexes = new int[4];
@@ -122,19 +122,15 @@ class PickingManager {
       viewer.setCenter(frame.getAtomPoint3f(atomIndex));
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
-      if (chimeStylePicking) {
+      if (shiftKey | chimeStylePicking)
         viewer.toggleSelection(atomIndex);
-      } else {
-        if (shiftKey)
-          viewer.toggleSelection(atomIndex);
-        else
-          viewer.setSelection(atomIndex);
-      }
+      else
+        viewer.setSelection(atomIndex);
       reportSelection();
       break;
     case JmolConstants.PICKING_SELECT_GROUP:
       BitSet bsGroup = frame.getGroupBitSet(atomIndex);
-      if (shiftKey)
+      if (shiftKey | chimeStylePicking)
         viewer.toggleSelectionSet(bsGroup);
       else
         viewer.setSelectionSet(bsGroup);
@@ -143,7 +139,7 @@ class PickingManager {
       break;
     case JmolConstants.PICKING_SELECT_CHAIN:
       BitSet bsChain = frame.getChainBitSet(atomIndex);
-      if (shiftKey)
+      if (shiftKey | chimeStylePicking)
         viewer.toggleSelectionSet(bsChain);
       else
         viewer.setSelectionSet(bsChain);

@@ -773,7 +773,9 @@ public interface JmolModelAdapter {
    */
   public final static int[] argbsCpk = {
     0xFFFF69B4, // HotPink        Xx   0
-    0xFFFAEBD7, // AntiqueWhite    H   1
+    0xFFE0E0E0, // grey88          H   1
+    //    0xFFF0FFFF, // azure           H   1
+    //    0xFFF0F8FF, // AliceBlue    H   1
     0xFFFFC0CB, // pink           He   2
     0xFFB22222, // firebrick      Li   3
     0xFF228B22, // ForestGreen    Be   4

@@ -256,7 +256,10 @@
       <patternset>
         <include name="**/Point3f.class"/>
         <include name="**/Vector3f.class"/>
+        <include name="**/Matrix3f.class"/>
         <include name="**/Matrix4f.class"/>
+        <include name="**/AxisAngle4f.class"/>
+        <include name="**/Quat4f.class"/>
 	<include name="**/Point3i.class"/>
 	<!-- the following are dependencies of the classes above -->
 	<include name="**/Tuple3i.class"/>
@@ -267,7 +270,6 @@
         <include name="**/Tuple4d.class"/>
         <include name="**/Vector3d.class"/>
         <include name="**/Quat4d.class"/>
-        <include name="**/Quat4f.class"/>
         <include name="**/Point4f.class"/>
         <include name="**/Point3d.class"/>
         <include name="**/Point4d.class"/>

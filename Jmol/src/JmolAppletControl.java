@@ -117,6 +117,20 @@ public class JmolAppletControl extends Applet {
     }
     setLayout(new GridLayout(1, 1));
     allocateControl();
+    logWarnings();
+  }
+
+  private void logWarnings() {
+    if (targetName == null)
+      System.out.println(typeName + " with no target?");
+    if (type == -1)
+      System.out.println("unrecognized control type:" + typeName);
+    if (type == typeChimeRadio && groupName == null)
+      System.out.println("chimeRadio with no group name?");
+    if (script == null)
+      System.out.println("control with no script?");
+    if (type == typeChimeToggle && altScript == null)
+      System.out.println("chimeToggle with no altScript?");
   }
 
   int clickCount;
@@ -194,7 +208,6 @@ public class JmolAppletControl extends Applet {
   }
 
   private void notifyRadioPeers() {
-    System.out.println("notifyRadioPeers()");
     for (Enumeration enum = context.getApplets(); enum.hasMoreElements(); ) {
       Object peer = enum.nextElement();
       if (! (peer instanceof JmolAppletControl))
@@ -208,7 +221,21 @@ public class JmolAppletControl extends Applet {
     String scriptToRun = (toggleState ? script : altScript);
     if (scriptToRun == null)
       return;
-    System.out.println("runScript:" + scriptToRun);
+    if (targetName == null) {
+      System.out.println(typeName + " has no target?");
+      return;
+    }
+    Object targetApplet = context.getApplet(targetName);
+    if (targetApplet == null) {
+      System.out.println("target " + targetName + " not found");
+      return;
+    }
+    if (! (targetApplet instanceof JmolApplet)) {
+      System.out.println("target " + targetName + " is not a JmolApplet");
+      return;
+    }
+    JmolApplet targetJmolApplet = (JmolApplet)targetApplet;
+    targetJmolApplet.script(scriptToRun);
   }
 }
 

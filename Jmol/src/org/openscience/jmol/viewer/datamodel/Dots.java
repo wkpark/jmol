@@ -166,7 +166,11 @@ public class Dots {
           calcCavities();
         }
     } else {
-      bsDotsOn.andNot(bsSelected);
+      // turn off the selected dots
+      // 1.1 jvm does not have BitSet.andNot()
+      for (int i = atomShapeCount; --i >= 0; )
+        if (bsSelected.get(i))
+          bsDotsOn.clear(i);
       int i;
       for (i = atomShapeCount; --i >= 0 && !bsDotsOn.get(i); )
         {}

@@ -100,20 +100,24 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     if (chemFile == null)
       return "unknown error reading file";
     try {
-        AtomTypeFactory factory = AtomTypeFactory.getInstance("jmol_atomtypes.txt");
-        AtomContainer atomContainer = getAtomContainer(chemFile, 0);
-        Atom[] atoms = atomContainer.getAtoms();
-        for (int i=0; i<atoms.length; i++) {
-            factory.configure(atoms[i]);
-        }
+      AtomTypeFactory factory = AtomTypeFactory.getInstance("jmol_atomtypes.txt");
+      AtomContainer atomContainer = getAtomContainer(chemFile, 0);
+      Atom[] atoms = atomContainer.getAtoms();
+      for (int i=0; i<atoms.length; i++) {
+        factory.configure(atoms[i]);
+      }
     } catch (ClassNotFoundException exception) {
-        // could not configure atoms... what to do?
-        System.err.println(exception.toString());
-        exception.printStackTrace();
+      // could not configure atoms... what to do?
+      System.err.println(exception.toString());
+      exception.printStackTrace();
     } catch (IOException exception) {
-        // could not configure atoms... what to do?
-        System.err.println(exception.toString());
-        exception.printStackTrace();
+      // could not configure atoms... what to do?
+      System.err.println(exception.toString());
+      exception.printStackTrace();
+    } catch (CDKException exception) {
+      // could not configure atoms... what to do?
+      System.err.println(exception.toString());
+      exception.printStackTrace();
     }
     return chemFile;
   }

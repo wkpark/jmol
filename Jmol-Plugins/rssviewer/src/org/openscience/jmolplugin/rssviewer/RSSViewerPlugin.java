@@ -28,6 +28,7 @@ import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Convertor;
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.app.SortedTableModel;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.ChemSequence;
@@ -70,6 +71,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
     private Vector channels = null;
     private JTree rssTree = null;
     private RSSContentModel channelContent = null;
+    private SortedTableModel sortedContent = null;
     
     public void setDisplayControl(DisplayControl control) {
         this.control = control;
@@ -174,7 +176,9 @@ public class RSSViewerPlugin implements JmolPluginInterface {
         
         // A table showing the entries in the channel
         channelContent = new RSSContentModel();
-        JTable channelTable = new JTable(channelContent);
+        sortedContent = new SortedTableModel(channelContent);
+        JTable channelTable = new JTable(sortedContent);
+        sortedContent.addMouseListenerToHeaderInTable(channelTable);
         channelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListSelectionModel rowSM = channelTable.getSelectionModel();
         rowSM.addListSelectionListener(new ListSelectionListener() {
@@ -187,7 +191,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
                     // no rows are selected
                 } else {
                     int selectedRow = lsm.getMinSelectionIndex();
-                    ChemModel model = channelContent.getValueAt(selectedRow);
+                    ChemModel model = channelContent.getValueAt(sortedContent.getSortedIndex(selectedRow));
                     AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
                     ChemFrame frame = Convertor.convert(control, container);
                     ChemFile file = new ChemFile(control, true);

@@ -67,7 +67,7 @@ final class Atom implements Tuple {
     this.modelIndex = (short)modelIndex;
     this.atomIndex = atomIndex;
     this.elementNumber = elementNumber;
-    if (formalCharge == Integer.MIN_VALUE)
+    if (! JmolConstants.isValidFormalCharge(elementNumber, formalCharge))
       formalCharge = 0;
     this.formalChargeAndFlags = (byte)(formalCharge << 4);
     this.colixAtom = viewer.getColixAtom(this);

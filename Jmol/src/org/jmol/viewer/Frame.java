@@ -1185,6 +1185,13 @@ final class Frame {
       System.out.println("maximum auto bond count reached");
       return;
     }
+    int formalChargeA = atomA.getFormalCharge();
+    if (formalChargeA != 0) {
+      int formalChargeB = atomB.getFormalCharge();
+      if ((formalChargeA < 0 && formalChargeB < 0) ||
+          (formalChargeA > 0 && formalChargeB > 0))
+        return;
+    }
     addBond(atomA.bondMutually(atomB, order, viewer));
   }
 

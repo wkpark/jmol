@@ -30,6 +30,8 @@ import org.openscience.jmol.viewer.protein.ProteinProp;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.AxisAngle4f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
@@ -44,6 +46,7 @@ public class Dots {
   int[][] dotsConvexMaps;
 
   AtomShape[] triples;
+  int torusCount;
   Torus[] tori;
   Hashtable htTori = new Hashtable();
 
@@ -65,11 +68,10 @@ public class Dots {
                          dotsConvexMaps.length);
         dotsConvexMaps = t;
       }
-      System.out.println("calculating visibility maps");
       for (int i = atomShapeCount; --i >= 0; )
         if (bsSelected.get(i) && dotsConvexMaps[i] == null)
-          dotsConvexMaps[i] = calcVisibilityMap(atomShapes[i]);
-      tori = calcTori(frame);
+          dotsConvexMaps[i] = calcConvexMap(atomShapes[i]);
+      calcTori();
       triples = calcTriples(frame);
     } else {
       for (int i = atomShapeCount; --i >= 0; )
@@ -84,11 +86,11 @@ public class Dots {
     dotsConvexCount = iLast + 1;
   }
 
-  int[] calcVisibilityMap(AtomShape atom) {
+  int[] calcConvexMap(AtomShape atom) {
     float vdwRadius = atom.getVanderwaalsRadius();
     float probeRadius = viewer.getSolventProbeRadius();
     getNeighbors(atom, vdwRadius, probeRadius);
-    calcBits(atom.getPoint3f(), vdwRadius, probeRadius);
+    calcConvexBits(atom.getPoint3f(), vdwRadius, probeRadius);
     int indexLast;
     for (indexLast = bitmap.length;
          --indexLast >= 0 && bitmap[indexLast] == 0; )
@@ -104,8 +106,8 @@ public class Dots {
   int[] bitmap;
   Point3f pointT = new Point3f();
 
-  void calcBits(Point3f myCenter, float vdwRadius, float probeRadius) {
-    Vector3f[] vertices = dotsRenderer.icosohedron.vertices;
+  void calcConvexBits(Point3f myCenter, float vdwRadius, float probeRadius) {
+    Vector3f[] vertices = dotsRenderer.geodesic.vertices;
     int dotCount = vertices.length;
     if (bitmap == null)
       bitmap = allocateBitmap(dotCount);
@@ -120,7 +122,7 @@ public class Dots {
       int iStart = iNeighborLast;
       do {
         if (pointT.distanceSquared(neighborCenters[iNeighborLast]) <
-            neighborRadii2[iNeighborLast]) {
+            neighborPlusProbeRadii2[iNeighborLast]) {
           clearBit(bitmap, iDot);
           break;
         }
@@ -179,7 +181,7 @@ public class Dots {
   int neighborCount;
   AtomShape[] neighbors = new AtomShape[16];
   Point3f[] neighborCenters = new Point3f[16];
-  float[] neighborRadii2 = new float[16];
+  float[] neighborPlusProbeRadii2 = new float[16];
   
   void getNeighbors(AtomShape atom, float vdwRadius, float probeRadius) {
     AtomShapeIterator iter =
@@ -197,14 +199,14 @@ public class Dots {
           System.arraycopy(neighborCenters, 0, centersNew, 0, neighborCount);
           neighborCenters = centersNew;
           float[] radiiNew = new float[2 * neighborCount];
-          System.arraycopy(neighborRadii2, 0, radiiNew, 0, neighborCount);
-          neighborRadii2 = radiiNew;
+          System.arraycopy(neighborPlusProbeRadii2, 0, radiiNew, 0,
+			   neighborCount);
+          neighborPlusProbeRadii2 = radiiNew;
         }
         neighbors[neighborCount] = neighbor;
         neighborCenters[neighborCount] = neighbor.point3f;
-        float effectiveRadius = (neighbor.getVanderwaalsRadius() +
-                                  probeRadius);
-        neighborRadii2[neighborCount] = effectiveRadius * effectiveRadius;
+        float combinedRadius = (neighbor.getVanderwaalsRadius() + probeRadius);
+        neighborPlusProbeRadii2[neighborCount] = combinedRadius*combinedRadius;
         ++neighborCount;
       }
     }
@@ -221,46 +223,94 @@ public class Dots {
     */
   }
 
-  Torus[] calcTori(JmolFrame frame) {
-    Dots dots = frame.dots;
-    System.out.println("DotsRendereer.calcTori()");
-    float probeRadius = viewer.getSolventProbeRadius();
-    if (probeRadius == 0)
-      return null;
-    float probeDiameter = 2 * probeRadius;
-    Torus[] tori = new Torus[32];
-    int iTorus = 0;
-    AtomShape[] atomShapes = frame.atomShapes;
-    for (int i = frame.atomShapeCount; --i >= 0; ) {
-      AtomShape atomI = atomShapes[i];
-      float vdwRadiusI = atomI.getVanderwaalsRadius();
-      getNeighbors(atomI, vdwRadiusI, probeRadius);
-      for (int iJ = neighborCount; --iJ >= 0; ) {
-        AtomShape atomJ = neighbors[iJ];
-        int j = atomJ.getAtomIndex();
-        if (i >= j) {
-          continue;
-        }
-        Torus torusIJ = getTorus(atomI, atomJ);
-        if (torusIJ == null) {
-          continue;
-        }
-        if (iTorus == tori.length) {
-          Torus[] t = new Torus[iTorus * 2];
-          System.arraycopy(tori, 0, t, 0, iTorus);
-          tori = t;
-        }
-        tori[iTorus++] = torusIJ;
-      }
+    void calcTori() {
+	System.out.println("DotsRendereer.calcTori()");
+	float probeRadius = viewer.getSolventProbeRadius();
+	if (probeRadius == 0)
+	    return;
+	float probeDiameter = 2 * probeRadius;
+	tori = new Torus[32];
+	torusCount = 0;
+	AtomShape[] atomShapes = frame.atomShapes;
+	for (int i = frame.atomShapeCount; --i >= 0; ) {
+	    AtomShape atomI = atomShapes[i];
+	    float vdwRadiusI = atomI.getVanderwaalsRadius();
+	    getNeighbors(atomI, vdwRadiusI, probeRadius);
+	    for (int iJ = neighborCount; --iJ >= 0; ) {
+		AtomShape atomJ = neighbors[iJ];
+		int j = atomJ.getAtomIndex();
+		if (i >= j) {
+		    continue;
+		}
+		Torus torusIJ = getTorus(atomI, atomJ);
+		if (torusIJ == null)
+		    continue;
+		calcTorusProbeMap(torusIJ);
+		if (torusIJ.probeMap == null) {
+		    System.out.println("null probeMap found!");
+		    continue;
+		}
+		if (torusCount == tori.length) {
+		    Torus[] t = new Torus[torusCount * 2];
+		    System.arraycopy(tori, 0, t, 0, torusCount);
+		    tori = t;
+		}
+		tori[torusCount++] = torusIJ;
+	    }
+	}
     }
-    return tori;
-  }
+
+    final static int torusProbePositionCount = 64;
+    Matrix3f matrixT = new Matrix3f();
+    AxisAngle4f aaT = new AxisAngle4f();
+    final int[] probeMapT = allocateBitmap(torusProbePositionCount);
+
+    void calcTorusProbeMap(Torus torus) {
+	int[] probeMap = probeMapT;
+	setAllBits(probeMap, torusProbePositionCount);
+	float stepAngle = 2 * (float)Math.PI / torusProbePositionCount;
+	aaT.set(torus.axisVector, 0);
+	int iNeighborLast = 0;
+	for (int a = torusProbePositionCount; --a >= 0; ) {
+	    aaT.angle = a * stepAngle;
+	    matrixT.set(aaT);
+	    matrixT.transform(torus.radialVector, pointT);
+	    pointT.add(torus.center);
+
+	    int iStart = iNeighborLast;
+	    do {
+		if (neighbors[iNeighborLast].getAtomIndex() != torus.j) {
+		    if (pointT.distanceSquared(neighborCenters[iNeighborLast]) <
+			neighborPlusProbeRadii2[iNeighborLast]) {
+			clearBit(probeMap, a);
+			break;
+		    }
+		}
+		iNeighborLast = (iNeighborLast + 1) % neighborCount;
+	    } while (iNeighborLast != iStart);
+	}
+	int indexLast;
+	for (indexLast = probeMap.length;
+	     --indexLast >= 0 && probeMap[indexLast] == 0; )
+	    {}
+	if (indexLast == -1) {
+	    torus.probeMap = null;
+	} else {
+	    ++indexLast;
+	    torus.probeMap = new int[indexLast];
+	    while (--indexLast >= 0)
+		torus.probeMap[indexLast] = probeMap[indexLast];
+	}
+    }
 
   class Torus {
     int i, j;
     Point3f center;
     float radius;
-    Vector3f axisVector;
+      Vector3f axisVector;
+      Vector3f radialVector;
+      Vector3f tangentVector;
+      int[] probeMap;
 
     Torus(int i, int j, Point3f center, float radius, Vector3f axisVector) {
       this.i = i;
@@ -268,8 +318,26 @@ public class Dots {
       this.center = center;
       this.radius = radius;
       this.axisVector = axisVector;
-    }
 
+      axisVector.normalize();
+      axisVector.scale(viewer.getSolventProbeRadius());
+
+      if (axisVector.x == 0)
+	  radialVector = new Vector3f(radius, 0, 0);
+      else if (axisVector.y == 0)
+	  radialVector = new Vector3f(0, radius, 0);
+      else if (axisVector.z == 0)
+	  radialVector = new Vector3f(0, 0, radius);
+      else {
+	  radialVector = new Vector3f(-axisVector.y, axisVector.x, 0);
+	  radialVector.normalize();
+	  radialVector.scale(radius);
+      }
+
+      tangentVector = new Vector3f();
+      tangentVector.cross(axisVector, radialVector);
+      tangentVector.normalize();
+    }
   }
 
   static Boolean boxedFalse = new Boolean(false);
@@ -319,12 +387,14 @@ public class Dots {
     torusCenter.add(atomI.point3f);
     torusCenter.add(atomJ.point3f);
     torusCenter.scale(0.5f);
+    /*
     System.out.println("calcTorusCenter i=" + atomI.point3f.x + "," +
                        atomI.point3f.y + "," + atomI.point3f.z + "  j=" +
                        atomJ.point3f.x + "," + atomJ.point3f.y + "," +
                        atomJ.point3f.z + "  center=" +
                        torusCenter.x + "," + torusCenter.y + "," +
                        torusCenter.z);
+    */
     return torusCenter;
   }
 

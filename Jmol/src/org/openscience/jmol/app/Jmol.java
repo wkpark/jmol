@@ -37,8 +37,6 @@ import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.io.CMLWriter;
 import org.openscience.cdk.applications.plugin.CDKPluginManager;
-import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.ui.JmolPopup;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
@@ -248,7 +246,6 @@ public class Jmol extends JPanel {
     exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(currentDir);
 
-    pcs.addPropertyChangeListener(chemFileProperty, saveAction);
     pcs.addPropertyChangeListener(chemFileProperty, exportAction);
     pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
     pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
@@ -800,7 +797,6 @@ public class Jmol extends JPanel {
 
   // --- action implementations -----------------------------------
 
-  private SaveAction saveAction = new SaveAction();
   private ExportAction exportAction = new ExportAction();
   private PovrayAction povrayAction = new PovrayAction();
   private PdfAction pdfAction = new PdfAction();
@@ -814,7 +810,7 @@ public class Jmol extends JPanel {
    */
   private Action[] defaultActions = {
     new NewAction(), new NewwinAction(), new OpenAction(),
-    new OpenUrlAction(), saveAction, printAction, exportAction,
+    new OpenUrlAction(), printAction, exportAction,
     new CloseAction(), new ExitAction(), new AboutAction(),
     new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
@@ -993,57 +989,6 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
         Jmol.this.doClose();
     }
-  }
-
-  class SaveAction extends MoleculeDependentAction {
-
-    SaveAction() {
-      super(saveasAction);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-
-      Frame frame = getFrame();
-      int retval = saveChooser.showSaveDialog(Jmol.this);
-      if (retval == 0) {
-        File file = saveChooser.getSelectedFile();
-        if (file != null) {
-          try {
-            ChemFile chemFile = (ChemFile)viewer.getClientFile();
-            if (fileTyper.getType().equals("XYZ (xmol)")) {
-                FileWriter writer = new FileWriter(file);
-                int frameCount = chemFile.getNumberOfFrames();
-                // note, that it only saves the first frame
-                ChemFrame chemFrame = chemFile.getFrame(0);
-                XYZWriter xyzwriter = new XYZWriter(writer);
-                xyzwriter.write(chemFrame);
-                xyzwriter.close();
-            } else if (fileTyper.getType().equals("PDB")) {
-                FileOutputStream os = new FileOutputStream(file);
-                PdbSaver ps = new PdbSaver(chemFile, os);
-                ps.writeFile();
-                os.flush();
-                os.close();
-            } else if (fileTyper.getType().equals("CML")) {
-                FileWriter writer = new FileWriter(file);
-                int frameCount = chemFile.getNumberOfFrames();
-                // note, that it only saves the first frame
-                ChemFrame chemFrame = chemFile.getFrame(0);
-                CMLWriter cmlwriter = new CMLWriter(writer);
-                cmlwriter.write(chemFrame);
-                cmlwriter.close();
-            } else {
-            }
-          } catch (Exception exc) {
-            status.setStatus(1, "Exception:");
-            status.setStatus(2, exc.toString());
-            exc.printStackTrace();
-          }
-          return;
-        }
-      }
-    }
-
   }
 
   class ExportAction extends MoleculeDependentAction {

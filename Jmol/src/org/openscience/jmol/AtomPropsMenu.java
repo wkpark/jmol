@@ -55,10 +55,10 @@ public class AtomPropsMenu extends JMenu {
     ButtonGroup bg;
     Vector list = new Vector();
     DisplaySettings settings;
-
+    
     public AtomPropsMenu(String name, DisplaySettings settings) {
         super(name);
-		this.settings = settings;
+        this.settings = settings;
         bg = new ButtonGroup();
         JRadioButtonMenuItem mi = new JRadioButtonMenuItem("None");
         list.addElement(mi);
@@ -71,7 +71,7 @@ public class AtomPropsMenu extends JMenu {
     public void replaceList(Vector propsList) {
         JRadioButtonMenuItem mi = (JRadioButtonMenuItem)list.elementAt(0);
         mi.setSelected(true);
-
+        
         for (int i = list.size()-1; i > 0; i--) {
             JRadioButtonMenuItem mi2 = (JRadioButtonMenuItem)list.elementAt(i);
             mi2.removeItemListener(propsListener);
@@ -79,7 +79,7 @@ public class AtomPropsMenu extends JMenu {
             remove(mi2);
             list.removeElementAt(i);
         }
-
+        
         for (int i = 0; i < propsList.size(); i++) {
             JRadioButtonMenuItem mi3 = new JRadioButtonMenuItem((String) propsList.elementAt(i));
             list.addElement(mi3);
@@ -90,21 +90,22 @@ public class AtomPropsMenu extends JMenu {
     }
     
     ItemListener propsListener = new ItemListener() {
-        Component c;
-        AbstractButton b;
-        
-        public void itemStateChanged(ItemEvent e) {
-            JRadioButtonMenuItem rbmi = (JRadioButtonMenuItem) e.getSource();
-            String mode = rbmi.getText();
-            if(mode.equals("None")) 
-                settings.setPropertyMode("");
-            else if (mode.equals("Vector")) {
-                settings.setPropertyMode(""); 
-                settings.setShowVectors(true);
-            } else
-                settings.setPropertyMode(rbmi.getText());            
-            Jmol.display.repaint();
-        }
-    };
+            Component c;
+            AbstractButton b;
+            
+            public void itemStateChanged(ItemEvent e) {
+                JRadioButtonMenuItem rbmi = (JRadioButtonMenuItem) e.getSource();
+                String mode = rbmi.getText();
+                if(mode.equals("None")) {
+                    settings.setPropertyMode("");
+                    settings.setShowVectors(false);
+                } else if (mode.equals("Vector")) {
+                    settings.setPropertyMode(""); 
+                    settings.setShowVectors(true);
+                } else
+                    settings.setPropertyMode(rbmi.getText());            
+                Jmol.display.repaint();
+            }
+        };
     
 }

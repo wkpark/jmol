@@ -207,7 +207,7 @@ public class ChemFrame {
 
     /** 
      * returns a Vector containing the list of Physical Properties
-     * associated with this
+     * associated with this frame
      */
     public Vector getFrameProps() {
         return frameProps;
@@ -220,9 +220,17 @@ public class ChemFrame {
      */
     public void addFrameProperty(PhysicalProperty property) {
         String desc = property.getDescriptor();
-        if (frameProps.indexOf(desc) < 0) {
-            frameProps.addElement(property);
+
+        // Make sure we don't have an identical property already defined:
+
+        boolean found = false;
+        for (Enumeration e = frameProps.elements() ; e.hasMoreElements() ;) {
+            PhysicalProperty fp = (PhysicalProperty) (e.nextElement());
+            String fpd = fp.getDescriptor();
+            if (desc.equals(fpd)) found = true;
         }
+
+        if (!found) frameProps.addElement(property);
     }
 
     /** 
@@ -602,7 +610,7 @@ public class ChemFrame {
                 atoms[j/3].paint(g, settings, v[j], v[j + 1], v[j + 2], j/3 + 1, 
                                  aProps[j/3], pickedAtoms[j/3]);
             
-            if (settings.getShowVectors() && hasVectors) {
+                if (settings.getShowVectors() && hasVectors) {
                 ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
                                              tvect[j], tvect[j+1], 
                                              false, true,

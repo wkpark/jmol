@@ -61,18 +61,18 @@ class Jmol extends JPanel {
     public StatusBar status;
     private AtomPropsMenu apm;
     static AtomTypeTable atomTypeTable;
-    private static Preferences prefs;
-    private static Animate anim;
-    private static Vibrate vib;
-    private static PropertyGraph pg;
+    private Preferences prefs;
+    private Animate anim;
+    private Vibrate vib;
+    private PropertyGraph pg;
     private Measure meas;
     private MeasurementList mlist;
     private static JFrame frame;
     private ChemFile cf;
-    private static JFileChooser openChooser = new JFileChooser();
-    private static JFileChooser saveChooser = new JFileChooser();
-    private static JFileChooser exportChooser = new JFileChooser();
-    private static FileTyper ft;
+    private JFileChooser openChooser = new JFileChooser();
+    private JFileChooser saveChooser = new JFileChooser();
+    private JFileChooser exportChooser = new JFileChooser();
+    private FileTyper ft;
 
     private static JmolResourceHandler jrh;
     
@@ -84,10 +84,10 @@ class Jmol extends JPanel {
     private DisplaySettings settings = new DisplaySettings();
 
     static {
-		if (System.getProperty("user.home") == null) {
-			System.err.println("Error starting Jmol: the property 'user.home' is not defined.");
-			System.exit(1);
-		}
+        if (System.getProperty("user.home") == null) {
+            System.err.println("Error starting Jmol: the property 'user.home' is not defined.");
+            System.exit(1);
+        }
         File ujmoldir = new File(new File(System.getProperty("user.home")), ".jmol");
         ujmoldir.mkdirs();
         JmolResourceHandler.initialize("org.openscience.jmol.Properties.Jmol");        
@@ -95,7 +95,7 @@ class Jmol extends JPanel {
         UserAtypeFile = new File(ujmoldir, "AtomTypes");
         jrh = new JmolResourceHandler("Jmol");
     }
-        
+    
     Jmol(Splash splash) {
 	super(true);
         
@@ -169,30 +169,30 @@ class Jmol extends JPanel {
 	panel.add("Center", ip);
         add("Center", panel);
         add("South", status);       
+
         splash.showStatus("Starting display...");
         display.start();        
-    }
-    
-    private static void begin() {
+
+        splash.showStatus("Reading AtomTypes...");
         atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
+        splash.showStatus("Setting up File Choosers...");
         ft = new FileTyper(openChooser);
         openChooser.setAccessory(ft);
-	File currentDir = getUserDirectory();
+        File currentDir = getUserDirectory();
         openChooser.setCurrentDirectory(currentDir);
         saveChooser.setCurrentDirectory(currentDir);
         exportChooser.setCurrentDirectory(currentDir);        
     }
-
-
+    
     public static void main(String[] args) {
 
-        if (args.length != 0) {
-            String astring = new String("Args = ");
-            for (int i = 0; i < args.length; i++) {
-                astring = astring + args[i] + " ";
-            }
-            System.out.println(astring);
-        }
+        // Read the first argument as a file name:
+        File initialFile = null;
+        if (args.length != 0) {            
+            /* Read only one argument as a file name for now: */
+            String astring = args[0];            
+            initialFile = new File(getUserDirectory(), astring);
+        }        
 
         try {
             String vers = System.getProperty("java.version");
@@ -200,9 +200,9 @@ class Jmol extends JPanel {
                 System.out.println("!!!WARNING: Swing components require a " +
                                    "1.1.2 or higher version VM!!!");
             }
-
+            
             frame = new JFrame();
-
+            
             ImageIcon splash_image = jrh.getIcon("splash");
             Splash splash = new Splash(frame, splash_image);
             splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -215,8 +215,6 @@ class Jmol extends JPanel {
             frame.addWindowListener(new AppCloser());
             frame.pack();
             frame.setSize(500, 600);
-            splash.showStatus("Reading AtomTypes...");
-            begin();
             splash.showStatus("Launching main frame...");
             frame.show();
         } catch (Throwable t) {
@@ -242,12 +240,69 @@ class Jmol extends JPanel {
         
         Point location = frame.getLocation();
         Dimension size = frame.getSize();
-        consoleframe.setBounds(location.x, location.y+size.height, size.width, 200);        
-
+        consoleframe.setBounds(location.x, location.y+size.height, 
+                               size.width, 200);        
+        
         // I'd prefer that the console stay out of the way until requested,
         // so I'm commenting this line out for now...
         // consoleframe.show();        
+
     }
+
+    /**
+     * Opens a file with a hint to use a particular reader, defaulting to
+     * the ReaderFactory if the hint doesn't match any known file types.
+     */
+    public void openFile(File theFile, String typeHint) {
+        if(theFile != null) {
+            try {
+                FileInputStream is = new FileInputStream(theFile);
+                
+                if (typeHint.equals("PDB")) {
+                    ChemFileReader reader = new PDBReader(new InputStreamReader(is)); 
+                    cf = reader.read();
+                } else if (typeHint.equals("CML")) {
+                    ChemFileReader reader = new CMLReader(new InputStreamReader(is));
+                    cf = reader.read();
+                } else if(typeHint.equals("Gaussian log file")){
+                    cf = new GaussianFile(is, ft.computeShifts());
+                } else if(typeHint.equals("XYZ (xmol)")) {
+                    ChemFileReader reader = new XYZReader(new InputStreamReader(is)); 
+                    cf = reader.read();
+                } else {
+                    // Try to automagically determine file type:
+                    ChemFileReader reader = ReaderFactory.createReader(new InputStreamReader(is));                
+                    if (reader == null){
+                        throw new JmolException("openFile",
+                                                "Unknown file type");
+                    }
+                    cf = reader.read();
+                }
+            
+                if (cf != null) {
+                    display.setChemFile(cf);
+                    anim.setChemFile(cf);
+                    vib.setChemFile(cf);
+                    pg.setChemFile(cf);
+                    frame.setTitle(theFile.getName());     
+                    apm.replaceList(cf.getAtomPropertyList());
+                    mlist.clear();
+                }
+            } catch(java.io.FileNotFoundException e2) {
+                JOptionPane.showMessageDialog(Jmol.this, 
+                                              ("File not found: " +
+                                               theFile));
+            } catch(JmolException e3) {
+                JOptionPane.showMessageDialog(Jmol.this, 
+                                              ("File type undetermined: " +
+                                               theFile));
+            } catch(Exception exc) {
+                System.out.println(exc.toString());
+                exc.printStackTrace();
+            }
+            return;
+        }
+    } 
 
     /**
      * returns the ChemFile that we are currently working with
@@ -921,54 +976,12 @@ class Jmol extends JPanel {
 	}
         
         public void actionPerformed(ActionEvent e) {
-
-            Frame frame = getFrame();                        
-                                    
+            
             int retval = openChooser.showOpenDialog(Jmol.this);
             if(retval == 0) {
                 File theFile = openChooser.getSelectedFile();
-                if(theFile != null) {
-                    try {
-                        FileInputStream is = new FileInputStream(theFile);
-
-                        if (ft.getType().equals("PDB")) {
-                            ChemFileReader reader = new PDBReader(new InputStreamReader(is)); 
-                            cf = reader.read();
-                        } else if (ft.getType().equals("CML")) {
-							ChemFileReader reader = new CMLReader(new InputStreamReader(is));
-                            cf = reader.read();
-                        } else if(ft.getType().equals("Gaussian log file")){
-                            cf = new GaussianFile(is, ft.computeShifts());
-                        } else if(ft.getType().equals("XYZ (xmol)")) {
-                            ChemFileReader reader = new XYZReader(new InputStreamReader(is)); 
-                            cf = reader.read();
-                        } else {
-                            // Try to automagically determine file type:
-			    ChemFileReader reader = ReaderFactory.createReader( new InputStreamReader(is));
-                            if (reader == null){
-                                throw new JmolException("openAction","Unknown file type");
-                            }
-			    cf = reader.read();
-                        }
-                        if (cf != null) {
-                            display.setChemFile(cf);
-                            anim.setChemFile(cf);
-                            vib.setChemFile(cf);
-                            pg.setChemFile(cf);
-                            frame.setTitle(theFile.getName());     
-                            apm.replaceList(cf.getAtomPropertyList());
-                            mlist.clear();
-                        }
-                    }catch(java.io.FileNotFoundException e2){
-                          JOptionPane.showMessageDialog(Jmol.this, ("File not found: "+theFile));
-                    }catch(JmolException e3){
-                          JOptionPane.showMessageDialog(Jmol.this, ("File type undetermined: "+theFile));
-                    } catch(Exception exc) {
-                        System.out.println(exc.toString());
-                        exc.printStackTrace();
-                    }
-                    return;
-                }
+                openFile(theFile, ft.getType());
+                return;
             } 
             JOptionPane.showMessageDialog(Jmol.this, "No file chosen");
         }                        
@@ -1054,19 +1067,19 @@ class Jmol extends JPanel {
         
         public void actionPerformed(ActionEvent e) {
             Frame frame = getFrame();                        
-
-
+            
+            
             ImageTyper it = new ImageTyper(exportChooser);
             // GIF doesn't support more than 8 bits:
             if (settings.getAtomDrawMode() == DisplaySettings.SHADING){
                 it.disableGIF();
             }
             exportChooser.setAccessory(it);
-                        
+            
             int retval = exportChooser.showSaveDialog(Jmol.this);
             if(retval == 0) {
                 File theFile = exportChooser.getSelectedFile();
-
+                
                 if(theFile != null) {
                     try {
                         Image eImage = display.takeSnapshot();
@@ -1085,7 +1098,7 @@ class Jmol extends JPanel {
                         } else {
                             // Do nothing
                         }
-
+                        
                         os.flush();
                         os.close();
                         
@@ -1099,17 +1112,17 @@ class Jmol extends JPanel {
             } 
         }                        
     }
-
-	/**
-	 * Returns a new File referenced by the property 'user.dir', or null
-	 * if the property is not defined.
-	 *
-	 * @returns  a File to the user directory 
-	 */
-	static File getUserDirectory() {
-		if (System.getProperty("user.dir") == null) {
-			return null;
-		}
-		return new File(System.getProperty("user.dir"));
-	}
+    
+    /**
+     * Returns a new File referenced by the property 'user.dir', or null
+     * if the property is not defined.
+     *
+     * @returns  a File to the user directory 
+     */
+    static File getUserDirectory() {
+        if (System.getProperty("user.dir") == null) {
+            return null;
+        }
+        return new File(System.getProperty("user.dir"));
+    }
 }

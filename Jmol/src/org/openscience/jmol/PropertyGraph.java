@@ -35,7 +35,6 @@ public class PropertyGraph extends JDialog {
         plotter.setSize(560,385);  
         container.add(plotter);
         
-
         addWindowListener(new GraphWindowListener());
         getContentPane().add(container);
         pack();
@@ -47,7 +46,7 @@ public class PropertyGraph extends JDialog {
      * If no Frame Properties are found, the PropertyGraph action will
      * be disabled; otherwise, it will be enabled.
      *
-     * @param inputFile the ChemFile containing vibration data
+     * @param inputFile the ChemFile containing potentially graphable data
      */
     public void setChemFile(ChemFile inputFile) {
         System.err.println("Checking for viewable properties...");
@@ -56,57 +55,66 @@ public class PropertyGraph extends JDialog {
         }
         restoreConflictingActions();
         hasGraphableProperties = false;
+        GPs = new Vector();
         this.inputFile = inputFile;
         
         // Check for graphable properties
-        // Note the ChemFile.getFramePropertyList doesn't work!
-        for (int i = 1; i < inputFile.nFrames(); i++) {
-          ChemFrame f = inputFile.getFrame(i);          
-          Vector plist = f.getFrameProps();
-          Enumeration els = plist.elements();
-          while (els.hasMoreElements()) {
-            PhysicalProperty p = (PhysicalProperty)els.nextElement();
-            System.err.println("Prop found: " + p.toString());
-            if (p.getDescriptor().equals("Energy")) {
-              hasGraphableProperties = true;
-            }
-          }
+
+        Vector filePL = inputFile.getFramePropertyList();
+
+        for (int j = 0; j < filePL.size(); j++) {          
+            
+            System.out.println(filePL.elementAt(j));
+            
+            if (GPs.indexOf(filePL.elementAt(j)) < 0) {
+                
+                System.out.println("Found one");
+                if (filePL.elementAt(j).equals("Energy")) {
+                    GPs.addElement(filePL.elementAt(j));
+                    hasGraphableProperties = true;
+                }
+            }            
+            
         }
 
-        if (hasGraphableProperties) {
+        if (hasGraphableProperties) { 
             graphAction.setEnabled(true);
-            System.err.println("Found! :) ");
-            // Oke, let's put in some datapoints then :)
-            // Since the only plot is Energy vs. Frame i can
-            // safely put the title
-            plotter.setTitle("Energy vs. Frames");
-            for (int i = 1; i <= inputFile.nFrames(); i++) {
-              ChemFrame f = inputFile.getFrame(i);          
-              Vector plist = f.getFrameProps();
-              Enumeration els = plist.elements();
-              while (els.hasMoreElements()) {
-                PhysicalProperty p = (PhysicalProperty)els.nextElement();
-                System.err.print("Prop found: " + p.toString() + "...");
-                if (p.getDescriptor().equals("Energy")) {
-                  System.err.println("  added.");
-                  plotter.addPoint(0,
-                                   (new Double(i)).doubleValue(),
-                                   ((Double)p.getProperty()).doubleValue(),
-                                   true);
-                }
-              }
-            }
-            //plotter.setXRange(1.0, (new Double(inputFile.nFrames())).doubleValue());
-            //plotter.setYRange(-100.0, -50.0);
-            plotter.fillPlot();
-            plotter.setMarksStyle("dots");
-            plotter.setConnected(true);
         } else {
             graphAction.setEnabled(false);
-            System.err.println("None found :(");
         }
     }
-    
+
+    public void findData() {        
+        if (hasGraphableProperties) {
+            
+            plotter.setTitle("Properties vs. Frame Number");
+            
+            for (int j = 0; j < GPs.size(); j++ ) {
+                String desc = (String)GPs.elementAt(j);
+                
+                plotter.addLegend(j, desc);
+                
+                for (int i = 0; i < inputFile.nFrames(); i++) {
+                    Vector fp = inputFile.getFrame(i).getFrameProps();
+                    for (Enumeration ef = fp.elements() ; 
+                         ef.hasMoreElements() ;) {
+                        PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
+                        
+                        if (pf.getDescriptor().equals(desc)) {
+                            
+                            plotter.addPoint(j,
+                                             (new Double(i+1)).doubleValue(),
+                                             ((Double)pf.getProperty()).doubleValue(),
+                                             true);
+                        }
+                    }
+                }
+            }
+            plotter.fillPlot();
+            plotter.setMarksStyle("dots");
+            plotter.setConnected(true);                
+        }
+    }       
         
     /**
      * Shows or hides this component depending on the value of
@@ -132,7 +140,7 @@ public class PropertyGraph extends JDialog {
      * @return the Dimension preferred by the dialog
      */
     public Dimension getPreferredSize() {
-        return new Dimension(575, 400);
+        return new Dimension(580, 450);
     }
     
     /**
@@ -166,6 +174,7 @@ public class PropertyGraph extends JDialog {
          * Shows the Property Graph dialog when an action occurs.
          */
         public void actionPerformed(ActionEvent e) {
+            findData();
             setVisible(true);
         }
     }
@@ -253,6 +262,10 @@ public class PropertyGraph extends JDialog {
      * Does the dialog have any vibration data.
      */
     private boolean hasGraphableProperties;
+    /*
+     * The Vector containing the list of Graphable Properties.
+     */
+    private Vector GPs = new Vector();
     /**
      * The ChemFile containing frames with graphable data.
      */

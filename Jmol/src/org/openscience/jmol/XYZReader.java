@@ -202,7 +202,7 @@ public class XYZReader implements ChemFileReader {
                 }
             }
             file.frames.addElement(frame);
-            Vector fp = frame.getAtomProps();
+            Vector fp = frame.getAtomProps(); 
             for (int i = 0; i < fp.size(); i++) {
                 if (file.AtomPropertyList.indexOf(fp.elementAt(i)) < 0) {
                     file.AtomPropertyList.addElement(fp.elementAt(i));

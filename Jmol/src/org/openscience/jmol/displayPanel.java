@@ -85,7 +85,7 @@ public class displayPanel extends JPanel
     private boolean WireFrameRotation = false;
     private Measure m = null;
     private MeasurementList mlist = null;
-	private DisplaySettings settings;
+    private DisplaySettings settings;
 
     public displayPanel(StatusBar status, DisplaySettings settings) {
         this.status = status;

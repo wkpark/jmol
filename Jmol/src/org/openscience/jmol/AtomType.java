@@ -231,7 +231,8 @@ public class AtomType {
      * @param picked whether or not the atom has been selected and gets a "halo"
      *
      */
-    public void paint(Graphics gc, DisplaySettings settings, int x, int y, int z, int n, 
+    public void paint(Graphics gc, DisplaySettings settings, 
+                      int x, int y, int z, int n, 
                       Vector props, boolean picked) {
         int diameter = (int) (2.0f*getCircleRadius(z));
         int radius = diameter >> 1;

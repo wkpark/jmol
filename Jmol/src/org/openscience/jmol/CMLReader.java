@@ -41,7 +41,8 @@ public class CMLReader implements ChemFileReader {
             EntityResolver resolver = new DTDResolver();
             JMolCDO cdo = new JMolCDO();
             CMLHandler handler = new CMLHandler(cdo);
-            ((CMLHandler)handler).registerConvention("JMOL-ANIMATION", new JMOLANIMATIONConvention(cdo));
+            ((CMLHandler)handler).registerConvention("JMOL-ANIMATION", 
+                                                     new JMOLANIMATIONConvention(cdo));
             parser.setEntityResolver(resolver);
             parser.setDocumentHandler(handler);
             parser.parse(source);
@@ -49,7 +50,30 @@ public class CMLReader implements ChemFileReader {
             Enumeration framesIter = ((JMolCDO)handler.returnCDO()).returnChemFrames().elements();
             while (framesIter.hasMoreElements()) {
                 System.err.println("New Frame!!!!!!!");
-                file.frames.addElement((ChemFrame)framesIter.nextElement());
+                
+                ChemFrame frame = (ChemFrame) framesIter.nextElement();
+                
+                file.frames.addElement(frame);
+                
+                Vector ap = frame.getAtomProps(); 
+                for (int i = 0; i < ap.size(); i++) {
+                    if (file.AtomPropertyList.indexOf(ap.elementAt(i)) < 0) {
+                        file.AtomPropertyList.addElement(ap.elementAt(i));
+                    }
+                }
+                
+                Vector fp = frame.getFrameProps();
+
+                for (int j = 0; j < fp.size(); j++) {
+                    PhysicalProperty p = (PhysicalProperty) fp.elementAt(j);
+                    String desc = p.getDescriptor();
+
+                    // Update the frameProps if we found a new property
+                    if (file.FramePropertyList.indexOf(desc) < 0) {
+                        file.FramePropertyList.addElement(desc);
+                    }
+                }
+
             }
             return file;
         } catch (ClassNotFoundException ex) {

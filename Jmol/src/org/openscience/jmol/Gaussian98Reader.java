@@ -100,9 +100,9 @@ public class Gaussian98Reader implements ChemFileReader {
 					Vector filePL = file.getAtomPropertyList();
 					Vector fp = frame.getAtomProps();
 					for (int i = 0; i < fp.size(); i++) {
-						if (filePL.indexOf(fp.elementAt(i)) < 0) {
-							filePL.addElement(fp.elementAt(i));
-						}
+                                            if (filePL.indexOf(fp.elementAt(i)) < 0) {
+                                                filePL.addElement(fp.elementAt(i));
+                                            }
 					}
 				} else  if (line.indexOf("GINC") >= 0) {
 					// Found calculation level of theory
@@ -239,29 +239,29 @@ public class Gaussian98Reader implements ChemFileReader {
 		}
 		int atomIndex = 0;
 		for (int i=0; i < frame.getNvert(); ++i) {
-			String line = input.readLine().trim();
-			while (line.indexOf("Isotropic") < 0) {
-				if (line == null)  return;
-				line = input.readLine().trim();
-			}
-			StringTokenizer st1 = new StringTokenizer(line);
-			// Find Isotropic label
-			while (st1.hasMoreTokens()) {
-				if (st1.nextToken().equals("Isotropic")) {
-					break;
-				}
-			}
-			// Find Isotropic value
-			while (st1.hasMoreTokens()) {
-				if (st1.nextToken().equals("=")) {
-					break;
-				}
-			}
-			double shielding = Double.valueOf(st1.nextToken()).doubleValue();
-			NMRShielding ns1 = new NMRShielding(shielding);
-			ns1.descriptor = label;
-			frame.addProperty(atomIndex, ns1);
-			++atomIndex;
+                    String line = input.readLine().trim();
+                    while (line.indexOf("Isotropic") < 0) {
+                        if (line == null)  return;
+                        line = input.readLine().trim();
+                    }
+                    StringTokenizer st1 = new StringTokenizer(line);
+                    // Find Isotropic label
+                    while (st1.hasMoreTokens()) {
+                        if (st1.nextToken().equals("Isotropic")) {
+                            break;
+                        }
+                    }
+                    // Find Isotropic value
+                    while (st1.hasMoreTokens()) {
+                        if (st1.nextToken().equals("=")) {
+                            break;
+                        }
+                    }
+                    double shielding = Double.valueOf(st1.nextToken()).doubleValue();
+                    NMRShielding ns1 = new NMRShielding(shielding);
+                    ns1.descriptor = label;
+                    frame.addProperty(atomIndex, ns1);
+                    ++atomIndex;
 		}
 	}
 

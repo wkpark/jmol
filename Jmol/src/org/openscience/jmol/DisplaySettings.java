@@ -25,259 +25,259 @@ import java.awt.Color;
  * Stores the display style of graphical elements.
  */
 public class DisplaySettings {
+    
+    /**
+     * Display no labels.
+     */
+    public static final int NOLABELS = 0;
+    
+    /**
+     * Display atomic symbols.
+     */
+    public static final int SYMBOLS = 1;
+    
+    /**
+     * Display atom types.
+     */
+    public static final int TYPES = 2;
+    
+    /**
+     * Display atom numbers.
+     */
+    public static final int NUMBERS = 3;
+    
+    /**
+     * Draw atoms as filled circles and bonds as filled rectangles.
+     */
+    public static final int QUICKDRAW = 0;
+    
+    /**
+     * Draw atoms as lighted spheres and bonds as lighted cylinders.
+     */
+    public static final int SHADING = 1;
+    
+    /**
+     * Draw atoms as transparent circles and bonds as transparent rectangles.
+     */
+    public static final int WIREFRAME = 2;
+    
+    /**
+     * Draw bonds as lines; invalid for atoms.
+     */
+    public static final int LINE = 3;
+    
+    /**
+     * Sets the display style for labels.
+     */
+    public void setLabelMode(int i) {
+        if (i > NUMBERS) {
+            return;
+        } 
+        labelMode = i;
+    } 
 
-	/**
-	 * Display no labels.
+    /**
+     * Gets the display style for labels.
+     */
+    public int getLabelMode() {
+        return labelMode;
+    } 
+    
+    /**
+     * Sets the display style for drawing atoms.
+     */
+    public void setAtomDrawMode(int i) {
+        if (i >= LINE) {
+            return;
+        } 
+        atomDrawMode = i;
+    } 
+
+    /**
+     * Gets the display style for drawing atoms.
+     */
+    public int getAtomDrawMode() {
+        return atomDrawMode;
+    } 
+    
+    /**
+     * Sets the display style for drawing bonds.
+     */
+    public void setBondDrawMode(int i) {
+        if (i > LINE) {
+            return;
+        } 
+        bondDrawMode = i;
+    } 
+    
+    /**
+     * Gets the display style for drawing bonds.
+     */
+    public int getBondDrawMode() {
+        return bondDrawMode;
+    } 
+    
+    /**
+     * Sets the color used for outlining atoms and bonds in QUICKDRAW
+     * and WIREFRAME drawing modes.
+     */
+    public void setOutlineColor(Color c) {
+        outlineColor = c;
+    } 
+    
+    /**
+     * Gets the color used for outlining atoms and bonds in QUICKDRAW
+     * and WIREFRAME drawing modes.
 	 */
-	public static final int NOLABELS = 0;
+    public Color getOutlineColor() {
+        return outlineColor;
+    } 
+    
+    /**
+     * Sets the color used for highlighting selected atoms.
+     */
+    public void setPickedColor(Color c) {
+        pickedColor = c;
+    } 
+    
+    /**
+     * Gets the color used for highlighting selected atoms.
+     */
+    public Color getPickedColor() {
+        return pickedColor;
+    } 
+    
+    /**
+     * Sets the color used for drawing text.
+     */
+    public void setTextColor(Color c) {
+        textColor = c;
+    } 
+    
+    /**
+     * Gets the color used for drawing text.
+     */
+    public Color getTextColor() {
+        return textColor;
+    } 
+    
+    /**
+     * Sets physical property to be displayed.
+     * 
+     * @param s The string descriptor of the physical property.
+     */
+    public void setPropertyMode(String s) {
+        propertyMode = s;
+    } 
 
-	/**
-	 * Display atomic symbols.
-	 */
-	public static final int SYMBOLS = 1;
+    /*
+     * Returns the descriptor of the physical property currently displayed.
+     */
+    public String getPropertyMode() {
+        return propertyMode;
+    } 
+    
+    /**
+     * Sets the color of the line drawn for distance measurements.
+     * @param c the color
+     */
+    public void setDistanceColor(Color c) {
+        distanceColor = c;
+    } 
+    
+    /**
+     * Gets the color of the line drawn for distance measurements.
+     */
+    public Color getDistanceColor() {
+        return distanceColor;
+    } 
 
-	/**
-	 * Display atom types.
-	 */
-	public static final int TYPES = 2;
+    /**
+     * Sets the color of the line drawn for angle measurements.
+     * @param c the color
+     */
+    public void setAngleColor(Color c) {
+        angleColor = c;
+    } 
+    
+    /**
+     * Gets the color of the line drawn for angle measurements.
+     */
+    public Color getAngleColor() {
+        return angleColor;
+    } 
+    
+    /**
+     * Sets the color of the line drawn for dihedral measurements.
+     * @param c the color
+     */
+    public void setDihedralColor(Color c) {
+        dihedralColor = c;
+    } 
+    
+    /**
+     * Gets the color of the line drawn for dihedral measurements.
+     */
+    public Color getDihedralColor() {
+        return dihedralColor;
+    } 
+    
+    /**
+     * Display style for labels.
+     */
+    private int labelMode = NOLABELS;
+    
+    /**
+     * Display style for drawing atoms.
+     */
+    private int atomDrawMode = QUICKDRAW;
 
-	/**
-	 * Display atom numbers.
-	 */
-	public static final int NUMBERS = 3;
+    /**
+     * Display style for drawing bonds.
+     */
+    private int bondDrawMode = QUICKDRAW;
+    
+    /**
+     * Color used for outlining atoms and bonds in QUICKDRAW and
+     * WIREFRAME drawing modes.
+     */
+    private Color outlineColor = Color.black;
 
-	/**
-	 * Draw atoms as filled circles and bonds as filled rectangles.
-	 */
-	public static final int QUICKDRAW = 0;
+    /**
+     * Descriptor of the physical property to be displayed.
+     */
+    private String propertyMode = "";
+    
+    /**
+     * Color used for highlighting selected atoms.
+     */
+    private Color pickedColor = Color.orange;
+    
+    /**
+     * Color used for drawing text.
+     */
+    private Color textColor = Color.black;
 
-	/**
-	 * Draw atoms as lighted spheres and bonds as lighted cylinders.
-	 */
-	public static final int SHADING = 1;
-
-	/**
-	 * Draw atoms as transparent circles and bonds as transparent rectangles.
-	 */
-	public static final int WIREFRAME = 2;
-
-	/**
-	 * Draw bonds as lines; invalid for atoms.
-	 */
-	public static final int LINE = 3;
-
-	/**
-	 * Sets the display style for labels.
-	 */
-	public void setLabelMode(int i) {
-		if (i > NUMBERS) {
-			return;
-		} 
-		labelMode = i;
-	} 
-
-	/**
-	 * Gets the display style for labels.
-	 */
-	public int getLabelMode() {
-		return labelMode;
-	} 
-
-	/**
-	 * Sets the display style for drawing atoms.
-	 */
-	public void setAtomDrawMode(int i) {
-		if (i >= LINE) {
-			return;
-		} 
-		atomDrawMode = i;
-	} 
-
-	/**
-	 * Gets the display style for drawing atoms.
-	 */
-	public int getAtomDrawMode() {
-		return atomDrawMode;
-	} 
-
-	/**
-	 * Sets the display style for drawing bonds.
-	 */
-	public void setBondDrawMode(int i) {
-		if (i > LINE) {
-			return;
-		} 
-		bondDrawMode = i;
-	} 
-
-	/**
-	 * Gets the display style for drawing bonds.
-	 */
-	public int getBondDrawMode() {
-		return bondDrawMode;
-	} 
-
-	/**
-	 * Sets the color used for outlining atoms and bonds in QUICKDRAW
-	 * and WIREFRAME drawing modes.
-	 */
-	public void setOutlineColor(Color c) {
-		outlineColor = c;
-	} 
-
-	/**
-	 * Gets the color used for outlining atoms and bonds in QUICKDRAW
-	 * and WIREFRAME drawing modes.
-	 */
-	public Color getOutlineColor() {
-		return outlineColor;
-	} 
-
-	/**
-	 * Sets the color used for highlighting selected atoms.
-	 */
-	public void setPickedColor(Color c) {
-		pickedColor = c;
-	} 
-
-	/**
-	 * Gets the color used for highlighting selected atoms.
-	 */
-	public Color getPickedColor() {
-		return pickedColor;
-	} 
-
-	/**
-	 * Sets the color used for drawing text.
-	 */
-	public void setTextColor(Color c) {
-		textColor = c;
-	} 
-
-	/**
-	 * Gets the color used for drawing text.
-	 */
-	public Color getTextColor() {
-		return textColor;
-	} 
-
-	/**
-	 * Sets physical property to be displayed.
-	 * 
-	 * @param s The string descriptor of the physical property.
-	 */
-	public void setPropertyMode(String s) {
-		propertyMode = s;
-	} 
-
-	/*
-	 * Returns the descriptor of the physical property currently displayed.
-	 */
-	public String getPropertyMode() {
-		return propertyMode;
-	} 
-
-	/**
-	 * Sets the color of the line drawn for distance measurements.
-	 * @param c the color
-	 */
-	public void setDistanceColor(Color c) {
-		distanceColor = c;
-	} 
-
-	/**
-	 * Gets the color of the line drawn for distance measurements.
-	 */
-	public Color getDistanceColor() {
-		return distanceColor;
-	} 
-
-	/**
-	 * Sets the color of the line drawn for angle measurements.
-	 * @param c the color
-	 */
-	public void setAngleColor(Color c) {
-		angleColor = c;
-	} 
-
-	/**
-	 * Gets the color of the line drawn for angle measurements.
-	 */
-	public Color getAngleColor() {
-		return angleColor;
-	} 
-
-	/**
-	 * Sets the color of the line drawn for dihedral measurements.
-	 * @param c the color
-	 */
-	public void setDihedralColor(Color c) {
-		dihedralColor = c;
-	} 
-
-	/**
-	 * Gets the color of the line drawn for dihedral measurements.
-	 */
-	public Color getDihedralColor() {
-		return dihedralColor;
-	} 
-
-	/**
-	 * Display style for labels.
-	 */
-	private int labelMode = NOLABELS;
-
-	/**
-	 * Display style for drawing atoms.
-	 */
-	private int atomDrawMode = QUICKDRAW;
-
-	/**
-	 * Display style for drawing bonds.
-	 */
-	private int bondDrawMode = QUICKDRAW;
-
-	/**
-	 * Color used for outlining atoms and bonds in QUICKDRAW and
-	 * WIREFRAME drawing modes.
-	 */
-	private Color outlineColor = Color.black;
-
-	/**
-	 * Descriptor of the physical property to be displayed.
-	 */
-	private String propertyMode = "";
-
-	/**
-	 * Color used for highlighting selected atoms.
-	 */
-	private Color pickedColor = Color.orange;
-
-	/**
-	 * Color used for drawing text.
-	 */
-	private Color textColor = Color.black;
-
-	/**
-	 * Color of the line drawn for distance measurements.
-	 */
-	private Color distanceColor = Color.black;
-
-	/**
-	 * Color of the line drawn for angle measurements.
-	 */
-	private Color angleColor = Color.black;
-
-	/**
-	 * Color of the line drawn for dihedral measurements.
-	 */
-	private Color dihedralColor = Color.black;
-
+    /**
+     * Color of the line drawn for distance measurements.
+     */
+    private Color distanceColor = Color.black;
+    
+    /**
+     * Color of the line drawn for angle measurements.
+     */
+    private Color angleColor = Color.black;
+    
+    /**
+     * Color of the line drawn for dihedral measurements.
+     */
+    private Color dihedralColor = Color.black;
+    
     private static boolean ShowAtoms     = true;
     private static boolean ShowBonds     = true;
     private static boolean ShowVectors   = false;
     private static boolean ShowHydrogens = true;
-
+    
     /**
      * Toggles on/off the flag that decides whether atoms are shown
      * when displaying a ChemFrame
@@ -359,7 +359,7 @@ public class DisplaySettings {
     public boolean getShowVectors() {
         return ShowVectors;
     }
-	public boolean getShowHydrogens() {
+    public boolean getShowHydrogens() {
         return ShowHydrogens;
     }
 }

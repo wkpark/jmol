@@ -140,7 +140,7 @@ public class ColorManager {
 
   public Color getColorAtom(byte mode, Atom atom) {
     if (mode > colorProfiles.size()) {
-        return Color.WHITE;
+        return Color.white;
     }
     Color color = ((AtomColorer)colorProfiles.elementAt(mode)).getAtomColor(atom);
     if (modeTransparentColors)

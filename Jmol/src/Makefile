@@ -1,13 +1,13 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-           JAVA_HOME= /usr/j2se
-#           JAVA_HOME= /usr/lib/j2sdk1.3
+#           JAVA_HOME= /usr/j2se
+           JAVA_HOME= /usr/lib/j2sdk1.3
 #
 #			For DEC Alpha:
 #			JAVA_HOME=/usr
 #
-               JIKES= /usr/local/bin/jikes
-#               JIKES= /usr/bin/jikes
+#               JIKES= /usr/local/bin/jikes
+               JIKES= /usr/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
 # Choose a compiler here:
                   JC=$(JIKES)

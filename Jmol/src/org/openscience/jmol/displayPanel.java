@@ -396,7 +396,7 @@ public class displayPanel extends JPanel
         if (AntiAliased && !movingDrawMode) {
             String vers = System.getProperty("java.version");
             if (vers.compareTo("1.2") >= 0) {
-            //comment out the next 5 lines if compiling under 1.1
+		//comment out the next 5 lines if compiling under 1.1
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, 
                                     RenderingHints.VALUE_ANTIALIAS_ON);
@@ -494,6 +494,7 @@ public class displayPanel extends JPanel
     private VectorsAction vectorsAction = new VectorsAction();
     private HydrogensAction hydrogensAction = new HydrogensAction();
     private AxesAction axesAction = new AxesAction();
+    private CellAxesAction cellAxesAction = new CellAxesAction();
     private SelectallAction selectallAction = new SelectallAction();    
     private DeselectallAction deselectallAction = new DeselectallAction();
     private WireFrameRotationAction wireframerotationAction = new WireFrameRotationAction();
@@ -556,6 +557,18 @@ public class displayPanel extends JPanel
         
         public void actionPerformed(ActionEvent e) {            
             settings.toggleAxes();
+            repaint();
+        }
+    }
+    class CellAxesAction extends AbstractAction {
+        
+        public CellAxesAction() {
+            super("cellaxes");
+            this.setEnabled(true);
+        }
+        
+        public void actionPerformed(ActionEvent e) {            
+            settings.toggleCellAxes();
             repaint();
         }
     }
@@ -926,6 +939,7 @@ public class displayPanel extends JPanel
             vectorsAction,
             hydrogensAction,
             axesAction,
+	    cellAxesAction,
             selectallAction,
             deselectallAction,
             homeAction,

@@ -298,6 +298,7 @@ public class DisplaySettings {
     private static boolean ShowVectors   = false;
     private static boolean ShowHydrogens = true;
     private static boolean ShowAxes      = false;
+    private static boolean ShowCellAxes      = false;
     
     /**
      * Toggles on/off the flag that decides whether atoms are shown
@@ -337,6 +338,10 @@ public class DisplaySettings {
      */
     public void toggleAxes() {
         ShowAxes = !ShowAxes;
+    }
+
+    public void toggleCellAxes() {
+        ShowCellAxes = !ShowCellAxes;
     }
 
     /**
@@ -389,6 +394,16 @@ public class DisplaySettings {
         ShowAxes = sa;
     }
 
+    /**
+     * Set the flag that decides whether the Cell Axes are shown
+     * when displaying a ChemFrame. 
+     *
+     * @param sh the value of the flag
+     */
+    public void setShowCellAxes(boolean sa) {
+        ShowCellAxes = sa;
+    }
+
     public boolean getShowAtoms() {
         return ShowAtoms;
     }
@@ -403,6 +418,9 @@ public class DisplaySettings {
     }
     public boolean getShowAxes() {
         return ShowAxes;
+    }
+    public boolean getShowCellAxes() {
+        return ShowCellAxes;
     }
 
     /**

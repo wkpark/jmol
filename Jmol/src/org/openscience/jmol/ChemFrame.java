@@ -50,9 +50,14 @@ public class ChemFrame {
     private static float[] axes = {0.0f,0.0f,0.0f, // axis vectors in
                                    1.0f,0.0f,0.0f, // real space
                                    0.0f,1.0f,0.0f,
-                                   0.0f,0.0f,1.0f};    
+                                   0.0f,0.0f,1.0f};
+    private static float[] cellaxes = {0.0f,0.0f,0.0f, // axis vectors in
+				       5.0f,0.0f,0.0f, // real space
+				       0.0f,5.0f,0.0f,
+				       0.0f,0.0f,5.0f};
 
     private static String[] AxesLabels = {"x","y","z"};
+    private static String[] CellAxesLabels = {"a","b","c"};
     /* 
        pickedAtoms and napicked are static because
        they deal with deformations or measurements that will persist
@@ -72,6 +77,7 @@ public class ChemFrame {
     int[] tvert;       // atom positions transformed to screen space
     int[] tvect;       // vector ends transformed to screen space
     int[] taxes;       // axes transformed to screen space
+    int[] tcellaxes;       // axes transformed to screen space
     AtomType[] atoms;  // array of atom types
     Bond[] bonds;      // array of bonds
     Vector[] aProps;   // array of Vector of atom properties
@@ -521,6 +527,9 @@ public class ChemFrame {
         if (taxes == null || taxes.length < 12)
             taxes = new int[12];
         mat.transform(axes, taxes, 4);
+        if (tcellaxes == null || tcellaxes.length < 12)
+            tcellaxes = new int[12];
+        mat.transform(cellaxes, tcellaxes, 4);
         if (hasVectors) {
             if (tvect == null || tvect.length < nvert * 3)
                 tvect = new int[nvert * 3];
@@ -564,7 +573,27 @@ public class ChemFrame {
             }
         }
         
+	if (settings.getShowCellAxes()) {
 
+            for (int i = 1; i < 4; i++) {
+
+                int x0 = tcellaxes[0];
+                int y0 = tcellaxes[1];
+                int x1 = tcellaxes[i*3];
+                int y1 = tcellaxes[i*3+1];
+                int sz = (int)settings.getScreenSize(tcellaxes[i*3]+2);
+
+                ArrowLine al = new ArrowLine(g, x0, y0, x1, y1, false, true,
+                                             0, 3 + sz);
+            
+                Font font = new Font("Helvetica", Font.PLAIN, sz);
+                FontMetrics fontMetrics = g.getFontMetrics(font);
+                String s = CellAxesLabels[i-1];
+                int j = fontMetrics.stringWidth(s);
+                int k = fontMetrics.getAscent();
+                g.drawString(s,x1,y1);
+            }
+        }
 
         int v[] = tvert;
         int zs[] = ZsortMap;

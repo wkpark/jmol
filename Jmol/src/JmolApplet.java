@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-import org.openscience.jmol.applet.*;
+import org.openscience.jmol.applet.JmolAppletRegistry;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolStatusListener;
 import org.openscience.jmol.adapters.SimpleModelAdapter;
@@ -33,12 +33,11 @@ import org.openscience.jmol.ui.JmolPopup;
 import netscape.javascript.JSObject;
 
 import java.applet.*;
-import java.awt.Canvas;
 import java.awt.Graphics;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyAdapter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -47,13 +46,13 @@ import java.util.MissingResourceException;
 
 public class JmolApplet extends Applet implements JmolStatusListener {
 
-  AppletCanvas canvas;
   JmolViewer viewer;
+  boolean jvm12orGreater;
+  Jvm12 jvm12;
   JmolPopup jmolpopup;
   String htmlName;
 
   JSObject jsoWindow;
-  JSObject jsoDocument;
 
   String animFrameCallback;
   String loadStructCallback;
@@ -105,22 +104,27 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   
   public void initWindows() {
 
-    canvas = new AppletCanvas();
-    viewer = new JmolViewer(canvas, new SimpleModelAdapter());
     //viewer = new JmolViewer(canvas, new CdkJmolModelAdapter());
-    canvas.setJmolViewer(viewer);
+    viewer = new JmolViewer(this, new SimpleModelAdapter());
+    jvm12orGreater = viewer.jvm12orGreater;
+    if (jvm12orGreater)
+      jvm12 = new Jvm12(this);
+    System.out.println("jvm12orGreater=" + jvm12orGreater);
+    System.out.println("strJvmVersion=" + viewer.strJvmVersion);
     viewer.setJmolStatusListener(this);
 
-    jmolpopup = new JmolPopup(viewer, canvas);
+    jmolpopup = new JmolPopup(viewer, this);
 
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),
                             getValue("JmolAppletProxy", null));
 
-    setLayout(new java.awt.BorderLayout());
-    add(canvas, "Center");
+    validate();
 
-    jsoWindow = JSObject.getWindow(this);
-    jsoDocument = (JSObject)jsoWindow.getMember("document");
+    try {
+      jsoWindow = JSObject.getWindow(this);
+    } catch (Exception e) {
+      System.out.println("" + e);
+    }
   }
 
   PropertyResourceBundle appletProperties = null;
@@ -199,7 +203,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void notifyFileLoaded(String fullPathName, String fileName,
                                String modelName, Object clientFile) {
-    if (loadStructCallback != null)
+    if (loadStructCallback != null && jsoWindow != null)
       jsoWindow.call(loadStructCallback, new Object[] {htmlName});
   }
 
@@ -210,7 +214,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void setStatusMessage(String statusMessage) {
     if (statusMessage == null)
       return;
-    if (messageCallback != null)
+    if (messageCallback != null && jsoWindow != null)
       jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
     else
       showStatus(statusMessage);
@@ -244,6 +248,17 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void notifyMeasurementsChanged() {
+  }
+
+  public void update(Graphics g) {
+    paint(g);
+  }
+
+  public void paint(Graphics g) {
+    Dimension size = jvm12orGreater ? jvm12.getSize() : size();
+    viewer.setScreenDimension(size);
+    Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
+    g.drawImage(viewer.renderScreenImage(rectClip), 0, 0, null);
   }
 
   //METHODS FOR JAVASCRIPT

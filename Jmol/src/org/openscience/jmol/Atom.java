@@ -294,24 +294,6 @@ public class Atom {
     return false;
   }
 
-  
-  /**
-   * Draws the atom on a particular graphics context
-   *
-   * @param gc the Graphics context
-   * @param x x position of the atom in screen space
-   * @param y y position of the atom in screen space
-   * @param z z position (helps in perspective and depth cueing)
-   * @param n atom location in the input file
-   * @param props Vector containing the physical properties associated with this atom
-   * @param picked whether or not the atom has been selected and gets a "halo"
-   *
-   */
-  public void paint(Graphics gc, DisplaySettings settings, int x, int y,
-          int z, int n, Vector props, boolean picked) {
-    atomType.paint(gc, settings, x, y, z, n, props, picked);
-  }
-  
   private AtomType atomType;
   private int atomNumber;
   

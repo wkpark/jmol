@@ -717,11 +717,11 @@ public class ChemFrame {
         tvect = new int[nvert * 3];
       }
       for (int i = 0; i < nvert * 3; i += 3) {
-        Point3d pt = new Point3d(vert[i], vert[i + 1], vert[i + 2]);
+        Point3d pt = new Point3d(vect[i], vect[i + 1], vect[i + 2]);
         mat.transform(pt);
-        tvert[i] = (int) pt.x;
-        tvert[i + 1] = (int) pt.y;
-        tvert[i + 2] = (int) pt.z;
+        tvect[i] = (int) pt.x;
+        tvect[i + 1] = (int) pt.y;
+        tvect[i + 2] = (int) pt.z;
       }
     }
   }

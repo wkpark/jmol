@@ -234,7 +234,7 @@ function jmolDebugAlert(enableAlerts) {
 }
 
 function jmolAppletInline(size, inlineModel, script, nameSuffix) {
-  _jmolApplet(size, _jmolConvertInline(inlineModel), script, nameSuffix);
+  _jmolApplet(size, _jmolSterilizeInline(inlineModel), script, nameSuffix);
 }
 
 function jmolSetTarget(targetSuffix) {
@@ -520,7 +520,8 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (inlineModel)
       t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
-      t += "  <param name='script' value='" + script + "' />\n";
+      t += "  <param name='script' value='" +
+           _jmolSterilizeScript(script) + "' />\n";
     t += "</applet>";
     jmolSetTarget(nameSuffix);
     ready["jmolApplet" + nameSuffix] = false;
@@ -583,8 +584,16 @@ function _jmolReadyCallback(name) {
   _jmol.ready["" + name] = true;
 }
 
-function _jmolConvertInline(model) {
-  var inlineModel = model.replace(/\r|\n|\r\n/g, "|");
+function _jmolSterilizeScript(script) {
+  var inlineScript = script.replace(/'/g, "&#39;");
+  if (_jmol.debugAlert)
+    alert("script:\n" + inlineScript);
+  return inlineScript;
+}
+
+function _jmolSterilizeInline(model) {
+  var inlineModel =
+    model.replace(/\r|\n|\r\n/g, "|").replace(/'/g, "&#39;");
   if (_jmol.debugAlert)
     alert("inline model:\n" + inlineModel);
   return inlineModel;

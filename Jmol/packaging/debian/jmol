@@ -12,7 +12,7 @@ JAVA_HOME=/usr/lib/jdk1.1
 #
 # This classpath line should be OK for JDK 1.1.  Comment it out if you have 1.2
 #
-CLASSPATH=${JAVALIBS}/jmol.jar:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:${EXTRALIBS}/swing.jar:${EXTRALIBS}/multi.jar:${JAVALIBS}/repository:${EXTRALIBS}/aelfred.jar:${EXTRALIBS}/cml.jar:${EXTRALIBS}/Acme.jar:${EXTRALIBS}/vecmath1.1-1.12.jar:${EXTRALIBS}/jas.jar
+CLASSPATH=${JAVALIBS}/jmol.jar:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:${EXTRALIBS}/swing.jar:${EXTRALIBS}/multi.jar:${JAVALIBS}/repository:${EXTRALIBS}/gnujaxp.jar:${EXTRALIBS}/cdk-cml.jar:${EXTRALIBS}/Acme.jar:${EXTRALIBS}/vecmath1.1-1.12.jar:${EXTRALIBS}/jas.jar
 export CLASSPATH
 
 if test -n "$JAVA_HOME"; then

@@ -6,7 +6,7 @@ LIBS     = ${DESTDIR}/usr/share/java
 EXTRA    = ${DESTDIR}/usr/share/jmol/lib
 HTMLDOC  = ${DESTDIR}/usr/share/doc/jmol/html
 
-VERSION=1
+VERSION=2
 
 CLASSPATH=`find /tmp/jmol-${VERSION}/jars -name "*.jar" | tr '\n' ':'`
 
@@ -15,7 +15,7 @@ all: deb
 archive: jars/jmol.jar
 
 jars/jmol.jar: 
-	@ant jar -Ddocbook.dir=/usr/lib/sgml/stylesheet/xsl/docbook/nwalsh/
+	@ant -Ddocbook.dir=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh
 
 clean:
 	@rm -f -r jmol-*
@@ -28,13 +28,19 @@ install:
 	@install ./jars/*jar ${EXTRA}
 	@install ./generatedSource/org/openscience/jmol/Data/guide/* ${HTMLDOC}
 
-deb: clean
+setup: clean
 	@echo "Building package for version ${VERSION}"
-	cp /tmp/jmol-${VERSION}.source.tar.gz /tmp/jmol_${VERSION}.orig.tar.gz
+	# cp /tmp/jmol-${VERSION}.source.tar.gz /tmp/jmol_${VERSION}.orig.tar.gz
 	cd /tmp; tar zxvf jmol-${VERSION}.source.tar.gz
 	cp Makefile /tmp/jmol-${VERSION}/.
 	cp jmol /tmp/jmol-${VERSION}/.
 	cp -R ../debian /tmp/jmol-${VERSION}/.
 	cp -R build.xml /tmp/jmol-${VERSION}/.
-	cd /tmp/jmol-${VERSION}; dpkg-buildpackage -rfakeroot
 
+guide:
+	@echo "Compiling Jmol guide..."
+	cd /tmp/jmol-${VERSION}/generatedSource/org/openscience/jmol/Data/guide; xsltproc /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/html/chunk.xsl ../../../../../../doc/source/JMolGuide.docbook.xml
+
+deb: setup guide
+	mkdir -p /tmp/jmol-${VERSION}/generatedSource/org/openscience/jmol/Data/guide/
+	cd /tmp/jmol-${VERSION}; dpkg-buildpackage -rfakeroot

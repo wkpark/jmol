@@ -242,6 +242,7 @@ class Compiler {
     case ']':
     case '+':
     case '?':
+    case ':':
     case '@':
       break;
     case '<':
@@ -471,6 +472,18 @@ class Compiler {
   private boolean badRGBColor() {
     return compileError("bad [R,G,B] color");
   }
+  private boolean residueIdentifierExpected() {
+    return compileError("residue identifier expected");
+  }
+  private boolean resnoSpecificationExpected() {
+    return compileError("residue number specification expected");
+  }
+  private boolean invalidChainSpecification() {
+    return compileError("invalid chain specification");
+  }
+  private boolean invalidAtomSpecification() {
+    return compileError("invalid atom specification");
+  }
 
   private boolean compileError(String errorMessage) {
     System.out.println("compileError(" + errorMessage + ")");
@@ -511,13 +524,13 @@ class Compiler {
 
     clauseAnd        ::= clauseNot {AND clauseNot}*
 
-    clauseNot        ::= {NOT}?  | clausePrimitive
+    clauseNot        ::= NOT clauseNot | clausePrimitive
 
     clausePrimitive  ::= clauseInteger |
                          clauseComparator |
                          clauseWithin |
-                         all | none |
-                         identifier
+                         clauseWildcard |
+                         none |
                          ( clauseOr )
 
     clauseInteger    ::= integer | integer - integer
@@ -527,6 +540,20 @@ class Compiler {
     clauseWithin     ::= WITHIN ( clauseDistance , expression )
 
     clauseDistance   ::= integer | decimal
+
+    clauseWildcard   ::= clauseResSpec {clauseAtomSpec}
+
+    clauseResSpec    ::= clauseResName {clauseResNo} {clauseChain}
+
+    clauseResName    ::= [ clauseResName0 ] | clauseResName0
+
+    clauseResName0   ::= * | {?}* identifier {?}*
+
+    clauseResNo      ::= * | {-} integer
+
+    clauseChain      ::= * | {:} integer | identifier
+
+    clauseAtomSpec   ::= {identifier | ?}+
   */
 
   private boolean compileExpression() {
@@ -624,9 +651,13 @@ class Compiler {
         break;
     case Token.all:
     case Token.none:
-    case Token.identifier:
       ltokenPostfix.addElement(tokenNext());
       return true;
+    case Token.asterisk:
+    case Token.questionmark:
+    case Token.leftsquare:
+    case Token.identifier:
+      return clauseWildcard();
     case Token.leftparen:
       tokenNext();
       if (! clauseOr())
@@ -695,6 +726,155 @@ class Compiler {
     if (tokenNext().tok != Token.rightparen) // )
       return rightParenthesisExpected();
     ltokenPostfix.addElement(new Token(Token.within, distance));
+    return true;
+  }
+
+  Token tokenResIdent;
+  String strNameSpec;
+  int resnoSpec;
+  char chainSpec;
+  String strAtomSpec;
+
+  boolean clauseWildcard() {
+    strNameSpec = "";
+    resnoSpec = Integer.MAX_VALUE;
+    chainSpec = '?';
+    strAtomSpec = null;
+    tokenResIdent = null;
+    if (! clauseResSpec())
+      return false;
+    if (tokPeek() == Token.dot && !clauseAtomSpec())
+      return false;
+    if (resnoSpec == Integer.MAX_VALUE &&
+        chainSpec=='?' && strAtomSpec == null) {
+      Token token;
+      if (strNameSpec.equals("*")) {
+        System.out.println("* -> all");
+        token = Token.tokenAll;
+      } else if (tokenResIdent != null &&
+                 strNameSpec.equals((String)tokenResIdent.value)) {
+        System.out.println("residue name :" + strNameSpec);
+        token = tokenResIdent;
+      } else {
+        System.out.println("residue name wildcard:" + strNameSpec);
+        token = new Token(Token.residue_wildcard, strNameSpec);
+      }
+      ltokenPostfix.addElement(token);
+      return true;
+    }
+    System.out.println("complex atom specification not implemented ..." +
+                       " emitting ALL");
+    ltokenPostfix.addElement(Token.tokenAll);
+    return true;
+  }
+
+  boolean clauseResSpec() {
+    if (! clauseResName())
+      return false;
+    int tokPeek = tokPeek();
+    if (tokPeek == Token.asterisk ||
+        tokPeek == Token.integer ||
+        tokPeek == Token.hyphen) {
+      if (! clauseResNo())
+        return false;
+      tokPeek = tokPeek();
+    }
+    if (tokPeek == Token.colon ||
+        tokPeek == Token.identifier ||
+        tokPeek == Token.asterisk ||
+        tokPeek == Token.questionmark) {
+      if (! clauseChain())
+        return false;
+    }
+    return true;
+  }
+
+  boolean clauseResName() {
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      strNameSpec = "*";
+      return true;
+    }
+    if (tokPeek() == Token.leftsquare) {
+      tokenNext();
+      if (! clauseResName0())
+        return false;
+      if (tokenNext().tok != Token.rightsquare)
+        return false;
+      return true;
+    }
+    return clauseResName0();
+  }
+
+  boolean clauseResName0() {
+    Token token;
+    while ((token = tokenNext()).tok == Token.questionmark)
+      strNameSpec += "?";
+    if (token.tok != Token.identifier)
+      return residueIdentifierExpected();
+    // FIXME mth -- the token "y" will not work here!
+    tokenResIdent = token;
+    strNameSpec += token.value;
+    while (tokPeek() == Token.questionmark) {
+      tokenNext();
+      strNameSpec += '?';
+    }
+    return true;
+  }
+
+  boolean clauseResNo() {
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      return true;
+    }
+    boolean negative = false;
+    if (tokPeek() == Token.hyphen) {
+      tokenNext();
+      negative = true;
+    }
+    Token tokenResno = tokenNext();
+    if (tokenResno.tok != Token.integer)
+      return resnoSpecificationExpected();
+    resnoSpec = (negative) ? -tokenResno.intValue : tokenResno.intValue;
+    return true;
+  }
+
+  boolean clauseChain() {
+    Token tokenChain = tokenNext();
+    if (tokenChain.tok == Token.asterisk ||
+        tokenChain.tok == Token.questionmark)
+      return true;
+    if (tokenChain.tok == Token.colon)
+      tokenChain = tokenNext();
+    if (tokenChain.tok == Token.integer) {
+      if (tokenChain.intValue < 0 || tokenChain.intValue > 9)
+        return invalidChainSpecification();
+      chainSpec = (char)('0' + tokenChain.intValue);
+      return true;
+    }
+    if (tokenChain.tok == Token.ident) {
+      String strChain = (String)tokenChain.value;
+      if (strChain.length() != 1)
+        return invalidChainSpecification();
+      chainSpec = strChain.charAt(0);
+    }
+    return invalidChainSpecification();
+  }
+
+  boolean clauseAtomSpec() {
+    if (tokenNext().tok != Token.dot)
+      return invalidAtomSpecification();
+    Token tokenAtomSpec = tokenNext();
+    if (tokenAtomSpec.tok == Token.asterisk)
+      return true;
+    if (tokenAtomSpec.tok == Token.questionmark ||
+        tokenAtomSpec.tok == Token.identifier)
+      strAtomSpec += tokenAtomSpec.value;
+    else
+      return invalidAtomSpecification();
+    while (tokPeek() == Token.questionmark ||
+           tokPeek() == Token.identifier)
+      strAtomSpec += tokenNext().value;
     return true;
   }
 

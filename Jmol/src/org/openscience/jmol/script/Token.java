@@ -220,9 +220,15 @@ class Token {
   final static int opAnd        = expression |  3;
   final static int opOr         = expression |  4;
   final static int opNot        = expression |  5;
-  final static int within       = expression | 12;
-  final static int plus         = expression | 13;
-  final static int pick         = expression | 14;
+  final static int within       = expression |  6;
+  final static int plus         = expression |  7;
+  final static int pick         = expression |  8;
+  final static int asterisk     = expression |  9;
+  final static int questionmark = expression | 10;
+  final static int dot          = expression | 11;
+  final static int leftsquare   = expression | 12;
+  final static int rightsquare  = expression | 13;
+  final static int colon        = expression | 14;
 
   final static int atomno       = atomproperty | 0;
   final static int elemno       = atomproperty | 1;
@@ -258,11 +264,12 @@ class Token {
   final static int angle        = misc | 13;
   final static int torsion      = misc | 14;
   final static int coord        = misc | 15;
-  final static int leftsquare   = misc | 16;
-  final static int rightsquare  = misc | 17;
   final static int shapely      = misc | 18;
   final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
+  final static int residue_wildcard = misc | 21;
+  final static int residue_number   = misc | 22;
+  final static int residue_chain    = misc | 23;
 
   final static int alpha       = predefinedset |  0;
   final static int amino       = predefinedset |  1;
@@ -279,7 +286,8 @@ class Token {
   final static int solvent     = predefinedset | 12 | setparam;
   final static int turn        = predefinedset | 13;
 
-  final static Token tokenOn = new Token(on, 1, "on");
+  final static Token tokenOn  = new Token(on, 1, "on");
+  final static Token tokenAll = new Token(all, "all");
 
   final static Object[] arrayPairs  = {
     // commands
@@ -419,6 +427,11 @@ class Token {
     "within",       new Token(within, "within"),
     "+",            new Token(plus, "+"),
     "pick",         new Token(pick, "pick"),
+    "?",            new Token(questionmark, "?"),
+    ".",            new Token(dot, "."),
+    "[",            new Token(leftsquare,  "["),
+    "]",            new Token(rightsquare, "]"),
+    ":",            new Token(colon, ":"),
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       new Token(elemno, "elemno"),
     "resno",        new Token(resno, "resno"),
@@ -438,8 +451,8 @@ class Token {
     "x",            new Token(x, "x"),
     "y",            new Token(y, "y"),
     "z",            new Token(z, "z"),
-    "all",          new Token(all, "all"),
-    "*",            null,
+    "*",            new Token(asterisk, "*"),
+    "all",          tokenAll,
     "none",         new Token(none, "none"),
     "normal",       new Token(normal, "normal"),
     "rasmol",       new Token(rasmol, "rasmol"),
@@ -537,8 +550,6 @@ class Token {
     "white",      new Token(colorRGB, 0xFFFFFF, "white"),
     "yellow",     new Token(colorRGB, 0xFFFF00, "yellow"),
     "yellowtint", new Token(colorRGB, 0xF6F675, "yellowtint"),
-    "[",          new Token(leftsquare,  "["),
-    "]",          new Token(rightsquare, "]")
   };
 
   static String[] predefinitions = {

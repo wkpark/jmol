@@ -31,13 +31,13 @@ public class ProteinProp {
   // FIXME mth -- a very quick/dirty/ugly implementation
   // just to get some complex queries running
   public String recordPdb;
-  int iResidue;
+  byte resid;
 
   public ProteinProp(String recordPdb) {
     this.recordPdb = recordPdb;
 
     Integer resInt = (Integer)htResidue.get(recordPdb.substring(17, 20));
-    iResidue = (resInt != null) ? resInt.intValue() : -1;
+    resid = (resInt != null) ? (byte)resInt.intValue() : -1;
   }
 
   public boolean isHetero() {
@@ -53,14 +53,27 @@ public class ProteinProp {
   }
 
   public String getResidue() {
-    return recordPdb.substring(17, 20);
+    return resid < 0 ? "???" : residues[resid];
   }
 
   public byte getResID() {
-    Integer res = (Integer)htResidue.get(getResidue());
-    if (res == null)
-      return -1;
-    return (byte)res.intValue();
+    return resid;
+  }
+
+  public boolean isResidueNameMatch(String strWildcard) {
+    if (strWildcard.length() != 3) {
+      System.err.println("residue wildcard length != 3");
+      return false;
+    }
+    String strResidue = getResidue();
+    for (int i = 0; i < 3; ++i) {
+      char charWild = strWildcard.charAt(i);
+      if (charWild == '?')
+        continue;
+      if (Character.toUpperCase(charWild) != strResidue.charAt(i))
+        return false;
+    }
+    return true;
   }
 
   public int getResno() {
@@ -83,12 +96,12 @@ public class ProteinProp {
     return (int)(temp * 100);
   }
 
-  public String getChain() {
-    return recordPdb.substring(21, 22);
+  public char getChain() {
+    return recordPdb.charAt(21);
   }
 
   public boolean isAmino() {
-    return iResidue != -1 && iResidue < 23;
+    return resid != -1 && resid < 23;
   }
 
   static String[] residues = {

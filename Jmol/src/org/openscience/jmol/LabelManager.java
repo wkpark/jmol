@@ -130,7 +130,7 @@ public class LabelManager {
       case 'c': // these two are the same
       case 's':
         if (pprop != null)
-          strExpansion = pprop.getChain();
+          strExpansion = "" + pprop.getChain();
         break;
       case 'm':
         strExpansion = "<X>";

@@ -500,6 +500,8 @@ public class Eval implements Runnable {
       case Token.hetero:
         stack[sp++] = getHeteroSet();
         break;
+      case Token.residue_wildcard:
+        stack[sp++] = getResidueWildcard((String)instruction.value);
       case Token.y:
       case Token.identifier:
         String variable = (String)instruction.value;
@@ -617,6 +619,19 @@ public class Eval implements Runnable {
         continue;
       int atomResno = pprop.getResno();
       if (atomResno >= resnoMin && atomResno <= resnoLast)
+        bsResidue.set(i);
+    }
+    return bsResidue;
+  }
+
+  BitSet getResidueWildcard(String strWildcard) {
+    ChemFrame frame = control.getFrame();
+    BitSet bsResidue = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop == null)
+        continue;
+      if (pprop.isResidueNameMatch(strWildcard))
         bsResidue.set(i);
     }
     return bsResidue;

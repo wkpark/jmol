@@ -127,7 +127,7 @@ public class Eval implements Runnable {
     if (! compiler.compile(filename, script)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
-      System.out.println(errorMessage);
+      control.scriptStatus(errorMessage);
       return false;
     }
     pc = 0;
@@ -219,7 +219,7 @@ public class Eval implements Runnable {
       if (compiler.compile("#predefinitions", script)) {
         Token [][] aatoken = compiler.getAatokenCompiled();
         if (aatoken.length != 1) {
-          System.out.println("predefinition does not have exactly 1 command:"
+          control.scriptStatus("predefinition does not have exactly 1 command:"
                              + script);
           continue;
         }
@@ -231,13 +231,13 @@ public class Eval implements Runnable {
             String variable = (String)statement[1].value;
             variables.put(variable, statement);
           } else {
-            System.out.println("invalid variable name:" + script);
+            control.scriptStatus("invalid variable name:" + script);
           }
         } else {
-          System.out.println("bad statement length:" + script);
+          control.scriptStatus("bad statement length:" + script);
         }
       } else {
-        System.out.println("predefined set compile error:" + script +
+        control.scriptStatus("predefined set compile error:" + script +
                            "\ncompile error:" + compiler.getErrorMessage());
       }
     }
@@ -255,7 +255,7 @@ public class Eval implements Runnable {
     } catch (ScriptException e) {
       error = true;
       errorMessage = "" + e;
-      System.out.println(errorMessage);
+      control.scriptStatus(errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && interruptExecution)
@@ -269,8 +269,8 @@ public class Eval implements Runnable {
     long timeBegin = 0;
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
-      System.out.println("Eval.instructionDispatchLoop():" + timeBegin);
-      System.out.println(toString());
+      control.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
+      control.scriptStatus(toString());
     }
     while (!interruptExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
@@ -380,7 +380,7 @@ public class Eval implements Runnable {
       case Token.spin:
       case Token.list:
       case Token.display3d:
-        System.out.println("Script command not implemented:" + token.value);
+        control.scriptStatus("Script command not implemented:" + token.value);
         break;
       default:
         unrecognizedCommand(token);
@@ -483,7 +483,7 @@ public class Eval implements Runnable {
   }
 
   void notImplemented(Token token) {
-    System.out.println("" + token.value +
+    control.scriptStatus("" + token.value +
                        " not implemented in command:" + statement[0].value);
   }
 
@@ -499,11 +499,11 @@ public class Eval implements Runnable {
     BitSet[] stack = new BitSet[10];
     int sp = 0;
     if (logMessages)
-      System.out.println("start to evaluate expression");
+      control.scriptStatus("start to evaluate expression");
     for (int pc = pcStart; pc < code.length; ++pc) {
       Token instruction = code[pc];
       if (logMessages)
-        System.out.println("instruction=" + instruction);
+        control.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
@@ -610,7 +610,7 @@ public class Eval implements Runnable {
 
   BitSet getHydrogenSet() {
     if (logMessages)
-      System.out.println("getHydrogenSet()");
+      control.scriptStatus("getHydrogenSet()");
     ChemFrame frame = control.getFrame();
     BitSet bsHydrogen = new BitSet();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
@@ -660,7 +660,7 @@ public class Eval implements Runnable {
   BitSet getSpecName(String resNameSpec) {
     BitSet bsRes = new BitSet();
     if (resNameSpec.length() != 3) {
-      System.out.println("residue name spec != 3 :" + resNameSpec);
+      control.scriptStatus("residue name spec != 3 :" + resNameSpec);
       return bsRes;
     }
     ChemFrame frame = control.getFrame();
@@ -730,7 +730,7 @@ public class Eval implements Runnable {
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
     if (logMessages)
-      System.out.println("lookupValue(" + variable + ")");
+      control.scriptStatus("lookupValue(" + variable + ")");
     Object value = variables.get(variable);
     if (value != null) {
       if (value instanceof Token[]) {
@@ -1022,7 +1022,7 @@ public class Eval implements Runnable {
     if (errMsg != null)
       evalError(errMsg);
     if (logMessages)
-      System.out.println("Successfully loaded:" + filename);
+      control.scriptStatus("Successfully loaded:" + filename);
   }
 
   void monitor() throws ScriptException {

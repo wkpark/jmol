@@ -1137,6 +1137,11 @@ final public class DisplayControl {
       jmolStatusListener.scriptEcho(strEcho);
   }
 
+  public void scriptStatus(String strStatus) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.scriptStatus(strStatus);
+  }
+
   /****************************************************************
    * delegated to StyleManager
    ****************************************************************/

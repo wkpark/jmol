@@ -95,6 +95,12 @@ public class ScriptWindow extends JDialog
     }
   }
 
+  public void scriptStatus(String strStatus) {
+    if (strStatus != null) {
+      console.outputStatus(strStatus);
+    }
+  }
+
   public void notifyScriptTermination(String strMsg, int msWalltime) {
     if (strMsg != null) {
       console.outputError(strMsg);
@@ -176,6 +182,10 @@ class ConsoleTextPane extends JTextPane {
     consoleDoc.outputEcho(strEcho);
   }
 
+  public void outputStatus(String strStatus) {
+    consoleDoc.outputStatus(strStatus);
+  }
+
   public void enterPressed() {
     if (enterListener != null)
       enterListener.enterPressed();
@@ -190,6 +200,7 @@ class ConsoleDocument extends DefaultStyledDocument {
   SimpleAttributeSet attEcho;
   SimpleAttributeSet attPrompt;
   SimpleAttributeSet attUserInput;
+  SimpleAttributeSet attStatus;
 
   ConsoleDocument() {
     super();
@@ -206,6 +217,10 @@ class ConsoleDocument extends DefaultStyledDocument {
     attEcho = new SimpleAttributeSet();
     StyleConstants.setForeground(attEcho, Color.blue);
     StyleConstants.setBold(attEcho, true);
+
+    attStatus = new SimpleAttributeSet();
+    StyleConstants.setForeground(attStatus, Color.black);
+    StyleConstants.setItalic(attStatus, true);
   }
 
   void setConsoleTextPane(ConsoleTextPane consoleTextPane) {
@@ -246,6 +261,15 @@ class ConsoleDocument extends DefaultStyledDocument {
     try {
       super.insertString(positionBeforePrompt.getOffset(), strEcho, attEcho);
       super.insertString(positionBeforePrompt.getOffset(), "\n", attEcho);
+      offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
+    } catch (BadLocationException e) {
+    }
+  }
+
+  void outputStatus(String strStatus) {
+    try {
+      super.insertString(positionBeforePrompt.getOffset(),strStatus,attStatus);
+      super.insertString(positionBeforePrompt.getOffset(), "\n", attStatus);
       offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
     } catch (BadLocationException e) {
     }

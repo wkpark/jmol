@@ -24,6 +24,8 @@ public interface JmolStatusListener {
 
   public void scriptEcho(String strEcho);
 
+  public void scriptStatus(String strStatus);
+
   public void notifyScriptTermination(String statusMessage, int msWalltime);
   
 }

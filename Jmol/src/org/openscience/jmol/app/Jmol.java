@@ -1422,6 +1422,11 @@ public class Jmol extends JPanel {
         scriptWindow.scriptEcho(strEcho);
     }
 
+    public void scriptStatus(String strStatus) {
+      if (scriptWindow != null)
+        scriptWindow.scriptStatus(strStatus);
+    }
+
     public void notifyScriptTermination(String strStatus, int msWalltime) {
       if (scriptWindow != null)
         scriptWindow.notifyScriptTermination(strStatus, msWalltime);

@@ -133,6 +133,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void scriptEcho(String strEcho) {
   }
 
+  public void scriptStatus(String strStatus) {
+  }
+
   public void notifyScriptTermination(String errorMessage, int msWalltime) {
   }
 

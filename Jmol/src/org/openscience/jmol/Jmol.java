@@ -138,13 +138,15 @@ class Jmol extends JPanel {
         display.setMeasure(meas);
         mlist.addMeasurementListListener(display);
         port.add(display);
-	// install the command table
+        splash.showStatus("Initializing Chemical Shifts...");
+        chemicalShifts.initialize();
+		// install the command table
         splash.showStatus("Building Command Hooks...");
-	commands = new Hashtable();
+		commands = new Hashtable();
         Action[] actions = getActions();
-	for (int i = 0; i < actions.length; i++) {
-	    Action a = actions[i];
-	    commands.put(a.getValue(Action.NAME), a);
+		for (int i = 0; i < actions.length; i++) {
+			Action a = actions[i];
+			commands.put(a.getValue(Action.NAME), a);
         }
         // Fix for actions that confict with the operation of
         // vibration animations
@@ -285,7 +287,10 @@ class Jmol extends JPanel {
                     frame.setTitle(theFile.getName());     
                     apm.replaceList(cf.getAtomPropertyList());
                     mlist.clear();
+					
+					chemicalShifts.setChemFile(cf, apm);
                 }
+
             } catch(java.io.FileNotFoundException e2) {
                 JOptionPane.showMessageDialog(Jmol.this, 
                                               ("File not found: " +
@@ -324,7 +329,7 @@ class Jmol extends JPanel {
         Action[] mlistActions = mlist.getActions();
         Action[] vibActions = vib.getActions();
         Action[] pgActions = pg.getActions();
-        
+
         int nactions = defaultActions.length + displayActions.length + 
             prefActions.length + animActions.length + vibActions.length +
             measActions.length + mlistActions.length + pgActions.length; 
@@ -812,6 +817,7 @@ class Jmol extends JPanel {
     
     // --- action implementations -----------------------------------
     
+    private CalculateChemicalShifts chemicalShifts = new CalculateChemicalShifts();
     private UndoAction undoAction = new UndoAction();
     private RedoAction redoAction = new RedoAction();
     
@@ -831,7 +837,8 @@ class Jmol extends JPanel {
         new AtompropsAction(),
         undoAction,
         redoAction,
-	new ConsoleAction()
+	new ConsoleAction(),
+	chemicalShifts
             };        
     
     class ConsoleAction extends AbstractAction {

@@ -133,7 +133,7 @@ public class PdbAtom {
   }
 
   public short getModelID() {
-    return group.chain.model.modelID;
+    return group.chain.pdbmodel.pdbmodelID;
   }
 
   public char getChainID() {
@@ -141,7 +141,7 @@ public class PdbAtom {
   }
 
   public PdbModel getPdbModel() {
-    return group.chain.model;
+    return group.chain.pdbmodel;
   }
 
   public PdbChain getPdbChain() {

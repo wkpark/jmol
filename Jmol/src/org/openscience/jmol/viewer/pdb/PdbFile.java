@@ -31,13 +31,13 @@ import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class PdbFile {
-  public Frame frame;
-  String[] structureRecords;
+final public class PdbFile {
+  Frame frame;
 
-  int modelCount = 0;
-  PdbModel[] models = new PdbModel[1];
-  short[] modelIDs = new short[1];
+  private String[] structureRecords;
+  private int pdbmodelCount = 0;
+  private PdbModel[] pdbmodels = new PdbModel[1];
+  private short[] pdbmodelIDs = new short[1];
 
   public PdbFile(Frame frame) {
     this.frame = frame;
@@ -48,27 +48,27 @@ public class PdbFile {
   }
 
   public void freeze() {
-    for (int i = modelCount; --i >= 0; )
-      models[i].freeze();
+    for (int i = pdbmodelCount; --i >= 0; )
+      pdbmodels[i].freeze();
     propogateSecondaryStructure();
   }
 
 
-  PdbModel getOrAllocateModel(short modelID) {
-    for (int i = modelCount; --i >= 0; )
-      if (modelIDs[i] == modelID)
-        return models[i];
-    if (modelCount == models.length) {
-      short[] tNumbers = new short[modelCount * 2];
-      System.arraycopy(modelIDs, 0, tNumbers, 0, modelCount);
-      modelIDs = tNumbers;
+  PdbModel getOrAllocateModel(short pdbmodelID) {
+    for (int i = pdbmodelCount; --i >= 0; )
+      if (pdbmodelIDs[i] == pdbmodelID)
+        return pdbmodels[i];
+    if (pdbmodelCount == pdbmodels.length) {
+      short[] tNumbers = new short[pdbmodelCount * 2];
+      System.arraycopy(pdbmodelIDs, 0, tNumbers, 0, pdbmodelCount);
+      pdbmodelIDs = tNumbers;
 
-      PdbModel[] t = new PdbModel[modelCount * 2];
-      System.arraycopy(models, 0, t, 0, modelCount);
-      models = t;
+      PdbModel[] t = new PdbModel[pdbmodelCount * 2];
+      System.arraycopy(pdbmodels, 0, t, 0, pdbmodelCount);
+      pdbmodels = t;
     }
-    modelIDs[modelCount] = modelID;
-    return models[modelCount++] = new PdbModel(this, modelID);
+    pdbmodelIDs[pdbmodelCount] = pdbmodelID;
+    return pdbmodels[pdbmodelCount++] = new PdbModel(this, pdbmodelID);
   }
 
   private void propogateSecondaryStructure() {
@@ -119,28 +119,28 @@ public class PdbFile {
 
       char chainID = structureRecord.charAt(chainIDIndex);
 
-      for (int j = modelCount; --j >= 0; )
-        models[j].addSecondaryStructure(chainID, type,
+      for (int j = pdbmodelCount; --j >= 0; )
+        pdbmodels[j].addSecondaryStructure(chainID, type,
                                         startSeqcode, endSeqcode);
     }
   }
 
-  int modelIDCurrent = -1;
+  int pdbmodelIDCurrent = -1;
   char chainIDCurrent = '\uFFFF';
   int seqcodeCurrent;
   PdbGroup groupCurrent;
 
-  void setCurrentResidue(short modelID, char chainID,
+  void setCurrentResidue(short pdbmodelID, char chainID,
                          int seqcode, String group3) {
-    modelIDCurrent = modelID;
+    pdbmodelIDCurrent = pdbmodelID;
     chainIDCurrent = chainID;
     seqcodeCurrent = seqcode;
-    PdbModel model = getOrAllocateModel(modelID);
+    PdbModel model = getOrAllocateModel(pdbmodelID);
     PdbChain chain = model.getOrAllocateChain(chainID);
     groupCurrent = chain.allocateGroup(seqcode, group3);
   }
   
-  public PdbAtom allocatePdbAtom(int atomIndex, short modelID,
+  public PdbAtom allocatePdbAtom(int atomIndex, short pdbmodelID,
                                  String pdbRecord) {
     char chainID = pdbRecord.charAt(21);
     int seqcode = Integer.MIN_VALUE;
@@ -151,21 +151,21 @@ public class PdbFile {
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }
-    if (modelID != modelIDCurrent ||
+    if (pdbmodelID != pdbmodelIDCurrent ||
         chainID != chainIDCurrent ||
         seqcode != seqcodeCurrent)
-      setCurrentResidue(modelID, chainID,
+      setCurrentResidue(pdbmodelID, chainID,
                         seqcode, pdbRecord.substring(17, 20).trim());
     return groupCurrent.allocatePdbAtom(atomIndex, pdbRecord);
   }
 
   public int getModelCount() {
 
-    return modelCount;
+    return pdbmodelCount;
   }
 
   public PdbModel getModel(int i) {
-    return models[i];
+    return pdbmodels[i];
   }
 
   /*
@@ -173,19 +173,19 @@ public class PdbFile {
   */
 
   public PdbGroup[] getMainchain(int i) {
-    return models[0].getMainchain(i);
+    return pdbmodels[0].getMainchain(i);
   }
 
   public PdbChain getChain(int i) {
-    return models[0].getChain(i);
+    return pdbmodels[0].getChain(i);
   }
 
   public int getChainCount() {
-    return models[0].getChainCount();
+    return pdbmodels[0].getChainCount();
   }
 
   public void calcHydrogenBonds() {
-    for (int i = modelCount; --i >= 0; )
-      models[i].calcHydrogenBonds();
+    for (int i = pdbmodelCount; --i >= 0; )
+      pdbmodels[i].calcHydrogenBonds();
   }
 }

@@ -32,12 +32,13 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class PdbPolymer {
+final public class PdbPolymer {
 
-  public PdbChain chain;
-  public int count;
-  public PdbGroup[] groups;
-  int[] atomIndices;
+  PdbChain chain;
+  PdbGroup[] groups;
+  int count;
+
+  private int[] atomIndices;
 
   public PdbPolymer(PdbChain chain) {
     this.chain = chain;
@@ -298,7 +299,7 @@ public class PdbPolymer {
     //                       "," + indexCarbonyl);
     Atom nitrogen = groups[indexAmino].getNitrogenAtom();
     Atom oxygen = groups[indexCarbonyl].getCarbonylOxygenAtom();
-    Frame frame = chain.model.file.frame;
+    Frame frame = chain.pdbmodel.pdbfile.frame;
     frame.addHydrogenBond(nitrogen, oxygen);
   }
 

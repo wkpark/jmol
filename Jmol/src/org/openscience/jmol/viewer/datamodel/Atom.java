@@ -370,7 +370,7 @@ public class Atom implements Bspt.Tuple {
   public PdbModel getPdbModel() {
     if (pdbAtom == null)
       return null;
-    return pdbAtom.group.chain.model;
+    return pdbAtom.group.chain.pdbmodel;
   }
 
   short getPdbTemperatureMar() {

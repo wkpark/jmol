@@ -31,18 +31,18 @@ import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class PdbModel {
+final public class PdbModel {
 
-  public PdbFile file;
-  public short modelID;
+  PdbFile pdbfile;
+  short pdbmodelID;
 
-  int chainCount = 0;
-  PdbChain[] chains = new PdbChain[8];
+  private int chainCount = 0;
+  private PdbChain[] chains = new PdbChain[8];
 
 
-  public PdbModel(PdbFile file, short modelID) {
-    this.file = file;
-    this.modelID = modelID;
+  public PdbModel(PdbFile pdbfile, short pdbmodelID) {
+    this.pdbfile = pdbfile;
+    this.pdbmodelID = pdbmodelID;
   }
 
   public void freeze() {

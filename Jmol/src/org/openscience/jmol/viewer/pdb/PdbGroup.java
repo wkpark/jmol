@@ -31,14 +31,14 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
-public class PdbGroup {
+final public class PdbGroup {
 
-  public PdbStructure structure;
   public PdbChain chain;
   public PdbPolymer polymer;
   public int seqcode;
   public short groupID;
-  int[] mainchainIndices;
+  public PdbStructure structure;
+  public int[] mainchainIndices;
 
   public PdbGroup(PdbChain chain, int seqcode, String group3) {
     this.chain = chain;
@@ -203,7 +203,7 @@ public class PdbGroup {
       System.out.println("sequence=" + getSeqcodeString());
       return null;
     }
-    return chain.model.file.frame.getAtomAt(j);
+    return chain.pdbmodel.pdbfile.frame.getAtomAt(j);
   }
 
   public Atom getNitrogenAtom() {
@@ -251,7 +251,7 @@ public class PdbGroup {
   }
 
   public void selectAtoms(BitSet bs) {
-    Frame frame = chain.model.file.frame;
+    Frame frame = chain.pdbmodel.pdbfile.frame;
     Atom[] atoms = frame.getAtoms();
     for (int i = frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];

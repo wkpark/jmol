@@ -31,17 +31,18 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class PdbChain {
+final public class PdbChain {
 
-  public PdbModel model;
-  public char chainID;
+  public PdbModel pdbmodel;
+  char chainID;
   int groupCount;
   PdbGroup[] groups = new PdbGroup[16];
-  PdbGroup[] mainchain;
-  PdbPolymer polymer;
 
-  public PdbChain(PdbModel model, char chainID) {
-    this.model = model;
+  private PdbGroup[] mainchain;
+  private PdbPolymer polymer;
+
+  public PdbChain(PdbModel pdbmodel, char chainID) {
+    this.pdbmodel = pdbmodel;
     this.chainID = chainID;
   }
 
@@ -167,7 +168,7 @@ public class PdbChain {
   }
 
   public void selectAtoms(BitSet bs) {
-    Frame frame = model.file.frame;
+    Frame frame = pdbmodel.pdbfile.frame;
     Atom[] atoms = frame.getAtoms();
     for (int i = frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];

@@ -37,19 +37,12 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
 
   Ribbons strands;
 
-  Point3i[] getTempScreens(int minLen) {
-    Point3i[] screens = new Point3i[minLen];
-    for (int i = minLen; --i >= 0; )
-      screens[i] = new Point3i();
-    return screens;
-  }
-
   final Point3f pointT = new Point3f();
 
   Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
                         short[] mads, float offsetFraction) {
     
-    Point3i[] screens = getTempScreens(centers.length);
+    Point3i[] screens = viewer.allocTempScreens(centers.length);
     if (offsetFraction == 0) {
       for (int i = centers.length; --i >= 0; )
         viewer.transformPoint(centers[i], screens[i]);
@@ -84,30 +77,33 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
   void render1Chain(int polymerCount,
                     Group[] groups, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
-    Point3i[] screensTop;
-    Point3i[] screensBottom;
+    Point3i[] ribbonTopScreens;
+    Point3i[] ribbonBottomScreens;
 
-    screensTop = calcScreens(centers, vectors, mads,
+    ribbonTopScreens = calcScreens(centers, vectors, mads,
                              isNucleotidePolymer ? 1f : 0.5f);
-    screensBottom = calcScreens(centers, vectors, mads,
+    ribbonBottomScreens = calcScreens(centers, vectors, mads,
                                 isNucleotidePolymer ? 0f : -0.5f);
     render2Strand(polymerCount, groups, mads, colixes,
-                  screensTop, screensBottom);
+                  ribbonTopScreens, ribbonBottomScreens);
+    viewer.freeTempScreens(ribbonTopScreens);
+    viewer.freeTempScreens(ribbonBottomScreens);
   }
   
   void render2Strand(int polymerCount, Group[] groups,
                      short[] mads, short[] colixes,
-                     Point3i[] screensTop, Point3i[] screensBottom) {
+                     Point3i[] ribbonTopScreens,
+                     Point3i[] ribbonBottomScreens) {
     for (int i = polymerCount; --i >= 0; )
       if (mads[i] > 0)
         render2StrandSegment(polymerCount,
                              groups[i], colixes[i], mads,
-                             screensTop, screensBottom, i);
+                             ribbonTopScreens, ribbonBottomScreens, i);
   }
 
   void render2StrandSegment(int polymerCount, Group group, short colix,
-                            short[] mads, Point3i[] screensTop,
-                            Point3i[] screensBottom, int i) {
+                            short[] mads, Point3i[] ribbonTopScreens,
+                            Point3i[] ribbonBottomScreens, int i) {
     int iLast = polymerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
@@ -117,10 +113,10 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
     
     //change false -> true to fill in mesh
     g3d.drawHermite(true, colix, isNucleotidePolymer ? 4 : 7,
-                    screensTop[iPrev], screensTop[i],
-                    screensTop[iNext], screensTop[iNext2],
-                    screensBottom[iPrev], screensBottom[i],
-                    screensBottom[iNext], screensBottom[iNext2]
+                    ribbonTopScreens[iPrev], ribbonTopScreens[i],
+                    ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
+                    ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
+                    ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2]
                     );
   }
 }

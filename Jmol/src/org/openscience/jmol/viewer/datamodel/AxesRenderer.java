@@ -36,13 +36,18 @@ class AxesRenderer extends ShapeRenderer {
   String[] axisLabels = { "+X", "+Y", "+Z",
                           null, null, null };
 
+  final Point3i[] axisScreens = new Point3i[6];
+  {
+    for (int i = 6; --i >= 0; )
+      axisScreens[i] = new Point3i();
+  }
+  final Point3i originScreen = new Point3i();
+
   void render() {
     Axes axes = (Axes)shape;
     short mad = axes.mad;
     if (mad == 0)
       return;
-    final Point3i[] axisScreens = frameRenderer.getTempScreens(7);
-    final Point3i originScreen = axisScreens[6];
 
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = 6; --i >= 0; )

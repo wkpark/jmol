@@ -116,6 +116,7 @@ public class FrameRenderer {
     g3d.drawString(str, colix, xStrBaseline, yStrBaseline, z);
   }
 
+  /*
   private Point3i[] tempScreens = new Point3i[32];
   {
     for (int i = tempScreens.length; --i >= 0; )
@@ -132,6 +133,7 @@ public class FrameRenderer {
     }
     return tempScreens;
   }
+  */
 
   private Point3f[] tempPoints = new Point3f[32];
   {

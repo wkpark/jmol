@@ -57,6 +57,7 @@ class TraceRenderer extends McpsRenderer {
   void render1Chain(Polymer polymer, int count, Group[] groups,
                     short[] mads, short[] colixes) {
     if (count > 0) {
+      screens = viewer.allocTempScreens(count + 1);
       calcMidPoints(polymer, count, groups);
       for (int i = count; --i >= 0; ) {
         if (mads[i] == 0)
@@ -66,11 +67,11 @@ class TraceRenderer extends McpsRenderer {
           colix = centerAtoms[i].colixAtom;
         render1Segment(colix, mads, i, count);
       }
+      viewer.freeTempScreens(screens);
     }
   }
 
   void calcMidPoints(Polymer polymer, int count, Group[] groups) {
-    screens = frameRenderer.getTempScreens(count + 1);
     centerAtoms = frameRenderer.getTempAtoms(count);
     Atom atomPrev = centerAtoms[0] = polymer.getLeadAtom(0);
     setScreen(atomPrev, screens[0]);

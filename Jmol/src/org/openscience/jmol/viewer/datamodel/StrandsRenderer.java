@@ -39,7 +39,7 @@ class StrandsRenderer extends McpsRenderer {
 
   Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
                    short[] mads, float offsetFraction) {
-    Point3i[] screens = frameRenderer.getTempScreens(centers.length);
+    Point3i[] screens = viewer.allocTempScreens(centers.length);
     if (offsetFraction == 0) {
       for (int i = centers.length; --i >= 0; )
         viewer.transformPoint(centers[i], screens[i]);
@@ -91,12 +91,15 @@ class StrandsRenderer extends McpsRenderer {
       float f = (i * strandSeparation) + baseOffset;
       screens = calcScreens(centers, vectors, mads, f);
       render1Strand(polymerCount, groups, mads, colixes, screens);
+      viewer.freeTempScreens(screens);
       screens = calcScreens(centers, vectors, mads, -f);
       render1Strand(polymerCount, groups, mads, colixes, screens);
+      viewer.freeTempScreens(screens);
     }
     if ((strandCount & 1) != 0) {
       screens = calcScreens(centers, vectors, mads, 0f);
       render1Strand(polymerCount, groups, mads, colixes, screens);
+      viewer.freeTempScreens(screens);
     }
   }
 

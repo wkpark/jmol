@@ -33,18 +33,23 @@ import javax.vecmath.Point3i;
 
 class BbcageRenderer extends ShapeRenderer {
 
+  final Point3i[] screens = new Point3i[8];
+  {
+    for (int i = 8; --i >= 0; )
+      screens[i] = new Point3i();
+  }
+
   void render() {
     Bbcage bbcage = (Bbcage)shape;
     short mad = bbcage.mad;
     if (mad == 0)
       return;
-    render(viewer, g3d, mad, bbcage.colix, frame.bboxVertices,
-           frameRenderer.getTempScreens(8));
+    render(viewer, g3d, mad, bbcage.colix, frame.bboxVertices, screens);
   }
 
   static void render(JmolViewer viewer, Graphics3D g3d,
                      short mad, short colix,
-                     Point3f vertices[], Point3i screens[]) {
+                     Point3f[] vertices, Point3i[] screens) {
     int zSum = 0;
     for (int i = 8; --i >= 0; ) {
       viewer.transformPoint(vertices[i], screens[i]);

@@ -42,6 +42,12 @@ class UccageRenderer extends ShapeRenderer {
     fid = g3d.getFontFid("Monospaced", 12);
   }
 
+  final Point3i[] screens = new Point3i[8];
+  {
+    for (int i = 8; --i >= 0; )
+      screens[i] = new Point3i();
+  }
+
   void render() {
     Uccage uccage = (Uccage)shape;
     short mad = uccage.mad;
@@ -49,7 +55,7 @@ class UccageRenderer extends ShapeRenderer {
     if (mad == 0 || ! uccage.hasUnitcell)
       return;
     BbcageRenderer.render(viewer, g3d, mad, colix, frame.unitcellVertices,
-                          frameRenderer.getTempScreens(8));
+                          screens);
     /*
     render(viewer, g3d, mad, bbox.colix, bbox.bboxVertices, bboxScreens);
 

@@ -37,23 +37,11 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
 
   Mesh strands;
 
-  Point3i[] getTempScreens(int minLen) {
-    Point3i[] screensT = new Point3i[0];//DC: made local
-    if (screensT.length < minLen) {
-      Point3i[] t = new Point3i[minLen];
-      System.arraycopy(screensT, 0, t, 0, screensT.length);
-      for (int i = screensT.length; i < t.length; ++i)
-        t[i] = new Point3i();
-      screensT = t;
-    }
-    return screensT;
-  }
-
   Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
-                   short[] mads, float offsetFraction) {
-
-  Point3f pointT = new Point3f();  //DC: made local
-  Point3i[] screens = getTempScreens(centers.length);
+                        short[] mads, float offsetFraction) {
+    
+    Point3f pointT = new Point3f();  //DC: made local
+    Point3i[] screens = viewer.allocTempScreens(centers.length);
     if (offsetFraction == 0) {
       for (int i = centers.length; --i >= 0; )
         viewer.transformPoint(centers[i], screens[i]);
@@ -98,28 +86,34 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
   void render1Chain(int polymerCount,
                     Group[] groups, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
-    Point3i[] screensTop;
-    Point3i[] screensBottom;
-    Point3i[] screens;
+    Point3i[] ribbonTopScreens;
+    Point3i[] ribbonBottomScreens;
 
     int j = strandCount >> 1;
     float offset = (j * strandSeparation) + baseOffset;
-    screensTop = calcScreens(centers, vectors, mads, offset);
-    screensBottom = calcScreens(centers, vectors, mads, -offset);
+    ribbonTopScreens = calcScreens(centers, vectors, mads, offset);
+    ribbonBottomScreens = calcScreens(centers, vectors, mads, -offset);
     render2Strand(polymerCount, groups, mads, colixes,
-                  screensTop, screensBottom);
+                  ribbonTopScreens, ribbonBottomScreens);
+    viewer.freeTempScreens(ribbonTopScreens);
+    viewer.freeTempScreens(ribbonBottomScreens);
     
+    Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
       float f = (i * strandSeparation) + baseOffset;
       screens = calcScreens(centers, vectors, mads, f);
       render1Strand(polymerCount, groups, mads, colixes, screens);
+      viewer.freeTempScreens(screens);
       screens = calcScreens(centers, vectors, mads, -f);
       render1Strand(polymerCount, groups, mads, colixes, screens);
+      viewer.freeTempScreens(screens);
     }
     if ((strandCount & 1) != 0) {
       screens = calcScreens(centers, vectors, mads, 0f);
       render1Strand(polymerCount, groups, mads, colixes, screens);
+      viewer.freeTempScreens(screens);
     }
+    
   }
 
 
@@ -145,18 +139,18 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
   }
 
   void render2Strand(int polymerCount, Group[] groups, short[] mads,
-                     short[] colixes, Point3i[] screensTop,
-                     Point3i[] screensBottom) {
+                     short[] colixes, Point3i[] ribbonTopScreens,
+                     Point3i[] ribbonBottomScreens) {
     for (int i = polymerCount; --i >= 0; )
       if (mads[i] > 0)
         render2StrandSegment(polymerCount,
                              groups[i], colixes[i], mads,
-                             screensTop, screensBottom, i);
+                             ribbonTopScreens, ribbonBottomScreens, i);
   }
   
   void render2StrandSegment(int polymerCount, Group group, short colix,
-                            short[] mads, Point3i[] screensTop,
-                            Point3i[] screensBottom, int i) {
+                            short[] mads, Point3i[] ribbonTopScreens,
+                            Point3i[] ribbonBottomScreens, int i) {
     int iLast = polymerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
@@ -167,10 +161,10 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
     //change false -> true to fill in mesh
       
     g3d.drawHermite(false, colix, isNucleotidePolymer ? 4 : 7,
-                    screensTop[iPrev], screensTop[i],
-                    screensTop[iNext], screensTop[iNext2],
-                    screensBottom[iPrev], screensBottom[i],
-                    screensBottom[iNext], screensBottom[iNext2]
+                    ribbonTopScreens[iPrev], ribbonTopScreens[i],
+                    ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
+                    ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
+                    ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2]
                     );
   }
 }

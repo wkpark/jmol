@@ -68,6 +68,7 @@ class RocketsRenderer extends McpsRenderer {
       }
     }
     renderPending();
+    viewer.freeTempScreens(screens);
   }
 
   int polymerCount;
@@ -126,7 +127,7 @@ class RocketsRenderer extends McpsRenderer {
 
   Point3i[] getScreens() {
     int count = polymerCount + 1;
-    Point3i[] screens = frameRenderer.getTempScreens(count);
+    Point3i[] screens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0; ) {
       viewer.transformPoint(cordMidPoints[i], screens[i]);
       //      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);

@@ -76,33 +76,33 @@ import javax.swing.border.TitledBorder;
 
 public class PreferencesDialog extends JDialog implements ActionListener {
 
-  private static boolean autoBond;
-  private static boolean showHydrogens;
-  private static boolean showVectors;
-  private static boolean showMeasurements;
-  private static boolean wireframeRotation;
-  private static boolean perspectiveDepth;
-  private static boolean showAxes;
-  private static boolean showBoundingBox;
-  private static boolean orientationRasMolChime;
-  private static boolean isLabelAtomColor;
-  private static boolean isBondAtomColor;
-  private static Color colorBackground;
-  private static Color colorSelection;
-  private static Color colorText;
-  private static Color colorBond;
-  private static Color colorVector;
-  private static byte styleAtom;
-  private static byte modeAtomColorProfile;
-  private static byte styleLabel;
-  private static byte styleBond;
-  private static float minBondDistance;
-  private static float bondTolerance;
-  private static short marBond;
-  private static int percentVdwAtom;
-  private static double VibrateAmplitudeScale;
-  private static double VibrateVectorScale;
-  private static int VibrationFrames;
+  private boolean autoBond;
+  private boolean showHydrogens;
+  private boolean showVectors;
+  private boolean showMeasurements;
+  private boolean wireframeRotation;
+  private boolean perspectiveDepth;
+  private boolean showAxes;
+  private boolean showBoundingBox;
+  private boolean orientationRasMolChime;
+  private boolean isLabelAtomColor;
+  private boolean isBondAtomColor;
+  private Color colorBackground;
+  private Color colorSelection;
+  private Color colorText;
+  private Color colorBond;
+  private Color colorVector;
+  private byte styleAtom;
+  private byte modeAtomColorProfile;
+  private byte styleLabel;
+  private byte styleBond;
+  private float minBondDistance;
+  private float bondTolerance;
+  private short marBond;
+  private int percentVdwAtom;
+  private double VibrateAmplitudeScale;
+  private double VibrateVectorScale;
+  private int VibrationFrames;
   private JButton bButton, pButton, tButton, eButton, vButton;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
@@ -116,55 +116,51 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbOrientationRasMolChime;
   private JCheckBox cbIsLabelAtomColor, cbIsBondAtomColor;
-  private static Properties props;
+  private Properties originalSystemProperties;
+  private Properties jmolDefaultProperties;
+  private Properties currentProperties;
 
   // The actions:
 
   private PrefsAction prefsAction = new PrefsAction();
   private Hashtable commands;
 
-  static {
-    props = System.getProperties();
-    defaults();
-    try {
-      FileInputStream fis2 = new FileInputStream(Jmol.UserPropsFile);
-      props.load(new BufferedInputStream(fis2, 1024));
-      fis2.close();
-    } catch (Exception e2) {
-    }
-    System.setProperties(props);
-  }
+  final static String[] jmolDefaults  = {
+    "showHydrogens",                  "true",
+    "showVectors",                    "true",
+    "showMeasurements",               "true",
+    "wireframeRotation",              "false",
+    "perspectiveDepth",               "true",
+    "showAxes",                       "false",
+    "showBoundingBox",                "false",
+    "orientationRasMolChime",         "true",
+    "styleAtom",                      "2",
+    "styleBond",                      "2",
+    "styleLabel",                     "0",
+    "percentVdwAtom",                 "20",
+    "autoBond",                       "true",
+    "marBond",                        "100",
+    "minBondDistance",                "0.40",
+    "bondTolerance",                  "0.45",
+    "colorSelection",                 "16762880",
+    "colorBackground",                "16777215",
+    "isLabelAtomColor",               "false",
+    "colorText",                      "0",
+    "isBondAtomColor",                "true",
+    "colorBond",                      "0",
+    "colorVector",                    "0",
+    "VibrateAmplitudeScale",          "0.7",
+    "VibrateVectorScale",             "1.0",
+    "VibrationFrames",                "20",
+  };
 
-  private static void defaults() {
-
-    props.put("showHydrogens", "true");
-    props.put("showVectors", "true");
-    props.put("showMeasurements", "true");
-    props.put("wireframeRotation", "false");
-    props.put("perspectiveDepth", "true");
-    props.put("showAxes", "false");
-    props.put("showBoundingBox", "false");
-    props.put("orientationRasMolChime", "true");
-    props.put("isLabelAtomColor", "false");
-    props.put("isBondAtomColor", "true");
-    props.put("styleAtom", "2");
-    props.put("styleBond", "2");
-    props.put("styleLabel", "0");
-    props.put("percentVdwAtom", "20");
-    props.put("autoBond", "true");
-    props.put("marBond", "100");
-    props.put("minBondDistance", "0.40");
-    props.put("bondTolerance", "0.45");
-    props.put("colorBackground", "16777215");
-    props.put("colorSelection", "16762880");
-    props.put("colorText", "0");
-    props.put("colorBond", "0");
-    props.put("colorVector", "0");
-    props.put("VibrateAmplitudeScale", "0.7");
-    props.put("VibrateVectorScale", "1.0");
-    props.put("VibrationFrames", "20");
-    props = new Properties(props);
-  }
+  final static String[] rasmolOverrides = {
+    "colorBackground",                "0",
+    "isLabelAtomColor",               "true",
+    "styleAtom",                      "0",
+    "styleBond",                      "1",
+    "colorVector",                    "16777215",
+  };
 
   private JmolViewer viewer;
   private GuiMap guimap;
@@ -174,6 +170,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     super(f, false);
     this.guimap = guimap;
     this.viewer = viewer;
+
+    initializeProperties();
 
     JmolResourceHandler jrh = JmolResourceHandler.getInstance();
     this.setTitle(jrh.translate("Preferences"));
@@ -353,7 +351,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JComboBox source = (JComboBox) e.getSource();
         styleAtom = (byte)source.getSelectedIndex();
         viewer.setStyleAtom(styleAtom);
-        props.put("styleAtom", Integer.toString(styleAtom));
+        currentProperties.put("styleAtom", Integer.toString(styleAtom));
       }
     });
 
@@ -378,7 +376,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JComboBox source = (JComboBox) e.getSource();
         modeAtomColorProfile = (byte)source.getSelectedIndex();
         viewer.setModeAtomColorProfile(modeAtomColorProfile);
-        props.put("modeAtomColorProfile", ""+modeAtomColorProfile);
+        currentProperties.put("modeAtomColorProfile", ""+modeAtomColorProfile);
       }
     });
     constraints = new GridBagConstraints();
@@ -408,7 +406,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JComboBox source = (JComboBox) e.getSource();
         styleLabel = (byte)source.getSelectedIndex();
         viewer.setStyleLabel(styleLabel);
-        props.put("styleLabel", "" + styleLabel);
+        currentProperties.put("styleLabel", "" + styleLabel);
       }
     });
     constraints = new GridBagConstraints();
@@ -437,7 +435,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         percentVdwAtom = source.getValue();
         viewer.setPercentVdwAtom(percentVdwAtom);
-        props.put("percentVdwAtom", "" + percentVdwAtom);
+        currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
       }
     });
     sfPanel.add(sfSlider, BorderLayout.CENTER);
@@ -489,7 +487,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JComboBox source = (JComboBox) e.getSource();
         styleBond = (byte)source.getSelectedIndex();
         viewer.setStyleBond(styleBond);
-        props.put("styleBond", "" + styleBond);
+        currentProperties.put("styleBond", "" + styleBond);
       }
     });
     renderPanel.add(bRender);
@@ -560,7 +558,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         marBond = (short)source.getValue();
         viewer.setMarBond(marBond);
-        props.put("marBond", "" + marBond);
+        currentProperties.put("marBond", "" + marBond);
       }
     });
 
@@ -613,7 +611,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         bondTolerance = source.getValue() / 100f;
         viewer.setBondTolerance(bondTolerance);
-        props.put("bondTolerance", "" + bondTolerance);
+        currentProperties.put("bondTolerance", "" + bondTolerance);
         viewer.rebond();
       }
     });
@@ -667,7 +665,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         minBondDistance = source.getValue() / 100f;
         viewer.setMinBondDistance(minBondDistance);
-        props.put("minBondDistance", "" + minBondDistance);
+        currentProperties.put("minBondDistance", "" + minBondDistance);
         viewer.rebond();
       }
     });
@@ -705,7 +703,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         colorBackground = color;
         bButton.setBackground(colorBackground);
         viewer.setColorBackground(colorBackground);
-        props.put("colorBackground",
+        currentProperties.put("colorBackground",
             Integer.toString(colorBackground.getRGB()));
       }
     };
@@ -733,7 +731,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         colorSelection = color;
         pButton.setBackground(colorSelection);
         viewer.setColorSelection(colorSelection);
-        props.put("colorSelection", Integer.toString(colorSelection.getRGB()));
+        currentProperties.put("colorSelection", Integer.toString(colorSelection.getRGB()));
       }
     };
     pButton.addActionListener(startPickedChooser);
@@ -769,7 +767,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         colorText = color;
         tButton.setBackground(colorText);
         viewer.setColorLabel(colorText);
-        props.put("colorText", Integer.toString(colorText.getRGB()));
+        currentProperties.put("colorText", Integer.toString(colorText.getRGB()));
       }
     };
     tButton.addActionListener(startTextChooser);
@@ -805,7 +803,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         colorBond = color;
         eButton.setBackground(colorBond);
         viewer.setColorBond(colorBond);
-        props.put("colorBond", "" + colorBond.getRGB());
+        currentProperties.put("colorBond", "" + colorBond.getRGB());
       }
     };
     eButton.addActionListener(startBondChooser);
@@ -833,7 +831,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         colorVector = color;
         vButton.setBackground(colorVector);
         viewer.setColorVector(colorVector);
-        props.put("colorVector", Integer.toString(colorVector.getRGB()));
+        currentProperties.put("colorVector", Integer.toString(colorVector.getRGB()));
         viewer.refresh();
       }
     };
@@ -895,7 +893,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         VibrateAmplitudeScale = source.getValue() / 100.0;
         Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
-        props.put("VibrateAmplitudeScale",
+        currentProperties.put("VibrateAmplitudeScale",
             Double.toString(VibrateAmplitudeScale));
       }
     });
@@ -939,7 +937,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         VibrateVectorScale = source.getValue() / 100.0;
         Vibrate.setVectorScale(VibrateVectorScale);
-        props.put("VibrateVectorScale", Double.toString(VibrateVectorScale));
+        currentProperties.put("VibrateVectorScale", Double.toString(VibrateVectorScale));
       }
     });
     vvsPanel.add(vvsSlider, BorderLayout.SOUTH);
@@ -963,7 +961,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         VibrationFrames = source.getValue();
         Vibrate.setNumberFrames(VibrationFrames);
-        props.put("VibrationFrames", Integer.toString(VibrationFrames));
+        currentProperties.put("VibrationFrames", Integer.toString(VibrationFrames));
       }
     });
 
@@ -1043,7 +1041,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     try {
       FileOutputStream fileOutputStream =
         new FileOutputStream(Jmol.UserPropsFile);
-      props.store(fileOutputStream, "Jmol");
+      currentProperties.store(fileOutputStream, "Jmol");
       fileOutputStream.close();
     } catch (Exception e) {
       System.out.println("Error saving preferences" + e);
@@ -1051,16 +1049,31 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.refresh();
   }
 
-  public void ResetPressed() {
+  void initializeProperties() {
+    originalSystemProperties = System.getProperties();
+    jmolDefaultProperties = new Properties(originalSystemProperties);
+    for (int i = jmolDefaults.length; (i -= 2) >= 0; )
+      jmolDefaultProperties.put(jmolDefaults[i], jmolDefaults[i+1]);
+    currentProperties = new Properties(jmolDefaultProperties);
+    try {
+      FileInputStream fis2 = new FileInputStream(Jmol.UserPropsFile);
+      currentProperties.load(new BufferedInputStream(fis2, 1024));
+      fis2.close();
+    } catch (Exception e2) {
+    }
+    System.setProperties(currentProperties);
+  }
 
-    defaults();
+  void resetDefaults(String[] overrides) {
+    currentProperties = new Properties(jmolDefaultProperties);
+    System.setProperties(currentProperties);
+    if (overrides != null) {
+      for (int i = overrides.length; (i -= 2) >= 0; )
+        currentProperties.put(overrides[i], overrides[i+1]);
+    }
     initVariables();
     viewer.refresh();
-
     updateComponents();
-    
-    save();
-    return;
   }
 
   void initVariables() {
@@ -1087,16 +1100,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
     minBondDistance =
-      new Float(props.getProperty("minBondDistance")).floatValue();
+      new Float(currentProperties.getProperty("minBondDistance")).floatValue();
     bondTolerance =
-      new Float(props.getProperty("bondTolerance")).floatValue();
-    marBond = Short.parseShort(props.getProperty("marBond"));
+      new Float(currentProperties.getProperty("bondTolerance")).floatValue();
+    marBond = Short.parseShort(currentProperties.getProperty("marBond"));
     percentVdwAtom =
-      Integer.parseInt(props.getProperty("percentVdwAtom"));
+      Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));
     VibrateAmplitudeScale =
-        new Double(props.getProperty("VibrateAmplitudeScale")).doubleValue();
+        new Double(currentProperties.getProperty("VibrateAmplitudeScale")).doubleValue();
     VibrateVectorScale =
-        new Double(props.getProperty("VibrateVectorScale")).doubleValue();
+        new Double(currentProperties.getProperty("VibrateVectorScale")).doubleValue();
 
     //    viewer.setColorOutline(colorOutline);
     viewer.setColorSelection(colorSelection);
@@ -1163,45 +1176,45 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       if (key.equals("Prefs.showHydrogens")) {
         showHydrogens = isSelected;
         viewer.setShowHydrogens(showHydrogens);
-        props.put("showHydrogens", strSelected);
+        currentProperties.put("showHydrogens", strSelected);
       } else if (key.equals("Prefs.showVectors")) {
         showVectors = isSelected;
         viewer.setShowVectors(showVectors);
-        props.put("showVectors", strSelected);
+        currentProperties.put("showVectors", strSelected);
       } else if (key.equals("Prefs.showMeasurements")) {
         showMeasurements = isSelected;
         viewer.setShowMeasurements(showMeasurements);
-        props.put("showMeasurements", strSelected);
+        currentProperties.put("showMeasurements", strSelected);
       } else if (key.equals("Prefs.isLabelAtomColor")) {
         isLabelAtomColor = isSelected;
         viewer.setColorLabel(isLabelAtomColor ? null : colorText);
-        props.put("isLabelAtomColor", strSelected);
+        currentProperties.put("isLabelAtomColor", strSelected);
         tButton.setEnabled(!isLabelAtomColor);
       } else if (key.equals("Prefs.isBondAtomColor")) {
         isBondAtomColor = isSelected;
         viewer.setColorBond(isBondAtomColor ? null : colorBond);
-        props.put("isBondAtomColor", strSelected);
+        currentProperties.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.wireframeRotation")) {
         wireframeRotation = isSelected;
         viewer.setWireframeRotation(wireframeRotation);
-        props.put("wireframeRotation", strSelected);
+        currentProperties.put("wireframeRotation", strSelected);
       } else if (key.equals("Prefs.perspectiveDepth")) {
         perspectiveDepth = isSelected;
         viewer.setPerspectiveDepth(perspectiveDepth);
-        props.put("perspectiveDepth", strSelected);
+        currentProperties.put("perspectiveDepth", strSelected);
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
         viewer.setShowAxes(showAxes);
-        props.put("showAxes", strSelected);
+        currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
         viewer.setShowBoundingBox(isSelected);
-        props.put("showBoundingBox", strSelected);
+        currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.orientationRasMolChime")) {
         orientationRasMolChime = isSelected;
         viewer.setOrientationRasMolChime(isSelected);
-        props.put("orientationRasMolChime", strSelected);
+        currentProperties.put("orientationRasMolChime", strSelected);
       }
     }
   };
@@ -1216,9 +1229,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     if (event.getSource() == applyButton) {
       save();
     } else if (event.getSource() == jmolDefaultsButton) {
-      ResetPressed();
+      resetDefaults(null);
     } else if (event.getSource() == rasmolDefaultsButton) {
-      ResetPressed();
+      resetDefaults(rasmolOverrides);
     } else if (event.getSource() == cancelButton) {
       cancel();
     } else if (event.getSource() == okButton) {

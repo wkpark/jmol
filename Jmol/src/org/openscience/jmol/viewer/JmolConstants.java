@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre6b";
+  public final static String version = "10pre6c";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1316,31 +1316,41 @@ final public class JmolConstants {
    */
 
   public final static int[] argbsPdbChainAtom = {
-    // xwindows colors
+    // protein explorer colors
     // ' '->0 'A'->1, 'B'->2
-    0xFFFFFAF0, // floralwhite 0xFFFFFAF0
-    0xFF0000FF, // blue 0xFF0000FF
-    0xFF00FFFF, // cyan 0xFF00FFFF
-    0xFF008000, // green 0xFF008000
-    0xFFFFFF00, // yellow 0xFFFFFF00
-    // these need to be changed
-    0xFFFF0000, // red 0xFFFF0000
-    0xFFFF00FF, // magenta 0xFFFF00FF
-    0xFFFFA500, // orange 0xFFFFA500
+    0xFF00ffff, // pecyan 0xFF00ffff
+    0xFFd020ff, // pepurple 0xFFd020ff
+    0xFF00ff00, // pegreen 0xFF00ff00
+    0xFF6060ff, // peblue 0xFF6060ff
+    0xFFff80c0, // peviolet 0xFFff80c0
+    0xFFa42028, // pebrown 0xFFa42028
+    0xFFffd8d8, // pepink 0xFFffd8d8
+    0xFFffff00, // peyellow 0xFFffff00
+    0xFF00c000, // pedarkgreen 0xFF00c000
+    0xFFffb000, // peorange 0xFFffb000
+    0xFFb0b0ff, // pelightblue 0xFFb0b0ff
+    0xFF00a0a0, // pedarkcyan 0xFF00a0a0
+    0xFF606060, // pedarkgray 0xFF606060
+    0xFFffffff, // pewhite 0xFFffffff
   };
 
   public final static int[] argbsPdbChainHetero = {
-    // xwindows colors
+    // protein explorer-derived colors
     // ' '->0 'A'->1, 'B'->2
-    0xFFFF0000, // red
-    0xFF1E90FF, // dodgerblue
-    0xFF00FA9A, // mediumspringgreen
-    0xFF6B8E23, // olivedrab
-    0xFFFF8C00, // darkorange
-    // these need to be changed
-    0xFFFF00FF, // magenta 0xFFFF00FF
-    0xFFFFA500, // orange 0xFFFFA500
-    0xFF87CEEB, // SkyBlue 0xFF87CEEB
+    0xFF66ffff, // pewashedcyan 0xFF66ffff
+    0xFFe37aff, // pewashedpurple 0xFFe37aff
+    0xFFa3ffa3, // pewashedgreen 0xFFa3ffa3
+    0xFFbfbfff, // pewashedblue 0xFFbfbfff
+    0xFFffb3d9, // pewashedviolet 0xFFffb3d9
+    0xFFa3555a, // pewashedbrown 0xFFa3555a
+    0xFFffe8e9, // pewashedpink 0xFFffe8e9
+    0xFFffff66, // pewashedyellow 0xFFffff66
+    0xFF4cbf4c, // pewasheddarkgreen 0xFF4cbf4c
+    0xFFffcf66, // pewashedorange 0xFFffcf66
+    0xFFcfcfff, // pewashedlightblue 0xFFcfcfff
+    0xFF40a1a1, // pewasheddarkcyan 0xFF40a1a1
+    0xFF505050, // pedarkergray 0xFF505050
+    0xFFf3f3e1, // pesand 0xFFf3f3e1
   };
 
   public final static int[] argbsCharge = {
@@ -1511,6 +1521,20 @@ final public class JmolConstants {
     "pinktint",             // FFABBB
     "redorange",            // FF4500
     "yellowtint",           // F6F675
+    "pecyan",               // 00ffff
+    "pepurple",             // d020ff
+    "pegreen",              // 00ff00
+    "peblue",               // 6060ff
+    "peviolet",             // ff80c0
+    "pebrown",              // a42028
+    "pepink",               // ffd8d8
+    "peyellow",             // ffff00
+    "pedarkgreen",          // 00c000
+    "peorange",             // ffb000
+    "pelightblue",          // b0b0ff
+    "pedarkcyan",           // 00a0a0
+    "pedarkgray",           // 606060
+    "pewhite",              // ffffff
   };
 
   public final static int[] colorArgbs = {
@@ -1662,6 +1686,21 @@ final public class JmolConstants {
     0xFFFFABBB, // pinktint
     0xFFFF4500, // redorange
     0xFFF6F675, // yellowtint
+    // plus the PE chain colors
+    0xFF00ffff, // pecyan
+    0xFFd020ff, // pepurple
+    0xFF00ff00, // pegreen
+    0xFF6060ff, // peblue
+    0xFFff80c0, // peviolet
+    0xFFa42028, // pebrown
+    0xFFffd8d8, // pepink
+    0xFFffff00, // peyellow
+    0xFF00c000, // pedarkgreen
+    0xFFffb000, // peorange
+    0xFFb0b0ff, // pelightblue
+    0xFF00a0a0, // pedarkcyan
+    0xFF606060, // pedarkgray
+    0xFFffffff, // pewhite
   };
 
   public final static short ATOMID_MAINCHAIN_MAX = 4;

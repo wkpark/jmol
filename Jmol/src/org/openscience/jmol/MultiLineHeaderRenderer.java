@@ -52,6 +52,10 @@ public class MultiLineHeaderRenderer extends JPanel implements TableCellRenderer
         add(theImage, BorderLayout.WEST);
     }
 
+    public ImageIcon getIcon() {
+        return (ImageIcon) theImage.getIcon();
+    }
+
     public void setIcon(ImageIcon ii) {
         theImage.setIcon(ii);
     }

@@ -48,7 +48,12 @@ import java.net.URL;
 import java.io.IOException;
 import java.io.File;
 import java.util.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
+/**
+ *  @author Bradley A. Smith (bradley@baysmith.com)
+ */
 public class AtomTypeTable extends JDialog implements ActionListener {
     private boolean DEBUG = false;
     private static JmolResourceHandler jrh;
@@ -91,8 +96,41 @@ public class AtomTypeTable extends JDialog implements ActionListener {
         // Create a model of the data.
         atModel = new AtomTypesModel();
         
-        poshTableSorter sorter = new poshTableSorter(atModel); 
-        JTable tableView = new JTable(sorter);         
+        SortedTableModel sorter = new SortedTableModel(atModel); 
+        final JTable tableView = new JTable(sorter);
+		// Change sort icon when sort properties change.
+		sorter.addPropertyChangeListener(new PropertyChangeListener() {
+			ImageIcon iconUp = jrh.getIcon("upImage");
+			ImageIcon iconDown = jrh.getIcon("downImage");
+
+			public void propertyChange(PropertyChangeEvent event) {
+				if (event.getPropertyName().equals("sortColumn")) {
+					Integer oldSortColumn = (Integer) event.getOldValue();
+					if (oldSortColumn != null) {
+						setIcon(oldSortColumn.intValue(), null);
+					}
+				}
+				SortedTableModel model = (SortedTableModel) event.getSource();
+				int column = model.getSortedColumn();
+				boolean ascending = model.isAscending();
+
+				if (ascending) {
+					setIcon(column, iconDown);
+				} else {
+					setIcon(column, iconUp);
+				}
+			}
+			
+			void setIcon(int column, ImageIcon icon) {
+				TableColumnModel cm = tableView.getColumnModel();
+				TableColumn tc = cm.getColumn(column);
+				MultiLineHeaderRenderer rr =
+					(MultiLineHeaderRenderer) tc.getHeaderRenderer();
+				rr.setIcon(icon);
+			}
+			
+		});
+		
         Enumeration enum = tableView.getColumnModel().getColumns();
         while (enum.hasMoreElements()) {
             MultiLineHeaderRenderer renderer = new MultiLineHeaderRenderer();

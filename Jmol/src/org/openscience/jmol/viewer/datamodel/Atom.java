@@ -54,6 +54,8 @@ public class Atom implements Bspt.Tuple {
   short colixAtom;
   Bond[] bonds;
 
+  boolean isHetero; // pack this bit someplace
+  int atomSerial;
   /* move these out of here */
   String atomName;
 
@@ -65,6 +67,7 @@ public class Atom implements Bspt.Tuple {
               int occupancy,
               float bfactor,
               float x, float y, float z,
+              boolean isHetero, int atomSerial,
               PdbFile pdbFile, String pdbAtomRecord) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
@@ -83,6 +86,8 @@ public class Atom implements Bspt.Tuple {
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
+    this.isHetero = isHetero;
+    this.atomSerial = atomSerial;
     if (pdbFile != null)
       pdbAtom =
         pdbFile.allocatePdbAtom(atomIndex, modelNumber, pdbAtomRecord);
@@ -287,12 +292,16 @@ public class Atom implements Bspt.Tuple {
   }
 
   public int getAtomNumber() {
-    if (pdbAtom != null)
-      return pdbAtom.getAtomSerial();
+    if (atomSerial != Integer.MIN_VALUE)
+      return atomSerial;
     if (frame.modelType == JmolConstants.MODEL_TYPE_XYZ &&
         frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
     return atomIndex + 1;
+  }
+
+  public boolean isHetero() {
+    return isHetero;
   }
 
   public int getAtomicCharge() {

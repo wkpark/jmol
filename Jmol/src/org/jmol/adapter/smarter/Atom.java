@@ -35,6 +35,8 @@ class Atom {
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
   int occupancy = 100;
+  boolean isHetero;
+  int atomSerial = Integer.MIN_VALUE;
   String pdbAtomRecord;
 
   Atom() {

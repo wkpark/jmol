@@ -121,6 +121,7 @@ final public class Frame {
                       int occupancy,
                       float bfactor,
                       float x, float y, float z,
+                      boolean isHetero, int atomSerial,
                       String pdbAtomRecord,
                       Object clientAtomReference) {
     if (modelNumber != lastModelNumber) {
@@ -145,6 +146,7 @@ final public class Frame {
                          occupancy,
                          bfactor,
                          x, y, z,
+                         isHetero, atomSerial,
                          pdbFile, pdbAtomRecord);
     atoms[atomCount] = atom;
     if (clientAtomReference != null) {
@@ -172,19 +174,10 @@ final public class Frame {
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {
-    if (hasPdbRecords) {
-      for (int i = atomCount; --i >= 0; ) {
-        PdbAtom pdbAtom = atoms[i].pdbAtom;
-        if (pdbAtom != null && pdbAtom.getAtomSerial() == atomNumber)
-          return i;
+    for (int i = atomCount; --i >= 0; ) {
+      if (atoms[i].getAtomNumber() == atomNumber)
+        return i;
       }
-    } else if (modelType == JmolConstants.MODEL_TYPE_XYZ &&
-               viewer.getZeroBasedXyzRasmol() &&
-               atomNumber >= 0 && atomNumber < atomCount) {
-      return atomNumber;
-    } else if (atomNumber >= 1 && atomNumber <= atomCount) {
-      return atomNumber - 1;
-    }
     return -1;
   }
 

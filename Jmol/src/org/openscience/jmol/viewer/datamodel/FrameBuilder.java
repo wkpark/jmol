@@ -74,6 +74,7 @@ final public class FrameBuilder {
                     iterAtom.getOccupancy(),
                     iterAtom.getBfactor(),
                     iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
+                    iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
                     iterAtom.getPdbAtomRecord(),
                     iterAtom.getClientAtomReference());
     }

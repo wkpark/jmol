@@ -112,6 +112,7 @@ class PdbReader extends ModelReader {
   }
 
   void atom() {
+    boolean isHetero = line.startsWith("HETATM");
     try {
       // for now, we are only taking alternate location 'A'
       char charAlternateLocation = line.charAt(16);
@@ -199,6 +200,8 @@ class PdbReader extends ModelReader {
       atom.occupancy = occupancy;
       atom.bfactor = bfactor;
       atom.x = x; atom.y = y; atom.z = z;
+      atom.isHetero = isHetero;
+      atom.atomSerial = serial;
       atom.pdbAtomRecord = line;
 
       // note that values are +1 in this serial map

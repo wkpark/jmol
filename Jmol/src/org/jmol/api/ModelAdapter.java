@@ -194,6 +194,8 @@ public abstract class ModelAdapter {
     public float getVectorZ() { return Float.NaN; }
     public float getBfactor() { return Float.NaN; }
     public int getOccupancy() { return 100; }
+    public boolean getIsHetero() { return false; }
+    public int getAtomSerial() { return Integer.MIN_VALUE; }
     public String getPdbAtomRecord() { return null; }
     public Object getClientAtomReference() { return null; }
   }

@@ -900,11 +900,9 @@ public class Eval implements Runnable {
   BitSet getHeteroSet() {
     Frame frame = viewer.getFrame();
     BitSet bsHetero = new BitSet();
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom != null && pdbatom.isHetero())
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isHetero())
         bsHetero.set(i);
-    }
     return bsHetero;
   }
 

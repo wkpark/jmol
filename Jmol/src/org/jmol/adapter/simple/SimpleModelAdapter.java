@@ -272,6 +272,8 @@ class Atom {
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
   int occupancy = 100;
+  boolean isHetero;
+  int atomSerial = Integer.MIN_VALUE;
   String pdbAtomRecord;
 
   Atom(int modelNumber, String symbol, int charge,
@@ -298,7 +300,9 @@ class Atom {
 
   Atom(int modelNumber, String symbol, int charge, int occupancy,
        float bfactor,
-       float x, float y, float z, String pdb) {
+       float x, float y, float z,
+       boolean isHetero, int atomSerial,
+       String pdb) {
     this.elementSymbol = symbol;
     this.atomicCharge = charge;
     this.occupancy = occupancy;
@@ -306,6 +310,8 @@ class Atom {
     this.x = x;
     this.y = y;
     this.z = z;
+    this.isHetero = isHetero;
+    this.atomSerial = atomSerial;
     this.modelNumber = modelNumber;
     this.pdbAtomRecord = pdb;
   }
@@ -620,6 +626,7 @@ class PdbModel extends Model {
   }
 
   void atom() {
+    boolean isHetero = line.startsWith("HETATM");
     try {
       // for now, we are only taking alternate location 'A'
       char charAlternateLocation = line.charAt(16);
@@ -630,7 +637,7 @@ class PdbModel extends Model {
       int cchAtomicSymbol = elementSymbol.length();
       if (cchAtomicSymbol == 0 ||
           Character.isDigit(elementSymbol.charAt(0)) ||
-          (cchAtomicSymbol == 2 && Character.isDigit(elementSymbol.charAt(1)))) {
+          (cchAtomicSymbol==2 && Character.isDigit(elementSymbol.charAt(1)))) {
         char ch13 = line.charAt(13);
         boolean isValid13 = isValidAtomicSymbolChar(ch13);
         char ch12 = line.charAt(12);
@@ -696,7 +703,9 @@ class PdbModel extends Model {
         serialMap = t;
       }
       addAtom(new Atom(currentModelNumber, elementSymbol,
-                       charge, occupancy, bfactor, x, y, z, line));
+                       charge, occupancy, bfactor, x, y, z,
+                       isHetero, serial,
+                       line));
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

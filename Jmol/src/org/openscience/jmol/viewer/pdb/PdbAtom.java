@@ -32,24 +32,12 @@ public class PdbAtom {
 
   public PdbGroup group;
   public short atomID;
-  public int atomSerial;
-  public boolean isHetero;
 
   public PdbAtom(PdbGroup group, int atomIndex, String recordPdb) {
     this.group = group;
-    isHetero = recordPdb.startsWith("HETATM");
 
     String t = recordPdb.substring(12, 16);
     atomID = lookupAtomID(t);
-    atomSerial = -999999;
-    try {
-      atomSerial = Integer.parseInt(recordPdb.substring(6, 11).trim());
-    } catch (NumberFormatException e) {
-    }
-  }
-  
-  public boolean isHetero() {
-    return isHetero;
   }
   
   public boolean isGroup3(String group3) {
@@ -135,10 +123,6 @@ public class PdbAtom {
 
   public PdbPolymer getPdbPolymer() {
     return group.polymer;
-  }
-
-  public int getAtomSerial() {
-    return atomSerial;
   }
 
   public int getSecondaryStructureType() {

@@ -331,7 +331,7 @@ public class ColorManager {
         int chain = pdbatom.getChainID() & 0x1F;
         if (chain >= JmolConstants.argbsPdbChainAtom.length)
           chain = chain % JmolConstants.argbsPdbChainAtom.length;
-        argb = (pdbatom.isHetero()
+        argb = (atom.isHetero()
                 ? JmolConstants.argbsPdbChainHetero
                 : JmolConstants.argbsPdbChainAtom)[chain];
       }

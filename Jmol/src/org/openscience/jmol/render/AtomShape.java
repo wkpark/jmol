@@ -103,8 +103,8 @@ public class AtomShape implements Shape {
   private static int labelMode;
   private static DisplaySettings settings;
   private static double halfBondWidth;
+  private static boolean showDarkerOutline;
   private static Color outlineColor;
-  private static boolean darkerOutlineColor = true;
   private static Color pickedColor;
   private static Color backgroundColor;
   private static Graphics2D g2;
@@ -123,6 +123,7 @@ public class AtomShape implements Shape {
     drawBondsToAtomCenters = settings.getDrawBondsToAtomCenters();
     halfBondWidth = 0.5 *
       settings.getBondWidth() * settings.getBondScreenScale();
+    showDarkerOutline = settings.getShowDarkerOutline();
     outlineColor = settings.getOutlineColor();
     pickedColor = settings.getPickedColor();
     // backgroundColor should be in settings
@@ -300,9 +301,9 @@ public class AtomShape implements Shape {
                    dx, dy, magnitude, bondOrder, halfBondWidth);
     } else {
       drawRectBond(g2,
-                   x1Bond, y1Bond, color1, getDarker(color1),
+                   x1Bond, y1Bond, color1, getOutline(color1),
                    x1Edge, y1Edge,
-                   x2Bond, y2Bond, color2, getDarker(color2),
+                   x2Bond, y2Bond, color2, getOutline(color2),
                    bondDrawMode != DisplaySettings.WIREFRAME,
                    dx, dy, magnitude, bondOrder, halfBondWidth);
     }
@@ -486,6 +487,10 @@ public class AtomShape implements Shape {
     return darker;
   }
 
+  private Color getOutline(Color color) {
+    return showDarkerOutline ? getDarker(color) : outlineColor;
+  }
+
   private void renderAtom() {
     if (!showAtoms || (!showHydrogens && atom.isHydrogen()))
       return;
@@ -523,7 +528,7 @@ public class AtomShape implements Shape {
       if (!fastRendering &&
           (atomDrawMode != DisplaySettings.WIREFRAME)) {
         g2.fillOval(x - radius, y - radius, diameter, diameter);
-        g2.setColor(getDarker(color));
+        g2.setColor(getOutline(color));
       }
       g2.drawOval(x - radius, y - radius, diameter, diameter);
     }

@@ -119,10 +119,11 @@ public class DisplaySettings implements Cloneable {
             (angleColor != null && propertyMode.equals(otherSettings.angleColor)))
         && (dihedralColor == otherSettings.dihedralColor ||
             (dihedralColor != null && propertyMode.equals(otherSettings.dihedralColor)))
-        && ShowAtoms == otherSettings.ShowAtoms
-        && ShowBonds == otherSettings.ShowBonds
-        && ShowVectors == otherSettings.ShowVectors
-        && ShowHydrogens == otherSettings.ShowHydrogens
+        && showAtoms == otherSettings.showAtoms
+        && showBonds == otherSettings.showBonds
+        && showVectors == otherSettings.showVectors
+        && showHydrogens == otherSettings.showHydrogens
+        && showDarkerOutline == otherSettings.showDarkerOutline
         && vectorScreenScale == otherSettings.vectorScreenScale
         && atomScreenScale == otherSettings.atomScreenScale
         && atomZOffset == otherSettings.atomZOffset
@@ -152,10 +153,11 @@ public class DisplaySettings implements Cloneable {
     result = 37*result + (distanceColor == null ? 0 : distanceColor.hashCode());
     result = 37*result + (angleColor == null ? 0 : angleColor.hashCode());
     result = 37*result + (dihedralColor == null ? 0 : dihedralColor.hashCode());
-    result = 37*result + (ShowAtoms ? 0 : 1);
-    result = 37*result + (ShowBonds ? 0 : 1);
-    result = 37*result + (ShowVectors ? 0 : 1);
-    result = 37*result + (ShowHydrogens ? 0 : 1);
+    result = 37*result + (showAtoms ? 0 : 1);
+    result = 37*result + (showBonds ? 0 : 1);
+    result = 37*result + (showVectors ? 0 : 1);
+    result = 37*result + (showHydrogens ? 0 : 1);
+    result = 37*result + (showDarkerOutline ? 0 : 1);
     result = 37*result + Float.floatToIntBits(vectorScreenScale);
     result = 37*result + Float.floatToIntBits(atomScreenScale);
     result = 37*result + atomZOffset;
@@ -416,17 +418,18 @@ public class DisplaySettings implements Cloneable {
    */
   private Color dihedralColor = Color.black;
 
-  private boolean ShowAtoms = true;
-  private boolean ShowBonds = true;
-  private boolean ShowVectors = false;
-  private boolean ShowHydrogens = true;
+  private boolean showAtoms = true;
+  private boolean showBonds = true;
+  private boolean showVectors = false;
+  private boolean showHydrogens = true;
+  private boolean showDarkerOutline = false;
 
   /**
    * Toggles on/off the flag that decides whether atoms are shown
    * when displaying a ChemFrame
    */
   public void toggleAtoms() {
-    ShowAtoms = !ShowAtoms;
+    showAtoms = !showAtoms;
   }
 
   /**
@@ -434,7 +437,7 @@ public class DisplaySettings implements Cloneable {
    * when displaying a ChemFrame
    */
   public void toggleBonds() {
-    ShowBonds = !ShowBonds;
+    showBonds = !showBonds;
   }
 
   /**
@@ -450,7 +453,7 @@ public class DisplaySettings implements Cloneable {
    * shown when displaying a ChemFrame
    */
   public void toggleHydrogens() {
-    ShowHydrogens = !ShowHydrogens;
+    showHydrogens = !showHydrogens;
   }
 
   /**
@@ -460,7 +463,7 @@ public class DisplaySettings implements Cloneable {
    * @param sa the value of the flag
    */
   public void setShowAtoms(boolean sa) {
-    ShowAtoms = sa;
+    showAtoms = sa;
   }
 
   /**
@@ -470,7 +473,7 @@ public class DisplaySettings implements Cloneable {
    * @param sb the value of the flag
    */
   public void setShowBonds(boolean sb) {
-    ShowBonds = sb;
+    showBonds = sb;
   }
 
   /**
@@ -480,7 +483,7 @@ public class DisplaySettings implements Cloneable {
    * @param sv the value of the flag
    */
   public void setShowVectors(boolean sv) {
-    ShowVectors = sv;
+    showVectors = sv;
   }
 
   /**
@@ -490,23 +493,30 @@ public class DisplaySettings implements Cloneable {
    * @param sh the value of the flag
    */
   public void setShowHydrogens(boolean sh) {
-    ShowHydrogens = sh;
+    showHydrogens = sh;
+  }
+  public void setDarkerOutline(boolean showDarkerOutline) {
+    this.showDarkerOutline = showDarkerOutline;
   }
 
   public boolean getShowAtoms() {
-    return ShowAtoms;
+    return showAtoms;
   }
 
   public boolean getShowBonds() {
-    return ShowBonds;
+    return showBonds;
   }
 
   public boolean getShowVectors() {
-    return ShowVectors;
+    return showVectors;
   }
 
   public boolean getShowHydrogens() {
-    return ShowHydrogens;
+    return showHydrogens;
+  }
+
+  public boolean getShowDarkerOutline() {
+    return showDarkerOutline;
   }
 
   /**

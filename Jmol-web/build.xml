@@ -29,7 +29,9 @@
       <fileset dir="${doc.dir}/images"/>
     </copy>
     <copy todir="${build.doc}" overwrite="yes">
-      <fileset dir="${doc.dir}" includes="*.css,*.jar,*.xyz,*.cml,*.mol,*.spt,*.in"/>
+      <fileset dir="${doc.dir}" includes="*.css,*.xyz,*.cml,*.mol,*.spt,*.in"/>
+      <fileset dir="../Jmol" includes="JmolApplet.jar" />
+      <fileset dir="../Jmol/appletweb" includes="JmolApplet.properties" />
     </copy>
 
     <replace file="${build.doc}/index.html" token="$$VERSION$$" value="${version}"/>

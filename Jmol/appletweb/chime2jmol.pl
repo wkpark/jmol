@@ -4,6 +4,7 @@ use Getopt::Std;
 use File::Find;
 use File::Copy;
 use File::Path;
+use Cwd;
 
 sub handleEmbed;
 sub handleEnd;
@@ -14,20 +15,34 @@ getopts('va:s:cd:b:') or usage();
 
 ($opt_s && $opt_d) or usage();
 
-print "source directory $opt_s\n" if $opt_v;
-(-d $opt_s) or die "$opt_s is not a directory";
+my $pwd = cwd();
+print "pwd is $pwd\n" if $opt_v;
+
+my $fullsrcpath = $opt_s;
+$fullsrcpath =~ s|(\./)+||;
+$fullsrcpath = $pwd . "/" . $fullsrcpath unless $fullsrcpath =~ m|^/|;
+$fullsrcpath = $fullsrcpath . "/" unless $fullsrcpath =~ m|/$|;
+
+my $fulldstpath = $opt_d;
+$fulldstpath =~ s|(\./)+||;
+$fulldstpath = $pwd . "/" . $fulldstpath unless $fulldstpath =~ m|^/|;
+$fulldstpath = $fulldstpath . "/" unless $fulldstpath =~ m|/$|;
+
+
+print "source directory $fullsrcpath\n" if $opt_v;
+(-d $fullsrcpath) or die "$fullsrcpath is not a directory";
 
 if ($opt_c) {
-    print "deleting directory tree $opt_d\n" if $opt_v;
-    rmtree $opt_d;
+    print "deleting directory tree $fulldstpath\n" if $opt_v;
+    rmtree $fulldstpath;
 }
 
-if (-e $opt_d) {
-    print "destination directory $opt_d exists\n" if $opt_v;
-    -d $opt_d or die "$opt_d is not a directory";
+if (-e $fulldstpath) {
+    print "destination directory $fulldstpath exists\n" if $opt_v;
+    -d $fulldstpath or die "$fulldstpath is not a directory";
 } else {
-    print "creating destination directory $opt_d\n" if $opt_v;
-    mkdir($opt_d) or die "could not make directory $opt_d";
+    print "creating destination directory $fulldstpath\n" if $opt_v;
+    mkdir($fulldstpath) or die "could not make directory $fulldstpath";
 }
 
 my $archive = "JmolApplet.jar";
@@ -44,24 +59,35 @@ sub accumulateFilename {
     if ($baseDirectory) {
 	my $pathname = $File::Find::name;
 	my $name = substr $pathname, length($baseDirectory);
-	push @files, $name if -f $pathname;
-	push @directories, $name if -d $pathname;
+	if (-f $pathname) {
+	    print "$pathname is a file\n";
+	    push @files, $name if -f $pathname;
+	} elsif (-d $pathname) {
+	    print "$pathname is a directory\n";
+	    push @directories, $name if -d $pathname;
+	} else {
+	    print "$pathname is neither fish nor fowl?\n";
+	    print "but it exists!\n" if -e $pathname;
+	}
+
     } else {
-	$baseDirectory = $File::Find::name;
+	$baseDirectory = $File::Find::name . "/";
+	print "baseDirectory=$baseDirectory\n" if $opt_v;
     }
 }
-find(\&accumulateFilename, $opt_s);
+find(\&accumulateFilename, $fullsrcpath);
 
 for my $directory (@directories) {
-    print "mkdir $opt_d$directory\n" if $opt_v;
-    mkdir "$opt_d$directory";
+    print "mkdir $fulldstpath$directory\n" if $opt_v;
+    mkdir "$fulldstpath$directory";
 }
 
 for my $file (@files) {
     next if $file =~  /\~$/; # ignore emacs files
     print "processing $file\n" if $opt_v;
-    processFile("$baseDirectory$file", "$opt_d$file");
+    processFile("$baseDirectory$file", "$fulldstpath$file");
 }
+
 exit();
 
 sub processFile {
@@ -96,34 +122,37 @@ my ($previous, $embed, $tokens);
 my $tokenCount;
 
 # common to both plugins and buttons
-my ($name, $width, $height, $bgcolor, $src);
+my ($name, $width, $height, $bgcolor, $src, $script);
 # plug-in specific
-my ($loadStructCallback, $messageCallback, $pauseCallback, $pickCallback);
+my ($preloadscript, $loadStructCallback, $messageCallback,
+    $pauseCallback, $pickCallback);
 # button-specific
-my ($type, $button, $buttonCallback, $target, $script, $altscript);
+my ($type, $button, $buttonCallback, $target, $altscript);
 
 sub handleEmbed {
     ($previous, $embed, $tokens) = @_;
     $tokenCount = scalar @$tokens;
 
-    $name = getParameter('name');
-    $width = getParameter('width');
-    $height = getParameter('height');
-    $bgcolor = getParameter('bgcolor');
-    $src = getParameter('src');
+    $name = getUnquotedParameter('name');
+    $width = getUnquotedParameter('width');
+    $height = getUnquotedParameter('height');
+    $bgcolor = getUnquotedParameter('bgcolor');
+    $src = getUnquotedParameter('src');
 
-    $loadStructCallback = getParameter('LoadStructCallback');
-    $messageCallback = getParameter('MessageCallback');
-    $pauseCallback = getParameter('pauseCallback');
-    $pickCallback = getParameter('pickCallback');
+    $loadStructCallback = getUnquotedParameter('LoadStructCallback');
+    $messageCallback = getUnquotedParameter('MessageCallback');
+    $pauseCallback = getUnquotedParameter('pauseCallback');
+    $pickCallback = getUnquotedParameter('pickCallback');
 
-    $type = getParameter('type');
-    $button = getParameter('button');
-    $buttonCallback = getParameter('ButtonCallBack');
-    $target = getParameter('target');
-    $script = getParameter('script');
+    $type = getUnquotedParameter('type');
+    $button = getUnquotedParameter('button');
+    $buttonCallback = getUnquotedParameter('ButtonCallBack');
+    $target = getUnquotedParameter('target');
+    $preloadscript = checkPreloadScript();
+    $script = getRawParameter('script');
     $script = convertSemicolonNewline($script);
-    $altscript = convertSemicolonNewline(getParameter('altscript'));
+    $altscript = convertSemicolonNewline(getRawParameter('altscript'));
+
     writePrevious($previous);
     writeCommentedEmbed();
 #    dumpVars();
@@ -131,7 +160,27 @@ sub handleEmbed {
     writeButtonControl() if $button;
 }
 
-sub dumpVars() {
+sub checkPreloadScript {
+    my $spinX = getUnquotedParameter('spinx');
+    my $spinY = getUnquotedParameter('spiny');
+    my $spinZ = getUnquotedParameter('spinz');
+    my $startspin = getUnquotedParameter('startspin');
+    my $frank = getUnquotedParameter('frank');
+    my $debugscript = getUnquotedParameter('debugscript');
+
+    my $preloadscript = getUnquotedParameter('preloadscript');
+    $preloadscript = convertSemicolonNewline($preloadscript);
+
+    $preloadscript .= "set spin x $spinX;" if $spinX;
+    $preloadscript .= "set spin y $spinY;" if $spinY;
+    $preloadscript .= "set spin z $spinZ;" if $spinZ;
+    $preloadscript .= "set spin on;" if $startspin =~ /true|yes|on/i;
+    $preloadscript .= "set frank $frank;" if $frank;
+    $preloadscript .= "set debugscript $debugscript;" if $debugscript;
+    return $preloadscript;
+}
+
+sub dumpVars {
     print <<END;
     name=$name
     width=$width
@@ -159,7 +208,7 @@ sub writeCommentedEmbed {
 
 sub writeJmolApplet {
     print OUTPUT
-	"  <applet name=$name code='JmolApplet' archive='$archive'\n"
+	"  <applet name='$name' code='JmolApplet' archive='$archive'\n"
 	if $name;
     print OUTPUT
 	"  <applet code='JmolApplet' archive='$archive'\n"
@@ -175,7 +224,10 @@ sub writeJmolApplet {
     print OUTPUT
 	"    <param name='load'    value='$src' />\n" if $src;
     print OUTPUT
-	"    <param name='script'  value='$script' />\n" if $script;
+	"    <param name='preloadscript'\n",
+	"           value='$preloadscript' />\n" if $preloadscript;
+    print OUTPUT
+	"    <param name='script'  value=$script />\n" if $script;
     print OUTPUT
 	"    <param name='LoadStructCallback' value='$loadStructCallback' />\n"
 	if $loadStructCallback;
@@ -186,7 +238,7 @@ sub writeJmolApplet {
 	"    <param name='PauseCallback'      value='$pauseCallback' />\n"
 	if $pauseCallback;
     print OUTPUT
-	"    <param name=PickCallback       value=$pickCallback />\n"
+	"    <param name='PickCallback'       value='$pickCallback' />\n"
 	if $pickCallback;
     print OUTPUT
 	"  </applet>\n";
@@ -214,7 +266,7 @@ sub writeButtonControl {
     print OUTPUT
 	"          width='$width' height='$height' mayscript='true' >\n";
     print OUTPUT
-	"    <param name='target' value=$target />\n".
+	"    <param name='target' value='$target' />\n".
 	"    <param name='type'   value='$controlType' />\n";
     print OUTPUT
 	"    <param name='group'  value='$group' />\n"
@@ -232,13 +284,21 @@ sub writeButtonControl {
 	"  </applet>\n";
 }
 
-sub getParameter {
+sub getRawParameter {
     my ($tag) = @_;
     for (my $i = 0; $i < $tokenCount; ++$i) {
 	my $token = $tokens->[$i];
 	return $tokens->[$i + 1] if ($token =~ /$tag/i);
     }
     return undef;
+}
+
+sub getUnquotedParameter {
+    my $value = getRawParameter(@_);
+    return undef unless $value;
+    $value =~ s/^[\'\"]//;
+    $value =~ s/[\'\"]$//;
+    return $value;
 }
 
 sub convertNewline {

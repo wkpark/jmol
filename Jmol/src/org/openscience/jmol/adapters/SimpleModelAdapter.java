@@ -521,6 +521,7 @@ class MolModel extends Model {
 
 class PdbModel extends Model {
   String line;
+  int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
   int currentModelNumber;
@@ -533,6 +534,7 @@ class PdbModel extends Model {
     fileHeader = "";
     boolean accumulatingHeader = true;
     while ((line = reader.readLine()) != null) {
+      lineLength = line.length();
       if (line.startsWith("ATOM  ") ||
           line.startsWith("HETATM")) {
         atom();
@@ -576,7 +578,7 @@ class PdbModel extends Model {
         accumulatingHeader = false;
         continue;
       }
-      if (line.startsWith("HEADER") && line.length() >= 66) {
+      if (line.startsWith("HEADER") && lineLength >= 66) {
         setModelName(line.substring(62, 66));
         continue;
       }
@@ -597,7 +599,7 @@ class PdbModel extends Model {
       char charAlternateLocation = line.charAt(16);
       if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
         return;
-      int len = line.length();
+      int len = lineLength;
       String elementSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
       int cchAtomicSymbol = elementSymbol.length();
       if (cchAtomicSymbol == 0 ||
@@ -703,7 +705,7 @@ class PdbModel extends Model {
   int getTargetSerial(int i) {
     int offset = i * 5 + 11;
     int offsetEnd = offset + 5;
-    if (offsetEnd <= line.length()) {
+    if (offsetEnd <= lineLength) {
       String str = line.substring(offset, offsetEnd).trim();
       if (str.length() > 0) {
         try {
@@ -726,8 +728,23 @@ class PdbModel extends Model {
   }
 
   void model() {
+    /****************************************************************
+     * mth 2004 02 28
+     * note that the pdb spec says:
+     * COLUMNS       DATA TYPE      FIELD         DEFINITION
+     * ----------------------------------------------------------------------
+     *  1 -  6       Record name    "MODEL "
+     * 11 - 14       Integer        serial        Model serial number.
+     *
+     * but I received a file with the serial number right after the word MODEL :-(
+     ****************************************************************/
     try {
-      int modelNumber = Integer.parseInt(line.substring(10, 14).trim());
+      int startModelColumn = 6; // should be 10 0-based
+      int endModelColumn = 14;
+      if (endModelColumn > lineLength)
+        endModelColumn = lineLength;
+      int modelNumber =
+        Integer.parseInt(line.substring(startModelColumn, endModelColumn).trim());
       if (modelNumber != currentModelNumber + 1)
         System.out.println("Model number sequence seems confused");
       currentModelNumber = modelNumber;

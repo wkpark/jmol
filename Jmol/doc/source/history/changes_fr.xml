@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : changes.xml (v 1.2)
+  Translated from default version : changes.xml (v 1.3)
 -->
 <changes version="jmol-10.??">
   <change contributor="EW">
@@ -32,6 +32,9 @@
     Ajout du plugin DADMLBrowser qui permet de r&#x00E9;cup&#x00E9;rer des informations
     chimiques sur internet avec des requ&#x00EA;tes sur des indices et des URIs telles
     que dadml://any/pdbid?1CRN.
+  </change>
+  <change contributor="EW">
+    Ajout du support pour les fichiers smol Spartan '04.
   </change>
 </changes>
 

@@ -56,8 +56,17 @@ public class ModelManager {
     control.setStructuralChange();
   }
 
+  public ChemFile getChemFile() {
+    return chemfile;
+  }
+
   public boolean haveFile() {
     return haveFile;
+  }
+
+  public String getModelName() {
+    // FIXME mth -- model name goes here
+    return "jmol";
   }
 
   public double getRotationRadius() {

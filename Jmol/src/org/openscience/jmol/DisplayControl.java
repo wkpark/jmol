@@ -47,6 +47,7 @@ import javax.vecmath.AxisAngle4d;
 
 import java.net.URL;
 import java.io.InputStream;
+import java.io.File;
 
 final public class DisplayControl {
 
@@ -707,6 +708,10 @@ final public class DisplayControl {
     return fileManager.openFile(name);
   }
 
+  public String openFile(File file) {
+    return fileManager.openFile(file);
+  }
+
   /****************************************************************
    * delegated to ModelManager
    ****************************************************************/
@@ -720,6 +725,14 @@ final public class DisplayControl {
     // but perhaps not if we are in the midst of executing a script?
     eval.clearDefinitionsAndLoadPredefined();
     refreshFirmly();
+  }
+
+  public ChemFile getChemFile() {
+    return modelManager.getChemFile();
+  }
+
+  public String getModelName() {
+    return modelManager.getModelName();
   }
 
   public boolean haveFile() {

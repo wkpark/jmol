@@ -548,56 +548,6 @@ public class Jmol extends JPanel {
     }
   }
 
-  /**
-   * Reads a CML encoded molecule from a string.
-   *
-   * @param cmlString the CML encoded molecule string.
-   * @deprecated As of Jmol 4, replaced by {@link #readMolecule(Reader)}
-   * @throws IllegalArgumentException if the cmlString is null or empty.
-   */
-  public void readCML(String cmlString) {
-
-    if ((cmlString == null) || (cmlString.length() == 0)) {
-      throw new IllegalArgumentException(
-          "CML string cannot be null or empty.");
-    }
-    try {
-      StringReader input = new StringReader(cmlString);
-      readMolecule(input);
-      frame.setTitle("Molecule read from a string");
-    } catch (Exception ex) {
-      JOptionPane.showMessageDialog(Jmol.this,
-          "Unexpected exception: " + ex.getMessage()
-            + "\nPlease contact the Jmol development team.",
-              "Unexpected error", JOptionPane.ERROR_MESSAGE);
-      ex.printStackTrace();
-    }
-  }
-
-  /**
-   * Reads a CML encoded molecule.
-   *
-   * @param input a reader of a CML encoded molecule string.
-   * @deprecated As of Jmol 4, replaced by {@link #readMolecule(Reader)}
-   * @throws IllegalArgumentException if the input is null.
-   */
-  public void readCML(StringReader input) {
-
-    if (input == null) {
-      throw new IllegalArgumentException("input cannot be null.");
-    }
-    try {
-      readMolecule(input);
-      frame.setTitle("Molecule read from a string");
-    } catch (Exception ex) {
-      JOptionPane.showMessageDialog(Jmol.this,
-          "Unexpected exception: " + ex.getMessage()
-            + "\nPlease contact the Jmol development team.",
-              "Unexpected error", JOptionPane.ERROR_MESSAGE);
-      ex.printStackTrace();
-    }
-  }
-
   void setChemFile(ChemFile chemFile) {
 
     ChemFile oldChemFile = model.getChemFile();
@@ -1479,7 +1429,6 @@ public class Jmol extends JPanel {
         }
       }
     }
-
   }
 
 }

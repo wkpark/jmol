@@ -33,6 +33,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.StringReader;
+import java.io.Reader;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.ReaderFactory;
 
@@ -85,28 +87,42 @@ public class FileManager {
   public String openFile(String name) {
     InputStream istream = getInputStreamFromName(name);
     if (istream == null)
-        return "error opening url/filename " + name;
-    try {
-      openInputStream(istream);
-    } catch (Exception e) {
-      return "" + e;
-    }
-    return null;
+        return "error opening url/filename:" + name;
+    return openInputStream(istream);
   }
 
-  private void openInputStream(InputStream istream) throws JmolException {
-    InputStreamReader isr = new InputStreamReader(istream);
-    BufferedReader bufreader = new BufferedReader(isr);
+  public String openFile(File file) {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      return openInputStream(fis);
+    } catch (FileNotFoundException e) {
+      return "file not found:" + file;
+    }
+  }
+
+  public String openString(String strModel) {
+    return openReader(new StringReader(strModel));
+  }
+
+  private String openInputStream(InputStream istream) {
+    return openReader(new InputStreamReader(istream));
+  }
+
+  private String openReader(Reader rdr) {
+    BufferedReader bufreader = new BufferedReader(rdr);
     try {
       ChemFileReader reader = null;
       try {
         reader = ReaderFactory.createReader(bufreader);
+        /*
+          FIXME -- need to notify the awt component of file change
+        firePropertyChange(openFileProperty, oldFile, currentFile);
+        */
       } catch (IOException ex) {
-        throw new JmolException("readMolecule",
-            "Error determining input format: " + ex);
+        return "Error determining input format: " + ex;
       }
       if (reader == null) {
-        throw new JmolException("readMolecule", "Unknown input format");
+        return "unrecognized input format";
       }
       ChemFile newChemFile = reader.read();
 
@@ -114,15 +130,14 @@ public class FileManager {
         if (newChemFile.getNumberOfFrames() > 0) {
           control.setChemFile(newChemFile);
         } else {
-          throw new JmolException("readMolecule",
-              "the input appears to be empty");
+          return "file appears to be empty";
         }
       } else {
-        throw new JmolException("readMolecule",
-            "unknown error reading input");
+        return "unknown error reading input";
       }
     } catch (IOException ex) {
-      throw new JmolException("readMolecule", "Error reading input: " + ex);
+      return "Error reading input:" + ex;
     }
+    return null;
   }
 }

@@ -16,10 +16,10 @@
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />
   <property name="lib.dir" value="jars" />
-  <property name="appjars.dir" value="appjars" />
+  <property name="appjars.dir" value="${build.dir}/appjars" />
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="tests.classes.dir" value="${build.dir}/classes-tests" />
-  <property name="appletjars.dir" value="appletjars" />
+  <property name="appletjars.dir" value="${build.dir}/appletjars" />
   <property name="applet.classes.dir" value="${build.dir}/applet-classes" />
   <property name="tests.dir" value="${build.dir}/unit.tests" />
   <property name="dist.dir" value="${build.dir}/dist" />

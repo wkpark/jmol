@@ -34,19 +34,40 @@ final class Line3D {
     this.g3d = g3d;
   }
 
-  void drawLine(int argb, int x1, int y1, int z1, int x2, int y2, int z2,
+  final static boolean useCohenSutherland = false;
+
+  void drawLine(int argb, int xA, int yA, int zA, int xB, int yB, int zB,
                 boolean tDotted) {
-    int cc1 = clipCode(x1, y1);
-    int cc2 = clipCode(x2, y2);
+    int dxBA = xB - xA, dyBA = yB - yA, dzBA = zB - zA;
+    int cc1 = clipCode(xA, yA, zA);
+    int cc2 = clipCode(xB, yB, zB);
+    if ((cc1 | cc2) == 0) {
+      if (tDotted)
+        plotDottedLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
+      else
+        plotLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
+      return;
+    }
+      
+    /*
+    if (tDotted)
+      plotDottedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
+    else
+      plotLineDeltaClipped(argb, argb, xA, yA, zA, dxBA, dyBA, dzBA);
+    if (true)
+      return;
+    */
+
+    int x1 = xA, y1 = yA, z1 = zA, x2 = xB, y2 = yB, z2 = zB;
     int xLast = g3d.xLast;
     int yLast = g3d.yLast;
-    while ((cc1 | cc2) != 0) {
+    int slab = g3d.slab;
+    do {
       if ((cc1 & cc2) != 0)
         return;
       int dx = x2 - x1;
       int dy = y2 - y1;
       int dz = z2 - z1;
-
 
       if (cc1 != 0) { //cohen-sutherland line clipping
         if      ((cc1 & xLT) != 0)
@@ -55,9 +76,11 @@ final class Line3D {
           { y1 += ((xLast-x1)*dy)/dx; z1 += ((xLast-x1)*dz)/dx; x1 = xLast; }
         else if ((cc1 & yLT) != 0)
           { x1 +=      (-y1 * dx)/dy; z1 +=      (-y1 * dz)/dy; y1 = 0; }
-        else
+        else if ((cc1 & yGT) != 0)
           { x1 += ((yLast-y1)*dx)/dy; z1 += ((yLast-y1)*dz)/dy; y1 = yLast; }
-        cc1 = clipCode(x1, y1);
+        else
+          { x1 +=  ((slab-z1)*dx)/dz; y1 +=  ((slab-z1)*dy)/dz; z1 = slab; }
+        cc1 = clipCode(x1, y1, z1);
       } else {
         if      ((cc2 & xLT) != 0)
           { y2 +=      (-x2 * dy)/dx; z2 +=      (-x2 * dz)/dx; x2 = 0; }
@@ -65,33 +88,48 @@ final class Line3D {
           { y2 += ((xLast-x2)*dy)/dx; z2 += ((xLast-x2)*dz)/dx; x2 = xLast; }
         else if ((cc2 & yLT) != 0)
           { x2 +=      (-y2 * dx)/dy; z2 +=      (-y2 * dz)/dy; y2 = 0; }
-        else
+        else if ((cc2 & yGT) != 0)
           { x2 += ((yLast-y2)*dx)/dy; z2 += ((yLast-y2)*dz)/dy; y2 = yLast; }
-        cc2 = clipCode(x2, y2);
+        else
+          { x2 +=  ((slab-z2)*dx)/dz; y2 +=  ((slab-z2)*dy)/dz; z2 = slab; }
+        cc2 = clipCode(x2, y2, z2);
       }
+    } while ((cc1 | cc2) != 0);
+    
+    if (useCohenSutherland) {
+      if (tDotted)
+        plotDottedLineDeltaUnclipped(argb, x1, y1, z1, x2-x1, y2-y1, z2-z1);
+      else
+        plotLineDeltaUnclipped(argb, argb, x1, y1, z1, x2-x1, y2-y1, z2-z1);
+    } else {
+      if (tDotted)
+        plotDottedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
+      else
+        plotLineDeltaClipped(argb, argb, xA, yA, zA, dxBA, dyBA, dzBA);
     }
-    if (tDotted)
-      plotDottedLineDeltaUnclipped(argb, x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
-    else
-      plotLineDeltaUnclipped(argb, x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
+  final static int zLT = 16;
   final static int xLT = 8;
   final static int xGT = 4;
   final static int yLT = 2;
   final static int yGT = 1;
 
-  private final int clipCode(int x, int y) {
+  private final int clipCode(int x, int y, int z) {
     int code = 0;
     if (x < 0)
-      code |= 8;
+      code |= xLT;
     else if (x >= g3d.width)
-      code |= 4;
+      code |= xGT;
 
     if (y < 0)
-      code |= 2;
+      code |= yLT;
     else if (y >= g3d.height)
-      code |= 1;
+      code |= yGT;
+
+    if (z < g3d.slab)
+      code |= zLT;
+
     return code;
   }
 
@@ -175,8 +213,8 @@ final class Line3D {
     } while (--n > 0);
   }
 
-  void plotDottedLineDeltaUnclipped(int argb,
-                                    int x1, int y1, int z1, int dx, int dy, int dz) {
+  void plotDottedLineDeltaUnclipped(int argb, int x1, int y1, int z1,
+                                    int dx, int dy, int dz) {
     boolean flipFlop = true;
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
@@ -251,6 +289,91 @@ final class Line3D {
       }
       int zCurrent = zCurrentScaled >> 10;
       if (flipFlop && zCurrent < zbuf[offset]) {
+        zbuf[offset] = (short)zCurrent;
+        pbuf[offset] = argb;
+      }
+      flipFlop = !flipFlop;
+    } while (--n > 0);
+  }
+
+  void plotDottedLineDeltaClipped(int argb, int x, int y, int z,
+                                  int dx, int dy, int dz) {
+    boolean flipFlop = true;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width, height = g3d.height, slab = g3d.slab;
+    int offset = y * width + x;
+    if (x >= 0 && x < width && y >= 0 && y < height) {
+      if (z >= slab && z < zbuf[offset]) {
+        zbuf[offset] = (short)z;
+        pbuf[offset] = argb;
+      }
+    }
+    if (dx == 0 && dy == 0)
+      return;
+
+    // int xCurrent = x;
+    // int yCurrent = y;
+    int xIncrement = 1;
+    // int yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      // yIncrement = -1;
+      yOffsetIncrement = -width;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      int n = dx;
+      do {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          // yCurrent += yIncrement;
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (flipFlop && zCurrent >= slab && zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] = argb;
+        }
+        flipFlop = !flipFlop;
+      } while (--n > 0);
+      return;
+    }
+    int roundingFactor = dy - 1;
+    if (dy < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int twoDyAccumulatedXError = 0;
+    int n = dy;
+    do {
+      // yCurrent += yIncrement;
+      offset += yOffsetIncrement;
+      zCurrentScaled += zIncrementScaled;
+      twoDyAccumulatedXError += twoDx;
+      if (twoDyAccumulatedXError > dy) {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        twoDyAccumulatedXError -= twoDy;
+      }
+      int zCurrent = zCurrentScaled >> 10;
+      if (flipFlop && zCurrent >= slab && zCurrent < zbuf[offset]) {
         zbuf[offset] = (short)zCurrent;
         pbuf[offset] = argb;
       }
@@ -473,12 +596,11 @@ final class Line3D {
                             int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
-    int width = g3d.width;
-    int height = g3d.height;
+    int width = g3d.width, height = g3d.height, slab = g3d.slab;
     int offset = y1 * width + x1;
     if (x1 >= 0 && x1 < width &&
         y1 >= 0 && y1 < height) {
-      if (z1 < zbuf[offset]) {
+      if (z1 >= slab && z1 < zbuf[offset]) {
         zbuf[offset] = (short)z1;
         pbuf[offset] = argb1;
       }
@@ -525,7 +647,7 @@ final class Line3D {
         if (xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent < zbuf[offset]) {
+          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
             pbuf[offset] = n > nMid ? argb1 : argb2;
           }
@@ -551,7 +673,7 @@ final class Line3D {
       if (xCurrent >= 0 && xCurrent < width &&
           yCurrent >= 0 && yCurrent < height) {
         int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent < zbuf[offset]) {
+        if (zCurrent >= slab && zCurrent < zbuf[offset]) {
           zbuf[offset] = (short)zCurrent;
           pbuf[offset] = n > nMid ? argb1 : argb2;
         }

@@ -124,8 +124,6 @@ final public class Graphics3D {
 
   public void setSlabValue(int slab) {
     this.slab = slab;
-    System.out.println("width=" + width + " height=" + height +
-                       " slab=" + slab);
   }
 
   private void downSample() {
@@ -395,7 +393,8 @@ final public class Graphics3D {
     }
     int argb2 = Colix.getArgb(colix2);
     if (x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
-        y1 < 0 || y1 >= height || y2 < 0 || y2 >= height) {
+        y1 < 0 || y1 >= height || y2 < 0 || y2 >= height ||
+        z1 < slab || z2 < slab) {
       int xMid = (x1 + x2) / 2;
       int yMid = (y1 + y2) / 2;
       int zMid = (z1 + z2) / 2;
@@ -713,7 +712,8 @@ final public class Graphics3D {
   
   void plotLineDelta(int argb, int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
-        y < 0 || y >= height || y + dy < 0 || y + dy >= height)
+        y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
+        z < slab || z + dz < slab)
       line3d.plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
     else
       line3d.plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
@@ -722,7 +722,8 @@ final public class Graphics3D {
   void plotLineDelta(int argb1, int argb2,
                      int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
-        y < 0 || y >= height || y + dy < 0 || y + dy >= height)
+        y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
+        z < slab || z + dz < slab)
       line3d.plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
     else if (argb1 == argb2)
       line3d.plotLineDeltaUnclipped(argb1, x, y, z, dx, dy, dz);

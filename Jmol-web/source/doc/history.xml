@@ -40,11 +40,13 @@
       </p>
       
       <p>
-        In the end of 2002, Egon Willighagen became the new project leader and a
-        start was made with integrating Jmol with <a href="http://cdk.sf.net/">The
-        Chemical Development Kit</a>, something that was already planned in September
-        2000 by Dan, Egon and Christoph Steinbeck. In the same period Miguel Howard
-        completely rewrote the graphical engine of Jmol.
+        In the end of 2002, Egon Willighagen became the new project leader
+	and a start was made with integrating Jmol with
+	<a href="http://cdk.sf.net/">The Chemical Development Kit</a>,
+	something that was already planned in September 2000 by Dan, Egon
+	and Christoph Steinbeck. In the same period Miguel Howard
+        completely rewrote the graphical engine of Jmol and implemented
+	the RasMol/Chime script interpreter. 
       </p>
     </section>
 

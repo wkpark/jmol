@@ -5,14 +5,28 @@
     
     <header>
       <p>
-        Both the application and the applet support scripting. The examples below
-        use the applet, but those scripts can be used in the application too.
-        The scripting in Jmol is compatible with Rasmol and Chime scripts, so transition
-        from Chime to Jmol should be easy.
+      Both the application and the applet support scripting.
+        The examples below use the applet, but the scripts can be used
+	in the Jmol application too. We recommend testing and debugging
+	long scripts within the context of the Jmol application because
+	you can receive diagnostic error messages. 
+      </p>
+      <p>
+        The scripting in Jmol is compatible with Rasmol and Chime scripts,
+	so transition from Chime to Jmol should be easy.
+      </p>
+      <p>
+        A description of the scripting language is available as part of
+	the Jmol Users Guide.
+      </p>
+      <p>
+        To develop more flexible web applications using the Jmol applet,
+	you write JavaScript code which passes text strings using the
+	"script" method of the applet.
       </p>
     </header>
 
-    <section title="Scripting with Forms">
+    <section title="Basic Scripting">
       <p>
         This examples shows some of the scripting available.
 <appletExample>
@@ -70,7 +84,7 @@ background white</a>]]>
       </p>
     </section>
 
-    <section title="Basic Scripting">
+    <section title="Advanced Scripting">
       <p>
         This examples shows more advanced interaction of a HTML page with
         the applet.
@@ -116,6 +130,11 @@ Enter your RasMol/Chime script here
   onClick="run(document.area.script.value)">
 </form>
 <br>
+Enter one-line RasMol/Chime script commands here
+<form name="line" onSubmit=
+ "run(document.line.script.value);document.line.script.select();return false;">
+<input name="script" onFocus="document.line.script.select()" size=50 type=text>
+</form>
 </td></tr></table>
 
 <script>
@@ -190,11 +209,11 @@ linkScript('monitor 1 4');
     <param name="load"   value="SN1_reaction.xyz">
   </applet>
   <form>
-    <input type="button" value="rewind" onClick="play('animate rewind')">
-    <input type="button" value="prev" onClick="play('animate prev')">
-    <input type="button" value="next" onClick="play('animate next')">
-    <input type="button" value="play" onClick="play('animate play')">
-    <input type="button" value="playrev" onClick="play('animate revplay')">
+    <input type="button" value="rewind"  onClick="play('animate rewind')">
+    <input type="button" value="prev"    onClick="play('animate prev')">
+    <input type="button" value="next"    onClick="play('animate next')">
+    <input type="button" value="play"    onClick="play('animate play')">
+    <input type="button" value="revplay" onClick="play('animate revplay')">
     <br>
     <input type="button" value="repeated with 2 second delay"
            onClick="play('animate play; loop 2')">

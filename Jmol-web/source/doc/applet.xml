@@ -5,18 +5,21 @@
     
     <header>
       <p>
-      A subset of the Jmol application is available for use as an applet. 
+      Most of the functionality of the Jmol application is available
+      for use as web browser applet. 
       </p>
     </header>
 
     <section title="Requirements">
-      <p>The Jmol applet requires Java 1.1 or later.
-      Although, the applet should work with any browser, the latest
-      <a href="http://java.sun.com/getjava/download.html">Java Plug-in</a>
-      is recommended.
+      <p>The Jmol applet runs with the JVM 1.1 included with the most
+      popular browsers on the Win32 platform.</p>
+      <p>For other platforms and for better rendering quality we
+      strongly recommend the latest Sun Java Virtual Machine,
+      available through the
+      <a href="http://java.sun.com/getjava/download.html">Java Plug-in</a>.
       </p>
-
     </section>
+
     <section title="Downloading the applet">
       <p>To use the applet, you must first download the applet distribution and
       extract the files. It can be downloaded from <a
@@ -32,81 +35,77 @@
       </ul>
       </p>
 
-      <p>In the jars directory are several jar files. Some of them are
-      optional. The jmol-applet.jar contains the majority of the applet and
-      therefore is required. The vecmath1.1-1.12.jar contains linear algebra
-      routines and is also required. The cdk-cml.jar and gnujaxp-saxonly.jar are
-      used for reading CML files, and are optional. You will only need to
-      include them if you wish to read CML files.
-      </p>
+      <p>JmolApplet.jar contains all the classes needed to support the
+      Jmol applet. No other jar files are needed. </p>
     </section>
 
     <section title="Creating a Web page">
-      <p>To use the Jmol applet in a web page, use the &lt;APPLET&gt; tag with
-      parameters specifying the molecule file to load. For example, the
-      this HTML was used to display the applet seen below.
+      <p>To use the Jmol applet in a web page, use the HTML standard
+      &lt;APPLET&gt; element. The <b>code</b>, <b>archive</b>, <b>width</b>
+      and <b>height</b> attributes are required. If you will be using
+      JavaScript to drive the applet you will want to use the <b>name</b>
+      attribute to uniquely identify the applet.
+      </p>
+      <p> The <b>param</b> element is used to pass parameters to the applet.
+      You will normally specify the parameter with name="load" in order
+      to load a molecule. You may also use JavaScript to dynamically
+      load molecules into the applet. See the
+      <a href="scripting.html">Scripting</a> page for more information.
 
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200">
-  <PARAM NAME="load" VALUE="caffeine.xyz"/>
-</APPLET>]]>
+<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar" 
+        width="200" height="200">
+  <param name="load" value="caffeine.xyz"/>
+</applet>]]>
 </appletExample>
-
       </p>
 
-      <p>The following applet displays a CML file. Note the additional jars
-      listed in the archive parameter.
+      <p>The following applet displays a CML (Chemical Markup Language) file. 
       
 <appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
+<![CDATA[<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar" 
+        width="200" height="200">
+  <param name="load" value="methanol1.cml"/>
 </APPLET>]]>
 </appletExample>
-
       </p>
 
-      <p>CML data can also be embedded in the HTML page. The "format" parameter
-      must be specfied with the value "cmlString", and the model contains the
-      string CML data which encoded with the approriate HTML entities. The
-      following applet displays the same molecule as above, but the CML data is
+      <p>Some types of molecular data can be embedded in the HTML
+      page. In this case, the data is passed as the value of the
+      the "loadInline" parameter. The following applet displays the
+      same molecule as above, but the CML data is
       embedded rather than in a file.
       
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
-  <PARAM NAME="loadInline" VALUE="&lt;?xml version=&quot;1.0&quot; ?&gt;
-&lt;!DOCTYPE molecule
-  SYSTEM &quot;http://www.xml-cml.org/dtd/cml1_0.dtd&quot; []&gt;
-&lt;molecule id=&quot;METHANOL&quot;&gt;
-  &lt;atomArray&gt;
-    &lt;stringArray builtin=&quot;id&quot;&gt;
+  <PARAM NAME="loadInline" VALUE="
+<?xml version='1.0' ?>
+<!DOCTYPE molecule
+  SYSTEM 'http://www.xml-cml.org/dtd/cml1_0.dtd' []>
+<molecule id='METHANOL'>
+  <atomArray>
+    <stringArray builtin='id'>
       a1 a2 a3 a4 a5 a6
-    &lt;/stringArray&gt;
-    &lt;stringArray builtin=&quot;elementType&quot;&gt;
+    </stringArray>
+    <stringArray builtin='elementType'>
       C O H H H H
-    &lt;/stringArray&gt;
-    &lt;floatArray builtin=&quot;x3&quot; units=&quot;pm&quot;&gt;
+    </stringArray>
+    <floatArray builtin='x3' units='pm'>
       -0.748 0.558 -1.293 -1.263 -0.699 0.716
-    &lt;/floatArray&gt;
-    &lt;floatArray builtin=&quot;y3&quot; units=&quot;pm&quot;&gt;
+    </floatArray>
+    <floatArray builtin='y3' units='pm'>
       -0.015 0.420 0.202 0.754 -0.934 1.404
-    &lt;/floatArray&gt;
-    &lt;floatArray builtin=&quot;z3&quot; units=&quot;pm&quot;&gt;
+    </floatArray>
+    <floatArray builtin='z3' units='pm'>
       0.024 -0.278 -0.901 0.600 0.609 0.137
-    &lt;/floatArray&gt;
-  &lt;/atomArray&gt;
-&lt;/molecule&gt;"/>
+    </floatArray>
+  </atomArray>
+</molecule>
+"/>
 </APPLET>]]>
 </appletExample>
       </p>
-    </section>
-
-    <section title="More applet examples">
-      <p>Examples of the applets showing animations can be 
-      found <a href="applet2.html">here</a>. Also the 
-      <a href="scripting.html">Scripting</a> page uses applets in the examples.</p>
     </section>
 
     <section title="Applet parameters">
@@ -115,43 +114,50 @@
       </p>
       <appletParameterList>
         <param name="load">
-          A file relative to the HTML page.
+          A file relative to the HTML page on the same web server where
+	  the applet was loaded from. The applet security manager prevents
+	  the applet from accessing molecule files which are stored on
+	  other web servers. 
         </param>
         
         <param name="loadInline">
-          Escaped CML data (&lt;, &gt;, &quot; written as &amp;lt;, &amp;gt;, &amp;quot;).
+          CML or other file format data stored inline. 
         </param>
         
         <param name="bgcolor">
-          The background colour
+          The specification of the background color. Acceptable parameter
+	  values are consistent with HTML: a hash mark followed by a
+	  hexadecimal color specification (#RRGGBB) or one of the sixteen
+	  sRGB color names (black silver gray white maroon red purple
+	  fuchsia green lime olive yellow navy blue teal aqua).
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="bgcolor" VALUE="black"/>
+  <PARAM NAME="bgcolor" VALUE="#00A0A0">/
 </APPLET>]]>
 </appletExample>
         </param>
         
         <param name="style">
-          The atom and bond rendering style.  One of:
+          The rendering style used for atoms and bonds.  One of:
           <ul>
-            <li>SHADED</li>
-            <li>QUICKDRAW</li>
-            <li>WIREFRAME</li>
+            <li>shaded &lt;default&gt;</li>
+            <li>quickdraw</li>
+            <li>wireframe</li>
           </ul>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="style" VALUE="QUICKDRAW"/>
+  <PARAM NAME="style" VALUE="quickdraw"/>
 </APPLET>]]>
 </appletExample>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="style" VALUE="WIREFRAME"/>
+  <PARAM NAME="style" VALUE="wireframe"/>
 </APPLET>]]>
 </appletExample>
         </param>
@@ -159,18 +165,10 @@
         <param name="label">
           The labels to display for atoms.  One of:
           <dl>
-            <dt>none</dt> <dd>do not display labels.</dd>
+            <dt>none &lt;default&gt;</dt> <dd>do not display labels.</dd>
             <dt>symbol</dt> <dd>label atoms with their atomic symbol.</dd>
             <dt>number</dt> <dd>label atoms with their number.</dd>
           </dl>
-          The default value is NONE.
-<appletExample>
-<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
-        WIDTH="200" HEIGHT="200">
-  <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="label" VALUE="number"/>
-</APPLET>]]>
-</appletExample>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
@@ -178,19 +176,27 @@
   <PARAM NAME="label" VALUE="symbol"/>
 </APPLET>]]>
 </appletExample>
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="load" VALUE="methanol1.cml"/>
+  <PARAM NAME="label" VALUE="number"/>
+</APPLET>]]>
+</appletExample>
         </param>
         
         <param name="wireframeRotation">
-          Whether or not to use the wireframe mode during rotations.  One of:
+          Whether or not to use the wireframe mode during rotations.
+	  Improves rendering performance of large molecules. One of:
           <ul>
-            <li>ON</li>
-            <li>OFF</li>
+            <li>true</li>
+            <li>false &lt;default&gt;</li>
           </ul>
         <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="wireframeRotation" VALUE="ON"/>
+  <PARAM NAME="wireframeRotation" VALUE="true"/>
 </APPLET>]]>
 </appletExample>
 </param>
@@ -198,16 +204,100 @@
       </appletParameterList>
     </section>
     
-    <section title="Using the applet">
-      <p>The following keys and mouse actions control the applet:
+    <section title="Mouse gestures">
+      <p>The following mouse actions control the applet:
         <ul>
-          <li>Left Mouse Button - rotates the molecule in x and y dimensions</li>
-          <li>Shift-Right Mouse Button - rotates the molecule in the z dimension</li>
-          <li>Ctrl-Right Mouse Button - translates the molecule</li>
-          <li>Shift-Left Mouse Button - zooms in and out</li>
-          <li>Ctrl-Left Mouse Button - controls the slab [if selected through scripting]</li>
+          <li>Left Mouse Button -
+	      rotates the molecule in x and y dimensions</li>
+	  <li>Right Mouse Button -
+	      &lt;reserved for future expansion&gt;</li>
+          <li>Shift-Right Mouse Button -
+	      horizontal movement of the mouse rotates the molecule
+	      in the z dimension</li>
+          <li>Ctrl-Right Mouse Button -
+	      translates (moves) the molecule</li>
+          <li>Shift-Left Mouse Button -
+	      vertical movement of the mouse zooms in and out</li>
+          <li>Ctrl-Left Mouse Button -
+	      controls the slab functionality for slicing through
+	      a molecule
+	      [if enabled through scripting <b>set slab on</b>]</li>
         </ul>
       </p>
+      <p>These mouse gestures were chosen to be compatible with the
+      MDL Chime plug-in.
+      </p>
+    </section>
+
+    <section title="Animation examples">
+      <p>A carbon-cation rearrangement reaction
+
+<appletExample>
+<![CDATA[
+  <applet name="anim" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+          width="350" height="350">
+    <param name="load"   value="SN1_reaction.cml">
+  </applet>
+  <form>
+    <input type="button" value="rewind"
+           onClick="document.anim.script('animate rewind')">
+    <input type="button" value="prev"
+           onClick="document.anim.script('animate prev')">
+    <input type="button" value="next"
+           onClick="document.anim.script('animate next')">
+    <input type="button" value="play"
+           onClick="document.anim.script('animate play')">
+    <input type="button" value="revplay"
+           onClick="document.anim.script('animate revplay')">
+  </form>
+ ]]>
+</appletExample>
+      </p>
+
+      <p>Rotamers of ethane
+      
+<appletExample>
+<![CDATA[
+  <script>
+  function play2(script) {
+    document.anim2.script(script);
+  }
+  </script>
+<APPLET name="anim2" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+    WIDTH="350" HEIGHT="350">
+  <PARAM NAME="load" VALUE="conformeren.cml"/>
+</APPLET>
+  <form>
+    <input type="button" value="rewind"  onClick="play2('animate rewind')">
+    <input type="button" value="prev"    onClick="play2('animate prev')">
+    <input type="button" value="next"    onClick="play2('animate next')">
+    <input type="button" value="play"    onClick="play2('animate play')">
+    <input type="button" value="revplay" onClick="play2('animate revplay')">
+  </form>
+]]>
+</appletExample>
+      </p>
+    </section>
+    
+    <section title="Examples with other file formats">
+      <p>Aspirin in MDL mol file format
+      
+<appletExample>
+<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar"
+    width="350" height="350">
+  <param name="load" value="aspirina.mol"/>
+  <param name="bgcolor" value="navy"/>
+  <param name="label"   value="symbol"/>
+  <param name="wireframeRotation" value="true"/>
+</applet>
+]]>
+</appletExample>
+      </p>
+
+      <p>The <a href="scripting.html">Scripting</a> page demonstrates
+        additional examples.
+      </p>
+
     </section>
 
   </body>

@@ -3122,8 +3122,7 @@ public class Eval implements Runnable {
 
     int fps = 30;
     int totalSteps = (int)(floatSecondsTotal * fps);
-    if (totalSteps > 1
-        && (aaTotal.angle > 0.01f || aaTotal.angle < -0.01f)) {
+    if (totalSteps > 1) {
       aaStep.angle /= totalSteps;
       int frameTimeMillis = 1000 / fps;
       long targetTime = System.currentTimeMillis();

@@ -1,16 +1,18 @@
 <project name="Jmol" default="main" basedir=".">
 
-	<property name="version" value="20010504" />
+	<property name="version" value="20010505" />
 	<property name="Jmol.home" value="${user.dir}" />
 	<property name="source.dir" value="src" />
 	<property name="generatedSource.dir" value="generatedSource" />
 	<property name="lib.dir" value="jars" />
 	<property name="classes.dir" value="classes" />
 	<property name="dist.dir" value="dist" />
-  <property name="sourcedist.dir" value="sourcedist" />
+	<property name="sourcedist.dir" value="sourcedist" />
+	<property name="doc.dir" value="doc" />
 	<property name="javadoc.dir" value="javadoc" />
 
-	<property name="docbook.dir" value="${user.dir}/../docbook" />
+	<!-- property name="docbook.dir" value="${user.dir}/../docbook" / -->
+        <property name="docbook.dir" value="/usr/lib/sgml/stylesheet/xsl/docbook/nwalsh" />
 
 	<property name="classpath" value="${lib.dir}/sax.jar:${lib.dir}/aelfred.jar:${lib.dir}/cml.jar:${lib.dir}/Acme.jar:${lib.dir}/vecmath1.1-1.12.jar:${lib.dir}/junit.jar:${lib.dir}/jas.jar"/>
 
@@ -22,7 +24,7 @@
 	
 	<target name="init" >
 		<uptodate property="jmolGuilde.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
-			<srcfiles dir="doc/source" includes="JMolGuide.docbook.xml" />
+			<srcfiles dir="${doc.dir}/source" includes="JMolGuide.docbook.xml" />
 		</uptodate>
 		<uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
 			<srcfiles dir="src" includes="**/*.java" />
@@ -33,7 +35,7 @@
 		<echo message="Generating user's guide" />
 		<mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
 		<java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" classname="com.icl.saxon.StyleSheet" classpath="${lib.dir}/saxon.jar" >
-			<arg value="${user.dir}/doc/source/JMolGuide.docbook.xml" />
+			<arg value="${user.dir}/${doc.dir}/source/JMolGuide.docbook.xml" />
 			<arg value="${docbook.dir}/html/chunk.xsl" />
 		</java>
 	</target>
@@ -139,9 +141,6 @@
 		<copy todir="${sourcedist.dir}/jmol-${version}/${lib.dir}" >
 			<fileset dir="${lib.dir}">
 				<exclude name="jmol*.jar" />
-				<exclude name="swing.jar" />
-				<exclude name="junit.jar" />
-				<exclude name="saxon.jar" />
 			</fileset>
 		</copy>
 		<copy todir="${sourcedist.dir}/jmol-${version}" >
@@ -150,8 +149,14 @@
 				<include name="jmol.mac" />
 				<include name="jmol.bat" />
 				<include name="*.txt" />
+				<include name="build.xml" />
 			</fileset>
-      <fileset dir="src" />
+		</copy>
+		<copy todir="${sourcedist.dir}/jmol-${version}/src" >
+			<fileset dir="src" />
+		</copy>
+		<copy todir="${sourcedist.dir}/jmol-${version}/${doc.dir}" >
+			<fileset dir="${doc.dir}" />
 		</copy>
 		<copy todir="${sourcedist.dir}/jmol-${version}/samples" >
 			<fileset dir="samples" />
@@ -173,11 +178,13 @@
 			<fileset dir=".">
 				<include name="*.txt" />
 			</fileset>
-      <fileset dir="src" />
+		</copy>
+		<copy todir="${sourcedist.dir}/jmol-applet-${version}/src" >
+			<fileset dir="src" />
 		</copy>
 	</target>
   
-  <target name="sourcedist.tar.gz" depends="sourcedist">
+	<target name="sourcedist.tar.gz" depends="sourcedist">
 		<tar tarfile="jmol.source.tar" basedir="${sourcedist.dir}" includes="**"/>
 		<gzip zipfile="jmol-${version}.source.tar.gz" src="jmol.source.tar"/>
 		<delete file="jmol.source.tar" />
@@ -197,6 +204,7 @@
 		</delete>
 		<delete dir="${javadoc.dir}"/>
 		<delete dir="${dist.dir}"/>
+		<delete dir="${sourcedist.dir}"/>
 	</target>
 
 	<target name="run" depends="classes">

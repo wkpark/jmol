@@ -119,10 +119,10 @@ public final class Atom implements Bspt.Tuple {
     return false;
   }
 
-  Bond bondMutually(Atom atomOther, int order) {
+  Bond bondMutually(Atom atomOther, int order, JmolViewer viewer) {
     if (isBonded(atomOther))
       return null;
-    Bond bond = new Bond(this, atomOther, order, group.chain.frame.viewer);
+    Bond bond = new Bond(this, atomOther, order, viewer);
     addBond(bond);
     atomOther.addBond(bond);
     return bond;

@@ -199,7 +199,7 @@ final public class Frame {
 
   void bondAtoms(Atom atom1, Atom atom2,
                              int order) {
-    addBond(atom1.bondMutually(atom2, order));
+    addBond(atom1.bondMutually(atom2, order, viewer));
   }
 
   public boolean hasVibrationVectors() {
@@ -635,7 +635,7 @@ final public class Frame {
                                    atomNear, atomNear.getBondingRadiusFloat(),
                                    iter.foundDistance2());
           if (order > 0)
-            addBond(atom.bondMutually(atomNear, order));
+            addBond(atom.bondMutually(atomNear, order, viewer));
         }
       }
       iter.release();
@@ -707,7 +707,8 @@ final public class Frame {
           continue;
         if (atom.isBonded(atomNear))
           continue;
-        addBond(atom.bondMutually(atomNear, JmolConstants.BOND_H_REGULAR));
+        addBond(atom.bondMutually(atomNear, JmolConstants.BOND_H_REGULAR,
+                                  viewer));
         System.out.println("adding an hbond between " + atom.atomIndex +
                            " & " + atomNear.atomIndex);
       }

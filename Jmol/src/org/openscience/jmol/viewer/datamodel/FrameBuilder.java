@@ -40,7 +40,6 @@ final public class FrameBuilder {
   }
 
   protected void finalize() {
-    System.out.println("FrameBuilder.finalize() called!");
   }
 
   public Frame buildFrame(Object clientFile) {
@@ -86,8 +85,6 @@ final public class FrameBuilder {
               iterAtom.getClientAtomReference());
     }
 
-    finishBuildingGroup();
-    
     {
       ModelAdapter.BondIterator iterBond =
         adapter.getBondIterator(clientFile);
@@ -117,9 +114,10 @@ final public class FrameBuilder {
 
     frame.doUnitcellStuff();
     frame.doAutobond();
+    finalizeGroupBuild();
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;
-    System.out.println("Build a frame:" + msToBuild + " ms");
+    //    System.out.println("Build a frame:" + msToBuild + " ms");
     adapter.finish(clientFile);
     finalizeBuild();
     return frame;
@@ -164,7 +162,6 @@ final public class FrameBuilder {
   }
 
   void finalizeBuild() {
-    finalizeGroupBuild();
     currentModel = null;
     currentChain = null;
     atoms = null;
@@ -202,9 +199,8 @@ final public class FrameBuilder {
         groupInsertionCode != currentGroupInsertionCode) {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
-      finishBuildingGroup();
-      startBuildingGroup(currentChain, group3,
-                         groupSequenceNumber, groupInsertionCode);
+      startGroup(currentChain, group3,
+                 groupSequenceNumber, groupInsertionCode, atomCount);
     }
     Atom atom = new Atom(viewer,
                          currentModelIndex,
@@ -217,8 +213,6 @@ final public class FrameBuilder {
                          x, y, z,
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ);
-
-    registerAtomWithGroup(atom);
 
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + ATOM_GROWTH_INCREMENT);
@@ -252,7 +246,7 @@ final public class FrameBuilder {
                                      bondCount + 2 * ATOM_GROWTH_INCREMENT);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
-    Bond bond = atom1.bondMutually(atom2, order);
+    Bond bond = atom1.bondMutually(atom2, order, viewer);
     if (bond != null)
       bonds[bondCount++] = bond;
   }
@@ -261,97 +255,104 @@ final public class FrameBuilder {
   // special handling for groups
   ////////////////////////////////////////////////////////////////
 
-  boolean hasPendingGroup;
+  final static int defaultGroupCount = 32;
+  int groupCount;
+  Chain[] chains = new Chain[defaultGroupCount];
+  String[] group3s = new String[defaultGroupCount];
+  int[] seqcodes = new int[defaultGroupCount];
+  int[] firstAtomIndexes = new int[defaultGroupCount];
+
+  final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
 
   void initializeGroupBuild() {
-    hasPendingGroup = false;
+    groupCount = 0;
   }
 
   void finalizeGroupBuild() {
-    hasPendingGroup = false;
-    chain = null;
+    // run this loop in increasing order so that the
+    // groups get defined going up
+    for (int i = 0; i < groupCount; ++i) {
+      distinguishAndPropogateGroup(chains[i], group3s[i], seqcodes[i],
+                                   firstAtomIndexes[i],
+                                   i == groupCount - 1
+                                   ? atomCount : firstAtomIndexes[i + 1]);
+      chains[i] = null;
+      group3s[i] = null;
+    }
   }
 
-  Chain chain;
-  String group3;
-  int seqcode;
-  int firstAtomIndex, lastAtomIndex;
+  void startGroup(Chain chain, String group3,
+                  int groupSequenceNumber, char groupInsertionCode,
+                  int firstAtomIndex) {
+    if (groupCount == group3s.length) {
+      chains = (Chain[])Util.doubleLength(chains);
+      group3s = Util.doubleLength(group3s);
+      seqcodes = Util.doubleLength(seqcodes);
+      firstAtomIndexes = Util.doubleLength(firstAtomIndexes);
+    }
+    firstAtomIndexes[groupCount] = firstAtomIndex;
+    chains[groupCount] = chain;
+    group3s[groupCount] = group3;
+    seqcodes[groupCount] =
+      Group.getSeqcode(groupSequenceNumber, groupInsertionCode);
+    ++groupCount;
+  }
 
-  int distinguishingBits;
-  final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
-
-  void startBuildingGroup(Chain chain, String group3,
-                          int groupSequenceNumber, char groupInsertionCode) {
-    if (hasPendingGroup)
-      throw new NullPointerException();
-    hasPendingGroup = true;
-    this.chain = chain;
-    this.group3 = group3;
-    this.seqcode = Group.getSeqcode(groupSequenceNumber, groupInsertionCode);
-    firstAtomIndex = -1;
-    distinguishingBits = 0;
+  void distinguishAndPropogateGroup(Chain chain, String group3, int seqcode,
+                                    int firstAtomIndex, int maxAtomIndex) {
+    /*
+    System.out.println("distinguish & propogate group:" +
+                       " group3:" + group3 +
+                       " seqcode:" + Group.getSeqcodeString(seqcode) +
+                       " firstAtomIndex:" + firstAtomIndex +
+                       " maxAtomIndex:" + maxAtomIndex);
+    */
+    int distinguishingBits = 0;
+    // clear previous specialAtomIndexes
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )
       specialAtomIndexes[i] = Integer.MIN_VALUE;
-  }
-
-
-  void registerAtomWithGroup(Atom atom) {
-    if (! hasPendingGroup)
-      throw new NullPointerException();
-    int atomIndex = atom.atomIndex;
-    if (firstAtomIndex < 0)
-      firstAtomIndex = lastAtomIndex = atomIndex;
-    else if (++lastAtomIndex != atomIndex) {
-      System.out.println("unexpected atom index while building group\n" +
-                         " expected:" + lastAtomIndex +
-                         " received:" + atomIndex);
-      throw new NullPointerException();
+    
+    for (int i = maxAtomIndex; --i >= firstAtomIndex; ) {
+      int specialAtomID = atoms[i].specialAtomID;
+      if (specialAtomID > 0) {
+        if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
+          distinguishingBits |= 1 << specialAtomID;
+        specialAtomIndexes[specialAtomID] = i;
+      }
     }
-    int specialAtomID = atom.specialAtomID;
-    if (specialAtomID > 0) {
-      if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
-        distinguishingBits |= 1 << specialAtomID;
-      if (specialAtomIndexes[specialAtomID] < 0)
-        specialAtomIndexes[specialAtomID] = atomIndex;
-    }
-  }
 
+    int lastAtomIndex = maxAtomIndex - 1;
+    if (lastAtomIndex < firstAtomIndex)
+      throw new NullPointerException();
 
-  void finishBuildingGroup() {
-    if (! hasPendingGroup)
-      return;
-    Group group = distinguishAndAllocateGroup();
-    propogateGroup(group, firstAtomIndex, lastAtomIndex);
-    chain.addGroup(group);
-    hasPendingGroup = false;
-    chain = null;
-  }
-  
-  Group distinguishAndAllocateGroup() {
     Group group = null;
+    //    System.out.println("distinguishingBits=" + distinguishingBits);
     if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
         JmolConstants.ATOMID_PROTEIN_MASK) {
+      //      System.out.println("may be an AminoMonomer");
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
-                                               specialAtomIndexes);
+                                               specialAtomIndexes, atoms);
     } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
                JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
-                                               specialAtomIndexes);
+                                               specialAtomIndexes, atoms);
     } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
                 JmolConstants.ATOMID_NUCLEIC_MASK)) {
       group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
                                                  firstAtomIndex, lastAtomIndex,
-                                                 specialAtomIndexes);
+                                                 specialAtomIndexes, atoms);
     }
+
     if (group == null)
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
-    return group;
-  }
 
-  void propogateGroup(Group group, int firstAtomIndex, int lastAtomIndex) {
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+    chain.addGroup(group);
+
+    ////////////////////////////////////////////////////////////////
+    for (int i = maxAtomIndex; --i >= firstAtomIndex; )
       atoms[i].setGroup(group);
   }
 }
+

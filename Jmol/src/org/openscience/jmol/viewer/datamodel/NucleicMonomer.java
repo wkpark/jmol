@@ -68,7 +68,7 @@ public class NucleicMonomer extends Monomer {
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstAtomIndex, int lastAtomIndex,
-                        int[] specialAtomIndexes) {
+                        int[] specialAtomIndexes, Atom[] atoms) {
 
     byte[] offsets = scanForOffsets(firstAtomIndex,
                                     specialAtomIndexes,

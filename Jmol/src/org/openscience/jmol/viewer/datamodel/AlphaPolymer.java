@@ -41,7 +41,11 @@ public class AlphaPolymer extends Polymer {
       return;
     int structureCount = polymerIndexEnd - polymerIndexStart + 1;
     if (structureCount < 1) {
-      System.out.println("structure definition error");
+      System.out.println("structure definition error\n" +
+                         " polymerIndexStart:" + polymerIndexStart +
+                         " polymerIndexEnd:" + polymerIndexEnd +
+                         " startSeqcode=" + Group.getSeqcodeString(startSeqcode) +
+                         " endSeqcode=" + Group.getSeqcodeString(endSeqcode));
       return;
     }
     ProteinStructure proteinstructure = null;

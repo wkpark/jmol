@@ -42,15 +42,38 @@ public class AminoMonomer extends AlphaMonomer {
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstAtomIndex, int lastAtomIndex,
-                        int[] specialAtomIndexes) {
+                        int[] specialAtomIndexes, Atom[] atoms) {
     byte[] offsets = scanForOffsets(firstAtomIndex, specialAtomIndexes,
                                     interestingAminoAtomIDs);
-    if (offsets == null)
+    if (offsets == null ||
+        ! isBondedCorrectly(firstAtomIndex, offsets, atoms))
       return null;
     AminoMonomer aminoMonomer =
       new AminoMonomer(chain, group3, seqcode,
                        firstAtomIndex, lastAtomIndex, offsets);
     return aminoMonomer;
+  }
+
+  static boolean isBondedCorrectly(int offset1, int offset2,
+                                   int firstAtomIndex,
+                                   byte[] offsets, Atom[] atoms) {
+    int atomIndex1 = firstAtomIndex + (offsets[offset1] & 0xFF);
+    int atomIndex2 = firstAtomIndex + (offsets[offset2] & 0xFF);
+    /*
+    System.out.println("isBondedCorrectly() " +
+                       " atomIndex1=" + atomIndex1 +
+                       " atomIndex2=" + atomIndex2);
+    */
+    if (atomIndex1 >= atomIndex2)
+      return false;
+    return atoms[atomIndex1].isBonded(atoms[atomIndex2]);
+  }
+
+  static boolean isBondedCorrectly(int firstAtomIndex, byte[] offsets,
+                                 Atom[] atoms) {
+    return (isBondedCorrectly(2, 0, firstAtomIndex, offsets, atoms) &&
+            isBondedCorrectly(0, 3, firstAtomIndex, offsets, atoms) &&
+            isBondedCorrectly(3, 1, firstAtomIndex, offsets, atoms));
   }
   
   ////////////////////////////////////////////////////////////////

@@ -85,7 +85,7 @@ abstract class Monomer extends Group {
     }
     return offsets;
   }
-                        
+
   ////////////////////////////////////////////////////////////////
 
   boolean isAminoMonomer() { return false; }

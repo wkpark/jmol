@@ -92,10 +92,39 @@ class CartoonRenderer extends Renderer {
       iNext1 = mainchainLast;
     if (iNext2 > mainchainLast)
       iNext2 = mainchainLast;
-    calcAverage(mainchain, iPrev2, iPrev1, s0);
-    calcAverage(mainchain, iPrev1, i, s1);
-    calcAverage(mainchain, i, iNext1, s2);
-    calcAverage(mainchain, iNext1, iNext2, s3);
+
+    if (mainchain[iPrev2].isHelixOrSheet()) {
+      viewer.transformPoint(mainchain[iPrev2].structure.getAxisEndPoint(), s0);
+      System.out.println("iPrev2 isHelixOrSheet");
+    }
+    else
+      calcAverage(mainchain, iPrev2, iPrev1, s0);
+
+    if (mainchain[iPrev1].isHelixOrSheet()) {
+      viewer.transformPoint(mainchain[iPrev1].structure.getAxisEndPoint(), s1);
+      System.out.println("iPrev1 isHelixOrSheet");
+    }
+    else
+      calcAverage(mainchain, iPrev1, i, s1);
+
+    if (mainchain[iNext1].isHelixOrSheet()) {
+      viewer.transformPoint(mainchain[iNext1].structure.getAxisStartPoint(),
+                            s2);
+      System.out.println("iNext1 isHelixOrSheet");
+    }
+    else
+      calcAverage(mainchain, i, iNext1, s2);
+
+    if (mainchain[iNext2].isHelixOrSheet()) {
+      System.out.println("iNext2 isHelixOrSheet");
+      Point3f point = mainchain[iNext2].structure.getAxisStartPoint();
+      System.out.println("point=" + point);
+      viewer.transformPoint(point,
+                            s3);
+    }
+    else
+      calcAverage(mainchain, iNext1, iNext2, s3);
+
     int madBeg, madMid, madEnd;
     madBeg = madMid = madEnd = mads[i];
     if (! mainchain[iPrev1].isHelixOrSheet())

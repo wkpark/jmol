@@ -88,4 +88,14 @@ public abstract class PdbStructure {
     return segments;
   }
 
+  public Point3f getAxisStartPoint() {
+    calcAxis();
+    return axisA;
+  }
+
+  public Point3f getAxisEndPoint() {
+    calcAxis();
+    return axisB;
+  }
+
 }

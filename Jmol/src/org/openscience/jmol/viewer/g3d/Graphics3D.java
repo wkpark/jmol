@@ -45,6 +45,7 @@ final public class Graphics3D {
   Sphere3D sphere3d;
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
+  Hermite3D hermite3d;
 
   boolean tFullSceneAntialiasing;
   boolean tPaintingInProgress;
@@ -82,6 +83,7 @@ final public class Graphics3D {
     this.sphere3d = new Sphere3D(viewer, this);
     this.triangle3d = new Triangle3D(viewer, this);
     this.cylinder3d = new Cylinder3D(viewer, this);
+    this.hermite3d = new Hermite3D(viewer, this);
   }
 
   public void setSize(int width, int height) {
@@ -469,8 +471,18 @@ final public class Graphics3D {
 
   public void fillCylinder(short colix1, short colix2, int w,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
+    //    hermite3d.render(colix1, colix2, w,
+    //                     x1-40, y1-40, z1, x1, y1, z1, x2, y2, z2,
+    //                     x2+40, y2+40, z2+40);
     cylinder3d.render(colix1, colix2, w,
-                       x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+                      x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+  }
+
+  public void fillHermite(short colix1, short colix2, int w,
+                          int x0, int y0, int z0, int x1, int y1, int z1,
+                          int x2, int y2, int z2, int x3, int y3, int z3) {
+    hermite3d.render(colix1, colix2, w,
+                     x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3);
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {

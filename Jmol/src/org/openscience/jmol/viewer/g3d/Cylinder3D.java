@@ -61,7 +61,8 @@ public class Cylinder3D {
     this.diameter = diameter;
     if (this.diameter <= 1) {
       if (this.diameter == 1)
-        g3d.plotLineDelta(colix1, colix2, xOrigin, yOrigin, zOrigin, dx, dy, dz);
+        g3d.plotLineDelta(colix1, colix2,
+                          xOrigin, yOrigin, zOrigin, dx, dy, dz);
       return;
     }
     this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
@@ -230,4 +231,5 @@ public class Cylinder3D {
     g3d.fillSphereCentered(colix2, diameter,
                             xOrigin+dx, yOrigin+dy, zOrigin+dz);
   }
+
 }

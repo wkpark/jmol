@@ -107,8 +107,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       control.setStyleAtom(DisplayControl.SHADING);
       
       control.setColorBackground(getParameter("bgcolor"));
-      style(getParameter("style"));
-      label(getParameter("label"));
+      setStyle(getParameter("style"));
+      setLabelStyle(getParameter("label"));
       //      setAtomPropertiesFromFile(getParameter("atomTypes"));
 
       String wfr = getParameter("wireframeRotation");
@@ -191,7 +191,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
                                  DisplayControl.SHADING,
                                  DisplayControl.WIREFRAME};
 
-  public void style(String style) {
+  public void setStyle(String style) {
     for (int i = 0; i < styleStrings.length; ++i) {
       if (styleStrings[i].equalsIgnoreCase(style)) {
         control.setStyleAtom(styles[i]);
@@ -206,7 +206,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
                                       DisplayControl.SYMBOLS,
                                       DisplayControl.NUMBERS};
 
-  public void label(String style) {
+  public void setLabelStyle(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
       if (labelStyleStrings[i].equalsIgnoreCase(style)) {
         control.setStyleLabel(labelStyles[i]);

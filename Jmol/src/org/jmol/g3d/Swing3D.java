@@ -37,6 +37,21 @@ import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.SinglePixelPackedSampleModel;
 
+/**
+ *<p>
+ * Implementation of Platform3D when using Swing on JVMs >= 1.2
+ *</p>
+ *<p>
+ * Uses the BufferedImage classe to turn an int[] into an
+ * Image that can be drawn.
+ *</p>
+ *<p>
+ * This is used by everything except
+ * MSFT Internet Explorer with the MSFT JVM,
+ * and Netscape 4.* on both Win32 and MacOS 9.
+ *</p>
+ */
+  
 final class Swing3D extends Platform3D {
 
   final static DirectColorModel rgbColorModel =

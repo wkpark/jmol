@@ -26,7 +26,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Xyzd;
-import org.jmol.bspt.Bspt;
+import org.jmol.bspt.Tuple;
 
 import java.util.Hashtable;
 
@@ -34,7 +34,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-final class Atom implements Bspt.Tuple {
+final class Atom implements Tuple {
 
   final static byte VISIBLE_FLAG = 0x01;
   final static byte VIBRATION_VECTOR_FLAG = 0x02;

@@ -23,44 +23,48 @@
  */
 package org.jmol.bspt;
 
-/*
-  mth 2003 05
-  BSP-Tree stands for Binary Space Partitioning Tree
-  The tree partitions n-dimensional space (in our case 3) into little
-  boxes, facilitating searches for things which are *nearby*.
-  For some useful background info, search the web for "bsp tree faq".
-  Our application is somewhat simpler because we are storing points instead
-  of polygons.
-  We are working with three dimensions. For the purposes of the Bspt code
-  these dimensions are stored as 0, 1, or 2. Each node of the tree splits
-  along the next dimension, wrapping around to 0.
-    mySplitDimension = (parentSplitDimension + 1) % 3;
-  A split value is stored in the node. Values which are <= splitValue are
-  stored down the left branch. Values which are >= splitValue are stored
-  down the right branch. If searchValue == splitValue then the search must
-  proceed down both branches.
-  Planar and crystaline substructures can generate values which are == along
-  one dimension.
-  To get a good picture in your head, first think about it in one dimension,
-  points on a number line. The tree just partitions the points.
-  Now think about 2 dimensions. The first node of the tree splits the plane
-  into two rectangles along the x dimension. The second level of the tree
-  splits the subplanes (independently) along the y dimension into smaller
-  rectangles. The third level splits along the x dimension.
-  In three dimensions, we are doing the same thing, only working with
-  3-d boxes.
-
-  Three iterators are provided
-    enumNear(Bspt.Tuple center, float distance)
-      returns all the points contained in of all the boxes which are within
-      distance from the center.
-    enumSphere(Bspt.Tuple center, float distance)
-      returns all the points which are contained within the sphere (inclusive)
-      defined by center + distance
-    enumHemiSphere(Bspt.Tuple center, float distance)
-      same as sphere, but only the points which are greater along the
-      x dimension
-*/
+/**
+ *<p>
+ *  a Binary Space Partitioning Tree
+ *</p>
+ *<p>
+ *  The tree partitions n-dimensional space (in our case 3) into little
+ *  boxes, facilitating searches for things which are *nearby*.
+ *</p>
+ *<p>
+ *  For some useful background info, search the web for "bsp tree faq".
+ *  Our application is somewhat simpler because we are storing points instead
+ *  of polygons.
+ *</p>
+ *<p>
+ *  We are working with three dimensions. For the purposes of the Bspt code
+ *  these dimensions are stored as 0, 1, or 2. Each node of the tree splits
+ *  along the next dimension, wrapping around to 0.
+ *  <pre>
+ *    mySplitDimension = (parentSplitDimension + 1) % 3;
+ *  </pre>
+ *  A split value is stored in the node. Values which are <= splitValue are
+ *  stored down the left branch. Values which are >= splitValue are stored
+ *  down the right branch. If searchValue == splitValue then the search must
+ *  proceed down both branches.
+ *</p>
+ *<p>
+ *  Planar and crystaline substructures can generate values which are == along
+ *  one dimension.
+ *</p>
+ *<p>
+ *  To get a good picture in your head, first think about it in one dimension,
+ *  points on a number line. The tree just partitions the points.
+ *  Now think about 2 dimensions. The first node of the tree splits the plane
+ *  into two rectangles along the x dimension. The second level of the tree
+ *  splits the subplanes (independently) along the y dimension into smaller
+ *  rectangles. The third level splits along the x dimension.
+ *  In three dimensions, we are doing the same thing, only working with
+ *  3-d boxes.
+ *</p>
+ *
+ * @author Miguel, miguel@jmol.org
+ */
 
 public final class Bspt {
 
@@ -72,96 +76,106 @@ public final class Bspt {
   private Element eleRoot;
 
   /*
-  static float distance(int dim, Tuple t1, Tuple t2) {
+    static float distance(int dim, Tuple t1, Tuple t2) {
     return Math.sqrt(distance2(dim, t1, t2));
-  }
+    }
 
-  static float distance2(int dim, Tuple t1, Tuple t2) {
+    static float distance2(int dim, Tuple t1, Tuple t2) {
     float distance2 = 0.0;
     while (--dim >= 0) {
-      float distT = t1.getDimensionValue(dim) - t2.getDimensionValue(dim);
-      distance2 += distT*distT;
+    float distT = t1.getDimensionValue(dim) - t2.getDimensionValue(dim);
+    distance2 += distT*distT;
     }
     return distance2;
-  }
+    }
   */
 
+  /**
+   * Create a bspt with the specified number of dimensions. For a 3-dimensional
+   * tree (x,y,z) call new Bspt(3).
+   */
   public Bspt(int dimMax) {
     this.dimMax = dimMax;
     this.eleRoot = new Leaf();
     treeDepth = 1;
   }
 
+  /**
+   * Iterate through all of your data points, calling addTuple
+   */
   public void addTuple(Tuple tuple) {
     eleRoot = eleRoot.addTuple(0, tuple);
   }
 
+  /**
+   * prints some simple stats to stdout
+   */
   public void stats() {
     System.out.println("bspt treeDepth=" + treeDepth +
                        " count=" + eleRoot.count);
   }
 
   /*
-  public void dump() {
+    public void dump() {
     eleRoot.dump(0);
-  }
+    }
 
-  public String toString() {
+    public String toString() {
     return eleRoot.toString();
-  }
+    }
   */
 
   /*
-  Enumeration enum() {
+    Enumeration enum() {
     return new EnumerateAll();
-  }
+    }
 
-  class EnumerateAll implements Enumeration {
+    class EnumerateAll implements Enumeration {
     Node[] stack;
     int sp;
     int i;
     Leaf leaf;
 
     EnumerateAll() {
-      stack = new Node[stackDepth];
-      sp = 0;
-      Element ele = eleRoot;
-      while (ele instanceof Node) {
-        Node node = (Node) ele;
-        if (sp == stackDepth)
-          System.out.println("Bspt.EnumerateAll tree stack overflow");
-        stack[sp++] = node;
-        ele = node.eleLE;
-      }
-      leaf = (Leaf)ele;
-      i = 0;
+    stack = new Node[stackDepth];
+    sp = 0;
+    Element ele = eleRoot;
+    while (ele instanceof Node) {
+    Node node = (Node) ele;
+    if (sp == stackDepth)
+    System.out.println("Bspt.EnumerateAll tree stack overflow");
+    stack[sp++] = node;
+    ele = node.eleLE;
+    }
+    leaf = (Leaf)ele;
+    i = 0;
     }
 
     boolean hasMoreElements() {
-      return (i < leaf.count) || (sp > 0);
+    return (i < leaf.count) || (sp > 0);
     }
 
     Object nextElement() {
-      if (i == leaf.count) {
-        //        System.out.println("-->" + stack[sp-1].splitValue);
-        Element ele = stack[--sp].eleGE;
-        while (ele instanceof Node) {
-          Node node = (Node) ele;
-          stack[sp++] = node;
-          ele = node.eleLE;
-        }
-        leaf = (Leaf)ele;
-        i = 0;
-      }
-      return leaf.tuples[i++];
+    if (i == leaf.count) {
+    //        System.out.println("-->" + stack[sp-1].splitValue);
+    Element ele = stack[--sp].eleGE;
+    while (ele instanceof Node) {
+    Node node = (Node) ele;
+    stack[sp++] = node;
+    ele = node.eleLE;
     }
-  }
+    leaf = (Leaf)ele;
+    i = 0;
+    }
+    return leaf.tuples[i++];
+    }
+    }
 
-  Enumeration enumNear(Tuple center, float distance) {
+    Enumeration enumNear(Tuple center, float distance) {
     return new EnumerateNear(center, distance);
-  }
+    }
 
-  class EnumerateNear implements Enumeration {
+    class EnumerateNear implements Enumeration {
     Node[] stack;
     int sp;
     int i;
@@ -170,63 +184,74 @@ public final class Bspt {
     Tuple center;
 
     EnumerateNear(Tuple center, float distance) {
-      this.distance = distance;
-      this.center = center;
+    this.distance = distance;
+    this.center = center;
 
-      stack = new Node[stackDepth];
-      sp = 0;
-      Element ele = eleRoot;
-      while (ele instanceof Node) {
-        Node node = (Node) ele;
-        if (center.getDimensionValue(node.dim) - distance <= node.splitValue) {
-          if (sp == stackDepth)
-            System.out.println("Bspt.EnumerateNear tree stack overflow");
-          stack[sp++] = node;
-          ele = node.eleLE;
-        } else {
-          ele = node.eleGE;
-        }
-      }
-      leaf = (Leaf)ele;
-      i = 0;
+    stack = new Node[stackDepth];
+    sp = 0;
+    Element ele = eleRoot;
+    while (ele instanceof Node) {
+    Node node = (Node) ele;
+    if (center.getDimensionValue(node.dim) - distance <= node.splitValue) {
+    if (sp == stackDepth)
+    System.out.println("Bspt.EnumerateNear tree stack overflow");
+    stack[sp++] = node;
+    ele = node.eleLE;
+    } else {
+    ele = node.eleGE;
+    }
+    }
+    leaf = (Leaf)ele;
+    i = 0;
     }
 
     boolean hasMoreElements() {
-      if (i < leaf.count)
-        return true;
-      if (sp == 0)
-        return false;
-      Element ele = stack[--sp];
-      while (ele instanceof Node) {
-        Node node = (Node) ele;
-        if (center.getDimensionValue(node.dim) + distance < node.splitValue) {
-          if (sp == 0)
-            return false;
-          ele = stack[--sp];
-        } else {
-          ele = node.eleGE;
-          while (ele instanceof Node) {
-            Node nodeLeft = (Node) ele;
-            stack[sp++] = nodeLeft;
-            ele = nodeLeft.eleLE;
-          }
-        }
-      }
-      leaf = (Leaf)ele;
-      i = 0;
-      return true;
+    if (i < leaf.count)
+    return true;
+    if (sp == 0)
+    return false;
+    Element ele = stack[--sp];
+    while (ele instanceof Node) {
+    Node node = (Node) ele;
+    if (center.getDimensionValue(node.dim) + distance < node.splitValue) {
+    if (sp == 0)
+    return false;
+    ele = stack[--sp];
+    } else {
+    ele = node.eleGE;
+    while (ele instanceof Node) {
+    Node nodeLeft = (Node) ele;
+    stack[sp++] = nodeLeft;
+    ele = nodeLeft.eleLE;
+    }
+    }
+    }
+    leaf = (Leaf)ele;
+    i = 0;
+    return true;
     }
 
     Object nextElement() {
-      return leaf.tuples[i++];
+    return leaf.tuples[i++];
     }
-  }
+    }
   */
 
   public SphereIterator allocateSphereIterator() {
     return new SphereIterator();
   }
 
+  /**
+   * Iterator used for finding all points within a sphere or a hemisphere
+   *<p>
+   * Obtain a SphereIterator by calling Bspt.allocateSphereIterator().
+   *<p>
+   * call initialize(...) or initializeHemizphere(...)
+   *<p>
+   * re-initialize in order to reuse the same SphereIterator
+   *
+   * @see Bspt.allocateSphereIterator
+   */
   public class SphereIterator {
     Node[] stack;
     int sp;
@@ -249,6 +274,10 @@ public final class Bspt {
       stack = new Node[treeDepth];
     }
 
+    /**
+     * initialize to return all points within the sphere defined
+     * by <code>center</code> and <code>radius</code>.
+     */
     public void initialize(Tuple center, float radius) {
       this.center = center;
       this.radius = radius;
@@ -273,11 +302,25 @@ public final class Bspt {
       leafIndex = 0;
     }
 
+    /**
+     * initialize to return all points within the hemisphere defined
+     * by <code>center</code> and <code>radius</code>.
+     *<p>
+     * the points returned are those that have a coordinate value >=
+     * to <code>center</code> along the first (x) dimension
+     *<p>
+     * Note that if you are iterating through all points, and two
+     * points are within <code>radius</code> and have the same
+     * x coordinate, then each will return the other
+     */
     public void initializeHemisphere(Tuple center, float radius) {
       initialize(center, radius);
       tHemisphere = true;
     }
 
+    /**
+     * nulls internal references
+     */
     public void release() {
       for (int i = treeDepth; --i >= 0; )
         stack[i] = null;
@@ -303,6 +346,9 @@ public final class Bspt {
       return true;
     }
     
+    /**
+     * normal iterator predicate
+     */
     public boolean hasMoreElements() {
       while (true) {
         for ( ; leafIndex < leaf.count; ++leafIndex)
@@ -331,33 +377,45 @@ public final class Bspt {
       }
     }
 
-    public Object nextElement() {
+    /**
+     * normal iterator method
+     */
+    public Tuple nextElement() {
       return leaf.tuples[leafIndex++];
     }
 
+    /**
+     * After calling nextElement(), allows one to find out
+     * the value of the distance squared. To get the distance
+     * just take the sqrt.
+     */
     public float foundDistance2() {
       return foundDistance2;
     }
   }
 
-  public interface Tuple {
-    public float getDimensionValue(int dim);
-  }
-
+  /**
+   * the internal tree is made up of elements ... either Node or Leaf
+   */
   private abstract class Element {
     int count;
     abstract Element addTuple(int level, Tuple tuple);
     /*
-    abstract void dump(int level);
+      abstract void dump(int level);
     */
   }
 
+  /**
+   * Nodes of the bspt. It is a binary tree so nodes contain two children.
+   * A splitValue tells which child should be followed. Values <= splitValue
+   * are stored down eleLE. Values >= splitValue are stored down eleGE.
+   */
   private class Node extends Element {
     Element eleLE;
     int dim;
     float splitValue;
     Element eleGE;
-    
+  
     Node(int level, Leaf leafLE) {
       if (level == treeDepth) {
         treeDepth = level + 1;
@@ -373,7 +431,7 @@ public final class Bspt {
       eleGE = new Leaf(leafLE, leafCountMax/2);
       count = leafCountMax;
     }
-
+  
     Element addTuple(int level, Tuple tuple) {
       float dimValue = tuple.getDimensionValue(dim);
       if (dimValue < splitValue ||
@@ -384,24 +442,27 @@ public final class Bspt {
       ++count;
       return this;
     }
-
+  
     /*
-    void dump(int level) {
+      void dump(int level) {
       System.out.println("");
       eleLE.dump(level + 1);
       for (int i = 0; i < level; ++i)
-        System.out.print("-");
+      System.out.print("-");
       System.out.println(">" + splitValue);
       eleGE.dump(level + 1);
-    }
-
-    public String toString() {
+      }
+    
+      public String toString() {
       return eleLE.toString() + dim + ":" +
-        splitValue + "\n" + eleGE.toString();
-    }
+      splitValue + "\n" + eleGE.toString();
+      }
     */
   }
 
+  /**
+   * A leaf of Tuple objects in the bsp tree
+   */
   private class Leaf extends Element {
     Tuple[] tuples;
     
@@ -446,47 +507,22 @@ public final class Bspt {
     }
     
     /*
-    void dump(int level) {
+      void dump(int level) {
       for (int i = 0; i < count; ++i) {
-        Tuple t = tuples[i];
-        for (int j = 0; j < level; ++j)
-          System.out.print(".");
-        for (int dim = 0; dim < dimMax-1; ++dim)
-          System.out.print("" + t.getDimensionValue(dim) + ",");
-        System.out.println("" + t.getDimensionValue(dimMax - 1));
+      Tuple t = tuples[i];
+      for (int j = 0; j < level; ++j)
+      System.out.print(".");
+      for (int dim = 0; dim < dimMax-1; ++dim)
+      System.out.print("" + t.getDimensionValue(dim) + ",");
+      System.out.println("" + t.getDimensionValue(dimMax - 1));
       }
-    }
+      }
 
-    public String toString() {
+      public String toString() {
       return "leaf:" + count + "\n";
-    }
+      }
     */
 
   }
+
 }
-
-/*
-class Point implements Bspt.Tuple {
-  float x;
-  float y;
-  float z;
-
-  Point(float x, float y, float z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-
-  float getDimensionValue(int dim) {
-    if (dim == 0)
-      return x;
-    if (dim == 1)
-      return y;
-    return z;
-  }
-
-  String toString() {
-    return "<" + x + "," + y + "," + z + ">";
-  }
-}
-*/

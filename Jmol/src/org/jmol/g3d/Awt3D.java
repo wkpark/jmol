@@ -34,7 +34,7 @@ import java.awt.image.ColorModel;
 
 /**
  *<p>
- * Uses AWT classes to implement Platform3D when running on 1.1 JVMs.
+ * Implementation of Platform3D when using AWT on 1.1 JVMs.
  *</p>
  *<p>
  * Uses the AWT imaging routines to convert an int[] of ARGB values

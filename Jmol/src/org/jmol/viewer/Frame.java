@@ -29,6 +29,7 @@ import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.Bspt;
+import org.jmol.bspt.Tuple;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
@@ -1058,11 +1059,11 @@ final class Frame {
   class WithinIterator implements AtomIterator {
 
     int bsptIndex;
-    Bspt.Tuple center;
+    Tuple center;
     float radius;
     Bspt.SphereIterator bsptIter;
 
-    void initialize(int bsptIndex, Bspt.Tuple center, float radius) {
+    void initialize(int bsptIndex, Tuple center, float radius) {
       initializeBspf();
       this.bsptIndex = bsptIndex;
       bsptIter = bspf.getSphereIterator(bsptIndex);

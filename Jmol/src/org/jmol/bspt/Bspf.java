@@ -23,9 +23,13 @@
  */
 package org.jmol.bspt;
 
-/*
-  A Binary Space Partitioning Forest
-  trees + an iterator
+/**
+ * A Binary Space Partitioning Forest
+ *<p>
+ * This is simply an array of Binary Space Partitioning Trees identified
+ * by indexes
+ *
+ * @author Miguel, miguel@jmol.org
 */
 
 public final class Bspf {
@@ -44,7 +48,7 @@ public final class Bspf {
     return bspts.length;
   }
   
-  public void addTuple(int bsptIndex, Bspt.Tuple tuple) {
+  public void addTuple(int bsptIndex, Tuple tuple) {
     if (bsptIndex >= bspts.length) {
       Bspt[] t = new Bspt[bsptIndex + 1];
       System.arraycopy(bspts, 0, t, 0, bspts.length);

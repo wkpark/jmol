@@ -96,7 +96,7 @@ public class JpegEncoder extends Frame
     }
 
     public void WriteCompressedData(BufferedOutputStream outStream) {
-        int offset, i, j, r, c,a ,b, temp = 0;
+        int i, j, r, c,a ,b;
         int comp, xpos, ypos, xblockoffset, yblockoffset;
         float inputArray[][];
         float dctArray1[][] = new float[8][8];
@@ -110,14 +110,14 @@ public class JpegEncoder extends Frame
          */
 
         int lastDCvalue[] = new int[JpegObj.NumberOfComponents];
-        int zeroArray[] = new int[64]; // initialized to hold all zeros
-        int Width = 0, Height = 0;
-        int nothing = 0, not;
+        //int zeroArray[] = new int[64]; // initialized to hold all zeros
+        //int Width = 0, Height = 0;
+        //int nothing = 0, not;
         int MinBlockWidth, MinBlockHeight;
 // This initial setting of MinBlockWidth and MinBlockHeight is done to
 // ensure they start with values larger than will actually be the case.
-        MinBlockWidth = ((imageWidth%8 != 0) ? (int) (Math.floor((double) imageWidth/8.0) + 1)*8 : imageWidth);
-        MinBlockHeight = ((imageHeight%8 != 0) ? (int) (Math.floor((double) imageHeight/8.0) + 1)*8: imageHeight);
+        MinBlockWidth = ((imageWidth%8 != 0) ? (int) (Math.floor(imageWidth/8.0) + 1)*8 : imageWidth);
+        MinBlockHeight = ((imageHeight%8 != 0) ? (int) (Math.floor(imageHeight/8.0) + 1)*8: imageHeight);
         for (comp = 0; comp < JpegObj.NumberOfComponents; comp++) {
                 MinBlockWidth = Math.min(MinBlockWidth, JpegObj.BlockWidth[comp]);
                 MinBlockHeight = Math.min(MinBlockHeight, JpegObj.BlockHeight[comp]);
@@ -128,8 +128,8 @@ public class JpegEncoder extends Frame
                xpos = c*8;
                ypos = r*8;
                for (comp = 0; comp < JpegObj.NumberOfComponents; comp++) {
-                  Width = JpegObj.BlockWidth[comp];
-                  Height = JpegObj.BlockHeight[comp];
+                  //Width = JpegObj.BlockWidth[comp];
+                  //Height = JpegObj.BlockHeight[comp];
                   inputArray = (float[][]) JpegObj.Components[comp];
 
                   for(i = 0; i < JpegObj.VsampFactor[comp]; i++) {
@@ -316,7 +316,7 @@ public class JpegEncoder extends Frame
     }
         
     void WriteArray(byte[] data, BufferedOutputStream out) {
-        int i, length;
+        int length;
         try {
                 length = (((int) (data[2] & 0xFF)) << 8) + (int) (data[3] & 0xFF) + 2;
                 out.write(data, 0, length);
@@ -603,11 +603,6 @@ class DCT
     public double[][] forwardDCTExtreme(float input[][])
     {
         double output[][] = new double[N][N];
-        double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
-        double tmp10, tmp11, tmp12, tmp13;
-        double z1, z2, z3, z4, z5, z11, z13;
-        int i;
-        int j;
         int v, u, x, y;
         for (v = 0; v < 8; v++) {
                 for (u = 0; u < 8; u++) {
@@ -815,7 +810,7 @@ class Huffman
           0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea,
           0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
           0xf9, 0xfa };
-    public int[] bitsACchrominance = { 0x11,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77 };;
+    public int[] bitsACchrominance = { 0x11,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77 };
     public int[] valACchrominance = 
         { 0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
           0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
@@ -1289,15 +1284,15 @@ class JpegInfo
     		    {
     		        throw new AWTException("Grabber returned false: " + grabber.status());
     		    }
-    		    catch (Exception e) {};
+    		    catch (Exception e) {}
             }
     	}
-    	catch (InterruptedException e) {};
+    	catch (InterruptedException e) {}
         float Y[][] = new float[compHeight[0]][compWidth[0]];
         float Cr1[][] = new float[compHeight[0]][compWidth[0]];
         float Cb1[][] = new float[compHeight[0]][compWidth[0]];
-        float Cb2[][] = new float[compHeight[1]][compWidth[1]];
-        float Cr2[][] = new float[compHeight[2]][compWidth[2]];
+        //float Cb2[][] = new float[compHeight[1]][compWidth[1]];
+        //float Cr2[][] = new float[compHeight[2]][compWidth[2]];
         int index = 0;
         for (y = 0; y < imageHeight; ++y)
     	{
@@ -1338,7 +1333,6 @@ class JpegInfo
         int inrow, incol;
         int outrow, outcol;
         float output[][];
-        int temp;
         int bias;
         inrow = 0;
         incol = 0;

@@ -445,7 +445,7 @@ final public class JmolConstants {
    * values are stored as MAR -- Milli Angstrom Radius
    * Used for spacefill rendering of atoms.
    * Values taken from OpenBabel.
-   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
+   * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
    */
   public final static short[] vanderwaalsMars = {
     1000, //   0  Xx big enough to see
@@ -566,7 +566,7 @@ final public class JmolConstants {
    * maximum number of bonds is stored in the top 4 bits
    * Used for bonding atoms when the client does not supply bonds. 
    * Values taken from OpenBabel.
-   * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
+   * @see <a href="http://openbabel.sourceforge.net">openbabel.sourceforge.net</a>
    */
   private final static short[] covalentMarsAndMaxBonds = {
     (0 << 12) + 0,    //   0  Xx big enough to bring attention to itself

@@ -332,15 +332,10 @@ class Jmol extends JPanel {
 
       /* Read only one argument as a file name for now: */
       String astring = args[0];
-      if (astring.equals("-test")) {
-        cmlString =
-            "<molecule id=\"METHANOL\"><atomArray><stringArray builtin=\"id\">a1 a2 a3 a4 a5 a6</stringArray><stringArray builtin=\"elementType\">C O H H H H</stringArray><floatArray builtin=\"x3\" units=\"pm\">-0.748 0.558 -1.293 -1.263 -0.699 0.716</floatArray>                                  <floatArray builtin=\"y3\" units=\"pm\">-0.015 0.420 0.202 0.754 -0.934 1.404</floatArray>                                      <floatArray builtin=\"z3\" units=\"pm\">0.024 -0.278 -0.901 0.600 0.609 0.137</floatArray></atomArray></molecule>";
-      } else {
-        initialFile = new File(getUserDirectory(), astring);
-        if (!initialFile.exists()) {
-          System.out.println("File not found: " + initialFile.toString());
-          System.exit(1);
-        }
+      initialFile = new File(getUserDirectory(), astring);
+      if (!initialFile.exists()) {
+        System.out.println("File not found: " + initialFile.toString());
+        System.exit(1);
       }
     }
 
@@ -357,10 +352,6 @@ class Jmol extends JPanel {
       // Open a file if on is given as an argument
       if (initialFile != null) {
         window.openFile(initialFile, "LetJmolDetermine");
-
-      } else if (cmlString != null) {
-        window.readCML(cmlString);
-
       }
 
       // Oke, by now it is time to execute the script

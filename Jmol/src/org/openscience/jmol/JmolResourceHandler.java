@@ -19,7 +19,6 @@
 package org.openscience.jmol;
 
 import java.net.URL;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -36,21 +35,10 @@ class JmolResourceHandler {
 
   private static JmolResourceHandler instance;
   private ResourceBundle resourceBundle;
-  private Locale locale;
 
   private JmolResourceHandler() {
-    locale = Locale.getDefault();
-    String localeString = System.getProperty("user.language");
-    if (locale != null) {
-        String lang = "en";
-        String country = "US";
-        StringTokenizer st = new StringTokenizer(localeString, "_");
-        if (st.hasMoreTokens()) lang = st.nextToken();
-        if (st.hasMoreTokens()) country = st.nextToken();
-        locale = new Locale(lang, country);
-    }
     resourceBundle =
-        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol", locale);
+        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
   }
 
   public static JmolResourceHandler getInstance() {
@@ -65,7 +53,7 @@ class JmolResourceHandler {
     String imageName = null;
     String resourceName = null;
     try {
-      resourceName = resourceBundle.getString(key);
+      resourceName = getString(key);
       imageName = "org/openscience/jmol/images/" + resourceName;
     } catch (MissingResourceException e) {
     }
@@ -107,10 +95,6 @@ class JmolResourceHandler {
     }
     String translatedText = getString(key.toString());
     return (translatedText != null) ? translatedText : text;
-  }
-
-  public synchronized Locale getLocale() {
-    return locale;
   }
 
   public synchronized Object getObject(String key) {

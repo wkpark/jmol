@@ -201,7 +201,7 @@ final public class FrameBuilder {
                                    groupSequenceNumber, groupInsertionCode);
     }
     Atom atom = new Atom(currentGroup,
-                         frame.atomCount,
+                         atomCount,
                          atomicNumber,
                          atomName,
                          formalCharge, partialCharge,

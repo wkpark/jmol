@@ -994,21 +994,22 @@ public interface JmolModelAdapter {
   public final static int[] argbsPdbChain = {
     // xwindows colors
     // ' '->0 'A'->1, 'B'->2
-    0xFF6B8E23, // OliveDrab
-    0xFF0000FF, // blue
-    0xFF00FFFF, // cyan
-    0xFF00FF00, // lime
-    0xFFFFFF00, // yellow
-    0xFFFF0000, // red
-    0xFFFF00FF, // magenta
-    0xFFFFA500, // orange
-    0xFF87CEEB, // SkyBlue
-    0xFF8B0000, // red4
-    0xFF006400, // DarkGreen
-    0xFF000080, // NavyBlue
-    0xFFA020F0, // purple
-    0xFF40E0D0, // turquoise
-    0xFFFA8072, // salmon
-    0xFF00FF7F, // SpringGreen
+    // colors are too bright and are washing out with hilites
+    0xFF6B8E23, // OliveDrab 0xFF6B8E23
+    0xFF0000F0, // blue 0xFF0000FF
+    0xFF00F0F0, // cyan 0xFF00FFFF
+    0xFF00F000, // lime 0xFF00FF00
+    0xFFF0F000, // yellow 0xFFFFFF00
+    0xFFF00000, // red 0xFFFF0000
+    0xFFF000F0, // magenta 0xFFFF00FF
+    0xFFFFA500, // orange 0xFFFFA500
+    0xFF87CEEB, // SkyBlue 0xFF87CEEB
+    0xFF8B0000, // red4 0xFF8B0000
+    0xFF006400, // DarkGreen 0xFF006400
+    0xFF000080, // NavyBlue 0xFF000080
+    0xFFA020F0, // purple 0xFFA020F0
+    0xFF40E0D0, // turquoise 0xFF40E0D0
+    0xFFFA8072, // salmon 0xFFFA8072
+    0xFF00FF7F, // SpringGreen 0xFF00FF7F
   };
 }

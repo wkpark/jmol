@@ -23,10 +23,9 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.render;
+package org.openscience.jmol.g25d;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.g25d.Graphics25D;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;

@@ -23,10 +23,9 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.render;
+package org.openscience.jmol.g25d;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.g25d.Graphics25D;
 
 import java.awt.Component;
 //import java.awt.Graphics;
@@ -56,83 +55,9 @@ public class ShadedSphereRenderer {
   public void render(Graphics25D g25d, int xUpperLeft, int yUpperLeft, int z,
                       int diameter, Color color, Color outline) {
     if (diameter < minCachedSize) {
-      switch (diameter) {
-      case 0:
-        break;
-      case 1:
+      if (diameter == 1) {
         g25d.setColor(outline);
         g25d.drawPixel(xUpperLeft, yUpperLeft, z);
-        break;
-      case 2:
-        g25d.setColor(color);
-        g25d.drawLine(xUpperLeft, yUpperLeft, z, xUpperLeft+1, yUpperLeft, z);
-        ++yUpperLeft;
-        g25d.setColor(outline);
-        g25d.drawLine(xUpperLeft, yUpperLeft, z, xUpperLeft+1, yUpperLeft, z);
-        break;
-      case 3:
-      case 4:
-        int diamMinus1 = diameter - 1;
-        int xLowerRight = xUpperLeft + diamMinus1;
-        int yLowerRight = yUpperLeft + diamMinus1;
-        g25d.setColor(color);
-        g25d.fillRect(xUpperLeft, yUpperLeft, z, diamMinus1, diamMinus1);
-        g25d.setColor(outline);
-        g25d.drawLine(xUpperLeft, yLowerRight, z, xLowerRight, yLowerRight, z);
-        g25d.drawLine(xLowerRight, yUpperLeft, z,
-                      xLowerRight, yLowerRight-1, z);
-        --xLowerRight; --yLowerRight;
-        g25d.drawLine(xLowerRight, yLowerRight, z,
-                      xLowerRight, yLowerRight, z);
-        break;
-      case 5:
-      case 6:
-        g25d.setColor(color);
-        int diamMinus2 = diameter - 2;
-        int diamMinus3 = diameter - 3;
-        g25d.drawLine(xUpperLeft+1, yUpperLeft, z,
-                      xUpperLeft + diamMinus3, yUpperLeft, z);
-        int y = yUpperLeft + 1;
-        for (int i = diameter - 3; --i >= 0; ++y)
-          g25d.drawLine(xUpperLeft, y, z, xUpperLeft + diamMinus3, y, z);
-        g25d.setColor(outline);
-        g25d.drawLine(xUpperLeft, y, z, xUpperLeft + diamMinus3, y, z);
-        ++y;
-        g25d.drawLine(xUpperLeft+1, y, z, xUpperLeft + diamMinus3, y, z);
-        int x = xUpperLeft + diamMinus2;
-        g25d.drawLine(x, yUpperLeft, z, x, yUpperLeft+diameter-1, z);
-        ++x;
-        g25d.drawLine(x, yUpperLeft+1, z, x, yUpperLeft+diamMinus2, z);
-        x = xUpperLeft + diamMinus3; y = yUpperLeft + diamMinus3;
-        g25d.drawPixel(x, y, z);
-        break;
-      case 7:
-        int xLeft = xUpperLeft + 2;
-        int xRight = xUpperLeft + diameter - 3;
-        int yT = yUpperLeft;
-        g25d.setColor(color);
-        g25d.drawLine(xLeft, yT, z, xRight, yT, z);
-        --xLeft; ++yT;
-        g25d.drawLine(xLeft, yT, z, xRight, yT, z);
-        --xLeft; ++yT; --xRight;
-        g25d.drawLine(xLeft, yT, z, xRight, yT, z);
-        ++yT;
-        g25d.drawLine(xLeft, yT, z, xRight-1, yT, z);
-        g25d.setColor(outline);
-        g25d.drawLine(xRight, yT, z, xRight, yT, z);
-        ++yT;
-        g25d.drawLine(xLeft, yT, z, xRight, yT, z);
-        ++xLeft; ++yT;
-        g25d.drawLine(xLeft, yT, z, xRight, yT, z);
-        ++xLeft; ++yT;
-        g25d.drawLine(xLeft, yT, z, xRight, yT, z);
-        ++xRight;
-        g25d.drawLine(xRight, yUpperLeft+2, z, xRight, yT, z);
-        ++xRight;
-        g25d.drawLine(xRight, yUpperLeft+1, z, xRight, yT-1, z);
-        ++xRight;
-        g25d.drawLine(xRight, yUpperLeft+2, z, xRight, yT-2, z);
-        break;
       }
       return;
     }
@@ -145,12 +70,12 @@ public class ShadedSphereRenderer {
       if (sphere == null)
         sphere = loadShadedSphereCache(control, color, shadedImages, diameter);
       int margin = control.getUseGraphics2D() ? 1 : 0;
-      g25d.drawImage(sphere, xUpperLeft - margin, yUpperLeft - margin, 0);
+      g25d.drawImage(sphere, xUpperLeft - margin, yUpperLeft - margin, z);
       return;
     }
     Image imgSphere = shadedImages[0];
     if (! control.getUseGraphics2D()) {
-      g25d.drawImage(imgSphere, xUpperLeft, yUpperLeft, 0,
+      g25d.drawImage(imgSphere, xUpperLeft, yUpperLeft, z,
                   diameter, diameter);
     } else if (diameter < maxSmoothedSize) {
       sphereG2D.drawSphereG2D(g25d, imgSphere,

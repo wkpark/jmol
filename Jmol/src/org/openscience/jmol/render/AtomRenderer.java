@@ -67,8 +67,6 @@ public class AtomRenderer {
   boolean useGraphics2D;
   Color colorSelection;
 
-  ShadedSphereRenderer shadedSphereRenderer;
-
   Atom atom;
   int x;
   int y;
@@ -111,17 +109,11 @@ public class AtomRenderer {
   }
 
   private void renderAtom() {
-    if (styleAtom == DisplayControl.SHADING && !fastRendering) {
-      if (shadedSphereRenderer == null)
-        shadedSphereRenderer = new ShadedSphereRenderer(control);
-      shadedSphereRenderer.render(g25d, xUpperLeft, yUpperLeft, z, diameter,
-                                  color, colorOutline);
-      return;
-    }
-    if (fastRendering || styleAtom == DisplayControl.WIREFRAME) {
+    if (styleAtom == DisplayControl.SHADING && !fastRendering)
+      g25d.fillSphereCentered(colorOutline, color, x, y, z, diameter);
+    else if (fastRendering || styleAtom == DisplayControl.WIREFRAME)
       g25d.drawCircleCentered(color, x, y, z, diameter);
-    } else {
+    else
       g25d.fillCircleCentered(colorOutline, color, x, y, z, diameter);
-    }
   }
 }

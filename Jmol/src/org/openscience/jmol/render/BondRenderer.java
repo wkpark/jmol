@@ -349,24 +349,12 @@ public class BondRenderer {
       drawEndCap(xAxis2, yAxis2, zAxis2, width2, color2, outline2);
   }
 
-  private ShadedSphereRenderer shadedSphereRenderer;
-
   void drawEndCap(int x, int y, int z, int diameter,
                   Color color, Color outline) {
-    switch (styleBond) {
-    case DisplayControl.QUICKDRAW:
+    if (styleBond == DisplayControl.SHADING)
       g25d.fillCircleCentered(outline, color, x, y, z, diameter);
-      break;
-    case DisplayControl.SHADING:
-      int radiusCap, xUpperLeft, yUpperLeft;
-      radiusCap = (diameter+1) / 2;
-      xUpperLeft = x - radiusCap;
-      yUpperLeft = y - radiusCap;
-      if (shadedSphereRenderer == null)
-        shadedSphereRenderer = new ShadedSphereRenderer(control);
-      shadedSphereRenderer.render(g25d, xUpperLeft, yUpperLeft, z,
-                                  diameter, color, outline);
-    }
+    else if (styleBond == DisplayControl.QUICKDRAW)
+      g25d.fillCircleCentered(outline, color, x, y, z, diameter);
   }
 
   int offset1, offset2, doffset;

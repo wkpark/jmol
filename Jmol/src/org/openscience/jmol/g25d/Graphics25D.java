@@ -40,6 +40,8 @@ final public class Graphics25D {
 
   DisplayControl control;
   Platform25D platform;
+  ShadedSphereRenderer shadedSphereRenderer;
+  Sphere25D sphere25d;
   Image img;
   Graphics g;
   int width,height,size;
@@ -64,6 +66,8 @@ final public class Graphics25D {
     } else {
       platform = new Awt25D(control.getAwtComponent());
     }
+    this.shadedSphereRenderer = new ShadedSphereRenderer(control);
+    this.sphere25d = new Sphere25D(control, this);
   }
 
   public void setEnabled(boolean value) {
@@ -126,7 +130,7 @@ final public class Graphics25D {
       System.out.println("pg.grabPixels Interrupted");
     }
     int offsetSrc = 0;
-    if (x >= 0 && y >= 0 && x+imageWidth < width && y+imageHeight < height) {
+    if (x >= 0 && y >= 0 && x+imageWidth <= width && y+imageHeight <= height) {
       do {
         plotPixelsUnclipped(imageBuf, offsetSrc, imageWidth, x, y, z);
         offsetSrc += imageWidth;
@@ -263,6 +267,16 @@ final public class Graphics25D {
         plotFilledCircleCenteredClipped(x, y, z, diameter);
       }
     }
+  }
+
+  public void fillSphereCentered(Color colorOutline, Color colorFill,
+                                 int x, int y, int z, int diameter) {
+    int r = (diameter + 1) / 2;
+    if (! usePbuf) 
+      shadedSphereRenderer.render(this, x - r, y - r, z,
+                                  diameter, colorFill, colorOutline);
+    else
+      sphere25d.render(x-r, y-r, z, diameter, colorFill);
   }
 
   public void drawRect(int x, int y, int width, int height) {
@@ -542,7 +556,7 @@ final public class Graphics25D {
     while (--count >= 0) {
       int pixel = pixels[offset++];
       int alpha = pixel & 0xFF000000;
-      if (alpha >= 0x80000000) {
+      if ((alpha & 0x80000000) != 0) {
         if (z < zbuf[offsetPbuf]) {
           zbuf[offsetPbuf] = (short)z;
           pbuf[offsetPbuf] = pixel;

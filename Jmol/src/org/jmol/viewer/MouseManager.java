@@ -295,6 +295,9 @@ abstract class MouseManager {
     case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
       viewer.rotateZBy(-deltaX);
       break;
+    case CTRL_RIGHT:
+      viewer.translateXYBy(deltaX, deltaY);
+      break;
     }
   }
 

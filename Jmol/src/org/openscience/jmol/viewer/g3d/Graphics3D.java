@@ -652,7 +652,6 @@ final public class Graphics3D {
     }
   }
 
-  /*
   void plotPixelClipped(short colix, int x, int y, int z) {
     if (x < 0 || x >= width || y < 0 || y >= height || z < slab)
       return;
@@ -662,7 +661,6 @@ final public class Graphics3D {
       pbuf[offset] = Colix.getArgb(colix);
     }
   }
-  */
 
   void forcePixel(Color co, int x, int y) {
     if (x < 0 || x >= width || y < 0 || y >= height)

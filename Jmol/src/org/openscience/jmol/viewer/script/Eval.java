@@ -1784,9 +1784,9 @@ public class Eval implements Runnable {
   void move() throws ScriptException {
     if (statementLength < 10 || statementLength > 12)
       badArgumentCount();
-    int dRotX = intParameter(1);
-    int dRotY = intParameter(2);
-    int dRotZ = intParameter(3);
+    float dRotX = floatParameter(1);
+    float dRotY = floatParameter(2);
+    float dRotZ = floatParameter(3);
     int dZoom = intParameter(4);
     int dTransX = intParameter(5);
     int dTransY = intParameter(6);

@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.ModelAdapter;
 import org.openscience.jmol.viewer.JmolStatusListener;
 
 import org.openscience.jmol.adapters.SimpleModelAdapter;
@@ -82,7 +82,7 @@ class ApplicationCloser extends WindowAdapter {
 
 class JmolPanel extends JPanel {
   JmolViewer viewer;
-  JmolModelAdapter adapter;
+  ModelAdapter adapter;
   JmolPanel() {
     adapter = new SimpleModelAdapter();
     viewer = new JmolViewer(this, adapter);

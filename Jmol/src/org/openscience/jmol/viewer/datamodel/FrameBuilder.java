@@ -24,15 +24,16 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
+import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
 
 final public class FrameBuilder {
 
   final JmolViewer viewer;
-  final JmolModelAdapter adapter;
+  final ModelAdapter adapter;
 
-  public FrameBuilder(JmolViewer viewer, JmolModelAdapter adapter) {
+  public FrameBuilder(JmolViewer viewer, ModelAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
   }
@@ -58,7 +59,7 @@ final public class FrameBuilder {
     frame.setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
 
-    for (JmolModelAdapter.AtomIterator iterAtom =
+    for (ModelAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile);
          iterAtom.hasNext(); ) {
       byte elementNumber = (byte)iterAtom.getElementNumber();
@@ -77,7 +78,7 @@ final public class FrameBuilder {
     }
 
     {
-      JmolModelAdapter.BondIterator iterBond =
+      ModelAdapter.BondIterator iterBond =
         adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext())

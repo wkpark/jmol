@@ -23,10 +23,9 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.adapters;
+package org.jmol.adapter.simple;
 
-// these are standard and should be needed by all adapters
-import org.openscience.jmol.viewer.*;
+import org.jmol.api.ModelAdapter;
 
 import java.awt.Color;
 import java.io.BufferedReader;
@@ -34,7 +33,7 @@ import java.util.StringTokenizer;
 
 // client-specific imports
 
-public class SimpleModelAdapter extends JmolModelAdapter {
+public class SimpleModelAdapter extends ModelAdapter {
 
   /****************************************************************
    * the file related methods
@@ -50,8 +49,8 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     ((Model)clientFile).finish();
   }
 
-  public Object openBufferedReader(JmolViewer viewer,
-                                   String name, BufferedReader bufferedReader) {
+  public Object openBufferedReader(String name,
+                                   BufferedReader bufferedReader) {
     try {
       Model model;
       switch (determineModel(bufferedReader)) {
@@ -139,10 +138,10 @@ public class SimpleModelAdapter extends JmolModelAdapter {
 
   public int getModelType(Object clientFile) {
     if (clientFile instanceof PdbModel)
-      return JmolConstants.MODEL_TYPE_PDB;
+      return MODEL_TYPE_PDB;
     if (clientFile instanceof XyzModel)
-      return JmolConstants.MODEL_TYPE_XYZ;
-    return JmolConstants.MODEL_TYPE_OTHER;
+      return MODEL_TYPE_XYZ;
+    return MODEL_TYPE_OTHER;
   }
 
   public String getModelName(Object clientFile) {
@@ -187,12 +186,12 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     return ((Model)clientFile).pdbScaleTranslate;
   }
 
-  public JmolModelAdapter.AtomIterator
+  public ModelAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator((Model)clientFile);
   }
 
-  public JmolModelAdapter.BondIterator
+  public ModelAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator((Model)clientFile);
   }
@@ -200,7 +199,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
   /****************************************************************
    * the frame iterators
    ****************************************************************/
-  class AtomIterator extends JmolModelAdapter.AtomIterator {
+  class AtomIterator extends ModelAdapter.AtomIterator {
     Model model;
     int iatom;
     Atom atom;
@@ -230,7 +229,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
-  class BondIterator extends JmolModelAdapter.BondIterator {
+  class BondIterator extends ModelAdapter.BondIterator {
     Model model;
     Atom[] atoms;
     Bond[] bonds;
@@ -481,8 +480,8 @@ class JmeModel extends Model {
       if (order < 1) {
         //        System.out.println("Stereo found:" + order);
         order = ((order == -1)
-                 ? JmolConstants.BOND_STEREO_NEAR
-                 : JmolConstants.BOND_STEREO_FAR);
+                 ? ModelAdapter.ORDER_STEREO_NEAR
+                 : ModelAdapter.ORDER_STEREO_FAR);
       }
       addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
@@ -528,7 +527,7 @@ class MolModel extends Model {
       int atomIndex2 = Integer.parseInt(line.substring(3, 6).trim());
       int order = Integer.parseInt(line.substring(6, 9).trim());
       if (order == 4)
-        order = JmolConstants.BOND_AROMATIC;
+        order = ModelAdapter.ORDER_AROMATIC;
       addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
   }
@@ -729,7 +728,7 @@ class PdbModel extends Model {
           System.out.println("hbond:" + sourceIndex + "->" + targetIndex);
         addBond(new Bond(sourceIndex, targetIndex,
                          i < 4
-                         ? 1 : JmolModelAdapter.ORDER_HBOND));
+                         ? 1 : ModelAdapter.ORDER_HBOND));
       }
     } catch (Exception e) {
     }

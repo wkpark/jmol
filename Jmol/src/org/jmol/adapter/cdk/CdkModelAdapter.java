@@ -23,10 +23,10 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.adapters;
+package org.jmol.adapter.cdk;
 
 // these are standard and should be needed by all adapters
-import org.openscience.jmol.viewer.*;
+import org.jmol.api.ModelAdapter;
 
 import java.awt.Color;
 import javax.vecmath.Point3d;
@@ -57,13 +57,13 @@ import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
 import java.util.Vector;
 
-public class CdkJmolModelAdapter extends JmolModelAdapter {
+public class CdkModelAdapter extends ModelAdapter {
 
   /****************************************************************
    * the file related methods
    ****************************************************************/
 
-  public Object openBufferedReader(JmolViewer viewer, String name,
+  public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
     ChemFile chemFile = null;
     try {
@@ -107,8 +107,8 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
 
   public int getModelType(Object clientFile) {
     if (hasPdbRecords(clientFile))
-      return JmolConstants.MODEL_TYPE_PDB;
-    return JmolConstants.MODEL_TYPE_OTHER;
+      return MODEL_TYPE_PDB;
+    return MODEL_TYPE_OTHER;
   }
 
   public String getModelName(Object clientFile) {
@@ -204,12 +204,12 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     return value == null ? null : "" + value;
   }
 
-  public JmolModelAdapter.AtomIterator
+  public ModelAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator(getAtomContainer(clientFile));
   }
 
-  public JmolModelAdapter.BondIterator
+  public ModelAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator(getAtomContainer(clientFile));
   }
@@ -217,7 +217,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
   /****************************************************************
    * the frame iterators
    ****************************************************************/
-  class AtomIterator extends JmolModelAdapter.AtomIterator {
+  class AtomIterator extends ModelAdapter.AtomIterator {
     AtomContainer atomContainer;
     int atomCount, iatom;
     Atom atom;
@@ -248,7 +248,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     }
   }
 
-  class BondIterator extends JmolModelAdapter.BondIterator {
+  class BondIterator extends ModelAdapter.BondIterator {
     
     AtomContainer atomContainer;
     Bond[] bonds;

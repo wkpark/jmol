@@ -25,6 +25,8 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+import org.jmol.api.ModelAdapter;
+
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.pdb.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
@@ -35,7 +37,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
-final public class FrameExportModelAdapter extends JmolModelAdapter {
+final public class FrameExportModelAdapter extends ModelAdapter {
 
   public JmolViewer viewer;
   public Frame frame;
@@ -57,17 +59,17 @@ final public class FrameExportModelAdapter extends JmolModelAdapter {
     return frame.notionalUnitcell;
   }
 
-  public JmolModelAdapter.AtomIterator
+  public ModelAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator();
   }
 
-  public JmolModelAdapter.BondIterator
+  public ModelAdapter.BondIterator
     getBondIterator(Object clientFile) {
     return new BondIterator();
   }
 
-  class AtomIterator extends JmolModelAdapter.AtomIterator {
+  class AtomIterator extends ModelAdapter.AtomIterator {
     int iatom;
     Atom atom;
 
@@ -86,7 +88,7 @@ final public class FrameExportModelAdapter extends JmolModelAdapter {
     public float getZ() { return atom.getAtomZ(); }
   }
 
-  class BondIterator extends JmolModelAdapter.BondIterator {
+  class BondIterator extends ModelAdapter.BondIterator {
     int ibond;
     Bond bond;
 

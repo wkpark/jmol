@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.viewer;
 
+import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.managers.*;
 import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.datamodel.*;
@@ -54,7 +55,7 @@ import java.io.File;
 
 /****************************************************************
  * The JmolViewer can be used to render client molecules. Clients
- * implement the JmolModelAdapter. JmolViewer uses this interface
+ * implement the ModelAdapter. JmolViewer uses this interface
  * to extract information from the client data structures and
  * render the molecule to the supplied java.awt.Component
  *
@@ -82,7 +83,7 @@ final public class JmolViewer {
   public Eval eval;
   public Graphics3D g3d;
 
-  public JmolModelAdapter modelAdapter;
+  public ModelAdapter modelAdapter;
 
   public String strJavaVendor;
   public String strJavaVersion;
@@ -94,7 +95,7 @@ final public class JmolViewer {
   JmolStatusListener jmolStatusListener;
 
   public JmolViewer(Component awtComponent,
-                    JmolModelAdapter modelAdapter) {
+                    ModelAdapter modelAdapter) {
 
     this.awtComponent = awtComponent;
     this.modelAdapter = modelAdapter;
@@ -933,10 +934,10 @@ final public class JmolViewer {
   /****************************************************************
    * This is the method that should be used to extract the model
    * data from Jmol.
-   * Note that the API provided by JmolModelAdapter is used to
+   * Note that the API provided by ModelAdapter is used to
    * import data into Jmol and to export data out of Jmol.
    *
-   * When exporting, a few of the methods in JmolModelAdapter do
+   * When exporting, a few of the methods in ModelAdapter do
    * not make sense.
    *   openBufferedReader(...)
    * Others may be implemented in the future, but are not currently
@@ -963,7 +964,7 @@ final public class JmolViewer {
    * post questions to jmol-developers@lists.sf.net
    ****************************************************************/
 
-  public JmolModelAdapter getExportModelAdapter() {
+  public ModelAdapter getExportModelAdapter() {
     return modelManager.getExportModelAdapter();
   }
 

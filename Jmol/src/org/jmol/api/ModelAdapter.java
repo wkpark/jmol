@@ -23,12 +23,12 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.viewer;
+package org.jmol.api;
 
 import java.io.BufferedReader;
 
 /****************************************************************
- * The JmolModelAdapter interface defines the API used by the JmolViewer to
+ * The ModelAdapter interface defines the API used by the JmolViewer to
  * read external files and fetch atom properties necessary for rendering.
  *
  * A client of the JmolViewer implements this interface on top of their
@@ -45,8 +45,17 @@ import java.io.BufferedReader;
  * covalent bonding radius. 
  * @see JmolViewer
  ****************************************************************/
-public abstract class JmolModelAdapter {
+public abstract class ModelAdapter {
   
+  public final static int MODEL_TYPE_OTHER = 0;
+  public final static int MODEL_TYPE_PDB = 1;
+  public final static int MODEL_TYPE_XYZ = 2;
+  
+  public final static byte ORDER_AROMATIC    = (byte)(1 << 2);
+  public final static byte ORDER_HBOND       = (byte)(1 << 6);
+  public final static byte ORDER_STEREO_NEAR = (byte)((1 << 3) | 1);
+  public final static byte ORDER_STEREO_FAR  = (byte)((2 << 3) | 2);
+
 
   /*****************************************************************
    * file related
@@ -65,7 +74,7 @@ public abstract class JmolModelAdapter {
    * considered an error condition and the returned String is the error
    * message. 
    */
-  public Object openBufferedReader(JmolViewer viewer, String name,
+  public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
     return null;
   }
@@ -74,9 +83,6 @@ public abstract class JmolModelAdapter {
 
   /**
    * returns the type of this model
-   public final static int MODEL_TYPE_OTHER = 0;
-   public final static int MODEL_TYPE_PDB = 1;
-   public final static int MODEL_TYPE_XYZ = 2;
    */
   public int getModelType(Object clientFile) { return 0; }
 
@@ -190,8 +196,6 @@ public abstract class JmolModelAdapter {
   /****************************************************************
    * BondIterator is used to enumerate all the bonds
    ****************************************************************/
-  public final static int ORDER_AROMATIC = 1 << 2;
-  public final static int ORDER_HBOND = 1 << 6;
 
   public abstract class BondIterator {
     public abstract boolean hasNext();

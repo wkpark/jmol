@@ -24,9 +24,10 @@
  */
 
 import org.openscience.jmol.viewer.*;
+import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.JmolStatusListener;
-import org.openscience.jmol.adapters.SimpleModelAdapter;
-//import org.openscience.jmol.adapters.CdkJmolModelAdapter;
+import org.jmol.adapter.simple.SimpleModelAdapter;
+//import org.openscience.jmol.adapters.CdkModelAdapter;
 import org.openscience.jmol.ui.JmolPopup;
 
 import netscape.javascript.JSObject;
@@ -79,7 +80,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     // to enable CDK
-    //    viewer = new JmolViewer(this, new CdkJmolModelAdapter());
+    //    viewer = new JmolViewer(this, new CdkModelAdapter());
     viewer = new JmolViewer(this, new SimpleModelAdapter());
     viewer.setJmolStatusListener(this);
 

@@ -26,8 +26,9 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.JmolStatusListener;
 
-import org.openscience.jmol.adapters.CdkJmolModelAdapter;
-import org.openscience.jmol.adapters.SimpleModelAdapter;
+import org.jmol.api.ModelAdapter;
+import org.jmol.adapter.cdk.CdkModelAdapter;
+import org.jmol.adapter.simple.SimpleModelAdapter;
 
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -169,7 +170,7 @@ public class Jmol extends JPanel {
     say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    JmolModelAdapter modelAdapter;
+    ModelAdapter modelAdapter;
     String adapter= System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
       adapter = "simple";
@@ -178,7 +179,7 @@ public class Jmol extends JPanel {
       modelAdapter = new SimpleModelAdapter();
     } else if (adapter.equals("cdk")) {
       System.out.println("using CDK Model Adapter");
-      modelAdapter = new CdkJmolModelAdapter();
+      modelAdapter = new CdkModelAdapter();
     } else {
       System.out.println("unrecognized model adapter:" + adapter +
                          " -- using Simple");

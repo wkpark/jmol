@@ -25,6 +25,7 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
+import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.FrameBuilder;
 import org.openscience.jmol.viewer.datamodel.Atom;
@@ -40,12 +41,12 @@ import java.awt.Color;
 public class ModelManager {
 
   final JmolViewer viewer;
-  final JmolModelAdapter modelAdapter;
+  final ModelAdapter modelAdapter;
 
   final Frame nullFrame;
   final FrameBuilder frameBuilder;
 
-  public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
+  public ModelManager(JmolViewer viewer, ModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
     nullFrame = new Frame(viewer);
@@ -94,7 +95,7 @@ public class ModelManager {
     return (frame == null) ? nullFrame : frame;
   }
 
-  public JmolModelAdapter getExportModelAdapter() {
+  public ModelAdapter getExportModelAdapter() {
     return (frame == null) ? null : frame.getExportModelAdapter();
   }
 

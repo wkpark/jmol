@@ -1020,29 +1020,29 @@ public class Eval implements Runnable {
 
   void backbone() throws ScriptException {
     int tok = statement[1].tok;
-    short mar = -1;
+    short mad = -1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      mar = 0;
+      mad = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      mar = (short)(radiusRasMol * 4);
+      mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
-      mar = (short)(angstroms * 1000);
+      mad = (short)(angstroms * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setBackboneMar(mar);
+    viewer.setGraphicMad(JmolConstants.GRAPHIC_BACKBONE, mad);
   }
   
   void background() throws ScriptException {
@@ -1163,10 +1163,12 @@ public class Eval implements Runnable {
       viewer.setColorAtomScript(palette, color);
       break;
     case Token.trace:
-      viewer.setTraceColor(palette, color);
+      viewer.setGraphicColor(JmolConstants.GRAPHIC_TRACE,
+                             palette, color);
       break;
     case Token.backbone:
-      viewer.setBackboneColor(palette, color);
+      viewer.setGraphicColor(JmolConstants.GRAPHIC_BACKBONE,
+                             palette, color);
       break;
     case Token.ribbons:
     case Token.strands:
@@ -1851,11 +1853,11 @@ public class Eval implements Runnable {
   }
 
   void trace() throws ScriptException {
-    float radius = 0;
+    short mad = 0;
     int tok = statement[1].tok;
     switch (tok) {
     case Token.on:
-      radius = -1; // means thick-n-thin
+      mad = -1; // means thick-n-thin
       break;
     case Token.off:
       break;
@@ -1863,24 +1865,24 @@ public class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      radius = radiusRasMol * 4 / 1000f;
+      mad = (short)(2 * radiusRasMol * 4);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms > 4)
         numberOutOfRange();
-      radius = angstroms;
+      mad = (short)(2 * 1000 * angstroms);
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("temperature")) {
-        radius = -2; // means trace temperature
+        mad = -2; // means trace temperature
         return;
       }
     default:
       booleanOrNumberExpected();
     }
-    viewer.setTraceRadius(radius);
+    viewer.setGraphicMad(JmolConstants.GRAPHIC_TRACE, mad);
   }
 
   void strands() throws ScriptException {

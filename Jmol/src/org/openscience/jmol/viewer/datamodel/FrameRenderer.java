@@ -53,10 +53,13 @@ public class FrameRenderer {
   LineRenderer lineRenderer;
   CellLineRenderer cellLineRenderer;
 
+  Renderer[] renderers;
+
   public FrameRenderer(JmolViewer viewer) {
     this.viewer = viewer;
     atomRenderer = new AtomRenderer(viewer, this);
     bondRenderer = new BondRenderer(viewer, this);
+    renderers = new Renderer[JmolConstants.GRAPHIC_MAX];
   }
   
   public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
@@ -83,16 +86,30 @@ public class FrameRenderer {
         ribbonsRenderer = new RibbonsRenderer(viewer, this);
       ribbonsRenderer.render(g3d, rectClip, frame, frame.ribbons);
     }
+
+    for (int i = 0; i < JmolConstants.GRAPHIC_MAX; ++i) {
+      Graphic graphic = frame.graphics[i];
+      if (graphic == null)
+        continue;
+      Renderer renderer = renderers[i];
+      if (renderer == null)
+        renderer = renderers[i] = allocateRenderer(i);
+      renderer.render(g3d, rectClip, frame, graphic);
+    }
+
+    /*
     if (frame.trace != null) {
       if (traceRenderer == null)
         traceRenderer = new TraceRenderer(viewer, this);
       traceRenderer.render(g3d, rectClip, frame, frame.trace);
     }
+
     if (frame.backbone != null) {
       if (backboneRenderer == null)
         backboneRenderer = new BackboneRenderer(viewer, this);
       backboneRenderer.render(g3d, rectClip, frame, frame.backbone);
     }
+    */
     if (frame.cartoon != null) {
       if (cartoonRenderer == null)
         cartoonRenderer = new CartoonRenderer(viewer, this);
@@ -127,31 +144,16 @@ public class FrameRenderer {
     }
   }
 
-  /*
-  public void renderStringOffset(String str, short colix, int points,
-                                 int x, int y, int z,
-                                 int xOffset, int yOffset) {
-    Font font = viewer.getFontOfSize(points);
-    g3d.setFont(font);
-    FontMetrics fontMetrics = g3d.getFontMetrics(font);
-    int strHeight = fontMetrics.getAscent();
-    strHeight -= 2; // this should not be necessary, but looks like it is;
-    if (yOffset > 0)
-      y += yOffset + strHeight;
-    else if (yOffset == 0)
-      y += strHeight / 2;
-    else
-      y += yOffset;
-    if (xOffset > 0)
-      x += xOffset;
-    else if (xOffset == 0)
-      x -= fontMetrics.stringWidth(str) / 2;
-    else
-      x += xOffset - fontMetrics.stringWidth(str);
-    g3d.drawString(str, colix, x, y, z);
+  Renderer allocateRenderer(int refGraphic) {
+    switch(refGraphic) {
+    case JmolConstants.GRAPHIC_BACKBONE:
+      return new BackboneRenderer(viewer, this);
+    case JmolConstants.GRAPHIC_TRACE:
+      return new TraceRenderer(viewer, this);
+    }
+    return null;
   }
-  */
-  
+
   public void renderStringOutside(String str, short colix, int pointsFontsize,
                                   Point3i screen, Graphics3D g3d) {
     renderStringOutside(str, colix, pointsFontsize,

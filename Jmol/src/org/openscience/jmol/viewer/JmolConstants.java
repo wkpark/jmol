@@ -1144,4 +1144,7 @@ final public class JmolConstants {
   public final static byte SECONDARY_STRUCTURE_SHEET = 2;
   public final static byte SECONDARY_STRUCTURE_HELIX = 3;
 
+  public final static int GRAPHIC_BACKBONE = 0;
+  public final static int GRAPHIC_TRACE    = 1;
+  public final static int GRAPHIC_MAX = 2;
 }

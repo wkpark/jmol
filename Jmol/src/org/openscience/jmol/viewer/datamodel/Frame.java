@@ -203,39 +203,42 @@ public class Frame {
       ribbons.setRibbons(ribbonType, bsSelected);
   }
 
-  Trace trace;
+  Graphic allocateGraphic(int refGraphic) {
+    System.out.println("allocateGraphic(" + refGraphic + ")");
+    switch (refGraphic) {
+    case JmolConstants.GRAPHIC_BACKBONE:
+      return new Backbone(viewer, this);
+    case JmolConstants.GRAPHIC_TRACE:
+      return new Trace(viewer, this);
+    }
+    return null;
+  }
 
-  public void setTraceMad(short mad, BitSet bsSelected) {
-    if (mad != 0 && trace == null)
-      trace = new Trace(viewer, this);
-    if (trace != null)
-      trace.setMad(mad, bsSelected);
-  }
-  
-  public void setTraceColix(byte palette, short colix, BitSet bsSelected) {
-    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && trace == null)
-      trace = new Trace(viewer, this);
-    if (trace != null)
-      trace.setColix(palette, colix, bsSelected);
-  }
-  
-  Backbone backbone;
+  final Graphic[] graphics = new Graphic[JmolConstants.GRAPHIC_MAX];
 
-  public void setBackboneMad(short mad, BitSet bsSelected) {
-    if (mad != 0 && backbone == null)
-      backbone = new Backbone(viewer, this);
-    if (backbone != null)
-      backbone.setMad(mad, bsSelected);
+  void checkGraphic(int refGraphic) {
+    if (graphics[refGraphic] == null) {
+      graphics[refGraphic] = allocateGraphic(refGraphic);
+    }
   }
   
-  public void setBackboneColix(byte palette, short colix, BitSet bsSelected) {
-    if ((palette != JmolConstants.PALETTE_CPK || colix != 0)
-        && backbone == null)
-      backbone = new Backbone(viewer, this);
-    if (backbone != null)
-      backbone.setColix(palette, colix, bsSelected);
+  public void setGraphicMad(int refGraphic, short mad, BitSet bsSelected) {
+    System.out.println("setGraphicMad(" + refGraphic + ","
+                       + mad + ")");
+    if (mad != 0)
+      checkGraphic(refGraphic);
+    if (graphics[refGraphic] != null)
+      graphics[refGraphic].setMad(mad, bsSelected);
   }
-  
+
+  public void setGraphicColix(int refGraphic, byte palette,
+                              short colix, BitSet bsSelected) {
+    if (palette != JmolConstants.PALETTE_CPK || colix != 0)
+      checkGraphic(refGraphic);
+    if (graphics[refGraphic] != null)
+      graphics[refGraphic].setColix(palette, colix, bsSelected);
+  }
+
   Cartoon cartoon;
 
   public void setCartoonMad(short mad, BitSet bsSelected) {

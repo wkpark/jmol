@@ -33,7 +33,7 @@ import java.util.BitSet;
 /****************************************************************
  * Mcg stands for Model-Chain-Graphic
  ****************************************************************/
-abstract public class Mcg {
+abstract public class Mcg implements Graphic {
 
   JmolViewer viewer;
   Frame frame;

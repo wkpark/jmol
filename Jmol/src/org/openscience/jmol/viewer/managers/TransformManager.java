@@ -59,8 +59,8 @@ public class TransformManager {
   public final Matrix4f matrixRotate = new Matrix4f();
 
   public void rotateXYBy(int xDelta, int yDelta) {
-    rotateByX((float)Math.PI * yDelta / 180);
-    rotateByY((float)Math.PI * xDelta / 180);
+    rotateXRadians((float)Math.PI * yDelta / 180);
+    rotateYRadians((float)Math.PI * xDelta / 180);
     /*
     // what fraction of PI radians do you want to rotate?
     // the full screen width corresponds to a PI (180 degree) rotation
@@ -73,14 +73,14 @@ public class TransformManager {
 
     // a change in the x coordinate generates a rotation about the y axis
     float ytheta = (float)Math.PI * xDelta / minScreenDimension;
-    rotateByY(ytheta * rotateAccelerator);
+    rotateYRadians(ytheta * rotateAccelerator);
     float xtheta = (float)Math.PI * yDelta / minScreenDimension;
-    rotateByX(xtheta * rotateAccelerator);
+    rotateXRadians(xtheta * rotateAccelerator);
     */
   }
 
   public void rotateZBy(int zDelta) {
-    rotateByZ((float)Math.PI * zDelta / 180);
+    rotateZRadians((float)Math.PI * zDelta / 180);
     /*
     float rotateAccelerator = 1.1f;
     float ztheta = (float)Math.PI * zDelta / minScreenDimension;
@@ -102,24 +102,24 @@ public class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  public synchronized void rotateByX(float angleRadians) {
+  public synchronized void rotateXRadians(float angleRadians) {
     matrixTemp.rotX(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
-  public synchronized void rotateByY(float angleRadians) {
+  public synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp.rotY(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
-  public synchronized void rotateByZ(float angleRadians) {
+  public synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
 
-  public void rotateByZScript(float angleRadians) {
+  public void rotateZRadiansScript(float angleRadians) {
     matrixTemp.rotZ(angleRadians);
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
@@ -719,15 +719,15 @@ public class TransformManager {
         }
         boolean refreshNeeded = false;
         if (spinX != 0) {
-          rotateByX(spinX * radiansPerDegree / myFps);
+          rotateXRadians(spinX * radiansPerDegree / myFps);
           refreshNeeded = true;
         }
         if (spinY != 0) {
-          rotateByY(spinY * radiansPerDegree / myFps);
+          rotateYRadians(spinY * radiansPerDegree / myFps);
           refreshNeeded = true;
         }
         if (spinZ != 0) {
-          rotateByZ(spinZ * radiansPerDegree / myFps);
+          rotateZRadians(spinZ * radiansPerDegree / myFps);
           refreshNeeded = true;
         }
         ++i;

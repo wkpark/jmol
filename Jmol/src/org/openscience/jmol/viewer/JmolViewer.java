@@ -207,29 +207,29 @@ final public class JmolViewer {
     rotateToZ(angleDegrees * radiansPerDegree);
   }
 
-  public void rotateByX(float angleRadians) {
-    transformManager.rotateByX(angleRadians);
+  public void rotateXRadians(float angleRadians) {
+    transformManager.rotateXRadians(angleRadians);
     refresh();
   }
-  public void rotateByY(float angleRadians) {
-    transformManager.rotateByY(angleRadians);
+  public void rotateYRadians(float angleRadians) {
+    transformManager.rotateYRadians(angleRadians);
     refresh();
   }
-  public void rotateByZ(float angleRadians) {
-    transformManager.rotateByZ(angleRadians);
+  public void rotateZRadians(float angleRadians) {
+    transformManager.rotateZRadians(angleRadians);
     refresh();
   }
-  public void rotateByX(int angleDegrees) {
-    rotateByX(angleDegrees * radiansPerDegree);
+  public void rotateXDegrees(float angleDegrees) {
+    rotateXRadians(angleDegrees * radiansPerDegree);
   }
-  public void rotateByY(int angleDegrees) {
-    rotateByY(angleDegrees * radiansPerDegree);
+  public void rotateYDegrees(float angleDegrees) {
+    rotateYRadians(angleDegrees * radiansPerDegree);
   }
-  public void rotateByZ(int angleDegrees) {
-    rotateByZ(angleDegrees * radiansPerDegree);
+  public void rotateZDegrees(float angleDegrees) {
+    rotateZRadians(angleDegrees * radiansPerDegree);
   }
-  public void rotateByZScript(int angleDegrees) {
-    transformManager.rotateByZScript(angleDegrees * radiansPerDegree);
+  public void rotateZDegreesScript(float angleDegrees) {
+    transformManager.rotateZRadiansScript(angleDegrees * radiansPerDegree);
     refresh();
   }
 

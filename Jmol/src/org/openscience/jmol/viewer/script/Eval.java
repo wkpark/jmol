@@ -1645,29 +1645,20 @@ public class Eval implements Runnable {
   }
 
   void rotate() throws ScriptException {
-    if (statementLength < 2)
-      axisExpected();
+    checkLength3();
+    float degrees = floatParameter(2);
     switch (statement[1].tok) {
     case Token.x:
+      viewer.rotateXDegrees(degrees);
+      break;
     case Token.y:
+      viewer.rotateYDegrees(degrees);
+      break;
     case Token.z:
+      viewer.rotateZDegreesScript(degrees);
       break;
     default:
       axisExpected();
-    }
-    if (statementLength != 3 || statement[2].tok != Token.integer)
-        integerExpected();
-    int degrees = statement[2].intValue;
-    switch (statement[1].tok) {
-    case Token.x:
-      viewer.rotateByX(degrees);
-      break;
-    case Token.y:
-      viewer.rotateByY(degrees);
-      break;
-    case Token.z:
-      viewer.rotateByZScript(degrees);
-      break;
     }
   }
 
@@ -1827,11 +1818,11 @@ public class Eval implements Runnable {
       totalSteps = 1; // to catch a zero secondsTotal parameter
     for (int i = 1; i <= totalSteps && !interruptExecution; ++i) {
       if (dRotX != 0)
-        viewer.rotateByX(radiansXStep);
+        viewer.rotateXRadians(radiansXStep);
       if (dRotY != 0)
-        viewer.rotateByY(radiansYStep);
+        viewer.rotateYRadians(radiansYStep);
       if (dRotZ != 0)
-        viewer.rotateByZ(radiansZStep);
+        viewer.rotateZRadians(radiansZStep);
       if (dZoom != 0)
         viewer.zoomToPercent(zoom + dZoom * i / totalSteps);
       if (dTransX != 0)

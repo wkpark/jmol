@@ -1633,13 +1633,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic acid base ring functional groups
     //
-    "O4",  // 74	// 24 - base carbonyl O4, only in U and T
-    "O6",  // 75	// 25 - base carbonyl O6, only in G and I
-    "N4",  // 76	// 26 - base ring N4, unique to C
-    "C5M", // 77	// 27 - base methyl carbon, unique to T
-    "N6",  // 78	// 28 - base amino N6, unique to A
-    "N2",  // 79	// 29 - base amino N2, unique to G
-    "S4",  // 80	// 30 - base thiol sulfur, unique to thio-U
+    "N4",  // 74 - base ring N4, unique to C
+    "N2",  // 75 - base amino N2, unique to G
+    "N6",  // 76 - base amino N6, unique to A
+    "C5M", // 77 - base methyl carbon, unique to T
+
+    "O6",  // 78 - base carbonyl O6, only in G and I
+    "O4",  // 79 - base carbonyl O4, only in T and U
+    "S4",  // 80 - base thiol sulfur, unique to thio-U
 
   };
 
@@ -1673,12 +1674,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_N7 = 71;
   public final static byte ATOMID_C8 = 72;
   public final static byte ATOMID_N9 = 73;
-  public final static byte ATOMID_O4 = 74;
-  public final static byte ATOMID_O6 = 75;
-  public final static byte ATOMID_N4 = 76;
+  public final static byte ATOMID_N4 = 74;
+  public final static byte ATOMID_N2 = 75;
+  public final static byte ATOMID_N6 = 76;
   public final static byte ATOMID_C5M= 77;
-  public final static byte ATOMID_N6 = 78;
-  public final static byte ATOMID_N2 = 79;
+  public final static byte ATOMID_O6 = 78;
+  public final static byte ATOMID_O4 = 79;
   public final static byte ATOMID_S4 = 80;
 
   // this is currently defined as C6
@@ -1883,14 +1884,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic, dna, rna, purine, pyrimidine are hard-wired
     //
-    "@c nucleic & within(group,_a=76)",
-    "@g nucleic & within(group,_a=79)",
+    "@c nucleic & within(group,_a=74)",
+    "@g nucleic & within(group,_a=75)",
     "@cg c,g",
-    "@a nucleic & within(group,_a=78)",
+    "@a nucleic & within(group,_a=76)",
     "@t nucleic & within(group,_a=77)",
     "@at a,t",
-    "@i nucleic & within(group,_a=75) & !t",
-    "@u nucleic & within(group,_a=74) & !t",
+    "@i nucleic & within(group,_a=78) & !g",
+    "@u nucleic & within(group,_a=79) & !t",
     "@tu nucleic & within(group,_a=80)",
 
     //

@@ -27,7 +27,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 /**
- *  Reads Mopac 97 output files.
+ *  Reads Mopac 97 or Mopac 2002 output files.
  *
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
@@ -59,8 +59,8 @@ class Mopac97Reader extends DefaultChemFileReader {
         frameInfo = line.trim();
       } else if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
         hasSymmetry = true;
-      } else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE CALCULATION")
-              >= 0) {
+      } else if (line.trim().equals("CARTESIAN COORDINATES")
+          || line.indexOf("ORIENTATION OF MOLECULE IN FORCE CALCULATION") >= 0) {
         for (int i = 0; i < 3; ++i) {
           line = input.readLine();
         }

@@ -16,7 +16,7 @@
 
 <changes version="jmol-4">
   <change contributor="BS">
-    Reading of MOPAC 97 files. Formerly, only MOPAC 7 files worked.
+    Reading of MOPAC 97 and 2002 files. Formerly, only MOPAC 7 files worked.
   </change>
   <change contributor="EW">
     Jmol can now also read files in non-CML with the command "jmol &lt;filename&gt;".

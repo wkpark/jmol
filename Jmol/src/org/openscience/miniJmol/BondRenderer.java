@@ -43,9 +43,8 @@ public class BondRenderer {
 	 * @param atom1 the atom from which the bond is to be drawn
 	 * @param atom2 the atom to which the bond is to be drawn
 	 * @param settings the display settings
-	 * @param forceLineBonds whether line drawing is to override the current display settings
      */
-	public void paint(Graphics gc, Atom atom1, Atom atom2, DisplaySettings settings, boolean forceLineBonds) {
+	public void paint(Graphics gc, Atom atom1, Atom atom2, DisplaySettings settings) {
 		int x1 = (int) atom1.getScreenPosition().x;
 		int y1 = (int) atom1.getScreenPosition().y;
 		int z1 = (int) atom1.getScreenPosition().z;
@@ -67,7 +66,7 @@ public class BondRenderer {
 		double zdiff = (double) (z2 - z1);
 		double costheta = Math.sqrt(run2 + rise2) / Math.sqrt(run2 + rise2 + zdiff * zdiff);
 
-		if (settings.getDrawBondsToAtomCenters() || forceLineBonds) {
+		if (settings.getDrawBondsToAtomCenters() || settings.getFastRendering()) {
 			r1 = 0.0;
 			r2 = 0.0;
 		} else {
@@ -115,7 +114,7 @@ public class BondRenderer {
 			dy2 = -(int) Math.round(ddx2 * m);
 		} 
 
-		if (settings.getBondDrawMode() == DisplaySettings.LINE || forceLineBonds) {
+		if (settings.getBondDrawMode() == DisplaySettings.LINE || settings.getFastRendering()) {
 			gc.setColor(atom1.getType().getColor());
 			gc.drawLine(x1 + dx1, y1 + dy1, xmp, ymp);
 			gc.setColor(atom2.getType().getColor());

@@ -926,6 +926,7 @@ class Compiler {
     if (tok == Token.asterisk ||
         tok == Token.leftsquare ||
         tok == Token.identifier ||
+        tok == Token.set ||
         tok == Token.x ||
         tok == Token.y ||
         tok == Token.z) {
@@ -1002,7 +1003,7 @@ class Compiler {
         tokenT = tokenNext(); if (tokenT == null) return false;
         tok = tokenT.tok;
       }
-      if (tok == Token.identifier ||
+      if (tok == Token.identifier || tok == Token.set ||
           tok == Token.x || tok == Token.y || tok == Token.z) {
         strSpec += tokenT.value;
         tokenT = tokenNext(); if (tokenT == null) return false;

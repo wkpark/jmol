@@ -672,7 +672,7 @@ final public class JmolConstants {
     0xFFFFFAF0, // floralwhite 0xFFFFFAF0
     0xFF0000FF, // blue 0xFF0000FF
     0xFF00FFFF, // cyan 0xFF00FFFF
-    0xFF00FF00, // lime 0xFF00FF00
+    0xFF008000, // green 0xFF008000
     0xFFFFFF00, // yellow 0xFFFFFF00
     // these need to be changed
     0xFFFF0000, // red 0xFFFF0000

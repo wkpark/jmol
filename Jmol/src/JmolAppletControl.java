@@ -104,7 +104,9 @@ public class JmolAppletControl extends Applet {
   public void init() {
     context = getAppletContext();
     myName = getParam("name");
-    mayScript = getParam("mayscript") != null;
+    // note that this needs to be getParameter, not getParam
+    // getParameter returns either null or the empty string
+    mayScript = getParameter("mayscript") != null;
     appletRegistry = new JmolAppletRegistry(myName, mayScript, this);
     
     targetName = getParam("target");

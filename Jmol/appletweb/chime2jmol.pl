@@ -12,26 +12,30 @@ sub usage;
 use vars qw/$opt_v $opt_a $opt_s $opt_c $opt_d/;
 getopts('va:s:cd:') or usage();
 
-my $archive = "JmolApplet.jar";
-if ($opt_a) {
-    $opt_a =~ s|/$||; # remove trailing slash
-    $archive = "$opt_a/$archive";
-}
-print "archive is $archive\n" if $opt_v;
-
 ($opt_s && $opt_d) or usage();
+
+print "source directory $opt_s\n" if $opt_v;
+(-d $opt_s) or die "$opt_s is not a directory";
+
 if ($opt_c) {
     print "deleting directory tree $opt_d\n" if $opt_v;
     rmtree $opt_d;
 }
 
 if (-e $opt_d) {
-    print "$opt_d exists\n" if $opt_v;
+    print "destination directory $opt_d exists\n" if $opt_v;
     -d $opt_d or die "$opt_d is not a directory";
 } else {
-    print "creating $opt_d\n" if $opt_v;
+    print "creating destination directory $opt_d\n" if $opt_v;
     mkdir($opt_d) or die "could not make directory $opt_d";
 }
+
+my $archive = "JmolApplet.jar";
+if ($opt_a) {
+    $opt_a =~ s|/$||; # remove trailing slash
+    $archive = "$opt_a/$archive";
+}
+print "archive is $archive\n" if $opt_v;
 
 my $baseDirectory;
 my @files;
@@ -154,13 +158,16 @@ sub writeCommentedEmbed {
 
 sub writeJmolApplet {
     print OUTPUT
-	"  <applet name=$name code=JmolApplet archive=$archive\n"
+	"  <applet name=$name code=JmolApplet\n" .
+	"          archive=$archive\n"
 	if $name;
     print OUTPUT
 	"  <applet code=JmolApplet archive=$archive\n"
 	unless $name;
     print OUTPUT
 	"          width=$width height=$height mayscript >\n";
+    print OUTPUT
+	"    <param name=emulate value=chime >\n";
     print OUTPUT
 	"    <param name=bgcolor value=$bgcolor >\n" if $bgcolor;
     print OUTPUT
@@ -246,8 +253,13 @@ sub convertSemicolonNewline {
 
 sub usage {
     print <<END;
-chime2jmol usage goes here
-    -d <dest directory>
+    perl chime2jmol.pl -s <src> -d <dst> {-c} {-a <archive>}
+
+    -s <source directory>
+    -d <destination directory>
+    -c Clear destination directory
+    -a <archive> specify alternate archive parameter
+    -v Verbose
 END
     exit;
 }

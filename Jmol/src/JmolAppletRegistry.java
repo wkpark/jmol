@@ -47,8 +47,10 @@ public class JmolAppletRegistry {
     strJavaVendor = System.getProperty("java.vendor");
     strJavaVersion = System.getProperty("java.version");
     strOSName = System.getProperty("os.name");
-    if (mayScript)
+    if (mayScript) {
       jsoWindow = JSObject.getWindow(applet);
+      System.out.println("JmolAppletRegistry: jsoWindow=" + jsoWindow);
+    }
     ns4 = (strJavaVendor.startsWith("Netscape") &
            strJavaVersion.startsWith("1.1"));
     if (! ns4)

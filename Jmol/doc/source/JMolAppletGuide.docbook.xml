@@ -1,13 +1,14 @@
 <?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <book>
   <bookinfo>
-    <title>JMol Applet Documentation</title>
+    <title>Jmol Applet Documentation</title>
   </bookinfo>
   
   <chapter>
     <title>Introduction</title>
     <para>
-      The JMol Applet is an offshoot of the main Jmol application, allowing
+      The Jmol Applet is an offshoot of the main Jmol application, allowing
       the display of 3D chemical information from within any Java 1.1 enabled
       browser.
     </para>

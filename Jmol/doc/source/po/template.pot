@@ -3,7 +3,6 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: jmol GUIDE\n"
-"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: YEAR-MO-DATE HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"

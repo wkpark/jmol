@@ -613,6 +613,8 @@ final public class JmolConstants {
    *  (scanned for Jmol by Phillip Barak, Jan 2004)
    ****************************************************************/
 
+  public final static int CHARGE_MIN = -4;
+  public final static int CHARGE_MAX = 7;
   public final static short[] ionicLookupTable = {
     (1 << 4) + (-1 + 4),  // 1,-1,1.54,"H"
     (3 << 4) + (1 + 4),   // 3,1,0.68,"Li"
@@ -987,19 +989,6 @@ final public class JmolConstants {
     920,  // "Am",95,4,0.92,920
   };
 
-  static {
-    if (ionicLookupTable.length != ionicMars.length) {
-      System.out.println("ionic table mismatch!");
-      throw new NullPointerException();
-    }
-    for (int i = ionicLookupTable.length; --i > 0; ) {
-      if (ionicLookupTable[i - 1] >= ionicLookupTable[i]) {
-        System.out.println("ionicLookupTable not sorted properly");
-        throw new NullPointerException();
-      }
-    }
-  }
-
   /**
    * Default table of CPK atom colors.
    * Used when the client does not implement
@@ -1246,6 +1235,21 @@ final public class JmolConstants {
     0xFFFF00FF, // magenta 0xFFFF00FF
     0xFFFFA500, // orange 0xFFFFA500
     0xFF87CEEB, // SkyBlue 0xFF87CEEB
+  };
+
+  public final static int[] argbsCharge = {
+    0xFFFF0000, // -4
+    0xFFFF4040, // -3
+    0xFFFF8080, // -2
+    0xFFFFC0C0, // -1
+    0xFFFFFFFF, // 0
+    0xFFD8D8FF, // 1
+    0xFFB4B4FF, // 2
+    0xFF9090FF, // 3
+    0xFF6C6CFF, // 4
+    0xFF4848FF, // 5
+    0xFF2424FF, // 6
+    0xFF0000FF, // 7
   };
 
   // 140 JavaScript color names
@@ -1710,4 +1714,29 @@ final public class JmolConstants {
   public final static String[] graphicClassBases = {
     "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands", "Unitcell"
   };
+
+  // all of these things are compile-time constants
+  // if they are false then the compiler should take them away
+  static {
+    if (ionicLookupTable.length != ionicMars.length) {
+      System.out.println("ionic table mismatch!");
+      throw new NullPointerException();
+    }
+    for (int i = ionicLookupTable.length; --i > 0; ) {
+      if (ionicLookupTable[i - 1] >= ionicLookupTable[i]) {
+        System.out.println("ionicLookupTable not sorted properly");
+        throw new NullPointerException();
+      }
+    }
+    if (argbsCharge.length != CHARGE_MAX - CHARGE_MIN + 1) {
+      System.out.println("charge color table length");
+      throw new NullPointerException();
+    }
+    if (graphicClassBases.length != GRAPHIC_MAX) {
+      System.out.println("graphicBaseClasses wrong length");
+      throw new NullPointerException();
+    }
+  }
+
+
 }

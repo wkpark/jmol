@@ -257,10 +257,14 @@ public class ColorManager {
     case JmolConstants.PALETTE_CPK:
       argb = JmolConstants.argbsCpk[atom.atomicNumber];
       break;
+    case JmolConstants.PALETTE_CHARGE:
+      int i = atom.getAtomicCharge() - JmolConstants.CHARGE_MIN;
+      argb = JmolConstants.argbsCharge[i];
+      break;
     case JmolConstants.PALETTE_STRUCTURE:
       if (pdbatom != null)
-        argb =
-          JmolConstants.argbsPdbStructure[pdbatom.getSecondaryStructureType()];
+        argb = JmolConstants.
+          argbsPdbStructure[pdbatom.getSecondaryStructureType()];
       break;
     case JmolConstants.PALETTE_AMINO:
       if (pdbatom != null) {
@@ -285,8 +289,6 @@ public class ColorManager {
                 ? JmolConstants.argbsPdbChainHetero
                 : JmolConstants.argbsPdbChainAtom)[chain];
       }
-      break;
-    case JmolConstants.PALETTE_CHARGE:
       break;
     }
     if (argb == 0)

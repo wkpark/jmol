@@ -35,7 +35,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
-public class Frame {
+final public class Frame {
 
   public JmolViewer viewer;
   public FrameRenderer frameRenderer;
@@ -250,6 +250,8 @@ public class Frame {
       shapes[shapeType].setColix(palette, colix, bsSelected);
   }
 
+  Point3f averageAtomPoint;
+
   Point3f centerBoundingBox;
   Vector3f boundingBoxCornerVector;
   Point3f minBoundingBox;
@@ -309,15 +311,21 @@ public class Frame {
   }
 
   private void calcRotationSphere() {
+    calcAverageAtomPoint();
     calcBoundingBoxDimensions();
-    rotationCenterDefault = centerBoundingBox;
-    if (notionalUnitcell != null) {
+    if (notionalUnitcell != null)
       calcUnitcellDimensions();
-      rotationCenterDefault = centerUnitcell;
-    }
-    rotationCenter = rotationCenterDefault;
+    rotationCenter = rotationCenterDefault =
+      averageAtomPoint;
     rotationRadius = rotationRadiusDefault =
       calcRotationRadius(rotationCenterDefault);
+  }
+
+  private void calcAverageAtomPoint() {
+    Point3f average = this.averageAtomPoint = new Point3f();
+    for (int i = atomCount; --i >= 0; )
+      average.add(atoms[i].point3f);
+    average.scale(1f/atomCount);
   }
 
   final static Point3f[] unitBboxPoints = {
@@ -378,6 +386,20 @@ public class Frame {
   }
 
   private float calcRotationRadius(Point3f center) {
+
+    float maxRadius = 0;
+    for (int i = atomCount; --i >= 0; ) {
+      Atom atom = atoms[i];
+      float distAtom = center.distance(atom.point3f);
+      float radiusVdw = atom.getVanderwaalsRadiusFloat();
+      float outerVdw = distAtom + radiusVdw;
+      if (outerVdw > maxRadius)
+        maxRadius = outerVdw;
+    }
+    
+    return maxRadius;
+
+    /*
     // check the 8 corners of the bounding box
     float maxRadius2 = center.distanceSquared(bboxVertices[7]);
     for (int i = 7; --i >= 0; ) {
@@ -392,8 +414,7 @@ public class Frame {
           maxRadius2 = radius2;
       }
     }
-    float radius = (float)Math.sqrt(maxRadius2);
-    return radius;
+    */
   }
 
   final static int lineGrowthIncrement = 16;

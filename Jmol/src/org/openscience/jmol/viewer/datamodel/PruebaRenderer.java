@@ -35,9 +35,9 @@ class PruebaRenderer extends ShapeRenderer {
 
   final Point3f[] points = {
     new Point3f(0, 0, 0),
-    new Point3f(10, 0, 0),
-    new Point3f(10, 10, 0),
-    new Point3f(0, 10, 0),
+    new Point3f(2, 0, 0),
+    new Point3f(2, 2, 0),
+    new Point3f(0, 2, 0),
   };
 
   final Point3i[] screens = new Point3i[points.length];
@@ -49,12 +49,20 @@ class PruebaRenderer extends ShapeRenderer {
   void render() {
     Prueba prueba = (Prueba)shape;
 
+    System.out.println("################################################################");
+    System.out.println(" screens[0]=" + screens[0] +
+                       " screens[1]=" + screens[1] +
+                       " screens[2]=" + screens[2]);
     viewer.transformPoints(points, screens);
+    g3d.fillTriangle(0xFFFF0000, screens[0], screens[1], screens[2]);
+    //    g3d.fillTriangle(0xFF00FFFF, screens[0], screens[2], screens[3]);
+    /*
     g3d.drawHermite(true, prueba.colix, 7,
                     screens[0], screens[0],
                     screens[1], screens[1],
                     screens[3], screens[3],
                     screens[2], screens[2]
                     );
+    */
   }
 }

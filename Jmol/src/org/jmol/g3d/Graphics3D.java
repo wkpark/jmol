@@ -484,6 +484,14 @@ final public class Graphics3D {
   public void fillQuadrilateral(short colix,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {
+    /*
+    System.out.println("################################");
+    System.out.println("fillQuad----------------");
+    System.out.println("screenA="+ screenA +
+                       "\nscreenB=" + screenB +
+                       "\nscreenC=" + screenC +
+                       "\nscreenD=" + screenD);
+    */
     calcSurfaceShade(colix, screenA, screenB, screenC);
     fillTriangle(argbCurrent, screenA, screenB, screenC);
     fillTriangle(argbCurrent, screenA, screenC, screenD);
@@ -541,6 +549,13 @@ final public class Graphics3D {
   
   public void fillTriangle(int argb, Point3i screenA,
                            Point3i screenB, Point3i screenC) {
+
+    /*
+    System.out.println("fillTriangle----------------");
+    System.out.println("screenA="+ screenA +
+                       " screenB=" + screenB +
+                       " screenC=" + screenC);
+    */
     argbCurrent = argb;
     int[] t;
     t = triangle3d.ax;

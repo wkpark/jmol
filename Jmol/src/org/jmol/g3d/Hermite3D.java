@@ -284,6 +284,10 @@ class Hermite3D {
       return;
     }
 
+    /*
+    System.out.println("------------render2-------------");
+    System.out.println("p1=" + p1 + " p2=" + p2 + "\np3=" + p3 + " p4=" + p4);
+    */
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;
     int x2 = p2.x, y2 = p2.y, z2 = p2.z;
     int xT1 = ( (x2 - p0.x) * tension) / 8;

@@ -48,18 +48,14 @@ public class Helix extends PdbStructure {
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
-    float dist;
-    Point3f temp = new Point3f();
-
-    chain.getAlphaCarbonMidPoint(startResidueIndex + 1, temp);
-    dist = axisB.distance(temp);
-    axisA.set(axisUnitVector);
-    axisA.scaleAdd(-dist, axisB);
-
-    chain.getAlphaCarbonMidPoint(endResidueIndex, temp);
-    dist = axisA.distance(temp);
-    axisB.set(axisUnitVector);
-    axisB.scaleAdd(dist, axisA);
+    Point3f tempA = new Point3f();
+    chain.getAlphaCarbonMidPoint(startResidueIndex, tempA);
+    projectOntoAxis(tempA);
+    Point3f tempB = new Point3f();
+    chain.getAlphaCarbonMidPoint(startResidueIndex + residueCount, tempB);
+    projectOntoAxis(tempB);
+    axisA = tempA;
+    axisB = tempB;
   }
 
 

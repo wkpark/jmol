@@ -57,13 +57,78 @@ class CartoonRenderer extends Renderer {
     short[][] madsChains = cartoon.madsChains;
     short[][] colixesChains = cartoon.colixesChains;
     for (int i = cartoon.chainCount; --i >= 0; )
-      render1Chain(pdbMolecule.getMainchain(i),
+      render1Chain(pdbMolecule.getChain(i),
                    madsChains[i], colixesChains[i]);
   }
   
+  int residueCount;
+
+  void render1Chain(PdbChain pdbchain,
+                    short[] mads, short[] colixes) {
+    residueCount = pdbchain.getResidueCount();
+    Point3i[] screens = getScreens(pdbchain);
+    Atom[] alphas = getAlphas(pdbchain);
+    for (int i = pdbchain.getResidueCount(); --i >= 0; ) {
+      short colix = colixes[i];
+      if (colix == 0)
+        colix = alphas[i].colixAtom;
+      render1Segment(screens, alphas, colix, mads, i);
+    }
+  }
+
+  Point3f[] calcStructureMidPoints(PdbChain pdbchain) {
+    int count = residueCount + 1;
+    Point3f[] structureMidPoints = frameRenderer.getTempPoints(count);
+    for (int i = count; --i >= 0; )
+      pdbchain.getStructureMidPoint(i, structureMidPoints[i]);
+    return structureMidPoints;
+  }
+
+  Point3i[] getScreens(PdbChain pdbchain) {
+    int count = residueCount + 1;
+    Point3f[] structureMidPoints = calcStructureMidPoints(pdbchain);
+    Point3i[] screens = frameRenderer.getTempScreens(count);
+    for (int i = count; --i >= 0; ) {
+      viewer.transformPoint(structureMidPoints[i], screens[i]);
+      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);
+    }
+    return screens;
+  }
+
+  Atom[] getAlphas(PdbChain pdbchain) {
+    Atom[] alphas = frameRenderer.getTempAtoms(residueCount);
+    PdbResidue[] residues = pdbchain.getMainchain();
+    for (int i = residueCount; --i >= 0; )
+      alphas[i] = residues[i].getAlphaCarbonAtom();
+    return alphas;
+  }
+
+  void render1Segment(Point3i[] screens, Atom[] alphas,
+                      short colix, short[] mads, int i) {
+    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
+    int iNext1 = i + 1; if (iNext1 > residueCount) iNext1 = residueCount;
+    int iNext2 = i + 2; if (iNext2 > residueCount) iNext2 = residueCount;
+    
+    int madThis = mads[i];
+    int madBeg = (mads[iPrev1] + madThis) / 2;
+    int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
+    int madEnd = (mads[iNext1] + madThis) / 2;
+    int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
+    int diameterMid = viewer.scaleToScreen(alphas[i].z, madThis);
+    g3d.fillHermite(colix, diameterBeg, diameterMid, diameterEnd,
+                    screens[iPrev1], screens[i],
+                    screens[iNext1], screens[iNext2]);
+    /*
+    System.out.println("render1Segment: iPrev1=" + iPrev1 +
+                       " i=" + i + " iNext1=" + iNext1 + " iNext2=" + iNext2 +
+                       " screens[i]=" + screens[i] + " colix=" + colix +
+                       " mads[i]=" + mads[i]);
+    */
+  }
+
   int mainchainLast;
 
-  void render1Chain(PdbResidue[] mainchain, short[] mads, short[] colixes) {
+  void render1ChainX(PdbResidue[] mainchain, short[] mads, short[] colixes) {
     mainchainLast = mainchain.length - 1;
     for (int i = 0; i < mainchain.length; ++i) {
       PdbResidue residue = mainchain[i];

@@ -68,24 +68,24 @@ public class PdbChain {
       residueCount = residueIndex + 1;
   }
 
-  PdbResidue getResidue(int residueIndex) {
+  public PdbResidue getResidue(int residueIndex) {
     return residues[residueIndex];
   }
   
-  int getResidueCount() {
+  public int getResidueCount() {
     return residueCount;
   }
 
-  short getFirstResidueID() {
+  public short getFirstResidueID() {
     return firstResidueID;
   }
 
-  Point3f getResidueAlphaCarbonPoint(int residueIndex) {
+  public Point3f getResidueAlphaCarbonPoint(int residueIndex) {
     return residues[residueIndex].getAlphaCarbonAtom().point3f;
   }
 
   // to get something other than the alpha carbon atom
-  Point3f getResiduePoint(int residueIndex, int mainchainIndex) {
+  public Point3f getResiduePoint(int residueIndex, int mainchainIndex) {
     return getResidue(residueIndex).getMainchainAtom(mainchainIndex).point3f;
   }
 
@@ -107,7 +107,7 @@ public class PdbChain {
     return mainchainCount;
   }
 
-  PdbResidue[] getMainchain() {
+  public PdbResidue[] getMainchain() {
     if (mainchain == null) {
       int mainchainCount = mainchainHelper(false);
       if (mainchainCount == residueCount) {
@@ -150,7 +150,7 @@ public class PdbChain {
       residues[i].setStructure(structure);
   }
 
-  void getAlphaCarbonMidPoint(int residueIndex, Point3f midPoint) {
+  public void getAlphaCarbonMidPoint(int residueIndex, Point3f midPoint) {
     if (residueIndex == residueCount) {
       residueIndex = residueCount - 1;
     } else if (residueIndex > 0) {
@@ -162,17 +162,29 @@ public class PdbChain {
     midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
   }
 
-  void getStructureMidPoint(int residueIndex, Point3f midPoint) {
+  public void getStructureMidPoint(int residueIndex, Point3f midPoint) {
     if (residueIndex < residueCount &&
         residues[residueIndex].isHelixOrSheet()) {
       midPoint.set(residues[residueIndex].structure.
                    getStructureMidPoint(residueIndex));
+      /*
+      System.out.println("" + residueIndex + "isHelixOrSheet" +
+                         midPoint.x + "," + midPoint.y + "," + midPoint.z);
+      */
     } else if (residueIndex > 0 &&
                residues[residueIndex - 1].isHelixOrSheet()) {
       midPoint.set(residues[residueIndex - 1].structure.
                    getStructureMidPoint(residueIndex));
+      /*
+      System.out.println("" + residueIndex + "previous isHelixOrSheet" +
+                         midPoint.x + "," + midPoint.y + "," + midPoint.z);
+      */
     } else {
       getAlphaCarbonMidPoint(residueIndex, midPoint);
+      /*
+      System.out.println("" + residueIndex + "the alpha carbon midpoint" +
+                         midPoint.x + "," + midPoint.y + "," + midPoint.z);
+      */
     }
   }
 }

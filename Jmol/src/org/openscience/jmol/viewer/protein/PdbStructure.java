@@ -55,6 +55,8 @@ public abstract class PdbStructure {
     if (segments != null)
       return;
     calcAxis();
+    System.out.println("axisA=" + axisA.x + "," + axisA.y + "," + axisA.z);
+    System.out.println("axisB=" + axisB.x + "," + axisB.y + "," + axisB.z);
     segments = new Point3f[residueCount + 1];
     segments[residueCount] = axisB;
     segments[0] = axisA;
@@ -62,6 +64,11 @@ public abstract class PdbStructure {
       Point3f point = segments[i] = new Point3f();
       chain.getAlphaCarbonMidPoint(startResidueIndex + i, point);
       projectOntoAxis(point);
+    }
+    for (int i = 0; i < segments.length; ++i) {
+      Point3f point = segments[i];
+      System.out.println("segment[" + i + "]=" +
+                         point.x + "," + point.y + "," + point.z);
     }
   }
 
@@ -102,6 +109,12 @@ public abstract class PdbStructure {
   public Point3f getStructureMidPoint(int residueIndex) {
     if (segments == null)
       calcSegments();
+    /*
+    Point3f point = segments[residueIndex - startResidueIndex];
+    System.out.println("PdbStructure.getStructureMidpoint(" +
+                       residueIndex + ") -> " +
+                       point.x + "," + point.y + "," + point.z);
+    */
     return segments[residueIndex - startResidueIndex];
   }
 }

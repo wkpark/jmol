@@ -49,7 +49,6 @@ class PdbReader extends AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection("pdb");
 
     atomSetCollection.pdbStructureRecords = new String[32];
-    StringBuffer sbHeader = new StringBuffer();
     initialize();
     while ((line = reader.readLine()) != null) {
       lineLength = line.length();

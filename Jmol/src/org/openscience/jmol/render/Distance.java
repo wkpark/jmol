@@ -53,7 +53,8 @@ public class Distance extends Measurement implements MeasurementInterface {
                              Atom atom1, Atom atom2) {
     control.maybeDottedStroke(g);
     g.setColor(control.getDistanceColor());
-    g.drawLine(atom1.screenX, atom1.screenY, atom2.screenX, atom2.screenY);
+    g.drawLine(atom1.getScreenX(), atom1.getScreenY(),
+	       atom2.getScreenX(), atom2.getScreenY());
   }
 
   /**
@@ -63,8 +64,10 @@ public class Distance extends Measurement implements MeasurementInterface {
   
   private void paintDistString(Graphics g, DisplayControl control,
                                Atom atom1, Atom atom2) {
-    int x1 = atom1.screenX, y1 = atom1.screenY, d1 = atom1.screenDiameter;
-    int x2 = atom2.screenX, y2 = atom2.screenY, d2 = atom2.screenDiameter;
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
+      d1 = atom1.getScreenDiameter();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
+      d2 = atom2.getScreenDiameter();
     
     int avgRadius = (d1 + d2) / 4;
 

@@ -65,7 +65,7 @@ public class ChemFrameRenderer {
       transformables.add(frame);
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = frame.getAtomAt(i);
-        shapesList.add(new AtomShape(atom));
+        shapesList.add(atom.getAtomShape());
       }
       if (control.getShowVectors()) {
         double minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();

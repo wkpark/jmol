@@ -14,7 +14,6 @@ public class AtomVectorShape implements Shape {
   
   AtomVectorShape(Atom atom, DisplayControl control,
                   double minMagnitude, double magnitudeRange) {
-    
     this.atom = atom;
     this.control = control;
     this.minMagnitude = minMagnitude;
@@ -36,7 +35,7 @@ public class AtomVectorShape implements Shape {
         double magnitude = atom.getVector().distance(zeroPoint);
         double scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;
         ArrowLine al =
-          new ArrowLine(g, control, atom.screenX, atom.screenY,
+          new ArrowLine(g, control, atom.getScreenX(), atom.getScreenY(),
                         atom.getScreenVector().x, atom.getScreenVector().y,
                         false, true, scaling);
       }
@@ -44,7 +43,7 @@ public class AtomVectorShape implements Shape {
   }
   
   public int getZ() {
-    return atom.screenZ + 1;
+    return atom.getScreenZ() + 1;
   }
   
   /**
@@ -52,4 +51,3 @@ public class AtomVectorShape implements Shape {
    */
   private static final Point3d zeroPoint = new Point3d();
 }
-

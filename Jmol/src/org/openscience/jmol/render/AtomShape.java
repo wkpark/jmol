@@ -52,6 +52,9 @@ import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.awt.Point;
 
+import javax.vecmath.Point3d;
+import javax.vecmath.Matrix4d;
+
 /**
  * Graphical representation of an atom.
  *
@@ -60,8 +63,14 @@ import java.awt.Point;
 public class AtomShape implements Shape {
 
   Atom atom;
+  private Point3d screenPosition = new Point3d();
+  public int x;
+  public int y;
+  public int z;
+  public int diameter;
+  public Point3d screenVector;
   
-  AtomShape(Atom atom) {
+  public AtomShape(Atom atom) {
     this.atom = atom;
   }
 
@@ -86,8 +95,7 @@ public class AtomShape implements Shape {
     Enumeration bondIter = atom.getBondedAtoms();
     while (bondIter.hasMoreElements()) {
       Atom otherAtom = (Atom) bondIter.nextElement();
-      int z = atom.screenZ;
-      int zOther = otherAtom.screenZ;
+      int zOther = otherAtom.getScreenZ();
       if ((control.showHydrogens || !otherAtom.isHydrogen()) &&
           (z > zOther) ||
           ((z==zOther) && (atom.getAtomNumber() > otherAtom.getAtomNumber())))
@@ -95,19 +103,35 @@ public class AtomShape implements Shape {
     }
   }
   
+  public void transform(DisplayControl control) {
+    control.matrixTransform.transform(atom.getPosition(), screenPosition);
+    x = (int)screenPosition.x;
+    y = (int)screenPosition.y;
+    z = (int)screenPosition.z;
+    diameter = control.getScreenDiameter(z, atom.getType().getVdwRadius());
+    if (control.isPerspectiveDepth()) {
+      int cameraZ = control.cameraZ;
+      x = (x * cameraZ) / (cameraZ - z);
+      y = (y * cameraZ) / (cameraZ - z);
+    }
+    x += control.xTranslation;
+    y += control.yTranslation;
+    if (atom.hasVector()) {
+      if (screenVector == null)
+        screenVector = new Point3d();
+      control.transformPoint(atom.getScaledVector(), screenVector);
+    }
+  }
+
   public int getZ() {
-    return atom.screenZ;
+    return z;
   }
   
   public void renderLabel(Graphics g, Rectangle clip, DisplayControl control) {
     if (control.labelMode == control.NOLABELS)
       return;
-    int x = atom.screenX;
-    int y = atom.screenY;
-    int z = atom.screenZ;
-    int diameter = atom.screenDiameter;
-    int radius = diameter >> 1;
 
+    int radius=diameter/2;
     int j = 0;
     String s = null;
     Font font = new Font("Helvetica", Font.PLAIN, radius);
@@ -168,8 +192,8 @@ public class AtomShape implements Shape {
                          Atom atom1, Atom atom2) {
     Color color1 = getAtomColor(control, atom1);
     Color color2 = getAtomColor(control, atom2);
-    int x1 = atom1.screenX, y1 = atom1.screenY;
-    int x2 = atom2.screenX, y2 = atom2.screenY;
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
     int dx = x2 - x1, dx2 = dx * dx;
     int dy = y2 - y1, dy2 = dy * dy;
     int magnitude2 = dx2 + dy2;
@@ -197,14 +221,14 @@ public class AtomShape implements Shape {
     if (!control.showAtoms) {
       diameter1 = radius1 = diameter2 = radius2 = 0;
     } else {
-      diameter1 = atom1.screenDiameter;
+      diameter1 = atom1.getScreenDiameter();
       radius1 = diameter1 >> 1;
-      diameter2 = atom2.screenDiameter;
+      diameter2 = atom2.getScreenDiameter();
       radius2 = diameter2 >> 1;
     }
 
-    int z1 = atom1.screenZ;
-    int z2 = atom2.screenZ;
+    int z1 = atom1.getScreenZ();
+    int z2 = atom2.getScreenZ();
     int dz = z2 - z1;
     int dz2 = dz * dz;
     int magnitude = (int) Math.sqrt(magnitude2);
@@ -517,22 +541,18 @@ public class AtomShape implements Shape {
   private void renderAtom(Graphics g, Rectangle clip, DisplayControl control) {
     if (!control.showAtoms || (!control.showHydrogens && atom.isHydrogen()))
       return;
-    int x = atom.screenX;
-    int y = atom.screenY;
-    int z = atom.screenZ;
-    int diameter = atom.screenDiameter;
-    int radius = diameter >> 1;
 
     if (!control.fastRendering && control.isSelected(atom)) {
       int halowidth = diameter / 3;
       if (halowidth < 2)
         halowidth = 2;
       int halodiameter = diameter + 2 * halowidth;
-      int haloradius = radius + halowidth;
+      int haloradius = halodiameter / 2;
       g.setColor(control.getPickedColor());
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
     Color color = getAtomColor(control, atom);
+    int radius = diameter / 2;
     g.setColor(color);
     if (diameter <= 3) {
       if (diameter > 0) {
@@ -543,17 +563,17 @@ public class AtomShape implements Shape {
       }
     } else {
       if (!control.fastRendering && control.atomDrawMode==control.SHADING) {
-        renderShadedAtom(g, control, x, y, diameter, color);
+        renderShadedAtom(g, control, color);
         return;
       }
       // the area *drawn* by an oval is 1 larger than the area
       // *filled* by an oval
-      --diameter;
+      int diamT = diameter-1;
       if (!control.fastRendering && control.atomDrawMode!=control.WIREFRAME) {
-        g.fillOval(x - radius, y - radius, diameter, diameter);
+        g.fillOval(x - radius, y - radius, diamT, diamT);
         g.setColor(getOutline(control, color));
       }
-      g.drawOval(x - radius, y - radius, diameter, diameter);
+      g.drawOval(x - radius, y - radius, diamT, diamT);
     }
   }
 
@@ -571,7 +591,7 @@ public class AtomShape implements Shape {
     
   
   private void renderShadedAtom(Graphics g, DisplayControl control,
-                                int x, int y, int diameter, Color color) {
+                                Color color) {
     if (! control.imageCache.containsKey(color)) {
       loadShadedSphereCache(control, color);
     }
@@ -580,23 +600,22 @@ public class AtomShape implements Shape {
     if (diameter < minCachedSize) {
       // the area drawn by an oval is 1 larger than the area
       // filled by an oval
-      --diameter;
+      int diamTemp = diameter-1;
       g.setColor(color);
-      g.fillOval(x - radius, y - radius, diameter, diameter);
+      g.fillOval(x - radius, y - radius, diamTemp, diamTemp);
       g.setColor(getDarker(color));
-      g.drawOval(x - radius, y - radius, diameter, diameter);
+      g.drawOval(x - radius, y - radius, diamTemp, diamTemp);
     } else if (diameter < maxCachedSize) {
       // images in the cache have a margin of 1
       g.drawImage(shadedImages[diameter],
                    x - radius - 1, y - radius - 1, null);
     } else {
-      renderLargeShadedAtom(g, control, shadedImages[0], x, y, diameter);
+	renderLargeShadedAtom(g, control, shadedImages[0]);
     }
   }
 
   private void renderLargeShadedAtom(Graphics g, DisplayControl control,
-                                     Image imgSphere,
-                                    int x, int y, int diameter) {
+                                     Image imgSphere) {
     int radius = diameter / 2;
     if (! control.useGraphics2D) {
       g.drawImage(imgSphere, x - radius, y - radius,

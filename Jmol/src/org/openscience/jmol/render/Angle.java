@@ -33,7 +33,6 @@ public class Angle extends Measurement implements MeasurementInterface {
   private ChemFrame fcf;
 
   public Angle(int a1, int a2, int a3) {
-
     super();
     Atoms[0] = a1;
     Atoms[1] = a2;
@@ -49,9 +48,9 @@ public class Angle extends Measurement implements MeasurementInterface {
 
   private void paintAngleLine(Graphics g, DisplayControl control,
                               Atom atom1, Atom atom2, Atom atom3) {
-    int x1 = atom1.screenX, y1 = atom1.screenY;
-    int x2 = atom2.screenX, y2 = atom2.screenY;
-    int x3 = atom3.screenX, y3 = atom3.screenY;
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
+    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY();
     int xa = (x1 + x2) / 2;
     int ya = (y1 + y2) / 2;
     int xb = (x3 + x2) / 2;
@@ -69,9 +68,12 @@ public class Angle extends Measurement implements MeasurementInterface {
   
   private void paintAngleString(Graphics g, DisplayControl control,
                                 Atom atom1, Atom atom2, Atom atom3) {
-    int x1 = atom1.screenX, y1 = atom1.screenY, d1 = atom1.screenDiameter;
-    int x2 = atom2.screenX, y2 = atom2.screenY, d2 = atom2.screenDiameter;
-    int x3 = atom3.screenX, y3 = atom3.screenY, d3 = atom3.screenDiameter;
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
+	d1 = atom1.getScreenDiameter();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
+	d2 = atom2.getScreenDiameter();
+    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY(),
+	d3 = atom3.getScreenDiameter();
     int avgRadius = (d1 + d2 + d3) / 6;
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);

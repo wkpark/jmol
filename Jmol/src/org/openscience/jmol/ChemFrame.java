@@ -391,17 +391,16 @@ public class ChemFrame implements Transformable {
     return result;
   }
 
-  private boolean isAtomInRegion(int n, int x1, int y1, int x2, int y2) {
-
-    int x = atoms[n].screenX;
-    if ((x > x1) && (x < x2)) {
-      int y = atoms[n].screenY;
-      if ((y > y1) && (y < y2)) {
-        return true;
-      }
+    private boolean isAtomInRegion(int n, int x1, int y1, int x2, int y2) {
+	int x = atoms[n].getScreenX();
+	if ((x > x1) && (x < x2)) {
+	    int y = atoms[n].getScreenY();
+	    if ((y > y1) && (y < y2)) {
+		return true;
+	    }
+	}
+	return false;
     }
-    return false;
-  }
 
   /**
    * Finds the atom nearest the given screen coordinates.
@@ -427,8 +426,8 @@ public class ChemFrame implements Transformable {
     int r2Closest = Integer.MAX_VALUE;
     for (int i = 0; i < numberAtoms; i++) {
       Atom atom = atoms[i];
-      dx = atom.screenX - x;
-      dy = atom.screenY - y;
+      dx = atom.getScreenX() - x;
+      dy = atom.getScreenY() - y;
       dr2 = dx * dx + dy * dy;
       if (dr2 < r2Closest) {
         atomClosest = atom;
@@ -436,7 +435,7 @@ public class ChemFrame implements Transformable {
       }
     }
     int rClosest = (int)Math.sqrt(r2Closest);
-    return (rClosest > (atomClosest.screenDiameter / 2) + 5)
+    return (rClosest > atomClosest.getScreenRadius() + 5)
       ? null
       : atomClosest;
   }

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.AtomShape;
 import java.awt.Color;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -36,18 +37,6 @@ import org.openscience.cdk.tools.IsotopeFactory;
  * atoms.
  */
 public class Atom extends org.openscience.cdk.Atom {
-
-   public Atom(BaseAtomType at) {
-    super(at.getSymbol());
-    super.setID(at.getID());
-    try {
-        IsotopeFactory.getInstance().configure(this);
-    } catch (Exception e) {
-        // failed to configure atom
-        System.err.println("Error configuration of atom: " + at.getSymbol());
-    }
-    this.atomType = new AtomType(at);
-  }
 
   /**
    * Creates an atom with the given type.
@@ -66,6 +55,7 @@ public class Atom extends org.openscience.cdk.Atom {
     }
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
+    this.atomShape = new AtomShape(this);
   }
 
   /**
@@ -162,14 +152,6 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   /**
-   * Returns the atom's on-screen position. Note: the atom must
-   * first be transformed. Otherwise, a point at the origin is returned.
-   */
-  public Point3d getScreenPosition() {
-    return screenPosition;
-  }
-
-  /**
    * Returns the atom's vector, or null if not set.
    */
   public boolean hasVector() {
@@ -177,16 +159,14 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   public Point3d getVector() {
-    if (vector == null)
-      return null;
-    return new Point3d(vector);
+      return vector;
   }
 
   private static final Point3d zeroPoint = new Point3d();
   public double getVectorMagnitude() {
     // mth 2002 nov
     // I don't know why they were scaling by two,
-    // but that is the way it was working
+    // but that is the way it was workingn
     if (vector == null)
       return 0f;
     return vector.distance(zeroPoint) * 2.0f;
@@ -218,7 +198,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * first be transformed. Otherwise, a point at the origin is returned.
    */
   public Point3d getScreenVector() {
-    return screenVector;
+    return atomShape.screenVector;
   }
 
   /**
@@ -226,23 +206,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * the given matrix.
    */
   public void transform(DisplayControl control) {
-    control.matrixTransform.transform(getPosition(), screenPosition);
-    screenX = (int)screenPosition.x;
-    screenY = (int)screenPosition.y;
-    screenZ = (int)screenPosition.z;
-    screenDiameter =
-      control.getScreenDiameter(screenZ,
-                           atomType.getBaseAtomType().getVdwRadius());
-    if (control.isPerspectiveDepth()) {
-      int cameraZ = control.cameraZ;
-      screenX = (screenX * cameraZ) / (cameraZ - screenZ);
-      screenY = (screenY * cameraZ) / (cameraZ - screenZ);
-    }
-    screenX += control.xTranslation;
-    screenY += control.yTranslation;
-    if (vector != null) {
-      control.transformPoint(getScaledVector(), screenVector);
-    }
+    atomShape.transform(control);
   }
 
   /**
@@ -316,17 +280,36 @@ public class Atom extends org.openscience.cdk.Atom {
     return false;
   }
 
+    private AtomShape atomShape;
+    public AtomShape getAtomShape() {
+	return atomShape;
+    }
+
   private AtomType atomType;
 
   /**
    * Position in screen space.
    */
-  private Point3d screenPosition = new Point3d();
 
-  public int screenX;
-  public int screenY;
-  public int screenZ;
-  public int screenDiameter;
+  public int getScreenX() {
+    return atomShape.x;
+  }
+
+  public int getScreenY() {
+    return atomShape.y;
+  }
+
+  public int getScreenZ() {
+    return atomShape.z;
+  }
+
+  public int getScreenDiameter() {
+    return atomShape.diameter;
+  }
+
+  public int getScreenRadius() {
+    return atomShape.diameter / 2;
+  }
 
   /**
    * A list of atoms to which this atom is bonded. Lazily initialized.
@@ -349,11 +332,6 @@ public class Atom extends org.openscience.cdk.Atom {
   private int atomNumber;
 
   /**
-   * Vibrational vector in screen space.
-   */
-  private Point3d screenVector = new Point3d();
-
-  /**
    * A list of properties
    */
   private Vector properties = new Vector();
@@ -361,7 +339,8 @@ public class Atom extends org.openscience.cdk.Atom {
   public String toString() {
     String type = getSymbol();
     return "Atom{" + type + " #" + getAtomNumber() + " @" +
-      getPosition() + " @" + screenX + "," + screenY + "," + screenZ + "}";
+      getPosition() + " @" + getScreenX() + ","
+	+ getScreenY() + "," + getScreenZ() + "}";
   }
 
   static class NoBondsEnumeration implements Enumeration {

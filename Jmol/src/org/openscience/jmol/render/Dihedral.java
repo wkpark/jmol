@@ -56,10 +56,10 @@ public class Dihedral extends Measurement implements MeasurementInterface {
   private void paintDihedralLine(Graphics g, DisplayControl control,
                                  Atom atom1, Atom atom2,
                                  Atom atom3, Atom atom4) {
-    int x1 = atom1.screenX, y1 = atom1.screenY;
-    int x2 = atom2.screenX, y2 = atom2.screenY;
-    int x3 = atom3.screenX, y3 = atom3.screenY;
-    int x4 = atom4.screenX, y4 = atom4.screenY;
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
+    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY();
+    int x4 = atom4.getScreenX(), y4 = atom4.getScreenY();
     int xa = (x1 + x2) / 2;
     int ya = (y1 + y2) / 2;
     int xb = (x3 + x4) / 2;
@@ -78,10 +78,14 @@ public class Dihedral extends Measurement implements MeasurementInterface {
   private void paintDihedralString(Graphics g, DisplayControl control,
                                  Atom atom1, Atom atom2,
                                  Atom atom3, Atom atom4) {
-    int x1 = atom1.screenX, y1 = atom1.screenY, d1 = atom1.screenDiameter;
-    int x2 = atom2.screenX, y2 = atom2.screenY, d2 = atom2.screenDiameter;
-    int x3 = atom3.screenX, y3 = atom3.screenY, d3 = atom3.screenDiameter;
-    int x4 = atom4.screenX, y4 = atom4.screenY, d4 = atom4.screenDiameter;
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
+	d1 = atom1.getScreenDiameter();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
+	d2 = atom2.getScreenDiameter();
+    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY(),
+	d3 = atom3.getScreenDiameter();
+    int x4 = atom4.getScreenX(), y4 = atom4.getScreenY(),
+	d4 = atom4.getScreenDiameter();
     int avgRadius = (d1 + d2 + d3 + d4) / 8;
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);

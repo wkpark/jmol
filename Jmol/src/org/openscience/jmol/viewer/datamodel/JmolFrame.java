@@ -341,6 +341,12 @@ public class JmolFrame {
       cellLine.render(g3d, viewer);
     }
 
+    for (int i = measurementShapeCount; --i >= 0; ) {
+      MeasurementShape measurementShape = measurementShapes[i];
+      measurementShape.transform(viewer);
+      measurementShape.render(g3d, viewer);
+    }
+
     if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {
       Shape[] axisShapes = viewer.getAxes().getShapes();
       for (int i = axisShapes.length; --i >= 0; ) {

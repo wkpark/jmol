@@ -33,6 +33,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
+
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix3f;
 
 class Context {
@@ -2907,9 +2909,9 @@ public class Eval implements Runnable {
                        matrixConfirmIdentity);
 
     Matrix3f foo =
-      new Matrix3f(matrixStart.m00, matrixStart.m01, matrixStart.m02,
-                   matrixStart.m10, matrixStart.m11, matrixStart.m12,
-                   matrixStart.m20, matrixStart.m21, matrixStart.m22);
+      new Matrix3f(matrixStart.m00, matrixStart.m01, 0,
+                   matrixStart.m10, matrixStart.m11, 0,
+                   0, 0, 0);
     Matrix3f fooInvert = new Matrix3f();
     Matrix3f fooIdentity = new Matrix3f();
 
@@ -2918,6 +2920,22 @@ public class Eval implements Runnable {
 
     System.out.println("---------confirm identity of foo\n" +
                        fooIdentity);
+
+                   
+
+    Matrix4d bar =
+      new Matrix4d(matrixStart.m00, matrixStart.m01, matrixStart.m02, matrixStart.m03,
+                   matrixStart.m10, matrixStart.m11, matrixStart.m12, matrixStart.m13,
+                   matrixStart.m20, matrixStart.m21, matrixStart.m22, matrixStart.m23,
+                   matrixStart.m30, matrixStart.m31, matrixStart.m32, matrixStart.m33);
+    Matrix4d barInvert = new Matrix4d();
+    Matrix4d barIdentity = new Matrix4d();
+
+    barInvert.invert(bar);
+    barIdentity.mul(bar, barInvert);
+
+    System.out.println("---------confirm identity of bar\n" +
+                       barIdentity);
 
                    
 

@@ -183,6 +183,7 @@ public class Jmol extends JPanel {
     scriptWindow = new ScriptWindow(viewer, frame);
     say("Initializing AtomSetChooser Window...");
     atomSetChooser = new AtomSetChooser(viewer, frame);
+
     viewer.setJmolStatusListener(new MyJmolStatusListener());
 
     say("Initializing Measurements...");
@@ -250,6 +251,7 @@ public class Jmol extends JPanel {
     pcs.addPropertyChangeListener(chemFileProperty, printAction);
     pcs.addPropertyChangeListener(chemFileProperty,
                                   viewMeasurementTableAction);
+    pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
 
     jmolpopup = JmolPopup.newJmolPopup(viewer);
 

@@ -32,6 +32,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.beans.*;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JEditorPane;
@@ -47,7 +48,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class AtomSetChooser extends JDialog
-                           implements TreeSelectionListener {
+  implements TreeSelectionListener, PropertyChangeListener {
   
   private JEditorPane propertiesPane;
   private JTree tree;
@@ -183,5 +184,19 @@ public class AtomSetChooser extends JDialog
     }
     
   }
-  
+
+  ////////////////////////////////////////////////////////////////
+  // PropertyChangeListener to receive notification that
+  // the underlying AtomSetCollection has changed
+  ////////////////////////////////////////////////////////////////
+
+  public void propertyChange(PropertyChangeEvent propertyChangeEvent) {
+    String eventName = propertyChangeEvent.getPropertyName();
+    if (eventName.equals(Jmol.chemFileProperty)) {
+      System.out.println("AtomSetChooser has received notification " +
+                         "that the underlying AtomSetCollection has changed");
+      // Rene, put your things here
+      return;
+    }
+  }
 }

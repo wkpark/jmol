@@ -191,12 +191,9 @@ class DaltonReader extends DefaultChemFileReader {
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
 
-        // ignore first token
-        tokenizer.nextToken();
-
         // Look for x which indicates vectors are next.
         String token = tokenizer.nextToken();
-        while (!token.equals("x") && tokenizer.hasMoreTokens()) {
+        while (!token.endsWith("x") && tokenizer.hasMoreTokens()) {
           token = tokenizer.nextToken();
         }
         for (int j = 0; j < currentFreqs.size(); ++j) {
@@ -209,12 +206,9 @@ class DaltonReader extends DefaultChemFileReader {
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
 
-        // ignore first token
-        tokenizer.nextToken();
-
         // Look for y which indicates vectors are next.
         token = tokenizer.nextToken();
-        while (!token.equals("y") && tokenizer.hasMoreTokens()) {
+        while (!token.endsWith("y") && tokenizer.hasMoreTokens()) {
           token = tokenizer.nextToken();
         }
         for (int j = 0; j < currentFreqs.size(); ++j) {
@@ -226,10 +220,9 @@ class DaltonReader extends DefaultChemFileReader {
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
 
-        // ignore first token
         // Look for z which indicates vectors are next.
         token = tokenizer.nextToken();
-        while (!token.equals("z") && tokenizer.hasMoreTokens()) {
+        while (!token.endsWith("z") && tokenizer.hasMoreTokens()) {
           token = tokenizer.nextToken();
         }
         for (int j = 0; j < currentFreqs.size(); ++j) {

@@ -526,10 +526,7 @@
   </target>
   
   <target name="run" id="run" depends="main">
-    <java fork="true" classname="org.openscience.jmol.Jmol">
-      <classpath location="classes" />
-      <classpath refid="project.class.path" />
-    </java>
+    <java fork="true" jar="jmol.jar" />
   </target>
 
   <!-- ********************************

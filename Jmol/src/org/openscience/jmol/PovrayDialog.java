@@ -41,7 +41,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
-import javax.vecmath.Matrix4d;
 
 /**
  * A dialog for controling the creation of a povray input file from a

@@ -19,8 +19,6 @@
  */
 package org.openscience.jmol;
 
-import javax.vecmath.Matrix4d;
-
 /**
  * Provides an interface for objects which are transformed
  * from 3D to 2D coordinates.

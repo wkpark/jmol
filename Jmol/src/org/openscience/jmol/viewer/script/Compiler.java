@@ -25,6 +25,7 @@
 
 package org.openscience.jmol.viewer.script;
 import org.openscience.jmol.viewer.managers.ColorManager;
+import org.openscience.jmol.viewer.pdb.PdbGroup;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -864,7 +865,7 @@ class Compiler {
       if (strSpec.length() != 3)
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
-      int groupID = Token.maybeGetGroupID(strSpec);
+      int groupID = PdbGroup.lookupGroupID(strSpec);
       if (groupID != -1)
         generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
       else
@@ -921,7 +922,7 @@ class Compiler {
         strUpper3.charAt(1) == '?' ||
         strUpper3.charAt(2) == '?') {
       generateResidueSpecCode(new Token(Token.spec_name_pattern, strUpper3));
-    } else if ((groupID = Token.maybeGetGroupID(strUpper3)) != -1) {
+    } else if ((groupID = PdbGroup.lookupGroupID(strUpper3)) != -1) {
       generateResidueSpecCode(new Token(Token.spec_resid, groupID, strUpper3));
     } else {
       return generateResidueSpecCode(tokenIdent);

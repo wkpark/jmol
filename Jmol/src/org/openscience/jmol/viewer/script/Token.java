@@ -648,11 +648,4 @@ public class Token {
       ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue) +
       ((value == null) ? "" : ":" + value) + "]";
   }
-
-  static int maybeGetGroupID(String strSpec) {
-    for (int i = JmolConstants.predefinedGroup3Names.length; --i >= 0; )
-      if (strSpec.equals(JmolConstants.predefinedGroup3Names[i]))
-          return i;
-    return -1;
-  }
 }

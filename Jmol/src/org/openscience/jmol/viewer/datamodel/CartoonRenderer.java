@@ -52,6 +52,8 @@ class CartoonRenderer extends McgRenderer {
   }
 
   void renderCartoonChain(Cartoon.Chain cartoonChain) {
+    if (cartoonChain.mainchainLength < 2)
+      return;
     render1Chain(cartoonChain.pdbChain,
                  cartoonChain.mads, cartoonChain.colixes);
   }

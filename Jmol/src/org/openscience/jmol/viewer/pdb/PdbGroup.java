@@ -40,7 +40,7 @@ public class PdbGroup {
   public PdbGroup(PdbChain chain, short groupSequence, String group3) {
     this.chain = chain;
     this.groupSequence = groupSequence;
-    this.groupID = lookupGroupID(group3);
+    this.groupID = getGroupID(group3);
   }
 
   public void setStructure(PdbStructure structure) {
@@ -128,11 +128,16 @@ public class PdbGroup {
     return groupID;
   }
 
-  short lookupGroupID(String group3) {
+  static short getGroupID(String group3) {
+    short groupID = lookupGroupID(group3);
+    return (groupID != -1) ? groupID : addGroup3Name(group3);
+  }
+
+  public static short lookupGroupID(String group3) {
     Short boxedGroupID = (Short)htGroup.get(group3);
     if (boxedGroupID != null)
       return boxedGroupID.shortValue();
-    return addGroup3Name(group3);
+    return -1;
   }
 
   public PdbAtom allocatePdbAtom(int atomIndex, String pdbRecord) {

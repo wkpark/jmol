@@ -65,7 +65,7 @@
 <![CDATA[
 <table border="1"><tr><td>
 <applet name="flash" code="JmolApplet" archive="JmolApplet.jar"
-        width="300" height="100" align="left">
+        width="300" height="100" align="left" mayscript>
 	<param name="bgcolor" value="teal">
 	<param name="script" value="
 	load 'jmol.mol';
@@ -101,7 +101,7 @@
         This example shows some of the scripting available.
 <appletExample>
 <![CDATA[<APPLET NAME="jmol" CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
-    WIDTH="200" HEIGHT="200">
+    WIDTH="200" HEIGHT="200" mayscript>
   <PARAM NAME="load" VALUE="caffeine.xyz"/>
 </APPLET>
 <br>
@@ -185,7 +185,7 @@ function br() {
 <table border=1>
 <tr><td width=350 align=right>
 <applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar"
-        width="350" height="350" align="left">
+        width="350" height="350" align="left" mayscript>
     <param name="bgcolor" value="black">
 </applet>
 </td>
@@ -273,7 +273,7 @@ linkScript('monitor 1 4');
   }
   </script>
   <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
-          width="350" height="350">
+          width="350" height="350" mayscript>
     <param name="load"   value="SN1_reaction.xyz">
   </applet>
   <form>

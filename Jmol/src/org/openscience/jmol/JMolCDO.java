@@ -107,9 +107,6 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Crystal")) {
 
       // need not to anything yet
-    } else if (type.equals("a-axis") || type.equals("b-axis")
-            || type.equals("c-axis")) {
-      currentFrame.setCellAxis(type, proptype, Float.parseFloat(propvalue));
     } else {
       System.err.println(
               "DEBUG: unknown CDO Object Type at SetObjectProperty -> "

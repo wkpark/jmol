@@ -152,22 +152,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   }
 
   /**
-   * Returns the Van derWaals radius.
-   */
-  public double getVdwRadius() {
-    return super.getVanderwaalsRadius();
-  }
-
-  /**
-   * Sets the Van derWaals radius.
-   *
-   * @param vr the Van derWaals Radius
-   */
-  public void setVdwRadius(double vr) {
-    super.setVanderwaalsRadius(vr);
-  }
-
-  /**
    * Returns true if this and the Object are equal.
    *
    * @param obj object for comparison.

@@ -102,7 +102,7 @@ class AtomTypesModel extends AbstractTableModel {
       break;
 
     case 4 :
-      at.setVdwRadius(((Double) o).doubleValue());
+      at.setVanderwaalsRadius(((Double) o).doubleValue());
       break;
 
     case 5 :
@@ -142,7 +142,7 @@ class AtomTypesModel extends AbstractTableModel {
         return mass;
 
       case 4 :
-        return new Double(at.getVdwRadius());
+        return new Double(at.getVanderwaalsRadius());
 
       case 5 :
         return new Double(at.getCovalentRadius());

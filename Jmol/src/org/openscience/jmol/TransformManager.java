@@ -366,7 +366,7 @@ public class TransformManager {
   }
 
   public int screenAtomDiameter(int z, Atom atom, int percentVdw) {
-    double vdwRadius = atom.getVdwRadius();
+    double vdwRadius = atom.getVanderwaalsRadius();
     if (z > 0)
       System.out.println("--?QUE? no way that z > 0--");
     if (vdwRadius <= 0)

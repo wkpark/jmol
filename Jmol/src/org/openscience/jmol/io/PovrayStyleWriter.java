@@ -84,7 +84,7 @@ import java.io.IOException;
  * 3) Still in writeAtomsAndBondsDeclare() loop over the types
  * declaring names based on the element and setting the radi:<p>
  *    w.write("#declare "+typeName[i]+"_RADIUS =
- * "+cf.getAtomType[indexOfExampleAtom[i]].getVdwRadius()+";");<p>
+ * "+cf.getAtomType[indexOfExampleAtom[i]].getVanderwaalsRadius()+";");<p>
  * 4) This will now produce a set of declares in the pov file like
  * for chlorine '#declare Cl_RADIUS = 1.9;'<p>
  * 5) Final in the writeAtom() call for the ith atom:<p>
@@ -224,7 +224,7 @@ public class PovrayStyleWriter {
           + "_atom " + "(center_x, center_y, center_z)\n" + "  sphere{\n"
           + "    < center_x, center_y, center_z>,\n" + "    "
           + (atomSphereFactor *
-             cf.getJmolAtomAt(indexOfExampleAtom[j]).getVdwRadius())
+             cf.getJmolAtomAt(indexOfExampleAtom[j]).getVanderwaalsRadius())
           + "\n" + "    texture{\n"
           + "      pigment{ " + povrayColor(cf, indexOfExampleAtom[j])
           + " }\n" + "      finish{\n" + "        ambient .2\n"

@@ -111,7 +111,7 @@ public class AtomShape extends Shape {
 
   public void setMarAtom(short marAtom) {
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) * atom.getVdwRadius());
+      marAtom = (short)((-10 * marAtom) * atom.getVanderwaalsRadius());
     this.marAtom = marAtom;
   }
         
@@ -120,7 +120,7 @@ public class AtomShape extends Shape {
     if (marAtom < 0) {
       // a percentage of the atom vdw
       // radius * 2 * 1000 * -marAtom / 100
-      marAtom = (short)((-10 * marAtom) * atom.getVdwRadius());
+      marAtom = (short)((-10 * marAtom) * atom.getVanderwaalsRadius());
     }
     this.marAtom = marAtom;
   }

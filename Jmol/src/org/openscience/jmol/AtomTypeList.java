@@ -138,7 +138,7 @@ public class AtomTypeList {
                 outline = outline + "\t" + bat.getSymbol();
                 outline = outline + "\t" + bat.getAtomicNumber();
                 outline = outline + "\t" + bat.getExactMass();
-                outline = outline + "\t" + bat.getVdwRadius();
+                outline = outline + "\t" + bat.getVanderwaalsRadius();
                 outline = outline + "\t" + bat.getCovalentRadius();
                 Color c = (Color) bat.getColor();
                 outline = outline + "\t" + c.getRed();

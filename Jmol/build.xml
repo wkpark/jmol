@@ -246,14 +246,14 @@
     <uptodate property="appletjars.uptodate"
       targetfile="${appletjars.dir}">
       <srcfiles dir="${lib.dir}"
-           includes="jmolcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
+           includes="jmolappletcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
   <target name="appletjars" depends="check.appletjars"
          unless="appletjars.uptodate">
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
-    <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+    <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolappletcdk.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp-saxonly.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>

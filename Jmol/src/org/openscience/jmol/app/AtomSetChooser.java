@@ -26,7 +26,6 @@
 package org.openscience.jmol.app;
 
 import org.jmol.viewer.*;
-import org.jmol.viewer.managers.ModelManager;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -122,9 +121,8 @@ public class AtomSetChooser extends JDialog
     if (node ==  null) return;
     
     if (node.isLeaf()) {
-      ModelManager mm = viewer.modelManager;
       int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
-      int atomSetNumber = mm.getModelNumber(atomSetIndex);
+      int atomSetNumber = viewer.getModelNumber(atomSetIndex);
       viewer.evalString("frame " + atomSetNumber);      
       // Currently I don't see how I can get a hold of the properties that
       // were read.
@@ -146,16 +144,13 @@ public class AtomSetChooser extends JDialog
    * buildFrame method.
    */
   public void createTreeModel() {
-    ModelManager mm = viewer.modelManager;
-    DefaultMutableTreeNode root = new DefaultMutableTreeNode(
-//      new DefaultMutableTreeNode(mm.fileName)
-      mm.fileName
-    );
+    DefaultMutableTreeNode root =
+      new DefaultMutableTreeNode(viewer.getModelSetName());
     // flat: add every AtomSet to the root
-    for (int counter = mm.getModelCount(), atomSetIndex=0; --counter>=0; atomSetIndex++) {
-      root.add(
-          new AtomSet(atomSetIndex,mm.getModelName(atomSetIndex))
-      );
+    for (int atomSetIndex = 0, count = viewer.getModelCount();
+         atomSetIndex < count; ++atomSetIndex) {
+      root.add(new AtomSet(atomSetIndex, viewer.getModelName(atomSetIndex))
+               );
     }
     treeModel.setRoot(root);
     treeModel.reload();

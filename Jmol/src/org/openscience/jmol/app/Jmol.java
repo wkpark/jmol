@@ -204,6 +204,10 @@ public class Jmol extends JPanel {
         System.getProperty("user.home") + System.getProperty("file.separator")
         + ".jmol/plugins"
     );
+    // feature to allow for globally installed plugins
+    if (System.getProperty("plugin.dir") != null) {
+        pluginManager.loadPlugins(System.getProperty("plugin.dir"));
+    }
 
     // install the command table
     say("Building Command Hooks...");
@@ -328,9 +332,7 @@ public class Jmol extends JPanel {
                       hasArg().
                       withValueSeparator().
                       withDescription(
-"supported are: user.language=[EN|ES|NL], display.speed=fps, " +
-"cdk.debugging=[true|false], cdk.debug.stdout=[true|false], " +
-"and JmolConsole=[true|false]").
+"supported options are given below").
                       create("D")
     );
     
@@ -345,6 +347,17 @@ public class Jmol extends JPanel {
     if (line.hasOption("h")) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("Jmol", options);
+        
+        // now report on the -D options
+        System.out.println();
+        System.out.println("The -D options are as follows (defaults in parathesis):");
+        System.out.println("  cdk.debugging=[true|false] (false)");
+        System.out.println("  cdk.debug.stdout=[true|false] (false)");
+        System.out.println("  display.speed=[fps|ms] (ms)");
+        System.out.println("  JmolConsole=[true|false] (true)");
+        System.out.println("  plugin.dir (unset)");
+        System.out.println("  user.language=[EN|ES|NL] (EN)");
+
         System.exit(0);
     }
 

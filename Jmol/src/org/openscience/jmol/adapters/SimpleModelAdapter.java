@@ -106,9 +106,12 @@ public class SimpleModelAdapter extends JmolModelAdapter {
       } catch (NumberFormatException nfe) {
       }
     }
-    for (int i = pdbRecords.length; --i >= 0; )
-      if (line1.startsWith(pdbRecords[i]))
+    for (int i = pdbRecords.length; --i >= 0; ) {
+      String recordTag = pdbRecords[i];
+      if (line1.startsWith(recordTag) || line2.startsWith(recordTag) ||
+          line3.startsWith(recordTag) || line4.startsWith(recordTag))
         return PDB;
+    }
     if (line2 == null || line2.trim().length() == 0)
       return JME;
     return UNKNOWN;

@@ -36,8 +36,8 @@ org/openscience/jmol/Energy.java
 org/openscience/jmol/NMRShielding.java
 org/openscience/jmol/AtomicSymbol.java
 org/openscience/jmol/Measurement.java
-org/openscience/jmol/MeasurementList.java
-org/openscience/jmol/MeasurementListEvent.java
+org/openscience/jmol/app/MeasurementList.java
+org/openscience/jmol/app/MeasurementListEvent.java
 org/openscience/jmol/UseJavaSort.java
 org/openscience/jmol/JmolAtomIterator.java
 org/openscience/jmol/ProteinProp.java

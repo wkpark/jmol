@@ -1950,4 +1950,5 @@ final public class JmolViewer {
   public Color getBondColor2(int i) {
     return g3d.getColor(modelManager.getBondColix2(i));
   }
+
 }

@@ -30,6 +30,8 @@ import java.util.BitSet;
 
 public class Labels extends Shape {
 
+  String labelStrings[];
+
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("label".equals(propertyName)) {
@@ -38,9 +40,25 @@ public class Labels extends Shape {
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
-          atom.setLabel(getLabelAtom(strLabel, atom, i));
+          String label = getLabelAtom(strLabel, atom, i);
+          if (labelStrings == null || i >= labelStrings.length) {
+            if (label == null)
+              continue;
+            labelStrings = ensureMinimumLengthStringArray(labelStrings, i + 1);
+          }
+          labelStrings[i] = label;
         }
     }
+  }
+
+  static String[] ensureMinimumLengthStringArray(String[] stringArray, int minimumLength) {
+    if (stringArray == null)
+      return new String[minimumLength];
+    if (stringArray.length >= minimumLength)
+      return stringArray;
+    String[] t = new String[minimumLength];
+    System.arraycopy(stringArray, 0, t, 0, stringArray.length);
+    return t;
   }
 
   String getLabelAtom(String strFormat, Atom atom, int atomIndex) {
@@ -121,7 +139,8 @@ public class Labels extends Shape {
     }
     strLabel += strFormat.substring(ich);
     if (strLabel.length() == 0)
-      strLabel = null;
-    return strLabel;
+      return null;
+    else
+      return strLabel.intern();
   }
 }

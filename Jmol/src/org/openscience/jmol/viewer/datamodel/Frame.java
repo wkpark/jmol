@@ -1051,4 +1051,7 @@ final public class Frame {
     pointMin.set(minX, minY, minZ);
     pointMax.set(maxX, maxY, maxZ);
   }
+
+  void setLabel(String label, int atomIndex) {
+  }
 }

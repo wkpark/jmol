@@ -54,7 +54,6 @@ public class Atom implements Bspt.Tuple {
 
   /* move these out of here */
   String atomName;
-  String strLabel;
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
@@ -228,8 +227,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public void setLabel(String strLabel) {
-    // note that strLabel could be null
-    this.strLabel = strLabel;
+    frame.setLabel(strLabel, atomIndex);
   }
 
   public void transform(JmolViewer viewer) {

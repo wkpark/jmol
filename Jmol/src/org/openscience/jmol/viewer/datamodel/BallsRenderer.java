@@ -29,23 +29,12 @@ import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Rectangle;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
-
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY;
   boolean wireframeRotating;
   boolean showHydrogens;
   short colixSelection;
-  short colixLabel;
-  boolean isLabelAtomColor;
-  // offsets are from the font baseline
-  int labelOffsetX;
-  int labelOffsetY;
-  Font labelFont;
-  FontMetrics labelFontMetrics;
-  int labelFontAscent;
 
   void render() {
     minX = rectClip.x;
@@ -56,15 +45,6 @@ class BallsRenderer extends ShapeRenderer {
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showHydrogens = viewer.getShowHydrogens();
-    colixLabel = viewer.getColixShape(JmolConstants.SHAPE_LABELS);
-    isLabelAtomColor = colixLabel == 0;
-    labelOffsetX = viewer.getLabelOffsetX();
-    labelOffsetY = viewer.getLabelOffsetY();
-    labelFont = viewer.getLabelFont();
-    labelFontMetrics = g3d.getFontMetrics(labelFont);
-    labelFontAscent = labelFontMetrics.getAscent();
-
-    g3d.setFont(labelFont);
 
     Atom[] atoms = frame.atoms;
     int displayModel = this.displayModel;
@@ -73,8 +53,6 @@ class BallsRenderer extends ShapeRenderer {
         Atom atom = atoms[i];
         atom.transform(viewer);
         render(atom);
-        if (atom.strLabel != null)
-          renderLabel(atom);
       }
     } else {
       for (int i = frame.atomCount; --i >= 0; ) {
@@ -83,8 +61,6 @@ class BallsRenderer extends ShapeRenderer {
           continue;
         atom.transform(viewer);
         render(atom);
-        if (atom.strLabel != null)
-          renderLabel(atom);
       }
     }
   }
@@ -124,45 +100,6 @@ class BallsRenderer extends ShapeRenderer {
     if (viewer.hasSelectionHalo(atom))
       g3d.fillScreenedCircleCentered(colixSelection,
                                      effectiveDiameter, x, y, z);
-  }
-
-  void renderLabel(Atom atom) {
-    String strLabel = atom.strLabel;
-    /*
-      left over from when font sizes changed;
-    Font font = viewer.getLabelFont(atom.diameter);
-    if (font == null)
-      return;
-    g3d.setFont(font);
-    */
-
-    int xOffset, yOffset, zLabel;
-    zLabel = atom.z - atom.diameter / 2 - 2;
-    if (zLabel < 0) zLabel = 0;
-
-    if (labelOffsetX > 0) {
-      xOffset = labelOffsetX;
-    } else {
-      xOffset = -labelFontMetrics.stringWidth(strLabel);
-      if (labelOffsetX == 0)
-        xOffset /= 2;
-      else
-        xOffset += labelOffsetX;
-    }
-
-    if (labelOffsetY > 0) {
-      yOffset = labelOffsetY;
-    } else {
-      yOffset = -labelFontAscent;
-      if (labelOffsetY == 0)
-        yOffset /= 2;
-      else
-        yOffset += labelOffsetY;
-      ++yOffset;
-    }
-    g3d.drawString(strLabel,
-                   isLabelAtomColor ? atom.colixAtom : colixLabel,
-                   atom.x + xOffset, atom.y - yOffset, zLabel);
   }
 
 }

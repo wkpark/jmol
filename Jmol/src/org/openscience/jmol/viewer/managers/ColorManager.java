@@ -40,7 +40,7 @@ public class ColorManager {
   Graphics3D g3d;
   int[] argbsCpk;
 
-  public byte paletteDefault = JmolConstants.PALETTE_CPK;
+  public byte paletteDefault = JmolConstants.PALETTE_NONE_CPK;
 
   public ColorManager(JmolViewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
@@ -242,7 +242,7 @@ public class ColorManager {
   public short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
     switch (palette) {
-    case JmolConstants.PALETTE_CPK:
+    case JmolConstants.PALETTE_NONE_CPK:
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
       short id = atom.elementNumber;

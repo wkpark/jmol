@@ -1458,20 +1458,6 @@ final public class JmolViewer {
     return colorManager.colixBond;
   }
 
-  public void setColorSsbond(Color color) {
-    colorManager.setColorSsbond(color);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "ssbondColor", color);
-  }
-  
-  public void setColorHbond(Color color) {
-    colorManager.setColorHbond(color);
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondColor", color);
-  }
-
-  public void setColorHbondType() {
-    setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondColor", "type");
-  }
-
   public void setSsbondsBackbone(boolean ssbondsBackbone) {
     styleManager.setSsbondsBackbone(ssbondsBackbone);
   }

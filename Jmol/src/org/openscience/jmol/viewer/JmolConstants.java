@@ -50,18 +50,19 @@ final public class JmolConstants {
   public final static byte STYLE_SHADED    = 2;
     
   public final static byte PALETTE_COLOR         =-1;
-  public final static byte PALETTE_CPK           = 0;
+  public final static byte PALETTE_NONE_CPK      = 0;
   public final static byte PALETTE_FORMALCHARGE  = 1;
   public final static byte PALETTE_STRUCTURE     = 2;
   public final static byte PALETTE_AMINO         = 3;
   public final static byte PALETTE_SHAPELY       = 4;
   public final static byte PALETTE_CHAIN         = 5;
   public final static byte PALETTE_PARTIALCHARGE = 6;
-  public final static byte PALETTE_MAX           = 7;
+  public final static byte PALETTE_TYPE          = 7;
+  public final static byte PALETTE_MAX           = 8;
 
   public final static String[] colorSchemes =
     { "cpk", "charge", "structure", "amino",
-      "shapely", "chain", "formalCharge"};
+      "shapely", "chain", "partialCharge", "type"};
 
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;
@@ -1946,31 +1947,34 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int SHAPE_BALLS    = 0;
   public final static int SHAPE_STICKS   = 1;
-  public final static int SHAPE_LABELS   = 2;
-  public final static int SHAPE_VECTORS  = 3;
-  public final static int SHAPE_MEASURES = 4;
-  public final static int SHAPE_DOTS     = 5;
-  public final static int SHAPE_BACKBONE = 6;
-  public final static int SHAPE_TRACE    = 7;
-  public final static int SHAPE_CARTOON  = 8;
-  public final static int SHAPE_STRANDS  = 9;
-  public final static int SHAPE_MESH     = 10;
-  public final static int SHAPE_RIBBONS  = 11;
-  public final static int SHAPE_ROCKETS  = 12;
+  public final static int SHAPE_HSTICKS  = 2;
+  public final static int SHAPE_SSSTICKS = 3;
+  public final static int SHAPE_LABELS   = 4;
+  public final static int SHAPE_VECTORS  = 5;
+  public final static int SHAPE_MEASURES = 6;
+  public final static int SHAPE_DOTS     = 7;
+  public final static int SHAPE_BACKBONE = 8;
+  public final static int SHAPE_TRACE    = 9;
+  public final static int SHAPE_CARTOON  = 10;
+  public final static int SHAPE_STRANDS  = 11;
+  public final static int SHAPE_MESH     = 12;
+  public final static int SHAPE_RIBBONS  = 13;
+  public final static int SHAPE_ROCKETS  = 14;
     
 
-  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 13;
-  public final static int SHAPE_AXES     = 13;
-  public final static int SHAPE_BBCAGE   = 14;
-  public final static int SHAPE_UCCAGE   = 15;
-  public final static int SHAPE_FRANK    = 16;
-  public final static int SHAPE_ECHO     = 17;
-  public final static int SHAPE_HOVER    = 18;
-  public final static int SHAPE_PRUEBA   = 19;
-  public final static int SHAPE_MAX      = 20;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 15;
+  public final static int SHAPE_AXES     = 15;
+  public final static int SHAPE_BBCAGE   = 16;
+  public final static int SHAPE_UCCAGE   = 17;
+  public final static int SHAPE_FRANK    = 18;
+  public final static int SHAPE_ECHO     = 19;
+  public final static int SHAPE_HOVER    = 20;
+  public final static int SHAPE_PRUEBA   = 21;
+  public final static int SHAPE_MAX      = 22;
 
   public final static String[] shapeClassBases = {
-    "Balls", "Sticks", "Labels", "Vectors", "Measures",
+    "Balls", "Sticks", "Hsticks", "Sssticks",
+    "Labels", "Vectors", "Measures",
     "Dots",
     "Backbone", "Trace",
     "Cartoon",

@@ -259,7 +259,7 @@ abstract class Mps extends Shape {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex))
           colixes[i] =
-            palette > JmolConstants.PALETTE_CPK
+            palette > JmolConstants.PALETTE_NONE_CPK
             ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
             : colix;
       }

@@ -1409,25 +1409,14 @@ public class Eval implements Runnable {
     case Token.user:
       colorObject(Token.atom, 1);
       break;
-    case Token.bond:
-    case Token.bonds:
-      viewer.setColorBond(getColorOrNoneParam(2));
-      break;
-    case Token.ssbonds:
-      viewer.setColorSsbond(getColorOrNoneParam(2));
-      break;
-    case Token.hbonds:
-      checkLength3();
-      if (statement[2].tok == Token.identifier &&
-          "type".equalsIgnoreCase((String)statement[2].value))
-        viewer.setColorHbondType();
-      else
-        viewer.setColorHbond(getColorOrNoneParam(2));
-      break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));
       break;
     case Token.atom:
+    case Token.bond:
+    case Token.bonds:
+    case Token.ssbonds:
+    case Token.hbonds:
     case Token.trace:
     case Token.backbone:
     case Token.mesh:
@@ -1468,7 +1457,7 @@ public class Eval implements Runnable {
     // I need to change it so that you can pass either a java.awt.Color
     // or an object that uniquely identifies the various palettes
     // this should be an object which is either a Color or a String
-    byte palette = JmolConstants.PALETTE_CPK;
+    byte palette = JmolConstants.PALETTE_NONE_CPK;
     Color color = null;
     if (itoken >= statementLength)
       badArgumentCount();
@@ -1493,6 +1482,9 @@ public class Eval implements Runnable {
       break;
     case Token.chain:
       palette = JmolConstants.PALETTE_CHAIN;
+      break;
+    case Token.type:
+      palette = JmolConstants.PALETTE_TYPE;
       break;
 
     case Token.group:
@@ -1941,7 +1933,7 @@ public class Eval implements Runnable {
     viewer.setShapeSize(JmolConstants.SHAPE_BALLS, mad);
   }
 
-  void wireframe() throws ScriptException {
+  short getMadParameter() throws ScriptException {
     int tok = statement[1].tok;
     short mad = 1;
     switch (tok) {
@@ -1965,63 +1957,19 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad);
+    return mad;
+  }
+
+  void wireframe() throws ScriptException {
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
   }
 
   void ssbonds() throws ScriptException {
-    int tok = statement[1].tok;
-    short mad = 1;
-    switch (tok) {
-    case Token.on:
-      break;
-    case Token.off:
-      mad = 0;
-      break;
-    case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
-        numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
-      break;
-    case Token.decimal:
-      float angstroms = floatParameter(1);
-      if (angstroms >= 2)
-        numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "ssbondMad",
-                            new Integer(mad));
+    viewer.setShapeSize(JmolConstants.SHAPE_SSSTICKS, getMadParameter());
   }
 
   void hbonds() throws ScriptException {
-    int tok = statement[1].tok;
-    short mad = 1;
-    switch (tok) {
-    case Token.on:
-      break;
-    case Token.off:
-      mad = 0;
-      break;
-    case Token.integer:
-      int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
-        numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
-      break;
-    case Token.decimal:
-      float angstroms = floatParameter(1);
-      if (angstroms >= 2)
-        numberOutOfRange();
-      mad = (short)(angstroms * 1000 * 2);
-      break;
-    default:
-      booleanOrNumberExpected();
-    }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondMad",
-                            new Integer(mad));
+    viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
   }
 
   void vector() throws ScriptException {
@@ -2360,7 +2308,8 @@ public class Eval implements Runnable {
   // SHAPE_* constants in JmolConstants
   
   private final static int[] shapeToks =
-  {Token.atom, Token.bonds, Token.label, Token.vector,
+  {Token.atom, Token.bonds, Token.hbonds, Token.ssbonds,
+   Token.label, Token.vector,
    Token.monitor, Token.dots, Token.backbone,
    Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbon,
    Token.rocket,

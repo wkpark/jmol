@@ -251,7 +251,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_CPK);
+      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_NONE_CPK);
     }
   }
 

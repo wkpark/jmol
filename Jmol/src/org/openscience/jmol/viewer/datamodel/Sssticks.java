@@ -30,37 +30,28 @@ import org.openscience.jmol.viewer.*;
 import java.awt.Color;
 import java.util.BitSet;
 
-public class Sticks extends Shape {
+public class Sssticks extends Sticks {
 
   public void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
-    setMadBond(mad, JmolConstants.BOND_COVALENT, bsSelected);
+    setMadBond(mad, JmolConstants.BOND_SULFUR_MASK, bsSelected);
   }
   
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("color" == propertyName) {
       short colix = g3d.getColix(value);
-      setColixBond(colix, JmolConstants.BOND_COVALENT, bsSelected);
+      setColixBond(colix, JmolConstants.BOND_SULFUR_MASK, bsSelected);
       return;
     }
     if ("colorScheme" == propertyName) {
-      if (value instanceof String && "cpk" == (String)value) {
-        setColixBond((short)0, JmolConstants.BOND_COVALENT, bsSelected);
-        return;
+      if (value instanceof String) {
+        if ("cpk" == (String)value) {
+          setColixBond((short)0, JmolConstants.BOND_SULFUR_MASK, bsSelected);
+          return;
+        }
       }
+      return;
     }
-  }
-
-  void setMadBond(short mad, short bondTypeMask, BitSet bs) {
-    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
-    while (iter.hasNext())
-      iter.next().setMad(mad);
-  }
-
-  void setColixBond(short colix, short bondTypeMask, BitSet bs) {
-    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
-    while (iter.hasNext())
-      iter.next().setColix(colix);
   }
 }

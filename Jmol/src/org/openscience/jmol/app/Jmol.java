@@ -365,7 +365,7 @@ public class Jmol extends JPanel {
                       withDescription("script to run").
                       withValueSeparator('=').
                       hasArg().
-                      create()
+                      create("s")
     );
     options.addOption(
         OptionBuilder.withArgName("property=value").
@@ -408,8 +408,8 @@ public class Jmol extends JPanel {
       if (args.length > 0) {
           modelFilename = args[0];
       }
-      if (line.hasOption("script")) {
-          scriptFilename = line.getOptionValue("script");
+      if (line.hasOption("s")) {
+          scriptFilename = line.getOptionValue("s");
       }
 
       // Open a file if one is given as an argument

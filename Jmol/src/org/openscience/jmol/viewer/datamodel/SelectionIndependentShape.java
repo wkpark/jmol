@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -35,6 +35,7 @@ abstract public class SelectionIndependentShape extends Shape {
 
   short mad;
   short colix;
+  short bgcolix;
   Font3D font3d;
 
   public void setSize(int size, BitSet bsSelected) {
@@ -42,12 +43,19 @@ abstract public class SelectionIndependentShape extends Shape {
   }
   
   public void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("color".equals(propertyName)) {
+    if ("color" == propertyName) {
       colix = g3d.getColix(value);
       return;
     }
-    if ("font".equals(propertyName)) {
+
+    if ("font" == propertyName) {
       font3d = (Font3D)value;
+      return;
+    }
+
+    if ("bgcolor" == propertyName) {
+      bgcolix = g3d.getColix(value);
+      return;
     }
   }
 }

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2003-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -30,12 +30,12 @@ import java.awt.FontMetrics;
 public class Frank extends SelectionIndependentShape {
 
   final static String frankString = "Jmol";
-  final static String frankFontName = "Serif";
-  final static String frankFontStyle = "Bold";
-  final static int frankFontSize = 14;
+  final static String defaultFontName = "Serif";
+  final static String defaultFontStyle = "Bold";
+  final static int defaultFontSize = 14;
   final static int frankMargin = 4;
 
-  Font3D font3d;
+  Font3D currentMetricsFont3d;
   int frankWidth;
   int frankAscent;
   int frankDescent;
@@ -43,13 +43,7 @@ public class Frank extends SelectionIndependentShape {
 
   void initShape() {
     colix = Graphics3D.GRAY;
-
-    
-    font3d = g3d.getFont3D(frankFontName, frankFontStyle, frankFontSize);
-    FontMetrics fm = font3d.fontMetrics;
-    frankWidth = fm.stringWidth(frankString);
-    frankDescent = fm.getDescent();
-    frankAscent = fm.getAscent();
+    font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
   }
 
   boolean wasClicked(int x, int y) {
@@ -57,5 +51,15 @@ public class Frank extends SelectionIndependentShape {
             g3d.height > 0 &&
             x > g3d.width - frankWidth - frankMargin &&
             y > g3d.height - frankAscent - frankMargin);
+  }
+
+  void calcMetrics() {
+    if (font3d != currentMetricsFont3d) {
+      currentMetricsFont3d = font3d;
+      FontMetrics fm = font3d.fontMetrics;
+      frankWidth = fm.stringWidth(frankString);
+      frankDescent = fm.getDescent();
+      frankAscent = fm.getAscent();
+    }
   }
 }

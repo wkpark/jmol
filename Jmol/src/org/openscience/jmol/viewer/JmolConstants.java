@@ -377,11 +377,11 @@ final public class JmolConstants {
     "bismuth",
     "polonium",
     "astatine",
-    "radon", // 86
-    "francium", // 87
-    "radium",
-    "actinium",
-    "thorium",
+    "radon",        // 86
+    "francium",     // 87
+    "radium",       // 88
+    "actinium",     // 89
+    "thorium",      // 90
     "protactinium",
     "uranium",
     "neptunium",

@@ -968,10 +968,6 @@ final public class DisplayControl {
     repaintManager.popHoldRepaint();
   }
 
-  public boolean holdRepaint() {
-    return repaintManager.holdRepaint > 0;
-  }
-
   public void refresh() {
     repaintManager.refresh();
   }

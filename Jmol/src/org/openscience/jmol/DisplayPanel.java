@@ -139,7 +139,7 @@ public class DisplayPanel extends JPanel
     g.getClipBounds(rectClip);
     g.setColor(control.getColorBackground());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
-    if (control.getFrame() != null && !control.holdRepaint()) {
+    if (control.getFrame() != null) {
       control.setGraphicsContext(g, rectClip);
       frameRenderer.paint(g, control);
       // FIXME -- measurements rendered incorrectly

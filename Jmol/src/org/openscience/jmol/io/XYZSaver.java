@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -84,7 +89,7 @@ public class XYZSaver extends FileSaver {
       for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
         Atom a = cf.getAtomAt(i);
-        st = a.getType().getName();
+        st = a.getID();
 
         double[] pos = cf.getAtomCoords(i);
         st = st + "\t" + new Double(pos[0]).toString() + "\t"

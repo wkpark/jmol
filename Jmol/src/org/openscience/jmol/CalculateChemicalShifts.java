@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -128,7 +133,7 @@ class CalculateChemicalShifts extends AbstractAction implements
     for (int f = 0; f < chemFile.getNumberOfFrames(); ++f) {
       ChemFrame frame = chemFile.getFrame(f);
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-        String element = frame.getAtomAt(i).getType().getName();
+        String element = frame.getAtomAt(i).getID();
         Vector properties = frame.getAtomAt(i).getProperties();
         Enumeration propIter = properties.elements();
         while (propIter.hasMoreElements()) {

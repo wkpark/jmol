@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,12 +38,13 @@ import org.openscience.cdk.tools.IsotopeFactory;
 public class Atom extends org.openscience.cdk.Atom {
 
    public Atom(BaseAtomType at) {
-    super(at.getName());
+    super(at.getSymbol());
+    super.setID(at.getID());
     try {
         IsotopeFactory.getInstance().configure(this);
     } catch (Exception e) {
         // failed to configure atom
-        System.err.println("Error configuration of atom: " + at.getName());
+        System.err.println("Error configuration of atom: " + at.getSymbol());
     }
     this.atomType = new AtomType(at);
   }
@@ -49,12 +56,13 @@ public class Atom extends org.openscience.cdk.Atom {
    */
   public Atom(BaseAtomType atomType, int atomNumber,
               double x, double y, double z) {
-    super(atomType.getName(), new Point3d(x, y, z));
+    super(atomType.getSymbol(), new Point3d(x, y, z));
+    super.setID(atomType.getID());
     try {
         IsotopeFactory.getInstance().configure(this);
     } catch (Exception e) {
         // failed to configure atom
-        System.err.println("Error configuration of atom: " + atomType.getName());
+        System.err.println("Error configuration of atom: " + atomType.getSymbol());
     }
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;

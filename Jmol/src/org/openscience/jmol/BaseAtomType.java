@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -156,54 +161,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   }
 
   /**
-   * Returns the name.
-   */
-  public String getName() {
-    return super.getID();
-  }
-
-  /**
-   * Sets the name.
-   *
-   * @param name the name
-   */
-  public void setName(String name) {
-    super.setID(name);
-  }
-
-  /**
-   * Returns the root.
-   */
-  public String getRoot() {
-    return super.getSymbol();
-  }
-
-  /**
-   * Sets the root.
-   *
-   * @param root the root
-   */
-  public void setRoot(String root) {
-    super.setSymbol(root);
-  }
-
-  /**
-   * Returns the mass.
-   */
-  public double getMass() {
-    return getExactMass();
-  }
-
-  /**
-   * Sets the mass.
-   *
-   * @param mass the mass
-   */
-  public void setMass(double mass) {
-    super.setExactMass(mass);
-  }
-
-  /**
    * Returns the covalent radius.
    */
   public double getCovalentRadius() {
@@ -266,11 +223,11 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
       return false;
     }
     BaseAtomType at = (BaseAtomType) obj;
-    boolean nameEqual = getName().equals(at.getName());
-    boolean rootEqual = getRoot().equals(at.getRoot());
+    boolean nameEqual = getID().equals(at.getID());
+    boolean rootEqual = getSymbol().equals(at.getSymbol());
     boolean atomicNumberEqual = (atomicNumber == at.getAtomicNumber());
-    boolean massEqual = (Double.doubleToLongBits(at.getMass())
-                          == Double.doubleToLongBits(at.getMass()));
+    boolean massEqual = (Double.doubleToLongBits(at.getExactMass())
+                          == Double.doubleToLongBits(at.getExactMass()));
     boolean vdwRadiiEqual = (Double.doubleToLongBits(vdwRadius)
                               == Double.doubleToLongBits(at.vdwRadius));
     boolean covalentRadiiEqual =
@@ -290,10 +247,10 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
 
     if (hashCode == 0) {
       int result = 17;
-      result = 37 * result + getName().hashCode();
-      result = 37 * result + getRoot().hashCode();
+      result = 37 * result + getID().hashCode();
+      result = 37 * result + getSymbol().hashCode();
       result = 37 * result + getAtomicNumber();
-      long longHashValue = Double.doubleToLongBits(getMass());
+      long longHashValue = Double.doubleToLongBits(getExactMass());
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
       longHashValue = Double.doubleToLongBits(vdwRadius);
       result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
@@ -316,13 +273,13 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   public String toString() {
 
     StringBuffer sb1 = new StringBuffer();
-    sb1.append(getName());
+    sb1.append(getID());
     sb1.append('\t');
-    sb1.append(getRoot());
+    sb1.append(getSymbol());
     sb1.append('\t');
     sb1.append(Integer.toString(getAtomicNumber()));
     sb1.append('\t');
-    sb1.append(Double.toString(getMass()));
+    sb1.append(Double.toString(getExactMass()));
     sb1.append('\t');
     sb1.append(Double.toString(vdwRadius));
     sb1.append('\t');

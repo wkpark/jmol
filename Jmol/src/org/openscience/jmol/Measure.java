@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -337,8 +342,7 @@ public class Measure extends JDialog {
     double[] c = cf.getAtomCoords(measured);
     selection[currentAtom] = measured;
 
-    mtm.updateRow(currentAtom, a.getAtomNumber() + 1, a.getType().getName(),
-        c);
+    mtm.updateRow(currentAtom, a.getAtomNumber() + 1, a.getSymbol(), c);
     if (currentAtom < measure - 1) {
       currentAtom++;
       table.setRowSelectionInterval(currentAtom, currentAtom);

@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -158,16 +164,12 @@ public class AtomShape implements Shape {
     String label = null;
     switch (labelMode) {
     case DisplayControl.SYMBOLS:
-      if (atom.getType() != null) {
-        label = atom.getSymbol();
-      }
+      label = atom.getSymbol();
       break;
 
     case DisplayControl.TYPES:
-      if (atom.getType() != null) {
-        label = atom.getType().getName();
-      }
-      break;
+      label = atom.getID();
+       break;
 
     case DisplayControl.NUMBERS:
       label = Integer.toString(atom.getAtomNumber() + 1);

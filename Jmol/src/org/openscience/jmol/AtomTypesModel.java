@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -89,7 +94,7 @@ class AtomTypesModel extends AbstractTableModel {
     BaseAtomType at = (BaseAtomType) data.elementAt(row);
     switch (col) {
     case 1 :
-      at.setRoot((String) o);
+      at.setSymbol((String) o);
       break;
 
     case 2 :
@@ -97,7 +102,7 @@ class AtomTypesModel extends AbstractTableModel {
       break;
 
     case 3 :
-      at.setMass(((Double) o).doubleValue());
+      at.setExactMass(((Double) o).doubleValue());
       break;
 
     case 4 :
@@ -121,16 +126,16 @@ class AtomTypesModel extends AbstractTableModel {
       BaseAtomType at = (BaseAtomType) data.elementAt(row);
       switch (column) {
       case 0 :
-        return at.getName();
+        return at.getID();
 
       case 1 :
-        return at.getRoot();
+        return at.getSymbol();
 
       case 2 :
         return new Integer(at.getAtomicNumber());
 
       case 3 :
-        return new Double(at.getMass());
+        return new Double(at.getExactMass());
 
       case 4 :
         return new Double(at.getVdwRadius());
@@ -155,7 +160,7 @@ class AtomTypesModel extends AbstractTableModel {
 
   public synchronized void updateAtomType(BaseAtomType atomType) {
 
-    String name = atomType.getName();
+    String name = atomType.getID();
     BaseAtomType at = null;
     int index = -1;
     boolean found = false;
@@ -164,7 +169,7 @@ class AtomTypesModel extends AbstractTableModel {
     int i = 0;
     while (!found && (i < nextEmptyRow) && (i < data.size())) {
       at = (BaseAtomType) data.elementAt(i);
-      if (name.equals(at.getName())) {
+      if (name.equals(at.getID())) {
         found = true;
         index = i;
       } else {
@@ -219,7 +224,7 @@ class AtomTypesModel extends AbstractTableModel {
       Enumeration e = data.elements();
       while (e.hasMoreElements()) {
         BaseAtomType at = (BaseAtomType) e.nextElement();
-        if (name.equalsIgnoreCase(at.getName())) {
+        if (name.equalsIgnoreCase(at.getID())) {
           return at;
         }
       }

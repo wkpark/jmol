@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -90,7 +95,7 @@ public class PdbSaver extends FileSaver {
       buffer.append(serialFormat.sprintf(atomNumber));
       buffer.append(' ');
       Atom atom = cf.getAtomAt(i);
-      buffer.append(atomNameFormat.sprintf(atom.getType().getName()));
+      buffer.append(atomNameFormat.sprintf(atom.getID()));
       buffer.append(" MOL          ");
       Point3d position = atom.getPosition();
       buffer.append(positionFormat.sprintf(position.x));

@@ -38,23 +38,7 @@ abstract class Monomer extends Group {
   byte leadAtomOffset;
   byte wingAtomOffset = -1;
 
-  // FIXME - mth 2004 05 17
-  // these two arrays of indices need to be merged
-  // one is for amino acid residues
-  // the other is for nucleotide bases
-  int[] mainchainIndices;
-
-  int[] nucleotideIndices;
-  int atomIndexNucleotidePhosphorus = -1;
-  int atomIndexNucleotideWing = -1;
-  int atomIndexRnaO2Prime = -1;
-  int nucleicCount = 0;
-
-
   short aminoBackboneHbondOffset = 0;
-
-  int distinguishingBits;
-
 
   Monomer(Chain chain, String group3,
           int sequenceNumber, char insertionCode,
@@ -245,29 +229,4 @@ abstract class Monomer extends Group {
     return aminoBackboneHbondOffset;
   }
 
-  ////////////////////////////////////////////////////////////////
-
-  /*
-  public boolean isProtein() {
-    return ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
-            JmolConstants.ATOMID_PROTEIN_MASK);
-  }
-
-  public boolean isNucleic() { 
-   return ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
-            JmolConstants.ATOMID_NUCLEIC_MASK);
-  }
-
-  public boolean isDna() {
-    // this is a little tricky ... apply the RNA mask
-    // but then check to make sure that the O2 bit is turned off
-    return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
-            JmolConstants.ATOMID_NUCLEIC_MASK);
-  }
-
-  public boolean isRna() {
-    return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
-            JmolConstants.ATOMID_RNA_MASK);
-  }
-  */
 }

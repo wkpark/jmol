@@ -30,6 +30,7 @@ import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
 import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
 import org.openscience.jmol.adapters.CdkJmolModelAdapter;
+import org.openscience.jmol.adapters.XyzJmolModelAdapter;
 
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -181,8 +182,6 @@ public class Jmol extends JPanel {
 
   Splash splash;
 
-  boolean useCdkModel;
-
   public static HistoryFile getHistoryFile() {
     return historyFile;
   }
@@ -234,14 +233,18 @@ public class Jmol extends JPanel {
     //
     display = new DisplayPanel(status, guimap);
     JmolModelAdapter modelAdapter;
-    useCdkModel = (System.getProperty("cdkmodel") != null);
+    boolean useCdkModel = (System.getProperty("cdkmodel") != null);
+    boolean useXyzModel = (System.getProperty("xyzmodel") != null);
     if (useCdkModel) {
       System.out.println("using CDK Model Adapter");
       modelAdapter = new CdkJmolModelAdapter();
+    } else if (useXyzModel) {
+      System.out.println("using Xyz Model Adapter");
+      modelAdapter = new XyzJmolModelAdapter();
     } else {
       modelAdapter = new DeprecatedJmolModelAdapter();
     }
-    boolean firePropertyChanges = !useCdkModel;
+    boolean firePropertyChanges = !(useCdkModel | useXyzModel);
     viewer = new JmolViewer(display, modelAdapter, firePropertyChanges);
     display.setViewer(viewer);
 

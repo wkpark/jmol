@@ -171,12 +171,21 @@ class Compiler {
           ltoken.addElement(new Token(Token.decimal, new Float(value)));
           continue;
         }
+        if (lookingAtSequenceCode()) {
+          int seqNum =
+            Integer.parseInt(script.substring(ichToken,
+                                              ichToken + cchToken - 1));
+          char insertionCode = script.charAt(ichToken + cchToken - 1);
+          int sequence = PdbGroup.getSequence(seqNum, insertionCode);
+          ltoken.addElement(new Token(Token.sequenceCode, sequence));
+          continue;
+        }
         if (lookingAtPositiveInteger() || 
             ((tokCommand & Token.negativeints) != 0 &&
              lookingAtNegativeInteger())) {
           int val = Integer.parseInt(script.substring(ichToken,
                                                       ichToken + cchToken));
-          ltoken.addElement(new Token(Token.integer, val, null));
+          ltoken.addElement(new Token(Token.integer, val));
           continue;
         }
       }
@@ -398,6 +407,18 @@ class Compiler {
       ++ichT;
     cchToken = ichT - ichToken;
     return cchToken > 1; // decimal point plust at least one digit
+  }
+
+  boolean lookingAtSequenceCode() {
+    int ichT = ichToken;
+    char ch = ' ';
+    while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
+      ++ichT;
+    if (ichT == ichToken || ichT == cchScript || ch < 'A' || ch > 'Z')
+      return false;
+    ++ichT;
+    cchToken = ichT - ichToken;
+    return cchToken > 0;
   }
 
   boolean lookingAtPositiveInteger() {

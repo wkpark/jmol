@@ -40,6 +40,11 @@ public class Token {
     this.value = value;
   }
 
+  Token(int tok, int intValue) {
+    this.tok = tok;
+    this.intValue = intValue;
+  }
+
   Token(int tok) {
     this.tok = tok;
   }
@@ -54,15 +59,17 @@ public class Token {
   final static int integer           =  2;
   final static int decimal           =  3;
   final static int string            =  4;
-  final static int unknown           =  5;
-  final static int keyword           =  6;
-  final static int whitespace        =  7;
-  final static int comment           =  8;
-  final static int endofline         =  9;
-  final static int endofstatement    = 10;
+  final static int sequenceCode      =  5;
+  final static int unknown           =  6;
+  final static int keyword           =  7;
+  final static int whitespace        =  8;
+  final static int comment           =  9;
+  final static int endofline         = 10;
+  final static int endofstatement    = 11;
 
   final static String[] astrType = {
-    "nada", "identifier", "integer", "decimal", "string", "unknown", "keyword"
+    "nada", "identifier", "integer", "decimal", "string",
+    "sequence",  "unknown", "keyword"
   };
 
   final static int command           = (1 <<  8);

@@ -315,50 +315,26 @@ public class Frame {
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
     float minX, minY, minZ, maxX, maxY, maxZ;
     Point3f point;
-    if (cellLineCount == 0) { // non-crystal, so find extremes of atoms
-      point = atoms[0].getPoint3f();
-      minX = maxX = point.x;
-      minY = maxY = point.y;
-      minZ = maxZ = point.z;
-      
-      for (int i = atomCount; --i > 0; ) {
-        // note that the 0 element was set above
-        point = atoms[i].getPoint3f();
-        float t;
-        t = point.x;
-        if (t < minX) { minX = t; }
-        else if (t > maxX) { maxX = t; }
-        t = point.y;
-        if (t < minY) { minY = t; }
-        else if (t > maxY) { maxY = t; }
-        t = point.z;
-        if (t < minZ) { minZ = t; }
-        else if (t > maxZ) { maxZ = t; }
-      }
-    } else { // a crystal cell, so use center of crystal cell box
-      point = cellLines[0].pointOrigin;
-      minX = maxX = point.x;
-      minY = maxY = point.y;
-      minZ = maxZ = point.z;
-      for (int i = cellLineCount; --i >= 0; ) {
-        point = cellLines[i].pointOrigin;
-        int j = 0;
-        do {
-          float t;
-          t = point.x;
-          if (t < minX) { minX = t; }
-          else if (t > maxX) { maxX = t; }
-          t = point.y;
-          if (t < minY) { minY = t; }
-          else if (t > maxY) { maxY = t; }
-          t = point.z;
-          if (t < minZ) { minZ = t; }
-          else if (t > maxZ) { maxZ = t; }
-          point = cellLines[i].pointEnd;
-        } while (j++ == 0);
-      }
+    point = atoms[0].getPoint3f();
+    minX = maxX = point.x;
+    minY = maxY = point.y;
+    minZ = maxZ = point.z;
+    
+    for (int i = atomCount; --i > 0; ) {
+      // note that the 0 element was set above
+      point = atoms[i].getPoint3f();
+      float t;
+      t = point.x;
+      if (t < minX) { minX = t; }
+      else if (t > maxX) { maxX = t; }
+      t = point.y;
+      if (t < minY) { minY = t; }
+      else if (t > maxY) { maxY = t; }
+      t = point.z;
+      if (t < minZ) { minZ = t; }
+      else if (t > maxZ) { maxZ = t; }
     }
-      
+
     centerBoundingBox = new Point3f((minX + maxX) / 2,
                                     (minY + maxY) / 2,
                                     (minZ + maxZ) / 2);
@@ -400,16 +376,6 @@ public class Frame {
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
-    for (int i = cellLineCount; --i >= 0; ) {
-      Line cellLine = cellLines[i];
-      float distLineEnd;
-      distLineEnd = center.distance(cellLine.pointOrigin);
-      if (distLineEnd > radius)
-        radius = distLineEnd;
-      distLineEnd = center.distance(cellLine.pointEnd);
-      if (distLineEnd > radius)
-        radius = distLineEnd;
-    }
     return radius;
   }
 
@@ -426,21 +392,6 @@ public class Frame {
       lines = newLines;
     }
     lines[lineCount++] = line;
-  }
-
-  int cellLineCount = 0;
-  Line[] cellLines = null;
-
-  public void addCrystalCellLine(Line line) {
-    if (cellLines == null ||
-        cellLineCount == cellLines.length) {
-      Line[] newLines = new Line[cellLineCount + lineGrowthIncrement];
-      if (cellLines != null)
-        System.arraycopy(cellLines, 0, newLines, 0,
-                         cellLineCount);
-      cellLines = newLines;
-    }
-    cellLines[cellLineCount++] = line;
   }
 
   final static int measurementGrowthIncrement = 16;

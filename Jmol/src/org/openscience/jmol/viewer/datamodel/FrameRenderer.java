@@ -44,7 +44,6 @@ public class FrameRenderer {
   MeasurementRenderer measurementRenderer;
   DotsRenderer dotsRenderer;
   LineRenderer lineRenderer;
-  CellLineRenderer cellLineRenderer;
 
   Renderer[] renderers;
 
@@ -54,7 +53,7 @@ public class FrameRenderer {
     bondRenderer = new BondRenderer(viewer, this);
     renderers = new Renderer[JmolConstants.GRAPHIC_MAX];
   }
-  
+
   public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
 
     if (frame.atomCount <= 0)
@@ -89,12 +88,6 @@ public class FrameRenderer {
       if (lineRenderer == null)
         lineRenderer = new LineRenderer(viewer, this);
       lineRenderer.render(g3d, rectClip, frame, null);
-    }
-
-    if (frame.cellLineCount > 0) {
-      if (cellLineRenderer == null)
-        cellLineRenderer = new CellLineRenderer(viewer, this);
-      cellLineRenderer.render(g3d, rectClip, frame, null);
     }
   }
 

@@ -99,7 +99,7 @@ public class AtomShape implements Shape {
       if ((control.showHydrogens || !otherAtom.isHydrogen()) &&
           (z > zOther) ||
           ((z==zOther) && (atom.getAtomNumber() > otherAtom.getAtomNumber())))
-        renderBond(g, control, atom, otherAtom);
+        renderBond(g, clip, control, atom, otherAtom);
     }
   }
   
@@ -188,15 +188,17 @@ public class AtomShape implements Shape {
   // are being clipped when they are obscured by the atom
   private static final boolean showCoveredBonds = false;
 
-  public void renderBond(Graphics g, DisplayControl control,
+  public void renderBond(Graphics g, Rectangle clip, DisplayControl control,
                          Atom atom1, Atom atom2) {
-    Color color1 = getAtomColor(control, atom1);
-    Color color2 = getAtomColor(control, atom2);
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
+    if (!isVisible(clip, x2, y2))
+      return;
     int dx = x2 - x1, dx2 = dx * dx;
     int dy = y2 - y1, dy2 = dy * dy;
     int magnitude2 = dx2 + dy2;
+    Color color1 = getAtomColor(control, atom1);
+    Color color2 = getAtomColor(control, atom2);
     if ((magnitude2 <= 2) || (control.fastRendering && magnitude2 <= 49))
       return; // also avoid divide by zero when magnitude == 0
     if (control.showAtoms && (magnitude2 <= 16))
@@ -539,7 +541,9 @@ public class AtomShape implements Shape {
   }
 
   private void renderAtom(Graphics g, Rectangle clip, DisplayControl control) {
-    if (!control.showAtoms || (!control.showHydrogens && atom.isHydrogen()))
+    if (!control.showAtoms ||
+        (!control.showHydrogens && atom.isHydrogen()) ||
+        !isVisible(clip))
       return;
 
     if (!control.fastRendering && control.isSelected(atom)) {
@@ -575,6 +579,55 @@ public class AtomShape implements Shape {
       }
       g.drawOval(x - radius, y - radius, diamT, diamT);
     }
+  }
+
+  private static Rectangle rectTemp = new Rectangle();
+  private boolean isVisible(Rectangle clip) {
+    int radius = diameter/2;
+    rectTemp.setRect(x - radius, y - radius, diameter, diameter);
+    // note that this is not correct if the atom is selected
+    // because the halo may be visible while the atom is not
+    return clip.intersects(rectTemp);
+  }
+
+  private boolean isVisible(Rectangle clip, int x2, int y2) {
+    // this is not actually correct, but quick & dirty
+    int xMin, width, yMin, height;
+    if (x < x2) {
+      xMin = x;
+      width = x2 - x;
+    } else if (x2 < x) {
+      xMin = x2;
+      width = x - x2;
+    } else {
+      xMin = x;
+      width = 1;
+    }
+    if (y < y2) {
+      yMin = y;
+      height = y2 - y;
+    } else if (y2 < y) {
+      yMin = y2;
+      height = y - y2;
+    } else {
+      yMin = y;
+      height = 1;
+    }
+    // there are some problems with this quick&dirty implementation
+    // so I am going to throw in some slop
+    xMin -= 5;
+    yMin -= 5;
+    width += 10;
+    height += 10;
+    rectTemp.setRect(xMin, yMin, width, height);
+    boolean visible = clip.intersects(rectTemp);
+    /*
+    System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +
+                       " & " + clip.x + "," + clip.y +
+                       " W " + clip.width + " H " + clip.height +
+                       "->" + visible);
+    */
+    return visible;
   }
 
   private static final int minCachedSize = 4;

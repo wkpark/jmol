@@ -61,28 +61,29 @@ class TraceRenderer extends Renderer {
   Atom[] alphas;
 
   void render1Chain(PdbGroup[] mainchain, short[] mads, short[] colixes) {
-    calcMidPoints(mainchain);
     mainchainLength = mainchain.length;
-    for (int i = mainchainLength; --i >= 0; ) {
-      short colix = colixes[i];
-      if (colix == 0)
-        colix = alphas[i].colixAtom;
-      render1Segment(colix, mads, i);
+    if (mainchainLength > 0) {
+      calcMidPoints(mainchain);
+      for (int i = mainchainLength; --i >= 0; ) {
+        short colix = colixes[i];
+        if (colix == 0)
+          colix = alphas[i].colixAtom;
+        render1Segment(colix, mads, i);
+      }
     }
   }
 
   void calcMidPoints(PdbGroup[] mainchain) {
-    int chainLength = mainchain.length;
-    screens = frameRenderer.getTempScreens(chainLength + 1);
-    alphas = frameRenderer.getTempAtoms(chainLength);
+    screens = frameRenderer.getTempScreens(mainchainLength + 1);
+    alphas = frameRenderer.getTempAtoms(mainchainLength);
     Atom atomPrev = alphas[0] = mainchain[0].getAlphaCarbonAtom();
     setScreen(atomPrev, screens[0]);
-    for (int i = 1; i < chainLength; ++i) {
-      Atom atomThis = alphas[i] = mainchain[i].getAlphaCarbonAtom();
-      calcAverageScreen(atomPrev, atomThis, screens[i]);
-      atomPrev = atomThis;
+    for (int i = 1; i < mainchainLength; ++i) {
+        Atom atomThis = alphas[i] = mainchain[i].getAlphaCarbonAtom();
+        calcAverageScreen(atomPrev, atomThis, screens[i]);
+        atomPrev = atomThis;
     }
-    setScreen(atomPrev, screens[chainLength]);
+    setScreen(atomPrev, screens[mainchainLength]);
   }
 
   void setScreen(Atom atom, Point3i dest) {

@@ -120,8 +120,10 @@ public class Trace {
       this.chain = chain;
       mainchain = chain.getMainchain();
       mainchainLength = mainchain.length;
-      colixes = new short[mainchainLength];
-      mads = new short[mainchainLength + 1];
+      if (mainchainLength > 0) {
+        colixes = new short[mainchainLength];
+        mads = new short[mainchainLength + 1];
+      }
     }
 
     public void setMad(short mad, BitSet bsSelected) {
@@ -137,7 +139,8 @@ public class Trace {
             mads[i] = mad;
           }
       }
-      mads[mainchainLength] = mads[mainchainLength - 1];
+      if (mainchainLength > 0)
+        mads[mainchainLength] = mads[mainchainLength - 1];
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {

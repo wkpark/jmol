@@ -253,4 +253,25 @@ public abstract class ModelAdapter {
                          + obj1 + ":" + obj2);
     }
   }
+
+  /****************************************************************
+   * range-checking routines
+   ****************************************************************/
+
+  public static char canonizeChainID(char chainID) {
+    if ((chainID >= 'A' && chainID <= 'Z') ||
+        (chainID >= 'a' && chainID <= 'z') ||
+        (chainID >= '0' && chainID <= '9'))
+      return chainID;
+    return '\0';
+  }
+
+  public static char canonizeInsertionCode(char insertionCode) {
+    if ((insertionCode >= 'A' && insertionCode <= 'Z') ||
+        (insertionCode >= 'a' && insertionCode <= 'z') ||
+        (insertionCode >= '0' && insertionCode <= '9'))
+      return insertionCode;
+    return '\0';
+  }
+
 }

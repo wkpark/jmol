@@ -213,7 +213,7 @@ class PdbReader extends ModelReader {
       atom.atomSerial = serial;
       atom.group3 = group3;
       atom.sequenceNumber = sequenceNumber;
-      atom.insertionCode = insertionCode;
+      atom.insertionCode = ModelAdapter.canonizeInsertionCode(insertionCode);
 
       // note that values are +1 in this serial map
       serialMap[serial] = model.atomCount;

@@ -75,7 +75,6 @@ final public class Model {
   }
 
   public Chain getChain(char chainID) {
-    chainID = Chain.canonizeChainID(chainID);
     for (int i = chainCount; --i >= 0; ) {
       Chain chain = chains[i];
       if (chain.chainID == chainID)

@@ -43,15 +43,7 @@ final public class Chain {
 
   public Chain(Model model, char chainID) {
     this.model = model;
-    this.chainID = canonizeChainID(chainID);
-  }
-
-  static char canonizeChainID(char chainID) {
-    if (!((chainID >= 'A' && chainID <= 'Z') ||
-          (chainID >= 'a' && chainID <= 'z') ||
-          (chainID >= '0' && chainID <= '9')))
-      return '\0';
-    return chainID;
+    this.chainID = chainID;
   }
 
   void freeze() {

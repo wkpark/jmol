@@ -160,10 +160,11 @@ public class SmarterModelAdapter extends ModelAdapter {
     public int getOccupancy() { return atom.occupancy; }
     public boolean getIsHetero() { return atom.isHetero; }
     public int getAtomSerial() { return atom.atomSerial; }
-    public char getChainID() { return atom.chainID; }
+    public char getChainID() { return canonizeChainID(atom.chainID); }
     public String getGroup3() { return atom.group3; }
     public int getSequenceNumber() { return atom.sequenceNumber; }
-    public char getInsertionCode() { return atom.insertionCode; }
+    public char getInsertionCode()
+    { return canonizeInsertionCode(atom.insertionCode); }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
@@ -221,7 +222,7 @@ public class SmarterModelAdapter extends ModelAdapter {
     }
 
     public char getChainID() {
-      return structure.chainID;
+      return canonizeChainID(structure.chainID);
     }
     
     public int getStartSequenceNumber() {
@@ -229,7 +230,7 @@ public class SmarterModelAdapter extends ModelAdapter {
     }
     
     public char getStartInsertionCode() {
-      return structure.startInsertionCode;
+      return canonizeInsertionCode(structure.startInsertionCode);
     }
     
     public int getEndSequenceNumber() {

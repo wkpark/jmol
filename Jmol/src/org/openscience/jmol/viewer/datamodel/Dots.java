@@ -89,6 +89,7 @@ public class Dots extends Graphic {
   BitSet bsDotsOn;
   int dotsConvexCount;
   int[][] dotsConvexMaps;
+  short[] colixes;
   Vector3f[] geodesicVertices;
   int geodesicCount;
   int[] geodesicMap;
@@ -143,13 +144,9 @@ public class Dots extends Graphic {
     dotsConvexCount = 0;
     if (show) {
       bsDotsOn.or(bsSelected);
-      if (dotsConvexMaps == null)
+      if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
-      else if (dotsConvexMaps.length < atomCount) {
-        int[][] t = new int[atomCount][];
-        System.arraycopy(dotsConvexMaps, 0, t, 0,
-                         dotsConvexMaps.length);
-        dotsConvexMaps = t;
+        colixes = new short[atomCount];
       }
       for (int i = atomCount; --i >= 0; )
         if (bsDotsOn.get(i)) {
@@ -157,6 +154,7 @@ public class Dots extends Graphic {
             dotsConvexCount = i + 1;
           if (dotsConvexMaps[i] != null)
             continue;
+          colixes[i] = viewer.getColixDotsConvex();
           setAtomI(i);
           getNeighbors();
           calcConvexMap();
@@ -173,6 +171,18 @@ public class Dots extends Graphic {
       for (i = atomCount; --i >= 0 && !bsDotsOn.get(i); )
         {}
       dotsConvexCount = i+1;
+    }
+  }
+
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+    for (int i = frame.atomCount; --i >= 0; ) {
+      if (bsSelected.get(i)) {
+        System.out.println("setting atom " + i + " to " + colix);
+        colixes[i] =
+          palette > JmolConstants.PALETTE_CPK
+          ? viewer.getColixAtomPalette(frame.getAtomAt(i), palette)
+          : colix;
+      }
     }
   }
 

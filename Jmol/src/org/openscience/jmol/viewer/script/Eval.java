@@ -1191,9 +1191,6 @@ public class Eval implements Runnable {
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));
       break;
-    case Token.dots:
-      viewer.setColorDots(getColorOrNoneParam(2));
-      break;
     case Token.monitor:
       viewer.setColorMeasurement(getColorParam(2));
       break;
@@ -1203,6 +1200,7 @@ public class Eval implements Runnable {
     case Token.strands:
     case Token.ribbons:
     case Token.cartoon:
+    case Token.dots:
       colorObject(tok, 2);
       break;
     case Token.identifier:
@@ -1256,30 +1254,32 @@ public class Eval implements Runnable {
     default:
         invalidArgument();
     }
-    switch(tokObject) {
-    case Token.atom:
+    if (tokObject == Token.atom) {
       viewer.setColorAtomScript(palette, color);
-      break;
+      return;
+    }
+    int refGraphic = 0;
+    switch(tokObject) {
     case Token.trace:
-      viewer.setGraphicColor(JmolConstants.GRAPHIC_TRACE,
-                             palette, color);
+      refGraphic = JmolConstants.GRAPHIC_TRACE;
       break;
     case Token.backbone:
-      viewer.setGraphicColor(JmolConstants.GRAPHIC_BACKBONE,
-                             palette, color);
+      refGraphic = JmolConstants.GRAPHIC_BACKBONE;
       break;
     case Token.ribbons:
     case Token.strands:
-      viewer.setGraphicColor(JmolConstants.GRAPHIC_STRANDS,
-                             palette, color);
+      refGraphic = JmolConstants.GRAPHIC_STRANDS;
       break;
     case Token.cartoon:
-      viewer.setGraphicColor(JmolConstants.GRAPHIC_CARTOON,
-                             palette, color);
+      refGraphic = JmolConstants.GRAPHIC_CARTOON;
+      break;
+    case Token.dots:
+      refGraphic = JmolConstants.GRAPHIC_DOTS;
       break;
     default:
       unrecognizedColorObject();
     }
+    viewer.setGraphicColor(refGraphic, palette, color);
   }
 
   Hashtable variables = new Hashtable();

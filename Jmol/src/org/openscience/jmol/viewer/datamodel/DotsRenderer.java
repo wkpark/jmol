@@ -43,7 +43,6 @@ class DotsRenderer extends Renderer {
 
   boolean perspectiveDepth;
   short colixConcave;
-  short colixConvex;
   short colixSaddle;
   int pixelsPerAngstrom;
   boolean bondSelectionModeOr;
@@ -65,7 +64,6 @@ class DotsRenderer extends Renderer {
   void render() {
     perspectiveDepth = viewer.getPerspectiveDepth();
     colixConcave = viewer.getColixDotsConcave();
-    colixConvex = viewer.getColixDotsConvex();
     colixSaddle = viewer.getColixDotsSaddle();
     pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
@@ -78,12 +76,13 @@ class DotsRenderer extends Renderer {
     Atom[] atoms = frame.atoms;
     BitSet bsDotsOn = dots.bsDotsOn;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
+    short[] colixes = dots.colixes;
     for (int i = dots.dotsConvexCount; --i >= 0; ) {
       if (! bsDotsOn.get(i))
         continue;
       int[] map = dotsConvexMaps[i];
       if (map != null && map != mapNull)
-        renderConvex(atoms[i], map);
+        renderConvex(atoms[i], colixes[i], map);
     }
     Dots.Torus[] tori = dots.tori;
     if (tori == null)
@@ -124,12 +123,12 @@ class DotsRenderer extends Renderer {
     }
   }
 
-  void renderConvex(Atom atom, int[] visibilityMap) {
+  void renderConvex(Atom atom, short colix, int[] visibilityMap) {
     geodesic.calcScreenPoints(visibilityMap,
                               atom.getVanderwaalsRadiusFloat(),
                               atom.x, atom.y, atom.z);
     if (geodesic.screenCoordinateCount > 0)
-      g3d.plotPoints(colixConvex == 0 ? atom.colixAtom : colixConvex,
+      g3d.plotPoints(colix == 0 ? atom.colixAtom : colix,
                      geodesic.screenCoordinateCount,
                      geodesic.screenCoordinates);
   }

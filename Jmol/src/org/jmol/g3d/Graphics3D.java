@@ -61,6 +61,7 @@ final public class Graphics3D {
 
   short colixBackground;
   int argbBackground;
+  short colixBackgroundContrast;
   private final Rectangle rectClip = new Rectangle();
 
   int argbCurrent;
@@ -119,6 +120,20 @@ final public class Graphics3D {
     colixBackground = colix;
     argbBackground = getArgb(colix);
     platform.setBackground(argbBackground);
+
+    colixBackgroundContrast =
+      calcGrayscaleFromRgb(argbBackground) < 128 ? WHITE : BLACK;
+  }
+
+  public short getColixBackgroundContrast() {
+    return colixBackgroundContrast;
+  }
+
+  public static int calcGrayscaleFromRgb(int rgb) {
+    // return a grayscale value 0-FF using NTSC color luminance algorithm
+    return ((2989 * (rgb >> 16) & 0xFF) +
+            (5870 * (rgb >> 8) & 0xFF) +
+            (1140 * (rgb & 0xFF)) + 500) / 1000;
   }
   
   public void setSlabAndDepthValues(int slabValue, int depthValue) {

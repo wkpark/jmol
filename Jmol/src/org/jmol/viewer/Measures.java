@@ -37,7 +37,7 @@ class Measures extends Shape {
   PendingMeasurement pendingMeasurement;
 
   short mad = (short)-1;
-  short colix = Graphics3D.WHITE;
+  short colix; // default to none in order to contrast with background
   boolean showMeasurementNumbers = true;
   Font3D font3d;
 
@@ -122,7 +122,7 @@ class Measures extends Shape {
     if ("color".equals(propertyName))
       {
         System.out.println("Measures.color set to:" + value);
-        colix = g3d.getColix(value); return; }
+        colix = value == null ? 0 : g3d.getColix(value); return; }
     else if ("font".equals(propertyName))
       { font3d = (Font3D)value; return; }
     else if ("define".equals(propertyName))

@@ -35,7 +35,7 @@ import java.awt.FontMetrics;
 
 class MeasuresRenderer extends ShapeRenderer {
 
-  short colixDistance;
+  short colix;
   boolean showMeasurementNumbers;
   short measurementMad;
   Font3D font3d;
@@ -46,13 +46,15 @@ class MeasuresRenderer extends ShapeRenderer {
 
     Measures measures = (Measures)shape;
 
-    colixDistance = measures.colix;
+    colix = measures.colix;
+    if (colix == 0)
+      colix = g3d.getColixBackgroundContrast();
     measurementMad = measures.mad;
     font3d = measures.font3d;
     showMeasurementNumbers = measures.showMeasurementNumbers;
     
     for (int i = measures.measurementCount; --i >= 0; )
-      renderMeasurement(measures.measurements[i], colixDistance);
+      renderMeasurement(measures.measurements[i], colix);
 
     renderPendingMeasurement(measures.pendingMeasurement);
   }

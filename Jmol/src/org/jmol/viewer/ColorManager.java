@@ -48,7 +48,7 @@ class ColorManager {
     if (colorScheme.equals("jmol")) {
       argbsCpk = JmolConstants.argbsCpk;
       viewer.setColorBackground(Color.black);
-      viewer.setColorMeasurement(Color.white);
+      viewer.setColorMeasurement(null);
       viewer.setColorLabel(Color.white);
       viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else if (colorScheme.equals("rasmol")) {
@@ -100,7 +100,7 @@ class ColorManager {
   }
 
   Color colorRubberband = Color.pink;
-  short colixRubberband = Graphics3D.PINK;
+  short colixRubberband = Graphics3D.HOTPINK;
   Color getColorRubberband() {
     return colorRubberband;
   }

@@ -259,12 +259,4 @@ class Atom implements Cloneable {
       return false;
     return elementCharMasks[ch - 'A'] != 0;
   }
-
-  static int getElementNumber(char chSingleLetterSymbol) {
-    return -1;
-  }
-  
-  static int getElementNumber(char chFirst, char chSecond) {
-    return -1;
-  }
 }

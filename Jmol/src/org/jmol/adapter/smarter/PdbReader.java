@@ -28,7 +28,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
-import java.util.BitSet;
+import java.util.Hashtable;
 
 class PdbReader extends ModelReader {
   String line;
@@ -40,12 +40,18 @@ class PdbReader extends ModelReader {
 
   boolean isNMRdata;
 
+  Hashtable htFormul;
+
+  String currentGroup3;
+  Hashtable htElementsInCurrentGroup;
+
   Model readModel(BufferedReader reader) throws Exception {
 
     model = new Model("pdb");
 
     model.pdbStructureRecords = new String[32];
     model.fileHeader = "";
+    initialize();
     boolean accumulatingHeader = true;
     while ((line = reader.readLine()) != null) {
       lineLength = line.length();
@@ -115,6 +121,11 @@ class PdbReader extends ModelReader {
     return model;
   }
 
+  void initialize() {
+    htFormul = null; // throw away old FORMUL records
+    currentGroup3 = null;
+  }
+
   void atom() {
     boolean isHetero = line.startsWith("HETATM");
     try {
@@ -122,31 +133,26 @@ class PdbReader extends ModelReader {
       char charAlternateLocation = line.charAt(16);
       if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
         return;
-      int len = lineLength;
-      /****************************************************************
-       * extract elementSymbol
-       ****************************************************************/
-      String elementSymbol = null;
-      if (len >= 78) {
-        char ch76 = line.charAt(76);
-        char ch77 = line.charAt(77);
-        if (ch76 == ' ' && Atom.isValidElementSymbol(ch77))
-          elementSymbol = "" + ch77;
-        else if (Atom.isValidElementSymbol(ch76, ch77))
-          elementSymbol = "" + ch76 + ch77;
+      ////////////////////////////////////////////////////////////////
+      // get the group so that we can check the formul
+      int serial = parseInt(line, 6, 11);
+      char chainID = line.charAt(21);
+      int sequenceNumber = parseInt(line, 22, 26);
+      char insertionCode = line.charAt(26);
+      String group3 = parseToken(line, 17, 20);
+      if (group3 == null) {
+        currentGroup3 = group3;
+        htElementsInCurrentGroup = null;
+      } else if (! group3.equals(currentGroup3)) {
+        currentGroup3 = group3;
+        htElementsInCurrentGroup =
+          htFormul == null ? null : (Hashtable)htFormul.get(group3);
       }
-      if (elementSymbol == null) {
-        char ch12 = line.charAt(12);
-        char ch13 = line.charAt(13);
-        if (Atom.isValidElementSymbol(ch12, ch13))
-          elementSymbol = "" + ch12 + ch13;
-        else if (Atom.isValidElementSymbol(ch12))
-          elementSymbol = "" + ch12;
-        else if (Atom.isValidElementSymbol(ch13))
-          elementSymbol = "" + ch13;
-        else
-          elementSymbol = "Xx";
-      }
+
+      ////////////////////////////////////////////////////////////////
+      // extract elementSymbol
+      String elementSymbol = deduceElementSymbol();
+
       /****************************************************************
        * atomName
        ****************************************************************/
@@ -160,7 +166,7 @@ class PdbReader extends ModelReader {
        * 2+, 3-, etc
        ****************************************************************/
       int charge = 0;
-      if (len >= 80) {
+      if (lineLength >= 80) {
         char chMag = line.charAt(78);
         char chSign = line.charAt(79);
         if (chMag >= '0' && chMag <= '7' &&
@@ -187,14 +193,6 @@ class PdbReader extends ModelReader {
       
       /****************************************************************/
 
-      int serial = parseInt(line, 6, 11);
-      char chainID = line.charAt(21);
-      // should use parseToken(line, 17, 20)
-      // but I don't have time to test parseToken right now
-      String group3 = line.substring(17, 20).trim();
-      int sequenceNumber = parseInt(line, 22, 26);
-      char insertionCode = line.charAt(26);
-
       /****************************************************************
        * coordinates
        ****************************************************************/
@@ -215,7 +213,7 @@ class PdbReader extends ModelReader {
       atom.isHetero = isHetero;
       atom.chainID = chainID;
       atom.atomSerial = serial;
-      atom.group3 = group3;
+      atom.group3 = currentGroup3;
       atom.sequenceNumber = sequenceNumber;
       atom.insertionCode = ModelAdapter.canonizeInsertionCode(insertionCode);
 
@@ -224,6 +222,32 @@ class PdbReader extends ModelReader {
     } catch (NumberFormatException e) {
       logger.log("bad record", "" + line);
     }
+  }
+
+  String deduceElementSymbol() {
+    if (lineLength >= 78) {
+      char ch76 = line.charAt(76);
+      char ch77 = line.charAt(77);
+      if (ch76 == ' ' && Atom.isValidElementSymbol(ch77))
+        return "" + ch77;
+      if (Atom.isValidElementSymbol(ch76, ch77))
+        return "" + ch76 + ch77;
+    }
+    char ch12 = line.charAt(12);
+    char ch13 = line.charAt(13);
+    if ((htElementsInCurrentGroup == null ||
+         htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
+        Atom.isValidElementSymbol(ch12, ch13))
+      return "" + ch12 + ch13;
+    if ((htElementsInCurrentGroup == null ||
+         htElementsInCurrentGroup.get("" + ch13) != null) &&
+        Atom.isValidElementSymbol(ch13))
+      return "" + ch13;
+    if ((htElementsInCurrentGroup == null ||
+         htElementsInCurrentGroup.get("" + ch12) != null) &&
+        Atom.isValidElementSymbol(ch12))
+      return "" + ch12;
+    return "Xx";
   }
 
   void conect() {
@@ -391,14 +415,14 @@ class PdbReader extends ModelReader {
   }
 
   void expdta() {
-    String technique = line.substring(10).trim().toLowerCase();
+    String technique = parseTrimmed(line, 10).toLowerCase();
     if (technique.regionMatches(true, 0, "nmr", 0, 3))
       isNMRdata = true;
   }
 
   void formul() {
     System.out.println("I see:" + line);
-    String group = parseToken(line, 12, 15);
+    String groupName = parseToken(line, 12, 15);
     // does not currently deal with continuations
     String formula = parseTrimmed(line, 19, 70);
     int ichLeftParen = formula.indexOf('(');
@@ -411,12 +435,31 @@ class PdbReader extends ModelReader {
       formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
       System.out.println("the trimmed formula:" + formula);
     }
-    BitSet bsElementsPresent = new BitSet();
+    Hashtable htElementsInGroup = new Hashtable();
     // now, look for atom names in the formula
     ichNextParse = 0;
-    String elementPlusCount;
-    while ((elementPlusCount = parseToken(formula, ichNextParse)) != null) {
-      System.out.println("I see:" + elementPlusCount);
+    String elementWithCount;
+    boolean hasEntries = false;
+    while ((elementWithCount = parseToken(formula, ichNextParse)) != null) {
+      if (elementWithCount.length() < 2)
+        break;
+      char chFirst = elementWithCount.charAt(0);
+      char chSecond = elementWithCount.charAt(1);
+      if (! Atom.isValidFirstSymbolChar(chFirst))
+        break;
+      if (! Atom.isValidElementSymbol(chFirst, chSecond)) {
+        // single letter element symbol
+        htElementsInGroup.put("" + chFirst, Boolean.TRUE);
+      } else {
+        // two letter element symbol;
+        htElementsInGroup.put("" + chFirst + chSecond, Boolean.TRUE);
+      }
+      hasEntries = true;
+    }
+    if (hasEntries) {
+      if (htFormul == null)
+        htFormul = new Hashtable();
+      htFormul.put(groupName, htElementsInGroup);
     }
   }
 }

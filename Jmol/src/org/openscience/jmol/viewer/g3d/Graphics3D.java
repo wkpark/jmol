@@ -515,7 +515,14 @@ final public class Graphics3D {
   public void fillHermite(short colix, int diameterBeg, int diameterMid, int diameterEnd,
                           int x0, int y0, int z0, int x1, int y1, int z1,
                           int x2, int y2, int z2, int x3, int y3, int z3) {
-    hermite3d.render(colix, diameterBeg, diameterMid, diameterEnd,
+    hermite3d.render(true, colix, diameterBeg, diameterMid, diameterEnd,
+                     x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3);
+  }
+
+  public void drawHermite(short colix, 
+                          int x0, int y0, int z0, int x1, int y1, int z1,
+                          int x2, int y2, int z2, int x3, int y3, int z3) {
+    hermite3d.render(false, colix, 0, 0, 0,
                      x0, y0, z0, x1, y1, z1, x2, y2, z2, x3, y3, z3);
   }
 

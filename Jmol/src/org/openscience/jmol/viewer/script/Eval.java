@@ -365,6 +365,9 @@ public class Eval implements Runnable {
       case Token.dots:
         dots();
         break;
+      case Token.strands:
+        strands();
+        break;
       case Token.trace:
         trace();
         break;
@@ -385,7 +388,6 @@ public class Eval implements Runnable {
       case Token.ssbonds:
       case Token.star:
       case Token.stereo:
-      case Token.strands:
       case Token.structure:
       case Token.unbond:
       case Token.write:
@@ -1011,6 +1013,9 @@ public class Eval implements Runnable {
     case Token.trace:
       colorObject(Token.trace, 2);
       break;
+    case Token.strands:
+      colorObject(Token.strands, 2);
+      break;
     case Token.identifier:
 	String str = (String)statement[1].value;
 	if (str.equalsIgnoreCase("dotsConvex"))
@@ -1073,6 +1078,9 @@ public class Eval implements Runnable {
       break;
     case Token.trace:
       viewer.setTraceColor(palette, color);
+      break;
+    case Token.strands:
+      viewer.setStrandsColor(palette, color);
       break;
     default:
       unrecognizedColorObject();
@@ -1682,7 +1690,7 @@ public class Eval implements Runnable {
     int tok = statement[1].tok;
     switch (tok) {
     case Token.on:
-      radius = 0.33f;
+      radius = -1; // means thick-n-thin
       break;
     case Token.off:
       break;
@@ -1694,20 +1702,47 @@ public class Eval implements Runnable {
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms >= 2)
+      if (angstroms > 4)
         numberOutOfRange();
       radius = angstroms;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("temperature")) {
-        radius = -1;
+        radius = -2; // means trace temperature
         return;
       }
     default:
       booleanOrNumberExpected();
     }
     viewer.setTraceRadius(radius);
+  }
+
+  void strands() throws ScriptException {
+    float width = 0;
+    int tok = statement[1].tok;
+    switch (tok) {
+    case Token.on:
+      width = -1; // means take default
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int widthRasMol = statement[1].intValue;
+      if (widthRasMol >= 500)
+        numberOutOfRange();
+      width = widthRasMol * 4 / 1000f;
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[1].value).floatValue();
+      if (angstroms > 4)
+        numberOutOfRange();
+      width = angstroms;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setStrandsWidth(width);
   }
 
   /****************************************************************

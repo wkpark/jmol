@@ -182,7 +182,7 @@ public class PdbMolecule {
 
   PdbResidue allocResidue(char chainID, int resNumber, String residue3) {
     PdbChain chain = getOrAllocPdbChain(chainID);
-    PdbResidue residue = new PdbResidue(chainID, resNumber, residue3);
+    PdbResidue residue = new PdbResidue(this, chainID, resNumber, residue3);
     chain.addResidue(residue);
     return residue;
   }

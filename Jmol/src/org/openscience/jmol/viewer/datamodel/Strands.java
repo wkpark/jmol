@@ -32,7 +32,7 @@ import org.openscience.jmol.viewer.protein.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class Trace {
+public class Strands {
 
   JmolViewer viewer;
   Frame frame;
@@ -44,7 +44,7 @@ public class Trace {
   short[][] madsChains;
   short[][] colixesChains;
 
-  Trace(JmolViewer viewer, Frame frame) {
+  Strands(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
     hasPdbRecords = frame.hasPdbRecords;
@@ -61,10 +61,7 @@ public class Trace {
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           if (mad < 0) {
-            if (mad == -4000) // -2.0 angstrom diameter -> -4000 milliangstroms diameter
-              mads[j] = 1000; // trace temperature goes here
-            else
-              mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 1500 : 500);
+            mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 1500 : 500);
           } else {
             mads[j] = mad;
           }

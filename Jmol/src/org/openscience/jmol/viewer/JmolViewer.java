@@ -744,6 +744,16 @@ final public class JmolViewer {
     clear();
     fileManager.openStringInline(strModel);
   }
+
+  /****************************************************************
+   * name is a text name of the file ... to be displayed in the window
+   * no need to pass a BufferedReader ...
+   * ... the FileManager will wrap a buffer around it
+   ****************************************************************/
+  public void openReader(String fullPathName, String name, Reader reader) {
+    clear();
+    fileManager.openReader(fullPathName, name, reader);
+  }
   
   public String getOpenFileError() {
     String fullPathName = fileManager.getFullPathName();
@@ -754,7 +764,7 @@ final public class JmolViewer {
       notifyFileNotLoaded(fullPathName, errorMsg);
       return errorMsg;
     }
-    setClientFile(fullPathName, fileName, clientFile);
+    openClientFile(fullPathName, fileName, clientFile);
     notifyFileLoaded(fullPathName, fileName,
                      modelManager.getModelName(), clientFile);
     return null;
@@ -764,8 +774,11 @@ final public class JmolViewer {
    * delegated to ModelManager
    ****************************************************************/
 
-  public void setClientFile(String fullPathName, String fileName,
-                            Object clientFile) {
+  public void openClientFile(String fullPathName, String fileName,
+                             Object clientFile) {
+    // maybe there needs to be a call to clear() 
+    // or something like that here
+    // for when CdkEditBus calls this directly
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     setFrame(0);
@@ -1164,6 +1177,16 @@ final public class JmolViewer {
   public void setTraceColor(byte palette, Color color) {
     getFrame().setTraceColor(palette, Colix.getColix(color),
                              selectionManager.bsSelection);
+  }
+
+  public void setStrandsWidth(float width) {
+    getFrame().setStrandsMad((short)(width * 1000),
+                             selectionManager.bsSelection);
+  }
+
+  public void setStrandsColor(byte palette, Color color) {
+    getFrame().setStrandsColor(palette, Colix.getColix(color),
+                               selectionManager.bsSelection);
   }
 
   boolean rasmolHydrogenSetting = true;

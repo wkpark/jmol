@@ -32,9 +32,9 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class TraceRenderer extends Renderer {
+class StrandsRenderer extends Renderer {
 
-  TraceRenderer(JmolViewer viewer) {
+  StrandsRenderer(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
@@ -44,20 +44,20 @@ class TraceRenderer extends Renderer {
   Point3i s3 = new Point3i();
   int diameterBeg, diameterMid, diameterEnd;
 
-  Trace trace;
+  Strands strands;
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     this.frame = frame;
     this.g3d = g3d;
     this.rectClip = rectClip;
-    this.trace = frame.trace;
+    this.strands = frame.strands;
 
-    if (trace == null || !trace.initialized)
+    if (strands == null || !strands.initialized)
       return;
-    PdbMolecule pdbMolecule = trace.pdbMolecule;
-    short[][] madsChains = trace.madsChains;
-    short[][] colixesChains = trace.colixesChains;
-    for (int i = trace.chainCount; --i >= 0; ) {
+    PdbMolecule pdbMolecule = strands.pdbMolecule;
+    short[][] madsChains = strands.madsChains;
+    short[][] colixesChains = strands.colixesChains;
+    for (int i = strands.chainCount; --i >= 0; ) {
       render1Chain(pdbMolecule.getMainchain(i), madsChains[i], colixesChains[i]);
     }
   }
@@ -78,24 +78,24 @@ class TraceRenderer extends Renderer {
   }
 
   void calcSegmentPoints(PdbResidue[] mainchain, int i, short[] mads) {
-    int iPrev1 = i - 1, iPrev2 = i - 2, iNext1 = i + 1, iNext2 = i + 2;
-    if (iPrev1 < 0)
-      iPrev1 = 0;
-    if (iPrev2 < 0)
-      iPrev2 = 0;
-    if (iNext1 > mainchainLast)
-      iNext1 = mainchainLast;
+    int iPrev = i - 1, iNext = i + 1, iNext2 = i + 2;
+    if (iPrev < 0)
+      iPrev = 0;
+    if (iNext > mainchainLast)
+      iNext = mainchainLast;
     if (iNext2 > mainchainLast)
       iNext2 = mainchainLast;
-    calcAverage(mainchain, iPrev2, iPrev1, s0);
-    calcAverage(mainchain, iPrev1, i, s1);
-    calcAverage(mainchain, i, iNext1, s2);
-    calcAverage(mainchain, iNext1, iNext2, s3);
-    int madBeg = (mads[iPrev1] + mads[i]) / 2;
-    int madEnd = (mads[iNext1] + mads[i]) / 2;
-    diameterBeg = viewer.scaleToScreen(s1.z, madBeg);
-    diameterMid = viewer.scaleToScreen(mainchain[i].getAlphaCarbonAtom().z, mads[i]);
-    diameterEnd = viewer.scaleToScreen(s2.z, madEnd);
+    calc(mainchain, iPrev, s0);
+    calc(mainchain, i, s1);
+    calc(mainchain, iNext, s2);
+    calc(mainchain, iNext2, s3);
+  }
+
+  void calc(PdbResidue[] mainchain, int i, Point3i dest) {
+    Atom atom = mainchain[i].getAlphaCarbonAtom();
+    dest.x = atom.x;
+    dest.y = atom.y;
+    dest.z = atom.z;
   }
 
   void calcAverage(PdbResidue[] mainchain, int iA, int iB, Point3i dest) {
@@ -107,7 +107,7 @@ class TraceRenderer extends Renderer {
   }
 
   void render1Segment(short colix) {
-    g3d.fillHermite(colix, diameterBeg, diameterMid, diameterEnd,
+    g3d.drawHermite(colix,
                     s0.x, s0.y, s0.z, s1.x, s1.y, s1.z,
                     s2.x, s2.y, s2.z, s3.x, s3.y, s3.z);
   }

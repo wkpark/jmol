@@ -44,6 +44,7 @@ public class FrameRenderer {
   DotsRenderer dotsRenderer;
   RibbonsRenderer ribbonsRenderer;
   TraceRenderer traceRenderer;
+  StrandsRenderer strandsRenderer;
   AxesRenderer axesRenderer;
   BboxRenderer bboxRenderer;
   LineRenderer lineRenderer;
@@ -83,6 +84,11 @@ public class FrameRenderer {
       if (traceRenderer == null)
         traceRenderer = new TraceRenderer(viewer);
       traceRenderer.render(g3d, rectClip, frame);
+    }
+    if (frame.strands != null) {
+      if (strandsRenderer == null)
+        strandsRenderer = new StrandsRenderer(viewer);
+      strandsRenderer.render(g3d, rectClip, frame);
     }
     if (frame.axes != null) {
       if (axesRenderer == null)

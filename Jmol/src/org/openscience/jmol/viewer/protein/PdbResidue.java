@@ -25,6 +25,7 @@
 package org.openscience.jmol.viewer.protein;
 
 import org.openscience.jmol.viewer.*;
+import org.openscience.jmol.viewer.datamodel.Atom;
 import java.util.Hashtable;
 
 public class PdbResidue {
@@ -34,13 +35,15 @@ public class PdbResidue {
   public final static byte STRUCTURE_SHEET = 2;
   public final static byte STRUCTURE_TURN = 3;
 
+  public PdbMolecule pdbmolecule;
   public char chainID;
   public short resNumber;
   public short resid;
   public byte structureType = STRUCTURE_NONE;
   int[] mainchainIndices;
 
-  public PdbResidue(char chainID, int resNumber, String residue3) {
+  public PdbResidue(PdbMolecule pdbmolecule, char chainID, int resNumber, String residue3) {
+    this.pdbmolecule = pdbmolecule;
     this.chainID = chainID;
     this.resNumber = (short) resNumber;
     resid = lookupResid(residue3);
@@ -90,6 +93,14 @@ public class PdbResidue {
     return chainID;
   }
 
+  public boolean isHelixOrSheet() {
+    return structureType == STRUCTURE_HELIX || structureType == STRUCTURE_SHEET;
+  }
+
+  /****************************************************************
+   * static stuff for residue ids
+   ****************************************************************/
+
   private static Hashtable htResidue = new Hashtable();
 
   static String[] residueNames3 = new String[128];
@@ -138,5 +149,28 @@ public class PdbResidue {
     if (mainchainIndices == null)
       return -1;
     return mainchainIndices[1];
+  }
+
+  Atom getAtom(int i) {
+    int j;
+    if (mainchainIndices == null || (j = mainchainIndices[i]) == -1)
+      return null;
+    return pdbmolecule.frame.getAtomAt(j);
+  }
+
+  public Atom getNitrogenAtom() {
+    return getAtom(0);
+  }
+
+  public Atom getAlphaCarbonAtom() {
+    return getAtom(1);
+  }
+
+  public Atom getCarboxylCarbonAtom() {
+    return getAtom(2);
+  }
+
+  public Atom getCarboxylOxygenAtom() {
+    return getAtom(3);
   }
 }

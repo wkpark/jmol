@@ -85,6 +85,14 @@ public class FileManager {
     fileOpenThread.run();
   }
 
+  public void openReader(String fullPathName, String name, Reader reader) {
+    openErrorMessage = null;
+    fullPathName = fullPathName;
+    fileName = name;
+    fileOpenThread = new FileOpenThread(fullPathName, reader);
+    fileOpenThread.run();
+  }
+
   public Object waitForClientFileOrErrorMessage() {
     Object clientFile = null;
     if (fileOpenThread != null) {

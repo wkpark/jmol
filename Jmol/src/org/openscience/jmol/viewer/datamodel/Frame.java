@@ -216,6 +216,22 @@ public class Frame {
       trace.setColor(palette, colix, bsSelected);
   }
   
+  Strands strands;
+
+  public void setStrandsMad(short mad, BitSet bsSelected) {
+    if (mad != 0 && strands == null)
+      strands = new Strands(viewer, this);
+    if (strands != null)
+      strands.setMad(mad, bsSelected);
+  }
+  
+  public void setStrandsColor(byte palette, short colix, BitSet bsSelected) {
+    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && strands == null)
+      strands = new Strands(viewer, this);
+    if (strands != null)
+      strands.setColor(palette, colix, bsSelected);
+  }
+  
   Axes axes;
   public void setModeAxes(byte modeAxes) {
     if (modeAxes != JmolConstants.AXES_NONE && axes == null)

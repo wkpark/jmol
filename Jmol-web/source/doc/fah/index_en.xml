@@ -9,6 +9,7 @@
 
     <form name="fahForm" action="">
       <script src="./fah.js" type="text/javascript"></script>
+      <script src="./createProjectList.js" type="text/javascript"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>

@@ -2584,21 +2584,21 @@
   <!-- Projects 1900 to 1999 -->
   <fah_proj number="1900" name="p1900_32_water_molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
-    credit="125" frames="100" code="Q" contact="NA"/>
+    credit="125" frames="100" code="Q" contact="ymrhee"/>
   <fah_proj number="1901" name="p1901_32_water_molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
-    credit="125" frames="100" code="Q" contact="NA"/>
+    credit="125" frames="100" code="Q" contact="ymrhee"/>
   <fah_proj number="1902" name="p1902_32_water_molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
-    credit="125" frames="100" code="Q" contact="NA"/>
+    credit="125" frames="100" code="Q" contact="ymrhee"/>
   <fah_proj number="1910" name="p1910_ALA-depeptide" file="y"
     server="171.64.122.113" atoms="118" preferred="29" deadline="43"
-    credit="450" frames="100" code="Q" contact="NA"/>
+    credit="450" frames="100" code="Q" contact="ymrhee"/>
   <fah_proj number="1911" name="p1911_ALA-depeptide_umbrel" file="y"
     server="171.64.122.113" atoms="118" preferred="29" deadline="43"
-    credit="450" frames="100" code="Q" contact="NA"/>
+    credit="450" frames="100" code="Q" contact="ymrhee"/>
   <fah_proj number="1912" name="p1912_ALA-depeptide_umb2" file="y"
     server="171.64.122.113" atoms="118" preferred="29" deadline="43"
-    credit="450" frames="100" code="Q" contact="NA"/>
+    credit="450" frames="100" code="Q" contact="ymrhee"/>
     
 </fah_projects>

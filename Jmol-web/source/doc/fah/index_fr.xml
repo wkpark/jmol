@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.7)
+  Translated from default version : index_en.xml (v 1.11)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -13,6 +13,7 @@
 
     <form name="fahForm" action="">
       <script src="./fah.js" type="text/javascript"></script>
+      <script src="./createProjectList.js" type="text/javascript"></script>
       <table border="1">
       <tr>
         <table border="0"><tr>
@@ -45,7 +46,7 @@
 
       <tr>
         <td class="btfah">
-          <script>
+          <script type="text/javascript">
             &projects;
           </script>
         </td>

@@ -68,6 +68,13 @@
       <replacefilter token="[root]/jmol" value="../jmolPrerelease" />
     </replace>
 
+  	<!-- Create JavaScript for Jmol-fah projects -->
+    <style
+      style="${doc.dir}/fah/createProjectList.xsl"
+      in="${doc.dir}/fah/fah-projects.xml"
+      out="${build.html}/fah/createProjectList.js">
+    </style>
+  	
   	<!-- Replace paths -->
     <replace dir="${build.html}" includes="*.html">
       <replacefilter token="[images]"   value="images" />

@@ -735,9 +735,9 @@ final public class Graphics3D {
       ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
     if (x < 0) {
       x = -x;
-      zScaled += (zIncrementScaled * x) / count;
-      count += x;
-      if (count < 0)
+      zScaled += zIncrementScaled * x;
+      count -= x;
+      if (count <= 0)
         return;
       x = 0;
     }

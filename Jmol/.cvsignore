@@ -5,6 +5,7 @@ dist
 javadoc
 jmol.jar
 JmolApplet.jar
+Jmol*.zip
 packaging/rpm/dist
 *.bak
 *.deprecated

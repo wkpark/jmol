@@ -444,8 +444,14 @@ class Compiler {
   private boolean endOfExpressionExpected() {
     return compileError("end of expression expected");
   }
+  private boolean leftParenthesisExpected() {
+    return compileError("left parenthesis expected");
+  }
   private boolean rightParenthesisExpected() {
     return compileError("right parenthesis expected");
+  }
+  private boolean commaExpected() {
+    return compileError("comma expected");
   }
   private boolean unrecognizedExpressionToken() {
     return compileError("unrecognized expression token");
@@ -458,6 +464,9 @@ class Compiler {
   }
   private boolean integerExpected() {
     return compileError("integer expected");
+  }
+  private boolean numberExpected() {
+    return compileError("number expected");
   }
   private boolean badRGBColor() {
     return compileError("bad [R,G,B] color");
@@ -505,7 +514,8 @@ class Compiler {
     clauseNot        ::= {NOT}?  | clausePrimitive
 
     clausePrimitive  ::= clauseInteger |
-                         clauseComparator | 
+                         clauseComparator |
+                         clauseWithin |
                          all | none |
                          identifier
                          ( clauseOr )
@@ -513,6 +523,10 @@ class Compiler {
     clauseInteger    ::= integer | integer - integer
 
     clauseComparator ::= atomproperty comparatorop integer
+
+    clauseWithin     ::= WITHIN ( clauseDistance , expression )
+
+    clauseDistance   ::= integer | decimal
   */
 
   private boolean compileExpression() {
@@ -601,6 +615,8 @@ class Compiler {
     case Token.temperature:
     case Token.bondedcount:
       return clauseComparator();
+    case Token.within:
+      return clauseWithin();
     default:
       int tok = tokPeek();
       if (((tok & Token.predefinedset) != Token.predefinedset) &&
@@ -615,9 +631,8 @@ class Compiler {
       tokenNext();
       if (! clauseOr())
           return false;
-      if (tokPeek() != Token.rightparen)
+      if (tokenNext().tok != Token.rightparen)
         return rightParenthesisExpected();
-      tokenNext();
       return true;
     }
     System.out.println("I am here");
@@ -631,9 +646,9 @@ class Compiler {
       return true;
     }
     tokenNext();
-    if (tokPeek() != Token.integer)
-      return integerExpectedAfterHyphen();
     Token tokenInt2 = tokenNext();
+    if (tokenInt2.tok != Token.integer)
+      return integerExpectedAfterHyphen();
     int min = tokenInt1.intValue;
     int max = tokenInt2.intValue;
     if (max < min) {
@@ -645,12 +660,12 @@ class Compiler {
 
   boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
-    if ((tokPeek() & Token.comparator) == 0)
-      return comparisonOperatorExpected();
     Token tokenComparator = tokenNext();
-    if (tokPeek() != Token.integer)
-      return integerExpected();
+    if ((tokenComparator.tok & Token.comparator) == 0)
+      return comparisonOperatorExpected();
     Token tokenValue = tokenNext();
+    if (tokenValue.tok != Token.integer)
+      return integerExpected();
     int val = tokenValue.intValue;
     // note that a comparator instruction is a complicated instruction
     // int intValue is the tok of the property you are comparing
@@ -659,6 +674,28 @@ class Compiler {
     ltokenPostfix.addElement(new Token(tokenComparator.tok,
                                        tokenAtomProperty.tok,
                                        new Integer(val)));
+    return true;
+  }
+
+  boolean clauseWithin() {
+    tokenNext();                             // WITHIN
+    if (tokenNext().tok != Token.leftparen)  // (
+      return leftParenthesisExpected();
+    Double distance;
+    Token tokenDistance = tokenNext();       // distance
+    if (tokenDistance.tok == Token.integer)
+      distance = new Double((tokenDistance.intValue * 4) / 1000.0);
+    else if (tokenDistance.tok == Token.decimal)
+      distance = (Double)tokenDistance.value;
+    else
+      return numberExpected();
+    if (tokenNext().tok != Token.opOr)       // ,
+      return commaExpected();
+    if (! clauseOr())                        // *expression*
+      return false;
+    if (tokenNext().tok != Token.rightparen) // )
+      return rightParenthesisExpected();
+    ltokenPostfix.addElement(new Token(Token.within, distance));
     return true;
   }
 

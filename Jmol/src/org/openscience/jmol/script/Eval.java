@@ -31,6 +31,7 @@ import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
+import javax.vecmath.Point3d;
 
 public class Eval implements Runnable {
 
@@ -167,6 +168,7 @@ public class Eval implements Runnable {
   }
 
   private void clearDefinitionsAndLoadPredefined() {
+    // FIXME mth -- need to call this when a new file is loaded!
     variables.clear();
 
     int cPredef = Token.predefinitions.length;
@@ -464,6 +466,7 @@ public class Eval implements Runnable {
         stack[sp++] = new BitSet();
         break;
       case Token.integer:
+        // FIXME mth -- this is selecting on atom#, not residue#
         int thisInt = instruction.intValue;
         bs = new BitSet();
         if (thisInt >= 0 && thisInt < numberOfAtoms)
@@ -483,6 +486,7 @@ public class Eval implements Runnable {
         notSet(bs);
         break;
       case Token.hyphen:
+        // FIXME mth -- this is selecting on atom#, not residue#
         int min = instruction.intValue;
         int last = ((Integer)instruction.value).intValue();
         int max = last + 1;
@@ -491,6 +495,11 @@ public class Eval implements Runnable {
         bs = stack[sp++] = new BitSet(max);
         for (int i = min; i < max; ++i)
           bs.set(i);
+        break;
+      case Token.within:
+        bs = stack[sp - 1];
+        stack[sp - 1] = new BitSet();
+        withinInstruction(instruction, bs, stack[sp - 1]);
         break;
       case Token.selected:
         stack[sp++] = copyBitSet(control.getSelectionSet());
@@ -613,7 +622,7 @@ public class Eval implements Runnable {
     int numberOfAtoms = control.numberOfAtoms();
     ChemFrame frame = control.getFrame();
     for (int i = 0; i < numberOfAtoms; ++i) {
-      Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
+      Atom atom = frame.getJmolAtomAt(i);
       switch (property) {
       case Token.atomno:
         propertyValue = i + 1; // in the user world the atoms start with 1
@@ -657,6 +666,41 @@ public class Eval implements Runnable {
       if (match)
         bs.set(i);
     }
+  }
+
+  void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
+    double distance = ((Double)instruction.value).doubleValue();
+    double distanceSquared = distance*distance;
+    Atom[] atoms = control.getFrame().getJmolAtoms();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      if (bs.get(i)) {
+        // the atom itself is in the set
+        bsResult.set(i);
+        continue;
+      }
+      if (isWithin(distanceSquared, atoms[i].getPosition(), bs))
+        bsResult.set(i);
+    }
+  }
+
+  boolean isWithin(double distanceSquared, Point3d point, BitSet bs) {
+    Atom[] atoms = control.getFrame().getJmolAtoms();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      if (! bs.get(i))
+        continue;
+      Point3d pointB = atoms[i].getPosition();
+      double d = point.x - pointB.x;
+      double d2 = d*d;
+      if (d2 > distanceSquared) continue;
+      d = point.y - pointB.y;
+      d2 += d*d;
+      if (d2 > distanceSquared) continue;
+      d = point.z - pointB.z;
+      d2 += d*d;
+      if (d2 <= distanceSquared)
+        return true;
+    }
+    return false;
   }
 
   Color getColorParam(int itoken) throws ScriptException {

@@ -199,8 +199,6 @@ public class DisplayPanel extends JPanel
 
   public void homePosition() {
     matrixRotate.setIdentity();         // no rotations
-    xTranslate = dimCurrent.width / 2;  // middle of the screen
-    yTranslate = dimCurrent.height / 2;
     scaleFitToScreen();
     setRotateMode();
   }
@@ -212,6 +210,10 @@ public class DisplayPanel extends JPanel
     
 
   public void scaleFitToScreen() {
+    // translate to the middle of the screen
+    xTranslate = dimCurrent.width / 2;
+    yTranslate = dimCurrent.height / 2;
+    // find smaller screen dimension
     minScreenDimension = dimCurrent.width;
     if (dimCurrent.height < minScreenDimension)
       minScreenDimension = dimCurrent.height;

@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
+<book>
+<bookinfo>
+<title>Jmol Developer's Guide</title>
+</bookinfo>
+
+<chapter id="Building Jmol">
+<title>Building Jmol</title>
+<para>Prerequisites:
+<itemizedlist>
+<listitem><para> Java 2 JDK (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>) </para></listitem>
+<listitem><para> Apache Ant (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>) </para></listitem>
+<listitem><para> DocBook XSL (<ulink url="http://sourceforge.net/projects/docbook">http://sourceforge.net/projects/docbook</ulink>) </para></listitem>
+<listitem><para> Jmol source code </para></listitem>
+</itemizedlist>
+
+The Jmol source code can be either downloaded
+(see <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge project files</ulink>)
+or checked out from the CVS repository
+(see <ulink url="http://sourceforge.net/cvs/?group_id=23629">SourceForge CVS access</ulink>).
+</para>
+
+<para>Once you have all the prerequisites, Jmol can be built from the top
+source directory with the following command:
+</para>
+
+<para>On Unix,
+<programlisting>
+	<prompt>/home/user/programming/Jmol&gt;</prompt> <command>ant -Ddocbook.dir=/home/user/programming/docbook-xsl</command>
+</programlisting>
+</para>
+
+<para>On Windows,
+<programlisting>
+	<prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Ddocbook.dir=h:\programming\docbook-xsl</command>
+</programlisting>
+</para>
+
+<para>
+where <parameter class="command">docbook.dir</parameter> is set equal to the absolute path of
+the DocBook XSL.
+</para>
+</chapter>
+
+<chapter id="Running Jmol">
+<title>Running Jmol</title>
+<para>
+On Unix, the development version of Jmol is run by simply executing
+the jmol script in the Jmol development directory.
+</para>
+
+<para>
+On Windows, the environment variable JMOL_HOME must be set to the development
+directory, and then the jmol.bat script can be executed. For example:
+
+<programlisting>
+	<prompt>H:\programming\Jmol&gt;</prompt> <command>set JMOL_HOME=h:\programming\Jmol</command>
+	<prompt>H:\programming\Jmol&gt;</prompt> <command>jmol.bat</command>
+</programlisting>
+
+</para>
+</chapter>
+</book>
+
+

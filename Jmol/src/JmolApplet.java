@@ -364,6 +364,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     ++paintCounter;
     if (REQUIRE_PROGRESSBAR &&
         !hasProgressBar &&
+        paintCounter < 30 &&
         (paintCounter & 1) == 0) {
       printProgressbarMessage(g);
       viewer.notifyRepainted();
@@ -384,7 +385,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   final static String[] progressbarMsgs = {
-    "progressbar is REQUIRED",
+    "Jmol developer alert!",
+    "",
+    "progressbar is REQUIRED ... otherwise users",
+    "will have no indicate that the applet is loading",
     "",
     "<applet code='JmolApplet' ... >",
     "  <param name='progressbar' value='true' />",

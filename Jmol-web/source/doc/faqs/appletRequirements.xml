@@ -62,6 +62,14 @@
 	</li>
       </ul>
     </p>
+    <p>
+      To check your browser try out the
+      <a href="../browsercheck">Jmol Browser Check</a>
+    </p>
+    <p>
+      Please report problems to <code>jmol-developers@lists.sf.net</code>.
+    </p>
+    
   </section>
 
   <section title="Which JVM should I use on Win32 Internet Explorer?">
@@ -83,7 +91,8 @@
 
   <section title="What is the deal with MacOS X?">
     <p>
-      Only Mac OS X 10.3.3 and greater are supported with Java 1.4.2.
+      Only Mac OS X 10.3.3 and greater with Safari v125.1
+      are supported.
       Up to that point there was no LiveConnect communication between
       JavaScript and Java applets.
     </p>
@@ -96,6 +105,10 @@
   <section title="I can see the display, but the buttons are not working">
     <p>
       Are you running on a <i>supported</i> browser?
+    </p>
+    <p>
+      To check your browser try out the
+      <a href="../browsercheck">Jmol Browser Check</a>
     </p>
     <p>
       The underlying JmolApplet runs on many browsers.

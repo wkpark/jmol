@@ -45,15 +45,21 @@ deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a>
 
       <p>
         To anonymously checkout the source code use the following commands.
-        When prompted for a password for anonymous, simply press the Enter key. 
       </p>
-      <p><tt>
-	<!--
-        cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol login
-        <br/><br/>
-	-->
-        cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol co Jmol
-        </tt></p>
+      <p>
+	<tt>
+	  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol login
+	</tt>
+      </p>
+      <p>
+	When prompted for a password for anonymous,
+	simply press the <code>Enter</code> key.
+      </p>
+      <p>
+	<tt>
+	  cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol co Jmol
+        </tt>
+      </p>
       <p>
 	This will check out to the <code>Jmol</code> subdirectory on your
 	system.

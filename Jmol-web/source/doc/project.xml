@@ -23,9 +23,11 @@
 
 	    <a href="http://wiki.jmol.org">Wiki</a>
 	    | <a href="[root]/docs/">Documentation</a>
+	    |
 	    <a href="http://www.stolaf.edu/people/hansonr/jmol/docs">
 	      Interactive Scripting Doc
 	    </a>
+	    | <a href="[root]/browsercheck/">Browser Check</a>
 	    <br />
 	    
 	    
@@ -37,6 +39,7 @@
 	    <br />
 
 	    <a href="[root]/download/">Download</a> 
+	    | <a href="[root]/lists/">Mailing lists</a>
 	    | <a href="http://sourceforge.net/projects/jmol">
 	      Sourceforge Project page
 	    </a>
@@ -45,7 +48,6 @@
 	       "http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133"
 	       >Bug Database
 	    </a>
-	    | <a href="[root]/lists/">Mailing lists</a>
 	  </font>
         </td>
       </tr>

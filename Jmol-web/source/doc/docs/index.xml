@@ -25,6 +25,13 @@
       </p>
     </section>
 
+    <section title="The Jmol Developers Guide">
+      <p>
+        The <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
+	describes Jmol development procedures.
+      </p>
+    </section>
+
     <section title="The Jmol v9 Guide">
       <p>
 	<b>
@@ -50,21 +57,6 @@
 	describes the Jmol applet.
       </p>
     </section>
-
-    <section title="The Jmol v9 Developers Guide">
-      <p>
-	<b>
-	  Be advised that this documentation applies to Jmol
-	  version 9. It is being rewritten for Jmol version 10.
-	</b>
-      </p>
-      <p>
-        The <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
-	describes how Jmol is developed and/or
-        development procedures used in Jmol. 
-      </p>
-    </section>
-
-    </body>
+  </body>
 </document>
 

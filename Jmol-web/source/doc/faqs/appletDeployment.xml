@@ -94,6 +94,12 @@
       plugins do. While the Chime <i>plugin</i> requires configuration
       of the web server, the Jmol<i>Applet</i> does not.
     </p>
+    <p>
+      Check out the Tech Note on
+      <a href="../technotes/#Browser Enhancement Technologies">
+	Browser Enhancement Technologies
+      </a>
+    </p>
   </section>
 
   <section title="Should I use APPLET, OBJECT or EMBED for my html tag?">

@@ -12,15 +12,6 @@
   <body>
     <title>Jmol Technical Notes</title>
 
-    <header>
-      <p>
-	<b>
-	  Information on this page relates to the upcoming release
-	  Jmol v10 release that is currently in beta test.
-	</b>
-      </p>
-    </header>
-
     &graphicsEngine;
     &antiAliasing;
     &noHeapMemory;

@@ -1,7 +1,6 @@
 <project default="html" basedir=".">
 
-  <property name="version" value="9" />
-  <property name="applet-version" value="9" />
+  <property name="version" value="10.00" />
   <property name="jmol-doc-dir" value="../Jmol-HEAD" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
@@ -38,7 +37,6 @@
 
     <replace dir="${build.html}" includes="**/*.html">
       <replacefilter token="$$VERSION$$" value="${version}"/>
-      <replacefilter token="$$APPLET-VERSION$$" value="${applet-version}"/>
     </replace>
 
     <replace dir="${build.html}" includes="*.html">

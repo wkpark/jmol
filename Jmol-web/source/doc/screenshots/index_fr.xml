@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+  French translation 
+  Translated from default version : index.xml (v 1.4)
+-->
+<document>
+  <body>
+    <title>Copies d'&#x00E9;cran</title>
+
+  <section>
+    <screenshots>
+      <screenshot image="screenshot1.jpg">
+        Un rendu avec ombre de la caf&#x00E9;ine.
+      </screenshot>
+      <screenshot image="screenshot2.jpg">
+        Une image de l'animation d'une r&#x00E9;action S<sub>N</sub>2 avec
+        la distance mesur&#x00E9;e entre les atomes de chlore et de carbone
+      </screenshot>
+      <screenshot image="screenshot3.jpg">
+        Animation de vibration du m&#x00E9;thanol avec les vecteurs
+        affich&#x00E9;s.
+      </screenshot>
+      <screenshot image="screenshot4.jpg">
+        Affichage d'une structure cristalline.
+      </screenshot>
+      <screenshot image="screenshot5.jpg">
+        Affichage de la bo&#x00F4;te englobante et des axes du
+        syst&#x00E8;me de coordonn&#x00E9;es. Il faut noter la
+        transparence du halo jaune autour des atomes
+        s&#x00E9;lectionn&#x00E9;s.
+      </screenshot>
+      <screenshot image="hemes.jpg">
+        Hemoglobin with backbone trace colored by chain and spacefilled hemes.
+        <i>
+          Cette image provient de la version de d&#x00E9;veloppement
+          de Jmol v10.
+        </i>
+      </screenshot>
+      <screenshot image="aceticacid.jpg">
+        Acetic acid using CPK colors and spacefilled atoms.
+        <i>
+          Cette image provient de la version de d&#x00E9;veloppement
+          de Jmol v10.
+        </i>
+      </screenshot>
+      <screenshot image="bbdots.jpg">
+        A few residues with backbone in blue and vdw dots surface. 
+        <i>
+          Cette image provient de la version de d&#x00E9;veloppement
+          de Jmol v10.
+        </i>
+      </screenshot>
+    </screenshots>
+  </section>
+
+  </body>
+</document>

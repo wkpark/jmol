@@ -64,8 +64,9 @@ public class Atom implements Bspt.Tuple {
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
     if (pdbMolecule != null)
-      pdbAtom = pdbMolecule.getPdbAtom(atomIndex,
-                                       viewer.getPdbAtomRecord(clientAtom));
+      pdbAtom = pdbMolecule.allocatePdbAtom(atomIndex,
+                                            viewer.getPdbModelNumber(clientAtom),
+                                            viewer.getPdbAtomRecord(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 

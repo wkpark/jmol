@@ -132,7 +132,6 @@ public class Eval implements Runnable {
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
-    System.out.println("loadScript succeeded");
     return true;
   }
 
@@ -877,7 +876,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (pdbatom.getModelNumber() == modelNumber)
+      if (pdbatom.modelNumber == modelNumber)
         bsModel.set(i);
     }
     return bsModel;

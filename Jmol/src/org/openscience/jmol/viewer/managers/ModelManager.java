@@ -302,6 +302,10 @@ public class ModelManager {
     return modelAdapter.getPdbAtomRecord(clientAtom);
   }
 
+  public int getPdbModelNumber(Object clientAtom) {
+    return modelAdapter.getPdbModelNumber(clientAtom);
+  }
+
   public float solventProbeRadius = 0;
   public void setSolventProbeRadius(float radius) {
     this.solventProbeRadius = radius;

@@ -194,14 +194,14 @@ public class PdbMolecule {
     chain.addGroup(groupCurrent);
   }
 
-  public PdbAtom getPdbAtom(int atomIndex, String pdbRecord) {
+  public PdbAtom allocatePdbAtom(int atomIndex, int modelNumber, String pdbRecord) {
     try {
       char chainID = pdbRecord.charAt(21);
       short groupSequence =
         Short.parseShort(pdbRecord.substring(22, 26).trim());
       if (chainID != chainIDCurrent || groupSequence != groupSequenceCurrent)
         setCurrentResidue(chainID, groupSequence, pdbRecord.substring(17, 20));
-      return new PdbAtom(atomIndex, pdbRecord, groupCurrent);
+      return new PdbAtom(atomIndex, modelNumber, pdbRecord, groupCurrent);
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }

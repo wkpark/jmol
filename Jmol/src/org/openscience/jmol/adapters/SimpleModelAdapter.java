@@ -485,6 +485,7 @@ class PdbModel extends Model {
   String line;
   // index into atoms array + 1
   // so that 0 can be used for the null value
+  int currentModelNumber;
   int[] serialMap = new int[512];
 
   PdbModel(BufferedReader reader) throws Exception {
@@ -505,6 +506,10 @@ class PdbModel extends Model {
           line.startsWith("SHEET ") ||
           line.startsWith("TURN  ")) {
         structure();
+        continue;
+      }
+      if (line.startsWith("MODEL ")) {
+        model();
         continue;
       }
       if (line.startsWith("HEADER") && line.length() >= 66) {
@@ -547,7 +552,8 @@ class PdbModel extends Model {
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      atoms[atomCount++] = new Atom(atomicSymbol, x, y, z, 1, line);
+      atoms[atomCount++] = new Atom(atomicSymbol, x, y, z,
+                                    currentModelNumber, line);
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {
@@ -610,5 +616,15 @@ class PdbModel extends Model {
       pdbStructureRecords = t;
     }
     pdbStructureRecords[pdbStructureRecordCount++] = line;
+  }
+
+  void model() {
+    try {
+      int modelNumber = Integer.parseInt(line.substring(10, 14).trim());
+      if (modelNumber != currentModelNumber + 1)
+        System.out.println("Model number sequence seems confused");
+      currentModelNumber = modelNumber;
+    } catch (NumberFormatException e) {
+    }
   }
 }

@@ -239,6 +239,7 @@ public class Token {
   final static int leftsquare   = expression | 12;
   final static int rightsquare  = expression | 13;
   final static int colon        = expression | 14;
+  final static int slash        = expression | 15;
 
   final static int atomno       = atomproperty | 0;
   final static int elemno       = atomproperty | 1;
@@ -456,6 +457,8 @@ public class Token {
     "[",            new Token(leftsquare,  "["),
     "]",            new Token(rightsquare, "]"),
     ":",            new Token(colon, ":"),
+    "/",            new Token(slash, "/"),
+
     "atomno",       new Token(atomno, "atomno"),
     "elemno",       tokenElemno,
     "_e",           tokenElemno,

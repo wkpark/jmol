@@ -31,15 +31,17 @@ import java.util.Hashtable;
 public class PdbAtom {
 
   public PdbGroup group;
-  String name;
-  short atomID;
-  int atomSerial;
-  int temperature;
-  boolean isHetero;
+  public String name;
+  public short atomID;
+  public int atomSerial;
+  public int temperature;
+  public boolean isHetero;
+  public byte modelNumber;
 
-  public PdbAtom(int atomIndex, String recordPdb, PdbGroup group) {
+  public PdbAtom(int atomIndex, int modelNumber, String recordPdb, PdbGroup group) {
     this.group = group;
     isHetero = recordPdb.startsWith("HETATM");
+    this.modelNumber = (byte)modelNumber;
 
     String t = recordPdb.substring(12, 16);
     name = t.trim();
@@ -133,7 +135,7 @@ public class PdbAtom {
   }
 
   public int getModelNumber() {
-    return 1;
+    return modelNumber;
   }
 
   public char getChainID() {

@@ -1791,6 +1791,10 @@ final public class JmolViewer {
     return modelManager.getPdbAtomRecord(clientAtom);
   }
 
+  public int getPdbModelNumber(Object clientAtom) {
+    return modelManager.getPdbModelNumber(clientAtom);
+  }
+
   public short getColixAtom(Atom atom) {
     return colorManager.getColixAtom(atom);
   }

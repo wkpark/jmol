@@ -606,8 +606,8 @@ class Compiler {
     clauseResidueSpec::= { clauseResNameSpec }
                          { clauseResNumSpec }
                          { chainSpec }
-                         { modelSpec }
                          { clauseAtomSpec }
+                         { modelSpec }
 
     clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
 
@@ -623,9 +623,10 @@ class Compiler {
 
     clauseChainSpec  ::= {:} * | identifier | integer
 
-    clauseModelSpec  ::= {:} * | integer
-
     clauseAtomSpec   ::= . * | . identifier
+
+    clauseModelSpec  ::= {:|/} * | integer
+
   */
 
   private boolean compileExpression() {
@@ -825,16 +826,15 @@ class Compiler {
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.colon ||
-        tok == Token.asterisk ||
-        tok == Token.integer) {
-      if (! clauseModelSpec())
+    if (tok == Token.dot) {
+      if (!clauseAtomSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.dot) {
-      if (!clauseAtomSpec())
+    if (tok == Token.colon ||
+        tok == Token.slash) {
+      if (! clauseModelSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
@@ -1009,7 +1009,8 @@ class Compiler {
   }
 
   boolean clauseModelSpec() {
-    if (tokPeek() == Token.colon)
+    int tok = tokPeek();
+    if (tok == Token.colon || tok == Token.slash)
       tokenNext();
     if (tokPeek() == Token.asterisk) {
       tokenNext();

@@ -1335,6 +1335,13 @@ public class Jmol extends JPanel {
 
     public void showUrl(String url) {
     }
+
+    public void showConsole(boolean showConsole) {
+      if (showConsole)
+        scriptWindow.show();
+      else
+        scriptWindow.hide();
+    }
   }
 
   class ExecuteScriptAction extends AbstractAction {

@@ -166,6 +166,7 @@ class Token {
   final static int surface      = command | predefinedset | 87;
   final static int moveto       = command | 88 | negativenums;
   final static int bondorder    = command | 89;
+  final static int console      = command | 90;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -445,6 +446,7 @@ class Token {
     "surface",           new Token(surface,  varArgCount, "surface"),
     "moveto",            new Token(moveto,   varArgCount, "moveto"),
     "bondorder",         new Token(bondorder,          1, "bondorder"),
+    "console",           new Token(console,   onDefault1, "console"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

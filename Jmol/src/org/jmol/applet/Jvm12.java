@@ -26,21 +26,32 @@ package org.jmol.applet;
 
 import java.awt.*;
 
-public class Jvm12 {
+class Jvm12 {
 
   Component awtComponent;
 
-  public Jvm12(Component awtComponent) {
+  Jvm12(Component awtComponent) {
     this.awtComponent = awtComponent;
   }
 
-  private final Rectangle rectClip = new Rectangle();
-  private final Dimension dimSize = new Dimension();
-  public Rectangle getClipBounds(Graphics g) {
+  final Rectangle rectClip = new Rectangle();
+  final Dimension dimSize = new Dimension();
+  Rectangle getClipBounds(Graphics g) {
     return g.getClipBounds(rectClip);
   }
 
-  public Dimension getSize() {
+  Dimension getSize() {
     return awtComponent.getSize(dimSize);
   }
+
+  void showConsole(boolean showConsole) {
+    System.out.println("showConsole(" + showConsole + ")");
+  }
+
+  void consoleMessage(String message) {
+    if (message.length() > 50)
+      message = message.substring(50) + "...";
+    System.out.println(message);
+  }
+
 }

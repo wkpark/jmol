@@ -290,7 +290,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
-    showStatus("File Error:" + errorMsg);
+    showStatusAndConsole("File Error:" + errorMsg);
   }
 
   public void setStatusMessage(String statusMessage) {
@@ -298,8 +298,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       return;
     if (messageCallback != null && jsoWindow != null)
       jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
-    else
-      showStatus(statusMessage);
+    showStatusAndConsole(statusMessage);
   }
 
   public void scriptEcho(String strEcho) {
@@ -309,6 +308,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void scriptStatus(String strStatus) {
     if (strStatus != null && messageCallback != null && jsoWindow != null)
       jsoWindow.call(messageCallback, new Object[] {htmlName, strStatus});
+    consoleMessage(strStatus);
   }
 
   boolean buttonCallbackNotificationPending;
@@ -317,7 +317,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   JSObject buttonWindow;
 
   public void notifyScriptTermination(String errorMessage, int msWalltime) {
-    showStatus("Jmol script completed");
+    showStatusAndConsole("Jmol script completed");
     if (buttonCallbackNotificationPending) {
       System.out.println("!!!! calling back " + buttonCallback);
       buttonCallbackAfter[0] = buttonName;
@@ -345,7 +345,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void notifyAtomPicked(int atomIndex, String strInfo) {
     //System.out.println("notifyAtomPicked(" + atomIndex + "," + strInfo +")");
-    showStatus(strInfo);
+    showStatusAndConsole(strInfo);
     if (pickCallback != null && jsoWindow != null)
       jsoWindow.call(pickCallback,
                      new Object[] {htmlName, strInfo, new Integer(atomIndex)});
@@ -357,9 +357,24 @@ public class JmolApplet extends Applet implements JmolStatusListener {
         URL url = new URL(urlString);
         getAppletContext().showDocument(url, "_blank");
       } catch (MalformedURLException mue) {
-        showStatus("Malformed URL:" + urlString);
+        showStatusAndConsole("Malformed URL:" + urlString);
       }
     }
+  }
+
+  public void showConsole(boolean showConsole) {
+    if (jvm12 != null)
+      jvm12.showConsole(showConsole);
+  }
+
+  void showStatusAndConsole(String message) {
+    showStatus(message);
+    consoleMessage(message);
+  }
+
+  void consoleMessage(String message) {
+    if (jvm12 != null)
+      jvm12.consoleMessage(message);
   }
 
   public void update(Graphics g) {

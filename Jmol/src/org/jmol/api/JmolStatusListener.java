@@ -48,4 +48,6 @@ public interface JmolStatusListener {
 
   public void showUrl(String url);
 
+  public void showConsole(boolean showConsole);
+
 }

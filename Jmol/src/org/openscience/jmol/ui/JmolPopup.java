@@ -42,6 +42,7 @@ abstract public class JmolPopup {
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
   Object aboutMenu;
+  Object consoleMenu;
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -59,6 +60,8 @@ abstract public class JmolPopup {
   void build(Object popupMenu) {
     addMenuItems("popupMenu", popupMenu, new PopupResourceBundle());
     addVersionAndDate(popupMenu);
+    if (! viewer.isJvm12orGreater() && (consoleMenu != null))
+      disableMenu(consoleMenu);
   }
 
   public void updateComputedMenus() {
@@ -124,6 +127,8 @@ abstract public class JmolPopup {
           addMenuItems(item, subMenu, popupResourceBundle);
         if ("aboutMenu".equals(item))
           aboutMenu = subMenu;
+        else if ("consoleMenu".equals(item))
+          consoleMenu = subMenu;
         addMenuSubMenu(menu, subMenu);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
@@ -162,6 +167,8 @@ abstract public class JmolPopup {
   abstract public void show(int x, int y);
 
   abstract void addMenuSeparator(Object menu);
+
+  abstract void disableMenu(Object menu);
 
   abstract void addMenuItem(Object menu, String entry);
 

@@ -128,6 +128,10 @@ public class JmolPopupAwt extends JmolPopup {
     ((Menu)menu).addSeparator();
   }
 
+  void disableMenu(Object menu) {
+    ((Menu)menu).setEnabled(false);
+  }
+
   void addMenuItem(Object menu, String entry) {
     MenuItem mi = new MenuItem(entry);
     mi.setEnabled(false);

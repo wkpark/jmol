@@ -463,6 +463,10 @@ class Eval implements Runnable {
         bondorder();
         break;
 
+      case Token.console:
+        console();
+        break;
+
         // not implemented
       case Token.bond:
       case Token.clipboard:
@@ -3218,5 +3222,9 @@ class Eval implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
                             "bondOrder",
                             new Short(order));
+  }
+
+  void console() throws ScriptException {
+    viewer.showConsole(statement[1].tok == Token.on);
   }
 }

@@ -1882,6 +1882,11 @@ final public class Viewer implements JmolViewer {
       jmolStatusListener.showUrl(urlString);
   }
 
+  public void showConsole(boolean showConsole) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.showConsole(showConsole);
+  }
+
   void setPickingMode(int pickingMode) {
     pickingManager.setPickingMode(pickingMode);
   }

@@ -85,6 +85,10 @@ public class JmolPopupSwing extends JmolPopup {
       ((JMenu)menu).addSeparator();
   }
 
+  void disableMenu(Object menu) {
+    ((JMenu)menu).setEnabled(false);
+  }
+
   void addMenuItem(Object menu, String entry) {
     JMenuItem jmi = new JMenuItem(entry);
     jmi.setEnabled(false);

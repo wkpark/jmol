@@ -287,6 +287,8 @@ public class Eval implements Runnable {
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && interruptExecution)
       errorMessage = "execution interrupted";
+    viewer.scriptStatus(errorMessage != null
+                        ? errorMessage : "Script completed");
     clearMyThread();
     terminationNotification = true;
     viewer.popHoldRepaint();

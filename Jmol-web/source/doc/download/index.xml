@@ -76,12 +76,11 @@ deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a>
         checkout the project contained in the
 	<a href="http://www.cvshome.org/">CVS</a>
 	repository.
-          
-        <ul>
-          <li> <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/jmol/">Browse
-          the CVS repository</a>
-          </li>
-        </ul>
+      </p>
+      <p>
+	<a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/jmol/">
+	  Browse the CVS repository
+	</a>
       </p>
 
       <p>
@@ -89,13 +88,22 @@ deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a>
         When prompted for a password for anonymous, simply press the Enter key. 
       </p>
       <p><tt>
-        cvs -d:pserver:anonymous@cvs.jmol.sourceforge.net:/cvsroot/jmol login
+	<!--
+        cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol login
         <br/><br/>
-        cvs -z3 -d:pserver:anonymous@cvs.jmol.sourceforge.net:/cvsroot/jmol
-        co Jmol
+	-->
+        cvs -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/jmol co Jmol
         </tt></p>
       <p>
-        Updates from within the module's directory do not need the -d parameter.
+	This will check out to the <code>Jmol</code> subdirectory on your
+	system.
+      </p>
+      <p>
+	You can update the source code from withing your Jmol <i>sandbox</i>
+	by saying:
+	<tt>
+	  cvs up -dP
+	</tt>
       </p>
     </section>
 

@@ -173,6 +173,7 @@ ActionListener, ChangeListener, Runnable {
     tree.getSelectionModel().setSelectionMode(
         TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.addTreeSelectionListener(this);
+    tree.setEnabled(false);
     treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
     // the panel for the properties
     JPanel propertiesPanel = new JPanel();
@@ -229,6 +230,7 @@ ActionListener, ChangeListener, Runnable {
     selectSlider.setMinorTickSpacing(1);
     selectSlider.setPaintTicks(true);
     selectSlider.setSnapToTicks(true);
+    selectSlider.setEnabled(false);
     cpsPanel.add(selectSlider, BorderLayout.SOUTH);
     collectionPanel.add(cpsPanel);
     // panel with controller and fps
@@ -458,48 +460,47 @@ ActionListener, ChangeListener, Runnable {
   public void actionPerformed (ActionEvent e) {
     String cmd = e.getActionCommand();
     String parts[]=cmd.split("\\.");
-    if (parts.length==2) {
-      String section = parts[0];
-      cmd = parts[1];
-      if (section.equals("collection")) {
-        if (REWIND.equals(cmd)) {
-          if (animThread != null)
+    try {
+      if (parts.length==2) {
+        String section = parts[0];
+        cmd = parts[1];
+        if (section.equals("collection")) {
+          if (REWIND.equals(cmd)) {
             animThread = null;
-          setAtomSet(indexes[0], true);
-        } else if (PREVIOUS.equals(cmd)) {
-          if (currentIndex>0) {
+            setAtomSet(indexes[0], true);
+          } else if (PREVIOUS.equals(cmd)) {
             setAtomSet(indexes[currentIndex-1], true);
-          }
-        } else if (PLAY.equals(cmd)) {
-          if (animThread == null) {
-            animThread = new Thread(this,"Animation");
-            animThread.start();
-          }
-        } else if (PAUSE.equals(cmd)) {
-           animThread = null;
-        } else if (NEXT.equals(cmd)) {
-          if (currentIndex<=(indexes.length-1)) 
+          } else if (PLAY.equals(cmd)) {
+            if (animThread == null) {
+              animThread = new Thread(this,"Animation");
+              animThread.start();
+            }
+          } else if (PAUSE.equals(cmd)) {
+             animThread = null;
+          } else if (NEXT.equals(cmd)) {
             setAtomSet(indexes[currentIndex+1], true);
-        } else if (FF.equals(cmd)) {
-          if (animThread != null)
+          } else if (FF.equals(cmd)) {
             animThread = null;
-          setAtomSet(indexes[indexes.length-1], true);
-        }       
-      } else if (section.equals("vector")) {
-        if (REWIND.equals(cmd)) {
-          findFrequency(0,1);
-        } else if (PREVIOUS.equals(cmd)) {
-          findFrequency(currentIndex-1,-1);
-        } else if (PLAY.equals(cmd)) {
-          viewer.evalStringQuiet("vibration on");
-        } else if (PAUSE.equals(cmd)) {
-          viewer.evalStringQuiet("vibration off");
-        } else if (NEXT.equals(cmd)) {
-          findFrequency(currentIndex+1,1);
-        } else if (FF.equals(cmd)) {
-          findFrequency(indexes.length-1,-1);
-        }     
+            setAtomSet(indexes[indexes.length-1], true);
+          }
+        } else if (section.equals("vector")) {
+          if (REWIND.equals(cmd)) {
+            findFrequency(0,1);
+          } else if (PREVIOUS.equals(cmd)) {
+            findFrequency(currentIndex-1,-1);
+          } else if (PLAY.equals(cmd)) {
+            viewer.evalStringQuiet("vibration on");
+          } else if (PAUSE.equals(cmd)) {
+            viewer.evalStringQuiet("vibration off");
+          } else if (NEXT.equals(cmd)) {
+            findFrequency(currentIndex+1,1);
+          } else if (FF.equals(cmd)) {
+            findFrequency(indexes.length-1,-1);
+          }     
+        }
       }
+    } catch (Exception exception) {
+      // exceptions during indexes array access: ignore it
     }
   }
   
@@ -510,7 +511,6 @@ ActionListener, ChangeListener, Runnable {
    * @param increment Increment value for how to go through the list
    */
   public void findFrequency(int index, int increment) {
-    // FIX ME this should only look in the collection set
     int maxIndex = indexes.length;
     boolean foundFrequency = false;
     
@@ -541,7 +541,6 @@ ActionListener, ChangeListener, Runnable {
       else
         viewer.evalStringQuiet("vector " + value);
     } else if (src == scaleSlider) {
-//      viewer.setVectorScale(value*SCALE_PRECISION); // no update: use script
       viewer.evalStringQuiet("vector scale "+value*SCALE_PRECISION);
     } else if (src == amplitudeSlider) {
       viewer.setVibrationScale(value*AMPLITUDE_PRECISION);
@@ -627,9 +626,13 @@ ActionListener, ChangeListener, Runnable {
       }
     }
     treeModel.setRoot(root);
-    treeModel.reload();
+    treeModel.reload(); 
     // make sure that we start with the whole set selected
     tree.setSelectionPath(tree.getPathForRow(0));
+    // en/dis able the tree and selec slider based on # of atomsets
+    boolean haveChildren = root.getChildCount()>0;
+    tree.setEnabled(haveChildren);
+    selectSlider.setEnabled(haveChildren);
   }
   
   /**

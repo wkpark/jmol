@@ -1431,6 +1431,10 @@ final public class JmolViewer {
   
   public void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
+
+    System.out.println("setShapeProperty("+JmolConstants.shapeClassBases[shapeID]+
+                       "," + propertyName + "," + value + ")");
+
     modelManager.setShapeProperty(shapeID, propertyName, value,
                                   selectionManager.bsSelection);
     refresh();
@@ -1880,6 +1884,13 @@ final public class JmolViewer {
 
   public int getLabelOffsetY() {
     return styleManager.labelOffsetY;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // font stuff
+  ////////////////////////////////////////////////////////////////
+  public byte getFontID(int fontsize, String fontface, String fontstyle) {
+    return g3d.getFontID(fontsize, fontface, fontstyle);
   }
 
   ////////////////////////////////////////////////////////////////

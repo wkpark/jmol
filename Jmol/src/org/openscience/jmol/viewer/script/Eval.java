@@ -417,7 +417,9 @@ public class Eval implements Runnable {
       case Token.frame:
         frame();
         break;
-        
+      case Token.font:
+        font();
+        break;
 
         // not implemented
       case Token.bond:
@@ -2205,6 +2207,79 @@ public class Eval implements Runnable {
     }
     if (! viewer.setDisplayModelID(modelID))
       evalError("Invalid modelID:" + modelID);
+  }
+
+  int getShapeType(int tok) throws ScriptException {
+    int shapeType = 0;
+    switch(tok) {
+    case Token.trace:
+      shapeType = JmolConstants.SHAPE_TRACE;
+      break;
+    case Token.backbone:
+      shapeType = JmolConstants.SHAPE_BACKBONE;
+      break;
+    case Token.ribbons:
+    case Token.strands:
+      shapeType = JmolConstants.SHAPE_STRANDS;
+      break;
+    case Token.cartoon:
+      shapeType = JmolConstants.SHAPE_CARTOON;
+      break;
+    case Token.dots:
+      shapeType = JmolConstants.SHAPE_DOTS;
+      break;
+    case Token.axes:
+      shapeType = JmolConstants.SHAPE_AXES;
+      break;
+    case Token.unitcell:
+      shapeType = JmolConstants.SHAPE_UCCAGE;
+      break;
+    case Token.boundbox:
+      shapeType = JmolConstants.SHAPE_BBCAGE;
+      break;
+    case Token.frank:
+      shapeType = JmolConstants.SHAPE_FRANK;
+      break;
+    case Token.echo:
+      shapeType = JmolConstants.SHAPE_ECHO;
+      break;
+    case Token.monitor:
+      shapeType = JmolConstants.SHAPE_MEASURES;
+      break;
+    default:
+      unrecognizedColorObject();
+    }
+    return shapeType;
+  }
+
+  void font() throws ScriptException {
+    int shapeType = 0;
+    int fontsize = 0;
+    String fontface = "SansSerif";
+    String fontstyle = "Plain";
+    switch (statementLength) {
+    case 5:
+      if (statement[4].tok != Token.identifier)
+        keywordExpected();
+      fontstyle = (String)statement[4].value;
+    case 4:
+      if (statement[3].tok != Token.identifier)
+        keywordExpected();
+      fontface = (String)statement[3].value;
+    case 3:
+      if (statement[2].tok != Token.integer)
+        integerExpected();
+      fontsize = statement[2].intValue;
+      shapeType = getShapeType(statement[1].tok);
+      break;
+    default:
+      badArgumentCount();
+    }
+    System.out.println("font <obj> fontsize=" + fontsize);
+    System.out.println("fontface=" + fontface + " fontstyle=" + fontstyle);
+    byte fontid = viewer.getFontID(fontsize, fontface, fontstyle);
+    System.out.println("fontid=" + fontid);
+    viewer.setShapeProperty(shapeType, "font", new Byte(fontid));
   }
 
   /****************************************************************

@@ -56,6 +56,7 @@ public class Echo extends Shape {
 
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
+    System.out.println("Echo.setProperty(" + propertyName + "," + value + ")");
 
     if ("color".equals(propertyName)) {
       if (currentText != null)
@@ -65,7 +66,7 @@ public class Echo extends Shape {
 
     if ("font".equals(propertyName)) {
       if (currentText != null) {
-        currentText.fontid = g3d.getFontID(value);
+        currentText.fontid = ((Byte)value).byteValue();
         currentText.recalc();
       }
       return;
@@ -188,6 +189,10 @@ public class Echo extends Shape {
       else
         y = g3d.height - descent - 1;
 
+      System.out.println("Echo.render fontid=" + fontid +
+                         " fontsize=" + g3d.getFontSize(fontid) +
+                         " fontface=" + g3d.getFontFaceString(fontid) +
+                         " fontstyle=" + g3d.getFontStyleString(fontid));
       g3d.setFontID(fontid);
       g3d.drawString(text, colix, x, y, 0);
     }

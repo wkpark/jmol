@@ -1056,14 +1056,15 @@ final public class Graphics3D {
   public final static String[] fontfaces =
   {"SansSerif", "Serif", "Monospaced", ""};
 
-  public final static int FONT_STYLE_NORMAL = 0;
-  public final static int FONT_STYLE_BOLD   = 1;
-  public final static int FONT_STYLE_ITALIC = 2;
+  public final static int FONT_STYLE_PLAIN      = 0;
+  public final static int FONT_STYLE_BOLD       = 1;
+  public final static int FONT_STYLE_ITALIC     = 2;
+  public final static int FONT_STYLE_BOLDITALIC = 3;
 
   public final static String[] fontstyles =
-  {"Normal", "Bold", "Italic", "BoldItalic"};
+  {"Plain", "Bold", "Italic", "BoldItalic"};
 
-  private static int getFontFace(String fontface) {
+  public static int getFontFace(String fontface) {
     if ("Monospaced".equalsIgnoreCase(fontface))
       return FONT_FACE_MONO;
     if ("Serif".equalsIgnoreCase(fontface))
@@ -1071,7 +1072,7 @@ final public class Graphics3D {
     return FONT_FACE_SANS;
   }
 
-  private static int getFontStyle(String fontstyle) {
+  public static int getFontStyle(String fontstyle) {
     int i = 4;
     while (--i > 0)
       if (fontstyles[i].equalsIgnoreCase(fontstyle))
@@ -1080,11 +1081,11 @@ final public class Graphics3D {
   }
 
   public byte getFontID(int fontsize) {
-    return getFontID(fontsize, FONT_FACE_SANS, FONT_STYLE_NORMAL);
+    return getFontID(fontsize, FONT_FACE_SANS, FONT_STYLE_PLAIN);
   }
 
   public byte getFontID(int fontsize, String fontface) {
-    return getFontID(fontsize, getFontFace(fontface), FONT_STYLE_NORMAL);
+    return getFontID(fontsize, getFontFace(fontface), FONT_STYLE_PLAIN);
   }
     
   public byte getFontID(int fontsize, String fontface, String fontstyle) {
@@ -1092,6 +1093,9 @@ final public class Graphics3D {
   }
     
   public byte getFontID(int fontsize, int fontface, int fontstyle) {
+    System.out.println("Graphics3D.getFontID(" + fontsize +
+                       "," + fontfaces[fontface] + "," + fontstyles[fontstyle]
+                       + ")");
     if (fontsize <= 0)
       return 0;
     if (fontsize > 63)

@@ -159,6 +159,8 @@ public class Token {
   final static int display3d    = command | 55;
   final static int animation    = command | 56;
   final static int frame        = command | 57;
+  // jmol commands
+  final static int font         = command | 58;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -391,6 +393,8 @@ public class Token {
     "animation",         new Token(animation,  "animation"),
     "anim",              null,
     "frame",             new Token(frame,      "frame"),
+    // jmol commands
+    "font",              new Token(font,       "font"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

@@ -288,6 +288,10 @@ final public class Frame {
 
   public void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
+    System.out.println("Frame.setShapeProperty(" +
+                       JmolConstants.shapeClassBases[shapeType] +
+                       "," + propertyName + "," + value + ")");
+
     if (shapes[shapeType] != null)
       shapes[shapeType].setProperty(propertyName, value, bsSelected);
   }

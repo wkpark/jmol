@@ -76,12 +76,12 @@ public class AtomRenderer {
   int z;
   int diameter;
   byte styleAtom;
+  Color color;
+  Color colorOutline;
 
   int radius;
   int xUpperLeft;
   int yUpperLeft;
-  Color color;
-  Color colorOutline;
 
   public void render(AtomShape atomShape) {
     styleAtom = atomShape.styleAtom;
@@ -99,8 +99,8 @@ public class AtomRenderer {
     colorOutline = control.getColorAtomOutline(styleAtom, color);
 
     renderAtom();
-    if (control.getStyleLabel() != DisplayControl.NOLABELS)
-      renderLabel();
+    if (atomShape.styleLabel != DisplayControl.NOLABELS)
+      renderLabel(atomShape.styleLabel);
   }
 
   private void renderAtom() {
@@ -367,7 +367,7 @@ public class AtomRenderer {
     }
   }
 
-  public void renderLabel() {
+  public void renderLabel(byte styleLabel) {
     int j = 0;
     String s = null;
     Font font = new Font("Helvetica", Font.PLAIN, radius);
@@ -377,7 +377,7 @@ public class AtomRenderer {
     g.setColor(colorText);
     
     String label = null;
-    switch (control.getStyleLabel()) {
+    switch (styleLabel) {
     case DisplayControl.SYMBOLS:
       label = atom.getSymbol();
       break;

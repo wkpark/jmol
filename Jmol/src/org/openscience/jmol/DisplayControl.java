@@ -836,7 +836,9 @@ final public class DisplayControl {
   public void setStyleLabel(byte style) {
     if (!modelManager.haveFile)
       return;
-    styleManager.setStyleLabel(style);
+    boolean empty = selectionManager.isEmpty();
+    styleManager.setStyleLabel(style, empty,
+                               empty ? iterAll() : iterSelection());
     refresh();
   }
 

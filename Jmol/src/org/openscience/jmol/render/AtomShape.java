@@ -36,19 +36,20 @@ import javax.vecmath.Point3d;
 public class AtomShape extends Shape {
 
   public Atom atom;
-  public int diameter;
-  public int numBonds;
-  public int[] bondWidths;
   public byte styleAtom;
   public int madAtom;
   public Color colorAtom;
+  public int diameter;
+  public int numBonds;
+  public int[] bondWidths;
   public byte[] styleBonds;
   public int[] madBonds;
+  public byte styleLabel;
   
   public AtomShape(Atom atom,
                    byte styleAtom, int madAtom,
                    byte styleBond, int madBond,
-                   Color colorAtom) {
+                   Color colorAtom, byte styleLabel) {
     this.atom = atom;
     numBonds = atom.getBondedCount();
     bondWidths = new int[numBonds];
@@ -57,14 +58,11 @@ public class AtomShape extends Shape {
     setStyleMadAtom(styleAtom, madAtom);
     setStyleMadAllBonds(styleBond, madBond);
     this.colorAtom = colorAtom;
+    this.styleLabel = styleLabel;
   }
 
   public String toString() {
     return "Atom shape for " + atom + ": z = " + z;
-  }
-
-  public void setStyleAtom(byte styleAtom) {
-    this.styleAtom = styleAtom;
   }
 
   /*
@@ -81,6 +79,10 @@ public class AtomShape extends Shape {
    * represents a percentage of the vdw radius of that atom.
    * This is converted to a normal MAD as soon as possible
    */
+
+  public void setStyleAtom(byte styleAtom) {
+    this.styleAtom = styleAtom;
+  }
 
   public void setMadAtom(int madAtom) {
     if (madAtom < 0)
@@ -130,6 +132,10 @@ public class AtomShape extends Shape {
 
   public void setColorAtom(Color colorAtom) {
     this.colorAtom = colorAtom;
+  }
+
+  public void setStyleLabel(byte styleLabel) {
+    this.styleLabel = styleLabel;
   }
 
   public void transform(DisplayControl control) {

@@ -828,6 +828,30 @@ final public class Graphics3D {
     }
   }
 
+  public void fillTriangle(boolean translucent,
+                           Point3i screenA, short colixA, short normixA,
+                           Point3i screenB, short colixB, short normixB,
+                           Point3i screenC, short colixC, short normixC) {
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
+    t = triangle3d.ay;
+    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
+    t = triangle3d.az;
+    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
+
+    if (normixA == normixB && normixA == normixC &&
+        colixA == colixB && colixA == colixC) {
+      setColorNoisy(colixA, normix3d.getIntensity(normixA));
+      triangle3d.fillTriangle(translucent, false);
+    } else {
+      triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
+                            getShades(colixB)[normix3d.getIntensity(normixB)],
+                            getShades(colixC)[normix3d.getIntensity(normixC)]);
+      triangle3d.fillTriangle(translucent, true);
+    }
+  }
+
   public void fillTriangle(short colix, boolean translucent,
                            Point3i screenA, Point3i screenB, Point3i screenC) {
     calcSurfaceShade(colix, translucent, screenA, screenB, screenC);

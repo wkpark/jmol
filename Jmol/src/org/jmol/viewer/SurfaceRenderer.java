@@ -151,6 +151,8 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
+    if (true)
+      return;
     if (surfaceConvexMaps[torus.indexII] != null)
       renderTorusHalf(torus,
                       getColix(torus.colixI, colixes, atoms, torus.indexII),
@@ -268,61 +270,30 @@ class SurfaceRenderer extends ShapeRenderer {
   void renderCavity(Surface.Cavity cavity,
                     Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
     Point3f[] points = cavity.points;
-    if (surfaceConvexMaps[cavity.ixI] != null) {
-      g3d.setColix(getColix(cavity.colixI, colixes, atoms, cavity.ixI));
-      renderCavityThird(points, 0);
-    }
-    if (surfaceConvexMaps[cavity.ixJ] != null) {
-      g3d.setColix(getColix(cavity.colixJ, colixes, atoms, cavity.ixJ));
-      renderCavityThird(points, 1);
-    }
-    if (surfaceConvexMaps[cavity.ixK] != null) {
-      g3d.setColix(getColix(cavity.colixK, colixes, atoms, cavity.ixK));
-      renderCavityThird(points, 2);
-    }
-  }
+    short[] normixes = cavity.normixes;
+    for (int i = 4; --i >= 0; )
+      viewer.transformPoint(points[i], screens[i]);
+    
+    short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
+    short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
+    short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
+    short colix0 = g3d.YELLOW;
+                        
 
-  void renderCavityThird(Point3f[] points, int which) {
-    Point3i screen;
-    for (int i = points.length; --i >= 0; ) {
-      if ((nearAssociations[i] & (1 << which)) != 0) {
-        screen = viewer.transformPoint(points[i]);
-        g3d.drawPixel(screen);
-      }
-    }
+    g3d.fillTriangle(false,
+                     screens[0], colix0, normixes[0],
+                     screens[1], colix1, normixes[1],
+                     screens[2], colix2, normixes[2]);
+    g3d.fillTriangle(false,
+                     screens[0], colix0, normixes[0],
+                     screens[2], colix2, normixes[2],
+                     screens[3], colix3, normixes[3]);
+    g3d.fillTriangle(false,
+                     screens[0], colix0, normixes[0],
+                     screens[1], colix1, normixes[1],
+                     screens[3], colix3, normixes[3]);
   }
-
-  final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
-  final static float oneFifth = 2 * (float)Math.PI / 5;
-  final static float oneTenth = oneFifth / 2;
   
-  final static short[] faceIndicesInitial = {
-    0, 1, 2,
-    0, 2, 3,
-    0, 3, 4,
-    0, 4, 5,
-    0, 5, 1,
-
-    1, 6, 2,
-    2, 7, 3,
-    3, 8, 4,
-    4, 9, 5,
-    5, 10, 1,
-
-
-    6, 1, 10,
-    7, 2, 6,
-    8, 3, 7,
-    9, 4, 8,
-    10, 5, 9,
-
-    11, 6, 10,
-    11, 7, 6,
-    11, 8, 7,
-    11, 9, 8,
-    11, 10, 9,
-  };
-
   final static boolean getBit(int[] bitmap, int i) {
     return (bitmap[(i >> 5)] << (i & 31)) < 0;
   }

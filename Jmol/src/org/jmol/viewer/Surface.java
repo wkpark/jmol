@@ -694,11 +694,13 @@ class Surface extends Shape {
   class Cavity {
     final int ixI, ixJ, ixK;
     final Point3f[] points;
+    final short[] normixes;
     short colixI, colixJ, colixK;
 
     Cavity() {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
+      normixes = new short[4];
       points = new Point3f[25];
       for (int i = 25; --i >= 0; )
         points[i] = new Point3f();
@@ -706,19 +708,23 @@ class Surface extends Shape {
       vectorPI.sub(centerI, probeIJK);
       vectorPI.normalize();
       points[1].scaleAdd(radiusP, vectorPI, probeIJK);
+      normixes[1] = g3d.getNormix(vectorPI);
       
       vectorPJ.sub(centerJ, probeIJK);
       vectorPJ.normalize();
       points[2].scaleAdd(radiusP, vectorPJ, probeIJK);
+      normixes[2] = g3d.getNormix(vectorPJ);
       
       vectorPK.sub(centerK, probeIJK);
       vectorPK.normalize();
       points[3].scaleAdd(radiusP, vectorPK, probeIJK);
+      normixes[3] = g3d.getNormix(vectorPK);
 
       vectorT.add(vectorPI, vectorPJ);
       vectorT.add(vectorPK);
       vectorT.normalize();
       points[0].scaleAdd(radiusP, vectorT, probeIJK);
+      normixes[0] = g3d.getNormix(vectorT);
 
       for (int i = 0; i < gcSplits.length; i += 3)
         splitGreatCircle(gcSplits[i], gcSplits[i + 1], gcSplits[i + 2]);

@@ -58,19 +58,15 @@
       </section>
     </section>
       
-    <section title="Jmol10pre3">
+    <section title="Jmol10pre4">
       <p>
-	Jmol version 10 pre-release 3 is now released. This release includes
+	Jmol version 10 pre-release 4 is now released. This release includes
 	the following enhancements:
 	<ul>
-	  <li>has updated/improved/correct nucleotide set definitions</li>
-	  <li>properly supports PickCallBack</li>
-	  <li>respects CONECT records in .pdb files</li>
-	  <li>chooses conformation A when alternate locations are present</li>
-	  <li>renders 'ribbons' as strands</li>
-	  <li>offers preliminary/rudimentary 'cartoons'</li>
-	  <li>supports 'color monitors'</li>
-	  <li><i>Note application name change</i> jmol.jar -> Jmol.jar</li>
+	  <li>basic support for multiple models in .pdb files</li>
+	  <li>basic support for ssbonds</li>
+	  <li>parser recognizes hetero group names</li>
+	  <li>bug fixes</li>
 	</ul>
 	This release continues to have the
 	following functional limitations:
@@ -82,13 +78,13 @@
 	    Will not automatically recognize protein secondary structures
 	  </li>
 	  <li>Will not render isosurfaces</li>
-	  <li>Does not handle nucleotide shapes</li>
+	  <li>Does not handle nucleotide graphic shapes</li>
 	  <li>Does not handle .pdb insertion codes</li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre3.zip"
-	   ><font size="+1"><i>Give me the code!</i> Jmol10pre3.zip</font></a>
+	<a href="Jmol10pre4.zip"
+	   ><font size="+1"><i>Give me the code!</i> Jmol10pre4.zip</font></a>
       </p>
       <p>
 	Unzip the code using the tool of your choice. It will unzip into
@@ -96,7 +92,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre1.zip</b>
+	format as .zip : <b>jar xf Jmol10pre4.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

@@ -1339,7 +1339,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrateVectorScale =
         new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
-    control.setColorOutline(colorOutline);
+    //    control.setColorOutline(colorOutline);
     control.setColorSelection(colorSelection);
     control.setColorLabel(isLabelAtomColor ? null : colorText);
     control.setColorBond(isBondAtomColor ? null : colorBond);

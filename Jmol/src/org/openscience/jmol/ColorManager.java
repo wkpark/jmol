@@ -46,13 +46,6 @@ public class ColorManager {
     return modeAtomColorProfile;
   }
 
-  public Color colorOutline = Color.black;
-  public short colixOutline = Colix.BLACK;
-  public void setColorOutline(Color c) {
-    colorOutline = c;
-    colixOutline = Colix.getColix(c);
-  }
-
   public Color colorSelection = Color.orange;
   public short colixSelection = Colix.ORANGE;
 
@@ -145,11 +138,6 @@ public class ColorManager {
   }
   public Color getColorVector() {
     return colorVector;
-  }
-
-  public boolean showDarkerOutline = true;
-  public void setShowDarkerOutline(boolean showDarkerOutline) {
-    this.showDarkerOutline = showDarkerOutline;
   }
 
   public void setColorBackground(String colorName) {

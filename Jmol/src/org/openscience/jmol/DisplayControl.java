@@ -447,15 +447,6 @@ final public class DisplayControl {
     return colorManager.modeAtomColorProfile;
   }
 
-  public void setColorOutline(Color c) {
-    colorManager.setColorOutline(c);
-    refresh();
-  }
-
-  public Color getColorOutline() {
-    return colorManager.colorOutline;
-  }
-
   public void setColorSelection(Color c) {
     colorManager.setColorSelection(c);
     refresh();

@@ -234,7 +234,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.pushHoldRepaint();
     {
       // REQUIRE that the progressbar be shown
-      boolean hasProgressBar = getBooleanValue("progressbar", false);
+      hasProgressBar = getBooleanValue("progressbar", false);
 
       // should the popupMenu be loaded ?
       boolean popupMenu = getBooleanValue("popupMenu", true);

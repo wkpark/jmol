@@ -48,10 +48,8 @@ public class AtomTypeSet extends Hashtable {
      * Loads AtomTypes from a Reader.
      */
     public void load(InputStream input) throws IOException {
-        if (input == null) {System.out.println("null!");} else {
-            System.out.println(input.toString());
-        }
-        BufferedReader br1 = new BufferedReader(new InputStreamReader(input), 1024);
+        BufferedReader br1 = new BufferedReader(new InputStreamReader(input), 
+                                                1024);
         clear();
         String line = br1.readLine();
         while (line != null) {

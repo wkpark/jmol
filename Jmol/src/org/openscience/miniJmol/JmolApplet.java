@@ -65,7 +65,7 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
     int labelMode;
     private String helpMessage = "Keys: S- change style; L- Show labels; B-Toggle Bonds";
     
-    private String AT_loc = "org/openscience/jmol/Data/AtomTypes";
+    private String AT_loc = "../jmol/Data/AtomTypes";
     
     private boolean bondsEnabled=true;
     
@@ -103,18 +103,17 @@ public class JmolApplet extends java.applet.Applet implements MouseListener, Key
             myBean.setWireframeRotation(false);
         }
         
-        java.net.URL atURL;
+        InputStream atis;
         String atomtypes = getParameter("ATOMTYPES");
         try {
             if ((atomtypes==null)||(atomtypes.length()==0)) {
-                atURL = ClassLoader.getSystemResource(AT_loc);
-                System.out.println(atURL);
+                atis = getClass().getResourceAsStream(AT_loc);
             } else {
-                atURL = new java.net.URL(getDocumentBase(),
-                                         atomtypes);
+                java.net.URL atURL = new java.net.URL(getDocumentBase(),
+                                                      atomtypes);
+                atis = atURL.openStream();
             }
-            System.out.println(atomtypes + " " + AT_loc);
-            myBean.setAtomPropertiesFromURL(atURL);
+            myBean.setAtomPropertiesFromStream(atis);
         } catch (java.io.IOException ex) {
             System.err.println("Error loading atom types: " + ex);
         }

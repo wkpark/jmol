@@ -48,13 +48,14 @@ class Hermite3D {
   final Point3i[] pLeft = new Point3i[16];
   final Point3i[] pRight = new Point3i[16];
 
+  final float[] sLeft = new float[16];
+  final float[] sRight = new float[16];
+  int sp;
+
   final Point3f[] pTopLeft = new Point3f[16];
   final Point3f[] pTopRight = new Point3f[16];
   final Point3f[] pBotLeft = new Point3f[16];
   final Point3f[] pBotRight = new Point3f[16];
-  final float[] sLeft = new float[16];
-  final float[] sRight = new float[16];
-  int sp;
   {
     for (int i = 16; --i >= 0; ) {
       pLeft[i] = new Point3i();
@@ -95,42 +96,43 @@ class Hermite3D {
       Point3i a = pLeft[sp];
       Point3i b = pRight[sp];
       int dx = b.x - a.x;
-      int dy = b.y - a.y;
-      int dist2 = dx*dx + dy*dy;
-      if (dist2 <= 2) {
-        // mth 2003 10 13
-        // I tried drawing short cylinder segments here,
-        // but drawing spheres was faster
-        float s = sLeft[sp];
-        if (tFill) {
-          int d =(s < 0.5f
-                  ? diameterBeg + (int)(dDiameterFirstHalf * s)
-                  : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5f)));
-          g3d.fillSphereCentered(colix, d, a);
-        } else {
-          g3d.plotPixelClipped(a);
+      if (dx >= -1 && dx <= 1) {
+        int dy = b.y - a.y;
+        if (dy >= -1 && dy <= 1) {
+          // mth 2003 10 13
+          // I tried drawing short cylinder segments here,
+          // but drawing spheres was faster
+          float s = sLeft[sp];
+          if (tFill) {
+            int d =(s < 0.5f
+                    ? diameterBeg + (int)(dDiameterFirstHalf * s)
+                    : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5f)));
+            g3d.fillSphereCentered(colix, d, a);
+          } else {
+            g3d.plotPixelClipped(a);
+          }
+          --sp;
+          continue;
         }
-        --sp;
-      } else {
-        double s = (sLeft[sp] + sRight[sp]) / 2;
-        double s2 = s * s;
-        double s3 = s2 * s;
-        double h1 = 2*s3 - 3*s2 + 1;
-        double h2 = -2*s3 + 3*s2;
-        double h3 = s3 - 2*s2 + s;
-        double h4 = s3 - s2;
-        Point3i pMid = pRight[sp+1];
-        pMid.x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
-        pMid.y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
-        pMid.z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
-        pRight[sp+1] = pRight[sp];
-        sRight[sp+1] = sRight[sp];
-        pRight[sp] = pMid;
-        sRight[sp] = (float)s;
-        ++sp;
-        pLeft[sp].set(pMid);
-        sLeft[sp] = (float)s;
       }
+      double s = (sLeft[sp] + sRight[sp]) / 2;
+      double s2 = s * s;
+      double s3 = s2 * s;
+      double h1 = 2*s3 - 3*s2 + 1;
+      double h2 = -2*s3 + 3*s2;
+      double h3 = s3 - 2*s2 + s;
+      double h4 = s3 - s2;
+      Point3i pMid = pRight[sp+1];
+      pMid.x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
+      pMid.y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
+      pMid.z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
+      pRight[sp+1] = pRight[sp];
+      sRight[sp+1] = sRight[sp];
+      pRight[sp] = pMid;
+      sRight[sp] = (float)s;
+      ++sp;
+      pLeft[sp].set(pMid);
+      sLeft[sp] = (float)s;
     } while (sp >= 0);
   }
 
@@ -312,21 +314,20 @@ class Hermite3D {
       Point3f a = pTopLeft[sp];
       Point3f b = pTopRight[sp];
       double dxTop = b.x - a.x;
-      if (dxTop >= -1 && dxTop <= 1) {
+      if (dxTop >= -8 && dxTop <= 8) {
         double dyTop = b.y - a.y;
-        if (dyTop >= -1 && dyTop <= 1) {
+        if (dyTop >= -8 && dyTop <= 8) {
           Point3f c = pBotLeft[sp];
           Point3f d = pBotRight[sp];
           float dxBot = d.x - c.x;
-          if (dxBot >= -1 && dxBot <= 1) {
+          if (dxBot >= -8 && dxBot <= 8) {
             float dyBot = d.y - c.y;
-            if (dyBot >= -1 && dyBot <= 1) {
+            if (dyBot >= -8 && dyBot <= 8) {
               
               g3d.fillSphereCentered(colix, 3, a);
               g3d.fillSphereCentered(colix, 3, c);
               
-              g3d.fillTriangle(colix, a, b, c);
-              g3d.fillTriangle(colix, b, c, d);
+              g3d.fillQuadrilateral(colix, a, b, d, c);
               // render triangles here
               
               --sp;

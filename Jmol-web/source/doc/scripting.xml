@@ -38,7 +38,7 @@
       <p>
         Simple scripts which are executed at applet load time can be
 	executed using the "script" parameter as part of your applet
-	definition in HTML. These scripts will execute will execute
+	definition in HTML. These scripts will execute 
 	on browser platforms which do not support JavaScript or the
 	LiveConnect interface between JavaScript and Java applets.
       </p>

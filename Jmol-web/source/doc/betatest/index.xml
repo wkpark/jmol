@@ -64,6 +64,14 @@
 	following functional limitations:
 	<ul>
 	  <li>Only supports .xyz, .mol, and .pdb files</li>
+	  <li>Does not handle animations</li>
+	  <li>Does not handle crystal cells</li>
+	  <li>
+	    Will not automatically recognize protein secondary structures
+	  </li>
+	  <li>Will not render ribbons nor cartoons</li>
+	  <li>Will not render isosurfaces</li>
+	  <li>Does not handle nucleotides</li>
 	</ul>
       </p>
       <p>

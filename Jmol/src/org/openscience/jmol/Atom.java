@@ -45,13 +45,14 @@ public class Atom extends org.openscience.cdk.Atom {
               float x, float y, float z) {
     super(atomType.getName(), new Point3d(x, y, z));
     this.atomType = new AtomType(atomType);
+    this.atomNumber = atomNumber;
   }
 
   /**
    * Returns the atom's number.
    */
   public int getAtomNumber() {
-    return getAtomicNumber();
+    return atomNumber;
   }
 
   /**
@@ -336,6 +337,11 @@ public class Atom extends org.openscience.cdk.Atom {
    * Vibrational vector in world space.
    */
   private Point3f vector = null;
+  
+  /**
+   * Atom number in set of all atoms. Not the atomic number!
+   */
+  private int atomNumber;
 
   /**
    * Vibrational vector in screen space.

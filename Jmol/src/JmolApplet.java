@@ -111,7 +111,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
       setBackgroundColor(getParameter("bgcolor"));
       setStyle(getParameter("style"));
       setLabel(getParameter("label"));
-      setAtomPropertiesFromFile(getParameter("atomTypes"));
+      //      setAtomPropertiesFromFile(getParameter("atomTypes"));
 
       String wfr = getParameter("wireframeRotation");
       setWireframeRotation(wfr != null &&

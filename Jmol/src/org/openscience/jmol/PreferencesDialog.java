@@ -68,10 +68,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
-public class PreferencesDialog extends JDialog {
+public class PreferencesDialog extends JDialog implements ActionListener {
 
   private static boolean AutoBond;
-  private static boolean AntiAliased;
   private static boolean Perspective;
   private static boolean ShowAtoms;
   private static boolean ShowBonds;
@@ -99,7 +98,7 @@ public class PreferencesDialog extends JDialog {
   private static int VibrationFrames;
   private DisplayPanel display;
   private JButton bButton, oButton, pButton, tButton, vButton;
-  private JRadioButton aaYes, aaNo;
+  private JRadioButton antiAliasedYes, antiAliasedNo;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
@@ -194,41 +193,38 @@ public class PreferencesDialog extends JDialog {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton save =
-      new JButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.saveLabel"));
-    save.addActionListener(new ActionListener() {
 
-      public void actionPerformed(ActionEvent e) {
-        SavePressed();
-      }
-    });
-    buttonPanel.add(save);
-    JButton reset =
+    resetButton =
       new JButton(JmolResourceHandler.getInstance()
         .getString("Prefs.resetLabel"));
-    reset.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        ResetPressed();
-      }
-    });
-    buttonPanel.add(reset);
-    JButton ok =
+    resetButton.addActionListener(this);
+    buttonPanel.add(resetButton);
+    
+    cancelButton =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.cancelButton"));
+    cancelButton.addActionListener(this);
+    buttonPanel.add(cancelButton);
+    
+    applyButton =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.applyButton"));
+    applyButton.addActionListener(this);
+    buttonPanel.add(applyButton);
+    
+    okButton =
       new JButton(JmolResourceHandler.getInstance()
         .getString("Prefs.okLabel"));
-    ok.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        OKPressed();
-      }
-    });
-    buttonPanel.add(ok);
-    getRootPane().setDefaultButton(ok);
+    okButton.addActionListener(this);
+    buttonPanel.add(okButton);
+    getRootPane().setDefaultButton(okButton);
 
     container.add(tabs, BorderLayout.CENTER);
     container.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(container);
+    
+    updateComponents();
+    
     pack();
     centerDialog();
   }
@@ -237,133 +233,82 @@ public class PreferencesDialog extends JDialog {
 
     JPanel disp = new JPanel();
     GridBagLayout gridbag = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
     disp.setLayout(gridbag);
-    c.fill = GridBagConstraints.BOTH;
-    c.weightx = 1.0;
-    c.weighty = 1.0;
+    GridBagConstraints constraints;
 
-    JPanel aaPanel = new JPanel();
-    aaPanel.setLayout(new BoxLayout(aaPanel, BoxLayout.Y_AXIS));
-    aaPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.aaLabel")));
-    ButtonGroup aaGroup = new ButtonGroup();
-    aaYes =
-        new JRadioButton(JmolResourceHandler.getInstance()
-          .getString("Prefs.aaYesLabel"));
-    aaNo = new JRadioButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.aaNoLabel"));
-    aaYes.addItemListener(radioButtonListener);
-    aaNo.addItemListener(radioButtonListener);
-    aaGroup.add(aaYes);
-    aaGroup.add(aaNo);
-    aaPanel.add(aaYes);
-    aaPanel.add(aaNo);
-    if (display.getAntiAliased()) {
-      aaYes.setSelected(true);
-    } else {
-      aaNo.setSelected(true);
-    }
-    String vers = System.getProperty("java.version");
-    if (vers.compareTo("1.2") < 0) {
-      aaYes.setEnabled(false);
-      aaNo.setEnabled(false);
-    }
-    gridbag.setConstraints(aaPanel, c);
-    disp.add(aaPanel);
+    JLabel antiAliasedLabel = new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.antiAliasedLabel"));
+    constraints = new GridBagConstraints();
+    disp.add(antiAliasedLabel, constraints);
+        
+    ButtonGroup antiAliasedGroup = new ButtonGroup();
+    antiAliasedYes = new JRadioButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.antiAliasedYesLabel"));
+    antiAliasedNo = new JRadioButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.antiAliasedNoLabel"));
+    antiAliasedGroup.add(antiAliasedYes);
+    antiAliasedGroup.add(antiAliasedNo);
+    constraints = new GridBagConstraints();
+    disp.add(antiAliasedYes, constraints);
+    disp.add(antiAliasedNo, constraints);
+    
+    JLabel filler = new JLabel();
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    disp.add(filler, constraints);
 
-    JPanel pPanel = new JPanel();
-    pPanel.setLayout(new BoxLayout(pPanel, BoxLayout.Y_AXIS));
-    pPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.pLabel")));
-    ButtonGroup pGroup = new ButtonGroup();
-    pYes = new JRadioButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.pYesLabel"));
-    pNo = new JRadioButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.pNoLabel"));
-    pYes.addItemListener(radioButtonListener);
-    pNo.addItemListener(radioButtonListener);
-    pGroup.add(pYes);
-    pGroup.add(pNo);
-    pPanel.add(pYes);
-    pPanel.add(pNo);
-    pYes.setSelected(DisplayPanel.getPerspective());
-    c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(pPanel, c);
-    disp.add(pPanel);
-
-    JPanel choicesPanel = new JPanel();
-    choicesPanel.setLayout(new GridLayout(0, 4));
-    choicesPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.cLabel")));
-    cB = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.cBLabel"), display.getSettings().getShowBonds());
-    cB.addItemListener(checkBoxListener);
+    JPanel showPanel = new JPanel();
+    showPanel.setLayout(new GridLayout(0, 4));
+    showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.showLabel")));
     cA = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.cALabel"), display.getSettings().getShowAtoms());
+        .getString("Prefs.showAtomsLabel"), display.getSettings().getShowAtoms());
     cA.addItemListener(checkBoxListener);
+    cB = new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Prefs.showBondsLabel"), display.getSettings().getShowBonds());
+    cB.addItemListener(checkBoxListener);
     cV = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.cVLabel"), display.getSettings().getShowVectors());
+        .getString("Prefs.showVectorsLabel"), display.getSettings().getShowVectors());
     cV.addItemListener(checkBoxListener);
     cH = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.cHLabel"), display.getSettings()
+        .getString("Prefs.showHydrogensLabel"), display.getSettings()
           .getShowHydrogens());
     cH.addItemListener(checkBoxListener);
-    choicesPanel.add(cB);
-    choicesPanel.add(cA);
-    choicesPanel.add(cV);
-    choicesPanel.add(cH);
+    showPanel.add(cA);
+    showPanel.add(cB);
+    showPanel.add(cV);
+    showPanel.add(cH);
 
-    JPanel fovPanel = new JPanel();
-    fovPanel.setLayout(new BorderLayout());
-    fovPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.fovLabel")));
-    JLabel fovLabel =
-      new JLabel(JmolResourceHandler.getInstance().getString("Prefs.fovExpl"),
-        JLabel.CENTER);
-    fovPanel.add(fovLabel, BorderLayout.NORTH);
-    fovSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, (int) FieldOfView);
-    fovSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    fovSlider.setPaintTicks(true);
-    fovSlider.setMajorTickSpacing(20);
-    fovSlider.setMinorTickSpacing(10);
-    fovSlider.setPaintLabels(true);
-    fovSlider.addChangeListener(new ChangeListener() {
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    disp.add(showPanel, constraints);
 
-      public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider) e.getSource();
-        FieldOfView = source.getValue();
-        DisplayPanel.setFieldOfView(FieldOfView);
-        props.put("FieldOfView", Float.toString(FieldOfView));
-      }
-    });
-    fovPanel.add(fovSlider, BorderLayout.SOUTH);
-    gridbag.setConstraints(fovPanel, c);
-    disp.add(fovPanel);
-    c.weightx = 0.0;
-    gridbag.setConstraints(choicesPanel, c);
-    disp.add(choicesPanel);
+    filler = new JLabel();
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.gridheight = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.weightx = 1.0;
+    constraints.weighty = 1.0;
+    disp.add(filler, constraints);
 
     return disp;
   }
 
   public JPanel buildAtomsPanel() {
 
-    JPanel atomPanel = new JPanel();
-    GridBagLayout gridbag = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    atomPanel.setLayout(gridbag);
-    c.fill = GridBagConstraints.BOTH;
-    c.weightx = 1.0;
-    c.weighty = 1.0;
+    JPanel atomPanel = new JPanel(new GridBagLayout());
+    GridBagConstraints constraints;
 
-    JPanel renderPanel = new JPanel();
-    renderPanel.setLayout(new BoxLayout(renderPanel, BoxLayout.Y_AXIS));
-    renderPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.aRenderStyleLabel")));
+    JLabel atomStyleLabel = new JLabel(JmolResourceHandler.getInstance()
+          .getString("Prefs.atomStyleLabel"));
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.EAST;
+    atomPanel.add(atomStyleLabel, constraints);
     aRender = new JComboBox();
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aQDChoice"));
@@ -371,7 +316,6 @@ public class PreferencesDialog extends JDialog {
         .getString("Prefs.aSChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aWFChoice"));
-    renderPanel.add(aRender);
     aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
     aRender.addItemListener(new ItemListener() {
 
@@ -384,10 +328,20 @@ public class PreferencesDialog extends JDialog {
         display.repaint();
       }
     });
+
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    atomPanel.add(aRender, constraints);
+
+    JLabel atomColoringLabel = new JLabel(JmolResourceHandler.getInstance()
+          .getString("Prefs.atomColoringLabel"));
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.EAST;
+    atomPanel.add(atomColoringLabel, constraints);
     cRender = new JComboBox();
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cATChoice"));
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cCChoice"));
-    renderPanel.add(cRender);
     cRender.setSelectedIndex(display.getSettings().getAtomColorProfile());
     cRender.addItemListener(new ItemListener() {
 
@@ -400,14 +354,16 @@ public class PreferencesDialog extends JDialog {
         display.repaint();
       }
     });
-    gridbag.setConstraints(renderPanel, c);
-    atomPanel.add(renderPanel);
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    atomPanel.add(cRender, constraints);
 
-    JPanel labelPanel = new JPanel();
-    labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
-    labelPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.aLabelStyleLabel")));
+    JLabel atomLabelsLabel = new JLabel(JmolResourceHandler.getInstance()
+          .getString("Prefs.atomLabelsLabel"));
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.EAST;
+    atomPanel.add(atomLabelsLabel, constraints);
     aLabel = new JComboBox();
     aLabel.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aPLChoice"));
@@ -417,7 +373,6 @@ public class PreferencesDialog extends JDialog {
         .getString("Prefs.aTLChoice"));
     aLabel.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aNLChoice"));
-    labelPanel.add(aLabel);
     aLabel.setSelectedIndex(display.getSettings().getLabelMode());
     aLabel.addItemListener(new ItemListener() {
 
@@ -430,15 +385,16 @@ public class PreferencesDialog extends JDialog {
         display.repaint();
       }
     });
-    c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(labelPanel, c);
-    atomPanel.add(labelPanel);
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    atomPanel.add(aLabel, constraints);
 
-    JPanel propsPanel = new JPanel();
-    propsPanel.setLayout(new BoxLayout(propsPanel, BoxLayout.Y_AXIS));
-    propsPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.aPropsStyleLabel")));
+    JLabel propertyLabelsLabel = new JLabel(JmolResourceHandler.getInstance()
+          .getString("Prefs.propertyLabelsLabel"));
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.EAST;
+    atomPanel.add(propertyLabelsLabel, constraints);
     aProps = new JComboBox();
     aProps.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.apPChoice"));
@@ -448,7 +404,6 @@ public class PreferencesDialog extends JDialog {
         .getString("Prefs.apNChoice"));
     aProps.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.apUChoice"));
-    propsPanel.add(aProps);
     aProps.setSelectedItem(display.getSettings().getPropertyMode());
     aProps.addItemListener(new ItemListener() {
 
@@ -461,17 +416,17 @@ public class PreferencesDialog extends JDialog {
         display.repaint();
       }
     });
-    c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(propsPanel, c);
-    atomPanel.add(propsPanel);
+    constraints = new GridBagConstraints();
+    constraints.anchor = GridBagConstraints.WEST;
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    atomPanel.add(aProps, constraints);
 
     JPanel sfPanel = new JPanel();
     sfPanel.setLayout(new BorderLayout());
     sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.aSizeLabel")));
-    JLabel sfLabel =
-      new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.aSizeExpl"), JLabel.CENTER);
+        .getString("Prefs.atomSizeLabel")));
+    JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     sfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
         (int) (100.0 * display.getSettings().getAtomSphereFactor()));
@@ -491,11 +446,21 @@ public class PreferencesDialog extends JDialog {
         display.repaint();
       }
     });
-    sfPanel.add(sfSlider, BorderLayout.SOUTH);
+    sfPanel.add(sfSlider, BorderLayout.CENTER);
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    atomPanel.add(sfPanel, constraints);
 
-    c.weightx = 0.0;
-    gridbag.setConstraints(sfPanel, c);
-    atomPanel.add(sfPanel);
+    JLabel filler = new JLabel();
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.gridheight = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.BOTH;
+    constraints.weightx = 1.0;
+    constraints.weighty = 1.0;
+    atomPanel.add(filler, constraints);
 
     return atomPanel;
   }
@@ -1135,37 +1100,23 @@ public class PreferencesDialog extends JDialog {
     this.setLocation(x, y);
   }
 
-  public void OKPressed() {
-    this.setVisible(false);
+  public void ok() {
+    save();
+    dispose();
   }
 
-  public void SavePressed() {
-
-    try {
-      FileOutputStream fileOutputStream =
-        new FileOutputStream(Jmol.UserPropsFile);
-      props.store(fileOutputStream, "Jmol");
-      fileOutputStream.close();
-    } catch (Exception e) {
-      System.out.println("Error saving preferences" + e.toString());
-    }
-    return;
+  public void cancel() {
+    updateComponents();
+    dispose();
   }
 
-  public void ResetPressed() {
-
-    defaults();
-    initVariables();
-    display.repaint();
-
+  private void updateComponents() {
     // Display panel controls:
-    if (display.getAntiAliased()) {
-      aaYes.setSelected(true);
+    if (display.getSettings().isAntiAliased()) {
+      antiAliasedYes.setSelected(true);
     } else {
-      aaNo.setSelected(true);
+      antiAliasedNo.setSelected(true);
     }
-    pYes.setSelected(DisplayPanel.getPerspective());
-    fovSlider.setValue((int) DisplayPanel.getFieldOfView());
     cB.setSelected(display.getSettings().getShowBonds());
     cA.setSelected(display.getSettings().getShowAtoms());
     cV.setSelected(display.getSettings().getShowVectors());
@@ -1200,14 +1151,41 @@ public class PreferencesDialog extends JDialog {
     vvsSlider.setValue((int) (100.0 * Vibrate.getVectorScale()));
     vfSlider.setValue(Vibrate.getNumberFrames());
 
-    SavePressed();
+  }
+
+  private void save() {
+    
+    boolean antiAliased = antiAliasedYes.isSelected();
+    display.getSettings().setAntiAliased(antiAliased);
+    props.put("AntiAliased", new Boolean(antiAliased).toString());
+    
+    try {
+      FileOutputStream fileOutputStream =
+        new FileOutputStream(Jmol.UserPropsFile);
+      props.store(fileOutputStream, "Jmol");
+      fileOutputStream.close();
+    } catch (Exception e) {
+      System.out.println("Error saving preferences" + e.toString());
+    }
+    
+    display.repaint();
+  }
+
+  public void ResetPressed() {
+
+    defaults();
+    initVariables();
+    display.repaint();
+
+    updateComponents();
+    
+    save();
     return;
   }
 
   void initVariables() {
 
     AutoBond = Boolean.getBoolean("AutoBond");
-    AntiAliased = Boolean.getBoolean("AntiAliased");
     Perspective = Boolean.getBoolean("Perspective");
     ShowAtoms = Boolean.getBoolean("ShowAtoms");
     ShowBonds = Boolean.getBoolean("ShowBonds");
@@ -1255,9 +1233,7 @@ public class PreferencesDialog extends JDialog {
     ArrowLine.setArrowHeadSize(ArrowHeadSize);
     ArrowLine.setLengthScale(ArrowLengthScale);
     DisplayPanel.setBackgroundColor(backgroundColor);
-    DisplayPanel.setFieldOfView(FieldOfView);
-    DisplayPanel.setPerspective(Perspective);
-    display.setAntiAliased(AntiAliased);
+    display.getSettings().setAntiAliased(Boolean.getBoolean("AntiAliased"));
     ChemFrame.setBondFudge(BondFudge);
     ChemFrame.setAutoBond(AutoBond);
     display.getSettings().setShowAtoms(ShowAtoms);
@@ -1338,37 +1314,24 @@ public class PreferencesDialog extends JDialog {
 
     public void itemStateChanged(ItemEvent e) {
 
-      JRadioButton rb = (JRadioButton) e.getSource();
-      if (rb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.aaYesLabel"))) {
-        AntiAliased = rb.isSelected();
-        display.setAntiAliased(AntiAliased);
-        props.put("AntiAliased", new Boolean(AntiAliased).toString());
-        display.repaint();
-      } else if (rb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.aaNoLabel"))) {
-        AntiAliased = !rb.isSelected();
-        display.setAntiAliased(AntiAliased);
-        props.put("AntiAliased", new Boolean(AntiAliased).toString());
-        display.repaint();
-      } else if (rb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.pYesLabel"))) {
-        Perspective = rb.isSelected();
-        DisplayPanel.setPerspective(Perspective);
-        props.put("Perspective", new Boolean(Perspective).toString());
-        display.repaint();
-      } else if (rb.getText()
-          .equals(JmolResourceHandler.getInstance()
-            .getString("Prefs.pNoLabel"))) {
-        Perspective = !rb.isSelected();
-        DisplayPanel.setPerspective(Perspective);
-        props.put("Perspective", new Boolean(Perspective).toString());
-        display.repaint();
-      }
     }
   };
+
+  private JButton applyButton;
+  private JButton resetButton;
+  private JButton cancelButton;
+  private JButton okButton;
+  
+  public void actionPerformed(ActionEvent event) {
+    if (event.getSource() == applyButton) {
+      save();
+    } else if (event.getSource() == resetButton) {
+      ResetPressed();
+    } else if (event.getSource() == cancelButton) {
+      cancel();
+    } else if (event.getSource() == okButton) {
+      ok();
+    }
+  }
 
 }

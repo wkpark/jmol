@@ -44,10 +44,10 @@ import java.util.BitSet;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
-
 import java.net.URL;
 import java.io.InputStream;
 import java.io.File;
+import java.beans.PropertyChangeListener;
 
 final public class DisplayControl {
 
@@ -716,15 +716,19 @@ final public class DisplayControl {
    * delegated to ModelManager
    ****************************************************************/
 
+  public static final String PROP_CHEM_FILE = "chemFile";
+  public static final String PROP_CHEM_FRAME = "chemFrame";
+
   public void setChemFile(ChemFile chemfile) {
+    control.pushHoldRepaint();
     modelManager.setChemFile(chemfile);
-    distributor.initializeAtomShapes();
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
     // but perhaps not if we are in the midst of executing a script?
     eval.clearDefinitionsAndLoadPredefined();
-    refreshFirmly();
+    control.setStructuralChange();
+    control.popHoldRepaint();
   }
 
   public ChemFile getChemFile() {
@@ -875,6 +879,24 @@ final public class DisplayControl {
     return modelManager.getChemFrameIterator(set);
   }
 
+  public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    modelManager.addPropertyChangeListener(pcl);
+  }
+
+  public void addPropertyChangeListener(String prop,
+                                        PropertyChangeListener pcl) {
+    modelManager.addPropertyChangeListener(prop, pcl);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    modelManager.removePropertyChangeListener(pcl);
+  }
+
+  public void removePropertyChangeListener(String prop,
+                                           PropertyChangeListener pcl) {
+    modelManager.removePropertyChangeListener(prop, pcl);
+  }
+
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
@@ -931,12 +953,16 @@ final public class DisplayControl {
     return repaintManager.takeSnapshot();
   }
 
-  public void setHoldRepaint(boolean holdRepaint) {
-    repaintManager.setHoldRepaint(holdRepaint);
+  public void pushHoldRepaint() {
+    repaintManager.pushHoldRepaint();
   }
 
-  private void refreshFirmly() {
-    repaintManager.refreshFirmly();
+  public void popHoldRepaint() {
+    repaintManager.popHoldRepaint();
+  }
+
+  public boolean holdRepaint() {
+    return repaintManager.holdRepaint > 0;
   }
 
   public void refresh() {

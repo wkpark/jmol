@@ -138,7 +138,7 @@ public class DisplayPanel extends JPanel
     g.getClipBounds(rectClip);
     g.setColor(control.getColorBackground());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
-    if (control.getFrame() != null) {
+    if (control.getFrame() != null && !control.holdRepaint()) {
       control.setGraphicsContext(g, rectClip);
       frameRenderer.paint(g, control);
       // FIXME -- measurements rendered incorrectly
@@ -763,10 +763,11 @@ public class DisplayPanel extends JPanel
   }
 
   public void propertyChange(PropertyChangeEvent event) {
-    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       control.setChemFile((ChemFile) event.getNewValue());
       setRotateMode();
-    } else if (event.getPropertyName().equals(JmolModel.chemFrameProperty)) {
+    } else if (event.getPropertyName().
+               equals(DisplayControl.PROP_CHEM_FRAME)) {
       control.setFrame((ChemFrame) event.getNewValue());
     }
   }

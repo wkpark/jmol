@@ -117,12 +117,16 @@ public class RepaintManager {
     //return awtComponent.takeSnapshot();
   }
 
-  public boolean holdRepaint;
+  public int holdRepaint = 0;
   public boolean repaintPending;
 
-  public void setHoldRepaint(boolean holdRepaint) {
-    this.holdRepaint = holdRepaint;
-    if (!holdRepaint) {
+  public void pushHoldRepaint() {
+    ++holdRepaint;
+  }
+
+  public void popHoldRepaint() {
+    if (--holdRepaint <= 0) {
+      holdRepaint = 0;
       repaintPending = true;
       control.awtComponent.repaint();
     }
@@ -130,15 +134,11 @@ public class RepaintManager {
 
   Object monitorRepaint = new Object();
 
-  public void refreshFirmly() {
-    control.awtComponent.repaint();
-  }
-
   public void refresh() {
     if (repaintPending)
       return;
     repaintPending = true;
-    if (! holdRepaint)
+    if (holdRepaint == 0)
       control.awtComponent.repaint();
   }
 

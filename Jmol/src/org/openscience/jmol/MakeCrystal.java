@@ -47,11 +47,8 @@ public class MakeCrystal
   
   /**
    * Constructor
-   *
-   * @param model a <code>JmolModel</code> value
-   * @param crystalPropertiesDialog the dialog that will be displayed
    */
-  public MakeCrystal(JmolModel model, 
+  public MakeCrystal(DisplayControl control,
 		     CrystalPropertiesDialog crystalPropertiesDialog) {
     makecrystalAction = new MakecrystalAction();
     this.crystalPropertiesDialog = crystalPropertiesDialog;
@@ -148,7 +145,7 @@ public class MakeCrystal
 
   public void propertyChange(PropertyChangeEvent event) {
 
-    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       setChemFile((ChemFile) event.getNewValue());
     }
   } 

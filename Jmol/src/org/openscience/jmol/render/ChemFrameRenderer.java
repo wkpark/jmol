@@ -55,6 +55,8 @@ public class ChemFrameRenderer {
         Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
         AtomShape atomShape = atom.getAtomShape();
         if (atomShape == null) {
+          // FIXME mth -- atomShapes should be allocated as part of new Atom()
+          // but the Atom code does not have a control at that point
           atomShape = new AtomShape(atom, control);
           atom.setAtomShape(atomShape);
         }

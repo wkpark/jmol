@@ -52,7 +52,7 @@ public class FileManager {
   }
 
   // mth jan 2003 -- there must be a better way for me to do this!?
-  final String[] urlPrefixes = {"http:", "https:", "ftp:"};
+  final String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
 
   public URL getURLFromName(String name) {
     URL url = null;

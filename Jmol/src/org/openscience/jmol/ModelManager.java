@@ -30,6 +30,9 @@ import java.util.BitSet;
 import javax.vecmath.Point3d;
 import java.awt.Rectangle;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+
 public class ModelManager {
 
   DisplayControl control;
@@ -44,7 +47,10 @@ public class ModelManager {
   public int nframes = 0;
   public MeasurementList mlist = null;
 
+  public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
   public void setChemFile(ChemFile chemfile) {
+    ChemFile chemfilePrevious = this.chemfile;
     this.chemfile = chemfile;
     nframes = chemfile.getNumberOfFrames();
     this.chemframe = chemfile.getFrame(0);
@@ -53,7 +59,8 @@ public class ModelManager {
       mlistChanged(new MeasurementListEvent(mlist));
     }
     haveFile = true;
-    control.setStructuralChange();
+    pcs.firePropertyChange(DisplayControl.PROP_CHEM_FILE,
+                           chemfilePrevious, chemfile);
   }
 
   public ChemFile getChemFile() {
@@ -92,12 +99,15 @@ public class ModelManager {
     }
   }
 
-  public void setFrame(ChemFrame frame) {
-    chemframe = frame;
-    Measurement.setChemFrame(frame);
+  public void setFrame(ChemFrame chemframe) {
+    ChemFrame chemframePrevious = this.chemframe;
+    this.chemframe = chemframe;
+    Measurement.setChemFrame(chemframe);
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
+    pcs.firePropertyChange(DisplayControl.PROP_CHEM_FRAME,
+                           chemframePrevious, chemframe);
   }
 
   public int numberOfAtoms() {
@@ -221,5 +231,23 @@ public class ModelManager {
                                        rectRubber.x + rectRubber.width,
                                        rectRubber.y + rectRubber.height);
     */
+  }
+
+  public void addPropertyChangeListener(PropertyChangeListener pcl) {
+    pcs.addPropertyChangeListener(pcl);
+  }
+
+  public void addPropertyChangeListener(String prop,
+                                        PropertyChangeListener pcl) {
+    pcs.addPropertyChangeListener(prop, pcl);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener pcl) {
+    pcs.removePropertyChangeListener(pcl);
+  }
+
+  public void removePropertyChangeListener(String prop,
+                                           PropertyChangeListener pcl) {
+    pcs.removePropertyChangeListener(prop, pcl);
   }
 }

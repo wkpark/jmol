@@ -205,14 +205,14 @@ public class Eval implements Runnable {
     try {
       // FIXME -- confirm repaint behavior during script execution
       control.setSelectionHaloEnabled(false);
-      control.setHoldRepaint(true);
+      control.pushHoldRepaint();
       instructionDispatchLoop();
     } catch (ScriptException e) {
       System.out.println("" + e);
     }
     myThread = null;
     control.setSelectionHaloEnabled(true);
-    control.setHoldRepaint(false);
+    control.popHoldRepaint();
     if (logMessages)
       System.out.println("total time to run=" +
                          (int)(System.currentTimeMillis() - timeBegin));

@@ -164,7 +164,7 @@ class CalculateChemicalShifts extends AbstractAction implements
 
   public void propertyChange(PropertyChangeEvent event) {
     
-    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       setChemFile((ChemFile) event.getNewValue());
     }
   }

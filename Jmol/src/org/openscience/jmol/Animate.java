@@ -67,10 +67,7 @@ import javax.vecmath.Point3d;
 public class Animate extends JDialog implements ActionListener,
     PropertyChangeListener, Runnable {
 
-  /**
-   * Reference to the data model.
-   */
-  private JmolModel model;
+  private DisplayControl control;
   
   private Thread animThread = null;
   private boolean haveFile = false;
@@ -99,7 +96,7 @@ public class Animate extends JDialog implements ActionListener,
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
     haveFile = true;
-    model.setChemFile(cf);
+    control.setChemFile(cf);
     setFrame(currentFrame, true);
   }
 
@@ -232,7 +229,7 @@ public class Animate extends JDialog implements ActionListener,
     cf = newFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
-    model.setChemFile(cf);
+    control.setChemFile(cf);
   }
 
   /**
@@ -326,14 +323,11 @@ public class Animate extends JDialog implements ActionListener,
 
   /**
    * Constructor
-   *
-   * @param f the parent frame
-   * @param dp the DisplayPanel in which the animation will take place
    */
-  public Animate(JmolModel model, JFrame f) {
+  public Animate(DisplayControl control, JFrame f) {
 
     super(f, "Animation", false);
-    this.model = model;
+    this.control = control;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -619,8 +613,8 @@ public class Animate extends JDialog implements ActionListener,
    */
   synchronized void setFrame(int which, boolean setSlider) {
 
-    model.setChemFrame(which);
-    ChemFrame frame = model.getChemFrame();
+    control.setFrame(which);
+    ChemFrame frame = control.getFrame();
     String inf = frame.getInfo();
     if (inf != null) {
       infoLabel.setText(inf);
@@ -696,12 +690,10 @@ public class Animate extends JDialog implements ActionListener,
 
   public void propertyChange(PropertyChangeEvent event) {
     
-    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       if (event.getNewValue() != inFile && event.getNewValue() != cf) {
         setChemFile((ChemFile) event.getNewValue());
       }
     }
   }
-  
 }
-

@@ -41,8 +41,7 @@ class TransformDialog
   extends JDialog 
   implements ActionListener, PropertyChangeListener {
 
-  protected Jmol program;
-  private JmolModel model;
+  private DisplayControl control;
   private boolean hasFile;
 
   private Point3d center;
@@ -59,11 +58,11 @@ class TransformDialog
   private TransformAction transformAction = new TransformAction();
   private Hashtable commands;
   
-  TransformDialog(JmolModel model, JFrame f, Jmol program) {
+  TransformDialog(DisplayControl control, JFrame f) {
     
     // Invoke JDialog constructor
     super(f, "Transform...", false);
-    this.model = model;
+    this.control = control;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -71,7 +70,6 @@ class TransformDialog
       commands.put(a.getValue(Action.NAME), a);
     }
     
-    this.program=program;
     makeTransformDialog();
   }
   
@@ -207,11 +205,11 @@ class TransformDialog
 
 
   void rotate() {  //TODO
-    program.control.setCenter(center);
-    program.control.rotate(new AxisAngle4d(direction.x,
-					   direction.y,
-					   direction.z,
-					   (double)Math.toRadians(angle)));
+    control.setCenter(center);
+    control.rotate(new AxisAngle4d(direction.x,
+                                   direction.y,
+                                   direction.z,
+                                   (double)Math.toRadians(angle)));
   }
   
   
@@ -250,7 +248,7 @@ class TransformDialog
   }
 
   public void propertyChange(PropertyChangeEvent event) {
-    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       setChemFile((ChemFile) event.getNewValue());
     }
   }

@@ -86,10 +86,7 @@ public class CrystalPropertiesDialog extends JDialog
 
   private JDialog thisDialog;  //reference to this dialog
   
-  /**
-   * Reference to the data model.
-   */
-  private JmolModel model;
+  private DisplayControl control;
 
   private boolean hasFile = false;
   private boolean hasCrystalInfo = false;
@@ -173,17 +170,14 @@ public class CrystalPropertiesDialog extends JDialog
 
   /**
    * Constructor
-   *
-   * @param model a <code>JmolModel</code> value
-   * @param f the parent frame
    */
-  public CrystalPropertiesDialog(JmolModel model, JFrame f) {
+  public CrystalPropertiesDialog(DisplayControl control, JFrame f) {
 
 
     // Invoke JDialog constructor
     super(f, "Crystal Properties...", false);
     this.thisDialog = this;
-    this.model = model;
+    this.control = control;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -1792,7 +1786,7 @@ public class CrystalPropertiesDialog extends JDialog
       this.chemFile = (ChemFile) crystalFile;
       
       // Say to everybody that we have a new chemfile!
-      model.setChemFile(this.chemFile);
+      control.setChemFile(this.chemFile);
       hasCrystalInfo = true;
       primitiveVectors_ApplyToWhichFrameCBO.setEnabled(true);
       crystalBox_ApplyToWhichFrameCBO.setEnabled(true);
@@ -1800,7 +1794,8 @@ public class CrystalPropertiesDialog extends JDialog
       
       
       
-      for (int i = 0; i < model.getNumberOfFrames(); i++) {
+      int frameCount = control.getChemFile().getNumberOfFrames();
+      for (int i = 0; i < frameCount; i++) {
 	
 	//set Primitive Vectors
 	unitCellBox = crystalFile.getUnitCellBox(i);
@@ -1947,8 +1942,8 @@ public class CrystalPropertiesDialog extends JDialog
     this.chemFile = (ChemFile) crystalFile;
     hasFile = true;
 
-    model.setChemFile(this.chemFile);
-    model.setChemFrame(currentFrameIndex);
+    control.setChemFile(this.chemFile);
+    control.setFrame(currentFrameIndex);
 
     //The chemfile is updated globally.
     //jmol.setChemFile(this.chemFile);
@@ -2160,7 +2155,7 @@ public class CrystalPropertiesDialog extends JDialog
    */
   public void propertyChange(PropertyChangeEvent event) {
 
-    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
       if (event.getNewValue() != chemFile) {
 	setChemFile((ChemFile) event.getNewValue());
       }

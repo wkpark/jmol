@@ -84,10 +84,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean wireframeRotation;
   private static boolean perspectiveDepth;
   private static boolean showDarkerOutline;
+  private static boolean isLabelAtomColor;
+  private static boolean isBondAtomColor;
   private static Color colorBackground;
   private static Color colorOutline;
   private static Color colorSelection;
   private static Color colorText;
+  private static Color colorBond;
   private static Color colorVector;
   private static byte styleAtom;
   private static int AtomColorProfile;
@@ -104,7 +107,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
   private static int VibrationFrames;
-  private JButton bButton, oButton, pButton, tButton, vButton;
+  private JButton bButton, oButton, pButton, tButton, eButton, vButton;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
@@ -114,7 +117,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vfSlider;
   private JCheckBox cB, cA, cH, cV, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
-  private JCheckBox cbDarkerOutline;
+  private JCheckBox cbDarkerOutline, cbIsLabelAtomColor, cbIsBondAtomColor;
   private JCheckBox cbGraphics2D, cbAntialias, cbAntialiasAlways;
   private static Properties props;
 
@@ -145,6 +148,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("wireframeRotation", "false");
     props.put("perspectiveDepth", "true");
     props.put("showDarkerOutline", "false");
+    props.put("isLabelAtomColor", "false");
+    props.put("isBondAtomColor", "true");
     props.put("graphics2D", "true");
     props.put("antialias", "true");
     props.put("antialiasAlways", "false");
@@ -165,6 +170,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("colorOutline", "0");
     props.put("colorSelection", "16762880");
     props.put("colorText", "0");
+    props.put("colorBond", "0");
     props.put("colorVector", "0");
     props.put("VibrateAmplitudeScale", "0.7");
     props.put("VibrateVectorScale", "1.0");
@@ -875,9 +881,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.outlineLabel")));
 
+    showDarkerOutline = control.getShowDarkerOutline();
     cbDarkerOutline =
-      guimap.newJCheckBox("Prefs.showDarkerOutline",
-                          control.getShowDarkerOutline());
+      guimap.newJCheckBox("Prefs.showDarkerOutline", showDarkerOutline);
     cbDarkerOutline.addItemListener(checkBoxListener);
     outlinePanel.add(cbDarkerOutline, BorderLayout.NORTH);
 
@@ -885,6 +891,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     oButton.setBackground(colorOutline);
     oButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.outlineToolTip"));
+    oButton.setEnabled(!showDarkerOutline);
     ActionListener startOutlineChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -930,15 +937,24 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     pickedPanel.add(pButton, BorderLayout.CENTER);
     colorPanel.add(pickedPanel);
 
+    // text color panel
     JPanel textPanel = new JPanel();
     textPanel.setLayout(new BorderLayout());
     textPanel
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.textLabel")));
+
+    isLabelAtomColor = control.getIsLabelAtomColor();
+    cbIsLabelAtomColor =
+      guimap.newJCheckBox("Prefs.isLabelAtomColor", isLabelAtomColor);
+    cbIsLabelAtomColor.addItemListener(checkBoxListener);
+    textPanel.add(cbIsLabelAtomColor, BorderLayout.NORTH);
+
     tButton = new JButton();
     tButton.setBackground(colorText);
     tButton.setToolTipText(JmolResourceHandler.getInstance()
         .getString("Prefs.textToolTip"));
+    tButton.setEnabled(!isLabelAtomColor);
     ActionListener startTextChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -957,6 +973,43 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     textPanel.add(tButton, BorderLayout.CENTER);
     colorPanel.add(textPanel);
 
+    // bond color panel
+    JPanel bondPanel = new JPanel();
+    bondPanel.setLayout(new BorderLayout());
+    bondPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.bondLabel")));
+
+    isBondAtomColor = control.getIsBondAtomColor();
+    cbIsBondAtomColor =
+      guimap.newJCheckBox("Prefs.isBondAtomColor", isBondAtomColor);
+    cbIsBondAtomColor.addItemListener(checkBoxListener);
+    bondPanel.add(cbIsBondAtomColor, BorderLayout.NORTH);
+
+    eButton = new JButton();
+    eButton.setBackground(colorBond);
+    eButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.textToolTip"));
+    eButton.setEnabled(!isBondAtomColor);
+    ActionListener startBondChooser = new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+
+        Color color =
+          JColorChooser
+            .showDialog(eButton, JmolResourceHandler.getInstance()
+              .getString("Prefs.bondChooserTitle"), colorBond);
+        colorBond = color;
+        eButton.setBackground(colorBond);
+        control.setColorBond(colorBond);
+        props.put("colorBond", "" + colorBond.getRGB());
+      }
+    };
+    eButton.addActionListener(startBondChooser);
+    bondPanel.add(eButton, BorderLayout.CENTER);
+    colorPanel.add(bondPanel);
+
+    // vector color panel
     JPanel vectorPanel = new JPanel();
     vectorPanel.setLayout(new BorderLayout());
     vectorPanel
@@ -1173,10 +1226,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     // Color panel controls:
     bButton.setBackground(colorBackground);
-    cbDarkerOutline.setSelected(control.getShowDarkerOutline());
+    cbDarkerOutline.setSelected(showDarkerOutline);
     oButton.setBackground(colorOutline);
+    oButton.setEnabled(!showDarkerOutline);
     pButton.setBackground(colorSelection);
+    cbIsLabelAtomColor.setSelected(isLabelAtomColor);
     tButton.setBackground(colorText);
+    tButton.setEnabled(!isLabelAtomColor);
+    cbIsBondAtomColor.setSelected(isBondAtomColor);
+    eButton.setBackground(colorBond);
+    eButton.setEnabled(!isBondAtomColor);
     vButton.setBackground(colorVector);
 
     // Vibrate panel controls
@@ -1193,7 +1252,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       props.store(fileOutputStream, "Jmol");
       fileOutputStream.close();
     } catch (Exception e) {
-      System.out.println("Error saving preferences" + e.toString());
+      System.out.println("Error saving preferences" + e);
     }
     control.refresh();
   }
@@ -1228,7 +1287,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     colorBackground = Color.getColor("colorBackground");
     colorOutline = Color.getColor("colorOutline");
     colorSelection = Color.getColor("colorSelection");
+    isLabelAtomColor = Boolean.getBoolean("isLabelAtomColor");
     colorText = Color.getColor("colorText");
+    isBondAtomColor = Boolean.getBoolean("isBondAtomColor");
+    colorBond = Color.getColor("colorBond");
     colorVector = Color.getColor("colorVector");
     styleAtom = (byte)Integer.getInteger("styleAtom").intValue();
     styleLabel = (byte)Integer.getInteger("styleLabel").intValue();
@@ -1256,7 +1318,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     control.setColorOutline(colorOutline);
     control.setColorSelection(colorSelection);
+    control.setIsLabelAtomColor(isLabelAtomColor);
     control.setColorText(colorText);
+    control.setIsBondAtomColor(isBondAtomColor);
+    control.setColorBond(colorBond);
     control.setPercentVdwAtom(percentVdwAtom);
     control.setStyleAtom(styleAtom);
     control.setStyleLabel(styleLabel);
@@ -1281,6 +1346,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setWireframeRotation(wireframeRotation);
     control.setPerspectiveDepth(perspectiveDepth);
     control.setShowDarkerOutline(showDarkerOutline);
+    control.setIsLabelAtomColor(isLabelAtomColor);
+    control.setIsBondAtomColor(isBondAtomColor);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1345,6 +1412,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         control.setShowDarkerOutline(showDarkerOutline);
         props.put("showDarkerOutline", strSelected);
         oButton.setEnabled(!showDarkerOutline);
+      } else if (key.equals("Prefs.isLabelAtomColor")) {
+        isLabelAtomColor = isSelected;
+        control.setIsLabelAtomColor(isLabelAtomColor);
+        props.put("isLabelAtomColor", strSelected);
+        tButton.setEnabled(!isLabelAtomColor);
+      } else if (key.equals("Prefs.isBondAtomColor")) {
+        isBondAtomColor = isSelected;
+        control.setIsBondAtomColor(isBondAtomColor);
+        props.put("isBondAtomColor", strSelected);
+        eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.graphics2D")) {
         graphics2D = isSelected;
         control.setWantsGraphics2D(graphics2D);

@@ -44,19 +44,22 @@ public class AtomShape extends Shape {
   public int[] bondWidths;
   public byte[] styleBonds;
   public int[] madBonds;
+  public Color[] colorBonds;
   public String strLabel;
   
   public AtomShape(Atom atom,
-                   byte styleAtom, int madAtom,
-                   byte styleBond, int madBond,
-                   Color colorAtom, String strLabel) {
+                   byte styleAtom, int madAtom, Color colorAtom,
+                   byte styleBond, int madBond, Color colorBond,
+                   String strLabel) {
     this.atom = atom;
     numBonds = atom.getBondedCount();
     bondWidths = new int[numBonds];
     styleBonds = new byte[numBonds];
     madBonds = new int[numBonds];
+    colorBonds = new Color[numBonds];
     setStyleMadAtom(styleAtom, madAtom);
     setStyleMadAllBonds(styleBond, madBond);
+    setColorAllBonds(colorBond);
     this.colorAtom = colorAtom;
     this.strLabel = strLabel;
   }
@@ -132,6 +135,15 @@ public class AtomShape extends Shape {
 
   public void setColorAtom(Color colorAtom) {
     this.colorAtom = colorAtom;
+  }
+
+  public void setColorAllBonds(Color colorBond) {
+    for (int i = numBonds; --i >= 0; )
+      colorBonds[i] = colorBond;
+  }
+
+  public void setColorBond(Color colorBond, int indexBond) {
+    colorBonds[indexBond] = colorBond;
   }
 
   public void setLabel(String strLabel) {

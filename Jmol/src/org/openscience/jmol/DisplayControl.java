@@ -442,6 +442,15 @@ final public class DisplayControl {
     return colorManager.colorRubberband;
   }
 
+  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
+    colorManager.setIsLabelAtomColor(isLabelAtomColor);
+    refresh();
+  }
+
+  public boolean getIsLabelAtomColor() {
+    return colorManager.isLabelAtomColor;
+  }
+
   public void setColorText(Color c) {
     colorManager.setColorText(c);
     refresh();
@@ -534,6 +543,34 @@ final public class DisplayControl {
 
   public Color getColorTransparent(Color color) {
     return colorManager.getColorTransparent(color);
+  }
+
+  public void setIsBondAtomColor(boolean isBondAtomColor) {
+    setColorBond(null);
+  }
+
+  public boolean getIsBondAtomColor() {
+    return colorManager.isBondAtomColor;
+  }
+
+  public void setColorBond(Color colorBond) {
+    boolean empty = selectionManager.isEmpty();
+    if (empty) {
+      if (colorBond == null)
+        colorManager.setIsBondAtomColor(true);
+      else {
+        colorManager.setIsBondAtomColor(false);
+        colorManager.setColorBond(colorBond);
+      }
+    }
+    if (!modelManager.haveFile)
+      return;
+    styleManager.setColorBond(colorBond, empty ? iterAll() : iterBond());
+    refresh();
+  }
+
+  public Color getColorBond() {
+    return colorManager.colorBond;
   }
 
   /****************************************************************
@@ -1027,14 +1064,6 @@ final public class DisplayControl {
 
   public Font getLabelFont(int diameter) {
     return labelManager.getFont(diameter);
-  }
-
-  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
-    labelManager.setIsLabelAtomColor(isLabelAtomColor);
-  }
-
-  public boolean getIsLabelAtomColor() {
-    return labelManager.isLabelAtomColor;
   }
 
 }

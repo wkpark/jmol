@@ -97,6 +97,21 @@ public class ColorManager {
     return colorRubberband;
   }
 
+  public boolean isBondAtomColor = true;
+  public void setIsBondAtomColor(boolean isBondAtomColor) {
+    this.isBondAtomColor = isBondAtomColor;
+  }
+
+  public Color colorBond = Color.black;
+  public void setColorBond(Color c) {
+    colorBond = c;
+  }
+
+  public boolean isLabelAtomColor;
+  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
+    this.isLabelAtomColor = isLabelAtomColor;
+  }
+
   public Color colorText = Color.black;
   public void setColorText(Color c) {
     colorText = c;

@@ -27,6 +27,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomShape;
 
 import java.awt.Font;
+import java.awt.Color;
 import java.util.BitSet;
 
 public class StyleManager {
@@ -43,8 +44,10 @@ public class StyleManager {
       Atom atom = iter.nextAtom();
       atom.setAtomShape(new AtomShape(atom,
                                       styleAtom, -percentVdwAtom,
-                                      styleBond, percentAngstromBond * 10,
                                       control.getColorAtom(atom),
+                                      styleBond, percentAngstromBond * 10,
+                                      control.getIsBondAtomColor()
+                                      ? null : control.getColorBond(),
                                       control.getLabelAtom(atom)));
     }
   }
@@ -92,6 +95,15 @@ public class StyleManager {
         iter.nextAtom().atomShape.setMadAllBonds(mad);
       else
         iter.nextAtom().atomShape.setMadBond(mad, iter.indexBond());
+    }
+  }
+
+  public void setColorBond(Color colorBond, JmolAtomIterator iter) {
+    while (iter.hasNext()) {
+      if (iter.allBonds())
+        iter.nextAtom().atomShape.setColorAllBonds(colorBond);
+      else
+        iter.nextAtom().atomShape.setColorBond(colorBond, iter.indexBond());
     }
   }
 

@@ -102,8 +102,12 @@ public class BondRenderer {
     dz = z2 - z1; dz2 = dz * dz;
     mag2d2 = dx2 + dy2;
     mag3d2 = mag2d2 + dz2;
-    color1 = atomShape1.colorAtom;
-    color2 = atomShape2.colorAtom;
+    color1 = atomShape1.colorBonds[index1];
+    if (color1 == null)
+      color1 = atomShape1.colorAtom;
+    color2 = atomShape2.colorBonds[index2];
+    if (color2 == null)
+      color2 = atomShape2.colorAtom;
     sameColor = color1.equals(color2);
     if (mag2d2 <= 2 || mag2d2 <= 49 && fastRendering)
       return; // also avoids divide by zero when magnitude == 0

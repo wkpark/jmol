@@ -52,11 +52,6 @@ public class LabelManager {
     return getLabel(styleLabel, atom);
   }
 
-  public boolean isLabelAtomColor;
-  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
-    this.isLabelAtomColor = isLabelAtomColor;
-  }
-
   public String strFontFace = "Helvetica";
   public void setFontFace(String strFontFace) {
     this.strFontFace = strFontFace;

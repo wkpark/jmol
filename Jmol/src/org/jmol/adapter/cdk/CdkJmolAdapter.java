@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003  The Jmol Development Team
+ * Copyright (C) 2003-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -43,15 +43,12 @@ import org.openscience.cdk.Molecule;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.Bond;
+import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.CDKException;
-
 import org.openscience.cdk.geometry.CrystalGeometryTools;
-
-import org.openscience.cdk.tools.AtomTypeFactory;
 import org.openscience.cdk.tools.manipulator.SetOfMoleculesManipulator;
 import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
 import org.openscience.cdk.tools.manipulator.SetOfMoleculesManipulator;
-
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;

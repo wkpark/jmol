@@ -24,7 +24,6 @@
  */
 package org.jmol.adapter.smarter;
 
-import javax.xml.parsers.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -39,52 +38,70 @@ import org.jmol.api.JmolAdapter;
  */
 class CmlReader extends AtomSetCollectionReader {
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)
+    throws Exception {
     atomSetCollection = new AtomSetCollection("cml");
 
     XMLReader xmlr = null;
     // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
-    if (xmlr == null) {
-        try {
-            javax.xml.parsers.SAXParserFactory spf = javax.xml.parsers.SAXParserFactory.newInstance();
-            spf.setNamespaceAware(true);
-            javax.xml.parsers.SAXParser saxParser = spf.newSAXParser();
-            xmlr = saxParser.getXMLReader();
-            System.out.println("Using JAXP/SAX XML parser.");
-        } catch (Exception e) {
-            System.out.println("Could not instantiate JAXP/SAX XML reader: " + e.getMessage());
-        }
-    }
+    if (xmlr == null &&
+        System.getProperty("java.version").compareTo("1.4") >= 0)
+      xmlr = allocateXmlReader14();
     // Aelfred is the first alternative.
+    if (xmlr == null)
+      xmlr = allocateXmlReaderAelfred2();
     if (xmlr == null) {
-        try {
-            xmlr = (XMLReader)this.getClass().getClassLoader().
-                    loadClass("gnu.xml.aelfred2.XmlReader").
-                    newInstance();
-            System.out.println("Using Aelfred2 XML parser.");
-        } catch (Exception e) {
-            System.out.println("Could not instantiate Aelfred2 XML reader!");
-        }
+      System.out.println("No XML reader found");
+      atomSetCollection.errorMessage = "No XML reader found";
+      return atomSetCollection;
     }
     //    System.out.println("opening InputSource");
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
     //    System.out.println("creating CmlHandler");
     CmlHandler cmlh = new CmlHandler();
-
+    
     //    System.out.println("setting features");
     xmlr.setFeature("http://xml.org/sax/features/validation", false);
     xmlr.setFeature("http://xml.org/sax/features/namespaces", true);
     xmlr.setEntityResolver(cmlh);
     xmlr.setContentHandler(cmlh);
     xmlr.setErrorHandler(cmlh);
-
+    
     xmlr.parse(is);
     
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
     }
     return atomSetCollection;
+  }
+
+  XMLReader allocateXmlReader14() {
+    XMLReader xmlr = null;
+    try {
+      javax.xml.parsers.SAXParserFactory spf =
+        javax.xml.parsers.SAXParserFactory.newInstance();
+      spf.setNamespaceAware(true);
+      javax.xml.parsers.SAXParser saxParser = spf.newSAXParser();
+      xmlr = saxParser.getXMLReader();
+      System.out.println("Using JAXP/SAX XML parser.");
+    } catch (Exception e) {
+      System.out.println("Could not instantiate JAXP/SAX XML reader: " +
+                         e.getMessage());
+    }
+    return xmlr;
+  }
+  
+  XMLReader allocateXmlReaderAelfred2() {
+    XMLReader xmlr = null;
+    try {
+      xmlr = (XMLReader)this.getClass().getClassLoader().
+        loadClass("gnu.xml.aelfred2.XmlReader").newInstance();
+      System.out.println("Using Aelfred2 XML parser.");
+    } catch (Exception e) {
+      System.out.println("Could not instantiate Aelfred2 XML reader!");
+    }
+    return xmlr;
   }
 
   class CmlHandler extends DefaultHandler implements ErrorHandler {

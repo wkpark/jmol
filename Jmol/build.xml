@@ -253,6 +253,10 @@
         <include name="**/Quat4f.class"/>
         <include name="**/Point4f.class"/>
         <include name="**/Point3d.class"/>
+        <include name="**/Point4d.class"/>
+        <include name="**/Tuple2d.class"/>
+        <include name="**/Point2d.class"/>
+        <include name="**/Matrix3d.class"/>
         <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>

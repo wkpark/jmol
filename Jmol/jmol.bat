@@ -9,8 +9,8 @@
  rem
  rem Use this line if you have jdk1.1.x, rem it out otherwise:
  rem
- rem %JAVA_HOME%\bin\java -classpath %JMOL_HOME%\jars\jmol.jar;%JAVA_HOME%\lib\classes.zip;%JMOL_HOME%\jars\swing.jar;%JMOL_HOME%\jars\multi.jar;%JMOL_HOME%\jars\sax.jar;%JMOL_HOME%\jars\aelfred.jar;%JMOL_HOME\jars\cml.jar;%JMOL_HOME%\jars\Acme.jar -Djmol.home=%JMOL_HOME% org.openscience.jmol.Jmol
+ rem %JAVA_HOME%\bin\java -classpath %JMOL_HOME%\jars\jmol.jar;%JAVA_HOME%\lib\classes.zip;%JMOL_HOME%\jars\swing.jar;%JMOL_HOME%\jars\multi.jar;%JMOL_HOME%\jars\sax.jar;%JMOL_HOME%\jars\aelfred.jar;%JMOL_HOME\jars\cml.jar;%JMOL_HOME%\jars\Acme.jar;%JMOL_HOME%\jars\plot.jar -Djmol.home=%JMOL_HOME% org.openscience.jmol.Jmol
  rem
  rem Use this line if you have jdk1.2.x, rem it out otherwise:
  rem
- %JAVA_HOME%\bin\java -classpath %JMOL_HOME%\jars\jmol.jar;%JMOL_HOME%\jars\sax.jar;%JMOL_HOME%\jars\aelfred.jar;%JMOL_HOME%\jars\cml.jar;%JMOL_HOME%\jars\Acme.jar -Djmol.home=%JMOL_HOME% org.openscience.jmol.Jmol
+ %JAVA_HOME%\bin\java -classpath %JMOL_HOME%\jars\jmol.jar;%JMOL_HOME%\jars\sax.jar;%JMOL_HOME%\jars\aelfred.jar;%JMOL_HOME%\jars\cml.jar;%JMOL_HOME%\jars\Acme.jar;%JMOL_HOME%\jars\plot.jar -Djmol.home=%JMOL_HOME% org.openscience.jmol.Jmol

@@ -33,11 +33,11 @@ export JAVA_COMPILER
 #
 # This classpath line should be OK for JDK 1.2.  Comment it out if you have 1.1
 #
-CLASSPATH=${JMOL_HOME}/jars/jmol.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar
+CLASSPATH=${JMOL_HOME}/jars/jmol.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/plot.jar
 #
 # This classpath line should be OK for JDK 1.1.  Comment it out if you have 1.2
 #
-#CLASSPATH=$JMOL_HOME/jars/jmol.jar:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:$JMOL_HOME/jars/swing.jar:$JMOL_HOME/jars/multi.jar:$JMOL_HOME/jars/sax.jar:$JMOL_HOME/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar
+#CLASSPATH=$JMOL_HOME/jars/jmol.jar:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:$JMOL_HOME/jars/swing.jar:$JMOL_HOME/jars/multi.jar:$JMOL_HOME/jars/sax.jar:$JMOL_HOME/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/plot.jar
 #
 ####################################################################
 #

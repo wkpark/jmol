@@ -129,6 +129,10 @@ public class ModelManager {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
+  public String getModelTag(int modelIndex) {
+    return (frame == null) ? null : frame.getModelTag(modelIndex);
+  }
+
   public int getModelIndex(String modelTag) {
     return (frame == null) ? -1 : frame.getModelIndex(modelTag);
   }

@@ -2886,7 +2886,10 @@ public class Eval implements Runnable {
   }
 
   void showModel() {
-    showString("model count=" + viewer.getModelCount());
+    int modelCount = viewer.getModelCount();
+    showString("model count = " + modelCount);
+    for (int i = 0; i < modelCount; ++i)
+      showString("" + i + ":" + viewer.getModelTag(i));
   }
 
   void showAnimation() {

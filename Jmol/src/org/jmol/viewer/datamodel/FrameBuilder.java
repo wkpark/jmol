@@ -125,8 +125,32 @@ final public class FrameBuilder {
     //    System.out.println("Build a frame:" + msToBuild + " ms");
     adapter.finish(clientFile);
     finalizeBuild();
+    dumpAtomSetNameDiagnostics(clientFile, frame);
     return frame;
   }
+
+  void dumpAtomSetNameDiagnostics(Object clientFile, Frame frame) {
+    int frameModelCount = frame.getModelCount();
+    int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
+    System.out.println("----------------\n" +
+                       "debugging of AtomSetName stuff\n" +
+                       "\nframeModelCount=" + frameModelCount +
+                       "\nadapterAtomSetCount=" + adapterAtomSetCount +
+                       "\n -- \n"
+                       );
+    for (int i = 0; i < adapterAtomSetCount; ++i) {
+      System.out.println("atomSetName[" + i + "]=" +
+                         adapter.getAtomSetName(clientFile, i) +
+                         " atomSetNumber[" + i + "]=" +
+                         adapter.getAtomSetNumber(clientFile, i));
+                         
+    }
+    for (int i = 0; i < frameModelCount; ++i) {
+      System.out.println("frame.getModelTag(" + i + ") => " +
+                         frame.getModelTag(i));
+    }
+  }
+
 
   private final static int ATOM_GROWTH_INCREMENT = 2000;
 

@@ -99,6 +99,10 @@ final public class Mmset {
     return model;
   }
 
+  String getModelTag(int modelIndex) {
+    return modelTags[modelIndex];
+  }
+
   int getModelIndex(String modelTag) {
     int i;
     for (i = modelCount; --i >= 0 && !modelTags[i].equals(modelTag); )

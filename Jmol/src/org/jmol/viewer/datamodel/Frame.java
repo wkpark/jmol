@@ -181,6 +181,10 @@ final public class Frame {
     return mmset.getModelCount();
   }
 
+  public String getModelTag(int modelIndex) {
+    return mmset.getModelTag(modelIndex);
+  }
+
   public int getModelIndex(String modelTag) {
     return mmset.getModelIndex(modelTag);
   }

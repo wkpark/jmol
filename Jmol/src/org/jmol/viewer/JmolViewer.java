@@ -1127,6 +1127,10 @@ final public class JmolViewer {
     return modelManager.getModelCount();
   }
 
+  public String getModelTag(int modelIndex) {
+    return modelManager.getModelTag(modelIndex);
+  }
+
   public int getChainCount() {
     return modelManager.getChainCount();
   }

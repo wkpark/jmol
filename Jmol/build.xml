@@ -26,8 +26,8 @@
   <property name="apisio.classes.dir" value="build/apisio-classes" />
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="javadoc" />
-  <property name="docbook-xsl" value="docbook-xsl-1.67.2" />
-  <property name="docbook-xml" value="docbook-xml-4.3" />
+  <property name="docbook-xsl" value="docbook-xsl-1.68.0" />
+  <property name="docbook-xml" value="docbook-xml-4.4" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
   <property name="keystore.name" value="Must be set by user." />

@@ -315,9 +315,8 @@ class ColorManager {
       index = quantize(0,
                        atom.getPolymerLength(),
                        atom.getPolymerIndex(),
-                       JmolConstants.argbsRwbScale.length);
-      index = JmolConstants.argbsRwbScale.length - index - 1;
-      argb = JmolConstants.argbsRwbScale[index];
+                       JmolConstants.argbsGroupScale.length);
+      argb = JmolConstants.argbsGroupScale[index];
       break;
     }
     if (argb == 0)

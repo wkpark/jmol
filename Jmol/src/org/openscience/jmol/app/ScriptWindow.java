@@ -60,6 +60,7 @@ public final class ScriptWindow extends JDialog
   private JButton closeButton;
   private JButton runButton;
   private JButton haltButton;
+  private JButton clearButton;
   private JButton helpButton;
   JmolViewer viewer;
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
@@ -67,7 +68,7 @@ public final class ScriptWindow extends JDialog
     super(frame, "Rasmol Scripts", false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
-    setSize(300, 400);
+    setSize(500, 400);
     setLocationRelativeTo(frame);
   }
 
@@ -95,6 +96,10 @@ public final class ScriptWindow extends JDialog
     haltButton.addActionListener(this);
     buttonPanel.add(haltButton);
     haltButton.setEnabled(false);
+
+    clearButton = new JButton(JmolResourceHandler.translateX("Clear"));
+    clearButton.addActionListener(this);
+    buttonPanel.add(clearButton);
 
     helpButton = new JButton(JmolResourceHandler.translateX("Help"));
     helpButton.addActionListener(this);
@@ -148,6 +153,9 @@ public final class ScriptWindow extends JDialog
       hide();
     } else if (source == runButton) {
       executeCommand();
+    } else if (source == clearButton) {
+      System.out.println("clearing content of script window.");
+      console.clearContent();
     } else if (source == haltButton) {
       System.out.println("calling viewer.haltScriptExecution();");
       viewer.haltScriptExecution();
@@ -210,6 +218,10 @@ class ConsoleTextPane extends JTextPane {
       enterListener.enterPressed();
   }
   
+  public void clearContent() {
+    consoleDoc.clearContent();
+  }
+
   
   
    /* (non-Javadoc)
@@ -329,6 +341,18 @@ class ConsoleDocument extends DefaultStyledDocument {
   Position positionBeforePrompt;
   int offsetAfterPrompt;
 
+  /** 
+   * Removes all content of the script window, and add a new prompt.
+   */
+  void clearContent() {
+      try {
+          super.remove(0, getLength());
+      } catch (javax.swing.text.BadLocationException exception) {
+          System.out.println("Could not clear script window content: " + exception.getMessage());
+      }
+      setPrompt();
+  }
+  
   void setPrompt() {
     try {
       super.insertString(getLength(), "$ ", attPrompt);

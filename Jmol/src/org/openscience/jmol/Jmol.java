@@ -130,7 +130,7 @@ class Jmol extends JPanel {
         splash.showStatus("Initializing Vibrate...");
         vib = new Vibrate(frame, display);
         splash.showStatus("Initializing Property Graph...");
-        pg = new PropertyGraph(frame, display);
+        pg = new PropertyGraph(frame);
         splash.showStatus("Initializing Measurements...");
         mlist = new MeasurementList(frame, display);
         meas = new Measure(frame, display);

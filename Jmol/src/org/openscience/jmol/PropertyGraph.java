@@ -2,41 +2,32 @@
  * PropertyGraph.java
  *
  */
+
 package org.openscience.jmol;
 
+import jas.hist.*;
+import jas.plot.PrintHelper;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.*;
-import java.io.File;
 import java.util.*;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import ptolemy.plot.*;
 
-public class PropertyGraph extends JDialog {
-
-    private Plot plotter;
+public class PropertyGraph extends JDialog implements ActionListener {
 
     /**
      * Creates a dialog. 
      *
      * @param f the parent frame
-     * @param dp the displayPanel in which the vibration will be displayed
      */
-    public PropertyGraph(JFrame f, displayPanel dp) {
+    public PropertyGraph(JFrame f) {
         super(f, "Property Graph", false);
-        display = dp;
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
-        /* Put all of the UI stuff here */
-        plotter = new Plot();
-        plotter.setSize(560,385);  
-        container.add(plotter);
+        gl = new GridLayout(1,0);
+        panel = new JPanel(gl);
         
+        setContentPane(panel);
+        setSize(500,500);        
         addWindowListener(new GraphWindowListener());
-        getContentPane().add(container);
         pack();
         centerDialog();
     }
@@ -87,32 +78,38 @@ public class PropertyGraph extends JDialog {
     public void findData() {        
         if (hasGraphableProperties) {
             
-            plotter.setTitle("Properties vs. Frame Number");
-            
-            for (int j = 0; j < GPs.size(); j++ ) {
+            int nGraphs = GPs.size();
+            int nPoints = inputFile.nFrames();
+
+            gl.setRows(nGraphs);
+
+            double[][] data = new double[nGraphs][nPoints];
+            String[] titles = new String[nGraphs];
+            JASHist[] graphs = new JASHist[nGraphs];
+
+            for (int j = 0; j < nGraphs; j++ ) {
                 String desc = (String)GPs.elementAt(j);
+
+                titles[j] = new String(desc);
+                graphs[j] = new JASHist();
                 
-                plotter.addLegend(j, desc);
-                
-                for (int i = 0; i < inputFile.nFrames(); i++) {
+                for (int i = 0; i < nPoints; i++) {
                     Vector fp = inputFile.getFrame(i).getFrameProps();
                     for (Enumeration ef = fp.elements() ; 
                          ef.hasMoreElements() ;) {
-                        PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
-                        
+
+                        PhysicalProperty pf = (PhysicalProperty) ef.nextElement();                        
                         if (pf.getDescriptor().equals(desc)) {
-                            
-                            plotter.addPoint(j,
-                                             (new Double(i+1)).doubleValue(),
-                                             ((Double)pf.getProperty()).doubleValue(),
-                                             true);
+                            data[j][i] = ((Double)pf.getProperty()).doubleValue();
                         }
                     }
                 }
             }
-            plotter.fillPlot();
-            plotter.setMarksStyle("dots");
-            plotter.setConnected(true);                
+            for (int j = 0; j < nGraphs; j++ ) {
+                graphs[j].addData(new ArrayDataSource(data[j], 
+                                                      titles[j])).show(true);
+                panel.add(graphs[j]);
+            }
         }
     }       
         
@@ -140,9 +137,12 @@ public class PropertyGraph extends JDialog {
      * @return the Dimension preferred by the dialog
      */
     public Dimension getPreferredSize() {
-        return new Dimension(580, 450);
+        return new Dimension(500, 500);
     }
-    
+
+    public void actionPerformed(ActionEvent evt) {
+    }
+
     /**
      * Centers the dialog on the screen.
      */
@@ -253,11 +253,10 @@ public class PropertyGraph extends JDialog {
         }
     }
     
-    /**
-     * Reference to the panel for displaying frames. Used to load and unload
-     * the vibration ChemFile, and to set the frame to be displayed.
-     */
-    private displayPanel display;
+
+    private JPanel panel;
+    private GridLayout gl;
+        
     /**
      * Does the dialog have any vibration data.
      */
@@ -289,4 +288,134 @@ public class PropertyGraph extends JDialog {
      * Resource handler for loading interface strings and icons.
      */
     private static JmolResourceHandler jrh = new JmolResourceHandler("Graph");
+}
+
+class ArrayDataSource implements ScatterPlotSource {
+    
+    ArrayDataSource(double[] xData, double[] yData, String title) {
+        this.xData = xData;
+        this.yData = yData;
+        this.title = title;
+        init();
+    }
+    
+    ArrayDataSource(double[] yData, String title) {
+        xData = new double[yData.length];
+        for (int i = 0; i < yData.length; i++) {
+            xData[i] = (new Double(i)).doubleValue();
+        }
+        this.yData = yData;
+        this.title = title;
+        init();
+    }
+
+    private void init() {
+        xAxisType = DOUBLE;
+        yAxisType = DOUBLE;
+        xmin = xData[0];
+        xmax = xmin;
+        ymin = yData[0];
+        ymax = ymin;
+        for (int i=1; i < xData.length; i++) {
+            if (xData[i] < xmin) xmin = xData[i];
+            if (xData[i] > xmax) xmax = xData[i];
+            if (yData[i] < ymin) ymin = yData[i];
+            if (yData[i] > ymax) ymax = yData[i];
+        }        
+    }
+
+    public double getXMin() { return xmin; }
+    public double getXMax() { return xmax; }
+    public double getYMin() { return ymin; }
+    public double getYMax() { return ymax; }
+    public int getXAxisType() { return xAxisType; }
+    public int getYAxisType() { return yAxisType; }
+    
+    public java.lang.String getTitle() { 
+        if (title != null) return title;
+        return null;
+    }
+
+    public ScatterEnumeration startEnumeration(double xMin, 
+                                               double xMax, 
+                                               double yMin, 
+                                               double yMax) {
+        return new FixedEnumeration(xData, yData, xMin, xMax, yMin, yMax);
+    }
+
+    public ScatterEnumeration startEnumeration() {
+        return new FixedEnumeration(xData, yData);
+    }
+    
+    private double xmin;
+    private double xmax;
+    private double ymin;
+    private double ymax;
+    private int xAxisType;
+    private int yAxisType;
+    private String title;
+    private double[] xData;
+    private double[] yData;
+     
+    private class FixedEnumeration implements ScatterEnumeration {
+        public FixedEnumeration(double[] xdata, double[] ydata) {
+            this.xdata = xdata;
+            this.ydata = ydata;
+            selectAll = true;
+        }
+        public FixedEnumeration(double[] xdata, double[] ydata, 
+                                double xMin, double xMax, 
+                                double yMin, double yMax) {
+            this.xdata = xdata;
+            this.ydata = ydata;
+            selectAll = false;
+            m_xmin = xMin;
+            m_xmax = xMax;
+            m_ymin = yMin;
+            m_ymax = yMax;
+        }
+        public boolean getNextPoint(double[] a) {
+            if (selectAll) {
+                if (pos < (xdata.length - 1)) {
+                    a[0] = xdata[pos];
+                    a[1] = ydata[pos++];
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                while (!((xdata[pos] >= m_xmin) && (xdata[pos] <= m_xmax) &&
+                         (ydata[pos] >= m_ymin) && (ydata[pos] <= m_ymax))) {
+                    //skip points that don't satisfy the conditions
+                    pos++;
+                    if (pos > (xdata.length - 1)) {
+                        // if no more points left (don't want to overstep 
+                        // bounds)
+                        return false;
+                    }
+                }
+                // okay, if we're here the point satisfies the min 
+                // and max conditions
+                a[0] = xdata[pos];
+                a[1] = ydata[pos++];
+                return true;
+            }
+        }
+        public void resetEndPoint() {
+            //what does this do?
+            //(it seems like Gauss2D.java doesn't know what to do here either)
+        }
+        public void restart() {
+            pos = 0;
+        }  
+        
+        private int pos = 0;
+        private double[] xdata;
+        private double[] ydata;
+        private boolean selectAll;
+        private double m_xmin;
+        private double m_xmax;
+        private double m_ymin;
+        private double m_ymax;
+    }      
 }

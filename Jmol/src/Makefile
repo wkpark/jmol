@@ -1,8 +1,10 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-           JAVA_HOME= /usr/local/java/jdk1.2.2
+           JAVA_HOME= /usr/local/jdk1.2.2
                JIKES= /usr/local/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
+# Choose a compiler here:
+                  JC=$(JIKES)
                 JAVA= $(JAVA_HOME)/bin/java
                  JAR= $(JAVA_HOME)/bin/jar
              JAVADOC= $(JAVA_HOME)/bin/javadoc -private
@@ -10,11 +12,11 @@
 #
 #           Java 1.2 classpath:
 #
-           CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar:${JMOL_HOME}/jars/plot.jar
+           CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar:${JMOL_HOME}/jars/jas.jar
 #
 #           Java 1.1 classpath:
 #
-#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar:${JMOL_HOME}/jars/plot.jar
+#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar:${JMOL_HOME}/jars/jas.jar
 #
 # put Jmol.java first, so that compilation is fast
 #
@@ -141,7 +143,7 @@ TEST_CLASSES = $(TEST_SOURCES:%.java=%.class)
 #
 %.class: %.java
 	@echo "compiling $*"
-	$(JAVAC) -classpath $(CLASSPATH) -O -deprecation $<
+	$(JC) -classpath $(CLASSPATH) -O -deprecation $<
 
 all: archive applet_archive
 

@@ -21,8 +21,8 @@ install: application
 	install ./jars/*jar ${LIBS}
 
 deb:	
-	ant dist.tar.gz	
-	cp jmol-${VERSION}.tar.gz /tmp/.
+	ant sourcedist.tar.gz	
+	cp jmol-${VERSION}.source.tar.gz /tmp/jmol_${VERSION}.tar.gz
 	cd /tmp; tar zxvf jmol-${VERSION}.tar.gz
 	cp Makefile.Debian /tmp/jmol-${VERSION}/.
 	cp -R debian /tmp/jmol-${VERSION}/.

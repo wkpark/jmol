@@ -112,9 +112,6 @@ public abstract class MouseManager {
     case RIGHT:
       viewer.popupMenu(x, y);
       return;
-    case MIDDLE:
-      viewer.zoomToPercent(100);
-      return;
     case SHIFT_MIDDLE:
       viewer.homePosition();
       return;
@@ -137,7 +134,8 @@ public abstract class MouseManager {
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
   final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
-  final static int BUTTON_MODIFIER_MASK = CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
+  final static int BUTTON_MODIFIER_MASK =
+    CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
 
   void mouseClicked(int x, int y, int modifiers, int clickCount) {
     xCurrent = x; yCurrent = y;
@@ -296,6 +294,9 @@ public abstract class MouseManager {
   void singleLeftClick(int atomIndex) {
     if (measurementMode) {
       addToMeasurement(atomIndex, false);
+    } else {
+      if (atomIndex != -1)
+        viewer.notifyPicked(atomIndex);
     }
   }
 

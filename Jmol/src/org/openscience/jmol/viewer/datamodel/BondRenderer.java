@@ -89,23 +89,30 @@ class BondRenderer extends Renderer {
   }
 
   void render(Bond bond) {
-    styleBond = bond.style;
+    this.styleBond = bond.style;
     if (styleBond == JmolConstants.STYLE_NONE)
       return;
     int order = bond.order;
-    Atom atomA, atomB;
-    if (bondsBackbone &&
-        ((ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) ||
-         (hbondsBackbone && (order & JmolConstants.BOND_HYDROGEN) != 0))) {
-      atomA = getBackboneAtom(bond.atom1);
-      atomB = getBackboneAtom(bond.atom2);
-    } else {
-      atomA = bond.atom1;
-      atomB = bond.atom2;
-      if (!showHydrogens && (atomA.atomicNumber == 1 ||
-                             atomB.atomicNumber == 1))
-        return;
+    Atom atomA = bond.atom1;
+    Atom atomB = bond.atom2;
+    if (bondsBackbone) {
+      if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
+        // for ssbonds, always render the sidechain, then render the backbone version
+        render(bond, atomA, atomB);
+        atomA = getBackboneAtom(atomA);
+        atomB = getBackboneAtom(atomB);
+      } else if (hbondsBackbone && (order & JmolConstants.BOND_HYDROGEN) != 0) {
+        atomA = getBackboneAtom(atomA);
+        atomB = getBackboneAtom(atomB);
+      }
     }
+    if (!showHydrogens && (atomA.atomicNumber == 1 ||
+                           atomB.atomicNumber == 1))
+      return;
+    render(bond, atomA, atomB);
+  }
+
+  void render(Bond bond, Atom atomA, Atom atomB) {
     this.atomA = atomA;
     xA = atomA.x; yA = atomA.y; zA = atomA.z;
     this.atomB = atomB;
@@ -119,7 +126,7 @@ class BondRenderer extends Renderer {
       colixA = atomA.colixAtom;
       colixB = atomB.colixAtom;
     }
-    bondOrder = getRenderBondOrder(order);
+    bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {
     case 1:
     case 2:

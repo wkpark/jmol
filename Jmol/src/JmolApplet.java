@@ -25,7 +25,6 @@
 
 import org.openscience.jmol.applet.*;
 import org.jmol.viewer.*;
-import org.jmol.api.JmolAdapter;
 import org.jmol.viewer.JmolStatusListener;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 //import org.openscience.jmol.adapters.CdkJmolAdapter;
@@ -35,11 +34,6 @@ import netscape.javascript.JSObject;
 
 import java.applet.*;
 import java.awt.*;
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.util.PropertyResourceBundle;
-import java.util.MissingResourceException;
 
 /*
   these are *required*

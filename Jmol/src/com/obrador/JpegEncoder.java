@@ -14,12 +14,10 @@
 
 package com.obrador;
 
-import java.applet.Applet;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import java.util.*;
-import java.lang.*;
 
 /*
 * JpegEncoder - The JPEG main program which performs a jpeg compression of

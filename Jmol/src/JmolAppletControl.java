@@ -24,13 +24,10 @@
  */
 
 import java.applet.*;
-import org.openscience.jmol.applet.*;
 import java.awt.*;
 import java.awt.Event;
 import java.util.*;
 import org.jmol.g3d.Graphics3D;
-
-import netscape.javascript.JSObject;
 
 public class JmolAppletControl extends Applet {
 

@@ -10,6 +10,9 @@
     <delete dir="${build.dir}"/>
   </target>
 
+  <target name="spotless" depends="clean">
+  </target>
+
   <target name="doc" >
     <mkdir    dir="${doc.dir}/images"/>
     <mkdir    dir="${build.doc}"/>

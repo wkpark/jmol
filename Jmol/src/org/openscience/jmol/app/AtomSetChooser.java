@@ -628,7 +628,7 @@ ActionListener, ChangeListener, Runnable {
     treeModel.setRoot(root);
     treeModel.reload(); 
     // make sure that we start with the whole set selected
-    tree.setSelectionPath(tree.getPathForRow(0));
+//    tree.setSelectionPath(tree.getPathForRow(0));
     // en/dis able the tree and selec slider based on # of atomsets
     boolean haveChildren = root.getChildCount()>0;
     tree.setEnabled(haveChildren);

@@ -152,11 +152,16 @@ class PdbReader extends AtomSetCollectionReader {
        ****************************************************************/
       int charge = 0;
       if (lineLength >= 80) {
-        char chMag = line.charAt(78);
+        char chMagnitude = line.charAt(78);
         char chSign = line.charAt(79);
-        if (chMag >= '0' && chMag <= '7' &&
-            (chSign == '+' || chSign == '-' || chSign == ' ')) {
-          charge = chMag - '0';
+        if (chSign >= '0' && chSign <= '7') {
+          char chT = chSign;
+          chSign = chMagnitude;
+          chMagnitude = chT;
+        }
+        if ((chSign == '+' || chSign == '-' || chSign == ' ') &&
+            chMagnitude >= '0' && chMagnitude <= '7') {
+          charge = chMagnitude - '0';
           if (chSign == '-')
             charge = -charge;
         }

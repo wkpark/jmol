@@ -658,39 +658,85 @@ public class BondRenderer {
   }
 
   
-  int xL, yL, dxL, dyL, lenL;
-  int xR, yR, dxR, dyR, lenR;
+  int pctLight = 50;
+
+  void calcLightPoint(int dxSlope, int dySlope) {
+    /*
+      mth
+      Well, I tried for a while and could not figure it out,
+      maybe some other day ... or somebody else
+
+      we need to calculate the factor 
+      
+    double mag = Math.sqrt(dxSlope*dxSlope + dySlope*dySlope);
+    double cos = dxSlope / mag;
+    double angle = Math.acos(cos);
+    angle += Math.PI / 4;
+    factorTop = 50 + (int)(Math.cos(angle) * 40);
+    System.out.println(" dxSlope="+dxSlope+
+                       " dySlope="+dySlope+
+                       " factorTop="+factorTop);
+    */
+  }
+
+  int xL, yL, dxL, dyL;
+  int dxLTop, dyLTop, dxLBot, dyLBot;
+  int xR, yR, dxR, dyR;
+  int dxRTop, dyRTop, dxRBot, dyRBot;
   int step, lenMax;
 
   int calcNumShadeSteps() {
+    int dxSlope = axPoly[1] - axPoly[0];
+    int dySlope = ayPoly[1] - ayPoly[0];
+    calcLightPoint(dxSlope, dySlope);
+    if (dxSlope < 0) dxSlope = -dxSlope;
+    if (dySlope < 0) dySlope = -dySlope;
+
     xL = axPoly[0]; yL = ayPoly[0];
     dxL = axPoly[3] - xL; dyL = ayPoly[3] - yL;
-    lenL = (int)Math.sqrt(dxL*dxL + dyL*dyL);
+    int lenL = (int)Math.sqrt(dxL*dxL + dyL*dyL);
+    int lenLTop = lenL * pctLight / 100;
+    int lenLBot = lenL - lenLTop;
+    dxLTop = dxL * pctLight / 100;
+    dxLBot = dxL - dxLTop;
+    dyLTop = dyL * pctLight / 100;
+    dyLBot = dyL - dyLTop;
+
     xR = axPoly[1]; yR = ayPoly[1];
     dxR = axPoly[2] - xR; dyR = ayPoly[2] - yR;
-    lenR = (int)Math.sqrt(dxR*dxR + dyR+dyR);
-    lenMax = lenL;
-    if (lenR > lenMax)
-      lenMax = lenR;
+    int lenR = (int)Math.sqrt(dxR*dxR + dyR+dyR);
+    int lenRTop = lenR * pctLight / 100;
+    int lenRBot = lenR - lenRTop;
+    dxRTop = dxR * pctLight / 100;
+    dxRBot = dxR - dxRTop;
+    dyRTop = dyR * pctLight / 100;
+    dyRBot = dyR - dyRTop;
+
     step = 0;
-    return lenMax / 2;
+    lenMax = Math.max(Math.max(lenLTop, lenLBot), Math.max(lenRTop, lenRBot));
+    return lenMax;
   }
 
   void stepPolygon() {
     ++step;
-    int dxStepL = dxL * step / (lenMax - 1);
-    int dyStepL = dyL * step / (lenMax - 1);
-    int dxStepR = dxR * step / (lenMax - 1);
-    int dyStepR = dyR * step / (lenMax - 1);
+    int dxStepLTop = dxLTop * step / (lenMax - 1);
+    int dyStepLTop = dyLTop * step / (lenMax - 1);
+    int dxStepLBot = dxLBot * step / (lenMax - 1);
+    int dyStepLBot = dyLBot * step / (lenMax - 1);
 
-    axPoly[0] = xL + dxStepL;
-    ayPoly[0] = yL + dyStepL;
-    axPoly[1] = xR + dxStepR;
-    ayPoly[1] = yR + dyStepR;
-    axPoly[2] = xR + dxR - dxStepR;
-    ayPoly[2] = yR + dyR - dyStepR;
-    axPoly[3] = xL + dxL - dxStepL;
-    ayPoly[3] = yL + dyL - dyStepL;
+    int dxStepRTop = dxRTop * step / (lenMax - 1);
+    int dyStepRTop = dyRTop * step / (lenMax - 1);
+    int dxStepRBot = dxRBot * step / (lenMax - 1);
+    int dyStepRBot = dyRBot * step / (lenMax - 1);
+
+    axPoly[0] = xL + dxStepLTop;
+    ayPoly[0] = yL + dyStepLTop;
+    axPoly[1] = xR + dxStepRTop;
+    ayPoly[1] = yR + dyStepRTop;
+    axPoly[2] = xR + dxR - dxStepRBot;
+    ayPoly[2] = yR + dyR - dyStepRBot;
+    axPoly[3] = xL + dxL - dxStepLBot;
+    ayPoly[3] = yL + dyL - dyStepLBot;
   }
 }
 

@@ -135,8 +135,7 @@ public class Cylinder25D {
     int diameter;
     int dx, dy, dz;
 
-    boolean tEven;
-    int evenCorrection;
+    boolean tEven; // to apply correction
 
     short colix;
     int[] shades;
@@ -162,8 +161,7 @@ public class Cylinder25D {
       int mag3d2 = mag2d2 + dz*dz;
       int mag3d = (int)(Math.sqrt(mag3d2) + 0.5);
       this._2a = this.diameter = diameter;
-      tEven = (diameter & 1) == 1;
-      evenCorrection = (diameter & 1) - 1;
+      tEven = (diameter & 1) == 0;
       this._2b = diameter - diameter * mag2d / mag3d;
       this.radius2 = ((diameter * diameter) + 2) / 4;
 
@@ -459,6 +457,8 @@ public class Cylinder25D {
 
     void render(short colix1, short colix2,
                 int x, int y, int z, int dx, int dy, int dz) {
+      System.out.println("cylinder (" + x + "," + y + "," + z + ") -> ("
+                         + dx + "," + dy + "," + dz + " diameter=" + diameter);
       int[] shades1 = Colix.getShades(colix1);
       int[] shades2 = Colix.getShades(colix2);
       if (tLine) {
@@ -471,13 +471,17 @@ public class Cylinder25D {
         int z0 = raster[i+2];
         int intensity = raster[i+3];
         g25d.plotLineDelta(shades1[intensity], shades2[intensity],
-                           x + ((x0 > 0 && tEven) ? x0 - 1 : x0),
-                           y + ((y0 > 0 && tEven) ? y0 - 1 : y0),
+                           //                           x + ((x0 > 0 && tEven) ? x0 - 1 : x0),
+                           //                           y + ((y0 > 0 && tEven) ? y0 - 1 : y0),
+                           x + x0,
+                           y + y0,
                            z + z0,
                            dx, dy, dz);
         g25d.plotLineDelta(shades1[intensity], shades2[intensity],
-                           x - ((x0 < 0 && tEven) ? x0 - 1 : x0),
-                           y - ((y0 < 0 && tEven) ? y0 - 1 : y0),
+                           //                           x - ((x0 < 0 && tEven) ? x0 + 1 : x0),
+                           //                           y - ((y0 < 0 && tEven) ? y0 + 1 : y0),
+                           x - x0,
+                           y - y0,
                            z - z0,
                            dx, dy, dz);
       }
@@ -520,6 +524,8 @@ public class Cylinder25D {
 
     void plotEdgewiseCylinder(int[] shades1, int[] shades2,
                               int x1, int y1, int x2, int y2) {
+      System.out.println("plotEdgewiseCylinder (" + x1 + "," + y1 + ") -> (" + x2 + "," + y2
+                         + ")");
       this.shades1 = shades1;
       this.shades2 = shades2;
 
@@ -581,5 +587,17 @@ public class Cylinder25D {
       g25d.plotLineDelta(shades1[intensity], shades2[intensity],
                          xOrigin + x, yOrigin + y, zOrigin - z, dx, dy, dz);
     }
+  }
+
+  int onTheSameSide(int xA, int yA, int xB, int yB, int x1, int y1, int x2, int y2) {
+    int dyAB = yA - yB;
+    int dxAB = xA - xB;
+    int n1 = (x1 - xB)*dyAB - (y1 - yB)*dxAB;
+    if (n1 == 0)
+      return 0;
+    int n2 = (x2 - xB)*dyAB - (y2 - yB)*dxAB;
+    if (n2 == 0)
+      return 0;
+    return ((n1 > 0) ^ (n2 > 0)) ? 1 : -1;
   }
 }

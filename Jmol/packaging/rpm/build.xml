@@ -2,8 +2,8 @@
   <property file="${user.home}/.jmol.build.properties" />
 
   <property name="name" value="jmol" />
-  <property name="version" value="6" />
-  <property name="release" value="1" />
+  <property name="version" value="7" />
+  <property name="release" value="0" />
   <property name="jmol.source"
     value="../../build/${name}-${version}.source.tar.gz" />
   <property name="dist.dir" value="${basedir}/dist" />

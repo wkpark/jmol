@@ -240,7 +240,9 @@ public class BondRenderer {
   }
 
   void cylinderBond() {
-    g25d.fillCylinder(colix1, colix2, (width1 + width2) / 2,
+    int w = (width1 + width2) / 2;
+    drawEndCaps(w);
+    g25d.fillCylinder(colix1, colix2, w,
                       xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
   }
 
@@ -336,10 +338,18 @@ public class BondRenderer {
       drawEndCap(xAxis2, yAxis2, zAxis2, width2, colix2, outline2);
   }
 
+  void drawEndCaps(int w) {
+    if (!showAtoms || (styleAtom1 == DisplayControl.NONE))
+      drawEndCap(xAxis1, yAxis1, zAxis1, w, colix1, outline1);
+    if (!showAtoms || (styleAtom2 == DisplayControl.NONE))
+      drawEndCap(xAxis2, yAxis2, zAxis2, w, colix2, outline2);
+  }
+
   void drawEndCap(int x, int y, int z, int diameter,
                   short colix, short outline) {
+    System.out.println("drawEndCap (" + x + "," + y + "," + z + ") diameter=" + diameter);
     if (styleBond == DisplayControl.SHADING)
-      g25d.fillCircleCentered(outline, colix, x, y, z, diameter);
+      g25d.fillSphereCentered(outline, colix, x, y, z, diameter);
     else if (styleBond == DisplayControl.QUICKDRAW)
       g25d.fillCircleCentered(outline, colix, x, y, z, diameter);
   }

@@ -40,7 +40,7 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Float;
 import java.awt.RenderingHints;
 import java.util.Enumeration;
-import java.util.HashMap;
+import java.util.Hashtable;
 
 import java.awt.GradientPaint;
 import java.awt.Paint;
@@ -85,7 +85,7 @@ public class AtomShape implements Shape {
       if ((showHydrogens || !otherAtom.isHydrogen()) &&
           (z > zOther) ||
           ((z==zOther) && (atom.getAtomNumber() > otherAtom.getAtomNumber())))
-        renderBond(g2, atom, otherAtom);
+        renderBond(g, atom, otherAtom);
     }
   }
   
@@ -108,12 +108,12 @@ public class AtomShape implements Shape {
   private static Color outlineColor;
   private static Color pickedColor;
   private static Color backgroundColor;
-  private static Graphics2D g2;
+  private static Graphics g;
   private static ColorProfile colorProfile;
 
-  public static void prepareRendering(Graphics g, Rectangle rectClip,
+  public static void prepareRendering(Graphics gc, Rectangle rectClip,
                                       DisplaySettings ds) {
-    g2 = (Graphics2D) g;
+    g = gc;
     settings = ds;
     atomDrawMode = settings.getAtomDrawMode();
     bondDrawMode = settings.getBondDrawMode();
@@ -151,10 +151,10 @@ public class AtomShape implements Shape {
     int j = 0;
     String s = null;
     Font font = new Font("Helvetica", Font.PLAIN, radius);
-    g2.setFont(font);
-    FontMetrics fontMetrics = g2.getFontMetrics(font);
+    g.setFont(font);
+    FontMetrics fontMetrics = g.getFontMetrics(font);
     int k = fontMetrics.getAscent();
-    g2.setColor(settings.getTextColor());
+    g.setColor(settings.getTextColor());
     
     String label = null;
     switch (labelMode) {
@@ -177,7 +177,7 @@ public class AtomShape implements Shape {
     }
     if (label != null) {
       j = fontMetrics.stringWidth(label);
-      g2.drawString(label, x - j / 2, y + k / 2);
+      g.drawString(label, x - j / 2, y + k / 2);
     }
     if (!settings.getPropertyMode().equals("")) {
 
@@ -190,14 +190,14 @@ public class AtomShape implements Shape {
           // OK, we had this property.  Let's draw the value on
           // screen:
           font = new Font("Helvetica", Font.PLAIN, radius / 2);
-          g2.setFont(font);
-          g2.setColor(settings.getTextColor());
+          g.setFont(font);
+          g.setColor(settings.getTextColor());
           s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);
           }
           k = 2 + (int) (radius / 1.4142136f);
-          g2.drawString(s, x + k, y - k);
+          g.drawString(s, x + k, y - k);
         }
       }
     }
@@ -208,7 +208,7 @@ public class AtomShape implements Shape {
   // are being clipped when they are obscured by the atom
   private static final boolean debugBondClipping = false;
 
-  public void renderBond(Graphics2D g2, Atom atom1, Atom atom2) {
+  public void renderBond(Graphics g, Atom atom1, Atom atom2) {
     Color color1 = colorProfile.getColor(atom1);
     Color color2 = colorProfile.getColor(atom2);
     int x1 = atom1.screenX, y1 = atom1.screenY;
@@ -231,15 +231,15 @@ public class AtomShape implements Shape {
     if (fastRendering ||
         ((bondDrawMode == DisplaySettings.LINE) && drawBondsToAtomCenters)) {
       if (color1.equals(color2)) {
-        g2.setColor(color1);
-        g2.drawLine(x1, y1, x2, y2);
+        g.setColor(color1);
+        g.drawLine(x1, y1, x2, y2);
       } else {
         int xMid = (x1 + x2) / 2;
         int yMid = (y1 + y2) / 2;
-        g2.setColor(color2);
-        g2.drawLine(xMid, yMid, x2, y2);
-        g2.setColor(color1);
-        g2.drawLine(x1, y1, xMid, yMid);
+        g.setColor(color2);
+        g.drawLine(xMid, yMid, x2, y2);
+        g.setColor(color1);
+        g.drawLine(x1, y1, xMid, yMid);
       }
       return;
     }
@@ -290,13 +290,13 @@ public class AtomShape implements Shape {
     }
 
     if (bondDrawMode == DisplaySettings.LINE) {
-      drawLineBond(g2,
+      drawLineBond(g,
                    x1Bond, y1Bond, color1,
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, color2,
                    dx, dy, magnitude, bondOrder, halfBondWidth);
     } else {
-      drawRectBond(g2,
+      drawRectBond(g,
                    x1Bond, y1Bond, color1, getOutline(color1),
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, color2, getOutline(color2),
@@ -314,7 +314,7 @@ public class AtomShape implements Shape {
 
   private static final int separationIncrement = 4;
 
-  private void drawLineBond(final Graphics2D g2,
+  private void drawLineBond(final Graphics g,
                             int x1, int y1, final Color color1,
                             int xEdge, int yEdge,
                             int x2, int y2, final Color color2,
@@ -346,12 +346,12 @@ public class AtomShape implements Shape {
           !isVisible(x1, y1, xEdge, yEdge, xMid, yMid)) {
         xTemp = xEdge; yTemp = yEdge;
       } else {
-        g2.setColor(color1);
-        g2.drawLine(xEdge, yEdge, xMid, yMid);
+        g.setColor(color1);
+        g.drawLine(xEdge, yEdge, xMid, yMid);
         xTemp = xMid; yTemp = yMid;
       }
-      g2.setColor(color2);
-      g2.drawLine(xTemp, yTemp, x2, y2);      
+      g.setColor(color2);
+      g.drawLine(xTemp, yTemp, x2, y2);      
       if (--bondOrder <= 0) // also catch initial parameter values <= 0
         return;
       x1 += xOffset; y1 += yOffset;
@@ -363,12 +363,12 @@ public class AtomShape implements Shape {
   private static final int[] xBondRectPoints = new int[4];
   private static final int[] yBondRectPoints = new int[4];
 
-  private void drawRectBond(final Graphics2D g2,
+  private void drawRectBond(final Graphics g,
                             final int x1, final int y1,
-                            final Paint paint1, final Paint paint1Outline,
+                            final Color color1, final Color color1Outline,
                             final int xEdge, final int yEdge,
                             final int x2, final int y2,
-                            final Paint paint2, final Paint paint2Outline,
+                            final Color color2, final Color color2Outline,
                             final boolean boolFill,
                             final int dx, final int dy, final int magnitude,
                             int bondOrder, final double halfBondWidth) {
@@ -419,7 +419,7 @@ public class AtomShape implements Shape {
     }
 
     while (true) {
-      if (paint1.equals(paint2) ||
+      if (color1.equals(color2) ||
           !isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {
         xBondRectPoints[0] = xEdgeTop; yBondRectPoints[0] = yEdgeTop;
         xBondRectPoints[1] = xEdgeBot; yBondRectPoints[1] = yEdgeBot;
@@ -428,36 +428,36 @@ public class AtomShape implements Shape {
         xBondRectPoints[1] = xMidBot; yBondRectPoints[1] = yMidBot;
         xBondRectPoints[2] = xEdgeBot; yBondRectPoints[2] = yEdgeBot;
         xBondRectPoints[3] = xEdgeTop; yBondRectPoints[3] = yEdgeTop;
-        g2.setPaint(paint1);
+        g.setColor(color1);
         if (boolFill) 
-          g2.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
+          g.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
         else
-          g2.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
+          g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
       }
       xBondRectPoints[2] = x2Bot; yBondRectPoints[2] = y2Bot; 
       xBondRectPoints[3] = x2Top; yBondRectPoints[3] = y2Top;
-      g2.setPaint(paint2);
+      g.setColor(color2);
       if (boolFill) 
-        g2.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
+        g.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
       else
-        g2.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
+        g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
 
-      if (paint1Outline != null) {
+      if (color1Outline != null) {
         int xOutlineTop, yOutlineTop, xOutlineBot, yOutlineBot;
-        if (paint1Outline.equals(paint2Outline) ||
+        if (color1Outline.equals(color2Outline) ||
             !isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {
           xOutlineTop = xEdgeTop; yOutlineTop = yEdgeTop;
           xOutlineBot = xEdgeBot; yOutlineBot = yEdgeBot;
         } else {
-          g2.setPaint(paint1Outline);
-          g2.drawLine(xEdgeTop, yEdgeTop, xMidTop, yMidTop);
-          g2.drawLine(xEdgeBot, yEdgeBot, xMidBot, yMidBot);
+          g.setColor(color1Outline);
+          g.drawLine(xEdgeTop, yEdgeTop, xMidTop, yMidTop);
+          g.drawLine(xEdgeBot, yEdgeBot, xMidBot, yMidBot);
           xOutlineTop = xMidTop; yOutlineTop = yMidTop;
           xOutlineBot = xMidBot; yOutlineBot = yMidBot;
         }
-        g2.setPaint(paint2Outline);
-        g2.drawLine(xOutlineTop, yOutlineTop, x2Top, y2Top);
-        g2.drawLine(xOutlineBot, yOutlineBot, x2Bot, y2Bot);
+        g.setColor(color2Outline);
+        g.drawLine(xOutlineTop, yOutlineTop, x2Top, y2Top);
+        g.drawLine(xOutlineBot, yOutlineBot, x2Bot, y2Bot);
       }
       if (--bondOrder <= 0) // also catch a crazy parameter value
         return;
@@ -473,12 +473,12 @@ public class AtomShape implements Shape {
     }
   }
 
-  static HashMap hmDarker = new HashMap();
+  static Hashtable htDarker = new Hashtable();
   private Color getDarker(Color color) {
-    Color darker = (Color) hmDarker.get(color);
+    Color darker = (Color) htDarker.get(color);
     if (darker == null) {
       darker = color.darker();
-      hmDarker.put(color, darker);
+      htDarker.put(color, darker);
     }
     return darker;
   }
@@ -499,17 +499,17 @@ public class AtomShape implements Shape {
     if (!fastRendering && settings.isAtomPicked(atom)) {
       int halo = radius + 5;
       int halo2 = 2 * halo;
-      g2.setColor(pickedColor);
-      g2.fillOval(x - halo, y - halo, halo2, halo2);
+      g.setColor(pickedColor);
+      g.fillOval(x - halo, y - halo, halo2, halo2);
     }
     Color color = colorProfile.getColor(atom);
-    g2.setColor(color);
+    g.setColor(color);
     if (diameter <= 3) {
       if (diameter > 0) {
         if ((atomDrawMode == DisplaySettings.WIREFRAME) && (diameter == 3))
-          g2.drawRect(x - radius, y - radius, 2, 2);
+          g.drawRect(x - radius, y - radius, 2, 2);
         else
-          g2.fillRect(x - radius, y - radius, diameter, diameter);
+          g.fillRect(x - radius, y - radius, diameter, diameter);
       }
     } else {
       if (! fastRendering && (atomDrawMode == DisplaySettings.SHADING)) {
@@ -521,17 +521,17 @@ public class AtomShape implements Shape {
       --diameter;
       if (!fastRendering &&
           (atomDrawMode != DisplaySettings.WIREFRAME)) {
-        g2.fillOval(x - radius, y - radius, diameter, diameter);
-        g2.setColor(getOutline(color));
+        g.fillOval(x - radius, y - radius, diameter, diameter);
+        g.setColor(getOutline(color));
       }
-      g2.drawOval(x - radius, y - radius, diameter, diameter);
+      g.drawOval(x - radius, y - radius, diameter, diameter);
     }
   }
 
   private static final int minCachedSize = 4;
   private static final int maxCachedSize = 50;
-  private static final HashMap ballImages = new HashMap();
-  private static final int scalableSize = 32;
+  private static final Hashtable ballImages = new Hashtable();
+  private static final int scalableSize = 47;
   private static final int maxSmoothedSize = 200;
   // I am getting severe graphical artifacts around the edges when
   // rendering hints are turned on. Therefore, I am adding a margin
@@ -552,104 +552,65 @@ public class AtomShape implements Shape {
       // the area drawn by an oval is 1 larger than the area
       // filled by an oval
       --diameter;
-      g2.setColor(color);
-      g2.fillOval(x - radius, y - radius, diameter, diameter);
-      g2.setColor(getDarker(color));
-      g2.drawOval(x - radius, y - radius, diameter, diameter);
+      g.setColor(color);
+      g.fillOval(x - radius, y - radius, diameter, diameter);
+      g.setColor(getDarker(color));
+      g.drawOval(x - radius, y - radius, diameter, diameter);
     } else if (diameter < maxCachedSize) {
-      g2.drawImage(shadedImages[diameter],
-                   x - radius, y - radius, null);
+      // images in the cache have a margin of 1
+      g.drawImage(shadedImages[diameter],
+                   x - radius - 1, y - radius - 1, null);
     } else if (diameter < maxSmoothedSize) {
-      drawScaledShadedAtom(g2, shadedImages[0], x, y,
+      // warning ... must fix this for the applet
+      drawScaledShadedAtom((Graphics2D) g, shadedImages[0], x, y,
                            diameter, artifactMargin);
     } else {
       // too big ... just forget the smoothing
       Ellipse2D circle =
         new Ellipse2D.Float((float)(x-radius), (float)(y-radius),
                             (float)diameter, (float)diameter);
-      g2.setClip(circle);
-      g2.drawImage(shadedImages[0], x - radius, y - radius,
+      g.setClip(circle);
+      g.drawImage(shadedImages[0], x - radius, y - radius,
                    diameter, diameter, null);
-      g2.setClip(null);
+      g.setClip(null);
     }
   }
   
   private void loadShadedSphereCache(Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
-    for (int d = minCachedSize; d < maxCachedSize; ++d) {
-      shadedImages[d] = gradientPaintSphere(color, d, 0, true);
-    }
-    shadedImages[0] = gradientPaintSphere(color, scalableSize,
-                                          artifactMargin, false);
     ballImages.put(color, shadedImages);
-    }
-
-  private static Color colorTransparent = new Color(0, 0, 0, 0);
-  private static Color colorGradScale = null;
-  private static BufferedImage gradScale = new BufferedImage(101, 1, 
-                                           BufferedImage.TYPE_INT_ARGB);
-  private static Graphics2D g2Scale = gradScale.createGraphics();
-
-  private void checkGradientScale(Color color) {
-    if (color.equals(colorGradScale))
-      return;
-    Color lighter = Color.white;
-    Color darker = getDarker(getDarker(color));
-    GradientPaint gp;
-    int lightPct = 2;
-    int lighteningPct = 20;
-    int colorPct = 60;
-    int darkeningPct = 85;
-
-    g2Scale.setPaint(lighter);
-    g2Scale.drawLine(0, 0, lightPct, 0);
-
-    gp = new GradientPaint(lightPct, 0, lighter,
-                             lighteningPct, 0, color);
-    g2Scale.setPaint(gp);
-    g2Scale.drawLine(lightPct, 0, lighteningPct, 0);
-
-    g2Scale.setPaint(color);
-    g2Scale.drawLine(lighteningPct, 0, colorPct, 0);
-
-    gp = new GradientPaint(colorPct, 0, color,
-                             darkeningPct, 0, darker);
-    g2Scale.setPaint(gp);
-    g2Scale.drawLine(colorPct, 0, darkeningPct, 0);
-
-    g2Scale.setPaint(darker);
-    g2Scale.drawLine(darkeningPct, 0, 101, 0);
-  }
-
-  private BufferedImage gradientPaintSphere(Color color,
-                                            int diameter,
-                                            int margin,
-                                            boolean applyCircleMask) {
-    checkGradientScale(color);
-    int size = diameter + (2 * margin);
-    BufferedImage bi = new BufferedImage(size, size,
-                                         BufferedImage.TYPE_INT_ARGB);
-    Graphics2D g = bi.createGraphics();
-    g.setPaint(colorTransparent);
-    g.fillRect(0, 0, diameter, diameter);
-    float shiny = margin + (25f * diameter / 100);
-
-    for (int i = 0; i < size; ++ i) {
-      double i2Shiny = i-shiny; i2Shiny *= i2Shiny;
-      for (int j = 0; j < size; ++j) {
-        double j2Shiny = j-shiny; j2Shiny *= j2Shiny;
-        double mag = Math.sqrt(i2Shiny + j2Shiny);
-        int pct = (int)(mag * 100 / diameter);
-        if (pct > 100) { pct = 100; };
-        int co = gradScale.getRGB(pct, 0);
-        bi.setRGB(i, j, co);
+    boolean oldJvm = false;
+    if (oldJvm) {
+      for (int d = minCachedSize; d < maxCachedSize; ++d) {
+        shadedImages[d] = sphereSetup(color, d+2, settings, false);
       }
+      shadedImages[0] = sphereSetup(color, scalableSize, settings, false);
+      return;
     }
-    if (applyCircleMask)
-      applyCircleMask(g, diameter, margin);
-    return bi;
-  }
-
+    /*
+    for (int d = minCachedSize; d < maxCachedSize; ++d) {
+      shadedImages[d] = sphereSetup(color, d+2, settings, false);
+      BufferedImage bi = new BufferedImage(d+2, d+2,
+                                           BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g2 = bi.createGraphics();
+      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                          RenderingHints.VALUE_ANTIALIAS_ON);
+      g2.drawImage(shadedImages[d], 0, 0, null);
+      applyCircleMask(g2, d, 1);
+      shadedImages[d] = bi;
+    }
+    shadedImages[0] = sphereSetup(color, scalableSize, settings, false);
+    return;
+    */
+    shadedImages[0] = sphereSetup(color, scalableSize, settings, false);
+    for (int d = minCachedSize; d < maxCachedSize; ++d) {
+      BufferedImage bi = new BufferedImage(d+2, d+2,
+                                           BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g2 = bi.createGraphics();
+      drawScaledShadedAtom(g2, shadedImages[0], d/2+1, d/2+1, d, 1);
+      shadedImages[d] = bi;
+    }
+}
   private static byte[] mapRGBA;
   private static IndexColorModel cmMask;
   private static int sizeMask = 0;
@@ -685,9 +646,9 @@ public class AtomShape implements Shape {
       rasterMask = biMask.getRaster();
       biAlphaMask = new BufferedImage(cmMask, rasterMask, false, null);
     }
-    g2Mask.setPaint(Color.black);
+    g2Mask.setColor(Color.black);
     g2Mask.fillRect(0, 0, size, size);
-    g2Mask.setPaint(Color.white);
+    g2Mask.setColor(Color.white);
     g2Mask.fillOval(margin, margin, diameter, diameter);
 
     Composite foo = g.getComposite();
@@ -739,7 +700,7 @@ public class AtomShape implements Shape {
    * @return an image of a shaded sphere.
    */
   private static Image sphereSetup(Color ballColor, int diameter,
-      DisplaySettings settings) {
+      DisplaySettings settings, boolean doNotClip) {
 
     float v1[] = new float[3];
     float v2[] = new float[3];
@@ -747,7 +708,7 @@ public class AtomShape implements Shape {
     int j = -1;
 
     // Create our own version of an IndexColorModel:
-    int model[] = new int[diameter * diameter];
+    int model[] = new int[diameter*diameter];
 
     // Normalize the lightsource vector:
     float[] lsSettings = settings.getLightSourceVector();
@@ -761,7 +722,7 @@ public class AtomShape implements Shape {
         v1[0] = k2;
         v1[1] = k1;
         float len1 = (float) Math.sqrt(k2 * k2 + k1 * k1);
-        if (len1 <= radius) {
+        if (doNotClip || len1 <= radius) {
           int red2 = 0;
           int green2 = 0;
           int blue2 = 0;
@@ -798,12 +759,10 @@ public class AtomShape implements Shape {
         }
       }
     }
-    Image result =
-      imageComponent.createImage(new MemoryImageSource(diameter,
-                                                       diameter,
-                                                       model,
-                                                       0, diameter));
-    return result;
+    return
+      imageComponent.createImage(new MemoryImageSource(diameter, diameter,
+                                                       model, 0,
+                                                       diameter));
   }
 
   /**

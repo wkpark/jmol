@@ -103,6 +103,15 @@ class Measurement {
     }
   }
   
+  void reformatDistanceIfSelected() {
+    if (count != 2)
+      return;
+    Viewer viewer = frame.viewer;
+    if (viewer.isSelected(countPlusIndices[1]) &&
+        viewer.isSelected(countPlusIndices[2]))
+      formatMeasurement();
+  }
+
   Point3f getAtomPoint3f(int i) {
     return frame.getAtomPoint3f(countPlusIndices[i]);
   }

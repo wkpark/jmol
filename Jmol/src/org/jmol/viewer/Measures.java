@@ -137,6 +137,8 @@ class Measures extends Shape {
       { clear(); }
     else if ("showMeasurementNumbers".equals(propertyName))
       { showMeasurementNumbers = ((Boolean)value).booleanValue(); }
+    else if ("reformatDistances".equals(propertyName))
+      { reformatDistances(); }
     else
       return;
     viewer.notifyMeasurementsChanged();
@@ -156,5 +158,10 @@ class Measures extends Shape {
         ? measurements[index].strMeasurement : null;
     }
     return null;
+  }
+
+  void reformatDistances() {
+    for (int i = measurementCount; --i >= 0; )
+      measurements[i].reformatDistanceIfSelected();
   }
 }

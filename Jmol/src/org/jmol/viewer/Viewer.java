@@ -2181,7 +2181,10 @@ final public class Viewer extends JmolViewer {
   */
 
   boolean setMeasureDistanceUnits(String units) {
-    return styleManager.setMeasureDistanceUnits(units);
+    if (! styleManager.setMeasureDistanceUnits(units))
+      return false;
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "reformatDistances", null);
+    return true;
   }
 
   String getMeasureDistanceUnits() {

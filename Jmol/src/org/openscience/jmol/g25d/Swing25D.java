@@ -43,12 +43,13 @@ final public class Swing25D implements Platform25D{
   int[] pbuf;
   Graphics2D g2;
 
-  public Image allocateImage(int width, int height, boolean useAlphaChannel) {
+  public Image allocateImage(int width, int height, boolean enabled) {
     this.width = width;
     this.height = height;
     bi = new BufferedImage(width, height,
-                           useAlphaChannel ? BufferedImage.TYPE_INT_ARGB :
-                           BufferedImage.TYPE_INT_RGB);
+                           enabled
+                           ? BufferedImage.TYPE_INT_RGB
+                           : BufferedImage.TYPE_INT_ARGB);
     wr = bi.getRaster();
     db = wr.getDataBuffer();
     dbi = (DataBufferInt) db;
@@ -63,5 +64,8 @@ final public class Swing25D implements Platform25D{
 
   public int[] getPbuf() {
     return pbuf;
+  }
+
+  public void notifyEndOfRendering() {
   }
 }

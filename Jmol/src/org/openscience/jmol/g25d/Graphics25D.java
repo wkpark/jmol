@@ -52,9 +52,9 @@ final public class Graphics25D {
   short[] zbuf;
 
   final static int zBackground = 32767;
+  final static boolean forceAWT = true;
 
   public boolean enabled = false;
-  boolean capable = false;
   boolean usePbuf;
 
   int argbCurrent;
@@ -63,12 +63,12 @@ final public class Graphics25D {
   public Graphics25D(DisplayControl control) {
     this.control = control;
     this.g = g;
-    this.capable = control.jvm12orGreater;
-    if (capable) {
+    if (control.jvm12orGreater && ! forceAWT ) {
       platform = new Swing25D();
     } else {
       platform = new Awt25D(control.getAwtComponent());
     }
+      platform = new Awt25D(control.getAwtComponent());
     this.shadedSphereRenderer = new ShadedSphereRenderer(control, this);
     this.shadedBondRenderer = new ShadedBondRenderer(control, this);
     this.sphere25d = new Sphere25D(control, this);
@@ -97,9 +97,9 @@ final public class Graphics25D {
       zbuf = null;
       return;
     }
-    img = platform.allocateImage(width, height, !enabled);
+    img = platform.allocateImage(width, height, enabled);
     g = platform.getGraphics();
-    usePbuf = capable & enabled;
+    usePbuf = enabled;
     if (usePbuf) {
       pbuf = platform.getPbuf();
       zbuf = new short[size];
@@ -107,6 +107,7 @@ final public class Graphics25D {
   }
 
   public Image getScreenImage() {
+    platform.notifyEndOfRendering();
     return img;
   }
 
@@ -159,6 +160,7 @@ final public class Graphics25D {
       g.drawImage(image, x, y, width, height, null);
       return;
     }
+    System.out.println("drawImage(... width,height) not implemented");
   }
 
   public void drawCircleCentered(Color color, int x, int y, int z,
@@ -327,20 +329,33 @@ final public class Graphics25D {
   }
 
   public void setFont(Font font) {
-    fontCurrent = font;
-    g.setFont(font);
+    if (! usePbuf)
+      g.setFont(font);
+    else
+      fontCurrent = font;
   }
 
   public FontMetrics getFontMetrics(Font font) {
-    return g.getFontMetrics(font);
+    if (! usePbuf)
+      return g.getFontMetrics(font);
+    System.out.println("usePbuf ... getFontMetrics is a problem");
+    return null;
   }
 
   public void setClip(Shape shape) {
-    g.setClip(shape);
+    if (! usePbuf) {
+      g.setClip(shape);
+      return;
+    }
+    System.out.println("setClip(shape) not implemented for pbuf");
   }
 
   public void setClip(int x, int y, int width, int height) {
-    g.setClip(x, y, width, height);
+    if (! usePbuf) {
+      g.setClip(x, y, width, height);
+      return;
+    }
+    System.out.println("setClip(x,y,width,height) not implemented for pbuf");
   }
 
   // 3D specific routines
@@ -455,6 +470,7 @@ final public class Graphics25D {
       shadedBondRenderer.render(color, ax, ay, az);
       return;
     }
+    System.out.println("fillCylinder4() not implemented for pbuf");
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {

@@ -28,24 +28,44 @@ package org.openscience.jmol.g25d;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.image.MemoryImageSource;
 
 final public class Awt25D implements Platform25D {
 
   Component component;
   int width, height;
+  boolean enabledPbuf = false;
   Image image;
+  MemoryImageSource mis;
   Graphics g;
+  Image imageFontOps; // this image & graphics are used for font operations;
   int[] pbuf;
 
   public Awt25D(Component component) {
     this.component = component;
   }
 
-  public Image allocateImage(int width, int height, boolean useAlphaChannel) {
+  public Image allocateImage(int width, int height, boolean enabledPbuf) {
     this.width = width;
     this.height = height;
-    image = component.createImage(width, height);
-    g = (image == null) ? null : image.getGraphics();
+    this.enabledPbuf = enabledPbuf;
+    System.out.println("allocateImage enabled:" + enabledPbuf);
+    if (enabledPbuf) {
+      pbuf = new int[width * height];
+      mis = new MemoryImageSource(width, height, pbuf, 0, width);
+      mis.setAnimated(true);
+      image = component.createImage(mis);
+      if (g != null) g.dispose();
+      imageFontOps = component.createImage(10, 10);
+      g = imageFontOps.getGraphics();
+    } else {
+      pbuf = null;
+      mis = null;
+      imageFontOps = null;
+      image = component.createImage(width, height);
+      if (g != null) g.dispose();
+      g = image.getGraphics();
+    }
     return image;
   }
 
@@ -55,5 +75,10 @@ final public class Awt25D implements Platform25D {
 
   public int[] getPbuf() {
     return pbuf;
+  }
+
+  public void notifyEndOfRendering() {
+    if (enabledPbuf)
+      mis.newPixels();
   }
 }

@@ -83,7 +83,6 @@ org/openscience/jmol/render/AtomColors.java
 org/openscience/jmol/render/Axes.java
 org/openscience/jmol/render/BoundingBox.java
 org/openscience/jmol/render/LabelRenderer.java
-org/openscience/jmol/render/ShadedSphereRenderer.java
 org/openscience/jmol/render/SphereG2D.java
 org/openscience/jmol/render/Distance.java
 org/openscience/jmol/render/Angle.java
@@ -96,3 +95,18 @@ org/openscience/jmol/script/ScriptException.java
 org/openscience/jmol/util/MathUtil.java
 org/openscience/jmol/ui/JmolPopup.java
 org/openscience/jmol/ui/JmolPopupAwt.java
+org/openscience/jmol/g25d/Graphics25D.java
+org/openscience/jmol/g25d/Swing25D.java
+org/openscience/jmol/g25d/Awt25D.java
+org/openscience/jmol/g25d/Platform25D.java
+org/openscience/jmol/g25d/Shade25D.java
+org/openscience/jmol/g25d/ShadedBondRenderer.java
+org/openscience/jmol/g25d/ShadesSphereRenderer.java
+org/openscience/jmol/g25d/Text25D.java
+org/openscience/jmol/g25d/Triangle25D.java
+
+
+
+
+
+

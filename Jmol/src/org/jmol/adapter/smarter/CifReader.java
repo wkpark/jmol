@@ -280,7 +280,7 @@ class CifReader extends ModelReader {
         System.out.println("char value is " + (chFirst + 0));
       tokenizer.setString(line);
       //      logger.log("reading an atom");
-      Atom atom = model.addNewAtom();
+      Atom atom = new Atom();
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
           tokenizer.setString(reader.readLine());
@@ -306,7 +306,6 @@ class CifReader extends ModelReader {
           break;
         case LABEL:
           atom.atomName = field;
-          model.mapMostRecentAtomName();
           break;
         case CARTN_X:
         case FRACT_X:
@@ -349,6 +348,11 @@ class CifReader extends ModelReader {
           break;
         }
       }
+      if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z))
+        logger.log("atom " + atom.atomName +
+                   " has invalid/unknown coordinates");
+      else
+        model.addAtomWithMappedName(atom);
     }
   }
 

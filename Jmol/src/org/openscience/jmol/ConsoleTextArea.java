@@ -23,6 +23,7 @@ public class ConsoleTextArea extends JTextArea {
         final LoopedStreams ls = new LoopedStreams();
         
         // Redirect System.out & System.err.
+        
         PrintStream ps = new PrintStream(ls.getOutputStream());
         System.setOut(ps);
         System.setErr(ps);

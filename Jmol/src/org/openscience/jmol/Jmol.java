@@ -174,9 +174,9 @@ class Jmol extends JPanel {
     }
     
     private static void beguine() {
-        try {                        
+        //try {                        
             atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
-        } catch(Exception e1) { }
+        //} catch(Exception e1) { }
         
         
         ft = new FileTyper(openChooser);

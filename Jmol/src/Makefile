@@ -4,9 +4,17 @@
                JIKES= /usr/local/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
                 JAVA= $(JAVA_HOME)/bin/java
+                 JAR= $(JAVA_HOME)/bin/jar
              JAVADOC= $(JAVA_HOME)/bin/javadoc -private
         THREADS_FLAG=native
+#
+#           Java 1.2 classpath:
+#
            CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar
+#
+#           Java 1.1 classpath:
+#
+#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar
 #
 # put Jmol.java first, so that compilation is fast
 #
@@ -48,6 +56,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/HelpDialog.java \
 		org/openscience/jmol/ImageTyper.java \
 		org/openscience/jmol/JMolCDO.java \
+		org/openscience/jmol/JMOLANIMATIONConvention.java \
 		org/openscience/jmol/JmolException.java \
 		org/openscience/jmol/JmolResourceHandler.java \
 		org/openscience/jmol/JmolFileFilter.java \
@@ -142,11 +151,11 @@ applet: $(APPLET_CLASSES) $(APPLET_JMOL_CLASSES)
 tests: $(TEST_CLASSES)
 
 applet_archive: applet
-	jar cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES)
+	$(JAR) cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES)
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar
-	jar cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/NMRReferences org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/*.html
+	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/NMRReferences org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/*.html
 	chmod 664 ../jars/jmol.jar
 
 # suggested by Christoph Steinbeck:

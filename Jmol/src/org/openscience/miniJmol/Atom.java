@@ -127,7 +127,7 @@ class Atom {
 	 * Clears the bonded atoms list.
 	 */
 	public void clearBondedAtoms() {
-		bondedAtoms.clear();
+		bondedAtoms.removeAllElements();
 	}
 
 	/**

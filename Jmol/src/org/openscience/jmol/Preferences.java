@@ -970,7 +970,8 @@ public class Preferences extends JDialog {
         
         try {
             FileOutputStream fileOutputStream = new FileOutputStream(Jmol.UserPropsFile);
-            props.store(fileOutputStream, "Jmol");
+            props.save(fileOutputStream, "Jmol");
+            // props.store(fileOutputStream, "Jmol");
             fileOutputStream.close();
         } catch (Exception e) {
             System.out.println("Error saving Preferences" + e.toString());

@@ -296,6 +296,8 @@ public abstract class MouseManager {
     case ALT_LEFT:
     case MIDDLE:
       viewer.zoomBy(deltaY);
+      // fall into
+    case SHIFT_RIGHT: // the one-button Mac folks won't get this gesture
       viewer.rotateZBy(-deltaX);
       break;
     }

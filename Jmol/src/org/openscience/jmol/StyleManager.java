@@ -58,6 +58,16 @@ public class StyleManager {
     this.marBond =marBond;
   }
 
+  public byte modeMultipleBond = DisplayControl.MB_SMALL;
+  public void setModeMultipleBond(byte modeMultipleBond) {
+    this.modeMultipleBond = modeMultipleBond;
+  }
+
+  public boolean showMultipleBonds = true;
+  public void setShowMultipleBonds(boolean showMultipleBonds) {
+    this.showMultipleBonds = showMultipleBonds;
+  }
+
   public boolean showAtoms = true;
   public void setShowAtoms(boolean showAtoms) {
     this.showAtoms = showAtoms;

@@ -708,11 +708,11 @@ public class ChemFrame extends AtomContainer {
         do {
           if (++iatom >= numberOfAtoms)
             return false;
+          atom = atoms[iatom];
           isSelected = set.get(iatom);
           if (isSelected && bondmodeOr)
             return bigHit = true;
         } while (!isSelected && !bondmodeOr);
-        atom = atoms[iatom];
         bondedAtoms = atom.getBondedAtoms();
         bigHit = false;
         ibond = -1;

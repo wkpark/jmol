@@ -48,16 +48,21 @@ public class BondRenderer {
 
     fastRendering = control.getFastRendering();
     showAtoms = control.getShowAtoms();
+    colorSelection = control.getColorSelection();
+    showMultipleBonds = control.getShowMultipleBonds();
+    modeMultipleBond = control.getModeMultipleBond();
   }
 
   boolean fastRendering;
   boolean showAtoms;
+  Color colorSelection;
+  boolean showMultipleBonds;
+  byte modeMultipleBond;
 
   int x1, y1, z1;
   int x2, y2, z2;
   int dx, dy, dz;
   int dx2, dy2, dz2;
-  int sgndx, sgndy;
   int mag2d, mag2d2, halfMag2d;
   int mag3d, mag3d2;
   Color color1, color2;
@@ -69,19 +74,36 @@ public class BondRenderer {
   byte styleAtom1, styleAtom2;
   int bondOrder;
   byte styleBond;
+  short marBond;
   
+  private void renderHalo() {
+    int diameter = (width1 + width2 + 1) / 2;
+    int x = (x1 + x2) / 2, y = (y1 + y2) / 2;
+    int halowidth = diameter / 4;
+    if (halowidth < 4) halowidth = 4;
+    if (halowidth > 10) halowidth = 10;
+    int halodiameter = diameter + 2 * halowidth;
+    int haloradius = (halodiameter + 1) / 2;
+    g.setColor(colorSelection);
+    g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
+  }
+
   public void render(AtomShape atomShape1, int index1,
                      AtomShape atomShape2, int index2,
-                     int bondOrder) {
-    x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
-    x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
-    dx = x2 - x1; dx2 = dx * dx; sgndx = (dx > 0) ? 1 : (dx < 0) ? -1 : 0;
-    dy = y2 - y1; dy2 = dy * dy; sgndy = (dy > 0) ? 1 : (dy < 0) ? -1 : 0;
-    dz = z2 - z1; dz2 = dz * dz;
-    mag2d2 = dx2 + dy2;
-    mag3d2 = mag2d2 + dz2;
+                     int order) {
     styleAtom1 = atomShape1.styleAtom;
     styleAtom2 = atomShape2.styleAtom;
+    styleBond = atomShape1.styleBonds[index1];
+    marBond = atomShape1.marBonds[index1];
+    x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
+    x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
+    width1 = atomShape1.bondWidths[index1];
+    width2 = atomShape2.bondWidths[index2];
+    if (width1 < 4 && width2 < 4) {
+      // to smooth out narrow bonds
+        width1 = width2 = (width1 + width2) / 2;
+    }
+
     color1 = atomShape1.colorBonds[index1];
     if (color1 == null)
       color1 = atomShape1.colorAtom;
@@ -89,11 +111,43 @@ public class BondRenderer {
     if (color2 == null)
       color2 = atomShape2.colorAtom;
     sameColor = color1.equals(color2);
+
+    if (!showAtoms) {
+      diameter1 = diameter2 = 0;
+    } else {
+      diameter1 =
+        (styleAtom1 == DisplayControl.NONE) ? 0 : atomShape1.diameter;
+      diameter2 =
+        (styleAtom2 == DisplayControl.NONE) ? 0 : atomShape2.diameter;
+    }
+
+    bondOrder = getRenderBondOrder(order);
+
+    if (control.hasSelectionHalo(atomShape1.atom, index1))
+      renderHalo();
+    renderBond();
+  }
+
+  int getRenderBondOrder(int order) {
+    if (order == 1 ||
+        !showMultipleBonds ||
+        modeMultipleBond == DisplayControl.MB_NEVER ||
+        (modeMultipleBond == DisplayControl.MB_SMALL &&
+         marBond > DisplayControl.marMultipleBondSmallMaximum))
+      return 1;
+    return order;
+  }
+
+  private void renderBond() {
+    dx = x2 - x1; dx2 = dx * dx;
+    dy = y2 - y1; dy2 = dy * dy;
+    dz = z2 - z1; dz2 = dz * dz;
+    mag2d2 = dx2 + dy2;
+    mag3d2 = mag2d2 + dz2;
     if (mag2d2 <= 2 || mag2d2 <= 49 && fastRendering)
       return; // also avoids divide by zero when magnitude == 0
     if (showAtoms && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
-    styleBond = atomShape1.styleBonds[index1];
     if (!showAtoms && bondOrder == 1 &&
         (fastRendering || styleBond == control.WIREFRAME)) {
       g.setColor(color1);
@@ -107,14 +161,6 @@ public class BondRenderer {
         drawLineInside(g, xMid, yMid, x2, y2);
       }
       return;
-    }
-    if (!showAtoms) {
-      diameter1 = diameter2 = 0;
-    } else {
-      diameter1 =
-        (styleAtom1 == DisplayControl.NONE) ? 0 : atomShape1.diameter;
-      diameter2 =
-        (styleAtom2 == DisplayControl.NONE) ? 0 : atomShape2.diameter;
     }
     radius1 = diameter1 >> 1;
     radius2 = diameter2 >> 1;
@@ -130,13 +176,6 @@ public class BondRenderer {
     outline1 = control.getColorAtomOutline(styleBond, color1);
     outline2 = control.getColorAtomOutline(styleBond, color2);
 
-    width1 = atomShape1.bondWidths[index1];
-    width2 = atomShape2.bondWidths[index2];
-
-    if (width1 < 4 && width2 < 4) {
-      // to smooth out narrow bonds
-        width1 = width2 = (width1 + width2) / 2;
-    }
     this.bondOrder = bondOrder;
 
     boolean lineBond =
@@ -202,6 +241,8 @@ public class BondRenderer {
 
     xAxis1 -= dxHalf1; yAxis1 -= dyHalf1;
     xAxis2 -= dxHalf2; yAxis2 -= dyHalf2;
+    // FIXME mth -- surface intersections are wrong
+    //    offsetAxis2 -= half2;
     calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
@@ -217,6 +258,7 @@ public class BondRenderer {
     
     xAxis1 += dxWidth1; yAxis1 += dyWidth1;
     xAxis2 += dxWidth2; yAxis2 += dyWidth2;
+    // offsetAxis2 += width2;
     calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
@@ -227,6 +269,7 @@ public class BondRenderer {
     // now, restore the axis points to their proper position
     xAxis1 -= dxOtherHalf1; yAxis1 -= dyOtherHalf1;
     xAxis2 -= dxOtherHalf2; yAxis2 -= dyOtherHalf2;
+    // offsetAxis2 -= otherHalf2;
 
     if (distanceExit >= mag2dLine / 2) {
       bothColors = false;
@@ -267,7 +310,7 @@ public class BondRenderer {
       g.drawPolygon(axPoly, ayPoly, 4);
       break;
     case DisplayControl.SHADING:
-      if (width1 > 3) {
+      if (width1 > 4) {
         boolean firstPass = true;
         int numPasses = calcNumShadeSteps();
         Color[] shades = getShades(color, Color.black);
@@ -476,6 +519,7 @@ public class BondRenderer {
   int xAxis1, yAxis1, xAxis2, yAxis2;
   int dxWidth1, dyWidth1, dxWidth2, dyWidth2;
   int dxHalf1, dyHalf1, dxHalf2, dyHalf2;
+  int half2, otherHalf2;
   int dxOtherHalf1, dyOtherHalf1, dxOtherHalf2, dyOtherHalf2;
 
   int space1, space2, step1, step2, dxStep1, dyStep1, dxStep2, dyStep2;
@@ -509,12 +553,6 @@ public class BondRenderer {
     }
     if (lineBond)
       return;
-    /*
-    dxWidth1 = -(width1 *  dy + halfMag2d * sgndy) / mag2d;
-    dyWidth1 =  (width1 *  dx + halfMag2d * sgndx) / mag2d;
-    dxWidth2 =  (width2 * -dy - halfMag2d * sgndy) / mag2d;
-    dyWidth2 = -(width2 * -dx - halfMag2d * sgndx) / mag2d;
-    */
     dxWidth1 = width1 * dy / mag2d;
     dyWidth1 = width1 * -dx / mag2d;
     dxWidth2 = width2 * dy / mag2d;
@@ -526,6 +564,9 @@ public class BondRenderer {
     dyHalf2 = (dyWidth2 + ((dx <  0) ? 1 : 0)) / 2;
     dxOtherHalf1 = dxWidth1 - dxHalf1; dyOtherHalf1 = dyWidth1 - dyHalf1;
     dxOtherHalf2 = dxWidth2 - dxHalf2; dyOtherHalf2 = dyWidth2 - dyHalf2;
+
+    //    half2 = width2 / 2;
+    //    otherHalf2 = width2 - half2;
   }
 
   void stepAxisCoordinates() {

@@ -76,7 +76,7 @@ class Token {
   final static int comparator        = (1 << 15) | expression;
   final static int predefinedset     = (1 << 16) | expression;
   final static int colorparam        = (1 << 17);
-  final static int specialstring     = (1 << 18); // load and echo
+  final static int specialstring     = (1 << 18); // load, echo, label
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
   final static int negativeints      = (1 << 19);
@@ -94,7 +94,7 @@ class Token {
   final static int backbone     = command |  0 | predefinedset;
   final static int background   = command |  1 | colorparam | setspecial;
   final static int bond         = command |  2 | bool;
-  final static int cartoon      = command |  3 | setspecial;
+  final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | showparam | expression;
   final static int clipboard    = command |  5;
   final static int color        = command |  6 | colorparam;
@@ -105,11 +105,11 @@ class Token {
   final static int exit         = command | 12;
   final static int hbonds       = command | 13 | setparam | bool;
   final static int help         = command | 14;
-  final static int label        = command | 15 | bool;
+  final static int label        = command | 15 | specialstring;
   // FIXME -- why did I have load tagged as a setparam?
   final static int load         = command | 16 | specialstring; // setparam;
   final static int molecule     = command | 17;
-  final static int monitor      = command | 18 | setspecial | bool;
+  final static int monitor      = command | 18 | setparam | bool;
   final static int pause        = command | 19;
   final static int print        = command | 20;
   final static int quit         = command | 21;
@@ -130,7 +130,7 @@ class Token {
   final static int star         = command | 37 | bool;
   final static int stereo       = command | 38
     | setspecial | bool | negativeints;
-  final static int strands      = command | 39 | setspecial | bool;
+  final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
   final static int trace        = command | 41 | bool;
   final static int translate    = command | 42 | negativeints;
@@ -347,7 +347,7 @@ class Token {
     "exit",              new Token(exit,               0, "exit"),
     "hbonds",            new Token(hbonds,    onDefault1, "hbonds"),
     "help",              new Token(help,     varArgCount, "help"),
-    "label",             new Token(label,    varArgCount, "label"),
+    "label",             new Token(label,              1, "label"),
     "load",              new Token(load,     varArgCount, "load"),
     "molecule",          new Token(molecule,           1, "molecule"),
     "monitor",           new Token(monitor,  varArgCount, "monitor"),

@@ -85,34 +85,34 @@ public class AtomRenderer {
 
   public void render(AtomShape atomShape) {
     styleAtom = atomShape.styleAtom;
+    atom = atomShape.atom;
+    x = atomShape.x;
+    y = atomShape.y;
+    z = atomShape.z;
+    diameter = atomShape.diameter;
+    radius = (diameter + 1) / 2;
+    xUpperLeft = x - radius;
+    yUpperLeft = y - radius;
+    color = atomShape.colorAtom;
+    colorOutline = control.getColorAtomOutline(styleAtom, color);
+    if (control.hasSelectionHalo(atom))
+      renderHalo();
     if (styleAtom != DisplayControl.NONE &&
-        styleAtom != DisplayControl.INVISIBLE) {
-      atom = atomShape.atom;
-      x = atomShape.x;
-      y = atomShape.y;
-      z = atomShape.z;
-      diameter = atomShape.diameter;
-      radius = (diameter + 1) / 2;
-      xUpperLeft = x - radius;
-      yUpperLeft = y - radius;
-      color = atomShape.colorAtom;
-      colorOutline = control.getColorAtomOutline(styleAtom, color);
-
+        styleAtom != DisplayControl.INVISIBLE)
       renderAtom();
-    }
+  }
+
+  private void renderHalo() {
+    int halowidth = diameter / 4;
+    if (halowidth < 4) halowidth = 4;
+    if (halowidth > 10) halowidth = 10;
+    int halodiameter = diameter + 2 * halowidth;
+    int haloradius = (halodiameter + 1) / 2;
+    g.setColor(colorSelection);
+    g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
   }
 
   private void renderAtom() {
-    if (!fastRendering && control.isSelected(atom.getAtomNumber())) {
-      int halowidth = diameter / 3;
-      if (halowidth < 2)
-        halowidth = 2;
-      int halodiameter = diameter + 2 * halowidth;
-      int haloradius = (halodiameter + 1) / 2;
-      g.setColor(colorSelection);
-      g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
-    }
-
     if (diameter <= 2) {
       if (diameter > 0) {
         g.setColor(styleAtom == DisplayControl.WIREFRAME

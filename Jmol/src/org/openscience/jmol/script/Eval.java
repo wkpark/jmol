@@ -201,12 +201,14 @@ public class Eval implements Runnable {
     }
     try {
       // FIXME -- confirm repaint behavior during script execution
+      control.setSelectionHaloEnabled(false);
       control.setHoldRepaint(true);
       instructionDispatchLoop();
     } catch (ScriptException e) {
       System.out.println("" + e);
     }
     myThread = null;
+    control.setSelectionHaloEnabled(true);
     control.setHoldRepaint(false);
     if (logMessages)
       System.out.println("total time to run=" +
@@ -241,6 +243,9 @@ public class Eval implements Runnable {
       case Token.exit:
       case Token.quit: // in rasmol quit actually exits the program
         haltExecution = true;
+        break;
+      case Token.label:
+        label();
         break;
       case Token.load:
         load();
@@ -280,6 +285,9 @@ public class Eval implements Runnable {
       case Token.move:
         move();
         break;
+      case Token.set:
+        set();
+        break;
       case Token.slab:
         slab();
         break;
@@ -298,7 +306,6 @@ public class Eval implements Runnable {
       case Token.dots:
       case Token.hbonds:
       case Token.help:
-      case Token.label:
       case Token.molecule:
       case Token.pause:
       case Token.print:
@@ -306,7 +313,6 @@ public class Eval implements Runnable {
       case Token.restrict:
       case Token.ribbons:
       case Token.save:
-      case Token.set:
       case Token.show:
       case Token.ssbonds:
       case Token.star:
@@ -400,8 +406,16 @@ public class Eval implements Runnable {
     evalError("invalid argument");
   }
 
-  void outOfRange() throws ScriptException {
-    evalError("out of range");
+  void unrecognizedSetParameter() throws ScriptException {
+    evalError("unrecognized SET parameter");
+  }
+
+  void setspecialShouldNotBeHere() throws ScriptException {
+    evalError("interpreter error - setspecial should not be here");
+  }
+
+  void numberOutOfRange() throws ScriptException {
+    evalError("number out of range");
   }
 
   void errorLoadingScript(String msg) throws ScriptException {
@@ -672,6 +686,7 @@ public class Eval implements Runnable {
       colorAtom(2);
       break;
     case Token.bond:
+    case Token.bonds:
       control.setColorBondScript(getColorOrNoneParam(2));
       break;
     case Token.label:
@@ -731,6 +746,15 @@ public class Eval implements Runnable {
       control.scriptEcho((String)statement[1].value);
     else
       control.scriptEcho("");
+  }
+
+  void label() throws ScriptException {
+    String strLabel = (String)statement[1].value;
+    if (strLabel.equalsIgnoreCase("on"))
+      strLabel = "<default>";
+    else if (strLabel.equalsIgnoreCase("off"))
+      strLabel = null;
+    control.setLabelScript(strLabel);
   }
 
   void load() throws ScriptException {
@@ -821,6 +845,7 @@ public class Eval implements Runnable {
     if (statement.length == 1) {
       // FIXME -- what is behavior when there are no arguments to select
       // doc says behavior is dependent upon hetero and hydrogen parameters
+      control.selectAll();
     } else {
       control.setSelectionSet(expression(statement, 1));
     }
@@ -831,7 +856,7 @@ public class Eval implements Runnable {
       integerExpected();
     int percent = statement[2].intValue;
     if (percent > 100 || percent < -100)
-      outOfRange();
+      numberOutOfRange();
     switch (statement[1].tok) {
     case Token.x:
       control.translateToXPercent(percent);
@@ -851,7 +876,7 @@ public class Eval implements Runnable {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 10 || percent > 500)
-        outOfRange();
+        numberOutOfRange();
       control.zoomToPercent(percent);
       return;
     }
@@ -892,7 +917,6 @@ public class Eval implements Runnable {
   }
 
   void move() throws ScriptException {
-    // FIXME -- mth - move does not disable antialiasing during rotation
     if (statement.length < 10 || statement.length > 12)
       badArgumentCount();
     for (int i = 1; i < statement.length; ++i)
@@ -965,11 +989,62 @@ public class Eval implements Runnable {
     control.setInMotion(false);
   }
 
+  void set() throws ScriptException {
+    switch(statement[1].tok) {
+    case Token.bondmode:
+      setBondmode();
+      break;
+    case Token.bonds:
+      setBonds();
+      break;
+    case Token.display:
+      setDisplay();
+      break;
+    case Token.fontsize:
+      setFontsize();
+      break;
+      // not implemented
+    case Token.ambient:
+    case Token.axes:
+    case Token.backfade:
+    case Token.boundbox:
+    case Token.cartoon:
+    case Token.hbonds:
+    case Token.hetero:
+    case Token.hourglass:
+    case Token.hydrogen:
+    case Token.kinemage:
+    case Token.menus:
+    case Token.monitor:
+    case Token.mouse:
+    case Token.picking:
+    case Token.radius:
+    case Token.shadow:
+    case Token.slabmode:
+    case Token.solvent:
+    case Token.specular:
+    case Token.specpower:
+    case Token.ssbonds:
+    case Token.strands:
+    case Token.transparent:
+    case Token.unitcell:
+    case Token.vectps:
+    case Token.write:
+      notImplemented(1);
+      break;
+    case Token.background:
+    case Token.stereo:
+      setspecialShouldNotBeHere();
+    default:
+      unrecognizedSetParameter();
+    }
+  }
+
   void slab() throws ScriptException {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 0 || percent > 100)
-        outOfRange();
+        numberOutOfRange();
       control.slabToPercent(percent);
       return;
     }
@@ -999,7 +1074,7 @@ public class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500 || radiusRasMol < -100)
-        outOfRange();
+        numberOutOfRange();
       mar = (short)radiusRasMol;
       if (radiusRasMol > 0)
         mar *= 4;
@@ -1007,7 +1082,7 @@ public class Eval implements Runnable {
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();
       if (angstroms >= 2)
-        outOfRange();
+        numberOutOfRange();
       mar = (short)(angstroms * 1000);
       break;
     default:
@@ -1019,7 +1094,7 @@ public class Eval implements Runnable {
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
     byte style = DisplayControl.WIREFRAME;
-    short mar = 100;
+    short mar = 50;
     switch (tok) {
     case Token.on:
       break;
@@ -1029,14 +1104,14 @@ public class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
-        outOfRange();
+        numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
       style = DisplayControl.SHADING;
       break;
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();
       if (angstroms >= 2)
-        outOfRange();
+        numberOutOfRange();
       mar = (short)(angstroms * 1000);
       style = DisplayControl.SHADING;
       break;
@@ -1044,5 +1119,67 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     control.setStyleMarBondScript(style, mar);
+  }
+
+  /****************************************************************
+   * SET implementations
+   ****************************************************************/
+
+  void setBondmode() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    boolean bondmodeOr = false;
+    switch(statement[2].tok) {
+    case Token.opAnd:
+      break;
+    case Token.opOr:
+      bondmodeOr = true;
+      break;
+    default:
+      invalidArgument();
+    }
+    control.setBondSelectionModeOr(bondmodeOr);
+  }
+
+  void setBonds() throws ScriptException {
+    boolean showMultipleBonds = false;
+    if (statement.length > 2) {
+      switch (statement[2].tok) {
+      case Token.on:
+        showMultipleBonds = true;
+      case Token.off:
+        break;
+      default:
+        booleanExpected();
+      }
+    }
+    control.setShowMultipleBonds(showMultipleBonds);
+  }
+
+  void setDisplay() throws ScriptException {
+    boolean haloEnabled = false;
+    if (statement.length != 3)
+      badArgumentCount();
+    switch (statement[2].tok) {
+    case Token.selected:
+      haloEnabled = true;
+    case Token.normal:
+      break;
+    default:
+      invalidArgument();
+    }
+    control.setSelectionHaloEnabled(haloEnabled);
+  }
+
+  void setFontsize() throws ScriptException {
+    int fontsize = 8;
+    if (statement.length == 3) {
+      if (statement[2].tok != Token.integer)
+        integerExpected();
+      fontsize = statement[2].intValue;
+      if (fontsize > 72)
+        numberOutOfRange();
+    }
+    control.setLabelFontSize(fontsize);
   }
 }

@@ -99,10 +99,15 @@ public class Distributor {
 
   public void setColorBond(Color colorBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
-      if (iter.allBonds())
-        iter.nextAtom().atomShape.setColorAllBonds(colorBond);
-      else
-        iter.nextAtom().atomShape.setColorBond(colorBond, iter.indexBond());
+      if (iter.allBonds()) {
+        Atom atom = iter.nextAtom();
+        System.out.println("allbonds for " + atom);
+        atom.atomShape.setColorAllBonds(colorBond);
+      } else {
+        Atom atom = iter.nextAtom();
+        System.out.println("one bonds for " + atom);
+        atom.atomShape.setColorBond(colorBond, iter.indexBond());
+      }
     }
   }
 
@@ -120,6 +125,13 @@ public class Distributor {
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
       atom.atomShape.setLabel(control.getLabelAtom(styleLabel, atom));
+    }
+  }
+
+  public void setLabel(String strLabel, JmolAtomIterator iter) {
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      atom.atomShape.setLabel(control.getLabelAtom(strLabel, atom));
     }
   }
 }

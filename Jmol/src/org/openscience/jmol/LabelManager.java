@@ -52,8 +52,7 @@ public class LabelManager {
 
   Font[] fonts = new Font[pointsMax - pointsMin + 1];
 
-  public Font getFont(int diameter) {
-    int points = diameter * 2 / 3;
+  public Font getFontOfSize(int points) {
     if (points < pointsMin)
       points = pointsMin;
     else if (points > pointsMax)
@@ -63,6 +62,18 @@ public class LabelManager {
     if (font == null)
       font = fonts[index] = new Font(strFontFace, Font.PLAIN, points);
     return font;
+  }
+
+  public Font getLabelFont(int diameter) {
+    int points = diameter * 2 / 3;
+    if (pointsLabelFontSize != 0)
+      points = pointsLabelFontSize;
+    return getFontOfSize(points);
+  }
+
+  public int pointsLabelFontSize = 0;
+  public void setLabelFontSize(int points) {
+    this.pointsLabelFontSize = points;
   }
 
   public String getLabelAtom(byte styleLabel, Atom atom) {
@@ -82,8 +93,9 @@ public class LabelManager {
     return label;
   }
 
-
-  public String label(Atom atom, String strFormat) {
+  public String getLabelAtom(String strFormat, Atom atom) {
+    if (strFormat == null || strFormat.equals(""))
+      return null;
     String strLabel = "";
     String strExpansion = "";
     int ich = 0;
@@ -109,17 +121,20 @@ public class LabelManager {
         break;
       case 'b': // these two are the same
       case 't':
-        strExpansion = "<temperatore>";
+        strExpansion = "<temp>";
         break;
       case 'c': // these two are the same
       case 's':
         strExpansion = "<chain>";
         break;
       case 'm':
-        strExpansion = "<residue 1>";
+        strExpansion = "<A>";
         break;
       case 'n':
-        strExpansion = "<residue 3>";
+        strExpansion = "<ALA>";
+        break;
+      case 'r':
+        strExpansion = "<#>";
         break;
       default:
         strExpansion = "" + ch;

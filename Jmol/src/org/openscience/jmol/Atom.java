@@ -240,6 +240,10 @@ public class Atom extends org.openscience.cdk.Atom {
     return bondedAtoms;
   }
 
+  public Atom getBondedAtom(int index) {
+    return bondedAtoms[index];
+  }
+
   /**
    * Clears the bonded atoms list.
    */

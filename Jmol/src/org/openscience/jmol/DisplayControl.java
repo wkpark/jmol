@@ -137,6 +137,10 @@ final public class DisplayControl {
     return structuralChange;
   }
 
+  public void setStructuralChange() {
+    this.structuralChange = true;
+  }
+
   public void resetStructuralChange() {
     structuralChange = false;
   }
@@ -586,6 +590,45 @@ final public class DisplayControl {
     return selectionManager.isSelected(atomIndex);
   }
 
+  public boolean hasSelectionHalo(Atom atom) {
+    return selectionHaloEnabled && !repaintManager.fastRendering &&
+      isSelected(atom.getAtomNumber());
+  }
+
+  public boolean hasSelectionHalo(Atom atom, int iatom) {
+    if (!selectionHaloEnabled || repaintManager.fastRendering)
+      return false;
+    boolean isAtomSelected = isSelected(atom.getAtomNumber());
+    if (bondSelectionModeOr && isAtomSelected)
+      return true;
+    if (!bondSelectionModeOr && !isAtomSelected)
+      return false;
+    Atom atomOther = atom.getBondedAtom(iatom);
+    boolean isOtherSelected =
+      selectionManager.isSelected(atomOther.getAtomNumber());
+    return isOtherSelected;
+  }
+
+  public boolean selectionHaloEnabled = true;
+  public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
+    this.selectionHaloEnabled = selectionHaloEnabled;
+    refresh();
+  }
+  
+  public boolean getSelectionHaloEnabled() {
+    return selectionHaloEnabled;
+  }
+
+  boolean bondSelectionModeOr;
+  public void setBondSelectionModeOr(boolean bondSelectionModeOr) {
+    this.bondSelectionModeOr = bondSelectionModeOr;
+    refresh();
+  }
+
+  public boolean getBondSelectionModeOr() {
+    return bondSelectionModeOr;
+  }
+
   public void selectAll() {
     selectionManager.selectAll();
     refresh();
@@ -867,6 +910,7 @@ final public class DisplayControl {
   /****************************************************************
    * routines for script support
    ****************************************************************/
+
   public void scriptEcho(String str) {
     // FIXME -- if there is a script window it should go there
     // for an applet it needs to go someplace else
@@ -883,7 +927,7 @@ final public class DisplayControl {
     if (!modelManager.haveFile || selectionManager.isEmpty())
       return iterNull;
     return modelManager.getChemFrameIterator(selectionManager.bsSelection,
-                                             false);
+                                             bondSelectionModeOr);
   }
 
   public void setStyleMarAtomScript(byte style, short mar) {
@@ -904,6 +948,10 @@ final public class DisplayControl {
 
   public void setColorBondScript(Color color) {
     distributor.setColorBond(color, iterBondScript());
+  }
+
+  public void setLabelScript(String strLabel) {
+    distributor.setLabel(strLabel, iterAtomScript());
   }
 
   /****************************************************************
@@ -983,6 +1031,31 @@ final public class DisplayControl {
 
   public short getMarBond() {
     return styleManager.marBond;
+  }
+
+  public final static byte MB_NEVER =     0;
+  public final static byte MB_WIREFRAME = 1;
+  public final static byte MB_SMALL =     2;
+  public final static byte MB_ALWAYS =    3;
+
+  public final static short marMultipleBondSmallMaximum = 128;
+
+  public void setModeMultipleBond(byte modeMultipleBond) {
+    styleManager.setModeMultipleBond(modeMultipleBond);
+    refresh();
+  }
+
+  public byte getModeMultipleBond() {
+    return styleManager.modeMultipleBond;
+  }
+
+  public void setShowMultipleBonds(boolean showMultipleBonds) {
+    styleManager.setShowMultipleBonds(showMultipleBonds);
+    refresh();
+  }
+
+  public boolean getShowMultipleBonds() {
+    return styleManager.showMultipleBonds;
   }
 
   public void setShowAtoms(boolean showAtoms) {
@@ -1105,8 +1178,17 @@ final public class DisplayControl {
     return labelManager.getLabelAtom(styleLabel, atom);
   }
 
+  public String getLabelAtom(String strLabel, Atom atom) {
+    return labelManager.getLabelAtom(strLabel, atom);
+  }
+
+  public void setLabelFontSize(int points) {
+    labelManager.setLabelFontSize(points);
+    refresh();
+  }
+
   public Font getLabelFont(int diameter) {
-    return labelManager.getFont(diameter);
+    return labelManager.getLabelFont(diameter);
   }
 
 }

@@ -53,6 +53,7 @@ public class ModelManager {
       mlistChanged(new MeasurementListEvent(mlist));
     }
     haveFile = true;
+    control.setStructuralChange();
   }
 
   public boolean haveFile() {

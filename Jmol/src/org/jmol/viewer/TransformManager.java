@@ -531,9 +531,9 @@ class TransformManager {
       int radius =
         (int)(viewer.getRotationRadius() * scalePixelsPerAngstrom);
       slabValue =
-        (int)((100-slabPercentSetting) * 2 * radius / 100) + cameraDistance;
+        ((100-slabPercentSetting) * 2 * radius / 100) + cameraDistance;
       depthValue =
-        (int)((100-depthPercentSetting) * 2 * radius / 100) + cameraDistance;
+        ((100-depthPercentSetting) * 2 * radius / 100) + cameraDistance;
     }
   }
 

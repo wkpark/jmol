@@ -487,7 +487,7 @@ class DotsRenderer extends ShapeRenderer {
     bitmap[(i >> 5)] &= ~(1 << (~i & 31));
   }
   */
-  private final static boolean getBit(int[] bitmap, int i) {
+  final static boolean getBit(int[] bitmap, int i) {
     return (bitmap[(i >> 5)] << (i & 31)) < 0;
   }
   /*

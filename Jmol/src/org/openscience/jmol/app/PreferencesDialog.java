@@ -66,32 +66,32 @@ import javax.swing.border.TitledBorder;
 public class PreferencesDialog extends JDialog implements ActionListener {
 
   private boolean autoBond;
-  private boolean showHydrogens;
+  boolean showHydrogens;
   //private boolean showVectors;
-  private boolean showMeasurements;
-  private boolean wireframeRotation;
-  private boolean perspectiveDepth;
-  private boolean showAxes;
-  private boolean showBoundingBox;
-  private boolean axesOrientationRasmol;
-  private boolean isLabelAtomColor;
-  private boolean isBondAtomColor;
-  private Color colorBackground;
-  private Color colorSelection;
-  private Color colorText;
-  private Color colorBond;
-  private Color colorVector;
-  private Color colorMeasurement;
+  boolean showMeasurements;
+  boolean wireframeRotation;
+  boolean perspectiveDepth;
+  boolean showAxes;
+  boolean showBoundingBox;
+  boolean axesOrientationRasmol;
+  boolean isLabelAtomColor;
+  boolean isBondAtomColor;
+  Color colorBackground;
+  Color colorSelection;
+  Color colorText;
+  Color colorBond;
+  Color colorVector;
+  Color colorMeasurement;
   //private byte modeAtomColorProfile;
-  private float minBondDistance;
-  private float bondTolerance;
-  private short marBond;
-  private int percentVdwAtom;
+  float minBondDistance;
+  float bondTolerance;
+  short marBond;
+  int percentVdwAtom;
   //  private double VibrateAmplitudeScale;
   //  private double VibrateVectorScale;
   //  private int VibrationFrames;
-  private JButton bButton, pButton, tButton, eButton, vButton;
-  private JButton measurementColorButton;
+  JButton bButton, pButton, tButton, eButton, vButton;
+  JButton measurementColorButton;
   private JRadioButton /*pYes, pNo, */abYes, abNo;
   //private JComboBox aProps, cRender;
   private JSlider vdwPercentSlider;
@@ -106,7 +106,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cbIsLabelAtomColor, cbIsBondAtomColor;
   private Properties originalSystemProperties;
   private Properties jmolDefaultProperties;
-  private Properties currentProperties;
+  Properties currentProperties;
 
   // The actions:
 
@@ -148,8 +148,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "axesOrientationRasmol",          "true",
   };
 
-  private JmolViewer viewer;
-  private GuiMap guimap;
+  JmolViewer viewer;
+  GuiMap guimap;
 
   public PreferencesDialog(JFrame f, GuiMap guimap, JmolViewer viewer) {
 

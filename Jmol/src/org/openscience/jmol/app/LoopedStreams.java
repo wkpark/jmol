@@ -33,9 +33,9 @@ import java.io.IOException;
 
 public class LoopedStreams {
 
-  private PipedOutputStream pipedOS = new PipedOutputStream();
-  private boolean keepRunning = true;
-  private ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream() {
+  PipedOutputStream pipedOS = new PipedOutputStream();
+  boolean keepRunning = true;
+  ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream() {
 
     public void close() {
 

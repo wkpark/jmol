@@ -34,9 +34,9 @@ import javax.swing.event.*;
 
 public class DisplayPanel extends JPanel
   implements ComponentListener, Printable {
-  private StatusBar status;
-  private GuiMap guimap;
-  private JmolViewer viewer;
+  StatusBar status;
+  GuiMap guimap;
+  JmolViewer viewer;
   
   private String displaySpeed;
 
@@ -68,7 +68,7 @@ public class DisplayPanel extends JPanel
     addComponentListener(this);
   }
 
-  private void setRotateMode() {
+  void setRotateMode() {
       Jmol.setRotateButton();
       viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
       viewer.setSelectionHaloEnabled(false);
@@ -465,7 +465,7 @@ public class DisplayPanel extends JPanel
     return menuListener;
   }
 
-  private void setDisplayMenuState() {
+  void setDisplayMenuState() {
     //    guimap.setSelected("wireframerotationCheck",
     //                       viewer.getWireframeRotation());
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());

@@ -62,22 +62,22 @@ public class Jmol extends JPanel {
 
   public JmolViewer viewer;
 
-  private DisplayPanel display;
-  private StatusBar status;
+  DisplayPanel display;
+  StatusBar status;
   private PreferencesDialog preferencesDialog;
-  private MeasurementTable measurementTable;
-  private RecentFilesDialog recentFiles;
+  MeasurementTable measurementTable;
+  RecentFilesDialog recentFiles;
   private JMenu recentFilesMenu;
   public ScriptWindow scriptWindow;
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
   private static File currentDir;
-  private JFileChooser openChooser;
+  JFileChooser openChooser;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
-  private JFileChooser exportChooser;
-  private JmolPopup jmolpopup;
+  JFileChooser exportChooser;
+  JmolPopup jmolpopup;
   private CDKPluginManager pluginManager;
 
   private GuiMap guimap = new GuiMap();
@@ -86,13 +86,13 @@ public class Jmol extends JPanel {
   private static Dimension screenSize = null;
   int startupWidth, startupHeight;
 
-  private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+  PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
 
   /**
    * The current file.
    */
-  private File currentFile;
+  File currentFile;
 
   /**
    * Button group for toggle buttons in the toolbar.
@@ -109,7 +109,7 @@ public class Jmol extends JPanel {
     return historyFile;
   }
 
-  private static JFrame consoleframe;
+  static JFrame consoleframe;
 
   static {
     if (System.getProperty("javawebstart.version") != null) {
@@ -486,7 +486,7 @@ public class Jmol extends JPanel {
       }
   }
 
-  private void doClose() {
+  void doClose() {
       numWindows--;
       if (numWindows <= 1) {
           System.out.println("Closing Jmol...");

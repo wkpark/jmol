@@ -73,7 +73,7 @@ class FileManager {
   //private boolean isURL;
   private String nameAsGiven;
   private String fullPathName;
-  private String fileName;
+  String fileName;
   private File file;
 
   private FileOpenThread fileOpenThread;
@@ -107,7 +107,7 @@ class FileManager {
 
   void openReader(String fullPathName, String name, Reader reader) {
     openErrorMessage = null;
-    fullPathName = fullPathName;
+    this.fullPathName = fullPathName;
     fileName = name;
     fileOpenThread = new FileOpenThread(fullPathName, reader);
     fileOpenThread.run();

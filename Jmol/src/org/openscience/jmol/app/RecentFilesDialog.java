@@ -43,12 +43,12 @@ import javax.swing.JPanel;
 class RecentFilesDialog extends JDialog implements ActionListener,
     WindowListener {
 
-  private String selectedFileName = null;
+  String selectedFileName = null;
   private static final int MAX_FILES = 10;
   private JButton okButton;
   private JButton cancelButton;
-  private String[] files = new String[MAX_FILES];
-  private JList fileList;
+  String[] files = new String[MAX_FILES];
+  JList fileList;
   java.util.Properties props;
 
   /** Creates a hidden recent files dialog

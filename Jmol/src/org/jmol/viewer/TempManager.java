@@ -40,7 +40,7 @@ class TempManager {
     int fitLength = Integer.MAX_VALUE;
     
     for (int i = lengths.length; --i >= 0; ) {
-      int freeLength = (short)lengths[i];
+      int freeLength = lengths[i];
       if (freeLength >= size &&
           freeLength < fitLength) {
         fitLength = freeLength;

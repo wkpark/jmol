@@ -976,7 +976,7 @@ final public class Frame {
     }
   }
 
-  private Bspf bspf;
+  Bspf bspf;
 
   void initializeBspf() {
     if (bspf == null) {

@@ -39,8 +39,8 @@ public class ImageTyper extends JPanel {
 
   private String[] Choices = { "JPEG", "PNG", "PPM" };
   private int def = 0;
-  private String result = Choices[def];
-  private JSlider qSlider;
+  String result = Choices[def];
+  JSlider qSlider;
   private JComboBox cb;
 
   /**

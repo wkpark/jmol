@@ -60,19 +60,19 @@ import java.io.File;
 public class PovrayDialog extends JDialog {
 
   private JmolViewer viewer;
-  private boolean callPovray = true;
-  private boolean doAntiAlias = true;
-  private boolean displayWhileRendering = true;
+  boolean callPovray = true;
+  boolean doAntiAlias = true;
+  boolean displayWhileRendering = true;
   String savePath;
   String basename = "I'm a bug";
   String commandLine = "Hello, I'm a bug!!";
   String povrayPath = "I'm a bug, lets party";
-  private JButton povrayPathButton;
-  private JCheckBox antiAlias;
-  private JCheckBox displayWhileRenderingBox;
-  private JTextField commandLineField;
-  private JButton goButton;
-  private JTextField saveField;
+  JButton povrayPathButton;
+  JCheckBox antiAlias;
+  JCheckBox displayWhileRenderingBox;
+  JTextField commandLineField;
+  JButton goButton;
+  JTextField saveField;
   private JLabel savePathLabel;
   private int outputWidth = -1;
   private int outputHeight = -1;
@@ -330,7 +330,7 @@ public class PovrayDialog extends JDialog {
   /**
    * Save or else launch povray- ie do our thang!
    */
-  private void goPressed() {
+  void goPressed() {
 
     // File theFile = new.getSelectedFile();
     commandLine = commandLineField.getText();
@@ -363,7 +363,7 @@ public class PovrayDialog extends JDialog {
   /**
    * Responds to cancel being press- or equivalent eg window closed.
    */
-  private void cancelPressed() {
+  void cancelPressed() {
     setVisible(false);
     dispose();
   }
@@ -371,7 +371,7 @@ public class PovrayDialog extends JDialog {
   /**
    * Show a file selector when the savePath button is pressed.
    */
-  private void showSavePathDialog() {
+  void showSavePathDialog() {
 
     JFileChooser myChooser = new JFileChooser();
     myChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -392,7 +392,7 @@ public class PovrayDialog extends JDialog {
   /**
    * Show a file selector when the savePath button is pressed.
    */
-  private void showPovrayPathDialog() {
+  void showPovrayPathDialog() {
 
     JFileChooser myChooser = new JFileChooser();
     int button = myChooser.showDialog(this, "Select");

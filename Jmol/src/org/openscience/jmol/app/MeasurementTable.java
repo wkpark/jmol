@@ -48,12 +48,12 @@ import java.awt.event.ActionListener;
 
 public class MeasurementTable extends JDialog {
 
-  private JmolViewer viewer;
+  JmolViewer viewer;
   private JTable measurementTable;
   private MeasurementTableModel measurementTableModel;
   private ListSelectionModel measurementSelection;
-  private int selectedMeasurementRow = -1;
-  private JButton deleteButton;
+  int selectedMeasurementRow = -1;
+  JButton deleteButton;
   private JButton deleteAllButton;
 
   /**

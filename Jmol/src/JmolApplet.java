@@ -304,6 +304,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void scriptEcho(String strEcho) {
+    scriptStatus(strEcho);
   }
 
   public void scriptStatus(String strStatus) {

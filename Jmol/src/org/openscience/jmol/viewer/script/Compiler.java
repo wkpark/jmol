@@ -183,9 +183,9 @@ class Compiler {
         if (lookingAtPositiveInteger() || 
             ((tokCommand & Token.negativeints) != 0 &&
              lookingAtNegativeInteger())) {
-          int val = Integer.parseInt(script.substring(ichToken,
-                                                      ichToken + cchToken));
-          ltoken.addElement(new Token(Token.integer, val, "integer"));
+          String intString = script.substring(ichToken, ichToken + cchToken);
+          int val = Integer.parseInt(intString);
+          ltoken.addElement(new Token(Token.integer, val, intString));
           continue;
         }
       }
@@ -980,30 +980,28 @@ class Compiler {
       tokenNext();
       return true;
     }
-    Token tokenIdent = tokenNext();
-    if (tokenIdent.tok == Token.leftsquare) {
+    Token tokenT = tokenNext();
+    if (tokenT.tok == Token.leftsquare) {
       log("I see a left square bracket");
       // FIXME mth -- maybe need to deal with asterisks here too
-      tokenIdent = tokenNext();
+      tokenT = tokenNext(); if (tokenT == null) return false;
       String strSpec = "";
-      if (tokenIdent.tok == Token.plus) {
+      if (tokenT.tok == Token.plus) {
         strSpec = "+";
-        tokenIdent = tokenNext();
+        tokenT = tokenNext();
       }
-      // note .. this will not work if they have residue names that
-      // start with the digit '0'
-      // as in [01A] ... we will reconstruct [1A]
-      //
       // what a hack :-(
-      int tok = tokenIdent.tok;
+      int tok = tokenT.tok;
       if (tok == Token.integer) {
-        strSpec += tokenIdent.intValue;
-        tokenIdent = tokenNext();
-        tok = tokenIdent.tok;
+        strSpec += tokenT.value;
+        tokenT = tokenNext(); if (tokenT == null) return false;
+        tok = tokenT.tok;
       }
       if (tok == Token.identifier ||
           tok == Token.x || tok == Token.y || tok == Token.z) {
-        strSpec += tokenIdent.value;
+        strSpec += tokenT.value;
+        tokenT = tokenNext(); if (tokenT == null) return false;
+        tok = tokenT.tok;
       }
       if (strSpec == "")
         return residueSpecificationExpected();
@@ -1013,9 +1011,9 @@ class Compiler {
         generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
       else
         generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
-      return tokenNext().tok == Token.rightsquare;
+      return tok == Token.rightsquare;
     }
-    return processIdentifier(tokenIdent);
+    return processIdentifier(tokenT);
   }
 
   boolean processIdentifier(Token tokenIdent) {

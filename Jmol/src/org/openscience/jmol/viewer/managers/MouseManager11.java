@@ -69,7 +69,16 @@ public class MouseManager11 extends MouseManager
   }
 
   public void mouseDragged(MouseEvent e) {
-    mouseDragged(e.getX(), e.getY(), e.getModifiers());
+    int modifiers = e.getModifiers();
+    /****************************************************************
+     * Netscape 4.* Win32 has a problem with mouseDragged
+     * if you left-drag then none of the modifiers are selected
+     * we will try to fix that here
+     ****************************************************************/
+    if ((modifiers & LEFT_MIDDLE_RIGHT) == 0)
+      modifiers |= LEFT;
+    /****************************************************************/      
+    mouseDragged(e.getX(), e.getY(), modifiers);
   }
 
   public void mouseMoved(MouseEvent e) {

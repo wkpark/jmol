@@ -50,7 +50,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = true;
+  private static final boolean logMouseEvents = false;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
@@ -104,6 +104,7 @@ public abstract class MouseManager {
   final static int CTRL = Event.CTRL_MASK;   // 2
   final static int SHIFT = Event.SHIFT_MASK; // 1
   final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
+  final static int LEFT_MIDDLE_RIGHT = LEFT | MIDDLE | RIGHT;
   final static int CTRL_SHIFT = CTRL | SHIFT;
   final static int CTRL_LEFT = CTRL | LEFT;
   final static int CTRL_RIGHT = CTRL | RIGHT;
@@ -170,10 +171,14 @@ public abstract class MouseManager {
   }
 
   void mouseEntered(int x, int y) {
+    if (logMouseEvents)
+      System.out.println("mouseEntered("+x+","+y+")");
     xCurrent = x; yCurrent = y;
   }
 
   void mouseExited(int x, int y) {
+    if (logMouseEvents)
+      System.out.println("mouseExited("+x+","+y+")");
     xCurrent = x; yCurrent = y;
     exitMeasurementMode();
   }
@@ -261,6 +266,8 @@ public abstract class MouseManager {
   }
 
   void mouseDragged(int x, int y, int modifiers) {
+    if (logMouseEvents)
+      System.out.println("mouseDragged("+x+","+y+","+modifiers + ")");
     checkSelectionHalo(modifiers);
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;
@@ -381,6 +388,10 @@ public abstract class MouseManager {
 */
 
   void mouseMoved(int x, int y, int modifiers) {
+    /*
+    if (logMouseEvents)
+      System.out.println("mouseMoved("+x+","+y+","+modifiers"+)");
+    */
     checkSelectionHalo(modifiers);
     xCurrent = x; yCurrent = y;
     if (measurementMode | hoverActive) {
@@ -448,10 +459,10 @@ public abstract class MouseManager {
 
   void exitMeasurementMode() {
     if (measurementMode) {
-      viewer.getAwtComponent().setCursor(null);
-      measurementCount = 0;
       viewer.setPendingMeasurement(null);
       measurementMode = false;
+      measurementCount = 0;
+      viewer.getAwtComponent().setCursor(Cursor.getDefaultCursor());
     }
   }
 

@@ -27,12 +27,10 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.*;
 import org.jmol.api.ModelAdapter;
 
-import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
@@ -46,6 +44,10 @@ import java.io.StringReader;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.util.zip.GZIPInputStream;
+/****************************************************************
+ * will not work with applet
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.ReaderFactory;
@@ -57,6 +59,7 @@ import org.openscience.dadml.INDEX;
 import org.openscience.dadml.filereaders.DBDEFFileReader;
 import org.openscience.dadml.filereaders.DBLISTFileReader;
 import org.openscience.dadml.tools.DBDEFInfo;
+*/
 
 public class FileManager {
 
@@ -179,6 +182,8 @@ public class FileManager {
         return;
       }
     }
+    /****************************************************************
+     * we need to comment this out because it will not work with applet
     if (name.startsWith("dadml:")) {
         isURL = true;
         try {
@@ -195,12 +200,14 @@ public class FileManager {
         System.out.println("dadml fullPathName=" + fullPathName);
         return;
     }
+    ****************************************************************/
     isURL = false;
     file = new File(name);
     fullPathName = file.getAbsolutePath();
     fileName = file.getName();
   }
 
+  /****************************************************************
   public URL resolveLink(URI dadmlRI) {
     System.out.println("Resolving URI: " + dadmlRI);
     
@@ -278,6 +285,7 @@ public class FileManager {
     openErrorMessage = "Database does not contain the requested compound";
     return null;
   }
+  ****************************************************************/
   
   public Object getInputStreamOrErrorMessageFromName(String name) {
     String errorMessage = null;

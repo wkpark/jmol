@@ -33,6 +33,7 @@ public class Bond {
   public Atom atom1;
   public Atom atom2;
   byte order;
+  byte hbondOffset; // for hbonds, what is the delta between the two atoms
   short mad;
   short colix;
 

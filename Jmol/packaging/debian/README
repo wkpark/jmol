@@ -1,0 +1,4 @@
+To generate Debian packages, do:
+
+1. copy $JMOL_CVSDIR/jmol/jmol-$VERSION.source.tar.gz to /tmp
+2. in $JMOL_CVSDIR/jmol/packaging/debian type make

@@ -393,42 +393,42 @@ public class CrystalFile extends ChemFile {
     double[][] rprimd = unitCellBoxS.getRprimd();
 
     //Compute the Unit Cell Box edges
-    boxEdgesTemplate.add(new Point3d());           //O
-    boxEdgesTemplate.add(new Point3d(1, 0, 0));    //E
+    boxEdgesTemplate.addElement(new Point3d());           //O
+    boxEdgesTemplate.addElement(new Point3d(1, 0, 0));    //E
 
-    boxEdgesTemplate.add(new Point3d());           //O
-    boxEdgesTemplate.add(new Point3d(0, 1, 0));    //E
+    boxEdgesTemplate.addElement(new Point3d());           //O
+    boxEdgesTemplate.addElement(new Point3d(0, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3d());           //O
-    boxEdgesTemplate.add(new Point3d(0, 0, 1));    //E
+    boxEdgesTemplate.addElement(new Point3d());           //O
+    boxEdgesTemplate.addElement(new Point3d(0, 0, 1));    //E
 
 
-    boxEdgesTemplate.add(new Point3d(1, 0, 0));    //O
-    boxEdgesTemplate.add(new Point3d(1, 1, 0));    //E
+    boxEdgesTemplate.addElement(new Point3d(1, 0, 0));    //O
+    boxEdgesTemplate.addElement(new Point3d(1, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3d(1, 1, 0));    //O
-    boxEdgesTemplate.add(new Point3d(0, 1, 0));    //E
+    boxEdgesTemplate.addElement(new Point3d(1, 1, 0));    //O
+    boxEdgesTemplate.addElement(new Point3d(0, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3d(0, 1, 0));    //O
-    boxEdgesTemplate.add(new Point3d(0, 1, 1));    //E
+    boxEdgesTemplate.addElement(new Point3d(0, 1, 0));    //O
+    boxEdgesTemplate.addElement(new Point3d(0, 1, 1));    //E
 
-    boxEdgesTemplate.add(new Point3d(0, 1, 1));    //O
-    boxEdgesTemplate.add(new Point3d(0, 0, 1));    //E
+    boxEdgesTemplate.addElement(new Point3d(0, 1, 1));    //O
+    boxEdgesTemplate.addElement(new Point3d(0, 0, 1));    //E
 
-    boxEdgesTemplate.add(new Point3d(0, 0, 1));    //O
-    boxEdgesTemplate.add(new Point3d(1, 0, 1));    //E
+    boxEdgesTemplate.addElement(new Point3d(0, 0, 1));    //O
+    boxEdgesTemplate.addElement(new Point3d(1, 0, 1));    //E
 
-    boxEdgesTemplate.add(new Point3d(1, 0, 1));    //O
-    boxEdgesTemplate.add(new Point3d(1, 0, 0));    //E
+    boxEdgesTemplate.addElement(new Point3d(1, 0, 1));    //O
+    boxEdgesTemplate.addElement(new Point3d(1, 0, 0));    //E
 
-    boxEdgesTemplate.add(new Point3d(1, 0, 1));    //O
-    boxEdgesTemplate.add(new Point3d(1, 1, 1));    //E
+    boxEdgesTemplate.addElement(new Point3d(1, 0, 1));    //O
+    boxEdgesTemplate.addElement(new Point3d(1, 1, 1));    //E
 
-    boxEdgesTemplate.add(new Point3d(1, 1, 1));    //O
-    boxEdgesTemplate.add(new Point3d(1, 1, 0));    //E
+    boxEdgesTemplate.addElement(new Point3d(1, 1, 1));    //O
+    boxEdgesTemplate.addElement(new Point3d(1, 1, 0));    //E
 
-    boxEdgesTemplate.add(new Point3d(0, 1, 1));    //O
-    boxEdgesTemplate.add(new Point3d(1, 1, 1));    //E
+    boxEdgesTemplate.addElement(new Point3d(0, 1, 1));    //O
+    boxEdgesTemplate.addElement(new Point3d(1, 1, 1));    //E
 
     //Operator "op" needed to transform atomic crystal 
     //coordinate (atomCrystCoord) in cartesian atomic 

@@ -241,8 +241,8 @@
   <target name="check.appletjars">
     <uptodate property="appletjars.uptodate"
       targetfile="${appletjars.dir}">
-      <srcfiles dir="${lib.dir}" includes="jmolcdk.jar"/>
-      <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
+      <srcfiles dir="${lib.dir}"
+           includes="jmolcdk.jar,gnujaxp.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
   <target name="appletjars" depends="check.appletjars"
@@ -250,6 +250,7 @@
     <delete dir="${appletjars.dir}"/>
     <mkdir dir="${appletjars.dir}"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+    <unjar dest="${appletjars.dir}" src="${lib.dir}/gnujaxp.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
         <include name="**/Tuple2d.class"/>
@@ -265,6 +266,7 @@
         <include name="**/Vector3d.class"/>
         <include name="**/Vector4d.class"/>
         <include name="**/Matrix4d.class"/>
+        <include name="**/Matrix3d.class"/>
         <include name="**/Quat4f.class"/>
         <include name="**/Quat4d.class"/>
       </patternset>

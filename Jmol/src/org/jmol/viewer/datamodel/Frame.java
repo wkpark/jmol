@@ -578,6 +578,23 @@ final public class Frame {
     return mmset.getModelSetProperty(propertyName);
   }
 
+  public boolean modelSetHasVibrationVectors() {
+    return hasVibrationVectors;
+  }
+
+  public boolean hasVibrationVectors() {
+    return hasVibrationVectors;
+  }
+
+  public boolean modelHasVibrationVectors(int modelIndex) {
+    if (vibrationVectors != null)
+      for (int i = atomCount; --i >= 0; )
+        if (atoms[i].modelIndex == modelIndex &&
+            vibrationVectors[i] != null)
+          return true;
+    return false;
+  }
+
   public int getModelCount() {
     return mmset.getModelCount();
   }
@@ -668,10 +685,6 @@ final public class Frame {
   void bondAtoms(Atom atom1, Atom atom2,
                              int order) {
     addBond(atom1.bondMutually(atom2, order, viewer));
-  }
-
-  public boolean hasVibrationVectors() {
-    return hasVibrationVectors;
   }
 
   Shape allocateShape(int shapeID) {

@@ -102,6 +102,14 @@ class ModelManager {
     return frame == null ? null : frame.getModelSetProperty(propertyName);
   }
 
+  boolean modelSetHasVibrationVectors() {
+    return frame == null ? false : frame.modelSetHasVibrationVectors();
+  }
+
+  boolean modelHasVibrationVectors(int modelIndex) {
+    return frame == null ? false : frame.modelHasVibrationVectors(modelIndex);
+  }
+
   String getModelFileHeader() {
     return modelFileHeader;
   }

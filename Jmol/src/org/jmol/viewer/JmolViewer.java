@@ -1150,6 +1150,14 @@ final public class JmolViewer {
     return modelManager.getModelNumberIndex(modelNumber);
   }
 
+  public boolean modelSetHasVibrationVectors() {
+    return modelManager.modelSetHasVibrationVectors();
+  }
+
+  public boolean modelHasVibrationVectors(int modelIndex) {
+    return modelManager.modelHasVibrationVectors(modelIndex);
+  }
+
   public int getChainCount() {
     return modelManager.getChainCount();
   }

@@ -2966,12 +2966,16 @@ public class Eval implements Runnable {
 
   void showModel() {
     int modelCount = viewer.getModelCount();
-    showString("model count = " + modelCount);
+    showString("model count = " + modelCount +
+               "\nmodelSetHasVibrationVectors:" +
+               viewer.modelSetHasVibrationVectors());
     Properties props = viewer.getModelSetProperties();
     printProperties(props);
     for (int i = 0; i < modelCount; ++i) {
       showString("" + i + ":" + viewer.getModelNumber(i) +
-                 ":" + viewer.getModelName(i));
+                 ":" + viewer.getModelName(i) +
+                 "\nmodelHasVibrationVectors:" +
+                 viewer.modelHasVibrationVectors(i));
       printProperties(viewer.getModelProperties(i));
     }
   }

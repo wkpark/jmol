@@ -42,7 +42,7 @@ class AtomSetCollection {
   Structure[] structures = new Structure[16];
   
   int atomSetCount;
-  int currentAtomSetNumber;
+  int currentAtomSetIndex = -1;
   int[] atomSetNumbers = new int[16];
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
@@ -81,7 +81,7 @@ class AtomSetCollection {
     atomCount = 0;
     atomNameMap.clear();
     atomSetCount = 0;
-    currentAtomSetNumber = 0;
+    currentAtomSetIndex = -1;
     for (int i = atomSetNumbers.length; --i >= 0; ) {
       atomSetNumbers[i] = atomSetAtomCounts[i] = 0;
       atomSetNames[i] = null;
@@ -106,7 +106,7 @@ class AtomSetCollection {
     //    System.out.println("b4 atomCount=" + atomCount);
     //    System.out.println("atomSetCount=" + atomSetCount);
     //    System.out.println("atomSetAtomCount=" +
-    //                       atomSetAtomCounts[atomSetCount - 1]);
+    //                       atomSetAtomCounts[currentAtomSetIndex]);
     int count = getLastAtomSetAtomCount();
     int atomIndex = getLastAtomSetAtomIndex();
     newAtomSet();
@@ -120,12 +120,12 @@ class AtomSetCollection {
   }
 
   int getLastAtomSetAtomCount() {
-    return atomSetAtomCounts[atomSetCount - 1];
+    return atomSetAtomCounts[currentAtomSetIndex];
   }
 
   int getLastAtomSetAtomIndex() {
     //    System.out.println("atomSetCount=" + atomSetCount);
-    return atomCount - atomSetAtomCounts[atomSetCount - 1];
+    return atomCount - atomSetAtomCounts[currentAtomSetIndex];
   }
 
   Atom addNewAtom() {
@@ -140,16 +140,17 @@ class AtomSetCollection {
     atoms[atomCount++] = atom;
     if (atomSetCount == 0) {
       atomSetCount = 1;
-      currentAtomSetNumber = 1;
+      currentAtomSetIndex = 0;
+      atomSetNumbers[0] = 1;
     }
-    atom.atomSetNumber = currentAtomSetNumber;
-    ++atomSetAtomCounts[atomSetCount - 1];
+    atom.atomSetIndex = currentAtomSetIndex;
+    ++atomSetAtomCounts[currentAtomSetIndex];
     /*
     System.out.println("addAtom ... after" +
                        "\natomCount=" + atomCount +
                        "\natomSetCount=" + atomSetCount +
-                       "\natomSetAtomCounts[" + (atomSetCount - 1) + "]=" +
-                       atomSetAtomCounts[atomSetCount - 1]);
+                       "\natomSetAtomCounts[" + (currentAtomSetIndex) + "]=" +
+                       atomSetAtomCounts[atomSetIndex]);
     */
   }
 
@@ -240,26 +241,25 @@ class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
 
   void newAtomSet() {
-    newAtomSet(atomSetCount + 1);
-  }
-
-  void newAtomSet(int atomSetNumber) {
-    //    System.out.println("newAtomSet(" + atomSetNumber + ")");
-    ++atomSetCount;
+    //    System.out.println("newAtomSet()");
+    currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
       atomSetNumbers = AtomSetCollectionReader.doubleLength(atomSetNumbers);
       atomSetNames = AtomSetCollectionReader.doubleLength(atomSetNames);
       atomSetAtomCounts =
         AtomSetCollectionReader.doubleLength(atomSetAtomCounts);
     }
-    currentAtomSetNumber = atomSetNumber;
-    atomSetNumbers[atomSetCount - 1] = atomSetNumber;
+    atomSetNumbers[currentAtomSetIndex] = atomSetCount;
   }
 
   void setAtomSetName(String atomSetName) {
     System.out.println("setAtomSetName(\"" + atomSetName +
-                       "\") for atomSet " + (atomSetCount - 1));
-    atomSetNames[atomSetCount - 1] = atomSetName;
+                       "\") for atomSet " + (currentAtomSetIndex));
+    atomSetNames[currentAtomSetIndex] = atomSetName;
+  }
+
+  void setAtomSetNumber(int atomSetNumber) {
+    atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
   }
 
   int getAtomSetCount() {

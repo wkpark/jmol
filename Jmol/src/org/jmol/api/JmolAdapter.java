@@ -213,8 +213,7 @@ public abstract class JmolAdapter {
    ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
-    public String getAtomSetName(){ return "" + getAtomSetNumber(); }
-    public int getAtomSetNumber() { return 1; }
+    public int getAtomSetIndex() { return 0; }
     abstract public Object getUniqueID();
     public int getElementNumber() { return -1; }
     public String getElementSymbol() { return null; }

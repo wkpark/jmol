@@ -350,8 +350,8 @@ class PdbReader extends AtomSetCollectionReader {
       if (endModelColumn > lineLength)
         endModelColumn = lineLength;
       int modelNumber = parseInt(line, startModelColumn, endModelColumn);
-      atomSetCollection.newAtomSet(modelNumber);
-      atomSetCollection.setAtomSetName("" + modelNumber);
+      atomSetCollection.newAtomSet();
+      atomSetCollection.setAtomSetNumber(modelNumber);
     } catch (NumberFormatException e) {
     }
   }

@@ -1030,10 +1030,6 @@ final public class JmolViewer {
     return modelManager.getModelFileHeader();
   }
 
-  public int getModelIndex(String modelTag) {
-    return modelManager.getModelIndex(modelTag);
-  }
-
   public boolean haveFrame() {
     return modelManager.frame != null;
   }
@@ -1127,8 +1123,16 @@ final public class JmolViewer {
     return modelManager.getModelCount();
   }
 
-  public String getModelTag(int modelIndex) {
-    return modelManager.getModelTag(modelIndex);
+  public int getModelNumber(int modelIndex) {
+    return modelManager.getModelNumber(modelIndex);
+  }
+
+  public String getModelName(int modelIndex) {
+    return modelManager.getModelName(modelIndex);
+  }
+
+  public int getModelNumberIndex(int modelNumber) {
+    return modelManager.getModelNumberIndex(modelNumber);
   }
 
   public int getChainCount() {

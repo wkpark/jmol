@@ -37,8 +37,9 @@ final public class Mmset {
   Frame frame;
 
   private int modelCount = 0;
+  private String[] modelNames = new String[1];
+  private int[] modelNumbers = new int[1];
   private Model[] models = new Model[1];
-  private String[] modelTags = new String[1];
 
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
@@ -84,30 +85,40 @@ final public class Mmset {
   }
 
 
-  Model getOrAllocateModel(String modelTag) {
-    modelTag = modelTag.intern();
-    for (int i = modelCount; --i >= 0; )
-      if (modelTags[i] == modelTag)
-        return models[i];
-    if (modelCount == models.length) {
-      models = (Model[])Util.doubleLength(models);
-      modelTags = Util.doubleLength(modelTags);
-    }
-    modelTags[modelCount] = modelTag;
-    Model model = new Model(this, modelCount, modelTag);
-    models[modelCount++] = model;
-    return model;
+  void setModelCount(int modelCount) {
+    System.out.println("setModelCount(" + modelCount + ")");
+    if (this.modelCount != 0)
+      throw new NullPointerException();
+    this.modelCount = modelCount;
+    models = (Model[])Util.setLength(models, modelCount);
+    modelNames = Util.setLength(modelNames, modelCount);
+    modelNumbers = Util.setLength(modelNumbers, modelCount);
   }
 
-  String getModelTag(int modelIndex) {
-    return modelTags[modelIndex];
+  String getModelName(int modelIndex) {
+    return modelNames[modelIndex];
   }
 
-  int getModelIndex(String modelTag) {
+  int getModelNumber(int modelIndex) {
+    return modelNumbers[modelIndex];
+  }
+
+  Model getModel(int modelIndex) {
+    return models[modelIndex];
+  }
+
+  public int getModelNumberIndex(int modelNumber) {
     int i;
-    for (i = modelCount; --i >= 0 && !modelTags[i].equals(modelTag); )
-      ;
+    for (i = modelCount; --i >= 0 && modelNumbers[i] != modelNumber; )
+      {}
     return i;
+  }
+
+
+  void setModelNameNumber(int modelIndex, String modelName, int modelNumber) {
+    modelNames[modelIndex] = modelName;
+    modelNumbers[modelIndex] = modelNumber;
+    models[modelIndex] = new Model(this, modelIndex, "" + modelNumber);
   }
 
   private void propogateSecondaryStructure() {

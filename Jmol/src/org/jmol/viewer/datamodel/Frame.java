@@ -181,13 +181,34 @@ final public class Frame {
     return mmset.getModelCount();
   }
 
-  public String getModelTag(int modelIndex) {
-    return mmset.getModelTag(modelIndex);
+  public int getModelNumber(int modelIndex) {
+    return mmset.getModelNumber(modelIndex);
   }
 
-  public int getModelIndex(String modelTag) {
-    return mmset.getModelIndex(modelTag);
+  public String getModelName(int modelIndex) {
+    return mmset.getModelName(modelIndex);
   }
+
+  public Model getModel(int modelIndex) {
+    return mmset.getModel(modelIndex);
+  }
+
+  public int getModelNumberIndex(int modelNumber) {
+    return mmset.getModelNumberIndex(modelNumber);
+  }
+
+  ////////////////////////////////////////////////////////////////
+  
+  public void setModelCount(int modelCount) {
+    mmset.setModelCount(modelCount);
+  }
+
+  public void setModelNameNumber(int modelIndex,
+                                 String modelName, int modelNumber) {
+    mmset.setModelNameNumber(modelIndex, modelName, modelNumber);
+  }
+
+  ////////////////////////////////////////////////////////////////
 
   public int getChainCount() {
     return mmset.getChainCount();

@@ -1193,8 +1193,14 @@ public class Eval implements Runnable {
   }
 
   BitSet getSpecModel(String modelTag) {
+    int modelNumber = -1;
+    try {
+      modelNumber = Integer.parseInt(modelTag);
+    } catch (NumberFormatException nfe) {
+    }
+    
     BitSet bsModel = new BitSet(viewer.getAtomCount());
-    selectModelIndexAtoms(viewer.getModelIndex(modelTag), bsModel);
+    selectModelIndexAtoms(viewer.getModelNumberIndex(modelNumber), bsModel);
     return bsModel;
   }
 
@@ -2338,7 +2344,7 @@ public class Eval implements Runnable {
     }
     if (statementLength != offset + 1)
       badArgumentCount();
-    String modelTag = null;
+    int modelNumber = -1;
     switch(statement[offset].tok) {
     case Token.all:
     case Token.asterisk:
@@ -2346,7 +2352,7 @@ public class Eval implements Runnable {
     case Token.none:
       break;
     case Token.integer:
-      modelTag = "" + statement[offset].intValue;
+      modelNumber = statement[offset].intValue;
       break;
     case Token.identifier:
       String ident = (String)statement[offset].value;
@@ -2358,12 +2364,11 @@ public class Eval implements Runnable {
         viewer.setAnimationPrevious();
         return;
       }
-      modelTag = (String)statement[offset].value;
       break;
     default:
       invalidArgument();
     }
-    int modelIndex = viewer.getModelIndex(modelTag);
+    int modelIndex = viewer.getModelNumberIndex(modelNumber);
     viewer.setDisplayModelIndex(modelIndex);
   }
 
@@ -2889,7 +2894,8 @@ public class Eval implements Runnable {
     int modelCount = viewer.getModelCount();
     showString("model count = " + modelCount);
     for (int i = 0; i < modelCount; ++i)
-      showString("" + i + ":" + viewer.getModelTag(i));
+      showString("" + i + ":" + viewer.getModelNumber(i) +
+                 ":" + viewer.getModelName(i));
   }
 
   void showAnimation() {

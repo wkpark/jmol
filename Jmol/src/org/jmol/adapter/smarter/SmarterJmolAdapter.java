@@ -155,7 +155,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       atom = atomSetCollection.atoms[iatom++];
       return true;
     }
-    public int getAtomSetNumber() { return atom.atomSetNumber; }
+    public int getAtomSetIndex() { return atom.atomSetIndex; }
     public Object getUniqueID() { return atom; }
     public String getElementSymbol() {
       if (atom.elementSymbol != null)

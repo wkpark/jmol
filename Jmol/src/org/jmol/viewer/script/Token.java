@@ -508,6 +508,7 @@ public class Token {
     // chime show parameters
     "residue",      new Token(residue,         "residue"),
     "model",        new Token(model,           "model"),
+    "models",       null,
     "pdbheader",    new Token(pdbheader,       "pdbheader"),
 
     "axisangle",    new Token(axisangle,       "axisangle"),

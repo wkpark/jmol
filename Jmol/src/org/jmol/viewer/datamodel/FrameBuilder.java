@@ -58,6 +58,17 @@ final public class FrameBuilder {
     frame.setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile));
     frame.setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
 
+    currentModelIndex = -1;
+    int modelCount = adapter.getAtomSetCount(clientFile);
+    frame.setModelCount(modelCount);
+    for (int i = 0; i < modelCount; ++i) {
+      int modelNumber = adapter.getAtomSetNumber(clientFile, i);
+      String modelName = adapter.getAtomSetName(clientFile, i);
+      if (modelName == null)
+        modelName = "" + modelNumber;
+      frame.setModelNameNumber(i, modelName, modelNumber);
+    }
+
     for (JmolAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile);
          iterAtom.hasNext(); ) {
@@ -68,7 +79,7 @@ final public class FrameBuilder {
       addAtom(frame,
               // FIXME miguel 2004 10 21
               // this should not be done using the atomSetName
-              iterAtom.getAtomSetName().intern(),
+              iterAtom.getAtomSetIndex(),
               iterAtom.getUniqueID(),
               elementNumber,
               iterAtom.getAtomName(),
@@ -108,7 +119,6 @@ final public class FrameBuilder {
                               iterStructure.getEndChainID(),
                               iterStructure.getEndSequenceNumber(),
                               iterStructure.getEndInsertionCode());
-  
     frame.atomCount = atomCount;
     frame.atoms = atoms;
     frame.clientAtomReferences = clientAtomReferences;
@@ -145,16 +155,11 @@ final public class FrameBuilder {
                          adapter.getAtomSetNumber(clientFile, i));
                          
     }
-    for (int i = 0; i < frameModelCount; ++i) {
-      System.out.println("frame.getModelTag(" + i + ") => " +
-                         frame.getModelTag(i));
-    }
   }
 
 
   private final static int ATOM_GROWTH_INCREMENT = 2000;
 
-  String currentModelTag;
   int currentModelIndex;
   Model currentModel;
   char currentChainID;
@@ -173,7 +178,6 @@ final public class FrameBuilder {
 
 
   void initializeBuild(int atomCountEstimate) {
-    currentModelTag = null;
     currentModel = null;
     currentChainID = '\uFFFF';
     currentChain = null;
@@ -201,7 +205,7 @@ final public class FrameBuilder {
 
 
   void addAtom(Frame frame,
-               String modelTag, Object atomUid,
+               int modelIndex, Object atomUid,
                byte atomicNumber,
                String atomName, 
                int formalCharge, float partialCharge,
@@ -213,10 +217,11 @@ final public class FrameBuilder {
                int groupSequenceNumber, char groupInsertionCode,
                float vectorX, float vectorY, float vectorZ,
                Object clientAtomReference) {
-    if (modelTag != currentModelTag) {
-      currentModelTag = modelTag;
-      currentModel = frame.mmset.getOrAllocateModel(modelTag);
-      currentModelIndex = frame.mmset.getModelIndex(modelTag);
+    if (modelIndex != currentModelIndex) {
+      System.out.println("modelIndex=" + modelIndex);
+      currentModel = frame.mmset.getModel(modelIndex);
+      System.out.println("currentModel=" + currentModel);
+      currentModelIndex = modelIndex;
       currentChainID = '\uFFFF';
     }
     if (chainID != currentChainID) {

@@ -74,7 +74,6 @@ class SpartanReader extends AtomSetCollectionReader {
 
   void readFrequencies(BufferedReader reader) throws Exception {
     int totalFrequencyCount = 0;
-    atomCountInFirstModel = atomSetCollection.atomCount;
     float[] frequencies = new float[5];
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
@@ -93,20 +92,21 @@ class SpartanReader extends AtomSetCollectionReader {
           break; //////////////// loop exit is here
         ++totalFrequencyCount;
         if (totalFrequencyCount > 1)
-          createNewModel(totalFrequencyCount);
+          atomSetCollection.cloneFirstAtomSet();
       }
       if (lineFreqCount == 0)
         return;
       Atom[] atoms = atomSetCollection.atoms;
       discardLines(reader, 2);
-      for (int i = 0; i < atomCountInFirstModel; ++i) {
+      int firstAtomSetAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
+      for (int i = 0; i < firstAtomSetAtomCount; ++i) {
         line = reader.readLine();
         for (int j = 0; j < lineFreqCount; ++j) {
           int ichCoords = j * 23 + 10;
           float x = parseFloat(line, ichCoords,      ichCoords +  7);
           float y = parseFloat(line, ichCoords +  7, ichCoords + 14);
           float z = parseFloat(line, ichCoords + 14, ichCoords + 21);
-          int atomIndex = (lineBaseFreqCount + j) * atomCountInFirstModel + i;
+          int atomIndex = (lineBaseFreqCount + j) * firstAtomSetAtomCount + i;
           Atom atom = atoms[atomIndex];
           atom.vectorX = x;
           atom.vectorY = y;
@@ -114,17 +114,6 @@ class SpartanReader extends AtomSetCollectionReader {
           //          System.out.println("x=" + x + " y=" + y + " z=" + z);
         }
       }
-    }
-  }
-
-  int atomCountInFirstModel;
-  
-  void createNewModel(int modelNumber) {
-    //    System.out.println("createNewModel(" + modelNumber + ")");
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCountInFirstModel; ++i) {
-      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
-      atomNew.modelNumber = modelNumber;
     }
   }
 }

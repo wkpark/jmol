@@ -104,6 +104,22 @@ public class ModelManager {
     return modelFileHeader;
   }
 
+  public int getModelCount() {
+    return (frame == null) ? 0 : frame.getModelCount();
+  }
+
+  public int getModelNumber(int modelIndex) {
+    return (frame == null) ? -1 : frame.getModelNumber(modelIndex);
+  }
+
+  public String getModelName(int modelIndex) {
+    return (frame == null) ? null : frame.getModelName(modelIndex);
+  }
+
+  public int getModelNumberIndex(int modelNumber) {
+    return (frame == null) ? -1 : frame.getModelNumberIndex(modelNumber);
+  }
+
   public boolean hasVibrationVectors() {
     return frame.hasVibrationVectors();
   }
@@ -123,18 +139,6 @@ public class ModelManager {
 
   public Vector3f getBoundingBoxCornerVector() {
     return (frame == null) ? null : frame.getBoundingBoxCornerVector();
-  }
-
-  public int getModelCount() {
-    return (frame == null) ? 0 : frame.getModelCount();
-  }
-
-  public String getModelTag(int modelIndex) {
-    return (frame == null) ? null : frame.getModelTag(modelIndex);
-  }
-
-  public int getModelIndex(String modelTag) {
-    return (frame == null) ? -1 : frame.getModelIndex(modelTag);
   }
 
   public int getChainCount() {

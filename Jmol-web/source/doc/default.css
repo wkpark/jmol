@@ -1,0 +1,26 @@
+body {
+  margin: 1em 1em 2em 30px;
+  font-family: arial, helvetica, sans-serif;
+  color: black;
+  background: white;
+}
+
+h1, h2, h3, h4, h5, h6 { text-align: left }
+h1, h2, h3, h4, h5 { color: #040099 }
+h1 { font: 170% arial, helvetica, sans-serif; }
+h2 { font: 140% arial, helvetica, sans-serif; }
+h3 { font: 120% arial, helvetica, sans-serif; }
+h4 { font: bold 100% arial, helvetica, sans-serif; }
+h5 { font: italic 100% arial, helvetica, sans-serif; }
+h6 { font: small-caps 100% arial, helvetica, sans-serif; }
+
+p { font-family: arial, helvetica, sans-serif; }
+
+ul, td, th {
+  font-family: arial, helvetica, sans-serif;
+}
+
+tt, pre, code {
+  font-family: monospace;
+}
+

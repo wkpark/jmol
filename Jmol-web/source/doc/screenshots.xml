@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Screenshots</title>
+
+  <section>
+    <screenshots>
+      <screenshot image="images/screenshot1.jpg">
+        A shaded rendering of caffeine.
+      </screenshot>
+      <screenshot image="images/screenshot2.jpg">
+        A frame of an S<sub>N</sub>2 reaction animation with the distance
+        measured between the chlorine and carbon atoms
+      </screenshot>
+      <screenshot image="images/screenshot3.jpg">
+        Vibration animation of methanol with vectors displayed.
+      </screenshot>
+    </screenshots>
+  </section>
+
+  </body>
+</document>
+

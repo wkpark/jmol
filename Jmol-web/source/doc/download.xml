@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Download Jmol</title>
+    
+    <section title="Downloading the current release">
+      <p>The current release is version $VERSION$.</p>
+      <p>It can be downloaded using one of the following links:
+      <ul>
+          <li>
+            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.zip">jmol-$VERSION$.zip</a>
+          </li>
+          <li>
+            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.tar.gz">jmol-$VERSION$.tar.gz</a>
+          </li>
+      </ul>
+      </p>
+
+      <p>
+      To access previous versions, please go to <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>
+      </p>
+    </section>
+
+    <section title="Obtaining the source code">
+      <p>The source code can accessed via CVS,
+        or downloaded using one of the following links:
+      <ul>
+          <li>
+            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.source.zip">jmol-$VERSION$.source.zip</a>
+          </li>
+          <li>
+            <a href="http://prdownloads.sourceforge.net/jmol/jmol-$VERSION$.source.tar.gz">jmol-$VERSION$.source.tar.gz</a>
+          </li>
+      </ul>
+      </p>
+
+      <p>
+      To access previous source code archives, please go to <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
+      </p>
+
+      <section title="CVS Access">
+        <p>
+
+          You can browse the latest source code online or anonymously
+          checkout the project contained in the <a
+          href="http://www.cvshome.org/">CVS</a> repository.
+          
+          <ul>
+          <li> <a
+          href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/jmol/">Browse
+          the CVS repository</a>
+          </li>
+          </ul>
+        </p>
+
+        <p>
+        To anonymously checkout the source code use the following commands.
+        When prompted for a password for anonymous, simply press the Enter key. 
+        </p>
+        <p><tt>
+        cvs -d:pserver:anonymous@cvs.jmol.sourceforge.net:/cvsroot/jmol login
+        <br/><br/>
+        cvs -z3 -d:pserver:anonymous@cvs.jmol.sourceforge.net:/cvsroot/jmol
+        co Jmol
+        </tt></p>
+        <p>
+        Updates from within the module's directory do not need the -d parameter.
+        </p>
+      </section>
+
+    </section>
+  </body>
+</document>

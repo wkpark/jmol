@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Jmol">
+
+  <title>Jmol</title>
+
+  <links>
+    <table width="100%">
+      <tr>
+        <td align="left" valign="center">
+          <a href="index.html"><img src="images/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
+        </td>
+        <td><br /></td>
+        <td align="right" valign="center">
+          <font size="2">
+            <a href="history.html">History</a> 
+            | <a href="download.html">Download</a> 
+            | <a href="screenshots.html">Screenshots</a> 
+            | <a href="applet.html">Applet</a> 
+            | <a href="changes.html">Changes</a> 
+            | <a href="http://sourceforge.net/projects/jmol">Project page</a>
+          </font>
+        </td>
+      </tr>
+    </table>
+  </links>
+
+  <notice>
+    Hosted by 
+    <a href="http://sourceforge.net/"> 
+    <img src="http://sourceforge.net/sflogo.php?group_id=16035" border="0" alt="SourceForge Logo" align="middle" />
+    </a>
+  </notice>
+
+</project>

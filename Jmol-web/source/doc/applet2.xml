@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Jmol Applet</title>
+
+    <section title="More examples of applets using CML">
+      <p>A carbon-cation rearrangement reaction
+
+<appletExample>
+<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
+    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,cdk-cml.jar,gnujaxp-saxonly.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="model" VALUE="SN1_reaction.cml"/>
+</APPLET>
+]]>
+</appletExample>
+      </p>
+
+      <p>Rotamers of ethane
+      
+<appletExample>
+<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
+    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,cdk-cml.jar,gnujaxp-saxonly.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="model" VALUE="conformeren.cml"/>
+</APPLET>
+]]>
+</appletExample>
+      </p>
+
+    </section>
+  </body>
+</document>
+

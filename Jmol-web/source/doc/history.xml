@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>History</title>
+    
+    <section title="The origins of Jmol">
+
+      <p>
+        Jmol was originally intended to be a fully functional replacement for
+        XMol which was a molecular viewing program developed at the Minnesota
+        Supercomputer Center. Although the program executables were
+        distributed, the source code was not available to users, and since the
+        program has not been maintained, the free binary versions have become
+        obsolete. For example, the SGI version of XMol does not run on IRIX 6.x
+        because IRIX has switched to a new executable format.
+      </p>
+      
+      <p>
+        XMol's demise left a need for a similar tool. Dan Gezelter, the
+        originator of Jmol, chose to avoid the same problems by making
+        Jmol open source.  Although it has not
+        completely met the goal of functionally replacing XMol, Jmol duplicates many
+        of the most useful features, and in some ways, it has surpassed XMol
+        functionality. In time, Jmol will hopefully include even more advanced
+        features.
+      </p>
+
+      <p>
+        Jmol was started as an OpenScience project which is dedicated to
+        writing and releasing free and open source scientific software. For more
+        information about the project, go to
+        <url>http://www.openscience.org/</url>.
+      </p>
+    </section>
+
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Jmol</title>
+
+    <header>
+      <p>
+      Jmol is a free, open source molecule viewer. It is a
+      collaboratively developed visualization and measurement tool for chemical
+      scientists. Jmol is an active project, and there are new features being
+      added to it. Users are encouraged to modify it to fit their needs and to
+      contribute their changes to the project.
+      </p>
+    </header>
+
+    <section title="Features">
+      <ul>
+      <li>Reads many types of files.</li>
+      <ul>
+        <li> <a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a> </li>
+        <li> <a href="http://www.scm.com/" TARGET="_top">ADF</a> (Amsterdam Density Functional)</li>
+        <li> <a href="http://www.xml-cml.org" TARGET="_top">CML</a> (Chemical Markup Language)</li>
+        <li> <a href="http://www.kjemi.uio.no/software/dalton/dalton.html">Dalton</a> </li>
+        <li> <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html" TARGET="_top">GAMESS</a></li>
+        <li> <a href="http://www.gaussian.com/" TARGET="_top">Gaussian 90/92/94/96/98</a></li>
+        <li> <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a> </li>
+        <li> <a href="http://www.mdli.com/">MDL molfiles</a> </li>
+        <li> MOPAC </li>
+        <li> <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a> (ATOM and HETATM entries only) </li>
+        <li> XYZ (XMol) </li>
+      </ul>
+
+        <li>Animates the results of simulations.</li>
+        
+        <li>Displays measurements inter-atomic distances, bond
+          angles, and dihedral angles from atomic coordinates as a
+          simulation progresses.</li>
+        
+        <li>Animates the computed vibrational modes from any of the quantum chemistry
+        packages mentioned above.</li>
+        
+        <li>Displays vectors (velocity, dipole, etc.),
+          charges, atomic symbols, or atomic indexes during
+          animation.</li>
+        
+        <li>Prints images.</li>
+        <li>Exports images.
+          <ul>
+            <li>GIF (if the displayed image is 8 bit)</li>
+            <li>JPG</li>
+            <li>PPM</li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section title="Mailing Lists">
+      <p>For users wanting help using Jmol, there is an email list at
+        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
+          jmol-users
+        </a> 
+        where you can share ideas and experiences, ask for help,
+        give us feedback, or discuss your requirements.
+        You can also browse the <a
+        href="http://www.geocrawler.com/redir-sf.php3?list=jmol-users">
+          jmol-users archives
+        </a>.
+      </p>
+
+      <p>For developers, there is an email list at 
+        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
+          jmol-developers
+        </a> 
+        where you can request new features or changes, 
+        discuss implementation, submit patches, or contribute code.
+        You can also browse the <a
+        href="http://www.geocrawler.com/redir-sf.php3?list=jmol-developers">
+          jmol-developers archives
+        </a>.
+      </p>
+
+    </section>
+
+  </body>
+</document>

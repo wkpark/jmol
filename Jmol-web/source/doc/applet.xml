@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<document>
+  <body>
+    <title>Jmol Applet</title>
+    
+    <header>
+      <p>
+      A subset of the Jmol application is available for use as an applet. 
+      </p>
+    </header>
+
+    <section title="Downloading the applet">
+      <p>To use the applet, you must first download the applet distribution and
+      extract the files. It can be downloaded from <a
+      href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>
+      or using one of the following links:
+      <ul>
+          <li>
+            <a href="http://prdownloads.sourceforge.net/jmol/jmol-applet-$APPLET-VERSION$.zip">jmol-applet-$APPLET-VERSION$.zip</a>
+          </li>
+          <li>
+            <a href="http://prdownloads.sourceforge.net/jmol/jmol-applet-$APPLET-VERSION$.tar.gz">jmol-applet-$APPLET-VERSION$.tar.gz</a>
+          </li>
+      </ul>
+      </p>
+
+      <p>In the jars directory are several jar files. Some of them are
+      optional. The jmol-applet.jar contains the majority of the applet and
+      therefore is required. The vecmath1.1-1.12.jar contains linear algebra
+      routines and is also required. The cdk-cml.jar and gnujaxp-saxonly.jar are
+      used for reading CML files, and are optional. You will only need to
+      include them if you wish to read CML files.
+      </p>
+    </section>
+
+    <section title="Creating a Web page">
+      <p>To use the Jmol applet in a web page, use the &lt;APPLET&gt; tag with
+      parameters specifying the molecule file to load. For example, the
+      this HTML was used to display the applet seen below.
+
+<appletExample>
+<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
+    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="model" VALUE="caffeine.xyz"/>
+</APPLET>]]>
+</appletExample>
+
+      </p>
+
+      <p>The following applet displays a CML file. Note the additional jars
+      listed in the archive parameter.
+      
+<appletExample>
+<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
+    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,
+      cdk-cml.jar,gnujaxp-saxonly.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="model" VALUE="methanol1.cml"/>
+</APPLET>]]>
+</appletExample>
+
+      </p>
+
+      <p>CML data can also be embedded in the HTML page. The "format" parameter
+      must be specfied with the value "cmlString", and the model contains the
+      string CML data which encoded with the approriate HTML entities. The
+      following applet displays the same molecule as above, but the CML data is
+      embedded rather than in a file.
+      
+<appletExample>
+<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
+    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar,
+      cdk-cml.jar,gnujaxp-saxonly.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="format" VALUE="cmlString"/>
+  <PARAM NAME="model" VALUE="&lt;?xml version=&quot;1.0&quot; ?&gt;
+&lt;!DOCTYPE molecule
+  SYSTEM &quot;http://www.xml-cml.org/dtd/cml1_0.dtd&quot; []&gt;
+&lt;molecule id=&quot;METHANOL&quot;&gt;
+  &lt;atomArray&gt;
+    &lt;stringArray builtin=&quot;id&quot;&gt;
+      a1 a2 a3 a4 a5 a6
+    &lt;/stringArray&gt;
+    &lt;stringArray builtin=&quot;elementType&quot;&gt;
+      C O H H H H
+    &lt;/stringArray&gt;
+    &lt;floatArray builtin=&quot;x3&quot; units=&quot;pm&quot;&gt;
+      -0.748 0.558 -1.293 -1.263 -0.699 0.716
+    &lt;/floatArray&gt;
+    &lt;floatArray builtin=&quot;y3&quot; units=&quot;pm&quot;&gt;
+      -0.015 0.420 0.202 0.754 -0.934 1.404
+    &lt;/floatArray&gt;
+    &lt;floatArray builtin=&quot;z3&quot; units=&quot;pm&quot;&gt;
+      0.024 -0.278 -0.901 0.600 0.609 0.137
+    &lt;/floatArray&gt;
+  &lt;/atomArray&gt;
+&lt;/molecule&gt;"/>
+</APPLET>]]>
+</appletExample>
+      </p>
+
+      <p><a href="applet2.html">More applet examples</a>.</p>
+      </section>
+
+    <section title="Applet parameters">
+      <p>The following parameters control the appearance and behavior of the
+      applet:
+      </p>
+      <appletParameterList>
+        <param name="model">
+          A file relative to the HTML page
+          or escaped CML data (&lt;, &gt;, &quot; written as &amp;lt;,
+          &amp;gt;, &amp;quot;).
+        </param>
+        
+        <param name="format">
+          When reading embedded CML data, the format must be specified with a
+          value of "cmlString".
+        </param>
+        
+        <param name="bcolour">
+          The background colour
+        </param>
+        
+        <param name="fcolour">
+        The foreground colour for labels, etc.
+        </param>
+        
+        <param name="style">
+          The atom and bond rendering style.  One of:
+          <ul>
+            <li>SHADED</li>
+            <li>QUICKDRAW</li>
+            <li>WIREFRAME</li>
+          </ul>
+        </param>
+        
+        <param name="atomTypes">
+          The location of the "AtomTypes" file relative to the HTML page.
+        </param>
+        
+        <param name="wireframeRotation">
+          Whether or not to use the wireframe mode during rotations.  One of:
+          <ul>
+            <li>ON</li>
+            <li>OFF</li>
+          </ul>
+        </param>
+        
+        <param name="zoom">
+          Changes the initial zoom. "1" is the default.
+        </param>
+        
+        <param name="atomSize">
+          Changes the size of the atoms.  "1" is the default.
+        </param>
+        
+        <param name="bonds">
+          Specifies if bonds are drawn initially, and if they can be selected
+          by the user. One of:
+          <ul>
+            <li>ON</li>
+            <li>OFF</li>
+            <li>NEVER</li>
+          </ul>
+        </param>
+        
+        <param name="customViews">
+          Specifies custom actions to be performed by custom buttons. An
+          example: Button1 { HOME; FRAME=n; ROTATE=y,x,y; ZOOM=n; TRANSLATE=x,y
+          }  Button2 { HOME; ZOOM=n; ... } ...
+        </param>
+      </appletParameterList>
+    </section>
+    
+    <section title="Using the applet">
+      <p>The following keys and mouse actions control the applet:
+        <ul>
+          <li>S - cycles through the various drawing styles for atoms and bonds</li>
+          <li>L - cycles through the various labeling modes for the atoms</li>
+          <li>B - toggles the bonds off and on</li>
+          <li>Mouse - rotates the molecule</li>
+          <li>Shift-Mouse - Zooms in and out</li>
+          <li>Ctrl-Mouse - Translates the molecule</li>
+        </ul>
+      </p>
+    </section>
+
+  </body>
+</document>
+

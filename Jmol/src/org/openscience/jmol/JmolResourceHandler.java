@@ -20,8 +20,10 @@
 package org.openscience.jmol;
 
 import java.net.URL;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import javax.swing.ImageIcon;
 
 /**
@@ -37,8 +39,15 @@ class JmolResourceHandler {
   private ResourceBundle resourceBundle;
 
   private JmolResourceHandler() {
+    String locale = System.getProperty("lang", "en_EN");
+    String lang = "en";
+    String country = "EN";
+    StringTokenizer st = new StringTokenizer(locale, "_");
+    if (st.hasMoreTokens()) lang = st.nextToken();
+    if (st.hasMoreTokens()) country = st.nextToken();
+    Locale l = new Locale(lang, country);
     resourceBundle =
-        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
+        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol", l);
   }
 
   public static JmolResourceHandler getInstance() {
@@ -78,6 +87,21 @@ class JmolResourceHandler {
     } catch (MissingResourceException e) {
     }
     return result;
+  }
+
+  /** 
+   * A wrapper for easy detection which strins in the
+   * source code are localized.
+   */
+  public synchronized String translate(String text) {
+    StringTokenizer st = new StringTokenizer(text);
+    StringBuffer key = new StringBuffer();
+    while (st.hasMoreTokens()) {
+      key.append(st.nextToken());
+      if (st.hasMoreTokens()) key.append("_");
+    }
+    String translatedText = getString(key.toString());
+    return (text != null) ? translatedText : text;
   }
 
   public synchronized Object getObject(String key) {

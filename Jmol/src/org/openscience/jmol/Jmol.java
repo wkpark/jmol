@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -60,6 +59,7 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.MissingResourceException;
 import java.util.EventObject;
+import java.util.Locale;
 import javax.swing.JToolBar;
 import javax.swing.JFileChooser;
 import javax.swing.AbstractAction;
@@ -128,7 +128,7 @@ class Jmol extends JPanel {
    * The current file.
    */
   private File currentFile;
-  
+
   /**
    * Button group for toggle buttons in the toolbar.
    */
@@ -147,6 +147,8 @@ class Jmol extends JPanel {
   private static JFrame consoleframe;
 
   protected DisplaySettings settings = new DisplaySettings();
+
+  private JmolResourceHandler resourceHandler;
 
   static {
     if (System.getProperty("javawebstart.version") != null) {
@@ -172,8 +174,12 @@ class Jmol extends JPanel {
   Jmol(Splash splash) {
 
     super(true);
+
+    // get a resource handler
+    resourceHandler = JmolResourceHandler.getInstance();
+
     this.splash = splash;
-    splash.showStatus("Initializing Swing...");
+    splash.showStatus(resourceHandler.translate("Initializing Swing..."));
     try {
       UIManager
           .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -188,9 +194,7 @@ class Jmol extends JPanel {
     port = scroller.getViewport();
 
     try {
-      String vpFlag =
-        JmolResourceHandler.getInstance()
-          .getString("Jmol.ViewportBackingStore");
+      String vpFlag = resourceHandler.getString("Jmol.ViewportBackingStore");
       Boolean bs = new Boolean(vpFlag);
       port.setBackingStoreEnabled(bs.booleanValue());
     } catch (MissingResourceException mre) {
@@ -199,33 +203,33 @@ class Jmol extends JPanel {
     }
 
     status = (StatusBar) createStatusBar();
-    splash.showStatus("Initializing 3D display...");
+    splash.showStatus(resourceHandler.translate("Initializing 3D display..."));
     display = new DisplayPanel(status, settings);
-    splash.showStatus("Initializing Preferences...");
+    splash.showStatus(resourceHandler.translate("Initializing Preferences..."));
     prefs = new Preferences(frame, display);
-    splash.showStatus("Initializing Animate...");
+    splash.showStatus(resourceHandler.translate("Initializing Animate..."));
     anim = new Animate(frame, display);
-    splash.showStatus("Initializing Vibrate...");
+    splash.showStatus(resourceHandler.translate("Initializing Vibrate..."));
     vib = new Vibrate(frame, display);
-    splash.showStatus("Initializing Recent Files...");
+    splash.showStatus(resourceHandler.translate("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
     addPropertyChangeListener(openFileProperty, recentFiles);
-    splash.showStatus("Initializing Script Window...");
+    splash.showStatus(resourceHandler.translate("Initializing Script Window..."));
     scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
-    splash.showStatus("Initializing Property Graph...");
+    splash.showStatus(resourceHandler.translate("Initializing Property Graph..."));
     pg = new PropertyGraph(frame);
-    splash.showStatus("Initializing Measurements...");
+    splash.showStatus(resourceHandler.translate("Initializing Measurements..."));
     mlist = new MeasurementList(frame, display);
     meas = new Measure(frame, display);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
     mlist.addMeasurementListListener(display);
     port.add(display);
-    splash.showStatus("Initializing Chemical Shifts...");
+    splash.showStatus(resourceHandler.translate("Initializing Chemical Shifts..."));
     chemicalShifts.initialize();
 
     // install the command table
-    splash.showStatus("Building Command Hooks...");
+    splash.showStatus(resourceHandler.translate("Building Command Hooks..."));
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -241,7 +245,7 @@ class Jmol extends JPanel {
     }
     vib.addConflictingAction(getAction(openAction));
     menuItems = new Hashtable();
-    splash.showStatus("Building Menubar...");
+    splash.showStatus(resourceHandler.translate("Building Menubar..."));
     menubar = createMenubar();
     add("North", menubar);
 
@@ -256,12 +260,12 @@ class Jmol extends JPanel {
     add("Center", panel);
     add("South", status);
 
-    splash.showStatus("Starting display...");
+    splash.showStatus(resourceHandler.translate("Starting display..."));
     display.start();
 
-    splash.showStatus("Reading AtomTypes...");
+    splash.showStatus(resourceHandler.translate("Reading AtomTypes..."));
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
-    splash.showStatus("Setting up File Choosers...");
+    splash.showStatus(resourceHandler.translate("Setting up File Choosers..."));
     File currentDir = getUserDirectory();
     openChooser = new JFileChooser();
     openChooser.setCurrentDirectory(currentDir);
@@ -286,11 +290,11 @@ class Jmol extends JPanel {
     ImageIcon splash_image = jrh.getIcon("Jmol.splash");
     Splash splash = new Splash(frame, splash_image);
     splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    splash.showStatus("Creating main window...");
+    splash.showStatus(jrh.translate("Creating main window..."));
     frame.setTitle(jrh.getString("Jmol.Title"));
     frame.setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());
-    splash.showStatus("Initializing Jmol...");
+    splash.showStatus(jrh.translate("Initializing Jmol..."));
     Jmol window = new Jmol(splash);
     frame.getContentPane().add("Center", window);
     frame.addWindowListener(new Jmol.AppCloser());
@@ -300,7 +304,7 @@ class Jmol extends JPanel {
       JmolResourceHandler.getInstance().getIcon("Jmol.icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
-    splash.showStatus("Launching main frame...");
+    splash.showStatus(jrh.translate("Launching main frame..."));
     frame.show();
     return window;
   }
@@ -351,7 +355,7 @@ class Jmol extends JPanel {
       if (script != null) {
         try {
           System.out.println("Executing script: " + script.toString());
-          window.splash.showStatus("Executing script...");
+          window.splash.showStatus(JmolResourceHandler.getInstance().translate("Executing script..."));
           RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
           BufferedReader reader = new BufferedReader(new FileReader(script));
           String command = reader.readLine();
@@ -655,9 +659,9 @@ class Jmol extends JPanel {
     JMenuItem mi;
     if (isRadio) {
       mi = new JRadioButtonMenuItem(JmolResourceHandler.getInstance()
-          .getString("Jmol." + cmd + labelSuffix));
+          .translate("Jmol." + cmd + labelSuffix));
     } else {
-      String checked = JmolResourceHandler.getInstance().getString("Jmol."
+      String checked = JmolResourceHandler.getInstance().translate("Jmol."
                          + cmd + checkSuffix);
       if (checked != null) {
         boolean c = false;

@@ -56,6 +56,7 @@ import org.openscience.cdk.tools.ChemFileManipulator;
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
+import java.util.Vector;
 
 public class CdkJmolModelAdapter implements JmolModelAdapter {
   AtomColorer[] colorSchemes;
@@ -82,8 +83,8 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
    * the file related methods
    ****************************************************************/
 
-  public Object openBufferedReader(JmolViewer viewer,
-                                   String name, BufferedReader bufferedReader) {
+  public Object openBufferedReader(JmolViewer viewer, String name,
+                                   BufferedReader bufferedReader) {
     ChemFile chemFile = null;
     try {
       ChemObjectReader chemObjectReader = null;
@@ -131,23 +132,23 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public String getModelName(Object clientFile) {
-      if (clientFile instanceof ChemFile) {
-          Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);
-          if (title != null) {
-              System.out.println("Setting model name to title");
-              return title.toString();
-          } else {
-              // try to recurse
-              AtomContainer container = getAtomContainer((ChemFile)clientFile, 0);
-              if (container != null) {
-                  Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
-                  if (moleculeTitle != null) {
-                      return moleculeTitle.toString();
-                  }
-              }
+    if (clientFile instanceof ChemFile) {
+      Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);
+      if (title != null) {
+        System.out.println("Setting model name to title");
+        return title.toString();
+      } else {
+        // try to recurse
+        AtomContainer container = getAtomContainer((ChemFile)clientFile, 0);
+        if (container != null) {
+          Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
+          if (moleculeTitle != null) {
+            return moleculeTitle.toString();
           }
+        }
       }
-      return null;
+    }
+    return null;
   }
 
   public int getFrameCount(Object clientFile) {
@@ -169,12 +170,12 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     if (setOfMolecules != null) {
       AtomContainer molecule =
         SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
-        return molecule;
+      return molecule;
     } else if (crystal != null) {
-        return crystal;
+      return crystal;
     } else {
-        System.out.println("Cannot display data in model");
-        return null;
+      System.out.println("Cannot display data in model");
+      return null;
     }
   }
 
@@ -307,7 +308,16 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
-    return null;
+    ChemFile chemFile = (ChemFile)clientFile;
+    ChemSequence chemSequence = chemFile.getChemSequence(0);
+    ChemModel chemModel = chemSequence.getChemModel(frameNumber);
+    Vector structureVector =
+      (Vector)chemModel.getProperty("pdb.structure.records");
+    if (structureVector == null)
+      return null;
+    String[] t = new String[structureVector.size()];
+    structureVector.copyInto(t);
+    return t;
   }
 
   public int getAtomArgb(Object clientAtom, int colorScheme) {
@@ -346,11 +356,11 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
       point1 = new Point3d(0.0, 0.0, 0.0);
       double[] axis = {0.0, 0.0, 0.0};
       if (ibox == 0) {
-          axis = crystal.getA();
+        axis = crystal.getA();
       } else if (ibox == 1) {
-          axis = crystal.getB();
+        axis = crystal.getB();
       } else if (ibox == 2) {
-          axis = crystal.getC();
+        axis = crystal.getC();
       }
       point2 = new Point3d(axis[0], axis[1], axis[2]);
       ibox++;

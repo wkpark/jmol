@@ -37,22 +37,22 @@ import javax.vecmath.Point3i;
 
 public class AtomShape extends Shape implements Bspt.Tuple {
 
-  public JmolFrame frame;
-  public short atomIndex = -1;
   public Object clientAtom;
-  public Point3d point3d;
-  public byte atomicNumber;
-  public byte styleAtom;
-  public short marAtom;
-  public short colixAtom;
-  public int diameter;
-  public short marDots = 0;
-  public short colixDots;
-  public int diameterDots = 0;
-  public BondShape[] bonds;
+  JmolFrame frame;
+  Point3d point3d;
+  byte atomicNumber;
+  byte styleAtom;
+  private short atomIndex = -1;
+  short marAtom;
+  short colixAtom;
+  short diameter;
+  short marDots = 0;
+  short colixDots;
+  short diameterDots = 0;
+  BondShape[] bonds;
 
-  public String strLabel;
-  public ProteinProp pprop;
+  String strLabel;
+  ProteinProp pprop;
   
   public AtomShape(JmolFrame frame, int atomIndex, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
@@ -78,7 +78,7 @@ public class AtomShape extends Shape implements Bspt.Tuple {
   }
 
   public int getAtomIndex() {
-    return atomIndex;
+    return atomIndex & 0xFFFF;
   }
 
   public boolean isBonded(AtomShape atomShapeOther) {
@@ -158,7 +158,8 @@ public class AtomShape extends Shape implements Bspt.Tuple {
 
   public int getBondedAtomIndex(int bondIndex) {
     BondShape bond = bonds[bondIndex];
-    return ((bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1).atomIndex;
+    return (((bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1).atomIndex
+            & 0xFFFF);
   }
 
   /*

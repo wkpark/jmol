@@ -110,7 +110,7 @@ public class JmolFrame {
       htAtomMap = new Hashtable();
       for (int i = atomShapeCount; --i >= 0; ) {
         AtomShape atomShape = atomShapes[i];
-        htAtomMap.put(atomShape.clientAtom, atomShape);
+        htAtomMap.put(atomShape.getClientAtom(), atomShape);
       }
     }
   }
@@ -559,7 +559,7 @@ public class JmolFrame {
           AtomShape atomShapeOther =
             (bondShape.atomShape1 != atomShapeCurrent ?
              bondShape.atomShape1 : bondShape.atomShape2);
-          boolean tOtherSelected = bsSelected.get(atomShapeOther.atomIndex);
+          boolean tOtherSelected = bsSelected.get(atomShapeOther.getAtomIndex());
           if (bondSelectionModeOr) {
             if (!tOtherSelected || bondShape.atomShape1 == atomShapeCurrent)
               return true;
@@ -615,7 +615,7 @@ public class JmolFrame {
     }
   }
 
-  final static boolean showRebondTimes = false;
+  final static boolean showRebondTimes = true;
 
   private double bondTolerance;
   private double minBondDistance;

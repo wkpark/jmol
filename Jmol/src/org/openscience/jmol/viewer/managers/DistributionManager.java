@@ -82,7 +82,7 @@ public class DistributionManager {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       short colixT = useColorProfile 
-       ? viewer.getColixAtom(mode, atomShape.clientAtom) : colix;
+       ? viewer.getColixAtom(mode, atomShape.getClientAtom()) : colix;
       atomShape.setColixAtom(colixT);
     }
   }
@@ -92,7 +92,7 @@ public class DistributionManager {
       AtomShape atomShape = iter.next();
       atomShape.setLabel(viewer.getLabelAtom(styleLabel,
                                               atomShape,
-                                              atomShape.atomIndex));
+                                              atomShape.getAtomIndex()));
     }
   }
 
@@ -100,7 +100,7 @@ public class DistributionManager {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       atomShape.setLabel(viewer.getLabelAtom(strLabel, atomShape,
-                                              atomShape.atomIndex));
+                                              atomShape.getAtomIndex()));
     }
   }
 
@@ -110,8 +110,8 @@ public class DistributionManager {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       if (colixDots == 0)
-        colixT = viewer.getColixAtom(atomShape.atomicNumber,
-                                      atomShape.clientAtom);
+        colixT = viewer.getColixAtom(atomShape.getAtomicNumber(),
+                                     atomShape.getClientAtom());
       atomShape.setColixMarDots(colixT, marDots);
     }
   }

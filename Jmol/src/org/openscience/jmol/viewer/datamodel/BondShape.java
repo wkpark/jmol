@@ -40,12 +40,12 @@ public class BondShape {
   public final static byte BACKBONE = 4;
   public final static byte ALL = COVALENT | BACKBONE;
 
-  public AtomShape atomShape1;
-  public AtomShape atomShape2;
-  public byte order;
-  public byte style;
-  public short mar;
-  public short colix;
+  AtomShape atomShape1;
+  AtomShape atomShape2;
+  byte order;
+  byte style;
+  short mar;
+  short colix;
 
   public BondShape(AtomShape atomShape1, AtomShape atomShape2,
                    int order, byte style, short mar, short colix) {

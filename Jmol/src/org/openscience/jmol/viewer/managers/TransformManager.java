@@ -395,11 +395,11 @@ public class TransformManager {
     return pixelSize;
   }
 
-  public int scaleToScreen(int z, int milliAngstroms) {
+  public short scaleToScreen(int z, int milliAngstroms) {
     int pixelSize = (int)(milliAngstroms * scalePixelsPerAngstrom / 1000);
     if (perspectiveDepth)
       pixelSize = (pixelSize * cameraZ) / (cameraZ + z);
-    return pixelSize;
+    return (short)pixelSize;
   }
 
   /****************************************************************

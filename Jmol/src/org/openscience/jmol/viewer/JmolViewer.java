@@ -385,7 +385,7 @@ final public class JmolViewer {
     return transformManager.scaleToScreen(z, sizeAngstroms);
   }
 
-  public int scaleToScreen(int z, int milliAngstroms) {
+  public short scaleToScreen(int z, int milliAngstroms) {
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
 

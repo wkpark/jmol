@@ -870,7 +870,7 @@ public class Eval implements Runnable {
       AtomShapeIterator iterWithin =
         frame.getWithinIterator(iterSelected.next(), distance);
       while (iterWithin.hasNext())
-        bsResult.set(iterWithin.next().atomIndex);
+        bsResult.set(iterWithin.next().getAtomIndex());
     }
   }
 

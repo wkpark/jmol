@@ -71,11 +71,11 @@ public class AtomRenderer {
     xUpperLeft = x - radius;
     yUpperLeft = y - radius;
     colix = atomShape.colixAtom;
-    if (viewer.hasSelectionHalo(atomShape))
-      renderHalo();
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);
     renderAtom();
+    if (viewer.hasSelectionHalo(atomShape))
+      renderHalo();
   }
 
   private void renderHalo() {
@@ -83,8 +83,7 @@ public class AtomRenderer {
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
-    int haloradius = (halodiameter + 1) / 2;
-    g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
+    g3d.fillCircleCentered(colixSelection, x, y, z, halodiameter);
   }
 
   private void renderDots(short colixDots, int diameterDots) {

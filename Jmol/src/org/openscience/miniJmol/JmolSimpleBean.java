@@ -20,6 +20,7 @@
 package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.AtomTypeSet;
 import java.awt.BorderLayout;
 import java.io.InputStream;
 import java.net.URL;

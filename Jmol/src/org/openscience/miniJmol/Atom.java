@@ -23,6 +23,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 import java.util.Vector;
 import java.util.Enumeration;
+import org.openscience.jmol.BaseAtomType;
 
 /**
  * This class stores and manipulations information and properties of

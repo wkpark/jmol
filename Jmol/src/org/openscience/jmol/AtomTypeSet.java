@@ -19,8 +19,11 @@
  */
 package org.openscience.jmol;
 
-import java.util.*;
-import java.io.*;
+import java.util.Hashtable;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * Collection of AtomTypes. No duplicates are allowed. This class is

@@ -80,6 +80,7 @@
 	</target>
 	
 	<target name="classes" depends="init,jmolGuide">
+<antstructure output="project.dtd"/>
 		<mkdir dir="${classes.dir}"/>
 		<javac srcdir="${source.dir}" destdir="${classes.dir}"
 				debug="off" deprecation="on">
@@ -123,6 +124,8 @@
 				<include name="**/jmol/Matrix3D.class" />
 				<include name="**/jmol/DisplaySettings.class" />
 				<include name="**/jmol/PhysicalProperty.class" />
+				<include name="**/jmol/BaseAtomType.class" />
+				<include name="**/jmol/AtomTypeSet.class" />
 			</fileset>
 		</jar>
 	</target>

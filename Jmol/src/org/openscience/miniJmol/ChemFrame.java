@@ -21,6 +21,7 @@ package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
 import org.openscience.jmol.PhysicalProperty;
+import org.openscience.jmol.BaseAtomType;
 import java.awt.Graphics;
 import java.util.Vector;
 import java.util.Enumeration;

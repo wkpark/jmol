@@ -53,8 +53,8 @@ class AxesRenderer extends ShapeRenderer {
     for (int i = 6; --i >= 0; )
       viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);
 
-    int widthPixels = 0;
-    if (mad > 0)
+    int widthPixels = mad;
+    if (mad >= 20)
       widthPixels = viewer.scaleToScreen(originScreen.z, mad);
     short colix = axes.colix;
     for (int i = 6; --i >= 0; ) {

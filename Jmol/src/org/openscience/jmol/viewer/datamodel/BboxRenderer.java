@@ -33,35 +33,36 @@ import javax.vecmath.Point3i;
 
 class BboxRenderer extends ShapeRenderer {
 
-  final Point3i[] bboxScreens = new Point3i[8];
-  {
-    for (int i = 8; --i >= 0; )
-      bboxScreens[i] = new Point3i();
-  }
-
   void render() {
     Bbox bbox = (Bbox)shape;
     short mad = bbox.mad;
     if (mad == 0)
       return;
-    int zSum = 0;;
+    render(viewer, g3d, mad, bbox.colix, bbox.vertices,
+           frameRenderer.getTempScreens(8));
+  }
+
+  static void render(JmolViewer viewer, Graphics3D g3d,
+                     short mad, short colix,
+                     Point3f vertices[], Point3i screens[]) {
+    int zSum = 0;
     for (int i = 8; --i >= 0; ) {
-      viewer.transformPoint(bbox.bboxPoints[i], bboxScreens[i]);
-      zSum += bboxScreens[i].z;
+      viewer.transformPoint(vertices[i], screens[i]);
+      zSum += screens[i].z;
     }
-    int widthPixels = 0;
-    if (mad > 0)
+    int widthPixels = mad;
+    if (mad >= 20) {
       widthPixels = viewer.scaleToScreen(zSum / 8, mad);
-    short colix = bbox.colix;
+    }
     for (int i = 0; i < 24; i += 2) {
       if (mad < 0)
         g3d.drawDottedLine(colix,
-                           bboxScreens[bbox.edges[i]],
-                           bboxScreens[bbox.edges[i+1]]);
+                           screens[Bbox.edges[i]],
+                           screens[Bbox.edges[i+1]]);
       else
         g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, widthPixels,
-                         bboxScreens[bbox.edges[i]],
-                         bboxScreens[bbox.edges[i+1]]);
+                         screens[Bbox.edges[i]],
+                         screens[Bbox.edges[i+1]]);
     }
   }
 }

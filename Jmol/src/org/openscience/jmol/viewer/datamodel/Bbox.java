@@ -36,13 +36,13 @@ import java.util.BitSet;
 
 class Bbox extends SelectionIndependentShape {
 
-  final Point3f[] bboxPoints = new Point3f[8];
+  final Point3f[] vertices = new Point3f[8];
   {
     for (int i = 8; --i >= 0; )
-      bboxPoints[i] = new Point3f();
+      vertices[i] = new Point3f();
   }
 
-  final static Point3f[] unitBboxPoints = {
+  final static Point3f[] unitBoxPoints = {
     new Point3f( 1, 1, 1),
     new Point3f( 1, 1,-1),
     new Point3f( 1,-1, 1),
@@ -62,8 +62,8 @@ class Bbox extends SelectionIndependentShape {
     Point3f pointOrigin = viewer.getBoundingBoxCenter();
     Point3f pointCorner = viewer.getBoundingBoxCorner();
     for (int i = 0; i < 8; ++i) {
-      Point3f bboxPoint = bboxPoints[i];
-      bboxPoint.set(unitBboxPoints[i]);
+      Point3f bboxPoint = vertices[i];
+      bboxPoint.set(unitBoxPoints[i]);
       bboxPoint.x *= pointCorner.x;
       bboxPoint.y *= pointCorner.y;
       bboxPoint.z *= pointCorner.z;

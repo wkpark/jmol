@@ -37,8 +37,14 @@ class UnitcellRenderer extends ShapeRenderer {
   void render() {
     Unitcell unitcell = (Unitcell)shape;
     short mad = unitcell.mad;
+    short colix = unitcell.colix;
     if (mad == 0 || ! unitcell.hasUnitcell)
       return;
+    BboxRenderer.render(viewer, g3d, mad, colix, unitcell.vertices,
+                        frameRenderer.getTempScreens(8));
+    /*
+    render(viewer, g3d, mad, bbox.colix, bbox.bboxVertices, bboxScreens);
+
     Point3i[] screens = frameRenderer.getTempScreens(8);
     for (int i = 8; --i >= 0; )
       viewer.transformPoint(unitcell.vertices[i], screens[i]);
@@ -52,6 +58,7 @@ class UnitcellRenderer extends ShapeRenderer {
         g3d.drawDottedLine(colix, screenA, screenB);
       }
     }
+    */
 
     g3d.drawString("a=" + unitcell.a, colix, 5, 15, 0);
     g3d.drawString("b=" + unitcell.b, colix, 5, 30, 0);

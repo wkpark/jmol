@@ -658,10 +658,10 @@ public class Eval implements Runnable {
       mad = 0;
       break;
     case Token.integer:
-      int radiusRasMol = statement[2].intValue;
-      if (radiusRasMol >= 500)
+      int diameterPixels = statement[2].intValue;
+      if (diameterPixels >= 20)
         numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * 2);
+      mad = (short)diameterPixels;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[2].value).floatValue();

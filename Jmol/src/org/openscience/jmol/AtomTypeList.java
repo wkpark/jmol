@@ -162,7 +162,7 @@ public class AtomTypeList {
 
     private void ReadAtypes(String configFile) throws Exception {
         // System.out.println("Reading config file... " + configFile);
-        AtomTypeFactory atf = new AtomTypeFactory(configFile);
+        AtomTypeFactory atf = AtomTypeFactory.getInstance(configFile);
         
         org.openscience.cdk.AtomType[] types = atf.getAllAtomTypes();
         // System.out.println("Read atom types: " + types.length);

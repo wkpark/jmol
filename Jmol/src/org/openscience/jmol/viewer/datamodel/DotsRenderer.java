@@ -45,11 +45,15 @@ public class DotsRenderer {
   Graphics3D g3d;
   JmolFrame frame;
   boolean perspectiveDepth;
-    short colixConcave;
-    short colixConvex;
-    short colixSaddle;
-    int pixelsPerAngstrom;
-    boolean bondSelectionModeOr;
+  short colixConcave;
+  short colixConvex;
+  short colixSaddle;
+  int pixelsPerAngstrom;
+  boolean bondSelectionModeOr;
+
+  Geodesic geodesic;
+
+  final static int[] mapNull = Dots.mapNull;
 
   public DotsRenderer(JmolViewer viewer) {
     this.viewer = viewer;
@@ -58,6 +62,7 @@ public class DotsRenderer {
     geodesic.quadruple(); // 42 * 4 - 6 = 162 vertices
     geodesic.quadruple(); // 162 * 4 - 6 = 642 vertices
     //    geodesic.quadruple(); // 642 * 4 - 6 = 2562 vertices
+
   }
 
   public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
@@ -72,8 +77,6 @@ public class DotsRenderer {
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
   }
 
-  Geodesic geodesic;
-
   void transform() {
     geodesic.transform();
   }
@@ -84,137 +87,144 @@ public class DotsRenderer {
       return;
     AtomShape[] atomShapes = frame.atomShapes;
     BitSet bsDotsOn = dots.bsDotsOn;
-    int[] mapNull = dots.mapNull;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     for (int i = dots.dotsConvexCount; --i >= 0; ) {
-	if (! bsDotsOn.get(i))
-	    continue;
-	int[] map = dotsConvexMaps[i];
-	if (map != null && map != mapNull)
-	    renderConvex(atomShapes[i], map);
+      if (! bsDotsOn.get(i))
+        continue;
+      int[] map = dotsConvexMaps[i];
+      if (map != null && map != mapNull)
+        renderConvex(atomShapes[i], map);
     }
     Dots.Torus[] tori = dots.tori;
     if (tori == null)
       return;
     for (int i = dots.torusCount; --i >= 0; ) {
-	Dots.Torus torus = tori[i];
-	boolean onI = bsDotsOn.get(torus.i);
-	boolean onJ = bsDotsOn.get(torus.j);
-	if (bondSelectionModeOr) {
-	    if (! (onI | onJ))
-		continue;
-	} else {
-	    if (! (onI & onJ))
-		continue;
-	}
-	renderTorus(tori[i]);
+      Dots.Torus torus = tori[i];
+      boolean onI = bsDotsOn.get(torus.indexI);
+      boolean onJ = bsDotsOn.get(torus.indexJ);
+      if (bondSelectionModeOr) {
+        if (! (onI | onJ))
+          continue;
+      } else {
+        if (! (onI & onJ))
+          continue;
+      }
+      renderTorus(torus);
     }
     Dots.Cavity[] cavities = dots.cavities;
     if (false) {
-	System.out.println("concave surface rendering currently disabled");
-	return;
+      System.out.println("concave surface rendering currently disabled");
+      return;
     }
     if (cavities == null)
       return;
-    for (int i = dots.cavityCount; --i >= 0; )
-	renderCavity(cavities[i]);
+    for (int i = dots.cavityCount; --i >= 0; ) {
+      Dots.Cavity cavity = cavities[i];
+      boolean onI = bsDotsOn.get(cavity.ixI);
+      boolean onJ = bsDotsOn.get(cavity.ixJ);
+      boolean onK = bsDotsOn.get(cavity.ixK);
+      if (bondSelectionModeOr) {
+        if (! (onI | onJ | onK))
+          continue;
+      } else {
+        if (! (onI & onJ & onK))
+          continue;
+      }
+      renderCavity(cavities[i]);
+    }
   }
 
   public void renderConvex(AtomShape atomShape, int[] visibilityMap) {
-      geodesic.calcScreenPoints(visibilityMap,
-				atomShape.getVanderwaalsRadius(),
-				atomShape.x, atomShape.y, atomShape.z);
-      if (geodesic.screenCoordinateCount > 0)
-	  g3d.plotPoints(colixConvex == 0 ? atomShape.colixAtom : colixConvex,
-			 geodesic.screenCoordinateCount,
-			 geodesic.screenCoordinates);
+    geodesic.calcScreenPoints(visibilityMap,
+                              atomShape.getVanderwaalsRadius(),
+                              atomShape.x, atomShape.y, atomShape.z);
+    if (geodesic.screenCoordinateCount > 0)
+      g3d.plotPoints(colixConvex == 0 ? atomShape.colixAtom : colixConvex,
+                     geodesic.screenCoordinateCount,
+                     geodesic.screenCoordinates);
   }
 
-    Point3f pointT = new Point3f();
-    Point3f pointT1 = new Point3f();
-    Matrix3f matrixT = new Matrix3f();
-    Matrix3f matrixT1 = new Matrix3f();
-    AxisAngle4f aaT = new AxisAngle4f();
-    AxisAngle4f aaT1 = new AxisAngle4f();
+  Point3f pointT = new Point3f();
+  Point3f pointT1 = new Point3f();
+  Matrix3f matrixT = new Matrix3f();
+  Matrix3f matrixT1 = new Matrix3f();
+  Matrix3f matrixRot = new Matrix3f();
+  AxisAngle4f aaT = new AxisAngle4f();
+  AxisAngle4f aaT1 = new AxisAngle4f();
+
+  static final float torusStepAngle = 2 * (float)Math.PI / 64;
 
   void renderTorus(Dots.Torus torus) {
-      g3d.setColix(colixSaddle);
-      int[] probeMap = torus.probeMap;
-      if (probeMap == null)
-	  return;
-      int torusDotCount = getTorusDotCount();
-      int torusDotCount1 =
-	  (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
+    g3d.setColix(colixSaddle);
+    long probeMap = torus.probeMap;
 
-    float stepAngle = 2 * (float)Math.PI / torusDotCount;
+    int torusDotCount1 =
+      (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
     float stepAngle1 = torus.outerAngle / torusDotCount1;
-    aaT.set(torus.axisVector, 0);
     aaT1.set(torus.tangentVector, 0);
-    int i = probeMap.length * 32;
-    if (i > torusDotCount)
-	i = torusDotCount;
-    while (--i >= 0) {
-	if (! getBit(probeMap, i))
-	    continue;
-	aaT.angle = i * stepAngle;
-	matrixT.set(aaT);
-	matrixT.transform(torus.radialVector, pointT);
-	pointT.add(torus.center);
 
-	for (int j = torusDotCount1; --j >= 0; ) {
-	    aaT1.angle = j * stepAngle1;
-	    matrixT1.set(aaT1);
-	    matrixT1.transform(torus.outerRadial, pointT1);
-	    matrixT.transform(pointT1);
-	    pointT1.add(pointT);
-	    g3d.plotPoint(viewer.transformPoint(pointT1));
-	}
-	
+    aaT.set(torus.axisVector, 0);
+    int step = getTorusIncrement();
+    for (int i = 0; probeMap != 0; i += step, probeMap <<= step) {
+      if (probeMap >= 0)
+        continue;
+      aaT.angle = i * torusStepAngle;
+      matrixT.set(aaT);
+      matrixT.transform(torus.radialVector, pointT);
+      pointT.add(torus.center);
+
+      for (int j = torusDotCount1; --j >= 0; ) {
+        aaT1.angle = j * stepAngle1;
+        matrixT1.set(aaT1);
+        matrixT1.transform(torus.outerRadial, pointT1);
+        matrixT.transform(pointT1);
+        pointT1.add(pointT);
+        g3d.plotPoint(viewer.transformPoint(pointT1));
+      }
     }
   }
-  
-    int getTorusDotCount() {
-	return Dots.torusProbePositionCount;
-    }
 
-    int getTorusOuterDotCount() {
-	int dotCount = 8;
-	if (pixelsPerAngstrom > 4) {
-	    dotCount = 16;
-	    if (pixelsPerAngstrom > 8) {
-		dotCount = 32;
-		if (pixelsPerAngstrom > 16) {
-		    dotCount = 64;
-		}
-	    }
-	}
-	return dotCount;
-    }
+  int getTorusIncrement() {
+    if (pixelsPerAngstrom <= 4)
+      return 16;
+    if (pixelsPerAngstrom <= 8)
+      return 8;
+    if (pixelsPerAngstrom <= 16)
+      return 4;
+    if (pixelsPerAngstrom <= 32)
+      return 2;
+    return 1;
+  }
 
-    void renderCavity(Dots.Cavity cavity) {
-	g3d.drawCircleCentered(colixConcave, 20,
-			       viewer.transformPoint(cavity.baseIJK));
-	Point3i screen;
-	int z;
-	screen = viewer.transformPoint(cavity.atomI.point3f);
-	g3d.drawCircleCentered(colixConcave, 10, screen);
-	screen = viewer.transformPoint(cavity.atomJ.point3f);
-	g3d.drawCircleCentered(colixConcave, 10, screen);
-	screen = viewer.transformPoint(cavity.atomK.point3f);
-	g3d.drawCircleCentered(colixConcave, 10, screen);
-	if (cavity.baseAbove != null) {
-	    float diameter = 2 * viewer.getSolventProbeRadius();
-	    screen = viewer.transformPoint(cavity.centerAbove);
-	    diameter = viewer.scaleToScreen(screen.z, diameter);
-	    g3d.drawCircleCentered(colixConcave, (int)diameter, screen);
-	}
-	if (cavity.baseBelow != null) {
-	    float diameter = 2 * viewer.getSolventProbeRadius();
-	    screen = viewer.transformPoint(cavity.centerBelow);
-	    diameter = viewer.scaleToScreen(screen.z, diameter);
-	    g3d.drawCircleCentered(colixConcave, (int)diameter, screen);
-	}
+  int getTorusOuterDotCount() {
+    int dotCount = 8;
+    if (pixelsPerAngstrom > 4) {
+      dotCount = 16;
+      if (pixelsPerAngstrom > 8) {
+        dotCount = 32;
+        if (pixelsPerAngstrom > 16) {
+          dotCount = 64;
+        }
+      }
     }
+    return dotCount;
+  }
+
+  void renderCavity(Dots.Cavity cavity) {
+    Point3i screen;
+    screen = viewer.transformPoint(cavity.pointIP);
+    int xIP = screen.x;
+    int yIP = screen.y;
+    int zIP = screen.z;
+    screen = viewer.transformPoint(cavity.pointJP);
+    int xJP = screen.x;
+    int yJP = screen.y;
+    int zJP = screen.z;
+    screen = viewer.transformPoint(cavity.pointKP);
+    g3d.drawLine(colixConcave, xIP, yIP, zIP, xJP, yJP, zJP);
+    g3d.drawLine(colixConcave, xIP, yIP, zIP, screen.x, screen.y, screen.z);
+    g3d.drawLine(colixConcave, xJP, yJP, zJP, screen.x, screen.y, screen.z);
+  }
 
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
   final static float oneFifth = 2 * (float)Math.PI / 5;
@@ -247,47 +257,47 @@ public class DotsRenderer {
     11, 10, 9,
   };
 
-    /****************************************************************
-     * This code constructs a geodesic sphere which is used to
-     * represent the vanderWaals and Connolly dot surfaces
-     * One geodesic sphere is constructed. It is a unit sphere
-     * with radius of 1.0 <p>
-     * Many times a sphere is constructed with lines of latitude and
-     * longitude. With this type of rendering, the atom has north and
-     * south poles. And the faces are not regularly shaped ... at the
-     * poles they are triangles but elsewhere they are quadrilaterals. <p>
-     * I think that a geodesic sphere is more appropriate for this type
-     * of application. The geodesic sphere does not have poles and 
-     * looks the same in all orientations ... as a sphere should. All
-     * faces are equilateral triangles. <p>
-     * The geodesic sphere is constructed by starting with an icosohedron, 
-     * a platonic solid with 12 vertices and 20 equilateral triangles
-     * for faces. The call to the method <code>quadruple</code> will
-     * split each triangular face into 4 faces by creating a new vertex
-     * at the midpoint of each edge. These midpoints are still in the
-     * plane, so they are then 'pushed out' to the surface of the
-     * enclosing sphere by normalizing their length back to 1.0<p>
-     * Individual atoms construct bitmaps to determine which dots are
-     * visible and which are obscured. Each bit corresponds to a single
-     * dot.<p>
-     * The sequence of vertex counts is 12, 42, 162, 642. The vertices
-     * are stored so that when atoms are small they can choose to display
-     * only the first n bits where n is one of the above vertex counts.<p>
-     * The vertices of the 'one true sphere' are rotated to the current
-     * molecular rotation at the beginning of the repaint cycle. That way,
-     * individual atoms only need to scale the unit vector to the vdw
-     * radius for that atom. <p>
-     * (If necessary, this on-the-fly scaling could be eliminated by
-     * storing multiple geodesic spheres ... one per vdw radius. But
-     * I suspect there are bigger performance problems with the saddle
-     * and convex connolly surfaces.)<p>
-     * I experimented with rendering the dots with light shading. However
-     * I found that it was much harder to look at. The dots in the front
-     * are lighter, but on a white background they are harder to see. The
-     * end result is that I tended to focus on the back side of the sphere
-     * of dots ... which made rotations very strange. So I turned off
-     * shading of dot surfaces.
-     ****************************************************************/
+  /****************************************************************
+   * This code constructs a geodesic sphere which is used to
+   * represent the vanderWaals and Connolly dot surfaces
+   * One geodesic sphere is constructed. It is a unit sphere
+   * with radius of 1.0 <p>
+   * Many times a sphere is constructed with lines of latitude and
+   * longitude. With this type of rendering, the atom has north and
+   * south poles. And the faces are not regularly shaped ... at the
+   * poles they are triangles but elsewhere they are quadrilaterals. <p>
+   * I think that a geodesic sphere is more appropriate for this type
+   * of application. The geodesic sphere does not have poles and 
+   * looks the same in all orientations ... as a sphere should. All
+   * faces are equilateral triangles. <p>
+   * The geodesic sphere is constructed by starting with an icosohedron, 
+   * a platonic solid with 12 vertices and 20 equilateral triangles
+   * for faces. The call to the method <code>quadruple</code> will
+   * split each triangular face into 4 faces by creating a new vertex
+   * at the midpoint of each edge. These midpoints are still in the
+   * plane, so they are then 'pushed out' to the surface of the
+   * enclosing sphere by normalizing their length back to 1.0<p>
+   * Individual atoms construct bitmaps to determine which dots are
+   * visible and which are obscured. Each bit corresponds to a single
+   * dot.<p>
+   * The sequence of vertex counts is 12, 42, 162, 642. The vertices
+   * are stored so that when atoms are small they can choose to display
+   * only the first n bits where n is one of the above vertex counts.<p>
+   * The vertices of the 'one true sphere' are rotated to the current
+   * molecular rotation at the beginning of the repaint cycle. That way,
+   * individual atoms only need to scale the unit vector to the vdw
+   * radius for that atom. <p>
+   * (If necessary, this on-the-fly scaling could be eliminated by
+   * storing multiple geodesic spheres ... one per vdw radius. But
+   * I suspect there are bigger performance problems with the saddle
+   * and convex connolly surfaces.)<p>
+   * I experimented with rendering the dots with light shading. However
+   * I found that it was much harder to look at. The dots in the front
+   * are lighter, but on a white background they are harder to see. The
+   * end result is that I tended to focus on the back side of the sphere
+   * of dots ... which made rotations very strange. So I turned off
+   * shading of dot surfaces.
+   ****************************************************************/
 
 
   class Geodesic {
@@ -451,23 +461,23 @@ public class DotsRenderer {
     }
   }
 
-  final static int[] allocateBitmap(int count) {
+  private final static int[] allocateBitmap(int count) {
     return new int[(count + 31) >> 5];
   }
 
-  final static void setBit(int[] bitmap, int i) {
+  private final static void setBit(int[] bitmap, int i) {
     bitmap[(i >> 5)] |= 1 << (~i & 31);
   }
 
-  final static void clearBit(int[] bitmap, int i) {
+  private final static void clearBit(int[] bitmap, int i) {
     bitmap[(i >> 5)] &= ~(1 << (~i & 31));
   }
 
-  final static boolean getBit(int[] bitmap, int i) {
+  private final static boolean getBit(int[] bitmap, int i) {
     return (bitmap[(i >> 5)] << (i & 31)) < 0;
   }
 
-  final static void setAllBits(int[] bitmap, int count) {
+  private final static void setAllBits(int[] bitmap, int count) {
     int i = count >> 5;
     if ((count & 31) != 0)
       bitmap[i] = 0x80000000 >> (count - 1);
@@ -475,7 +485,7 @@ public class DotsRenderer {
       bitmap[i] = -1;
   }
   
-  final static void clearBitmap(int[] bitmap) {
+  private final static void clearBitmap(int[] bitmap) {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
   }

@@ -28,8 +28,8 @@ import java.awt.event.MouseMotionAdapter;
 import java.util.StringTokenizer;
 import java.util.NoSuchElementException;
 import javax.vecmath.Point3f;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.Vector3f;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.ChemFile;
@@ -63,9 +63,9 @@ public class DisplayPanel extends Canvas
   private int outy;
   private Point3f useMinBound = new Point3f();
   private Point3f useMaxBound = new Point3f();
-  private Matrix4d amat = new Matrix4d();    // Matrix to do mouse angular rotations.
-  private Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
-  private Matrix4d mat = new Matrix4d();    // Final matrix for assembly on screen.
+  private Matrix4f amat = new Matrix4f();    // Matrix to do mouse angular rotations.
+  private Matrix4f tmat = new Matrix4f();    // Matrix to do translations.
+  private Matrix4f mat = new Matrix4f();    // Final matrix for assembly on screen.
   private boolean matIsValid = false;        // is mat valid ???
   private float zoomFactor = 0.7f;
   private java.awt.Label frameLabel = null;
@@ -181,14 +181,14 @@ public class DisplayPanel extends Canvas
 
     try {
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      Matrix4d matrix = new Matrix4d();
-      matrix.rotY(rotTheta * Math.PI / 180.0);
+      Matrix4f matrix = new Matrix4f();
+      matrix.rotY((float)(rotTheta * Math.PI / 180.0));
       amat.mul(matrix, amat);
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotX(rotTheta * Math.PI / 180.0);
+      matrix.rotX((float)(rotTheta * Math.PI / 180.0));
       amat.mul(matrix, amat);
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotZ(rotTheta * Math.PI / 180.0);
+      matrix.rotZ((float)(rotTheta * Math.PI / 180.0));
       amat.mul(matrix, amat);
     } catch (NoSuchElementException E) {
     }
@@ -222,8 +222,8 @@ public class DisplayPanel extends Canvas
       deltay = (float) FortranFormat.atof(st.nextToken());
     } catch (java.util.NoSuchElementException E) {
     }
-    Matrix4d matrix = new Matrix4d();
-    matrix.setTranslation(new Vector3d(deltax, deltay, 0.0));
+    Matrix4f matrix = new Matrix4f();
+    matrix.setTranslation(new Vector3f(deltax, deltay, 0.0f));
     tmat.add(matrix);
     matIsValid = false;
     painted = false;
@@ -515,10 +515,10 @@ public class DisplayPanel extends Canvas
         tb.build_rotmatrix(amat, quat);
 
         */
-        double xtheta = (y - prevy) * (2.0 * Math.PI / drawWidth);
-        double ytheta = (x - prevx) * (2.0 * Math.PI / drawHeight);
+        float xtheta = (float)((y - prevy) * (2.0 * Math.PI / drawWidth));
+        float ytheta = (float)((x - prevx) * (2.0 * Math.PI / drawHeight));
 
-        Matrix4d matrix = new Matrix4d();
+        Matrix4f matrix = new Matrix4f();
         matrix.rotX(xtheta);
         amat.mul(matrix, amat);
         matrix.rotY(ytheta);
@@ -531,8 +531,8 @@ public class DisplayPanel extends Canvas
       if (mode == XLATE) {
         float dx = (x - prevx);
         float dy = (y - prevy);
-        Matrix4d matrix = new Matrix4d();
-        matrix.setTranslation(new Vector3d(dx, dy, 0.0));
+        Matrix4f matrix = new Matrix4f();
+        matrix.setTranslation(new Vector3f(dx, dy, 0.0f));
         tmat.add(matrix);
         matIsValid = false;
         painted = false;
@@ -675,8 +675,8 @@ public class DisplayPanel extends Canvas
         float xft = xfac2 * xfac0;
         painted = false;
         mat.setIdentity();
-        Matrix4d matrix = new Matrix4d();
-        matrix.setTranslation(new Vector3d(-(useMinBound.x + useMaxBound.x)
+        Matrix4f matrix = new Matrix4f();
+        matrix.setTranslation(new Vector3f(-(useMinBound.x + useMaxBound.x)
             / 2, -(useMinBound.y + useMaxBound.y) / 2,
               -(useMinBound.z + useMaxBound.z) / 2));
         mat.add(matrix);
@@ -688,7 +688,7 @@ public class DisplayPanel extends Canvas
         mat.mul(matrix, mat);
         mat.mul(tmat, mat);
         matrix.setZero();
-        matrix.setTranslation(new Vector3d(drawWidth / 2, drawHeight / 2,
+        matrix.setTranslation(new Vector3f(drawWidth / 2, drawHeight / 2,
             drawWidth / 2));
         mat.add(matrix);
         matIsValid = true;

@@ -28,10 +28,18 @@
   <path id="project.class.path">
     <fileset dir="${lib.dir}">
       <include name="*.jar" />
+      <exclude name="jmolappletcdk.jar"/>
     </fileset>
   </path>
   
-  <target name="main" depends="init,jar,applet-jar"/>
+  <path id="applet-project.class.path">
+    <fileset dir="${lib.dir}">
+      <include name="*.jar" />
+      <exclude name="jmolcdk.jar"/>
+    </fileset>
+  </path>
+  
+  <target name="main" id="main" depends="init,jar,applet-jar"/>
   
   <target name="init" depends="check.docbook,check.xsl" />
   
@@ -39,7 +47,7 @@
     <fail message="Init failed. See messages above." />
   </target>
 
-  <target name="setup" >
+  <target name="setup" id="setup">
     <uptodate property="jmolGuide.uptodate" 
       targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
       <srcfiles dir="${doc.dir}/source" includes="JmolGuide.docbook.xml" />
@@ -81,15 +89,15 @@
   <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
     <echo message="Docbook directory '${docbook.dir}' not found." />
     <echo message="Please set with the argument '-Ddocbook.dir=directory'." />
-    <antcall target="initFailure" />
+    <echo message="Note that the documentation is CANNOT generated now." />
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >
     <echo message="XSLT class 'com.icl.saxon.StyleSheet' not found." />
-    <antcall target="initFailure" />
+    <echo message="Note that the documentation is CANNOT generated now." />
   </target>
 
-  <target name="jmolGuide" depends="init" unless="jmolGuide.uptodate" >
+  <target name="jmolGuide" id="jmolGuide" depends="init" unless="jmolGuide.uptodate, docbook.dir.present, xsl.available" >
     <echo message="Generating user's guide" />
     <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
     <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
@@ -187,10 +195,10 @@
     <mkdir dir="${applet.classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
         debug="on" deprecation="on" target="1.1"
-        includesfile="applet.classes" classpathref="project.class.path" />
+        includesfile="applet.classes" classpathref="applet-project.class.path" />
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
         debug="on" deprecation="on" target="1.1"
-        includes="JmolApplet.java" classpathref="project.class.path" />
+        includes="JmolApplet.java" classpathref="applet-project.class.path" />
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
         <include name="**/*.dtd" />
@@ -198,6 +206,7 @@
       </fileset>
       <fileset dir="${source.dir}/org/openscience/jmol/applet">
         <include name="Data/AtomTypes.txt" />
+        <include name="Data/cml1_0.dtd.txt" />
       </fileset>
     </copy>
   </target>
@@ -228,7 +237,7 @@
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
   </target>
 
-  <target name="jar" depends="init,classes,appjars">
+  <target name="jar" id="jar" depends="init,classes,appjars">
     <jar jarfile="jmol.jar" manifest="${manifest}" >
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -278,7 +287,7 @@
     </unjar>
   </target>
 
-  <target name="applet-jar" depends="applet-classes,appletjars">
+  <target name="applet-jar" id="applet-jar" depends="applet-classes,appletjars">
     <jar jarfile="JmolApplet.jar" >
       <fileset dir="${applet.classes.dir}" >
         <include name="**/*" />
@@ -379,7 +388,7 @@
   </target>
   
 
-  <target name="dist.zip" depends="dist">
+  <target name="dist.zip" id="dist.zip" depends="dist">
     <zip zipfile="${build.dir}/jmol-${version}.zip" basedir="${dist.dir}"
       includes="jmol-${version}/**" />
   </target>
@@ -417,7 +426,7 @@
     <delete file="${build.dir}/jmol-applet-${version}.tar" />
   </target>
 
-  <target name="sourcedist">
+  <target name="sourcedist" id="sourcedist">
     <mkdir dir="${sourcedist.dir}/jmol-${version}"/>
     <copy todir="${sourcedist.dir}/jmol-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
@@ -478,7 +487,7 @@
   <target name="applet-dists" description="Builds applet distributions."
       depends="applet.dist.zip,applet.dist.tar.gz"/>
 
-  <target name="clean">
+  <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${tests.classes.dir}"/>
@@ -497,7 +506,7 @@
     <delete dir="${javadoc.dir}"/>
   </target>
   
-  <target name="run" depends="classes">
+  <target name="run" id="run" depends="classes">
     <java fork="true" classname="org.openscience.jmol.Jmol">
       <classpath location="classes" />
       <classpath refid="project.class.path" />
@@ -505,7 +514,7 @@
   </target>
 
   <property name="testName" value="org.openscience.jmol.JmolTests" />
-  <target name="test" depends="compile.tests" description="Tests Jmol.">
+  <target name="test" id="test" depends="compile.tests" description="Tests Jmol.">
     <mkdir dir="${tests.dir}" />
     <junit fork="yes" dir="${tests.dir}" printsummary="yes" haltonfailure="yes">
       <formatter type="plain" useFile="no" />

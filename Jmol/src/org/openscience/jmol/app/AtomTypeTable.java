@@ -570,6 +570,8 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
 
   void ReadAtypes(InputStream is) throws Exception {
+      // FIXME: this method should be removed (Egon)
+      // It is superceded by CDK's TXTBasedAtomTypeConfigurator.
 
     BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);
     StringTokenizer st;
@@ -619,7 +621,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
             }
 
             AtomType at = new AtomType(name, rootType, an, mass, vdw, covalent);
-            atomColors.setAtomColor(at, new Color(rl, gl, bl));
+            // atomColors.setAtomColor(at, new Color(rl, gl, bl));
 
             atModel.updateAtomType(at.getBaseAtomType());
 

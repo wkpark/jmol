@@ -22,30 +22,32 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
  */
-
 package org.openscience.jmol.render;
+
+import java.awt.Color;
+
+import java.util.Hashtable;
 
 import org.openscience.cdk.Atom;
 import org.openscience.cdk.renderer.color.AtomColorer;
-import org.openscience.jmol.BaseAtomType;
+
 import org.openscience.jmol.AtomType;
-import java.awt.Color;
-import java.util.Hashtable;
+import org.openscience.jmol.BaseAtomType;
+
 
 /**
- * Singleton class defing the colors of the different atom types.
+ * <p>Singleton class defing the colors of the different atom types.
  * When initialized for the first time, all atoms have the color
- * dark grey.
+ * dark grey. An instance is created with:
+ * <pre>
+ *   AtomColors colorer = AtomColors.getInstance();
+ * </pre>
  */
 public class AtomColors implements AtomColorer {
 
     private static AtomColors ac = null;
 
-    Hashtable colors = null;
-
-    private AtomColors() {
-        colors = new Hashtable();
-    }
+    private AtomColors() {}
 
     public static AtomColors getInstance() {
         if (ac == null) {
@@ -55,50 +57,18 @@ public class AtomColors implements AtomColorer {
     }
 
     /**
-     * Sets the color for a certain atom type
-     */
-    public void setAtomColor(AtomType a, Color c) {
-        this.setAtomColor(a.getBaseAtomType(), c);
-    }
-
-    /**
-     * Sets the color for a certain atom type
-     */
-    public void setAtomColor(BaseAtomType a, Color c) {
-        colors.put(a.getID(), c);
-    }
-
-    /**
      * Returns the color for a certain atom type
      */
-  public Color getAtomColor(Atom a) {
-    if (colors.containsKey(a.getID()))
-      return (Color)colors.get(a.getID());
-    // FIXME -- mth -- all this color stuff needs work
-    // the colors are already stored in the basetype
-    // the basetypes get read to populate the atom properties table
-    // but that does not happen in the applet
-    org.openscience.jmol.Atom jmolAtom;
-    jmolAtom = (org.openscience.jmol.Atom)a;
-    return jmolAtom.getType().getColor();
-  }
-
-    /**
-     * Returns the color for a certain atom type
-     */
-    public Color getAtomColor(AtomType a) {
-        return this.getAtomColor(a.getBaseAtomType());
-    }
-
-    /**
-     * Returns the color for a certain atom type
-     */
-    public Color getAtomColor(BaseAtomType a) {
-        Color c = Color.darkGray; // returned color if atom type not in hash
-        if (colors.containsKey(a.getID())) {
-            c = (Color)colors.get(a.getID());
+    public Color getAtomColor(Atom a) {
+        Object o = a.getProperty("org.openscience.jmol.color");
+        if (o == null) {
+            // no color set. return white
+            return Color.white;
+        } else if (o instanceof Color) {
+            return (Color)o;
+        } else {
+            // no color set. return white
+            return Color.white;
         }
-        return c;
     }
-
 }

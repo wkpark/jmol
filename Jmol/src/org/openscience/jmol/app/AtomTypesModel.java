@@ -117,7 +117,8 @@ class AtomTypesModel extends AbstractTableModel {
       break;
 
     case 6 :
-      AtomColors.getInstance().setAtomColor(at, (Color) o);
+      // AtomColors.getInstance().setAtomColor(at, (Color) o);
+      // FIXME: (by Egon)
       break;
     }
     updateAtomType(at);
@@ -147,7 +148,10 @@ class AtomTypesModel extends AbstractTableModel {
         return new Double(at.getCovalentRadius());
 
       case 6 :
-        return AtomColors.getInstance().getAtomColor(at);
+        // return AtomColors.getInstance().getAtomColor(at);
+        return Color.white;
+        // FIXME: this should be done beter... but i'll need to
+        // come up with a good solution. Will do that next week (Egon)
       }
     } catch (Exception e) {
     }

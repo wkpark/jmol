@@ -83,6 +83,12 @@
   <change contributor="EW">
     Added reading of input structures from Mopac files.
   </change>
+  <change contributor="NV">
+    Added Folding@Home (folding.stanford.edu) current.xyz files reader.
+  </change>
+  <change contributor="MTH">
+    Added Unicode support in scripts.
+  </change>
 </changes>
 
 <changes version="jmol-10">

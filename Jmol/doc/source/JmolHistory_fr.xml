@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : JmolHistory.docbook.xml (v 1.44)
+  Translated from default version : JmolHistory.docbook.xml (v 1.45)
 -->
 <history>
 <contributors>
@@ -88,6 +88,13 @@
   <change contributor="EW">
     Ajout de la lecture des structures d'entr&#x00E9;e pour les fichiers
     Mopac.
+  </change>
+  <change contributor="NV">
+    Ajout de la lecture des fichier current.xyz de Folding@Home
+    (folding.stanford.edu).
+  </change>
+  <change contributor="MTH">
+    Support d'Unicode dans les scripts.
   </change>
 </changes>
 
@@ -182,7 +189,7 @@
     d'&#x00E9;tat.
   </change>
   <change contributor="RG">
-	Ajout de la lecture/&#x00E9;criture du format HIN (HyperChem)
+    Ajout de la lecture/&#x00E9;criture du format HIN (HyperChem)
   </change>
   <change contributor="EW">
     Ajout d'un bouton aide dans la fen&#x00EA;tre de script.
@@ -217,7 +224,7 @@
     Historique des commandes de script impl&#x00E9;ment&#x00E9;
   </change>
   <change contributor="MTH">
-	Probl&#x00E8;me de ReaderFactory buffer.reset() corrig&#x00E9;
+    Probl&#x00E8;me de ReaderFactory buffer.reset() corrig&#x00E9;
     (cl&#x00F4;ture dr #799963)
   </change>
   <change contributor="EW">

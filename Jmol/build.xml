@@ -135,21 +135,6 @@
     </copy>
   </target>
   
-  <target name="compile.tests" id="compile.tests" depends="classes">
-    <mkdir dir="${tests.classes.dir}"/>
-    <javac srcdir="${tests.source.dir}" destdir="${tests.classes.dir}"
-           debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}" source="1.4">
-      <classpath location="${classes.dir}" />
-      <classpath refid="project.class.path" />
-    </javac>
-    <copy todir="${tests.classes.dir}" >
-      <fileset dir="${tests.source.dir}">
-        <include name="**/Test-*" />
-      </fileset>
-    </copy>
-  </target>
-
   <target name="applet-classes" id="applet-classes" depends="init">
     <mkdir dir="${applet.classes.dir}"/>
     <property name="build.compiler" value="javac1.1" />
@@ -442,11 +427,6 @@
         <exclude name="**/CVS"/>
       </fileset>
     </copy>
-    <copy todir="${sourcedist.dir}/jmol-${version}/${tests.source.dir}" >
-      <fileset dir="${tests.source.dir}">
-        <exclude name="**/CVS"/>
-      </fileset>
-    </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${doc.dir}" >
       <fileset dir="${doc.dir}">
         <exclude name="**/CVS"/>
@@ -521,18 +501,6 @@
       <classpath location="classes" />
       <classpath refid="project.class.path" />
     </java>
-  </target>
-
-  <property name="testName" value="org.openscience.jmol.JmolTests" />
-  <target name="test" id="test" depends="compile.tests" description="Tests Jmol.">
-    <mkdir dir="${tests.dir}" />
-    <junit fork="yes" dir="${tests.dir}" printsummary="yes" haltonfailure="yes">
-      <formatter type="plain" useFile="no" />
-      <classpath path="${classes.dir}" />
-      <classpath path="${tests.classes.dir}" />
-      <classpath refid="project.class.path" />
-      <test name="${testName}" />
-    </junit>
   </target>
 
   <!-- ********************************

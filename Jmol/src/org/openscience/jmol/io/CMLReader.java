@@ -42,7 +42,6 @@ import org.xml.sax.InputSource;
 
 /**
  * CML files contain a single ChemFrame object.
- * @see ChemFrame
  */
 public class CMLReader extends DefaultChemFileReader {
 

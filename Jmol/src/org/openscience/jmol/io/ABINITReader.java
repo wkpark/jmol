@@ -58,7 +58,6 @@ import java.awt.event.ActionListener;
  *   molecular dynamics simulation using these forces, or to generate
  *   dynamical matrices, Born effective charges, and dielectric tensors.
  *
- *
  * <p> An abinit input file is composed of many keywords arranged
  * in a non-specific
  * order. Each keyword is followed by one or more numbers (integers or
@@ -67,17 +66,8 @@ import java.awt.event.ActionListener;
  * The fisrt line of the file can be considered as a title.
  * This implementaton supports only 1 dataset!!!
  *
- * <p> This reader was developed without the assistance or approval of
- * anyone from Network Computing Services, Inc. (the authors of XMol).
- * If you have problems, please contact the author of this code, not
- * the developers of XMol.
- *
- *<p><p> <p> Create an ABINIT input and output reader.
- *
- *
- *
- * @author Fabian Dortu (Fabian.Dortu@wanadoo.be)
- * @version 1.3 */
+ * @author Fabian Dortu <Fabian.Dortu@wanadoo.be>
+ */
 public class ABINITReader extends DefaultChemFileReader {
 
   // Factor conversion bohr to angstrom
@@ -93,7 +83,6 @@ public class ABINITReader extends DefaultChemFileReader {
   // The resulting CrystalFile
   CrystalFile crystalFile;
   
-
   /**
    * Creates a new <code>ABINITReader</code> instance.
    *
@@ -101,6 +90,7 @@ public class ABINITReader extends DefaultChemFileReader {
    */
   public ABINITReader(DisplayControl control, Reader input) {
     super(control, input);
+    logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
     this.inputBuffer = (BufferedReader) input;
     crystalFile = new CrystalFile(control);
   }
@@ -136,15 +126,15 @@ public class ABINITReader extends DefaultChemFileReader {
 
           //This is an output file
           inputBuffer.reset();
-          System.out.println("We have an abinit *output* file");
+          logger.info("We have an abinit *output* file");
           return (new ABINITOutputReader(control, input)).read();
         }
       }
     }
 
-    //We don't have an output file so we have an input file
+    // We don't have an output file so we have an input file
     inputBuffer.reset();
-    System.out.println("We have an abinit *input* file");
+    logger.info("We have an abinit *input* file");
     return (new ABINITInputReader(control, input)).read();
   } //end read()
   
@@ -161,7 +151,7 @@ public class ABINITReader extends DefaultChemFileReader {
 
     String line;
 
-    if (newLine) {    //We ignore the end of the line and go to the following line
+    if (newLine) {    // We ignore the end of the line and go to the following line
       if (inputBuffer.ready()) {
         line = inputBuffer.readLine();
         st = new StringTokenizer(line, " \t");
@@ -180,8 +170,9 @@ public class ABINITReader extends DefaultChemFileReader {
     } else {
       fieldVal = null;
     }
+    logger.debug("ABINIT token: " + this.fieldVal);
     return this.fieldVal;
-  } //end nextAbinitToken(boolean newLine)
+  } // end nextAbinitToken(boolean newLine)
 
   
   public String nextAbinitTokenFollowing(String string)  throws IOException{

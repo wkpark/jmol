@@ -9,7 +9,7 @@ To generate Debian packages, do:
 
 2. in $JMOL_CVSDIR/jmol/packaging/debian update for version the files
 
-   VERSION, build.xml, changelog
+   VERSION, Makefile, build.xml, changelog
 
 3. in $JMOL_CVSDIR/jmol/packaging/debian type:
    make

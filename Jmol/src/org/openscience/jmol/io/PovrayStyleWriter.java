@@ -103,12 +103,12 @@ import java.io.IOException;
 
 /**
  * Writes the appearance and locations of the
- * atoms and bonds that are exported from j-mol. The default action is
- * to grab the color from j-mol based on atom type. The following are
+ * atoms and bonds that are exported from Jmol. The default action is
+ * to grab the color from Jmol based on atom type. The following are
  * passed as general parameters:
  *
  * <ul>
- *   <li>The percentage of the Van Der Walls radius to display</li>
+ *   <li>The percentage of the Van Der Waals radius to display</li>
  *   <li>The width of the bonds</li>
  * </ul>
  *
@@ -134,9 +134,6 @@ import java.io.IOException;
  *
  * @author Thomas James Grey
  * @author Matthew A. Meineke
- *
- * @version 1.1
- *
  */
 public class PovrayStyleWriter {
 
@@ -383,14 +380,14 @@ public class PovrayStyleWriter {
   /**
    * Takes the index of the example atom, and returns a string
    * representation of the atom type's color in povray's rgb
-   * format.<br>
-   * ie. &#34;rgb &lt RED_FLOAT, GREEN_FLOAT, BLUE_FLOAT
+   * format.
+   * <p>ie. &#34;rgb &lt RED_FLOAT, GREEN_FLOAT, BLUE_FLOAT
    * &gt;&#34;<br>
    * where RED_FLOAT, GREEN_FLOAT, and BLUE_FLOAT are the
    * red, green, and blue components of the color scaled from 0 to
    * 1.<p>
    *
-   * Override this method to specify the color by something other
+   * <p>Override this method to specify the color by something other
    * than the name of the atom
    *
    * @param indexOfExampleAtom The index of an example atom tpye

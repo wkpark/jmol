@@ -6,7 +6,7 @@ LIBS     = ${DESTDIR}/usr/share/java
 EXTRA    = ${DESTDIR}/usr/share/jmol/lib
 HTMLDOC  = ${DESTDIR}/usr/share/doc/jmol/html
 
-VERSION=6
+VERSION=7
 
 CLASSPATH=`find /tmp/jmol-${VERSION}/jars -name "*.jar" | tr '\n' ':'`
 

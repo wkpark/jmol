@@ -143,7 +143,8 @@ public class Jmol extends JPanel {
   private MeasurementList mlist;
   private RecentFilesDialog recentFiles;
   public ScriptWindow scriptWindow;
-  protected static JFrame frame;
+  protected JFrame frame;
+  private static File currentDir;
   private JFileChooser openChooser;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
@@ -151,6 +152,10 @@ public class Jmol extends JPanel {
   private JmolPopup jmolpopup;
 
   private GuiMap guimap = new GuiMap();
+  
+  private static int numWindows = 0;
+  private static Dimension screenSize = null;
+  private static String strJvmVersion;
 
   /**
    * The current file.
@@ -196,69 +201,62 @@ public class Jmol extends JPanel {
     UserAtypeFile = new File(ujmoldir, "jmol_atomtypes.txt");
     historyFile = new HistoryFile(new File(ujmoldir, "history"),
         "Jmol's persistent values");
+        
+    strJvmVersion = System.getProperty("java.version");
   }
 
-  Jmol(Splash splash) {
-
+  Jmol(Splash splash, JFrame frame, Jmol parent) {
     super(true);
-
+    this.frame = frame;
+    numWindows++;
+    
     // get a resource handler
     resourceHandler = JmolResourceHandler.getInstance();
 
+    frame.setTitle(resourceHandler.getString("Jmol.Title"));
+    frame.setBackground(Color.lightGray);
+    frame.getContentPane().setLayout(new BorderLayout());
+    
     this.splash = splash;
-    splash.showStatus(resourceHandler.translate("Initializing Swing..."));
-    try {
-      UIManager
-          .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-    } catch (Exception exc) {
-      System.err.println("Error loading L&F: " + exc);
-    }
 
     setBorder(BorderFactory.createEtchedBorder());
     setLayout(new BorderLayout());
 
     status = (StatusBar) createStatusBar();
-    splash.showStatus(resourceHandler
-        .translate("Initializing 3D display..."));
+    say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    String strJvmVersion = System.getProperty("java.version");
     control = new DisplayControl(strJvmVersion, display);
     display.setDisplayControl(control);
 
     //    control.addPropertyChangeListener(display);
-    splash.showStatus(resourceHandler
-        .translate("Initializing Preferences..."));
+    say("Initializing Preferences...");
     preferencesDialog = new PreferencesDialog(frame, guimap, control);
-    splash.showStatus(resourceHandler.translate("Initializing Animate..."));
+    say("Initializing Animate...");
     anim = new Animate(control, frame);
     control.addPropertyChangeListener(anim);
-    splash.showStatus(resourceHandler.translate("Initializing Vibrate..."));
+    say("Initializing Vibrate...");
     vib = new Vibrate(control, frame);
     control.addPropertyChangeListener(vib);
-    splash.showStatus(resourceHandler.translate("Initializing Crystal..."));
+    say("Initializing Crystal...");
     crystprop = new CrystalPropertiesDialog(control, frame);
     control.addPropertyChangeListener(crystprop);
     makecrystal = new MakeCrystal(control, crystprop);
     control.addPropertyChangeListener(makecrystal);
     transform = new TransformDialog(control, frame);
     control.addPropertyChangeListener(transform);
-    splash.showStatus(resourceHandler
-        .translate("Initializing Recent Files..."));
+    say("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
     addPropertyChangeListener(openFileProperty, recentFiles);
-    splash.showStatus(resourceHandler
-        .translate("Initializing Script Window..."));
+    say("Initializing Script Window...");
     scriptWindow = new ScriptWindow(control, frame);
     //scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
     control.setJmolStatusListener(new MyJmolStatusListener());
-    splash.showStatus(resourceHandler
-        .translate("Initializing Property Graph..."));
+    say("Initializing Property Graph...");
     pg = new PropertyGraph(frame);
     control.addPropertyChangeListener(pg);
 
-    splash.showStatus(resourceHandler
-        .translate("Initializing Measurements..."));
+    say("Initializing Measurements...");
     mlist = new MeasurementList(frame, control);
     meas = new Measure(frame, control);
     meas.setMeasurementList(mlist);
@@ -267,7 +265,7 @@ public class Jmol extends JPanel {
     //    mlist.addMeasurementListListener(display);
 
     // install the command table
-    splash.showStatus(resourceHandler.translate("Building Command Hooks..."));
+    say("Building Command Hooks...");
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -283,7 +281,7 @@ public class Jmol extends JPanel {
     }
     vib.addConflictingAction(getAction(openAction));
     menuItems = new Hashtable();
-    splash.showStatus(resourceHandler.translate("Building Menubar..."));
+    say("Building Menubar...");
     menubar = createMenubar();
     add("North", menubar);
 
@@ -298,21 +296,14 @@ public class Jmol extends JPanel {
     add("Center", panel);
     add("South", status);
 
-    splash.showStatus(resourceHandler
-        .translate("Initializing Chemical Shifts..."));
+    say("Initializing Chemical Shifts...");
     chemicalShifts.initialize(apm);
     control.addPropertyChangeListener(chemicalShifts);
 
-    splash.showStatus(resourceHandler.translate("Starting display..."));
+    say("Starting display...");
     display.start();
 
-    splash.showStatus(resourceHandler.translate("Reading AtomTypes..."));
-    AtomTypeList atl = AtomTypeList.getInstance(UserAtypeFile);
-    atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
-
-    splash.showStatus(resourceHandler
-        .translate("Setting up File Choosers..."));
-    File currentDir = getUserDirectory();
+    say("Setting up File Choosers...");
     openChooser = new JFileChooser();
     openChooser.setCurrentDirectory(currentDir);
     saveChooser = new JFileChooser();
@@ -335,21 +326,23 @@ public class Jmol extends JPanel {
                                       printAction);
 
     jmolpopup = new JmolPopup(control, display);
-  }
 
-  public static Jmol getJmol(JFrame frame) {
+    // prevent new Jmol from covering old Jmol
+    if (parent != null) {
+        Point location = parent.frame.getLocationOnScreen();
+        int maxX = screenSize.width - 50;
+        int maxY = screenSize.height - 50;
+        
+        location.x += 40;
+        location.y += 40;
+        if ((location.x > maxX) || (location.y > maxY))
+        {
+            location.setLocation(0, 0);
+        }
+        frame.setLocation(location);
+    }
 
-    JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-    ImageIcon splash_image = jrh.getIcon("Jmol.splash");
-    Splash splash = new Splash(frame, splash_image);
-    splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    splash.showStatus(jrh.translate("Creating main window..."));
-    frame.setTitle(jrh.getString("Jmol.Title"));
-    frame.setBackground(Color.lightGray);
-    frame.getContentPane().setLayout(new BorderLayout());
-    splash.showStatus(jrh.translate("Initializing Jmol..."));
-    Jmol window = new Jmol(splash);
-    frame.getContentPane().add("Center", window);
+    frame.getContentPane().add("Center", this);
     frame.addWindowListener(new Jmol.AppCloser());
     frame.pack();
     frame.setSize(400, 400);
@@ -357,14 +350,43 @@ public class Jmol extends JPanel {
       JmolResourceHandler.getInstance().getIcon("Jmol.icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
-    splash.showStatus(jrh.translate("Launching main frame..."));
+    // splash.showStatus(jrh.translate("Launching main frame..."));
+    say("Launching main frame...");
+  }
+
+  public static Jmol getJmol(JFrame frame) {
+    JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+    ImageIcon splash_image = jrh.getIcon("Jmol.splash");
+    Splash splash = new Splash(frame, splash_image);
+    splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    splash.showStatus(jrh.translate("Creating main window..."));
+    splash.showStatus(jrh.translate("Initializing Swing..."));
+    try {
+        UIManager
+        .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+    } catch (Exception exc) {
+        System.err.println("Error loading L&F: " + exc);
+    }
+    
+    screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    
+    splash.showStatus(jrh.translate("Initializing Jmol..."));
+    
+    // cache the current directory to speed up Jmol window creation
+    currentDir = getUserDirectory();
+    
+    splash.showStatus(jrh.translate("Reading AtomTypes..."));
+    AtomTypeList atl = AtomTypeList.getInstance(UserAtypeFile);
+    atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
+    
+    Jmol window = new Jmol(splash, frame, null);
     frame.show();
     return window;
   }
 
-  static Jmol jmol;
-
   public static void main(String[] args) {
+
+    Jmol jmol = null;
 
     String modelFilename = null;
     String scriptFilename = null;
@@ -384,8 +406,8 @@ public class Jmol extends JPanel {
             + "1.1.2 or higher version VM!!!");
       }
 
-      frame = new JFrame();
-      jmol = getJmol(frame);
+      JFrame jmolFrame = new JFrame();
+      jmol = getJmol(jmolFrame);
 
       // Open a file if one is given as an argument
       if (modelFilename != null) {
@@ -425,8 +447,8 @@ public class Jmol extends JPanel {
       errorTextArea.append("Could not create ConsoleTextArea: " + e);
     }
 
-    Point location = frame.getLocation();
-    Dimension size = frame.getSize();
+    Point location = jmol.frame.getLocation();
+    Dimension size = jmol.frame.getSize();
     consoleframe.setBounds(location.x, location.y + size.height, size.width,
         200);
 
@@ -436,6 +458,14 @@ public class Jmol extends JPanel {
 
   }
 
+  private void say(String message) {
+      if (splash == null) {
+          System.out.println(message);
+      } else {
+          splash.showStatus(resourceHandler.translate(message));
+      }
+  }
+  
   /**
    * Opens a file.
    *
@@ -558,13 +588,23 @@ public class Jmol extends JPanel {
    * implementation would at least check to see if a save
    * was needed.
    */
-  protected static final class AppCloser extends WindowAdapter {
+  protected final class AppCloser extends WindowAdapter {
 
-    public void windowClosing(WindowEvent e) {
-      System.exit(0);
-    }
+      public void windowClosing(WindowEvent e) {
+          Jmol.this.doClose();
+      }
   }
 
+  private void doClose() {
+      numWindows--;
+      if (numWindows <= 0) {
+          System.exit(0);
+      } else {
+          this.frame.dispose();
+      }
+  }
+
+  
   /**
    * Find the hosting frame, for the file-chooser dialog.
    */
@@ -986,10 +1026,12 @@ public class Jmol extends JPanel {
    */
   private static final String mnemonicSuffix = "Mnemonic";
 
+  private static final String newwinAction = "newwin";
   private static final String openAction = "open";
   private static final String newAction = "new";
   private static final String saveasAction = "saveas";
   private static final String exportActionProperty = "export";
+  private static final String closeAction = "close";
   private static final String exitAction = "exit";
   private static final String aboutAction = "about";
   private static final String vibAction = "vibrate";
@@ -1018,13 +1060,24 @@ public class Jmol extends JPanel {
    * Actions defined by the Jmol class
    */
   private Action[] defaultActions = {
-    new NewAction(), new OpenAction(), saveAction, printAction, exportAction,
-    new ExitAction(), new AboutAction(), new WhatsNewAction(),
+    new NewAction(), new NewwinAction(), new OpenAction(), saveAction, printAction, exportAction,
+    new CloseAction(), new ExitAction(), new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new AtompropsAction(), new ConsoleAction(),
     chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
     new ScriptAction()
   };
 
+  class CloseAction extends AbstractAction {
+      CloseAction() {
+          super(closeAction);
+      }
+      
+      public void actionPerformed(ActionEvent e) {
+          Jmol.this.frame.hide();
+          Jmol.this.doClose();
+      }
+  }
+  
   class ConsoleAction extends AbstractAction {
 
     public ConsoleAction() {
@@ -1060,7 +1113,20 @@ public class Jmol extends JPanel {
       WhatsNewDialog wnd = new WhatsNewDialog(frame);
       wnd.show();
     }
-
+  }
+  
+  class NewwinAction extends AbstractAction {
+      
+      NewwinAction() {
+          super(newwinAction);
+      }
+      
+      public void actionPerformed(ActionEvent e) {
+          JFrame newFrame = new JFrame();
+          Jmol newJmol = new Jmol(null, newFrame, Jmol.this);
+          newFrame.show();
+      }
+      
   }
 
   class UguideAction extends AbstractAction {

@@ -2,7 +2,7 @@
 
   <property file="${user.home}/.jmol.build.properties" />
 
-  <property name="version" value="4" />
+  <property name="version" value="7" />
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />

@@ -27,9 +27,9 @@ import java.util.Vector;
 import javax.vecmath.Point3d;
 
 /**
- * A class to store the "Energy Band" property for a frame <br><br>
+ * A class to store the "Energy Band" property for a frame.
  *
- * Usage: <br><br>
+ * <p>Usage: <br><br>
  *
  * 1) Create a new EnergyBand object:<br>
  * <code>EnergyBand energyBand = new EnergyBand(orig, origName, end, endName, nkpt, nband);</code> <br><br>

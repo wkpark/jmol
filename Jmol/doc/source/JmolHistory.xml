@@ -14,7 +14,18 @@
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
 <contributor id="MTH"><name>Miguel Howard</name><email>mth@mth.com</email></contributor>
+<contributor id="JRK"><name>Jonathan C. Rienstra-Kiracofe</name><email>jrienst@emory.edu</email></contributor>
+<contributor id="CR2"><name>Carl Resnikoff</name><email>carl@resnikoff.net</email></contributor>
 </contributors>
+
+<changes version="jmol-8">
+  <change contributor="EW">
+    Made detection of MDL mol files more flexible, allowing v2000 with lower case too.
+  </change>
+  <change contributor="EW">
+    Corrected documentation to state that J2SE 1.4 is required (closes #769822).
+  </change>
+</changes>
 
 <changes version="jmol-7">
   <change contributor="MTH">
@@ -22,6 +33,24 @@
   </change>
   <change contributor="FD">
     Added VASP reader.
+  </change>
+  <change contributor="JRK">
+    Added Gaussian 03 reader.
+  </change>
+  <change contributor="EW">
+    Fixed reading of frequencies in Jaguar 4.2.77 output files (bug #749430).
+  </change>
+  <change contributor="EW">
+    Fixed reading of frequencies in AcesII output files (bug #740967).
+  </change>
+  <change contributor="CR2">
+    Added new window option (feature #743640).
+  </change>
+  <change contributor="FD">
+    Fixed reading of some ABINIT output files (feature #746494).
+  </change>
+  <change contributor="EW">
+    Fixed some JavaDoc.
   </change>
 </changes>
 

@@ -42,8 +42,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Generates files for viewing in the freeware povray reaytracer
- * (http://www.povray.org)<p> The types of atoms and bonds is
+ * Generates files for viewing in the freeware povray raytracer
+ * (http://www.povray.org).
+ *
+ * <p> The types of atoms and bonds is
  * controlled by PovrayStyleWriter
  *
  *  @author Bradley A. Smith (bradley@baysmith.com)

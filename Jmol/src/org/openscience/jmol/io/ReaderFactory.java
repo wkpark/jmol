@@ -120,6 +120,9 @@ public abstract class ReaderFactory {
         boolean mdlFile = false;
         if (line4.trim().endsWith("V2000")) {
           mdlFile = true;
+        } else if (line4.trim().endsWith("v2000")) {
+            System.err.println("WARNING: MDL molfile uses 'v2000' string as found in the NIST database");
+            mdlFile = true;
         } else if (line4.length() >= 6) {
           try {
             String atomCountString = line4.substring(0, 3).trim();
@@ -176,7 +179,10 @@ public abstract class ReaderFactory {
 
     /* Search file for a line containing an identifying keyword */
     while (buffer.ready() && (line != null)) {
-      if (line.indexOf("Gaussian 98:") >= 0) {
+      if (line.indexOf("Gaussian 03:") >= 0) {
+        System.out.println("ReaderFactory: Gaussian03Reader");
+        return new Gaussian03Reader(control, buffer);
+      } else if (line.indexOf("Gaussian 98:") >= 0) {
         System.out.println("ReaderFactory: Gaussian98Reader");
         return new Gaussian98Reader(control, buffer);
       } else if (line.indexOf("Gaussian 95:") >= 0) {
@@ -205,6 +211,7 @@ public abstract class ReaderFactory {
         return new DaltonReader(control, buffer);
       } else if (line.indexOf("Jaguar") >= 0) {
         System.out.println("ReaderFactory: JaguarReader");
+        buffer.reset();
         return new JaguarReader(control, buffer);
       } else if (line.indexOf("MOPAC:  VERSION  7.00") >= 0) {
         System.out.println("ReaderFactory: Mopac7Reader");

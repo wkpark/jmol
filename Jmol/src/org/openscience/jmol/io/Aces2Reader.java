@@ -51,8 +51,7 @@ import java.io.IOException;
  * please contact the author of this code, not the developers
  * of Aces2.
  *
- * @author Bradley A. Smith (yeldar@home.com)
- * @version 1.0
+ * @author Bradley A. Smith <yeldar@home.com>
  */
 public class Aces2Reader extends DefaultChemFileReader {
 
@@ -187,38 +186,52 @@ public class Aces2Reader extends DefaultChemFileReader {
    */
   private void readFrequencies(ChemFrame frame) throws IOException {
 
-    String line;
-    line = input.readLine();
-    line = input.readLine();
-    line = input.readLine();
+    String line = "dummy";
+    while (line.length() > 0) {
+        line = input.readLine();
+        System.out.println("Non empty line: " + line);
+    }
+    /* skipes the line like:
+               A''                        A'                       A''
+     */
+    line = input.readLine(); // line with A A A, or A'' A' A'' etc
     while (input.ready()) {
+        /* read and parse the line like:
+               399.59                   1208.61                   1308.34 
+         */
       line = input.readLine();
       Vector currentVibs = new Vector();
-      StringReader freqValRead = new StringReader(line.trim());
-      StreamTokenizer token = new StreamTokenizer(freqValRead);
-      while (token.nextToken() != StreamTokenizer.TT_EOF) {
-        if (token.ttype == StreamTokenizer.TT_WORD) {
-
-          // Previous Vibration was imaginary.
-          // Add this token to its label.
-          Vibration vib =
-            new Vibration(((Vibration) currentVibs.lastElement()).getLabel()
-              + ' ' + token.sval);
-          currentVibs.removeElementAt(currentVibs.size() - 1);
-          currentVibs.addElement(vib);
-
-          // Read next token for current Vibration value.
-          token.nextToken();
-        }
-        Vibration vib = new Vibration(Double.toString(token.nval));
-        currentVibs.addElement(vib);
+      String freq1 = line.substring(14, 21);
+      logger.debug("freq1: " + freq1);
+      if (line.charAt(21) == 'i') {
+          currentVibs.addElement(new Vibration(freq1 + " i"));
+      } else {
+          currentVibs.addElement(new Vibration(freq1));
       }
+      String freq2 = line.substring(40, 47);
+      logger.debug("freq2: " + freq2);
+      if (line.charAt(47) == 'i') {
+          currentVibs.addElement(new Vibration(freq2 + " i"));
+      } else {
+          currentVibs.addElement(new Vibration(freq2));
+      }
+      String freq3 = line.substring(66, 73);
+      logger.debug("freq3: " + freq3);
+      if (line.charAt(73) == 'i') {
+          currentVibs.addElement(new Vibration(freq3 + " i"));
+      } else {
+          currentVibs.addElement(new Vibration(freq3));
+      }
+      System.out.println("Done reading vib labels");
       line = input.readLine();
       line = input.readLine();
+      System.out.println("Trying to parse coordinates for #atoms: " +
+                         frame.getAtomCount());
       for (int i = 0; i < frame.getAtomCount(); ++i) {
         line = input.readLine();
+        System.out.println("Reading line: " + line);
         StringReader vectorRead = new StringReader(line);
-        token = new StreamTokenizer(vectorRead);
+        StreamTokenizer token = new StreamTokenizer(vectorRead);
         token.nextToken();
 
         // ignore first token

@@ -15,9 +15,9 @@ at http://jmol.sourceforge.net/.
 
 Installation:
 
-  If you have downloaded the source distribution, e.g. jmol-6.source.zip,
+  If you have downloaded the source distribution, e.g. jmol-*.source.zip,
   then Jmol needs to be compiled first. For this you need an Ant
-  installation (ant.apache.org).
+  installation (ant.apache.org), and a J2SDK 1.4.0 or higher.
 
   Then, on both Unix and Windows, you can compile Jmol with:
 

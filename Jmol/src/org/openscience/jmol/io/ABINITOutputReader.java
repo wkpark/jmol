@@ -68,7 +68,6 @@ import javax.swing.JOptionPane;
  *   molecular dynamics simulation using these forces, or to generate
  *   dynamical matrices, Born effective charges, and dielectric tensors.
  *
- *
  * <p> An abinit input file is composed of many keywords arranged
  * in a non-specific
  * order. Each keyword is followed by one or more numbers (integers or
@@ -77,17 +76,8 @@ import javax.swing.JOptionPane;
  * The fisrt line of the file can be considered as a title.
  * This implementaton supports only 1 dataset!!!
  *
- * <p> This reader was developed without the assistance or approval of
- * anyone from Network Computing Services, Inc. (the authors of XMol).
- * If you have problems, please contact the author of this code, not
- * the developers of XMol.
- *
- *<p><p> <p> Create an ABINIT output reader.
- *
- *
- *
- * @author Fabian Dortu (Fabian.Dortu@wanadoo.be)
- * @version 1.3 */
+ * @author Fabian Dortu <Fabian.Dortu@wanadoo.be>
+ */
 public class ABINITOutputReader extends ABINITReader {
   
   // ABINIT variables
@@ -236,10 +226,8 @@ public class ABINITOutputReader extends ABINITReader {
     count = 0;
     while (fieldVal != null) {
       if (fieldVal.equals("zatnum") || fieldVal.equals("znucl") ||
-	  fieldVal.equals("zatnum" +
-			  dataset.elementAt(selectedDataset)) ||
-	  fieldVal.equals("znucl" +
-			  dataset.elementAt(selectedDataset))) {
+          fieldVal.equals("zatnum" + dataset.elementAt(selectedDataset)) ||
+          fieldVal.equals("znucl" + dataset.elementAt(selectedDataset))) {
         for (int i = 0; i < ntype; i++) {
           nextAbinitToken(false);
           zatnum[i] = (int) FortranFormat.atof(fieldVal);
@@ -299,45 +287,41 @@ public class ABINITOutputReader extends ABINITReader {
    
 
   private void echoPreprocessedVariables() {
-    System.out.println("Info: " + info);
-    System.out.println("Dataset Number: " + dataset.size());
-    System.out.println("Selected Dataset: " 
+    logger.info("Info: " + info);
+    logger.info("Dataset Number: " + dataset.size());
+    logger.info("Selected Dataset: " 
 		       + dataset.elementAt(selectedDataset));
     
 
-    System.out.println("acell: " + " " +
-		       acell[0] + " " +
-		       acell[1] + " " +
-		       acell[2]);    
-    System.out.println("enunit: " + enunit);
-    System.out.println("ionmov: " + ionmov);
-    System.out.println("natom: " + natom);
-    System.out.println("nband: " + nband);
-    System.out.println("nkpt: " + nkpt);
-    System.out.println("ntype: " + ntype);
-    System.out.println("rprim: ");
-    System.out.println("   "+rprim[0][0]+" "+rprim[0][1]+" "+rprim[0][2]);
-    System.out.println("   "+rprim[1][0]+" "+rprim[1][1]+" "+rprim[1][2]);
-    System.out.println("   "+rprim[2][0]+" "+rprim[2][1]+" "+rprim[2][2]);
-    System.out.print("type: ");
+    logger.info("acell: " + " " + acell[0] + " " +
+                acell[1] + " " + acell[2]);    
+    logger.info("enunit: " + enunit);
+    logger.info("ionmov: " + ionmov);
+    logger.info("natom: " + natom);
+    logger.info("nband: " + nband);
+    logger.info("nkpt: " + nkpt);
+    logger.info("ntype: " + ntype);
+    logger.info("rprim: ");
+    logger.info("   "+rprim[0][0]+" "+rprim[0][1]+" "+rprim[0][2]);
+    logger.info("   "+rprim[1][0]+" "+rprim[1][1]+" "+rprim[1][2]);
+    logger.info("   "+rprim[2][0]+" "+rprim[2][1]+" "+rprim[2][2]);
+    logger.info("type: ");
     for (int i = 0; i< natom; i++) {
-      System.out.print(type[i] + " ");
+      logger.info(type[i] + " ");
     }
-    System.out.println("");
+    logger.info("");
 
-    System.out.println("xangst: ");
+    logger.info("xangst: ");
     for (int i = 0; i< natom; i++) {
-      System.out.print("   "); 
       for (int j =0; j<3; j++) {
-	System.out.print(xangst[i][j] + " ");
+          logger.info(i + ", " + j + ": " + xangst[i][j]);
       }
-      System.out.println("");
     }
-    System.out.print("zatnum: ");
+    logger.info("zatnum: ");
     for (int i = 0; i< ntype; i++) {
-      System.out.print(zatnum[i] + " ");
+      logger.info(i + ": " + zatnum[i] + " ");
     }
-    System.out.println("");
+    logger.info("");
   } //end echoPreprocessedVariables()
 
   
@@ -361,7 +345,7 @@ public class ABINITOutputReader extends ABINITReader {
         
     //generate the frame
     crystalFile.generateCrystalFrame();
-    System.out.println("New Frame set!");
+    logger.info("New Frame set!");
     
     //Add the Energy Property to the frame
     if (energy != 1000000) {
@@ -381,7 +365,7 @@ public class ABINITOutputReader extends ABINITReader {
         info = info + " " + fieldVal;
         nextAbinitToken(false);    // NUMBER
         info = info + " " + fieldVal;
-        System.out.println(info);
+        logger.info(info);
       } else if (fieldVal.equals("acell=")) {
         acell = new double[3];
         for (int i = 0; i < 3; i++) {
@@ -446,7 +430,7 @@ public class ABINITOutputReader extends ABINITReader {
 
     //Go to "Eigenvalues"
     nextAbinitToken(true);
-    while(!fieldVal.equals("Eigenvalues")) {
+    while (fieldVal != null && !fieldVal.equals("Eigenvalues")) {
       nextAbinitToken(true);
     }
 
@@ -509,7 +493,7 @@ public class ABINITOutputReader extends ABINITReader {
       
       energyBand.addKLine(orig,origName,end,endName,lkpt,nband); //create a new line
 
-      System.out.println("New K Line");
+      logger.info("New K Line");
       for (int ikpt=0; ikpt < lkpt; ikpt++) {
 	if (ikpt ==(lkpt-1)) {
 	  inputBuffer.mark(1024*1024);
@@ -521,7 +505,7 @@ public class ABINITOutputReader extends ABINITReader {
 	nkptRead++;
 	nkptReadSinceLastMark++;
 
-	System.out.println("  kpt: " + a.x + " " +a.y +" "+a.z );
+	logger.info("  kpt: " + a.x + " " +a.y +" "+a.z );
 	energyBand.addKPoint(a); //add kPoint
 	for (int iband=0; iband<nband; iband++) { //add energies
 	  if (iband==0) { 

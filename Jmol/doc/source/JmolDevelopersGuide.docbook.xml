@@ -57,7 +57,7 @@
       <section>
         <title>Compiling with Java 1.2</title>
         <para>
-          The applet needs to be compiled with javac 1.2, to be compatible with most browsers.
+          The applet needs to be compiled with javac 1.2, to be compatible with many older browsers.
           This can be done by doing:
           <programlisting>
             <prompt>h:\programming\Jmol&gt;</prompt> <command>setenv JAVA_HOME /path/to/java1.2</command>
@@ -66,14 +66,14 @@
         </para>
       </section>
       <section>
-        <title>Compiling with Java 1.3/1.4</title>
+        <title>Compiling with Java 1.4</title>
         <para>
-          The application can best be compiled with javac 1.3/1.4. This can be done by doing:
+          The application requires to be compiled with javac from J2SDK 1.4 or higher. 
+          This can be done by doing:
           <programlisting>
             <prompt>h:\programming\Jmol&gt;</prompt> <command>setenv JAVA_HOME /path/to/java1.4</command>
             <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Dbuild.compiler=javac1.4</command>
           </programlisting>
-          And similar for javac1.3.
         </para>
       </section>
     </section>

@@ -35,7 +35,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 /**
- * A reader for CAChe molstruct files
+ * A reader for CAChe molstruct files.
  *
  * <p> Molecular coordinates are the only thing read in right now,
  * I plan to add energies, and other property data next.
@@ -44,11 +44,8 @@ import java.io.IOException;
  * CAChe, not babel or MAC versions. This will be fixed shortly with a "smarter" version.
  * See source code comments below.
  *
- * @author Charles R. Fulton (fultoncr@ucarb.com)
- * @version 1.0
- *
+ * @author Charles R. Fulton <fultoncr@ucarb.com>
  */
-
 public class CACheReader extends DefaultChemFileReader {
 
   /**

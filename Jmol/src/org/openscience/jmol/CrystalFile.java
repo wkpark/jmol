@@ -36,44 +36,53 @@ import java.lang.reflect.Array;    //fa
 /**
  * The class <code>CrystalFile</code> defines the properties of a crystal and
  * has a method to generate a set of atoms representing a part
- * of the crystal.<br>
+ * of the crystal.
  *
- * How to use this class? It works as a state machine.
+ * <p>How to use this class? It works as a state machine.
  * Create a <code>CrystalFile</code> object and
- * set the crystal properties to the desired values:<br><br>
+ * set the crystal properties to the desired values:
+ * <pre>
+ * CrystalFile cf = new CrystalFile();
+ * cf.setUnitCellBox(new UnitCellBox(...));
+ *              (use the constructor appropriated to your needs)
+ *              (so far, only the trivial space group "1" is implemented)
+ * cf.setCrystalBox(new CrystalBox(...));
+ * </pre>
  *
- * <code>CrystalFile cf = new CrystalFile();</code><br>
- * <code>cf.setUnitCellBox(new UnitCellBox(...));</code><br>
- *              (use the constructor appropriated to your needs)<br>
- *              (so far, only the trivial space group "1" is implemented)<br>
- * <code>cf.setCrystalBox(new CrystalBox(...));</code><br>
-
- * You have now settled all the necessary information and you can
- * generate the crystal:<br><br>
- * <code>cf.generateCrystalFrame();</code><br><br>
+ * <p>You have now settled all the necessary information and you can
+ * generate the crystal:
+ * <pre>
+ * cf.generateCrystalFrame();
+ * </pre>
  *
- * If you have more frames, you can set the properties to any other desired
- * value and generate a new frame.<br>
- * <code>cf.setUnitCellBox(...);</code><br>
- * <code>cf.generateCrystalFrame();</code><br>
- *    and so on if you want to add more frames.<br><br>
+ * <p>If you have more frames, you can set the properties to any other desired
+ * value and generate a new frame.
+ * <pre>
+ * cf.setUnitCellBox(...);
+ * cf.generateCrystalFrame();
+ *    and so on if you want to add more frames.
+ * </pre>
  *
- * The generated frames are stored in a field of the <code>super</code>
+ * <p>The generated frames are stored in a field of the <code>super</code>
  * class (<code>ChemFile</code>) and can be accessed with:
- * <code>cf.getFrame(whichframe);</code><br><br>
+ * <pre>
+ * cf.getFrame(whichframe);
+ * </pre>
  *
- * The crystal properties of a frame can be read with:<br>
- * <code>cf.getUnitCellBox(whichframe)</code>,
- * <code>cf.getCrystalBox(whichframe)</code><br>
+ * <p>The crystal properties of a frame can be read with:
+ * <pre>
+ * cf.getUnitCellBox(whichframe)
+ * cf.getCrystalBox(whichframe)
+ * </pre>
  *
- * The crystal properties state (used to generate a new frame)
- * can be read with:<br>
- * <code>cf.getUnitCellBox()</code>,
- * <code>cf.getCrystalBox()</code><br>
- *
+ * <p>The crystal properties state (used to generate a new frame)
+ * can be read with:
+ * <pre>
+ * cf.getUnitCellBox()
+ * cf.getCrystalBox()
+ * </pre>
  *
  * @author Fabian Dortu (Fabian.Dortu@wanadoo.be)
- * @version 1.2
  */
 public class CrystalFile extends ChemFile {
 
@@ -142,11 +151,13 @@ public class CrystalFile extends ChemFile {
 
 
   /**
-   * Default constructor:<br>
-   * Create a CrystalFile object using default parameters.<br>
-   * By default, the primitive vectors
+   * Create a CrystalFile object using default parameters.
+   *
+   * <p>By default, the primitive vectors
    * set to define a cube, the space group is set to 1
    * and the atom box and bond box are set to {0,0,0}->{1,1,1}.
+   *
+   * <p>This is the default constructor.
    */
   public CrystalFile(DisplayControl control) {
     super(control);
@@ -285,8 +296,8 @@ public class CrystalFile extends ChemFile {
 
 
   /**
-   * Generate a frame given by its index.<br>
-   * The frame must exist or be the last frame index + 1.
+   * Generate a frame given by its index.
+   * <p>The frame must exist or be the last frame index + 1.
    *
    * @param whichframe an <code>int</code> value.
    */

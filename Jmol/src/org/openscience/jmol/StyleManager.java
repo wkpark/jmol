@@ -34,19 +34,19 @@ public class StyleManager {
     this.control = control;
   }
 
-  public byte modeLabel = DisplayControl.NOLABELS;
-  public void setModeLabel(byte mode) {
-    modeLabel = mode;
+  public byte styleLabel = DisplayControl.NOLABELS;
+  public void setStyleLabel(byte style) {
+    styleLabel = style;
   }
 
-  public byte modeAtomDraw = DisplayControl.QUICKDRAW;
-  public void setModeAtomDraw(byte mode) {
-    modeAtomDraw = mode;
+  public byte styleAtom = DisplayControl.QUICKDRAW;
+  public void setStyleAtom(byte style) {
+    styleAtom = style;
   }
 
-  public byte modeBondDraw = DisplayControl.QUICKDRAW;
-  public void setModeBondDraw(byte mode) {
-    modeBondDraw = mode;
+  public byte styleBond = DisplayControl.QUICKDRAW;
+  public void setStyleBond(byte style) {
+    styleBond = style;
   }
 
   public int percentAngstromBond = 10;
@@ -93,9 +93,9 @@ public class StyleManager {
     this.percentVdwAtom = percentVdwAtom;
   }
 
-  public String propertyModeString = "";
-  public void setPropertyModeString(String s) {
-    propertyModeString = s;
+  public String propertyStyleString = "";
+  public void setPropertyStyleString(String s) {
+    propertyStyleString = s;
   }
 
   public boolean wireframeRotation = false;

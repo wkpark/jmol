@@ -103,7 +103,7 @@ public class BondRenderer {
       return; // the pixels from the atoms will nearly cover the bond
     if (!control.getShowAtoms() && bondOrder == 1 &&
         (control.getFastRendering() ||
-         control.getModeBondDraw() == control.LINE)) {
+         control.getStyleBond() == control.WIREFRAME)) {
       if (sameColor) {
         drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
@@ -144,7 +144,8 @@ public class BondRenderer {
     this.bondOrder = bondOrder;
 
     boolean lineBond =
-      control.getModeBondDraw() == control.LINE || control.getFastRendering();
+      control.getStyleBond() == control.WIREFRAME ||
+      control.getFastRendering();
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
@@ -152,8 +153,6 @@ public class BondRenderer {
       color2 = outline2;
       lineBond = true;
     }
-    if (lineBond && width1 <= 1)
-      width1 = width2 = 2;
     resetAxisCoordinates(lineBond);
     while (true) {
       if (lineBond)
@@ -235,8 +234,8 @@ public class BondRenderer {
 
   void polyBond1(Color color, Color outline) {
     g.setColor(color);
-    switch(control.getModeBondDraw()) {
-    case DisplayControl.WIREFRAME:
+    switch(control.getStyleBond()) {
+    case DisplayControl.BOX:
       g.drawPolygon(axPoly, ayPoly, 4);
       break;
     case DisplayControl.SHADING:
@@ -449,8 +448,16 @@ public class BondRenderer {
 
   void resetAxisCoordinates(boolean lineBond) {
     lines = bondOrder;
-    if (! lineBond)
+    if (! lineBond) {
       lines *= 2;
+    } else {
+      if (width1 == 0)
+        width1 = 1;
+      width1 *= 2;
+      if (width2 == 0)
+        width2 = 1;
+      width2 *= 2;
+    }
     steps = lines-1;
     halfSteps = steps / 2;
 

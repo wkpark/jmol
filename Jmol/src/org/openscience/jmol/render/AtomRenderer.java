@@ -80,6 +80,7 @@ public class AtomRenderer {
   int y;
   int z;
   int diameter;
+  byte styleAtom;
 
   int radius;
   int xUpperLeft;
@@ -88,6 +89,9 @@ public class AtomRenderer {
   Color colorOutline;
 
   public void render(AtomShape atomShape) {
+    styleAtom = control.getStyleAtom();
+    if (styleAtom == DisplayControl.NONE)
+      return;
     atom = atomShape.atom;
     x = atomShape.x;
     y = atomShape.y;
@@ -100,7 +104,7 @@ public class AtomRenderer {
     colorOutline = control.getColorAtomOutline(color);
 
     renderAtom();
-    if (control.getModeLabel() != control.NOLABELS)
+    if (control.getStyleLabel() != control.NOLABELS)
       renderLabel();
   }
 
@@ -118,13 +122,13 @@ public class AtomRenderer {
 
     if (diameter <= 2) {
       if (diameter > 0) {
-        g.setColor(control.getModeAtomDraw() == control.WIREFRAME
+        g.setColor(styleAtom == control.WIREFRAME
                    ? color : colorOutline);
           g.fillRect(xUpperLeft, yUpperLeft, diameter, diameter);
       }
       return;
     }
-    if (control.getModeAtomDraw() == control.SHADING &&
+    if (styleAtom == control.SHADING &&
         diameter >= minCachedSize &&
         !control.getFastRendering()) {
       renderShadedAtom();
@@ -135,7 +139,7 @@ public class AtomRenderer {
     int diamT = diameter-1;
     g.setColor(color);
     if (!control.getFastRendering() &&
-        control.getModeAtomDraw() != control.WIREFRAME) {
+        styleAtom != control.WIREFRAME) {
       // diamT should work here, but if background dots are appearing
       // just inside the circles then change the parameter to *diameter*
       g.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
@@ -381,7 +385,7 @@ public class AtomRenderer {
     g.setColor(control.getColorText());
     
     String label = null;
-    switch (control.getModeLabel()) {
+    switch (control.getStyleLabel()) {
     case DisplayControl.SYMBOLS:
       label = atom.getSymbol();
       break;
@@ -400,13 +404,13 @@ public class AtomRenderer {
       j = fontMetrics.stringWidth(label);
       g.drawString(label, x - j / 2, y + k / 2);
     }
-    if (!control.getPropertyMode().equals("")) {
+    if (!control.getPropertyStyleString().equals("")) {
 
       // check to make sure this atom has this property:
       Enumeration propIter = atom.getProperties().elements();
       while (propIter.hasMoreElements()) {
         PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
-        if (p.getDescriptor().equals(control.getPropertyMode())) {
+        if (p.getDescriptor().equals(control.getPropertyStyleString())) {
         
           // OK, we had this property.  Let's draw the value on
           // screen:

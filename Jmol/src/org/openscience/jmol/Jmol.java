@@ -1299,7 +1299,7 @@ public class Jmol extends JPanel {
       ImageTyper it = new ImageTyper(exportChooser);
 
       // GIF doesn't support more than 8 bits:
-      if (control.getModeAtomDraw() == DisplayControl.SHADING) {
+      if (control.getStyleAtom() == DisplayControl.SHADING) {
         it.disableGIF();
       }
       exportChooser.setAccessory(it);

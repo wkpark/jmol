@@ -86,8 +86,8 @@ public class RepaintManager {
     if (this.inMotion != inMotion && control.getWireframeRotation())
       setFastRendering(inMotion);
     if (this.inMotion && !inMotion) {
-      if ((useGraphics2D && wantsAntialias && !wantsAntialiasAlways) ||
-          (control.getModeBondDraw() == DisplayControl.SHADING))
+      if (control.getWireframeRotation() ||
+          (useGraphics2D && wantsAntialias && !wantsAntialiasAlways))
         refresh();
     }
     this.inMotion = inMotion;

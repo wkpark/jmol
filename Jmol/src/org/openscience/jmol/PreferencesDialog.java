@@ -89,11 +89,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static Color colorSelection;
   private static Color colorText;
   private static Color colorVector;
-  private static byte modeAtomDraw;
+  private static byte styleAtom;
   private static int AtomColorProfile;
-  private static byte modeLabel;
+  private static byte styleLabel;
   private static String AtomPropsMode;
-  private static byte modeBondDraw;
+  private static byte styleBond;
   private static double ArrowHeadSize;
   private static double ArrowHeadRadius;
   private static double ArrowLengthScale;
@@ -150,11 +150,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("antialiasAlways", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
-    props.put("modeAtomDraw", "0");
-    props.put("modeLabel", "0");
+    props.put("styleAtom", "0");
+    props.put("styleBond", "0");
+    props.put("styleLabel", "0");
     props.put("AtomPropsMode", "");
     props.put("percentVdwAtom", "20");
-    props.put("modeBondDraw", "0");
     props.put("AutoBond", "true");
     props.put("percentAngstromBond", "10");
     props.put("BondFudge", "1.12");
@@ -356,15 +356,17 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aSChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aWFChoice"));
-    aRender.setSelectedIndex(control.getModeAtomDraw());
+    aRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aNoneChoice"));
+    aRender.setSelectedIndex(control.getStyleAtom());
     aRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        modeAtomDraw = (byte)source.getSelectedIndex();
-        control.setModeAtomDraw(modeAtomDraw);
-        props.put("modeAtomDraw", Integer.toString(modeAtomDraw));
+        styleAtom = (byte)source.getSelectedIndex();
+        control.setStyleAtom(styleAtom);
+        props.put("styleAtom", Integer.toString(styleAtom));
       }
     });
 
@@ -411,15 +413,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aTLChoice"));
     aLabel.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aNLChoice"));
-    aLabel.setSelectedIndex(control.getModeLabel());
+    aLabel.setSelectedIndex(control.getStyleLabel());
     aLabel.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        modeLabel = (byte)source.getSelectedIndex();
-        control.setModeLabel(modeLabel);
-        props.put("modeLabel", "" + modeLabel);
+        styleLabel = (byte)source.getSelectedIndex();
+        control.setStyleLabel(styleLabel);
+        props.put("styleLabel", "" + styleLabel);
       }
     });
     constraints = new GridBagConstraints();
@@ -441,14 +443,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.apNChoice"));
     aProps.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.apUChoice"));
-    aProps.setSelectedItem(control.getPropertyMode());
+    aProps.setSelectedItem(control.getPropertyStyleString());
     aProps.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomPropsMode = (String) source.getSelectedItem();
-        control.setPropertyMode(AtomPropsMode);
+        control.setPropertyStyleString(AtomPropsMode);
         props.put("AtomPropsMode", AtomPropsMode);
       }
     });
@@ -523,16 +525,18 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bWFChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bLChoice"));
-    bRender.setSelectedIndex(control.getModeBondDraw());
+        .getString("Prefs.bNoneChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.bBoxChoice"));
+    bRender.setSelectedIndex(control.getStyleBond());
     bRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        modeBondDraw = (byte)source.getSelectedIndex();
-        control.setModeBondDraw(modeBondDraw);
-        props.put("modeBondDraw", "" + modeBondDraw);
+        styleBond = (byte)source.getSelectedIndex();
+        control.setStyleBond(styleBond);
+        props.put("styleBond", "" + styleBond);
       }
     });
     renderPanel.add(bRender);
@@ -1150,12 +1154,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbPerspectiveDepth.setSelected(control.getPerspectiveDepth());
 
     // Atom panel controls: 
-    aRender.setSelectedIndex(control.getModeAtomDraw());
-    aLabel.setSelectedIndex(control.getModeLabel());
+    aRender.setSelectedIndex(control.getStyleAtom());
+    aLabel.setSelectedIndex(control.getStyleLabel());
     sfSlider.setValue(control.getPercentVdwAtom());
 
     // Bond panel controls:
-    bRender.setSelectedIndex(control.getModeBondDraw());
+    bRender.setSelectedIndex(control.getStyleBond());
     abYes.setSelected(control.getAutoBond());
     bwSlider.setValue(control.getPercentAngstromBond());
     bfSlider.setValue((int) (50.0 * control.getBondFudge()));
@@ -1224,10 +1228,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     colorSelection = Color.getColor("colorSelection");
     colorText = Color.getColor("colorText");
     colorVector = Color.getColor("colorVector");
-    modeAtomDraw = (byte)Integer.getInteger("modeAtomDraw").intValue();
-    modeLabel = (byte)Integer.getInteger("modeLabel").intValue();
+    styleAtom = (byte)Integer.getInteger("styleAtom").intValue();
+    styleLabel = (byte)Integer.getInteger("styleLabel").intValue();
     AtomPropsMode = props.getProperty("AtomPropsMode");
-    modeBondDraw = (byte)Integer.getInteger("modeBondDraw").intValue();
+    styleBond = (byte)Integer.getInteger("styleBond").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
     // Doubles and Doubles are special:
@@ -1252,11 +1256,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setColorSelection(colorSelection);
     control.setColorText(colorText);
     control.setPercentVdwAtom(percentVdwAtom);
-    control.setModeAtomDraw(modeAtomDraw);
-    control.setModeLabel(modeLabel);
-    control.setPropertyMode(AtomPropsMode);
+    control.setStyleAtom(styleAtom);
+    control.setStyleLabel(styleLabel);
+    control.setPropertyStyleString(AtomPropsMode);
     control.setPercentAngstromBond(percentAngstromBond);
-    control.setModeBondDraw(modeBondDraw);
+    control.setStyleBond(styleBond);
     control.setColorVector(colorVector);
     control.setArrowHeadRadius(ArrowHeadRadius);
     control.setArrowHeadSize(ArrowHeadSize);

@@ -182,14 +182,16 @@ public class DisplayPanel extends JPanel
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
+  private aNoneAction anoneAction = new aNoneAction();
   private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
   private aChargeColorAction acchargeAction = new aChargeColorAction();
   private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
+  private bNoneAction bnoneAction = new bNoneAction();
   private bQuickdrawAction bquickdrawAction = new bQuickdrawAction();
   private bShadingAction bshadingAction = new bShadingAction();
-  private bLineAction blineAction = new bLineAction();
+  private bBoxAction bboxAction = new bBoxAction();
   private bWireframeAction bwireframeAction = new bWireframeAction();
   private PlainAction plainAction = new PlainAction();
   private SymbolsAction symbolsAction = new SymbolsAction();
@@ -302,6 +304,21 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class aNoneAction extends AbstractAction {
+
+    public aNoneAction() {
+      super("anone");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      control.setStyleAtom(DisplayControl.NONE);
+      // FIXME -- these repaints are not necessary
+      // confirm later when not working on something else
+      repaint();
+    }
+  }
+
   class aQuickdrawAction extends AbstractAction {
 
     public aQuickdrawAction() {
@@ -310,7 +327,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeAtomDraw(DisplayControl.QUICKDRAW);
+      control.setStyleAtom(DisplayControl.QUICKDRAW);
       repaint();
     }
   }
@@ -323,7 +340,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeAtomDraw(DisplayControl.SHADING);
+      control.setStyleAtom(DisplayControl.SHADING);
     }
   }
 
@@ -335,7 +352,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeAtomDraw(DisplayControl.WIREFRAME);
+      control.setStyleAtom(DisplayControl.WIREFRAME);
       repaint();
     }
   }
@@ -366,6 +383,21 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class bNoneAction extends AbstractAction {
+
+    public bNoneAction() {
+      super("bnone");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      control.setStyleBond(DisplayControl.NONE);
+      // FIXME -- these repaints are not necessary
+      // confirm later when not working on something else
+      repaint();
+    }
+  }
+
   class bQuickdrawAction extends AbstractAction {
 
     public bQuickdrawAction() {
@@ -374,7 +406,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeBondDraw(DisplayControl.QUICKDRAW);
+      control.setStyleBond(DisplayControl.QUICKDRAW);
       repaint();
     }
   }
@@ -387,20 +419,20 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeBondDraw(DisplayControl.SHADING);
+      control.setStyleBond(DisplayControl.SHADING);
       repaint();
     }
   }
 
-  class bLineAction extends AbstractAction {
+  class bBoxAction extends AbstractAction {
 
-    public bLineAction() {
-      super("bline");
+    public bBoxAction() {
+      super("bbox");
       this.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeBondDraw(DisplayControl.LINE);
+      control.setStyleBond(DisplayControl.BOX);
       repaint();
     }
   }
@@ -413,7 +445,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeBondDraw(DisplayControl.WIREFRAME);
+      control.setStyleBond(DisplayControl.WIREFRAME);
       repaint();
     }
   }
@@ -568,7 +600,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeLabel(DisplayControl.NOLABELS);
+      control.setStyleLabel(DisplayControl.NOLABELS);
       repaint();
     }
   }
@@ -581,7 +613,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeLabel(DisplayControl.SYMBOLS);
+      control.setStyleLabel(DisplayControl.SYMBOLS);
       repaint();
     }
   }
@@ -594,7 +626,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeLabel(DisplayControl.TYPES);
+      control.setStyleLabel(DisplayControl.TYPES);
       repaint();
     }
   }
@@ -607,7 +639,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeLabel(DisplayControl.NUMBERS);
+      control.setStyleLabel(DisplayControl.NUMBERS);
       repaint();
     }
   }
@@ -679,13 +711,14 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
     final String[] modeLabel =
       {"Jmol.plain", "Jmol.symbols", "Jmol.types", "Jmol.numbers"};
-    guimap.setSelected(modeLabel[control.getModeLabel()], true);
-    final String[] modeAtom
-      = {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe"};
-    guimap.setSelected(modeAtom[control.getModeAtomDraw()], true);
+    guimap.setSelected(modeLabel[control.getStyleLabel()], true);
+    final String[] modeAtom =
+      {"Jmol.aquickdraw", "Jmol.ashading", "Jmol.awireframe",  "Jmol.anone"};
+    guimap.setSelected(modeAtom[control.getStyleAtom()], true);
     final String[] modeBond =
-      {"Jmol.bquickdraw", "Jmol.bshading", "Jmol.bwireframe","Jmol.bline"};
-    guimap.setSelected(modeBond[control.getModeBondDraw()], true);
+      {"Jmol.bquickdraw", "Jmol.bshading", "Jmol.bwireframe",
+       "Jmol.bnone", "Jmol.bbox"};
+    guimap.setSelected(modeBond[control.getStyleBond()], true);
     final String[] modeColor =
       {"Jmol.actype", "Jmol.accharge"};
     guimap.setSelected(modeColor[control.getModeAtomColorProfile()], true);
@@ -697,8 +730,10 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
-      aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
-      bshadingAction, blineAction, bwireframeAction, plainAction,
+      aquickdrawAction, ashadingAction, awireframeAction, anoneAction, 
+      bquickdrawAction, bshadingAction, bboxAction, bwireframeAction,
+      bnoneAction,
+      plainAction,
       symbolsAction, typesAction, numbersAction,
       bondsAction, atomsAction, hydrogensAction,
       vectorsAction, measurementsAction,

@@ -32,8 +32,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
@@ -44,16 +42,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
 
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.ReaderFactory;
 
 final public class DisplayControl {
 
@@ -109,10 +98,13 @@ final public class DisplayControl {
   public final static byte SYMBOLS =   1;
   public final static byte TYPES =     2;
   public final static byte NUMBERS =   3;
+
   public final static byte QUICKDRAW = 0;
   public final static byte SHADING =   1;
   public final static byte WIREFRAME = 2;
-  public final static byte LINE =      3;
+  public final static byte NONE =      3;
+  public final static byte BOX =       4;
+
   public final static byte ATOMTYPE =   0;
   public final static byte ATOMCHARGE = 1;
 
@@ -810,31 +802,31 @@ final public class DisplayControl {
    * delegated to StyleManager
    ****************************************************************/
 
-  public void setModeLabel(byte mode) {
-    styleManager.setModeLabel(mode);
+  public void setStyleLabel(byte style) {
+    styleManager.setStyleLabel(style);
     refresh();
   }
 
-  public byte getModeLabel() {
-    return styleManager.modeLabel;
+  public byte getStyleLabel() {
+    return styleManager.styleLabel;
   }
 
-  public void setModeAtomDraw(byte mode) {
-    styleManager.setModeAtomDraw(mode);
+  public void setStyleAtom(byte style) {
+    styleManager.setStyleAtom(style);
     refresh();
   }
 
-  public byte getModeAtomDraw() {
-    return styleManager.modeAtomDraw;
+  public byte getStyleAtom() {
+    return styleManager.styleAtom;
   }
 
-  public void setModeBondDraw(byte mode) {
-    styleManager.setModeBondDraw(mode);
+  public void setStyleBond(byte style) {
+    styleManager.setStyleBond(style);
     refresh();
   }
 
-  public byte getModeBondDraw() {
-    return styleManager.modeBondDraw;
+  public byte getStyleBond() {
+    return styleManager.styleBond;
   }
 
   public void setPercentAngstromBond(int percentAngstromBond) {
@@ -913,13 +905,13 @@ final public class DisplayControl {
     return styleManager.percentVdwAtom;
   }
 
-  public void setPropertyMode(String s) {
-    styleManager.setPropertyModeString(s);
+  public void setPropertyStyleString(String s) {
+    styleManager.setPropertyStyleString(s);
     refresh();
   }
 
-  public String getPropertyMode() {
-    return styleManager.propertyModeString;
+  public String getPropertyStyleString() {
+    return styleManager.propertyStyleString;
   }
 
   public void setWireframeRotation(boolean wireframeRotation) {

@@ -93,8 +93,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
   Eval eval;
   
-  byte mode;
-  byte labelMode;
+  byte style;
+  byte labelStyle;
   private String helpMessage =
     "Keys: S- change style; L- Show labels; B-Toggle Bonds";
   private String errorMessage;
@@ -132,8 +132,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
     control.setShowAtoms(true);
     control.zoomToPercent(100);
     control.setPercentVdwAtom(20);
-    control.setModeBondDraw(DisplayControl.SHADING);
-    control.setModeAtomDraw(DisplayControl.SHADING);
+    control.setStyleBond(DisplayControl.SHADING);
+    control.setStyleAtom(DisplayControl.SHADING);
     /*
     double zoomFactor = 1;
 
@@ -280,7 +280,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
    */
   public static final int SHADED = 3;
 
-  static String[] drawModeNames = {
+  static String[] drawStyleNames = {
     "WIREFRAME", "QUICKDRAW", "HALFSHADED", "SHADED"
   };
 
@@ -288,21 +288,21 @@ public class JmolApplet extends Applet implements StatusDisplay {
    *  Returns the string representation for the given drawing mode.
    *  If the mode is invalid, null is returned.
    */
-  public static String getDrawModeName(int mode) {
-    if ((mode < 0) || (mode > drawModeNames.length)) {
+  public static String getDrawStyleName(int style) {
+    if ((style < 0) || (style > drawStyleNames.length)) {
       return null;
     }
-    return drawModeNames[mode];
+    return drawStyleNames[style];
   }
 
   /**
    *  Returns the integer representation for the given drawing mode.
-   *  If the mode is invalid, -1 is returned.
+   *  If the style is invalid, -1 is returned.
    */
-  public static int getDrawMode(String mode) {
+  public static int getDrawStyle(String style) {
 
-    for (int i = 0; i < drawModeNames.length; ++i) {
-      if (drawModeNames[i].equalsIgnoreCase(mode)) {
+    for (int i = 0; i < drawStyleNames.length; ++i) {
+      if (drawStyleNames[i].equalsIgnoreCase(style)) {
         return i;
       }
     }
@@ -311,26 +311,26 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
   // FIXME -- modes should be the same so that map is not necessary
   // map from applet modes to DisplayControl modes
-  static byte[] mapModeAtomDraw = {
+  static byte[] mapStyleAtom = {
     DisplayControl.WIREFRAME,
     DisplayControl.QUICKDRAW,
     DisplayControl.SHADING,
     DisplayControl.SHADING};
     
-  static byte[] mapModeBondDraw = {
-    DisplayControl.LINE,
+  static byte[] mapStyleBond = {
+    DisplayControl.WIREFRAME,
     DisplayControl.QUICKDRAW,
     DisplayControl.QUICKDRAW,
     DisplayControl.SHADING};
 
   void setRenderingStyle() {
-    control.setModeAtomDraw(mapModeAtomDraw[mode]);
-    control.setModeBondDraw(mapModeBondDraw[mode]);
+    control.setStyleAtom(mapStyleAtom[style]);
+    control.setStyleBond(mapStyleBond[style]);
   }
 
   void setLabelStyle() {
     // no mapping is necessary in this case
-    control.setModeLabel(labelMode);
+    control.setStyleLabel(labelStyle);
   }
 
   /**
@@ -462,16 +462,16 @@ public class JmolApplet extends Applet implements StatusDisplay {
       switch(e.getKeyChar()) {
       case 's':
       case 'S':
-        mode++;
-        mode %= drawModeNames.length;
+        style++;
+        style %= drawStyleNames.length;
         setStatusMessage("JmolApplet: Changing rendering style to "
-                         + drawModeNames[mode]);
+                         + drawStyleNames[style]);
         setRenderingStyle();
         break;
       case 'l':
       case 'L':
-        labelMode++;
-        labelMode %= 4;
+        labelStyle++;
+        labelStyle %= 4;
         setLabelStyle();
         break;
       case 'b':
@@ -611,44 +611,46 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   /**
-   * <b>For Javascript:<\b> Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
+   * <b>For Javascript:<\b> Sets the rendering style for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
    */
-  private final String[] atomStyles = {"QUICKDRAW", "SHADED", "WIREFRAME"};
-  private final byte[] atomModes = {DisplayControl.QUICKDRAW,
-                                    DisplayControl.SHADING,
-                                    DisplayControl.WIREFRAME};
-  private final byte[] bondModes = {DisplayControl.QUICKDRAW,
-                                    DisplayControl.SHADING,
-                                    DisplayControl.LINE};
+  private final String[] styleStrings
+    = {"QUICKDRAW", "SHADED", "WIREFRAME"};
+  private final byte[] atomStyles = {DisplayControl.QUICKDRAW,
+                                     DisplayControl.SHADING,
+                                     DisplayControl.WIREFRAME};
+  private final byte[] bondStyles = {DisplayControl.QUICKDRAW,
+                                     DisplayControl.SHADING,
+                                     DisplayControl.WIREFRAME};
   public void setRenderingStyle(String style) {
-    for (int i = 0; i < atomStyles.length; ++i) {
-      if (atomStyles[i].equalsIgnoreCase(style)) {
-        control.setModeAtomDraw(atomModes[i]);
-        control.setModeBondDraw(bondModes[i]);
+    for (int i = 0; i < styleStrings.length; ++i) {
+      if (styleStrings[i].equalsIgnoreCase(style)) {
+        control.setStyleAtom(atomStyles[i]);
+        control.setStyleBond(bondStyles[i]);
         return;
       }
     }
   }
 
   /**
-   * <b>For Javascript:<\b> Sets the rendering mode for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
+   * <b>For Javascript:<\b> Sets the rendering style for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
-  private final String[] labelStyles = {"NONE","SYMBOLS","TYPES","NUMBERS"};
-  private final byte[] labelModes = {DisplayControl.NOLABELS,
-                                     DisplayControl.SYMBOLS,
-                                     DisplayControl.TYPES,
-                                     DisplayControl.NUMBERS};
+  private final String[] labelStyleStrings
+    = {"NONE","SYMBOLS","TYPES","NUMBERS"};
+  private final byte[] labelStyles = {DisplayControl.NOLABELS,
+                                      DisplayControl.SYMBOLS,
+                                      DisplayControl.TYPES,
+                                      DisplayControl.NUMBERS};
   public void setLabelRenderingStyle(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
-      if (labelStyles[i].equalsIgnoreCase(style)) {
-        control.setModeLabel(labelModes[i]);
+      if (labelStyleStrings[i].equalsIgnoreCase(style)) {
+        control.setStyleLabel(labelStyles[i]);
         return;
       }
     }
   }
 
   /**
-   * <b>For Javascript:<\b> Gets the rendering mode for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
+   * <b>For Javascript:<\b> Gets the rendering style for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
   public String getLabelRenderingStyleDescription() {
     //    return myBean.getLabelRenderingStyleDescription();

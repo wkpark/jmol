@@ -33,6 +33,8 @@ import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Component;
+import java.awt.event.*;
+import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -50,7 +52,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
-import java.awt.event.*;
 
 public final class ScriptWindow extends JDialog
     implements ActionListener, EnterListener{
@@ -59,6 +60,7 @@ public final class ScriptWindow extends JDialog
   private JButton closeButton;
   private JButton runButton;
   private JButton haltButton;
+  private JButton helpButton;
   JmolViewer viewer;
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
 
@@ -95,6 +97,10 @@ public final class ScriptWindow extends JDialog
     haltButton.addActionListener(this);
     buttonPanel.add(haltButton);
     haltButton.setEnabled(false);
+
+    helpButton = new JButton(resources.translate("Help"));
+    helpButton.addActionListener(this);
+    buttonPanel.add(helpButton);
   }
 
   public void scriptEcho(String strEcho) {
@@ -147,6 +153,11 @@ public final class ScriptWindow extends JDialog
     } else if (source == haltButton) {
       System.out.println("calling viewer.haltScriptExecution();");
       viewer.haltScriptExecution();
+    } else if (source == helpButton) {
+        URL url = this.getClass().getClassLoader()
+            .getResource("org/openscience/jmol/Data/guide/ch04.html");
+        HelpDialog hd = new HelpDialog(null, url);
+        hd.show();
     }
   }
   

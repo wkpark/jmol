@@ -60,24 +60,32 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
   JEditorPane html;
 
   public HelpDialog(JFrame fr) {
-
-    super(fr, "Jmol Help", true);
+      this(fr, null);
+  }
+  
+  /**
+   * If url is null, then the default help url is taken.
+   */
+  public HelpDialog(JFrame fr, URL url) {
+    super(fr, "Jmol Help", false);
 
     try {
-      URL helpURL =
-        this.getClass().getClassLoader()
-          .getResource(JmolResourceHandler.getInstance()
-            .getString("Help.helpURL"));
-      if (helpURL != null) {
-        html = new JEditorPane(helpURL);
-      } else {
-        html = new JEditorPane("text/plain",
-            "Unable to find url '"
+        URL helpURL = url;
+        if (url == null) {
+            helpURL = this.getClass().getClassLoader()
+                .getResource(JmolResourceHandler.getInstance()
+                .getString("Help.helpURL"));
+        }
+        if (helpURL != null) {
+            html = new JEditorPane(helpURL);
+        } else {
+            html = new JEditorPane("text/plain",
+              "Unable to find url '"
               + JmolResourceHandler.getInstance().getString("Help.helpURL")
-                + "'.");
-      }
-      html.setEditable(false);
-      html.addHyperlinkListener(this);
+              + "'.");
+        }
+        html.setEditable(false);
+        html.addHyperlinkListener(this);
     } catch (MalformedURLException e) {
       System.out.println("Malformed URL: " + e);
     } catch (IOException e) {

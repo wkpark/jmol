@@ -39,12 +39,12 @@ final public class Graphics3D {
 
   JmolViewer viewer;
   Platform3D platform;
-  Line3D line25d;
-  Circle3D circle25d;
-  Sphere3D sphere25d;
-  Triangle3D triangle25d;
-  Cylinder3D cylinder25d;
-  Dots3D dots25d;
+  Line3D line3d;
+  Circle3D circle3d;
+  Sphere3D sphere3d;
+  Triangle3D triangle3d;
+  Cylinder3D cylinder3d;
+  Dots3D dots3d;
   Graphics g;
 
   boolean tOversample;
@@ -81,12 +81,12 @@ final public class Graphics3D {
       platform = new Awt3D(viewer.getAwtComponent());
     }
     platform = new Awt3D(viewer.getAwtComponent());
-    this.line25d = new Line3D(viewer, this);
-    this.circle25d = new Circle3D(viewer, this);
-    this.sphere25d = new Sphere3D(viewer, this);
-    this.triangle25d = new Triangle3D(viewer, this);
-    this.cylinder25d = new Cylinder3D(viewer, this);
-    this.dots25d = new Dots3D(viewer, this);
+    this.line3d = new Line3D(viewer, this);
+    this.circle3d = new Circle3D(viewer, this);
+    this.sphere3d = new Sphere3D(viewer, this);
+    this.triangle3d = new Triangle3D(viewer, this);
+    this.cylinder3d = new Cylinder3D(viewer, this);
+    this.dots3d = new Dots3D(viewer, this);
   }
 
   public void setSize(int width, int height) {
@@ -209,7 +209,7 @@ final public class Graphics3D {
           plotPixelUnclipped(x-1, y, z);
         }
       } else {
-        circle25d.plotCircleCenteredUnclipped(x, y, z, diameter);
+        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
       }
     } else {
       if (diameter <= 2) {
@@ -223,7 +223,7 @@ final public class Graphics3D {
           plotPixelClipped(x-1, y, z);
         }
       } else {
-        circle25d.plotCircleCenteredClipped(x , y , z, diameter);
+        circle3d.plotCircleCenteredClipped(x , y , z, diameter);
       }
     }
   }
@@ -235,9 +235,9 @@ final public class Graphics3D {
     int r = (diameter + 1) / 2;
     argbCurrent = Colix.getArgb(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
-      circle25d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
     } else {
-      circle25d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
     }
   }
 
@@ -259,9 +259,9 @@ final public class Graphics3D {
           plotPixelUnclipped(x-1, y, z);
         }
       } else {
-        circle25d.plotCircleCenteredUnclipped(x, y, z, diameter);
+        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
         argbCurrent = Colix.getArgb(colixFill);
-        circle25d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+        circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
       }
     } else {
       if (diameter <= 2) {
@@ -275,31 +275,31 @@ final public class Graphics3D {
           plotPixelClipped(x-1, y, z);
         }
       } else {
-        circle25d.plotCircleCenteredClipped(x, y, z, diameter);
+        circle3d.plotCircleCenteredClipped(x, y, z, diameter);
         argbCurrent = Colix.getArgb(colixFill);
-        circle25d.plotFilledCircleCenteredClipped(x, y, z, diameter);
+        circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
       }
     }
   }
 
   public void drawDotsCentered(short colixDots, 
                                int x, int y, int z, int diameterDots) {
-    dots25d.render(colixDots, diameterDots, x, y, z);
+    dots3d.render(colixDots, diameterDots, x, y, z);
   }
 
   public void fillSphereCentered(short colix, int diameter,
                                  int x, int y, int z) {
-    sphere25d.render(colix, diameter, x, y, z);
+    sphere3d.render(colix, diameter, x, y, z);
   }
 
   public void drawRect(short colix, int x, int y, int width, int height) {
-    argbCurrent = Colix.getArgb(colix);
+    int argb = Colix.getArgb(colix);
     int xRight = x + width;
-    line25d.drawLine(x, y, 0, xRight, y, 0);
+    line3d.drawLine(argb, x, y, 0, xRight, y, 0, false);
     int yBottom = y + height;
-    line25d.drawLine(x, y, 0, x, yBottom, 0);
-    line25d.drawLine(x, yBottom, 0, xRight, yBottom, 0);
-    line25d.drawLine(xRight, y, 0, xRight, yBottom, 0);
+    line3d.drawLine(argb, x, y, 0, x, yBottom, 0, false);
+    line3d.drawLine(argb, x, yBottom, 0, xRight, yBottom, 0, false);
+    line3d.drawLine(argb, xRight, y, 0, xRight, yBottom, 0, false);
   }
 
   public void drawString(String str, short colix,
@@ -391,15 +391,12 @@ final public class Graphics3D {
 
   public void drawDottedLine(short colix,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    // currently not implemented
-    argbCurrent = Colix.getArgb(colix);
-    line25d.drawLine(x1, y1, z1, x2, y2, z2);
+    line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, true);
   }
 
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    argbCurrent = Colix.getArgb(colix);
-    line25d.drawLine(x1, y1, z1, x2, y2, z2);
+    line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, false);
   }
 
   public void drawLine(short colix1, short colix2,
@@ -407,8 +404,7 @@ final public class Graphics3D {
     int argb1 = Colix.getArgb(colix1);
     int argb2 = Colix.getArgb(colix2);
     if (argb1 == argb2) {
-      argbCurrent = argb1;
-      line25d.drawLine(x1, y1, z1, x2, y2, z2);
+      line3d.drawLine(argb1, x1, y1, z1, x2, y2, z2, false);
       return;
     }
     if (x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
@@ -416,28 +412,20 @@ final public class Graphics3D {
       int xMid = (x1 + x2) / 2;
       int yMid = (y1 + y2) / 2;
       int zMid = (z1 + z2) / 2;
-      argbCurrent = argb1;
-      line25d.drawLine(x1, y1, z1, xMid, yMid, zMid);
-      argbCurrent = argb2;
-      line25d.drawLine(xMid, yMid, zMid, x2, y2, z2);
+      line3d.drawLine(argb1, x1, y1, z1, xMid, yMid, zMid, false);
+      line3d.drawLine(argb2, xMid, yMid, zMid, x2, y2, z2, false);
     } else {
-      line25d.plotLineDeltaUnclipped(argb1, argb2,
+      line3d.plotLineDeltaUnclipped(argb1, argb2,
                                      x1, y1, z1, x2-x1, y2-y1, z2-z1);
     }
   }
 
-  public void drawPolygon4(short colixOutline, int[] ax, int[] ay, int[] az) {
-    setColix(colixOutline);
-    line25d.drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
+  public void drawPolygon4(short colix, int[] ax, int[] ay, int[] az) {
+    int argb = Colix.getArgb(colix);
+    line3d.drawLine(argb, ax[0], ay[0], az[0], ax[3], ay[3], az[3], false);
     for (int i = 3; --i >= 0; )
-      line25d.drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
-  }
-
-  public void drawPolygon4(Color colorOutline, int[] ax, int[] ay, int[] az) {
-    setColor(colorOutline);
-    line25d.drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
-    for (int i = 3; --i >= 0; )
-      line25d.drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
+      line3d.drawLine(argb, ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1],
+                      false);
   }
 
   public void fillPolygon4(short colixFill,
@@ -446,27 +434,14 @@ final public class Graphics3D {
     // make up for some deficiencies in the fill code
     drawPolygon4(colixFill, ax, ay, az);
     argbCurrent = Colix.getArgb(colixFill);
-    System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
-    System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
-    System.arraycopy(az, 0, triangle25d.az, 0, 3);
-    triangle25d.fillTriangle();
-    triangle25d.ax[1] = ax[3];
-    triangle25d.ay[1] = ay[3];
-    triangle25d.az[1] = az[3];
-    triangle25d.fillTriangle();
-  }
-
-  public void fillPolygon4(Color colorFill,
-                           int[] ax, int[] ay, int[] az) {
-    drawPolygon4(colorFill, ax, ay, az);
-    System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
-    System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
-    System.arraycopy(az, 0, triangle25d.az, 0, 3);
-    triangle25d.fillTriangle();
-    triangle25d.ax[1] = ax[3];
-    triangle25d.ay[1] = ay[3];
-    triangle25d.az[1] = az[3];
-    triangle25d.fillTriangle();
+    System.arraycopy(ax, 0, triangle3d.ax, 0, 3);
+    System.arraycopy(ay, 0, triangle3d.ay, 0, 3);
+    System.arraycopy(az, 0, triangle3d.az, 0, 3);
+    triangle3d.fillTriangle();
+    triangle3d.ax[1] = ax[3];
+    triangle3d.ay[1] = ay[3];
+    triangle3d.az[1] = az[3];
+    triangle3d.fillTriangle();
   }
 
   public void fillPolygon4(short colixOutline, short colixFill,
@@ -478,19 +453,19 @@ final public class Graphics3D {
   public void fillTriangle(short colix, int x0, int y0, int z0,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
     int[] t;
-    t = triangle25d.ax;
+    t = triangle3d.ax;
     t[0] = x0; t[1] = x1; t[2] = x2;
-    t = triangle25d.ay;
+    t = triangle3d.ay;
     t[0] = y0; t[1] = y1; t[2] = y2;
-    t = triangle25d.az;
+    t = triangle3d.az;
     t[0] = z0; t[1] = z1; t[2] = z2;
 
-    triangle25d.fillTriangle();
+    triangle3d.fillTriangle();
   }
 
   public void fillCylinder(short colix1, short colix2, int w,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
-    cylinder25d.render(colix1, colix2, w,
+    cylinder3d.render(colix1, colix2, w,
                        x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
@@ -684,20 +659,20 @@ final public class Graphics3D {
   void plotLineDelta(int argb, int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height)
-      line25d.plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
     else
-      line25d.plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
   }
 
   void plotLineDelta(int argb1, int argb2,
                      int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height)
-      line25d.plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
     else if (argb1 == argb2)
-      line25d.plotLineDeltaUnclipped(argb1, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaUnclipped(argb1, x, y, z, dx, dy, dz);
     else 
-      line25d.plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
+      line3d.plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
   }
 }
 

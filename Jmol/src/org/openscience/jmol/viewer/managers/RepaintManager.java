@@ -129,17 +129,20 @@ public class RepaintManager {
   public boolean setAnimationRelative(int direction) {
     if (displayModelID == 0)
       return false;
-    int modelIndexNext = displayModelIndex + currentDirection;
-    /*
-    System.out.println("setAnimationRelative: displayModel=" + displayModel +
-                       " modelIndex=" + modelIndex +
+    int modelIndexNext = displayModelIndex + (direction * currentDirection);
+    int modelCount = viewer.getModelCount();
+
+    System.out.println("setAnimationRelative: displayModelID=" +
+                       displayModelID +
+                       " displayModelIndex=" + displayModelIndex +
+                       " currentDirection=" + currentDirection +
                        " direction=" + direction +
                        " modelIndexNext=" + modelIndexNext +
                        " modelCount=" + modelCount +
                        " animationReplayMode=" + animationReplayMode +
                        " animationDirection=" + animationDirection);
-    */
-    int modelCount = viewer.getModelCount();
+
+
     if (modelIndexNext == modelCount) {
       switch (animationReplayMode) {
       case 0:

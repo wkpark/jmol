@@ -85,6 +85,7 @@ final public class Graphics3D {
     this.triangle3d = new Triangle3D(viewer, this);
     this.cylinder3d = new Cylinder3D(viewer, this);
     this.hermite3d = new Hermite3D(viewer, this);
+    setFontOfSize(13);
   }
 
   private Platform3D allocateSwing3D() {

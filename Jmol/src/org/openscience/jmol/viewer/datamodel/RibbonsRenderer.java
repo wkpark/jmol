@@ -38,22 +38,18 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
   Ribbons strands;
 
   Point3i[] getTempScreens(int minLen) {
-    Point3i[] screensT = new Point3i[0];//DC: made local
-    if (screensT.length < minLen) {
-      Point3i[] t = new Point3i[minLen];
-      System.arraycopy(screensT, 0, t, 0, screensT.length);
-      for (int i = screensT.length; i < t.length; ++i)
-        t[i] = new Point3i();
-      screensT = t;
-    }
-    return screensT;
+    Point3i[] screens = new Point3i[minLen];
+    for (int i = minLen; --i >= 0; )
+      screens[i] = new Point3i();
+    return screens;
   }
 
-  Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
-                   short[] mads, float offsetFraction) {
+  final Point3f pointT = new Point3f();
 
-  Point3f pointT = new Point3f();  //DC: made local
-  Point3i[] screens = getTempScreens(centers.length);
+  Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
+                        short[] mads, float offsetFraction) {
+    
+    Point3i[] screens = getTempScreens(centers.length);
     if (offsetFraction == 0) {
       for (int i = centers.length; --i >= 0; )
         viewer.transformPoint(centers[i], screens[i]);

@@ -9,28 +9,20 @@
 	Jmol v10 is a complete rewrite of Jmol.
 	Major features/changes include:
 	<ul>
-	  <li>substantial performance improvements</li>
+	  <li>dramatic performance improvements</li>
 	  <li>true 3d graphics engine that requires no special hardware</li>
 	  <li>support for macromolecule secondary structure graphics</li>
-	  <li>additional script commands</li>
-	  <li>support for the RasMol/Chime coordinate system orientation</li>
-	  <li>JmolAppletControl buttons</li>
+	  <li>compatibility with existing RasMol/Chime scripts</li>
+	  <li>
+	    JavaScript library to facilitate web application developement
+	  </li>
 	</ul>
       </p>
       <p>
-	Along with these new features comes a new set of bugs.
-	Thank you for helping us test out new releases of Jmol and
-	helping us find these bugs.
-      </p>
-
-      <p>
 	<i>
-	  At this point, we feel obligated to admit that this is not
-	  really being conducted as a formal <strong>beta test.</strong>
-	  During the test phase we are continuing to make substantial
-	  changes to the code; changes that go far beyond a beta test.
-	  But we are continuing to develop and enhance the code,
-	  regardless of what we call it.
+	  <b>Jmol version 10 will be released in December 2004.</b>
+	  Please do your best to find and report bugs
+	  ... and have fun!
 	</i>
       </p>
 
@@ -70,35 +62,31 @@
       </section>
     </section>
     
-    <section title="Jmol10pre21">
+    <section title="Jmol10pre22">
       <p>
-	Jmol version 10 pre-release 21 was released on Tue 30 Nov 2004.
+	Jmol version 10 pre-release 22 was released on Thu 2 Dec 2004.
 	<ul>
 	  <li>
-	    workaround for Safari/OS X bug that caused button problems
+	    Fixed bug where measurements were not being rendered
 	  </li>
 	  <li>
-	    work on Jmol.js library ... more forgiving with some non-compliant browsers
+	    Fixed bug where angle measurement were sometimes not drawn
 	  </li>
 	  <li>
-	    autobond maximum bonding limits effectively removed
+	    Measurements will now automatically render in either
+	    white or black, whichever contrasts most with your
+	    background color
 	  </li>
 	  <li>
-	    'color group' implemented to RasMol compliance
-	  </li>
-	  <li>
-	    'set picking select' behaves like RasMol/Chime
-	  </li>
-	  <li>
-	    other bug fixes
+	    some internal code repackaging
 	  </li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre21.zip">
+	<a href="Jmol10pre22.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre21.zip
+	    Jmol10pre22.zip
 	  </font>
 	</a>
       </p>
@@ -115,7 +103,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre21.zip</b>
+	format as .zip : <b>jar xf Jmol10pre22.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

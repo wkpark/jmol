@@ -24,7 +24,7 @@
  */
 
 package org.jmol.viewer;
-import org.jmol.g3d.*;
+
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
@@ -167,9 +167,8 @@ class Polyhedra extends SelectionIndependentShape {
       }
       Polyhedron p = new Polyhedron(atom, bondCount, otherAtoms);
       return p;
-    } else {
-      return null;
     }
+    return null;
   }
 
   final static byte TRANSPARENT = (byte)0x80;

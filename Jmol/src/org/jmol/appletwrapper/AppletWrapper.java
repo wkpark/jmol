@@ -25,8 +25,6 @@
 
 package org.jmol.appletwrapper;
 
-import netscape.javascript.JSObject;
-
 import java.applet.*;
 import java.awt.*;
 import java.net.URL;
@@ -47,7 +45,7 @@ public class AppletWrapper extends Applet {
   private boolean preloadImageReadyForDisplay;
   private boolean preloadImagePainted;
   private Image preloadImage;
-  private int preloadImageHeight;
+  //private int preloadImageHeight;
   private MediaTracker mediaTracker;
 
   private Color bgcolor;
@@ -69,7 +67,7 @@ public class AppletWrapper extends Applet {
   private Font font;
   private FontMetrics fontMetrics;
   private int fontAscent;
-  private int fontDescent;
+  //private int fontDescent;
   private int fontHeight;
     
 

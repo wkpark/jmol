@@ -24,10 +24,6 @@
  */
 package org.jmol.viewer;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
-
 class PolyhedraRenderer extends ShapeRenderer {
 
   void render() {

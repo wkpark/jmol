@@ -132,8 +132,6 @@ public class RepaintManager {
     }
   }
 
-  Object monitorRepaint = new Object();
-
   public void refresh() {
     if (repaintPending)
       return;
@@ -142,21 +140,16 @@ public class RepaintManager {
       control.awtComponent.repaint();
   }
 
-  public void requestRepaintAndWait() {
-    synchronized(monitorRepaint) {
-      control.awtComponent.repaint();
-      try {
-        monitorRepaint.wait();
-      } catch (InterruptedException e) {
-      }
+  public synchronized void requestRepaintAndWait() {
+    control.awtComponent.repaint();
+    try {
+      wait();
+    } catch (InterruptedException e) {
     }
   }
 
   public void notifyRepainted() {
-    synchronized(monitorRepaint) {
-      repaintPending = false;
-      monitorRepaint.notify();
-    }
+    repaintPending = false;
+    notify();
   }
-  
 }

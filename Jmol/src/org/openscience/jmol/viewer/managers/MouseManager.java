@@ -389,11 +389,23 @@ mol is a collaboratively developed visualization an    return ROTATE;
     }
   }
 
-  final static int wheelClickPercentage = 25;
+  final static float wheelClickFractionUp = 1.25f;
+  final static float wheelClickFractionDown = 1/wheelClickFractionUp;
 
   void mouseWheel(int rotation, int modifiers) {
-    if ((modifiers & BUTTON_MODIFIER_MASK) == 0)
-      viewer.zoomByPercent(rotation * wheelClickPercentage);
+    if (rotation == 0)
+      return;
+    if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {
+      float zoomLevel = viewer.getZoomPercentSetting() / 100f;
+      if (rotation > 0) {
+        while (--rotation >= 0)
+          zoomLevel *= wheelClickFractionUp;
+      } else {
+        while (++rotation <= 0)
+          zoomLevel *= wheelClickFractionDown;
+      }
+      viewer.zoomToPercent((int)(zoomLevel * 100 + 0.5f));
+    }
   }
   
 

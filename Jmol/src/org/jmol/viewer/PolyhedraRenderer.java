@@ -46,8 +46,13 @@ class PolyhedraRenderer extends ShapeRenderer {
       faces = octahedronFaces;
       break;
     case 4:
-      faces = tetrahedronFaces;
-      break;
+      for (int i = 0, j = 0; i < 4; ++i) {
+        renderFace(colix, p.alpha, p.normixes[i],
+                   vertices[Polyhedra.tetrahedronFaces[j++]],
+                   vertices[Polyhedra.tetrahedronFaces[j++]],
+                   vertices[Polyhedra.tetrahedronFaces[j++]]);
+      }
+      return;
     default:
       System.out.println("?Que? vertices.length=" + vertices.length);
       return;
@@ -65,5 +70,11 @@ class PolyhedraRenderer extends ShapeRenderer {
   void renderFace(short colix, byte alpha,
                   Atom atomA, Atom atomB, Atom atomC) {
     g3d.fillTriangle(colix, alpha, atomA.xyzd, atomB.xyzd, atomC.xyzd);
+  }
+
+  void renderFace(short colix, byte alpha, short normix,
+                  Atom atomA, Atom atomB, Atom atomC) {
+    g3d.fillTriangle(colix, alpha, normix,
+                     atomA.xyzd, atomB.xyzd, atomC.xyzd);
   }
 }

@@ -27,6 +27,7 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 class Polyhedra extends SelectionIndependentShape {
 
@@ -167,8 +168,7 @@ class Polyhedra extends SelectionIndependentShape {
         }
         otherAtoms[i] = otherAtom;
       }
-      Polyhedron p = new Polyhedron(atom, bondCount, otherAtoms);
-      return p;
+      return validatePolyhedron(atom, bondCount, otherAtoms);
     }
     return null;
   }
@@ -201,11 +201,60 @@ class Polyhedra extends SelectionIndependentShape {
         break;
       }
     }
-    Polyhedron p = null;
-    if (otherAtomCount == 4 || otherAtomCount == 6)
-      p = new Polyhedron(atom, otherAtomCount, otherAtoms);
+    Polyhedron p = validatePolyhedron(atom, otherAtomCount, otherAtoms);
     for (int i = 6; --i >= 0; )
       otherAtoms[i] = null;
+    return p;
+  }
+
+  final Vector3f vectorAB = new Vector3f();
+  final Vector3f vectorAC = new Vector3f();
+  final Vector3f vectorXA = new Vector3f();
+  final Vector3f faceNormalT = new Vector3f();
+  //                                      0        1        2        3
+  final static byte[] tetrahedronFaces = { 1,2,3, 0,2,3, 0,1,3, 0,1,2 };
+  final static short[] tetrahedronNormixes = new short[4];
+
+  Polyhedron validatePolyhedron(Atom atom, int vertexCount,
+                                Atom[] otherAtoms) {
+    if (vertexCount == 4)
+      return validateTetrahedron(atom, otherAtoms);
+    if (vertexCount == 6)
+      return validateOctahedron(atom, otherAtoms);
+    return null;
+  }
+
+  Polyhedron validateTetrahedron(Atom atom, Atom[] otherAtoms) {
+    Point3f pointCentral = atom.point3f;
+    for (int i = 0, j = 0; i < 4; ++i) {
+      Point3f pointA = otherAtoms[tetrahedronFaces[j++]].point3f;
+      Point3f pointB = otherAtoms[tetrahedronFaces[j++]].point3f;
+      Point3f pointC = otherAtoms[tetrahedronFaces[j++]].point3f;
+      vectorAB.sub(pointB, pointA);
+      vectorAC.sub(pointC, pointA);
+      faceNormalT.cross(vectorAB, vectorAC);
+      vectorXA.sub(pointCentral, pointA);
+      float whichSideCentral = faceNormalT.dot(vectorXA);
+      vectorXA.sub(otherAtoms[i].point3f, pointA);
+      float whichSideOpposite = faceNormalT.dot(vectorXA);
+      short normix;
+      if (whichSideCentral > 0 && whichSideOpposite > 0)
+        normix = g3d.getInverseNormix(faceNormalT);
+      else if (whichSideCentral < 0 && whichSideOpposite < 0)
+        normix = g3d.getNormix(faceNormalT);
+      else
+        return null;
+      tetrahedronNormixes[i] = normix;
+    }
+    Polyhedron p = new Polyhedron(atom, 4, otherAtoms, tetrahedronNormixes);
+    return p;
+  }
+
+  final static byte[] octahedronFaces =
+  { 0,1,2, 0,2,3, 0,3,4, 0,4,1, 5,2,1, 5,3,2, 5,4,3, 5,1,4 };
+
+  Polyhedron validateOctahedron(Atom atom, Atom[] otherAtoms) {
+    Polyhedron p = new Polyhedron(atom, 6, otherAtoms, null);
     return p;
   }
 
@@ -217,14 +266,23 @@ class Polyhedra extends SelectionIndependentShape {
     final Atom[] vertices;
     boolean visible;
     byte alpha;
+    final short[] normixes;
     short polyhedronColix;
 
-    Polyhedron(Atom centralAtom, int vertexCount, Atom[] otherAtoms) {
+    Polyhedron(Atom centralAtom, int vertexCount, Atom[] otherAtoms,
+               short[] normixes) {
       this.centralAtom = centralAtom;
       this.vertices = new Atom[vertexCount];
       this.visible = true;
       this.alpha = defaultAlpha;
       this.polyhedronColix = colix;
+      if (normixes == null)
+        this.normixes = null;
+      else {
+        this.normixes = new short[vertexCount];
+        for (int i = vertexCount; --i >= 0; )
+          this.normixes[i] = normixes[i];
+      }
       if (vertexCount == 6)
         copyOctahedronVertices(otherAtoms);
       else {

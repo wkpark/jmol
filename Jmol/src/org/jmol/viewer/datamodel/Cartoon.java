@@ -25,10 +25,6 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-import javax.vecmath.Point3f;
-import java.util.BitSet;
-
 class Cartoon extends Mps {
 
   Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {

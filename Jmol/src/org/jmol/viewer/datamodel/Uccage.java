@@ -24,11 +24,7 @@
  */
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
 import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Vector3f;
-import java.util.BitSet;
 
 public class Uccage extends SelectionIndependentShape {
 

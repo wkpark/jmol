@@ -24,11 +24,8 @@
  */
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
 import org.jmol.g3d.Graphics3D;
 
-import java.awt.Rectangle;
-import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 class AxesRenderer extends ShapeRenderer {

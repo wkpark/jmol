@@ -24,14 +24,6 @@
  */
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.AxisAngle4f;
-
 class PendingMeasurement extends Measurement {
 
   boolean isActive = false;

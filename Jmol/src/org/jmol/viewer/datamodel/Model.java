@@ -23,13 +23,7 @@
  *  02111-1307  USA.
  */
 package org.jmol.viewer.datamodel;
-import org.jmol.viewer.datamodel.Frame;
-import org.jmol.viewer.datamodel.Atom;
 import org.jmol.viewer.*;
-
-import javax.vecmath.Point3f;
-import java.util.Hashtable;
-import java.util.Vector;
 
 final class Model {
 

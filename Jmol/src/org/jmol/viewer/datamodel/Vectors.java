@@ -25,9 +25,6 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.JmolConstants;
-
-import java.awt.Color;
 import java.util.BitSet;
 
 public class Vectors extends Shape {

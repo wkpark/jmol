@@ -24,14 +24,6 @@
  */
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import javax.vecmath.Point3i;
-
-import java.util.BitSet;
-
 class Bbcage extends SelectionIndependentShape {
 
   // by XORing each of the three bits of my index

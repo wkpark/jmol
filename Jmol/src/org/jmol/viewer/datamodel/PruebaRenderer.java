@@ -24,9 +24,6 @@
  */
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-import org.jmol.g3d.Graphics3D;
-
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 

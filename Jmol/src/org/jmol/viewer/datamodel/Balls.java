@@ -25,7 +25,6 @@
 
 package org.jmol.viewer.datamodel;
 
-import java.awt.Color;
 import java.util.BitSet;
 
 public class Balls extends Shape {

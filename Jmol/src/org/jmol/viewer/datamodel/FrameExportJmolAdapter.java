@@ -28,12 +28,6 @@ package org.jmol.viewer.datamodel;
 import org.jmol.api.JmolAdapter;
 
 import org.jmol.viewer.*;
-import javax.vecmath.Point3f;
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Vector3f;
-import java.util.Hashtable;
-import java.util.BitSet;
-import java.awt.Rectangle;
 
 final public class FrameExportJmolAdapter extends JmolAdapter {
 

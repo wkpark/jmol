@@ -27,7 +27,6 @@ package org.jmol.viewer.datamodel;
 import org.jmol.viewer.*;
 import java.util.Hashtable;
 import java.util.BitSet;
-import javax.vecmath.Point3f;
 
 public class Group {
 

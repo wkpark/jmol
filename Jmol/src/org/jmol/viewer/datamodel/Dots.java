@@ -26,7 +26,6 @@
 package org.jmol.viewer.datamodel;
 
 import org.jmol.viewer.*;
-import org.jmol.g3d.Graphics3D;
 import javax.vecmath.*;
 import java.util.Hashtable;
 import java.util.BitSet;

@@ -25,9 +25,6 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-import java.util.BitSet;
-
 class Trace extends Mps {
 
   Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {

@@ -26,8 +26,6 @@
 package org.jmol.viewer.datamodel;
 import org.jmol.viewer.*;
 
-import java.awt.Rectangle;
-
 public class Bond {
 
   Atom atom1;

@@ -25,10 +25,8 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
 import org.jmol.g3d.Font3D;
 
-import java.awt.Color;
 import java.util.BitSet;
 
 abstract public class SelectionIndependentShape extends Shape {

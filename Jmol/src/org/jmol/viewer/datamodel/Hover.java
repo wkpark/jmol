@@ -25,11 +25,8 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
 import org.jmol.g3d.*;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
 import java.util.BitSet;
 
 public class Hover extends Shape {

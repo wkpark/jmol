@@ -24,9 +24,6 @@
  */
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-import org.jmol.g3d.Graphics3D;
-
 class FrankRenderer extends ShapeRenderer {
 
   void render() {
@@ -39,9 +36,9 @@ class FrankRenderer extends ShapeRenderer {
     if (frank.font3d == null)
       System.out.println("que? frank.font3d = null?");
 
-    g3d.drawString(frank.frankString, frank.font3d, frank.colix, frank.bgcolix,
-                   g3d.width - frank.frankWidth - frank.frankMargin,
-                   g3d.height - frank.frankDescent - frank.frankMargin,
+    g3d.drawString(Frank.frankString, frank.font3d, frank.colix, frank.bgcolix,
+                   g3d.width - frank.frankWidth - Frank.frankMargin,
+                   g3d.height - frank.frankDescent - Frank.frankMargin,
                    0);
   }
 }

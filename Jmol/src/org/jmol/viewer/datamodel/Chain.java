@@ -27,8 +27,6 @@ package org.jmol.viewer.datamodel;
 import org.jmol.viewer.*;
 import org.jmol.viewer.datamodel.Atom;
 import org.jmol.viewer.datamodel.Frame;
-import java.util.Hashtable;
-import javax.vecmath.Point3f;
 import java.util.BitSet;
 
 final public class Chain {

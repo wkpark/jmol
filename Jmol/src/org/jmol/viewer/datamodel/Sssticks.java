@@ -27,7 +27,6 @@ package org.jmol.viewer.datamodel;
 
 import org.jmol.viewer.*;
 
-import java.awt.Color;
 import java.util.BitSet;
 
 public class Sssticks extends Sticks {

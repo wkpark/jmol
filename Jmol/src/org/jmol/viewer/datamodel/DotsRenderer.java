@@ -25,12 +25,7 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-import org.jmol.g3d.Graphics3D;
-import java.awt.Rectangle;
-
 import java.util.Hashtable;
-import java.util.BitSet;
 import javax.vecmath.*;
 
 class DotsRenderer extends ShapeRenderer {

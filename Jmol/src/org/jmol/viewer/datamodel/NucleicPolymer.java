@@ -25,7 +25,6 @@
 package org.jmol.viewer.datamodel;
 
 import org.jmol.viewer.*;
-import javax.vecmath.Point3f;
 
 public class NucleicPolymer extends Polymer {
 

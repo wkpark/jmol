@@ -5,7 +5,7 @@
  *
  * Copyright (C) 2003-2004  The Jmol Development Team
  *
-e * Contact: jmol-developers@lists.sf.net
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,6 @@ e * Contact: jmol-developers@lists.sf.net
  */
 
 package org.jmol.viewer.datamodel;
-
-import org.jmol.viewer.*;
-import javax.vecmath.Point3f;
-import java.util.BitSet;
 
 class Rockets extends Mps {
 

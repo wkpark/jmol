@@ -28,9 +28,6 @@ import org.jmol.viewer.*;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-import javax.vecmath.Point3i;
-
-import java.util.BitSet;
 
 public class Axes extends SelectionIndependentShape {
 

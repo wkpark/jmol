@@ -25,7 +25,6 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
 import java.util.BitSet;
 
 class Backbone extends Mps {

@@ -28,9 +28,6 @@ package org.jmol.viewer.datamodel;
 import org.jmol.g3d.*;
 import org.jmol.viewer.*;
 import javax.vecmath.Point3i;
-import javax.vecmath.Point3f;
-import java.util.Hashtable;
-import java.util.BitSet;
 import java.awt.Rectangle;
 
 import java.awt.FontMetrics;

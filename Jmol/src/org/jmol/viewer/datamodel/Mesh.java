@@ -25,11 +25,6 @@
 
 package org.jmol.viewer.datamodel;
 
-import org.jmol.viewer.*;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-import java.util.BitSet;
-
 class Mesh extends Mps {
 
   Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {

@@ -129,15 +129,18 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
     appletRegistry = new JmolAppletRegistry(htmlName, mayScript, this);
 
+    System.out.println("Howdy!");
+
     //    loadProperties();
     initWindows();
     initApplication();
 
-    /*
-     * tests done by miguel 2004 11 20
     System.out.println("getting ready to call back!\n" +
                        " readyCallback=" + readyCallback +
                        " jsoWindow=" + jsoWindow);
+
+    /*
+     * tests done by miguel 2004 11 20
 
     if (readyCallback != null && jsoWindow != null) {
       //      jsoWindow.call(readyCallback, new Object[] {htmlName});

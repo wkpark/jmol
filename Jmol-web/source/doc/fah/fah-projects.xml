@@ -2383,7 +2383,7 @@
   <fah_proj number="1475" name="p1475_tet1_03_1" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
-  <fah_proj number="1476" name="p1476_tet_2nm"
+  <fah_proj number="1476" name="p1476_tet_2nm" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
 

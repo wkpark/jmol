@@ -36,7 +36,6 @@ import java.awt.Component;
 import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
 

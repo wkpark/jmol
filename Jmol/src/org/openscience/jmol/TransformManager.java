@@ -24,33 +24,11 @@
  */
 package org.openscience.jmol;
 
-import java.awt.Image;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.BasicStroke;
-import java.awt.RenderingHints;
 import java.awt.Dimension;
-import java.awt.Component;
-import java.util.Hashtable;
-import java.util.BitSet;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
-
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.ReaderFactory;
 
 public class TransformManager {
 

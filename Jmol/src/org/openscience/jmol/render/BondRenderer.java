@@ -312,32 +312,15 @@ public class BondRenderer {
   }
 
   void polyBond1(byte styleBond, Color color, Color outline) {
-    g25d.setColor(color);
     switch(styleBond) {
     case DisplayControl.BOX:
-      g25d.drawPolygon(axPoly, ayPoly, azPoly, 4);
+      g25d.drawPolygon4(color, axPoly, ayPoly, azPoly);
       break;
     case DisplayControl.SHADING:
-      if (width1 > 4) {
-        boolean firstPass = true;
-        Color[] shades = getShades(color, Color.black);
-        int numPasses = calcNumShadeSteps();
-        for (int i = numPasses; --i >= 0; ) {
-          Color shade = shades[i * maxShade / numPasses];
-          if (firstPass) {
-            drawInside(g25d, shade, 2, axPoly, ayPoly, azPoly);
-            firstPass = false;
-          } else {
-            stepPolygon();
-            g25d.setColor(shade);
-          }
-          g25d.fillPolygon(axPoly, ayPoly, azPoly, 4);
-        }
-        break;
-      } // else fall into QUICKDRAW
+      g25d.fillCylinder4(color, axPoly, ayPoly, azPoly);
+      break;
     case DisplayControl.QUICKDRAW:
-      g25d.fillPolygon(axPoly, ayPoly, azPoly, 4);
-      drawInside(g25d, outline, 2, axPoly, ayPoly, azPoly);
+      g25d.fillPolygon4(outline, color, axPoly, ayPoly, azPoly);
       break;
     }
   }
@@ -355,110 +338,6 @@ public class BondRenderer {
       g25d.fillCircleCentered(outline, color, x, y, z, diameter);
     else if (styleBond == DisplayControl.QUICKDRAW)
       g25d.fillCircleCentered(outline, color, x, y, z, diameter);
-  }
-
-  int offset1, offset2, doffset;
-
-  void drawInside(Graphics25D g25d, Color color, int width,
-                  int[] ax, int[] ay, int[] az) {
-    // mth dec 2002
-    // I am not happy with this implementation, but for now it is the most
-    // effective kludge I could come up with to deal with the fact that
-    // the brush is offset to the lower right of the point when drawing
-    if (color == null)
-      return;
-    g25d.setColor(color);
-    int iNW = 0;
-    int iNE = 1;
-    int iSE = 2;
-    int iSW = 3;
-    int iT;
-    boolean top = false;
-    if (ax[iNE] < ax[iNW]) {
-      iT = iNE; iNE = iNW; iNW = iT;
-      iT = iSE; iSE = iSW; iSW = iT;
-      top = !top;
-    }
-    drawInside1(g25d, top, ax[iNW], ay[iNW], az[iNW],
-                ax[iNE], ay[iNE], az[iNE]);
-    if (width > 1)
-      drawInside1(g25d, !top, ax[iSW], ay[iSW], az[iSW],
-                  ax[iSE], ay[iSE], az[iSE]);
-  }
-
-  private final static boolean applyDrawInsideCorrection = true;
-  void drawInside1(Graphics25D g25d, boolean top,
-                   int x1, int y1, int z1, int x2, int y2, int z2) {
-    if (!applyDrawInsideCorrection) {
-      drawLineInside(g25d, x1, y1, z1, x2, y2, z2);
-      return;
-    }
-    int dx = x2 - x1, dy = y2 - y1;
-    if (dy >= 0) {
-      if (dy == 0) {
-        if (top) {
-          --x2;
-        } else {
-          --y1; --x2; --y2;
-        }
-      } else if (3*dy < dx) {
-        if (top) {
-          ++y1; --x2;
-        } else {
-          --x2; --y2;
-        }
-      } else if (dy < dx) {
-        if (! top) {
-          --x2; --y2;
-        }
-      } else if (dx == 0) {
-        if (top) {
-          --x1; --x2; --y2;
-        } else {
-          --y2;
-        }
-      } else if (3*dx < dy) {
-        if (top) {
-          --x1; --x2; --y2;
-        } else {
-          --y2;
-        }
-      } else if (dx == dy) {
-        if (top) {
-          ++y1; --x2;
-          g25d.drawLine(x1, y1, z1, x2, y2, z2);
-          --x1; --x2;
-        } else {
-          g25d.drawLine(x1+1, y1, z1, x2, y2-1, z2);
-          --x2; --y2;
-        }
-      }
-    } else {
-      if (dx == 0) {
-        if (top) {
-          --y1;
-        } else {
-          --x1; --y1; --x2;
-        }
-      } else if (3*dx < -dy) {
-        if (top) {
-          --y1;
-        } else {
-          --x1; --y1; --x2;
-        }
-      } else if (dx > -dy*3) {
-        if (top){
-          --x2; ++y2;
-        } else {
-          --y1; --x2;
-        }
-      } else if (dx == -dy) {
-        if (!top) {
-          --x2; ++y2;
-        }
-      }
-    }
-    g25d.drawLine(x1, y1, z1, x2, y2, z2);
   }
 
   private final static boolean applyLineInsideCorrection = true;
@@ -707,95 +586,6 @@ public class BondRenderer {
     coords[2] = x + (1 - lambda) * dxA + lambda * dxB;
     coords[3] = y + (1 - lambda) * dyA + lambda * dyB;
     return 2;
-  }
-
-  
-  int pctLight = 50;
-
-  void calcLightPoint(int dxSlope, int dySlope) {
-    /*
-      mth
-      Well, I tried for a while and could not figure it out,
-      maybe some other day ... or somebody else
-
-      we need to calculate the factor as a percentage of where
-      the brightest spot on the bond cylinder is located
-
-      I guess that I also need to know the orientation in the
-      z dimension to be able to calculate this ... maybe that
-      is my problem
-      
-    double mag = Math.sqrt(dxSlope*dxSlope + dySlope*dySlope);
-    double cos = dxSlope / mag;
-    double angle = Math.acos(cos);
-    angle += Math.PI / 4;
-    factorTop = 50 + (int)(Math.cos(angle) * 40);
-    System.out.println(" dxSlope="+dxSlope+
-                       " dySlope="+dySlope+
-                       " factorTop="+factorTop);
-    */
-  }
-
-  int xL, yL, dxL, dyL;
-  int dxLTop, dyLTop, dxLBot, dyLBot;
-  int xR, yR, dxR, dyR;
-  int dxRTop, dyRTop, dxRBot, dyRBot;
-  int step, lenMax;
-
-  int calcNumShadeSteps() {
-    int dxSlope = axPoly[1] - axPoly[0];
-    int dySlope = ayPoly[1] - ayPoly[0];
-    calcLightPoint(dxSlope, dySlope);
-    if (dxSlope < 0) dxSlope = -dxSlope;
-    if (dySlope < 0) dySlope = -dySlope;
-
-    xL = axPoly[0]; yL = ayPoly[0];
-    dxL = axPoly[3] - xL; dyL = ayPoly[3] - yL;
-    int lenL = (int)Math.sqrt(dxL*dxL + dyL*dyL);
-    int lenLTop = lenL * pctLight / 100;
-    int lenLBot = lenL - lenLTop;
-    dxLTop = dxL * pctLight / 100;
-    dxLBot = dxL - dxLTop;
-    dyLTop = dyL * pctLight / 100;
-    dyLBot = dyL - dyLTop;
-
-    xR = axPoly[1]; yR = ayPoly[1];
-    dxR = axPoly[2] - xR; dyR = ayPoly[2] - yR;
-    int lenR = (int)Math.sqrt(dxR*dxR + dyR+dyR);
-    int lenRTop = lenR * pctLight / 100;
-    int lenRBot = lenR - lenRTop;
-    dxRTop = dxR * pctLight / 100;
-    dxRBot = dxR - dxRTop;
-    dyRTop = dyR * pctLight / 100;
-    dyRBot = dyR - dyRTop;
-
-    step = 0;
-    lenMax = Math.max(Math.max(lenLTop, lenLBot), Math.max(lenRTop, lenRBot));
-    if (lenMax < 1)
-      control.logError("BondRenderer calculation error #3465 :^)");
-    return lenMax;
-  }
-
-  void stepPolygon() {
-    ++step;
-    int dxStepLTop = dxLTop * step / lenMax;
-    int dyStepLTop = dyLTop * step / lenMax;
-    int dxStepLBot = dxLBot * step / lenMax;
-    int dyStepLBot = dyLBot * step / lenMax;
-
-    int dxStepRTop = dxRTop * step / lenMax;
-    int dyStepRTop = dyRTop * step / lenMax;
-    int dxStepRBot = dxRBot * step / lenMax;
-    int dyStepRBot = dyRBot * step / lenMax;
-
-    axPoly[0] = xL + dxStepLTop;
-    ayPoly[0] = yL + dyStepLTop;
-    axPoly[1] = xR + dxStepRTop;
-    ayPoly[1] = yR + dyStepRTop;
-    axPoly[2] = xR + dxR - dxStepRBot;
-    ayPoly[2] = yR + dyR - dyStepRBot;
-    axPoly[3] = xL + dxL - dxStepLBot;
-    ayPoly[3] = yL + dyL - dyStepLBot;
   }
 }
 

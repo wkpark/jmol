@@ -41,7 +41,9 @@ final public class Graphics25D {
   DisplayControl control;
   Platform25D platform;
   ShadedSphereRenderer shadedSphereRenderer;
+  ShadedBondRenderer shadedBondRenderer;
   Sphere25D sphere25d;
+  Triangle25D triangle25d;
   Image img;
   Graphics g;
   int width,height,size;
@@ -67,8 +69,10 @@ final public class Graphics25D {
     } else {
       platform = new Awt25D(control.getAwtComponent());
     }
-    this.shadedSphereRenderer = new ShadedSphereRenderer(control);
+    this.shadedSphereRenderer = new ShadedSphereRenderer(control, this);
+    this.shadedBondRenderer = new ShadedBondRenderer(control, this);
     this.sphere25d = new Sphere25D(control, this);
+    this.triangle25d = new Triangle25D(control, this);
   }
 
   public void setEnabled(boolean value) {
@@ -274,7 +278,7 @@ final public class Graphics25D {
                                  int x, int y, int z, int diameter) {
     int r = (diameter + 1) / 2;
     if (! usePbuf) 
-      shadedSphereRenderer.render(this, x - r, y - r, z,
+      shadedSphereRenderer.render(x - r, y - r, z,
                                   diameter, colorFill, colorOutline);
     else
       sphere25d.paintSphereShape(x, y, z, diameter, colorFill);
@@ -402,19 +406,49 @@ final public class Graphics25D {
     }
   }
 
-  public void drawPolygon(int[] ax, int[] ay, int[] az, int numPoints) {
-    int i = numPoints - 1;
-    drawLine(ax[0], ay[0], az[0], ax[i], ay[i], az[i]);
-    while (--i >= 0)
+  public void drawPolygon4(Color colorOutline, int[] ax, int[] ay, int[] az) {
+    setColor(colorOutline);
+    drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
+    for (int i = 3; --i >= 0; )
       drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
   }
 
-  public void fillPolygon(int[] ax, int[] ay, int[] az, int numPoints) {
+  public void fillPolygon4(Color colorFill,
+                           int[] ax, int[] ay, int[] az) {
     if (! usePbuf) {
-      g.fillPolygon(ax, ay, numPoints);
+      g.setColor(colorFill);
+      g.fillPolygon(ax, ay, 4);
       return;
     }
-    drawPolygon(ax, ay, az, numPoints);
+    argbCurrent = colorFill.getRGB();
+    System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
+    System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
+    System.arraycopy(az, 0, triangle25d.az, 0, 3);
+    triangle25d.fillTriangle();
+    triangle25d.ax[1] = ax[3];
+    triangle25d.ay[1] = ay[3];
+    triangle25d.az[1] = az[3];
+    //    triangle25d.fillTriangle();
+  }
+
+  public void fillPolygon4(Color colorOutline, Color colorFill,
+                           int[] ax, int[] ay, int[] az) {
+    if (! usePbuf) {
+      g.setColor(colorFill);
+      g.fillPolygon(ax, ay, 4);
+      g.setColor(colorOutline);
+      g.drawPolygon(ax, ay, 4);
+      return;
+    }
+    drawPolygon4(colorOutline, ax, ay, az);
+    fillPolygon4(colorFill, ax, ay, az);
+  }
+
+  public void fillCylinder4(Color color, int ax[], int ay[], int az[]) {
+    if (! usePbuf) {
+      shadedBondRenderer.render(color, ax, ay, az);
+      return;
+    }
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {
@@ -588,6 +622,10 @@ final public class Graphics25D {
     }
   }
   
+  void plotLine(int x1, int y1, int z1, int x2, int y2, int z2) {
+    plotLineDeltaUnclipped(x1, y1, z1, x2-x1, y2-y1, z2-z1);
+  }
+
   void plotLineDeltaUnclipped(int x1, int y1, int z1, int dx, int dy, int dz) {
     int offset = y1 * width + x1;
     if (z1 < zbuf[offset]) {
@@ -815,5 +853,5 @@ final public class Graphics25D {
       }
     }
   }
-
 }
+

@@ -87,7 +87,8 @@ public class ArrowLine {
 
   public void paint(Graphics25D g25d, DisplayControl control) {
 
-    g25d.setColor(control.getColorVector());
+    Color color = control.getColorVector();
+    g25d.setColor(color);
 
     double arrowLengthScale = control.getArrowLengthScale();
     double arrowHeadRadius = control.getArrowHeadRadius();
@@ -107,16 +108,16 @@ public class ArrowLine {
                     );
     }
     if (arrowStart) {
-      paintArrowHead(g25d, 0.0, false, arrowHeadSize, arrowHeadRadius);
+      paintArrowHead(g25d, color, 0.0, false, arrowHeadSize, arrowHeadRadius);
     }
     if (arrowEnd) {
-      paintArrowHead(g25d, offset + magnitude * arrowLengthScale, true,
+      paintArrowHead(g25d, color, offset + magnitude * arrowLengthScale, true,
                      arrowHeadSize, arrowHeadRadius);
     }
   }
 
-  public void paintArrowHead(Graphics25D g25d, double lengthOffset,
-                             boolean forwardArrow,
+  public void paintArrowHead(Graphics25D g25d, Color color,
+                             double lengthOffset, boolean forwardArrow,
                              double arrowHeadSize, double arrowHeadRadius) {
 
     double directionSign = 1.0;
@@ -146,7 +147,8 @@ public class ArrowLine {
 
     xpoints[3] = (int) (x1 + rx * ctheta - ry * stheta);
     ypoints[3] = (int) (y1 + rx * stheta + ry * ctheta);
-    g25d.fillPolygon(xpoints, ypoints, null, 4);
+    // FIXME mth 2003 06 09
+    g25d.fillPolygon4(color, color, xpoints, ypoints, null);
   }
 }
 

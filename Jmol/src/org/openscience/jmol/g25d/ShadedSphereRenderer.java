@@ -36,9 +36,11 @@ import java.awt.Color;
 public class ShadedSphereRenderer {
 
   DisplayControl control;
+  Graphics25D g25d;
   SphereG2D sphereG2D;
-  public ShadedSphereRenderer(DisplayControl control) {
+  public ShadedSphereRenderer(DisplayControl control, Graphics25D g25d) {
     this.control = control;
+    this.g25d = g25d;
     if (control.jvm12orGreater)
       sphereG2D = new SphereG2D();
   }
@@ -52,7 +54,7 @@ public class ShadedSphereRenderer {
   // to shaded rendering in order to cut down on edge effects
   static final int artifactMargin = 4;
   
-  public void render(Graphics25D g25d, int xUpperLeft, int yUpperLeft, int z,
+  public void render(int xUpperLeft, int yUpperLeft, int z,
                       int diameter, Color color, Color outline) {
     if (diameter < minCachedSize) {
       if (diameter == 1) {

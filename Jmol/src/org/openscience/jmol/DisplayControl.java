@@ -24,7 +24,9 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.render.AtomShape;
+import org.openscience.cdk.renderer.color.AtomColorer;
+import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
+import org.openscience.jmol.render.AtomColors;
 
 import java.awt.Image;
 import java.awt.Color;
@@ -108,10 +110,15 @@ final public class DisplayControl {
     return atomDrawMode;
   }
 
+  AtomColorer colorProfile = AtomColors.getInstance();
   public int atomColorProfile = ATOMTYPE;
   public void setAtomColorProfile(int mode) {
     if (atomColorProfile != mode) {
       atomColorProfile = mode;
+      if (mode == ATOMTYPE)
+        colorProfile = AtomColors.getInstance();
+      else
+        colorProfile = new PartialAtomicChargeColors();
       recalc();
     }
   }
@@ -869,5 +876,22 @@ final public class DisplayControl {
     return arrowHeadRadius;
   }
 
+  public Color getAtomColor(Atom atom) {
+    return colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
+  }
 
+  public Color getAtomOutlineColor(Color color) {
+    return (showDarkerOutline || atomDrawMode == SHADING)
+      ? getDarker(color) : outlineColor;
+  }
+
+  private Hashtable htDarker = new Hashtable();
+  public Color getDarker(Color color) {
+    Color darker = (Color) htDarker.get(color);
+    if (darker == null) {
+      darker = color.darker();
+      htDarker.put(color, darker);
+    }
+    return darker;
+  }
 }

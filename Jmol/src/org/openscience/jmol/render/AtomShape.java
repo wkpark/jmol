@@ -83,128 +83,71 @@ public class AtomShape extends Shape {
   }
 
   public void render(Graphics g, Rectangle clip, DisplayControl control) {
-    renderBonds(g, clip, control);
-    renderAtom(g, clip, control);
-    renderLabel(g, clip, control);
+    if (!control.showHydrogens && atom.isHydrogen())
+      return;
+    if (control.showBonds)
+      renderBonds(g, clip, control);
+    if (control.showAtoms && isClipVisible(clip)) {
+      AtomRenderer atomRenderer = new AtomRenderer();
+      atomRenderer.setContext(g, clip, control);
+      atomRenderer.render(this);
+    }
   }
 
   public void renderBonds(Graphics g, Rectangle clip, DisplayControl control) {
-    if (!control.showBonds || (!control.showHydrogens && atom.isHydrogen()))
+    Atom[] bondedAtoms = atom.getBondedAtoms();
+    if (bondedAtoms == null)
       return;
     // FIXME -- the one instance of BondRenderer needs to be stored-in
     // and retrieved-from the DisplayControl. It can be initialized before
     // a paint cycle
     BondRenderer bondRenderer = new BondRenderer();
     bondRenderer.setContext(g, clip, control);
-    Atom[] bondedAtoms = atom.getBondedAtoms();
-    if (bondedAtoms == null)
-      return;
     for (int i = 0; i < bondedAtoms.length; ++i) {
-      Atom otherAtom = bondedAtoms[i];
-      int zOther = otherAtom.getScreenZ();
-      if ((control.showHydrogens || !otherAtom.isHydrogen()) &&
-          (z > zOther) ||
-          ((z==zOther) && (atom.getAtomNumber() > otherAtom.getAtomNumber())))
-        bondRenderer.render(this, otherAtom.getAtomShape(),
-                            atom.getBondOrder(otherAtom));
-    }
-  }
-  
-  static Hashtable htDarker = new Hashtable();
-  private Color getDarker(Color color) {
-    Color darker = (Color) htDarker.get(color);
-    if (darker == null) {
-      darker = color.darker();
-      htDarker.put(color, darker);
-    }
-    return darker;
-  }
-
-  private Color getAtomColor(DisplayControl control, Atom atom) {
-    org.openscience.cdk.renderer.color.AtomColorer colorProfile;
-    if (control.getAtomColorProfile() == DisplayControl.ATOMCHARGE)
-        colorProfile =
-          new org.openscience.cdk.renderer.color.PartialAtomicChargeColors();
-    else
-        colorProfile = AtomColors.getInstance();
-    return colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
-  }
-
-  private Color getOutline(DisplayControl control, Color color) {
-    return control.showDarkerOutline ? getDarker(color) : control.outlineColor;
-  }
-
-  private void renderAtom(Graphics g, Rectangle clip, DisplayControl control) {
-    if (!control.showAtoms ||
-        (!control.showHydrogens && atom.isHydrogen()) ||
-        !isVisible(clip))
-      return;
-
-    if (!control.fastRendering && control.isSelected(atom)) {
-      int halowidth = diameter / 3;
-      if (halowidth < 2)
-        halowidth = 2;
-      int halodiameter = diameter + 2 * halowidth;
-      int haloradius = halodiameter / 2;
-      g.setColor(control.getPickedColor());
-      g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
-    }
-    Color color = getAtomColor(control, atom);
-    int radius = diameter / 2;
-    g.setColor(color);
-    if (diameter <= 3) {
-      if (diameter > 0) {
-        if (control.atomDrawMode==control.WIREFRAME && diameter==3)
-          g.drawRect(x - radius, y - radius, 2, 2);
-        else
-          g.fillRect(x - radius, y - radius, diameter, diameter);
+      Atom atomOther = bondedAtoms[i];
+      AtomShape atomShapeOther = atomOther.getAtomShape();
+      int zOther = atomShapeOther.z;
+      if ((control.showHydrogens || !atomOther.isHydrogen()) &&
+          ((z > zOther) ||
+           (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
+          isBondClipVisible(clip, x, y, atomShapeOther.x, atomShapeOther.y)) {
+        bondRenderer.render(this, atomShapeOther,
+                            atom.getBondOrder(atomOther));
       }
-    } else {
-      if (!control.fastRendering && control.atomDrawMode==control.SHADING) {
-        renderShadedAtom(g, control, color);
-        return;
-      }
-      // the area *drawn* by an oval is 1 larger than the area
-      // *filled* by an oval
-      int diamT = diameter-1;
-      if (!control.fastRendering && control.atomDrawMode!=control.WIREFRAME) {
-        g.fillOval(x - radius, y - radius, diamT, diamT);
-        g.setColor(getOutline(control, color));
-      }
-      g.drawOval(x - radius, y - radius, diamT, diamT);
     }
   }
 
   private static Rectangle rectTemp = new Rectangle();
-  private boolean isVisible(Rectangle clip) {
-    int radius = diameter/2;
+  private boolean isClipVisible(Rectangle clip) {
+    int radius = diameter / 2;
     rectTemp.setRect(x - radius, y - radius, diameter, diameter);
     // note that this is not correct if the atom is selected
     // because the halo may be visible while the atom is not
     return clip.intersects(rectTemp);
   }
 
-  private boolean isVisible(Rectangle clip, int x2, int y2) {
+  private boolean isBondClipVisible(Rectangle clip,
+                                    int x1, int y1, int x2, int y2) {
     // this is not actually correct, but quick & dirty
     int xMin, width, yMin, height;
-    if (x < x2) {
-      xMin = x;
-      width = x2 - x;
-    } else if (x2 < x) {
+    if (x1 < x2) {
+      xMin = x1;
+      width = x2 - x1;
+    } else if (x2 < x1) {
       xMin = x2;
-      width = x - x2;
+      width = x1 - x2;
     } else {
-      xMin = x;
+      xMin = x1;
       width = 1;
     }
-    if (y < y2) {
-      yMin = y;
-      height = y2 - y;
-    } else if (y2 < y) {
+    if (y1 < y2) {
+      yMin = y1;
+      height = y2 - y1;
+    } else if (y2 < y1) {
       yMin = y2;
-      height = y - y2;
+      height = y1 - y2;
     } else {
-      yMin = y;
+      yMin = y1;
       height = 1;
     }
     // there are some problems with this quick&dirty implementation
@@ -224,306 +167,5 @@ public class AtomShape extends Shape {
     return visible;
   }
 
-  private static final int minCachedSize = 4;
-  private static final int maxCachedSize = 50;
-  private static final int scalableSize = 47;
-  private static final int maxSmoothedSize = 200;
-  // I am getting severe graphical artifacts around the edges when
-  // rendering hints are turned on. Therefore, I am adding a margin
-  // to shaded rendering in order to cut down on edge effects
-  private static final int artifactMargin = 4;
-  private static final int minShadingBufferSize = maxCachedSize;
-  private static final int maxShadingBufferSize =
-    maxSmoothedSize + artifactMargin*2;
-    
-  
-  private void renderShadedAtom(Graphics g, DisplayControl control,
-                                Color color) {
-    if (! control.imageCache.containsKey(color)) {
-      loadShadedSphereCache(control, color);
-    }
-    Image[] shadedImages = (Image[]) control.imageCache.get(color);
-    int radius = diameter / 2;
-    if (diameter < minCachedSize) {
-      // the area drawn by an oval is 1 larger than the area
-      // filled by an oval
-      int diamTemp = diameter-1;
-      g.setColor(color);
-      g.fillOval(x - radius, y - radius, diamTemp, diamTemp);
-      g.setColor(getDarker(color));
-      g.drawOval(x - radius, y - radius, diamTemp, diamTemp);
-    } else if (diameter < maxCachedSize) {
-      // images in the cache have a margin of 1
-      g.drawImage(shadedImages[diameter],
-                   x - radius - 1, y - radius - 1, null);
-    } else {
-	renderLargeShadedAtom(g, control, shadedImages[0]);
-    }
-  }
-
-  private void renderLargeShadedAtom(Graphics g, DisplayControl control,
-                                     Image imgSphere) {
-    int radius = diameter / 2;
-    if (! control.useGraphics2D) {
-      g.drawImage(imgSphere, x - radius, y - radius,
-                   diameter, diameter, null);
-      return;
-    }
-    if (diameter < maxSmoothedSize) {
-      drawScaledShadedAtom((Graphics2D) g,
-                           imgSphere, x, y, diameter, artifactMargin);
-    } else {
-      // too big ... just forget the smoothing
-      // but we *can* clip it to eliminate fat pixels
-      Ellipse2D circle =
-        new Ellipse2D.Double(x-radius, y-radius, diameter, diameter);
-      g.setClip(circle);
-      g.drawImage(imgSphere, x - radius, y - radius,
-                   diameter, diameter, null);
-      g.setClip(null);
-    }
-  }
-  
-  private static final double[] lightSource = { -1.0f, -1.0f, 2.0f };
-  private void loadShadedSphereCache(DisplayControl control, Color color) {
-    Image shadedImages[] = new Image[maxCachedSize];
-    Component component = control.getDisplayPanel();
-    control.imageCache.put(color, shadedImages);
-    if (! control.useGraphics2D) {
-      for (int d = minCachedSize; d < maxCachedSize; ++d) {
-        shadedImages[d] = sphereSetup(component, color, d+2, lightSource);
-      }
-      shadedImages[0] = sphereSetup(component,color,scalableSize,lightSource);
-      return;
-    }
-    shadedImages[0] = sphereSetup(component, color, scalableSize, lightSource);
-    for (int d = minCachedSize; d < maxCachedSize; ++d) {
-      BufferedImage bi = new BufferedImage(d+2, d+2,
-                                           BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g2 = bi.createGraphics();
-      drawScaledShadedAtom(g2, shadedImages[0], d/2+1, d/2+1, d, 1);
-      shadedImages[d] = bi;
-    }
-  }
-  
-  private static byte[] mapRGBA;
-  private static IndexColorModel cmMask;
-  private static int sizeMask = 0;
-  private static BufferedImage biMask = null;
-  private static Graphics2D g2Mask;
-  private static WritableRaster rasterMask;
-  private static BufferedImage biAlphaMask;
-
-  private void applyCircleMask(Graphics2D g, int diameter, int margin) {
-    // mth 2002 nov 12
-    // a 4 bit greyscale mask would/should be sufficient here, but there
-    // was a bug in my JVM (or a bug in my head) which prevented it
-    // from working
-    if (mapRGBA == null) {
-      mapRGBA = new byte[256];
-      for (int i = 0; i < 256; ++ i) {
-        mapRGBA[i] = (byte) i;
-      }
-      cmMask = new IndexColorModel(8, 256, mapRGBA, mapRGBA, mapRGBA, mapRGBA);
-    }
-    int size = diameter + 2*margin;
-    if (size > sizeMask) {
-      sizeMask = size * 2;
-      if (sizeMask < minShadingBufferSize)
-        sizeMask = minShadingBufferSize;
-      if (sizeMask > maxShadingBufferSize)
-        sizeMask = maxShadingBufferSize;
-      biMask = new BufferedImage(sizeMask, sizeMask,
-                                 BufferedImage.TYPE_BYTE_GRAY);
-      g2Mask = biMask.createGraphics();
-      g2Mask.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                              RenderingHints.VALUE_ANTIALIAS_ON);
-      rasterMask = biMask.getRaster();
-      biAlphaMask = new BufferedImage(cmMask, rasterMask, false, null);
-    }
-    g2Mask.setColor(Color.black);
-    g2Mask.fillRect(0, 0, size, size);
-    g2Mask.setColor(Color.white);
-    g2Mask.fillOval(margin, margin, diameter, diameter);
-
-    Composite foo = g.getComposite();
-    g.setComposite(AlphaComposite.DstIn);
-    g.drawImage(biAlphaMask, 0, 0, null);
-    g.setComposite(foo);
-  }
-
-  private static int sizeShadingBuffer = 0;
-  private static BufferedImage biShadingBuffer = null;
-  private static Graphics2D g2ShadingBuffer = null;
-
-  void drawScaledShadedAtom(Graphics2D g2, Image image,
-                            int x, int y, int diameter, int margin) {
-    final int size = diameter + 2*margin;
-    if (size > sizeShadingBuffer) {
-      sizeShadingBuffer = size * 2; // leave some room to grow
-      if (sizeShadingBuffer < minShadingBufferSize)
-        sizeShadingBuffer = minShadingBufferSize;
-      if (sizeShadingBuffer > maxShadingBufferSize)
-        sizeShadingBuffer = maxShadingBufferSize;
-      biShadingBuffer = new BufferedImage(sizeShadingBuffer, sizeShadingBuffer,
-                                          BufferedImage.TYPE_INT_ARGB);
-      g2ShadingBuffer = biShadingBuffer.createGraphics();
-      g2ShadingBuffer.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                              RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    }
-    g2ShadingBuffer.drawImage(image, 0, 0, size, size, null);
-    applyCircleMask(g2ShadingBuffer, diameter, margin);
-    int radius = diameter / 2;
-    int upperleftX = x - radius - margin;
-    int upperleftY = y - radius - margin;
-    int lowerrightX = upperleftX + diameter + margin;
-    int lowerrightY = upperleftY + diameter + margin;
-    g2.setClip(upperleftX, upperleftY, size, size);
-    g2.drawImage(biShadingBuffer, upperleftX, upperleftY, null);
-    g2.setClip(null);
-    //    g2.drawImage(biShadingBuffer,
-    //                 upperleftX, upperleftY, lowerrightX, lowerrightY,
-    //                 0, 0, size, size,
-    //                 null);
-  }
-
-  /**
-   * Creates a shaded atom image.
-   */
-  private static Image sphereSetup(Component component, Color ballColor,
-                                   int diameter, double[] lightSource) {
-
-    double v1[] = new double[3];
-    double v2[] = new double[3];
-    int radius = (diameter + 1) / 2; // round it up
-    int j = -1;
-
-    // Create our own version of an IndexColorModel:
-    int model[] = new int[diameter*diameter];
-
-    // Normalize the lightsource vector:
-    double[] lightsource = new double[3];
-    for (int i = 0; i < 3; ++ i)
-      lightsource[i] = lightSource[i];
-    normalize(lightsource);
-    for (int k1 = -(diameter - radius); k1 < radius; k1++) {
-      for (int k2 = -(diameter - radius); k2 < radius; k2++) {
-        j++;
-        v1[0] = k2;
-        v1[1] = k1;
-        double len1 = Math.sqrt(k2 * k2 + k1 * k1);
-        if (len1 <= radius) {
-          int red2 = 0;
-          int green2 = 0;
-          int blue2 = 0;
-          v1[2] = radius * Math.cos(Math.asin(len1 / radius));
-          normalize(v1);
-          double len2 = Math.abs((v1[0] * lightsource[0]
-                         + v1[1] * lightsource[1] + v1[2] * lightsource[2]));
-          if (len2 < 0.995f) {
-            red2 = (int) (ballColor.getRed() * len2);
-            green2 = (int) (ballColor.getGreen() * len2);
-            blue2 = (int) (ballColor.getBlue() * len2);
-          } else {
-            v2[0] = lightsource[0] + 0.0f;
-            v2[1] = lightsource[1] + 0.0f;
-            v2[2] = lightsource[2] + 1.0f;
-            normalize(v2);
-            double len3 = v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-            double len4 = 8.0f * len3 * len3 - 7.0f;
-            double len5 = 100.0f * len4;
-            len5 = Math.max(len5, 0.0f);
-            red2 = (int) (ballColor.getRed() * 155 * len2 + 100.0 + len5);
-            green2 = (int) (ballColor.getGreen() * 155 * len2 + 100.0 + len5);
-            blue2 = (int) (ballColor.getBlue() * 155 * len2 + 100.0 + len5);
-          }
-          red2 = Math.min(red2 + 32, 255);
-          green2 = Math.min(green2 + 32, 255);
-          blue2 = Math.min(blue2 + 32, 255);
-
-
-          // Bitwise masking to make model:
-          model[j] = 0xff000000 | red2 << 16 | green2 << 8 | blue2;
-        } else {
-          model[j] = 0x00000000;
-        }
-      }
-    }
-    return component.createImage(new MemoryImageSource(diameter, diameter,
-                                                       model, 0, diameter));
-  }
-
-  /**
-   * normalizes the double[3] vector in place
-   */
-  private static void normalize(double v[]) {
-
-    double len = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (Math.abs(len - 0.0) < java.lang.Double.MIN_VALUE) {
-      v[0] = 0.0;
-      v[1] = 0.0;
-      v[2] = 0.0;
-    } else {
-      v[0] = v[0] / len;
-      v[1] = v[1] / len;
-      v[2] = v[2] / len;
-    }
-  }
-
-  public void renderLabel(Graphics g, Rectangle clip, DisplayControl control) {
-    if (control.labelMode == control.NOLABELS)
-      return;
-
-    int radius=diameter/2;
-    int j = 0;
-    String s = null;
-    Font font = new Font("Helvetica", Font.PLAIN, radius);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
-    int k = fontMetrics.getAscent();
-    g.setColor(control.getTextColor());
-    
-    String label = null;
-    switch (control.labelMode) {
-    case DisplayControl.SYMBOLS:
-      label = atom.getSymbol();
-      break;
-
-    case DisplayControl.TYPES:
-      label = atom.getID();
-       break;
-
-    case DisplayControl.NUMBERS:
-      label = Integer.toString(atom.getAtomNumber() + 1);
-      break;
-
-    }
-    if (label != null) {
-      j = fontMetrics.stringWidth(label);
-      g.drawString(label, x - j / 2, y + k / 2);
-    }
-    if (!control.getPropertyMode().equals("")) {
-
-      // check to make sure this atom has this property:
-      Enumeration propIter = atom.getProperties().elements();
-      while (propIter.hasMoreElements()) {
-        PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
-        if (p.getDescriptor().equals(control.getPropertyMode())) {
-        
-          // OK, we had this property.  Let's draw the value on
-          // screen:
-          font = new Font("Helvetica", Font.PLAIN, radius / 2);
-          g.setFont(font);
-          g.setColor(control.getTextColor());
-          s = p.stringValue();
-          if (s.length() > 5) {
-            s = s.substring(0, 5);
-          }
-          k = 2 + (int) (radius / 1.4142136f);
-          g.drawString(s, x + k, y - k);
-        }
-      }
-    }
-  }
 }
 

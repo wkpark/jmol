@@ -70,13 +70,11 @@ public class BondRenderer {
                      int bondOrder) {
     int x1 = atomShape1.x, y1 = atomShape1.y;
     int x2 = atomShape2.x, y2 = atomShape2.y;
-    if (!isInsideClip(clip, x1, y1, x2, y2))
-      return;
     int dx = x2 - x1, dx2 = dx * dx;
     int dy = y2 - y1, dy2 = dy * dy;
     int magnitude2 = dx2 + dy2;
-    Color color1 = getAtomColor(control, atomShape1.atom);
-    Color color2 = getAtomColor(control, atomShape2.atom);
+    Color color1 = control.getAtomColor(atomShape1.atom);
+    Color color2 = control.getAtomColor(atomShape2.atom);
     if ((magnitude2 <= 2) || (control.fastRendering && magnitude2 <= 49))
       return; // also avoid divide by zero when magnitude == 0
     if (control.showAtoms && (magnitude2 <= 16))
@@ -143,9 +141,11 @@ public class BondRenderer {
                    dx, dy, magnitude, bondOrder, halfBondWidth);
       return;
     }
-    if (control.bondDrawMode != control.SHADING) {
-      Color outline1 = getOutline(control, color1);
-      Color outline2 = getOutline(control, color2);
+    Color outline1 = control.getAtomOutlineColor(color1);
+    Color outline2 = control.getAtomOutlineColor(color2);
+    if (control.bondDrawMode != control.SHADING ||
+        control.mouseDragged
+        || (int)halfBondWidth < 2) {
       if (halfBondWidth < .75) {
         drawLineBond(g, control,
                      x1Bond, y1Bond, (control.bondDrawMode == control.WIREFRAME
@@ -164,54 +164,19 @@ public class BondRenderer {
                    dx, dy, magnitude, bondOrder, halfBondWidth, halfBondWidth);
       return;
     }
-    // drawing shaded bonds
-    if (control.mouseDragged || (int)halfBondWidth < 2) {
-      drawRectBond(g, control,
-                   x1Bond, y1Bond, color1, getDarker(color1),
-                   x1Edge, y1Edge,
-                   x2Bond, y2Bond, color2, getDarker(color2),
-                   true,
-                   dx, dy, magnitude, bondOrder, halfBondWidth, halfBondWidth);
-      return;
-    }
-    Color darker1 = getDarker(color1), outline1 = darker1;
-    Color bright1 = color1;
-    Color darker2 = getDarker(color2), outline2 = darker2;
-    Color bright2 = color2;
-
-    int atom1R = darker1.getRed(),   range1R = bright1.getRed() - atom1R;
-    int atom1G = darker1.getGreen(), range1G = bright1.getGreen() - atom1G;
-    int atom1B = darker1.getBlue(),  range1B = bright1.getBlue() - atom1B;
-    int atom2R = darker2.getRed(),   range2R = bright2.getRed() - atom2R;
-    int atom2G = darker2.getGreen(), range2G = bright2.getGreen() - atom2G;
-    int atom2B = darker2.getBlue(),  range2B = bright2.getBlue() - atom2B;
+    Color[] shades1 = getShades(color1, outline1);
+    Color[] shades2 = getShades(color2, outline2);
 
     int numPasses = (int)halfBondWidth;
     double widthT = halfBondWidth;
-    for (int i = 0; i < numPasses; ++i, widthT -= 1.0) {
-      // numPasses must be > 1 because of test above
-      double pct = (double) i / (numPasses - 1);
-      int r1 = atom1R + (int)(pct * range1R);
-      int g1 = atom1G + (int)(pct * range1G);
-      int b1 = atom1B + (int)(pct * range1B);
-      int r2 = atom2R + (int)(pct * range2R);
-      int g2 = atom2G + (int)(pct * range2G);
-      int b2 = atom2B + (int)(pct * range2B);
-
-      // Bitwise masking to make color model:
-      int model1 = 0xFF << 24 | r1 << 16 | g1 << 8 | b1;
-      Color co1 = new Color(model1);
-      int model2 = 0xFF << 24 | r2 << 16 | g2 << 8 | b2;
-      Color co2 = new Color(model2);
-
+    for (int i = numPasses; --i >= 0; widthT -= 1.0) {
+      int index = i * maxShade / numPasses;
       drawRectBond(g, control,
-                   x1Bond, y1Bond, co1, outline1,
+                   x1Bond, y1Bond, shades1[index], null,
                    x1Edge, y1Edge,
-                   x2Bond, y2Bond, co2, outline2,
+                   x2Bond, y2Bond, shades2[index], null,
                    true, dx, dy, magnitude, bondOrder,
                    widthT, halfBondWidth);
-      // only draw the outline the first time around
-      outline1 = outline2 = null;
     }
   }
 
@@ -507,72 +472,26 @@ public class BondRenderer {
     g.drawLine(x1, y1, x2, y2);
   }
 
-  static Hashtable htDarker = new Hashtable();
-  private Color getDarker(Color color) {
-    Color darker = (Color) htDarker.get(color);
-    if (darker == null) {
-      darker = color.darker();
-      htDarker.put(color, darker);
+  private final Hashtable htShades = new Hashtable();
+  final static int maxShade = 16;
+  Color[] getShades(Color color, Color darker) {
+    Color[] shades = (Color[])htShades.get(color);
+    if (shades == null) {
+      int darkerR = darker.getRed(),   rangeR = color.getRed() - darkerR;
+      int darkerG = darker.getGreen(), rangeG = color.getGreen() - darkerG;
+      int darkerB = darker.getBlue(),  rangeB = color.getBlue() - darkerB;
+      shades = new Color[maxShade];
+      for (int i = 0; i < maxShade; ++i) {
+        double distance = (float)i / (maxShade - 1);
+        double percentage = Math.sqrt(1 - distance);
+        int r = darkerR + (int)(percentage * rangeR);
+        int g = darkerG + (int)(percentage * rangeG);
+        int b = darkerB + (int)(percentage * rangeB);
+        int rgb = 0xFF << 24 | r << 16 | g << 8 | b;
+        shades[i] = new Color(rgb);
+      }
+      htShades.put(color, shades);
     }
-    return darker;
+    return shades;
   }
-
-  private Color getAtomColor(DisplayControl control, Atom atom) {
-    org.openscience.cdk.renderer.color.AtomColorer colorProfile;
-    if (control.getAtomColorProfile() == DisplayControl.ATOMCHARGE)
-        colorProfile =
-          new org.openscience.cdk.renderer.color.PartialAtomicChargeColors();
-    else
-        colorProfile = AtomColors.getInstance();
-    return colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
-  }
-
-  private Color getOutline(DisplayControl control, Color color) {
-    return control.showDarkerOutline ? getDarker(color) : control.outlineColor;
-  }
-
-  private static Rectangle rectTemp = new Rectangle();
-
-  private boolean isInsideClip(Rectangle clip,
-                               int x1, int y1, int x2, int y2) {
-    // this is not actually correct, but quick & dirty
-    int xMin, width, yMin, height;
-    if (x1 < x2) {
-      xMin = x1;
-      width = x2 - x1;
-    } else if (x2 < x1) {
-      xMin = x2;
-      width = x1 - x2;
-    } else {
-      xMin = x1;
-      width = 1;
-    }
-    if (y1 < y2) {
-      yMin = y1;
-      height = y2 - y1;
-    } else if (y2 < y1) {
-      yMin = y2;
-      height = y1 - y2;
-    } else {
-      yMin = y1;
-      height = 1;
-    }
-    // there are some problems with this quick&dirty implementation
-    // so I am going to throw in some slop
-    xMin -= 5;
-    yMin -= 5;
-    width += 10;
-    height += 10;
-    rectTemp.setRect(xMin, yMin, width, height);
-    boolean visible = clip.intersects(rectTemp);
-    /*
-    System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +
-                       " & " + clip.x + "," + clip.y +
-                       " W " + clip.width + " H " + clip.height +
-                       "->" + visible);
-    */
-    return visible;
-  }
-
 }
-

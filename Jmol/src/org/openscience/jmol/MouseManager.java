@@ -197,16 +197,18 @@ public class MouseManager {
       if ((modifiers & LEFT) == LEFT)
         return ROTATE;
       */
-      if ((modifiers & CTRL_SHIFT_LEFT) == CTRL_SHIFT_LEFT)
+      if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
+        return ROTATE_Z;
+      if ((modifiers & CTRL_RIGHT) == CTRL_RIGHT)
+        return XLATE;
+      // if ((modifiers & RIGHT) == RIGHT)
+      //   popup menu
+      if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
         return ZOOM;
       if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
-        return ROTATE_Z;
-      if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
-        return XLATE;
+        return SLAB_PLANE;
       if ((modifiers & LEFT) == LEFT)
         return ROTATE;
-      if ((modifiers & CTRL_SHIFT_RIGHT) == CTRL_SHIFT_RIGHT)
-        return SLAB_PLANE;
       return modeMouse;
     }
 
@@ -222,16 +224,16 @@ public class MouseManager {
         control.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
         break;
       case ROTATE_Z:
-        control.rotateZBy((xCurrent - xPrevious) + (yPrevious - yCurrent));
+        control.rotateZBy(xPrevious - xCurrent);
         break;
       case XLATE:
         control.translateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
         break;
       case ZOOM:
-        control.zoomBy((xCurrent - xPrevious) + (yPrevious - yCurrent));
+        control.zoomBy(yCurrent - yPrevious);
         break;
       case SLAB_PLANE:
-        control.slabBy((xCurrent - xPrevious) + (yPrevious - yCurrent));
+        control.slabBy(yCurrent - yPrevious);
         break;
       case PICK:
         calcRectRubberBand();

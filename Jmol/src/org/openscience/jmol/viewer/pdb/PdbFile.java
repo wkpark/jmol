@@ -32,7 +32,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 public class PdbFile {
-  Frame frame;
+  public Frame frame;
   String[] structureRecords;
 
   int modelCount = 0;
@@ -124,9 +124,6 @@ public class PdbFile {
 
   void setCurrentResidue(short modelID, char chainID,
                          short groupSequence, String group3) {
-    System.out.println("setResidueCurrent(" + modelID + ",'" +
-                       chainID + "'," + groupSequence + "," +
-                       group3);
     modelIDCurrent = modelID;
     chainIDCurrent = chainID;
     groupSequenceCurrent = groupSequence;
@@ -150,6 +147,14 @@ public class PdbFile {
       setCurrentResidue(modelID, chainID,
                         groupSequence, pdbRecord.substring(17, 20));
     return groupCurrent.allocatePdbAtom(atomIndex, pdbRecord);
+  }
+
+  public int getModelCount() {
+    return modelCount;
+  }
+
+  public PdbModel getModel(int i) {
+    return models[i];
   }
 
   /*

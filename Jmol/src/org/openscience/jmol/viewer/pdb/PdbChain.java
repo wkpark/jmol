@@ -31,8 +31,8 @@ import javax.vecmath.Point3f;
 
 public class PdbChain {
 
-  PdbModel model;
-  char chainID;
+  public PdbModel model;
+  public char chainID;
   short firstGroupSequence;
   int groupCount;
   PdbGroup[] groups = new PdbGroup[16];

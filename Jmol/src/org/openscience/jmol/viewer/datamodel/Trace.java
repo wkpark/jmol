@@ -36,10 +36,10 @@ public class Trace {
 
   JmolViewer viewer;
   Frame frame;
-  boolean hasPdbRecords;
   PdbFile pdbFile;
 
-  boolean initialized;
+  Tmodel[] tmodels;
+
   int chainCount;
   short[][] madsChains;
   short[][] colixesChains;
@@ -47,64 +47,128 @@ public class Trace {
   Trace(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
-    hasPdbRecords = frame.hasPdbRecords;
     pdbFile = frame.pdbFile;
   }
 
   public void setMad(short mad, BitSet bsSelected) {
-    if (! hasPdbRecords)
-      return;
     initialize();
-    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
-      short[] mads = madsChains[i];
-      PdbGroup[] mainchain = pdbFile.getMainchain(i);
-      for (int j = mainchain.length; --j >= 0; ) {
-        if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
-          if (mad < 0) {
-            // -2.0 angstrom diameter -> -4000 milliangstroms diameter
-            if (mad == -4000)
-              mads[j] = 1000; // trace temperature goes here
-            else
-              mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 1500 : 500);
-          } else {
-            mads[j] = mad;
-          }
-      }
-      mads[mainchain.length] = mads[mainchain.length - 1];
-    }
+    for (int m = tmodels.length; --m >= 0; )
+      tmodels[m].setMad(mad, bsSelected);
   }
 
   public void setColix(byte palette, short colix, BitSet bsSelected) {
-    if (! hasPdbRecords)
-      return;
     initialize();
-    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
-      short[] colixes = colixesChains[i];
-      PdbGroup[] mainchain = pdbFile.getMainchain(i);
-      for (int j = mainchain.length; --j >= 0; ) {
-        int atomIndex = mainchain[j].getAlphaCarbonIndex();
-        if (bsSelected.get(atomIndex))
-          colixes[j] =
-            (palette != JmolConstants.PALETTE_CPK
-             ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
-             : colix);
-      }
-    }
+    for (int m = tmodels.length; --m >= 0; )
+      tmodels[m].setColix(palette, colix, bsSelected);
   }
 
   void initialize() {
-    if (! initialized) {
-      chainCount = pdbFile.getChainCount();
-      madsChains = new short[chainCount][];
-      colixesChains = new short[chainCount][];
-      for (int i = chainCount; --i >= 0; ) {
-        int chainLength = pdbFile.getMainchain(i).length;
-        colixesChains[i] = new short[chainLength];
-        // mads are one larger and the last two values are always ==
-        // makes interval caluclations easier (maybe?)
-        madsChains[i] = new short[chainLength + 1];
-      }
-      initialized = true;
+    if (tmodels == null) {
+      int tmodelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
+      tmodels = new Tmodel[tmodelCount];
+      for (int i = tmodelCount; --i >= 0; )
+        tmodels[i] = new Tmodel(pdbFile.getModel(i));
     }
   }
+
+  int getTmodelCount() {
+    return tmodels.length;
+  }
+
+  Tmodel getTmodel(int i) {
+    return tmodels[i];
+  }
+
+  class Tmodel {
+    PdbModel model;
+    Tchain[] tchains;
+    
+    Tmodel(PdbModel model) {
+      this.model = model;
+      tchains = new Tchain[model.getChainCount()];
+      for (int i = tchains.length; --i >= 0; )
+        tchains[i] = new Tchain(model.getChain(i));
+    }
+    
+    public void setMad(short mad, BitSet bsSelected) {
+      for (int i = tchains.length; --i >= 0; )
+        tchains[i].setMad(mad, bsSelected);
+    }
+
+    public void setColix(byte palette, short colix, BitSet bsSelected) {
+      for (int i = tchains.length; --i >= 0; )
+        tchains[i].setColix(palette, colix, bsSelected);
+    }
+
+    int getTchainCount() {
+      return tchains.length;
+    }
+
+    Tchain getTchain(int i) {
+      return tchains[i];
+    }
+  }
+
+  class Tchain {
+    PdbChain chain;
+    int mainchainLength;
+    PdbGroup[] mainchain;
+    short[] colixes;
+    short[] mads;
+
+    Tchain(PdbChain chain) {
+      this.chain = chain;
+      mainchain = chain.getMainchain();
+      mainchainLength = mainchain.length;
+      colixes = new short[mainchainLength];
+      mads = new short[mainchainLength + 1];
+    }
+
+    public void setMad(short mad, BitSet bsSelected) {
+      for (int i = mainchainLength; --i >= 0; ) {
+        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
+          if (mad < 0) {
+            // -2.0 angstrom diameter -> -4000 milliangstroms diameter
+            if (mad == -4000)
+              mads[i] = 1000; // trace temperature goes here
+            else
+              mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 1500 : 500);
+          } else {
+            mads[i] = mad;
+          }
+      }
+      mads[mainchainLength] = mads[mainchainLength - 1];
+    }
+
+    public void setColix(byte palette, short colix, BitSet bsSelected) {
+      Frame frame = chain.model.file.frame;
+      for (int i = mainchainLength; --i >= 0; ) {
+        int atomIndex = mainchain[i].getAlphaCarbonIndex();
+        if (bsSelected.get(atomIndex))
+          colixes[i] =
+            palette > JmolConstants.PALETTE_CPK
+            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+            : colix;
+      }
+    }
+
+  /*
+    void initialize() {
+      if (! initialized) {
+        chainCount = pdbFile.getChainCount();
+        madsChains = new short[chainCount][];
+        colixesChains = new short[chainCount][];
+        for (int i = chainCount; --i >= 0; ) {
+          int chainLength = pdbFile.getMainchain(i).length;
+          colixesChains[i] = new short[chainLength];
+          // mads are one larger and the last two values are always ==
+          // makes interval caluclations easier (maybe?)
+          madsChains[i] = new short[chainLength + 1];
+        }
+        initialized = true;
+      }
+    }
+  */
+  }
 }
+

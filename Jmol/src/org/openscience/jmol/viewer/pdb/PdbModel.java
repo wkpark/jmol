@@ -33,8 +33,8 @@ import java.util.Vector;
 
 public class PdbModel {
 
-  PdbFile file;
-  short modelID;
+  public PdbFile file;
+  public short modelID;
 
   int chainCount = 0;
   PdbChain[] chains = new PdbChain[8];

@@ -184,6 +184,7 @@ public class ColorManager {
   }
 
   public static int getArgbFromString(String strColor) {
+    System.out.println("ColorManager.getArgbFromString(" + strColor + ")");
     if (strColor != null) {
       if (strColor.length() == 7 && strColor.charAt(0) == '#') {
         try {

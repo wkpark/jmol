@@ -149,9 +149,6 @@ public class PdbGroup {
       mainchainIndices = new int[4];
       for (int i = 4; --i >= 0; )
         mainchainIndices[i] = -1;
-      System.out.println("group=" + this + 
-                         " groupSequence=" + groupSequence +
-                         " mainchainIndices=" + mainchainIndices);
     }
     if (mainchainIndices[atomid] != -1) {
       // my residue already has a mainchain atom with this atomid

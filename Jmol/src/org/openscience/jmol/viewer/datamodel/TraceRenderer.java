@@ -43,15 +43,14 @@ class TraceRenderer extends Renderer {
 
   void render() {
     this.trace = frame.trace;
-
-    if (trace == null || !trace.initialized)
+    if (trace == null)
       return;
-    PdbFile pdbFile = trace.pdbFile;
-    short[][] madsChains = trace.madsChains;
-    short[][] colixesChains = trace.colixesChains;
-    for (int i = trace.chainCount; --i >= 0; ) {
-      render1Chain(pdbFile.getMainchain(i), madsChains[i],
-                   colixesChains[i]);
+    for (int m = trace.getTmodelCount(); --m >= 0; ) {
+      Trace.Tmodel tmodel = trace.getTmodel(m);
+      for (int c = tmodel.getTchainCount(); --c >= 0; ) {
+        Trace.Tchain tchain = tmodel.getTchain(c);
+        render1Chain(tchain.mainchain, tchain.mads, tchain.colixes);
+      }
     }
     screens = null;
     alphas = null;

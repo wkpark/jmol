@@ -1052,7 +1052,6 @@ class Compiler {
           token.intValue = argb;
         }
       }
-                 
     }
     return true;
   }

@@ -240,6 +240,7 @@ class Jmol extends JPanel {
     splash.showStatus(resourceHandler
         .translate("Initializing Property Graph..."));
     pg = new PropertyGraph(frame);
+    model.addPropertyChangeListener(pg);
     splash.showStatus(resourceHandler
         .translate("Initializing Measurements..."));
     mlist = new MeasurementList(frame, display);

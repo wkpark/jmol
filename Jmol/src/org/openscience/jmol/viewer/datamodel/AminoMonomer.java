@@ -105,18 +105,24 @@ public class AminoMonomer extends AlphaMonomer {
     JmolViewer viewer = chain.frame.viewer;
     Atom competitor = closest.atom;
     Atom nitrogen = getNitrogenAtom();
-    int diameterBegin = viewer.scaleToScreen(nitrogen.getScreenZ(), madBegin);
-    if (diameterBegin < 4)
-      diameterBegin = 4;
+    short marBegin = (short)(madBegin / 2);
+    if (marBegin < 1200)
+      marBegin = 1200;
+    int radiusBegin = viewer.scaleToScreen(nitrogen.getScreenZ(), marBegin);
+    if (radiusBegin < 4)
+      radiusBegin = 4;
     Atom ccarbon = getCarbonylCarbonAtom();
-    int diameterEnd =  viewer.scaleToScreen(nitrogen.getScreenZ(), madEnd);
-    if (diameterEnd < 4)
-      diameterEnd = 4;
+    short marEnd = (short)(madEnd / 2);
+    if (marEnd < 1200)
+      marEnd = 1200;
+    int radiusEnd =  viewer.scaleToScreen(nitrogen.getScreenZ(), marEnd);
+    if (radiusEnd < 4)
+      radiusEnd = 4;
     Atom alpha = getLeadAtom();
     if (alpha.isCursorOnTop(x, y,
-                            (diameterBegin + diameterEnd) / 4, competitor) ||
-        nitrogen.isCursorOnTop(x, y, diameterBegin / 2, competitor) ||
-        ccarbon.isCursorOnTop(x, y, diameterEnd / 2, competitor))
+                            (radiusBegin + radiusEnd) / 2, competitor) ||
+        nitrogen.isCursorOnTop(x, y, radiusBegin, competitor) ||
+        ccarbon.isCursorOnTop(x, y, radiusEnd, competitor))
       closest.atom = alpha;
   }
 }

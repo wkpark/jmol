@@ -62,7 +62,7 @@ import java.io.Reader;
  * applets that will run on a wide variety of system configurations.
  ****************************************************************/
 
-final public class Viewer implements JmolViewer {
+final public class Viewer extends JmolViewer {
 
   Component awtComponent;
   ColorManager colorManager;
@@ -131,14 +131,8 @@ final public class Viewer implements JmolViewer {
     pickingManager = new PickingManager(this);
   }
 
-  public static JmolSimpleViewer
-    allocateJmolSimpleViewer(Component awtComponent,
-                             JmolAdapter modelAdapter) {
-    return new Viewer(awtComponent, modelAdapter);
-  }
-
-  public static JmolViewer
-    allocateJmolViewer(Component awtComponent, JmolAdapter modelAdapter) {
+  public static JmolViewer allocateViewer(Component awtComponent,
+                                          JmolAdapter modelAdapter) {
     return new Viewer(awtComponent, modelAdapter);
   }
 

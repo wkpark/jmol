@@ -36,190 +36,197 @@ import java.io.Reader;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
 
+import org.jmol.viewer.Viewer;
+
 /**
  * This is the high-level API for the JmolViewer for simple access.
  * <p>
  * We will implement a low-level API at some point
  **/
 
-public interface JmolViewer extends JmolSimpleViewer {
+abstract public class JmolViewer extends JmolSimpleViewer {
 
-  public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
+  static public JmolViewer allocateViewer(Component awtComponent,
+                                          JmolAdapter jmolAdapter) {
+    return Viewer.allocateViewer(awtComponent, jmolAdapter);
+  }
 
-  public void setAppletContext(URL documentBase, URL codeBase,
+  abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
+
+  abstract public void setAppletContext(URL documentBase, URL codeBase,
                                String appletProxy);
 
-  public void haltScriptExecution();
+  abstract public void haltScriptExecution();
 
-  public boolean isJvm12orGreater();
-  public String getOperatingSystemName();
-  public String getJavaVersion();
+  abstract public boolean isJvm12orGreater();
+  abstract public String getOperatingSystemName();
+  abstract public String getJavaVersion();
 
-  public boolean haveFrame();
+  abstract public boolean haveFrame();
 
-  public void pushHoldRepaint();
-  public void popHoldRepaint();
+  abstract public void pushHoldRepaint();
+  abstract public void popHoldRepaint();
 
-  public void setJmolDefaults();
-  public void setRasmolDefaults();
-  public void setDebugScript(boolean debugScript);
+  abstract public void setJmolDefaults();
+  abstract public void setRasmolDefaults();
+  abstract public void setDebugScript(boolean debugScript);
 
-  public void setFrankOn(boolean frankOn);
+  abstract public void setFrankOn(boolean frankOn);
 
   // change this to width, height
-  public void setScreenDimension(Dimension dim);
-  public int getScreenWidth();
-  public int getScreenHeight();
+  abstract public void setScreenDimension(Dimension dim);
+  abstract public int getScreenWidth();
+  abstract public int getScreenHeight();
 
-  public Image getScreenImage();
-  public void releaseScreenImage();
+  abstract public Image getScreenImage();
+  abstract public void releaseScreenImage();
 
 
-  public void notifyRepainted();
+  abstract public void notifyRepainted();
 
-  public boolean handleOldJvm10Event(Event e);
+  abstract public boolean handleOldJvm10Event(Event e);
 
-  public int getMotionEventNumber();
+  abstract public int getMotionEventNumber();
 
-  public void openReader(String fullPathName, String name, Reader reader);
-  public void openClientFile(String fullPathName, String fileName,
+  abstract public void openReader(String fullPathName, String name, Reader reader);
+  abstract public void openClientFile(String fullPathName, String fileName,
                              Object clientFile);
 
-  public void showUrl(String urlString);
+  abstract public void showUrl(String urlString);
 
-  public void deleteMeasurement(int i);
-  public void clearMeasurements();
-  public int getMeasurementCount();
-  public String getMeasurementStringValue(int i);
-  public int[] getMeasurementCountPlusIndices(int i);
+  abstract public void deleteMeasurement(int i);
+  abstract public void clearMeasurements();
+  abstract public int getMeasurementCount();
+  abstract public String getMeasurementStringValue(int i);
+  abstract public int[] getMeasurementCountPlusIndices(int i);
 
-  public Component getAwtComponent();
+  abstract public Component getAwtComponent();
 
-  public BitSet getElementsPresentBitSet();
+  abstract public BitSet getElementsPresentBitSet();
 
-  public int getAnimationFps();
-  public void setAnimationFps(int framesPerSecond);
+  abstract public int getAnimationFps();
+  abstract public void setAnimationFps(int framesPerSecond);
 
-  public String evalStringQuiet(String script);
+  abstract public String evalStringQuiet(String script);
 
-  public void setVectorScale(float vectorScaleValue);
-  public void setVibrationScale(float vibrationScaleValue);
-  public void setVibrationPeriod(float vibrationPeriod);
+  abstract public void setVectorScale(float vectorScaleValue);
+  abstract public void setVibrationScale(float vibrationScaleValue);
+  abstract public void setVibrationPeriod(float vibrationPeriod);
 
-  public String getModelSetName();
-  public String getModelSetFileName();
-  public String getModelSetPathName();
-  public Properties getModelSetProperties();
-  public int getModelNumber(int atomSetIndex);
-  public String getModelName(int atomSetIndex);
-  public Properties getModelProperties(int atomSetIndex);
-  public String getModelProperty(int atomSetIndex, String propertyName);
-  public boolean modelHasVibrationVectors(int atomSetIndex);
+  abstract public String getModelSetName();
+  abstract public String getModelSetFileName();
+  abstract public String getModelSetPathName();
+  abstract public Properties getModelSetProperties();
+  abstract public int getModelNumber(int atomSetIndex);
+  abstract public String getModelName(int atomSetIndex);
+  abstract public Properties getModelProperties(int atomSetIndex);
+  abstract public String getModelProperty(int atomSetIndex, String propertyName);
+  abstract public boolean modelHasVibrationVectors(int atomSetIndex);
 
-  public int getModelCount();
-  public int getAtomCount();
-  public int getBondCount();
-  public int getGroupCount();
-  public int getChainCount();
-  public int getPolymerCount();
+  abstract public int getModelCount();
+  abstract public int getAtomCount();
+  abstract public int getBondCount();
+  abstract public int getGroupCount();
+  abstract public int getChainCount();
+  abstract public int getPolymerCount();
 
-  public void setModeMouse(int modeMouse);
-  public void setSelectionHaloEnabled(boolean haloEnabled);
+  abstract public void setModeMouse(int modeMouse);
+  abstract public void setSelectionHaloEnabled(boolean haloEnabled);
 
-  public void setShowHydrogens(boolean showHydrogens);
-  public void setShowMeasurements(boolean showMeasurements);
+  abstract public void setShowHydrogens(boolean showHydrogens);
+  abstract public void setShowMeasurements(boolean showMeasurements);
 
-  public void selectAll();
-  public void clearSelection();
+  abstract public void selectAll();
+  abstract public void clearSelection();
 
   // get rid of this!
-  public void setModeAtomColorProfile(byte mode);
+  abstract public void setModeAtomColorProfile(byte mode);
 
-  public void homePosition();
-  public void rotateFront();
-  public void rotateToX(int degrees);
-  public void rotateToY(int degrees);
+  abstract public void homePosition();
+  abstract public void rotateFront();
+  abstract public void rotateToX(int degrees);
+  abstract public void rotateToY(int degrees);
 
-  public void rotateToX(float radians);
-  public void rotateToY(float radians);
-  public void rotateToZ(float radians);
+  abstract public void rotateToX(float radians);
+  abstract public void rotateToY(float radians);
+  abstract public void rotateToZ(float radians);
 
-  public void setCenterSelected();
+  abstract public void setCenterSelected();
 
-  public BitSet getGroupsPresentBitSet();
+  abstract public BitSet getGroupsPresentBitSet();
 
   //deprecated
-  public void setWireframeRotation(boolean wireframeRotation);
-  public void setPerspectiveDepth(boolean perspectiveDepth);
+  abstract public void setWireframeRotation(boolean wireframeRotation);
+  abstract public void setPerspectiveDepth(boolean perspectiveDepth);
 
-  public boolean getPerspectiveDepth();
-  public boolean getWireframeRotation();
-  public boolean getShowHydrogens();
-  public boolean getShowMeasurements();
+  abstract public boolean getPerspectiveDepth();
+  abstract public boolean getWireframeRotation();
+  abstract public boolean getShowHydrogens();
+  abstract public boolean getShowMeasurements();
 
-  public void setShowAxes(boolean showAxes);
-  public boolean getShowAxes();
-  public void setShowBbcage(boolean showBbcage);
-  public boolean getShowBbcage();
+  abstract public void setShowAxes(boolean showAxes);
+  abstract public boolean getShowAxes();
+  abstract public void setShowBbcage(boolean showBbcage);
+  abstract public boolean getShowBbcage();
 
-  public int getAtomNumber(int atomIndex);
-  public String getAtomName(int atomIndex);
+  abstract public int getAtomNumber(int atomIndex);
+  abstract public String getAtomName(int atomIndex);
 
-  public float getRotationRadius();
+  abstract public float getRotationRadius();
 
-  public int getZoomPercent();
-  public Matrix4f getUnscaledTransformMatrix();
+  abstract public int getZoomPercent();
+  abstract public Matrix4f getUnscaledTransformMatrix();
 
-  public Color getColorBackground();
-  public void setColorBackground(Color colorBackground);
-  public void setColorBackground(String colorName);
+  abstract public Color getColorBackground();
+  abstract public void setColorBackground(Color colorBackground);
+  abstract public void setColorBackground(String colorName);
 
-  public float getAtomRadius(int atomIndex);
-  public Point3f getAtomPoint3f(int atomIndex);
-  public Color getAtomColor(int atomIndex);
+  abstract public float getAtomRadius(int atomIndex);
+  abstract public Point3f getAtomPoint3f(int atomIndex);
+  abstract public Color getAtomColor(int atomIndex);
 
-  public float getBondRadius(int bondIndex);
+  abstract public float getBondRadius(int bondIndex);
 
-  public Point3f getBondPoint3f1(int bondIndex);
-  public Point3f getBondPoint3f2(int bondIndex);
-  public Color getBondColor1(int bondIndex);
-  public Color getBondColor2(int bondIndex);
-  public short getBondOrder(int bondIndex);
+  abstract public Point3f getBondPoint3f1(int bondIndex);
+  abstract public Point3f getBondPoint3f2(int bondIndex);
+  abstract public Color getBondColor1(int bondIndex);
+  abstract public Color getBondColor2(int bondIndex);
+  abstract public short getBondOrder(int bondIndex);
 
-  public boolean getAxesOrientationRasmol();
-  public void setAxesOrientationRasmol(boolean axesMessedUp);
-  public int getPercentVdwAtom();
-  public void setPercentVdwAtom(int percentVdwAtom);
+  abstract public boolean getAxesOrientationRasmol();
+  abstract public void setAxesOrientationRasmol(boolean axesMessedUp);
+  abstract public int getPercentVdwAtom();
+  abstract public void setPercentVdwAtom(int percentVdwAtom);
 
-  public boolean getAutoBond();
-  public void setAutoBond(boolean autoBond);
+  abstract public boolean getAutoBond();
+  abstract public void setAutoBond(boolean autoBond);
 
   // EVIL!
-  public short getMadBond();
-  public void setMarBond(short marBond);
+  abstract public short getMadBond();
+  abstract public void setMarBond(short marBond);
 
-  public float getBondTolerance();
-  public void setBondTolerance(float bondTolerance);
+  abstract public float getBondTolerance();
+  abstract public void setBondTolerance(float bondTolerance);
 
-  public void rebond();
+  abstract public void rebond();
 
-  public float getMinBondDistance();
-  public void setMinBondDistance(float minBondDistance);
+  abstract public float getMinBondDistance();
+  abstract public void setMinBondDistance(float minBondDistance);
 
-  public void setColorSelection(Color colorSelection);
-  public Color getColorLabel();
-  public void setColorLabel(Color colorBond);
-  public Color getColorBond();
-  public void setColorBond(Color colorBond);
-  public Color getColorVector();
-  public void setColorVector(Color colorVector);
-  public Color getColorMeasurement();
-  public void setColorMeasurement(Color colorMeasurement);
+  abstract public void setColorSelection(Color colorSelection);
+  abstract public Color getColorLabel();
+  abstract public void setColorLabel(Color colorBond);
+  abstract public Color getColorBond();
+  abstract public void setColorBond(Color colorBond);
+  abstract public Color getColorVector();
+  abstract public void setColorVector(Color colorVector);
+  abstract public Color getColorMeasurement();
+  abstract public void setColorMeasurement(Color colorMeasurement);
 
-  public void refresh();
+  abstract public void refresh();
 
-  public boolean getBooleanProperty(String propertyName);
-  public void setBooleanProperty(String propertyName, boolean value);
+  abstract public boolean getBooleanProperty(String propertyName);
+  abstract public void setBooleanProperty(String propertyName, boolean value);
 
-  public boolean showModelSetDownload();
+  abstract public boolean showModelSetDownload();
 }

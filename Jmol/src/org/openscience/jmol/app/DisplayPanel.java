@@ -56,14 +56,15 @@ public class DisplayPanel extends JPanel
 
   public void setViewer(JmolViewer viewer) {
     this.viewer = viewer;
-    viewer.setScreenDimension(getSize());
+    viewer.setScreenDimension(getSize(dimSize));
   }
 
   // for now, default to true
   private boolean showPaintTime = true;
 
   // current dimensions of the display screen
-  private static final Rectangle rectClip = new Rectangle();
+  private final Dimension dimSize = new Dimension();
+  private final Rectangle rectClip = new Rectangle();
 
   public void start() {
     addComponentListener(this);
@@ -90,7 +91,7 @@ public class DisplayPanel extends JPanel
   }
 
   private void updateSize() {
-    viewer.setScreenDimension(getSize());
+    viewer.setScreenDimension(getSize(dimSize));
     setRotateMode();
   }
 
@@ -98,14 +99,9 @@ public class DisplayPanel extends JPanel
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    Image image = viewer.renderScreenImage(rectClip);
-    g.drawImage(image, 0, 0, null);
+    viewer.renderScreenImage(g, dimSize, rectClip);
     if (showPaintTime)
       stopPaintClock();
-  }
-
-  public Image takeSnapshot() {
-    return viewer.getScreenImage();
   }
 
   public int print(Graphics g, PageFormat pf, int pageIndex) {
@@ -115,7 +111,7 @@ public class DisplayPanel extends JPanel
     rectClip.x = rectClip.y = 0;
     int screenWidth = rectClip.width = viewer.getScreenWidth();
     int screenHeight = rectClip.height = viewer.getScreenHeight();
-    Image image = viewer.renderScreenImage(rectClip);
+    Image image = viewer.getScreenImage();
     int pageX = (int)pf.getImageableX();
     int pageY = (int)pf.getImageableY();
     int pageWidth = (int)pf.getImageableWidth();
@@ -134,6 +130,7 @@ public class DisplayPanel extends JPanel
     } else {
       g2.drawImage(image, pageX, pageY, null);
     }
+    viewer.releaseScreenImage();
     return Printable.PAGE_EXISTS;
   }
 

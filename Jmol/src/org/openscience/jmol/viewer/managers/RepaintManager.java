@@ -31,6 +31,7 @@ import org.openscience.jmol.viewer.datamodel.Frame;
 
 import java.awt.Image;
 import java.awt.Graphics;
+import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Rectangle;
 
@@ -245,31 +246,18 @@ public class RepaintManager {
 
   public void render(Graphics3D g3d, Rectangle rectClip,
                      Frame frame, int displayModelID) {
-    g3d.validateRectClip(rectClip);
-    g3d.beginRendering(tOversample);
-    if (tOversample) {
-      rectOversample.x = rectClip.x << 1;
-      rectOversample.y = rectClip.y << 1;
-      rectOversample.width = rectClip.width << 1;
-      rectOversample.height = rectClip.height << 1;
-      rectClip = rectOversample;
-    }
-    g3d.clearScreenBuffer(viewer.getColorBackground().getRGB(), rectClip);
     frameRenderer.render(g3d, rectClip, frame, displayModelID);
     viewer.checkCameraDistance();
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)
       g3d.drawRect(viewer.getColixRubberband(),
-                    band.x, band.y, band.width, band.height);
-    g3d.endRendering();
-    notifyRepainted();
+                   band.x, band.y, band.width, band.height);
   }
 
-  
   /****************************************************************
    * Animation support
    ****************************************************************/
-                                                                 
+  
   public void clearAnimation() {
     setAnimationOn(false);
     setDisplayModelID(0);

@@ -293,22 +293,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.setScreenDimension(size);
     Rectangle rectClip =
       jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
-    Image screenImage = viewer.renderScreenImage(rectClip);
-    if (screenImage == null) {
-      System.out.println("screenImage == null?");
-      return;
-    }
-    // mth 2003-01-09 Linux Sun JVM 1.4.2_02
-    // Sun is throwing a NullPointerExceptions inside graphics routines
-    // while the window is resized. 
-    try {
-      g.drawImage(screenImage, 0, 0, null);
-      if (showPaintTime) {
-        stopPaintClock();
-        showTimes(10, 10, g);
-      }
-    } catch (NullPointerException npe) {
-      System.out.println("Sun!! ... fix graphics your bugs!");
+    viewer.renderScreenImage(g, size, rectClip);
+    if (showPaintTime) {
+      stopPaintClock();
+      showTimes(10, 10, g);
     }
   }
 

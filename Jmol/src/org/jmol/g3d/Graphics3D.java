@@ -33,6 +33,7 @@ import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.awt.FontMetrics;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
@@ -68,6 +69,10 @@ final public class Graphics3D {
   int[] pbuf4;
   short[] zbuf4;
 
+  short colixBackground;
+  int argbBackground;
+  final Rectangle rectClip = new Rectangle();
+
   int argbCurrent;
   boolean jvm12orGreater;
 
@@ -96,11 +101,12 @@ final public class Graphics3D {
     return new Swing3D();
   }
 
-  public void setSize(int width, int height) {
-    System.out.println("Graphics3D.setSize(" + width + "," + height + ")");
-    width1 = this.width = width;
+  public void setSize(Dimension dim) {
+    if (dim.width == width && dim.height == height)
+      return;
+    width1 = width = dim.width;
     xLast1 = xLast = width1 - 1;
-    height1 = this.height = height;
+    height1 = height = dim.height;
     yLast1 = yLast = height - 1;
     size1 = width1 * height1;
 
@@ -111,13 +117,10 @@ final public class Graphics3D {
     size4 = width4 * height4;
 
     if (size1 == 0) {
-      System.out.println("sizes are null");
       pbuf = pbuf1 = pbuf4 = null;
       zbuf = zbuf1 = zbuf4 = null;
       return;
     } else {
-
-      System.out.println("getting ready to allocateBuffers");
       platform.allocateBuffers(width, height);
       pbuf = pbuf1 = platform.pBuffer;
       zbuf = zbuf1 = platform.zBuffer;
@@ -125,17 +128,29 @@ final public class Graphics3D {
     System.out.println("returning from Graphics3D.setSize()");
   }
 
-  public void validateRectClip(Rectangle rectClip) {
-    // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
-    // that is wider than the current window during window resize
-    if (rectClip.x < 0)
-      rectClip.x = 0;
-    if (rectClip.y < 0)
-      rectClip.y = 0;
-    if (rectClip.x + rectClip.width > width)
-      rectClip.width = width - rectClip.x;
-    if (rectClip.y + rectClip.height > height)
-      rectClip.height = height - rectClip.y;
+  public void setBackground(short colix) {
+    colixBackground = colix;
+    argbBackground = getArgb(colix);
+  }
+  
+  public void setRectClip(Rectangle clip) {
+    if (clip == null) {
+      rectClip.x = rectClip.y = 0;
+      rectClip.width = width;
+      rectClip.height = height;
+    } else {
+      rectClip.setBounds(clip);
+      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
+      // that is wider than the current window during window resize
+      if (rectClip.x < 0)
+        rectClip.x = 0;
+      if (rectClip.y < 0)
+        rectClip.y = 0;
+      if (rectClip.x + rectClip.width > width)
+        rectClip.width = width - rectClip.x;
+      if (rectClip.y + rectClip.height > height)
+        rectClip.height = height - rectClip.y;
+    }
   }
 
   public void setSlabValue(int slab) {
@@ -337,7 +352,7 @@ final public class Graphics3D {
   public void setFont3D(Font3D font3d) {
     font3dCurrent = font3d;
   }
-
+  
   public Font3D getFont3D() {
     return font3dCurrent;
   }
@@ -346,8 +361,13 @@ final public class Graphics3D {
     return font3dCurrent.fontMetrics;
   }
 
+  boolean currentlyRendering;
+
   // 3D specific routines
   public void beginRendering(boolean tFullSceneAntialiasing) {
+    if (currentlyRendering)
+      endRendering();
+    currentlyRendering = true;
     if (tFullSceneAntialiasing && zbuf4 != null) {
       width = width4;
       height = height4;
@@ -364,20 +384,16 @@ final public class Graphics3D {
       zbuf = zbuf1;
     }
     this.tFullSceneAntialiasing = tFullSceneAntialiasing;
+    platform.clearScreenBuffer(argbBackground, rectClip);
   }
 
   public void endRendering() {
-    if (tFullSceneAntialiasing)
-      downSample();
-    platform.notifyEndOfRendering();
-  }
-
-  public void clearScreenBuffer(int argbBackground, Rectangle rectClip) {
-    // mth 2003 08 07
-    // this may be an easy place to take advantage of multiple processors
-    // have a thread whose responsibility it is to keep a buffer clean and
-    // ready to go.
-    platform.clearScreenBuffer(argbBackground, rectClip);
+    if (currentlyRendering) {
+      if (tFullSceneAntialiasing)
+        downSample();
+      platform.notifyEndOfRendering();
+      currentlyRendering = false;
+    }
   }
 
   public void drawDashedLine(short colix, int run, int rise,

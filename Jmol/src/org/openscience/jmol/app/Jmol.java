@@ -1011,7 +1011,7 @@ public class Jmol extends JPanel {
         System.out.println("file chosen=" + file);
         if (file != null) {
           try {
-            Image eImage = display.takeSnapshot();
+            Image eImage = viewer.getScreenImage();
             FileOutputStream os = new FileOutputStream(file);
             
             if (it.getType().equals("JPEG")) {
@@ -1038,11 +1038,11 @@ public class Jmol extends JPanel {
             status.setStatus(2, exc.toString());
             System.out.println(exc.toString());
           }
+          viewer.releaseScreenImage();
           return;
         }
       }
     }
-
   }
 
   class RecentFilesAction extends AbstractAction {

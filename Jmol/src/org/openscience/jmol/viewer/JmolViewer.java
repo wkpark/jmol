@@ -32,6 +32,7 @@ import org.openscience.jmol.viewer.datamodel.*;
 import org.openscience.jmol.viewer.script.Eval;
 
 import java.lang.reflect.Array;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -439,26 +440,46 @@ final public class JmolViewer {
         increaseRotationRadius(transformManager.getRotationRadiusIncrease());
   }
 
-  public int screenWidth, screenHeight;
+  final Dimension dimScreen = new Dimension();
+  final Rectangle rectClip = new Rectangle();
 
   public void setScreenDimension(Dimension dim) {
     // note that there is a bug in MacOS when comparing dimension objects
     // so don't try dim1.equals(dim2)
-    if (dim.width == screenWidth && dim.height == screenHeight)
+    if (dim.width == dimScreen.width && dim.height == dimScreen.height)
       return;
-    screenWidth = dim.width;
-    screenHeight = dim.height;
-    transformManager.setScreenDimension(screenWidth, screenHeight);
+    dimScreen.width = dim.width;
+    dimScreen.height = dim.height;
+    transformManager.setScreenDimension(dim.width, dim.height);
     transformManager.scaleFitToScreen();
-    g3d.setSize(screenWidth, screenHeight);
+    g3d.setSize(dim);
   }
 
   public int getScreenWidth() {
-    return screenWidth;
+    return dimScreen.width;
   }
 
   public int getScreenHeight() {
-    return screenHeight;
+    return dimScreen.height;
+  }
+
+  public void setRectClip(Rectangle clip) {
+    if (clip == null) {
+      rectClip.x = rectClip.y = 0;
+      rectClip.setSize(dimScreen);
+    } else {
+      rectClip.setBounds(clip);
+      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
+      // that is wider than the current window during window resize
+      if (rectClip.x < 0)
+        rectClip.x = 0;
+      if (rectClip.y < 0)
+        rectClip.y = 0;
+      if (rectClip.x + rectClip.width > dimScreen.width)
+        rectClip.width = dimScreen.width - rectClip.x;
+      if (rectClip.y + rectClip.height > dimScreen.height)
+        rectClip.height = dimScreen.height - rectClip.y;
+    }
   }
 
   public void setScaleAngstromsPerInch(float angstromsPerInch) {
@@ -1034,11 +1055,11 @@ final public class JmolViewer {
     // used by the labelRenderer for rendering labels away from the center
     // for now this is returning the center of the screen
     // need to transform the center of the bounding box and return that point
-    return screenWidth / 2;
+    return dimScreen.width / 2;
   }
 
   public int getBoundingBoxCenterY() {
-    return screenHeight / 2;
+    return dimScreen.height / 2;
   }
 
   public int getNumberOfFrames() {
@@ -1317,19 +1338,42 @@ final public class JmolViewer {
     repaintManager.notifyRepainted();
   }
 
-  public Image renderScreenImage(Rectangle rectClip) {
+  public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     manageScriptTermination();
+    if (size != null)
+      setScreenDimension(size);
+    setRectClip(clip);
+    g3d.setRectClip(rectClip);
+    g3d.beginRendering(false);
     /*
     System.out.println("renderScreenImage() thread:" + Thread.currentThread() +
                        " priority:" + Thread.currentThread().getPriority());
     */
-    repaintManager.render(g3d, rectClip,
-                          modelManager.getFrame(), repaintManager.displayModelID);
-    return g3d.getScreenImage();
+    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+                          repaintManager.displayModelID);
+    // mth 2003-01-09 Linux Sun JVM 1.4.2_02
+    // Sun is throwing a NullPointerExceptions inside graphics routines
+    // while the window is resized. 
+    try {
+      g.drawImage(g3d.getScreenImage(), 0, 0, null);
+    } catch (NullPointerException npe) {
+      System.out.println("Sun!! ... fix graphics your bugs!");
+    }
+    g3d.endRendering();
+    notifyRepainted();
   }
 
   public Image getScreenImage() {
+    setRectClip(null);
+    g3d.setRectClip(rectClip);
+    g3d.beginRendering(false);
+    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+                          repaintManager.displayModelID);
     return g3d.getScreenImage();
+  }
+
+  public void releaseScreenImage() {
+    g3d.endRendering();
   }
 
   public void checkOversample() {

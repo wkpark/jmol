@@ -362,9 +362,6 @@ final public class Group {
       nucleotideIndices[atomid -
                         JmolConstants.ATOMID_NUCLEOTIDE_MIN] =
         atomIndex;
-      if (atomid == JmolConstants.ATOMID_N1) {
-        System.out.println("register " + this + " N1=" + atomIndex);
-      }
     }
     ++nucleicCount;
   }
@@ -394,6 +391,21 @@ final public class Group {
             nucleicCount > 5);
   }
 
+  Atom getNucleotideAtomID(int atomid) {
+    if (atomid < JmolConstants.ATOMID_NUCLEOTIDE_MIN ||
+        atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
+      System.out.println("getNucleotideAtomID out of bounds");
+      return null;
+    }
+    int index = atomid - JmolConstants.ATOMID_NUCLEOTIDE_MIN;
+    Atom atom = getAtomIndex(nucleotideIndices[index]);
+    if (atom == null)
+      System.out.println("getNucleotideAtomID(" + atomid + ") -> null ?" +
+                         " nucleotideIndices[" + index + "]=" +
+                         nucleotideIndices[index]);
+    return atom;
+  }
+
   Atom getAtomIndex(int atomIndex) {
     return (atomIndex < 0
             ? null
@@ -402,17 +414,14 @@ final public class Group {
 
   Atom getPurineN1() {
     Atom n1 = ((groupID >= 23 && groupID <= 28)
-               ? getAtomIndex(JmolConstants.ATOMID_N1 -
-                              JmolConstants.ATOMID_NUCLEOTIDE_MIN)
+               ? getNucleotideAtomID(JmolConstants.ATOMID_N1)
                : null);
-    System.out.println("getPurineN1(" + this + ") -> " + n1);
     return n1;
   }
 
   Atom getPyrimidineN3() {
     return ((groupID >= 29 && groupID <= 34)
-            ? getAtomIndex(JmolConstants.ATOMID_N3 -
-                           JmolConstants.ATOMID_NUCLEOTIDE_MIN)
+            ? getNucleotideAtomID(JmolConstants.ATOMID_N3)
             : null);
   }
             
@@ -424,10 +433,16 @@ final public class Group {
             groupID >= 54 && groupID <= 56);
   }
 
-  Atom getAtomID(int specialAtomID) {
-    if (specialAtomID >= JmolConstants.ATOMID_NUCLEOTIDE_MIN &&
-        specialAtomID < JmolConstants.ATOMID_NUCLEOTIDE_MAX)
-      return getAtomIndex(specialAtomID - JmolConstants.ATOMID_NUCLEOTIDE_MIN);
-    return null;
+  void dumpNucleotideIndices() {
+    System.out.println("dumpNucleotideIndices(" + this + "," + groupID + ")");
+    if (nucleotideIndices == null) {
+      System.out.println("  nucleotideIndices=null");
+    } else {
+      System.out.println("  ");
+      for (int i = 0; i < nucleotideIndices.length; ++i)
+        System.out.print(nucleotideIndices[i] + " ");
+      System.out.println("\n");
+    }
   }
+
 }

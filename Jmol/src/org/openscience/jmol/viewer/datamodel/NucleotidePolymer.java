@@ -108,9 +108,10 @@ public class NucleotidePolymer extends Polymer {
   void lookForHbonds(NucleotidePolymer other) {
     for (int i = count; --i >= 0; ) {
       Group myNucleotide = groups[i];
+      myNucleotide.dumpNucleotideIndices();
       Atom myN1 = myNucleotide.getPurineN1();
       if (myN1 != null) {
-        System.out.println("lookForHbonds myN1=" + myN1.atomIndex + " " + myN1);
+        //        System.out.println("lookForHbonds myN1=" + myN1.atomIndex + " " + myN1);
         Atom bestN3 = null;
         float minDist2 = 5*5;
         Group otherNucleotide = null;
@@ -127,20 +128,23 @@ public class NucleotidePolymer extends Polymer {
         }
         if (bestN3 != null) {
           if (myNucleotide.isGuanine()) {
-            Atom myN2 = myNucleotide.getAtomID(JmolConstants.ATOMID_N2);
+            Atom myN2 =
+              myNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_N2);
             Atom otherO2 =
-              otherNucleotide.getAtomID(JmolConstants.ATOMID_O2);
+              otherNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_O2);
             if (myN2 != null && otherO2 != null)
               createHydrogenBond(myN2, otherO2);
-            Atom myO6 = myNucleotide.getAtomID(JmolConstants.ATOMID_O6);
+            Atom myO6 =
+              myNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_O6);
             Atom otherN4 =
-              otherNucleotide.getAtomID(JmolConstants.ATOMID_N4);
+              otherNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_N4);
             if (myO6 != null && otherN4 != null)
               createHydrogenBond(myN2, otherO2);
           } else {
-            Atom myN6 = myNucleotide.getAtomID(JmolConstants.ATOMID_N6);
+            Atom myN6 =
+              myNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_N6);
             Atom otherO4 =
-              otherNucleotide.getAtomID(JmolConstants.ATOMID_O4);
+              otherNucleotide.getNucleotideAtomID(JmolConstants.ATOMID_O4);
             if (myN6 != null && otherO4 != null)
               createHydrogenBond(myN6, otherO4);
           }

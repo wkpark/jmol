@@ -47,6 +47,7 @@ public class Atom implements Bspt.Tuple {
   short diameter;
   public byte atomicNumber;
   byte chargeAndFlags;
+  short bfactor100;
   short madAtom;
   short colixAtom;
   Bond[] bonds;
@@ -56,8 +57,9 @@ public class Atom implements Bspt.Tuple {
   String strLabel;
 
   public Atom(Frame frame, int atomIndex,
-              int modelNumber, 
-              byte atomicNumber, int atomicCharge, String atomTypeName,
+              int modelNumber,
+              byte atomicNumber, int atomicCharge, float bfactor,
+              String atomTypeName,
               float x, float y, float z,
               PdbFile pdbFile, String pdbAtomRecord) {
     JmolViewer viewer = frame.viewer;
@@ -66,6 +68,8 @@ public class Atom implements Bspt.Tuple {
     this.modelNumber = (short)modelNumber;
     this.atomicNumber = atomicNumber;
     this.chargeAndFlags = (byte)(atomicCharge << 4);
+    this.bfactor100 =
+      (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
     this.atomTypeName = atomTypeName;
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
@@ -190,7 +194,7 @@ public class Atom implements Bspt.Tuple {
   public void setMadAtom(short madAtom) {
     if (this.madAtom == JmolConstants.MAR_DELETED) return;
     if (madAtom == -1000) // temperature
-      madAtom = (short)(getPdbTemperatureMar() * 2);
+      madAtom = (short)(bfactor100 * 10 * 2);
     else if (madAtom == -1001) // ionic
       madAtom = (short)(getBondingMar() * 2);
     else if (madAtom < 0)
@@ -348,12 +352,12 @@ public class Atom implements Bspt.Tuple {
     return pdbAtom.getChainID();
   }
 
-  // This is called temperature100 because it is stored as an integer
-  // 100 times the temperature/bfactor value
-  public int getTemperature100() {
-    if (pdbAtom == null)
+  // This is called bfactor100 because it is stored as an integer
+  // 100 times the bfactor(temperature) value
+  public int getBfactor100() {
+    if (bfactor100 == Short.MIN_VALUE)
       return 0;
-    return pdbAtom.temperature;
+    return bfactor100;
   }
 
   public PdbAtom getPdbAtom() {

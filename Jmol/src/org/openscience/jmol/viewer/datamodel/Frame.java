@@ -112,7 +112,7 @@ final public class Frame {
   }
 
   public Atom addAtom(int modelNumber, Object atomUid,
-                      byte atomicNumber, int atomicCharge,
+                      byte atomicNumber, int atomicCharge, float bfactor,
                       String atomTypeName, float x, float y, float z,
                       String pdbAtomRecord) {
     if (modelNumber != lastModelNumber) {
@@ -131,7 +131,8 @@ final public class Frame {
     }
     Atom atom = new Atom(this, atomCount,
                          modelNumber, 
-                         atomicNumber, atomicCharge, atomTypeName, x, y, z,
+                         atomicNumber, atomicCharge, bfactor, 
+                         atomTypeName, x, y, z,
                          pdbFile, pdbAtomRecord);
     atoms[atomCount++] = atom;
     htAtomMap.put(atomUid, atom);

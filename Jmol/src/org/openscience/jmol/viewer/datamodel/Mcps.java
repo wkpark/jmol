@@ -170,8 +170,8 @@ abstract class Mcps extends Shape {
           if (! hasTemperatureRange)
             calcTemperatureRange();
           Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
-          int temperature = atom.getTemperature100(); // scaled by 1000
-          int scaled = temperature - temperatureMin;
+          int bfactor100 = atom.getBfactor100(); // scaled by 1000
+          int scaled = bfactor100 - temperatureMin;
           if (range == 0)
             return (short)0;
           float percentile = scaled / floatRange;
@@ -182,7 +182,7 @@ abstract class Mcps extends Shape {
       case -4: // trace displacement
         {
           Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
-          return calcMeanPositionalDisplacement(atom.getTemperature100());
+          return calcMeanPositionalDisplacement(atom.getBfactor100());
         }
       }
       System.out.println("unrecognized Mcps.getSpecial(" +
@@ -197,10 +197,10 @@ abstract class Mcps extends Shape {
 
     void calcTemperatureRange() {
       temperatureMin = temperatureMax =
-        polymerGroups[0].getAlphaCarbonAtom().getTemperature100();
+        polymerGroups[0].getAlphaCarbonAtom().getBfactor100();
       for (int i = polymerCount; --i > 0; ) {
         int temperature =
-          polymerGroups[i].getAlphaCarbonAtom().getTemperature100();
+          polymerGroups[i].getAlphaCarbonAtom().getBfactor100();
         if (temperature < temperatureMin)
           temperatureMin = temperature;
         else if (temperature > temperatureMax)

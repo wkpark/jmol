@@ -38,6 +38,7 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.SetOfMolecules;
+import org.openscience.cdk.tools.SetOfMoleculesManipulator;
 import org.openscience.cdk.Crystal;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.AtomContainer;
@@ -166,7 +167,8 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
     Crystal crystal = chemModel.getCrystal();
     if (setOfMolecules != null) {
-        AtomContainer molecule = SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
+      AtomContainer molecule =
+        SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
         return molecule;
     } else if (crystal != null) {
         return crystal;
@@ -297,7 +299,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
 
   public String getPdbAtomRecord(Object clientAtom){
     String pdbRecord = (String)((Atom)clientAtom).getProperty("pdb.record");
-    System.out.println("getPdbAtomRecord:" + pdbRecord);
     return pdbRecord;
   }
 
@@ -308,7 +309,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   public int getAtomArgb(Object clientAtom, int colorScheme) {
     if (colorScheme >= colorSchemes.length ||
         colorSchemes[colorScheme] == null)
-      colorScheme = 0;
+      return 0;
     Color color = colorSchemes[colorScheme].getAtomColor((Atom)clientAtom);
     return color == null ? 0 : color.getRGB();
   }

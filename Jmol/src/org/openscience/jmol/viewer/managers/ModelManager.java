@@ -277,7 +277,8 @@ public class ModelManager {
 
   public float getVanderwaalsRadius(Atom atom) {
     if (suppliesVanderwaalsRadius) {
-      float vanderwaalsRadius = modelAdapter.getVanderwaalsRadius(atom.clientAtom);
+      float vanderwaalsRadius =
+        modelAdapter.getVanderwaalsRadius(atom.clientAtom);
       if (vanderwaalsRadius > 0)
         return vanderwaalsRadius;
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +

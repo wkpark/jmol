@@ -36,7 +36,7 @@ import java.awt.Rectangle;
 public class JmolFrame {
 
   public JmolViewer viewer;
-    public FrameRenderer frameRenderer;
+  public FrameRenderer frameRenderer;
   // the maximum CovalentRadius seen in this set of atoms
   // used in autobonding
   double maxCovalentRadius = 0.0;
@@ -165,6 +165,35 @@ public class JmolFrame {
   public void bondAtomShapes(AtomShape atomShape1, AtomShape atomShape2,
                              int order) {
     addBondShape(atomShape1.bondMutually(atomShape2, order));
+  }
+
+  int dotsConvexCount;
+  int[][] dotsConvexMaps;
+
+  public void setDotsOn(boolean dotsOn, BitSet bsSelected) {
+    if (dotsOn) {
+      if (dotsConvexMaps == null)
+        dotsConvexMaps = new int[atomShapeCount][];
+      else if (dotsConvexMaps.length < atomShapeCount) {
+        int[][] t = new int[atomShapeCount][];
+        System.arraycopy(dotsConvexMaps, 0, t, 0,
+                         dotsConvexMaps.length);
+        dotsConvexMaps = t;
+      }
+      DotsRenderer dotsRenderer = frameRenderer.dotsRenderer;
+      for (int i = atomShapeCount; --i >= 0; )
+        if (bsSelected.get(i) && dotsConvexMaps[i] == null)
+          dotsConvexMaps[i] =
+            dotsRenderer.calcVisibilityMap(atomShapes[i]);
+    } else {
+      for (int i = atomShapeCount; --i >= 0; )
+        if (bsSelected.get(i))
+          dotsConvexMaps[i] = null;
+    }
+    int iLast = dotsConvexMaps.length;
+    while (--iLast > 0 && dotsConvexMaps[iLast] == null)
+      {}
+    dotsConvexCount = iLast + 1;
   }
 
   Point3d centerBoundingBox;
@@ -474,6 +503,9 @@ public class JmolFrame {
     public AtomShape next() {
       return atomShapes[iAtomShape++];
     }
+
+    public void release() {
+    }
   }
 
   public BondShapeIterator getBondIterator(byte bondType, BitSet bsSelected) {
@@ -516,6 +548,7 @@ public class JmolFrame {
   }
 
   private Bspt bspt;
+  private Bspt.SphereIterator sphereIter;
 
   private Bspt getBspt() {
     if (bspt == null) {
@@ -525,33 +558,67 @@ public class JmolFrame {
         if (atom.styleAtom >= JmolViewer.NONE) // don't add deleted atoms
           bspt.addTuple(atom);
       }
+      sphereIter = bspt.allocateSphereIterator();
     }
     return bspt;
+  }
+
+  private Bspt.SphereIterator getSphereIterator() {
+    getBspt();
+    return sphereIter;
   }
 
   private void clearBspt() {
     bspt = null;
   }
 
+  private WithinIterator withinAtomIterator = new WithinIterator();
+  private WithinIterator withinPointIterator = new WithinIterator();
+  private PointWrapper pointWrapper = new PointWrapper();
+
   public AtomShapeIterator getWithinIterator(AtomShape atomCenter,
-                                             double distance) {
-    return new WithinAtomShapeIterator(atomCenter, distance);
+                                             double radius) {
+    withinAtomIterator.initialize(atomCenter, radius);
+    return withinAtomIterator;
   }
 
-  class WithinAtomShapeIterator implements AtomShapeIterator {
+  public AtomShapeIterator getWithinIterator(Point3d point, double radius) {
+    pointWrapper.setPoint(point);
+    withinPointIterator.initialize(pointWrapper, radius);
+    return withinPointIterator;
+  }
 
-    Bspt.EnumerateSphere enum;
+  class WithinIterator implements AtomShapeIterator {
 
-    WithinAtomShapeIterator(AtomShape atomCenter, double distance) {
-      enum = getBspt().enumSphere(atomCenter, distance);
+    Bspt.SphereIterator iter;
+
+    void initialize(Bspt.Tuple center, double radius) {
+      iter = getSphereIterator();
+      iter.initialize(center, radius);
     }
 
     public boolean hasNext() {
-      return enum.hasMoreElements();
+      return iter.hasMoreElements();
     }
 
     public AtomShape next() {
-      return (AtomShape)enum.nextElement();
+      return (AtomShape)iter.nextElement();
+    }
+
+    public void release() {
+      iter.release();
+    }
+  }
+
+  class PointWrapper implements Bspt.Tuple {
+    Point3d point;
+    
+    void setPoint(Point3d point) {
+      this.point.set(point);
+    }
+    
+    public double getDimensionValue(int dim) {
+      return (dim == 0 ? point.x : (dim == 1 ? point.y : point.z));
     }
   }
 
@@ -581,17 +648,19 @@ public class JmolFrame {
       double myCovalentRadius = atom.getCovalentRadius();
       double searchRadius =
         myCovalentRadius + maxCovalentRadius + bondTolerance;
-      for (Bspt.EnumerateSphere e = bspt.enumHemiSphere(atom, searchRadius);
-           e.hasMoreElements(); ) {
-        AtomShape atomNear = (AtomShape)e.nextElement();
+      Bspt.SphereIterator iter = getSphereIterator();
+      iter.initialize(atom, searchRadius);
+      while (iter.hasMoreElements()) {
+        AtomShape atomNear = (AtomShape)iter.nextElement();
         if (atomNear != atom) {
           int order = getBondOrder(atom, myCovalentRadius,
                                    atomNear, atomNear.getCovalentRadius(),
-                                   e.foundDistance2());
+                                   iter.foundDistance2());
           if (order > 0)
             addBondShape(atom.bondMutually(atomNear, order));
         }
       }
+      iter.release();
 
       // Protein backbone bonds
       if (hasPdbRecords) {

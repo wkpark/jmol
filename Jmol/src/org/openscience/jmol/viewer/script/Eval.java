@@ -1389,6 +1389,9 @@ public class Eval implements Runnable {
     case Token.property:
       setProperty();
       break;
+    case Token.solvent:
+      setSolvent();
+      break;
 
       /*
     case Token.spacefill:
@@ -1411,7 +1414,6 @@ public class Eval implements Runnable {
     case Token.radius:
     case Token.shadow:
     case Token.slabmode:
-    case Token.solvent:
     case Token.specular:
     case Token.specpower:
     case Token.ssbonds:
@@ -1714,6 +1716,30 @@ public class Eval implements Runnable {
     default:
       unrecognizedSetParameter();
     }
+  }
+
+  void setSolvent() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    double probeRadius = 0;
+    switch (statement[2].tok) {
+    case Token.on:
+      probeRadius = 1.2;
+    case Token.off:
+      break;
+    case Token.decimal:
+      probeRadius = ((Double)statement[2].value).doubleValue();
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        numberOutOfRange();
+      probeRadius = radiusRasMol * 4 / 1000.0;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setSolventProbeRadius(probeRadius);
   }
 
   /*

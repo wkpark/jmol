@@ -885,6 +885,14 @@ final public class JmolViewer {
     return modelManager.autoBond;
   }
 
+  public void setSolventProbeRadius(double radius) {
+    modelManager.setSolventProbeRadius(radius);
+  }
+
+  public double getSolventProbeRadius() {
+    return modelManager.solventProbeRadius;
+  }
+
   public void deleteAtom(int atomIndex) {
     if (measurementManager.deleteMeasurementsReferencing(atomIndex))
       notifyMeasurementsChanged();
@@ -1106,7 +1114,7 @@ final public class JmolViewer {
   }
 
   public void setDotsOn(boolean dotsOn) {
-    distributionManager.setDotsOn(dotsOn, atomIteratorSelected());
+    getJmolFrame().setDotsOn(dotsOn, selectionManager.bsSelection);
   }
 
   boolean rasmolHydrogenSetting = true;
@@ -1276,6 +1284,7 @@ final public class JmolViewer {
   class NullAtomShapeIterator implements AtomShapeIterator {
     public boolean hasNext() { return false; }
     public AtomShape next() { return null; }
+    public void release() {}
   }
 
   final BondShapeIterator nullBondShapeIterator =

@@ -27,4 +27,5 @@ package org.openscience.jmol.viewer.datamodel;
 public interface AtomShapeIterator {
   public boolean hasNext();
   public AtomShape next();
+  public void release();
 }

@@ -47,7 +47,6 @@ public class AtomShape implements Bspt.Tuple {
   short marAtom;
   short colixAtom;
   short diameter;
-  Dots dots;
   BondShape[] bonds;
 
   String strLabel;
@@ -216,19 +215,6 @@ public class AtomShape implements Bspt.Tuple {
     this.marAtom = marAtom;
   }
         
-    public void setDotsOn(boolean dotsOn) {
-	if (dotsOn) {
-	    if (dots == null)
-		dots = new Dots(this, frame.frameRenderer.dotsRenderer);
-	    else
-		dots.setDotsOn(true);
-	} else {
-	    if (dots != null)
-		dots.setDotsOn(false);
-	}
-    }
-
-
   public int getRasMolRadius() {
     if (styleAtom <= JmolViewer.NONE)
       return 0;

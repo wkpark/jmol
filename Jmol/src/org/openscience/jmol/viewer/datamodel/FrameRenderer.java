@@ -68,15 +68,23 @@ public class FrameRenderer {
 
     dotsRenderer.transform();
 
+    AtomShape[] atomShapes = frame.atomShapes;
     for (int i = frame.atomShapeCount; --i >= 0; ) {
-      AtomShape atomShape = frame.atomShapes[i];
+      AtomShape atomShape = atomShapes[i];
       atomShape.transform(viewer);
-      dotsRenderer.render(atomShape);
       atomRenderer.render(atomShape);
     }
 
+    int[][] dotsConvexMaps = frame.dotsConvexMaps;
+    for (int i = frame.dotsConvexCount; --i >= 0; ) {
+      int[] map = dotsConvexMaps[i];
+      if (map != null)
+        dotsRenderer.render(atomShapes[i], map);
+    }
+
+    BondShape[] bondShapes = frame.bondShapes;
     for (int i = frame.bondShapeCount; --i >= 0; )
-      bondRenderer.render(frame.bondShapes[i]);
+      bondRenderer.render(bondShapes[i]);
 
     for (int i = frame.lineShapeCount; --i >= 0; ) {
       LineShape lineShape = frame.lineShapes[i];
@@ -126,8 +134,4 @@ public class FrameRenderer {
                                   int x, int y, int z) {
     labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);
   }
-
-    public DotsRenderer getDotsRenderer() {
-	return dotsRenderer;
-    }
 }

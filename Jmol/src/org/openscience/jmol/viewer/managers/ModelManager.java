@@ -319,6 +319,11 @@ public class ModelManager {
     return JmolModelAdapter.atomColors[atomicNumber];
   }
 
+  public double solventProbeRadius = 0;
+  public void setSolventProbeRadius(double radius) {
+    this.solventProbeRadius = radius;
+  }
+
   /****************************************************************
    * default values if not supplied by client
    * note that atomicSymbols are stored in the JmolClientAdapter

@@ -104,10 +104,5 @@ public class DistributionManager {
                                               atomShape.getAtomIndex()));
     }
   }
-
-  public void setDotsOn(boolean dotsOn, AtomShapeIterator iter) {
-    while (iter.hasNext())
-      iter.next().setDotsOn(dotsOn);
-  }
 }
 

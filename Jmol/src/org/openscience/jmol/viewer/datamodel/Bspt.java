@@ -23,8 +23,6 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import java.util.Enumeration;
-
 /*
   mth 2003 05
   BSP-Tree stands for Binary Space Partitioning Tree
@@ -39,8 +37,8 @@ import java.util.Enumeration;
     mySplitDimension = (parentSplitDimension + 1) % 3;
   A split value is stored in the node. Values which are <= splitValue are
   stored down the left branch. Values which are >= splitValue are stored
-  down the right branch. When this happens, the search must proceed down
-  both branches.
+  down the right branch. If searchValue == splitValue then the search must
+  proceed down both branches.
   Planar and crystaline substructures can generate values which are == along
   one dimension.
   To get a good picture in your head, first think about it in one dimension,
@@ -52,7 +50,7 @@ import java.util.Enumeration;
   In three dimensions, we are doing the same thing, only working with
   3-d boxes.
 
-  Three enumerators are provided
+  Three iterators are provided
     enumNear(Bspt.Tuple center, double distance)
       returns all the points contained in of all the boxes which are within
       distance from the center.
@@ -63,12 +61,12 @@ import java.util.Enumeration;
       same as sphere, but only the points which are greater along the
       x dimension
 */
-  
 
 public final class Bspt {
 
-  private final static int leafCount = 4;
-  private final static int stackDepth = 64; /* this corresponds to the max height of the tree */
+  private final static int leafCountMax = 4;
+  // this corresponds to the max height of the tree
+  private final static int stackDepth = 64;
   int dimMax;
   Element eleRoot;
 
@@ -108,6 +106,7 @@ public final class Bspt {
     eleRoot.dump(0);
   }
 
+  /*
   public Enumeration enum() {
     return new EnumerateAll();
   }
@@ -217,46 +216,48 @@ public final class Bspt {
       return leaf.tuples[i++];
     }
   }
+  */
 
-  public EnumerateSphere enumSphere(Tuple center, double distance) {
-    return new EnumerateSphere(center, distance, false);
+  public SphereIterator allocateSphereIterator() {
+    return new SphereIterator();
   }
 
-  public EnumerateSphere enumHemiSphere(Tuple center, double distance) {
-    return new EnumerateSphere(center, distance, true);
-  }
-
-  class EnumerateSphere implements Enumeration {
+  class SphereIterator {
     Node[] stack;
     int sp;
-    int i;
+    int leafIndex;
     Leaf leaf;
-    double distance;
-    double distance2;
+
     Tuple center;
+    double radius;
+
     double centerValues[];
+    double radius2;
     double foundDistance2; // the dist squared of a found Element;
 
     // when set, only the hemisphere sphere .GT. or .EQ. the point
     // (on the first dim) is returned
     boolean tHemisphere;
 
-    EnumerateSphere(Tuple center, double distance, boolean tHemisphere) {
-      this.distance = distance;
-      this.distance2 = distance*distance;
-      this.center = center;
-      this.tHemisphere = tHemisphere;
+    SphereIterator() {
       centerValues = new double[dimMax];
+      stack = new Node[stackDepth];
+    }
+
+    public void initialize(Tuple center, double radius) {
+      this.center = center;
+      this.radius = radius;
+      this.radius2 = radius*radius;
+      this.tHemisphere = false;
       for (int dim = dimMax; --dim >= 0; )
         centerValues[dim] = center.getDimensionValue(dim);
-      stack = new Node[stackDepth];
       sp = 0;
       Element ele = eleRoot;
       while (ele instanceof Node) {
         Node node = (Node) ele;
-        if (center.getDimensionValue(node.dim) - distance <= node.splitValue) {
+        if (centerValues[node.dim] - radius <= node.splitValue) {
           if (sp == stackDepth)
-            System.out.println("Bspt.EnumerateSphere tree stack overflow");
+            System.out.println("Bspt.SphereIterator tree stack overflow");
           stack[sp++] = node;
           ele = node.eleLE;
         } else {
@@ -264,42 +265,66 @@ public final class Bspt {
         }
       }
       leaf = (Leaf)ele;
-      i = 0;
+      leafIndex = 0;
+    }
+
+    public void initializeHemisphere(Tuple center, double radius) {
+      initialize(center, radius);
+      tHemisphere = true;
+    }
+
+    public void release() {
+      for (int i = stackDepth; --i >= 0; )
+        stack[i] = null;
     }
 
     private boolean isWithin(Tuple t) {
       double dist2;
       double distT;
       distT = t.getDimensionValue(0) - centerValues[0];
-      if (tHemisphere && distT < 0) {
-        return false;
-      }
       dist2 = distT * distT;
-      if (dist2 > distance2) {
+      if (dist2 > radius2)
         return false;
-      }
-      for (int dim = dimMax; --dim > 0; ) {
-        distT = t.getDimensionValue(dim) - centerValues[dim];
-        dist2 += distT*distT;
-        if (dist2 > distance2) {
+      int dim = dimMax - 1;
+      if (tHemisphere) {
+        if (distT < 0)
           return false;
-        }
+        boolean tHemispherePending = (distT == 0);
+        do {
+          distT = t.getDimensionValue(dim) - centerValues[dim];
+          dist2 += distT*distT;
+          if (dist2 > radius2)
+            return false;
+          if (tHemispherePending) {
+            if (distT < 0)
+              return false;
+            if (distT != 0)
+              tHemispherePending = false;
+          }
+        } while (--dim >= 0);
+      } else {
+        do {
+          distT = t.getDimensionValue(dim) - centerValues[dim];
+          dist2 += distT*distT;
+          if (dist2 > radius2)
+            return false;
+        } while (--dim > 0);
       }
       this.foundDistance2 = dist2;
       return true;
     }
-
+    
     public boolean hasMoreElements() {
       while (true) {
-        for ( ; i < leaf.count; ++i)
-          if (isWithin(leaf.tuples[i]))
+        for ( ; leafIndex < leaf.count; ++leafIndex)
+          if (isWithin(leaf.tuples[leafIndex]))
             return true;
         if (sp == 0)
           return false;
         Element ele = stack[--sp];
         while (ele instanceof Node) {
           Node node = (Node) ele;
-          if (center.getDimensionValue(node.dim)+distance < node.splitValue) {
+          if (centerValues[node.dim]+radius < node.splitValue) {
             if (sp == 0)
               return false;
             ele = stack[--sp];
@@ -313,12 +338,12 @@ public final class Bspt {
           }
         }
         leaf = (Leaf)ele;
-        i = 0;
+        leafIndex = 0;
       }
     }
 
     public Object nextElement() {
-      return leaf.tuples[i++];
+      return leaf.tuples[leafIndex++];
     }
 
     public double foundDistance2() {
@@ -403,12 +428,12 @@ public final class Bspt {
 
     Leaf() {
       count = 0;
-      tuples = new Tuple[leafCount];
+      tuples = new Tuple[leafCountMax];
     }
 
     Leaf(Leaf leaf, int dim, double splitValue) {
       this();
-      for (int i = leafCount; --i >= 0; ) {
+      for (int i = leafCountMax; --i >= 0; ) {
         Tuple tuple = leaf.tuples[i];
         double value = tuple.getDimensionValue(dim);
         if (value > splitValue ||
@@ -418,19 +443,19 @@ public final class Bspt {
         }
       }
       int dest = 0;
-      for (int src = 0; src < leafCount; ++src)
+      for (int src = 0; src < leafCountMax; ++src)
         if (leaf.tuples[src] != null)
           leaf.tuples[dest++] = leaf.tuples[src];
       leaf.count = dest;
       if (count == 0)
-        tuples[leafCount] = null; // explode
+        tuples[leafCountMax] = null; // explode
     }
 
     public double getSplitValue(int dim) {
-      if (count != leafCount)
-        tuples[leafCount] = null;
+      if (count != leafCountMax)
+        tuples[leafCountMax] = null;
       return (tuples[0].getDimensionValue(dim) +
-              tuples[leafCount - 1].getDimensionValue(dim)) / 2;
+              tuples[leafCountMax - 1].getDimensionValue(dim)) / 2;
     }
 
     public String toString() {
@@ -438,7 +463,7 @@ public final class Bspt {
     }
 
     public boolean addTuple(Tuple tuple) {
-      if (count == leafCount)
+      if (count == leafCountMax)
         return false;
       tuples[count++] = tuple;
       return true;
@@ -456,7 +481,7 @@ public final class Bspt {
     }
 
     public boolean isLeafWithSpace() {
-      return count < leafCount;
+      return count < leafCountMax;
     }
   }
 }

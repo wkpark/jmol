@@ -687,5 +687,25 @@ final public class Graphics3D {
       }
     }
   }
-}
 
+  public void plotPoints(int count,
+                         short colix, byte[] intensities, int[] coordinates) {
+    int[] shades = Colix.getShades(colix);
+    for (int i = count * 3, j = count-1; i > 0; --j) {
+      int z = coordinates[--i];
+      int y = coordinates[--i];
+      int x = coordinates[--i];
+      if (x < 0 || x >= width ||
+          y < 0 || y >= height
+          //        || z < 0 || z >= 8192
+          )
+        continue;
+      int offset = y * width + x;
+      if (z < zbuf[offset]) {
+        zbuf[offset] = (short)z;
+        //        pbuf[offset] = Colix.getArgb(colix);
+        pbuf[offset] = shades[intensities[j]];
+      }
+    }
+  }
+}

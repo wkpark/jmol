@@ -501,6 +501,7 @@ public class TransformManager {
     matrixVectorTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
+  /*
   public void transformVector(Point3d pointAngstroms,
                               Point3d vectorAngstroms,
                               double scale,
@@ -510,6 +511,7 @@ public class TransformManager {
     Point3i pointT = transformPoint(point3dScreenTemp);
     results.set(pointT);
   }
+  */
 
   /****************************************************************
    exports for POV rendering

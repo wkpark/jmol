@@ -38,7 +38,7 @@ import java.io.StringReader;
 import java.io.Reader;
 import java.util.zip.GZIPInputStream;
 import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.cdk.io.*;
+import org.openscience.jmol.io.ReaderFactory;
 
 public class FileManager {
 
@@ -90,24 +90,24 @@ public class FileManager {
     InputStream istream = getInputStreamFromName(name);
     if (istream == null)
         return "error opening url/filename:" + name;
-    return openInputStream(istream);
+    return openInputStream(name, istream);
   }
 
   public String openFile(File file) {
     try {
       FileInputStream fis = new FileInputStream(file);
-      return openInputStream(fis);
+      return openInputStream(file.getName(), fis);
     } catch (FileNotFoundException e) {
       return "file not found:" + file;
     }
   }
 
   public String openStringInline(String strModel) {
-    return openReader(new StringReader(strModel));
+    return openReader("StringInline", new StringReader(strModel));
   }
 
   byte[] abMagic = new byte[4];
-  private String openInputStream(InputStream istream) {
+  private String openInputStream(String name, InputStream istream) {
     BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
     InputStream istreamToRead = bistream;
     bistream.mark(5);
@@ -120,43 +120,17 @@ public class FileManager {
           istreamToRead = new GZIPInputStream(bistream);
         }
       }
-      return openReader(new InputStreamReader(istreamToRead));
+      return openReader(name, new InputStreamReader(istreamToRead));
     } catch (IOException ioe) {
       return "Error reading stream header: " + ioe;
     }
   }
 
-  private String openReader(Reader rdr) {
-    try {
-      ChemObjectReader reader = null;
-      try {
-          ReaderFactory factory = new ReaderFactory();
-          reader = factory.createReader(rdr);
-          /*
-            FIXME -- need to notify the awt component of file change
-            firePropertyChange(openFileProperty, oldFile, currentFile);
-          */
-      } catch (IOException ex) {
-          return "Error determining input format: " + ex;
-      }
-      if (reader == null) {
-        return "unrecognized input format";
-      }
-      org.openscience.jmol.ChemFile newChemFile = null;
-      // org.openscience.cdk.ChemFile newChemFile = reader.read(new ChemFile());
-
-      if (newChemFile != null) {
-        if (newChemFile.getNumberOfFrames() > 0) {
-          control.setChemFile(newChemFile);
-        } else {
-          return "file appears to be empty";
-        }
-      } else {
-        return "unknown error reading input";
-      }
-    } catch (Exception ex) {
-      return "Error reading input:" + ex;
-    }
+  private String openReader(String name, Reader reader) {
+    Object clientFile = control.openReader(name, reader);
+    if (clientFile instanceof String)
+      return (String)clientFile;
+    control.setClientFile(name, clientFile);
     return null;
   }
 }

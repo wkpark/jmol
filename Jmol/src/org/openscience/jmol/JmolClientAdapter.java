@@ -26,9 +26,16 @@
 package org.openscience.jmol;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
+import org.openscience.jmol.render.JmolFrame;
+import java.io.Reader;
 import java.awt.Color;
 
 public interface JmolClientAdapter {
+
+  public Object openReader(DisplayControl control, String name, Reader reader);
+  public int getFrameCount(Object clientFile);
+
+  public JmolFrame getJmolFrame(Object clientFile, int frameNumber);
 
   public final static int COLORSCHEME_CPK = 0;
   public final static int COLORSCHEME_CHARGE = 1;

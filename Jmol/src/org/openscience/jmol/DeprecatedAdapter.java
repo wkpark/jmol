@@ -26,9 +26,14 @@
 package org.openscience.jmol;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
+import org.openscience.jmol.render.JmolFrame;
 import java.awt.Color;
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
+import java.io.Reader;
+import java.io.IOException;
+import org.openscience.jmol.io.ReaderFactory;
+import org.openscience.jmol.io.ChemFileReader;
 
 public class DeprecatedAdapter implements JmolClientAdapter {
   AtomColorer[] colorSchemes;
@@ -40,6 +45,48 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     colorSchemes[JmolClientAdapter.COLORSCHEME_CHARGE] =
       new PartialAtomicChargeColors();
   }
+
+  /****************************************************************
+   * the file related methods
+   ****************************************************************/
+
+  public Object openReader(DisplayControl control,
+                           String name, Reader reader) {
+    ChemFile chemFile = null;
+    try {
+      ChemFileReader chemFileReader = null;
+      try {
+        chemFileReader = ReaderFactory.createReader(control, reader);
+        /*
+          FIXME -- need to notify the awt component of file change
+          firePropertyChange(openFileProperty, oldFile, currentFile);
+        */
+      } catch (IOException ex) {
+        return "Error determining input format: " + ex;
+      }
+      if (chemFileReader == null) {
+        return "unrecognized input format";
+      }
+      chemFile = chemFileReader.read();
+    } catch (IOException ex) {
+      return "Error reading input:" + ex;
+    }
+    if (chemFile == null)
+      return "unknown error reading file";
+    return chemFile;
+  }
+
+  public int getFrameCount(Object clientFile) {
+    return 0;
+  }
+
+  public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
+    return null;
+  }
+
+  /****************************************************************
+   * The atom related methods
+   ****************************************************************/
 
   public int getAtomicNumber(Object clientAtom) {
     return ((Atom)clientAtom).getAtomicNumber();

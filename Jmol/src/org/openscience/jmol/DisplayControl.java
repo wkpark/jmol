@@ -57,6 +57,7 @@ import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
 import java.net.URL;
 import java.io.InputStream;
+import java.io.Reader;
 import java.io.File;
 import java.beans.PropertyChangeListener;
 import java.awt.event.MouseEvent;
@@ -735,6 +736,10 @@ final public class DisplayControl {
 
   public static final String PROP_CHEM_FILE = "chemFile";
   public static final String PROP_CHEM_FRAME = "chemFrame";
+
+  public void setClientFile(String name, Object clientFile) {
+    setChemFile((ChemFile)clientFile);
+  }
 
   public void setChemFile(ChemFile chemfile) {
     pushHoldRepaint();
@@ -1657,6 +1662,18 @@ final public class DisplayControl {
   /****************************************************************
    * JmolClientAdapter routines
    ****************************************************************/
+
+  public Object openReader(String name, Reader reader) {
+    return clientAdapter.openReader(this, name, reader);
+  }
+
+  public int getFrameCount(Object clientFile) {
+    return clientAdapter.getFrameCount(clientFile);
+  }
+
+  public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
+    return clientAdapter.getJmolFrame(clientFile, frameNumber);
+  }
 
   public int getAtomicNumber(Object clientAtom) {
     return clientAdapter.getAtomicNumber(clientAtom);

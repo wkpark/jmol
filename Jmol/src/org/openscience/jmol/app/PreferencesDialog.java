@@ -74,6 +74,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   boolean showAxes;
   boolean showBoundingBox;
   boolean axesOrientationRasmol;
+  boolean openFilePreview;
   boolean isLabelAtomColor;
   boolean isBondAtomColor;
   Color colorBackground;
@@ -103,6 +104,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbAxesOrientationRasmol;
+  private JCheckBox cbOpenFilePreview;
   private JCheckBox cbIsLabelAtomColor, cbIsBondAtomColor;
   private Properties originalSystemProperties;
   private Properties jmolDefaultProperties;
@@ -122,6 +124,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "showAxes",                       "false",
     "showBoundingBox",                "false",
     "axesOrientationRasmol",          "false",
+	"openFilePreview",                "true",
     "percentVdwAtom",                 "20",
     "autoBond",                       "true",
     "marBond",                        "150",
@@ -271,10 +274,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
-    cbAxesOrientationRasmol =
-      guimap.newJCheckBox("Prefs.axesOrientationRasmol",
-                          viewer.getAxesOrientationRasmol());
-
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -285,6 +284,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     axesPanel.setBorder(new TitledBorder(""));
     axesPanel.setLayout(new GridLayout(1, 1));
 
+    cbAxesOrientationRasmol =
+        guimap.newJCheckBox("Prefs.axesOrientationRasmol",
+                            viewer.getAxesOrientationRasmol());
     cbAxesOrientationRasmol.addItemListener(checkBoxListener);
     axesPanel.add(cbAxesOrientationRasmol);
 
@@ -294,6 +296,21 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     constraints.weightx = 1.0;
     disp.add(axesPanel, constraints);
 
+    JPanel otherPanel = new JPanel();
+    otherPanel.setBorder(new TitledBorder(""));
+    otherPanel.setLayout(new GridLayout(1, 1));
+
+    cbOpenFilePreview =
+        guimap.newJCheckBox("Prefs.openFilePreview",
+                            openFilePreview);
+    cbOpenFilePreview.addItemListener(checkBoxListener);
+    otherPanel.add(cbOpenFilePreview);
+    
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    disp.add(otherPanel, constraints);
 
 
     JLabel filler = new JLabel();
@@ -912,6 +929,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbShowBoundingBox.setSelected(viewer.getShowBbcage());
 
     cbAxesOrientationRasmol.setSelected(viewer.getAxesOrientationRasmol());
+    
+    cbOpenFilePreview.setSelected(openFilePreview);
 
     // Atom panel controls: 
     vdwPercentSlider.setValue(viewer.getPercentVdwAtom());
@@ -993,6 +1012,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showAxes = Boolean.getBoolean("showAxes");
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
     axesOrientationRasmol = Boolean.getBoolean("axesOrientationRasmol");
+    openFilePreview = Boolean.valueOf(System.getProperty("openFilePreview", "true")).booleanValue();
     colorBackground = Color.getColor("colorBackground");
     colorSelection = Color.getColor("colorSelection");
     isLabelAtomColor = Boolean.getBoolean("isLabelAtomColor");
@@ -1117,6 +1137,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         axesOrientationRasmol = isSelected;
         viewer.setAxesOrientationRasmol(isSelected);
         currentProperties.put("axesOrientationRasmol", strSelected);
+      } else if (key.equals("Prefs.openFilePreview")) {
+      	openFilePreview = isSelected;
+      	currentProperties.put("openFilePreview", strSelected);
       }
     }
   };

@@ -22,6 +22,7 @@ package org.openscience.jmol;
 
 import java.util.StringTokenizer;
 import java.io.File;
+import java.awt.Color;
 import javax.swing.JTextArea;
 
 /**
@@ -67,16 +68,9 @@ class RasMolScriptHandler {
 		    throw new RasMolScriptException("Error: omitted parameter.");
 		}
 	    } else if (word.equals("echo")) {
-		if (output != null) {
-                    while (st.hasMoreElements()) {
-                        output.append((String)st.nextElement() + " ");
-		    }
-		    output.append("\n");
-   	        } else {
-                    while (st.hasMoreElements()) {
-                        System.out.print((String)st.nextElement() + " ");
-		    }
-		    System.out.println();
+                while (st.hasMoreElements()) {
+                    print((String)st.nextElement() + " ");
+		    println();
 		}
 	    } else if (word.equals("set")) {
                 if (st.hasMoreElements()) {
@@ -92,6 +86,18 @@ class RasMolScriptHandler {
 		}
 	    } else if (word.equals("refresh")) {
                 program.display.repaint();
+	    } else if (word.equals("background")) {
+                if (st.hasMoreElements()) {
+		    setBackgroundColor((String)st.nextElement());
+   	        } else {
+		    throw new RasMolScriptException("Error: omitted color.");
+		}
+	    } else if (word.equals("list")) {
+                if (st.hasMoreElements()) {
+		    list((String)st.nextElement());
+   	        } else {
+		    throw new RasMolScriptException("Error: omitted object type.");
+		}
 	    } else if (word.equals("exit")) {
                 if (output != null) {
 		    // script command is run from script window
@@ -122,6 +128,49 @@ class RasMolScriptHandler {
 	}
     }
 
+    private void list(String objectType) throws RasMolScriptException {
+        if (objectType.equals("atoms")) {
+	    for (int i=0; i<program.display.md.atoms.length; i++) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("  ");
+		sb.append(i + 1);
+		sb.append(" ");
+		sb.append(program.display.md.atoms[i].getBaseAtomType().getRoot());
+		println(sb.toString());
+	    }
+	} else {
+	    throw new RasMolScriptException("Unrecognized object type: " + objectType);
+	}
+    }
+
+    private void setBackgroundColor(String value)throws RasMolScriptException {
+        if (value.equals("red")) {
+            program.display.setBackgroundColor(Color.red);
+	} else if (value.equals("white")) {
+            program.display.setBackgroundColor(Color.white);
+	} else if (value.equals("black")) {
+            program.display.setBackgroundColor(Color.black);
+	} else if (value.equals("grey")) {
+            program.display.setBackgroundColor(Color.gray);
+	} else if (value.equals("blue")) {
+            program.display.setBackgroundColor(Color.blue);
+	} else if (value.equals("green")) {
+            program.display.setBackgroundColor(Color.green);
+	} else if (value.equals("cyan")) {
+            program.display.setBackgroundColor(Color.cyan);
+	} else if (value.equals("magenta")) {
+            program.display.setBackgroundColor(Color.magenta);
+	} else if (value.equals("orange")) {
+            program.display.setBackgroundColor(Color.orange);
+	} else if (value.equals("pink")) {
+            program.display.setBackgroundColor(Color.pink);
+	} else if (value.equals("yellow")) {
+            program.display.setBackgroundColor(Color.yellow);
+	} else {
+	    throw new RasMolScriptException("Unknown color: " + value);
+	} 
+    }
+
     private boolean checkBoolean(String value) throws RasMolScriptException {
         if (value.equals("true")) {
 	    return true;
@@ -131,5 +180,23 @@ class RasMolScriptHandler {
             throw new RasMolScriptException("Unrecognized boolean value: " + value);
 	}
     }
+
+    private void print(String s) {
+	if (output != null) {
+	    output.append(s);
+	} else {
+	    System.out.print(s);
+	}
+    }
+
+    private void println(String s) {
+        this.print(s);
+        this.println();
+    }
+
+    private void println() {
+        this.print("\n");
+    }
 }
+
 

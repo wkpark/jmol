@@ -38,13 +38,10 @@ public class ChemFrame {
   private static boolean AutoBond = true;
   private static Matrix4d mat;
 
-  /*
-     pickedAtoms and napicked are static because
-     they deal with deformations or measurements that will persist
-     across frames.
-  */
-  private boolean[] pickedAtoms;
-  private int napicked;
+  /**
+   * The set of selected atoms.
+   */
+  private AtomSet pickedAtoms = new AtomSet();
 
   // This stuff can vary for each frame in the dynamics:
 
@@ -58,11 +55,11 @@ public class ChemFrame {
    */
   boolean isAtomPicked(int index) {
 
-    if (index >= pickedAtoms.length) {
+    if (index >= atoms.length) {
       throw new IllegalArgumentException(
           "isAtomPicked(): atom index to large");
     }
-    return pickedAtoms[index];
+    return pickedAtoms.contains(atoms[index]);
   }
 
   /**
@@ -116,7 +113,7 @@ public class ChemFrame {
    * list for future operations
    */
   public int getNpicked() {
-    return napicked;
+    return pickedAtoms.size();
   }
 
   static void setBondFudge(float bf) {
@@ -171,10 +168,6 @@ public class ChemFrame {
   public ChemFrame(int na, boolean bondsEnabled) {
 
     atoms = new Atom[na];
-    pickedAtoms = new boolean[na];
-    for (int i = 0; i < na; i++) {
-      pickedAtoms[i] = false;
-    }
     this.bondsEnabled = bondsEnabled;
   }
 
@@ -435,10 +428,9 @@ public class ChemFrame {
 
     Vector result = new Vector();
     for (int i = 0; i < numberAtoms; i++) {
-      if (pickedAtoms[i]) {
+      if (pickedAtoms.contains(atoms[i])) {
         result.addElement(new Integer(i + 1));
       }
-      ;
     }
     return result;
   }
@@ -451,8 +443,7 @@ public class ChemFrame {
     if ((numberAtoms <= 0) || (atom > numberAtoms)) {
       return;
     }
-    pickedAtoms[atom - 1] = true;
-    napicked++;
+    pickedAtoms.add(atoms[atom-1]);
   }
 
   /**
@@ -463,10 +454,8 @@ public class ChemFrame {
     if (numberAtoms <= 0) {
       return;
     }
-    napicked = 0;
     for (int i = 0; i < numberAtoms; i++) {
-      pickedAtoms[i] = true;
-      napicked++;
+      pickedAtoms.add(atoms[i]);
     }
   }
 
@@ -478,10 +467,7 @@ public class ChemFrame {
     if (numberAtoms <= 0) {
       return;
     }
-    for (int i = 0; i < numberAtoms; i++) {
-      pickedAtoms[i] = false;
-    }
-    napicked = 0;
+    pickedAtoms.clear();
   }
 
   public int pickMeasuredAtom(int x, int y) {
@@ -502,17 +488,9 @@ public class ChemFrame {
     if (smallest < 0) {
       return;
     }
-    if (pickedAtoms[smallest]) {
-      pickedAtoms[smallest] = false;
-      napicked = 0;
-    } else {
-      pickedAtoms[smallest] = true;
-      napicked = 1;
-    }
-    for (int i = 0; i < numberAtoms; i++) {
-      if (i != smallest) {
-        pickedAtoms[i] = false;
-      }
+    pickedAtoms.clear();
+    if (!pickedAtoms.contains(atoms[smallest])) {
+      pickedAtoms.add(atoms[smallest]);
     }
   }
 
@@ -543,12 +521,10 @@ public class ChemFrame {
   public void shiftSelectAtom(int x, int y) {
 
     int smallest = getNearestAtom(x, y);
-    if (pickedAtoms[smallest]) {
-      pickedAtoms[smallest] = false;
-      napicked--;
+    if (pickedAtoms.contains(atoms[smallest])) {
+      pickedAtoms.remove(atoms[smallest]);
     } else {
-      pickedAtoms[smallest] = true;
-      napicked++;
+      pickedAtoms.add(atoms[smallest]);
     }
   }
 
@@ -567,13 +543,10 @@ public class ChemFrame {
       return;
     }
     transform();
-    napicked = 0;
+    pickedAtoms.clear();
     for (int i = 0; i < numberAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
-        pickedAtoms[i] = true;
-        napicked++;
-      } else {
-        pickedAtoms[i] = false;
+        pickedAtoms.add(atoms[i]);
       }
     }
   }
@@ -595,9 +568,8 @@ public class ChemFrame {
     transform();
     for (int i = 0; i < numberAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
-        if (!pickedAtoms[i]) {
-          pickedAtoms[i] = true;
-          napicked++;
+        if (!pickedAtoms.contains(atoms[i])) {
+          pickedAtoms.add(atoms[i]);
         }
       }
     }
@@ -740,9 +712,6 @@ public class ChemFrame {
     System.arraycopy(atoms, 0, nat, 0, atoms.length);
     atoms = nat;
 
-    boolean[] newPickedAtoms = new boolean[newArraySize];
-    System.arraycopy(pickedAtoms, 0, newPickedAtoms, 0, pickedAtoms.length);
-    pickedAtoms = newPickedAtoms;
   }
 
   private boolean bondsEnabled;
@@ -753,18 +722,36 @@ public class ChemFrame {
 
   public void setPickedAtoms(boolean[] newPickedAtoms) {
 
-    int copyLength = newPickedAtoms.length;
-    if (copyLength > pickedAtoms.length) {
-      copyLength = pickedAtoms.length;
+    pickedAtoms.clear();
+    for (int i = 0; i < newPickedAtoms.length; ++i) {
+      if (newPickedAtoms[i]) {
+        pickedAtoms.add(atoms[i]);
+      }
     }
-    System.arraycopy(newPickedAtoms, 0, pickedAtoms, 0, copyLength);
   }
 
+  /**
+   * Returns the set of picked atoms.
+   *
+   * @return the AtomSet of picked atoms.
+   */
+  public AtomSet getPickedAtomSet() {
+    return pickedAtoms;
+  }
+  
   /**
    * Returns whether each atom in this frame is picked.
    */
   public boolean[] getPickedAtoms() {
-    return pickedAtoms;
+    boolean[] pickedAtomsArray = new boolean[atoms.length];
+    for (int i = 0; i < atoms.length; ++i) {
+      if (pickedAtoms.contains(atoms[i])) {
+        pickedAtomsArray[i] = true;
+      } else {
+        pickedAtomsArray[i] = false;
+      }
+    }
+    return pickedAtomsArray;
   }
 
   /**

@@ -1,6 +1,7 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
+import java.util.Hashtable;
 
 /**
  * Graphical representation of an atom.
@@ -11,12 +12,12 @@ class AtomShape implements Shape {
 
   Atom atom;
   DisplaySettings settings;
-  boolean picked;
+  AtomSet pickedAtoms;
   
-  AtomShape(Atom atom, DisplaySettings settings, boolean isPicked) {
+  AtomShape(Atom atom, DisplaySettings settings, AtomSet pickedAtoms) {
     this.atom = atom;
     this.settings = settings;
-    this.picked = isPicked;
+    this.pickedAtoms = pickedAtoms;
   }
 
   public String toString() {
@@ -30,7 +31,7 @@ class AtomShape implements Shape {
 
   public void render(Graphics g) {
     AtomRenderer atomRenderer = getAtomRenderer(settings);
-    atomRenderer.paint(g, atom, false, settings);
+    atomRenderer.paint(g, atom, pickedAtoms.contains(atom), settings);
   }
   
   public double getZ() {

@@ -30,15 +30,15 @@ import java.util.*;
  *
  */
 public class SharcReader {
-
-	BufferedReader input;
-	String entryLine;
-	boolean hasMore;
-
-	public SharcReader(BufferedReader input) throws IOException {
-		this.input = input;
-		findNextEntry();
-	}
+    
+    BufferedReader input;
+    String entryLine;
+    boolean hasMore;
+    
+    public SharcReader(BufferedReader input) throws IOException {
+        this.input = input;
+        findNextEntry();
+    }
 
 	public boolean hasNext() {
 		return hasMore;

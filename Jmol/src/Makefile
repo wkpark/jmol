@@ -46,6 +46,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/AtomTypesModel.java \
 		org/openscience/jmol/BaseAtomType.java \
 		org/openscience/jmol/Bond.java \
+		org/openscience/jmol/CalculateChemicalShifts.java \
 		org/openscience/jmol/CMLReader.java \
 		org/openscience/jmol/CMLSaver.java \
 		org/openscience/jmol/Charge.java \
@@ -68,6 +69,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/Gaussian98Reader.java \
 		org/openscience/jmol/HelpDialog.java \
 		org/openscience/jmol/ImageTyper.java \
+                org/openscience/jmol/JMOLANIMATIONConvention.java \
 		org/openscience/jmol/JMolCDO.java \
 		org/openscience/jmol/JMOLANIMATIONConvention.java \
 		org/openscience/jmol/JmolException.java \
@@ -90,6 +92,8 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/Preferences.java \
 		org/openscience/jmol/PropertyGraph.java \
 		org/openscience/jmol/ReaderFactory.java \
+                org/openscience/jmol/SharcReader.java \
+                org/openscience/jmol/SharcShielding.java \
 		org/openscience/jmol/Splash.java \
 		org/openscience/jmol/StatusBar.java \
 		org/openscience/jmol/TableMap.java \
@@ -166,7 +170,7 @@ applet_archive: applet
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar
-	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/doc/*.html  org/openscience/jmol/Data/*.html
+	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/refs_c4h12si1_data.sharc org/openscience/jmol/Data/doc/*.html org/openscience/jmol/Data/*.html
 	chmod 664 ../jars/jmol.jar
 
 # suggested by Christoph Steinbeck:

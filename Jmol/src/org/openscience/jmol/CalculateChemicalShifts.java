@@ -23,39 +23,43 @@ import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.io.*;
+import java.net.URL;
 
 class CalculateChemicalShifts extends AbstractAction {
-	ChemFile chemFile;
-	AtomPropsMenu propertiesMenu;
-	Map shieldings;
-	SelectSharcReference dialog;
+    ChemFile chemFile;
+    AtomPropsMenu propertiesMenu;
+    Map shieldings;
+    SelectSharcReference dialog;
+    
+    static String RF = "org/openscience/jmol/Data/refs_c4h12si1_data.sharc";
+    static final String propertyLabel = "Chemical shift";
 
-	static final String propertyLabel = "Chemical shift";
-
-	public CalculateChemicalShifts() {
-		super("chemicalShifts");
+    public CalculateChemicalShifts() {
+        super("chemicalShifts");
 		setEnabled(false);
 	}
-
-	public void initialize() {
-		if (shieldings == null) {
-			try {
-				SharcReader sr1 = new SharcReader(new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("Data/refs_c4h12si1_data.sharc"))));
-				shieldings = new HashMap();
-				while (sr1.hasNext()) {
-					SharcShielding ss1 = sr1.next();
-					shieldings.put(ss1.getMethod(), ss1);
-				}
-				
-				String[] shieldingNames = (String[])shieldings.keySet().toArray(new String[0]);
-				dialog = new SelectSharcReference(null, shieldingNames, true);
-
-			} catch (IOException ex) {
-				shieldings = null;
-			}
-		}
-	}
-
+    
+    public void initialize() {
+        if (shieldings == null) {
+            try {
+                URL url = ClassLoader.getSystemResource(RF);
+                InputStreamReader isr = new InputStreamReader(url.openStream());
+                BufferedReader br = new BufferedReader(isr);
+                SharcReader sr1 = new SharcReader(br);
+                shieldings = new HashMap(); 
+                while (sr1.hasNext()) {
+                    SharcShielding ss1 = sr1.next();
+                    shieldings.put(ss1.getMethod(), ss1);
+                }
+                String[] shieldingNames = (String[])shieldings.keySet().toArray(new String[0]);
+                
+                dialog = new SelectSharcReference(null, shieldingNames, true);
+            } catch (Exception ex) {
+                shieldings = null;
+            }
+        }
+    }
+    
 	public void setChemFile(ChemFile file, AtomPropsMenu menu) {
 		setEnabled(false);
 

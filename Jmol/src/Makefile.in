@@ -23,6 +23,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/AtomTypesModel.java \
 		org/openscience/jmol/BaseAtomType.java \
 		org/openscience/jmol/Bond.java \
+		org/openscience/jmol/CalculateChemicalShifts.java \
 		org/openscience/jmol/CMLReader.java \
 		org/openscience/jmol/CMLSaver.java \
 		org/openscience/jmol/Charge.java \
@@ -68,6 +69,8 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/Preferences.java \
 		org/openscience/jmol/PropertyGraph.java \
 		org/openscience/jmol/ReaderFactory.java \
+                org/openscience/jmol/SharcReader.java \
+                org/openscience/jmol/SharcShielding.java \
 		org/openscience/jmol/Splash.java \
 		org/openscience/jmol/StatusBar.java \
 		org/openscience/jmol/TableMap.java \
@@ -85,13 +88,17 @@ SOURCES = org/openscience/jmol/Jmol.java \
 CLASSES = $(SOURCES:%.java=%.class)
 
 APPLET_SOURCES = org/openscience/miniJmol/JmolApplet.java \
+		org/openscience/miniJmol/Atom.java \
 		org/openscience/miniJmol/AtomTypeSet.java \
 		org/openscience/miniJmol/BaseAtomType.java \
-		org/openscience/miniJmol/CMLReader.java \
-		org/openscience/miniJmol/CMLHandler.java \
+		org/openscience/miniJmol/BondRenderer.java \
 		org/openscience/miniJmol/ChemFile.java \
+		org/openscience/miniJmol/ChemFileReader.java \
 		org/openscience/miniJmol/ChemFrame.java \
+		org/openscience/miniJmol/CMLHandler.java \
+		org/openscience/miniJmol/CMLReader.java \
 		org/openscience/miniJmol/DTDResolver.java \
+		org/openscience/miniJmol/Gaussian98Reader.java \
 		org/openscience/miniJmol/JMolCDO.java \
 		org/openscience/miniJmol/JmolBeanTest.java \
 		org/openscience/miniJmol/JmolSimpleBean.java \
@@ -111,7 +118,6 @@ APPLET_CLASSES = $(APPLET_SOURCES:%.java=%.class)
 
 APPLET_JMOL_SOURCES = org/openscience/jmol/FortranFormat.java \
 		org/openscience/jmol/PhysicalProperty.java \
-		org/openscience/jmol/ChemFileReader.java \
 		org/openscience/jmol/DisplaySettings.java
 
 APPLET_JMOL_CLASSES = $(APPLET_JMOL_SOURCES:%.java=%.class)
@@ -146,7 +152,7 @@ applet_archive: applet
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar
-	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/doc/*.html  org/openscience/jmol/Data/*.html
+	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/refs_c4h12si1_data.sharc org/openscience/jmol/Data/doc/*.html org/openscience/jmol/Data/*.html
 	chmod 664 ../jars/jmol.jar
 
 # suggested by Christoph Steinbeck:

@@ -103,6 +103,7 @@ class Surface extends Shape {
   final Point3f pointT = new Point3f();
   final Point3f pointT1 = new Point3f();
 
+  // don't set this to more than 32
   final static int segmentsPerFullCircle = 10;
   private final static float radiansPerSegment =
     2*(float)Math.PI/segmentsPerFullCircle;
@@ -386,17 +387,6 @@ class Surface extends Shape {
     */
   }
 
-  void calcTorusesI() {
-    if (radiusP == 0)
-      return;
-    for (int iJ = neighborCount; --iJ >= 0; ) {
-      if (indexI >= neighborIndexes[iJ])
-        continue;
-      setNeighborJ(iJ);
-      calcTorusIJ();
-    }
-  }
-
   void deleteUnusedToruses() {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
@@ -436,6 +426,9 @@ class Surface extends Shape {
   final Vector3f vectorT = new Vector3f();
   final Vector3f vectorT1 = new Vector3f();
 
+  final Vector3f vectorTorusT = new Vector3f();
+  final Vector3f vectorTorusTangentT = new Vector3f();
+
   final Point3f pointTorusP = new Point3f();
   final Vector3f vectorPI = new Vector3f();
   final Vector3f vectorPJ = new Vector3f();
@@ -452,8 +445,8 @@ class Surface extends Shape {
     float outerAngle;
     AxisAngle4f aaRotate;
     short colixI, colixJ;
-    int cavityCountT;
-    Cavity[] cavitiesT;
+    int torusCavityCount;
+    Cavity[] torusCavities;
     Vector3f outerVector;
     float outerRadians;
     Point3f[][] stripPointArrays;
@@ -479,7 +472,7 @@ class Surface extends Shape {
       radialVector.scale(radius);
 
       tangentVector = new Vector3f();
-      tangentVector.cross(radialVector, axisVector);
+      tangentVector.cross(axisVector, radialVector);
       tangentVector.normalize();
 
       pointTorusP.add(center, radialVector);
@@ -528,17 +521,18 @@ class Surface extends Shape {
     }
 
     void addCavity(Cavity cavity) {
-      if (cavitiesT == null)
-        cavitiesT = new Cavity[4];
-      else if (cavityCountT == cavitiesT.length)
-        cavitiesT = (Cavity[])Util.doubleLength(cavitiesT);
-      cavitiesT[cavityCountT++] = cavity;
+      System.out.println("Torus.addCavity(" + cavity + ") " + ixI + "," + ixJ);
+      if (torusCavities == null)
+        torusCavities = new Cavity[4];
+      else if (torusCavityCount == torusCavities.length)
+        torusCavities = (Cavity[])Util.doubleLength(torusCavities);
+      torusCavities[torusCavityCount++] = cavity;
     }
       
     void checkAngles() {
-      for (int i = cavityCountT; --i >= 0; ) {
+      for (int i = torusCavityCount; --i >= 0; ) {
         float cavityAngle = -999;
-        Cavity cavity = cavitiesT[i];
+        Cavity cavity = torusCavities[i];
         if (cavity.ixI == ixI) {
           if (cavity.ixJ == ixJ)
             cavityAngle = cavity.radiansIJ;
@@ -562,11 +556,36 @@ class Surface extends Shape {
 
     void whyIsThisCavityHere(int cavityIndex) {
       
-      Cavity cavity = cavitiesT[cavityIndex];
+      Cavity cavity = torusCavities[cavityIndex];
       System.out.println("torus ixI=" + ixI + " ixJ=" + ixJ +
                          " cavity ixI=" + cavity.ixI +
                          " ixJ=" + cavity.ixJ + " ixK=" + cavity.ixK);
       throw new NullPointerException();
+    }
+
+    void calculateSegments() {
+      for (int i = 0; i < cavityCount; ++i) {
+        Cavity cavity = cavities[i];
+        vectorTorusT.sub(cavity.probeCenter, center);
+        float angle = unitRadialVector.angle(vectorTorusT);
+
+        vectorTorusTangentT.cross(axisVector, vectorTorusT);
+        
+        vectorTorusT.sub(cavity.probeCenter, cavity.points[0]);
+        float dot = vectorTorusT.dot(vectorTorusTangentT);
+
+        vectorTorusT.add(cavity.getPoint(ixI), cavity.getPoint(ixJ));
+        vectorTorusT.sub(cavity.points[0]);
+
+        float dot2 = vectorTorusT.dot(vectorTorusTangentT);
+        
+        System.out.println("I see a probe at angle:" + angle +
+                           " dot:" + dot +
+                           " dot2:" + dot2);
+        System.out.println("vectorTorusTangentT=" + vectorTorusTangentT + 
+                           "vectorTorusT=" + vectorTorusT);
+
+      }
     }
 
     void calculatePoints() {
@@ -575,9 +594,7 @@ class Surface extends Shape {
         ++segments;
       int pointStripCount = segments + 1;
       float actualOuterRadiansPerSegment = outerRadians / segments;
-      //FIXME, flip the tangent vector around
-      vectorT.sub(vectorNull, tangentVector);
-      aaOuterTangent.set(vectorT, 0);
+      aaOuterTangent.set(tangentVector, 0);
       aaAxis.set(axisVector, 0);
       stripPointArrays = new Point3f[pointStripCount][];
       stripNormixesArrays = new short[pointStripCount][];
@@ -601,47 +618,24 @@ class Surface extends Shape {
         }
       }
     }
-  }
 
-  void calcTorusIJ() {
-    // indexI < indexJ is tested previously in calcTorus
-    if (indexI >= indexJ)
-      throw new NullPointerException();
-    Long key = new Long(((long)indexI << 32) + indexJ);
-    Object value = htToruses.get(key);
-    if (value != null)
-      return;
-    float radius = calcTorusRadius();
-    if (radius == 0) {
-      htToruses.put(key, Boolean.FALSE);
-      return;
+    void tellMeAboutYourself() {
+      System.out.println("Well, I am a torus" +
+                         " center:" + center +
+                         " between ixI:" + ixI + " & ixJ:" + ixJ +
+                         " cavityCount:" + cavityCount);
+      for (int i = 0; i < cavityCount; ++i)
+        cavities[i].tellMeAboutYourself();
+      System.out.println("--");
     }
-    Point3f center = calcTorusCenter();
-
-    //float holeRadius = radius - radiusP;
-    for (int n = neighborCount; --n >= 0; ) {
-      int k = neighborIndexes[n];
-      if (k == indexJ)
-        continue;
-      // see whether or not the probe would fit
-      // at the farthest point from k
-      //
-      // 1. find the closest point on the torus plane to center K
-      // 2. calculate vector from that point to center torus
-      // 3. normalize
-      // 4. scale by torus radius
-      // 5. take distanceSquared to center K
-      // 6. see if that distanceSquared > neighborPlusProbeRadii2
-    }
-    
-
-    Torus torus = new Torus(indexI, centerI, indexJ, centerJ, center, radius);
-    htToruses.put(key, torus);
   }
 
   Torus createTorus(int indexA, Point3f centerA, int indexB, Point3f centerB,
                     Point3f torusCenterAB, float torusRadius,
                     boolean fullTorus) {
+    System.out.println("createTorus(" + indexA + "," + centerA + "," +
+                       indexB + "," + centerB + "," + torusCenterAB + "," +
+                       torusRadius + "," + fullTorus + ")");
     if (indexA >= indexB)
       throw new NullPointerException();
     Long key = new Long(((long)indexA << 32) + indexB);
@@ -664,11 +658,13 @@ class Surface extends Shape {
       Object value = e.nextElement();
       if (value instanceof Torus) {
         Torus torus = (Torus)value;
+        torus.checkAngles();
+        torus.calculateSegments();
+        torus.calculatePoints();
+        torus.tellMeAboutYourself();
         if (torusCount == toruses.length)
           toruses = (Torus[])Util.doubleLength(toruses);
         toruses[torusCount++] = torus;
-        torus.checkAngles();
-        torus.calculatePoints();
       }
     }
   }
@@ -680,34 +676,6 @@ class Surface extends Shape {
     return (Torus)htToruses.get(key);
     //    Object value = htToruses.get(key);
     //    return (value instanceof Torus) ? (Torus)value : null;
-  }
-
-  Point3f calcTorusCenter() {
-    Point3f torusCenter = new Point3f();
-    torusCenter.sub(centerJ, centerI);
-    torusCenter.scale((radiiIP2-radiiJP2) / distanceIJ2);
-    torusCenter.add(centerI);
-    torusCenter.add(centerJ);
-    torusCenter.scale(0.5f);
-    /*
-      System.out.println("calcTorusCenter i=" + atomI.point3f.x + "," +
-      atomI.point3f.y + "," + atomI.point3f.z + "  j=" +
-      atomJ.point3f.x + "," + atomJ.point3f.y + "," +
-      atomJ.point3f.z + "  center=" +
-      torusCenter.x + "," + torusCenter.y + "," +
-      torusCenter.z);
-    */
-    return torusCenter;
-  }
-
-  float calcTorusRadius() {
-    float t1 = radiusI + radiusJ + diameterP;
-    float t2 = t1*t1 - distanceIJ2;
-    float diff = radiusI - radiusJ;
-    float t3 = distanceIJ2 - diff*diff;
-    if (t2 <= 0 || t3 <= 0 || distanceIJ2 == 0)
-      return 0;
-    return (float)(0.5*Math.sqrt(t2)*Math.sqrt(t3)/Math.sqrt(distanceIJ2));
   }
 
   float calcTorusRadius(float radiusA, float radiusB, float distanceAB2) {
@@ -815,7 +783,7 @@ class Surface extends Shape {
     Torus torusIJ = null, torusIK = null, torusJK = null;
     for (int i = -1; i <= 1; i += 2) {
       cavityProbe.scaleAdd(i * probeHeight, normalIJK, probeBaseIJK);
-      if (checkProbeNotIJK(cavityProbe)) {
+      if (checkProbeAgainstNeighborsIJK(cavityProbe)) {
         Cavity cavity = new Cavity(cavityProbe);
         addCavity(cavity);
         if (torusIJ == null && (torusIJ = getTorus(indexI, indexJ)) == null)
@@ -824,19 +792,22 @@ class Surface extends Shape {
                                 calcTorusRadius(radiusI, radiusJ, distanceIJ2),
                                 false);
         torusIJ.addCavity(cavity);
-          
+
         if (torusIK == null && (torusIK = getTorus(indexI, indexK)) == null)
           torusIK = createTorus(indexI, centerI, indexK, centerK,
                                 torusCenterIK,
                                 calcTorusRadius(radiusI, radiusK, distanceIK2),
                                 false);
         torusIK.addCavity(cavity);
-          
-        if (torusJK == null && (torusJK = getTorus(indexI, indexK)) == null)
-          torusJK = createTorus(indexI, centerI, indexK, centerK,
+
+        if (torusJK == null && (torusJK = getTorus(indexJ, indexK)) == null) {
+          calcTorusCenter(centerJ, radiiJP2, centerK, radiiKP2, distanceJK2,
+                          torusCenterJK);
+          torusJK = createTorus(indexJ, centerJ, indexK, centerK,
                                 torusCenterJK,
-                                calcTorusRadius(radiusI, radiusK, distanceJK2),
+                                calcTorusRadius(radiusJ, radiusK, distanceJK2),
                                 false);
+        }
         torusJK.addCavity(cavity);
           
       }
@@ -902,7 +873,7 @@ class Surface extends Shape {
     return true;
   }
   
-  boolean checkProbeNotIJK(Point3f cavityProbe) {
+  boolean checkProbeAgainstNeighborsIJK(Point3f cavityProbe) {
     for (int i = neighborCount; --i >= 0; ) {
       int neighborIndex = neighborIndexes[i];
       if (neighborIndex == indexI ||
@@ -944,35 +915,39 @@ class Surface extends Shape {
 
   class Cavity {
     final int ixI, ixJ, ixK;
+    final Point3f probeCenter;
     final Point3f[] points;
     final short[] normixes;
     final float radiansIJ;
     final float radiansJK;
     final float radiansKI;
     short colixI, colixJ, colixK;
+    byte segmentsIJ, segmentsJK, segmentsKI;
 
-    Cavity(Point3f probe) {
+    Cavity(Point3f probeCenter) {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
-      vectorPI.sub(centerI, probe);
+      this.probeCenter = new Point3f(probeCenter);
+
+      vectorPI.sub(centerI, probeCenter);
       vectorPI.normalize();
-      vectorPJ.sub(centerJ, probe);
+      vectorPJ.sub(centerJ, probeCenter);
       vectorPJ.normalize();
-      vectorPK.sub(centerK, probe);
+      vectorPK.sub(centerK, probeCenter);
       vectorPK.normalize();
       radiansIJ = vectorPI.angle(vectorPJ);
-      int segmentsIJ = (int)(radiansIJ / radiansPerSegment);
+      segmentsIJ = (byte)(radiansIJ / radiansPerSegment);
       if (segmentsIJ == 0)
         ++segmentsIJ;
       radiansJK = vectorPJ.angle(vectorPK);
-      int segmentsJK = (int)(radiansJK / radiansPerSegment);
+      segmentsJK = (byte)(radiansJK / radiansPerSegment);
       if (segmentsJK == 0)
         ++segmentsJK;
       radiansKI = vectorPK.angle(vectorPI);
-      int segmentsKI = (int)(radiansKI / radiansPerSegment);
+      segmentsKI = (byte)(radiansKI / radiansPerSegment);
       if (segmentsKI == 0)
         ++segmentsKI;
-      
+
       int pointCount = 1 + segmentsIJ + segmentsJK + segmentsKI;
       normixes = new short[pointCount];
       points = new Point3f[pointCount];
@@ -982,21 +957,31 @@ class Surface extends Shape {
       vectorT.add(vectorPI, vectorPJ);
       vectorT.add(vectorPK);
       vectorT.normalize();
-      points[0].scaleAdd(radiusP, vectorT, probe);
+      points[0].scaleAdd(radiusP, vectorT, probeCenter);
       normixes[0] = g3d.getInverseNormix(vectorT);
 
-      addSegments(probe, radiansIJ, segmentsIJ, vectorPI, vectorPJ,
+      addSegments(probeCenter, radiansIJ, segmentsIJ, vectorPI, vectorPJ,
                   points, normixes, 1);
-      addSegments(probe, radiansJK, segmentsJK, vectorPJ, vectorPK,
+      addSegments(probeCenter, radiansJK, segmentsJK, vectorPJ, vectorPK,
                   points, normixes, 1 + segmentsIJ);
-      addSegments(probe, radiansKI, segmentsKI, vectorPK, vectorPI,
+      addSegments(probeCenter, radiansKI, segmentsKI, vectorPK, vectorPI,
                   points, normixes, 1 + segmentsIJ + segmentsJK);
     }
 
-    void addSegments(Point3f probe,
+    Point3f getPoint(int atomIndex) {
+      if (atomIndex == ixI)
+        return points[1];
+      if (atomIndex == ixJ)
+        return points[1 + segmentsIJ];
+      if (atomIndex == ixK)
+        return points[1 + segmentsIJ + segmentsJK];
+      throw new NullPointerException();
+    }
+
+    void addSegments(Point3f probeCenter,
                      float radians, float segments, Vector3f v1, Vector3f v2,
                      Point3f[] points, short[] normixes, int index) {
-      points[index].scaleAdd(radiusP, v1, probe);
+      points[index].scaleAdd(radiusP, v1, probeCenter);
       normixes[index] = g3d.getNormix(v1);
       if (segments == 1)
         return;
@@ -1007,10 +992,15 @@ class Surface extends Shape {
         matrixT.set(aaT);
         vectorT.set(v1);
         matrixT.transform(vectorT, vectorT1);
-        points[j].scaleAdd(radiusP, vectorT1, probe);
+        points[j].scaleAdd(radiusP, vectorT1, probeCenter);
         normixes[j] = g3d.getInverseNormix(vectorT1);
         aaT.angle +=  radiansPerSegment;
       }
+    }
+
+    void tellMeAboutYourself() {
+      System.out.println("   cavity i,j,k:" + ixI + "," + ixJ + "," + ixK +
+                         " -> " + points[0]);
     }
   }
 

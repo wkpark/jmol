@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -127,7 +127,9 @@ class AtomTypesModel extends AbstractTableModel {
   public synchronized Object getValueAt(int row, int column) {
 
     try {
-      BaseAtomType at = (BaseAtomType) data.elementAt(row);
+        // System.err.println("Getting data for atom type: " + row + ", " + column);
+        BaseAtomType at = (BaseAtomType) data.elementAt(row);
+        // System.err.println("Retrieved BAT");
       switch (column) {
       case 0 :
         return at.getID();
@@ -139,7 +141,11 @@ class AtomTypesModel extends AbstractTableModel {
         return new Integer(at.getAtomicNumber());
 
       case 3 :
-        return new Double(at.getExactMass());
+        double m = at.getExactMass();
+        System.err.println("Mass: " + m);
+        Double mass = new Double(m);
+        System.err.println("Mass: " + mass.toString());
+        return mass;
 
       case 4 :
         return new Double(at.getVdwRadius());
@@ -148,12 +154,11 @@ class AtomTypesModel extends AbstractTableModel {
         return new Double(at.getCovalentRadius());
 
       case 6 :
-        // return AtomColors.getInstance().getAtomColor(at);
-        return Color.white;
-        // FIXME: this should be done beter... but i'll need to
-        // come up with a good solution. Will do that next week (Egon)
+        return at.getColor();
       }
     } catch (Exception e) {
+        System.err.println(e.toString());
+        e.printStackTrace();
     }
     return "";
   }
@@ -166,6 +171,8 @@ class AtomTypesModel extends AbstractTableModel {
   }
 
   public synchronized void updateAtomType(BaseAtomType atomType) {
+      
+    // System.err.println("Adding atom: " + data.size());
 
     String name = atomType.getID();
     BaseAtomType at = null;
@@ -205,6 +212,8 @@ class AtomTypesModel extends AbstractTableModel {
     } else {
       fireTableRowsUpdated(index, index);
     }
+    
+    // System.err.println("Added atom: " + data.size());
   }
 
 

@@ -38,7 +38,7 @@ import java.util.Enumeration;
  * label, one will be created upon the first retreival.
  */
 public class BaseAtomType extends org.openscience.cdk.AtomType {
-
+    
   /**
    * Gets the BaseAtomType corresponding to the given name and sets
    * its values to the parameters.
@@ -117,7 +117,7 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   private BaseAtomType(String name, String root) {
     super(name, root);
   }
-
+  
   /**
    * Sets the values of this atom type.
    *
@@ -136,6 +136,19 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
     super.setExactMass(mass);
     super.setVanderwaalsRadius(vdwRadius);
     super.setCovalentRadius(covalentRadius);
+  }
+
+  public static BaseAtomType get(org.openscience.cdk.AtomType at) {
+      BaseAtomType bat = new BaseAtomType(at.getID(), at.getSymbol());
+      bat.setAtomicNumber(at.getAtomicNumber());
+      bat.setExactMass(at.getExactMass());
+      bat.setVanderwaalsRadius(at.getVanderwaalsRadius());
+      bat.setCovalentRadius(at.getCovalentRadius());
+      Object o = at.getProperty("org.openscience.jmol.color");
+      if (o != null && o instanceof Color) {
+          bat.color = (Color)o;
+      };
+      return bat;
   }
 
   /**

@@ -130,7 +130,7 @@ public class Jmol extends JPanel {
   private DisplayPanel display;
   private StatusBar status;
   private AtomPropsMenu apm;
-  static AtomTypeTable atomTypeTable;
+  public static AtomTypeTable atomTypeTable;
   private PreferencesDialog preferencesDialog;
   private Animate anim;
   private Vibrate vib;
@@ -191,7 +191,7 @@ public class Jmol extends JPanel {
                       ".jmol");
     ujmoldir.mkdirs();
     UserPropsFile = new File(ujmoldir, "properties");
-    UserAtypeFile = new File(ujmoldir, "AtomTypes");
+    UserAtypeFile = new File(ujmoldir, "jmol_atomtypes.txt");
     historyFile = new HistoryFile(new File(ujmoldir, "history"),
         "Jmol's persistent values");
   }

@@ -86,6 +86,15 @@ class Resolver {
       return "Xyz";
     } catch (NumberFormatException e) {
     }
+    try {
+      String[] elements = lines[0].trim().split("[ \t]+");
+      if (elements.length >= 2) {
+        Integer.parseInt(elements[0].trim());
+        return "FoldingXyz";
+      }
+    } catch (NumberFormatException e) {
+      //
+    }
     // run these loops forward ... easier for people to understand
     for (int i = 0; i < startsWithRecords.length; ++i) {
       String[] recordTags = startsWithRecords[i];

@@ -1398,33 +1398,33 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // ' '->0 'A'->1, 'B'->2
     0xFFffffff, // ' ' & '0' white
     //
-    0xFFC0D0FF - 0x00202020, // skyblue
-    0xFFB0FFB0 - 0x00202018, // pastel green
-    0xFFFFC0C8 - 0x00202018, // pink
-    0xFFFFFF80 - 0x00202010, // pastel yellow
-    0xFFFFC0FF - 0x00202020, // pastel magenta
-    0xFFB0F0F0 - 0x00202020, // pastel cyan
-    0xFFFFD070 - 0x00202010, // pastel gold
-    0xFFF08080 - 0x00202010, // lightcoral
+    0xFFC0D0FF - 0x00303030, // skyblue
+    0xFFB0FFB0 - 0x00303018, // pastel green
+    0xFFFFC0C8 - 0x00303018, // pink
+    0xFFFFFF80 - 0x00303010, // pastel yellow
+    0xFFFFC0FF - 0x00303030, // pastel magenta
+    0xFFB0F0F0 - 0x00303030, // pastel cyan
+    0xFFFFD070 - 0x00303010, // pastel gold
+    0xFFF08080 - 0x00303010, // lightcoral
 
-    0xFFF5DEB3 - 0x00202020, // wheat
-    0xFF00BFFF - 0x00001820, // deepskyblue
+    0xFFF5DEB3 - 0x00303030, // wheat
+    0xFF00BFFF - 0x00001830, // deepskyblue
     0xFFCD5C5C - 0x00181010, // indianred
     0xFF66CDAA - 0x00101818, // mediumaquamarine
     0xFF9ACD32 - 0x00101808, // yellowgreen
-    0xFFEE82EE - 0x00201020, // violet
-    0xFF00CED1 - 0x00001820, // darkturquoise
-    0xFF00FF7F - 0x00002010, // springgreen
+    0xFFEE82EE - 0x00301030, // violet
+    0xFF00CED1 - 0x00001830, // darkturquoise
+    0xFF00FF7F - 0x00003010, // springgreen
     0xFF3CB371 - 0x00081810, // mediumseagreen
 
-    0xFF00008B + 0x00000020, // darkblue
+    0xFF00008B + 0x00000030, // darkblue
     0xFFBDB76B - 0x00181810, // darkkhaki
-    0xFF006400 + 0x00002000, // darkgreen
-    0xFF800000 + 0x00200000, // maroon
-    0xFF808000 + 0x00202000, // olive
-    0xFF800080 + 0x00200020, // purple
-    0xFF008080 + 0x00002020, // teal
-    0xFFB8860B + 0x00202008, // darkgoldenrod
+    0xFF006400 + 0x00003000, // darkgreen
+    0xFF800000 + 0x00300000, // maroon
+    0xFF808000 + 0x00303000, // olive
+    0xFF800080 + 0x00300030, // purple
+    0xFF008080 + 0x00003030, // teal
+    0xFFB8860B + 0x00303008, // darkgoldenrod
     0xFFB22222 + 0x00101010, // firebrick
   };
 

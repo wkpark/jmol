@@ -24,42 +24,39 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.g3d.Graphics3D;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 
 class PmeshRenderer extends ShapeRenderer {
 
-  final Point3f[] points = {
-    new Point3f(0, 0, 0),
-    new Point3f(2, 0, 0),
-    new Point3f(2, 2, 0),
-    new Point3f(0, 2, 0),
-  };
-
-  final Point3i[] screens = new Point3i[points.length];
-  {
-    for (int i = screens.length; --i >= 0; )
-      screens[i] = new Point3i();
-  }
-
   void render() {
-    //Prueba prueba = (Prueba)shape;
-
-    System.out.println("################################################################");
-    System.out.println(" screens[0]=" + screens[0] +
-                       " screens[1]=" + screens[1] +
-                       " screens[2]=" + screens[2]);
-    viewer.transformPoints(points, screens);
-    g3d.fillTriangle(0xFFFF0000, screens[0], screens[1], screens[2]);
-    //    g3d.fillTriangle(0xFF00FFFF, screens[0], screens[2], screens[3]);
-    /*
-    g3d.drawHermite(true, prueba.colix, 7,
-                    screens[0], screens[0],
-                    screens[1], screens[1],
-                    screens[3], screens[3],
-                    screens[2], screens[2]
-                    );
-    */
+    Pmesh pmesh = (Pmesh)shape;
+    int vertexCount = pmesh.vertexCount;
+    int[][] polygonIndexes = pmesh.polygonIndexes;
+    Point3f[] vertices = pmesh.vertices;
+    Point3i[] screens = viewer.allocTempScreens(vertexCount);
+    short colix = pmesh.colix;
+    g3d.setColix(colix);
+    for(int i = vertexCount; --i >= 0; )
+      viewer.transformPoint(vertices[i], screens[i]);
+    for (int i = pmesh.polygonCount; --i >= 0; ) {
+      int[] vertexIndexes = polygonIndexes[i];
+      if (vertexIndexes.length == 3)
+        g3d.fillTriangle(colix,
+                         screens[vertexIndexes[0]],
+                         screens[vertexIndexes[1]],
+                         screens[vertexIndexes[2]]);
+      else if (vertexIndexes.length == 4)
+        g3d.fillQuadrilateral(colix,
+                              screens[vertexIndexes[0]],
+                              screens[vertexIndexes[1]],
+                              screens[vertexIndexes[2]],
+                              screens[vertexIndexes[3]]);
+      else
+        System.out.println("huh?");
+    }
   }
 }

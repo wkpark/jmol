@@ -35,6 +35,8 @@ class Pmesh extends SelectionIndependentShape {
 
   int vertexCount;
   Point3f[] vertices;
+  int polygonCount;
+  int[][] polygonIndexes;
 
   void initShape() {
     colix = Graphics3D.RED;
@@ -55,6 +57,10 @@ class Pmesh extends SelectionIndependentShape {
       System.out.println("vertexCount=" + vertexCount);
       readVertices(br);
       System.out.println("vertices read");
+      readPolygonCount(br);
+      System.out.println("polygonCount=" + polygonCount);
+      readPolygonIndexes(br);
+      System.out.println("polygonIndexes read");
     } catch (Exception e) {
       System.out.println("Pmesh.readPmesh exception:" + e);
     }
@@ -75,6 +81,36 @@ class Pmesh extends SelectionIndependentShape {
         vertices[i] = new Point3f(x, y, z);
       }
     }
+  }
+
+  void readPolygonCount(BufferedReader br) throws Exception {
+    polygonCount = parseInt(br.readLine());
+  }
+
+  void readPolygonIndexes(BufferedReader br) throws Exception {
+    if (polygonCount > 0) {
+      polygonIndexes = new int[polygonCount][];
+      for (int i = 0; i < polygonCount; ++i)
+        polygonIndexes[i] = readPolygon(br);
+    }
+  }
+
+  int[] readPolygon(BufferedReader br) throws Exception {
+    int vertexIndexCount = parseInt(br.readLine());
+    System.out.println("Pmesh.readPolygon vertexIndexCount=" +
+                       vertexIndexCount);
+    if (vertexIndexCount < 4)
+      return null;
+    int vertexCount = vertexIndexCount - 1;
+    int[] vertices = new int[vertexCount];
+    for (int i = 0; i < vertexCount; ++i)
+      vertices[i] = parseInt(br.readLine());
+    int extraVertex = parseInt(br.readLine());
+    if (extraVertex != vertices[0]) {
+      System.out.println("?Que?");
+      return null;
+    }
+    return vertices;
   }
 
   int ichNextParse;

@@ -576,6 +576,13 @@ final public class Graphics3D {
     fillTriangle(screenA, screenB, screenC);
   }
 
+  public void fillQuadrilateral(short colix,
+                                Point3i screenA, Point3i screenB,
+                                Point3i screenC, Point3i screenD) {
+    fillTriangle(colix, screenA, screenB, screenC);
+    fillTriangle(colix, screenA, screenC, screenD);
+  }
+
   public void fillQuadrilateral(int argb,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {

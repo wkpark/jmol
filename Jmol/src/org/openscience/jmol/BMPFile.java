@@ -40,7 +40,7 @@ public class BMPFile extends Component {
   //--- Bitmap file header
   private byte bitmapFileHeader[] = new byte[14];
   private byte bfType[] = {
-    'B', 'M'
+    (byte) 'B', (byte) 'M'
   };
   private int bfSize = 0;
   private int bfReserved1 = 0;

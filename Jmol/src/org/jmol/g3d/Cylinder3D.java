@@ -283,8 +283,8 @@ class Cylinder3D {
           xMax = x;
           zXMax = zRaster[i];
         }
-        if (y == 0) {
-        }
+        //if (y == 0) {
+        //}
       }
       if (yRaster[i] == -y) { // 0 will run through here too
         int x = -xRaster[i];

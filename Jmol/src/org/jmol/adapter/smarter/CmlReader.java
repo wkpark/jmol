@@ -38,8 +38,6 @@ import org.jmol.api.ModelAdapter;
  * A CML2 Reader, it does not support the old CML1 architecture.
  */
 class CmlReader extends ModelReader {
-  
-  SAXParser saxp;
 
   Model readModel(BufferedReader reader) throws Exception {
     SAXParserFactory spf = SAXParserFactory.newInstance();

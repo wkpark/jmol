@@ -167,18 +167,21 @@ public class Eval implements Runnable {
       return LoadError((String) t);
     BufferedReader reader =
       new BufferedReader(new InputStreamReader((InputStream) t));
-    String script = "";
+    StringBuffer script = new StringBuffer();
     try {
       while (true) {
         String command = reader.readLine();
         if (command == null)
           break;
-        script += command + "\n";
+        script.append(command);
+	script.append("\n");
       }
     } catch (IOException e) {
+	try{reader.close();}catch(IOException ioe){}
       return IOError(filename);
     }
-    return loadScript(filename, script);
+    try{reader.close();}catch(IOException ioe){}
+    return loadScript(filename, script.toString());
   }
 
   boolean LoadError(String msg) {
@@ -196,20 +199,21 @@ public class Eval implements Runnable {
   }
 
   public String toString() {
-    String str;
-    str = "Eval\n";
-    str += " pc:" + pc + "\n";
-    str += aatoken.length + " statements\n";
+    StringBuffer str=new StringBuffer();
+    str.append("Eval\n pc:");
+    str.append(pc); str.append("\n");
+    str.append(aatoken.length); str.append(" statements\n");
     for (int i = 0; i < aatoken.length; ++i) {
-      str += " |";
+      str.append(" |");
       Token[] atoken = aatoken[i];
       for (int j = 0; j < atoken.length; ++j) {
-        str += " " + atoken[j];
+        str.append(' ');
+	str.append(atoken[j]);
       }
-      str += "\n";
+      str.append("\n");
     }
-    str += "END\n";
-    return str;
+    str.append("END\n");
+    return str.toString();
   }
 
   public void clearDefinitionsAndLoadPredefined() {

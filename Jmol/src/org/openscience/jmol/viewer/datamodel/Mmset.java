@@ -144,7 +144,7 @@ final public class Mmset {
       models[i].calcHydrogenBonds();
   }
 
-  class Structure {
+  static class Structure {
     String typeName;
     byte type;
     char startChainID;

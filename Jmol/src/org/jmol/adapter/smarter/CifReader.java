@@ -655,7 +655,7 @@ class CifReader extends ModelReader {
    *</p>
    */
     
-  class RidiculousFileFormatTokenizer {
+  static class RidiculousFileFormatTokenizer {
     String str;
     int ich;
     int cch;

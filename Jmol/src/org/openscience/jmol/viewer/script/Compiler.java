@@ -43,7 +43,7 @@ class Compiler {
   String errorMessage;
   String errorLine;
   
-  final boolean logMessages = false;
+  static final boolean logMessages = false;
 
   private void log(String message) {
     if (logMessages)
@@ -92,7 +92,6 @@ class Compiler {
 
   int ichToken;
   int cchToken;
-  String strToken;
   Token[] atokenCommand;
 
   int ichCurrentCommand;

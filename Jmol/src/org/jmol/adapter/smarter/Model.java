@@ -51,7 +51,6 @@ class Model {
   float[] pdbScaleMatrix;
   float[] pdbScaleTranslate;
 
-  int pdbStructureRecordCount;
   String[] pdbStructureRecords;
 
   Model(String modelTypeName) {
@@ -60,6 +59,7 @@ class Model {
 
   protected void finalize() {
     //    System.out.println("Model.finalize() called");
+      try{super.finalize();}catch(Throwable t){}
   }
 
   void finish() {
@@ -147,7 +147,7 @@ class Model {
 
   void setModelName(String modelName) {
     if (modelName != null) {
-      modelName.trim();
+      modelName = modelName.trim();
       if (modelName.length() > 0)
         this.modelName = modelName;
     }

@@ -473,7 +473,7 @@ mol is a collaboratively developed visualization an    return ROTATE;
         //        exitMeasurementMode();
         return;
       }
-    if (measurementCount == 3 & !dblClick)
+    if (measurementCount == 3 && !dblClick)
       return;
     measurementCountPlusIndices[++measurementCount] = atomIndex;
     measurementCountPlusIndices[0] = measurementCount;

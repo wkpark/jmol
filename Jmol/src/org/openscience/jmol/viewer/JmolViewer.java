@@ -1895,7 +1895,7 @@ final public class JmolViewer {
   final AtomIterator nullAtomIterator =
     new NullAtomIterator();
 
-  class NullAtomIterator implements AtomIterator {
+  static class NullAtomIterator implements AtomIterator {
     public boolean hasNext() { return false; }
     public Atom next() { return null; }
     public void release() {}
@@ -1904,7 +1904,7 @@ final public class JmolViewer {
   final BondIterator nullBondIterator =
     new NullBondIterator();
   
-  class NullBondIterator implements BondIterator {
+  static class NullBondIterator implements BondIterator {
     public boolean hasNext() { return false; }
     public Bond next() { return null; }
   }

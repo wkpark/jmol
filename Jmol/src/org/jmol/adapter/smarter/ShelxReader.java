@@ -50,7 +50,6 @@ class ShelxReader extends ModelReader {
   boolean endReached;
 
   Model readModel(BufferedReader reader) throws Exception {
-    this.logger = logger;
     model = new Model("shelx");
     model.coordinatesAreFractional = true;
 

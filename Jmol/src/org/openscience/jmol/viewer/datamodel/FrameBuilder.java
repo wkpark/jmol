@@ -39,9 +39,6 @@ final public class FrameBuilder {
     this.adapter = adapter;
   }
 
-  protected void finalize() {
-  }
-
   boolean fileHasHbonds;
 
   public Frame buildFrame(Object clientFile) {

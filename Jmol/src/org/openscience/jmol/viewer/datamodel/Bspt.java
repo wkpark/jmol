@@ -347,7 +347,7 @@ public final class Bspt {
     boolean isLeafWithSpace();
   }
 
-  class Node implements Element {
+  static class Node implements Element {
     Element eleLE;
     int dim;
     int dimMax;
@@ -410,7 +410,7 @@ public final class Bspt {
     }
   }
 
-  class Leaf implements Element {
+  static class Leaf implements Element {
     int count;
     Tuple[] tuples;
 

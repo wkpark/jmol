@@ -30,6 +30,9 @@ import javax.vecmath.Vector3f;
 
 public class AminoPolymer extends AlphaPolymer {
 
+  // the primary offset within the same mainchain;
+  short mainchainHbondOffsets[];
+
   AminoPolymer(Model model, Monomer[] monomers) {
     super(model, monomers);
   }
@@ -48,8 +51,12 @@ public class AminoPolymer extends AlphaPolymer {
     Point3f carbonPoint;
     Point3f oxygenPoint;
     
+    if (mainchainHbondOffsets == null)
+      mainchainHbondOffsets = new short[count];
+
     for (int i = 0; i < count; ++i) {
       AminoMonomer residue = (AminoMonomer)monomers[i];
+      mainchainHbondOffsets[i] = 0;
       /****************************************************************
        * This does not acount for the first nitrogen in the chain
        * is there some way to predict where it's hydrogen is?
@@ -101,6 +108,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
     }
     if (indexMin1 >= 0) {
+      mainchainHbondOffsets[indexDonor] = (short)(indexDonor - indexMin1);
       createResidueHydrogenBond(indexDonor, indexMin1);
       if (indexMin2 >= 0)
         createResidueHydrogenBond(indexDonor, indexMin2);
@@ -186,7 +194,6 @@ public class AminoPolymer extends AlphaPolymer {
     //    System.out.println("createResidueHydrogenBond(" + indexAminoGroup +
     //                       "," + indexCarbonylGroup);
     AminoMonomer donor = (AminoMonomer)monomers[indexAminoGroup];
-    donor.setAminoBackboneHbondOffset(aminoBackboneHbondOffset);
     Atom nitrogen = donor.getNitrogenAtom();
     AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
     Atom oxygen = recipient.getCarbonylOxygenAtom();

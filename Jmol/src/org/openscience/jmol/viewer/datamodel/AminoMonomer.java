@@ -86,16 +86,6 @@ public class AminoMonomer extends AlphaMonomer {
 
   ////////////////////////////////////////////////////////////////
 
-  short aminoBackboneHbondOffset = 0;
-
-  void setAminoBackboneHbondOffset(int aminoBackboneHbondOffset) {
-    this.aminoBackboneHbondOffset = (short)aminoBackboneHbondOffset;
-  }
-  
-  int getAminoBackboneHbondOffset() {
-    return aminoBackboneHbondOffset;
-  }
-
   Atom getAtom(byte specialAtomID) {
     return getSpecialAtom(interestingAminoAtomIDs, specialAtomID);
   }

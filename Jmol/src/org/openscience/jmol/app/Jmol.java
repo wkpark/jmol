@@ -235,6 +235,9 @@ public class Jmol extends JPanel {
     preferencesDialog = new PreferencesDialog(frame, guimap, control);
     say("Initializing Animate...");
     anim = new Animate(control, frame);
+    // mth 2003 08 15
+    // get rid of this property change listener for Animate.java
+    // may break animations
     control.addPropertyChangeListener(anim);
     say("Initializing Vibrate...");
     vib = new Vibrate(control, frame);

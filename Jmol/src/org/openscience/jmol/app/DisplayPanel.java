@@ -39,8 +39,6 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.ComponentListener;
 import javax.swing.event.MenuListener;
 import javax.swing.event.MenuEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -51,8 +49,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 
-public class DisplayPanel extends JPanel
-  implements PropertyChangeListener, ComponentListener {
+public class DisplayPanel extends JPanel implements ComponentListener {
   private StatusBar status;
   private GuiMap guimap;
   private DisplayControl control;
@@ -649,13 +646,6 @@ public class DisplayPanel extends JPanel
       acchargeAction, actypeAction,
     };
     return defaultActions;
-  }
-
-  public void propertyChange(PropertyChangeEvent event) {
-    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
-      control.setClientFile("DisplayPanel", (ChemFile) event.getNewValue());
-      setRotateMode();
-    }
   }
 
   // code to record last and average times

@@ -57,6 +57,7 @@ public class ModelManager {
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
   public void setClientFile(String name, Object clientFile) {
+    System.out.println("setClientFile:" + name);
     Object clientFilePrevious = this.clientFile;
     this.clientFile = clientFile;
     if (clientFile == null) {
@@ -121,11 +122,12 @@ public class ModelManager {
   }
 
   public void setFrame(int frameNumber) {
+    System.out.println("setFrame(" + frameNumber+ ")");
     if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
       jmolFrame = jmolFrames[frameNumber];
       if (jmolFrame == null)
         jmolFrame = jmolFrames[frameNumber] =
-          (true
+          (false // flip flop
            ? control.getJmolFrame(clientFile, frameNumber)
            : (new JmolFrameBuilder(control, clientFile, frameNumber)
               .buildJmolFrame()));

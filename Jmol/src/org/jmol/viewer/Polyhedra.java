@@ -32,33 +32,52 @@ class Polyhedra extends SelectionIndependentShape {
 
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
+  byte defaultAlpha = OPAQUE;
 
   void initShape() {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("on" == propertyName) {
+    if ("bonds" == propertyName) {
       deletePolyhedra(bs);
       buildPolyhedra(bs);
       return;
     }
-    if ("off" == propertyName) {
+    if ("delete" == propertyName) {
       deletePolyhedra(bs);
       return;
     }
-    if ("clear" == propertyName) {
+    if ("on" == propertyName) {
+      setVisible(true, bs);
+      return;
+    }
+    if ("off" == propertyName) {
+      setVisible(false, bs);
       return;
     }
     if ("transparent" == propertyName) {
-      setTransparent(true, bs);
+      defaultAlpha = TRANSPARENT;
+      setAlpha(TRANSPARENT, bs);
       return;
     }
-    if ("solid" == propertyName) {
-      setTransparent(false, bs);
+    if ("opaque" == propertyName) {
+      defaultAlpha = OPAQUE;
+      setAlpha(OPAQUE, bs);
       return;
     }
     if ("color" == propertyName) {
       colix = g3d.getColix(value);
+      System.out.println("color polyhedra:" + colix);
+      setColix(colix, bs);
+      return;
+    }
+    if ("distance" == propertyName) {
+      float distance = ((Float)value).floatValue();
+      System.out.println("Polyhedra distance=" + distance);
+      return;
+    }
+    if ("expression" == propertyName) {
+      System.out.println("polyhedra expression");
       return;
     }
   }
@@ -87,13 +106,33 @@ class Polyhedra extends SelectionIndependentShape {
     polyhedronCount = newCount;
   }
 
-  void setTransparent(boolean transparent, BitSet bs) {
+  void setVisible(boolean visible, BitSet bs) {
     for (int i = polyhedronCount; --i >= 0; ) {
       Polyhedron p = polyhedrons[i];
       if (p == null)
         continue;
       if (bs.get(p.centralAtom.atomIndex))
-        p.transparent = transparent;
+        p.visible = visible;
+    }
+  }
+
+  void setAlpha(byte alpha, BitSet bs) {
+    for (int i = polyhedronCount; --i >= 0; ) {
+      Polyhedron p = polyhedrons[i];
+      if (p == null)
+        continue;
+      if (bs.get(p.centralAtom.atomIndex))
+        p.alpha = alpha;
+    }
+  }
+
+  void setColix(short colix, BitSet bs) {
+    for (int i = polyhedronCount; --i >= 0; ) {
+      Polyhedron p = polyhedrons[i];
+      if (p == null)
+        continue;
+      if (bs.get(p.centralAtom.atomIndex))
+        p.polyhedronColix = colix;
     }
   }
 
@@ -133,15 +172,22 @@ class Polyhedra extends SelectionIndependentShape {
     }
   }
 
+  final static byte TRANSPARENT = (byte)0x80;
+  final static byte OPAQUE      = (byte)0xFF;
+
   class Polyhedron {
     final Atom centralAtom;
     final Atom[] vertices;
-    short colix;
-    boolean transparent;
+    boolean visible;
+    byte alpha;
+    short polyhedronColix;
 
     Polyhedron(Atom centralAtom, int vertexCount, Atom[] otherAtoms) {
       this.centralAtom = centralAtom;
       this.vertices = new Atom[vertexCount];
+      this.visible = true;
+      this.alpha = defaultAlpha;
+      this.polyhedronColix = colix;
       if (vertexCount == 6)
         copyOctahedronVertices(otherAtoms);
       else {

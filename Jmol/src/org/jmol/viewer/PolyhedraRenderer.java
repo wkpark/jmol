@@ -38,10 +38,11 @@ class PolyhedraRenderer extends ShapeRenderer {
   }
 
   void render1(Polyhedra.Polyhedron p) {
-    short colix = p.colix;
+    if (! p.visible)
+      return;
+    short colix = p.polyhedronColix;
     if (colix == 0)
       colix = p.centralAtom.colixAtom;
-    boolean transparent = p.transparent;
     Atom[] vertices = p.vertices;
     byte[] faces;
     switch(vertices.length) {
@@ -56,7 +57,7 @@ class PolyhedraRenderer extends ShapeRenderer {
       return;
     }
     for (int i = 0; i < faces.length; )
-      renderFace(colix, transparent, vertices[faces[i++]],
+      renderFace(colix, p.alpha, vertices[faces[i++]],
                  vertices[faces[i++]], vertices[faces[i++]]);
   }
 
@@ -65,8 +66,8 @@ class PolyhedraRenderer extends ShapeRenderer {
   final static byte[] octahedronFaces =
   { 0,1,2, 0,2,3, 0,3,4, 0,4,1, 5,2,1, 5,3,2, 5,4,3, 5,1,4 };
 
-  void renderFace(short colix, boolean transparent,
+  void renderFace(short colix, byte alpha,
                   Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(colix, transparent, atomA.xyzd, atomB.xyzd, atomC.xyzd);
+    g3d.fillTriangle(colix, alpha, atomA.xyzd, atomB.xyzd, atomC.xyzd);
   }
 }

@@ -159,7 +159,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.string, str));
           continue;
         }
-        if (lookingAtDecimal((tokCommand & Token.negativenums) != 0)) {
+        if (lookingAtDecimal((tokCommand & Token.negnums) != 0)) {
           float value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
@@ -177,7 +177,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
           continue;
         }
-        if (lookingAtInteger((tokCommand & Token.negativenums) != 0)) {
+        if (lookingAtInteger((tokCommand & Token.negnums) != 0)) {
           String intString = script.substring(ichToken, ichToken + cchToken);
           int val = Integer.parseInt(intString);
           ltoken.addElement(new Token(Token.integer, val, intString));
@@ -232,8 +232,7 @@ class Compiler {
         case Token.center:
         case Token.restrict:
         case Token.select:
-          if (tok != Token.identifier && tok != Token.set &&
-              (tok & (Token.expression | Token.predefinedset)) == 0)
+          if (tok != Token.identifier && (tok & Token.expression) == 0)
             return invalidExpressionToken(ident);
           break;
         }
@@ -666,21 +665,22 @@ class Compiler {
       int size = ltoken.size();
       if (size < 2)
         return badArgumentCount();
+      /*
+       * miguel 2005 01 01 - setDefaultOn is not used
       if (size == 2 &&
           (((Token)ltoken.elementAt(1)).tok & Token.setDefaultOn) != 0)
         ltoken.addElement(Token.tokenOn);
+      */
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
-    // a hack ... just to take care of model
-    if (tokCommand != Token.model &&
-        (tokCommand & Token.expression) != 0
+    if ((tokCommand & (Token.expressionCommand|Token.embeddedExpression)) != 0
         && !compileExpression())
       return false;
     if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;
     if ((tokenCommand.intValue & Token.varArgCount) == 0 &&
-        (tokenCommand.intValue & 7) + 1 != atokenCommand.length)
+        (tokenCommand.intValue & 0x0F) + 1 != atokenCommand.length)
       return badArgumentCount();
     return true;
   }
@@ -748,8 +748,15 @@ class Compiler {
 
   private boolean compileExpression() {
     int i = 1;
-    if (atokenCommand[0].tok == Token.define)
+    int tokCommand = atokenCommand[0].tok;
+    if (tokCommand == Token.define)
       i = 2;
+    else if ((tokCommand & Token.embeddedExpression) != 0) {
+      // look for the open parenthesis
+      while (i < atokenCommand.length &&
+             atokenCommand[i].tok != Token.leftparen)
+        ++i;
+    }
     if (i >= atokenCommand.length)
       return true;
     return compileExpression(i);
@@ -770,8 +777,11 @@ class Compiler {
       addTokenToPostfix(atokenCommand[i]);
     atokenInfix = atokenCommand;
     itokenInfix = itoken;
+
+    addTokenToPostfix(Token.tokenExpressionBegin);
     if (! clauseOr())
       return false;
+    addTokenToPostfix(Token.tokenExpressionEnd);
     if (itokenInfix != atokenInfix.length) {
       /*
       System.out.println("itokenInfix=" + itokenInfix + " atokenInfix.length="

@@ -570,8 +570,13 @@ final public class Graphics3D {
     triangle3d.fillTriangleNoisy(transparent);
   }
 
-  public void fillTriangle(short colix, boolean transparent,
+  public final static byte ALPHA_OFF         = 0;
+  public final static byte ALPHA_TRANSPARENT = (byte)0x80;
+  public final static byte ALPHA_OPAQUE      = (byte)0xFF;
+
+  public void fillTriangle(short colix, byte alpha,
                            long xyzdA, long xyzdB, long xyzdC) {
+    boolean transparent = (alpha != ALPHA_OPAQUE);
     calcSurfaceShade(colix, transparent, xyzdA, xyzdB, xyzdC);
     int[] t;
     t = triangle3d.ax;

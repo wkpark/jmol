@@ -107,7 +107,7 @@ class Pmesh extends SelectionIndependentShape {
       }
       return;
     }
-    if ("solid" == propertyName) {
+    if ("opaque" == propertyName) {
       if (currentMesh != null)
         currentMesh.transparent = false;
       else {

@@ -72,40 +72,46 @@ class Token {
   };
 
   final static int command           = (1 <<  8);
-  final static int setparam          = (1 <<  9); // parameter to set command
-  final static int showparam         = (1 << 10); // parameter to show command
-  final static int bool              = (1 << 11);
-  final static int misc              = (1 << 12); // misc parameter
-  final static int expression        = (1 << 13);
+  final static int expressionCommand = (1 <<  9); // expression command
+  final static int embeddedExpression= (1 << 10); // embedded expression
+  final static int setparam          = (1 << 11); // parameter to set command
+  final static int showparam         = (1 << 12); // parameter to show command
+  final static int bool              = (1 << 13);
+  final static int misc              = (1 << 14); // misc parameter
+  final static int expression        = (1 << 15); /// expression term
   // every property is also valid in an expression context
-  final static int atomproperty      = (1 << 14) | expression;
+  final static int atomproperty      = (1 << 16) | expression;
   // every predefined is also valid in an expression context
-  final static int comparator        = (1 << 15) | expression;
-  final static int predefinedset     = (1 << 16); // | expression;
-  final static int colorparam        = (1 << 17);
-  final static int specialstring     = (1 << 18); // load, echo, label
+  final static int comparator        = (1 << 17) | expression;
+  final static int predefinedset     = (1 << 18) | expression;
+  final static int colorparam        = (1 << 19);
+  final static int specialstring     = (1 << 20); // load, echo, label
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
-  final static int negativenums      = (1 << 19);
+  final static int negnums      = (1 << 21);
   // for some commands the 'set' is optional
   // so, just delete the set command from the token list
   // but not for hbonds nor ssbonds
-  final static int setspecial        = (1 << 20);
+  final static int setspecial        = (1 << 22);
 
-  final static int varArgCount     = (1 << 22);
-  final static int onDefault1      = (1 << 23) | 1;
-  final static int setDefaultOn    = (1 << 24);
+  // These are unrelated
+  final static int varArgCount       = (1 << 4);
+  final static int onDefault1        = (1 << 5) | 1;
+  /**
+   * miguel 2005 01 01 not used
+  final static int setDefaultOn      = (1 << 25);
+  */
 
   // rasmol commands
   final static int backbone     = command |  0 | bool | predefinedset;
   final static int background   = command |  1 | colorparam | setspecial;
   final static int bond         = command |  2 | setparam | bool;
   final static int cartoon      = command |  3 | setparam;
-  final static int center       = command |  4 | showparam | expression;
+  final static int center       = command |  4 | showparam | expressionCommand;
   final static int clipboard    = command |  5;
   final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | bool;
-  final static int define       = command |  9 | expression;
+  final static int define       = command |  9 | expressionCommand;
   final static int dots         = command | 10 | bool;
   final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;
@@ -119,25 +125,25 @@ class Token {
   final static int print        = command | 20;
   final static int quit         = command | 21;
   final static int refresh      = command | 22;
-  final static int renumber     = command | 23 | negativenums;
+  final static int renumber     = command | 23 | negnums;
   final static int reset        = command | 24;
-  final static int restrict     = command | 25 | expression;
+  final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26 | bool;
-  final static int rotate       = command | 27 | bool | negativenums;
+  final static int rotate       = command | 27 | bool | negnums;
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
-  final static int select       = command | 30 | expression;
-  final static int set          = command | 31 | bool | negativenums;
+  final static int select       = command | 30 | expressionCommand;
+  final static int set          = command | 31 | bool | negnums;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
-  final static int cpk          = command | 35 | setparam | bool | negativenums;
+  final static int cpk          = command | 35 | setparam | bool | negnums;
   final static int ssbonds      = command | 36 | setparam | bool;
   final static int star         = command | 37 | bool;
-  final static int stereo       = command | 38 | setspecial | bool | negativenums;
+  final static int stereo       = command | 38 | setspecial | bool | negnums;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
   final static int trace        = command | 41 | bool;
-  final static int translate    = command | 42 | negativenums;
+  final static int translate    = command | 42 | negnums;
   final static int unbond       = command | 43;
   final static int wireframe    = command | 44 | bool;
   final static int write        = command | 45 | setparam;
@@ -148,7 +154,7 @@ class Token {
   // chime commands
   final static int delay        = command | 60;
   final static int loop         = command | 61;
-  final static int move         = command | 62 | negativenums;
+  final static int move         = command | 62 | negnums;
   final static int view         = command | 63;
   final static int spin         = command | 64 | setparam | showparam | bool;
   final static int list         = command | 65 | showparam;
@@ -164,11 +170,11 @@ class Token {
   final static int prueba       = command | 85;
   final static int rocket       = command | 86;
   final static int surface      = command | predefinedset | 87;
-  final static int moveto       = command | 88 | negativenums;
+  final static int moveto       = command | 88 | negnums;
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
-  final static int polyhedra    = command | 92;
+  final static int polyhedra    = command | 92 | embeddedExpression;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -266,6 +272,13 @@ class Token {
   final static int colon        = expression | 14;
   final static int slash        = expression | 15;
 
+  // miguel 2005 01 01
+  // these are used to demark the beginning and end of expressions
+  // they do not exist in the source code, but are emitted by the
+  // expression compiler
+  final static int expressionBegin = expression | 100;
+  final static int expressionEnd   = expression | 101;
+
   final static int atomno       = atomproperty | 0;
   final static int elemno       = atomproperty | 1;
   final static int resno        = atomproperty | 2;
@@ -328,7 +341,8 @@ class Token {
   final static int rubberband   = misc | 37;
   final static int monomer      = misc | 38;
   final static int defaultColors= misc | 39 | setparam;
-  final static int solid        = misc | 40;
+  final static int opaque       = misc | 40;
+  final static int delete       = misc | 41;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -347,6 +361,11 @@ class Token {
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
   final static Token tokenElemno = new Token(elemno, "elemno");
+  final static Token tokenExpressionBegin =
+    new Token(expressionBegin, "expressionBegin");
+  final static Token tokenExpressionEnd =
+    new Token(expressionEnd, "expressionEnd");
+  
 
   final static String[] comparatorNames = {">", ">=", "<=", "<", "=", "!="};
   final static String[] atomPropertyNames = {
@@ -624,7 +643,8 @@ class Token {
     "rubberband",   new Token(rubberband,      "rubberband"),
     "monomer",      new Token(monomer,         "monomer"),
     "defaultcolors",new Token(defaultColors,   "defaultColors"),
-    "solid",        new Token(solid,           "solid"),
+    "opaque",       new Token(opaque,          "opaque"),
+    "delete",       new Token(delete,          "delete"),
   };
 
   static Hashtable map = new Hashtable();

@@ -811,11 +811,16 @@ class Eval implements Runnable {
     int sp = 0;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
-    for (int pc = pcStart; pc < code.length; ++pc) {
+    expression_loop:
+    for (int pc = pcStart; ; ++pc) {
       Token instruction = code[pc];
       if (logMessages)
         viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
+      case Token.expressionBegin:
+        break;
+      case Token.expressionEnd:
+        break expression_loop;
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
         for (int i = numberOfAtoms; --i >= 0; )
@@ -3273,16 +3278,10 @@ class Eval implements Runnable {
         propertyValue = br;
         break;
       case Token.on:
-        propertyName = "on";
-        break;
       case Token.off:
-        propertyName = "off";
-        break;
-      case Token.solid:
-        propertyName = "solid";
-        break;
+      case Token.opaque:
       case Token.transparent:
-        propertyName = "transparent";
+        propertyName = (String)statement[i].value;
         break;
       default:
         invalidArgument();
@@ -3298,17 +3297,23 @@ class Eval implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       switch (statement[i].tok) {
+      case Token.bonds:
       case Token.on:
-        propertyName = "on";
-        break;
       case Token.off:
-        propertyName = "off";
-        break;
-      case Token.solid:
-        propertyName = "solid";
-        break;
+      case Token.delete:
+      case Token.opaque:
       case Token.transparent:
-        propertyName = "transparent";
+        propertyName = (String)statement[i].value;
+        break;
+      case Token.decimal:
+        propertyName = "distance";
+        propertyValue = statement[i].value;
+        break;
+      case Token.expressionBegin:
+        propertyName = "expression";
+        propertyValue = expression(statement, i);
+        // hack for now;
+        i = statement.length;
         break;
       default:
         invalidArgument();

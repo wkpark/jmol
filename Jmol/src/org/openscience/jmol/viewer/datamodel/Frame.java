@@ -228,7 +228,7 @@ final public class Frame {
   private Hashtable htAtomMap = new Hashtable();
 
   public void addHydrogenBond(Atom atom1, Atom atom2) {
-    addBond(atom1.bondMutually(atom2, JmolConstants.BOND_HYDROGEN));
+    addBond(atom1.bondMutually(atom2, JmolConstants.BOND_H_REGULAR));
   }
 
   private void addBond(Bond bond) {
@@ -539,18 +539,18 @@ final public class Frame {
     return bsFoundRectangle;
   }
 
-  public BondIterator getBondIterator(byte bondType, BitSet bsSelected) {
+  public BondIterator getBondIterator(short bondType, BitSet bsSelected) {
     return new SelectedBondIterator(bondType, bsSelected);
   }
 
   class SelectedBondIterator implements BondIterator {
 
-    byte bondType;
+    short bondType;
     int iBond;
     BitSet bsSelected;
     boolean bondSelectionModeOr;
 
-    SelectedBondIterator(byte bondType, BitSet bsSelected) {
+    SelectedBondIterator(short bondType, BitSet bsSelected) {
       this.bondType = bondType;
       this.bsSelected = bsSelected;
       iBond = 0;
@@ -785,7 +785,7 @@ final public class Frame {
           continue;
         if (atom.isBonded(atomNear))
           continue;
-        addBond(atom.bondMutually(atomNear, JmolConstants.BOND_HYDROGEN));
+        addBond(atom.bondMutually(atomNear, JmolConstants.BOND_H_REGULAR));
         System.out.println("adding an hbond between " + atom.atomIndex +
                            " & " + atomNear.atomIndex);
       }

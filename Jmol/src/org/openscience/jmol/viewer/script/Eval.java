@@ -1306,7 +1306,12 @@ public class Eval implements Runnable {
       viewer.setColorSsbond(getColorOrNoneParam(2));
       break;
     case Token.hbonds:
-      viewer.setColorHbond(getColorOrNoneParam(2));
+      checkLength3();
+      if (statement[2].tok == Token.identifier &&
+          "type".equalsIgnoreCase((String)statement[2].value))
+        viewer.setColorHbondType();
+      else
+        viewer.setColorHbond(getColorOrNoneParam(2));
       break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));

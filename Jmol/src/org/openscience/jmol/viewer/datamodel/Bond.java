@@ -32,8 +32,7 @@ public class Bond {
 
   public Atom atom1;
   public Atom atom2;
-  byte order;
-  byte hbondOffset; // for hbonds, what is the delta between the two atoms
+  short order;
   short mad;
   short colix;
 
@@ -49,7 +48,7 @@ public class Bond {
       order |= JmolConstants.BOND_SULFUR_MASK;
     if (order == JmolConstants.BOND_AROMATIC_MASK)
       order = JmolConstants.BOND_AROMATIC;
-    this.order = (byte)order;
+    this.order = (short)order;
     this.mad = mad;
     this.colix = colix;
   }
@@ -91,7 +90,7 @@ public class Bond {
     return mad / 2000f;
   }
 
-  public byte getOrder() {
+  public short getOrder() {
     return order;
   }
 

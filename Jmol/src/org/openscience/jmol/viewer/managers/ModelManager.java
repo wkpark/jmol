@@ -356,7 +356,7 @@ public String getAtomInfoChime(int i) {
     return frame.bonds[i].getRadius();
   }
 
-  public byte getBondOrder(int i) {
+  public short getBondOrder(int i) {
     return frame.bonds[i].getOrder();
   }
 

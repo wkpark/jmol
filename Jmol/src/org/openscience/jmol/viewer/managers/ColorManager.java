@@ -1,4 +1,3 @@
-
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -311,6 +310,12 @@ public class ColorManager {
     if (argb == 0)
       return Graphics3D.HOTPINK;
     return g3d.getColix(argb);
+  }
+
+  public short getColixHbondType(short order) {
+    int argbIndex = ((order & JmolConstants.BOND_HYDROGEN_MASK)
+                     >> JmolConstants.BOND_HBOND_SHIFT);
+    return g3d.getColix(JmolConstants.argbsHbondType[argbIndex]);
   }
 
   public void flushCachedColors() {

@@ -762,6 +762,10 @@ final public class JmolViewer {
     return colorManager.getColixAtomPalette(atom, palette);
   }
 
+  public short getColixHbondType(short order) {
+    return colorManager.getColixHbondType(order);
+  }
+
   public short getColixAxes() {
     return colorManager.colixAxes;
   }
@@ -1454,7 +1458,7 @@ final public class JmolViewer {
   }
 
   public short getColixBond(int order) {
-    if (order == JmolConstants.BOND_HYDROGEN)
+    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       return colorManager.colixHbond;
     if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
       return colorManager.colixSsbond;
@@ -1469,6 +1473,10 @@ final public class JmolViewer {
   public void setColorHbond(Color color) {
     colorManager.setColorHbond(color);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondColor", color);
+  }
+
+  public void setColorHbondType() {
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondColor", "type");
   }
 
   public void setSsbondsBackbone(boolean ssbondsBackbone) {
@@ -2094,7 +2102,7 @@ final public class JmolViewer {
     return modelManager.getBondRadius(i);
   }
 
-  public byte getBondOrder(int i) {
+  public short getBondOrder(int i) {
     return modelManager.getBondOrder(i);
   }
 

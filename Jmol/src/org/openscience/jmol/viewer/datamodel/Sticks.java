@@ -45,12 +45,25 @@ public class Sticks extends Shape {
       return;
     }
 
-    byte bondTypeMask;
+    short bondTypeMask;
+    if ("hbondColor" == propertyName &&
+        value instanceof String &&
+        "type" == (String)value) {
+      System.out.println("color hbond type!");
+      BondIterator iter =
+        frame.getBondIterator(JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
+      while (iter.hasNext()) {
+        Bond bond = iter.next();
+        bond.setColix(viewer.getColixHbondType(bond.order));
+      }
+      return;
+    }
+
     if (propertyName.startsWith("ssbond")) {
       bondTypeMask = JmolConstants.BOND_SULFUR_MASK;
     } else if (propertyName.startsWith("hbond")) {
       frame.calcHbonds();
-      bondTypeMask = JmolConstants.BOND_HYDROGEN;
+      bondTypeMask = JmolConstants.BOND_HYDROGEN_MASK;
     } else if (propertyName.startsWith("all")) {
       bondTypeMask = JmolConstants.BOND_ALL_MASK;
     } else {
@@ -71,13 +84,13 @@ public class Sticks extends Shape {
     }
   }
 
-  void setMadBond(short mad, byte bondTypeMask, BitSet bs) {
+  void setMadBond(short mad, short bondTypeMask, BitSet bs) {
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext())
       iter.next().setMad(mad);
   }
 
-  void setColixBond(short colix, byte bondTypeMask, BitSet bs) {
+  void setColixBond(short colix, short bondTypeMask, BitSet bs) {
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext())
       iter.next().setColix(colix);

@@ -103,7 +103,8 @@ class SticksRenderer extends ShapeRenderer {
     short colixAtomB = atomB.colixAtom;
     atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     if (bondsBackbone) {
-      if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
+      if (ssbondsBackbone &&
+          (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
         // then render the backbone version
         /*
@@ -113,7 +114,8 @@ class SticksRenderer extends ShapeRenderer {
         */
         atomA = getBackboneAtom(atomA);
         atomB = getBackboneAtom(atomB);
-      } else if (hbondsBackbone && (order & JmolConstants.BOND_HYDROGEN)!=0) {
+      } else if (hbondsBackbone &&
+                 (order & JmolConstants.BOND_HYDROGEN_MASK)!=0) {
         atomA = getBackboneAtom(atomA);
         atomB = getBackboneAtom(atomB);
       }
@@ -155,8 +157,11 @@ class SticksRenderer extends ShapeRenderer {
     case JmolConstants.BOND_STEREO_FAR:
       renderTriangle(bond);
       break;
-    case JmolConstants.BOND_HYDROGEN:
-      renderHbondDashed();
+    default:
+      if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+        renderHbondDashed();
+        break;
+      }
     }
   }
     

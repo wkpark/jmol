@@ -96,15 +96,38 @@ final public class JmolConstants {
    * Extended Bond Definition Types
    *
    */
-  public final static byte BOND_COVALENT      = 3;
-  public final static byte BOND_AROMATIC_MASK = (1 << 2);
-  public final static byte BOND_AROMATIC      = (1 << 2) | 1;
-  public final static byte BOND_STEREO_MASK   = (3 << 3);
-  public final static byte BOND_STEREO_NEAR   = (1 << 3) | 1;
-  public final static byte BOND_STEREO_FAR    = (2 << 3) | 2;
-  public final static byte BOND_SULFUR_MASK   = (1 << 5);
-  public final static byte BOND_HYDROGEN      = (1 << 6);
-  public final static byte BOND_ALL_MASK      = (byte)0xFF;
+  public final static short BOND_COVALENT      = 3;
+  public final static short BOND_AROMATIC_MASK = (1 << 2);
+  public final static short BOND_AROMATIC      = (1 << 2) | 1;
+  public final static short BOND_STEREO_MASK   = (3 << 3);
+  public final static short BOND_STEREO_NEAR   = (1 << 3) | 1;
+  public final static short BOND_STEREO_FAR    = (2 << 3) | 2;
+  public final static short BOND_SULFUR_MASK   = (1 << 5);
+  public final static short BOND_HBOND_SHIFT = 6;
+  public final static short BOND_HYDROGEN_MASK = (0x0F << BOND_HBOND_SHIFT);
+  public final static short BOND_H_REGULAR     = (1 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_PLUS_2      = (2 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_PLUS_3      = (3 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_PLUS_4      = (4 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_PLUS_5      = (5 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_MINUS_3     = (6 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_MINUS_4     = (7 << BOND_HBOND_SHIFT);
+  public final static short BOND_H_NUCLEOTIDE  = (8 << BOND_HBOND_SHIFT);
+
+  public final static short BOND_ALL_MASK      = (short)0xFFFF;
+
+  public final static int[] argbsHbondType =
+  {
+    0xFFFF69B4, // unused - pink
+    0xFFFFFF00, // regular yellow
+    0xFFFFFFFF, // +2 white
+    0xFFFF00FF, // +3 magenta
+    0xFFFF0000, // +4 red
+    0xFFFFA500, // +5 orange
+    0xFF00FFFF, // -3 cyan
+    0xFF00FF00, // -4 green
+    0xFFFF8080, // nucleotide
+  };
 
   /**
    * The default elementSymbols. Presumably the only entry which may cause

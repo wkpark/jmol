@@ -146,7 +146,11 @@ public class DisplayPanel extends JPanel
     if (control.getFrame() != null) {
       control.maybeEnableAntialiasing(g);
       frameRenderer.paint(g, rectClip, control);
-      measureRenderer.paint(g, rectClip, control);
+      // FIXME -- measurements rendered incorrectly
+      // this is in the wrong spot because the display of measurements
+      // needs to take z-order into account
+      if (control.getShowMeasurements())
+        measureRenderer.paint(g, rectClip, control);
       Rectangle rect = mouseman.getRubberBand();
       if (rect != null) {
         g.setColor(control.colorRubberband);
@@ -183,13 +187,6 @@ public class DisplayPanel extends JPanel
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
-  private PerspectiveAction perspectiveAction = new PerspectiveAction();
-  private UseGraphics2DAction useGraphics2DAction = new UseGraphics2DAction();
-  private DoubleBufferAction doubleBufferAction = new DoubleBufferAction();
-  private Test1Action test1Action = new Test1Action();
-  private Test2Action test2Action = new Test2Action();
-  private Test3Action test3Action = new Test3Action();
-  private Test4Action test4Action = new Test4Action();
   private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
@@ -205,12 +202,15 @@ public class DisplayPanel extends JPanel
   private NumbersAction numbersAction = new NumbersAction();
   private BondsAction bondsAction = new BondsAction();
   private AtomsAction atomsAction = new AtomsAction();
-  private VectorsAction vectorsAction = new VectorsAction();
   private HydrogensAction hydrogensAction = new HydrogensAction();
+  private VectorsAction vectorsAction = new VectorsAction();
+  private MeasurementsAction measurementsAction =
+    new MeasurementsAction();
   private SelectallAction selectallAction = new SelectallAction();
   private DeselectallAction deselectallAction = new DeselectallAction();
   private WireFrameRotationAction wireframerotationAction =
     new WireFrameRotationAction();
+  private PerspectiveAction perspectiveAction = new PerspectiveAction();
 
   class BondsAction extends AbstractAction {
 
@@ -238,6 +238,19 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class HydrogensAction extends AbstractAction {
+
+    public HydrogensAction() {
+      super("hydrogens");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setShowHydrogens(cbmi.isSelected());
+    }
+  }
+
   class VectorsAction extends AbstractAction {
 
     public VectorsAction() {
@@ -251,16 +264,16 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class HydrogensAction extends AbstractAction {
+  class MeasurementsAction extends AbstractAction {
 
-    public HydrogensAction() {
-      super("hydrogens");
+    public MeasurementsAction() {
+      super("measurements");
       this.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowHydrogens(cbmi.isSelected());
+      control.setShowMeasurements(cbmi.isSelected());
     }
   }
 
@@ -554,100 +567,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class PerspectiveAction extends AbstractAction {
-
-    public PerspectiveAction() {
-      super("perspective");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setPerspectiveDepth(cbmi.isSelected());
-    }
-  }
-
-  class UseGraphics2DAction extends AbstractAction {
-
-    public UseGraphics2DAction() {
-      super("usegraphics2d");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setWantsGraphics2D(cbmi.isSelected());
-    }
-  }
-
-  class DoubleBufferAction extends AbstractAction {
-
-    public DoubleBufferAction() {
-      super("doublebuffer");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      RepaintManager.currentManager(null).
-        setDoubleBufferingEnabled(cbmi.isSelected());
-      System.out.println("isDoubleBufferingEnabled()=" +
-                         RepaintManager.currentManager(null).
-                         isDoubleBufferingEnabled());
-    }
-  }
-
-  class Test1Action extends AbstractAction {
-
-    public Test1Action() {
-      super("test1");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      control.setWantsGraphics2D(true);
-    }
-  }
-
-  class Test2Action extends AbstractAction {
-
-    public Test2Action() {
-      super("test2");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      control.setWantsGraphics2D(false);
-      repaint();
-    }
-  }
-
-  class Test3Action extends AbstractAction {
-
-    public Test3Action() {
-      super("test3");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      //      rotateZ(45);
-      repaint();
-    }
-  }
-
-  class Test4Action extends AbstractAction {
-
-    public Test4Action() {
-      super("test4");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      //      rotate(new AxisAngle4f(1, 1, 1, Math.PI/4));
-      repaint();
-    }
-  }
-
   class PlainAction extends AbstractAction {
 
     public PlainAction() {
@@ -726,6 +645,19 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class PerspectiveAction extends AbstractAction {
+
+    public PerspectiveAction() {
+      super("perspective");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setPerspectiveDepth(cbmi.isSelected());
+    }
+  }
+
   MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
         String menuKey = guimap.getKey(e.getSource());
@@ -744,11 +676,14 @@ public class DisplayPanel extends JPanel
   }
 
   private void setDisplayMenuState() {
-    guimap.setSelected("Jmol.wireframerotation", control.wireframeRotation);
-    guimap.setSelected("Jmol.bonds", control.showBonds);
-    guimap.setSelected("Jmol.atoms", control.showAtoms);
-    guimap.setSelected("Jmol.vectors", control.showVectors);
-    guimap.setSelected("Jmol.hydrogens", control.showHydrogens);
+    guimap.setSelected("Jmol.wireframerotation",
+                       control.getWireframeRotation());
+    guimap.setSelected("Jmol.perspective", control.getPerspectiveDepth());
+    guimap.setSelected("Jmol.bonds", control.getShowBonds());
+    guimap.setSelected("Jmol.atoms", control.getShowAtoms());
+    guimap.setSelected("Jmol.hydrogens", control.getShowHydrogens());
+    guimap.setSelected("Jmol.vectors", control.getShowVectors());
+    guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
     final String[] modeLabel =
       {"Jmol.plain", "Jmol.symbols", "Jmol.types", "Jmol.numbers"};
     guimap.setSelected(modeLabel[control.modeLabel], true);
@@ -768,14 +703,14 @@ public class DisplayPanel extends JPanel
     Action[] defaultActions = {
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
-      defineCenterAction, perspectiveAction,
-      useGraphics2DAction, doubleBufferAction,
-      test1Action, test2Action, test3Action, test4Action,
+      defineCenterAction,
       aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
       bshadingAction, blineAction, bwireframeAction, plainAction,
-      symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,
-      vectorsAction, hydrogensAction, selectallAction, deselectallAction,
-      homeAction, wireframerotationAction,
+      symbolsAction, typesAction, numbersAction,
+      bondsAction, atomsAction, hydrogensAction,
+      vectorsAction, measurementsAction,
+      selectallAction, deselectallAction,
+      homeAction, wireframerotationAction, perspectiveAction,
       acchargeAction, actypeAction,
     };
     return defaultActions;

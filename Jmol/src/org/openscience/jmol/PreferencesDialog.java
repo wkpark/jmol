@@ -80,6 +80,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean showBonds;
   private static boolean showHydrogens;
   private static boolean showVectors;
+  private static boolean showMeasurements;
+  private static boolean wireframeRotation;
+  private static boolean perspectiveDepth;
   private static boolean showDarkerOutline;
   private static Color colorBackground;
   private static Color colorOutline;
@@ -109,7 +112,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
-  private JCheckBox cB, cA, cV, cH;
+  private JCheckBox cB, cA, cH, cV, cM;
+  private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbDarkerOutline;
   private JCheckBox cbGraphics2D, cbAntialias, cbAntialiasAlways;
   private static Properties props;
@@ -136,7 +140,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("showAtoms", "true");
     props.put("showBonds", "true");
     props.put("showHydrogens", "true");
-    props.put("showVectors", "false");
+    props.put("showVectors", "true");
+    props.put("showMeasurements", "true");
+    props.put("wireframeRotation", "false");
+    props.put("perspectiveDepth", "true");
     props.put("showDarkerOutline", "false");
     props.put("graphics2D", "true");
     props.put("antialias", "true");
@@ -272,28 +279,53 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     disp.add(filler, constraints);
 
     JPanel showPanel = new JPanel();
-    showPanel.setLayout(new GridLayout(0, 4));
+    showPanel.setLayout(new GridLayout(2, 3));
     showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.showLabel")));
     cA = guimap.newJCheckBox("Prefs.showAtoms", control.getShowAtoms());
     cA.addItemListener(checkBoxListener);
     cB = guimap.newJCheckBox("Prefs.showBonds", control.getShowBonds());
     cB.addItemListener(checkBoxListener);
-    cV = guimap.newJCheckBox("Prefs.showVectors", control.getShowVectors());
-    cV.addItemListener(checkBoxListener);
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
                              control.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
+    cV = guimap.newJCheckBox("Prefs.showVectors", control.getShowVectors());
+    cV.addItemListener(checkBoxListener);
+    cM = guimap.newJCheckBox("Prefs.showMeasurements",
+                             control.getShowMeasurements());
+    cM.addItemListener(checkBoxListener);
     showPanel.add(cA);
     showPanel.add(cB);
-    showPanel.add(cV);
     showPanel.add(cH);
+    showPanel.add(cV);
+    showPanel.add(cM);
 
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.weightx = 1.0;
     disp.add(showPanel, constraints);
+
+    JPanel fooPanel = new JPanel();
+    fooPanel.setLayout(new GridLayout(2, 1));
+
+    cbWireframeRotation =
+      guimap.newJCheckBox("Prefs.wireframeRotation",
+                          control.getWireframeRotation());
+    cbWireframeRotation.addItemListener(checkBoxListener);
+    cbPerspectiveDepth =
+      guimap.newJCheckBox("Prefs.perspectiveDepth",
+                          control.getPerspectiveDepth());
+    cbPerspectiveDepth.addItemListener(checkBoxListener);
+    fooPanel.add(cbWireframeRotation);
+    fooPanel.add(cbPerspectiveDepth);
+
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    disp.add(fooPanel, constraints);
+
 
     filler = new JLabel();
     constraints = new GridBagConstraints();
@@ -1103,15 +1135,21 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   }
 
   private void updateComponents() {
+    // Display panel
     cbGraphics2D.setSelected(control.wantsGraphics2D);
     cbAntialias.setSelected(control.wantsAntialias);
     cbAntialiasAlways.setSelected(control.wantsAntialiasAlways);
+
     cB.setSelected(control.getShowBonds());
     cA.setSelected(control.getShowAtoms());
-    cV.setSelected(control.getShowVectors());
     cH.setSelected(control.getShowHydrogens());
+    cV.setSelected(control.getShowVectors());
+    cM.setSelected(control.getShowMeasurements());
 
-    // Atom panel controls:
+    cbWireframeRotation.setSelected(control.getWireframeRotation());
+    cbPerspectiveDepth.setSelected(control.getPerspectiveDepth());
+
+    // Atom panel controls: 
     aRender.setSelectedIndex(control.modeAtomDraw);
     aLabel.setSelectedIndex(control.modeLabel);
     sfSlider.setValue(control.percentVdwAtom);
@@ -1177,6 +1215,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showBonds = Boolean.getBoolean("showBonds");
     showHydrogens = Boolean.getBoolean("showHydrogens");
     showVectors = Boolean.getBoolean("showVectors");
+    showMeasurements = Boolean.getBoolean("showMeasurements");
+    wireframeRotation = Boolean.getBoolean("wireframeRotation");
+    perspectiveDepth = Boolean.getBoolean("perspectiveDepth");
     showDarkerOutline = Boolean.getBoolean("showDarkerOutline");
     colorBackground = Color.getColor("colorBackground");
     colorOutline = Color.getColor("colorOutline");
@@ -1230,6 +1271,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setShowBonds(showBonds);
     control.setShowHydrogens(showHydrogens);
     control.setShowVectors(showVectors);
+    control.setShowMeasurements(showMeasurements);
+    control.setWireframeRotation(wireframeRotation);
+    control.setPerspectiveDepth(perspectiveDepth);
     control.setShowDarkerOutline(showDarkerOutline);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
@@ -1269,42 +1313,54 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       JCheckBox cb = (JCheckBox) e.getSource();
       String key = guimap.getKey(cb);
       boolean isSelected = cb.isSelected();
-      if (key.equals("Prefs.showBonds")) {
-        showAtoms = isSelected;
-        control.setShowBonds(showBonds);
-        props.put("showBonds", new Boolean(showBonds).toString());
-      } else if (key.equals("Prefs.showAtoms")) {
+      String strSelected = isSelected ? "true" : "false";
+      if (key.equals("Prefs.showAtoms")) {
         showAtoms = isSelected;
         control.setShowAtoms(showAtoms);
-        props.put("showAtoms", new Boolean(showAtoms).toString());
-      } else if (key.equals("Prefs.showVectors")) {
-        showVectors = isSelected;
-        control.setShowVectors(showVectors);
-        props.put("showVectors", new Boolean(showVectors).toString());
+        props.put("showAtoms", strSelected);
+      } else if (key.equals("Prefs.showBonds")) {
+        showBonds = isSelected;
+        control.setShowBonds(showBonds);
+        props.put("showBonds", strSelected);
       } else if (key.equals("Prefs.showHydrogens")) {
         showHydrogens = isSelected;
         control.setShowHydrogens(showHydrogens);
-        props.put("showHydrogens", new Boolean(showHydrogens).toString());
+        props.put("showHydrogens", strSelected);
+      } else if (key.equals("Prefs.showVectors")) {
+        showVectors = isSelected;
+        control.setShowVectors(showVectors);
+        props.put("showVectors", strSelected);
+      } else if (key.equals("Prefs.showMeasurements")) {
+        showMeasurements = isSelected;
+        control.setShowMeasurements(showMeasurements);
+        props.put("showMeasurements", strSelected);
       } else if (key.equals("Prefs.showDarkerOutline")) {
         showDarkerOutline = isSelected;
         control.setShowDarkerOutline(showDarkerOutline);
-        props.put("showDarkerOutline",
-                  new Boolean(showDarkerOutline).toString());
+        props.put("showDarkerOutline", strSelected);
         oButton.setEnabled(!showDarkerOutline);
       } else if (key.equals("Prefs.graphics2D")) {
         graphics2D = isSelected;
         control.setWantsGraphics2D(graphics2D);
-        props.put("graphics2D", new Boolean(graphics2D).toString());
+        props.put("graphics2D", strSelected);
         setEnabledGraphics();
       } else if (key.equals("Prefs.antialias")) {
         antialias = isSelected;
         control.setWantsAntialias(antialias);
-        props.put("antialias", new Boolean(antialias).toString());
+        props.put("antialias", strSelected);
         setEnabledGraphics();
       } else if (key.equals("Prefs.antialiasAlways")) {
         antialiasAlways = isSelected;
         control.setWantsAntialiasAlways(antialiasAlways);
-        props.put("antialiasAlways", new Boolean(antialiasAlways).toString());
+        props.put("antialiasAlways", strSelected);
+      } else if (key.equals("Prefs.wireframeRotation")) {
+        wireframeRotation = isSelected;
+        control.setWireframeRotation(wireframeRotation);
+        props.put("wireframeRotation", strSelected);
+      } else if (key.equals("Prefs.perspectiveDepth")) {
+        perspectiveDepth = isSelected;
+        control.setPerspectiveDepth(perspectiveDepth);
+        props.put("perspectiveDepth", strSelected);
       }
     }
   };

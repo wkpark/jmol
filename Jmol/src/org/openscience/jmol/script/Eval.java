@@ -169,7 +169,6 @@ public class Eval implements Runnable {
   private void clearDefinitionsAndLoadPredefined() {
     variables.clear();
 
-    System.out.println("loading predefined:");
     int cPredef = Token.predefinitions.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++) {
       script = Token.predefinitions[iPredef];
@@ -641,14 +640,14 @@ public class Eval implements Runnable {
 
   void monitor() throws ScriptException {
     if (statement.length == 1) {
-      control.setShowMeasures(true);
+      control.setShowMeasurements(true);
       return;
     }
     if (statement.length == 2) {
       if (statement[1].tok == Token.on)
-        control.setShowMeasures(true);
+        control.setShowMeasurements(true);
       else if (statement[1].tok == Token.off)
-        control.setShowMeasures(true);
+        control.setShowMeasurements(true);
       else
         booleanExpected();
       return;

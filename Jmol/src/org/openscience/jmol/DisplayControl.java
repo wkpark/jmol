@@ -98,7 +98,7 @@ final public class DisplayControl {
   public final Matrix4d matrixRotate = new Matrix4d();
   private final Matrix4d matrixTemp = new Matrix4d();
   private final Vector3d vectorTemp = new Vector3d();
-  private boolean perspectiveDepth = false;
+  private boolean perspectiveDepth = true;
   private boolean structuralChange = false;
 
   public void setAwtComponent(Component component) {
@@ -227,6 +227,17 @@ final public class DisplayControl {
     return showBonds;
   }
 
+  public boolean showHydrogens = true;
+  public void setShowHydrogens(boolean showHydrogens) {
+    if (this.showHydrogens != showHydrogens) {
+      this.showHydrogens = showHydrogens;
+      recalc();
+    }
+  }
+  public boolean getShowHydrogens() {
+    return showHydrogens;
+  }
+
   public boolean showVectors = false;
   public void setShowVectors(boolean showVectors) {
     if (this.showVectors != showVectors) {
@@ -239,15 +250,20 @@ final public class DisplayControl {
     return showVectors;
   }
 
-  public boolean showHydrogens = true;
-  public void setShowHydrogens(boolean showHydrogens) {
-    if (this.showHydrogens != showHydrogens) {
-      this.showHydrogens = showHydrogens;
+  public boolean showMeasurements = false;
+  public void setShowMeasurements(boolean showMeasurements) {
+    if (this.showMeasurements != showMeasurements) {
+      this.showMeasurements = showMeasurements;
+      structuralChange = true;
       recalc();
     }
   }
-  public boolean getShowHydrogens() {
-    return showHydrogens;
+  public boolean getShowMeasurements() {
+    return showMeasurements;
+  }
+
+  public Font getMeasureFont(int size) {
+    return new Font("Helvetica", Font.PLAIN, size);
   }
 
   public boolean showDarkerOutline = false;
@@ -541,7 +557,7 @@ final public class DisplayControl {
     recalc();
   }
 
-  public boolean isPerspectiveDepth() {
+  public boolean getPerspectiveDepth() {
     return perspectiveDepth;
   }
 
@@ -722,6 +738,10 @@ final public class DisplayControl {
   public void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
     recalc();
+  }
+
+  public boolean getWireframeRotation() {
+    return wireframeRotation;
   }
 
   public void setInMotion(boolean inMotion) {
@@ -931,21 +951,6 @@ final public class DisplayControl {
     return pixelSize;
   }
 
-  public Font getMeasureFont(int size) {
-    return new Font("Helvetica", Font.PLAIN, size);
-  }
-
-  public boolean showMeasures = true;
-  public void setShowMeasures(boolean showMeasures) {
-    if (this.showMeasures != showMeasures) {
-      this.showMeasures = showMeasures;
-      recalc();
-    }
-  }
-  public boolean getShowMeasures() {
-    return showMeasures;
-  }
-
   public boolean hasStructuralChange() {
     return structuralChange;
   }
@@ -953,6 +958,10 @@ final public class DisplayControl {
   public void defineDistanceMeasure(int atom1, int atom2) {
     System.out.println("define distance measure not implemented " +
                        atom1 + "<->" + atom2);
+    /*
+    Distance ds = new Distance(a1, a2);
+    mlist.addDistance(ds);
+    */
   }
 
   public void resetStructuralChange() {

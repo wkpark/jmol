@@ -53,13 +53,10 @@ public class DisplayPanel extends JPanel
   public static int Y_AXIS = 2;
   public static int Z_AXIS = 3;
 
-  private static boolean Perspective;
-  private static float FieldOfView;
   private boolean painted = false;
   private boolean initialized = false;
   private boolean haveFile = false;
   private boolean rubberband = false;
-  private boolean AntiAliased = false;
   private int bx, by, rtop, rbottom, rleft, rright;
   private int nframes = 0;
   private static int prevx, prevy, outx, outy;
@@ -98,14 +95,6 @@ public class DisplayPanel extends JPanel
     this.settings = settings;
     settings.addPropertyChangeListener(this);
     ShadingAtomRenderer.setImageComponent(this);
-  }
-
-  public boolean getAntiAliased() {
-    return AntiAliased;
-  }
-
-  public void setAntiAliased(boolean aa) {
-    AntiAliased = aa;
   }
 
   public int getMode() {
@@ -452,25 +441,9 @@ public class DisplayPanel extends JPanel
     return backgroundColor;
   }
 
-  static void setPerspective(boolean p) {
-    Perspective = p;
-  }
-
-  static boolean getPerspective() {
-    return Perspective;
-  }
-
-  static void setFieldOfView(float fov) {
-    FieldOfView = fov;
-  }
-
-  static float getFieldOfView() {
-    return FieldOfView;
-  }
-
   public void paint(Graphics g) {
 
-    if (AntiAliased && !movingDrawMode) {
+    if (settings.isAntiAliased() && !movingDrawMode) {
       String vers = System.getProperty("java.version");
       if (vers.compareTo("1.2") >= 0) {
 

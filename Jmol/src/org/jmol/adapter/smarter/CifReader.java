@@ -64,9 +64,18 @@ public class CifReader extends ModelReader {
       char firstChar = line.charAt(0);
       if (firstChar == '#')
         continue;
-      if ((firstChar != '_') &&
-          ! line.startsWith("loop_"))
+      if (firstChar != '_') {
+        if (line.startsWith("data_")) {
+          processDataParameter(line);
+          continue;
+        }
+        if (line.startsWith("loop_")) {
+          processLoopBlock();
+          continue;
+        }
         continue;
+      }
+        
       /* determine CIF command */
       int spaceIndex = line.indexOf(' ');
       if (spaceIndex == -1)
@@ -74,10 +83,6 @@ public class CifReader extends ModelReader {
       String command = line.substring(0, spaceIndex);
       if (command.startsWith("_cell")) {
         processCellParameter(command, line, spaceIndex);
-        continue;
-      }
-      if ("loop_".equals(command)) {
-        processLoopBlock();
         continue;
       }
       if ("_symmetry_space_group_name_H-M".equals(command)) {
@@ -114,6 +119,12 @@ public class CifReader extends ModelReader {
   }
   
 
+  void processDataParameter(String line) {
+    String modelName = line.substring(5).trim();
+    if (modelName.length() > 0)
+      model.modelName = modelName;
+  }
+
   final static String[] cellParamNames =
   {"_cell_length_a", "_cell_length_b", "_cell_length_c",
    "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"};
@@ -140,7 +151,7 @@ public class CifReader extends ModelReader {
       processAtomSiteLoopBlock(line);
       return;
     }
-    logger.log("Skipping loop block");
+    //    logger.log("Skipping loop block");
     skipUntilEmptyOrCommentLine(line);
   }
 
@@ -201,7 +212,7 @@ public class CifReader extends ModelReader {
           fieldTypes[fieldCount] = atomProperty;
           continue outer_loop;
         }
-      logger.log("unrecognized atom field", line);
+      //      logger.log("unrecognized atom field", line);
     }
 
     // now that headers are parsed, check to see if we want
@@ -214,7 +225,8 @@ public class CifReader extends ModelReader {
       for (int i = CARTN_X; i < CARTN_Z; ++i)
         disableField(fieldCount, fieldTypes, i);
     } else {
-      logger.log("?que? no atom coordinates found");
+      // it is a different kind of _atom_site loop block
+      //      logger.log("?que? no atom coordinates found");
       skipUntilEmptyOrCommentLine(line);
       return;
     }
@@ -223,12 +235,10 @@ public class CifReader extends ModelReader {
          line != null && line.length() > 0 && line.charAt(0) != '#';
          line = reader.readLine().trim()) {
       StringTokenizer tokenizer = new StringTokenizer(line);
-      if (tokenizer.countTokens() < fieldCount) {
-        logger.log("Column count mismatch; assuming continued on next line");
-        tokenizer = new StringTokenizer(line + reader.readLine());
-      }
       Atom atom = model.newAtom();
       for (int i = 0; i < fieldCount; ++i) {
+        if (! tokenizer.hasMoreTokens())
+          tokenizer = new StringTokenizer(reader.readLine());
         String field = tokenizer.nextToken();
         switch (fieldTypes[i]) {
         case NONE:

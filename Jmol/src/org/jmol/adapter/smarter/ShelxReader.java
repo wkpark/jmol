@@ -80,7 +80,7 @@ class ShelxReader extends ModelReader {
         if (command.equals(supportedRecordTypes[i])) {
           processSupportedRecord(i, line.substring(4).trim());
           if (endReached)
-            break;
+            break readLine_loop;
           continue readLine_loop;
         }
       assumeAtomRecord(line);

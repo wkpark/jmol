@@ -148,6 +148,7 @@ class SticksRenderer extends ShapeRenderer {
     case 3:
       renderCylinder(0);
       break;
+    case JmolConstants.BOND_PARTIAL12:
     case JmolConstants.BOND_AROMATIC:
       bondOrder = 2;
       renderCylinder(getAromaticDottedBondMask(bond));

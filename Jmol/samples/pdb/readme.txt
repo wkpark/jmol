@@ -23,3 +23,4 @@
 3DFR - ?
 3OVO - ?
 5CRO - ?
+fullRhinovirus.pdb.gz - rather large: almost 400K atoms ... 392520 atoms

@@ -67,7 +67,9 @@ class Jmol extends JPanel {
     private PropertyGraph pg;
     private Measure meas;
     private MeasurementList mlist;
-    private static JFrame frame;
+    private RecentFilesDialog recentFiles;
+    private ScriptWindow scriptWindow;
+    protected static JFrame frame;
     private ChemFile cf;
     private JFileChooser openChooser = new JFileChooser();
     private JFileChooser saveChooser = new JFileChooser();
@@ -83,7 +85,6 @@ class Jmol extends JPanel {
     private static JFrame consoleframe;
 
     private DisplaySettings settings = new DisplaySettings();
-    private RecentFilesDialog recentFiles;
 /** The name of the currently open file **/
     public String currentFileName="";
 
@@ -138,6 +139,8 @@ class Jmol extends JPanel {
         vib = new Vibrate(frame, display);
         splash.showStatus("Initializing Recent Files...");
         recentFiles = new RecentFilesDialog(frame); 
+        splash.showStatus("Initializing Script Windos...");
+        scriptWindow = new ScriptWindow(this);
         splash.showStatus("Initializing Property Graph...");
         pg = new PropertyGraph(frame);
         splash.showStatus("Initializing Measurements...");
@@ -204,24 +207,28 @@ class Jmol extends JPanel {
               1 argument  -> filename of file to read
               2 arguments -> -script <rasmol.script>
 	**/
-	System.out.println("Arguments:"); 
-        for (int i=0; i<args.length; i++) {
-            System.out.println(args[i]);
-	}
+	// System.out.println("Arguments:"); 
+        // for (int i=0; i<args.length; i++) {
+        //     System.out.println(args[i]);
+	// }
         if (args.length == 2) {
             String s = args[0];
             if (s.equals("-script")) {
                 script = new File(getUserDirectory(), args[1]);
                 if (!script.exists()) {
-		    script = null;
-		    System.out.print("Script not found: " + script.toString());
+		    System.out.println("Script not found: " + script.toString());
+                    System.exit(1);
 		}
             }
         }
-        if (args.length == 0) {            
+        if (args.length == 1) {            
             /* Read only one argument as a file name for now: */
             String astring = args[0];            
             initialFile = new File(getUserDirectory(), astring);
+	    if (!initialFile.exists()) {
+		System.out.println("File not found: " + initialFile.toString());
+		System.exit(1);
+	    }
         }        
 
         try {
@@ -254,7 +261,7 @@ class Jmol extends JPanel {
 
             // Open a file if on is given as an argument
             if (initialFile != null) {
-                window.openFile(initialFile, "");
+                window.openFile(initialFile, "CML");
 	    }
 
 	    // Oke, by now it is time to execute the script
@@ -871,6 +878,7 @@ class Jmol extends JPanel {
     public static final String printAction = "print";
     public static final String recentFilesAction = "recentFiles";
     public static final String povrayAction = "povray";
+    public static final String scriptAction = "script";
 
     class UndoHandler implements UndoableEditListener {
 
@@ -910,9 +918,10 @@ class Jmol extends JPanel {
         redoAction,
 	new ConsoleAction(),
 	chemicalShifts,
-      new RecentFilesAction(),
-      new PovrayAction()
-            };        
+	new RecentFilesAction(),
+	new PovrayAction(),
+	new ScriptAction()
+    };        
     
     class ConsoleAction extends AbstractAction {
         public ConsoleAction() {
@@ -1203,6 +1212,16 @@ class Jmol extends JPanel {
               System.out.println("Recent File: "+selection+" ("+recentFiles.getFileType()+")");
              openFile(new File(selection), recentFiles.getFileType());
            }
+        }
+    }
+
+    class ScriptAction extends AbstractAction {
+        public ScriptAction() {
+            super(scriptAction);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+           scriptWindow.show();
         }
     }
 

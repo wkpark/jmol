@@ -1,11 +1,13 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
            JAVA_HOME= /usr/j2se
+#           JAVA_HOME= /usr/lib/j2sdk1.3
 #
 #			For DEC Alpha:
 #			JAVA_HOME=/usr
 #
                JIKES= /usr/local/bin/jikes
+#               JIKES= /usr/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
 # Choose a compiler here:
                   JC=$(JIKES)
@@ -94,6 +96,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
                 org/openscience/jmol/RasMolScriptException.java \
                 org/openscience/jmol/RasMolScriptHandler.java \
 		org/openscience/jmol/ReaderFactory.java \
+                org/openscience/jmol/ScriptWindow.java \
                 org/openscience/jmol/SharcReader.java \
                 org/openscience/jmol/SharcShielding.java \
 		org/openscience/jmol/Splash.java \

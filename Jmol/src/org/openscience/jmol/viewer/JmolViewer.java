@@ -1105,6 +1105,10 @@ final public class JmolViewer {
     refresh();
   }
 
+  public boolean isMeasurementDefined(int count, int[] atomIndices) {
+    return measurementManager.isMeasurementDefined(count, atomIndices);
+  }
+
   public boolean deleteMeasurement(int measurementIndex) {
     boolean deleted = measurementManager.deleteMeasurement(measurementIndex);
     if (deleted)

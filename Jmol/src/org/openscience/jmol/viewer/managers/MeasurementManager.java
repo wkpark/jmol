@@ -141,6 +141,19 @@ public class MeasurementManager {
     return false;
   }
 
+  public boolean isMeasurementDefined(int count, int[] atomIndices) {
+    Frame frame = viewer.getFrame();
+    if (frame != null) {
+      Measurement[] measurements = frame.getMeasurements();
+      for (int i = frame.getMeasurementCount(); --i >= 0; ) {
+        if (measurements[i].sameAs(count, atomIndices)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public void deleteMeasurements(int count) {
     Frame frame = viewer.getFrame();
     if (frame != null) {

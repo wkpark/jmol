@@ -53,6 +53,8 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean haltExecution;
 
+  final static boolean logMessages = true;
+
   public Eval(DisplayControl control) {
     compiler = new Compiler(this);
     this.control = control;
@@ -85,6 +87,11 @@ public class Eval implements Runnable {
   }
 
   boolean loadFile(String filename, int scriptLevel) {
+    long timeBegin = 0;
+    if (logMessages) {
+      timeBegin = System.currentTimeMillis();
+      System.out.println("loadFile called:" + timeBegin);
+    }
     InputStream istream = control.getInputStreamFromName(filename);
     if (istream == null)
       return false;
@@ -102,7 +109,14 @@ public class Eval implements Runnable {
     } catch (IOException e) {
       return IOError(filename);
     }
-    return load(filename, script, scriptLevel);
+    if (logMessages)
+      System.out.println("time to read file=" +
+                         (int)(System.currentTimeMillis() - timeBegin));
+    boolean loaded = load(filename, script, scriptLevel);
+    if (logMessages)
+      System.out.println("total time time to load=" +
+                         (int)(System.currentTimeMillis() - timeBegin));
+    return loaded;
   }
 
   boolean LoadError(String msg) {
@@ -153,6 +167,11 @@ public class Eval implements Runnable {
   }
 
   public void run() {
+    long timeBegin = 0;
+    if (logMessages) {
+      timeBegin = System.currentTimeMillis();
+      System.out.println("Eval.run():" + timeBegin);
+    }
     try {
       // FIXME -- confirm repaint behavior during script execution
       control.setHoldRepaint(true);
@@ -162,9 +181,17 @@ public class Eval implements Runnable {
     }
     myThread = null;
     control.setHoldRepaint(false);
+    if (logMessages)
+      System.out.println("total time to run=" +
+                         (int)(System.currentTimeMillis() - timeBegin));
   }
 
   public void instructionDispatchLoop() throws ScriptException {
+    long timeBegin = 0;
+    if (logMessages) {
+      timeBegin = System.currentTimeMillis();
+      System.out.println("Eval.instructionDispatchLoop():" + timeBegin);
+    }
     while (!haltExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
       Token token = statement[0];
@@ -590,6 +617,7 @@ public class Eval implements Runnable {
   }
 
   void delay() throws ScriptException {
+    long timeBegin = System.currentTimeMillis();
     long millis = 0;
     Token token = statement[1];
     switch (token.tok) {
@@ -601,8 +629,11 @@ public class Eval implements Runnable {
       millis = (long)(((Double)token.value).doubleValue() * 1000);
       break;
     default:
-      integerExpected();
+      numberExpected(); 
     }
+    control.requestRepaintAndWait();
+    millis -= System.currentTimeMillis() - timeBegin;
+    if (millis > 0)
     try {
       Thread.sleep(millis);
     } catch (InterruptedException e) {
@@ -644,6 +675,7 @@ public class Eval implements Runnable {
     double radiansXStep = radiansPerDegreePerStep * dRotX;
     double radiansYStep = radiansPerDegreePerStep * dRotY;
     double radiansZStep = radiansPerDegreePerStep * dRotZ;
+    control.setInMotion(true);
     if (totalSteps == 0)
       totalSteps = 1; // to catch a zero secondsTotal parameter
     for (int i = 1; i <= totalSteps; ++i) {
@@ -671,10 +703,11 @@ public class Eval implements Runnable {
           try {
             Thread.sleep(timeToSleep);
           } catch (InterruptedException e) {
-            return;
+            break;
           }
         }
       }
     }
+    control.setInMotion(false);
   }
 }

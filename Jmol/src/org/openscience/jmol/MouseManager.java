@@ -153,7 +153,7 @@ public class MouseManager {
     }
 
     public void mouseReleased(MouseEvent e) {
-      control.setMouseDragged(false);
+      control.setInMotion(false);
       if (modeMouse == PICK) {
         rubberbandSelectionMode = false;
         component.repaint();
@@ -168,8 +168,8 @@ public class MouseManager {
       xCurrent = e.getX();
       yCurrent = e.getY();
 
-      if (! control.mouseDragged) {
-        control.setMouseDragged(true);
+      if (! control.inMotion) {
+        control.setInMotion(true);
       }
       switch (modeMouse) {
       case ROTATE:

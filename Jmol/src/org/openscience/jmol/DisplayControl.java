@@ -79,7 +79,7 @@ final public class DisplayControl {
   // while these variables are public, they should be considered *read-only*
   // to write these variables you *must* use the appropriate set function
   // they are currently used by Atom and AtomShape for transforms & rendering
-  public boolean mouseDragged = false;
+  public boolean inMotion = false;
   public int xTranslation;
   public int yTranslation;
   public int cameraZ = 750;
@@ -551,7 +551,7 @@ final public class DisplayControl {
   public void maybeEnableAntialiasing(Graphics g) {
     if (useGraphics2D && wantsAntialias) {
       Graphics2D g2d = (Graphics2D) g;
-      if (wantsAntialiasAlways || !mouseDragged) {
+      if (wantsAntialiasAlways || !inMotion) {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                              RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
@@ -652,15 +652,15 @@ final public class DisplayControl {
     recalc();
   }
 
-  public void setMouseDragged(boolean mouseDragged) {
-    if (wireframeRotation && this.mouseDragged != mouseDragged)
-      setFastRendering(mouseDragged);
-    if (this.mouseDragged && !mouseDragged) {
+  public void setInMotion(boolean inMotion) {
+    if (wireframeRotation && this.inMotion != inMotion)
+      setFastRendering(inMotion);
+    if (this.inMotion && !inMotion) {
       if ((useGraphics2D && wantsAntialias && !wantsAntialiasAlways) ||
           (modeBondDraw == SHADING))
         recalc();
     }
-    this.mouseDragged = mouseDragged;
+    this.inMotion = inMotion;
   }
 
   public boolean jvm12orGreater = false;
@@ -793,8 +793,8 @@ final public class DisplayControl {
   }
 
   public void requestRepaintAndWait() {
-    panel.repaint();
     synchronized(monitorRepaint) {
+      panel.repaint();
       try {
         monitorRepaint.wait();
       } catch (InterruptedException e) {
@@ -803,8 +803,8 @@ final public class DisplayControl {
   }
 
   public void notifyRepainted() {
-    repaintPending = false;
     synchronized(monitorRepaint) {
+      repaintPending = false;
       monitorRepaint.notify();
     }
   }

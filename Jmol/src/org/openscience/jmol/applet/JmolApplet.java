@@ -673,8 +673,15 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   public void rasmolScript(String scriptName) {
-    if (eval.loadFile(scriptName))
+    long timeBegin = System.currentTimeMillis();
+    System.out.println("rasmolScript:" + timeBegin);
+    if (eval.loadFile(scriptName)) {
+      System.out.println("loadTime=" +
+                         (int)(System.currentTimeMillis() - timeBegin));
       eval.run();
+    }
+    System.out.println("totalTime=" +
+                       (int)(System.currentTimeMillis() - timeBegin));
   }
 
   public void rasmolScriptInline(String script) {

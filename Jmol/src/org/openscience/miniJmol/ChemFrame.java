@@ -603,7 +603,9 @@ public class ChemFrame {
 				}
 				zSortedAtomIndicies[j-1]=thisN;
 				zSortedAtomIndicies[j]=preN;
+				oldVal=thisVal;
 			} else {
+				oldVal=preVal;
 				preVal=thisVal;
 				preN=thisN;
 			}

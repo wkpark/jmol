@@ -32,23 +32,23 @@ import org.openscience.jmol.viewer.g3d.Colix;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class UnitcellRenderer extends ShapeRenderer {
+class UccageRenderer extends ShapeRenderer {
 
   void render() {
-    Unitcell unitcell = (Unitcell)shape;
-    short mad = unitcell.mad;
-    short colix = unitcell.colix;
-    if (mad == 0 || ! unitcell.hasUnitcell)
+    Uccage uccage = (Uccage)shape;
+    short mad = uccage.mad;
+    short colix = uccage.colix;
+    if (mad == 0 || ! uccage.hasUnitcell)
       return;
-    BboxRenderer.render(viewer, g3d, mad, colix, unitcell.vertices,
-                        frameRenderer.getTempScreens(8));
+    BbcageRenderer.render(viewer, g3d, mad, colix, uccage.vertices,
+                          frameRenderer.getTempScreens(8));
     /*
     render(viewer, g3d, mad, bbox.colix, bbox.bboxVertices, bboxScreens);
 
     Point3i[] screens = frameRenderer.getTempScreens(8);
     for (int i = 8; --i >= 0; )
-      viewer.transformPoint(unitcell.vertices[i], screens[i]);
-    short colix = unitcell.colix;
+      viewer.transformPoint(uccage.vertices[i], screens[i]);
+    short colix = uccage.colix;
     for (int i = 0; i < 24; i += 2) {
       Point3i screenA = screens[Bbox.edges[i]];
       Point3i screenB = screens[Bbox.edges[i+1]];
@@ -60,11 +60,11 @@ class UnitcellRenderer extends ShapeRenderer {
     }
     */
 
-    g3d.drawString("a=" + unitcell.a, colix, 5, 15, 0);
-    g3d.drawString("b=" + unitcell.b, colix, 5, 30, 0);
-    g3d.drawString("c=" + unitcell.c, colix, 5, 45, 0);
-    g3d.drawString("alpha=" + unitcell.alpha, colix, 5, 60, 0);
-    g3d.drawString("beta =" + unitcell.beta,  colix, 5, 75, 0);
-    g3d.drawString("gamma=" + unitcell.gamma, colix, 5, 90, 0);
+    g3d.drawString("a=" + uccage.a, colix, 5, 15, 0);
+    g3d.drawString("b=" + uccage.b, colix, 5, 30, 0);
+    g3d.drawString("c=" + uccage.c, colix, 5, 45, 0);
+    g3d.drawString("alpha=" + uccage.alpha, colix, 5, 60, 0);
+    g3d.drawString("beta =" + uccage.beta,  colix, 5, 75, 0);
+    g3d.drawString("gamma=" + uccage.gamma, colix, 5, 90, 0);
   }
 }

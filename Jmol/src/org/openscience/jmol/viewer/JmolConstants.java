@@ -1709,14 +1709,14 @@ final public class JmolConstants {
   public final static int SHAPE_DOTS     = 4;
   public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 5;
   public final static int SHAPE_AXES     = 5;
-  public final static int SHAPE_BBOX     = 6;
-  public final static int SHAPE_UNITCELL = 7;
+  public final static int SHAPE_BBCAGE     = 6;
+  public final static int SHAPE_UCCAGE = 7;
   public final static int SHAPE_FRANK    = 8;
   public final static int SHAPE_MAX      = 9;
 
   public final static String[] shapeClassBases = {
     "Backbone", "Trace", "Cartoon", "Strands", "Dots",
-    "Axes", "Bbox", "Unitcell", "Frank",
+    "Axes", "Bbcage", "Uccage", "Frank",
   };
 
   // all of these things are compile-time constants

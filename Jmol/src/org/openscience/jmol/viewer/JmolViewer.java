@@ -1430,9 +1430,9 @@ final public class JmolViewer {
     if (key.equals("showAxes"))
       return getShapeShow(JmolConstants.SHAPE_AXES);
     if (key.equals("showBoundingBox"))
-      return getShapeShow(JmolConstants.SHAPE_BBOX);
+      return getShapeShow(JmolConstants.SHAPE_BBCAGE);
     if (key.equals("showUnitcell"))
-      return getShapeShow(JmolConstants.SHAPE_UNITCELL);
+      return getShapeShow(JmolConstants.SHAPE_UCCAGE);
     if (key.equals("showHydrogens"))
       return getShowHydrogens();
     if (key.equals("showVectors"))
@@ -1467,9 +1467,9 @@ final public class JmolViewer {
     if (key.equals("showAxes"))
       { setShapeShow(JmolConstants.SHAPE_AXES, value); return; }
     if (key.equals("showBoundingBox"))
-      { setShapeShow(JmolConstants.SHAPE_BBOX, value); return; }
+      { setShapeShow(JmolConstants.SHAPE_BBCAGE, value); return; }
     if (key.equals("showUnitcell"))
-      { setShapeShow(JmolConstants.SHAPE_UNITCELL, value); return; }
+      { setShapeShow(JmolConstants.SHAPE_UCCAGE, value); return; }
     if (key.equals("showHydrogens"))
       { setShowHydrogens(value); return; }
     if (key.equals("showHydrogens"))

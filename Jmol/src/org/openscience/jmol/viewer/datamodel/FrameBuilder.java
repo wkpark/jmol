@@ -55,11 +55,11 @@ public class FrameBuilder {
      ****************************************************************/
     frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile,
                                                           frameNumber));
-    frame.setCrystalScaleMatrix(adapter.getCrystalScaleMatrix(clientFile,
-                                                              frameNumber));
-    frame.setCrystalScaleTranslate(adapter.
-                                   getCrystalScaleTranslate(clientFile,
-                                                            frameNumber));
+    frame.setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile,
+                                                      frameNumber));
+    frame.setPdbScaleTranslate(adapter.
+                               getPdbScaleTranslate(clientFile,
+                                                    frameNumber));
 
 
     for (JmolModelAdapter.AtomIterator iterAtom =

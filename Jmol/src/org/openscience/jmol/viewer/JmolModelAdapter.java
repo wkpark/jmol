@@ -210,9 +210,9 @@ public interface JmolModelAdapter {
    */
   public float[] getNotionalUnitcell(Object clientFile, int frameNumber);
 
-  public float[] getCrystalScaleMatrix(Object clientFile, int frameNumber);
+  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber);
 
-  public float[] getCrystalScaleTranslate(Object clientFile, int frameNumber);
+  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber);
 
   /****************************************************************
    * AtomIterator is used to enumerate all the <code>clientAtom</code>

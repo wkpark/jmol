@@ -55,10 +55,9 @@ public class Frame {
   public Bond[] bonds;
   public float[] notionalUnitcell;
   public Matrix3f matrixNotional;
-  public Matrix3f crystalScaleMatrix;
-  public Matrix3f crystalScaleMatrixTranspose;
-  public Vector3f crystalTranslateVector;
-  public Matrix3f matrixUnitcellToOrthogonal;
+  public Matrix3f pdbScaleMatrix;
+  public Matrix3f pdbScaleMatrixTranspose;
+  public Vector3f pdbTranslateVector;
   public Matrix3f matrixEuclideanToFractional;
   public Matrix3f matrixFractionalToEuclidean;
 
@@ -817,30 +816,28 @@ public class Frame {
       this.notionalUnitcell = notionalUnitcell;
   }
 
-  public void setCrystalScaleMatrix(float[] crystalScaleMatrixArray) {
-    if (crystalScaleMatrixArray == null)
+  public void setPdbScaleMatrix(float[] pdbScaleMatrixArray) {
+    if (pdbScaleMatrixArray == null)
       return;
-    if (crystalScaleMatrixArray.length != 9) {
-      System.out.println("crystalScaleMatrix.length != 9 :" + 
-                        crystalScaleMatrix);
+    if (pdbScaleMatrixArray.length != 9) {
+      System.out.println("pdbScaleMatrix.length != 9 :" + 
+                        pdbScaleMatrix);
       return;
     }
-    crystalScaleMatrix = new Matrix3f(crystalScaleMatrixArray);
-    crystalScaleMatrixTranspose = new Matrix3f();
-    crystalScaleMatrixTranspose.transpose(crystalScaleMatrix);
-    matrixUnitcellToOrthogonal = new Matrix3f();
-    matrixUnitcellToOrthogonal.invert(crystalScaleMatrix);
+    pdbScaleMatrix = new Matrix3f(pdbScaleMatrixArray);
+    pdbScaleMatrixTranspose = new Matrix3f();
+    pdbScaleMatrixTranspose.transpose(pdbScaleMatrix);
   }
 
-  public void setCrystalScaleTranslate(float[] crystalScaleTranslate) {
-    if (crystalScaleTranslate == null)
+  public void setPdbScaleTranslate(float[] pdbScaleTranslate) {
+    if (pdbScaleTranslate == null)
       return;
-    if (crystalScaleTranslate.length != 3) {
-      System.out.println("crystalScaleTranslate.length != 3 :" + 
-                         crystalScaleTranslate);
+    if (pdbScaleTranslate.length != 3) {
+      System.out.println("pdbScaleTranslate.length != 3 :" + 
+                         pdbScaleTranslate);
       return;
     }
-    this.crystalTranslateVector = new Vector3f(crystalScaleTranslate);
+    this.pdbTranslateVector = new Vector3f(pdbScaleTranslate);
   }
 
   public ShapeRenderer getRenderer(int refShape) {
@@ -856,10 +853,10 @@ public class Frame {
     System.out.println("constructFractionalMatrices()");
     matrixNotional = new Matrix3f();
     calcNotionalMatrix(notionalUnitcell, matrixNotional);
-    if (crystalScaleMatrix != null) {
+    if (pdbScaleMatrix != null) {
       System.out.println("using PDB Scale matrix");
       matrixEuclideanToFractional = new Matrix3f();
-      matrixEuclideanToFractional.transpose(crystalScaleMatrix);
+      matrixEuclideanToFractional.transpose(pdbScaleMatrix);
       matrixFractionalToEuclidean = new Matrix3f();
       matrixFractionalToEuclidean.invert(matrixEuclideanToFractional);
     } else {

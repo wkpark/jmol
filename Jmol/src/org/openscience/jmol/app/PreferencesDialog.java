@@ -286,7 +286,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbShowBoundingBox =
       guimap.newJCheckBox("Prefs.showBoundingBox",
-                          viewer.getShapeShow(JmolConstants.SHAPE_BBOX));
+                          viewer.getShapeShow(JmolConstants.SHAPE_BBCAGE));
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
@@ -983,7 +983,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
     cbShowAxes.setSelected(viewer.getShapeShow(JmolConstants.SHAPE_AXES));
     cbShowBoundingBox.setSelected(viewer.
-                                  getShapeShow(JmolConstants.SHAPE_BBOX));
+                                  getShapeShow(JmolConstants.SHAPE_BBCAGE));
 
     cbOrientationRasMolChime.setSelected(viewer.getOrientationRasMolChime());
 
@@ -1109,7 +1109,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setWireframeRotation(wireframeRotation);
     viewer.setPerspectiveDepth(perspectiveDepth);
     viewer.setShapeShow(JmolConstants.SHAPE_AXES, showAxes);
-    viewer.setShapeShow(JmolConstants.SHAPE_BBOX, showBoundingBox);
+    viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, showBoundingBox);
     viewer.setOrientationRasMolChime(orientationRasMolChime);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
@@ -1186,7 +1186,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        viewer.setShapeShow(JmolConstants.SHAPE_BBOX, isSelected);
+        viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, isSelected);
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.orientationRasMolChime")) {
         orientationRasMolChime = isSelected;

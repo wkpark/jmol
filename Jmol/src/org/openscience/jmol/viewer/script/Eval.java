@@ -1315,10 +1315,10 @@ public class Eval implements Runnable {
       refShape = JmolConstants.SHAPE_AXES;
       break;
     case Token.unitcell:
-      refShape = JmolConstants.SHAPE_UNITCELL;
+      refShape = JmolConstants.SHAPE_UCCAGE;
       break;
     case Token.boundbox:
-      refShape = JmolConstants.SHAPE_BBOX;
+      refShape = JmolConstants.SHAPE_BBCAGE;
       break;
     case Token.frank:
       refShape = JmolConstants.SHAPE_FRANK;
@@ -2043,12 +2043,12 @@ public class Eval implements Runnable {
   }
 
   void setBoundbox() throws ScriptException {
-    viewer.setShapeMad(JmolConstants.SHAPE_BBOX,
+    viewer.setShapeMad(JmolConstants.SHAPE_BBCAGE,
                        getSetBooleanOrMad());
   }
 
   void setUnitcell() throws ScriptException {
-    viewer.setShapeMad(JmolConstants.SHAPE_UNITCELL,
+    viewer.setShapeMad(JmolConstants.SHAPE_UCCAGE,
                        getSetBooleanOrMad());
   }
 

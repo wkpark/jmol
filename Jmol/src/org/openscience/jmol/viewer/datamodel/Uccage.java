@@ -31,7 +31,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class Unitcell extends SelectionIndependentShape {
+public class Uccage extends SelectionIndependentShape {
 
   boolean hasUnitcell;
   float a,b,c,alpha,beta,gamma;
@@ -73,25 +73,5 @@ public class Unitcell extends SelectionIndependentShape {
     alpha = notionalUnitcell[3];
     beta  = notionalUnitcell[4];
     gamma = notionalUnitcell[5];
-  }
-
-  void dumpCellData(float[] notionalUnitcell,
-                    Matrix3f crystalScaleMatrix,
-                    Vector3f crystalTranslateVector,
-                    Matrix3f crystalScaleMatrixTranspose,
-                    Matrix3f matrixUnitcellToOrthogonal) {
-    if (notionalUnitcell == null) {
-      System.out.println("notional unitcell is null");
-      return;
-    }
-    System.out.print("unitcell:");
-    for (int i = 0; i < 6; ++i)
-      System.out.print(" " + notionalUnitcell[i]);
-    System.out.println("");
-
-    System.out.println("scale matrix:\n" + crystalScaleMatrix);
-    System.out.println("translate vector:\n" + crystalTranslateVector);
-    System.out.println("transpose:\n" + crystalScaleMatrixTranspose);
-    System.out.println("inverted matrix:\n" + matrixUnitcellToOrthogonal);
   }
 }

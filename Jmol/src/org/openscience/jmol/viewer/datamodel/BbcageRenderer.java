@@ -31,14 +31,14 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class BboxRenderer extends ShapeRenderer {
+class BbcageRenderer extends ShapeRenderer {
 
   void render() {
-    Bbox bbox = (Bbox)shape;
-    short mad = bbox.mad;
+    Bbcage bbcage = (Bbcage)shape;
+    short mad = bbcage.mad;
     if (mad == 0)
       return;
-    render(viewer, g3d, mad, bbox.colix, bbox.vertices,
+    render(viewer, g3d, mad, bbcage.colix, bbcage.vertices,
            frameRenderer.getTempScreens(8));
   }
 
@@ -57,12 +57,12 @@ class BboxRenderer extends ShapeRenderer {
     for (int i = 0; i < 24; i += 2) {
       if (mad < 0)
         g3d.drawDottedLine(colix,
-                           screens[Bbox.edges[i]],
-                           screens[Bbox.edges[i+1]]);
+                           screens[Bbcage.edges[i]],
+                           screens[Bbcage.edges[i+1]]);
       else
         g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, widthPixels,
-                         screens[Bbox.edges[i]],
-                         screens[Bbox.edges[i+1]]);
+                         screens[Bbcage.edges[i]],
+                         screens[Bbcage.edges[i+1]]);
     }
   }
 }

@@ -154,11 +154,11 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
-  public float[] getCrystalScaleMatrix(Object clientFile, int frameNumber) {
+  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber) {
     return null;
   }
 
-  public float[] getCrystalScaleTranslate(Object clientFile, int frameNumber) {
+  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
     return null;
   }
 

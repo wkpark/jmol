@@ -463,7 +463,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShapeShow(JmolConstants.SHAPE_BBOX, cbmi.isSelected());
+      viewer.setShapeShow(JmolConstants.SHAPE_BBCAGE, cbmi.isSelected());
     }
   }
 
@@ -494,7 +494,7 @@ public class DisplayPanel extends JPanel
     guimap.setSelected("axesCheck",
                        viewer.getShapeShow(JmolConstants.SHAPE_AXES));
     guimap.setSelected("boundboxCheck",
-                       viewer.getShapeShow(JmolConstants.SHAPE_BBOX));
+                       viewer.getShapeShow(JmolConstants.SHAPE_BBCAGE));
   }
 
   public Action[] getActions() {

@@ -190,12 +190,12 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return ((Model)clientFile).notionalUnitcell;
   }
 
-  public float[] getCrystalScaleMatrix(Object clientFile, int frameNumber) {
-    return ((Model)clientFile).crystalScaleMatrix;
+  public float[] getPdbScaleMatrix(Object clientFile, int frameNumber) {
+    return ((Model)clientFile).pdbScaleMatrix;
   }
 
-  public float[] getCrystalScaleTranslate(Object clientFile, int frameNumber) {
-    return ((Model)clientFile).crystalScaleTranslate;
+  public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
+    return ((Model)clientFile).pdbScaleTranslate;
   }
 
   /****************************************************************
@@ -367,8 +367,8 @@ abstract class Model {
   String errorMessage;
   String fileHeader;
   float[] notionalUnitcell;
-  float[] crystalScaleMatrix;
-  float[] crystalScaleTranslate;
+  float[] pdbScaleMatrix;
+  float[] pdbScaleTranslate;
 
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
@@ -758,24 +758,24 @@ class PdbModel extends Model {
   }
 
   void scale(int n) throws Exception {
-    crystalScaleMatrix[n*3 + 0] = getFloat(10, 10);
-    crystalScaleMatrix[n*3 + 1] = getFloat(20, 10);
-    crystalScaleMatrix[n*3 + 2] = getFloat(30, 10);
+    pdbScaleMatrix[n*3 + 0] = getFloat(10, 10);
+    pdbScaleMatrix[n*3 + 1] = getFloat(20, 10);
+    pdbScaleMatrix[n*3 + 2] = getFloat(30, 10);
     float translation = getFloat(45, 10);
     if (translation != 0) {
-      if (crystalScaleTranslate == null)
-        crystalScaleTranslate = new float[3];
-      crystalScaleTranslate[n] = translation;
+      if (pdbScaleTranslate == null)
+        pdbScaleTranslate = new float[3];
+      pdbScaleTranslate[n] = translation;
     }
   }
 
   void scale1() {
     System.out.println("scale1 seen");
     try {
-      crystalScaleMatrix = new float[9];
+      pdbScaleMatrix = new float[9];
       scale(0);
     } catch (Exception e) {
-      crystalScaleMatrix = null;
+      pdbScaleMatrix = null;
       System.out.println("scale1 died:" + 3);
     }
   }
@@ -785,7 +785,7 @@ class PdbModel extends Model {
     try {
       scale(1);
     } catch (Exception e) {
-      crystalScaleMatrix = null;
+      pdbScaleMatrix = null;
       System.out.println("scale2 died");
     }
   }
@@ -795,7 +795,7 @@ class PdbModel extends Model {
     try {
       scale(2);
     } catch (Exception e) {
-      crystalScaleMatrix = null;
+      pdbScaleMatrix = null;
       System.out.println("scale3 died");
     }
   }

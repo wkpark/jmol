@@ -83,7 +83,7 @@ class SpartanReader extends ModelReader {
     while (true) {
       String line = discardLinesUntilNonBlank(reader);
       int lineBaseFreqCount = totalFrequencyCount;
-      System.out.println("lineBaseFreqCount=" + lineBaseFreqCount);
+      //      System.out.println("lineBaseFreqCount=" + lineBaseFreqCount);
       ichNextParse = 16;
       int lineFreqCount;
       for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
@@ -111,7 +111,7 @@ class SpartanReader extends ModelReader {
           atom.vectorX = x;
           atom.vectorY = y;
           atom.vectorZ = z;
-          System.out.println("x=" + x + " y=" + y + " z=" + z);
+          //          System.out.println("x=" + x + " y=" + y + " z=" + z);
         }
       }
     }

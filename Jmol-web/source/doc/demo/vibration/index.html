@@ -1,387 +1,97 @@
 <html>
-  <head><title>jmol applet vibrations demo</title>
+  <head>
+    <title>jmol applet vibrations demo</title>
+    <script src="../jmol/Jmol.js"></script>
+    <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
-    <table border="1">
-      <tr>
-	<td>
-	  <h2>phenylnitrene vibrations</h2>
-	  <applet name="jmol" code="JmolApplet"
-		  archive="../jmol/JmolApplet.jar"
-		  width="300" height="300" mayscript="true" >
-	    <param name="progressbar"   value="true" />
-	    <param name="progresscolor" value="blue" />
-	    <param name="boxmessage"    value="Downloading JmolApplet ..." />
-	    <param name="boxbgcolor"    value="black" />
-	    <param name="boxfgcolor"    value="white" />
-
-	    <param name="load"      value="phenylnitrene.g94.out.gz" />
-	    <param name="script"    value="
-		   wireframe .1; cpk off;
-		   frame 1; vectors on; color vectors yellow;
-		   move 10 -20 10 0 0 0 0 0 3;
-		   delay 1;
-		   vibration on;
-		   " />
-	    
-	  </applet>
-	</td>
-	
-	<td>
-	  Jmol can read output directly from Gaussian
-	  <a href="http://www.gaussian.com">www.gaussian.com</a>
-	  and animate the various resonating frequencies. <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="251.6760" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 1" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="306.9127" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 2" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="496.9935" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 3" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="554.8730" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 4" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="560.1715" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 5" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="671.5923" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 6" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="761.6204" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 7" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="815.6071" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 8" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="885.2657" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 9" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="909.3329" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 10" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="954.3123" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 11" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1045.4868" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 12" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1090.6792" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 13" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1106.0149" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 14" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1126.0255" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 15" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1169.3482" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 16" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1195.8327" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 17" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1295.8197" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 18" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1309.7455" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 19" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1381.4084" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 20" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1468.8493" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 21" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1582.4009" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 22" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1619.5605" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 23" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1731.3209" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 24" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="1783.9488" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 25" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="3359.7554" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 26" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="3366.3644" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 27" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="3384.8139" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 28" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="3389.5252" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 29" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="3396.5785" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 30" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="frame all" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame all" />
-	  </applet>
-	  <br />
-
-	  Of course, all the other Jmol script commands work as well:<br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="vibration on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="vibration on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="vibration off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="vibration off" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="vectors on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="vectors on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="vectors off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="vectors off" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="color vectors yellow" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="color vectors yellow" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="color vectors purple" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="color vectors purple" />
-	  </applet>
-	  <br />
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    <h2>phenylnitrene vibrations</h2>
+	    <script>
+	      var script = 
+	      "wireframe .1; cpk off; frame 1; vectors on; color vectors yellow;" +
+	      "move 10 -20 10 0 0 0 0 0 3; delay 1; vibration on;";
+	      jmolApplet(300, "phenylnitrene.g94.out.gz", script);
+	    </script>
+	  </td>
 	  
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill 15%" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill 15%" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill 0.25" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill 0.25" />
-	  </applet>
-	  <br />
+	  <td>
+	    Jmol can read output directly from Gaussian
+	    <a href="http://www.gaussian.com">www.gaussian.com</a>
+	    and animate the various resonating frequencies. <br />
+	    
+	    <blockquote>
+	      <script>
+		jmolMenu([
+		["frame 1", "251.6760", "selected"],
+		["frame 2", "306.9127"],
+		["frame 3", "496.9935"],
+		["frame 4", "554.8730"],
+		["frame 5", "560.1715"],
+		["frame 6", "671.5923"],
+		["frame 7", "761.6204"],
+		["frame 8", "815.6071"],
+		["frame 9", "885.2657"],
+		["frame 10", "909.3329"],
+		["frame 11", "954.3123"],
+		["frame 12", "1045.4868"],
+		["frame 13", "1090.6792"],
+		["frame 14", "1106.0149"],
+		["frame 15", "1126.0255"],
+		["frame 16", "1169.3482"],
+		["frame 17", "1195.8327"],
+		["frame 18", "1295.8197"],
+		["frame 19", "1309.7455"],
+		["frame 20", "1381.4084"],
+		["frame 21", "1468.8493"],
+		["frame 22", "1582.4009"],
+		["frame 23", "1619.5605"],
+		["frame 24", "1731.3209"],
+		["frame 25", "1783.9488"],
+		["frame 26", "3359.7554"],
+		["frame 27", "3366.3644"],
+		["frame 28", "3384.8139"],
+		["frame 29", "3389.5252"],
+		["frame 30", "3396.5785"],
+		["frame all", "frame all"]
+		], 10);
+	      </script>
+	    </blockquote>
 
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill off" />
-	  </applet>
-	  <br />
+	    Of course, all the other Jmol script commands work as well:<br />
 
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="wireframe on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="wireframe on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="wireframe 0.1" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="wireframe 0.1" />
-	  </applet>
-	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spin on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spin on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spin off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spin off" />
-	  </applet>
-	  <br />
-
-	</td>
-	
-      </tr>
-    </table>
+	    <blockquote>
+	      <script>
+		jmolCheckbox("vibration on", "vibration off", "vibration", "checked");
+		jmolBr();
+		jmolCheckbox("vectors on", "vectors off", "vectors", "checked");
+		jmolBr();
+		jmolRadioGroup([
+		["color vectors yellow", null, "checked"],
+		"color vectors purple"
+		]);
+		jmolBr();
+		jmolRadioGroup([
+		["spacefill off", null, "checked"],
+		"spacefill 20%",
+		"spacefill 100%"
+		]);
+		jmolBr();
+		jmolRadioGroup([
+		"wireframe on",
+		["wireframe 0.1", null, "checked"],
+		]);
+		jmolBr();
+		jmolCheckbox("spin on", "spin off", "spin");
+		jmolBr();
+	      </script>
+	    </blockquote>
+	  </td>
+	</tr>
+      </table>
+    </form>
   </body>
 </html>

@@ -54,6 +54,22 @@ import java.io.File;
 import java.beans.PropertyChangeListener;
 import java.awt.event.MouseEvent;
 
+/****************************************************************
+ * The JmolViewer can be used to render client molecules. Clients
+ * implement the JmolModelAdapter. JmolViewer uses this interface
+ * to extract information from the client data structures and
+ * render the molecule to the supplied java.awt.Component
+ *
+ * The default implementation of Jmol uses the CDK library
+ * <a href='http://cdk.sourceforge.net'>cdk.sourceforge.net</a>
+ *
+ * The JmolViewer runs on Java 1.1 virtual machines.
+ * The 3d graphics rendering package is a software implementation
+ * of a z-buffer. It does not use Java3D and does not use Graphics2D
+ * from Java 1.2. Therefore, it is well suited to building web browser
+ * applets that will run on a wide variety of system configurations.
+ ****************************************************************/
+
 final public class JmolViewer {
 
   //  public static JmolViewer viewer;
@@ -112,7 +128,6 @@ final public class JmolViewer {
     axesManager = new AxesManager(this);
     measurementManager = new MeasurementManager(this);
     distributionManager = new DistributionManager(this);
-
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
@@ -597,23 +612,6 @@ final public class JmolViewer {
       isSelected(atomShape);
   }
 
-  /*
-  public boolean hasBondSelectionHalo(AtomShape atomShape, int bondIndex) {
-    if (!selectionHaloEnabled || repaintManager.fastRendering)
-      return false;
-    boolean isAtomSelected = isSelected(atomShape);
-    if (bondSelectionModeOr && isAtomSelected)
-      return true;
-    if (!bondSelectionModeOr && !isAtomSelected)
-      return false;
-    // FIXME 
-    int atomIndexOther = atomShape.getBondedAtomIndex(bondIndex);
-    boolean isOtherSelected =
-      selectionManager.isSelected(atomIndexOther);
-    return isOtherSelected;
-  }
-  */
-
   public boolean selectionHaloEnabled = false;
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
     this.selectionHaloEnabled = selectionHaloEnabled;
@@ -798,8 +796,6 @@ final public class JmolViewer {
   public int getBoundingBoxCenterY() {
     return dimCurrent.height / 2;
   }
-
-  // FIXME mth -- consolidate these two calls to setFrame
 
   public int getNumberOfFrames() {
     return modelManager.getFrameCount();
@@ -1472,17 +1468,6 @@ final public class JmolViewer {
     return styleManager.getMeasureFont(size);
   }
 
-  /*
-  public void setPropertyStyleString(String s) {
-    styleManager.setPropertyStyleString(s);
-    refresh();
-  }
-
-  public String getPropertyStyleString() {
-    return styleManager.propertyStyleString;
-  }
-  */
-
   public void setWireframeRotation(boolean wireframeRotation) {
     styleManager.setWireframeRotation(wireframeRotation);
     // no need to refresh since we are not currently rotating
@@ -1521,10 +1506,6 @@ final public class JmolViewer {
 
   public double getArrowHeadRadius() {
     return styleManager.arrowHeadRadius;
-  }
-
-  public boolean getDebugShowAxis() {
-    return false;
   }
 
   /****************************************************************

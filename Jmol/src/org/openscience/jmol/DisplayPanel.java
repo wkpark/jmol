@@ -44,6 +44,7 @@ import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.AxisAngle4f;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -479,6 +480,10 @@ public class DisplayPanel extends JPanel
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
+  private Test1Action test1Action = new Test1Action();
+  private Test2Action test2Action = new Test2Action();
+  private Test3Action test3Action = new Test3Action();
+  private Test4Action test4Action = new Test4Action();
   private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
@@ -862,6 +867,58 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class Test1Action extends AbstractAction {
+
+    public Test1Action() {
+      super("test1");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      rotateX(45);
+      repaint();
+    }
+  }
+
+  class Test2Action extends AbstractAction {
+
+    public Test2Action() {
+      super("test2");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      rotateY(45);
+      repaint();
+    }
+  }
+
+  class Test3Action extends AbstractAction {
+
+    public Test3Action() {
+      super("test3");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      rotateZ(45);
+      repaint();
+    }
+  }
+
+  class Test4Action extends AbstractAction {
+
+    public Test4Action() {
+      super("test4");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      rotate(new AxisAngle4f(1, 1, 1, (float)Math.PI/4));
+      repaint();
+    }
+  }
+
   class PlainAction extends AbstractAction {
 
     public PlainAction() {
@@ -945,7 +1002,7 @@ public class DisplayPanel extends JPanel
     Action[] defaultActions = {
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
-      defineCenterAction,
+      defineCenterAction, test1Action, test2Action, test3Action, test4Action,
       aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
       bshadingAction, blineAction, bwireframeAction, plainAction,
       symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,
@@ -959,20 +1016,6 @@ public class DisplayPanel extends JPanel
   DisplaySettings getSettings() {
     return settings;
   }
-
-  /** Added for compatability with RasmolScript
-   */
-  public void rotate(int axis, float angle) {
-
-    if (axis == X_AXIS) {
-      matrixRotate.rotX((float)Math.toRadians(angle));
-    } else if (axis == Y_AXIS) {
-      matrixRotate.rotY((float)Math.toRadians(angle));
-    } else if (axis == Z_AXIS) {
-      matrixRotate.rotZ((float)Math.toRadians(angle));
-    }
-  }
-
 
   public void propertyChange(PropertyChangeEvent event) {
     
@@ -1042,5 +1085,49 @@ public class DisplayPanel extends JPanel
     int timeAverage = totalTime / cTimes;
     status.setStatus(3, fmt(lastTime) + "ms : " + fmt(timeAverage) + "ms");
   }
+
+  public void rotate(int axis, float angle) {
+    if (axis == X_AXIS) {
+      matrixRotate.rotX((float)Math.toRadians(angle));
+    } else if (axis == Y_AXIS) {
+      matrixRotate.rotY((float)Math.toRadians(angle));
+    } else if (axis == Z_AXIS) {
+      matrixRotate.rotZ((float)Math.toRadians(angle));
+    }
+  }
+  public void rotateX(float angleRadians) {
+    matrixTemp.rotX(angleRadians);
+    matrixRotate.mul(matrixTemp, matrixRotate);
+    repaint();
+  }
+  public void rotateY(float angleRadians) {
+    matrixTemp.rotY(angleRadians);
+    matrixRotate.mul(matrixTemp, matrixRotate);
+    repaint();
+  }
+  public void rotateZ(float angleRadians) {
+    matrixTemp.rotZ(angleRadians);
+    matrixRotate.mul(matrixTemp, matrixRotate);
+    repaint();
+  }
+  public void rotateX(int angleDegrees) {
+    rotateX((float)Math.toRadians(angleDegrees));
+  }
+  public void rotateY(int angleDegrees) {
+    rotateY((float)Math.toRadians(angleDegrees));
+  }
+  public void rotateZ(int angleDegrees) {
+    rotateZ((float)Math.toRadians(angleDegrees));
+  }
+  public void rotate(AxisAngle4f axisAngle) {
+    matrixTemp.setIdentity();
+    matrixTemp.setRotation(axisAngle);
+    matrixRotate.mul(matrixTemp, matrixRotate);
+    repaint();
+  }
+  public void setCenter(Point3f center) {
+    chemframe.setRotationCenter(center);
+  }
 }
+
 

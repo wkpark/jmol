@@ -42,12 +42,9 @@ import java.awt.FlowLayout;
 
 public class ImageTyper extends JPanel {
 
-  private String[] Choices = {
-    "JPEG", "PNG", "PPM"
-  };
+  private String[] Choices = { "JPEG", "PNG", "PPM" };
   private int def = 0;
   private String result = Choices[def];
-  private int JpegQuality;
   private JSlider qSlider;
   private JComboBox cb;
 
@@ -89,21 +86,13 @@ public class ImageTyper extends JPanel {
     JPanel qPanel = new JPanel();
     qPanel.setLayout(new BorderLayout());
     qPanel.setBorder(new TitledBorder("JPEG Quality"));
-    qSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, 8);
+    qSlider = new JSlider(JSlider.HORIZONTAL, 50, 100, 90);
     qSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     qSlider.setPaintTicks(true);
-    qSlider.setMajorTickSpacing(1);
+    qSlider.setMajorTickSpacing(10);
     qSlider.setPaintLabels(true);
-    qSlider.addChangeListener(new ChangeListener() {
 
-      public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider) e.getSource();
-        JpegQuality = source.getValue();
-      }
-    });
-
-    // by default, disabled.  Can be turned on with choice of JPEG.
-    qSlider.setEnabled(false);
+    qSlider.setEnabled(true);
     qPanel.add(qSlider, BorderLayout.SOUTH);
     add(qPanel, BorderLayout.SOUTH);
   }
@@ -120,11 +109,6 @@ public class ImageTyper extends JPanel {
    * image that is to be generated.  Returns -1 if choice was not JPEG.
    */
   public int getQuality() {
-
-    int qual = -1;
-    if (result.equals("JPEG")) {
-      qual = JpegQuality;
-    }
-    return qual;
+    return qSlider.getValue();
   }
 }

@@ -1001,14 +1001,15 @@ public class Jmol extends JPanel {
       if (retval == 0) {
         File file = exportChooser.getSelectedFile();
 
+        System.out.println("file chosen=" + file);
         if (file != null) {
           try {
             Image eImage = display.takeSnapshot();
             FileOutputStream os = new FileOutputStream(file);
             
             if (it.getType().equals("JPEG")) {
-              int qual = 10 * it.getQuality();
-              JpegEncoder jc = new JpegEncoder(eImage, qual, os);
+              int quality = it.getQuality();
+              JpegEncoder jc = new JpegEncoder(eImage, quality, os);
               jc.Compress();
             } else if (it.getType().equals("PPM")) {
               PpmEncoder pc = new PpmEncoder(eImage, os);

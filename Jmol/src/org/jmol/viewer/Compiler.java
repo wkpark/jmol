@@ -143,7 +143,7 @@ class Compiler {
       }
       if (tokCommand != Token.nada) {
         if (lookingAtString()) {
-          String str = script.substring(ichToken+1, ichToken+cchToken-1);
+          String str = getUnescapedStringLiteral();
           ltoken.addElement(new Token(Token.string, str));
           continue;
         }
@@ -415,10 +415,76 @@ class Compiler {
     //      return false;
     int ichT = ichToken + 1;
     //    while (ichT < cchScript && script.charAt(ichT++) != chFirst)
-    while (ichT < cchScript && script.charAt(ichT++) != '"') {
+    char ch;
+    boolean previousCharBackslash = false;
+    while (ichT < cchScript) {
+      ch = script.charAt(ichT++);
+      if (ch == '"' && !previousCharBackslash)
+        break;
+      previousCharBackslash = ch == '\\' ? !previousCharBackslash : false;
     }
     cchToken = ichT - ichToken;
     return true;
+  }
+
+  String getUnescapedStringLiteral() {
+    System.out.println("getUnescapedStringLiteral:" +
+                       script.substring(ichToken, ichToken + cchToken));
+    StringBuffer sb = new StringBuffer(cchToken - 2);
+    int ichMax = ichToken + cchToken - 1;
+    int ich = ichToken + 1;
+    while (ich < ichMax) {
+      char ch = script.charAt(ich++);
+      if (ch == '\\' && ich < ichMax) {
+        ch = script.charAt(ich++);
+        switch (ch) {
+        case 'b':
+          ch = '\b';
+          break;
+        case 'n':
+          ch = '\n';
+          break;
+        case 't':
+          ch = '\t';
+          break;
+        case 'r':
+          ch = '\r';
+          // fall into
+        case '"':
+          System.out.println("dbl quote seen");
+        case '\\':
+        case '\'':
+          break;
+        case 'u':
+          if (ich < ichMax) {
+            int unicode = 0;
+            for (int k = 4; --k >= 0 && ich < ichMax; ) {
+              char chT = script.charAt(ich);
+              int hexit = getHexitValue(chT);
+              if (hexit < 0)
+                break;
+              unicode <<= 4;
+              unicode += hexit;
+              ++ich;
+            }
+            ch = (char)unicode;
+          }
+        }
+      }
+      sb.append(ch);
+    }
+    return "" + sb;
+  }
+
+  static int getHexitValue(char ch) {
+    if (ch >= '0' && ch <= '9')
+      return ch - '0';
+    else if (ch >= 'a' && ch <= 'f')
+      return ch - 'a';
+    else if (ch >= 'A' && ch <= 'F')
+      return ch - 'A';
+    else
+      return -1;
   }
 
   // note that these formats include a space character
@@ -1292,4 +1358,5 @@ class Compiler {
     }
     return badRGBColor();
   }
+
 }

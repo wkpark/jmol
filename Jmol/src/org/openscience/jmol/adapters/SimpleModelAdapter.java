@@ -317,27 +317,21 @@ class Atom {
   String pdbAtomRecord;
   int pdbModelNumber;
 
-  Atom(String symbol, float x, float y, float z) {
+  Atom(String symbol, int charge, float x, float y, float z) {
     this.atomicSymbol = symbol;
+    this.atomicCharge = charge;
     this.x = x;
     this.y = y;
     this.z = z;
   }
 
-  Atom(String symbol, float x, float y, float z, int charge) {
+  Atom(String symbol, int charge, float x, float y, float z,
+       int model, String pdb) {
     this.atomicSymbol = symbol;
+    this.atomicCharge = charge;
     this.x = x;
     this.y = y;
     this.z = z;
-    this.atomicCharge = charge;
-  }
-
-  Atom(String symbol, float x, float y, float z, int charge, int model, String pdb) {
-    this.atomicSymbol = symbol;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.atomicCharge = charge;
     this.pdbModelNumber = model;
     this.pdbAtomRecord = pdb;
   }
@@ -403,10 +397,11 @@ class XyzModel extends Model {
     for (int i = 0; i < atomCount; ++i) {
       StringTokenizer tokenizer = new StringTokenizer(reader.readLine(), "\t ");
       String atomicSymbol = tokenizer.nextToken();
+      int charge = 0;
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = Float.valueOf(tokenizer.nextToken()).floatValue();
-      atoms[i] = new Atom(atomicSymbol, x, y, z);
+      atoms[i] = new Atom(atomicSymbol, charge, x, y, z);
     }
   }
 }
@@ -443,7 +438,7 @@ class JmeModel extends Model {
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = 0;
-      atoms[i] = new Atom(atomicSymbol, x, y, z);
+      atoms[i] = new Atom(atomicSymbol, 0, x, y, z);
     }
   }
 
@@ -476,7 +471,8 @@ class MolModel extends Model {
     readAtoms(reader);
     readBonds(reader);
   }
-
+  
+  // www.mdli.com/downloads/public/ctfile/ctfile.jsp
   void readAtoms(BufferedReader reader) throws Exception {
     atoms = new Atom[atomCount];
     for (int i = 0; i < atomCount; ++i) {
@@ -485,7 +481,14 @@ class MolModel extends Model {
       float x = Float.valueOf(line.substring( 0,10).trim()).floatValue();
       float y = Float.valueOf(line.substring(10,20).trim()).floatValue();
       float z = Float.valueOf(line.substring(20,30).trim()).floatValue();
-      atoms[i] = new Atom(atomicSymbol, x, y, z);
+      int charge = 0;
+      if (line.length() >= 39) {
+        int chargeCode = Integer.parseInt(line.substring(36, 39).trim());
+        if (chargeCode != 0)
+          charge = 4 - chargeCode;
+      }
+
+      atoms[i] = new Atom(atomicSymbol, charge, x, y, z);
     }
   }
 
@@ -617,8 +620,8 @@ class PdbModel extends Model {
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      atoms[atomCount++] = new Atom(atomicSymbol, x, y, z,
-                                    charge, currentModelNumber, line);
+      atoms[atomCount++] = new Atom(atomicSymbol, charge, x, y, z,
+                                    currentModelNumber, line);
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

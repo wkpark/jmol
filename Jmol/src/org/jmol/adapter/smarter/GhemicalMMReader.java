@@ -101,7 +101,7 @@ class GhemicalMMReader extends AtomSetCollectionReader {
 
   void processAtoms(BufferedReader input, String line) throws Exception {
     int atomCount = parseInt(line, 6);
-    System.out.println("atomCount=" + atomCount);
+    //System.out.println("atomCount=" + atomCount);
     for (int i = 0; i < atomCount; ++i) {
       if (atomSetCollection.atomCount != i)
         throw new Exception("GhemicalMMReader error #1");

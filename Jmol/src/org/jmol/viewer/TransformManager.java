@@ -689,12 +689,12 @@ class TransformManager {
   int minimumZ;
 
   float getRotationRadiusIncrease() {
-    System.out.println("TransformManager.getRotationRadiusIncrease()");
-    System.out.println("minimumZ=" + minimumZ);
+    //System.out.println("TransformManager.getRotationRadiusIncrease()");
+    //System.out.println("minimumZ=" + minimumZ);
     // add one more pixel just for good luck;
     int backupDistance = cameraDistance - minimumZ + 1;
     float angstromsIncrease = backupDistance / scalePixelsPerAngstrom;
-    System.out.println("angstromsIncrease=" + angstromsIncrease);
+    //System.out.println("angstromsIncrease=" + angstromsIncrease);
     return angstromsIncrease;
   }
 

@@ -13,7 +13,7 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="10.00.07" />
+  <property name="version" value="10.00.09" />
 
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
@@ -469,6 +469,8 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </jar>
 
+    <!-- vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv -->
+    <!-- changes to this must be replicated below for the signed applet -->
     <jar jarfile="JmolApplet0.jar" manifest="manifest/applet0.txt"
 	 index="true" >
       <fileset dir="${applet.classes.dir}">
@@ -477,6 +479,7 @@ support for assertions (which were introduced in 1.4).
         <include name="jmol75x29x8.gif" />
         <include name="org/jmol/api/JmolAppletInterface.class" />
       </fileset>
+      <!-- changes to this must be replicated below for the signed applet -->
       <indexjars>
         <pathelement path="JmolApplet1.jar" />
         <pathelement path="JmolApplet2.jar" />
@@ -486,10 +489,61 @@ support for assertions (which were introduced in 1.4).
         <pathelement path="JmolApplet6.jar" />
       </indexjars>
     </jar>
+    <!-- changes to this must be replicated below for the signed applet -->
+    <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   </target>
 
-  <target name="dist" id="dist" depends="doc,main">
+  <target name="signed-applet" id="signed-applet" depends="applet-jar">
+    <signjar jar="JmolApplet.jar" signedjar="JmolAppletSigned.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <signjar jar="JmolApplet1.jar" signedjar="JmolAppletSigned1.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <signjar jar="JmolApplet2.jar" signedjar="JmolAppletSigned2.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <signjar jar="JmolApplet3.jar" signedjar="JmolAppletSigned3.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <signjar jar="JmolApplet4.jar" signedjar="JmolAppletSigned4.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <signjar jar="JmolApplet5.jar" signedjar="JmolAppletSigned5.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+    <signjar jar="JmolApplet6.jar" signedjar="JmolAppletSigned6.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
+    <!-- this one must be treated specially because of jar indexing
+	 we cannot simply rename the jar file, because the index has
+	 the old name (JmolApplet?.jar) inside it -->
+    <jar jarfile="JmolAppletSigned0.jar" manifest="manifest/applet0.txt"
+	 index="true" >
+      <fileset dir="${applet.classes.dir}">
+        <include name="org/jmol/appletwrapper/*" />
+        <include name="JmolApplet*.class" />
+        <include name="jmol75x29x8.gif" />
+        <include name="org/jmol/api/JmolAppletInterface.class" />
+      </fileset>
+      <indexjars>
+        <pathelement path="JmolAppletSigned1.jar" />
+        <pathelement path="JmolAppletSigned2.jar" />
+        <pathelement path="JmolAppletSigned3.jar" />
+        <pathelement path="JmolAppletSigned4.jar" />
+        <pathelement path="JmolAppletSigned5.jar" />
+        <pathelement path="JmolAppletSigned6.jar" />
+      </indexjars>
+    </jar>
+    <signjar jar="JmolAppletSigned0.jar"
+	     keystore="selfSignedCertificate/selfSignedCertificate.store"
+	     storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
+  </target>
+
+  <target name="dist" id="dist" depends="doc,main,signed-applet">
     <!-- first build binary distribution -->
     <delete dir="build/dist/jmol-${version}"/>
     <mkdir dir="build/dist/jmol-${version}"/>
@@ -666,7 +720,7 @@ support for assertions (which were introduced in 1.4).
     <delete>
       <fileset dir=".">
         <include name="Jmol.jar" />
-        <include name="JmolApplet.jar" />
+        <include name="JmolApplet*.jar" />
       </fileset>
     </delete>
   </target>

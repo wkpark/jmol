@@ -27,16 +27,11 @@
 
 var undefined; // for IE 5 ... wherein undefined is undefined
 
-var _jmolArchivePath = "JmolApplet0.jar";
-var _jmolLastJar = 6;
-for (var i = 1; i <= _jmolLastJar; ++i)
-  _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
-
 ////////////////////////////////////////////////////////////////
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
 
-function jmolInitialize(codebaseDirectory) {
+function jmolInitialize(codebaseDirectory, useSignedApplet) {
   if (_jmol.initialized) {
     alert("jmolInitialize() should only be called *ONCE* within a page");
     return;
@@ -53,6 +48,7 @@ function jmolInitialize(codebaseDirectory) {
     alert("codebaseDirectory should be directory relative,\n" +
 	  "not relative to the root of the web server : " + codebaseDirectory);
   _jmolSetCodebase(codebaseDirectory);
+  _jmolUseSignedApplet(useSignedApplet);
   _jmolOnloadResetForms();
   _jmol.initialized = true;
 }
@@ -360,67 +356,76 @@ function jmolSetMenuCssClass(menuCssClass) {
 // use at your own risk ... you have been WARNED!
 ////////////////////////////////////////////////////////////////
 
+var _jmolArchivePath = "JmolApplet0.jar";
+var _jmolLastJar = 6;
+for (var i = 1; i <= _jmolLastJar; ++i)
+  _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
+
 var _jmol = {
 
-debugAlert: false,
-bgcolor: "black",
-progresscolor: "blue",
-boxbgcolor: "black",
-boxfgcolor: "white",
-boxmessage: "Downloading JmolApplet ...",
+  debugAlert: false,
+  bgcolor: "black",
+  progresscolor: "blue",
+  boxbgcolor: "black",
+  boxfgcolor: "white",
+  boxmessage: "Downloading JmolApplet ...",
+  
+  codebase: ".",
+  modelbase: ".",
+  
+  appletCount: 0,
+  
+  buttonCount: 0,
+  checkboxCount: 0,
+  linkCount: 0,
+  menuCount: 0,
+  radioCount: 0,
+  radioGroupCount: 0,
+  
+  appletCssClass: null,
+  appletCssText: "",
+  buttonCssClass: null,
+  buttonCssText: "",
+  checkboxCssClass: null,
+  checkboxCssText: "",
+  radioCssClass: null,
+  radioCssText: "",
+  linkCssClass: null,
+  linkCssText: "",
+  menuCssClass: null,
+  menuCssText: "",
+  
+  targetSuffix: 0,
+  targetText: "",
+  scripts: [""],
+  
+  ua: navigator.userAgent.toLowerCase(),
+  uaVersion: parseFloat(navigator.appVersion),
+  
+  os: "unknown",
+  browser: "unknown",
+  browserVersion: 0,
+  hasGetElementById: !!document.getElementById,
+  isJavaEnabled: navigator.javaEnabled(),
+  isNetscape47Win: false,
+  
+  isBrowserCompliant: false,
+  isJavaCompliant: false,
+  isFullyCompliant: false,
+  
+  initialized: false,
+  initChecked: false,
+  
+  browserChecked: false,
+  checkBrowserAction: "alert",
+  checkBrowserUrlOrMessage: null,
 
-codebase: ".",
-modelbase: ".",
+  lastJar: 6, // jars are numbered 0 through lastJar
+  baseAppletName: null, // JmolApplet OR JmolAppletSigned
+  archivePath: null,
 
-appletCount: 0,
-
-buttonCount: 0,
-checkboxCount: 0,
-linkCount: 0,
-menuCount: 0,
-radioCount: 0,
-radioGroupCount: 0,
-
-appletCssClass: null,
-appletCssText: "",
-buttonCssClass: null,
-buttonCssText: "",
-checkboxCssClass: null,
-checkboxCssText: "",
-radioCssClass: null,
-radioCssText: "",
-linkCssClass: null,
-linkCssText: "",
-menuCssClass: null,
-menuCssText: "",
-
-targetSuffix: 0,
-targetText: "",
-scripts: [""],
-
-ua: navigator.userAgent.toLowerCase(),
-uaVersion: parseFloat(navigator.appVersion),
-
-os: "unknown",
-browser: "unknown",
-browserVersion: 0,
-hasGetElementById: !!document.getElementById,
-isJavaEnabled: navigator.javaEnabled(),
-isNetscape47Win: false,
-
-isBrowserCompliant: false,
-isJavaCompliant: false,
-isFullyCompliant: false,
-
-initialized: false,
-initChecked: false,
-
-browserChecked: false,
-checkBrowserAction: "alert",
-checkBrowserUrlOrMessage: null,
-
-previousOnloadHandler: null,
-ready: {}
+  previousOnloadHandler: null,
+  ready: {}
 }
 
 with (_jmol) {
@@ -430,7 +435,7 @@ with (_jmol) {
     if (index < 0)
       return false;
     _jmol.browser = candidate;
-    _jmol.browserVersion = parseFloat(ua.substring(index + candidate.length+1));
+    _jmol.browserVersion = parseFloat(ua.substring(index+candidate.length+1));
     return true;
   }
   
@@ -491,6 +496,15 @@ with (_jmol) {
   isFullyCompliant = isBrowserCompliant && isJavaCompliant;
 }
 
+function _jmolUseSignedApplet(useSignedApplet) {
+  with (_jmol) {
+    baseAppletName = useSignedApplet ? "JmolAppletSigned" : "JmolApplet";
+    archivePath = baseAppletName + "0.jar";
+    for (var i = 1; i <= lastJar; ++i)
+      archivePath = archivePath + "," + baseAppletName + i + ".jar";
+  }
+}
+
 function _jmolApplet(size, inlineModel, script, nameSuffix) {
   with (_jmol) {
     if (! nameSuffix)
@@ -500,23 +514,24 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
       script = "select *";
     var sz = _jmolGetAppletSize(size);
     var t;
-    t = "<applet name='jmolApplet" + nameSuffix + "' id='jmolApplet" + nameSuffix +
-        "' " + appletCssText +
-        " code='JmolApplet'" +
-        " archive='" + _jmolArchivePath + "' codebase='" + codebase + "'\n" +
-        " width='" + sz[0] + "' height='" + sz[1] +
-        "' mayscript='true'>\n" +
-        "  <param name='progressbar' value='true' />\n" +
-        "  <param name='progresscolor' value='" +
-        progresscolor + "' />\n" +
-        "  <param name='boxmessage' value='" +
-        boxmessage + "' />\n" +
-        "  <param name='boxbgcolor' value='" +
-        boxbgcolor + "' />\n" +
-        "  <param name='boxfgcolor' value='" +
-        boxfgcolor + "' />\n" +
-        "  <param name='ReadyCallback' value='_jmolReadyCallback' />\n";
-
+    t = "<applet name='jmolApplet" + nameSuffix +
+      "' id='jmolApplet" + nameSuffix +
+      "' " + appletCssText +
+      " code='JmolApplet'" +
+      " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
+      " width='" + sz[0] + "' height='" + sz[1] +
+      "' mayscript='true'>\n" +
+      "  <param name='progressbar' value='true' />\n" +
+      "  <param name='progresscolor' value='" +
+      progresscolor + "' />\n" +
+      "  <param name='boxmessage' value='" +
+      boxmessage + "' />\n" +
+      "  <param name='boxbgcolor' value='" +
+      boxbgcolor + "' />\n" +
+      "  <param name='boxfgcolor' value='" +
+      boxfgcolor + "' />\n" +
+      "  <param name='ReadyCallback' value='_jmolReadyCallback' />\n";
+    
     if (inlineModel)
       t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)

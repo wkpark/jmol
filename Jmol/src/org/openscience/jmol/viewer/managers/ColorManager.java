@@ -147,25 +147,18 @@ public class ColorManager {
     colixLabel = g3d.getColix(color);
   }
 
-  private final static short colixDotsConcaveDefault = Graphics3D.GREEN;
-  private final static short colixDotsSaddleDefault = Graphics3D.BLUE;
-
   public short colixDotsConvex = 0;
-  public short colixDotsConcave = colixDotsConcaveDefault;
-  public short colixDotsSaddle = colixDotsSaddleDefault;
+  public short colixDotsConcave = 0;
+  public short colixDotsSaddle = 0;
 
   public void setColorDotsConvex(Color color) {
     colixDotsConvex = g3d.getColix(color);
   }
   public void setColorDotsConcave(Color color) {
     colixDotsConcave = g3d.getColix(color);
-    if (colixDotsConcave == 0)
-      colixDotsConcave = colixDotsConcaveDefault;
   }
   public void setColorDotsSaddle(Color color) {
     colixDotsSaddle = g3d.getColix(color);
-    if (colixDotsSaddle == 0)
-      colixDotsSaddle = colixDotsSaddleDefault;
   }
 
   public Color colorDistance = Color.white;

@@ -76,16 +76,15 @@ class DotsRenderer extends ShapeRenderer {
         renderConvex(atoms[i], colixes[i], map);
     }
     Dots.Torus[] tori = dots.tori;
-    System.out.println("DotsRenderer.render torusCount=" + dots.torusCount);
     for (int i = dots.torusCount; --i >= 0; )
-      renderTorus(tori[i], dotsConvexMaps);
+      renderTorus(tori[i], atoms, colixes, dotsConvexMaps);
     Dots.Cavity[] cavities = dots.cavities;
     if (false) {
       System.out.println("concave surface rendering currently disabled");
       return;
     }
     for (int i = dots.cavityCount; --i >= 0; )
-      renderCavity(cavities[i]);
+      renderCavity(cavities[i], atoms, colixes, dotsConvexMaps);
   }
 
   void renderConvex(Atom atom, short colix, int[] visibilityMap) {
@@ -109,11 +108,24 @@ class DotsRenderer extends ShapeRenderer {
 
   static final float torusStepAngle = 2 * (float)Math.PI / 64;
 
-  void renderTorus(Dots.Torus torus, int[][] dotsConvexMaps) {
+  void renderTorus(Dots.Torus torus,
+                   Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
     if (dotsConvexMaps[torus.indexI] != null)
-      renderTorusHalf(torus, colixSaddle, false);
+      renderTorusHalf(torus,
+                      getColix(colixSaddle, colixes, atoms, torus.indexI),
+                      false);
     if (dotsConvexMaps[torus.indexJ] != null)
-      renderTorusHalf(torus, colixSaddle, true);
+      renderTorusHalf(torus,
+                      getColix(colixSaddle, colixes, atoms, torus.indexJ),
+                      true);
+  }
+
+  short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
+    if (colix != 0)
+      return colix;
+    if (colixes[index] != 0)
+      return colixes[index];
+    return atoms[index].colixAtom;
   }
 
   void renderTorusHalf(Dots.Torus torus, short colix, boolean renderJHalf) {
@@ -181,14 +193,18 @@ class DotsRenderer extends ShapeRenderer {
    * In the center of aromatic rings there are 2-4 ... which looks ugly
    * So, if you have an idea how to render this, please let me know.
    */
-  void renderCavity(Dots.Cavity cavity) {
-    g3d.setColix(colixConcave);
+  void renderCavity(Dots.Cavity cavity,
+                    Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
+    int i = cavity.ixI;
+    g3d.setColix(getColix(colixConcave, colixes, atoms, i));
     Point3i screen;
     screen = viewer.transformPoint(cavity.pointIP);
     g3d.drawPixel(screen);
     screen = viewer.transformPoint(cavity.pointJP);
     g3d.drawPixel(screen);
     screen = viewer.transformPoint(cavity.pointKP);
+    g3d.drawPixel(screen);
+    screen = viewer.transformPoint(cavity.pointCentroid);
     g3d.drawPixel(screen);
   }
 

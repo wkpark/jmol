@@ -140,7 +140,8 @@ public class Dots extends Shape {
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
           dotsConvexMaps[i] = null;
-      turnOffTori();
+      deleteUnnecessaryTori();
+      deleteUnnecessaryCavities();
     }
     // now, calculate surface for selected atoms
     if (mad != 0) {
@@ -190,7 +191,6 @@ public class Dots extends Shape {
   }
 
   void setAtomI(int indexI) {
-    System.out.println("Dots.setAtomI(" + indexI + ")");
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
@@ -260,9 +260,11 @@ public class Dots extends Shape {
   float[] neighborPlusProbeRadii2 = new float[16];
   
   void getNeighbors(BitSet bsSelected) {
+    /*
     System.out.println("Dots.getNeighbors radiusI=" + radiusI +
                        " diameterP=" + diameterP +
                        " maxVdw=" + frame.getMaxVanderwaalsRadius());
+    */
     AtomIterator iter =
       frame.getWithinIterator(atomI, radiusI + diameterP +
                               frame.getMaxVanderwaalsRadius());
@@ -329,7 +331,7 @@ public class Dots extends Shape {
     }
   }
 
-  void turnOffTori() {
+  void deleteUnnecessaryTori() {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = tori[i];
@@ -547,6 +549,29 @@ public class Dots extends Shape {
     }
   }
 
+  void deleteUnnecessaryCavities() {
+    boolean cavityDeleted = false;
+    for (int i = cavityCount; --i >= 0; ) {
+      Cavity cavity = cavities[i];
+      if (dotsConvexMaps[cavity.ixI] == null &&
+          dotsConvexMaps[cavity.ixJ] == null &&
+          dotsConvexMaps[cavity.ixK] == null) {
+        cavityDeleted = true;
+        cavities[i] = null;
+      }
+    }
+    if (cavityDeleted) {
+      int iDestination = 0;
+      for (int iSource = 0; iSource < cavityCount; ++iSource) {
+        if (cavities[iSource] != null)
+          cavities[iDestination++] = cavities[iSource];
+      }
+      for (int i = cavityCount; --i >= iDestination; )
+        cavities[i] = null;
+      cavityCount = iDestination;
+    }
+  }
+
   void getCavitiesIJK() {
     torusIJ = getTorus(atomI, atomJ);
     torusIK = getTorus(atomI, atomK);
@@ -594,27 +619,38 @@ public class Dots extends Shape {
   final Vector3f p2 = new Vector3f();
   final Vector3f p3 = new Vector3f();
 
+  // plus use vectorPI and vectorPJ from above;
+  final Vector3f vectorPK = new Vector3f();
+
   class Cavity {
     int ixI, ixJ, ixK;
     Point3f pointIP, pointJP, pointKP;
+    Point3f pointCentroid;
 
     Cavity() {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
-      vectorT.sub(centerI, probeIJK);
-      vectorT.normalize();
+      vectorPI.sub(centerI, probeIJK);
+      vectorPI.normalize();
       pointIP = new Point3f();
-      pointIP.scaleAdd(radiusP, vectorT, probeIJK);
+      pointIP.scaleAdd(radiusP, vectorPI, probeIJK);
       
-      vectorT.sub(centerJ, probeIJK);
-      vectorT.normalize();
+      vectorPJ.sub(centerJ, probeIJK);
+      vectorPJ.normalize();
       pointJP = new Point3f();
-      pointJP.scaleAdd(radiusP, vectorT, probeIJK);
+      pointJP.scaleAdd(radiusP, vectorPJ, probeIJK);
       
-      vectorT.sub(centerK, probeIJK);
-      vectorT.normalize();
+      vectorPK.sub(centerK, probeIJK);
+      vectorPK.normalize();
       pointKP = new Point3f();
-      pointKP.scaleAdd(radiusP, vectorT, probeIJK);
+      pointKP.scaleAdd(radiusP, vectorPK, probeIJK);
+
+      vectorT.add(vectorPI, vectorPJ);
+      vectorT.add(vectorPK);
+      vectorT.normalize();
+      pointCentroid = new Point3f();
+      pointCentroid.scaleAdd(radiusP, vectorT, probeIJK);
+
     }
   }
 

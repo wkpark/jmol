@@ -21,11 +21,12 @@
             | <a href="[root]/docs/">Docs</a> 
             | <a href="[root]/history/">History</a> 
             | <a href="[root]/changes/">Changes</a>
-            | <a href="[root]/download/">Download</a> 
+	    | <a href="[root]/faqs/">FAQs</a>
 	    <br/>
-            <a href="[root]/faqs/">FAQs</a> 
+	    <a href="[root]/websites/">Websites</a>
             | <a href="[root]/preview/">Sneak Preview</a>
             | <a href="[root]/betatest/">Beta Test</a>
+	    | <a href="[root]/download/">Download</a> 
 	    | <a href=
 	    "http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133"
 	    >Bug Database</a>

@@ -1,0 +1,4 @@
+org/jmol/viewer/Viewer.java
+org/jmol/api/*.java
+org/jmol/g3d/*.java
+org/jmol/adapter/smarter/*.java

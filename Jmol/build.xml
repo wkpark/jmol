@@ -23,6 +23,7 @@
   <property name="tests.classes.dir" value="build/classes-tests" />
   <property name="appletjars.dir" value="build/appletjars" />
   <property name="applet.classes.dir" value="build/applet-classes" />
+  <property name="apisio.classes.dir" value="build/apisio-classes" />
   <property name="tests.dir" value="build/unit.tests" />
   <property name="javadoc.dir" value="javadoc" />
   <property name="docbook-xsl" value="docbook-xsl-1.67.2" />
@@ -47,6 +48,14 @@
     </fileset>
   </path>
   
+  <path id="apisio-project.class.path">
+    <fileset dir="${lib.dir}">
+      <include name="vecmath1.2-1.14.jar" />
+      <include name="netscape.jar" />
+      <include name="gnujaxp.jar" />
+    </fileset>
+  </path>
+
   <target name="main" id="main" depends="init,jar,applet-jar"/>
   
   <target name="all" id="all" depends="doc,main"/>
@@ -207,6 +216,20 @@ support for assertions (which were introduced in 1.4).
     </copy>
   </target>
 
+  <target name="apisio-classes" id="apisio-classes" depends="init">
+    <mkdir dir="${apisio.classes.dir}"/>
+    <javac srcdir="src" destdir="${apisio.classes.dir}"
+	   debug="${debug}" deprecation="${deprecation}"
+	   optimize="${optimization}" source="1.4"
+	   includesfile="apisio.classes"
+	   classpathref="apisio-project.class.path" />
+    <copy todir="${classes.dir}" >
+      <fileset dir="src">
+	<include name="**/g3d/*.html" />
+      </fileset>
+    </copy>
+  </target>
+
   <target name="check.cdkjars" id="check.cdkjars">
     <uptodate property="cdkjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdk">
       <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
@@ -281,9 +304,9 @@ support for assertions (which were introduced in 1.4).
     </jar>
   </target>
 
-  <target name="apis-jar" id="apis-jar" depends="init,classes">
+  <target name="apis-jar" id="apis-jar" depends="init,apisio-classes">
     <jar jarfile="jmolApis.jar">
-      <fileset dir="${classes.dir}" >
+      <fileset dir="${apisio.classes.dir}" >
 	<include name="org/jmol/api/**" />
       </fileset>
       <fileset dir="." >
@@ -292,9 +315,9 @@ support for assertions (which were introduced in 1.4).
     </jar>
   </target>
 
-  <target name="io-jar" id="io-jar" depends="init,classes">
+  <target name="io-jar" id="io-jar" depends="init,apisio-classes">
     <jar jarfile="jmolIO.jar">
-      <fileset dir="${classes.dir}" >
+      <fileset dir="${apisio.classes.dir}" >
 	<include name="org/jmol/adapter/smarter/**" />
       </fileset>
       <fileset dir="." >
@@ -497,11 +520,12 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </copy>
 
-    <copy todir="build/dist/jmol-${version}/samples" >
+    <!-- remove if really obsolete - for now only uncommented -->
+    <!-- <copy todir="build/dist/jmol-${version}/samples" >
       <fileset dir="samples">
 	<exclude name="**/CVS"/>
       </fileset>
-    </copy>
+    </copy> -->
 
     <copy   file="build/doc/JmolDevelopersGuide.html"
 	    tofile="build/dist/jmol-${version}/doc/JmolDevelopersGuide.html" />

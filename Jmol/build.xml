@@ -1,6 +1,6 @@
 <project name="Jmol" default="main" basedir=".">
 
-  <property name="version" value="2" />
+  <property name="version" value="3" />
   <property name="source.dir" value="src" />
   <property name="generatedSource.dir" value="generatedSource" />
   <property name="lib.dir" value="jars" />

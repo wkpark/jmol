@@ -103,18 +103,18 @@ public class MeasurementList extends JDialog {
     mPanel.setLayout(new BorderLayout());
 
     top = new DefaultMutableTreeNode(JmolResourceHandler.getInstance()
-        .translate("MeasurementList.mLabel"));
+        .getString("MeasurementList.mLabel"));
     treeModel = new DefaultTreeModel(top);
 
     distances =
         new ListNode(JmolResourceHandler.getInstance()
-          .translate("MeasurementList.distanceLabel"), distanceList);
+          .getString("MeasurementList.distanceLabel"), distanceList);
     angles =
         new ListNode(JmolResourceHandler.getInstance()
-          .translate("MeasurementList.angleLabel"), angleList);
+          .getString("MeasurementList.angleLabel"), angleList);
     dihedrals =
         new ListNode(JmolResourceHandler.getInstance()
-          .translate("MeasurementList.dihedralLabel"), dihedralList);
+          .getString("MeasurementList.dihedralLabel"), dihedralList);
 
     treeModel.insertNodeInto(distances, top, top.getChildCount());
     treeModel.insertNodeInto(angles, top, top.getChildCount());

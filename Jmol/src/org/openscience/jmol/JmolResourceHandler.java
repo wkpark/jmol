@@ -48,8 +48,6 @@ class JmolResourceHandler {
         if (st.hasMoreTokens()) lang = st.nextToken();
         if (st.hasMoreTokens()) country = st.nextToken();
         locale = new Locale(lang, country);
-        Locale.setDefault(locale);
-        JComponent.setDefaultLocale(locale);
     }
     resourceBundle =
         ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol", locale);

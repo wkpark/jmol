@@ -97,25 +97,25 @@ public class Measure extends JDialog {
   class MeasureTableModel extends AbstractTableModel {
 
     final String[] columnNames = {
-      " ", JmolResourceHandler.getInstance().translate("Measure.atomnLabel"),
-      JmolResourceHandler.getInstance().translate("Measure.atomidentLabel"),
-      JmolResourceHandler.getInstance().translate("Measure.xLabel"),
-      JmolResourceHandler.getInstance().translate("Measure.yLabel"),
-      JmolResourceHandler.getInstance().translate("Measure.zLabel")
+      " ", JmolResourceHandler.getInstance().getString("Measure.atomnLabel"),
+      JmolResourceHandler.getInstance().getString("Measure.atomidentLabel"),
+      JmolResourceHandler.getInstance().getString("Measure.xLabel"),
+      JmolResourceHandler.getInstance().getString("Measure.yLabel"),
+      JmolResourceHandler.getInstance().getString("Measure.zLabel")
     };
 
     final Object[][] data = {
       {
-        JmolResourceHandler.getInstance().translate("Measure.atomaLabel"),
+        JmolResourceHandler.getInstance().getString("Measure.atomaLabel"),
         " ", " ", " ", " ", " "
       }, {
-        JmolResourceHandler.getInstance().translate("Measure.atombLabel"),
+        JmolResourceHandler.getInstance().getString("Measure.atombLabel"),
         " ", " ", " ", " ", " "
       }, {
-        JmolResourceHandler.getInstance().translate("Measure.atomcLabel"),
+        JmolResourceHandler.getInstance().getString("Measure.atomcLabel"),
         " ", " ", " ", " ", " "
       }, {
-        JmolResourceHandler.getInstance().translate("Measure.atomdLabel"),
+        JmolResourceHandler.getInstance().getString("Measure.atomdLabel"),
         " ", " ", " ", " ", " "
       }
     };
@@ -229,7 +229,7 @@ public class Measure extends JDialog {
     mButton.setEnabled(false);
     JButton cancel =
       new JButton(JmolResourceHandler.getInstance()
-        .translate("Measure.cancelLabel"));
+        .getString("Measure.cancelLabel"));
     cancel.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -262,25 +262,25 @@ public class Measure extends JDialog {
     switch (measure) {
     case ANGLE :
       mBorder.setTitle(JmolResourceHandler.getInstance()
-          .translate("Measure.infoString3"));
+          .getString("Measure.infoString3"));
       break;
 
     case DIHEDRAL :
       mBorder.setTitle(JmolResourceHandler.getInstance()
-          .translate("Measure.infoString4"));
+          .getString("Measure.infoString4"));
       break;
 
     default :
       mBorder.setTitle(JmolResourceHandler.getInstance()
-          .translate("Measure.infoString2"));
+          .getString("Measure.infoString2"));
       break;
     }
     if (action == DELETE) {
       mButton.setText(JmolResourceHandler.getInstance()
-          .translate("Measure.deleteLabel"));
+          .getString("Measure.deleteLabel"));
     } else {
       mButton.setText(JmolResourceHandler.getInstance()
-          .translate("Measure.addLabel"));
+          .getString("Measure.addLabel"));
     }
     oldMode = display.getMode();
     display.setMode(DisplayPanel.MEASURE);

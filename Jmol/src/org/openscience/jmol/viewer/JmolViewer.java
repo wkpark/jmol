@@ -709,6 +709,10 @@ final public class JmolViewer {
     return selectionManager.bsSelection;
   }
 
+  public int getSelectionCount() {
+    return selectionManager.getSelectionCount();
+  }
+
   /****************************************************************
    * delegated to MouseManager
    ****************************************************************/
@@ -1277,6 +1281,14 @@ final public class JmolViewer {
   public void scriptEcho(String strEcho) {
     if (jmolStatusListener != null)
       jmolStatusListener.scriptEcho(strEcho);
+  }
+
+  boolean scriptDebug = true;
+  public boolean getScriptDebug() {
+    return scriptDebug;
+  }
+  public void setScriptDebug(boolean scriptDebug) {
+    this.scriptDebug = scriptDebug;
   }
 
   public void scriptStatus(String strStatus) {

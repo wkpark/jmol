@@ -129,4 +129,21 @@ public class SelectionManager {
         bsSelection.clear(i);
     empty = UNKNOWN;
   }
+
+  public int getSelectionCount() {
+    // FIXME mth 2003 11 16
+    // very inefficient ... but works for now
+    // need to implement our own bitset that keeps track of the count
+    // maybe one that takes 'model' into account as well
+    if (empty == TRUE)
+      return 0;
+    int count = 0;
+    empty = TRUE;
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (bsSelection.get(i))
+     ++count;
+    if (count > 0)
+      empty = FALSE;
+    return count;
+  }
 }

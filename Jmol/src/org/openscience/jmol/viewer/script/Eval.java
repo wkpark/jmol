@@ -277,6 +277,8 @@ public class Eval implements Runnable {
     }
     while (!interruptExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
+      if (viewer.getScriptDebug())
+        logScriptDebug();
       Token token = statement[0];
       switch (token.tok) {
       case Token.backbone:
@@ -353,8 +355,8 @@ public class Eval implements Runnable {
       case Token.slab:
         slab();
         break;
-      case Token.spacefill:
-        spacefill();
+      case Token.cpk:
+        cpk();
         break;
       case Token.wireframe:
         wireframe();
@@ -420,6 +422,17 @@ public class Eval implements Runnable {
         (ichEnd = script.indexOf('\n', ichBegin)) == -1)
       ichEnd = script.length();
     return script.substring(ichBegin, ichEnd);
+  }
+
+  final StringBuffer strbufLog = new StringBuffer(80);
+  void logScriptDebug() {
+    strbufLog.setLength(0);
+    strbufLog.append(statement[0].value.toString());
+    for (int i = 1; i < statement.length; ++i) {
+      strbufLog.append(' ');
+      strbufLog.append("" + statement[i].value);
+    }
+    viewer.scriptStatus(strbufLog.toString());
   }
 
   void evalError(String message) throws ScriptException {
@@ -1000,7 +1013,7 @@ public class Eval implements Runnable {
     int tok = statement[1].tok;
     switch (tok) {
     case Token.colorRGB:
-    case Token.spacefill:
+    case Token.cpk:
     case Token.amino:
     case Token.chain:
     case Token.group:
@@ -1056,7 +1069,7 @@ public class Eval implements Runnable {
     Color color = null;
     switch (statement[itoken].tok) {
     case Token.none:
-    case Token.spacefill:
+    case Token.cpk:
       break;
     case Token.charge:
       palette = JmolConstants.PALETTE_CHARGE;
@@ -1279,6 +1292,7 @@ public class Eval implements Runnable {
     } else {
       viewer.setSelectionSet(expression(statement, 1));
     }
+    viewer.scriptStatus("" + viewer.getSelectionCount() + " atoms selected");
   }
 
   void translate() throws ScriptException {
@@ -1521,7 +1535,7 @@ public class Eval implements Runnable {
     }
   }
 
-  void spacefill() throws ScriptException {
+  void cpk() throws ScriptException {
     byte style = JmolConstants.STYLE_SHADED;
     short mar = -999;
     int tok = Token.on;
@@ -1536,7 +1550,7 @@ public class Eval implements Runnable {
     }
     switch (tok) {
     case Token.on:
-      mar = -100; // spacefill with no args goes to 100%
+      mar = -100; // cpk with no args goes to 100%
       break;
     case Token.off:
       style = JmolConstants.STYLE_NONE;

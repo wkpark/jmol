@@ -129,7 +129,7 @@ public class Token {
   final static int set          = command | 31 | bool | negativeints;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
-  final static int spacefill    = command | 35 | setparam | bool |negativeints;
+  final static int cpk          = command | 35 | setparam | bool |negativeints;
   final static int ssbonds      = command | 36 | setparam | bool;
   final static int star         = command | 37 | bool;
   final static int stereo       = command | 38
@@ -261,7 +261,7 @@ public class Token {
   final static int on           = bool |  1;
 
   final static int dash         = misc |  0; //backbone
-  final static int user         = misc |  1; //spacefill & star
+  final static int user         = misc |  1; //cpk & star
   final static int x            = misc |  2;
   final static int y            = misc | 3 | predefinedset;
   final static int z            = misc |  4;
@@ -340,8 +340,8 @@ public class Token {
     "set",               new Token(set,      varArgCount, "set"),
     "show",              new Token(show,     varArgCount, "show"),
     "slab",              new Token(slab,      onDefault1, "slab"),
-    "spacefill",         new Token(spacefill,varArgCount, "spacefill"),
-    "cpk",               null,
+    "cpk",               new Token(cpk,      varArgCount, "cpk"),
+    "spacefill",         null,
     "ssbonds",           new Token(ssbonds,   onDefault1, "ssbonds"),
     "star",              new Token(star,      onDefault1, "star"),
     "stereo",            new Token(stereo,             1, "stereo"),

@@ -224,7 +224,6 @@ public abstract class MouseManager {
 
   void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
-    case SHIFT_LEFT:
     case LEFT:
       if (viewer.frankClicked(x, y)) {
         viewer.popupMenu(x, y);
@@ -236,10 +235,7 @@ public abstract class MouseManager {
         viewer.notifyPicked(nearestAtomIndex);
       }
       break;
-    case ALT_SHIFT_LEFT:
-    case ALT_LEFT:
-    case SHIFT_MIDDLE:
-    case MIDDLE:
+    case SHIFT_LEFT:
       viewer.zoomToPercent(100);
       break;
     }
@@ -256,8 +252,7 @@ public abstract class MouseManager {
         addToMeasurement(nearestAtomIndex, true);
       }
       break;
-    case ALT_LEFT:
-    case MIDDLE:
+    case SHIFT_LEFT:
       viewer.homePosition();
       break;
     }
@@ -284,15 +279,11 @@ public abstract class MouseManager {
       break;
     case SHIFT_LEFT:
       viewer.zoomBy(deltaY);
+      viewer.rotateZBy(-deltaX);
       break;
 
     case ALT_LEFT:
     case MIDDLE:
-      viewer.zoomBy(deltaY);
-      viewer.rotateZBy(-deltaX);
-      break;
-    case ALT_SHIFT_LEFT:
-    case SHIFT_MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
       break;
     }

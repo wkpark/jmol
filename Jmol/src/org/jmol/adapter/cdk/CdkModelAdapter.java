@@ -109,7 +109,7 @@ public class CdkModelAdapter extends ModelAdapter {
     return chemFile;
   }
 
-  public String getModelTypeName(Object clientFile) {
+  public String getFileTypeName(Object clientFile) {
     AtomContainer atomContainer = getAtomContainer(clientFile);
     if ((atomContainer.getAtomCount() > 0 &&
          atomContainer.getAtomAt(0).getProperty("pdb.record") != null))
@@ -117,7 +117,7 @@ public class CdkModelAdapter extends ModelAdapter {
     return "other";
   }
 
-  public String getModelName(Object clientFile) {
+  public String getModelSetName(Object clientFile) {
     if (clientFile instanceof ChemFile) {
       Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);
       if (title != null) {

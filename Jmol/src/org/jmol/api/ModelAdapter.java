@@ -124,7 +124,9 @@ public abstract class ModelAdapter {
   /**
    * The properties for each model
    */
-  public String getModelProperties(Object clientFile, int modelIndex) { return null; }
+  public String getModelProperties(Object clientFile, int modelIndex) {
+    return null;
+  }
 
   /**
    * The number of atoms contained in the file.

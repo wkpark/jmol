@@ -126,7 +126,6 @@ public class Atom implements Bspt.Tuple {
     if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
         !Float.isNaN(vibrationZ)) {
       vibrationVector = new Vector3f(vibrationX, vibrationY, vibrationZ);
-      System.out.println("I see an atom with a vibration:" + vibrationVector);
     }
   }
   

@@ -28,25 +28,25 @@ import java.lang.reflect.Array;
 final public class Util {
 
   public static Object ensureLength(Object array, int minimumLength) {
-    if (Array.getLength(array) >= minimumLength)
+    if (array != null && Array.getLength(array) >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
   public static String[] ensureLength(String[] array, int minimumLength) {
-    if (array.length >= minimumLength)
+    if (array != null && array.length >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
   public static short[] ensureLength(short[] array, int minimumLength) {
-    if (array.length >= minimumLength)
+    if (array != null && array.length >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
   public static byte[] ensureLength(byte[] array, int minimumLength) {
-    if (array.length >= minimumLength)
+    if (array != null && array.length >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
@@ -60,19 +60,19 @@ final public class Util {
   }
 
   public static float[] doubleLength(float[] array) {
-    return setLength(array, 2 * array.length);
+    return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
   public static int[] doubleLength(int[] array) {
-    return setLength(array, 2 * array.length);
+    return setLength(array, (array == null ? 16 : 2 * array.length));
   }
-
+  
   public static short[] doubleLength(short[] array) {
-    return setLength(array, 2 * array.length);
+    return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
   public static byte[] doubleLength(byte[] array) {
-    return setLength(array, 2 * array.length);
+    return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
   public static Object setLength(Object array, int newLength) {
@@ -85,42 +85,52 @@ final public class Util {
   }
 
   public static String[] setLength(String[] array, int newLength) {
-    int oldLength = array.length;
     String[] t = new String[newLength];
-    System.arraycopy(array, 0, t, 0, 
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
                      oldLength < newLength ? oldLength : newLength);
+    }
     return t;
   }
   
   public static float[] setLength(float[] array, int newLength) {
-    int oldLength = array.length;
     float[] t = new float[newLength];
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
+                       oldLength < newLength ? oldLength : newLength);
+    }
     return t;
   }
   
   public static int[] setLength(int[] array, int newLength) {
-    int oldLength = array.length;
     int[] t = new int[newLength];
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
+                       oldLength < newLength ? oldLength : newLength);
+    }
     return t;
   }
   
   public static short[] setLength(short[] array, int newLength) {
-    int oldLength = array.length;
-    short[] t = (short[])Array.newInstance(Short.TYPE, newLength);
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+    short[] t = new short[newLength];
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
+                       oldLength < newLength ? oldLength : newLength);
+    }
     return t;
   }
 
   public static byte[] setLength(byte[] array, int newLength) {
-    int oldLength = array.length;
     byte[] t = new byte[newLength];
-    System.arraycopy(array, 0, t, 0, 
-                     oldLength < newLength ? oldLength : newLength);
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
+                       oldLength < newLength ? oldLength : newLength);
+    }
     return t;
   }
 }

@@ -36,6 +36,7 @@ class GaussianReader extends ModelReader {
 
     try {
       String line;
+      int lineNum = 0;
       while ((line = reader.readLine()) != null) {
         if (line.indexOf("Standard orientation:") >= 0) {
           // we only take the last set of atoms before the frequencies
@@ -44,7 +45,16 @@ class GaussianReader extends ModelReader {
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
           break;
+        } else if (lineNum < 20) {
+          if (line.indexOf("This is part of the Gaussian 94(TM) system")
+              >= 0) {
+            setGaussian94Offsets();
+          } else if (line.indexOf("This is part of the Gaussian(R) 98 program")
+                     >= 0) {
+            setGaussian98Offsets();
+          }
         }
+        ++lineNum;
       }
     } catch (Exception ex) {
       model.errorMessage = "Could not read file:" + ex;
@@ -55,7 +65,36 @@ class GaussianReader extends ModelReader {
     }
     return model;
   }
-    
+
+  // offset of coordinates 
+
+  int coordinateBase = 34;
+
+  void setGaussian94Offsets() {
+    coordinateBase = 23;
+    /*
+                   Standard orientation:
+ ----------------------------------------------------------
+ Center     Atomic              Coordinates (Angstroms)
+ Number     Number             X           Y           Z
+ ----------------------------------------------------------
+    1          6           0.000000    0.000000    1.043880
+    */
+  }
+
+  void setGaussian98Offsets() {
+    coordinateBase = 34;
+    /*
+                         Standard orientation:                         
+ ---------------------------------------------------------------------
+ Center     Atomic     Atomic              Coordinates (Angstroms)
+ Number     Number      Type              X           Y           Z
+ ---------------------------------------------------------------------
+    1          6             0        0.852764   -0.020119    0.050711
+    */
+  }
+
+
   void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 4);
     String line;
@@ -67,9 +106,9 @@ class GaussianReader extends ModelReader {
         continue;
       // these are the Gaussian 98 offsets
       // others seem to have different values
-      float x = parseFloat(line, 34, 46);
-      float y = parseFloat(line, 46, 58);
-      float z = parseFloat(line, 58, 70);
+      float x = parseFloat(line, coordinateBase     , coordinateBase + 12);
+      float y = parseFloat(line, coordinateBase + 12, coordinateBase + 24);
+      float z = parseFloat(line, coordinateBase + 24, coordinateBase + 36);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         continue;
       Atom atom = model.newAtom();
@@ -120,7 +159,6 @@ class GaussianReader extends ModelReader {
   }
 
   void createNewModel(int modelNumber) {
-    System.out.println("creating new model:" + modelNumber);
     Atom[] atoms = model.atoms;
     for (int i = 0; i < baseAtomCount; ++i) {
       Atom atomNew = model.newCloneAtom(atoms[i]);
@@ -129,9 +167,8 @@ class GaussianReader extends ModelReader {
   }
 
   void discardLines(BufferedReader reader, int nLines) throws Exception {
-    System.out.println("discardLines:");
     for (int i = nLines; --i >= 0; )
-      System.out.println(reader.readLine());
+      reader.readLine();
   }
   
 }

@@ -60,6 +60,8 @@
                   <br/>
                   <input type='button' value='Project description'
                     onclick='showProjectDescription()'/>
+                  <input type='button' value='Hide solvent'
+                    onclick='hideSolvent()'/>
                   <input type='button' value='XML'
                     onclick='showXMLFile()'/>
                   <small>

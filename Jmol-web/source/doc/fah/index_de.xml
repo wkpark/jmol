@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   German translation 
-  Translated from default version : index_en.xml (v 1.6)
+  Translated from default version : index_en.xml (v 1.7)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -64,6 +64,8 @@
                   <br/>
                   <input type='button' value='Projektbeschreibung'
                     onclick='showProjectDescription()'/>
+                  <input type='button' value='Hide solvent'
+                    onclick='hideSolvent()'/>
                   <input type='button' value='XML'
                     onclick='showXMLFile()'/>
                   <small>

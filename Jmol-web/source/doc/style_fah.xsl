@@ -14,13 +14,14 @@
         window.open("http://vspx27.stanford.edu/cgi-bin/allprojects#" + document.fahForm.infoNumber.value);
       }
 
-      function hideSolvant() {
+      function hideSolvent() {
         var varScript;
         varScript =
-          "restrict (not substructure(\"[O][C](N)N\")) or substructure(\"[0]([C](N)N)[*]\")\n" +
+          "restrict (not substructure(\"[O][C](N)N\")) or substructure(\"[O]([C](N)N)[*]\")\n" +
           "restrict (not substructure(\"[N][C]C\")) or substructure(\"[N]([C]C)[*]\")\n" +
           "restrict (not substructure(\"C(Cl)(Cl)Cl\"))\n" +
-          "restrict (not substructure(\"CO\")) or substructure(\"C(O)[*]\")\n" +
+          "restrict (not substructure(\"CO\"))\n" +
+          "restrict (not substructure(\"O\"))\n" +
           "select none";
         jmolScript(varScript, "Fah");
       }

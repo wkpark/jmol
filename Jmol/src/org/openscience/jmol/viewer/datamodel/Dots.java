@@ -86,6 +86,8 @@ public class Dots extends Shape {
 
   DotsRenderer dotsRenderer;
 
+  short mad; // this is really just a true/false flag ... 0 vs non-zero
+
   BitSet bsDotsOn;
   int dotsConvexCount;
   int[][] dotsConvexMaps;
@@ -127,9 +129,8 @@ public class Dots extends Shape {
     geodesicMap = allocateBitmap(geodesicCount);
   }
 
-  public void setShow(boolean show) {
-    this.show = show;
-    BitSet bsSelected = viewer.getBitSetSelection();
+  public void setMad(short mad, BitSet bsSelected) {
+    this.mad = mad;
     if (radiusP != viewer.getSolventProbeRadius()) {
       dotsConvexCount = 0;
       dotsConvexMaps = null;
@@ -142,7 +143,7 @@ public class Dots extends Shape {
     }
     int atomCount = frame.atomCount;
     dotsConvexCount = 0;
-    if (show) {
+    if (mad != 0) {
       bsDotsOn.or(bsSelected);
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];

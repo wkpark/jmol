@@ -1298,12 +1298,12 @@ final public class JmolViewer {
   }
 
   public void setShapeShow(int refGraphic, boolean show) {
-    getFrame().setShapeShow(refGraphic, show);
+    getFrame().setShapeMad(refGraphic, (short)(show ? -1 : 0), null);
     refresh();
   }
 
   public boolean getShapeShow(int refShape) {
-    return getFrame().getShapeShow(refShape);
+    return getFrame().getShapeMad(refShape) != 0;
   }
 
   public void setShapeMad(int refShape, short mad) {

@@ -220,6 +220,7 @@ public class Frame {
   }
 
   final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
+  final short[] shapeMads = new short[JmolConstants.SHAPE_MAX];
 
   void checkShape(int refShape) {
     if (shapes[refShape] == null) {
@@ -227,24 +228,16 @@ public class Frame {
     }
   }
   
-  public void setShapeShow(int refShape, boolean show) {
-    if (show)
-      checkShape(refShape);
-    if (shapes[refShape] != null)
-      shapes[refShape].setShow(show);
-  }
-
-  public boolean getShapeShow(int refShape) {
-    if (shapes[refShape] == null)
-      return false;
-    return shapes[refShape].getShow();
-  }
-
   public void setShapeMad(int refShape, short mad, BitSet bsSelected) {
+    shapeMads[refShape] = mad;
     if (mad != 0)
       checkShape(refShape);
     if (shapes[refShape] != null)
       shapes[refShape].setMad(mad, bsSelected);
+  }
+
+  public short getShapeMad(int refShape) {
+    return shapeMads[refShape];
   }
 
   public void setShapeColix(int refShape, byte palette,

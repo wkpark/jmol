@@ -1875,25 +1875,24 @@ public class Eval implements Runnable {
   }
 
   void dots() throws ScriptException {
-    boolean dotsOn = true;
+    short mad = 0;
     switch (statement[1].tok) {
     case Token.on:
+      mad = -1;
       break;
     case Token.off:
-      dotsOn = false;
       break;
     case Token.integer:
       int dotsParam = statement[1].intValue;
       if (dotsParam < 0 || dotsParam > 1000)
         numberOutOfRange();
       // I don't know what to do with this thing yet
-      if (dotsParam == 0)
-        dotsOn = false;
+      mad = (short)dotsParam;
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeShow(JmolConstants.SHAPE_DOTS, dotsOn);
+    viewer.setShapeMad(JmolConstants.SHAPE_DOTS, mad);
   }
 
   void proteinGraphic(int graphicType) throws ScriptException {
@@ -2269,10 +2268,6 @@ public class Eval implements Runnable {
       numberExpected();
     }
     viewer.setScaleAngstromsPerInch(angstromsPerInch);
-  }
-
-  void setShapeShow(int graphic) throws ScriptException {
-    viewer.setShapeShow(graphic, getSetBoolean());
   }
 
   /****************************************************************

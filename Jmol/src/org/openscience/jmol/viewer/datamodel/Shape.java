@@ -33,7 +33,6 @@ abstract public class Shape {
 
   JmolViewer viewer;
   Frame frame;
-  boolean show;
 
   final public void setViewerFrame(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
@@ -42,14 +41,6 @@ abstract public class Shape {
   }
 
   void initShape() {
-  }
-
-  public void setShow(boolean show) {
-    this.show = show;
-  }
-
-  final public boolean getShow() {
-    return show;
   }
 
   public void setMad(short mad, BitSet bsSelected) {

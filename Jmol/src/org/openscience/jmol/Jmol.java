@@ -33,6 +33,7 @@ import javax.swing.filechooser.*;
 import javax.swing.JToolBar.*;
 
 import Acme.JPM.Encoders.*;
+import com.obrador.JpegEncoder;
 
 class Jmol extends JPanel {
 

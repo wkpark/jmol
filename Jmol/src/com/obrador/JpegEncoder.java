@@ -11,8 +11,8 @@
 // It borrows a great deal of code and structure from the Independent
 // Jpeg Group's Jpeg 6a library, Copyright Thomas G. Lane.
 // See license.txt for details.
-package org.openscience.jmol;
 
+package com.obrador;
 
 import java.applet.Applet;
 import java.awt.*;

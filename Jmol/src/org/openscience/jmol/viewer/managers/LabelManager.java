@@ -143,7 +143,7 @@ public class LabelManager {
         break;
       case 'r':
         if (pdbatom != null)
-          strLabel += pdbatom.getSequenceString();
+          strLabel += pdbatom.getSeqcodeString();
         break;
       case 'M':
         if (pdbatom != null)

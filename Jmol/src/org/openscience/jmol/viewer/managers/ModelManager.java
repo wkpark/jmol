@@ -358,7 +358,7 @@ public class ModelManager {
     if (pdbAtom == null)
       return "Atom: " + atom.getAtomicSymbol() + " " + atom.getAtomno();
     return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomSerial() +
-      " " + pdbAtom.getGroup3() + " " + pdbAtom.getSequenceString() +
+      " " + pdbAtom.getGroup3() + " " + pdbAtom.getSeqcodeString() +
       " Chain:" + pdbAtom.getChainID();
   }
 

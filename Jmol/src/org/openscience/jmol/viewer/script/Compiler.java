@@ -171,13 +171,13 @@ class Compiler {
           ltoken.addElement(new Token(Token.decimal, new Float(value)));
           continue;
         }
-        if (lookingAtSequenceCode()) {
+        if (lookingAtSeqcode()) {
           int seqNum =
             Integer.parseInt(script.substring(ichToken,
                                               ichToken + cchToken - 1));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
-          int sequence = PdbGroup.getSequence(seqNum, insertionCode);
-          ltoken.addElement(new Token(Token.sequenceCode, sequence));
+          int seqcode = PdbGroup.getSeqcode(seqNum, insertionCode);
+          ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
           continue;
         }
         if (lookingAtPositiveInteger() || 
@@ -185,7 +185,7 @@ class Compiler {
              lookingAtNegativeInteger())) {
           int val = Integer.parseInt(script.substring(ichToken,
                                                       ichToken + cchToken));
-          ltoken.addElement(new Token(Token.integer, val));
+          ltoken.addElement(new Token(Token.integer, val, "integer"));
           continue;
         }
       }
@@ -409,7 +409,7 @@ class Compiler {
     return cchToken > 1; // decimal point plust at least one digit
   }
 
-  boolean lookingAtSequenceCode() {
+  boolean lookingAtSeqcode() {
     int ichT = ichToken;
     char ch = ' ';
     while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
@@ -641,7 +641,11 @@ class Compiler {
 
     resNamePattern   ::= up to 3 alphanumeric chars with * and ?
 
-    clauseResNumSpec ::= * | {-} integer { - {-} integer}
+    clauseResNumSpec ::= * | clauseSequenceRange
+
+    clauseSequenceRange ::= clauseSequenceCode { - clauseSequenceCode }
+
+    clauseSequenceCode ::= seqcode | {-} integer
 
     clauseChainSpec  ::= {:} * | identifier | integer
 
@@ -743,6 +747,7 @@ class Compiler {
       return clauseWithin();
     case Token.hyphen: // selecting a negative residue spec
     case Token.integer:
+    case Token.seqcode:
     case Token.asterisk:
     case Token.leftsquare:
     case Token.identifier:
@@ -832,7 +837,8 @@ class Compiler {
     }
     if (tok == Token.asterisk ||
         tok == Token.hyphen ||
-        tok == Token.integer) {
+        tok == Token.integer ||
+        tok == Token.seqcode) {
       log("I see a residue number");
       if (! clauseResNumSpec())
         return false;
@@ -923,7 +929,7 @@ class Compiler {
     log("still here looking at:" + strToken);
 
     // still might be an identifier ... so be careful
-    int sequence = -1;
+    int seqcode = -1;
     char chain = '?';
     if (cchToken > 3) {
       // let's take a look at the last character
@@ -940,7 +946,7 @@ class Compiler {
       try {
         int sequenceNum = Integer.parseInt(strResno);
         log("I parsed sequenceNum=" + sequenceNum);
-        sequence = PdbGroup.getSequence(sequenceNum, ' ');
+        seqcode = PdbGroup.getSeqcode(sequenceNum, ' ');
       } catch (NumberFormatException e) {
         return generateResidueSpecCode(tokenIdent);
       }
@@ -957,12 +963,12 @@ class Compiler {
       return generateResidueSpecCode(tokenIdent);
     }
     log(" I see a residue name:" + strUpper3 +
-                       " sequence=" + sequence +
+                       " seqcode=" + seqcode +
                        " chain=" + chain);
 
-    if (sequence != -1)
+    if (seqcode != -1)
       generateResidueSpecCode(new Token(Token.spec_number,
-                                        sequence, "spec_number"));
+                                        seqcode, "spec_number"));
     if (chain != '?')
       generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
     return true;
@@ -974,40 +980,44 @@ class Compiler {
       tokenNext();
       return true;
     }
-    boolean negativeInt1 = false;
+    return clauseSequenceRange();
+  }
+
+  boolean clauseSequenceRange() {
+    if (! clauseSequenceCode())
+      return false;
     if (tokPeek() == Token.hyphen) {
       tokenNext();
-      negativeInt1 = true;
+      int seqcodeMin = seqcode;
+      if (! clauseSequenceCode())
+        return false;
+      return generateResidueSpecCode(new Token(Token.spec_number_range,
+                                               seqcodeMin,
+                                               new Integer(seqcode)));
     }
-    Token tokenInt1 = tokenNext();
-    if (tokenInt1.tok != Token.integer)
-      return resnumSpecificationExpected();
-    int sequenceNum = negativeInt1 ? -tokenInt1.intValue : tokenInt1.intValue;
-    log("sequenceNum=" + sequenceNum);
-    int sequence = PdbGroup.getSequence(sequenceNum, ' ');
-    if (tokPeek() != Token.hyphen)
-      return generateResidueSpecCode(new Token(Token.spec_number,
-                                               sequence, "spec_number"));
-    log("seems to be a range");
-    tokenNext(); // throw away range hyphen
-    // now look for negative int hyphen
-    boolean negativeInt2 = false;
-    if (tokPeek() == Token.hyphen) {
+    return generateResidueSpecCode(new Token(Token.spec_number,
+                                             seqcode, "seqcode"));
+  }
+
+  int seqcode;
+
+  boolean clauseSequenceCode() {
+    boolean negative = false;
+    int tokPeek = tokPeek();
+    if (tokPeek == Token.hyphen) {
       tokenNext();
-      negativeInt2 = true;
+      negative = true;
+      tokPeek = tokPeek();
     }
-    Token tokenInt2 = tokenNext();
-    if (tokenInt2.tok != Token.integer)
-      return resnumSpecificationExpected();
-    int sequenceNumLast =
-      (negativeInt2 ? -tokenInt2.intValue : tokenInt2.intValue);
-    log("sequenceNumLast=" + sequenceNumLast);
-
-    int sequenceLast = PdbGroup.getSequence(sequenceNumLast, ' ');
-
-    return generateResidueSpecCode(new Token(Token.spec_number_range,
-                                             sequence,
-                                             new Integer(sequenceLast)));
+    if (tokPeek == Token.seqcode)
+      seqcode = tokenNext().intValue;
+    else if (tokPeek == Token.integer)
+      seqcode = PdbGroup.getSeqcode(tokenNext().intValue, ' ');
+    else
+      return false;
+    if (negative)
+      seqcode = -seqcode;
+    return true;
   }
 
   boolean clauseChainSpec() {

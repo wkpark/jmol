@@ -75,12 +75,12 @@ public class PdbAtom {
     return group.getGroup3();
   }
   
-  public int getSequence() {
-    return group.sequence;
+  public int getSeqcode() {
+    return group.seqcode;
   }
 
-  public String getSequenceString() {
-    return group.getSequenceString();
+  public String getSeqcodeString() {
+    return group.getSeqcodeString();
   }
 
   public short getGroupID() {

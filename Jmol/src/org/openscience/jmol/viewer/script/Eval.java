@@ -782,7 +782,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (number == pdbatom.getSequence())
+      if (number == pdbatom.getSeqcode())
         bsResno.set(i);
     }
     return bsResno;
@@ -795,7 +795,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      int atomResno = pdbatom.getSequence();
+      int atomResno = pdbatom.getSeqcode();
       if (atomResno >= resnoMin && atomResno <= resnoLast)
         bsResidue.set(i);
     }
@@ -976,7 +976,7 @@ public class Eval implements Runnable {
 
   int getResno(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getSequence();
+    return (pdbatom == null) ? -1 : pdbatom.getSeqcode();
   }
 
   int getTemperature(Atom atom) {

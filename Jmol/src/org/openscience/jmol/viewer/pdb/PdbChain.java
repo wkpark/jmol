@@ -121,10 +121,10 @@ public class PdbChain {
   }
 
   void addSecondaryStructure(byte type,
-                             int startSequence, int endSequence) {
+                             int startSeqcode, int endSeqcode) {
     if (polymer == null)
       polymer = new PdbPolymer(this);
-    polymer.addSecondaryStructure(type, startSequence, endSequence);
+    polymer.addSecondaryStructure(type, startSeqcode, endSeqcode);
   }
 
   public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {

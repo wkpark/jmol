@@ -59,7 +59,7 @@ public class Token {
   final static int integer           =  2;
   final static int decimal           =  3;
   final static int string            =  4;
-  final static int sequenceCode      =  5;
+  final static int seqcode           =  5;
   final static int unknown           =  6;
   final static int keyword           =  7;
   final static int whitespace        =  8;
@@ -69,7 +69,7 @@ public class Token {
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "sequence",  "unknown", "keyword"
+    "seqcode",  "unknown", "keyword"
   };
 
   final static int command           = (1 <<  8);

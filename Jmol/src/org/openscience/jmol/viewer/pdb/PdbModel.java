@@ -56,10 +56,10 @@ public class PdbModel {
   }
 
   public void addSecondaryStructure(char chainID, byte type,
-                                    int startSequence, int endSequence) {
+                                    int startSeqcode, int endSeqcode) {
     PdbChain chain = getChain(chainID);
     if (chain != null)
-      chain.addSecondaryStructure(type, startSequence, endSequence);
+      chain.addSecondaryStructure(type, startSeqcode, endSeqcode);
   }
 
   public int getChainCount() {

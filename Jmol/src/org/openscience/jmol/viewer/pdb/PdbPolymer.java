@@ -129,19 +129,19 @@ public class PdbPolymer {
     }
   }
 
-  public int getIndex(int sequence) {
+  public int getIndex(int seqcode) {
     int i;
     for (i = count; --i >= 0; )
-      if (groups[i].sequence == sequence)
+      if (groups[i].seqcode == seqcode)
         break;
     return i;
   }
 
   void addSecondaryStructure(byte type,
-                             int startSequence, int endSequence) {
+                             int startSeqcode, int endSeqcode) {
     int polymerIndexStart, polymerIndexEnd;
-    if ((polymerIndexStart = getIndex(startSequence)) == -1 ||
-        (polymerIndexEnd = getIndex(endSequence)) == -1)
+    if ((polymerIndexStart = getIndex(startSeqcode)) == -1 ||
+        (polymerIndexEnd = getIndex(endSeqcode)) == -1)
       return;
     int structureCount = polymerIndexEnd - polymerIndexStart + 1;
     if (structureCount < 1) {

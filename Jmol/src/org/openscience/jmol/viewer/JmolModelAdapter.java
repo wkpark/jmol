@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer;
 
 import javax.vecmath.Point3d;
-import java.io.Reader;
+import java.io.BufferedReader;
 import java.awt.Color;
 import java.util.Iterator;
 
@@ -119,7 +119,7 @@ public interface JmolModelAdapter {
    * file related
    ****************************************************************/
   /**
-   * Given the opened reader, return an object which represents the file
+   * Given the BufferedReader, return an object which represents the file
    * contents. The parameter <code>name</code> is assumed to be the
    * file name or URL which is the source of reader. Note that this 'file'
    * may have been automatically decompressed. Also note that the name
@@ -131,7 +131,8 @@ public interface JmolModelAdapter {
    * If the return value is <code>instanceof String</code> then it is considered
    * an error condition and the returned String is the error message
    */
-  public Object openReader(JmolViewer viewer, String name, Reader reader);
+  public Object openBufferedReader(JmolViewer viewer, String name,
+                                   BufferedReader bufferedReader);
 
   /**
    * The number of frames in this file. Used for animations, etc.

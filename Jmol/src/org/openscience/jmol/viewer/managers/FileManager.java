@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.io.Reader;
+import java.io.BufferedReader;
 import java.util.zip.GZIPInputStream;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.ReaderFactory;
@@ -128,7 +129,8 @@ public class FileManager {
   }
 
   private String openReader(String name, Reader reader) {
-    Object clientFile = viewer.getJmolModelAdapter().openReader(viewer, name, reader);
+    Object clientFile = viewer.getJmolModelAdapter()
+      .openBufferedReader(viewer, name, new BufferedReader(reader));
     if (clientFile instanceof String)
       return (String)clientFile;
     viewer.setClientFile(name, clientFile);

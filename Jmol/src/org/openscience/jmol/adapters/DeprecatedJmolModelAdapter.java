@@ -31,7 +31,7 @@ import org.openscience.jmol.viewer.JmolModelAdapter;
 
 import java.awt.Color;
 import javax.vecmath.Point3d;
-import java.io.Reader;
+import java.io.BufferedReader;
 
 // client-specific imports
 import org.openscience.jmol.ChemFrame;
@@ -74,13 +74,13 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
    * the file related methods
    ****************************************************************/
 
-  public Object openReader(JmolViewer viewer,
-                           String name, Reader reader) {
+  public Object openBufferedReader(JmolViewer viewer,
+                                   String name, BufferedReader bufferedReader) {
     ChemFile chemFile = null;
     try {
       ChemFileReader chemFileReader = null;
       try {
-        chemFileReader = ReaderFactory.createReader(viewer, reader);
+        chemFileReader = ReaderFactory.createReader(viewer, bufferedReader);
       } catch (IOException ex) {
         return "Error determining input format: " + ex;
       }

@@ -35,24 +35,26 @@
   <title>Ways to integrate scripts</title>
   <para>
     There are two methods of defining a script to be run by the applet
+  </para>
     <itemizedlist>
       <listitem>
-	by using the parameter="script" tag as part of the applet specification
+	<para>by using the parameter="script" tag as part of the applet specification</para>
       </listitem>
       <listitem>
-	by using the JavaScript script('script-commands') method
+	<para>by using the JavaScript script('script-commands') method</para>
       </listitem>
     </itemizedlist>
-    In either of these cases you can
+    <para>In either of these cases you can</para>
     <itemizedlist>
       <listitem>
-	include the entire script in the html page
+	<para>include the entire script in the html page</para>
       </listitem>
       <listitem>
-	use the 'script [scriptname]' command to load a script from the
-	webserver
+	<para>use the 'script [scriptname]' command to load a script from the
+	webserver</para>
       </listitem>
     </itemizedlist>
+  <para>
     In general, the first of these methods is only acceptable for short
     scripts.
     For longer scripts it is probably better to store the script files
@@ -60,6 +62,7 @@
   </para>
 </section>
 <section>
+  <title>Examples</title>
   <para>
     All of the following examples load the molecule caffeine.xyz. 
     Various ways of invoking scripts are demonstrated

@@ -73,9 +73,9 @@
   <para>
     Unfortunately, this means that the JmolApplet cannot directly load
     molecular models from other web servers, such as the Protein Data Bank
-    <ulink href="http://www.rcsb.org/pdb">www.rcsb.org/pdb</ulink>,
+    <ulink url="http://www.rcsb.org/pdb">www.rcsb.org/pdb</ulink>,
     or the cactus database maintiained by the National Cancer Institute
-    <ulink href="http://cactus.nci.nih.gov">cactus.nci.nih.gov</ulink>.
+    <ulink url="http://cactus.nci.nih.gov">cactus.nci.nih.gov</ulink>.
   </para>
   <para>
     The JmolAppletProxy.cgi provides a mechanism to enable remote access

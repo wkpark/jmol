@@ -48,7 +48,7 @@
       <para>
         With this option you can change the maximum heap size the Java virtual
         machine can address on Java 1.4 systems. By default this is 64 MB.
-        For large files this might not be enough. Using <arg>-Xmx512m</arg>
+        For large files this might not be enough. Using <cmdsynopsis><arg>-Xmx512m</arg></cmdsynopsis>
         the heap size is enlarge to half a gigabyte. On older Java systems the syntax
         of this option is different (see <command>java --help</command>).
       </para>

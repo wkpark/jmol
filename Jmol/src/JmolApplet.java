@@ -307,6 +307,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public boolean showPaintTime = true;
 
   public void paint(Graphics g) {
+    if (viewer == null) // it seems that this can happen at startup sometimes
+      return;
     if (showPaintTime)
       startPaintClock();
     Dimension size = jvm12orGreater ? jvm12.getSize() : size();

@@ -55,4 +55,64 @@ class PopupResourceBundle {
     }
     return str;
   }
+  /*
+   * I tried this ... but for some reason did not work on NS 4.78
+   * try again later
+   *
+package org.openscience.jmol.ui;
+
+import java.util.Properties;
+import java.io.InputStream;
+import java.io.IOException;
+import java.lang.ClassLoader;
+
+class PopupResourceBundle {
+
+  Properties propsStructure;
+  Properties propsWords;
+
+  private final static String structuresPath =
+    "org/openscience/jmol/ui/JmolPopupStructure.properties";
+  private final static String wordsPath =
+    "org/openscience/jmol/ui/JmolPopupWords.properties";
+
+  PopupResourceBundle() {
+    propsStructure = new Properties();
+    propsWords = new Properties();
+    
+    ClassLoader cl = getClass().getClassLoader();
+
+    try {
+      InputStream is;
+
+      System.out.println("foo:" + cl.getResource(structuresPath));
+
+      is = cl.getResourceAsStream(structuresPath);
+      if (is == null) {
+        System.out.println("unable to open:" + structuresPath);
+        return;
+      }
+
+      propsStructure.load(is);
+
+      is = cl.getResourceAsStream(wordsPath);
+      if (is == null) {
+        System.out.println("unable to open:" + wordsPath);
+        return;
+      }
+      propsWords.load(is);
+      
+    } catch (IOException ioe) {
+      System.out.println("PopupResourceBundle:" + ioe);
+    }
+  }
+
+  String getStructure(String key) {
+    return propsStructure.getProperty(key);
+  }
+
+  String getWord(String key) {
+    return propsWords.getProperty(key);
+  }
+  */
 }

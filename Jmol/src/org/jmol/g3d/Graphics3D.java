@@ -322,12 +322,23 @@ final public class Graphics3D {
   
   public void drawString(String str, Font3D font3d, short colix, short bgcolix,
                          int xBaseline, int yBaseline, int z) {
+    if (font3d == null || font3d.fontMetrics == null) {
+      System.out.println("Graphics3d.drawString ... font3d=" + font3d +
+                         " font3d.fontMetrics=" + font3d.fontMetrics);
+      return;
+    }
+
+    //    System.out.println("Graphics3D.drawString(" + str + "," + font3d +
+    //                       ", ...)");
+
     font3dCurrent = font3d;
     argbCurrent = getArgb(colix);
     if (z < slab)
       return;
-    Text3D.plot(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(),
+    //    System.out.println("ready to call");
+    Text3D.plot(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
                 z, argbCurrent, getArgb(bgcolix), str, font3dCurrent, this);
+    //    System.out.println("done");
   }
 
   public void setFontOfSize(int fontsize) {

@@ -75,9 +75,10 @@ abstract class Mcps extends Shape {
   void initialize() {
     if (mcpsmodels == null) {
       int modelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
+      PdbModel[] models = pdbFile.getModels();
       mcpsmodels = new Mcpsmodel[modelCount];
       for (int i = modelCount; --i >= 0; )
-        mcpsmodels[i] = new Mcpsmodel(pdbFile.getModel(i));
+        mcpsmodels[i] = new Mcpsmodel(models[i]);
     }
   }
 

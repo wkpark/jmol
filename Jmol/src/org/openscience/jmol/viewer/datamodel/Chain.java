@@ -59,9 +59,10 @@ final public class Chain {
     polymer = Polymer.allocatePolymer(this);
   }
   
-  Group allocateGroup(int sequenceNumber, char insertionCode,
-                         String group3) {
-    Group group = new Group(this, sequenceNumber, insertionCode, group3);
+  Group allocateGroup(Frame frame, String group3,
+                      int sequenceNumber, char insertionCode) {
+    Group group =
+      new Group(frame, this, sequenceNumber, insertionCode, group3);
 
     if (groupCount == groups.length)
       groups = (Group[])Util.doubleLength(groups);

@@ -36,7 +36,7 @@ final public class PdbFile {
 
   private int modelCount = 0;
   private PdbModel[] pdbmodels = new PdbModel[1];
-  private int[] modelNumbers = new int[1];
+  private int[] modelIDs = new int[1];
 
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
@@ -75,23 +75,23 @@ final public class PdbFile {
   }
 
 
-  PdbModel getOrAllocateModel(int modelNumber) {
+  PdbModel getOrAllocateModel(int modelID) {
     for (int i = modelCount; --i >= 0; )
-      if (modelNumbers[i] == modelNumber)
+      if (modelIDs[i] == modelID)
         return pdbmodels[i];
     if (modelCount == pdbmodels.length) {
       pdbmodels = (PdbModel[])Util.doubleLength(pdbmodels);
-      modelNumbers = Util.doubleLength(modelNumbers);
+      modelIDs = Util.doubleLength(modelIDs);
     }
-    modelNumbers[modelCount] = modelNumber;
-    PdbModel pdbmodel = new PdbModel(this, modelCount, modelNumber);
+    modelIDs[modelCount] = modelID;
+    PdbModel pdbmodel = new PdbModel(this, modelCount, modelID);
     pdbmodels[modelCount++] = pdbmodel;
     return pdbmodel;
   }
 
   int getModelIndex(int modelID) {
     int i;
-    for (i = modelCount; --i >= 0 && modelNumbers[i] != modelID; )
+    for (i = modelCount; --i >= 0 && modelIDs[i] != modelID; )
       ;
     return i;
   }
@@ -108,22 +108,23 @@ final public class PdbFile {
     }
   }
 
-  int modelNumberCurrent = Integer.MIN_VALUE;
+  int modelIDCurrent = Integer.MIN_VALUE;
   char chainIDCurrent;
   int sequenceNumberCurrent;
   char insertionCodeCurrent;
   Group groupCurrent;
 
-  void setCurrentResidue(int modelNumber, char chainID,
+  void setCurrentResidue(int modelID, char chainID,
                          int sequenceNumber, char insertionCode,
                          String group3) {
-    modelNumberCurrent = modelNumber;
+    modelIDCurrent = modelID;
     chainIDCurrent = chainID;
     sequenceNumberCurrent = sequenceNumber;
     insertionCodeCurrent = insertionCode;
-    PdbModel model = getOrAllocateModel(modelNumber);
+    PdbModel model = getOrAllocateModel(modelID);
     Chain chain = model.getOrAllocateChain(chainID);
-    groupCurrent = chain.allocateGroup(sequenceNumber, insertionCode, group3);
+    groupCurrent =
+      chain.allocateGroup(frame, group3, sequenceNumber, insertionCode);
   }
 
   /*
@@ -137,43 +138,41 @@ final public class PdbFile {
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }
-    int modelNumber = atom.getModelNumber();
-    if (modelNumber != modelNumberCurrent ||
+    int modelID = atom.getModelNumber();
+    if (modelID != modelIDCurrent ||
         chainID != chainIDCurrent ||
         seqcode != seqcodeCurrent)
-      setCurrentResidue(modelNumber, chainID,
+      setCurrentResidue(modelID, chainID,
                         seqcode, pdbRecord.substring(17, 20).trim());
     groupCurrent.assignAtom(atom, pdbRecord);
     return groupCurrent;
   }
   */
 
-  public Group registerAtom(Atom atom, int modelNumber, char chainID,
-                               int sequenceNumber, char insertionCode,
-                               String group3) {
-    /*
-    System.out.println("PdbFile.registerAtom(...," + modelNumber + "," +
-                       chainID + "," + sequenceNumber + "," + insertionCode +
-                       "," + group3 + ")");
-    */
-                       
+  Group getGroup(int modelID, char chainID, String group3,
+                 int sequenceNumber, char insertionCode) {
     if (sequenceNumber != sequenceNumberCurrent ||
         insertionCode != insertionCodeCurrent ||
         chainID != chainIDCurrent ||
-        modelNumber != modelNumberCurrent)
-      setCurrentResidue(modelNumber, chainID,
+        modelID != modelIDCurrent)
+      setCurrentResidue(modelID, chainID,
                         sequenceNumber, insertionCode, group3);
-    groupCurrent.registerAtom(atom);
     return groupCurrent;
   }
-  
+
   public int getModelCount() {
     return modelCount;
   }
 
+  public PdbModel[] getModels() {
+    return pdbmodels;
+  }
+
+  /*
   public PdbModel getModel(int i) {
     return pdbmodels[i];
   }
+  */
 
   /*
     temporary hack for backward compatibility with drawing code

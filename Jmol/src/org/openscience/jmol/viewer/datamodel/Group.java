@@ -33,6 +33,7 @@ import javax.vecmath.Point3f;
 
 final public class Group {
 
+  public Frame frame;
   public Chain chain;
   public Polymer polymer;
   public int seqcode;
@@ -55,8 +56,9 @@ final public class Group {
   short aminoBackboneHbondOffset = 0;
 
 
-  public Group(Chain chain,
+  public Group(Frame frame, Chain chain,
                   int sequenceNumber, char insertionCode, String group3) {
+    this.frame = frame;
     this.chain = chain;
     this.seqcode = getSeqcode(sequenceNumber, insertionCode);
     if (group3 == null)

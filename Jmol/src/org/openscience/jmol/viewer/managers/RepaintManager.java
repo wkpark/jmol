@@ -50,12 +50,8 @@ public class RepaintManager {
   public boolean setDisplayModelIndex(int modelIndex) {
     if (modelIndex > 0) {
       Frame frame = viewer.getFrame();
-      if (modelIndex >= frame.modelCount) {
+      if (modelIndex >= frame.getModelCount()) {
         System.out.println("bad model index");
-        System.out.println("modelIndex=" + modelIndex +
-                           "\nframe.modelIDs.length=" + frame.modelIDs.length +
-                           "viewer.getModelCount()=" + viewer.getModelCount() +
-                           "frame.modelCount=" + frame.modelCount);
         return false;
       }
     }
@@ -67,11 +63,7 @@ public class RepaintManager {
   public boolean setDisplayModelID(int modelID) {
     int i = -1;
     if (modelID != 0) {
-      Frame frame = viewer.getFrame();
-      short[] ids = frame.modelIDs;
-      i = frame.modelCount;
-      while ((--i >= 0) && (ids[i] != modelID))
-        ;
+      i = viewer.getModelIndex(modelID);
       if (i < 0)
         return false;
     }

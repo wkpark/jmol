@@ -51,10 +51,7 @@ final public class Frame {
   float maxVanderwaalsRadius = 0;
 
   final static int growthIncrement = 128;
-  public int modelCount;
-  int modelIndex = -1;
-  int lastModelNumber = -1;
-  public short modelIDs[];
+  //  public short modelIDs[];
   int atomCount = 0;
   public Atom[] atoms;
   Object[] clientAtomReferences;
@@ -79,7 +76,7 @@ final public class Frame {
     // if (modelTypeName == "xyz") { }
     this.modelTypeName = modelTypeName.toLowerCase().intern();
     pdbFile = new PdbFile(this);
-    modelIDs = new short[10];
+    //    modelIDs = new short[10];
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
@@ -130,7 +127,15 @@ final public class Frame {
     }
   }
 
-  public Atom addAtom(int modelNumber, Object atomUid,
+  int currentModelID = Integer.MIN_VALUE;
+  PdbModel currentModel;
+  char currentChainID = '\uFFFF';
+  Chain currentChain;
+  int currentGroupSequenceNumber = Integer.MIN_VALUE;
+  char currentGroupInsertionCode = '\uFFFF';
+  Group currentGroup;
+
+  public Atom addAtom(int modelID, Object atomUid,
                       byte atomicNumber,
                       String atomName, 
                       int formalCharge, float partialCharge,
@@ -138,19 +143,45 @@ final public class Frame {
                       float bfactor,
                       float x, float y, float z,
                       boolean isHetero, int atomSerial, char chainID,
-                      String group3, int sequenceNumber, char insertionCode,
+                      String group3,
+                      int groupSequenceNumber, char groupInsertionCode,
                       float vectorX, float vectorY, float vectorZ,
                       Object clientAtomReference) {
-    if (modelNumber != lastModelNumber) {
+    if (modelID != currentModelID) {
+      currentModelID = modelID;
+      currentModel = pdbFile.getOrAllocateModel(modelID);
+      currentChainID = '\uFFFF';
+    }
+    if (chainID != currentChainID) {
+      currentChainID = chainID;
+      currentChain = currentModel.getOrAllocateChain(chainID);
+      currentGroupInsertionCode = '\uFFFF';
+    }
+    if (groupSequenceNumber != currentGroupSequenceNumber ||
+        groupInsertionCode != currentGroupInsertionCode) {
+      currentGroupSequenceNumber = groupSequenceNumber;
+      currentGroupInsertionCode = groupInsertionCode;
+      currentGroup =
+        currentChain.allocateGroup(this, group3,
+                                   groupSequenceNumber, groupInsertionCode);
+    }
+    /*
+    if (modelID != lastModelNumber) {
       if (modelCount == modelIDs.length)
         modelIDs = Util.setLength(modelIDs, modelCount + 20);
       modelIndex = modelCount;
       lastModelNumber = modelIDs[modelCount++] = (short)modelNumber;
     }
+    */
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + growthIncrement);
-    Atom atom = new Atom(this, atomCount,
-                         modelIndex, modelNumber, 
+    /*
+    Group group = pdbFile.getGroup(modelNumber, chainID,
+                                   group3,
+                                   groupSequenceNumber, groupInsertionCode);
+    */
+    Atom atom = new Atom(currentGroup,
+                         atomCount,
                          atomicNumber,
                          atomName,
                          formalCharge, partialCharge,
@@ -158,9 +189,8 @@ final public class Frame {
                          bfactor,
                          x, y, z,
                          isHetero, atomSerial, chainID,
-                         group3, sequenceNumber, insertionCode,
-                         vectorX, vectorY, vectorZ,
-                         pdbFile);
+                         vectorX, vectorY, vectorZ);
+    currentGroup.registerAtom(atom);
     atoms[atomCount] = atom;
     if (clientAtomReference != null) {
       if (clientAtomReferences == null)
@@ -192,7 +222,7 @@ final public class Frame {
   }
 
   public int getModelCount() {
-    return modelCount;
+    return pdbFile.getModelCount();
   }
 
   public int getModelIndex(int modelID) {

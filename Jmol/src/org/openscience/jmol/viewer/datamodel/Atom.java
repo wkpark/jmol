@@ -39,9 +39,8 @@ public final class Atom implements Bspt.Tuple {
 
   public final static byte VISIBLE_FLAG = 0x01;
 
+  Group group;
   public int atomIndex;
-  Frame frame; // maybe we can get rid of this ...
-  Group group; // ... if everybody has a group
   public short modelIndex; // we want this here for the BallsRenderer
   public Point3f point3f;
   long xyzd;
@@ -65,8 +64,8 @@ public final class Atom implements Bspt.Tuple {
   byte specialAtomID;
   float partialCharge;
 
-  public Atom(Frame frame, int atomIndex,
-              int modelIndex, int modelNumber,
+  public Atom(Group group,
+              int atomIndex,
               byte elementNumber,
               String atomName,
               int formalCharge, float partialCharge,
@@ -74,9 +73,7 @@ public final class Atom implements Bspt.Tuple {
               float bfactor,
               float x, float y, float z,
               boolean isHetero, int atomSerial, char chainID,
-              String group3, int groupSequenceNumber, char groupInsertionCode,
-              float vibrationX, float vibrationY, float vibrationZ,
-              PdbFile pdbFile) {
+              float vibrationX, float vibrationY, float vibrationZ) {
     /*
     System.out.println("new Atom(" + modelNumber + "," +
                        elementNumber + "," +
@@ -89,10 +86,9 @@ public final class Atom implements Bspt.Tuple {
                        group3 + "," + groupSequenceNumber + ","
                        + groupInsertionCode + "," + pdbFile);
     */
-    JmolViewer viewer = frame.viewer;
-    this.frame = frame;
+    this.group = group;
+    this.modelIndex = (short)group.chain.pdbmodel.modelIndex;
     this.atomIndex = atomIndex;
-    this.modelIndex = (short)modelIndex;
     this.elementNumber = elementNumber;
     if (formalCharge == Integer.MIN_VALUE)
       formalCharge = 0;
@@ -108,20 +104,19 @@ public final class Atom implements Bspt.Tuple {
     this.atomSerial = atomSerial;
     this.atomName = (atomName == null ? null : atomName.intern());
     specialAtomID = lookupSpecialAtomID(atomName);
+    JmolViewer viewer = group.frame.viewer;
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
     this.isHetero = isHetero;
     // this does not belong here
     // put it in the higher level and pass in the group
-    group = pdbFile.registerAtom(this, modelNumber, chainID,
-                                 groupSequenceNumber, groupInsertionCode, group3);
     if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
         !Float.isNaN(vibrationZ)) {
       vibrationVector = new Vector3f(vibrationX, vibrationY, vibrationZ);
     }
   }
-  
+
   public boolean isBonded(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
@@ -136,7 +131,7 @@ public final class Atom implements Bspt.Tuple {
   public Bond bondMutually(Atom atomOther, int order) {
     if (isBonded(atomOther))
       return null;
-    Bond bond = new Bond(this, atomOther, order, frame.viewer);
+    Bond bond = new Bond(this, atomOther, order, group.frame.viewer);
     addBond(bond);
     atomOther.addBond(bond);
     return bond;
@@ -171,7 +166,7 @@ public final class Atom implements Bspt.Tuple {
     if (bonds == null)
       return;
     for (int i = bonds.length; --i >= 0; )
-      frame.deleteBond(bonds[i]);
+      group.frame.deleteBond(bonds[i]);
     if (bonds != null) {
       System.out.println("bond delete error");
       throw new NullPointerException();
@@ -268,7 +263,7 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public void setLabel(String strLabel) {
-    frame.setLabel(strLabel, atomIndex);
+    group.frame.setLabel(strLabel, atomIndex);
   }
 
   final static int MIN_Z = 100;
@@ -339,8 +334,8 @@ public final class Atom implements Bspt.Tuple {
   public int getAtomNumber() {
     if (atomSerial != Integer.MIN_VALUE)
       return atomSerial;
-    if (frame.modelTypeName == "xyz" &&
-        frame.viewer.getZeroBasedXyzRasmol())
+    if (group.frame.modelTypeName == "xyz" &&
+        group.frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
     return atomIndex + 1;
   }
@@ -447,11 +442,11 @@ public final class Atom implements Bspt.Tuple {
   }
   
   public String getClientAtomStringProperty(String propertyName) {
-    Object[] clientAtomReferences = frame.clientAtomReferences;
+    Object[] clientAtomReferences = group.frame.clientAtomReferences;
     return
       ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
        ? null
-       : (frame.viewer.
+       : (group.frame.viewer.
           getClientAtomStringProperty(clientAtomReferences[atomIndex],
                                       propertyName)));
   }
@@ -672,7 +667,7 @@ public final class Atom implements Bspt.Tuple {
       info.append(" Chain:");
       info.append(chainID);
     }
-    if (frame.getModelCount() > 1) {
+    if (group.frame.getModelCount() > 1) {
       info.append(" Model:");
       info.append(getModelID());
     }
@@ -706,7 +701,7 @@ public final class Atom implements Bspt.Tuple {
       info.append(":");
       info.append(chainID);
     }
-    if (frame.getModelCount() > 1) {
+    if (group.frame.getModelCount() > 1) {
       info.append("/");
       info.append(getModelID());
     }

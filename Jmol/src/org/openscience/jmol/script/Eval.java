@@ -229,6 +229,9 @@ public class Eval implements Runnable {
       case Token.center:
         center();
         break;
+      case Token.color:
+        color();
+        break;
       case Token.define:
         define();
         break;
@@ -291,7 +294,6 @@ public class Eval implements Runnable {
       case Token.bond:
       case Token.cartoon:
       case Token.clipboard:
-      case Token.color:
       case Token.connect:
       case Token.dots:
       case Token.hbonds:
@@ -394,12 +396,25 @@ public class Eval implements Runnable {
     evalError("bad argument count");
   }
 
+  void invalidArgument() throws ScriptException {
+    evalError("invalid argument");
+  }
+
   void outOfRange() throws ScriptException {
     evalError("out of range");
   }
 
   void errorLoadingScript(String msg) throws ScriptException {
     evalError("error loading script -> " + msg);
+  }
+
+  void notImplemented(int itoken) {
+    notImplemented(statement[itoken]);
+  }
+
+  void notImplemented(Token token) {
+    System.out.println("" + token.value +
+                       " not implemented in command:" + statement[0].value);
   }
 
   BitSet copyBitSet(BitSet bitSet) {
@@ -599,10 +614,26 @@ public class Eval implements Runnable {
     }
   }
 
-  void background() throws ScriptException {
-    if ((statement[1].tok & Token.colorparam) == 0)
+  Color getColorParam(int itoken) throws ScriptException {
+    if (itoken >= statement.length)
       colorExpected();
-    control.setColorBackground(new Color(statement[1].intValue));
+    if ((statement[itoken].tok & Token.colorparam) != Token.colorparam)
+      colorExpected();
+    return new Color(statement[itoken].intValue);
+  }
+
+  Color getColorOrNoneParam(int itoken) throws ScriptException {
+    if (itoken >= statement.length)
+      colorExpected();
+    if ((statement[itoken].tok & Token.colorparam) == Token.colorparam)
+      return new Color(statement[itoken].intValue);
+    if (statement[itoken].tok != Token.none)
+      colorExpected();
+    return null;
+  }
+
+  void background() throws ScriptException {
+    control.setColorBackground(getColorParam(1));
   }
 
   // mth - 2003 01
@@ -617,6 +648,71 @@ public class Eval implements Runnable {
       control.setSelectionSet(expression(statement, 1));
     }
     control.setCenterAsSelected();
+  }
+
+  void color() throws ScriptException {
+    if (statement.length > 3 || statement.length < 2)
+      badArgumentCount();
+    switch (statement[1].tok) {
+    default:
+      if ((statement[1].tok & Token.colorparam) != Token.colorparam)
+        invalidArgument();
+    case Token.spacefill:
+    case Token.amino:
+    case Token.chain:
+    case Token.group:
+    case Token.shapely:
+    case Token.structure:
+    case Token.temperature:
+    case Token.charge:
+    case Token.user:
+      colorAtom(1);
+      break;
+    case Token.atom:
+      colorAtom(2);
+      break;
+    case Token.bond:
+      control.setColorBondScript(getColorOrNoneParam(2));
+      break;
+    case Token.label:
+      control.setColorLabel(getColorOrNoneParam(2));
+      break;
+    case Token.backbone:
+    case Token.ribbons:
+    case Token.dots:
+    case Token.hbonds:
+    case Token.ssbonds:
+      notImplemented(1);
+      break;
+    }
+  }
+
+  void colorAtom(int itoken) throws ScriptException {
+    byte mode = DisplayControl.ATOMTYPE;
+    Color color = null;
+    switch (statement[itoken].tok) {
+    case Token.spacefill:
+      break;
+    case Token.charge:
+      mode = DisplayControl.ATOMCHARGE;
+      break;
+    case Token.amino:
+    case Token.chain:
+    case Token.group:
+    case Token.shapely:
+    case Token.structure:
+    case Token.temperature:
+    case Token.user:
+      notImplemented(itoken);
+      return;
+    default:
+      if ((statement[itoken].tok & Token.colorparam) != Token.colorparam)
+        invalidArgument();
+      mode = DisplayControl.COLOR;
+      color = getColorParam(itoken);
+      break;
+    }
+    control.setColorAtomScript(mode, color);
   }
 
   Hashtable variables = new Hashtable();

@@ -239,6 +239,7 @@ class Token {
   final static int opEQ         = comparator |  4;
   final static int opNE         = comparator |  5;
 
+  // misc
   final static int off          = bool |  0;
   final static int on           = bool |  1;
 
@@ -259,8 +260,9 @@ class Token {
   final static int coord        = misc | 15;
   final static int leftsquare   = misc | 16;
   final static int rightsquare  = misc | 17;
-  final static int restore      = misc | 18; // chime extended
-  
+  final static int shapely      = misc | 18;
+  final static int restore      = misc | 19; // chime extended
+
   final static int alpha       = predefinedset |  0;
   final static int amino       = predefinedset |  1;
   final static int cystine     = predefinedset |  2;
@@ -430,6 +432,9 @@ class Token {
     "phipsi",       new Token(phipsi,          "phipsi"),
     "ramprint",     new Token(ramprint,        "ramprint"),
     "rotation",     new Token(rotation,        "rotation"),
+    "group",        new Token(group,           "group"),
+    "chain",        new Token(chain,           "chain"),
+    "atom",         new Token(atom,            "atom"),
     "sequence",     new Token(sequence,        "sequence"),
     "symmetry",     new Token(symmetry,        "symmetry"),
     "translation",  new Token(translation,     "translation"),
@@ -490,6 +495,7 @@ class Token {
     "angle",        new Token(angle, "angle"),
     "torsion",      new Token(torsion, "torsion"),
     "coord",        new Token(coord, "coord"),
+    "shapely",      new Token(shapely,         "shapely"),
 
     "restore",           new Token(restore,    "restore"),
   

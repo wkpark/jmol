@@ -113,6 +113,7 @@ final public class DisplayControl {
   public final static byte BOX =       3; // for bonds
   public final static byte NONE =      4;
 
+  public final static byte COLOR =     -1;
   public final static byte ATOMTYPE =   0;
   public final static byte ATOMCHARGE = 1;
 
@@ -405,9 +406,9 @@ final public class DisplayControl {
    * delegated to ColorManager
    ****************************************************************/
 
-  public void setModeAtomColorProfile(int mode) {
+  public void setModeAtomColorProfile(byte mode) {
     colorManager.setModeAtomColorProfile(mode);
-    distributor.setColorAtom(null, iterAtomMenu());
+    distributor.setColorAtom(mode, null, iterAtomMenu());
     refresh();
   }
 
@@ -506,6 +507,10 @@ final public class DisplayControl {
     return colorManager.getColorAtom(atom);
   }
 
+  public Color getColorAtom(byte mode, Atom atom) {
+    return colorManager.getColorAtom(mode, atom);
+  }
+
   public Color getColorAtomOutline(byte style, Color color) {
     return colorManager.getColorAtomOutline(style, color);
   }
@@ -540,6 +545,22 @@ final public class DisplayControl {
 
   public Color getColorBond() {
     return colorManager.colorBond;
+  }
+
+  public Color transparentRed() {
+    return getColorTransparent(Color.red);
+  }
+
+  public Color transparentGreen() {
+    return getColorTransparent(Color.green);
+  }
+
+  public Color transparentBlue() {
+    return getColorTransparent(Color.blue);
+  }
+
+  public Color transparentGrey() {
+    return getColorTransparent(Color.gray);
   }
 
   /****************************************************************
@@ -875,6 +896,14 @@ final public class DisplayControl {
 
   public void setStyleBondScript(byte style) {
     distributor.setStyleBond(style, iterBondScript());
+  }
+
+  public void setColorAtomScript(byte mode, Color color) {
+    distributor.setColorAtom(mode, color, iterAtomScript());
+  }
+
+  public void setColorBondScript(Color color) {
+    distributor.setColorBond(color, iterBondScript());
   }
 
   /****************************************************************

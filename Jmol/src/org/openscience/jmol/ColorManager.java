@@ -42,17 +42,12 @@ public class ColorManager {
     this.control = control;
   }
 
-  private PartialAtomicChargeColors chargeColors =
-    new PartialAtomicChargeColors();
-  private AtomColors atomColors = AtomColors.getInstance();
-  private AtomColorer colorProfile = AtomColors.getInstance();
-  public int modeAtomColorProfile = DisplayControl.ATOMTYPE;
-  public void setModeAtomColorProfile(int mode) {
-    this.modeAtomColorProfile = mode;
-    if (mode == DisplayControl.ATOMTYPE)
-      colorProfile = atomColors;
-    else
-      colorProfile = chargeColors;
+  private final AtomColorer[] colorProfiles =
+  { AtomColors.getInstance(),
+    new PartialAtomicChargeColors()};
+
+  public byte modeAtomColorProfile = DisplayControl.ATOMTYPE;
+  public void setModeAtomColorProfile(byte mode) {
   }
 
   public int getModeAtomColorProfile() {
@@ -74,10 +69,7 @@ public class ColorManager {
   }
   public Color getColorSelection() {
     if (colorSelectionTransparent == null) {
-      colorSelectionTransparent = 
-        control.getUseGraphics2D() ?
-        getColorTransparent(colorSelection) :
-        colorSelection;
+      colorSelectionTransparent = getColorTransparent(colorSelection);
     }
     return colorSelectionTransparent;
   }
@@ -142,7 +134,11 @@ public class ColorManager {
   }
 
   public Color getColorAtom(Atom atom) {
-    Color color = colorProfile.getAtomColor(atom);
+    return getColorAtom(modeAtomColorProfile, atom);
+  }
+
+  public Color getColorAtom(byte mode, Atom atom) {
+    Color color = colorProfiles[mode].getAtomColor(atom);
     if (modeTransparentColors)
       color = getColorTransparent(color);
     return color;
@@ -177,8 +173,12 @@ public class ColorManager {
   public Color getColorTransparent(Color color) {
     Color transparent = (Color) htTransparent.get(color);
     if (transparent == null) {
-      int argb = (color.getRGB() & 0x00FFFFFF) | (transparency << 24);
-      transparent = new Color (argb, true);
+      if (control.getUseGraphics2D()) {
+        int argb = (color.getRGB() & 0x00FFFFFF) | (transparency << 24);
+        transparent = new Color (argb, true);
+      } else {
+        transparent = color;
+      }
       htTransparent.put(color, transparent);
     }
     return transparent;

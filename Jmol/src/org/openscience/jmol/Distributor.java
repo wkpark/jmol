@@ -106,12 +106,13 @@ public class Distributor {
     }
   }
 
-  public void setColorAtom(Color colorAtom, JmolAtomIterator iter) {
-    boolean useColorProfile = colorAtom == null;
+  public void setColorAtom(byte mode, Color color, JmolAtomIterator iter) {
+    boolean useColorProfile = color == null;
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
-      Color color = useColorProfile ? control.getColorAtom(atom) : colorAtom;
-      atom.atomShape.setColorAtom(color);
+      Color colorT = useColorProfile
+        ? control.getColorAtom(mode, atom) : color;
+      atom.atomShape.setColorAtom(colorT);
     }
   }
 

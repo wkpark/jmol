@@ -92,7 +92,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static Color colorBond;
   private static Color colorVector;
   private static byte styleAtom;
-  private static int AtomColorProfile;
+  private static byte modeAtomColorProfile;
   private static byte styleLabel;
   private static String AtomPropsMode;
   private static byte styleBond;
@@ -396,9 +396,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
-        AtomColorProfile = source.getSelectedIndex();
-        control.setModeAtomColorProfile(AtomColorProfile);
-        props.put("AtomColorProfile", Integer.toString(AtomColorProfile));
+        modeAtomColorProfile = (byte)source.getSelectedIndex();
+        control.setModeAtomColorProfile(modeAtomColorProfile);
+        props.put("modeAtomColorProfile", ""+modeAtomColorProfile);
       }
     });
     constraints = new GridBagConstraints();

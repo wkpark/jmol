@@ -295,6 +295,13 @@ final public class JmolConstants {
             "" + symbol.charAt(0) + Character.toUpperCase(symbol.charAt(1));
           map.put(symbol, boxed);
         }
+        if (elementNumber == 1) {
+          // special case for D = deuterium
+          //
+          // We can put in a special table for these in the future
+          // if there are more 'element symbol aliases'
+          map.put("D", boxed);
+        }
       }
       htElementMap = map;
     }

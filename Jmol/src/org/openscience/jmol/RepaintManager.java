@@ -135,8 +135,9 @@ public class RepaintManager {
   }
 
   public void render(Graphics25D g25d, Rectangle rectClip) {
-    g25d.setColor(control.getColorBackground());
-    g25d.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
+    g25d.clearScreenBuffer(control.getColorBackground(),
+                           rectClip.x, rectClip.y,
+                           rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
       control.setGraphicsContext(g25d, rectClip);
       control.frameRenderer.paint(g25d, control);

@@ -642,14 +642,14 @@ public class BondRenderer {
     
 
     if (showAxis) {
-      dot(xSurface1, ySurface1, control.transparentBlue());
-      dot(xSurface2, ySurface2, control.transparentBlue());
+      dot(xSurface1, ySurface1, zSurface1, control.transparentBlue());
+      dot(xSurface2, ySurface2, zSurface2, control.transparentBlue());
     }
   }
 
-  void dot(int x, int y, Color co) {
+  void dot(int x, int y, int z, Color co) {
     g25d.setColor(co);
-    g25d.fillRect(x-1, y-1, 2, 2);
+    g25d.fillRect(x-1, y-1, z, 2, 2);
   }
 
   double[] intersectionCoords = new double[4];
@@ -681,7 +681,7 @@ public class BondRenderer {
       int dx = xExit - x1, dy = yExit - y1;
       distanceExit = (int)Math.sqrt(dx*dx + dy*dy);
       if (showAxis)
-        dot(xExit, yExit, control.transparentBlue());
+        dot(xExit, yExit, zExit, control.transparentBlue());
     }
   }
   

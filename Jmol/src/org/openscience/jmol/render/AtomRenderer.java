@@ -108,7 +108,7 @@ public class AtomRenderer {
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
     g25d.setColor(colorSelection);
-    g25d.fillCircle(x - haloradius, y - haloradius, z, halodiameter);
+    g25d.fillCircle(x - haloradius, y - haloradius, z+1, halodiameter);
   }
 
   private void renderAtom() {
@@ -126,11 +126,7 @@ public class AtomRenderer {
         if (diameter == 1) {
           g25d.drawPixel(x, y, z);
         } else {
-          g25d.drawLine(xUpperLeft, yUpperLeft, z,
-                        xUpperLeft+1, yUpperLeft, z);
-          ++yUpperLeft;
-          g25d.drawLine(xUpperLeft, yUpperLeft, z,
-                        xUpperLeft+1, yUpperLeft, z);
+          g25d.fillSquare2(xUpperLeft, yUpperLeft, z);
         }
       }
       return;
@@ -140,6 +136,6 @@ public class AtomRenderer {
       g25d.fillCircle(xUpperLeft, yUpperLeft, z, diameter);
       g25d.setColor(colorOutline);
     }
-    g25d.drawCircle(xUpperLeft, yUpperLeft, z, diameter);
+    g25d.drawCircle(xUpperLeft, yUpperLeft, z-1, diameter);
   }
 }

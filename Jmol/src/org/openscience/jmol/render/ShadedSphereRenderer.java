@@ -76,7 +76,7 @@ public class ShadedSphereRenderer {
         int xLowerRight = xUpperLeft + diamMinus1;
         int yLowerRight = yUpperLeft + diamMinus1;
         g25d.setColor(color);
-        g25d.fillRect(xUpperLeft, yUpperLeft, diamMinus1, diamMinus1);
+        g25d.fillRect(xUpperLeft, yUpperLeft, z, diamMinus1, diamMinus1);
         g25d.setColor(outline);
         g25d.drawLine(xUpperLeft, yLowerRight, z, xLowerRight, yLowerRight, z);
         g25d.drawLine(xLowerRight, yUpperLeft, z,

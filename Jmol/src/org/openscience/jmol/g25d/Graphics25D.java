@@ -42,9 +42,11 @@ final public class Graphics25D {
   Platform25D platform;
   Image img;
   Graphics g;
-  int width,height;
+  int width,height,size;
   int[] pbuf;
   short[] zbuf;
+
+  final static int zBackground = 32767;
 
   public boolean enabled = false;
   boolean capable = false;
@@ -75,9 +77,10 @@ final public class Graphics25D {
     System.out.println("Graphics25D.setSize(" + width + "," + height + ")");
     this.width = width;
     this.height = height;
+    this.size = width * height;
     if (g != null)
       g.dispose();
-    if (width == 0 || height == 0) {
+    if (size == 0) {
       img = null;
       g = null;
       pbuf = null;
@@ -90,7 +93,7 @@ final public class Graphics25D {
     if (usePbuf) {
       System.out.println("using pbuf");
       pbuf = platform.getPbuf();
-      zbuf = new short[width * height];
+      zbuf = new short[size];
     }
   }
 
@@ -153,12 +156,19 @@ final public class Graphics25D {
     plotDiscCentered(x + r, y + r, z, r);
   }
 
-  public void drawRect(int x, int y, int width, int height) {
-    g.drawRect(x, y, width, height);
+  public void fillSquare2(int x, int y, int z) {
+    if (! usePbuf) {
+      g.drawLine(x, y, x+1, y);
+      ++y;
+      g.drawLine(x, y, x+1, y);
+      return;
+    }
+    plotPixels(2, x, y, z);
+    plotPixels(2, x, y+1, z);
   }
 
-  public void fillRect(int x, int y, int width, int height) {
-    g.fillRect(x, y, width, height);
+  public void drawRect(int x, int y, int width, int height) {
+    g.drawRect(x, y, width, height);
   }
 
   public void drawString(String str, int xBaseline, int yBaseline) {
@@ -194,6 +204,31 @@ final public class Graphics25D {
   }
 
   // 3D specific routines
+  public void clearScreenBuffer(Color colorBackground,int xClip, int yClip,
+                                int widthClip, int heightClip) {
+    if (! usePbuf) {
+      g.setColor(colorBackground);
+      g.fillRect(xClip, yClip, widthClip, heightClip);
+      return;
+    }
+    if (heightClip <= 0 || widthClip <= 0)
+      return;
+    int argbBackground = colorBackground.getRGB();
+    int offsetSrc = yClip * width + xClip;
+    int offsetT = offsetSrc;
+    int count = widthClip;
+    do {
+      zbuf[offsetT] = zBackground;
+      pbuf[offsetT++] = argbBackground;
+    } while (--count > 0);
+    int offsetDst = offsetSrc;
+    while (--heightClip > 0) {
+      offsetDst += width;
+      System.arraycopy(pbuf, offsetSrc, pbuf, offsetDst, widthClip);
+      System.arraycopy(zbuf, offsetSrc, zbuf, offsetDst, widthClip);
+    }
+  }
+
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     if (! usePbuf) {
       g.drawLine(x1, y1, x2, y2);
@@ -223,6 +258,15 @@ final public class Graphics25D {
     g.fillPolygon(ax, ay, numPoints);
   }
 
+  public void fillRect(int x, int y, int z, int width, int height) {
+    if (! usePbuf) {
+      g.drawRect(x, y, width, height);
+      return;
+    }
+    while (--height >= 0)
+      plotPixels(width, x, y++, z);
+  }
+
   /****************************************************************
    * the plotting routines
    ****************************************************************/
@@ -235,13 +279,31 @@ final public class Graphics25D {
         )
       return;
     int offset = y * width + x;
-    pbuf[offset] = argbCurrent;
-    /*
-    if (zbuf[offset] < z) {
+    if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
       pbuf[offset] = argbCurrent;
     }
-    */
+  }
+
+  void plotPixels(int count, int x, int y, int z) {
+    if (y < 0 || y >= height || x >= width)
+      return;
+    if (x < 0) {
+      count += x; // x is negative, so this is subtracting -x
+      if (count < 0)
+        return;
+      x = 0;
+    }
+    if (count + x > width)
+      count = width - x;
+    int offsetPbuf = y * width + x;
+    while (--count >= 0) {
+      if (z < zbuf[offsetPbuf]) {
+        zbuf[offsetPbuf] = (short)z;
+        pbuf[offsetPbuf] = argbCurrent;
+      }
+      ++offsetPbuf;
+    }
   }
 
   void plotPixels(int[] pixels, int offset, int count, int x, int y, int z) {
@@ -260,14 +322,11 @@ final public class Graphics25D {
     while (--count >= 0) {
       int pixel = pixels[offset++];
       int alpha = pixel & 0xFF000000;
-      if (alpha == 0xFF000000) {
-        pbuf[offsetPbuf] = pixel;
-        /*
-          if (zbuf[offset] < z) {
-          zbuf[offset] = (short)z;
-          pbuf[offset] = argbCurrent;
+      if (alpha >= 0x80000000) {
+        if (z < zbuf[offsetPbuf]) {
+          zbuf[offsetPbuf] = (short)z;
+          pbuf[offsetPbuf] = pixel;
           }
-        */
       }
       ++offsetPbuf;
     }
@@ -365,6 +424,11 @@ final public class Graphics25D {
   }
 
   void plot8DiscCentered(int dx, int dy) {
+    plotPixels(2*dx + 1, xCenter - dx, yCenter + dy, zCenter);
+    plotPixels(2*dx + 1, xCenter - dx, yCenter - dy, zCenter);
+    plotPixels(2*dy + 1, xCenter - dy, yCenter + dx, zCenter);
+    plotPixels(2*dy + 1, xCenter - dy, yCenter - dx, zCenter);
+    /*
     for (int i = -dx; i <= dx; ++i) {
       plotPixel(xCenter + i, yCenter + dy, zCenter);
       plotPixel(xCenter + i, yCenter - dy, zCenter);
@@ -373,6 +437,7 @@ final public class Graphics25D {
       plotPixel(xCenter + i, yCenter + dx, zCenter);
       plotPixel(xCenter + i, yCenter - dx, zCenter);
     }
+    */
   }
 
   void plotDiscCentered(int xCenter, int yCenter, int zCenter, int r) {

@@ -75,6 +75,7 @@
 				<include name="**/*.dtd" />
 				<include name="**/Properties/*" />
 				<include name="**/Data/*" />
+				<include name="**/*.txt" />
 			</fileset>
 		</copy>
 		<copy todir="${classes.dir}" >
@@ -92,6 +93,7 @@
 				<exclude name="**/.*" />
 				<exclude name="**/Test*.class" />
 				<include name="**/jmol/**" />
+				<include name="com/**" />
 			</fileset>
 		</jar>
 		

@@ -556,6 +556,10 @@ public class Eval implements Runnable {
     evalError("color expected");
   }
 
+  void keywordExpected() throws ScriptException {
+    evalError("keyword expected");
+  }
+
   void unrecognizedColorObject() throws ScriptException {
     evalError("unrecognized color object");
   }
@@ -2026,7 +2030,17 @@ public class Eval implements Runnable {
   }
 
   void setDisplay() throws ScriptException {
-    viewer.setSelectionHaloEnabled(getSetBoolean());
+    boolean showHalo = false;
+    checkLength3();
+    switch (statement[2].tok) {
+    case Token.selected:
+      showHalo = true;
+    case Token.normal:
+      viewer.setSelectionHaloEnabled(showHalo);
+      break;
+    default:
+      keywordExpected();
+    }
   }
 
   void setFontsize() throws ScriptException {

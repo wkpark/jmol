@@ -540,6 +540,7 @@ public class Token {
   };
 
   static String[] predefinitions = {
+    "@a _g=23,_g=24,_g>=35 & _g<=36,_g>=51 & _g<=53",
     "@at a,t",
     "@acidic asp,glu",
     "@acyclic amino&!cyclic",
@@ -549,54 +550,53 @@ public class Token {
     "@aromatic his,phe,trp,tyr",
     //    "@backbone amino & _a<=3,nucleic & _a>=4 & _a<=15",
     "@backbone amino & _a<=3,nucleic & (_a>=8 & _a<=30)",
-    "@mainchain backbone",
+    "@base nucleic & !backbone",
     "@basic arg,his,lys",
     "@bonded _bondedcount>0",
     "@buried ala,cys,ile,leu,met,phe,trp,val",
+    "@c _g=29,_g=30,_g>=37 & _g<=38,_g>=60 & _g<=62",
     "@cg c,g",
     "@charged acidic,basic",
     "@cyclic his,phe,pro,trp,tyr",
     //    "@cystine",
     "@dna nucleic & !within(group,(_a=15,_a=30))",
+    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
     "@helix _structure=3",
     //    "@hetero", handled specially
     // doc on hydrophobic is inconsistent
     // text description of hydrophobic says this
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
+    "@hoh water",
     "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
+    "@i _g=27,_g=28,_g>=57 & _g<=59",
     "@ions _g=69,_g=70",
     "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
     "@ligand hetero & !solvent",
+    "@mainchain backbone",
     "@medium asn,asp,cys,pro,thr,val",
     // doc is inconsistent
     // is h basic or neutral
     "@negative acidic",
     "@neutral amino&!(acidic,basic)",
+    "@nucleic within(group,(_a>=8 & _a<=30))",
     "@polar amino&!hydrophobic",
     "@positive basic",
     "@protein amino", // + common post-translational modifications ??
+    "@purine _g>=23 & _g<=28",
+    "@pyrimidine _g>=29 & _g<=34",
     // selected - special and is handled at runtime
     "@rna nucleic & within(group,_a=15)",
     "@sheet _structure=2",
     "@sidechain protein & !backbone", // doc & code inconsistent
-    "@base nucleic & !backbone",
     "@small ala,gly,ser",
     "@solvent _g>=69 & _g<=73", // water or ions
     "@surface !buried",
-    "@turn _structure=1",
-    "@water _g=69,_g=70,_g=71",
-    "@hoh water",
-
-    "@nucleic within(group,(_a>=8 & _a<=30))",
-    "@purine _g>=23 & _g<=28",
-    "@pyrimidine _g>=29 & _g<=34",
-    "@a _g=23,_g=24,_g>=35 & _g<=36,_g>=51 & _g<=53",
-    "@c _g=29,_g=30,_g>=37 & _g<=38,_g>=60 & _g<=62",
-    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
     "@t _g=31,_g=32,_g>=63 & _g<=65",
+    "@turn _structure=1",
     "@u _g=33,_g=34,_g>=47 & _g<=50,_g>=66 & _g<=68",
-    "@i _g=27,_g=28,_g>=57 & _g<=59",
+    "@water _g=69,_g=70,_g=71",
+
     
 
     // "@hydrogen _e=1", handled specially

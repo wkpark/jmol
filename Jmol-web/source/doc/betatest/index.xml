@@ -70,59 +70,35 @@
       </section>
     </section>
     
-    <section title="Jmol10pre14">
+    <section title="Jmol10pre15">
       <p>
-	Jmol version 10 pre-release 14 was released on Tue 21 Sep 2004.
+	Jmol version 10 pre-release 15 was released on Thu 14 Oct 2004.
 	This release includes the following:
 	<ul>
 	  <li>
-	    bug fixes to the Jmol.js JavaScript library, especially
-	    for Macintosh Safari support
+	    support for 'show orientation and 'moveTo' commands ...
+	    very useful
 	  </li>
 	  <li>
-	    support for color by fixedTemperature
-	  </li>
-	  <li>
-	    initial support for Spartan output
-	  </li>
-	  <li>
-	    initial support for some other file format
-	    that I have forgotton
-	  </li>
-	  <li>
-	    dot surfaces can now be generated on subsets
-	    of the atoms
-	  </li>
-	  <li>
-	    separate scaling of atom force vectors and vibration
-	    amplitude
+	    Bug fix so that 'slab mode' now works again
 	  </li>
 	  <li>
 	    more things that I have forgotton
 	  </li>
 	</ul>
-	The following areas will not be supported in the initial
-	public release of Jmol v10. 
-	<ul>
-	  <li>
-	    automatic recognition of protein secondary structures
-	    using DSSP or related algorithms
-	  </li>
-	  <li>isosurfaces</li>
-	</ul>
       </p>
       <p>
-	<a href="Jmol10pre14.zip">
+	<a href="Jmol10pre15.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre14.zip
+	    Jmol10pre15.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre13.zip">
+	<a href="Jmol10pre14.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre13.zip
+	    <i>Give me the old code</i> Jmol10pre14.zip
 	  </font>
 	</a>
       </p>
@@ -132,7 +108,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre14.zip</b>
+	format as .zip : <b>jar xf Jmol10pre15.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

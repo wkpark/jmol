@@ -26,9 +26,16 @@
       </p>
     </header>
 
-    <section title="Jmol Version 10 is now released">
+    <section title="Jmol v9 information">
       <p>
-	Jmol Version 10 was released on XX October 2004.
+	For information on Jmol v9 click
+	<a href="v9/">here</a>.
+      </p>
+    </section>
+
+    <section title="Jmol Version 10 will soon be released">
+      <p>
+	Jmol Version 10 will be released before the end of October 2004.
       </p>
       <p>
 	Jmol v10 is a complete rearchitecture and rewrite of Jmol,

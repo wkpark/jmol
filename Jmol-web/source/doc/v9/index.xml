@@ -74,6 +74,28 @@
       </ul>
     </section>
 
+    <section title="v9 screen shots">
+      <screenshots>
+	<screenshot image="screenshot1.jpg">
+	  A shaded rendering of caffeine.
+	</screenshot>
+	<screenshot image="screenshot2.jpg">
+	  A frame of an S<sub>N</sub>2 reaction animation with the distance
+	  measured between the chlorine and carbon atoms
+	</screenshot>
+	<screenshot image="screenshot3.jpg">
+	  Vibration animation of methanol with vectors displayed.
+	</screenshot>
+	<screenshot image="screenshot4.jpg">
+	  Display of a crystal structure.
+	</screenshot>
+	<screenshot image="screenshot5.jpg">
+	  Display of bounding box and axes of coordinates space.
+	  Note the transparency of the yellow halo around selected atoms.
+	</screenshot>
+      </screenshots>
+    </section>
+
     <section title="JmolApplet v9">
       <section title="Jmol Applet Requirements">
 	<p>The Jmol applet runs with the JVM 1.1 included with the most
@@ -101,7 +123,7 @@
 	<a href="../scripting">Scripting</a> page for more information.
 	
 	<appletExample>
-<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+<![CDATA[<applet name="jmol1" code="JmolApplet" archive="JmolApplet.jar"
         width="200" height="200" mayscript="true">
   <param name="load" value="caffeine.xyz"/>
 </applet>]]>
@@ -478,53 +500,53 @@
       <p>
         This example shows some of the scripting available.
 <appletExample>
-<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+<![CDATA[<applet name="jmol3" code="JmolApplet" archive="JmolApplet.jar"
         width="200" height="200" mayscript="true">
   <param name="load" value="caffeine.xyz"/>
 </applet>
 <br>
-<a href="javascript:document.jmol.setStyle('WIREFRAME')">
+<a href="javascript:document.jmol3.setStyle('WIREFRAME')">
 WIREFRAME</a>
-<a href="javascript:document.jmol.setStyle('SHADED')">
+<a href="javascript:document.jmol3.setStyle('SHADED')">
 SHADED</a>
 <br>
-<a href="javascript:document.jmol.load('aspirina.mol');">
+<a href="javascript:document.jmol3.load('aspirina.mol');">
 aspirina.mol</a>
-<a href="javascript:document.jmol.load('bulk_si.in');">
+<a href="javascript:document.jmol3.load('bulk_si.in');">
 bulk_si.in</a>
-<a href="javascript:document.jmol.load('caffeine.xyz');">
+<a href="javascript:document.jmol3.load('caffeine.xyz');">
 caffeine.xyz</a>
-<a href="javascript:document.jmol.load('dna.xyz');">
+<a href="javascript:document.jmol3.load('dna.xyz');">
 dna.xyz</a>
-<a href="javascript:document.jmol.load('estron.cml');">
+<a href="javascript:document.jmol3.load('estron.cml');">
 estron.cml</a>
 <br>
-<a href="javascript:document.jmol.script('background blue ; move 90 180 -45 0 0 0 0 0 5; 
+<a href="javascript:document.jmol3.script('background blue ; move 90 180 -45 0 0 0 0 0 5; 
 center 1 ; move 0 0 360 100 0 0 0 0 2 ; delay 2 ; reset; background white')">move</a>
-<a href="javascript:document.jmol.script('script move.txt');">
+<a href="javascript:document.jmol3.script('script move.txt');">
 move off of server</a>
-<a href="javascript:document.jmol.script('load aspirina.mol')">
+<a href="javascript:document.jmol3.script('load aspirina.mol')">
 load aspirina via script</a>
-<a href="javascript:document.jmol.script('source testscript.txt')">
+<a href="javascript:document.jmol3.script('source testscript.txt')">
 run test script off of server</a>
 <br>
-<a href="javascript:document.jmol.setWireframeRotation(true)">
+<a href="javascript:document.jmol3.setWireframeRotation(true)">
 setWireframeRotation(true)</a>
-<a href="javascript:document.jmol.setWireframeRotation(false)">
+<a href="javascript:document.jmol3.setWireframeRotation(false)">
 setWireframeRotation(false)</a>
 <br>
-<a href="javascript:document.jmol.setPerspectiveDepth(true)">
+<a href="javascript:document.jmol3.setPerspectiveDepth(true)">
 setPerspectiveDepth(true)</a>
-<a href="javascript:document.jmol.setPerspectiveDepth(false)">
+<a href="javascript:document.jmol3.setPerspectiveDepth(false)">
 setPerspectiveDepth(false)</a>
 <br>
-<a href="javascript:document.jmol.script('background black')">
+<a href="javascript:document.jmol3.script('background black')">
 background black</a>
-<a href="javascript:document.jmol.script('background grey')">
+<a href="javascript:document.jmol3.script('background grey')">
 background grey</a>
-<a href="javascript:document.jmol.script('background [222,222,222]')">
+<a href="javascript:document.jmol3.script('background [222,222,222]')">
 background [222,222,222]</a>
-<a href="javascript:document.jmol.script('background white')">
+<a href="javascript:document.jmol3.script('background white')">
 background white</a>]]>
 </appletExample>
       </p>
@@ -538,7 +560,7 @@ background white</a>]]>
 <![CDATA[
 <script>
 function run(script) {
-  document.jmol2.script(script);
+  document.jmol4.script(script);
 }
 
 function addToScript(script) {
@@ -562,7 +584,7 @@ function br() {
 </script>
 <table border=1>
 <tr><td width=350 align=right>
-<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar"
+<applet name="jmol4" code="JmolApplet" archive="JmolApplet.jar"
         width="350" height="350" align="left" mayscript="true">
     <param name="bgcolor" value="black">
 </applet>
@@ -647,10 +669,10 @@ linkScript('monitor 1 4');
 <appletExample><![CDATA[
   <script>
   function play(script) {
-    document.anim.script(script);
+    document.anim3.script(script);
   }
   </script>
-  <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
+  <applet name="anim3" code="JmolApplet" archive="JmolApplet.jar"
           width="350" height="350" mayscript="true">
     <param name="load"   value="SN1_reaction.xyz">
   </applet>
@@ -674,5 +696,6 @@ linkScript('monitor 1 4');
         </p>
       </section>
     </section>
+
   </body>
 </document>

@@ -5,25 +5,32 @@
     
     <header>
       <p>
-        There are three documents describing both the Jmol software and the project.
+	<b>
+	  Be advised that this documentation applies to Jmol
+	  version 9. It is being rewritten for Jmol version 10.
+	</b>
+      </p>
+      <p>
+        There are three documents describing both the Jmol
+	software and the project.
       </p>
     </header>
 
-    <section title="The Jmol Guide">
+    <section title="The Jmol v9 Guide">
       <p>
         The <a href="JmolUserGuide/">Jmol Guide</a>
 	describes the Jmol application.
       </p>
     </section>
 
-    <section title="The Jmol Applet Guide">
+    <section title="The Jmol v9 Applet Guide">
       <p>
         The <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
 	describes the Jmol applet.
       </p>
     </section>
 
-    <section title="The Jmol Developers Guide">
+    <section title="The Jmol v9 Developers Guide">
       <p>
         The <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
 	describes how Jmol is developed and/or

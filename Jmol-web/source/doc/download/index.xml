@@ -34,8 +34,8 @@
       </p>
     </section>
 
-    <section title="Downloading the application">
-      <p>The current release is version $VERSION$.</p>
+    <section title="Downloading Jmol version 9">
+      <p>The current official release is version $VERSION$.</p>
       <p>It can be downloaded using the following links:
       <ul>
           <li>

@@ -86,12 +86,14 @@ class PatternMatcher {
         int matchingAtom = patternBond.getAtom1().getMatchingAtom();
         Atom atom = frame.getAtomAt(matchingAtom);
         Bond[] bonds = atom.getBonds();
-        for (int j = 0; j < bonds.length; j++) {
-          if (bonds[j].getAtom1().atomIndex == matchingAtom) {
-            searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtom2().atomIndex);
-          }
-          if (bonds[j].getAtom2().atomIndex == matchingAtom) {
-            searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtom1().atomIndex);
+        if (bonds != null) {
+          for (int j = 0; j < bonds.length; j++) {
+            if (bonds[j].getAtom1().atomIndex == matchingAtom) {
+              searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtom2().atomIndex);
+            }
+            if (bonds[j].getAtom2().atomIndex == matchingAtom) {
+              searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtom1().atomIndex);
+            }
           }
         }
         return;

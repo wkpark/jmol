@@ -11,7 +11,7 @@
 <itemizedlist>
 <listitem><para> Java 2 JDK (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>) </para></listitem>
 <listitem><para> Apache Ant (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>) </para></listitem>
-<listitem><para> DocBook XSL (<ulink url="http://sourceforge.net/projects/docbook">http://sourceforge.net/projects/docbook</ulink>) </para></listitem>
+<listitem><para> DocBook XSL 1.40 (<ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629&amp;release_id=109862">http://sourceforge.net/project/showfiles.php?group_id=23629&amp;release_id=109862</ulink>) </para></listitem>
 <listitem><para> Jmol source code </para></listitem>
 </itemizedlist>
 

@@ -176,6 +176,22 @@ class Compiler {
     return true;
   }
 
+  // note that these formats include a space character
+  String[] loadFormats = { "alchemy ", "mol2 ", "mopac ", "nmrpdb ",
+                           "charmm ", "xyz ", "mdl ", "pdb "};
+
+  boolean lookingAtLoadFormat() {
+    for (int i = loadFormats.length; --i>=0; ) {
+      String strFormat = loadFormats[i];
+      int cchFormat = strFormat.length();
+      if (script.regionMatches(true, ichToken, strFormat, 0, cchFormat)) {
+        cchToken = cchFormat - 1; // subtract off the space character
+        return true;
+      }
+    }
+    return false;
+  }
+
   boolean lookingAtSpecialString() {
     int ichT = ichToken;
     char ch;
@@ -340,6 +356,12 @@ class Compiler {
           ltoken.addElement(new Token(Token.string, str));
           continue;
         }
+        if (tokCommand == Token.load && lookingAtLoadFormat()) {
+          String strFormat = script.substring(ichToken, ichToken + cchToken);
+          strFormat = strFormat.toLowerCase();
+          ltoken.addElement(new Token(Token.identifier, strFormat));
+          continue;
+        }
         if ((tokCommand & Token.specialstring) != 0 &&
             lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
@@ -474,8 +496,11 @@ class Compiler {
   private boolean badRGBColor() {
     return compileError("bad [R,G,B] color");
   }
-  private boolean residueIdentifierExpected() {
-    return compileError("residue identifier expected");
+  private boolean identifierOrResidueSpecificationExpected() {
+    return compileError("identifier or residue specification expected");
+  }
+  private boolean residueSpecificationExpected() {
+    return compileError("3 letter residue specification expected");
   }
   private boolean resnoSpecificationExpected() {
     return compileError("residue number specification expected");
@@ -588,10 +613,15 @@ class Compiler {
   Token[] atokenInfix;
   int itokenInfix;
                   
+  boolean addTokenToPostfix(Token token) {
+    ltokenPostfix.addElement(token);
+    return true;
+  }
+
   public boolean compileExpression(int itoken) {
     ltokenPostfix = new Vector();
     for (int i = 0; i < itoken; ++i)
-      ltokenPostfix.addElement(atokenCommand[i]);
+      addTokenToPostfix(atokenCommand[i]);
     atokenInfix = atokenCommand;
     itokenInfix = itoken;
     if (! clauseOr())
@@ -622,7 +652,7 @@ class Compiler {
       Token tokenOr = tokenNext();
       if (! clauseAnd())
         return false;
-      ltokenPostfix.addElement(tokenOr);
+      addTokenToPostfix(tokenOr);
     }
     return true;
   }
@@ -634,7 +664,7 @@ class Compiler {
       Token tokenAnd = tokenNext();
       if (! clauseNot())
         return false;
-      ltokenPostfix.addElement(tokenAnd);
+      addTokenToPostfix(tokenAnd);
     }
     return true;
   }
@@ -644,8 +674,7 @@ class Compiler {
       Token tokenNot = tokenNext();
       if (! clauseNot())
         return false;
-      ltokenPostfix.addElement(tokenNot);
-      return true;
+      return addTokenToPostfix(tokenNot);
     }
     return clausePrimitive();
   }
@@ -671,8 +700,7 @@ class Compiler {
         break;
     case Token.all:
     case Token.none:
-      ltokenPostfix.addElement(tokenNext());
-      return true;
+      return addTokenToPostfix(tokenNext());
     case Token.asterisk:
     case Token.leftsquare:
     case Token.identifier:
@@ -690,10 +718,8 @@ class Compiler {
 
   boolean clauseInteger() {
     Token tokenInt1 = tokenNext();
-    if (tokPeek() != Token.hyphen) {
-      ltokenPostfix.addElement(tokenInt1);
-      return true;
-    }
+    if (tokPeek() != Token.hyphen)
+      return addTokenToPostfix(tokenInt1);
     tokenNext();
     Token tokenInt2 = tokenNext();
     if (tokenInt2.tok != Token.integer)
@@ -703,8 +729,7 @@ class Compiler {
     if (max < min) {
       int intT = max; max = min; min = intT;
     }
-    ltokenPostfix.addElement(new Token(Token.hyphen, min, new Integer(max)));
-    return true;
+    return addTokenToPostfix(new Token(Token.hyphen, min, new Integer(max)));
   }
 
   boolean clauseComparator() {
@@ -720,10 +745,9 @@ class Compiler {
     // int intValue is the tok of the property you are comparing
     // the value against which you are comparing is stored as an Integer
     // in the object value
-    ltokenPostfix.addElement(new Token(tokenComparator.tok,
+    return addTokenToPostfix(new Token(tokenComparator.tok,
                                        tokenAtomProperty.tok,
                                        new Integer(val)));
-    return true;
   }
 
   boolean clauseWithin() {
@@ -744,8 +768,7 @@ class Compiler {
       return false;
     if (tokenNext().tok != Token.rightparen) // )
       return rightParenthesisExpected();
-    ltokenPostfix.addElement(new Token(Token.within, distance));
-    return true;
+    return addTokenToPostfix(new Token(Token.within, distance));
   }
 
   boolean clauseWildcard() {
@@ -783,20 +806,75 @@ class Compiler {
   boolean clauseResName() {
     if (tokPeek() == Token.asterisk) {
       tokenNext();
-      ltokenPostfix.addElement(Token.tokenAll);
-      return true;
+      return addTokenToPostfix(Token.tokenAll);
     }
     Token tokenIdent = tokenNext();
     if (tokenIdent.tok == Token.leftsquare) {
       tokenIdent = tokenNext();
       if (tokenIdent.tok != Token.identifier)
-        return residueIdentifierExpected();
-      ltokenPostfix.addElement(new Token(Token.spec_name,tokenIdent.value));
+        return residueSpecificationExpected();
+      String strSpec = (String)tokenIdent.value;
+      if (strSpec.length() != 3)
+        return residueSpecificationExpected();
+      strSpec = strSpec.toUpperCase();
+      byte resid = Token.getResid(strSpec);
+      if (resid != -1)
+        addTokenToPostfix(new Token(Token.opEQ,
+                                    Token._resid,
+                                    new Integer(resid)));
+      else
+        addTokenToPostfix(new Token(Token.spec_name, strSpec));
       return tokenNext().tok == Token.rightsquare;
     }
+    return processIdentifier(tokenIdent);
+  }
+
+  boolean processIdentifier(Token tokenIdent) {
     if (tokenIdent.tok != Token.identifier)
-      return residueIdentifierExpected();
-    ltokenPostfix.addElement(tokenIdent);
+      return identifierOrResidueSpecificationExpected();
+    String strToken = (String)tokenIdent.value;
+    int cchToken = strToken.length();
+    if (cchToken < 3 ||
+        (cchToken > 3 && !Character.isDigit(strToken.charAt(3))))
+      return addTokenToPostfix(tokenIdent);
+    for (int i = 4; i < cchToken - 1; ++i) {
+      if (!Character.isDigit(strToken.charAt(i)))
+        return addTokenToPostfix(tokenIdent);
+    }
+    int resno = -1;
+    char chain = '?';
+    if (cchToken > 3) {
+      String strResno;
+      chain = strToken.charAt(cchToken-1);
+      if (Character.isDigit(chain)) {
+        chain = '?';
+        strResno = strToken.substring(3);
+      } else {
+        strResno = strToken.substring(3, cchToken - 1);
+      }
+      resno = Integer.parseInt(strResno);
+    }
+    String strUpper3 = strToken.substring(0, 3).toUpperCase();
+    byte resid;
+    if (strUpper3.charAt(0) == '?' ||
+        strUpper3.charAt(1) == '?' ||
+        strUpper3.charAt(2) == '?') {
+      addTokenToPostfix(new Token(Token.spec_name, strUpper3));
+    } else if ((resid = Token.getResid(strUpper3)) != -1) {
+      addTokenToPostfix(new Token(Token.opEQ,
+                                  Token._resid,
+                                  new Integer(resid)));
+    } else {
+      return addTokenToPostfix(tokenIdent);
+    }
+    if (resno != -1) {
+      addTokenToPostfix(new Token(Token.spec_number, resno, "spec_number"));
+      addTokenToPostfix(Token.tokenAnd);
+    }
+    if (chain != '?') {
+      addTokenToPostfix(new Token(Token.spec_chain, chain, "spec_chain"));
+      addTokenToPostfix(Token.tokenAnd);
+    }
     return true;
   }
 
@@ -814,10 +892,8 @@ class Compiler {
     if (tokenResno.tok != Token.integer)
       return resnoSpecificationExpected();
     int resnoSpec = (negative) ? -tokenResno.intValue : tokenResno.intValue;
-    ltokenPostfix.addElement(new Token(Token.spec_number,
-                                       resnoSpec, "spec_number"));
-    ltokenPostfix.addElement(Token.tokenAnd);
-    return true;
+    addTokenToPostfix(new Token(Token.spec_number, resnoSpec, "spec_number"));
+    return addTokenToPostfix(Token.tokenAnd);
   }
 
   boolean clauseChain() {
@@ -840,9 +916,8 @@ class Compiler {
         return true;
     } else
       return invalidChainSpecification();
-    ltokenPostfix.addElement(new Token(Token.spec_chain, chain, null));
-    ltokenPostfix.addElement(Token.tokenAnd);
-    return true;
+    addTokenToPostfix(new Token(Token.spec_chain, chain, "spec_chain"));
+    return addTokenToPostfix(Token.tokenAnd);
   }
 
   boolean clauseAtomSpec() {
@@ -853,9 +928,8 @@ class Compiler {
       return true;
     if (tokenAtomSpec.tok != Token.identifier)
       return invalidAtomSpecification();
-    ltokenPostfix.addElement(new Token(Token.spec_atom, tokenAtomSpec.value));
-    ltokenPostfix.addElement(Token.tokenAnd);
-    return true;
+    addTokenToPostfix(new Token(Token.spec_atom, tokenAtomSpec.value));
+    return addTokenToPostfix(Token.tokenAnd);
   }
 
   boolean compileColorParam() {

@@ -55,7 +55,7 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean haltExecution;
 
-  final static boolean logMessages = true;
+  final static boolean logMessages = false;
 
   public Eval(DisplayControl control) {
     compiler = new Compiler(this);
@@ -608,24 +608,62 @@ public class Eval implements Runnable {
     return bsResidue;
   }
 
-  BitSet getSpecName(String nameSpec) {
-    System.out.println("not implemented getSpecName:" + nameSpec);
-    return new BitSet();
+  BitSet getSpecName(String resNameSpec) {
+    BitSet bsRes = new BitSet();
+    if (resNameSpec.length() != 3) {
+      System.out.println("residue name spec != 3 :" + resNameSpec);
+      return bsRes;
+    }
+    ChemFrame frame = control.getFrame();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop == null)
+        continue;
+      if (pprop.isResidueNameMatch(resNameSpec))
+        bsRes.set(i);
+    }
+    return bsRes;
   }
 
   BitSet getSpecNumber(int number) {
-    System.out.println("not implemented getSpecNumber:" + number);
-    return new BitSet();
+    ChemFrame frame = control.getFrame();
+    BitSet bsResno = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop == null)
+        continue;
+      if (number == pprop.getResno())
+        bsResno.set(i);
+    }
+    return bsResno;
   }
 
   BitSet getSpecChain(char chain) {
-    System.out.println("not implemented getSpecChain:" + chain);
-    return new BitSet();
+    chain = Character.toUpperCase(chain);
+    ChemFrame frame = control.getFrame();
+    BitSet bsChain = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop == null)
+        continue;
+      if (chain == pprop.getChain())
+        bsChain.set(i);
+    }
+    return bsChain;
   }
 
   BitSet getSpecAtom(String atomSpec) {
-    System.out.println("not implemented getSpecAtom:" + atomSpec);
-    return new BitSet();
+    atomSpec = atomSpec.toUpperCase();
+    ChemFrame frame = control.getFrame();
+    BitSet bsAtom = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop == null)
+        continue;
+      if (pprop.isAtomNameMatch(atomSpec))
+        bsAtom.set(i);
+    }
+    return bsAtom;
   }
 
   BitSet getResidueWildcard(String strWildcard) {
@@ -643,7 +681,7 @@ public class Eval implements Runnable {
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
     if (logMessages)
-      System.out.println("looking up:" + variable);
+      System.out.println("lookupValue(" + variable + ")");
     Object value = variables.get(variable);
     if (value != null) {
       if (value instanceof Token[]) {
@@ -773,30 +811,22 @@ public class Eval implements Runnable {
 
   int getResno(Atom atom) {
     ProteinProp pprop = atom.getProteinProp();
-    if (pprop == null)
-      return -1;
-    return pprop.getResno();
+    return (pprop == null) ? -1 : pprop.getResno();
   }
 
   int getTemperature(Atom atom) {
     ProteinProp pprop = atom.getProteinProp();
-    if (pprop == null)
-      return -1;
-    return pprop.getTemperature();
+    return (pprop == null) ? -1 : pprop.getTemperature();
   }
 
   int getResID(Atom atom) {
     ProteinProp pprop = atom.getProteinProp();
-    if (pprop == null)
-      return -1;
-    return pprop.getResID();
+    return (pprop == null) ? -1 : pprop.getResID();
   }
 
   int getAtomID(Atom atom) {
     ProteinProp pprop = atom.getProteinProp();
-    if (pprop == null)
-      return -1;
-    return pprop.getAtomID();
+    return (pprop == null) ? -1 : pprop.getAtomID();
   }
 
 
@@ -930,9 +960,15 @@ public class Eval implements Runnable {
   }
 
   void load() throws ScriptException {
-    if (statement[1].tok != Token.string)
+    int i = 1;
+    // ignore optional file format
+    if (statement[i].tok == Token.identifier)
+      ++i;
+    if (statement[i].tok != Token.string)
       filenameExpected();
-    String filename = (String)statement[1].value;
+    if (statement.length != i + 1)
+      badArgumentCount();
+    String filename = (String)statement[i].value;
     String errMsg = control.openFile(filename);
     if (errMsg != null)
       evalError(errMsg);

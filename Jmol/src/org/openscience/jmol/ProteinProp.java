@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.script.Token;
+
 import java.util.Hashtable;
 
 public class ProteinProp {
@@ -32,15 +34,13 @@ public class ProteinProp {
   // just to get some complex queries running
   public String recordPdb;
   byte resid;
-  byte atomID;
+  byte atomid;
 
   public ProteinProp(String recordPdb) {
     this.recordPdb = recordPdb;
 
-    Integer resInt = (Integer)htResidue.get(recordPdb.substring(17, 20));
-    resid = (resInt != null) ? (byte)resInt.intValue() : -1;
-    Integer atomInt = (Integer)htAtom.get(getName());
-    atomID = (atomInt != null) ? (byte)atomInt.intValue() : -1;
+    resid = Token.getResid(recordPdb.substring(17, 20));
+    atomid = Token.getAtomid(getName());
   }
 
   public boolean isHetero() {
@@ -56,7 +56,7 @@ public class ProteinProp {
   }
 
   public String getResidue() {
-    return resid < 0 ? "???" : residues[resid];
+    return Token.getResidue3(resid);
   }
 
   public byte getResID() {
@@ -64,12 +64,12 @@ public class ProteinProp {
   }
 
   public byte getAtomID() {
-    return atomID;
+    return atomid;
   }
 
   public String getAtomName() {
-    if (atomID > -1)
-      return atomNames[atomID];
+    if (atomid > -1)
+      return Token.getAtomName(atomid);
     return getName();
   }
 
@@ -83,7 +83,25 @@ public class ProteinProp {
       char charWild = strWildcard.charAt(i);
       if (charWild == '?')
         continue;
-      if (Character.toUpperCase(charWild) != strResidue.charAt(i))
+      if (charWild != strResidue.charAt(i))
+        return false;
+    }
+    return true;
+  }
+
+  public boolean isAtomNameMatch(String strPattern) {
+    int cchPattern = strPattern.length();
+    if (cchPattern > 4) {
+      System.err.println("atom wildcard length != 4");
+      return false;
+    }
+    String strAtomName = getAtomName();
+    int cchAtomName = strAtomName.length();
+    for (int i = 0; i < cchPattern; ++i) {
+      char charWild = strPattern.charAt(i);
+      if (charWild == '?')
+        continue;
+      if (i >= cchAtomName || charWild != strAtomName.charAt(i))
         return false;
     }
     return true;
@@ -113,90 +131,4 @@ public class ProteinProp {
     return recordPdb.charAt(21);
   }
 
-  static String[] residues = {
-    // tabel taken from rasmol source molecule.h
-          "ALA", /* 8.4% */     "GLY", /* 8.3% */
-          "LEU", /* 8.0% */     "SER", /* 7.5% */
-          "VAL", /* 7.1% */     "THR", /* 6.4% */
-          "LYS", /* 5.8% */     "ASP", /* 5.5% */
-          "ILE", /* 5.2% */     "ASN", /* 4.9% */
-          "GLU", /* 4.9% */     "PRO", /* 4.4% */
-          "ARG", /* 3.8% */     "PHE", /* 3.7% */
-          "GLN", /* 3.5% */     "TYR", /* 3.5% */
-          "HIS", /* 2.3% */     "CYS", /* 2.0% */
-          "MET", /* 1.8% */     "TRP", /* 1.4% */
-
-          "ASX", "GLX", "PCA", "HYP",
-
-    /*===================*/
-    /*  DNA Nucleotides  */
-    /*===================*/
-          "  A", "  C", "  G", "  T",
-
-    /*===================*/
-    /*  RNA Nucleotides  */
-    /*===================*/
-          "  U", " +U", "  I", "1MA", 
-          "5MC", "OMC", "1MG", "2MG", 
-          "M2G", "7MG", "OMG", " YG", 
-          "H2U", "5MU", "PSU",
-
-    /*=================*/
-    /*  Miscellaneous  */ 
-    /*=================*/
-          "UNK", "ACE", "FOR", "HOH",
-          "DOD", "SO4", "PO4", "NAD",
-          "COA", "NAP", "NDP"  };
-
-  private static Hashtable htResidue = new Hashtable();
-  static {
-    for (int i = 0; i < residues.length; ++i) {
-      htResidue.put(residues[i], new Integer(i));
-    }
-  }
-
-  public final static int ATOM_BACKBONE_MIN =  0;
-  public final static int ATOM_BACKBONE_MAX =  3;
-  public final static int ATOM_SHAPELY_MAX  =  7;
-  public final static int ATOM_NUCLEIC_BACKBONE_MIN =  7;
-  public final static int ATOM_NICLEIC_BACKBONE_MAX = 18;
-
-  static String[] atomNames = {
-    "N",   // 0
-    "CA",
-    "C",
-    "O",   // 3
-    "C'",  // 4
-    "OT",
-    "S",
-    "P",   // 7
-    "O1P",
-    "O2P",
-    "O5*",
-    "C5*",
-    "C4*",
-    "O4*",
-    "C3*",
-    "O3*",
-    "C2*",
-    "O2*",
-    "C1*",
-    "CA2",
-    "SG",
-    "N1",
-    "N2",
-    "N3",
-    "N4",
-    "N6",
-    "O2",
-    "O4",
-    "O6"
-  };
-  
-  private static Hashtable htAtom = new Hashtable();
-  static {
-    for (int i = 0; i < atomNames.length; ++i) {
-      htAtom.put(atomNames[i], new Integer(i));
-    }
-  }
 }

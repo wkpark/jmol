@@ -27,7 +27,7 @@ package org.openscience.jmol.script;
 
 import java.util.Hashtable;
 
-class Token {
+public class Token {
 
   int tok;
   Object value;
@@ -739,7 +739,7 @@ class Token {
           "DOD", "SO4", "PO4", "NAD",
           "COA", "NAP", "NDP"  };
 
-  private static Hashtable htResidue = new Hashtable();
+  private static final Hashtable htResidue = new Hashtable();
   static {
     for (int i = 0; i < residues3.length; ++i) {
       htResidue.put(residues3[i], new Integer(i));
@@ -752,8 +752,61 @@ class Token {
 
   public static byte getResid(String residue3) {
     Integer res = (Integer)htResidue.get(residue3);
-    if (res == null)
-      return -1;
-    return (byte)res.intValue();
+    return (res == null) ? -1 : (byte)res.intValue();
+  }
+
+  public final static int ATOM_BACKBONE_MIN =  0;
+  public final static int ATOM_BACKBONE_MAX =  3;
+  public final static int ATOM_SHAPELY_MAX  =  7;
+  public final static int ATOM_NUCLEIC_BACKBONE_MIN =  7;
+  public final static int ATOM_NICLEIC_BACKBONE_MAX = 18;
+
+  final static String[] atomNames = {
+    "N",   // 0
+    "CA",
+    "C",
+    "O",   // 3
+    "C'",  // 4
+    "OT",
+    "S",
+    "P",   // 7
+    "O1P",
+    "O2P",
+    "O5*",
+    "C5*",
+    "C4*",
+    "O4*",
+    "C3*",
+    "O3*",
+    "C2*",
+    "O2*",
+    "C1*",
+    "CA2", 
+   "SG",
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N6",
+    "O2",
+    "O4",
+    "O6"
+  };
+  
+  private static Hashtable htAtom = new Hashtable();
+  static {
+    for (int i = 0; i < atomNames.length; ++i) {
+      htAtom.put(atomNames[i], new Integer(i));
+    }
+  }
+
+  public static String getAtomName(byte atomid) {
+    return (atomid < 0 || atomid >= atomNames.length)
+      ? "??" : atomNames[atomid];
+  }
+
+  public static byte getAtomid(String strAtom) {
+    Integer iatom = (Integer)htAtom.get(strAtom);
+    return iatom == null ? -1 : (byte)iatom.intValue();
   }
 }

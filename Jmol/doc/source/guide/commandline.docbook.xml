@@ -26,6 +26,13 @@
   </para>
 
   <section>
+    <title>--geometry</title>
+    <para>
+      This option allows setting of the window size. By default the
+      size is 500x500.
+    </para>
+  </section>
+  <section>
     <title>-Duser.language</title>
     <para>
       In addition to the above command line options there is also one

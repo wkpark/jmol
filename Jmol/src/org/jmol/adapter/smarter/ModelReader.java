@@ -94,7 +94,7 @@ abstract class ModelReader {
       }
     }
     if (! digitSeen)
-      value = Integer.MIN_VALUE;
+      value = Float.NaN;
     else if (negative)
       value = -value;
     if (ich < ichMax && (ch == 'E' || ch == 'e')) {
@@ -267,11 +267,35 @@ abstract class ModelReader {
       reader.readLine();
   }
 
-  void discardLinesThroughStartsWith(BufferedReader reader, String startsWith)
+  String discardLinesUntilStartsWith(BufferedReader reader, String startsWith)
     throws Exception {
     String line;
     while ((line = reader.readLine()) != null &&
            !line.startsWith(startsWith))
       {}
+    return line;
   }
+
+  String discardLinesUntilContains(BufferedReader reader, String containsMatch)
+    throws Exception {
+    String line;
+    while ((line = reader.readLine()) != null &&
+           line.indexOf(containsMatch) < 0)
+      {}
+    return line;
+  }
+
+  void discardLinesUntilBlank(BufferedReader reader) throws Exception {
+    String line;
+    while ((line = reader.readLine()) != null && line.length() != 0)
+      {}
+  }
+
+  /*
+  String discardLinesUntilNonBlank(BufferedReader reader) throws Exception {
+    String line;
+    while ((line = reader.readLine()) != null && line.length() == 0)
+      {}
+  }
+  */
 }

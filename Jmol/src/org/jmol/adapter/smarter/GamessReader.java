@@ -37,11 +37,10 @@ class GamessReader extends ModelReader {
 
     try {
       String line;
-      while ((line = reader.readLine()) != null) {
-        if (line.indexOf("COORDINATES (BOHR)") >= 0) {
-          readAtomsInBohrCoordinates(reader);
-        }
-      }
+      discardLinesUntilContains(reader, "COORDINATES (BOHR)");
+      readAtomsInBohrCoordinates(reader);
+      discardLinesUntilContains(reader, "FREQUENCIES IN CM");
+      readFrequencies(reader);
     } catch (Exception ex) {
       ex.printStackTrace();
       model.errorMessage = "Could not read file:" + ex;
@@ -71,4 +70,64 @@ class GamessReader extends ModelReader {
       atom.z = z * angstromsPerBohr;
     }
   }
+
+  void readFrequencies(BufferedReader reader) throws Exception {
+    int totalFrequencyCount = 0;
+    atomCountInFirstModel = model.atomCount;
+    float[] frequencies = new float[5];
+    float[] xComponents = new float[5];
+    float[] yComponents = new float[5];
+    float[] zComponents = new float[5];
+
+    String line = discardLinesUntilContains(reader, "FREQUENCY:");
+    do {
+      int lineBaseFreqCount = totalFrequencyCount;
+      ichNextParse = 17;
+      int lineFreqCount;
+      for (lineFreqCount = 0; lineFreqCount < 5; ++lineFreqCount) {
+        float frequency = parseFloat(line, ichNextParse);
+        //        System.out.println("frequency=" + frequency);
+        if (Float.isNaN(frequency))
+          break;
+        ++totalFrequencyCount;
+        if (totalFrequencyCount > 1)
+          createNewModel(totalFrequencyCount);
+      }
+      Atom[] atoms = model.atoms;
+      discardLinesUntilBlank(reader);
+      for (int i = 0; i < atomCountInFirstModel; ++i) {
+        readComponents(reader.readLine(), lineFreqCount, xComponents);
+        readComponents(reader.readLine(), lineFreqCount, yComponents);
+        readComponents(reader.readLine(), lineFreqCount, zComponents);
+        for (int j = 0; j < lineFreqCount; ++j) {
+          int atomIndex = (lineBaseFreqCount + j) * atomCountInFirstModel + i;
+          Atom atom = atoms[atomIndex];
+          atom.vectorX = xComponents[j];
+          atom.vectorY = yComponents[j];
+          atom.vectorZ = zComponents[j];
+        }
+      }
+      discardLines(reader, 12);
+      line = reader.readLine();
+    } while (line.indexOf("FREQUENCY:") > 0);
+  }
+
+  void readComponents(String line, int count, float[] components) {
+    for (int i = 0, start = 20; i < count; ++i, start += 12)
+      components[i] = parseFloat(line, start, start + 12);
+  }
+
+  int modelCount;
+  int atomCountInFirstModel;
+  void createNewModel(int modelNumber) {
+    //    System.out.println("createNewModel(" + modelNumber + ")");
+    modelCount = modelNumber - 1;
+    Atom[] atoms = model.atoms;
+    for (int i = 0; i < atomCountInFirstModel; ++i) {
+      Atom atomNew = model.newCloneAtom(atoms[i]);
+      atomNew.modelNumber = modelNumber;
+    }
+  }
+
 }
+

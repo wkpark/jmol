@@ -142,7 +142,7 @@ class GaussianReader extends ModelReader {
       return;
     do {
       // FIXME deal with frequency line here
-      discardLinesThroughStartsWith(reader, " Atom AN");
+      discardLinesUntilStartsWith(reader, " Atom AN");
       for (int i = 0; i < atomCount; ++i) {
         line = reader.readLine();
         int atomCenterNumber = parseInt(line, 0, 4);

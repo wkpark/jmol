@@ -54,6 +54,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.StringReader;
 import java.io.BufferedReader;
+import java.io.Reader;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
@@ -124,6 +125,11 @@ class Jmol extends JPanel {
   private JFileChooser exportChooser;
 
   /**
+   * The current file.
+   */
+  private File currentFile;
+  
+  /**
    * Button group for toggle buttons in the toolbar.
    */
   ButtonGroup toolbarButtonGroup = new ButtonGroup();
@@ -141,9 +147,6 @@ class Jmol extends JPanel {
   private static JFrame consoleframe;
 
   protected DisplaySettings settings = new DisplaySettings();
-
-  /** The name of the currently open file **/
-  public String currentFileName = "";
 
   static {
     if (System.getProperty("javawebstart.version") != null) {
@@ -206,6 +209,7 @@ class Jmol extends JPanel {
     vib = new Vibrate(frame, display);
     splash.showStatus("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
+    addPropertyChangeListener(openFileProperty, recentFiles);
     splash.showStatus("Initializing Script Window...");
     scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
     splash.showStatus("Initializing Property Graph...");
@@ -307,17 +311,6 @@ class Jmol extends JPanel {
     File initialFile = null;
     File script = null;
 
-    String cmlString = null;
-
-    /* to be compatible with current arguments:
-              1 argument  -> filename of file to read
-              2 arguments -> -script <rasmol.script>
-    **/
-
-    // System.out.println("Arguments:");
-    // for (int i=0; i<args.length; i++) {
-    //     System.out.println(args[i]);
-    // }
     if (args.length == 2) {
       String s = args[0];
       if (s.equals("-script")) {
@@ -415,55 +408,36 @@ class Jmol extends JPanel {
   }
 
   /**
-   * Opens a file with a hint to use a particular reader, defaulting to
-   * the ReaderFactory if the hint doesn't match any known file types.
+   * Opens a file.
+   *
+   * @param file the file to open.
    */
-  public void openFile(File theFile) {
-
-    if (theFile != null) {
+  public void openFile(File file) {
+    
+    if (file != null) {
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-      ChemFile newChemFile = null;
 
       try {
-        FileInputStream is = new FileInputStream(theFile);
+        FileInputStream is = new FileInputStream(file);
+        
+        readMolecule(new InputStreamReader(is));
+        
+        frame.setTitle(file.getName());
+        
+        File oldFile = currentFile;
+        currentFile = file;
 
-        ChemFileReader reader =
-          ReaderFactory.createReader(new InputStreamReader(is));
-        if (reader == null) {
-          throw new JmolException("openFile", "Unknown file type");
-        }
-        newChemFile = reader.read();
-
-        if (newChemFile != null) {
-          if (newChemFile.getNumberFrames() > 0) {
-            setChemFile(newChemFile);
-
-            frame.setTitle(theFile.getName());
-            currentFileName = theFile.getName();
-
-            // Add the file to the recent files list
-            recentFiles.addFile(theFile.toString());
-          } else {
-            JOptionPane.showMessageDialog(Jmol.this,
-                "The file \"" + theFile + "\" appears to be empty."
-                  + "\nIf this is in error, please contact the Jmol development team.",
-                    "Empty file", JOptionPane.ERROR_MESSAGE);
-          }
-        } else {
-          JOptionPane.showMessageDialog(Jmol.this,
-              "Unknown error reading file \"" + theFile + "\"."
-                + "\nPlease contact the Jmol development team.",
-                  "Unknown error", JOptionPane.ERROR_MESSAGE);
-        }
+        firePropertyChange(openFileProperty, oldFile, currentFile);
 
       } catch (java.io.FileNotFoundException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-            "Unable to find file \"" + theFile + "\"", "File not found",
+            "Unable to find file \"" + file + "\"", "File not found",
               JOptionPane.ERROR_MESSAGE);
       } catch (JmolException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-            "Unable to determine type for file \"" + theFile + "\"",
-              "Unknown file type", JOptionPane.ERROR_MESSAGE);
+            "Unable to read file \"" + file + "\": " + ex.getMessage()
+              + "\nIf this is in error, please contact the Jmol development team.",
+              "Unable to read file", JOptionPane.ERROR_MESSAGE);
       } catch (Exception ex) {
         JOptionPane.showMessageDialog(Jmol.this,
             "Unexpected exception: " + ex.getMessage()
@@ -477,43 +451,91 @@ class Jmol extends JPanel {
     }
   }
 
-  // transfer molecule to Jmol as serialized XML string
-  public void readCML(String s) {
-    StringReader sr = new StringReader(s);
-    readCML(sr);
-  }
-
-  // transfer CML molecule to Jmol as string representation
-  public void readCML(StringReader sr) {
-
-    ChemFileReader reader = new CMLReader(sr);
+  /**
+   * Reads a molecule from the given input.
+   *
+   * @param input the location from which to read.
+   * @throws JmolException if the input format cannot be determined, the input
+   *   is empty, or otherwise cannot be read.
+   */
+  public void readMolecule(Reader input) throws JmolException {
+    frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     try {
-      chemFile = reader.read();
-    } catch (Exception e) {
-      System.out.println("Exception: " + e);
-      return;
+      ChemFileReader reader = null;
+      try {
+        reader = ReaderFactory.createReader(input);
+      } catch (IOException ex) {
+        throw new JmolException("readMolecule", "Error determining input format: "
+            + ex);
+      }
+      if (reader == null) {
+        throw new JmolException("readMolecule", "Unknown input format");
+      }
+      ChemFile newChemFile = reader.read();
+  
+      if (newChemFile != null) {
+        if (newChemFile.getNumberFrames() > 0) {
+          setChemFile(newChemFile);
+        } else {
+          throw new JmolException("readMolecule", "the input appears to be empty");
+        }
+      } else {
+        throw new JmolException("readMolecule", "unknown error reading input");
+      }
+    } catch (IOException ex) {
+      throw new JmolException("readMolecule", "Error reading input: "
+          + ex);
+    } finally {
+      frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
     }
-
-    System.out.println("READING CML");
-    String name = "from Jumbo";
-    if (chemFile != null) {
-      display.setChemFile(chemFile);
-      anim.setChemFile(chemFile);
-      vib.setChemFile(chemFile);
-      pg.setChemFile(chemFile);
-      apm.replaceList(chemFile.getAtomPropertyList());
-      mlist.clear();
-
-      chemicalShifts.setChemFile(chemFile, apm);
-      currentFileName = "from Jumbo";
-
-      frame.setTitle(currentFileName);
-
+  }
+  
+  /**
+   * Reads a CML encoded molecule from a string.
+   *
+   * @param cmlString the CML encoded molecule string.
+   * @deprecated As of Jmol 4, replaced by {@link #readMolecule(Reader)}
+   * @throws IllegalArgumentException if the cmlString is null or empty.
+   */
+  public void readCML(String cmlString) {
+    if (cmlString == null || cmlString.length() == 0) {
+      throw new IllegalArgumentException("CML string cannot be null or empty.");
     }
-
+    try {
+      StringReader input = new StringReader(cmlString);
+      readMolecule(input);
+      frame.setTitle("Molecule read from a string");
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(Jmol.this,
+          "Unexpected exception: " + ex.getMessage()
+            + "\nPlease contact the Jmol development team.",
+              "Unexpected error", JOptionPane.ERROR_MESSAGE);
+      ex.printStackTrace();
+    }
   }
 
-
+  /**
+   * Reads a CML encoded molecule.
+   *
+   * @param input a reader of a CML encoded molecule string.
+   * @deprecated As of Jmol 4, replaced by {@link #readMolecule(Reader)}
+   * @throws IllegalArgumentException if the input is null.
+   */
+  public void readCML(StringReader input) {
+    if (input == null) {
+      throw new IllegalArgumentException("input cannot be null.");
+    }
+    try {
+      readMolecule(input);
+      frame.setTitle("Molecule read from a string");
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(Jmol.this,
+          "Unexpected exception: " + ex.getMessage()
+            + "\nPlease contact the Jmol development team.",
+              "Unexpected error", JOptionPane.ERROR_MESSAGE);
+      ex.printStackTrace();
+    }
+  }
 
   /**
    * returns the ChemFile that we are currently working with
@@ -1163,8 +1185,8 @@ class Jmol extends JPanel {
 
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
-        File theFile = openChooser.getSelectedFile();
-        openFile(theFile);
+        File file = openChooser.getSelectedFile();
+        openFile(file);
         return;
       }
     }
@@ -1211,10 +1233,10 @@ class Jmol extends JPanel {
       Frame frame = getFrame();
       int retval = saveChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
-        File theFile = saveChooser.getSelectedFile();
-        if (theFile != null) {
+        File file = saveChooser.getSelectedFile();
+        if (file != null) {
           try {
-            FileOutputStream os = new FileOutputStream(theFile);
+            FileOutputStream os = new FileOutputStream(file);
 
             if (fileTyper.getType().equals("XYZ (xmol)")) {
               XYZSaver xyzs = new XYZSaver(getCurrentFile(), os);
@@ -1265,12 +1287,12 @@ class Jmol extends JPanel {
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
-        File theFile = exportChooser.getSelectedFile();
+        File file = exportChooser.getSelectedFile();
 
-        if (theFile != null) {
+        if (file != null) {
           try {
             Image eImage = display.takeSnapshot();
-            FileOutputStream os = new FileOutputStream(theFile);
+            FileOutputStream os = new FileOutputStream(file);
 
             if (it.getType().equals("JPEG")) {
               int qual = 10 * it.getQuality();
@@ -1344,10 +1366,13 @@ class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      String basename = currentFileName.substring(0,
-                          currentFileName.lastIndexOf("."));
+      String baseName = "jmol";
+      if (currentFile != null) {
+        currentFile.getName().substring(0,
+            currentFile.getName().lastIndexOf("."));
+      }
       PovrayDialog pvsd = new PovrayDialog(frame, display, getCurrentFile(),
-                            basename);
+                            baseName);
     }
 
   }
@@ -1364,13 +1389,13 @@ class Jmol extends JPanel {
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
-        File theFile = exportChooser.getSelectedFile();
+        File file = exportChooser.getSelectedFile();
 
-        if (theFile != null) {
+        if (file != null) {
           Document document = new Document();
       
           try {
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(theFile));
+            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(file));
         
             document.open();
         
@@ -1413,6 +1438,7 @@ class Jmol extends JPanel {
   }
 
   public static final String moleculeProperty = "molecule";
+  public static final String openFileProperty = "openFile";
 
   private abstract class MoleculeDependentAction extends AbstractAction
       implements PropertyChangeListener {

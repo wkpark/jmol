@@ -68,10 +68,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       "URL of the chemical data" },
     { "loadInline", "fileformat",
       "Inline representation of chemical data" },
-    { "rasmolScript", "url",
-      "URL of RasMol/Chime script" },
-    { "rasmolScriptInline", "string",
-      "Inline RasMol/Chime commands separated by newlines or semicolons" }
+    { "script", "string",
+      "Inline RasMol/Chime script commands " +
+      "separated by newlines or semicolons" }
   };
   public String[][] getParameterInfo() {
     return paramInfo;
@@ -120,7 +119,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       load(getParameter("load"));
       loadInline(getParameter("loadInline"));
       rasmolScript(getParameter("rasmolScript"));
-      rasmolScriptInline(getParameter("rasmolScriptInline"));
     }
     control.popHoldRepaint();
   }
@@ -229,12 +227,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     control.setWireframeRotation(wireframeRotation);
   }
 
-  public void rasmolScript(String scriptName) {
-    String strError = control.evalFile(scriptName);
-    setStatusMessage(strError);
-  }
-
-  public void rasmolScriptInline(String script) {
+  public void script(String script) {
     String strError = control.evalString(script);
     setStatusMessage(strError);
   }

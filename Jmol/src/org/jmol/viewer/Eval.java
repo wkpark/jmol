@@ -461,21 +461,20 @@ class Eval implements Runnable {
       case Token.moveto:
         moveto();
         break;
-
       case Token.bondorder:
         bondorder();
         break;
-
       case Token.console:
         console();
         break;
-
       case Token.pmesh:
         pmesh();
         break;
-
       case Token.polyhedra:
         polyhedra();
+        break;
+      case Token.surface:
+        surface();
         break;
 
         // not implemented
@@ -496,7 +495,6 @@ class Eval implements Runnable {
       case Token.view:
       case Token.list:
       case Token.display3d:
-      case Token.surface:
         viewer.scriptStatus("Script command not implemented:" + token.value);
         break;
       default:
@@ -1448,6 +1446,7 @@ class Eval implements Runnable {
     if (statementLength > 3 || statementLength < 2)
       badArgumentCount();
     int tok = statement[1].tok;
+    outer:
     switch (tok) {
     case Token.colorRGB:
     case Token.none:
@@ -1467,33 +1466,6 @@ class Eval implements Runnable {
       break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));
-      break;
-    case Token.atom:
-    case Token.bond:
-    case Token.bonds:
-    case Token.ssbonds:
-    case Token.hbonds:
-    case Token.trace:
-    case Token.backbone:
-    case Token.meshRibbon:
-    case Token.strands:
-    case Token.ribbon:
-    case Token.prueba:
-    case Token.cartoon:
-    case Token.rocket:
-    case Token.star:
-    case Token.dots:
-    case Token.axes:
-    case Token.boundbox:
-    case Token.unitcell:
-    case Token.frank:
-    case Token.echo:
-    case Token.monitor:
-    case Token.hover:
-    case Token.vector:
-    case Token.pmesh:
-    case Token.polyhedra:
-      colorObject(tok, 2);
       break;
     case Token.rubberband:
       viewer.setColorRubberband(getColorParam(2));
@@ -1516,6 +1488,11 @@ class Eval implements Runnable {
 	    invalidArgument();
 	break;
     default:
+      for (int i = 0; i < shapeToks.length; ++i)
+        if (tok == shapeToks[i]) {
+          colorObject(tok, 2);
+          break outer;
+        }
       invalidArgument();
     }
   }
@@ -2469,7 +2446,7 @@ class Eval implements Runnable {
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket, Token.star,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover, Token.pmesh, Token.polyhedra,
+   Token.hover, Token.pmesh, Token.polyhedra, Token.surface,
    Token.prueba,
   };
 
@@ -3387,4 +3364,26 @@ class Eval implements Runnable {
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
                               "expression", null);
   }
+
+  void surface() throws ScriptException {
+    short mad = 0;
+    switch (statement[1].tok) {
+    case Token.on:
+      mad = -1;
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int dotsParam = statement[1].intValue;
+      if (dotsParam < 0 || dotsParam > 1000)
+        numberOutOfRange();
+      // I don't know what to do with this thing yet
+      mad = (short)dotsParam;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setShapeSize(JmolConstants.SHAPE_SURFACE, mad);
+  }
+
 }

@@ -31,10 +31,10 @@ public class NucleicMonomer extends Monomer {
 
   // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
-    -JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 0 P  the lead, phosphorus
+    ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 0 P  the lead, phosphorus
     JmolConstants.ATOMID_NUCLEIC_WING,           // 1 the wing man, c6
 
-    -JmolConstants.ATOMID_RNA_O2PRIME, // 2  O2' for RNA
+    ~JmolConstants.ATOMID_RNA_O2PRIME, // 2  O2' for RNA
 
     JmolConstants.ATOMID_C5,   //  3 C5
     JmolConstants.ATOMID_C6,   //  4 C6
@@ -43,26 +43,26 @@ public class NucleicMonomer extends Monomer {
     JmolConstants.ATOMID_N3,   //  7 N3
     JmolConstants.ATOMID_C4,   //  8 C4
 
-    -JmolConstants.ATOMID_O2,  //  9 O2
+    ~JmolConstants.ATOMID_O2,  //  9 O2
 
-    -JmolConstants.ATOMID_N7,  // 10 N7
-    -JmolConstants.ATOMID_C8,  // 11 C8
-    -JmolConstants.ATOMID_N9,  // 12 C9
+    ~JmolConstants.ATOMID_N7,  // 10 N7
+    ~JmolConstants.ATOMID_C8,  // 11 C8
+    ~JmolConstants.ATOMID_N9,  // 12 C9
 
-    -JmolConstants.ATOMID_O4,  // 13 O4   U (& ! C5M)
-    -JmolConstants.ATOMID_O6,  // 14 O6   I (& ! N2)
-    -JmolConstants.ATOMID_N4,  // 15 N4   C
-    -JmolConstants.ATOMID_C5M, // 16 C5M  T
-    -JmolConstants.ATOMID_N6,  // 17 N6   A
-    -JmolConstants.ATOMID_N2,  // 18 N2   G
-    -JmolConstants.ATOMID_S4,  // 19 S4   tU
+    ~JmolConstants.ATOMID_O4,  // 13 O4   U (& ! C5M)
+    ~JmolConstants.ATOMID_O6,  // 14 O6   I (& ! N2)
+    ~JmolConstants.ATOMID_N4,  // 15 N4   C
+    ~JmolConstants.ATOMID_C5M, // 16 C5M  T
+    ~JmolConstants.ATOMID_N6,  // 17 N6   A
+    ~JmolConstants.ATOMID_N2,  // 18 N2   G
+    ~JmolConstants.ATOMID_S4,  // 19 S4   tU
 
-    -JmolConstants.ATOMID_H5T_TERMINUS, // 20 H5T terminus
-    -JmolConstants.ATOMID_O5T_TERMINUS, // 21 O5T terminus
-    JmolConstants.ATOMID_O5_PRIME       // 22 O5' terminus
+    ~JmolConstants.ATOMID_H5T_TERMINUS, // 20 H5T terminus
+    ~JmolConstants.ATOMID_O5T_TERMINUS, // 21 O5T terminus
+    JmolConstants.ATOMID_O5_PRIME,      // 22 O5' terminus
 
-    -JmolConstants.ATOMID_H3T_TERMINUS, // 23 H3T terminus
-    JmolConstants.ATOMID_O3_PRIME       // 24 O3' terminus
+    ~JmolConstants.ATOMID_H3T_TERMINUS, // 23 H3T terminus
+    JmolConstants.ATOMID_O3_PRIME,      // 24 O3' terminus
   };
 
   static Monomer

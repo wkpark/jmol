@@ -36,7 +36,7 @@ public class AminoMonomer extends AlphaMonomer {
     JmolConstants.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
     JmolConstants.ATOMID_AMINO_NITROGEN,    // 2 N
     JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C
-    -JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
+    ~JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
   };
 
   static Monomer

@@ -62,8 +62,12 @@ abstract class Monomer extends Group {
     for (int i = interestingCount; --i >= 0; ) {
       int atomIndex;
       int atomID = interestingAtomIDs[i];
+      // mth 2004 06 09
+      // use ~ instead of - as the optional indicator
+      // because I got hosed by a missing comma
+      // in an interestingAtomIDs table
       if (atomID < 0) {
-        atomIndex = specialAtomIndexes[-atomID]; // optional
+        atomIndex = specialAtomIndexes[~atomID]; // optional
       } else {
         atomIndex = specialAtomIndexes[atomID];  // required
         if (atomIndex < 0)

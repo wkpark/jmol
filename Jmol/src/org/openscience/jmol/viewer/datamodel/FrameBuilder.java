@@ -44,11 +44,10 @@ final public class FrameBuilder {
 
   public Frame buildFrame(Object clientFile) {
     long timeBegin = System.currentTimeMillis();
+    String modelTypeName = adapter.getModelTypeName(clientFile);
     int atomCount = adapter.getAtomCount(clientFile);
-    int modelType = adapter.getModelType(clientFile);
-    boolean hasPdbRecords = adapter.hasPdbRecords(clientFile);
 
-    Frame frame = new Frame(viewer, atomCount, modelType, hasPdbRecords);
+    Frame frame = new Frame(viewer, modelTypeName, atomCount);
 
     /****************************************************************
      * crystal cell must come first, in case atom coordinates
@@ -91,19 +90,17 @@ final public class FrameBuilder {
                           iterBond.getOrder());
     }
 
-    if (hasPdbRecords) { // this test should go away
-      ModelAdapter.StructureIterator iterStructure =
-        adapter.getStructureIterator(clientFile);
-      if (iterStructure != null) 
-        while (iterStructure.hasNext())
-          frame.pdbFile.defineStructure(iterStructure.getStructureType(),
-                                        iterStructure.getChainID(),
-                                        iterStructure.getStartSequenceNumber(),
-                                        iterStructure.getStartInsertionCode(),
-                                        iterStructure.getEndSequenceNumber(),
-                                        iterStructure.getEndInsertionCode());
-    }
-      
+    ModelAdapter.StructureIterator iterStructure =
+      adapter.getStructureIterator(clientFile);
+    if (iterStructure != null) 
+      while (iterStructure.hasNext())
+        frame.pdbFile.defineStructure(iterStructure.getStructureType(),
+                                      iterStructure.getChainID(),
+                                      iterStructure.getStartSequenceNumber(),
+                                      iterStructure.getStartInsertionCode(),
+                                      iterStructure.getEndSequenceNumber(),
+                                      iterStructure.getEndInsertionCode());
+  
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;
     System.out.println("Build a frame:" + msToBuild + " ms");

@@ -33,7 +33,7 @@ class XyzReader extends ModelReader {
     
   Model readModel(BufferedReader reader) throws Exception {
 
-    model = new Model(ModelAdapter.MODEL_TYPE_XYZ);
+    model = new Model("xyz");
 
     try {
       int modelNumber = 1;

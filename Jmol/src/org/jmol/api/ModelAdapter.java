@@ -47,10 +47,6 @@ import java.io.BufferedReader;
  ****************************************************************/
 public abstract class ModelAdapter {
   
-  public final static int MODEL_TYPE_OTHER = 0;
-  public final static int MODEL_TYPE_PDB = 1;
-  public final static int MODEL_TYPE_XYZ = 2;
-  
   public final static byte ORDER_AROMATIC    = (byte)(1 << 2);
   public final static byte ORDER_HBOND       = (byte)(1 << 6);
   public final static byte ORDER_STEREO_NEAR = (byte)((1 << 3) | 1);
@@ -98,7 +94,7 @@ public abstract class ModelAdapter {
   /**
    * returns the type of this model
    */
-  public int getModelType(Object clientFile) { return 0; }
+  public String getModelTypeName(Object clientFile) { return "unknown"; }
 
   /**
    * Some file formats contain a formal name of the molecule in the file.
@@ -119,12 +115,6 @@ public abstract class ModelAdapter {
    * Just return -1 if you don't know (or don't want to figure it out)
    */
   abstract public int getAtomCount(Object clientFile);
-  /**
-   * Whether or not this file has records in the .pdb format as specified
-   * by the Protein Data Bank.
-   * @see <a href='http://www.rcsb.org/pdb'>www.rcsb.org/pdb</a>
-   */
-  public boolean hasPdbRecords(Object clientFile) { return false; }
 
   /**
    * This method returns the parameters that define a crystal unitcell

@@ -357,7 +357,7 @@ public class Atom implements Bspt.Tuple {
   public int getAtomNumber() {
     if (atomSerial != Integer.MIN_VALUE)
       return atomSerial;
-    if (frame.modelType == JmolConstants.MODEL_TYPE_XYZ &&
+    if (frame.modelTypeName == "xyz" &&
         frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
     return atomIndex + 1;

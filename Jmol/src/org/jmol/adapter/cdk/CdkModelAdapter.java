@@ -109,10 +109,12 @@ public class CdkModelAdapter extends ModelAdapter {
     return chemFile;
   }
 
-  public int getModelType(Object clientFile) {
-    if (hasPdbRecords(clientFile))
-      return MODEL_TYPE_PDB;
-    return MODEL_TYPE_OTHER;
+  public String getModelTypeName(Object clientFile) {
+    AtomContainer atomContainer = getAtomContainer(clientFile);
+    if ((atomContainer.getAtomCount() > 0 &&
+         atomContainer.getAtomAt(0).getProperty("pdb.record") != null))
+      return "pdb";
+    return "other";
   }
 
   public String getModelName(Object clientFile) {
@@ -165,13 +167,10 @@ public class CdkModelAdapter extends ModelAdapter {
     return getAtomContainer(clientFile).getAtomCount();
   }
 
-  public boolean hasPdbRecords(Object clientFile) {
-    AtomContainer atomContainer = getAtomContainer(clientFile);
-    return (atomContainer.getAtomCount() > 0 &&
-            atomContainer.getAtomAt(0).getProperty("pdb.record") != null);
-  }
+  /*
+    this needs to be handled through the StructureIterator
 
-  public String[] getPdbStructureRecords(Object clientFile) {
+  String[] getPdbStructureRecords(Object clientFile) {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);
     ChemModel chemModel = chemSequence.getChemModel(0);
@@ -183,6 +182,7 @@ public class CdkModelAdapter extends ModelAdapter {
     structureVector.copyInto(t);
     return t;
   }
+  */
 
   public float[] getNotionalUnitcell(Object clientFile) {
     AtomContainer container = getAtomContainer(clientFile);

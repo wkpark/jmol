@@ -27,7 +27,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 class Model {
-  int modelType = ModelAdapter.MODEL_TYPE_OTHER;
+  String modelTypeName;
   String modelName;
 
   int atomCount;
@@ -50,10 +50,8 @@ class Model {
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
 
-  Model() { }
-
-  Model(int modelType) {
-    this.modelType = modelType;
+  Model(String modelTypeName) {
+    this.modelTypeName = modelTypeName;
   }
 
   protected void finalize() {

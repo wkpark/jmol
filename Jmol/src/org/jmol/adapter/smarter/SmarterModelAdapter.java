@@ -69,8 +69,8 @@ public class SmarterModelAdapter extends ModelAdapter {
     }
   }
 
-  public int getModelType(Object clientFile) {
-    return ((Model)clientFile).modelType;
+  public String getModelTypeName(Object clientFile) {
+    return ((Model)clientFile).modelTypeName;
   }
 
   public String getModelName(Object clientFile) {
@@ -87,11 +87,6 @@ public class SmarterModelAdapter extends ModelAdapter {
 
   public int getAtomCount(Object clientFile) {
     return ((Model)clientFile).atomCount;
-  }
-
-  public boolean hasPdbRecords(Object clientFile) {
-    return true;
-    //    return ((Model)clientFile).modelType == MODEL_TYPE_PDB;
   }
 
   public boolean coordinatesAreFractional(Object clientFile) {

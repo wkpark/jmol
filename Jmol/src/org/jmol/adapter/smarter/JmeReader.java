@@ -36,7 +36,7 @@ class JmeReader extends ModelReader {
   StringTokenizer tokenizer;
   
   Model readModel(BufferedReader reader) throws Exception {
-    model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
+    model = new Model("jme");
 
     try {
       line = reader.readLine();

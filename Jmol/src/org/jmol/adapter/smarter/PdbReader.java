@@ -42,7 +42,7 @@ class PdbReader extends ModelReader {
 
   Model readModel(BufferedReader reader) throws Exception {
 
-    model = new Model(ModelAdapter.MODEL_TYPE_PDB);
+    model = new Model("pdb");
 
     model.pdbStructureRecords = new String[32];
     model.fileHeader = "";

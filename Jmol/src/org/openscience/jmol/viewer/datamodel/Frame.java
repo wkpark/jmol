@@ -40,15 +40,16 @@ final public class Frame {
 
   public JmolViewer viewer;
   public FrameRenderer frameRenderer;
+  // NOTE: these strings are interned and are lower case
+  // therefore, we can do == comparisions against string constants
+  // if (modelTypeName == "xyz")
+  String modelTypeName;
+  PdbFile pdbFile;
   Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
   float maxBondingRadius = 0;
   float maxVanderwaalsRadius = 0;
-  // whether or not this frame has any protein properties
-  int modelType;
-  boolean hasPdbRecords;
-  PdbFile pdbFile;
 
   final static int growthIncrement = 128;
   public int modelCount;
@@ -68,13 +69,13 @@ final public class Frame {
   public Matrix3f matrixEuclideanToFractional;
   public Matrix3f matrixFractionalToEuclidean;
 
-  public Frame(JmolViewer viewer, int atomCount,
-                   int modelType, boolean hasPdbRecords) {
+  public Frame(JmolViewer viewer, String modelTypeName, int atomCount) {
     this.viewer = viewer;
-    this.modelType = modelType;
-    this.hasPdbRecords = hasPdbRecords;
-    if (hasPdbRecords)
-      pdbFile = new PdbFile(this);
+    // NOTE: these strings are interned and are lower case
+    // therefore, we can do == comparisions against string constants
+    // if (modelTypeName == "xyz") { }
+    this.modelTypeName = modelTypeName.toLowerCase().intern();
+    pdbFile = new PdbFile(this);
     modelIDs = new short[10];
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
@@ -83,14 +84,6 @@ final public class Frame {
 
     checkShape(JmolConstants.SHAPE_BALLS);
     checkShape(JmolConstants.SHAPE_STICKS);
-  }
-
-  public Frame(JmolViewer viewer, int modelType, boolean hasPdbRecords) {
-    this(viewer, growthIncrement, modelType, hasPdbRecords);
-  }
-
-  public Frame(JmolViewer viewer) {
-    this(viewer, JmolConstants.MODEL_TYPE_OTHER, false);
   }
 
   FrameExportModelAdapter exportModelAdapter;
@@ -107,11 +100,10 @@ final public class Frame {
       doUnitcellStuff();
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
-          (hasPdbRecords && (bondCount < (atomCount / 2))))
+          (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);
     }
-    if (hasPdbRecords)
-      pdbFile.freeze();
+    pdbFile.freeze();
   }
 
   public Atom addAtom(int modelNumber, Object atomUid,
@@ -187,11 +179,11 @@ final public class Frame {
   }
 
   public int getChainCount() {
-    return (hasPdbRecords ? pdbFile.getChainCount() : 0);
+    return pdbFile.getChainCount();
   }
 
   public int getGroupCount() {
-    return (hasPdbRecords ? pdbFile.getGroupCount() : 0);
+    return pdbFile.getGroupCount();
   }
 
   public int getAtomCount() {
@@ -216,10 +208,6 @@ final public class Frame {
 
   public Bond getBondAt(int bondIndex) {
     return bonds[bondIndex];
-  }
-
-  public boolean hasPdbRecords() {
-    return hasPdbRecords;
   }
 
   private Hashtable htAtomMap = new Hashtable();

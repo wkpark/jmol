@@ -31,7 +31,6 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 
 /**
@@ -47,6 +46,7 @@ public class CifReader extends ModelReader {
 
   BufferedReader reader;
   String line;
+  SpaceAndSingleQuoteTokenizer tokenizer = new SpaceAndSingleQuoteTokenizer();
 
   void initialize() {
     notionalUnitcell = new float[6];
@@ -56,7 +56,7 @@ public class CifReader extends ModelReader {
 
   Model readModel(BufferedReader reader) throws Exception {
     this.reader = reader;
-    model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
+    model = new Model("cif");
     
     while ((line = reader.readLine()) != null) {
       if (line.length() == 0)
@@ -243,11 +243,11 @@ public class CifReader extends ModelReader {
     for (;
          line != null && line.length() > 0 && line.charAt(0) != '#';
          line = reader.readLine().trim()) {
-      StringTokenizer tokenizer = new StringTokenizer(line);
+      tokenizer.setString(line);
       Atom atom = model.newAtom();
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
-          tokenizer = new StringTokenizer(reader.readLine());
+          tokenizer.setString(reader.readLine());
         String field = tokenizer.nextToken();
         switch (fieldTypes[i]) {
         case NONE:
@@ -369,17 +369,15 @@ public class CifReader extends ModelReader {
         return;
       }
 
-    logger.log("still here!");
-
     for (;
          line != null && line.length() > 0 && line.charAt(0) != '#';
          line = reader.readLine().trim()) {
-      StringTokenizer tokenizer = new StringTokenizer(line);
+      tokenizer.setString(line);
       Structure structure = new Structure();
       
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
-          tokenizer = new StringTokenizer(reader.readLine());
+          tokenizer.setString(reader.readLine());
         String field = tokenizer.nextToken();
         char firstChar = field.charAt(0);
         switch (fieldTypes[i]) {
@@ -453,13 +451,13 @@ public class CifReader extends ModelReader {
     for (;
          line != null && line.length() > 0 && line.charAt(0) != '#';
          line = reader.readLine().trim()) {
-      StringTokenizer tokenizer = new StringTokenizer(line);
+      tokenizer.setString(line);
       Structure structure = new Structure();
       structure.structureType = "sheet";
       
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
-          tokenizer = new StringTokenizer(reader.readLine());
+          tokenizer.setString(reader.readLine());
         String field = tokenizer.nextToken();
         char firstChar = field.charAt(0);
         switch (fieldTypes[i]) {
@@ -484,6 +482,59 @@ public class CifReader extends ModelReader {
         }
       }
       model.addStructure(structure);
+    }
+  }
+
+  class SpaceAndSingleQuoteTokenizer {
+    String str;
+    int ich;
+    int cch;
+
+    void setString(String str) {
+      if (str == null)
+        str = "";
+      this.str = str;
+      cch = str.length();
+      ich = 0;
+    }
+
+    boolean hasMoreTokens() {
+      while (ich < cch && (str.charAt(ich)) == ' ')
+        ++ich;
+      return ich < cch;
+    }
+
+    String nextToken() {
+      if (ich == cch)
+        return null;
+      int ichStart = ich;
+      if (str.charAt(ichStart) != '\'') {
+        while (ich < cch && str.charAt(ich) != ' ')
+          ++ich;
+        return str.substring(ichStart, ich);
+      }
+      boolean embeddedQuote = false;
+      boolean containsEmbeddedQuote = false;
+      while (++ich < cch &&
+             (str.charAt(ich) != '\'' ||
+              (embeddedQuote = (ich+1 < cch && str.charAt(ich+1) == '\''))))
+        if (embeddedQuote) {
+          ++ich;
+          embeddedQuote = false;
+          containsEmbeddedQuote = true;
+        }
+      if (ich == cch) {
+        // reached the end of the string without finding closing '
+        return str.substring(ichStart, ich);
+      }
+      String token = str.substring(ichStart + 1, ich++);
+      if (! containsEmbeddedQuote)
+        return token;
+      StringBuffer sb = new StringBuffer(token);
+      for (int i = sb.length(); --i >= 0; )
+        if (sb.charAt(i) == '\'') // found a quote
+          sb.deleteCharAt(i--); // skip over the previous one
+      return new String(sb);
     }
   }
 }

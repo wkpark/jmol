@@ -140,12 +140,12 @@ public class SimpleModelAdapter extends ModelAdapter {
     "ATOM  ", "HETATM", "MODEL ",
   };
 
-  public int getModelType(Object clientFile) {
+  public String getModelTypeName(Object clientFile) {
     if (clientFile instanceof PdbModel)
-      return MODEL_TYPE_PDB;
+      return "pdb";
     if (clientFile instanceof XyzModel)
-      return MODEL_TYPE_XYZ;
-    return MODEL_TYPE_OTHER;
+      return "xyz";
+    return "other";
   }
 
   public String getModelName(Object clientFile) {
@@ -164,10 +164,8 @@ public class SimpleModelAdapter extends ModelAdapter {
     return ((Model)clientFile).atomCount;
   }
 
-  public boolean hasPdbRecords(Object clientFile) {
-    return clientFile instanceof PdbModel;
-  }
-
+  /*
+    handle this through the structure iterator
   public String[] getPdbStructureRecords(Object clientFile) {
     Model model = (Model)clientFile;
     if (model.pdbStructureRecordCount == 0)
@@ -177,6 +175,7 @@ public class SimpleModelAdapter extends ModelAdapter {
                      model.pdbStructureRecordCount);
     return t;
   }
+  */
 
   public float[] getNotionalUnitcell(Object clientFile) {
     return ((Model)clientFile).notionalUnitcell;

@@ -52,7 +52,7 @@ class ShelxReader extends ModelReader {
 
   Model readModel(BufferedReader reader) throws Exception {
     this.logger = logger;
-    model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
+    model = new Model("shelx");
     model.coordinatesAreFractional = true;
 
     String line;

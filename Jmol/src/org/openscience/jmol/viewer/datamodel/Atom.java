@@ -52,7 +52,7 @@ public class Atom implements Bspt.Tuple {
   String strLabel;
 
   public Atom(Frame frame, int atomIndex,
-              PdbMolecule pdbMolecule, Object clientAtom) {
+              PdbFile pdbFile, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = atomIndex;
@@ -63,8 +63,8 @@ public class Atom implements Bspt.Tuple {
     this.point3f = new Point3f(viewer.getAtomX(clientAtom),
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
-    if (pdbMolecule != null)
-      pdbAtom = pdbMolecule.allocatePdbAtom(atomIndex,
+    if (pdbFile != null)
+      pdbAtom = pdbFile.allocatePdbAtom(atomIndex,
                                             viewer.getPdbModelNumber(clientAtom),
                                             viewer.getPdbAtomRecord(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);

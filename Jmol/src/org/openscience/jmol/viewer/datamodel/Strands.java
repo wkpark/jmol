@@ -38,7 +38,7 @@ public class Strands {
   JmolViewer viewer;
   Frame frame;
   boolean hasPdbRecords;
-  PdbMolecule pdbMolecule;
+  PdbFile pdbFile;
 
   boolean initialized;
   int chainCount;
@@ -62,18 +62,18 @@ public class Strands {
     this.viewer = viewer;
     this.frame = frame;
     hasPdbRecords = frame.hasPdbRecords;
-    pdbMolecule = frame.pdbMolecule;
+    pdbFile = frame.pdbFile;
   }
 
   public void setMad(short mad, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
     initialize();
-    for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
+    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
       short[] mads = madsChains[i];
       if (mads == null)
         continue;
-      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbFile.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           if (mad < 0) {
@@ -92,11 +92,11 @@ public class Strands {
     if (! hasPdbRecords)
       return;
     initialize();
-    for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
+    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
       short[] colixes = colixesChains[i];
       if (colixes == null)
         continue;
-      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbFile.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))
@@ -108,20 +108,20 @@ public class Strands {
 
   void initialize() {
     if (! initialized) {
-      chainCount = pdbMolecule.getChainCount();
+      chainCount = pdbFile.getChainCount();
       madsChains = new short[chainCount][];
       colixesChains = new short[chainCount][];
       centersChains = new Point3f[chainCount][];
       vectorsChains = new Vector3f[chainCount][];
       for (int i = chainCount; --i >= 0; ) {
-        int chainLength = pdbMolecule.getMainchain(i).length;
+        int chainLength = pdbFile.getMainchain(i).length;
         System.out.println("chainLength=" + chainLength);
         if (chainLength > 1) {
           colixesChains[i] = new short[chainLength];
           madsChains[i] = new short[chainLength + 1];
           centersChains[i] = new Point3f[chainLength + 1];
           vectorsChains[i] = new Vector3f[chainLength + 1];
-          calcCentersAndVectors(pdbMolecule.getMainchain(i),
+          calcCentersAndVectors(pdbFile.getMainchain(i),
                                 centersChains[i], vectorsChains[i]);
         }
       }

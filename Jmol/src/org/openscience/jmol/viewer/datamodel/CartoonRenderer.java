@@ -53,11 +53,11 @@ class CartoonRenderer extends Renderer {
 
     if (cartoon == null || !cartoon.initialized)
       return;
-    PdbMolecule pdbMolecule = cartoon.pdbMolecule;
+    PdbFile pdbFile = cartoon.pdbFile;
     short[][] madsChains = cartoon.madsChains;
     short[][] colixesChains = cartoon.colixesChains;
     for (int i = cartoon.chainCount; --i >= 0; )
-      render1Chain(pdbMolecule.getChain(i),
+      render1Chain(pdbFile.getChain(i),
                    madsChains[i], colixesChains[i]);
   }
   

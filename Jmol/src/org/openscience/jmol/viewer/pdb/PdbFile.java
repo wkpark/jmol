@@ -31,11 +31,11 @@ import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
 
-public class PdbMolecule {
+public class PdbFile {
   Frame frame;
   String[] structureRecords;
 
-  public PdbMolecule(Frame frame) {
+  public PdbFile(Frame frame) {
     this.frame = frame;
   }
 

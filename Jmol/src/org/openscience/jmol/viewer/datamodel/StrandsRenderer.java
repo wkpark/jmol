@@ -88,7 +88,7 @@ class StrandsRenderer extends Renderer {
 
     if (strands == null || !strands.initialized)
       return;
-    PdbMolecule pdbMolecule = strands.pdbMolecule;
+    PdbFile pdbFile = strands.pdbFile;
     short[][] madsChains = strands.madsChains;
     short[][] colixesChains = strands.colixesChains;
     Point3f[][] centersChains = strands.centersChains;
@@ -96,7 +96,7 @@ class StrandsRenderer extends Renderer {
     for (int i = strands.chainCount; --i >= 0; ) {
       Point3f[] centers = centersChains[i];
       if (centers != null)
-        render1Chain(pdbMolecule.getMainchain(i), centers,
+        render1Chain(pdbFile.getMainchain(i), centers,
                      vectorsChains[i], madsChains[i], colixesChains[i]);
     }
   }

@@ -118,7 +118,7 @@ public class FrameBuilder {
     if (hasPdbRecords) {
       String[] structures = adapter.getPdbStructureRecords(clientFile, frameNumber);
       if (structures != null && structures.length > 0)
-        frame.pdbMolecule.setStructureRecords(structures);
+        frame.pdbFile.setStructureRecords(structures);
     }
       
     frame.freeze();

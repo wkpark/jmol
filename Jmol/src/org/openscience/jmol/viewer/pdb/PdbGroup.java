@@ -32,15 +32,15 @@ import javax.vecmath.Point3f;
 public class PdbGroup {
 
   public PdbStructure structure;
-  public PdbMolecule pdbmolecule;
+  public PdbFile pdbFile;
   public char chainID;
   public short groupSequence;
   public short groupID;
   int[] mainchainIndices;
 
-  public PdbGroup(PdbMolecule pdbmolecule, char chainID,
+  public PdbGroup(PdbFile pdbFile, char chainID,
                   short groupSequence, String group3) {
-    this.pdbmolecule = pdbmolecule;
+    this.pdbFile = pdbFile;
     this.chainID = chainID;
     this.groupSequence = groupSequence;
     this.groupID = lookupGroupID(group3);
@@ -163,7 +163,7 @@ public class PdbGroup {
     int j;
     if (mainchainIndices == null || (j = mainchainIndices[i]) == -1)
       return null;
-    return pdbmolecule.frame.getAtomAt(j);
+    return pdbFile.frame.getAtomAt(j);
   }
 
   public Atom getNitrogenAtom() {

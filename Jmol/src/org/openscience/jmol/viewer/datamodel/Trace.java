@@ -37,7 +37,7 @@ public class Trace {
   JmolViewer viewer;
   Frame frame;
   boolean hasPdbRecords;
-  PdbMolecule pdbMolecule;
+  PdbFile pdbFile;
 
   boolean initialized;
   int chainCount;
@@ -48,16 +48,16 @@ public class Trace {
     this.viewer = viewer;
     this.frame = frame;
     hasPdbRecords = frame.hasPdbRecords;
-    pdbMolecule = frame.pdbMolecule;
+    pdbFile = frame.pdbFile;
   }
 
   public void setMad(short mad, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
     initialize();
-    for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
+    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
       short[] mads = madsChains[i];
-      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbFile.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           if (mad < 0) {
@@ -78,9 +78,9 @@ public class Trace {
     if (! hasPdbRecords)
       return;
     initialize();
-    for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
+    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
       short[] colixes = colixesChains[i];
-      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbFile.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))
@@ -94,11 +94,11 @@ public class Trace {
 
   void initialize() {
     if (! initialized) {
-      chainCount = pdbMolecule.getChainCount();
+      chainCount = pdbFile.getChainCount();
       madsChains = new short[chainCount][];
       colixesChains = new short[chainCount][];
       for (int i = chainCount; --i >= 0; ) {
-        int chainLength = pdbMolecule.getMainchain(i).length;
+        int chainLength = pdbFile.getMainchain(i).length;
         colixesChains[i] = new short[chainLength];
         // mads are one larger and the last two values are always ==
         // makes interval caluclations easier (maybe?)

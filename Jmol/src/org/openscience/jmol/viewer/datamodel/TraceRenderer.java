@@ -46,11 +46,11 @@ class TraceRenderer extends Renderer {
 
     if (trace == null || !trace.initialized)
       return;
-    PdbMolecule pdbMolecule = trace.pdbMolecule;
+    PdbFile pdbFile = trace.pdbFile;
     short[][] madsChains = trace.madsChains;
     short[][] colixesChains = trace.colixesChains;
     for (int i = trace.chainCount; --i >= 0; ) {
-      render1Chain(pdbMolecule.getMainchain(i), madsChains[i],
+      render1Chain(pdbFile.getMainchain(i), madsChains[i],
                    colixesChains[i]);
     }
     screens = null;

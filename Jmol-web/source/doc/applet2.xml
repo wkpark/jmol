@@ -28,6 +28,18 @@
 </appletExample>
       </p>
 
+      <p>Caffeine in MDL mol file format
+      
+<appletExample>
+<![CDATA[<APPLET CODE="org.openscience.jmol.applet.JmolApplet"
+    ARCHIVE="jmol-applet.jar,vecmath1.1-1.12.jar"
+    WIDTH="200" HEIGHT="200">
+  <PARAM NAME="model" VALUE="caffeine.mol"/>
+</APPLET>
+]]>
+</appletExample>
+      </p>
+
     </section>
   </body>
 </document>

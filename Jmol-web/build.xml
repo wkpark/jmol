@@ -29,7 +29,7 @@
       <fileset dir="${doc.dir}/images"/>
     </copy>
     <copy todir="${build.doc}" overwrite="yes">
-      <fileset dir="${doc.dir}" includes="*.css,*.jar,*.xyz,*.cml"/>
+      <fileset dir="${doc.dir}" includes="*.css,*.jar,*.xyz,*.cml,*.mol"/>
     </copy>
 
     <replace file="${build.doc}/index.html" token="$$VERSION$$" value="${version}"/>

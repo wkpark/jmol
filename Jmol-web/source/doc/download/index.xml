@@ -3,37 +3,15 @@
   <body>
     <title>Download Jmol</title>
     
-    <section title="Requirements">
-      <p>
-	The Jmol web browser applet runs on most browser Java Virtual
-	Machines, including the Microsoft and Netscape 4.7* implementations
-	of the Java 1.1 JVM. 
-      </p>
-
-      <p>
-	If you are running Microsoft Internet Explorer on the Windows
-	operating system you should upgrade to the Sun
-	Java Virtual Machine by visiting
-	<a href="http://www.java.com/">www.java.com</a>.
-      </p>
-
-      <p>
-	The standalone Jmol application requires Java 1.4 or higher.
-	The latest
-	<a href="http://java.sun.com/j2se/">Java 2 Platform Standard Edition</a>
-	is recommended.
-      </p>
-      
-    </section>
-
     <section title="Downloading Jmol">
       <p>The current official release is version $VERSION$.</p>
-      <p>It can be downloaded using the following links:
+      <p>It can be downloaded from SourceForge using the following link:
       <ul>
           <li>
             <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">jmol v$VERSION$</a>
           </li>
       </ul>
+<!--      
       With some delay, binary and source packages are available, 
       as well as Debian GNU/Linux (see below), and Suse/RedHat Linux packages.
       </p>
@@ -48,6 +26,7 @@ deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a>
         to /etc/apt/sources.list, and doing 'apt-get update &amp;&amp; apt-get install jmol/unstable'. 
         The repository has changed, because <a href="http://mentors.debian.net/">mentors.debian.net</a> 
         will no longer provide binary-packages.
+      -->
       </p>
     </section>
 
@@ -86,6 +65,31 @@ deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a>
 	  cvs up -dP
 	</tt>
       </p>
+    </section>
+
+    <section title="Requirements">
+      <p>
+	The Jmol web browser applet runs on most browser Java Virtual
+	Machines, including the Microsoft and Netscape 4.7* implementations
+	of the Java 1.1 JVM. 
+      </p>
+
+      <p>
+	If you are running Microsoft Internet Explorer on the Windows
+	operating system you should upgrade to the Sun
+	Java Virtual Machine by visiting
+	<a href="http://www.java.com/">www.java.com</a>.
+      </p>
+
+      <p>
+	The standalone Jmol application requires Java 1.4 or higher.
+	The latest
+	<a href="http://java.sun.com/j2se/">
+	  Java 2 Platform Standard Edition
+	</a>
+	is recommended.
+      </p>
+      
     </section>
 
   </body>

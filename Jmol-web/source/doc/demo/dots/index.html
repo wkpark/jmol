@@ -53,8 +53,11 @@
 		], "<br />");
 	      jmolBr();
 
-	      jmolButton("color dotsSaddle blue; color dotsConcave red; color dotsConvex yellow",
-	                 "show saddles and cavities");
+	      var saddles="dots off; set solvent on; dots on;" +
+	      "color dotsSaddle blue; color dotsConcave red;" +
+	      "color dotsConvex yellow";
+	      
+	      jmolButton(saddles, "show saddles and cavities");
 	    </script>
 	  </td>
 	</tr>

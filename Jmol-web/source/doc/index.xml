@@ -3,10 +3,32 @@
   <body>
     <title>Jmol</title>
 
-    <html-head>
-      <script src="jmol/Jmol.js"></script>
-    </html-head>
     <header>
+      <table border="1" width="600" bgcolor="#FFFAF0">
+	<tr>
+	  <td><script>
+	    jmolApplet(300, "script script/promotion1.txt");
+	  </script></td>
+	  <td>
+	    <p>
+	      This is the Jmol applet in action.
+	    </p>
+	    <p>
+	      It is running a script written in
+	      the Jmol/Rasmol/Chime scripting language.
+	    </p>
+	    <p>
+	      It is <i>not</i> a movie, slide show, or animation ...
+	      Jmol is an interactive web browser applet.
+	    </p>
+	  </td>
+	</tr>
+      </table>
+      <br />
+      <hr />
+    </header>
+    
+    <section title="Overview">
       <p>
 	Jmol is a free, open source molecule viewer for students,
 	educators, and researchers in chemistry and biochemistry.
@@ -27,61 +49,50 @@
 	  </li>
 	</ul>
       </p>
-
-      <p>
-	<table border="1" width="600">
-	  <tr>
-	    <td>
-	      <script>
-		jmolApplet(300, "script script/promotion1.txt");
-	      </script>
-	    </td>
-	    <td>
-	      <p>
-		This is the Jmol applet in action.
-		It is running a script written in
-		the Jmol/Rasmol/Chime scripting language.
-	      </p>
-	      <p>
-		It is <i>not</i> a movie, slide show, or animation.
-		It is an interactive web browser applet.
-	      </p>
-	    </td>
-	  </tr>
-	</table>
-      </p>
-    </header>
-      
-
-    <section title="Jmol v9 information">
-      <p>
-	For information on Jmol v9 click
-	<a href="v9/">here</a>.
-      </p>
     </section>
 
-    <section title="Jmol Version 10 will soon be released">
+    <section title="Jmol Version 10 has been released">
       <p>
-	Jmol Version 10 will be released before the end of December 2004.
+	Jmol Version 10 was released on Fri 17 December 2004.
       </p>
       <p>
 	Jmol v10 is a complete rearchitecture and rewrite of Jmol,
-	undertaken to specifically develop Jmol into a replacement for
-	the Chime Plug-in.
+	undertaken in the Spring of 2003, with the specific goal of
+	developing Jmol into a replacement for the Chime Plug-in.
       </p>
       <p>
 	Jmol v10 retains most of the features and functionality
-	of the previous Jmol architecture while offering significant
+	of the previous Jmol releases while offering significant
 	enhancments in the following areas:
 	<ul>
 	  <li>true 3D graphics engine that requires no special hardware</li>
+	  <li>24 bit color with accurate lighting and shading</li>
 	  <li>substantially higher rendering performance</li>
 	  <li>handles large macromolecules with excellent performance</li>
 	  <li>protein/nucleic acid secondary structure graphics</li>
+	  <li>RasMol/Chime script compatibility</li>
 	</ul>
       </p>
     </section>
 
+    <section title="What the critics are saying">
+      <i>
+	Jmol v10: I can't believe it's Java!<br />
+	But it's also open-source, so there's
+	simply no question about it.<br />
+	Get your copy now, before they run out of those
+	virtual Java machine thingies.<br />
+	It's just in time (JIT) for Christmas, from what I hear!
+      </i>
+      <blockquote>
+	Warren L. DeLano, shell-shocked C/Python developer<br />
+	Principal Scientist, <a href="http://www.delanoscientific.com">
+	DeLano Scientific</a>,
+	Author of <a href="http://pymol.sourceforge.net">PyMOL</a><br />
+	December 2004.
+      </blockquote>
+    </section>
+    
     <section title="Jmol v10 Features">
 
       <ul>
@@ -103,7 +114,7 @@
 	    </li>
 	    <li>
 	      The Jmol application is a standalone Java application
-	      that runs on the desktop.
+	      that runs on the desktop. 
 	    </li>
 	    <li>
 	      The JmolViewer can be integrated as a component
@@ -123,10 +134,9 @@
 	  Supports all major web browsers
 	  <ul>
 	    <li>Internet Explorer (Win32)</li>
-	    <li>Netscape 4.7* (Win32, Mac OS 9)</li>
 	    <li>Mozilla/Firefox (Win32, OSX, *nix)</li>
 	    <li>Safari (Mac OS X)</li>
-	    <li>Konqueror (*nix)</li>
+	    <li>Opera 7.5.4 (Win32 only)</li>
 	  </ul>
 	</li>
 	<li>
@@ -194,6 +204,21 @@
 	    <li>
 	      <a href="http://www.wavefun.com">Spartan</a>
 	      - Wavefunction, Inc.
+	    </li>
+	    <li>
+	      <a href="http://www.uku.fi/~thassine/ghemical/">
+		Ghemical
+	      </a>
+	    </li>
+	    <li>
+	      <a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">
+		NWChem
+	      </a>
+	    </li>
+	    <li>
+	      <a href="http://www.q-chem.com">
+		Q-Chem
+	      </a>
 	    </li>
 	    <li>XYZ</li>
 	  </ul>

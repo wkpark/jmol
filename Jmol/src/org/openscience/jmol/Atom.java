@@ -260,6 +260,10 @@ public class Atom extends org.openscience.cdk.Atom {
     return -1;
   }
 
+  public int getBondedCount() {
+    return (bondedAtoms == null) ? 0 : bondedAtoms.length;
+  }
+
   /**
    * Returns true if the two atoms are within the distance fudge
    * factor of each other.

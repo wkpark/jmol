@@ -635,6 +635,10 @@ class Compiler {
       return IntegerExpected();
     Token tokenValue = tokenNext();
     int val = tokenValue.intValue;
+    // note that a comparator instruction is a complicated instruction
+    // int intValue is the tok of the property you are comparing
+    // the value against which you are comparing is stored as an Integer
+    // in the object value
     ltokenPostfix.add(new Token(tokenComparator.tok,
                                 tokenAtomProperty.tok,
                                 new Integer(val)));

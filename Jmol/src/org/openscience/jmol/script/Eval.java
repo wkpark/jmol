@@ -359,6 +359,12 @@ public class Eval implements Runnable {
     evalError("error loading script -> " + msg);
   }
 
+  BitSet copyBitSet(BitSet bitSet) {
+    BitSet copy = new BitSet();
+    copy.or(bitSet);
+    return copy;
+  }
+
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
     int numberOfAtoms = control.numberOfAtoms();
     BitSet bs;
@@ -409,12 +415,15 @@ public class Eval implements Runnable {
         for (int i = min; i < max; ++i)
           bs.set(i);
         break;
+      case Token.selected:
+        stack[sp++] = copyBitSet(control.getSelectionSet());
+        break;
       case Token.identifier:
         String variable = (String)instruction.value;
-        Token[] definition = (Token[])variables.get(variable);
-        if (definition == null)
+        BitSet value = (BitSet)variables.get(variable);
+        if (value == null)
           undefinedVariable();
-        stack[sp++] = expression(definition, 2);
+        stack[sp++] = copyBitSet(value);
         break;
       case Token.opLT:
       case Token.opLE:
@@ -426,7 +435,8 @@ public class Eval implements Runnable {
         comparatorInstruction(instruction, bs);
         break;
       default:
-        unrecognizedExpression();
+        if ((instruction.tok & Token.predefinedset) == 0)
+          unrecognizedExpression();
       }
     }
     if (sp != 1)
@@ -457,8 +467,10 @@ public class Eval implements Runnable {
         propertyValue = -1;
         break;
       case Token.radius:
-        // FIXME -- confirm that RasMol units are 250 per angstrom
         propertyValue = (int)(atom.getVdwRadius() * 250);
+        break;
+      case Token.bondedcount:
+        propertyValue = atom.getBondedCount();
         break;
       }
       boolean match = false;
@@ -510,7 +522,7 @@ public class Eval implements Runnable {
   Hashtable variables = new Hashtable();
   void define() throws ScriptException {
     String variable = (String)statement[1].value;
-    variables.put(variable, statement);
+    variables.put(variable, (expression(statement, 2)));
   }
 
   void echo() throws ScriptException {

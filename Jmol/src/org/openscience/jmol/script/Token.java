@@ -230,6 +230,7 @@ class Token {
   final static int resno        = atomproperty | 2;
   // radius;
   final static int temperature  = atomproperty | 3;
+  final static int bondedcount  = atomproperty | 4;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -484,6 +485,7 @@ class Token {
     "elemno",       new Token(elemno, "elemno"),
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
+    "_bondedcount", new Token(bondedcount, "_bondedcount"),
 
     "off",          new Token(off, 0, "off"),
     "false",        null,
@@ -619,6 +621,78 @@ class Token {
     "[",          new Token(leftsquare,  "["),
     "]",          new Token(rightsquare, "]")
   };
+
+  static String[] predefinitions = {
+    "at a,t",
+    "acidic d,e",
+    "acyclic a,r,n,d,c,e,q,g,i,l,k,m,s,t,v",
+    "aliphatic a,g,i,l,v",
+    //    "alpha approximatly *.CA", // whatever that means
+    //    "amino",
+    "aromatic h,f,w,y",
+    "backbone (protein or nucleic) & !sidechain",
+    "basic r,h,k",
+    "bonded _bondedcount>0",
+    "buried a,c,i,l,m,f,w,v", // doesn't seem right to me
+    "cg c,g",
+    "charged r,d,e,h,k",
+    "cyclic h,f,p,w,y",
+    //    "cystine",
+    //    "helix",
+    //    "hetero",
+    // doc on hydrophobic is inconsistent
+    // text description of hydrophobic says this
+    //    "hydrophobic ala,leu,val,ile,pro,phe,met,trp",
+    // table says this
+    "hydrophobic a,g,i,l,m,f,p,w,y,v",
+    //    "ions",
+    "large r,e,q,h,i,l,k,m,f,w,y",
+    //    "ligand",
+    "medium n,d,c,p,t,v",
+    // doc is inconsistent
+    // is h basic or neutral
+    "neutral amino & !(acidic,basic)",
+    "nucleic a,c,g,t",
+    "polar r,n,d,c,e,q,h,k,s,t",
+    //    "protein amino + common post-translational modifications",
+    "purine a,g",
+    "pyrimidine c,t",
+    // selected - special and is handled at runtime
+    //    "sheet"
+    //    "sidechain (protein or nucleic) and !backbone",
+    "small a,g,s",
+    "solvent water,ions",
+    "surface r,n,d,e,q,g,h,k,p,s,t,y",
+    //    "turn",
+    //    "water"
+
+    // FIXME - check spelling of elements
+    "hydrogen elemno==1",
+    "helium elemno=2",
+    "lithium elemno=3",
+    "berelium elemno=4",
+    "barium elemno=5",
+    "carbon elemno=6",
+    "nitrogen elemno=7",
+    "oxygen elemno=8",
+    "florine elemno=9",
+    "neon elemno=10",
+    "sodium elemno=11",
+    "magnesium elemno=12",
+    "aluminum elemno=13", // don't forget to add the british spelling
+    "silicon elemno=14",
+    "phosphorus elemno=15",
+    "sulphur elemno=16",
+    "clorine elemno=17",
+    "argon elemno=18",
+    "potassium elemno=19",
+    "calcium elemno=20",
+    "tin elemno=21",
+    "iron elemno=26",
+    "copper elemno=29",
+    "zinc elemno=30",
+  };
+
   static Hashtable map = new Hashtable();
   static {
     Token tokenLast = null;

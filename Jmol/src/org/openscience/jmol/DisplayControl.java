@@ -345,6 +345,10 @@ final public class DisplayControl {
     recalc();
   }
 
+  public BitSet getSelectionSet() {
+    return bsSelection;
+  }
+
   public void translateBy(int xDelta, int yDelta) {
     xTranslation += xDelta;
     yTranslation += yDelta;

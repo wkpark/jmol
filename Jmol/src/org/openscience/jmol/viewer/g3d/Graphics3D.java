@@ -35,7 +35,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 final public class Graphics3D {
 
@@ -437,14 +436,16 @@ final public class Graphics3D {
     triangle3d.fillTriangle();
   }
 
-  public void drawfillTriangle(short colix, Vector3f normal,
-                               Point3i screenA,
-                               Point3i screenB, Point3i screenC) {
-    int argb = argbCurrent =
-      Colix.getArgbSurface(colix, normal.x, normal.y, normal.z);
-    drawLine(screenA, screenB);
-    drawLine(screenA, screenC);
-    drawLine(screenB, screenC);
+  public void fillQuadrilateral(short colix,
+                                Point3i screenA, Point3i screenB,
+                                Point3i screenC, Point3i screenD) {
+    fillTriangle(colix, screenA, screenB, screenC);
+    fillTriangle(colix, screenA, screenC, screenD);
+ }
+
+  public void fillTriangle(short colix, Point3i screenA,
+                           Point3i screenB, Point3i screenC) {
+    calcSurfaceShade(colix, screenA, screenB, screenC);
     int[] t;
     t = triangle3d.ax;
     t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
@@ -455,6 +456,15 @@ final public class Graphics3D {
 
     triangle3d.fillTriangle();
   }
+
+  int intensity = 0;
+
+  void calcSurfaceShade(short colix, Point3i screenA,
+                        Point3i screenB, Point3i screenC) {
+    argbCurrent = Colix.getShades(colix)[intensity];
+    intensity = (intensity + 10) & 63;
+  }
+
 
   public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {

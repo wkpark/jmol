@@ -107,17 +107,23 @@ public class AtomSetChooser extends JDialog
     
     if (node ==  null) return;
     
-    if (node.isLeaf()) {
-      int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
-      int atomSetNumber = viewer.getModelNumber(atomSetIndex);
-      // show the model in the viewer
-      viewer.evalStringQuiet("frame " + atomSetNumber);
-      // show the properties in the properties pane
-      showProperties(viewer.getModelProperties(atomSetIndex));
-    } else { // selected branch
-      propertiesPane.setText("Collection has " +
-        node.getLeafCount() + " AtomSets");
-    }
+    // not the prettiest solution to the problem that a starting out
+    // tree has a root leaf that is not an AtomSet, so the cast
+    // goes wrong...
+    try {
+			if (node.isLeaf()) {
+				int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
+				int atomSetNumber = viewer.getModelNumber(atomSetIndex);
+				// show the model in the viewer
+				viewer.evalStringQuiet("frame " + atomSetNumber);
+				// show the properties in the properties pane
+				showProperties(viewer.getModelProperties(atomSetIndex));
+			} else { // selected branch
+				propertiesPane.setText("Collection has " +
+					node.getLeafCount() + " AtomSets");
+			}
+		}
+		catch (Exception exception) {}
   }
   
   public void showProperties(Properties properties) {

@@ -289,10 +289,26 @@ public class ColorManager {
     viewer.transformVector(vNormal, vRotated);
     int intensity =
       vRotated.z >= 0
-      ? Shade3D.calcIntensity(-vRotated.x, -vRotated.y,vRotated.z)
-      : Shade3D.calcIntensity(vRotated.x, vRotated.y, -vRotated.z);
+      ? calcIntensity(-vRotated.x, -vRotated.y, vRotated.z)
+      : calcIntensity(vRotated.x, vRotated.y, -vRotated.z);
     if (intensity > Shade3D.intensitySpecularSurfaceLimit)
       intensity = Shade3D.intensitySpecularSurfaceLimit;
     return intensity;
+  }
+
+  public boolean specular = true;
+
+  public void setSpecular(boolean specular) {
+    if (this.specular != specular) {
+      Sphere3D.flushImageCache();
+      this.specular = specular;
+      viewer.refresh();
+    }
+  }
+
+  public int calcIntensity(float x, float y, float z) {
+    float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
+    return Shade3D.calcIntensityNormalized(x/magnitude, y/magnitude,
+                                           z/magnitude, specular);
   }
 }

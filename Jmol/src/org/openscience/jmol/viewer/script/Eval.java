@@ -365,6 +365,9 @@ public class Eval implements Runnable {
       case Token.dots:
         dots();
         break;
+      case Token.ribbons:
+        // for now, just let ribbons and strands do the same thing
+        System.out.println("sorry - ribbons not implemented, using strands");
       case Token.strands:
         strands();
         break;
@@ -384,7 +387,6 @@ public class Eval implements Runnable {
       case Token.pause:
       case Token.print:
       case Token.renumber:
-      case Token.ribbons:
       case Token.save:
       case Token.show:
       case Token.ssbonds:
@@ -1458,6 +1460,9 @@ public class Eval implements Runnable {
     case Token.strands:
       setStrands();
       break;
+    case Token.specular:
+      setSpecular();
+      break;
 
       /*
     case Token.spacefill:
@@ -1480,7 +1485,6 @@ public class Eval implements Runnable {
     case Token.radius:
     case Token.shadow:
     case Token.slabmode:
-    case Token.specular:
     case Token.specpower:
     case Token.ssbonds:
     case Token.transparent:
@@ -1917,6 +1921,10 @@ public class Eval implements Runnable {
         numberOutOfRange();
     }
     viewer.setStrandsCount(strandCount);
+  }
+
+  void setSpecular() throws ScriptException {
+    viewer.setSpecular(getSetBoolean());
   }
 
   /*

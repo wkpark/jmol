@@ -94,6 +94,7 @@ public class Shade3D {
     return "[" + red + "," + grn + "," + blu + "]";
   }
 
+  /*
   public static byte calcIntensity(float x, float y, float z) {
     float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
     return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
@@ -102,22 +103,26 @@ public class Shade3D {
   public static byte calcIntensity(float x, float y, float z, float magnitude) {
     return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
   }
+  */
 
-  public final static byte intensitySpecularSurfaceLimit = 44;
+  public final static int intensitySpecularSurfaceLimit = 44;
 
-  public static byte calcIntensityNormalized(float x, float y, float z) {
+  public static int calcIntensityNormalized(float x, float y, float z,
+                                             boolean tSpecular) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
     float intensity = intensityAmbient; // ambient component
     if (cosTheta > 0) {
       intensity += cosTheta * intensityDiffuseSource; // diffuse component
-
-      // this is the dot product of the reflection and the viewer
-      // but the viewer only has a z component
-      float dotProduct = z * 2 * cosTheta - zLight;
-      if (dotProduct > 0) {
-        for (int n = exponentSpecular; --n >= 0; )
-          dotProduct *= dotProduct;
-        intensity += dotProduct * intensitySpecularSource; // specular
+      
+      if (tSpecular) {
+        // this is the dot product of the reflection and the viewer
+        // but the viewer only has a z component
+        float dotProduct = z * 2 * cosTheta - zLight;
+        if (dotProduct > 0) {
+          for (int n = exponentSpecular; --n >= 0; )
+            dotProduct *= dotProduct;
+          intensity += dotProduct * intensitySpecularSource; // specular
+        }
       }
     }
     int shade = (int)(shadeMax * intensity + 0.5f);

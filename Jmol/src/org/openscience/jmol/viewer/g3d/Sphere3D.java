@@ -84,7 +84,7 @@ public class Sphere3D {
         float z2 = radius2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = Shade3D.calcIntensity(xF, yF, zF);
+          int intensity = viewer.calcIntensity(xF, yF, zF);
           int x = xUL + j;
           int z = zC - (int)(zF + 0.5f);
           g3d.plotPixelClipped(shades[intensity],
@@ -124,7 +124,7 @@ public class Sphere3D {
           int z0 = z - (int)(zF + 0.5f);
           if (zbuf[offsetPbuf] <= z0)
             continue;
-          int intensity = Shade3D.calcIntensity(xF, yF, zF);
+          int intensity = viewer.calcIntensity(xF, yF, zF);
           pbuf[offsetPbuf] = shades[intensity];
           zbuf[offsetPbuf] = (short) z0;
         }
@@ -150,7 +150,7 @@ public class Sphere3D {
         float z2 = r2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = Shade3D.calcIntensity(xF, yF, zF);
+          int intensity = viewer.calcIntensity(xF, yF, zF);
           int z0 = z - (int)(zF + 0.5f);
           g3d.plotPixelClipped(shades[intensity],
                                 x0, y0, z0);
@@ -334,11 +334,15 @@ public class Sphere3D {
     return ss;
   }
 
+  public static void flushImageCache() {
+    sphereShapeCache = new int[maxSphereCache][];
+  }
+
   int calcIntensity1(float x, float y, float radius2) {
     float z2 = radius2 - x*x - y*y;
     if (z2 < 0)
       return -1;
-    return Shade3D.calcIntensity(x, y, (float)Math.sqrt(z2));
+    return viewer.calcIntensity(x, y, (float)Math.sqrt(z2));
   }
 
   byte calcIntensity(float x, float y, float radius2) {

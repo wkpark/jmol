@@ -222,7 +222,7 @@ public class Cylinder3D {
     }
     zRaster[i] = (int)(zR + 0.5);
 
-    intensityUp[i] = Shade3D.calcIntensity((float)xR, (float)yR, (float)zR);
+    intensityUp[i] = viewer.calcIntensity((float)xR, (float)yR, (float)zR);
 
     /*
     System.out.println("calcRotatedPoint(" + t + "," + i + ")" + " -> " +
@@ -319,7 +319,7 @@ public class Cylinder3D {
     dzB = (this.zTip = zTip) - (this.zA = zA);
     
     shadesA = Colix.getShades(this.colixA = colix);
-    int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
+    int intensityTip = viewer.calcIntensity(dxB, dyB, -dzB);
     g3d.plotPixelClipped(shadesA[intensityTip], xTip, yTip, zTip);
 
     this.diameter = diameter;
@@ -371,11 +371,11 @@ public class Cylinder3D {
     int intensityEndcap;
     int[] shadesEndcap;
     if (dzB >= 0) {
-      intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
+      intensityEndcap = viewer.calcIntensity(-dxB, -dyB, dzB);
       shadesEndcap = shadesA;
       //      System.out.println("endcap is A");
     } else {
-      intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB);
+      intensityEndcap = viewer.calcIntensity(dxB, dyB, -dzB);
       shadesEndcap = shadesB;
       xEndcap += dxB; yEndcap += dyB; zEndcap += dzB;
       //      System.out.println("endcap is B");

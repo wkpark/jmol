@@ -609,6 +609,18 @@ final public class JmolViewer {
     return colorManager.colorBond;
   }
 
+  public void setSpecular(boolean specular) {
+    colorManager.setSpecular(specular);
+  }
+
+  public boolean getSpecular() {
+    return colorManager.specular;
+  }
+
+  public int calcIntensity(float x, float y, float z) {
+    return colorManager.calcIntensity(x, y, z);
+  }
+
   public int calcSurfaceIntensity(Point3f pointA, Point3f pointB,
                                    Point3f pointC) {
     return colorManager.calcSurfaceIntensity(pointA, pointB, pointC);

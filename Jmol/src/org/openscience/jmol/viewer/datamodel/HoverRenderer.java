@@ -35,8 +35,10 @@ class HoverRenderer extends ShapeRenderer {
     if (hover.atomIndex == -1 || hover.labelFormat == null)
       return;
     Atom atom = frame.getAtomAt(hover.atomIndex);
+    /*
     System.out.println("hover on atom:" + hover.atomIndex + " @ " +
                        atom.getScreenX() + "," + atom.getScreenY());
+    */
     String msg = atom.formatLabel(hover.labelFormat);
     Font3D font3d = hover.font3d;
     FontMetrics fontMetrics = font3d.fontMetrics;

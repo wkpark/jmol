@@ -165,7 +165,7 @@ class BondRenderer extends Renderer {
           g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
         if (tDotted)
-          g3d.drawDashedLine(colixA, colixB, 6, 3, xA, yA, zA, xB, yB, zB);
+          drawDottedCylinder(colixA, colixB, width, xA, yA, zA, xB, yB, zB);
         else
           g3d.fillCylinder(colixA, colixB, endcaps,
                          width, xA, yA, zA, xB, yB, zB);
@@ -189,7 +189,7 @@ class BondRenderer extends Renderer {
                        xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       } else {
         if (tDotted)
-          g3d.drawDashedLine(colixA, colixB, 6, 3,
+          drawDottedCylinder(colixA, colixB, width,
                              xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
         else
           g3d.fillCylinder(colixA, colixB, endcaps, width,
@@ -323,6 +323,19 @@ class BondRenderer extends Renderer {
                            xMidDn, yMidDn, zMid, xWideDn, yWideDn, zB);
       g3d.drawfillTriangle(colixB, xMidUp, yMidUp, zMid,
                            xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
+    }
+  }
+
+  void drawDottedCylinder(short colixA, short colixB, int width,
+                          int x1, int y1, int z1, int x2, int y2, int z2) {
+    int dx = x2 - x1;
+    int dy = y2 - y1;
+    int dz = z2 - z1;
+    for (int i = 8; --i >= 0; ) {
+      int x = x1 + (dx * i) / 7;
+      int y = y1 + (dy * i) / 7;
+      int z = z1 + (dz * i) / 7;
+      g3d.fillSphereCentered(i > 3 ? colixB : colixA, width, x, y, z);
     }
   }
 }

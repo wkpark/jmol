@@ -259,7 +259,7 @@ public class CdkJmolAdapter extends JmolAdapter {
         // System.out.println("sequence: " + sequence);
         try {
             int sequenceInt = Integer.parseInt((String)atom.getProperty("pdb.resSeq"));
-            System.out.println("     int: " + sequenceInt);
+            // System.out.println("     int: " + sequenceInt);
             return sequenceInt;
         } catch (Exception exception) {
             exception.printStackTrace();

@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.1)
+  Translated from default version : index_en.xml (v 1.3)
 -->
 <!DOCTYPE somethingOrAnything [
+<!ENTITY aboutJmol             SYSTEM "aboutJmol_fr.xml" >
 <!ENTITY appletRequirements    SYSTEM "appletRequirements_fr.xml" >
 <!ENTITY hardwareRequirements  SYSTEM "hardwareRequirements_fr.xml" >
 <!ENTITY appRequirements       SYSTEM "appRequirements_fr.xml" >
@@ -15,7 +16,7 @@
   <body>
     <title>FAQs Jmol</title>
 
-    &appletRequirements;
+    &aboutJmol;
 
     &hardwareRequirements;
 

@@ -45,8 +45,8 @@ class VectorShape implements Shape, Transformable {
 
   }
 
-  public int getZ() {
-    return (int)screenPositionEnd.z + 4;
+  public double getZ() {
+    return screenPositionEnd.z + 4.0;
   }
 
   /**

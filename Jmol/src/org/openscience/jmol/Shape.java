@@ -20,7 +20,6 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
-import java.util.Comparator;
 
 /**
  * Provides an interface for graphical components so that
@@ -35,7 +34,6 @@ interface Shape {
 
   public void render(Graphics g);
 
-  public int getZ();
+  public double getZ();
 
 }
-

@@ -27,9 +27,9 @@ class AtomLabelShape implements Shape {
   }
 
   public void render(Graphics gc) {
-    int x = atom.screenX;
-    int y = atom.screenY;
-    int z = atom.screenZ;
+    int x = (int) atom.getScreenPosition().x;
+    int y = (int) atom.getScreenPosition().y;
+    int z = (int) atom.getScreenPosition().z;
     int diameter =
       (int) (2.0f
         * settings.getCircleRadius(z, atom.getType().getVdwRadius()));
@@ -94,8 +94,8 @@ class AtomLabelShape implements Shape {
 
   }
   
-  public int getZ() {
-    return atom.screenZ + 1;
+  public double getZ() {
+    return atom.getScreenPosition().z + 1;
   }
   
 }

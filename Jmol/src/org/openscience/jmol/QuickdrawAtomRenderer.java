@@ -55,9 +55,9 @@ public class QuickdrawAtomRenderer implements AtomRenderer {
     }
     Color atomColor = colorProfile.getColor(atom);
 
-    int x = atom.screenX;
-    int y = atom.screenY;
-    int z = atom.screenZ;
+    int x = (int) atom.getScreenPosition().x;
+    int y = (int) atom.getScreenPosition().y;
+    int z = (int) atom.getScreenPosition().z;
     int diameter =
       (int) (2.0f
         * settings.getCircleRadius(z, atom.getType().getVdwRadius()));

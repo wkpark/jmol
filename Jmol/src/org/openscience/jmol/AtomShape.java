@@ -32,8 +32,8 @@ class AtomShape implements Shape {
     atomRenderer.paint(g, atom, settings.isAtomPicked(atom), settings);
   }
   
-  public int getZ() {
-    return atom.screenZ;
+  public double getZ() {
+    return atom.getScreenPosition().z;
   }
   
   private static AtomRenderer getAtomRenderer(DisplaySettings settings) {

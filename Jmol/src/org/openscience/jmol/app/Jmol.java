@@ -31,10 +31,6 @@ import org.jmol.adapter.cdk.CdkModelAdapter;
 import org.jmol.adapter.simple.SimpleModelAdapter;
 import org.jmol.adapter.smarter.SmarterModelAdapter;
 
-import org.openscience.cdk.io.ChemObjectReader;
-import org.openscience.cdk.io.ReaderFactory;
-import org.openscience.cdk.io.XYZWriter;
-import org.openscience.cdk.io.CMLWriter;
 import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import org.openscience.jmol.ui.JmolPopup;
 import Acme.JPM.Encoders.ImageEncoder;
@@ -935,8 +931,7 @@ public class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
-        viewer.openFile(file.getAbsolutePath());
-        viewer.getOpenFileError();
+        viewer.evalString("load " + file.getAbsolutePath());
         return;
       }
     }

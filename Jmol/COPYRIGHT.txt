@@ -8,17 +8,23 @@ The copyrights for some portions of this software package are held
 by other contributors to Jmol.  The copyright holders are identified 
 as follows:
 
+Copyright (c) 1999 by The University of Notre Dame:
+  PDBReader.java
+  XYZReader.java
 Copyright (c) 1998, 1999 J. Daniel Gezelter and Michael Beachy:
   Bond.java
 Copyright (C) 1997, 1998 Dr. Christoph Steinbeck:
   GaussianFile.java
+  StatusBar.java
 Copyright (c) 1999 E.L. Willighagen:
   CMLFile.java
-  CMLHandler.java
+  CMLSaver.java
+  JMolCDO.java
 Copyright (c) 1999 Bradley A. Smith:
   ADFReader.java
   Aces2Reader.java
   ChemFileReader.java
+  DisplaySettings.java
   GamessReader.java
   Gaussian92Reader.java
   Gaussian94Reader.java
@@ -26,10 +32,6 @@ Copyright (c) 1999 Bradley A. Smith:
   ReaderFactory.java
   Vibrate.java
   Vibration.java
-Copyright (C) 1996, 1998 by Jef Poskanzer:
-  GifEncoder.java
-  ImageEncoder.java
-  PpmEncoder.java
 Copyright (c) 1993, 1994, Silicon Graphics, Inc.:
   Trackball.java
 Copyright (c) 1994-1997 Sun Microsystems, Inc.:
@@ -60,6 +62,10 @@ parsing CML files:
              for both commercial and non-commercial use.  Details on
              and source code for SAX are available at:
              http://www.megginson.com/SAX/
+
+Jmol also includes jar files for the Acme Image encoders by Jef Poskanzer
+(http://www.acme.com) as well as the junit Java testing framework 
+(http://www.xprogramming.com/software.htm)
 
 #######################################################################
 

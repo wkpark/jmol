@@ -40,8 +40,6 @@ import java.awt.PopupMenu;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
-//import java.awt.Graphics;
-//import java.awt.Graphics2D;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
@@ -81,6 +79,7 @@ final public class DisplayControl {
   public Distributor distributor;
   public Eval eval;
   public Java12 java12;
+  public Graphics25D g25d;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -116,6 +115,8 @@ final public class DisplayControl {
     eval = new Eval(this);
     if (jvm12orGreater)
       java12 = new Java12(this);
+
+    g25d = new Graphics25D(this);
   
     // System.out.println("New DisplayControl");
   }
@@ -397,14 +398,6 @@ final public class DisplayControl {
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
 
-  public void setScreenDimension(Dimension dimCurrent) {
-    transformManager.setScreenDimension(dimCurrent);
-  }
-
-  public Dimension getScreenDimension() {
-    return transformManager.dimCurrent;
-  }
-
   public void scaleFitToScreen() {
     transformManager.scaleFitToScreen();
   }
@@ -428,6 +421,21 @@ final public class DisplayControl {
 
   public int getCameraZ() {
     return transformManager.cameraZ;
+  }
+
+  private Dimension dimCurrent;
+
+  public void setScreenDimension(Dimension dim) {
+    if (dim.equals(dimCurrent))
+      return;
+    dimCurrent = dim;
+    transformManager.setScreenDimension(dim);
+    transformManager.scaleFitToScreen();
+    g25d.setSize(dim.width, dim.height);
+  }
+
+  public Dimension getScreenDimension() {
+    return dimCurrent;
   }
 
   /****************************************************************
@@ -1078,10 +1086,15 @@ final public class DisplayControl {
     repaintManager.notifyRepainted();
   }
 
-  public void render(Graphics25D g25d, Rectangle rectClip) {
+  public Image renderScreenImage(Rectangle rectClip) {
     if (eval.hasTerminationNotification())
       manageScriptTermination();
     repaintManager.render(g25d, rectClip);
+    return g25d.getScreenImage();
+  }
+
+  public Image getScreenImage() {
+    return g25d.getScreenImage();
   }
 
 

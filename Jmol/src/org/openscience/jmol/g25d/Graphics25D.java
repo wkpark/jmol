@@ -1,3 +1,27 @@
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
 package org.openscience.jmol.g25d;
 
 import org.openscience.jmol.DisplayControl;
@@ -13,25 +37,42 @@ import java.awt.Shape;
 
 final public class Graphics25D {
   DisplayControl control;
+  Image img;
   Graphics g;
+  int width, height;
 
-  public Graphics25D(DisplayControl control, Graphics g) {
+  public Graphics25D(DisplayControl control) {
     this.control = control;
     this.g = g;
   }
 
-  public void dispose() {
-    g.dispose();
-    g = null;
+  public void setSize(int width, int height) {
+    this.width = width;
+    this.height = height;
+    System.out.println("Graphics25D.setSize(" + width + "," + height + ")");
+    if (g != null)
+      g.dispose();
+    if (width == 0 || height == 0) {
+      img = null;
+      g = null;
+      return;
+    }
+    if (control.jvm12orGreater) {
+      img = Swing25D.allocateImage(control.getAwtComponent(), width, height);
+      g = Swing25D.createGraphics(img);
+    } else {
+      img = Awt25D.allocateImage(control.getAwtComponent(), width, height);
+      g = Awt25D.createGraphics(img);
+    }
+  }
+
+  public Image getScreenImage() {
+    return img;
   }
 
   public void setColor(Color color) {
     g.setColor(color);
   }
-
-  //  public void drawLine(int x1, int y1, int x2, int y2) {
-  //    g.drawLine(x1, y1, x2, y2);
-  //  }
 
   public void drawPolygon(int[] ax, int[] ay, int numPoints) {
     g.drawPolygon(ax, ay, numPoints);

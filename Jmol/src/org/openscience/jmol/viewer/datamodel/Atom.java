@@ -722,12 +722,17 @@ public final class Atom implements Bspt.Tuple {
     return "" + info;
   }
 
-  boolean isCursorOnTop(int xCursor, int yCursor, Atom competitor) {
-    if ((formalChargeAndFlags & VISIBLE_FLAG) == 0)
-      return false;
+  boolean isCursorOnTopOfVisibleAtom(int xCursor, int yCursor,
+                                     int minRadius, Atom competitor) {
+    return (((formalChargeAndFlags & VISIBLE_FLAG) != 0) &&
+            isCursorOnTop(xCursor, yCursor, minRadius, competitor));
+  }
+
+  boolean isCursorOnTop(int xCursor, int yCursor,
+                        int minRadius, Atom competitor) {
     int r = Xyzd.getD(xyzd) / 2;
-    if (r < 4)
-      r = 4;
+    if (r < minRadius)
+      r = minRadius;
     int r2 = r * r;
     int dx = Xyzd.getX(xyzd) - xCursor;
     int dx2 = dx * dx;

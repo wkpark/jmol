@@ -398,7 +398,7 @@ final public class Frame {
     return frankShape.wasClicked(x, y);
   }
 
-  final static int selectionPixelLeeway = 5;
+  final static int minimumPixelSelectionRadius = 4;
 
   public int findNearestAtomIndex(int x, int y) {
     /*
@@ -418,12 +418,17 @@ final public class Frame {
     int championIndex = -1;
     for (int i = atomCount; --i >= 0; ) {
       Atom contender = atoms[i];
-      if (contender.isCursorOnTop(x, y, champion)) {
+      if (contender.isCursorOnTopOfVisibleAtom(x, y,
+                                               minimumPixelSelectionRadius,
+                                               champion)) {
         champion = contender;
         championIndex = i;
       }
     }
-    return championIndex;
+    if (championIndex >= 0)
+      return championIndex;
+    // not on top of any atoms ... let's try the shapes
+    return -1;
   }
     
   // jvm < 1.4 does not have a BitSet.clear();

@@ -79,7 +79,7 @@ class SurfaceRenderer extends ShapeRenderer {
     for (int i = surface.torusCount; --i >= 0; ) {
       Surface.Torus torus = toruses[i];
       if (displayModelIndex < 0 ||
-          displayModelIndex == atoms[torus.indexII].modelIndex)
+          displayModelIndex == atoms[torus.indexI].modelIndex)
         renderTorus(torus, atoms, colixesConvex, convexSurfaceMaps);
     }
 
@@ -150,13 +150,13 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
-    if (convexSurfaceMaps[torus.indexII] != null)
+    if (convexSurfaceMaps[torus.indexI] != null)
       renderTorusHalf(torus,
-                      getColix(torus.colixI, colixes, atoms, torus.indexII),
+                      getColix(torus.colixI, colixes, atoms, torus.indexI),
                       false);
-    if (convexSurfaceMaps[torus.indexJJ] != null)
+    if (convexSurfaceMaps[torus.indexJ] != null)
       renderTorusHalf(torus,
-                      getColix(torus.colixJ, colixes, atoms, torus.indexJJ),
+                      getColix(torus.colixJ, colixes, atoms, torus.indexJ),
                       true);
   }
 

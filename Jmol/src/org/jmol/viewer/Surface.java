@@ -185,9 +185,9 @@ class Surface extends Shape {
       short colix = g3d.getColix(value);
       for (int i = torusCount; --i >= 0; ) {
         Torus torus = toruses[i];
-        if (bs.get(torus.indexII))
+        if (bs.get(torus.indexI))
           torus.colixI = colix;
-        if (bs.get(torus.indexJJ))
+        if (bs.get(torus.indexJ))
           torus.colixJ = colix;
       }
       return;
@@ -216,11 +216,11 @@ class Surface extends Shape {
         }
         for (int i = torusCount; --i >= 0; ) {
           Torus torus = toruses[i];
-          if (bs.get(torus.indexII))
-            torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexII],
+          if (bs.get(torus.indexI))
+            torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexI],
                                                       palette);
-          if (bs.get(torus.indexJJ))
-            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.indexJJ],
+          if (bs.get(torus.indexJ))
+            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.indexJ],
                                                       palette);
         }
         for (int i = cavityCount; --i >= 0; ) {
@@ -391,8 +391,8 @@ class Surface extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = toruses[i];
-      if (convexSurfaceMaps[torus.indexII] == null &&
-          convexSurfaceMaps[torus.indexJJ] == null) {
+      if (convexSurfaceMaps[torus.indexI] == null &&
+          convexSurfaceMaps[torus.indexJ] == null) {
         torusDeleted = true;
         toruses[i] = null;
       }
@@ -426,7 +426,7 @@ class Surface extends Shape {
   final Vector3f vectorPJ = new Vector3f();
 
   class Torus {
-    int indexII, indexJJ;
+    int indexI, indexJ;
     Point3f center;
     float radius;
     Vector3f axisVector;
@@ -442,20 +442,16 @@ class Surface extends Shape {
 
     Torus(int indexA, Point3f centerA, int indexB, Point3f centerB, 
           Point3f center, float radius) {
-      this.indexII = indexA;
-      this.indexJJ = indexB;
+      this.indexI = indexA;
+      this.indexJ = indexB;
       this.center = new Point3f(center);
       this.radius = radius;
 
       axisVector = new Vector3f();
       axisVector.sub(centerB, centerA);
 
-      if (axisVector.x == 0)
-        unitRadialVector = new Vector3f(1, 0, 0);
-      else if (axisVector.y == 0)
-        unitRadialVector = new Vector3f(0, 1, 0);
-      else if (axisVector.z == 0)
-        unitRadialVector = new Vector3f(0, 0, 1);
+      if (axisVector.z == 0)
+        unitRadialVector = vectorZ;
       else {
         unitRadialVector = new Vector3f(-axisVector.y, axisVector.x, 0);
         unitRadialVector.normalize();
@@ -722,35 +718,33 @@ class Surface extends Shape {
     float probeHeight = calcProbeHeightIJK(probeBaseIJK);
     if (probeHeight <= 0)
       return;
-    boolean cavityAdded = false;
+    Torus torusIJ = null, torusIK = null, torusJK = null;
     for (int i = -1; i <= 1; i += 2) {
       cavityProbe.scaleAdd(i * probeHeight, normalIJK, probeBaseIJK);
       if (checkProbeNotIJK(cavityProbe)) {
-        addCavity(new Cavity(cavityProbe));
-        cavityAdded = true;
-      }
-    }
-    if (cavityAdded) {
-      Torus torusIJ = getTorus(indexI, indexJ);
-      if (torusIJ == null)
-        torusIJ = createTorus(indexI, centerI, indexJ, centerJ,
-                              torusCenterIJ,
-                              calcTorusRadius(radiusI, radiusJ, distanceIJ2),
-                              false);
-      Torus torusIK = getTorus(indexI, indexK);
-      if (torusIK == null)
-        torusIK = createTorus(indexI, centerI, indexK, centerK,
-                              torusCenterIK,
-                              calcTorusRadius(radiusI, radiusK, distanceIK2),
-                              false);
-      Torus torusJK = getTorus(indexJ, indexK);
-      if (torusJK == null) {
-        calcTorusCenter(centerJ, radiiJP2, centerK, radiiKP2, distanceJK2,
-                        torusCenterJK);
-        torusJK = createTorus(indexJ, centerJ, indexK, centerK,
-                              torusCenterJK,
-                              calcTorusRadius(radiusJ, radiusK, distanceJK2),
-                              false);
+        Cavity cavity = new Cavity(cavityProbe);
+        addCavity(cavity);
+        if (torusIJ == null && (torusIJ = getTorus(indexI, indexJ)) == null)
+          torusIJ = createTorus(indexI, centerI, indexJ, centerJ,
+                                torusCenterIJ,
+                                calcTorusRadius(radiusI, radiusJ, distanceIJ2),
+                                false);
+        torusIJ.addCavity(cavity);
+          
+        if (torusIK == null && (torusIK = getTorus(indexI, indexK)) == null)
+          torusIK = createTorus(indexI, centerI, indexK, centerK,
+                                torusCenterIK,
+                                calcTorusRadius(radiusI, radiusK, distanceIK2),
+                                false);
+        torusIK.addCavity(cavity);
+          
+        if (torusJK == null && (torusJK = getTorus(indexI, indexK)) == null)
+          torusJK = createTorus(indexI, centerI, indexK, centerK,
+                                torusCenterJK,
+                                calcTorusRadius(radiusI, radiusK, distanceJK2),
+                                false);
+        torusJK.addCavity(cavity);
+          
       }
     }
   }

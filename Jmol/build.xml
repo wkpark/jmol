@@ -14,6 +14,8 @@
   <property name="docbook.dir" value="${user.dir}/../docbook-xsl" />
   <property name="keystore.name" value="${user.dir}/jmol.keystore" />
 
+  <property file="proxy.properties" />
+
   <path id="project.class.path">
     <fileset dir="${lib.dir}">
       <include name="*.jar" />
@@ -47,6 +49,19 @@
       <srcfiles dir="${source.dir}" includes="**/*.java" />
     </uptodate>
     <available file="${keystore.name}" property="keystore.present" />
+    <!-- Optional proxy settings (if defined) -->
+    <condition property="proxyHost"
+        value="-Dhttp.proxyHost=${http.proxyHost}" >
+      <not>
+        <equals arg1="http.proxyHost" arg2="" />
+      </not>
+    </condition>
+    <condition property="proxyPort"
+        value="-Dhttp.proxyPort=${http.proxyPort}" >
+      <not>
+        <equals arg1="http.proxyPort" arg2="" />
+      </not>
+    </condition>
   </target>
 
   <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
@@ -66,6 +81,8 @@
     <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
         classname="com.icl.saxon.StyleSheet"
         classpath="${lib.dir}/saxon.jar" >
+      <jvmarg value="${proxyHost}" />
+      <jvmarg value="${proxyPort}" />
       <arg value="${user.dir}/${doc.dir}/source/JMolGuide.docbook.xml" />
       <arg value="${docbook.dir}/html/chunk.xsl" />
     </java>

@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : scripts.docbook.xml (v 1.5)
+  Translated from default version : scripts.docbook.xml (v 1.7)
 -->
 <chapter id="rasmol" xreflabel="RasMol/Chime Scripts">
   <title id="rasmol.title">Scripts RasMol/Chime</title>
@@ -47,31 +47,19 @@
     plate-formes mat&eacute;rielles.
   </para>
   <para>
-    Dans cette version, la plupart des commandes de d&eacute;placement,
-    s&eacute;lection, expression d'atome et couleur sont op&eacute;rationnelles.
-  </para>
-  <para>
-    Les choses qui ne fonctionnent *pas* explicitement sont les formats de
-    rendu des prot&eacute;ines tels que ruban, cartoons, tresses, etc. Jmol
-    n'accomplit pas d'&eacute;clairage et rendu de surface &agrave; la
-    vol&eacute;e, ce qui signifie que les r&eacute;glages tels que ambiant,
-    ombres, sp&eacute;culaire et specpower ne sont pas disponibles. Enfin,
-    Jmol n'a pas de vrai moteur 3D, ce qui signifie que les intersections de
-    surface ne sont pas g&eacute;r&eacute;es correctement. Ceci se produit
-    quand des atomes sont dessin&eacute;s avec des pourcentages de
-    vanderWaals plus grands (tels que 50% ou plus).
-  </para>
-  <para>
-    Veuillez s'il vous plait nous faire un retour sur les fonctions que vous
-    utiliseriez et que vous voudriez voir. Ceci nous aider &agrave; mettre
-    des priorit&eacute;s dans nos futurs d&eacute;veloppements.
+    Ayez l'amabilit&eacute; de nous faire un retoure sur les fonctions que
+    vous utilisez et qui ne sont pas actuellement impl&eacute;ment&eacute;es.
+    Ceci nous aidera &agrave; mettre des priorit&eacute;s dans nos futurs
+    d&eacute;veloppements.
   </para>
   <section>
     <title>Commandes RasMol/Chime</title>
     <para>
       Cette documentation est g&eacute;n&eacute;r&eacute;e automatiquement
       &agrave; partir du contenu du site web:
-      http://www.stolaf.edu/people/hansonr/jmol/docs/.
+      <ulink url="http://www.stolaf.edu/people/hansonr/jmol/docs/">
+        www.stolaf.edu/people/hansonr/jmol/docs/
+      </ulink>.
     </para>
     &guideScriptCommands;
   </section>	

@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : commandline.docbook.xml (v 1.6)
+  Translated from default version : commandline.docbook.xml (v 1.7)
 -->
 <chapter id="commandlineoptions">
   <title>Options de la Ligne de Commande</title>
@@ -24,6 +24,13 @@
       <arg choice="req"><replaceable>file</replaceable></arg>
     </cmdsynopsis>
   </para>
+  <section>
+    <title>--geometry</title>
+    <para>
+      Cette option permet de sp&eacute;cifier la taille de la
+      fen&ecirc;tre. Par d&eacute;faut, elle est de 500x500.
+    </para>
+  </section>
   <section>
     <title>-Duser.language</title>
     <para>

@@ -10,7 +10,9 @@
 	<tr>
 	  <td>
 	    <h2>nanotechnology</h2>
-	    <script>jmolApplet(400);</script>
+	    <script>
+	      jmolApplet(400, "fineMotion970116.pdb.gz", "cpk off");
+	    </script>
 	  </td>
 
 	  <td>
@@ -20,7 +22,7 @@
 	    <script>
 	      jmolMenu([
 	        ["load diffGear.pdb.gz; cpk off;", "diffGear"],
-		["load fineMotion970116.pdb.gz; cpk off;", "fineMotion"],
+		["load fineMotion970116.pdb.gz; cpk off;", "fineMotion", "selected"],
 		["load finalPump96.09.06.pdb.gz; cpk off;", "finalPump"]
 		], -1);
 

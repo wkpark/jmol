@@ -12,7 +12,8 @@
 	    
 	    <h1>1crn.pdb</h1>
 	    <script>
-	      jmolApplet(400, "1crn.pdb.gz", "spacefill off; wireframe");
+	      jmolApplet(400, "1crn.pdb.gz",
+	      "spacefill off; wireframe; backbone 0.6; color backbone structure");
 	    </script>
 	  </td>
 	  
@@ -24,9 +25,9 @@
 	      &nbsp;&nbsp;backbone
 	      <script>
 		jmolRadioGroup([
-		["backbone off", "off", "checked"],
+		["backbone off", "off"],
 		["backbone 0.3", "0.3"],
-		["backbone 0.6", "0.6"]
+		["backbone 0.6", "0.6", "checked"]
 		]);
 	      </script>
 	    </b>
@@ -38,10 +39,10 @@
 	    <b>
 	      <script>
 		jmolRadioGroup([
-		["color backbone none", null, "checked"],
+		"color backbone none",
 		"color backbone firebrick",
 		"color backbone greenyellow",
-		"color backbone structure"
+		["color backbone structure", null, "checked"]
 		], "<br />");
 	      </script>
 	    </b>

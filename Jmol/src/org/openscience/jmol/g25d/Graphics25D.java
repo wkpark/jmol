@@ -266,7 +266,16 @@ final public class Graphics25D {
   }
 
   public void drawRect(int x, int y, int width, int height) {
-    g.drawRect(x, y, width, height);
+    if (! usePbuf) {
+      g.drawRect(x, y, width, height);
+      return;
+    }
+    int xRight = x + width;
+    drawLine(x, y, 0, xRight, y, 0);
+    int yBottom = y + height;
+    drawLine(x, y, 0, x, yBottom, 0);
+    drawLine(x, yBottom, 0, xRight, yBottom, 0);
+    drawLine(xRight, y, 0, xRight, yBottom, 0);
   }
 
   public void drawString(String str, int xBaseline, int yBaseline) {

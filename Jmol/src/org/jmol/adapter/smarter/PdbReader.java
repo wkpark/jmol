@@ -28,6 +28,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
+import java.util.BitSet;
 
 class PdbReader extends ModelReader {
   String line;
@@ -93,6 +94,10 @@ class PdbReader extends ModelReader {
       }
       if (line.startsWith("EXPDTA")) {
         expdta();
+        continue;
+      }
+      if (line.startsWith("FORMUL")) {
+        formul();
         continue;
       }
       if (line.startsWith("HEADER") && lineLength >= 66) {
@@ -390,4 +395,29 @@ class PdbReader extends ModelReader {
     if (technique.regionMatches(true, 0, "nmr", 0, 3))
       isNMRdata = true;
   }
+
+  void formul() {
+    System.out.println("I see:" + line);
+    String group = parseToken(line, 12, 15);
+    // does not currently deal with continuations
+    String formula = parseTrimmed(line, 19, 70);
+    int ichLeftParen = formula.indexOf('(');
+    if (ichLeftParen >= 0) {
+      int ichRightParen = formula.indexOf(')');
+      if (ichRightParen < 0 || ichLeftParen >= ichRightParen)
+        return; // invalid formula;
+      System.out.println("I see a left paren @ :" + ichLeftParen +
+                          " and a right paren @ :" + ichRightParen);
+      formula = parseTrimmed(formula, ichLeftParen + 1, ichRightParen);
+      System.out.println("the trimmed formula:" + formula);
+    }
+    BitSet bsElementsPresent = new BitSet();
+    // now, look for atom names in the formula
+    ichNextParse = 0;
+    String elementPlusCount;
+    while ((elementPlusCount = parseToken(formula, ichNextParse)) != null) {
+      System.out.println("I see:" + elementPlusCount);
+    }
+  }
 }
+

@@ -84,6 +84,13 @@ class Atom implements Cloneable {
     return elementSymbol;
   }
 
+  /**
+   * Bits which indicate whether or not an element symbol is valid.
+   *<p>
+   * If the high bit is set, then it is valid as a standalone char.
+   * otherwise, bits 0-25 say whether or not is valid when followed
+   * by the letters a-z.
+   */
   final static int[] elementCharMasks = {
     //   Ac Ag Al Am Ar As At Au
     1 << ('c' - 'a') |
@@ -251,5 +258,13 @@ class Atom implements Cloneable {
     else if (ch < 'A' || ch > 'Z')
       return false;
     return elementCharMasks[ch - 'A'] != 0;
+  }
+
+  static int getElementNumber(char chSingleLetterSymbol) {
+    return -1;
+  }
+  
+  static int getElementNumber(char chFirst, char chSecond) {
+    return -1;
   }
 }

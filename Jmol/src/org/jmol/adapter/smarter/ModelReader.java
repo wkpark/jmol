@@ -234,8 +234,6 @@ abstract class ModelReader {
     if (ichLast < ich)
       return null;
     ichNextParse = ichLast + 1;
-    if (ich == ichStart && (ichLast + 1) == ichMax)
-      return str;
     return str.substring(ich, ichLast + 1);
   }
 

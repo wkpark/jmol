@@ -197,7 +197,7 @@ final public class FrameBuilder {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
       currentGroup =
-        currentChain.allocateGroup(frame, group3,
+        currentChain.allocateGroup(group3,
                                    groupSequenceNumber, groupInsertionCode);
     }
     Atom atom = new Atom(currentGroup,

@@ -108,7 +108,7 @@ final class Model {
       return chain;
     if (chainCount == chains.length)
       chains = (Chain[])Util.doubleLength(chains);
-    return chains[chainCount++] = new Chain(this, chainID);
+    return chains[chainCount++] = new Chain(mmset.frame, this, chainID);
   }
 
   void addPolymer(Polymer polymer) {

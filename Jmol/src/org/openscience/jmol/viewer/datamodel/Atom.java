@@ -92,7 +92,7 @@ public final class Atom implements Bspt.Tuple {
     this.atomSerial = atomSerial;
     this.atomName = (atomName == null ? null : atomName.intern());
     specialAtomID = lookupSpecialAtomID(atomName);
-    JmolViewer viewer = group.frame.viewer;
+    JmolViewer viewer = group.chain.frame.viewer;
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
@@ -119,7 +119,7 @@ public final class Atom implements Bspt.Tuple {
   Bond bondMutually(Atom atomOther, int order) {
     if (isBonded(atomOther))
       return null;
-    Bond bond = new Bond(this, atomOther, order, group.frame.viewer);
+    Bond bond = new Bond(this, atomOther, order, group.chain.frame.viewer);
     addBond(bond);
     atomOther.addBond(bond);
     return bond;
@@ -154,7 +154,7 @@ public final class Atom implements Bspt.Tuple {
     if (bonds == null)
       return;
     for (int i = bonds.length; --i >= 0; )
-      group.frame.deleteBond(bonds[i]);
+      group.chain.frame.deleteBond(bonds[i]);
     if (bonds != null) {
       System.out.println("bond delete error");
       throw new NullPointerException();
@@ -251,7 +251,7 @@ public final class Atom implements Bspt.Tuple {
   }
 
   void setLabel(String strLabel) {
-    group.frame.setLabel(strLabel, atomIndex);
+    group.chain.frame.setLabel(strLabel, atomIndex);
   }
 
   final static int MIN_Z = 100;
@@ -322,8 +322,8 @@ public final class Atom implements Bspt.Tuple {
   public int getAtomNumber() {
     if (atomSerial != Integer.MIN_VALUE)
       return atomSerial;
-    if (group.frame.modelTypeName == "xyz" &&
-        group.frame.viewer.getZeroBasedXyzRasmol())
+    if (group.chain.frame.modelTypeName == "xyz" &&
+        group.chain.frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
     return atomIndex + 1;
   }
@@ -430,11 +430,11 @@ public final class Atom implements Bspt.Tuple {
   }
   
   String getClientAtomStringProperty(String propertyName) {
-    Object[] clientAtomReferences = group.frame.clientAtomReferences;
+    Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
     return
       ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
        ? null
-       : (group.frame.viewer.
+       : (group.chain.frame.viewer.
           getClientAtomStringProperty(clientAtomReferences[atomIndex],
                                       propertyName)));
   }
@@ -656,7 +656,7 @@ public final class Atom implements Bspt.Tuple {
       info.append(" Chain:");
       info.append(chainID);
     }
-    if (group.frame.getModelCount() > 1) {
+    if (group.chain.frame.getModelCount() > 1) {
       info.append(" Model:");
       info.append(getModelID());
     }
@@ -690,7 +690,7 @@ public final class Atom implements Bspt.Tuple {
       info.append(":");
       info.append(chainID);
     }
-    if (group.frame.getModelCount() > 1) {
+    if (group.chain.frame.getModelCount() > 1) {
       info.append("/");
       info.append(getModelID());
     }

@@ -33,6 +33,7 @@ import java.util.BitSet;
 
 final public class Chain {
 
+  Frame frame;
   Model model;
   char chainID;
   int groupCount;
@@ -40,7 +41,8 @@ final public class Chain {
 
   //  private Group[] mainchain;
 
-  Chain(Model model, char chainID) {
+  Chain(Frame frame, Model model, char chainID) {
+    this.frame = frame;
     this.model = model;
     this.chainID = chainID;
   }
@@ -51,10 +53,10 @@ final public class Chain {
       groups[i].freeze();
   }
   
-  Group allocateGroup(Frame frame, String group3,
+  Group allocateGroup(String group3,
                       int sequenceNumber, char insertionCode) {
     Group group =
-      new Group(frame, this, sequenceNumber, insertionCode, group3);
+      new Group(this, sequenceNumber, insertionCode, group3);
 
     if (groupCount == groups.length)
       groups = (Group[])Util.doubleLength(groups);

@@ -33,7 +33,6 @@ import javax.vecmath.Point3f;
 
 final public class Group {
 
-  Frame frame;
   Chain chain;
   int seqcode;
   short groupID;
@@ -62,9 +61,7 @@ final public class Group {
   int distinguishingBits;
 
 
-  Group(Frame frame, Chain chain,
-                  int sequenceNumber, char insertionCode, String group3) {
-    this.frame = frame;
+  Group(Chain chain, int sequenceNumber, char insertionCode, String group3) {
     this.chain = chain;
     this.seqcode = getSeqcode(sequenceNumber, insertionCode);
     if (group3 == null)
@@ -85,7 +82,7 @@ final public class Group {
   }
 
   void demoteImposterGroup() {
-    Atom[] atoms = frame.atoms;
+    Atom[] atoms = chain.frame.atoms;
     for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
       atoms[i].specialAtomID = -1;
     distinguishingBits = 0;
@@ -375,8 +372,8 @@ final public class Group {
 
   public void selectAtoms(BitSet bs) {
     Frame frame = chain.model.mmset.frame;
-    Atom[] atoms = frame.getAtoms();
-    for (int i = frame.getAtomCount(); --i >= 0; ) {
+    Atom[] atoms = chain.frame.getAtoms();
+    for (int i = chain.frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];
       if (atom.getGroup() == this)
         bs.set(i);
@@ -459,7 +456,7 @@ final public class Group {
   Atom getAtomIndex(int atomIndex) {
     return (atomIndex < 0
             ? null
-            : chain.model.mmset.frame.getAtomAt(atomIndex));
+            : chain.frame.getAtomAt(atomIndex));
   }
 
   Atom getPurineN1() {

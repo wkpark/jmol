@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index.xml (v 1.4)
+  Translated from default version : index.xml (v 1.5)
 -->
 <document>
   <body>
@@ -30,6 +30,13 @@
       </p>
     </section>
 
+    <section title="Le Guide des D&#x00E9;veloppeurs Jmol">
+      <p>
+        Le <a href="JmolDevelopersGuide.html">Guide des D&#x00E9;veloppeurs Jmol</a>
+        d&#x00E9;crit les proc&#x00E9;dure de d&#x00E9;veloppement de Jmol.
+      </p>
+    </section>
+
     <section title="Le Guide de Jmol v9">
       <p>
         <b>
@@ -53,21 +60,6 @@
       <p>
         Le <a href="JmolAppletGuide_fr.html">Guide de l'Applet Jmol</a>
         d&#x00E9;crit l'applet Jmol.
-      </p>
-    </section>
-
-    <section title="Le Guide du D&#x00E9;veloppeur Jmol v9">
-      <p>
-        <b>
-          Notez que cette documentation s'applique &#x00E0; Jmol version 9.
-          Elle est en cours de r&#x00E9;&#x00E9;criture pour Jmol version 10.
-        </b>
-      </p>
-      <p>
-        Le
-        <a href="JmolDevelopersGuide_fr.html">Guide du D&#x00E9;veloppeur Jmol</a>
-        d&#x00E9;crit comment Jmol est d&#x00E9;velopp&#x00E9; et les
-        proc&#x00E9;dures de d&#x00E9;veloppement utilis&#x00E9;es pour Jmol.
       </p>
     </section>
 

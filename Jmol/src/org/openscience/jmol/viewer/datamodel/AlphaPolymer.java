@@ -159,7 +159,8 @@ public class AlphaPolymer extends Polymer {
     byte code = CODE_NADA;
     int runLength = 0;
     for (int i = 0; i < count; ++i) {
-      if (codes[i] == code && code != CODE_NADA) {
+      // throw away the sheets ... their angle technique does not work well
+      if (codes[i] == code && code != CODE_NADA && code != CODE_BETA_SHEET) {
         ++runLength;
         if (runLength == 4) {
           tag = (code == CODE_BETA_SHEET ? TAG_SHEET : TAG_HELIX);

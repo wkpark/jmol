@@ -98,7 +98,6 @@ abstract class ModelReader {
     else if (negative)
       value = -value;
     if (ich < ichMax && (ch == 'E' || ch == 'e')) {
-      System.out.println("Exponent seen!");
       if (++ich >= ichMax)
         return Float.NaN;
       ch = str.charAt(ich);

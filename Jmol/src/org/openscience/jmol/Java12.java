@@ -56,4 +56,11 @@ public class Java12 {
     Graphics2D g2 = (Graphics2D) g;
     g2.setStroke(dottedStroke);
   }
+
+  private BasicStroke defaultStroke = new BasicStroke();
+
+  public void defaultStroke(Graphics g) {
+    Graphics2D g2 = (Graphics2D) g;
+    g2.setStroke(defaultStroke);
+  }
 }

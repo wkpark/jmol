@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol;
 
+import java.awt.event.MouseEvent;
+
 public interface JmolStatusListener {
   public void setStatusMessage(String statusMessage);
 
@@ -32,5 +34,7 @@ public interface JmolStatusListener {
   public void scriptStatus(String strStatus);
 
   public void notifyScriptTermination(String statusMessage, int msWalltime);
+
+  public void handlePopupMenu(MouseEvent e);
   
 }

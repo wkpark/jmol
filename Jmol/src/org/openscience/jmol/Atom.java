@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.Bspt;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.AtomShape;
 import java.awt.Color;
@@ -36,7 +37,7 @@ import javax.vecmath.Matrix4d;
  * Stores and manipulations information and properties of
  * atoms.
  */
-public class Atom extends org.openscience.cdk.Atom {
+public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
 
   /**
    * Creates an atom with the given type.
@@ -240,6 +241,14 @@ public class Atom extends org.openscience.cdk.Atom {
     }
   }
 
+  public boolean isBondedAtom(Atom toAtom) {
+    if (bondedAtoms != null)
+      for (int i = bondedAtoms.length; --i >= 0; )
+        if (bondedAtoms[i] == toAtom)
+          return true;
+    return false;
+  }
+
   /**
    * Returns the list of atoms to which this atom is bonded.
    */
@@ -257,6 +266,7 @@ public class Atom extends org.openscience.cdk.Atom {
   public void clearBondedAtoms() {
     bondedAtoms = null;
     bondOrders = null;
+    atomShape = null;
   }
 
   public int getBondOrder(Atom atom2) {
@@ -378,6 +388,11 @@ public class Atom extends org.openscience.cdk.Atom {
    * A list of properties
    */
   private Vector properties = new Vector();
+
+  public double getDimValue(int dim) {
+    Point3d point = getPoint3D();
+    return (dim == 0) ? point.x : (dim == 1) ? point.y : point.z;
+  }
 
 }
 

@@ -33,6 +33,9 @@ import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
 import org.openscience.jmol.script.Eval;
 
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
+
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
@@ -51,6 +54,7 @@ import java.net.URL;
 import java.io.InputStream;
 import java.io.File;
 import java.beans.PropertyChangeListener;
+import java.awt.event.MouseEvent;
 
 final public class DisplayControl {
 
@@ -694,6 +698,7 @@ final public class DisplayControl {
   public static final int DEFORM = 6; // mth -- what is this?
   public static final int ROTATE_Z = 7;
   public static final int SLAB_PLANE = 8;
+  public static final int POPUP_MENU = 9;
 
   public void setModeMouse(int modeMouse) {
     mouseManager.setMode(modeMouse);
@@ -705,6 +710,16 @@ final public class DisplayControl {
 
   public Rectangle getRubberBandSelection() {
     return mouseManager.getRubberBand();
+  }
+
+  public void popupMenu(MouseEvent e) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.handlePopupMenu(e);
+  }
+
+  private MenuItem makeMenuItem(String id) {
+    MenuItem mi = new MenuItem(id);
+    return mi;
   }
 
   /****************************************************************
@@ -797,6 +812,17 @@ final public class DisplayControl {
     return modelManager.getBoundingBoxCorner();
   }
 
+  public int getBoundingBoxCenterX() {
+    // FIXME mth 2003 05 31
+    // for now this is returning the center of the screen
+    // need to transform the center of the bounding box and return that point
+    return transformManager.dimCurrent.width / 2;
+  }
+
+  public int getBoundingBoxCenterY() {
+    return transformManager.dimCurrent.height / 2;
+  }
+
   // FIXME mth -- consolidate these two calls to setFrame
 
   public int getNumberOfFrames() {
@@ -854,6 +880,7 @@ final public class DisplayControl {
 
   public void rebond() {
     modelManager.rebond();
+    structuralChange = true;
     refresh();
   }
 
@@ -864,6 +891,24 @@ final public class DisplayControl {
 
   public double getBondFudge() {
     return modelManager.bondFudge;
+  }
+
+  public void setBondTolerance(double bondTolerance) {
+    modelManager.setBondTolerance(bondTolerance);
+    refresh();
+  }
+
+  public double getBondTolerance() {
+    return modelManager.bondTolerance;
+  }
+
+  public void setMinBondDistance(double minBondDistance) {
+    modelManager.setMinBondDistance(minBondDistance);
+    refresh();
+  }
+
+  public double getMinBondDistance() {
+    return modelManager.minBondDistance;
   }
 
   public void setAutoBond(boolean ab) {
@@ -1045,15 +1090,17 @@ final public class DisplayControl {
   
   private void maybeEnableAntialiasing(Graphics g) {
     if (repaintManager.useGraphics2D)
-      java12.enableAntialiasing(g,
-                                repaintManager.wantsAntialias &&
-                                (!repaintManager.inMotion ||
-                                 repaintManager.wantsAntialiasAlways));
+      java12.enableAntialiasing(g, repaintManager.enableAntialiasing());
   }
 
   public void maybeDottedStroke(Graphics g) {
     if (repaintManager.useGraphics2D)
       java12.dottedStroke(g);
+  }
+
+  public void defaultStroke(Graphics g) {
+    if (repaintManager.useGraphics2D)
+      java12.defaultStroke(g);
   }
 
   /****************************************************************
@@ -1154,6 +1201,35 @@ final public class DisplayControl {
   public void scriptStatus(String strStatus) {
     if (jmolStatusListener != null)
       jmolStatusListener.scriptStatus(strStatus);
+  }
+
+  /****************************************************************
+   * mth 2003 05 31 - needs more work
+   * this should be implemented using properties
+   * or as a hashtable using boxed primitive types so that the
+   * boxed values could be shared
+   ****************************************************************/
+
+  public boolean getBooleanProperty(String key) {
+    if (key.equals("wireframeRotation"))
+      return getWireframeRotation();
+    if (key.equals("perspectiveDepth"))
+      return getPerspectiveDepth();
+    if (key.equals("axes"))
+      return getShowAxes();
+    if (key.equals("boundbox"))
+      return getShowBoundingBox();
+    if (key.equals("showHydrogens"))
+      return getShowHydrogens();
+    if (key.equals("showVectors"))
+      return getShowVectors();
+    if (key.equals("showMeasurements"))
+      return getShowMeasurements();
+    if (key.equals("showSelections"))
+      return getSelectionHaloEnabled();
+    System.out.println("control.getBooleanProperty(" +
+                       key + ") - unrecognized");
+    return false;
   }
 
   /****************************************************************
@@ -1285,6 +1361,7 @@ final public class DisplayControl {
 
   public void setShowVectors(boolean showVectors) {
     styleManager.setShowVectors(showVectors);
+    setStructuralChange();
     refresh();
   }
 
@@ -1413,6 +1490,11 @@ final public class DisplayControl {
                                      x, y, xOffset, yOffset);
   }
 
+  public void renderStringOutside(String str, Color color, int pointsFontsize,
+                                  int x, int y) {
+    labelRenderer.renderStringOutside(str, color, pointsFontsize, x, y);
+  }
+
   /****************************************************************
    * delegated to AxesManager
    ****************************************************************/
@@ -1468,4 +1550,5 @@ final public class DisplayControl {
   public Color getColorAxesText() {
     return axesManager.colorAxesText;
   }
+
 }

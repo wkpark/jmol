@@ -149,7 +149,10 @@ public class TransformManager {
    ZOOM
   ****************************************************************/
   public boolean zoomEnabled = true;
+  // zoomPercent is the current displayed zoom value
   public int zoomPercent = 100;
+  // zoomPercentSetting is the current setting of zoom
+  // if zoom is not enabled then the two values will be different
   public int zoomPercentSetting = 100;
 
   public void zoomBy(int pixels) {
@@ -181,8 +184,8 @@ public class TransformManager {
   }
 
   private void calcZoom() {
-    if (zoomPercentSetting < 10)
-      zoomPercentSetting = 10;
+    if (zoomPercentSetting < 5)
+      zoomPercentSetting = 5;
     if (zoomPercentSetting > 1000)
       zoomPercentSetting = 1000;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
@@ -348,7 +351,7 @@ public class TransformManager {
     // leave a very small margin - only 1 on top and 1 on bottom
     if (minScreenDimension > 2)
       minScreenDimension -= 2;
-    scalePixelsPerAngstrom =
+    scaleDefaultPixelsPerAngstrom =
       minScreenDimension / 2 / control.getRotationRadius();
     if (perspectiveDepth) {
       cameraZ = (int)(cameraDepth * minScreenDimension);
@@ -358,11 +361,9 @@ public class TransformManager {
       // I have looked at it three times and still cannot figure it out
       // so just bump it up a bit.
       scaleFactor += 0.02;
-      scalePixelsPerAngstrom *= scaleFactor;
+      scaleDefaultPixelsPerAngstrom *= scaleFactor;
     }
-    scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
-    zoomPercentSetting = zoomPercent = 100;
-    zoomEnabled = true;
+    calcZoom();
   }
 
   public int screenAtomDiameter(int z, Atom atom, int percentVdw) {

@@ -26,6 +26,7 @@
 import org.openscience.jmol.applet.*;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.script.Eval;
+import org.openscience.jmol.ui.JmolPopup;
 
 import java.applet.Applet;
 import java.awt.Canvas;
@@ -48,6 +49,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   AppletCanvas canvas;
   DisplayControl control;
+  JmolPopup jmolpopup;
 
   private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
 
@@ -94,6 +96,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     canvas = new AppletCanvas();
     control = new DisplayControl(strJvmVersion, canvas);
     canvas.setDisplayControl(control);
+    control.setJmolStatusListener(this);
+
+    jmolpopup = new JmolPopup(control, canvas);
 
     control.setAppletDocumentBase(getDocumentBase());
 
@@ -145,6 +150,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void notifyScriptTermination(String errorMessage, int msWalltime) {
   }
+
+  public void handlePopupMenu(MouseEvent e) {
+    jmolpopup.show(e.getComponent(), e.getX(), e.getY());
+  }  
 
   //METHODS FOR JAVASCRIPT
 

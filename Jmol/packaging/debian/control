@@ -1,9 +1,9 @@
 Source: jmol
 Build-Depends: ant (>= 1.5), jikes, lib-saxon-java
-Section: x11
+Section: contrib/x11
 Priority: optional
 Maintainer: Egon Willighagen <egonw@sci.kun.nl>
-Standards-Version: 3.1.1
+Standards-Version: 3.5.9
 
 Package: jmol
 Architecture: any

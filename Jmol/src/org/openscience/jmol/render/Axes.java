@@ -141,11 +141,35 @@ public class Axes {
         g.setColor(control.getColorAxes());
         g.drawLine(x, y, originShape.x, originShape.y);
       }
+      if (label != null)
+        control.renderStringOutside(label, control.getColorAxes(),
+                                    axisFontsize, x, y);
+    }
+
+    /*
+    public void render(Graphics g, DisplayControl control) {
+      if (z > originShape.z) {
+        g.setColor(control.getColorAxes());
+        g.drawLine(x, y, originShape.x, originShape.y);
+      }
       if (label != null) {
-        control.renderStringOffset(label, control.getColorAxesText(),
+        int xLabel;
+        int yLabel;
+        int dx = x - originShape.x;
+        int dy = y - originShape.y;
+        if (dx == 0 && dy == 0) {
+          xLabel = x;
+          yLabel = y;
+        } else {
+          int dist = (int) Math.sqrt(dx*dx + dy*dy);
+          xLabel = originShape.x + ((dist + axisFontsize) * dx / dist);
+          yLabel = originShape.y + ((dist + 2 + axisFontsize / 2) * dy / dist);
+        }
+        control.renderStringOffset(label, Color.green,
                                    axisFontsize,
-                                   x, y, xOffsetLabel, yOffsetLabel);
+                                   xLabel, yLabel, 0, 0);
       }
     }
+    */
   }
 }

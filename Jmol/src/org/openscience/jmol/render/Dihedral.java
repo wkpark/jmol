@@ -75,6 +75,7 @@ public class Dihedral implements MeasurementInterface {
     control.maybeDottedStroke(g);
     g.setColor(control.getColorDihedral());
     g.drawLine(xa, ya, xb, yb);
+    control.defaultStroke(g);
   }
 
   /**

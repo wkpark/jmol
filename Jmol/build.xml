@@ -10,7 +10,8 @@
   <property name="deprecation" value="on" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="6" />
+  <property name="version" value="7" />
+
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />
@@ -122,6 +123,7 @@
         <include name="**/*.gif" />
         <include name="**/*.html" />
         <include name="**/*.dtd" />
+	<include name="**/*.properties" />
         <include name="**/Properties/*" />
         <include name="**/Data/*" />
         <include name="**/*.txt" />
@@ -156,6 +158,7 @@
       <fileset dir="${source.dir}">
         <include name="**/*.dtd" />
         <include name="**/*.txt" />
+	<include name="**/ui/*.properties" />
       </fileset>
       <fileset dir="${source.dir}/org/openscience/jmol/applet">
         <include name="Data/AtomTypes.txt" />

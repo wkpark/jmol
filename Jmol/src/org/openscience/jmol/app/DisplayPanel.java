@@ -27,7 +27,9 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.*;
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
@@ -66,6 +68,8 @@ public class DisplayPanel extends JPanel
     if (displaySpeed == null) {
         displaySpeed = "ms";
     }
+    setDoubleBuffered(false);
+    allocScreenBuf(getSize());
   }
 
   public void setDisplayControl(DisplayControl control) {
@@ -123,6 +127,7 @@ public class DisplayPanel extends JPanel
 
   private void updateSize() {
     dimCurrent = getSize();
+    allocScreenBuf(dimCurrent);
     if ((dimCurrent.width == 0) || (dimCurrent.height == 0))
       dimCurrent = null;
     control.setScreenDimension(dimCurrent);
@@ -130,11 +135,28 @@ public class DisplayPanel extends JPanel
     setRotateMode();
   }
 
+  private void allocScreenBuf(Dimension dim) {
+    if (g2ScreenBuf != null)
+      g2ScreenBuf.dispose();
+    if (dim.width == 0 || dim.height == 0) {
+      g2ScreenBuf = null;
+      biScreenBuf = null;
+    } else {
+      biScreenBuf = new BufferedImage(dimCurrent.width, dimCurrent.height,
+                                      BufferedImage.TYPE_INT_ARGB);
+      g2ScreenBuf = biScreenBuf.createGraphics();
+    }
+  }
+
+  BufferedImage biScreenBuf;
+  Graphics2D g2ScreenBuf;
+
   public void paint(Graphics g) {
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    control.render(g, rectClip);
+    control.render(g2ScreenBuf, rectClip);
+    g.drawImage(biScreenBuf, 0, 0, null);
     if (showPaintTime)
       stopPaintClock();
   }

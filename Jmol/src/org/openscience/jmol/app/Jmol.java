@@ -30,6 +30,7 @@ import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.io.XYZSaver;
+import org.openscience.jmol.ui.JmolPopup;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
@@ -60,6 +61,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.MouseEvent;
 import java.awt.geom.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -86,6 +88,8 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -100,12 +104,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.event.MenuListener;
@@ -122,8 +125,6 @@ public class Jmol extends JPanel {
   /**
    * The data model.
    */
-  private JScrollPane scroller;
-  private JViewport port;
 
   public DisplayControl control;
 
@@ -147,6 +148,7 @@ public class Jmol extends JPanel {
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
   private JFileChooser exportChooser;
+  private JmolPopup jmolpopup;
 
   private GuiMap guimap = new GuiMap();
 
@@ -215,18 +217,6 @@ public class Jmol extends JPanel {
     setBorder(BorderFactory.createEtchedBorder());
     setLayout(new BorderLayout());
 
-    scroller = new JScrollPane();
-    port = scroller.getViewport();
-
-    try {
-      String vpFlag = resourceHandler.getString("Jmol.ViewportBackingStore");
-      Boolean bs = new Boolean(vpFlag);
-      port.setBackingStoreEnabled(bs.booleanValue());
-    } catch (MissingResourceException mre) {
-
-      // just use the viewport default
-    }
-
     status = (StatusBar) createStatusBar();
     splash.showStatus(resourceHandler
         .translate("Initializing 3D display..."));
@@ -275,7 +265,6 @@ public class Jmol extends JPanel {
     display.setMeasure(meas);
     control.setMeasureWatcher(meas);
     //    mlist.addMeasurementListListener(display);
-    port.add(display);
 
     // install the command table
     splash.showStatus(resourceHandler.translate("Building Command Hooks..."));
@@ -304,7 +293,7 @@ public class Jmol extends JPanel {
 
     JPanel ip = new JPanel();
     ip.setLayout(new BorderLayout());
-    ip.add("Center", scroller);
+    ip.add("Center", display);
     panel.add("Center", ip);
     add("Center", panel);
     add("South", status);
@@ -344,6 +333,8 @@ public class Jmol extends JPanel {
                                       pdfAction);
     control.addPropertyChangeListener(DisplayControl.PROP_CHEM_FILE,
                                       printAction);
+
+    jmolpopup = new JmolPopup(control, display);
   }
 
   public static Jmol getJmol(JFrame frame) {
@@ -1435,5 +1426,10 @@ public class Jmol extends JPanel {
       if (scriptWindow != null)
         scriptWindow.notifyScriptTermination(strStatus, msWalltime);
     }
+
+    public void handlePopupMenu(MouseEvent e) {
+      jmolpopup.show(e.getComponent(), e.getX(), e.getY());
+    }
   }
+
 }

@@ -73,6 +73,7 @@ public class Angle implements MeasurementInterface {
     control.maybeDottedStroke(g);
     g.setColor(control.getColorAngle());
     g.drawLine(xa, ya, xb, yb);
+    control.defaultStroke(g);
   }
 
   /**

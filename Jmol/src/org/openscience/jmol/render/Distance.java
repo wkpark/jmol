@@ -65,6 +65,7 @@ public class Distance implements MeasurementInterface {
     g.setColor(control.getColorDistance());
     g.drawLine(atom1.getScreenX(), atom1.getScreenY(),
 	       atom2.getScreenX(), atom2.getScreenY());
+    control.defaultStroke(g);
   }
 
   /**

@@ -83,6 +83,14 @@ public class RepaintManager {
     // no need to refresh in this state since we aren't doing anything
   }
 
+  int maxAntialiasCount = 500;
+
+  public boolean enableAntialiasing() {
+    return wantsAntialias
+      && (control.numberOfAtoms() <= maxAntialiasCount)
+      && (!inMotion || wantsAntialiasAlways);
+  }
+
   public Image takeSnapshot() {
     return null;
     //return awtComponent.takeSnapshot();

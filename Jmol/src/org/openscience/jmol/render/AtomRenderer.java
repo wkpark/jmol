@@ -113,19 +113,25 @@ public class AtomRenderer {
   }
 
   private void renderAtom() {
-    if (diameter <= 2) {
-      if (diameter > 0) {
-        g.setColor(styleAtom == DisplayControl.WIREFRAME
-                   ? color : colorOutline);
-          g.fillRect(xUpperLeft, yUpperLeft, diameter, diameter);
-      }
-      return;
-    }
     if (styleAtom == DisplayControl.SHADING && !fastRendering) {
       if (shadedSphereRenderer == null)
         shadedSphereRenderer = new ShadedSphereRenderer(control);
       shadedSphereRenderer.render(g, xUpperLeft, yUpperLeft, diameter,
                                   color, colorOutline);
+      return;
+    }
+    if (diameter <= 2) {
+      if (diameter > 0) {
+        g.setColor(styleAtom == DisplayControl.WIREFRAME
+                   ? color : colorOutline);
+        if (diameter == 1) {
+          g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft, yUpperLeft);
+        } else {
+          g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft+1, yUpperLeft);
+          ++yUpperLeft;
+          g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft+1, yUpperLeft);
+        }
+      }
       return;
     }
     // the area *drawn* by an oval is 1 larger than the area

@@ -43,7 +43,7 @@ public class ShadedSphereRenderer {
       sphereG2D = new SphereG2D();
   }
 
-  static final int minCachedSize = 4;
+  static final int minCachedSize = 2;
   static final int maxCachedSize = 100;
   static final int scalableSize = 47;
   static final int maxSmoothedSize = 200;
@@ -55,17 +55,80 @@ public class ShadedSphereRenderer {
   public void render(Graphics g, int xUpperLeft, int yUpperLeft,
                       int diameter, Color color, Color outline) {
     if (diameter < minCachedSize) {
-      if (diameter <= 2) {
-        if (diameter > 0) {
-          g.setColor(outline);
-          g.fillRect(xUpperLeft, yUpperLeft, diameter, diameter);
-        }
-      } else {
-        int diamT = diameter-1;
-        g.setColor(color);
-        g.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
+      switch (diameter) {
+      case 0:
+        break;
+      case 1:
         g.setColor(outline);
-        g.drawOval(xUpperLeft, yUpperLeft, diamT, diamT);
+        g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft, yUpperLeft);
+        break;
+      case 2:
+        g.setColor(color);
+        g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft+1, yUpperLeft);
+        ++yUpperLeft;
+        g.setColor(outline);
+        g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft+1, yUpperLeft);
+        break;
+      case 3:
+      case 4:
+        int diamMinus1 = diameter - 1;
+        int xLowerRight = xUpperLeft + diamMinus1;
+        int yLowerRight = yUpperLeft + diamMinus1;
+        g.setColor(color);
+        g.fillRect(xUpperLeft, yUpperLeft, diamMinus1, diamMinus1);
+        g.setColor(outline);
+        g.drawLine(xUpperLeft, yLowerRight, xLowerRight, yLowerRight);
+        g.drawLine(xLowerRight, yUpperLeft, xLowerRight, yLowerRight-1);
+        --xLowerRight; --yLowerRight;
+        g.drawLine(xLowerRight, yLowerRight, xLowerRight, yLowerRight);
+        break;
+      case 5:
+      case 6:
+        g.setColor(color);
+        int diamMinus2 = diameter - 2;
+        int diamMinus3 = diameter - 3;
+        g.drawLine(xUpperLeft+1, yUpperLeft, xUpperLeft + diamMinus3, yUpperLeft);
+        int y = yUpperLeft + 1;
+        for (int i = diameter - 3; --i >= 0; ++y)
+          g.drawLine(xUpperLeft, y, xUpperLeft + diamMinus3, y);
+        g.setColor(outline);
+        g.drawLine(xUpperLeft, y, xUpperLeft + diamMinus3, y);
+        ++y;
+        g.drawLine(xUpperLeft+1, y, xUpperLeft + diamMinus3, y);
+        int x = xUpperLeft + diamMinus2;
+        g.drawLine(x, yUpperLeft, x, yUpperLeft+diameter-1);
+        ++x;
+        g.drawLine(x, yUpperLeft+1, x, yUpperLeft+diamMinus2);
+        x = xUpperLeft + diamMinus3; y = yUpperLeft + diamMinus3;
+        g.drawLine(x, y, x, y);
+        break;
+      case 7:
+        int xLeft = xUpperLeft + 2;
+        int xRight = xUpperLeft + diameter - 3;
+        int yT = yUpperLeft;
+        g.setColor(color);
+        g.drawLine(xLeft, yT, xRight, yT);
+        --xLeft; ++yT;
+        g.drawLine(xLeft, yT, xRight, yT);
+        --xLeft; ++yT; --xRight;
+        g.drawLine(xLeft, yT, xRight, yT);
+        ++yT;
+        g.drawLine(xLeft, yT, xRight-1, yT);
+        g.setColor(outline);
+        g.drawLine(xRight, yT, xRight, yT);
+        ++yT;
+        g.drawLine(xLeft, yT, xRight, yT);
+        ++xLeft; ++yT;
+        g.drawLine(xLeft, yT, xRight, yT);
+        ++xLeft; ++yT;
+        g.drawLine(xLeft, yT, xRight, yT);
+        ++xRight;
+        g.drawLine(xRight, yUpperLeft+2, xRight, yT);
+        ++xRight;
+        g.drawLine(xRight, yUpperLeft+1, xRight, yT-1);
+        ++xRight;
+        g.drawLine(xRight, yUpperLeft+2, xRight, yT-2);
+        break;
       }
       return;
     }

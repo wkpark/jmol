@@ -15,7 +15,8 @@ all: deb
 archive: jars/jmol.jar
 
 jars/jmol.jar: 
-	@ant -Ddocbook.dir=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh -Dbuild.compiler=jikes jar
+	@ant -Ddocbook.dir=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh -Dbuild.compiler=jikes doc jar
+
 
 clean:
 	@rm -f -r jmol-*
@@ -26,7 +27,7 @@ install:
 	@install ./jmol ${BIN}
 	@install ./jmol.jar ${LIBS}
 	# @install ./jars/*jar ${EXTRA}
-	@install ./doc/JmolUserGuide/* ${HTMLDOC}
+	@install ./build/doc/JmolUserGuide/* ${HTMLDOC}
 
 setup: clean
 	@echo "Setting up build dir for version ${VERSION}"

@@ -1,4 +1,11 @@
-jmol (6-1) unstable; urgency=low
+jmol (6-2) unstable; urgency=low
+
+  * should be conform Policy 3.5.9 now
+  * fixed Section in control to contrib/x11
+
+ -- E.L. Willighagen (Egon) <egonw@sci.kun.nl>  Wed, 21 May 2003 16:32:00 +0100
+
+ jmol (6-1) unstable; urgency=low
 
   * new upstream release
   * fixed a few lintian errors

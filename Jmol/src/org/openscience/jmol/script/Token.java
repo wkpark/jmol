@@ -92,7 +92,7 @@ public class Token {
   // rasmol commands
   final static int backbone     = command |  0 | predefinedset;
   final static int background   = command |  1 | colorparam | setspecial;
-  final static int bond         = command |  2 | bool;
+  final static int bond         = command |  2 | setparam | bool;
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | showparam | expression;
   final static int clipboard    = command |  5;
@@ -124,7 +124,7 @@ public class Token {
   final static int set          = command | 31 | bool | negativeints;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
-  final static int spacefill    = command | 35 | bool | negativeints;
+  final static int spacefill    = command | 35 | setparam | bool |negativeints;
   final static int ssbonds      = command | 36 | setparam | bool;
   final static int star         = command | 37 | bool;
   final static int stereo       = command | 38
@@ -193,6 +193,14 @@ public class Token {
   final static int mep          = setparam | 26;
   final static int mlp          = setparam | 27 | showparam;
   final static int molsurface   = setparam | 28;
+  //
+  // jmol extensions
+  final static int wireframeRotation = setparam | 29;
+  final static int perspectiveDepth  = setparam | 30;
+  final static int showHydrogens     = setparam | 31;
+  final static int showVectors       = setparam | 32;
+  final static int showMeasurements  = setparam | 33;
+  final static int showSelections    = setparam | 34;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -385,6 +393,14 @@ public class Token {
     "mep",          new Token(mep,             "mep"),
     "mlp",          new Token(mlp,             "mlp"),
     "molsurface",   new Token(molsurface,      "molsurface"),
+
+    // jmol extensions
+    "wireframerotation", new Token(wireframeRotation, "wireframeRotation"),
+    "perspectivedepth",  new Token(perspectiveDepth,  "perspectiveDepth"),
+    "showhydrogens",     new Token(showHydrogens,     "showHydrogens"),
+    "showvectors",       new Token(showVectors,       "showVectors"),
+    "showmeasurements",  new Token(showMeasurements,  "showMeasurements"),
+    "showselections",    new Token(showSelections,    "showSelections"),
   
     // show parameters
     "information",  new Token(information,     "information"),

@@ -2,7 +2,7 @@
 <history>
 <contributors>
 <contributor id="BS"><name>Bradley A. Smith</name><email>bradley@baysmith.com</email></contributor>
-<contributor id="EW"><name>E.L. Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
+<contributor id="EW"><name>Egon Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
 <contributor id="DG"><name>Dan Gezelter</name><email>gezelter@openscience.org</email></contributor>
 <contributor id="CS"><name>Christoph Steinbeck</name><email>steinbeck@ice.mpg.de</email></contributor>
 <contributor id="TG"><name>Tom Grey</name><email>t.grey@ic.ac.uk</email></contributor>
@@ -15,6 +15,15 @@
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
 <contributor id="MTH"><name>Miguel Howard</name><email>mth@mth.com</email></contributor>
 </contributors>
+
+<changes version="jmol-7">
+  <change contributor="MTH">
+    Reimplementation of rebonding algorithm using BST.
+  </change>
+  <change contributor="FD">
+    Added VASP reader.
+  </change>
+</changes>
 
 <changes version="jmol-6">
   <change contributor="MTH">

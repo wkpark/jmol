@@ -205,7 +205,7 @@ public class ColorManager {
     "blue",    Color.blue,
     "fuchsia", Color.magenta,
     "gray",    Color.gray,
-    "green",   new Color(128, 128, 128),
+    "green",   new Color(0,   128,   0),
     "lime",    Color.green,
     "maroon",  new Color(128,   0,   0),
     "navy",    new Color(  0,   0, 128),

@@ -106,7 +106,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double ArrowHeadSize;
   private static double ArrowHeadRadius;
   private static double ArrowLengthScale;
-  private static double BondFudge;
+  private static double minBondDistance;
+  private static double bondTolerance;
   private static short marBond;
   private static double FieldOfView;
   private static int percentVdwAtom;
@@ -117,7 +118,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
-  private JSlider bfSlider, bwSlider, ahSlider, arSlider, alSlider;
+  private JSlider bdSlider, bwSlider, btSlider, ahSlider, arSlider, alSlider;
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
@@ -177,7 +178,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("percentVdwAtom", "20");
     props.put("AutoBond", "true");
     props.put("marBond", "100");
-    props.put("BondFudge", "1.12");
+    props.put("minBondDistance", "0.40");
+    props.put("bondTolerance", "0.45");
     props.put("ArrowHeadSize", "1.0");
     props.put("ArrowHeadRadius", "1.0");
     props.put("ArrowLengthScale", "1.0");
@@ -612,11 +614,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel bwPanel = new JPanel();
     bwPanel.setLayout(new BorderLayout());
     bwPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondWidthLabel")));
+        .getString("Prefs.bondRadiusLabel")));
     JLabel bwLabel =
       new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondWidthExpl"), JLabel.CENTER);
+        .getString("Prefs.bondRadiusExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
+
     bwSlider = new JSlider(0, 250,control.getMarBond());
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
@@ -647,57 +650,112 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     gridbag.setConstraints(bwPanel, c);
     bondPanel.add(bwPanel);
 
-    JPanel bfPanel = new JPanel();
-    bfPanel.setLayout(new BorderLayout());
-    bfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondFudgeLabel")));
-    bfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (50.0 * control.getBondFudge()));
-    bfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    bfSlider.setPaintTicks(true);
-    bfSlider.setMajorTickSpacing(20);
-    bfSlider.setMinorTickSpacing(10);
-    bfSlider.setPaintLabels(true);
-    bfSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    bfSlider.setLabelTable(bfSlider.getLabelTable());
-    bfSlider.getLabelTable().put(new Integer(20),
-        new JLabel("0.4", JLabel.CENTER));
-    bfSlider.setLabelTable(bfSlider.getLabelTable());
-    bfSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.8", JLabel.CENTER));
-    bfSlider.setLabelTable(bfSlider.getLabelTable());
-    bfSlider.getLabelTable().put(new Integer(60),
-        new JLabel("1.2", JLabel.CENTER));
-    bfSlider.setLabelTable(bfSlider.getLabelTable());
-    bfSlider.getLabelTable().put(new Integer(80),
-        new JLabel("1.6", JLabel.CENTER));
-    bfSlider.setLabelTable(bfSlider.getLabelTable());
-    bfSlider.getLabelTable().put(new Integer(100),
-        new JLabel("2.0", JLabel.CENTER));
-    bfSlider.setLabelTable(bfSlider.getLabelTable());
+    // Bond Tolerance Slider
+    JPanel btPanel = new JPanel();
+    btPanel.setLayout(new BorderLayout());
+    btPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.bondToleranceLabel")));
+    JLabel btLabel =
+      new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.bondToleranceExpl"), JLabel.CENTER);
+    btPanel.add(btLabel, BorderLayout.NORTH);
 
-    bfSlider.addChangeListener(new ChangeListener() {
+    btSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
+        (int) (100 * control.getBondTolerance()));
+    btSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    btSlider.setPaintTicks(true);
+    btSlider.setMajorTickSpacing(20);
+    btSlider.setMinorTickSpacing(10);
+    btSlider.setPaintLabels(true);
+    btSlider.getLabelTable().put(new Integer(0),
+        new JLabel("0.0", JLabel.CENTER));
+    btSlider.setLabelTable(btSlider.getLabelTable());
+    btSlider.getLabelTable().put(new Integer(20),
+        new JLabel("0.2", JLabel.CENTER));
+    btSlider.setLabelTable(btSlider.getLabelTable());
+    btSlider.getLabelTable().put(new Integer(40),
+        new JLabel("0.4", JLabel.CENTER));
+    btSlider.setLabelTable(btSlider.getLabelTable());
+    btSlider.getLabelTable().put(new Integer(60),
+        new JLabel("0.6", JLabel.CENTER));
+    btSlider.setLabelTable(btSlider.getLabelTable());
+    btSlider.getLabelTable().put(new Integer(80),
+        new JLabel("0.8", JLabel.CENTER));
+    btSlider.setLabelTable(btSlider.getLabelTable());
+    btSlider.getLabelTable().put(new Integer(100),
+        new JLabel("1.0", JLabel.CENTER));
+    btSlider.setLabelTable(btSlider.getLabelTable());
+
+    btSlider.addChangeListener(new ChangeListener() {
 
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        BondFudge = source.getValue() / 50.0f;
-
-        // this doesn't make me happy, but we don't want static
-        // reference to ChemFrame here.  We only want to rebond
-        // the current frame. (I think).
-        control.setBondFudge(BondFudge);
-        props.put("BondFudge", Double.toString(BondFudge));
+        bondTolerance = source.getValue() / 100.0;
+        control.setBondTolerance(bondTolerance);
+        props.put("bondTolerance", Double.toString(bondTolerance));
         control.rebond();
       }
     });
-    bfPanel.add(bfSlider);
+    btPanel.add(btSlider);
 
 
     c.weightx = 0.0;
-    gridbag.setConstraints(bfPanel, c);
-    bondPanel.add(bfPanel);
+    gridbag.setConstraints(btPanel, c);
+    bondPanel.add(btPanel);
+
+    // minimum bond distance slider
+    JPanel bdPanel = new JPanel();
+    bdPanel.setLayout(new BorderLayout());
+    bdPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.minBondDistanceLabel")));
+    JLabel bdLabel =
+      new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.minBondDistanceExpl"), JLabel.CENTER);
+    bdPanel.add(bdLabel, BorderLayout.NORTH);
+
+    bdSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
+        (int) (100 * control.getMinBondDistance()));
+    bdSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    bdSlider.setPaintTicks(true);
+    bdSlider.setMajorTickSpacing(20);
+    bdSlider.setMinorTickSpacing(10);
+    bdSlider.setPaintLabels(true);
+    bdSlider.getLabelTable().put(new Integer(0),
+        new JLabel("0.0", JLabel.CENTER));
+    bdSlider.setLabelTable(bdSlider.getLabelTable());
+    bdSlider.getLabelTable().put(new Integer(20),
+        new JLabel("0.2", JLabel.CENTER));
+    bdSlider.setLabelTable(bdSlider.getLabelTable());
+    bdSlider.getLabelTable().put(new Integer(40),
+        new JLabel("0.4", JLabel.CENTER));
+    bdSlider.setLabelTable(bdSlider.getLabelTable());
+    bdSlider.getLabelTable().put(new Integer(60),
+        new JLabel("0.6", JLabel.CENTER));
+    bdSlider.setLabelTable(bdSlider.getLabelTable());
+    bdSlider.getLabelTable().put(new Integer(80),
+        new JLabel("0.8", JLabel.CENTER));
+    bdSlider.setLabelTable(bdSlider.getLabelTable());
+    bdSlider.getLabelTable().put(new Integer(100),
+        new JLabel("1.0", JLabel.CENTER));
+    bdSlider.setLabelTable(bdSlider.getLabelTable());
+
+    bdSlider.addChangeListener(new ChangeListener() {
+
+      public void stateChanged(ChangeEvent e) {
+
+        JSlider source = (JSlider) e.getSource();
+        minBondDistance = source.getValue() / 100.0;
+        control.setMinBondDistance(minBondDistance);
+        props.put("minBondDistance", Double.toString(minBondDistance));
+        control.rebond();
+      }
+    });
+    bdPanel.add(bdSlider);
+
+    c.weightx = 0.0;
+    gridbag.setConstraints(bdPanel, c);
+    bondPanel.add(bdPanel);
 
     return bondPanel;
   }
@@ -1228,7 +1286,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bRender.setSelectedIndex(control.getStyleBond());
     abYes.setSelected(control.getAutoBond());
     bwSlider.setValue(control.getMarBond());
-    bfSlider.setValue((int) (50.0 * control.getBondFudge()));
+    bdSlider.setValue((int) (100 * control.getMinBondDistance()));
+    btSlider.setValue((int) (100 * control.getBondTolerance()));
 
     // Vector panel controls:
     ahSlider.setValue((int) (100.0f * control.getArrowHeadSize()));
@@ -1316,7 +1375,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         new Double(props.getProperty("ArrowHeadRadius")).doubleValue();
     ArrowLengthScale =
         new Double(props.getProperty("ArrowLengthScale")).doubleValue();
-    BondFudge = new Double(props.getProperty("BondFudge")).doubleValue();
+    minBondDistance =
+      new Double(props.getProperty("minBondDistance")).doubleValue();
+    bondTolerance =
+      new Double(props.getProperty("bondTolerance")).doubleValue();
     marBond = Short.parseShort(props.getProperty("marBond"));
     FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
     percentVdwAtom =
@@ -1344,7 +1406,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setWantsGraphics2D(graphics2D);
     control.setWantsAntialias(antialias);
     control.setWantsAntialiasAlways(antialiasAlways);
-    control.setBondFudge(BondFudge);
+    control.setMinBondDistance(minBondDistance);
+    control.setBondTolerance(bondTolerance);
     control.setAutoBond(AutoBond);
     control.setShowHydrogens(showHydrogens);
     control.setShowVectors(showVectors);

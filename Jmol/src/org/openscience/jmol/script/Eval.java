@@ -496,6 +496,23 @@ public class Eval implements Runnable {
                        " not implemented in command:" + statement[0].value);
   }
 
+  // gets a boolean value from the 2nd parameter to the command
+  // as in set foo <boolean>
+
+  boolean getSetBoolean() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    switch (statement[2].tok) {
+    case Token.on:
+      return true;
+    case Token.off:
+      return false;
+    default:
+      booleanExpected();
+    }
+    return false;
+  }
+
   BitSet copyBitSet(BitSet bitSet) {
     BitSet copy = new BitSet();
     copy.or(bitSet);
@@ -1328,6 +1345,33 @@ public class Eval implements Runnable {
     case Token.monitor:
       setMonitor();
       break;
+    case Token.wireframeRotation:
+      setWireframerotation();
+      break;
+    case Token.perspectiveDepth:
+      setPerspectivedepth();
+      break;
+    case Token.showHydrogens:
+      setShowHydrogens();
+      break;
+    case Token.showVectors:
+      setShowVectors();
+      break;
+    case Token.showMeasurements:
+      setShowMeasurements();
+      break;
+    case Token.showSelections:
+      setShowSelections();
+      break;
+      
+      /*
+    case Token.spacefill:
+      setSpacefill();
+      break;
+    case Token.bond:
+      setBond();
+      break;
+      */
       // not implemented
     case Token.ambient:
     case Token.backfade:
@@ -1383,12 +1427,12 @@ public class Eval implements Runnable {
   void spacefill() throws ScriptException {
     int tok = statement[1].tok;
     byte style = DisplayControl.SHADING;
-    short mar = -100; // cpk with no args goes to 100%
+    short mar = -999;
     switch (tok) {
     case Token.on:
+      mar = -100; // spacefill with no args goes to 100%
       break;
     case Token.off:
-      mar = -10; // for better interactions with menu usage
       style = DisplayControl.NONE;
       break;
     case Token.integer:
@@ -1405,16 +1449,34 @@ public class Eval implements Runnable {
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
       break;
+    case Token.wireframe:
+      style = DisplayControl.WIREFRAME;
+      break;
+    case Token.identifier:
+      String id = (String)statement[1].value;
+      if (id.equalsIgnoreCase("shaded"))
+        break;
+      if (id.equalsIgnoreCase("invisible")) {
+        style = DisplayControl.INVISIBLE;
+        break;
+      }
+      if (id.equalsIgnoreCase("quickdraw")) {
+        style = DisplayControl.QUICKDRAW;
+        break;
+      }
     default:
       booleanOrNumberExpected();
     }
-    control.setStyleMarAtomScript(style, mar);
+    if (mar == -999)
+      control.setStyleAtomScript(style);
+    else
+      control.setStyleMarAtomScript(style, mar);
   }
 
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
     byte style = DisplayControl.WIREFRAME;
-    short mar = 50;
+    short mar = -1;
     switch (tok) {
     case Token.on:
       break;
@@ -1435,10 +1497,27 @@ public class Eval implements Runnable {
       mar = (short)(angstroms * 1000);
       style = DisplayControl.SHADING;
       break;
+    case Token.identifier:
+      String id = (String)statement[1].value;
+      if (id.equalsIgnoreCase("shaded")) {
+        control.setStyleBond(DisplayControl.SHADING);
+        return;
+      }
+      if (id.equalsIgnoreCase("box")) {
+        control.setStyleBond(DisplayControl.BOX);
+        return;
+      }
+      if (id.equalsIgnoreCase("quickdraw")) {
+        control.setStyleBond(DisplayControl.QUICKDRAW);
+        return;
+      }
     default:
       booleanOrNumberExpected();
     }
-    control.setStyleMarBondScript(style, mar);
+    if (mar == -1)
+      control.setStyleBondScript(style);
+    else
+      control.setStyleMarBondScript(style, mar);
   }
 
   void animate() throws ScriptException {
@@ -1548,48 +1627,15 @@ public class Eval implements Runnable {
   }
 
   void setBonds() throws ScriptException {
-    boolean showMultipleBonds = false;
-    if (statement.length > 2) {
-      switch (statement[2].tok) {
-      case Token.on:
-        showMultipleBonds = true;
-      case Token.off:
-        break;
-      default:
-        booleanExpected();
-      }
-    }
-    control.setShowMultipleBonds(showMultipleBonds);
+    control.setShowMultipleBonds(getSetBoolean());
   }
 
   void setBoundbox() throws ScriptException {
-    if (statement.length != 3)
-      badArgumentCount();
-    boolean showBoundingBox = false;
-    switch (statement[2].tok) {
-    case Token.on:
-      showBoundingBox = true;
-    case Token.off:
-      break;
-    default:
-      booleanExpected();
-    }
-    control.setShowBoundingBox(showBoundingBox);
+    control.setShowBoundingBox(getSetBoolean());
   }
 
   void setDisplay() throws ScriptException {
-    boolean haloEnabled = false;
-    if (statement.length != 3)
-      badArgumentCount();
-    switch (statement[2].tok) {
-    case Token.selected:
-      haloEnabled = true;
-    case Token.normal:
-      break;
-    default:
-      invalidArgument();
-    }
-    control.setSelectionHaloEnabled(haloEnabled);
+    control.setSelectionHaloEnabled(getSetBoolean());
   }
 
   void setFontsize() throws ScriptException {
@@ -1605,47 +1651,100 @@ public class Eval implements Runnable {
   }
 
   void setHetero() throws ScriptException {
-    boolean heteroSetting = false;
-    if (statement.length != 3)
-      badArgumentCount();
-    switch (statement[2].tok) {
-    case Token.on:
-      heteroSetting = true;
-    case Token.off:
-      break;
-    default:
-      booleanExpected();
-    }
-    control.setRasmolHeteroSetting(heteroSetting);
+    control.setRasmolHeteroSetting(getSetBoolean());
   }
 
   void setHydrogen() throws ScriptException {
-    boolean hydrogenSetting = false;
-    if (statement.length != 3)
-      badArgumentCount();
-    switch (statement[2].tok) {
-    case Token.on:
-      hydrogenSetting = true;
-    case Token.off:
-      break;
-    default:
-      booleanExpected();
-    }
-    control.setRasmolHydrogenSetting(hydrogenSetting);
+    control.setRasmolHydrogenSetting(getSetBoolean());
   }
 
   void setMonitor() throws ScriptException {
-    boolean showMeasurementLabels = false;
-    if (statement.length != 3)
-      badArgumentCount();
-    switch (statement[2].tok) {
-    case Token.on:
-      showMeasurementLabels = true;
-    case Token.off:
-      break;
-    default:
-      booleanExpected();
-    }
-    control.setShowMeasurementLabels(showMeasurementLabels);
+    control.setShowMeasurementLabels(getSetBoolean());
   }
+
+  void setWireframerotation() throws ScriptException {
+    control.setWireframeRotation(getSetBoolean());
+  }
+
+  void setPerspectivedepth() throws ScriptException {
+    control.setPerspectiveDepth(getSetBoolean());
+  }
+
+  void setShowHydrogens() throws ScriptException {
+    control.setShowHydrogens(getSetBoolean());
+  }
+
+  void setShowVectors() throws ScriptException {
+    control.setShowVectors(getSetBoolean());
+  }
+
+  void setShowMeasurements() throws ScriptException {
+    control.setShowMeasurements(getSetBoolean());
+  }
+
+  void setShowSelections() throws ScriptException {
+    control.setSelectionHaloEnabled(getSetBoolean());
+  }
+
+  /*
+  void setSpacefill() throws ScriptException {
+    byte style = DisplayControl.SHADING;
+    if (statement.length == 3) {
+      switch (statement[2].tok) {
+      case Token.wireframe:
+        style = DisplayControl.WIREFRAME;
+        break;
+      case Token.identifier:
+        String str = (String)statement[2].value;
+        if (str.equalsIgnoreCase("shaded"))
+          break;
+        if (str.equals("quickdraw")) {
+          style = DisplayControl.QUICKDRAW;
+          break;
+        }
+        if (str.equals("invisible")) {
+          style = DisplayControl.INVISIBLE;
+          break;
+        }
+        if (str.equals("none")) {
+          style = DisplayControl.NONE;
+          break;
+        }
+      default:
+        unrecognizedStyleParameter();
+      }
+    }
+    control.setStyleAtomScript(DisplayControl.SHADING);
+  }
+
+  void setBond() throws ScriptException {
+    byte style = DisplayControl.SHADING;
+    if (statement.length == 3) {
+      switch (statement[2].tok) {
+      case Token.wireframe:
+        style = DisplayControl.WIREFRAME;
+        break;
+      case Token.identifier:
+        String str = (String)statement[2].value;
+        if (str.equalsIgnoreCase("shaded"))
+          break;
+        if (str.equals("quickdraw")) {
+          style = DisplayControl.QUICKDRAW;
+          break;
+        }
+        if (str.equals("box")) {
+          style = DisplayControl.BOX;
+          break;
+        }
+        if (str.equals("none")) {
+          style = DisplayControl.NONE;
+          break;
+        }
+      default:
+        unrecognizedStyleParameter();
+      }
+    }
+    control.setStyleBondScript(DisplayControl.SHADING);
+  }
+  */
 }

@@ -76,6 +76,7 @@ public class MouseManager {
   public static final int DEFORM =     DisplayControl.DEFORM;
   public static final int ROTATE_Z =   DisplayControl.ROTATE_Z;
   public static final int SLAB_PLANE = DisplayControl.SLAB_PLANE;
+  public static final int POPUP_MENU = DisplayControl.POPUP_MENU;
 
   public static final String[] modeNames = {
     "ROTATE", "ZOOM", "XLATE", "PICK", "DELETE", "MEASURE", "DEFORM",
@@ -138,7 +139,9 @@ public class MouseManager {
       }
     }
 
+
     public void mouseClicked(MouseEvent e) {
+      int modifiers = e.getModifiers();
       if (control.haveFile()) {
         if ((e.getModifiers() & MIDDLE) == MIDDLE) {
           control.homePosition();
@@ -170,7 +173,13 @@ public class MouseManager {
 
     public void mouseReleased(MouseEvent e) {
       control.setInMotion(false);
-      if (modeMouse == PICK) {
+      int modifiers = e.getModifiers();
+      if (e.isPopupTrigger() || (modifiers & CTRL_SHIFT_RIGHT) == RIGHT) {
+        // mth 2003 05 27
+        // the reason I am checking for RIGHT is because e.isPopupTrigger()
+        // was failing on some platforms
+        control.popupMenu(e);
+      } else if (modeMouse == PICK) {
         rubberbandSelectionMode = false;
         component.repaint();
       }
@@ -179,7 +188,8 @@ public class MouseManager {
 
   class MyMouseMotionListener extends MouseMotionAdapter {
 
-    int getMode(int modifiers) {
+    int getMode(MouseEvent e) {
+      int modifiers = e.getModifiers();
       if (modeMouse != ROTATE)
         return modeMouse;
       /* RASMOL
@@ -199,8 +209,8 @@ public class MouseManager {
         return ROTATE_Z;
       if ((modifiers & CTRL_RIGHT) == CTRL_RIGHT)
         return XLATE;
-      // if ((modifiers & RIGHT) == RIGHT)
-      //   popup menu
+      if ((modifiers & RIGHT) == RIGHT)
+        return POPUP_MENU;
       if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
         return ZOOM;
       if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
@@ -217,7 +227,7 @@ public class MouseManager {
       }
       xCurrent = e.getX();
       yCurrent = e.getY();
-      switch (getMode(e.getModifiers())) {
+      switch (getMode(e)) {
       case ROTATE:
         control.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
         break;
@@ -243,6 +253,8 @@ public class MouseManager {
             control.setSelectionSet(selectedAtoms);
           }
         }
+        break;
+      case POPUP_MENU:
         break;
       }
       xPrevious = xCurrent;

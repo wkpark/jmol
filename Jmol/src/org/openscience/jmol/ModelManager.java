@@ -79,11 +79,11 @@ public class ModelManager {
   }
 
   public double getRotationRadius() {
-    return chemframe.getRotationRadius();
+    return chemfile.getFrame(0).getRotationRadius();
   }
 
   public Point3d getRotationCenter() {
-    return chemframe.getRotationCenter();
+    return chemfile.getFrame(0).getRotationCenter();
   }
 
   public Point3d getBoundingBoxCenter() {
@@ -171,6 +171,18 @@ public class ModelManager {
 
   public void setAutoBond(boolean ab) {
     autoBond = ab;
+  }
+
+  // angstroms of slop ... from OpenBabel ... mth 2003 05 26
+  public double bondTolerance = 0.45;
+  public void setBondTolerance(double bondTolerance) {
+    this.bondTolerance = bondTolerance;
+  }
+
+  // minimum acceptable bonding distance ... from OpenBabel ... mth 2003 05 26
+  public double minBondDistance = 0.4;
+  public void setMinBondDistance(double minBondDistance) {
+    this.minBondDistance =  minBondDistance;
   }
 
   public void deleteAtom(int atomIndex) {

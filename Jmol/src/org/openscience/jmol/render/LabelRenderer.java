@@ -117,6 +117,7 @@ public class LabelRenderer {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     int labelHeight = fontMetrics.getAscent();
+    labelHeight -= 2; // this should not be necessary, but looks like it is;
     if (yOffset > 0)
       y += yOffset + labelHeight;
     else if (yOffset == 0)
@@ -126,10 +127,39 @@ public class LabelRenderer {
     if (xOffset > 0)
       x += xOffset;
     else if (xOffset == 0)
-      x -= fontMetrics.stringWidth(label);
+      x -= fontMetrics.stringWidth(label) / 2;
     else
       x += xOffset - fontMetrics.stringWidth(label);
     g.drawString(label, x, y);
+  }
+
+  public void renderStringOutside(String label, Color color, int points,
+                                  int x, int y) {
+    //    System.out.println("render string outside " + x + "," + y);
+    //    g.setColor(Color.blue);
+    //    g.fillRect(x-1, y-1, 3, 3);
+    g.setColor(color);
+    Font font = control.getFontOfSize(points);
+    g.setFont(font);
+    FontMetrics fontMetrics = g.getFontMetrics(font);
+    int labelAscent = fontMetrics.getAscent();
+    int labelWidth = fontMetrics.stringWidth(label);
+    int xLabelCenter, yLabelCenter;
+    int xCenter = control.getBoundingBoxCenterX();
+    int yCenter = control.getBoundingBoxCenterY();
+    int dx = x - xCenter;
+    int dy = y - yCenter;
+    if (dx == 0 && dy == 0) {
+      xLabelCenter = x;
+      yLabelCenter = y;
+    } else {
+      int dist = (int) Math.sqrt(dx*dx + dy*dy);
+      xLabelCenter = xCenter + ((dist + 2 + (labelWidth + 1) / 2) * dx / dist);
+      yLabelCenter = yCenter + ((dist + 3 + (labelAscent + 1)/ 2) * dy / dist);
+    }
+    int xLabelBaseline = xLabelCenter - labelWidth / 2;
+    int yLabelBaseline = yLabelCenter + labelAscent / 2;
+    g.drawString(label, xLabelBaseline, yLabelBaseline);
   }
 }
 

@@ -74,6 +74,14 @@ public abstract class ReaderFactory {
         return new CMLReader(control, buffer);
       }
 
+      // VASP file if first line contains the 'NCLASS' keyword
+      if ((line != null) && line.indexOf("NCLASS") >= 0 ) {
+	  System.out.println("ReaderFactory: VASPReader");
+	  return new VASPReader(control, buffer);
+      }
+      
+
+
       // Abinit file if the essential keyword 'natom'
       // is found in the first 100 lines.
       buffer.mark(1 << 16);

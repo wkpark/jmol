@@ -69,12 +69,12 @@ class StrandsRenderer extends McpsRenderer {
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
-    if (schain.vectors != null) {
+    if (schain.wingVectors != null) {
       isNucleotidePolymer = schain.polymer instanceof NucleotidePolymer;
       render1Chain(schain.polymerCount,
                    schain.polymerGroups,
-                   schain.centers,
-                   schain.vectors,
+                   schain.leadMidpoints,
+                   schain.wingVectors,
                    schain.mads,
                    schain.colixes);
     }

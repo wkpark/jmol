@@ -104,7 +104,8 @@ class TraceRenderer extends McpsRenderer {
     int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
     int madEnd = (mads[iNext1] + madThis) / 2;
     int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
-    int diameterMid = viewer.scaleToScreen(centerAtoms[i].getScreenZ(), madThis);
+    int diameterMid = viewer.scaleToScreen(centerAtoms[i].getScreenZ(),
+                                           madThis);
     g3d.fillHermite(colix, isNucleotidePolymer ? 4 : 7,
                     diameterBeg, diameterMid, diameterEnd,
                     screens[iPrev1], screens[i],

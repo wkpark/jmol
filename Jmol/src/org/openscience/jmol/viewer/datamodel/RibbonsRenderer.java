@@ -73,12 +73,12 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
 
   void renderMcpschain( Mcps.Mcpschain mcpsChain) {
     Ribbons.Schain strandsChain = (Ribbons.Schain)mcpsChain;
-    if (strandsChain.vectors != null) {
+    if (strandsChain.wingVectors != null) {
       isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
       render1Chain(strandsChain.polymerCount,
                    strandsChain.polymerGroups,
-                   strandsChain.centers,
-                   strandsChain.vectors,
+                   strandsChain.leadMidpoints,
+                   strandsChain.wingVectors,
                    strandsChain.mads,
                    strandsChain.colixes);
     }

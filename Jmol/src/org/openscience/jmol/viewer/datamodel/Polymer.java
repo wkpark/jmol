@@ -40,6 +40,13 @@ abstract public class Polymer {
 
   private int[] atomIndices;
 
+  // these arrays will be one longer than the polymerCount
+  // we probably should have better names for these things
+  // holds center points between alpha carbons or sugar phosphoruses
+  Point3f[] leadMidpoints;
+  // holds the vector that runs across the 'ribbon'
+  Vector3f[] wingVectors;
+
   static Polymer allocatePolymer(Chain chain) {
     Group[] polymerGroups;
     polymerGroups = getAminoGroups(chain);
@@ -185,4 +192,56 @@ abstract public class Polymer {
   abstract boolean isProtein();
 
   abstract void calcHydrogenBonds();
+
+  Point3f[] getLeadMidpoints() {
+    if (leadMidpoints == null)
+      calcLeadMidpointsAndWingVectors();
+    return leadMidpoints;
+  }
+
+  Vector3f[] getWingVectors() {
+    if (leadMidpoints == null) // this is correct ... test on leadMidpoints
+      calcLeadMidpointsAndWingVectors();
+    return wingVectors; // wingVectors might be null
+  }
+
+  void calcLeadMidpointsAndWingVectors() {
+    int count = this.count;
+    leadMidpoints = new Point3f[count + 1];
+    if (hasWingPoints())
+      wingVectors = new Vector3f[count + 1];
+
+    Vector3f vectorA = new Vector3f();
+    Vector3f vectorB = new Vector3f();
+    Vector3f vectorC = new Vector3f();
+    Vector3f vectorD = new Vector3f();
+    
+    Point3f leadPointPrev, leadPoint;
+    leadMidpoints[0] = leadPointPrev = leadPoint = getLeadPoint(0);
+    Vector3f previousVectorD = null;
+    for (int i = 1; i < count; ++i) {
+      leadPointPrev = leadPoint;
+      leadPoint = getLeadPoint(i);
+      Point3f midpoint = new Point3f(leadPoint);
+      midpoint.add(leadPointPrev);
+      midpoint.scale(0.5f);
+      leadMidpoints[i] = midpoint;
+      if (wingVectors != null) {
+        vectorA.sub(leadPoint, leadPointPrev);
+        vectorB.sub(getWingPoint(i - 1), leadPointPrev);
+        vectorC.cross(vectorA, vectorB);
+        vectorD.cross(vectorC, vectorA);
+        vectorD.normalize();
+        if (previousVectorD != null &&
+            previousVectorD.angle(vectorD) > Math.PI/2)
+          vectorD.scale(-1);
+        previousVectorD = wingVectors[i] = new Vector3f(vectorD);
+      }
+    }
+    if (wingVectors != null) {
+      wingVectors[0] = wingVectors[1];
+      wingVectors[count] = wingVectors[count - 1];
+    }
+    leadMidpoints[count] = getLeadPoint(count - 1);
+  }
 }

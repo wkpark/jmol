@@ -137,6 +137,9 @@ abstract class Mcps extends Shape {
     short[] colixes;
     short[] mads;
     
+    Point3f[] leadMidpoints;
+    Vector3f[] wingVectors;
+
     Mcpschain(Polymer polymer, int madOn,
               int madHelixSheet, int madTurnRandom, int madDnaRna) {
       this.polymer = polymer;
@@ -151,55 +154,9 @@ abstract class Mcps extends Shape {
         mads = new short[polymerCount + 1];
         polymerGroups = polymer.getGroups();
 
-        centers = new Point3f[polymerCount + 1];
-        if (polymer.hasWingPoints())
-          vectors = new Vector3f[polymerCount + 1];
-        calcCentersAndVectors(polymer, centers, vectors);
+        leadMidpoints = polymer.getLeadMidpoints();
+        wingVectors = polymer.getWingVectors();
       }
-    }
-
-    // these arrays will be one longer than the polymerCount
-    // we probably should have better names for these things
-    // holds center points between alpha carbons
-    Point3f[] centers;
-    // holds the vector that runs across the 'ribbon'
-    Vector3f[] vectors;
-
-    void calcCentersAndVectors(Polymer polymer,
-                               Point3f[] centers, Vector3f[] vectors) {
-      int count = polymer.getCount();
-      Vector3f vectorA = new Vector3f();
-      Vector3f vectorB = new Vector3f();
-      Vector3f vectorC = new Vector3f();
-      Vector3f vectorD = new Vector3f();
-      
-      Point3f leadPointPrev, leadPoint;
-      centers[0] = leadPointPrev = leadPoint = polymer.getLeadPoint(0);
-      Vector3f previousVectorD = null;
-      for (int i = 1; i < count; ++i) {
-        leadPointPrev = leadPoint;
-        leadPoint = polymer.getLeadPoint(i);
-        Point3f center = new Point3f(leadPoint);
-        center.add(leadPointPrev);
-        center.scale(0.5f);
-        centers[i] = center;
-        if (vectors != null) {
-          vectorA.sub(leadPoint, leadPointPrev);
-          vectorB.sub(polymer.getWingPoint(i - 1), leadPointPrev);
-          vectorC.cross(vectorA, vectorB);
-          vectorD.cross(vectorC, vectorA);
-          vectorD.normalize();
-          if (previousVectorD != null &&
-              previousVectorD.angle(vectorD) > Math.PI/2)
-            vectorD.scale(-1);
-          previousVectorD = vectors[i] = new Vector3f(vectorD);
-        }
-      }
-      if (vectors != null) {
-        vectors[0] = vectors[1];
-        vectors[count] = vectors[count - 1];
-      }
-      centers[count] = polymer.getLeadPoint(count - 1);
     }
 
     short getMadSpecial(short mad, int groupIndex) {

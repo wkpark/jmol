@@ -38,7 +38,7 @@ import java.io.StringReader;
 import java.io.Reader;
 import java.util.zip.GZIPInputStream;
 import org.openscience.jmol.io.ChemFileReader;
-import org.openscience.jmol.io.ReaderFactory;
+import org.openscience.cdk.io.*;
 
 public class FileManager {
 
@@ -128,20 +128,22 @@ public class FileManager {
 
   private String openReader(Reader rdr) {
     try {
-      ChemFileReader reader = null;
+      ChemObjectReader reader = null;
       try {
-        reader = ReaderFactory.createReader(control, rdr);
-        /*
-          FIXME -- need to notify the awt component of file change
-        firePropertyChange(openFileProperty, oldFile, currentFile);
-        */
+          ReaderFactory factory = new ReaderFactory();
+          reader = factory.createReader(rdr);
+          /*
+            FIXME -- need to notify the awt component of file change
+            firePropertyChange(openFileProperty, oldFile, currentFile);
+          */
       } catch (IOException ex) {
-        return "Error determining input format: " + ex;
+          return "Error determining input format: " + ex;
       }
       if (reader == null) {
         return "unrecognized input format";
       }
-      ChemFile newChemFile = reader.read();
+      org.openscience.jmol.ChemFile newChemFile = null;
+      // org.openscience.cdk.ChemFile newChemFile = reader.read(new ChemFile());
 
       if (newChemFile != null) {
         if (newChemFile.getNumberOfFrames() > 0) {
@@ -152,7 +154,7 @@ public class FileManager {
       } else {
         return "unknown error reading input";
       }
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       return "Error reading input:" + ex;
     }
     return null;

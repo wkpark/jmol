@@ -25,7 +25,8 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.io.ReaderFactory;
+import org.openscience.cdk.io.ChemObjectReader;
+import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
@@ -522,9 +523,10 @@ public class Jmol extends JPanel {
 
     frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
     try {
-      ChemFileReader reader = null;
+      ChemObjectReader reader = null;
       try {
-        reader = ReaderFactory.createReader(control, input);
+          ReaderFactory factory = new ReaderFactory();
+        reader = factory.createReader(input);
       } catch (IOException ex) {
         throw new JmolException("readMolecule",
             "Error determining input format: " + ex);
@@ -532,7 +534,8 @@ public class Jmol extends JPanel {
       if (reader == null) {
         throw new JmolException("readMolecule", "Unknown input format");
       }
-      ChemFile newChemFile = reader.read();
+      ChemFile newChemFile = null;
+      // ChemFile chemFile = reader.read(new ChemFile()); -> CDK ChemFile
 
       if (newChemFile != null) {
         if (newChemFile.getNumberOfFrames() > 0) {
@@ -545,7 +548,7 @@ public class Jmol extends JPanel {
         throw new JmolException("readMolecule",
             "unknown error reading input");
       }
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       throw new JmolException("readMolecule", "Error reading input: " + ex);
     } finally {
       frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));

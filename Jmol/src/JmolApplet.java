@@ -39,7 +39,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
 import org.openscience.jmol.io.ReaderProgress;
-import org.openscience.jmol.io.ReaderFactory;
+import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.jmol.JmolStatusListener;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.io.ChemFileReader;

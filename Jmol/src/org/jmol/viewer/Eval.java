@@ -397,6 +397,9 @@ class Eval implements Runnable {
       case Token.depth:
         depth();
         break;
+      case Token.star:
+        star();
+        break;
       case Token.cpk:
         cpk();
         break;
@@ -485,7 +488,6 @@ class Eval implements Runnable {
       case Token.print:
       case Token.renumber:
       case Token.save:
-      case Token.star:
       case Token.stereo:
       case Token.structure:
       case Token.unbond:
@@ -1479,6 +1481,7 @@ class Eval implements Runnable {
     case Token.prueba:
     case Token.cartoon:
     case Token.rocket:
+    case Token.star:
     case Token.dots:
     case Token.axes:
     case Token.boundbox:
@@ -1961,6 +1964,60 @@ class Eval implements Runnable {
     viewer.depthToPercent(intParameter(1));
   }
 
+  void star() throws ScriptException {
+    short mad = 0;
+    int tok = Token.on;
+    if (statementLength > 1) {
+      tok = statement[1].tok;
+      if (! ((statementLength == 2) ||
+             (statementLength == 3 &&
+              tok == Token.integer &&
+              statement[2].tok == Token.percent))) {
+        badArgumentCount();
+      }
+    }
+    switch (tok) {
+    case Token.on:
+      mad = -100; // cpk with no args goes to 100%
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (statementLength == 2) {
+        if (radiusRasMol >= 750 || radiusRasMol < -100)
+          numberOutOfRange();
+        mad = (short)radiusRasMol;
+        if (radiusRasMol > 0)
+          mad *= 4 * 2;
+      } else {
+        if (radiusRasMol < 0 || radiusRasMol > 100)
+          numberOutOfRange();
+        mad = (short)-radiusRasMol; // use a negative number to specify %vdw
+      }
+      break;
+    case Token.decimal:
+      float angstroms = floatParameter(1);
+      if (angstroms > 3)
+        numberOutOfRange();
+      mad = (short)(angstroms * 1000 * 2);
+      break;
+    case Token.temperature:
+      mad = -1000;
+      break;
+    case Token.identifier:
+      String t = (String)statement[1].value;
+      if (t.equalsIgnoreCase("ionic")) {
+        mad = -1001;
+        break;
+      }
+
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setShapeSize(JmolConstants.SHAPE_STARS, mad);
+  }
+
   void cpk() throws ScriptException {
     short mad = 0;
     int tok = Token.on;
@@ -2410,7 +2467,7 @@ class Eval implements Runnable {
    Token.label, Token.vector,
    Token.monitor, Token.dots, Token.backbone,
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
-   Token.rocket,
+   Token.rocket, Token.star,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
    Token.hover, Token.pmesh, Token.polyhedra,
    Token.prueba,

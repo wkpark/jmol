@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10.00.2";
+  public final static String version = "10.00.3";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -2115,19 +2115,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MESHRIBBON = 12;
   public final static int SHAPE_RIBBONS    = 13;
   public final static int SHAPE_ROCKETS    = 14;
-    
+  public final static int SHAPE_STARS      = 15;
 
-  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 15;
-  public final static int SHAPE_AXES       = 15;
-  public final static int SHAPE_BBCAGE     = 16;
-  public final static int SHAPE_UCCAGE     = 17;
-  public final static int SHAPE_FRANK      = 18;
-  public final static int SHAPE_ECHO       = 19;
-  public final static int SHAPE_HOVER      = 20;
-  public final static int SHAPE_PMESH      = 21;
-  public final static int SHAPE_POLYHEDRA  = 22;
-  public final static int SHAPE_PRUEBA     = 23;
-  public final static int SHAPE_MAX        = 24;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 16;
+  public final static int SHAPE_AXES       = 16;
+  public final static int SHAPE_BBCAGE     = 17;
+  public final static int SHAPE_UCCAGE     = 18;
+  public final static int SHAPE_FRANK      = 19;
+  public final static int SHAPE_ECHO       = 20;
+  public final static int SHAPE_HOVER      = 21;
+  public final static int SHAPE_PMESH      = 22;
+  public final static int SHAPE_POLYHEDRA  = 23;
+  public final static int SHAPE_PRUEBA     = 24;
+  public final static int SHAPE_MAX        = 25;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",
@@ -2136,7 +2136,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Backbone", "Trace",
     "Cartoon",
     "Strands", "MeshRibbon", "Ribbons",
-    "Rockets",
+    "Rockets", "Stars",
     "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
     "Pmesh", "Polyhedra",
     "Prueba"

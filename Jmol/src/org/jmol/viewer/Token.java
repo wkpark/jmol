@@ -138,7 +138,6 @@ class Token {
   final static int slab         = command | 33 | bool;
   final static int cpk          = command | 35 | setparam | bool | negnums;
   final static int ssbonds      = command | 36 | setparam | bool;
-  final static int star         = command | 37 | bool;
   final static int stereo       = command | 38 | setspecial | bool | negnums;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
@@ -151,6 +150,7 @@ class Token {
   final static int zoom         = command | 47 | showparam | bool;
   // openrasmol commands
   final static int depth        = command | 50;
+  final static int star         = command | 51;
   // chime commands
   final static int delay        = command | 60;
   final static int loop         = command | 61;
@@ -431,7 +431,6 @@ class Token {
     "cpk",               new Token(cpk,      varArgCount, "cpk"),
     "spacefill",         null,
     "ssbonds",           new Token(ssbonds,   onDefault1, "ssbonds"),
-    "star",              new Token(star,      onDefault1, "star"),
     "stereo",            new Token(stereo,             1, "stereo"),
     "strands",           new Token(strands,   onDefault1, "strands"),
     "structure",         new Token(structure,          0, "structure"),
@@ -444,6 +443,7 @@ class Token {
     "zoom",              new Token(zoom,      onDefault1, "zoom"),
     // openrasmol commands
     "depth",             new Token(depth,              1, "depth"),
+    "star",              new Token(star,     varArgCount, "star"),
     // chime commands
     "delay",             new Token(delay,     onDefault1, "delay"),
     "loop",              new Token(loop,      onDefault1, "loop"),

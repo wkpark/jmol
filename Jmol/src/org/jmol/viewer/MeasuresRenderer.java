@@ -167,7 +167,6 @@ class MeasuresRenderer extends ShapeRenderer {
         pointT.add(atomB.point3f);
         Point3i screenLabel = viewer.transformPoint(pointT);
         int zLabel = screenLabel.z - zOffset;
-        if (zLabel < 0) zLabel = 0;
         paintMeasurementString(screenLabel.x, screenLabel.y, zLabel,
                                radius, colix);
       }
@@ -212,8 +211,12 @@ class MeasuresRenderer extends ShapeRenderer {
     FontMetrics fontMetrics = font3d.fontMetrics;
     //FIXME: Is the next line useful ?
     /*int j = */fontMetrics.stringWidth(strMeasurement);
-    g3d.drawString(strMeasurement, colix,
-                   x+radius/2+2, y-radius/2, z - radius - 2);
+    int xT = x + radius/2 + 2;
+    int yT = y - radius/2;
+    int zT = z - radius - 2;
+    if (zT < 1)
+      zT = 1;
+    g3d.drawString(strMeasurement, colix, xT, yT, zT);
   }
 
   void renderPendingMeasurement(PendingMeasurement pendingMeasurement) {

@@ -5,14 +5,29 @@
 -->
 <history>
 <contributors>
-  <contributor id="EW">
-    <name>Egon Willighagen</name><email>egonw@sci.kun.nl</email>
-  </contributor>
   <contributor id="MTH">
     <name>Miguel Howard</name><email>mth@mth.com</email>
   </contributor>
+  <contributor id="EW">
+    <name>Egon Willighagen</name><email>egonw@sci.kun.nl</email>
+  </contributor>
   <contributor id="TD">
     <name>Tim Driscoll</name><email>driscoll@molvisions.com</email>
+  </contributor>
+  <contributor id="NV">
+    <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
+  </contributor>
+  <contributor id="OS">
+    <name>Oliver Stuker</name><email>revilo@oc38.uni-paderborn.de</email>
+  </contributor>
+  <contributor id="RK">
+    <name>Rene Kanters</name><email>rkanters@richmond.edu</email>
+  </contributor>
+  <contributor id="RH">
+    <name>Bob Hanson</name><email>hansonr@stolaf.edu</email>
+  </contributor>
+  <contributor id="JR">
+    <name>Jan Reichert</name><email>jr@imb-jena.de</email>
   </contributor>
   <contributor id="FD">
     <name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email>
@@ -66,10 +81,76 @@
 
 <changes version="jmol-10">
   <change contributor="MTH">
-    Moteur graphique r&#x00E9;&#x00E9;crit et am&#x00E9;lior&#x00E9;.
+    R&#x00E9;architecture et r&#x00E9;impl&#x00E9;mentation du noyau Jmol
   </change>
   <change contributor="MTH">
-    Moteur de script r&#x00E9;&#x00E9;crit avec support complet de Chime.
+    Architecture et impl&#x00E9;mentation du moteur graphique de rendu
+    org.jmol.g3d pour un rendu 3D &#x00E0; hautes performances de
+    mol&#x00E9;cules sans support mat&#x00E9;riel
+  </change>
+  <change contributor="MTH">
+    Architecture et impl&#x00E9;mentation des structures de donn&#x00E9;es
+    du noyau de org.jmol.viewer
+  </change>
+  <change contributor="MTH">
+    Architecture et impl&#x00E9;mentation du support pour les structures
+    secondaires des prot&#x00E9;ines
+  </change>
+  <change contributor="MTH">
+    R&#x00E9;architecture et r&#x00E9;impl&#x00E9;mentation du
+    syst&#x00E8;me d'e/s fichier
+  </change>
+  <change contributor="MTH">
+    Architecture de l'api org.jmol.api.JmolAdapter pour s&#x00E9;parer les
+    acc&#x00E8;s fichiers du rendu graphique
+  </change>
+  <change contributor="MTH">
+    A &#x00E9;crit org.jmol.adapter.smarter.Resolver pour fournir une
+    identification automatique des types de fichiers
+  </change>
+  <change contributor="MTH">
+    Impl&#x00E9;mentation de la plupart des types de fichiers pour
+    org.jmol.adapter.smarter, y compris xyz, mol, pdb, cif/mmCif, gaussian,
+    jaguar, shelx, etc.
+  </change>
+  <change contributor="MTH">
+    A &#x00E9;crit la libraire JavaScript Jmol.js pour faciliter le
+    d&#x00E9;veloppement d'applications web.
+  </change>
+  <change contributor="MTH">
+    A &#x00E9;crit le m&#x00E9;canisme JmolAppletControl pour supporter
+    les navigateurs sans JavaScript
+  </change>
+  <change contributor="MTH">
+    A &#x00E9;tendu et assur&#x00E9; la portabilit&#x00E9; du noyau
+    JmolApplet sur des navigateurs web avec Java 1.1, y compris Netscape 4.7
+    et Internet Explorer &#x00E0; la fois sous Win32 et Mac OS 9
+  </change>
+  <change contributor="EW">
+    CmlReader, CdkModelAdapter, int&#x00E9;gration de cdk, wiki,
+    administration g&#x00E9;n&#x00E9;rale du projet
+  </change>
+  <change contributor="TD">
+    A fourni un support significatif et des tests dans les domaines de
+    d&#x00E9;finition de polym&#x00E8;res, d&#x00E9;veloppement
+    d'application web, JavaScript et portabilit&#x00E9; Mac OS X.
+  </change>
+  <change contributor="NV">
+    Traduction fran&#x00E7;aise, nettoyage du code, JavaDoc, readers
+  </change>
+  <change contributor="RK">
+    M&#x00E9;canisme AtomSetChooser, am&#x00E9;lioration du reader
+    Gaussian, impl&#x00E9;mentation du reader NWChem
+  </change>
+  <change contributor="JR">
+    Assistance dans les domaines de mod&#x00E8;les multiple, insertion de
+    codes, d&#x00E9;finition de polym&#x00E8;res, test de l'applet
+  </change>
+  <change contributor="OS">
+    wiki.jmol.org
+  </change>
+  <change contributor="RH">
+    Tutoriel interactif du langage de script, test de l'applet
   </change>
 </changes>
 

@@ -165,11 +165,10 @@ class Jmol extends JPanel {
 
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
-    panel.add("North", createToolbar1());
+    panel.add("North", createToolbar());
 
     JPanel ip = new JPanel();
     ip.setLayout(new BorderLayout());
-    ip.add("West", createToolbar2());
     ip.add("Center", scroller);
     panel.add("Center", ip);
     add("Center", panel);
@@ -558,66 +557,33 @@ class Jmol extends JPanel {
     return (Action) commands.get(cmd);
   }
 
-  protected Container getToolbar1() {
-    return toolbar1;
-  }
-
-  protected Container getToolbar2() {
-    return toolbar2;
-  }
-
   protected JMenuBar getMenubar() {
     return menubar;
   }
 
 
   /**
-   * Create the first toolbar.  By default this reads the
+   * Create the toolbar.  By default this reads the
    * resource file for the definition of the toolbars.
    */
-  private Component createToolbar1() {
+  private Component createToolbar() {
 
-    toolbar1 = new JToolBar();
-    String[] tool1Keys = tokenize(jrh.getString("toolbar1"));
+    toolbar = new JToolBar();
+    String[] tool1Keys = tokenize(jrh.getString("toolbar"));
     for (int i = 0; i < tool1Keys.length; i++) {
       if (tool1Keys[i].equals("-")) {
-        toolbar1.addSeparator();
+        toolbar.addSeparator();
       } else {
-        toolbar1.add(createTool(tool1Keys[i]));
+        toolbar.add(createTool(tool1Keys[i]));
       }
     }
 
     //Action handler implementation would go here.
-    toolbar1.add(Box.createHorizontalGlue());
+    toolbar.add(Box.createHorizontalGlue());
 
-    // toolbar1.putClientProperty( "JToolBar.isRollover", Boolean.TRUE);
-    return toolbar1;
+    return toolbar;
   }
 
-  private Component createToolbar2() {
-
-    toolbar2 = new JToolBar();
-
-    // make it vertical;
-    toolbar2.setOrientation(JToolBar.VERTICAL);
-
-    // BasicToolBarUI ui = (BasicToolBarUI) toolbar2.getUI();
-    // ui.setOrientation(BasicToolBarUI.VERTICAL);
-    String[] tool2Keys = tokenize(jrh.getString("toolbar2"));
-    for (int i = 0; i < tool2Keys.length; i++) {
-      if (tool2Keys[i].equals("-")) {
-        toolbar2.addSeparator();
-      } else {
-        toolbar2.add(createTool(tool2Keys[i]));
-      }
-    }
-
-    //Action handler implementation would go here.
-    toolbar2.add(Box.createVerticalGlue());
-
-    // toolbar2.putClientProperty( "JToolBar.isRollover", Boolean.TRUE);
-    return toolbar2;
-  }
 
   /**
    * Hook through which every toolbar item is created.
@@ -826,8 +792,7 @@ class Jmol extends JPanel {
   private Hashtable commands;
   private Hashtable menuItems;
   private JMenuBar menubar;
-  private JToolBar toolbar1;
-  private JToolBar toolbar2;
+  private JToolBar toolbar;
 
 
   /**

@@ -106,7 +106,7 @@ abstract class Platform3D {
     if (width > widthOffscreen)
       widthOffscreen = (width + 63) & ~63;
     if (height > heightOffscreen)
-      heightOffscreen = (width + 15) & ~15;
+      heightOffscreen = (height + 15) & ~15;
     imageOffscreen = allocateOffscreenImage(widthOffscreen, heightOffscreen);
     gOffscreen = imageOffscreen.getGraphics();
   }

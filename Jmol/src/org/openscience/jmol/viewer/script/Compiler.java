@@ -718,7 +718,7 @@ class Compiler {
 
     clauseChainSpec  ::= {:} * | identifier | integer
 
-    clauseAtomSpec   ::= . * | . identifier
+    clauseAtomSpec   ::= . * | . identifier {*} // note that this * is *not* a wildcard
 
     clauseModelSpec  ::= {:|/} * | integer
 
@@ -1145,7 +1145,13 @@ class Compiler {
       return true;
     if (tokenAtomSpec.tok != Token.identifier)
       return invalidAtomSpecification();
-    return generateResidueSpecCode(new Token(Token.spec_atom, tokenAtomSpec.value));
+    String atomSpec = (String)tokenAtomSpec.value;
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      // this one is a '*' as a prime, not a wildcard
+      atomSpec += "*";
+    }
+    return generateResidueSpecCode(new Token(Token.spec_atom, atomSpec));
   }
 
   boolean compileColorParam() {

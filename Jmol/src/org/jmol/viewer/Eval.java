@@ -471,6 +471,10 @@ class Eval implements Runnable {
         pmesh();
         break;
 
+      case Token.polyhedra:
+        polyhedra();
+        break;
+
         // not implemented
       case Token.bond:
       case Token.clipboard:
@@ -1480,6 +1484,7 @@ class Eval implements Runnable {
     case Token.hover:
     case Token.vector:
     case Token.pmesh:
+    case Token.polyhedra:
       colorObject(tok, 2);
       break;
     case Token.rubberband:
@@ -2402,7 +2407,7 @@ class Eval implements Runnable {
    Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover, Token.pmesh,
+   Token.hover, Token.pmesh, Token.polyhedra,
    Token.prueba,
   };
 
@@ -3283,6 +3288,32 @@ class Eval implements Runnable {
         invalidArgument();
       }
       viewer.setShapeProperty(JmolConstants.SHAPE_PMESH,
+                              propertyName, propertyValue);
+    }
+  }
+
+  void polyhedra() throws ScriptException {
+    viewer.setShapeSize(JmolConstants.SHAPE_POLYHEDRA, 1);
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (statement[i].tok) {
+      case Token.on:
+        propertyName = "on";
+        break;
+      case Token.off:
+        propertyName = "off";
+        break;
+      case Token.solid:
+        propertyName = "solid";
+        break;
+      case Token.transparent:
+        propertyName = "transparent";
+        break;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
                               propertyName, propertyValue);
     }
   }

@@ -25,6 +25,8 @@
 
 package org.jmol.g3d;
 
+import javax.vecmath.Point3i;
+
 public class Xyzd {
   public final static int GB = 0x8000; // guard bit
   public final static int OV = 0x4000; // overflow bit
@@ -115,4 +117,9 @@ public class Xyzd {
                        " d=" + getD(xyzd));
   }
 
+  final static void setPoint3i(long xyzd, Point3i p) {
+    p.x = (((int)xyzd) & MASK) - ZO;
+    p.y = (((int)xyzd>>16)&MASK)-ZO;
+    p.z = ((int)(xyzd>>32)&MASK)-ZO;
+  }
 }

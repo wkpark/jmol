@@ -168,6 +168,7 @@ class Token {
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
+  final static int polyhedra    = command | 92;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -450,6 +451,7 @@ class Token {
     "bondorder",         new Token(bondorder,          1, "bondorder"),
     "console",           new Token(console,   onDefault1, "console"),
     "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
+    "polyhedra",         new Token(polyhedra,varArgCount, "polyhedra"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

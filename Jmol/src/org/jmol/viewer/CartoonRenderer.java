@@ -249,9 +249,8 @@ class CartoonRenderer extends MpsRenderer {
   }
 
   void renderRing6(short colix) {
-    g3d.calcSurfaceShade(colix,
-                         ring6Screens[0], ring6Screens[2], ring6Screens[4],
-                         false);
+    g3d.calcSurfaceShade(colix, false, 
+                         ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[4], ring6Screens[5]);

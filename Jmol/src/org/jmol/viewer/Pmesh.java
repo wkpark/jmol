@@ -38,7 +38,7 @@ class Pmesh extends SelectionIndependentShape {
   Mesh currentMesh;
   
   void initShape() {
-    colix = Graphics3D.RED;
+    colix = Graphics3D.ORANGE;
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {

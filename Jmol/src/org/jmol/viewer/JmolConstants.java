@@ -2125,8 +2125,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_ECHO       = 19;
   public final static int SHAPE_HOVER      = 20;
   public final static int SHAPE_PMESH      = 21;
-  public final static int SHAPE_PRUEBA     = 22;
-  public final static int SHAPE_MAX        = 23;
+  public final static int SHAPE_POLYHEDRA  = 22;
+  public final static int SHAPE_PRUEBA     = 23;
+  public final static int SHAPE_MAX        = 24;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",
@@ -2137,7 +2138,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Strands", "MeshRibbon", "Ribbons",
     "Rockets",
     "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
-    "Pmesh",
+    "Pmesh", "Polyhedra",
     "Prueba"
   };
 

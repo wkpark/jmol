@@ -52,18 +52,16 @@ class PmeshRenderer extends ShapeRenderer {
     for (int i = mesh.polygonCount; --i >= 0; ) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes.length == 3)
-        g3d.fillTriangle(colix,
+        g3d.fillTriangle(colix, mesh.transparent,
                          screens[vertexIndexes[0]],
                          screens[vertexIndexes[1]],
-                         screens[vertexIndexes[2]],
-                         mesh.transparent);
+                         screens[vertexIndexes[2]]);
       else if (vertexIndexes.length == 4)
-        g3d.fillQuadrilateral(colix,
+        g3d.fillQuadrilateral(colix, mesh.transparent,
                               screens[vertexIndexes[0]],
                               screens[vertexIndexes[1]],
                               screens[vertexIndexes[2]],
-                              screens[vertexIndexes[3]],
-                              mesh.transparent);
+                              screens[vertexIndexes[3]]);
       else
         System.out.println("PmeshRenderer: polygon with > 4 sides");
     }

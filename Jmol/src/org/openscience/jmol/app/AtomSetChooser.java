@@ -116,7 +116,7 @@ public class AtomSetChooser extends JDialog
       showProperties(viewer.getModelProperties(atomSetIndex));
     } else { // selected branch
       propertiesPane.setText("Collection has " +
-        node.getChildCount() + " AtomSets");
+        node.getLeafCount() + " AtomSets");
     }
   }
   
@@ -157,11 +157,15 @@ public class AtomSetChooser extends JDialog
     if (modelSetProperties != null) {
       key = modelSetProperties.getProperty("PATH_KEY");
       separator = modelSetProperties.getProperty("PATH_SEPARATOR");
+    } else {
+      System.out.println("No PATH info found in the atomSetCollectionProperties "    
+         + modelSetProperties);
     }
     if (key == null || separator == null) {
-      System.out.println("No PATH info found in the atomSetCollectionProperties "
-         + modelSetProperties);
-      // make a flat hierarchy
+      // make a flat hierarchy currently won't happen since I initialize
+      // key and separator with the values I used in the GaussianReader
+      // FIXME when viewer.getModelSetProperties indeed returns the
+      // properties, I can initialize key and separator back to null
       for (int atomSetIndex = 0, count = viewer.getModelCount();
            atomSetIndex < count; ++atomSetIndex) {
         root.add(new AtomSet(atomSetIndex,

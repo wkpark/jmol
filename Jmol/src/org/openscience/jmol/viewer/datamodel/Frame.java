@@ -621,6 +621,8 @@ final public class Frame {
       Atom atom = atoms[i];
       // Covalent bonds
       float myBondingRadius = atom.getBondingRadiusFloat();
+      if (myBondingRadius == 0)
+        continue;
       float searchRadius =
         myBondingRadius + maxBondingRadius + bondTolerance;
       Bspt.SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
@@ -651,6 +653,8 @@ final public class Frame {
     //                               " radiusB=" + bondingRadiusB +
     //                         " distance2=" + distance2 +
     //                         " tolerance=" + bondTolerance);
+    if (bondingRadiusA == 0 || bondingRadiusB == 0)
+      return 0;
     float maxAcceptable = bondingRadiusA + bondingRadiusB + bondTolerance;
     float maxAcceptable2 = maxAcceptable * maxAcceptable;
     if (distance2 < minBondDistance2) {

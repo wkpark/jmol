@@ -559,6 +559,7 @@ final public class JmolConstants {
     680, //   7  N
     680, //   8  O
     640, //   9  F
+    //    1120, //  10  Ne
     0,   //  10  Ne
     970, //  11  Na
     1100, //  12  Mg

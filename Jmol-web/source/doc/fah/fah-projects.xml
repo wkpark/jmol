@@ -1368,6 +1368,9 @@
   <fah_proj number="928" name="p928_pa_sa_fold" file="y"
     server="171.67.89.153" atoms="737" preferred="16" deadline="25"
     credit="91" frames="100" code="G" contact="guha"/>
+  <fah_proj number="929" name="p929_fk_lig_dup" file="y"
+    server="171.64.122.132" atoms="1135" preferred="21" deadline="31"
+    credit="114" frames="100" code="DG" contact="guha"/>
   <fah_proj number="930" name="p930_fkbound_l02" file="y"
     server="171.65.103.151" atoms="19716" preferred="20" deadline="29"
     credit="99" frames="100" code="DG" contact="guha"/>
@@ -1395,6 +1398,9 @@
   <fah_proj number="938" name="p938_fkmd_H14" file="y"
     server="171.67.89.153" atoms="14907" preferred="16" deadline="22"
     credit="75" frames="100" code="DG" contact="guha"/>
+  <fah_proj number="939" name="p939_fk_comp_dup" file="y"
+    server="171.64.122.132" atoms="16549" preferred="18" deadline="27"
+    credit="99" frames="100" code="DG" contact="guha"/>
   <fah_proj number="940" name="p940_AK12" file="y"
     preferred="4"
     credit="12" frames="100"/>
@@ -1461,6 +1467,9 @@
   <fah_proj number="961" name="p961_pa_f31g_drf2" file="y"
     server="171.64.122.132" atoms="724" preferred="8" deadline="13"
     credit="48" frames="100" code="G" contact="guha"/>
+  <fah_proj number="970" name="p970_fklig_dock" file="y"
+    server="171.64.122.132" atoms="1261" preferred="22" deadline="33"
+    credit="122" frames="100" code="DG" contact="guha"/>
   <fah_proj number="997"
     credit="10"/>
   <fah_proj number="998"

@@ -343,23 +343,23 @@ public class Atom extends org.openscience.cdk.Atom {
    */
 
   public int getScreenX() {
-    return atomShape.x;
+    return atomShape == null ? 0 : atomShape.x;
   }
 
   public int getScreenY() {
-    return atomShape.y;
+    return atomShape == null ? 0 : atomShape.y;
   }
 
   public int getScreenZ() {
-    return atomShape.z;
+    return atomShape == null ? 0 : atomShape.z;
   }
 
   public int getScreenDiameter() {
-    return atomShape.diameter;
+    return atomShape == null ? 0 : atomShape.diameter;
   }
 
   public int getScreenRadius() {
-    return atomShape.diameter / 2;
+    return atomShape == null ? 0 : atomShape.diameter / 2;
   }
 
   /**
@@ -394,9 +394,7 @@ public class Atom extends org.openscience.cdk.Atom {
 
   public String toString() {
     String type = getSymbol();
-    return "Atom{" + type + " #" + getAtomNumber() + " @" +
-      getPosition() + " @" + getScreenX() + ","
-	+ getScreenY() + "," + getScreenZ() + "}";
+    return "Atom{" + type + "#" + getAtomNumber() + "@" + getPosition() + "}";
   }
 }
 

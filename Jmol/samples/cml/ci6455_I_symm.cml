@@ -1,4 +1,7 @@
-<molecule id="ci6455_I">
+<?xml version="1.0"?>
+<molecule id="ci6455_I" xmlns="http://www.xml-cml.org/schema/cml2/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.xml-cml.org/schema/cml2/core cmlAll.xsd">>
 <crystal>
 <scalar dictRef="cif:_cell_length_a">8.781
 </scalar>

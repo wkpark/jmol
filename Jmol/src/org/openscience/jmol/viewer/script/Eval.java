@@ -648,6 +648,33 @@ public class Eval implements Runnable {
     return false;
   }
 
+  short getSetBooleanOrMad() throws ScriptException {
+    int tok = statement[2].tok;
+    short mad = -1;
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      mad = 0;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[2].intValue;
+      if (radiusRasMol >= 500)
+        numberOutOfRange();
+      mad = (short)(radiusRasMol * 4 * 2);
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[2].value).floatValue();
+      if (angstroms >= 2)
+        numberOutOfRange();
+      mad = (short)(angstroms * 1000 * 2);
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    return mad;
+  }
+
   int getSetInteger() throws ScriptException {
     checkLength3();
     return intParameter(2);
@@ -1205,6 +1232,10 @@ public class Eval implements Runnable {
     case Token.ribbons:
     case Token.cartoon:
     case Token.dots:
+    case Token.axes:
+    case Token.boundbox:
+    case Token.unitcell:
+    case Token.frank:
       colorObject(tok, 2);
       break;
     case Token.identifier:
@@ -1279,6 +1310,18 @@ public class Eval implements Runnable {
       break;
     case Token.dots:
       refShape = JmolConstants.SHAPE_DOTS;
+      break;
+    case Token.axes:
+      refShape = JmolConstants.SHAPE_AXES;
+      break;
+    case Token.unitcell:
+      refShape = JmolConstants.SHAPE_UNITCELL;
+      break;
+    case Token.boundbox:
+      refShape = JmolConstants.SHAPE_BBOX;
+      break;
+    case Token.frank:
+      refShape = JmolConstants.SHAPE_FRANK;
       break;
     default:
       unrecognizedColorObject();
@@ -1996,7 +2039,8 @@ public class Eval implements Runnable {
   }
 
   void setAxes() throws ScriptException {
-    viewer.setShapeShow(JmolConstants.SHAPE_AXES, getSetBoolean());
+    viewer.setShapeMad(JmolConstants.SHAPE_AXES,
+                       getSetBooleanOrMad());
   }
 
   void setBondmode() throws ScriptException {
@@ -2025,7 +2069,6 @@ public class Eval implements Runnable {
   void setFrank() throws ScriptException {
     viewer.setShapeShow(JmolConstants.SHAPE_FRANK, getSetBoolean());
   }
-
 
   void setDisplay() throws ScriptException {
     boolean showHalo = false;

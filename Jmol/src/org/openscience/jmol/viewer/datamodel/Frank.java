@@ -22,33 +22,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.openscience.jmol.viewer.datamodel;
+import org.openscience.jmol.viewer.g3d.Colix;
 
-import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-
-import java.awt.Rectangle;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
-class BboxRenderer extends ShapeRenderer {
-
-  final Point3i[] bboxScreen = new Point3i[8];
-  {
-    for (int i = 8; --i >= 0; )
-      bboxScreen[i] = new Point3i();
-  }
-
-  void render() {
-    Bbox bbox = (Bbox)shape;
-    if (! bbox.show)
-      return;
-    for (int i = 8; --i >= 0; )
-      viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);
-    short colix = bbox.colix;
-    for (int i = 0; i < 24; i += 2)
-      g3d.drawDottedLine(colix,
-                         bboxScreen[bbox.edges[i]],
-                         bboxScreen[bbox.edges[i+1]]);
+public class Frank extends SelectionIndependentShape {
+  void initShape() {
+    colix = Colix.GRAY;
   }
 }

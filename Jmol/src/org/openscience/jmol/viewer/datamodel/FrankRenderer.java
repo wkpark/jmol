@@ -27,46 +27,38 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
+import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import java.util.BitSet;
+class FrankRenderer extends ShapeRenderer {
 
-public class Axes extends SelectionIndependentShape {
+  private final static String frankString = "Jmol";
+  private final static String frankFontName = "Serif";
+  private final static int frankFontStyle = Font.BOLD;
+  private final static int frankFontSize = 14;
+  private final static int frankMargin = 4;
+  Font frankFont;
+  int frankWidth;
+  int frankDescent;
 
-  final static Point3f[] unitAxisPoints = {
-    new Point3f( 1, 0, 0),
-    new Point3f( 0, 1, 0),
-    new Point3f( 0, 0, 1),
-    new Point3f(-1, 0, 0),
-    new Point3f( 0,-1, 0),
-    new Point3f( 0, 0,-1)
-  };
+  void render() {
+    Frank frank = (Frank)shape;
+    if (! frank.show)
+      return;
 
-  final Point3f originPoint = new Point3f();
-  final Point3f[] axisPoints = new Point3f[6];
-  {
-    for (int i = 6; --i >= 0; )
-      axisPoints[i] = new Point3f();
-  }
-
-  void initShape() {
-    originPoint.set(viewer.getBoundingBoxCenter());
-    Point3f corner = viewer.getBoundingBoxCorner();
-    for (int i = 6; --i >= 0; ) {
-      Point3f axisPoint = axisPoints[i];
-      axisPoint.set(unitAxisPoints[i]);
-      // we have just set the axisPoint to be a unit on a single axis
-      // therefore only one of these values (x, y, or z) will be nonzero
-      // it will have value 1 or -1
-      axisPoint.x *= corner.x;
-      axisPoint.y *= corner.y;
-      axisPoint.z *= corner.z;
-      axisPoint.add(originPoint);
-
-      colix = viewer.getColixAxes();
+    if (frankFont == null) {
+      frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
+      FontMetrics fm = g3d.getFontMetrics(frankFont);
+      frankWidth = fm.stringWidth(frankString);
+      frankDescent = fm.getDescent();
     }
+    g3d.setFont(frankFont);
+    g3d.drawString(frankString, frank.colix,
+                   g3d.width - frankWidth - frankMargin,
+                   g3d.height - frankDescent - frankMargin,
+                   0);
   }
 }

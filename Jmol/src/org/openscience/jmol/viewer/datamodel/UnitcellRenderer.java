@@ -41,7 +41,7 @@ class UnitcellRenderer extends ShapeRenderer {
     Point3i[] screens = frameRenderer.getTempScreens(8);
     for (int i = 8; --i >= 0; )
       viewer.transformPoint(unitcell.vertices[i], screens[i]);
-    short colix = viewer.getColixAxes();
+    short colix = unitcell.colix;
     for (int i = 0; i < 24; i += 2) {
       Point3i screenA = screens[Bbox.edges[i]];
       Point3i screenB = screens[Bbox.edges[i+1]];

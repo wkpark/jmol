@@ -41,7 +41,7 @@ abstract public class Shape {
     initShape();
   }
 
-  public void initShape() {
+  void initShape() {
   }
 
   public void setShow(boolean show) {

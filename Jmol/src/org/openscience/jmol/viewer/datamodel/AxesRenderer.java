@@ -43,7 +43,8 @@ class AxesRenderer extends ShapeRenderer {
   
   void render() {
     Axes axes = (Axes)shape;
-    if (! axes.show)
+    short mad = axes.mad;
+    if (mad == 0)
       return;
     final Point3i[] axisScreens = frameRenderer.getTempScreens(7);
     final Point3i originScreen = axisScreens[6];
@@ -51,14 +52,20 @@ class AxesRenderer extends ShapeRenderer {
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = 6; --i >= 0; )
       viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);
-    
-    short colixAxes = viewer.getColixAxes();
-    short colixAxesText = viewer.getColixAxesText();
+
+    int widthPixels = 0;
+    if (mad > 0)
+      widthPixels = viewer.scaleToScreen(originScreen.z, mad);
+    short colix = axes.colix;
     for (int i = 6; --i >= 0; ) {
-      g3d.drawDottedLine(colixAxes, originScreen, axisScreens[i]);
+      if (mad < 0)
+        g3d.drawDottedLine(colix, originScreen, axisScreens[i]);
+      else
+        g3d.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT,
+                         widthPixels, originScreen, axisScreens[i]);
       String label = axisLabels[i];
       if (label != null)
-        frameRenderer.renderStringOutside(label, colixAxesText,
+        frameRenderer.renderStringOutside(label, colix,
                                           axisFontsize, axisScreens[i], g3d);
     }
   }

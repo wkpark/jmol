@@ -34,7 +34,7 @@ import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 
-class Bbox extends Shape {
+class Bbox extends SelectionIndependentShape {
 
   final Point3f[] bboxPoints = new Point3f[8];
   {
@@ -58,7 +58,7 @@ class Bbox extends Shape {
   final static byte edges[] =
   {0,1, 0,2, 0,4, 1,3, 1,5, 2,3, 2,6, 3,7, 4,5, 4,6, 5,7, 6,7};
 
-  public void initShape() {
+  void initShape() {
     Point3f pointOrigin = viewer.getBoundingBoxCenter();
     Point3f pointCorner = viewer.getBoundingBoxCorner();
     for (int i = 0; i < 8; ++i) {
@@ -69,5 +69,6 @@ class Bbox extends Shape {
       bboxPoint.z *= pointCorner.z;
       bboxPoint.add(pointOrigin);
     }
+    colix = viewer.getColixAxes();
   }
 }

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -22,33 +22,25 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.*;
+import java.util.BitSet;
 
-import java.awt.Rectangle;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
+abstract public class SelectionIndependentShape extends Shape {
 
-class BboxRenderer extends ShapeRenderer {
+  short mad;
+  short colix;
 
-  final Point3i[] bboxScreen = new Point3i[8];
-  {
-    for (int i = 8; --i >= 0; )
-      bboxScreen[i] = new Point3i();
+  public void setMad(short mad, BitSet bsSelected) {
+    this.mad = mad;
   }
-
-  void render() {
-    Bbox bbox = (Bbox)shape;
-    if (! bbox.show)
-      return;
-    for (int i = 8; --i >= 0; )
-      viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);
-    short colix = bbox.colix;
-    for (int i = 0; i < 24; i += 2)
-      g3d.drawDottedLine(colix,
-                         bboxScreen[bbox.edges[i]],
-                         bboxScreen[bbox.edges[i+1]]);
+  
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
+    if (palette == JmolConstants.PALETTE_COLOR)
+      this.colix = colix;
   }
 }
+

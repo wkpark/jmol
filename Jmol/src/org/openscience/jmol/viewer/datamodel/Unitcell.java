@@ -31,7 +31,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class Unitcell extends Shape {
+public class Unitcell extends SelectionIndependentShape {
 
   boolean hasUnitcell;
   float a,b,c,alpha,beta,gamma;
@@ -41,7 +41,9 @@ public class Unitcell extends Shape {
 
   final static float toRadians = (float)Math.PI * 2 / 360;
 
-  public void initShape() {
+  void initShape() {
+    colix = viewer.getColixAxes();
+
     float[] notionalUnitcell = frame.notionalUnitcell;
     Matrix3f crystalScaleMatrix = frame.crystalScaleMatrix;
     Vector3f crystalTranslateVector = frame.crystalTranslateVector;

@@ -53,6 +53,15 @@ public class JmolEditBus implements CDKEditBus {
         return APIVersion;
     }
     
+    public void runScript(String mimeType, String script) {
+        if ("chemical/x-rasmol".equals(mimeType)) {
+            viewer.evalString(script);
+        } else {
+            // ignore
+            System.out.println("Ignoring script with unknown MIME type: " + mimeType);
+        }
+    }
+    
     public void showChemFile(Reader file) {
         viewer.openReader("", "", file);
     }

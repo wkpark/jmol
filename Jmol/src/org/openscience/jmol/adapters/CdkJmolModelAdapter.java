@@ -198,6 +198,12 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     return null;
   }
 
+  public String getClientAtomStringProperty(Object clientAtom,
+                                            String propertyName) {
+    Object value = ((Atom)clientAtom).getProperty(propertyName);
+    return value == null ? null : "" + value;
+  }
+
   public JmolModelAdapter.AtomIterator
     getAtomIterator(Object clientFile) {
     return new AtomIterator(getAtomContainer(clientFile));
@@ -237,7 +243,9 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
       return (String)atom.getProperty("pdb.record");
     }
     public int getPdbModelNumber() { return 0; }
-
+    public Object getClientAtomReference() {
+      return atom;
+    }
   }
 
   class BondIterator extends JmolModelAdapter.BondIterator {

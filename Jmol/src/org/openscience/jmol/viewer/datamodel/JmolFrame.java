@@ -193,6 +193,15 @@ public class JmolFrame {
       dots.setDotsOn(dotsOn, bsSelected);
   }
 
+  Ribbons ribbons;
+
+  public void setRibbons(int ribbonType, BitSet bsSelected) {
+    if (ribbonType != 0 && ribbons == null)
+      ribbons = new Ribbons(viewer, this, frameRenderer.ribbonsRenderer);
+    if (ribbons != null)
+      ribbons.setRibbons(ribbonType, bsSelected);
+  }
+
   Point3f centerBoundingBox;
   Point3f cornerBoundingBox;
   Point3f centerRotation;

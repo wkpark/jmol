@@ -77,12 +77,11 @@ public class DotsRenderer {
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
   }
 
-  void transform() {
+  void transform(Dots dots) {
     geodesic.transform();
   }
 
-  public void render() {
-    Dots dots = frame.dots;
+  public void render(Dots dots) {
     if (dots == null)
       return;
     AtomShape[] atomShapes = frame.atomShapes;

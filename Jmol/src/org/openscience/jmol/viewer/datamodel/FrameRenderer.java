@@ -40,6 +40,7 @@ public class FrameRenderer {
   LabelRenderer labelRenderer;
   MeasurementRenderer measurementRenderer;
   DotsRenderer dotsRenderer;
+  RibbonsRenderer ribbonsRenderer;
   ArcTest arctest;
   Gtest gtest;
   JmolFrame frame;
@@ -51,6 +52,7 @@ public class FrameRenderer {
     labelRenderer = new LabelRenderer(viewer);
     measurementRenderer = new MeasurementRenderer(viewer);
     dotsRenderer = new DotsRenderer(viewer);
+    ribbonsRenderer = new RibbonsRenderer(viewer);
     arctest = new ArcTest(viewer);
     gtest = new Gtest(viewer);
   }
@@ -62,6 +64,7 @@ public class FrameRenderer {
     labelRenderer.setGraphicsContext(g3d, rectClip);
     measurementRenderer.setGraphicsContext(g3d, rectClip, frame);
     dotsRenderer.setGraphicsContext(g3d, rectClip, frame);
+    ribbonsRenderer.setGraphicsContext(g3d, rectClip, frame);
     arctest.setGraphicsContext(g3d, rectClip, frame);
     gtest.setGraphicsContext(g3d, rectClip, frame);
   }
@@ -74,7 +77,6 @@ public class FrameRenderer {
 
     viewer.calcTransformMatrices();
 
-    dotsRenderer.transform();
     //    arctest.transform();
     //    arctest.render();
     gtest.transform();
@@ -90,7 +92,10 @@ public class FrameRenderer {
         labelRenderer.render(atomShape);
     }
 
-    dotsRenderer.render();
+    dotsRenderer.transform(frame.dots);
+    dotsRenderer.render(frame.dots);
+    ribbonsRenderer.transform(frame.ribbons);
+    ribbonsRenderer.render(frame.ribbons);
 
     BondShape[] bondShapes = frame.bondShapes;
     for (int i = frame.bondShapeCount; --i >= 0; )

@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre12a";
+  public final static String version = "10pre12b";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -405,12 +405,14 @@ final public class JmolConstants {
   };
 
   public final static byte[] alternateElementNumbers = {
+    0,
     13,
     16,
     55,
   };
 
   public final static String[] alternateElementNames = {
+    "dummy",
     "aluminium",
     "sulphur",
     "caesium",

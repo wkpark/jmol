@@ -10,33 +10,86 @@
       If your website uses the Jmol applet too, and want to have it listed,
       please email us.
       </p>
-      <p>
-	The list:
-	<ul>
-	  <li>
-	    <a href="http://www.woc.sci.kun.nl">
-	      Dutch Dictionary on Organic Chemistry
-	    </a>
-	  </li>
-	  <li>
-	    <a href="http://www.ebi.ac.uk/msd-srv/chempdb/">
-	      MSD ligand chemistry
-	    </a>
-	  </li>
-	  <li>
-	    <a href="http://bip.weizmann.ac.il/oca">
-	      Weizmann Institute of Science, OCA
-	    </a>
-	  </li>
-	  <li>
-	    <a href="http://www.imb-jena.de/IMAGE_PDB_SEARCH.html">
-	      IMB Jena Image Library of Biological Macromolecules
-	    </a>
-	  </li>
-        </ul>
-      </p>
+      <ul>
+	<li>
+	  <a href="http://www.woc.sci.kun.nl">
+	    Dutch Dictionary on Organic Chemistry
+	  </a>
+	</li>
+	<li>
+	  <a href="http://www.ebi.ac.uk/msd-srv/chempdb/">
+	    MSD ligand chemistry
+	  </a>
+	</li>
+	<li>
+	  <a href="http://bip.weizmann.ac.il/oca">
+	    Weizmann Institute of Science, OCA
+	  </a>
+	</li>
+	<li>
+	  <a href="http://www.imb-jena.de/IMAGE_PDB_SEARCH.html">
+	    IMB Jena Image Library of Biological Macromolecules
+	  </a>
+	</li>
+      </ul>
     </section>
       
+    <section title="Directly Related Documentation Links">
+      <ul>
+	<li>
+	  <a href="http://www.openrasmol.org/doc/rasmol.htm">
+	    Current Open RasMol documentation
+	  </a>
+	</li>
+	<li>
+	  <a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm">
+	    RasMol Version 2.6-beta-2 Reference Manual
+	  </a>
+	</li>
+      </ul>
+    </section>
+
+    <section title="General Molecular Visualization links">
+      <ul>
+	<li>
+	  Open RasMol<br />
+	  <a href="http://www.openrasmol.org">
+	    www.openrasmol.org
+	  </a>
+	</li>
+	<li>
+	  RasMol Home Page at University of Massachusetts, USA<br />
+	  <a href="http://www.umass.edu/microbio/rasmol/index2.htm">
+	    www.umass.edu/microbio/rasmol/index2.htm
+	  </a>
+	</li>
+	<li>
+	  World Index of Molecular Visualization Resources<br />
+	  <a href="http://molvis.sdsc.edu/visres">
+	    molvis.sdsc.edu/visres
+	  </a>
+	</li>
+	<li>
+	  Molecular Visualization Freeware at UMass<br />
+	  <a href="http://www.umass.edu/microbio/rasmol">
+	    www.umass.edu/microbio.rasmol
+	  </a>
+	</li>
+	<li>
+	  Protein Explorer<br />
+	  <a href="http://www.proteinexplorer.org">
+	    www.proteinexplorer.org
+	  </a>
+	</li>
+	<li>
+	  Protein Data Bank<br />
+	  <a href="http://www.pdb.org">
+	    www.pdb.org
+	  </a>
+	</li>
+      </ul>
+    </section>
+
     
   </body>
 </document>

@@ -187,8 +187,7 @@ public class CdkJmolAdapter extends JmolAdapter {
             fNotional[i] = (float)notional[i];
         }
         return fNotional;
-    }
-    System.err.println("Cannot return notional unit cell params: no Crystal found");
+    } // else: no crystal thus no unit cell info
     return null;
   }
 

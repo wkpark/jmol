@@ -26,6 +26,7 @@
 package org.jmol.api;
 
 import java.io.BufferedReader;
+import java.util.Properties;
 
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
@@ -120,28 +121,28 @@ public abstract class JmolAdapter {
   public int getAtomSetCount(Object clientFile) { return 1; }
 
   /**
+   * The a number identifying each atomSet.
+   *<p>
+   * For a PDB file, this is is the model number. For others it is
+   * a 1-based atomSet number.
+   *<p>
+   * <i>Note that this is not currently implemented in PdbReader</i>
+   */
+  public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
+    return atomSetIndex + 1;
+  }
+
+  /**
    * The name of each atomSet
    */
   public String getAtomSetName(Object clientFile, int atomSetIndex) {
-    return "" + atomSetIndex + 1;
+    return "" + getAtomSetNumber(clientFile, atomSetIndex);
   }
 
   /**
-   * The model tag for each model.
-   *<p>
-   * For a PDB file, this is is the model number.
+   * The properties for each atomSet
    */
-  public String getModelTag(Object clientFile, int modelIndex)
-  { return "" + getModelNumber(clientFile, modelIndex); }
-
-  public int getModelNumber(Object clientFile, int modelIndex) {
-    return 1;
-  }
-
-  /**
-   * The properties for each model
-   */
-  public String getModelProperties(Object clientFile, int modelIndex) {
+  public Properties getAtomSetProperties(Object clientFile, int atomSetIndex) {
     return null;
   }
 

@@ -353,7 +353,7 @@ public class Jmol extends JPanel {
         System.out.println("  display.speed=[fps|ms] (ms)");
         System.out.println("  JmolConsole=[true|false] (true)");
         System.out.println("  plugin.dir (unset)");
-        System.out.println("  user.language=[EN|ES|NL] (EN)");
+        System.out.println("  user.language=[DE|EN|ES|FR|NL|PL] (EN)");
 
         System.exit(0);
     }

@@ -74,17 +74,6 @@ public class AtomColors implements AtomColorer {
   public Color getAtomColor(Atom a) {
     if (colors.containsKey(a.getID()))
       return (Color)colors.get(a.getID());
-    /* Egon,
-       The code below is what I added.
-       It used to just return Color.gray
-       So I am putting that in with the following statement.
-       Now that I am looking at it, the code does not look that bad.
-       But the app and the applet need to manage atom colors/charactists
-       in the same manner.
-       Miguel
-    */
-    if (true)
-      return Color.gray;
     // FIXME -- mth -- all this color stuff needs work
     // the colors are already stored in the basetype
     // the basetypes get read to populate the atom properties table

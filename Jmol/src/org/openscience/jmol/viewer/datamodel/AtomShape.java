@@ -32,14 +32,14 @@ import org.openscience.jmol.viewer.protein.ProteinProp;
 
 import java.awt.Rectangle;
 
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 public class AtomShape implements Bspt.Tuple {
 
   public Object clientAtom;
   JmolFrame frame;
-  Point3d point3d;
+  Point3f point3f;
   int x, y, z;
   byte atomicNumber;
   byte styleAtom;
@@ -65,7 +65,7 @@ public class AtomShape implements Bspt.Tuple {
         pprop = new ProteinProp(pdbRecord);
     }
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
-    this.point3d = new Point3d(viewer.getAtomX(clientAtom),
+    this.point3f = new Point3f(viewer.getAtomX(clientAtom),
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
@@ -247,7 +247,7 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public void transform(JmolViewer viewer) {
-    Point3i screen = viewer.transformPoint(point3d);
+    Point3i screen = viewer.transformPoint(point3f);
     x = screen.x;
     y = screen.y;
     z = screen.z;
@@ -266,26 +266,26 @@ public class AtomShape implements Bspt.Tuple {
     return frame.viewer.getAtomTypeName(atomicNumber, clientAtom);
   }
 
-  public Point3d getPoint3d() {
-    return point3d;
+  public Point3f getPoint3f() {
+    return point3f;
   }
 
   public float getAtomX() {
-    return (float)point3d.x;
+    return (float)point3f.x;
   }
 
   public float getAtomY() {
-    return (float)point3d.y;
+    return (float)point3f.y;
   }
 
   public float getAtomZ() {
-    return (float)point3d.z;
+    return (float)point3f.z;
   }
 
   public float getDimensionValue(int dimension) {
     return (float)(dimension == 0
-		   ? point3d.x
-		   : (dimension == 1 ? point3d.y : point3d.z));
+		   ? point3f.x
+		   : (dimension == 1 ? point3f.y : point3f.z));
   }
 
   public float getVanderwaalsRadius() {

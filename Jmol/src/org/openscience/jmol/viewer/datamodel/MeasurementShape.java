@@ -28,8 +28,8 @@ import org.openscience.jmol.MeasurementInterface;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 //import freeware.PrintfFormat;
 import java.awt.Font;
@@ -42,10 +42,10 @@ public class MeasurementShape extends LineShape
   public String strMeasurement;
 
   public MeasurementShape(JmolViewer viewer, int count, int[] atomIndices) {
-    Point3d point1 = viewer.getPoint3d(atomIndices[0]);
-    Point3d point2 = viewer.getPoint3d(atomIndices[1]);
-    Point3d point3 = null;
-    Point3d point4 = null;
+    Point3f point1 = viewer.getPoint3f(atomIndices[0]);
+    Point3f point2 = viewer.getPoint3f(atomIndices[1]);
+    Point3f point3 = null;
+    Point3f point4 = null;
     switch (count) {
     case 2:
       strMeasurement = formatDistance(point1.distance(point2));;
@@ -54,33 +54,33 @@ public class MeasurementShape extends LineShape
       pointEnd = point2;
       break;
     case 3:
-      point3 = viewer.getPoint3d(atomIndices[2]);
-      Vector3d vector12 = new Vector3d(point1);
+      point3 = viewer.getPoint3f(atomIndices[2]);
+      Vector3f vector12 = new Vector3f(point1);
       vector12.sub(point2);
-      Vector3d vector32 = new Vector3d(point3);
+      Vector3f vector32 = new Vector3f(point3);
       vector32.sub(point2);
-      double angle = toDegrees(vector12.angle(vector32));
+      float angle = toDegrees(vector12.angle(vector32));
       strMeasurement = formatAngle(angle);
 
-      pointOrigin = new Point3d(point1);
+      pointOrigin = new Point3f(point1);
       pointOrigin.scaleAdd(3, point2);
-      pointOrigin.scale(.25);
-      pointEnd = new Point3d(point3);
+      pointOrigin.scale(0.25f);
+      pointEnd = new Point3f(point3);
       pointEnd.scaleAdd(3, point2);
-      pointEnd.scale(.25);
+      pointEnd.scale(0.25f);
       break;
     case 4:
-      point3 = viewer.getPoint3d(atomIndices[2]);
-      point4 = viewer.getPoint3d(atomIndices[3]);
-      double dihedral = computeDihedral(point1, point2, point3, point4);
+      point3 = viewer.getPoint3f(atomIndices[2]);
+      point4 = viewer.getPoint3f(atomIndices[3]);
+      float dihedral = computeDihedral(point1, point2, point3, point4);
       strMeasurement = formatAngle(dihedral);
 
-      pointOrigin = new Point3d(point1);
+      pointOrigin = new Point3f(point1);
       pointOrigin.add(point2);
-      pointOrigin.scale(0.5);
-      pointEnd = new Point3d(point3);
+      pointOrigin.scale(0.5f);
+      pointEnd = new Point3f(point3);
       pointEnd.add(point4);
-      pointEnd.scale(0.5);
+      pointEnd.scale(0.5f);
       break;
     default:
       System.out.println("Invalid count to measurement shape:" + count);
@@ -107,14 +107,14 @@ public class MeasurementShape extends LineShape
   private static PrintfFormat dihedralFormat = new PrintfFormat("%0.1f\u00b0");
   */
   
-  String formatDistance(double dist) {
-    dist = (int)(dist * 1000 + .5);
+  String formatDistance(float dist) {
+    dist = (int)(dist * 1000 + 0.5f);
     dist /= 1000;
     return "" + dist + '\u00C5';
   }
 
-  String formatAngle(double angle) {
-    angle = (int)(angle * 10 + (angle >= 0 ? 0.5 : -0.5));
+  String formatAngle(float angle) {
+    angle = (int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f));
     angle /= 10;
     return "" + angle + '\u00B0';
   }
@@ -158,52 +158,52 @@ public class MeasurementShape extends LineShape
              atomIndices[3] == this.atomIndices[0]));
   }
 
-  public double computeDihedral(Point3d p1, Point3d p2,
-                                Point3d p3, Point3d p4) {
+  public float computeDihedral(Point3f p1, Point3f p2,
+                                Point3f p3, Point3f p4) {
 
-    double ijx = p1.x - p2.x;
-    double ijy = p1.y - p2.y;
-    double ijz = p1.z - p2.z;
+    float ijx = p1.x - p2.x;
+    float ijy = p1.y - p2.y;
+    float ijz = p1.z - p2.z;
 
-    double kjx = p3.x - p2.x;
-    double kjy = p3.y - p2.y;
-    double kjz = p3.z - p2.z;
+    float kjx = p3.x - p2.x;
+    float kjy = p3.y - p2.y;
+    float kjz = p3.z - p2.z;
 
-    double klx = p3.x - p4.x;
-    double kly = p3.y - p4.y;
-    double klz = p3.z - p4.z;
+    float klx = p3.x - p4.x;
+    float kly = p3.y - p4.y;
+    float klz = p3.z - p4.z;
 
-    double ax = ijy * kjz - ijz * kjy;
-    double ay = ijz * kjx - ijx * kjz;
-    double az = ijx * kjy - ijy * kjx;
-    double cx = kjy * klz - kjz * kly;
-    double cy = kjz * klx - kjx * klz;
-    double cz = kjx * kly - kjy * klx;
+    float ax = ijy * kjz - ijz * kjy;
+    float ay = ijz * kjx - ijx * kjz;
+    float az = ijx * kjy - ijy * kjx;
+    float cx = kjy * klz - kjz * kly;
+    float cy = kjz * klx - kjx * klz;
+    float cz = kjx * kly - kjy * klx;
 
-    double ai2 = 1.0 / (ax * ax + ay * ay + az * az);
-    double ci2 = 1.0 / (cx * cx + cy * cy + cz * cz);
+    float ai2 = 1f / (ax * ax + ay * ay + az * az);
+    float ci2 = 1f / (cx * cx + cy * cy + cz * cz);
 
-    double ai = Math.sqrt(ai2);
-    double ci = Math.sqrt(ci2);
-    double denom = ai * ci;
-    double cross = ax * cx + ay * cy + az * cz;
-    double cosang = cross * denom;
-    if (cosang > 1.0) {
-      cosang = 1.0;
+    float ai = (float)Math.sqrt(ai2);
+    float ci = (float)Math.sqrt(ci2);
+    float denom = ai * ci;
+    float cross = ax * cx + ay * cy + az * cz;
+    float cosang = cross * denom;
+    if (cosang > 1) {
+      cosang = 1;
     }
-    if (cosang < -1.0) {
-      cosang = -1.0;
+    if (cosang < -1) {
+      cosang = -1;
     }
 
-    double dihedral = toDegrees(Math.acos(cosang));
-    double dot  =  ijx*cx + ijy*cy + ijz*cz;
-    double absDot =  Math.abs(dot);
+    float dihedral = toDegrees((float)Math.acos(cosang));
+    float dot  =  ijx*cx + ijy*cy + ijz*cz;
+    float absDot =  (float)Math.abs(dot);
     dihedral = (dot/absDot > 0) ? dihedral : -dihedral;
     return dihedral;
   }
 
-  public static double toDegrees(double angrad) {
-    return angrad * 180.0 / Math.PI;
+  public static float toDegrees(float angrad) {
+    return angrad * 180 / (float)Math.PI;
   }
 
   public String toString() {

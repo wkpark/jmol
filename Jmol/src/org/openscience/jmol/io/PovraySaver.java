@@ -32,8 +32,8 @@ import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
-import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Matrix4f;
 import java.awt.Dimension;
 
 public class PovraySaver {
@@ -41,8 +41,8 @@ public class PovraySaver {
   BufferedWriter bw;
   JmolViewer viewer;
   
-  Matrix4d rotationMatrix;
-  Matrix4d transformMatrix;
+  Matrix4f rotationMatrix;
+  Matrix4f transformMatrix;
 
   public PovraySaver(JmolViewer viewer, OutputStream out) {
     this.bw = new BufferedWriter(new OutputStreamWriter(out), 8192);
@@ -341,15 +341,15 @@ public class PovraySaver {
         "#end\n\n");
   }
 
-  Point3d point1 = new Point3d();
-  Point3d point2 = new Point3d();
-  Point3d pointC = new Point3d();
+  Point3f point1 = new Point3f();
+  Point3f point2 = new Point3f();
+  Point3f pointC = new Point3f();
 
   void writeAtom(int i) throws IOException {
     float radius = (float)viewer.getAtomRadius(i);
     if (radius == 0)
       return;
-    transformMatrix.transform(viewer.getAtomPoint3d(i), point1);
+    transformMatrix.transform(viewer.getAtomPoint3f(i), point1);
     float x = (float)point1.x;
     float y = (float)point1.y;
     float z = (float)point1.z;
@@ -367,11 +367,11 @@ public class PovraySaver {
     float radius = (float)viewer.getBondRadius(i);
     if (radius == 0)
       return;
-    transformMatrix.transform(viewer.getBondPoint3d1(i), point1);
+    transformMatrix.transform(viewer.getBondPoint3f1(i), point1);
     float x1 = (float)point1.x;
     float y1 = (float)point1.y;
     float z1 = (float)point1.z;
-    transformMatrix.transform(viewer.getBondPoint3d2(i), point2);
+    transformMatrix.transform(viewer.getBondPoint3f2(i), point2);
     float x2 = (float)point2.x;
     float y2 = (float)point2.y;
     float z2 = (float)point2.z;
@@ -400,7 +400,7 @@ public class PovraySaver {
     } else {
       pointC.set(point1);
       pointC.add(point2);
-      pointC.scale(0.5);
+      pointC.scale(0.5f);
       float xC = (float)pointC.x;
       float yC = (float)pointC.y;
       float zC = (float)pointC.z;

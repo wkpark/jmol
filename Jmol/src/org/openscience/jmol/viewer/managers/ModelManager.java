@@ -31,7 +31,7 @@ import org.openscience.jmol.viewer.datamodel.JmolFrameBuilder;
 
 import java.util.BitSet;
 import java.util.Hashtable;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import java.awt.Rectangle;
 import java.awt.Color;
 
@@ -124,15 +124,15 @@ public class ModelManager {
     return frame.getRotationRadius();
   }
 
-  public Point3d getRotationCenter() {
+  public Point3f getRotationCenter() {
     return frame.getRotationCenter();
   }
 
-  public Point3d getBoundingBoxCenter() {
+  public Point3f getBoundingBoxCenter() {
     return frame.getBoundingBoxCenter();
   }
 
-  public Point3d getBoundingBoxCorner() {
+  public Point3f getBoundingBoxCorner() {
     return frame.getBoundingBoxCorner();
   }
   
@@ -165,20 +165,20 @@ public class ModelManager {
     return frame.getBondCount();
   }
 
-  public Point3d getPoint3d(int atomIndex) {
-    return frame.getAtomAt(atomIndex).getPoint3d();
+  public Point3f getPoint3f(int atomIndex) {
+    return frame.getAtomAt(atomIndex).getPoint3f();
   }
 
   public void setCenterAsSelected() {
     int atomCount = getAtomCount();
     int countSelected = 0;
-    Point3d  center = new Point3d(); // defaults to 0,00,
+    Point3f  center = new Point3f(); // defaults to 0,00,
     BitSet bsSelection = viewer.getSelectionSet();
     for (int i = 0; i < atomCount; ++i) {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(getPoint3d(i));
+      center.add(getPoint3f(i));
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity
@@ -188,7 +188,7 @@ public class ModelManager {
     frame.setRotationCenter(center);
   }
 
-  public void setRotationCenter(Point3d center) {
+  public void setRotationCenter(Point3f center) {
     frame.setRotationCenter(center);
   }
 
@@ -369,8 +369,8 @@ public class ModelManager {
     return frame.atomShapes[i].getAtomZ();
   }
 
-  public Point3d getAtomPoint3d(int i) {
-    return frame.atomShapes[i].getPoint3d();
+  public Point3f getAtomPoint3f(int i) {
+    return frame.atomShapes[i].getPoint3f();
   }
 
   public float getAtomRadius(int i) {
@@ -381,12 +381,12 @@ public class ModelManager {
     return frame.atomShapes[i].getColix();
   }
 
-  public Point3d getBondPoint3d1(int i) {
-    return frame.bondShapes[i].atomShape1.getPoint3d();
+  public Point3f getBondPoint3f1(int i) {
+    return frame.bondShapes[i].atomShape1.getPoint3f();
   }
 
-  public Point3d getBondPoint3d2(int i) {
-    return frame.bondShapes[i].atomShape2.getPoint3d();
+  public Point3f getBondPoint3f2(int i) {
+    return frame.bondShapes[i].atomShape2.getPoint3f();
   }
 
   public float getBondRadius(int i) {

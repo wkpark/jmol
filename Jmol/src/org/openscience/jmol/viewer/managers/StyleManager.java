@@ -110,41 +110,4 @@ public class StyleManager {
   public void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
   }
-
-  // FIXME NEEDSWORK -- arrow vector stuff
-  public float arrowHeadSize = 10.0f;
-  public float arrowHeadRadius = 1.0f;
-  public float arrowLengthScale = 1.0f;
-
-  public void setArrowHeadSize(float ls) {
-    arrowHeadSize = 10.0f * ls;
-  }
-
-  public float getArrowHeadSize() {
-    return arrowHeadSize / 10.0f;
-  }
-
-  // mth dec 2003
-  // for some reason, internal to ArrowLine the raw arrowHeadSize was
-  // used, but externally it is multiplied/divided by 10
-  // will figure it out and fix it later
-  public float getArrowHeadSize10() {
-    return arrowHeadSize;
-  }
-
-  public void setArrowLengthScale(float ls) {
-    arrowLengthScale = ls;
-  }
-
-  public float getArrowLengthScale() {
-    return arrowLengthScale;
-  }
-
-  public void setArrowHeadRadius(float rs) {
-    arrowHeadRadius = rs;
-  }
-
-  public float getArrowHeadRadius() {
-    return arrowHeadRadius;
-  }
 }

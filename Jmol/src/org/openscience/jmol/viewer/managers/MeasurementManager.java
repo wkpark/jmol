@@ -30,7 +30,6 @@ import org.openscience.jmol.viewer.datamodel.MeasurementShape;
 
 import java.util.BitSet;
 import java.util.Vector;
-import javax.vecmath.Point3d;
 import java.awt.Rectangle;
 
 import java.beans.PropertyChangeListener;

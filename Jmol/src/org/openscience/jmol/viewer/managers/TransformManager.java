@@ -26,11 +26,11 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import java.awt.Dimension;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Matrix4d;
-import javax.vecmath.AxisAngle4d;
+import javax.vecmath.Vector3f;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.AxisAngle4f;
 
 public class TransformManager {
 
@@ -53,7 +53,7 @@ public class TransformManager {
    ROTATIONS
   ****************************************************************/
 
-  public final Matrix4d matrixRotate = new Matrix4d();
+  public final Matrix4f matrixRotate = new Matrix4f();
 
   public void rotateXYBy(int xDelta, int yDelta) {
     // what fraction of PI radians do you want to rotate?
@@ -105,7 +105,7 @@ public class TransformManager {
     matrixRotate.mul(matrixTemp, matrixRotate);
   }
 
-  public void rotate(AxisAngle4d axisAngle) {
+  public void rotate(AxisAngle4f axisAngle) {
     matrixTemp.setIdentity();
     matrixTemp.setRotation(axisAngle);
     matrixRotate.mul(matrixTemp, matrixRotate);
@@ -412,12 +412,12 @@ public class TransformManager {
    TRANSFORMATIONS
   ****************************************************************/
 
-  public final Matrix4d matrixPointTransform = new Matrix4d();
-  public final Matrix4d matrixVectorTransform = new Matrix4d();
-  private final Point3d point3dScreenTemp = new Point3d();
+  public final Matrix4f matrixPointTransform = new Matrix4f();
+  public final Matrix4f matrixVectorTransform = new Matrix4f();
+  private final Point3f point3dScreenTemp = new Point3f();
   private final Point3i point3iScreenTemp = new Point3i();
-  private final Matrix4d matrixTemp = new Matrix4d();
-  private final Vector3d vectorTemp = new Vector3d();
+  private final Matrix4f matrixTemp = new Matrix4f();
+  private final Vector3f vectorTemp = new Vector3f();
 
   public void calcTransformMatrices() {
     calcPointTransformMatrix();
@@ -467,8 +467,8 @@ public class TransformManager {
     matrixVectorTransform.mul(matrixTemp, matrixVectorTransform);
   }
 
-  public Matrix4d getUnscaledTransformMatrix() {
-    Matrix4d unscaled = new Matrix4d();
+  public Matrix4f getUnscaledTransformMatrix() {
+    Matrix4f unscaled = new Matrix4f();
     unscaled.setIdentity();
     vectorTemp.set(viewer.getRotationCenter());
     matrixTemp.setZero();
@@ -478,7 +478,7 @@ public class TransformManager {
     return unscaled;
   }
 
-  public Point3i transformPoint(Point3d pointAngstroms) {
+  public Point3i transformPoint(Point3f pointAngstroms) {
     matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
     int z = (int)(point3dScreenTemp.z + 0.5);
     if (z < 0) {
@@ -496,14 +496,14 @@ public class TransformManager {
     return point3iScreenTemp;
   }
 
-  public void transformVector(Vector3d vectorAngstroms,
-                              Vector3d vectorTransformed) {
+  public void transformVector(Vector3f vectorAngstroms,
+                              Vector3f vectorTransformed) {
     matrixVectorTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
   /*
-  public void transformVector(Point3d pointAngstroms,
-                              Point3d vectorAngstroms,
+  public void transformVector(Point3f pointAngstroms,
+                              Point3f vectorAngstroms,
                               float scale,
                               Point3i results) {
     point3dScreenTemp.set(vectorAngstroms);
@@ -517,12 +517,12 @@ public class TransformManager {
    exports for POV rendering
   ****************************************************************/
 
-  public Matrix4d getPovRotateMatrix() {
-    return new Matrix4d(matrixRotate);
+  public Matrix4f getPovRotateMatrix() {
+    return new Matrix4f(matrixRotate);
   }
 
-  public Matrix4d getPovTranslateMatrix() {
-    Matrix4d matrixPovTranslate = new Matrix4d();
+  public Matrix4f getPovTranslateMatrix() {
+    Matrix4f matrixPovTranslate = new Matrix4f();
     matrixPovTranslate.setIdentity();
     matrixPovTranslate.get(vectorTemp);
     vectorTemp.x = (xTranslation-width/2) / scalePixelsPerAngstrom;

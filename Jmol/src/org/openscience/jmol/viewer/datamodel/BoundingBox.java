@@ -29,27 +29,27 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 public class BoundingBox {
 
   JmolViewer viewer;
 
-  Point3d pointOrigin;
-  Point3d pointCorner;
+  Point3f pointOrigin;
+  Point3f pointCorner;
   BboxShape[] bboxShapes;
 
 
-  Point3d[] unitBboxPoints = {
-    new Point3d( 1, 1, 1),
-    new Point3d( 1, 1,-1),
-    new Point3d( 1,-1, 1),
-    new Point3d( 1,-1,-1),
-    new Point3d(-1, 1, 1),
-    new Point3d(-1, 1,-1),
-    new Point3d(-1,-1, 1),
-    new Point3d(-1,-1,-1),
+  Point3f[] unitBboxPoints = {
+    new Point3f( 1, 1, 1),
+    new Point3f( 1, 1,-1),
+    new Point3f( 1,-1, 1),
+    new Point3f( 1,-1,-1),
+    new Point3f(-1, 1, 1),
+    new Point3f(-1, 1,-1),
+    new Point3f(-1,-1, 1),
+    new Point3f(-1,-1,-1),
   };
 
   public BoundingBox(JmolViewer viewer) {
@@ -58,7 +58,7 @@ public class BoundingBox {
     bboxShapes = new BboxShape[8];
     for (int i = 0; i < 8; ++i)
       bboxShapes[i] =
-        new BboxShape(new Point3d(unitBboxPoints[i]), i);
+        new BboxShape(new Point3f(unitBboxPoints[i]), i);
   }
 
   public Shape[] getBboxShapes() {
@@ -66,10 +66,10 @@ public class BoundingBox {
   }
 
   public void recalc() {
-    Point3d pointOrigin = viewer.getBoundingBoxCenter();
-    Point3d pointCorner = viewer.getBoundingBoxCorner();
+    Point3f pointOrigin = viewer.getBoundingBoxCenter();
+    Point3f pointCorner = viewer.getBoundingBoxCorner();
     for (int i = 0; i < 8; ++i) {
-      Point3d pointBbox = bboxShapes[i].getPoint();
+      Point3f pointBbox = bboxShapes[i].getPoint();
       pointBbox.set(unitBboxPoints[i]);
       pointBbox.x *= pointCorner.x;
       pointBbox.y *= pointCorner.y;
@@ -79,15 +79,15 @@ public class BoundingBox {
   }
 
   class BboxShape extends Shape {
-    Point3d point;
+    Point3f point;
     int myIndex;
 
-    BboxShape(Point3d point, int myIndex) {
+    BboxShape(Point3f point, int myIndex) {
       this.point = point;
       this.myIndex = myIndex;
     }
 
-    Point3d getPoint() {
+    Point3f getPoint() {
       return point;
     }
 

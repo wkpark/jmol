@@ -29,7 +29,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 public class Axes {
@@ -40,14 +40,14 @@ public class Axes {
   AxisShape[] axisShapes;
   Shape[] allShapes;
 
-  final Point3d pointOrigin = new Point3d();
-  Point3d[] unitAxisPoints = {
-    new Point3d( 1, 0, 0),
-    new Point3d( 0, 1, 0),
-    new Point3d( 0, 0, 1),
-    new Point3d(-1, 0, 0),
-    new Point3d( 0,-1, 0),
-    new Point3d( 0, 0,-1)
+  final Point3f pointOrigin = new Point3f();
+  Point3f[] unitAxisPoints = {
+    new Point3f( 1, 0, 0),
+    new Point3f( 0, 1, 0),
+    new Point3f( 0, 0, 1),
+    new Point3f(-1, 0, 0),
+    new Point3f( 0,-1, 0),
+    new Point3f( 0, 0,-1)
   };
 
   String[] axisLabels = { "+X", "+Y", "+Z",
@@ -64,7 +64,7 @@ public class Axes {
     axisShapes = new AxisShape[6];
     for (int i = 0; i < 6; ++i)
       allShapes[i+1] = axisShapes[i] =
-        new AxisShape(new Point3d(unitAxisPoints[i]), axisLabels[i]);
+        new AxisShape(new Point3f(unitAxisPoints[i]), axisLabels[i]);
   }
 
   public Shape[] getShapes() {
@@ -75,9 +75,9 @@ public class Axes {
     if (modeAxes == JmolViewer.AXES_NONE)
       return;
     pointOrigin.set(viewer.getBoundingBoxCenter());
-    Point3d corner = viewer.getBoundingBoxCorner();
+    Point3f corner = viewer.getBoundingBoxCorner();
     for (int i = 0; i < 6; ++i) {
-      Point3d axisPoint = axisShapes[i].getPoint();
+      Point3f axisPoint = axisShapes[i].getPoint();
       axisPoint.set(unitAxisPoints[i]);
       if (modeAxes == JmolViewer.AXES_BBOX) {
         // we have just set the axisPoint to be a unit on a single axis
@@ -114,14 +114,14 @@ public class Axes {
   }
 
   class AxisShape extends Shape {
-    Point3d pointAxisEnd;
+    Point3f pointAxisEnd;
     String label;
-    AxisShape(Point3d pointAxisEnd, String label) {
+    AxisShape(Point3f pointAxisEnd, String label) {
       this.pointAxisEnd = pointAxisEnd;
       this.label = label;
     }
 
-    Point3d getPoint() {
+    Point3f getPoint() {
       return pointAxisEnd;
     }
 

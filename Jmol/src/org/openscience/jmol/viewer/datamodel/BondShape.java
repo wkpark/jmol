@@ -31,9 +31,6 @@ import org.openscience.jmol.viewer.g3d.Colix;
 
 import java.awt.Rectangle;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Point3i;
-
 public class BondShape {
 
   public final static byte COVALENT = 3;

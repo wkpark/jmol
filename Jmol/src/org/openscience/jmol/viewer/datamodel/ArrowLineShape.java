@@ -28,7 +28,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.JmolViewer;
 
 import java.awt.Rectangle;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 public class ArrowLineShape extends LineShape {
@@ -42,7 +42,7 @@ public class ArrowLineShape extends LineShape {
   final static int shaftDivisor = 5;
   final static int finDivisor = 6;
 
-  public ArrowLineShape(Point3d pointOrigin, Point3d pointVector) {
+  public ArrowLineShape(Point3f pointOrigin, Point3f pointVector) {
     super(pointOrigin, pointVector);
     headWidthAngstroms =
 	(float)pointOrigin.distance(this.pointEnd) / widthDivisor;

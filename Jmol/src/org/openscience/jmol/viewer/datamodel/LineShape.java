@@ -28,28 +28,28 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import java.awt.Rectangle;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 public class LineShape extends Shape {
 
-  Point3d pointOrigin;
-  Point3d pointEnd;
+  Point3f pointOrigin;
+  Point3f pointEnd;
   int xEnd, yEnd, zEnd;
 
   public LineShape() {
   }
 
-  public LineShape(Point3d pointOrigin, Point3d pointEnd) {
+  public LineShape(Point3f pointOrigin, Point3f pointEnd) {
     this.pointOrigin = pointOrigin;
     this.pointEnd = pointEnd;
   }
 
-  public Point3d getPoint1() {
+  public Point3f getPoint1() {
     return pointOrigin;
   }
 
-  public Point3d getPoint2() {
+  public Point3f getPoint2() {
     return pointEnd;
   }
 

@@ -28,7 +28,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.protein.ProteinProp;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
@@ -196,9 +196,9 @@ public class JmolFrame {
     dotsConvexCount = iLast + 1;
   }
 
-  Point3d centerBoundingBox;
-  Point3d cornerBoundingBox;
-  Point3d centerRotation;
+  Point3f centerBoundingBox;
+  Point3f cornerBoundingBox;
+  Point3f centerRotation;
   float radiusBoundingBox;
   float radiusRotation;
 
@@ -207,17 +207,17 @@ public class JmolFrame {
     return radiusBoundingBox;
   }
 
-  public Point3d getBoundingBoxCenter() {
+  public Point3f getBoundingBoxCenter() {
     findBounds();
     return centerBoundingBox;
   }
 
-  public Point3d getBoundingBoxCorner() {
+  public Point3f getBoundingBoxCorner() {
     findBounds();
     return cornerBoundingBox;
   }
 
-  public Point3d getRotationCenter() {
+  public Point3f getRotationCenter() {
     findBounds();
     return centerRotation;
   }
@@ -227,7 +227,7 @@ public class JmolFrame {
     return radiusRotation;
   }
 
-  public void setRotationCenter(Point3d newCenterOfRotation) {
+  public void setRotationCenter(Point3f newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       centerRotation = newCenterOfRotation;
       radiusRotation = calcRadius(centerRotation);
@@ -256,44 +256,44 @@ public class JmolFrame {
     // Note that this is not really the geometric center of the molecule
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
     float minX, minY, minZ, maxX, maxY, maxZ;
-    Point3d point;
+    Point3f point;
     if (crystalCellLineCount == 0) { // non-crystal, so find extremes of atoms
-      point = atomShapes[0].getPoint3d();
-      minX = maxX = (float)point.x;
-      minY = maxY = (float)point.y;
-      minZ = maxZ = (float)point.z;
+      point = atomShapes[0].getPoint3f();
+      minX = maxX = point.x;
+      minY = maxY = point.y;
+      minZ = maxZ = point.z;
       
       for (int i = atomShapeCount; --i > 0; ) {
         // note that the 0 element was set above
-        point = atomShapes[i].getPoint3d();
+        point = atomShapes[i].getPoint3f();
         float t;
-        t = (float)point.x;
+        t = point.x;
         if (t < minX) { minX = t; }
         else if (t > maxX) { maxX = t; }
-        t = (float)point.y;
+        t = point.y;
         if (t < minY) { minY = t; }
         else if (t > maxY) { maxY = t; }
-        t = (float)point.z;
+        t = point.z;
         if (t < minZ) { minZ = t; }
         else if (t > maxZ) { maxZ = t; }
       }
     } else { // a crystal cell, so use center of crystal cell box
       point = crystalCellLines[0].getPoint1();
-      minX = maxX = (float)point.x;
-      minY = maxY = (float)point.y;
-      minZ = maxZ = (float)point.z;
+      minX = maxX = point.x;
+      minY = maxY = point.y;
+      minZ = maxZ = point.z;
       for (int i = crystalCellLineCount; --i >= 0; ) {
         point = crystalCellLines[i].getPoint1();
         int j = 0;
         do {
           float t;
-          t = (float)point.x;
+          t = point.x;
           if (t < minX) { minX = t; }
           else if (t > maxX) { maxX = t; }
-          t = (float)point.y;
+          t = point.y;
           if (t < minY) { minY = t; }
           else if (t > maxY) { maxY = t; }
-          t = (float)point.z;
+          t = point.z;
           if (t < minZ) { minZ = t; }
           else if (t > maxZ) { maxZ = t; }
           point = crystalCellLines[i].getPoint2();
@@ -301,19 +301,19 @@ public class JmolFrame {
       }
     }
       
-    centerBoundingBox = new Point3d((minX + maxX) / 2,
+    centerBoundingBox = new Point3f((minX + maxX) / 2,
                                     (minY + maxY) / 2,
                                     (minZ + maxZ) / 2);
-    cornerBoundingBox = new Point3d(maxX, maxY, maxZ);
+    cornerBoundingBox = new Point3f(maxX, maxY, maxZ);
     cornerBoundingBox.sub(centerBoundingBox);
   }
 
-  private float calcRadius(Point3d center) {
-    float radius = 0.0f;
+  private float calcRadius(Point3f center) {
+    float radius = 0;
     for (int i = atomShapeCount; --i >= 0; ) {
       AtomShape atomShape = atomShapes[i];
-      Point3d posAtom = atomShape.getPoint3d();
-      float distAtom = (float)center.distance(posAtom);
+      Point3f posAtom = atomShape.getPoint3f();
+      float distAtom = center.distance(posAtom);
       float radiusVdw = atomShape.getVanderwaalsRadius();
       float distVdw = distAtom + radiusVdw;
       
@@ -335,20 +335,20 @@ public class JmolFrame {
     for (int i = lineShapeCount; --i >= 0; ) {
       LineShape ls = lineShapes[i];
       float distLineEnd;
-      distLineEnd = (float)center.distance(ls.getPoint1());
+      distLineEnd = center.distance(ls.getPoint1());
       if (distLineEnd > radius)
         radius = distLineEnd;
-      distLineEnd = (float)center.distance(ls.getPoint2());
+      distLineEnd = center.distance(ls.getPoint2());
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
     for (int i = crystalCellLineCount; --i >= 0; ) {
       LineShape ls = crystalCellLines[i];
       float distLineEnd;
-      distLineEnd = (float)center.distance(ls.getPoint1());
+      distLineEnd = center.distance(ls.getPoint1());
       if (distLineEnd > radius)
         radius = distLineEnd;
-      distLineEnd = (float)center.distance(ls.getPoint2());
+      distLineEnd = center.distance(ls.getPoint2());
       if (distLineEnd > radius)
         radius = distLineEnd;
     }
@@ -582,7 +582,7 @@ public class JmolFrame {
     return withinAtomIterator;
   }
 
-  public AtomShapeIterator getWithinIterator(Point3d point, float radius) {
+  public AtomShapeIterator getWithinIterator(Point3f point, float radius) {
     pointWrapper.setPoint(point);
     withinPointIterator.initialize(pointWrapper, radius);
     return withinPointIterator;
@@ -611,16 +611,16 @@ public class JmolFrame {
   }
 
   class PointWrapper implements Bspt.Tuple {
-    Point3d point;
+    Point3f point;
     
-    void setPoint(Point3d point) {
+    void setPoint(Point3f point) {
       this.point.set(point);
     }
     
     public float getDimensionValue(int dim) {
       return (dim == 0
-	      ? (float)point.x
-	      : (dim == 1 ? (float)point.y : (float)point.z));
+	      ? point.x
+	      : (dim == 1 ? point.y : point.z));
     }
   }
 

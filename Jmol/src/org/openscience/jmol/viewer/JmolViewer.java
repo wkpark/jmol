@@ -43,10 +43,11 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
 import java.util.Iterator;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Matrix4d;
+import javax.vecmath.Matrix4f;
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.AxisAngle4d;
 import java.net.URL;
 import java.io.InputStream;
@@ -244,7 +245,7 @@ final public class JmolViewer {
     return degrees / (360 * 2 * (float)Math.PI);
   }
 
-  public void rotate(AxisAngle4d axisAngle) {
+  public void rotate(AxisAngle4f axisAngle) {
     transformManager.rotate(axisAngle);
     refresh();
   }
@@ -362,15 +363,15 @@ final public class JmolViewer {
     return transformManager.slabValue;
   }
 
-  public Matrix4d getPovRotateMatrix() {
+  public Matrix4f getPovRotateMatrix() {
     return transformManager.getPovRotateMatrix();
   }
 
-  public Matrix4d getPovTranslateMatrix() {
+  public Matrix4f getPovTranslateMatrix() {
     return transformManager.getPovTranslateMatrix();
   }
 
-  public Matrix4d getUnscaledTransformMatrix() {
+  public Matrix4f getUnscaledTransformMatrix() {
     return transformManager.getUnscaledTransformMatrix();
   }
 
@@ -378,12 +379,12 @@ final public class JmolViewer {
     transformManager.calcTransformMatrices();
   }
 
-  public Point3i transformPoint(Point3d pointAngstroms) {
+  public Point3i transformPoint(Point3f pointAngstroms) {
     return transformManager.transformPoint(pointAngstroms);
   }
 
-  public void transformVector(Vector3d vectorAngstroms,
-                              Vector3d vectorTransformed) {
+  public void transformVector(Vector3f vectorAngstroms,
+                              Vector3f vectorTransformed) {
     transformManager.transformVector(vectorAngstroms, vectorTransformed);
   }
 
@@ -780,15 +781,15 @@ final public class JmolViewer {
     return modelManager.getRotationRadius();
   }
 
-  public Point3d getRotationCenter() {
+  public Point3f getRotationCenter() {
     return modelManager.getRotationCenter();
   }
 
-  public Point3d getBoundingBoxCenter() {
+  public Point3f getBoundingBoxCenter() {
     return modelManager.getBoundingBoxCenter();
   }
 
-  public Point3d getBoundingBoxCorner() {
+  public Point3f getBoundingBoxCorner() {
     return modelManager.getBoundingBoxCorner();
   }
 
@@ -829,8 +830,8 @@ final public class JmolViewer {
     return modelManager.getBondCount();
   }
 
-    public Point3d getPoint3d(int atomIndex) {
-	return modelManager.getPoint3d(atomIndex);
+    public Point3f getPoint3f(int atomIndex) {
+	return modelManager.getPoint3f(atomIndex);
     }
 
   public float getAtomX(Object clientAtom) {
@@ -851,7 +852,7 @@ final public class JmolViewer {
     return modelManager.findAtomsInRectangle(rectRubberBand);
   }
 
-  public void setCenter(Point3d center) {
+  public void setCenter(Point3f center) {
     modelManager.setRotationCenter(center);
   }
 
@@ -868,8 +869,8 @@ final public class JmolViewer {
     refresh();
   }
 
-  public void setBondTolerance(double bondTolerance) {
-    modelManager.setBondTolerance((float)bondTolerance);
+  public void setBondTolerance(float bondTolerance) {
+    modelManager.setBondTolerance(bondTolerance);
     refresh();
   }
 
@@ -877,8 +878,8 @@ final public class JmolViewer {
     return modelManager.bondTolerance;
   }
 
-  public void setMinBondDistance(double minBondDistance) {
-    modelManager.setMinBondDistance((float)minBondDistance);
+  public void setMinBondDistance(float minBondDistance) {
+    modelManager.setMinBondDistance(minBondDistance);
     refresh();
   }
 
@@ -895,8 +896,8 @@ final public class JmolViewer {
     return modelManager.autoBond;
   }
 
-  public void setSolventProbeRadius(double radius) {
-    modelManager.setSolventProbeRadius((float)radius);
+  public void setSolventProbeRadius(float radius) {
+    modelManager.setSolventProbeRadius(radius);
   }
 
   public float getSolventProbeRadius() {
@@ -1444,37 +1445,6 @@ final public class JmolViewer {
     return styleManager.wireframeRotation;
   }
 
-  public void setArrowHeadSize(double ls) {
-    styleManager.setArrowHeadSize((float)ls);
-    refresh();
-  }
-
-  public float getArrowHeadSize() {
-    return styleManager.getArrowHeadSize();
-  }
-
-  public float getArrowHeadSize10() {
-    return styleManager.getArrowHeadSize10();
-  }
-
-  public void setArrowLengthScale(double ls) {
-    styleManager.setArrowLengthScale((float)ls);
-    refresh();
-  }
-
-  public float getArrowLengthScale() {
-    return styleManager.arrowLengthScale;
-  }
-
-  public void setArrowHeadRadius(double rs) {
-    styleManager.setArrowHeadRadius((float)rs);
-    refresh();
-  }
-
-  public float getArrowHeadRadius() {
-    return styleManager.arrowHeadRadius;
-  }
-
   /****************************************************************
    * delegated to LabelManager
    ****************************************************************/
@@ -1657,8 +1627,8 @@ final public class JmolViewer {
     return modelManager.getAtomZ(i);
   }
 
-  public Point3d getAtomPoint3d(int i) {
-    return modelManager.getAtomPoint3d(i);
+  public Point3f getAtomPoint3f(int i) {
+    return modelManager.getAtomPoint3f(i);
   }
 
   public float getAtomRadius(int i) {
@@ -1669,12 +1639,12 @@ final public class JmolViewer {
     return Colix.getColor(modelManager.getAtomColix(i));
   }
 
-  public Point3d getBondPoint3d1(int i) {
-    return modelManager.getBondPoint3d1(i);
+  public Point3f getBondPoint3f1(int i) {
+    return modelManager.getBondPoint3f1(i);
   }
 
-  public Point3d getBondPoint3d2(int i) {
-    return modelManager.getBondPoint3d2(i);
+  public Point3f getBondPoint3f2(int i) {
+    return modelManager.getBondPoint3f2(i);
   }
 
   public float getBondRadius(int i) {

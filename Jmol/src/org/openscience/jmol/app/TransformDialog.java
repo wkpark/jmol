@@ -49,8 +49,9 @@ import javax.swing.JLabel; //LBL
 import javax.swing.border.TitledBorder;
 import javax.swing.JButton; //BUT
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
-import javax.vecmath.AxisAngle4d;
+import javax.vecmath.AxisAngle4f;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.JScrollPane;
 import java.awt.FlowLayout;
@@ -229,11 +230,11 @@ class TransformDialog
 
 
   void rotate() {  //TODO
-    viewer.setCenter(center);
-    viewer.rotate(new AxisAngle4d(direction.x,
-                                   direction.y,
-                                   direction.z,
-                                   (double)Math.toRadians(angle)));
+    viewer.setCenter(new Point3f(center));
+    viewer.rotate(new AxisAngle4f((float)direction.x,
+				  (float)direction.y,
+				  (float)direction.z,
+				  (float)Math.toRadians(angle)));
   }
   
   

@@ -98,11 +98,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static byte styleLabel;
   private static String AtomPropsMode;
   private static byte styleBond;
-  private static double ArrowHeadSize;
-  private static double ArrowHeadRadius;
-  private static double ArrowLengthScale;
-  private static double minBondDistance;
-  private static double bondTolerance;
+  private static float minBondDistance;
+  private static float bondTolerance;
   private static short marBond;
   private static double FieldOfView;
   private static int percentVdwAtom;
@@ -628,9 +625,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        bondTolerance = source.getValue() / 100.0;
+        bondTolerance = source.getValue() / 100f;
         viewer.setBondTolerance(bondTolerance);
-        props.put("bondTolerance", Double.toString(bondTolerance));
+        props.put("bondTolerance", "" + bondTolerance);
         viewer.rebond();
       }
     });
@@ -682,9 +679,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        minBondDistance = source.getValue() / 100.0;
+        minBondDistance = source.getValue() / 100f;
         viewer.setMinBondDistance(minBondDistance);
-        props.put("minBondDistance", Double.toString(minBondDistance));
+        props.put("minBondDistance", "" + minBondDistance);
         viewer.rebond();
       }
     });
@@ -1104,11 +1101,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     styleBond = (byte)Integer.getInteger("styleBond").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
-    // Doubles and Doubles are special:
     minBondDistance =
-      new Double(props.getProperty("minBondDistance")).doubleValue();
+      new Float(props.getProperty("minBondDistance")).floatValue();
     bondTolerance =
-      new Double(props.getProperty("bondTolerance")).doubleValue();
+      new Float(props.getProperty("bondTolerance")).floatValue();
     marBond = Short.parseShort(props.getProperty("marBond"));
     FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
     percentVdwAtom =

@@ -32,8 +32,8 @@ import org.openscience.jmol.viewer.g3d.Shade3D;
 import java.awt.Rectangle;
 
 import java.util.Hashtable;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 public class DotsRenderer {
@@ -84,7 +84,7 @@ public class DotsRenderer {
   // I have no idea what this number should be
   int neighborCount;
   AtomShape[] neighbors = new AtomShape[16];
-  Point3d[] neighborCenters = new Point3d[16];
+  Point3f[] neighborCenters = new Point3f[16];
   float[] neighborRadii2 = new float[16];
   
   void getNeighbors(AtomShape atom, float vdwRadius, float probeRadius) {
@@ -99,7 +99,7 @@ public class DotsRenderer {
           AtomShape[] neighborsNew = new AtomShape[2 * neighborCount];
           System.arraycopy(neighbors, 0, neighborsNew, 0, neighborCount);
           neighbors = neighborsNew;
-          Point3d[] centersNew = new Point3d[2 * neighborCount];
+          Point3f[] centersNew = new Point3f[2 * neighborCount];
           System.arraycopy(neighborCenters, 0, centersNew, 0, neighborCount);
           neighborCenters = centersNew;
           float[] radiiNew = new float[2 * neighborCount];
@@ -107,7 +107,7 @@ public class DotsRenderer {
           neighborRadii2 = radiiNew;
         }
         neighbors[neighborCount] = neighbor;
-        neighborCenters[neighborCount] = neighbor.point3d;
+        neighborCenters[neighborCount] = neighbor.point3f;
         float effectiveRadius = (neighbor.getVanderwaalsRadius() +
                                   probeRadius);
         neighborRadii2[neighborCount] = effectiveRadius * effectiveRadius;
@@ -119,19 +119,19 @@ public class DotsRenderer {
       System.out.println("myVdwRadius=" + myVdwRadius +
       " maxVdwRadius=" + maxVdwRadius +
       " distMax=" + (myVdwRadius + maxVdwRadius));
-      Point3d me = atom.getPoint3d();
+      Point3f me = atom.getPoint3f();
       for (int i = 0; i < neighborCount; ++i) {
       System.out.println(" dist=" +
-      me.distance(neighbors[i].getPoint3d()));
+      me.distance(neighbors[i].getPoint3f()));
       }
     */
   }
 
   int[] bitmap;
-  Point3d pointT = new Point3d();
+  Point3f pointT = new Point3f();
 
-  void calcBits(Point3d myCenter, float vdwRadius, float probeRadius) {
-    Vector3d[] vertices = icosohedron.vertices;
+  void calcBits(Point3f myCenter, float vdwRadius, float probeRadius) {
+    Vector3f[] vertices = icosohedron.vertices;
     int dotCount = vertices.length;
     setAllBits(bitmap, dotCount);
     if (neighborCount == 0)
@@ -157,7 +157,7 @@ public class DotsRenderer {
     float vdwRadius = atom.getVanderwaalsRadius();
     float probeRadius = viewer.getSolventProbeRadius();
     getNeighbors(atom, vdwRadius, probeRadius);
-    calcBits(atom.getPoint3d(), vdwRadius, probeRadius);
+    calcBits(atom.getPoint3f(), vdwRadius, probeRadius);
     int indexLast;
     for (indexLast = bitmap.length;
          --indexLast >= 0 && bitmap[indexLast] == 0; )
@@ -203,8 +203,8 @@ public class DotsRenderer {
 
   class Icosohedron {
 
-    Vector3d[] vertices;
-    Vector3d[] verticesTransformed;
+    Vector3f[] vertices;
+    Vector3f[] verticesTransformed;
     //    byte[] intensitiesTransformed;
     int screenCoordinateCount;
     int[] screenCoordinates;
@@ -212,23 +212,23 @@ public class DotsRenderer {
     short[] faceIndices;
 
     Icosohedron() {
-      vertices = new Vector3d[12];
-      vertices[0] = new Vector3d(0, 0, halfRoot5);
+      vertices = new Vector3f[12];
+      vertices[0] = new Vector3f(0, 0, halfRoot5);
       for (int i = 0; i < 5; ++i) {
-        vertices[i+1] = new Vector3d(Math.cos(i * oneFifth),
-                                     Math.sin(i * oneFifth),
-                                     0.5);
-        vertices[i+6] = new Vector3d(Math.cos(i * oneFifth + oneTenth),
-                                     Math.sin(i * oneFifth + oneTenth),
-                                     -0.5);
+        vertices[i+1] = new Vector3f((float)Math.cos(i * oneFifth),
+                                     (float)Math.sin(i * oneFifth),
+                                     0.5f);
+        vertices[i+6] = new Vector3f((float)Math.cos(i * oneFifth + oneTenth),
+                                     (float)Math.sin(i * oneFifth + oneTenth),
+                                     -0.5f);
       }
-      vertices[11] = new Vector3d(0, 0, -halfRoot5);
+      vertices[11] = new Vector3f(0, 0, -halfRoot5);
       for (int i = 12; --i >= 0; )
         vertices[i].normalize();
       faceIndices = faceIndicesInitial;
-      verticesTransformed = new Vector3d[12];
+      verticesTransformed = new Vector3f[12];
       for (int i = 12; --i >= 0; )
-        verticesTransformed[i] = new Vector3d();
+        verticesTransformed[i] = new Vector3f();
       screenCoordinates = new int[3 * 12];
       //      intensities = new byte[12];
       //      intensitiesTransformed = new byte[12];
@@ -236,7 +236,7 @@ public class DotsRenderer {
 
     void transform() {
       for (int i = vertices.length; --i >= 0; ) {
-        Vector3d t = verticesTransformed[i];
+        Vector3f t = verticesTransformed[i];
         viewer.transformVector(vertices[i], t);
         //        intensitiesTransformed[i] =
         //          Shade3D.calcIntensity((float)t.x, (float)t.y, (float)t.z);
@@ -270,7 +270,7 @@ public class DotsRenderer {
         if (! getBit(visibilityMap, iDot))
           continue;
         //        intensities[iintensities++] = intensitiesTransformed[iDot];
-        Vector3d vertex = verticesTransformed[iDot];
+        Vector3f vertex = verticesTransformed[iDot];
         screenCoordinates[icoordinates++] = x
           + (int)((scaledRadius*vertex.x) + (vertex.x < 0 ? -0.5 : 0.5));
         screenCoordinates[icoordinates++] = y
@@ -291,12 +291,12 @@ public class DotsRenderer {
       int nFaceIndicesOld = faceIndicesOld.length;
       int nEdgesOld = nVerticesOld + nFaceIndicesOld/3 - 2;
       int nVerticesNew = nVerticesOld + nEdgesOld;
-      Vector3d[] verticesNew = new Vector3d[nVerticesNew];
+      Vector3f[] verticesNew = new Vector3f[nVerticesNew];
       System.arraycopy(vertices, 0, verticesNew, 0, nVerticesOld);
       vertices = verticesNew;
-      verticesTransformed = new Vector3d[nVerticesNew];
+      verticesTransformed = new Vector3f[nVerticesNew];
       for (int i = nVerticesNew; --i >= 0; )
-        verticesTransformed[i] = new Vector3d();
+        verticesTransformed[i] = new Vector3f();
       screenCoordinates = new int[3 * nVerticesNew];
       //      intensitiesTransformed = new byte[nVerticesNew];
       //      intensities
@@ -353,9 +353,9 @@ public class DotsRenderer {
       Short iv = (Short)htVertex.get(hashKey);
       if (iv != null)
         return iv.shortValue();
-      Vector3d vertexNew = new Vector3d(vertices[i1]);
+      Vector3f vertexNew = new Vector3f(vertices[i1]);
       vertexNew.add(vertices[i2]);
-      vertexNew.scale(0.5);
+      vertexNew.scale(0.5f);
       vertexNew.normalize();
       htVertex.put(hashKey, new Short(iVertexNew));
       vertices[iVertexNew] = vertexNew;

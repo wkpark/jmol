@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.awt.Color;
 import java.util.BitSet;
 import java.util.Hashtable;
-import javax.vecmath.Point3d;
 
 class Context {
   String filename;

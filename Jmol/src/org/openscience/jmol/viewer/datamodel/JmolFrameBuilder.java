@@ -26,7 +26,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
-import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 
 public class JmolFrameBuilder {
 
@@ -83,10 +83,10 @@ public class JmolFrameBuilder {
       if (iterVector != null)
         while (iterVector.hasNext()) {
           iterVector.moveNext();
-	  Point3d point1 = new Point3d(iterVector.getPoint1X(),
+	  Point3f point1 = new Point3f(iterVector.getPoint1X(),
 				       iterVector.getPoint1Y(),
 				       iterVector.getPoint1Z());
-	  Point3d point2 = new Point3d(iterVector.getPoint2X(),
+	  Point3f point2 = new Point3f(iterVector.getPoint2X(),
 				       iterVector.getPoint2Y(),
 				       iterVector.getPoint2Z());
           frame.addLineShape(new ArrowLineShape(point1, point2));
@@ -99,10 +99,10 @@ public class JmolFrameBuilder {
       if (iterCell != null)
         for (int i = 0; iterCell.hasNext(); ++i) {
           iterCell.moveNext();
-	  Point3d point1 = new Point3d(iterCell.getPoint1X(),
+	  Point3f point1 = new Point3f(iterCell.getPoint1X(),
 				       iterCell.getPoint1Y(),
 				       iterCell.getPoint1Z());
-	  Point3d point2 = new Point3d(iterCell.getPoint2X(),
+	  Point3f point2 = new Point3f(iterCell.getPoint2X(),
 				       iterCell.getPoint2Y(),
 				       iterCell.getPoint2Z());
           LineShape line;

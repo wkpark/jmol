@@ -884,8 +884,10 @@ public class Frame {
 
   void putAtomInsideUnitcell(Atom atom) {
     Point3f point = atom.point3f;
+    /*
     point.x += 1000;
     point.y += 1000;
     point.z += 1000;
+    */
   }
 }

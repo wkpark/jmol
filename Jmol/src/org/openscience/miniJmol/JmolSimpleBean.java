@@ -418,6 +418,15 @@ public class JmolSimpleBean extends java.awt.Panel
 		return "NULL";
 	}
 
+	public void setPickingMode(String style) {
+
+		if (style.equalsIgnoreCase("MULTIPLE")) {
+			display.setPickingMode(DisplayPanel.MULTIPLEPICK);
+		} else {
+			display.setPickingMode(DisplayPanel.SINGLEPICK);
+		}
+	}
+
 	/**
 	 * Sets whether they view automatically goes to wireframe when they model is rotated.
 	 * @param doesIt String either "T" or "F"

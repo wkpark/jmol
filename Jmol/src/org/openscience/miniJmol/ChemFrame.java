@@ -544,4 +544,9 @@ public class ChemFrame {
 	private Point3f max;
 
 	private boolean bondsEnabled;
+
+	public void setPickedAtoms(boolean[] newPickedAtoms) {
+		pickedAtoms = newPickedAtoms;
+	}
 }
+

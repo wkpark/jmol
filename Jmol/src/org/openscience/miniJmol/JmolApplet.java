@@ -68,6 +68,9 @@ public class JmolApplet extends java.applet.Applet
 			"CUSTOMVIEWS",
 			"Button1{HOME;FRAME=n;ROTATE=y,x,y;ZOOM=n;TRANSLATE=x,y}Button2{HOME;ZOOM=n;...}...",
 			"Specifies custom actions to be performed by custom buttons"
+		}, {
+			"PICKMODE", "SINGLE or MULTIPLE",
+			"Sets the picking mode to single or multiple atoms. (Default is single picking)."
 		}
 	};
 
@@ -194,6 +197,11 @@ public class JmolApplet extends java.applet.Applet
 		setRenderingStyle();
 		setLayout(new java.awt.BorderLayout());
 		add(myBean, "Center");
+
+		String pickmode = getParameter("PICKMODE");
+		if (pickmode != null) {
+			myBean.setPickingMode(pickmode);
+		}
 	}
 
 	public String[][] getParameterInfo() {

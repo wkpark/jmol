@@ -83,6 +83,8 @@ public class DisplayPanel extends Canvas
 	public static final int PICK = 3;
 	public static final int DEFORM = 4;
 	public static final int MEASURE = 5;
+	public static final int SINGLEPICK = 0;
+	public static final int MULTIPLEPICK = 1;
 	public static final String customViewPrefix = "VIEW.";
 	public static final String resetViewToken = "HOME";
 	public static final String rotateToken = "ROTATE";
@@ -91,6 +93,7 @@ public class DisplayPanel extends Canvas
 	public static final String translateToken = "TRANSLATE";
 
 	private int mode = ROTATE;
+	private int pickingMode = SINGLEPICK;
 	private static Color backgroundColor = (java.awt.Color.black);
 
 	//Added T.GREY for moveDraw support- should be true while mouse is dragged
@@ -323,6 +326,14 @@ public class DisplayPanel extends Canvas
 		this.mode = mode;
 	}
 
+	public int getPickingMode() {
+		return pickingMode;
+	}
+
+	public void setPickingMode(int mode) {
+		this.pickingMode = mode;
+	}
+
 	public void setDisplaySettings(DisplaySettings settings) {
 		this.settings = settings;
 		settings.setBondScreenScale(xfac2 * xfac0);
@@ -449,27 +460,15 @@ public class DisplayPanel extends Canvas
 		}
 
 		public void mouseClicked(MouseEvent e) {
-
-			//            if (showPopupMenu){
-			//               if (e.getX() < popButtonSideLength){
-			//                 if (e.getY() < popButtonSideLength){
-			//                    popup.show(e.getComponent(),e.getX(), e.getY());
-			//                    return;
-			//                 }
-			//               }
-			//            }
-			if (mode == PICK) {
-				if (haveFile) {
-					if (e.isShiftDown()) {
-						md.shiftSelectAtom(e.getX(), e.getY());
-					} else {
-						md.selectAtom(e.getX(), e.getY());
-					}
-					painted = false;
-					repaint();
+			if (haveFile) {
+				if (pickingMode == MULTIPLEPICK) {
+					md.shiftSelectAtom(e.getX(), e.getY());
+				} else {
+					md.selectAtom(e.getX(), e.getY());
 				}
+				painted = false;
+				repaint();
 			}
-
 		}
 
 		public void mouseReleased(MouseEvent e) {

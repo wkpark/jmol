@@ -95,17 +95,26 @@ public abstract class ReaderFactory {
       }
 
       // An integer on the first line is a special test for XYZ files
-      try {
-        if (line != null) {
-          StringTokenizer tokenizer = new StringTokenizer(line.trim());
-          if (tokenizer.hasMoreTokens()) {
+      boolean xyzFile = false;
+      if (line != null) {
+        StringTokenizer tokenizer = new StringTokenizer(line.trim());
+        try {
+          int tokenCount = tokenizer.countTokens();
+          if (tokenCount == 1) {
             new Integer(tokenizer.nextToken());
+            xyzFile = true;
+          } else if (tokenCount == 2) {
+            new Integer(tokenizer.nextToken());
+            if ("Bohr".equalsIgnoreCase(tokenizer.nextToken())) {
+              xyzFile = true;
+            }
           }
-          return new XYZReader(buffer);
+        } catch (NumberFormatException nfe) {
+          // Integer not found on first line; therefore not a XYZ file
         }
-      } catch (NumberFormatException nfe) {
-
-        // Integer not found on first line; therefore not a XYZ file
+      }
+      if (xyzFile) {
+        return new XYZReader(buffer);
       }
 
     } else {

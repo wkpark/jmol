@@ -48,8 +48,25 @@ class Node extends Element {
     eleLE = leafLE;
     dim = level % bspt.dimMax;
     leafLE.sort(dim);
-    splitValue = leafLE.tuples[Bspt.leafCountMax/2 - 1].getDimensionValue(dim);
-    eleGE = new Leaf(bspt, leafLE, Bspt.leafCountMax/2);
+    if (true) {
+      // split based upon the mean of the two middle values
+      splitValue =
+        (leafLE.tuples[Bspt.leafCountMax/2 - 1].getDimensionValue(dim) +
+         leafLE.tuples[Bspt.leafCountMax/2].getDimensionValue(dim)) / 2;
+      eleGE = new Leaf(bspt, leafLE, Bspt.leafCountMax/2);
+    } else {
+      // split based upon the mean of the high and low values;
+      splitValue =
+        (leafLE.tuples[0].getDimensionValue(dim) +
+         leafLE.tuples[Bspt.leafCountMax - 1].getDimensionValue(dim)) / 2;
+      int i;
+      for (i = 0; i < Bspt.leafCountMax; ++i)
+        if (leafLE.tuples[i].getDimensionValue(dim) > splitValue)
+          break;
+      if (i == Bspt.leafCountMax)
+        i /= 2; // entire leaf must be filled with duplicates
+      eleGE = new Leaf(bspt, leafLE, i);
+    }
     count = Bspt.leafCountMax;
   }
   

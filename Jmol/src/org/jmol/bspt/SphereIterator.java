@@ -74,7 +74,10 @@ public class SphereIterator {
     Element ele = bspt.eleRoot;
     while (ele instanceof Node) {
       Node node = (Node) ele;
-      if (centerValues[node.dim] - radius <= node.splitValue) {
+      float minValue = centerValues[node.dim];
+      if (! tHemisphere || node.dim != 0)
+        minValue -= radius;
+      if (minValue <= node.splitValue) {
         if (sp == bspt.treeDepth)
           System.out.println("Bspt.SphereIterator tree stack overflow");
         stack[sp++] = node;
@@ -142,8 +145,9 @@ public class SphereIterator {
       if (sp == 0)
         return false;
       Element ele = stack[--sp];
+      Node node;
       while (ele instanceof Node) {
-        Node node = (Node) ele;
+        node = (Node) ele;
         if (centerValues[node.dim] + radius < node.splitValue) {
           if (sp == 0)
             return false;
@@ -151,9 +155,18 @@ public class SphereIterator {
         } else {
           ele = node.eleGE;
           while (ele instanceof Node) {
-            Node nodeLeft = (Node) ele;
-            stack[sp++] = nodeLeft;
-            ele = nodeLeft.eleLE;
+            node = (Node) ele;
+            float minValue = centerValues[node.dim];
+            if (!tHemisphere || node.dim != 0)
+              minValue -= radius;
+            if (minValue <= node.splitValue) {
+              if (sp == bspt.treeDepth)
+                System.out.println("Bspt.SphereIterator tree stack overflow");
+              stack[sp++] = node;
+              ele = node.eleLE;
+            } else {
+              ele = node.eleGE;
+            }
           }
         }
       }

@@ -47,7 +47,8 @@ public class MeasurementManager {
 
   public void setJmolFrame(JmolFrame frame) {
     this.frame = frame;
-    frame.clearMeasurementShapes();
+    if (frame != null)
+      frame.clearMeasurementShapes();
   }
 
   public void clearMeasurements() {
@@ -77,7 +78,8 @@ public class MeasurementManager {
       if (measurementShapes[i].sameAs(count, atomIndices))
         return;
     }
-    frame.addMeasurementShape(new MeasurementShape(viewer, count, atomIndices));
+    frame.addMeasurementShape(new MeasurementShape(viewer, count,
+                                                   atomIndices));
   }
 
   public boolean deleteMeasurement(MeasurementShape measurementShape) {

@@ -62,12 +62,12 @@ public class MeasurementShape extends LineShape
       double angle = toDegrees(vector12.angle(vector32));
       strMeasurement = formatAngle(angle);
 
-      pointOrigin = new Point3d(point2);
-      pointOrigin.add(point1);
-      pointOrigin.scale(0.5);
-      pointEnd = new Point3d(point2);
-      pointEnd.add(point3);
-      pointEnd.scale(0.5);
+      pointOrigin = new Point3d(point1);
+      pointOrigin.scaleAdd(3, point2);
+      pointOrigin.scale(.25);
+      pointEnd = new Point3d(point3);
+      pointEnd.scaleAdd(3, point2);
+      pointEnd.scale(.25);
       break;
     case 4:
       point3 = viewer.getPoint3d(atomIndices[2]);

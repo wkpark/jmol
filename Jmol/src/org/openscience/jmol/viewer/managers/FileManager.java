@@ -140,8 +140,7 @@ public class FileManager {
   }
 
   public String openStringInline(String strModel) {
-    return openReader("StringInline", "StringInline",
-                      new StringReader(strModel));
+    return openReader(null, "StringInline", new StringReader(strModel));
   }
 
   byte[] abMagic = new byte[4];

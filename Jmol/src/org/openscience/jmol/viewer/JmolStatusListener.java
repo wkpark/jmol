@@ -30,6 +30,8 @@ public interface JmolStatusListener {
   public void notifyFileLoaded(String fullPathName, String fileName,
                                String modelName);
 
+  public void notifyFileNotLoaded(String fileName, String errorMsg);
+
   public void setStatusMessage(String statusMessage);
 
   public void scriptEcho(String strEcho);

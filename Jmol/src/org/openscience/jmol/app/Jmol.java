@@ -426,13 +426,15 @@ public class Jmol extends JPanel {
       JFrame jmolFrame = new JFrame();
       jmol = getJmol(jmolFrame);
 
+      // Adding consoleframe to grab System.out & System.err
+      consoleframe = new JFrame("Jmol Console");
+
+
       // Open a file if one is given as an argument
       if (modelFilename != null) {
         String msgError = jmol.viewer.openFile(modelFilename);
-        if (msgError != null) {
+        if (msgError != null)
           System.out.println("File error: " + msgError);
-          System.exit(1);
-        }
       }
 
       // Oke, by now it is time to execute the script
@@ -447,9 +449,6 @@ public class Jmol extends JPanel {
       System.out.println("uncaught exception: " + t);
       t.printStackTrace();
     }
-
-    // Adding consoleframe to grab System.out & System.err
-    consoleframe = new JFrame("Jmol Console");
 
     try {
       ConsoleTextArea consoleTextArea = new ConsoleTextArea();
@@ -1392,6 +1391,13 @@ public class Jmol extends JPanel {
         title = "Jmol";
       frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
+    }
+
+    public void notifyFileNotLoaded(String fileName, String errorMsg) {
+      JOptionPane.showMessageDialog(null,
+                                    fileName + '\n' + errorMsg,
+                                    "File not loaded",
+                                    JOptionPane.ERROR_MESSAGE);
     }
 
     public void setStatusMessage(String statusMessage) {

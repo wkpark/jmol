@@ -83,7 +83,7 @@ public class ModelManager {
   public JmolFrame jmolFrame;
   public JmolFrame[] jmolFrames;
 
-  public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+  //  public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
@@ -110,10 +110,9 @@ public class ModelManager {
       frameCount = viewer.getFrameCount(clientFile);
       jmolFrames = new JmolFrame[frameCount];
       haveFile = true;
-      setFrame(0);
     }
-    pcs.firePropertyChange(JmolViewer.PROP_CHEM_FILE,
-                           clientFilePrevious, clientFile);
+    //    pcs.firePropertyChange(JmolViewer.PROP_CHEM_FILE,
+    //                     clientFilePrevious, clientFile);
     viewer.notifyFileLoaded(fullPathName, fileName, modelName);
   }
 
@@ -233,21 +232,21 @@ public class ModelManager {
   }
 
   public void addPropertyChangeListener(PropertyChangeListener pcl) {
-    pcs.addPropertyChangeListener(pcl);
+    //    pcs.addPropertyChangeListener(pcl);
   }
 
   public void addPropertyChangeListener(String prop,
                                         PropertyChangeListener pcl) {
-    pcs.addPropertyChangeListener(prop, pcl);
+    //    pcs.addPropertyChangeListener(prop, pcl);
   }
 
   public void removePropertyChangeListener(PropertyChangeListener pcl) {
-    pcs.removePropertyChangeListener(pcl);
+    //    pcs.removePropertyChangeListener(pcl);
   }
 
   public void removePropertyChangeListener(String prop,
                                            PropertyChangeListener pcl) {
-    pcs.removePropertyChangeListener(prop, pcl);
+    //    pcs.removePropertyChangeListener(prop, pcl);
   }
 
   /****************************************************************

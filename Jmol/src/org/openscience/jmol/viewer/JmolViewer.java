@@ -712,7 +712,11 @@ final public class JmolViewer {
   }
 
   public String openFile(String name) {
-    return fileManager.openFile(name);
+    clear();
+    String errorMsg = fileManager.openFile(name);
+    if (errorMsg != null)
+      notifyFileNotLoaded(name, errorMsg);
+    return errorMsg;
   }
 
   public String openStringInline(String strModel) {
@@ -729,6 +733,7 @@ final public class JmolViewer {
                             Object clientFile) {
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
+    setFrame(0);
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
@@ -1126,6 +1131,11 @@ final public class JmolViewer {
                                String modelName) {
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFileLoaded(fullPathName, fileName, modelName);
+  }
+
+  public void notifyFileNotLoaded(String fileName, String errorMsg) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyFileNotLoaded(fileName, errorMsg);
   }
 
   public void manageScriptTermination() {

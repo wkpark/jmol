@@ -135,6 +135,21 @@ public class LabelManager {
       case 'e':
         strLabel += atom.getAtomicSymbol();
         break;
+      case 'C':
+        int charge = atom.getAtomicCharge();
+        if (charge > 0)
+          strLabel += "" + charge + "+";
+        else if (charge < 0)
+          strLabel += "" + -charge + "-";
+        else
+          strLabel += "0";
+        break;
+      case 'V':
+        strLabel += atom.getVanderwaalsRadiusFloat();
+        break;
+      case 'I':
+        strLabel += atom.getBondingRadiusFloat();
+        break;
       case 'b': // these two are the same
       case 't':
         if (pdbatom != null)

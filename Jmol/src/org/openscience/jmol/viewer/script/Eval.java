@@ -1622,7 +1622,7 @@ public class Eval implements Runnable {
   }
 
   void cpk() throws ScriptException {
-    short mar = -999;
+    short mar = 0;
     int tok = Token.on;
     if (statement.length > 1) {
       tok = statement[1].tok;
@@ -1638,7 +1638,6 @@ public class Eval implements Runnable {
       mar = -100; // cpk with no args goes to 100%
       break;
     case Token.off:
-      mar = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
@@ -1663,6 +1662,13 @@ public class Eval implements Runnable {
     case Token.temperature:
       mar = -1000;
       break;
+    case Token.identifier:
+      String t = (String)statement[1].value;
+      if (t.equalsIgnoreCase("ionic")) {
+        mar = -1001;
+        break;
+      }
+
     default:
       booleanOrNumberExpected();
     }

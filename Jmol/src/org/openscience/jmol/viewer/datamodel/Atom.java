@@ -191,9 +191,11 @@ public class Atom implements Bspt.Tuple {
     if (this.marAtom == JmolConstants.MAR_DELETED) return;
     if (marAtom == -1000) // temperature
       marAtom = getPdbTemperatureMar();
+    else if (marAtom == -1001) // ionic
+      marAtom = getBondingMar();
     else if (marAtom < 0)
       marAtom =
-        (short)(-marAtom * frame.viewer.getVanderwaalsMar(this) / 100);
+        (short)(-marAtom * getVanderwaalsMar() / 100);
     this.marAtom = marAtom;
   }
 
@@ -266,6 +268,10 @@ public class Atom implements Bspt.Tuple {
 
   public String getAtomTypeName() {
     return frame.viewer.getAtomTypeName(this);
+  }
+
+  public int getAtomicCharge() {
+    return atomicCharge;
   }
 
   public int getAtomno() {

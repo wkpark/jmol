@@ -318,18 +318,27 @@ class Atom {
   String pdbAtomRecord;
   int pdbModelNumber;
 
-  Atom(String atomicSymbol, float x, float y, float z) {
-    this.atomicSymbol = atomicSymbol;
+  Atom(String symbol, float x, float y, float z) {
+    this.atomicSymbol = symbol;
     this.x = x;
     this.y = y;
     this.z = z;
   }
 
-  Atom(String atomicSymbol, float x, float y, float z, int model, String pdb) {
-    this.atomicSymbol = atomicSymbol;
+  Atom(String symbol, float x, float y, float z, int charge) {
+    this.atomicSymbol = symbol;
     this.x = x;
     this.y = y;
     this.z = z;
+    this.atomicCharge = charge;
+  }
+
+  Atom(String symbol, float x, float y, float z, int charge, int model, String pdb) {
+    this.atomicSymbol = symbol;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.atomicCharge = charge;
     this.pdbModelNumber = model;
     this.pdbAtomRecord = pdb;
   }
@@ -566,13 +575,33 @@ class PdbModel extends Model {
         else
           atomicSymbol = isValid13 ? "" + ch13 : "Xx";
       }
+      /****************************************************************
+       * calculate the charge from cols 79 & 80 (1-based)
+       * 2+, 3-, etc
+       ****************************************************************/
+      int charge = 0;
+      if (len >= 80) {
+        char chMag = line.charAt(78);
+        char chSign = line.charAt(79);
+        if (chMag >= '0' && chMag <= '7' &&
+            (chSign == '+' || chSign == '-' || chSign == ' ')) {
+          charge = chMag - '0';
+          if (chSign == '-')
+            charge = -charge;
+        }
+      }
+      /****************************************************************/
       int serial = Integer.parseInt(line.substring(6, 11).trim());
+      /****************************************************************
+       * coordinates
+       ****************************************************************/
       float x =
         Float.valueOf(line.substring(30, 38).trim()).floatValue();
       float y =
         Float.valueOf(line.substring(38, 46).trim()).floatValue();
       float z =
         Float.valueOf(line.substring(46, 54).trim()).floatValue();
+      /****************************************************************/
       if (atomCount == atoms.length) {
         Atom[] t = new Atom[atomCount + 512];
         System.arraycopy(atoms, 0, t, 0, atomCount);
@@ -584,7 +613,7 @@ class PdbModel extends Model {
         serialMap = t;
       }
       atoms[atomCount++] = new Atom(atomicSymbol, x, y, z,
-                                    currentModelNumber, line);
+                                    charge, currentModelNumber, line);
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

@@ -221,38 +221,23 @@ public class MeasurementList extends JDialog {
   }
 
   public void addDistance(int atom1, int atom2) {
-    addDistance(new Distance(atom1, atom2));
-  }
-
-  public void addDistance(Distance d) {
-    distanceList.addElement(d);
+    control.defineMeasure(atom1, atom2);
     distances.update();
     treeModel.reload(distances);
-    notifyControl();
   }
 
   public void addAngle(int atom1, int atom2, int atom3) {
-    addAngle(new Angle(atom1, atom2, atom3));
-  }
-
-  public void addAngle(Angle a) {
-
-    angleList.addElement(a);
+    control.defineMeasure(atom1, atom2, atom3);
     angles.update();
     treeModel.reload(angles);
-    notifyControl();
   }
 
   public void addDihedral(int atom1, int atom2, int atom3, int atom4) {
-    addDihedral(new Dihedral(atom1, atom2, atom3, atom4));
-  }
-
-  public void addDihedral(Dihedral d) {
-    dihedralList.addElement(d);
+    control.defineMeasure(atom1, atom2, atom3, atom4);
     dihedrals.update();
     treeModel.reload(dihedrals);
-    notifyControl();
   }
+
 
   public void clear() {
 

@@ -24,8 +24,6 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.app.Measure;
-
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
@@ -69,6 +67,7 @@ final public class DisplayControl {
   public StyleManager styleManager;
   public LabelManager labelManager;
   public AxesManager axesManager;
+  public MeasurementManager measurementManager;
   public ChemFrameRenderer frameRenderer;
   public MeasureRenderer measureRenderer;
   public AtomRenderer atomRenderer;
@@ -100,6 +99,7 @@ final public class DisplayControl {
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
     axesManager = new AxesManager(this);
+    measurementManager = new MeasurementManager(this);
     distributor = new Distributor(this);
 
     frameRenderer = new ChemFrameRenderer();
@@ -697,10 +697,6 @@ final public class DisplayControl {
     return mouseManager.modeMouse;
   }
 
-  public void setMeasureMouse(Measure measure) {
-    mouseManager.setMeasure(measure);
-  }
-
   public Rectangle getRubberBandSelection() {
     return mouseManager.getRubberBand();
   }
@@ -750,6 +746,7 @@ final public class DisplayControl {
     // FIXME mth -- we need to clear definitions when we open a new file
     // but perhaps not if we are in the midst of executing a script?
     eval.clearDefinitionsAndLoadPredefined();
+    clearMeasurements();
     control.setStructuralChange();
     control.popHoldRepaint();
   }
@@ -796,6 +793,7 @@ final public class DisplayControl {
     modelManager.setFrame(fr);
     selectAll();
     recalcAxes();
+    clearMeasurements();
     structuralChange = true;
     refresh();
   }
@@ -804,6 +802,7 @@ final public class DisplayControl {
     modelManager.setFrame(frame);
     selectAll();
     recalcAxes();
+    clearMeasurements();
     structuralChange = true;
     refresh();
   }
@@ -814,22 +813,6 @@ final public class DisplayControl {
 
   public Atom[] getCurrentFrameAtoms() {
     return modelManager.getCurrentFrameAtoms();
-  }
-
-  public Vector getDistanceMeasurements() {
-    return modelManager.distanceMeasurements;
-  }
-
-  public Vector getAngleMeasurements() {
-    return modelManager.angleMeasurements;
-  }
-
-  public Vector getDihedralMeasurements() {
-    return modelManager.dihedralMeasurements;
-  }
-
-  public void clearMeasurements() {
-    modelManager.clearMeasurements();
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -848,26 +831,6 @@ final public class DisplayControl {
     modelManager.setCenterAsSelected();
     selectAll();
     scaleFitToScreen();
-    refresh();
-  }
-
-  public void defineMeasure(int[] atomIndices) {
-    modelManager.defineMeasure(atomIndices);
-    refresh();
-  }
-
-  public void defineMeasure(int atom1, int atom2) {
-    modelManager.defineMeasure(atom1, atom2);
-    refresh();
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3) {
-    modelManager.defineMeasure(atom1, atom2, atom3);
-    refresh();
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
-    modelManager.defineMeasure(atom1, atom2, atom3, atom4);
     refresh();
   }
 
@@ -931,6 +894,56 @@ final public class DisplayControl {
   public void removePropertyChangeListener(String prop,
                                            PropertyChangeListener pcl) {
     modelManager.removePropertyChangeListener(prop, pcl);
+  }
+
+  /****************************************************************
+   * delegated to MeasurementManager
+   ****************************************************************/
+
+  public Vector getDistanceMeasurements() {
+    return measurementManager.distanceMeasurements;
+  }
+
+  public Vector getAngleMeasurements() {
+    return measurementManager.angleMeasurements;
+  }
+
+  public Vector getDihedralMeasurements() {
+    return measurementManager.dihedralMeasurements;
+  }
+
+  public void clearMeasurements() {
+    measurementManager.clearMeasurements();
+  }
+
+  public void defineMeasure(int[] atomIndices) {
+    measurementManager.defineMeasure(atomIndices);
+    refresh();
+  }
+
+  public void defineMeasure(int atom1, int atom2) {
+    measurementManager.defineMeasure(atom1, atom2);
+    refresh();
+  }
+
+  public void defineMeasure(int atom1, int atom2, int atom3) {
+    measurementManager.defineMeasure(atom1, atom2, atom3);
+    refresh();
+  }
+
+  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
+    measurementManager.defineMeasure(atom1, atom2, atom3, atom4);
+    refresh();
+  }
+
+  MeasureWatcher measureWatcher;
+  public void setMeasureWatcher(MeasureWatcher measureWatcher) {
+    this.measureWatcher = measureWatcher;
+  }
+
+  public void measureSelection(int iatom) {
+    if (measureWatcher != null)
+      measureWatcher.firePicked(iatom);
   }
 
   /****************************************************************

@@ -25,12 +25,9 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.render.Angle;
-import org.openscience.jmol.render.Distance;
-import org.openscience.jmol.render.Dihedral;
+import org.openscience.jmol.MeasureWatcher;
 
 import java.io.File;
 import javax.swing.JTable;
@@ -70,7 +67,7 @@ import javax.swing.border.TitledBorder;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class Measure extends JDialog {
+public class Measure extends JDialog implements MeasureWatcher {
 
   private final static int ADD = 1;
   private final static int DELETE = 2;
@@ -84,7 +81,6 @@ public class Measure extends JDialog {
   private int[] selection = {
     -1, -1, -1, -1
   };
-  private ChemFile cf;
 
   private DisplayControl control;
   private MeasurementList mlist;

@@ -275,7 +275,7 @@ public class Jmol extends JPanel {
     meas = new Measure(frame, control);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
-    control.setMeasureMouse(meas);
+    control.setMeasureWatcher(meas);
     //    mlist.addMeasurementListListener(display);
     port.add(display);
 

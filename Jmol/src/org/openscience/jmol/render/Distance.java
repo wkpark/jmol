@@ -20,6 +20,8 @@
 package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 
+import javax.vecmath.Point3d;
+
 import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -29,29 +31,31 @@ import java.awt.Graphics;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class Distance extends Measurement implements MeasurementInterface {
+public class Distance implements MeasurementInterface {
 
-  private int[] Atoms = new int[2];
+  int[] iatoms = new int[2];
+  Atom atom1;
+  Atom atom2;
   private double distance;
-  private boolean computed = false;
-  private ChemFrame fcf;
+  private String strDistance;
 
-  public Distance(int a1, int a2) {
+  public Distance(int iatom1, Atom atom1, int iatom2, Atom atom2) {
     super();
-    Atoms[0] = a1;
-    Atoms[1] = a2;
-    compute();
+    iatoms[0] = iatom1;
+    iatoms[1] = iatom2;
+    this.atom1 = atom1;
+    this.atom2 = atom2;
+    distance = atom1.getPosition().distance(atom2.getPosition());
+    strDistance = formatDistance(distance);
   }
 
-  public void paint(Graphics g, DisplayControl control, boolean showLabel,
-                    Atom atom1, Atom atom2) throws Exception {
-    paintDistLine(g, control, atom1, atom2);
+  public void paint(Graphics g, DisplayControl control, boolean showLabel) {
+    paintDistLine(g, control);
     if (showLabel)
-      paintDistString(g, control, atom1, atom2);
+      paintDistString(g, control);
   }
 
-  private void paintDistLine(Graphics g, DisplayControl control,
-                             Atom atom1, Atom atom2) {
+  private void paintDistLine(Graphics g, DisplayControl control) {
     control.maybeDottedStroke(g);
     g.setColor(control.getColorDistance());
     g.drawLine(atom1.getScreenX(), atom1.getScreenY(),
@@ -63,8 +67,11 @@ public class Distance extends Measurement implements MeasurementInterface {
    */
   private static PrintfFormat distanceFormat = new PrintfFormat("%0.3f \u00c5");
   
-  private void paintDistString(Graphics g, DisplayControl control,
-                               Atom atom1, Atom atom2) {
+  private String formatDistance(double dist) {
+    return distanceFormat.sprintf(dist);
+  }
+
+  private void paintDistString(Graphics g, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
       d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
@@ -76,26 +83,24 @@ public class Distance extends Measurement implements MeasurementInterface {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     g.setColor(control.getColorDistance());
-    String s = distanceFormat.sprintf(getDistance());
-    int j = fontMetrics.stringWidth(s);
-
+    int j = fontMetrics.stringWidth(strDistance);
     if (x2 == x1) {
-      g.drawString(s, x1 + 1, ((y1 + y2) / 2) + 1);
+      g.drawString(strDistance, x1 + 1, ((y1 + y2) / 2) + 1);
     } else {
-      g.drawString(s, (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1);
+      g.drawString(strDistance, (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1);
     }
   }
 
   public int[] getAtomList() {
-    return Atoms;
+    return iatoms;
   }
 
   public boolean sameAs(int a1, int a2) {
 
-    if ((Atoms[0] == a1) && (Atoms[1] == a2)) {
+    if ((iatoms[0] == a1) && (iatoms[1] == a2)) {
       return true;
     } else {
-      if ((Atoms[0] == a2) && (Atoms[1] == a1)) {
+      if ((iatoms[0] == a2) && (iatoms[1] == a1)) {
         return true;
       } else {
         return false;
@@ -104,38 +109,7 @@ public class Distance extends Measurement implements MeasurementInterface {
   }
 
   public String toString() {
-    return ("[" + Atoms[0] + "," + Atoms[1] + " = " + getDistance() + "]");
-  }
-
-  public double getDistance() {
-    if (!computed || (cf != fcf)) {
-      compute();
-    }
-    return distance;
-  }
-
-  public void compute() {
-
-    if (cf == null) {
-      return;
-    }
-
-    double[] c0 = cf.getAtomCoords(Atoms[0]);
-    double[] c1 = cf.getAtomCoords(Atoms[1]);
-
-    double ax = c0[0] - c1[0];
-    double ay = c0[1] - c1[1];
-    double az = c0[2] - c1[2];
-
-    double ax2 = ax * ax;
-    double ay2 = ay * ay;
-    double az2 = az * az;
-
-    double rij2 = ax2 + ay2 + az2;
-
-    distance = Math.sqrt(rij2);
-    fcf = cf;
-    computed = true;
+    return ("[" + iatoms[0] + "," + iatoms[1] + " = " + distance + "]");
   }
 }
 

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -19,7 +18,6 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.app.Measure;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.DisplayControl;
 
@@ -85,13 +83,6 @@ public class MouseManager {
 
   public int getMode() {
     return modeMouse;
-  }
-
-  // FIXME -- figure out a way to get measure to work with both
-  // applet and app
-  Measure measure;
-  public void setMeasure(Measure measure) {
-    this.measure = measure;
   }
 
   public Rectangle getRubberBand() {
@@ -164,8 +155,8 @@ public class MouseManager {
             control.deleteAtom(atomIndex);
           break;
         case MEASURE:
-          if (atomIndex != -1 && measure != null) {
-            measure.firePicked(atomIndex);
+          if (atomIndex != -1) {
+            control.measureSelection(atomIndex);
           }
         }
       }

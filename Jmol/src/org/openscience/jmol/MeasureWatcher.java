@@ -19,10 +19,6 @@
  */
 package org.openscience.jmol;
 
-public class Measurement {
-
-  public static ChemFrame cf;
-  public static void setChemFrame(ChemFrame cfi) {
-    cf = cfi;
-  }
+public interface MeasureWatcher {
+  public void firePicked(int iatom);
 }

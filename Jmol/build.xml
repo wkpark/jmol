@@ -277,8 +277,7 @@
   <target name="applet-jar" depends="applet-classes,appletjars">
     <jar jarfile="${lib.dir}/JmolApplet.jar" >
       <fileset dir="${applet.classes.dir}" >
-        <exclude name="**/.*" />
-        <include name="**/jmol/**" />
+        <include name="**/*" />
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>

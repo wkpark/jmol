@@ -25,7 +25,6 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.app.MeasurementList;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -47,7 +46,6 @@ public class ModelManager {
   public ChemFile chemfile;
   public ChemFrame chemframe;
   public int nframes = 0;
-  public MeasurementList mlist = null;
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
   public void setChemFile(ChemFile chemfile) {
@@ -55,8 +53,6 @@ public class ModelManager {
     this.chemfile = chemfile;
     nframes = chemfile.getNumberOfFrames();
     this.chemframe = chemfile.getFrame(0);
-    Measurement.setChemFrame(chemframe);
-    clearMeasurements();
     haveFile = true;
     pcs.firePropertyChange(DisplayControl.PROP_CHEM_FILE,
                            chemfilePrevious, chemfile);
@@ -101,8 +97,6 @@ public class ModelManager {
   public void setFrame(ChemFrame chemframe) {
     ChemFrame chemframePrevious = this.chemframe;
     this.chemframe = chemframe;
-    Measurement.setChemFrame(chemframe);
-    clearMeasurements();
     pcs.firePropertyChange(DisplayControl.PROP_CHEM_FRAME,
                            chemframePrevious, chemframe);
   }
@@ -117,16 +111,6 @@ public class ModelManager {
 
   public ChemFrame[] getFrames() {
     return chemfile.getFrames();
-  }
-
-  public Vector distanceMeasurements = new Vector();
-  public Vector angleMeasurements = new Vector();
-  public Vector dihedralMeasurements = new Vector();
-
-  public void clearMeasurements() {
-    distanceMeasurements.removeAllElements();
-    angleMeasurements.removeAllElements();
-    dihedralMeasurements.removeAllElements();
   }
 
   public void setCenterAsSelected() {
@@ -171,34 +155,6 @@ public class ModelManager {
 
   public void setAutoBond(boolean ab) {
     autoBond = ab;
-  }
-
-  public void defineMeasure(int[] atoms) {
-    switch (atoms.length) {
-    case 2:
-      defineMeasure(atoms[0], atoms[1]);
-      break;
-    case 3:
-      defineMeasure(atoms[0], atoms[1], atoms[2]);
-      break;
-    case 4:
-      defineMeasure(atoms[0], atoms[1], atoms[2], atoms[3]);
-      break;
-    default:
-      control.logError("unrecognized number of args to defineMeasure");
-    }
-  }
-
-  public void defineMeasure(int atom1, int atom2) {
-    mlist.addDistance(atom1, atom2);
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3) {
-    mlist.addAngle(atom1, atom2, atom3);
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
-    mlist.addDihedral(atom1, atom2, atom3, atom4);
   }
 
   public void deleteAtom(int atomIndex) {

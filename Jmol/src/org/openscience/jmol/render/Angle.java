@@ -21,34 +21,42 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 
 import freeware.PrintfFormat;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 
-public class Angle extends Measurement implements MeasurementInterface {
+public class Angle implements MeasurementInterface {
 
   private int[] Atoms = new int[3];
+  Atom atom1, atom2, atom3;
   private double angle;
-  private boolean computed = false;
-  private ChemFrame fcf;
+  String strAngle;
 
-  public Angle(int a1, int a2, int a3) {
+  public Angle(int a1, Atom atom1, int a2, Atom atom2, int a3, Atom atom3) {
     super();
     Atoms[0] = a1;
     Atoms[1] = a2;
     Atoms[2] = a3;
-    compute();
+    this.atom1 = atom1;
+    this.atom2 = atom2;
+    this.atom3 = atom3;
+    Vector3d vector12 = new Vector3d(atom1.getPosition());
+    vector12.sub(atom2.getPosition());
+    Vector3d vector32 = new Vector3d(atom3.getPosition());
+    vector32.sub(atom2.getPosition());
+    angle = vector12.angle(vector32) * 180 / Math.PI;
+    strAngle = angleFormat.sprintf(angle);
   }
 
-  public void paint(Graphics g, DisplayControl control, boolean showLabel,
-                    Atom atom1, Atom atom2, Atom atom3) throws Exception {
-    paintAngleLine(g, control, atom1, atom2, atom3);
+  public void paint(Graphics g, DisplayControl control, boolean showLabel) {
+    paintAngleLine(g, control);
     if (showLabel)
-      paintAngleString(g, control, atom1, atom2, atom3);
+      paintAngleString(g, control);
   }
 
-  private void paintAngleLine(Graphics g, DisplayControl control,
-                              Atom atom1, Atom atom2, Atom atom3) {
+  private void paintAngleLine(Graphics g, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
     int x3 = atom3.getScreenX(), y3 = atom3.getScreenY();
@@ -67,8 +75,7 @@ public class Angle extends Measurement implements MeasurementInterface {
    */
   private static PrintfFormat angleFormat = new PrintfFormat("%0.1f\u00b0");
   
-  private void paintAngleString(Graphics g, DisplayControl control,
-                                Atom atom1, Atom atom2, Atom atom3) {
+  private void paintAngleString(Graphics g, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
 	d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
@@ -80,13 +87,12 @@ public class Angle extends Measurement implements MeasurementInterface {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     g.setColor(control.getColorAngle());
-    String s = angleFormat.sprintf(getAngle());
-    int j = fontMetrics.stringWidth(s);
+    int j = fontMetrics.stringWidth(strAngle);
 
     int xloc = (2 * x2 + x1 + x3) / 4;
     int yloc = (2 * y2 + y1 + y3) / 4;
 
-    g.drawString(s, xloc, yloc);
+    g.drawString(strAngle, xloc, yloc);
   }
 
   public int[] getAtomList() {
@@ -114,65 +120,10 @@ public class Angle extends Measurement implements MeasurementInterface {
 
   public String toString() {
     return ("[" + Atoms[0] + "," + Atoms[1] + "," + Atoms[2] + " = "
-        + getAngle() + "]");
+        + angle + "]");
   }
 
   public double getAngle() {
-    if (!computed || (cf != fcf)) {
-      compute();
-    }
     return angle;
-  }
-
-  public void compute() {
-
-    if (cf == null) {
-      return;
-    }
-
-    double[] c0 = cf.getAtomCoords(Atoms[0]);
-    double[] c1 = cf.getAtomCoords(Atoms[1]);
-    double[] c2 = cf.getAtomCoords(Atoms[2]);
-
-
-    double ax = c0[0] - c1[0];
-    double ay = c0[1] - c1[1];
-    double az = c0[2] - c1[2];
-
-    double bx = c2[0] - c1[0];
-    double by = c2[1] - c1[1];
-    double bz = c2[2] - c1[2];
-
-    double ax2 = ax * ax;
-    double ay2 = ay * ay;
-    double az2 = az * az;
-
-    double bx2 = bx * bx;
-    double by2 = by * by;
-    double bz2 = bz * bz;
-
-    double rij2 = ax2 + ay2 + az2;
-    double rkj2 = bx2 + by2 + bz2;
-
-    double riji2 = 1.0 / rij2;
-    double rkji2 = 1.0 / rkj2;
-
-    double dot = ax * bx + ay * by + az * bz;
-    double denom = Math.sqrt(riji2 * rkji2);
-    double cosang = dot * denom;
-    if (cosang > 1.0) {
-      cosang = 1.0;
-    }
-    if (cosang < -1.0) {
-      cosang = -1.0;
-    }
-
-    angle = toDegrees(Math.acos(cosang));
-    fcf = cf;
-    computed = true;
-  }
-
-  public static double toDegrees(double angrad) {
-    return angrad * 180.0 / Math.PI;
   }
 }

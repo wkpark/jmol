@@ -920,7 +920,7 @@ class Jmol extends JPanel {
             if(retval == 0) {
                 File theFile = openChooser.getSelectedFile();
                 if(theFile != null) {
-                    try {                        
+                    try {
                         FileInputStream is = new FileInputStream(theFile);
 
                         if (ft.getType().equals("PDB")) {
@@ -937,6 +937,9 @@ class Jmol extends JPanel {
                         } else {
                             // Try to automagically determine file type:
 			    ChemFileReader reader = ReaderFactory.createReader( new InputStreamReader(is));
+                            if (reader == null){
+                                throw new JmolException("openAction","Unknown file type");
+                            }
 			    cf = reader.read();
                         }
                         if (cf != null) {
@@ -947,6 +950,10 @@ class Jmol extends JPanel {
                             apm.replaceList(cf.getPropertyList());
                             mlist.clear();
                         }
+                    }catch(java.io.FileNotFoundException e2){
+                          JOptionPane.showMessageDialog(Jmol.this, ("File not found: "+theFile));
+                    }catch(JmolException e3){
+                          JOptionPane.showMessageDialog(Jmol.this, ("File type undetermined: "+theFile));
                     } catch(Exception exc) {
                         System.out.println(exc.toString());
                         exc.printStackTrace();

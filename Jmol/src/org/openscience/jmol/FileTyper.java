@@ -49,15 +49,21 @@ import java.io.File;
 public class FileTyper extends JPanel implements PropertyChangeListener {
     
     File f = null;
+    private JFileChooser myChooser;
     private JComboBox cb;
     private JRadioButton sYes, sNo;
     private boolean GaussianComputeShifts;
     private static boolean UseFileExtensions = true;
     private static JmolResourceHandler jrh;
-
+    
     static {
         jrh = new JmolResourceHandler("FileTyper");
     }
+    private String[] extensions = {"",
+                                   "XYZ", 
+                                   "PDB", 
+                                   "LOG",
+                                   "CML"};
     private String[] Choices = {jrh.getString("Automatic"),
                                 jrh.getString("XYZ"), 
                                 jrh.getString("PDB"), 
@@ -66,7 +72,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
     // Default is the first one:
     private int def = 0;
     private String result = Choices[def];
-
+    
     /**
      * Should we use the file extension to set the file type????
      *
@@ -75,14 +81,14 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
     public static void setUseFileExtensions(boolean ufe) {
         UseFileExtensions = ufe;
     }
-
+    
     /**
      * Are we using the file extension to set the file type????
      */    
     public static boolean getUseFileExtensions() {
         return UseFileExtensions;
     }
-
+    
     /**
      * A simple panel with a combo box for allowing the user to choose
      * the input file type.
@@ -90,9 +96,11 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
      * @param fc the file chooser
      */
     public FileTyper(JFileChooser fc) {
- 
+        
+        myChooser = fc;
+        
         setLayout(new BorderLayout());
-
+        
         JPanel cbPanel = new JPanel();
         cbPanel.setLayout(new FlowLayout());
         cbPanel.setBorder(new TitledBorder(jrh.getString("Title")));
@@ -103,18 +111,23 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
         cbPanel.add(cb);
         cb.setSelectedIndex(def);
         cb.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                JComboBox source = (JComboBox)e.getSource();
-                result = (String)source.getSelectedItem();
-                if (result.equals(jrh.getString("Gaussian"))) {
-                    sYes.setEnabled(true);
-                    sNo.setEnabled(true);
-                } else {
-                    sYes.setEnabled(false);
-                    sNo.setEnabled(false);
+                public void itemStateChanged(ItemEvent e) {
+                    JComboBox source = (JComboBox)e.getSource();
+                    result = (String)source.getSelectedItem();
+                    int resultNo = source.getSelectedIndex();
+                    if (resultNo > 0){
+                        myChooser.setFileFilter(new FileFilter(extensions[resultNo],
+                                                               result,true));
+                    }
+                    if (result.equals(jrh.getString("Gaussian"))) {
+                        sYes.setEnabled(true);
+                        sNo.setEnabled(true);
+                    } else {
+                        sYes.setEnabled(false);
+                        sNo.setEnabled(false);
+                    }
                 }
-            }
-        });
+            });
         add(cbPanel,BorderLayout.CENTER); // Change to NORTH if other controls
         
         JPanel sPanel = new JPanel();
@@ -133,20 +146,20 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
         sYes.setEnabled(false);
         sNo.setEnabled(false);
         add(sPanel,BorderLayout.SOUTH);
-
+        
         fc.addPropertyChangeListener(this);
     }
     
     ItemListener rbListener = new ItemListener() {
-        public void itemStateChanged(ItemEvent e) {
-            JRadioButton rb = (JRadioButton) e.getSource();
-            if(rb.getText().equals(jrh.getString("sYesLabel"))) { 
-                GaussianComputeShifts = false;
-            } else if(rb.getText().equals(jrh.getString("sNoLabel"))) {
-                GaussianComputeShifts = true;
+            public void itemStateChanged(ItemEvent e) {
+                JRadioButton rb = (JRadioButton) e.getSource();
+                if(rb.getText().equals(jrh.getString("sYesLabel"))) { 
+                    GaussianComputeShifts = false;
+                } else if(rb.getText().equals(jrh.getString("sNoLabel"))) {
+                    GaussianComputeShifts = true;
+                }
             }
-        }
-    };
+        };
     
     /**
      * returns the file type which contains the user's choice 
@@ -154,7 +167,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
     public String getType() {
         return result;
     }
-
+    
     /**
      * If the selected file is a Gaussian log file, should we compute
      * Chemical Shifts?  Or should we leave the raw shielding values?
@@ -166,14 +179,18 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
         }
         return c;
     }
-
+    
     public void propertyChange(PropertyChangeEvent e) {
         String prop = e.getPropertyName();
         if(prop == JFileChooser.SELECTED_FILE_CHANGED_PROPERTY) {
             f = (File) e.getNewValue();
             String fname = f.toString().toLowerCase();
             System.out.println(fname);
-            if (UseFileExtensions) {
+            String lastSection = f.getName();
+            if (lastSection.startsWith("*.")){
+               String type = lastSection.substring(2);
+               myChooser.setFileFilter(new FileFilter(type,null,true));
+            }else if (UseFileExtensions) {
                 if (fname.endsWith("xyz")) {
                     cb.setSelectedIndex(1); 
                 } else if (fname.endsWith("pdb")) {
@@ -184,7 +201,9 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
                     cb.setSelectedIndex(0);
                 } else if (fname.endsWith("cml")) {
                     cb.setSelectedIndex(4);
-                } 
+                } else{
+                    cb.setSelectedIndex(5);
+                }
             }            
         }
     }

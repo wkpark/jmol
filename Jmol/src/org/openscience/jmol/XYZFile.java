@@ -43,6 +43,9 @@ import java.io.*;
 import java.util.Vector;
 import java.util.StringTokenizer;
 
+//Updated 16 Feb 2000 by TJG to use null not exceptions to
+//signal end of frames.
+
 public class XYZFile extends ChemFile {
     
     /**
@@ -54,40 +57,41 @@ public class XYZFile extends ChemFile {
      * @param is input stream for the XYZ file
      */
     public XYZFile(InputStream is) throws Exception {
-
+        
         super();
-
+        
         BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);                 
-        while (true) {
-            try {
-                ChemFrame cf = readFrame(r);                
-                frames.addElement(cf);
-                Vector fp = cf.getFrameProps();
-                for (int i = 0; i < fp.size(); i++) {
-                    if (PropertyList.indexOf(fp.elementAt(i)) < 0) {
-                        PropertyList.addElement(fp.elementAt(i));
-                    }
+        do{
+            ChemFrame cf = readFrame(r);                
+            frames.addElement(cf);
+            Vector fp = cf.getFrameProps();
+            for (int i = 0; i < fp.size(); i++) {
+                if (PropertyList.indexOf(fp.elementAt(i)) < 0) {
+                    PropertyList.addElement(fp.elementAt(i));
                 }
-                nframes++;
-            } catch (Exception e) {   
-                break;
-            }          
+            }
+            nframes++;
+        } while(cf != null);
+        if (nframe == 0){
+            throw new JmolException("XYZFile constructor","No frames found!!");
         }
+        
     }
-
+    
     /**
      * parses the next section of the XYZ file into a ChemFrame
+     * or returns null if there are no more frames found.
      * @param r the reader that will supply the next part of the XYZ file
      */
-    public ChemFrame readFrame(BufferedReader r) throws Exception {
-
+    public ChemFrame readFrame(BufferedReader r) {
+        
         int na = 0;
         String info = "";
         StringTokenizer st;
-
+        
         try {
             String l = r.readLine();
-            if (l == null) throw new JmolException("XYZFile.readFrame", "no more frames!");
+            if (l == null)return null;
             st = new StringTokenizer(l, "\t ,;");
             String sn = st.nextToken();
             na = Integer.parseInt(sn);
@@ -141,7 +145,7 @@ public class XYZFile extends ChemFile {
                     x = FortranFormat.atof(sx);
                     y = FortranFormat.atof(sy);
                     z = FortranFormat.atof(sz);
-
+                    
                     Vector props = new Vector();
                     
                     if (readcharge) {

@@ -41,8 +41,6 @@ public class Preferences extends JDialog {
   private static boolean ShowBonds;
   private static boolean ShowHydrogens;
   private static boolean ShowVectors;
-  private static boolean ShowAxes;
-  private static boolean ShowCellAxes;
   private static Color backgroundColor;
   private static Color outlineColor;
   private static Color pickedColor;
@@ -104,8 +102,6 @@ public class Preferences extends JDialog {
     props.put("ShowBonds", "true");
     props.put("ShowHydrogens", "true");
     props.put("ShowVectors", "false");
-    props.put("ShowAxes", "false");
-    props.put("ShowCellAxes", "false");
     props.put("MessageTime", "5.0");
     props.put("AntiAliased", "false");
     props.put("Perspective", "false");
@@ -345,18 +341,10 @@ public class Preferences extends JDialog {
     cH = new JCheckBox(jrh.getString("cHLabel"),
             display.getSettings().getShowHydrogens());
     cH.addItemListener(checkBoxListener);
-    cX = new JCheckBox(jrh.getString("cXLabel"),
-            display.getSettings().getShowAxes());
-    cX.addItemListener(checkBoxListener);
-    cXX = new JCheckBox(jrh.getString("cXXLabel"),
-            display.getSettings().getShowCellAxes());
-    cXX.addItemListener(checkBoxListener);
     choicesPanel.add(cB);
     choicesPanel.add(cA);
-    choicesPanel.add(cX);
     choicesPanel.add(cV);
     choicesPanel.add(cH);
-    choicesPanel.add(cXX);
 
     JPanel fovPanel = new JPanel();
     fovPanel.setLayout(new BorderLayout());
@@ -1133,8 +1121,6 @@ public class Preferences extends JDialog {
     ShowBonds = Boolean.getBoolean("ShowBonds");
     ShowHydrogens = Boolean.getBoolean("ShowHydrogens");
     ShowVectors = Boolean.getBoolean("ShowVectors");
-    ShowAxes = Boolean.getBoolean("ShowAxes");
-    ShowCellAxes = Boolean.getBoolean("ShowCellAxes");
     backgroundColor = Color.getColor("backgroundColor");
     outlineColor = Color.getColor("outlineColor");
     pickedColor = Color.getColor("pickedColor");
@@ -1253,14 +1239,6 @@ public class Preferences extends JDialog {
         ShowHydrogens = cb.isSelected();
         display.getSettings().setShowHydrogens(ShowHydrogens);
         props.put("ShowHydrogens", new Boolean(ShowHydrogens).toString());
-      } else if (cb.getText().equals(jrh.getString("cXLabel"))) {
-        ShowAxes = cb.isSelected();
-        display.getSettings().setShowAxes(ShowAxes);
-        props.put("ShowAxes", new Boolean(ShowAxes).toString());
-      } else if (cb.getText().equals(jrh.getString("cXXLabel"))) {
-        ShowCellAxes = cb.isSelected();
-        display.getSettings().setShowCellAxes(ShowCellAxes);
-        props.put("ShowCellAxes", new Boolean(ShowCellAxes).toString());
       }
       display.repaint();
     }

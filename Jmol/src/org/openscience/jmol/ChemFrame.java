@@ -38,23 +38,6 @@ public class ChemFrame {
   private static float bondFudge = 1.12f;
   private static boolean AutoBond = true;
   private static Matrix4d mat;
-  private static float[] axes = {
-    0.0f, 0.0f, 0.0f,                     // axis vectors in
-    1.0f, 0.0f, 0.0f,                     // real space
-    0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f
-  };
-  private static float[] cellaxes = {
-    0.0f, 0.0f, 0.0f,                     // axis vectors in
-    5.0f, 0.0f, 0.0f,                     // real space
-    0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 5.0f
-  };
-
-  private static String[] AxesLabels = {
-    "x", "y", "z"
-  };
-  private static String[] CellAxesLabels = {
-    "a", "b", "c"
-  };
 
   /*
      pickedAtoms and napicked are static because
@@ -67,8 +50,6 @@ public class ChemFrame {
   // This stuff can vary for each frame in the dynamics:
 
   private String info;                    // The title or info string for this frame.
-  private int[] taxes;                    // axes transformed to screen space
-  private int[] tcellaxes;                // axes transformed to screen space
   private Atom[] atoms;               // array of atom types
   private Vector properties = new Vector();
   private int[] ZsortMap;
@@ -208,29 +189,6 @@ public class ChemFrame {
       }
     }
     return result;
-  }
-  
-  public void setCellAxis(String axis, String fract, float x) {
-
-    int index = -1;
-    if (fract.equals("x")) {
-      index = 0;
-    }
-    if (fract.equals("y")) {
-      index = 1;
-    }
-    if (fract.equals("z")) {
-      index = 2;
-    }
-    if (index != -1) {
-      if (axis.equals("a-axis")) {
-        cellaxes[3 + index] = x;
-      } else if (axis.equals("b-axis")) {
-        cellaxes[6 + index] = x;
-      } else if (axis.equals("c-axis")) {
-        cellaxes[9 + index] = x;
-      }
-    }
   }
 
   /**
@@ -393,26 +351,6 @@ public class ChemFrame {
       mat.transform(pt);
       atoms[i].transform(mat);
     }
-    if ((taxes == null) || (taxes.length < 12)) {
-      taxes = new int[12];
-    }
-    for (int i = 0; i < 4; ++i) {
-      Point3d pt = new Point3d(axes[i*3], axes[i*3 + 1], axes[i*3 + 2]);
-      mat.transform(pt);
-      taxes[i*3] = (int) pt.x;
-      taxes[i*3 + 1] = (int) pt.y;
-      taxes[i*3 + 2] = (int) pt.z;
-    }
-    if ((tcellaxes == null) || (tcellaxes.length < 12)) {
-      tcellaxes = new int[12];
-    }
-    for (int i = 0; i < 4; ++i) {
-      Point3d pt = new Point3d(cellaxes[i*3], cellaxes[i*3 + 1], cellaxes[i*3 + 2]);
-      mat.transform(pt);
-      tcellaxes[i*3] = (int) pt.x;
-      tcellaxes[i*3 + 1] = (int) pt.y;
-      tcellaxes[i*3 + 2] = (int) pt.z;
-    }
   }
 
   /**
@@ -430,48 +368,6 @@ public class ChemFrame {
     boolean drawHydrogen = settings.getShowHydrogens();
     transform();
 
-
-    if (settings.getShowAxes()) {
-
-      for (int i = 1; i < 4; i++) {
-
-        int x0 = taxes[0];
-        int y0 = taxes[1];
-        int x1 = taxes[i * 3];
-        int y1 = taxes[i * 3 + 1];
-        int sz = (int) settings.getScreenSize(taxes[i * 3] + 2);
-
-        ArrowLine al = new ArrowLine(g, x0, y0, x1, y1, false, true);
-
-        Font font = new Font("Helvetica", Font.PLAIN, sz);
-        FontMetrics fontMetrics = g.getFontMetrics(font);
-        String s = AxesLabels[i - 1];
-        int j = fontMetrics.stringWidth(s);
-        int k = fontMetrics.getAscent();
-        g.drawString(s, x1, y1);
-      }
-    }
-
-    if (settings.getShowCellAxes()) {
-
-      for (int i = 1; i < 4; i++) {
-
-        int x0 = tcellaxes[0];
-        int y0 = tcellaxes[1];
-        int x1 = tcellaxes[i * 3];
-        int y1 = tcellaxes[i * 3 + 1];
-        int sz = (int) settings.getScreenSize(tcellaxes[i * 3] + 2);
-
-        ArrowLine al = new ArrowLine(g, x0, y0, x1, y1, false, true);
-
-        Font font = new Font("Helvetica", Font.PLAIN, sz);
-        FontMetrics fontMetrics = g.getFontMetrics(font);
-        String s = CellAxesLabels[i - 1];
-        int j = fontMetrics.stringWidth(s);
-        int k = fontMetrics.getAscent();
-        g.drawString(s, x1, y1);
-      }
-    }
 
     int zs[] = ZsortMap;
     if (zs == null) {

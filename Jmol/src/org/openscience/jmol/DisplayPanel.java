@@ -537,8 +537,6 @@ public class DisplayPanel extends JPanel
   private AtomsAction atomsAction = new AtomsAction();
   private VectorsAction vectorsAction = new VectorsAction();
   private HydrogensAction hydrogensAction = new HydrogensAction();
-  private AxesAction axesAction = new AxesAction();
-  private CellAxesAction cellAxesAction = new CellAxesAction();
   private SelectallAction selectallAction = new SelectallAction();
   private DeselectallAction deselectallAction = new DeselectallAction();
   private WireFrameRotationAction wireframerotationAction =
@@ -593,32 +591,6 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.toggleHydrogens();
-      repaint();
-    }
-  }
-
-  class AxesAction extends AbstractAction {
-
-    public AxesAction() {
-      super("axes");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      settings.toggleAxes();
-      repaint();
-    }
-  }
-
-  class CellAxesAction extends AbstractAction {
-
-    public CellAxesAction() {
-      super("cellaxes");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      settings.toggleCellAxes();
       repaint();
     }
   }
@@ -988,7 +960,7 @@ public class DisplayPanel extends JPanel
       ashadingAction, awireframeAction, bquickdrawAction, bshadingAction,
       blineAction, bwireframeAction, plainAction, symbolsAction, typesAction,
       numbersAction, bondsAction, atomsAction, vectorsAction, hydrogensAction,
-      axesAction, cellAxesAction, selectallAction, deselectallAction,
+      selectallAction, deselectallAction,
       homeAction, wireframerotationAction
     };
     return defaultActions;

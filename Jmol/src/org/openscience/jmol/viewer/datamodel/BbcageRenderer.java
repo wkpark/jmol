@@ -38,7 +38,7 @@ class BbcageRenderer extends ShapeRenderer {
     short mad = bbcage.mad;
     if (mad == 0)
       return;
-    render(viewer, g3d, mad, bbcage.colix, bbcage.vertices,
+    render(viewer, g3d, mad, bbcage.colix, frame.bboxVertices,
            frameRenderer.getTempScreens(8));
   }
 

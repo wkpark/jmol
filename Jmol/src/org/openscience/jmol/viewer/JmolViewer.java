@@ -913,8 +913,8 @@ final public class JmolViewer {
     return modelManager.getModelHeader();
   }
 
-  public boolean haveFile() {
-    return modelManager.haveFile;
+  public boolean haveFrame() {
+    return modelManager.frame != null;
   }
 
   public Frame getFrame() {
@@ -933,8 +933,8 @@ final public class JmolViewer {
     return modelManager.getBoundingBoxCenter();
   }
 
-  public Point3f getBoundingBoxCorner() {
-    return modelManager.getBoundingBoxCorner();
+  public Vector3f getBoundingBoxCornerVector() {
+    return modelManager.getBoundingBoxCornerVector();
   }
 
   public int getBoundingBoxCenterX() {

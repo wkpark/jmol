@@ -251,112 +251,152 @@ public class Frame {
   }
 
   Point3f centerBoundingBox;
-  Point3f cornerBoundingBox;
-  Point3f centerRotation;
-  float radiusBoundingBox;
-  float radiusRotation;
+  Vector3f boundingBoxCornerVector;
+  Point3f minBoundingBox;
+  Point3f maxBoundingBox;
 
+  Point3f centerUnitcell;
+
+  //  float radiusBoundingBox;
+  Point3f rotationCenter;
+  float rotationRadius;
+  Point3f rotationCenterDefault;
+  float rotationRadiusDefault;
+
+  /*
   public float getGeometricRadius() {
     findBounds();
     return radiusBoundingBox;
   }
+  */
 
   public Point3f getBoundingBoxCenter() {
     findBounds();
     return centerBoundingBox;
   }
 
-  public Point3f getBoundingBoxCorner() {
+  public Vector3f getBoundingBoxCornerVector() {
     findBounds();
-    return cornerBoundingBox;
+    return boundingBoxCornerVector;
   }
 
   public Point3f getRotationCenter() {
     findBounds();
-    return centerRotation;
+    return rotationCenter;
   }
 
   public float getRotationRadius() {
     findBounds();
-    return radiusRotation;
+    return rotationRadius;
   }
 
   public void setRotationCenter(Point3f newCenterOfRotation) {
     if (newCenterOfRotation != null) {
-      centerRotation = newCenterOfRotation;
-      radiusRotation = calcRadius(centerRotation);
+      rotationCenter = newCenterOfRotation;
+      rotationRadius = calcRotationRadius(rotationCenter);
     } else {
-      centerRotation = centerBoundingBox;
-      radiusRotation = radiusBoundingBox;
+      rotationCenter = rotationCenterDefault;
+      rotationRadius = rotationRadiusDefault;
     }
   }
 
   public void clearBounds() {
-    centerBoundingBox = centerRotation = null;
-    radiusBoundingBox = radiusRotation = 0;
+    rotationCenter = null;
+    rotationRadius = 0;
   }
 
   private void findBounds() {
-    if ((centerBoundingBox != null) || (atomCount <= 0))
+    if ((rotationCenter != null) || (atomCount <= 0))
       return;
-    calcBoundingBox();
-    centerRotation = centerBoundingBox;
-    radiusBoundingBox = radiusRotation = calcRadius(centerBoundingBox);
+    calcRotationSphere();
   }
 
-  private void calcBoundingBox() {
-    Point3f pointMin = new Point3f();
-    Point3f pointMax = new Point3f();
-    calcAtomsMinMax(pointMin, pointMax);
-
-    for (int i = JmolConstants.SHAPE_MAX; --i >= 0; ) {
-      Shape g = shapes[i];
-      if (g != null)
-        g.checkBoundsMinMax(pointMin, pointMax);
+  private void calcRotationSphere() {
+    calcBoundingBoxDimensions();
+    rotationCenterDefault = centerBoundingBox;
+    if (notionalUnitcell != null) {
+      calcUnitcellDimensions();
+      rotationCenterDefault = centerUnitcell;
     }
-
-    pointMin.add(pointMax);
-    pointMin.scale(0.5f);
-
-    centerBoundingBox = pointMin;
-    pointMax.sub(centerBoundingBox);
-    cornerBoundingBox = pointMax;
+    rotationCenter = rotationCenterDefault;
+    rotationRadius = rotationRadiusDefault =
+      calcRotationRadius(rotationCenterDefault);
   }
 
-  private float calcRadius(Point3f center) {
-    float radius = 0;
-    for (int i = atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      Point3f posAtom = atom.getPoint3f();
-      float distAtom = center.distance(posAtom);
-      float radiusVdw = atom.getVanderwaalsRadiusFloat();
-      float distVdw = distAtom + radiusVdw;
-      
-      if (distVdw > radius)
-        radius = distVdw;
-      /*
-      if (atom.hasVector()) {
-        // mth 2002 nov
-        // this calculation isn't right, but I can't get it to work with
-        // samples/cs2.syz when I try to use
-        // float distVector = center.distance(atom.getScaledVector());
-        // So I am over-estimating and giving up for the day. 
-        float distVector = distAtom + atom.getVectorMagnitude();
-        if (distVector > radius)
-          radius = distVector;
+  final static Point3f[] unitBboxPoints = {
+    new Point3f( 1, 1, 1),
+    new Point3f( 1, 1,-1),
+    new Point3f( 1,-1, 1),
+    new Point3f( 1,-1,-1),
+    new Point3f(-1, 1, 1),
+    new Point3f(-1, 1,-1),
+    new Point3f(-1,-1, 1),
+    new Point3f(-1,-1,-1),
+  };
+
+  final Point3f[] bboxVertices = new Point3f[8];
+
+  private void calcBoundingBoxDimensions() {
+    minBoundingBox = new Point3f();
+    maxBoundingBox = new Point3f();
+
+    calcAtomsMinMax(minBoundingBox, maxBoundingBox);
+
+    centerBoundingBox = new Point3f(minBoundingBox);
+    centerBoundingBox.add(maxBoundingBox);
+    centerBoundingBox.scale(0.5f);
+    boundingBoxCornerVector = new Vector3f(maxBoundingBox);
+    boundingBoxCornerVector.sub(centerBoundingBox);
+
+    for (int i = 8; --i >= 0; ) {
+      Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
+      bbcagePoint.x *= boundingBoxCornerVector.x;
+      bbcagePoint.y *= boundingBoxCornerVector.y;
+      bbcagePoint.z *= boundingBoxCornerVector.z;
+      bbcagePoint.add(centerBoundingBox);
+    }
+  }
+
+  final static Point3f[] unitCubePoints = {
+    new Point3f( 0, 0, 0),
+    new Point3f( 0, 0, 1),
+    new Point3f( 0, 1, 0),
+    new Point3f( 0, 1, 1),
+    new Point3f( 1, 0, 0),
+    new Point3f( 1, 0, 1),
+    new Point3f( 1, 1, 0),
+    new Point3f( 1, 1, 1),
+  };
+
+  Point3f[] unitcellVertices;
+
+  private void calcUnitcellDimensions() {
+    unitcellVertices = new Point3f[8];
+    for (int i = 8; --i >= 0; ) {
+      Point3f vertex = unitcellVertices[i] = new Point3f();
+      matrixFractionalToEuclidean.transform(unitCubePoints[i], vertex);
+    }
+    centerUnitcell = new Point3f(unitcellVertices[7]);
+    centerUnitcell.scale(0.5f);
+  }
+
+  private float calcRotationRadius(Point3f center) {
+    // check the 8 corners of the bounding box
+    float maxRadius2 = center.distanceSquared(bboxVertices[7]);
+    for (int i = 7; --i >= 0; ) {
+      float radius2 = center.distanceSquared(bboxVertices[i]);
+      if (radius2 > maxRadius2)
+        maxRadius2 = radius2;
+    }
+    if (unitcellVertices != null) {
+      for (int i = 8; --i >= 0; ) {
+        float radius2 = center.distanceSquared(bboxVertices[i]);
+        if (radius2 > maxRadius2)
+          maxRadius2 = radius2;
       }
-      */
     }
-    for (int i = lineCount; --i >= 0; ) {
-      Line line = lines[i];
-      float distLineEnd;
-      distLineEnd = center.distance(line.pointOrigin);
-      if (distLineEnd > radius)
-        radius = distLineEnd;
-      distLineEnd = center.distance(line.pointEnd);
-      if (distLineEnd > radius)
-        radius = distLineEnd;
-    }
+    float radius = (float)Math.sqrt(maxRadius2);
+    radius += 2; // the biggest radius of any atom or cage
     return radius;
   }
 
@@ -854,23 +894,25 @@ public class Frame {
     matrixNotional = new Matrix3f();
     calcNotionalMatrix(notionalUnitcell, matrixNotional);
     if (pdbScaleMatrix != null) {
-      System.out.println("using PDB Scale matrix");
+      //      System.out.println("using PDB Scale matrix");
       matrixEuclideanToFractional = new Matrix3f();
       matrixEuclideanToFractional.transpose(pdbScaleMatrix);
       matrixFractionalToEuclidean = new Matrix3f();
       matrixFractionalToEuclidean.invert(matrixEuclideanToFractional);
     } else {
-      System.out.println("using notional unit cell");
+      //      System.out.println("using notional unit cell");
       matrixFractionalToEuclidean = matrixNotional;
       matrixEuclideanToFractional = new Matrix3f();
       matrixEuclideanToFractional.invert(matrixFractionalToEuclidean);
     }
+    /*
     System.out.println("matrixNotional\n" +
                        matrixNotional +
                        "matrixFractionalToEuclidean\n" +
                        matrixFractionalToEuclidean + "\n" +
                        "matrixEuclideanToFractional\n" +
                        matrixEuclideanToFractional);
+    */
   }
 
   final static float toRadians = (float)Math.PI * 2 / 360;
@@ -925,7 +967,6 @@ public class Frame {
     if (adjustment.x != 0 || adjustment.y != 0 || adjustment.z != 0)
       applyFractionalAdjustment(adjustment);
     convertFractionalToEuclidean();
-    System.out.println("moved them :-)");
   }
 
   void convertEuclideanToFractional() {

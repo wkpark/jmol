@@ -30,6 +30,7 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
 import java.util.BitSet;
@@ -54,7 +55,7 @@ public class Axes extends SelectionIndependentShape {
 
   void initShape() {
     originPoint.set(viewer.getBoundingBoxCenter());
-    Point3f corner = viewer.getBoundingBoxCorner();
+    Vector3f corner = viewer.getBoundingBoxCornerVector();
     for (int i = 6; --i >= 0; ) {
       Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);

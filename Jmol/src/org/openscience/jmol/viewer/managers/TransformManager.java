@@ -365,7 +365,7 @@ public class TransformManager {
   }
 
   public void scaleFitToScreen() {
-    if (width == 0 || height == 0 || !viewer.haveFile())
+    if (width == 0 || height == 0 || !viewer.haveFrame())
       return;
     // translate to the middle of the screen
     xTranslation = width / 2;

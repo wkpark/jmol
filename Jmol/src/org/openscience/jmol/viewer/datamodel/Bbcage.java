@@ -30,45 +30,19 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
 import java.util.BitSet;
 
 class Bbcage extends SelectionIndependentShape {
 
-  final Point3f[] vertices = new Point3f[8];
-  {
-    for (int i = 8; --i >= 0; )
-      vertices[i] = new Point3f();
-  }
-
-  final static Point3f[] unitBoxPoints = {
-    new Point3f( 1, 1, 1),
-    new Point3f( 1, 1,-1),
-    new Point3f( 1,-1, 1),
-    new Point3f( 1,-1,-1),
-    new Point3f(-1, 1, 1),
-    new Point3f(-1, 1,-1),
-    new Point3f(-1,-1, 1),
-    new Point3f(-1,-1,-1),
-  };
-
-  // the points I am connected with are at the indices obtained
   // by XORing each of the three bits of my index
   final static byte edges[] =
   {0,1, 0,2, 0,4, 1,3, 1,5, 2,3, 2,6, 3,7, 4,5, 4,6, 5,7, 6,7};
 
   void initShape() {
-    Point3f pointOrigin = viewer.getBoundingBoxCenter();
-    Point3f pointCorner = viewer.getBoundingBoxCorner();
-    for (int i = 0; i < 8; ++i) {
-      Point3f bbcagePoint = vertices[i];
-      bbcagePoint.set(unitBoxPoints[i]);
-      bbcagePoint.x *= pointCorner.x;
-      bbcagePoint.y *= pointCorner.y;
-      bbcagePoint.z *= pointCorner.z;
-      bbcagePoint.add(pointOrigin);
-    }
-    colix = viewer.getColixAxes();
+    colix = viewer.getColixAxes(); // do this, or it will be BLACK
   }
+
 }

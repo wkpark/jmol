@@ -93,7 +93,7 @@ public abstract class MouseManager {
   void mousePressed(int x, int y, int modifiers, int clickCount) {
     if (logMouseEvents)
       System.out.println("mousePressed("+x+","+y+","+modifiers+")");
-    if (! viewer.haveFile())
+    if (! viewer.haveFrame())
       return;
     xClickPressed = xCurrent = xPrevious = x;
     yClickPressed = yCurrent = yPrevious = y;
@@ -238,7 +238,7 @@ public abstract class MouseManager {
       viewer.slabBy(yCurrent - yPrevious);
       break;
     case JmolConstants.MOUSE_PICK:
-      if (viewer.haveFile()) {
+      if (viewer.haveFrame()) {
         calcRectRubberBand();
         BitSet selectedAtoms = viewer.findAtomsInRectangle(rectRubber);
         if ((modifiers & SHIFT) != 0) {

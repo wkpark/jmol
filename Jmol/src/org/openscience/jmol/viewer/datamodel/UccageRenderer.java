@@ -40,7 +40,7 @@ class UccageRenderer extends ShapeRenderer {
     short colix = uccage.colix;
     if (mad == 0 || ! uccage.hasUnitcell)
       return;
-    BbcageRenderer.render(viewer, g3d, mad, colix, uccage.vertices,
+    BbcageRenderer.render(viewer, g3d, mad, colix, frame.unitcellVertices,
                           frameRenderer.getTempScreens(8));
     /*
     render(viewer, g3d, mad, bbox.colix, bbox.bboxVertices, bboxScreens);

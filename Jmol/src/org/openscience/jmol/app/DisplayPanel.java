@@ -213,7 +213,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
 
-      if (viewer.haveFile()) {
+      if (viewer.haveFrame()) {
         viewer.selectAll();
       }
     }
@@ -228,7 +228,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
 
-      if (viewer.haveFile()) {
+      if (viewer.haveFrame()) {
         viewer.clearSelection();
       }
     }

@@ -751,9 +751,7 @@ class PdbModel extends Model {
 
   float getFloat(int ich, int cch) throws Exception {
     String strFloat = line.substring(ich, ich+cch).trim();
-    System.out.println("strFloat=" + strFloat);
     float value = Float.valueOf(strFloat).floatValue();
-    System.out.println("value=" + value);
     return value;
   }
 
@@ -770,7 +768,6 @@ class PdbModel extends Model {
   }
 
   void scale1() {
-    System.out.println("scale1 seen");
     try {
       pdbScaleMatrix = new float[9];
       scale(0);
@@ -781,7 +778,6 @@ class PdbModel extends Model {
   }
 
   void scale2() {
-    System.out.println("scale2 seen");
     try {
       scale(1);
     } catch (Exception e) {
@@ -791,7 +787,6 @@ class PdbModel extends Model {
   }
 
   void scale3() {
-    System.out.println("scale3 seen");
     try {
       scale(2);
     } catch (Exception e) {

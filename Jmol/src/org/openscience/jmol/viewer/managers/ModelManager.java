@@ -33,6 +33,7 @@ import org.openscience.jmol.viewer.pdb.PdbAtom;
 import java.util.BitSet;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
 import java.awt.Color;
 
@@ -129,10 +130,10 @@ public class ModelManager {
     return frame.getBoundingBoxCenter();
   }
 
-  public Point3f getBoundingBoxCorner() {
-    return frame.getBoundingBoxCorner();
+  public Vector3f getBoundingBoxCornerVector() {
+    return frame.getBoundingBoxCornerVector();
   }
-  
+
   public int getFrameCount() {
     return frameCount;
   }

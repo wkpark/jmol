@@ -37,41 +37,18 @@ public class Uccage extends SelectionIndependentShape {
   float a,b,c,alpha,beta,gamma;
   Point3f[] vertices;
 
-  final static Point3f pointOrigin = new Point3f();
-
-  final static Point3f[] unitCubePoints = {
-    new Point3f( 0, 0, 0),
-    new Point3f( 0, 0, 1),
-    new Point3f( 0, 1, 0),
-    new Point3f( 0, 1, 1),
-    new Point3f( 1, 0, 0),
-    new Point3f( 1, 0, 1),
-    new Point3f( 1, 1, 0),
-    new Point3f( 1, 1, 1),
-  };
-
-  final static float toRadians = (float)Math.PI * 2 / 360;
-
   void initShape() {
     colix = viewer.getColixAxes(); // do this, or it will be BLACK
 
-    Matrix3f matrixFractionalToEuclidean = frame.matrixFractionalToEuclidean;
-    hasUnitcell = matrixFractionalToEuclidean != null;
-    if (! hasUnitcell)
-      return;
-    vertices = new Point3f[8];
-    for (int i = 8; --i >= 0; ) {
-      Point3f vertex = vertices[i] = new Point3f();
-      matrixFractionalToEuclidean.transform(unitCubePoints[i], vertex);
-    }
-
     float[] notionalUnitcell = frame.notionalUnitcell;
-    
-    a = notionalUnitcell[0];
-    b = notionalUnitcell[1];
-    c = notionalUnitcell[2];
-    alpha = notionalUnitcell[3];
-    beta  = notionalUnitcell[4];
-    gamma = notionalUnitcell[5];
+    hasUnitcell = notionalUnitcell != null;
+    if (hasUnitcell) {
+      a = notionalUnitcell[0];
+      b = notionalUnitcell[1];
+      c = notionalUnitcell[2];
+      alpha = notionalUnitcell[3];
+      beta  = notionalUnitcell[4];
+      gamma = notionalUnitcell[5];
+    }
   }
 }

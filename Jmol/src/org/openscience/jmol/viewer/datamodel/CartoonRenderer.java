@@ -255,10 +255,8 @@ class CartoonRenderer extends Renderer {
     pointCorner.scaleAdd(-0.5f, base);
     pointTipOffset.set(scaledHeightVector);
     pointTipOffset.scaleAdd(-0.5f, tip);
-    buildScreenArrowHeadBox(pointCorner,
-                            scaledWidthVector,
-                            scaledHeightVector,
-                            pointTipOffset);
+    buildArrowHeadBox(pointCorner, scaledWidthVector,
+                      scaledHeightVector, pointTipOffset);
     g3d.fillTriangle(colixPending,
                      screenCorners[0],
                      screenCorners[1],
@@ -309,14 +307,14 @@ class CartoonRenderer extends Renderer {
     pointCorner.add(scaledWidthVector, scaledHeightVector);
     pointCorner.scaleAdd(-0.5f, pointA);
     lengthVector.sub(pointB, pointA);
-    buildScreenBox(pointCorner, scaledWidthVector,
-                   scaledHeightVector, lengthVector);
-    for (int i = 0; i < 24; i += 4)
+    buildBox(pointCorner, scaledWidthVector,
+             scaledHeightVector, lengthVector);
+    for (int i = 0; i < 6; ++i)
       g3d.fillQuadrilateral(colixPending,
-                            screenCorners[boxFaces[i]],
-                            screenCorners[boxFaces[i + 1]],
-                            screenCorners[boxFaces[i + 2]],
-                            screenCorners[boxFaces[i + 3]]);
+                            screenCorners[boxFaces[i * 4]],
+                            screenCorners[boxFaces[i * 4 + 1]],
+                            screenCorners[boxFaces[i * 4 + 2]],
+                            screenCorners[boxFaces[i * 4 + 3]]);
   }
 
   final static byte[] boxFaces =
@@ -328,15 +326,19 @@ class CartoonRenderer extends Renderer {
     7, 6, 2, 3,
     7, 3, 2, 6 };
 
-  final Point3i screenCorners[] = new Point3i[8];
-  { for (int i = 8; --i >= 0; ) screenCorners[i] = new Point3i(); }
-  final Point3f corner = new Point3f();
-
-  void buildScreenBox(Point3f pointCorner,
-                      Vector3f scaledWidthVector,
-                      Vector3f scaledHeightVector,
-                      Vector3f lengthVector) {
+  final Point3f[] corners = new Point3f[8];
+  final Point3i[] screenCorners = new Point3i[8];
+  {
     for (int i = 8; --i >= 0; ) {
+      screenCorners[i] = new Point3i();
+      corners[i] = new Point3f();
+    }
+  }
+
+  void buildBox(Point3f pointCorner, Vector3f scaledWidthVector,
+                Vector3f scaledHeightVector, Vector3f lengthVector) {
+    for (int i = 8; --i >= 0; ) {
+      Point3f corner = corners[i];
       corner.set(pointCorner);
       if ((i & 1) != 0)
         corner.add(scaledWidthVector);
@@ -348,11 +350,10 @@ class CartoonRenderer extends Renderer {
     }
   }
 
-  void buildScreenArrowHeadBox(Point3f pointCorner,
-                               Vector3f scaledWidthVector,
-                               Vector3f scaledHeightVector,
-                               Point3f pointTip) {
+  void buildArrowHeadBox(Point3f pointCorner, Vector3f scaledWidthVector,
+                         Vector3f scaledHeightVector, Point3f pointTip) {
     for (int i = 4; --i >= 0; ) {
+      Point3f corner = corners[i];
       corner.set(pointCorner);
       if ((i & 1) != 0)
         corner.add(scaledWidthVector);
@@ -360,8 +361,9 @@ class CartoonRenderer extends Renderer {
         corner.add(scaledHeightVector);
       viewer.transformPoint(corner, screenCorners[i]);
     }
+    corners[4].set(pointTip);
     viewer.transformPoint(pointTip, screenCorners[4]);
-    corner.add(pointTip, scaledHeightVector);
-    viewer.transformPoint(corner, screenCorners[5]);
+    corners[5].add(pointTip, scaledHeightVector);
+    viewer.transformPoint(corners[5], screenCorners[5]);
   }
 }

@@ -421,8 +421,7 @@ public class TransformManager {
    TRANSFORMATIONS
   ****************************************************************/
 
-  public final Matrix4f matrixPointTransform = new Matrix4f();
-  public final Matrix4f matrixVectorTransform = new Matrix4f();
+  public final Matrix4f matrixTransform = new Matrix4f();
   private final Point3f point3dScreenTemp = new Point3f();
   private final Point3i point3iScreenTemp = new Point3i();
   private final Matrix4f matrixTemp = new Matrix4f();
@@ -435,24 +434,23 @@ public class TransformManager {
   }
 
   public void calcTransformMatrices() {
-    calcPointTransformMatrix();
-    calcVectorTransformMatrix();
+    calcTransformMatrix();
     viewer.setSlabValue(calcSlabValue());
   }
 
-  private void calcPointTransformMatrix() {
+  private void calcTransformMatrix() {
     // you absolutely *must* watch the order of these operations
-    matrixPointTransform.setIdentity();
+    matrixTransform.setIdentity();
     // first, translate the coordinates back to the center
     vectorTemp.set(viewer.getRotationCenter());
 
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
-    matrixPointTransform.sub(matrixTemp);
+    matrixTransform.sub(matrixTemp);
     // now, multiply by angular rotations
-    // this is *not* the same as  matrixPointTransform.mul(matrixRotate);
-    matrixPointTransform.mul(matrixRotate, matrixPointTransform);
-    //    matrixPointTransform.mul(matrixRotate, matrixPointTransform);
+    // this is *not* the same as  matrixTransform.mul(matrixRotate);
+    matrixTransform.mul(matrixRotate, matrixTransform);
+    //    matrixTransform.mul(matrixRotate, matrixTransform);
     // we want all z coordinates >= 0, with larger coordinates further away
     // this is important for scaling, and is the way our zbuffer works
     // so first, translate an make all z coordinates negative
@@ -462,9 +460,9 @@ public class TransformManager {
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     if (orientationRasMolChime)
-      matrixPointTransform.add(matrixTemp); // make all z positive
+      matrixTransform.add(matrixTemp); // make all z positive
     else
-      matrixPointTransform.sub(matrixTemp); // make all z negative
+      matrixTransform.sub(matrixTemp); // make all z negative
 
     // now scale to screen coordinates
     matrixTemp.setZero();
@@ -473,30 +471,10 @@ public class TransformManager {
       // negate y (for screen) and z (for zbuf)
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
     }
-    matrixPointTransform.mul(matrixTemp, matrixPointTransform);
+    matrixTransform.mul(matrixTemp, matrixTransform);
     // note that the image is still centered at 0, 0 in the xy plane
     // all z coordinates are (should be) >= 0
     // translations come later (to deal with perspective)
-  }
-
-  private void calcVectorTransformMatrix() {
-    matrixVectorTransform.setIdentity();
-    // first, translate the coordinates back to the center
-    vectorTemp.set(viewer.getRotationCenter());
-    matrixTemp.setZero();
-    matrixTemp.setTranslation(vectorTemp);
-    matrixVectorTransform.sub(matrixTemp);
-    // now, multiply by angular rotations
-    // this is *not* the same as  matrixVectorTransform.mul(matrixRotate);
-    matrixVectorTransform.mul(matrixRotate, matrixVectorTransform);
-    // now scale to screen coordinates
-    matrixTemp.setZero();
-    matrixTemp.set(scalePixelsPerAngstrom);
-    if (! orientationRasMolChime) {
-      // negate y (for screen) and z (for zbuf)
-      matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
-    }
-    matrixVectorTransform.mul(matrixTemp, matrixVectorTransform);
   }
 
   public Matrix4f getUnscaledTransformMatrix() {
@@ -515,7 +493,7 @@ public class TransformManager {
   }
 
   public Point3i transformPoint(Point3f pointAngstroms) {
-    matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
+    matrixTransform.transform(pointAngstroms, point3dScreenTemp);
 
     int z = (int)(point3dScreenTemp.z + 0.5);
     if (z < 0) {
@@ -535,7 +513,7 @@ public class TransformManager {
 
   public void transformVector(Vector3f vectorAngstroms,
                               Vector3f vectorTransformed) {
-    matrixVectorTransform.transform(vectorAngstroms, vectorTransformed);
+    matrixTransform.transform(vectorAngstroms, vectorTransformed);
   }
 
 }

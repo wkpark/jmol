@@ -298,7 +298,7 @@ public class Jmol extends JPanel {
     frame.getContentPane().add("Center", this);
     frame.addWindowListener(new Jmol.AppCloser());
     frame.pack();
-    frame.setSize(400, 400);
+    frame.setSize(500, 500);
     ImageIcon jmolIcon =
       JmolResourceHandler.getInstance().getIcon("Jmol.icon");
     Image iconImage = jmolIcon.getImage();

@@ -82,14 +82,15 @@ abstract class Platform3D {
 
   final static short ZBUFFER_BACKGROUND = 32767;
 
-  abstract void allocatePixelBuffer();
+  abstract Image allocateImage();
 
   void allocateBuffers(int width, int height) {
     this.width = width;
     this.height = height;
     size = width * height;
     zBuffer = new short[size];
-    allocatePixelBuffer();
+    pBuffer = new int[size];
+    imagePixelBuffer = allocateImage();
   }
 
   void releaseBuffers() {
@@ -117,7 +118,22 @@ abstract class Platform3D {
     return false;
   }
 
-  abstract void clearScreenBuffer(int argbBackground);
+  void clearScreenBuffer(int argbBackground) {
+    for (int i = size; --i >= 0; ) {
+      zBuffer[i] = ZBUFFER_BACKGROUND;
+      pBuffer[i] = argbBackground;
+    }
+    /*
+    for (int i = width; --i >= 0; ) {
+      zBuffer[i] = ZBUFFER_BACKGROUND;
+      pBuffer[i] = argbBackground;
+    }
+    for (int i = height, offset = size; --i > 0; ) {
+      System.arraycopy(pBuffer, 0, pBuffer, offset -= width, width);
+      System.arraycopy(zBuffer, 0, zBuffer, offset, width);
+    }
+    */
+  }
   
   final void obtainScreenBuffer() {
     if (useClearingThread) {

@@ -59,9 +59,8 @@ final class Awt3D extends Platform3D implements ImageProducer {
     colorModelRGB = ColorModel.getRGBdefault();
   }
 
-  void allocatePixelBuffer() {
-    pBuffer = new int[size];
-    imagePixelBuffer = component.createImage(this);
+  Image allocateImage() {
+    return component.createImage(this);
   }
 
   void notifyEndOfRendering() {
@@ -74,17 +73,6 @@ final class Awt3D extends Platform3D implements ImageProducer {
     Image img = component.createImage(width, height);
     //    System.out.println("img=" + img);
     return img;
-  }
-
-  void clearScreenBuffer(int argbBackground) {
-    for (int i = width; --i >= 0; ) {
-      zBuffer[i] = ZBUFFER_BACKGROUND;
-      pBuffer[i] = argbBackground;
-    }
-    for (int i = height, offset = size; --i > 0; ) {
-      System.arraycopy(pBuffer, 0, pBuffer, offset -= width, width);
-      System.arraycopy(zBuffer, 0, zBuffer, offset, width);
-    }
   }
 
   public synchronized void addConsumer(ImageConsumer ic) {

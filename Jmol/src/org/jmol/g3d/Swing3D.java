@@ -26,30 +26,36 @@
 package org.jmol.g3d;
 
 import java.awt.Image;
+import java.awt.image.ColorModel;
+import java.awt.image.DirectColorModel;
+import java.awt.image.Raster;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
+import java.awt.image.SinglePixelPackedSampleModel;
 import java.awt.Rectangle;
 import java.util.Arrays;
 
 final class Swing3D extends Platform3D {
 
-  void allocatePixelBuffer() {
-    BufferedImage bi =
-      new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-    WritableRaster wr = bi.getRaster();
-    DataBuffer db = wr.getDataBuffer();
-    DataBufferInt dbi = (DataBufferInt) db;
-    pBuffer = dbi.getData();
-    imagePixelBuffer = bi;
-  }
+  final static DirectColorModel rgbColorModel =
+    new DirectColorModel(24, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
 
-  void clearScreenBuffer(int argbBackground) {
-    if (pBuffer != null) {
-      Arrays.fill(pBuffer, argbBackground);
-      Arrays.fill(zBuffer, ZBUFFER_BACKGROUND);
-    }
+  final static int[] sampleModelBitMasks =
+  { 0x00FF0000, 0x0000FF00, 0x000000FF };
+  
+  Image allocateImage() {
+    SinglePixelPackedSampleModel sppsm =
+      new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT,
+                                       width,
+                                       height,
+                                       sampleModelBitMasks);
+    DataBufferInt dbi = new DataBufferInt(pBuffer, size);
+    WritableRaster wr =
+      Raster.createWritableRaster(sppsm, dbi, null);
+    BufferedImage bi = new BufferedImage(rgbColorModel, wr, false, null);
+    return bi;
   }
 
   Image allocateOffscreenImage(int width, int height) {

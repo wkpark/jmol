@@ -52,9 +52,10 @@ class Jmol extends JPanel {
   protected ScriptWindow scriptWindow;
   protected static JFrame frame;
   private ChemFile chemFile;
-  private JFileChooser openChooser = new JFileChooser();
-  private JFileChooser saveChooser = new JFileChooser();
-  private JFileChooser exportChooser = new JFileChooser();
+  private JFileChooser openChooser;
+  private JFileChooser saveChooser;
+  private FileTyper fileTyper;
+  private JFileChooser exportChooser;
 
   public static File UserPropsFile;
   public static File UserAtypeFile;
@@ -181,8 +182,14 @@ class Jmol extends JPanel {
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
     splash.showStatus("Setting up File Choosers...");
     File currentDir = getUserDirectory();
+    openChooser = new JFileChooser();
     openChooser.setCurrentDirectory(currentDir);
+    saveChooser = new JFileChooser();
+    fileTyper = new FileTyper();
+    saveChooser.addPropertyChangeListener(fileTyper);
+    saveChooser.setAccessory(fileTyper);
     saveChooser.setCurrentDirectory(currentDir);
+    exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(currentDir);
   }
 
@@ -1048,9 +1055,6 @@ class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
 
       Frame frame = getFrame();
-      FileTyper ft = new FileTyper();
-      saveChooser.addPropertyChangeListener(ft);
-      saveChooser.setAccessory(ft);
       int retval = saveChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
         File theFile = saveChooser.getSelectedFile();
@@ -1058,13 +1062,13 @@ class Jmol extends JPanel {
           try {
             FileOutputStream os = new FileOutputStream(theFile);
 
-            if (ft.getType().equals("XYZ (xmol)")) {
+            if (fileTyper.getType().equals("XYZ (xmol)")) {
               XYZSaver xyzs = new XYZSaver(getCurrentFile(), os);
               xyzs.writeFile();
-            } else if (ft.getType().equals("PDB")) {
+            } else if (fileTyper.getType().equals("PDB")) {
               PdbSaver ps = new PdbSaver(getCurrentFile(), os);
               ps.writeFile();
-            } else if (ft.getType().equals("CML")) {
+            } else if (fileTyper.getType().equals("CML")) {
               CMLSaver cs = new CMLSaver(getCurrentFile(), os);
               cs.writeFile();
             } else {
@@ -1076,7 +1080,7 @@ class Jmol extends JPanel {
           } catch (Exception exc) {
             status.setStatus(1, "Exception:");
             status.setStatus(2, exc.toString());
-            System.out.println(exc.toString());
+            exc.printStackTrace();
           }
           return;
         }

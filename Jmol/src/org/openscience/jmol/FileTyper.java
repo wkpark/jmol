@@ -29,8 +29,10 @@ import java.io.File;
 public class FileTyper extends JPanel implements PropertyChangeListener,
     ItemListener {
 
+  private JCheckBox useFileExtensionCheckBox;
+  private JLabel fileTypeLabel;
   private JComboBox fileTypeComboBox;
-  private static boolean useFileExtensions = true;
+  private boolean useFileExtension = true;
 
   private String[] choices = {
     JmolResourceHandler.getInstance().getString("FileTyper.XYZ"),
@@ -43,22 +45,6 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
   private String fileType = choices[defaultTypeIndex];
 
   /**
-   * Whether to use the file extension to set the file type.
-   *
-   * @param on if true file extensions are used.
-   */
-  public static void setUseFileExtensions(boolean on) {
-    useFileExtensions = on;
-  }
-
-  /**
-   * Whether file extensions are used to set the file type.
-   */
-  public static boolean getUseFileExtensions() {
-    return useFileExtensions;
-  }
-
-  /**
    * A simple panel with a combo box for allowing the user to choose
    * the input file type.
    *
@@ -69,16 +55,43 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     setLayout(new BorderLayout());
 
     JPanel fileTypePanel = new JPanel();
-    fileTypePanel.setLayout(new FlowLayout());
-    fileTypePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("FileTyper.Title")));
-    fileTypeComboBox = new JComboBox();
-    for (int i = 0; i < choices.length; i++) {
-      fileTypeComboBox.addItem(choices[i]);
+    fileTypePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+    fileTypePanel.setLayout(new GridBagLayout());
+    
+    JLabel fillerLabel = new JLabel();
+    GridBagConstraints gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+    gridBagConstraints.fill = GridBagConstraints.BOTH;
+    gridBagConstraints.weightx = 1.0;
+    gridBagConstraints.weighty = 1.0;
+    fileTypePanel.add(fillerLabel, gridBagConstraints);
+    
+    
+    useFileExtensionCheckBox = new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("FileTyper.useFileExtensionCheckBox"), useFileExtension);
+    useFileExtensionCheckBox.addItemListener(this);
+    String mnemonic = JmolResourceHandler.getInstance().getString("FileTyper.useFileExtensionMnemonic");
+    if (mnemonic != null && mnemonic.length() > 0) {
+      useFileExtensionCheckBox.setMnemonic(mnemonic.charAt(0));
     }
-    fileTypePanel.add(fileTypeComboBox);
+    gridBagConstraints = new GridBagConstraints();
+    gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+    fileTypePanel.add(useFileExtensionCheckBox, gridBagConstraints);
+
+    gridBagConstraints = new GridBagConstraints();
+    fileTypeLabel = new JLabel(JmolResourceHandler.getInstance()
+        .getString("FileTyper.fileTypeLabel"));
+    fileTypeLabel.setForeground(Color.black);
+    fileTypePanel.add(fileTypeLabel, gridBagConstraints);
+    fileTypeComboBox = new JComboBox(choices);
+    gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
+    fileTypePanel.add(fileTypeComboBox, gridBagConstraints);
     fileTypeComboBox.setSelectedIndex(defaultTypeIndex);
     fileTypeComboBox.addItemListener(this);
+    
     add(fileTypePanel, BorderLayout.CENTER);
+    
+    setUseFileExtension(useFileExtension);
   }
 
   /**
@@ -88,8 +101,20 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     return fileType;
   }
 
+  private void setUseFileExtension(boolean value) {
+    useFileExtension = value;
+    fileTypeLabel.setEnabled(!useFileExtension);
+    fileTypeComboBox.setEnabled(!useFileExtension);
+  }
+  
   public void itemStateChanged(ItemEvent event) {
-    if (event.getSource() == fileTypeComboBox) {
+    if (event.getSource() == useFileExtensionCheckBox) {
+      if (event.getStateChange() == ItemEvent.DESELECTED) {
+        setUseFileExtension(false);
+      } else {
+        setUseFileExtension(true);
+      }
+    } else if (event.getSource() == fileTypeComboBox) {
       fileType = (String) fileTypeComboBox.getSelectedItem();
     }
   }
@@ -97,7 +122,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
   public void propertyChange(PropertyChangeEvent event) {
     
     String property = event.getPropertyName();
-    if (useFileExtensions) {
+    if (useFileExtension) {
       if (property.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
         File file = (File) event.getNewValue();
         String fileName = file.toString().toLowerCase();

@@ -33,10 +33,8 @@ import javax.swing.JColorChooser.*;
 public class Preferences extends JDialog {
 
   private static boolean AutoBond;
-  private static boolean ConfirmExit;
   private static boolean AntiAliased;
   private static boolean Perspective;
-  private static boolean UseFileExtensions;
   private static boolean ShowAtoms;
   private static boolean ShowBonds;
   private static boolean ShowHydrogens;
@@ -53,21 +51,19 @@ public class Preferences extends JDialog {
   private static float ArrowHeadSize;
   private static float ArrowHeadRadius;
   private static float ArrowLengthScale;
-  private static double AutoTimeout;
   private static float BondFudge;
   private static double BondWidth;
   private static float FieldOfView;
-  private static double MessageTime;
   private static double SphereFactor;
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
   private static int VibrationFrames;
   private DisplayPanel display;
   private JButton bButton, oButton, pButton, tButton, vButton;
-  private JRadioButton ceYes, ceNo, ufeYes, ufeNo, aaYes, aaNo;
+  private JRadioButton aaYes, aaNo;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender;
-  private JSlider mtSlider, fovSlider, sfSlider;
+  private JSlider fovSlider, sfSlider;
   private JSlider bfSlider, bwSlider, ahSlider, arSlider, alSlider;
   private JSlider vasSlider;
   private JSlider vvsSlider;
@@ -94,13 +90,10 @@ public class Preferences extends JDialog {
 
   private static void defaults() {
 
-    props.put("ConfirmExit", "false");
-    props.put("UseFileExtensions", "true");
     props.put("ShowAtoms", "true");
     props.put("ShowBonds", "true");
     props.put("ShowHydrogens", "true");
     props.put("ShowVectors", "false");
-    props.put("MessageTime", "5.0");
     props.put("AntiAliased", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
@@ -120,7 +113,6 @@ public class Preferences extends JDialog {
     props.put("pickedColor", "16762880");
     props.put("textColor", "0");
     props.put("vectorColor", "0");
-    props.put("AutoTimeout", "15.0");
     props.put("VibrateAmplitudeScale", "0.7");
     props.put("VibrateVectorScale", "1.0");
     props.put("VibrationFrames", "20");
@@ -142,14 +134,12 @@ public class Preferences extends JDialog {
     container.setLayout(new BorderLayout());
 
     JTabbedPane tabs = new JTabbedPane();
-    JPanel general = buildGeneralPanel();
     JPanel disp = buildDispPanel();
     JPanel atoms = buildAtomsPanel();
     JPanel bonds = buildBondPanel();
     JPanel vectors = buildVectorsPanel();
     JPanel colors = buildColorsPanel();
     JPanel vibrate = buildVibratePanel();
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.generalLabel"), null, general);
     tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.displayLabel"), null, disp);
     tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.atomsLabel"), null, atoms);
     tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.bondsLabel"), null, bonds);
@@ -190,87 +180,6 @@ public class Preferences extends JDialog {
     getContentPane().add(container);
     pack();
     centerDialog();
-  }
-
-  public JPanel buildGeneralPanel() {
-
-    JPanel general = new JPanel();
-
-    GridBagLayout gridbag = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    general.setLayout(gridbag);
-    c.fill = GridBagConstraints.BOTH;
-    c.weightx = 1.0;
-    c.weighty = 1.0;
-
-    JPanel cePanel = new JPanel();
-    cePanel.setLayout(new BoxLayout(cePanel, BoxLayout.Y_AXIS));
-    cePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.ceLabel")));
-    ButtonGroup ceGroup = new ButtonGroup();
-    ceYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ceYesLabel"));
-    ceYes.addItemListener(radioButtonListener);
-    ceNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ceNoLabel"));
-    ceNo.addItemListener(radioButtonListener);
-    ceGroup.add(ceYes);
-    ceGroup.add(ceNo);
-    cePanel.add(ceYes);
-    cePanel.add(ceNo);
-    if (ConfirmExit) {
-      ceYes.setSelected(true);
-    } else {
-      ceNo.setSelected(true);
-    }
-
-    gridbag.setConstraints(cePanel, c);
-    general.add(cePanel);
-
-    JPanel ufePanel = new JPanel();
-    ufePanel.setLayout(new BoxLayout(ufePanel, BoxLayout.Y_AXIS));
-    ufePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.ufeLabel")));
-    ButtonGroup ufeGroup = new ButtonGroup();
-    ufeYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ufeYesLabel"));
-    ufeNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.ufeNoLabel"));
-    ufeYes.addItemListener(radioButtonListener);
-    ufeNo.addItemListener(radioButtonListener);
-    ufeGroup.add(ufeYes);
-    ufeGroup.add(ufeNo);
-    ufePanel.add(ufeYes);
-    ufePanel.add(ufeNo);
-    if (FileTyper.getUseFileExtensions()) {
-      ufeYes.setSelected(true);
-    } else {
-      ufeNo.setSelected(true);
-    }
-
-    c.gridwidth = GridBagConstraints.REMAINDER;
-    gridbag.setConstraints(ufePanel, c);
-    general.add(ufePanel);
-
-    JPanel mtPanel = new JPanel();
-    mtPanel.setLayout(new BorderLayout());
-    mtPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.mtLabel")));
-    JLabel mtLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.mtExpl"), JLabel.CENTER);
-    mtPanel.add(mtLabel, BorderLayout.NORTH);
-    mtSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, (int) MessageTime);
-    mtSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    mtSlider.setPaintTicks(true);
-    mtSlider.setMajorTickSpacing(1);
-    mtSlider.setPaintLabels(true);
-    mtSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-        JSlider source = (JSlider) e.getSource();
-        MessageTime = source.getValue();
-        props.put("MessageTime", Double.toString(MessageTime));
-      }
-    });
-    mtPanel.add(mtSlider, BorderLayout.SOUTH);
-
-    c.weightx = 0.0;
-    gridbag.setConstraints(mtPanel, c);
-    general.add(mtPanel);
-
-    return general;
   }
 
   public JPanel buildDispPanel() {
@@ -1105,17 +1014,6 @@ public class Preferences extends JDialog {
     initVariables();
     display.repaint();
 
-    // General panel controls:
-    ceYes.setSelected(ConfirmExit);
-
-    // FileTyper controls:
-    if (FileTyper.getUseFileExtensions()) {
-      ufeYes.setSelected(true);
-    } else {
-      ufeNo.setSelected(true);
-    }
-    mtSlider.setValue((int) MessageTime);
-
     // Display panel controls:
     if (display.getAntiAliased()) {
       aaYes.setSelected(true);
@@ -1165,10 +1063,8 @@ public class Preferences extends JDialog {
   void initVariables() {
 
     AutoBond = Boolean.getBoolean("AutoBond");
-    ConfirmExit = Boolean.getBoolean("ConfirmExit");
     AntiAliased = Boolean.getBoolean("AntiAliased");
     Perspective = Boolean.getBoolean("Perspective");
-    UseFileExtensions = Boolean.getBoolean("UseFileExtensions");
     ShowAtoms = Boolean.getBoolean("ShowAtoms");
     ShowBonds = Boolean.getBoolean("ShowBonds");
     ShowHydrogens = Boolean.getBoolean("ShowHydrogens");
@@ -1192,10 +1088,8 @@ public class Preferences extends JDialog {
     ArrowLengthScale =
             new Float(props.getProperty("ArrowLengthScale")).floatValue();
     BondFudge = new Float(props.getProperty("BondFudge")).floatValue();
-    AutoTimeout = new Double(props.getProperty("AutoTimeout")).doubleValue();
     BondWidth = new Double(props.getProperty("BondWidth")).doubleValue();
     FieldOfView = new Float(props.getProperty("FieldOfView")).floatValue();
-    MessageTime = new Double(props.getProperty("MessageTime")).doubleValue();
     SphereFactor =
             new Double(props.getProperty("SphereFactor")).doubleValue();
     VibrateAmplitudeScale =
@@ -1221,7 +1115,6 @@ public class Preferences extends JDialog {
     DisplayPanel.setFieldOfView(FieldOfView);
     DisplayPanel.setPerspective(Perspective);
     display.setAntiAliased(AntiAliased);
-    FileTyper.setUseFileExtensions(UseFileExtensions);
     ChemFrame.setBondFudge(BondFudge);
     ChemFrame.setAutoBond(AutoBond);
     display.getSettings().setShowAtoms(ShowAtoms);
@@ -1232,18 +1125,6 @@ public class Preferences extends JDialog {
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
-  }
-
-  static boolean getConfirmExit() {
-    return ConfirmExit;
-  }
-
-  static double getAutoTimeout() {
-    return AutoTimeout;
-  }
-
-  static double getMessageTime() {
-    return MessageTime;
   }
 
   class PrefsAction extends AbstractAction {
@@ -1307,13 +1188,7 @@ public class Preferences extends JDialog {
     public void itemStateChanged(ItemEvent e) {
 
       JRadioButton rb = (JRadioButton) e.getSource();
-      if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ceYesLabel"))) {
-        ConfirmExit = rb.isSelected();
-        props.put("ConfirmExit", new Boolean(ConfirmExit).toString());
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ceNoLabel"))) {
-        ConfirmExit = !rb.isSelected();
-        props.put("ConfirmExit", new Boolean(ConfirmExit).toString());
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.aaYesLabel"))) {
+      if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.aaYesLabel"))) {
         AntiAliased = rb.isSelected();
         display.setAntiAliased(AntiAliased);
         props.put("AntiAliased", new Boolean(AntiAliased).toString());
@@ -1323,16 +1198,6 @@ public class Preferences extends JDialog {
         display.setAntiAliased(AntiAliased);
         props.put("AntiAliased", new Boolean(AntiAliased).toString());
         display.repaint();
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ufeYesLabel"))) {
-        UseFileExtensions = rb.isSelected();
-        FileTyper.setUseFileExtensions(UseFileExtensions);
-        props.put("UseFileExtensions",
-                new Boolean(UseFileExtensions).toString());
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.ufeNoLabel"))) {
-        UseFileExtensions = !rb.isSelected();
-        FileTyper.setUseFileExtensions(UseFileExtensions);
-        props.put("UseFileExtensions",
-                new Boolean(UseFileExtensions).toString());
       } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.pYesLabel"))) {
         Perspective = rb.isSelected();
         DisplayPanel.setPerspective(Perspective);

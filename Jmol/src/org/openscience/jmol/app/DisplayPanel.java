@@ -650,21 +650,21 @@ public class DisplayPanel extends JPanel implements ComponentListener {
   }
 
   private long timeBegin;
-  private boolean wereInMotion;
-  private boolean inMotion;
+  private int lastMotionEventNumber;
 
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
-    inMotion = viewer.getInMotion();
-    if (!wereInMotion & inMotion)
+    int motionEventNumber = viewer.motionEventNumber;
+    if (lastMotionEventNumber != motionEventNumber) {
+      lastMotionEventNumber = motionEventNumber;
       resetTimes();
+    }
   }
 
   private void stopPaintClock() {
     int time = (int)(System.currentTimeMillis() - timeBegin);
     recordTime(time);
     showTimes();
-    wereInMotion = inMotion;
   }
 
   private String fmt(int num) {

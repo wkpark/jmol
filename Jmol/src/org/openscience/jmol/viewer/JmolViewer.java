@@ -1040,9 +1040,17 @@ final public class JmolViewer {
     return repaintManager.wireframeRotating;
   }
 
+  public int motionEventNumber;
+  public boolean wasInMotion = false;
+
   public void setInMotion(boolean inMotion) {
-    repaintManager.setInMotion(inMotion);
-    checkOversample();
+    if (wasInMotion ^ inMotion) {
+      if (inMotion)
+        ++motionEventNumber;
+      repaintManager.setInMotion(inMotion);
+      checkOversample();
+      wasInMotion = inMotion;
+    }
   }
 
   public boolean getInMotion() {

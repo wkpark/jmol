@@ -188,8 +188,6 @@ class Sphere3D {
   final static int maxSphereCache = 128;
   final static int maxOddSizeSphere = 49;
   static int[][] sphereShapeCache = new int[maxSphereCache][];
-  byte[] intensities = new byte[maxSphereCache * maxSphereCache];
-  byte[] heights = new byte[maxSphereCache * maxSphereCache];
 
   int[] getSphereShape(int diameter) {
     int[] ss;
@@ -207,51 +205,50 @@ class Sphere3D {
   }
 
   int[] createSphereShape(int diameter) {
+    int countSE = 0;
+    boolean oddDiameter = (diameter & 1) != 0;
     float radiusF = diameter / 2.0f;
     float radiusF2 = radiusF * radiusF;
-    int offset = 0;
-    
-    //int visibleCount = 0;
-    int countSE = 0;
-    int radius = diameter / 2;
-    
-    float y = -radiusF + 0.5f;
-    for (int i = 0; i < diameter; ++i, ++y) {
+    int radius = (diameter + 1) / 2;
+
+    float y = oddDiameter ? 0 : 0.5f;
+    for (int i = 0; i < radius; ++i, ++y) {
       float y2 = y * y;
-      float x = -radiusF + 0.5f;
-      for (int j = 0; j < diameter; ++j, ++x) {
-        float z2 = radiusF2 - y2 - x*x;
-        if (z2 >= 0) {
-          float z = (float)Math.sqrt(z2);
-          intensities[offset] = Shade3D.calcDitheredNoisyIntensity(x, y, z);
-          heights[offset] = (byte)(z + 0.5f);
-          if (j >= radius && i >= radius)
-            ++countSE;
-        } else {
-          intensities[offset] = -1;
-          heights[offset] = -1;
-        }
-        ++offset;
+      float x = oddDiameter ? 0 : 0.5f;
+      for (int j = 0; j < radius; ++j, ++x) {
+        float x2 = x * x;
+        float z2 = radiusF2 - y2 - x2;
+        if (z2 >= 0)
+          ++countSE;
       }
     }
     
     int[] sphereShape = new int[countSE];
-    int offset2 = 0;
-    //int offsetCount;
+    int offset = 0;
 
-    for(int i = radius; i < diameter; ++i) {
-      int offsetRowSouth = i*diameter;
-      int offsetRowNorth = (diameter - i - 1) * diameter;
-      for (int j = radius;
-           j < diameter && heights[offsetRowSouth + j] != -1; ++j) {
-        int packed = heights[offsetRowSouth + j];
-        packed |= (intensities[offsetRowSouth + j]) << 7;
-        packed |= (intensities[offsetRowSouth + diameter - j - 1]) << 13;
-        packed |= (intensities[offsetRowNorth + j]) << 19;
-        packed |= (intensities[offsetRowNorth + diameter - j - 1]) << 25;
-        sphereShape[offset2++] = packed;
+    y = oddDiameter ? 0 : 0.5f;
+    for (int i = 0; i < radius; ++i, ++y) {
+      float y2 = y * y;
+      float x = oddDiameter ? 0 : 0.5f;
+      for (int j = 0; j < radius; ++j, ++x) {
+        float x2 = x * x;
+        float z2 = radiusF2 - y2 - x2;
+        if (z2 >= 0) {
+          float z = (float)Math.sqrt(z2);
+          int height = (int)z;
+          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z);
+          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z);
+          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z);
+          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z);
+          int packed = (height |
+                        (intensitySE << 7) |
+                        (intensitySW << 13) |
+                        (intensityNE << 19) |
+                        (intensityNW << 25));
+          sphereShape[offset++] = packed;
+        }
       }
-      sphereShape[offset2 - 1] |= 0x80000000;
+      sphereShape[offset - 1] |= 0x80000000;
     }
     return sphereShape;
   }

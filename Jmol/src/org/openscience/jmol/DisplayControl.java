@@ -20,6 +20,9 @@ package org.openscience.jmol;
 
 import java.awt.Image;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Dimension;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -48,7 +51,7 @@ final public class DisplayControl {
   private float scalePixelsPerAngstrom;
   private float scaleDefaultPixelsPerAngstrom;
   private int xTranslate;
-  private int yTranslate; 
+  private int yTranslate;
   private final Matrix4f matrixRotate = new Matrix4f();
   private final Matrix4f matrixViewTransform = new Matrix4f();
   private final Matrix4f matrixTemp = new Matrix4f();
@@ -59,6 +62,14 @@ final public class DisplayControl {
     this.settings = settings;
   }
 
+  public DisplayPanel getPanel() {
+    return panel;
+  }
+
+  public DisplaySettings getSettings() {
+    return settings;
+  }
+  
   public void setLabelMode(int mode) {
     settings.setLabelMode(mode);
     recalc();
@@ -110,7 +121,7 @@ final public class DisplayControl {
   }
 
   public float getBondScreenScale() {
-    return settings.getBondScreenScale();
+    return scalePixelsPerAngstrom;
   }
 
   public void setOutlineColor(Color c) {
@@ -236,7 +247,7 @@ final public class DisplayControl {
   }
 
   public float getVectorScreenScale() {
-    return settings.getVectorScreenScale();
+    return scalePixelsPerAngstrom;
   }
 
   public void setAtomScreenScale(float scale) {
@@ -245,7 +256,7 @@ final public class DisplayControl {
   }
 
   public float getAtomScreenScale() {
-    return settings.getAtomScreenScale();
+    return scalePixelsPerAngstrom;
   }
 
   public void setAtomSphereFactor(float f) {
@@ -254,7 +265,7 @@ final public class DisplayControl {
   }
 
   public float getAtomSphereFactor() {
-    return (float) settings.getAtomSphereFactor();
+    return (float)settings.getAtomSphereFactor();
   }
 
   public void setAntiAliased(boolean antiAlias) {
@@ -341,13 +352,13 @@ final public class DisplayControl {
 
   public void multiplyZoomScale(float scale) {
     scalePixelsPerAngstrom *= scale;
-    settings.setAtomScreenScale(scalePixelsPerAngstrom);
+    setAtomScreenScale(scalePixelsPerAngstrom);
     settings.setBondScreenScale(scalePixelsPerAngstrom);
     settings.setVectorScreenScale(scalePixelsPerAngstrom);
     recalc();
   }
 
-  public float getPovScale() {
+  public float getZoomScale() {
     return scalePixelsPerAngstrom / scaleDefaultPixelsPerAngstrom;
   }
 
@@ -386,9 +397,9 @@ final public class DisplayControl {
     matrixTemp.setZero();
     // This z dimension is here because of the approximations used
     // to calculate atom sizes
-    vectorTemp.x =
-      vectorTemp.z = xTranslate;
+    vectorTemp.x = xTranslate;
     vectorTemp.y = yTranslate;
+    vectorTemp.z = minScreenDimension/2;
     matrixTemp.setTranslation(vectorTemp);
     matrixViewTransform.add(matrixTemp);
     return matrixViewTransform;
@@ -397,7 +408,6 @@ final public class DisplayControl {
   public void homePosition() {
     matrixRotate.setIdentity();         // no rotations
     scaleFitToScreen();
-    panel.setRotateMode();
     recalc();
   }
 
@@ -433,11 +443,20 @@ final public class DisplayControl {
       minScreenDimension / 2 / getFrame().getRotationRadius();
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
 
-    settings.setAtomScreenScale(scalePixelsPerAngstrom);
+    setAtomScreenScale(scalePixelsPerAngstrom);
     settings.setBondScreenScale(scalePixelsPerAngstrom);
     settings.setVectorScreenScale(scalePixelsPerAngstrom);
   }
 
+  public void maybeEnableAntialiasing(Graphics g) {
+    if (!mouseDragged && antialiasCapable && settings.isAntiAliased()) {
+      Graphics2D g2d = (Graphics2D) g;
+      g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                           RenderingHints.VALUE_ANTIALIAS_ON);
+      g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
+                           RenderingHints.VALUE_RENDER_QUALITY);
+    }
+  }
   private boolean haveFile = false;
   private ChemFile chemfile;
   private ChemFrame chemframe;
@@ -602,5 +621,51 @@ final public class DisplayControl {
   }
   public void setCenter(Point3f center) {
     getFrame().setRotationCenter(center);
+  }
+
+  public void setCenterAsSelected() {
+    int[] picked = getPickedAtoms().elements();
+    Point3f center = null;
+    if (picked.length > 0) {
+      // just take the average of all the points
+      center = new Point3f(); // defaults to 0,0,0
+      for (int i = 0; i < picked.length; ++i)
+        center.add(getFrame().getAtomAt(picked[i]).getPosition());
+      center.scale(1.0f / picked.length); // just divide by the quantity
+    }
+    getFrame().setRotationCenter(center);
+    clearPickedAtoms();
+    scaleFitToScreen();
+    recalc();
+  }
+
+  /**
+   * Returns the on-screen radius of an atom with the given radius.
+   *
+   * @param z z position in screen space
+   */
+  public float getCircleRadius(int z, float radius) {
+
+    float raw = radius * getAtomSphereFactor();
+    float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
+    float tmp = scalePixelsPerAngstrom *
+      ((float) raw + atomDepthFactor * depth);
+    if (tmp < 0.0f) {
+      tmp = 1.0f;
+    }
+    return tmp;
+  }
+
+
+  private int atomZOffset = 1;
+  private float atomDepthFactor = 0.33f;
+
+  public void setAtomZOffset(int z) {
+    settings.setAtomZOffset(z);
+    atomZOffset = z;
+  }
+
+  public float[] getLightSource() {
+    return settings.getLightSourceVector();
   }
 }

@@ -124,6 +124,7 @@ public class Jmol extends JPanel {
 
   public static final DisplaySettings settings = new DisplaySettings();
   public static DisplayPanel display;
+  public static DisplayControl control;
   private StatusBar status;
   private AtomPropsMenu apm;
   static AtomTypeTable atomTypeTable;
@@ -227,6 +228,7 @@ public class Jmol extends JPanel {
     splash.showStatus(resourceHandler
         .translate("Initializing 3D display..."));
     display = new DisplayPanel(status, settings);
+    control = display.getDisplayControl();
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
         .translate("Initializing Preferences..."));
@@ -1389,7 +1391,7 @@ public class Jmol extends JPanel {
         currentFile.getName().substring(0,
             currentFile.getName().lastIndexOf("."));
       }
-      PovrayDialog pvsd = new PovrayDialog(frame, display,
+      PovrayDialog pvsd = new PovrayDialog(frame, control,
                             model.getChemFile(), baseName);
     }
 

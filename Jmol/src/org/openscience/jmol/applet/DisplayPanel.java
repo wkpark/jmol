@@ -35,6 +35,7 @@ import org.openscience.jmol.Atom;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.render.ChemFrameRenderer;
 
@@ -42,6 +43,7 @@ public class DisplayPanel extends Canvas
     implements java.awt.event.ComponentListener,
       java.awt.event.ActionListener {
 
+  private DisplayControl control;
   private String message = "Waiting for structure...";
   private DisplaySettings settings;
   private ChemFrameRenderer chemFrameRenderer = new ChemFrameRenderer();
@@ -704,7 +706,7 @@ public class DisplayPanel extends Canvas
         g.setColor(fg);
         Rectangle rectClip = g.getClipBounds();
 
-        chemFrameRenderer.paint(g, rectClip, chemframe, settings, mat);
+        chemFrameRenderer.paint(g, rectClip, control);
 
         //chemframe.paint(g, settings);
         if (rubberband) {

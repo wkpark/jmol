@@ -45,9 +45,9 @@ public class ChemFrameRenderer {
    * @param g the Graphics context to paint to
    */
   public synchronized void paint(Graphics g, Rectangle rectClip,
-                                 ChemFrame frame, DisplaySettings settings,
-                                 Matrix4f matrix) {
-
+                                 DisplayControl control) {
+    ChemFrame frame = control.getFrame();
+    DisplaySettings settings = control.getSettings();
     int numAtoms = frame.getNumberOfAtoms();
     if (numAtoms <= 0) {
       return;
@@ -65,16 +65,14 @@ public class ChemFrameRenderer {
       shapesList.clear();
       transformables.clear();
       transformables.add(frame);
-      boolean showHydrogens = settings.getShowHydrogens();
-      boolean showVectors = settings.getShowVectors();
-    
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = frame.getAtomAt(i);
         shapesList.add(new AtomShape(atom));
       }
-      if (showVectors) {
+      if (control.getShowVectors()) {
         float minAtomVectorMagnitude = frame.getMinAtomVectorMagnitude();
         float atomVectorRange = frame.getAtomVectorRange();
+        boolean showHydrogens = control.getShowHydrogens();
         for (int i = 0; i < numAtoms; ++i) {
           Atom atom = frame.getAtomAt(i);
           if (showHydrogens || !atom.isHydrogen()) {
@@ -115,9 +113,10 @@ public class ChemFrameRenderer {
     }
     
     Iterator iter = transformables.listIterator();
+    Matrix4f matrix = control.getViewTransformMatrix();
     while (iter.hasNext()) {
       Transformable t1 = (Transformable) iter.next();
-      t1.transform(matrix, settings);
+      t1.transform(matrix, control);
     }
     Arrays.sort(shapes,
                 new Comparator() {
@@ -132,7 +131,7 @@ public class ChemFrameRenderer {
                   }
                 }
                 );
-    AtomShape.prepareRendering(g, rectClip, settings);
+    AtomShape.prepareRendering(g, rectClip, control);
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
     }

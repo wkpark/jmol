@@ -38,8 +38,8 @@ public class MeasureRenderer {
    * @param g the Graphics context to paint to
    */
   public synchronized void paint(Graphics g, Rectangle rectClip,
-                                 ChemFrame frame, DisplaySettings settings) {
-
+                                 DisplayControl control) {
+    ChemFrame frame = control.getFrame();
     if (frame.getDistanceMeasurements() != null) {
       Enumeration e = frame.getDistanceMeasurements().elements();
       while (e.hasMoreElements()) {
@@ -48,7 +48,7 @@ public class MeasureRenderer {
         int l = al[0];
         int j = al[1];
         try {
-          d.paint(g, settings,
+          d.paint(g, control.getSettings(),
                   frame.getAtomAt(l).screenX,
                   frame.getAtomAt(l).screenY,
                   frame.getAtomAt(l).screenZ,
@@ -68,7 +68,7 @@ public class MeasureRenderer {
         int j = al[1];
         int k = al[2];
         try {
-          an.paint(g, settings,
+          an.paint(g, control.getSettings(),
                    frame.getAtomAt(l).screenX,
                    frame.getAtomAt(l).screenY,
                    frame.getAtomAt(l).screenZ,
@@ -92,7 +92,7 @@ public class MeasureRenderer {
         int k = dhl[2];
         int m = dhl[3];
         try {
-          dh.paint(g, settings,
+          dh.paint(g, control.getSettings(),
                    frame.getAtomAt(l).screenX,
                    frame.getAtomAt(l).screenY,
                    frame.getAtomAt(l).screenZ,

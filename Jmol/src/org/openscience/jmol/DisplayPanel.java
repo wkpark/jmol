@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -21,8 +20,6 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.render.*;
 import java.awt.Color;
-import java.awt.RenderingHints;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Dimension;
@@ -39,8 +36,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Point3f;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -87,6 +82,10 @@ public class DisplayPanel extends JPanel
       showPaintTime = true;
   }
 
+  public DisplayControl getDisplayControl() {
+    return control;
+  }
+
   public int getMode() {
     return modeMouse;
   }
@@ -107,19 +106,7 @@ public class DisplayPanel extends JPanel
     control.setAntialiasCapable(vers.compareTo("1.2") >= 0);
   }
 
-  public float getPovScale() {
-    return control.getPovScale();
-  }
-
-  public Matrix4f getPovRotateMatrix() {
-    return control.getPovRotateMatrix();
-  }
-
-  public Matrix4f getPovTranslateMatrix() {
-    return control.getPovTranslateMatrix();
-  }
-
-  public void setRotateMode() {
+  private void setRotateMode() {
       Jmol.setRotateButton();
       modeMouse = ROTATE;
   }
@@ -246,10 +233,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  public static void setBackgroundColor() {
-    control.setBackgroundColor(null);
-  }
-
   public static void setBackgroundColor(Color bg) {
     control.setBackgroundColor(bg);
   }
@@ -276,20 +259,17 @@ public class DisplayPanel extends JPanel
     g.setColor(control.getBackgroundColor());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
-      if (! dimCurrent.equals(dimPrevious))
+      if (! dimCurrent.equals(dimPrevious)) {
         control.scaleFitToScreen(dimCurrent);
-      if (control.isAntialiased() && !control.isMouseDragged()) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                             RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING,
-                             RenderingHints.VALUE_RENDER_QUALITY);
+        setRotateMode();
       }
-      Matrix4f matrix = control.getViewTransformMatrix();
-      settings.setAtomZOffset(dimCurrent.width / 2);
+      control.maybeEnableAntialiasing(g);
 
-      frameRenderer.paint(g, rectClip, control.getFrame(), settings, matrix);
-      measureRenderer.paint(g, rectClip, control.getFrame(), settings);
+      // need to get this out of here
+      control.setAtomZOffset(dimCurrent.width / 2);
+
+      frameRenderer.paint(g, rectClip, control);
+      measureRenderer.paint(g, rectClip, control);
       if (rubberbandSelectionMode) {
         g.setColor(fg);
         g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
@@ -686,20 +666,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      int[] picked = control.getPickedAtoms().elements();
-      Point3f center = null;
-      if (picked.length > 0) {
-        // just take the average of all the points
-        center = new Point3f(); // defaults to 0,0,0
-        for (int i = 0; i < picked.length; ++i)
-          center.add(control.getFrame().getAtomAt(picked[i]).getPosition());
-        center.scale(1.0f / picked.length); // just divide by the quantity
-      }
-      control.getFrame().setRotationCenter(center);
-      control.clearPickedAtoms();
-      control.scaleFitToScreen();
+      control.setCenterAsSelected();
       setRotateMode();
-      repaint();
     }
   }
 
@@ -816,6 +784,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.homePosition();
+      setRotateMode();
     }
   }
 

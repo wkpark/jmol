@@ -237,7 +237,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * the given matrix.
    */
   public void transform(Matrix4f transformationMatrix,
-                        DisplaySettings settings ) {
+                        DisplayControl control) {
 
     transformationMatrix.transform(getPosition(), screenPosition);
     screenX = (int) screenPosition.x;
@@ -245,8 +245,8 @@ public class Atom extends org.openscience.cdk.Atom {
     screenZ = (int) screenPosition.z;
     screenDiameter =
       (int) (2.0f
-        * settings.getCircleRadius(screenZ,
-                                   atomType.getBaseAtomType().getVdwRadius()));
+        * control.getCircleRadius(screenZ,
+                        (float) atomType.getBaseAtomType().getVdwRadius()));
     if (vector != null) {
       screenVector.set(getScaledVector());
       transformationMatrix.transform(screenVector);

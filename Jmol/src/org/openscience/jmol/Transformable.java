@@ -34,6 +34,6 @@ public interface Transformable {
    *
    * @param matrix the transformation matrix.
    */
-  public void transform(Matrix4f matrix, DisplaySettings settings);
+  public void transform(Matrix4f matrix, DisplayControl control);
 
 }

@@ -53,7 +53,7 @@ import javax.vecmath.Matrix4f;
  */
 public class PovrayDialog extends JDialog {
 
-  private DisplayPanel display;
+  private DisplayControl control;
   private ChemFile currentFile;
   private boolean callPovray = true;
   private boolean doAntiAlias = false;
@@ -80,16 +80,17 @@ public class PovrayDialog extends JDialog {
    * @param dp The interacting display we are reproducing (source of view angle info etc)
    * @param bn The default name to base frame names on
    */
-  public PovrayDialog(JFrame f, DisplayPanel dp, ChemFile cf, String bn) {
+  public PovrayDialog(JFrame f, DisplayControl control,
+                      ChemFile cf, String bn) {
 
     super(f, JmolResourceHandler.getInstance()
         .getString("Povray.povrayDialogTitle"), true);
-    display = dp;
+    this.control = control;
     currentFile = cf;
     basename = bn;
 
     //Take the height and width settings from the JFrame
-    Dimension d = dp.getSize();
+    Dimension d = control.getScreenDimension();
     int w = d.width;
     int h = d.height;
     getPathHistory();
@@ -341,12 +342,12 @@ public class PovrayDialog extends JDialog {
 
         PovraySaver povs = new PovraySaver(currentFile, os);
         povs.setStyleController(style);
-        povs.setSettings(display.getSettings());
-        povs.setScale(display.getPovScale());
-        povs.setRotateMatrix(display.getPovRotateMatrix());
-        povs.setTranslateMatrix(display.getPovTranslateMatrix());
+        povs.setSettings(control.getSettings());
+        povs.setScale(control.getZoomScale());
+        povs.setRotateMatrix(control.getPovRotateMatrix());
+        povs.setTranslateMatrix(control.getPovTranslateMatrix());
         povs.setSize(outputWidth, outputHeight);
-        povs.setBackgroundColor(DisplayPanel.getBackgroundColor());
+        povs.setBackgroundColor(control.getBackgroundColor());
         povs.writeFile();
         os.flush();
         os.close();

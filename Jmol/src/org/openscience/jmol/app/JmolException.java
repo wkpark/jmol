@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -16,29 +17,20 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.script;
+package org.openscience.jmol.app;
 
-public class ScriptException extends Exception {
+public class JmolException extends Exception {
 
-  String message;
-  String line;
-  String filename;
-  int linenumber;
+  private String routine;
 
-  public ScriptException(String message, String line,
-                         String filename, int linenumber) {
-    this.message = message;
-    this.line = line;
-    this.filename = filename;
-    this.linenumber = linenumber;
+  public JmolException(String routine, String message) {
+    super(message);
+
+    // System.err.println(routine + " " + message);
+    this.routine = routine;
   }
 
-  public String toString() {
-    String str = "ScriptException:" + message;
-    if (line != null)
-      str += "\n    Script line:" + line;
-    if (filename != null)
-      str += "\n           File:" + filename + " Line number:" + linenumber;
-    return str;
+  public String getRoutine() {
+    return routine;
   }
 }

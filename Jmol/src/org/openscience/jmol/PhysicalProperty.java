@@ -28,8 +28,8 @@ package org.openscience.jmol;
  */
 public class PhysicalProperty {
 
-  String descriptor;
-  Object property;
+  public String descriptor;
+  public Object property;
 
   public PhysicalProperty(String descriptor, Object property) {
     this.descriptor = descriptor;

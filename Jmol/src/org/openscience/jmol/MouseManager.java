@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.app.Measure;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.DisplayControl;
 

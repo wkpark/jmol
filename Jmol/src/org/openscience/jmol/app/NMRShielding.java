@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -16,29 +17,28 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.script;
+package org.openscience.jmol.app;
+import org.openscience.jmol.*;
 
-public class ScriptException extends Exception {
+/**
+ * A class to store the NMRShielding property for an atom
+ */
+public class NMRShielding extends PhysicalProperty {
 
-  String message;
-  String line;
-  String filename;
-  int linenumber;
-
-  public ScriptException(String message, String line,
-                         String filename, int linenumber) {
-    this.message = message;
-    this.line = line;
-    this.filename = filename;
-    this.linenumber = linenumber;
+  /**
+   * Constructor for NMR Shielding
+   * @param s The isotropic shielding of the atom
+   */
+  public NMRShielding(double s) {
+    super("Isotropic Shielding", new Double(s));
   }
 
-  public String toString() {
-    String str = "ScriptException:" + message;
-    if (line != null)
-      str += "\n    Script line:" + line;
-    if (filename != null)
-      str += "\n           File:" + filename + " Line number:" + linenumber;
-    return str;
+  /**
+   * Constructor for NMR Shielding
+   * @param s The isotropic shielding of the atom
+   */
+  public NMRShielding(String descriptor, double s) {
+    super(descriptor, new Double(s));
   }
+
 }

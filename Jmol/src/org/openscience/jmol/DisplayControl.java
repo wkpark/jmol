@@ -24,6 +24,9 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.app.Measure;
+import org.openscience.jmol.app.MeasurementListEvent;
+
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;

@@ -25,6 +25,8 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.Atom;
+import org.openscience.jmol.app.MeasurementList;
+import org.openscience.jmol.app.MeasurementListEvent;
 
 import java.util.BitSet;
 import javax.vecmath.Point3d;

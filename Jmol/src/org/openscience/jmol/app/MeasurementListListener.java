@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -16,29 +17,20 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.script;
+package org.openscience.jmol.app;
 
-public class ScriptException extends Exception {
+import java.util.EventListener;
 
-  String message;
-  String line;
-  String filename;
-  int linenumber;
+/**
+ * MeasurementListListener defines the interface for an object that listens
+ * to changes in a MeasurementList.
+ *
+ * @version 1.0 10/26/99
+ * @author J. Daniel Gezelter
+ * @see org.openscience.jmol.MeasurementList
+ */
 
-  public ScriptException(String message, String line,
-                         String filename, int linenumber) {
-    this.message = message;
-    this.line = line;
-    this.filename = filename;
-    this.linenumber = linenumber;
-  }
-
-  public String toString() {
-    String str = "ScriptException:" + message;
-    if (line != null)
-      str += "\n    Script line:" + line;
-    if (filename != null)
-      str += "\n           File:" + filename + " Line number:" + linenumber;
-    return str;
-  }
+public interface MeasurementListListener extends java.util.EventListener {
+  public void mlistChanged(MeasurementListEvent mle);
 }
+

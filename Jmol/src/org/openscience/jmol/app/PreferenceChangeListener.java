@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -16,29 +17,22 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.script;
+package org.openscience.jmol.app;
 
-public class ScriptException extends Exception {
+/**
+ * Represents a change to a preference.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ */
+public interface PreferenceChangeListener {
 
-  String message;
-  String line;
-  String filename;
-  int linenumber;
-
-  public ScriptException(String message, String line,
-                         String filename, int linenumber) {
-    this.message = message;
-    this.line = line;
-    this.filename = filename;
-    this.linenumber = linenumber;
-  }
-
-  public String toString() {
-    String str = "ScriptException:" + message;
-    if (line != null)
-      str += "\n    Script line:" + line;
-    if (filename != null)
-      str += "\n           File:" + filename + " Line number:" + linenumber;
-    return str;
-  }
+  /**
+   * Called when a preference is changed.
+   *
+   * @param event an object describing the preference change.
+   */
+  void preferenceChange(PreferenceChangeEvent event);
+  
 }
+
+

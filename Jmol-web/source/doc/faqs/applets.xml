@@ -72,7 +72,7 @@
   
   <section title="What MIME types must be installed on the server?">
     <p>
-      None.
+      None. The web server needs no special configuration. 
     </p>
     <p>
       Applets do not get associated with MIME types in the same way that
@@ -113,5 +113,60 @@
     </p>
   </section>
 
+  <a name="loadInline" />
+  <section title="I am having problems with loadInline">
+    <p>
+      Make sure you make a clear distinction between the
+      loadInline <i>param tag</i> and the loadLine <i>method</i>.
+    </p>
+  </section>
+
+  <section title="The loadInline param does not seem to work">
+    <p>
+      Unfortunately, the mechanism for the loadInline param tag is rather
+      ugly ... the HTML specification causes a few problems for us.
+    </p>
+    <p>
+      The HTML specification requires that newline characters get removed
+      (and carriage-return characters get turned into spaces) <i>before</i>
+      the parameter string is passed to the applet. Therefore, the browser
+      removes the newline characters before they get sent to the applet.
+    </p>
+    <p>
+      Jmol has a special syntax to work around this issue. 
+      you put a vertical bar beginning of each line ... like this:
+      <code>
+	...
+	&lt;param name="loadInline" value="
+|put your
+|molecular model
+|data here
+" /&gt;
+      </code>
+      The JmolApplet will replace the vertical bars with a newline character.
+      (Any white space up through the first vertical bar is removed).
+    </p>
+    <p>
+      If you have a text string with the molecular model and you want to
+      convert it, you can use a regular expression to perform the substitution.
+      Different OS platforms use different conventions for line termination, so
+      your code should check for three different end-of-line sequences ...
+      <code>carriage-return</code>, <code>linefeed</code>, or
+      <code>carriage-return linefeed</code>.
+    </p>
+    <p>
+      In Perl:
+      <code>
+	myMolecularModel ~= s/\r|\n|\r\n/|/g;
+      </code>
+    </p>
+    <p>
+      In JavaScript:
+      <code>
+	myMolecularModel.replace(/\r|\n|\r\n/g, "|");
+      </code>
+    </p>
+  </section>
+  
 </section>    
 

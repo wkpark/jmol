@@ -40,6 +40,7 @@ final public class Graphics3D {
 
   JmolViewer viewer;
   Platform3D platform;
+  boolean forcePlatformAWT = true;
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;
@@ -73,7 +74,7 @@ final public class Graphics3D {
   public Graphics3D(JmolViewer viewer) {
     this.viewer = viewer;
     jvm12orGreater = viewer.jvm12orGreater;
-    if (jvm12orGreater) {
+    if (jvm12orGreater && !forcePlatformAWT) {
       platform = new Swing3D();
     } else {
       platform = new Awt3D(viewer.getAwtComponent());

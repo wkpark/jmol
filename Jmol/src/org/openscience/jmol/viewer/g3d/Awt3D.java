@@ -28,32 +28,62 @@ package org.openscience.jmol.viewer.g3d;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.image.MemoryImageSource;
-import java.awt.FontMetrics;
-import java.awt.Font;
+import java.awt.image.ImageProducer;
+import java.awt.image.ImageConsumer;
+import java.awt.image.ColorModel;
 import java.awt.Rectangle;
 
-final public class Awt3D extends Platform3D {
+final public class Awt3D extends Platform3D implements ImageProducer {
 
   Component component;
-  MemoryImageSource mis;
+
+  ColorModel colorModelRGB;
+  ImageConsumer ic;
 
   public Awt3D(Component component) {
     this.component = component;
+    colorModelRGB = ColorModel.getRGBdefault();
   }
 
   public void allocatePixelBuffer() {
     pBuffer = new int[size];
-    mis = new MemoryImageSource(width, height, pBuffer, 0, width);
-    mis.setAnimated(true);
-    imagePixelBuffer = component.createImage(mis);
+    imagePixelBuffer = component.createImage(this);
   }
 
   public void notifyEndOfRendering() {
-    mis.newPixels();
+    if (this.ic != null)
+      startProduction(ic);
   }
 
   Image allocateOffscreenImage(int width, int height) {
     return component.createImage(widthOffscreen, heightOffscreen);
+  }
+
+  public synchronized void addConsumer(ImageConsumer ic) {
+    startProduction(ic);
+  }
+
+  public boolean isConsumer(ImageConsumer ic) {
+    return (this.ic == ic);
+  }
+
+  public void removeConsumer(ImageConsumer ic) {
+    if (this.ic == ic)
+      this.ic = null;
+  }
+
+  public void requestTopDownLeftRightResend(ImageConsumer ic) {
+  }
+
+  public void startProduction(ImageConsumer ic) {
+    if (this.ic != ic) {
+      this.ic = ic;
+      ic.setDimensions(width, height);
+      ic.setHints(ImageConsumer.TOPDOWNLEFTRIGHT |
+                  ImageConsumer.COMPLETESCANLINES |
+                  ImageConsumer.SINGLEPASS);
+    }
+    ic.setPixels(0, 0, width, height, colorModelRGB, pBuffer, 0, width);
+    ic.imageComplete(ImageConsumer.SINGLEFRAMEDONE);
   }
 }

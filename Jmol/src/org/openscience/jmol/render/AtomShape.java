@@ -74,6 +74,14 @@ public class AtomShape extends Shape {
     return "Atom shape for " + atom + ": z = " + z;
   }
 
+  public void transform(DisplayControl control) {
+    Point3d screen = control.transformPoint(atom.getPosition());
+    x = (int)screen.x;
+    y = (int)screen.y;
+    z = (int)screen.z;
+    diameter = control.getScreenDiameter(z, atom.getType().getVdwRadius());
+  }
+
   public void render(Graphics g, Rectangle clip, DisplayControl control) {
     renderBonds(g, clip, control);
     renderAtom(g, clip, control);
@@ -96,75 +104,6 @@ public class AtomShape extends Shape {
     }
   }
   
-  public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(atom.getPosition());
-    x = (int)screen.x;
-    y = (int)screen.y;
-    z = (int)screen.z;
-    diameter = control.getScreenDiameter(z, atom.getType().getVdwRadius());
-  }
-
-  public void renderLabel(Graphics g, Rectangle clip, DisplayControl control) {
-    if (control.labelMode == control.NOLABELS)
-      return;
-
-    int radius=diameter/2;
-    int j = 0;
-    String s = null;
-    Font font = new Font("Helvetica", Font.PLAIN, radius);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
-    int k = fontMetrics.getAscent();
-    g.setColor(control.getTextColor());
-    
-    String label = null;
-    switch (control.labelMode) {
-    case DisplayControl.SYMBOLS:
-      label = atom.getSymbol();
-      break;
-
-    case DisplayControl.TYPES:
-      label = atom.getID();
-       break;
-
-    case DisplayControl.NUMBERS:
-      label = Integer.toString(atom.getAtomNumber() + 1);
-      break;
-
-    }
-    if (label != null) {
-      j = fontMetrics.stringWidth(label);
-      g.drawString(label, x - j / 2, y + k / 2);
-    }
-    if (!control.getPropertyMode().equals("")) {
-
-      // check to make sure this atom has this property:
-      Enumeration propIter = atom.getProperties().elements();
-      while (propIter.hasMoreElements()) {
-        PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
-        if (p.getDescriptor().equals(control.getPropertyMode())) {
-        
-          // OK, we had this property.  Let's draw the value on
-          // screen:
-          font = new Font("Helvetica", Font.PLAIN, radius / 2);
-          g.setFont(font);
-          g.setColor(control.getTextColor());
-          s = p.stringValue();
-          if (s.length() > 5) {
-            s = s.substring(0, 5);
-          }
-          k = 2 + (int) (radius / 1.4142136f);
-          g.drawString(s, x + k, y - k);
-        }
-      }
-    }
-  }
-
-  // When this variable is set then a wireframe atom will behave
-  // as though it is translucent. This allows you to see that the bonds
-  // are being clipped when they are obscured by the atom
-  private static final boolean showCoveredBonds = false;
-
   public void renderBond(Graphics g, Rectangle clip, DisplayControl control,
                          Atom atom1, Atom atom2) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
@@ -182,17 +121,15 @@ public class AtomShape extends Shape {
       return; // the pixels from the atoms will nearly cover the bond
     if (!control.showAtoms &&
         (control.fastRendering || control.bondDrawMode==control.LINE)) {
-      // the trivial case of no atoms and only lines
+      // the trivial case of no atoms and only single lines
+      // in this case double & triple bonds are not shown 
       if (color1.equals(color2)) {
-        g.setColor(color1);
-        g.drawLine(x1, y1, x2, y2);
+        drawLineInside(g, color1, x1, y1, x2, y2);
       } else {
         int xMid = (x1 + x2) / 2;
         int yMid = (y1 + y2) / 2;
-        g.setColor(color2);
-        g.drawLine(xMid, yMid, x2, y2);
-        g.setColor(color1);
-        g.drawLine(x1, y1, xMid, yMid);
+        drawLineInside(g, color1, x1, y1, xMid, yMid);
+        drawLineInside(g, color2, xMid, yMid, x2, y2);
       }
       return;
     }
@@ -215,33 +152,27 @@ public class AtomShape extends Shape {
     double cosine = magnitude / Math.sqrt(magnitude2 + dz2);
     int radius1Bond = (int)(radius1 * cosine);
     int radius2Bond = (int)(radius2 * cosine);
-    if ((control.atomDrawMode != control.WIREFRAME || !showCoveredBonds) &&
-        (magnitude < radius1 + radius2Bond)) {
-      // the shapes are solid and the front atom (radius1) has
-      // completely obscured the bond
+    if (magnitude < radius1 + radius2Bond) {
+      // the front atom (radius1) has completely obscured the bond
       return;
     }
 
-    int arcFactor = 1;
+    // FIXME -- kludge until I calculate accurate positions for
+    // bond intersections
+    // single line is correct without arcFactor
+    int arcFactor = bondOrder - 1;
     int x1Bond = x1 + ((radius1Bond - arcFactor) * dx) / magnitude;
     int y1Bond = y1 + ((radius1Bond - arcFactor) * dy) / magnitude;
     int x2Bond = x2 - ((radius2Bond - arcFactor) * dx) / magnitude;
     int y2Bond = y2 - ((radius2Bond - arcFactor) * dy) / magnitude;
-    int x1Edge;
-    int y1Edge;
+    int x1Edge = x1 + ((radius1 - arcFactor) * dx) / magnitude;
+    int y1Edge = y1 + ((radius1 - arcFactor) * dy) / magnitude;
     // technically, this bond width is not correct in that it is
     // not in perspective. the width at z1 should be wider than the
     // width at z2. but ...
     // just take the average of the two z's and don't worry about it
     int avgZ = (z1 + z2) / 2;
     double halfBondWidth = control.scaleToScreen(avgZ, control.bondWidth/2);
-    if (control.atomDrawMode==control.WIREFRAME && showCoveredBonds) {
-      x1Edge = x1Bond;
-      y1Edge = y1Bond;
-    } else {
-      x1Edge = x1 + ((radius1 - arcFactor) * dx) / magnitude;
-      y1Edge = y1 + ((radius1 - arcFactor) * dy) / magnitude;
-    }
 
     if (control.fastRendering || control.bondDrawMode==control.LINE) {
       drawLineBond(g, control,
@@ -364,12 +295,10 @@ public class AtomShape extends Shape {
           !isVisible(x1, y1, xEdge, yEdge, xMid, yMid)) {
         xTemp = xEdge; yTemp = yEdge;
       } else {
-        g.setColor(color1);
-        g.drawLine(xEdge, yEdge, xMid, yMid);
+        drawLineInside(g, color1, xEdge, yEdge, xMid, yMid);
         xTemp = xMid; yTemp = yMid;
       }
-      g.setColor(color2);
-      g.drawLine(xTemp, yTemp, x2, y2);      
+      drawLineInside(g, color2, xTemp, yTemp, x2, y2);      
       if (--bondOrder <= 0) // also catch initial parameter values <= 0
         return;
       x1 += xOffset; y1 += yOffset;
@@ -383,10 +312,10 @@ public class AtomShape extends Shape {
 
   private void drawRectBond(final Graphics g, DisplayControl control,
                             final int x1, final int y1,
-                            final Color color1, final Color color1Outline,
+                            Color color1, Color color1Outline,
                             final int xEdge, final int yEdge,
                             final int x2, final int y2,
-                            final Color color2, final Color color2Outline,
+                            Color color2, Color color2Outline,
                             final boolean boolFill,
                             final int dx, final int dy, final int magnitude,
                             int bondOrder, final double halfBondWidth,
@@ -394,6 +323,7 @@ public class AtomShape extends Shape {
     if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
       return;
     // offsets for the width of the bond rectangle
+    int width = (int)(2*halfBondWidth);
     int xHalfWidth = (int)(halfBondWidth * dy / magnitude);
     int yHalfWidth = (int)(halfBondWidth * dx / magnitude);
     int xFullWidth = (int)(halfBondWidth * 2 * dy / magnitude);
@@ -405,8 +335,8 @@ public class AtomShape extends Shape {
     int y2Top = y2 - yHalfWidth, y2Bot = y2Top + yFullWidth;
     int xEdgeTop = xEdge + xHalfWidth, xEdgeBot = xEdgeTop - xFullWidth;
     int yEdgeTop = yEdge - yHalfWidth, yEdgeBot = yEdgeTop + yFullWidth;
-    int xMidTop = (x1Top + x2Top) / 2, yMidTop = (y1Top + y2Top) / 2;
-    int xMidBot = (x1Bot + x2Bot) / 2, yMidBot = (y1Bot + y2Bot) / 2;
+    int xMidTop = (x1Top + x2Top) / 2, yMidTop = (y1Top + y2Top + 1) / 2;
+    int xMidBot = (x1Bot + x2Bot) / 2, yMidBot = (y1Bot + y2Bot + 1) / 2;
 
     int sepUp = (int) (separationIncrement * separationWidth);
     int sepDn = sepUp - (int)((separationIncrement * 2) * separationWidth);
@@ -437,30 +367,36 @@ public class AtomShape extends Shape {
       bondOrder = 3; // just in case
     }
 
-    while (true) {
-      if (color1.equals(color2) ||
-          !isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {
-        xBondRectPoints[0] = xEdgeTop; yBondRectPoints[0] = yEdgeTop;
-        xBondRectPoints[1] = xEdgeBot; yBondRectPoints[1] = yEdgeBot;
-      } else { // two different bond colors
-        xBondRectPoints[0] = xMidTop; yBondRectPoints[0] = yMidTop;
-        xBondRectPoints[1] = xMidBot; yBondRectPoints[1] = yMidBot;
-        xBondRectPoints[2] = xEdgeBot; yBondRectPoints[2] = yEdgeBot;
-        xBondRectPoints[3] = xEdgeTop; yBondRectPoints[3] = yEdgeTop;
-        g.setColor(color1);
-        if (boolFill) 
-          g.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
-        else
-          g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
-      }
-      xBondRectPoints[2] = x2Bot; yBondRectPoints[2] = y2Bot; 
-      xBondRectPoints[3] = x2Top; yBondRectPoints[3] = y2Top;
-      g.setColor(color2);
-      if (boolFill) 
-        g.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
-      else
-        g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
 
+    while (true) {
+      xBondRectPoints[0] = xEdgeTop; yBondRectPoints[0] = yEdgeTop;
+      xBondRectPoints[3] = xEdgeBot; yBondRectPoints[3] = yEdgeBot;
+      if (!color1.equals(color2) &&
+          isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {
+        // two different bond colors
+        xBondRectPoints[1] = xMidTop; yBondRectPoints[1] = yMidTop;
+        xBondRectPoints[2] = xMidBot; yBondRectPoints[2] = yMidBot;
+        g.setColor(color1);
+        if (boolFill) {
+          g.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
+          drawInside(g, color1Outline, width,xBondRectPoints, yBondRectPoints);
+        } else {
+          g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
+        }
+        xBondRectPoints[0] = xMidTop; yBondRectPoints[0] = yMidTop;
+        xBondRectPoints[3] = xMidBot; yBondRectPoints[3] = yMidBot;
+      }
+      xBondRectPoints[1] = x2Top; yBondRectPoints[1] = y2Top;
+      xBondRectPoints[2] = x2Bot; yBondRectPoints[2] = y2Bot; 
+      g.setColor(color2);
+      if (boolFill) {
+        g.fillPolygon(xBondRectPoints, yBondRectPoints, 4);
+        drawInside(g, color2Outline, width, xBondRectPoints, yBondRectPoints);
+      } else {
+        g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
+      }
+
+      /*
       // don't draw outlines if we did not fill
       if (boolFill && color1Outline != null) {
         int xOutlineTop, yOutlineTop, xOutlineBot, yOutlineBot;
@@ -470,15 +406,18 @@ public class AtomShape extends Shape {
           xOutlineBot = xEdgeBot; yOutlineBot = yEdgeBot;
         } else {
           g.setColor(color1Outline);
-          g.drawLine(xEdgeTop, yEdgeTop, xMidTop, yMidTop);
-          g.drawLine(xEdgeBot, yEdgeBot, xMidBot, yMidBot);
+          drawInside(g, (int)halfBondWidth*2,
+                     xEdgeTop, yEdgeTop, xMidTop, yMidTop,
+                     xEdgeBot, yEdgeBot, xMidBot, yMidBot);
           xOutlineTop = xMidTop; yOutlineTop = yMidTop;
           xOutlineBot = xMidBot; yOutlineBot = yMidBot;
         }
         g.setColor(color2Outline);
-        g.drawLine(xOutlineTop, yOutlineTop, x2Top, y2Top);
-        g.drawLine(xOutlineBot, yOutlineBot, x2Bot, y2Bot);
+        drawInside(g,  (int)halfBondWidth*2,
+                   xOutlineTop, yOutlineTop, x2Top, y2Top,
+                   xOutlineBot, yOutlineBot, x2Bot, y2Bot);
       }
+      */
       if (--bondOrder <= 0) // also catch a crazy parameter value
         return;
       x1Top +=    xOffset; x1Bot +=    xOffset;
@@ -491,6 +430,120 @@ public class AtomShape extends Shape {
       yEdgeTop += yOffset; yEdgeBot += yOffset;
       yMidTop +=  yOffset; yMidBot +=  yOffset;
     }
+  }
+
+  void drawInside(Graphics g, Color color, int width, int[] ax, int[] ay) {
+    // mth dec 2002
+    // I am not happy with this implementation, but for now it is the most
+    // effective kludge I could come up with to deal with the fact that
+    // the brush is offset to the lower right of the point when drawing
+    if (color == null)
+      return;
+    g.setColor(color);
+    int iNW = 0;
+    int iNE = 1;
+    int iSE = 2;
+    int iSW = 3;
+    int iT;
+    boolean top = true;
+    if (ax[iNE] < ax[iNW]) {
+      iT = iNE; iNE = iNW; iNW = iT;
+      iT = iSE; iSE = iSW; iSW = iT;
+      top = !top;
+    }
+    drawInside1(g, top, ax[iNW], ay[iNW], ax[iNE], ay[iNE]);
+    if (width > 1)
+      drawInside1(g, !top, ax[iSW], ay[iSW], ax[iSE], ay[iSE]);
+  }
+
+  void drawInside1(Graphics g, boolean top, int x1, int y1, int x2, int y2) {
+    int dx = x2 - x1, dy = y2 - y1;
+    if (dy >= 0) {
+      if (dy == 0) {
+        if (top) {
+          --x2;
+        } else {
+          --y1; --x2; --y2;
+        }
+      } else if (3*dy < dx) {
+        if (top) {
+          ++y1; --x2;
+        } else {
+          --x2; --y2;
+        }
+      } else if (dy < dx) {
+        if (! top) {
+          --x2; --y2;
+        }
+      } else if (dx == 0) {
+        if (top) {
+          --x1; --x2; --y2;
+        } else {
+          --y2;
+        }
+      } else if (3*dx < dy) {
+        if (top) {
+          --x1; --x2; --y2;
+        } else {
+          --y2;
+        }
+      } else if (dx == dy) {
+        if (top) {
+          ++y1; --x2;
+          g.drawLine(x1, y1, x2, y2);
+          --x1; --x2;
+        } else {
+          g.drawLine(x1+1, y1, x2, y2-1);
+          --x2; --y2;
+        }
+      }
+    } else {
+      if (dx == 0) {
+        if (top) {
+          --y1;
+        } else {
+          --x1; --y1; --x2;
+        }
+      } else if (3*dx < -dy) {
+        if (top) {
+          --y1;
+        } else {
+          --x1; --y1; --x2;
+        }
+      } else if (dx > -dy*3) {
+        if (top){
+          --x2; ++y2;
+        } else {
+          --y1; --x2;
+        }
+      } else if (dx == -dy) {
+        if (!top) {
+          --x2; ++y2;
+        }
+      }
+    }
+    g.drawLine(x1, y1, x2, y2);
+  }
+
+  void drawLineInside(Graphics g, Color co, int x1, int y1, int x2, int y2) {
+    if (x2 < x1) {
+      int xT = x1; x1 = x2; x2 = xT;
+      int yT = y1; y1 = y2; y2 = yT;
+    }
+    int dx = x2 - x1, dy = y2 - y1;
+    if (dy >= 0) {
+      if (dy <= dx)
+        --x2;
+      if (dx <= dy)
+        --y2;
+    } else {
+      if (-dy <= dx)
+        --x2;
+      if (dx <= -dy)
+        --y1;
+    }
+    g.setColor(co);
+    g.drawLine(x1, y1, x2, y2);
   }
 
   static Hashtable htDarker = new Hashtable();
@@ -850,6 +903,62 @@ public class AtomShape extends Shape {
       v[0] = v[0] / len;
       v[1] = v[1] / len;
       v[2] = v[2] / len;
+    }
+  }
+
+  public void renderLabel(Graphics g, Rectangle clip, DisplayControl control) {
+    if (control.labelMode == control.NOLABELS)
+      return;
+
+    int radius=diameter/2;
+    int j = 0;
+    String s = null;
+    Font font = new Font("Helvetica", Font.PLAIN, radius);
+    g.setFont(font);
+    FontMetrics fontMetrics = g.getFontMetrics(font);
+    int k = fontMetrics.getAscent();
+    g.setColor(control.getTextColor());
+    
+    String label = null;
+    switch (control.labelMode) {
+    case DisplayControl.SYMBOLS:
+      label = atom.getSymbol();
+      break;
+
+    case DisplayControl.TYPES:
+      label = atom.getID();
+       break;
+
+    case DisplayControl.NUMBERS:
+      label = Integer.toString(atom.getAtomNumber() + 1);
+      break;
+
+    }
+    if (label != null) {
+      j = fontMetrics.stringWidth(label);
+      g.drawString(label, x - j / 2, y + k / 2);
+    }
+    if (!control.getPropertyMode().equals("")) {
+
+      // check to make sure this atom has this property:
+      Enumeration propIter = atom.getProperties().elements();
+      while (propIter.hasMoreElements()) {
+        PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
+        if (p.getDescriptor().equals(control.getPropertyMode())) {
+        
+          // OK, we had this property.  Let's draw the value on
+          // screen:
+          font = new Font("Helvetica", Font.PLAIN, radius / 2);
+          g.setFont(font);
+          g.setColor(control.getTextColor());
+          s = p.stringValue();
+          if (s.length() > 5) {
+            s = s.substring(0, 5);
+          }
+          k = 2 + (int) (radius / 1.4142136f);
+          g.drawString(s, x + k, y - k);
+        }
+      }
     }
   }
 }

@@ -51,7 +51,7 @@
         <a href="http://debian.wgdd.de/">debian.wgdd.de/</a> by adding:
         <pre><tt>
 deb <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
-deb-src <a href="http://debian.wgdd.de/debian/">http://ftp.wgdd.de/debian</a> unstable main contrib non-free
+deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
         </tt></pre>
         to /etc/apt/sources.list, and doing 'apt-get update &amp;&amp; apt-get install jmol/unstable'. 
         The repository has changed, because <a href="http://mentors.debian.net/">mentors.debian.net</a> 

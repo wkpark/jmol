@@ -71,11 +71,6 @@ class ModelResolver {
       lines[i] = line != null ? line : "";
     }
     bufferedReader.reset();
-    try {
-      int atomCount = Integer.parseInt(lines[0].trim());
-      return "Xyz";
-    } catch (NumberFormatException e) {
-    }
     if (lines[3].length() >= 6) {
       String line4trimmed = lines[3].trim();
       if (line4trimmed.endsWith("V2000") ||
@@ -88,6 +83,11 @@ class ModelResolver {
         return "Mol";
       } catch (NumberFormatException nfe) {
       }
+    }
+    try {
+      int atomCount = Integer.parseInt(lines[0].trim());
+      return "Xyz";
+    } catch (NumberFormatException e) {
     }
     // run these loops forward ... easier for people to understand
     for (int i = 0; i < startsWithRecords.length; ++i) {

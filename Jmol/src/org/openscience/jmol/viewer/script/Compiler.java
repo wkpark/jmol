@@ -412,11 +412,16 @@ class Compiler {
   boolean lookingAtString() {
     if (ichToken == cchScript)
       return false;
-    char chFirst = script.charAt(ichToken);
-    if (chFirst != '"' && chFirst != '\'')
+    if (script.charAt(ichToken) != '=')
       return false;
+    // remove support for single quote
+    // in order to use it in atom expressions
+    //    char chFirst = script.charAt(ichToken);
+    //    if (chFirst != '"' && chFirst != '\'')
+    //      return false;
     int ichT = ichToken + 1;
-    while (ichT < cchScript && script.charAt(ichT++) != chFirst)
+    //    while (ichT < cchScript && script.charAt(ichT++) != chFirst)
+    while (ichT < cchScript && script.charAt(ichT++) != '=')
       ;
     cchToken = ichT - ichToken;
     return true;

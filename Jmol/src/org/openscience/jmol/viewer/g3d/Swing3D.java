@@ -33,7 +33,7 @@ import java.awt.image.DataBufferInt;
 import java.awt.Rectangle;
 import java.util.Arrays;
 
-final public class Swing3D extends Platform3D {
+final class Swing3D extends Platform3D {
 
   void allocatePixelBuffer() {
     BufferedImage bi =

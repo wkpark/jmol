@@ -27,14 +27,14 @@ package org.openscience.jmol.viewer.g3d;
 
 import javax.vecmath.Vector3f;
 
-public final class Shade3D {
+final class Shade3D {
 
   // there are 64 shades of a given color
   // 0 = ambient
   // 63 = brightest ... white
-  public static final int shadeMax = 64;
+  static final int shadeMax = 64;
 
-  private static byte shadeNormal = 52;
+  static byte shadeNormal = 52;
 
   // the light source vector
   static final float xLightsource = -1;
@@ -64,7 +64,7 @@ public final class Shade3D {
   // set ambient 0-100
   static float ambientFraction = 0.5f;
 
-  public static int[] getShades(int rgb) {
+  static int[] getShades(int rgb) {
     int[] shades = new int[shadeMax];
 
     int red = (rgb >> 16) & 0xFF;
@@ -117,9 +117,9 @@ public final class Shade3D {
   }
   */
 
-  public final static int intensitySpecularSurfaceLimit = shadeNormal + 4;
+  final static byte intensitySpecularSurfaceLimit = (byte)(shadeNormal + 4);
 
-  public static int calcIntensityNormalized(float x, float y, float z) {
+  static int calcIntensityNormalized(float x, float y, float z) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
     float intensity = 0; // ambient component
     if (cosTheta > 0) {
@@ -142,16 +142,16 @@ public final class Shade3D {
     return (byte)shade;
   }
 
-  public static void setSpecular(boolean specular) {
+  static void setSpecular(boolean specular) {
     specularOn = specular;
     dump();
   }
 
-  public static boolean getSpecular() {
+  static boolean getSpecular() {
     return specularOn;
   }
 
-  public static void setLightsourceZ(float z) {
+  static void setLightsourceZ(float z) {
     zLightsource = z;
     magnitudeLight =
       (float)Math.sqrt(xLightsource * xLightsource +
@@ -160,7 +160,7 @@ public final class Shade3D {
     dump();
   }
 
-  public static void setSpecularPower(int specularPower) {
+  static void setSpecularPower(int specularPower) {
     if (specularPower >= 0)
       intenseFraction = specularPower / 100f;
     else
@@ -168,17 +168,17 @@ public final class Shade3D {
     dump();
   }
 
-  public static void setAmbientPercent(int ambientPercent) {
+  static void setAmbientPercent(int ambientPercent) {
     ambientFraction = ambientPercent / 100f;
     dump();
   }
 
-  public static void setDiffusePercent(int diffusePercent) {
+  static void setDiffusePercent(int diffusePercent) {
     intensityDiffuse = diffusePercent / 100f;
     dump();
   }
 
-  public static void setSpecularPercent(int specularPercent) {
+  static void setSpecularPercent(int specularPercent) {
     intensitySpecular = specularPercent / 100f;
     dump();
   }

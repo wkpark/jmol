@@ -1055,114 +1055,146 @@ final public class JmolConstants {
   public final static int[] argbsCpk = {
     0xFFFF1493, // Xx 0
     0xFFFFFFFF, // H  1
-    0xFFFFC0CB, // He 2
-    0xFFB22222, // Li 3
-    0xFFC1FF00, // Be 4
-    0xFF00FF00, // B  5
-    0xFFC8C8C8, // C  6
-    0xFF8F8FFF, // N  7
-    0xFFF00000, // O  8
-    0xFFDAA520, // F  9
-    0xFFB2E2F4, // Ne 10
-    0xFF0000FF, // Na 11
-    0xFF228B22, // Mg 12
-    0xFF808090, // Al 13
-    0xFFDAA520, // Si 14
-    0xFFFFA500, // P  15
-    0xFFFFC832, // S  16
-    0xFF00FF00, // Cl 17
-    0xFF7FD1E2, // Ar 18
-    0xFF8E3FD3, // K  19
-    0xFF808090, // Ca 20
-    0xFFE5E5E5, // Sc 21
-    0xFF808090, // Ti 22
-    0xFFA5A5AA, // V  23
-    0xFF808090, // Cr 24
-    0xFF808090, // Mn 25
-    0xFFFFA500, // Fe 26
-    0xFF707AC6, // Co 27
-    0xFFA52A2A, // Ni 28
-    0xFFA52A2A, // Cu 29
-    0xFFA52A2A, // Zn 30
-    0xFFC18E8E, // Ga 31
-    0xFF668E8E, // Ge 32
-    0xFFBC7FE2, // As 33
-    0xFFFFA000, // Se 34
-    0xFFA52A2A, // Br 35
-    0xFF5BB7D1, // Kr 36
-    0xFF702DAF, // Rb 37
+    0xFFD9FFFF, // He 2
+    0xFFCC80FF, // Li 3
+    0xFFC2FF00, // Be 4
+    0xFFFFB5B5, // B  5
+    0xFF808080, // C  6
+    0xFF0D0DFF, // N  7
+    0xFFFF0D0D, // O  8
+    0xFFB3FFFF, // F  9
+    0xFFB3E3F5, // Ne 10
+    0xFFAB5CF2, // Na 11
+    0xFF8AFF00, // Mg 12
+    0xFFBFA6A6, // Al 13
+    0xFF809999, // Si 14
+    0xFFFF8000, // P  15
+    0xFFFFFF30, // S  16
+    0xFF1FF01F, // Cl 17
+    0xFF80D1E3, // Ar 18
+    0xFF8F40D4, // K  19
+    0xFF3DFF00, // Ca 20
+    0xFFE6E6E6, // Sc 21
+    0xFFBFC2C7, // Ti 22
+    0xFFA6A6AB, // V  23
+    0xFF8A99C7, // Cr 24
+    0xFF9C7AC7, // Mn 25
+    0xFF807AC7, // Fe 26
+    0xFF707AC7, // Co 27
+    0xFF5C7AC2, // Ni 28
+    0xFFFF7A61, // Cu 29
+    0xFF7D80B0, // Zn 30
+    0xFFC28F8F, // Ga 31
+    0xFF668F8F, // Ge 32
+    0xFFBD80E3, // As 33
+    0xFFFFA100, // Se 34
+    0xFFA62929, // Br 35
+    0xFF5CB8D1, // Kr 36
+    0xFF702EB0, // Rb 37
     0xFF00FF00, // Sr 38
-    0xFF93FFFF, // Y  39
-    0xFF93E0E0, // Zr 40
-    0xFF72C1C9, // Nb 41
+    0xFF94FFFF, // Y  39
+    0xFF94E0E0, // Zr 40
+    0xFF73C2C9, // Nb 41
     0xFF54B5B5, // Mo 42
-    0xFF3A9E9E, // Tc 43
-    0xFF238E8E, // Ru 44
-    0xFF0A7C8C, // Rh 45
-    0xFF006884, // Pd 46
-    0xFF808090, // Ag 47
-    0xFFFFD88E, // Cd 48
-    0xFFA57572, // In 49
-    0xFF667F7F, // Sn 50
+    0xFF3B9E9E, // Tc 43
+    0xFF248F8F, // Ru 44
+    0xFF0A7D8C, // Rh 45
+    0xFF006985, // Pd 46
+    0xFFE0E0FF, // Ag 47
+    0xFFFFD98F, // Cd 48
+    0xFFA67573, // In 49
+    0xFF668080, // Sn 50
     0xFF9E63B5, // Sb 51
-    0xFFD37A00, // Te 52
-    0xFFA020F0, // I  53
-    0xFF429EAF, // Xe 54
-    0xFF56168E, // Cs 55
-    0xFFFFA500, // Ba 56
-    0xFF70D3FF, // La 57
-    0xFFFFFFC6, // Ce 58
-    0xFFD8FFC6, // Pr 59
-    0xFFC6FFC6, // Nd 60
-    0xFFA3FFC6, // Pm 61
-    0xFF8EFFC6, // Sm 62
-    0xFF60FFC6, // Eu 63
-    0xFF44FFC6, // Gd 64
-    0xFF30FFC6, // Tb 65
-    0xFF1EFFC6, // Dy 66
-    0xFF00FF9B, // Ho 67
-    0xFF00E575, // Er 68
-    0xFF00D351, // Tm 69
+    0xFFD47A00, // Te 52
+    0xFF940094, // I  53
+    0xFF429EB0, // Xe 54
+    0xFF57178F, // Cs 55
+    0xFF00C900, // Ba 56
+    0xFF70D4FF, // La 57
+    0xFFFFFFC7, // Ce 58
+    0xFFD9FFC7, // Pr 59
+    0xFFC7FFC7, // Nd 60
+    0xFFA3FFC7, // Pm 61
+    0xFF8FFFC7, // Sm 62
+    0xFF61FFC7, // Eu 63
+    0xFF45FFC7, // Gd 64
+    0xFF30FFC7, // Tb 65
+    0xFF1FFFC7, // Dy 66
+    0xFF00FF9C, // Ho 67
+    0xFF00E675, // Er 68
+    0xFF00D452, // Tm 69
     0xFF00BF38, // Yb 70
-    0xFF00AA23, // Lu 71
-    0xFF4CC1FF, // Hf 72
-    0xFF4CA5FF, // Ta 73
-    0xFF2193D6, // W  74
-    0xFF267CAA, // Re 75
+    0xFF00AB24, // Lu 71
+    0xFF4DC2FF, // Hf 72
+    0xFF4DA6FF, // Ta 73
+    0xFF2194D6, // W  74
+    0xFF267DAB, // Re 75
     0xFF266696, // Os 76
-    0xFF165487, // Ir 77
-    0xFFF4EDD1, // Pt 78
-    0xFFDAA520, // Au 79
-    0xFFB5B5C1, // Hg 80
-    0xFFA5544C, // Tl 81
-    0xFF565960, // Pb 82
+    0xFF175487, // Ir 77
+    0xFFF5EDD1, // Pt 78
+    0xFFCCD11F, // Au 79
+    0xFFB5B5C2, // Hg 80
+    0xFFA6544D, // Tl 81
+    0xFF575961, // Pb 82
     0xFF9E4FB5, // Bi 83
-    0xFFAA5B00, // Po 84
-    0xFF754F44, // At 85
+    0xFFAB5C00, // Po 84
+    0xFF754F45, // At 85
     0xFF428296, // Rn 86
     0xFF420066, // Fr 87
-    0xFF007C00, // Ra 88
-    0xFF70AAF9, // Ac 89
+    0xFF007D00, // Ra 88
+    0xFF70ABFA, // Ac 89
     0xFF00BAFF, // Th 90
-    0xFF00A0FF, // Pa 91
-    0xFF008EFF, // U  92
-    0xFF007FFF, // Np 93
+    0xFF00A1FF, // Pa 91
+    0xFF008FFF, // U  92
+    0xFF0080FF, // Np 93
     0xFF006BFF, // Pu 94
-    0xFF545BF2, // Am 95
-    0xFF775BE2, // Cm 96
-    0xFF894FE2, // Bk 97
-    0xFFA035D3, // Cf 98
-    0xFFB21ED3, // Es 99
-    0xFFB21EBA, // Fm 100
-    0xFFB20CA5, // Md 101
-    0xFFBC0C87, // No 102
-    0xFFC60066, // Lr 103
+    0xFF545CF2, // Am 95
+    0xFF785CE3, // Cm 96
+    0xFF8A4FE3, // Bk 97
+    0xFFA136D4, // Cf 98
+    0xFFB31FD4, // Es 99
+    0xFFB31FBA, // Fm 100
+    0xFFB30DA6, // Md 101
+    0xFFBD0D87, // No 102
+    0xFFC70066, // Lr 103
     0xFFCC0059, // Rf 104
     0xFFD1004F, // Db 105
-    0xFFD80044, // Sg 106
+    0xFFD90045, // Sg 106
     0xFFE00038, // Bh 107
-    0xFFE5002D, // Hs 108
-    0xFFEA0026, // Mt 109
+    0xFFE6002E, // Hs 108
+    0xFFEB0026, // Mt 109
+  };
+
+  public final static int[] argbsCpkRasmol = {
+    0x00FF1493 + ( 0 << 24), // Xx 0
+    0x00FFFFFF + ( 1 << 24), // H  1
+    0x00FFC0CB + ( 2 << 24), // He 2
+    0x00B22222 + ( 3 << 24), // Li 3
+    0x0000FF00 + ( 5 << 24), // B  5
+    0x00C8C8C8 + ( 6 << 24), // C  6
+    0x008F8FFF + ( 7 << 24), // N  7
+    0x00F00000 + ( 8 << 24), // O  8
+    0x00DAA520 + ( 9 << 24), // F  9
+    0x000000FF + (11 << 24), // Na 11
+    0x00228B22 + (12 << 24), // Mg 12
+    0x00808090 + (13 << 24), // Al 13
+    0x00DAA520 + (14 << 24), // Si 14
+    0x00FFA500 + (15 << 24), // P  15
+    0x00FFC832 + (16 << 24), // S  16
+    0x0000FF00 + (17 << 24), // Cl 17
+    0x00808090 + (20 << 24), // Ca 20
+    0x00808090 + (22 << 24), // Ti 22
+    0x00808090 + (24 << 24), // Cr 24
+    0x00808090 + (25 << 24), // Mn 25
+    0x00FFA500 + (26 << 24), // Fe 26
+    0x00A52A2A + (28 << 24), // Ni 28
+    0x00A52A2A + (29 << 24), // Cu 29
+    0x00A52A2A + (30 << 24), // Zn 30
+    0x00A52A2A + (35 << 24), // Br 35
+    0x00808090 + (47 << 24), // Ag 47
+    0x00A020F0 + (53 << 24), // I  53
+    0x00FFA500 + (56 << 24), // Ba 56
+    0x00DAA520 + (79 << 24), // Au 79
   };
 
   static {

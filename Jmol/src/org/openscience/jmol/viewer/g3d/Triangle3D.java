@@ -31,7 +31,7 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Triangle3D {
+class Triangle3D {
 
   JmolViewer viewer;
   Graphics3D g3d;
@@ -40,7 +40,7 @@ public class Triangle3D {
   int ay[] = new int[4];
   int az[] = new int[4];
 
-  public Triangle3D(JmolViewer viewer, Graphics3D g3d) {
+  Triangle3D(JmolViewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
   }

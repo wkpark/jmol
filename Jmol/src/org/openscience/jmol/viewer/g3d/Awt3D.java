@@ -33,24 +33,24 @@ import java.awt.image.ImageConsumer;
 import java.awt.image.ColorModel;
 import java.awt.Rectangle;
 
-final public class Awt3D extends Platform3D implements ImageProducer {
+final class Awt3D extends Platform3D implements ImageProducer {
 
   Component component;
 
   ColorModel colorModelRGB;
   ImageConsumer ic;
 
-  public Awt3D(Component component) {
+  Awt3D(Component component) {
     this.component = component;
     colorModelRGB = ColorModel.getRGBdefault();
   }
 
-  public void allocatePixelBuffer() {
+  void allocatePixelBuffer() {
     pBuffer = new int[size];
     imagePixelBuffer = component.createImage(this);
   }
 
-  public void notifyEndOfRendering() {
+  void notifyEndOfRendering() {
     if (this.ic != null)
       startProduction(ic);
   }

@@ -30,7 +30,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
 
-abstract public class Platform3D {
+abstract class Platform3D {
 
   int width, height;
   int size;

@@ -32,12 +32,12 @@ import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
 
-public class Hermite3D {
+class Hermite3D {
 
   JmolViewer viewer;
   Graphics3D g3d;
 
-  public Hermite3D(JmolViewer viewer, Graphics3D g3d) {
+  Hermite3D(JmolViewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
   }
@@ -54,7 +54,7 @@ public class Hermite3D {
     }
   }
 
-  public void render(boolean tFill, short colix, int tension,
+  void render(boolean tFill, short colix, int tension,
                      int diameterBeg, int diameterMid, int diameterEnd,
                      Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;

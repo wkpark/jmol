@@ -31,7 +31,7 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Sphere3D {
+class Sphere3D {
 
   JmolViewer viewer;
   Graphics3D g3d;
@@ -42,7 +42,7 @@ public class Sphere3D {
   final static int shiftDivFoo = 9;
   short[] heightsFoo;
 
-  public Sphere3D(JmolViewer viewer, Graphics3D g3d) {
+  Sphere3D(JmolViewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
 
@@ -70,10 +70,10 @@ public class Sphere3D {
     int radius = (diameter + 1) / 2;
     float r = diameter / 2.0f;
     float radius2 = r * r;
-    g3d.argbCurrent = Colix.getArgb(colix);
+    g3d.argbCurrent = g3d.getArgb(colix);
     int xUL = xC - radius;
     int yUL = yC - radius;
-    int[] shades = Colix.getShades(colix);
+    int[] shades = g3d.getShades(colix);
     
     float yF = -radius + 0.5f;
     for (int i = 0; i < diameter; ++i, ++yF) {
@@ -161,7 +161,7 @@ public class Sphere3D {
 
   void render(short colix, int diameter, int x, int y, int z) {
     int radius = (diameter + 1) >> 1;
-    int[] shades = Colix.getShades(colix);
+    int[] shades = g3d.getShades(colix);
     if (diameter >= maxSphereCache) {
       if (x-radius < 0 || x+radius >= g3d.width ||
           y-radius < 0 || y+radius >= g3d.height)
@@ -334,7 +334,7 @@ public class Sphere3D {
     return ss;
   }
 
-  public static void flushImageCache() {
+  static void flushImageCache() {
     sphereShapeCache = new int[maxSphereCache][];
   }
 

@@ -253,7 +253,7 @@ class CartoonRenderer extends McpsRenderer {
 
   void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
-    shadesPending = Colix.getShades(colixPending);
+    shadesPending = g3d.getShades(colixPending);
     if (tEnd) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);
       drawBox(pointStart, pointBeforeEnd);

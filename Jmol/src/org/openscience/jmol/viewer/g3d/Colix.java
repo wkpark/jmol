@@ -27,36 +27,13 @@ package org.openscience.jmol.viewer.g3d;
 
 import java.awt.Color;
 
-public class Colix {
+class Colix {
 
   /****************************************************************
    * colix support
    *
    * a colix is a color index stored as a short
    ****************************************************************/
-
-  public final static short NULL = 0;
-  public final static short BLACK = 1;
-  public final static short ORANGE = 2;
-  public final static short PINK = 3;
-  public final static short BLUE = 4;
-  public final static short WHITE = 5;
-  public final static short AQUA = 6;
-  public final static short CYAN = 6;
-  public final static short RED = 7;
-  public final static short GREEN = 8;
-  public final static short GRAY = 9;
-  public final static short SILVER = 10;
-  public final static short LIGHTGRAY = 10;
-  public final static short LIME = 11;
-  public final static short MAROON = 12;
-  public final static short NAVY = 13;
-  public final static short OLIVE = 14;
-  public final static short PURPLE = 15;
-  public final static short TEAL = 16;
-  public final static short MAGENTA = 17;
-  public final static short FUCHSIA = 17;
-  public final static short YELLOW = 18;
 
   static Color[] colorsPredefined = {
     Color.black, Color.orange, Color.pink, Color.blue,
@@ -66,17 +43,17 @@ public class Colix {
     new Color(0, 128, 128), Color.magenta, Color.yellow
   };
 
-  static short colixMax = 1;
-  public static int[] argbs = new int[128];
-  public static Color[] colors = new Color[128];
-  static int[][] ashades = new int[128][];
+  private static short colixMax = 1;
+  private static int[] argbs = new int[128];
+  private static Color[] colors = new Color[128];
+  private static int[][] ashades = new int[128][];
 
   static {
     for (int i = 0; i < colorsPredefined.length; ++i)
       getColix(colorsPredefined[i]);
   }
 
-  public static short getColix(int argb) {
+  static short getColix(int argb) {
     if (argb == 0)
       return 0;
     argb |= 0xFF000000;
@@ -101,7 +78,7 @@ public class Colix {
     return colixMax++;
   }
 
-  public static short getColix(Color color) {
+  static short getColix(Color color) {
     if (color == null)
       return 0;
     int argb = color.getRGB();
@@ -111,7 +88,7 @@ public class Colix {
     return colix;
   }
 
-  public static Color getColor(short colix) {
+  static Color getColor(short colix) {
     if (colix == 0)
       return null;
     Color color = colors[colix];
@@ -120,18 +97,18 @@ public class Colix {
     return colors[colix];
   }
 
-  public static int getArgb(short colix) {
+  static int getArgb(short colix) {
     return argbs[colix];
   }
 
-  public static int[] getShades(short colix) {
+  static int[] getShades(short colix) {
     int[] shades = ashades[colix];
     if (shades == null)
       shades = ashades[colix] = Shade3D.getShades(argbs[colix]);
     return shades;
   }
 
-  public static void flushShades() {
+  static void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
   }

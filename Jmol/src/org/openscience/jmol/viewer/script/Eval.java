@@ -2107,6 +2107,9 @@ public class Eval implements Runnable {
     case Token.boundbox:
       setBoundbox();
       break;
+    case Token.color:
+      setColor();
+      break;
     case Token.frank:
       setFrank();
       break;
@@ -2209,6 +2212,20 @@ public class Eval implements Runnable {
   void setFrank() throws ScriptException {
     viewer.setShapeMad(JmolConstants.SHAPE_FRANK,
                        getSetAxesTypeMad());
+  }
+
+  void setColor() throws ScriptException {
+    checkLength3();
+    switch(statement[2].tok) {
+    case Token.rasmol:
+    case Token.jmol:
+    case Token.string:
+    case Token.identifier:
+      viewer.setColorScheme((String)statement[2].value);
+      break;
+    default:
+      invalidArgument();
+    }
   }
 
   void setBondmode() throws ScriptException {

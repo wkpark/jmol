@@ -114,7 +114,8 @@ final public class JmolViewer {
                        "\nJava " + strJavaVendor + " " + strJavaVersion +
                        " " + strOSName);
 
-    colorManager = new ColorManager(this, modelAdapter);
+    g3d = new Graphics3D(this);
+    colorManager = new ColorManager(this, g3d);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
     if (jvm12orGreater) 
@@ -129,7 +130,6 @@ final public class JmolViewer {
     measurementManager = new MeasurementManager(this);
     distributionManager = new DistributionManager(this);
 
-    g3d = new Graphics3D(this);
   
   }
 
@@ -499,13 +499,17 @@ final public class JmolViewer {
 
   public void setModeAtomColorProfile(byte palette) {
     colorManager.setPaletteDefault(palette);
-    distributionManager.setColixAtom(palette, Colix.NULL,
+    distributionManager.setColixAtom(palette, (short)0, // FIXME Colix.NULL,
                                      atomIteratorSelected());
     refresh();
   }
 
   public byte getModeAtomColorProfile() {
     return colorManager.paletteDefault;
+  }
+
+  public void setColorScheme(String colorScheme) {
+    colorManager.setColorScheme(colorScheme);
   }
 
   public void setColorSelection(Color c) {
@@ -643,7 +647,7 @@ final public class JmolViewer {
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
     distributionManager
-      .setColix(Colix.getColix(colorBond),
+      .setColix(g3d.getColix(colorBond),
                 bondIteratorSelected(JmolConstants.BOND_COVALENT));
     refresh();
   }
@@ -1342,27 +1346,27 @@ final public class JmolViewer {
   }
 
   public void setColorAtomScript(byte palette, Color color) {
-    distributionManager.setColixAtom(palette, Colix.getColix(color),
+    distributionManager.setColixAtom(palette, g3d.getColix(color),
                                      atomIteratorSelected());
   }
 
   public void setColorBondScript(Color color) {
     distributionManager
-      .setColix(Colix.getColix(color),
+      .setColix(g3d.getColix(color),
                 bondIteratorSelected(JmolConstants.BOND_COVALENT));
   }
 
   public void setColorSsBondScript(Color color) {
     colorManager.setColorSsbond(color);
     distributionManager
-      .setColix(Colix.getColix(color),
+      .setColix(g3d.getColix(color),
                 bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
   }
 
   public void setColorHBondScript(Color color) {
     colorManager.setColorHbond(color);
     distributionManager
-      .setColix(Colix.getColix(color),
+      .setColix(g3d.getColix(color),
                 bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
@@ -1409,7 +1413,7 @@ final public class JmolViewer {
   }
 
   public void setShapeColor(int shapeType, byte palette, Color color) {
-    getFrame().setShapeColix(shapeType, palette, Colix.getColix(color),
+    getFrame().setShapeColix(shapeType, palette, g3d.getColix(color),
                              shapeType <
                              JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT
                              ? selectionManager.bsSelection
@@ -1905,7 +1909,7 @@ final public class JmolViewer {
   }
 
   public Color getAtomColor(int i) {
-    return Colix.getColor(modelManager.getAtomColix(i));
+    return g3d.getColor(modelManager.getAtomColix(i));
   }
 
   public Point3f getBondPoint3f1(int i) {
@@ -1925,10 +1929,10 @@ final public class JmolViewer {
   }
 
   public Color getBondColor1(int i) {
-    return Colix.getColor(modelManager.getBondColix1(i));
+    return g3d.getColor(modelManager.getBondColix1(i));
   }
 
   public Color getBondColor2(int i) {
-    return Colix.getColor(modelManager.getBondColix2(i));
+    return g3d.getColor(modelManager.getBondColix2(i));
   }
 }

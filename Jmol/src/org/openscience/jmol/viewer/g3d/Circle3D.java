@@ -26,7 +26,7 @@ package org.openscience.jmol.viewer.g3d;
 
 import org.openscience.jmol.viewer.*;
 
-final public class Circle3D {
+final class Circle3D {
 
   Graphics3D g3d;
 

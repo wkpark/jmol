@@ -108,7 +108,7 @@ public class Token {
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | showparam | expression;
   final static int clipboard    = command |  5;
-  final static int color        = command |  6 | colorparam;
+  final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | bool;
   final static int define       = command |  9 | expression;
   final static int dots         = command | 10 | bool;
@@ -139,8 +139,7 @@ public class Token {
   final static int cpk          = command | 35 | setparam | bool |negativeints;
   final static int ssbonds      = command | 36 | setparam | bool;
   final static int star         = command | 37 | bool;
-  final static int stereo       = command | 38
-    | setspecial | bool | negativeints;
+  final static int stereo       = command | 38 | setspecial | bool | negativeints;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40;
   final static int trace        = command | 41 | bool;
@@ -304,6 +303,7 @@ public class Token {
   final static int mode         = misc | 30;
   final static int direction    = misc | 31;
   final static int fps          = misc | 32;
+  final static int jmol         = misc | 33;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -533,6 +533,7 @@ public class Token {
     "sidechain",    new Token(sidechain,       "sidechain"),
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),
+    "jmol",         new Token(jmol,            "jmol"),
 
   };
 

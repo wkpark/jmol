@@ -31,12 +31,12 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Cylinder3D {
+class Cylinder3D {
 
   JmolViewer viewer;
   Graphics3D g3d;
 
-  public Cylinder3D(JmolViewer viewer, Graphics3D g3d) {
+  Cylinder3D(JmolViewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
     this.g3d = g3d;
   }
@@ -59,19 +59,19 @@ public class Cylinder3D {
   int sampleCount;
   private float[] samples = new float[32];
 
-  public void render(short colixA, short colixB, byte endcaps, int diameter,
+  void render(short colixA, short colixB, byte endcaps, int diameter,
                      int xA, int yA, int zA,
                      int dxB, int dyB, int dzB) {
     this.diameter = diameter;
     if (diameter <= 1) {
-      g3d.plotLineDelta(Colix.getArgb(colixA), Colix.getArgb(colixB),
+      g3d.plotLineDelta(g3d.getArgb(colixA), g3d.getArgb(colixB),
                         xA, yA, zA, dxB, dyB, dzB);
       return;
     }
     this.xA = xA; this.yA = yA; this.zA = zA;
     this.dxB = dxB; this.dyB = dyB; this.dzB = dzB;
-    this.shadesA = Colix.getShades(this.colixA = colixA);
-    this.shadesB = Colix.getShades(this.colixB = colixB);
+    this.shadesA = g3d.getShades(this.colixA = colixA);
+    this.shadesB = g3d.getShades(this.colixB = colixB);
     this.endcaps = endcaps;
     calcArgbEndcap(true);
 
@@ -311,14 +311,14 @@ public class Cylinder3D {
 
   int xTip, yTip, zTip;
 
-  public void renderCone(short colix, byte endcap, int diameter,
+  void renderCone(short colix, byte endcap, int diameter,
                          int xA, int yA, int zA,
                          int xTip, int yTip, int zTip) {
     dxB = (this.xTip = xTip) - (this.xA = xA);
     dyB = (this.yTip = yTip) - (this.yA = yA);
     dzB = (this.zTip = zTip) - (this.zA = zA);
     
-    shadesA = Colix.getShades(this.colixA = colix);
+    shadesA = g3d.getShades(this.colixA = colix);
     int intensityTip = viewer.calcIntensity(dxB, dyB, -dzB);
     g3d.plotPixelClipped(shadesA[intensityTip], xTip, yTip, zTip);
 

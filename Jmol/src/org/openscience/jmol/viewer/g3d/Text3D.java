@@ -34,7 +34,7 @@ import java.awt.Graphics;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
 
-public class Text3D {
+class Text3D {
   /*
     we have a few problems here
     a message is probably going to vary in size with z depth
@@ -58,7 +58,7 @@ public class Text3D {
   int size;
   int[] bitmap;
 
-  public Text3D(String text, Font font, Platform3D platform) {
+  Text3D(String text, Font font, Platform3D platform) {
     calcMetrics(text, font, platform);
     platform.checkOffscreenSize(width, height);
     renderOffscreen(text, font, platform);
@@ -193,8 +193,8 @@ public class Text3D {
     return text3d;
   }
 
-  public static void plot(int x, int y, int z, int argb,
-                          String text, Font font, Graphics3D g3d) {
+  static void plot(int x, int y, int z, int argb,
+                   String text, Font font, Graphics3D g3d) {
     Text3D text25d = getText3D(text, font, g3d.platform);
     int[] bitmap = text25d.bitmap;
     int textWidth = text25d.width;

@@ -24,10 +24,10 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
-import org.openscience.jmol.viewer.g3d.Colix;
+import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 public class Frank extends SelectionIndependentShape {
   void initShape() {
-    colix = Colix.GRAY;
+    colix = Graphics3D.GRAY;
   }
 }

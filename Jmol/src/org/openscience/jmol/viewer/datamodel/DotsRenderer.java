@@ -27,8 +27,6 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.g3d.Shade3D;
 import java.awt.Rectangle;
 
 import java.util.Hashtable;

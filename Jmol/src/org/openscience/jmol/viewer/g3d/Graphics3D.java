@@ -176,7 +176,7 @@ final public class Graphics3D {
   }
 
   public void setColix(short colix) {
-    argbCurrent = Colix.getArgb(colix);
+    argbCurrent = getArgb(colix);
   }
 
   int[] imageBuf = new int[0];
@@ -215,7 +215,7 @@ final public class Graphics3D {
     if (z < slab)
       return;
     int r = (diameter + 1) / 2;
-    argbCurrent = Colix.getArgb(colix);
+    argbCurrent = getArgb(colix);
     if ((x >= r && x + r < width) && (y >= r && y + r < height)) {
       switch (diameter) {
       case 2:
@@ -250,7 +250,7 @@ final public class Graphics3D {
     if (diameter == 0 || z < slab)
       return;
     int r = (diameter + 1) / 2;
-    argbCurrent = Colix.getArgb(colixFill);
+    argbCurrent = getArgb(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, true);
       circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
@@ -265,7 +265,7 @@ final public class Graphics3D {
     if (diameter == 0 || z < slab)
       return;
     int r = (diameter + 1) / 2;
-    argbCurrent = Colix.getArgb(colixFill);
+    argbCurrent = getArgb(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter, false);
     } else {
@@ -289,7 +289,7 @@ final public class Graphics3D {
   }
 
   public void drawRect(short colix, int x, int y, int width, int height) {
-    argbCurrent = Colix.getArgb(colix);
+    argbCurrent = getArgb(colix);
     int xRight = x + width;
     drawLine(x, y, 0, xRight, y, 0);
     int yBottom = y + height;
@@ -302,7 +302,7 @@ final public class Graphics3D {
                          int xBaseline, int yBaseline, int z) {
     if (z < slab)
       return;
-    argbCurrent = Colix.getArgb(colix);
+    argbCurrent = getArgb(colix);
     Text3D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(), z,
                 argbCurrent, str, fontCurrent, this);
   }
@@ -357,20 +357,20 @@ final public class Graphics3D {
 
   public void drawDashedLine(short colix, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = Colix.getArgb(colix);
+    int argb = getArgb(colix);
     line3d.drawDashedLine(argb, argb, run, rise, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawDottedLine(short colix,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = Colix.getArgb(colix);
+    int argb = getArgb(colix);
     line3d.drawDashedLine(argb, argb, 2, 1, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawDashedLine(short colix1, short colix2, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
         
-    line3d.drawDashedLine(Colix.getArgb(colix1), Colix.getArgb(colix2),
+    line3d.drawDashedLine(getArgb(colix1), getArgb(colix2),
                           run, rise, x1, y1, z1, x2, y2, z2);
   }
   
@@ -382,7 +382,7 @@ final public class Graphics3D {
   }
 
   public void drawLine(short colix, Point3i pointA, Point3i pointB) {
-    int argb = Colix.getArgb(colix);
+    int argb = getArgb(colix);
     line3d.drawLine(argb, argb,
                     pointA.x, pointA.y, pointA.z,
                     pointB.x, pointB.y, pointB.z);
@@ -394,7 +394,7 @@ final public class Graphics3D {
 
   public void drawDashedLine(short colix, int run, int rise,
                              Point3i pointA, Point3i pointB) {
-    int argb = Colix.getArgb(colix);
+    int argb = getArgb(colix);
     line3d.drawDashedLine(argb, argb, run, rise,
                           pointA.x, pointA.y, pointA.z,
                           pointB.x, pointB.y, pointB.z);
@@ -412,13 +412,13 @@ final public class Graphics3D {
 
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb = Colix.getArgb(colix);
+    int argb = getArgb(colix);
     line3d.drawLine(argb, argb, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(short colix1, short colix2,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(Colix.getArgb(colix1), Colix.getArgb(colix2),
+    line3d.drawLine(getArgb(colix1), getArgb(colix2),
                     x1, y1, z1, x2, y2, z2);
   }
   
@@ -466,8 +466,8 @@ final public class Graphics3D {
                                 Point3i screenC, Point3i screenD) {
     fillTriangle(argb, screenA, screenB, screenC);
     fillTriangle(argb, screenA, screenC, screenD);
- }
-
+  }
+  
   public void fillTriangle(int argb, Point3i screenA,
                            Point3i screenB, Point3i screenC) {
     argbCurrent = argb;
@@ -483,17 +483,17 @@ final public class Graphics3D {
   }
 
   int intensity = 0;
-
+  
   void calcSurfaceShade(short colix, Point3i screenA,
                         Point3i screenB, Point3i screenC) {
-    argbCurrent = Colix.getShades(colix)[intensity];
+    argbCurrent = getShades(colix)[intensity];
     intensity = (intensity + 10) & 63;
   }
 
 
   public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {
-    int argb = argbCurrent = Colix.getArgb(colix);
+    int argb = argbCurrent = getArgb(colix);
     line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
     line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
     line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
@@ -515,7 +515,7 @@ final public class Graphics3D {
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
     */
-    argbCurrent = Colix.getArgb(colix);
+    argbCurrent = getArgb(colix);
     int[] t;
     t = triangle3d.ax;
     t[0] = xA; t[1] = xB; t[2] = xC;
@@ -534,7 +534,7 @@ final public class Graphics3D {
                        xB + "," + yB + "," + zB + "->" +
                        xC + "," + yC + "," + zC);
     */
-    int argb = Colix.getArgb(colix);
+    int argb = getArgb(colix);
     line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
     line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
     line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
@@ -669,7 +669,7 @@ final public class Graphics3D {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
-      pbuf[offset] = Colix.getArgb(colix);
+      pbuf[offset] = getArgb(colix);
     }
   }
 
@@ -845,7 +845,7 @@ final public class Graphics3D {
   }
 
   public void plotPoints(short colix, int count, int[] coordinates) {
-    int argb = argbCurrent = Colix.getArgb(colix);
+    int argb = argbCurrent = getArgb(colix);
     for (int i = count * 3; i > 0; ) {
       int z = coordinates[--i];
       int y = coordinates[--i];
@@ -862,7 +862,7 @@ final public class Graphics3D {
 
   public void plotPoints(int count,
                          short colix, byte[] intensities, int[] coordinates) {
-    int[] shades = Colix.getShades(colix);
+    int[] shades = getShades(colix);
     for (int i = count * 3, j = count-1; i > 0; --j) {
       int z = coordinates[--i];
       int y = coordinates[--i];
@@ -872,7 +872,7 @@ final public class Graphics3D {
       int offset = y * width + x;
       if (z < zbuf[offset]) {
         zbuf[offset] = (short)z;
-        //        pbuf[offset] = Colix.getArgb(colix);
+        //        pbuf[offset] = getArgb(colix);
         pbuf[offset] = shades[intensities[j]];
       }
     }
@@ -882,5 +882,116 @@ final public class Graphics3D {
     pbuf[offset] =((((pbuf[offset] >> 1) & 0x007F7F7F) +
                     ((argb >> 1) & 0xFF7F7F7F)) |
                    (argb & 0xFF010101));
+  }
+
+  public final static short NULL = 0;
+  public final static short BLACK = 1;
+  public final static short ORANGE = 2;
+  public final static short PINK = 3;
+  public final static short BLUE = 4;
+  public final static short WHITE = 5;
+  public final static short AQUA = 6;
+  public final static short CYAN = 6;
+  public final static short RED = 7;
+  public final static short GREEN = 8;
+  public final static short GRAY = 9;
+  public final static short SILVER = 10;
+  public final static short LIGHTGRAY = 10;
+  public final static short LIME = 11;
+  public final static short MAROON = 12;
+  public final static short NAVY = 13;
+  public final static short OLIVE = 14;
+  public final static short PURPLE = 15;
+  public final static short TEAL = 16;
+  public final static short MAGENTA = 17;
+  public final static short FUCHSIA = 17;
+  public final static short YELLOW = 18;
+
+  public int getArgb(short colix) {
+    return Colix.getArgb(colix >= 0 ? colix : changableColixMap[-colix]);
+  }
+
+  public int[] getShades(short colix) {
+    return Colix.getShades(colix >= 0 ? colix : changableColixMap[-colix]);
+  }
+
+  public short getColix(int argb) {
+    return Colix.getColix(argb);
+  }
+
+  public short getColix(Color color) {
+    return Colix.getColix(color);
+  }
+
+  public Color getColor(short colix) {
+    return Colix.getColor(colix >= 0 ? colix : changableColixMap[-colix]);
+  }
+
+  /****************************************************************
+   * changable colixes
+   * give me a short ID and a color, and I will give you a colix
+   * later, you can reassign the color if you want
+   ****************************************************************/
+
+  short[] changableColixMap = new short[16];
+
+  public short getChangableColix(short id, int argb) {
+    ++id; // to deal with 0;
+    if (id > changableColixMap.length) {
+      short[] t = new short[id + 16];
+      System.arraycopy(changableColixMap, 0, t, 0, changableColixMap.length);
+      changableColixMap = t;
+    }
+    if (changableColixMap[id] == 0)
+      changableColixMap[id] = getColix(argb);
+    return (short)-id;
+  }
+
+  public void changeColixArgb(short id, int argb) {
+    ++id;
+    if (id < changableColixMap.length && changableColixMap[id] != 0)
+      changableColixMap[id] = getColix(argb);
+  }
+
+  public void flushShadesAndImageCaches() {
+    Colix.flushShades();
+    Sphere3D.flushImageCache();
+  }
+
+  public final static byte shadeMax = Shade3D.shadeMax;
+  public final static byte shadeNormal = Shade3D.shadeNormal;
+  public final static byte intensitySpecularSurfaceLimit =
+    Shade3D.intensitySpecularSurfaceLimit;
+
+  public void setSpecular(boolean specular) {
+    Shade3D.setSpecular(specular);
+  }
+
+  public boolean getSpecular() {
+    return Shade3D.getSpecular();
+  }
+
+  public void setSpecularPower(int specularPower) {
+    Shade3D.setSpecularPower(specularPower);
+  }
+
+  public void setAmbientPercent(int ambientPercent) {
+    Shade3D.setAmbientPercent(ambientPercent);
+  }
+
+  public void setDiffusePercent(int diffusePercent) {
+    Shade3D.setDiffusePercent(diffusePercent);
+  }
+
+  public void setSpecularPercent(int specularPercent) {
+    Shade3D.setSpecularPercent(specularPercent);
+  }
+
+  public void setLightsourceZ(float dist) {
+    Shade3D.setLightsourceZ(dist);
+  }
+
+  public int calcIntensityNormalized(float x, float y, float z) {
+    return Shade3D.calcIntensityNormalized(x, y, z);
   }
 }

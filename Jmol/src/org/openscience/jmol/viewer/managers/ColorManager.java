@@ -1,3 +1,4 @@
+
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -38,15 +39,39 @@ import javax.vecmath.Point3f;
 public class ColorManager {
 
   JmolViewer viewer;
-  JmolModelAdapter modelAdapter;
+  Graphics3D g3d;
+  int[] argbsCpk;
 
   public byte paletteDefault = JmolConstants.PALETTE_CPK;
 
-  public ColorManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
+  public ColorManager(JmolViewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
-    this.modelAdapter = modelAdapter;
-    if (JmolConstants.argbsCpk.length != JmolConstants.atomicNumberMax)
-      System.out.println("WARNING! argbsCpk.length not consistent");
+    this.g3d = g3d;
+    argbsCpk = JmolConstants.argbsCpk;
+  }
+
+  public void setColorScheme(String colorScheme) {
+    System.out.println("setting color scheme to:" + colorScheme);
+    if (colorScheme.equals("jmol")) {
+      argbsCpk = JmolConstants.argbsCpk;
+    } else if (colorScheme.equals("rasmol")) {
+      int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
+      argbsCpk = new int[JmolConstants.argbsCpk.length];
+      for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
+        argbsCpk[i] = argb;
+      for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0; ) {
+        argb = JmolConstants.argbsCpkRasmol[i];
+        int atomNo = argb >> 24;
+        argb |= 0xFF000000;
+        argbsCpk[atomNo] = argb;
+        g3d.changeColixArgb((short)atomNo, argb);
+      }
+    } else {
+      System.out.println("unrecognized color scheme");
+      return;
+    }
+    for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
+      g3d.changeColixArgb((short)i, argbsCpk[i]);
   }
 
   public void setPaletteDefault(byte palette) {
@@ -58,11 +83,11 @@ public class ColorManager {
   }
 
   public Color colorSelection = Color.orange;
-  public short colixSelection = Colix.ORANGE;
+  public short colixSelection = Graphics3D.ORANGE;
 
   public void setColorSelection(Color c) {
     colorSelection = c;
-    colixSelection = Colix.getColix(c);
+    colixSelection = g3d.getColix(c);
   }
 
   public Color getColorSelection() {
@@ -74,7 +99,7 @@ public class ColorManager {
   }
 
   public Color colorRubberband = Color.pink;
-  public short colixRubberband = Colix.PINK;
+  public short colixRubberband = Graphics3D.PINK;
   public Color getColorRubberband() {
     return colorRubberband;
   }
@@ -92,107 +117,107 @@ public class ColorManager {
   public short colixBond = 0;
   public void setColorBond(Color c) {
     colorBond = c;
-    colixBond = Colix.getColix(c);
+    colixBond = g3d.getColix(c);
   }
 
   public Color colorHbond = null;
   public short colixHbond = 0;
   public void setColorHbond(Color c) {
     colorHbond = c;
-    colixHbond = Colix.getColix(c);
+    colixHbond = g3d.getColix(c);
   }
 
   public Color colorSsbond = null;
   public short colixSsbond = 0;
   public void setColorSsbond(Color c) {
     colorSsbond = c;
-    colixSsbond = Colix.getColix(c);
+    colixSsbond = g3d.getColix(c);
   }
 
   public Color colorLabel = Color.black;
-  public short colixLabel = Colix.BLACK;
+  public short colixLabel = Graphics3D.BLACK;
   public void setColorLabel(Color color) {
     colorLabel = color;
-    colixLabel = Colix.getColix(color);
+    colixLabel = g3d.getColix(color);
   }
 
-  private final static short colixDotsConcaveDefault = Colix.GREEN;
-  private final static short colixDotsSaddleDefault = Colix.BLUE;
+  private final static short colixDotsConcaveDefault = Graphics3D.GREEN;
+  private final static short colixDotsSaddleDefault = Graphics3D.BLUE;
 
   public short colixDotsConvex = 0;
   public short colixDotsConcave = colixDotsConcaveDefault;
   public short colixDotsSaddle = colixDotsSaddleDefault;
 
   public void setColorDotsConvex(Color color) {
-    colixDotsConvex = Colix.getColix(color);
+    colixDotsConvex = g3d.getColix(color);
   }
   public void setColorDotsConcave(Color color) {
-    colixDotsConcave = Colix.getColix(color);
+    colixDotsConcave = g3d.getColix(color);
     if (colixDotsConcave == 0)
       colixDotsConcave = colixDotsConcaveDefault;
   }
   public void setColorDotsSaddle(Color color) {
-    colixDotsSaddle = Colix.getColix(color);
+    colixDotsSaddle = g3d.getColix(color);
     if (colixDotsSaddle == 0)
       colixDotsSaddle = colixDotsSaddleDefault;
   }
 
   public Color colorDistance = Color.black;
-  public short colixDistance = Colix.BLACK;
+  public short colixDistance = Graphics3D.BLACK;
   public void setColorDistance(Color c) {
     colorDistance = c;
-    colixDistance = Colix.getColix(c);
+    colixDistance = g3d.getColix(c);
   }
 
   public Color colorAngle = Color.black;
-  public short colixAngle = Colix.BLACK;
+  public short colixAngle = Graphics3D.BLACK;
   public void setColorAngle(Color c) {
     colorAngle = c;
-    colixAngle = Colix.getColix(c);
+    colixAngle = g3d.getColix(c);
   }
 
   public Color colorDihedral = Color.black;
-  public short colixDihedral = Colix.BLACK;
+  public short colixDihedral = Graphics3D.BLACK;
   public void setColorDihedral(Color c) {
     colorDihedral = c;
-    colixDihedral = Colix.getColix(c);
+    colixDihedral = g3d.getColix(c);
   }
 
   public void setColorMeasurement(Color c) {
     colorDistance = colorAngle = colorDihedral = c;
-    colixDistance = colixAngle = colixDihedral = Colix.getColix(c);
+    colixDistance = colixAngle = colixDihedral = g3d.getColix(c);
   }
 
   public Color colorBackground = Color.white;
-  public short colixBackground = Colix.WHITE;
+  public short colixBackground = Graphics3D.WHITE;
   public void setColorBackground(Color bg) {
     if (bg == null)
       colorBackground = Color.getColor("colorBackground");
     else
       colorBackground = bg;
-    colixBackground = Colix.getColix(colorBackground);
+    colixBackground = g3d.getColix(colorBackground);
   }
 
   public Color colorAxes = Color.gray;
-  public short colixAxes = Colix.GRAY;
+  public short colixAxes = Graphics3D.GRAY;
   public void setColorAxes(Color color) {
     colorAxes = color;
-    colixAxes = Colix.getColix(color);
+    colixAxes = g3d.getColix(color);
   }
 
   public Color colorAxesText = Color.gray;
-  public short colixAxesText = Colix.GRAY;
+  public short colixAxesText = Graphics3D.GRAY;
   public void setColorAxesText(Color color) {
     colorAxesText = color;
-    colixAxesText = Colix.getColix(color);
+    colixAxesText = g3d.getColix(color);
   }
 
   // FIXME NEEDSWORK -- arrow vector stuff
   public Color colorVector = Color.black;
-  public short colixVector = Colix.BLACK;
+  public short colixVector = Graphics3D.BLACK;
   public void setColorVector(Color c) {
     colorVector = c;
-    colixVector = Colix.getColix(c);
+    colixVector = g3d.getColix(c);
   }
   public Color getColorVector() {
     return colorVector;
@@ -262,8 +287,10 @@ public class ColorManager {
     PdbAtom pdbatom = atom.pdbAtom;
     switch (palette) {
     case JmolConstants.PALETTE_CPK:
-      argb = JmolConstants.argbsCpk[atom.atomicNumber];
-      break;
+      // Note that CPK colors can be changed based upon user preference
+      // therefore, a changable colix is allocated in this case
+      short id = atom.atomicNumber;
+      return g3d.getChangableColix(id, argbsCpk[id]);
     case JmolConstants.PALETTE_CHARGE:
       int i = atom.getAtomicCharge() - JmolConstants.CHARGE_MIN;
       argb = JmolConstants.argbsCharge[i];
@@ -299,8 +326,8 @@ public class ColorManager {
       break;
     }
     if (argb == 0)
-      return Colix.PINK;
-    return Colix.getColix(argb);
+      return Graphics3D.PINK;
+    return g3d.getColix(argb);
   }
 
   public void flushCachedColors() {
@@ -320,54 +347,53 @@ public class ColorManager {
       vRotated.z >= 0
       ? calcIntensity(-vRotated.x, -vRotated.y, vRotated.z)
       : calcIntensity(vRotated.x, vRotated.y, -vRotated.z);
-    if (intensity > Shade3D.intensitySpecularSurfaceLimit)
-      intensity = Shade3D.intensitySpecularSurfaceLimit;
+    if (intensity > Graphics3D.intensitySpecularSurfaceLimit)
+      intensity = Graphics3D.intensitySpecularSurfaceLimit;
     return intensity;
   }
 
   private void flushCaches() {
-    Colix.flushShades();
-    Sphere3D.flushImageCache();
+    g3d.flushShadesAndImageCaches();
     viewer.refresh();
   }
 
   public void setSpecular(boolean specular) {
-    Shade3D.setSpecular(specular);
+    g3d.setSpecular(specular);
     flushCaches();
   }
 
   public boolean getSpecular() {
-    return Shade3D.getSpecular();
+    return g3d.getSpecular();
   }
 
   public void setSpecularPower(int specularPower) {
-    Shade3D.setSpecularPower(specularPower);
+    g3d.setSpecularPower(specularPower);
     flushCaches();
   }
 
   public void setAmbientPercent(int ambientPercent) {
-    Shade3D.setAmbientPercent(ambientPercent);
+    g3d.setAmbientPercent(ambientPercent);
     flushCaches();
   }
 
   public void setDiffusePercent(int diffusePercent) {
-    Shade3D.setDiffusePercent(diffusePercent);
+    g3d.setDiffusePercent(diffusePercent);
     flushCaches();
   }
 
   public void setSpecularPercent(int specularPercent) {
-    Shade3D.setSpecularPercent(specularPercent);
+    g3d.setSpecularPercent(specularPercent);
     flushCaches();
   }
 
   public void setLightsourceZ(float dist) {
-    Shade3D.setLightsourceZ(dist);
+    g3d.setLightsourceZ(dist);
     flushCaches();
   }
 
   public int calcIntensity(float x, float y, float z) {
     float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
-    return Shade3D.calcIntensityNormalized(x/magnitude, y/magnitude,
-                                           z/magnitude);
+    return g3d.calcIntensityNormalized(x/magnitude, y/magnitude,
+                                       z/magnitude);
   }
 }

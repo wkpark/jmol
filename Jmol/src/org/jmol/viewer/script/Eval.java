@@ -2928,6 +2928,9 @@ public class Eval implements Runnable {
     case Token.center:
       showCenter();
       break;
+    case Token.file:
+      showFile();
+      break;
 
       // not implemented
     case Token.zoom:
@@ -2978,6 +2981,10 @@ public class Eval implements Runnable {
                  viewer.modelHasVibrationVectors(i));
       printProperties(viewer.getModelProperties(i));
     }
+  }
+
+  void showFile() {
+    showString(viewer.getCurrentFileAsString());
   }
 
   void printProperties(Properties props) {

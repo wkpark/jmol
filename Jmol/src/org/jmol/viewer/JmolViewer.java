@@ -998,6 +998,13 @@ final public class JmolViewer {
     return null;
   }
 
+  public String getCurrentFileAsString() {
+    String fileName = modelManager.getCurrentFileName();
+    if (fileName == null)
+      return null;
+    return fileManager.getFileAsString(fileName);
+  }
+
    /////////////////////////////////////////////////////////////////
    // delegated to ModelManager
    /////////////////////////////////////////////////////////////////

@@ -244,6 +244,7 @@ public class Token {
   final static int axisangle    = showparam | 13;
   final static int transform    = showparam | 14;
   final static int orientation  = showparam | 15;
+  final static int file         = showparam | 16;
 
   // atom expression operators
   final static int leftparen    = expression |  0;
@@ -508,6 +509,7 @@ public class Token {
     "axisangle",    new Token(axisangle,       "axisangle"),
     "transform",    new Token(transform,       "transform"),
     "orientation",  new Token(orientation,     "orientation"),
+    "file",         new Token(file,            "file"),
 
     // atom expressions
     "(",            new Token(leftparen, "("),

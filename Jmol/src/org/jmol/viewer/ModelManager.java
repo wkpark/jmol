@@ -92,6 +92,10 @@ class ModelManager {
     return modelSetName;
   }
 
+  String getCurrentFileName() {
+    return fullPathName;
+  }
+
   Properties getModelSetProperties() {
     return frame == null ? null : frame.getModelSetProperties();
   }

@@ -113,6 +113,35 @@ class FileManager {
     fileOpenThread.run();
   }
 
+  String getFileAsString(String name) {
+    System.out.println("FileManager.getFileAsString(" + name + ")");
+    Object t = getInputStreamOrErrorMessageFromName(nameAsGiven);
+    byte[] abMagic = new byte[4];
+    if (t instanceof String)
+      return "Error:" + t;
+    try {
+      BufferedInputStream bis = new BufferedInputStream((InputStream)t, 8192);
+      InputStream is = bis;
+      bis.mark(5);
+      int countRead = 0;
+      countRead = bis.read(abMagic, 0, 4);
+      bis.reset();
+      if (countRead == 4 &&
+          abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B)
+        is = new GZIPInputStream(bis);
+      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      StringBuffer sb = new StringBuffer(8192);
+      String line;
+      while ((line = br.readLine()) != null) {
+        sb.append(line);
+        sb.append('\n');
+      }
+      return "" + sb;
+      } catch (IOException ioe) {
+        return ioe.getMessage();
+      }
+  }
+
   Object waitForClientFileOrErrorMessage() {
     Object clientFile = null;
     if (fileOpenThread != null) {

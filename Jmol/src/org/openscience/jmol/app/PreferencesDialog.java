@@ -76,8 +76,7 @@ import javax.swing.border.TitledBorder;
 
 public class PreferencesDialog extends JDialog implements ActionListener {
 
-  private static boolean AutoBond;
-  private static boolean Perspective;
+  private static boolean autoBond;
   private static boolean showHydrogens;
   private static boolean showVectors;
   private static boolean showMeasurements;
@@ -89,7 +88,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean isLabelAtomColor;
   private static boolean isBondAtomColor;
   private static Color colorBackground;
-  private static Color colorOutline;
   private static Color colorSelection;
   private static Color colorText;
   private static Color colorBond;
@@ -97,12 +95,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static byte styleAtom;
   private static byte modeAtomColorProfile;
   private static byte styleLabel;
-  private static String AtomPropsMode;
   private static byte styleBond;
   private static float minBondDistance;
   private static float bondTolerance;
   private static short marBond;
-  private static double FieldOfView;
   private static int percentVdwAtom;
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
@@ -119,7 +115,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbOrientationRasMolChime;
-  private JCheckBox cbDarkerOutline, cbIsLabelAtomColor, cbIsBondAtomColor;
+  private JCheckBox cbIsLabelAtomColor, cbIsBondAtomColor;
   private static Properties props;
 
   // The actions:
@@ -151,19 +147,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("orientationRasMolChime", "true");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
-    props.put("Perspective", "false");
-    props.put("FieldOfView", "20.0");
     props.put("styleAtom", "2");
     props.put("styleBond", "2");
     props.put("styleLabel", "0");
-    props.put("AtomPropsMode", "");
     props.put("percentVdwAtom", "20");
-    props.put("AutoBond", "true");
+    props.put("autoBond", "true");
     props.put("marBond", "100");
     props.put("minBondDistance", "0.40");
     props.put("bondTolerance", "0.45");
     props.put("colorBackground", "16777215");
-    props.put("colorOutline", "0");
     props.put("colorSelection", "16762880");
     props.put("colorText", "0");
     props.put("colorBond", "0");
@@ -211,9 +203,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    resetButton = new JButton(jrh.getString("Prefs.resetLabel"));
-    resetButton.addActionListener(this);
-    buttonPanel.add(resetButton);
+    jmolDefaultsButton = new JButton(jrh.getString("Prefs.jmolDefaultsLabel"));
+    jmolDefaultsButton.addActionListener(this);
+    buttonPanel.add(jmolDefaultsButton);
+
+    rasmolDefaultsButton =
+      new JButton(jrh.getString("Prefs.rasmolDefaultsLabel"));
+    rasmolDefaultsButton.addActionListener(this);
+    buttonPanel.add(rasmolDefaultsButton);
 
     cancelButton = new JButton(jrh.getString("Prefs.cancelButton"));
     cancelButton.addActionListener(this);
@@ -418,37 +415,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     constraints.anchor = GridBagConstraints.WEST;
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     atomPanel.add(aLabel, constraints);
-
-    JLabel propertyLabelsLabel = new JLabel(JmolResourceHandler.getInstance()
-          .getString("Prefs.propertyLabelsLabel"));
-    constraints = new GridBagConstraints();
-    constraints.anchor = GridBagConstraints.EAST;
-    atomPanel.add(propertyLabelsLabel, constraints);
-    aProps = new JComboBox();
-    aProps.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.apPChoice"));
-    aProps.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.apCChoice"));
-    aProps.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.apNChoice"));
-    aProps.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.apUChoice"));
-    aProps.setSelectedItem("");
-    //    aProps.setSelectedItem(viewer.getPropertyStyleString());
-    aProps.addItemListener(new ItemListener() {
-
-      public void itemStateChanged(ItemEvent e) {
-
-        JComboBox source = (JComboBox) e.getSource();
-        AtomPropsMode = (String) source.getSelectedItem();
-        // viewer.setPropertyStyleString(AtomPropsMode);
-        props.put("AtomPropsMode", AtomPropsMode);
-      }
-    });
-    constraints = new GridBagConstraints();
-    constraints.anchor = GridBagConstraints.WEST;
-    constraints.gridwidth = GridBagConstraints.REMAINDER;
-    atomPanel.add(aProps, constraints);
 
     JPanel sfPanel = new JPanel();
     sfPanel.setLayout(new BorderLayout());
@@ -1099,8 +1065,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   void initVariables() {
 
-    AutoBond = Boolean.getBoolean("AutoBond");
-    Perspective = Boolean.getBoolean("Perspective");
+    autoBond = Boolean.getBoolean("autoBond");
     showHydrogens = Boolean.getBoolean("showHydrogens");
     showVectors = Boolean.getBoolean("showVectors");
     showMeasurements = Boolean.getBoolean("showMeasurements");
@@ -1110,7 +1075,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
     orientationRasMolChime = Boolean.getBoolean("orientationRasMolChime");
     colorBackground = Color.getColor("colorBackground");
-    colorOutline = Color.getColor("colorOutline");
     colorSelection = Color.getColor("colorSelection");
     isLabelAtomColor = Boolean.getBoolean("isLabelAtomColor");
     colorText = Color.getColor("colorText");
@@ -1119,7 +1083,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     colorVector = Color.getColor("colorVector");
     styleAtom = (byte)Integer.getInteger("styleAtom").intValue();
     styleLabel = (byte)Integer.getInteger("styleLabel").intValue();
-    AtomPropsMode = props.getProperty("AtomPropsMode");
     styleBond = (byte)Integer.getInteger("styleBond").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
@@ -1128,7 +1091,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bondTolerance =
       new Float(props.getProperty("bondTolerance")).floatValue();
     marBond = Short.parseShort(props.getProperty("marBond"));
-    FieldOfView = new Double(props.getProperty("FieldOfView")).doubleValue();
     percentVdwAtom =
       Integer.parseInt(props.getProperty("percentVdwAtom"));
     VibrateAmplitudeScale =
@@ -1150,7 +1112,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setColorBackground(colorBackground);
     viewer.setMinBondDistance(minBondDistance);
     viewer.setBondTolerance(bondTolerance);
-    viewer.setAutoBond(AutoBond);
+    viewer.setAutoBond(autoBond);
     viewer.setShowHydrogens(showHydrogens);
     viewer.setShowVectors(showVectors);
     viewer.setShowMeasurements(showMeasurements);
@@ -1245,14 +1207,17 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   };
 
   private JButton applyButton;
-  private JButton resetButton;
+  private JButton jmolDefaultsButton;
+  private JButton rasmolDefaultsButton;
   private JButton cancelButton;
   private JButton okButton;
   
   public void actionPerformed(ActionEvent event) {
     if (event.getSource() == applyButton) {
       save();
-    } else if (event.getSource() == resetButton) {
+    } else if (event.getSource() == jmolDefaultsButton) {
+      ResetPressed();
+    } else if (event.getSource() == rasmolDefaultsButton) {
       ResetPressed();
     } else if (event.getSource() == cancelButton) {
       cancel();

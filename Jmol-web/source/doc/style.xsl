@@ -96,7 +96,7 @@
     </head>
 
     <body>
-      <script>jmolInitialize("jmol");</script>
+      <script>jmolInitialize("[root]/jmol");</script>
       <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
           <td valign="top">

@@ -79,6 +79,18 @@ class JmolResourceHandler {
     return instance;
   }
 
+  public static String getStringX(String key) {
+    return getInstance().getString(key);
+  }
+
+  public static ImageIcon getIconX(String key) {
+    return getInstance().getIcon(key);
+  }
+
+  public static String translateX(String key) {
+    return getInstance().translate(key);
+  }
+
   public synchronized ImageIcon getIcon(String key) {
 
     String resourceName = null;
@@ -102,7 +114,7 @@ class JmolResourceHandler {
 
   public synchronized String getString(String key) {
 
-    String result = null;
+    String result = key;
     try {
       result = stringsResourceBundle.getString(key);
     } catch (MissingResourceException e) {

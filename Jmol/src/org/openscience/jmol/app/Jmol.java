@@ -117,8 +117,6 @@ public class Jmol extends JPanel {
 
   private static JFrame consoleframe;
 
-  private JmolResourceHandler resourceHandler;
-
   static {
     if (System.getProperty("javawebstart.version") != null) {
 
@@ -144,9 +142,6 @@ public class Jmol extends JPanel {
     this.frame = frame;
     numWindows++;
     
-    // get a resource handler
-    resourceHandler = JmolResourceHandler.getInstance();
-
     frame.setTitle("Jmol");
     frame.setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());
@@ -278,7 +273,7 @@ public class Jmol extends JPanel {
     frame.pack();
     frame.setSize(500, 550);
     ImageIcon jmolIcon =
-      JmolResourceHandler.getInstance().getIcon("icon");
+      JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
     // splash.showStatus(jrh.translate("Launching main frame..."));
@@ -286,12 +281,13 @@ public class Jmol extends JPanel {
   }
 
   public static Jmol getJmol(JFrame frame) {
-    JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-    ImageIcon splash_image = jrh.getIcon("splash");
+    ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
     Splash splash = new Splash(frame, splash_image);
     splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-    splash.showStatus(jrh.translate("Creating main window..."));
-    splash.showStatus(jrh.translate("Initializing Swing..."));
+    splash.showStatus(JmolResourceHandler
+                      .translateX("Creating main window..."));
+    splash.showStatus(JmolResourceHandler.
+                      translateX("Initializing Swing..."));
     try {
         UIManager
         .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
@@ -301,7 +297,7 @@ public class Jmol extends JPanel {
     
     screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
-    splash.showStatus(jrh.translate("Initializing Jmol..."));
+    splash.showStatus(JmolResourceHandler.translateX("Initializing Jmol..."));
     
     // cache the current directory to speed up Jmol window creation
     currentDir = getUserDirectory();
@@ -392,8 +388,7 @@ public class Jmol extends JPanel {
       if (scriptFilename != null) {
         System.out.println("Executing script: " + scriptFilename);
         jmol.splash
-          .showStatus(JmolResourceHandler.getInstance()
-                      .getString("Executing script..."));
+          .showStatus(JmolResourceHandler.getStringX("Executing script..."));
         jmol.viewer.evalFile(scriptFilename);
       }
     } catch (Throwable t) {
@@ -432,7 +427,7 @@ public class Jmol extends JPanel {
       if (splash == null) {
           System.out.println(message);
       } else {
-          splash.showStatus(resourceHandler.translate(message));
+          splash.showStatus(JmolResourceHandler.translateX(message));
       }
   }
   
@@ -501,22 +496,21 @@ public class Jmol extends JPanel {
     } else {
       mi = guimap.newJMenuItem(cmd);
     }
-    String mnem =
-      JmolResourceHandler.getInstance().getString(cmd + "Mnemonic");
+    String mnem = JmolResourceHandler.getStringX(cmd + "Mnemonic");
     if (mnem != null) {
       char mn = mnem.charAt(0);
       mi.setMnemonic(mn);
     }
     
     ImageIcon f =
-      JmolResourceHandler.getInstance().getIcon(cmd + "Image");
+      JmolResourceHandler.getIconX(cmd + "Image");
     if (f != null) {
       mi.setHorizontalTextPosition(JButton.RIGHT);
       mi.setIcon(f);
     }
     
     if (cmd.endsWith("Script")) {
-      mi.setActionCommand(JmolResourceHandler.getInstance().getString(cmd));
+      mi.setActionCommand(JmolResourceHandler.getStringX(cmd));
       mi.addActionListener(executeScriptAction);
     } else {
       mi.setActionCommand(cmd);
@@ -561,7 +555,7 @@ public class Jmol extends JPanel {
 
     toolbar = new JToolBar();
     String[] tool1Keys =
-      tokenize(JmolResourceHandler.getInstance().getString("toolbar"));
+      tokenize(JmolResourceHandler.getStringX("toolbar"));
     for (int i = 0; i < tool1Keys.length; i++) {
       if (tool1Keys[i].equals("-")) {
         toolbar.addSeparator();
@@ -595,10 +589,10 @@ public class Jmol extends JPanel {
   protected AbstractButton createToolbarButton(String key) {
 
     ImageIcon ii =
-      JmolResourceHandler.getInstance().getIcon(key + "Image");
+      JmolResourceHandler.getIconX(key + "Image");
     AbstractButton b = new JButton(ii);
     String isToggleString =
-      JmolResourceHandler.getInstance().getString(key + "Toggle");
+      JmolResourceHandler.getStringX(key + "Toggle");
     if (isToggleString != null) {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
@@ -607,7 +601,7 @@ public class Jmol extends JPanel {
           buttonRotate = b;
         toolbarButtonGroup.add(b);
         String isSelectedString =
-          JmolResourceHandler.getInstance().getString(key + "ToggleSelected");
+          JmolResourceHandler.getStringX(key + "ToggleSelected");
         if (isSelectedString != null) {
           boolean isSelected =
             Boolean.valueOf(isSelectedString).booleanValue();
@@ -628,7 +622,7 @@ public class Jmol extends JPanel {
       b.setEnabled(false);
     }
 
-    String tip = JmolResourceHandler.getInstance().getString(key + "Tip");
+    String tip = JmolResourceHandler.getStringX(key + "Tip");
     if (tip != null) {
       b.setToolTipText(tip);
     }
@@ -685,7 +679,7 @@ public class Jmol extends JPanel {
 
   protected void addNormalMenuBar(JMenuBar menuBar) {
     String[] menuKeys =
-      tokenize(JmolResourceHandler.getInstance().getString("menubar"));
+      tokenize(JmolResourceHandler.getStringX("menubar"));
     for (int i = 0; i < menuKeys.length; i++) {
         if (menuKeys[i].equals("-")) {
             menuBar.add(Box.createHorizontalGlue());
@@ -710,7 +704,7 @@ public class Jmol extends JPanel {
           menuBar.add(m);
       }
       String mnem =
-        JmolResourceHandler.getInstance().getString(menuKey + "Mnemonic");
+        JmolResourceHandler.getStringX(menuKey + "Mnemonic");
       if (mnem != null) {
           char mn = mnem.charAt(0);
           m.setMnemonic(mn);
@@ -950,8 +944,8 @@ public class Jmol extends JPanel {
 
     OpenUrlAction() {
       super(openurlAction);
-      title = JmolResourceHandler.getInstance().getString("OpenUrl.title");
-      prompt = JmolResourceHandler.getInstance().getString("OpenUrl.prompt");
+      title = JmolResourceHandler.getStringX("OpenUrl.title");
+      prompt = JmolResourceHandler.getStringX("OpenUrl.prompt");
     }
 
     public void actionPerformed(ActionEvent e) {

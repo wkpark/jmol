@@ -87,15 +87,17 @@ public class Splash extends Window {
 
   public void showStatus(String message) {
 
-    status = message;
-    Graphics g = this.getGraphics();
-    if (g == null) {
-      return;
+    if (message != null) {
+      status = message;
+      Graphics g = this.getGraphics();
+      if (g == null) {
+        return;
+      }
+      g.setColor(BORDERCOLOR);
+      g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
+      g.setColor(TEXTCOLOR);
+      g.drawString(status, BORDERSIZE, textY);
     }
-    g.setColor(BORDERCOLOR);
-    g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
-    g.setColor(TEXTCOLOR);
-    g.drawString(status, BORDERSIZE, textY);
   }
 
   class WindowListener extends WindowAdapter {

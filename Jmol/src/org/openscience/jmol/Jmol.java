@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.StringReader;
 import java.io.BufferedReader;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -118,7 +119,9 @@ class Jmol extends JPanel {
   static File UserPropsFile;
   static File UserAtypeFile;
   private static HistoryFile historyFile;
-  
+
+  Splash splash;
+
   public static HistoryFile getHistoryFile() {
     return historyFile;
   }
@@ -152,7 +155,7 @@ class Jmol extends JPanel {
   Jmol(Splash splash) {
 
     super(true);
-
+    this.splash = splash;
     splash.showStatus("Initializing Swing...");
     try {
       UIManager.setLookAndFeel(UIManager
@@ -256,18 +259,45 @@ class Jmol extends JPanel {
     addPropertyChangeListener(moleculeProperty, printAction);
   }
 
+// refactored by petermr for use outside Jmol
+
+	public static Jmol getJmol(JFrame frame) {
+		JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+	    ImageIcon splash_image = jrh.getIcon("Jmol.splash");
+        Splash splash = new Splash(frame, splash_image);
+	    splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+	    splash.showStatus("Creating main window...");
+	    frame.setTitle(jrh.getString("Jmol.Title"));
+	    frame.setBackground(Color.lightGray);
+	    frame.getContentPane().setLayout(new BorderLayout());
+	    splash.showStatus("Initializing Jmol...");
+	    Jmol window = new Jmol(splash);
+        frame.getContentPane().add("Center", window);
+	    frame.addWindowListener(new Jmol.AppCloser());
+	    frame.pack();
+	    frame.setSize(400, 400);
+        ImageIcon jmolIcon = JmolResourceHandler.getInstance().getIcon("Jmol.icon");
+        Image iconImage = jmolIcon.getImage();
+        frame.setIconImage(iconImage);
+        splash.showStatus("Launching main frame...");
+	    frame.show();
+	    return window;
+	}
+
   public static void main(String[] args) {
 
     // Read the first argument as a file name:
     File initialFile = null;
     File script = null;
+// PMR
+		String cmlString = null;
 
     /* to be compatible with current arguments:
               1 argument  -> filename of file to read
               2 arguments -> -script <rasmol.script>
     **/
 
-    // System.out.println("Arguments:"); 
+    // System.out.println("Arguments:");
     // for (int i=0; i<args.length; i++) {
     //     System.out.println(args[i]);
     // }
@@ -285,10 +315,14 @@ class Jmol extends JPanel {
 
       /* Read only one argument as a file name for now: */
       String astring = args[0];
-      initialFile = new File(getUserDirectory(), astring);
-      if (!initialFile.exists()) {
-        System.out.println("File not found: " + initialFile.toString());
-        System.exit(1);
+  	  if (astring.equals("-test")) {
+		cmlString = "<molecule id=\"METHANOL\"><atomArray><stringArray builtin=\"id\">a1 a2 a3 a4 a5 a6</stringArray><stringArray builtin=\"elementType\">C O H H H H</stringArray><floatArray builtin=\"x3\" units=\"pm\">-0.748 0.558 -1.293 -1.263 -0.699 0.716</floatArray>					 <floatArray builtin=\"y3\" units=\"pm\">-0.015 0.420 0.202 0.754 -0.934 1.404</floatArray>					 <floatArray builtin=\"z3\" units=\"pm\">0.024 -0.278 -0.901 0.600 0.609 0.137</floatArray></atomArray></molecule>";
+	  } else {
+        initialFile = new File(getUserDirectory(), astring);
+        if (!initialFile.exists()) {
+          System.out.println("File not found: " + initialFile.toString());
+          System.exit(1);
+        }
       }
     }
 
@@ -299,37 +333,24 @@ class Jmol extends JPanel {
                 + "1.1.2 or higher version VM!!!");
       }
 
+// refactored by petermr
       frame = new JFrame();
-
-      ImageIcon splash_image = JmolResourceHandler.getInstance().getIcon("Jmol.splash");
-      Splash splash = new Splash(frame, splash_image);
-      splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-      splash.showStatus("Creating main window...");
-      frame.setTitle(JmolResourceHandler.getInstance().getString("Jmol.Title"));
-      frame.setBackground(Color.lightGray);
-      frame.getContentPane().setLayout(new BorderLayout());
-      splash.showStatus("Initializing Jmol...");
-      Jmol window = new Jmol(splash);
-      frame.getContentPane().add("Center", window);
-      frame.addWindowListener(new AppCloser());
-      frame.pack();
-      frame.setSize(500, 600);
-      ImageIcon jmolIcon = JmolResourceHandler.getInstance().getIcon("Jmol.icon");
-      Image iconImage = jmolIcon.getImage();
-      frame.setIconImage(iconImage);
-      splash.showStatus("Launching main frame...");
-      frame.show();
+      Jmol window = getJmol(frame);
 
       // Open a file if on is given as an argument
       if (initialFile != null) {
         window.openFile(initialFile, "LetJmolDetermine");
-      }
+// PMR
+			} else if (cmlString != null) {
+				window.readCML(cmlString);
+
+			}
 
       // Oke, by now it is time to execute the script
       if (script != null) {
         try {
           System.out.println("Executing script: " + script.toString());
-          splash.showStatus("Executing script...");
+          window.splash.showStatus("Executing script...");
           RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
           BufferedReader reader = new BufferedReader(new FileReader(script));
           String command = reader.readLine();
@@ -381,7 +402,7 @@ class Jmol extends JPanel {
 
     // I'd prefer that the console stay out of the way until requested,
     // so I'm commenting this line out for now...
-    // consoleframe.show();        
+    // consoleframe.show();
 
   }
 
@@ -394,7 +415,7 @@ class Jmol extends JPanel {
     if (theFile != null) {
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
       ChemFile newChemFile = null;
-      
+
       try {
         FileInputStream is = new FileInputStream(theFile);
 
@@ -424,10 +445,10 @@ class Jmol extends JPanel {
         if (newChemFile != null) {
           if (newChemFile.getNumberFrames() > 0) {
             setChemFile(newChemFile);
-            
+
             frame.setTitle(theFile.getName());
             currentFileName = theFile.getName();
-  
+
             // Add the file to the recent files list
             recentFiles.addFile(theFile.toString(), typeHint);
           } else {
@@ -464,6 +485,45 @@ class Jmol extends JPanel {
     }
   }
 
+// transfer molecule to Jmol as serialized XML string (petermr)
+	public void readCML(String s) {
+		StringReader sr = new StringReader(s);
+		readCML(sr);
+	}
+
+// transfer CML molecule to Jmol as string representation (petermr)
+	public void readCML(StringReader sr) {
+		ChemFileReader reader = new CMLReader(sr);
+		try {
+			chemFile = reader.read();
+		} catch (Exception e) {
+			System.out.println("Exception: "+e);
+			return;
+		}
+
+		System.out.println("READING CML");
+		String name = "from Jumbo";
+		if (chemFile != null) {
+			display.setChemFile(chemFile);
+			anim.setChemFile(chemFile);
+			vib.setChemFile(chemFile);
+			pg.setChemFile(chemFile);
+			apm.replaceList(chemFile.getAtomPropertyList());
+			mlist.clear();
+
+			chemicalShifts.setChemFile(chemFile, apm);
+			currentFileName = "from Jumbo";
+
+			frame.setTitle(currentFileName);
+
+		}
+// Add the file to the recent files list
+//		recentFiles.addFile(theFile.toString(), typeHint);
+//		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
+
+
+
   /**
    * returns the ChemFile that we are currently working with
    *
@@ -472,6 +532,7 @@ class Jmol extends JPanel {
   public ChemFile getCurrentFile() {
     return chemFile;
   }
+
 
   void setChemFile(ChemFile chemFile) {
     ChemFile oldChemFile = this.chemFile;
@@ -484,7 +545,7 @@ class Jmol extends JPanel {
     mlist.clear();
 
     chemicalShifts.setChemFile(chemFile, apm);
-    
+
     firePropertyChange(moleculeProperty, oldChemFile, chemFile);
   }
 
@@ -494,7 +555,7 @@ class Jmol extends JPanel {
   public boolean hasMolecule() {
     return chemFile != null;
   }
-  
+
   /**
    * returns a list of Actions that is understood by the upper level
    * application
@@ -974,7 +1035,7 @@ class Jmol extends JPanel {
   private ExportAction exportAction = new ExportAction();
   private PovrayAction povrayAction = new PovrayAction();
   private PrintAction printAction = new PrintAction();
-  
+
   /**
    * Actions defined by the Jmol class
    */
@@ -1128,7 +1189,7 @@ class Jmol extends JPanel {
       super(saveasAction);
       setEnabled(false);
     }
-    
+
     public void actionPerformed(ActionEvent e) {
 
       Frame frame = getFrame();
@@ -1163,7 +1224,7 @@ class Jmol extends JPanel {
         }
       }
     }
-    
+
   }
 
   class ExportAction extends MoleculeDependentAction {
@@ -1229,7 +1290,7 @@ class Jmol extends JPanel {
         }
       }
     }
-    
+
   }
 
   class RecentFilesAction extends AbstractAction {
@@ -1289,9 +1350,9 @@ class Jmol extends JPanel {
     }
     return new File(System.getProperty("user.dir"));
   }
-  
+
   public static final String moleculeProperty = "molecule";
-  
+
   private abstract class MoleculeDependentAction extends AbstractAction
       implements PropertyChangeListener {
 
@@ -1301,7 +1362,7 @@ class Jmol extends JPanel {
     }
 
     public void propertyChange(PropertyChangeEvent event) {
-      
+
       if (event.getSource() instanceof Jmol) {
         Jmol jmol = (Jmol) event.getSource();
         if (jmol.hasMolecule()) {
@@ -1311,7 +1372,7 @@ class Jmol extends JPanel {
         }
       }
     }
-    
+
   }
 
 }

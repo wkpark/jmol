@@ -59,7 +59,7 @@ public class Measurement {
   void formatMeasurement() {
     for (int i = count; --i >= 0; )
       if (countPlusIndices[i+1] < 0) {
-        strMeasurement = "";
+        strMeasurement = null;
         return;
       }
     if (count < 2)

@@ -162,7 +162,7 @@ public class Echo extends Shape {
     }
 
     void recalc() {
-      if (text == null || text == "") {
+      if (text == null || text.length() == 0) {
         text = null;
         return;
       }

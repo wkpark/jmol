@@ -203,8 +203,7 @@ class MeasuresRenderer extends ShapeRenderer {
     if (! showMeasurementLabels)
       return;
     String strMeasurement = measurement.strMeasurement;
-    // I *think* that the string "" is always interned
-    if (strMeasurement == null || strMeasurement == "")
+    if (strMeasurement == null)
       return;
     g3d.setFontOfSize(fontsize);
     FontMetrics fontMetrics = g3d.getFontMetrics();

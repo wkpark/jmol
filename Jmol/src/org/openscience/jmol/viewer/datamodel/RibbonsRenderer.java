@@ -91,8 +91,10 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
     Point3i[] screensTop;
     Point3i[] screensBottom;
 
-    screensTop = calcScreens(centers, vectors, mads, 0.5f);
-    screensBottom = calcScreens(centers, vectors, mads, -0.5f);
+    screensTop = calcScreens(centers, vectors, mads,
+                             isNucleotidePolymer ? 1f : 0.5f);
+    screensBottom = calcScreens(centers, vectors, mads,
+                                isNucleotidePolymer ? 0f : -0.5f);
     render2Strand(polymerCount, groups, mads, colixes,
                   screensTop, screensBottom);
   }

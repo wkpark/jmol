@@ -21,6 +21,7 @@ package org.openscience.jmol;
 
 import java.awt.Graphics;
 import java.util.Enumeration;
+import javax.vecmath.Point3f;
 
 /**
  *  Drawing methods for ChemFrame.
@@ -60,6 +61,23 @@ public class ChemFrameRenderer {
 			}
 		}
 
+    double maxMagnitude = -1.0;
+    double minMagnitude = Double.MAX_VALUE;
+    for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+      Atom atom = frame.getAtomAt(i);
+      Point3f vector = atom.getVector();
+      if (vector != null) {
+        double magnitude = vector.distance(zeroPoint);
+        if (magnitude > maxMagnitude) {
+          maxMagnitude = magnitude;
+        }
+        if (magnitude < minMagnitude) {
+          minMagnitude = magnitude;
+        }
+      }
+    }
+    double magnitudeRange = maxMagnitude - minMagnitude;
+
     BondRenderer bondRenderer = getBondRenderer(settings);
     for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
       int j = atomReferences[i].index;
@@ -98,20 +116,21 @@ public class ChemFrameRenderer {
             }
           }
         }
-  
+        
         if (settings.getShowVectors()) {
           if (atom.getVector() != null) {
+            double magnitude = atom.getVector().distance(zeroPoint);
+            double scaling = (magnitude - minMagnitude) / magnitudeRange + 0.5;
             ArrowLine al = new ArrowLine(g, atom.getScreenPosition().x,
               atom.getScreenPosition().y,
                 atom.getScreenVector().x,
-                  frame.getAtoms()[j].getScreenVector().y,
-                    false, true);
+                  atom.getScreenVector().y,
+                    false, true, scaling);
           }
         }
+        
       }
-
     }
-
   }
 
   private BondRenderer getBondRenderer(DisplaySettings settings) {
@@ -162,5 +181,9 @@ public class ChemFrameRenderer {
 		}
 	});
 
+  /**
+   * Point for calculating lengths of vectors.
+   */
+  private static final Point3f zeroPoint = new Point3f();
 }
 

@@ -23,6 +23,8 @@ import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.StringTokenizer;
+import java.util.Hashtable;
+import java.util.Enumeration;
 
 
 /**
@@ -71,6 +73,7 @@ public class PDBReader extends DefaultChemFileReader {
 
     ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = new ChemFrame();
+    boolean bondsCleared = false;
     StringTokenizer st;
 
     String line = input.readLine();
@@ -97,9 +100,47 @@ public class PDBReader extends DefaultChemFileReader {
         double y = FortranFormat.atof(sy);
         double z = FortranFormat.atof(sz);
         frame.addAtom(atype, (float) x, (float) y, (float) z);
-      }
+      } else if (command.equalsIgnoreCase("CONECT")) {
+        // read connectivity information
+        if (!bondsCleared) {
+            frame.clearBonds();
+            bondsCleared = true;
+        }
+        
+        String atom = new String(line.substring(6, 11).trim());
+        String connectedAtoms = new String(line.substring(12).trim());
+        StringTokenizer linet = new StringTokenizer(connectedAtoms);
 
-      if (command.equalsIgnoreCase("END")) {
+        /* Though not mentioned in PDB's specifications, adhere to Rasmol's
+         * custom to define double/triple bonds by mentioning bonds with
+         * double bonded atoms twice or with triple bonded atoms three times.
+         *
+         * E.g.: CONECT  3 4 4
+         * would be a double bond between atoms 3 and 4
+         */
+        Hashtable tmp = new Hashtable(10);
+        while (linet.hasMoreTokens()) {
+            String connectedAtom = linet.nextToken();
+            Integer neighbour = new Integer(connectedAtom);
+            if (tmp.containsKey(neighbour)) {
+                tmp.put(neighbour,
+                        new Integer(((Integer)tmp.get(neighbour)).intValue()+1));
+            } else {
+                tmp.put(neighbour, new Integer(1));
+            }
+        }
+        Enumeration neighbours = tmp.keys();
+        int atomi = Integer.parseInt(atom);
+        while (neighbours.hasMoreElements()) {
+            Integer neighbour = (Integer)neighbours.nextElement();
+            int atomj = neighbour.intValue();
+            int bondorder = ((Integer)tmp.get(neighbour)).intValue();
+            frame.addBond(atomi-1, atomj-1, bondorder);
+            System.out.println("Stored bond: " + atomi + " "
+                                               + atomj + " "
+                                               + bondorder);
+        }
+      } else if (command.equalsIgnoreCase("END")) {
         file.addFrame(frame);
         fireFrameRead();
         return file;

@@ -748,7 +748,7 @@ final public class DisplayControl {
     colorTransparentPicked = null;
   }
 
-  // NEEDSWORK -- bond binding stuff
+  // FIXME NEEDSWORK -- bond binding stuff
   private float bondFudge = 1.12f;
   private boolean autoBond = true;
 
@@ -778,5 +778,52 @@ final public class DisplayControl {
   public boolean getAutoBond() {
     return autoBond;
   }
+
+  // FIXME NEEDSWORK -- arrow vector stuff
+  private Color vectorColor = Color.black;
+  private float arrowHeadSize = 10.0f;
+  private float arrowHeadRadius = 1.0f;
+  private float arrowLengthScale = 1.0f;
+
+  public void setVectorColor(Color c) {
+    vectorColor = c;
+  }
+
+  public Color getVectorColor() {
+    return vectorColor;
+  }
+
+  public void setArrowHeadSize(float ls) {
+    arrowHeadSize = 10.0f * ls;
+  }
+
+  public float getArrowHeadSize() {
+    return arrowHeadSize / 10.0f;
+  }
+
+  // mth dec 2003
+  // for some reason, internal to ArrowLine the raw arrowHeadSize was
+  // used, but externally it is multiplied/divided by 10
+  // will figure it out and fix it later
+  public float getArrowHeadSize10() {
+    return arrowHeadSize;
+  }
+
+  public void setArrowLengthScale(float ls) {
+    arrowLengthScale = ls;
+  }
+
+  public float getArrowLengthScale() {
+    return arrowLengthScale;
+  }
+
+  public void setArrowHeadRadius(float rs) {
+    arrowHeadRadius = rs;
+  }
+
+  public float getArrowHeadRadius() {
+    return arrowHeadRadius;
+  }
+
 
 }

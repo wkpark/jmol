@@ -26,8 +26,6 @@ import java.awt.Graphics;
 
 public class ArrowLine {
 
-  private static Color vectorColor = Color.black;
-
   private boolean arrowStart = false;
   private boolean arrowEnd = true;
 
@@ -40,48 +38,20 @@ public class ArrowLine {
   private float x2;
   private float y2;
   private double magnitude;
-  private static float arrowHeadSize = 10.0f;
-  private static float arrowHeadRadius = 1.0f;
-  private static float arrowLength = 1.0f;
 
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
 
-  public static void setVectorColor(Color c) {
-    vectorColor = c;
-  }
-
-  public static void setArrowHeadSize(float ls) {
-    arrowHeadSize = 10.0f * ls;
-  }
-
-  public static float getArrowHeadSize() {
-    return arrowHeadSize / 10.0f;
-  }
-
-  public static void setLengthScale(float ls) {
-    arrowLength = ls;
-  }
-
-  public static float getLengthScale() {
-    return arrowLength;
-  }
-
-  public static void setArrowHeadRadius(float rs) {
-    arrowHeadRadius = rs;
-  }
-
-  public static float getArrowHeadRadius() {
-    return arrowHeadRadius;
-  }
-
+  /*
   public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
       boolean arrowStart, boolean arrowEnd) {
     this(gc, x1, y1, x2, y2, arrowStart, arrowEnd, 1.0);
   }
+  */
 
-  public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
-      boolean arrowStart, boolean arrowEnd, double scaling) {
+  public ArrowLine(Graphics gc, DisplayControl control,
+                   float x1, float y1, float x2, float y2,
+                   boolean arrowStart, boolean arrowEnd, double scaling) {
 
     this.scaling = scaling;
     this.arrowStart = arrowStart;
@@ -103,31 +73,36 @@ public class ArrowLine {
     ctheta = dx / magnitude;
     stheta = dy / magnitude;
 
-    paint(gc);
+    paint(gc, control);
   }
 
-  public void paint(Graphics gc) {
+  public void paint(Graphics gc, DisplayControl control) {
 
-    gc.setColor(vectorColor);
+    gc.setColor(control.getVectorColor());
 
+    double arrowLengthScale = control.getArrowLengthScale();
+    double arrowHeadRadius = control.getArrowHeadRadius();
+    double arrowHeadSize = control.getArrowHeadSize10();
     double offset = arrowHeadSize;
-    if (arrowLength < 0.0) {
+    if (arrowLengthScale < 0.0) {
       offset = -offset;
     }
     gc.drawLine((int) x1, (int) y1,
-        (int) (x1 + (offset + magnitude * arrowLength) * ctheta),
-          (int) (y1 + (offset + magnitude * arrowLength) * stheta));
+        (int) (x1 + (offset + magnitude * arrowLengthScale) * ctheta),
+          (int) (y1 + (offset + magnitude * arrowLengthScale) * stheta));
 
     if (arrowStart) {
-      paintArrowHead(gc, 0.0, false);
+      paintArrowHead(gc, 0.0, false, arrowHeadSize, arrowHeadRadius);
     }
     if (arrowEnd) {
-      paintArrowHead(gc, offset + magnitude * arrowLength, true);
+      paintArrowHead(gc, offset + magnitude * arrowLengthScale, true,
+                     arrowHeadSize, arrowHeadRadius);
     }
   }
 
   public void paintArrowHead(Graphics gc, double lengthOffset,
-      boolean forwardArrow) {
+                             boolean forwardArrow,
+                             double arrowHeadSize, double arrowHeadRadius) {
 
     double directionSign = 1.0;
     if (forwardArrow) {
@@ -158,6 +133,5 @@ public class ArrowLine {
     ypoints[3] = (int) (y1 + rx * stheta + ry * ctheta);
     gc.fillPolygon(xpoints, ypoints, 4);
   }
-
 }
 

@@ -3,6 +3,7 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
 
@@ -28,7 +29,7 @@ class LineShape implements Shape, Transformable {
     control.transformPoint(endPoint, screenPositionEnd);
   }
   
-  public void render(Graphics g) {
+  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
 
     PlainLine al = new PlainLine(g, screenPositionOrig.x,
                      screenPositionOrig.y, screenPositionEnd.x,

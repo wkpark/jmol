@@ -2,6 +2,7 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 
 public class AtomVectorShape implements Shape {
@@ -29,14 +30,15 @@ public class AtomVectorShape implements Shape {
     return buffer.toString();
   }
 
-  public void render(Graphics g) {
+  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
     if (control.getShowVectors()) {
       if (atom.getVector() != null) {
         float magnitude = atom.getVector().distance(zeroPoint);
         float scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;
-        ArrowLine al = new ArrowLine(g, atom.screenX, atom.screenY,
-                         atom.getScreenVector().x,
-                         atom.getScreenVector().y, false, true, scaling);
+        ArrowLine al =
+          new ArrowLine(g, control, atom.screenX, atom.screenY,
+                        atom.getScreenVector().x, atom.getScreenVector().y,
+                        false, true, scaling);
       }
     }
   }

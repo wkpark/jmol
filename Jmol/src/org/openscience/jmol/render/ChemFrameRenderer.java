@@ -124,7 +124,7 @@ public class ChemFrameRenderer {
                               
     AtomShape.prepareRendering(g, rectClip, control);
     for (int i = 0; i < shapes.length; ++i) {
-      shapes[i].render(g);
+      shapes[i].render(g, rectClip, control);
     }
   }
 

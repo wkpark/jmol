@@ -619,12 +619,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         // the current frame. (I think).
         control.setBondFudge(BondFudge);
         props.put("BondFudge", Float.toString(BondFudge));
-        try {
-          // FIXME 
-          //display.rebond();
-          control.rebond();
-        } catch (Exception ex) {
-        }
+        control.rebond();
       }
     });
     bfPanel.add(bfSlider);
@@ -653,7 +648,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     ahPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.ahLabel")));
     ahSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0f * ArrowLine.getArrowHeadSize()));
+        (int) (100.0f * control.getArrowHeadSize()));
     ahSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     ahSlider.setPaintTicks(true);
     ahSlider.setMajorTickSpacing(40);
@@ -683,7 +678,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         ArrowHeadSize = source.getValue() / 100.0f;
-        ArrowLine.setArrowHeadSize(ArrowHeadSize);
+        control.setArrowHeadSize(ArrowHeadSize);
         props.put("ArrowHeadSize", Float.toString(ArrowHeadSize));
         // FIXME -- arrow settings should be like all other settings
         control.refresh();
@@ -697,7 +692,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     arPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.arLabel")));
     arSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0f * ArrowLine.getArrowHeadRadius()));
+        (int) (100.0f * control.getArrowHeadRadius()));
     arSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     arSlider.setPaintTicks(true);
     arSlider.setMajorTickSpacing(40);
@@ -726,7 +721,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         ArrowHeadRadius = source.getValue() / 100.0f;
-        ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
+        control.setArrowHeadRadius(ArrowHeadRadius);
         props.put("ArrowHeadRadius", Float.toString(ArrowHeadRadius));
         control.refresh();
       }
@@ -739,7 +734,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     alPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.alLabel")));
     alSlider = new JSlider(JSlider.HORIZONTAL, -200, 200,
-        (int) (100.0f * ArrowLine.getLengthScale()));
+        (int) (100.0f * control.getArrowLengthScale()));
     alSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     alSlider.setPaintTicks(true);
     alSlider.setMajorTickSpacing(50);
@@ -778,7 +773,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         ArrowLengthScale = source.getValue() / 100.0f;
-        ArrowLine.setLengthScale(ArrowLengthScale);
+        control.setArrowLengthScale(ArrowLengthScale);
         props.put("ArrowLengthScale", Float.toString(ArrowLengthScale));
         control.refresh();
       }
@@ -930,7 +925,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.vectorChooserTitle"), vectorColor);
         vectorColor = color;
         vButton.setBackground(vectorColor);
-        ArrowLine.setVectorColor(vectorColor);
+        control.setVectorColor(vectorColor);
         props.put("vectorColor", Integer.toString(vectorColor.getRGB()));
         control.refresh();
       }
@@ -1119,9 +1114,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bfSlider.setValue((int) (50.0 * control.getBondFudge()));
 
     // Vector panel controls:
-    ahSlider.setValue((int) (100.0f * ArrowLine.getArrowHeadSize()));
-    arSlider.setValue((int) (100.0f * ArrowLine.getArrowHeadRadius()));
-    alSlider.setValue((int) (100.0f * ArrowLine.getLengthScale()));
+    ahSlider.setValue((int) (100.0f * control.getArrowHeadSize()));
+    arSlider.setValue((int) (100.0f * control.getArrowHeadRadius()));
+    alSlider.setValue((int) (100.0f * control.getArrowLengthScale()));
 
     // Color panel controls:
     bButton.setBackground(backgroundColor);
@@ -1213,11 +1208,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setPropertyMode(AtomPropsMode);
     control.setBondWidth((float) BondWidth);
     control.setBondDrawMode(BondRenderMode);
-    ArrowLine.setVectorColor(vectorColor);
-    ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
-    ArrowLine.setArrowHeadSize(ArrowHeadSize);
-    ArrowLine.setLengthScale(ArrowLengthScale);
-    DisplayPanel.setBackgroundColor(backgroundColor);
+    control.setVectorColor(vectorColor);
+    control.setArrowHeadRadius(ArrowHeadRadius);
+    control.setArrowHeadSize(ArrowHeadSize);
+    control.setArrowLengthScale(ArrowLengthScale);
+    control.setBackgroundColor(backgroundColor);
     control.setAntiAliased(Boolean.getBoolean("AntiAliased"));
     control.setBondFudge(BondFudge);
     control.setAutoBond(AutoBond);

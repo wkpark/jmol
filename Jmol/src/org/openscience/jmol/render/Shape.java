@@ -19,7 +19,9 @@
  */
 package org.openscience.jmol.render;
 
+import org.openscience.jmol.DisplayControl;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 /**
  * Provides an interface for graphical components so that
@@ -32,7 +34,7 @@ import java.awt.Graphics;
  */
 public interface Shape {
 
-  public void render(Graphics g);
+  public void render(Graphics g, Rectangle rectClip, DisplayControl control);
 
   public int getZ();
 

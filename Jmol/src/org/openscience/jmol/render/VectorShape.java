@@ -3,6 +3,7 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4f;
 
@@ -33,14 +34,15 @@ public class VectorShape implements Shape, Transformable {
     control.transformPoint(endPoint, screenPositionEnd);
   }
 
-  public void render(Graphics g) {
+  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
 
     double scaling = 1.0;
 
 
-    ArrowLine al = new ArrowLine(g, screenPositionOrig.x,
-                     screenPositionOrig.y, screenPositionEnd.x,
-                     screenPositionEnd.y, arrowStart, arrowEnd, scaling);
+    ArrowLine al = new ArrowLine(g, control,
+                                 screenPositionOrig.x, screenPositionOrig.y,
+                                 screenPositionEnd.x, screenPositionEnd.y,
+                                 arrowStart, arrowEnd, scaling);
 
   }
 

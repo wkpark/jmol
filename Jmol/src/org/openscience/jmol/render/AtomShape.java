@@ -68,7 +68,7 @@ public class AtomShape implements Shape {
     return buffer.toString();
   }
 
-  public void render(Graphics g) {
+  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
     renderBonds();
     renderAtom();
     renderLabel();

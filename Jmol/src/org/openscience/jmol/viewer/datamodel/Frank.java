@@ -30,8 +30,9 @@ import java.awt.FontMetrics;
 public class Frank extends SelectionIndependentShape {
 
   final static String frankString = "Jmol";
-  final static String defaultFontName = "Serif";
-  final static String defaultFontStyle = "Bold";
+  final static String defaultFontName = "SansSerif";
+  final static String defaultFontStyle = "Normal";
+  final static short defaultFontColix = Graphics3D.OLIVE;
   final static int defaultFontSize = 14;
   final static int frankMargin = 4;
 
@@ -42,7 +43,7 @@ public class Frank extends SelectionIndependentShape {
 
 
   void initShape() {
-    colix = Graphics3D.GRAY;
+    colix = defaultFontColix;
     font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
   }
 

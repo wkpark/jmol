@@ -109,6 +109,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   String pauseCallback;
   String pickCallback;
 
+  String readyCallback;
+
   final static boolean REQUIRE_PROGRESSBAR = true;
   boolean hasProgressBar;
   int paintCounter;
@@ -130,6 +132,20 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     //    loadProperties();
     initWindows();
     initApplication();
+
+    /*
+     * tests done by miguel 2004 11 20
+    System.out.println("getting ready to call back!\n" +
+                       " readyCallback=" + readyCallback +
+                       " jsoWindow=" + jsoWindow);
+
+    if (readyCallback != null && jsoWindow != null) {
+      //      jsoWindow.call(readyCallback, new Object[] {htmlName});
+      //      jsoWindow.eval("if (_jmol) _jmol.ready['" + htmlName + "']=true;");
+      System.out.println("calling back!");
+    }
+    System.out.println("afterwards");
+    */
   }
   
   public void initWindows() {
@@ -150,6 +166,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     if (mayScript) {
       try {
         jsoWindow = JSObject.getWindow(this);
+        if (jsoWindow == null)
+          System.out.println("jsoWindow return null ... no JavaScript callbacks :-(");
       } catch (Exception e) {
         System.out.println("" + e);
       }
@@ -253,13 +271,16 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       if (getBooleanValue("frank", true))
         viewer.setFrankOn(true);
 
+      readyCallback = getValue("ReadyCallback", null);
+
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
       messageCallback = getValue("MessageCallback", null);
       pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
       if (! mayScript &&
-          (animFrameCallback != null ||
+          (readyCallback != null ||
+           animFrameCallback != null ||
            loadStructCallback != null ||
            messageCallback != null ||
            pauseCallback != null ||

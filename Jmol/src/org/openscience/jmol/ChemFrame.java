@@ -72,8 +72,7 @@ public class ChemFrame extends AtomContainer {
     try {
       // FIXME mth -- egon, should there only be one instance of the
       // AtomTypeFactory?
-        atomTypeFactory = new AtomTypeFactory(
-                  "org/openscience/cdk/config/jmol_atomtypes.txt");
+        atomTypeFactory = new AtomTypeFactory("jmol_atomtypes.txt");
     } catch (Exception exc) {
       System.out.println("failure opening AtomTypeFactory:" + exc);
     }

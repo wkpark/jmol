@@ -18,6 +18,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.app.Jmol;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.tools.AtomTypeFactory;
 import java.beans.PropertyChangeSupport;
@@ -45,8 +46,6 @@ public class ChemFrame extends AtomContainer {
   private Vector properties = new Vector();
   private int numberOfAtoms = 0;
 
-  private AtomTypeFactory atomTypeFactory = null;
-  
   Point3d centerBoundingBox;
   Point3d cornerBoundingBox;
   private Point3d centerRotation;
@@ -69,13 +68,6 @@ public class ChemFrame extends AtomContainer {
 
     atoms = new Atom[na];
     this.bondsEnabled = bondsEnabled;
-    try {
-      // FIXME mth -- egon, should there only be one instance of the
-      // AtomTypeFactory?
-        atomTypeFactory = new AtomTypeFactory("jmol_atomtypes.txt");
-    } catch (Exception exc) {
-      System.out.println("failure opening AtomTypeFactory:" + exc);
-    }
   }
 
   public ChemFrame(boolean bondsEnabled) {
@@ -206,8 +198,7 @@ public class ChemFrame extends AtomContainer {
     }
 
     atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
-    if (atomTypeFactory != null)
-      atomTypeFactory.configure(atoms[i]);
+    Jmol.atomTypeTable.configure(atoms[i]);
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
         if (Atom.closeEnoughToBond(atoms[i], atoms[j],

@@ -188,6 +188,10 @@ class ModelManager {
     return (frame == null) ? 0 : frame.getPolymerCount();
   }
 
+  int getPolymerCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : frame.getPolymerCountInModel(modelIndex);
+  }
+  
   int getAtomCount() {
     return (frame == null) ? 0 : frame.getAtomCount();
   }
@@ -425,6 +429,10 @@ String getAtomInfoChime(int i) {
     return frame.getAtomAt(i).getSeqcodeString();
   }
 
+  int getAtomModelIndex(int i) {
+  	return frame.getAtomAt(i).getModelIndex();
+  }
+  
   Point3f getBondPoint3f1(int i) {
     return frame.getBondAt(i).getAtom1().getPoint3f();
   }
@@ -447,5 +455,22 @@ String getAtomInfoChime(int i) {
 
   short getBondColix2(int i) {
     return frame.getBondAt(i).getColix2();
+  }
+  
+  int getBondModelIndex(int i) {
+  	Atom atom = frame.getBondAt(i).getAtom1();
+  	if (atom != null) {
+  	  return atom.getModelIndex();
+  	}
+  	atom = frame.getBondAt(i).getAtom2();
+  	if (atom != null) {
+  	  return atom.getModelIndex();
+  	}
+  	return 0;
+  }
+
+  public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {
+    Polymer polymer = frame.getPolymerAt(modelIndex, polymerIndex);
+    return polymer.getLeadMidpoints();
   }
 }

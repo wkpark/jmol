@@ -78,6 +78,7 @@ public class PovrayDialog extends JDialog {
   
   protected JCheckBox runPovCheck;
   protected JCheckBox useIniCheck;
+  protected JCheckBox allFramesCheck;
   protected JCheckBox antiAliasCheck;
   protected JCheckBox displayWhileRenderingCheck;
   
@@ -215,6 +216,17 @@ public class PovrayDialog extends JDialog {
     useIniBox.add(useIniCheck);
     useIniBox.add(Box.createGlue());
     povOptionsBox.add(useIniBox);
+    
+    // Render all frames options
+    Box allFramesBox = Box.createHorizontalBox();
+    text = JmolResourceHandler.getStringX("Povray.allFrames");
+    allFramesCheck = new JCheckBox(text, false);
+    text = JmolResourceHandler.getStringX("Povray.allFramesTip");
+    allFramesCheck.setToolTipText(text);
+    allFramesCheck.addItemListener(updateItemListener);
+    allFramesBox.add(allFramesCheck);
+    allFramesBox.add(Box.createGlue());
+    povOptionsBox.add(allFramesBox);
     
     // Antialias option
     Box antiAliasBox = Box.createHorizontalBox();
@@ -527,7 +539,18 @@ public class PovrayDialog extends JDialog {
       try {
         java.io.FileOutputStream os = new java.io.FileOutputStream(theFile);
       
-        PovraySaver povs = new PovraySaver(viewer, os);
+        boolean allFrames = false;
+        if (allFramesCheck != null) {
+         allFrames = allFramesCheck.isSelected();   
+        }
+        int width = outputWidth;
+        int height = outputHeight;
+        if ((imageSizeCheck != null) && (imageSizeCheck.isSelected())) {
+            height = Integer.parseInt(imageSizeTextHeight.getText());
+            width = Integer.parseInt(imageSizeTextWidth.getText());
+        }
+        PovraySaver povs = new PovraySaver(
+                viewer, os, allFrames, width, height);
         povs.writeFile();
       } catch (FileNotFoundException fnf) {
         System.out.println("Povray Dialog FileNotFoundException:" + theFile);
@@ -860,6 +883,14 @@ public class PovrayDialog extends JDialog {
       commandLine += " +D +P";
     }
 
+    // Animation options
+    if ((allFramesCheck != null) && (allFramesCheck.isSelected())) {
+      commandLine += " +KFI1";
+      commandLine += " +KFF" + viewer.getModelCount();
+      commandLine += " +KI1";
+      commandLine += " +KF" + viewer.getModelCount();
+    }
+    
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
       commandLine +=
@@ -948,6 +979,14 @@ public class PovrayDialog extends JDialog {
       os.write("Pause_When_Done=true\n");
     }
 
+    // Animation options
+    if ((allFramesCheck != null) && (allFramesCheck.isSelected())) {
+      os.write("Initial_Frame=1\n");
+      os.write("Final_Frame=" + viewer.getModelCount() + "\n");
+      os.write("Initial_Clock=1\n");
+      os.write("Final_Clock=" + viewer.getModelCount() + "\n");
+    }
+    
     // Mosaic preview options
     if ((mosaicPreviewCheck != null) && (mosaicPreviewCheck.isSelected())) {
       os.write("Preview_Start_Size=" + mosaicPreviewComboStart.getSelectedItem() + "\n");

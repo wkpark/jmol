@@ -1198,6 +1198,10 @@ final public class Viewer extends JmolViewer {
     return modelManager.getPolymerCount();
   }
 
+  public int getPolymerCountInModel(int modelIndex) {
+    return modelManager.getPolymerCountInModel(modelIndex);
+  }
+  
   public int getAtomCount() {
     return modelManager.getAtomCount();
   }
@@ -1419,7 +1423,7 @@ final public class Viewer extends JmolViewer {
     return repaintManager.setDisplayModelIndex(modelIndex);
   }
 
-  int getDisplayModelIndex() {
+  public int getDisplayModelIndex() {
     return repaintManager.displayModelIndex;
   }
 
@@ -2303,10 +2307,14 @@ final public class Viewer extends JmolViewer {
     return modelManager.getAtomChain(i);
   }
 
+  public int getAtomModelIndex(int i) {
+  	return modelManager.getAtomModelIndex(i);
+  }
+
   String getAtomSequenceCode(int i) {
     return modelManager.getAtomSequenceCode(i);
   }
-
+  
   public Point3f getBondPoint3f1(int i) {
     return modelManager.getBondPoint3f1(i);
   }
@@ -2327,10 +2335,18 @@ final public class Viewer extends JmolViewer {
     return g3d.getColor(modelManager.getBondColix1(i));
   }
 
+  public int getBondModelIndex(int i) {
+  	return modelManager.getBondModelIndex(i);
+  }
+  
   public Color getBondColor2(int i) {
     return g3d.getColor(modelManager.getBondColix2(i));
   }
 
+  public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex) {
+    return modelManager.getPolymerLeadMidPoints(modelIndex, polymerIndex);
+  }
+  
   ////////////////////////////////////////////////////////////////
   //
   ////////////////////////////////////////////////////////////////

@@ -124,11 +124,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean modelHasVibrationVectors(int atomSetIndex);
 
   abstract public int getModelCount();
+  abstract public int getDisplayModelIndex();
   abstract public int getAtomCount();
   abstract public int getBondCount();
   abstract public int getGroupCount();
   abstract public int getChainCount();
   abstract public int getPolymerCount();
+  abstract public int getPolymerCountInModel(int modelIndex);
 
   abstract public void setModeMouse(int modeMouse);
   abstract public void setSelectionHaloEnabled(boolean haloEnabled);
@@ -184,15 +186,18 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public float getAtomRadius(int atomIndex);
   abstract public Point3f getAtomPoint3f(int atomIndex);
   abstract public Color getAtomColor(int atomIndex);
+  abstract public int getAtomModelIndex(int atomIndex);
 
   abstract public float getBondRadius(int bondIndex);
-
   abstract public Point3f getBondPoint3f1(int bondIndex);
   abstract public Point3f getBondPoint3f2(int bondIndex);
   abstract public Color getBondColor1(int bondIndex);
   abstract public Color getBondColor2(int bondIndex);
   abstract public short getBondOrder(int bondIndex);
+  abstract public int getBondModelIndex(int bondIndex);
 
+  abstract public Point3f[] getPolymerLeadMidPoints(int modelIndex, int polymerIndex);
+  
   abstract public boolean getAxesOrientationRasmol();
   abstract public void setAxesOrientationRasmol(boolean axesMessedUp);
   abstract public int getPercentVdwAtom();

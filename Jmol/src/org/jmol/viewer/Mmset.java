@@ -181,6 +181,14 @@ final class Mmset {
     return polymerCount;
   }
 
+  int getPolymerCountInModel(int modelIndex) {
+    return models[modelIndex].getPolymerCount();
+  }
+  
+  Polymer getPolymerAt(int modelIndex, int polymerIndex) {
+    return models[modelIndex].getPolymer(polymerIndex);
+  }
+  
   int getGroupCount() {
     int groupCount = 0;
     for (int i = modelCount; --i >= 0; )

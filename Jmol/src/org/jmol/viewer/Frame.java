@@ -656,6 +656,14 @@ final class Frame {
     return mmset.getPolymerCount();
   }
 
+  int getPolymerCountInModel(int modelIndex) {
+    return mmset.getPolymerCountInModel(modelIndex);
+  }
+  
+  Polymer getPolymerAt(int modelIndex, int polymerIndex) {
+    return mmset.getPolymerAt(modelIndex, polymerIndex);
+  }
+  
   int getGroupCount() {
     return mmset.getGroupCount();
   }

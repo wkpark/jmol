@@ -51,6 +51,35 @@
 	alternative to the Chime plugin.
       </p>
     </section>
+    <section title="Jmol Literature">
+      <p>
+        E.L. Willighagen, Processing CML Conventions in Java,
+        <i>Internet Journal of Chemistry</i>, 4, <b>2001</b><br/>
+        <ul>
+          Describes how Jmol reads CML. (<a href="http://www.ijc.com/abstracts/abstract4n4.html">abstract</a>)
+        </ul>
+      </p>
+      <p>
+        Christoph Steinbeck, Yongquan Han, Stefan Kuhn, Oliver Horlacher, Edgar Luttmann, and Egon Willighagen,
+        The Chemistry Development Kit (CDK): An Open-Source Java Library for Chemo- and Bioinformaticsm,
+        <i>J.Chem.Inf.Comp.Sci.</i>, <b>2003</b><br/>
+        <ul>
+          Describes CDK the library on which Jmol is build. (<a href="http://pubs.acs.org/cgi-bin/abstract.cgi/jcisd8/2003/43/i02/abs/ci025584y.html">abstract</a>)
+        </ul>
+      </p>
+      <p>
+        Peter Murray-Rust, Henry S. Rzepa, Mark J. Williamson, and Egon L. Willighagen,
+        Chemical Markup, XML, and the World Wide Web. 5. Applications of Chemical Metadata in RSS Aggregators,
+        <i>J.Chem.Inf.Comp.Sci.</i>, <b>2004</b><br/>
+        <ul>
+          Describes a CDK plugin that acts as a RSS agregator and show its application as
+          pluged in Jmol. (<a href="http://pubs.acs.org/cgi-bin/asap.cgi/jcisd8/asap/abs/ci034244p.html">abstract</a>)
+        </ul>
+      </p>
+      <p>
+        Please send additions too <a href="mailto:jmol-developers@lists.sf.net">jmol-developers@lists.sf.net</a>.
+      </p>
+    </section>
   </body>
 </document>
 

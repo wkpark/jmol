@@ -19,6 +19,7 @@
  */
 package org.openscience.miniJmol;
 
+import org.openscience.jmol.Matrix3D;
 import javax.vecmath.Point3f;
 import java.util.Vector;
 import java.util.Enumeration;

@@ -30,21 +30,23 @@
 
 package org.openscience.jmol;
 
+import javax.vecmath.Point3f;
+
 /** A fairly conventional 3D matrix object that can transform sets of
     3D points and perform a variety of manipulations on the transform */
-class Matrix3D {
+public class Matrix3D {
     float xx, xy, xz, xo;
     float yx, yy, yz, yo;
     float zx, zy, zz, zo;
     static final double pi = 3.14159265;
     /** Create a new unit matrix */
-    Matrix3D () {
+    public Matrix3D () {
 	xx = 1.0f;
 	yy = 1.0f;
 	zz = 1.0f;
     }
     /** Scale by f in all dimensions */
-    void scale(float f) {
+    public void scale(float f) {
 	xx *= f;
 	xy *= f;
 	xz *= f;
@@ -59,7 +61,7 @@ class Matrix3D {
 	zo *= f;
     }
     /** Scale along each axis independently */
-    void scale(float xf, float yf, float zf) {
+    public void scale(float xf, float yf, float zf) {
 	xx *= xf;
 	xy *= xf;
 	xz *= xf;
@@ -74,13 +76,13 @@ class Matrix3D {
 	zo *= zf;
     }
     /** Translate the origin */
-    void translate(float x, float y, float z) {
+    public void translate(float x, float y, float z) {
 	xo += x;
 	yo += y;
 	zo += z;
     }
     /** rotate theta degrees about the y axis */
-    void yrot(double theta) {
+    public void yrot(double theta) {
 	theta *= (pi / 180);
 	double ct = Math.cos(theta);
 	double st = Math.sin(theta);
@@ -105,7 +107,7 @@ class Matrix3D {
 	zz = Nzz;
     }
     /** rotate theta degrees about the x axis */
-    void xrot(double theta) {
+    public void xrot(double theta) {
 	theta *= (pi / 180);
 	double ct = Math.cos(theta);
 	double st = Math.sin(theta);
@@ -130,7 +132,7 @@ class Matrix3D {
 	zz = Nzz;
     }
     /** rotate theta degrees about the z axis */
-    void zrot(double theta) {
+    public void zrot(double theta) {
 	theta *= (pi / 180);
 	double ct = Math.cos(theta);
 	double st = Math.sin(theta);
@@ -155,7 +157,7 @@ class Matrix3D {
 	xz = Nxz;
     }
     /** Multiply this matrix by a second: M = M*R */
-    void mult(Matrix3D rhs) {
+    public void mult(Matrix3D rhs) {
 	float lxx = xx * rhs.xx + yx * rhs.xy + zx * rhs.xz;
 	float lxy = xy * rhs.xx + yy * rhs.xy + zy * rhs.xz;
 	float lxz = xz * rhs.xx + yz * rhs.xy + zz * rhs.xz;
@@ -188,7 +190,7 @@ class Matrix3D {
     }
 
     /** Reinitialize to the unit matrix */
-    void unit() {
+    public void unit() {
 	xo = 0;
 	xx = 1;
 	xy = 0;
@@ -206,7 +208,7 @@ class Matrix3D {
         coordinates in floating point.  Three successive entries in
 	the array constitute a point.  tv ends up holding the transformed
 	points as integers; three successive entries per point */
-    void transform(float v[], int tv[], int nvert) {
+    public void transform(float v[], int tv[], int nvert) {
 	float lxx = xx, lxy = xy, lxz = xz, lxo = xo;
 	float lyx = yx, lyy = yy, lyz = yz, lyo = yo;
 	float lzx = zx, lzy = zy, lzz = zz, lzo = zo;
@@ -219,9 +221,18 @@ class Matrix3D {
 	    tv[i + 2] = (int) (x * lzx + y * lzy + z * lzz + lzo);
 	}
     }
+    /**
+	 * Transform a point from Point3f p into Point3f tp.
+	 */
+    public void transform(Point3f p, Point3f tp) {
+	    tp.x = (p.x * xx + p.y * xy + p.z * xz + xo);
+	    tp.y = (p.x * yx + p.y * yy + p.z * yz + yo);
+	    tp.z = (p.x * zx + p.y * zy + p.z * zz + zo);
+    }
     public String toString() {
 	return ("[" + xo + "," + xx + "," + xy + "," + xz + ";"
 		+ yo + "," + yx + "," + yy + "," + yz + ";"
 		+ zo + "," + zx + "," + zy + "," + zz + "]");
     }
 }
+

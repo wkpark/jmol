@@ -40,11 +40,12 @@
 package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.FortranFormat;
+import org.openscience.jmol.Matrix3D;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
 import javax.vecmath.Point3f;
-import org.openscience.jmol.FortranFormat;
 
 public class displayPanel extends Canvas implements java.awt.event.ComponentListener, java.awt.event.ActionListener {
     private String message = "Waiting for structure...";

@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre14b";
+  public final static String version = "10pre14c";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -501,7 +501,7 @@ final public class JmolConstants {
     1700, //  69  Tm
     1700, //  70  Yb
     1700, //  71  Lu
-    1700, //  72  H00
+    1700, //  72  Hf
     1700, //  73  Ta
     1700, //  74  W
     1700, //  75  Re
@@ -559,7 +559,7 @@ final public class JmolConstants {
     680, //   7  N
     680, //   8  O
     640, //   9  F
-    1120, //  10  Ne
+    0,   //  10  Ne
     970, //  11  Na
     1100, //  12  Mg
     1350, //  13  Al

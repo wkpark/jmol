@@ -67,7 +67,7 @@ class CifReader extends ModelReader {
         continue;
       } else if (line.startsWith("data_")) {
         processDataParameter();
-      } else if (line.startsWith("_cell_")) {
+      } else if (line.startsWith("_cell_") || line.startsWith("_cell.")) {
         processCellParameter();
       } else if (line.startsWith("_symmetry_space_group_name_H-M")) {
         processSymmetrySpaceGroupNameHM();

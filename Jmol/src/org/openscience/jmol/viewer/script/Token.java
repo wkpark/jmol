@@ -599,65 +599,6 @@ public class Token {
     "@u _g=33,_g=34,_g>=47 & _g<=50,_g>=66 & _g<=68",
     "@water _g=69,_g=70,_g=71",
 
-    
-
-    // "@hydrogen _e=1", handled specially
-    "@helium _e=2",
-    "@lithium _e=3",
-    "@beryllium _e=4",
-    "@barium _e=5",
-    "@carbon _e=6",
-    "@nitrogen _e=7",
-    "@oxygen _e=8",
-    "@fluorine _e=9",
-    "@neon _e=10",
-    "@sodium _e=11",
-    "@magnesium _e=12",
-    "@aluminum _e=13",  //US
-    "@aluminium _e=13", //UK
-    "@silicon _e=14",
-    "@phosphorus _e=15",
-    "@sulfur _e=16",   //US
-    "@sulphur _e=16",   //UK
-    "@chlorine _e=17",
-    "@argon _e=18",
-    "@potassium _e=19",
-    "@calcium _e=20",
-    "@scandium _e=21",
-    "@titanium _e=22",
-    "@vanadium _e=23",
-    "@chromium _e=24",
-    "@manganese _e=25",
-    "@iron _e=26",
-    "@cobolt _e=27",
-    "@nickel _e=28",
-    "@copper _e=29",
-    "@zinc _e=30",
-    "@gallium _e=31",
-    "@germanium _e=32",
-    "@arsenic _e=33",
-    "@selenium _e=34",
-    "@bromine _e=35",
-    "@krypton _e=36",
-    "@rubidium _e=37",
-    "@strontium _e=38",
-    "@yttrium _e=39",
-    "@zirconium _e=40",
-    "@niobioum _e=41",
-    "@molybdenum _e=42",
-    "@technetium _e=43",
-    "@ruthenium _e=44",
-    "@rhodium _e=45",
-    "@palladium _e=46",
-    "@silver _e=47",
-    "@cadmium _e=48",
-    "@indium _e=49",
-    "@tin _e=50",
-    "@antimony _e=51",
-    "@tellurium _e=52",
-    "@iodine _e=53",
-    "@xenon _e=54",
-    // that is enough for now
   };
 
   static Hashtable map = new Hashtable();

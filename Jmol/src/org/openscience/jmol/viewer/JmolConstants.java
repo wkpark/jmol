@@ -294,7 +294,7 @@ final public class JmolConstants {
     "chromium",
     "manganese",
     "iron",
-    "cobolt",
+    "cobalt",
     "nickel",
     "copper",
     "zinc",
@@ -1052,12 +1052,7 @@ final public class JmolConstants {
 
   /**
    * Default table of CPK atom colors.
-   * Used when the client does not implement
-   * getAtomColor(clientAtom, colorScheme)
-   * 
-   * mth 2004 01 13
-   * these colors are now the RasMol colors ... using this as a starting
-   * point, we can make changes
+   * ghemical colors with a few proposed modifications
    */
   public final static int[] argbsCpk = {
     0xFFFF1493, // Xx 0
@@ -1067,14 +1062,14 @@ final public class JmolConstants {
     0xFFC2FF00, // Be 4
     0xFFFFB5B5, // B  5
     0xFF808080, // C  6
-    0xFF0D0DFF, // N  7
+    0xFF3050F8, // N  7 - changed from ghemical
     0xFFFF0D0D, // O  8
-    0xFFB3FFFF, // F  9
+    0xFF90E050, // F  9 - changed from ghemical
     0xFFB3E3F5, // Ne 10
     0xFFAB5CF2, // Na 11
     0xFF8AFF00, // Mg 12
     0xFFBFA6A6, // Al 13
-    0xFF809999, // Si 14
+    0xFFF0C8A0, // Si 14 - changed from ghemical
     0xFFFF8000, // P  15
     0xFFFFFF30, // S  16
     0xFF1FF01F, // Cl 17
@@ -1086,10 +1081,10 @@ final public class JmolConstants {
     0xFFA6A6AB, // V  23
     0xFF8A99C7, // Cr 24
     0xFF9C7AC7, // Mn 25
-    0xFF807AC7, // Fe 26
-    0xFF707AC7, // Co 27
-    0xFF5C7AC2, // Ni 28
-    0xFFFF7A61, // Cu 29
+    0xFFE06633, // Fe 26 - changed from ghemical
+    0xFFF090A0, // Co 27 - changed from ghemical
+    0xFF50D050, // Ni 28 - changed from ghemical
+    0xFFC88033, // Cu 29 - changed from ghemical
     0xFF7D80B0, // Zn 30
     0xFFC28F8F, // Ga 31
     0xFF668F8F, // Ge 32
@@ -1107,7 +1102,7 @@ final public class JmolConstants {
     0xFF248F8F, // Ru 44
     0xFF0A7D8C, // Rh 45
     0xFF006985, // Pd 46
-    0xFFE0E0FF, // Ag 47
+    0xFFC0C0C0, // Ag 47 - changed from ghemical
     0xFFFFD98F, // Cd 48
     0xFFA67573, // In 49
     0xFF668080, // Sn 50
@@ -1138,9 +1133,9 @@ final public class JmolConstants {
     0xFF267DAB, // Re 75
     0xFF266696, // Os 76
     0xFF175487, // Ir 77
-    0xFFF5EDD1, // Pt 78
-    0xFFCCD11F, // Au 79
-    0xFFB5B5C2, // Hg 80
+    0xFFD0D0E0, // Pt 78 - changed from ghemical
+    0xFFFFD123, // Au 79 - changed from ghemical
+    0xFFB8B8D0, // Hg 80 - changed from ghemical
     0xFFA6544D, // Tl 81
     0xFF575961, // Pb 82
     0xFF9E4FB5, // Bi 83

@@ -25,42 +25,44 @@
 
 package org.openscience.jmol.viewer.g3d;
 
-import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.MemoryImageSource;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferInt;
 import java.awt.FontMetrics;
 import java.awt.Font;
 
-final public class Awt3D implements Platform3D {
+final public class Swing3D implements Platform3D{
 
-  Component component;
   int width, height;
-  Image image;
-  MemoryImageSource mis;
+  BufferedImage bi;
+  WritableRaster wr;
+  DataBuffer db;
+  DataBufferInt dbi;
   int[] pbuf;
 
-  int widthOffscreen, heightOffscreen;
-  Image imageOffscreen;
-  Graphics gOffscreen;
-
-  public Awt3D(Component component) {
-    this.component = component;
-  }
+  Graphics2D gOffscreen;
+  BufferedImage biOffscreen;
+  int widthOffscreen;
+  int heightOffscreen;
 
   public void allocateImage(int width, int height) {
     this.width = width;
     this.height = height;
-    pbuf = new int[width * height];
-    mis = new MemoryImageSource(width, height, pbuf, 0, width);
-    mis.setAnimated(true);
-    if (image != null)
-      image.flush();
-    image = component.createImage(mis);
+    if (bi != null)
+      bi.flush();
+    bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    wr = bi.getRaster();
+    db = wr.getDataBuffer();
+    dbi = (DataBufferInt) db;
+    pbuf = dbi.getData();
   }
 
   public Image getImage() {
-    return image;
+    return bi;
   }
 
   public int[] getPbuf() {
@@ -68,7 +70,6 @@ final public class Awt3D implements Platform3D {
   }
 
   public void notifyEndOfRendering() {
-    mis.newPixels();
   }
 
   public FontMetrics getFontMetrics(Font font) {
@@ -80,16 +81,17 @@ final public class Awt3D implements Platform3D {
   public void checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
       return;
-    if (imageOffscreen != null) {
+    if (biOffscreen != null) {
       gOffscreen.dispose();
-      imageOffscreen.flush();
+      biOffscreen.flush();
     }
     if (width > widthOffscreen)
       widthOffscreen = (width + 63) & ~63;
     if (height > heightOffscreen)
       heightOffscreen = (width + 15) & ~15;
-    imageOffscreen = component.createImage(widthOffscreen, heightOffscreen);
-    gOffscreen = imageOffscreen.getGraphics();
+    biOffscreen = new BufferedImage(widthOffscreen, heightOffscreen,
+                                    BufferedImage.TYPE_INT_RGB);
+    gOffscreen = biOffscreen.createGraphics();
   }
 
   public Graphics getGraphicsOffscreen() {
@@ -97,6 +99,6 @@ final public class Awt3D implements Platform3D {
   }
 
   public Image getImageOffscreen() {
-    return imageOffscreen;
+    return biOffscreen;
   }
 }

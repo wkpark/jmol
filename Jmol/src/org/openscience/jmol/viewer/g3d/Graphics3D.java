@@ -39,13 +39,12 @@ import javax.vecmath.Point3i;
 final public class Graphics3D {
 
   JmolViewer viewer;
-  Awt3D awt;
+  Platform3D platform;
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
-  Graphics g;
 
   boolean tFullSceneAntialiasing;
   boolean tPaintingInProgress;
@@ -73,8 +72,11 @@ final public class Graphics3D {
 
   public Graphics3D(JmolViewer viewer) {
     this.viewer = viewer;
-    this.g = g;
-    awt = new Awt3D(viewer.getAwtComponent());
+    if (viewer.jvm12orGreater) {
+      platform = new Swing3D();
+    } else {
+      platform = new Awt3D(viewer.getAwtComponent());
+    }
     this.line3d = new Line3D(viewer, this);
     this.circle3d = new Circle3D(viewer, this);
     this.sphere3d = new Sphere3D(viewer, this);
@@ -95,18 +97,14 @@ final public class Graphics3D {
     yLast4 = height4 - 1;
     size4 = width4 * height4;
 
-    if (g != null)
-      g.dispose();
     if (size1 == 0) {
-      g = null;
       pbuf = pbuf1 = pbuf4 = null;
       zbuf = zbuf1 = zbuf4 = null;
       return;
     }
-    awt.allocateImage(width, height, true);
-    g = awt.getGraphics();
+    platform.allocateImage(width, height);
 
-    pbuf = pbuf1 = awt.getPbuf();
+    pbuf = pbuf1 = platform.getPbuf();
     zbuf = zbuf1 = new short[size1];
     
     //    pbuf4 = new int[size4];
@@ -138,7 +136,7 @@ final public class Graphics3D {
   }
 
   public Image getScreenImage() {
-    return awt.getImage();
+    return platform.getImage();
   }
 
   public void setColor(Color color) {
@@ -268,15 +266,14 @@ final public class Graphics3D {
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
     argbCurrent = Colix.getArgb(colix);
-    Text3D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(),
-                 z, argbCurrent,
-                 str, fontCurrent, this, viewer.getAwtComponent());
+    Text3D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(), z,
+                argbCurrent, str, fontCurrent, this);
   }
 
   public void setFont(Font font) {
     if (fontCurrent != font) {
       fontCurrent = font;
-      fontmetricsCurrent = g.getFontMetrics(font);
+      fontmetricsCurrent = platform.getFontMetrics(font);
     }
   }
 
@@ -284,7 +281,7 @@ final public class Graphics3D {
     if (font == fontCurrent)
       return fontmetricsCurrent;
     else
-      return g.getFontMetrics(font);
+      return platform.getFontMetrics(font);
   }
 
   // 3D specific routines
@@ -310,7 +307,7 @@ final public class Graphics3D {
   public void endRendering() {
     if (tFullSceneAntialiasing)
       downSample();
-    awt.notifyEndOfRendering();
+    platform.notifyEndOfRendering();
   }
 
   public void clearScreenBuffer(Color colorBackground,int xClip, int yClip,

@@ -58,15 +58,14 @@ public class Text3D {
   int size;
   int[] bitmap;
 
-  public Text3D(String text, Font font, Component component) {
-    if (g == null)
-      checkImageBufferSize(component, 128, 16);
-    calcMetrics(text, font);
-    checkImageBufferSize(component, width, height);
-    renderImage(text, font);
-    rasterize();
+  public Text3D(String text, Font font, Platform3D platform) {
+    calcMetrics(text, font, platform);
+    platform.checkOffscreenSize(width, height);
+    renderImage(text, font, platform);
+    rasterize(platform);
   }
 
+  /*
   static int widthBuffer;
   static int heightBuffer;
   static Image img;
@@ -94,15 +93,18 @@ public class Text3D {
     }
   }
 
-  void calcMetrics(String text, Font font) {
-    FontMetrics fontMetrics = g.getFontMetrics(font);
+  */
+
+  void calcMetrics(String text, Font font, Platform3D platform) {
+    FontMetrics fontMetrics = platform.getFontMetrics(font);
     ascent = fontMetrics.getAscent();
     height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
     size = width*height;
   }
 
-  void renderImage(String text, Font font) {
+  void renderImage(String text, Font font, Platform3D platform) {
+    Graphics g = platform.getGraphicsOffscreen();
     g.setColor(Color.black);
     g.fillRect(0, 0, width, height);
     g.setColor(Color.white);
@@ -110,16 +112,22 @@ public class Text3D {
     g.drawString(text, 0, ascent);
   }
 
-  void rasterize() {
+  void rasterize(Platform3D platform) {
     long time, timeBegin = System.currentTimeMillis();
-    int[] pixels = new int[size];
-    PixelGrabber pixelGrabber = new PixelGrabber(img, 0, 0, width, height,
-                                                 pixels, 0, width);
+    PixelGrabber pixelGrabber = new PixelGrabber(platform.getImageOffscreen(),
+                                                 0, 0, width, height, true);
     time = System.currentTimeMillis() - timeBegin;
     System.out.println("after allocating PixelGrabber time=" + time);
-    pixelGrabber.startGrabbing();
+    try {
+      pixelGrabber.grabPixels();
+    } catch (InterruptedException e) {
+      System.out.println("Que? 7748");
+    }
     time = System.currentTimeMillis() - timeBegin;
     System.out.println("after startGrabbing time=" + time);
+
+    int pixels[] = (int[])pixelGrabber.getPixels();
+
     // shifter error checking
     boolean[] bits = new boolean[size];
     for (int i = 0; i < size; ++i)
@@ -173,7 +181,7 @@ public class Text3D {
   // so only one Text3D can be generated at a time
 
   synchronized static Text3D getText3D(String text, Font font,
-                                         Component component) {
+                                         Platform3D platform) {
     long timeBegin = System.currentTimeMillis();
     int size = font.getSize();
     Text3D[] at25d = (Text3D[])htText.get(text);
@@ -195,7 +203,7 @@ public class Text3D {
       at25d = new Text3D[size + 8];
       htText.put(text, at25d);
     }
-    Text3D text3d = new Text3D(text, font, component);
+    Text3D text3d = new Text3D(text, font, platform);
     at25d[size - 1] = text3d;
     long time = System.currentTimeMillis() - timeBegin;
     System.out.println(text + " -> " + time + " ms");
@@ -203,9 +211,8 @@ public class Text3D {
   }
 
   public static void plot(int x, int y, int z, int argb,
-                          String text, Font font, Graphics3D g3d,
-                          Component component) {
-    Text3D text25d = getText3D(text, font, component);
+                          String text, Font font, Graphics3D g3d) {
+    Text3D text25d = getText3D(text, font, g3d.platform);
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;

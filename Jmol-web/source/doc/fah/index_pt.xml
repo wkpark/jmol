@@ -17,7 +17,7 @@
       <script src="./createProjectList.js" type="text/javascript"></script>
       <script type="text/javascript">
         createFahPage(
-          "Select project",
+          "Selecione o projeto",
           "Projeto",
           "Nome",
           "Cr&#x00E9;dito",
@@ -30,7 +30,7 @@
           "Esconder solvente",
           "<fah_count_files/> arquivos / <fah_count_projects/> projetos.",
           "Se voc&#x00EA; tiver arquivos <b>current.xyz</b> para os projetos que faltam, por favor envie-os para nicove@users.sourceforge.net",
-          "Missing projects");
+          "Projetos ausentes");
       </script>
     </form></section>
   </body>

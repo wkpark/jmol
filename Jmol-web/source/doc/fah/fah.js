@@ -28,27 +28,42 @@ function showXMLFile() {
   window.open("./fah-projects.xml");
 }
 
+function getParameter(paramName, defaultVal) {
+  var paramValue = defaultVal;
+  var params = location.search.substring(1).split("&");
+  for (i = 0; i < params.length; i++) {
+    var detail = params[i].split("=");
+    if ((detail[0] != undefined) && (detail[1] != undefined) && (detail[0] == paramName)) {
+      paramValue = detail[1];
+    }
+  }
+  return paramValue;
+}
+
 function createFahPage(select,
                        project, name, credit, atoms, preferred, deadline, frames, code,
                        projectDescription, hideSolvent, availableFiles,
                        findMissing, missingProjects) {
   document.writeln("<table border='0' cellpadding='0' cellspacing='0' width='100%'>");
-  document.writeln(" <tr>");
-  document.writeln("  <td>");
-  document.writeln(    select + " : ");
-  document.writeln("   <select onchange='showProjectInfo(this.value)'>");
-  document.writeln("    <option value=''></option>");
-  createAllProjects();
-  document.writeln("   </select>");
-  document.writeln("   <br/>");
-  document.writeln("  </td>");
-  document.writeln(" </tr>");
+  var paramShowList = getParameter("showList", "dropbox");
+  if (paramShowList != "button") {
+    document.writeln(" <tr>");
+    document.writeln("  <td>");
+    document.writeln(    select + " : ");
+    document.writeln("   <select onchange='showProjectInfo(this.value)'>");
+    document.writeln("    <option value=''></option>");
+    createAllProjects("dropbox");
+    document.writeln("   </select>");
+    document.writeln("   <br/>");
+    document.writeln("  </td>");
+    document.writeln(" </tr>");
+  }
   document.writeln(" <tr>");
   document.writeln("  <td>");
   document.writeln("   <table border='0' cellpadding='0' cellspacing='0' width='100%'>");
   document.writeln("    <tr>");
   document.writeln("     <td>");
-  jmolApplet(350, "", "Fah");
+  jmolApplet(parseInt(getParameter("appletSize", "350")), "", "Fah");
   document.writeln("     </td>");
   document.writeln("     <td valign='top'>");
   document.writeln("      <table border='0' cellpadding='0' cellspacing='0' width='100%'>");
@@ -62,42 +77,42 @@ function createFahPage(select,
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + project + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoNumber' id='infoNumber'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + name + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoName' id='infoName'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + credit + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoCredit' id='infoCredit'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + atoms + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoAtoms' id='infoAtoms'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + preferred + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoPreferred' id='infoPreferred'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + deadline + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoDeadline' id='infoDeadline'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + frames + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoFrames' id='infoFrames'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("       <tr>");
   document.writeln("        <td><label>" + code + " :</label></td>");
   document.writeln("        <td><input type='text' name='infoCode' id='infoCode'");
-  document.writeln("                   size='50' readonly='readonly'/></td>");
+  document.writeln("                   size='45' readonly='readonly'/></td>");
   document.writeln("       </tr>");
   document.writeln("      </table>");
   document.writeln("     </td>");
@@ -124,6 +139,15 @@ function createFahPage(select,
   document.writeln("   <small><i>" + findMissing + "</i></small>");
   document.writeln("  </td>");
   document.writeln(" </tr>");
+  if ((paramShowList == "button") || (paramShowList == "both")) {
+    document.writeln(" <tr>");
+    document.writeln("  <td class='btfah'>");
+    document.writeln("   <br/>");
+    createAllProjects("button");
+    document.writeln("  </td");
+    document.writeln(" </tr");
+    document.writeln(" <br/>");
+  }
   document.writeln(" <tr>");
   document.writeln("  <td>");
   document.writeln("   <br/>");
@@ -137,7 +161,8 @@ function createFahPage(select,
 }
 
 function addProject(project, filename, projectname,
-                    credit, atoms, preferred, deadline, frames, code) {
+                    credit, atoms, preferred, deadline, frames, code,
+                    showList) {
   if (projectname != undefined && projectname !== null && filename != undefined && filename != null) {
     var varValue = "" + project + ";" + filename + ";" + projectname + ";";
     if (credit != undefined && credit != null) {
@@ -163,8 +188,20 @@ function addProject(project, filename, projectname,
     if (code != undefined && code != null) {
       varValue = varValue + code;
     }
-    varOption = "<option value='" + varValue + "'>" + projectname + "</option>";
-    document.writeln(varOption);
+    if (showList == "button") {
+      varButton =
+        "<input " +
+          "type='button' " +
+          "value='" + project + "' " +
+          "onClick='showProjectInfo(\"" + varValue + "\")' " +
+          "onMouseOver='displayStatus(\"" + projectname + "\");return true' " +
+          "onMouseout='clearStatus();return true' " +
+          "/>";
+      document.writeln(varButton);
+    } else {
+      varOption = "<option value='" + varValue + "'>" + projectname + "</option>";
+      document.writeln(varOption);
+    }
   }
 }
 

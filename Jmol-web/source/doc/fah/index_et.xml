@@ -17,7 +17,7 @@
       <script src="./createProjectList.js" type="text/javascript"></script>
       <script type="text/javascript">
         createFahPage(
-          "Select project",
+          "Vali projekt",
           "Projekt",
           "Nimi",
           "Punkte",
@@ -30,7 +30,7 @@
           "Peida lahusti",
           "<fah_count_files/> faili / <fah_count_projects/> projekti.",
           "Kui sul on puuduvate projektide <b>current.xyz</b> faile, siis, palun, saada need nicove@users.sourceforge.net",
-          "Missing projects");
+          "Puuduvad projektid");
       </script>
     </form></section>
   </body>

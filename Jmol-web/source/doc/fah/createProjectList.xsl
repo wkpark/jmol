@@ -8,7 +8,7 @@
   </xsl:template>
 
   <xsl:template match="fah_projects">
-    <xsl:text><![CDATA[function createAllProjects() {]]>
+    <xsl:text><![CDATA[function createAllProjects(showList) {]]>
 </xsl:text>
     <xsl:for-each select="fah_proj" >
       <xsl:value-of select="." />
@@ -74,7 +74,7 @@
               <xsl:value-of select="@code" />
             </xsl:when>
           </xsl:choose>
-          <xsl:text>');
+          <xsl:text>',showList);
 </xsl:text>
         </xsl:if>
       </xsl:if>

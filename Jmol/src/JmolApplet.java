@@ -38,7 +38,6 @@ import java.net.MalformedURLException;
 
 /*
   these are *required*
-  I may make them mandatory, otherwise the JmolApplet may not load :-)
 
    [param name="progressbar" value="true" /]
    [param name="progresscolor" value="blue" /]
@@ -70,11 +69,6 @@ import java.net.MalformedURLException;
    // the Jmol frank
    [param name="frank"      value="false" /]
 
-   // if you don't give me a good reason to keep these two,
-   // I am going to remove them
-   [param name="vdwPercent" value="20" /]
-   [param name="perspectiveDepth" value="true" /]
-
    // for verbose MessageCallback
    [param name="debugscript"      value="true" /]
 
@@ -102,6 +96,17 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   String htmlName;
   JmolAppletRegistry appletRegistry;
 
+  /*
+   * miguel 2004 11 29
+   *
+   * WARNING! DANGER!
+   *
+   * I have discovered that if you call JSObject.getWindow().toString()
+   * on Safari v125.1 / Java 1.4.2_03 then it breaks or kills Safari
+   * I filed Apple bug report #3897879
+   *
+   * Therefore, do *not* call System.out.println("" + jsoWindow);
+   */
   JSObject jsoWindow;
 
   boolean mayScript;
@@ -110,8 +115,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   String messageCallback;
   String pauseCallback;
   String pickCallback;
-
-  String readyCallback;
 
   final static boolean REQUIRE_PROGRESSBAR = true;
   boolean hasProgressBar;
@@ -131,26 +134,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
     appletRegistry = new JmolAppletRegistry(htmlName, mayScript, this);
 
-    System.out.println("Howdy!");
-
-    //    loadProperties();
     initWindows();
     initApplication();
 
-    System.out.println("getting ready to call back!\n" +
-                       " readyCallback=" + readyCallback +
-                       " jsoWindow=" + jsoWindow);
-
-    /*
-     * tests done by miguel 2004 11 20
-
-    if (readyCallback != null && jsoWindow != null) {
-      //      jsoWindow.call(readyCallback, new Object[] {htmlName});
-      //      jsoWindow.eval("if (_jmol) _jmol.ready['" + htmlName + "']=true;");
-      System.out.println("calling back!");
-    }
-    System.out.println("afterwards");
-    */
   }
   
   public void initWindows() {
@@ -276,16 +262,13 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       if (getBooleanValue("frank", true))
         viewer.setFrankOn(true);
 
-      readyCallback = getValue("ReadyCallback", null);
-
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
       messageCallback = getValue("MessageCallback", null);
       pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
       if (! mayScript &&
-          (readyCallback != null ||
-           animFrameCallback != null ||
+          (animFrameCallback != null ||
            loadStructCallback != null ||
            messageCallback != null ||
            pauseCallback != null ||
@@ -398,12 +381,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     } else {
       viewer.renderScreenImage(g, size, rectClip);
     }
-    /*
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException ie) {
-    }
-    */
 
     if (showPaintTime) {
       stopPaintClock();

@@ -60,10 +60,10 @@ public class PovraySaver {
 
     rotationMatrix = viewer.getPovRotateMatrix();
     transformMatrix = viewer.getUnscaledTransformMatrix();
-    Dimension screenDimension = viewer.getScreenDimension();
-    int minScreenDimension = screenDimension.width;
-    if (screenDimension.height < minScreenDimension)
-      minScreenDimension = screenDimension.height;
+    int screenWidth = viewer.getScreenWidth();
+    int screenHeight = viewer.getScreenHeight();
+    int minScreenDimension =
+      screenWidth < screenHeight ? screenWidth : screenHeight;
 
     Date now = new Date();
     SimpleDateFormat sdf =
@@ -86,8 +86,8 @@ public class PovraySaver {
     out("// NOTE: if you plan to render at a different resoltion,\n");
     out("// be sure to update the following two lines to maintain\n");
     out("// the correct aspect ratio.\n" + "\n");
-    out("#declare Width = "+ screenDimension.width + ";\n");
-    out("#declare Height = "+ screenDimension.height + ";\n");
+    out("#declare Width = "+ screenWidth + ";\n");
+    out("#declare Height = "+ screenHeight + ";\n");
     out("#declare minScreenDimension = " + minScreenDimension + ";\n");
     out("#declare Ratio = Width / Height;\n");
     out("#declare zoom = " + zoom + ";\n");

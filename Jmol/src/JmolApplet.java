@@ -50,6 +50,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   JSObject jsoWindow;
 
+  String mayscript;
   String animFrameCallback;
   String loadStructCallback;
   String messageCallback;
@@ -100,29 +101,32 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   
   public void initWindows() {
 
-    //viewer = new JmolViewer(canvas, new CdkJmolModelAdapter());
+    // to enable CDK
+    //viewer = new JmolViewer(this, new CdkJmolModelAdapter());
     viewer = new JmolViewer(this, new SimpleModelAdapter());
-    jvm12orGreater = viewer.jvm12orGreater;
-    if (jvm12orGreater)
-      jvm12 = new Jvm12(this);
-    System.out.println("jvm12orGreater=" + jvm12orGreater);
-    System.out.println("strJvmVersion=" + viewer.strJvmVersion);
     viewer.setJmolStatusListener(this);
 
-    jmolpopup = new JmolPopup(viewer, this);
+    if (! (viewer.strOSName.equals("Mac OS") &&
+           viewer.strJavaVersion.equals("1.1.5")))
+      jmolpopup = new JmolPopup(viewer, this);
 
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),
                             getValue("JmolAppletProxy", null));
 
-    validate();
+    jvm12orGreater = viewer.jvm12orGreater;
+    if (jvm12orGreater)
+      jvm12 = new Jvm12(this);
 
-    try {
-      jsoWindow = JSObject.getWindow(this);
-    } catch (Exception e) {
-      System.out.println("" + e);
+    mayscript = getParameter("mayscript");
+    if (mayscript != null) {
+      try {
+        jsoWindow = JSObject.getWindow(this);
+      } catch (Exception e) {
+        System.out.println("" + e);
+      }
     }
   }
-
+    
   PropertyResourceBundle appletProperties = null;
 
   private void loadProperties() {
@@ -193,6 +197,22 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       load(getValue("load", null));
       loadInline(getValue("loadInline", null));
       script(getValue("script", null));
+
+      animFrameCallback = getValue("AnimFrameCallback", null);
+      loadStructCallback = getValue("LoadStructCallback", null);
+      messageCallback = getValue("MessageCallback", null);
+      pauseCallback = getValue("PauseCallback", null);
+      pickCallback = getValue("PickCallback", null);
+      if (mayscript == null &&
+          (animFrameCallback != null ||
+           loadStructCallback != null ||
+           messageCallback != null ||
+           pauseCallback != null ||
+           pickCallback != null))
+        System.out.println("WARNING!! to use callback function you *must* " +
+                           "declare the MAYSCRIPT attribute in your APPLET " +
+                           "tag in your html code");
+
     }
     viewer.popHoldRepaint();
   }

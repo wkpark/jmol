@@ -83,7 +83,6 @@ final public class Graphics3D {
   }
 
   public void setSize(int width, int height) {
-    System.out.println("Graphics3D.setSize(" + width + "," + height + ")");
     width1 = this.width = width;
     xLast1 = xLast = width1 - 1;
     height1 = this.height = height;

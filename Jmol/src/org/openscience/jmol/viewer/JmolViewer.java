@@ -91,7 +91,9 @@ final public class JmolViewer {
 
   public JmolModelAdapter modelAdapter;
 
-  public String strJvmVersion;
+  public String strJavaVendor;
+  public String strJavaVersion;
+  public String strOSName;
   public boolean jvm12orGreater = false;
   public boolean jvm14orGreater = false;
 
@@ -103,15 +105,17 @@ final public class JmolViewer {
     this.awtComponent = awtComponent;
     this.modelAdapter = modelAdapter;
 
-    strJvmVersion = System.getProperty("java.version");
-    jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
-    jvm14orGreater = (strJvmVersion.compareTo("1.4") >= 0);
+    strJavaVendor = System.getProperty("java.vendor");
+    strOSName = System.getProperty("os.name");
+    strJavaVersion = System.getProperty("java.version");
+    jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
+    jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
     colorManager = new ColorManager(this, modelAdapter);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
     if (jvm12orGreater) 
-      mouseManager = new MouseManager12(awtComponent, this);
+      mouseManager = MouseWrapper12.alloc(awtComponent, this);
     else
       mouseManager = new MouseManager10(awtComponent, this);
     fileManager = new FileManager(this);
@@ -450,21 +454,28 @@ final public class JmolViewer {
     return transformManager.cameraZ;
   }
 
-  private Dimension dimCurrent;
+  public int screenWidth, screenHeight;
 
   public void setScreenDimension(Dimension dim) {
-    if (dim.equals(dimCurrent))
+    // note that there is a bug in MacOS when comparing dimension objects
+    // so don't try dim1.equals(dim2)
+    if (dim.width == screenWidth && dim.height == screenHeight)
       return;
-    dimCurrent = new Dimension(dim);
-    transformManager.setScreenDimension(dim.width, dim.height);
+    screenWidth = dim.width;
+    screenHeight = dim.height;
+    transformManager.setScreenDimension(screenWidth, screenHeight);
     transformManager.scaleFitToScreen();
-    g3d.setSize(dim.width, dim.height);
+    g3d.setSize(screenWidth, screenHeight);
   }
 
-  public Dimension getScreenDimension() {
-    return dimCurrent;
+  public int getScreenWidth() {
+    return screenWidth;
   }
 
+  public int getScreenHeight() {
+    return screenHeight;
+  }
+  
   /****************************************************************
    * delegated to ColorManager
    ****************************************************************/
@@ -844,11 +855,11 @@ final public class JmolViewer {
     // used by the labelRenderer for rendering labels away from the center
     // for now this is returning the center of the screen
     // need to transform the center of the bounding box and return that point
-    return dimCurrent.width / 2;
+    return screenWidth / 2;
   }
 
   public int getBoundingBoxCenterY() {
-    return dimCurrent.height / 2;
+    return screenHeight / 2;
   }
 
   public int getNumberOfFrames() {

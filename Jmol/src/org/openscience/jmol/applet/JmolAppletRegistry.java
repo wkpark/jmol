@@ -35,23 +35,23 @@ public class JmolAppletRegistry {
   private static Hashtable htRegistry = new Hashtable();
 
   public static void checkIn(String name, Applet applet) {
-    System.out.println("JmolAppletRegistry.checkIn(" + name + ")");
+    //    System.out.println("JmolAppletRegistry.checkIn(" + name + ")");
     if (name != null)
       htRegistry.put(name, applet);
   }
 
   public static void checkOut(String name) {
-    System.out.println("JmolAppletRegistry.checkOut(" + name + ")");
+    //    System.out.println("JmolAppletRegistry.checkOut(" + name + ")");
     if (name != null)
       htRegistry.remove(name);
   }
 
   public static Applet lookup(String name) {
-    System.out.println("JmolAppletRegistry.lookup(" + name + ")");
+    //    System.out.println("JmolAppletRegistry.lookup(" + name + ")");
     if (name == null)
       return null;
     Applet applet = (Applet)htRegistry.get(name);
-    System.out.println("  applet != null" + (applet != null));
+    //    System.out.println("  applet != null" + (applet != null));
     return applet;
   }
 

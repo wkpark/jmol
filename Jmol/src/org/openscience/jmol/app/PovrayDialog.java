@@ -96,11 +96,10 @@ public class PovrayDialog extends JDialog {
     basename = "jmol";
 
     //Take the height and width settings from the JFrame
-    Dimension d = viewer.getScreenDimension();
-    int w = d.width;
-    int h = d.height;
+    int screenWidth = viewer.getScreenWidth();
+    int screenHeight = viewer.getScreenHeight();
     getPathHistory();
-    setImageDimensions(w, h);
+    setImageDimensions(screenWidth, screenHeight);
     getContentPane().setLayout(new BorderLayout());
     GridBagLayout gridBagLayout = new GridBagLayout();
     GridBagConstraints gridBagConstraints = new GridBagConstraints();

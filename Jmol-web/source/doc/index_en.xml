@@ -8,7 +8,7 @@
 	     cellpadding="10">
 	<tr>
 	  <td><script>
-	    jmolApplet(300, "script script/promotion1.txt");
+	    jmolApplet(300, "script script/promotion1.en.txt");
 	  </script></td>
 	  <td>
 	    <p>

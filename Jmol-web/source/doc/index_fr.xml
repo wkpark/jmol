@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.2)
+  Translated from default version : index_en.xml (v 1.3)
 -->
 <document>
   <body>
@@ -10,7 +10,7 @@
       <table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
         <tr>
           <td><script>
-            jmolApplet(300, "script script/promotion1.txt");
+            jmolApplet(300, "script script/promotion1.fr.txt");
           </script></td>
           <td>
             <p>

@@ -24,7 +24,6 @@
  */
 
 package org.jmol.adapter.smarter;
-import org.jmol.api.JmolAdapter;
 import java.util.Hashtable;
 import java.util.Properties;
 

@@ -26,7 +26,6 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 /**
  * A reader for NWChem 4.6

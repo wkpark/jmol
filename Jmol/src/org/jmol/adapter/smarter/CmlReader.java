@@ -363,7 +363,7 @@ class CmlReader extends AtomSetCollectionReader {
           System.out.println("CRYSTAL atts.title: " + title);
           if (title != null) {
               int i = 6;
-              while (--i >= 0 && ! title.equals(atomSetCollection.notionalUnitcellTags[i]))
+              while (--i >= 0 && ! title.equals(AtomSetCollection.notionalUnitcellTags[i]))
                   ;
               if (i >= 0)
                   notionalUnitcell[i] = parseFloat(chars);
@@ -371,7 +371,7 @@ class CmlReader extends AtomSetCollectionReader {
           System.out.println("CRYSTAL atts.dictRef: " + dictRef);
           if (dictRef != null) {
               int i = 6;
-              while (--i >= 0 && ! dictRef.equals("cml:" + atomSetCollection.notionalUnitcellTags[i]))
+              while (--i >= 0 && ! dictRef.equals("cml:" + AtomSetCollection.notionalUnitcellTags[i]))
                   ;
               if (i >= 0)
                   notionalUnitcell[i] = parseFloat(chars);

@@ -24,8 +24,6 @@
  */
 package org.jmol.adapter.smarter;
 
-import org.jmol.api.JmolAdapter;
-
 import java.io.BufferedReader;
 
 /**

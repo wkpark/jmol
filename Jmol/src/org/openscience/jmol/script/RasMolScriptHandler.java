@@ -287,7 +287,7 @@ public class RasMolScriptHandler {
         sb.append("  ");
         sb.append(i + 1);
         sb.append(" ");
-        sb.append(program.display.chemframe.getAtomAt(i).getType().getRoot());
+        sb.append(program.display.chemframe.getAtomAt(i).getSymbol());
         println(sb.toString());
       }
     } else {

@@ -38,8 +38,8 @@ public class Bond {
 
   public boolean bindsHydrogen() {
 
-    if ((atom1.getType().getAtomicNumber() == 1)
-        || (atom2.getType().getAtomicNumber() == 1)) {
+    if ((atom1.getAtomicNumber() == 1)
+        || (atom2.getAtomicNumber() == 1)) {
       return true;
     } else {
       return false;

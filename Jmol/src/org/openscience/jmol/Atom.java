@@ -367,7 +367,7 @@ public class Atom extends org.openscience.cdk.Atom {
   private Vector properties = new Vector();
 
   public String toString() {
-    String type = getType().getRoot();
+    String type = getSymbol();
     return "Atom{" + type + " #" + getAtomNumber() + " @" +
       getPosition() + " @" + screenX + "," + screenY + "," + screenZ + "}";
   }

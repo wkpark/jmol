@@ -133,7 +133,7 @@ public class CMLSaver extends FileSaver {
       if (elementTypes.length() > 0) {
         elementTypes.append(" ");
       }
-      elementTypes.append(a.getType().getName());
+      elementTypes.append(a.getSymbol());
 
       double[] pos = cf.getAtomCoords(i);
       if (x3s.length() > 0) {

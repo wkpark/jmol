@@ -303,6 +303,8 @@ public class Jmol extends JPanel {
 
     splash.showStatus(resourceHandler.translate("Reading AtomTypes..."));
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
+    org.openscience.cdk.IsotopeFactory if = org.openscience.cdk.IsotopeFactory.getInstance();
+
     splash.showStatus(resourceHandler
         .translate("Setting up File Choosers..."));
     File currentDir = getUserDirectory();

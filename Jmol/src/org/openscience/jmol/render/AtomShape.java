@@ -163,7 +163,7 @@ public class AtomShape implements Shape {
     switch (labelMode) {
     case DisplaySettings.SYMBOLS:
       if (atom.getType() != null) {
-        label = atom.getType().getRoot();
+        label = atom.getSymbol();
       }
       break;
 
@@ -232,6 +232,7 @@ public class AtomShape implements Shape {
     //  && the diameter of the atom1 is >= 3
     // ... but I'm not going to do it right now
     if (fastRendering ||
+
         ((bondDrawMode == DisplaySettings.LINE) && drawBondsToAtomCenters)) {
       if (color1.equals(color2)) {
         g.setColor(color1);

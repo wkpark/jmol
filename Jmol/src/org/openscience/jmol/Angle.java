@@ -105,7 +105,9 @@ class Angle extends Measurement implements MeasurementInterface {
     BaseAtomType b = cf.getAtomAt(Atoms[1]).getType();
     BaseAtomType c = cf.getAtomAt(Atoms[2]).getType();
 
-    return (settings.getCircleRadius(z1, a.getVdwRadius()) + settings.getCircleRadius(z2, b.getVdwRadius()) + settings.getCircleRadius(z3, c.getVdwRadius()))
+    return (settings.getCircleRadius(z1, a.getVdwRadius()) + 
+            settings.getCircleRadius(z2, b.getVdwRadius()) + 
+            settings.getCircleRadius(z3, c.getVdwRadius()))
         / 3.0f;
   }
 

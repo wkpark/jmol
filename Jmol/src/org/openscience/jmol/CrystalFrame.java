@@ -4,7 +4,7 @@ import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3f;
 
-class CrystalFrame extends ChemFrame {
+public class CrystalFrame extends ChemFrame {
 
   //the 3 primitives vectors
   private float[][] rprimd;
@@ -24,24 +24,24 @@ class CrystalFrame extends ChemFrame {
     super(na);
   }
 
-  void setRprimd(float[][] rprimd) {
+  public void setRprimd(float[][] rprimd) {
     this.rprimd = rprimd;
   }
 
-  float[][] getRprimd() {
+  public float[][] getRprimd() {
     return this.rprimd;
   }
 
-  void setBoxEdges(Vector boxEdges) {
+  public void setBoxEdges(Vector boxEdges) {
     this.boxEdges = boxEdges;
   }
 
 
-  Vector getBoxEdges() {
+  public Vector getBoxEdges() {
     return this.boxEdges;
   }
 
-  Point3f calculateCenterPoint() {
+  public Point3f calculateCenterPoint() {
     Point3f position = (Point3f) boxEdges.elementAt(0);
     float minX = position.x, maxX = minX;
     float minY = position.y, maxY = minY;
@@ -66,7 +66,7 @@ class CrystalFrame extends ChemFrame {
 
   // arrowhead size isn't included because it is currently in screen
   // coordinates .. oh well. 
-  float calculateRadius(Point3f center) {
+  public float calculateRadius(Point3f center) {
     // initialize to be the radius of the atoms ...
     // just in case there are atoms outside the box
     float radius = super.calculateRadius(center);

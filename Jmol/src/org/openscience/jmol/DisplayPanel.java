@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.*;
 import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.Component;
@@ -395,7 +396,7 @@ public class DisplayPanel extends JPanel
     backgroundColor = bg;
   }
 
-  static Color getBackgroundColor() {
+  public static Color getBackgroundColor() {
     return backgroundColor;
   }
 

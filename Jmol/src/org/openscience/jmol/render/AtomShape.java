@@ -17,8 +17,9 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol;
+package org.openscience.jmol.render;
 
+import org.openscience.jmol.*;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -49,7 +50,7 @@ import java.awt.Point;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-class AtomShape implements Shape {
+public class AtomShape implements Shape {
 
   Atom atom;
   

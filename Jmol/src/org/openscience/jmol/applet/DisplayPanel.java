@@ -35,7 +35,7 @@ import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.DisplaySettings;
 import org.openscience.jmol.FortranFormat;
-import org.openscience.jmol.ChemFrameRenderer;
+import org.openscience.jmol.render.ChemFrameRenderer;
 
 public class DisplayPanel extends Canvas
     implements java.awt.event.ComponentListener,

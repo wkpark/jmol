@@ -27,7 +27,7 @@ import javax.vecmath.Matrix4d;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-interface Transformable {
+public interface Transformable {
 
   /**
    * Transform this object using the given transformation matrix.

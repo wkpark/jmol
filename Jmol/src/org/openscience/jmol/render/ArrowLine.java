@@ -17,12 +17,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.render;
+
+import org.openscience.jmol.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
 
-class ArrowLine {
+public class ArrowLine {
 
   private static Color vectorColor = Color.black;
 
@@ -45,31 +47,31 @@ class ArrowLine {
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
 
-  static void setVectorColor(Color c) {
+  public static void setVectorColor(Color c) {
     vectorColor = c;
   }
 
-  static void setArrowHeadSize(float ls) {
+  public static void setArrowHeadSize(float ls) {
     arrowHeadSize = 10.0f * ls;
   }
 
-  static float getArrowHeadSize() {
+  public static float getArrowHeadSize() {
     return arrowHeadSize / 10.0f;
   }
 
-  static void setLengthScale(float ls) {
+  public static void setLengthScale(float ls) {
     arrowLength = ls;
   }
 
-  static float getLengthScale() {
+  public static float getLengthScale() {
     return arrowLength;
   }
 
-  static void setArrowHeadRadius(float rs) {
+  public static void setArrowHeadRadius(float rs) {
     arrowHeadRadius = rs;
   }
 
-  static float getArrowHeadRadius() {
+  public static float getArrowHeadRadius() {
     return arrowHeadRadius;
   }
 

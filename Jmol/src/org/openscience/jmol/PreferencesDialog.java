@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.ArrowLine;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Color;

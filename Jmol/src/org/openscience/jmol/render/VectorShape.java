@@ -1,26 +1,33 @@
-package org.openscience.jmol;
+package org.openscience.jmol.render;
+
+import org.openscience.jmol.*;
 
 import java.awt.Graphics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 
-class LineShape implements Shape, Transformable {
+public class VectorShape implements Shape, Transformable {
 
   DisplaySettings settings;
   Point3f origPoint;
   Point3f endPoint;
+  boolean arrowStart;
+  boolean arrowEnd;
 
-  LineShape(DisplaySettings settings, Point3f origPoint,
-      Point3f endPoint) {
+
+  VectorShape(DisplaySettings settings, Point3f origPoint,
+      Point3f endPoint, boolean arrowStart, boolean arrowEnd) {
 
     this.settings = settings;
     this.origPoint = origPoint;
     this.endPoint = endPoint;
+    this.arrowStart = arrowStart;
+    this.arrowEnd = arrowEnd;
   }
 
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    buffer.append("Primitive line shape");
+    buffer.append("Primitive vector shape");
     return buffer.toString();
   }
 
@@ -28,12 +35,15 @@ class LineShape implements Shape, Transformable {
     matrix.transform(origPoint, screenPositionOrig);
     matrix.transform(endPoint, screenPositionEnd);
   }
-  
+
   public void render(Graphics g) {
 
-    PlainLine al = new PlainLine(g, screenPositionOrig.x,
+    double scaling = 1.0;
+
+
+    ArrowLine al = new ArrowLine(g, screenPositionOrig.x,
                      screenPositionOrig.y, screenPositionEnd.x,
-                     screenPositionEnd.y);
+                     screenPositionEnd.y, arrowStart, arrowEnd, scaling);
 
   }
 

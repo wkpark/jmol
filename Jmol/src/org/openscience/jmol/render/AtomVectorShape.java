@@ -1,9 +1,10 @@
-package org.openscience.jmol;
+package org.openscience.jmol.render;
 
+import org.openscience.jmol.*;
 import java.awt.Graphics;
 import javax.vecmath.Point3f;
 
-class AtomVectorShape implements Shape {
+public class AtomVectorShape implements Shape {
 
   Atom atom;
   DisplaySettings settings;

@@ -32,7 +32,6 @@ import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.io.XYZSaver;
 import org.openscience.jmol.script.ScriptWindow;
 import org.openscience.jmol.script.Eval;
-import org.openscience.cdk.tools.IsotopeFactory;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
@@ -321,11 +320,6 @@ public class Jmol extends JPanel {
 
     splash.showStatus(resourceHandler.translate("Reading AtomTypes..."));
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
-    try {
-        IsotopeFactory ifac = IsotopeFactory.getInstance();
-    } catch (Exception e) {
-        // ignore exception
-    }
 
     splash.showStatus(resourceHandler
         .translate("Setting up File Choosers..."));

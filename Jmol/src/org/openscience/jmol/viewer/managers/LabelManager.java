@@ -91,7 +91,7 @@ public class LabelManager {
       label = atomShape.getAtomTypeName();
        break;
     case JmolViewer.NUMBERS:
-      label = "" + atomIndex;
+      label = "" + (atomIndex + 1);
       break;
     }
     return label;
@@ -120,7 +120,7 @@ public class LabelManager {
       ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strExpansion = "" + atomIndex;
+        strExpansion = "" + (atomIndex + 1);
         break;
       case 'a': // FIXME -- mth -- a is not the same as e
       case 'e':

@@ -123,7 +123,6 @@ public class StyleManager {
   }
 
   void setTextColors(Color color) {
-    viewer.setColorLabel(color);
     viewer.setColorDistance(color);
     viewer.setColorAngle(color);
     viewer.setColorDihedral(color);
@@ -135,6 +134,7 @@ public class StyleManager {
     viewer.setStyleAtom(JmolViewer.SHADED);
     viewer.setColorBackground(Color.white);
     setTextColors(Color.black);
+    viewer.setColorLabel(Color.black);
   }
 
   public void setRasmolDefaults() {
@@ -143,5 +143,6 @@ public class StyleManager {
     viewer.setStyleAtom(JmolViewer.NONE);
     viewer.setColorBackground(Color.black);
     setTextColors(Color.white);
+    viewer.setColorLabel(null);
   }
 }

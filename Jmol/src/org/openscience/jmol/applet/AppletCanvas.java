@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *

@@ -440,9 +440,14 @@ final public class Group {
     } else {
       System.out.println("  ");
       for (int i = 0; i < nucleotideIndices.length; ++i)
-        System.out.print(nucleotideIndices[i] + " ");
+        System.out.print(
+                         JmolConstants.specialAtomNames[JmolConstants.ATOMID_NUCLEOTIDE_MIN + i] + ":" + nucleotideIndices[i] + " ");
       System.out.println("\n");
     }
+  }
+
+  public String toString() {
+    return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }
 
 }

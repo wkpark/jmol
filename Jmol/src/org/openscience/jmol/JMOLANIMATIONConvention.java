@@ -53,6 +53,9 @@ public class JMOLANIMATIONConvention extends Convention {
 
   
   public void startElement (String name, AttributeList atts) {
+    if (name.equals("list")) {
+      System.err.println("Oke, JMOLANIMATION seems to be kicked in :)");
+    }
     super.startElement(name, atts);
   };
 

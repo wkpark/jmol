@@ -17,6 +17,7 @@ import org.xml.sax.EntityResolver;
 import org.xml.sax.DocumentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.ParserFactory;
+import org.openscience.cml.CMLHandler;
 
 /**
  * CML files contain a single ChemFrame object.
@@ -44,13 +45,14 @@ public class CMLReader implements ChemFileReader {
 			Parser parser =
 				ParserFactory.makeParser("com.microstar.xml.SAXDriver");
 			EntityResolver resolver = new DTDResolver();
-			DocumentHandler handler = new CMLHandler(bondsEnabled);
+            JMolCDO cdo = new JMolCDO();
+            CMLHandler handler = new CMLHandler(cdo);
 			parser.setEntityResolver(resolver);
 			parser.setDocumentHandler(handler);
 			parser.parse(source);
 			ChemFile file = new ChemFile(bondsEnabled);
 			Enumeration framesIter =
-				((CMLHandler) handler).returnChemFrames().elements();
+				((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
 			while (framesIter.hasMoreElements()) {
 				file.addFrame((ChemFrame) framesIter.nextElement());
 			}

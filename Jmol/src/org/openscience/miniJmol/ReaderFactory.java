@@ -61,11 +61,13 @@ public abstract class ReaderFactory {
 			String line2 = getLine(buffer);
 			buffer.reset();
 
-			/* an integer-valued first line is a special test for XYZ files */
 
+			// An integer on the first line is a special test for XYZ files
 			try {
+				new Integer(line.trim());
 				return new XYZReader(buffer);
 			} catch (NumberFormatException nfe) {
+				// Integer not found on first line; therefore not a XYZ file
 			}
 
 			/* This line wasn't an integer, so move on to the rest of

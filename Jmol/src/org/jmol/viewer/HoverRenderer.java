@@ -66,9 +66,9 @@ class HoverRenderer extends ShapeRenderer {
     int msgYBaseline = y + 4 + ascent;
     if (colixBackground != 0) {
       g3d.fillRect(colixBackground, x, y, 2, width, height);
-      g3d.drawRect(colixForeground, x+1, y+1, 1, width - 2, height - 2);
+      g3d.drawRectNoSlab(colixForeground, x+1, y+1, 1, width - 2, height - 2);
     }
-    g3d.drawString(msg, font3d, colixForeground, (short)0,
-                   msgX, msgYBaseline, 0);
+    g3d.drawStringNoSlab(msg, font3d, colixForeground, (short)0,
+                         msgX, msgYBaseline, 0);
   }
 }

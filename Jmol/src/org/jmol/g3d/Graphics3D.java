@@ -321,11 +321,22 @@ final public class Graphics3D {
                        int width, int height) {
     argbCurrent = getArgb(colix);
     int xRight = x + width - 1;
-    drawLine(x, y, z, xRight, y, z);
+    line3d.drawHLine(argbCurrent, x, y, z, width -1, true);
     int yBottom = y + height - 1;
-    drawLine(x, y, z, x, yBottom, z);
-    drawLine(xRight, y, z, xRight, yBottom, z);
-    drawLine(x, yBottom, z, xRight + 1, yBottom, z);
+    line3d.drawVLine(argbCurrent, x, y, z, height - 1, true);
+    line3d.drawVLine(argbCurrent, xRight, y, z, height - 1, true);
+    line3d.drawHLine(argbCurrent, x, yBottom, z, width, true);
+  }
+
+  public void drawRectNoSlab(short colix, int x, int y, int z,
+                       int width, int height) {
+    argbCurrent = getArgb(colix);
+    int xRight = x + width - 1;
+    line3d.drawHLine(argbCurrent, x, y, z, width -1, false);
+    int yBottom = y + height - 1;
+    line3d.drawVLine(argbCurrent, x, y, z, height - 1, false);
+    line3d.drawVLine(argbCurrent, xRight, y, z, height - 1, false);
+    line3d.drawHLine(argbCurrent, x, yBottom, z, width, false);
   }
 
   public void drawString(String str, short colix,
@@ -348,6 +359,15 @@ final public class Graphics3D {
     //    System.out.println("done");
   }
 
+  public void drawStringNoSlab(String str, Font3D font3d, short colix,
+                               short bgcolix, int xBaseline, int yBaseline,
+                               int z) {
+    font3dCurrent = font3d;
+    argbCurrent = getArgb(colix);
+    Text3D.plot(xBaseline, yBaseline - font3d.fontMetrics.getAscent(),
+                z, argbCurrent, getArgb(bgcolix), str, font3dCurrent, this);
+  }
+  
   public void setFontOfSize(int fontsize) {
     font3dCurrent = getFont3D(fontsize);
   }

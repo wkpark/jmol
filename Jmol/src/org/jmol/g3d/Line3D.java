@@ -55,6 +55,74 @@ final class Line3D {
     }
   }
 
+  void drawVLine(int argb, int x, int y, int z, int h, boolean checkSlab) {
+    int width = g3d.width;
+    int height = g3d.height;
+  	if ((x < 0) || (x >= width)) {
+  		return;
+  	}
+  	if (checkSlab) {
+  		if ((z < g3d.slab) || (z > g3d.depth)) {
+  			return;
+  		}
+  	}
+  	if (h < 0) {
+  		y += h;
+  		h = -h;
+  	}
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    if (y < 0) {
+    	h += y;
+    	y = 0;
+    }
+    if (y + h >= height) {
+    	h = height - 1 - y;
+    }
+    int offset = x + width * y;
+    for (int i = 0; i <= h; i++) {
+    	if (z < zbuf[offset]) {
+    		zbuf[offset] = (short)z;
+    		pbuf[offset] = argb;
+    	}
+    	offset += width;
+    }
+  }
+  
+  void drawHLine(int argb, int x, int y, int z, int w, boolean checkSlab) {
+    int width = g3d.width;
+    int height = g3d.height;
+  	if ((y < 0) || (y >= height)) {
+  		return;
+  	}
+  	if (checkSlab) {
+  		if ((z < g3d.slab) || (z > g3d.depth)) {
+  			return;
+  		}
+  	}
+  	if (w < 0) {
+  		x += w;
+  		w = -w;
+  	}
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    if (x < 0) {
+    	w += x;
+    	x = 0;
+    }
+    if (x + w >= width) {
+    	w = width - 1 - x;
+    }
+    int offset = x + width * y;
+    for (int i = 0; i <= w; i++) {
+    	if (z < zbuf[offset]) {
+    		zbuf[offset] = (short)z;
+    		pbuf[offset] = argb;
+    	}
+    	offset++;
+    }
+  }
+  
   void drawDashedLine(int argbA, int argbB, int run, int rise,
                       int xA, int yA, int zA,
                       int xB, int yB, int zB) {

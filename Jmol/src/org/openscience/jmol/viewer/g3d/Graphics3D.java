@@ -937,7 +937,7 @@ final public class Graphics3D {
 
   public short getChangableColix(short id, int argb) {
     ++id; // to deal with 0;
-    if (id > changableColixMap.length) {
+    if (id >= changableColixMap.length) {
       short[] t = new short[id + 16];
       System.arraycopy(changableColixMap, 0, t, 0, changableColixMap.length);
       changableColixMap = t;

@@ -923,6 +923,7 @@ final public class JmolViewer {
   public void openStringInline(String strModel) {
     clear();
     fileManager.openStringInline(strModel);
+    /*return*/ getOpenFileError();
   }
 
   /****************************************************************

@@ -557,7 +557,8 @@ final public class Graphics3D {
   }
 
   public void fillTriangle(short colix, Point3i screenA,
-                           Point3i screenB, Point3i screenC) {
+                           Point3i screenB, Point3i screenC,
+                           boolean transparent) {
     calcSurfaceShade(colix, screenA, screenB, screenC, false);
     int[] t;
     t = triangle3d.ax;
@@ -567,21 +568,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangleNoisy(false);
-  }
-
-  public void fillTransparentTriangle(short colix, Point3i screenA,
-                                      Point3i screenB, Point3i screenC) {
-    calcSurfaceShade(colix, screenA, screenB, screenC, true);
-    int[] t;
-    t = triangle3d.ax;
-    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
-    t = triangle3d.ay;
-    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
-    t = triangle3d.az;
-    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
-
-    triangle3d.fillTriangleNoisy(true);
+    triangle3d.fillTriangleNoisy(transparent);
   }
 
   public void fillTriangle(short colix, Point3f screenA,
@@ -592,16 +579,10 @@ final public class Graphics3D {
 
   public void fillQuadrilateral(short colix,
                                 Point3i screenA, Point3i screenB,
-                                Point3i screenC, Point3i screenD) {
-    fillTriangle(colix, screenA, screenB, screenC);
-    fillTriangle(colix, screenA, screenC, screenD);
-  }
-
-  public void fillTransparentQuadrilateral(short colix,
-                                           Point3i screenA, Point3i screenB,
-                                           Point3i screenC, Point3i screenD) {
-    fillTransparentTriangle(colix, screenA, screenB, screenC);
-    fillTransparentTriangle(colix, screenA, screenC, screenD);
+                                Point3i screenC, Point3i screenD,
+                                boolean transparent) {
+    fillTriangle(colix, screenA, screenB, screenC, transparent);
+    fillTriangle(colix, screenA, screenC, screenD, transparent);
   }
 
   public void fillQuadrilateral(int argb,

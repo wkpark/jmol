@@ -34,29 +34,38 @@ class PmeshRenderer extends ShapeRenderer {
 
   void render() {
     Pmesh pmesh = (Pmesh)shape;
-    int vertexCount = pmesh.vertexCount;
-    int[][] polygonIndexes = pmesh.polygonIndexes;
-    Point3f[] vertices = pmesh.vertices;
+    for (int i = pmesh.meshCount; --i >= 0; )
+      render1(pmesh.meshes[i]);
+  }
+
+  void render1(Pmesh.Mesh mesh) {
+    if (! mesh.visible)
+      return;
+    int vertexCount = mesh.vertexCount;
+    int[][] polygonIndexes = mesh.polygonIndexes;
+    Point3f[] vertices = mesh.vertices;
     Point3i[] screens = viewer.allocTempScreens(vertexCount);
-    short colix = pmesh.colix;
+    short colix = mesh.meshColix;
     g3d.setColix(colix);
     for(int i = vertexCount; --i >= 0; )
       viewer.transformPoint(vertices[i], screens[i]);
-    for (int i = pmesh.polygonCount; --i >= 0; ) {
+    for (int i = mesh.polygonCount; --i >= 0; ) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes.length == 3)
-        g3d.fillTransparentTriangle(colix,
-                                    screens[vertexIndexes[0]],
-                                    screens[vertexIndexes[1]],
-                                    screens[vertexIndexes[2]]);
+        g3d.fillTriangle(colix,
+                         screens[vertexIndexes[0]],
+                         screens[vertexIndexes[1]],
+                         screens[vertexIndexes[2]],
+                         mesh.transparent);
       else if (vertexIndexes.length == 4)
-        g3d.fillTransparentQuadrilateral(colix,
-                                         screens[vertexIndexes[0]],
-                                         screens[vertexIndexes[1]],
-                                         screens[vertexIndexes[2]],
-                                         screens[vertexIndexes[3]]);
+        g3d.fillQuadrilateral(colix,
+                              screens[vertexIndexes[0]],
+                              screens[vertexIndexes[1]],
+                              screens[vertexIndexes[2]],
+                              screens[vertexIndexes[3]],
+                              mesh.transparent);
       else
-        System.out.println("huh?");
+        System.out.println("PmeshRenderer: polygon with > 4 sides");
     }
   }
 }

@@ -1479,6 +1479,7 @@ class Eval implements Runnable {
     case Token.monitor:
     case Token.hover:
     case Token.vector:
+    case Token.pmesh:
       colorObject(tok, 2);
       break;
     case Token.rubberband:
@@ -3246,19 +3247,43 @@ class Eval implements Runnable {
   }
 
   void pmesh() throws ScriptException {
-    if (statementLength < 2 || statementLength > 3)
-      badArgumentCount();
-    if (statement[1].tok != Token.string)
-      filenameExpected();
-    String filename = (String)statement[1].value;
-    Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
-    System.out.println("t=" + t);
-    if (t instanceof String)
-      fileNotFoundException(filename + ":" + t);
-    BufferedReader br =
-      new BufferedReader(new InputStreamReader((InputStream)t));
     viewer.setShapeSize(JmolConstants.SHAPE_PMESH, 1);
-    viewer.setShapeProperty(JmolConstants.SHAPE_PMESH,
-                            "bufferedreader", br);
+    viewer.setShapeProperty(JmolConstants.SHAPE_PMESH, "meshID", null);
+    for (int i = 1; i < statementLength; ++i) {
+      String propertyName = null;
+      Object propertyValue = null;
+      switch (statement[i].tok) {
+      case Token.identifier:
+        propertyName = "meshID";
+        propertyValue = statement[i].value;
+        break;
+      case Token.string:
+        String filename = (String)statement[i].value;
+        Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
+        if (t instanceof String)
+          fileNotFoundException(filename + ":" + t);
+        BufferedReader br =
+          new BufferedReader(new InputStreamReader((InputStream)t));
+        propertyName = "bufferedreader";
+        propertyValue = br;
+        break;
+      case Token.on:
+        propertyName = "on";
+        break;
+      case Token.off:
+        propertyName = "off";
+        break;
+      case Token.solid:
+        propertyName = "solid";
+        break;
+      case Token.transparent:
+        propertyName = "transparent";
+        break;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_PMESH,
+                              propertyName, propertyValue);
+    }
   }
 }

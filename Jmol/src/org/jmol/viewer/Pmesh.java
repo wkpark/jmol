@@ -33,65 +33,149 @@ import javax.vecmath.Point3f;
 
 class Pmesh extends SelectionIndependentShape {
 
-  int vertexCount;
-  Point3f[] vertices;
-  int polygonCount;
-  int[][] polygonIndexes;
-
+  int meshCount;
+  Mesh[] meshes = new Mesh[4];
+  Mesh currentMesh;
+  
   void initShape() {
     colix = Graphics3D.RED;
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+
+    /*
+    System.out.println("setProperty(" + propertyName + "," + value + ")");
+    System.out.println("meshCount=" + meshCount +
+                       " currentMesh=" + currentMesh);
+    for (int i = 0; i < meshCount; ++i) {
+      Mesh mesh = meshes[i];
+      System.out.println("i=" + i +
+                         " mesh.meshID=" + mesh.meshID +
+                         " mesh.visible=" + mesh.visible +
+                         " mesh.transparent=" + mesh.transparent +
+                         " mesh.colix=" + mesh.meshColix);
+    }
+    */
+    if ("meshID" == propertyName) {
+      String meshID = (String)value;
+      //      System.out.println("meshID=" + meshID);
+      if (meshID == null) {
+        currentMesh = null;
+        return;
+      }
+      for (int i = meshCount; --i >= 0; ) {
+        currentMesh = meshes[i];
+        if (meshID.equals(currentMesh.meshID))
+          return;
+      }
+      allocMesh(meshID);
+      return;
+    }
     if ("bufferedreader" == propertyName) {
       BufferedReader br = (BufferedReader)value;
+      if (currentMesh == null)
+        allocMesh(null);
+      currentMesh.clear();
       readPmesh(br);
+      currentMesh.visible = true;
+      currentMesh.transparent = false;
+      return;
+    }
+    if ("on" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.visible = true;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].visible = true;
+      }
+      return;
+    }
+    if ("off" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.visible = false;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].visible = false;
+      }
+      return;
+    }
+    if ("transparent" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.transparent = true;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].transparent = true;
+      }
+      return;
+    }
+    if ("solid" == propertyName) {
+      if (currentMesh != null)
+        currentMesh.transparent = false;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].transparent = false;
+      }
+      return;
+    }
+    if ("color" == propertyName) {
+      colix = g3d.getColix(value);
+      if (currentMesh != null)
+        currentMesh.meshColix = colix;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].meshColix = colix;
+      }
       return;
     }
   }
+  
+  void allocMesh(String meshID) {
+    Util.ensureLength(meshes, meshCount + 1);
+    currentMesh = meshes[meshCount++] = new Mesh(meshID);
+  }
 
   void readPmesh(BufferedReader br) {
-    System.out.println("Pmesh.readPmesh(" + br + ")");
+    //    System.out.println("Pmesh.readPmesh(" + br + ")");
     try {
       readVertexCount(br);
-      System.out.println("vertexCount=" + vertexCount);
+      //      System.out.println("vertexCount=" + currentMesh.vertexCount);
       readVertices(br);
-      System.out.println("vertices read");
+      //      System.out.println("vertices read");
       readPolygonCount(br);
-      System.out.println("polygonCount=" + polygonCount);
+      //      System.out.println("polygonCount=" + currentMesh.polygonCount);
       readPolygonIndexes(br);
-      System.out.println("polygonIndexes read");
+      //      System.out.println("polygonIndexes read");
     } catch (Exception e) {
       System.out.println("Pmesh.readPmesh exception:" + e);
     }
   }
 
   void readVertexCount(BufferedReader br) throws Exception {
-    vertexCount = parseInt(br.readLine());
+    currentMesh.vertexCount = parseInt(br.readLine());
   }
 
   void readVertices(BufferedReader br) throws Exception {
-    if (vertexCount > 0) {
-      vertices = new Point3f[vertexCount];
-      for (int i = 0; i < vertexCount; ++i) {
+    if (currentMesh.vertexCount > 0) {
+      currentMesh.vertices = new Point3f[currentMesh.vertexCount];
+      for (int i = 0; i < currentMesh.vertexCount; ++i) {
         String line = br.readLine();
         float x = parseFloat(line);
         float y = parseFloat(line, ichNextParse);
         float z = parseFloat(line, ichNextParse);
-        vertices[i] = new Point3f(x, y, z);
+        currentMesh.vertices[i] = new Point3f(x, y, z);
       }
     }
   }
 
   void readPolygonCount(BufferedReader br) throws Exception {
-    polygonCount = parseInt(br.readLine());
+    currentMesh.polygonCount = parseInt(br.readLine());
   }
 
   void readPolygonIndexes(BufferedReader br) throws Exception {
-    if (polygonCount > 0) {
-      polygonIndexes = new int[polygonCount][];
-      for (int i = 0; i < polygonCount; ++i)
-        polygonIndexes[i] = readPolygon(br);
+    if (currentMesh.polygonCount > 0) {
+      currentMesh.polygonIndexes = new int[currentMesh.polygonCount][];
+      for (int i = 0; i < currentMesh.polygonCount; ++i)
+        currentMesh.polygonIndexes[i] = readPolygon(br);
     }
   }
 
@@ -105,8 +189,8 @@ class Pmesh extends SelectionIndependentShape {
       vertices[i] = parseInt(br.readLine());
     int extraVertex = parseInt(br.readLine());
     if (extraVertex != vertices[0]) {
-      System.out.println("?Que?");
-      return null;
+      System.out.println("?Que? polygon is not complete");
+      throw new NullPointerException();
     }
     return vertices;
   }
@@ -241,4 +325,27 @@ class Pmesh extends SelectionIndependentShape {
     return value;
   }
 
+  class Mesh {
+    String meshID;
+    boolean transparent;
+    boolean visible;
+    short meshColix;
+    
+    int vertexCount;
+    Point3f[] vertices;
+    int polygonCount;
+    int[][] polygonIndexes;
+    
+    Mesh(String meshID) {
+      this.meshID = meshID;
+      this.meshColix = colix;
+    }
+
+    void clear() {
+      vertexCount = polygonCount = 0;
+      vertices = null;
+      polygonIndexes = null;
+    }
+  }
 }
+

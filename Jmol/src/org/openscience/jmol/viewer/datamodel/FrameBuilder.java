@@ -96,6 +96,8 @@ public class FrameBuilder {
 
     frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile,
                                                           frameNumber));
+    frame.setCrystalScaleMatrix(adapter.getCrystalScaleMatrix(clientFile,
+                                                              frameNumber));
 
     if (hasPdbRecords) {
       String[] structures = adapter.getPdbStructureRecords(clientFile, frameNumber);

@@ -190,6 +190,10 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return ((Model)clientFile).notionalUnitcell;
   }
 
+  public float[][] getCrystalScaleMatrix(Object clientFile, int frameNumber) {
+    return ((Model)clientFile).crystalScaleMatrix;
+  }
+
   /****************************************************************
    * the frame iterators
    ****************************************************************/
@@ -359,6 +363,7 @@ abstract class Model {
   String errorMessage;
   String fileHeader;
   float[] notionalUnitcell;
+  float[][] crystalScaleMatrix;
 
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
@@ -548,6 +553,21 @@ class PdbModel extends Model {
         accumulatingHeader = false;
         continue;
       }
+      if (line.startsWith("SCALE1")) {
+        scale1();
+        accumulatingHeader = false;
+        continue;
+      }
+      if (line.startsWith("SCALE2")) {
+        scale2();
+        accumulatingHeader = false;
+        continue;
+      }
+      if (line.startsWith("SCALE3")) {
+        scale3();
+        accumulatingHeader = false;
+        continue;
+      }
       if (line.startsWith("HEADER") && line.length() >= 66) {
         setModelName(line.substring(62, 66));
         continue;
@@ -725,6 +745,50 @@ class PdbModel extends Model {
   }
 
   float getFloat(int ich, int cch) throws Exception {
-    return Float.valueOf(line.substring(ich, ich+cch)).floatValue();
+    String strFloat = line.substring(ich, ich+cch).trim();
+    System.out.println("strFloat=" + strFloat);
+    float value = Float.valueOf(strFloat).floatValue();
+    System.out.println("value=" + value);
+    return value;
+  }
+
+  void scale(int n) throws Exception {
+    float[] row = new float[4];
+    crystalScaleMatrix[n] = row;
+    row[0] = getFloat(10, 10);
+    row[1] = getFloat(20, 10);
+    row[2] = getFloat(30, 10);
+    row[3] = getFloat(45, 10);
+  }
+
+  void scale1() {
+    System.out.println("scale1 seen");
+    try {
+      crystalScaleMatrix = new float[3][];
+      scale(0);
+    } catch (Exception e) {
+      crystalScaleMatrix = null;
+      System.out.println("scale1 died:" + 3);
+    }
+  }
+
+  void scale2() {
+    System.out.println("scale2 seen");
+    try {
+      scale(1);
+    } catch (Exception e) {
+      crystalScaleMatrix = null;
+      System.out.println("scale2 died");
+    }
+  }
+
+  void scale3() {
+    System.out.println("scale3 seen");
+    try {
+      scale(2);
+    } catch (Exception e) {
+      crystalScaleMatrix = null;
+      System.out.println("scale3 died");
+    }
   }
 }

@@ -52,6 +52,7 @@ public class Frame {
   int bondCount = 0;
   public Bond[] bonds;
   public float[] notionalUnitcell;
+  public float[][] crystalScaleMatrix;
 
   public Frame(JmolViewer viewer, int atomCount,
                    int modelType, boolean hasPdbRecords) {
@@ -834,6 +835,25 @@ public class Frame {
                          notionalUnitcell);
     else
       this.notionalUnitcell = notionalUnitcell;
+  }
+
+  public void setCrystalScaleMatrix(float[][] crystalScaleMatrix) {
+    if (crystalScaleMatrix == null)
+      return;
+    if (crystalScaleMatrix.length != 3) {
+      System.out.println("crystalScaleMatrix length incorrect:" + 
+                        crystalScaleMatrix);
+      return;
+    }
+    for (int i = 3; --i >= 0; ) {
+      float[] row = crystalScaleMatrix[i];
+      if (row == null || row.length != 4) {
+        System.out.println("bad crystalScaleMatrix row:" +
+                           crystalScaleMatrix);
+        return;
+      }
+    }
+    this.crystalScaleMatrix = crystalScaleMatrix;
   }
 
   public Renderer getRenderer(int refGraphic) {

@@ -41,6 +41,8 @@ public class Unitcell extends Graphic {
 
   public void initGraphic() {
     float[] notionalUnitcell = frame.notionalUnitcell;
+    float[][] crystalScaleMatrix = frame.crystalScaleMatrix;
+    dumpCellData(notionalUnitcell, crystalScaleMatrix);
     hasUnitcell = notionalUnitcell != null;
     if (hasUnitcell) {
       float a = this.a = notionalUnitcell[0];
@@ -96,6 +98,29 @@ public class Unitcell extends Graphic {
         pointBC,
         pointABC
       };
+    }
+  }
+
+  void dumpCellData(float[] notionalUnitcell, float[][] crystalScaleMatrix) {
+    if (notionalUnitcell == null) {
+      System.out.println("notional unitcell is null");
+      return;
+    }
+    System.out.print("unitcell:");
+    for (int i = 0; i < 6; ++i)
+      System.out.print(" " + notionalUnitcell[i]);
+    System.out.println("");
+
+    if (crystalScaleMatrix == null) {
+      System.out.println("scale matrix is null");
+      return;
+    }
+
+    System.out.print("scale matrix:\n");
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 4; ++j)
+        System.out.print(" " + crystalScaleMatrix[i][j]);
+      System.out.println("");
     }
   }
 

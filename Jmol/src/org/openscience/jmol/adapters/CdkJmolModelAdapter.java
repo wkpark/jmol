@@ -228,6 +228,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return null;
   }
 
+  public float[][] getCrystalScaleMatrix(Object clientFile, int frameNumber) {
+    return null;
+  }
+
   /****************************************************************
    * the frame iterators
    ****************************************************************/

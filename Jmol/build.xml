@@ -143,6 +143,8 @@
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
         debug="on" deprecation="on">
       <classpath refid="project.class.path" />
+      <!-- removed until all base classes are CDK based -->
+      <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
     </javac>
     <copy todir="${classes.dir}" >
       <fileset dir="${source.dir}">

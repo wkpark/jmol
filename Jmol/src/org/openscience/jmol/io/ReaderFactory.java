@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -204,11 +203,12 @@ public abstract class ReaderFactory {
       } else if (line.startsWith("molstruct")) {
         System.out.println("ReaderFactory: CACheReader");
         return new CACheReader(buffer);
+      /** This is removed until all base classes are CDK based
       } else if (line.startsWith("ZERR ") ||
                  line.startsWith("TITL ")) {
         buffer.reset();
         System.out.println("ReaderFactory: ShelXReader");
-        return new ShelXReader(buffer);
+        return new ShelXReader(buffer); **/
       }
       line = buffer.readLine();
     }

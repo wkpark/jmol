@@ -68,7 +68,6 @@ org/openscience/jmol/io/DefaultChemFileReader.java
 org/openscience/jmol/io/ABINITReader.java
 org/openscience/jmol/io/ABINITInputReader.java
 org/openscience/jmol/io/GhemicalMMReader.java
-org/openscience/jmol/io/ShelXReader.java
 org/openscience/jmol/render/AtomRenderer.java
 org/openscience/jmol/render/BondRenderer.java
 org/openscience/jmol/render/ArrowLine.java

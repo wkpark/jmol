@@ -207,11 +207,15 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     }
     public int getModelNumber() { return atom.modelNumber; }
     public Object getUniqueID() { return atom; }
-    public String getAtomicSymbol() { return atom.atomicSymbol; }
+    public String getAtomicSymbol() { return atom.elementSymbol; }
     public int getAtomicCharge() { return atom.atomicCharge; }
     public float getX() { return atom.x; }
     public float getY() { return atom.y; }
     public float getZ() { return atom.z; }
+    public boolean hasVector() { return atom.vectorX != Float.NaN; };
+    public float getVectorX() { return atom.vectorX; }
+    public float getVectorY() { return atom.vectorY; }
+    public float getVectorZ() { return atom.vectorZ; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
@@ -247,14 +251,29 @@ public class SimpleModelAdapter extends JmolModelAdapter {
 }
 
 class Atom {
-  String atomicSymbol;
+  int modelNumber;
+  String elementSymbol;
   int atomicCharge;
   float x, y, z;
+  float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   String pdbAtomRecord;
-  int modelNumber;
+
+  Atom(int modelNumber, String symbol, int charge,
+       float x, float y, float z,
+       float vectorX, float vectorY, float vectorZ) {
+    this.modelNumber = modelNumber;
+    this.elementSymbol = symbol;
+    this.atomicCharge = charge;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.vectorX = vectorX;
+    this.vectorY = vectorY;
+    this.vectorZ = vectorZ;
+  }
 
   Atom(String symbol, int charge, float x, float y, float z) {
-    this.atomicSymbol = symbol;
+    this.elementSymbol = symbol;
     this.atomicCharge = charge;
     this.x = x;
     this.y = y;
@@ -263,7 +282,7 @@ class Atom {
 
   Atom(int modelNumber, String symbol, int charge,
        float x, float y, float z, String pdb) {
-    this.atomicSymbol = symbol;
+    this.elementSymbol = symbol;
     this.atomicCharge = charge;
     this.x = x;
     this.y = y;
@@ -324,32 +343,66 @@ class XyzModel extends Model {
     
   XyzModel(BufferedReader reader) {
     try {
-      readAtomCount(reader);
-      setModelName(reader.readLine());
-      readAtoms(reader);
+      int modelNumber = 1;
+      int modelCount;
+      while ((modelCount = readAtomCount(reader)) > 0) {
+        if (modelNumber == 1)
+          setModelName(reader.readLine());
+        else
+          reader.readLine();
+        readAtoms(reader, modelNumber, modelCount);
+        atomCount += modelCount;
+        ++modelNumber;
+      }
     } catch (Exception ex) {
       errorMessage = "Could not read file:" + ex;
+      System.out.println(errorMessage);
+      ex.printStackTrace();
+    }
+    if (atomCount == 0) {
+      errorMessage = "No atoms in file";
       System.out.println(errorMessage);
     }
   }
     
-  void readAtomCount(BufferedReader reader) throws Exception {
+  int readAtomCount(BufferedReader reader) throws Exception {
     String line = reader.readLine();
+    if (line == null)
+      return 0;
     StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
-    atomCount = Integer.parseInt(tokenizer.nextToken());
-    System.out.println("atomCount=" + atomCount);
+    if (! tokenizer.hasMoreTokens())
+      return 0;
+    return Integer.parseInt(tokenizer.nextToken());
   }
 
-  void readAtoms(BufferedReader reader) throws Exception {
-    atoms = new Atom[atomCount];
-    for (int i = 0; i < atomCount; ++i) {
-      StringTokenizer tokenizer = new StringTokenizer(reader.readLine(), "\t ");
-      String atomicSymbol = tokenizer.nextToken();
-      int charge = 0;
+  void readAtoms(BufferedReader reader, int modelNumber, int modelCount)
+    throws Exception {
+    Atom[] t = new Atom[atomCount + modelCount];
+    if (atomCount > 0)
+      System.arraycopy(atoms, 0, t, 0, atomCount);
+    atoms = t;
+    float[] chargeAndOrVector = new float[4];
+    for (int i = 0; i < modelCount; ++i) {
+      StringTokenizer tokenizer =
+        new StringTokenizer(reader.readLine(), "\t ");
+      String elementSymbol = tokenizer.nextToken();
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = Float.valueOf(tokenizer.nextToken()).floatValue();
-      atoms[i] = new Atom(atomicSymbol, charge, x, y, z);
+      int j;
+      for (j = 0; j < 4 && tokenizer.hasMoreTokens(); ++j)
+        chargeAndOrVector[j] =
+          Float.valueOf(tokenizer.nextToken()).floatValue();
+      int charge = (j == 1 || j == 4) ? (int)chargeAndOrVector[0] : 0;
+      float vectorX, vectorY, vectorZ;
+      vectorX = vectorY = vectorZ = Float.NaN;
+      if (j >= 3) {
+        vectorX = chargeAndOrVector[j - 3];
+        vectorY = chargeAndOrVector[j - 2];
+        vectorZ = chargeAndOrVector[j - 1];
+      }
+      atoms[atomCount + i] = new Atom(modelNumber, elementSymbol, charge,
+                                      x, y, z, vectorX, vectorY, vectorZ);
     }
   }
 }
@@ -380,13 +433,13 @@ class JmeModel extends Model {
       String atom = tokenizer.nextToken();
       //      System.out.println("atom=" + atom);
       int indexColon = atom.indexOf(':');
-      String atomicSymbol = (indexColon > 0
+      String elementSymbol = (indexColon > 0
                              ? atom.substring(0, indexColon)
                              : atom);
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = 0;
-      atoms[i] = new Atom(atomicSymbol, 0, x, y, z);
+      atoms[i] = new Atom(elementSymbol, 0, x, y, z);
     }
   }
 
@@ -425,7 +478,7 @@ class MolModel extends Model {
     atoms = new Atom[atomCount];
     for (int i = 0; i < atomCount; ++i) {
       String line = reader.readLine();
-      String atomicSymbol = line.substring(31,34).trim();
+      String elementSymbol = line.substring(31,34).trim();
       float x = Float.valueOf(line.substring( 0,10).trim()).floatValue();
       float y = Float.valueOf(line.substring(10,20).trim()).floatValue();
       float z = Float.valueOf(line.substring(20,30).trim()).floatValue();
@@ -436,7 +489,7 @@ class MolModel extends Model {
           charge = 4 - chargeCode;
       }
 
-      atoms[i] = new Atom(atomicSymbol, charge, x, y, z);
+      atoms[i] = new Atom(elementSymbol, charge, x, y, z);
     }
   }
 
@@ -533,18 +586,18 @@ class PdbModel extends Model {
       if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
         return;
       int len = line.length();
-      String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
-      int cchAtomicSymbol = atomicSymbol.length();
+      String elementSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
+      int cchAtomicSymbol = elementSymbol.length();
       if (cchAtomicSymbol == 0 ||
-          Character.isDigit(atomicSymbol.charAt(0)) ||
-          (cchAtomicSymbol == 2 && Character.isDigit(atomicSymbol.charAt(1)))) {
+          Character.isDigit(elementSymbol.charAt(0)) ||
+          (cchAtomicSymbol == 2 && Character.isDigit(elementSymbol.charAt(1)))) {
         char ch13 = line.charAt(13);
         boolean isValid13 = isValidAtomicSymbolChar(ch13);
         char ch12 = line.charAt(12);
         if (isValidAtomicSymbolChar(ch12))
-          atomicSymbol = isValid13 ? "" + ch12 + ch13 : "" + ch12;
+          elementSymbol = isValid13 ? "" + ch12 + ch13 : "" + ch12;
         else
-          atomicSymbol = isValid13 ? "" + ch13 : "Xx";
+          elementSymbol = isValid13 ? "" + ch13 : "Xx";
       }
       /****************************************************************
        * calculate the charge from cols 79 & 80 (1-based)
@@ -583,7 +636,7 @@ class PdbModel extends Model {
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      atoms[atomCount++] = new Atom(currentModelNumber, atomicSymbol,
+      atoms[atomCount++] = new Atom(currentModelNumber, elementSymbol,
                                     charge, x, y, z, line);
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;

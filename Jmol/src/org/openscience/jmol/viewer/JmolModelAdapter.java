@@ -172,6 +172,10 @@ public abstract class JmolModelAdapter {
     abstract public float getX();
     abstract public float getY();
     abstract public float getZ();
+    public boolean hasVector() { return false; }
+    public float getVectorX() { return Float.NaN; }
+    public float getVectorY() { return Float.NaN; }
+    public float getVectorZ() { return Float.NaN; }
     public String getPdbAtomRecord() { return null; }
   }
 

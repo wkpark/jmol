@@ -38,7 +38,6 @@ import org.openscience.cdk.CDKConstants;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.SetOfMolecules;
-import org.openscience.cdk.tools.SetOfMoleculesManipulator;
 import org.openscience.cdk.Crystal;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.AtomContainer;
@@ -49,8 +48,9 @@ import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.CrystalGeometryTools;
 
 import org.openscience.cdk.tools.AtomTypeFactory;
-import org.openscience.cdk.tools.SetOfMoleculesManipulator;
-import org.openscience.cdk.tools.ChemFileManipulator;
+import org.openscience.cdk.tools.manipulator.SetOfMoleculesManipulator;
+import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
+import org.openscience.cdk.tools.manipulator.SetOfMoleculesManipulator;
 
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -240,9 +240,9 @@ public class CdkModelAdapter extends ModelAdapter {
     public Object getUniqueID() { return atom; }
     public int getElementNumber() { return atom.getAtomicNumber(); }
     public String getElementSymbol() { return atom.getSymbol(); }
-    public float getX() { return (float)atom.getX3D(); }
-    public float getY() { return (float)atom.getY3D(); }
-    public float getZ() { return (float)atom.getZ3D(); }
+    public float getX() { return (float)atom.getX3d(); }
+    public float getY() { return (float)atom.getY3d(); }
+    public float getZ() { return (float)atom.getZ3d(); }
     public String getPdbAtomRecord() {
       return (String)atom.getProperty("pdb.record");
     }

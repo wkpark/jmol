@@ -247,8 +247,8 @@ public class Token {
   final static int temperature  = atomproperty | 4;
   final static int model        = atomproperty | 5 | showparam;
   final static int _bondedcount = atomproperty | 6;
-  final static int _resid       = atomproperty | 7;
-  final static int _atomid      = atomproperty | 8;
+  final static int _groupID     = atomproperty | 7;
+  final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
 
   final static int opGT         = comparator |  0;
@@ -303,7 +303,7 @@ public class Token {
   final static String[] comparatorNames = {">", ">=", "<=", "<", "=", "!="};
   final static String[] atomPropertyNames = {
     "atomno", "elemno", "resno", "radius", "temperature", "model",
-    "_bondedcount", "_resid", "_atomid", "_structure"};
+    "_bondedcount", "_groupID", "_atomID", "_structure"};
 
   final static Object[] arrayPairs  = {
     // commands
@@ -462,8 +462,9 @@ public class Token {
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
     "_bondedcount", new Token(_bondedcount, "_bondedcount"),
-    "_resid",       new Token(_resid, "_resid"),
-    "_atomid",      new Token(_atomid, "_atomid"),
+    "_groupID",     new Token(_groupID, "_groupID"),
+    "_g",           null,
+    "_atomID",      new Token(_atomID, "_atomID"),
     "_structure",   new Token(_structure, "_structure"),
 
     "off",          new Token(off, 0, "off"),
@@ -510,7 +511,7 @@ public class Token {
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",
     "@alpha _atomid=1", // rasmol doc says "approximately *.CA" - whatever?
-    "@amino _resid<=22",
+    "@amino _g<=22",
     "@aromatic his,phe,trp,tyr",
     //    "@backbone amino & _atomid<=3,nucleic & _atomid>=4 & _atomid<=15",
     "@backbone amino & _atomid<=3,nucleic & (_atomid>=8 & _atomid<=29)",
@@ -529,7 +530,7 @@ public class Token {
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
     "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
-    "@ions _resid=69,_resid=70",
+    "@ions _g=69,_g=70",
     "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
     "@ligand hetero & !solvent",
     "@medium asn,asp,cys,pro,thr,val",
@@ -545,21 +546,21 @@ public class Token {
     "@sidechain protein and !backbone", // doc & code inconsistent
     "@base nucleic and !backbone",
     "@small ala,gly,ser",
-    "@solvent _resid>=69 & _resid<=72", // water or ions
+    "@solvent _g>=69 & _g<=72", // water or ions
     "@surface !buried",
     "@turn _structure=1",
-    "@water _resid=69,_resid=70",
+    "@water _g=69,_g=70",
     "@hoh water",
 
-    "@nucleic _resid>=23 & _resid<=68",
-    "@purine _resid>=23 & _resid<=28",
-    "@pyrimidine _resid>=29 & _resid<=34",
-    "@a _resid=23,_resid=24,_resid>=35 & _resid <=36,_resid>=51 & _resid<=53",
-    "@c _resid=29,_resid=30,_resid>=37 & _resid<=38,_resid>=60 & _resid<=62",
-    "@g _resid=25,_resid=26,_resid>=39 & _resid<=45,_resid>=54 & _resid<=56",
-    "@t _resid=31,_resid=32,_resid>=63 & _resid<=65",
-    "@u _resid=33,_resid=34,_resid>=47 & _resid<=50,_resid>=66 & _resid<=68",
-    "@i _resid=27,_resid=28,_resid>=57 & _resid<=59",
+    "@nucleic _g>=23 & _g<=68",
+    "@purine _g>=23 & _g<=28",
+    "@pyrimidine _g>=29 & _g<=34",
+    "@a _g=23,_g=24,_g>=35 & _g<=36,_g>=51 & _g<=53",
+    "@c _g=29,_g=30,_g>=37 & _g<=38,_g>=60 & _g<=62",
+    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
+    "@t _g=31,_g=32,_g>=63 & _g<=65",
+    "@u _g=33,_g=34,_g>=47 & _g<=50,_g>=66 & _g<=68",
+    "@i _g=27,_g=28,_g>=57 & _g<=59",
 
     // "@hydrogen _e=1", handled specially
     "@helium _e=2",
@@ -644,9 +645,9 @@ public class Token {
       ((value == null) ? "" : ":" + value) + "]";
   }
 
-  static int getResid(String strSpec) {
-    for (int i = JmolConstants.predefinedResidueNames3.length; --i >= 0; )
-      if (strSpec.equals(JmolConstants.predefinedResidueNames3[i]))
+  static int maybeGetGroupID(String strSpec) {
+    for (int i = JmolConstants.predefinedGroup3Names.length; --i >= 0; )
+      if (strSpec.equals(JmolConstants.predefinedGroup3Names[i]))
           return i;
     return -1;
   }

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.protein;
+package org.openscience.jmol.viewer.pdb;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;

@@ -22,28 +22,28 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.protein;
+package org.openscience.jmol.viewer.pdb;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
 
-public class PdbResidue {
+public class PdbGroup {
 
   public PdbStructure structure;
   public PdbMolecule pdbmolecule;
   public char chainID;
-  public short residueID;
-  public short resid;
+  public short groupSequence;
+  public short groupID;
   int[] mainchainIndices;
 
-  public PdbResidue(PdbMolecule pdbmolecule, char chainID,
-                    short residueID, short resid) {
+  public PdbGroup(PdbMolecule pdbmolecule, char chainID,
+                  short groupSequence, String group3) {
     this.pdbmolecule = pdbmolecule;
     this.chainID = chainID;
-    this.residueID = residueID;
-    this.resid = resid;
+    this.groupSequence = groupSequence;
+    this.groupID = lookupGroupID(group3);
   }
 
   public void setStructure(PdbStructure structure) {
@@ -53,34 +53,38 @@ public class PdbResidue {
   public byte getStructureType() {
     return structure == null ? 0 : structure.type;
   }
-
-  public static boolean isResidue3(short resid, String residue3) {
-    return residueNames3[resid].equalsIgnoreCase(residue3);
+  
+  public boolean isGroup3(String group3) {
+    return group3Names[groupID].equalsIgnoreCase(group3);
   }
 
-  public static String getResidue3(short resid) {
-    return residueNames3[resid];
+  public String getGroup3() {
+    return group3Names[groupID];
   }
 
-  public short getResidueID() {
-    return residueID;
+  public static String getGroup3(short groupID) {
+    return group3Names[groupID];
   }
 
-  public short getResID() {
-    return resid;
+  public short getSequence() {
+    return groupSequence;
   }
 
-  public static boolean isResidueNameMatch(short resid, String strWildcard) {
+  public short getGroupID() {
+    return groupID;
+  }
+
+  public boolean isGroup3Match(String strWildcard) {
     if (strWildcard.length() != 3) {
-      System.err.println("residue wildcard length != 3");
+      System.err.println("group wildcard length != 3");
       return false;
     }
-    String strResidue = residueNames3[resid];
+    String group3 = group3Names[groupID];
     for (int i = 0; i < 3; ++i) {
       char charWild = strWildcard.charAt(i);
       if (charWild == '?')
         continue;
-      if (charWild != strResidue.charAt(i))
+      if (charWild != group3.charAt(i))
         return false;
     }
     return true;
@@ -101,37 +105,37 @@ public class PdbResidue {
   }
 
   /****************************************************************
-   * static stuff for residue ids
+   * static stuff for group ids
    ****************************************************************/
 
-  private static Hashtable htResidue = new Hashtable();
+  private static Hashtable htGroup = new Hashtable();
 
-  static String[] residueNames3 = new String[128];
-  static short residMax = 0;
+  static String[] group3Names = new String[128];
+  static short group3NameCount = 0;
 
   static {
-    for (int i = 0; i < JmolConstants.predefinedResidueNames3.length; ++i)
-      addResidueName(JmolConstants.predefinedResidueNames3[i]);
+    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i)
+      addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
   }
 
-  synchronized static short addResidueName(String name) {
-    if (residMax == residueNames3.length) {
+  synchronized static short addGroup3Name(String group3) {
+    if (group3NameCount == group3Names.length) {
       String[] t;
-      t = new String[residMax * 2];
-      System.arraycopy(residueNames3, 0, t, 0, residMax);
-      residueNames3 = t;
+      t = new String[group3NameCount * 2];
+      System.arraycopy(group3Names, 0, t, 0, group3NameCount);
+      group3Names = t;
     }
-    short resid = residMax++;
-    residueNames3[resid] = name;
-    htResidue.put(name, new Short(resid));
-    return resid;
+    short groupID = group3NameCount++;
+    group3Names[groupID] = group3;
+    htGroup.put(group3, new Short(groupID));
+    return groupID;
   }
 
-  static short lookupResid(String strRes3) {
-    Short boxedResid = (Short)htResidue.get(strRes3);
-    if (boxedResid != null)
-      return boxedResid.shortValue();
-    return addResidueName(strRes3);
+  short lookupGroupID(String group3) {
+    Short boxedGroupID = (Short)htGroup.get(group3);
+    if (boxedGroupID != null)
+      return boxedGroupID.shortValue();
+    return addGroup3Name(group3);
   }
 
   boolean registerMainchainAtomIndex(short atomid, int atomIndex) {

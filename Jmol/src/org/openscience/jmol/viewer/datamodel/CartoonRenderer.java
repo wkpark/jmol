@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -62,7 +62,7 @@ class CartoonRenderer extends Renderer {
   }
   
   int residueCount;
-  PdbResidue[] residues;
+  PdbGroup[] residues;
   Point3i[] screens;
   Atom[] alphas;
   boolean[] isSpecials;
@@ -80,12 +80,12 @@ class CartoonRenderer extends Renderer {
   Point3f[] calcCordMidPoints(PdbChain pdbchain) {
     int count = residueCount + 1;
     Point3f[] cordMidPoints = frameRenderer.getTempPoints(count);
-    PdbResidue residuePrev = null;
+    PdbGroup residuePrev = null;
     PdbStructure structurePrev = null;
     Point3f point;
     for (int i = 0; i < residueCount; ++i) {
       point = cordMidPoints[i];
-      PdbResidue residue = residues[i];
+      PdbGroup residue = residues[i];
       if (isSpecials[i] = residue.isHelixOrSheet()) {
         PdbStructure structure = residue.structure;
         point.set(i - 1 != structure.getStartResidueIndex()
@@ -140,7 +140,7 @@ class CartoonRenderer extends Renderer {
       short colix = colixes[i];
       if (colix == 0)
         colix = alphas[i].colixAtom;
-      PdbResidue residue = residues[i];
+      PdbGroup residue = residues[i];
       if (residue.isHelixOrSheet())
         renderSpecialSegment(residue, i, colix, mads[i]);
       else
@@ -176,10 +176,10 @@ class CartoonRenderer extends Renderer {
 
   int mainchainLast;
 
-  void render1ChainX(PdbResidue[] mainchain, short[] mads, short[] colixes) {
+  void render1ChainX(PdbGroup[] mainchain, short[] mads, short[] colixes) {
     mainchainLast = mainchain.length - 1;
     for (int i = 0; i < mainchain.length; ++i) {
-      PdbResidue residue = mainchain[i];
+      PdbGroup residue = mainchain[i];
       short colix = colixes[i];
       if (colix == 0)
         colix = residue.getAlphaCarbonAtom().colixAtom;
@@ -193,7 +193,7 @@ class CartoonRenderer extends Renderer {
     renderPending();
   }
 
-  void calcSegmentPoints(PdbResidue[] mainchain, int i, short[] mads) {
+  void calcSegmentPoints(PdbGroup[] mainchain, int i, short[] mads) {
     int iPrev1 = i - 1, iPrev2 = i - 2, iNext1 = i + 1, iNext2 = i + 2;
     if (iPrev1 < 0)
       iPrev1 = 0;
@@ -248,7 +248,7 @@ class CartoonRenderer extends Renderer {
     diameterEnd = viewer.scaleToScreen(s2.z, madEnd);
   }
 
-  void calcAverage(PdbResidue[] mainchain, int iA, int iB, Point3i dest) {
+  void calcAverage(PdbGroup[] mainchain, int iA, int iB, Point3i dest) {
     Atom atomA = mainchain[iA].getAlphaCarbonAtom();
     Atom atomB = mainchain[iB].getAlphaCarbonAtom();
     dest.x = (atomA.x + atomB.x) / 2;
@@ -265,7 +265,7 @@ class CartoonRenderer extends Renderer {
   Point3i screenB = new Point3i();
   Point3i screenC = new Point3i();
 
-  void renderSpecialSegment(PdbResidue residue, int residueIndex,
+  void renderSpecialSegment(PdbGroup residue, int residueIndex,
                             short colix, short mad) {
     PdbStructure structure = residue.structure;
     if (tPending) {

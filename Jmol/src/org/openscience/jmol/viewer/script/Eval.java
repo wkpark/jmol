@@ -26,7 +26,7 @@ package org.openscience.jmol.viewer.script;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.*;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
@@ -441,7 +441,7 @@ public class Eval implements Runnable {
         continue;
       case Token.spec_resid:
         strbufLog.append('[');
-        strbufLog.append(PdbResidue.getResidue3((short)token.intValue));
+        strbufLog.append(PdbGroup.getGroup3((short)token.intValue));
         strbufLog.append(']');
         continue;
       case Token.spec_name_pattern:
@@ -753,7 +753,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (pdbatom.isResidueNameMatch(resNameSpec))
+      if (pdbatom.isGroup3Match(resNameSpec))
         bsRes.set(i);
     }
     return bsRes;
@@ -766,7 +766,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (pdbatom.getResID() == resid)
+      if (pdbatom.getGroupID() == resid)
         bsRes.set(i);
     }
     return bsRes;
@@ -779,7 +779,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (number == pdbatom.getResidueNumber())
+      if (number == pdbatom.getGroupSequence())
         bsResno.set(i);
     }
     return bsResno;
@@ -792,7 +792,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      int atomResno = pdbatom.getResidueNumber();
+      int atomResno = pdbatom.getGroupSequence();
       if (atomResno >= resnoMin && atomResno <= resnoLast)
         bsResidue.set(i);
     }
@@ -834,7 +834,7 @@ public class Eval implements Runnable {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (pdbatom.isResidueNameMatch(strWildcard))
+      if (pdbatom.isGroup3Match(strWildcard))
         bsResidue.set(i);
     }
     return bsResidue;
@@ -901,12 +901,12 @@ public class Eval implements Runnable {
         if (propertyValue == -1)
           continue;
         break;
-      case Token._resid:
-       propertyValue = getResID(atom);
+      case Token._groupID:
+       propertyValue = getGroupID(atom);
         if (propertyValue == -1)
           continue;
         break;
-      case Token._atomid:
+      case Token._atomID:
        propertyValue = getAtomID(atom);
         if (propertyValue == -1)
           continue;
@@ -968,7 +968,7 @@ public class Eval implements Runnable {
 
   int getResno(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getResidueNumber();
+    return (pdbatom == null) ? -1 : pdbatom.getGroupSequence();
   }
 
   int getTemperature(Atom atom) {
@@ -976,9 +976,9 @@ public class Eval implements Runnable {
     return (pdbatom == null) ? -1 : pdbatom.getTemperature();
   }
 
-  int getResID(Atom atom) {
+  int getGroupID(Atom atom) {
     PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getResID();
+    return (pdbatom == null) ? -1 : pdbatom.getGroupID();
   }
 
   int getAtomID(Atom atom) {

@@ -28,7 +28,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
@@ -57,7 +57,7 @@ public class Cartoon {
     initialize();
     for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
       short[] mads = madsChains[i];
-      PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           if (mad < 0) {
@@ -80,7 +80,7 @@ public class Cartoon {
     initialize();
     for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
       short[] colixes = colixesChains[i];
-      PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))

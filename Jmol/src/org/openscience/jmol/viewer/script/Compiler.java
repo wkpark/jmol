@@ -864,9 +864,9 @@ class Compiler {
       if (strSpec.length() != 3)
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
-      int resid = Token.getResid(strSpec);
-      if (resid != -1)
-        generateResidueSpecCode(new Token(Token.spec_resid, resid, strSpec));
+      int groupID = Token.maybeGetGroupID(strSpec);
+      if (groupID != -1)
+        generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
       else
         generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
       return tokenNext().tok == Token.rightsquare;
@@ -916,13 +916,13 @@ class Compiler {
       }
     }
     String strUpper3 = strToken.substring(0, 3).toUpperCase();
-    int resid;
+    int groupID;
     if (strUpper3.charAt(0) == '?' ||
         strUpper3.charAt(1) == '?' ||
         strUpper3.charAt(2) == '?') {
       generateResidueSpecCode(new Token(Token.spec_name_pattern, strUpper3));
-    } else if ((resid = Token.getResid(strUpper3)) != -1) {
-      generateResidueSpecCode(new Token(Token.spec_resid, resid, strUpper3));
+    } else if ((groupID = Token.maybeGetGroupID(strUpper3)) != -1) {
+      generateResidueSpecCode(new Token(Token.spec_resid, groupID, strUpper3));
     } else {
       return generateResidueSpecCode(tokenIdent);
     }

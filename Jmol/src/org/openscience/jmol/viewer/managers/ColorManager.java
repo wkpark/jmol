@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.protein.PdbAtom;
+import org.openscience.jmol.viewer.pdb.PdbAtom;
 import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;
@@ -249,17 +249,17 @@ public class ColorManager {
       break;
     case JmolConstants.PALETTE_AMINO:
       if (pdbatom != null) {
-        int resid = pdbatom.getResID();
-        argb = ((resid < JmolConstants.argbsPdbAmino.length)
-                ? JmolConstants.argbsPdbAmino[resid]
+        int groupID = pdbatom.getGroupID();
+        argb = ((groupID < JmolConstants.argbsPdbAmino.length)
+                ? JmolConstants.argbsPdbAmino[groupID]
                 : JmolConstants.argbPdbAminoDefault);
       }
       break;
     case JmolConstants.PALETTE_SHAPELY:
       if (pdbatom != null) {
-        int resid = pdbatom.getResID();
-        argb = ((resid < JmolConstants.argbsPdbShapely.length)
-                ? JmolConstants.argbsPdbShapely[resid]
+        int groupID = pdbatom.getGroupID();
+        argb = ((groupID < JmolConstants.argbsPdbShapely.length)
+                ? JmolConstants.argbsPdbShapely[groupID]
                 : JmolConstants.argbPdbShapelyDefault);
       }
       break;

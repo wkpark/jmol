@@ -1046,7 +1046,7 @@ final public class JmolConstants {
   
   public final static short RESID_AMINO_MAX = 22;
 
-  public final static String[] predefinedResidueNames3 = {
+  public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
     "ALA", // 0
     "ARG",

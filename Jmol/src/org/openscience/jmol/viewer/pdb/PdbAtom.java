@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.protein;
+package org.openscience.jmol.viewer.pdb;
 
 import org.openscience.jmol.viewer.*;
 
@@ -32,70 +32,65 @@ public class PdbAtom {
 
   // FIXME mth -- a very quick/dirty/ugly implementation
   // just to get some complex queries running
-  public PdbResidue residue;
+  public PdbGroup group;
   public String recordPdb;
-  short atomid;
-  short resid;
-  short resNumber;
-  int atomNumber;
+  short atomID;
+  int atomSerial;
 
-  public PdbAtom(int atomIndex, String recordPdb,
-                 PdbResidue residue, short resid, short resNumber) {
+  public PdbAtom(int atomIndex, String recordPdb, PdbGroup group) {
     this.recordPdb = recordPdb;
-    this.residue = residue;
-    this.resid = resid;
-    this.resNumber = resNumber;
+    this.group = group;
 
-    atomid = lookupAtomid(recordPdb.substring(12, 16));
-    atomNumber = -999999;
+    atomID = lookupAtomID(recordPdb.substring(12, 16));
+    atomSerial = -999999;
     try {
-      atomNumber = Integer.parseInt(recordPdb.substring(6, 11).trim());
+      atomSerial = Integer.parseInt(recordPdb.substring(6, 11).trim());
     } catch (NumberFormatException e) {
     }
-    if (residue != null && atomid < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! residue.registerMainchainAtomIndex(atomid, atomIndex))
-        atomid += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
+    if (atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
+      if (! group.registerMainchainAtomIndex(atomID, atomIndex))
+        atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
     }
   }
-
+  
   public boolean isHetero() {
     return recordPdb.startsWith("HETATM");
   }
-
-  public boolean isResidue3(String residue3) {
-    return PdbResidue.isResidue3(resid, residue3);
+  
+  public boolean isGroup3(String group3) {
+    return group.isGroup3(group3);
   }
-
+  
   public String getName() {
     return recordPdb.substring(12, 16).trim();
   }
 
-  public String getResidue3() {
-    return PdbResidue.getResidue3(resid);
+  public String getGroup3() {
+    return group.getGroup3();
+  }
+  
+  public short getGroupSequence() {
+    return group.groupSequence;
   }
 
-  public int getResidueNumber() {
-    return resNumber;
+  public short getGroupID() {
+    return group.groupID;
   }
-
-  public short getResID() {
-    return resid;
-  }
-
+  
   public short getAtomID() {
-    return atomid;
+    return atomID;
   }
 
   public String getAtomName() {
-    return atomNames[atomid];
+    return atomNames[atomID];
   }
 
   public String getAtomPrettyName() {
-    return atomPrettyNames[atomid];
+    return atomPrettyNames[atomID];
   }
 
-  public boolean isResidueNameMatch(String strWildcard) {
-    return PdbResidue.isResidueNameMatch(resid, strWildcard);
+  public boolean isGroup3Match(String strWildcard) {
+    return group.isGroup3Match(strWildcard);
   }
 
   public boolean isAtomNameMatch(String strPattern) {
@@ -104,7 +99,7 @@ public class PdbAtom {
       System.err.println("atom wildcard length != 4");
       return false;
     }
-    String strAtomName = getAtomName();
+    String strAtomName = atomNames[atomID];
     int cchAtomName = strAtomName.length();
     for (int i = 0; i < cchPattern; ++i) {
       char charWild = strPattern.charAt(i);
@@ -129,23 +124,23 @@ public class PdbAtom {
   }
 
   public char getChainID() {
-    return recordPdb.charAt(21);
+    return group.chainID;
   }
 
-  public int getAtomNumber() {
-    return atomNumber;
+  public int getAtomSerial() {
+    return atomSerial;
   }
 
   public int getSecondaryStructureType() {
-    return residue == null ? 0 : residue.getStructureType();
+    return group.getStructureType();
   }
-
-  public final static short atomidMainchainMax = 3;
-
+  
+  public final static short atomIDMainchainMax = 3;
+  
   private static Hashtable htAtom = new Hashtable();
   static String[] atomNames = new String[128];
   static String[] atomPrettyNames = new String[128];
-  static short atomidMax = 0;
+  static short atomIDMax = 0;
 
   static {
     // this loop *must* run in forward direction;
@@ -189,28 +184,28 @@ public class PdbAtom {
 
   synchronized static short addAtomName(String name) {
     String prettyName = calcPrettyName(name);
-    if (atomidMax == atomNames.length) {
+    if (atomIDMax == atomNames.length) {
       String[] t;
-      t = new String[atomidMax * 2];
-      System.arraycopy(atomNames, 0, t, 0, atomidMax);
+      t = new String[atomIDMax * 2];
+      System.arraycopy(atomNames, 0, t, 0, atomIDMax);
       atomNames = t;
-      t = new String[atomidMax * 2];
-      System.arraycopy(atomPrettyNames, 0, t, 0, atomidMax);
+      t = new String[atomIDMax * 2];
+      System.arraycopy(atomPrettyNames, 0, t, 0, atomIDMax);
       atomPrettyNames = t;
     }
-    short atomid = atomidMax++;
-    atomNames[atomid] = name;
-    atomPrettyNames[atomid] = prettyName;
+    short atomID = atomIDMax++;
+    atomNames[atomID] = name;
+    atomPrettyNames[atomID] = prettyName;
     // if already exists then this is an imposter entry
     if (htAtom.get(name) == null)
-      htAtom.put(name, new Short(atomid));
-    return atomid;
+      htAtom.put(name, new Short(atomID));
+    return atomID;
   }
 
-  short lookupAtomid(String strAtom) {
-    Short boxedAtomid = (Short)htAtom.get(strAtom);
-    if (boxedAtomid != null)
-      return boxedAtomid.shortValue();
+  short lookupAtomID(String strAtom) {
+    Short boxedAtomID = (Short)htAtom.get(strAtom);
+    if (boxedAtomID != null)
+      return boxedAtomID.shortValue();
     return addAtomName(strAtom);
   }
 }

@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.protein;
+package org.openscience.jmol.viewer.pdb;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
@@ -32,88 +32,88 @@ import javax.vecmath.Point3f;
 public class PdbChain {
 
   public char chainID;
-  short firstResidueID;
-  int residueCount;
-  PdbResidue[] residues = new PdbResidue[16];
-  PdbResidue[] mainchain;
+  short firstGroupSequence;
+  int groupCount;
+  PdbGroup[] groups = new PdbGroup[16];
+  PdbGroup[] mainchain;
 
   public PdbChain(char chainID) {
     this.chainID = chainID;
   }
 
   void freeze() {
-    if (residueCount != residues.length) {
-      PdbResidue[] t = new PdbResidue[residueCount];
-      System.arraycopy(residues, 0, t, 0, residueCount);
-      residues = t;
+    if (groupCount != groups.length) {
+      PdbGroup[] t = new PdbGroup[groupCount];
+      System.arraycopy(groups, 0, t, 0, groupCount);
+      groups = t;
     }
   }
   
-  void addResidue(PdbResidue residue) {
-    short residueID = residue.residueID;
-    if (residueCount == 0)
-      firstResidueID = residueID;
-    int residueIndex = residueID - firstResidueID;
-    if (residueIndex < 0) {
+  void addGroup(PdbGroup group) {
+    short groupSequence = group.groupSequence;
+    if (groupCount == 0)
+      firstGroupSequence = groupSequence;
+    int groupIndex = groupSequence - firstGroupSequence;
+    if (groupIndex < 0) {
       System.out.println("residue out of sequence?");
       return;
     }
-    if (residueIndex >= residues.length) {
-      PdbResidue[] t = new PdbResidue[residueIndex * 2];
-      System.arraycopy(residues, 0, t, 0, residueCount);
-      residues = t;
+    if (groupIndex >= groups.length) {
+      PdbGroup[] t = new PdbGroup[groupIndex * 2];
+      System.arraycopy(groups, 0, t, 0, groupCount);
+      groups = t;
     }
-    residues[residueIndex] = residue;
-    if (residueIndex >= residueCount)
-      residueCount = residueIndex + 1;
+    groups[groupIndex] = group;
+    if (groupIndex >= groupCount)
+      groupCount = groupIndex + 1;
   }
 
-  public PdbResidue getResidue(int residueIndex) {
-    return residues[residueIndex];
+  public PdbGroup getResidue(int groupIndex) {
+    return groups[groupIndex];
   }
   
   public int getResidueCount() {
-    return residueCount;
+    return groupCount;
   }
 
   public short getFirstResidueID() {
-    return firstResidueID;
+    return firstGroupSequence;
   }
 
-  public Point3f getResidueAlphaCarbonPoint(int residueIndex) {
-    return residues[residueIndex].getAlphaCarbonAtom().point3f;
+  public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
+    return groups[groupIndex].getAlphaCarbonAtom().point3f;
   }
 
   // to get something other than the alpha carbon atom
-  public Point3f getResiduePoint(int residueIndex, int mainchainIndex) {
-    return getResidue(residueIndex).getMainchainAtom(mainchainIndex).point3f;
+  public Point3f getResiduePoint(int groupIndex, int mainchainIndex) {
+    return getResidue(groupIndex).getMainchainAtom(mainchainIndex).point3f;
   }
 
-  int mainchainHelper(boolean addResidues) {
+  int mainchainHelper(boolean addGroups) {
     int mainchainCount = 0;
     outer:
-    for (int i = residueCount; --i >= 0; ) {
-      PdbResidue residue = residues[i];
+    for (int i = groupCount; --i >= 0; ) {
+      PdbGroup residue = groups[i];
       int[] mainchainIndices = residue.mainchainIndices;
       if (mainchainIndices == null)
         continue;
       for (int j = 4; --j >=0; )
         if (mainchainIndices[j] == -1)
           continue outer;
-      if (addResidues)
+      if (addGroups)
         mainchain[mainchainCount] = residue;
       ++mainchainCount;
     }
     return mainchainCount;
   }
 
-  public PdbResidue[] getMainchain() {
+  public PdbGroup[] getMainchain() {
     if (mainchain == null) {
       int mainchainCount = mainchainHelper(false);
-      if (mainchainCount == residueCount) {
-        mainchain = residues;
+      if (mainchainCount == groupCount) {
+        mainchain = groups;
       } else {
-        mainchain = new PdbResidue[mainchainCount];
+        mainchain = new PdbGroup[mainchainCount];
         if (mainchainCount > 0)
           mainchainHelper(true);
       }
@@ -123,11 +123,11 @@ public class PdbChain {
 
   void addSecondaryStructure(byte type,
                              short startResidueID, short endResidueID) {
-    int structureIndex = startResidueID - firstResidueID;
+    int structureIndex = startResidueID - firstGroupSequence;
     int structureCount = endResidueID - startResidueID + 1;
     if (structureCount < 1 ||
         structureIndex < 0 ||
-        endResidueID > (firstResidueID + residueCount)) {
+        endResidueID > (firstGroupSequence + groupCount)) {
       System.out.println("structure definition error");
       return;
     }
@@ -147,42 +147,42 @@ public class PdbChain {
       return;
     }
     for (int i = structureIndex + structureCount; --i >= structureIndex; )
-      residues[i].setStructure(structure);
+      groups[i].setStructure(structure);
   }
 
-  public void getAlphaCarbonMidPoint(int residueIndex, Point3f midPoint) {
-    if (residueIndex == residueCount) {
-      residueIndex = residueCount - 1;
-    } else if (residueIndex > 0) {
-      midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
-      midPoint.add(residues[residueIndex-1].getAlphaCarbonPoint());
+  public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {
+    if (groupIndex == groupCount) {
+      groupIndex = groupCount - 1;
+    } else if (groupIndex > 0) {
+      midPoint.set(groups[groupIndex].getAlphaCarbonPoint());
+      midPoint.add(groups[groupIndex-1].getAlphaCarbonPoint());
       midPoint.scale(0.5f);
       return;
     }
-    midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
+    midPoint.set(groups[groupIndex].getAlphaCarbonPoint());
   }
 
-  public void getStructureMidPoint(int residueIndex, Point3f midPoint) {
-    if (residueIndex < residueCount &&
-        residues[residueIndex].isHelixOrSheet()) {
-      midPoint.set(residues[residueIndex].structure.
-                   getStructureMidPoint(residueIndex));
+  public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
+    if (groupIndex < groupCount &&
+        groups[groupIndex].isHelixOrSheet()) {
+      midPoint.set(groups[groupIndex].structure.
+                   getStructureMidPoint(groupIndex));
       /*
-      System.out.println("" + residueIndex + "isHelixOrSheet" +
+      System.out.println("" + groupIndex + "isHelixOrSheet" +
                          midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
-    } else if (residueIndex > 0 &&
-               residues[residueIndex - 1].isHelixOrSheet()) {
-      midPoint.set(residues[residueIndex - 1].structure.
-                   getStructureMidPoint(residueIndex));
+    } else if (groupIndex > 0 &&
+               groups[groupIndex - 1].isHelixOrSheet()) {
+      midPoint.set(groups[groupIndex - 1].structure.
+                   getStructureMidPoint(groupIndex));
       /*
-      System.out.println("" + residueIndex + "previous isHelixOrSheet" +
+      System.out.println("" + groupIndex + "previous isHelixOrSheet" +
                          midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
     } else {
-      getAlphaCarbonMidPoint(residueIndex, midPoint);
+      getAlphaCarbonMidPoint(groupIndex, midPoint);
       /*
-      System.out.println("" + residueIndex + "the alpha carbon midpoint" +
+      System.out.println("" + groupIndex + "the alpha carbon midpoint" +
                          midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
     }

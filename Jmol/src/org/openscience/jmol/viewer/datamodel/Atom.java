@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 
 import java.awt.Rectangle;
 
@@ -263,7 +263,7 @@ public boolean isBonded(Atom atomOther) {
 
   public int getAtomno() {
     if (pdbAtom != null)
-      return pdbAtom.getAtomNumber();
+      return pdbAtom.getAtomSerial();
     return getAtomIndex() +
       (frame.modelType == JmolConstants.MODEL_TYPE_XYZ ? 0 : 1);
   }

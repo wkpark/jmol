@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.viewer.protein;
+package org.openscience.jmol.viewer.pdb;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.JmolConstants;
@@ -113,7 +113,7 @@ public class PdbMolecule {
     return chains[chainIndex];
   }
 
-  public PdbResidue[] getMainchain(int chainIndex) {
+  public PdbGroup[] getMainchain(int chainIndex) {
     return chains[chainIndex].getMainchain();
   }
 
@@ -183,31 +183,25 @@ public class PdbMolecule {
 
 
   char chainIDCurrent = '\uFFFF';
-  short resNumberCurrent = -1;
-  PdbResidue pdbResidueCurrent;
-  short residCurrent;
+  short groupSequenceCurrent;
+  PdbGroup groupCurrent;
 
-  void setCurrentResidue(char chainID, short resNumber, String residue3) {
-    resNumberCurrent = resNumber;
+  void setCurrentResidue(char chainID, short groupSequence, String group3) {
     chainIDCurrent = chainID;
+    groupSequenceCurrent = groupSequence;
     PdbChain chain = getOrAllocPdbChain(chainID);
-    residCurrent = PdbResidue.lookupResid(residue3);
-    pdbResidueCurrent = null;
-    if (residCurrent < JmolConstants.RESID_AMINO_MAX) {
-      pdbResidueCurrent =
-        new PdbResidue(this, chainID, resNumber, residCurrent);
-      chain.addResidue(pdbResidueCurrent);
-    }
+    groupCurrent = new PdbGroup(this, chainID, groupSequence, group3);
+    chain.addGroup(groupCurrent);
   }
 
   public PdbAtom getPdbAtom(int atomIndex, String pdbRecord) {
     try {
       char chainID = pdbRecord.charAt(21);
-      short resNumber = Short.parseShort(pdbRecord.substring(22, 26).trim());
-      if (chainID != chainIDCurrent || resNumber != resNumberCurrent)
-        setCurrentResidue(chainID, resNumber, pdbRecord.substring(17, 20));
-      return new PdbAtom(atomIndex, pdbRecord,
-                         pdbResidueCurrent, residCurrent, resNumber);
+      short groupSequence =
+        Short.parseShort(pdbRecord.substring(22, 26).trim());
+      if (chainID != chainIDCurrent || groupSequence != groupSequenceCurrent)
+        setCurrentResidue(chainID, groupSequence, pdbRecord.substring(17, 20));
+      return new PdbAtom(atomIndex, pdbRecord, groupCurrent);
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }

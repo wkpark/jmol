@@ -28,7 +28,7 @@ import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.FrameBuilder;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.protein.PdbAtom;
+import org.openscience.jmol.viewer.pdb.PdbAtom;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -353,8 +353,8 @@ public class ModelManager {
     PdbAtom pdbAtom = atom.pdbAtom;
     if (pdbAtom == null)
       return "Atom: " + atom.getAtomicSymbol() + " " + atom.getAtomno();
-    return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomNumber() +
-      " " + pdbAtom.getResidue3() + " " + pdbAtom.getResidueNumber() +
+    return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomSerial() +
+      " " + pdbAtom.getGroup3() + " " + pdbAtom.getGroupSequence() +
       " Chain:" + pdbAtom.getChainID();
   }
 

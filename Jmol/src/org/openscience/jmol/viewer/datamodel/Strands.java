@@ -28,7 +28,7 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
@@ -73,7 +73,7 @@ public class Strands {
       short[] mads = madsChains[i];
       if (mads == null)
         continue;
-      PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           if (mad < 0) {
@@ -96,7 +96,7 @@ public class Strands {
       short[] colixes = colixesChains[i];
       if (colixes == null)
         continue;
-      PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
+      PdbGroup[] mainchain = pdbMolecule.getMainchain(i);
       for (int j = mainchain.length; --j >= 0; ) {
         int atomIndex = mainchain[j].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))
@@ -129,7 +129,7 @@ public class Strands {
     }
   }
 
-  void calcCentersAndVectors(PdbResidue[] mainchain,
+  void calcCentersAndVectors(PdbGroup[] mainchain,
                              Point3f[] centers, Vector3f[] vectors) {
     Point3f alphaPointPrev, alphaPoint;
     centers[0] = alphaPointPrev = alphaPoint =

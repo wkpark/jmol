@@ -26,7 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import java.util.Hashtable;

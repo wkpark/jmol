@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -61,7 +61,7 @@ class TraceRenderer extends Renderer {
   Point3i[] screens;
   Atom[] alphas;
 
-  void render1Chain(PdbResidue[] mainchain, short[] mads, short[] colixes) {
+  void render1Chain(PdbGroup[] mainchain, short[] mads, short[] colixes) {
     calcMidPoints(mainchain);
     mainchainLength = mainchain.length;
     for (int i = mainchainLength; --i >= 0; ) {
@@ -72,7 +72,7 @@ class TraceRenderer extends Renderer {
     }
   }
 
-  void calcMidPoints(PdbResidue[] mainchain) {
+  void calcMidPoints(PdbGroup[] mainchain) {
     int chainLength = mainchain.length;
     screens = frameRenderer.getTempScreens(chainLength + 1);
     alphas = frameRenderer.getTempAtoms(chainLength);

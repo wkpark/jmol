@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.protein.*;
+import org.openscience.jmol.viewer.pdb.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -101,7 +101,7 @@ class StrandsRenderer extends Renderer {
     }
   }
   
-  void render1Chain(PdbResidue[] mainchain, Point3f[] centers,
+  void render1Chain(PdbGroup[] mainchain, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
@@ -117,21 +117,21 @@ class StrandsRenderer extends Renderer {
     }
   }
 
-  void render1Strand(PdbResidue[] mainchain, short[] mads,
+  void render1Strand(PdbGroup[] mainchain, short[] mads,
                      short[] colixes, Point3i[] screens) {
     for (int i = colixes.length; --i >= 0; )
       if (mads[i] > 0)
         render1StrandSegment(mainchain[i], colixes[i], mads, screens, i);
   }
 
-  void render1StrandSegment(PdbResidue residue, short colix,
+  void render1StrandSegment(PdbGroup group, short colix,
                             short[] mads, Point3i[] screens, int i) {
     int iLast = mads.length - 1;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
-      colix = residue.getAlphaCarbonAtom().colixAtom;
+      colix = group.getAlphaCarbonAtom().colixAtom;
     g3d.drawHermite(colix, 7, screens[iPrev], screens[i],
                     screens[iNext], screens[iNext2]);
   }

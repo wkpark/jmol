@@ -26,7 +26,7 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.protein.PdbAtom;
+import org.openscience.jmol.viewer.pdb.PdbAtom;
 
 import java.awt.Font;
 import java.util.BitSet;
@@ -139,11 +139,11 @@ public class LabelManager {
         break;
       case 'n':
         if (pdbatom != null)
-          strLabel += pdbatom.getResidue3();
+          strLabel += pdbatom.getGroup3();
         break;
       case 'r':
         if (pdbatom != null)
-          strLabel += pdbatom.getResidueNumber();
+          strLabel += pdbatom.getGroupSequence();
         break;
       default:
         strLabel += "" + ch;

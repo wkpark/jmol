@@ -42,7 +42,6 @@ import javax.swing.JFrame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JPanel;
-import javax.swing.BoxLayout;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 
@@ -69,17 +68,17 @@ public class MeasurementTable extends JDialog {
     this.viewer = viewer;
 
     JPanel container = new JPanel();
-    container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+    container.setLayout(new BorderLayout());
 
-    container.add(constructMeasurementTable());
+    container.add(constructMeasurementTable(),BorderLayout.CENTER);
 
     JPanel foo = new JPanel();
     foo.setLayout(new BorderLayout());
     foo.add(constructMeasurementButtonPanel(), BorderLayout.WEST);
     foo.add(constructDismissButtonPanel(), BorderLayout.EAST);
 
-    container.add(foo);
-
+    container.add(foo, BorderLayout.SOUTH);
+    
     addWindowListener(new MeasurementListWindowListener());
 
     getContentPane().add(container);

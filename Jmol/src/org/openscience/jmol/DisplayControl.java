@@ -72,12 +72,15 @@ final public class DisplayControl {
   private boolean perspectiveDepth = true;
   private boolean structuralChange = false;
 
-  DisplayControl(DisplayPanel panel, DisplaySettings settings ) {
-    this.panel = panel;
-    this.settings = settings;
+  DisplayControl() {
+    this.settings = new DisplaySettings();
   }
 
-  public DisplayPanel getPanel() {
+  public void setDisplayPanel(DisplayPanel panel) {
+    this.panel = panel;
+  }
+
+  public DisplayPanel getDisplayPanel() {
     return panel;
   }
 
@@ -595,7 +598,7 @@ final public class DisplayControl {
   public boolean jvm12orGreater = false;
   private boolean wantsGraphics2D = true;
   public boolean useGraphics2D = false;
-  private boolean wantsAntialiased = false;
+  public boolean wantsAntialiased = false;
   public void setJvm12orGreater(boolean jvm12orGreater) {
     this.jvm12orGreater = jvm12orGreater;
     useGraphics2D = jvm12orGreater && wantsGraphics2D;
@@ -744,4 +747,36 @@ final public class DisplayControl {
     imageCache.clear();
     colorTransparentPicked = null;
   }
+
+  // NEEDSWORK -- bond binding stuff
+  private float bondFudge = 1.12f;
+  private boolean autoBond = true;
+
+  public void rebond() {
+    if (getFrame() != null) {
+      try {
+        getFrame().rebond();
+      } catch (Exception e){
+      }
+    }
+  }
+
+  public void setBondFudge(float bf) {
+    bondFudge = bf;
+    recalc();
+  }
+
+  public float getBondFudge() {
+    return bondFudge;
+  }
+
+  public void setAutoBond(boolean ab) {
+    autoBond = ab;
+    recalc();
+  }
+
+  public boolean getAutoBond() {
+    return autoBond;
+  }
+
 }

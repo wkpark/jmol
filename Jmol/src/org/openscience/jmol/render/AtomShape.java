@@ -816,10 +816,9 @@ public class AtomShape implements Shape {
         }
       }
     }
-    return
-      imageComponent.createImage(new MemoryImageSource(diameter, diameter,
-                                                       model, 0,
-                                                       diameter));
+    return control.getDisplayPanel().
+      createImage(new MemoryImageSource(diameter, diameter,
+                                        model, 0, diameter));
   }
 
   /**
@@ -838,16 +837,5 @@ public class AtomShape implements Shape {
       v[2] = v[2] / len;
     }
   }
-
-  /**
-   * Sets the Component where all atoms will be drawn.
-   *
-   * @param c the Component
-   */
-  public static void setImageComponent(Component c) {
-    imageComponent = c;
-  }
-  private static Component imageComponent;
-
 }
 

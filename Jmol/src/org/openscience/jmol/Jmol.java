@@ -124,7 +124,6 @@ public class Jmol extends JPanel {
 
   public static DisplayControl control;
 
-  private final DisplaySettings settings = new DisplaySettings();
   private DisplayPanel display;
   private StatusBar status;
   private AtomPropsMenu apm;
@@ -228,12 +227,13 @@ public class Jmol extends JPanel {
     model = new JmolModel();
     splash.showStatus(resourceHandler
         .translate("Initializing 3D display..."));
-    display = new DisplayPanel(status, settings);
-    control = display.getDisplayControl();
+    control = new DisplayControl();
+    display = new DisplayPanel(status, control);
+    control.setDisplayPanel(display);
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
         .translate("Initializing Preferences..."));
-    preferencesDialog = new PreferencesDialog(frame, display);
+    preferencesDialog = new PreferencesDialog(frame, control);
     splash.showStatus(resourceHandler.translate("Initializing Animate..."));
     anim = new Animate(model, frame);
     model.addPropertyChangeListener(anim);
@@ -959,7 +959,7 @@ public class Jmol extends JPanel {
           if (popup != null) {
             if (popup.equals("prop")) {
               apm = new AtomPropsMenu(JmolResourceHandler.getInstance()
-                  .getString("Jmol." + itemKeys[i] + "Label"), settings);
+                  .getString("Jmol." + itemKeys[i] + "Label"), control);
               menu.add(apm);
             } else {
               JMenu pm;
@@ -1300,7 +1300,7 @@ public class Jmol extends JPanel {
       ImageTyper it = new ImageTyper(exportChooser);
 
       // GIF doesn't support more than 8 bits:
-      if (settings.getAtomDrawMode() == DisplaySettings.SHADING) {
+      if (control.getAtomDrawMode() == DisplayControl.SHADING) {
         it.disableGIF();
       }
       exportChooser.setAccessory(it);

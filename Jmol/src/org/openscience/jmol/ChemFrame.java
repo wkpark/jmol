@@ -34,9 +34,6 @@ import java.io.PrintStream;
  */
 public class ChemFrame implements Transformable {
 
-  private static float bondFudge = 1.12f;
-  private static boolean AutoBond = true;
-
   // This stuff can vary for each frame in the dynamics:
 
   private String info;     // The title or info string for this frame.
@@ -87,22 +84,6 @@ public class ChemFrame implements Transformable {
   private float minAtomVectorMagnitude;
   private float maxAtomVectorMagnitude;
   private float atomVectorRange;
-
-  public static void setBondFudge(float bf) {
-    bondFudge = bf;
-  }
-
-  public static float getBondFudge() {
-    return bondFudge;
-  }
-
-  public static void setAutoBond(boolean ab) {
-    AutoBond = ab;
-  }
-
-  public static boolean getAutoBond() {
-    return AutoBond;
-  }
 
   /**
    * Constructor for a ChemFrame with a known number of atoms.
@@ -235,9 +216,10 @@ public class ChemFrame implements Transformable {
 
     atoms[i] = new Atom(type, numberAtoms, x, y, z);
 
-    if (AutoBond) {
+    if (Jmol.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
-        if (Atom.closeEnoughToBond(atoms[i], atoms[j], bondFudge)) {
+        if (Atom.closeEnoughToBond(atoms[i], atoms[j],
+                                   Jmol.control.getBondFudge())) {
           addBond(i, j);
         }
       }
@@ -570,10 +552,11 @@ public class ChemFrame implements Transformable {
     clearBonds();
 
     // Do a n*(n-1) scan to get new bonds.
-    if (AutoBond) {
+    if (Jmol.control.getAutoBond()) {
       for (int i = 0; i < numberAtoms - 1; i++) {
         for (int j = i; j < numberAtoms; j++) {
-          if (Atom.closeEnoughToBond(atoms[i], atoms[j], bondFudge)) {
+          if (Atom.closeEnoughToBond(atoms[i], atoms[j],
+                                     Jmol.control.getBondFudge())) {
             addBond(i, j);
           }
         }

@@ -98,7 +98,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
   private static int VibrationFrames;
-  private DisplayPanel display;
+  private DisplayControl control;
   private JButton bButton, oButton, pButton, tButton, vButton;
   private JRadioButton antiAliasedYes, antiAliasedNo;
   private JRadioButton pYes, pNo, abYes, abNo;
@@ -161,13 +161,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props = new Properties(props);
   }
 
-  public PreferencesDialog(JFrame f, DisplayPanel dp) {
+  public PreferencesDialog(JFrame f, DisplayControl control) {
 
     super(f, false);
     JmolResourceHandler jrh = JmolResourceHandler.getInstance();
     this.setTitle(jrh.translate("Preferences"));
 
-    this.display = dp;
+    this.control = control;
     initVariables();
     commands = new Hashtable();
     Action[] actions = getActions();
@@ -257,17 +257,16 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.showLabel")));
     cA = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showAtomsLabel"), display.getSettings().getShowAtoms());
+        .getString("Prefs.showAtomsLabel"), control.getShowAtoms());
     cA.addItemListener(checkBoxListener);
     cB = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showBondsLabel"), display.getSettings().getShowBonds());
+        .getString("Prefs.showBondsLabel"), control.getShowBonds());
     cB.addItemListener(checkBoxListener);
     cV = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showVectorsLabel"), display.getSettings().getShowVectors());
+        .getString("Prefs.showVectorsLabel"), control.getShowVectors());
     cV.addItemListener(checkBoxListener);
     cH = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("Prefs.showHydrogensLabel"), display.getSettings()
-          .getShowHydrogens());
+        .getString("Prefs.showHydrogensLabel"), control.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
     showPanel.add(cA);
     showPanel.add(cB);
@@ -309,16 +308,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aSChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aWFChoice"));
-    aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
+    aRender.setSelectedIndex(control.getAtomDrawMode());
     aRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomRenderMode = source.getSelectedIndex();
-        display.getSettings().setAtomDrawMode(AtomRenderMode);
+        control.setAtomDrawMode(AtomRenderMode);
         props.put("AtomRenderMode", Integer.toString(AtomRenderMode));
-        display.repaint();
       }
     });
 
@@ -335,16 +333,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cRender = new JComboBox();
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cATChoice"));
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cCChoice"));
-    cRender.setSelectedIndex(display.getSettings().getAtomColorProfile());
+    cRender.setSelectedIndex(control.getAtomColorProfile());
     cRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomColorProfile = source.getSelectedIndex();
-        display.getSettings().setAtomColorProfile(AtomColorProfile);
+        control.setAtomColorProfile(AtomColorProfile);
         props.put("AtomColorProfile", Integer.toString(AtomColorProfile));
-        display.repaint();
       }
     });
     constraints = new GridBagConstraints();
@@ -366,16 +363,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aTLChoice"));
     aLabel.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aNLChoice"));
-    aLabel.setSelectedIndex(display.getSettings().getLabelMode());
+    aLabel.setSelectedIndex(control.getLabelMode());
     aLabel.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomLabelMode = source.getSelectedIndex();
-        display.getSettings().setLabelMode(AtomLabelMode);
+        control.setLabelMode(AtomLabelMode);
         props.put("AtomLabelMode", Integer.toString(AtomLabelMode));
-        display.repaint();
       }
     });
     constraints = new GridBagConstraints();
@@ -397,16 +393,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.apNChoice"));
     aProps.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.apUChoice"));
-    aProps.setSelectedItem(display.getSettings().getPropertyMode());
+    aProps.setSelectedItem(control.getPropertyMode());
     aProps.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomPropsMode = (String) source.getSelectedItem();
-        display.getSettings().setPropertyMode(AtomPropsMode);
+        control.setPropertyMode(AtomPropsMode);
         props.put("AtomPropsMode", AtomPropsMode);
-        display.repaint();
       }
     });
     constraints = new GridBagConstraints();
@@ -422,7 +417,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     sfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (100.0 * display.getSettings().getAtomSphereFactor()));
+        (int) (100.0 * control.getAtomSphereFactor()));
     sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     sfSlider.setPaintTicks(true);
     sfSlider.setMajorTickSpacing(20);
@@ -434,9 +429,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         SphereFactor = source.getValue() / 100.0;
-        display.getSettings().setAtomSphereFactor(SphereFactor);
+        control.setAtomSphereFactor((float)SphereFactor);
         props.put("SphereFactor", Double.toString(SphereFactor));
-        display.repaint();
       }
     });
     sfPanel.add(sfSlider, BorderLayout.CENTER);
@@ -482,16 +476,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bWFChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bLChoice"));
-    bRender.setSelectedIndex(display.getSettings().getBondDrawMode());
+    bRender.setSelectedIndex(control.getBondDrawMode());
     bRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         BondRenderMode = source.getSelectedIndex();
-        display.getSettings().setBondDrawMode(BondRenderMode);
+        control.setBondDrawMode(BondRenderMode);
         props.put("BondRenderMode", Integer.toString(BondRenderMode));
-        display.repaint();
       }
     });
     renderPanel.add(bRender);
@@ -514,20 +507,18 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     autobondPanel.add(abYes);
     autobondPanel.add(abNo);
     autobondPanel.add(Box.createVerticalGlue());
-    abYes.setSelected(ChemFrame.getAutoBond());
+    abYes.setSelected(control.getAutoBond());
     abYes.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        ChemFrame.setAutoBond(true);
-        display.repaint();
+        control.setAutoBond(true);
       }
     });
 
     abNo.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        ChemFrame.setAutoBond(false);
-        display.repaint();
+        control.setAutoBond(false);
       }
     });
 
@@ -544,7 +535,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bondWidthExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
     bwSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (100.0 * display.getSettings().getBondWidth()));
+        (int) (100.0 * control.getBondWidth()));
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(20);
@@ -575,9 +566,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         BondWidth = source.getValue() / 100.0;
-        display.getSettings().setBondWidth((float) BondWidth);
+        control.setBondWidth((float) BondWidth);
         props.put("BondWidth", Double.toString(BondWidth));
-        display.repaint();
       }
     });
 
@@ -592,7 +582,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.bondFudgeLabel")));
     bfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (50.0 * ChemFrame.getBondFudge()));
+        (int) (50.0 * control.getBondFudge()));
     bfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bfSlider.setPaintTicks(true);
     bfSlider.setMajorTickSpacing(20);
@@ -627,13 +617,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         // this doesn't make me happy, but we don't want static
         // reference to ChemFrame here.  We only want to rebond
         // the current frame. (I think).
-        ChemFrame.setBondFudge(BondFudge);
+        control.setBondFudge(BondFudge);
         props.put("BondFudge", Float.toString(BondFudge));
         try {
-          display.rebond();
+          // FIXME 
+          //display.rebond();
+          control.rebond();
         } catch (Exception ex) {
         }
-        display.repaint();
       }
     });
     bfPanel.add(bfSlider);
@@ -694,7 +685,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         ArrowHeadSize = source.getValue() / 100.0f;
         ArrowLine.setArrowHeadSize(ArrowHeadSize);
         props.put("ArrowHeadSize", Float.toString(ArrowHeadSize));
-        display.repaint();
+        // FIXME -- arrow settings should be like all other settings
+        control.refresh();
       }
     });
     ahPanel.add(ahSlider, BorderLayout.SOUTH);
@@ -736,7 +728,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         ArrowHeadRadius = source.getValue() / 100.0f;
         ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
         props.put("ArrowHeadRadius", Float.toString(ArrowHeadRadius));
-        display.repaint();
+        control.refresh();
       }
     });
     arPanel.add(arSlider, BorderLayout.SOUTH);
@@ -788,7 +780,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         ArrowLengthScale = source.getValue() / 100.0f;
         ArrowLine.setLengthScale(ArrowLengthScale);
         props.put("ArrowLengthScale", Float.toString(ArrowLengthScale));
-        display.repaint();
+        control.refresh();
       }
     });
     alPanel.add(alSlider, BorderLayout.SOUTH);
@@ -821,11 +813,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.bgChooserTitle"), backgroundColor);
         backgroundColor = color;
         bButton.setBackground(backgroundColor);
-        DisplayPanel.setBackgroundColor(backgroundColor);
+        control.setBackgroundColor(backgroundColor);
         props.put("backgroundColor",
             Integer.toString(backgroundColor.getRGB()));
-        display.repaint();
-
       }
     };
     bButton.addActionListener(startBackgroundChooser);
@@ -841,7 +831,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbDarkerOutline =
       new JCheckBox(JmolResourceHandler.getInstance()
                     .getString("Prefs.showDarkerOutlineLabel"),
-                    display.getSettings().getShowDarkerOutline());
+                    control.getShowDarkerOutline());
     cbDarkerOutline.addItemListener(checkBoxListener);
     outlinePanel.add(cbDarkerOutline, BorderLayout.NORTH);
 
@@ -859,10 +849,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.outlineChooserTitle"), outlineColor);
         outlineColor = color;
         oButton.setBackground(outlineColor);
-        display.getSettings().setOutlineColor(outlineColor);
+        control.setOutlineColor(outlineColor);
         props.put("outlineColor", Integer.toString(outlineColor.getRGB()));
-        display.repaint();
-
       }
     };
     oButton.addActionListener(startOutlineChooser);
@@ -888,10 +876,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.pickedChooserTitle"), pickedColor);
         pickedColor = color;
         pButton.setBackground(pickedColor);
-        display.getSettings().setPickedColor(pickedColor);
+        control.setPickedColor(pickedColor);
         props.put("pickedColor", Integer.toString(pickedColor.getRGB()));
-        display.repaint();
-
       }
     };
     pButton.addActionListener(startPickedChooser);
@@ -917,10 +903,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.textChooserTitle"), textColor);
         textColor = color;
         tButton.setBackground(textColor);
-        display.getSettings().setTextColor(textColor);
+        control.setTextColor(textColor);
         props.put("textColor", Integer.toString(textColor.getRGB()));
-        display.repaint();
-
       }
     };
     tButton.addActionListener(startTextChooser);
@@ -948,8 +932,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         vButton.setBackground(vectorColor);
         ArrowLine.setVectorColor(vectorColor);
         props.put("vectorColor", Integer.toString(vectorColor.getRGB()));
-        display.repaint();
-
+        control.refresh();
       }
     };
     vButton.addActionListener(startVectorChooser);
@@ -1113,27 +1096,27 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private void updateComponents() {
     // Display panel controls:
-    if (display.getSettings().isAntiAliased()) {
+    if (control.wantsAntialiased) {
       antiAliasedYes.setSelected(true);
     } else {
       antiAliasedNo.setSelected(true);
     }
-    cB.setSelected(display.getSettings().getShowBonds());
-    cA.setSelected(display.getSettings().getShowAtoms());
-    cV.setSelected(display.getSettings().getShowVectors());
-    cH.setSelected(display.getSettings().getShowHydrogens());
+    cB.setSelected(control.getShowBonds());
+    cA.setSelected(control.getShowAtoms());
+    cV.setSelected(control.getShowVectors());
+    cH.setSelected(control.getShowHydrogens());
 
     // Atom panel controls:
-    aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
-    aLabel.setSelectedIndex(display.getSettings().getLabelMode());
+    aRender.setSelectedIndex(control.getAtomDrawMode());
+    aLabel.setSelectedIndex(control.getLabelMode());
     sfSlider.setValue((int) (100.0
-        * display.getSettings().getAtomSphereFactor()));
+        * control.getAtomSphereFactor()));
 
     // Bond panel controls:
-    bRender.setSelectedIndex(display.getSettings().getBondDrawMode());
-    abYes.setSelected(ChemFrame.getAutoBond());
-    bwSlider.setValue((int) (100.0 * display.getSettings().getBondWidth()));
-    bfSlider.setValue((int) (50.0 * ChemFrame.getBondFudge()));
+    bRender.setSelectedIndex(control.getBondDrawMode());
+    abYes.setSelected(control.getAutoBond());
+    bwSlider.setValue((int) (100.0 * control.getBondWidth()));
+    bfSlider.setValue((int) (50.0 * control.getBondFudge()));
 
     // Vector panel controls:
     ahSlider.setValue((int) (100.0f * ArrowLine.getArrowHeadSize()));
@@ -1142,7 +1125,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     // Color panel controls:
     bButton.setBackground(backgroundColor);
-    cbDarkerOutline.setSelected(display.getSettings().getShowDarkerOutline());
+    cbDarkerOutline.setSelected(control.getShowDarkerOutline());
     oButton.setBackground(outlineColor);
     pButton.setBackground(pickedColor);
     tButton.setBackground(textColor);
@@ -1158,7 +1141,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private void save() {
     
     boolean antiAliased = antiAliasedYes.isSelected();
-    display.getSettings().setAntiAliased(antiAliased);
+    control.setAntiAliased(antiAliased);
     props.put("AntiAliased", new Boolean(antiAliased).toString());
     
     try {
@@ -1169,15 +1152,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     } catch (Exception e) {
       System.out.println("Error saving preferences" + e.toString());
     }
-    
-    display.repaint();
+    control.refresh();
   }
 
   public void ResetPressed() {
 
     defaults();
     initVariables();
-    display.repaint();
+    control.refresh();
 
     updateComponents();
     
@@ -1222,29 +1204,29 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrateVectorScale =
         new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
-    display.getSettings().setOutlineColor(outlineColor);
-    display.getSettings().setPickedColor(pickedColor);
-    display.getSettings().setTextColor(textColor);
-    display.getSettings().setAtomSphereFactor(SphereFactor);
-    display.getSettings().setAtomDrawMode(AtomRenderMode);
-    display.getSettings().setLabelMode(AtomLabelMode);
-    display.getSettings().setPropertyMode(AtomPropsMode);
-    display.getSettings().setBondWidth((float) BondWidth);
-    display.getSettings().setBondDrawMode(BondRenderMode);
+    control.setOutlineColor(outlineColor);
+    control.setPickedColor(pickedColor);
+    control.setTextColor(textColor);
+    control.setAtomSphereFactor((float)SphereFactor);
+    control.setAtomDrawMode(AtomRenderMode);
+    control.setLabelMode(AtomLabelMode);
+    control.setPropertyMode(AtomPropsMode);
+    control.setBondWidth((float) BondWidth);
+    control.setBondDrawMode(BondRenderMode);
     ArrowLine.setVectorColor(vectorColor);
     ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
     ArrowLine.setArrowHeadSize(ArrowHeadSize);
     ArrowLine.setLengthScale(ArrowLengthScale);
     DisplayPanel.setBackgroundColor(backgroundColor);
-    display.getSettings().setAntiAliased(Boolean.getBoolean("AntiAliased"));
-    ChemFrame.setBondFudge(BondFudge);
-    ChemFrame.setAutoBond(AutoBond);
-    display.getSettings().setShowAtoms(showAtoms);
-    display.getSettings().setDrawBondsToAtomCenters(!showAtoms);
-    display.getSettings().setShowBonds(showBonds);
-    display.getSettings().setShowHydrogens(showHydrogens);
-    display.getSettings().setShowVectors(showVectors);
-    display.getSettings().setShowDarkerOutline(showDarkerOutline);
+    control.setAntiAliased(Boolean.getBoolean("AntiAliased"));
+    control.setBondFudge(BondFudge);
+    control.setAutoBond(AutoBond);
+    control.setShowAtoms(showAtoms);
+    control.setDrawBondsToAtomCenters(!showAtoms);
+    control.setShowBonds(showBonds);
+    control.setShowHydrogens(showHydrogens);
+    control.setShowVectors(showVectors);
+    control.setShowDarkerOutline(showDarkerOutline);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1285,37 +1267,36 @@ public class PreferencesDialog extends JDialog implements ActionListener {
           .equals(JmolResourceHandler.getInstance()
             .getString("Prefs.showBondsLabel"))) {
         showBonds = cb.isSelected();
-        display.getSettings().setShowBonds(showBonds);
+        control.setShowBonds(showBonds);
         props.put("showBonds", new Boolean(showBonds).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
             .getString("Prefs.showAtomsLabel"))) {
         showAtoms = cb.isSelected();
-        display.getSettings().setShowAtoms(showAtoms);
-        display.getSettings().setDrawBondsToAtomCenters(!showAtoms);
+        control.setShowAtoms(showAtoms);
+        control.setDrawBondsToAtomCenters(!showAtoms);
         props.put("showAtoms", new Boolean(showAtoms).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
             .getString("Prefs.showVectorsLabel"))) {
         showVectors = cb.isSelected();
-        display.getSettings().setShowVectors(showVectors);
+        control.setShowVectors(showVectors);
         props.put("showVectors", new Boolean(showVectors).toString());
       } else if (cb.getText()
           .equals(JmolResourceHandler.getInstance()
             .getString("Prefs.showHydrogensLabel"))) {
         showHydrogens = cb.isSelected();
-        display.getSettings().setShowHydrogens(showHydrogens);
+        control.setShowHydrogens(showHydrogens);
         props.put("showHydrogens", new Boolean(showHydrogens).toString());
       } else if (cb.getText()
                  .equals(JmolResourceHandler.getInstance().
                          getString("Prefs.showDarkerOutlineLabel"))) {
         showDarkerOutline = cb.isSelected();
-        display.getSettings().setShowDarkerOutline(showDarkerOutline);
+        control.setShowDarkerOutline(showDarkerOutline);
         props.put("showDarkerOutline",
                   new Boolean(showDarkerOutline).toString());
         oButton.setEnabled(!showDarkerOutline);
       }
-      display.repaint();
     }
   };
 

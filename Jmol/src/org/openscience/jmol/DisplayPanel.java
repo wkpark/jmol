@@ -69,18 +69,20 @@ public class DisplayPanel extends JPanel
   private StatusBar status;
 
   private Measure measure = null;
-  public DisplaySettings settings;
   private static DisplayControl control;
 
-  public DisplayPanel(StatusBar status, DisplaySettings settings) {
+  public DisplayPanel(StatusBar status, DisplayControl control) {
     this.status = status;
-    this.settings = settings;
-    control = new DisplayControl(this, settings);
-    settings.addPropertyChangeListener(this);
-    AtomShape.setImageComponent(this);
+    this.control = control;
     if (System.getProperty("painttime", "false").equals("true"))
       showPaintTime = true;
   }
+
+  /*
+  public DisplaySettings getSettings() {
+    return control.getSettings();
+  }
+  */
 
   public DisplayControl getDisplayControl() {
     return control;
@@ -232,12 +234,6 @@ public class DisplayPanel extends JPanel
       prevMouseY = y;
       // I can't figure out if I want this repaint here or not
       repaint();
-    }
-  }
-
-  public void rebond() throws Exception {
-    if (control.getFrame() != null) {
-      control.getFrame().rebond();
     }
   }
 
@@ -865,15 +861,8 @@ public class DisplayPanel extends JPanel
     return defaultActions;
   }
 
-  public DisplaySettings getSettings() {
-    return settings;
-  }
-
   public void propertyChange(PropertyChangeEvent event) {
-    
-    if (event.getPropertyName().equals(DisplaySettings.atomPickedProperty)) {
-        status.setStatus(2, event.getNewValue() + " atoms selected");
-    } else if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
       control.setChemFile((ChemFile) event.getNewValue());
     } else if (event.getPropertyName().equals(JmolModel.chemFrameProperty)) {
       control.setFrame((ChemFrame) event.getNewValue());

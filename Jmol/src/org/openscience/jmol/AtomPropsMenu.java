@@ -37,12 +37,12 @@ public class AtomPropsMenu extends JMenu {
 
   ButtonGroup bg;
   Vector list = new Vector();
-  DisplaySettings settings;
+  DisplayControl control;
 
-  public AtomPropsMenu(String name, DisplaySettings settings) {
+  public AtomPropsMenu(String name, DisplayControl control) {
 
     super(name);
-    this.settings = settings;
+    this.control = control;
     bg = new ButtonGroup();
     JRadioButtonMenuItem mi = new JRadioButtonMenuItem("None");
     list.addElement(mi);
@@ -85,9 +85,9 @@ public class AtomPropsMenu extends JMenu {
       JRadioButtonMenuItem rbmi = (JRadioButtonMenuItem) e.getSource();
       String mode = rbmi.getText();
       if (mode.equals("None")) {
-        settings.setPropertyMode("");
+        control.setPropertyMode("");
       } else {
-        settings.setPropertyMode(rbmi.getText());
+        control.setPropertyMode(rbmi.getText());
       }
     }
   };

@@ -472,7 +472,7 @@ public class CrystalFile extends ChemFile {
         for (int j = i; j < numberAtoms; j++) {
 
           if (Atom.closeEnoughToBond(crystalFrame.getAtomAt(i),
-              crystalFrame.getAtomAt(j), crystalFrame.getBondFudge())) {
+              crystalFrame.getAtomAt(j), Jmol.control.getBondFudge())) {
 
             redPos = ((float[]) crystalRedPos.elementAt(j));
             if ((redPos[0] >= bondBox[0][0]) && (redPos[0] <= bondBox[1][0])

@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.Jmol;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.FortranFormat;
@@ -76,7 +77,7 @@ public class PDBReader extends DefaultChemFileReader {
 
     ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = new ChemFrame();
-    ChemFrame.setAutoBond(false);
+    Jmol.control.setAutoBond(false);
     boolean bondsCleared = false;
     StringTokenizer st;
 
@@ -171,16 +172,16 @@ public class PDBReader extends DefaultChemFileReader {
       } else if (command.equalsIgnoreCase("MODEL")) {
         frame.setInfo(line.trim());
       } else if (command.equalsIgnoreCase("ENDMDL")) {
-        ChemFrame.setAutoBond(true);
+        Jmol.control.setAutoBond(true);
         frame.rebond();
         file.addFrame(frame);
         fireFrameRead();
         
         frame = new ChemFrame();
-        ChemFrame.setAutoBond(false);
+        Jmol.control.setAutoBond(false);
         
       } else if (command.equalsIgnoreCase("END")) {
-        ChemFrame.setAutoBond(true);
+        Jmol.control.setAutoBond(true);
         if (frame.getNumberOfAtoms() > 0) {
           frame.rebond();
           file.addFrame(frame);
@@ -193,7 +194,7 @@ public class PDBReader extends DefaultChemFileReader {
     }
 
     // No END marker, so just wrap things up as if we had seen one:
-    ChemFrame.setAutoBond(true);
+    Jmol.control.setAutoBond(true);
     if (frame.getNumberOfAtoms() > 0) {
       frame.rebond();
       file.addFrame(frame);

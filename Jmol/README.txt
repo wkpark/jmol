@@ -85,10 +85,11 @@ The canonical distribution site for Jmol is:
 
     http://www.openscience.org/jmol
 
-We also have a temporary anonymous CVS server that you can use as follows:
+We also have an anonymous read-only CVS account that you can use to
+obtain the latest (sometimes broken) version of Jmol:
 
-    cvs -d :pserver:anoncvs@www.nmrshiftdb.org:/usr/local/cvsroot login
-    cvs -d :pserver:anoncvs@www.nmrshiftdb.org:/usr/local/cvsroot checkout Jmol
+    cvs -d :pserver:anoncvs@openscience.org:/Jmol login
+    cvs -d :pserver:anoncvs@openscience.org:/Jmol checkout Jmol
 
 8) Who is working on Jmol?
 

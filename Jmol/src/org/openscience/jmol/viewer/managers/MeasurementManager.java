@@ -51,12 +51,13 @@ public class MeasurementManager {
   }
 
   public void clearMeasurements() {
-    frame.clearMeasurementShapes();
+    if (frame != null)
+      frame.clearMeasurementShapes();
   }
 
   public MeasurementShape[] getMeasurements(int count) {
     int numFound = 0;
-    int measurementShapeCount = viewer.getJmolFrame().getMeasurementShapeCount();
+    int measurementShapeCount = frame.getMeasurementShapeCount();
     MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
     for (int i = measurementShapeCount; --i >= 0; )
       if (measurementShapes[i].atomIndices.length == count)

@@ -26,6 +26,7 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
@@ -66,12 +67,17 @@ public class FileManager {
         break;
     }
     try {
-      if (i < urlPrefixes.length)
-        url = new URL(name);
-      else if (appletDocumentBase != null)
+      if (appletDocumentBase != null) {
+        // we are running as an applet
+        if (i < urlPrefixes.length)
+          name = "JmolAppletProxy.pl?url=" + URLEncoder.encode(name);
+        System.out.println("an applet will try to open the URL:" + name);
         url = new URL(appletDocumentBase, name);
-      else
-        url = new URL("file", null, name);
+      } else {
+        url = (i < urlPrefixes.length
+               ? new URL(name)
+               : new URL("file", null, name));
+      }
     } catch (MalformedURLException e) {
     }
     return url;
@@ -89,6 +95,7 @@ public class FileManager {
   }
 
   public String openFile(String name) {
+    System.out.println("openFile(" + name + ")");
     InputStream istream = getInputStreamFromName(name);
     if (istream == null)
         return "error opening url/filename:" + name;
@@ -96,6 +103,7 @@ public class FileManager {
   }
 
   public String openFile(File file) {
+    System.out.println("openFile(File:" + file.getName() + ")");
     try {
       FileInputStream fis = new FileInputStream(file);
       return openInputStream(file.getName(), fis);
@@ -129,6 +137,7 @@ public class FileManager {
   }
 
   private String openReader(String name, Reader reader) {
+    System.out.println("openReader(" + name + ")");
     Object clientFile = viewer.getJmolModelAdapter()
       .openBufferedReader(viewer, name, new BufferedReader(reader));
     if (clientFile instanceof String)

@@ -1059,9 +1059,8 @@ class Jmol extends JPanel {
               XYZSaver xyzs = new XYZSaver(getCurrentFile(), os);
               xyzs.writeFile();
             } else if (ft.getType().equals("PDB")) {
-
-              // PDBSaver ps = new PDBSaver(getCurrentFile(), os);
-              // ps.writeFile();
+              PdbSaver ps = new PdbSaver(getCurrentFile(), os);
+              ps.writeFile();
             } else if (ft.getType().equals("CML")) {
               CMLSaver cs = new CMLSaver(getCurrentFile(), os);
               cs.writeFile();

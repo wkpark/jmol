@@ -30,9 +30,12 @@
 </changes>
 
 <changes version="jmol-1.2">
-  <changes>
+  <change>
     Fixed line separator for XYZ output. (bug #519101)
-  </changes>
+  </change>
+  <change>
+    Added rudimentary PDB output. (bug #519100)
+  </change>
 </changes>
 
 <changes version="jmol-1.1">

@@ -128,6 +128,7 @@
         <exclude name="**/Test*.class" />
         <include name="**/jmol/**" />
         <include name="com/**" />
+        <include name="freeware/**" />
       </fileset>
     </jar>
     

@@ -217,7 +217,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       loadInline(getValue("loadInline", null));
       script(getValue("script", null));
 
-      viewer.setShowFrank(getBooleanValue("frank", true));
+      viewer.setGraphicShow(JmolConstants.GRAPHIC_FRANK, 
+                            getBooleanValue("frank", true));
 
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
@@ -321,26 +322,12 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     }
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
-    // while the window is resized. Especially in setColor(frankColor)
-    // and g.drawImage
+    // while the window is resized. 
     try {
       g.drawImage(screenImage, 0, 0, null);
       if (showPaintTime) {
         stopPaintClock();
         showTimes(10, 10, g);
-      }
-      if (viewer.getShowFrank()) {
-        if (frankFont == null) {
-          frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
-          FontMetrics fm = getFontMetrics(frankFont);
-          frankWidth = fm.stringWidth(frankString);
-          frankDescent = fm.getDescent();
-        }
-        g.setFont(frankFont);
-        g.setColor(frankColor);
-        g.drawString(frankString,
-                     size.width - frankWidth - frankMargin,
-                     size.height - frankDescent - frankMargin);
       }
     } catch (NullPointerException npe) {
       System.out.println("Sun!! ... fix graphics your bugs!");

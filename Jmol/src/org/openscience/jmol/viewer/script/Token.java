@@ -212,6 +212,7 @@ public class Token {
   final static int property     = setparam | 31;
   final static int diffuse      = setparam | 32;
   final static int labeloffset  = setparam | 33;
+  final static int frank        = setparam | 34;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -428,6 +429,7 @@ public class Token {
     "property",     new Token(property,        "property"),
     "diffuse",      new Token(diffuse,         "diffuse"),
     "labeloffset",  new Token(labeloffset,     "labeloffset"),
+    "frank",        new Token(frank,           "frank"),
   
     // show parameters
     "information",  new Token(information,     "information"),

@@ -51,7 +51,7 @@ final public class Graphics3D {
   boolean tFullSceneAntialiasing;
   boolean tPaintingInProgress;
 
-  int width,height;
+  public int width,height;
   int slab;
   int xLast, yLast;
   int[] pbuf;

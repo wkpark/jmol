@@ -1911,6 +1911,9 @@ public class Eval implements Runnable {
     case Token.boundbox:
       setBoundbox();
       break;
+    case Token.frank:
+      setFrank();
+      break;
     case Token.display:
       setDisplay();
       break;
@@ -2028,6 +2031,11 @@ public class Eval implements Runnable {
   void setBoundbox() throws ScriptException {
     viewer.setShowBoundingBox(getSetBoolean());
   }
+
+  void setFrank() throws ScriptException {
+    viewer.setGraphicShow(JmolConstants.GRAPHIC_FRANK, getSetBoolean());
+  }
+
 
   void setDisplay() throws ScriptException {
     boolean showHalo = false;

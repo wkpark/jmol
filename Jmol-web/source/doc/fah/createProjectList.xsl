@@ -10,8 +10,6 @@
   <xsl:template match="fah_projects">
     <xsl:text><![CDATA[function createAllProjects() {]]>
 </xsl:text>
-    <xsl:text><![CDATA[document.writeln("<table width='100%' border=0 cellpadding=0><tr>");]]>
-</xsl:text>
     <xsl:for-each select="fah_proj" >
       <xsl:value-of select="." />
       <xsl:if test="@number">
@@ -81,10 +79,28 @@
         </xsl:if>
       </xsl:if>
     </xsl:for-each>
-    <xsl:text><![CDATA[document.writeln("</tr></table>");]]>
+    <xsl:text><![CDATA[}]]>
 </xsl:text>
-    <xsl:text><![CDATA[document.writeln("<br/>");]]>
+    <xsl:text><![CDATA[function createMissingProjects() {]]>
 </xsl:text>
+    <xsl:for-each select="fah_proj" >
+      <xsl:value-of select="." />
+      <xsl:if test="@number">
+        <xsl:if test="@name">
+          <!-- Project file name -->
+          <xsl:choose>
+            <xsl:when test="@file = 'y'">
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:text>addMissingProject('</xsl:text>
+              <xsl:value-of select="@number" />
+              <xsl:text>');
+</xsl:text>
+            </xsl:otherwise>
+          </xsl:choose>
+        </xsl:if>
+      </xsl:if>
+    </xsl:for-each>
     <xsl:text><![CDATA[}]]>
 </xsl:text>
   </xsl:template>

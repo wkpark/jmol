@@ -1,5 +1,5 @@
   <xsl:template match="fah_projects">
-    <xsl:text>createAllProjects();</xsl:text>
+    <!-- <xsl:text>createAllProjects();</xsl:text> -->
   </xsl:template>
   
   <xsl:template match="fah_count_projects">

@@ -53,11 +53,16 @@ public class Cylinder25D {
   public void render(short colix1, short colix2, int diameter,
                      int xOrigin, int yOrigin, int zOrigin,
                      int dx, int dy, int dz) {
+    this.diameter = diameter;
+    if (this.diameter <= 1) {
+      if (this.diameter == 1)
+        g25d.plotLineDelta(colix1, colix2, xOrigin, yOrigin, zOrigin, dx, dy, dz);
+      return;
+    }
     this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
     this.dx = dx; this.dy = dy; this.dz = dz;
     this.shades1 = Colix.getShades(this.colix1 = colix1);
     this.shades2 = Colix.getShades(this.colix2 = colix2);
-    this.diameter = diameter;
     this.tEvenDiameter = (diameter & 1) == 0;
     
     float radius = diameter / 2.0f;

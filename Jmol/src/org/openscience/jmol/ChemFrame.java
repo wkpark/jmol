@@ -361,6 +361,14 @@ public class ChemFrame extends AtomContainer {
     System.arraycopy(atoms, 0, result, 0, result.length);
     return result;
   }
+
+  public Atom getJmolAtomAt(int index) {
+    return atoms[index];
+  }
+
+  public Atom[] getJmolAtoms() {
+    return atoms;
+  }
   
   /**
    * returns the coordinates of the i'th atom

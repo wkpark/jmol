@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -26,46 +26,18 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
+
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
-import java.awt.image.Kernel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.awt.Composite;
-import java.awt.AlphaComposite;
-import java.awt.Polygon;
-import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
-import java.awt.RenderingHints;
-import java.util.Enumeration;
-import java.util.Hashtable;
-
-import java.awt.GradientPaint;
-import java.awt.Paint;
-import java.awt.Point;
 
 import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4d;
 
-/**
- * Graphical representation of an atom.
- *
- * @author Bradley A. Smith (bradley@baysmith.com)
- */
 public class AtomShape extends Shape {
 
   Atom atom;
-  //  private Point3d screenPosition = new Point3d();
   public int diameter;
   public int bondWidth;
+  public byte styleAtom;
   
   public AtomShape(Atom atom) {
     this.atom = atom;
@@ -73,6 +45,10 @@ public class AtomShape extends Shape {
 
   public String toString() {
     return "Atom shape for " + atom + ": z = " + z;
+  }
+
+  public void setStyleAtom(byte styleAtom) {
+    this.styleAtom = styleAtom;
   }
 
   public void transform(DisplayControl control) {

@@ -42,6 +42,14 @@ public class StyleManager {
   public byte styleAtom = DisplayControl.QUICKDRAW;
   public void setStyleAtom(byte style) {
     styleAtom = style;
+    if (control.haveFile()) {
+      System.out.println("setting style:" + style);
+      int numAtoms = control.numberOfAtoms();
+      Atom[] atoms = control.getFrameAtoms();
+      while (--numAtoms >= 0) {
+        atoms[numAtoms].atomShape.setStyleAtom(style);
+      }
+    }
   }
 
   public byte styleBond = DisplayControl.QUICKDRAW;

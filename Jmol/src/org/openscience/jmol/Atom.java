@@ -286,7 +286,7 @@ public class Atom extends org.openscience.cdk.Atom {
     return false;
   }
 
-  private AtomShape atomShape;
+  public AtomShape atomShape;
   public AtomShape getAtomShape() {
     return atomShape;
   }

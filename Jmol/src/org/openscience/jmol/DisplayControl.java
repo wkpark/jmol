@@ -650,6 +650,10 @@ final public class DisplayControl {
     return modelManager.numberOfAtoms();
   }
 
+  public Atom[] getFrameAtoms() {
+    return modelManager.getFrameAtoms();
+  }
+
   public void mlistChanged(MeasurementListEvent mle) {
     modelManager.mlistChanged(mle);
   }

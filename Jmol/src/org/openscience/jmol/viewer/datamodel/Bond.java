@@ -61,7 +61,7 @@ public class Bond {
     this.atom1 = atom1;
     this.atom2 = atom2;
     if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16)
-      order |= JmolConstants.BOND_SULFUR;
+      order |= JmolConstants.BOND_SULFUR_MASK;
     this.order = (byte)order;
     this.style = style;
     this.mar = mar;
@@ -78,7 +78,11 @@ public class Bond {
   }
 
   public boolean isStereo() {
-    return (order & JmolConstants.BOND_STEREO) != 0;
+    return (order & JmolConstants.BOND_STEREO_MASK) != 0;
+  }
+
+  public boolean isAromatic() {
+    return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
   }
 
   public void deleteAtomReferences() {

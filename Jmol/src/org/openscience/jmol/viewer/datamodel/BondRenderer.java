@@ -104,20 +104,25 @@ class BondRenderer extends Renderer {
     case 1:
     case 2:
     case 3:
-      renderCylinder();
+      renderCylinder(0);
+      break;
+    case JmolConstants.BOND_AROMATIC:
+      bondOrder = 2;
+      renderCylinder(1);
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:
       renderTriangle(bond);
       break;
     case JmolConstants.BOND_HYDROGEN:
-      renderDotted();
+      bondOrder = 1;
+      renderCylinder(1);
     }
   }
 
   int getRenderBondOrder(int order) {
-    if ((order & JmolConstants.BOND_SULFUR) != 0)
-      order &= ~JmolConstants.BOND_SULFUR;
+    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
+      order &= ~JmolConstants.BOND_SULFUR_MASK;
     if ((order & JmolConstants.BOND_COVALENT) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||
@@ -131,7 +136,7 @@ class BondRenderer extends Renderer {
     return order;
   }
 
-  private void renderCylinder() {
+  private void renderCylinder(int dottedMask) {
     boolean lineBond = (styleBond == JmolConstants.STYLE_WIREFRAME ||
                         wireframeRotating ||
                         width <= 1);
@@ -152,11 +157,19 @@ class BondRenderer extends Renderer {
       return;
     }
     if (bondOrder == 1) {
-      if (lineBond)
-        g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-      else
-        g3d.fillCylinder(colixA, colixB, endcaps,
+      boolean tDotted = (dottedMask & 1) != 0;
+      if (lineBond) {
+        if (tDotted)
+          g3d.drawDottedLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+        else 
+          g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+      } else {
+        if (tDotted)
+          g3d.drawDottedLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+        else
+          g3d.fillCylinder(colixA, colixB, endcaps,
                          width, xA, yA, zA, xB, yB, zB);
+      }
       return;
     }
     int dxB = dx * dx;
@@ -165,20 +178,34 @@ class BondRenderer extends Renderer {
     mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
     resetAxisCoordinates(lineBond);
     while (true) {
-      if (lineBond)
-        g3d.drawLine(colixA, colixB, xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
-      else
-        g3d.fillCylinder(colixA, colixB, endcaps, width,
-                         xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+      boolean tDotted = (dottedMask & 1) != 0;
+      dottedMask >>= 1;
+      if (lineBond) {
+        if (tDotted)
+          g3d.drawDottedLine(colixA, colixB,
+                             xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+        else
+          g3d.drawLine(colixA, colixB,
+                       xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+      } else {
+        if (tDotted)
+          g3d.drawDottedLine(colixA, colixB,
+                             xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+        else
+          g3d.fillCylinder(colixA, colixB, endcaps, width,
+                           xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+      }
       if (--bondOrder == 0)
         break;
       stepAxisCoordinates();
     }
   }
 
+  int cylinderNumber;
   int xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2, dxStep, dyStep;
 
   void resetAxisCoordinates(boolean lineBond) {
+    cylinderNumber = 0;
     int space = width / 8 + 3;
     int step = width + space;
     dxStep = step * dy / mag2d; dyStep = step * -dx / mag2d;

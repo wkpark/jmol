@@ -476,6 +476,8 @@ class MolModel extends Model {
       int atomIndex1 = Integer.parseInt(line.substring(0, 3).trim());
       int atomIndex2 = Integer.parseInt(line.substring(3, 6).trim());
       int order = Integer.parseInt(line.substring(6, 9).trim());
+      if (order == 4)
+        order = JmolConstants.BOND_AROMATIC;
       bonds[i] = new Bond(atomIndex1-1, atomIndex2-1, order);
     }
   }

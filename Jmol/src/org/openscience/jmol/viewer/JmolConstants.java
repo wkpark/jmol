@@ -83,14 +83,15 @@ final public class JmolConstants {
    * Extended Bond Definition Types
    *
    */
-  public final static byte BOND_COVALENT    = 3;
-  public final static byte BOND_STEREO      = (1 << 2);
-  public final static byte BOND_STEREO_NEAR = (1 << 2) | 1;
-  public final static byte BOND_STEREO_FAR  = (1 << 2) | 2;
-  public final static byte BOND_AROMATIC    = (1 << 3) | 1;
-  public final static byte BOND_SULFUR      = (1 << 4);
-  public final static byte BOND_HYDROGEN    = (1 << 5);
-  public final static byte BOND_ALL         = (byte)0xFF;
+  public final static byte BOND_COVALENT      = 3;
+  public final static byte BOND_AROMATIC_MASK = (1 << 2);
+  public final static byte BOND_AROMATIC      = (1 << 2) | 1;
+  public final static byte BOND_STEREO_MASK   = (3 << 3);
+  public final static byte BOND_STEREO_NEAR   = (1 << 3) | 1;
+  public final static byte BOND_STEREO_FAR    = (2 << 3) | 2;
+  public final static byte BOND_SULFUR_MASK   = (1 << 5);
+  public final static byte BOND_HYDROGEN      = (1 << 6);
+  public final static byte BOND_ALL_MASK      = (byte)0xFF;
 
   /**
    * The default atomicSymbols. Presumably the only entry which may cause

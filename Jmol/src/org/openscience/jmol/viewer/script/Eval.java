@@ -1278,7 +1278,7 @@ public class Eval implements Runnable {
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
     viewer.setStyleBondScript(JmolConstants.STYLE_NONE,
-                              JmolConstants.BOND_ALL);
+                              JmolConstants.BOND_ALL_MASK);
     viewer.setBondSelectionModeOr(bondmode);
     viewer.setStyleAtomScript(JmolConstants.STYLE_NONE);
     viewer.setLabelScript(null);

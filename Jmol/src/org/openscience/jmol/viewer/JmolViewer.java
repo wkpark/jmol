@@ -1162,7 +1162,7 @@ final public class JmolViewer {
   public void setStyleMarSsBondScript(byte style, short mar) {
     distributionManager
       .setStyleMar(style, mar,
-                   bondIteratorSelected(JmolConstants.BOND_SULFUR));
+                   bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
   }
 
   public void setStyleMarHBondScript(byte style, short mar) {
@@ -1190,7 +1190,7 @@ final public class JmolViewer {
   public void setColorSsBondScript(Color color) {
     distributionManager
       .setColix(Colix.getColix(color),
-                bondIteratorSelected(JmolConstants.BOND_SULFUR));
+                bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
   }
 
   public void setColorHBondScript(Color color) {

@@ -43,7 +43,8 @@ final class Line3D {
     int cc2 = clipCode(xB, yB, zB);
     if ((cc1 | cc2) == 0) {
       if (tDotted)
-        plotDottedLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
+        plotDashedLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
+                                     2, 1);
       else
         plotLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
       return;
@@ -98,12 +99,14 @@ final class Line3D {
     
     if (useCohenSutherland) {
       if (tDotted)
-        plotDottedLineDeltaUnclipped(argb, x1, y1, z1, x2-x1, y2-y1, z2-z1);
+        plotDashedLineDeltaUnclipped(argb, x1, y1, z1, x2-x1, y2-y1, z2-z1,
+                                     2, 1);
       else
         plotLineDeltaUnclipped(argb, argb, x1, y1, z1, x2-x1, y2-y1, z2-z1);
     } else {
       if (tDotted)
-        plotDottedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
+        plotDashedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
+                                   2, 1);
       else
         plotLineDeltaClipped(argb, argb, xA, yA, zA, dxBA, dyBA, dzBA);
     }
@@ -211,22 +214,27 @@ final class Line3D {
     }
   }
 
-  void plotDottedLineDeltaUnclipped(int argb, int x1, int y1, int z1,
-                                    int dx, int dy, int dz) {
-    boolean flipFlop = true;
+  void plotDashedLineDeltaUnclipped(int argb, int x, int y, int z,
+                                    int dx, int dy, int dz,
+                                    int run, int rise) {
+    if (rise >= run) {
+      plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
+      return;
+    }
+    int runIndex = 0;
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int width = g3d.width;
-    int offset = y1 * width + x1;
-    if (z1 < zbuf[offset]) {
-      zbuf[offset] = (short)z1;
+    int offset = y * width + x;
+    if (z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
       pbuf[offset] = argb;
     }
     if (dx == 0 && dy == 0)
       return;
 
-    // int xCurrent = x1;
-    // int yCurrent = y1;
+    // int xCurrent = x;
+    // int yCurrent = y;
     int xIncrement = 1;
     // int yIncrement = 1;
     int yOffsetIncrement = width;
@@ -244,7 +252,7 @@ final class Line3D {
 
     // the z dimension and the z increment are stored with a fractional
     // component in the bottom 10 bits.
-    int zCurrentScaled = z1 << 10;
+    int zCurrentScaled = z << 10;
     if (dy <= dx) {
       int roundingFactor = dx - 1;
       if (dz < 0) roundingFactor = -roundingFactor;
@@ -261,11 +269,13 @@ final class Line3D {
           twoDxAccumulatedYError -= twoDx;
         }
         int zCurrent = zCurrentScaled >> 10;
-        if (flipFlop && zCurrent < zbuf[offset]) {
+        if (runIndex < rise  && zCurrent < zbuf[offset]) {
           zbuf[offset] = (short)zCurrent;
           pbuf[offset] = argb;
         }
-        flipFlop = !flipFlop;
+        ++runIndex;
+        if (runIndex == run)
+          runIndex = 0;
       }
       return;
     }
@@ -284,17 +294,24 @@ final class Line3D {
         twoDyAccumulatedXError -= twoDy;
       }
       int zCurrent = zCurrentScaled >> 10;
-      if (flipFlop && zCurrent < zbuf[offset]) {
+      if (runIndex < rise && zCurrent < zbuf[offset]) {
         zbuf[offset] = (short)zCurrent;
         pbuf[offset] = argb;
       }
-      flipFlop = !flipFlop;
+      ++runIndex;
+      if (runIndex == run)
+        runIndex = 0;
     }
   }
 
-  void plotDottedLineDeltaClipped(int argb, int x, int y, int z,
-                                  int dx, int dy, int dz) {
-    boolean flipFlop = true;
+  void plotDashedLineDeltaClipped(int argb, int x, int y, int z,
+                                  int dx, int dy, int dz,
+                                  int run, int rise) {
+    if (rise >= run) {
+      plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
+      return;
+    }
+    int runIndex = 0;
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int width = g3d.width, height = g3d.height, slab = g3d.slab;
@@ -343,7 +360,7 @@ final class Line3D {
           offset += yOffsetIncrement;
           twoDxAccumulatedYError -= twoDx;
         }
-        if (flipFlop &&
+        if (runIndex < rise &&
             xCurrent >= 0 && xCurrent < width &&
             yCurrent >= 0 && yCurrent < height) {
           int zCurrent = zCurrentScaled >> 10;
@@ -352,9 +369,10 @@ final class Line3D {
             pbuf[offset] = argb;
           }
         }
-        flipFlop = !flipFlop;
+        ++runIndex;
+        if (runIndex == run)
+          runIndex = 0;
       }
-      return;
     }
     int roundingFactor = dy - 1;
     if (dy < 0) roundingFactor = -roundingFactor;
@@ -370,7 +388,7 @@ final class Line3D {
         offset += xIncrement;
         twoDyAccumulatedXError -= twoDy;
       }
-      if (flipFlop &&
+      if (runIndex < rise &&
           xCurrent >= 0 && xCurrent < width &&
           yCurrent >= 0 && yCurrent < height) {
         int zCurrent = zCurrentScaled >> 10;
@@ -379,7 +397,9 @@ final class Line3D {
           pbuf[offset] = argb;
         }
       }
-      flipFlop = !flipFlop;
+      ++runIndex;
+      if (runIndex == run)
+        runIndex = 0;
     }
   }
 

@@ -82,7 +82,6 @@ final public class JmolViewer {
   public ModelManager modelManager;
   public RepaintManager repaintManager;
   public StyleManager styleManager;
-  public LabelManager labelManager;
   public MeasurementManager measurementManager;
   public Eval eval;
   public Graphics3D g3d;
@@ -125,10 +124,7 @@ final public class JmolViewer {
     repaintManager = new RepaintManager(this);
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
-    labelManager = new LabelManager(this);
     measurementManager = new MeasurementManager(this);
-
-  
   }
 
   public Component getAwtComponent() {
@@ -526,6 +522,7 @@ final public class JmolViewer {
 
   public void setColorLabel(Color color) {
     colorManager.setColorLabel(color);
+    setShapeColorProperty(JmolConstants.SHAPE_LABELS, color);
     refresh();
   }
 
@@ -677,6 +674,22 @@ final public class JmolViewer {
   public int calcSurfaceIntensity(Point3f pointA, Point3f pointB,
                                    Point3f pointC) {
     return colorManager.calcSurfaceIntensity(pointA, pointB, pointC);
+  }
+
+  public short getColixAtom(Atom atom) {
+    return colorManager.getColixAtom(atom);
+  }
+
+  public short getColixAtomPalette(Atom atom, byte palette) {
+    return colorManager.getColixAtomPalette(atom, palette);
+  }
+
+  public short getColixAxes() {
+    return colorManager.colixAxes;
+  }
+
+  public short getColixAxesText() {
+    return colorManager.colixAxesText;
   }
 
   /****************************************************************
@@ -1339,7 +1352,10 @@ final public class JmolViewer {
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
   }
 
-  public void setLabelScript(String strLabel) {
+  public void setLabel(String strLabel) {
+    if (strLabel != null) // force the class to load and display
+      setShapeSize(JmolConstants.SHAPE_LABELS,
+                   styleManager.pointsLabelFontSize);
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
   }
 
@@ -1817,60 +1833,34 @@ final public class JmolViewer {
     return styleManager.zeroBasedXyzRasmol;
   }
 
-
-  /****************************************************************
-   * delegated to LabelManager
-   ****************************************************************/
-
-  public String getLabelAtom(String strFormat, Atom atom,
-                             int atomIndex) {
-    return labelManager.getLabelAtom(strFormat, atom, atomIndex);
-  }
-
   public void setLabelFontSize(int points) {
-    labelManager.setLabelFontSize(points);
+    styleManager.setLabelFontSize(points);
     refresh();
   }
 
   public Font getLabelFont() {
-    return labelManager.getLabelFont();
+    return styleManager.getLabelFont();
   }
 
   public Font getLabelFont(int diameter) {
-    return labelManager.getLabelFont(diameter);
+    return styleManager.getLabelFont(diameter);
   }
 
   public Font getFontOfSize(int points) {
-    return labelManager.getFontOfSize(points);
+    return styleManager.getFontOfSize(points);
   }
 
   public void setLabelOffset(int xOffset, int yOffset) {
-    labelManager.setLabelOffset(xOffset, yOffset);
+    styleManager.setLabelOffset(xOffset, yOffset);
     refresh();
   }
 
   public int getLabelOffsetX() {
-    return labelManager.labelOffsetX;
+    return styleManager.labelOffsetX;
   }
 
   public int getLabelOffsetY() {
-    return labelManager.labelOffsetY;
-  }
-
-  public short getColixAtom(Atom atom) {
-    return colorManager.getColixAtom(atom);
-  }
-
-  public short getColixAtomPalette(Atom atom, byte palette) {
-    return colorManager.getColixAtomPalette(atom, palette);
-  }
-
-  public short getColixAxes() {
-    return colorManager.colixAxes;
-  }
-
-  public short getColixAxesText() {
-    return colorManager.colixAxesText;
+    return styleManager.labelOffsetY;
   }
 
   ////////////////////////////////////////////////////////////////

@@ -25,6 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+import org.openscience.jmol.viewer.pdb.PdbAtom;
 import java.util.BitSet;
 
 public class Labels extends Shape {
@@ -37,8 +38,91 @@ public class Labels extends Shape {
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
-          atom.setLabel(viewer.getLabelAtom(strLabel, atom, i));
+          atom.setLabel(getLabelAtom(strLabel, atom, i));
         }
     }
+  }
+
+  String getLabelAtom(String strFormat, Atom atom, int atomIndex) {
+    if (strFormat == null || strFormat.equals(""))
+      return null;
+    PdbAtom pdbatom = atom.getPdbAtom();
+    String strLabel = "";
+    int cch = strFormat.length();
+    int ich, ichPercent;
+    for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1; ) {
+      strLabel += strFormat.substring(ich, ichPercent);
+      ich = ichPercent + 1;
+      if (ich == cch) {
+        --ich; // a percent sign at the end of the string
+        break;
+      }
+      int ch = strFormat.charAt(ich++);
+      switch (ch) {
+      case 'i':
+        strLabel += atom.getAtomno();
+        break;
+      case 'a':
+        strLabel += atom.getAtomTypeName();
+        break;
+      case 'e':
+        strLabel += atom.getAtomicSymbol();
+        break;
+      case 'x':
+        strLabel += atom.getAtomX();
+        break;
+      case 'y':
+        strLabel += atom.getAtomY();
+        break;
+      case 'z':
+        strLabel += atom.getAtomZ();
+        break;
+      case 'C':
+        int charge = atom.getAtomicCharge();
+        if (charge > 0)
+          strLabel += "" + charge + "+";
+        else if (charge < 0)
+          strLabel += "" + -charge + "-";
+        else
+          strLabel += "0";
+        break;
+      case 'V':
+        strLabel += atom.getVanderwaalsRadiusFloat();
+        break;
+      case 'I':
+        strLabel += atom.getBondingRadiusFloat();
+        break;
+      case 'b': // these two are the same
+      case 't':
+        if (pdbatom != null)
+          strLabel += pdbatom.getTemperature();
+        break;
+      case 'c': // these two are the same
+      case 's':
+        if (pdbatom != null)
+          strLabel += pdbatom.getChainID();
+        break;
+      case 'M':
+        strLabel += "/" + atom.getModelNumber();
+        break;
+      case 'm':
+        strLabel += "<X>";
+        break;
+      case 'n':
+        if (pdbatom != null)
+          strLabel += pdbatom.getGroup3();
+        break;
+      case 'r':
+        if (pdbatom != null)
+          strLabel += pdbatom.getSeqcodeString();
+        break;
+      default:
+        strLabel += "" + ch;
+      }
+    }
+    strLabel += strFormat.substring(ich);
+    if (strLabel.length() == 0)
+      strLabel = null;
+    return strLabel;
   }
 }

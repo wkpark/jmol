@@ -119,7 +119,7 @@ public class StyleManager {
     viewer.setPerspectiveDepth(true);
     viewer.setBondTolerance(0.45f);
     viewer.setMinBondDistance(0.40f);
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 150 * 2);
+    viewer.setMarBond((short)150);
   }
 
   public void setJmolDefaults() {
@@ -135,7 +135,7 @@ public class StyleManager {
     viewer.setAxesOrientationRasmol(true);
     setZeroBasedXyzRasmol(true);
     viewer.setPercentVdwAtom(0);
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 1);
+    viewer.setMarBond((short)1);
   }
 
   public boolean showFrank;
@@ -152,4 +152,50 @@ public class StyleManager {
   public void setHbondsBackbone(boolean hbondsBackbone) {
     this.hbondsBackbone = hbondsBackbone;
   }
+
+  /****************************************************************
+   * label related
+   ****************************************************************/
+  public String strFontFace = "SansSerif";
+  public void setFontFace(String strFontFace) {
+    this.strFontFace = strFontFace;
+  }
+
+  public final static int pointsMin = 6;
+  public final static int pointsMax = 52;
+
+  Font[] fonts = new Font[pointsMax - pointsMin + 1];
+
+  public Font getFontOfSize(int points) {
+    if (points < pointsMin)
+      points = pointsMin;
+    else if (points > pointsMax)
+      points = pointsMax;
+    int index = points - pointsMin;
+    Font font = fonts[index];
+    if (font == null)
+      font = fonts[index] = new Font(strFontFace, Font.PLAIN, points);
+    return font;
+  }
+
+  public Font getLabelFont() {
+    return getFontOfSize(pointsLabelFontSize);
+  }
+
+  public Font getLabelFont(int diameter) {
+    return getFontOfSize(pointsLabelFontSize);
+  }
+
+  public int pointsLabelFontSize = 13;
+  public void setLabelFontSize(int points) {
+    this.pointsLabelFontSize = points <= 0 ? 13 : points;
+  }
+
+  public int labelOffsetX = 4;
+  public int labelOffsetY = 4;
+  public void setLabelOffset(int offsetX, int offsetY) {
+    labelOffsetX = offsetX;
+    labelOffsetY = offsetY;
+  }
+
 }

@@ -1371,7 +1371,7 @@ public class Eval implements Runnable {
       strLabel = "<default>";
     else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
-    viewer.setLabelScript(strLabel);
+    viewer.setLabel(strLabel);
   }
 
   void load() throws ScriptException {
@@ -1442,7 +1442,7 @@ public class Eval implements Runnable {
     viewer.setBondSelectionModeOr(true);
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
     viewer.setBondSelectionModeOr(bondmode);
-    viewer.setLabelScript(null);
+    viewer.setLabel(null);
 
     for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT;
          --shapeType >= 0; )

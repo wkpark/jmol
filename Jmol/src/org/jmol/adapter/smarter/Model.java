@@ -108,10 +108,6 @@ class Model {
   }
 
   Bond newBond(int atomIndex1, int atomIndex2, int order) {
-    if (atomIndex1 < 0 ||
-        atomIndex2 < 0 ||
-        order <= 0)
-      return null;
     Bond bond = new Bond(atomIndex1, atomIndex2, order);
     addBond(bond);
     return bond;
@@ -124,6 +120,19 @@ class Model {
   }
 
   void addBond(Bond bond) {
+    /*
+    System.out.println("I see a bond:" + bond.atomIndex1 + "-" +
+                       bond.atomIndex2 + ":" + bond.order);
+    */
+    if (bond.atomIndex1 < 0 ||
+        bond.atomIndex1 < 0 ||
+        bond.order <= 0) {
+      /*
+      System.out.println(">>>>>>BAD BOND:" + bond.atomIndex1 + "-" +
+                         bond.atomIndex2 + ":" + bond.order);
+      */
+      return;
+    }
     if (bondCount == bonds.length)
       bonds = (Bond[])ModelReader.setLength(bonds, bondCount + 1024);
     bonds[bondCount++] = bond;

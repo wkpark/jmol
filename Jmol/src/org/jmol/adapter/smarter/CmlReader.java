@@ -79,6 +79,9 @@ class CmlReader extends ModelReader {
     // atomCount holds the current number of atoms
     int atomCount;
     Atom[] atomArray = new Atom[100];
+
+    int bondCount;
+    Bond[] bondArray = new Bond[100];
     
     // the same string array gets reused
     // tokenCount holds the current number of tokens
@@ -134,6 +137,23 @@ class CmlReader extends ModelReader {
       }
     }
 
+    void breakOutBondTokens(String str) {
+      breakOutTokens(str);
+      checkBondArrayLength(tokenCount);
+    }
+    
+    void checkBondArrayLength(int newBondCount) {
+      if (bondCount == 0) {
+        if (newBondCount > bondArray.length)
+          bondArray = new Bond[newBondCount];
+        for (int i = newBondCount; --i >= 0; )
+          bondArray[i] = new Bond();
+        bondCount = newBondCount;
+      } else if (newBondCount != bondCount) {
+        throw new IndexOutOfBoundsException("bad bond attribute length");
+      }
+    }
+
     ////////////////////////////////////////////////////////////////
 
 
@@ -155,17 +175,19 @@ class CmlReader extends ModelReader {
       }
       if ("atom".equals(qName)) {
         atom = new Atom();
-        for (int i=0; i<atts.getLength(); i++) {
-          if ("id".equals(atts.getLocalName(i))) {
-            atom.atomName = atts.getValue(i);
-          } else if ("x3".equals(atts.getLocalName(i))) {
-            atom.x = parseFloat(atts.getValue(i));
-          } else if ("y3".equals(atts.getLocalName(i))) {
-            atom.y = parseFloat(atts.getValue(i));
-          } else if ("z3".equals(atts.getLocalName(i))) {
-            atom.z = parseFloat(atts.getValue(i));
-          } else if ("elementType".equals(atts.getLocalName(i))) {
-            atom.elementSymbol = atts.getValue(i);
+        for (int i = atts.getLength(); --i >= 0; ) {
+          String attLocalName = atts.getLocalName(i);
+          String attValue = atts.getValue(i);
+          if ("id".equals(attLocalName)) {
+            atom.atomName = attValue;
+          } else if ("x3".equals(attLocalName)) {
+            atom.x = parseFloat(attValue);
+          } else if ("y3".equals(attLocalName)) {
+            atom.y = parseFloat(attValue);
+          } else if ("z3".equals(attLocalName)) {
+            atom.z = parseFloat(attValue);
+          } else if ("elementType".equals(attLocalName)) {
+            atom.elementSymbol = attValue;
           }
         }
         atom.modelNumber = moleculeCount;
@@ -173,45 +195,70 @@ class CmlReader extends ModelReader {
       }
       if ("atomArray".equals(qName)) {
         atomCount = 0;
-        for (int i=0; i<atts.getLength(); i++) {
-          if ("atomID".equals(atts.getLocalName(i))) {
-            breakOutAtomTokens(atts.getValue(i));
-            for (int j = 0; j < tokenCount; ++j)
+        for (int i = atts.getLength(); --i >= 0; ) {
+          String attLocalName = atts.getLocalName(i);
+          String attValue = atts.getValue(i);
+          if ("atomID".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
               atomArray[j].atomName = tokens[j];
-          } else if ("x3".equals(atts.getLocalName(i))) {
-            breakOutAtomTokens(atts.getValue(i));
-            for (int j = 0; j < tokenCount; ++j)
+          } else if ("x3".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
               atomArray[j].x = parseFloat(tokens[j]);
-          } else if ("y3".equals(atts.getLocalName(i))) {
-            breakOutAtomTokens(atts.getValue(i));
-            for (int j = 0; j < tokenCount; ++j)
+          } else if ("y3".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
               atomArray[j].y = parseFloat(tokens[j]);
-          } else if ("z3".equals(atts.getLocalName(i))) {
-            breakOutAtomTokens(atts.getValue(i));
-            for (int j = 0; j < tokenCount; ++j)
+          } else if ("z3".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
               atomArray[j].z = parseFloat(tokens[j]);
-          } else if ("elementType".equals(atts.getLocalName(i))) {
-            breakOutAtomTokens(atts.getValue(i));
-            for (int j = 0; j < tokenCount; ++j)
+          } else if ("elementType".equals(attLocalName)) {
+            breakOutAtomTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
               atomArray[j].elementSymbol = tokens[j];
           }
         }
-        for (int j = 0; j < atomCount; ++j)
+        for (int j = atomCount; --j >= 0; )
           atomArray[j].modelNumber = moleculeCount;
         return;
       }
       if ("bond".equals(qName)) {
         //  <bond atomRefs2="a20 a21" id="b41" order="2"/>
         int order = -1;
-        for (int i=0; i<atts.getLength(); i++) {
-          if ("atomRefs2".equals(atts.getLocalName(i))) {
-            breakOutTokens(atts.getValue(i));
-          } else if ("order".equals(atts.getLocalName(i))) {
-            order = parseInt(atts.getValue(i));
+        for (int i = atts.getLength(); --i >= 0; ) {
+          String attLocalName = atts.getLocalName(i);
+          String attValue = atts.getValue(i);
+          if ("atomRefs2".equals(attLocalName)) {
+            breakOutTokens(attValue);
+          } else if ("order".equals(attLocalName)) {
+            order = parseInt(attValue);
           }
         }
         if (tokenCount == 2 && order > 0)
           model.newBond(tokens[0], tokens[1], order);
+        return;
+      }
+      if ("bondArray".equals(qName)) {
+        bondCount = 0;
+        for (int i = atts.getLength(); --i >= 0; ) {
+          String attLocalName = atts.getLocalName(i);
+          String attValue = atts.getValue(i);
+          if ("order".equals(attLocalName)) {
+            breakOutBondTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
+              bondArray[j].order = parseInt(tokens[j]);
+          } else if ("atomRef1".equals(attLocalName)) {
+            breakOutBondTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
+              bondArray[j].atomIndex1 = model.getAtomNameIndex(tokens[j]);
+          } else if ("atomRef2".equals(attLocalName)) {
+            breakOutBondTokens(attValue);
+            for (int j = tokenCount; --j >= 0; )
+              bondArray[j].atomIndex2 = model.getAtomNameIndex(tokens[j]);
+          }
+        }
         return;
       }
       if ("crystal".equals(qName)) {
@@ -220,11 +267,13 @@ class CmlReader extends ModelReader {
         return;
       }
       if ("scalar".equals(qName)) {
-        for (int i=0; i<atts.getLength(); i++) {
-          if ("title".equals(atts.getLocalName(i))) {
-            title = atts.getValue(i);
-          } else if ("dictRef".equals(atts.getLocalName(i))) {
-            dictRef = atts.getValue(i);
+        for (int i = atts.getLength(); --i >= 0; ) {
+          String attLocalName = atts.getLocalName(i);
+          String attValue = atts.getValue(i);
+          if ("title".equals(attLocalName)) {
+            title = attValue;
+          } else if ("dictRef".equals(attLocalName)) {
+            dictRef = attValue;
           }
         }
         keepChars = true;
@@ -278,6 +327,12 @@ class CmlReader extends ModelReader {
               ! Float.isNaN(atom.z))
             model.addAtomWithMappedName(atom);
         }
+        return;
+      }
+      if ("bondArray".equals(qName)) {
+        System.out.println("adding bondArray:" + bondCount);
+        for (int i = 0; i < bondCount; ++i)
+          model.addBond(bondArray[i]);
         return;
       }
     }

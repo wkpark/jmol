@@ -50,7 +50,7 @@ class PdbReader extends ModelReader {
     model = new Model("pdb");
 
     model.pdbStructureRecords = new String[32];
-    model.fileHeader = "";
+    StringBuffer sbHeader = new StringBuffer();
     initialize();
     boolean accumulatingHeader = true;
     while ((line = reader.readLine()) != null) {
@@ -111,13 +111,15 @@ class PdbReader extends ModelReader {
         continue;
       }
       if (accumulatingHeader) {
-        model.fileHeader += line + '\n';
+        sbHeader.append(line);
+        sbHeader.append("\n");
       }
     }
     serialMap = null;
     if (isNMRdata)
       model.notionalUnitcell =
         model.pdbScaleMatrix = model.pdbScaleTranslate = null;
+    model.fileHeader = "" + sbHeader;
     return model;
   }
 

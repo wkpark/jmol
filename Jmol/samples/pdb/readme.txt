@@ -14,7 +14,7 @@
 1LCD - multiple conformations
 1MBO - has strange FORMUL records because the HEM is on two lines
 1NE6 - ?
-1OHG - large spiral
+1OHG - large spiral with large header
 1OLD - dna with something hanging off of it
 1PN8 - alpha carbon only protein AND phosphorus-only nucleic polymer
 233D - dna with something strange

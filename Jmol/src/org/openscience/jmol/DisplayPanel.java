@@ -289,9 +289,8 @@ public class DisplayPanel extends JPanel
 
     public void mouseReleased(MouseEvent e) {
 
-      //NEW LINE T.GREY
       if (mouseDragged && WireFrameRotation) {
-        md.setMovingDrawMode(false);
+        settings.setFastRendering(false);
         movingDrawMode = false;
         if (painted) {
           painted = false;
@@ -318,9 +317,8 @@ public class DisplayPanel extends JPanel
       int x = e.getX();
       int y = e.getY();
 
-      //NEW LINE T.GREY
       if (WireFrameRotation) {
-        md.setMovingDrawMode(true);
+        settings.setFastRendering(true);
         movingDrawMode = true;
         mouseDragged = true;
       }

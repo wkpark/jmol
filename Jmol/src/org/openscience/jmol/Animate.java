@@ -113,12 +113,10 @@ public class Animate extends JDialog implements ActionListener, Runnable {
           newCoord[0] = fromCoord[0] + (i + 1) * step[0];
           newCoord[1] = fromCoord[1] + (i + 1) * step[1];
           newCoord[2] = fromCoord[2] + (i + 1) * step[2];
-          Vector newProps = new Vector();
           try {
-            extraFrames[i]
-                    .addPropertiedAtom(atom.getType().getName(),
-                      (float) newCoord[0], (float) newCoord[1],
-                        (float) newCoord[2], newProps);
+            extraFrames[i].addAtom(atom.getType(),
+                  (float) newCoord[0], (float) newCoord[1],
+                    (float) newCoord[2]);
           } catch (Exception ex) {
             System.out.println(ex);
             ex.printStackTrace();

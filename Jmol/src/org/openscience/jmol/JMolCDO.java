@@ -139,7 +139,7 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("energy")) {
       double energy = (new Double(value)).doubleValue();
       Energy prop = new Energy(energy);
-      currentFrame.addFrameProperty(prop);
+      currentFrame.addProperty(prop);
     }
   }
 

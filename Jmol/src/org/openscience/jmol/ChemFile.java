@@ -21,6 +21,8 @@ package org.openscience.jmol;
 
 import java.io.*;
 import java.util.Vector;
+import java.util.HashSet;
+import java.util.Enumeration;
 
 public class ChemFile {
 
@@ -62,7 +64,19 @@ public class ChemFile {
    * properties that this file contains.
    */
   public Vector getAtomPropertyList() {
-    return AtomPropertyList;
+    HashSet descriptions = new HashSet();
+    Enumeration frameIter = frames.elements();
+    while (frameIter.hasMoreElements()) {
+      ChemFrame frame = (ChemFrame) frameIter.nextElement();
+      if (frame.getNumberOfAtoms() > 0) {
+        Enumeration properties = frame.getAtomAt(0).getProperties().elements();
+        while (properties.hasMoreElements()) {
+          PhysicalProperty property = (PhysicalProperty) properties.nextElement();
+          descriptions.add(property.getDescriptor());
+        }
+      }
+    }
+    return new Vector(descriptions);
   }
 
   /**

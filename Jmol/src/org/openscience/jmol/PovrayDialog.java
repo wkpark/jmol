@@ -313,8 +313,7 @@ public class PovrayDialog extends JDialog {
         os.close();
 
       } catch (Exception exc) {
-        System.out.println("Exception:");
-        System.out.println(exc.toString());
+        exc.printStackTrace();
       }
     }
     try {

@@ -28,6 +28,7 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
+import javax.vecmath.Point3f;
 
 /**
  * A dialog for controling the animation of a molecular vibration.
@@ -336,15 +337,15 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
         forceVector[0] = vectorScale * force[0];
         forceVector[1] = vectorScale * force[1];
         forceVector[2] = vectorScale * force[2];
-        Vector newProps = new Vector();
-        newProps.addElement(new VProperty(forceVector));
         coord[0] += force[0] * scaling;
         coord[1] += force[1] * scaling;
         coord[2] += force[2] * scaling;
         try {
-          newFrame.addPropertiedAtom(atom.getType().getName(),
-                  (float) coord[0], (float) coord[1], (float) coord[2],
-                    newProps);
+          int atomIndex = newFrame.addAtom(atom.getType(),
+                  (float) coord[0], (float) coord[1], (float) coord[2]);
+          newFrame.getAtomAt(atomIndex).setVector(
+              new Point3f((float) forceVector[0], (float) forceVector[1],
+                (float) forceVector[2]));
         } catch (Exception ex) {
           System.out.println(ex);
           ex.printStackTrace();

@@ -102,16 +102,6 @@ public class Gaussian98Reader implements ChemFileReader {
           // Found NMR data
           readNMRData(frame, line);
 
-          // Add properties to PropertyList in ChemFile; otherwise,
-          // menu of properties doesn't include option for this
-          // data
-          Vector filePL = file.getAtomPropertyList();
-          Vector fp = frame.getAtomProps();
-          for (int i = 0; i < fp.size(); i++) {
-            if (filePL.indexOf(fp.elementAt(i)) < 0) {
-              filePL.addElement(fp.elementAt(i));
-            }
-          }
         } else if (line.indexOf("GINC") >= 0) {
 
           // Found calculation level of theory
@@ -299,7 +289,7 @@ public class Gaussian98Reader implements ChemFileReader {
       double shielding = Double.valueOf(st1.nextToken()).doubleValue();
       NMRShielding ns1 = new NMRShielding(shielding);
       ns1.descriptor = label;
-      frame.addProperty(atomIndex, ns1);
+      frame.getAtomAt(atomIndex).addProperty(ns1);
       ++atomIndex;
     }
   }

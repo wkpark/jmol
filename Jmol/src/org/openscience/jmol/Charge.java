@@ -20,16 +20,19 @@
 package org.openscience.jmol;
 
 /**
- * A class to store the "Charge" property for an atom
+ * Atomic charge property.
  */
 public class Charge extends PhysicalProperty {
 
+  public static final String DESCRIPTION = "Atomic Charge";
+  
   /**
-   * Constructor for charge
-   * @param c The charge on the atom
+   * Creates an atomic charge property.
+   *
+   * @param charge the charge on an atom.
    */
-  public Charge(double c) {
-    super("Atomic Charge", new Double(c));
+  public Charge(double charge) {
+    super(DESCRIPTION, new Double(charge));
   }
 
 }

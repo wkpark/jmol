@@ -22,7 +22,9 @@ package org.openscience.jmol;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Vector;
+import java.util.Enumeration;
 import javax.vecmath.Point3f;
+import javax.vecmath.Matrix4d;
 
 public class Atom {
   
@@ -31,10 +33,18 @@ public class Atom {
    *
    * @param the type of this atom.
    */
-  public Atom(BaseAtomType atomType) {
+  public Atom(BaseAtomType atomType, int atomNumber) {
     this.atomType = new AtomType(atomType);
+    this.atomNumber = atomNumber;
   }
   
+  /**
+   * Returns the atom's number.
+   */
+  public int getAtomNumber() {
+    return atomNumber;
+  }
+
   /**
    * Returns this atom's base type.
    *
@@ -42,6 +52,57 @@ public class Atom {
    */
   public BaseAtomType getType() {
     return atomType.getBaseAtomType();
+  }
+  
+  /**
+   * Adds a <code>PhysicalProperty</code> to this atom if not already defined.
+   * If a <code>PhysicalProperty</code> with the same description already
+   * exists, the property is not added.
+   *
+   * @param property the <code>PhysicalProperty</code> to be added.
+   */
+  public void addProperty(PhysicalProperty property) {
+    if (!hasProperty(property.getDescriptor())) {
+      properties.addElement(property);
+    }
+  }
+
+  /**
+   * Returns the <code>PhysicalProperty</code> matching the description given.
+   *
+   * @return the <code>PhysicalProperty</code>, or null if not found.
+   */
+  public PhysicalProperty getProperty(String description) {
+    Enumeration e = properties.elements();
+    while (e.hasMoreElements()) {
+      PhysicalProperty fp = (PhysicalProperty) e.nextElement();
+      if (description.equals(fp.getDescriptor())) {
+        return fp;
+      }
+    }
+    return null;
+  }
+  
+  /**
+   * Returns the <code>PhysicalProperty</code>'s associated with this atom.
+   *
+   * @return a Vector of <code>PhysicalProperty</code>
+   */
+  public Vector getProperties() {
+    return properties;
+  }
+
+  /**
+   * Returns whether this atom has a property with the given description.
+   *
+   * @param description the property to be found.
+   * @return true if a property with the description was found, else false.
+   */
+  public boolean hasProperty(String description) {
+    if (getProperty(description) != null) {
+      return true;
+    }
+    return false;
   }
   
   /**
@@ -75,6 +136,111 @@ public class Atom {
   public void setPosition(Point3f position) {
     this.position.set(position);
   }
+
+  /**
+   * Returns the atom's on-screen position. Note: the atom must
+   * first be transformed. Otherwise, a point at the origin is returned.
+   */
+  public Point3f getScreenPosition() {
+    return new Point3f(screenPosition);
+  }
+
+  /**
+   * Returns the atom's vector, or null if not set.
+   */
+  public Point3f getVector() {
+    if (vector == null) {
+      return null;
+    }
+    return new Point3f(vector);
+  }
+  
+  /**
+   * Sets the atom's vector.
+   */
+  public void setVector(Point3f vector) {
+    if (vector == null) {
+      this.vector = null;
+    } else {
+      if (this.vector == null) {
+        this.vector = new Point3f();
+      }
+      this.vector.set(vector);
+    }
+  }
+
+  /**
+   * Returns the atom's on-screen vibrational vector. Note: the atom must
+   * first be transformed. Otherwise, a point at the origin is returned.
+   */
+  public Point3f getScreenVector() {
+    return new Point3f(screenVector);
+  }
+
+  /**
+   * Sets the atom's screen position by transforming the atom's position by
+   * the given matrix.
+   */
+  public void transform(Matrix4d transformationMatrix) {
+    transformationMatrix.transform(position, screenPosition);
+    if (vector != null) {
+      screenVector.add(position, vector);
+      transformationMatrix.transform(screenVector);
+    }
+  }
+
+/**
+   * Adds an atom to this atom's bonded list.
+   */
+  public void addBondedAtom(Atom toAtom) {
+    if (bondedAtoms == null) {
+      bondedAtoms = new Vector();
+    }
+    bondedAtoms.addElement(toAtom);
+  }
+
+  /**
+   * Returns the list of atoms to which this atom is bonded.
+   */
+  public Enumeration getBondedAtoms() {
+
+    if (bondedAtoms == null) {
+      return new NoBondsEnumeration();
+    } else {
+      return bondedAtoms.elements();
+    }
+  }
+
+  /**
+   * Clears the bonded atoms list.
+   */
+  public void clearBondedAtoms() {
+    if (bondedAtoms != null) {
+      bondedAtoms.removeAllElements();
+    }
+  }
+
+  /**
+   * Returns true if the two atoms are within the distance fudge
+   * factor of each other.
+   */
+  public static boolean closeEnoughToBond(Atom atom1, Atom atom2,
+          float distanceFudgeFactor) {
+
+    if (atom1 != atom2) {
+      float squaredDistanceBetweenAtoms =
+        atom1.position.distanceSquared(atom2.position);
+      float bondingDistance = distanceFudgeFactor
+        * ((float) atom1.atomType.getBaseAtomType().getCovalentRadius()
+           + (float) atom2.atomType.getBaseAtomType().getCovalentRadius());
+
+      if (squaredDistanceBetweenAtoms <= bondingDistance * bondingDistance) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   
   /**
    * Draws the atom on a particular graphics context
@@ -94,10 +260,48 @@ public class Atom {
   }
   
   private AtomType atomType;
+  private int atomNumber;
   
   /**
    * Position in world space.
    */
   private Point3f position = new Point3f();
+
+  /**
+   * Position in screen space.
+   */
+  private Point3f screenPosition = new Point3f();
+
+  /**
+   * A list of atoms to which this atom is bonded. Lazily initialized.
+   */
+  private Vector bondedAtoms = null;
+
+  /**
+   * Vibrational vector in world space.
+   */
+  private Point3f vector = null;
+
+  /**
+   * Vibrational vector in screen space.
+   */
+  private Point3f screenVector = new Point3f();
+
+  /**
+   * A list of properties
+   */
+  private Vector properties = new Vector();
+
+  
+  static class NoBondsEnumeration implements Enumeration {
+  
+    public boolean hasMoreElements() {
+      return false;
+    }
+  
+    public Object nextElement() throws java.util.NoSuchElementException {
+      throw new java.util.NoSuchElementException();
+    }
+  }
 }
 

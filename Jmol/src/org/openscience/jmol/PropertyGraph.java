@@ -111,7 +111,7 @@ public class PropertyGraph extends JDialog implements ActionListener {
         graphs[j] = new JASHist();
 
         for (int i = 0; i < nPoints; i++) {
-          Vector fp = inputFile.getFrame(i).getFrameProps();
+          Vector fp = inputFile.getFrame(i).getFrameProperties();
           for (Enumeration ef = fp.elements(); ef.hasMoreElements(); ) {
 
             PhysicalProperty pf = (PhysicalProperty) ef.nextElement();

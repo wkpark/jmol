@@ -64,12 +64,6 @@ public class AtomPropsMenu extends JMenu {
 
     for (int i = 0; i < propsList.size(); i++) {
       String propertyName = (String) propsList.elementAt(i);
-      if (propertyName.equals("Vector")) {
-
-        // Ignore vector properties because a special checkbox menu
-        // item already exists in Display menu.
-        continue;
-      }
       JRadioButtonMenuItem mi3 = new JRadioButtonMenuItem(propertyName);
       list.addElement(mi3);
       add(mi3);

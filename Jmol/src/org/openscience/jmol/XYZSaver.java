@@ -21,6 +21,7 @@ package org.openscience.jmol;
 
 import java.util.Vector;
 import java.io.*;
+import javax.vecmath.Point3f;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -58,9 +59,7 @@ public class XYZSaver extends FileSaver {
     int na = 0;
     String info = "";
     String st = "";
-    String tab = "\t";
-    boolean writecharge = false;
-    boolean writevect = false;
+    boolean writecharge = cf.hasAtomProperty(Charge.DESCRIPTION);
 
     try {
 
@@ -74,27 +73,6 @@ public class XYZSaver extends FileSaver {
         w.write(s2 + "\n", 0, s2.length() + 1);
       }
 
-      Vector fp = cf.getAtomProps();
-
-      // Create some dummy properties:
-      Charge c = new Charge(0.0);
-      double[] vect = new double[3];
-      vect[0] = 0.0;
-      vect[1] = 0.0;
-      vect[2] = 0.0;
-      VProperty vp = new VProperty(vect);
-
-      // test if we have charges or vectors in this frame:
-      for (int i = 0; i < fp.size(); i++) {
-        String prop = (String) fp.elementAt(i);
-        if (prop.equals(c.getDescriptor())) {
-          writecharge = true;
-        }
-        if (prop.equals(vp.getDescriptor())) {
-          writevect = true;
-        }
-      }
-
       // Loop through the atoms and write them out:
 
       for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
@@ -103,36 +81,18 @@ public class XYZSaver extends FileSaver {
         st = a.getType().getName();
 
         double[] pos = cf.getAtomCoords(i);
-        st = st + tab + new Double(pos[0]).toString() + tab
-                + new Double(pos[1]).toString() + tab
+        st = st + "\t" + new Double(pos[0]).toString() + "\t"
+                + new Double(pos[1]).toString() + "\t"
                   + new Double(pos[2]).toString();
 
-        Vector props = cf.getAtomProps(i);
-
         if (writecharge) {
-          for (int j = 0; j < props.size(); j++) {
-            PhysicalProperty p = (PhysicalProperty) props.elementAt(j);
-            String desc = p.getDescriptor();
-            if (desc.equals(c.getDescriptor())) {
-              Charge ct = (Charge) p;
-              st = st + tab + ct.stringValue();
-            }
-          }
+          Charge ct = (Charge) a.getProperty(Charge.DESCRIPTION);
+          st = st + "\t" + ct.stringValue();
         }
 
-        if (writevect) {
-          for (int j = 0; j < props.size(); j++) {
-            PhysicalProperty p = (PhysicalProperty) props.elementAt(j);
-            String desc = p.getDescriptor();
-            if (desc.equals(vp.getDescriptor())) {
-              VProperty vt = (VProperty) p;
-              double[] vtmp;
-              vtmp = vt.getVector();
-              st = st + tab + new Double(vtmp[0]).toString() + tab
-                      + new Double(vtmp[1]).toString() + tab
-                        + new Double(vtmp[2]).toString();
-            }
-          }
+        if (a.getVector() != null) {
+          Point3f vector = a.getVector();
+          st = st + "\t" + vector.x + "\t" + vector.y + "\t" + vector.z;
         }
         st = st + "\n";
         w.write(st, 0, st.length());

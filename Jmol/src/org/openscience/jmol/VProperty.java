@@ -28,24 +28,21 @@ import java.util.*;
  */
 public class VProperty extends PhysicalProperty {
 
-  double[] property = new double[3];
-
+  public static final String DESCRIPTION = "Vector";
+  
   /**
    * Constructor for VProperty
    * @param v The 3-vector containing the VProperty
    */
   public VProperty(double v[]) {
-    super("Vector", v);
-    property[0] = v[0];
-    property[1] = v[1];
-    property[2] = v[2];
+    super(DESCRIPTION, v);
   }
 
   /**
-   * returns the Vector
+   * Returns the Vector
    */
   public double[] getVector() {
-    return property;
+    return (double[]) getProperty();
   }
 
 }

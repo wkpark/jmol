@@ -90,21 +90,9 @@ public class CMLSaver extends FileSaver {
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
 
-    Charge c = new Charge(0.0);
-    boolean writecharge = false;
-    boolean writevect = false;
+    boolean writecharge = cf.hasAtomProperty(Charge.DESCRIPTION);
 
     frame_count++;
-
-    Vector fp = cf.getAtomProps();
-
-    // test if we have charges or vectors in this frame:
-    for (int i = 0; i < fp.size(); i++) {
-      String prop = (String) fp.elementAt(i);
-      if (prop.equals(c.getDescriptor())) {
-        writecharge = true;
-      }
-    }
 
     w.write("<molecule id=\"FRAME" + frame_count + "\">\n");
 
@@ -158,18 +146,11 @@ public class CMLSaver extends FileSaver {
       }
 
       if (writecharge) {
-        Vector props = cf.getAtomProps(i);
         if (formalCharges.length() > 0) {
           formalCharges += " ";
         }
-        for (int j = 0; j < props.size(); j++) {
-          PhysicalProperty p = (PhysicalProperty) props.elementAt(j);
-          String desc = p.getDescriptor();
-          if (desc.equals(c.getDescriptor())) {
-            Charge ct = (Charge) p;
-            formalCharges += ct.stringValue();
-          }
-        }
+        Charge ct = (Charge) cf.getAtomAt(i).getProperty(Charge.DESCRIPTION);
+        formalCharges += ct.stringValue();
       }
     }
     w.write("  <atomArray>\n");

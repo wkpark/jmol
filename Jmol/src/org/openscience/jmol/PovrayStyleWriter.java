@@ -20,6 +20,7 @@
 package org.openscience.jmol;
 
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import java.io.*;
@@ -335,14 +336,8 @@ public class PovrayStyleWriter {
    *
    * @throws IOException
    */
-  public void writeBond(BufferedWriter w, int which_bond, ChemFrame cf)
+  public void writeBond(BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
           throws IOException {
-
-    int atom_index_1 = cf.getBondEnd1(which_bond);
-    int atom_index_2 = cf.getBondEnd2(which_bond);
-
-    double[] pos_1 = cf.getAtomCoords(atom_index_1);
-    double[] pos_2 = cf.getAtomCoords(atom_index_2);
 
     cf.findBB();
     float c_x = (cf.getXMax() + cf.getXMin()) / 2.0f;
@@ -356,8 +351,8 @@ public class PovrayStyleWriter {
     cmat.mul(amat, cmat);
     cmat.mul(tmat, cmat);
 
-    Point3d aloc_1 = new Point3d(pos_1[0], pos_1[1], pos_1[2]);
-    Point3d aloc_2 = new Point3d(pos_2[0], pos_2[1], pos_2[2]);
+    Point3d aloc_1 = new Point3d(atom1.getPosition());
+    Point3d aloc_2 = new Point3d(atom2.getPosition());
 
     Point3d taloc_1 = new Point3d();
     Point3d taloc_2 = new Point3d();
@@ -373,13 +368,13 @@ public class PovrayStyleWriter {
 
     /* The first part of the bond */
 
-    w.write("make_" + getAtomName(cf, atom_index_1) + "_bond( " + taloc_1.x
+    w.write("make_" + getAtomName(atom1) + "_bond( " + taloc_1.x
             + ", " + taloc_1.y + ", " + taloc_1.z + ", " + (taloc_1.x + dx)
               + ", " + (taloc_1.y + dy) + ", " + (taloc_1.z + dz) + " )\n");
 
     /* The second part of the bond */
 
-    w.write("make_" + getAtomName(cf, atom_index_2) + "_bond( " + taloc_2.x
+    w.write("make_" + getAtomName(atom2) + "_bond( " + taloc_2.x
             + ", " + taloc_2.y + ", " + taloc_2.z + ", " + (taloc_2.x - dx)
               + ", " + (taloc_2.y - dy) + ", " + (taloc_2.z - dz) + " )\n"
                 + "\n");
@@ -416,16 +411,28 @@ public class PovrayStyleWriter {
   /**
    * Identifys atoms types based on the name of the atom.<p>
    *
-   * Override this method to identify atom types by a different
-   * property.
-   *
    * @param cf The <code>ChemFrame</code> object being scanned.
    * @param atomIndex The specific atom being examined.
    *
    * @return The string representation of the atom type.
    */
   protected String getAtomName(ChemFrame cf, int atomIndex) {
-    return cf.getAtomAt(atomIndex).getType().getName();
+    return getAtomName(cf.getAtomAt(atomIndex));
+  }
+
+  /**
+   * Identifys atoms types based on the name of the atom.<p>
+   *
+   * Override this method to identify atom types by a different
+   * property.
+   *
+   * @param atom the atom for which the name is returned.
+   * @param atomIndex The specific atom being examined.
+   *
+   * @return The string representation of the atom type.
+   */
+  protected String getAtomName(Atom atom) {
+    return atom.getType().getName();
   }
 
 }

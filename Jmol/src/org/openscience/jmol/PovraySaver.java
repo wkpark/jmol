@@ -22,6 +22,8 @@ package org.openscience.jmol;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
+import java.util.Enumeration;
+import java.util.HashMap;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -256,9 +258,6 @@ public class PovraySaver extends FileSaver {
     myStyle.writeAtomsAndBondsMacros(w, cf, settings.getAtomSphereFactor(),
             settings.getBondWidth());
 
-    String st = "";
-    boolean writevect = false;
-
     boolean drawHydrogen = settings.getShowHydrogens();
 
 
@@ -270,24 +269,6 @@ public class PovraySaver extends FileSaver {
         w.write("// List of all of the atoms\n");
         w.write("//***********************************************\n");
         w.write("\n");
-
-
-        Vector fp = cf.getFrameProps();
-
-        // Create some dummy properties:
-        double[] vect = new double[3];
-        vect[0] = 0.0;
-        vect[1] = 0.0;
-        vect[2] = 0.0;
-        VProperty vp = new VProperty(vect);
-
-        // test if we have vectors in this frame:
-        for (int i = 0; i < fp.size(); i++) {
-          String prop = (String) fp.elementAt(i);
-          if (prop.equals(vp.getDescriptor())) {
-            writevect = true;
-          }
-        }
 
         // Loop through the atoms and write them out:
 
@@ -314,27 +295,6 @@ public class PovraySaver extends FileSaver {
           write_out = true;
 
 
-          /*
-            Vector props = cf.getAtomProps(i);
-
-            if (writevect) {
-            for (int j = 0; j < props.size(); j++) {
-            PhysicalProperty p = (PhysicalProperty) props.elementAt(j);
-            String desc = p.getDescriptor();
-            if (desc.equals(vp.getDescriptor())) {
-            VProperty vt = (VProperty) p;
-            double[] vtmp;
-            vtmp = vt.getVector();
-            st = st + tab +
-            new Double(vtmp[0]).toString() + tab +
-            new Double(vtmp[1]).toString() + tab +
-            new Double(vtmp[2]).toString();
-            }
-            }
-            }
-            st = st + "\n";
-            w.write(st, 0, st.length());
-          */
         }
       }
 
@@ -342,13 +302,8 @@ public class PovraySaver extends FileSaver {
 
       if (settings.getShowBonds()) {
 
-        boolean[] bond_drawn = new boolean[cf.getBondCount()];
-
-        for (int i = 0; i < cf.getBondCount(); i++) {
-          bond_drawn[i] = false;
-        }
-
-
+        HashMap bondsDrawn = new HashMap();
+        
         w.write("\n");
         w.write("\n");
         w.write("//***********************************************\n");
@@ -356,22 +311,14 @@ public class PovraySaver extends FileSaver {
         w.write("//***********************************************\n");
         w.write("\n");
 
-        for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
-
-          int na = cf.getNumberOfBondsForAtom(i);
-          for (int k = 0; k < na; k++) {
-            int which = cf.getOtherBondedAtom(i, k);
-
-            if (!drawHydrogen && cf.getBondAt(which).bindsHydrogen()) {
-
-              /*bond contains hydrogen, and shouldn't be
-                written, therefore we'll say its already been
-                written */
-              bond_drawn[which] = true;
-            }
-            if (!bond_drawn[which]) {
-              myStyle.writeBond(w, which, cf);
-              bond_drawn[which] = true;
+        for (int i = 0; i < cf.getNumberOfAtoms(); ++i) {
+          Atom atom1 = cf.getAtomAt(i);
+          Enumeration bondIter = atom1.getBondedAtoms();
+          while (bondIter.hasMoreElements()) {
+            Atom atom2 = (Atom) bondIter.nextElement();
+            if (bondsDrawn.get(atom2) == null || !bondsDrawn.get(atom2).equals(atom1)) {
+              myStyle.writeBond(w, atom1, atom2, cf);
+              bondsDrawn.put(atom1, atom2);
             }
           }
         }

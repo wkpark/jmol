@@ -111,7 +111,7 @@ class CalculateChemicalShifts extends AbstractAction {
       ChemFrame frame = chemFile.getFrame(f);
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         String element = frame.getAtomAt(i).getType().getName();
-        Vector properties = frame.getAtomProps(i);
+        Vector properties = frame.getAtomAt(i).getProperties();
         Enumeration propIter = properties.elements();
         while (propIter.hasMoreElements()) {
           Object prop = propIter.nextElement();
@@ -123,7 +123,7 @@ class CalculateChemicalShifts extends AbstractAction {
 
             NMRShielding newShield = new NMRShielding(value);
             newShield.descriptor = propertyLabel;
-            frame.addProperty(i, newShield);
+            frame.getAtomAt(i).addProperty(newShield);
             break;
           }
         }

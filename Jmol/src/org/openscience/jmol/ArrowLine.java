@@ -26,23 +26,19 @@ class ArrowLine {
 
   private static Color vectorColor = Color.black;
 
-  private static float radiusScale = 1.0f;
-  private static float lengthScale = 1.0f;
+  private boolean arrowStart = false;
+  private boolean arrowEnd = true;
 
-  private boolean aStart = false;
-  private boolean aEnd = true;
+  private double length = 0.0;
+  private double scaling = 1.0;
+  private double ctheta = 0.0;
+  private double stheta = 0.0;
 
-  private double length = -1;
-  private double ctheta = 0;
-  private double stheta = 0;
-
-  private int x1;
-  private int y1;
-  private int x2;
-  private int y2;
-  private int r;
-  private int s;
-
+  private float x1;
+  private float y1;
+  private static float arrowHeadSize = 10.0f;
+  private static float arrowHeadRadius = 1.0f;
+  
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
 
@@ -51,167 +47,95 @@ class ArrowLine {
   }
 
   static void setLengthScale(float ls) {
-    lengthScale = ls;
+    arrowHeadSize = 10.0f * ls;
   }
 
   static float getLengthScale() {
-    return lengthScale;
+    return arrowHeadSize / 10.0f;
   }
 
   static void setRadiusScale(float rs) {
-    radiusScale = rs;
+    arrowHeadRadius = rs;
   }
 
   static float getRadiusScale() {
-    return radiusScale;
+    return arrowHeadRadius;
   }
 
-  public ArrowLine(Graphics gc, int x1, int y1, int x2, int y2,
-          boolean arrowStart, boolean arrowEnd, int radius, int size) {
+  public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
+          boolean arrowStart, boolean arrowEnd) {
+    this(gc, x1, y1, x2, y2, arrowStart, arrowEnd,
+      Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)), 1.0);
+  }
 
-    this.r = (int) (radius * radiusScale);
-    this.s = (int) (size * lengthScale);
-    this.aStart = arrowStart;
-    this.aEnd = arrowEnd;
+   public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
+          boolean arrowStart, boolean arrowEnd, double length, double scaling) {
+
+    this.length = length;
+    this.scaling = scaling;
+    this.arrowStart = arrowStart;
+    this.arrowEnd = arrowEnd;
     this.x1 = x1;
     this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
 
-    precalc();
-    gc.setColor(vectorColor);
-    paintLine(gc);
-    paintArrows(gc);
-
-  }
-
-
-  private void precalc() {
-
-    if (length < 0) {
-      double dy = y2 - y1;
-      double dx = x2 - x1;
-
-      length = Math.sqrt(Math.pow(dx, 2.0) + Math.pow(dy, 2.0));
-
-      if (Math.abs(length - 0.0) < Double.MIN_VALUE) {
-        return;
-      }
-
-      ctheta = dx / length;
-      stheta = dy / length;
+    double dy = y2 - y1;
+    double dx = x2 - x1;
+    
+    double magnitude = Math.sqrt(dx*dx + dy*dy);
+    
+    if (Math.abs(magnitude - 0.0) < Double.MIN_VALUE) {
+      return;
     }
+    
+    ctheta = dx / magnitude;
+    stheta = dy / magnitude;
+
+    paint(gc);
   }
 
-  public void paintLine(Graphics gc) {
-    gc.drawLine(x1, y1, x2, y2);
-  }
-
-  public void paintStartArrowHead(Graphics gc) {
-
-    double ax = x1 + 0.5;
-    double ay = y1 + 0.5;
-    double px = r + 1.0;
-    double py = 0.0;
-    double ly = s;
-    double lx = r + s + s;
-    double rx = lx;
-    double ry = -ly;
-    double mx = r + s + s / 2.0;
-    double my = 0.0;
-    double tx = px * ctheta - py * stheta;
-    double ty = px * stheta + py * ctheta;
-    px = tx;
-    py = ty;
-    tx = lx * ctheta - ly * stheta;
-    ty = lx * stheta + ly * ctheta;
-    lx = tx;
-    ly = ty;
-    tx = rx * ctheta - ry * stheta;
-    ty = rx * stheta + ry * ctheta;
-    rx = tx;
-    ry = ty;
-    tx = mx * ctheta - my * stheta;
-    ty = mx * stheta + my * ctheta;
-    mx = tx;
-    my = ty;
-    px += ax;
-    py += ay;
-    mx += ax;
-    my += ay;
-    lx += ax;
-    ly += ay;
-    rx += ax;
-    ry += ay;
-    xpoints[0] = (int) px;
-    xpoints[1] = (int) lx;
-    xpoints[2] = (int) mx;
-    xpoints[3] = (int) rx;
-    ypoints[0] = (int) py;
-    ypoints[1] = (int) ly;
-    ypoints[2] = (int) my;
-    ypoints[3] = (int) ry;
-    gc.fillPolygon(xpoints, ypoints, 4);
-  }
-
-  public void paintEndArrowHead(Graphics gc) {
-
-    double ax = x1 + 0.5;
-    double ay = y1 + 0.5;
-    double px = length - (r + 1);
-    double py = 0;
-    double ly = s;
-    double lx = length - (r + s + s);
-    double rx = lx;
-    double ry = -ly;
-    double mx = length - (r + s + s / 2);
-    double my = 0;
-    double tx = px * ctheta - py * stheta;
-    double ty = px * stheta + py * ctheta;
-    px = tx;
-    py = ty;
-    tx = lx * ctheta - ly * stheta;
-    ty = lx * stheta + ly * ctheta;
-    lx = tx;
-    ly = ty;
-    tx = rx * ctheta - ry * stheta;
-    ty = rx * stheta + ry * ctheta;
-    rx = tx;
-    ry = ty;
-    tx = mx * ctheta - my * stheta;
-    ty = mx * stheta + my * ctheta;
-    mx = tx;
-    my = ty;
-    px += ax;
-    py += ay;
-    mx += ax;
-    my += ay;
-    lx += ax;
-    ly += ay;
-    rx += ax;
-    ry += ay;
-    xpoints[0] = (int) px;
-    xpoints[1] = (int) lx;
-    xpoints[2] = (int) mx;
-    xpoints[3] = (int) rx;
-    ypoints[0] = (int) py;
-    ypoints[1] = (int) ly;
-    ypoints[2] = (int) my;
-    ypoints[3] = (int) ry;
-    gc.fillPolygon(xpoints, ypoints, 4);
-  }
-
-  public void paintArrows(Graphics gc) {
-
+  public void paint(Graphics gc) {
+    gc.setColor(vectorColor);
+    
+    gc.drawLine((int) x1, (int) y1, (int) (x1 + length*ctheta), (int) (y1 + length*stheta));
+    
     if (Math.abs(length - 0.0) < Double.MIN_VALUE) {
       return;
     }
-    if (aStart) {
-      paintStartArrowHead(gc);
+    if (arrowStart) {
+      paintArrowHead(gc, 0.0, false);
     }
-    if (aEnd) {
-      paintEndArrowHead(gc);
+    if (arrowEnd) {
+      paintArrowHead(gc, length, true);
     }
   }
+
+  public void paintArrowHead(Graphics gc, double lengthOffset, boolean forwardArrow) {
+    double directionSign = 1.0;
+    if (forwardArrow) {
+      directionSign = -1.0;
+    }
+    double px = lengthOffset;
+    double py = 0.0;
+    double ly = scaling * arrowHeadSize * arrowHeadRadius;
+    double lx = lengthOffset + directionSign * 2.0*scaling*arrowHeadSize;
+    double rx = lx;
+    double ry = -ly;
+    double mx = lengthOffset + directionSign * 1.5*scaling*arrowHeadSize;
+    double my = 0.0;
+
+    xpoints[0] = (int) (x1 + px * ctheta - py * stheta);
+    ypoints[0] = (int) (y1 + px * stheta + py * ctheta);
+
+    xpoints[1] = (int) (x1 + lx * ctheta - ly * stheta);
+    ypoints[1] = (int) (y1 + lx * stheta + ly * ctheta);
+
+    xpoints[2] = (int) (x1 + mx * ctheta - my * stheta);
+    ypoints[2] = (int) (y1 + mx * stheta + my * ctheta);
+
+    xpoints[3] = (int) (x1 + rx * ctheta - ry * stheta);
+    ypoints[3] = (int) (y1 + rx * stheta + ry * ctheta);
+    gc.fillPolygon(xpoints, ypoints, 4);
+  }
+
 }
 

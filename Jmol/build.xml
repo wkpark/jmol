@@ -30,6 +30,9 @@
 		<uptodate property="jmolGuide.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
 			<srcfiles dir="${doc.dir}/source" includes="JMolGuide.docbook.xml" />
 		</uptodate>
+		<uptodate property="jmolHistory.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html">
+			<srcfiles dir="${doc.dir}/source" includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
+		</uptodate>
 		<uptodate property="jmolDevelopersGuide.uptodate"
 				targetfile="${doc.dir}/JmolDevelopersGuide.html">
 			<srcfiles dir="${doc.dir}/source" includes="JmolDevelopersGuide.docbook.xml" />
@@ -65,6 +68,19 @@
 		</java>
 	</target>
 
+	<target name="jmolHistory" depends="init" unless="jmolHistory.uptodate" >
+		<echo message="Generating history of changes" />
+		<mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data" />
+		<java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data"
+				classname="com.icl.saxon.StyleSheet"
+				classpath="${lib.dir}/saxon.jar" >
+			<arg value="-o" />
+			<arg value="ChangeLog.html" />
+			<arg value="${user.dir}/${doc.dir}/source/JmolHistory.xml" />
+			<arg value="${user.dir}/${doc.dir}/source/JmolHistoryToHtml.xsl" />
+		</java>
+	</target>
+
 	<target name="doc" depends="jmolDevelopersGuide,javadoc" />
 	
 	<target name="jmolDevelopersGuide" depends="init" unless="jmolDevelopersGuide.uptodate" >
@@ -79,7 +95,7 @@
 		</java>
 	</target>
 	
-	<target name="classes" depends="init,jmolGuide">
+	<target name="classes" depends="init,jmolGuide,jmolHistory">
 		<mkdir dir="${classes.dir}"/>
 		<javac srcdir="${source.dir}" destdir="${classes.dir}"
 				debug="off" deprecation="on">

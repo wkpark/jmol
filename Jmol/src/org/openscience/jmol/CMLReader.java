@@ -69,25 +69,6 @@ public class CMLReader implements ChemFileReader {
 
         file.frames.addElement(frame);
 
-        Vector ap = frame.getAtomProps();
-        for (int i = 0; i < ap.size(); i++) {
-          if (file.AtomPropertyList.indexOf(ap.elementAt(i)) < 0) {
-            file.AtomPropertyList.addElement(ap.elementAt(i));
-          }
-        }
-
-        Vector fp = frame.getFrameProps();
-
-        for (int j = 0; j < fp.size(); j++) {
-          PhysicalProperty p = (PhysicalProperty) fp.elementAt(j);
-          String desc = p.getDescriptor();
-
-          // Update the frameProps if we found a new property
-          if (file.FramePropertyList.indexOf(desc) < 0) {
-            file.FramePropertyList.addElement(desc);
-          }
-        }
-
       }
       return file;
     } catch (ClassNotFoundException ex) {

@@ -39,7 +39,6 @@ public class PdbChain {
   PdbGroup[] groups = new PdbGroup[16];
   PdbGroup[] mainchain;
   PdbPolymer polymer;
-  BitSet atomSet;
 
   public PdbChain(PdbModel model, char chainID) {
     this.model = model;
@@ -167,18 +166,14 @@ public class PdbChain {
     }
   }
 
-  public BitSet getAtomSet() {
-    if (atomSet == null) {
-      BitSet bs = atomSet = new BitSet();
-      Frame frame = model.file.frame;
-      Atom[] atoms = frame.getAtoms();
-      for (int i = frame.getAtomCount(); --i >= 0; ) {
-        Atom atom = atoms[i];
-        if (atom.getPdbChain() == this)
-          bs.set(i);
-      }
+  public void selectAtoms(BitSet bs) {
+    Frame frame = model.file.frame;
+    Atom[] atoms = frame.getAtoms();
+    for (int i = frame.getAtomCount(); --i >= 0; ) {
+      Atom atom = atoms[i];
+      if (atom.getPdbChain() == this)
+        bs.set(i);
     }
-    return atomSet;
   }
 
   public void calcHydrogenBonds() {

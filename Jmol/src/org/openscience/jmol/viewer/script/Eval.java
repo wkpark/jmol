@@ -1052,36 +1052,40 @@ public class Eval implements Runnable {
 
   void withinGroup(BitSet bs, BitSet bsResult) {
     System.out.println("withinGroup");
-    // this test will select all the even-numbered atoms
-    // regardless of the input set
-    // note that we are assuming 0-based numbering
-    for (int i = 0; i < viewer.getAtomCount(); i += 2)
-      bsResult.set(i);
+    Frame frame = viewer.getFrame();
+    PdbGroup pdbgroupLast = null;
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      if (! bs.get(i))
+        continue;
+      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
+      if (pdbatom == null)
+        continue;
+      PdbGroup pdbgroup = pdbatom.getPdbGroup();
+      if (pdbgroup != pdbgroupLast) {
+        pdbgroup.selectAtoms(bsResult);
+        pdbgroupLast = pdbgroup;
+      }
+    }
   }
 
   void withinChain(BitSet bs, BitSet bsResult) {
-    System.out.println("withinChain");
-    // this test will use the input set
-    // we will select the input atom + the two neighboring atoms ...
-    // the one below and the one above;
-    // rather than call viewer.getAtomCount() each time through
-    // the loop, I'm going to allocate a variable to hold it.
-    int atomCount = viewer.getAtomCount();
-    for (int i = 0; i < atomCount; ++i) {
-      if (bs.get(i)) {
-        if (i > 0)
-          bsResult.set(i - 1); // set the bit before
-        bsResult.set(i);
-        if (i + 1 < atomCount)
-          bsResult.set(i + 1); // set the bit after
+    Frame frame = viewer.getFrame();
+    PdbChain pdbchainLast = null;
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      if (! bs.get(i))
+        continue;
+      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
+      if (pdbatom == null)
+        continue;
+      PdbChain pdbchain = pdbatom.getPdbChain();
+      if (pdbchain != pdbchainLast) {
+        pdbchain.selectAtoms(bsResult);
+        pdbchainLast = pdbchain;
       }
     }
   }
 
   void withinModel(BitSet bs, BitSet bsResult) {
-    System.out.println("withinModel");
-    // we will really implement this one
-    // perhaps not the most efficient, but it is simple and good enough
     Frame frame = viewer.getFrame();
     int modelLast = -1;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {

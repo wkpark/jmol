@@ -26,7 +26,9 @@ package org.openscience.jmol.viewer.pdb;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
+import org.openscience.jmol.viewer.datamodel.Frame;
 import java.util.Hashtable;
+import java.util.BitSet;
 import javax.vecmath.Point3f;
 
 public class PdbGroup {
@@ -246,5 +248,15 @@ public class PdbGroup {
   public boolean isProline() {
     // this is the index into JmolConstants.predefinedGroup3Names
     return groupID == 14;
+  }
+
+  public void selectAtoms(BitSet bs) {
+    Frame frame = chain.model.file.frame;
+    Atom[] atoms = frame.getAtoms();
+    for (int i = frame.getAtomCount(); --i >= 0; ) {
+      Atom atom = atoms[i];
+      if (atom.getPdbGroup() == this)
+        bs.set(i);
+    }
   }
 }

@@ -148,6 +148,10 @@ public class PdbAtom {
     return group.chain;
   }
 
+  public PdbGroup getPdbGroup() {
+    return group;
+  }
+
   public PdbPolymer getPdbPolymer() {
     return group.polymer;
   }

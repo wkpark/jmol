@@ -38,7 +38,6 @@ public class PdbPolymer {
   public int count;
   public PdbGroup[] groups;
   int[] atomIndices;
-  BitSet atomSet;
 
   public PdbPolymer(PdbChain chain) {
     this.chain = chain;
@@ -171,20 +170,6 @@ public class PdbPolymer {
     }
     for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
       groups[i].setStructure(structure);
-  }
-
-  public BitSet getAtomSet() {
-    if (atomSet == null) {
-      BitSet bs = atomSet = new BitSet();
-      Frame frame = chain.model.file.frame;
-      Atom[] atoms = frame.getAtoms();
-      for (int i = frame.getAtomCount(); --i >= 0; ) {
-        Atom atom = atoms[i];
-        if (atom.getPdbPolymer() == this)
-          bs.set(i);
-      }
-    }
-    return atomSet;
   }
 
   public boolean isProtein() {

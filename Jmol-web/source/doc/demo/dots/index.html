@@ -1,232 +1,64 @@
 <html>
-<head><title>jmol applet atoms demo</title>
-</head>
-<body>
-<table border="1">
-<tr>
-<td>
-<h2>ddt</h2>
-<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="../jmol"
-        width="300" height="300" mayscript="true" >
-	<param name="progressbar"   value="true" />
-	<param name="progresscolor" value="blue" />
-	<param name="boxmessage"    value="Downloading JmolApplet ..." />
-	<param name="boxbgcolor"    value="black" />
-	<param name="boxfgcolor"    value="white" />
+  <head>
+    <title>jmol applet atoms demo</title>
+    <script src="../jmol/Jmol.js"></script>
+    <script>jmolSetCodebase("../jmol");</script>
+  </head>
+  <body>
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    <h2>ddt</h2>
+	    <script>jmolApplet(400, "ddt.xyz.gz");</script>
+	  </td>
+	  
+	  <td>
+	    Jmol has the ability to show two types of 'dots' surfaces. The first is a
+	    vanderWalls dots surface, where the dots are shown at the vanderWaals
+	    radius for all atoms. The second type of dots surface you can display is
+	    a Connolly or Solvent Accessible Surface, formed when a probe sphere
+	    (representing the solvent) is rolled over the surface.
+	    <br />
+	    <script>
+	      jmolHtml("<b>dots surface:</b><br />");
+	      jmolRadio("dots", "dots off", "checked");
+	      jmolHtml("off<br />");
+	      jmolRadio("dots", "set solvent off; dots on");
+	      jmolHtml("vanderWaals<br />");
+	      jmolRadio("dots", "set solvent on; dots on");
+	      jmolHtml("solvent accessible<br />");
+	      jmolBr();
 
-        <param name="load"      value="ddt.xyz.gz" />
-</applet>
-</td>
+	      jmolHtml("<b>spacefill:</b><br />");
+	      jmolRadio("balls", "spacefill off");
+	      jmolHtml("off<br />");
+	      jmolRadio("balls", "spacefill 20%", "checked");
+	      jmolHtml("20%<br />");
+	      jmolRadio("balls", "spacefill 95%");
+	      jmolHtml("95%<br />");
+	      jmolBr();
+	      
+	      jmolHtml("<b>wireframe:</b><br />");
+	      jmolRadio("sticks", "wireframe off");
+	      jmolHtml("off<br />");
+	      jmolRadio("sticks", "wireframe on");
+	      jmolHtml("on<br />");
+	      jmolRadio("sticks", "wireframe .15", "checked");
+	      jmolHtml("0.15<br />");
+	      jmolRadio("sticks", "wireframe .25");
+	      jmolHtml("0.25<br />");
+	      jmolRadio("sticks", "wireframe .35");
+	      jmolHtml("0.35<br />");
 
-<td>
-Jmol has the ability to show two types of 'dots' surfaces. The first is a
-vanderWalls dots surface, where the dots are shown at the vanderWaals
-radius for all atoms.<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="dots on" />
-  <param name="target" value="jmol" />
-  <param name="script" value="dots on" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="dots off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="dots off" />
-</applet><br />
+	      jmolBr();
 
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="cpk 25%" />
-  <param name="target" value="jmol" />
-  <param name="script" value="cpk 25%" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="cpk 50%" />
-  <param name="target" value="jmol" />
-  <param name="script" value="cpk 50%" />
-</applet><br />
-
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="cpk 95%" />
-  <param name="target" value="jmol" />
-  <param name="script" value="cpk 95%" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="cpk off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="cpk off" />
-</applet><br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="wireframe on" />
-  <param name="target" value="jmol" />
-  <param name="script" value="wireframe on" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="wireframe 0.1" />
-  <param name="target" value="jmol" />
-  <param name="script" value="wireframe 0.1" />
-</applet><br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="wireframe 0.3" />
-  <param name="target" value="jmol" />
-  <param name="script" value="wireframe 0.3" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="wireframe off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="wireframe off" />
-</applet><br />
-
-
-
-
-The second type of dots surface you can display is a Connolly or
-Solvent Accessible Surface. The model is that this is the surface which is
-accessible by a probe sphere. This command interacts with the 'dots'
-command.<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="dots off; set solvent on; dots on" />
-  <param name="target" value="jmol" />
-  <param name="script" value="dots off; set solvent on; dots on" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="dots off; set solvent off; dots on" />
-  <param name="target" value="jmol" />
-  <param name="script" value="dots off; set solvent off; dots on" />
-</applet><br />
-
-The default probe size is 1.2 &Aring;, a probe size used for water.
-So these first two buttons do the same thing. But you need to use
-these in combination with the 'dots' buttons above. <br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set solvent on" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set solvent on" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set solvent 1.2" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set solvent 1.2" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set solvent 2.0" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set solvent 2.0" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set solvent off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set solvent off" />
-</applet><br />
-
-By default, convex dots on the outside of the atom spheres
-inherit the color of the atom. Saddle dots are shown in blue.
-There are explicit color commands for controlling dot color. <br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color dots yellow" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color dots yellow" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color dotsConvex cyan" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color dotsConvex cyan" />
-</applet><br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color dotsSaddle hotpink" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color dotsSaddle hotpink" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color dots none" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color dots none" />
-</applet><br />
-
-(Concave surfaces formed where three atoms come together are a problem
-for me. If you are interested in this topic, please get in touch.
-<b>mth@mth.com</b>) <br />
-
-This button makes them pretty easy to see. They are the little spherical
-triangles that do not have any dots. <br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="400" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"
-         value="cpk 95%; color dots yellow; set solvent on; dots on" />
-  <param name="target" value="jmol" />
-  <param name="script"
-         value="cpk 95%; color dots yellow; set solvent on; dots on" />
-</applet><br />
-</td>
-</tr>
-</table>
-</body>
+	      jmolButton("color dotsSaddle blue; color dotsConcave red",
+	                 "show saddles and cavities");
+	    </script>
+	  </td>
+	</tr>
+      </table>
+    </form>
+  </body>
 </html>

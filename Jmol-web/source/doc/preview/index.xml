@@ -43,24 +43,6 @@
 	  <li><a href="[root]/demo/cartoons">cartoons</a> <i>--New!--</i></li>
 	</ul>
       </p>
-      <p>
-	To facilitate conversion of existing web pages built with
-	the Chime plug-in, we have written a perl script which will
-	identify Chime &lt;embed ...&gt; tags and replace them
-	with the appropriate jmol &lt;applet ...&gt; tags. The
-	chime2jmol.pl script handles Chime buttons as well as
-	the Chime applet itself.
-      </p>
-      <p>
-	This page shows a Chime application that was converted to
-	jmol using the chime2jmol.pl perl script:
-	<ul>
-	  <li>
-	    <a href="[root]/demo/bwhite/index.html">hemoglobin lecture</a>
-	  </li>
-	</ul>
-      </p>
-
     </section>
 
   </body>

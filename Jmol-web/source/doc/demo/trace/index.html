@@ -1,168 +1,75 @@
 <html>
-<head><title>jmol applet trace demo</title>
-</head>
-<body>
-<table border="1">
-<tr>
-<td>
-
-<h1>1crn.pdb</h1>
-<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="../jmol"
-        width="400" height="400" mayscript="true" >
-	<param name="progressbar"   value="true" />
-	<param name="progresscolor" value="blue" />
-	<param name="boxmessage"    value="Downloading JmolApplet ..." />
-	<param name="boxbgcolor"    value="black" />
-	<param name="boxfgcolor"    value="white" />
-
-        <param name="load"      value="1crn.pdb.gz" />
-	<param name="script"    value="spacefill off; wireframe" />
-</applet>
-</td>
-
-<td>
-This shows the backbone of a protein macromolecule by
-creating artificial 'backbone' bonds between alpha carbons.
-Backbone radius can be specified in angstroms.<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="backbone 0.3" />
-  <param name="target" value="jmol" />
-  <param name="script" value="backbone 0.3" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="backbone 0.6" />
-  <param name="target" value="jmol" />
-  <param name="script" value="backbone 0.6" />
-</applet><br />
+  <head>
+    <title>jmol applet trace demo</title>
+    <script src="../jmol/Jmol.js"></script>
+    <script>jmolSetCodebase("../jmol");</script>
+  </head>
+  <body>
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    
+	    <h1>1crn.pdb</h1>
+	    <script>
+	      jmolApplet(400, "1crn.pdb.gz", "spacefill off; wireframe");
+	    </script>
+	  </td>
+	  
+	  <td>
+	    This shows the backbone of a protein macromolecule by
+	    creating artificial 'backbone' bonds between alpha carbons.
+	    Backbone radius can be specified in angstroms.<br />
+	    <script>
+	      jmolButton("backbone off");
+	      jmolButton("backbone 0.3");
+	      jmolButton("backbone 0.6");
+	    </script>
+	    <br />
 	
-By default, the backbone bond color is inherited from the
-atoms (as with other bonds). You can explicitly change
-the backbone color. <br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color backbone greenyellow" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color backbone greenyellow" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color backbone firebrick" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color backbone firebrick" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color backbone khaki" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color backbone khaki" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color backbone none" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color backbone none" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="backbone off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="backbone off" />
-</applet><br />
-<hr/>
+	    By default, the backbone bond color is inherited from the
+	    atoms (as with other bonds). You can explicitly change
+	    the backbone color. <br />
+	    <script>
+	      jmolRadio("cbb", "color backbone none", "checked");
+	      jmolHtml("color backbone none<br />");
+	      jmolRadio("cbb", "color backbone firebrick");
+	      jmolHtml("color backbone firebrick<br />");
+	      jmolRadio("cbb", "color backbone greenyellow");
+	      jmolHtml("color backbone greenyellow<br />");
+	      jmolRadio("cbb", "color backbone structure");
+	      jmolHtml("color backbone structure<br />");
+	    </script>
+	    <br />
+	    <hr />
 
-This shows a spline trace of a protein backbone.
-The hermite spline curve passes through the mid-points
-between alpha carbon atoms<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="trace 0.4" />
-  <param name="target" value="jmol" />
-  <param name="script" value="trace 0.4" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="trace 0.8" />
-  <param name="target" value="jmol" />
-  <param name="script" value="trace 0.8" />
-</applet><br />
-With color by 'structure' you get different colors for
-HELIX, TURN, and SHEET. Color by 'amino' assigns different colors
-to different amino acids.<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color trace structure" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color trace structure" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color trace amino" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color trace amino" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="trace off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="trace off" />
-</applet><br />
-<hr />
+	    This shows a spline trace of a protein backbone.
+	    The hermite spline curve passes through the mid-points
+	    between alpha carbon atoms<br />
+	    <script>
+	      jmolButton("trace off");
+	      jmolButton("trace 0.4");
+	      jmolButton("trace 0.8");
+	    </script>
+	    <br />
 
-some rotations<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="move 0 360 0 0 0 0 0 0 10" />
-  <param name="target" value="jmol" />
-  <param name="script" value="move 0 360 0 0 0 0 0 0 10" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="move 180 0 0 200 0 0 0 0 5" />
-  <param name="target" value="jmol" />
-  <param name="script" value="move 180 0 0 200 0 0 0 0 5" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="200" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="reset" />
-  <param name="target" value="jmol" />
-  <param name="script" value="reset" />
-</applet><br />
-</td>
-
-</tr>
-</table>
-</body>
+	    With color by 'structure' you get different colors for
+	    HELIX, TURN, and SHEET. Color by 'amino' and color by
+	    'shapely' assign different colors
+	    to different amino acids.<br />
+	    <script>
+	      jmolRadio("ct", "color trace none", "checked");
+	      jmolHtml("color trace none<br />");
+	      jmolRadio("ct", "color trace structure");
+	      jmolHtml("color trace structure<br />");
+	      jmolRadio("ct", "color trace amino");
+	      jmolHtml("color trace amino<br />");
+	      jmolRadio("ct", "color trace shapely");
+	      jmolHtml("color trace shapely<br />");
+	    </script>
+	  </td>
+	</tr>
+      </table>
+    </form>
+  </body>
 </html>

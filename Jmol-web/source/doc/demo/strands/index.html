@@ -1,268 +1,64 @@
 <html>
-<head><title>jmol applet strands demo</title>
-</head>
-<body>
-<table border="1">
-<tr>
-<td>
+  <head>
+    <title>jmol applet strands demo</title>
+    <script src="../jmol/Jmol.js"></script>
+    <script>jmolSetCodebase("../jmol");</script>
+  </head>
+  <body>
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    <h2>jellyfish <br /> Green Flourescent Protein 1gfl.pdb</h2>
 
-<h2>jellyfish <br /> Green Flourescent Protein 1gfl.pdb</h2>
-<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="../jmol"
-        width="400" height="400" mayscript="true" >
-	<param name="progressbar"   value="true" />
-	<param name="progresscolor" value="blue" />
-	<param name="boxmessage"    value="Downloading JmolApplet ..." />
-	<param name="boxbgcolor"    value="black" />
-	<param name="boxfgcolor"    value="white" />
+	    <script>jmolApplet(400, "1gfl.pdb.gz", "spacefill off; wireframe");</script>
+	  </td>
+	  
+	  <td>
+	    Strands offer a representation the protein backbone using lines.
+	    Control points are chosen midway between adjacent alpha carbons.
+	    The strands are arranged perpendicular to the peptide plane.
+	    A hermite cubic curve is used to smoothly connect the points.<br />
+	    
+	    <script>
+	      jmolCheckbox("strands on", "strands off");
+	      jmolHtml("Strands");
+	      jmolBr();
+	      jmolHtml("Color your strands<br />");
+	      jmolRadio("color", "color strands none", "checked");
+	      jmolHtml("none<br />");
+	      jmolRadio("color", "color strands aquamarine");
+	      jmolHtml("aquamarine<br />");
+	      jmolRadio("color", "color strands slateblue");
+	      jmolHtml("slateblue<br />");
+	      jmolRadio("color", "color strands goldenrod");
+	      jmolHtml("goldenrod<br />");
+	      jmolRadio("color", "color strands structure");
+	      jmolHtml("structure<br />");
+	      jmolRadio("color", "color strands amino");
+	      jmolHtml("amino<br />");
+	      jmolRadio("color", "color strands shapely");
+	      jmolHtml("shapely<br />");
+	    </script>
+	    <br />
 
-        <param name="load"      value="1gfl.pdb.gz" />
-	<param name="script"    value="spacefill off; wireframe" />
-</applet>
-</td>
-
-<td>
-Strands offer a representation the protein backbone using lines.
-Control points are chosen midway between adjacent alpha carbons.
-The strands are arranged perpendicular to the peptide plane.
-A hermite cubic curve is used to smoothly connect the points.<br />
-
-The script command <b>strands on</b> will show strands which are
-1.5 angstroms wide in alpha-helices and beta-sheets, 0.5 angstroms
-wide elsewhere. <br />
-
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands on" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands on" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands off" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands off" />
-</applet><br />
-
-
-Color your strands with solid colors<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands wheat" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands wheat" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands aquamarine" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands aquamarine" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands goldenrod" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands goldenrod" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands slateblue" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands slateblue" />
-</applet><br />
-
-or by structure type or by amino acid type<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands structure" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands structure" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands amino" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands amino" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands shapely" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands shapely" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="150" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="color strands none" />
-  <param name="target" value="jmol" />
-  <param name="script" value="color strands none" />
-</applet><br />
-
-
-The number of strands can be controlled.<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 1" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 1" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 2" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 2" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 3" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 3" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 4" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 4" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 5" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 5" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 6" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 6" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 9" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 9" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="set strands 12" />
-  <param name="target" value="jmol" />
-  <param name="script" value="set strands 12" />
-</applet><br />
-
-Explict strand widths can also be chosen.<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands 0.5" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands 0.5" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands 1.0" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands 1.0" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands 1.5" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands 1.5" />
-</applet><br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands 2.0" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands 2.0" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands 3.0" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands 3.0" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="strands 4.0" />
-  <param name="target" value="jmol" />
-  <param name="script" value="strands 4.0" />
-</applet><br />
-
-Take a closer look<br />
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="zoom 200" />
-  <param name="target" value="jmol" />
-  <param name="script" value="zoom 200" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="zoom 400" />
-  <param name="target" value="jmol" />
-  <param name="script" value="zoom 400" />
-</applet>
-<applet code="JmolAppletControl" archive="JmolApplet.jar"
-        codebase="../jmol"
-        height="20" width="100" mayscript="true" >
-  <param name="type"  value="button" />
-  <param name="label"  value="zoom 100" />
-  <param name="target" value="jmol" />
-  <param name="script" value="zoom 100" />
-</applet><br />
-
-</td>
-
-</tr>
-</table>
-</body>
+	    Strand count<br />
+	    <script>
+	      jmolRadio("count", "set strands 1"); jmolHtml("1 "); 
+	      jmolRadio("count", "set strands 2"); jmolHtml("2 "); 
+	      jmolRadio("count", "set strands 3"); jmolHtml("3 "); 
+	      jmolRadio("count", "set strands 5", "checked"); jmolHtml("5 "); 
+	      jmolRadio("count", "set strands 7"); jmolHtml("7 "); 
+	      jmolRadio("count", "set strands 9"); jmolHtml("9 "); 
+	      jmolRadio("count", "set strands 11");jmolHtml("11 ");
+	      jmolRadio("count", "set strands 15");jmolHtml("15 ");
+	      jmolRadio("count", "set strands 20");jmolHtml("20 ");
+	    </script>
+	    
+	  </td>
+	  
+	</tr>
+      </table>
+    </form>
+  </body>
 </html>

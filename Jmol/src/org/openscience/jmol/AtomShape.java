@@ -417,10 +417,14 @@ class AtomShape implements Shape {
     }
   }
 
+  static HashMap hmDarker = new HashMap();
   private Color getDarker(Color color) {
-    // later this will be cached to prevent garbage generation
-    // for now, this is fine
-    return color.darker();
+    Color darker = (Color) hmDarker.get(color);
+    if (darker == null) {
+      darker = color.darker();
+      hmDarker.put(color, darker);
+    }
+    return darker;
   }
 
   private void renderAtom() {
@@ -532,7 +536,7 @@ class AtomShape implements Shape {
     if (color.equals(colorGradScale))
       return;
     Color lighter = Color.white;
-    Color darker = getDarker(color).darker();
+    Color darker = getDarker(getDarker(color));
     GradientPaint gp;
     int lightPct = 2;
     int lighteningPct = 20;

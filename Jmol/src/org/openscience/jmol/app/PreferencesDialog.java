@@ -78,9 +78,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private static boolean AutoBond;
   private static boolean Perspective;
-  private static boolean graphics2D;
-  private static boolean antialias;
-  private static boolean antialiasAlways;
   private static boolean showHydrogens;
   private static boolean showVectors;
   private static boolean showMeasurements;
@@ -124,7 +121,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbDarkerOutline, cbIsLabelAtomColor, cbIsBondAtomColor;
-  private JCheckBox cbGraphics2D, cbAntialias, cbAntialiasAlways;
   private static Properties props;
 
   // The actions:
@@ -155,17 +151,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("showBoundingBox", "false");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
-    // mth 2003 05 20
-    // The Apple JVMs have a problem with graphics2D operations
-    // so, we will default to turning graphics2D off until
-    // they get their issues resolved.
-    // props.put("graphics2D", "true");
-    String vendor = System.getProperty("java.vendor");
-    String strBool = vendor.startsWith("Apple Computer") ? "false" : "true";
-    props.put("graphics2D", strBool);
-    //
-    props.put("antialias", "true");
-    props.put("antialiasAlways", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
     props.put("styleAtom", "2");
@@ -177,9 +162,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("marBond", "100");
     props.put("minBondDistance", "0.40");
     props.put("bondTolerance", "0.45");
-    props.put("ArrowHeadSize", "1.0");
-    props.put("ArrowHeadRadius", "1.0");
-    props.put("ArrowLengthScale", "1.0");
     props.put("colorBackground", "16777215");
     props.put("colorOutline", "0");
     props.put("colorSelection", "16762880");
@@ -218,13 +200,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel disp = buildDispPanel();
     JPanel atoms = buildAtomsPanel();
     JPanel bonds = buildBondPanel();
-    JPanel vectors = buildVectorsPanel();
     JPanel colors = buildColorsPanel();
     JPanel vibrate = buildVibratePanel();
     tabs.addTab(jrh.getString("Prefs.displayLabel"), null, disp);
     tabs.addTab(jrh.getString("Prefs.atomsLabel"), null, atoms);
     tabs.addTab(jrh.getString("Prefs.bondsLabel"), null, bonds);
-    tabs.addTab(jrh.getString("Prefs.vectorsLabel"), null, vectors);
     tabs.addTab(jrh.getString("Prefs.colorsLabel"), null, colors);
     tabs.addTab(jrh.getString("Prefs.vibrateLabel"), null, vibrate);
 
@@ -264,39 +244,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     GridBagLayout gridbag = new GridBagLayout();
     disp.setLayout(gridbag);
     GridBagConstraints constraints;
-
-    JPanel g2dPanel = new JPanel();
-    g2dPanel.setLayout(new GridLayout(0, 4));
-    g2dPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.graphics2DPanelLabel")));
-    //    graphics2D = viewer.getWantsGraphics2D();
-    cbGraphics2D = guimap.newJCheckBox("Prefs.graphics2D", graphics2D);
-    cbGraphics2D.addItemListener(checkBoxListener);
-    //    antialias = viewer.getWantsAntialias();
-    cbAntialias = guimap.newJCheckBox("Prefs.antialias", antialias);
-    cbAntialias.addItemListener(checkBoxListener);
-    //    antialiasAlways = viewer.getWantsAntialiasAlways();
-    cbAntialiasAlways = guimap.newJCheckBox("Prefs.antialiasAlways",
-                                            antialiasAlways);
-    cbAntialiasAlways.addItemListener(checkBoxListener);
-    g2dPanel.add(cbGraphics2D);
-    g2dPanel.add(cbAntialias);
-    g2dPanel.add(cbAntialiasAlways);
-    setEnabledGraphics();
-    
-    constraints = new GridBagConstraints();
-    constraints.gridwidth = GridBagConstraints.REMAINDER;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.weightx = 1.0;
-    disp.add(g2dPanel, constraints);
-
-        
-    JLabel filler = new JLabel();
-    constraints = new GridBagConstraints();
-    constraints.gridwidth = GridBagConstraints.REMAINDER;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.weightx = 1.0;
-    disp.add(filler, constraints);
 
     JPanel showPanel = new JPanel();
     showPanel.setLayout(new GridLayout(1, 3));
@@ -355,7 +302,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     disp.add(fooPanel, constraints);
 
 
-    filler = new JLabel();
+    JLabel filler = new JLabel();
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     constraints.gridheight = GridBagConstraints.REMAINDER;
@@ -750,156 +697,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     return bondPanel;
   }
 
-  public JPanel buildVectorsPanel() {
-
-    JPanel vPanel = new JPanel();
-    vPanel.setLayout(new GridLayout(0, 1));
-
-    JPanel sample = new JPanel();
-    sample.setLayout(new BorderLayout());
-    sample.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.sampleLabel")));
-    vPanel.add(sample);
-
-    JPanel ahPanel = new JPanel();
-    ahPanel.setLayout(new BorderLayout());
-    ahPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.ahLabel")));
-    ahSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0f * viewer.getArrowHeadSize()));
-    ahSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    ahSlider.setPaintTicks(true);
-    ahSlider.setMajorTickSpacing(40);
-    ahSlider.setPaintLabels(true);
-    ahSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    ahSlider.setLabelTable(ahSlider.getLabelTable());
-    ahSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
-    ahSlider.setLabelTable(ahSlider.getLabelTable());
-    ahSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
-    ahSlider.setLabelTable(ahSlider.getLabelTable());
-    ahSlider.getLabelTable().put(new Integer(120),
-        new JLabel("1.2", JLabel.CENTER));
-    ahSlider.setLabelTable(ahSlider.getLabelTable());
-    ahSlider.getLabelTable().put(new Integer(160),
-        new JLabel("1.6", JLabel.CENTER));
-    ahSlider.setLabelTable(ahSlider.getLabelTable());
-    ahSlider.getLabelTable().put(new Integer(200),
-        new JLabel("2.0", JLabel.CENTER));
-    ahSlider.setLabelTable(ahSlider.getLabelTable());
-
-    ahSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        ArrowHeadSize = source.getValue() / 100.0f;
-        viewer.setArrowHeadSize(ArrowHeadSize);
-        props.put("ArrowHeadSize", Double.toString(ArrowHeadSize));
-      }
-    });
-    ahPanel.add(ahSlider, BorderLayout.SOUTH);
-    vPanel.add(ahPanel);
-
-    JPanel arPanel = new JPanel();
-    arPanel.setLayout(new BorderLayout());
-    arPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.arLabel")));
-    arSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0f * viewer.getArrowHeadRadius()));
-    arSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    arSlider.setPaintTicks(true);
-    arSlider.setMajorTickSpacing(40);
-    arSlider.setPaintLabels(true);
-    arSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    arSlider.setLabelTable(arSlider.getLabelTable());
-    arSlider.getLabelTable().put(new Integer(40),
-        new JLabel("0.4", JLabel.CENTER));
-    arSlider.setLabelTable(arSlider.getLabelTable());
-    arSlider.getLabelTable().put(new Integer(80),
-        new JLabel("0.8", JLabel.CENTER));
-    arSlider.setLabelTable(arSlider.getLabelTable());
-    arSlider.getLabelTable().put(new Integer(120),
-        new JLabel("1.2", JLabel.CENTER));
-    arSlider.setLabelTable(arSlider.getLabelTable());
-    arSlider.getLabelTable().put(new Integer(160),
-        new JLabel("1.6", JLabel.CENTER));
-    arSlider.setLabelTable(arSlider.getLabelTable());
-    arSlider.getLabelTable().put(new Integer(200),
-        new JLabel("2.0", JLabel.CENTER));
-    arSlider.setLabelTable(arSlider.getLabelTable());
-    arSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        ArrowHeadRadius = source.getValue() / 100.0f;
-        viewer.setArrowHeadRadius(ArrowHeadRadius);
-        props.put("ArrowHeadRadius", Double.toString(ArrowHeadRadius));
-        viewer.refresh();
-      }
-    });
-    arPanel.add(arSlider, BorderLayout.SOUTH);
-    vPanel.add(arPanel);
-
-    JPanel alPanel = new JPanel();
-    alPanel.setLayout(new BorderLayout());
-    alPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.alLabel")));
-    alSlider = new JSlider(JSlider.HORIZONTAL, -200, 200,
-        (int) (100.0f * viewer.getArrowLengthScale()));
-    alSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    alSlider.setPaintTicks(true);
-    alSlider.setMajorTickSpacing(50);
-    alSlider.setPaintLabels(true);
-    alSlider.getLabelTable().put(new Integer(-200),
-        new JLabel("-2.0", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(-150),
-        new JLabel("-1.5", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(-100),
-        new JLabel("-1.0", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(-50),
-        new JLabel("-0.5", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(0),
-        new JLabel("0.0", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(50),
-        new JLabel("0.5", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(100),
-        new JLabel("1.0", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(150),
-        new JLabel("1.5", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.getLabelTable().put(new Integer(200),
-        new JLabel("2.0", JLabel.CENTER));
-    alSlider.setLabelTable(alSlider.getLabelTable());
-    alSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        ArrowLengthScale = source.getValue() / 100.0f;
-        viewer.setArrowLengthScale(ArrowLengthScale);
-        props.put("ArrowLengthScale", Double.toString(ArrowLengthScale));
-        viewer.refresh();
-      }
-    });
-    alPanel.add(alSlider, BorderLayout.SOUTH);
-    vPanel.add(alPanel);
-
-    return vPanel;
-  }
-
   public JPanel buildColorsPanel() {
 
     JPanel colorPanel = new JPanel();
@@ -1218,10 +1015,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private void updateComponents() {
     // Display panel
-    cbGraphics2D.setSelected(viewer.getWantsGraphics2D());
-    cbAntialias.setSelected(viewer.getWantsAntialias());
-    cbAntialiasAlways.setSelected(viewer.getWantsAntialiasAlways());
-
     cH.setSelected(viewer.getShowHydrogens());
     cV.setSelected(viewer.getShowVectors());
     cM.setSelected(viewer.getShowMeasurements());
@@ -1243,11 +1036,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bwSlider.setValue(viewer.getMarBond());
     bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
     btSlider.setValue((int) (100 * viewer.getBondTolerance()));
-
-    // Vector panel controls:
-    ahSlider.setValue((int) (100.0f * viewer.getArrowHeadSize()));
-    arSlider.setValue((int) (100.0f * viewer.getArrowHeadRadius()));
-    alSlider.setValue((int) (100.0f * viewer.getArrowLengthScale()));
 
     // Color panel controls:
     bButton.setBackground(colorBackground);
@@ -1295,9 +1083,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     AutoBond = Boolean.getBoolean("AutoBond");
     Perspective = Boolean.getBoolean("Perspective");
-    graphics2D = Boolean.getBoolean("graphics2D");
-    antialias = Boolean.getBoolean("antialias");
-    antialiasAlways = Boolean.getBoolean("antialiasAlways");
     showHydrogens = Boolean.getBoolean("showHydrogens");
     showVectors = Boolean.getBoolean("showVectors");
     showMeasurements = Boolean.getBoolean("showMeasurements");
@@ -1320,12 +1105,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
     // Doubles and Doubles are special:
-    ArrowHeadSize =
-        new Double(props.getProperty("ArrowHeadSize")).doubleValue();
-    ArrowHeadRadius =
-        new Double(props.getProperty("ArrowHeadRadius")).doubleValue();
-    ArrowLengthScale =
-        new Double(props.getProperty("ArrowLengthScale")).doubleValue();
     minBondDistance =
       new Double(props.getProperty("minBondDistance")).doubleValue();
     bondTolerance =
@@ -1350,13 +1129,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setStyleBond(styleBond);
     viewer.setMarBond(marBond);
     viewer.setColorVector(colorVector);
-    viewer.setArrowHeadRadius(ArrowHeadRadius);
-    viewer.setArrowHeadSize(ArrowHeadSize);
-    viewer.setArrowLengthScale(ArrowLengthScale);
     viewer.setColorBackground(colorBackground);
-    viewer.setWantsGraphics2D(graphics2D);
-    viewer.setWantsAntialias(antialias);
-    viewer.setWantsAntialiasAlways(antialiasAlways);
     viewer.setMinBondDistance(minBondDistance);
     viewer.setBondTolerance(bondTolerance);
     viewer.setAutoBond(AutoBond);
@@ -1428,20 +1201,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         viewer.setColorBond(isBondAtomColor ? null : colorBond);
         props.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
-      } else if (key.equals("Prefs.graphics2D")) {
-        graphics2D = isSelected;
-        viewer.setWantsGraphics2D(graphics2D);
-        props.put("graphics2D", strSelected);
-        setEnabledGraphics();
-      } else if (key.equals("Prefs.antialias")) {
-        antialias = isSelected;
-        viewer.setWantsAntialias(antialias);
-        props.put("antialias", strSelected);
-        setEnabledGraphics();
-      } else if (key.equals("Prefs.antialiasAlways")) {
-        antialiasAlways = isSelected;
-        viewer.setWantsAntialiasAlways(antialiasAlways);
-        props.put("antialiasAlways", strSelected);
       } else if (key.equals("Prefs.wireframeRotation")) {
         wireframeRotation = isSelected;
         viewer.setWireframeRotation(wireframeRotation);
@@ -1461,11 +1220,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       }
     }
   };
-
-  private void setEnabledGraphics() {
-    cbAntialias.setEnabled(graphics2D);
-    cbAntialiasAlways.setEnabled(graphics2D && antialias);
-  }
 
   private JButton applyButton;
   private JButton resetButton;

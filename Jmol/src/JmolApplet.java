@@ -144,7 +144,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void handlePopupMenu(MouseEvent e) {
     jmolpopup.show(e.getComponent(), e.getX(), e.getY());
-  }  
+  }
+
+  public void measureSelection(int atomIndex) {
+  }
 
   //METHODS FOR JAVASCRIPT
 

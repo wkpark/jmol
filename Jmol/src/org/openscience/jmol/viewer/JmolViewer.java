@@ -99,7 +99,6 @@ final public class JmolViewer {
   public boolean jvm12orGreater = false;
   public boolean jvm14orGreater = false;
 
-  JmolMeasureWatcher jmolMeasureWatcher;
   JmolStatusListener jmolStatusListener;
 
   boolean firePropertyChanges;
@@ -171,7 +170,6 @@ final public class JmolViewer {
     atomRenderer.setGraphicsContext(g3d, rectClip);
     bondRenderer.setGraphicsContext(g3d, rectClip);
     labelRenderer.setGraphicsContext(g3d, rectClip);
-    maybeEnableAntialiasing(g3d);
   }
 
   public boolean hasStructuralChange() {
@@ -622,7 +620,7 @@ final public class JmolViewer {
     return selectionHaloEnabled;
   }
 
-  boolean bondSelectionModeOr;
+  private boolean bondSelectionModeOr;
   public void setBondSelectionModeOr(boolean bondSelectionModeOr) {
     this.bondSelectionModeOr = bondSelectionModeOr;
     refresh();
@@ -788,6 +786,7 @@ final public class JmolViewer {
 
   public int getBoundingBoxCenterX() {
     // FIXME mth 2003 05 31
+    // used by the labelRenderer for rendering labels away from the center
     // for now this is returning the center of the screen
     // need to transform the center of the bounding box and return that point
     return dimCurrent.width / 2;
@@ -841,15 +840,6 @@ final public class JmolViewer {
     modelManager.rebond();
     structuralChange = true;
     refresh();
-  }
-
-  public void setBondFudge(double bf) {
-    modelManager.setBondFudge(bf);
-    refresh();
-  }
-
-  public double getBondFudge() {
-    return modelManager.bondFudge;
   }
 
   public void setBondTolerance(double bondTolerance) {
@@ -954,14 +944,9 @@ final public class JmolViewer {
     refresh();
   }
 
-  public void setJmolMeasureWatcher(JmolMeasureWatcher
-                                      jmolMeasureWatcher) {
-    this.jmolMeasureWatcher = jmolMeasureWatcher;
-  }
-
   public void measureSelection(int iatom) {
-    if (jmolMeasureWatcher != null)
-      jmolMeasureWatcher.firePicked(iatom);
+    if (jmolStatusListener != null)
+      jmolStatusListener.measureSelection(iatom);
   }
 
   public boolean deleteMeasurement(MeasurementShape measurement) {
@@ -1001,34 +986,6 @@ final public class JmolViewer {
 
   public boolean getInMotion() {
     return repaintManager.inMotion;
-  }
-
-  public void setWantsGraphics2D(boolean wantsGraphics2D) {
-    repaintManager.setWantsGraphics2D(wantsGraphics2D);
-  }
-
-  public boolean getWantsGraphics2D() {
-    return repaintManager.wantsGraphics2D;
-  }
-
-  public boolean getUseGraphics2D() {
-    return repaintManager.useGraphics2D;
-  }
-
-  public void setWantsAntialias(boolean wantsAntialias) {
-    repaintManager.setWantsAntialias(wantsAntialias);
-  }
-
-  public boolean getWantsAntialias() {
-    return repaintManager.wantsAntialias;
-  }
-
-  public void setWantsAntialiasAlways(boolean wantsAntialiasAlways) {
-    repaintManager.setWantsAntialiasAlways(wantsAntialiasAlways);
-  }
-
-  public boolean getWantsAntialiasAlways() {
-    return repaintManager.wantsAntialiasAlways;
   }
 
   public Image takeSnapshot() {
@@ -1076,25 +1033,6 @@ final public class JmolViewer {
   public void setOversample(boolean tOversample) {
     transformManager.setOversample(tOversample);
     repaintManager.setOversample(tOversample);
-  }
-
-  /****************************************************************
-   * routines for java12
-   ****************************************************************/
-  
-  private void maybeEnableAntialiasing(Graphics3D g3d) {
-    if (repaintManager.useGraphics2D)
-      g3d.enableAntialiasing(repaintManager.enableAntialiasing());
-  }
-
-  public void maybeDottedStroke(Graphics3D g3d) {
-    if (repaintManager.useGraphics2D)
-      g3d.dottedStroke();
-  }
-
-  public void defaultStroke(Graphics3D g3d) {
-    if (repaintManager.useGraphics2D)
-      g3d.defaultStroke();
   }
 
   /****************************************************************

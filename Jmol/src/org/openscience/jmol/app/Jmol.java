@@ -26,7 +26,6 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.JmolStatusListener;
-import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
 import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
 import org.openscience.jmol.adapters.CdkJmolModelAdapter;
@@ -283,7 +282,6 @@ public class Jmol extends JPanel {
     meas = new Measure(frame, viewer);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
-    viewer.setJmolMeasureWatcher(meas);
     //    mlist.addMeasurementListListener(display);
 
     // install the command table
@@ -1522,6 +1520,10 @@ public class Jmol extends JPanel {
 
     public void handlePopupMenu(MouseEvent e) {
       jmolpopup.show(e.getComponent(), e.getX(), e.getY());
+    }
+
+    public void measureSelection(int atomIndex) {
+      meas.firePicked(atomIndex);
     }
   }
 

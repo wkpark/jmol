@@ -187,16 +187,10 @@ public class ModelManager {
     jmolFrame.setRotationCenter(center);
   }
 
-  // FIXME NEEDSWORK -- bond binding stuff
-  public double bondFudge = 1.12f;
   public boolean autoBond = true;
 
   public void rebond() {
     jmolFrame.rebond();
-  }
-
-  public void setBondFudge(double bf) {
-    bondFudge = bf;
   }
 
   public void setAutoBond(boolean ab) {

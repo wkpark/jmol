@@ -36,5 +36,7 @@ public interface JmolStatusListener {
   public void notifyScriptTermination(String statusMessage, int msWalltime);
 
   public void handlePopupMenu(MouseEvent e);
+
+  public void measureSelection(int iatom);
   
 }

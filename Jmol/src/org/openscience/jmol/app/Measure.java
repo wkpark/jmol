@@ -27,7 +27,6 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.viewer.datamodel.AtomShape;
 import org.openscience.jmol.viewer.datamodel.JmolFrame;
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
 import java.io.File;
 import javax.swing.JTable;
@@ -67,7 +66,7 @@ import javax.swing.border.TitledBorder;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class Measure extends JDialog implements JmolMeasureWatcher {
+public class Measure extends JDialog {
 
   private final static int ADD = 1;
   private final static int DELETE = 2;

@@ -93,9 +93,7 @@ public class MeasurementShape extends LineShape
   }
 
   public void render(Graphics3D g3d, JmolViewer viewer) {
-    viewer.maybeDottedStroke(g3d);
-    g3d.drawLine(viewer.getColixDistance(), x, y, z, xEnd, yEnd, zEnd);
-    viewer.defaultStroke(g3d);
+    g3d.drawDottedLine(viewer.getColixDistance(), x, y, z, xEnd, yEnd, zEnd);
     if (viewer.getShowMeasurementLabels())
       paintMeasurementString(g3d, viewer);
   }

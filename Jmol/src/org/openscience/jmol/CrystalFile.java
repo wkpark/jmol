@@ -563,6 +563,8 @@ public class CrystalFile extends ChemFile {
 
     // Do a n*(n-1) scan to get new bonds.
 
+    double bondFudge = 1.12;
+
     for (int i = 0; i < numberAtoms; i++) {
       redPos = ((double[]) crystalRedPos.elementAt(i));
 
@@ -575,7 +577,7 @@ public class CrystalFile extends ChemFile {
           if (BondTools.closeEnoughToBond(
               (org.openscience.jmol.Atom)crystalFrame.getAtomAt(i),
               (org.openscience.jmol.Atom)crystalFrame.getAtomAt(j),
-              viewer.getBondFudge())) {
+              bondFudge)) {
 
             redPos = ((double[]) crystalRedPos.elementAt(j));
             if ((redPos[0] >= bondBox[0][0]) && (redPos[0] <= bondBox[1][0])

@@ -36,17 +36,8 @@ public class RepaintManager {
 
   JmolViewer viewer;
 
-  public boolean useGraphics2D = false;
-  // mth 2003 05 20
-  // Apple JVMs don't work with graphics2d ... disable until they fix it
-  public boolean wantsGraphics2D =
-    ! System.getProperty("java.vendor").startsWith("Apple Computer");
-  public boolean wantsAntialias = true;
-  public boolean wantsAntialiasAlways = false;
-
   public RepaintManager(JmolViewer viewer) {
     this.viewer = viewer;
-    useGraphics2D = viewer.jvm12orGreater && wantsGraphics2D;
   }
 
   public boolean fastRendering = false;
@@ -69,33 +60,6 @@ public class RepaintManager {
     */
     if (!inMotion)
       refresh();
-  }
-
-  public void setWantsGraphics2D(boolean wantsGraphics2D) {
-    if (this.wantsGraphics2D != wantsGraphics2D) {
-      this.wantsGraphics2D = wantsGraphics2D;
-      useGraphics2D = viewer.jvm12orGreater && wantsGraphics2D;
-      viewer.flushCachedImages();
-      refresh();
-    }
-  }
-
-  public void setWantsAntialias(boolean wantsAntialias) {
-    this.wantsAntialias = wantsAntialias;
-    refresh();
-  }
-
-  public void setWantsAntialiasAlways(boolean wantsAntialiasAlways) {
-    this.wantsAntialiasAlways = wantsAntialiasAlways;
-    // no need to refresh in this state since we aren't doing anything
-  }
-
-  int maxAntialiasCount = 500;
-
-  public boolean enableAntialiasing() {
-    return wantsAntialias
-      && (viewer.getAtomCount() <= maxAntialiasCount)
-      && (!inMotion || wantsAntialiasAlways);
   }
 
   public Image takeSnapshot() {

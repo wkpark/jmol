@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002-2003  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,7 +25,6 @@
 
 import org.openscience.jmol.applet.*;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.AtomTypeSet;
 import org.openscience.jmol.script.Eval;
 
 import java.applet.Applet;
@@ -109,7 +114,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       control.setColorBackground(getParameter("bgcolor"));
       setStyle(getParameter("style"));
       setLabelStyle(getParameter("label"));
-      //      setAtomPropertiesFromFile(getParameter("atomTypes"));
 
       String wfr = getParameter("wireframeRotation");
       setWireframeRotation(wfr != null &&
@@ -154,42 +158,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
    * ... even if one of the methods is private
    * mth 2003 02
    ****************************************************************/
-
-
-  /**
-   * <b>For Javascript:<\b> Takes the argument, reads it as a file and allocates this as the current atom types- eg radius etc.
-   * @param atomTypesFile The filename of the properties we want.
-   */
-  public void setAtomPropertiesFromFile(String atomTypesFile) {
-    try {
-      InputStream atis = null;
-      if (atomTypesFile == null || atomTypesFile.length() == 0) {
-        atis = getClass().getResourceAsStream(defaultAtomTypesFileName);
-        atomTypesFile = defaultAtomTypesFileName + "(default)";
-      } else {
-        URL atURL = new URL(getDocumentBase(), atomTypesFile);
-        atis = atURL.openStream();
-      }
-      if (atis == null) {
-        System.err.println("Unable to open the atom types file:" +
-                           atomTypesFile);
-        return;
-      }
-      AtomTypeSet ats1 = new AtomTypeSet();
-      ats1.load(atis);
-    } catch (IOException e) {
-      System.err.println("IOException reading atom properties:" + e);
-    }
-  }
-
-  /**
-   * <b>For Javascript:<\b> Takes the argument, reads it as a URL and allocates this as the current atom types- eg radius etc.
-   * @param propertiesFileURL The URL of the properties we want.
-   */
-  public void setAtomPropertiesFromURL(String propertiesURL) {
-    //    myBean.setAtomPropertiesFromURL(propertiesURL);
-  }
-
 
   private final String[] styleStrings = {"QUICKDRAW", "SHADED", "WIREFRAME"};
   private final byte[] styles = {DisplayControl.QUICKDRAW,

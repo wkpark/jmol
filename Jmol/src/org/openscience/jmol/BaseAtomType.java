@@ -152,27 +152,6 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
   }
 
   /**
-   * Converts the string into the BaseAtomType.
-   *
-   * @param s1 the string to be converted to an BaseAtomType
-   */
-  public static BaseAtomType parse(String s1) {
-
-    StringTokenizer st1 = new StringTokenizer(s1, "\t ,;");
-
-    String localName = st1.nextToken();
-    String root      = st1.nextToken();
-    BaseAtomType at = get(localName, root);
-    at.setAtomicNumber(Integer.parseInt(st1.nextToken()));
-    at.setExactMass(Double.valueOf(st1.nextToken()).doubleValue());
-    at.setVanderwaalsRadius(Double.valueOf(st1.nextToken()).doubleValue());
-    at.setCovalentRadius(Double.valueOf(st1.nextToken()).doubleValue());
-    at.color = new Color(Integer.parseInt(st1.nextToken()),
-        Integer.parseInt(st1.nextToken()), Integer.parseInt(st1.nextToken()));
-    return at;
-  }
-
-  /**
    * Returns the Van derWaals radius.
    */
   public double getVdwRadius() {

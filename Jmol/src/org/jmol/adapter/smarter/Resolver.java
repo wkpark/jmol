@@ -180,7 +180,8 @@ class Resolver {
   { "Entering Gaussian System", "1998 Gaussian, Inc." };
 
   final static String[] mopacRecords =
-  { "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu" };
+  { "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
+    "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)"};
 
   final static String[] qchemRecords = 
   { "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };

@@ -84,17 +84,12 @@ class FoldingXyzReader extends AtomSetCollectionReader {
 	    atom.atomName = parseToken(line, ichNextParse);
 	    if (atom.atomName != null) {
 	      int carCount = 1;
-          if ((atom.atomName.length() >= 2) &&
-              (Character.isLetter(atom.atomName.charAt(0))) &&
-			  (Character.isLetter(atom.atomName.charAt(1)))) {
-          	char c1 = Character.toUpperCase(atom.atomName.charAt(0));
-          	char c2 = Character.toLowerCase(atom.atomName.charAt(1));
-          	switch (c1) {
-          	case 'C':
-          	  switch (c2) {
-          	  case 'l':
-          	    carCount = 2;	
-          	  }
+          if (atom.atomName.length() >= 2) {
+          	char c1 = atom.atomName.charAt(0);
+          	char c2 = atom.atomName.charAt(1);
+          	if (Character.isUpperCase(c1) && Character.isLowerCase(c2) &&
+          	    Atom.isValidElementSymbol(c1, c2)) {
+          	  carCount = 2;
           	}
           }
           atom.elementSymbol = atom.atomName.substring(0, carCount);

@@ -9,6 +9,7 @@ package org.openscience.miniJmol;
 
 import org.openscience.cdopi.*;
 import java.util.Vector;
+import org.openscience.jmol.FortranFormat;
 
 public final class JMolCDO extends ANIMATIONCDO {
     
@@ -104,10 +105,6 @@ public final class JMolCDO extends ANIMATIONCDO {
         System.out.println("setFrameProperty: " + type + "=" + value);
         if (type.equals("title")) {
           currentFrame.setInfo(value);
-        } else if (type.equals("energy")) {
-          double energy = (new Double(value)).doubleValue();
-          Energy prop = new Energy(energy);
-          currentFrame.addFrameProperty((PhysicalProperty)prop);
         }
     }
 
@@ -132,7 +129,7 @@ public final class JMolCDO extends ANIMATIONCDO {
         double y = FortranFormat.atof(atom_y.trim());
         double z = FortranFormat.atof(atom_z.trim());
         try {
-            currentFrame.addVert(atom_type.trim(), (float) x, (float) y, (float) z);
+            currentFrame.addAtom(atom_type.trim(), (float) x, (float) y, (float) z);
         } catch (Exception e) {
             System.out.println("JMolCDO error while adding atom: " + e);
         }

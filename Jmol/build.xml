@@ -45,6 +45,7 @@
 				<exclude name="**/.*" />
 				<include name="**/miniJmol/**" />
 				<include name="**/jmol/FortranFormat.class" />
+				<include name="**/jmol/Matrix3D.class" />
 				<include name="**/jmol/DisplaySettings.class" />
 				<include name="**/jmol/PhysicalProperty.class" />
 			</fileset>

@@ -28,7 +28,6 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.g3d.*;
-import org.openscience.jmol.viewer.pdb.PdbAtom;
 import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;

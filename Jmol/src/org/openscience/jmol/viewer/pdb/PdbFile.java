@@ -126,18 +126,21 @@ final public class PdbFile {
   }
 
   int modelNumberCurrent = Integer.MIN_VALUE;
-  char chainIDCurrent = '\uFFFF';
-  int seqcodeCurrent;
+  char chainIDCurrent;
+  int sequenceNumberCurrent;
+  char insertionCodeCurrent;
   PdbGroup groupCurrent;
 
   void setCurrentResidue(int modelNumber, char chainID,
-                         int seqcode, String group3) {
+                         int sequenceNumber, char insertionCode,
+                         String group3) {
     modelNumberCurrent = modelNumber;
     chainIDCurrent = chainID;
-    seqcodeCurrent = seqcode;
+    sequenceNumberCurrent = sequenceNumber;
+    insertionCodeCurrent = insertionCode;
     PdbModel model = getOrAllocateModel(modelNumber);
     PdbChain chain = model.getOrAllocateChain(chainID);
-    groupCurrent = chain.allocateGroup(seqcode, group3);
+    groupCurrent = chain.allocateGroup(sequenceNumber, insertionCode, group3);
   }
 
   /*
@@ -162,20 +165,19 @@ final public class PdbFile {
   }
   */
 
-  public PdbAtom allocatePdbAtom(Atom atom) {
-    int modelNumber = atom.getModelNumber();
-    char chainID = atom.getChainID();
-    int sequenceNum = atom.getSequenceNumber();
-    char insertionCode = atom.getInsertionCode();
-    int seqcode = PdbGroup.getSeqcode(sequenceNum, insertionCode);
-    if (modelNumber != modelNumberCurrent ||
+  public PdbGroup registerAtom(Atom atom, int modelNumber, char chainID,
+                               int sequenceNumber, char insertionCode,
+                               String group3) {
+    if (sequenceNumber != sequenceNumberCurrent ||
+        insertionCode != insertionCodeCurrent ||
         chainID != chainIDCurrent ||
-        seqcode != seqcodeCurrent)
+        modelNumber != modelNumberCurrent)
       setCurrentResidue(modelNumber, chainID,
-                        seqcode, atom.getGroup3());
-    return groupCurrent.allocatePdbAtom(atom);
+                        sequenceNumber, insertionCode, group3);
+    groupCurrent.registerAtom(atom);
+    return groupCurrent;
   }
-
+  
   public int getModelCount() {
     return modelCount;
   }

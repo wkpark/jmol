@@ -34,7 +34,7 @@ import java.util.BitSet;
 final public class PdbChain {
 
   public PdbModel pdbmodel;
-  char chainID;
+  public char chainID;
   int groupCount;
   PdbGroup[] groups = new PdbGroup[16];
 
@@ -55,9 +55,9 @@ final public class PdbChain {
     polymer = new PdbPolymer(this);
   }
   
-  PdbGroup allocateGroup(int sequence, String group3) {
-
-    PdbGroup group = new PdbGroup(this, sequence, group3);
+  PdbGroup allocateGroup(int sequenceNumber, char insertionCode,
+                         String group3) {
+    PdbGroup group = new PdbGroup(this, sequenceNumber, insertionCode, group3);
 
     if (groupCount == groups.length) {
       PdbGroup[] t = new PdbGroup[groupCount * 2];

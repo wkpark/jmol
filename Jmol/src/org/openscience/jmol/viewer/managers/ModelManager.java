@@ -29,7 +29,6 @@ import org.jmol.api.ModelAdapter;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.FrameBuilder;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.pdb.PdbAtom;
 
 import java.util.BitSet;
 import java.util.Hashtable;

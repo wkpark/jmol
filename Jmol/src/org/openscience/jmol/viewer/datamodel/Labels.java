@@ -26,7 +26,6 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolConstants;
-import org.openscience.jmol.viewer.pdb.PdbAtom;
 import org.openscience.jmol.viewer.g3d.Font3D;
 
 import java.awt.Color;
@@ -160,7 +159,6 @@ public class Labels extends Shape {
   String getLabelAtom(String strFormat, Atom atom, int atomIndex) {
     if (strFormat == null || strFormat.equals(""))
       return null;
-    PdbAtom pdbatom = atom.getPdbAtom();
     String strLabel = "";
     int cch = strFormat.length();
     int ich, ichPercent;
@@ -216,8 +214,7 @@ public class Labels extends Shape {
         break;
       case 'c': // these two are the same
       case 's':
-        if (pdbatom != null)
-          strLabel += pdbatom.getChainID();
+        strLabel += atom.getChainID();
         break;
       case 'M':
         strLabel += "/" + atom.getModelNumber();
@@ -226,12 +223,10 @@ public class Labels extends Shape {
         strLabel += "<X>";
         break;
       case 'n':
-        if (pdbatom != null)
-          strLabel += pdbatom.getGroup3();
+        strLabel += atom.getGroup3();
         break;
       case 'r':
-        if (pdbatom != null)
-          strLabel += pdbatom.getSeqcodeString();
+        strLabel += atom.getSeqcodeString();
         break;
       case '{': // client property name
         int ichCloseBracket = strFormat.indexOf('}', ich);

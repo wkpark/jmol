@@ -40,10 +40,9 @@ public class Atom implements Bspt.Tuple {
   public final static byte VISIBLE_FLAG = 1;
 
   public int atomIndex;
-  PdbAtom pdbAtom;
-  short modelNumber;
-  char chainID;
-  Frame frame;
+  Frame frame; // maybe we can get rid of this ...
+  PdbGroup group; // ... if everybody has a group
+  short modelNumber; // we want this here for the BallsRenderer
   public Point3f point3f;
   short x, y, z;
   short diameter;
@@ -60,11 +59,8 @@ public class Atom implements Bspt.Tuple {
 
   /* move these out of here */
   int atomSerial;
-  String group3;
-  int sequenceNumber;
-  char insertionCode;
   String atomName;
-  short atomID = -1;
+  public short atomID = -1;
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
@@ -96,15 +92,11 @@ public class Atom implements Bspt.Tuple {
     this.point3f = new Point3f(x, y, z);
     this.isHetero = isHetero;
     this.atomSerial = atomSerial;
-    this.chainID = chainID;
-    this.group3 = group3;
-    this.sequenceNumber = sequenceNumber;
-    this.insertionCode = insertionCode;
     if (pdbFile != null) {
       atomID = lookupAtomID(atomName);
-      pdbAtom = pdbFile.allocatePdbAtom(this);
+      group = pdbFile.registerAtom(this, modelNumber, chainID,
+                                   sequenceNumber, insertionCode, group3);
     }
-    //    this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
   
   public boolean isBonded(Atom atomOther) {
@@ -301,23 +293,53 @@ public class Atom implements Bspt.Tuple {
       return atomName;
     return JmolConstants.elementSymbols[elementNumber];
   }
-
+  
   public String getPdbAtomName4() {
     return atomName;
   }
 
   public String getGroup3() {
-    return group3;
+    return group == null ? null : group.getGroup3();
   }
 
-  // this needs a name change
-  // it is the group sequence number
-  public int getSequenceNumber() {
-    return sequenceNumber;
+  public boolean isGroup3(String group3) {
+    return group == null ? false : group.isGroup3(group3);
   }
 
-  public char getInsertionCode() {
-    return insertionCode;
+  public boolean isGroup3Match(String strWildcard) {
+    return group == null ? false : group.isGroup3Match(strWildcard);
+  }
+
+  public int getSeqcode() {
+    // I wonder if this should be -infinity instead of -1
+    return group == null ? -1 : group.seqcode;
+  }
+
+  public boolean isAtomNameMatch(String strPattern) {
+    if (atomID < 0)
+      return false;
+    int cchPattern = strPattern.length();
+    if (cchPattern > 4) {
+      System.err.println("atom wildcard length > 4 : " + strPattern);
+      return false;
+    }
+    String strAtomName = atomNames[atomID];
+    int cchAtomName = strAtomName.length();
+    int ichAtomName = 0;
+    while (strAtomName.charAt(ichAtomName) == ' ')
+      ++ichAtomName;
+    for (int i = 0; i < cchPattern; ++i, ++ichAtomName) {
+      char charWild = strPattern.charAt(i);
+      if (charWild == '?')
+        continue;
+      if (ichAtomName >= cchAtomName ||
+          charWild != Character.toUpperCase(strAtomName.charAt(ichAtomName)))
+        return false;
+    }
+    while (ichAtomName < cchAtomName)
+      if (strAtomName.charAt(ichAtomName++) != ' ')
+        return false;
+    return true;
   }
 
   public int getAtomNumber() {
@@ -393,12 +415,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public char getChainID() {
-    return chainID;
-    /*
-    if (pdbAtom == null)
-      return (char)0;
-    return pdbAtom.getChainID();
-    */
+    return group == null ? (char)0 : group.chain.chainID;
   }
 
   // a percentage value in the range 0-100
@@ -414,32 +431,26 @@ public class Atom implements Bspt.Tuple {
     return bfactor100;
   }
 
-  public PdbAtom getPdbAtom() {
-    return pdbAtom;
-  }
-
   public PdbGroup getPdbGroup() {
-    if (pdbAtom == null)
-      return null;
-    return pdbAtom.group;
+    return group;
   }
 
   public PdbPolymer getPdbPolymer() {
-    if (pdbAtom == null)
+    if (group == null)
       return null;
-    return pdbAtom.group.polymer;
+    return group.polymer;
   }
 
   public PdbChain getPdbChain() {
-    if (pdbAtom == null)
+    if (group == null)
       return null;
-    return pdbAtom.group.chain;
+    return group.chain;
   }
 
   public PdbModel getPdbModel() {
-    if (pdbAtom == null)
+    if (group == null)
       return null;
-    return pdbAtom.group.chain.pdbmodel;
+    return group.chain.pdbmodel;
   }
   
   public String getClientAtomStringProperty(String propertyName) {
@@ -463,33 +474,33 @@ public class Atom implements Bspt.Tuple {
   }
 
   public byte getSecondaryStructureType() {
-    if (pdbAtom != null)
-      return pdbAtom.group.getStructureType();
+    if (group != null)
+      return group.getStructureType();
     return 0;
   }
 
   public short getGroupID() {
-    if (pdbAtom != null)
-      return pdbAtom.group.groupID;
+    if (group != null)
+      return group.groupID;
     return -1;
   }
 
   public String getSeqcodeString() {
-    if (pdbAtom != null)
-      return pdbAtom.group.getSeqcodeString();
+    if (group != null)
+      return group.getSeqcodeString();
     return null;
   }
 
   public int getModelID() {
-    if (pdbAtom != null)
-      return pdbAtom.group.chain.pdbmodel.modelNumber;
+    if (group != null)
+      return group.chain.pdbmodel.modelNumber;
     return 1;
   }
-
+  
   public short getAtomID() {
     return atomID;
   }
-
+  
   public String getAtomPrettyName() {
     return atomPrettyNames[atomID];
   }

@@ -210,10 +210,6 @@ final public class Frame {
     return atoms[atomIndex].point3f;
   }
 
-  public PdbAtom getPdbAtom(int atomIndex) {
-    return atoms[atomIndex].pdbAtom;
-  }
-
   public int getBondCount() {
     return bondCount;
   }

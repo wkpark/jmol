@@ -394,8 +394,6 @@ final public class JmolConstants {
   /**
    * Default table of van der Waals Radii.
    * values are stored as MAR -- Milli Angstrom Radius
-   * Used when the client does not choose
-   * to implement getVanderwaalsRadius(clientAtom).
    * Used for spacefill rendering of atoms.
    * Values taken from OpenBabel.
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
@@ -516,8 +514,6 @@ final public class JmolConstants {
   /**
    * Default table of covalent Radii.
    * stored as a short mar ... Milli Angstrom Radius
-   * Used when the client does not choose
-   * to implement getCovalentRadius(clientAtom).
    * Used for bonding atoms when the client does not supply bonds. 
    * Values taken from OpenBabel.
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>

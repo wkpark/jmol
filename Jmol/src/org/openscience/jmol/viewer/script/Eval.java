@@ -876,10 +876,8 @@ public class Eval implements Runnable {
     //    System.out.println("lookupPotentialGroupName:" + potentialGroupName);
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (pdbatom.isGroup3(potentialGroupName)) {
+      Atom atom = frame.getAtomAt(i);
+      if (atom.isGroup3(potentialGroupName)) {
         if (bsResult == null)
           bsResult = new BitSet(i + 1);
         bsResult.set(i);
@@ -937,10 +935,8 @@ public class Eval implements Runnable {
     //    System.out.println("getSpecName:" + resNameSpec);
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (pdbatom.isGroup3Match(resNameSpec))
+      Atom atom = frame.getAtomAt(i);
+      if (atom.isGroup3Match(resNameSpec))
         bsRes.set(i);
     }
     return bsRes;
@@ -950,10 +946,8 @@ public class Eval implements Runnable {
     BitSet bsRes = new BitSet();
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (pdbatom.getGroupID() == resid)
+      Atom atom = frame.getAtomAt(i);
+      if (atom.getGroupID() == resid)
         bsRes.set(i);
     }
     return bsRes;
@@ -963,10 +957,8 @@ public class Eval implements Runnable {
     Frame frame = viewer.getFrame();
     BitSet bsResno = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (seqcode == pdbatom.getSeqcode())
+      Atom atom = frame.getAtomAt(i);
+      if (seqcode == atom.getSeqcode())
         bsResno.set(i);
     }
     return bsResno;
@@ -976,10 +968,8 @@ public class Eval implements Runnable {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      int atomSeqcode = pdbatom.getSeqcode();
+      Atom atom = frame.getAtomAt(i);
+      int atomSeqcode = atom.getSeqcode();
       if (atomSeqcode >= seqcodeMin && atomSeqcode <= seqcodeLast)
         bsResidue.set(i);
     }
@@ -991,10 +981,8 @@ public class Eval implements Runnable {
     Frame frame = viewer.getFrame();
     BitSet bsChain = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (chain == pdbatom.getChainID())
+      Atom atom = frame.getAtomAt(i);
+      if (chain == atom.getChainID())
         bsChain.set(i);
     }
     return bsChain;
@@ -1005,10 +993,8 @@ public class Eval implements Runnable {
     Frame frame = viewer.getFrame();
     BitSet bsAtom = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (pdbatom.isAtomNameMatch(atomSpec))
+      Atom atom = frame.getAtomAt(i);
+      if (atom.isAtomNameMatch(atomSpec))
         bsAtom.set(i);
     }
     return bsAtom;
@@ -1019,10 +1005,8 @@ public class Eval implements Runnable {
     BitSet bsResidue = new BitSet();
     //    System.out.println("getResidueWildcard:" + strWildcard);
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      if (pdbatom.isGroup3Match(strWildcard))
+      Atom atom = frame.getAtomAt(i);
+      if (atom.isGroup3Match(strWildcard))
         bsResidue.set(i);
     }
     return bsResidue;
@@ -1195,10 +1179,8 @@ public class Eval implements Runnable {
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (! bs.get(i))
         continue;
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      PdbGroup pdbgroup = pdbatom.getPdbGroup();
+      Atom atom = frame.getAtomAt(i);
+      PdbGroup pdbgroup = atom.getPdbGroup();
       if (pdbgroup != pdbgroupLast) {
         pdbgroup.selectAtoms(bsResult);
         pdbgroupLast = pdbgroup;
@@ -1212,10 +1194,8 @@ public class Eval implements Runnable {
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (! bs.get(i))
         continue;
-      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
-      if (pdbatom == null)
-        continue;
-      PdbChain pdbchain = pdbatom.getPdbChain();
+      Atom atom = frame.getAtomAt(i);
+      PdbChain pdbchain = atom.getPdbChain();
       if (pdbchain != pdbchainLast) {
         pdbchain.selectAtoms(bsResult);
         pdbchainLast = pdbchain;
@@ -1238,23 +1218,19 @@ public class Eval implements Runnable {
   }
 
   int getResno(Atom atom) {
-    PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getSeqcode();
+    return atom.getSeqcode();
   }
 
   int getGroupID(Atom atom) {
-    PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getGroupID();
+    return atom.getGroupID();
   }
 
   int getAtomID(Atom atom) {
-    PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getAtomID();
+    return atom.getAtomID();
   }
 
   int getSecondaryStructureType(Atom atom) {
-    PdbAtom pdbatom = atom.getPdbAtom();
-    return (pdbatom == null) ? -1 : pdbatom.getSecondaryStructureType();
+    return atom.getSecondaryStructureType();
   }
 
 

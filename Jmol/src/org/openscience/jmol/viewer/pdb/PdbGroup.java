@@ -40,9 +40,10 @@ final public class PdbGroup {
   public PdbStructure structure;
   public int[] mainchainIndices;
 
-  public PdbGroup(PdbChain chain, int seqcode, String group3) {
+  public PdbGroup(PdbChain chain,
+                  int sequenceNumber, char insertionCode, String group3) {
     this.chain = chain;
-    this.seqcode = seqcode;
+    this.seqcode = getSeqcode(sequenceNumber, insertionCode);
     this.groupID = getGroupID(group3);
   }
 
@@ -173,13 +174,11 @@ final public class PdbGroup {
   }
   */
 
-  PdbAtom allocatePdbAtom(Atom atom) {
-    PdbAtom pdbAtom = new PdbAtom(this, atom);
-    if (pdbAtom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! registerMainchainAtomIndex(pdbAtom.atomID, atom.atomIndex))
-        pdbAtom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
+  void registerAtom(Atom atom) {
+    if (atom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
+      if (! registerMainchainAtomIndex(atom.atomID, atom.atomIndex))
+        atom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
     }
-    return pdbAtom;
   }
 
   boolean registerMainchainAtomIndex(short atomid, int atomIndex) {

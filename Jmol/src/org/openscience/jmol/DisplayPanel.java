@@ -99,6 +99,7 @@ public class DisplayPanel extends JPanel
   private void setRotateMode() {
       Jmol.setRotateButton();
       control.setModeMouse(DisplayControl.ROTATE);
+      control.setSelectionHaloEnabled(false);
   }
     
   public ChemFrame getFrame() {
@@ -480,6 +481,7 @@ public class DisplayPanel extends JPanel
         control.setModeMouse(DisplayControl.MEASURE);
       } else {
         control.setModeMouse(DisplayControl.PICK);
+        control.setSelectionHaloEnabled(true);
       }
       status.setStatus(1, "Select Atoms");
     }
@@ -494,6 +496,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setModeMouse(DisplayControl.DELETE);
+      control.setSelectionHaloEnabled(false);
       status.setStatus(1, "Delete Atoms");
     }
   }
@@ -507,6 +510,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setModeMouse(DisplayControl.ROTATE);
+      control.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -520,6 +524,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setModeMouse(DisplayControl.ZOOM);
+      control.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -533,6 +538,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       control.setModeMouse(DisplayControl.XLATE);
+      control.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -607,6 +613,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       control.setCenterAsSelected();
       setRotateMode();
+      control.setSelectionHaloEnabled(false);
     }
   }
 

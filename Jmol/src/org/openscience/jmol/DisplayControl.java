@@ -133,7 +133,7 @@ final public class DisplayControl {
     // FIXME -- need to hold repaint during this process, but first 
     // figure out the interaction with the current holdRepaint setting
     setCenter(null);
-    clearSelection();
+    selectAll();
     transformManager.homePosition();
     refresh();
   }
@@ -416,7 +416,7 @@ final public class DisplayControl {
 
   public void setModeAtomColorProfile(byte mode) {
     colorManager.setModeAtomColorProfile(mode);
-    distributor.setColorAtom(mode, null, iterAtomMenu());
+    distributor.setColorAtom(mode, null, iterAtom());
     refresh();
   }
 
@@ -550,7 +550,7 @@ final public class DisplayControl {
   // note that colorBond could be null -- meaning inherit atom color
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
-    distributor.setColorBond(colorBond, iterBondMenu());
+    distributor.setColorBond(colorBond, iterBond());
     refresh();
   }
 
@@ -598,8 +598,10 @@ final public class DisplayControl {
   }
 
   public boolean hasSelectionHalo(Atom atom) {
-    return selectionHaloEnabled && !repaintManager.fastRendering &&
-      isSelected(atom.getAtomNumber());
+    return
+      selectionHaloEnabled &&
+      !repaintManager.fastRendering &&
+      selectionManager.isSelected(atom.getAtomNumber());
   }
 
   public boolean hasSelectionHalo(Atom atom, int iatom) {
@@ -616,7 +618,7 @@ final public class DisplayControl {
     return isOtherSelected;
   }
 
-  public boolean selectionHaloEnabled = true;
+  public boolean selectionHaloEnabled = false;
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
     this.selectionHaloEnabled = selectionHaloEnabled;
     refresh();
@@ -783,7 +785,7 @@ final public class DisplayControl {
 
   public void setFrame(int fr) {
     modelManager.setFrame(fr);
-    clearSelection();
+    selectAll();
     recalcAxes();
     structuralChange = true;
     refresh();
@@ -791,7 +793,7 @@ final public class DisplayControl {
 
   public void setFrame(ChemFrame frame) {
     modelManager.setFrame(frame);
-    clearSelection();
+    selectAll();
     recalcAxes();
     structuralChange = true;
     refresh();
@@ -823,7 +825,7 @@ final public class DisplayControl {
 
   public void setCenterAsSelected() {
     modelManager.setCenterAsSelected();
-    clearSelection();
+    selectAll();
     scaleFitToScreen();
     refresh();
   }
@@ -876,9 +878,10 @@ final public class DisplayControl {
     // after a delete operation, all the sets are messed up
     // the selection set *and* the script sets
     // selectionManager.delete(atomIndex);
-    selectionManager.clearSelection();
+    clearSelection();
     modelManager.deleteAtom(atomIndex);
     //            status.setStatus(2, "Atom deleted"); 
+    selectAll();
     structuralChange = true;
     refresh();
   }
@@ -984,7 +987,7 @@ final public class DisplayControl {
   /****************************************************************
    * routines for java12
    ****************************************************************/
-
+  
   private void maybeEnableAntialiasing(Graphics g) {
     if (repaintManager.useGraphics2D)
       java12.enableAntialiasing(g,
@@ -1030,45 +1033,32 @@ final public class DisplayControl {
     System.out.println(str);
   }
 
-  private JmolAtomIterator iterAtomScript() {
-    if (! modelManager.haveFile || selectionManager.isEmpty())
-      return iterNull;
-    return modelManager.getChemFrameIterator(selectionManager.bsSelection);
-  }
-
-  private JmolAtomIterator iterBondScript() {
-    if (!modelManager.haveFile || selectionManager.isEmpty())
-      return iterNull;
-    return modelManager.getChemFrameIterator(selectionManager.bsSelection,
-                                             bondSelectionModeOr);
-  }
-
   public void setStyleMarAtomScript(byte style, short mar) {
-    distributor.setStyleMarAtom(style, mar, iterAtomScript());
+    distributor.setStyleMarAtom(style, mar, iterAtom());
   }
 
   public void setStyleAtomScript(byte style) {
-    distributor.setStyleAtom(style, iterAtomScript());
+    distributor.setStyleAtom(style, iterAtom());
   }
 
   public void setStyleMarBondScript(byte style, short mar) {
-    distributor.setStyleMarBond(style, mar, iterBondScript());
+    distributor.setStyleMarBond(style, mar, iterBond());
   }
 
   public void setStyleBondScript(byte style) {
-    distributor.setStyleBond(style, iterBondScript());
+    distributor.setStyleBond(style, iterBond());
   }
 
   public void setColorAtomScript(byte mode, Color color) {
-    distributor.setColorAtom(mode, color, iterAtomScript());
+    distributor.setColorAtom(mode, color, iterAtom());
   }
 
   public void setColorBondScript(Color color) {
-    distributor.setColorBond(color, iterBondScript());
+    distributor.setColorBond(color, iterBond());
   }
 
   public void setLabelScript(String strLabel) {
-    distributor.setLabel(strLabel, iterAtomScript());
+    distributor.setLabel(strLabel, iterAtom());
   }
 
   boolean rasmolHydrogenSetting = true;
@@ -1106,27 +1096,23 @@ final public class DisplayControl {
    */
 
   JmolAtomIterator iterNull = new JmolAtomIterator();
-
-  private JmolAtomIterator iterAtomMenu() {
-    if (! modelManager.haveFile)
+  private JmolAtomIterator iterAtom() {
+    if (! modelManager.haveFile || selectionManager.isEmpty())
       return iterNull;
-    if (selectionManager.isEmpty())
-      return modelManager.getChemFileIterator();
     return modelManager.getChemFrameIterator(selectionManager.bsSelection);
   }
 
-  private JmolAtomIterator iterBondMenu() {
-    if (! modelManager.haveFile)
+  private JmolAtomIterator iterBond() {
+    if (!modelManager.haveFile || selectionManager.isEmpty())
       return iterNull;
-    if (selectionManager.isEmpty())
-      return modelManager.getChemFileIterator();
     return modelManager.getChemFrameIterator(selectionManager.bsSelection,
-                                             false);
+                                             bondSelectionModeOr);
   }
+
 
   public void setStyleAtom(byte style) {
     styleManager.setStyleAtom(style);
-    distributor.setStyleAtom(style, iterAtomMenu());
+    distributor.setStyleAtom(style, iterAtom());
     refresh();
   }
 
@@ -1136,7 +1122,7 @@ final public class DisplayControl {
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
-    distributor.setMarAtom((short)-percentVdwAtom, iterAtomMenu());
+    distributor.setMarAtom((short)-percentVdwAtom, iterAtom());
     refresh();
   }
 
@@ -1150,7 +1136,7 @@ final public class DisplayControl {
 
   public void setStyleBond(byte style) {
     styleManager.setStyleBond(style);
-    distributor.setStyleBond(style, iterBondMenu());
+    distributor.setStyleBond(style, iterBond());
     refresh();
   }
 
@@ -1160,7 +1146,7 @@ final public class DisplayControl {
 
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
-    distributor.setMarBond(marBond, iterBondMenu());
+    distributor.setMarBond(marBond, iterBond());
     refresh();
   }
 
@@ -1311,7 +1297,7 @@ final public class DisplayControl {
 
   public void setStyleLabel(byte style) {
     labelManager.setStyleLabel(style);
-    distributor.setStyleLabel(style, iterAtomMenu());
+    distributor.setStyleLabel(style, iterAtom());
     refresh();
   }
 

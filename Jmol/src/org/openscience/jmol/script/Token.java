@@ -302,6 +302,7 @@ public class Token {
     "hbonds",            new Token(hbonds,    onDefault1, "hbonds"),
     "help",              new Token(help,     varArgCount, "help"),
     "label",             new Token(label,              1, "label"),
+    "labels",            null,
     "load",              new Token(load,     varArgCount, "load"),
     "molecule",          new Token(molecule,           1, "molecule"),
     "monitor",           new Token(monitor,  varArgCount, "monitor"),

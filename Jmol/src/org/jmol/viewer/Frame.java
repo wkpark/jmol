@@ -803,7 +803,8 @@ final class Frame {
   void setRotationCenter(Point3f newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       rotationCenter = newCenterOfRotation;
-      rotationRadius = calcRotationRadius(rotationCenter);
+      if (! viewer.getFriedaSwitch())
+        rotationRadius = calcRotationRadius(rotationCenter);
     } else {
       rotationCenter = rotationCenterDefault;
       rotationRadius = rotationRadiusDefault;

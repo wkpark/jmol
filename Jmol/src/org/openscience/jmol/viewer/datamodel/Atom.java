@@ -219,9 +219,12 @@ public final class Atom implements Bspt.Tuple {
 
   void setMadAtom(short madAtom) {
     if (this.madAtom == JmolConstants.MAR_DELETED) return;
-    if (madAtom == -1000) // temperature
-      madAtom = (short)(bfactor100 * 10 * 2);
-    else if (madAtom == -1001) // ionic
+    if (madAtom == -1000) { // temperature
+      int diameter = bfactor100 * 10 * 2;
+      if (diameter > 4000)
+        diameter = 4000;
+      madAtom = (short)diameter;
+    } else if (madAtom == -1001) // ionic
       madAtom = (short)(getBondingMar() * 2);
     else if (madAtom < 0)
       madAtom = // we are going from a radius to a diameter

@@ -24,8 +24,10 @@
  */
 
 package org.openscience.jmol;
+
+import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolModelAdapter;
 import javax.vecmath.Point3d;
-import org.openscience.jmol.ProteinProp;
 import java.awt.Color;
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
@@ -35,14 +37,14 @@ import org.openscience.jmol.io.ReaderFactory;
 import org.openscience.jmol.io.ChemFileReader;
 import java.util.Vector;
 
-public class DeprecatedAdapter implements JmolClientAdapter {
+public class DeprecatedAdapter implements JmolModelAdapter {
   AtomColorer[] colorSchemes;
 
   public DeprecatedAdapter() {
-    colorSchemes = new AtomColorer[JmolClientAdapter.COLORSCHEME_MAX];
-    colorSchemes[JmolClientAdapter.COLORSCHEME_CPK] =
+    colorSchemes = new AtomColorer[JmolModelAdapter.COLORSCHEME_MAX];
+    colorSchemes[JmolModelAdapter.COLORSCHEME_CPK] =
       new DefaultCdkAtomColors();
-    colorSchemes[JmolClientAdapter.COLORSCHEME_CHARGE] =
+    colorSchemes[JmolModelAdapter.COLORSCHEME_CHARGE] =
       new PartialAtomicChargeColors();
   }
 
@@ -50,13 +52,13 @@ public class DeprecatedAdapter implements JmolClientAdapter {
    * the file related methods
    ****************************************************************/
 
-  public Object openReader(DisplayControl control,
+  public Object openReader(JmolViewer viewer,
                            String name, Reader reader) {
     ChemFile chemFile = null;
     try {
       ChemFileReader chemFileReader = null;
       try {
-        chemFileReader = ReaderFactory.createReader(control, reader);
+        chemFileReader = ReaderFactory.createReader(viewer, reader);
         /*
           FIXME -- need to notify the awt component of file change
           firePropertyChange(openFileProperty, oldFile, currentFile);
@@ -103,27 +105,27 @@ public class DeprecatedAdapter implements JmolClientAdapter {
             chemFrame.getJmolAtomAt(0).getPdbRecord() != null);
   }
 
-  public JmolClientAdapter.AtomIterator
+  public JmolModelAdapter.AtomIterator
     getAtomIterator(Object clientFile, int frameNumber) {
     return new AtomIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public JmolClientAdapter.BondIterator
+  public JmolModelAdapter.BondIterator
     getCovalentBondIterator(Object clientFile, int frameNumber) {
     return new CovalentBondIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public JmolClientAdapter.BondIterator
+  public JmolModelAdapter.BondIterator
     getAssociationBondIterator(Object clientFile, int frameNumber) {
     return null;
   }
 
-  public JmolClientAdapter.LineIterator
+  public JmolModelAdapter.LineIterator
     getVectorIterator(Object clientFile, int frameNumber) {
     return new VectorIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public JmolClientAdapter.LineIterator
+  public JmolModelAdapter.LineIterator
     getCrystalCellIterator(Object clientFile, int frameNumber) {
     return new CrystalCellIterator(getChemFrame(clientFile, frameNumber));
   }
@@ -131,7 +133,7 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   /****************************************************************
    * the frame iterators
    ****************************************************************/
-  class AtomIterator extends JmolClientAdapter.AtomIterator {
+  class AtomIterator extends JmolModelAdapter.AtomIterator {
     ChemFrame chemFrame;
     int atomCount, iatom;
     AtomIterator(ChemFrame chemFrame) {
@@ -147,7 +149,7 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     }
   }
 
-  class CovalentBondIterator extends JmolClientAdapter.BondIterator {
+  class CovalentBondIterator extends JmolModelAdapter.BondIterator {
     ChemFrame chemFrame;
     AtomIterator iterAtom;
     Atom atom;
@@ -187,7 +189,7 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     }
   }
 
-  class VectorIterator extends JmolClientAdapter.LineIterator {
+  class VectorIterator extends JmolModelAdapter.LineIterator {
     ChemFrame chemFrame;
     AtomIterator iterAtom;
     Atom atom;
@@ -222,7 +224,7 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
 
-  class CrystalCellIterator extends JmolClientAdapter.LineIterator {
+  class CrystalCellIterator extends JmolModelAdapter.LineIterator {
     boolean isCrystalFrame;
     CrystalFrame crystalFrame;
     Point3d point1, point2;

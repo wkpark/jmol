@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import java.util.Vector;
 import java.util.Enumeration;
 
@@ -33,7 +33,7 @@ import java.util.Enumeration;
  **/
 public class ChemFile {
 
-  DisplayControl control;
+  JmolViewer viewer;
   private ChemFrame[] frames = new ChemFrame[0];
   //  private boolean bondsEnabled = true;
   private Vector propertyList = new Vector();
@@ -42,12 +42,12 @@ public class ChemFile {
    * Very simple class that should be subclassed for each different
    * kind of file that can be read by Jmol.
    */
-  public ChemFile(DisplayControl control) {
-    this.control = control;
+  public ChemFile(JmolViewer viewer) {
+    this.viewer = viewer;
   }
 
-  public ChemFile(DisplayControl control, boolean bondsEnabled) {
-    this.control = control;
+  public ChemFile(JmolViewer viewer, boolean bondsEnabled) {
+    this.viewer = viewer;
     //    this.bondsEnabled = bondsEnabled;
   }
 

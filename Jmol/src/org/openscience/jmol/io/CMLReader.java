@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.JmolCDO;
 import java.io.Reader;
@@ -52,8 +52,8 @@ public class CMLReader extends DefaultChemFileReader {
    *
    * @param input source of CML data
    */
-  public CMLReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public CMLReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
 
   /**
@@ -61,8 +61,8 @@ public class CMLReader extends DefaultChemFileReader {
    *
    * @param input source of CML data
    */
-  public CMLReader(DisplayControl control, URL url) {
-    super(control, null);
+  public CMLReader(JmolViewer viewer, URL url) {
+    super(viewer, null);
     this.url = url;
   }
 
@@ -82,7 +82,7 @@ public class CMLReader extends DefaultChemFileReader {
       } catch (SAXException e) {
         System.out.println("Cannot activate validation.");
       }
-      JmolCDO cdo = new JmolCDO(control);
+      JmolCDO cdo = new JmolCDO(viewer);
       CMLHandler handler = new CMLHandler(cdo);
       handler.registerConvention("JMOL-ANIMATION",
           new JMOLANIMATIONConvention(cdo));
@@ -114,7 +114,7 @@ public class CMLReader extends DefaultChemFileReader {
 
     try {
       XMLReader parser = new gnu.xml.aelfred2.SAXDriver();
-      JmolCDO cdo = new JmolCDO(control);
+      JmolCDO cdo = new JmolCDO(viewer);
       CMLHandler handler = new CMLHandler(cdo);
       handler.registerConvention("JMOL-ANIMATION",
           new JMOLANIMATIONConvention(cdo));

@@ -24,9 +24,9 @@
  */
 
 import org.openscience.jmol.applet.*;
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.DeprecatedAdapter;
-import org.openscience.jmol.script.Eval;
+import org.openscience.jmol.viewer.script.Eval;
 import org.openscience.jmol.ui.JmolPopup;
 
 import java.applet.Applet;
@@ -39,12 +39,12 @@ import java.awt.event.KeyAdapter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
-import org.openscience.jmol.JmolStatusListener;
+import org.openscience.jmol.viewer.JmolStatusListener;
 
 public class JmolApplet extends Applet implements JmolStatusListener {
 
   AppletCanvas canvas;
-  DisplayControl control;
+  JmolViewer viewer;
   JmolPopup jmolpopup;
 
   private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
@@ -88,27 +88,27 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     canvas = new AppletCanvas();
-    control = new DisplayControl(canvas, new DeprecatedAdapter());
-    canvas.setDisplayControl(control);
-    control.setJmolStatusListener(this);
+    viewer = new JmolViewer(canvas, new DeprecatedAdapter());
+    canvas.setJmolViewer(viewer);
+    viewer.setJmolStatusListener(this);
 
-    jmolpopup = new JmolPopup(control, canvas);
+    jmolpopup = new JmolPopup(viewer, canvas);
 
-    control.setAppletDocumentBase(getDocumentBase());
+    viewer.setAppletDocumentBase(getDocumentBase());
 
     setLayout(new java.awt.BorderLayout());
     add(canvas, "Center");
   }
 
   public void initApplication() {
-    control.pushHoldRepaint();
+    viewer.pushHoldRepaint();
     {
-      control.setPercentVdwAtom(20);
-      control.zoomToPercent(100);
-      control.setStyleBond(DisplayControl.SHADED);
-      control.setStyleAtom(DisplayControl.SHADED);
+      viewer.setPercentVdwAtom(20);
+      viewer.zoomToPercent(100);
+      viewer.setStyleBond(JmolViewer.SHADED);
+      viewer.setStyleAtom(JmolViewer.SHADED);
       
-      control.setColorBackground(getParameter("bgcolor"));
+      viewer.setColorBackground(getParameter("bgcolor"));
       setStyle(getParameter("style"));
       setLabelStyle(getParameter("label"));
 
@@ -126,7 +126,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       loadInline(getParameter("loadInline"));
       script(getParameter("script"));
     }
-    control.popHoldRepaint();
+    viewer.popHoldRepaint();
   }
 
   public void setStatusMessage(String statusMessage) {
@@ -161,56 +161,56 @@ public class JmolApplet extends Applet implements JmolStatusListener {
    ****************************************************************/
 
   private final String[] styleStrings = {"SHADED", "WIREFRAME"};
-  private final byte[] styles = {DisplayControl.SHADED,
-                                 DisplayControl.WIREFRAME};
+  private final byte[] styles = {JmolViewer.SHADED,
+                                 JmolViewer.WIREFRAME};
 
   public void setStyle(String style) {
     for (int i = 0; i < styleStrings.length; ++i) {
       if (styleStrings[i].equalsIgnoreCase(style)) {
-        control.setStyleAtom(styles[i]);
-        control.setStyleBond(styles[i]);
+        viewer.setStyleAtom(styles[i]);
+        viewer.setStyleBond(styles[i]);
         return;
       }
     }
   }
 
   private final String[] labelStyleStrings = {"NONE","SYMBOL","NUMBER"};
-  private final byte[] labelStyles = {DisplayControl.NOLABELS,
-                                      DisplayControl.SYMBOLS,
-                                      DisplayControl.NUMBERS};
+  private final byte[] labelStyles = {JmolViewer.NOLABELS,
+                                      JmolViewer.SYMBOLS,
+                                      JmolViewer.NUMBERS};
 
   public void setLabelStyle(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
       if (labelStyleStrings[i].equalsIgnoreCase(style)) {
-        control.setStyleLabel(labelStyles[i]);
+        viewer.setStyleLabel(labelStyles[i]);
         return;
       }
     }
   }
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
-    control.setPerspectiveDepth(perspectiveDepth);
+    viewer.setPerspectiveDepth(perspectiveDepth);
   }
 
   public void setWireframeRotation(boolean wireframeRotation) {
-    control.setWireframeRotation(wireframeRotation);
+    viewer.setWireframeRotation(wireframeRotation);
   }
 
   public void script(String script) {
-    String strError = control.evalString(script);
+    String strError = viewer.evalString(script);
     setStatusMessage(strError);
   }
 
   public void load(String modelName) {
     if (modelName != null) {
-      String strError = control.openFile(modelName);
+      String strError = viewer.openFile(modelName);
       setStatusMessage(strError);
     }
   }
 
   public void loadInline(String strModel) {
     if (strModel != null) {
-      String strError = control.openStringInline(strModel);
+      String strError = viewer.openStringInline(strModel);
       setStatusMessage(strError);
     }
   }

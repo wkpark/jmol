@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol.app;
 
+import org.openscience.jmol.viewer.JmolViewer;
+
 import org.openscience.jmol.*;
 import org.openscience.jmol.io.SharcReader;
 import java.awt.event.ActionEvent;
@@ -174,7 +176,7 @@ class CalculateChemicalShifts extends AbstractAction implements
 
   public void propertyChange(PropertyChangeEvent event) {
     
-    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
       setChemFile((ChemFile) event.getNewValue());
     }
   }

@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.ui;
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import java.awt.Component;
 import java.util.ResourceBundle;
 
@@ -32,18 +32,18 @@ public class JmolPopup {
   JmolPopupAwt popupAwt;
   boolean useSwing;
 
-  public JmolPopup(DisplayControl control, Component parent) {
+  public JmolPopup(JmolViewer viewer, Component parent) {
     ResourceBundle rbStructure =
       ResourceBundle.getBundle("org.openscience.jmol.ui." +
                                "JmolPopupStructure");
     ResourceBundle rbWords =
       ResourceBundle.getBundle("org.openscience.jmol.ui." +
                                "JmolPopupWords");
-    useSwing = control.jvm12orGreater;
+    useSwing = viewer.jvm12orGreater;
     if (useSwing)
-      popupSwing = new JmolPopupSwing(control, parent, rbStructure, rbWords);
+      popupSwing = new JmolPopupSwing(viewer, parent, rbStructure, rbWords);
     else
-      popupAwt = new JmolPopupAwt(control, parent, rbStructure, rbWords);
+      popupAwt = new JmolPopupAwt(viewer, parent, rbStructure, rbWords);
     rbWords = null;
   }
 

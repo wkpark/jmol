@@ -24,12 +24,14 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.viewer.JmolViewer;
+
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.render.AtomShape;
-import org.openscience.jmol.render.BondShape;
-import org.openscience.jmol.render.ArrowLineShape;
-import org.openscience.jmol.render.LineShape;
-import org.openscience.jmol.render.JmolFrame;
+import org.openscience.jmol.viewer.datamodel.AtomShape;
+import org.openscience.jmol.viewer.datamodel.BondShape;
+import org.openscience.jmol.viewer.datamodel.ArrowLineShape;
+import org.openscience.jmol.viewer.datamodel.LineShape;
+import org.openscience.jmol.viewer.datamodel.JmolFrame;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.geometry.BondTools;
 import java.beans.PropertyChangeSupport;
@@ -49,7 +51,7 @@ public class ChemFrame extends AtomContainer {
 
   // This stuff can vary for each frame in the dynamics:
 
-  DisplayControl control;
+  JmolViewer viewer;
   JmolFrame jmframe;
 
   private String info;     // The title or info string for this frame.
@@ -60,25 +62,25 @@ public class ChemFrame extends AtomContainer {
    *
    * @param na the number of atoms in the frame
    */
-  public ChemFrame(DisplayControl control, int na) {
-      this(control, na, true);
+  public ChemFrame(JmolViewer viewer, int na) {
+      this(viewer, na, true);
   }
 
-  public ChemFrame(DisplayControl control, int na, boolean bondsEnabled) {
+  public ChemFrame(JmolViewer viewer, int na, boolean bondsEnabled) {
       super(na, na);
       this.bondsEnabled = bondsEnabled;
-      this.control = control;
+      this.viewer = viewer;
   }
 
-  public ChemFrame(DisplayControl control, boolean bondsEnabled) {
-      this(control, 100, bondsEnabled);
+  public ChemFrame(JmolViewer viewer, boolean bondsEnabled) {
+      this(viewer, 100, bondsEnabled);
   }
 
   /**
    * Constructor for a ChemFrame with an unknown number of atoms.
    */
-  public ChemFrame(DisplayControl control) {
-      this(control, true);
+  public ChemFrame(JmolViewer viewer) {
+      this(viewer, true);
   }
 
   /**
@@ -159,7 +161,7 @@ public class ChemFrame extends AtomContainer {
     public void addAtom(org.openscience.cdk.Atom atom) {
         Atom jmolAtom = null;
         if (!(atom instanceof org.openscience.jmol.Atom)) {
-            jmolAtom = new org.openscience.jmol.Atom(control, atom);
+            jmolAtom = new org.openscience.jmol.Atom(viewer, atom);
         } else {
             jmolAtom = (Atom)atom;
         }
@@ -177,14 +179,14 @@ public class ChemFrame extends AtomContainer {
     //      clearBounds();
       int i = getAtomCount();
       
-      Atom atom = new Atom(control, type, i, x, y, z, pdbRecord);
+      Atom atom = new Atom(viewer, type, i, x, y, z, pdbRecord);
       this.addAtom(atom);
       /*
         mth 2003 05 23
-      if (control.getAutoBond()) {
+      if (viewer.getAutoBond()) {
           for (int j = 0; j < i; j++) {
               if (BondTools.closeEnoughToBond(atom, getAtomAt(j),
-                                              control.getBondFudge())) {
+                                              viewer.getBondFudge())) {
                   addBond(i, j);
               }
           }

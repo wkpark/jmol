@@ -27,6 +27,7 @@ package org.openscience.jmol.app;
 
 import  org.openscience.jmol.util.*;
 import  org.openscience.jmol.*;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.JTable;  //TBL
@@ -87,7 +88,7 @@ public class CrystalPropertiesDialog extends JDialog
 
   private JDialog thisDialog;  //reference to this dialog
   
-  private DisplayControl control;
+  private JmolViewer viewer;
 
   private boolean hasFile = false;
   private boolean hasCrystalInfo = false;
@@ -172,13 +173,13 @@ public class CrystalPropertiesDialog extends JDialog
   /**
    * Constructor
    */
-  public CrystalPropertiesDialog(DisplayControl control, JFrame f) {
+  public CrystalPropertiesDialog(JmolViewer viewer, JFrame f) {
 
 
     // Invoke JDialog constructor
     super(f, "Crystal Properties...", false);
     this.thisDialog = this;
-    this.control = control;
+    this.viewer = viewer;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -1799,11 +1800,11 @@ public class CrystalPropertiesDialog extends JDialog
       // In case of a classical ChemFile has been loaded,
       // a CrystalFile is created.
       if (hasCrystalInfo == false) {
-	this.crystalFile = new CrystalFile(control, chemFile, rprim, acell);
+	this.crystalFile = new CrystalFile(viewer, chemFile, rprim, acell);
       this.chemFile = (ChemFile) crystalFile;
       
       // Say to everybody that we have a new chemfile!
-      control.setClientFile("Crystal", this.chemFile);
+      viewer.setClientFile("Crystal", this.chemFile);
       hasCrystalInfo = true;
       primitiveVectors_ApplyToWhichFrameCBO.setEnabled(true);
       crystalBox_ApplyToWhichFrameCBO.setEnabled(true);
@@ -1811,7 +1812,7 @@ public class CrystalPropertiesDialog extends JDialog
       
       
       
-      int frameCount = control.getFrameCount();
+      int frameCount = viewer.getFrameCount();
       for (int i = 0; i < frameCount; i++) {
 	
 	//set Primitive Vectors
@@ -1963,8 +1964,8 @@ public class CrystalPropertiesDialog extends JDialog
     this.chemFile = (ChemFile) crystalFile;
     hasFile = true;
 
-    control.setClientFile("CrystalProp", this.chemFile);
-    control.setFrame(currentFrameIndex);
+    viewer.setClientFile("CrystalProp", this.chemFile);
+    viewer.setFrame(currentFrameIndex);
 
     //The chemfile is updated globally.
     //jmol.setChemFile(this.chemFile);
@@ -2176,7 +2177,7 @@ public class CrystalPropertiesDialog extends JDialog
    */
   public void propertyChange(PropertyChangeEvent event) {
 
-    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
       if (event.getNewValue() != chemFile) {
 	setChemFile((ChemFile) event.getNewValue());
       }

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Color;
@@ -192,14 +192,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props = new Properties(props);
   }
 
-  private DisplayControl control;
+  private JmolViewer viewer;
   private GuiMap guimap;
 
-  public PreferencesDialog(JFrame f, GuiMap guimap, DisplayControl control) {
+  public PreferencesDialog(JFrame f, GuiMap guimap, JmolViewer viewer) {
 
     super(f, false);
     this.guimap = guimap;
-    this.control = control;
+    this.viewer = viewer;
 
     JmolResourceHandler jrh = JmolResourceHandler.getInstance();
     this.setTitle(jrh.translate("Preferences"));
@@ -269,13 +269,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     g2dPanel.setLayout(new GridLayout(0, 4));
     g2dPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.graphics2DPanelLabel")));
-    //    graphics2D = control.getWantsGraphics2D();
+    //    graphics2D = viewer.getWantsGraphics2D();
     cbGraphics2D = guimap.newJCheckBox("Prefs.graphics2D", graphics2D);
     cbGraphics2D.addItemListener(checkBoxListener);
-    //    antialias = control.getWantsAntialias();
+    //    antialias = viewer.getWantsAntialias();
     cbAntialias = guimap.newJCheckBox("Prefs.antialias", antialias);
     cbAntialias.addItemListener(checkBoxListener);
-    //    antialiasAlways = control.getWantsAntialiasAlways();
+    //    antialiasAlways = viewer.getWantsAntialiasAlways();
     cbAntialiasAlways = guimap.newJCheckBox("Prefs.antialiasAlways",
                                             antialiasAlways);
     cbAntialiasAlways.addItemListener(checkBoxListener);
@@ -303,12 +303,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     showPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.showLabel")));
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
-                             control.getShowHydrogens());
+                             viewer.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
-    cV = guimap.newJCheckBox("Prefs.showVectors", control.getShowVectors());
+    cV = guimap.newJCheckBox("Prefs.showVectors", viewer.getShowVectors());
     cV.addItemListener(checkBoxListener);
     cM = guimap.newJCheckBox("Prefs.showMeasurements",
-                             control.getShowMeasurements());
+                             viewer.getShowMeasurements());
     cM.addItemListener(checkBoxListener);
     showPanel.add(cH);
     showPanel.add(cV);
@@ -325,24 +325,24 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbWireframeRotation =
       guimap.newJCheckBox("Prefs.wireframeRotation",
-                          control.getWireframeRotation());
+                          viewer.getWireframeRotation());
     cbWireframeRotation.addItemListener(checkBoxListener);
     fooPanel.add(cbWireframeRotation);
 
     cbPerspectiveDepth =
       guimap.newJCheckBox("Prefs.perspectiveDepth",
-                          control.getPerspectiveDepth());
+                          viewer.getPerspectiveDepth());
     cbPerspectiveDepth.addItemListener(checkBoxListener);
     fooPanel.add(cbPerspectiveDepth);
 
     cbShowAxes =
-      guimap.newJCheckBox("Prefs.showAxes", control.getShowAxes());
+      guimap.newJCheckBox("Prefs.showAxes", viewer.getShowAxes());
     cbShowAxes.addItemListener(checkBoxListener);
     fooPanel.add(cbShowAxes);
 
     cbShowBoundingBox =
       guimap.newJCheckBox("Prefs.showBoundingBox",
-                          control.getShowBoundingBox());
+                          viewer.getShowBoundingBox());
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
@@ -384,14 +384,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aWFChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aSChoice"));
-    aRender.setSelectedIndex(control.getStyleAtom());
+    aRender.setSelectedIndex(viewer.getStyleAtom());
     aRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         styleAtom = (byte)source.getSelectedIndex();
-        control.setStyleAtom(styleAtom);
+        viewer.setStyleAtom(styleAtom);
         props.put("styleAtom", Integer.toString(styleAtom));
       }
     });
@@ -409,14 +409,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cRender = new JComboBox();
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cATChoice"));
     cRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.cCChoice"));
-    cRender.setSelectedIndex(control.getModeAtomColorProfile());
+    cRender.setSelectedIndex(viewer.getModeAtomColorProfile());
     cRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         modeAtomColorProfile = (byte)source.getSelectedIndex();
-        control.setModeAtomColorProfile(modeAtomColorProfile);
+        viewer.setModeAtomColorProfile(modeAtomColorProfile);
         props.put("modeAtomColorProfile", ""+modeAtomColorProfile);
       }
     });
@@ -439,14 +439,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.aTLChoice"));
     aLabel.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aNLChoice"));
-    aLabel.setSelectedIndex(control.getStyleLabel());
+    aLabel.setSelectedIndex(viewer.getStyleLabel());
     aLabel.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         styleLabel = (byte)source.getSelectedIndex();
-        control.setStyleLabel(styleLabel);
+        viewer.setStyleLabel(styleLabel);
         props.put("styleLabel", "" + styleLabel);
       }
     });
@@ -470,14 +470,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     aProps.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.apUChoice"));
     aProps.setSelectedItem("");
-    //    aProps.setSelectedItem(control.getPropertyStyleString());
+    //    aProps.setSelectedItem(viewer.getPropertyStyleString());
     aProps.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomPropsMode = (String) source.getSelectedItem();
-        // control.setPropertyStyleString(AtomPropsMode);
+        // viewer.setPropertyStyleString(AtomPropsMode);
         props.put("AtomPropsMode", AtomPropsMode);
       }
     });
@@ -494,7 +494,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     sfSlider =
-      new JSlider(JSlider.HORIZONTAL, 0, 100, control.getPercentVdwAtom());
+      new JSlider(JSlider.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
     sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     sfSlider.setPaintTicks(true);
     sfSlider.setMajorTickSpacing(20);
@@ -506,7 +506,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         percentVdwAtom = source.getValue();
-        control.setPercentVdwAtom(percentVdwAtom);
+        viewer.setPercentVdwAtom(percentVdwAtom);
         props.put("percentVdwAtom", "" + percentVdwAtom);
       }
     });
@@ -551,14 +551,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bWFChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bSChoice"));
-    bRender.setSelectedIndex(control.getStyleBond());
+    bRender.setSelectedIndex(viewer.getStyleBond());
     bRender.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         styleBond = (byte)source.getSelectedIndex();
-        control.setStyleBond(styleBond);
+        viewer.setStyleBond(styleBond);
         props.put("styleBond", "" + styleBond);
       }
     });
@@ -582,18 +582,18 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     autobondPanel.add(abYes);
     autobondPanel.add(abNo);
     autobondPanel.add(Box.createVerticalGlue());
-    abYes.setSelected(control.getAutoBond());
+    abYes.setSelected(viewer.getAutoBond());
     abYes.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        control.setAutoBond(true);
+        viewer.setAutoBond(true);
       }
     });
 
     abNo.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        control.setAutoBond(false);
+        viewer.setAutoBond(false);
       }
     });
 
@@ -610,7 +610,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.bondRadiusExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
 
-    bwSlider = new JSlider(0, 250,control.getMarBond());
+    bwSlider = new JSlider(0, 250,viewer.getMarBond());
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(50);
@@ -629,7 +629,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         marBond = (short)source.getValue();
-        control.setMarBond(marBond);
+        viewer.setMarBond(marBond);
         props.put("marBond", "" + marBond);
       }
     });
@@ -651,7 +651,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     btPanel.add(btLabel, BorderLayout.NORTH);
 
     btSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (100 * control.getBondTolerance()));
+        (int) (100 * viewer.getBondTolerance()));
     btSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     btSlider.setPaintTicks(true);
     btSlider.setMajorTickSpacing(20);
@@ -682,9 +682,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         bondTolerance = source.getValue() / 100.0;
-        control.setBondTolerance(bondTolerance);
+        viewer.setBondTolerance(bondTolerance);
         props.put("bondTolerance", Double.toString(bondTolerance));
-        control.rebond();
+        viewer.rebond();
       }
     });
     btPanel.add(btSlider);
@@ -705,7 +705,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     bdPanel.add(bdLabel, BorderLayout.NORTH);
 
     bdSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-        (int) (100 * control.getMinBondDistance()));
+        (int) (100 * viewer.getMinBondDistance()));
     bdSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bdSlider.setPaintTicks(true);
     bdSlider.setMajorTickSpacing(20);
@@ -736,9 +736,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         minBondDistance = source.getValue() / 100.0;
-        control.setMinBondDistance(minBondDistance);
+        viewer.setMinBondDistance(minBondDistance);
         props.put("minBondDistance", Double.toString(minBondDistance));
-        control.rebond();
+        viewer.rebond();
       }
     });
     bdPanel.add(bdSlider);
@@ -766,7 +766,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     ahPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.ahLabel")));
     ahSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0f * control.getArrowHeadSize()));
+        (int) (100.0f * viewer.getArrowHeadSize()));
     ahSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     ahSlider.setPaintTicks(true);
     ahSlider.setMajorTickSpacing(40);
@@ -796,7 +796,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         ArrowHeadSize = source.getValue() / 100.0f;
-        control.setArrowHeadSize(ArrowHeadSize);
+        viewer.setArrowHeadSize(ArrowHeadSize);
         props.put("ArrowHeadSize", Double.toString(ArrowHeadSize));
       }
     });
@@ -808,7 +808,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     arPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.arLabel")));
     arSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-        (int) (100.0f * control.getArrowHeadRadius()));
+        (int) (100.0f * viewer.getArrowHeadRadius()));
     arSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     arSlider.setPaintTicks(true);
     arSlider.setMajorTickSpacing(40);
@@ -837,9 +837,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         ArrowHeadRadius = source.getValue() / 100.0f;
-        control.setArrowHeadRadius(ArrowHeadRadius);
+        viewer.setArrowHeadRadius(ArrowHeadRadius);
         props.put("ArrowHeadRadius", Double.toString(ArrowHeadRadius));
-        control.refresh();
+        viewer.refresh();
       }
     });
     arPanel.add(arSlider, BorderLayout.SOUTH);
@@ -850,7 +850,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     alPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
         .getString("Prefs.alLabel")));
     alSlider = new JSlider(JSlider.HORIZONTAL, -200, 200,
-        (int) (100.0f * control.getArrowLengthScale()));
+        (int) (100.0f * viewer.getArrowLengthScale()));
     alSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     alSlider.setPaintTicks(true);
     alSlider.setMajorTickSpacing(50);
@@ -889,9 +889,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         ArrowLengthScale = source.getValue() / 100.0f;
-        control.setArrowLengthScale(ArrowLengthScale);
+        viewer.setArrowLengthScale(ArrowLengthScale);
         props.put("ArrowLengthScale", Double.toString(ArrowLengthScale));
-        control.refresh();
+        viewer.refresh();
       }
     });
     alPanel.add(alSlider, BorderLayout.SOUTH);
@@ -924,7 +924,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.bgChooserTitle"), colorBackground);
         colorBackground = color;
         bButton.setBackground(colorBackground);
-        control.setColorBackground(colorBackground);
+        viewer.setColorBackground(colorBackground);
         props.put("colorBackground",
             Integer.toString(colorBackground.getRGB()));
       }
@@ -952,7 +952,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.pickedChooserTitle"), colorSelection);
         colorSelection = color;
         pButton.setBackground(colorSelection);
-        control.setColorSelection(colorSelection);
+        viewer.setColorSelection(colorSelection);
         props.put("colorSelection", Integer.toString(colorSelection.getRGB()));
       }
     };
@@ -967,7 +967,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.textLabel")));
 
-    isLabelAtomColor = control.getColorLabel() == null;
+    isLabelAtomColor = viewer.getColorLabel() == null;
     cbIsLabelAtomColor =
       guimap.newJCheckBox("Prefs.isLabelAtomColor", isLabelAtomColor);
     cbIsLabelAtomColor.addItemListener(checkBoxListener);
@@ -988,7 +988,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.textChooserTitle"), colorText);
         colorText = color;
         tButton.setBackground(colorText);
-        control.setColorLabel(colorText);
+        viewer.setColorLabel(colorText);
         props.put("colorText", Integer.toString(colorText.getRGB()));
       }
     };
@@ -1003,7 +1003,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.bondLabel")));
 
-    isBondAtomColor = control.getColorBond() == null;
+    isBondAtomColor = viewer.getColorBond() == null;
     cbIsBondAtomColor =
       guimap.newJCheckBox("Prefs.isBondAtomColor", isBondAtomColor);
     cbIsBondAtomColor.addItemListener(checkBoxListener);
@@ -1024,7 +1024,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.bondChooserTitle"), colorBond);
         colorBond = color;
         eButton.setBackground(colorBond);
-        control.setColorBond(colorBond);
+        viewer.setColorBond(colorBond);
         props.put("colorBond", "" + colorBond.getRGB());
       }
     };
@@ -1052,9 +1052,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.vectorChooserTitle"), colorVector);
         colorVector = color;
         vButton.setBackground(colorVector);
-        control.setColorVector(colorVector);
+        viewer.setColorVector(colorVector);
         props.put("colorVector", Integer.toString(colorVector.getRGB()));
-        control.refresh();
+        viewer.refresh();
       }
     };
     vButton.addActionListener(startVectorChooser);
@@ -1218,36 +1218,36 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private void updateComponents() {
     // Display panel
-    cbGraphics2D.setSelected(control.getWantsGraphics2D());
-    cbAntialias.setSelected(control.getWantsAntialias());
-    cbAntialiasAlways.setSelected(control.getWantsAntialiasAlways());
+    cbGraphics2D.setSelected(viewer.getWantsGraphics2D());
+    cbAntialias.setSelected(viewer.getWantsAntialias());
+    cbAntialiasAlways.setSelected(viewer.getWantsAntialiasAlways());
 
-    cH.setSelected(control.getShowHydrogens());
-    cV.setSelected(control.getShowVectors());
-    cM.setSelected(control.getShowMeasurements());
+    cH.setSelected(viewer.getShowHydrogens());
+    cV.setSelected(viewer.getShowVectors());
+    cM.setSelected(viewer.getShowMeasurements());
 
-    cbWireframeRotation.setSelected(control.getWireframeRotation());
+    cbWireframeRotation.setSelected(viewer.getWireframeRotation());
 
-    cbPerspectiveDepth.setSelected(control.getPerspectiveDepth());
-    cbShowAxes.setSelected(control.getShowAxes());
-    cbShowBoundingBox.setSelected(control.getShowBoundingBox());
+    cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
+    cbShowAxes.setSelected(viewer.getShowAxes());
+    cbShowBoundingBox.setSelected(viewer.getShowBoundingBox());
 
     // Atom panel controls: 
-    aRender.setSelectedIndex(control.getStyleAtom());
-    aLabel.setSelectedIndex(control.getStyleLabel());
-    sfSlider.setValue(control.getPercentVdwAtom());
+    aRender.setSelectedIndex(viewer.getStyleAtom());
+    aLabel.setSelectedIndex(viewer.getStyleLabel());
+    sfSlider.setValue(viewer.getPercentVdwAtom());
 
     // Bond panel controls:
-    bRender.setSelectedIndex(control.getStyleBond());
-    abYes.setSelected(control.getAutoBond());
-    bwSlider.setValue(control.getMarBond());
-    bdSlider.setValue((int) (100 * control.getMinBondDistance()));
-    btSlider.setValue((int) (100 * control.getBondTolerance()));
+    bRender.setSelectedIndex(viewer.getStyleBond());
+    abYes.setSelected(viewer.getAutoBond());
+    bwSlider.setValue(viewer.getMarBond());
+    bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
+    btSlider.setValue((int) (100 * viewer.getBondTolerance()));
 
     // Vector panel controls:
-    ahSlider.setValue((int) (100.0f * control.getArrowHeadSize()));
-    arSlider.setValue((int) (100.0f * control.getArrowHeadRadius()));
-    alSlider.setValue((int) (100.0f * control.getArrowLengthScale()));
+    ahSlider.setValue((int) (100.0f * viewer.getArrowHeadSize()));
+    arSlider.setValue((int) (100.0f * viewer.getArrowHeadRadius()));
+    alSlider.setValue((int) (100.0f * viewer.getArrowLengthScale()));
 
     // Color panel controls:
     bButton.setBackground(colorBackground);
@@ -1276,14 +1276,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     } catch (Exception e) {
       System.out.println("Error saving preferences" + e);
     }
-    control.refresh();
+    viewer.refresh();
   }
 
   public void ResetPressed() {
 
     defaults();
     initVariables();
-    control.refresh();
+    viewer.refresh();
 
     updateComponents();
     
@@ -1339,34 +1339,34 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     VibrateVectorScale =
         new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
-    //    control.setColorOutline(colorOutline);
-    control.setColorSelection(colorSelection);
-    control.setColorLabel(isLabelAtomColor ? null : colorText);
-    control.setColorBond(isBondAtomColor ? null : colorBond);
-    control.setPercentVdwAtom(percentVdwAtom);
-    control.setStyleAtom(styleAtom);
-    control.setStyleLabel(styleLabel);
-    //control.setPropertyStyleString(AtomPropsMode);
-    control.setStyleBond(styleBond);
-    control.setMarBond(marBond);
-    control.setColorVector(colorVector);
-    control.setArrowHeadRadius(ArrowHeadRadius);
-    control.setArrowHeadSize(ArrowHeadSize);
-    control.setArrowLengthScale(ArrowLengthScale);
-    control.setColorBackground(colorBackground);
-    control.setWantsGraphics2D(graphics2D);
-    control.setWantsAntialias(antialias);
-    control.setWantsAntialiasAlways(antialiasAlways);
-    control.setMinBondDistance(minBondDistance);
-    control.setBondTolerance(bondTolerance);
-    control.setAutoBond(AutoBond);
-    control.setShowHydrogens(showHydrogens);
-    control.setShowVectors(showVectors);
-    control.setShowMeasurements(showMeasurements);
-    control.setWireframeRotation(wireframeRotation);
-    control.setPerspectiveDepth(perspectiveDepth);
-    control.setShowAxes(showAxes);
-    control.setShowBoundingBox(showBoundingBox);
+    //    viewer.setColorOutline(colorOutline);
+    viewer.setColorSelection(colorSelection);
+    viewer.setColorLabel(isLabelAtomColor ? null : colorText);
+    viewer.setColorBond(isBondAtomColor ? null : colorBond);
+    viewer.setPercentVdwAtom(percentVdwAtom);
+    viewer.setStyleAtom(styleAtom);
+    viewer.setStyleLabel(styleLabel);
+    //viewer.setPropertyStyleString(AtomPropsMode);
+    viewer.setStyleBond(styleBond);
+    viewer.setMarBond(marBond);
+    viewer.setColorVector(colorVector);
+    viewer.setArrowHeadRadius(ArrowHeadRadius);
+    viewer.setArrowHeadSize(ArrowHeadSize);
+    viewer.setArrowLengthScale(ArrowLengthScale);
+    viewer.setColorBackground(colorBackground);
+    viewer.setWantsGraphics2D(graphics2D);
+    viewer.setWantsAntialias(antialias);
+    viewer.setWantsAntialiasAlways(antialiasAlways);
+    viewer.setMinBondDistance(minBondDistance);
+    viewer.setBondTolerance(bondTolerance);
+    viewer.setAutoBond(AutoBond);
+    viewer.setShowHydrogens(showHydrogens);
+    viewer.setShowVectors(showVectors);
+    viewer.setShowMeasurements(showMeasurements);
+    viewer.setWireframeRotation(wireframeRotation);
+    viewer.setPerspectiveDepth(perspectiveDepth);
+    viewer.setShowAxes(showAxes);
+    viewer.setShowBoundingBox(showBoundingBox);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1408,55 +1408,55 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       String strSelected = isSelected ? "true" : "false";
       if (key.equals("Prefs.showHydrogens")) {
         showHydrogens = isSelected;
-        control.setShowHydrogens(showHydrogens);
+        viewer.setShowHydrogens(showHydrogens);
         props.put("showHydrogens", strSelected);
       } else if (key.equals("Prefs.showVectors")) {
         showVectors = isSelected;
-        control.setShowVectors(showVectors);
+        viewer.setShowVectors(showVectors);
         props.put("showVectors", strSelected);
       } else if (key.equals("Prefs.showMeasurements")) {
         showMeasurements = isSelected;
-        control.setShowMeasurements(showMeasurements);
+        viewer.setShowMeasurements(showMeasurements);
         props.put("showMeasurements", strSelected);
       } else if (key.equals("Prefs.isLabelAtomColor")) {
         isLabelAtomColor = isSelected;
-        control.setColorLabel(isLabelAtomColor ? null : colorText);
+        viewer.setColorLabel(isLabelAtomColor ? null : colorText);
         props.put("isLabelAtomColor", strSelected);
         tButton.setEnabled(!isLabelAtomColor);
       } else if (key.equals("Prefs.isBondAtomColor")) {
         isBondAtomColor = isSelected;
-        control.setColorBond(isBondAtomColor ? null : colorBond);
+        viewer.setColorBond(isBondAtomColor ? null : colorBond);
         props.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.graphics2D")) {
         graphics2D = isSelected;
-        control.setWantsGraphics2D(graphics2D);
+        viewer.setWantsGraphics2D(graphics2D);
         props.put("graphics2D", strSelected);
         setEnabledGraphics();
       } else if (key.equals("Prefs.antialias")) {
         antialias = isSelected;
-        control.setWantsAntialias(antialias);
+        viewer.setWantsAntialias(antialias);
         props.put("antialias", strSelected);
         setEnabledGraphics();
       } else if (key.equals("Prefs.antialiasAlways")) {
         antialiasAlways = isSelected;
-        control.setWantsAntialiasAlways(antialiasAlways);
+        viewer.setWantsAntialiasAlways(antialiasAlways);
         props.put("antialiasAlways", strSelected);
       } else if (key.equals("Prefs.wireframeRotation")) {
         wireframeRotation = isSelected;
-        control.setWireframeRotation(wireframeRotation);
+        viewer.setWireframeRotation(wireframeRotation);
         props.put("wireframeRotation", strSelected);
       } else if (key.equals("Prefs.perspectiveDepth")) {
         perspectiveDepth = isSelected;
-        control.setPerspectiveDepth(perspectiveDepth);
+        viewer.setPerspectiveDepth(perspectiveDepth);
         props.put("perspectiveDepth", strSelected);
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
-        control.setShowAxes(showAxes);
+        viewer.setShowAxes(showAxes);
         props.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        control.setShowBoundingBox(showBoundingBox);
+        viewer.setShowBoundingBox(showBoundingBox);
         props.put("showBoundingBox", strSelected);
       }
     }

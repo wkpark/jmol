@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3d;
@@ -41,18 +41,18 @@ public class Atom extends org.openscience.cdk.Atom {
    *
    * @param the type of this atom.
    */
-  public Atom(DisplayControl control, Atom atom, int atomNumber,
+  public Atom(JmolViewer viewer, Atom atom, int atomNumber,
               double x, double y, double z, String pdbRecord) {
     super(atom.getSymbol(), new Point3d(x, y, z));
     super.setID(atom.getAtomTypeName());
     this.baseAtomType = atom.baseAtomType;
     //    this.atomNumber = atomNumber;
-    this.control = control;
+    this.viewer = viewer;
     if (pdbRecord != null)
       setPdbRecord(pdbRecord);
   }
 
-  public Atom(DisplayControl control, org.openscience.cdk.Atom atom) {
+  public Atom(JmolViewer viewer, org.openscience.cdk.Atom atom) {
     super(atom.getSymbol(), atom.getPoint3D());
     super.setAtomicNumber(atom.getAtomicNumber());
     super.setAtomTypeName(atom.getAtomTypeName());
@@ -69,7 +69,7 @@ public class Atom extends org.openscience.cdk.Atom {
     } else {
         this.baseAtomType = BaseAtomType.get(atom.getAtomicNumber());
     }
-    this.control = control;
+    this.viewer = viewer;
   }
 
   public String getPdbRecord() {
@@ -269,7 +269,7 @@ public class Atom extends org.openscience.cdk.Atom {
     return (bondedAtoms == null) ? 0 : bondedAtoms.length;
   }
 
-  private DisplayControl control;
+  private JmolViewer viewer;
 
   public void delete() {
     // this atom has been deleted ...

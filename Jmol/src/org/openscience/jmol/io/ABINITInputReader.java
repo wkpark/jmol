@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.CrystalBox;
 import org.openscience.jmol.UnitCellBox;
@@ -84,8 +84,8 @@ public class ABINITInputReader extends ABINITReader {
   /**
    *The constructor
    */
-  public ABINITInputReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public ABINITInputReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
   
   /**

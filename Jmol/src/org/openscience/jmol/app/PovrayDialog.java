@@ -23,6 +23,7 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.app;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import org.openscience.jmol.*;
 
@@ -60,7 +61,7 @@ import javax.swing.border.TitledBorder;
  */
 public class PovrayDialog extends JDialog {
 
-  private DisplayControl control;
+  private JmolViewer viewer;
   private ChemFile currentFile;
   private boolean callPovray = true;
   private boolean doAntiAlias = true;
@@ -87,17 +88,17 @@ public class PovrayDialog extends JDialog {
    * @param dp The interacting display we are reproducing (source of view angle info etc)
    * @param bn The default name to base frame names on
    */
-  public PovrayDialog(JFrame f, DisplayControl control,
+  public PovrayDialog(JFrame f, JmolViewer viewer,
                       ChemFile cf, String bn) {
 
     super(f, JmolResourceHandler.getInstance()
         .getString("Povray.povrayDialogTitle"), true);
-    this.control = control;
+    this.viewer = viewer;
     currentFile = cf;
     basename = bn;
 
     //Take the height and width settings from the JFrame
-    Dimension d = control.getScreenDimension();
+    Dimension d = viewer.getScreenDimension();
     int w = d.width;
     int h = d.height;
     getPathHistory();
@@ -342,12 +343,12 @@ public class PovrayDialog extends JDialog {
     commandLine = commandLineField.getText();
     String filename = basename + ".pov";
     java.io.File theFile = new java.io.File(savePath, filename);
-    PovrayStyleWriter style = new PovrayStyleWriter(control);
+    PovrayStyleWriter style = new PovrayStyleWriter(viewer);
     if (theFile != null) {
       try {
         java.io.FileOutputStream os = new java.io.FileOutputStream(theFile);
 
-        PovraySaver povs = new PovraySaver(currentFile, os, style, control);
+        PovraySaver povs = new PovraySaver(currentFile, os, style, viewer);
         povs.writeFile();
         os.flush();
         os.close();

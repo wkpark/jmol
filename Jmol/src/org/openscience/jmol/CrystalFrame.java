@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.viewer.JmolViewer;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3d;
@@ -40,12 +41,12 @@ public class CrystalFrame extends ChemFrame {
   //etc.
   private Vector boxEdges; //Vector of Point3d
   
-  public CrystalFrame(DisplayControl control) {
-    super(control);
+  public CrystalFrame(JmolViewer viewer) {
+    super(viewer);
   }
 
-  public CrystalFrame(DisplayControl control, int na) {
-    super(control, na);
+  public CrystalFrame(JmolViewer viewer, int na) {
+    super(viewer, na);
   }
 
   public void setRprimd(double[][] rprimd) {

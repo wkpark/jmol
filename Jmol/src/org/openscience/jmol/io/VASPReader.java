@@ -26,7 +26,7 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.AtomicSymbol;
 import org.openscience.jmol.AtomTypeList;
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.CrystalFile;
 import java.util.Vector;
@@ -92,10 +92,10 @@ public class VASPReader extends DefaultChemFileReader {
      *
      * @param input a <code>Reader</code> value
      */
-    public VASPReader(DisplayControl control, Reader input) {
-	super(control, input);
+    public VASPReader(JmolViewer viewer, Reader input) {
+	super(viewer, input);
 	this.inputBuffer = (BufferedReader) input;
-	crystalFile = new CrystalFile(control);
+	crystalFile = new CrystalFile(viewer);
     }
 
 

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import java.io.BufferedReader;
@@ -40,8 +40,8 @@ import java.util.StringTokenizer;
  */
 public class GhemicalMMReader extends DefaultChemFileReader {
 
-  public GhemicalMMReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public GhemicalMMReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
 
   /**
@@ -52,7 +52,7 @@ public class GhemicalMMReader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFile file = new ChemFile(viewer, bondsEnabled);
     ChemFrame frame = readFrame();
     file.addFrame(frame);
     return file;
@@ -76,7 +76,7 @@ public class GhemicalMMReader extends DefaultChemFileReader {
     int numberOfAtoms = 0;
     int numberOfBonds = 0;
 
-    ChemFrame frame = new ChemFrame(control, bondsEnabled);
+    ChemFrame frame = new ChemFrame(viewer, bondsEnabled);
 
     String line = input.readLine();
     while (line != null) {

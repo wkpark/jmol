@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.app;
 
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.*;
 import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.XYZSaver;
@@ -89,7 +90,7 @@ import javax.swing.border.TitledBorder;
 public class Vibrate extends JDialog implements ActionListener,
     PropertyChangeListener, Runnable {
 
-  private DisplayControl control;
+  private JmolViewer viewer;
   
   /**
    * Sets the scale factor for the amplitude of vibrations.
@@ -142,10 +143,10 @@ public class Vibrate extends JDialog implements ActionListener,
   /**
    * Creates a dialog.
    */
-  public Vibrate(DisplayControl control, JFrame f) {
+  public Vibrate(JmolViewer viewer, JFrame f) {
 
     super(f, "Vibration", false);
-    this.control = control;
+    this.viewer = viewer;
     JPanel container = new JPanel();
     container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
     JPanel framePanel = new JPanel();
@@ -389,7 +390,7 @@ public class Vibrate extends JDialog implements ActionListener,
    */
   private void setFrame(int which, boolean setSlider) {
 
-    control.setFrame(which);
+    viewer.setFrame(which);
     if (setSlider) {
       progressSlider.setValue(which + 1);
     }
@@ -404,10 +405,10 @@ public class Vibrate extends JDialog implements ActionListener,
     // Create set of frames animating the vectors
     ChemFrame inputFrame = inputFile.getFrame(inputFrameNumber);
     Vibration vib = inputFrame.getVibration(vibrationNumber);
-    vibFile = new ChemFile(control);
+    vibFile = new ChemFile(viewer);
     for (int n = 0; n < numberFrames; ++n) {
       int numberVerticies = inputFrame.getAtomCount();
-      ChemFrame newFrame = new ChemFrame(control, numberVerticies);
+      ChemFrame newFrame = new ChemFrame(viewer, numberVerticies);
       for (int i = 0; i < numberVerticies; ++i) {
         double scaling = amplitudeScale
                            * Math.sin(2.0 * Math.PI * n / numberFrames);
@@ -451,14 +452,14 @@ public class Vibrate extends JDialog implements ActionListener,
 
     if (b) {
       vibrateAction.setEnabled(false);
-      control.setClientFile("Vibrate", vibFile);
+      viewer.setClientFile("Vibrate", vibFile);
       currentFrame = 0;
       setFrame(currentFrame, true);
       disableConflictingActions();
     } else {
       stop();
       if (inputFile != null) {
-        control.setClientFile("Vibrate", inputFile);
+        viewer.setClientFile("Vibrate", inputFile);
       }
       vibrateAction.setEnabled(true);
       restoreConflictingActions();
@@ -805,7 +806,7 @@ public class Vibrate extends JDialog implements ActionListener,
       vibrationNumber = source.getSelectedIndex();
       if (isVisible()) {
         createVibration();
-        control.setClientFile("Vibrate", vibFile);
+        viewer.setClientFile("Vibrate", vibFile);
         currentFrame = 0;
         setFrame(currentFrame, true);
       }
@@ -924,7 +925,7 @@ public class Vibrate extends JDialog implements ActionListener,
 
   public void propertyChange(PropertyChangeEvent event) {
     
-    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
       if (event.getNewValue() != inputFile && event.getNewValue() != vibFile) {
         setChemFile((ChemFile) event.getNewValue());
       }

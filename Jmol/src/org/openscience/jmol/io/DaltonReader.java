@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
@@ -55,13 +55,13 @@ class DaltonReader extends DefaultChemFileReader {
   static final double angstromPerBohr = 0.529177249;
   Hashtable atomTypeMap = new Hashtable();
 
-  public DaltonReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public DaltonReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
 
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFile file = new ChemFile(viewer, bondsEnabled);
     ChemFrame frame = null;
 
     // Find energy
@@ -76,7 +76,7 @@ class DaltonReader extends DefaultChemFileReader {
         if (frame != null) {
           file.addFrame(frame);
         }
-        frame = new ChemFrame(control);
+        frame = new ChemFrame(viewer);
         readCoordinates(frame);
       } else if (line.trim().startsWith("Normal Coordinates")) {
         readFrequencies(frame);

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
@@ -61,8 +61,8 @@ public class Gaussian92Reader extends DefaultChemFileReader {
    *
    * @param input source of Gaussian92 data
    */
-  public Gaussian92Reader(DisplayControl control, Reader input) {
-    super(control, input);
+  public Gaussian92Reader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
 
   /**
@@ -73,14 +73,14 @@ public class Gaussian92Reader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFile file = new ChemFile(viewer, bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
 
     // Find first set of coordinates
     while (input.ready() && (line != null)) {
       if (line.indexOf("Standard orientation:") >= 0) {
-        frame = new ChemFrame(control);
+        frame = new ChemFrame(viewer);
         readCoordinates(frame);
         break;
       }
@@ -97,7 +97,7 @@ public class Gaussian92Reader extends DefaultChemFileReader {
           // Add current frame to file and create a new one.
           frame.rebond();
           file.addFrame(frame);
-          frame = new ChemFrame(control);
+          frame = new ChemFrame(viewer);
           readCoordinates(frame);
         } else if (line.indexOf("SCF Done:") >= 0) {
 

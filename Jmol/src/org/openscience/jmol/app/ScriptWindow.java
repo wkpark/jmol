@@ -24,8 +24,8 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.script.Eval;
+import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.script.Eval;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -60,12 +60,12 @@ public class ScriptWindow extends JDialog
   private JButton closeButton;
   private JButton runButton;
   private JButton haltButton;
-  DisplayControl control;
+  JmolViewer viewer;
 
-  public ScriptWindow(DisplayControl control, JFrame frame) {
+  public ScriptWindow(JmolViewer viewer, JFrame frame) {
 
     super(frame, "Rasmol Scripts", false);
-    this.control = control;
+    this.viewer = viewer;
     layoutWindow(getContentPane());
     setSize(300, 400);
     setLocationRelativeTo(frame);
@@ -127,7 +127,7 @@ public class ScriptWindow extends JDialog
     console.appendNewline();
     console.setPrompt();
     if (strCommand.length() > 0) {
-      String strErrorMessage = control.evalString(strCommand);
+      String strErrorMessage = viewer.evalString(strCommand);
       if (strErrorMessage != null)
         console.outputError(strErrorMessage);
       else {
@@ -145,7 +145,7 @@ public class ScriptWindow extends JDialog
     } else if (source == runButton) {
       executeCommand();
     } else if (source == haltButton) {
-      control.haltScriptExecution();
+      viewer.haltScriptExecution();
     }
   }
 }

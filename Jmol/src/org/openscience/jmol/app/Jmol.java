@@ -23,6 +23,9 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.app;
+import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolStatusListener;
+import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -127,7 +130,7 @@ public class Jmol extends JPanel {
    * The data model.
    */
 
-  public DisplayControl control;
+  public JmolViewer viewer;
 
   private DisplayPanel display;
   private StatusBar status;
@@ -224,45 +227,45 @@ public class Jmol extends JPanel {
     say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    control = new DisplayControl(display, new DeprecatedAdapter());
-    display.setDisplayControl(control);
+    viewer = new JmolViewer(display, new DeprecatedAdapter());
+    display.setViewer(viewer);
 
-    //    control.addPropertyChangeListener(display);
+    //    viewer.addPropertyChangeListener(display);
     say("Initializing Preferences...");
-    preferencesDialog = new PreferencesDialog(frame, guimap, control);
+    preferencesDialog = new PreferencesDialog(frame, guimap, viewer);
     say("Initializing Animate...");
-    anim = new Animate(control, frame);
+    anim = new Animate(viewer, frame);
     // mth 2003 08 15
     // get rid of this property change listener for Animate.java
     // may break animations
-    control.addPropertyChangeListener(anim);
+    viewer.addPropertyChangeListener(anim);
     say("Initializing Vibrate...");
-    vib = new Vibrate(control, frame);
-    control.addPropertyChangeListener(vib);
+    vib = new Vibrate(viewer, frame);
+    viewer.addPropertyChangeListener(vib);
     say("Initializing Crystal...");
-    crystprop = new CrystalPropertiesDialog(control, frame);
-    control.addPropertyChangeListener(crystprop);
-    makecrystal = new MakeCrystal(control, crystprop);
-    control.addPropertyChangeListener(makecrystal);
-    transform = new TransformDialog(control, frame);
-    control.addPropertyChangeListener(transform);
+    crystprop = new CrystalPropertiesDialog(viewer, frame);
+    viewer.addPropertyChangeListener(crystprop);
+    makecrystal = new MakeCrystal(viewer, crystprop);
+    viewer.addPropertyChangeListener(makecrystal);
+    transform = new TransformDialog(viewer, frame);
+    viewer.addPropertyChangeListener(transform);
     say("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
     addPropertyChangeListener(openFileProperty, recentFiles);
     say("Initializing Script Window...");
-    scriptWindow = new ScriptWindow(control, frame);
+    scriptWindow = new ScriptWindow(viewer, frame);
     //scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
-    control.setJmolStatusListener(new MyJmolStatusListener());
+    viewer.setJmolStatusListener(new MyJmolStatusListener());
     say("Initializing Property Graph...");
     pg = new PropertyGraph(frame);
-    control.addPropertyChangeListener(pg);
+    viewer.addPropertyChangeListener(pg);
 
     say("Initializing Measurements...");
-    mlist = new MeasurementList(frame, control);
-    meas = new Measure(frame, control);
+    mlist = new MeasurementList(frame, viewer);
+    meas = new Measure(frame, viewer);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
-    control.setMeasureWatcher(meas);
+    viewer.setJmolMeasureWatcher(meas);
     //    mlist.addMeasurementListListener(display);
 
     // install the command table
@@ -299,7 +302,7 @@ public class Jmol extends JPanel {
 
     say("Initializing Chemical Shifts...");
     chemicalShifts.initialize(apm);
-    control.addPropertyChangeListener(chemicalShifts);
+    viewer.addPropertyChangeListener(chemicalShifts);
 
     say("Starting display...");
     display.start();
@@ -315,18 +318,18 @@ public class Jmol extends JPanel {
     exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(currentDir);
 
-    control.addPropertyChangeListener(DisplayControl.PROP_CHEM_FILE,
+    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
                                       saveAction);
-    control.addPropertyChangeListener(DisplayControl.PROP_CHEM_FILE,
+    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
                                       exportAction);
-    control.addPropertyChangeListener(DisplayControl.PROP_CHEM_FILE,
+    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
                                       povrayAction);
-    control.addPropertyChangeListener(DisplayControl.PROP_CHEM_FILE,
+    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
                                       pdfAction);
-    control.addPropertyChangeListener(DisplayControl.PROP_CHEM_FILE,
+    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
                                       printAction);
 
-    jmolpopup = new JmolPopup(control, display);
+    jmolpopup = new JmolPopup(viewer, display);
 
     // prevent new Jmol from covering old Jmol
     if (parent != null) {
@@ -412,7 +415,7 @@ public class Jmol extends JPanel {
 
       // Open a file if one is given as an argument
       if (modelFilename != null) {
-        String msgError = jmol.control.openFile(modelFilename);
+        String msgError = jmol.viewer.openFile(modelFilename);
         if (msgError != null) {
           System.out.println("File error: " + msgError);
           System.exit(1);
@@ -425,7 +428,7 @@ public class Jmol extends JPanel {
         jmol.splash
           .showStatus(JmolResourceHandler.getInstance()
                       .getString("Executing script..."));
-        jmol.control.evalFile(scriptFilename);
+        jmol.viewer.evalFile(scriptFilename);
       }
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
@@ -557,7 +560,7 @@ public class Jmol extends JPanel {
 
   void setChemFile(ChemFile chemFile) {
 
-    control.setClientFile("CommandLine", chemFile);
+    viewer.setClientFile("CommandLine", chemFile);
     //    apm.replaceList(chemFile.getAtomPropertyList());
     mlist.clear();
   }
@@ -926,7 +929,7 @@ public class Jmol extends JPanel {
             apm =
               new AtomPropsMenu(JmolResourceHandler.getInstance()
                                 .getString("Jmol." + itemKeys[i] + "Label"),
-                                control);
+                                viewer);
             menu.add(apm);
           } else {
             JMenu pm;
@@ -1199,7 +1202,7 @@ public class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
-        control.openFile(file);
+        viewer.openFile(file);
         return;
       }
     }
@@ -1252,15 +1255,15 @@ public class Jmol extends JPanel {
             FileOutputStream os = new FileOutputStream(file);
 
             if (fileTyper.getType().equals("XYZ (xmol)")) {
-              XYZSaver xyzs = new XYZSaver((ChemFile)control.getClientFile(),
+              XYZSaver xyzs = new XYZSaver((ChemFile)viewer.getClientFile(),
                                            os);
               xyzs.writeFile();
             } else if (fileTyper.getType().equals("PDB")) {
-              PdbSaver ps = new PdbSaver((ChemFile)control.getClientFile(),
+              PdbSaver ps = new PdbSaver((ChemFile)viewer.getClientFile(),
                                          os);
               ps.writeFile();
             } else if (fileTyper.getType().equals("CML")) {
-              CMLSaver cs = new CMLSaver((ChemFile)control.getClientFile(),
+              CMLSaver cs = new CMLSaver((ChemFile)viewer.getClientFile(),
                                          os);
               cs.writeFile();
             } else {
@@ -1296,7 +1299,7 @@ public class Jmol extends JPanel {
       ImageTyper it = new ImageTyper(exportChooser);
 
       // GIF doesn't support more than 8 bits:
-      if (control.getStyleAtom() == DisplayControl.SHADED) {
+      if (viewer.getStyleAtom() == JmolViewer.SHADED) {
         it.disableGIF();
       }
       exportChooser.setAccessory(it);
@@ -1358,7 +1361,7 @@ public class Jmol extends JPanel {
       recentFiles.show();
       String selection = recentFiles.getFile();
       if (selection != null) {
-        control.openFile(selection);
+        viewer.openFile(selection);
       }
     }
   }
@@ -1388,8 +1391,8 @@ public class Jmol extends JPanel {
         currentFile.getName().substring(0,
             currentFile.getName().lastIndexOf("."));
       }
-      PovrayDialog pvsd = new PovrayDialog(frame, control,
-                                           (ChemFile)control.getClientFile(),
+      PovrayDialog pvsd = new PovrayDialog(frame, viewer,
+                                           (ChemFile)viewer.getClientFile(),
                                            baseName);
     }
 
@@ -1469,7 +1472,7 @@ public class Jmol extends JPanel {
 
     public void propertyChange(PropertyChangeEvent event) {
 
-      if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
+      if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
         if (event.getNewValue() != null) {
           setEnabled(true);
         } else {

@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.viewer.JmolViewer;
 import java.util.Vector;
 import java.util.Enumeration;
 import org.openscience.cdk.Atom;
@@ -32,7 +33,7 @@ import org.openscience.cdk.io.cml.cdopi.CDOAcceptedObjects;
 
 public final class JmolCDO extends ANIMATIONCDO {
 
-  DisplayControl control;
+  JmolViewer viewer;
   private ChemFile file;
   private ChemFrame currentFrame;
 
@@ -45,10 +46,10 @@ public final class JmolCDO extends ANIMATIONCDO {
   //Crystal
   private double[][] rprimd; //the dimensional primitive vectors
 
-  public JmolCDO(DisplayControl control) {
-    this.control = control;
-    currentFrame = new ChemFrame(control);
-    file = new ChemFile(control);
+  public JmolCDO(JmolViewer viewer) {
+    this.viewer = viewer;
+    currentFrame = new ChemFrame(viewer);
+    file = new ChemFile(viewer);
   }
 
   public void startDocument() {
@@ -78,7 +79,7 @@ public final class JmolCDO extends ANIMATIONCDO {
     } else if (type.equals("Crystal")) {
       this.startCrystal();
       if (!(file instanceof CrystalFile)) {
-	file = new CrystalFile(control);
+	file = new CrystalFile(viewer);
       }
       // assume frame has been started       
     } else {
@@ -146,7 +147,7 @@ public final class JmolCDO extends ANIMATIONCDO {
   }
 
   public void startFrame() {
-    currentFrame = new ChemFrame(control);
+    currentFrame = new ChemFrame(viewer);
   }
   
   public void endFrame() {

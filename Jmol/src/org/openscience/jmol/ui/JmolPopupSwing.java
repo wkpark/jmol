@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.ui;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import java.awt.Component;
 import javax.swing.JPopupMenu;
@@ -43,16 +43,16 @@ import java.util.Enumeration;
 
 public class JmolPopupSwing extends JPopupMenu {
 
-  DisplayControl control;
+  JmolViewer viewer;
   MenuItemListener mil;
   CheckboxMenuItemListener cmil;
   ResourceBundle rbStructure;
   ResourceBundle rbWords;
 
-  public JmolPopupSwing(DisplayControl control, Component parent,
+  public JmolPopupSwing(JmolViewer viewer, Component parent,
                         ResourceBundle rbStructure, ResourceBundle rbWords) {
     super("Jmol");
-    this.control = control;
+    this.viewer = viewer;
     this.rbStructure = rbStructure;
     this.rbWords = rbWords;
     mil = new MenuItemListener();
@@ -66,7 +66,7 @@ public class JmolPopupSwing extends JPopupMenu {
       String key = (String)keys.nextElement();
       JCheckBoxMenuItem jcbmi = (JCheckBoxMenuItem)htCheckbox.get(key);
       //      System.out.println("found:" + key);
-      boolean b = control.getBooleanProperty(key);
+      boolean b = viewer.getBooleanProperty(key);
       jcbmi.setState(b);
     }
 
@@ -77,7 +77,7 @@ public class JmolPopupSwing extends JPopupMenu {
     public void actionPerformed(ActionEvent e) {
       String script = getValue(e.getActionCommand());
       if (script != null)
-        control.evalString(script);
+        viewer.evalString(script);
     }
   }
 
@@ -85,7 +85,7 @@ public class JmolPopupSwing extends JPopupMenu {
     public void itemStateChanged(ItemEvent e) {
       //  System.out.println("CheckboxMenuItemListener() " + e.getSource());
       JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem)e.getSource();
-      control.setBooleanProperty(jcmi.getActionCommand(), jcmi.getState());
+      viewer.setBooleanProperty(jcmi.getActionCommand(), jcmi.getState());
     }
   }
 

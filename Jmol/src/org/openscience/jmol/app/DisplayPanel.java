@@ -25,6 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -52,7 +53,7 @@ import javax.swing.RepaintManager;
 public class DisplayPanel extends JPanel implements ComponentListener {
   private StatusBar status;
   private GuiMap guimap;
-  private DisplayControl control;
+  private JmolViewer viewer;
   
   private String displaySpeed;
 
@@ -68,9 +69,9 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     setDoubleBuffered(false);
   }
 
-  public void setDisplayControl(DisplayControl control) {
-    this.control = control;
-    control.setScreenDimension(getSize());
+  public void setViewer(JmolViewer viewer) {
+    this.viewer = viewer;
+    viewer.setScreenDimension(getSize());
   }
 
   // for now, default to true
@@ -82,8 +83,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
   private Measure measure = null;
 
   /*
-  public DisplayControl getDisplayControl() {
-    return control;
+  public Viewer getViewer() {
+    return viewer;
   }
   */
 
@@ -101,8 +102,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   private void setRotateMode() {
       Jmol.setRotateButton();
-      control.setModeMouse(DisplayControl.ROTATE);
-      control.setSelectionHaloEnabled(false);
+      viewer.setModeMouse(JmolViewer.ROTATE);
+      viewer.setSelectionHaloEnabled(false);
   }
     
   public void componentHidden(java.awt.event.ComponentEvent e) {
@@ -120,7 +121,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
   }
 
   private void updateSize() {
-    control.setScreenDimension(getSize());
+    viewer.setScreenDimension(getSize());
     setRotateMode();
   }
 
@@ -128,13 +129,13 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    g.drawImage(control.renderScreenImage(rectClip), 0, 0, null);
+    g.drawImage(viewer.renderScreenImage(rectClip), 0, 0, null);
     if (showPaintTime)
       stopPaintClock();
   }
 
   public Image takeSnapshot() {
-    return control.getScreenImage();
+    return viewer.getScreenImage();
   }
 
   // The actions:
@@ -184,7 +185,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowHydrogens(cbmi.isSelected());
+      viewer.setShowHydrogens(cbmi.isSelected());
     }
   }
 
@@ -197,7 +198,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowVectors(cbmi.isSelected());
+      viewer.setShowVectors(cbmi.isSelected());
     }
   }
 
@@ -210,7 +211,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowMeasurements(cbmi.isSelected());
+      viewer.setShowMeasurements(cbmi.isSelected());
     }
   }
 
@@ -223,8 +224,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
 
-      if (control.haveFile()) {
-        control.selectAll();
+      if (viewer.haveFile()) {
+        viewer.selectAll();
       }
     }
   }
@@ -238,8 +239,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
 
-      if (control.haveFile()) {
-        control.clearSelection();
+      if (viewer.haveFile()) {
+        viewer.clearSelection();
       }
     }
   }
@@ -252,7 +253,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleAtom(DisplayControl.NONE);
+      viewer.setStyleAtom(JmolViewer.NONE);
     }
   }
 
@@ -264,7 +265,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleAtom(DisplayControl.SHADED);
+      viewer.setStyleAtom(JmolViewer.SHADED);
     }
   }
 
@@ -276,7 +277,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleAtom(DisplayControl.WIREFRAME);
+      viewer.setStyleAtom(JmolViewer.WIREFRAME);
     }
   }
 
@@ -288,7 +289,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeAtomColorProfile(DisplayControl.ATOMCHARGE);
+      viewer.setModeAtomColorProfile(JmolViewer.ATOMCHARGE);
     }
   }
 
@@ -300,7 +301,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeAtomColorProfile(DisplayControl.ATOMTYPE);
+      viewer.setModeAtomColorProfile(JmolViewer.ATOMTYPE);
     }
   }
 
@@ -312,7 +313,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleBond(DisplayControl.NONE);
+      viewer.setStyleBond(JmolViewer.NONE);
     }
   }
 
@@ -324,7 +325,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleBond(DisplayControl.SHADED);
+      viewer.setStyleBond(JmolViewer.SHADED);
     }
   }
 
@@ -336,7 +337,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleBond(DisplayControl.WIREFRAME);
+      viewer.setStyleBond(JmolViewer.WIREFRAME);
     }
   }
 
@@ -349,10 +350,10 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       if (measure.isShowing()) {
-        control.setModeMouse(DisplayControl.MEASURE);
+        viewer.setModeMouse(JmolViewer.MEASURE);
       } else {
-        control.setModeMouse(DisplayControl.PICK);
-        control.setSelectionHaloEnabled(true);
+        viewer.setModeMouse(JmolViewer.PICK);
+        viewer.setSelectionHaloEnabled(true);
       }
       status.setStatus(1, "Select Atoms");
     }
@@ -366,8 +367,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeMouse(DisplayControl.DELETE);
-      control.setSelectionHaloEnabled(false);
+      viewer.setModeMouse(JmolViewer.DELETE);
+      viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, "Delete Atoms");
     }
   }
@@ -380,8 +381,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeMouse(DisplayControl.ROTATE);
-      control.setSelectionHaloEnabled(false);
+      viewer.setModeMouse(JmolViewer.ROTATE);
+      viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -394,8 +395,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeMouse(DisplayControl.ZOOM);
-      control.setSelectionHaloEnabled(false);
+      viewer.setModeMouse(JmolViewer.ZOOM);
+      viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -408,8 +409,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setModeMouse(DisplayControl.XLATE);
-      control.setSelectionHaloEnabled(false);
+      viewer.setModeMouse(JmolViewer.XLATE);
+      viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -422,7 +423,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.rotateFront();
+      viewer.rotateFront();
     }
   }
 
@@ -434,7 +435,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.rotateToX(90);
+      viewer.rotateToX(90);
     }
   }
 
@@ -446,7 +447,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.rotateToX(-90);
+      viewer.rotateToX(-90);
     }
   }
 
@@ -458,7 +459,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.rotateToY(90);
+      viewer.rotateToY(90);
     }
   }
 
@@ -470,7 +471,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.rotateToY(-90);
+      viewer.rotateToY(-90);
     }
   }
 
@@ -482,9 +483,9 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setCenterAsSelected();
+      viewer.setCenterAsSelected();
       setRotateMode();
-      control.setSelectionHaloEnabled(false);
+      viewer.setSelectionHaloEnabled(false);
     }
   }
 
@@ -496,7 +497,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleLabel(DisplayControl.NOLABELS);
+      viewer.setStyleLabel(JmolViewer.NOLABELS);
     }
   }
 
@@ -508,7 +509,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleLabel(DisplayControl.SYMBOLS);
+      viewer.setStyleLabel(JmolViewer.SYMBOLS);
     }
   }
 
@@ -520,7 +521,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleLabel(DisplayControl.TYPES);
+      viewer.setStyleLabel(JmolViewer.TYPES);
     }
   }
 
@@ -532,7 +533,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleLabel(DisplayControl.NUMBERS);
+      viewer.setStyleLabel(JmolViewer.NUMBERS);
     }
   }
 
@@ -544,7 +545,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.homePosition();
+      viewer.homePosition();
       setRotateMode();
     }
   }
@@ -558,7 +559,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setWireframeRotation(cbmi.isSelected());
+      viewer.setWireframeRotation(cbmi.isSelected());
     }
   }
 
@@ -571,7 +572,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setPerspectiveDepth(cbmi.isSelected());
+      viewer.setPerspectiveDepth(cbmi.isSelected());
     }
   }
 
@@ -584,7 +585,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowAxes(cbmi.isSelected());
+      viewer.setShowAxes(cbmi.isSelected());
     }
   }
 
@@ -597,7 +598,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowBoundingBox(cbmi.isSelected());
+      viewer.setShowBoundingBox(cbmi.isSelected());
     }
   }
 
@@ -620,13 +621,13 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   private void setDisplayMenuState() {
     guimap.setSelected("Jmol.wireframerotation",
-                       control.getWireframeRotation());
-    guimap.setSelected("Jmol.perspective", control.getPerspectiveDepth());
-    guimap.setSelected("Jmol.hydrogens", control.getShowHydrogens());
-    guimap.setSelected("Jmol.vectors", control.getShowVectors());
-    guimap.setSelected("Jmol.measurements", control.getShowMeasurements());
-    guimap.setSelected("Jmol.axes", control.getShowAxes());
-    guimap.setSelected("Jmol.boundbox", control.getShowBoundingBox());
+                       viewer.getWireframeRotation());
+    guimap.setSelected("Jmol.perspective", viewer.getPerspectiveDepth());
+    guimap.setSelected("Jmol.hydrogens", viewer.getShowHydrogens());
+    guimap.setSelected("Jmol.vectors", viewer.getShowVectors());
+    guimap.setSelected("Jmol.measurements", viewer.getShowMeasurements());
+    guimap.setSelected("Jmol.axes", viewer.getShowAxes());
+    guimap.setSelected("Jmol.boundbox", viewer.getShowBoundingBox());
   }
 
   public Action[] getActions() {
@@ -674,7 +675,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
-    inMotion = control.getInMotion();
+    inMotion = viewer.getInMotion();
     if (!wereInMotion & inMotion)
       resetTimes();
   }
@@ -714,11 +715,11 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   public void rotate(int axis, double angle) {
     if (axis == X_AXIS) {
-      control.rotateToX(Math.toRadians(angle));
+      viewer.rotateToX(Math.toRadians(angle));
     } else if (axis == Y_AXIS) {
-      control.rotateToY(Math.toRadians(angle));
+      viewer.rotateToY(Math.toRadians(angle));
     } else if (axis == Z_AXIS) {
-      control.rotateToZ(Math.toRadians(angle));
+      viewer.rotateToZ(Math.toRadians(angle));
     }
   }
 }

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.CrystalFile;
 import java.util.Vector;
@@ -88,11 +88,11 @@ public class ABINITReader extends DefaultChemFileReader {
    *
    * @param input a <code>Reader</code> value
    */
-  public ABINITReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public ABINITReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
     logger = new org.openscience.cdk.tools.LoggingTool(this.getClass().getName());
     this.inputBuffer = (BufferedReader) input;
-    crystalFile = new CrystalFile(control);
+    crystalFile = new CrystalFile(viewer);
   }
 
 
@@ -127,7 +127,7 @@ public class ABINITReader extends DefaultChemFileReader {
           //This is an output file
           inputBuffer.reset();
           logger.info("We have an abinit *output* file");
-          return (new ABINITOutputReader(control, input)).read();
+          return (new ABINITOutputReader(viewer, input)).read();
         }
       }
     }
@@ -135,7 +135,7 @@ public class ABINITReader extends DefaultChemFileReader {
     // We don't have an output file so we have an input file
     inputBuffer.reset();
     logger.info("We have an abinit *input* file");
-    return (new ABINITInputReader(control, input)).read();
+    return (new ABINITInputReader(viewer, input)).read();
   } //end read()
   
   

@@ -25,6 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import java.util.Vector;
 import java.awt.Component;
@@ -44,12 +45,12 @@ public class AtomPropsMenu extends JMenu {
 
   ButtonGroup bg;
   Vector list = new Vector();
-  DisplayControl control;
+  JmolViewer viewer;
 
-  public AtomPropsMenu(String name, DisplayControl control) {
+  public AtomPropsMenu(String name, JmolViewer viewer) {
 
     super(name);
-    this.control = control;
+    this.viewer = viewer;
     bg = new ButtonGroup();
     JRadioButtonMenuItem mi = new JRadioButtonMenuItem("None");
     list.addElement(mi);
@@ -93,9 +94,9 @@ public class AtomPropsMenu extends JMenu {
       String mode = rbmi.getText();
       /*
       if (mode.equals("None")) {
-        control.setPropertyStyleString("");
+        viewer.setPropertyStyleString("");
       } else {
-        control.setPropertyStyleString(rbmi.getText());
+        viewer.setPropertyStyleString(rbmi.getText());
       }
       */
     }

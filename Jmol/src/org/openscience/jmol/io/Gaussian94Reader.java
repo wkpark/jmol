@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.NMRShielding;
@@ -63,8 +63,8 @@ public class Gaussian94Reader extends DefaultChemFileReader {
    *
    * @param input source of Gaussian94 data
    */
-  public Gaussian94Reader(DisplayControl control, Reader input) {
-    super(control, input);
+  public Gaussian94Reader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
 
   /**
@@ -75,7 +75,7 @@ public class Gaussian94Reader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFile file = new ChemFile(viewer, bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
     String levelOfTheory = null;
@@ -83,7 +83,7 @@ public class Gaussian94Reader extends DefaultChemFileReader {
     // Find first set of coordinates
     while (input.ready() && (line != null)) {
       if (line.indexOf("Standard orientation:") >= 0) {
-        frame = new ChemFrame(control);
+        frame = new ChemFrame(viewer);
         readCoordinates(frame);
         break;
       }
@@ -100,7 +100,7 @@ public class Gaussian94Reader extends DefaultChemFileReader {
           // Add current frame to file and create a new one.
           frame.rebond();
           file.addFrame(frame);
-          frame = new ChemFrame(control);
+          frame = new ChemFrame(viewer);
           readCoordinates(frame);
         } else if (line.indexOf("SCF Done:") >= 0) {
 

@@ -27,7 +27,7 @@ package org.openscience.jmol.io;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import java.util.Date;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
@@ -53,7 +53,7 @@ import java.io.OutputStream;
  */
 public class PovraySaver extends FileSaver {
 
-  private DisplayControl control;
+  private JmolViewer viewer;
   private PovrayStyleWriter style;
   private int framenumber = 0;
   
@@ -67,7 +67,7 @@ public class PovraySaver extends FileSaver {
    * @param out The <code>OutputStream</code> which will be written to.
    */
   public PovraySaver(ChemFile cf, OutputStream out, PovrayStyleWriter style,
-                     DisplayControl control) throws IOException {
+                     JmolViewer viewer) throws IOException {
 
     super(cf, out);
 
@@ -75,7 +75,7 @@ public class PovraySaver extends FileSaver {
     this.cf = cf;
 
     this.style = style;
-    this.control = control;
+    this.viewer = viewer;
   }
 
   public void writeFileStart(ChemFile cf, BufferedWriter w)
@@ -96,12 +96,12 @@ public class PovraySaver extends FileSaver {
    * @param w the Writer to write it to
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
-    edge = control.getJmolFrame().getRotationRadius() * 2;
+    edge = viewer.getJmolFrame().getRotationRadius() * 2;
     edge *= 1.1; // for some reason I need a little more margin
-    edge /= control.getZoomPercent() / 100.0;
+    edge /= viewer.getZoomPercent() / 100.0;
 
-    style.setRotate(control.getPovRotateMatrix());
-    style.setTranslate(control.getPovTranslateMatrix());
+    style.setRotate(viewer.getPovRotateMatrix());
+    style.setTranslate(viewer.getPovTranslateMatrix());
 
     Date now = new Date();
     SimpleDateFormat sdf =
@@ -129,8 +129,8 @@ public class PovraySaver extends FileSaver {
     w.write("// NOTE: if you plan to render at a different resoltion,\n");
     w.write("// be sure to update the following two lines to maintain\n");
     w.write("// the correct aspect ratio.\n" + "\n");
-    w.write("#declare Width = "+ control.getScreenDimension().width + ";\n");
-    w.write("#declare Height = "+ control.getScreenDimension().height + ";\n");
+    w.write("#declare Width = "+ viewer.getScreenDimension().width + ";\n");
+    w.write("#declare Height = "+ viewer.getScreenDimension().height + ";\n");
     w.write("#declare Ratio = Width / Height;\n");
     w.write("#declare zoom = " + edge + ";\n\n");
     w.write("camera{\n");
@@ -144,7 +144,7 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
 
     w.write("background { color " +
-            povrayColor(control.getColorBackground()) + " }\n");
+            povrayColor(viewer.getColorBackground()) + " }\n");
     w.write("\n");
 
     w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
@@ -153,10 +153,10 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
     w.write("\n");
 
-    style.writeAtomsAndBondsMacros(w, cf, control.getPercentVdwAtom() / 100.0,
-                                   control.getMarBond() / 1000.0);
+    style.writeAtomsAndBondsMacros(w, cf, viewer.getPercentVdwAtom() / 100.0,
+                                   viewer.getMarBond() / 1000.0);
 
-    boolean drawHydrogen = control.getShowHydrogens();
+    boolean drawHydrogen = viewer.getShowHydrogens();
 
 
     try {

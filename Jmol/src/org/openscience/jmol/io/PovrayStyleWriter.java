@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.BaseAtomType;
 import org.openscience.jmol.Atom;
@@ -138,10 +138,10 @@ import java.awt.Color;
  */
 public class PovrayStyleWriter {
 
-  DisplayControl control;
+  JmolViewer viewer;
 
-  public PovrayStyleWriter(DisplayControl control) {
-    this.control = control;
+  public PovrayStyleWriter(JmolViewer viewer) {
+    this.viewer = viewer;
   }
 
   /**
@@ -309,7 +309,7 @@ public class PovrayStyleWriter {
 
     double[] pos = cf.getAtomCoords(atomIndex);
 
-    Point3d center = control.getJmolFrame().getRotationCenter();
+    Point3d center = viewer.getJmolFrame().getRotationCenter();
 
     double c_x = center.x;
     double c_y = center.y;
@@ -347,7 +347,7 @@ public class PovrayStyleWriter {
       BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
         throws IOException {
 
-    Point3d center = control.getRotationCenter();
+    Point3d center = viewer.getRotationCenter();
 
     double c_x = center.x;
     double c_y = center.y;

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import java.util.Vector;
 import java.io.BufferedReader;
@@ -40,8 +40,8 @@ abstract class DefaultChemFileReader implements ChemFileReader {
    *
    * @param input source of ChemFile data
    */
-  protected DefaultChemFileReader(DisplayControl control, Reader input) {
-    this(control, input, "Unknown Reader");
+  protected DefaultChemFileReader(JmolViewer viewer, Reader input) {
+    this(viewer, input, "Unknown Reader");
   }
 
   /**
@@ -49,9 +49,9 @@ abstract class DefaultChemFileReader implements ChemFileReader {
    *
    * @param input source of ChemFile data
    */
-  protected DefaultChemFileReader(DisplayControl control, Reader input, String name) {
+  protected DefaultChemFileReader(JmolViewer viewer, Reader input, String name) {
     logger = new org.openscience.cdk.tools.LoggingTool(name);
-    this.control = control;
+    this.viewer = viewer;
     this.input = new BufferedReader(input);
   }
 
@@ -117,5 +117,5 @@ abstract class DefaultChemFileReader implements ChemFileReader {
    * The source for data.
    */
   protected BufferedReader input;
-  DisplayControl control;
+  JmolViewer viewer;
 }

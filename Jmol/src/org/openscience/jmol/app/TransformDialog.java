@@ -23,9 +23,10 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.app;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.render.*;
+import org.openscience.jmol.viewer.datamodel.*;
 import org.openscience.jmol.util.*;
 
 import javax.swing.JDialog; //DLG
@@ -64,7 +65,7 @@ class TransformDialog
   extends JDialog 
   implements ActionListener, PropertyChangeListener {
 
-  private DisplayControl control;
+  private JmolViewer viewer;
   private boolean hasFile;
 
   private Point3d center;
@@ -81,11 +82,11 @@ class TransformDialog
   private TransformAction transformAction = new TransformAction();
   private Hashtable commands;
   
-  TransformDialog(DisplayControl control, JFrame f) {
+  TransformDialog(JmolViewer viewer, JFrame f) {
     
     // Invoke JDialog constructor
     super(f, "Transform...", false);
-    this.control = control;
+    this.viewer = viewer;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -228,8 +229,8 @@ class TransformDialog
 
 
   void rotate() {  //TODO
-    control.setCenter(center);
-    control.rotate(new AxisAngle4d(direction.x,
+    viewer.setCenter(center);
+    viewer.rotate(new AxisAngle4d(direction.x,
                                    direction.y,
                                    direction.z,
                                    (double)Math.toRadians(angle)));
@@ -271,7 +272,7 @@ class TransformDialog
   }
 
   public void propertyChange(PropertyChangeEvent event) {
-    if (event.getPropertyName().equals(DisplayControl.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
       setChemFile((ChemFile) event.getNewValue());
     }
   }

@@ -25,9 +25,7 @@
 package org.openscience.jmol.applet;
 
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.DisplayControl;
-//import org.openscience.jmol.render.ChemFrameRenderer;
-//import org.openscience.jmol.render.MeasureRenderer;
+import org.openscience.jmol.viewer.JmolViewer;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -40,16 +38,16 @@ import java.awt.event.ComponentAdapter;
 
 public class AppletCanvas extends Canvas {
 
-  private DisplayControl control;
+  private JmolViewer viewer;
 
-  public void setDisplayControl(DisplayControl control) {
-    this.control = control;
-    control.setScreenDimension(getSize());
+  public void setJmolViewer(JmolViewer viewer) {
+    this.viewer = viewer;
+    viewer.setScreenDimension(getSize());
     addComponentListener(new MyComponentListener());
   }
 
   public void updateSize() {
-    control.setScreenDimension(getSize());
+    viewer.setScreenDimension(getSize());
   }
 
   public void update(Graphics g) {
@@ -57,7 +55,7 @@ public class AppletCanvas extends Canvas {
   }
 
   public void paint(Graphics g) {
-    g.drawImage(control.renderScreenImage(g.getClipBounds()), 0, 0, null);
+    g.drawImage(viewer.renderScreenImage(g.getClipBounds()), 0, 0, null);
   }
 
   // Make sure AWT knows we are using a buffered image.

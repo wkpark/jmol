@@ -24,10 +24,10 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.render.AtomShape;
-import org.openscience.jmol.render.JmolFrame;
-import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.MeasureWatcher;
+import org.openscience.jmol.viewer.datamodel.AtomShape;
+import org.openscience.jmol.viewer.datamodel.JmolFrame;
+import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
 import java.io.File;
 import javax.swing.JTable;
@@ -67,7 +67,7 @@ import javax.swing.border.TitledBorder;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class Measure extends JDialog implements MeasureWatcher {
+public class Measure extends JDialog implements JmolMeasureWatcher {
 
   private final static int ADD = 1;
   private final static int DELETE = 2;
@@ -82,7 +82,7 @@ public class Measure extends JDialog implements MeasureWatcher {
     -1, -1, -1, -1
   };
 
-  private DisplayControl control;
+  private JmolViewer viewer;
   private MeasurementList mlist;
 
   // The actions:
@@ -178,10 +178,10 @@ public class Measure extends JDialog implements MeasureWatcher {
     }
   }
 
-  public Measure(JFrame f, DisplayControl control) {
+  public Measure(JFrame f, JmolViewer viewer) {
     super(f, JmolResourceHandler.getInstance()
              .getString("Measure.windowTitle"), false);
-    this.control = control;
+    this.viewer = viewer;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -286,8 +286,8 @@ public class Measure extends JDialog implements MeasureWatcher {
       mButton.setText(JmolResourceHandler.getInstance()
           .getString("Measure.addLabel"));
     }
-    oldMode = control.getModeMouse();
-    control.setModeMouse(DisplayControl.MEASURE);
+    oldMode = viewer.getModeMouse();
+    viewer.setModeMouse(JmolViewer.MEASURE);
     disableActions();
     show();
   }
@@ -307,7 +307,7 @@ public class Measure extends JDialog implements MeasureWatcher {
 
   public void close() {
 
-    control.setModeMouse(oldMode);
+    viewer.setModeMouse(oldMode);
     this.setVisible(false);
     mtm.wipe();
     mButton.setEnabled(false);
@@ -331,7 +331,7 @@ public class Measure extends JDialog implements MeasureWatcher {
         return;
       }
     }
-    JmolFrame frame = control.getJmolFrame();
+    JmolFrame frame = viewer.getJmolFrame();
     AtomShape atom = frame.getAtomAt(measured);
     selection[currentAtom] = measured;
 
@@ -352,10 +352,10 @@ public class Measure extends JDialog implements MeasureWatcher {
     switch (measure) {
     case ANGLE :
       if (action == ADD) {
-        control.defineMeasure(selection[0], selection[1], selection[2]);
+        viewer.defineMeasure(selection[0], selection[1], selection[2]);
       } else {
         boolean ok =
-          control.deleteMatchingMeasurement(selection[0], selection[1],
+          viewer.deleteMatchingMeasurement(selection[0], selection[1],
                                             selection[2]);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
@@ -370,11 +370,11 @@ public class Measure extends JDialog implements MeasureWatcher {
 
     case DIHEDRAL :
       if (action == ADD) {
-        control.defineMeasure(selection[0], selection[1],
+        viewer.defineMeasure(selection[0], selection[1],
                               selection[2], selection[3]);
       } else {
         boolean ok =
-          control.deleteMatchingMeasurement(selection[0], selection[1],
+          viewer.deleteMatchingMeasurement(selection[0], selection[1],
                                             selection[2], selection[3]);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
@@ -389,10 +389,10 @@ public class Measure extends JDialog implements MeasureWatcher {
 
     default :
       if (action == ADD) {
-        control.defineMeasure(selection[0], selection[1]);
+        viewer.defineMeasure(selection[0], selection[1]);
       } else {
         boolean ok =
-          control.deleteMatchingMeasurement(selection[0], selection[1]);
+          viewer.deleteMatchingMeasurement(selection[0], selection[1]);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 

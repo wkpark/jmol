@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import java.io.Reader;
@@ -53,8 +53,8 @@ public class CACheReader extends DefaultChemFileReader {
    *
    * @param input source of CAChe data
    */
-  public CACheReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public CACheReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
     System.out.println("Parsing CAChe Molstruct File");
   }
 
@@ -66,7 +66,7 @@ public class CACheReader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFile file = new ChemFile(viewer, bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
     System.out.println(line);
@@ -92,7 +92,7 @@ public class CACheReader extends DefaultChemFileReader {
       if (line.indexOf("ID dflag sym anum chrg xyz_coordinates") >= 0) {
 
         // frame is where we store property data
-        frame = new ChemFrame(control);
+        frame = new ChemFrame(viewer);
         try {
           readCoordinates(frame);
         } catch (Exception e) {

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
@@ -68,8 +68,8 @@ public class GamessReader extends DefaultChemFileReader {
    *
    * @param input source of GAMESS data
    */
-  public GamessReader(DisplayControl control, Reader input) {
-    super(control, input);
+  public GamessReader(JmolViewer viewer, Reader input) {
+    super(viewer, input);
   }
 
   /**
@@ -80,7 +80,7 @@ public class GamessReader extends DefaultChemFileReader {
    */
   public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile(control, bondsEnabled);
+    ChemFile file = new ChemFile(viewer, bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
 
@@ -89,7 +89,7 @@ public class GamessReader extends DefaultChemFileReader {
       if (line.indexOf("COORDINATES (BOHR)") >= 0) {
 
         // Found a set of coordinates.
-        frame = new ChemFrame(control);
+        frame = new ChemFrame(viewer);
         input.readLine();
         readCoordinates(frame, true);
         break;
@@ -114,7 +114,7 @@ public class GamessReader extends DefaultChemFileReader {
           } else {
             file.addFrame(frame);
           }
-          frame = new ChemFrame(control);
+          frame = new ChemFrame(viewer);
           input.readLine();
           input.readLine();
           readCoordinates(frame, false);

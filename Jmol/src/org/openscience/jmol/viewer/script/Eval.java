@@ -1271,12 +1271,9 @@ public class Eval implements Runnable {
   // but someplace in the rasmol doc it makes reference to the geometric
   // center as the default for rotations. who knows. 
   void center() throws ScriptException {
-    if (statementLength == 1) {
-      viewer.clearSelection();
-    } else {
-      viewer.setSelectionSet(expression(statement, 1));
-    }
-    viewer.setCenterAsSelected();
+    viewer.setCenterBitSet(statementLength == 1
+                           ? null
+                           : expression(statement, 1));
   }
 
   void color() throws ScriptException {

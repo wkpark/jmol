@@ -146,22 +146,25 @@ public class ModelManager {
     return (frame == null) ? 0 : frame.getBondCount();
   }
 
-  public void setCenterAsSelected() {
+  private final Point3f pointT = new Point3f();
+  public void setCenterBitSet(BitSet bsCenter) {
     if (frame == null)
       return;
-    int countSelected = 0;
-    Point3f  center = new Point3f(); // defaults to 0,00,
-    BitSet bsSelection = viewer.getSelectionSet();
-    for (int i = getAtomCount(); --i >= 0; ) {
-      if (!bsSelection.get(i))
-        continue;
-      ++countSelected;
-      center.add(frame.getAtomPoint3f(i));
-    }
-    if (countSelected > 0) {
-      center.scale(1.0f / countSelected); // just divide by the quantity
-    } else {
-      center = null;
+    Point3f center = null;
+    if (bsCenter != null) {
+      int countSelected = 0;
+      center = pointT;
+      center.set(0,0,0);
+      for (int i = getAtomCount(); --i >= 0; ) {
+        if (! bsCenter.get(i))
+          continue;
+        ++countSelected;
+        center.add(frame.getAtomPoint3f(i));
+      }
+      if (countSelected > 0)
+        center.scale(1.0f / countSelected); // just divide by the quantity
+      else
+        center = null;
     }
     frame.setRotationCenter(center);
   }

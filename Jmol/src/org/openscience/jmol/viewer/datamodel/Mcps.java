@@ -182,7 +182,8 @@ abstract class Mcps extends Shape {
       case -4: // trace displacement
         {
           Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
-          return calcMeanPositionalDisplacement(atom.getBfactor100());
+          return // double it ... we are returning a diameter
+            (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
         }
       }
       System.out.println("unrecognized Mcps.getSpecial(" +

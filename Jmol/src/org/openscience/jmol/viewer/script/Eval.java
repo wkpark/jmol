@@ -2113,8 +2113,11 @@ public class Eval implements Runnable {
       mad = -2;
       break;
     case Token.temperature:
-      mad = -3;
-      break;
+      // MTH 2004 03 15
+      // Let temperature return the mean positional displacement
+      // see what people think
+      //      mad = -3;
+      //      break;
     case Token.displacement:
       mad = -4;
       break;

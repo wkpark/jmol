@@ -55,6 +55,7 @@ final public class Frame {
   public short modelIDs[];
   int atomCount = 0;
   public Atom[] atoms;
+  Object[] clientAtomReferences;
   int bondCount = 0;
   public Bond[] bonds;
   public float[] notionalUnitcell;
@@ -117,7 +118,8 @@ final public class Frame {
                       float occupancy,
                       float bfactor,
                       String atomTypeName, float x, float y, float z,
-                      String pdbAtomRecord) {
+                      String pdbAtomRecord,
+                      Object clientAtomReference) {
     if (modelNumber != lastModelNumber) {
       if (modelCount == modelIDs.length) {
       short[] newModelIDs = new short[atoms.length + 20];
@@ -140,7 +142,19 @@ final public class Frame {
                          bfactor,
                          atomTypeName, x, y, z,
                          pdbFile, pdbAtomRecord);
-    atoms[atomCount++] = atom;
+    atoms[atomCount] = atom;
+    if (clientAtomReference != null) {
+      if (clientAtomReferences == null)
+        clientAtomReferences = new Object[atoms.length];
+      else if (clientAtomReferences.length <= atomCount) {
+        Object[] t = new Object[atoms.length];
+        System.arraycopy(clientAtomReferences, 0, t, 0,
+                         clientAtomReferences.length);
+        clientAtomReferences = t;
+      }
+      clientAtomReferences[atomCount] = clientAtomReference;
+    }
+    ++atomCount;
     htAtomMap.put(atomUid, atom);
     if (bspf != null)
       bspf.addTuple(atom.getModelNumber(), atom);

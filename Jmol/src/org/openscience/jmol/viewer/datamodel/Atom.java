@@ -398,6 +398,16 @@ public class Atom implements Bspt.Tuple {
       return null;
     return pdbAtom.group.chain.pdbmodel;
   }
+  
+  public String getClientAtomStringProperty(String propertyName) {
+    Object[] clientAtomReferences = frame.clientAtomReferences;
+    return
+      ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
+       ? null
+       : (frame.viewer.
+          getClientAtomStringProperty(clientAtomReferences[atomIndex],
+                                      propertyName)));
+  }
 
   public boolean isDeleted() {
     return madAtom == JmolConstants.MAR_DELETED;

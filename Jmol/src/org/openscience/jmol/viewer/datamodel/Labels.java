@@ -165,13 +165,14 @@ public class Labels extends Shape {
     int cch = strFormat.length();
     int ich, ichPercent;
     for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1; ) {
-      strLabel += strFormat.substring(ich, ichPercent);
+      if (ich != ichPercent)
+        strLabel += strFormat.substring(ich, ichPercent);
       ich = ichPercent + 1;
       if (ich == cch) {
         --ich; // a percent sign at the end of the string
         break;
       }
-      int ch = strFormat.charAt(ich++);
+      char ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
         strLabel += atom.getAtomNumber();
@@ -232,8 +233,19 @@ public class Labels extends Shape {
         if (pdbatom != null)
           strLabel += pdbatom.getSeqcodeString();
         break;
+      case '{': // client property name
+        int ichCloseBracket = strFormat.indexOf('}', ich);
+        if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
+          String propertyName = strFormat.substring(ich, ichCloseBracket);
+          String value = atom.getClientAtomStringProperty(propertyName);
+          if (value != null)
+            strLabel += value;
+          ich = ichCloseBracket + 1;
+          break;
+        }
+        // malformed will fall into
       default:
-        strLabel += "" + ch;
+        strLabel += "%" + ch;
       }
     }
     strLabel += strFormat.substring(ich);

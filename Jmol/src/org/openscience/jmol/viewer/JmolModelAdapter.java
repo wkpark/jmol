@@ -140,6 +140,11 @@ public abstract class JmolModelAdapter {
     return null;
   }
 
+  public String getClientAtomStringProperty(Object clientAtom,
+                                            String propertyName) {
+    return null;
+  }
+
   /**
    * Returns an AtomIterator used to retrieve all the atoms in the file.
    * This method may not return <code>null</code>.
@@ -179,6 +184,7 @@ public abstract class JmolModelAdapter {
     public float getBfactor() { return Float.NaN; }
     public float getOccupancy() { return Float.NaN; }
     public String getPdbAtomRecord() { return null; }
+    public Object getClientAtomReference() { return null; }
   }
 
   /****************************************************************

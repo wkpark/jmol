@@ -85,6 +85,11 @@ public class ModelManager {
     }
   }
 
+  public String getClientAtomStringProperty(Object clientAtom,
+                                            String propertyName) {
+    return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
+  }
+
   public Frame getFrame() {
     return (frame == null) ? nullFrame : frame;
   }

@@ -921,6 +921,12 @@ final public class JmolViewer {
     return null;
   }
 
+  public String getClientAtomStringProperty(Object clientAtomReference,
+                                            String propertyName) {
+    return modelManager.getClientAtomStringProperty(clientAtomReference,
+                                                    propertyName);
+  }
+
   /****************************************************************
    * This is the method that should be used to extract the model
    * data from Jmol.

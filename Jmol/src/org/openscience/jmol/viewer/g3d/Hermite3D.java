@@ -57,19 +57,19 @@ public class Hermite3D {
                      int x0, int y0, int z0, int x1, int y1, int z1,
                      int x2, int y2, int z2, int x3, int y3, int z3) {
     g3d.setColix(colix1);
-    int xT1 = (x2 - x0) / 2;
-    int yT1 = (y2 - y0) / 2;
-    int zT1 = (z2 - z0) / 2;
-    int xT2 = (x3 - x1) / 2;
-    int yT2 = (y3 - y1) / 2;
-    int zT2 = (z3 - z1) / 2;
+    int xT1 = (x2 - x0) * 7 / 8;
+    int yT1 = (y2 - y0) * 7 / 8;
+    int zT1 = (z2 - z0) * 7 / 8;
+    int xT2 = (x3 - x1) * 7 / 8;
+    int yT2 = (y3 - y1) * 7 / 8;
+    int zT2 = (z3 - z1) * 7 / 8;
 
     sA[0] = 0;
     xA[0] = x1; yA[0] = y1; zA[0] = z1;
-    g3d.plotPixelClipped(x1, y1, z1);
+    g3d.fillSphereCentered(colix1, diameter, x1, y1, z1);
     sB[0] = 1;
     xB[0] = x2; yB[0] = y2; zB[0] = z2;
-    g3d.plotPixelClipped(x2, y2, z2);
+    g3d.fillSphereCentered(colix1, diameter, x2, y2, z2);
     sp = 0;
     do {
       int dx = xB[sp] - xA[sp];
@@ -89,7 +89,7 @@ public class Hermite3D {
         int x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
         int y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
         int z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
-        g3d.plotPixelClipped(x, y, z);
+        g3d.fillSphereCentered(colix1, diameter, x, y, z);
         xB[sp+1] = xB[sp];
         yB[sp+1] = yB[sp];
         zB[sp+1] = zB[sp];

@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.protein.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
@@ -35,15 +36,28 @@ public class Trace {
   JmolViewer viewer;
   Frame frame;
   boolean hasPdbRecords;
+  PdbMolecule pdbMolecule;
+  float radius;
     
   Trace(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
     hasPdbRecords = frame.hasPdbRecords;
+    pdbMolecule = frame.pdbMolecule;
   }
 
   public void setTrace(float radius, BitSet bsSelected) {
+    this.radius = radius;
     if (! hasPdbRecords)
       return;
+    /*
+    for (AtomIterator ai = frame.getAtomIterator(bsSelected); ai.hasNext(); ) {
+      Atom atom = ai.next();
+      PdbAtom pdbAtom = atom.pdbatom;
+      if (! pdbAtom.isAlphaCarbon())
+        continue;
+      Atom[] chainAlphaCarbons = pdbMolecule.getChainAlphaCarbons(pdbAtom.getChain());
+    }
+    */
   }
 }

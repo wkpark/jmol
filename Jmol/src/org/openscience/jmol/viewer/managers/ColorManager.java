@@ -228,7 +228,7 @@ public class ColorManager {
 
   public short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
-    PdbAtom pdbatom = atom.pdbatom;
+    PdbAtom pdbatom = atom.pdbAtom;
     if (suppliesAtomArgb) {
       argb = modelAdapter.getAtomArgb(atom.clientAtom, palette);
       if (argb != 0)

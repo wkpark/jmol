@@ -45,7 +45,7 @@ public class Frame {
   // whether or not this frame has any protein properties
   int modelType;
   boolean hasPdbRecords;
-  PdbMolecule pdbmolecule;
+  PdbMolecule pdbMolecule;
 
   final static int growthIncrement = 128;
   int atomCount = 0;
@@ -59,7 +59,7 @@ public class Frame {
     this.modelType = modelType;
     this.hasPdbRecords = hasPdbRecords;
     if (hasPdbRecords)
-      pdbmolecule = new PdbMolecule(this);
+      pdbMolecule = new PdbMolecule(this);
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
     this.frameRenderer = viewer.getFrameRenderer();
@@ -78,7 +78,7 @@ public class Frame {
     if (bondCount == 0 && viewer.getAutoBond())
       rebond();
     if (hasPdbRecords)
-      pdbmolecule.finalize(atomCount);
+      pdbMolecule.finalize(atomCount, atoms);
   }
 
   public Atom addAtom(Object clientAtom) {
@@ -116,7 +116,7 @@ public class Frame {
   }
 
   public PdbAtom getPdbAtom(int atomIndex) {
-    return atoms[atomIndex].pdbatom;
+    return atoms[atomIndex].pdbAtom;
   }
 
   public int getBondCount() {

@@ -269,8 +269,8 @@ public class ModelManager {
       if (atomTypeName != null)
         return atomTypeName;
     }
-    if (atom.pdbatom != null) {
-      return atom.pdbatom.getAtomName();
+    if (atom.pdbAtom != null) {
+      return atom.pdbAtom.getAtomName();
     }
     return getAtomicSymbol(atom);
   }

@@ -40,7 +40,7 @@ public class Atom implements Bspt.Tuple {
   private short atomIndex = -1;
   public byte atomicNumber;
   public Object clientAtom;
-  public PdbAtom pdbatom;
+  public PdbAtom pdbAtom;
   Frame frame;
   Point3f point3f;
   int x, y, z;
@@ -61,7 +61,7 @@ public class Atom implements Bspt.Tuple {
     if (frame.hasPdbRecords()) {
       String pdbRecord = viewer.getPdbAtomRecord(clientAtom);
       if (pdbRecord != null)
-        pdbatom = new PdbAtom(pdbRecord);
+        pdbAtom = new PdbAtom(pdbRecord);
     }
     this.colixAtom = viewer.getColixAtom(this);
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
@@ -260,8 +260,8 @@ public boolean isBonded(Atom atomOther) {
   }
 
   public int getAtomno() {
-    if (pdbatom != null)
-      return pdbatom.getAtomNumber();
+    if (pdbAtom != null)
+      return pdbAtom.getAtomNumber();
     return getAtomIndex() +
       (frame.modelType == JmolConstants.MODEL_TYPE_XYZ ? 0 : 1);
   }
@@ -309,7 +309,7 @@ public boolean isBonded(Atom atomOther) {
   }
 
   public PdbAtom getPdbAtom() {
-    return pdbatom;
+    return pdbAtom;
   }
 
   public Object markDeleted() {

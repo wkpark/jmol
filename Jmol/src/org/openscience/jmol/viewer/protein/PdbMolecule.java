@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol.viewer.protein;
 import org.openscience.jmol.viewer.datamodel.Frame;
+import org.openscience.jmol.viewer.datamodel.Atom;
+
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -39,13 +41,17 @@ public class PdbMolecule {
     this.structureRecords = structureRecords;
   }
 
-  public void finalize(int atomCount) {
+  public void finalize(int atomCount, Atom[] atoms) {
+    propogateAtomStructure(atomCount, atoms);
+  }
+
+  private void propogateAtomStructure(int atomCount, Atom[] atoms) {
     if (structureRecords == null)
       return;
 
     Hashtable ht = new Hashtable();
     for (int i = atomCount; --i >= 0; ) {
-      PdbAtom pdbatom = frame.getPdbAtom(i);
+      PdbAtom pdbatom = atoms[i].pdbAtom;
       if (pdbatom == null)
         continue;
       int residueNum = pdbatom.getResidueNumber();
@@ -95,6 +101,49 @@ public class PdbMolecule {
           pdbatom.setStructureType(type);
         }
       }
+    }
+  }
+
+  int alphaCount = 0;
+  Atom[] alphas;
+
+  public Atom[] getAlphaCarbons() {
+    if (alphas == null)
+      buildAlphaCarbonList();
+    return alphas;
+  }
+
+  void buildAlphaCarbonList() {
+    initializeAlphas();
+    int atomCount = frame.getAtomCount();
+    for (int i = 0; i < atomCount; ++i) {
+      Atom atom = frame.getAtomAt(i);
+      PdbAtom pdbAtom = atom.pdbAtom;
+      if (pdbAtom == null || pdbAtom.getAtomID() != 1) // FIXME!! needs a symbol
+        continue;
+      addAlpha(atom);
+    }
+    finalizeAlphas();
+  }
+
+  void initializeAlphas() {
+    alphas = new Atom[64];
+  }
+
+  void addAlpha(Atom atom) {
+    if (alphaCount == alphas.length) {
+      Atom[] t = new Atom[alphaCount * 2];
+      System.arraycopy(alphas, 0, t, 0, alphaCount);
+      alphas = t;
+    }
+    alphas[alphaCount++] = atom;
+  }
+
+  void finalizeAlphas() {
+    if (alphaCount != alphas.length) {
+      Atom[] t = new Atom[alphaCount];
+      System.arraycopy(alphas, 0, t, 0, alphaCount);
+      alphas = t;
     }
   }
 }

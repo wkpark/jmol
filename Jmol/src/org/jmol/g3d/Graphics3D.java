@@ -740,16 +740,22 @@ final public class Graphics3D {
     triangle3d.fillTriangleNoisy(transparent);
   }
 
-  public void fillTriangle(int argb,
-                           int xA, int yA, int zA,
-                           int xB, int yB, int zB,
-                           int xC, int yC, int zC) {
-    /*
-    System.out.println("fillTriangle:" + xA + "," + yA + "," + zA + "->" +
-                       xB + "," + yB + "," + zB + "->" +
-                       xC + "," + yC + "," + zC);
-    */
-    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
+  final Point3i warrenA = new Point3i();
+  final Point3i warrenB = new Point3i();
+  final Point3i warrenC = new Point3i();
+
+  public void fillTriangleWarren(int argb,
+                                 int xA, int yA, int zA,
+                                 int xB, int yB, int zB,
+                                 int xC, int yC, int zC) {
+    warrenA.x = xA; warrenA.y = yA; warrenA.z = zA;
+    warrenB.x = xB; warrenB.y = yB; warrenB.z = zB;
+    warrenC.x = xC; warrenC.y = yC; warrenC.z = zC;
+
+    short colix = getColix(argb);
+
+    calcSurfaceShade(colix, false, warrenA, warrenB, warrenC);
+
     int[] t;
     t = triangle3d.ax;
     t[0] = xA; t[1] = xB; t[2] = xC;

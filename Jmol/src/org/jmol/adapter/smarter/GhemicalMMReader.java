@@ -27,129 +27,140 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 /**
  * Reads Ghemical (<a href="http://www.uku.fi/~thassine/ghemical/">
  * http://www.uku.fi/~thassine/ghemical</a>)
  * molecular mechanics (*.mm1gp) files.
+ * <code>
+ * !Header mm1gp 100
+ * !Info 1
+ * !Atoms 6
+ * 0 6 
+ * 1 6 
+ * 2 1 
+ * 3 1 
+ * 4 1 
+ * 5 1 
+ * !Bonds 5
+ * 1 0 D 
+ * 2 0 S 
+ * 3 0 S 
+ * 4 1 S 
+ * 5 1 S 
+ * !Coord
+ * 0 0.06677 -0.00197151 4.968e-07 
+ * 1 -0.0667699 0.00197154 -5.19252e-07 
+ * 2 0.118917 -0.097636 2.03406e-06 
+ * 3 0.124471 0.0904495 -4.84021e-07 
+ * 4 -0.118917 0.0976359 -2.04017e-06 
+ * 5 -0.124471 -0.0904493 5.12591e-07 
+ * !Charges
+ * 0 -0.2
+ * 1 -0.2
+ * 2 0.1
+ * 3 0.1
+ * 4 0.1
+ * 5 0.1
+ * !End
+ * </code>
  *
  * @author Egon Willighagen <egonw@sci.kun.nl>
  */
 class GhemicalMMReader extends ModelReader {
     
-    Model readModel(BufferedReader input) throws Exception {
-        model = new Model("ghemicalMM");
-        
-        byte[] atoms = new byte[1];
-        float[] atomxs = new float[1];
-        float[] atomys = new float[1];
-        float[] atomzs = new float[1];
-        float[] atomcharges = new float[1];
-        
-        int[] bondatomid1 = new int[1];
-        int[] bondatomid2 = new int[1];
-        int[] bondorder = new int[1];
-        
-        int numberOfAtoms = 0;
-        int numberOfBonds = 0;
-        
-        String line = input.readLine();
-        while (line != null) {
-            StringTokenizer st = new StringTokenizer(line);
-            String command = st.nextToken();
-            if ("!Header".equals(command)) {
-            } else if ("!Info".equals(command)) {
-            } else if ("!Atoms".equals(command)) {
-                
-                // determine number of atoms to read
-                numberOfAtoms = Integer.parseInt(st.nextToken());
-                atoms = new byte[numberOfAtoms];
-                atomxs = new float[numberOfAtoms];
-                atomys = new float[numberOfAtoms];
-                atomzs = new float[numberOfAtoms];
-                
-                for (int i = 0; i < numberOfAtoms; i++) {
-                    line = input.readLine();
-                    StringTokenizer atomInfoFields = new StringTokenizer(line);
-                    int atomID = Integer.parseInt(atomInfoFields.nextToken());
-                    atoms[atomID] = Byte.parseByte(atomInfoFields.nextToken());
-                }
-            } else if ("!Bonds".equals(command)) {
-                
-                // determine number of bonds to read
-                numberOfBonds = Integer.parseInt(st.nextToken());
-                bondatomid1 = new int[numberOfAtoms];
-                bondatomid2 = new int[numberOfAtoms];
-                bondorder = new int[numberOfAtoms];
-                
-                for (int i = 0; i < numberOfBonds; i++) {
-                    line = input.readLine();
-                    StringTokenizer bondInfoFields = new StringTokenizer(line);
-                    bondatomid1[i] = Integer.parseInt(bondInfoFields.nextToken());
-                    bondatomid2[i] = Integer.parseInt(bondInfoFields.nextToken());
-                    String order = bondInfoFields.nextToken();
-                    if ("D".equals(order)) {
-                        bondorder[i] = 2;
-                    } else if ("S".equals(order)) {
-                        bondorder[i] = 1;
-                    } else if ("T".equals(order)) {
-                        bondorder[i] = 3;
-                    } else {
-                        
-                        // ignore order, i.e. set to single
-                        bondorder[i] = 1;
-                    }
-                }
-            } else if ("!Coord".equals(command)) {
-                for (int i = 0; i < numberOfAtoms; i++) {
-                    line = input.readLine();
-                    StringTokenizer atomInfoFields = new StringTokenizer(line);
-                    int atomID = Integer.parseInt(atomInfoFields.nextToken());
-                    float x = Float.parseFloat(atomInfoFields.nextToken());
-                    float y = Float.parseFloat(atomInfoFields.nextToken());
-                    float z = Float.parseFloat(atomInfoFields.nextToken());
-                    atomxs[atomID] = x * 10;    // convert to Angstrom
-                    atomys[atomID] = y * 10;
-                    atomzs[atomID] = z * 10;
-                }
-            } else if ("!Charges".equals(command)) {
-                atomcharges = new float[numberOfAtoms];
-                
-                for (int i = 0; i < numberOfAtoms; i++) {
-                    line = input.readLine();
-                    StringTokenizer atomInfoFields = new StringTokenizer(line);
-                    int atomID = Integer.parseInt(atomInfoFields.nextToken());
-                    float charge = Float.parseFloat(atomInfoFields.nextToken());
-                    atomcharges[atomID] = charge;
-                }
-            } else if ("!End".equals(command)) {
-                
-                // Store atoms
-                for (int i = 0; i < numberOfAtoms; i++) {
-                    Atom atom = model.addNewAtom();
-                    // atom.elementSymbol = "None";
-                    atom.elementNumber = atoms[i];
-                    atom.x = atomxs[i];
-                    atom.y = atomys[i];
-                    atom.z = atomzs[i];
-                }
-                
-                // Store bonds
-                for (int i = 0; i < numberOfBonds; i++) {
-                    model.addBond(new Bond(bondatomid1[i], bondatomid2[i], bondorder[i]));
-                }
-                
-                return model;
-            } else {
-                
-                // disregard this line
-            }
-            
-            line = input.readLine();
-        }
-        
-        // this should not happen, file is lacking !End command
-        return null;
+  Model readModel(BufferedReader input) throws Exception {
+
+    model = new Model("ghemicalMM");
+
+    String line;
+    while ((line = input.readLine()) != null) {
+      if (line.startsWith("!Header"))
+        processHeader(line);
+      else if (line.startsWith("!Info"))
+        processInfo(line);
+      else if (line.startsWith("!Atoms"))
+        processAtoms(input, line);
+      else if (line.startsWith("!Bonds"))
+        processBonds(input, line);
+      else if (line.startsWith("!Coord"))
+        processCoord(input, line);
+      else if (line.startsWith("!Charges"))
+        processCharges(input, line);
+      else if (line.startsWith("!End")) {
+        return model;
+      }
     }
+    model.errorMessage = "unexpected end of file";
+    return model;
+  }
+
+  void processHeader(String line) {
+  }
+
+  void processInfo(String line) {
+  }
+
+  void processAtoms(BufferedReader input, String line) throws Exception {
+    int atomCount = parseInt(line, 6);
+    for (int i = 0; i < atomCount; ++i) {
+      if (model.atomCount != i)
+        throw new Exception("GhemicalMMReader error #1");
+      line = input.readLine();
+      int atomIndex = parseInt(line);
+      if (atomIndex != i)
+        throw new Exception("bad atom index in !Atoms" +
+                            "expected: " + i + " saw:" + atomIndex);
+      int elementNumber = parseInt(line, ichNextParse);
+      Atom atom = model.addNewAtom();
+      atom.elementNumber = (byte)elementNumber;
+    }
+  }
+
+  void processBonds(BufferedReader input, String line) throws Exception {
+    int bondCount = parseInt(line, 6);
+    for (int i = 0; i < bondCount; ++i) {
+      line = input.readLine();
+      int atomIndex1 = parseInt(line);
+      int atomIndex2 = parseInt(line, ichNextParse);
+      String orderCode = parseToken(line, ichNextParse);
+      int order = 0;
+      switch(orderCode.charAt(0)) {
+      case 'T':
+        ++order;
+      case 'D':
+        ++order;
+      case 'S':
+      default:
+        ++order;
+      }
+      model.addNewBond(atomIndex1, atomIndex2, order);
+    }
+  }
+
+  void processCoord(BufferedReader input, String line) throws Exception {
+    for (int i = 0; i < model.atomCount; ++i) {
+      line = input.readLine();
+      int atomIndex = parseInt(line);
+      if (atomIndex != i)
+        throw new Exception("bad atom index in !Coord" +
+                            "expected: " + i + " saw:" + atomIndex);
+      Atom atom = model.atoms[i];
+      atom.x = parseFloat(line, ichNextParse) * 10;
+      atom.y = parseFloat(line, ichNextParse) * 10;
+      atom.z = parseFloat(line, ichNextParse) * 10;
+    }
+  }
+
+  void processCharges(BufferedReader input, String line) throws Exception {
+    for (int i = 0; i < model.atomCount; ++i) {
+      line = input.readLine();
+      int atomIndex = parseInt(line);
+      if (atomIndex != i)
+        throw new Exception("bad atom index in !Charges" +
+                            "expected: " + i + " saw:" + atomIndex);
+      Atom atom = model.atoms[i];
+      atom.partialCharge = parseFloat(line, ichNextParse);
+    }
+  }
 }

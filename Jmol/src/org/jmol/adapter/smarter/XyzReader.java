@@ -26,7 +26,6 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 class XyzReader extends ModelReader {
     
@@ -36,61 +35,63 @@ class XyzReader extends ModelReader {
 
     try {
       int modelNumber = 1;
-      int modelCount;
-      while ((modelCount = readAtomCount(reader)) > 0) {
+      int modelAtomCount;
+      while ((modelAtomCount = readAtomCount(reader)) > 0) {
         if (modelNumber == 1)
           model.setModelName(reader.readLine());
         else
           reader.readLine();
-        readAtoms(reader, modelNumber, modelCount);
+        readAtoms(reader, modelNumber, modelAtomCount);
         ++modelNumber;
       }
     } catch (Exception ex) {
       model.errorMessage = "Could not read file:" + ex;
-    }
-    if (model.atomCount == 0) {
-      model.errorMessage = "No atoms in file";
     }
     return model;
   }
     
   int readAtomCount(BufferedReader reader) throws Exception {
     String line = reader.readLine();
-    if (line == null)
-      return 0;
-    StringTokenizer tokenizer = new StringTokenizer(line, "\t ");
-    if (! tokenizer.hasMoreTokens())
-      return 0;
-    return Integer.parseInt(tokenizer.nextToken());
+    if (line != null) {
+      int atomCount = parseInt(line);
+      if (atomCount > 0)
+        return atomCount;
+    }
+    return 0;
   }
   
+  final float[] chargeAndOrVector = new float[4];
+  final boolean isNaN[] = new boolean[4];
+  
   void readAtoms(BufferedReader reader,
-                 int modelNumber, int modelCount) throws Exception {
-    float[] chargeAndOrVector = new float[4];
-    for (int i = 0; i < modelCount; ++i) {
-      StringTokenizer tokenizer =
-        new StringTokenizer(reader.readLine(), "\t ");
-      String elementSymbol = tokenizer.nextToken().intern();
-      float x = parseFloat(tokenizer.nextToken());
-      float y = parseFloat(tokenizer.nextToken());
-      float z = parseFloat(tokenizer.nextToken());
-      int j;
-      for (j = 0; j < 4 && tokenizer.hasMoreTokens(); ++j)
-        chargeAndOrVector[j] = parseFloat(tokenizer.nextToken());
-      int charge = (j == 1 || j == 4) ? (int)chargeAndOrVector[0] : 0;
-      float vectorX, vectorY, vectorZ;
-      vectorX = vectorY = vectorZ = Float.NaN;
-      if (j >= 3) {
-        vectorX = chargeAndOrVector[j - 3];
-        vectorY = chargeAndOrVector[j - 2];
-        vectorZ = chargeAndOrVector[j - 1];
-      }
+                 int modelNumber, int modelAtomCount) throws Exception {
+    for (int i = 0; i < modelAtomCount; ++i) {
+      String line = reader.readLine();
       Atom atom = model.addNewAtom();
       atom.modelNumber = modelNumber;
-      atom.elementSymbol = elementSymbol;
-      atom.formalCharge = charge;
-      atom.x = x; atom.y = y; atom.z = z;
-      atom.vectorX = vectorX; atom.vectorY = vectorY; atom.vectorZ = vectorZ;
+      atom.elementSymbol = parseToken(line);
+      atom.x = parseFloat(line, ichNextParse);
+      atom.y = parseFloat(line, ichNextParse);
+      atom.z = parseFloat(line, ichNextParse);
+      for (int j = 0; j < 4; ++j)
+        isNaN[j] =
+          Float.isNaN(chargeAndOrVector[j] = parseFloat(line, ichNextParse));
+      if (isNaN[0])
+        continue;
+      if (isNaN[1]) {
+        atom.formalCharge = (int)chargeAndOrVector[0];
+        continue;
+      }
+      if (isNaN[3]) {
+        atom.vectorX = chargeAndOrVector[0];
+        atom.vectorY = chargeAndOrVector[1];
+        atom.vectorZ = chargeAndOrVector[2];
+        continue;
+      }
+      atom.formalCharge = (int)chargeAndOrVector[0];
+      atom.vectorX = chargeAndOrVector[1];
+      atom.vectorY = chargeAndOrVector[2];
+      atom.vectorZ = chargeAndOrVector[3];
     }
   }
 }

@@ -31,7 +31,6 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 /**
  * A reader for SHELX output (RES) files. It does not read all information.
@@ -70,7 +69,7 @@ class ShelxReader extends ModelReader {
           break;
         continue;
       }
-      // FIXME -- should we call toUpperCase(Locale.US)
+      // FIXME -- should we call toUpperCase(Locale.US) ?
       // although I really don't think it is necessary
       String command = line.substring(0, 4).toUpperCase();
       for (int i = unsupportedRecordTypes.length; --i >= 0; )
@@ -78,7 +77,7 @@ class ShelxReader extends ModelReader {
           continue readLine_loop;
       for (int i = supportedRecordTypes.length; --i >= 0; )
         if (command.equals(supportedRecordTypes[i])) {
-          processSupportedRecord(i, line.substring(4).trim());
+          processSupportedRecord(i, line);
           if (endReached)
             break readLine_loop;
           continue readLine_loop;
@@ -91,17 +90,17 @@ class ShelxReader extends ModelReader {
   final static String[] supportedRecordTypes =
   {"TITL", "CELL", "SPGR", "END "};
 
-  void processSupportedRecord(int recordIndex, String restOfLine)
+  void processSupportedRecord(int recordIndex, String line)
     throws Exception {
     switch(recordIndex) {
     case 0: // TITL
-      model.modelName = restOfLine;
+      model.modelName = parseTrimmed(line, 4);
       break;
     case 1: // CELL
-      cell(restOfLine);
+      cell(line);
       break;
     case 2: // SPGR
-      model.spaceGroup = restOfLine;
+      model.spaceGroup = parseTrimmed(line, 4);
       break;
     case 3: // END
       endReached = true;
@@ -109,43 +108,29 @@ class ShelxReader extends ModelReader {
     }
   }
   
-  void cell(String restOfLine) throws Exception {
+  void cell(String line) throws Exception {
     /* example:
      * CELL  1.54184   23.56421  7.13203 18.68928  90.0000 109.3799  90.0000
      * CELL   1.54184   7.11174  21.71704  30.95857  90.000  90.000  90.000
      */
-    StringTokenizer st = new StringTokenizer(restOfLine);
-
-    float wavelength = parseFloat(st.nextToken());
+    float wavelength = parseFloat(line, 4);
     float[] notionalUnitcell = new float[6];
     for (int i = 0; i < 6; ++i)
-      notionalUnitcell[i] = parseFloat(st.nextToken());
+      notionalUnitcell[i] = parseFloat(line, ichNextParse);
     model.wavelength = wavelength;
     model.notionalUnitcell = notionalUnitcell;
   }
-
-  /*
-  void spgr(String restOfLine) throws Exception {
-    // Line added by PLATON stating the spacegroup
-    // Q: Is a tokenizer actually needed here?
-    // the line is already trimmed ... perhaps we can use it as is
-    StringTokenizer st = new StringTokenizer(restOfLine);
-    this.spaceGroup = st.nextToken();
-  }
-  */
-
 
   void assumeAtomRecord(String line) {
     try {
       //    System.out.println("Assumed to contain an atom: " + line);
       // this line gives an atom, because all lines not starting with
       // a SHELX command is an atom
-      StringTokenizer st = new StringTokenizer(line);
-      String atomName = st.nextToken();
-      int scatterFactor = parseInt(st.nextToken());
-      float a = parseFloat(st.nextToken());
-      float b = parseFloat(st.nextToken());
-      float c = parseFloat(st.nextToken());
+      String atomName = parseToken(line);
+      int scatterFactor = parseInt(line, ichNextParse);
+      float a = parseFloat(line, ichNextParse);
+      float b = parseFloat(line, ichNextParse);
+      float c = parseFloat(line, ichNextParse);
       // skip the rest
       
       /*

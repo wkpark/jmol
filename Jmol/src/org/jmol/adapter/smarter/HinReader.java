@@ -26,7 +26,6 @@
 package org.jmol.adapter.smarter;
 
 import org.jmol.api.ModelAdapter;
-import java.util.StringTokenizer;
 import java.io.BufferedReader;
 
 /**
@@ -60,13 +59,15 @@ class HinReader extends ModelReader {
 
   int modelNumber;
   int atomIndex;
-  int modelBaseAtomIndex;
+  int baseAtomIndex;
   String[] tokens;
+
+  final static int MAX_TOKENS = 40; // should be plenty
 
   void readAtoms(BufferedReader reader) throws Exception {
 
     modelNumber = 0;
-    tokens = new String[40]; // should be plenty
+    tokens = new String[MAX_TOKENS];
     errorMessage = null;
 
     String line;
@@ -86,28 +87,19 @@ class HinReader extends ModelReader {
   void processMol(String line) {
     model.setModelName(getMolName(line));
     atomIndex = 0;
-    modelBaseAtomIndex = model.atomCount;
+    baseAtomIndex = model.atomCount;
     ++modelNumber;
   }
 
   String getMolName(String line) {
-    StringTokenizer st = new StringTokenizer(line);
-    if (st.countTokens() == 3) {
-      st.nextToken();
-      st.nextToken();
-      return st.nextToken();
-    }
-    return "";
+    parseToken(line);
+    parseToken(line, ichNextParse);
+    return parseToken(line, ichNextParse);
   }
 
   void processAtom(String line) {
-    StringTokenizer tokenizer = new StringTokenizer(line, " ");
-    
-    int tokenCount = tokenizer.countTokens();
-    for (int i = 0; i < tokenCount; i++)
-      tokens[i] = tokenizer.nextToken();
-    
-    int fileAtomNumber = parseInt(tokens[1]);
+
+    int fileAtomNumber = parseInt(line, 5);
     if (fileAtomNumber - 1 != atomIndex) {
       errorMessage = "bad atom number sequence ... expected:" +
         (atomIndex + 1) + " found:" + fileAtomNumber;
@@ -116,20 +108,22 @@ class HinReader extends ModelReader {
 
     Atom atom = model.addNewAtom();
     atom.modelNumber = modelNumber;
-    atom.elementSymbol = tokens[3];
-    atom.partialCharge = parseFloat(tokens[6]);
-    atom.x = parseFloat(tokens[7]);
-    atom.y = parseFloat(tokens[8]);
-    atom.z = parseFloat(tokens[9]);
+    parseToken(line, ichNextParse); // discard
+    atom.elementSymbol = parseToken(line, ichNextParse);
+    parseToken(line, ichNextParse); // discard
+    parseToken(line, ichNextParse); // discard
+    atom.partialCharge = parseFloat(line, ichNextParse);
+    atom.x = parseFloat(line, ichNextParse);
+    atom.y = parseFloat(line, ichNextParse);
+    atom.z = parseFloat(line, ichNextParse);
     
-    int bondCount = parseInt(tokens[10]);
+    int bondCount = parseInt(line, ichNextParse);
     for (int i = 0; i < bondCount; ++i) {
-      int tokenIndex = 11 + i * 2;
-      int otherAtomNumber = parseInt(tokens[tokenIndex]);
+      int otherAtomNumber = parseInt(line, ichNextParse);
+      String bondTypeToken = parseToken(line, ichNextParse);
       if (otherAtomNumber > atomIndex)
         continue;
       int bondOrder;
-      String bondTypeToken = tokens[tokenIndex + 1];
       switch(bondTypeToken.charAt(0)) {
       case 's': 
         bondOrder = 1;
@@ -148,8 +142,8 @@ class HinReader extends ModelReader {
           " atom #" + fileAtomNumber;
         return;
       }
-      model.addNewBond(modelBaseAtomIndex + atomIndex,
-                       modelBaseAtomIndex + otherAtomNumber - 1,
+      model.addNewBond(baseAtomIndex + atomIndex,
+                       baseAtomIndex + otherAtomNumber - 1,
                        bondOrder);
     }
     ++atomIndex;

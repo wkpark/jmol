@@ -28,7 +28,6 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 class MolReader extends ModelReader {
     

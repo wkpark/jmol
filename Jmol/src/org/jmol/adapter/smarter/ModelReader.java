@@ -27,7 +27,6 @@ package org.jmol.adapter.smarter;
 
 import org.jmol.api.ModelAdapter;
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 import java.lang.reflect.Array;
 
 abstract class ModelReader {
@@ -71,14 +70,15 @@ abstract class ModelReader {
     boolean digitSeen = false;
     float value = 0;
     int ich = ichStart;
-    while (ich < ichMax && str.charAt(ich) == ' ')
+    char ch;
+    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == '-') {
       ++ich;
       negative = true;
     }
-    char ch = 0;
+    ch = 0;
     while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
       value = value * 10 + (ch - '0');
       ++ich;
@@ -145,14 +145,14 @@ abstract class ModelReader {
     boolean digitSeen = false;
     int value = 0;
     int ich = ichStart;
-    while (ich < ichMax && str.charAt(ich) == ' ')
+    char ch;
+    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == '-') {
       negative = true;
       ++ich;
     }
-    char ch;
     while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
       value = value * 10 + (ch - '0');
       digitSeen = true;
@@ -190,10 +190,45 @@ abstract class ModelReader {
 
   String parseTokenChecked(String str, int ichStart, int ichMax) {
     int ich = ichStart;
-    while (ich < ichMax && str.charAt(ich) == ' ')
+    char ch;
+    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
+      ++ich;
+    int ichNonWhite = ich;
+    while (ich < ichMax && ((ch = str.charAt(ich)) != ' ' && ch != '\t'))
+      ++ich;
+    ichNextParse = ich;
+    if (ichNonWhite == ich)
+      return null;
+    return str.substring(ichNonWhite, ich);
+  }
+
+  String parseTrimmed(String str) {
+    return parseTrimmedChecked(str, 0, str.length());
+  }
+
+  String parseTrimmed(String str, int ich) {
+    int cch = str.length();
+    if (ich >= cch)
+      return null;
+    return parseTrimmedChecked(str, ich, cch);
+  }
+
+  String parseTrimmed(String str, int ichStart, int ichMax) {
+    int cch = str.length();
+    if (ichMax > cch)
+      ichMax = cch;
+    if (ichStart >= ichMax)
+      return null;
+    return parseTrimmedChecked(str, ichStart, ichMax);
+  }
+
+  String parseTrimmedChecked(String str, int ichStart, int ichMax) {
+    int ich = ichStart;
+    char ch;
+    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
       ++ich;
     int ichLast = ichMax - 1;
-    while (ichLast >= ich && str.charAt(ichLast) == ' ')
+    while (ichLast >= ich && ((ch = str.charAt(ichLast)) == ' ' || ch == '\t'))
       --ichLast;
     if (ichLast < ich)
       return null;
@@ -219,5 +254,19 @@ abstract class ModelReader {
                      oldLength < newLength ? oldLength : newLength);
     return t;
   }
+
+  float[] setLength(float[] array, int newLength) {
+    int oldLength = array.length;
+    float[] t = new float[newLength];
+    System.arraycopy(array, 0, t, 0, 
+                     oldLength < newLength ? oldLength : newLength);
+    return t;
+  }
+
+  void discardLines(BufferedReader reader, int nLines) throws Exception {
+    for (int i = nLines; --i >= 0; )
+      reader.readLine();
+  }
+  
 }
 

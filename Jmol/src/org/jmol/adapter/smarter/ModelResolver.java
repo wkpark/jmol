@@ -57,6 +57,8 @@ class ModelResolver {
     Model model = modelReader.readModel(bufferedReader);
     if (model.errorMessage != null)
       return model.errorMessage;
+    if (model.atomCount == 0)
+      return "No atoms in file";
     return model;
   }
 

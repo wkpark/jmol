@@ -26,7 +26,6 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 class JaguarReader extends ModelReader {
     

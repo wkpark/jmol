@@ -27,186 +27,122 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StreamTokenizer;
-import java.util.StringTokenizer;
 
 /**
  * Reads Mopac 93, 97 or 2002 output files, but was tested only
  * for Mopac 93 files yet.
  *
- * @author Bradley A. Smith <bradley@baysmith.com>
  * @author Egon Willighagen <egonw@jmol.org>
  */
 class MopacReader extends ModelReader {
     
-    Model readModel(BufferedReader input) throws Exception {
-        model = new Model("mopac");
+  String frameInfo;
+  int modelNumber;
+  int baseAtomIndex;
+
+  Model readModel(BufferedReader input) throws Exception {
+    model = new Model("mopac");
         
-        String line;
-        String frameInfo = null;
-        int modelNumber = 1;
-        while (input.ready()) {
-            line = input.readLine();
-            // System.out.println("Read line: " + line);
-            if (line.startsWith(" --------------")) {
-                // ok, start of results is found (at least for Mopac 93)
-                break;
-            } else if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
-                hasSymmetry = true;
-            }
-        }
-        float[] atomicCharges = new float[0];
-        
-        while (input.ready()) {
-            line = input.readLine();
-            if (line.indexOf("TOTAL ENERGY") >= 0) {
-                frameInfo = line.trim();
-            } else if (line.indexOf("ATOMIC CHARGES") >= 0) {
-                for (int i = 0; i < 3; ++i) {
-                    line = input.readLine();
-                }
-                atomicCharges = readAtomicCharges(input);
-            } else if (line.trim().equals("CARTESIAN COORDINATES") ||
-                       (line.indexOf("ORIENTATION OF MOLECULE IN FORCE CALCULATION") >= 0)) {
-                for (int i = 0; i < 3; ++i) {
-                    line = input.readLine();
-                }
-                readCoordinates(input, modelNumber, atomicCharges);
-                atomicCharges = new float[0]; // consume charges
-                modelNumber++;
-            } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0) {
-                for (int i = 0; i < 2; ++i) {
-                    line = input.readLine();
-                }
-                // readFrequencies(); Ignore for now
-                break;
-            }
-        }
-        return model;
+    frameInfo = null;
+    modelNumber = 1;
+
+    String line;
+    while ((line = input.readLine()) != null && ! line.startsWith(" ---")) {
+      if (line.indexOf("MOLECULAR POINT GROUP") >= 0)
+        hasSymmetry = true;
     }
-    
-    /**
-     * Reads the section in MOPAC files with atomic charges.
-     * These sections look like:
-     * <pre>
-     *               NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
-     * 
-     *          ATOM NO.   TYPE          CHARGE        ATOM  ELECTRON DENSITY
-     *            1          C          -0.077432        4.0774
-     *            2          C          -0.111917        4.1119
-     *            3          C           0.092081        3.9079
-     * </pre>
-     * The are expected to be found in the file <i>before</i> the 
-     * cartesian coordinate section.
-     */
-    private float[] readAtomicCharges(BufferedReader input) throws Exception {
-        System.out.println("Reading atomic charges");
-        float[] charges = new float[50];
-        String line;
-        int chargeCounter = 0;
-        while (input.ready()) {
-            line = readLine(input);
-            if (line.trim().length() == 0) {
-                break;
-            }
-            StringReader sr = new StringReader(line);
-            StreamTokenizer token = new StreamTokenizer(sr);
-            
-            // Ignore first token; must be a number.
-            if (token.nextToken() != StreamTokenizer.TT_NUMBER) {
-                break;
-            }
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                // ok, an element number
-            } else if (token.ttype == StreamTokenizer.TT_WORD) {
-                // ok, an element symbol
-            } else {
-                throw new IOException("Error reading atomic charges: expected an element in the second token");
-            }
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                if (chargeCounter == charges.length) {
-                    charges = enlargeFloatArray(charges);
-                }
-                charges[chargeCounter] = (float)token.nval;
-                chargeCounter++;
-            } else {
-                throw new IOException("Error reading atomic charges: expected a charge in the third token");
-            }
-        }
-        return charges;
+
+    while ((line = input.readLine()) != null) {
+      if (line.indexOf("TOTAL ENERGY") >= 0)
+        processTotalEnergy(line);
+      else if (line.indexOf("ATOMIC CHARGES") >= 0)
+        processAtomicCharges(input);
+      else if (line.indexOf("CARTESIAN COORDINATES") >= 0 ||
+               line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0)
+        processCoordinates(input);
+      else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
+        processFrequencies(input);
     }
+    return model;
+  }
     
-    private float[] enlargeFloatArray(float[] charges) {
-		float[] newarray = new float[charges.length + 50];
-		System.arraycopy(charges, 0, newarray, 0, charges.length);
-		return newarray;
+  void processTotalEnergy(String line) {
+    frameInfo = line.trim();
+  }
+
+  /**
+   * Reads the section in MOPAC files with atomic charges.
+   * These sections look like:
+   * <pre>
+   *               NET ATOMIC CHARGES AND DIPOLE CONTRIBUTIONS
+   * 
+   *          ATOM NO.   TYPE          CHARGE        ATOM  ELECTRON DENSITY
+   *            1          C          -0.077432        4.0774
+   *            2          C          -0.111917        4.1119
+   *            3          C           0.092081        3.9079
+   * </pre>
+   * They are expected to be found in the file <i>before</i> the 
+   * cartesian coordinate section.
+   */
+  void processAtomicCharges(BufferedReader input) throws Exception {
+    discardLines(input, 2);
+    //    System.out.println("Reading atomic charges");
+    baseAtomIndex = model.atomCount;
+    int expectedAtomNumber = 0;
+    String line;
+    while ((line = input.readLine()) != null) {
+      int atomNumber = parseInt(line);
+      if (atomNumber == Integer.MIN_VALUE) // a blank line
+        break;
+      ++expectedAtomNumber;
+      if (atomNumber != expectedAtomNumber)
+        throw new Exception("unexpected atom number in atomic charges");
+      Atom atom = model.addNewAtom();
+      atom.elementSymbol = parseToken(line, ichNextParse);
+      atom.partialCharge = parseFloat(line, ichNextParse);
     }
+  }
     
-    /**
-     * Reads the section in MOPAC files with cartesian coordinates.
-     * These sections look like:
-     * <pre>
-     *           CARTESIAN COORDINATES
-     * 
-     *     NO.       ATOM         X         Y         Z
-     * 
-     *      1         C        0.0000    0.0000    0.0000
-     *      2         C        1.3952    0.0000    0.0000
-     *      3         C        2.0927    1.2078    0.0000
-     * </pre>
-     */
-    void readCoordinates(BufferedReader input, int modelNumber, float[] charges) throws IOException {
-        System.out.println("Reading coordinates");
-        
-        String line;
-        int atomCounter = 0;
-        while (input.ready()) {
-            line = readLine(input);
-            if (line.trim().length() == 0) {
-                break;
-            }
-            StringReader sr = new StringReader(line);
-            StreamTokenizer token = new StreamTokenizer(sr);
-            
-            // Ignore first token; must be a number.
-            if (token.nextToken() != StreamTokenizer.TT_NUMBER) {
-                break;
-            }
-            Atom atom = model.addNewAtom();
-            // atom.modelNumber = modelNumber;
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                atom.elementNumber = (byte) token.nval;
-            } else if (token.ttype == StreamTokenizer.TT_WORD) {
-                atom.elementSymbol = token.sval;
-            } else {
-                throw new IOException("Error reading coordinates");
-            }
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                atom.x = (float)token.nval;
-            } else {
-                throw new IOException("Error reading coordinates");
-            }
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                atom.y = (float)token.nval;
-            } else {
-                throw new IOException("Error reading coordinates");
-            }
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-                atom.z = (float)token.nval;
-            } else {
-                throw new IOException("Error reading coordinates");
-            }
-            // look up charge
-            if (atomCounter < charges.length) {
-                atom.partialCharge = charges[atomCounter];
-            }
-            atomCounter++;
-        }
+  /**
+   * Reads the section in MOPAC files with cartesian coordinates.
+   * These sections look like:
+   * <pre>
+   *           CARTESIAN COORDINATES
+   * 
+   *     NO.       ATOM         X         Y         Z
+   * 
+   *      1         C        0.0000    0.0000    0.0000
+   *      2         C        1.3952    0.0000    0.0000
+   *      3         C        2.0927    1.2078    0.0000
+   * </pre>
+   */
+  void processCoordinates(BufferedReader input) throws Exception {
+    //    System.out.println("Reading coordinates");
+    discardLines(input, 3);
+    int expectedAtomNumber = 0;
+    String line;
+    while ((line = input.readLine()) != null) {
+      int atomNumber = parseInt(line);
+      if (atomNumber == Integer.MIN_VALUE) // blank line
+        break;
+      ++expectedAtomNumber;
+      if (atomNumber != expectedAtomNumber)
+        throw new Exception("unexpected atom number in coordinates");
+      
+      Atom atom = model.atoms[baseAtomIndex + atomNumber - 1];
+      atom.x = parseFloat(line, 30);
+      atom.y = parseFloat(line, 40);
+      atom.z = parseFloat(line, 50);
     }
-    
-    /* void readFrequencies() throws IOException {
+  }
+  
+
+  void processFrequencies(BufferedReader input) throws Exception {
+    discardLines(input, 2);
+  }
+
+
+  /* void readFrequencies() throws IOException {
         
         String line;
         line = readLine(input);
@@ -287,20 +223,26 @@ class MopacReader extends ModelReader {
         }
     } */
     
-    private String readLine(BufferedReader input) throws IOException {
-        
-        String line = input.readLine();
-        while ((line != null) && (line.length() > 0)
-        && Character.isDigit(line.charAt(0))) {
-            line = input.readLine();
-        }
-        System.out.println("Read line: " + line);
-        return line;
+  // mth is getting rid of this
+  // skip the line if the first character is a digit?
+  // looks very strange to me
+  /*           
+  private String readLine(BufferedReader input) throws IOException {
+    
+    String line = input.readLine();
+    while ((line != null) && (line.length() > 0)
+           && Character.isDigit(line.charAt(0))) {
+      line = input.readLine();
     }
-    
-    /**
-    * Whether the input file has symmetry elements reported.
-    */
-    private boolean hasSymmetry = false;
-    
+    System.out.println("Read line: " + line);
+    return line;
+  }
+  */
+  
+  
+  /**
+   * Whether the input file has symmetry elements reported.
+   */
+  private boolean hasSymmetry = false;
+  
 }

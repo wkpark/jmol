@@ -26,7 +26,6 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 class GaussianReader extends ModelReader {
     
@@ -201,9 +200,4 @@ class GaussianReader extends ModelReader {
     }
   }
 
-  void discardLines(BufferedReader reader, int nLines) throws Exception {
-    for (int i = nLines; --i >= 0; )
-      reader.readLine();
-  }
-  
 }

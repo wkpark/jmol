@@ -11,8 +11,14 @@
 <contributor id="HG"><name>Hugo Garcia</name><email>elhugo@objectchemistry.org</email></contributor>
 <contributor id="MM"><name>Matthew Meinek</name><email>mmeineke@nd.edu</email></contributor>
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
+<contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 </contributors>
 
+<changes version="jmol-3">
+  <change contributor="CR">
+    Export of BMP and PNG images.
+  </change>
+</changes>
 
 <changes version="jmol-2">
   <change>

@@ -49,6 +49,8 @@
             <li>GIF (if the displayed image is 8 bit)</li>
             <li>JPG</li>
             <li>PPM</li>
+            <li>BMP</li>
+            <li>PNG</li>
           </ul>
         </li>
       </ul>

@@ -1344,6 +1344,8 @@ public class Eval implements Runnable {
     // this should be an object which is either a Color or a String
     byte palette = JmolConstants.PALETTE_CPK;
     Color color = null;
+    if (statement.length <= itoken)
+      badArgumentCount();
     switch (statement[itoken].tok) {
     case Token.none:
     case Token.cpk:

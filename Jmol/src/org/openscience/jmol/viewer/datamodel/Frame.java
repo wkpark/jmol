@@ -859,8 +859,10 @@ final public class Frame {
     this.pdbTranslateVector = new Vector3f(pdbScaleTranslate);
   }
 
+  // FIXME mth 2004 05 04 - do NOT pass a null in here
+  // figure out what to do about the g3d when allocating a shape renderer
   public ShapeRenderer getRenderer(int shapeType) {
-    return frameRenderer.getRenderer(shapeType);
+    return frameRenderer.getRenderer(shapeType, null);
   }
 
   void doUnitcellStuff() {

@@ -70,44 +70,56 @@
       </section>
     </section>
     
-    <section title="Jmol10pre10">
+    <section title="Jmol10pre11">
       <p>
-	Jmol version 10 pre-release 10 was released on Sat 22 May 2004.
+	Jmol version 10 pre-release 11 was released on Thu 10 Jun 2004.
 	This release includes
 	the following enhancements:
 	<ul>
-	  <li>improved support for Ribbons</li>
-	  <li>cartoons which are more RasMol-like</li>
-	  <li>support for nucleotide chain graphic shapes</li>
-	  <li>support for nucleotide chain hbonds</li>
-	  <li>applet support for 'loadInline' molecular models</li>
-	  <li>improved support for CML files</li>
-	  <li>improved support for Gaussian output</li>
+	  <li>
+	    Redesigned group handling to recognize modified residues.
+	  </li>
+	  <li>redefinition of almost all nucleic sets</li>
+	  <li>redefinition protein and backbone sets</li>
+	  <li>graphic objects now extend to the terminal atoms</li>
+	  <li>support for base platelets in nucleotide cartoons</li>
+	  <li>support for HIN files</li>
+	  <li>initial support for Ghemical files</li>
+	  <li>improved support for CIF/mmCIF files</li>
+	  <li>minor changes to force vectors &amp; vibrations</li>
+	  <li>minor changes to animations</li>
+	  <li>
+	    clicking on a schematic shape returns the alpha carbon of the group
+	  </li>
+	  <li>smaller memory footprint</li>
+	  <li>
+	    JmolApplet now <i>requires</i> the use of the
+	    <code>progressbar</code> param
+	  </li>
 	  <li>bug fixes</li>
 	</ul>
-	The following areas are still not supported. We hope to begin
-	work in one or more of these areas over the coming weeks:
+	The following areas will not be supported in the initial
+	public release of Jmol v10. 
 	<ul>
 	  <li>
 	    automatic recognition of protein secondary structures
 	    using DSSP or related algorithms
 	  </li>
 	  <li>isosurfaces</li>
-	  <li>full animation support</li>
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre10.zip">
+	<a href="Jmol10pre11.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre10.zip
+	    Jmol10pre11.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre9.zip">
+	<a href="Jmol10pre10.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre9.zip
+	    <i>Give me the old code</i> Jmol10pre10.zip
 	  </font>
 	</a>
       </p>
@@ -117,7 +129,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre10.zip</b>
+	format as .zip : <b>jar xf Jmol10pre11.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

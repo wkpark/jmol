@@ -52,6 +52,19 @@
 		  codebase="../jmol"
 		  height="20" width="150" mayscript="true" >
 	    <param name="type"  value="button" />
+	    <param name="label"  value="1D68.pdb" />
+	    <param name="target" value="jmol" />
+	    <param name="script"    value="
+		   load 1D68.pdb.gz;
+		   cpk off; wireframe off; cartoon" />
+	  </applet>
+	  <br />
+
+
+	  <applet code="JmolAppletControl" archive="JmolApplet.jar"
+		  codebase="../jmol"
+		  height="20" width="150" mayscript="true" >
+	    <param name="type"  value="button" />
 	    <param name="label"  value="1PSI.cif" />
 	    <param name="target" value="jmol" />
 	    <param name="script"    value="
@@ -64,7 +77,7 @@
 		  codebase="../jmol"
 		  height="20" width="150" mayscript="true" >
 	    <param name="type"  value="button" />
-	    <param name="label"  value="1D66.cif" />
+	    <param name="label"  value="1D66.pdb" />
 	    <param name="target" value="jmol" />
 	    <param name="script"    value="
 		   load ../ribbons/1D66.pdb.gz;

@@ -22,9 +22,50 @@
       <p>
         To develop more flexible web applications using the Jmol applet,
 	you write JavaScript code which passes text strings using the
-	"script" method of the applet.
+	"script" method of the applet. 
       </p>
     </header>
+
+    <section title="Eye Candy Without JavaScript">
+      <p>This example demonstrates how scripting can be used without
+      JavaScript. Browsers that do not support LiveConnect communication
+      between JavaScript and Java applets will still run this type
+      of script.
+
+<appletExample>
+<![CDATA[
+<table border="1"><tr><td>
+<applet name="flash" code="JmolApplet" archive="JmolApplet.jar"
+        width="300" height="100" align="left">
+	<param name="bgcolor" value="teal">
+	<param name="script" value="
+	load 'jmol.mol';
+	select all; cpk off; wireframe 10; color yellow;
+	move 0 0 0 400 0 0 0 0 2;
+	cpk 10; wireframe  5; delay 0.1;
+	cpk 30; wireframe 15; delay 0.1;
+	cpk 50; wireframe 30; delay 0.1;
+	cpk 70; wireframe 50; delay 0.1;
+	select atomno=1, atomno=9;  color blue;   delay 0.1;
+	select atomno=2, atomno=10; color red;    delay 0.1;
+	select atomno=3, atomno=11; color green;  delay 0.1;
+	select atomno=4, atomno=12; color orange; delay 0.1;
+	select atomno=5, atomno=13; color pink;   delay 0.1;
+	select atomno=6, atomno=14; color brown;  delay 0.1;
+	select atomno=7, atomno=15; color purple; delay 0.1;
+	select atomno=8, atomno=16; color cyan;   delay 0.1;
+	move 0 0 0 -400 0 0 0 0 1;
+	move 0 0 360 50 0 0 0 0 1;
+	move 0 360 0 350 0 0 0 0 1;
+	loop 5;
+	">
+</applet>
+</td></tr></table>
+]]>
+</appletExample>
+      </p>
+      <br/>
+    </section>
 
     <section title="Basic Scripting">
       <p>

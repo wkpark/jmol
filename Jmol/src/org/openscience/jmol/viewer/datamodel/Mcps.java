@@ -142,13 +142,7 @@ abstract public class Mcps extends Shape {
     }
 
     short getMadDefault(short mad, byte structureType) {
-      switch(structureType) {
-      case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-      case JmolConstants.SECONDARY_STRUCTURE_HELIX:
-        return (short)1500;
-      default:
-        return (short)500;
-      }
+      return 1;
     }
 
     public void setMad(short mad, BitSet bsSelected) {

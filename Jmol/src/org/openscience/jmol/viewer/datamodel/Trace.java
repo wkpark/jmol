@@ -40,6 +40,10 @@ public class Trace extends Mcps {
     Chain(PdbPolymer polymer) {
       super(polymer);
     }
+
+    short getMadDefault(short mad, byte structureType) {
+      return (short)600;
+    }
   }
 }
 

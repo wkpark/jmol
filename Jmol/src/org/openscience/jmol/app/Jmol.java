@@ -1427,9 +1427,6 @@ public class Jmol extends JPanel {
   class MyJmolStatusListener implements JmolStatusListener {
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile) {
-      System.out.println("notifyFileLoaded(" + fullPathName + "," +
-                         fileName + "," + modelName + "," +
-                         (clientFile != null));
       String title = "Jmol";
       if (modelName != null && fileName != null)
 	  title = fileName + " - " + modelName;

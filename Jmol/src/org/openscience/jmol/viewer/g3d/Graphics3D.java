@@ -339,7 +339,6 @@ final public class Graphics3D {
       yLast = yLast4;
       pbuf = pbuf4;
       zbuf = zbuf4;
-      System.out.println("beginRendering(true)");
     } else {
       width = width1;
       height = height1;

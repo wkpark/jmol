@@ -158,7 +158,6 @@ public class FileManager {
   }
 
   public Object getInputStreamOrErrorMessageFromName(String name) {
-    System.out.println("getInputStreamOrErrorMessageFromName name=" + name);
     String errorMessage = null;
     int iurlPrefix;
     for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0; )

@@ -43,7 +43,6 @@ public class JmolFrameBuilder {
 
   public JmolFrame buildJmolFrame() {
     JmolModelAdapter adapter = viewer.getJmolModelAdapter();
-    System.out.println("JmolFrameBuilder.buildJmolFrame()");
     int atomCount = adapter.getAtomCount(clientFile, frameNumber);
     boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
 

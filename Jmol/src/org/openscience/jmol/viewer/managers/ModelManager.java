@@ -82,7 +82,6 @@ public class ModelManager {
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
-    System.out.println("setClientFile:" + fileName);
     Object clientFilePrevious = this.clientFile;
     this.clientFile = clientFile;
     if (clientFile == null) {

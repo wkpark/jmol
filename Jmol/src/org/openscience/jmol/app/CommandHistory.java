@@ -120,7 +120,7 @@ final class CommandHistory
     */
    void addCommand(String command)
    {
-      System.out.println(command);
+       //      System.out.println(command);
 
       pos = 0;
 

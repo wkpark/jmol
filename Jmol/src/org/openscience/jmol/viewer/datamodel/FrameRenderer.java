@@ -42,7 +42,6 @@ public class FrameRenderer {
   DotsRenderer dotsRenderer;
 
   public FrameRenderer(JmolViewer viewer) {
-    System.out.println("FrameRenderer viewer:" + (viewer != null));
     this.viewer = viewer;
     atomRenderer = new AtomRenderer(viewer);
     bondRenderer = new BondRenderer(viewer);

@@ -103,7 +103,6 @@ public class DisplayPanel extends JPanel
   public void start() {
     this.addMouseListener(new MyAdapter());
     this.addMouseMotionListener(new MyMotionAdapter());
-    RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
     String vers = System.getProperty("java.version");
     control.setJvm12orGreater(vers.compareTo("1.2") >= 0);
   }

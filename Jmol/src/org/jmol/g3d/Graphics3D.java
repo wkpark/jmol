@@ -42,7 +42,6 @@ import javax.vecmath.Point3i;
 final public class Graphics3D {
 
   Platform3D platform;
-  final static boolean forcePlatformAWT = false;
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;
@@ -68,15 +67,11 @@ final public class Graphics3D {
   final Rectangle rectClip = new Rectangle();
 
   int argbCurrent;
-  boolean jvm12orGreater;
 
   Font3D font3dCurrent;
 
   public Graphics3D(Component awtComponent) {
-    jvm12orGreater = System.getProperty("java.version").compareTo("1.2") >= 0;
-    platform =(jvm12orGreater && !forcePlatformAWT
-               ? allocateSwing3D() : new Awt3D(awtComponent));
-    platform.initialize();
+    platform = Platform3D.createInstance(awtComponent);
     //    Font3D.initialize(platform);
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
@@ -87,13 +82,6 @@ final public class Graphics3D {
     //    setFontOfSize(13);
   }
   
-  private Platform3D allocateSwing3D() {
-    // this method is necessary in order to prevent Swing-related
-    // classes from getting touched on the MacOS9 platform
-    // otherwise the Mac crashes *badly* when the classes are not found
-    return new Swing3D();
-  }
-
   public void setSize(Dimension dim) {
     if (dim.width == width && dim.height == height)
       return;

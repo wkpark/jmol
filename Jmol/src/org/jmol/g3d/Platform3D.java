@@ -24,6 +24,7 @@
  */
 package org.jmol.g3d;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -41,12 +42,33 @@ abstract class Platform3D {
   Image imageOffscreen;
   Graphics gOffscreen;
 
-  final static boolean useClearingThread = false;
+  final static boolean forcePlatformAWT = false;
+  final static boolean desireClearingThread = true;
+  boolean useClearingThread = true;
 
   ClearingThread clearingThread;
 
-  final void initialize() {
+  static Platform3D createInstance(Component awtComponent) {
+    boolean jvm12orGreater =
+      System.getProperty("java.version").compareTo("1.2") >= 0;
+    boolean useSwing = jvm12orGreater && !forcePlatformAWT;
+    Platform3D platform =(useSwing
+                          ? allocateSwing3D() : new Awt3D(awtComponent));
+    platform.initialize(desireClearingThread & useSwing);
+    return platform;
+  }
+
+  private static Platform3D allocateSwing3D() {
+    // this method is necessary in order to prevent Swing-related
+    // classes from getting touched on the MacOS9 platform
+    // otherwise the Mac crashes *badly* when the classes are not found
+    return new Swing3D();
+  }
+
+  final void initialize(boolean useClearingThread) {
+    this.useClearingThread = useClearingThread;
     if (useClearingThread) {
+      System.out.println("using ClearingThread");
       clearingThread = new ClearingThread();
       clearingThread.start();
     }

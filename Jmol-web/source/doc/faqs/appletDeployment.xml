@@ -18,6 +18,13 @@
       execution. 
     </p>
   </section>
+
+  <section title="Jmol.js JavaScript Library">
+    <p>
+      Use the <a href="../jslibrary/">Jmol.js JavaScript Library</a>
+      to allocate your applets within your web pages. 
+    </p>
+  </section>
   
   <section
    title="Can the JmolApplet be permanently installed locally,
@@ -45,6 +52,10 @@
 
   <section title="Use SQUARE applets">
     <p>
+      <i>You should probably use the
+      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
+    </p>
+    <p>
       Applets should generally be <i>square</i> ... width == height.
     </p>
     <p>
@@ -56,8 +67,12 @@
       a relatively expensive operation.
     </p>
   </section>
-
+  
   <section title="Use FIXED pixel width &amp; height, not percentages">
+    <p>
+      <i>You should probably use the
+      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
+    </p>
     <p>
       <code>&lt;applet ... width='{n}' height='{n}' ... &gt;</code>
       where {n} = 300, 400, 600 ... you get the idea. 
@@ -83,7 +98,11 @@
 
   <section title="Should I use APPLET, OBJECT or EMBED for my html tag?">
     <p>
-      You should always use the <code>APPLET</code> tag.
+      <i>You should probably use the
+      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
+    </p>
+    <p>
+      Always use the <code>APPLET</code> tag.
     </p>
     <p>
       <i>

@@ -1,21 +1,27 @@
 <?xml version="1.0"?>
 <!DOCTYPE somethingOrAnything [
-<!ENTITY platforms    SYSTEM "platforms.xml" >
-<!ENTITY requirements SYSTEM "requirements.xml" >
-<!ENTITY graphics     SYSTEM "graphics.xml" >
-<!ENTITY applets      SYSTEM "applets.xml" >
+<!ENTITY appletRequirements    SYSTEM "appletRequirements.xml" >
+<!ENTITY hardwareRequirements  SYSTEM "hardwareRequirements.xml" >
+<!ENTITY appRequirements       SYSTEM "appRequirements.xml" >
+<!ENTITY performance           SYSTEM "performance.xml" >
+<!ENTITY graphics              SYSTEM "graphics.xml" >
+<!ENTITY appletDeployment      SYSTEM "appletDeployment.xml" >
 ]>
 <document>
   <body>
     <title>Jmol FAQs</title>
 
-    &platforms;
-    
-    &requirements;
+    &appletRequirements;
+
+    &hardwareRequirements;
+
+    &appRequirements;
+
+    &performance;
 
     &graphics;
 
-    &applets;
+    &appletDeployment;
 
     <section title="Jmol v10">
       <section title="When will Jmol v10 be released?">

@@ -1,4 +1,10 @@
 <?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
+<!ENTITY basic_scripting    SYSTEM "basic_scripting.xml" >
+<!ENTITY advanced_scripting SYSTEM "advanced_scripting.xml" >
+<!ENTITY showing_animations SYSTEM "showing_animations.xml" >
+]>
 <document>
   <body>
     <title>Jmol Scripting</title>
@@ -59,38 +65,9 @@
       between JavaScript and Java applets will still run this type
       of script.
 
-<table border="1"><tr><td>
-<appletExample>
-<![CDATA[
-<applet name="flash" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="[codebase]"
-        width="300" height="100" align="left" mayscript="true">
-	<param name="bgcolor" value="teal">
-	<param name="script" value="
-	load 'jmol.mol';
-	select all; cpk off; wireframe 10; color yellow;
-	move 0 0 0 400 0 0 0 0 2;
-	cpk 10; wireframe  5; delay 0.1;
-	cpk 30; wireframe 15; delay 0.1;
-	cpk 50; wireframe 30; delay 0.1;
-	cpk 70; wireframe 50; delay 0.1;
-	select atomno=1, atomno=9;  color blue;   delay 0.1;
-	select atomno=2, atomno=10; color red;    delay 0.1;
-	select atomno=3, atomno=11; color green;  delay 0.1;
-	select atomno=4, atomno=12; color orange; delay 0.1;
-	select atomno=5, atomno=13; color pink;   delay 0.1;
-	select atomno=6, atomno=14; color brown;  delay 0.1;
-	select atomno=7, atomno=15; color purple; delay 0.1;
-	select atomno=8, atomno=16; color cyan;   delay 0.1;
-	move 0 0 0 -400 0 0 0 0 1;
-	move 0 0 360 50 0 0 0 0 1;
-	move 0 360 0 350 0 0 0 0 1;
-	loop 5;
-	">
-</applet>
-]]>
-</appletExample>
-</td></tr></table>
+      <table border="1"><tr><td>
+        <appletExample>&eye_candy;</appletExample>
+      </td></tr></table>
       </p>
       <br/>
     </section>
@@ -98,57 +75,7 @@
     <section title="Basic Scripting">
       <p>
         This example shows some of the scripting available.
-<appletExample>
-<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="caffeine.xyz"/>
-</applet>
-<br>
-<a href="javascript:document.jmol.setStyle('WIREFRAME')">
-WIREFRAME</a>
-<a href="javascript:document.jmol.setStyle('SHADED')">
-SHADED</a>
-<br>
-<a href="javascript:document.jmol.load('aspirina.mol');">
-aspirina.mol</a>
-<a href="javascript:document.jmol.load('bulk_si.in');">
-bulk_si.in</a>
-<a href="javascript:document.jmol.load('caffeine.xyz');">
-caffeine.xyz</a>
-<a href="javascript:document.jmol.load('dna.xyz');">
-dna.xyz</a>
-<a href="javascript:document.jmol.load('estron.cml');">
-estron.cml</a>
-<br>
-<a href="javascript:document.jmol.script('background blue ; move 90 180 -45 0 0 0 0 0 5; 
-center 1 ; move 0 0 360 100 0 0 0 0 2 ; delay 2 ; reset; background white')">move</a>
-<a href="javascript:document.jmol.script('script move.txt');">
-move off of server</a>
-<a href="javascript:document.jmol.script('load aspirina.mol')">
-load aspirina via script</a>
-<a href="javascript:document.jmol.script('source testscript.txt')">
-run test script off of server</a>
-<br>
-<a href="javascript:document.jmol.setWireframeRotation(true)">
-setWireframeRotation(true)</a>
-<a href="javascript:document.jmol.setWireframeRotation(false)">
-setWireframeRotation(false)</a>
-<br>
-<a href="javascript:document.jmol.setPerspectiveDepth(true)">
-setPerspectiveDepth(true)</a>
-<a href="javascript:document.jmol.setPerspectiveDepth(false)">
-setPerspectiveDepth(false)</a>
-<br>
-<a href="javascript:document.jmol.script('background black')">
-background black</a>
-<a href="javascript:document.jmol.script('background grey')">
-background grey</a>
-<a href="javascript:document.jmol.script('background [222,222,222]')">
-background [222,222,222]</a>
-<a href="javascript:document.jmol.script('background white')">
-background white</a>]]>
-</appletExample>
+        <appletExample>&basic_scripting;</appletExample>
       </p>
     </section>
 
@@ -156,148 +83,15 @@ background white</a>]]>
       <p>
         This examples shows more advanced interaction of a HTML page with
         the applet.
-<appletExample>
-<![CDATA[
-<script>
-function run(script) {
-  document.jmol2.script(script);
-}
-
-function addToScript(script) {
-  fullscript = document.area.script.value;
-  fullscript += script + '\n';
-  document.area.script.value = fullscript;
-  }
-  
-function linkScript(script) {
-  document.write('<a href="javascript:addToScript(');
-  document.write("'" + script + "'");
-  document.write(')\">');
-  document.write(script);
-  document.writeln('</a>&nbsp;&nbsp');
-}
-
-function br() {
-  document.write("<br>");
-}
-
-</script>
-<table border=1>
-<tr><td width=350 align=right>
-<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="[codebase]"
-        width="350" height="350" align="left" mayscript="true">
-    <param name="bgcolor" value="black">
-</applet>
-</td>
-<td>
-Enter your RasMol/Chime script here
-<form name="area">
-<textarea name="script" cols=40 rows=10></textarea><br>
-<input type="reset"  value="Clear Script">
-<input type="button" value="Execute Script"
-  onClick="run(document.area.script.value)">
-</form>
-<br>
-Enter one-line RasMol/Chime script commands here
-<form name="line" onSubmit=
- "run(document.line.script.value);document.line.script.select();return false;">
-<input name="script" onFocus="document.line.script.select()" size=50 type=text>
-</form>
-</td></tr></table>
-
-<script>
-linkScript('load aspirina.mol');
-linkScript('load caffeine.xyz');
-linkScript('load dna.xyz');
-linkScript('load estron.cml');
-br();
-linkScript('set display selected');
-linkScript('set display normal');
-linkScript('set bondmode or');
-linkScript('set bondmode and');
-br();
-linkScript('color atoms purple');
-linkScript('color bonds green');
-linkScript('color yellow');
-linkScript('color atoms [100, 150, 200]');
-br();
-linkScript('select all');
-linkScript('select none');
-linkScript('select atomno=1,atomno=2');
-linkScript('select elemno=1');
-linkScript('select hydrogens');
-linkScript('select carbons');
-br();
-linkScript('delay .1');
-linkScript('delay .5');
-linkScript('delay');
-linkScript('delay 5');
-linkScript('refresh');
-br();
-linkScript('reset');
-linkScript('rotate x 15');
-linkScript('rotate y 15');
-linkScript('rotate z 15');
-linkScript('move 360 0 0 0 0 0 0 0 4');
-linkScript('move 0 360 0 0 0 0 0 0 4');
-linkScript('move 0 0 360 0 0 0 0 0 4');
-br();
-linkScript('translate x 50');
-linkScript('translate x 0');
-linkScript('translate x -50');
-linkScript('move 0 0 0 0 50 -50 0 0 4');
-linkScript('move 0 0 0 0 -50 50 0 0 4');
-br();
-linkScript('zoom 50');
-linkScript('zoom 200');
-linkScript('move 0 0 0 100 0 0 0 0 4');
-br();
-linkScript('set boundbox on');
-linkScript('set boundbox off');
-linkScript('set axes on');
-linkScript('set axes off');
-br();
-linkScript('monitor 1 4');
-</script>
-]]>
-</appletExample>
+        <appletExample>&advanced_scripting;</appletExample>
       </p>
     </section>
     
     <section title="Showing Animations">
       <p>
-<appletExample><![CDATA[
-  <script>
-  function play(script) {
-    document.anim.script(script);
-  }
-  </script>
-  <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
-          codebase="[codebase]"
-          width="350" height="350" mayscript="true">
-    <param name="load"   value="SN1_reaction.xyz">
-  </applet>
-  <form>
-    <input type="button" value="rewind"  onClick="play('animate rewind')">
-    <input type="button" value="prev"    onClick="play('animate prev')">
-    <input type="button" value="next"    onClick="play('animate next')">
-    <input type="button" value="play"    onClick="play('animate play')">
-    <input type="button" value="revplay" onClick="play('animate revplay')">
-    <br>
-    <input type="button" value="repeated with 2 second delay"
-           onClick="play('animate play; loop 2')">
-    <br>
-    <input type="button" value="repeated no delay"
-           onClick="play('animate play; loop 0')">
-    <br>
-    <input type="button" value="forward and reverse"
-           onClick="play('animate play; animate revplay; loop 0')">
-  </form>]]>
-</appletExample>
+        <appletExample>&showing_animations;</appletExample>
       </p>
     </section>
     
   </body>
 </document>
-

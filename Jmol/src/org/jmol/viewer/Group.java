@@ -193,6 +193,11 @@ class Group {
         return true;
     return false;
   }
+
+  boolean isHetero() {
+    // just look at the first atom of the group
+    return chain.frame.atoms[firstAtomIndex].isHetero();
+  }
   
   public String toString() {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";

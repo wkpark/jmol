@@ -1456,8 +1456,8 @@ final class Frame {
     }
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected) {
-    mmset.calcMinMaxSeqcode(bsSelected);
+  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
+    mmset.calcMinMaxSeqcode(bsSelected, heteroSetting);
   }
 
   int getMinSeqcode() {

@@ -1295,7 +1295,8 @@ final public class Viewer implements JmolViewer {
   void calcMinMaxSeqcode(boolean selectedOnly) {
     modelManager.calcMinMaxSeqcode(selectedOnly
                                    ? selectionManager.bsSelection
-                                   : null);
+                                   : null,
+                                   rasmolHeteroSetting);
   }
 
   int getMinSeqcode() {

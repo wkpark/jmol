@@ -71,12 +71,13 @@ final class Chain {
     }
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected) {
+  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
     minSeqcode = Integer.MAX_VALUE;
     maxSeqcode = Integer.MIN_VALUE;
     for (int i = groupCount; --i >= 0; ) {
       Group group = groups[i];
-      if (bsSelected == null || group.isSelected(bsSelected)) {
+      if ((bsSelected == null || group.isSelected(bsSelected)) &&
+          heteroSetting || !group.isHetero()) {
         if (group.seqcode < minSeqcode)
           minSeqcode = group.seqcode;
         if (group.seqcode > maxSeqcode)

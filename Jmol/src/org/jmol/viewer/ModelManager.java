@@ -328,9 +328,9 @@ class ModelManager {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected) {
+  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
     if (frame != null)
-      frame.calcMinMaxSeqcode(bsSelected);
+      frame.calcMinMaxSeqcode(bsSelected, heteroSetting);
   }
 
   int getMinSeqcode() {

@@ -183,17 +183,17 @@ final class Mmset {
     return groupCount;
   }
 
-  void calcMinMaxSeqcode(BitSet bsSelected) {
+  void calcMinMaxSeqcode(BitSet bsSelected, boolean heteroSetting) {
     minSeqcode = Integer.MAX_VALUE;
     maxSeqcode = Integer.MIN_VALUE;
     if (modelCount > 0) {
       Model model = models[0];
-      model.calcMinMaxSeqcode(bsSelected);
+      model.calcMinMaxSeqcode(bsSelected, heteroSetting);
       minSeqcode = model.minSeqcode;
       maxSeqcode = model.maxSeqcode;
       for (int i = modelCount; --i > 0; ) {
         model = models[i];
-        model.calcMinMaxSeqcode(bsSelected);
+        model.calcMinMaxSeqcode(bsSelected, heteroSetting);
         if (model.minSeqcode < minSeqcode)
           minSeqcode = model.minSeqcode;
         if (model.maxSeqcode > maxSeqcode)

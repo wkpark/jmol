@@ -26,34 +26,11 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
+
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
-import java.awt.image.Kernel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.awt.Composite;
-import java.awt.AlphaComposite;
-import java.awt.Polygon;
 import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
-import java.awt.RenderingHints;
-import java.util.Enumeration;
 import java.util.Hashtable;
-
-import java.awt.GradientPaint;
-import java.awt.Paint;
-import java.awt.Point;
-
-import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4d;
 
 public class BondRenderer {
 
@@ -89,9 +66,10 @@ public class BondRenderer {
   int radius2, diameter2;
   int width1, width2;
   Color outline1, outline2;
+  byte styleAtom1, styleAtom2;
   int bondOrder;
   byte styleBond;
-
+  
   public void render(AtomShape atomShape1, int index1,
                      AtomShape atomShape2, int index2,
                      int bondOrder) {
@@ -102,6 +80,8 @@ public class BondRenderer {
     dz = z2 - z1; dz2 = dz * dz;
     mag2d2 = dx2 + dy2;
     mag3d2 = mag2d2 + dz2;
+    styleAtom1 = atomShape1.styleAtom;
+    styleAtom2 = atomShape2.styleAtom;
     color1 = atomShape1.colorBonds[index1];
     if (color1 == null)
       color1 = atomShape1.colorAtom;
@@ -116,13 +96,15 @@ public class BondRenderer {
     styleBond = atomShape1.styleBonds[index1];
     if (!showAtoms && bondOrder == 1 &&
         (fastRendering || styleBond == control.WIREFRAME)) {
+      g.setColor(color1);
       if (sameColor) {
-        drawLineInside(g, color1, x1, y1, x2, y2);
+        drawLineInside(g, x1, y1, x2, y2);
       } else {
         int xMid = (x1 + x2) / 2;
         int yMid = (y1 + y2) / 2;
-        drawLineInside(g, color1, x1, y1, xMid, yMid);
-        drawLineInside(g, color2, xMid, yMid, x2, y2);
+        drawLineInside(g, x1, y1, xMid, yMid);
+        g.setColor(color2);
+        drawLineInside(g, xMid, yMid, x2, y2);
       }
       return;
     }
@@ -130,9 +112,9 @@ public class BondRenderer {
       diameter1 = diameter2 = 0;
     } else {
       diameter1 =
-        (atomShape1.styleAtom==DisplayControl.NONE) ? 0 : atomShape1.diameter;
+        (styleAtom1 == DisplayControl.NONE) ? 0 : atomShape1.diameter;
       diameter2 =
-        (atomShape2.styleAtom==DisplayControl.NONE) ? 0 : atomShape2.diameter;
+        (styleAtom2 == DisplayControl.NONE) ? 0 : atomShape2.diameter;
     }
     radius1 = diameter1 >> 1;
     radius2 = diameter2 >> 1;
@@ -176,7 +158,7 @@ public class BondRenderer {
         break;
       stepAxisCoordinates();
     }
-    if (showAtomCenters) {
+    if (showAxis) {
       g.setColor(transparentGreen);
       g.drawLine(x1 + 5, y1, x1 - 5, y1);
       g.drawLine(x1, y1 + 5, x1, y1 - 5);
@@ -188,29 +170,37 @@ public class BondRenderer {
   }
 
   private final static Color transparentGreen = new Color(0x8000FF00, true);
-  private final static boolean showAtomCenters = false;
+  private static final boolean showAxis = false;
 
   int[] axPoly = new int[4];
   int[] ayPoly = new int[4];
   int xExit, yExit;
 
   void lineBond() {
+    calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
     if (sameColor || distanceExit >= mag2dLine / 2 ) {
-      if (distanceExit < (mag2dLine - distanceSurface2))
-        drawLineInside(g, color2, xExit, yExit, xSurface2, ySurface2);
+      if (distanceExit + distanceSurface2 >= mag2dLine)
+        return;
+      g.setColor(color2);
+      drawLineInside(g, xExit, yExit, xSurface2, ySurface2);
       return;
     }
     int xMid = (xAxis1 + xAxis2) / 2;
     int yMid = (yAxis1 + yAxis2) / 2;
-    drawLineInside(g, color1, xExit, yExit, xMid, yMid);
-    drawLineInside(g, color2, xMid, yMid, xSurface2, ySurface2);
+    g.setColor(color1);
+    drawLineInside(g, xExit, yExit, xMid, yMid);
+    g.setColor(color2);
+    drawLineInside(g, xMid, yMid, xSurface2, ySurface2);
   }
 
   void polyBond(byte styleBond) {
     boolean bothColors = !sameColor;
 
+    xAxis1 -= dxHalf1; yAxis1 -= dyHalf1;
+    xAxis2 -= dxHalf2; yAxis2 -= dyHalf2;
+    calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
     int xExitTop = xExit, yExitTop = yExit;
@@ -218,21 +208,32 @@ public class BondRenderer {
     int xSurfaceTop = xSurface2, ySurfaceTop = ySurface2;
     if (distanceExit >= mag2dLine / 2) {
       bothColors = false;
-      if (distanceExit >= (mag2dLine - distanceSurface2 + 1))
+      if (distanceExit + distanceSurface2 >= mag2dLine)
         return;
     }
 
-    stepAxisCoordinates();
+    
+    xAxis1 += dxWidth1; yAxis1 += dyWidth1;
+    xAxis2 += dxWidth2; yAxis2 += dyWidth2;
+    calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
     int xExitBot = xExit, yExitBot = yExit;
     int xMidBot = (xAxis1 + xAxis2) / 2, yMidBot = (yAxis1 + yAxis2) / 2;
     int xSurfaceBot = xSurface2, ySurfaceBot = ySurface2;
+
+    // now, restore the axis points to their proper position
+    xAxis1 -= dxOtherHalf1; yAxis1 -= dyOtherHalf1;
+    xAxis2 -= dxOtherHalf2; yAxis2 -= dyOtherHalf2;
+
     if (distanceExit >= mag2dLine / 2) {
       bothColors = false;
-      if (distanceExit > (mag2dLine - distanceSurface2 + 1))
+      if (distanceExit + distanceSurface2 >= mag2dLine)
         return;
     }
+
+    // draw endcaps here, centered at axis1, axis2
+    drawEndCaps();
 
     if (! bothColors) {
       if (distanceExit < mag2dLine) {
@@ -273,7 +274,7 @@ public class BondRenderer {
           stepPolygon();
         }
         break;
-      }
+      } // else fall into QUICKDRAW
     case DisplayControl.QUICKDRAW:
       g.fillPolygon(axPoly, ayPoly, 4);
       drawInside(g, outline, 2, axPoly, ayPoly);
@@ -282,8 +283,10 @@ public class BondRenderer {
   }
 
   void drawEndCaps() {
-    drawEndCap(xAxis1, yAxis1, width1, color1, outline1);
-    drawEndCap(xAxis2, yAxis2, width2, color2, outline2);
+    if (!showAtoms || (styleAtom1 == DisplayControl.NONE))
+      drawEndCap(xAxis1, yAxis1, width1, color1, outline1);
+    if (!showAtoms || (styleAtom2 == DisplayControl.NONE))
+      drawEndCap(xAxis2, yAxis2, width2, color2, outline2);
   }
 
   void drawEndCap(int x, int y, int diameter, Color color, Color outline) {
@@ -325,73 +328,74 @@ public class BondRenderer {
       drawInside1(g, !top, ax[iSW], ay[iSW], ax[iSE], ay[iSE]);
   }
 
-  private final static boolean applyDrawInsideCorrection = true;
-
+  private final static boolean applyDrawInsideCorrection = false;
   void drawInside1(Graphics g, boolean top, int x1, int y1, int x2, int y2) {
-    if (applyDrawInsideCorrection) {
-      int dx = x2 - x1, dy = y2 - y1;
-      if (dy >= 0) {
-        if (dy == 0) {
-          if (top) {
-            --x2;
-          } else {
-            --y1; --x2; --y2;
-          }
-        } else if (3*dy < dx) {
-          if (top) {
-            ++y1; --x2;
-          } else {
-            --x2; --y2;
-          }
-        } else if (dy < dx) {
-          if (! top) {
-            --x2; --y2;
-          }
-        } else if (dx == 0) {
-          if (top) {
-            --x1; --x2; --y2;
-          } else {
-            --y2;
-          }
-        } else if (3*dx < dy) {
-          if (top) {
-            --x1; --x2; --y2;
-          } else {
-            --y2;
-          }
-        } else if (dx == dy) {
-          if (top) {
-            ++y1; --x2;
-            g.drawLine(x1, y1, x2, y2);
-            --x1; --x2;
-          } else {
-            g.drawLine(x1+1, y1, x2, y2-1);
-            --x2; --y2;
-          }
+    if (!applyDrawInsideCorrection) {
+      drawLineInside(g, x1, y1, x2, y2);
+      return;
+    }
+    int dx = x2 - x1, dy = y2 - y1;
+    if (dy >= 0) {
+      if (dy == 0) {
+        if (top) {
+          --x2;
+        } else {
+          --y1; --x2; --y2;
         }
-      } else {
-        if (dx == 0) {
-          if (top) {
-            --y1;
-          } else {
-            --x1; --y1; --x2;
-          }
-        } else if (3*dx < -dy) {
-          if (top) {
-            --y1;
-          } else {
-            --x1; --y1; --x2;
-          }
-        } else if (dx > -dy*3) {
-          if (top){
-            --x2; ++y2;
-          } else {
-            --y1; --x2;
-          }
-        } else if (dx == -dy) {
-          if (!top) {
-            --x2; ++y2;
-          }
+      } else if (3*dy < dx) {
+        if (top) {
+          ++y1; --x2;
+        } else {
+          --x2; --y2;
+        }
+      } else if (dy < dx) {
+        if (! top) {
+          --x2; --y2;
+        }
+      } else if (dx == 0) {
+        if (top) {
+          --x1; --x2; --y2;
+        } else {
+          --y2;
+        }
+      } else if (3*dx < dy) {
+        if (top) {
+          --x1; --x2; --y2;
+        } else {
+          --y2;
+        }
+      } else if (dx == dy) {
+        if (top) {
+          ++y1; --x2;
+          g.drawLine(x1, y1, x2, y2);
+          --x1; --x2;
+        } else {
+          g.drawLine(x1+1, y1, x2, y2-1);
+          --x2; --y2;
+        }
+      }
+    } else {
+      if (dx == 0) {
+        if (top) {
+          --y1;
+        } else {
+          --x1; --y1; --x2;
+        }
+      } else if (3*dx < -dy) {
+        if (top) {
+          --y1;
+        } else {
+          --x1; --y1; --x2;
+        }
+      } else if (dx > -dy*3) {
+        if (top){
+          --x2; ++y2;
+        } else {
+          --y1; --x2;
+        }
+      } else if (dx == -dy) {
+        if (!top) {
+          --x2; ++y2;
         }
       }
     }
@@ -400,7 +404,7 @@ public class BondRenderer {
 
   private final static boolean applyLineInsideCorrection = true;
 
-  void drawLineInside(Graphics g, Color co, int x1, int y1, int x2, int y2) {
+  void drawLineInside(Graphics g, int x1, int y1, int x2, int y2) {
     if (applyLineInsideCorrection) {
       if (x2 < x1) {
         int xT = x1; x1 = x2; x2 = xT;
@@ -419,7 +423,6 @@ public class BondRenderer {
           --y1;
       }
     }
-    g.setColor(co);
     g.drawLine(x1, y1, x2, y2);
   }
 
@@ -446,120 +449,74 @@ public class BondRenderer {
     return shades;
   }
 
-  // u stands for unscaled - unscaled by the magnitude
-  int dxLine, dyLine, mag2dLine;
-
-  int uxAxis1, uyAxis1;
-  int uxAxis2, uyAxis2;
-
-  int xAxis1, yAxis1;
-  int xAxis2, yAxis2;
-
-  void calcAxisCoordinates() {
-    uxAxis1 = -offset1 * dy;
-    xAxis1 = x1 + uxAxis1 / mag2d;
-    uyAxis1 = offset1 * dx;
-    yAxis1 = y1 + uyAxis1 / mag2d;
-    uxAxis2 = offset2 * -dy;
-    xAxis2 = x2 + uxAxis2 / mag2d;
-    uyAxis2 = -offset2 * -dx;
-    yAxis2 = y2 + uyAxis2 / mag2d;
-
-    dxLine = xAxis2 - xAxis1;
-    dyLine = yAxis2 - yAxis1;
-    mag2dLine = (int)Math.sqrt(dxLine*dxLine + dyLine*dyLine);
-  }
-
-  // I currently have an 'accurate method' and a 'regular method'
-  // accurate rounds each point to the nearest pixel
-  // regular makes regular steps along the axis
-  // this propogates errors, but the distances between the lines are fixed
-  private static final boolean accurateMethod = false;
-  private static final boolean showAxis = false;
-
-  int lines, steps, halfSteps, currentStep;
+  int xAxis1, yAxis1, xAxis2, yAxis2;
   int dxWidth1, dyWidth1, dxWidth2, dyWidth2;
+  int dxHalf1, dyHalf1, dxHalf2, dyHalf2;
+  int dxOtherHalf1, dyOtherHalf1, dxOtherHalf2, dyOtherHalf2;
+
+  int space1, space2, step1, step2, dxStep1, dyStep1, dxStep2, dyStep2;
+  int offsetAxis1, offsetAxis2;
 
   void resetAxisCoordinates(boolean lineBond) {
-    lines = bondOrder;
-    if (! lineBond) {
-      lines *= 2;
-    } else {
-      if (width1 == 0)
-        width1 = 1;
-      width1 *= 2;
-      if (width2 == 0)
-        width2 = 1;
-      width2 *= 2;
-    }
-    steps = lines-1;
-    halfSteps = steps / 2;
+    if (width1 == 0)
+      width1 = 1;
+    if (width2 == 0)
+      width2 = 1;
+    space1 = width1 / 4 + 2; space2 = width2 / 4 + 2;
+    step1 = width1 + space1;      step2 = width2 + space2;
+    dxStep1 = step1 * dy / mag2d; dyStep1 = step1 * -dx / mag2d;
+    dxStep2 = step2 * dy / mag2d; dyStep2 = step2 * -dx / mag2d;
 
-    if (accurateMethod) {
-      currentStep = 0;
-    } else {
-      dxWidth1 = -(width1 *  dy + halfMag2d * sgndy) / mag2d;
-      dyWidth1 =  (width1 *  dx + halfMag2d * sgndx) / mag2d;
-      dxWidth2 =  (width2 * -dy - halfMag2d * sgndy) / mag2d;
-      dyWidth2 = -(width2 * -dx - halfMag2d * sgndx) / mag2d;
+    xAxis1 = x1; yAxis1 = y1;     xAxis2 = x2; yAxis2 = y2;
 
-      xAxis1 = x1 - dxWidth1*halfSteps;
-      yAxis1 = y1 - dyWidth1*halfSteps;
-      xAxis2 = x2 - dxWidth2*halfSteps;
-      yAxis2 = y2 - dyWidth2*halfSteps;
-      if (steps % 2 == 1) {
-        xAxis1 -= (dxWidth1+1)/2;
-        yAxis1 -= (dyWidth1+1)/2;
-        xAxis2 -= (dxWidth2+1)/2;
-        yAxis2 -= (dyWidth2+1)/2;
-      }
+    if (bondOrder == 2) {
+      offsetAxis1 = -step1 / 2; offsetAxis2 = -step2 / 2;
+      xAxis1 -= dxStep1 / 2; yAxis1 -= dyStep1 / 2;
+      xAxis2 -= dxStep2 / 2; yAxis2 -= dyStep2 / 2;
+    } else if (bondOrder == 3) {
+      offsetAxis1 = -step1; offsetAxis2 = -step2;
+      xAxis1 -= dxStep1; yAxis1 -= dyStep1;
+      xAxis2 -= dxStep2; yAxis2 -= dyStep2;
     }
-    calcLineSlope();
+    if (showAxis) {
+      g.setColor(colorGreyTrans);
+      g.drawLine(x1 + dy, y1 - dx, x1 - dy, y1 + dx);
+      g.drawLine(x2 + dy, y2 - dx, x2 - dy, y2 + dx);
+    }
+    if (lineBond)
+      return;
+    /*
+    dxWidth1 = -(width1 *  dy + halfMag2d * sgndy) / mag2d;
+    dyWidth1 =  (width1 *  dx + halfMag2d * sgndx) / mag2d;
+    dxWidth2 =  (width2 * -dy - halfMag2d * sgndy) / mag2d;
+    dyWidth2 = -(width2 * -dx - halfMag2d * sgndx) / mag2d;
+    */
+    dxWidth1 = width1 * dy / mag2d;
+    dyWidth1 = width1 * -dx / mag2d;
+    dxWidth2 = width2 * dy / mag2d;
+    dyWidth2 = width2 * -dx / mag2d;
+
+    dxHalf1 = (dxWidth1 + ((dy >= 0) ? 1 : 0)) / 2;
+    dyHalf1 = (dyWidth1 + ((dx <  0) ? 1 : 0)) / 2;
+    dxHalf2 = (dxWidth2 + ((dy >= 0) ? 1 : 0)) / 2;
+    dyHalf2 = (dyWidth2 + ((dx <  0) ? 1 : 0)) / 2;
+    dxOtherHalf1 = dxWidth1 - dxHalf1; dyOtherHalf1 = dyWidth1 - dyHalf1;
+    dxOtherHalf2 = dxWidth2 - dxHalf2; dyOtherHalf2 = dyWidth2 - dyHalf2;
   }
 
   void stepAxisCoordinates() {
-    if (accurateMethod) {
-      ++currentStep;
-    } else {
-      xAxis1 += dxWidth1;
-      yAxis1 += dyWidth1;
-      xAxis2 += dxWidth2;
-      yAxis2 += dyWidth2;
-    }
-    calcLineSlope();
+    offsetAxis1 += step1; offsetAxis2 += step2;
+    xAxis1 += dxStep1; yAxis1 += dyStep1;
+    xAxis2 += dxStep2; yAxis2 += dyStep2;
   }
 
-  void calcLineSlope() {
-    if (accurateMethod) {
-      offset1 = (currentStep - halfSteps) * width1;
-      offset2 = (currentStep - halfSteps) * width2;
-      if (steps % 2 == 1) {
-        offset1 -= width1 / 2;
-        offset2 -= width2 / 2;
-      }
-      xAxis1 = x1 - (offset1 * dy + sgndy * halfMag2d) / mag2d;
-      yAxis1 = y1 + (offset1 * dx + sgndx * halfMag2d) / mag2d;
-      xAxis2 = x2 - (offset2 * dy + sgndy * halfMag2d) / mag2d;
-      yAxis2 = y2 + (offset2 * dx + sgndx * halfMag2d) / mag2d;
-    }
+  int dxLine, dyLine, mag2dLineSquared, mag2dLine;
+  void calcMag2dLine() {
     dxLine = xAxis2 - xAxis1;
     dyLine = yAxis2 - yAxis1;
-    mag2dLine = (int)Math.sqrt(dxLine*dxLine + dyLine*dyLine);
-    if (!accurateMethod) {
-      dxLine = xAxis2 - xAxis1;
-      dyLine = yAxis2 - yAxis1;
-      mag2dLine = (int)Math.sqrt(dxLine*dxLine + dyLine*dyLine);
-      int dxOffset1 = xAxis1 - x1;
-      int dyOffset1 = yAxis1 - y1;
-      offset1 = (int)Math.sqrt(dxOffset1*dxOffset1 + dyOffset1*dyOffset1);
-      int dxOffset2 = xAxis2 - x2;
-      int dyOffset2 = yAxis2 - y2;
-      offset2 = (int)Math.sqrt(dxOffset2*dxOffset2 + dyOffset2*dyOffset2);
-    }
+    mag2dLineSquared = dxLine*dxLine + dyLine*dyLine;
+    mag2dLine = (int)Math.sqrt(mag2dLineSquared);
     if (showAxis) {
-      g.setColor(Color.lightGray);
-      g.drawLine(x1 + dy, y1 - dx, x1 - dy, y1 + dx);
-      g.drawLine(x2 + dy, y2 - dx, x2 - dy, y2 + dx);
       g.setColor(Color.cyan);
       g.drawLine(xAxis1, yAxis1, xAxis2, yAxis2);
     }
@@ -568,13 +525,11 @@ public class BondRenderer {
   int xSurface1, ySurface1, xSurface2, ySurface2;
   int distanceSurface2;
 
-  int radius1Squared;
-
-  public static final boolean calcSurface1 = false;
+  private static final boolean calcSurface1 = false;
   void calcSurfaceIntersections() {
     if (calcSurface1) {
-      radius1Squared = radius1*radius1;
-      int offset1Squared = offset1*offset1;
+      int radius1Squared = radius1*radius1;
+      int offset1Squared = offsetAxis1*offsetAxis1;
       int radius1Slice = 0;
       if (offset1Squared < radius1Squared) {
         radius1Slice = (int)(Math.sqrt(radius1Squared-offset1Squared));
@@ -588,7 +543,7 @@ public class BondRenderer {
 
     // ensure that we stay inside;
     int radius2Squared = radius2*radius2 - 1;
-    int offset2Squared = offset2*offset2;
+    int offset2Squared = offsetAxis2*offsetAxis2;
     distanceSurface2 = 0;
     if (offset2Squared < radius2Squared) {
       distanceSurface2 = (int)(Math.sqrt(radius2Squared-offset2Squared));
@@ -600,8 +555,8 @@ public class BondRenderer {
     ySurface2 = yAxis2 + dySlice2;
 
     if (showAxis) {
-      dot(xSurface1, ySurface1, Color.blue);
-      dot(xSurface2, ySurface2, Color.blue);
+      dot(xSurface1, ySurface1, colorBlueTrans);
+      dot(xSurface2, ySurface2, colorBlueTrans);
     }
   }
 
@@ -618,12 +573,13 @@ public class BondRenderer {
   double[] intersectionCoords = new double[4];
   int distanceExit;
   void calcExitPoint() {
-    int count = intersectCircleLine(x1, y1, diameter1,
+    int count = intersectCircleLine(x1, y1, diameter1-1,
                                     xAxis1, yAxis1, xAxis2, yAxis2,
                                     intersectionCoords);
     if (count == 0) {
       xExit = xAxis1;
       yExit = yAxis1;
+      distanceExit = 0;
     } else {
       // as currently implemented, the "interesting" point is the first
       // point returned. However, if you make changes you need to be careful
@@ -633,20 +589,12 @@ public class BondRenderer {
       // things that you did, or 2) put in a test here to determine which
       // of the two points should be assigned to Exit
       //
-      if (lines == 1) {
-        xExit = (int)(intersectionCoords[0] + 0.5);
-        yExit = (int)(intersectionCoords[1] + 0.5);
-      } else {
-        // unfortunately, we have to do this calculation to ensure that
-        // the end points are exactly on the axis lines
-        // otherwise the results look terrible when things get small
-        // because 'parallel' lines are not parallel
-        double dx = intersectionCoords[0] - xAxis1;
-        double dy = intersectionCoords[1] - yAxis1;
-        distanceExit = (int)Math.sqrt(dx*dx + dy*dy);
-        xExit = xAxis1 + distanceExit * dxLine / mag2dLine;
-        yExit = yAxis1 + distanceExit * dyLine / mag2dLine;
-      }
+      xExit = (int)(intersectionCoords[0]);
+      yExit = (int)(intersectionCoords[1]);
+      int dx = xExit - x1, dy = yExit - y1;
+      distanceExit = (int)Math.sqrt(dx*dx + dy*dy);
+      if (showAxis)
+        dot(xExit, yExit, colorBlueTrans);
     }
   }
   

@@ -6,90 +6,18 @@
     <!-- $Id$ -->
     
     <section title="Websites using Jmol">
-      <p>A few websites use Jmol to display molecules. Below is a partial list.
-      If your website uses the Jmol applet too, and want to have it listed,
-      please email us.
+      <p>
+        A full list of websites that use Jmol to display molecules is
+        available on <a href="http://wiki.jmol.org/WebsitesUsingJmol">Jmol's Wiki pages</a>.
       </p>
-      <ul>
-	<li>
-	  <a href="http://www.woc.science.ru.nl">
-	    Dutch Dictionary on Organic Chemistry
-	  </a> - Radboud University Nijmegen, The Netherlands
-	</li>
-	<li>
-	  <a href="http://www.ebi.ac.uk/msd-srv/chempdb/">
-	    MSD ligand chemistry
-	  </a> - European Bioinformatics Institute, UK
-	</li>
-	<li>
-	  <a href="http://www.weizmann.ac.il">
-	    Weizmann Institute of Science
-	  </a>
-	  - Israel
-	  <ul>
-	    <li>
-	      <a href="http://bip.weizmann.ac.il/oca/">
-		OCA database system
-	      </a>
-	    </li>
-	    <li>
-	      <a href="http://bip.weizmann.ac.il/hypare/">
-		HyPare
-	      </a>
-	      - Predicting Association Rate Enhancement
-	    </li>
-	  </ul>
-	</li>
-	<li>
-	  <a href="http://www.imb-jena.de/IMAGE_PDB_SEARCH.html">
-	    IMB Jena Image Library of Biological Macromolecules
-	  </a>
-	  - Germany
-	</li>
-	<li>
-	  <a href="http://surya.bic.nus.edu.sg/xdom/">
-	    XdomView
-	  </a>
-	  - National University of Singapore
-	</li>
-	<li>
-	  <a href="http://www.stolaf.edu/depts/chemistry/mo/struc/">
-	     CoolMolecules
-	  </a>
-	  - St. Olaf College, USA
-	</li>
-	<li>
-	  <a href="http://www.cem.msu.edu/~reusch/vtxtindex.htm">
-	    Virtual Textbook of Organic Chemistry
-	  </a>
-	  - Michigan State University, USA <br />
-	  <i>
-	    Because this is a large site the Jmol references
-	    may be difficult to find ... but they are in there.
-	  </i>
-	</li>
-      </ul>
     </section>
 
     <section title="Applications with embedded Jmol">
       <p>
 	Jmol can easily be integrated into existing applications.
-	The following are some links to applications that
-	have embedded Jmol.
+	A full list of applications that embed Jmol is
+        available on <a href="http://wiki.jmol.org/ApplicationsEmbeddingJmol">Jmol's Wiki pages</a>.
       </p>
-      <ul>
-	<li>
-	  <a href="http://www.charite.de/bioinf/strap">
-	    STRAP Structural Alignment Program for Proteins
-	  </a>
-	</li>
-	<li>
-	  <a href="http://www.efamily.org.uk/software/dasclients/spice/">
-	    SPICE-DAS
-	  </a>
-	  - Wellcome Trust Sanger Institute, UK
-	</li>
-      </ul>
     </section>
 	
       

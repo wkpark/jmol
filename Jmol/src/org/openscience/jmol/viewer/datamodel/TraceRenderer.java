@@ -34,22 +34,14 @@ import javax.vecmath.Point3i;
 
 class TraceRenderer extends Renderer {
 
-  TraceRenderer(JmolViewer viewer) {
+  TraceRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
-
-  Point3i s0 = new Point3i();
-  Point3i s1 = new Point3i();
-  Point3i s2 = new Point3i();
-  Point3i s3 = new Point3i();
-  int diameterBeg, diameterMid, diameterEnd;
 
   Trace trace;
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.frame = frame;
-    this.g3d = g3d;
-    this.rectClip = rectClip;
+  void render() {
     this.trace = frame.trace;
 
     if (trace == null || !trace.initialized)
@@ -58,57 +50,68 @@ class TraceRenderer extends Renderer {
     short[][] madsChains = trace.madsChains;
     short[][] colixesChains = trace.colixesChains;
     for (int i = trace.chainCount; --i >= 0; ) {
-      render1Chain(pdbMolecule.getMainchain(i), madsChains[i], colixesChains[i]);
+      render1Chain(pdbMolecule.getMainchain(i), madsChains[i],
+                   colixesChains[i]);
     }
+    screens = null;
+    alphas = null;
   }
   
-  int mainchainLast;
+  int mainchainLength;
+  Point3i[] screens;
+  Atom[] alphas;
 
   void render1Chain(PdbResidue[] mainchain, short[] mads, short[] colixes) {
-    mainchainLast = mainchain.length - 1;
-    for (int i = mainchain.length; --i >= 0; ) {
-      Atom alpha = mainchain[i].getAlphaCarbonAtom();
-      int x = alpha.x, y = alpha.y, z = alpha.z;
+    calcMidPoints(mainchain);
+    mainchainLength = mainchain.length;
+    for (int i = mainchainLength; --i >= 0; ) {
       short colix = colixes[i];
       if (colix == 0)
-        colix = alpha.colixAtom;
-      calcSegmentPoints(mainchain, i, mads);
-      render1Segment(colix);
+        colix = alphas[i].colixAtom;
+      render1Segment(colix, mads, i);
     }
   }
 
-  void calcSegmentPoints(PdbResidue[] mainchain, int i, short[] mads) {
-    int iPrev1 = i - 1, iPrev2 = i - 2, iNext1 = i + 1, iNext2 = i + 2;
-    if (iPrev1 < 0)
-      iPrev1 = 0;
-    if (iPrev2 < 0)
-      iPrev2 = 0;
-    if (iNext1 > mainchainLast)
-      iNext1 = mainchainLast;
-    if (iNext2 > mainchainLast)
-      iNext2 = mainchainLast;
-    calcAverage(mainchain, iPrev2, iPrev1, s0);
-    calcAverage(mainchain, iPrev1, i, s1);
-    calcAverage(mainchain, i, iNext1, s2);
-    calcAverage(mainchain, iNext1, iNext2, s3);
-    int madBeg = (mads[iPrev1] + mads[i]) / 2;
-    int madEnd = (mads[iNext1] + mads[i]) / 2;
-    diameterBeg = viewer.scaleToScreen(s1.z, madBeg);
-    diameterMid = viewer.scaleToScreen(mainchain[i].getAlphaCarbonAtom().z, mads[i]);
-    diameterEnd = viewer.scaleToScreen(s2.z, madEnd);
+  void calcMidPoints(PdbResidue[] mainchain) {
+    int chainLength = mainchain.length;
+    screens = frameRenderer.getTempScreens(chainLength + 1);
+    alphas = frameRenderer.getTempAtoms(chainLength);
+    Atom atomPrev = alphas[0] = mainchain[0].getAlphaCarbonAtom();
+    setScreen(atomPrev, screens[0]);
+    for (int i = 1; i < chainLength; ++i) {
+      Atom atomThis = alphas[i] = mainchain[i].getAlphaCarbonAtom();
+      calcAverageScreen(atomPrev, atomThis, screens[i]);
+      atomPrev = atomThis;
+    }
+    setScreen(atomPrev, screens[chainLength]);
   }
 
-  void calcAverage(PdbResidue[] mainchain, int iA, int iB, Point3i dest) {
-    Atom atomA = mainchain[iA].getAlphaCarbonAtom();
-    Atom atomB = mainchain[iB].getAlphaCarbonAtom();
+  void setScreen(Atom atom, Point3i dest) {
+    dest.x = atom.x;
+    dest.y = atom.y;
+    dest.z = atom.z;
+  }
+
+  void calcAverageScreen(Atom atomA, Atom atomB, Point3i dest) {
     dest.x = (atomA.x + atomB.x) / 2;
     dest.y = (atomA.y + atomB.y) / 2;
     dest.z = (atomA.z + atomB.z) / 2;
   }
 
-  void render1Segment(short colix) {
+  void render1Segment(short colix, short[] mads, int i) {
+    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
+    int iNext1 = i + 1; if (iNext1 > mainchainLength) iNext1 = mainchainLength;
+    int iNext2 = i + 2; if (iNext2 > mainchainLength) iNext2 = mainchainLength;
+    
+    int madThis = mads[i];
+    int madBeg = (mads[iPrev1] + madThis) / 2;
+    int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
+    int madEnd = (mads[iNext1] + madThis) / 2;
+    int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
+    int diameterMid = viewer.scaleToScreen(alphas[i].z, madThis);
     g3d.fillHermite(colix, diameterBeg, diameterMid, diameterEnd,
-                    s0, s1, s2, s3);
+                    screens[iPrev1], screens[i],
+                    screens[iNext1], screens[iNext2]);
   }
 }
 

@@ -33,11 +33,12 @@ import javax.vecmath.Point3i;
 
 class CellLineRenderer extends LineRenderer {
 
-  CellLineRenderer(JmolViewer viewer) {
+  CellLineRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    render(g3d, rectClip, frame, frame.cellLineCount, frame.cellLines);
+  void render() {
+    render(frame.cellLineCount, frame.cellLines);
   }
 }

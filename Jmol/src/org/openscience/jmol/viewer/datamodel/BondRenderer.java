@@ -33,8 +33,9 @@ import java.awt.Rectangle;
 
 class BondRenderer extends Renderer {
 
-  BondRenderer(JmolViewer viewer) {
+  BondRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
   boolean wireframeRotating;
@@ -63,10 +64,8 @@ class BondRenderer extends Renderer {
     g3d.fillScreenedCircleCentered(colixSelection, halodiameter, x, y, z+1);
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
-    this.frame = frame;
+  void render() {
+
     endcaps = viewer.getTestFlag1()
       ? Graphics3D.ENDCAPS_NONE : Graphics3D.ENDCAPS_SPHERICAL;
 

@@ -39,8 +39,9 @@ import java.awt.FontMetrics;
 
 class MeasurementRenderer extends Renderer {
 
-  MeasurementRenderer(JmolViewer viewer) {
+  MeasurementRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
   short colixDistance;
@@ -48,10 +49,7 @@ class MeasurementRenderer extends Renderer {
 
   Measurement measurement;
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
-    this.frame = frame;
+  void render() {
 
     colixDistance = viewer.getColixDistance();
     showMeasurementLabels = viewer.getShowMeasurementLabels();

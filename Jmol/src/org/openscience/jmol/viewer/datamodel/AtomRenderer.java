@@ -34,8 +34,9 @@ import java.awt.FontMetrics;
 
 class AtomRenderer extends Renderer {
 
-  AtomRenderer(JmolViewer viewer) {
+  AtomRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
   int minX, maxX, minY, maxY;
@@ -46,10 +47,7 @@ class AtomRenderer extends Renderer {
   boolean isLabelAtomColor;
 
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
-    this.frame = frame;
+  void render() {
 
     minX = rectClip.x;
     maxX = minX + rectClip.width;

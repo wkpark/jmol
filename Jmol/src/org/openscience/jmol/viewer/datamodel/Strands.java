@@ -82,7 +82,8 @@ public class Strands {
             mads[j] = mad;
           }
       }
-      // the last one in the chain needs to set the size for the following point
+      // the last one in the chain needs to
+      // set the size for the following point
       mads[mainchain.length] = mads[mainchain.length-1];
     }
   }

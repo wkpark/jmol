@@ -35,8 +35,9 @@ import javax.vecmath.Vector3f;
 
 class CartoonRenderer extends Renderer {
 
-  CartoonRenderer(JmolViewer viewer) {
+  CartoonRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
   Point3i s0 = new Point3i();
@@ -47,10 +48,7 @@ class CartoonRenderer extends Renderer {
 
   Cartoon cartoon;
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.frame = frame;
-    this.g3d = g3d;
-    this.rectClip = rectClip;
+  void render() {
     this.cartoon = frame.cartoon;
 
     if (cartoon == null || !cartoon.initialized)
@@ -58,9 +56,9 @@ class CartoonRenderer extends Renderer {
     PdbMolecule pdbMolecule = cartoon.pdbMolecule;
     short[][] madsChains = cartoon.madsChains;
     short[][] colixesChains = cartoon.colixesChains;
-    for (int i = cartoon.chainCount; --i >= 0; ) {
-      render1Chain(pdbMolecule.getMainchain(i), madsChains[i], colixesChains[i]);
-    }
+    for (int i = cartoon.chainCount; --i >= 0; )
+      render1Chain(pdbMolecule.getMainchain(i),
+                   madsChains[i], colixesChains[i]);
   }
   
   int mainchainLast;

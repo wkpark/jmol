@@ -35,8 +35,9 @@ import javax.vecmath.Point3i;
 
 class StrandsRenderer extends Renderer {
 
-  StrandsRenderer(JmolViewer viewer) {
+  StrandsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
   Strands strands;
@@ -77,10 +78,7 @@ class StrandsRenderer extends Renderer {
   float strandSeparation;
   float baseOffset;
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.frame = frame;
-    this.g3d = g3d;
-    this.rectClip = rectClip;
+  void render() {
     this.strands = frame.strands;
 
     strandCount = viewer.getStrandsCount();

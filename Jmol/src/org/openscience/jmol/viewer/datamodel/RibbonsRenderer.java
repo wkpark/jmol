@@ -33,11 +33,12 @@ import java.awt.Rectangle;
 
 class RibbonsRenderer extends Renderer {
 
-  RibbonsRenderer(JmolViewer viewer) {
+  RibbonsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+  void render() {
     Ribbons ribbons = frame.ribbons;
     if (ribbons != null)
       g3d.drawLine(Colix.RED, 0, 0, 0, 10, 10, 0);

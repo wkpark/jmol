@@ -34,10 +34,19 @@ import java.awt.Rectangle;
 abstract class Renderer {
 
   JmolViewer viewer;
+  FrameRenderer frameRenderer;
+
   Graphics3D g3d;
   Rectangle rectClip;
   Frame frame;
 
-  abstract void render(Graphics3D g3d, Rectangle rectClip, Frame frame);
+  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+    this.g3d = g3d;
+    this.rectClip = rectClip;
+    this.frame = frame;
+    render();
+  }
+
+  abstract void render();
 }
 

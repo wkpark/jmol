@@ -70,6 +70,7 @@ public class Cartoon {
             mads[j] = mad;
           }
       }
+      mads[mainchain.length] = mads[mainchain.length - 1];
     }
   }
 
@@ -98,7 +99,7 @@ public class Cartoon {
       colixesChains = new short[chainCount][];
       for (int i = chainCount; --i >= 0; ) {
         int chainLength = pdbMolecule.getMainchain(i).length;
-        madsChains[i] = new short[chainLength];
+        madsChains[i] = new short[chainLength + 1];
         colixesChains[i] = new short[chainLength];
       }
       initialized = true;

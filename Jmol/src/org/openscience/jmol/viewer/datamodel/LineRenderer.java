@@ -36,8 +36,9 @@ class LineRenderer extends Renderer {
   LineRenderer() {
   }
 
-  LineRenderer(JmolViewer viewer) {
+  LineRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
   final Point3i screenOrigin = new Point3i();
@@ -52,12 +53,11 @@ class LineRenderer extends Renderer {
   final static int[] az = new int[4];
   */
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    render(g3d, rectClip, frame, frame.lineCount, frame.lines);
+  void render() {
+    render(frame.lineCount, frame.lines);
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame,
-              int lineCount, Line[] lines) {
+  void render(int lineCount, Line[] lines) {
     short colix = viewer.getColixVector();
     g3d.setColix(colix);
     for (int i = lineCount; --i >= 0; ) {

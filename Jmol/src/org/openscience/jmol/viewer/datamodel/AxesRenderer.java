@@ -35,10 +35,9 @@ import javax.vecmath.Point3i;
 
 class AxesRenderer extends Renderer {
 
-  AxesRenderer(JmolViewer viewer) {
+  AxesRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
-    for (int i = 6; --i >= 0; )
-      axisScreens[i] = new Point3i();
+    this.frameRenderer = frameRenderer;
   }
 
   final Point3i originScreen = new Point3i();
@@ -50,7 +49,7 @@ class AxesRenderer extends Renderer {
                           null, null, null };
 
   
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+  void render() {
     Axes axes = frame.axes;
     if (axes.mode == JmolConstants.AXES_NONE)
       return;

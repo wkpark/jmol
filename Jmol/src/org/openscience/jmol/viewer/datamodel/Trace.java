@@ -70,6 +70,7 @@ public class Trace {
             mads[j] = mad;
           }
       }
+      mads[mainchain.length] = mads[mainchain.length - 1];
     }
   }
 
@@ -98,8 +99,10 @@ public class Trace {
       colixesChains = new short[chainCount][];
       for (int i = chainCount; --i >= 0; ) {
         int chainLength = pdbMolecule.getMainchain(i).length;
-        madsChains[i] = new short[chainLength];
         colixesChains[i] = new short[chainLength];
+        // mads are one larger and the last two values are always ==
+        // makes interval caluclations easier (maybe?)
+        madsChains[i] = new short[chainLength + 1];
       }
       initialized = true;
     }

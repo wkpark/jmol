@@ -31,19 +31,20 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class BboxRenderer {
-
-  JmolViewer viewer;
+class BboxRenderer extends Renderer {
 
   final Point3i[] bboxScreen = new Point3i[8];
-
-  BboxRenderer(JmolViewer viewer) {
-    this.viewer = viewer;
+  {
     for (int i = 8; --i >= 0; )
       bboxScreen[i] = new Point3i();
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+  BboxRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
+    this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
+  }
+
+  void render() {
     Bbox bbox = frame.bbox;
     if (! bbox.showBoundingBox)
       return;

@@ -158,16 +158,4 @@ public class PdbChain {
     }
     midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
   }
-    
-  /*
-  void propogateSecondaryStructure(byte type, int startResidueNumber,
-                                   int endResidueNumber) {
-    for (int i = residueCount; --i >= 0; ) {
-      PdbResidue residue = residues[i];
-      int resNumber = residue.resNumber;
-      if (resNumber >= startResidueNumber && resNumber <= endResidueNumber)
-        residue.setStructureType(type);
-    }
-  }
-  */
 }

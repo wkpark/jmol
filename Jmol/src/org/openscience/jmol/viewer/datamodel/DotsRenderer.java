@@ -52,8 +52,10 @@ class DotsRenderer extends Renderer {
 
   final static int[] mapNull = Dots.mapNull;
 
-  DotsRenderer(JmolViewer viewer) {
+  DotsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
+
     this.geodesic = new Geodesic(); // 12 vertices
     geodesic.quadruple(); // 12 * 4 - 6 = 42 vertices
     geodesic.quadruple(); // 42 * 4 - 6 = 162 vertices
@@ -62,10 +64,7 @@ class DotsRenderer extends Renderer {
 
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
-    this.frame = frame;
+  void render() {
     perspectiveDepth = viewer.getPerspectiveDepth();
     colixConcave = viewer.getColixDotsConcave();
     colixConvex = viewer.getColixDotsConvex();

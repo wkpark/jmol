@@ -53,8 +53,8 @@ public class FrameRenderer {
 
   public FrameRenderer(JmolViewer viewer) {
     this.viewer = viewer;
-    atomRenderer = new AtomRenderer(viewer);
-    bondRenderer = new BondRenderer(viewer);
+    atomRenderer = new AtomRenderer(viewer, this);
+    bondRenderer = new BondRenderer(viewer, this);
   }
   
   public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
@@ -68,54 +68,54 @@ public class FrameRenderer {
     bondRenderer.render(g3d, rectClip, frame);
     if (frame.measurementCount > 0) {
       if (measurementRenderer == null)
-        measurementRenderer = new MeasurementRenderer(viewer);
+        measurementRenderer = new MeasurementRenderer(viewer, this);
       measurementRenderer.render(g3d, rectClip, frame);
     }
     if (frame.dots != null) {
       if (dotsRenderer == null)
-        dotsRenderer = new DotsRenderer(viewer);
+        dotsRenderer = new DotsRenderer(viewer, this);
       dotsRenderer.render(g3d, rectClip, frame);
     }
     if (frame.ribbons != null) {
       if (ribbonsRenderer == null)
-        ribbonsRenderer = new RibbonsRenderer(viewer);
+        ribbonsRenderer = new RibbonsRenderer(viewer, this);
       ribbonsRenderer.render(g3d, rectClip, frame);
     }
     if (frame.trace != null) {
       if (traceRenderer == null)
-        traceRenderer = new TraceRenderer(viewer);
+        traceRenderer = new TraceRenderer(viewer, this);
       traceRenderer.render(g3d, rectClip, frame);
     }
     if (frame.cartoon != null) {
       if (cartoonRenderer == null)
-        cartoonRenderer = new CartoonRenderer(viewer);
+        cartoonRenderer = new CartoonRenderer(viewer, this);
       cartoonRenderer.render(g3d, rectClip, frame);
     }
     if (frame.strands != null) {
       if (strandsRenderer == null)
-        strandsRenderer = new StrandsRenderer(viewer);
+        strandsRenderer = new StrandsRenderer(viewer, this);
       strandsRenderer.render(g3d, rectClip, frame);
     }
     if (frame.axes != null) {
       if (axesRenderer == null)
-        axesRenderer = new AxesRenderer(viewer);
+        axesRenderer = new AxesRenderer(viewer, this);
       axesRenderer.render(g3d, rectClip, frame);
     }
     if (frame.bbox != null) {
       if (bboxRenderer == null)
-        bboxRenderer = new BboxRenderer(viewer);
+        bboxRenderer = new BboxRenderer(viewer, this);
       bboxRenderer.render(g3d, rectClip, frame);
     }
 
     if (frame.lineCount > 0) {
       if (lineRenderer == null)
-        lineRenderer = new LineRenderer(viewer);
+        lineRenderer = new LineRenderer(viewer, this);
       lineRenderer.render(g3d, rectClip, frame);
     }
 
     if (frame.cellLineCount > 0) {
       if (cellLineRenderer == null)
-        cellLineRenderer = new CellLineRenderer(viewer);
+        cellLineRenderer = new CellLineRenderer(viewer, this);
       cellLineRenderer.render(g3d, rectClip, frame);
     }
   }
@@ -179,7 +179,32 @@ public class FrameRenderer {
 
   public DotsRenderer getDotsRenderer() {
     if (dotsRenderer == null)
-      dotsRenderer = new DotsRenderer(viewer);
+      dotsRenderer = new DotsRenderer(viewer, this);
     return dotsRenderer;
+  }
+
+  private Point3i[] tempScreens = new Point3i[32];
+  {
+    for (int i = tempScreens.length; --i >= 0; )
+      tempScreens[i] = new Point3i();
+  }
+
+  public Point3i[] getTempScreens(int n) {
+    if (tempScreens.length < n) {
+      int tSize = n + (n >> 1);
+      Point3i[] t = new Point3i[tSize];
+      System.arraycopy(tempScreens, 0, t, 0, tempScreens.length);
+      for (int i = tempScreens.length; i < tSize; ++i)
+        t[i] = new Point3i();
+      tempScreens = t;
+    }
+    return tempScreens;
+  }
+
+  private Atom[] tempAtoms = new Atom[32];
+  public Atom[] getTempAtoms(int n) {
+    if (tempAtoms.length < n)
+      tempAtoms = new Atom[n + (n >> 1)];
+    return tempAtoms;
   }
 }

@@ -61,8 +61,15 @@ class AtomTypesModel extends AbstractTableModel {
         data = new Vector();
     }
 
-    public String getColumnName(int column) {
-        return names[column];
+	/**
+	 * Returns the name of the column at the index given. If the column is undefined,
+	 * null is returned.
+	 */
+    public String getColumnName(int index) {
+		if (index < 0 || index > names.length) {
+			return null;
+		}
+        return names[index];
     }
 
     public synchronized int getColumnCount() {
@@ -85,28 +92,28 @@ class AtomTypesModel extends AbstractTableModel {
     }
     
     public void setValueAt(Object o, int row, int col) {
-        System.out.println("Setting value at " + row + "," + col
-                           + " to " + o
-                           + " (an instance of " 
-                           + o.getClass() + ")");        
-        AtomType at = (AtomType)data.elementAt(row);
-        try {
-            switch (col) {
-            case 1:            
-                at.setRoot((String)o);
-            case 2:
-                at.setAtomicNumber(((Integer)o).intValue());
-            case 3:
-                at.setMass(((Double)o).doubleValue());
-            case 4:
-                at.setvdWRadius(((Double)o).doubleValue());
-            case 5:
-                at.setCovalentRadius(((Double)o).doubleValue());
-            case 6:
-                at.setColor((Color)o);
-            }
-        } catch (Exception e) {}
-        updateAtomType(at);
+		AtomType at = (AtomType)data.elementAt(row);
+		switch (col) {
+		case 1:            
+			at.setRoot((String)o);
+			break;
+		case 2:
+			at.setAtomicNumber(((Integer)o).intValue());
+			break;
+		case 3:
+			at.setMass(((Double)o).doubleValue());
+			break;
+		case 4:
+			at.setvdWRadius(((Double)o).doubleValue());
+			break;
+		case 5:
+			at.setCovalentRadius(((Double)o).doubleValue());
+			break;
+		case 6:
+			at.setColor((Color)o);
+			break;
+		}
+		updateAtomType(at);
     }
     
     public synchronized Object getValueAt(int row, int column) {
@@ -208,15 +215,24 @@ class AtomTypesModel extends AbstractTableModel {
         fireTableRowsUpdated(0, START_NUM_ROWS - 1);
     }
 
+	/**
+	 * Returns the first occurence of an AtomType with the given name.
+	 */
     public AtomType get(String name) {
-        for (Enumeration e = data.elements() ; e.hasMoreElements() ;) {
-            AtomType at = (AtomType) e.nextElement();
-            if (name.equalsIgnoreCase(at.getName())) {
-                return at;
-            }
-        }
+		if (name != null) {
+			for (Enumeration e = data.elements() ; e.hasMoreElements() ;) {
+				AtomType at = (AtomType) e.nextElement();
+				if (name.equalsIgnoreCase(at.getName())) {
+					return at;
+				}
+			}
+		}
         return null;
     }
+
+	/**
+	 * Returns the first occurence of an AtomType with the given atomic number.
+	 */
     public AtomType get(int atomicNumber) {
         for (Enumeration e = data.elements() ; e.hasMoreElements() ;) {
             AtomType at = (AtomType) e.nextElement();

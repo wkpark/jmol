@@ -335,7 +335,7 @@ public class FileManager {
         }
       } else {
         if (iurlPrefix >= 0 && appletProxy != null)
-          name = appletProxy + "?url=" + URLEncoder.encode(name);
+          name = appletProxy + "?url=" + URLEncoder.encode(name, "utf-8");
         URL url = new URL(appletDocumentBase, name);
         URLConnection conn = url.openConnection();
         length = conn.getContentLength();

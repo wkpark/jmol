@@ -153,7 +153,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
-      jvm12 = new Jvm12(this);
+      jvm12 = new Jvm12(this, viewer);
 
     if (mayScript) {
       try {
@@ -366,6 +366,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void showConsole(boolean showConsole) {
+    System.out.println("JmolApplet.showConsole(" + showConsole + ")");
     if (jvm12 != null)
       jvm12.showConsole(showConsole);
   }

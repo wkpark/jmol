@@ -24,14 +24,18 @@
  */
 package org.jmol.applet;
 
+import org.jmol.api.*;
 import java.awt.*;
 
 class Jvm12 {
 
   Component awtComponent;
+  Console console;
+  JmolViewer viewer;
 
-  Jvm12(Component awtComponent) {
+  Jvm12(Component awtComponent, JmolViewer viewer) {
     this.awtComponent = awtComponent;
+    this.viewer = viewer;
   }
 
   final Rectangle rectClip = new Rectangle();
@@ -45,13 +49,20 @@ class Jvm12 {
   }
 
   void showConsole(boolean showConsole) {
-    System.out.println("showConsole(" + showConsole + ")");
+    System.out.println("Jvm12.showConsole(" + showConsole + ")");
+    if (console == null && !showConsole)
+      return;
+    if (console == null)
+      {
+        System.out.println("getting ready to allocate console");
+      console = new Console(awtComponent, viewer);
+      }
+    console.setVisible(showConsole);
   }
 
   void consoleMessage(String message) {
-    if (message.length() > 50)
-      message = message.substring(50) + "...";
-    System.out.println(message);
+    System.out.println("Jvm12.consoleMessage(" + message + ")");
+    if (console != null)
+      console.output(message);
   }
-
 }

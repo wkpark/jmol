@@ -115,6 +115,8 @@ public class Triangle3D {
                        "E="+ax[iE]+"," + ay[iE] + "," + az[iE] + "\n");
     */
     int nLines = ay[iW] - ay[iN];
+    if (nLines == 0)
+      return;
     if (nLines > axW.length)
       reallocRasterArrays(nLines);
     generateRaster(nLines, iN, iW, axW, azW);
@@ -132,6 +134,8 @@ public class Triangle3D {
                        "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
     */
     int nLines = ay[iS] - ay[iW];
+    if (nLines == 0)
+      return;
     if (nLines > axW.length)
       reallocRasterArrays(nLines);
     generateRaster(nLines, iW, iS, axW, azW);

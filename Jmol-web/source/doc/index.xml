@@ -26,7 +26,7 @@
         <li> <a href="http://www.bioinformatics.org/ghemical/" TARGET="_top">Ghemical</a></li>
         <li> <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a> </li>
         <li> <a href="http://www.mdli.com/">MDL molfiles</a> </li>
-        <li> MOPAC 7/97</li>
+        <li> MOPAC 7/97/2002</li>
         <li> <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a> (ATOM and HETATM entries only) </li>
         <li> XYZ (XMol) </li>
       </ul>

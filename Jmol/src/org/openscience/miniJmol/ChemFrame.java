@@ -43,7 +43,6 @@ import java.awt.Graphics;
 import java.util.*;
 
 public class ChemFrame {
-    private static AtomTypeLookup atomTypeTable;
     private float bondFudge       = 1.12f;
     private float ScreenScale;
     private boolean AutoBond      = true;
@@ -207,9 +206,6 @@ public class ChemFrame {
     public boolean getShowHydrogens() {
         return ShowHydrogens;
     }
-    public void setAtomTypeLookup(AtomTypeLookup att) {
-        atomTypeTable = att;
-    }
     public void setBondFudge(float bf) {
         bondFudge = bf;
     }
@@ -326,9 +322,7 @@ public class ChemFrame {
      * @param z the z coordinate of the new atom
      */                
     public int addVert(String name, float x, float y, float z) throws Exception {
-//	System.out.println (atomTypeTable);
-        AtomType type = atomTypeTable.get(name);
-        return addVert(type, x, y, z);
+        return addVert(new AtomType(BaseAtomType.get(name)), x, y, z);
     }
 
     /**
@@ -386,8 +380,8 @@ public class ChemFrame {
             float dz = vert[3*j+2] - z;
             d2 += dx*dx + dy*dy + dz*dz;
             AtomType b = atoms[j];
-            float dr = bondFudge*((float) type.getCovalentRadius() + 
-                                  (float) b.getCovalentRadius());
+            float dr = bondFudge*((float) type.getBaseAtomType().getCovalentRadius() + 
+                                  (float) b.getBaseAtomType().getCovalentRadius());
             float dr2 = dr*dr;
             
             if (d2 <= dr2) {
@@ -456,8 +450,11 @@ public class ChemFrame {
      * @param z the z coordinate of the new atom
      */                
     public int addVert(int atomicNumber, float x, float y, float z) throws Exception {
-        AtomType type = atomTypeTable.get(atomicNumber);
-        return addVert(type, x, y, z);
+        BaseAtomType baseType = BaseAtomType.get(atomicNumber);
+		if (baseType == null) {
+			return -1;
+		}
+        return addVert(new AtomType(baseType), x, y, z);
     }
 	
     /**
@@ -677,19 +674,13 @@ public class ChemFrame {
          }
     }
     public void setLabelMode(int mode){
-         for (int i=0;i<nvert;i++){
-             atoms[i].setLabelMode(mode);
-         }
+		DisplaySettings.setLabelMode(mode);
     }
     public void setAtomRenderMode(int mode){
-         for (int i=0;i<nvert;i++){
-             atoms[i].setRenderMode(mode);
-         }
+		DisplaySettings.setAtomDrawMode(mode);
     }
     public void setBondRenderMode(int mode){
-         for (int i=0;i<nbonds;i++){
-             bonds[i].setRenderMode(mode);
-         }
+		DisplaySettings.setBondDrawMode(mode);
     }
     public void setAtomScreenScale(float ss){
          for (int i=0;i<nvert;i++){
@@ -926,8 +917,8 @@ public class ChemFrame {
                 float dz = vert[3*j+2] - az;
                 d2 += dx*dx + dy*dy + dz*dz;
                 AtomType b = atoms[j];
-                float dr = bondFudge*((float) a.getCovalentRadius() + 
-                                  (float) b.getCovalentRadius());
+                float dr = bondFudge*((float) a.getBaseAtomType().getCovalentRadius() + 
+                                  (float) b.getBaseAtomType().getCovalentRadius());
                 float dr2 = dr*dr;
                 
                 if (d2 <= dr2) {

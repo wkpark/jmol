@@ -54,11 +54,8 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
   private Vector y3;
   private Vector z3;
  
-  private AtomTypeLookup atlu;
-
-  public CMLHandler (AtomTypeLookup at) {
+  public CMLHandler () {
     cfs = new Vector();
-    atlu = at;
     frameNo = 0;
   };
 
@@ -120,7 +117,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         break;	
       case MOLECULE :
 	cf = new ChemFrame();
-        cf.setAtomTypeLookup(atlu);
 	elsym = new Vector();
 	elid = new Vector();
 	x3 = new Vector();

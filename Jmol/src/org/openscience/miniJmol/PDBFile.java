@@ -45,8 +45,6 @@ import java.util.StringTokenizer;
 
 public class PDBFile extends ChemFile {
 
-    private AtomTypeLookup atlu;
-
     /**
      * PDB files contain a single ChemFrame object.  Only the END, ATOM and 
      * HETATM command strings are processed for now, and the ATOM and HETATM
@@ -54,10 +52,9 @@ public class PDBFile extends ChemFile {
      * @see ChemFrame
      * @param is input stream for the PDB file
      */
-    public PDBFile(InputStream is, AtomTypeLookup at) throws Exception {        
+    public PDBFile(InputStream is) throws Exception {        
 
         super();
-        atlu = at;
 
         BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);         
         try {
@@ -76,7 +73,6 @@ public class PDBFile extends ChemFile {
         StringTokenizer st;
         
         ChemFrame cf = new ChemFrame();
-        cf.setAtomTypeLookup(atlu);
             
         String s; // temporary variable used to store data as we read it
 

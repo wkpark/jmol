@@ -140,8 +140,8 @@ public class Bond {
     public Bond(AtomType at1, AtomType at2) {
         this.at1 = at1;
         this.at2 = at2;
-        col1 = at1.getColor();
-        col2 = at2.getColor();
+        col1 = at1.getBaseAtomType().getColor();
+        col2 = at2.getBaseAtomType().getColor();
     }        
 
     public void paint(Graphics gc, int x1, int y1, int z1, 

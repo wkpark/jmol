@@ -54,7 +54,6 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 
     private displayPanel display;
     private ChemFile cf;
-    private AtomTypeLookup atomTypeLookup;
 
     private boolean ready = false;
     private boolean modelReady = false;
@@ -125,12 +124,12 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
     public void setAtomPropertiesFromFile(String propertiesFile){
         try {
-            atomTypeLookup = new AtomTypeLookup(propertiesFile,false);
+			AtomTypeSet ats1 = new AtomTypeSet();
+			ats1.load(new java.io.FileInputStream(propertiesFile));
         } catch(Exception e1) {
-	    e1.printStackTrace ();
-	}
+			e1.printStackTrace ();
+		}
         
-//        ChemFrame.setAtomTypeLookup(atomTypeLookup);
         typesReady = true;
         ready = areWeReady();
     }
@@ -140,10 +139,12 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
     public void setAtomPropertiesFromURL(String propertiesURL){
         try {
-            atomTypeLookup = new AtomTypeLookup(propertiesURL,true);
-        } catch(Exception e1) { }
+			AtomTypeSet ats1 = new AtomTypeSet();
+			java.net.URL url1 = new java.net.URL(propertiesURL);
+			ats1.load(url1.openStream());
+        } catch(java.io.IOException e1) {
+		}
         
-//        ChemFrame.setAtomTypeLookup(atomTypeLookup);
         typesReady = true;
         ready = areWeReady();
     }
@@ -153,10 +154,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
     public void setAtomPropertiesFromURL(java.net.URL propertiesURL){
         try {
-            atomTypeLookup = new AtomTypeLookup(propertiesURL);
-        } catch(Exception e1) { }
+			AtomTypeSet ats1 = new AtomTypeSet();
+			ats1.load(propertiesURL.openStream());
+        } catch(java.io.IOException e1) {
+		}
         
-//        ChemFrame.setAtomTypeLookup(atomTypeLookup);
         typesReady = true;
         ready = areWeReady();
     }
@@ -306,11 +308,11 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  * Gets the rendering mode for atoms. Values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
  */
    public String getAtomRenderingStyleDescription(){
-      if (display.getAtomRenderMode()== AtomType.QUICKDRAW){
+      if (display.getAtomRenderMode()== DisplaySettings.QUICKDRAW){
        return("QUICKDRAW");
-      }else if (display.getAtomRenderMode()== AtomType.SHADING){
+      }else if (display.getAtomRenderMode()== DisplaySettings.SHADING){
        return("SHADED");
-      }else if (display.getAtomRenderMode()== AtomType.WIREFRAME){
+      }else if (display.getAtomRenderMode()== DisplaySettings.WIREFRAME){
        return("WIREFRAME");
       }
       return "NULL";
@@ -368,13 +370,13 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  * Gets the rendering mode for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'. 
  */
    public String getLabelRenderingStyleDescription(){
-      if (display.getLabelMode()== AtomType.NOLABELS){
+      if (DisplaySettings.getLabelMode()== DisplaySettings.NOLABELS){
        return("NONE");
-      }else if (display.getLabelMode()== AtomType.SYMBOLS){
+      }else if (DisplaySettings.getLabelMode()== DisplaySettings.SYMBOLS){
        return("SYMBOLS");
-      }else if (display.getLabelMode()== AtomType.TYPES){
+      }else if (DisplaySettings.getLabelMode()== DisplaySettings.TYPES){
        return("TYPES");
-      }else if (display.getLabelMode()== AtomType.NUMBERS){
+      }else if (DisplaySettings.getLabelMode()== DisplaySettings.NUMBERS){
        return("NUMBERS");
       }
       return "NULL";
@@ -475,19 +477,19 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
     }
 
     private ChemFile loadModel(java.io.InputStream myStream, String type){
-          if (atomTypeLookup==null){
+          if (!typesReady){
             System.out.println("Atom properties file defaulting to 'AtomTypes' in working directory");
             setAtomPropertiesFromFile("AtomTypes");
           }
           try {                        
               if (type.equalsIgnoreCase("PDB")) {
-                  return new PDBFile(myStream,atomTypeLookup);
+                  return new PDBFile(myStream);
               }else if (type.equalsIgnoreCase("CML")) {
-                  return new CMLFile(myStream,atomTypeLookup); 
+                  return new CMLFile(myStream); 
 //              } else if(type.equalsIgnoreCase("GAUSSIAN")){
 //                  return new GaussianFile(myStream, false);
               }else if(type.equalsIgnoreCase("XYZ")) {
-                  return new XYZFile(myStream,atomTypeLookup);
+                  return new XYZFile(myStream);
               } else {
                   throw new RuntimeException("Unknown file type in loadModel: "+type);
               }

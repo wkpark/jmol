@@ -45,8 +45,6 @@ import java.util.StringTokenizer;
 
 public class XYZFile extends ChemFile {
 
-    private AtomTypeLookup atlu;
-    
     /**
      * XYZ files may contain multiple ChemFrame objects, and may have charges
      * and vector information contained along with atom types and coordinates.
@@ -55,9 +53,8 @@ public class XYZFile extends ChemFile {
      * @see ChemFrame
      * @param is input stream for the XYZ file
      */
-    public XYZFile(InputStream is, AtomTypeLookup at) throws Exception {
+    public XYZFile(InputStream is) throws Exception {
         super();
-        atlu = at;
 
         BufferedReader r = new BufferedReader(new InputStreamReader(is), 1024);                 
         while (true) {
@@ -100,7 +97,6 @@ public class XYZFile extends ChemFile {
             
 
             ChemFrame cf = new ChemFrame(na);
-            cf.setAtomTypeLookup(atlu);
             cf.setInfo(info);
             
             String s; // temporary variable used to store data as we read it

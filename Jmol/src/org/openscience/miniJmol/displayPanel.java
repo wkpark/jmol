@@ -407,15 +407,15 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public int getAtomRenderMode(){
-       return md.atoms[0].getRenderMode();
+       return DisplaySettings.getAtomDrawMode();
     }
 
     public int getBondRenderMode(){
-       return md.bonds[0].getRenderMode();
+       return DisplaySettings.getBondDrawMode();
     }
 
     public int getLabelMode(){
-       return md.atoms[0].getLabelMode();
+       return DisplaySettings.getLabelMode();
     }
 
     public void update(Graphics g){
@@ -619,33 +619,19 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
           cf.getFrame(i).toggleVectors();
         }
       }else if (command.equals(rendermodeAtomQuickDrawCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomRenderMode(AtomType.QUICKDRAW);
-        }
+	  DisplaySettings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
       }else if (command.equals(rendermodeAtomShadedCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomRenderMode(AtomType.SHADING);
-        }
+	  DisplaySettings.setAtomDrawMode(DisplaySettings.SHADING);
       }else if (command.equals(rendermodeAtomWireframeCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomRenderMode(AtomType.WIREFRAME);
-        }
+	  DisplaySettings.setAtomDrawMode(DisplaySettings.WIREFRAME);
       }else if (command.equals(rendermodeBondQuickDrawCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.QUICKDRAW);
-        }
+	  DisplaySettings.setBondDrawMode(DisplaySettings.QUICKDRAW);
       }else if (command.equals(rendermodeBondShadedCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.SHADING);
-        }
+	  DisplaySettings.setBondDrawMode(DisplaySettings.SHADING);
       }else if (command.equals(rendermodeBondLineCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.LINE);
-        }
+	  DisplaySettings.setBondDrawMode(DisplaySettings.LINE);
       }else if (command.equals(rendermodeBondWireframeCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.WIREFRAME);
-        }
+	  DisplaySettings.setBondDrawMode(DisplaySettings.WIREFRAME);
       }else if (command.equals(frontCommand)){
             amat.xrot(0.0f);
             amat.yrot(0.0f);
@@ -758,9 +744,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
 
 
     public void setAtomQuickDraw(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomRenderMode(AtomType.QUICKDRAW);
-        }
+		DisplaySettings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
       if (painted){
         painted = false;
       }
@@ -768,9 +752,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setAtomShaded(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomRenderMode(AtomType.SHADING);
-        }
+		DisplaySettings.setAtomDrawMode(DisplaySettings.SHADING);
       if (painted){
         painted = false;
       }
@@ -778,9 +760,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setAtomWireframe(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setAtomRenderMode(AtomType.WIREFRAME);
-        }
+		DisplaySettings.setAtomDrawMode(DisplaySettings.WIREFRAME);
       if (painted){
         painted = false;
       }
@@ -788,9 +768,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setBondQuickDraw(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.QUICKDRAW);
-        }
+		DisplaySettings.setBondDrawMode(DisplaySettings.QUICKDRAW);
       if (painted){
         painted = false;
       }
@@ -798,9 +776,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setBondShaded(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.SHADING);
-        }
+		DisplaySettings.setBondDrawMode(DisplaySettings.SHADING);
       if (painted){
         painted = false;
       }
@@ -808,9 +784,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setBondLine(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.LINE);
-        }
+		DisplaySettings.setBondDrawMode(DisplaySettings.LINE);
       if (painted){
         painted = false;
       }
@@ -818,9 +792,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setBondWireframe(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setBondRenderMode(Bond.WIREFRAME);
-        }
+		DisplaySettings.setBondDrawMode(DisplaySettings.WIREFRAME);
       if (painted){
         painted = false;
       }
@@ -828,9 +800,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setLabelsToNone(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.NOLABELS);
-        }
+		DisplaySettings.setLabelMode(DisplaySettings.NOLABELS);
       if (painted){
         painted = false;
       }
@@ -838,9 +808,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setLabelsToSymbols(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.SYMBOLS);
-        }
+		DisplaySettings.setLabelMode(DisplaySettings.SYMBOLS);
       if (painted){
         painted = false;
       }
@@ -848,9 +816,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setLabelsToTypes(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.TYPES);
-        }
+		DisplaySettings.setLabelMode(DisplaySettings.TYPES);
       if (painted){
         painted = false;
       }
@@ -858,9 +824,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
     }
 
     public void setLabelsToAtomNumbers(){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.NUMBERS);
-        }
+		DisplaySettings.setLabelMode(DisplaySettings.NUMBERS);
       if (painted){
         painted = false;
       }

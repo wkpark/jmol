@@ -18,21 +18,19 @@ public class CMLFile extends ChemFile {
 
   private Vector cfs;
   private int retFrame;
-  private AtomTypeLookup atlu;
 
     /**
      * CML files contain a single ChemFrame object.
      * @see ChemFrame
      * @param is input stream for the PDB file
      */
-    public CMLFile(InputStream is, AtomTypeLookup at) throws Exception {        
+    public CMLFile(InputStream is) throws Exception {        
         super();
-        atlu = at;
         InputSource input = new InputSource(is);
         Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
         //EntityResolver resolver = new DTDResolver();
         EntityResolver resolver = new DTDResolver();
-        DocumentHandler handler = new CMLHandler(atlu);
+        DocumentHandler handler = new CMLHandler();
 	//        parser.setEntityResolver(resolver);
 		parser.setEntityResolver(resolver);
         parser.setDocumentHandler(handler);

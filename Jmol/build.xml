@@ -194,6 +194,7 @@ support for assertions (which were introduced in 1.4).
     <copy todir="${applet.classes.dir}" >
       <fileset dir="src">
 	<include name="**/ui/*.properties" />
+	<include name="jmol75x29x8.gif" />
       </fileset>
     </copy>
   </target>
@@ -336,7 +337,8 @@ support for assertions (which were introduced in 1.4).
 
   </target>
 
-  <target name="applet-jar" id="applet-jar" depends="applet-classes,appletjars">
+  <target name="applet-jar" id="applet-jar"
+	  depends="applet-classes,appletjars">
     <jar jarfile="JmolApplet.jar"
 	 manifest="manifest/application.txt" index="true" >
       <fileset dir="${applet.classes.dir}" >
@@ -375,6 +377,7 @@ support for assertions (which were introduced in 1.4).
       <fileset dir="${applet.classes.dir}">
 	<include name="org/jmol/appletwrapper/*" />
 	<include name="JmolApplet*.class" />
+	<include name="jmol75x29x8.gif" />
       </fileset>
       <indexjars>
 	<pathelement path="JmolApplet1.jar" />

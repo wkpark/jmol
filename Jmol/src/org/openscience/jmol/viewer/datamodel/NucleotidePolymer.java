@@ -32,26 +32,22 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class AlphaCarbonPolymer extends Polymer {
+public class NucleotidePolymer extends Polymer {
 
-  AlphaCarbonPolymer(Chain chain, Group[] groups) {
+  NucleotidePolymer(Chain chain, Group[] groups) {
     super(chain, groups);
   }
 
-  public Atom getAlphaCarbonAtom(int groupIndex) {
-    return groups[groupIndex].getAlphaCarbonAtom();
+  public Atom getNucleotidePhosphorusAtom(int groupIndex) {
+    return groups[groupIndex].getNucleotidePhosphorusAtom();
   }
 
   public Atom getLeadAtom(int groupIndex) {
-    return getAlphaCarbonAtom(groupIndex);
+    return getNucleotidePhosphorusAtom(groupIndex);
   }
 
   public Point3f getLeadPoint(int groupIndex) {
     return getLeadAtom(groupIndex).point3f;
-  }
-
-  public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
-    return getAlphaCarbonAtom(groupIndex).point3f;
   }
 
   public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
@@ -82,38 +78,10 @@ public class AlphaCarbonPolymer extends Polymer {
 
   void addSecondaryStructure(byte type,
                              int startSeqcode, int endSeqcode) {
-    int polymerIndexStart, polymerIndexEnd;
-    if ((polymerIndexStart = getIndex(startSeqcode)) == -1 ||
-        (polymerIndexEnd = getIndex(endSeqcode)) == -1)
-      return;
-    int structureCount = polymerIndexEnd - polymerIndexStart + 1;
-    if (structureCount < 1) {
-      System.out.println("structure definition error");
-      return;
-    }
-    AminoStructure aminostructure = null;
-    switch(type) {
-    case JmolConstants.SECONDARY_STRUCTURE_HELIX:
-      aminostructure = new Helix(this, polymerIndexStart, structureCount);
-      break;
-    case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-      if (this instanceof AminoPolymer)
-        aminostructure = new Sheet((AminoPolymer)this,
-                                   polymerIndexStart, structureCount);
-      break;
-    case JmolConstants.SECONDARY_STRUCTURE_TURN:
-      aminostructure = new Turn(this, polymerIndexStart, structureCount);
-      break;
-    default:
-      System.out.println("unrecognized secondary structure type");
-      return;
-    }
-    for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
-      groups[i].setStructure(aminostructure);
   }
 
   public boolean isProtein() {
-    return true;
+    return false;
   }
 
   public void calcHydrogenBonds() {

@@ -111,7 +111,7 @@ class CartoonRenderer extends McpsRenderer {
         if (aminostructurePrev != null)
           point.set(aminostructurePrev.getAxisEndPoint());
         else
-          aminopolymer.getAlphaCarbonMidPoint(i, point);
+          aminopolymer.getLeadMidPoint(i, point);
         residuePrev = null;
         aminostructurePrev = null;
       }
@@ -120,7 +120,7 @@ class CartoonRenderer extends McpsRenderer {
     if (aminostructurePrev != null)
       point.set(aminostructurePrev.getAxisEndPoint());
     else
-      aminopolymer.getAlphaCarbonMidPoint(polymerCount, point);
+      aminopolymer.getLeadMidPoint(polymerCount, point);
     return cordMidPoints;
   }
 

@@ -62,7 +62,7 @@ public abstract class AminoStructure {
     segments[0] = axisA;
     for (int i = polymerCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
-      acpolymer.getAlphaCarbonMidPoint(polymerIndex + i, point);
+      acpolymer.getLeadMidPoint(polymerIndex + i, point);
       projectOntoAxis(point);
     }
     for (int i = 0; i < segments.length; ++i) {

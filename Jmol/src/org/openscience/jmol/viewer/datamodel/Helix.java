@@ -44,25 +44,25 @@ public class Helix extends AminoStructure {
 
     axisA = new Point3f();
     if (lowerNeighborIsHelixOrSheet())
-      acpolymer.getAlphaCarbonMidPoint(polymerIndex, axisA);
+      acpolymer.getLeadMidPoint(polymerIndex, axisA);
     else
-      acpolymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
+      acpolymer.getLeadMidPoint(polymerIndex + 1, axisA);
 
     axisB = new Point3f();
     if (upperNeighborIsHelixOrSheet())
-      acpolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, axisB);
+      acpolymer.getLeadMidPoint(polymerIndex + polymerCount, axisB);
     else
-      acpolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
+      acpolymer.getLeadMidPoint(polymerIndex + polymerCount - 1, axisB);
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    acpolymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
+    acpolymer.getLeadMidPoint(polymerIndex, tempA);
     projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    acpolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
+    acpolymer.getLeadMidPoint(polymerIndex + polymerCount, tempB);
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;

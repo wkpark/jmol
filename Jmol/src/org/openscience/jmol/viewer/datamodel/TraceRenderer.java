@@ -36,48 +36,49 @@ class TraceRenderer extends McpsRenderer {
   void render() {
     super.render();
     screens = null;
-    alphas = null;
+    centerAtoms = null;
   }
 
   void renderMcpschain(Mcps.Mcpschain mcpschain) {
     Trace.Tchain tchain = (Trace.Tchain)mcpschain;
-    render1Chain(tchain.polymerCount,
+    render1Chain(tchain.polymer,
+                 tchain.polymerCount,
                  tchain.polymerGroups,
                  tchain.mads,
                  tchain.colixes);
   }
 
   Point3i[] screens;
-  Atom[] alphas;
+  Atom[] centerAtoms;
   
-  void render1Chain(int count, Group[] groups,
+  void render1Chain(Polymer polymer, int count, Group[] groups,
                     short[] mads, short[] colixes) {
     if (count > 0) {
-      calcMidPoints(count, groups);
+      calcMidPoints(polymer, count, groups);
       for (int i = count; --i >= 0; ) {
         if (mads[i] == 0)
           continue;
         short colix = colixes[i];
         if (colix == 0)
-          colix = alphas[i].colixAtom;
+          colix = centerAtoms[i].colixAtom;
         render1Segment(colix, mads, i, count);
       }
     }
   }
 
-  void calcMidPoints(int count, Group[] groups) {
+  void calcMidPoints(Polymer polymer, int count, Group[] groups) {
     screens = frameRenderer.getTempScreens(count + 1);
-    alphas = frameRenderer.getTempAtoms(count);
-    Atom atomPrev = alphas[0] = groups[0].getAlphaCarbonAtom();
+    centerAtoms = frameRenderer.getTempAtoms(count);
+    Atom atomPrev = centerAtoms[0] = polymer.getLeadAtom(0);
     setScreen(atomPrev, screens[0]);
     for (int i = 1; i < count; ++i) {
-        Atom atomThis = alphas[i] = groups[i].getAlphaCarbonAtom();
-        calcAverageScreen(atomPrev, atomThis, screens[i]);
-        atomPrev = atomThis;
+      Atom atomThis = centerAtoms[i] = polymer.getLeadAtom(i);
+      calcAverageScreen(atomPrev, atomThis, screens[i]);
+      atomPrev = atomThis;
     }
     setScreen(atomPrev, screens[count]);
   }
-
+  
   void setScreen(Atom atom, Point3i dest) {
     dest.x = atom.getScreenX();
     dest.y = atom.getScreenY();
@@ -100,7 +101,7 @@ class TraceRenderer extends McpsRenderer {
     int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
     int madEnd = (mads[iNext1] + madThis) / 2;
     int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
-    int diameterMid = viewer.scaleToScreen(alphas[i].getScreenZ(), madThis);
+    int diameterMid = viewer.scaleToScreen(centerAtoms[i].getScreenZ(), madThis);
     g3d.fillHermite(colix, 7, diameterBeg, diameterMid, diameterEnd,
                     screens[iPrev1], screens[i],
                     screens[iNext1], screens[iNext2]);

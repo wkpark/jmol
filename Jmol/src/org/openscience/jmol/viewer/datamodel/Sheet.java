@@ -44,9 +44,9 @@ public class Sheet extends AminoStructure {
       axisB = aminopolymer.getResidueAlphaCarbonPoint(polymerIndex + 1);
     } else {
       axisA = new Point3f();
-      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
+      aminopolymer.getLeadMidPoint(polymerIndex + 1, axisA);
       axisB = new Point3f();
-      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
+      aminopolymer.getLeadMidPoint(polymerIndex + polymerCount - 1, axisB);
     }
 
     axisUnitVector = new Vector3f();
@@ -54,11 +54,11 @@ public class Sheet extends AminoStructure {
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    aminopolymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
+    aminopolymer.getLeadMidPoint(polymerIndex, tempA);
     if (! lowerNeighborIsHelixOrSheet())
       projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
+    aminopolymer.getLeadMidPoint(polymerIndex + polymerCount, tempB);
     if (! upperNeighborIsHelixOrSheet())
       projectOntoAxis(tempB);
     axisA = tempA;

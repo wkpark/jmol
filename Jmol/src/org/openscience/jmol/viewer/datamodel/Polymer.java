@@ -48,6 +48,9 @@ abstract public class Polymer {
     polymerGroups = getAlphaCarbonGroups(chain);
     if (polymerGroups != null)
       return new AlphaCarbonPolymer(chain, polymerGroups);
+    polymerGroups = getNucleotideGroups(chain);
+    if (polymerGroups != null)
+      return new NucleotidePolymer(chain, polymerGroups);
     return null;
   }
 
@@ -101,6 +104,29 @@ abstract public class Polymer {
     return groups;
   }
 
+  static Group[] getNucleotideGroups(Chain chain) {
+    Group[] chainGroups = chain.groups;
+    int firstNonNucleotide = 0;
+    int count = 0;
+    for (int i = 0; i < chain.groupCount; ++i ) {
+      Group group = chainGroups[i];
+      if (! group.hasNucleotidePhosphorus())
+        continue;
+      ++count;
+    }
+    if (count < 2)
+      return null;
+    Group[] groups = new Group[count];
+    for (int i = 0, j = 0; i < chain.groupCount; ++i) {
+      Group group = chainGroups[i];
+      if (! group.hasNucleotidePhosphorus())
+        continue;
+      groups[j++] = group;
+    }
+    System.out.println("is a NucleotidePolymer");
+    return groups;
+  }
+
   Polymer(Chain chain, Group[] groups) {
     this.chain = chain;
     this.groups = groups;
@@ -134,7 +160,21 @@ abstract public class Polymer {
     return i;
   }
 
-  abstract public Point3f getCenterPoint(int polymerIndex);
+  abstract public Point3f getLeadPoint(int polymerIndex);
+
+  abstract public Atom getLeadAtom(int polymerIndex);
+
+  public void getLeadMidPoint(int groupIndex, Point3f midPoint) {
+    if (groupIndex == count) {
+      --groupIndex;
+    } else if (groupIndex > 0) {
+      midPoint.set(getLeadPoint(groupIndex));
+      midPoint.add(getLeadPoint(groupIndex - 1));
+      midPoint.scale(0.5f);
+      return;
+    }
+    midPoint.set(getLeadPoint(groupIndex));
+  }
 
   boolean hasWingPoints() { return false; }
 

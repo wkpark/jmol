@@ -178,10 +178,16 @@ final public class Group {
                        " atom.atomName=" + atom.atomName);
     */
     byte specialAtomID = atom.getSpecialAtomID();
-    if (specialAtomID >= 0 &&
-        specialAtomID < JmolConstants.SPECIALATOMID_MAINCHAIN_MAX) {
+    if (specialAtomID < 0)
+      return;
+    if (specialAtomID < JmolConstants.SPECIALATOMID_MAINCHAIN_MAX) {
       if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
         atom.demoteSpecialAtomImposter();
+      return;
+    }
+    if (specialAtomID < JmolConstants.SPECIALATOMID_NUCLEIC_MAX) {
+      registerNucleicAtomIndex(specialAtomID, atom.atomIndex);
+      return;
     }
   }
 
@@ -200,7 +206,16 @@ final public class Group {
     return true;
   }
 
+  public Atom getLeadAtom() {
+    if (hasNucleotidePhosphorus())
+      return getNucleotidePhosphorusAtom();
+    return getAlphaCarbonAtom();
+    
+  }
+
   public int getLeadAtomIndex() {
+    if (hasNucleotidePhosphorus())
+      return atomIndexNucleotidePhosphorus;
     return getAlphaCarbonIndex();
   }
 
@@ -283,4 +298,30 @@ final public class Group {
         bs.set(i);
     }
   }
+
+  int atomIndexNucleotidePhosphorus = -1;
+  int nucleicCount = 0;
+  
+  void registerNucleicAtomIndex(short atomid, int atomIndex) {
+    if (atomid == 8) {
+      if (atomIndexNucleotidePhosphorus < 0) {
+        ++nucleicCount;
+        atomIndexNucleotidePhosphorus = atomIndex;
+      }
+      return;
+    }
+    ++nucleicCount;
+  }
+
+  Atom getNucleotidePhosphorusAtom() {
+    if (atomIndexNucleotidePhosphorus < 0)
+      return null;
+    return
+      chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndexNucleotidePhosphorus);
+  }
+
+  boolean hasNucleotidePhosphorus() {
+    return atomIndexNucleotidePhosphorus >= 0 && nucleicCount > 5;
+  }
+
 }

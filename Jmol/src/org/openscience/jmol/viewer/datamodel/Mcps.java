@@ -170,19 +170,19 @@ abstract class Mcps extends Shape {
       Vector3f vectorC = new Vector3f();
       Vector3f vectorD = new Vector3f();
       
-      Point3f centerPointPrev, centerPoint;
-      centers[0] = centerPointPrev = centerPoint = polymer.getCenterPoint(0);
+      Point3f leadPointPrev, leadPoint;
+      centers[0] = leadPointPrev = leadPoint = polymer.getLeadPoint(0);
       Vector3f previousVectorD = null;
       for (int i = 1; i < count; ++i) {
-        centerPointPrev = centerPoint;
-        centerPoint = polymer.getCenterPoint(i);
-        Point3f center = new Point3f(centerPoint);
-        center.add(centerPointPrev);
+        leadPointPrev = leadPoint;
+        leadPoint = polymer.getLeadPoint(i);
+        Point3f center = new Point3f(leadPoint);
+        center.add(leadPointPrev);
         center.scale(0.5f);
         centers[i] = center;
         if (vectors != null) {
-          vectorA.sub(centerPoint, centerPointPrev);
-          vectorB.sub(polymer.getWingPoint(i - 1), centerPointPrev);
+          vectorA.sub(leadPoint, leadPointPrev);
+          vectorB.sub(polymer.getWingPoint(i - 1), leadPointPrev);
           vectorC.cross(vectorA, vectorB);
           vectorD.cross(vectorC, vectorA);
           vectorD.normalize();
@@ -196,7 +196,7 @@ abstract class Mcps extends Shape {
         vectors[0] = vectors[1];
         vectors[count] = vectors[count - 1];
       }
-      centers[count] = polymer.getCenterPoint(count - 1);
+      centers[count] = polymer.getLeadPoint(count - 1);
     }
 
     short getMadSpecial(short mad, int groupIndex) {
@@ -219,7 +219,7 @@ abstract class Mcps extends Shape {
         {
           if (! hasTemperatureRange)
             calcTemperatureRange();
-          Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
+          Atom atom = polymerGroups[groupIndex].getLeadAtom();
           int bfactor100 = atom.getBfactor100(); // scaled by 1000
           int scaled = bfactor100 - temperatureMin;
           if (range == 0)
@@ -231,7 +231,7 @@ abstract class Mcps extends Shape {
         }
       case -4: // trace displacement
         {
-          Atom atom = polymerGroups[groupIndex].getAlphaCarbonAtom();
+          Atom atom = polymerGroups[groupIndex].getLeadAtom();
           return // double it ... we are returning a diameter
             (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
         }
@@ -248,10 +248,10 @@ abstract class Mcps extends Shape {
 
     void calcTemperatureRange() {
       temperatureMin = temperatureMax =
-        polymerGroups[0].getAlphaCarbonAtom().getBfactor100();
+        polymerGroups[0].getLeadAtom().getBfactor100();
       for (int i = polymerCount; --i > 0; ) {
         int temperature =
-          polymerGroups[i].getAlphaCarbonAtom().getBfactor100();
+          polymerGroups[i].getLeadAtom().getBfactor100();
         if (temperature < temperatureMin)
           temperatureMin = temperature;
         else if (temperature > temperatureMax)

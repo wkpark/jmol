@@ -1,0 +1,77 @@
+<project name="Jmol" default="main" basedir=".">
+
+	<property name="Jmol.home" value="${user.dir}"/>
+	<property name="source.dir" value="src"/>
+	<property name="classes.dir" value="classes"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="docs.dir" value="api-docs"/>
+
+	<property name="classpath" value="jars/sax.jar:jars/aelfred.jar:jars/cml.jar:jars/Acme.jar:jars/vecmath1.1-1.12.jar:jars/junit.jar:jars/jas.jar"/>
+
+	<property name="manifest" value="manifest"/>
+	
+	<property name="build.compiler" value="classic"/>
+
+	<target name="main" depends="classes"/>
+
+	<target name="classes">
+		<mkdir dir="${classes.dir}"/>
+		<javac srcdir="${source.dir}" destdir="${classes.dir}" classpath="${classpath}"
+			debug="off" deprecation="on"
+			excludes="**/pending/**,**/jmol/ColorCellEditor.java,**/jmol/FrameHandler.java,**/jmol/MeasurementFactory.java,**/jmol/XYZFile.java,*"
+		/>
+		<copydir src="${source.dir}" dest="${classes.dir}" includes="**/Properties" />
+	</target>
+
+	<target name="jar" depends="classes">
+		<jar jarfile="jars/jmol.jar" basedir="${classes.dir}"/>
+	</target>
+
+	<target name="dist" depends="classes">
+		<mkdir dir="${dist.dir}/jmol"/>
+		<jar jarfile="${dist.dir}/jmol/jmol.jar" basedir="${classes.dir}" manifest="src/manifest"
+			excludes="**/miniJmol/**,**/.*"
+		/>
+		<jar jarfile="${dist.dir}/jmol/JmolApplet.jar" basedir="${classes.dir}"
+			includes="**/miniJmol/**,**/jmol/FortranFormat.class,**/jmol/PhysicalProperty.class,**/jmol/ChemFileReader.class,**/jmol/DisplaySettings.class"
+			excludes="**/.*"
+		/>
+		<copydir src="jars" dest="${dist.dir}/jmol" includes="*.jar"
+			excludes="jmol.jar,JmolApplet.jar,swing.jar,junit.jar"
+		/>
+	</target>
+
+	<target name="dist.zip" depends="dist">
+		<exec dir="${dist.dir}" command="jar cMf ../jmol.zip *" />
+	</target>
+
+	<target name="dist.tar.gz" depends="dist">
+		<exec dir="${dist.dir}" command="tar zcf ../jmol.tar.gz *" />
+	</target>
+
+	<target name="clean">
+		<deltree dir="${classes.dir}"/>
+	</target>
+
+	<target name="real_clean" depends="clean">
+		<deltree dir="${docs.dir}"/>
+		<deltree dir="${dist.dir}"/>
+	</target>
+
+	<target name="run" depends="classes">
+		<java fork="true" classpath="${classpath}:classes" classname="org.openscience.jmol.Jmol" />
+	</target>
+
+	<target name="run_tests" depends="classes">
+		<java fork="true" classpath="${classpath}:classes" classname="org.openscience.jmol.TestAll" />
+	</target>
+
+	<target name="docs">
+		<mkdir dir="${docs.dir}"/>
+		<javadoc2 destdir="${docs.dir}" classpath="${classpath}" sourcepath="src"
+			private="true" packagenames="org.openscience.jmol,org.openscience.miniJmol"
+		/>
+	</target>
+
+</project>
+

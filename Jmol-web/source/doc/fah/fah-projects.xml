@@ -233,7 +233,7 @@
   <fah_proj number="248" name="p248_c24MUreGS" file="y"
     server="171.64.122.127" atoms="16841" preferred="35" deadline="52"
     credit="183" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="249" name="p249_c21MUreGS"
+  <fah_proj number="249" name="p249_c21MUreGS" file="y"
     server="171.64.122.127" atoms="17240" preferred="31" deadline="45"
     credit="158" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="250"
@@ -2571,7 +2571,7 @@
   <fah_proj number="1804" name="p1804_Collagen_PPG10_refolding_gamma" file="y"
     server="171.65.103.158" atoms="1086" preferred="24" deadline="35"
     credit="123" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1805" name="p1805_Collagen_POG10_refolding_gamma"
+  <fah_proj number="1805" name="p1805_Collagen_POG10_refolding_gamma" file="y"
     server="171.65.103.158" atoms="1116" preferred="26" deadline="37"
     credit="130" frames="100" code="A" contact="spark7"/>
 

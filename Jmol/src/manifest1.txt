@@ -1,0 +1,10 @@
+Main-Class: JmolApplet
+
+Name: org/jmol/viewer
+Sealed: true
+
+Name: org/jmol/g3d
+Sealed: true
+
+Name: org/openscience/jmol/
+Sealed: true

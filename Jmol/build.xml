@@ -345,6 +345,27 @@ support for assertions (which were introduced in 1.4).
       </fileset>
       <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
+
+    <jar jarfile="JmolApplet1.jar" manifest="src/manifest1.txt">
+      <fileset dir="${applet.classes.dir}">
+	<exclude name="org/jmol/applet/*" />
+	<exclude name="JmolApplet*.class" />
+	<include name="**/*" />
+      </fileset>
+    </jar>
+
+    <jar jarfile="JmolApplet2.jar">
+      <fileset dir="${appletjars.dir}" includes="**/*"/>
+    </jar>
+
+    <jar jarfile="JmolApplet0.jar" manifest="src/manifest0.txt" index="true">
+      <fileset dir="${applet.classes.dir}">
+	<include name="org/jmol/applet/*" />
+	<include name="JmolApplet*.class" />
+      </fileset>
+      <indexjars path="JmolApplet1.jar:JmolApplet2.jar" />
+    </jar>
+
   </target>
 
   <target name="dist" id="dist" depends="doc,main">

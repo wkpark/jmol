@@ -497,7 +497,8 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     var t;
     t = "<applet name='jmolApplet" + nameSuffix + "' id='jmolApplet" + nameSuffix +
         "' " + appletCssText +
-        " code='JmolApplet' archive='JmolApplet.jar'\n" +
+        " code='JmolApplet'" +
+        " archive='JmolApplet0.jar,JmolApplet1.jar,JmolApplet2.jar'\n" +
         " codebase='" + codebase + "'\n" +
         " width='" + sz[0] + "' height='" + sz[1] +
         "' mayscript='true'>\n" +

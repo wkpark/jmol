@@ -1,0 +1,5 @@
+Main-Class: JmolApplet
+
+Name: org/jmol/applet
+Sealed: true
+

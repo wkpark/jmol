@@ -34,6 +34,7 @@ public class Wrapper extends Applet {
 
   Jmol jmol;
   int percentage;
+  long startTime;
 
   static String appletInfo = "Jmol Applet -- www.jmol.org";
   public String getAppletInfo() {
@@ -42,6 +43,7 @@ public class Wrapper extends Applet {
 
   public void init() {
     
+    startTime = System.currentTimeMillis();
     new Thread(new LoadJmolTask(this)).start();
 
   }
@@ -57,10 +59,12 @@ public class Wrapper extends Applet {
     
     g.setColor(Color.black);
     
-    g.drawString("loading Jmol Applet:" + System.currentTimeMillis(),
-                 15, 20);
-    g.drawString("percentage:" + percentage, 15, 40);
+    g.drawString("applet wrapper test", 15, 20);
     
+    long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
+
+    g.drawString("" + elapsedTime + " seconds", 15, 40);
+
   }
 
   public void paint(Graphics g) {
@@ -101,28 +105,36 @@ class LoadJmolTask implements Runnable {
   }
     
   public void run() {
-    Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    System.out.println("LoadJmolTask.run()");
-    long totalTime = 5 * 1000;
     long startTime = System.currentTimeMillis();
-    int stepCount = 10;
-    int i = 0;
-    do {
-      long currentTime = System.currentTimeMillis();
-      long targetTime = startTime + totalTime * i / stepCount;
-      long sleepTime = targetTime - currentTime;
-      if (sleepTime > 0) {
-        try {
-          Thread.sleep((int)sleepTime);
-        } catch (InterruptedException ie) {
-          System.out.println("who woke me up?");
-        }
-      }
-      wrapper.percentage = i * 100 / stepCount;
-      wrapper.repaint();
-    } while (++i <= stepCount); // this is indeed <=
-    wrapper.jmol = new Jmol(wrapper);
+    System.out.println("LoadJmolTask.run()");
+    Thread tickerThread = new Thread(new TickerTask(wrapper));
+    tickerThread.start();
+    Jmol jmol = new Jmol(wrapper);
+    tickerThread.interrupt();
+    wrapper.jmol = jmol;
     wrapper.repaint();
+    long loadTimeSeconds =
+      (System.currentTimeMillis() - startTime + 500) / 1000;
+    System.out.println("appletloadTime=" + loadTimeSeconds);
+  }
+}
+
+class TickerTask implements Runnable {
+  Wrapper wrapper;
+
+  TickerTask(Wrapper wrapper) {
+    this.wrapper = wrapper;
+  }
+
+  public void run() {
+    do {
+      try {
+        Thread.sleep(999);
+      } catch (InterruptedException ie) {
+        break;
+      }
+      wrapper.repaint();
+    } while (! Thread.interrupted());
   }
 }
 

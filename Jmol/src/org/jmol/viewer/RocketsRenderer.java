@@ -258,7 +258,6 @@ class RocketsRenderer extends MpsRenderer {
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    /*int argb = */calcSurfaceArgb(0, 1, 4);
     g3d.fillTriangle(colixPending,
                      screenCorners[0],
                      screenCorners[1],
@@ -272,7 +271,6 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = arrowHeadFaces[i + 1];
       int i2 = arrowHeadFaces[i + 2];
       int i3 = arrowHeadFaces[i + 3];
-      /*argb = */calcSurfaceArgb(i0, i1, i3);
       g3d.fillQuadrilateral(colixPending,
                             screenCorners[i0],
                             screenCorners[i1],
@@ -322,19 +320,12 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = boxFaces[i * 4 + 1];
       int i2 = boxFaces[i * 4 + 2];
       int i3 = boxFaces[i * 4 + 3];
-      /*int argb = */calcSurfaceArgb(i0, i1, i3);
       g3d.fillQuadrilateral(colixPending,
                             screenCorners[i0],
                             screenCorners[i1],
                             screenCorners[i2],
                             screenCorners[i3]);
     }
-  }
-
-  int calcSurfaceArgb(int iA, int iB, int iC) {
-    return shadesPending[viewer.calcSurfaceIntensity(corners[iA],
-                                                     corners[iB],
-                                                     corners[iC])];
   }
 
   final static byte[] boxFaces =

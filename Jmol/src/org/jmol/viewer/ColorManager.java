@@ -342,25 +342,6 @@ class ColorManager {
   void flushCachedColors() {
   }
 
-  final Vector3f vAB = new Vector3f();
-  final Vector3f vAC = new Vector3f();
-  final Vector3f vNormal = new Vector3f();
-  final Vector3f vRotated = new Vector3f();
-
-  int calcSurfaceIntensity(Point3f pA, Point3f pB, Point3f pC) {
-    vAB.sub(pB, pA);
-    vAC.sub(pC, pA);
-    vNormal.cross(vAB, vAC);
-    viewer.transformVector(vNormal, vRotated);
-    int intensity =
-      vRotated.z >= 0
-      ? calcIntensity(-vRotated.x, -vRotated.y, vRotated.z)
-      : calcIntensity(vRotated.x, vRotated.y, -vRotated.z);
-    if (intensity > Graphics3D.intensitySpecularSurfaceLimit)
-      intensity = Graphics3D.intensitySpecularSurfaceLimit;
-    return intensity;
-  }
-
   private void flushCaches() {
     g3d.flushShadesAndImageCaches();
     viewer.refresh();
@@ -398,9 +379,5 @@ class ColorManager {
   void setLightsourceZ(float dist) {
     g3d.setLightsourceZ(dist);
     flushCaches();
-  }
-
-  int calcIntensity(float x, float y, float z) {
-    return Graphics3D.calcIntensity(x, y, z);
   }
 }

@@ -780,15 +780,6 @@ final public class Viewer extends JmolViewer {
     colorManager.setLightsourceZ(z);
   }
 
-  int calcIntensity(float x, float y, float z) {
-    return colorManager.calcIntensity(x, y, z);
-  }
-
-  int calcSurfaceIntensity(Point3f pointA, Point3f pointB,
-                                   Point3f pointC) {
-    return colorManager.calcSurfaceIntensity(pointA, pointB, pointC);
-  }
-
   short getColixAtom(Atom atom) {
     return colorManager.getColixAtom(atom);
   }

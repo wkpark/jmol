@@ -2429,5 +2429,8 @@
   <fah_proj number="1801" name="p1801_Collagen_PPG10_refolding" file="y"
     server="171.65.103.158" atoms="1086" preferred="14" deadline="20"
     credit="66" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1802" name="p1802_Collagen_POG10_restrained_unfolding" file="y"
+    server="171.65.103.158" atoms="1116" preferred="16" deadline="23"
+    credit="77" frames="100" code="A" contact="spark7"/>
 
 </fah_projects>

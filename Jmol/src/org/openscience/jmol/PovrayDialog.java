@@ -449,14 +449,7 @@ public class PovrayDialog extends JDialog {
    */
   private void getPathHistory() {
 
-    java.util.Properties props = new java.util.Properties();
-    try {
-      java.io.FileInputStream in =
-        new java.io.FileInputStream(Jmol.HistoryPropsFile);
-      props.load(in);
-    } catch (java.io.IOException e) {
-      System.err.println("PovrayDialog: Error reading history");
-    }
+    java.util.Properties props = Jmol.getHistoryFile().getProperties();
     povrayPath = props.getProperty("povrayPath",
             System.getProperty("user.home"));
     savePath = props.getProperty("povraySavePath",
@@ -468,16 +461,10 @@ public class PovrayDialog extends JDialog {
    */
   private void saveHistory() {
 
-    try {
-      java.io.FileOutputStream out =
-        new java.io.FileOutputStream(Jmol.HistoryPropsFile);
-      java.util.Properties props = new java.util.Properties();
-      props.setProperty("povrayPath", povrayPath);
-      props.setProperty("povraySavePath", savePath);
-      props.store(out, Jmol.HistoryFileHeader);
-    } catch (java.io.IOException e) {
-      System.err.println("PovrayDialog: Error saving history");
-    }
+    java.util.Properties props = new java.util.Properties();
+    props.setProperty("povrayPath", povrayPath);
+    props.setProperty("povraySavePath", savePath);
+    Jmol.getHistoryFile().addProperties(props);
   }
 
 }

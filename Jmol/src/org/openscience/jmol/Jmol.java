@@ -61,7 +61,11 @@ class Jmol extends JPanel {
 
   public static File UserPropsFile;
   public static File UserAtypeFile;
-  public static File HistoryPropsFile;
+  private static HistoryFile historyFile;
+  
+  public static HistoryFile getHistoryFile() {
+    return historyFile;
+  }
 
   private static JFrame consoleframe;
 
@@ -87,12 +91,9 @@ class Jmol extends JPanel {
     JmolResourceHandler.initialize("org.openscience.jmol.Properties.Jmol");
     UserPropsFile = new File(ujmoldir, "properties");
     UserAtypeFile = new File(ujmoldir, "AtomTypes");
-    HistoryPropsFile = new File(ujmoldir, "history");
+    historyFile = new HistoryFile(new File(ujmoldir, "history"), "Jmol's persistent values");
     jrh = new JmolResourceHandler("Jmol");
   }
-
-  /** Header at top of Jmol history file **/
-  static String HistoryFileHeader = "Jmol's persistent values";
 
   Jmol(Splash splash) {
 

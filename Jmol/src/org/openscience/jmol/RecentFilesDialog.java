@@ -64,16 +64,10 @@ public class RecentFilesDialog extends JDialog
 
   private void getFiles() {
 
-    try {
-      java.io.FileInputStream in =
-        new java.io.FileInputStream(Jmol.HistoryPropsFile);
-      props.load(in);
-      for (int i = 0; i < MAX_FILES; i++) {
-        files[i] = props.getProperty("recentFilesFile" + i);
-        fileTypes[i] = props.getProperty("recentFilesType" + i);
-      }
-    } catch (java.io.IOException e) {
-      System.err.println("RecentFiles: Error opening history!");
+    props = Jmol.getHistoryFile().getProperties();
+    for (int i = 0; i < MAX_FILES; i++) {
+      files[i] = props.getProperty("recentFilesFile" + i);
+      fileTypes[i] = props.getProperty("recentFilesType" + i);
     }
   }
 
@@ -128,16 +122,9 @@ public class RecentFilesDialog extends JDialog
         props.setProperty("recentFilesFile" + i, files[i]);
         props.setProperty("recentFilesType" + i, fileTypes[i]);
       }
-
-      //System.out.println(i+" "+props.getProperty("recentFilesFile"+i));
     }
-    try {
-      java.io.FileOutputStream out =
-        new java.io.FileOutputStream(Jmol.HistoryPropsFile);
-      props.store(out, Jmol.HistoryFileHeader);
-    } catch (java.io.IOException e) {
-      System.err.println("Error saving history!! " + e);
-    }
+    
+    Jmol.getHistoryFile().addProperties(props);
   }
 
   /**

@@ -61,9 +61,19 @@ import javax.vecmath.Matrix4d;
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class AtomRenderer {
+
+  DisplayControl control;
+  public AtomRenderer(DisplayControl control) {
+    this.control = control;
+  }
+
   Graphics g;
   Rectangle clip;
-  DisplayControl control;
+
+  public void setGraphicsContext(Graphics g, Rectangle clip) {
+    this.g = g;
+    this.clip = clip;
+  }
 
   Atom atom;
   int x;
@@ -77,14 +87,8 @@ public class AtomRenderer {
   Color color;
   Color colorOutline;
 
-  public void setContext(Graphics g, Rectangle clip, DisplayControl control) {
-    this.g = g;
-    this.clip = clip;
-    this.control = control;
-  }
-
   public void render(AtomShape atomShape) {
-        atom = atomShape.atom;
+    atom = atomShape.atom;
     x = atomShape.x;
     y = atomShape.y;
     z = atomShape.z;

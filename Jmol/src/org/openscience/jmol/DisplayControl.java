@@ -24,6 +24,9 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.AtomRenderer;
+import org.openscience.jmol.render.BondRenderer;
+
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
@@ -55,14 +58,17 @@ import org.openscience.jmol.io.ReaderFactory;
 final public class DisplayControl {
 
   public static DisplayControl control;
-  Component awtComponent;
-  ColorManager colorManager;
-  TransformManager transformManager;
-  SelectionManager selectionManager;
-  MouseManager mouseManager;
-  FileManager fileManager;
-  ModelManager modelManager;
-  RepaintManager repaintManager;
+
+  public Component awtComponent;
+  public ColorManager colorManager;
+  public TransformManager transformManager;
+  public SelectionManager selectionManager;
+  public MouseManager mouseManager;
+  public FileManager fileManager;
+  public ModelManager modelManager;
+  public RepaintManager repaintManager;
+  public AtomRenderer atomRenderer;
+  public BondRenderer bondRenderer;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -83,6 +89,8 @@ final public class DisplayControl {
     fileManager = new FileManager(this);
     modelManager = new ModelManager(this);
     repaintManager = new RepaintManager(this);
+    atomRenderer = new AtomRenderer(this);
+    bondRenderer = new BondRenderer(this);
   }
 
   public Component getAwtComponent() {
@@ -251,7 +259,13 @@ final public class DisplayControl {
     refresh();
   }
 
-  public void maybeEnableAntialiasing(Graphics g) {
+  public void setGraphicsContext(Graphics g, Rectangle rectClip) {
+    atomRenderer.setGraphicsContext(g, rectClip);
+    bondRenderer.setGraphicsContext(g, rectClip);
+    maybeEnableAntialiasing(g);
+  }
+
+  private void maybeEnableAntialiasing(Graphics g) {
     repaintManager.maybeEnableAntialiasing(g);
   }
 
@@ -477,6 +491,15 @@ final public class DisplayControl {
     // FIXME -- if there is a script window it should go there
     // for an applet it needs to go someplace else
     System.out.println(str);
+  }
+
+  public void deleteAtom(Atom atom) {
+    // FIXME -- there are problems with deleting atoms
+    // for example, the selection set gets messed up
+    modelManager.deleteAtom(atom);
+    //            status.setStatus(2, "Atom deleted"); 
+    structuralChange = true;
+    refresh();
   }
 
   /****************************************************************

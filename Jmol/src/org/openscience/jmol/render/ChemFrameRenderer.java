@@ -42,21 +42,15 @@ public class ChemFrameRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  // FIXME -- mth 2003 01 03  why is this synchronized?
-  public synchronized void paint(Graphics g, Rectangle rectClip,
-                                 DisplayControl control) {
+  public void paint(Graphics g, Rectangle rectClip,
+                    DisplayControl control) {
     ChemFrame frame = control.getFrame();
     int numAtoms = frame.getNumberOfAtoms();
     if (numAtoms <= 0) {
       return;
     }
-    if (shapes == null || // did not do shapes yet
-        control.hasStructuralChange() || 
-        // FIXME -- this should be part of hasStructuralChange
-        numAtoms != previousNumberAtoms // #atoms changed (e.g. a delete)
-       ) {
+    if (shapes == null || control.hasStructuralChange()) {
       control.resetStructuralChange();
-      previousNumberAtoms = numAtoms;
       shapesVector.removeAllElements();
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
@@ -125,8 +119,6 @@ public class ChemFrameRenderer {
       shapes[i].render(g, rectClip, control);
     }
   }
-
-  private int previousNumberAtoms;
 
   private Shape[] shapes = null;
   private final Vector shapesVector = new Vector();

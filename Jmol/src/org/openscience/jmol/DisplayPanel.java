@@ -139,7 +139,7 @@ public class DisplayPanel extends JPanel
     g.setColor(control.getColorBackground());
     g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
-      control.maybeEnableAntialiasing(g);
+      control.setGraphicsContext(g, rectClip);
       frameRenderer.paint(g, rectClip, control);
       // FIXME -- measurements rendered incorrectly
       // this is in the wrong spot because the display of measurements

@@ -65,6 +65,7 @@ public class AtomShape extends Shape {
   Atom atom;
   //  private Point3d screenPosition = new Point3d();
   public int diameter;
+  public int bondWidth;
   
   public AtomShape(Atom atom) {
     this.atom = atom;
@@ -80,6 +81,7 @@ public class AtomShape extends Shape {
     y = (int)screen.y;
     z = (int)screen.z;
     diameter = control.screenAtomDiameter(z, atom);
+    bondWidth = control.screenBondWidth(z);
   }
 
   public void render(Graphics g, Rectangle clip, DisplayControl control) {
@@ -90,10 +92,7 @@ public class AtomShape extends Shape {
       renderBonds(g, clip, control);
     }
     if (control.showAtoms && isClipVisible(clip)) {
-      // FIXME -- no reason to allocate a new AtomRenderer every time
-      AtomRenderer atomRenderer = new AtomRenderer();
-      atomRenderer.setContext(g, clip, control);
-      atomRenderer.render(this);
+      control.atomRenderer.render(this);
     }
   }
 
@@ -102,11 +101,6 @@ public class AtomShape extends Shape {
     if (bondedAtoms == null) {
       return;
     }
-    // FIXME -- the one instance of BondRenderer needs to be stored-in
-    // and retrieved-from the DisplayControl. It can be initialized before
-    // a paint cycle
-    BondRenderer bondRenderer = new BondRenderer();
-    bondRenderer.setContext(g, clip, control);
     for (int i = 0; i < bondedAtoms.length; ++i) {
       Atom atomOther = bondedAtoms[i];
       AtomShape atomShapeOther = atomOther.getAtomShape();
@@ -115,8 +109,8 @@ public class AtomShape extends Shape {
           ((z > zOther) ||
            (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
           isBondClipVisible(clip, x, y, atomShapeOther.x, atomShapeOther.y)) {
-        bondRenderer.render(this, atomShapeOther,
-                            atom.getBondOrder(atomOther));
+        control.bondRenderer.render(this, atomShapeOther,
+                                    atom.getBondOrder(atomOther));
       }
     }
   }

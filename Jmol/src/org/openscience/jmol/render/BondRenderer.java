@@ -56,9 +56,19 @@ import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 
 public class BondRenderer {
+
+  DisplayControl control;
+  public BondRenderer(DisplayControl control) {
+    this.control = control;
+  }
+
   Graphics g;
   Rectangle clip;
-  DisplayControl control;
+
+  public void setGraphicsContext(Graphics g, Rectangle clip) {
+    this.g = g;
+    this.clip = clip;
+  }
 
   int x1, y1, z1;
   int x2, y2, z2;
@@ -74,12 +84,6 @@ public class BondRenderer {
   int width1, width2;
   Color outline1, outline2;
   int bondOrder;
-
-  public void setContext(Graphics g, Rectangle clip, DisplayControl control) {
-    this.g = g;
-    this.clip = clip;
-    this.control = control;
-  }
 
   public void render(AtomShape atomShape1, AtomShape atomShape2,
                      int bondOrder) {
@@ -129,8 +133,8 @@ public class BondRenderer {
     outline1 = control.getColorAtomOutline(color1);
     outline2 = control.getColorAtomOutline(color2);
 
-    width1 = control.screenBondWidth(z1);
-    width2 = control.screenBondWidth(z2);
+    width1 = atomShape1.bondWidth;
+    width2 = atomShape2.bondWidth;
 
     if (width1 < 4 && width2 < 4) {
       // to smooth out narrow bonds

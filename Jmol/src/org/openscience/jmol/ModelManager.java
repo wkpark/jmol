@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.cdk.Atom;
+import org.openscience.jmol.Atom;
 
 import java.util.BitSet;
 import javax.vecmath.Point3d;
@@ -103,7 +103,7 @@ public class ModelManager {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(((org.openscience.jmol.Atom)chemframe.getAtomAt(i)).getPosition());
+      center.add(((Atom)chemframe.getAtomAt(i)).getPosition());
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity
@@ -150,4 +150,7 @@ public class ModelManager {
     mlist.addDihedral(atom1, atom2, atom3, atom4);
   }
 
+  public void deleteAtom(Atom atom) {
+    chemframe.deleteAtom(atom);
+  }
 }

@@ -158,16 +158,12 @@ public class MouseManager {
           }
           break;
         case DELETE:
-          if (atom != null) {
-            control.getFrame().deleteAtom(atom);
-            //            status.setStatus(2, "Atom deleted"); 
-          }
-          component.repaint();
+          if (atom != null)
+            control.deleteAtom(atom);
           break;
         case MEASURE:
           System.out.println("MEASURE clicked");
           if (atom != null && measure != null) {
-            System.out.println("firing");
             measure.firePicked(atom.getAtomNumber());
           }
         }

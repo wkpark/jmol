@@ -193,19 +193,48 @@ class DotsRenderer extends ShapeRenderer {
    * In the center of aromatic rings there are 2-4 ... which looks ugly
    * So, if you have an idea how to render this, please let me know.
    */
+
+  final static byte nearI = (byte)(1 << 0);
+  final static byte nearJ = (byte)(1 << 1);
+  final static byte nearK = (byte)(1 << 2);
+
+  final static byte[] nearAssociations = {
+    nearI | nearJ | nearK,
+
+    nearI, nearJ, nearK,
+    nearI | nearJ, nearJ | nearK, nearK | nearI,
+    nearI, nearJ, nearJ, nearK, nearK, nearI,
+    // index 13 starts here
+    nearI, nearJ, nearK,
+    nearI | nearJ, nearJ | nearK, nearK | nearI,
+    nearI, nearJ, nearJ, nearK, nearK, nearI,
+  };
+
   void renderCavity(Dots.Cavity cavity,
                     Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
-    int i = cavity.ixI;
-    g3d.setColix(getColix(colixConcave, colixes, atoms, i));
+    Point3f[] points = cavity.points;
+    if (dotsConvexMaps[cavity.ixI] != null) {
+      g3d.setColix(getColix(colixConcave, colixes, atoms, cavity.ixI));
+      renderCavityThird(points, 0);
+    }
+    if (dotsConvexMaps[cavity.ixJ] != null) {
+      g3d.setColix(getColix(colixConcave, colixes, atoms, cavity.ixJ));
+      renderCavityThird(points, 1);
+    }
+    if (dotsConvexMaps[cavity.ixK] != null) {
+      g3d.setColix(getColix(colixConcave, colixes, atoms, cavity.ixK));
+      renderCavityThird(points, 2);
+    }
+  }
+
+  void renderCavityThird(Point3f[] points, int which) {
     Point3i screen;
-    screen = viewer.transformPoint(cavity.pointIP);
-    g3d.drawPixel(screen);
-    screen = viewer.transformPoint(cavity.pointJP);
-    g3d.drawPixel(screen);
-    screen = viewer.transformPoint(cavity.pointKP);
-    g3d.drawPixel(screen);
-    screen = viewer.transformPoint(cavity.pointCentroid);
-    g3d.drawPixel(screen);
+    for (int i = points.length; --i >= 0; ) {
+      if ((nearAssociations[i] & (1 << which)) != 0) {
+        screen = viewer.transformPoint(points[i]);
+        g3d.drawPixel(screen);
+      }
+    }
   }
 
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

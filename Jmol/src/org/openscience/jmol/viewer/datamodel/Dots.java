@@ -384,6 +384,7 @@ public class Dots extends Shape {
   }
 
   final Vector3f vectorT = new Vector3f();
+  final Vector3f vectorT1 = new Vector3f();
   final Vector3f vectorZ = new Vector3f(0, 0, 1);
   final Vector3f vectorX = new Vector3f(1, 0, 0);
 
@@ -622,40 +623,65 @@ public class Dots extends Shape {
   // plus use vectorPI and vectorPJ from above;
   final Vector3f vectorPK = new Vector3f();
 
+  final static byte[] gcSplits = {
+    1, 2, 4,
+    2, 3, 5,
+    3, 1, 6,
+    1, 4, 7,
+    2, 4, 8,
+    2, 5, 9,
+    3, 5, 10,
+    3, 6, 11,
+    1, 6, 12
+  };
+
   class Cavity {
-    int ixI, ixJ, ixK;
-    Point3f pointIP, pointJP, pointKP;
-    Point3f pointCentroid;
+    final int ixI, ixJ, ixK;
+    final Point3f[] points;
 
     Cavity() {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
+      points = new Point3f[25];
+      for (int i = 25; --i >= 0; )
+        points[i] = new Point3f();
+
       vectorPI.sub(centerI, probeIJK);
       vectorPI.normalize();
-      pointIP = new Point3f();
-      pointIP.scaleAdd(radiusP, vectorPI, probeIJK);
+      points[1].scaleAdd(radiusP, vectorPI, probeIJK);
       
       vectorPJ.sub(centerJ, probeIJK);
       vectorPJ.normalize();
-      pointJP = new Point3f();
-      pointJP.scaleAdd(radiusP, vectorPJ, probeIJK);
+      points[2].scaleAdd(radiusP, vectorPJ, probeIJK);
       
       vectorPK.sub(centerK, probeIJK);
       vectorPK.normalize();
-      pointKP = new Point3f();
-      pointKP.scaleAdd(radiusP, vectorPK, probeIJK);
+      points[3].scaleAdd(radiusP, vectorPK, probeIJK);
 
       vectorT.add(vectorPI, vectorPJ);
       vectorT.add(vectorPK);
       vectorT.normalize();
-      pointCentroid = new Point3f();
-      pointCentroid.scaleAdd(radiusP, vectorT, probeIJK);
+      points[0].scaleAdd(radiusP, vectorT, probeIJK);
 
+      for (int i = 0; i < gcSplits.length; i += 3)
+        splitGreatCircle(gcSplits[i], gcSplits[i + 1], gcSplits[i + 2]);
+      for (int i = 13; i < 25; ++i)
+        splitGreatCircle(0, i - 12, i);
+    }
+
+    void splitGreatCircle(int indexA, int indexB, int indexMiddle) {
+      vectorT.sub(points[indexA], probeIJK);
+      vectorT1.sub(points[indexB], probeIJK);
+      vectorT.add(vectorT1);
+      vectorT.normalize();
+      points[indexMiddle].scaleAdd(radiusP, vectorT, probeIJK);
     }
   }
 
+
   /****************************************************************
-   * I could not understand the algorithm in the Connolly article :-(
+   * I could not understand the algorithm that is described
+   * in the Connolly article ... seemed too complicated ... :-(
    * All that it is trying to do is calculate the base point between
    * the two probes. This is the intersection of three planes:
    * the plane defined by atoms IJK, the bisecting plane of torusIJ,

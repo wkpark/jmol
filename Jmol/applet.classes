@@ -95,3 +95,4 @@ org/openscience/jmol/script/Compiler.java
 org/openscience/jmol/script/ScriptException.java
 org/openscience/jmol/util/MathUtil.java
 org/openscience/jmol/ui/JmolPopup.java
+org/openscience/jmol/ui/JmolPopupAwt.java

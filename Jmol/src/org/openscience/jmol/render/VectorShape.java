@@ -27,8 +27,8 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 import org.openscience.jmol.g25d.Graphics25D;
 
-//import java.awt.Graphics;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 
 public class VectorShape extends LineShape {
 
@@ -60,14 +60,14 @@ public class VectorShape extends LineShape {
   }
 
   public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(pointOrigin);
-    x = (int)screen.x;
-    y = (int)screen.y;
-    z = (int)screen.z;
+    Point3i screen = control.transformPoint(pointOrigin);
+    x = screen.x;
+    y = screen.y;
+    z = screen.z;
     screen = control.transformPoint(pointEnd);
-    xEnd = (int)screen.x;
-    yEnd = (int)screen.y;
-    zEnd = (int)screen.z;
+    xEnd = screen.x;
+    yEnd = screen.y;
+    zEnd = screen.z;
 
     if (arrowEnd)
       z = zEnd;

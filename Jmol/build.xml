@@ -249,6 +249,8 @@
         <include name="**/Matrix3d.class"/>
         <include name="**/Quat4f.class"/>
         <include name="**/Quat4d.class"/>
+	<include name="**/Point3i.class"/>
+	<include name="**/Tuple3i.class"/>
         <include name="**/SingularMatrixException.class"/>
       </patternset>
     </unjar>
@@ -533,6 +535,8 @@
   <target name="initdoc" depends="init,check.docbook,check.xsl" />
   
   <target name="check.docbook" depends="setup" unless="docbook-xsl.uptodate" >
+    <delete dir="${build.dir}/${docbook-xsl}" />
+    <mkdir dir="${build.dir}/${docbook-xsl}" />
     <untar src="${doc.dir}/${docbook-xsl}.tar.gz" dest="${build.dir}"
       compression="gzip" />
   </target>

@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 
 public class Axes {
 
@@ -99,10 +100,10 @@ public class Axes {
 
   class OriginShape extends Shape {
     public void transform(DisplayControl control) {
-      Point3d screen = control.transformPoint(pointOrigin);
-      x = (int)screen.x;
-      y = (int)screen.y;
-      z = (int)screen.z;
+      Point3i screen = control.transformPoint(pointOrigin);
+      x = screen.x;
+      y = screen.y;
+      z = screen.z;
     }
 
     public void render(Graphics25D g25d, DisplayControl control) {
@@ -131,10 +132,10 @@ public class Axes {
     }
 
     public void transform(DisplayControl control) {
-      Point3d screen = control.transformPoint(pointAxisEnd);
-      x = (int)screen.x;
-      y = (int)screen.y;
-      z = (int)screen.z;
+      Point3i screen = control.transformPoint(pointAxisEnd);
+      x = screen.x;
+      y = screen.y;
+      z = screen.z;
     }
   
     public void render(Graphics25D g25d, DisplayControl control) {

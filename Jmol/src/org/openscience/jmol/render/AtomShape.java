@@ -33,6 +33,7 @@ import java.awt.Rectangle;
 import java.awt.Color;
 
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 
 public class AtomShape extends Shape {
 
@@ -181,10 +182,10 @@ public class AtomShape extends Shape {
   }
 
   public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(atom.getPoint3D());
-    x = (int)screen.x;
-    y = (int)screen.y;
-    z = (int)screen.z;
+    Point3i screen = control.transformPoint(atom.getPoint3D());
+    x = screen.x;
+    y = screen.y;
+    z = screen.z;
     diameter = control.scaleToScreen(z, marAtom * 2);
     for (int i = numBonds; --i >= 0; )
       bondWidths[i] = control.scaleToScreen(z, marBonds[i] * 2);

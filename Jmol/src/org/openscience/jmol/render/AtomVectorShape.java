@@ -27,8 +27,8 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.*;
 import org.openscience.jmol.g25d.Graphics25D;
 
-//import java.awt.Graphics;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 
 public class AtomVectorShape extends Shape {
 
@@ -64,12 +64,12 @@ public class AtomVectorShape extends Shape {
   }
 
   public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(atom.getPoint3D());
-    int zAtom = (int)screen.z;
+    Point3i screen = control.transformPoint(atom.getPoint3D());
+    int zAtom = screen.z;
     screen = control.transformPoint(atom.getScaledVector());
-    x = (int)screen.x;
-    y = (int)screen.y;
-    z = (zAtom + (int)screen.z) / 2;
+    x = screen.x;
+    y = screen.y;
+    z = (zAtom + screen.z) / 2;
   }
   
   /**

@@ -26,6 +26,7 @@ package org.openscience.jmol;
 
 import java.awt.Dimension;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
@@ -366,38 +367,23 @@ public class TransformManager {
     calcZoom();
   }
 
-  public int screenAtomDiameter(int z, Atom atom, int percentVdw) {
-    double vdwRadius = atom.getVanderwaalsRadius();
-    if (z > 0)
-      System.out.println("--?QUE? no way that z > 0--");
-    if (vdwRadius <= 0)
-      System.out.println("--?QUE? vdwRadius=" + vdwRadius);
-    int d = (int)(2 * vdwRadius * scalePixelsPerAngstrom * percentVdw / 100);
-    if (perspectiveDepth)
-      d = (d * cameraZ) / (cameraZ - z);
-    return d;
-  }
-
-  public int screenBondWidth(int z, int percentAngstrom) {
-    int w = (int)(scalePixelsPerAngstrom * percentAngstrom / 100);
-    if (perspectiveDepth)
-      w = (w * cameraZ) / (cameraZ - z);
-    return w;
-  }
+  /****************************************************************
+   * scalings
+   ****************************************************************/
 
   public double scaleToScreen(int z, double sizeAngstroms) {
-    // all z's are <= 0
-    // so the more negative z is, the smaller the screen scale
+    // all z's are >= 0
+    // so the more positive z is, the smaller the screen scale
     double pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
     if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraZ) / (cameraZ - z);
+      pixelSize = (pixelSize * cameraZ) / (cameraZ + z);
     return pixelSize;
   }
 
   public int scaleToScreen(int z, int milliAngstroms) {
     int pixelSize = (int)(milliAngstroms * scalePixelsPerAngstrom / 1000);
     if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraZ) / (cameraZ - z);
+      pixelSize = (pixelSize * cameraZ) / (cameraZ + z);
     return pixelSize;
   }
 
@@ -407,6 +393,7 @@ public class TransformManager {
 
   public final Matrix4d matrixTransform = new Matrix4d();
   private final Point3d point3dScreenTemp = new Point3d();
+  private final Point3i point3iScreenTemp = new Point3i();
   private final Matrix4d matrixTemp = new Matrix4d();
   private final Vector3d vectorTemp = new Vector3d();
 
@@ -421,7 +408,7 @@ public class TransformManager {
     // now, multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
     matrixTransform.mul(matrixRotate, matrixTransform);
-    // now shift so that all z coordinates are <= 0
+    // now shift so that all z coordinates are >= 0
     // this is important for scaling
     vectorTemp.x = 0;
     vectorTemp.y = 0;
@@ -429,31 +416,34 @@ public class TransformManager {
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);
     // now scale to screen coordinates
-    matrixTemp.set(scalePixelsPerAngstrom);
-    matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
+    matrixTemp.set(-scalePixelsPerAngstrom); // invert y & z
+    matrixTemp.m00=scalePixelsPerAngstrom; // preserve x
     matrixTransform.mul(matrixTemp, matrixTransform);
     // note that the image is still centered at 0, 0
     // translations come later (to deal with perspective)
-    // and all z coordinates are <= 0
+    // and all z coordinates are >= 0
   }
 
-  public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
-    pointScreen.set(transformPoint(pointAngstroms));
-  }
-
-  public Point3d transformPoint(Point3d pointAngstroms) {
+  public Point3i transformPoint(Point3d pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3dScreenTemp);
-    if (perspectiveDepth) {
-      int depth = cameraZ - (int)point3dScreenTemp.z;
-      point3dScreenTemp.x =
-        (((int)point3dScreenTemp.x * cameraZ) / depth) + xTranslation;
-      point3dScreenTemp.y =
-        (((int)point3dScreenTemp.y * cameraZ) / depth) + yTranslation;
-    } else {
-      point3dScreenTemp.x += xTranslation;
-      point3dScreenTemp.y += yTranslation;
+    int x = (int)point3dScreenTemp.x;
+    int y = (int)point3dScreenTemp.y;
+    int z = (int)point3dScreenTemp.z;
+    if (z < 0) {
+      System.out.println("WARNING! DANGER! z < 0! transformPoint()");
+      z = 0;
     }
-    return point3dScreenTemp;
+    if (perspectiveDepth) {
+      int depth = cameraZ + z;
+      point3iScreenTemp.x = ((x * cameraZ) / depth) + xTranslation;
+      point3iScreenTemp.y = ((y * cameraZ) / depth) + yTranslation;
+      point3iScreenTemp.z = z;
+    } else {
+      point3iScreenTemp.x = x + xTranslation;
+      point3iScreenTemp.y = y + yTranslation;
+      point3iScreenTemp.z = z;
+    }
+    return point3iScreenTemp;
   }
 
   /****************************************************************

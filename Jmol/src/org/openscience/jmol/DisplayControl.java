@@ -47,6 +47,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
 import java.net.URL;
@@ -382,11 +383,13 @@ final public class DisplayControl {
     transformManager.calcViewTransformMatrix();
   }
 
+  /*
   public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
+  */
 
-  public Point3d transformPoint(Point3d pointAngstroms) {
+  public Point3i transformPoint(Point3d pointAngstroms) {
     return transformManager.transformPoint(pointAngstroms);
   }
 

@@ -32,6 +32,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 
 public class BoundingBox {
 
@@ -93,10 +94,10 @@ public class BoundingBox {
     }
 
     public void transform(DisplayControl control) {
-      Point3d screen = control.transformPoint(point);
-      x = (int)screen.x;
-      y = (int)screen.y;
-      z = (int)screen.z;
+      Point3i screen = control.transformPoint(point);
+      x = screen.x;
+      y = screen.y;
+      z = screen.z;
     }
   
     public void render(Graphics25D g25d, DisplayControl control) {

@@ -30,6 +30,7 @@ import org.openscience.jmol.g25d.Graphics25D;
 //import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3d;
+import javax.vecmath.Point3i;
 
 class LineShape extends Shape {
 
@@ -47,14 +48,14 @@ class LineShape extends Shape {
   }
 
   public void transform(DisplayControl control) {
-    Point3d screen = control.transformPoint(pointOrigin);
-    x = (int)screen.x;
-    y = (int)screen.y;
-    z = (int)screen.z;
+    Point3i screen = control.transformPoint(pointOrigin);
+    x = screen.x;
+    y = screen.y;
+    z = screen.z;
     screen = control.transformPoint(pointEnd);
-    xEnd = (int)screen.x;
-    yEnd = (int)screen.y;
-    zEnd = (int)screen.z;
+    xEnd = screen.x;
+    yEnd = screen.y;
+    zEnd = screen.z;
     // z = (z + zEnd) / 2;
     if (zEnd > z)
       z = zEnd;

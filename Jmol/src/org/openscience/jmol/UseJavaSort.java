@@ -40,7 +40,7 @@ public class UseJavaSort {
         public int compare(Object shape1, Object shape2) {
           int z1 = ((Shape)shape1).z;
           int z2 = ((Shape)shape2).z;
-          if (z1 < z2)
+          if (z1 > z2)
             return -1;
           if (z1 == z2)
             return 0;

@@ -89,10 +89,7 @@ public class JmolPopupAwt extends PopupMenu {
     public void itemStateChanged(ItemEvent e) {
       System.out.println("CheckboxMenuItemListener() " + e.getSource());
       CheckboxMenuItem cmi = (CheckboxMenuItem)e.getSource();
-      String script = "set " + cmi.getActionCommand() + 
-        (cmi.getState() ? " on" : " off");
-      //      System.out.println(" script=" + script);
-      control.evalString(script);
+      control.setBooleanProperty(cmi.getActionCommand(), cmi.getState());
     }
   }
 

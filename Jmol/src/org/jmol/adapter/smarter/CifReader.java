@@ -33,6 +33,8 @@ import java.io.BufferedReader;
  * <a href='http://www.iucr.org/iucr-top/cif/'>
  * http://www.iucr.org/iucr-top/cif/
  * </a>
+ *
+ * @author Miguel <miguel@jmol.org>
  */
 class CifReader extends AtomSetCollectionReader {
 
@@ -40,7 +42,8 @@ class CifReader extends AtomSetCollectionReader {
 
   BufferedReader reader;
   String line;
-  RidiculousFileFormatTokenizer tokenizer = new RidiculousFileFormatTokenizer();
+  RidiculousFileFormatTokenizer tokenizer =
+    new RidiculousFileFormatTokenizer();
 
   void initialize() {
     notionalUnitcell = new float[6];
@@ -391,18 +394,22 @@ class CifReader extends AtomSetCollectionReader {
 
   final static byte GEOM_BOND_ATOM_SITE_LABEL_1 = 1;
   final static byte GEOM_BOND_ATOM_SITE_LABEL_2 = 2;
-  //  final static byte GEOM_BOND_DISTANCE          = 3;
-  final static byte GEOM_BOND_PROPERTY_MAX      = 3;
+  final static byte GEOM_BOND_SITE_SYMMETRY_2   = 3;
+  //  final static byte GEOM_BOND_DISTANCE          = 4;
+  
+  final static byte GEOM_BOND_PROPERTY_MAX      = 4;
 
   final static String[] geomBondFields = {
     "_geom_bond_atom_site_label_1",
     "_geom_bond_atom_site_label_2",
+    "_geom_bond_site_symmetry_2",
     //    "_geom_bond_distance",
   };
 
   final static byte[] geomBondFieldMap = {
     GEOM_BOND_ATOM_SITE_LABEL_1,
     GEOM_BOND_ATOM_SITE_LABEL_2,
+    GEOM_BOND_SITE_SYMMETRY_2,
     //    GEOM_BOND_DISTANCE,
   };
 
@@ -425,7 +432,9 @@ class CifReader extends AtomSetCollectionReader {
            line.charAt(0) != '#';
          line = reader.readLine()) {
       tokenizer.setString(line);
-      Bond bond = new Bond();
+      int atomIndex1 = -1;
+      int atomIndex2 = -1;
+      String symmetry = null;
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
           tokenizer.setString(reader.readLine());
@@ -434,15 +443,26 @@ class CifReader extends AtomSetCollectionReader {
         case NONE:
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_1:
-          bond.atomIndex1 = atomSetCollection.getAtomNameIndex(field);
+          atomIndex1 = atomSetCollection.getAtomNameIndex(field);
           break;
         case GEOM_BOND_ATOM_SITE_LABEL_2:
-          bond.atomIndex2 = atomSetCollection.getAtomNameIndex(field);
+          atomIndex2 = atomSetCollection.getAtomNameIndex(field);
           break;
+        case GEOM_BOND_SITE_SYMMETRY_2:
+          if (field.charAt(0) != '.')
+            symmetry = field;
         }
       }
-      if (bond.atomIndex1 >= 0 && bond.atomIndex2 >= 0)
-        atomSetCollection.addBond(bond);
+      if (atomIndex1 >= 0 && atomIndex2 >= 0) {
+        // miguel 2004 11 19
+        // for now, do not deal with symmetry
+        if (symmetry == null) {
+          Bond bond = new Bond();
+          bond.atomIndex1 = atomIndex1;
+          bond.atomIndex2 = atomIndex2;
+          atomSetCollection.addBond(bond);
+        }
+      }
     }
   }
 

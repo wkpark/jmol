@@ -36,8 +36,8 @@ function jmolInitialize(codebaseDirectory) {
     alert("codebaseDirectory is a required parameter to jmolInitialize");
     codebaseDirectory = ".";
   }
-  jmolSetCodebase(codebaseDirectory);
-  jmolOnloadResetForms();
+  _jmolSetCodebase(codebaseDirectory);
+  _jmolOnloadResetForms();
   _jmol.initialized = true;
 }
 
@@ -271,16 +271,6 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName) {
   document.write(t);
 }
 
-function jmolInitializeBypass() {
-  _jmol.initialized = true;
-}
-
-function jmolSetCodebase(codebase) {
-  _jmol.codebase = codebase ? codebase : ".";
-  if (_jmol.debugAlert)
-    alert("jmolCodebase=" + _jmol.codebase);
-}
-
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
   if (typeof action == "string") {
     action = action.toLowerCase();
@@ -301,32 +291,6 @@ function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
   }
   if (typeof nowOrLater == "string" && nowOrLater.toLowerCase() == "now")
     _jmolCheckBrowser();
-}
-
-function jmolOnloadResetForms() {
-  _jmol.previousOnloadHandler = window.onload;
-  window.onload =
-  function() {
-//    alert("onloadResetForms");
-    with (_jmol) {
-      if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
-        var forms = document.forms;
-        if (!forms || forms.length == 0) {
-          alert("<form> tags seem to be missing\n" +
-                "Jmol/HTML input controls must be contained " +
-                "within form tags"
-//                + "\n\n" + forms + " forms.length=" + forms.length +
-//                " typeof=" + (typeof forms)
-                );
-        } else {
-          for (var i = forms.length; --i >= 0; )
-            forms[i].reset();
-        }
-      }
-      if (previousOnloadHandler)
-        previousOnloadHandler();
-    }
-  }
 }
 
 ////////////////////////////////////////////////////////////////
@@ -716,3 +680,36 @@ function _jmolMouseOut() {
   window.status = " ";
   return true;
 }
+
+function _jmolSetCodebase(codebase) {
+  _jmol.codebase = codebase ? codebase : ".";
+  if (_jmol.debugAlert)
+    alert("jmolCodebase=" + _jmol.codebase);
+}
+
+function _jmolOnloadResetForms() {
+  _jmol.previousOnloadHandler = window.onload;
+  window.onload =
+  function() {
+//    alert("onloadResetForms");
+    with (_jmol) {
+      if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
+        var forms = document.forms;
+        if (!forms || forms.length == 0) {
+          alert("<form> tags seem to be missing\n" +
+                "Jmol/HTML input controls must be contained " +
+                "within form tags"
+//                + "\n\n" + forms + " forms.length=" + forms.length +
+//                " typeof=" + (typeof forms)
+                );
+        } else {
+          for (var i = forms.length; --i >= 0; )
+            forms[i].reset();
+        }
+      }
+      if (previousOnloadHandler)
+        previousOnloadHandler();
+    }
+  }
+}
+

@@ -1710,7 +1710,7 @@ public class Eval implements Runnable {
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (statementLength == 2) {
-        if (radiusRasMol >= 500 || radiusRasMol < -100)
+        if (radiusRasMol >= 750 || radiusRasMol < -100)
           numberOutOfRange();
         mar = (short)radiusRasMol;
         if (radiusRasMol > 0)
@@ -1723,7 +1723,7 @@ public class Eval implements Runnable {
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms >= 2)
+      if (angstroms > 3)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
       break;
@@ -1754,13 +1754,13 @@ public class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500)
+      if (radiusRasMol > 750)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
-      if (angstroms >= 2)
+      if (angstroms > 3)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
       break;

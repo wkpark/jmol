@@ -5,7 +5,7 @@ org/openscience/jmol/applet/*.java
 org/openscience/jmol/viewer/*.java
 org/openscience/jmol/viewer/**/*.java
 org/openscience/jmol/ui/*.java
-org/openscience/jmol/adapters/CdkJmolModelAdapter.java
+
 
 
 

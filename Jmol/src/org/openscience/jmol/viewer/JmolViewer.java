@@ -729,7 +729,10 @@ final public class JmolViewer {
 
   public void openFile(String name) {
     clear();
+    long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name);
+    long ms = System.currentTimeMillis() - timeBegin;
+    System.out.println("openFile(" + name + ") " + ms + " ms");
   }
 
   public void openStringInline(String strModel) {

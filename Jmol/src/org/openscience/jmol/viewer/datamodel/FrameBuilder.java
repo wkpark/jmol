@@ -41,6 +41,7 @@ public class FrameBuilder {
   }
 
   public Frame buildFrame() {
+    long timeBegin = System.currentTimeMillis();
     JmolModelAdapter adapter = viewer.getJmolModelAdapter();
     int atomCount = adapter.getAtomCount(clientFile, frameNumber);
     int modelType = adapter.getModelType(clientFile);
@@ -121,6 +122,8 @@ public class FrameBuilder {
     }
       
     frame.freeze();
+    long msToBuild = System.currentTimeMillis() - timeBegin;
+    System.out.println("Build a frame:" + msToBuild + " ms");
     return frame;
   }
 }

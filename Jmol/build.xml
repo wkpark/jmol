@@ -112,11 +112,10 @@
 	  <srcfiles dir="doc/source"
 		    includes="JmolDevelopersGuide_fr.docbook.xml"/>
 	</uptodate>
-<!--	<uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
+	<uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
 	  <srcfiles dir="doc/source"
 		    includes="JmolDevelopersGuide_de.docbook.xml"/>
 	</uptodate>
--->
       </and>
     </condition>
 
@@ -736,6 +735,15 @@ support for assertions (which were introduced in 1.4).
       <arg value="../../doc/source/JmolDevelopersGuide_fr.docbook.xml" />
       <arg value="../${docbook-xsl}/html/docbook.xsl" />
     </java>
+    <echo message="Generating developer's guide (de)" />
+    <java fork="true" dir="build/doc"
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="JmolDevelopersGuide_de.html" />
+      <arg value="../../doc/source/JmolDevelopersGuide_de.docbook.xml" />
+      <arg value="../${docbook-xsl}/html/docbook.xsl" />
+    </java>
   </target>
 
   <target name="jmolAppletGuide" id="jmolAppletGuide" depends="initdoc"
@@ -756,6 +764,15 @@ support for assertions (which were introduced in 1.4).
       <arg value="-o" />
       <arg value="JmolAppletGuide_fr.html" />
       <arg value="../../doc/source/JmolAppletGuide_fr.docbook.xml" />
+      <arg value="../${docbook-xsl}/html/docbook.xsl" />
+    </java>
+    <echo message="Generating applet guide (de)" />
+    <java fork="true" dir="build/doc"
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="JmolAppletGuide_de.html" />
+      <arg value="../../doc/source/JmolAppletGuide_de.docbook.xml" />
       <arg value="../${docbook-xsl}/html/docbook.xsl" />
     </java>
   </target>

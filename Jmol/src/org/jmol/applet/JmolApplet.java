@@ -46,12 +46,6 @@ import java.net.MalformedURLException;
    [param name="boxbgcolor" value="#112233" /]
    [param name="boxfgcolor" value="#778899" /]  
 
-   // load should *never* have an http server name
-   // it will fail unless the applet is signed
-   // must be a path relative to the html page
-   // can be absolute on the server ... starting with '/'
-   [param name="load"       value="relative-pathname-with-no-http://" /]
-
    [param name="loadInline" value="
 | do
 | it
@@ -63,16 +57,6 @@ import java.net.MalformedURLException;
 
    // this one flips the orientation and uses RasMol/Chime colors
    [param name="emulate"    value="chime" /]
-
-   // I have thought about making this boxbgcolor ... what do you think?
-   [param name="bgcolor"    value="#AABBCC" /]
-
-   // the Jmol frank
-   [param name="frank"      value="false" /]
-
-   // for verbose MessageCallback
-   [param name="debugscript"      value="true" /]
-
 
    // this is *required* if you want the applet to be able to
    // call your callbacks
@@ -87,7 +71,7 @@ import java.net.MalformedURLException;
 
 */
 
-public class JmolApplet extends Applet implements JmolStatusListener {
+public class JmolApplet extends Applet {
 
   JmolViewer viewer;
   boolean jvm12orGreater;
@@ -96,6 +80,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   JmolPopup jmolpopup;
   String htmlName;
   JmolAppletRegistry appletRegistry;
+
+  MyStatusListener myStatusListener;
 
   /*
    * miguel 2004 11 29
@@ -125,7 +111,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     return appletInfo;
   }
 
-  private static String appletInfo =
+  static String appletInfo =
     "Jmol Applet.  Part of the OpenScience project. " +
     "See jmol.sourceforge.net for more information";
 
@@ -145,7 +131,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     // to enable CDK
     //    viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(null));
-    viewer.setJmolStatusListener(this);
+    myStatusListener = new MyStatusListener();
+    viewer.setJmolStatusListener(myStatusListener);
 
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),
                             getValue("JmolAppletProxy", null));
@@ -180,14 +167,14 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
   */
 
-  private boolean getBooleanValue(String propertyName, boolean defaultValue) {
+  boolean getBooleanValue(String propertyName, boolean defaultValue) {
     String value = getValue(propertyName, defaultValue ? "true" : "");
     return (value.equalsIgnoreCase("true") ||
             value.equalsIgnoreCase("on") ||
             value.equalsIgnoreCase("yes"));
   }
 
-  private String getValue(String propertyName, String defaultValue) {
+  String getValue(String propertyName, String defaultValue) {
     String stringValue = getParameter(propertyName);
     if (stringValue != null)
       return stringValue;
@@ -227,7 +214,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     return defaultValue;
   }
   */
-  private String getValueLowerCase(String paramName, String defaultValue) {
+  String getValueLowerCase(String paramName, String defaultValue) {
     String value = getValue(paramName, defaultValue);
     if (value != null) {
       value = value.trim().toLowerCase();
@@ -254,13 +241,12 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       } else {
         viewer.setJmolDefaults();
       }
-      viewer.setColorBackground(getValue("bgcolor", "black"));
-      viewer.setDebugScript(getBooleanValue("debugscript", false));
+      String bgcolor = getValue("boxbgcolor", "black");
+      bgcolor = getValue("bgcolor", bgcolor);
+      viewer.setColorBackground(bgcolor);
       
-      load(getValue("load", null));
       loadInline(getValue("loadInline", null));
-      if (getBooleanValue("frank", true))
-        viewer.setFrankOn(true);
+      viewer.setFrankOn(true);
 
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
@@ -275,99 +261,13 @@ public class JmolApplet extends Applet implements JmolStatusListener {
            pickCallback != null))
         System.out.println("WARNING!! MAYSCRIPT not found");
       
-      script(getValue("script", null));
+      String scriptParam = getValue("script", "");
+      String loadParam = getValue("load", null);
+      if (loadParam != null)
+        scriptParam = loadParam + ";" + scriptParam;
+      script(scriptParam);
     }
     viewer.popHoldRepaint();
-  }
-
-  public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile,
-                               String errorMsg) {
-    if (errorMsg != null) {
-      showStatusAndConsole("File Error:" + errorMsg);
-      return;
-    }
-    if (fullPathName != null)
-      if (loadStructCallback != null && jsoWindow != null)
-        jsoWindow.call(loadStructCallback, new Object[] {htmlName});
-    if (jmolpopup != null)
-      jmolpopup.updateComputedMenus();
-  }
-
-  public void setStatusMessage(String statusMessage) {
-    if (statusMessage == null)
-      return;
-    if (messageCallback != null && jsoWindow != null)
-      jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
-    showStatusAndConsole(statusMessage);
-  }
-
-  public void scriptEcho(String strEcho) {
-    scriptStatus(strEcho);
-  }
-
-  public void scriptStatus(String strStatus) {
-    if (strStatus != null && messageCallback != null && jsoWindow != null)
-      jsoWindow.call(messageCallback, new Object[] {htmlName, strStatus});
-    consoleMessage(strStatus);
-  }
-
-  boolean buttonCallbackNotificationPending;
-  String buttonCallback;
-  String buttonName;
-  JSObject buttonWindow;
-
-  public void notifyScriptTermination(String errorMessage, int msWalltime) {
-    showStatusAndConsole("Jmol script completed");
-    if (buttonCallbackNotificationPending) {
-      System.out.println("!!!! calling back " + buttonCallback);
-      buttonCallbackAfter[0] = buttonName;
-      buttonWindow.call(buttonCallback, buttonCallbackAfter);
-    }
-  }
-
-  public void handlePopupMenu(int x, int y) {
-    if (jmolpopup != null)
-      jmolpopup.show(x, y);
-  }
-
-  public void measureSelection(int atomIndex) {
-  }
-
-  public void notifyMeasurementsChanged() {
-  }
-
-  public void notifyFrameChanged(int frameNo) {
-    //System.out.println("notifyFrameChanged(" + frameNo +")");
-    if (animFrameCallback != null && jsoWindow != null)
-      jsoWindow.call(animFrameCallback,
-                     new Object[] {htmlName, new Integer(frameNo)});
-  }
-
-  public void notifyAtomPicked(int atomIndex, String strInfo) {
-    //System.out.println("notifyAtomPicked(" + atomIndex + "," + strInfo +")");
-    showStatusAndConsole(strInfo);
-    if (pickCallback != null && jsoWindow != null)
-      jsoWindow.call(pickCallback,
-                     new Object[] {htmlName, strInfo, new Integer(atomIndex)});
-  }
-
-  public void showUrl(String urlString) {
-    System.out.println("showUrl(" + urlString + ")");
-    if (urlString != null && urlString.length() > 0) {
-      try {
-        URL url = new URL(urlString);
-        getAppletContext().showDocument(url, "_blank");
-      } catch (MalformedURLException mue) {
-        showStatusAndConsole("Malformed URL:" + urlString);
-      }
-    }
-  }
-
-  public void showConsole(boolean showConsole) {
-    System.out.println("JmolApplet.showConsole(" + showConsole + ")");
-    if (jvm12 != null)
-      jvm12.showConsole(showConsole);
   }
 
   void showStatusAndConsole(String message) {
@@ -423,7 +323,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     "</applet>",
   };
 
-  private void printProgressbarMessage(Graphics g) {
+  void printProgressbarMessage(Graphics g) {
     g.setColor(Color.yellow);
     g.fillRect(0, 0, 10000, 10000);
     g.setColor(Color.black);
@@ -448,16 +348,16 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   // code to record last and average times
   // last and average of all the previous times are shown in the status window
 
-  private static int timeLast = 0;
-  private static int timeCount;
-  private static int timeTotal;
+  static int timeLast = 0;
+  static int timeCount;
+  static int timeTotal;
 
-  private void resetTimes() {
+  void resetTimes() {
     timeCount = timeTotal = 0;
     timeLast = -1;
   }
 
-  private void recordTime(int time) {
+  void recordTime(int time) {
     if (timeLast != -1) {
       timeTotal += timeLast;
       ++timeCount;
@@ -465,10 +365,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     timeLast = time;
   }
 
-  private long timeBegin;
-  private int lastMotionEventNumber;
+  long timeBegin;
+  int lastMotionEventNumber;
 
-  private void startPaintClock() {
+  void startPaintClock() {
     timeBegin = System.currentTimeMillis();
     int motionEventNumber = viewer.getMotionEventNumber();
     if (lastMotionEventNumber != motionEventNumber) {
@@ -477,12 +377,12 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     }
   }
 
-  private void stopPaintClock() {
+  void stopPaintClock() {
     int time = (int)(System.currentTimeMillis() - timeBegin);
     recordTime(time);
   }
 
-  private String fmt(int num) {
+  String fmt(int num) {
     if (num < 0)
       return "---";
     if (num < 10)
@@ -492,7 +392,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     return "" + num;
   }
 
-  private void showTimes(int x, int y, Graphics g) {
+  void showTimes(int x, int y, Graphics g) {
     int timeAverage =
       (timeCount == 0)
       ? -1
@@ -501,8 +401,13 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     g.drawString(fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms", x, y);
   }
 
-  private final Object[] buttonCallbackBefore = { null, new Boolean(false)};
-  private final Object[] buttonCallbackAfter = { null, new Boolean(true)};
+  final Object[] buttonCallbackBefore = { null, new Boolean(false)};
+  final Object[] buttonCallbackAfter = { null, new Boolean(true)};
+
+  boolean buttonCallbackNotificationPending;
+  String buttonCallback;
+  String buttonName;
+  JSObject buttonWindow;
 
   public void scriptButton(JSObject buttonWindow, String buttonName,
                            String script, String buttonCallback) {
@@ -527,21 +432,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void script(String script) {
-    System.out.println(htmlName + " will try to run:\n-----" +
-                       script + "\n-----\n");
     String strError = viewer.evalString(script);
     if (strError == null)
       strError = "Jmol executing script ...";
-    setStatusMessage(strError);
-  }
-
-  public void load(String modelName) {
-    if (modelName != null) {
-      viewer.openFile(modelName);
-      String strError = viewer.getOpenFileError();
-      setStatusMessage(strError);
-    }
-    repaint();
+    myStatusListener.setStatusMessage(strError);
   }
 
   char inlineNewlineChar = '|';
@@ -558,11 +452,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
         strModel = strModel.replace(inlineNewlineChar, '\n');
       }
       viewer.openStringInline(strModel);
-      setStatusMessage(viewer.getOpenFileError());
+      myStatusListener.setStatusMessage(viewer.getOpenFileError());
     }
   }
 
-  private void loadPopupMenuAsBackgroundTask() {
+  void loadPopupMenuAsBackgroundTask() {
     // no popup on MacOS 9 NetScape
     if (viewer.getOperatingSystemName().equals("Mac OS") &&
         viewer.getJavaVersion().equals("1.1.5"))
@@ -570,7 +464,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     new LoadPopupThread(this).run();
   }
 
-  private class LoadPopupThread implements Runnable {
+  class LoadPopupThread implements Runnable {
 
     JmolApplet jmolApplet;
     
@@ -596,5 +490,93 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       // long runTime = System.currentTimeMillis() - beginTime;
       // System.out.println("LoadPopupThread finished " + runTime + " ms");
     }
+  }
+
+  class MyStatusListener implements JmolStatusListener {
+    public void notifyFileLoaded(String fullPathName, String fileName,
+                                 String modelName, Object clientFile,
+                                 String errorMsg) {
+      if (errorMsg != null) {
+        showStatusAndConsole("File Error:" + errorMsg);
+        return;
+      }
+      if (fullPathName != null)
+        if (loadStructCallback != null && jsoWindow != null)
+          jsoWindow.call(loadStructCallback, new Object[] {htmlName});
+      if (jmolpopup != null)
+        jmolpopup.updateComputedMenus();
+    }
+
+    public void setStatusMessage(String statusMessage) {
+      if (statusMessage == null)
+        return;
+      if (messageCallback != null && jsoWindow != null)
+        jsoWindow.call(messageCallback, new Object[] {htmlName, statusMessage});
+      showStatusAndConsole(statusMessage);
+    }
+
+    public void scriptEcho(String strEcho) {
+      scriptStatus(strEcho);
+    }
+
+    public void scriptStatus(String strStatus) {
+      if (strStatus != null && messageCallback != null && jsoWindow != null)
+        jsoWindow.call(messageCallback, new Object[] {htmlName, strStatus});
+      consoleMessage(strStatus);
+    }
+
+    public void notifyScriptTermination(String errorMessage, int msWalltime) {
+      showStatusAndConsole("Jmol script completed");
+      if (buttonCallbackNotificationPending) {
+        System.out.println("!!!! calling back " + buttonCallback);
+        buttonCallbackAfter[0] = buttonName;
+        buttonWindow.call(buttonCallback, buttonCallbackAfter);
+      }
+    }
+
+    public void handlePopupMenu(int x, int y) {
+      if (jmolpopup != null)
+        jmolpopup.show(x, y);
+    }
+
+    public void measureSelection(int atomIndex) {
+    }
+
+    public void notifyMeasurementsChanged() {
+    }
+
+    public void notifyFrameChanged(int frameNo) {
+      //System.out.println("notifyFrameChanged(" + frameNo +")");
+      if (animFrameCallback != null && jsoWindow != null)
+        jsoWindow.call(animFrameCallback,
+                       new Object[] {htmlName, new Integer(frameNo)});
+    }
+
+    public void notifyAtomPicked(int atomIndex, String strInfo) {
+      //System.out.println("notifyAtomPicked(" + atomIndex + "," + strInfo +")");
+      showStatusAndConsole(strInfo);
+      if (pickCallback != null && jsoWindow != null)
+        jsoWindow.call(pickCallback,
+                       new Object[] {htmlName, strInfo, new Integer(atomIndex)});
+    }
+
+    public void showUrl(String urlString) {
+      System.out.println("showUrl(" + urlString + ")");
+      if (urlString != null && urlString.length() > 0) {
+        try {
+          URL url = new URL(urlString);
+          getAppletContext().showDocument(url, "_blank");
+        } catch (MalformedURLException mue) {
+          showStatusAndConsole("Malformed URL:" + urlString);
+        }
+      }
+    }
+
+    public void showConsole(boolean showConsole) {
+      System.out.println("JmolApplet.showConsole(" + showConsole + ")");
+      if (jvm12 != null)
+        jvm12.showConsole(showConsole);
+    }
+
   }
 }

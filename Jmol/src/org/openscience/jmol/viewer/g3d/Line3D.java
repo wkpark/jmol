@@ -34,38 +34,48 @@ final class Line3D {
     this.g3d = g3d;
   }
 
-  final static boolean useCohenSutherland = false;
-
-  void drawLine(int argb, int xA, int yA, int zA, int xB, int yB, int zB,
-                boolean tDotted) {
+  void drawLine(int argbA, int argbB,
+                int xA, int yA, int zA, int xB, int yB, int zB) {
     int dxBA = xB - xA, dyBA = yB - yA, dzBA = zB - zA;
-    int cc1 = clipCode(xA, yA, zA);
-    int cc2 = clipCode(xB, yB, zB);
-    if ((cc1 | cc2) == 0) {
-      if (tDotted)
-        plotDashedLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
-                                     2, 1);
-      else
-        plotLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
-      return;
+    switch (visibilityCheck(xA, yA, zA, xB, yB, zB)) {
+    case VISIBILITY_UNCLIPPED:
+      plotLineDeltaUnclipped(argbA, argbB, xA, yA, zA, dxBA, dyBA, dzBA);
+      break;
+    case VISIBILITY_CLIPPED:
+      plotLineDeltaClipped(argbA, argbB, xA, yA, zA, dxBA, dyBA, dzBA);
     }
-      
-    /*
-    if (tDotted)
-      plotDottedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA);
-    else
-      plotLineDeltaClipped(argb, argb, xA, yA, zA, dxBA, dyBA, dzBA);
-    if (true)
-      return;
-    */
+  }
 
-    int x1 = xA, y1 = yA, z1 = zA, x2 = xB, y2 = yB, z2 = zB;
+  void drawDashedLine(int argb, int xA, int yA, int zA,
+                      int xB, int yB, int zB, int run, int rise) {
+    int dxBA = xB - xA, dyBA = yB - yA, dzBA = zB - zA;
+    switch (visibilityCheck(xA, yA, zA, xB, yB, zB)) {
+    case VISIBILITY_UNCLIPPED:
+      plotDashedLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
+                                   run, rise);
+      break;
+    case VISIBILITY_CLIPPED:
+      plotDashedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
+                                 run, rise);
+    }
+  }
+
+  private final static int VISIBILITY_UNCLIPPED = 0;
+  private final static int VISIBILITY_CLIPPED = 1;
+  private final static int VISIBILITY_OFFSCREEN = 2;
+
+  int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
+    int cc1 = clipCode(x1, y1, z1);
+    int cc2 = clipCode(x2, y2, z2);
+    if ((cc1 | cc2) == 0)
+      return VISIBILITY_UNCLIPPED;
+    
     int xLast = g3d.xLast;
     int yLast = g3d.yLast;
     int slab = g3d.slab;
     do {
       if ((cc1 & cc2) != 0)
-        return;
+        return VISIBILITY_OFFSCREEN;
       int dx = x2 - x1;
       int dy = y2 - y1;
       int dz = z2 - z1;
@@ -96,20 +106,7 @@ final class Line3D {
         cc2 = clipCode(x2, y2, z2);
       }
     } while ((cc1 | cc2) != 0);
-    
-    if (useCohenSutherland) {
-      if (tDotted)
-        plotDashedLineDeltaUnclipped(argb, x1, y1, z1, x2-x1, y2-y1, z2-z1,
-                                     2, 1);
-      else
-        plotLineDeltaUnclipped(argb, argb, x1, y1, z1, x2-x1, y2-y1, z2-z1);
-    } else {
-      if (tDotted)
-        plotDashedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
-                                   2, 1);
-      else
-        plotLineDeltaClipped(argb, argb, xA, yA, zA, dxBA, dyBA, dzBA);
-    }
+    return VISIBILITY_CLIPPED;
   }
 
   final static int zLT = 16;

@@ -276,13 +276,13 @@ final public class Graphics3D {
   }
 
   public void drawRect(short colix, int x, int y, int width, int height) {
-    int argb = Colix.getArgb(colix);
+    argbCurrent = Colix.getArgb(colix);
     int xRight = x + width;
-    line3d.drawLine(argb, x, y, 0, xRight, y, 0, false);
+    drawLine(x, y, 0, xRight, y, 0);
     int yBottom = y + height;
-    line3d.drawLine(argb, x, y, 0, x, yBottom, 0, false);
-    line3d.drawLine(argb, x, yBottom, 0, xRight, yBottom, 0, false);
-    line3d.drawLine(argb, xRight, y, 0, xRight, yBottom, 0, false);
+    drawLine(x, y, 0, x, yBottom, 0);
+    drawLine(x, yBottom, 0, xRight, yBottom, 0);
+    drawLine(xRight, y, 0, xRight, yBottom, 0);
   }
 
   public void drawString(String str, short colix,
@@ -344,83 +344,70 @@ final public class Graphics3D {
 
   public void drawDottedLine(short colix,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, true);
+    line3d.drawDashedLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2,
+                          2, 1);
   }
 
   public void drawDottedLine(short colix1, short colix2,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb1 = Colix.getArgb(colix1);
     if (colix1 == colix2) {
-      line3d.drawLine(argb1, x1, y1, z1, x2, y2, z2, true);
+      line3d.drawDashedLine(argb1, x1, y1, z1, x2, y2, z2, 2, 1);
       return;
     }
     int xMid = (x1 + x2) / 2;
     int yMid = (y1 + y2) / 2;
     int zMid = (z1 + z2) / 2;
-    line3d.drawLine(argb1, x1, y1, z1, xMid, yMid, zMid, true);
-    line3d.drawLine(Colix.getArgb(colix2), xMid, yMid, zMid, x2, y2, z2, true);
+    line3d.drawDashedLine(argb1, x1, y1, z1, xMid, yMid, zMid, 2, 1);
+    line3d.drawDashedLine(Colix.getArgb(colix2), xMid, yMid, zMid, x2, y2, z2,
+                          2, 1);
   }
   
 
   public void drawLine(Point3i pointA, Point3i pointB) {
-    line3d.drawLine(argbCurrent,
+    line3d.drawLine(argbCurrent, argbCurrent,
                     pointA.x, pointA.y, pointA.z,
-                    pointB.x, pointB.y, pointB.z, false);
+                    pointB.x, pointB.y, pointB.z);
   }
 
   public void drawLine(short colix, Point3i pointA, Point3i pointB) {
-    line3d.drawLine(Colix.getArgb(colix),
+    int argb = Colix.getArgb(colix);
+    line3d.drawLine(argb, argb,
                     pointA.x, pointA.y, pointA.z,
-                    pointB.x, pointB.y, pointB.z, false);
+                    pointB.x, pointB.y, pointB.z);
   }
 
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
-    line3d.drawLine(Colix.getArgb(colix),
-                    pointA.x, pointA.y, pointA.z,
-                    pointB.x, pointB.y, pointB.z, true);
+    line3d.drawDashedLine(Colix.getArgb(colix),
+                          pointA.x, pointA.y, pointA.z,
+                          pointB.x, pointB.y, pointB.z,
+                          2, 1);
   }
 
   public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, true);
+    line3d.drawDashedLine(argbCurrent, x1, y1, z1, x2, y2, z2, 2, 1);
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, false);
+    line3d.drawLine(argbCurrent, argbCurrent, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, false);
+    int argb = Colix.getArgb(colix);
+    line3d.drawLine(argb, argb, x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(short colix1, short colix2,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb1 = Colix.getArgb(colix1);
-    if (colix1 == colix2) {
-      line3d.drawLine(argb1, x1, y1, z1, x2, y2, z2, false);
-      return;
-    }
-    int argb2 = Colix.getArgb(colix2);
-    if (x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
-        y1 < 0 || y1 >= height || y2 < 0 || y2 >= height ||
-        z1 < slab || z2 < slab) {
-      int xMid = (x1 + x2) / 2;
-      int yMid = (y1 + y2) / 2;
-      int zMid = (z1 + z2) / 2;
-      line3d.drawLine(argb1, x1, y1, z1, xMid, yMid, zMid, false);
-      line3d.drawLine(argb2, xMid, yMid, zMid, x2, y2, z2, false);
-    } else {
-      line3d.plotLineDeltaUnclipped(argb1, argb2,
-                                     x1, y1, z1, x2-x1, y2-y1, z2-z1);
-    }
+    line3d.drawLine(Colix.getArgb(colix1), Colix.getArgb(colix2),
+                    x1, y1, z1, x2, y2, z2);
   }
-
+  
   public void drawPolygon4(int[] ax, int[] ay, int[] az) {
-    line3d.drawLine(argbCurrent,
-                    ax[0], ay[0], az[0], ax[3], ay[3], az[3], false);
+    drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
     for (int i = 3; --i >= 0; )
-      line3d.drawLine(argbCurrent,
-                      ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1], false);
+      drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
   }
 
   public void drawfillPolygon4(int[] ax, int[] ay, int[] az) {
@@ -489,9 +476,9 @@ final public class Graphics3D {
   public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {
     int argb = argbCurrent = Colix.getArgb(colix);
-    line3d.drawLine(argb, xA, yA, zA, xB, yB, zB, false);
-    line3d.drawLine(argb, xA, yA, zA, xC, yC, zC, false);
-    line3d.drawLine(argb, xB, yB, zB, xC, yC, zC, false);
+    line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
+    line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
+    line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
     int[] t;
     t = triangle3d.ax;
     t[0] = xA; t[1] = xB; t[2] = xC;
@@ -530,9 +517,9 @@ final public class Graphics3D {
                        xC + "," + yC + "," + zC);
     */
     int argb = Colix.getArgb(colix);
-    line3d.drawLine(argb, xA, yA, zA, xB, yB, zB, false);
-    line3d.drawLine(argb, xA, yA, zA, xC, yC, zC, false);
-    line3d.drawLine(argb, xB, yB, zB, xC, yC, zC, false);
+    line3d.drawLine(argb, argb, xA, yA, zA, xB, yB, zB);
+    line3d.drawLine(argb, argb, xA, yA, zA, xC, yC, zC);
+    line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
   }
 
   public final static byte ENDCAPS_NONE = 0;

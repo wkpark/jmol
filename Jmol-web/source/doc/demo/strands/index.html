@@ -21,38 +21,33 @@
 	    A hermite cubic curve is used to smoothly connect the points.<br />
 	    
 	    <script>
-	      jmolCheckbox("strands on", "strands off");
-	      jmolHtml("Strands");
-	      jmolBr();
+	      jmolCheckbox("strands on", "strands off", "<i>strands on/off</i><br />");
 	      jmolHtml("Color your strands<br />");
-	      jmolRadio("color", "color strands none", "checked");
-	      jmolHtml("none<br />");
-	      jmolRadio("color", "color strands aquamarine");
-	      jmolHtml("aquamarine<br />");
-	      jmolRadio("color", "color strands slateblue");
-	      jmolHtml("slateblue<br />");
-	      jmolRadio("color", "color strands goldenrod");
-	      jmolHtml("goldenrod<br />");
-	      jmolRadio("color", "color strands structure");
-	      jmolHtml("structure<br />");
-	      jmolRadio("color", "color strands amino");
-	      jmolHtml("amino<br />");
-	      jmolRadio("color", "color strands shapely");
-	      jmolHtml("shapely<br />");
+	      jmolRadioGroup([
+	        ["color strands none", null, "checked"],
+		"color strands structure",
+		"color strands amino",
+		"color strands shapely",
+		"color strands aquamarine",
+		"color strands slateblue",
+		"color strands goldenrod"
+		]);
 	    </script>
 	    <br />
 
 	    Strand count<br />
 	    <script>
-	      jmolRadio("count", "set strands 1"); jmolHtml("1 "); 
-	      jmolRadio("count", "set strands 2"); jmolHtml("2 "); 
-	      jmolRadio("count", "set strands 3"); jmolHtml("3 "); 
-	      jmolRadio("count", "set strands 5", "checked"); jmolHtml("5 "); 
-	      jmolRadio("count", "set strands 7"); jmolHtml("7 "); 
-	      jmolRadio("count", "set strands 9"); jmolHtml("9 "); 
-	      jmolRadio("count", "set strands 11");jmolHtml("11 ");
-	      jmolRadio("count", "set strands 15");jmolHtml("15 ");
-	      jmolRadio("count", "set strands 20");jmolHtml("20 ");
+	      jmolRadioGroup([
+	      "set strands 1",
+	      "set strands 2",
+	      "set strands 3",
+	      ["set strands 5", null, "checked"],
+	      "set strands 7",
+	      "set strands 9",
+	      "set strands 11",
+	      "set strands 15",
+	      "set strands 20"
+	      ]);
 	    </script>
 	    
 	  </td>

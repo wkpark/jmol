@@ -20,25 +20,28 @@
 	    This shows the backbone of a protein macromolecule by
 	    creating artificial 'backbone' bonds between alpha carbons.
 	    Backbone radius can be specified in angstroms.<br />
-	    <script>
-	      jmolButton("backbone off");
-	      jmolButton("backbone 0.3");
-	      jmolButton("backbone 0.6");
-	    </script>
+	    <b>
+	      &nbsp;&nbsp;backbone
+	      <script>
+		jmolRadioGroup([
+		["backbone off", "off ", "checked"],
+		["backbone 0.3", "0.3 "],
+		["backbone 0.6", "0.6 "]
+		]);
+	      </script>
+	    </b>
 	    <br />
 	
 	    By default, the backbone bond color is inherited from the
 	    atoms (as with other bonds). You can explicitly change
 	    the backbone color. <br />
 	    <script>
-	      jmolRadio("cbb", "color backbone none", "checked");
-	      jmolHtml("color backbone none<br />");
-	      jmolRadio("cbb", "color backbone firebrick");
-	      jmolHtml("color backbone firebrick<br />");
-	      jmolRadio("cbb", "color backbone greenyellow");
-	      jmolHtml("color backbone greenyellow<br />");
-	      jmolRadio("cbb", "color backbone structure");
-	      jmolHtml("color backbone structure<br />");
+	      jmolRadioGroup([
+	        ["color backbone none", null, "checked"],
+		"color backbone firebrick",
+		"color backbone greenyellow",
+		"color backbone structure"
+		]);
 	    </script>
 	    <br />
 	    <hr />
@@ -46,11 +49,17 @@
 	    This shows a spline trace of a protein backbone.
 	    The hermite spline curve passes through the mid-points
 	    between alpha carbon atoms<br />
-	    <script>
-	      jmolButton("trace off");
-	      jmolButton("trace 0.4");
-	      jmolButton("trace 0.8");
-	    </script>
+	    <b>
+	      &nbsp;&nbsp;trace
+	      <script>
+		jmolRadioGroup([
+		["trace off", "off ", "checked"],
+		["trace 0.4", "0.4 "],
+		["trace 0.8", "0.8 "],
+		["trace structure", "structure"]
+	      ]);
+	      </script>
+	    </b>
 	    <br />
 
 	    With color by 'structure' you get different colors for
@@ -58,14 +67,12 @@
 	    'shapely' assign different colors
 	    to different amino acids.<br />
 	    <script>
-	      jmolRadio("ct", "color trace none", "checked");
-	      jmolHtml("color trace none<br />");
-	      jmolRadio("ct", "color trace structure");
-	      jmolHtml("color trace structure<br />");
-	      jmolRadio("ct", "color trace amino");
-	      jmolHtml("color trace amino<br />");
-	      jmolRadio("ct", "color trace shapely");
-	      jmolHtml("color trace shapely<br />");
+	      jmolRadioGroup([
+	        ["color trace none", null, "checked"],
+		"color trace structure",
+		"color trace amino",
+		"color trace shapely"
+		]);
 	    </script>
 	  </td>
 	</tr>

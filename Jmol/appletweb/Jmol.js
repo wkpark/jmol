@@ -47,7 +47,29 @@ function jmolSetColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
 function jmolSetCodebase(codebase) {
   _jmol.codebase = codebase ? codebase : ".";
   if (_jmol.debugAlert)
-    alert("jmolCodebase=" + _jmol.codebas);
+    alert("jmolCodebase=" + _jmol.codebase);
+}
+
+function jmolSetButtonCssClass(buttonCssClass) {
+  _jmol.buttonCssClass = buttonCssClass;
+  _jmol.buttonCssText =
+    buttonCssClass ? "class='" + buttonCssClass + "' " : "";
+}
+
+function jmolSetCheckboxCssClass(checkboxCssClass) {
+  _jmol.checkboxCssClass = checkboxCssClass;
+  _jmol.checkboxCssText =
+    checkboxCssClass ? "class='" + checkboxCssClass + "' " : "";
+}
+
+function jmolSetRadioCssClass(radioCssClass) {
+  _jmol.radioCssClass = radioCssClass;
+  _jmol.radioCssText = radioCssClass ? "class='" + radioCssClass + "' " : "";
+}
+
+function jmolSetLinkCssClass(linkCssClass) {
+  _jmol.linkCssClass = linkCssClass;
+  _jmol.linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
 }
 
 function jmolApplet(size, modelFilename, script, nameSuffix) {
@@ -92,67 +114,106 @@ function jmolSetTarget(targetSuffix) {
   _jmol.targetText = targetSuffix ? ",\"" + targetSuffix + "\"" : "";
 }
 
-function jmolButton(script, label, cssClass) {
+function jmolButton(script, label) {
   var scriptIndex = _jmolAddScript(script);
-  var cssText = cssClass ? "class='" + cssClass + "' " : "";
   if (! label)
     label = script.substring(0, 32);
   var t = "<input type='button' value='" + label +
           "' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
-          cssText + "/>";
+          _jmol.buttonCssText + "/>";
   document.open();
   document.write(t);
   document.close();
 }
 
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
-                      isChecked, cssClass) {
-  if (! scriptWhenChecked && scriptWhenUnchecked) {
+                      labelHtml, isChecked) {
+  if (scriptWhenChecked == undefined || scriptWhenChecked == null ||
+      scriptWhenUnchecked == undefined || scriptWhenUnchecked == null) {
     alert("jmolCheckbox requires two scripts");
+    return;
+  }
+  if (labelHtml == undefined || labelHtml == null) {
+    alert("jmolCheckbox requires a label");
     return;
   }
   var indexChecked = _jmolAddScript(scriptWhenChecked);
   var indexUnchecked = _jmolAddScript(scriptWhenUnchecked);
-  var cssText = cssClass ? "class='" + cssClass + "' " : "";
   var t = "<input type='checkbox' onClick='_jmolCbClick(this," +
           indexChecked + "," + indexUnchecked + "," + _jmol.targetSuffix +
           ")' onMouseover='_jmolCbOver(this," + indexChecked + "," +
           indexUnchecked +
           ");return true' onMouseout='_jmolMouseOut()' " +
-	  (isChecked ? "checked " : "") + cssText + "/>";
+	  (isChecked ? "checked " : "") + _jmol.checkboxCssText + "/>" +
+          labelHtml;
   document.open();
   document.write(t);
   document.close();
 }
 
-function jmolRadio(groupName, script, isChecked, cssClass) {
-  if (!groupName || !script)
+function jmolStartRadioGroup() {
+  ++_jmol.radioGroupCount;
+}
+
+function jmolRadio(script, labelHtml, isChecked) {
+  if (!script)
     return;
+  if (labelHtml == undefined || labelHtml == null)
+    labelHtml = script.substring(0, 32) + "<br />";
   var scriptIndex = _jmolAddScript(script);
-  var cssText = cssClass ? "class='" + cssClass + "' " : "";
-  var t = "<input name='" + groupName +
+  var t = "<input name='" + "jmolGroup" + _jmol.radioGroupCount +
           "' type='radio' onClick='_jmolClick(" + scriptIndex +
           _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
-	  (isChecked ? "checked " : "") + cssText + "/>";
+	  (isChecked ? "checked " : "") + _jmol.radioCssText + "/>" +
+          labelHtml;
   document.open();
   document.write(t);
   document.close();
 }
 
-function jmolLink(text, script, cssClass) {
+function jmolRadioGroup(arrayOfRadioButtons) {
+  var type = typeof arrayOfRadioButtons;
+  if (type == "object" && type != null) {
+    jmolStartRadioGroup();
+    var length = arrayOfRadioButtons.length;
+    var i;
+    for (i = 0; i < length; ++i) {
+      var radio = arrayOfRadioButtons[i];
+      type = typeof radio;
+      if (type == "object") {
+        jmolRadio(radio[0], radio[1], radio[2]);
+      } else {
+        jmolRadio(radio);
+      }
+    }
+  }
+}
+
+function jmolLink(script, text) {
   var scriptIndex = _jmolAddScript(script);
-  var cssText = cssClass ? "class='" + cssClass + "' " : "";
   var t = "<a href='javascript:_jmolClick(" + scriptIndex +
           _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
-          cssText + ">" + text + "</a>";
+          _jmol.linkCssText + ">" + text + "</a>";
   document.open();
   document.write(t);
+  document.close();
+}
+
+function jmolHtml(html) {
+  document.open();
+  document.write(html);
+  document.close();
+}
+
+function jmolBr() {
+  document.open();
+  document.write("<br />");
   document.close();
 }
 
@@ -173,6 +234,17 @@ codebase: ".",
 modelbase: ".",
 
 appletCount: 0,
+
+radioGroupCount: 0,
+
+buttonCssClass: null,
+buttonCssText: "",
+checkboxCssClass: null,
+checkboxCssText: "",
+radioCssClass: null,
+radioCssText: "",
+linkCssClass: null,
+linkCssText: "",
 
 targetSuffix: 0,
 targetText: "",

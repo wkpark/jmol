@@ -18,12 +18,11 @@
 	    <a href="http://www.imm.org">http://www.imm.org</a><br />
 	    
 	    <script>
-	      jmolRadio("model", "load diffGear.pdb.gz");
-	      jmolHtml(" differential gear <br />");
-	      jmolRadio("model", "load fineMotion970116.pdb.gz");
-	      jmolHtml(" fineMotion <br />");
-	      jmolRadio("model", "load finalPump96.09.06.pdb.gz");
-	      jmolHtml(" pump");
+	      jmolRadioGroup([
+	        "load diffGear.pdb.gz",
+		"load fineMotion970116.pdb.gz",
+		"load finalPump96.09.06.pdb.gz"
+		]);
 
 	      jmolHtml("<hr />");
 

@@ -20,37 +20,29 @@
 	    a Connolly or Solvent Accessible Surface, formed when a probe sphere
 	    (representing the solvent) is rolled over the surface.
 	    <br />
+	    <b>dots surface:</b><br />
 	    <script>
-	      jmolHtml("<b>dots surface:</b><br />");
-	      jmolRadio("dots", "dots off", "checked");
-	      jmolHtml("off<br />");
-	      jmolRadio("dots", "set solvent off; dots on");
-	      jmolHtml("vanderWaals<br />");
-	      jmolRadio("dots", "set solvent on; dots on");
-	      jmolHtml("solvent accessible<br />");
+	      jmolRadioGroup([
+	        ["dots off", "<i>no dots</i><br />", "checked"],
+		["set solvent off; dots on", "<i>vanderWaals dots surface</i><br />"],
+		["set solvent on; dots on", "<i>solvent-accessible surface</i><br />"]
+		]);
 	      jmolBr();
-
 	      jmolHtml("<b>spacefill:</b><br />");
-	      jmolRadio("balls", "spacefill off");
-	      jmolHtml("off<br />");
-	      jmolRadio("balls", "spacefill 20%", "checked");
-	      jmolHtml("20%<br />");
-	      jmolRadio("balls", "spacefill 95%");
-	      jmolHtml("95%<br />");
+	      jmolRadioGroup([
+	        "spacefill off",
+		["spacefill 20%", null, "checked"],
+		"spacefill 95%"
+		]);
 	      jmolBr();
-	      
 	      jmolHtml("<b>wireframe:</b><br />");
-	      jmolRadio("sticks", "wireframe off");
-	      jmolHtml("off<br />");
-	      jmolRadio("sticks", "wireframe on");
-	      jmolHtml("on<br />");
-	      jmolRadio("sticks", "wireframe .15", "checked");
-	      jmolHtml("0.15<br />");
-	      jmolRadio("sticks", "wireframe .25");
-	      jmolHtml("0.25<br />");
-	      jmolRadio("sticks", "wireframe .35");
-	      jmolHtml("0.35<br />");
-
+	      jmolRadioGroup([
+	        "wireframe off",
+		"wireframe on",
+		["wireframe .15", null, "checked"],
+		"wireframe .25",
+		"wireframe .35"
+		]);
 	      jmolBr();
 
 	      jmolButton("color dotsSaddle blue; color dotsConcave red",

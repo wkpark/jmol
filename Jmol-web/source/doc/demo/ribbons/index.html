@@ -18,46 +18,62 @@
 	    <script>
 	      function modelRadio(model) {
 	        var script = "load " + model + ".gz; cpk off; wireframe; ribbons";
-		jmolRadio("model", script);
-		jmolHtml(model);
-		jmolBr();
+		jmolRadio(script, model);
+		jmolHtml(" &nbsp; ");
 	      }
 
 	      modelRadio("1CRN.pdb");
 	      modelRadio("1D68.pdb");
 	      modelRadio("1D66.pdb");
 	    </script>
-	    <br />
+	    <p />
 
 	    Ribbons offer a representation the protein backbone using
 	    a ribbons which smoothly traces the midpoints of adjacent
 	    alpha carbon atoms (or phosphorus atoms in nucleotide chains).
 	    The ribbon is perpendicular to the peptide plane. <br />
 	    
-	    <script>jmolButton("ribbons on");jmolButton("ribbons off");</script>
+	    &nbsp;&nbsp;
+	    <script>
+	      jmolCheckbox("ribbons on", "ribbons off", "ribbons on/off");
+	    </script>
 	    <br />
 	  
 	  
 	    Color your ribbons the way you like<br />
 	    <script>
-	      jmolButton("color ribbons structure");
-	      jmolBr();
-	      jmolButton("color ribbons amino");
-	      jmolBr();
-	      jmolButton("color ribbons skyblue");
-	      jmolBr();
-	      jmolButton("color ribbons yellow");
-	      jmolBr();
+	      jmolRadioGroup([
+	        ["color ribbons none", null, "checked"],
+		"color ribbons structure",
+	        "color ribbons amino",
+		"color ribbons skyblue",
+		"color ribbons yellow"
+		]);
 	    </script>
 	    <br />
 
-	      With or without wireframe<br />
-	      <script>jmolButton("wireframe on"); jmolButton("wireframe off");</script>
-	      <br />
-	  
-	      Zoom in and take a closer look<br />
-	      <script>jmolButton("zoom 300"); jmolButton("zoom 100");</script>
-	      <br />
+	    With or without wireframe<br />
+	    &nbsp;&nbsp;
+	    <script>
+	      jmolCheckbox("wireframe on", "wireframe off", "wireframe on/off", "checked");
+	    </script>
+	    <br />
+	    
+	    With or without spacefill<br />
+	    &nbsp;&nbsp;
+	    <script>
+	      jmolRadioGroup([
+	        ["spacefill off", "off ", "checked"],
+		["spacefill 20%", "20% "],
+		["spacefill 25%", "25% "],
+		["spacefill on",  "100%"]
+		]);
+	    </script>
+	    <br />
+	    	
+	    Zoom in and take a closer look<br />
+	    <script>jmolButton("zoom 300"); jmolButton("zoom 100");</script>
+	    <br />
 	  </td>
 	</tr>
       </table>

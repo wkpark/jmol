@@ -23,11 +23,24 @@
 	      exactly the same code.
 	    </p>
 	    
-	    <script>jmolRadio("size", "spacefill on");</script>
-	    spacefill on <i>or</i> cpk on <i>or</i> spacefill 100% <br />
-	    <script>jmolRadio("size", "spacefill off");</script>
-	    spacefill off <i>or</i> cpk off <i>or</i> spacefill 0 <i>or</i> spacefill 0%
+	    <script>
+	      jmolRadio("spacefill on",
+	                "spacefill on <i>or</i> cpk on <i>or</i> spacefill 100% <br />");
+	      jmolRadio("spacefill off",
+	                "spacefill off <i>or</i> cpk off <i>or</i> spacefill 0 <i>or</i> spacefill 0%");
+	    </script>
 	    
+	    <p>
+	      As an extension to the RasMol scripting language, Jmol
+	      allows you to specify your size as a percentage of the
+	      vanderWaals radius.
+	    </p>
+	    <script>
+	      jmolRadio("spacefill 20%", "spacefill 20% <i>or</i> cpk 20%<br />", "checked");
+	      jmolRadio("spacefill 25%", "spacefill 25% <i>or</i> cpk 25%<br />");
+	      jmolRadio("spacefill 50%", "spacefill 50% <i>or</i> cpk 50%<br />");
+	      jmolRadio("spacefill 75%", "spacefill 75% <i>or</i> cpk 75%<br />");
+	    </script>
 	    <p>
 	      The default size is 100% of the vanderWaals radius.
 	      If you want to specify a size then you can do so in Angstroms.
@@ -35,19 +48,12 @@
 	      This is important because integer values specify
 	      <i>RasMol units (1/250th Angstrom)</i>
 	    </p>
-	    <script>jmolRadio("size", "spacefill 0.25");</script>spacefill 0.25 <i>or</i> cpk 0.25<br />
-	    <script>jmolRadio("size", "spacefill 0.5");</script>spacefill 0.5 <i>or</i> cpk 0.5<br />
-	    <script>jmolRadio("size", "spacefill 0.75");</script>spacefill 0.75 <i>or</i> cpk 0.75<br />
-	    <script>jmolRadio("size", "spacefill 1.0");</script>spacefill 1.0 <i>or</i> cpk 1.0<br />
-	    <p>
-	      As an extension to the RasMol scripting language, Jmol
-	      allows you to specify your size as a percentage of the
-	      vanderWaals radius.
-	    </p>
-	    <script>jmolRadio("size", "spacefill 20%", "checked");</script>spacefill 20% <i>or</i> cpk 20%<br />
-	    <script>jmolRadio("size", "spacefill 25%");</script>spacefill 25% <i>or</i> cpk 25%<br />
-	    <script>jmolRadio("size", "spacefill 50%");</script>spacefill 50% <i>or</i> cpk 50%<br />
-	    <script>jmolRadio("size", "spacefill 75%");</script>spacefill 75% <i>or</i> cpk 75%<br />
+	    <script>
+	      jmolRadio("spacefill 0.25", "spacefill 0.25 <i>or</i> cpk 0.25<br />");
+	      jmolRadio("spacefill 0.5",  "spacefill 0.5 <i>or</i> cpk 0.5<br />");
+	      jmolRadio("spacefill 0.75", "spacefill 0.75 <i>or</i> cpk 0.75<br />");
+	      jmolRadio("spacefill 1.0",  "spacefill 1.0 <i>or</i> cpk 1.0<br />");
+	    </script>
 	  </form>
 	</td>
       </tr>

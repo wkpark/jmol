@@ -5,46 +5,58 @@
     <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
-    <table border="1">
-      <tr>
-	<td>
-	  <h1>aspirin</h1>
-	  <script>jmolApplet(400, "aspirina.mol.gz");</script>
-	</td>
-
-	<td>
-	  <p>
-	    For compatibility with the RasMol scripting language, the command to
-	    control bondsize is called <b>wireframe</b>. The parameter is the
-	    bond radius in angstroms. Try the following:
-	  </p>
-	  <p>
-	    <script>jmolCheckbox("spacefill 20%", "spacefill off", true);</script> <i>show atoms</i>
-	  </p>
-	  <script>jmolRadio("w", "wireframe 0.1");</script>wireframe 0.1<br />
-	  <script>jmolRadio("w", "wireframe 0.125");</script>wireframe 0.125<br />
-	  <script>jmolRadio("w", "wireframe 0.15", true);</script>wireframe 0.15<br />
-	  <script>jmolRadio("w", "wireframe 0.25");</script>wireframe 0.25<br />
-	  <script>jmolRadio("w", "wireframe 0.3");</script>wireframe 0.3<br />
-	  <script>jmolRadio("w", "wireframe 0.5");</script>wireframe 0.5<br />
-	  <script>jmolRadio("w", "wireframe on");</script>wireframe on<br />
-	  <script>jmolRadio("w", "wireframe off");</script>wireframe off<br />
-
-	  <p>
-	    <i>Note that or compatibility with existing RasMol/Chime scripts,
-	    multiple bonds are not displayed with larger bonds.</i>	    
-	  </p>
-	  <p>
-	    By default, a bond inherits the colors of the two atoms it connects. 
-	    If you want to change the bond color you can assign explicit colors
-	  </p>
-	  <script>jmolRadio("c", "color bonds none", true);</script>color bonds none
-	  <i># will inherit bond colors from the two atoms</i><br />
-	  <script>jmolRadio("c", "color bonds dodgerblue");</script>color bonds dodgerblue<br />
-	  <script>jmolRadio("c", "color bonds goldenrod");</script>color bonds goldenrod<br />
-	  <script>jmolRadio("c", "color bonds orchid");</script>color bonds orchid<br />
-	</td>
-      </tr>
-    </table>
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    <h1>aspirin</h1>
+	    <script>jmolApplet(400, "aspirina.mol.gz", "spacefill off");</script>
+	  </td>
+	  
+	  <td>
+	    <p>
+	      For compatibility with the RasMol scripting language, the command to
+	      control bondsize is called <b>wireframe</b>. The parameter is the
+	      bond radius in angstroms. Try the following:
+	    </p>
+	    <script>
+	      jmolRadioGroup(["wireframe off",
+	      "wireframe on",
+	      "wireframe 0.1",
+	      "wireframe 0.125",
+	      ["wireframe 0.15", null, "checked"],
+	      "wireframe 0.25",
+	      "wireframe 0.3",
+	      "wireframe 0.5"
+	      ]);
+	    </script>
+	    <p>
+	      <i>Note that or compatibility with existing RasMol/Chime scripts,
+	      multiple bonds are not displayed with larger bonds.</i>	    
+	    </p>
+	    <p>
+	      By default, a bond inherits the colors of the two atoms it connects. 
+	      If you want to change the bond color you can assign explicit colors
+	    </p>
+	    <script>
+	      var colorRadioGroup = [
+	      ["color bonds none",
+	      "color bonds none <i># inherits atom colors</i><br />",
+	      "checked"],
+	      "color bonds dodgerblue",
+	      "color bonds goldenrod",
+	      "color bonds orchid"
+	      ];
+	      jmolRadioGroup(colorRadioGroup);
+	    </script>
+	    <p>
+	      <script>
+		jmolCheckbox("spacefill 20%", "spacefill off", " <i>show atoms</i>");
+	      </script>
+	    </p>
+	  </td>
+	</tr>
+      </table>
+    </form>
   </body>
 </html>

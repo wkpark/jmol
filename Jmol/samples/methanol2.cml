@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!DOCTYPE molecule SYSTEM "cml.dtd" []>
+<!DOCTYPE molecule SYSTEM "http://www.xml-cml.org/dtd/cml1_0_1.dtd" []>
 <molecule id="METHANOL">
   <atom id="a1">
     <string builtin="elementType">C</string>

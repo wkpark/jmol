@@ -2881,7 +2881,7 @@ public class Eval implements Runnable {
   }
 
   void showAxisAngle() {
-    showString("axis-angle rotation = " + viewer.getAxisAngleText());
+    showString("moveTo " + viewer.getAxisAngleText());
   }
 
   void showCenter() {
@@ -2898,15 +2898,14 @@ public class Eval implements Runnable {
   Matrix3f matrixIdentity;
 
   void moveto() throws ScriptException {
-    if (statementLength < 5 || statementLength > 7)
+    if (statementLength < 6 || statementLength > 9)
       badArgumentCount();
-    float axisX = floatParameter(1);
-    float axisY = floatParameter(2);
-    float axisZ = floatParameter(3);
-    float degrees = floatParameter(4);
-    float floatSecondsTotal = statementLength >= 6 ? floatParameter(5) : 1;
-    int fps = 30;
-    int zoom = statementLength == 7 ? intParameter(6) : 0;
+    float floatSecondsTotal = floatParameter(1);
+    float axisX = floatParameter(2);
+    float axisY = floatParameter(3);
+    float axisZ = floatParameter(4);
+    float degrees = floatParameter(5);
+    int zoom = statementLength >= 7 ? intParameter(6) : 100;
 
     if (aaMoveTo == null) {
       aaMoveTo = new AxisAngle4f();
@@ -2954,12 +2953,15 @@ public class Eval implements Runnable {
                        "\naaStep=\n" + aaStep);
     */
 
+    int fps = 30;
     int totalSteps = (int)(floatSecondsTotal * fps);
     if (totalSteps > 1
         && (aaTotal.angle > 0.01f || aaTotal.angle < -0.01f)) {
       aaStep.angle /= totalSteps;
       int frameTimeMillis = 1000 / fps;
       long targetTime = System.currentTimeMillis();
+      int zoomStart = viewer.getZoomPercent();
+      int zoomDelta = zoom - zoomStart;
       for (int i = 1; i < totalSteps; ++i) {
 
         viewer.getRotation(matrixStart);
@@ -2971,6 +2973,7 @@ public class Eval implements Runnable {
         aaStep.angle /= (totalSteps - i + 1);
         matrixStep.set(aaStep);
         matrixStep.mul(matrixStart);
+        viewer.zoomToPercent(zoomStart + (zoomDelta * i / totalSteps));
         viewer.setRotation(matrixStep);
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
@@ -2993,6 +2996,7 @@ public class Eval implements Runnable {
         }
       }
     }
+    viewer.zoomToPercent(zoom);
     viewer.setRotation(matrixEnd);
   }
 }

@@ -107,6 +107,7 @@ public class TransformManager {
   public synchronized void rotateXRadians(float angleRadians) {
     matrixTemp3.rotX(angleRadians);
     matrixRotate.mul(matrixTemp3, matrixRotate);
+    //    System.out.println("rotateXRadius matrixRotate=\n" + matrixRotate);
   }
   public synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
@@ -199,7 +200,10 @@ public class TransformManager {
       return "0 0 0 0";
     vectorT.set(axisangleT.x, axisangleT.y, axisangleT.z);
     vectorT.normalize();
-    return "" + vectorT.x + " " + vectorT.y + " " + vectorT.z + " " + degrees;
+    return (""  + Math.round(vectorT.x * 1000) / 1000f +
+            " " + Math.round(vectorT.y * 1000) / 1000f +
+            " " + Math.round(vectorT.z * 1000) / 1000f +
+            " " + Math.round(degrees * 10) / 10f);
   }
 
   public void getAxisAngle(AxisAngle4f axisAngle) {

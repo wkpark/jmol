@@ -249,13 +249,14 @@ abstract class Polymer {
     return leadMidpoints;
   }
 
-  Vector3f[] getWingVectors() {
+  final Vector3f[] getWingVectors() {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
       calcLeadMidpointsAndWingVectors();
     return wingVectors; // wingVectors might be null ... before autocalc
   }
 
-  void calcLeadMidpointsAndWingVectors() {
+  final void calcLeadMidpointsAndWingVectors() {
+    //    System.out.println("Polymer.calcLeadMidpointsAndWingVectors");
     int count = this.count;
     leadMidpoints = new Point3f[count + 1];
     wingVectors = new Vector3f[count + 1];
@@ -291,29 +292,50 @@ abstract class Polymer {
     }
     leadMidpoints[count] = getTerminatorPoint();
     if (! hasWingPoints) {
-      // auto-calculate wing vectors based upon lead atom positions only
-      // seems to work like a charm! :-)
-      Point3f next, current, prev;
-      prev = leadMidpoints[0];
-      current = leadMidpoints[1];
-      Vector3f previousVectorC = null;
-      for (int i = 1; i < count; ++i) {
-        next = leadMidpoints[i + 1];
-        vectorA.sub(prev, current);
-        vectorB.sub(next, current);
-        vectorC.cross(vectorA, vectorB);
-        vectorC.normalize();
-        if (previousVectorC != null &&
-            previousVectorC.angle(vectorC) > Math.PI/2)
-          vectorC.scale(-1);
-        previousVectorC = wingVectors[i] = new Vector3f(vectorC);
-        prev = current;
-        current = next;
+      if (count < 3) {
+        wingVectors[1] = unitVectorX;
+      } else {
+        // auto-calculate wing vectors based upon lead atom positions only
+        // seems to work like a charm! :-)
+        Point3f next, current, prev;
+        prev = leadMidpoints[0];
+        current = leadMidpoints[1];
+        Vector3f previousVectorC = null;
+        for (int i = 1; i < count; ++i) {
+          next = leadMidpoints[i + 1];
+          vectorA.sub(prev, current);
+          vectorB.sub(next, current);
+          vectorC.cross(vectorA, vectorB);
+          vectorC.normalize();
+          if (previousVectorC != null &&
+              previousVectorC.angle(vectorC) > Math.PI/2)
+            vectorC.scale(-1);
+          previousVectorC = wingVectors[i] = new Vector3f(vectorC);
+          prev = current;
+          current = next;
+        }
       }
     }
     wingVectors[0] = wingVectors[1];
     wingVectors[count] = wingVectors[count - 1];
+
+    /*
+    for (int i = 0; i < wingVectors.length; ++i) {
+      if (wingVectors[i] == null) {
+        System.out.println("que? wingVectors[" + i + "] == null?");
+        System.out.println("hasWingPoints=" + hasWingPoints +
+                           " wingVectors.length=" + wingVectors.length +
+                           " count=" + count);
+                      
+      }
+      else if (Float.isNaN(wingVectors[i].x)) {
+        System.out.println("wingVectors[" + i + "]=" + wingVectors[i]);
+      }
+    }
+    */
   }
+
+  private final Vector3f unitVectorX = new Vector3f(1, 0, 0);
 
   void findNearestAtomIndex(int xMouse, int yMouse,
                             Closest closest, short[] mads) {

@@ -52,6 +52,13 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
         pointT.set(vectors[i]);
         float scale = mads[i] * offsetFraction;
         pointT.scaleAdd(scale, centers[i]);
+        if (Float.isNaN(pointT.x)) {
+          System.out.println(" vectors[" + i + "]=" + vectors[i] +
+                             " centers[" + i + "]=" + centers[i] +
+                             " mads[" + i + "]=" + mads[i] +
+                             " scale=" + scale +
+                             " --> " + pointT);
+        }
         viewer.transformPoint(pointT, screens[i]);
       }
     }

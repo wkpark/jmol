@@ -546,13 +546,18 @@ public class TransformManager {
     int z = (int)point3fScreenTemp.z;
     if (z < cameraDistance) {
       System.out.println("need to back up the camera");
+      System.out.println("point3fScreenTemp.z=" + point3fScreenTemp.z +
+                         " -> z=" + z);
       increaseRotationRadius = true;
       if (z < minimumZ)
         minimumZ = z;
       if (z <= 0) {
-        System.out.println("WARNING! DANGER! z <= 0! transformPoint()");
+        System.out.println("WARNING! DANGER! z <= 0! transformPoint()" +
+                           " point=" + pointAngstroms + 
+                           "  ->  " + point3fScreenTemp);
         z = 1;
       }
+      throw new NullPointerException();
     }
     point3iScreenTemp.z = z;
     if (perspectiveDepth) {

@@ -1000,6 +1000,17 @@ public class Eval implements Runnable {
     case Token.backbone:
       viewer.setColorBackboneScript(getColorOrNoneParam(2));
       break;
+    case Token.identifier:
+	String str = (String)statement[1].value;
+	if (str.equalsIgnoreCase("dotsConvex"))
+	    viewer.setColorDotsConvex(getColorOrNoneParam(2));
+	else if (str.equalsIgnoreCase("dotsConcave"))
+	    viewer.setColorDotsConcave(getColorOrNoneParam(2));
+	else if (str.equalsIgnoreCase("dotsSaddle"))
+	    viewer.setColorDotsSaddle(getColorOrNoneParam(2));
+	else
+	    invalidArgument();
+	break;
     case Token.ribbons:
     case Token.hbonds:
     case Token.ssbonds:

@@ -303,6 +303,8 @@ public class Dots {
 	}
     }
 
+    Vector3f vectorT = new Vector3f();
+
   class Torus {
     int i, j;
     Point3f center;
@@ -310,17 +312,21 @@ public class Dots {
       Vector3f axisVector;
       Vector3f radialVector;
       Vector3f tangentVector;
+      Vector3f outerRadial;
+      float outerAngle;
       int[] probeMap;
 
-    Torus(int i, int j, Point3f center, float radius, Vector3f axisVector) {
-      this.i = i;
-      this.j = j;
+    Torus(AtomShape atomI, AtomShape atomJ,
+	  Point3f center, float radius, Vector3f axisVector) {
+      this.i = atomI.getAtomIndex();
+      this.j = atomJ.getAtomIndex();
       this.center = center;
       this.radius = radius;
       this.axisVector = axisVector;
+      float probeRadius = viewer.getSolventProbeRadius();
 
       axisVector.normalize();
-      axisVector.scale(viewer.getSolventProbeRadius());
+      axisVector.scale(probeRadius);
 
       if (axisVector.x == 0)
 	  radialVector = new Vector3f(radius, 0, 0);
@@ -335,8 +341,20 @@ public class Dots {
       }
 
       tangentVector = new Vector3f();
-      tangentVector.cross(axisVector, radialVector);
+      tangentVector.cross(radialVector, axisVector);
       tangentVector.normalize();
+
+      pointT.set(center);
+      pointT.add(radialVector);
+
+      outerRadial = new Vector3f(atomI.point3f);
+      outerRadial.sub(pointT);
+      outerRadial.normalize();
+      outerRadial.scale(probeRadius);
+
+      vectorT.set(atomJ.point3f);
+      vectorT.sub(pointT);
+      outerAngle = vectorT.angle(outerRadial);
     }
   }
 
@@ -364,7 +382,7 @@ public class Dots {
     Point3f center = calcTorusCenter(atomI, atomJ);
     Vector3f axisVector = new Vector3f(atomI.point3f);
     axisVector.sub(center);
-    Torus torus = new Torus(i, j, center, radius, axisVector);
+    Torus torus = new Torus(atomI, atomJ, center, radius, axisVector);
     htTori.put(key, torus);
     return torus;
   }

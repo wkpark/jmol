@@ -93,12 +93,23 @@ public class ColorManager {
     colixLabel = Colix.getColix(color);
   }
 
-  public Color colorDots = null;
-  public short colixDots = 0;
-  public void setColorDots(Color color) {
-    colorDots = color;
-    colixDots = Colix.getColix(color);
-  }
+    public short colixDotsConvex = 0;
+    public short colixDotsConcave = Colix.GREEN;
+    public short colixDotsSaddle = Colix.RED;
+
+    public void setColorDotsConvex(Color color) {
+	colixDotsConvex = Colix.getColix(color);
+    }
+    public void setColorDotsConcave(Color color) {
+	colixDotsConcave = Colix.getColix(color);
+	if (colixDotsConcave == 0)
+	    colixDotsConcave = Colix.GREEN;
+    }
+    public void setColorDotsSaddle(Color color) {
+	colixDotsSaddle = Colix.getColix(color);
+	if (colixDotsSaddle == 0)
+	    colixDotsSaddle = Colix.RED;
+    }
 
   public Color colorDistance = Color.black;
   public short colixDistance = Colix.BLACK;

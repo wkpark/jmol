@@ -476,12 +476,32 @@ final public class JmolViewer {
   }
 
   public void setColorDots(Color color) {
-    colorManager.setColorDots(color);
+    setColorDotsConvex(color);
+    setColorDotsConcave(color);
+    setColorDotsSaddle(color);
   }
 
-  public short getColixDots() {
-    return colorManager.colixDots;
-  }
+    public void setColorDotsSaddle(Color color) {
+	colorManager.setColorDotsSaddle(color);
+    }
+    public short getColixDotsSaddle() {
+	return colorManager.colixDotsSaddle;
+    }
+
+
+    public void setColorDotsConvex(Color color) {
+	colorManager.setColorDotsConvex(color);
+    }
+    public short getColixDotsConvex() {
+	return colorManager.colixDotsConvex;
+    }
+
+    public void setColorDotsConcave(Color color) {
+	colorManager.setColorDotsConcave(color);
+    }
+    public short getColixDotsConcave() {
+	return colorManager.colixDotsConcave;
+    }
 
   public Color getColorLabel() {
     return colorManager.colorLabel;

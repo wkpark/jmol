@@ -44,7 +44,10 @@ public class DotsRenderer {
   Graphics3D g3d;
   JmolFrame frame;
   boolean perspectiveDepth;
-  short colixDots;
+    short colixConcave;
+    short colixConvex;
+    short colixSaddle;
+    int pixelsPerAngstrom;
 
   public DotsRenderer(JmolViewer viewer) {
     this.viewer = viewer;
@@ -60,7 +63,10 @@ public class DotsRenderer {
     this.g3d = g3d;
     this.frame = frame;
     perspectiveDepth = viewer.getPerspectiveDepth();
-    colixDots = viewer.getColixDots();
+    colixConcave = viewer.getColixDotsConcave();
+    colixConvex = viewer.getColixDotsConvex();
+    colixSaddle = viewer.getColixDotsSaddle();
+    pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
   }
 
   Geodesic geodesic;
@@ -108,7 +114,7 @@ public class DotsRenderer {
 				atomShape.getVanderwaalsRadius(),
 				atomShape.x, atomShape.y, atomShape.z);
       if (geodesic.screenCoordinateCount > 0)
-	  g3d.plotPoints(colixDots == 0 ? atomShape.colixAtom : colixDots,
+	  g3d.plotPoints(colixConvex == 0 ? atomShape.colixAtom : colixConvex,
 			 geodesic.screenCoordinateCount,
 			 geodesic.screenCoordinates);
   }
@@ -121,19 +127,16 @@ public class DotsRenderer {
     AxisAngle4f aaT1 = new AxisAngle4f();
 
   void renderTorus(Dots.Torus torus) {
+      g3d.setColix(colixSaddle);
       int[] probeMap = torus.probeMap;
       if (probeMap == null)
 	  return;
-    Point3i screenCenter = viewer.transformPoint(torus.center);
-    int screenDiameter =
-      (int)(viewer.scaleToScreen(screenCenter.z, torus.radius) * 2 + 0.5f);
-    g3d.drawCircleCentered(viewer.getColixDistance(),
-                           20,
-                           screenCenter.x, screenCenter.y, screenCenter.z);
-    int torusDotCount = Dots.torusProbePositionCount;
-    int torusDotCount1 = 64;
+      int torusDotCount = getTorusDotCount();
+      int torusDotCount1 =
+	  (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
+
     float stepAngle = 2 * (float)Math.PI / torusDotCount;
-    float stepAngle1 = 2 * (float)Math.PI / torusDotCount1;
+    float stepAngle1 = torus.outerAngle / torusDotCount1;
     aaT.set(torus.axisVector, 0);
     aaT1.set(torus.tangentVector, 0);
     int i = probeMap.length * 32;
@@ -146,13 +149,11 @@ public class DotsRenderer {
 	matrixT.set(aaT);
 	matrixT.transform(torus.radialVector, pointT);
 	pointT.add(torus.center);
-	Point3i screenPoint = viewer.transformPoint(pointT);
-	g3d.plotPoint(screenPoint);
 
 	for (int j = torusDotCount1; --j >= 0; ) {
 	    aaT1.angle = j * stepAngle1;
 	    matrixT1.set(aaT1);
-	    matrixT1.transform(torus.axisVector, pointT1);
+	    matrixT1.transform(torus.outerRadial, pointT1);
 	    matrixT.transform(pointT1);
 	    pointT1.add(pointT);
 	    g3d.plotPoint(viewer.transformPoint(pointT1));
@@ -161,6 +162,24 @@ public class DotsRenderer {
     }
   }
   
+    int getTorusDotCount() {
+	return Dots.torusProbePositionCount;
+    }
+
+    int getTorusOuterDotCount() {
+	int dotCount = 8;
+	if (pixelsPerAngstrom > 4) {
+	    dotCount = 16;
+	    if (pixelsPerAngstrom > 8) {
+		dotCount = 32;
+		if (pixelsPerAngstrom > 16) {
+		    dotCount = 64;
+		}
+	    }
+	}
+	return dotCount;
+    }
+
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
   final static float oneFifth = 2 * (float)Math.PI / 5;
   final static float oneTenth = oneFifth / 2;
@@ -236,7 +255,6 @@ public class DotsRenderer {
 
     void calcScreenPoints(int[] visibilityMap, float radius,
 			  int x, int y, int z) {
-      int pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
       int dotCount = 12;
       if (pixelsPerAngstrom > 4) {
         dotCount = 42;

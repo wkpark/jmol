@@ -1212,12 +1212,14 @@ public class ProjectInformation {
     ProjectInformation projectInfo = getInstance();
 
     //Print current date / time
+    /*
     projectInfo.outputTextLn("Dates"); //$NON-NLS-1$
     projectInfo.outputTextLn("  EM    :" + Long.toString(_info._emDate)); //$NON-NLS-1$
     projectInfo.outputTextLn("  PS    :" + Long.toString(_info._psDate)); //$NON-NLS-1$
     projectInfo.outputTextLn("  QD    :" + Long.toString(_info._qdDate)); //$NON-NLS-1$
     projectInfo.outputTextLn("  Static:" + Long.toString(_info._staticDate)); //$NON-NLS-1$
     projectInfo.outputTextLn("  Now   :" + Long.toString(new Date().getTime())); //$NON-NLS-1$
+    */
 
     //Ouput emprotz.dat format
     if (_outputEmprotz) {

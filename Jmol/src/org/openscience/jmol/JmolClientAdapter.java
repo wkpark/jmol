@@ -48,6 +48,6 @@ public interface JmolClientAdapter {
   public double getVanderwaalsRadius(int atomicNumber, Object clientAtom);
   public double getCovalentRadius(int atomicNumber, Object clientAtom);
   public Point3d getPoint3d(Object clientAtom);
-  public ProteinProp getProteinProp(Object clientAtom);
+  public String getPdbAtomRecord(Object clientAtom);
   public Color getColor(int atomicNumber, Object clientAtom, int colorScheme);
 }

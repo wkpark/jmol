@@ -90,8 +90,7 @@ public class Distributor {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       atomShape.setLabel(control.getLabelAtom(styleLabel,
-                                              atomShape.atomicNumber,
-                                              atomShape.clientAtom,
+                                              atomShape,
                                               atomShape.atomIndex));
     }
   }
@@ -99,9 +98,7 @@ public class Distributor {
   public void setLabel(String strLabel, AtomShapeIterator iter) {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
-      atomShape.setLabel(control.getLabelAtom(strLabel,
-                                              atomShape.atomicNumber,
-                                              atomShape.clientAtom,
+      atomShape.setLabel(control.getLabelAtom(strLabel, atomShape,
                                               atomShape.atomIndex));
     }
   }

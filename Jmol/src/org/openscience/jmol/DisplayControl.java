@@ -1536,24 +1536,19 @@ final public class DisplayControl {
     return labelManager.styleLabel;
   }
 
-  public String getLabelAtom(int atomicNumber, Object clientAtom,
-                             int atomIndex) {
+  public String getLabelAtom(AtomShape atomShape, int atomIndex) {
     return labelManager.getLabelAtom(labelManager.styleLabel,
-                                     atomicNumber, clientAtom, atomIndex);
+                                     atomShape, atomIndex);
   }
 
-  public String getLabelAtom(byte styleLabel,
-                             int atomicNumber, Object clientAtom,
+  public String getLabelAtom(byte styleLabel, AtomShape atomShape,
                              int atomIndex) {
-    return labelManager.getLabelAtom(styleLabel, atomicNumber, clientAtom,
-                                     atomIndex);
+    return labelManager.getLabelAtom(styleLabel, atomShape, atomIndex);
   }
 
-  public String getLabelAtom(String strLabel,
-                             int atomicNumber, Object clientAtom,
+  public String getLabelAtom(String strLabel, AtomShape atomShape,
                              int atomIndex) {
-    return labelManager.getLabelAtom(strLabel, atomicNumber, clientAtom,
-                                     atomIndex);
+    return labelManager.getLabelAtom(strLabel, atomShape, atomIndex);
   }
 
   public void setLabelFontSize(int points) {
@@ -1681,8 +1676,8 @@ final public class DisplayControl {
     return clientAdapter.getPoint3d(clientAtom);
   }
 
-  public ProteinProp getProteinProp(Object clientAtom) {
-    return clientAdapter.getProteinProp(clientAtom);
+  public String getPdbAtomRecord(Object clientAtom) {
+    return clientAdapter.getPdbAtomRecord(clientAtom);
   }
 
   public short getColixAtom(int atomicNumber, Object clientAtom) {

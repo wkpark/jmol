@@ -173,11 +173,11 @@ public class ChemFrame extends AtomContainer {
   }
 
   public int addAtom(Atom type, double x, double y, double z,
-                     ProteinProp pprop) {
+                     String pdbRecord) {
     //      clearBounds();
       int i = getAtomCount();
       
-      Atom atom = new Atom(control, type, i, x, y, z, pprop);
+      Atom atom = new Atom(control, type, i, x, y, z, pdbRecord);
       this.addAtom(atom);
       /*
         mth 2003 05 23
@@ -328,7 +328,10 @@ public class ChemFrame extends AtomContainer {
   private static final Point3d zeroPoint = new Point3d();
   private void buildJmolFrame() {
     int atomCount = getAtomCount();
-    jmframe = new JmolFrame(control, atomCount);
+    boolean hasPdbRecords = (atomCount > 0 &&
+                             getJmolAtomAt(0).getPdbRecord() != null);
+    System.out.println("hasPdbRecords=" + hasPdbRecords);
+    jmframe = new JmolFrame(control, atomCount, hasPdbRecords);
     for (int i = 0; i < atomCount; ++i) {
       Atom jmolAtom = getJmolAtomAt(i);
       AtomShape atomShape = jmframe.addAtom(jmolAtom);

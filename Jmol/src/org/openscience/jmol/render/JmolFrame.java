@@ -40,7 +40,7 @@ public class JmolFrame {
   // used in autobonding
   private double maxCovalentRadius = 0.0;
   // whether or not this frame has any protein properties
-  public boolean hasProteinProps;
+  public boolean hasPdbRecords;
 
   Shape[] shapes;
 
@@ -50,14 +50,20 @@ public class JmolFrame {
   int bondShapeCount = 0;
   BondShape[] bondShapes;
 
-  public JmolFrame(DisplayControl control, int atomCount) {
+  public JmolFrame(DisplayControl control, int atomCount,
+                   boolean hasPdbRecords) {
     this.control = control;
+    this.hasPdbRecords = hasPdbRecords;
     atomShapes = new AtomShape[atomCount];
     bondShapes = new BondShape[atomCount * 2];
   }
 
+  public JmolFrame(DisplayControl control, boolean hasPdbRecords) {
+    this(control, growthIncrement, false);
+  }
+
   public JmolFrame(DisplayControl control) {
-    this(control, growthIncrement);
+    this(control, false);
   }
 
   public void finalize() {
@@ -82,8 +88,6 @@ public class JmolFrame {
     double covalentRadius = atomShape.getCovalentRadius();
     if (covalentRadius > maxCovalentRadius)
       maxCovalentRadius = covalentRadius;
-    if (!hasProteinProps)
-      hasProteinProps = (atomShape.getProteinProp() != null);
     return atomShape;
   }
 
@@ -93,6 +97,10 @@ public class JmolFrame {
 
   public AtomShape getAtomAt(int atomIndex) {
     return atomShapes[atomIndex];
+  }
+
+  public boolean hasPdbRecords() {
+    return hasPdbRecords;
   }
 
   private Hashtable htAtomMap = null;
@@ -646,7 +654,7 @@ public class JmolFrame {
       }
 
       // Protein backbone bonds
-      if (hasProteinProps) {
+      if (hasPdbRecords) {
         ProteinProp pprop = atom.getProteinProp();
         if (pprop != null) {
           char chainThis = pprop.getChain();

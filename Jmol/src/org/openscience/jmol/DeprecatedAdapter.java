@@ -117,8 +117,8 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     return ((Atom)clientAtom).getPoint3D();
   }
 
-  public ProteinProp getProteinProp(Object clientAtom){
-    return ((Atom)clientAtom).getProteinProp();
+  public String getPdbAtomRecord(Object clientAtom){
+    return ((Atom)clientAtom).getPdbRecord();
   }
 
   public Color getColor(int atomicNumber, Object clientAtom, int colorScheme) {

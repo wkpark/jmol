@@ -52,6 +52,7 @@ public class AtomShape extends Shape implements Bspt.Tuple {
   public BondShape[] bonds;
 
   public String strLabel;
+  public ProteinProp pprop;
   
   public AtomShape(JmolFrame frame, int atomIndex, Object clientAtom) {
     DisplayControl control = frame.control;
@@ -60,11 +61,20 @@ public class AtomShape extends Shape implements Bspt.Tuple {
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) control.getAtomicNumber(clientAtom);
     this.colixAtom = control.getColixAtom(atomicNumber, clientAtom);
-    this.strLabel = control.getLabelAtom(atomicNumber, clientAtom, atomIndex);
+    if (frame.hasPdbRecords()) {
+      String pdbRecord = control.getPdbAtomRecord(clientAtom);
+      if (pdbRecord != null)
+        pprop = new ProteinProp(pdbRecord);
+    }
     this.colixDots = 0;
     this.marDots = 0;
     setStyleMarAtom(control.getStyleAtom(), control.getMarAtom());
     this.point3d = control.getPoint3d(clientAtom);
+    this.strLabel = control.getLabelAtom(this, atomIndex);
+  }
+
+  public Object getClientAtom() {
+    return clientAtom;
   }
 
   public int getAtomIndex() {
@@ -389,6 +399,6 @@ public class AtomShape extends Shape implements Bspt.Tuple {
   }
 
   public ProteinProp getProteinProp() {
-    return frame.control.getProteinProp(clientAtom);
+    return pprop;
   }
 }

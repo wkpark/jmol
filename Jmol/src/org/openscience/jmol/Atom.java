@@ -42,12 +42,12 @@ public class Atom extends org.openscience.cdk.Atom {
    * @param the type of this atom.
    */
   public Atom(DisplayControl control, Atom atom, int atomNumber,
-              double x, double y, double z, ProteinProp pprop) {
+              double x, double y, double z, String pdbRecord) {
     super(atom.getSymbol(), new Point3d(x, y, z));
     super.setID(atom.getAtomTypeName());
     this.baseAtomType = atom.baseAtomType;
     //    this.atomNumber = atomNumber;
-    this.pprop = pprop;
+    this.pdbRecord = pdbRecord;
     this.control = control;
   }
 
@@ -77,13 +77,13 @@ public class Atom extends org.openscience.cdk.Atom {
    * @return true if this atom is a hydrogen atom.
    */
   
-  ProteinProp pprop = null;
-  public ProteinProp getProteinProp() {
-    return pprop;
+  String pdbRecord = null;
+  public String getPdbRecord() {
+    return pdbRecord;
   }
 
-  public void setProteinProp(ProteinProp pprop) {
-    this.pprop = pprop;
+  public void setPdbRecord(String pdbRecord) {
+    this.pdbRecord = pdbRecord;
   }
 
   /**

@@ -127,7 +127,7 @@ public class PDBReader extends DefaultChemFileReader {
         atom.setX3D(x);
         atom.setY3D(y);
         atom.setZ3D(z);
-        atom.setProteinProp(new ProteinProp(line));
+        atom.setPdbRecord(line);
         frame.addAtom(atom);
         
         // logger.debug("Added atom: " + atom.toString());

@@ -36,6 +36,7 @@ public abstract class MouseManager {
   Component component;
   JmolViewer viewer;
 
+  int xClickPressed, yClickPressed;
   int xPrevious, yPrevious;
   int xCurrent, yCurrent;
   int modifiersWhenPressed;
@@ -44,7 +45,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = false;
+  private static final boolean logMouseEvents = true;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
@@ -89,13 +90,13 @@ public abstract class MouseManager {
     }
   }
 
-  void mousePressed(int x, int y, int modifiers) {
+  void mousePressed(int x, int y, int modifiers, int clickCount) {
     if (logMouseEvents)
       System.out.println("mousePressed("+x+","+y+","+modifiers+")");
     if (! viewer.haveFile())
       return;
-    xCurrent = xPrevious = x;
-    yCurrent = yPrevious = y;
+    xClickPressed = xCurrent = xPrevious = x;
+    yClickPressed = yCurrent = yPrevious = y;
     modifiersWhenPressed = modifiers;
     if ((modifiers & MIDDLE) != 0) {
       viewer.homePosition();
@@ -148,18 +149,19 @@ public abstract class MouseManager {
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
   final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
 
-  void mouseClicked(int x, int y, int modifiers) {
-    if (logMouseEvents)
-      System.out.println("mouseClicked("+x+","+y+","+modifiers+")");
+  void mouseClicked(int x, int y, int modifiers, int clickCount) {
+    // this event is not reliable on older platforms
+    //    if (logMouseEvents)
+    //      System.out.println("mouseClicked("+x+","+y+","+modifiers+")");
   }
 
-  void mouseEntered(int x, int y, int modifiers) {
+  void mouseEntered(int x, int y, int modifiers, int clickCount) {
   }
 
-  void mouseExited(int x, int y, int modifiers) {
+  void mouseExited(int x, int y, int modifiers, int clickCount) {
   }
 
-  void mouseReleased(int x, int y, int modifiers) {
+  void mouseReleased(int x, int y, int modifiers, int clickCount) {
     if (logMouseEvents)
       System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
@@ -175,6 +177,10 @@ public abstract class MouseManager {
     } else if (modeMouse == JmolConstants.MOUSE_PICK) {
       rubberbandSelectionMode = false;
       component.repaint();
+    } else if (x == xClickPressed && y == yClickPressed) {
+      int atomIndex = viewer.findNearestAtomIndex(x, y);
+      if (atomIndex != -1)
+        viewer.notifyPicked(atomIndex);
     }
   }
 
@@ -209,9 +215,10 @@ public abstract class MouseManager {
     return modeMouse;
   }
 
-  public void mouseDragged(int x, int y, int modifiers) {
+  public void mouseDragged(int x, int y, int modifiers, int clickCount) {
 
     viewer.setInMotion(true);
+    xClickPressed = -1; // to invalidate a 'click'
     xCurrent = x;
     yCurrent = y;
     switch (getMode(modifiers)) {
@@ -248,7 +255,7 @@ public abstract class MouseManager {
     yPrevious = yCurrent;
   }
 
-  void mouseMoved(int x, int y, int modifiers) {
+  void mouseMoved(int x, int y, int modifiers, int clickCount) {
   }
 
   public abstract boolean handleEvent(Event e);

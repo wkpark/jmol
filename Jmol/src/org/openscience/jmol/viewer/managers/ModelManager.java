@@ -348,6 +348,16 @@ public class ModelManager {
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////
 
+  public String getAtomInfo(int i) {
+    Atom atom = frame.atoms[i];
+    PdbAtom pdbAtom = atom.pdbAtom;
+    if (pdbAtom == null)
+      return "Atom: " + atom.getAtomicSymbol() + " " + atom.getAtomno();
+    return "Atom: " + pdbAtom.getAtomName() + " " + pdbAtom.getAtomNumber() +
+      " " + pdbAtom.getResidue3() + " " + pdbAtom.getResidueNumber() +
+      " Chain:" + pdbAtom.getChainID();
+  }
+
   public String getAtomicSymbol(int i) {
     return frame.atoms[i].getAtomicSymbol();
   }

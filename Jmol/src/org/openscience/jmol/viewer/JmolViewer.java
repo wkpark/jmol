@@ -1306,6 +1306,12 @@ final public class JmolViewer {
       jmolStatusListener.notifyMeasurementsChanged();
   }
 
+  public void notifyPicked(int atomIndex) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyAtomPicked(atomIndex,
+                                          modelManager.getAtomInfo(atomIndex));
+  }
+
   /****************************************************************
    * mth 2003 05 31 - needs more work
    * this should be implemented using properties

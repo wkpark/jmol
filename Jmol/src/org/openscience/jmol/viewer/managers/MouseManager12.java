@@ -62,31 +62,31 @@ public class MouseManager12 extends MouseManager
   }
 
   public void mouseClicked(MouseEvent e) {
-    mouseClicked(e.getX(), e.getY(), e.getModifiers());
+    mouseClicked(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
 
   public void mouseEntered(MouseEvent e) {
-    mouseEntered(e.getX(), e.getY(), e.getModifiers());
+    mouseEntered(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
   
   public void mouseExited(MouseEvent e) {
-    mouseExited(e.getX(), e.getY(), e.getModifiers());
+    mouseExited(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
   
   public void mousePressed(MouseEvent e) {
-    mousePressed(e.getX(), e.getY(), e.getModifiers());
+    mousePressed(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
   
   public void mouseReleased(MouseEvent e) {
-    mouseReleased(e.getX(), e.getY(), e.getModifiers());
+    mouseReleased(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
 
   public void mouseDragged(MouseEvent e) {
-    mouseDragged(e.getX(), e.getY(), e.getModifiers());
+    mouseDragged(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
 
   public void mouseMoved(MouseEvent e) {
-    mouseMoved(e.getX(), e.getY(), e.getModifiers());
+    mouseMoved(e.getX(), e.getY(), e.getModifiers(), e.getClickCount());
   }
 
   /*

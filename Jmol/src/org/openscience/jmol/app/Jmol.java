@@ -1429,6 +1429,13 @@ public class Jmol extends JPanel {
     public void notifyMeasurementsChanged() {
       measurementTable.updateTables();
     }
+
+    public void notifyAtomPicked(int atomIndex, String strInfo) {
+      if (scriptWindow != null) {
+        scriptWindow.scriptStatus(strInfo);
+        scriptWindow.scriptStatus("\n");
+      }
+    }
   }
 
 }

@@ -20,9 +20,11 @@
 
 package org.openscience.miniJmol;
 
+import org.openscience.jmol.PhysicalProperty;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.Vector;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
 
@@ -51,11 +53,10 @@ public class AtomRenderer {
      *
      * @param gc the Graphics context
 	 * @param atom the atom to be drawn
-     * @param props Vector containing the physical properties associated with this atom
      * @param picked whether or not the atom has been selected and gets a "halo"
 	 * @param settings the display settings
      */
-    public void paint(Graphics gc, Atom atom, Vector props, boolean picked, DisplaySettings settings) {
+    public void paint(Graphics gc, Atom atom, boolean picked, DisplaySettings settings) {
 		int x = (int)atom.getScreenPosition().x;
 		int y = (int)atom.getScreenPosition().y;
 		int z = (int)atom.getScreenPosition().z;
@@ -122,8 +123,9 @@ public class AtomRenderer {
 
         if (!settings.getPropertyMode().equals("")) {
             // check to make sure this atom has this property:
-            for (int i = 0; i < props.size(); i++) {
-                PhysicalProperty p = (PhysicalProperty)props.elementAt(i);
+			Enumeration propIter = atom.getProperties().elements();
+			while (propIter.hasMoreElements()) {
+                PhysicalProperty p = (PhysicalProperty)propIter.nextElement();
                 if (p.getDescriptor().equals(settings.getPropertyMode())) {
                     // OK, we had this property.  Let's draw the value on 
                     // screen:

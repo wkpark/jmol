@@ -66,9 +66,11 @@ public class LabelManager {
   }
 
   public Font getLabelFont(int diameter) {
-    int points = diameter * 2 / 3;
+    int points = diameter * 3 / 4;
     if (pointsLabelFontSize != 0)
       points = pointsLabelFontSize;
+    if (points < 6)
+      return null;
     return getFontOfSize(points);
   }
 

@@ -81,9 +81,9 @@ public class Distance implements MeasurementInterface {
 
   private void paintDistString(Graphics25D g25d, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
-      d1 = atom1.getScreenDiameter();
+      z1 = atom1.getScreenZ(), d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
-      d2 = atom2.getScreenDiameter();
+      z2 = atom2.getScreenZ(), d2 = atom2.getScreenDiameter();
     
     int avgRadius = (d1 + d2) / 4;
 
@@ -92,10 +92,13 @@ public class Distance implements MeasurementInterface {
     FontMetrics fontMetrics = g25d.getFontMetrics(font);
     g25d.setColor(control.getColorDistance());
     int j = fontMetrics.stringWidth(strDistance);
+    int z = (z1 + z2) / 2;
     if (x2 == x1) {
-      g25d.drawString(strDistance, x1 + 1, ((y1 + y2) / 2) + 1);
+      g25d.drawString(strDistance,
+                      x1 + 1, ((y1 + y2) / 2) + 1, z);
     } else {
-      g25d.drawString(strDistance, (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1);
+      g25d.drawString(strDistance,
+                      (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1, z);
     }
   }
 

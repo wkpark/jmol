@@ -34,6 +34,7 @@ import java.awt.FontMetrics;
 import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.image.PixelGrabber;
+import java.util.Hashtable;
 
 public class Text25D {
   /*
@@ -52,119 +53,142 @@ public class Text25D {
       array of bits - uncompressed - i like this
       some type of run-length, using bytes
   */
-  String text;
-  Font font;
   Component component;
-  int height;
+  int height; // this height is just ascent + descent ... no reason for leading
   int ascent;
   int width;
   int size;
-  int[] pixels;
-  boolean[] bits;
-
   int[] bitmap;
 
   public Text25D(String text, Font font, Component component) {
-    this.text = text;
-    this.font = font;
-    this.component = component;
-    calcMetrics();
-    renderImage();
+    if (g == null)
+      checkImageBufferSize(component, 128, 16);
+    calcMetrics(text, font);
+    checkImageBufferSize(component, width, height);
+    renderImage(text, font);
     rasterize();
   }
 
-  static int widthImg = 128;
-  static int heightImg = 16;
+  static int widthBuffer;
+  static int heightBuffer;
   static Image img;
   static Graphics g;
-  void allocImage() {
-    if (g != null)
-      g.dispose();
-    img = component.createImage(widthImg, heightImg);
-    g = img.getGraphics();
-  }
 
-  void checkImageSize() {
+  void checkImageBufferSize(Component component, int width, int height) {
     boolean realloc = false;
-    if (width > widthImg) {
-      widthImg = (width + 63) & ~63;
+    int widthT = widthBuffer;
+    int heightT = heightBuffer;
+    if (width > widthT) {
+      widthT = (width + 63) & ~63;
       realloc = true;
     }
-    if (height > heightImg) {
-      heightImg = (height + 7) & ~7;
+    if (height > heightT) {
+      heightT = (height + 7) & ~7;
       realloc = true;
     }
-    if (realloc)
-      allocImage();
+    if (realloc) {
+      if (g != null)
+        g.dispose();
+      img = component.createImage(widthT, heightT);
+      widthBuffer = widthT;
+      heightBuffer = heightT;
+      g = img.getGraphics();
+    }
   }
 
-  void calcMetrics() {
-    if (g == null)
-      allocImage();
+  void calcMetrics(String text, Font font) {
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    height = fontMetrics.getHeight();
+    ascent = fontMetrics.getAscent();
+    height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
     size = width*height;
-    ascent = fontMetrics.getAscent();
-    // perhaps I should use getMaxAscent + getMaxDescent
-    checkImageSize();
   }
 
-  void renderImage() {
+  void renderImage(String text, Font font) {
     g.setColor(Color.black);
     g.fillRect(0, 0, width, height);
     g.setColor(Color.white);
     g.setFont(font);
     g.drawString(text, 0, ascent);
-    g.dispose();
   }
 
   void rasterize() {
-    pixels = new int[size];
+    int[] pixels = new int[size];
     PixelGrabber pixelGrabber = new PixelGrabber(img, 0, 0, width, height,
                                                  pixels, 0, width);
     pixelGrabber.startGrabbing();
-    bits = new boolean[size];
+    // shifter error checking
+    boolean[] bits = new boolean[size];
     for (int i = 0; i < size; ++i)
       bits[i] = (pixels[i] & 0x00FFFFFF) != 0;
+    //
 
-    bitmap = new int[(size + 31) & ~31];
+    int bitmapSize = (size + 31) >> 5;
+    bitmap = new int[bitmapSize];
 
-    /*
-    int offset = 0;
-    int shiftregister = 0;
-    while (offset < size) {
-    */
     int offset, shifter;
     for (offset = shifter = 0; offset < size; ++offset, shifter <<= 1) {
-      //      if (bits[offset])
       if ((pixels[offset] & 0x00FFFFFF) != 0)
         shifter |= 1;
       if ((offset & 31) == 31)
         bitmap[offset >> 5] = shifter;
     }
     if ((offset & 31) != 0) {
-      shifter <<= 32 - (offset & 31);
+      shifter <<= 31 - (offset & 31);
       bitmap[offset >> 5] = shifter;
     }
 
+    // error checking
     for (offset = 0; offset < size; ++offset, shifter <<= 1) {
       if ((offset & 31) == 0)
         shifter = bitmap[offset >> 5];
       if (shifter < 0) {
-        if (!bits[offset])
+        if (!bits[offset]) {
           System.out.println("false positive @" + offset);
+          System.out.println("size = " + size);
+        }
       } else {
-        if (bits[offset])
+        if (bits[offset]) {
           System.out.println("false negative @" + offset);
+          System.out.println("size = " + size);
+        }
       }
     }
+    // error checking
+  }
+
+  static Hashtable htText = new Hashtable();
+  
+  // FIXME mth
+  // we have a synchronization issue/race condition  here with multiple
+  // so only one Text25D can be generated at a time
+
+  synchronized static Text25D getText25D(String text, Font font,
+                                         Component component) {
+    int size = font.getSize();
+    Text25D[] at25d = (Text25D[])htText.get(text);
+    if (at25d != null) {
+      if (size <= at25d.length) {
+        Text25D t25d = at25d[size - 1];
+        if (t25d != null)
+          return t25d;
+      } else {
+        Text25D[] at25dNew = new Text25D[size + 8];
+        System.arraycopy(at25d, 0, at25dNew, 0, at25d.length);
+        at25d = at25dNew;
+        htText.put(text, at25d);
+      }
+    } else {
+      at25d = new Text25D[size + 8];
+      htText.put(text, at25d);
+    }
+    return at25d[size - 1] = new Text25D(text, font, component);
   }
 
   public static void plot(int x, int y, int z, int argb,
                           String text, Font font, Graphics25D g25d,
                           Component component) {
-    Text25D text25d = new Text25D(text, font, component);
+    Text25D text25d = getText25D(text, font, component);
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;

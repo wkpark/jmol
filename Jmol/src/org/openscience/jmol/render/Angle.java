@@ -90,11 +90,11 @@ public class Angle implements MeasurementInterface {
   
   private void paintAngleString(Graphics25D g25d, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
-	d1 = atom1.getScreenDiameter();
+      z1 = atom1.getScreenZ(), d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
-	d2 = atom2.getScreenDiameter();
+      z2 = atom2.getScreenZ(), d2 = atom2.getScreenDiameter();
     int x3 = atom3.getScreenX(), y3 = atom3.getScreenY(),
-	d3 = atom3.getScreenDiameter();
+      z3 = atom3.getScreenZ(), d3 = atom3.getScreenDiameter();
     int avgRadius = (d1 + d2 + d3) / 6;
     Font font = control.getMeasureFont(avgRadius);
     g25d.setFont(font);
@@ -104,8 +104,9 @@ public class Angle implements MeasurementInterface {
 
     int xloc = (2 * x2 + x1 + x3) / 4;
     int yloc = (2 * y2 + y1 + y3) / 4;
+    int zloc = (2 * z2 + z1 + z3) / 4;
 
-    g25d.drawString(strAngle, xloc, yloc);
+    g25d.drawString(strAngle, xloc, yloc, zloc);
   }
 
   public int[] getAtomList() {

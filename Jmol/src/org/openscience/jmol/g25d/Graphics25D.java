@@ -60,6 +60,7 @@ final public class Graphics25D {
 
   int argbCurrent;
   Font fontCurrent;
+  FontMetrics fontmetricsCurrent;
 
   public Graphics25D(DisplayControl control) {
     this.control = control;
@@ -307,12 +308,13 @@ final public class Graphics25D {
     drawLine(xRight, y, 0, xRight, yBottom, 0);
   }
 
-  public void drawString(String str, int xBaseline, int yBaseline) {
+  public void drawString(String str, int xBaseline, int yBaseline, int z) {
     if (! usePbuf) {
       g.drawString(str, xBaseline, yBaseline);
       return;
     }
-    Text25D.plot(xBaseline, yBaseline, 100, argbCurrent,
+    Text25D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(),
+                 z, argbCurrent,
                  str, fontCurrent, this, control.getAwtComponent());
   }
 
@@ -328,18 +330,25 @@ final public class Graphics25D {
     control.java12.defaultStroke(g);
   }
 
+
   public void setFont(Font font) {
     if (! usePbuf)
       g.setFont(font);
-    else
-      fontCurrent = font;
+    else {
+      if (fontCurrent != font) {
+        fontCurrent = font;
+        fontmetricsCurrent = g.getFontMetrics(font);
+      }
+    }
   }
 
   public FontMetrics getFontMetrics(Font font) {
     if (! usePbuf)
       return g.getFontMetrics(font);
-    System.out.println("usePbuf ... getFontMetrics is a problem");
-    return null;
+    if (font == fontCurrent)
+      return fontmetricsCurrent;
+    else
+      return g.getFontMetrics(font);
   }
 
   public void setClip(Shape shape) {

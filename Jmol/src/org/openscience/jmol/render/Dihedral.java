@@ -89,13 +89,13 @@ public class Dihedral implements MeasurementInterface {
   
   private void paintDihedralString(Graphics25D g25d, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
-	d1 = atom1.getScreenDiameter();
+      z1 = atom1.getScreenZ(), d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
-	d2 = atom2.getScreenDiameter();
+      z2 = atom2.getScreenZ(), d2 = atom2.getScreenDiameter();
     int x3 = atom3.getScreenX(), y3 = atom3.getScreenY(),
-	d3 = atom3.getScreenDiameter();
+      z3 = atom2.getScreenZ(), d3 = atom3.getScreenDiameter();
     int x4 = atom4.getScreenX(), y4 = atom4.getScreenY(),
-	d4 = atom4.getScreenDiameter();
+      z4 = atom4.getScreenZ(), d4 = atom4.getScreenDiameter();
     int avgRadius = (d1 + d2 + d3 + d4) / 8;
     Font font = control.getMeasureFont(avgRadius);
     g25d.setFont(font);
@@ -105,8 +105,9 @@ public class Dihedral implements MeasurementInterface {
 
     int xloc = (x1 + x2 + x3 + x4) / 4;
     int yloc = (y1 + y2 + y3 + y4) / 4;
+    int zloc = (z1 + z2 + z3 + z4) / 4;
 
-    g25d.drawString(strDihedral, xloc, yloc);
+    g25d.drawString(strDihedral, xloc, yloc, zloc);
   }
 
   public int[] getAtomList() {

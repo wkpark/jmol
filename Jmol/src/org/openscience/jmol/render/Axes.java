@@ -146,7 +146,7 @@ public class Axes {
       }
       if (label != null)
         control.renderStringOutside(label, control.getColorAxes(),
-                                    axisFontsize, x, y);
+                                    axisFontsize, x, y, z);
     }
 
     /*

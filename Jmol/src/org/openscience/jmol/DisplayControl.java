@@ -1542,14 +1542,15 @@ final public class DisplayControl {
   }
   
   public void renderStringOffset(String str, Color color, int points,
-                                 int x, int y, int xOffset, int yOffset) {
+                                 int x, int y, int z,
+                                 int xOffset, int yOffset) {
     labelRenderer.renderStringOffset(str, color, points,
-                                     x, y, xOffset, yOffset);
+                                     x, y, z, xOffset, yOffset);
   }
 
   public void renderStringOutside(String str, Color color, int pointsFontsize,
-                                  int x, int y) {
-    labelRenderer.renderStringOutside(str, color, pointsFontsize, x, y);
+                                  int x, int y, int z) {
+    labelRenderer.renderStringOutside(str, color, pointsFontsize, x, y, z);
   }
 
   /****************************************************************

@@ -123,26 +123,21 @@ class PdbReader extends ModelReader {
        ****************************************************************/
       String elementSymbol = null;
       if (len >= 78) {
-        String candidate = line.substring(76, 78).trim();
-        int candidateLength = candidate.length();
-        if (candidateLength > 0) {
-          char chFirst = candidate.charAt(0);
-          if (Atom.isValidFirstSymbolChar(chFirst) &&
-              (candidateLength == 1 ||
-               (candidateLength == 2 &&
-                Atom.isValidSecondSymbolChar(chFirst, candidate.charAt(1)))))
-            elementSymbol = candidate;
-        }
+        char ch76 = line.charAt(76);
+        char ch77 = line.charAt(77);
+        if (ch76 == ' ' && Atom.isValidElementSymbol(ch77))
+          elementSymbol = "" + ch77;
+        else if (Atom.isValidElementSymbol(ch76, ch77))
+          elementSymbol = "" + ch76 + ch77;
       }
       if (elementSymbol == null) {
         char ch12 = line.charAt(12);
         char ch13 = line.charAt(13);
-        if (Atom.isValidFirstSymbolChar(ch12)) {
-          if (Atom.isValidSecondSymbolChar(ch12, ch13))
-            elementSymbol = "" + ch12 + ch13;
-          else
-            elementSymbol = "" + ch12;
-        } else if (Atom.isValidFirstSymbolChar(ch13))
+        if (Atom.isValidElementSymbol(ch12, ch13))
+          elementSymbol = "" + ch12 + ch13;
+        else if (Atom.isValidElementSymbol(ch12))
+          elementSymbol = "" + ch12;
+        else if (Atom.isValidElementSymbol(ch13))
           elementSymbol = "" + ch13;
         else
           elementSymbol = "Xx";

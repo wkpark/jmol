@@ -52,26 +52,188 @@ class Atom {
         switch(len - ichFirst) {
         case 0:
           break;
-        case 1:
-          elementSymbol = atomName.substring(ichFirst, len);
-          break;
         default:
           char chSecond = atomName.charAt(ichFirst + 1);
-          boolean secondValid = isValidSecondSymbolChar(chFirst, chSecond);
-          elementSymbol =
-            atomName.substring(ichFirst, ichFirst + (secondValid ? 2 : 1));
+          if (isValidElementSymbol(chFirst, chSecond)) {
+            elementSymbol = "" + chFirst + chSecond;
+            break;
+          }
+          // fall into
+        case 1:
+          if (isValidElementSymbol(chFirst))
+            elementSymbol = "" + chFirst;
+          break;
         }
       }
     return elementSymbol;
   }
 
-  static boolean isValidFirstSymbolChar(char ch) {
-    // make this a little more restricive later, if you want
-    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+  final static int[] elementCharMasks = {
+    //   Ac Ag Al Am Ar As At Au
+    1 << ('c' - 'a') |
+    1 << ('g' - 'a') |
+    1 << ('l' - 'a') |
+    1 << ('m' - 'a') |
+    1 << ('r' - 'a') |
+    1 << ('s' - 'a') |
+    1 << ('t' - 'a') |
+    1 << ('u' - 'a'),
+    // B Ba Be Bh Bi Bk Br
+    1 << 31 |
+    1 << ('a' - 'a') |
+    1 << ('e' - 'a') |
+    1 << ('h' - 'a') |
+    1 << ('i' - 'a') |
+    1 << ('k' - 'a') |
+    1 << ('r' - 'a'),
+    // C Ca Cd Ce Cf Cl Cm Co Cr Cs Cu
+    1 << 31 |
+    1 << ('a' - 'a') |
+    1 << ('d' - 'a') |
+    1 << ('e' - 'a') |
+    1 << ('f' - 'a') |
+    1 << ('l' - 'a') |
+    1 << ('m' - 'a') |
+    1 << ('o' - 'a') |
+    1 << ('r' - 'a') |
+    1 << ('s' - 'a') |
+    1 << ('u' - 'a'),
+    //   Db Dy
+    1 << ('d' - 'a') |
+    1 << ('y' - 'a'),
+    //   Er Es Eu
+    1 << ('r' - 'a') |
+    1 << ('s' - 'a') |
+    1 << ('u' - 'a'),
+    // F Fe Fm Fr
+    1 << 31 |
+    1 << ('e' - 'a') |
+    1 << ('m' - 'a') |
+    1 << ('r' - 'a'),
+    //   Ga Gd Ge
+    1 << ('a' - 'a') |
+    1 << ('d' - 'a') |
+    1 << ('e' - 'a'),
+    // H He Hf Hg Ho Hs
+    1 << 31 |
+    1 << ('e' - 'a') |
+    1 << ('f' - 'a') |
+    1 << ('g' - 'a') |
+    1 << ('o' - 'a') |
+    1 << ('s' - 'a'),
+    // I In Ir
+    1 << 31 |
+    1 << ('n' - 'a') |
+    1 << ('r' - 'a'),
+    //j
+    0,
+    // K Kr
+    1 << 31 |
+    1 << ('r' - 'a'),
+    //   La Li Lr Lu
+    1 << ('a' - 'a') |
+    1 << ('i' - 'a') |
+    1 << ('r' - 'a') |
+    1 << ('u' - 'a'),
+    //   Md Mg Mn Mo Mt
+    1 << ('d' - 'a') |
+    1 << ('g' - 'a') |
+    1 << ('n' - 'a') |
+    1 << ('o' - 'a') |
+    1 << ('t' - 'a'),
+    // N Na Nb Nd Ne Ni No Np
+    1 << 31 |
+    1 << ('a' - 'a') |
+    1 << ('b' - 'a') |
+    1 << ('d' - 'a') |
+    1 << ('e' - 'a') |
+    1 << ('i' - 'a') |
+    1 << ('o' - 'a') |
+    1 << ('p' - 'a'),
+    // O Os
+    1 << 31 |
+    1 << ('s' - 'a'),
+    // P Pa Pb Pd Pm Po Pr Pt Pu
+    1 << 31 |
+    1 << ('a' - 'a') |
+    1 << ('b' - 'a') |
+    1 << ('d' - 'a') |
+    1 << ('m' - 'a') |
+    1 << ('o' - 'a') |
+    1 << ('r' - 'a') |
+    1 << ('t' - 'a') |
+    1 << ('u' - 'a'),
+    //q
+    0,
+    //   Ra Rb Re Rf Rh Rn Ru
+    1 << ('a' - 'a') |
+    1 << ('b' - 'a') |
+    1 << ('e' - 'a') |
+    1 << ('f' - 'a') |
+    1 << ('h' - 'a') |
+    1 << ('n' - 'a') |
+    1 << ('u' - 'a'),
+    // S Sb Sc Se Sg Si Sm Sn Sr
+    1 << 31 |
+    1 << ('b' - 'a') |
+    1 << ('c' - 'a') |
+    1 << ('e' - 'a') |
+    1 << ('g' - 'a') |
+    1 << ('i' - 'a') |
+    1 << ('m' - 'a') |
+    1 << ('n' - 'a') |
+    1 << ('r' - 'a'),
+    //   Ta Tb Tc Te Th Ti Tl Tm
+    1 << ('a' - 'a') |
+    1 << ('b' - 'a') |
+    1 << ('c' - 'a') |
+    1 << ('e' - 'a') |
+    1 << ('h' - 'a') |
+    1 << ('i' - 'a') |
+    1 << ('l' - 'a') |
+    1 << ('m' - 'a'),
+    // U
+    1 << 31,
+    // V
+    1 << 31,
+    // W
+    1 << 31,
+    //   Xe Xx
+    1 << ('e' - 'a') |
+    1 << ('x' - 'a'), // don't know if I should have Xx here or not?
+    // Y Yb
+    1 << 31 |
+    1 << ('b' - 'a'),
+    //   Zn Zr
+    1 << ('n' - 'a') |
+    1 << ('r' - 'a')
+  };
+
+  static boolean isValidElementSymbol(char ch) {
+    if (ch >= 'a' && ch <= 'z')
+      ch -= 'a' - 'A';
+    else if (ch < 'A' || ch > 'Z')
+      return false;
+    return elementCharMasks[ch - 'A'] < 0;
   }
-  
-  static boolean isValidSecondSymbolChar(char chFirst, char ch) {
-    // is the second char valid, given the first
-    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+
+  static boolean isValidElementSymbol(char chFirst, char chSecond) {
+    if (chFirst >= 'a' && chFirst <= 'z')
+      chFirst -= 'a' - 'A';
+    else if (chFirst < 'A' || chFirst > 'Z')
+      return false;
+    if (chSecond >= 'A' && chSecond <= 'Z')
+      chSecond += 'a' - 'A';
+    else if (chSecond < 'a' || chSecond > 'z')
+      return false;
+    return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
+  }
+
+  static boolean isValidFirstSymbolChar(char ch) {
+    if (ch >= 'a' && ch <= 'z')
+      ch -= 'a' - 'A';
+    else if (ch < 'A' || ch > 'Z')
+      return false;
+    return elementCharMasks[ch - 'A'] != 0;
   }
 }

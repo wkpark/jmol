@@ -26,9 +26,6 @@ package org.openscience.jmol.app;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.datamodel.MeasurementShape;
-//import org.openscience.jmol.viewer.datamodel.Angle;
-//import org.openscience.jmol.viewer.datamodel.Distance;
-//import org.openscience.jmol.viewer.datamodel.Dihedral;
 
 import java.io.File;
 import javax.swing.JTree;

@@ -27,11 +27,6 @@ package org.openscience.jmol;
 import org.openscience.jmol.viewer.JmolViewer;
 
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.viewer.datamodel.AtomShape;
-import org.openscience.jmol.viewer.datamodel.BondShape;
-import org.openscience.jmol.viewer.datamodel.ArrowLineShape;
-import org.openscience.jmol.viewer.datamodel.LineShape;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.geometry.BondTools;
 import java.beans.PropertyChangeSupport;
@@ -52,7 +47,6 @@ public class ChemFrame extends AtomContainer {
   // This stuff can vary for each frame in the dynamics:
 
   JmolViewer viewer;
-  JmolFrame jmframe;
 
   private String info;     // The title or info string for this frame.
   private Vector properties = new Vector();

@@ -25,9 +25,9 @@
  */
 package org.openscience.jmol.app;
 
+import org.openscience.jmol.viewer.JmolViewer;
 import  org.openscience.jmol.util.*;
 import  org.openscience.jmol.*;
-import org.openscience.jmol.viewer.JmolViewer;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.JTable;  //TBL

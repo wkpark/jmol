@@ -25,8 +25,8 @@
 
 import org.openscience.jmol.applet.*;
 import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.JmolStatusListener;
 import org.openscience.jmol.DeprecatedAdapter;
-import org.openscience.jmol.viewer.script.Eval;
 import org.openscience.jmol.ui.JmolPopup;
 
 import java.applet.Applet;
@@ -39,7 +39,6 @@ import java.awt.event.KeyAdapter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
-import org.openscience.jmol.viewer.JmolStatusListener;
 
 public class JmolApplet extends Applet implements JmolStatusListener {
 

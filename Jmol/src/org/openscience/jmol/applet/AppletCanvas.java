@@ -24,14 +24,11 @@
  */
 package org.openscience.jmol.applet;
 
-import org.openscience.jmol.Atom;
 import org.openscience.jmol.viewer.JmolViewer;
 
-import java.awt.Color;
+//import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Rectangle;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Canvas;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentAdapter;

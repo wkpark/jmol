@@ -25,7 +25,6 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.script.Eval;
 
 import java.awt.BorderLayout;
 import java.awt.Color;

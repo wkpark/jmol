@@ -169,6 +169,42 @@ abstract class ModelReader {
     return value;
   }
 
+  String[] getTokens(String line) {
+    if (line == null)
+      return null;
+    int cchLine = line.length();
+    int tokenCount = countTokens(line);
+    String[] tokens = new String[tokenCount];
+    ichNextParse = 0;
+    for (int i = 0; i < tokenCount; ++i)
+      tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
+    System.out.println("-----------\nline:" + line);
+    for (int i = 0; i < tokenCount; ++i)
+      System.out.println("token[" + i + "]=" + tokens[i]);
+    return tokens;
+  }
+
+  int countTokens(String line) {
+    int tokenCount = 0;
+    if (line != null) {
+      int ichMax = line.length();
+      int ich = 0;
+      char ch;
+      while (true) {
+        while (ich < ichMax && ((ch = line.charAt(ich)) == ' ' || ch == '\t'))
+          ++ich;
+        if (ich == ichMax)
+          break;
+        ++tokenCount;
+        do {
+          ++ich;
+        } while (ich < ichMax &&
+                 ((ch = line.charAt(ich)) != ' ' && ch != '\t'));
+      }
+    }
+    return tokenCount;
+  }
+
   String parseToken(String str) {
     return parseTokenChecked(str, 0, str.length());
   }

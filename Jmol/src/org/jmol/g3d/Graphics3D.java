@@ -564,6 +564,7 @@ final public class Graphics3D {
    * @param str the String
    * @param font3d the Font3D
    * @param colix the color index
+   * @param bgcolix the color index of the background
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z

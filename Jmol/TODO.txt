@@ -1,7 +1,12 @@
 To Be Done before 0.7:
 ======================
-* Highlighting of dot corresponding to current frame in Energy vs. Frames plot.
+
+To Be Done soon:
+================
+* Scripting of Jmol (requesten/recommended by H.Rzepa)
+  (Scripting language compatible with Rasmol)
 
 To Be Done later:
 =================
+* Highlighting of dot corresponding to current frame in Energy vs. Frames plot.
 * Calculate additional points in Energy vs. Frames plot to view a smoother sinoid function

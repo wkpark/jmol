@@ -70,17 +70,23 @@
       </section>
     </section>
     
-    <section title="Jmol10pre12">
+    <section title="Jmol10pre13">
       <p>
-	Jmol version 10 pre-release 12 was released on Wed 04 Aug 2004.
-	This release includes the following enhancements:
+	Jmol version 10 pre-release 13 was released on Sun 15 Aug 2004.
+	This release includes the following:
 	<ul>
 	  <li>
-	    initial release of the Jmol.js JavaScript library
-	    to simplify creation of web pages
+	    bug fixes to the Jmol.js JavaScript library, especially
+	    for Macintosh Safari support
 	  </li>
 	  <li>
-	    bug fixes
+	    support for color by temperature
+	  </li>
+	  <li>
+	    enhancement of menu entries for force vector support
+	  </li>
+	  <li>
+	    improved support for reading Gaussian 03 output
 	  </li>
 	</ul>
 	The following areas will not be supported in the initial
@@ -94,17 +100,17 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre12.zip">
+	<a href="Jmol10pre13.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre12.zip
+	    Jmol10pre13.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre11.zip">
+	<a href="Jmol10pre12.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre11.zip
+	    <i>Give me the old code</i> Jmol10pre12.zip
 	  </font>
 	</a>
       </p>
@@ -114,7 +120,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre12.zip</b>
+	format as .zip : <b>jar xf Jmol10pre13.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

@@ -24,8 +24,8 @@
  */
 
 package org.openscience.jmol.viewer.script;
+import org.openscience.jmol.viewer.managers.ColorManager;
 
-//import java.io.*;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -957,14 +957,23 @@ class Compiler {
 
   boolean compileColorParam() {
     for (int i = 1; i < atokenCommand.length; ++i) {
-      if (atokenCommand[i].tok == Token.leftsquare) {
+      Token token = atokenCommand[i];
+      if (token.tok == Token.leftsquare) {
         Token[] atokenNew = new Token[i + 1];
         System.arraycopy(atokenCommand, 0, atokenNew, 0, i);
         if (! compileRGB(atokenCommand, i, atokenNew))
           return false;
         atokenCommand = atokenNew;
         break;
+      } else if (token.tok == Token.identifier) {
+        String id = (String)token.value;
+        int argb = ColorManager.getArgbFromString(id);
+        if (argb != 0) {
+          token.tok = Token.colorRGB;
+          token.intValue = argb;
+        }
       }
+                 
     }
     return true;
   }

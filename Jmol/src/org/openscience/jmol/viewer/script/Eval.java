@@ -2118,7 +2118,13 @@ public class Eval implements Runnable {
     }
   }
 
+  void showString(String str) {
+    System.out.println("show:" + str);
+    viewer.scriptStatus(str);
+    
+  }
+
   void showPdbHeader() {
-    System.out.println("pdbHeader=" + viewer.getModelHeader());
+    showString(viewer.getModelHeader());
   }
 }

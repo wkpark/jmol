@@ -331,7 +331,7 @@ class Jmol extends JPanel {
           ChemFileReader reader = new PDBReader(new InputStreamReader(is));
           cf = reader.read();
         } else if (typeHint.equals("CML")) {
-          ChemFileReader reader = new CMLReader(new InputStreamReader(is));
+          ChemFileReader reader = new CMLReader(theFile.toURL());
           cf = reader.read();
         } else if (typeHint.equals("XYZ (xmol)")) {
           ChemFileReader reader = new XYZReader(new InputStreamReader(is));

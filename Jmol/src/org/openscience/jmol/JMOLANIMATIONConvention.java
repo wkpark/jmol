@@ -20,10 +20,9 @@
 package org.openscience.jmol;
 
 import java.util.*;
+import org.openscience.cdk.io.cml.cdopi.*;
+import org.openscience.cdk.io.cml.*;
 import org.xml.sax.*;
-import com.microstar.xml.*;
-import org.openscience.cdopi.*;
-import org.openscience.cml.*;
 
 public class JMOLANIMATIONConvention extends Convention {
 
@@ -60,21 +59,21 @@ public class JMOLANIMATIONConvention extends Convention {
   ;
 
 
-  public void startElement(String name, AttributeList atts) {
-
+  public void startElement(String uri, String local, String raw, Attributes atts) {
+    String name = raw;
     if (name.equals("list")) {
       System.err.println("Oke, JMOLANIMATION seems to be kicked in :)");
-      super.startElement(name, atts);
+      super.startElement(uri, local, raw, atts);
     } else if (name.equals("float")) {
       boolean isEnergy = false;
       System.err.println("FLOAT found!");
       for (int i = 0; i < atts.getLength(); i++) {
-        System.err.println(" att: " + atts.getName(i) + " -> "
+        System.err.println(" att: " + atts.getQName(i) + " -> "
                 + atts.getValue(i));
-        if (atts.getName(i).equals("title")
+        if (atts.getQName(i).equals("title")
                 && atts.getValue(i).equals("FRAME_ENERGY")) {
           isEnergy = true;
-        } else if (atts.getName(i).equals("units")) {
+        } else if (atts.getQName(i).equals("units")) {
           units = atts.getValue(i);
         }
       }
@@ -83,23 +82,23 @@ public class JMOLANIMATIONConvention extends Convention {
         // oke, this is the frames energy!
         current = ENERGY;
       } else {
-        super.startElement(name, atts);
+        super.startElement(uri, local, raw, atts);
       }
     } else {
-      super.startElement(name, atts);
+      super.startElement(uri, local, raw, atts);
     }
   }
   ;
 
-  public void endElement(String name) {
-
+  public void endElement(String uri, String local, String raw) {
+    String name = raw;
     if (current == ENERGY) {
       cdo.setObjectProperty("Frame", "energy", frame_energy);    // + " " + units);
       current = UNKNOWN;
       frame_energy = "";
       units = "";
     } else {
-      super.endElement(name);
+      super.endElement(uri, local, raw);
     }
   }
 

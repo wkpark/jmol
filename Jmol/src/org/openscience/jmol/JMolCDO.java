@@ -19,8 +19,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.cdopi.ANIMATIONCDO;
-import org.openscience.cdopi.CDOAcceptedObjects;
+import org.openscience.cdk.io.cml.cdopi.*;
 import java.util.Vector;
 
 public final class JMolCDO extends ANIMATIONCDO {

@@ -69,7 +69,7 @@ public class Eval implements Runnable {
   boolean terminationNotification;
   boolean interruptExecution;
 
-  final static boolean logMessages = true;
+  final static boolean logMessages = false;
 
   public Eval(JmolViewer viewer) {
     compiler = new Compiler();

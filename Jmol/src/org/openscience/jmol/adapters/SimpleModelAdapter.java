@@ -52,7 +52,6 @@ public class SimpleModelAdapter extends JmolModelAdapter {
 
   public Object openBufferedReader(JmolViewer viewer,
                                    String name, BufferedReader bufferedReader) {
-    System.out.println("SimpleModelAdapter reading:" + name);
     try {
       Model model;
       switch (determineModel(bufferedReader)) {

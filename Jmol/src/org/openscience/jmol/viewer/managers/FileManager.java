@@ -247,7 +247,6 @@ public class FileManager {
     byte[] abMagic = new byte[4];
     private void openInputStream(String fullPathName, String fileName,
                                  InputStream istream) {
-      System.out.println("FileOpenThread.openInputStream(" + fullPathName + ")");
       BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
       InputStream istreamToRead = bistream;
       bistream.mark(5);

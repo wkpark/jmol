@@ -891,7 +891,6 @@ final public class Frame {
   }
 
   void constructFractionalMatrices() {
-    System.out.println("constructFractionalMatrices()");
     matrixNotional = new Matrix3f();
     calcNotionalMatrix(notionalUnitcell, matrixNotional);
     if (pdbScaleMatrix != null) {
@@ -920,6 +919,9 @@ final public class Frame {
 
   void calcNotionalMatrix(float[] notionalUnitcell,
                           Matrix3f matrixNotional) {
+    // note that these are oriented as columns, not as row
+    // this is because we will later use the transform method,
+    // which multiplies the matrix by the point, not the point by the matrix
     float gamma = notionalUnitcell[5];
     float beta  = notionalUnitcell[4];
     float alpha = notionalUnitcell[3];
@@ -927,7 +929,7 @@ final public class Frame {
     float b = notionalUnitcell[1];
     float a = notionalUnitcell[0];
     
-    /* some intermediate variablesn */
+    /* some intermediate variables */
     float cosAlpha = (float)Math.cos(toRadians * alpha);
     float sinAlpha = (float)Math.sin(toRadians * alpha);
     float cosBeta  = (float)Math.cos(toRadians * beta);
@@ -937,9 +939,9 @@ final public class Frame {
     
     
     // 1. align the a axis with x axis
-    matrixNotional.setRow(0, a, 0, 0);
+    matrixNotional.setColumn(0, a, 0, 0);
     // 2. place the b is in xy plane making a angle gamma with a
-    matrixNotional.setRow(1, b * cosGamma, b * sinGamma, 0);
+    matrixNotional.setColumn(1, b * cosGamma, b * sinGamma, 0);
     // 3. now the c axis,
     // http://server.ccl.net/cca/documents/molecular-modeling/node4.html
     float V = a * b * c *
@@ -948,8 +950,9 @@ final public class Frame {
                         cosGamma*cosGamma +
                         2.0*cosAlpha*cosBeta*cosGamma);
     matrixNotional.
-      setRow(2, c * cosBeta,
-             c * (cosAlpha - cosBeta*cosGamma)/sinGamma, V/(a * b * sinGamma));
+      setColumn(2, c * cosBeta,
+                c * (cosAlpha - cosBeta*cosGamma)/sinGamma,
+                V/(a * b * sinGamma));
   }
 
   void putAtomsInsideUnitcell() {

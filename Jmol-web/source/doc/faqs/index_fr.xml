@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+  French translation 
+  Translated from default version : index.xml (v 1.7)
+-->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY appletRequirements    SYSTEM "appletRequirements_fr.xml" >
+<!ENTITY hardwareRequirements  SYSTEM "hardwareRequirements_fr.xml" >
+<!ENTITY appRequirements       SYSTEM "appRequirements_fr.xml" >
+<!ENTITY performance           SYSTEM "performance_fr.xml" >
+<!ENTITY graphics              SYSTEM "graphics_fr.xml" >
+<!ENTITY appletDeployment      SYSTEM "appletDeployment_fr.xml" >
+]>
+<document>
+  <body>
+    <title>FAQs Jmol</title>
+
+    &appletRequirements;
+
+    &hardwareRequirements;
+
+    &appRequirements;
+
+    &performance;
+
+    &graphics;
+
+    &appletDeployment;
+
+  </body>
+</document>

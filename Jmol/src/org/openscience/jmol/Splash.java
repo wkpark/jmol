@@ -27,9 +27,15 @@ public class Splash extends Window {
     private Image splashImage;
     private int imgWidth, imgHeight;
     private String imgName;
-    private static final int BORDERSIZE = 5;
+    private static final int BORDERSIZE = 10;
     private static final Color BORDERCOLOR = Color.blue;
     Toolkit tk;
+    //Added by T.Grey for status line
+    private String status = "Loading...";
+    private int textY;
+    private int statusTop;
+    private static final int STATUSSIZE = 10;
+    private static final Color TEXTCOLOR = Color.white;
     
     public Splash(Frame parent, ImageIcon ii) {
         super(parent);
@@ -40,23 +46,43 @@ public class Splash extends Window {
         showSplashScreen();
         parent.addWindowListener(new WindowListener());
     }
-
+    
     public void showSplashScreen() {
         Dimension screenSize = tk.getScreenSize();
         setBackground(BORDERCOLOR);
         int w = imgWidth + (BORDERSIZE * 2);
-        int h = imgHeight + (BORDERSIZE * 2);
+        //T.Grey status line support
+        int h = imgHeight + (BORDERSIZE * 2) + STATUSSIZE;
         int x = (screenSize.width - w) /2;
         int y = (screenSize.height - h) /2;
         setBounds(x, y, w, h);
+        //T.Grey status line support
+        statusTop = BORDERSIZE+imgHeight;
+        textY = BORDERSIZE+STATUSSIZE+imgHeight+1;
         show();
+        
     }
     
     public void paint(Graphics g) {
         g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight, 
                     this);
+        //T.Grey status line support
+        g.setColor(BORDERCOLOR);
+        g.fillRect(BORDERSIZE,statusTop, imgWidth, textY);
+        g.setColor(TEXTCOLOR);
+        g.drawString(status,BORDERSIZE,textY);
     }
-
+    
+    //T.Grey status line support
+    public void showStatus(String message){
+        status = message;
+        Graphics g = this.getGraphics();
+        g.setColor(BORDERCOLOR);
+        g.fillRect(BORDERSIZE,statusTop, imgWidth, textY);
+        g.setColor(TEXTCOLOR);
+        g.drawString(status,BORDERSIZE,textY);
+    }
+    
     class WindowListener extends WindowAdapter {
         public void windowActivated(WindowEvent we) {
             setVisible(false);

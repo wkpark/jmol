@@ -1,6 +1,6 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
-               JAVAC= javac
+               JAVAC= /usr/local/jdk1.2.2/bin/javac
                 JAVA= java
              JAVADOC= javadoc -private
         THREADS_FLAG=native

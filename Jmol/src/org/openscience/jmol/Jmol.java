@@ -95,10 +95,11 @@ class Jmol extends JPanel {
         jrh = new JmolResourceHandler("Jmol");
     }
         
-    Jmol() {
+    Jmol(Splash splash) {
 	super(true);
         
-	try {
+   splash.showStatus("Initialising Swing...");
+        try {
 	    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 	} catch (Exception exc) {
 	    System.err.println("Error loading L&F: " + exc);
@@ -119,10 +120,14 @@ class Jmol extends JPanel {
 	}
 
         status = (StatusBar)createStatusBar();
+   splash.showStatus("Initialising 3D display...");
         display = new displayPanel(status, settings);
+   splash.showStatus("Initialising Preferences...");
         prefs = new Preferences(frame, display);
+   splash.showStatus("Initialising Animate and Vibrate...");
         anim = new Animate(frame, display);
         vib = new Vibrate(frame, display);
+   splash.showStatus("Initialising Measurements...");
         mlist = new MeasurementList(frame, display);
         meas = new Measure(frame, display);
         meas.setMeasurementList(mlist);
@@ -130,6 +135,7 @@ class Jmol extends JPanel {
         mlist.addMeasurementListListener(display);
         port.add(display);
 	// install the command table
+   splash.showStatus("Building Command Hooks...");
 	commands = new Hashtable();
         Action[] actions = getActions();
 	for (int i = 0; i < actions.length; i++) {
@@ -144,6 +150,7 @@ class Jmol extends JPanel {
         }
         vib.addConflictingAction(getAction(openAction));
 	menuItems = new Hashtable();
+   splash.showStatus("Building Menubar...");
 	menubar = createMenubar();
         add("North", menubar);
 
@@ -158,6 +165,7 @@ class Jmol extends JPanel {
 	panel.add("Center", ip);
         add("Center", panel);
         add("South", status);       
+   splash.showStatus("Starting display...");
         display.start();        
     }
 
@@ -197,14 +205,18 @@ class Jmol extends JPanel {
 
             ImageIcon splash_image = jrh.getIcon("splash");
             Splash splash = new Splash(frame, splash_image);
+      splash.showStatus("Creating main window...");
             frame.setTitle(jrh.getString("Title"));
             frame.setBackground(Color.lightGray);
             frame.getContentPane().setLayout(new BorderLayout());
-            frame.getContentPane().add("Center", new Jmol());
+      splash.showStatus("Initialising Jmol...");
+            frame.getContentPane().add("Center", new Jmol(splash));
             frame.addWindowListener(new AppCloser());
             frame.pack();
             frame.setSize(500, 600);
+      splash.showStatus("Reading AtomTypes...");
             beguine();
+      splash.showStatus("Launching main frame...");
             frame.show();
         } catch (Throwable t) {
             System.out.println("uncaught exception: " + t);

@@ -23,6 +23,9 @@ import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.CMLSaver;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.io.XYZSaver;
+import org.openscience.jmol.script.ScriptWindow;
+import org.openscience.jmol.script.RasMolScriptHandler;
+import org.openscience.jmol.script.RasMolScriptException;
 import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
@@ -108,7 +111,7 @@ import javax.swing.UIManager;
  * @author Bradley A. Smith (bradley@baysmith.com)
  * @author Peter Murray-Rust
  */
-class Jmol extends JPanel {
+public class Jmol extends JPanel {
 
   /**
    * The data model.
@@ -132,7 +135,7 @@ class Jmol extends JPanel {
   private Measure meas;
   private MeasurementList mlist;
   private RecentFilesDialog recentFiles;
-  protected ScriptWindow scriptWindow;
+  public ScriptWindow scriptWindow;
   protected static JFrame frame;
   private JFileChooser openChooser;
   private JFileChooser saveChooser;
@@ -1164,7 +1167,7 @@ class Jmol extends JPanel {
   /**
    * added print command, so that it can be used by RasmolScriptHandler
    **/
-  protected void print() {
+  public void print() {
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     PrintJob pJob = tk.getPrintJob(frame, "Jmol Print Job", null);
@@ -1440,7 +1443,7 @@ class Jmol extends JPanel {
    *
    * @return  a File to the user directory
    */
-  static File getUserDirectory() {
+  public static File getUserDirectory() {
     if (System.getProperty("user.dir") == null) {
       return null;
     }

@@ -17,7 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.script;
+
+import org.openscience.jmol.*;
 
 import java.awt.Color;
 import javax.swing.JTextArea;
@@ -41,18 +43,18 @@ import java.io.FileReader;
  * @author Bradley A. Smith (bradley@baysmith.com)
  * @author Egon L. Willighagen
  */
-class RasMolScriptHandler {
+public class RasMolScriptHandler {
 
   private Jmol program;
   private JTextArea output;
   private boolean autoRefresh = false;
 
-  RasMolScriptHandler(Jmol program) {
+  public RasMolScriptHandler(Jmol program) {
     this.program = program;
     this.output = null;
   }
 
-  RasMolScriptHandler(Jmol program, JTextArea output) {
+  public RasMolScriptHandler(Jmol program, JTextArea output) {
     this.program = program;
     this.output = output;
   }
@@ -154,7 +156,7 @@ class RasMolScriptHandler {
           select((String) st.nextElement());
         } else {
           int[] selectedAtoms =
-            program.display.getSettings().getPickedAtoms().elements();
+            program.settings.getPickedAtoms().elements();
           print("Selected atoms: ");
           for (int i = 0; i < selectedAtoms.length; ++i) {
             int atom = selectedAtoms[i];
@@ -297,9 +299,9 @@ class RasMolScriptHandler {
   private void select(String value) throws RasMolScriptException {
 
     if (value.equals("all") || value.equals("*")) {
-      program.display.getSettings().addPickedAtoms(program.display.chemframe.getAtoms());
+      program.settings.addPickedAtoms(program.display.chemframe.getAtoms());
     } else if (value.equals("none")) {
-      program.display.getSettings().clearPickedAtoms();
+      program.settings.clearPickedAtoms();
     } else if (value.indexOf(',') != -1) {
       StringTokenizer st = new StringTokenizer(value, ",");
       while (st.hasMoreElements()) {

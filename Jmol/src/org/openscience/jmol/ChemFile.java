@@ -86,15 +86,6 @@ public class ChemFile {
   }
 
   /**
-   * Returns the number of frames in this file.
-   *
-   * @deprecated Use getNumberOfFrames instead.
-   */
-  public int getNumberFrames() {
-    return frames.size();
-  }
-
-  /**
    * Returns a list of descriptions for physical properties
    * contained by this file.
    */

@@ -79,7 +79,7 @@ public class DisplayPanel extends JPanel
   // previous dimensions ... used to detect resize operations
   private static Dimension dimPrevious = null;
   ChemFile cf;
-  ChemFrame chemframe;
+  public ChemFrame chemframe;
   public static final int ROTATE = 0;
   public static final int ZOOM = 1;
   public static final int XLATE = 2;
@@ -97,7 +97,7 @@ public class DisplayPanel extends JPanel
   private boolean wireFrameRotation = false;
   private Measure measure = null;
   private MeasurementList mlist = null;
-  protected DisplaySettings settings;
+  public DisplaySettings settings;
 
   public DisplayPanel(StatusBar status, DisplaySettings settings) {
     this.status = status;
@@ -400,11 +400,11 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  static void setBackgroundColor() {
+  public static void setBackgroundColor() {
     backgroundColor = Color.getColor("backgroundColor");
   }
 
-  static void setBackgroundColor(Color bg) {
+  public static void setBackgroundColor(Color bg) {
     backgroundColor = bg;
   }
 
@@ -1013,7 +1013,7 @@ public class DisplayPanel extends JPanel
     return defaultActions;
   }
 
-  DisplaySettings getSettings() {
+  public DisplaySettings getSettings() {
     return settings;
   }
 

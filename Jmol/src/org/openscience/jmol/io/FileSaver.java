@@ -41,7 +41,7 @@ public abstract class FileSaver {
 
     BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out), 1024);
     writeFileStart(cf, w);
-    int nframes = cf.getNumberFrames();
+    int nframes = cf.getNumberOfFrames();
     try {
       for (int i = 0; i < nframes; i++) {
         ChemFrame cfr = cf.getFrame(i);

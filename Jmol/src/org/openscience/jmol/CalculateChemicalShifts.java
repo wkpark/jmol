@@ -96,7 +96,7 @@ class CalculateChemicalShifts extends AbstractAction implements
 
     boolean foundShielding = false;
     for (int frameIndex = 0;
-        !foundShielding && (frameIndex < chemFile.getNumberFrames());
+        !foundShielding && (frameIndex < chemFile.getNumberOfFrames());
           ++frameIndex) {
       ChemFrame frame = chemFile.getFrame(frameIndex);
       for (int atomIndex = 0;
@@ -125,7 +125,7 @@ class CalculateChemicalShifts extends AbstractAction implements
     if (referenceShielding == null) {
       return;
     }
-    for (int f = 0; f < chemFile.getNumberFrames(); ++f) {
+    for (int f = 0; f < chemFile.getNumberOfFrames(); ++f) {
       ChemFrame frame = chemFile.getFrame(f);
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         String element = frame.getAtomAt(i).getType().getName();

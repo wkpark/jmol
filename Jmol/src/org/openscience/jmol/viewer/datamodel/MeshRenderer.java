@@ -84,12 +84,13 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
 
-    render1Chain(strandsChain.polymerCount,
-                 strandsChain.polymerGroups,
-                 strandsChain.centers,
-                 strandsChain.vectors,
-                 strandsChain.mads,
-                 strandsChain.colixes);
+    if (strandsChain.vectors != null)
+      render1Chain(strandsChain.polymerCount,
+                   strandsChain.polymerGroups,
+                   strandsChain.centers,
+                   strandsChain.vectors,
+                   strandsChain.mads,
+                   strandsChain.colixes);
   }
 
 

@@ -439,6 +439,10 @@ public class Eval implements Runnable {
     evalError("number expected");
   }
 
+  void propertyNameExpected() throws ScriptException {
+    evalError("property name expected");
+  }
+
   void axisExpected() throws ScriptException {
     evalError("x y z axis expected");
   }
@@ -1345,25 +1349,10 @@ public class Eval implements Runnable {
     case Token.monitor:
       setMonitor();
       break;
-    case Token.wireframeRotation:
-      setWireframerotation();
+    case Token.property:
+      setProperty();
       break;
-    case Token.perspectiveDepth:
-      setPerspectivedepth();
-      break;
-    case Token.showHydrogens:
-      setShowHydrogens();
-      break;
-    case Token.showVectors:
-      setShowVectors();
-      break;
-    case Token.showMeasurements:
-      setShowMeasurements();
-      break;
-    case Token.showSelections:
-      setShowSelections();
-      break;
-      
+
       /*
     case Token.spacefill:
       setSpacefill();
@@ -1662,6 +1651,29 @@ public class Eval implements Runnable {
     control.setShowMeasurementLabels(getSetBoolean());
   }
 
+  void setProperty() throws ScriptException {
+    if (statement.length != 4)
+      badArgumentCount();
+    if (statement[2].tok != Token.identifier)
+      propertyNameExpected();
+    String propertyName = (String)statement[2].value;
+    switch (statement[3].tok) {
+    case Token.on:
+      control.setBooleanProperty(propertyName, true);
+      break;
+    case Token.off:
+      control.setBooleanProperty(propertyName, false);
+      break;
+    case Token.integer:
+    case Token.decimal:
+    case Token.string:
+      notImplemented(3);
+    default:
+      unrecognizedSetParameter();
+    }
+  }
+
+  /*
   void setWireframerotation() throws ScriptException {
     control.setWireframeRotation(getSetBoolean());
   }
@@ -1685,6 +1697,8 @@ public class Eval implements Runnable {
   void setShowSelections() throws ScriptException {
     control.setSelectionHaloEnabled(getSetBoolean());
   }
+
+  */
 
   /*
   void setSpacefill() throws ScriptException {

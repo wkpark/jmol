@@ -38,8 +38,6 @@ import java.awt.Shape;
 
 final public class Graphics25D {
 
-  final static boolean wantsPbuf = false;
-
   DisplayControl control;
   Platform25D platform;
   Image img;
@@ -48,6 +46,8 @@ final public class Graphics25D {
   int[] pbuf;
   short[] zbuf;
 
+  public boolean enabled = false;
+  boolean capable = false;
   boolean usePbuf;
 
   int argbCurrent;
@@ -55,16 +55,24 @@ final public class Graphics25D {
   public Graphics25D(DisplayControl control) {
     this.control = control;
     this.g = g;
-    if (control.jvm12orGreater) {
-      usePbuf = wantsPbuf & true;
+    this.capable = control.jvm12orGreater;
+    if (capable) {
       platform = new Swing25D();
     } else {
-      usePbuf = false;
       platform = new Awt25D(control.getAwtComponent());
     }
   }
 
+  public void setEnabled(boolean value) {
+    System.out.println("Graphics25D.setEnabled(" + value +")");
+    if (enabled != value) {
+      enabled = value;
+      setSize(width, height);
+    }
+  }
+
   public void setSize(int width, int height) {
+    System.out.println("Graphics25D.setSize(" + width + "," + height + ")");
     this.width = width;
     this.height = height;
     if (g != null)
@@ -76,9 +84,11 @@ final public class Graphics25D {
       zbuf = null;
       return;
     }
-    img = platform.allocateImage(width, height, !usePbuf);
+    img = platform.allocateImage(width, height, !enabled);
     g = platform.getGraphics();
+    usePbuf = capable & enabled;
     if (usePbuf) {
+      System.out.println("using pbuf");
       pbuf = platform.getPbuf();
       zbuf = new short[width * height];
     }

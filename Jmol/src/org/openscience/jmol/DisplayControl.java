@@ -1229,9 +1229,9 @@ final public class DisplayControl {
       return getWireframeRotation();
     if (key.equals("perspectiveDepth"))
       return getPerspectiveDepth();
-    if (key.equals("axes"))
+    if (key.equals("showAxes"))
       return getShowAxes();
-    if (key.equals("boundbox"))
+    if (key.equals("showBoundingBox"))
       return getShowBoundingBox();
     if (key.equals("showHydrogens"))
       return getShowHydrogens();
@@ -1241,9 +1241,49 @@ final public class DisplayControl {
       return getShowMeasurements();
     if (key.equals("showSelections"))
       return getSelectionHaloEnabled();
+    if (key.equals("useGraphics25D"))
+      return getGraphics25DEnabled();
     System.out.println("control.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
+  }
+
+  public void setBooleanProperty(String key, boolean value) {
+    if (key.equals("wireframeRotation"))
+      { setWireframeRotation(value); return ; }
+    if (key.equals("perspectiveDepth"))
+      { setPerspectiveDepth(value); return ; }
+    if (key.equals("showAxes"))
+      { setShowAxes(value); return ; }
+    if (key.equals("showBoundingBox"))
+      { setShowBoundingBox(value); return ; }
+    if (key.equals("showHydrogens"))
+      { setShowHydrogens(value); return ; }
+    if (key.equals("showHydrogens"))
+      { setShowHydrogens(value); return ; }
+    if (key.equals("showVectors"))
+      { setShowVectors(value); return ; }
+    if (key.equals("showMeasurements"))
+      { setShowMeasurements(value); return ; }
+    if (key.equals("showSelections"))
+      { setSelectionHaloEnabled(value); return ; }
+    if (key.equals("useGraphics25D"))
+      { setGraphics25DEnabled(value); return; }
+    System.out.println("control.setBooleanProperty(" +
+                       key + "," + value + ") - unrecognized");
+  }
+
+  /****************************************************************
+   * Graphics25D
+   ****************************************************************/
+
+  public boolean getGraphics25DEnabled() {
+    return g25d.enabled;
+  }
+
+  public void setGraphics25DEnabled(boolean value) {
+    g25d.setEnabled(value);
+    refresh();
   }
 
   /****************************************************************

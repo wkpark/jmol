@@ -85,10 +85,7 @@ public class JmolPopupSwing extends JPopupMenu {
     public void itemStateChanged(ItemEvent e) {
       System.out.println("CheckboxMenuItemListener() " + e.getSource());
       JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem)e.getSource();
-      String script = "set " + jcmi.getActionCommand() + 
-        (jcmi.getState() ? " on" : " off");
-      System.out.println(" script=" + script);
-      control.evalString(script);
+      control.setBooleanProperty(jcmi.getActionCommand(), jcmi.getState());
     }
   }
 

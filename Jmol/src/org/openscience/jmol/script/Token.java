@@ -195,12 +195,7 @@ public class Token {
   final static int molsurface   = setparam | 28;
   //
   // jmol extensions
-  final static int wireframeRotation = setparam | 29;
-  final static int perspectiveDepth  = setparam | 30;
-  final static int showHydrogens     = setparam | 31;
-  final static int showVectors       = setparam | 32;
-  final static int showMeasurements  = setparam | 33;
-  final static int showSelections    = setparam | 34;
+  final static int property     = setparam | 29;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -395,12 +390,7 @@ public class Token {
     "molsurface",   new Token(molsurface,      "molsurface"),
 
     // jmol extensions
-    "wireframerotation", new Token(wireframeRotation, "wireframeRotation"),
-    "perspectivedepth",  new Token(perspectiveDepth,  "perspectiveDepth"),
-    "showhydrogens",     new Token(showHydrogens,     "showHydrogens"),
-    "showvectors",       new Token(showVectors,       "showVectors"),
-    "showmeasurements",  new Token(showMeasurements,  "showMeasurements"),
-    "showselections",    new Token(showSelections,    "showSelections"),
+    "property",     new Token(property,        "property"),
   
     // show parameters
     "information",  new Token(information,     "information"),

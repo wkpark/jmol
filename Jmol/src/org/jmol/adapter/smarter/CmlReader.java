@@ -61,20 +61,61 @@ class CmlReader extends ModelReader {
     return model;
   }
 
+  boolean inAtomContext = false;
+  int charactersState;
+
+  final static int DISCARD = 0;
+  final static int ELEMENT_TYPE = 1;
+  
+
   class CmlHandler extends DefaultHandler {
 
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts)
       throws SAXException
     {
+      /*
       System.out.println("startElement(" + namespaceURI + "," + localName +
                          "," + qName + "," + atts +  ")");
+      */
+      if ("atom".equals(qName)) {
+        inAtomContext = true;
+        String id = atts.getValue("id");
+        System.out.println("an atom whose id is:" + id);
+        return;
+      }
+      if (inAtomContext) {
+        if ("string".equals(qName) &&
+            "elementType".equals(atts.getValue("builtin"))) {
+          charactersState = ELEMENT_TYPE;
+          return;
+        }
+        return;
+      }
     }
 
     public void endElement(String uri, String localName,
                            String qName) throws SAXException {
+      /*
       System.out.println("endElement(" + uri + "," + localName +
                          "," + qName + ")");
+      */
+      charactersState = DISCARD;
+      if ("atom".equals(qName)) {
+        inAtomContext = false;
+        return;
+      }
+    }
+
+    public void characters(char[] ch, int start, int length) {
+      if (charactersState == DISCARD)
+        return;
+      String str = new String(ch, start, length);
+      switch(charactersState) {
+      case ELEMENT_TYPE:
+        System.out.println("I see elementType:" + str);
+        return;
+      }
     }
     
     // Methods for entity resolving, e.g. getting an DTD resolved

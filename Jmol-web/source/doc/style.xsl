@@ -131,7 +131,7 @@
           <tr>
             <td align="center">
               <xsl:for-each select="$project/notice">
-                <small><xsl:copy-of select="self::node()[* or @*]"/><br/>&#xA0;<br/></small>
+                <small><xsl:copy-of select="./*"/></small>
               </xsl:for-each>
             </td>
           </tr>

@@ -244,10 +244,16 @@ class LimitedLineReader {
       sb.append(buf, ichBeginningOfLine, cchLine);
       return "" + sb;
     }
-    if (true) {
-      System.out.println("input buffer is too small for resolver");
-      throw new NullPointerException();
-    }
+    System.out.println("org.jmol.adapter.smarter.Resolver short input buffer");
+    // miguel 2005 01 26
+    // for now, just return the empty string.
+    // it will only affect the Resolver code
+    // it will be easier to handle because then everyone does not
+    // need to check for the null pointer
+    //
+    // If it becomes a problem, then change this to null and modify
+    // all the code above to make sure that it tests for null before
+    // attempting to invoke methods on the strings. 
     return "";
   }
 }

@@ -1911,21 +1911,22 @@ public class CrystalPropertiesDialog extends JDialog
     crystalBox_ApplyToWhichFrameCBO.addItem(applyToList[1]);
     crystalBox_ApplyToWhichFrameCBO.setSelectedIndex(boxIndex);
 
-    /*
+    
     //Check if we have an "EnergyBand" property
-    //TODO
-    hasEnergyBand=false;
-    Vector frameProperties 
-      = crystalFile.getFrame(currentFrameIndex).getFrameProperties();
-    for (int i=0; i< frameProperties.size();i++) {
-      if(((PhysicalProperty)frameProperties.elementAt(i)).getDescriptor()
-	 .equals("EnergyBand")) {
-	energyBand =
-	  (EnergyBand)frameProperties.elementAt(i);
-	hasEnergyBand=true;
+    hasEnergyBand=false;    
+    if (hasCrystalInfo) {
+      Vector frameProperties 
+	= crystalFile.getFrame(currentFrameIndex).getFrameProperties();
+      for (int i=0; i< frameProperties.size();i++) {
+	if(((PhysicalProperty)frameProperties.elementAt(i)).getDescriptor()
+	   .equals("EnergyBand")) {
+	  energyBand =
+	    (EnergyBand)frameProperties.elementAt(i);
+	  hasEnergyBand=true;
+	}
       }
     }
-    */
+    
   }
   
 

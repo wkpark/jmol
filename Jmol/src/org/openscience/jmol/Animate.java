@@ -35,6 +35,8 @@ import java.awt.event.WindowEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
 import java.util.EventObject;
 import javax.swing.JDialog;
@@ -60,13 +62,18 @@ import javax.swing.border.TitledBorder;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class Animate extends JDialog implements ActionListener, Runnable {
+public class Animate extends JDialog implements ActionListener,
+    PropertyChangeListener, Runnable {
 
+  /**
+   * Reference to the data model.
+   */
+  private JmolModel model;
+  
   private Thread animThread = null;
   private boolean haveFile = false;
   private int nframes = 1;
   private int speed = 10;
-  private DisplayPanel display;
 
   private boolean repeat = true;
 
@@ -85,12 +92,12 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
   private void restoreInFile() {
 
-    nframes = inFile.getNumberFrames();
+    nframes = inFile.getNumberOfFrames();
     cf = inFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
     haveFile = true;
-    display.setChemFile(cf);
+    model.setChemFile(cf);
     setFrame(currentFrame, true);
   }
 
@@ -158,11 +165,11 @@ public class Animate extends JDialog implements ActionListener, Runnable {
     }
 
     haveFile = true;
-    nframes = newFile.getNumberFrames();
+    nframes = newFile.getNumberOfFrames();
     cf = newFile;
     progressSlider.setMaximum(nframes);
     currentFrame = 0;
-    display.setChemFile(cf);
+    model.setChemFile(cf);
   }
 
   /**
@@ -170,7 +177,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
    *
    * @param cf the ChemFile
    */
-  public void setChemFile(ChemFile cf) {
+  private void setChemFile(ChemFile cf) {
 
     stop();
     setVisible(false);
@@ -260,10 +267,10 @@ public class Animate extends JDialog implements ActionListener, Runnable {
    * @param f the parent frame
    * @param dp the DisplayPanel in which the animation will take place
    */
-  public Animate(JFrame f, DisplayPanel dp) {
+  public Animate(JmolModel model, JFrame f) {
 
     super(f, "Animation", false);
-    this.display = dp;
+    this.model = model;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -542,15 +549,15 @@ public class Animate extends JDialog implements ActionListener, Runnable {
   }
 
   /**
-   * sets the frame pointer of the display panel and updates the slider
+   * sets the frame of the model and updates the slider
    *
    * @param which the frame number
    * @param setSlider true if we should set the slider position also
    */
   synchronized void setFrame(int which, boolean setSlider) {
 
-    display.setFrame(which);
-    ChemFrame frame = cf.getFrame(which);
+    model.setChemFrame(which);
+    ChemFrame frame = model.getChemFrame();
     String inf = frame.getInfo();
     if (inf != null) {
       infoLabel.setText(inf);
@@ -624,5 +631,14 @@ public class Animate extends JDialog implements ActionListener, Runnable {
     }
   }
 
+  public void propertyChange(PropertyChangeEvent event) {
+    
+    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+      if (event.getNewValue() != inFile && event.getNewValue() != cf) {
+        setChemFile((ChemFile) event.getNewValue());
+      }
+    }
+  }
+  
 }
 

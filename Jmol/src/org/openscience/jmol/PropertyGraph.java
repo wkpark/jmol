@@ -24,11 +24,6 @@ import jas.hist.ScatterEnumeration;
 import jas.hist.JASHistData;
 import jas.hist.JASHist;
 import jas.hist.DataSource;
-import javax.swing.Action;
-import javax.swing.AbstractAction;
-import javax.swing.JFrame;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
 import java.awt.Container;
 import java.awt.Component;
 import java.awt.Toolkit;
@@ -39,10 +34,18 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Vector;
 import java.util.Enumeration;
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.JFrame;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 
-public class PropertyGraph extends JDialog implements ActionListener {
+public class PropertyGraph extends JDialog implements PropertyChangeListener,
+    ActionListener {
 
   /**
    * Creates a dialog.
@@ -70,7 +73,7 @@ public class PropertyGraph extends JDialog implements ActionListener {
    *
    * @param inputFile the ChemFile containing potentially graphable data
    */
-  public void setChemFile(ChemFile inputFile) {
+  private void setChemFile(ChemFile inputFile) {
 
     if (isVisible()) {
       setVisible(false);
@@ -328,171 +331,180 @@ public class PropertyGraph extends JDialog implements ActionListener {
    */
   private Vector actionStates = null;
 
-}
-
-class ArrayDataSource implements ScatterPlotSource {
-
-  ArrayDataSource(double[] xData, double[] yData, String title) {
-    this.xData = xData;
-    this.yData = yData;
-    this.title = title;
-    init();
-  }
-
-  ArrayDataSource(double[] yData, String title) {
-
-    xData = new double[yData.length];
-    for (int i = 0; i < yData.length; i++) {
-      xData[i] = (new Double(i)).doubleValue();
+  public void propertyChange(PropertyChangeEvent event) {
+    
+    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+      setChemFile((ChemFile) event.getNewValue());
     }
-    this.yData = yData;
-    this.title = title;
-    init();
   }
 
-  private void init() {
-
-    xAxisType = DOUBLE;
-    yAxisType = DOUBLE;
-    xmin = xData[0];
-    xmax = xmin;
-    ymin = yData[0];
-    ymax = ymin;
-    for (int i = 1; i < xData.length; i++) {
-      if (xData[i] < xmin) {
-        xmin = xData[i];
+  class ArrayDataSource implements ScatterPlotSource {
+  
+    ArrayDataSource(double[] xData, double[] yData, String title) {
+      this.xData = xData;
+      this.yData = yData;
+      this.title = title;
+      init();
+    }
+  
+    ArrayDataSource(double[] yData, String title) {
+  
+      xData = new double[yData.length];
+      for (int i = 0; i < yData.length; i++) {
+        xData[i] = (new Double(i)).doubleValue();
       }
-      if (xData[i] > xmax) {
-        xmax = xData[i];
+      this.yData = yData;
+      this.title = title;
+      init();
+    }
+  
+    private void init() {
+  
+      xAxisType = DOUBLE;
+      yAxisType = DOUBLE;
+      xmin = xData[0];
+      xmax = xmin;
+      ymin = yData[0];
+      ymax = ymin;
+      for (int i = 1; i < xData.length; i++) {
+        if (xData[i] < xmin) {
+          xmin = xData[i];
+        }
+        if (xData[i] > xmax) {
+          xmax = xData[i];
+        }
+        if (yData[i] < ymin) {
+          ymin = yData[i];
+        }
+        if (yData[i] > ymax) {
+          ymax = yData[i];
+        }
       }
-      if (yData[i] < ymin) {
-        ymin = yData[i];
+    }
+  
+    public double getXMin() {
+      return xmin;
+    }
+  
+    public double getXMax() {
+      return xmax;
+    }
+  
+    public double getYMin() {
+      return ymin;
+    }
+  
+    public double getYMax() {
+      return ymax;
+    }
+  
+    public int getXAxisType() {
+      return xAxisType;
+    }
+  
+    public int getYAxisType() {
+      return yAxisType;
+    }
+  
+    public java.lang.String getTitle() {
+      if (title != null) {
+        return title;
       }
-      if (yData[i] > ymax) {
-        ymax = yData[i];
+      return null;
+    }
+  
+    public ScatterEnumeration startEnumeration(double xMin, double xMax,
+        double yMin, double yMax) {
+      return new FixedEnumeration(xData, yData, xMin, xMax, yMin, yMax);
+    }
+  
+    public ScatterEnumeration startEnumeration() {
+      return new FixedEnumeration(xData, yData);
+    }
+  
+    private double xmin;
+    private double xmax;
+    private double ymin;
+    private double ymax;
+    private int xAxisType;
+    private int yAxisType;
+    private String title;
+    private double[] xData;
+    private double[] yData;
+  
+    private class FixedEnumeration implements ScatterEnumeration {
+  
+      public FixedEnumeration(double[] xdata, double[] ydata) {
+        this.xdata = xdata;
+        this.ydata = ydata;
+        selectAll = true;
       }
-    }
-  }
-
-  public double getXMin() {
-    return xmin;
-  }
-
-  public double getXMax() {
-    return xmax;
-  }
-
-  public double getYMin() {
-    return ymin;
-  }
-
-  public double getYMax() {
-    return ymax;
-  }
-
-  public int getXAxisType() {
-    return xAxisType;
-  }
-
-  public int getYAxisType() {
-    return yAxisType;
-  }
-
-  public java.lang.String getTitle() {
-    if (title != null) {
-      return title;
-    }
-    return null;
-  }
-
-  public ScatterEnumeration startEnumeration(double xMin, double xMax,
-      double yMin, double yMax) {
-    return new FixedEnumeration(xData, yData, xMin, xMax, yMin, yMax);
-  }
-
-  public ScatterEnumeration startEnumeration() {
-    return new FixedEnumeration(xData, yData);
-  }
-
-  private double xmin;
-  private double xmax;
-  private double ymin;
-  private double ymax;
-  private int xAxisType;
-  private int yAxisType;
-  private String title;
-  private double[] xData;
-  private double[] yData;
-
-  private class FixedEnumeration implements ScatterEnumeration {
-
-    public FixedEnumeration(double[] xdata, double[] ydata) {
-      this.xdata = xdata;
-      this.ydata = ydata;
-      selectAll = true;
-    }
-
-    public FixedEnumeration(double[] xdata, double[] ydata, double xMin,
-        double xMax, double yMin, double yMax) {
-
-      this.xdata = xdata;
-      this.ydata = ydata;
-      selectAll = false;
-      m_xmin = xMin;
-      m_xmax = xMax;
-      m_ymin = yMin;
-      m_ymax = yMax;
-    }
-
-    public boolean getNextPoint(double[] a) {
-
-      if (selectAll) {
-        if (pos < (xdata.length - 1)) {
+  
+      public FixedEnumeration(double[] xdata, double[] ydata, double xMin,
+          double xMax, double yMin, double yMax) {
+  
+        this.xdata = xdata;
+        this.ydata = ydata;
+        selectAll = false;
+        m_xmin = xMin;
+        m_xmax = xMax;
+        m_ymin = yMin;
+        m_ymax = yMax;
+      }
+  
+      public boolean getNextPoint(double[] a) {
+  
+        if (selectAll) {
+          if (pos < (xdata.length - 1)) {
+            a[0] = xdata[pos];
+            a[1] = ydata[pos++];
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          while (!((xdata[pos] >= m_xmin) && (xdata[pos] <= m_xmax)
+              && (ydata[pos] >= m_ymin) && (ydata[pos] <= m_ymax))) {
+  
+            //skip points that don't satisfy the conditions
+            pos++;
+            if (pos > (xdata.length - 1)) {
+  
+              // if no more points left (don't want to overstep 
+              // bounds)
+              return false;
+            }
+          }
+  
+          // okay, if we're here the point satisfies the min 
+          // and max conditions
           a[0] = xdata[pos];
           a[1] = ydata[pos++];
           return true;
-        } else {
-          return false;
         }
-      } else {
-        while (!((xdata[pos] >= m_xmin) && (xdata[pos] <= m_xmax)
-            && (ydata[pos] >= m_ymin) && (ydata[pos] <= m_ymax))) {
-
-          //skip points that don't satisfy the conditions
-          pos++;
-          if (pos > (xdata.length - 1)) {
-
-            // if no more points left (don't want to overstep 
-            // bounds)
-            return false;
-          }
-        }
-
-        // okay, if we're here the point satisfies the min 
-        // and max conditions
-        a[0] = xdata[pos];
-        a[1] = ydata[pos++];
-        return true;
       }
+  
+      public void resetEndPoint() {
+  
+        //what does this do?
+        //(it seems like Gauss2D.java doesn't know what to do here either)
+      }
+  
+      public void restart() {
+        pos = 0;
+      }
+  
+      private int pos = 0;
+      private double[] xdata;
+      private double[] ydata;
+      private boolean selectAll;
+      private double m_xmin;
+      private double m_xmax;
+      private double m_ymin;
+      private double m_ymax;
     }
-
-    public void resetEndPoint() {
-
-      //what does this do?
-      //(it seems like Gauss2D.java doesn't know what to do here either)
-    }
-
-    public void restart() {
-      pos = 0;
-    }
-
-    private int pos = 0;
-    private double[] xdata;
-    private double[] ydata;
-    private boolean selectAll;
-    private double m_xmin;
-    private double m_xmax;
-    private double m_ymin;
-    private double m_ymax;
+  
   }
+
 }
+

@@ -131,7 +131,7 @@ public class DisplayPanel extends JPanel
 
     this.cf = cf;
     haveFile = true;
-    nframes = cf.getNumberFrames();
+    nframes = cf.getNumberOfFrames();
     this.md = cf.getFrame(0);
     Measurement.setChemFrame(md);
     if (mlist != null) {
@@ -232,14 +232,20 @@ public class DisplayPanel extends JPanel
 
     if (haveFile) {
       if (fr < nframes) {
-        md = cf.getFrame(fr);
-        Measurement.setChemFrame(md);
-        if (mlist != null) {
-          mlistChanged(new MeasurementListEvent(mlist));
-        }
+        setFrame(cf.getFrame(fr));
       }
       repaint();
     }
+  }
+
+  private void setFrame(ChemFrame frame) {
+
+    md = frame;
+    Measurement.setChemFrame(frame);
+    if (mlist != null) {
+      mlistChanged(new MeasurementListEvent(mlist));
+    }
+    repaint();
   }
 
   public ChemFrame getFrame() {
@@ -1060,6 +1066,10 @@ public class DisplayPanel extends JPanel
     
     if (event.getPropertyName().equals(DisplaySettings.atomPickedProperty)) {
         status.setStatus(2, event.getNewValue() + " atoms selected");
+    } else if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+      setChemFile((ChemFile) event.getNewValue());
+    } else if (event.getPropertyName().equals(JmolModel.chemFrameProperty)) {
+      setFrame((ChemFrame) event.getNewValue());
     }
   }
 

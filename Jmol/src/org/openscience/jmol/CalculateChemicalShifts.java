@@ -19,19 +19,22 @@
  */
 package org.openscience.jmol;
 
-import javax.swing.AbstractAction;
 import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.Vector;
-import java.util.Hashtable;
-import java.util.Enumeration;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+import javax.swing.AbstractAction;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  */
-class CalculateChemicalShifts extends AbstractAction {
+class CalculateChemicalShifts extends AbstractAction implements
+    PropertyChangeListener {
 
   ChemFile chemFile;
   AtomPropsMenu propertiesMenu;
@@ -46,8 +49,9 @@ class CalculateChemicalShifts extends AbstractAction {
     setEnabled(false);
   }
 
-  public void initialize() {
+  public void initialize(AtomPropsMenu menu) {
 
+    propertiesMenu = menu;
     if (shieldings == null) {
       try {
         URL url = this.getClass().getClassLoader().getResource(RF);
@@ -77,11 +81,10 @@ class CalculateChemicalShifts extends AbstractAction {
     }
   }
 
-  public void setChemFile(ChemFile file, AtomPropsMenu menu) {
+  private void setChemFile(ChemFile file) {
 
     setEnabled(false);
 
-    propertiesMenu = menu;
     chemFile = file;
     if (chemFile == null) {
       return;
@@ -150,5 +153,12 @@ class CalculateChemicalShifts extends AbstractAction {
     }
 
     propertiesMenu.replaceList(chemFile.getAtomPropertyList());
+  }
+
+  public void propertyChange(PropertyChangeEvent event) {
+    
+    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+      setChemFile((ChemFile) event.getNewValue());
+    }
   }
 }

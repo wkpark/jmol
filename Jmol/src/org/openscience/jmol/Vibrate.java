@@ -36,6 +36,8 @@ import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.PrintStream;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
@@ -76,8 +78,14 @@ import javax.swing.border.TitledBorder;
  *
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  */
-public class Vibrate extends JDialog implements ActionListener, Runnable {
+public class Vibrate extends JDialog implements ActionListener,
+    PropertyChangeListener, Runnable {
 
+  /**
+   * Reference to the data model.
+   */
+  private JmolModel model;
+  
   /**
    * Sets the scale factor for the amplitude of vibrations.
    *
@@ -130,12 +138,11 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
    * Creates a dialog.
    *
    * @param f the parent frame
-   * @param dp the DisplayPanel in which the vibration will be displayed
    */
-  public Vibrate(JFrame f, DisplayPanel dp) {
+  public Vibrate(JmolModel model, JFrame f) {
 
     super(f, "Vibration", false);
-    display = dp;
+    this.model = model;
     JPanel container = new JPanel();
     container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
     JPanel framePanel = new JPanel();
@@ -316,7 +323,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
    *
    * @param inputFile the ChemFile containing vibration data
    */
-  public void setChemFile(ChemFile inputFile) {
+  private void setChemFile(ChemFile inputFile) {
 
     stop();
     if (isVisible()) {
@@ -329,7 +336,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       frameCombo.removeAllItems();
     }
     frameIds.removeAllElements();
-    for (int i = 0; i < inputFile.getNumberFrames(); ++i) {
+    for (int i = 0; i < inputFile.getNumberOfFrames(); ++i) {
       ChemFrame frame2 = inputFile.getFrame(i);
       if (frame2.getNumberVibrations() > 0) {
         hasVibrations = true;
@@ -377,8 +384,8 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
    */
   private void setFrame(int which, boolean setSlider) {
 
-    display.setFrame(which);
-    ChemFrame frame = vibFile.getFrame(which);
+    model.setChemFrame(which);
+    ChemFrame frame = model.getChemFrame();
     if (setSlider) {
       progressSlider.setValue(which + 1);
     }
@@ -423,7 +430,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       }
       vibFile.addFrame(newFrame);
     }
-    progressSlider.setMaximum(vibFile.getNumberFrames());
+    progressSlider.setMaximum(vibFile.getNumberOfFrames());
     currentFrame = 0;
   }
 
@@ -438,14 +445,14 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
 
     if (b) {
       vibrateAction.setEnabled(false);
-      display.setChemFile(vibFile);
+      model.setChemFile(vibFile);
       currentFrame = 0;
       setFrame(currentFrame, true);
       disableConflictingActions();
     } else {
       stop();
       if (inputFile != null) {
-        display.setChemFile(inputFile);
+        model.setChemFile(inputFile);
       }
       vibrateAction.setEnabled(true);
       restoreConflictingActions();
@@ -476,7 +483,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
   public void run() {
 
     while (playing) {
-      if (currentFrame < vibFile.getNumberFrames() - 1) {
+      if (currentFrame < vibFile.getNumberOfFrames() - 1) {
         currentFrame++;
       } else {
         currentFrame = 0;
@@ -513,12 +520,12 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       }
       if (arg.equals("ff")) {
         stop();
-        currentFrame = vibFile.getNumberFrames() - 1;
+        currentFrame = vibFile.getNumberOfFrames() - 1;
         setFrame(currentFrame, true);
       }
       if (arg.equals("next")) {
         stop();
-        if (currentFrame < vibFile.getNumberFrames() - 1) {
+        if (currentFrame < vibFile.getNumberOfFrames() - 1) {
           currentFrame++;
         }
         setFrame(currentFrame, true);
@@ -792,7 +799,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
       vibrationNumber = source.getSelectedIndex();
       if (isVisible()) {
         createVibration();
-        display.setChemFile(vibFile);
+        model.setChemFile(vibFile);
         currentFrame = 0;
         setFrame(currentFrame, true);
       }
@@ -838,12 +845,6 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
    * Current frame of the vibration animation being displayed.
    */
   private static int currentFrame;
-
-  /**
-   * Reference to the panel for displaying frames. Used to load and unload
-   * the vibration ChemFile, and to set the frame to be displayed.
-   */
-  private DisplayPanel display;
 
   /**
    * Does the dialog have any vibration data.
@@ -914,4 +915,13 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
    * FileChooser for saving normal mode files.
    */
   private static JFileChooser saveChooser = new JFileChooser();
+
+  public void propertyChange(PropertyChangeEvent event) {
+    
+    if (event.getPropertyName().equals(JmolModel.chemFileProperty)) {
+      if (event.getNewValue() != inputFile && event.getNewValue() != vibFile) {
+        setChemFile((ChemFile) event.getNewValue());
+      }
+    }
+  }
 }

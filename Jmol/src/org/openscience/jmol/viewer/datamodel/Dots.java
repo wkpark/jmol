@@ -130,6 +130,7 @@ public class Dots extends Shape {
       torusCount = 0;
       htTori = null;
       tori = null;
+      cavityCount = 0;
       cavities = null;
       radiusP = viewer.getCurrentSolventProbeRadius();
       diameterP = 2 * radiusP;

@@ -38,6 +38,7 @@ import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.SetOfMolecules;
+import org.openscience.cdk.Crystal;
 import org.openscience.cdk.Molecule;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.Atom;
@@ -138,8 +139,16 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     ChemModel[] chemModels = chemSequence.getChemModels();
     ChemModel chemModel = chemModels[0];
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
-    Molecule molecule = setOfMolecules.getMolecule(0);
-    return molecule;
+    Crystal crystal = chemModel.getCrystal();
+    if (setOfMolecules != null) {
+        Molecule molecule = setOfMolecules.getMolecule(0);
+        return molecule;
+    } else if (crystal != null) {
+        return crystal;
+    } else {
+        System.out.println("Cannot display data in file");
+        return null;
+    }
   }
 
   public int getAtomCount(Object clientFile, int frameNumber) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   French translation 
-  Translated from default version : project.xml (v 1.19)
+  Translated from default version : project.xml (v 1.20)
 -->
 <project name="Jmol">
 
@@ -27,7 +27,8 @@
             <br/>
             <a href="http://wiki.jmol.org">Wiki</a> |
             <a href="[root]/docs/">Documentation</a> |
-            <a href="http://www.stolaf.edu/people/hansonr/jmol/docs">
+            <a href="http://www.stolaf.edu/people/hansonr/jmol/docs"
+              target="_blank" >
               Doc Interactif du Langage de Script
             </a> |
             <a href="[root]/browsercheck/">V&#x00E9;rification Navigateur</a>

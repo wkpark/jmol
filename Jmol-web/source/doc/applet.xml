@@ -113,7 +113,7 @@
 
     <section title="Applet parameters">
       <p>The following parameters control the appearance and behavior of the
-      applet:
+      applet. All parameter names and values are case insensitive.
       </p>
       <appletParameterList>
         <param name="model">
@@ -142,6 +142,17 @@
             <li>QUICKDRAW</li>
             <li>WIREFRAME</li>
           </ul>
+        </param>
+        
+        <param name="atomLabels">
+          The labels to display for atoms.  One of:
+          <dl>
+            <dt>NONE</dt> <dd>do not display labels.</dd>
+            <dt>SYMBOLS</dt> <dd>the atomic symbols for the atoms.</dd>
+            <dt>TYPES</dt> <dd>the atom types (or names) read from the input file.</dd>
+            <dt>NUMBERS</dt> <dd>the numbers of the atoms.</dd>
+          </dl>
+          The default value is NONE.
         </param>
         
         <param name="atomTypes">

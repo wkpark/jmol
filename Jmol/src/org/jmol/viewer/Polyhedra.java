@@ -30,16 +30,15 @@ import javax.vecmath.Point3f;
 
 class Polyhedra extends SelectionIndependentShape {
 
-  int maxPolyhedron;
-  int currentPolyhedronCount;
+  int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
 
   void initShape() {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-
     if ("on" == propertyName) {
+      deletePolyhedra(bs);
       buildPolyhedra(bs);
       return;
     }
@@ -71,31 +70,25 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void build1(int atomIndex) {
-    deletePolyhedron(atomIndex);
     Polyhedron p = constructPolyhedron(atomIndex);
     if (p != null)
       savePolyhedron(p);
   }
 
   void deletePolyhedra(BitSet bs) {
-    for (int i = frame.atomCount; --i >= 0; )
-      if (bs.get(i))
-        deletePolyhedron(i);
-  }
-
-  void deletePolyhedron(int atomIndex) {
-    for (int i = maxPolyhedron; --i >= 0; ) {
+    int newCount = 0;
+    for (int i = 0; i < polyhedronCount; ++i) {
       Polyhedron p = polyhedrons[i];
-      if (p != null && p.centralAtom.atomIndex == atomIndex) {
-        --currentPolyhedronCount;
-        polyhedrons[i] = null;
-        return;
-      }
+      if (! bs.get(p.centralAtom.atomIndex))
+        polyhedrons[newCount++] = p;
     }
+    for (int i = newCount; i < polyhedronCount; ++i)
+      polyhedrons[i] = null;
+    polyhedronCount = newCount;
   }
 
   void setTransparent(boolean transparent, BitSet bs) {
-    for (int i = maxPolyhedron; --i >= 0; ) {
+    for (int i = polyhedronCount; --i >= 0; ) {
       Polyhedron p = polyhedrons[i];
       if (p == null)
         continue;
@@ -105,21 +98,14 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void savePolyhedron(Polyhedron p) {
-    if (currentPolyhedronCount < maxPolyhedron) {
-      for (int i = maxPolyhedron; --i >= 0; )
-        if (polyhedrons[i] == null) {
-          polyhedrons[i] = p;
-          break;
-        }
-    } else {
-      if (maxPolyhedron == polyhedrons.length)
-        polyhedrons = (Polyhedron[])Util.doubleLength(polyhedrons);
-      polyhedrons[maxPolyhedron++] = p;
-      ++currentPolyhedronCount;
-    }
+    if (polyhedronCount == polyhedrons.length)
+      polyhedrons = (Polyhedron[])Util.doubleLength(polyhedrons);
+    polyhedrons[polyhedronCount++] = p;
   }
 
   Atom[] otherAtoms = new Atom[6];
+
+  final static boolean CHECK_ELEMENT = false;
 
   Polyhedron constructPolyhedron(int atomIndex) {
     Atom atom = frame.getAtomAt(atomIndex);
@@ -132,10 +118,12 @@ class Polyhedra extends SelectionIndependentShape {
       for (int i = bondCount; --i >= 0; ) {
         Bond bond = bonds[i];
         Atom otherAtom = bond.atom1 == atom ? bond.atom2 : bond.atom1;
-        if (bondedElementNumber == -1)
-          bondedElementNumber = otherAtom.elementNumber;
-        else if (bondedElementNumber != otherAtom.elementNumber)
-          return null;
+        if (CHECK_ELEMENT) {
+          if (bondedElementNumber == -1)
+            bondedElementNumber = otherAtom.elementNumber;
+          else if (bondedElementNumber != otherAtom.elementNumber)
+            return null;
+        }
         otherAtoms[i] = otherAtom;
       }
       Polyhedron p = new Polyhedron(atom, bondCount, otherAtoms);

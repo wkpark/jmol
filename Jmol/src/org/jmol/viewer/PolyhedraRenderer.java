@@ -33,13 +33,8 @@ class PolyhedraRenderer extends ShapeRenderer {
   void render() {
     Polyhedra polyhedra = (Polyhedra)shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
-    if (polyhedra.currentPolyhedronCount == 0)
-      return;
-    for (int i = polyhedra.maxPolyhedron; --i >= 0; ) {
-      Polyhedra.Polyhedron p = polyhedrons[i];
-      if (p != null)
-        render1(p);
-    }
+    for (int i = polyhedra.polyhedronCount; --i >= 0; )
+      render1(polyhedrons[i]);
   }
 
   void render1(Polyhedra.Polyhedron p) {

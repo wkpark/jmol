@@ -33,7 +33,6 @@ public class PdbChain {
 
   public PdbModel model;
   public char chainID;
-  short firstGroupSequence;
   int groupCount;
   PdbGroup[] groups = new PdbGroup[16];
   PdbGroup[] mainchain;
@@ -55,23 +54,13 @@ public class PdbChain {
   PdbGroup allocateGroup(short groupSequence, String group3) {
 
     PdbGroup group = new PdbGroup(this, groupSequence, group3);
-    
-    if (groupCount == 0)
-      firstGroupSequence = groupSequence;
-    int groupIndex = groupSequence - firstGroupSequence;
-    if (groupIndex < 0) {
-      System.out.println("residue out of sequence?");
-      return group;
-    }
-    if (groupIndex >= groups.length) {
-      PdbGroup[] t = new PdbGroup[groupIndex * 2];
+
+    if (groupCount == groups.length) {
+      PdbGroup[] t = new PdbGroup[groupCount * 2];
       System.arraycopy(groups, 0, t, 0, groupCount);
       groups = t;
     }
-    groups[groupIndex] = group;
-    if (groupIndex >= groupCount)
-      groupCount = groupIndex + 1;
-    return group;
+    return groups[groupCount++] = group;
   }
 
   public PdbGroup getResidue(int groupIndex) {
@@ -80,10 +69,6 @@ public class PdbChain {
   
   public int getResidueCount() {
     return groupCount;
-  }
-
-  public short getFirstResidueID() {
-    return firstGroupSequence;
   }
 
   public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
@@ -140,10 +125,6 @@ public class PdbChain {
     if (polymer == null)
       polymer = new PdbPolymer(this);
     polymer.addSecondaryStructure(type, startResidueID, endResidueID);
-  }
-
-  public int getIndex(short groupID) {
-    return groupID - firstGroupSequence;
   }
 
   public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {

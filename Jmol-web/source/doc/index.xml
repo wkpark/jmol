@@ -9,17 +9,35 @@
 	educators, and researchers in chemistry and biochemistry.
 	It is cross-platform, running on Windows, Mac OS X, and
 	Linux/Unix systems. 
+	<ul>
+	  <li>
+	    The JmolApplet is a web browser applet that can be
+	    integrated into web pages.
+	  </li>
+	  <li>
+	    The Jmol application is a standalone Java application
+	    that runs on the desktop.
+	  </li>
+	  <li>
+	    The JmolViewer is a development tool kit that can be
+	    integrated into other Java applications.
+	  </li>
+	</ul>
       </p>
     </header>
 
     <section title="Jmol Version 10 is now released">
       <p>
-	Jmol Version 10 was released on XX September 2004.
+	Jmol Version 10 was released on XX October 2004.
       </p>
       <p>
-	Version 10 is a complete rearchitecture and rewrite of Jmol.
-	It retains most of the features and functionality of the
-	previous Jmol architecture while offering significant
+	Jmol v10 is a complete rearchitecture and rewrite of Jmol,
+	undertaken to specifically develop Jmol into a replacement for
+	the Chime Plug-in.
+      </p>
+      <p>
+	Jmol v10 retains most of the features and functionality
+	of the previous Jmol architecture while offering significant
 	enhancments in the following areas:
 	<ul>
 	  <li>true 3D graphics engine that requires no special hardware</li>
@@ -30,7 +48,7 @@
       </p>
     </section>
 
-    <section title="Jmol v$VERSION$ Features">
+    <section title="Jmol v10 Features">
 
       <ul>
 	<li>
@@ -183,30 +201,34 @@
     </section>
 
     <section title="Mailing Lists">
-      <p>Those interested in using Jmol should join the
-      <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
-	jmol-users mailing list
-      </a>
-      where you can share ideas and experiences, ask for help,
-      and give us feedback.
-      You can also browse the
-      <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
-	jmol-users archives
-      </a>
-      .
+      <p>
+	Those with interest in molecular visualization, especially
+	the education and research communities, are encouraged
+	to join the 
+	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
+	  jmol-users mailing list
+	</a>
+	where you can share ideas and experiences, ask for help,
+	and give us feedback.
+	The
+	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
+	  jmol-users archives
+	</a>
+	can be a useful reference.
       </p>
       
-      <p>Those who are seriously interested in participating should join the
-      <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
-	jmol-developers mailing list
-      </a>
-      where you can request new features or changes, 
-      discuss implementation, submit patches, or contribute code.
-      You can also browse the
-      <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
+      <p>
+	Those who are seriously interested in participating should join the
+	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
+	  jmol-developers mailing list
+	</a>
+	where you can request new features or changes, 
+	discuss implementation, submit patches, or contribute code.
+	You can also browse the
+	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
 	jmol-developers archives
-      </a>
-      .
+	</a>
+	.
       </p>
       
     </section>

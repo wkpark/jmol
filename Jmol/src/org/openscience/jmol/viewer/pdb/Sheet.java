@@ -37,10 +37,15 @@ public class Sheet extends PdbStructure {
   void calcAxis() {
     if (axisA != null)
       return;
-    axisA = new Point3f();
-    polymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
-    axisB = new Point3f();
-    polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
+    if (polymerCount == 2) {
+      axisA = polymer.getResidueAlphaCarbonPoint(0);
+      axisB = polymer.getResidueAlphaCarbonPoint(1);
+    } else {
+      axisA = new Point3f();
+      polymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
+      axisB = new Point3f();
+      polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
+    }
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);

@@ -442,7 +442,7 @@ class Jmol extends JPanel {
             currentFileName = theFile.getName();
 
             // Add the file to the recent files list
-            recentFiles.addFile(theFile.toString(), "auto");
+            recentFiles.addFile(theFile.toString());
           } else {
             JOptionPane.showMessageDialog(Jmol.this,
                 "The file \"" + theFile + "\" appears to be empty."

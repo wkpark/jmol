@@ -76,10 +76,10 @@ public class RecentFilesDialog extends JDialog
   }
 
   /**
-   * Adds this file and type to the history. If already present,
+   * Adds this file to the history. If already present,
    * this file is premoted to the top position.
    */
-  public void addFile(String name, String type) {
+  public void addFile(String name) {
 
     int currentPosition = -1;
 

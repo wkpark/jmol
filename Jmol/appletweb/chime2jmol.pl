@@ -1,14 +1,88 @@
-use HTML::Parser;
 use strict;
+use HTML::Parser;
+use Getopt::Std;
+use File::Find;
+use File::Copy;
+use File::Path;
 
 sub handleEmbed;
 sub handleEnd;
+sub usage;
 
-my $p = HTML::Parser->new(start_h =>
-  [\&handleEmbed, 'skipped_text,text,tokens'],
-			  end_document_h => [\&writePrevious, 'skipped_text']);
-$p->report_tags('embed');
-$p->parse_file(shift || die) || die $!;
+use vars qw/$opt_v $opt_a $opt_s $opt_c $opt_d/;
+getopts('va:s:cd:') or usage();
+
+my $archive = "JmolApplet.jar";
+$archive = "$opt_a/$archive" if $opt_a;
+print "archive is $archive\n" if $opt_v;
+
+($opt_s && $opt_d) or usage();
+if ($opt_c) {
+    print "deleting directory tree $opt_d\n" if $opt_v;
+    rmtree $opt_d;
+}
+
+if (-e $opt_d) {
+    print "$opt_d exists\n" if $opt_v;
+    -d $opt_d or die "$opt_d is not a directory";
+} else {
+    print "creating $opt_d\n" if $opt_v;
+    mkdir($opt_d) or die "could not make directory $opt_d";
+}
+
+my $baseDirectory;
+my @files;
+my @directories;
+sub accumulateFilename {
+    if ($baseDirectory) {
+	my $pathname = $File::Find::name;
+	my $name = substr $pathname, length($baseDirectory);
+	push @files, $name if -f $pathname;
+	push @directories, $name if -d $pathname;
+    } else {
+	$baseDirectory = $File::Find::name;
+    }
+}
+find(\&accumulateFilename, $opt_s);
+
+for my $directory (@directories) {
+    print "mkdir $opt_d$directory\n" if $opt_v;
+    mkdir "$opt_d$directory";
+}
+
+for my $file (@files) {
+    print "processing $file\n" if $opt_v;
+    processFile("$baseDirectory$file", "$opt_d$file");
+}
+exit();
+
+sub processFile {
+    my ($src, $dst) = @_;
+    if ($src =~ /html?$/i) {
+	processHtmlFile($src, $dst);
+    } else {
+	copyFile($src, $dst);
+    }
+}
+
+sub copyFile {
+    my ($src, $dst) = @_;
+#    print "copyFile $src -> $dst\n";
+    copy $src, $dst;
+}
+
+sub processHtmlFile {
+    my ($src, $dst) = @_;
+    open OUTPUT, ">$dst" or die "could not open $dst";
+
+    my $p = HTML::Parser->new(start_h =>
+			      [\&handleEmbed, 'skipped_text,text,tokens'],
+			      end_document_h => [\&writePrevious,
+						 'skipped_text']);
+    $p->report_tags('embed');
+    $p->parse_file($src) || die $!;
+    close OUTPUT;
+}
 
 my ($previous, $embed, $tokens);
 my $tokenCount;
@@ -22,7 +96,7 @@ my ($type, $button, $buttonCallback, $target, $script, $altscript);
 
 sub handleEmbed {
     ($previous, $embed, $tokens) = @_;
-    $tokenCount = length $tokens;
+    $tokenCount = scalar @$tokens;
 
     $name = getParameter('name');
     $width = getParameter('width');
@@ -39,7 +113,8 @@ sub handleEmbed {
     $button = getParameter('button');
     $buttonCallback = getParameter('ButtonCallBack');
     $target = getParameter('target');
-    $script = convertSemicolonNewline(getParameter('script'));
+    $script = getParameter('script');
+    $script = convertSemicolonNewline($script);
     $altscript = convertSemicolonNewline(getParameter('altscript'));
     writePrevious($previous);
     writeCommentedEmbed();
@@ -66,42 +141,42 @@ END
 }
 
 sub writePrevious {
-    print convertNewline(@_[0]);
+    print OUTPUT convertNewline(@_[0]);
 }
 
 sub writeCommentedEmbed {
     $embed = convertNewline($embed);
-    print "<!-- $embed -->\n";
+    print OUTPUT "<!-- $embed -->\n";
 }
 
 sub writeJmolApplet {
-    print
-	"  <applet name=$name code=JmolApplet archive=JmolApplet.jar\n"
+    print OUTPUT
+	"  <applet name=$name code=JmolApplet archive=$archive\n"
 	if $name;
-    print
-	"  <applet code=JmolApplet archive=JmolApplet.jar\n"
+    print OUTPUT
+	"  <applet code=JmolApplet archive=$archive\n"
 	unless $name;
-    print
+    print OUTPUT
 	"          width=$width height=$height mayscript >\n";
-    print
+    print OUTPUT
 	"    <param name=bgcolor value=$bgcolor >\n" if $bgcolor;
-    print
+    print OUTPUT
 	"    <param name=load    value=$src >\n" if $src;
-    print
+    print OUTPUT
 	"    <param name=script  value=$script >\n" if $script;
-    print
+    print OUTPUT
 	"    <param name=LoadStructCallback value=$loadStructCallback >\n"
 	if $loadStructCallback;
-    print
+    print OUTPUT
 	"    <param name=MessageCallback    value=$messageCallback >\n"
 	if $messageCallback;
-    print
+    print OUTPUT
 	"    <param name=PauseCallback      value=$pauseCallback >\n"
 	if $pauseCallback;
-    print
+    print OUTPUT
 	"    <param name=PickCallback       value=$pickCallback >\n"
 	if $pickCallback;
-    print
+    print OUTPUT
 	"  </applet>\n";
 }
 
@@ -116,31 +191,30 @@ sub writeButtonControl {
 	$group = $1;
     }
     my $buttonScript = $script || $src;
-    print
-	"  <applet name=$name code=JmolAppletControl".
-	" archive=JmolApplet.jar\n"
+    print OUTPUT
+	"  <applet name=$name code=JmolAppletControl archive=$archive\n"
 	if $name;
-    print
-	"  <applet code=JmolAppletControl archive=JmolApplet.jar\n"
+    print OUTPUT
+	"  <applet code=JmolAppletControl archive=$archive\n"
 	unless $name;
-    print
+    print OUTPUT
 	"          width=$width height=$height mayscript >\n";
-    print
+    print OUTPUT
 	"    <param name=target value=$target >\n".
 	"    <param name=type   value=$controlType >\n";
-    print
+    print OUTPUT
 	"    <param name=group  value=$group >\n"
 	if $group;
-    print
+    print OUTPUT
 	"    <param name=script value=$buttonScript >\n"
 	if $buttonScript;
-    print
+    print OUTPUT
 	"    <param name=altscript value=$altscript >\n"
 	if $altscript;
-    print
+    print OUTPUT
 	"    <param name=ButtonCallback value=$buttonCallback >\n"
 	if $buttonCallback;
-    print
+    print OUTPUT
 	"  </applet>\n";
 }
 
@@ -165,4 +239,12 @@ sub convertSemicolonNewline {
     $text = convertNewline($text);
     $text =~ s/\n/;\n/g;
     return $text;
+}
+
+sub usage {
+    print <<END;
+chime2jmol usage goes here
+    -d <dest directory>
+END
+    exit;
 }

@@ -32,30 +32,39 @@ public class JmolAppletRegistry {
 
   // java.util.Hashtable is synchronized
   // therefore everything here should be thread-safe
-  private static Hashtable htRegistry = new Hashtable();
 
   public static void checkIn(String name, Applet applet) {
-    //    System.out.println("JmolAppletRegistry.checkIn(" + name + ")");
+    System.out.println("JmolAppletRegistry.checkIn(" + name + ")");
     if (name != null)
-      htRegistry.put(name, applet);
+      getRegistry().put(name, applet);
   }
 
   public static void checkOut(String name) {
-    //    System.out.println("JmolAppletRegistry.checkOut(" + name + ")");
+    System.out.println("JmolAppletRegistry.checkOut(" + name + ")");
     if (name != null)
-      htRegistry.remove(name);
+      getRegistry().remove(name);
   }
 
   public static Applet lookup(String name) {
-    //    System.out.println("JmolAppletRegistry.lookup(" + name + ")");
+    System.out.println("JmolAppletRegistry.lookup(" + name + ")");
     if (name == null)
       return null;
-    Applet applet = (Applet)htRegistry.get(name);
-    //    System.out.println("  applet != null" + (applet != null));
+    Applet applet = (Applet)getRegistry().get(name);
+    System.out.println("  applet != null" + (applet != null));
     return applet;
   }
 
   public static Enumeration applets() {
-    return htRegistry.elements();
+    return getRegistry().elements();
+  }
+
+  private static Hashtable htRegistry;
+
+  private static synchronized Hashtable getRegistry() {
+    if (htRegistry == null) {
+      System.out.println("I am allocating a registry");
+      htRegistry = new Hashtable();
+    }
+    return htRegistry;
   }
 }

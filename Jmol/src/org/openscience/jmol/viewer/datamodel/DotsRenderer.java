@@ -72,12 +72,9 @@ class DotsRenderer extends ShapeRenderer {
     if (dots == null)
       return;
     Atom[] atoms = frame.atoms;
-    BitSet bsDotsOn = dots.bsDotsOn;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixes = dots.colixes;
-    for (int i = dots.dotsConvexCount; --i >= 0; ) {
-      if (! bsDotsOn.get(i))
-        continue;
+    for (int i = dots.dotsConvexMax; --i >= 0; ) {
       int[] map = dotsConvexMaps[i];
       if (map != null && map != mapNull)
         renderConvex(atoms[i], colixes[i], map);
@@ -87,8 +84,8 @@ class DotsRenderer extends ShapeRenderer {
       return;
     for (int i = dots.torusCount; --i >= 0; ) {
       Dots.Torus torus = tori[i];
-      boolean onI = bsDotsOn.get(torus.indexI);
-      boolean onJ = bsDotsOn.get(torus.indexJ);
+      boolean onI = dotsConvexMaps[torus.indexI] != null;
+      boolean onJ = dotsConvexMaps[torus.indexJ] != null;
       if (bondSelectionModeOr) {
         if (! (onI | onJ))
           continue;
@@ -107,9 +104,9 @@ class DotsRenderer extends ShapeRenderer {
       return;
     for (int i = dots.cavityCount; --i >= 0; ) {
       Dots.Cavity cavity = cavities[i];
-      boolean onI = bsDotsOn.get(cavity.ixI);
-      boolean onJ = bsDotsOn.get(cavity.ixJ);
-      boolean onK = bsDotsOn.get(cavity.ixK);
+      boolean onI = dotsConvexMaps[cavity.ixI] != null;
+      boolean onJ = dotsConvexMaps[cavity.ixJ] != null;
+      boolean onK = dotsConvexMaps[cavity.ixK] != null;
       if (bondSelectionModeOr) {
         if (! (onI | onJ | onK))
           continue;

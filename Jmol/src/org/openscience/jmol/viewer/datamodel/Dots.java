@@ -89,8 +89,7 @@ public class Dots extends Shape {
 
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  BitSet bsDotsOn;
-  int dotsConvexCount;
+  int dotsConvexMax; // the Max == the highest atomIndex with dots + 1
   int[][] dotsConvexMaps;
   short[] colixes;
   Vector3f[] geodesicVertices;
@@ -124,7 +123,6 @@ public class Dots extends Shape {
     
   void initShape() {
     dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
-    bsDotsOn = new BitSet();
     geodesicVertices = dotsRenderer.geodesic.vertices;
     geodesicCount = geodesicVertices.length;
     geodesicMap = allocateBitmap(geodesicCount);
@@ -134,7 +132,7 @@ public class Dots extends Shape {
     short mad = (short)size;
     this.mad = mad;
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
-      dotsConvexCount = 0;
+      dotsConvexMax = 0;
       dotsConvexMaps = null;
       bsToriCalculated = null;
       htTori = null;
@@ -144,17 +142,16 @@ public class Dots extends Shape {
       diameterP = 2 * radiusP;
     }
     int atomCount = frame.atomCount;
-    dotsConvexCount = 0;
+    dotsConvexMax = 0;
     if (mad != 0) {
-      bsDotsOn.or(bsSelected);
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
         colixes = new short[atomCount];
       }
       for (int i = atomCount; --i >= 0; )
-        if (bsDotsOn.get(i)) {
-          if (i >= dotsConvexCount)
-            dotsConvexCount = i + 1;
+        if (bsSelected.get(i)) {
+          if (i >= dotsConvexMax)
+            dotsConvexMax = i + 1;
           /*
           if (dotsConvexMaps[i] != null)
             continue;
@@ -171,11 +168,11 @@ public class Dots extends Shape {
       // 1.1 jvm does not have BitSet.andNot()
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
-          bsDotsOn.clear(i);
+          dotsConvexMaps[i] = null;
       int i;
-      for (i = atomCount; --i >= 0 && !bsDotsOn.get(i); )
+      for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
         {}
-      dotsConvexCount = i+1;
+      dotsConvexMax = i+1;
     }
   }
 

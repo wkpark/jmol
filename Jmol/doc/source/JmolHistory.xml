@@ -34,6 +34,9 @@
   <change>
     Fixed reading certain GAMESS and Dalton files. (bug #529999)
   </change>
+  <change>
+    Major update CML import.
+  </change>
 </changes>
 
 <changes version="jmol-1.2">

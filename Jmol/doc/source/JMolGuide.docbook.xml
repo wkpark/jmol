@@ -1,4 +1,4 @@
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+<?xml version="1.0"?>
 <book>
   <bookinfo>
     <title>JMol Documentation</title>
@@ -18,6 +18,18 @@
       <title>The File menu</title>
       <section>
         <title>Open</title>
+        <para>
+          Open files in Jmol. Jmol can read files of the following types:
+          <itemizedlist>
+            <listitem><para>ACES II</para></listitem>
+            <listitem><para>ADF - Amsterdam Density Functional</para></listitem>
+            <listitem><para>GAMESS</para></listitem>
+            <listitem><para>Gaussian 92/94/98</para></listitem>
+            <listitem><para>XYZ (single and multiple frame)</para></listitem>
+            <listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
+            <listitem><para>CML</para></listitem>
+          </itemizedlist>
+        </para>
       </section>
       <section>
         <title>Script...</title>
@@ -33,6 +45,18 @@
       </section>
       <section>
         <title>Export Image</title>
+        <para>
+          Jmol can export images of the following types:
+          <itemizedlist>
+            <listitem><para>GIF</para></listitem>
+            <listitem><para>JPG</para></listitem>
+            <listitem><para>PPM</para></listitem>
+          </itemizedlist>
+        </para>
+        <para>
+          Note that GIF pictures can only be exported if the
+          displayed image is 8 bit.
+        </para>
       </section>
       <section>
         <title>Revert</title>
@@ -42,7 +66,7 @@
       </section>
       <section>
         <title>Exit</title>
-	<para>Quits the Jmol application</para>
+	<para>Quits this Jmol session.</para>
       </section>
     </section>
     <section>
@@ -74,13 +98,24 @@
     </section>
     <section>
       <title>The Display menu</title>
+      <para>
+        In this menu display settings can be changed.
+      </para>
       <section>
         <title>Atom Style</title>
         <section>
-          <title>Quick Draw</title>	  
+          <title>Quick Draw</title>
+          <para>
+            Views molecules without shading. Preferred on slower
+            computers.
+          </para>
         </section>
         <section>
-          <title>Shading</title>	  
+          <title>Shading</title>
+          <para>
+            Views molecules with shading. Since this takes more
+            calculations, this only works well on faster computers.
+          </para>
         </section>
         <section>
           <title>Wire Frame</title>	  
@@ -105,12 +140,21 @@
         <title>Atom Labels</title>
         <section>
           <title>No Atom Labels</title>	  
+          <para>
+            View the atoms without any label.
+          </para>
         </section>
         <section>
           <title>Atomic Symbols</title>	  
+          <para>
+            Label the atoms with their symbol.
+          </para>
         </section>
         <section>
-          <title>Atom Types</title>	  
+          <title>Atom Types</title>
+          <para>
+            Label the atoms with their atom type.
+          </para>
         </section>
         <section>
           <title>Atom Numbers</title>	  
@@ -127,12 +171,16 @@
       </section>
       <section>
         <title>Bonds</title>
+        <para>If this option is checked it views bonds.</para>
       </section>
       <section>
         <title>Atoms</title>
+        <para>If this option is checked it views atoms.</para>
       </section>
       <section>
         <title>Vectors</title>
+        <para>If this option is checked it views vectors like
+          dipole moments.</para>
       </section>
       <section>
         <title>Hydrogens</title>
@@ -216,6 +264,13 @@
         <title>Vibrate...</title>
       </section>
       <section>
+        <title>Graph...</title>
+        <para>This opens a window in which a energy versus frames plot
+          is viewed. This option currently only works when reading a
+          CML animation with energies given for each frame.</para>
+        <para>An example file is supplied: conformeren.cml.</para>
+      </section>
+      <section>
         <title>Bounding Box...</title>
       </section>
       <section>
@@ -226,19 +281,23 @@
       <title>The Help menu</title>
       <section>
         <title>About Jmol</title>
+        <para>Popups a window with copyright notice for this software.</para>
       </section>
       <section>
         <title>User Guide</title>
-	<para>Show this documentation.</para>
+	<para>Shows this documentation.</para>
       </section>
       <section>
         <title>What's New</title>
+        <para>Shows the changes from version to version.</para>
       </section>
       <section>
         <title>Man Page</title>
+        <para>Currently not implemented.</para>
       </section>
       <section>
         <title>Jmol Console</title>
+        <para>Shows the output to the System.err output stream.</para>
       </section>
     </section>
   </chapter>

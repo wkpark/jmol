@@ -197,7 +197,7 @@ public class TransformManager {
   final Vector3f vectorT = new Vector3f();
 
   public String getOrientationText() {
-    return getMoveToText() + "\nOR\n" + getRotateText();
+    return getMoveToText() + "\nOR\n" + getRotateZyzText();
   }
 
   String getMoveToText() {
@@ -231,12 +231,13 @@ public class TransformManager {
     return "" + sb;
   }
 
-  String getRotateText() {
+  /*
+  String getRotateXyzText() {
     StringBuffer sb = new StringBuffer();
     float m20 = matrixRotate.m20;
     float rY = -(float)Math.asin(m20) * degreesPerRadian;
     float rX, rZ;
-    if (m20 > .99f || m20 < -.99f) {
+    if (m20 > .999f || m20 < -.999f) {
       rX = -(float)Math.atan2(matrixRotate.m12, matrixRotate.m11) *
         degreesPerRadian;
       rZ = 0;
@@ -258,6 +259,57 @@ public class TransformManager {
     if (rZ != 0) {
       sb.append("; rotate z");
       truncate1(sb, rZ);
+    }
+    sb.append(";");
+    int zoom = getZoomPercent();
+    if (zoom != 100) {
+      sb.append(" zoom ");
+      sb.append(zoom);
+      sb.append(";");
+    }
+    int tX = getTranslationXPercent();
+    if (tX != 0) {
+      sb.append(" translate x ");
+      sb.append(tX);
+      sb.append(";");
+    }
+    int tY = getTranslationYPercent();
+    if (tY != 0) {
+      sb.append(" translate y ");
+      sb.append(tY);
+      sb.append(";");
+    }
+    return "" + sb;
+  }
+  */
+
+  String getRotateZyzText() {
+    StringBuffer sb = new StringBuffer();
+    float m22 = matrixRotate.m22;
+    float rY = (float)Math.acos(m22) * degreesPerRadian;
+    float rZ1, rZ2;
+    if (m22 > .999f || m22 < -.999f) {
+      rZ1 = (float)Math.atan2(matrixRotate.m10, matrixRotate.m11) *
+        degreesPerRadian;
+      rZ2 = 0;
+    } else {
+      rZ1 = (float)Math.atan2(matrixRotate.m21, -matrixRotate.m20) *
+        degreesPerRadian;
+      rZ2 = (float)Math.atan2(matrixRotate.m12, matrixRotate.m02) *
+        degreesPerRadian;
+    }
+    sb.append("reset");
+    if (rZ1 != 0) {
+      sb.append("; rotate z");
+      truncate1(sb, rZ1);
+    }
+    if (rY != 0) {
+      sb.append("; rotate y");
+      truncate1(sb, rY);
+    }
+    if (rZ2 != 0) {
+      sb.append("; rotate z");
+      truncate1(sb, rZ2);
     }
     sb.append(";");
     int zoom = getZoomPercent();

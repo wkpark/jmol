@@ -80,8 +80,10 @@ public class ChemFrame implements Transformable {
    */
   private Vector dhlist;
 
-  private Point3f centerPoint;
-  private float radius;
+  private Point3f centerGeometric;
+  private Point3f centerRotation;
+  private float radiusGeometric;
+  private float radiusRotation;
 
   public static void setBondFudge(float bf) {
     bondFudge = bf;
@@ -284,14 +286,34 @@ public class ChemFrame implements Transformable {
     return numberAtoms;
   }
 
-  public float getRadius() {
+  public float getGeometricRadius() {
     findBounds();
-    return radius;
+    return radiusGeometric;
   }
 
-  public Point3f getCenter() {
+  public Point3f getGeometricCenter() {
     findBounds();
-    return centerPoint;
+    return centerGeometric;
+  }
+
+  public Point3f getRotationCenter() {
+    findBounds();
+    return centerRotation;
+  }
+
+  public float getRotationRadius() {
+    findBounds();
+    return radiusRotation;
+  }
+
+  public void setRotationCenter(Point3f newCenterOfRotation) {
+    if (newCenterOfRotation != null) {
+      centerRotation = newCenterOfRotation;
+      radiusRotation = calculateRadius(centerRotation);
+    } else {
+      centerRotation = centerGeometric;
+      radiusRotation = radiusGeometric;
+    }
   }
 
   /**
@@ -383,49 +405,60 @@ public class ChemFrame implements Transformable {
    * @param x the x screen coordinate
    * @param y the y screen coordinate
    * @return the atom drawn closest to the coordinates.
+   * note that this will return null if the atom is more than 5 pixels
+   * outside the radius of the atom
+   * mth - this code has problems
+   * 1. doesn't take radius of atom into account until too late
+   * 2. doesn't take Z dimension into account, so it could select an atom
+   *    which is behind the one the user wanted
+   * 3. doesn't take into account the fact that hydrogens could be hidden
+   *    you can select a region and get extra hydrogens
    */
   public Atom getNearestAtom(int x, int y) {
     if (numberAtoms <= 0) {
       return null;
     }
     int dx, dy, dr2;
-    Atom smallest = null;
-    int smallr2 = Integer.MAX_VALUE;
+    Atom atomClosest = null;
+    int r2Closest = Integer.MAX_VALUE;
     for (int i = 0; i < numberAtoms; i++) {
       Atom atom = atoms[i];
       dx = atom.screenX - x;
       dy = atom.screenY - y;
       dr2 = dx * dx + dy * dy;
-      if (dr2 < smallr2) {
-        smallest = atom;
-        smallr2 = dr2;
+      if (dr2 < r2Closest) {
+        atomClosest = atom;
+        r2Closest = dr2;
       }
     }
-    return smallest;
+    int rClosest = (int)Math.sqrt(r2Closest);
+    return (rClosest > (atomClosest.screenDiameter / 2) + 5)
+      ? null
+      : atomClosest;
   }
 
   /**
    * Clears the bounds cache for this model.
    */
   private void clearBounds() {
-    centerPoint = null;
-    radius = 0.0f;
+    centerGeometric = centerRotation = null;
+    radiusGeometric = radiusRotation = 0.0f;
   }
 
   /**
    * Find the bounds of this model.
    */
   private void findBounds() {
-    if ((centerPoint != null) || (atoms == null) || (numberAtoms <= 0))
+    if ((centerGeometric != null) || (atoms == null) || (numberAtoms <= 0))
       return;
-    centerPoint = calculateCenterPoint();
-    radius = calculateRadius(centerPoint);
+    centerGeometric = centerRotation = calculateGeometricCenter();
+    radiusGeometric = radiusRotation = calculateRadius(centerGeometric);
   }
 
-  /**
-   * Note that this method is overridden by CrystalFrame
-   */
-  Point3f calculateCenterPoint() {
+  Point3f calculateGeometricCenter() {
+    /**
+     * Note that this method is overridden by CrystalFrame
+     */
     // First, find the center of the molecule. Current definition is the center
     // of the cartesian coordinates as stored in the file. Note that this is
     // not really the center because an atom could be stuck way up in one of
@@ -453,6 +486,9 @@ public class ChemFrame implements Transformable {
   }
 
   float calculateRadius(Point3f center) {
+    /**
+     * Note that this method is overridden by CrystalFrame
+     */
     // Now that we have defined the center, find the radius to the outermost
     // atom, including the radius of the atom itself. Note that this is
     // currently the vdw radius as scaled by the vdw display radius as set

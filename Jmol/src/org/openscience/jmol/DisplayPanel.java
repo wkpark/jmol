@@ -43,6 +43,7 @@ import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Point3f;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -66,9 +67,10 @@ public class DisplayPanel extends JPanel
   private static float scalePixelsPerAngstrom;
   private static float scaleDefaultPixelsPerAngstrom;
   private static final Matrix4f matrixRotate = new Matrix4f();
-  private static final Matrix4f matrixTemp = new Matrix4f();
   private static final Matrix4f matrixTranslate = new Matrix4f();
   private static final Matrix4f matrixViewTransform = new Matrix4f();
+  private static final Matrix4f matrixTemp = new Matrix4f();
+  private static final Vector3f vectorTemp = new Vector3f();
 
   // current dimensions of the display screen
   private static Dimension dimCurrent = null;
@@ -151,12 +153,11 @@ public class DisplayPanel extends JPanel
 
   public Matrix4f getPovTranslateMatrix() {
     Matrix4f matrixPovTranslate = new Matrix4f(matrixTranslate);
-    Vector3f vect = new Vector3f();
-    matrixPovTranslate.get(vect);
-    vect.x /= scalePixelsPerAngstrom;
-    vect.y /= -scalePixelsPerAngstrom; // need to invert y axis
-    vect.z /= scalePixelsPerAngstrom;
-    matrixPovTranslate.set(vect);
+    matrixPovTranslate.get(vectorTemp);
+    vectorTemp.x /= scalePixelsPerAngstrom;
+    vectorTemp.y /= -scalePixelsPerAngstrom; // need to invert y axis
+    vectorTemp.z /= scalePixelsPerAngstrom;
+    matrixPovTranslate.set(vectorTemp);
     return matrixPovTranslate;
   }
 
@@ -168,7 +169,8 @@ public class DisplayPanel extends JPanel
     matrixViewTransform.setIdentity();
     // first, translate the coordinates back to the center
     matrixTemp.setZero();
-    matrixTemp.setTranslation(new Vector3f(chemframe.getCenter()));
+    vectorTemp.set(chemframe.getRotationCenter());
+    matrixTemp.setTranslation(vectorTemp);
     matrixViewTransform.sub(matrixTemp);
     // now, multiply by angular rotations
     // this is *not* the same as  matrixViewTransform.mul(matrixRotate);
@@ -181,8 +183,12 @@ public class DisplayPanel extends JPanel
     matrixViewTransform.mul(matrixTranslate, matrixViewTransform);
     // now translate to the center of the screen
     matrixTemp.setZero();
-    matrixTemp.setTranslation(new Vector3f(dimCurrent.width / 2,
-                           dimCurrent.height / 2, dimCurrent.width / 2));
+    // This z dimension is here because of the approximations used
+    // to calculate atom sizes
+    vectorTemp.x =
+      vectorTemp.z = dimCurrent.width / 2;
+    vectorTemp.y = dimCurrent.height / 2;
+    matrixTemp.setTranslation(vectorTemp);
     matrixViewTransform.add(matrixTemp);
     return matrixViewTransform;
   }
@@ -191,7 +197,14 @@ public class DisplayPanel extends JPanel
     matrixRotate.setIdentity();
     matrixTranslate.setIdentity();
     scaleFitToScreen();
+    setRotateMode();
   }
+
+  public void setRotateMode() {
+      Jmol.setRotateButton();
+      modeMouse = ROTATE;
+  }
+    
 
   public void scaleFitToScreen() {
     minScreenDimension = dimCurrent.width;
@@ -204,16 +217,13 @@ public class DisplayPanel extends JPanel
     // leave a very small margin - only 1 on top and 1 on bottom
     if (minScreenDimension > 2)
       minScreenDimension -= 2;
-    scalePixelsPerAngstrom = minScreenDimension / 2 / chemframe.getRadius();
+    scalePixelsPerAngstrom =
+      minScreenDimension / 2 / chemframe.getRotationRadius();
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
 
     settings.setAtomScreenScale(scalePixelsPerAngstrom);
     settings.setBondScreenScale(scalePixelsPerAngstrom);
     settings.setVectorScreenScale(scalePixelsPerAngstrom);
-    if ((modeMouse == ZOOM) || (modeMouse == XLATE)) {
-      Jmol.setRotateButton();
-      modeMouse = ROTATE;
-    }
   }
 
   public void setFrame(int fr) {
@@ -270,22 +280,24 @@ public class DisplayPanel extends JPanel
 
       if (haveFile) {
         Atom atom = chemframe.getNearestAtom(e.getX(), e.getY());
-        if (atom != null) {
-          if (modeMouse == PICK) {
-            if (e.isShiftDown()) {
-              settings.addPickedAtom(atom);
-            } else {
-              settings.clearPickedAtoms();
-              settings.addPickedAtom(atom);
-            }
-            repaint();
-          } else if (modeMouse == DELETE) {
+        switch (modeMouse) {
+        case PICK:
+          if (!e.isShiftDown())
+            settings.clearPickedAtoms();
+          if (atom != null)
+            settings.addPickedAtom(atom);
+          repaint();
+          break;
+        case DELETE:
+          if (atom != null) {
             chemframe.deleteAtom(atom);
-            repaint();
             status.setStatus(2, "Atom deleted");
-          } else if (modeMouse == MEASURE) {
-            measure.firePicked(atom.getAtomNumber());
           }
+          repaint();
+          break;
+        case MEASURE:
+          if (atom != null)
+            measure.firePicked(atom.getAtomNumber());
         }
       }
     }
@@ -466,6 +478,7 @@ public class DisplayPanel extends JPanel
   private BottomAction bottomAction = new BottomAction();
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
+  private DefineCenterAction defineCenterAction = new DefineCenterAction();
   private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
@@ -824,6 +837,31 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class DefineCenterAction extends AbstractAction {
+
+    public DefineCenterAction() {
+      super("definecenter");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      int[] picked = settings.getPickedAtoms().elements();
+      Point3f center = null;
+      if (picked.length > 0) {
+        // just take the average of all the points
+        center = new Point3f(); // defaults to 0,0,0
+        for (int i = 0; i < picked.length; ++i)
+          center.add(chemframe.getAtomAt(picked[i]).getPosition());
+        center.scale(1.0f / picked.length); // just divide by the quantity
+      }
+      chemframe.setRotationCenter(center);
+      settings.clearPickedAtoms();
+      scaleFitToScreen();
+      setRotateMode();
+      repaint();
+    }
+  }
+
   class PlainAction extends AbstractAction {
 
     public PlainAction() {
@@ -907,6 +945,7 @@ public class DisplayPanel extends JPanel
     Action[] defaultActions = {
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
+      defineCenterAction,
       aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
       bshadingAction, blineAction, bwireframeAction, plainAction,
       symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,

@@ -173,7 +173,7 @@ public class PovraySaver extends FileSaver {
    * @param w the Writer to write it to
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
-    edge = cf.getRadius() * 2;
+    edge = cf.getRotationRadius() * 2;
     edge *= 1.1; // for some reason I need a little more margin
     edge /= scalingFactor;
 

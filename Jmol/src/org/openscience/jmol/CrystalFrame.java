@@ -41,7 +41,7 @@ public class CrystalFrame extends ChemFrame {
     return this.boxEdges;
   }
 
-  public Point3f calculateCenterPoint() {
+  public Point3f calculateGeometricCenter() {
     Point3f position = (Point3f) boxEdges.elementAt(0);
     float minX = position.x, maxX = minX;
     float minY = position.y, maxY = minY;

@@ -384,4 +384,16 @@ final public class Group {
     return null;
   }
 
+  boolean isGuanine() {
+    //    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
+    return (groupID == 25 ||
+            groupID == 26 ||
+            groupID >= 39 && groupID <= 45 ||
+            groupID >= 54 && groupID <= 56);
+  }
+
+  Atom getAtomID(int specialAtomID) {
+    System.out.println("Group.getAtomID(...) called");
+    return null;
+  }
 }

@@ -105,17 +105,48 @@ public class NucleotidePolymer extends Polymer {
     }
   }
 
+  void createHydrogenBond(Atom atom1, Atom atom2) {
+  }
+
   void lookForHbonds(NucleotidePolymer other) {
     for (int i = count; --i >= 0; ) {
       Group myNucleotide = groups[i];
       Atom myN1 = myNucleotide.getPurineN1();
-      if (myN1 == null)
-        continue;
-      for (int j = other.count; --j >= 0; ) {
-        Atom otherN3 = other.groups[j].getPyramidineN3();
-        if (otherN3 == null)
-          continue;
-        System.out.println("found a candidate hbond match");
+      if (myN1 != null) {
+        Atom bestN3 = null;
+        float minDist = 5*5;
+        Group otherNucleotide = null;
+        for (int j = other.count; --j >= 0; ) {
+          otherNucleotide = other.groups[j];
+          Atom otherN3 = otherNucleotide.getPyramidineN3();
+          if (otherN3 != null) {
+            float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
+            if (dist2 < minDist) {
+              bestN3 = otherN3;
+              minDist = dist2;
+            }
+          }
+        }
+        if (bestN3 != null) {
+          if (myNucleotide.isGuanine()) {
+            Atom myN2 = myNucleotide.getAtomID(JmolConstants.SPECIALATOMID_N2);
+            Atom otherO2 =
+              otherNucleotide.getAtomID(JmolConstants.SPECIALATOMID_O2);
+            if (myN2 != null && otherO2 != null)
+              createHydrogenBond(myN2, otherO2);
+            Atom myO6 = myNucleotide.getAtomID(JmolConstants.SPECIALATOMID_O6);
+            Atom otherN4 =
+              otherNucleotide.getAtomID(JmolConstants.SPECIALATOMID_N4);
+            if (myO6 != null && otherN4 != null)
+              createHydrogenBond(myN2, otherO2);
+          } else {
+            Atom myN6 = myNucleotide.getAtomID(JmolConstants.SPECIALATOMID_N6);
+            Atom otherO4 =
+              otherNucleotide.getAtomID(JmolConstants.SPECIALATOMID_O4);
+            if (myN6 != null && otherO4 != null)
+              createHydrogenBond(myN6, otherO4);
+          }
+        }
       }
     }
   }

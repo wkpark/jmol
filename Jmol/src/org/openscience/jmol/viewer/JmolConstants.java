@@ -1531,6 +1531,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     "C6",   // 31
     "N1",   // 32
+    "N2",   // 33
+    "O2",   // 34
+    "O6",   // 35
+    "N4",   // 36
+    "N6",   // 37
+    "O4",   // 38
   };
 
   public final static int SPECIALATOMID_MAINCHAIN_MAX = 4;
@@ -1541,7 +1547,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SPECIALATOMID_MAINCHAIN_IMPOSTERS = 4;
 
   public final static int SPECIALATOMID_NUCLEOTIDE_WING = 31;
-  public final static int SPECIALATOMID_NUCLEOTIDE_MAX = 32;
+
+  public final static int SPECIALATOMID_N1 = 32;
+  public final static int SPECIALATOMID_N2 = 33;
+  public final static int SPECIALATOMID_O2 = 34;
+  public final static int SPECIALATOMID_O6 = 35;
+  public final static int SPECIALATOMID_N4 = 36;
+  public final static int SPECIALATOMID_N6 = 37;
+  public final static int SPECIALATOMID_O4 = 38;
+    
+  public final static int SPECIALATOMID_NUCLEOTIDE_MAX = 39;
 
   public final static short RESID_AMINO_MAX = 22;
 

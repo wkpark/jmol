@@ -151,8 +151,8 @@ function jmolLink(script, text, id) {
   var t = "<a name='" + id + "' id='" + id + 
           "' href='javascript:_jmolClick(" + scriptIndex +
           _jmol.targetText +
-          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
-          ");return true' onMouseout='_jmolMouseOut()' " +
+          ");return false;' onMouseover='_jmolMouseOver(" + scriptIndex +
+          ");return true;' onMouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + text + "</a>";
   if (_jmol.debugAlert)
     alert(t);
@@ -549,7 +549,7 @@ function _jmolCheckBrowser() {
 }
 
 function _jmolPopup(url) {
-  var popup = window.open(url, "Jmol Popup",
+  var popup = window.open(url, "JmolPopup",
                           "left=150,top=150,height=400,width=600," +
                           "directories=yes,location=yes,menubar=yes," +
                           "toolbar=yes," +
@@ -598,10 +598,11 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName) {
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
   return "<input name='" + groupName +
-         "' type='radio' onClick='_jmolClick(" + scriptIndex +
-         _jmol.targetText +
-         ")' onMouseover='_jmolMouseOver(" + scriptIndex +
-         ");return true' onMouseout='_jmolMouseOut()' " +
+         "' type='radio' onClick='_jmolClick(" +
+         scriptIndex + _jmol.targetText +
+         ");return true;' onMouseover='_jmolMouseOver(" +
+         scriptIndex +
+         ");return true;' onMouseout='_jmolMouseOut()' " +
 	 (isChecked ? "checked " : "") + _jmol.radioCssText + "/>" +
          labelHtml + separatorHtml;
 }

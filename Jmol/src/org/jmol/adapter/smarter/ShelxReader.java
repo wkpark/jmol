@@ -133,20 +133,6 @@ class ShelxReader extends ModelReader {
       float c = parseFloat(line, ichNextParse);
       // skip the rest
       
-      /*
-      String elementSymbol;
-      if (atomName.length() > 1 &&
-          Character.isDigit(atomName.charAt(1))) {
-        // one letter code elementSymbol
-        char symbol = atomName.charAt(0);
-        if (symbol == 'Q' || symbol == 'q')
-          return;     // ignore atoms named Q
-        elementSymbol = "" + symbol;
-      } else {
-        elementSymbol = atomName.substring(0, 2);
-      }
-      */
-
       Atom atom = model.addNewAtom();
       atom.atomName = atomName;
       atom.scatterFactor = scatterFactor;

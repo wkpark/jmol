@@ -265,8 +265,7 @@ final public class Graphics3D {
     if (z < slab)
       return;
     if (diameter <= 1) {
-      if (diameter == 1)
-        plotPixelClipped(colix, x, y, z);
+      plotPixelClipped(colix, x, y, z);
     } else {
       sphere3d.render(colix, diameter, x, y, z);
     }

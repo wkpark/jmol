@@ -595,6 +595,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   char inlineNewlineChar = '|';
 
   public void loadInline(String strModel) {
+    System.out.println("loadInline called!:" + strModel);
     if (strModel != null) {
       if (inlineNewlineChar != 0) {
         int len = strModel.length();

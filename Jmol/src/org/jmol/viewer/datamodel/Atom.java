@@ -388,16 +388,16 @@ public final class Atom implements Bspt.Tuple {
                                        formalChargeAndFlags >> 4);
   }
 
-  int getMaximumValence() {
-    return JmolConstants.getMaximumValence(elementNumber,
-                                           formalChargeAndFlags >> 4);
+  int getMaximumAutoBondCount() {
+    return JmolConstants.getMaximumAutoBondCount(elementNumber,
+                                                 formalChargeAndFlags >> 4);
   }
 
-  int getCurrentValence() {
-    int currentValence = 0;
+  int getCurrentBondCount() {
+    int currentBondCount = 0;
     for (int i = (bonds == null ? 0 : bonds.length); --i >= 0; )
-      currentValence += bonds[i].order & JmolConstants.BOND_COVALENT;
-    return currentValence;
+      currentBondCount += bonds[i].order & JmolConstants.BOND_COVALENT;
+    return currentBondCount;
   }
 
   // find the longest bond to discard

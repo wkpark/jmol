@@ -723,18 +723,18 @@ final public class Frame {
   void checkValencesAndBond(Atom atomA, Atom atomB, int order) {
     //    System.out.println("checkValencesAndBond(" +
     //                       atomA.point3f + "," + atomB.point3f + ")");
-    int maxValenceA = atomA.getMaximumValence();
-    if (maxValenceA == 0)
+    int maxBondCountA = atomA.getMaximumAutoBondCount();
+    if (maxBondCountA == 0)
       return;
-    int maxValenceB = atomB.getMaximumValence();
-    if (maxValenceB == 0)
+    int maxBondCountB = atomB.getMaximumAutoBondCount();
+    if (maxBondCountB == 0)
       return;
-    int currentValenceA = atomA.getCurrentValence();
-    //    System.out.println("currentValenceA=" + currentValenceA);
-    boolean availableA = currentValenceA < maxValenceA;
-    int currentValenceB = atomB.getCurrentValence();
-    //    System.out.println("currentValenceB=" + currentValenceB);
-    boolean availableB = currentValenceB < maxValenceB;
+    int currentBondCountA = atomA.getCurrentBondCount();
+    //    System.out.println("currentBondCountA=" + currentBondCountA);
+    boolean availableA = currentBondCountA < maxBondCountA;
+    int currentBondCountB = atomB.getCurrentBondCount();
+    //    System.out.println("currentBondCountB=" + currentBondCountB);
+    boolean availableB = currentBondCountB < maxBondCountB;
     if (!availableA && availableB) {
       //      System.out.println("a is not available but B is");
       Bond bondToDiscard = atomA.getLongestBondToDiscard(atomB);

@@ -561,36 +561,35 @@ final public class JmolConstants {
   };
 
   /**
-   * Default table of covalent Radii + valence
+   * Default table of covalent Radii + MaxBonds
    * stored as a short mar ... Milli Angstrom Radius
-   * valence is stored in the top 4 bits
+   * maximum number of bonds is stored in the top 4 bits
    * Used for bonding atoms when the client does not supply bonds. 
    * Values taken from OpenBabel.
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
    */
-  private final static short[] covalentMarsAndValence = {
-    (0 << 12) + 0, //   0  Xx big enough to bring attention to itself
-    (1 << 12) + 230, //   1  H
-    (0 << 12) + 930, //   2  He
-    (1 << 12) + 680, //   3  Li
-    (2 << 12) + 350, //   4  Be
-    (3 << 12) + 830, //   5  B
-    (4 << 12) + 680, //   6  C
-    (4 << 12) + 680, //   7  N
-    (2 << 12) + 680, //   8  O
-    (1 << 12) + 640, //   9  F
-    //    1120, //  10  Ne // this will need to change back once we get covalent
-    (0 << 12) + 0,   //  10  Ne        // bonding orders in place
-    (1 << 12) + 970, //  11  Na
+  private final static short[] covalentMarsAndMaxBonds = {
+    (0 << 12) + 0,    //   0  Xx big enough to bring attention to itself
+    (1 << 12) + 230,  //   1  H
+    (0 << 12) + 930,  //   2  He
+    (1 << 12) + 680,  //   3  Li
+    (2 << 12) + 350,  //   4  Be
+    (3 << 12) + 830,  //   5  B
+    (4 << 12) + 680,  //   6  C
+    (4 << 12) + 680,  //   7  N
+    (2 << 12) + 680,  //   8  O
+    (1 << 12) + 640,  //   9  F
+    (0 << 12) + 1120, //  10  Ne
+    (1 << 12) + 970,  //  11  Na
     (2 << 12) + 1100, //  12  Mg
     (6 << 12) + 1350, //  13  Al
     (6 << 12) + 1200, //  14  Si
-    (5 << 12) + 750, //  15  P
+    (5 << 12) + 750,  //  15  P
     (6 << 12) + 1020, //  16  S
-    (1 << 12) + 990, //  17  Cl
+    (1 << 12) + 990,  //  17  Cl
     (0 << 12) + 1570, //  18  Ar
     (1 << 12) + 1330, //  19  K
-    (2 << 12) + 990, //  20  Ca
+    (2 << 12) + 990,  //  20  Ca
     (6 << 12) + 1440, //  21  Sc
     (6 << 12) + 1470, //  22  Ti
     (6 << 12) + 1330, //  23  V
@@ -1093,15 +1092,15 @@ final public class JmolConstants {
           return ionicMars[iMid];
       }
     }
-    return (short)(covalentMarsAndValence[elementNumber] & 0x0FFF);
+    return (short)(covalentMarsAndMaxBonds[elementNumber] & 0x0FFF);
   }
 
-  public static int getMaximumValence(int elementNumber, int charge) {
+  public static int getMaximumAutoBondCount(int elementNumber, int charge) {
     if (charge != 0) {
       // I don't know what this should be
       return 8;
     }
-    return (covalentMarsAndValence[elementNumber] >> 12) & 0x0F;
+    return (covalentMarsAndMaxBonds[elementNumber] >> 12) & 0x0F;
   }
 
 
@@ -1259,14 +1258,14 @@ final public class JmolConstants {
     // java compiler should eliminate all of this code.
     if ((elementSymbols.length != elementNames.length) ||
         (elementSymbols.length != vanderwaalsMars.length) ||
-        (elementSymbols.length != covalentMarsAndValence.length) ||
+        (elementSymbols.length != covalentMarsAndMaxBonds.length) ||
         (elementSymbols.length != argbsCpk.length)) {
       System.out.println("ERROR!!! Element table length mismatch:" +
                          "\n elementSymbols.length=" + elementSymbols.length +
                          "\n elementNames.length=" + elementNames.length +
                          "\n vanderwaalsMars.length=" + vanderwaalsMars.length+
-                         "\n covalentMarsAndValence.length=" +
-                         covalentMarsAndValence.length +
+                         "\n covalentMarsAndMaxBonds.length=" +
+                         covalentMarsAndMaxBonds.length +
                          "\n argbsCpk.length=" + argbsCpk.length);
     }
   }

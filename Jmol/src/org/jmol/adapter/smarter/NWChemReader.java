@@ -28,12 +28,35 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
+/**
+ * A reader for NWChem 4.6
+ * NWChem is a quantum chemistry program developed at
+ * Pacific Northwest National Laboratory.
+ *
+ * <p>AtomSets will be generated for
+ * output coordinates in angstroms,
+ * energy gradients with vector information of the gradients,
+ * and frequencies with an AtomSet for every separate frequency containing
+ * vector information of the vibrational mode.
+**/
+
 class NWChemReader extends AtomSetCollectionReader {
 
   // multiplication factor to go from AU to Angstrom
+  /**
+   * Conversion factor from atomic units to Angstrom based on the NWChem
+   * reported conversion value.
+   **/
   private final static float AU2ANGSTROM = (float) (1.0/1.889725989);  
   
+  /**
+   * The number of atoms read for the current or last AtomSet.
+   **/
   private int atomCount  = 0;  // the number of atoms in the last read model
+  
+  /**
+   * The number of AtomSets read. Used for assigning the modelNumber in the Atoms.
+   **/
   private int modelCount = 0;  // the number of models I have  
   // it looks like model numbers really need to start with 1 and not 0 otherwise
   // a single frequency calculation can not go to the first frequency
@@ -85,6 +108,9 @@ class NWChemReader extends AtomSetCollectionReader {
       Atomic Mass 
 */
 
+  /**
+   * Reads the output coordinates section into a new AtomSet.
+   **/
   private void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 3); // skip blank line, titles and dashes
     String line;
@@ -117,6 +143,13 @@ class NWChemReader extends AtomSetCollectionReader {
 */
 // NB one could consider removing the previous read structure since that
 // must have been the input structure for the optimizition?
+  /**
+   * Reads the energy gradients section into a new AtomSet.
+   *
+   * <p>One could consider not adding a new AtomSet for this, but just
+   * adding the gradient vectors to the last AtomSet read (if that was
+   * indeed the same nuclear arrangement).
+   **/
   private void readGradients(BufferedReader reader) throws Exception {
     discardLines(reader, 3); // skip blank line, titles and dashes
     String line;
@@ -210,6 +243,12 @@ class NWChemReader extends AtomSetCollectionReader {
  ----------------------------------------------------------------------------
 */
 
+  /**
+   * Reads the AtomSet and projected frequencies in the frequency section.
+   *
+   * <p>Attaches the vibration vectors of the projected frequencies to
+   * duplicates of the atom information in the frequency section.
+   **/
   private void readFrequencies(BufferedReader reader) throws Exception {
     String line, tokens[];
     
@@ -289,6 +328,15 @@ class NWChemReader extends AtomSetCollectionReader {
     }
   }
 
+  /**
+   * Returns a modified identifier for a tag, so that the element can be determined
+   * from it in the {@link Atom}.
+   *<p> The result is that a tag that started with Bq (case insensitive) will
+   * be renamed to have the Bq removed and '-Bq' appended to it.
+   * 
+   * @param tag the tag to be modified
+   * @return a possibly modified tag
+   **/
   private String fixTag(String tag) {
     // make sure that Bq's are not interpreted as boron
     if (tag.toLowerCase().startsWith("bq"))
@@ -296,7 +344,18 @@ class NWChemReader extends AtomSetCollectionReader {
     return tag;
   }
 
-// duplicate the last model 
+// duplicate the last model
+  /**
+   * Duplicates the last read AtomSet.
+   *<p>
+   * Useful for creating a duplicate of an AtomSet in order to put vibrational
+   * vectors on them for each vibrational mode encountered.
+   *<p><b>Note</b> Maybe we replace this by a method in the super
+   * class in which case it would require two arguments: the number of atoms in
+   * the last model (our local version of atomCount), and the modelNumber to be
+   * used for the cloned atoms. We could call it
+   * cloneAtomSet(int nAtoms, int modelNumber).
+   **/
   private void duplicateLastModel() {
     Atom[] atoms = atomSetCollection.atoms;
     int atomOffset = atomSetCollection.atomCount - atomCount; // first atom to be duplicated

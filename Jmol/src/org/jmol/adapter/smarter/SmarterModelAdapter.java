@@ -80,6 +80,10 @@ public class SmarterModelAdapter extends ModelAdapter {
   public String getModelFileHeader(Object clientFile) {
     return ((AtomSetCollection)clientFile).fileHeader;
   }
+  
+  public String getAtomSetName(Object clientFile, int atomSetIndex) {
+    return ((AtomSetCollection)clientFile).getAtomSetName(atomSetIndex);
+  }
 
   /****************************************************************
    * The frame related methods

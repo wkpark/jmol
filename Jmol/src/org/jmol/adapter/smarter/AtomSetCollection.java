@@ -40,6 +40,10 @@ class AtomSetCollection {
   Bond[] bonds = new Bond[256];
   int structureCount;
   Structure[] structures = new Structure[16];
+  
+  // atomName stuff
+  String[] atomSetNames = new String[16];
+  int atomSetNameCount = 0;
 
   String errorMessage;
   String fileHeader;
@@ -174,5 +178,39 @@ class AtomSetCollection {
     if (value != null)
       index = ((Integer)value).intValue();
     return index;
+  }
+  
+  /**
+   * Sets the atomSetName.
+   *
+   * @param atomSetIndex The index of the atomSet to be named.
+   * @param atomSetName The name to be associated with the atomSet.
+   **/
+  void setAtomSetName(int atomSetIndex, String atomSetName) {
+    if (atomSetIndex > atomSetNames.length) {
+      // extend the atomSetNames array to be able to hold
+      int newAtomSetNameCount = atomSetNameCount;
+      if (atomSetNameCount < atomSetIndex) {
+        while (atomSetNameCount < atomSetIndex)
+          atomSetNameCount += 16;
+        atomSetNames = (String[])AtomSetCollectionReader.setLength(atomSetNames,
+                                                                atomSetNameCount);
+      }
+      atomSetNames[atomSetIndex] = atomSetName;
+    }
+  }
+  
+  /**
+   * Returns the AtomSetName.
+   *
+   * <P>If the atomSetIndex refers to an atomSet whose name is not set,
+   **/
+  public String getAtomSetName(int atomSetIndex) {
+    try {
+      return atomSetNames[atomSetIndex]; 
+    }
+    finally {
+      return "AtomSet " + atomSetIndex; 
+    }
   }
 }

@@ -537,6 +537,7 @@ public class Token {
     "_e",           tokenElemno,
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
+    "relativetemperature",  null,
     "_bondedcount", new Token(_bondedcount, "_bondedcount"),
     "_groupID",     new Token(_groupID, "_groupID"),
     "_g",           null,
@@ -596,9 +597,7 @@ public class Token {
     "jmol",         new Token(jmol,            "jmol"),
     "displacement", new Token(displacement,    "displacement"),
     "type",         new Token(type,            "type"),
-    "fixedtemp",    new Token(fixedtemp,       "fixedtemp"),
-    "fixedtemperature", null,
-
+    "fixedtemperature", new Token(fixedtemp,       "fixedtemperature"),
   };
 
   static Hashtable map = new Hashtable();

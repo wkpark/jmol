@@ -6,7 +6,7 @@
   <bookinfo>
     <title>Jmol Developer's Guide</title>
   </bookinfo>
-
+  
   <chapter id="Prerequisites">
     <title>Prerequisites</title>
     <para>
@@ -344,6 +344,179 @@ cvs checkout -r b6 -d Jmol-6 Jmol
       </section>
     </section>
   </chapter>
+
+  <chapter id="Eclipse">
+    <title>Using Eclipse</title>
+    
+    <section id="Eclipse_prerequisites">
+      <para>
+        This documentation has been tested with Eclipse 3.01.
+      </para>
+      <para>
+        Eclipse must be installed and correctly configured before
+        following this procedure.
+      </para>
+    </section>
+    
+    <section id="Eclipse_CVSConfig">
+      <title>CVS Repository configuration</title>
+      <para>
+        To configure Eclipse to access Jmol's CVS repository, do
+        the following :
+      </para>
+      <para><itemizedlist>
+        <listitem>
+          Launch Eclipse.
+        </listitem>
+        <listitem>
+          Switch to the <command>CVS Repository Exploring</command>
+          perspective.
+        </listitem>
+        <listitem>
+          Right click in the <command>CVS Repositories</command> windows
+          and select <command>New</command> / <command>Repository
+          Location...</command> in the contextual menu.
+        </listitem>
+        <listitem>
+          In the <command>Add CVS Repository</command> window, enter the
+          following values:
+          <itemizedlist>
+            <listitem>
+              Host: <command>cvs.sourceforge.net</command>
+            </listitem>
+            <listitem>
+              Repository path: <command>/cvsroot/jmol</command>
+            </listitem>
+            <listitem>
+              Authentication: <command>anonymous</command> for
+              anonymous access, or your login for developer
+              access.
+            </listitem>
+            <listitem>
+              Password: empty for anonymous access, or your
+              password for developer access.
+            </listitem>
+            <listitem>
+              Connection type: <command>pserver</command> for
+              anonymous access, <command>extssh</command> for
+              developer access.
+            </listitem>
+            <listitem>
+              Check <command>Use Default Port</command> and
+              <command>Validate Connection on Finish</command>.
+            </listitem>
+            <listitem>
+              You can choose to check <command>Save
+              Password</command> or not.
+            </listitem>
+            <listitem>
+              Click on <command>Finish</command>.
+            </listitem>
+          </itemizedlist>
+        </listitem>
+      </itemizedlist></para>
+    </section>
+    
+    <section id="Eclipse_CheckingOut">
+      <title>Checking Out Jmol from CVS</title>
+      <para>
+        To check out Jmol from CVS, do the following :
+      </para>
+      <para><itemizedlist>
+        <listitem>
+          Switch to the <command>CVS Repository Exploring</command>
+          perspective.
+        </listitem>
+        <listitem>
+          Deploy the repository location you added in the previous
+          section and deploy <command>HEAD</command>.
+        </listitem>
+        <listitem>
+          Right click on <command>Jmol</command> and select
+          <command>Check Out As...</command> in the contextual
+          menu.
+        </listitem>
+        <listitem>
+          In the <command>Check Out As</command> window, check the
+          <command>Check out as a project in the workspace</command>
+          and type <command>Jmol-HEAD</command> in the
+          <command>Project Name</command> field. Click on
+          <command>Finish</command>.
+        </listitem>
+        <listitem>
+          If you want, you can also check out Jmol-web: Right click on
+          <command>Jmol-web</command> and select
+          <command>Check out</command> in the contextual menu.
+        </listitem>
+      </itemizedlist></para>
+    </section>
+    
+    <section id="Eclipse_Configuring">
+      <title>Configuring Eclipse to build Jmol</title>
+      <para>
+        To configure Eclipse to build Jmol, you can do the following:
+      </para>
+      <para><itemizedlist>
+        <listitem>
+          Switch to the <command>Java</command> perspective.
+        </listitem>
+        <listitem>
+          Right click on <command>Jmol-HEAD</command> and select
+          <command>Properties</command> in the contextual menu.
+        </listitem>
+        <listitem>
+          In the <command>Properties for Jmol-HEAD</command> window,
+          select <command>Java Compiler</command>.
+        </listitem>
+        <listitem>
+          Check <command>Use project settings</command>.
+        </listitem>
+        <listitem>
+          In the <command>Style</command> tab, select
+          <command>Warning</command> for every combo-box, except for
+          <command>Unqualified access to instance field</command> and
+          <command>Undocumented empty block</command> where you can
+          select <command>Ignore</command>.
+        </listitem>
+        <listitem>
+          In the <command>Advanced</command> tab, select
+          <command>Warning</command> for every combo-box, except for
+          <command>Local variable declaration hides another field or
+          variable</command>, <command>Usage of deprecated API</command>
+          and <command>Usage of non-externalized strings</command> where
+          you can select <command>Ignore</command>.
+        </listitem>
+        <listitem>
+          In the <command>Unused code</command> tab, select
+          <command>Warning</command> for every combo-box, except for
+          <command>Parameter is never read</command> and
+          <command>Unnecessary cast or 'instance of' operation</command>
+          where you can select <command>Ignore</command>.
+        </listitem>
+      </itemizedlist></para>
+    </section>
+    
+    <section id="Eclipse_Running">
+      <title>Running and Debugging Jmol</title>
+      <para>
+        Eclipse can be used to run and debug Jmol directly in Eclipse.
+      </para>
+      <para>
+        The main class is <command>org.openscience.jmol.app.Jmol</command>.
+      </para>
+    </section>
+    
+    <section id="Eclipse_Building">
+      <title>Building Jmol</title>
+      <para>
+        To make a full build of Jmol under Eclipse, just do the following:
+        Right click on <command>build.xml</command> and select
+        <command>Run</command> / <command>Ant Build</command> in the
+        contextual menu.
+      </para>
+    </section>
+  </chapter>
+  
 </book>
 
 

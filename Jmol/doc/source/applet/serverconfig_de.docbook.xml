@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<chapter>
-  <title>Web-Server Konfiguration für den Einsatz von JmolApplet</title>
-  <para>JmolApplet wird auf dem Web-Server wie jedes andere Java-Applet konfiguriert.</para>
-  <para>The JmolApplet.jar and Jmol.js files are placed in a directory on your web server. We advise placing them in a in a sibling directory or subdirectory of your .html pages ... something like <command>../jmol</command> or <command>./jmol</command></para>
-  <para>Alle Java-Klassen, die das Applet benötigt, befinden sich in JmolApplet.jar.</para>
-  <para>Das Applet läuft als unsigned/untrusted Applet. Daher sind keine weiteren Schritte notwendig, die Applet-Authentizität für den Endbenutzer zu verifizieren.</para>
-</chapter>

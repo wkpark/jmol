@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<chapter>
-  <title>Hardware- und Bestriebssystem-Voraussetzungen</title>
-  <para>Wir empfehlen ein System mit 600 MHz CPU und 256 MB RAM. Damit sollten die meisten in diesem Jahrhundert hergstellten Computer abgedeckt sein.</para>
-  <para>Fall Sie eine ältere CPU mit einem neuen/aktuellen Betriebssystem einsetzen (z.B. Mac OSX oder WinXP), dann empfehlen wir Ihnen <emphasis>dringend</emphasis> den Einsatz von <emphasis>mindestens</emphasis> 256 MB RAM ... mehr ist in diesem Fall besser.</para>
-  <para><emphasis>Es wird keine spezielle Graik-/Video-Hardware benötigt. </emphasis></para>
-</chapter>

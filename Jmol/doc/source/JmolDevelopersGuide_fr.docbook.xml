@@ -280,7 +280,7 @@
       devrait &ecirc;tre commit&eacute; sous CVS dans le r&eacute;pertoire
       Jmol/packaging. Actuellement, les packages suivants sont disponibles:
       <itemizedlist>
-        <listitem><para>Debian (par Egon Willighagen) </para></listitem>
+        <listitem><para>Debian (par Daniel Leidert &amp; Egon Willighagen) </para></listitem>
         <listitem><para>RPM (par Miguel Howard) </para></listitem>
       </itemizedlist>
     </para>

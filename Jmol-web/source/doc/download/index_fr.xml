@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index.xml (v 1.1)
+  Translated from default version : index.xml (v 1.2)
 -->
 <document>
   <body>
@@ -21,6 +21,7 @@
             </a>
           </li>
         </ul>
+        Des versions de tests sont aussi disponibles de temps en temps au m&#x00EA;me endroit.
 <!--      
         Avec un certain d&#x00E9;lai, les packages binaires et sources
         sont disponibles, aussi bien sur Debian GNU/Linux (voir ci-dessous)

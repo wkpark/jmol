@@ -31,6 +31,7 @@ import org.openscience.jmol.viewer.protein.*;
 import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 class CartoonRenderer extends Renderer {
 
@@ -156,28 +157,96 @@ class CartoonRenderer extends Renderer {
       Point3f[] segments = structurePending.getSegments();
       int residueNumberStart = structurePending.getResidueNumberStart();
       int iStart = beginPending - residueNumberStart;
-      viewer.transformPoint(segments[iStart], screenA);
       int iEnd = endPending - residueNumberStart + 1;
-      viewer.transformPoint(segments[iEnd], screenB);
-      boolean tRocketCap = (iEnd == structurePending.getResidueCount());
-      if (tRocketCap) {
-        viewer.transformPoint(segments[iEnd - 1], screenC);
-        int capDiameter =
-          viewer.scaleToScreen(screenC.z, madPending + (madPending >> 2));
-        g3d.fillCone(colixPending, Graphics3D.ENDCAPS_FLAT, capDiameter,
-                     screenC, screenB);
-        if (beginPending == endPending)
-          return;
-        Point3i t = screenB;
-        screenB = screenC;
-        screenC = t;
-      }
-      int zMid = (screenA.z + screenB.z) / 2;
-      int diameter = viewer.scaleToScreen(zMid, madPending);
-      g3d.fillCylinder(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
-                       screenA, screenB);
+      boolean tEnd = (iEnd == structurePending.getResidueCount());
+      if (structurePending instanceof Helix)
+        renderPendingHelix(segments[iStart],
+                           segments[iEnd - 1], segments[iEnd],
+                           tEnd);
+      else
+        renderPendingSheet(segments[iStart],
+                           segments[iEnd - 1], segments[iEnd],
+                           tEnd);
       tPending = false;
     }
   }
+
+  void renderPendingHelix(Point3f pointStart, Point3f pointBeforeEnd,
+                          Point3f pointEnd, boolean tEnd) {
+    viewer.transformPoint(pointStart, screenA);
+    viewer.transformPoint(pointEnd, screenB);
+    if (tEnd) {
+      viewer.transformPoint(pointBeforeEnd, screenC);
+      int capDiameter =
+        viewer.scaleToScreen(screenC.z, madPending + (madPending >> 2));
+      g3d.fillCone(colixPending, Graphics3D.ENDCAPS_FLAT, capDiameter,
+                   screenC, screenB);
+      if (beginPending == endPending)
+        return;
+      Point3i t = screenB;
+      screenB = screenC;
+      screenC = t;
+    }
+    int zMid = (screenA.z + screenB.z) / 2;
+    int diameter = viewer.scaleToScreen(zMid, madPending);
+    g3d.fillCylinder(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
+                     screenA, screenB);
+  }
+
+  void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
+                          Point3f pointEnd, boolean tEnd) {
+    if (tEnd) {
+      drawArrowHead(pointBeforeEnd, pointEnd);
+      drawBox(pointStart, pointBeforeEnd);
+    } else {
+      drawBox(pointStart, pointEnd);
+    }
+  }
+
+  final Point3f pointArrow1 = new Point3f();
+  final Point3f pointArrow2 = new Point3f();
+  final Vector3f vectorNormal = new Vector3f();
+
+  void drawArrowHead(Point3f base, Point3f tip) {
+    Sheet sheet = (Sheet)structurePending;
+    Vector3f widthUnitVector = sheet.getWidthUnitVector();
+    Vector3f heightUnitVector = sheet.getHeightUnitVector();
+    float widthScale = (madPending + madPending >> 2) / 2 / 1000f;
+
+    pointArrow1.set(widthUnitVector);
+    pointArrow1.scaleAdd(-widthScale, base);
+    viewer.transformPoint(pointArrow1, screenA);
+
+    pointArrow2.set(widthUnitVector);
+    pointArrow2.scaleAdd(widthScale, base);
+    viewer.transformPoint(pointArrow2, screenB);
+
+    viewer.transformPoint(tip, screenC);
+
+    viewer.transformVector(heightUnitVector, vectorNormal);
+
+    g3d.drawfillTriangle(Colix.YELLOW, vectorNormal,
+                         screenA, screenB, screenC);
+  }
+
+  final Vector3f vectorLength = new Vector3f();
+
+  void drawBox(Point3f pointA, Point3f pointB) {
+    Sheet sheet = (Sheet)structurePending;
+    Vector3f widthUnitVector = sheet.getWidthUnitVector();
+    Vector3f heightUnitVector = sheet.getHeightUnitVector();
+    vectorLength.sub(pointB, pointA);
+    float widthScale = madPending / 2 / 1000f;
+
+    /*
+    calcBoxPoints(pointA, widthUnitVector, heightUnitVector, lengthVector,
+                  widthScale);
+    */
+
+    viewer.transformPoint(pointA, screenA);
+    viewer.transformPoint(pointB, screenB);
+    g3d.drawLine(Colix.YELLOW, screenA, screenB);
+  }
+
 }
 

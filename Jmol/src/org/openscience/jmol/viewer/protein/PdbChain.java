@@ -79,6 +79,10 @@ public class PdbChain {
     return getResidue(residueNumber).getAlphaCarbonAtom().point3f;
   }
 
+  Point3f getResiduePoint(int residueNumber, int mainchainIndex) {
+    return getResidue(residueNumber).getMainchainAtom(mainchainIndex).point3f;
+  }
+
   int mainchainHelper(boolean addResidues) {
     int mainchainCount = 0;
     outer:

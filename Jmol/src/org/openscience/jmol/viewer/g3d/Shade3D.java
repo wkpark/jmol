@@ -25,6 +25,8 @@
 
 package org.openscience.jmol.viewer.g3d;
 
+import javax.vecmath.Vector3f;
+
 public class Shade3D {
 
   public final static byte shadeAmbient = 0;
@@ -101,8 +103,9 @@ public class Shade3D {
     return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
   }
 
-  public static byte calcIntensityNormalized(float x, float y, float z) {
+  public final static byte intensitySpecularSurfaceLimit = 44;
 
+  public static byte calcIntensityNormalized(float x, float y, float z) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
     float intensity = intensityAmbient; // ambient component
     if (cosTheta > 0) {
@@ -121,4 +124,5 @@ public class Shade3D {
     if (shade >= shadeMax) shade = shadeMax-1;
     return (byte)shade;
   }
+
 }

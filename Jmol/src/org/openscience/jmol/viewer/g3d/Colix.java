@@ -130,4 +130,14 @@ public class Colix {
       shades = ashades[colix] = Shade3D.getShades(argbs[colix]);
     return shades;
   }
+
+  public static int getArgbSurface(short colix,
+                                   float x, float y, float z) {
+    int intensity = (z >= 0
+                     ? Shade3D.calcIntensity(x, y, z)
+                     : Shade3D.calcIntensity(-x, -y, -z));
+    if (intensity > Shade3D.intensitySpecularSurfaceLimit)
+      intensity = Shade3D.intensitySpecularSurfaceLimit;
+    return getShades(colix)[intensity];
+  }
 }

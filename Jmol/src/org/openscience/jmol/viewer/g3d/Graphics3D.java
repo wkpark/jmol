@@ -35,6 +35,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 final public class Graphics3D {
 
@@ -369,6 +370,12 @@ final public class Graphics3D {
                     pointB.x, pointB.y, pointB.z, false);
   }
 
+  public void drawLine(short colix, Point3i pointA, Point3i pointB) {
+    line3d.drawLine(Colix.getArgb(colix),
+                    pointA.x, pointA.y, pointA.z,
+                    pointB.x, pointB.y, pointB.z, false);
+  }
+
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
     line3d.drawLine(Colix.getArgb(colix),
                     pointA.x, pointA.y, pointA.z,
@@ -427,6 +434,25 @@ final public class Graphics3D {
     triangle3d.ax[1] = ax[3];
     triangle3d.ay[1] = ay[3];
     triangle3d.az[1] = az[3];
+    triangle3d.fillTriangle();
+  }
+
+  public void drawfillTriangle(short colix, Vector3f normal,
+                               Point3i screenA,
+                               Point3i screenB, Point3i screenC) {
+    int argb = argbCurrent =
+      Colix.getArgbSurface(colix, normal.x, normal.y, normal.z);
+    drawLine(screenA, screenB);
+    drawLine(screenA, screenC);
+    drawLine(screenB, screenC);
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
+    t = triangle3d.ay;
+    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
+    t = triangle3d.az;
+    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
+
     triangle3d.fillTriangle();
   }
 
@@ -515,7 +541,8 @@ final public class Graphics3D {
 
   }
 
-  public void fillHermite(short colix, int diameterBeg, int diameterMid, int diameterEnd,
+  public void fillHermite(short colix, int diameterBeg,
+                          int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
     hermite3d.render(true, colix, diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);

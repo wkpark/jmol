@@ -52,6 +52,44 @@ public class Sheet extends PdbStructure {
     axisA = tempA;
     axisB = tempB;
   }
+
+  Vector3f widthUnitVector;
+  Vector3f heightUnitVector;
+
+  void calcSheetUnitVectors() {
+    if (widthUnitVector == null) {
+      Vector3f vectorCO = new Vector3f();
+      Vector3f vectorCOSum = new Vector3f();
+      vectorCOSum.sub(chain.getResiduePoint(residueStart, 3),
+                      chain.getResiduePoint(residueStart, 2));
+      for (int i = 1; i < count; ++i) {
+        vectorCO.sub(chain.getResiduePoint(residueStart, 3),
+                     chain.getResiduePoint(residueStart, 2));
+        if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)
+          vectorCOSum.add(vectorCO);
+        else
+          vectorCOSum.sub(vectorCO);
+      }
+      heightUnitVector = vectorCO;
+      heightUnitVector.cross(axisUnitVector, vectorCOSum);
+      heightUnitVector.normalize();
+      widthUnitVector = vectorCOSum;
+      widthUnitVector.cross(axisUnitVector, heightUnitVector);
+    }
+  }
+
+  public Vector3f getWidthUnitVector() {
+    if (widthUnitVector == null)
+      calcSheetUnitVectors();
+    return widthUnitVector;
+  }
+
+  public Vector3f getHeightUnitVector() {
+    if (heightUnitVector == null)
+      calcSheetUnitVectors();
+    return heightUnitVector;
+  }
+
   /*
 
     Vector3f vectorT = new Vector3f();

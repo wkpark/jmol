@@ -6,10 +6,10 @@
     <section title="Contributors">
       Improvements to Jmol are thanks to many talented developers.
       <contributors>
-      <contributor id="DG"><name>Dan Gezelter</name><email>gezelter@openscience.org</email></contributor>
       <contributor id="BS"><name>Bradley A. Smith</name><email>bradley@baysmith.com</email></contributor>
-      <contributor id="CS"><name>Christoph Steinbeck</name><email>steinbeck@ice.mpg.de</email></contributor>
       <contributor id="EW"><name>E.L. Willighagen</name><email>egonw@sci.kun.nl</email></contributor>
+      <contributor id="DG"><name>Dan Gezelter</name><email>gezelter@openscience.org</email></contributor>
+      <contributor id="CS"><name>Christoph Steinbeck</name><email>steinbeck@ice.mpg.de</email></contributor>
       <contributor id="TG"><name>Tom Grey</name><email>t.grey@ic.ac.uk</email></contributor>
       <contributor id="CF"><name>Charles Fulton</name><email>fultoncr@ucarb.com</email></contributor>
       <contributor id="MB"><name>Mike Beachy</name><email>beachy@alum.mit.edu</email></contributor>
@@ -27,6 +27,25 @@
       <changes version="jmol-3">
         <change contributor="CR">
           Export of BMP and PNG images.
+        </change>
+        <change contributor="BS, JJ">
+          Rendering of multiple bonds.
+        </change>
+        <change contributor="BS">
+          Scaling of vector arrowheads by magnitude which shows significant
+          vectors more clearly.
+        </change>
+        <change contributor="BS">
+          Fixed bugs 547574 and 548591.
+        </change>
+        <change contributor="BS">
+          Adjustable scaling of vector length from -2.0 to 2.0 times length.
+        </change>
+        <change contributor="EW">
+          Import of Ghemical MM files.
+        </change>
+        <change contributor="BS">
+          Automatic file type determination used for all loading of files.
         </change>
       </changes>
 

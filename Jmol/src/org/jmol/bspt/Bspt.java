@@ -68,11 +68,11 @@ package org.jmol.bspt;
 
 public final class Bspt {
 
-  private final static int leafCountMax = 16;
+  final static int leafCountMax = 16;
   // this corresponds to the max height of the tree
-  private final static int MAX_TREE_DEPTH = 100;
-  private int treeDepth;
-  private int dimMax;
+  final static int MAX_TREE_DEPTH = 100;
+  int treeDepth;
+  int dimMax;
   private Element eleRoot;
 
   /*
@@ -96,7 +96,7 @@ public final class Bspt {
    */
   public Bspt(int dimMax) {
     this.dimMax = dimMax;
-    this.eleRoot = new Leaf();
+    this.eleRoot = new Leaf(this);
     treeDepth = 1;
   }
 
@@ -394,135 +394,5 @@ public final class Bspt {
     }
   }
 
-  /**
-   * the internal tree is made up of elements ... either Node or Leaf
-   */
-  private abstract class Element {
-    int count;
-    abstract Element addTuple(int level, Tuple tuple);
-    /*
-      abstract void dump(int level);
-    */
-  }
-
-  /**
-   * Nodes of the bspt. It is a binary tree so nodes contain two children.
-   * A splitValue tells which child should be followed. Values <= splitValue
-   * are stored down eleLE. Values >= splitValue are stored down eleGE.
-   */
-  private class Node extends Element {
-    Element eleLE;
-    int dim;
-    float splitValue;
-    Element eleGE;
-  
-    Node(int level, Leaf leafLE) {
-      if (level == treeDepth) {
-        treeDepth = level + 1;
-        if (treeDepth >= MAX_TREE_DEPTH)
-          System.out.println("BSPT tree depth too great:" + treeDepth);
-      }
-      if (leafLE.count != leafCountMax)
-        throw new NullPointerException();
-      eleLE = leafLE;
-      dim = level % dimMax;
-      leafLE.sort(dim);
-      splitValue = leafLE.tuples[leafCountMax/2 - 1].getDimensionValue(dim);
-      eleGE = new Leaf(leafLE, leafCountMax/2);
-      count = leafCountMax;
-    }
-  
-    Element addTuple(int level, Tuple tuple) {
-      float dimValue = tuple.getDimensionValue(dim);
-      if (dimValue < splitValue ||
-          (dimValue == splitValue && eleLE.count <= eleGE.count))
-        eleLE = eleLE.addTuple(level + 1, tuple);
-      else
-        eleGE = eleGE.addTuple(level + 1, tuple);
-      ++count;
-      return this;
-    }
-  
-    /*
-      void dump(int level) {
-      System.out.println("");
-      eleLE.dump(level + 1);
-      for (int i = 0; i < level; ++i)
-      System.out.print("-");
-      System.out.println(">" + splitValue);
-      eleGE.dump(level + 1);
-      }
-    
-      public String toString() {
-      return eleLE.toString() + dim + ":" +
-      splitValue + "\n" + eleGE.toString();
-      }
-    */
-  }
-
-  /**
-   * A leaf of Tuple objects in the bsp tree
-   */
-  private class Leaf extends Element {
-    Tuple[] tuples;
-    
-    Leaf() {
-      count = 0;
-      tuples = new Tuple[leafCountMax];
-    }
-    
-    Leaf(Leaf leaf, int countToKeep) {
-      this();
-      for (int i = countToKeep; i < leafCountMax; ++i) {
-        tuples[count++] = leaf.tuples[i];
-        leaf.tuples[i] = null;
-      }
-      leaf.count = countToKeep;
-    }
-
-    void sort(int dim) {
-      for (int i = count; --i > 0; ) { // this is > not >=
-        Tuple champion = tuples[i];
-        float championValue = champion.getDimensionValue(dim);
-        for (int j = i; --j >= 0; ) {
-          Tuple challenger = tuples[j];
-          float challengerValue = challenger.getDimensionValue(dim);
-          if (challengerValue > championValue) {
-            tuples[i] = challenger;
-            tuples[j] = champion;
-            champion = challenger;
-            championValue = challengerValue;
-          }
-        }
-      }
-    }
-
-    Element addTuple(int level, Tuple tuple) {
-      if (count < leafCountMax) {
-        tuples[count++] = tuple;
-        return this;
-      }
-      Node node = new Node(level, this);
-      return node.addTuple(level, tuple);
-    }
-    
-    /*
-      void dump(int level) {
-      for (int i = 0; i < count; ++i) {
-      Tuple t = tuples[i];
-      for (int j = 0; j < level; ++j)
-      System.out.print(".");
-      for (int dim = 0; dim < dimMax-1; ++dim)
-      System.out.print("" + t.getDimensionValue(dim) + ",");
-      System.out.println("" + t.getDimensionValue(dimMax - 1));
-      }
-      }
-
-      public String toString() {
-      return "leaf:" + count + "\n";
-      }
-    */
-
-  }
-
 }
+

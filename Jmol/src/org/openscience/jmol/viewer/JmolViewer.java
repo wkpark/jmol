@@ -898,6 +898,19 @@ final public class JmolViewer {
 
   public void clearMeasurements() {
     measurementManager.clearMeasurements();
+    refresh();
+  }
+
+  public int getMeasurementCount() {
+    return measurementManager.getMeasurementCount();
+  }
+
+  public int[] getMeasurementIndices(int measurementIndex) {
+    return measurementManager.getMeasurementIndices(measurementIndex);
+  }
+
+  public String getMeasurementString(int measurementIndex) {
+    return measurementManager.getMeasurementString(measurementIndex);
   }
 
   public void deleteMeasurements(int count) {
@@ -907,6 +920,13 @@ final public class JmolViewer {
   public void defineMeasurement(int count, int[] atomIndices) {
     measurementManager.defineMeasurement(count, atomIndices);
     refresh();
+  }
+
+  public boolean deleteMeasurement(int measurementIndex) {
+    boolean deleted = measurementManager.deleteMeasurement(measurementIndex);
+    if (deleted)
+      refresh();
+    return deleted;
   }
 
   public boolean deleteMeasurement(Object measurement) {

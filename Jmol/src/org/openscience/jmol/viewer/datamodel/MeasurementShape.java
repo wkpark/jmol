@@ -39,7 +39,7 @@ public class MeasurementShape extends LineShape
   implements MeasurementInterface {
 
   public int[] atomIndices;
-  private String strMeasurement;
+  public String strMeasurement;
 
   public MeasurementShape(JmolViewer viewer, int count, int[] atomIndices) {
     Point3d point1 = viewer.getPoint3d(atomIndices[0]);

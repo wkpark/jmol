@@ -26,61 +26,44 @@ package org.openscience.jmol.app;
 
 import org.openscience.jmol.viewer.JmolViewer;
 
-import java.io.File;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.JScrollPane;
-import java.util.Vector;
-import java.awt.Container;
-import java.awt.Component;
-import java.awt.Toolkit;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.Dimension;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
-import java.awt.Dimension;
-import java.awt.Window;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JRootPane;
-import javax.swing.BoxLayout;
-import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JButton;
-import javax.swing.AbstractButton;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.Action;
+import javax.swing.JDialog;
+import javax.swing.AbstractAction;
+import java.awt.event.ActionEvent;
+import javax.swing.JFrame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JPanel;
+import javax.swing.BoxLayout;
+import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+
 
 public class MeasurementList extends JDialog {
 
   private JmolViewer viewer;
-  protected DefaultMutableTreeNode top;
-  protected ListNode distances, angles, dihedrals;
-  protected DefaultTreeModel treeModel;
-  protected JTree tree;
-  protected JButton xButton = new JButton(
-    JmolResourceHandler.getInstance().translate("Delete Measurement"));
+  private JTable measurementTable;
+  private MeasurementTableModel measurementTableModel;
+  private int selectedRow = -1;
 
-  private Vector distanceList;
-  private Vector angleList;
-  private Vector dihedralList;
+  private JButton deleteButton;
+  private JButton deleteAllButton;
 
-  // The actions:
-  private CDistanceAction cdistanceAction = new CDistanceAction();
-  private CAngleAction cangleAction = new CAngleAction();
-  private CDihedralAction cdihedralAction = new CDihedralAction();
-  private CMeasureAction cmeasureAction = new CMeasureAction();
   private ViewMListAction viewmlistAction = new ViewMListAction();
-  private Hashtable commands;
+
+  private String[] headers = { "Value", "1", "2", "3", "4", };
 
   /**
    * Constructor
@@ -94,102 +77,11 @@ public class MeasurementList extends JDialog {
           .translate("Measurement List"), false);
     this.viewer = viewer;
 
-    distanceList = new Vector();
-    angleList = new Vector();
-    dihedralList = new Vector();
-
-    commands = new Hashtable();
-    Action[] actions = getActions();
-    for (int i = 0; i < actions.length; i++) {
-      Action a = actions[i];
-      commands.put(a.getValue(Action.NAME), a);
-    }
-
     JPanel container = new JPanel();
     container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
-    JPanel mPanel = new JPanel();
-    mPanel.setLayout(new BorderLayout());
-
-    top = new DefaultMutableTreeNode(JmolResourceHandler.getInstance()
-        .getString("MeasurementList.mLabel"));
-    treeModel = new DefaultTreeModel(top);
-
-    distances =
-        new ListNode(JmolResourceHandler.getInstance()
-          .getString("MeasurementList.distanceLabel"), distanceList);
-    angles =
-        new ListNode(JmolResourceHandler.getInstance()
-          .getString("MeasurementList.angleLabel"), angleList);
-    dihedrals =
-        new ListNode(JmolResourceHandler.getInstance()
-          .getString("MeasurementList.dihedralLabel"), dihedralList);
-
-    treeModel.insertNodeInto(distances, top, top.getChildCount());
-    treeModel.insertNodeInto(angles, top, top.getChildCount());
-    treeModel.insertNodeInto(dihedrals, top, top.getChildCount());
-
-    tree = new JTree(treeModel);
-    tree.setEditable(false);
-    tree.getSelectionModel()
-        .setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-    tree.setShowsRootHandles(true);
-
-    //Listen for when the selection changes.
-    tree.addTreeSelectionListener(new TreeSelectionListener() {
-
-      public void valueChanged(TreeSelectionEvent e) {
-
-        DefaultMutableTreeNode node =
-          (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-
-        if (node == null) {
-          return;
-        }
-
-        Object nodeInfo = node.getUserObject();
-        System.out.println(nodeInfo.toString());
-        if (node.isLeaf()) {
-          if (nodeInfo.toString().equalsIgnoreCase("Empty")) {
-            xButton.setEnabled(false);
-          } else {
-            xButton.setEnabled(true);
-          }
-        } else {
-          xButton.setEnabled(false);
-        }
-      }
-    });
-    tree.putClientProperty("JTree.lineStyle", "Angled");
-
-    //Create the scroll pane and add the tree to it. 
-    JScrollPane treeView = new JScrollPane(tree);
-    mPanel.add(treeView, BorderLayout.CENTER);
-    container.add(mPanel);
-
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-    xButton.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        DeletePressed();
-      }
-    });
-    buttonPanel.add(xButton);
-    xButton.setEnabled(false);
-    JButton dismiss = new JButton(JmolResourceHandler.getInstance()
-        .translate("Dismiss"));
-    dismiss.addActionListener(new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-        close();
-      }
-    });
-    buttonPanel.add(dismiss);
-    getRootPane().setDefaultButton(xButton);
-
-    container.add(buttonPanel);
+    container.add(constructTable());
+    container.add(constructButtonPanel());
 
     addWindowListener(new MeasurementListWindowListener());
 
@@ -198,55 +90,74 @@ public class MeasurementList extends JDialog {
     centerDialog();
   }
 
-  private void refresh(int count, Vector vector) {
-    vector.removeAllElements();
-    Object[] measurements = viewer.getMeasurements(count);
-    for (int i = 0; i < measurements.length; ++i)
-      vector.addElement(measurements[i]);
+  JComponent constructTable() {
+    measurementTableModel = new MeasurementTableModel();
+    measurementTable = new JTable(measurementTableModel);
+
+    measurementTable
+      .setPreferredScrollableViewportSize(new Dimension(150, 100));
+
+    measurementTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+    for (int i = 5; --i > 0; )
+      measurementTable.getColumnModel().getColumn(i).setPreferredWidth(15);
+
+    measurementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    ListSelectionModel lsm = measurementTable.getSelectionModel();
+    lsm.addListSelectionListener(new ListSelectionListener() {
+        public void valueChanged(ListSelectionEvent e) {
+          //Ignore extra messages.
+          if (e.getValueIsAdjusting()) return;
+          
+          ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+          selectedRow = (lsm.isSelectionEmpty()
+                         ? -1
+                         : lsm.getMinSelectionIndex());
+          deleteButton.setEnabled(selectedRow >= 0);
+        }
+      });
+
+    return new JScrollPane(measurementTable);
   }
 
-  public void updateTree() {
+  JComponent constructButtonPanel() {
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    refresh(2, distanceList);
-    refresh(3, angleList);
-    refresh(4, dihedralList);
+    deleteButton = new JButton(JmolResourceHandler
+                               .getInstance().translate("Delete"));
+    deleteButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          viewer.deleteMeasurement(selectedRow);
+          updateTableData();
+        }
+      });
+    deleteButton.setEnabled(false);
+    
+    deleteAllButton = new JButton(JmolResourceHandler
+                                  .getInstance().translate("Delete all"));
+    deleteAllButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          viewer.clearMeasurements();
+          updateTableData();
+        }
+      });
+    deleteAllButton.setEnabled(false);
 
-    distances.update();
-    angles.update();
-    dihedrals.update();
+    JButton dismissButton = new JButton(JmolResourceHandler.getInstance()
+                                        .translate("Dismiss"));
+    dismissButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          close();
+        }
+      });
 
-    treeModel.reload(top);
+    buttonPanel.add(deleteAllButton);
+    buttonPanel.add(deleteButton);
+    buttonPanel.add(dismissButton);
+    getRootPane().setDefaultButton(dismissButton);
+    return buttonPanel;
   }
 
-  public void clear() {
-
-    distanceList.removeAllElements();
-    angleList.removeAllElements();
-    dihedralList.removeAllElements();
-    distances.update();
-    angles.update();
-    dihedrals.update();
-    treeModel.reload(top);
-  }
-
-  public void clearMeasurements() {
-    viewer.clearMeasurements();
-    updateTree();
-  }
-  public void clearDistanceList() {
-    viewer.deleteMeasurements(2);
-    updateTree();
-  }
-
-  public void clearAngleList() {
-    viewer.deleteMeasurements(3);
-    updateTree();
-  }
-
-  public void clearDihedralList() {
-    viewer.deleteMeasurements(4);
-    updateTree();
-  }
 
   protected void centerDialog() {
 
@@ -266,81 +177,12 @@ public class MeasurementList extends JDialog {
     enableActions();
   }
 
-  public void DeletePressed() {
-
-    DefaultMutableTreeNode node =
-      (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-    if (node == null) {
-      return;
-    }
-    viewer.deleteMeasurement(node.getUserObject());
-    updateTree();
-  }
-
   public void enableActions() {
-
-    cdistanceAction.setEnabled(true);
-    cangleAction.setEnabled(true);
-    cdihedralAction.setEnabled(true);
-    cmeasureAction.setEnabled(true);
     viewmlistAction.setEnabled(true);
   }
 
   public void disableActions() {
-
-    cdistanceAction.setEnabled(false);
-    cangleAction.setEnabled(false);
-    cdihedralAction.setEnabled(false);
-    cmeasureAction.setEnabled(false);
     viewmlistAction.setEnabled(false);
-  }
-
-  class CDistanceAction extends AbstractAction {
-
-    public CDistanceAction() {
-      super("cdistance");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      clearDistanceList();
-    }
-  }
-
-  class CAngleAction extends AbstractAction {
-
-    public CAngleAction() {
-      super("cangle");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      clearAngleList();
-    }
-  }
-
-  class CDihedralAction extends AbstractAction {
-
-    public CDihedralAction() {
-      super("cdihedral");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      clearDihedralList();
-    }
-  }
-
-  class CMeasureAction extends AbstractAction {
-
-    public CMeasureAction() {
-      super("cmeasure");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      clearMeasurements();
-    }
   }
 
   class ViewMListAction extends AbstractAction {
@@ -351,22 +193,26 @@ public class MeasurementList extends JDialog {
     }
 
     public void actionPerformed(ActionEvent e) {
-      updateTree();
+      updateTableData();
       show();
     }
   }
 
-  public Action[] getActions() {
+  void updateTableData() {
+    deleteAllButton.setEnabled(viewer.getMeasurementCount() > 0);
+    measurementTableModel.fireTableDataChanged();
+  }
 
-    Action[] defaultActions = {
-      cdistanceAction, cangleAction, cdihedralAction, cmeasureAction,
-      viewmlistAction
-    };
-    return defaultActions;
+  Action[] actions = {viewmlistAction};
+  public Action[] getActions() {
+    return actions;
   }
 
   protected Action getAction(String cmd) {
-    return (Action) commands.get(cmd);
+    if (cmd.equals("viewmlist"))
+      return viewmlistAction;
+    System.out.println("getAction called with cmd:" + cmd);
+    return null;
   }
 
   class MeasurementListWindowListener extends WindowAdapter {
@@ -374,5 +220,29 @@ public class MeasurementList extends JDialog {
     public void windowClosing(WindowEvent e) {
       close();
     }
+  }
+
+  class MeasurementTableModel extends AbstractTableModel {
+
+    public String getColumnName(int col) { 
+      return headers[col];
+    }
+    public int getRowCount() { return viewer.getMeasurementCount(); }
+    public int getColumnCount() { return 5; };
+
+    Class stringClass = "".getClass();
+    Class integerClass = new Integer(0).getClass();
+
+    public Class getColumnClass(int col) {
+      return (col == 0 ? stringClass : integerClass);
+    }
+    public Object getValueAt(int row, int col) {
+      if (col == 0)
+        return viewer.getMeasurementString(row);
+      int[] indices = viewer.getMeasurementIndices(row);
+      int i = col-1;
+      return (i < indices.length ? new Integer(indices[i]) : null);
+    }
+    public boolean isCellEditable(int row, int col) { return false; }
   }
 }

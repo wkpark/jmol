@@ -56,6 +56,18 @@ public class MeasurementManager {
       frame.clearMeasurementShapes();
   }
 
+  public int getMeasurementCount() {
+    return (frame == null) ? 0 : frame.getMeasurementShapeCount();
+  }
+
+  public int[] getMeasurementIndices(int measurementIndex) {
+    return frame.getMeasurementShapes()[measurementIndex].atomIndices;
+  }
+
+  public String getMeasurementString(int measurementIndex) {
+    return frame.getMeasurementShapes()[measurementIndex].strMeasurement;
+  }
+
   public MeasurementShape[] getMeasurements(int count) {
     int numFound = 0;
     int measurementShapeCount = frame.getMeasurementShapeCount();
@@ -80,6 +92,14 @@ public class MeasurementManager {
     }
     frame.addMeasurementShape(new MeasurementShape(viewer, count,
                                                    atomIndices));
+  }
+
+  public boolean deleteMeasurement(int measurementIndex) {
+    if (measurementIndex < 0 ||
+        measurementIndex >= frame.getMeasurementShapeCount())
+      return false;
+    frame.deleteMeasurementShape(measurementIndex);
+    return true;
   }
 
   public boolean deleteMeasurement(MeasurementShape measurementShape) {

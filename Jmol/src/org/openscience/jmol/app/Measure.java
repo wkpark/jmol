@@ -71,7 +71,6 @@ public class Measure extends JDialog {
   private final static int DISTANCE = 2;
   private final static int ANGLE = 3;
   private final static int DIHEDRAL = 4;
-  private int action;
   private int measure = 1;
   private int oldMode;
   private int currentAtom = 0;
@@ -87,9 +86,6 @@ public class Measure extends JDialog {
   private DistanceAction distanceAction = new DistanceAction();
   private AngleAction angleAction = new AngleAction();
   private DihedralAction dihedralAction = new DihedralAction();
-  private DDistanceAction ddistanceAction = new DDistanceAction();
-  private DAngleAction dangleAction = new DAngleAction();
-  private DDihedralAction ddihedralAction = new DDihedralAction();
   private Hashtable commands;
   private MeasureTableModel mtm = new MeasureTableModel();
   private JTable table = new JTable();
@@ -276,13 +272,8 @@ public class Measure extends JDialog {
           .getString("Measure.infoString2"));
       break;
     }
-    if (action == DELETE) {
-      mButton.setText(JmolResourceHandler.getInstance()
-          .getString("Measure.deleteLabel"));
-    } else {
-      mButton.setText(JmolResourceHandler.getInstance()
-          .getString("Measure.addLabel"));
-    }
+    mButton.setText(JmolResourceHandler.getInstance()
+                    .getString("Measure.addLabel"));
     oldMode = viewer.getModeMouse();
     viewer.setModeMouse(JmolViewer.MEASURE);
     disableActions();
@@ -347,53 +338,15 @@ public class Measure extends JDialog {
 
     switch (measure) {
     case ANGLE :
-      if (action == ADD) {
-        viewer.defineMeasurement(3, selection);
-      } else {
-        boolean ok = viewer.deleteMeasurement(3, selection);
-        if (!ok) {
-          JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-
-          String error = jrh.translate("No matching Angle was found");
-          JOptionPane.showMessageDialog(null, error,
-              jrh.translate("Invalid Input"),
-              JOptionPane.ERROR_MESSAGE);
-        }
-      }
+      viewer.defineMeasurement(3, selection);
       break;
 
     case DIHEDRAL :
-      if (action == ADD) {
-        viewer.defineMeasurement(4, selection);
-      } else {
-        boolean ok =
-          viewer.deleteMeasurement(4, selection);
-        if (!ok) {
-          JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-
-          String error = jrh.translate("No matching Dihedral was found");
-          JOptionPane.showMessageDialog(null, error,
-              jrh.translate("Invalid Input"),
-              JOptionPane.ERROR_MESSAGE);
-        }
-      }
+      viewer.defineMeasurement(4, selection);
       break;
 
     default :
-      if (action == ADD) {
-        viewer.defineMeasurement(2, selection);
-      } else {
-        boolean ok =
-          viewer.deleteMeasurement(2, selection);
-        if (!ok) {
-          JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-
-          String error = jrh.translate("No matching Distance was found");
-          JOptionPane.showMessageDialog(null, error,
-              jrh.translate("Invalid Input"),
-              JOptionPane.ERROR_MESSAGE);
-        }
-      }
+      viewer.defineMeasurement(2, selection);
       break;
     }
     
@@ -410,9 +363,6 @@ public class Measure extends JDialog {
     distanceAction.setEnabled(true);
     angleAction.setEnabled(true);
     dihedralAction.setEnabled(true);
-    ddistanceAction.setEnabled(true);
-    dangleAction.setEnabled(true);
-    ddihedralAction.setEnabled(true);
   }
 
   public void disableActions() {
@@ -420,9 +370,6 @@ public class Measure extends JDialog {
     distanceAction.setEnabled(false);
     angleAction.setEnabled(false);
     dihedralAction.setEnabled(false);
-    ddistanceAction.setEnabled(false);
-    dangleAction.setEnabled(false);
-    ddihedralAction.setEnabled(false);
   }
 
   class DistanceAction extends AbstractAction {
@@ -433,7 +380,6 @@ public class Measure extends JDialog {
     }
 
     public void actionPerformed(ActionEvent e) {
-      action = ADD;
       measure = DISTANCE;
       initialize();
     }
@@ -447,7 +393,6 @@ public class Measure extends JDialog {
     }
 
     public void actionPerformed(ActionEvent e) {
-      action = ADD;
       measure = ANGLE;
       initialize();
     }
@@ -461,60 +406,15 @@ public class Measure extends JDialog {
     }
 
     public void actionPerformed(ActionEvent e) {
-      action = ADD;
       measure = DIHEDRAL;
       initialize();
-    }
-  }
-
-  class DDistanceAction extends AbstractAction {
-
-    public DDistanceAction() {
-      super("ddistance");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      action = DELETE;
-      measure = DISTANCE;
-      initialize();
-    }
-  }
-
-  class DAngleAction extends AbstractAction {
-
-    public DAngleAction() {
-      super("dangle");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      action = DELETE;
-      measure = ANGLE;
-      initialize();
-    }
-  }
-
-  class DDihedralAction extends AbstractAction {
-
-    public DDihedralAction() {
-      super("ddihedral");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      action = DELETE;
-      measure = DIHEDRAL;
-      initialize();
-      show();
     }
   }
 
   public Action[] getActions() {
 
     Action[] defaultActions = {
-      distanceAction, angleAction, dihedralAction, ddistanceAction,
-      dangleAction, ddihedralAction
+      distanceAction, angleAction, dihedralAction
     };
     return defaultActions;
   }

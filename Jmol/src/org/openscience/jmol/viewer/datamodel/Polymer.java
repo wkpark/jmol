@@ -55,121 +55,81 @@ abstract class Polymer {
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
 
-  static Polymer allocatePolymer(Model model, Chain chain) {
+  static Polymer allocatePolymer(Model model, Chain chain,
+                                 int firstGroupIndex) {
     //    System.out.println("allocatePolymer()");
     Monomer[] monomers;
-    monomers = getAminoMonomers(chain);
+    monomers = getAminoMonomers(chain, firstGroupIndex);
     if (monomers != null) {
       //      System.out.println("an AminoPolymer");
       return new AminoPolymer(model, monomers);
     }
-    monomers = getAlphaMonomers(chain);
+    monomers = getAlphaMonomers(chain, firstGroupIndex);
     if (monomers != null) {
       //      System.out.println("an AlphaPolymer");
       return new AlphaPolymer(model, monomers);
     }
-    monomers = getNucleotideMonomers(chain);
+    monomers = getNucleicMonomers(chain, firstGroupIndex);
     if (monomers != null) {
       //      System.out.println("a NucleicPolymer");
       return new NucleicPolymer(model, monomers);
     }
-    //    System.out.println("no polymer");
-    return null;
+    System.out.println("Polymer.allocatePolymer() ... why am I here?");
+    throw new NullPointerException();
   }
 
-  static Monomer[] getAminoMonomers(Chain chain) {
+  static Monomer[] getAlphaMonomers(Chain chain, int firstGroupIndex) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     int count = 0;
-    for (int i = 0; i < chain.groupCount; ++i ) {
-      Group group = chainGroups[i];
-      if (! (group instanceof Monomer))
-        continue;
-      Monomer monomer = (Monomer)group;
-      if (! monomer.isAminoMonomer())
-        continue;
-      ++count;
-      if (firstNonMainchain == i)
-        ++firstNonMainchain;
-    }
+    for (int i = firstGroupIndex;
+         i < chain.groupCount &&
+           chainGroups[i] instanceof AlphaMonomer; ++i, ++count )
+      {}
     if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
-    for (int i = 0, j = 0; i < chain.groupCount; ++i) {
-      Group group = chainGroups[i];
-      if (! (group instanceof Monomer))
-        continue;
-      Monomer monomer = (Monomer)group;
-      if (! monomer.isAminoMonomer())
-        continue;
-      monomers[j++] = monomer;
-    }
-    //    System.out.println("is an AminoPolymer");
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (AlphaMonomer)chainGroups[firstGroupIndex + j];
     return monomers;
   }
 
-  static Monomer[] getAlphaMonomers(Chain chain) {
+  static Monomer[] getAminoMonomers(Chain chain, int firstGroupIndex) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     int count = 0;
-    for (int i = 0; i < chain.groupCount; ++i ) {
-      Group group = chainGroups[i];
-      if (! (group instanceof Monomer))
-        continue;
-      Monomer monomer = (Monomer)group;
-      if (! monomer.isAlphaMonomer())
-        continue;
-      ++count;
-      if (firstNonMainchain == i)
-        ++firstNonMainchain;
-    }
+    for (int i = firstGroupIndex;
+         i < chain.groupCount &&
+           chainGroups[i] instanceof AminoMonomer; ++i, ++count )
+      {}
     if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
-    for (int i = 0, j = 0; i < chain.groupCount; ++i) {
-      Group group = chainGroups[i];
-      if (! (group instanceof Monomer))
-        continue;
-      Monomer monomer = (Monomer)group;
-      if (! monomer.isAlphaMonomer())
-        continue;
-      monomers[j++] = monomer;
-    }
-    //    System.out.println("is an AminoPolymer");
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (AminoMonomer)chainGroups[firstGroupIndex + j];
     return monomers;
   }
 
-  static Monomer[] getNucleotideMonomers(Chain chain) {
+  static Monomer[] getNucleicMonomers(Chain chain, int firstGroupIndex) {
     Group[] chainGroups = chain.groups;
-    int firstNonNucleotide = 0;
+    int firstNonMainchain = 0;
     int count = 0;
-    for (int i = 0; i < chain.groupCount; ++i ) {
-      Group group = chainGroups[i];
-      if (! (group instanceof Monomer))
-        continue;
-      Monomer monomer = (Monomer)group;
-      if (! monomer.isNucleicMonomer())
-        continue;
-      ++count;
-    }
+    for (int i = firstGroupIndex;
+         i < chain.groupCount &&
+           chainGroups[i] instanceof NucleicMonomer; ++i, ++count )
+      {}
     if (count == 0)
       return null;
     Monomer[] monomers = new Monomer[count];
-    for (int i = 0, j = 0; i < chain.groupCount; ++i) {
-      Group group = chainGroups[i];
-      if (! (group instanceof Monomer))
-        continue;
-      Monomer monomer = (Monomer)group;
-      if (! monomer.isNucleicMonomer())
-        continue;
-      monomers[j++] = monomer;
-    }
-    //    System.out.println("is a NucleicPolymer");
+    for (int j = 0; j < count; ++j)
+      monomers[j] = (NucleicMonomer)chainGroups[firstGroupIndex + j];
     return monomers;
   }
+
 
   /**
    * for now, a polymer only comes from a single chain.
+   * this is still used in propogating structures
    */
   char getChainID() {
     return monomers[0].getChainID();
@@ -315,4 +275,3 @@ abstract class Polymer {
     }
   }
 }
-

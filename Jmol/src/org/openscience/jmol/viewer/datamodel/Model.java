@@ -53,12 +53,8 @@ final class Model {
   void freeze() {
     //    System.out.println("Mmset.freeze() chainCount=" + chainCount);
     chains = (Chain[])Util.setLength(chains, chainCount);
-    for (int i = chainCount; --i >= 0; )
+    for (int i = 0; i < chainCount; ++i)
       chains[i].freeze();
-    // keep these loops separate so that some day we can search
-    // for polymers that involve multiple chains
-    for (int i = chainCount; --i >= 0; )
-      addPolymer(Polymer.allocatePolymer(this, chains[i]));
     polymers = (Polymer[])Util.setLength(polymers, polymerCount);
   }
 
@@ -95,12 +91,6 @@ final class Model {
     return null;
   }
 
-  /*
-    Chain getChain(int chainIndex) {
-    return chains[chainIndex];
-    }
-  */
-
   Chain getOrAllocateChain(char chainID) {
     //    System.out.println("chainID=" + chainID + " -> " + (chainID + 0));
     Chain chain = getChain(chainID);
@@ -112,8 +102,6 @@ final class Model {
   }
 
   void addPolymer(Polymer polymer) {
-    if (polymer == null)
-      return;
     if (polymerCount == polymers.length)
       polymers = (Polymer[])Util.doubleLength(polymers);
     polymers[polymerCount++] = polymer;

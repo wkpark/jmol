@@ -49,9 +49,6 @@ public class Group {
     this.lastAtomIndex = lastAtomIndex;
   }
 
-  void freeze() {
-  }
-
   public final boolean isGroup3(String group3) {
     return group3Names[groupID].equalsIgnoreCase(group3);
   }

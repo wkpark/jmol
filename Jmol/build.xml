@@ -1,6 +1,6 @@
 <project name="Jmol" default="main" basedir=".">
 
-	<property name="version" value="0.7" />
+	<property name="version" value="20010504" />
 	<property name="Jmol.home" value="${user.dir}" />
 	<property name="source.dir" value="src" />
 	<property name="generatedSource.dir" value="generatedSource" />
@@ -129,7 +129,7 @@
 
 	<target name="dist.tar.gz" depends="dist">
 		<tar tarfile="jmol.tar" basedir="${dist.dir}" includes="**"/>
-		<gzip zipfile="jmol.tar.gz" src="jmol.tar"/>
+		<gzip zipfile="jmol-${version}.tar.gz" src="jmol.tar"/>
 		<delete file="jmol.tar" />
 	</target>
 
@@ -141,6 +141,9 @@
 				<include name="jmol.jar" />
 				<include name="jmol-applet.jar" />
 			</fileset>
+                        <fileset dir=".">
+                                <include name="*.tar.gz" />
+                        </fileset>
 		</delete>
 		<delete dir="${javadoc.dir}"/>
 		<delete dir="${dist.dir}"/>

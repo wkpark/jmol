@@ -105,9 +105,9 @@ public class NucleicMonomer extends Monomer {
 
   public boolean isRna() { return hasRnaO2Prime; }
 
-  boolean isPurine() { return isPurine; }
+  public boolean isPurine() { return isPurine; }
 
-  boolean isPyrimidine() { return isPyrimidine; }
+  public boolean isPyrimidine() { return isPyrimidine; }
 
   boolean isGuanine() { return offsets[18] != -1; }
 

@@ -316,16 +316,18 @@ public class Token {
   final static int jmol         = misc | 33;
   final static int displacement = misc | 34;
 
-  final static int amino       = predefinedset | 0;
-  final static int hetero      = predefinedset | 1 | setparam;
-  final static int hydrogen    = predefinedset | 2 | setparam;
-  final static int selected    = predefinedset | 3 | showparam;
-  final static int solvent     = predefinedset | 4 | setparam;
-  final static int sidechain   = predefinedset | 5;
-  final static int protein     = predefinedset | 6;
-  final static int nucleic     = predefinedset | 7;
-  final static int dna         = predefinedset | 8;
-  final static int rna         = predefinedset | 9;
+  final static int amino       = predefinedset |  0;
+  final static int hetero      = predefinedset |  1 | setparam;
+  final static int hydrogen    = predefinedset |  2 | setparam;
+  final static int selected    = predefinedset |  3 | showparam;
+  final static int solvent     = predefinedset |  4 | setparam;
+  final static int sidechain   = predefinedset |  5;
+  final static int protein     = predefinedset |  6;
+  final static int nucleic     = predefinedset |  7;
+  final static int dna         = predefinedset |  8;
+  final static int rna         = predefinedset |  9;
+  final static int purine      = predefinedset | 10;
+  final static int pyrimidine  = predefinedset | 11;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -574,6 +576,8 @@ public class Token {
     "nucleic",      new Token(nucleic,         "nucleic"),
     "dna",          new Token(dna,             "dna"),
     "rna",          new Token(rna,             "rna"),
+    "purine",       new Token(purine,          "purine"),
+    "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
 
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),

@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre10f";
+  public final static String version = "10pre10g";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1854,7 +1854,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // protein related
     //
-    // protein is pre-defined
+    // protein is hardwired
     "@amino _g>0 & _g<=23",
     "@acidic asp,glu",
     "@basic arg,his,lys",
@@ -1887,19 +1887,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // nucleic acid related
 
-    // nucleic, rna, and dna are hard-wired
+    // nucleic, dna, rna, purine, pyrimidine are hard-wired
     //
-    "@c _g=30,_g=31,_g=38,_g=39,_g>=61 & _g<=63",
-    "@g _g=26,_g=27,_g>=40 & _g<=46,_g>=55 & _g<=57",
+    "@c nucleic & within(group,_a=76)",
+    "@g nucleic & within(group,_a=79)",
     "@cg c,g",
-    "@a _g=24,_g=25,_g=36,_g=37,_g>=52 & _g<=54",
-    "@t _g=32,_g=33,_g>=64 & _g<=66",
+    "@a nucleic & within(group,_a=78)",
+    "@t nucleic & within(group,_a=77)",
     "@at a,t",
-    "@i _g=28,_g=29,_g>=58 & _g<=60",
-    "@u _g=34,_g=35,_g>=48 & _g<=51,_g>=67 & _g<=69",
-
-    "@purine _g>=24 & _g<=29",
-    "@pyrimidine _g>=30 & _g<=35",
+    "@i nucleic & within(group,_a=75) & !t",
+    "@u nucleic & within(group,_a=74) & !t",
+    "@tu nucleic & within(group,_a=80)",
 
     //
     // solvent
@@ -1912,10 +1910,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // structure related
     //
-    "@alpha amino & _a=2", // rasmol doc says "approximately *.CA" - whatever?
-    "@backbone amino & _a<=4,nucleic & (_a>=9 & _a<=31)",
-    "@sidechain (protein,nucleic) & _a>=64",
-    "@base nucleic & _a>=64",
+    "@alpha _a=2", // rasmol doc says "approximately *.CA" - whatever?
+    "@backbone (protein,nucleic) & _a>0 & _a<=63",
+    "@sidechain (protein,nucleic) & !backbone",
+    "@base nucleic & !backbone",
 
     "@turn _structure=1",
     "@sheet _structure=2",

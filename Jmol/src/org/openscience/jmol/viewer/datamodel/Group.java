@@ -115,6 +115,8 @@ public class Group {
   public boolean isNucleic() { return false; }
   public boolean isDna() { return false; }
   public boolean isRna() { return false; }
+  public boolean isPurine() { return false; }
+  public boolean isPyrimidine() { return false; }
 
   ////////////////////////////////////////////////////////////////
   // static stuff for group ids

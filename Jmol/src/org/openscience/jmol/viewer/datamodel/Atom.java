@@ -757,4 +757,12 @@ public final class Atom implements Bspt.Tuple {
   public boolean isRna() {
     return group.isRna();
   }
+
+  public boolean isPurine() {
+    return group.isPurine();
+  }
+
+  public boolean isPyrimidine() {
+    return group.isPyrimidine();
+  }
 }

@@ -813,6 +813,12 @@ public class Eval implements Runnable {
       case Token.rna:
         stack[sp++] = getRnaSet();
         break;
+      case Token.purine:
+        stack[sp++] = getPurineSet();
+        break;
+      case Token.pyrimidine:
+        stack[sp++] = getPyrimidineSet();
+        break;
       case Token.y:
       case Token.amino:
       case Token.backbone:
@@ -983,6 +989,24 @@ public class Eval implements Runnable {
       if (frame.getAtomAt(i).isRna())
         bsRna.set(i);
     return bsRna;
+  }
+
+  BitSet getPurineSet() {
+    Frame frame = viewer.getFrame();
+    BitSet bsPurine = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isPurine())
+        bsPurine.set(i);
+    return bsPurine;
+  }
+
+  BitSet getPyrimidineSet() {
+    Frame frame = viewer.getFrame();
+    BitSet bsPyrimidine = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isPyrimidine())
+        bsPyrimidine.set(i);
+    return bsPyrimidine;
   }
 
   /*

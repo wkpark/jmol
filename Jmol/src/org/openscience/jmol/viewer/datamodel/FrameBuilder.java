@@ -43,6 +43,7 @@ final public class FrameBuilder {
   }
 
   public Frame buildFrame(Object clientFile) {
+    initializeBuild();
     long timeBegin = System.currentTimeMillis();
     String fileTypeName = adapter.getFileTypeName(clientFile);
     int atomCount = adapter.getAtomCount(clientFile);
@@ -66,23 +67,24 @@ final public class FrameBuilder {
       if (elementNumber <= 0)
         elementNumber = JmolConstants.
           elementNumberFromSymbol(iterAtom.getElementSymbol());
-      frame.addAtom(iterAtom.getModelNumber(), iterAtom.getUniqueID(),
-                    elementNumber,
-                    iterAtom.getAtomName(),
-                    iterAtom.getFormalCharge(),
-                    iterAtom.getPartialCharge(),
-                    iterAtom.getOccupancy(),
-                    iterAtom.getBfactor(),
-                    iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
-                    iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
-                    iterAtom.getChainID(),
-                    iterAtom.getGroup3(),
-                    iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(),
-                    iterAtom.getVectorX(), iterAtom.getVectorY(),
-                    iterAtom.getVectorZ(),
-                    iterAtom.getClientAtomReference());
+      addAtom(frame,
+              iterAtom.getModelNumber(), iterAtom.getUniqueID(),
+              elementNumber,
+              iterAtom.getAtomName(),
+              iterAtom.getFormalCharge(),
+              iterAtom.getPartialCharge(),
+              iterAtom.getOccupancy(),
+              iterAtom.getBfactor(),
+              iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
+              iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
+              iterAtom.getChainID(),
+              iterAtom.getGroup3(),
+              iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(),
+              iterAtom.getVectorX(), iterAtom.getVectorY(),
+              iterAtom.getVectorZ(),
+              iterAtom.getClientAtomReference());
     }
-
+    
     {
       ModelAdapter.BondIterator iterBond =
         adapter.getBondIterator(clientFile);
@@ -108,6 +110,77 @@ final public class FrameBuilder {
     long msToBuild = System.currentTimeMillis() - timeBegin;
     System.out.println("Build a frame:" + msToBuild + " ms");
     adapter.finish(clientFile);
+    finalizeBuild();
     return frame;
   }
+
+  int currentModelID;
+  Model currentModel;
+  char currentChainID;
+  Chain currentChain;
+  int currentGroupSequenceNumber;
+  char currentGroupInsertionCode;
+  Group currentGroup;
+
+  void initializeBuild() {
+    currentModelID = Integer.MIN_VALUE;
+    currentModel = null;
+    currentChainID = '\uFFFF';
+    currentChain = null;
+    currentGroupInsertionCode = '\uFFFF';
+    currentGroup = null;
+  }
+
+  void finalizeBuild() {
+    currentModel = null;
+    currentChain = null;
+    currentGroup = null;
+  }
+
+
+  public void addAtom(Frame frame,
+                      int modelID, Object atomUid,
+                      byte atomicNumber,
+                      String atomName, 
+                      int formalCharge, float partialCharge,
+                      int occupancy,
+                      float bfactor,
+                      float x, float y, float z,
+                      boolean isHetero, int atomSerial, char chainID,
+                      String group3,
+                      int groupSequenceNumber, char groupInsertionCode,
+                      float vectorX, float vectorY, float vectorZ,
+                      Object clientAtomReference) {
+    if (modelID != currentModelID) {
+      currentModelID = modelID;
+      currentModel = frame.mmset.getOrAllocateModel(modelID);
+      currentChainID = '\uFFFF';
+    }
+    if (chainID != currentChainID) {
+      currentChainID = chainID;
+      currentChain = currentModel.getOrAllocateChain(chainID);
+      currentGroupInsertionCode = '\uFFFF';
+    }
+    if (groupSequenceNumber != currentGroupSequenceNumber ||
+        groupInsertionCode != currentGroupInsertionCode) {
+      currentGroupSequenceNumber = groupSequenceNumber;
+      currentGroupInsertionCode = groupInsertionCode;
+      currentGroup =
+        currentChain.allocateGroup(frame, group3,
+                                   groupSequenceNumber, groupInsertionCode);
+    }
+    Atom atom = new Atom(currentGroup,
+                         frame.atomCount,
+                         atomicNumber,
+                         atomName,
+                         formalCharge, partialCharge,
+                         occupancy,
+                         bfactor,
+                         x, y, z,
+                         isHetero, atomSerial, chainID,
+                         vectorX, vectorY, vectorZ);
+    currentGroup.registerAtom(atom);
+    frame.addAtom(currentGroup, atom, atomUid, clientAtomReference);
+  }
+
 }

@@ -110,58 +110,6 @@ final public class Mmset {
     }
   }
 
-  int modelIDCurrent = Integer.MIN_VALUE;
-  char chainIDCurrent;
-  int sequenceNumberCurrent;
-  char insertionCodeCurrent;
-  Group groupCurrent;
-
-  void setCurrentResidue(int modelID, char chainID,
-                         int sequenceNumber, char insertionCode,
-                         String group3) {
-    modelIDCurrent = modelID;
-    chainIDCurrent = chainID;
-    sequenceNumberCurrent = sequenceNumber;
-    insertionCodeCurrent = insertionCode;
-    Model model = getOrAllocateModel(modelID);
-    Chain chain = model.getOrAllocateChain(chainID);
-    groupCurrent =
-      chain.allocateGroup(frame, group3, sequenceNumber, insertionCode);
-  }
-
-  /*
-  public Group assignGroup(Atom atom, String pdbRecord) {
-    char chainID = pdbRecord.charAt(21);
-    int seqcode = Integer.MIN_VALUE;
-    try {
-      int sequenceNum = Integer.parseInt(pdbRecord.substring(22, 26).trim());
-      char insertionCode = pdbRecord.charAt(26);
-      seqcode = Group.getSeqcode(sequenceNum, insertionCode);
-    } catch (NumberFormatException e) {
-      System.out.println("bad residue number in: " + pdbRecord);
-    }
-    int modelID = atom.getModelNumber();
-    if (modelID != modelIDCurrent ||
-        chainID != chainIDCurrent ||
-        seqcode != seqcodeCurrent)
-      setCurrentResidue(modelID, chainID,
-                        seqcode, pdbRecord.substring(17, 20).trim());
-    groupCurrent.assignAtom(atom, pdbRecord);
-    return groupCurrent;
-  }
-  */
-
-  Group getGroup(int modelID, char chainID, String group3,
-                 int sequenceNumber, char insertionCode) {
-    if (sequenceNumber != sequenceNumberCurrent ||
-        insertionCode != insertionCodeCurrent ||
-        chainID != chainIDCurrent ||
-        modelID != modelIDCurrent)
-      setCurrentResidue(modelID, chainID,
-                        sequenceNumber, insertionCode, group3);
-    return groupCurrent;
-  }
-
   public int getModelCount() {
     return modelCount;
   }

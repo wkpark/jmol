@@ -127,66 +127,11 @@ final public class Frame {
     }
   }
 
-  int currentModelID = Integer.MIN_VALUE;
-  Model currentModel;
-  char currentChainID = '\uFFFF';
-  Chain currentChain;
-  int currentGroupSequenceNumber = Integer.MIN_VALUE;
-  char currentGroupInsertionCode = '\uFFFF';
-  Group currentGroup;
 
-  public Atom addAtom(int modelID, Object atomUid,
-                      byte atomicNumber,
-                      String atomName, 
-                      int formalCharge, float partialCharge,
-                      int occupancy,
-                      float bfactor,
-                      float x, float y, float z,
-                      boolean isHetero, int atomSerial, char chainID,
-                      String group3,
-                      int groupSequenceNumber, char groupInsertionCode,
-                      float vectorX, float vectorY, float vectorZ,
-                      Object clientAtomReference) {
-    if (modelID != currentModelID) {
-      currentModelID = modelID;
-      currentModel = mmset.getOrAllocateModel(modelID);
-      currentChainID = '\uFFFF';
-    }
-    if (chainID != currentChainID) {
-      currentChainID = chainID;
-      currentChain = currentModel.getOrAllocateChain(chainID);
-      currentGroupInsertionCode = '\uFFFF';
-    }
-    if (groupSequenceNumber != currentGroupSequenceNumber ||
-        groupInsertionCode != currentGroupInsertionCode) {
-      currentGroupSequenceNumber = groupSequenceNumber;
-      currentGroupInsertionCode = groupInsertionCode;
-      currentGroup =
-        currentChain.allocateGroup(this, group3,
-                                   groupSequenceNumber, groupInsertionCode);
-    }
-    /*
-    if (modelID != lastModelNumber) {
-      if (modelCount == modelIDs.length)
-        modelIDs = Util.setLength(modelIDs, modelCount + 20);
-      modelIndex = modelCount;
-      lastModelNumber = modelIDs[modelCount++] = (short)modelNumber;
-    }
-    */
+  void addAtom(Group group, Atom atom,
+               Object atomUid, Object clientAtomReference) {
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + growthIncrement);
-
-    Atom atom = new Atom(currentGroup,
-                         atomCount,
-                         atomicNumber,
-                         atomName,
-                         formalCharge, partialCharge,
-                         occupancy,
-                         bfactor,
-                         x, y, z,
-                         isHetero, atomSerial, chainID,
-                         vectorX, vectorY, vectorZ);
-    currentGroup.registerAtom(atom);
     atoms[atomCount] = atom;
     if (clientAtomReference != null) {
       if (clientAtomReferences == null)
@@ -206,7 +151,6 @@ final public class Frame {
     float vdwRadius = atom.getVanderwaalsRadiusFloat();
     if (vdwRadius > maxVanderwaalsRadius)
       maxVanderwaalsRadius = vdwRadius;
-    return atom;
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {

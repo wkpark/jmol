@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,14 @@
  */
 package org.openscience.jmol;
 
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyChangeListener;
+import java.util.Vector;
+import java.util.Enumeration;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
-import java.util.Vector;
-import java.util.Enumeration;
 
 /**
  *  Data representation for a molecule in a particular set of coordinates.
@@ -106,14 +108,6 @@ public class ChemFrame {
   static {
     mat = new Matrix4d();
     mat.setIdentity();
-  }
-
-  /**
-   * returns the number of atoms that are currently in the "selected"
-   * list for future operations
-   */
-  public int getNpicked() {
-    return pickedAtoms.size();
   }
 
   static void setBondFudge(float bf) {
@@ -443,7 +437,7 @@ public class ChemFrame {
     if ((numberAtoms <= 0) || (atom > numberAtoms)) {
       return;
     }
-    pickedAtoms.add(atoms[atom-1]);
+    addPickedAtom(atoms[atom-1]);
   }
 
   /**
@@ -455,7 +449,7 @@ public class ChemFrame {
       return;
     }
     for (int i = 0; i < numberAtoms; i++) {
-      pickedAtoms.add(atoms[i]);
+      addPickedAtom(atoms[i]);
     }
   }
 
@@ -467,7 +461,7 @@ public class ChemFrame {
     if (numberAtoms <= 0) {
       return;
     }
-    pickedAtoms.clear();
+    clearPickedAtoms();
   }
 
   public int pickMeasuredAtom(int x, int y) {
@@ -488,9 +482,9 @@ public class ChemFrame {
     if (smallest < 0) {
       return;
     }
-    pickedAtoms.clear();
+    clearPickedAtoms();
     if (!pickedAtoms.contains(atoms[smallest])) {
-      pickedAtoms.add(atoms[smallest]);
+      addPickedAtom(atoms[smallest]);
     }
   }
 
@@ -522,9 +516,9 @@ public class ChemFrame {
 
     int smallest = getNearestAtom(x, y);
     if (pickedAtoms.contains(atoms[smallest])) {
-      pickedAtoms.remove(atoms[smallest]);
+      removePickedAtom(atoms[smallest]);
     } else {
-      pickedAtoms.add(atoms[smallest]);
+      addPickedAtom(atoms[smallest]);
     }
   }
 
@@ -543,10 +537,10 @@ public class ChemFrame {
       return;
     }
     transform();
-    pickedAtoms.clear();
+    clearPickedAtoms();
     for (int i = 0; i < numberAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
-        pickedAtoms.add(atoms[i]);
+        addPickedAtom(atoms[i]);
       }
     }
   }
@@ -569,7 +563,7 @@ public class ChemFrame {
     for (int i = 0; i < numberAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
         if (!pickedAtoms.contains(atoms[i])) {
-          pickedAtoms.add(atoms[i]);
+          addPickedAtom(atoms[i]);
         }
       }
     }
@@ -722,10 +716,10 @@ public class ChemFrame {
 
   public void setPickedAtoms(boolean[] newPickedAtoms) {
 
-    pickedAtoms.clear();
+    clearPickedAtoms();
     for (int i = 0; i < newPickedAtoms.length; ++i) {
       if (newPickedAtoms[i]) {
-        pickedAtoms.add(atoms[i]);
+        addPickedAtom(atoms[i]);
       }
     }
   }
@@ -787,5 +781,38 @@ public class ChemFrame {
     }
   }
 
+  private void addPickedAtom(Atom atom) {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    pickedAtoms.add(atom);
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  private void removePickedAtom(Atom atom) {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    pickedAtoms.remove(atom);
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+  
+  private void clearPickedAtoms() {
+    Integer oldNumberOfPicked = new Integer(pickedAtoms.size());
+    pickedAtoms.clear();
+    Integer newNumberOfPicked = new Integer(pickedAtoms.size());
+    changeSupport.firePropertyChange(atomPickedProperty, oldNumberOfPicked, newNumberOfPicked);
+  }
+
+  public static final String atomPickedProperty = "atomPicked";
+
+  public void addPropertyChangeListener(PropertyChangeListener listener) {
+    changeSupport.addPropertyChangeListener(listener);
+  }
+
+  public void removePropertyChangeListener(PropertyChangeListener listener) {
+    changeSupport.removePropertyChangeListener(listener);
+  }
+
+  private PropertyChangeSupport changeSupport =
+    new PropertyChangeSupport(this);
 }
 

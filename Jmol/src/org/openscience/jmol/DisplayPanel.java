@@ -33,6 +33,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.AbstractButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.Action;
@@ -45,7 +47,7 @@ import javax.swing.JPanel;
  *  @author  J. Daniel Gezelter
  */
 public class DisplayPanel extends JPanel
-    implements Runnable, MeasurementListListener {
+    implements Runnable, MeasurementListListener, PropertyChangeListener {
 
   public static int X_AXIS = 1;
   public static int Y_AXIS = 2;
@@ -130,6 +132,7 @@ public class DisplayPanel extends JPanel
     haveFile = true;
     nframes = cf.getNumberFrames();
     this.md = cf.getFrame(0);
+    md.addPropertyChangeListener(this);
     Measurement.setChemFrame(md);
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
@@ -230,6 +233,7 @@ public class DisplayPanel extends JPanel
     if (haveFile) {
       if (fr < nframes) {
         md = cf.getFrame(fr);
+        md.addPropertyChangeListener(this);
         Measurement.setChemFrame(md);
         if (mlist != null) {
           mlistChanged(new MeasurementListEvent(mlist));
@@ -292,8 +296,6 @@ public class DisplayPanel extends JPanel
             md.selectAtom(e.getX(), e.getY());
           }
           repaint();
-          int n = md.getNpicked();
-          status.setStatus(2, n + " Atoms Selected");
         } else if (mode == DELETE) {
           md.deleteSelectedAtom(e.getX(), e.getY());
           repaint();    // this seems to have no effect...
@@ -409,8 +411,6 @@ public class DisplayPanel extends JPanel
             md.selectRegion(rleft, rtop, rright, rbottom);
           }
           repaint();
-          int n = md.getNpicked();
-          status.setStatus(2, n + " Atoms Selected");
         }
       }
 
@@ -631,8 +631,6 @@ public class DisplayPanel extends JPanel
 
       if (haveFile) {
         md.selectAll();
-        int n = md.getNpicked();
-        status.setStatus(2, n + " Atoms Selected");
         repaint();
       }
     }
@@ -649,8 +647,6 @@ public class DisplayPanel extends JPanel
 
       if (haveFile) {
         md.deselectAll();
-        int n = md.getNpicked();
-        status.setStatus(2, n + " Atoms Selected");
         repaint();
       }
     }
@@ -1051,6 +1047,14 @@ public class DisplayPanel extends JPanel
       amat.rotY(Math.toRadians(angle));
     } else if (axis == Z_AXIS) {
       amat.rotZ(Math.toRadians(angle));
+    }
+  }
+
+
+  public void propertyChange(PropertyChangeEvent event) {
+    
+    if (event.getPropertyName().equals(ChemFrame.atomPickedProperty)) {
+        status.setStatus(2, event.getNewValue() + " Atoms Selected");
     }
   }
 

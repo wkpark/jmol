@@ -64,8 +64,7 @@ public class ChemFrameRenderer {
       }
       if (control.getModeAxes() != DisplayControl.AXES_NONE) {
         Axes axes = control.getAxes();
-        shapesVector.addElement(axes.getOriginShape());
-        Shape[] shapes = axes.getAxisShapes();
+        Shape[] shapes = axes.getShapes();
         for (int i = shapes.length; --i >= 0; )
           shapesVector.addElement(shapes[i]);
       }
@@ -82,9 +81,7 @@ public class ChemFrameRenderer {
         
         // The three primitives vectors with arrows
         for (int i = 0; i < 3; i++) {
-          VectorShape vector = new VectorShape(zeroPoint,
-              new Point3d(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
-                true);
+          VectorShape vector = new VectorShape(zeroPoint, new Point3d(rprimd[i]));
           shapesVector.addElement(vector);
         }
         

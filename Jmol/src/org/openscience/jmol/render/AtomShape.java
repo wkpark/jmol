@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.render;
 
-import org.openscience.jmol.*;
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 import org.openscience.jmol.g25d.Colix;
 
@@ -36,7 +36,8 @@ import javax.vecmath.Point3i;
 
 public class AtomShape extends Shape {
 
-  public Atom atom;
+  public JmolAtom atom;
+  private short atomIndex = -1;
   public boolean isHydrogen;
   public byte styleAtom;
   public short marAtom;
@@ -46,51 +47,35 @@ public class AtomShape extends Shape {
   public short colixDots;
   public int diameterDots = 0;
   public BondShape[] bonds;
-  /*
-  public int numBonds;
-  public byte[] bondOrders;
-  public short[] bondWidths;  // after a delete operation, these arrays
-  public byte[] styleBonds; // will be longer than numBonds
-  public short[] marBonds;
-  public short[] acolixBonds;
-  */
+
   public String strLabel;
   
-  public AtomShape(Atom atom, boolean isHydrogen,
+  public AtomShape(JmolAtom atom, boolean isHydrogen,
                    byte styleAtom, short marAtom, short colixAtom,
-                   //byte styleBond, short marBond, short colixBond,
                    String strLabel) {
-    this.isHydrogen = isHydrogen;
     this.atom = atom;
+    this.isHydrogen = isHydrogen;
     this.colixAtom = colixAtom;
     this.strLabel = strLabel;
     this.colixDots = 0;
     this.marDots = 0;
     setStyleMarAtom(styleAtom, marAtom);
-    /*
-    numBonds = atom.getBondedCount();
-    bonds = new BondShape[numBonds];
-    for (int n = numBonds; --n >= 0; ) {
-      bonds[n] = new BondShape(
-    }
-    bondOrders = new byte[numBonds];
-    fixBondOrders();
-
-    bondWidths = new short[numBonds];
-    styleBonds = new byte[numBonds];
-    marBonds = new short[numBonds];
-    acolixBonds = new short[numBonds];
-    setStyleMarAllBonds(styleBond, marBond);
-    setStyleMarAllBackbones(DisplayControl.NONE, (short)0);
-    setColixAllBonds(colixBond);
-    */
   }
 
-  public AtomShape(Atom atom, boolean isHydrogen, DisplayControl c) {
+  public AtomShape(JmolAtom atom, boolean isHydrogen, DisplayControl c) {
     this(atom, isHydrogen,
          c.getStyleAtom(), c.getMarAtom(), c.getColixAtom(atom),
-         //c.getStyleBond(), c.getMarBond(), c.getColixBond(),
          c.getLabelAtom(atom));
+  }
+
+  public void setAtomIndex(int atomIndex) {
+    this.atomIndex = (short)atomIndex;
+  }
+
+  public int getAtomIndex() {
+    if (atomIndex == -1)
+      throw new IndexOutOfBoundsException();
+    return atomIndex;
   }
 
   public String toString() {
@@ -172,6 +157,11 @@ public class AtomShape extends Shape {
 
   public void clearBonds() {
     bonds = null;
+  }
+
+  public int getBondedAtomIndex(int bondIndex) {
+    BondShape bond = bonds[bondIndex];
+    return ((bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1).atomIndex;
   }
 
   /*
@@ -350,5 +340,19 @@ public class AtomShape extends Shape {
     visible = true;
     */
     return visible;
+  }
+
+  /*
+   * mth 2003 07 30
+   * These routines are currently going through the Atom
+   * but soon they will go through an interface which defines their behavior
+   */
+
+  Point3d getPoint3d() {
+    return atom.getPoint3D();
+  }
+
+  double getVanderwaalsRadius() {
+    return atom.getVanderwaalsRadius();
   }
 }

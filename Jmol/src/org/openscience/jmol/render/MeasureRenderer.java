@@ -44,9 +44,7 @@ public class MeasureRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  public synchronized void paint(Graphics25D g25d, Rectangle rectClip,
-                                 DisplayControl control) {
-    ChemFrame frame = control.getFrame();
+  public synchronized void render(Graphics25D g25d, DisplayControl control) {
     boolean showMeasurementLabels = control.getShowMeasurementLabels();
     Enumeration e;
 

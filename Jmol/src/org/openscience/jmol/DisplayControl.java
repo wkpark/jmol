@@ -28,10 +28,13 @@ import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
 import org.openscience.jmol.render.ChemFrameRenderer;
+import org.openscience.jmol.render.JmolFrame;
 import org.openscience.jmol.render.MeasureRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
+import org.openscience.jmol.render.AtomShape;
 import org.openscience.jmol.render.BondShape;
+import org.openscience.jmol.render.JmolAtom;
 import org.openscience.jmol.script.Eval;
 import org.openscience.jmol.g25d.Graphics25D;
 import org.openscience.jmol.g25d.Colix;
@@ -544,6 +547,10 @@ final public class DisplayControl {
     return colorManager.colorVector;
   }
 
+  public short getColixVector() {
+    return colorManager.colixVector;
+  }
+
   public void setColorBackground(Color bg) {
     colorManager.setColorBackground(bg);
     refresh();
@@ -560,6 +567,10 @@ final public class DisplayControl {
 
   public Color getColorFromString(String colorName) {
     return colorManager.getColorFromString(colorName);
+  }
+
+  public short getColixAtom(JmolAtom atom) {
+    return colorManager.getColixAtom((Atom)atom);
   }
 
   public short getColixAtom(Atom atom) {
@@ -653,24 +664,26 @@ final public class DisplayControl {
     return selectionManager.isSelected(atomIndex);
   }
 
-  public boolean hasSelectionHalo(Atom atom) {
+  public boolean hasSelectionHalo(int atomIndex) {
     return
       selectionHaloEnabled &&
       !repaintManager.fastRendering &&
-      selectionManager.isSelected(atom.getAtomNumber());
+      selectionManager.isSelected(atomIndex);
   }
 
-  public boolean hasSelectionHalo(Atom atom, int iatom) {
+  public boolean hasBondSelectionHalo(AtomShape atomShape, int bondIndex) {
     if (!selectionHaloEnabled || repaintManager.fastRendering)
       return false;
-    boolean isAtomSelected = isSelected(atom.getAtomNumber());
+    int atomIndex =
+      useJmolFrame ? atomShape.getAtomIndex() : atomShape.atom.getAtomNumber();
+    boolean isAtomSelected = isSelected(atomIndex);
     if (bondSelectionModeOr && isAtomSelected)
       return true;
     if (!bondSelectionModeOr && !isAtomSelected)
       return false;
-    Atom atomOther = atom.getBondedAtom(iatom);
+    int atomIndexOther = atomShape.getBondedAtomIndex(bondIndex);
     boolean isOtherSelected =
-      selectionManager.isSelected(atomOther.getAtomNumber());
+      selectionManager.isSelected(atomIndexOther);
     return isOtherSelected;
   }
 
@@ -823,6 +836,10 @@ final public class DisplayControl {
 
   public boolean haveFile() {
     return modelManager.haveFile();
+  }
+
+  public JmolFrame getJmolFrame() {
+    return modelManager.chemframe.getJmolFrame();
   }
 
   public ChemFrame getFrame() {
@@ -1303,6 +1320,8 @@ final public class DisplayControl {
       return getOversampleAlwaysEnabled();
     if (key.equals("oversampleStopped"))
       return getOversampleStoppedEnabled();
+    if (key.equals("useJmolFrame"))
+      return getUseJmolFrame();
     System.out.println("control.getBooleanProperty(" +
                        key + ") - unrecognized");
     return false;
@@ -1333,6 +1352,8 @@ final public class DisplayControl {
       { setOversampleAlwaysEnabled(value); return; }
     if (key.equals("oversampleStopped"))
       { setOversampleStoppedEnabled(value); return; }
+    if (key.equals("useJmolFrame"))
+      { setUseJmolFrame(value); return; }
     System.out.println("control.setBooleanProperty(" +
                        key + "," + value + ") - unrecognized");
   }
@@ -1369,6 +1390,19 @@ final public class DisplayControl {
     tOversampleStopped = value;
     checkOversample();
     refresh();
+  }
+
+  /****************************************************************
+   * JmolFrame
+   ****************************************************************/
+
+  public boolean useJmolFrame = false;
+  public void setUseJmolFrame(boolean value) {
+    setStructuralChange();
+    useJmolFrame = value;
+  }
+  public boolean getUseJmolFrame() {
+    return useJmolFrame;
   }
 
   /****************************************************************
@@ -1588,6 +1622,10 @@ final public class DisplayControl {
 
   public byte getStyleLabel() {
     return labelManager.styleLabel;
+  }
+
+  public String getLabelAtom(JmolAtom atom) {
+    return labelManager.getLabelAtom(labelManager.styleLabel, (Atom)atom);
   }
 
   public String getLabelAtom(Atom atom) {

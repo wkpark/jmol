@@ -38,6 +38,7 @@ public class Axes {
 
   OriginShape originShape;
   AxisShape[] axisShapes;
+  Shape[] allShapes;
 
   final Point3d pointOrigin = new Point3d();
   Point3d[] unitAxisPoints = {
@@ -58,18 +59,16 @@ public class Axes {
     this.control = control;
 
     originShape = new OriginShape();
+    allShapes = new Shape[1 + 6];
+    allShapes[0] = originShape;
     axisShapes = new AxisShape[6];
     for (int i = 0; i < 6; ++i)
-      axisShapes[i] =
+      allShapes[i+1] = axisShapes[i] =
         new AxisShape(new Point3d(unitAxisPoints[i]), axisLabels[i]);
   }
 
-  public Shape getOriginShape() {
-    return originShape;
-  }
-
-  public Shape[] getAxisShapes() {
-    return axisShapes;
+  public Shape[] getShapes() {
+    return allShapes;
   }
 
   public void recalc(byte modeAxes) {

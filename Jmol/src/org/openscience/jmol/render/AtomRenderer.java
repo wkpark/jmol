@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.render;
 
-import org.openscience.jmol.*;
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 import java.awt.Component;
 import java.awt.Font;
@@ -68,7 +68,7 @@ public class AtomRenderer {
   short colixSelection;
   boolean g25dEnabled;
 
-  Atom atom;
+  JmolAtom atom;
   int x;
   int y;
   int z;
@@ -93,7 +93,9 @@ public class AtomRenderer {
     yUpperLeft = y - radius;
     colix = atomShape.colixAtom;
     colixOutline = control.getColixAtomOutline(styleAtom, colix);
-    if (control.hasSelectionHalo(atom))
+    int atomIndex =
+      control.getUseJmolFrame() ? atomShape.getAtomIndex() : atom.getAtomNumber();
+    if (control.hasSelectionHalo(atomIndex))
       renderHalo();
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);

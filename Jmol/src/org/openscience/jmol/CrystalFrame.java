@@ -65,6 +65,7 @@ public class CrystalFrame extends ChemFrame {
     return this.boxEdges;
   }
 
+  /*
   void calcBoundingBox() {
 
     Vector boxEdges;
@@ -97,7 +98,9 @@ public class CrystalFrame extends ChemFrame {
     cornerBoundingBox = new Point3d(maxX, maxY, maxZ);
     cornerBoundingBox.sub(centerBoundingBox);
   }
+  */
   
+  /*
   // arrowhead size isn't included because it is currently in screen
   // coordinates .. oh well. 
   public double calcRadius(Point3d center) {
@@ -112,4 +115,5 @@ public class CrystalFrame extends ChemFrame {
     }
     return radius;
   }
+  */
 }

@@ -133,7 +133,7 @@ public class BondRenderer {
 
     bondOrder = getRenderBondOrder(order);
 
-    if (control.hasSelectionHalo(atomShape1.atom, index1))
+    if (control.hasBondSelectionHalo(atomShape1, index1))
       renderHalo();
     if (styleBond != DisplayControl.NONE)
       renderBond();

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.Atom;
+import org.openscience.jmol.render.JmolFrame;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -202,10 +202,14 @@ public class ModelManager {
   }
 
   public int findNearestAtomIndex(int x, int y) {
+    if (control.getUseJmolFrame())
+      return control.getJmolFrame().findNearestAtomIndex(x, y);
     return chemframe.findNearestAtomIndex(x, y);
   }
 
   public BitSet findAtomsInRectangle(Rectangle rectRubber) {
+    if (control.getUseJmolFrame())
+      return control.getJmolFrame().findAtomsInRectangle(rectRubber);
     return chemframe.findAtomsInRectangle(rectRubber);
     /*
     return chemframe.findAtomsInRegion(rectRubber.x,

@@ -41,12 +41,20 @@ public class VectorShape extends LineShape {
   boolean arrowStart;
   boolean arrowEnd;
 
+  public VectorShape(Point3d pointOrigin, Point3d pointEnd) {
+    super(pointOrigin, pointEnd);
+    this.arrowStart = false;
+    this.arrowEnd = true;
+  }
+
+  /*
   VectorShape(Point3d pointOrigin, Point3d pointEnd,
               boolean arrowStart, boolean arrowEnd) {
     super(pointOrigin, pointEnd);
     this.arrowStart = arrowStart;
     this.arrowEnd = arrowEnd;
   }
+  */
 
   public String toString() {
     return "Primitive vector shape";

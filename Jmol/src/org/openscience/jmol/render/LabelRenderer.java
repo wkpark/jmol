@@ -90,7 +90,7 @@ public class LabelRenderer {
     if (!control.getPropertyStyleString().equals("")) {
 
       // check to make sure this atom has this property:
-      Enumeration propIter = atomShape.atom.getAtomicProperties().elements();
+      Enumeration propIter = ((Atom)atomShape.atom).getAtomicProperties().elements();
       while (propIter.hasMoreElements()) {
         PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
         if (p.getDescriptor().equals(control.getPropertyStyleString())) {

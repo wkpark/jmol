@@ -27,6 +27,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.JmolAtom;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3d;
@@ -36,7 +37,8 @@ import javax.vecmath.Matrix4d;
  * Stores and manipulations information and properties of
  * atoms.
  */
-public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
+public class Atom extends org.openscience.cdk.Atom
+  implements Bspt.Tuple, JmolAtom {
 
   /**
    * Creates an atom with the given type.
@@ -202,6 +204,7 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
   /**
    * Sets the atom's vector.
    */
+
   public void setVector(Point3d vector) {
 
     if (vector == null) {
@@ -274,6 +277,10 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
     bondedAtoms = null;
     bondOrders = null;
     getAtomShape().clearBonds();
+  }
+
+  public int getBondOrder(int i) {
+    return (bondOrders==null || bondOrders.length <= i) ? 1 : bondOrders[i] + 1;
   }
 
   public int getBondOrder(Atom atom2) {

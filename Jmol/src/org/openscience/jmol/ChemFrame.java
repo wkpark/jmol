@@ -27,6 +27,8 @@ package org.openscience.jmol;
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.VectorShape;
+import org.openscience.jmol.render.JmolFrame;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.geometry.BondTools;
 import java.beans.PropertyChangeSupport;
@@ -50,6 +52,7 @@ public class ChemFrame extends AtomContainer {
   // This stuff can vary for each frame in the dynamics:
 
   DisplayControl control;
+  JmolFrame jmframe;
 
   private String info;     // The title or info string for this frame.
   private Vector properties = new Vector();
@@ -175,8 +178,7 @@ public class ChemFrame extends AtomContainer {
         jmolAtom.setAtomNumber(this.getAtomCount());
         super.addAtom(jmolAtom);
     }
-    
-  
+
   public int addAtom(Atom type, double x, double y, double z) {
       return addAtom(type, x, y, z, null);
   }
@@ -233,31 +235,62 @@ public class ChemFrame extends AtomContainer {
   }
 
   public double getGeometricRadius() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getGeometricRadius();
+    }
     findBounds();
     return radiusBoundingBox;
   }
 
   public Point3d getBoundingBoxCenter() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getBoundingBoxCenter();
+    }
     findBounds();
     return centerBoundingBox;
   }
 
   public Point3d getBoundingBoxCorner() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getBoundingBoxCorner();
+    }
     findBounds();
     return cornerBoundingBox;
   }
 
   public Point3d getRotationCenter() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getRotationCenter();
+    }
     findBounds();
     return centerRotation;
   }
 
   public double getRotationRadius() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getRotationRadius();
+    }
     findBounds();
     return radiusRotation;
   }
 
   public void setRotationCenter(Point3d newCenterOfRotation) {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      jmframe.setRotationCenter(newCenterOfRotation);
+      return;
+    }
     if (newCenterOfRotation != null) {
       centerRotation = newCenterOfRotation;
       radiusRotation = calcRadius(centerRotation);
@@ -268,16 +301,31 @@ public class ChemFrame extends AtomContainer {
   }
 
   public double getMinAtomVectorMagnitude() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getMinAtomVectorMagnitude();
+    }
     findBounds();
     return minAtomVectorMagnitude;
   }
 
   public double getMaxAtomVectorMagnitude() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getMaxAtomVectorMagnitude();
+    }
     findBounds();
     return maxAtomVectorMagnitude;
   }
 
   public double getAtomVectorRange() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      return jmframe.getAtomVectorRange();
+    }
     findBounds();
     return maxAtomVectorMagnitude - minAtomVectorMagnitude;
   }
@@ -374,6 +422,12 @@ public class ChemFrame extends AtomContainer {
    * Clears the bounds cache for this model.
    */
   private void clearBounds() {
+    if (control.getUseJmolFrame()) {
+      if (jmframe == null)
+        buildJmolFrame();
+      jmframe.clearBounds();
+      return;
+    }
     centerBoundingBox = centerRotation = null;
     radiusBoundingBox = radiusRotation =
       minAtomVectorMagnitude = maxAtomVectorMagnitude = atomVectorRange = 0f;
@@ -409,9 +463,9 @@ public class ChemFrame extends AtomContainer {
   }
 
   void calcBoundingBox() {
-    /**
-     * Note that this method is overridden by CrystalFrame
-     */
+    //
+    // Note that this method is overridden by CrystalFrame
+    //
     // bounding box is defined as the center of the cartesian coordinates
     // as stored in the file
     // Note that this is not really the geometric center of the molecule
@@ -441,9 +495,9 @@ public class ChemFrame extends AtomContainer {
   }
 
   double calcRadius(Point3d center) {
-    /**
-     * Note that this method is overridden by CrystalFrame
-     */
+    //
+    // Note that this method is overridden by CrystalFrame
+    //
     // Now that we have defined the center, find the radius to the outermost
     // atom, including the radius of the atom itself. Note that this is
     // currently the vdw radius as scaled by the vdw display radius as set
@@ -605,6 +659,14 @@ public class ChemFrame extends AtomContainer {
     return vibrations.elements();
   }
 
+  public void addAtomVector(int atomIndex, double[] vector) {
+    Atom atom = getJmolAtomAt(atomIndex);
+    Point3d vector3d = new Point3d(vector);
+    atom.setVector(vector3d);
+
+    jmframe.addVectorShape(new VectorShape(atom.getPoint3D(), vector3d));
+  }
+
   private void setAtomArraySize(int newArraySize) {
     Atom[] nat = new Atom[newArraySize];
     int countToMove = atoms.length;
@@ -660,6 +722,27 @@ public class ChemFrame extends AtomContainer {
       for (int i = 0; i < atoms.length; i++) {
           out.println(atoms[i].toString());
       }
+  }
+
+  private void buildJmolFrame() {
+    jmframe = new JmolFrame(control);
+    for (int i = getAtomCount(); --i >= 0; ) {
+      Atom jmolAtom = getJmolAtomAt(i);
+      AtomShape atomShape =
+        new AtomShape(jmolAtom, jmolAtom.isHydrogen(), control);
+      jmframe.addAtomShape(atomShape);
+      Atom[] bondedAtoms = jmolAtom.getBondedAtoms();
+      if (bondedAtoms != null)
+        for (int j = bondedAtoms.length; --j >= 0; ) {
+          jmframe.bondAtomShapes(atomShape, bondedAtoms[j], jmolAtom.getBondOrder(j));
+        }
+    }
+  }
+
+  public JmolFrame getJmolFrame() {
+    if (jmframe == null)
+      buildJmolFrame();
+    return jmframe;
   }
 
   public JmolAtomIterator getAtomIterator() {
@@ -760,5 +843,6 @@ public class ChemFrame extends AtomContainer {
       return ibond;
     }
   }
+
 }
 

@@ -424,9 +424,12 @@ public class Vibrate extends JDialog implements ActionListener,
         coord[2] += force[2] * scaling;
         try {
           int atomIndex = newFrame.addAtom(atom, coord[0], coord[1], coord[2]);
+          /*
           newFrame.getJmolAtomAt(atomIndex).setVector(
                              new Point3d(forceVector[0],
                              forceVector[1], forceVector[2]));
+          */
+          newFrame.addAtomVector(atomIndex, forceVector);
         } catch (Exception ex) {
           System.out.println(ex);
           ex.printStackTrace();

@@ -401,7 +401,12 @@ final public class DisplayControl {
    ****************************************************************/
 
   public void setModeAtomColorProfile(int mode) {
-    colorManager.setModeAtomColorProfile(mode);
+    if (!modelManager.haveFile)
+      return;
+    if (selectionManager.countSelection() == 0) 
+      colorManager.setModeAtomColorProfile(mode);
+    else
+      colorManager.setModeAtomColorProfile(mode, selectionManager.bsSelection);
     refresh();
   }
 
@@ -494,6 +499,7 @@ final public class DisplayControl {
   public Color getColorFromHexString(String colorName) {
     return colorManager.getColorFromHexString(colorName);
   }
+
   public Color getColorAtom(Atom atom) {
     return colorManager.getColorAtom(atom);
   }
@@ -735,6 +741,10 @@ final public class DisplayControl {
     refresh();
   }
 
+  public JmolAtomIterator getChemFileIterator() {
+    return modelManager.getChemFileIterator();
+  }
+
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
@@ -816,6 +826,8 @@ final public class DisplayControl {
    ****************************************************************/
 
   public void setStyleLabel(byte style) {
+    if (!modelManager.haveFile)
+      return;
     styleManager.setStyleLabel(style);
     refresh();
   }
@@ -825,6 +837,8 @@ final public class DisplayControl {
   }
 
   public void setStyleAtom(byte style) {
+    if (!modelManager.haveFile)
+      return;
     if (selectionManager.countSelection() == 0) 
       styleManager.setStyleAtom(style);
     else
@@ -837,6 +851,8 @@ final public class DisplayControl {
   }
 
   public void setStyleBond(byte style) {
+    if (!modelManager.haveFile)
+      return;
     if (selectionManager.countSelection() == 0)
       styleManager.setStyleBond(style);
     else
@@ -849,6 +865,8 @@ final public class DisplayControl {
   }
 
   public void setPercentAngstromBond(int percentAngstromBond) {
+    if (!modelManager.haveFile)
+      return;
     if (selectionManager.countSelection() == 0)
       styleManager.setPercentAngstromBond(percentAngstromBond);
     else
@@ -920,6 +938,8 @@ final public class DisplayControl {
   }
 
   public void setPercentVdwAtom(int percentVdwAtom) {
+    if (!modelManager.haveFile)
+      return;
     if (selectionManager.countSelection() == 0)
       styleManager.setPercentVdwAtom(percentVdwAtom);
     else

@@ -24,12 +24,15 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.AtomShape;
+
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
 import org.openscience.jmol.render.AtomColors;
 
 import java.awt.Color;
 import java.util.Hashtable;
+import java.util.BitSet;
 
 public class ColorManager {
 
@@ -49,6 +52,26 @@ public class ColorManager {
       else
         colorProfile = new PartialAtomicChargeColors();
     }
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      Color color = getColorAtom(atom);
+      atom.atomShape.setColorAtom(color);
+    }
+  }
+
+  public void setModeAtomColorProfile(int mode, BitSet set) {
+    AtomColorer colorProfile;
+    if (mode == DisplayControl.ATOMTYPE)
+      colorProfile = AtomColors.getInstance();
+    else
+      colorProfile = new PartialAtomicChargeColors();
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; )
+      if (set.get(iatom)) {
+        Atom atom = atoms[iatom];
+        atom.atomShape.setColorAtom(colorProfile.getAtomColor(atom));
+      }
   }
 
   public int getModeAtomColorProfile() {

@@ -702,5 +702,20 @@ public class ChemFrame extends AtomContainer {
     }
   }
 
+  public JmolAtomIterator getAtomIterator() {
+    return new ChemFrameIterator();
+  }
+
+  class ChemFrameIterator extends JmolAtomIterator {
+    int iAtom = 0;
+
+    public boolean hasNext() {
+      return (iAtom < numberOfAtoms);
+    }
+
+    public Atom nextAtom() {
+      return atoms[iAtom++];
+    }
+  }
 }
 

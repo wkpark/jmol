@@ -29,6 +29,7 @@ import org.openscience.jmol.*;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.Color;
 
 import javax.vecmath.Point3d;
 
@@ -40,12 +41,14 @@ public class AtomShape extends Shape {
   public int[] bondWidths;
   public byte styleAtom;
   public int madAtom;
+  public Color colorAtom;
   public byte[] styleBonds;
   public int[] madBonds;
   
   public AtomShape(Atom atom,
                    byte styleAtom, int madAtom,
-                   byte styleBond, int madBond) {
+                   byte styleBond, int madBond,
+                   Color colorAtom) {
     this.atom = atom;
     numBonds = atom.getBondedCount();
     bondWidths = new int[numBonds];
@@ -53,6 +56,7 @@ public class AtomShape extends Shape {
     madBonds = new int[numBonds];
     setStyleMadAtom(styleAtom, madAtom);
     setStyleMadAllBonds(styleBond, madBond);
+    this.colorAtom = colorAtom;
   }
 
   public String toString() {
@@ -122,6 +126,10 @@ public class AtomShape extends Shape {
   public void setStyleMadBond(byte styleBond, int madBond, int indexBond) {
     styleBonds[indexBond] = styleBond;
     madBonds[indexBond] = madBond;
+  }
+
+  public void setColorAtom(Color colorAtom) {
+    this.colorAtom = colorAtom;
   }
 
   public void transform(DisplayControl control) {

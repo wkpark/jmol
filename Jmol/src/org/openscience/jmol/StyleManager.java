@@ -37,48 +37,31 @@ public class StyleManager {
     this.control = control;
   }
 
-  // FIXME -- mth -- write some iterators to clean this up
-
   public void initializeAtomShapes() {
-    ChemFrame[] frames = control.getFrames();
-    for (int iframe = frames.length; --iframe >= 0; ) {
-      Atom[] atoms = frames[iframe].getJmolAtoms();
-      for (int iatom = atoms.length; --iatom >= 0; ) {
-        AtomShape atomShape =
-          new AtomShape(atoms[iatom],
-                        styleAtom, -percentVdwAtom,
-                        styleBond, percentAngstromBond * 10);
-        atoms[iatom].setAtomShape(atomShape);
-      }
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      atom.setAtomShape(new AtomShape(atom,
+                                      styleAtom, -percentVdwAtom,
+                                      styleBond, percentAngstromBond * 10,
+                                      control.getColorAtom(atom)));
     }
   }
 
   public byte styleAtom = DisplayControl.QUICKDRAW;
   public void setStyleAtom(byte styleAtom) {
     this.styleAtom = styleAtom;
-    if (control.haveFile()) {
-      ChemFrame[] frames = control.getFrames();
-      for (int iframe = frames.length; --iframe >= 0; ) {
-        Atom[] atoms = frames[iframe].getJmolAtoms();
-        for (int iatom = atoms.length; --iatom >= 0; ) {
-          atoms[iatom].atomShape.setStyleAtom(styleAtom);
-        }
-      }
-    }
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext())
+      iter.nextAtom().atomShape.setStyleAtom(styleAtom);
   }
 
   public int percentVdwAtom = 20;
   public void setPercentVdwAtom(int percentVdwAtom) {
     this.percentVdwAtom = percentVdwAtom;
-    if (control.haveFile()) {
-      ChemFrame[] frames = control.getFrames();
-      for (int iframe = frames.length; --iframe >= 0; ) {
-        Atom[] atoms = frames[iframe].getJmolAtoms();
-        for (int iatom = atoms.length; --iatom >= 0; ) {
-          atoms[iatom].atomShape.setMadAtom(-percentVdwAtom);
-        }
-      }
-    }
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext())
+      iter.nextAtom().atomShape.setMadAtom(-percentVdwAtom);
   }
 
   public void setStyleAtom(byte style, BitSet set) {
@@ -105,30 +88,18 @@ public class StyleManager {
   public byte styleBond = DisplayControl.QUICKDRAW;
   public void setStyleBond(byte styleBond) {
     this.styleBond = styleBond;
-    if (control.haveFile()) {
-      ChemFrame[] frames = control.getFrames();
-      for (int iframe = frames.length; --iframe >= 0; ) {
-        Atom[] atoms = frames[iframe].getJmolAtoms();
-        for (int iatom = atoms.length; --iatom >= 0; ) {
-          atoms[iatom].atomShape.setStyleAllBonds(styleBond);
-        }
-      }
-    }
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext())
+      iter.nextAtom().atomShape.setStyleAllBonds(styleBond);
   }
 
   public int percentAngstromBond = 10;
   public void setPercentAngstromBond(int percentAngstromBond) {
     this.percentAngstromBond = percentAngstromBond;
     int mad = percentAngstromBond * 10;
-    if (control.haveFile()) {
-      ChemFrame[] frames = control.getFrames();
-      for (int iframe = frames.length; --iframe >= 0; ) {
-        Atom[] atoms = frames[iframe].getJmolAtoms();
-        for (int iatom = atoms.length; --iatom >= 0; ) {
-          atoms[iatom].atomShape.setMadAllBonds(mad);
-        }
-      }
-    }
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext())
+      iter.nextAtom().atomShape.setMadAllBonds(mad);
   }
 
   public void setStyleBond(byte style, BitSet set, boolean bondmodeOr) {

@@ -58,7 +58,17 @@ public class AtomRenderer {
   public void setGraphicsContext(Graphics g, Rectangle clip) {
     this.g = g;
     this.clip = clip;
+
+    fastRendering = control.getFastRendering();
+    useGraphics2D = control.getUseGraphics2D();
+    colorSelection = control.getColorSelection();
+    colorText = control.getColorText();
   }
+
+  boolean fastRendering;
+  boolean useGraphics2D;
+  Color colorSelection;
+  Color colorText;
 
   Atom atom;
   int x;
@@ -85,37 +95,35 @@ public class AtomRenderer {
     radius = diameter / 2;
     xUpperLeft = x - radius;
     yUpperLeft = y - radius;
-    color = control.getColorAtom(atom);
+    color = atomShape.colorAtom;
     colorOutline = control.getColorAtomOutline(color);
 
     renderAtom();
-    if (control.getStyleLabel() != control.NOLABELS)
+    if (control.getStyleLabel() != DisplayControl.NOLABELS)
       renderLabel();
   }
 
   private void renderAtom() {
-    if (!control.getFastRendering() &&
-        control.isSelected(atom.getAtomNumber())) {
+    if (!fastRendering && control.isSelected(atom.getAtomNumber())) {
       int halowidth = diameter / 3;
       if (halowidth < 2)
         halowidth = 2;
       int halodiameter = diameter + 2 * halowidth;
       int haloradius = halodiameter / 2;
-      g.setColor(control.getColorSelection());
+      g.setColor(colorSelection);
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
 
     if (diameter <= 2) {
       if (diameter > 0) {
-        g.setColor(styleAtom == control.WIREFRAME
+        g.setColor(styleAtom == DisplayControl.WIREFRAME
                    ? color : colorOutline);
           g.fillRect(xUpperLeft, yUpperLeft, diameter, diameter);
       }
       return;
     }
-    if (styleAtom == control.SHADING &&
-        diameter >= minCachedSize &&
-        !control.getFastRendering()) {
+    if (styleAtom == DisplayControl.SHADING &&
+        diameter >= minCachedSize && !fastRendering) {
       renderShadedAtom();
       return;
     }
@@ -123,8 +131,7 @@ public class AtomRenderer {
     // *filled* by an oval because of the stroke offset
     int diamT = diameter-1;
     g.setColor(color);
-    if (!control.getFastRendering() &&
-        styleAtom != control.WIREFRAME) {
+    if (!fastRendering && styleAtom != DisplayControl.WIREFRAME) {
       // diamT should work here, but if background dots are appearing
       // just inside the circles then change the parameter to *diameter*
       g.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
@@ -161,7 +168,7 @@ public class AtomRenderer {
   }
 
   private void renderLargeShadedAtom(Image imgSphere) {
-    if (! control.getUseGraphics2D()) {
+    if (! useGraphics2D) {
       g.drawImage(imgSphere, xUpperLeft, yUpperLeft,
                    diameter, diameter, null);
       return;
@@ -185,7 +192,7 @@ public class AtomRenderer {
     Image shadedImages[] = new Image[maxCachedSize];
     Component component = control.getAwtComponent();
     control.imageCache.put(color, shadedImages);
-    if (! control.getUseGraphics2D()) {
+    if (! useGraphics2D) {
       for (int d = minCachedSize; d < maxCachedSize; ++d) {
         shadedImages[d] = sphereSetup(component, color, d+2, lightSource);
       }
@@ -367,7 +374,7 @@ public class AtomRenderer {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     int k = fontMetrics.getAscent();
-    g.setColor(control.getColorText());
+    g.setColor(colorText);
     
     String label = null;
     switch (control.getStyleLabel()) {
@@ -401,7 +408,7 @@ public class AtomRenderer {
           // screen:
           font = new Font("Helvetica", Font.PLAIN, radius / 2);
           g.setFont(font);
-          g.setColor(control.getColorText());
+          g.setColor(colorText);
           s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);

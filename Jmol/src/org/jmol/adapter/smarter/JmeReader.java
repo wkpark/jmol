@@ -37,7 +37,7 @@ class JmeReader extends ModelReader {
   
   Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
     throws Exception {
-    Model model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
+    model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
 
     try {
       line = reader.readLine();
@@ -46,8 +46,8 @@ class JmeReader extends ModelReader {
       System.out.println("atomCount=" + atomCount);
       int bondCount = Integer.parseInt(tokenizer.nextToken());
       model.setModelName("JME");
-      readAtoms(model, atomCount);
-      readBonds(model, bondCount);
+      readAtoms(atomCount);
+      readBonds(bondCount);
     } catch (Exception ex) {
       model.errorMessage = "Could not read file:" + ex;
       logger.log(model.errorMessage);
@@ -55,22 +55,24 @@ class JmeReader extends ModelReader {
     return model;
   }
     
-  void readAtoms(Model model, int atomCount) throws Exception {
+  void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      String atom = tokenizer.nextToken();
-      //      System.out.println("atom=" + atom);
-      int indexColon = atom.indexOf(':');
+      String strAtom = tokenizer.nextToken();
+      //      System.out.println("strAtom=" + strAtom);
+      int indexColon = strAtom.indexOf(':');
       String elementSymbol = (indexColon > 0
-                              ? atom.substring(0, indexColon)
-                              : atom);
+                              ? strAtom.substring(0, indexColon)
+                              : strAtom).intern();
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = 0;
-      model.addAtom(new Atom(elementSymbol, 0, x, y, z));
+      Atom atom = model.newAtom();
+      atom.elementSymbol = elementSymbol;
+      atom.x = x; atom.y = y; atom.z = z;
     }
   }
 
-  void readBonds(Model model, int bondCount) throws Exception {
+  void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       int atomIndex1 = Integer.parseInt(tokenizer.nextToken());
       int atomIndex2 = Integer.parseInt(tokenizer.nextToken());

@@ -63,6 +63,12 @@ class Model {
     pdbStructureRecords = null;
   }
 
+  Atom newAtom() {
+    Atom atom = new Atom();
+    addAtom(atom);
+    return atom;
+  }
+  
   void addAtom(Atom atom) {
     if (atomCount == atoms.length) {
       Atom[] t = new Atom[atomCount + 512];

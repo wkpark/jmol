@@ -34,24 +34,24 @@ class MolReader extends ModelReader {
     
   Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
     throws Exception {
-    Model model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
+    model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
     model.setModelName(reader.readLine());
     reader.readLine();
     reader.readLine();
     String countLine = reader.readLine();
     int atomCount = Integer.parseInt(countLine.substring(0, 3).trim());
     int bondCount = Integer.parseInt(countLine.substring(3, 6).trim());
-    readAtoms(model, reader, atomCount);
-    readBonds(model, reader, bondCount);
+    readAtoms(reader, atomCount);
+    readBonds(reader, bondCount);
     return model;
   }
   
   // www.mdli.com/downloads/public/ctfile/ctfile.jsp
-  void readAtoms(Model model, BufferedReader reader, int atomCount)
+  void readAtoms(BufferedReader reader, int atomCount)
     throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String line = reader.readLine();
-      String elementSymbol = line.substring(31,34).trim();
+      String elementSymbol = line.substring(31,34).trim().intern();
       float x = Float.valueOf(line.substring( 0,10).trim()).floatValue();
       float y = Float.valueOf(line.substring(10,20).trim()).floatValue();
       float z = Float.valueOf(line.substring(20,30).trim()).floatValue();
@@ -61,12 +61,14 @@ class MolReader extends ModelReader {
         if (chargeCode != 0)
           charge = 4 - chargeCode;
       }
-
-      model.addAtom(new Atom(elementSymbol, charge, x, y, z));
+      Atom atom = model.newAtom();
+      atom.elementSymbol = elementSymbol;
+      atom.charge = charge;
+      atom.x = x; atom.y = y; atom.z = z;
     }
   }
 
-  void readBonds(Model model, BufferedReader reader, int bondCount)
+  void readBonds(BufferedReader reader, int bondCount)
     throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       String line = reader.readLine();

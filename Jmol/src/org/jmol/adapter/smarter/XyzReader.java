@@ -33,7 +33,7 @@ class XyzReader extends ModelReader {
     
   Model readModel(BufferedReader reader, ModelAdapter.Logger logger) {
 
-    Model model = new Model(ModelAdapter.MODEL_TYPE_XYZ);
+    model = new Model(ModelAdapter.MODEL_TYPE_XYZ);
 
     try {
       int modelNumber = 1;
@@ -43,7 +43,7 @@ class XyzReader extends ModelReader {
           model.setModelName(reader.readLine());
         else
           reader.readLine();
-        readAtoms(model, reader, modelNumber, modelCount);
+        readAtoms(reader, modelNumber, modelCount);
         ++modelNumber;
       }
     } catch (Exception ex) {
@@ -65,13 +65,13 @@ class XyzReader extends ModelReader {
     return Integer.parseInt(tokenizer.nextToken());
   }
   
-  void readAtoms(Model model, BufferedReader reader,
+  void readAtoms(BufferedReader reader,
                  int modelNumber, int modelCount) throws Exception {
     float[] chargeAndOrVector = new float[4];
     for (int i = 0; i < modelCount; ++i) {
       StringTokenizer tokenizer =
         new StringTokenizer(reader.readLine(), "\t ");
-      String elementSymbol = tokenizer.nextToken();
+      String elementSymbol = tokenizer.nextToken().intern();
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = Float.valueOf(tokenizer.nextToken()).floatValue();
@@ -87,8 +87,12 @@ class XyzReader extends ModelReader {
         vectorY = chargeAndOrVector[j - 2];
         vectorZ = chargeAndOrVector[j - 1];
       }
-      model.addAtom(new Atom(modelNumber, elementSymbol, charge,
-                             x, y, z, vectorX, vectorY, vectorZ));
+      Atom atom = model.newAtom();
+      atom.modelNumber = modelNumber;
+      atom.elementSymbol = elementSymbol;
+      atom.charge = charge;
+      atom.x = x; atom.y = y; atom.z = z;
+      atom.vectorX = vectorX; atom.vectorY = vectorY; atom.vectorZ = vectorZ;
     }
   }
 }

@@ -40,8 +40,6 @@ class PdbReader extends ModelReader {
 
   boolean isNMRdata;
 
-  Model model;
-
   ModelAdapter.Logger logger;
 
   Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
@@ -195,8 +193,15 @@ class PdbReader extends ModelReader {
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      model.addAtom(new Atom(currentModelNumber, elementSymbol,
-                             charge, occupancy, bfactor, x, y, z, line));
+      Atom atom = model.newAtom();
+      atom.modelNumber = currentModelNumber;
+      atom.elementSymbol = elementSymbol.intern();
+      atom.charge = charge;
+      atom.occupancy = occupancy;
+      atom.bfactor = bfactor;
+      atom.x = x; atom.y = y; atom.z = z;
+      atom.pdbAtomRecord = line;
+
       // note that values are +1 in this serial map
       serialMap[serial] = model.atomCount;
     } catch (NumberFormatException e) {

@@ -48,7 +48,6 @@ import java.util.StringTokenizer;
 
 class ShelxReader extends ModelReader {
 
-  Model model;
   boolean endReached;
   ModelAdapter.Logger logger;
   

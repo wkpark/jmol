@@ -29,7 +29,7 @@ class Atom {
   int modelNumber = 1;
   String elementSymbol;
   String atomName;
-  int atomicCharge;
+  int charge;
   int scatterFactor = Integer.MIN_VALUE;
   float x, y, z;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
@@ -40,33 +40,11 @@ class Atom {
   Atom() {
   }
 
-  Atom(int modelNumber, String symbol, int charge,
-       float x, float y, float z,
-       float vectorX, float vectorY, float vectorZ) {
-    this.modelNumber = modelNumber;
-    this.elementSymbol = symbol;
-    this.atomicCharge = charge;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.vectorX = vectorX;
-    this.vectorY = vectorY;
-    this.vectorZ = vectorZ;
-  }
-
-  Atom(String symbol, int charge, float x, float y, float z) {
-    this.elementSymbol = symbol;
-    this.atomicCharge = charge;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-
   Atom(int modelNumber, String symbol, int charge, float occupancy,
        float bfactor,
        float x, float y, float z, String pdb) {
     this.elementSymbol = symbol;
-    this.atomicCharge = charge;
+    this.charge = charge;
     this.occupancy = occupancy;
     this.bfactor = bfactor;
     this.x = x;

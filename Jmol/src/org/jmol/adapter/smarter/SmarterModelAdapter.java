@@ -151,7 +151,7 @@ public class SmarterModelAdapter extends ModelAdapter {
     public Object getUniqueID() { return atom; }
     public String getElementSymbol() { return atom.elementSymbol; }
     public String getAtomName() { return atom.atomName; }
-    public int getAtomicCharge() { return atom.atomicCharge; }
+    public int getAtomicCharge() { return atom.charge; }
     public float getX() { return atom.x; }
     public float getY() { return atom.y; }
     public float getZ() { return atom.z; }

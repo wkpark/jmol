@@ -103,10 +103,10 @@
     Ajout du rendu des surfaces maill&#x00E9;es.
   </change>
   <change contributor="MTH">
-    Ajout du rendu des polyh&#00E8;dres.
+    Ajout du rendu des polyh&#x00E8;dres.
   </change>
   <change contributor="ST">
-    Ajout du Drag-and-Drop &#00E0; l'application pour les JVM 1.5 et ult&#x00E9;rieures.
+    Ajout du Drag-and-Drop &#x00E0; l'application pour les JVM 1.5 et ult&#x00E9;rieures.
   </change>
 </changes>
 

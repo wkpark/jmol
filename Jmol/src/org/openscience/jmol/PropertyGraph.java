@@ -12,8 +12,11 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
+import ptolemy.plot.*;
 
 public class PropertyGraph extends JDialog {
+
+    private Plot plotter;
 
     /**
      * Creates a dialog. 
@@ -28,6 +31,10 @@ public class PropertyGraph extends JDialog {
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
         /* Put all of the UI stuff here */
+        plotter = new Plot();
+        plotter.setSize(560,385);  
+        container.add(plotter);
+        
 
         addWindowListener(new GraphWindowListener());
         getContentPane().add(container);
@@ -69,6 +76,31 @@ public class PropertyGraph extends JDialog {
         if (hasGraphableProperties) {
             graphAction.setEnabled(true);
             System.err.println("Found! :) ");
+            // Oke, let's put in some datapoints then :)
+            // Since the only plot is Energy vs. Frame i can
+            // safely put the title
+            plotter.setTitle("Energy vs. Frames");
+            for (int i = 1; i <= inputFile.nFrames(); i++) {
+              ChemFrame f = inputFile.getFrame(i);          
+              Vector plist = f.getFrameProps();
+              Enumeration els = plist.elements();
+              while (els.hasMoreElements()) {
+                PhysicalProperty p = (PhysicalProperty)els.nextElement();
+                System.err.print("Prop found: " + p.toString() + "...");
+                if (p.getDescriptor().equals("Energy")) {
+                  System.err.println("  added.");
+                  plotter.addPoint(0,
+                                   (new Double(i)).doubleValue(),
+                                   ((Double)p.getProperty()).doubleValue(),
+                                   true);
+                }
+              }
+            }
+            //plotter.setXRange(1.0, (new Double(inputFile.nFrames())).doubleValue());
+            //plotter.setYRange(-100.0, -50.0);
+            plotter.fillPlot();
+            plotter.setMarksStyle("dots");
+            plotter.setConnected(true);
         } else {
             graphAction.setEnabled(false);
             System.err.println("None found :(");
@@ -100,7 +132,7 @@ public class PropertyGraph extends JDialog {
      * @return the Dimension preferred by the dialog
      */
     public Dimension getPreferredSize() {
-        return new Dimension(275, 300);
+        return new Dimension(575, 400);
     }
     
     /**

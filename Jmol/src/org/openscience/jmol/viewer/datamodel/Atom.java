@@ -74,20 +74,8 @@ public final class Atom implements Bspt.Tuple {
               float x, float y, float z,
               boolean isHetero, int atomSerial, char chainID,
               float vibrationX, float vibrationY, float vibrationZ) {
-    /*
-    System.out.println("new Atom(" + modelNumber + "," +
-                       elementNumber + "," +
-                       atomName + "," +
-                       atomicCharge + "," +
-                       occupancy + "," +
-                       bfactor + "," +
-                       x + "," + y + "," + z + "," +
-                       isHetero + "," + atomSerial + "," + chainID + "," +
-                       group3 + "," + groupSequenceNumber + ","
-                       + groupInsertionCode + "," + pdbFile);
-    */
     this.group = group;
-    this.modelIndex = (short)group.chain.pdbmodel.modelIndex;
+    this.modelIndex = (short)group.chain.model.modelIndex;
     this.atomIndex = atomIndex;
     this.elementNumber = elementNumber;
     if (formalCharge == Integer.MIN_VALUE)
@@ -437,8 +425,8 @@ public final class Atom implements Bspt.Tuple {
     return group.chain;
   }
 
-  public PdbModel getPdbModel() {
-    return group.chain.pdbmodel;
+  public Model getModel() {
+    return group.chain.model;
   }
   
   public String getClientAtomStringProperty(String propertyName) {
@@ -474,7 +462,7 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public int getModelID() {
-    return group.chain.pdbmodel.modelNumber;
+    return group.chain.model.modelNumber;
   }
   
   public byte getSpecialAtomID() {

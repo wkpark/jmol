@@ -91,7 +91,7 @@ public class NucleotidePolymer extends Polymer {
   }
 
   public void calcHydrogenBonds() {
-    PdbModel model = chain.pdbmodel;
+    Model model = chain.model;
     for (int i = model.getChainCount(); --i >= 0; ) {
       Chain otherChain = model.getChain(i);
       if (otherChain == chain) // don't look at self
@@ -152,7 +152,7 @@ public class NucleotidePolymer extends Polymer {
     //    System.out.println("createHydrogenBond:" +
     // atom1.getAtomNumber() + "<->" + atom2.getAtomNumber());
     if (atom1 != null && atom2 != null) {
-      Frame frame = chain.pdbmodel.pdbfile.frame;
+      Frame frame = chain.model.mmset.frame;
       frame.bondAtoms(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE);
     }
   }

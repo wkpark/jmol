@@ -33,7 +33,7 @@ import java.util.BitSet;
 
 final public class Chain {
 
-  public PdbModel pdbmodel;
+  public Model model;
   public char chainID;
   int groupCount;
   Group[] groups = new Group[16];
@@ -41,8 +41,8 @@ final public class Chain {
   private Group[] mainchain;
   private Polymer polymer;
 
-  public Chain(PdbModel pdbmodel, char chainID) {
-    this.pdbmodel = pdbmodel;
+  public Chain(Model model, char chainID) {
+    this.model = model;
     this.chainID = canonizeChainID(chainID);
   }
 
@@ -169,7 +169,7 @@ final public class Chain {
   }
 
   public void selectAtoms(BitSet bs) {
-    Frame frame = pdbmodel.pdbfile.frame;
+    Frame frame = model.mmset.frame;
     Atom[] atoms = frame.getAtoms();
     for (int i = frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];

@@ -31,9 +31,9 @@ import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
 
-final public class PdbModel {
+final public class Model {
 
-  PdbFile pdbfile;
+  Mmset mmset;
   int modelNumber;
   public int modelIndex;
 
@@ -41,14 +41,14 @@ final public class PdbModel {
   private Chain[] chains = new Chain[8];
 
 
-  public PdbModel(PdbFile pdbfile, int modelIndex, int modelNumber) {
-    this.pdbfile = pdbfile;
+  public Model(Mmset mmset, int modelIndex, int modelNumber) {
+    this.mmset = mmset;
     this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
   }
 
   public void freeze() {
-    //    System.out.println("PdbFile.freeze() chainCount=" + chainCount);
+    //    System.out.println("Mmset.freeze() chainCount=" + chainCount);
     chains = (Chain[])Util.setLength(chains, chainCount);
     for (int i = chainCount; --i >= 0; ) {
       //      System.out.println(" chain:" + i);

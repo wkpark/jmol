@@ -37,12 +37,12 @@ import javax.vecmath.Vector3f;
  ****************************************************************/
 abstract class Mcps extends Shape {
 
-  PdbFile pdbFile;
+  Mmset mmset;
 
   Mcpsmodel[] mcpsmodels;
 
   final void initShape() {
-    pdbFile = frame.pdbFile;
+    mmset = frame.mmset;
   }
 
   void setSize(int size, BitSet bsSelected) {
@@ -74,8 +74,8 @@ abstract class Mcps extends Shape {
 
   void initialize() {
     if (mcpsmodels == null) {
-      int modelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
-      PdbModel[] models = pdbFile.getModels();
+      int modelCount = mmset == null ? 0 : mmset.getModelCount();
+      Model[] models = mmset.getModels();
       mcpsmodels = new Mcpsmodel[modelCount];
       for (int i = modelCount; --i >= 0; )
         mcpsmodels[i] = new Mcpsmodel(models[i]);
@@ -94,7 +94,7 @@ abstract class Mcps extends Shape {
     Mcpschain[] mcpschains;
     int modelIndex;
     
-    Mcpsmodel(PdbModel model) {
+    Mcpsmodel(Model model) {
       mcpschains = new Mcpschain[model.getChainCount()];
       this.modelIndex = model.modelIndex;
       for (int i = mcpschains.length; --i >= 0; )

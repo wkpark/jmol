@@ -200,7 +200,7 @@ public class AminoPolymer extends AlphaCarbonPolymer {
     groupDonor.setAminoBackboneHbondOffset(aminoBackboneHbondOffset);
     Atom nitrogen = groupDonor.getNitrogenAtom();
     Atom oxygen = groups[indexCarbonylGroup].getCarbonylOxygenAtom();
-    Frame frame = chain.pdbmodel.pdbfile.frame;
+    Frame frame = chain.model.mmset.frame;
     frame.bondAtoms(nitrogen, oxygen, order);
   }
 }

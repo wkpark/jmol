@@ -342,7 +342,7 @@ final public class Group {
   }
 
   public void selectAtoms(BitSet bs) {
-    Frame frame = chain.pdbmodel.pdbfile.frame;
+    Frame frame = chain.model.mmset.frame;
     Atom[] atoms = frame.getAtoms();
     for (int i = frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];
@@ -423,7 +423,7 @@ final public class Group {
   Atom getAtomIndex(int atomIndex) {
     return (atomIndex < 0
             ? null
-            : chain.pdbmodel.pdbfile.frame.getAtomAt(atomIndex));
+            : chain.model.mmset.frame.getAtomAt(atomIndex));
   }
 
   Atom getPurineN1() {

@@ -43,7 +43,7 @@ final public class Frame {
   // therefore, we can do == comparisions against string constants
   // if (modelTypeName == "xyz")
   String modelTypeName;
-  PdbFile pdbFile;
+  Mmset mmset;
   Graphics3D g3d;
   // the maximum BondingRadius seen in this set of atoms
   // used in autobonding
@@ -75,7 +75,7 @@ final public class Frame {
     // therefore, we can do == comparisions against string constants
     // if (modelTypeName == "xyz") { }
     this.modelTypeName = modelTypeName.toLowerCase().intern();
-    pdbFile = new PdbFile(this);
+    mmset = new Mmset(this);
     //    modelIDs = new short[10];
     atoms = new Atom[atomCount];
     bonds = new Bond[atomCount * 2];
@@ -104,7 +104,7 @@ final public class Frame {
         rebond(false);
     }
     hackAtomSerialNumbersForAnimations();
-    pdbFile.freeze();
+    mmset.freeze();
     findElementsPresent();
     findGroupsPresent();
   }
@@ -128,7 +128,7 @@ final public class Frame {
   }
 
   int currentModelID = Integer.MIN_VALUE;
-  PdbModel currentModel;
+  Model currentModel;
   char currentChainID = '\uFFFF';
   Chain currentChain;
   int currentGroupSequenceNumber = Integer.MIN_VALUE;
@@ -149,7 +149,7 @@ final public class Frame {
                       Object clientAtomReference) {
     if (modelID != currentModelID) {
       currentModelID = modelID;
-      currentModel = pdbFile.getOrAllocateModel(modelID);
+      currentModel = mmset.getOrAllocateModel(modelID);
       currentChainID = '\uFFFF';
     }
     if (chainID != currentChainID) {
@@ -175,11 +175,7 @@ final public class Frame {
     */
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + growthIncrement);
-    /*
-    Group group = pdbFile.getGroup(modelNumber, chainID,
-                                   group3,
-                                   groupSequenceNumber, groupInsertionCode);
-    */
+
     Atom atom = new Atom(currentGroup,
                          atomCount,
                          atomicNumber,
@@ -222,19 +218,19 @@ final public class Frame {
   }
 
   public int getModelCount() {
-    return pdbFile.getModelCount();
+    return mmset.getModelCount();
   }
 
   public int getModelIndex(int modelID) {
-    return pdbFile.getModelIndex(modelID);
+    return mmset.getModelIndex(modelID);
   }
 
   public int getChainCount() {
-    return pdbFile.getChainCount();
+    return mmset.getChainCount();
   }
 
   public int getGroupCount() {
-    return pdbFile.getGroupCount();
+    return mmset.getGroupCount();
   }
 
   public int getAtomCount() {
@@ -790,8 +786,8 @@ final public class Frame {
       return;
     hbondsCalculated = true;
     if (useRasMolHbondsCalculation) {
-      if (pdbFile != null)
-        pdbFile.calcHydrogenBonds();
+      if (mmset != null)
+        mmset.calcHydrogenBonds();
       return;
     }
     initializeBspf();

@@ -97,12 +97,12 @@ final public class FrameBuilder {
       adapter.getStructureIterator(clientFile);
     if (iterStructure != null) 
       while (iterStructure.hasNext())
-        frame.pdbFile.defineStructure(iterStructure.getStructureType(),
-                                      iterStructure.getChainID(),
-                                      iterStructure.getStartSequenceNumber(),
-                                      iterStructure.getStartInsertionCode(),
-                                      iterStructure.getEndSequenceNumber(),
-                                      iterStructure.getEndInsertionCode());
+        frame.mmset.defineStructure(iterStructure.getStructureType(),
+                                       iterStructure.getChainID(),
+                                       iterStructure.getStartSequenceNumber(),
+                                       iterStructure.getStartInsertionCode(),
+                                       iterStructure.getEndSequenceNumber(),
+                                       iterStructure.getEndInsertionCode());
   
     frame.freeze();
     long msToBuild = System.currentTimeMillis() - timeBegin;

@@ -121,7 +121,7 @@ public class ChemFile {
       ChemFrame frame = frames[iframe];
       if (frame.getNumberOfAtoms() > 0) {
         Enumeration properties =
-          frame.getJmolAtomAt(0).getProperties().elements();
+          frame.getJmolAtomAt(0).getAtomicProperties().elements();
         while (properties.hasMoreElements()) {
           PhysicalProperty property =
             (PhysicalProperty) properties.nextElement();

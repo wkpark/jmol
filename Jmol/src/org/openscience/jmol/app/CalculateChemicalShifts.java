@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -109,7 +109,7 @@ class CalculateChemicalShifts extends AbstractAction implements
           !foundShielding && (atomIndex < frame.getNumberOfAtoms());
             ++atomIndex) {
         Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(atomIndex);
-        Vector properties = atom.getProperties();
+        Vector properties = atom.getAtomicProperties();
         for (int propertyIndex = 0;
             !foundShielding && (propertyIndex < properties.size());
               ++propertyIndex) {
@@ -136,7 +136,7 @@ class CalculateChemicalShifts extends AbstractAction implements
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         String element = frame.getAtomAt(i).getID();
         Vector properties = ((org.openscience.jmol.Atom)frame.getAtomAt(i)).
-                            getProperties();
+                            getAtomicProperties();
         Enumeration propIter = properties.elements();
         while (propIter.hasMoreElements()) {
           Object prop = propIter.nextElement();

@@ -154,7 +154,7 @@ public class Atom extends org.openscience.cdk.Atom {
    *
    * @return a Vector of <code>PhysicalProperty</code>
    */
-  public Vector getProperties() {
+  public Vector getAtomicProperties() {
     return properties;
   }
 

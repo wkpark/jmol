@@ -236,6 +236,8 @@ final public class PdbGroup {
   }
 
   public static int getSeqcode(int sequenceNumber, char insertionCode) {
+    if (insertionCode >= 'a' && insertionCode <= 'z')
+      insertionCode -= 'a' - 'A';
     return (sequenceNumber << 8) + ((insertionCode - ' ') & 0xFF);
   }
 

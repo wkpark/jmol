@@ -471,9 +471,11 @@ public class Eval implements Runnable {
       case Token.spec_model:
         strbufLog.append("/");
         // fall into
-      case Token.spec_number:
       case Token.integer:
         strbufLog.append(token.intValue);
+        continue;
+      case Token.spec_seqcode:
+        strbufLog.append(PdbGroup.getSeqcodeString(token.intValue));
         continue;
       case Token.spec_chain:
         strbufLog.append(':');
@@ -492,9 +494,10 @@ public class Eval implements Runnable {
       case Token.spec_atom:
         strbufLog.append('.');
         break;
-      case Token.spec_number_range:
-        strbufLog.append(token.intValue);
+      case Token.spec_seqcode_range:
+        strbufLog.append(PdbGroup.getSeqcodeString(token.intValue));
         strbufLog.append('-');
+        strbufLog.append(PdbGroup.getSeqcodeString(((Integer)token.value).intValue()));
         break;
       case Token.within:
         strbufLog.append("within ");
@@ -754,13 +757,13 @@ public class Eval implements Runnable {
       case Token.spec_resid:
         stack[sp++] = getSpecResid(instruction.intValue);
         break;
-      case Token.spec_number:
-        stack[sp++] = getSpecNumber(instruction.intValue);
+      case Token.spec_seqcode:
+        stack[sp++] = getSpecSeqcode(instruction.intValue);
         break;
-      case Token.spec_number_range:
+      case Token.spec_seqcode_range:
         int min = instruction.intValue;
         int last = ((Integer)instruction.value).intValue();
-        stack[sp++] = getSpecNumberRange(min, last);
+        stack[sp++] = getSpecSeqcodeRange(min, last);
         break;
       case Token.spec_chain:
         stack[sp++] = getSpecChain((char)instruction.intValue);
@@ -776,11 +779,7 @@ public class Eval implements Runnable {
       case Token.backbone:
       case Token.solvent:
       case Token.identifier:
-        String variable = (String)instruction.value;
-        BitSet value = lookupValue(variable, false);
-        if (value == null)
-          undefinedVariable();
-        stack[sp++] = copyBitSet(value);
+        stack[sp++] = lookupIdentifierValue((String)instruction.value);
         break;
       case Token.opLT:
       case Token.opLE:
@@ -798,6 +797,87 @@ public class Eval implements Runnable {
     if (sp != 1)
       evalError("atom expression compiler error - stack over/underflow");
     return stack[0];
+  }
+
+  BitSet lookupIdentifierValue(String identifier) throws ScriptException {
+    // identifiers must be handled as a hack
+    // the expression 'select c1a' might be [c]1:a or might be a 'define c1a ...'
+    BitSet bsDefinedSet = lookupValue(identifier, false);
+    if (bsDefinedSet != null)
+      return copyBitSet(bsDefinedSet); // identifier had been previously defined
+    //    System.out.println("undefined & trying specname with:" + identifier);
+    // determine number of leading alpha characters
+    int alphaLen = 0;
+    int len = identifier.length();
+    while (alphaLen < len && Compiler.isAlphabetic(identifier.charAt(alphaLen)))
+      ++alphaLen;
+    if (alphaLen > 3)
+      undefinedVariable();
+    String potentialGroupName = identifier.substring(0, alphaLen);
+    //    System.out.println("potentialGroupName=" + potentialGroupName);
+    //          undefinedVariable();
+    BitSet bsName = lookupPotentialGroupName(potentialGroupName);
+    if (bsName == null)
+      undefinedVariable();
+    if (alphaLen == len)
+      return bsName;
+    //
+    // look for a sequence code
+    // for now, only support a sequence number
+    //
+    int seqcodeEnd = alphaLen;
+    while (seqcodeEnd < len && Compiler.isDigit(identifier.charAt(seqcodeEnd)))
+      ++seqcodeEnd;
+    int seqNumber = 0;
+    try {
+      seqNumber = Integer.parseInt(identifier.substring(alphaLen, seqcodeEnd));
+    } catch (NumberFormatException nfe) {
+      evalError("identifier parser error #373");
+    }
+    char insertionCode = ' ';
+    if (seqcodeEnd < len && identifier.charAt(seqcodeEnd) == '^') {
+      ++seqcodeEnd;
+      if (seqcodeEnd == len)
+        evalError("invalid insertion code");
+      insertionCode = identifier.charAt(seqcodeEnd++);
+    }
+    //    System.out.println("sequence number=" + seqNumber +
+    //                       " insertionCode=" + insertionCode);
+    int seqcode = PdbGroup.getSeqcode(seqNumber, insertionCode);
+    //    System.out.println("seqcode=" + seqcode);
+    BitSet bsSequence = getSpecSeqcode(seqcode);
+    BitSet bsNameSequence = bsName;
+    bsNameSequence.and(bsSequence);
+    if (seqcodeEnd == len)
+      return bsNameSequence;
+    //
+    // look for a chain spec ... also alpha & part of an identifier ... :-(
+    //
+    char chainID = identifier.charAt(seqcodeEnd);
+    if (++seqcodeEnd != len)
+      undefinedVariable();
+    //    System.out.println("chainID=" + chainID);
+    BitSet bsChain = getSpecChain(chainID);
+    BitSet bsNameSequenceChain = bsNameSequence;
+    bsNameSequenceChain.and(bsChain);
+    return bsNameSequenceChain;
+  }
+
+  BitSet lookupPotentialGroupName(String potentialGroupName) {
+    BitSet bsResult = null;
+    //    System.out.println("lookupPotentialGroupName:" + potentialGroupName);
+    Frame frame = viewer.getFrame();
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
+      if (pdbatom == null)
+        continue;
+      if (pdbatom.isGroup3(potentialGroupName)) {
+        if (bsResult == null)
+          bsResult = new BitSet(i + 1);
+        bsResult.set(i);
+      }
+    }
+    return bsResult;
   }
 
   void notSet(BitSet bs) {
@@ -848,7 +928,7 @@ public class Eval implements Runnable {
 
   BitSet getSpecName(String resNameSpec) {
     BitSet bsRes = new BitSet();
-    System.out.println("getSpecName:" + resNameSpec);
+    //    System.out.println("getSpecName:" + resNameSpec);
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -873,28 +953,28 @@ public class Eval implements Runnable {
     return bsRes;
   }
 
-  BitSet getSpecNumber(int number) {
+  BitSet getSpecSeqcode(int seqcode) {
     Frame frame = viewer.getFrame();
     BitSet bsResno = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      if (number == pdbatom.getSeqcode())
+      if (seqcode == pdbatom.getSeqcode())
         bsResno.set(i);
     }
     return bsResno;
   }
 
-  BitSet getSpecNumberRange(int resnoMin, int resnoLast) {
+  BitSet getSpecSeqcodeRange(int seqcodeMin, int seqcodeLast) {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
         continue;
-      int atomResno = pdbatom.getSeqcode();
-      if (atomResno >= resnoMin && atomResno <= resnoLast)
+      int atomSeqcode = pdbatom.getSeqcode();
+      if (atomSeqcode >= seqcodeMin && atomSeqcode <= seqcodeLast)
         bsResidue.set(i);
     }
     return bsResidue;
@@ -931,7 +1011,7 @@ public class Eval implements Runnable {
   BitSet getResidueWildcard(String strWildcard) {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
-    System.out.println("getResidueWildcard:" + strWildcard);
+    //    System.out.println("getResidueWildcard:" + strWildcard);
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
@@ -1100,7 +1180,7 @@ public class Eval implements Runnable {
   }
   
   void withinGroup(BitSet bs, BitSet bsResult) {
-    System.out.println("withinGroup");
+    //    System.out.println("withinGroup");
     Frame frame = viewer.getFrame();
     PdbGroup pdbgroupLast = null;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
@@ -1392,7 +1472,7 @@ public class Eval implements Runnable {
     viewer.openFile(filename);
     String errMsg = viewer.getOpenFileError();
     int millis = (int)(System.currentTimeMillis() - timeBegin);
-    System.out.println("!!!!!!!!! took " + millis + " ms");
+    //    System.out.println("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null)
       evalError(errMsg);
     if (logMessages)

@@ -293,8 +293,8 @@ public class Token {
   final static int colorRGB     = misc | 20 | colorparam;
   final static int spec_resid           = misc | 21;
   final static int spec_name_pattern    = misc | 22;
-  final static int spec_number          = misc | 23;
-  final static int spec_number_range    = misc | 24;
+  final static int spec_seqcode         = misc | 23;
+  final static int spec_seqcode_range   = misc | 24;
   final static int spec_chain           = misc | 25;
   final static int spec_model           = misc | 26;
   final static int spec_atom            = misc | 27;

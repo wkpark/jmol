@@ -467,11 +467,11 @@ class Compiler {
     return cchToken > 1; // decimal point plust at least one digit
   }
 
-  boolean isAlphabetic(char ch) {
+  static boolean isAlphabetic(char ch) {
     return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
   }
 
-  boolean isDigit(char ch) {
+  static boolean isDigit(char ch) {
     return ch >= '0' && ch <= '9';
   }
 
@@ -550,7 +550,11 @@ class Compiler {
       while (ichT < cchScript &&
              (isAlphabetic(ch = script.charAt(ichT)) ||
               isDigit(ch) ||
-              ch == '_' || ch == '?'))
+              ch == '_' || ch == '?') ||
+             // hack for insertion codes embedded in an atom expression :-(
+             // select c3^a
+             (ch == '^' && ichT > ichToken && isDigit(script.charAt(ichT - 1)))
+             )
         ++ichT;
       break;
     }
@@ -1040,8 +1044,8 @@ class Compiler {
                        " chain=" + chain);
 
     if (seqcode != -1)
-      generateResidueSpecCode(new Token(Token.spec_number,
-                                        seqcode, "spec_number"));
+      generateResidueSpecCode(new Token(Token.spec_seqcode,
+                                        seqcode, "spec_seqcode"));
     if (chain != '?')
       generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
     return true;
@@ -1064,11 +1068,11 @@ class Compiler {
       int seqcodeMin = seqcode;
       if (! clauseSequenceCode())
         return false;
-      return generateResidueSpecCode(new Token(Token.spec_number_range,
+      return generateResidueSpecCode(new Token(Token.spec_seqcode_range,
                                                seqcodeMin,
                                                new Integer(seqcode)));
     }
-    return generateResidueSpecCode(new Token(Token.spec_number,
+    return generateResidueSpecCode(new Token(Token.spec_seqcode,
                                              seqcode, "seqcode"));
   }
 

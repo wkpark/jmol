@@ -40,6 +40,7 @@ class SurfaceRenderer extends ShapeRenderer {
   short[] geodesicFaceVertexes;
   short[] geodesicFaceNormixes;
   Point3i[] screens;
+  Point3i[] screensTorusStrip;
 
   final static int[] mapNull = Surface.mapNull;
 
@@ -57,6 +58,7 @@ class SurfaceRenderer extends ShapeRenderer {
     transformedVectors = g3d.getTransformedVertexVectors();
     geodesicVertexCount = surface.geodesicVertexCount;
     screens = viewer.allocTempScreens(geodesicVertexCount);
+    screensTorusStrip = viewer.allocTempScreens(Surface.segmentsPerFullCircle);
     geodesicFaceCount =
       g3d.getGeodesicFaceCount(surface.geodesicRenderingLevel);
     geodesicFaceVertexes =
@@ -79,7 +81,7 @@ class SurfaceRenderer extends ShapeRenderer {
     for (int i = surface.torusCount; --i >= 0; ) {
       Surface.Torus torus = toruses[i];
       if (displayModelIndex < 0 ||
-          displayModelIndex == atoms[torus.indexI].modelIndex)
+          displayModelIndex == atoms[torus.ixI].modelIndex)
         renderTorus(torus, atoms, colixesConvex, convexSurfaceMaps);
     }
 
@@ -91,6 +93,7 @@ class SurfaceRenderer extends ShapeRenderer {
         renderCavity(cavities[i], atoms, colixesConvex, convexSurfaceMaps);
     }
     viewer.freeTempScreens(screens);
+    viewer.freeTempScreens(screensTorusStrip);
     screens = null;
   }
 
@@ -150,14 +153,29 @@ class SurfaceRenderer extends ShapeRenderer {
 
   void renderTorus(Surface.Torus torus,
                    Atom[] atoms, short[] colixes, int[][] convexSurfaceMaps) {
-    if (convexSurfaceMaps[torus.indexI] != null)
-      renderTorusHalf(torus,
-                      getColix(torus.colixI, colixes, atoms, torus.indexI),
-                      false);
-    if (convexSurfaceMaps[torus.indexJ] != null)
-      renderTorusHalf(torus,
-                      getColix(torus.colixJ, colixes, atoms, torus.indexJ),
-                      true);
+    if (false) {
+      if (convexSurfaceMaps[torus.ixI] != null)
+        renderTorusHalf(torus,
+                        getColix(torus.colixI, colixes, atoms, torus.ixI),
+                        false);
+      if (convexSurfaceMaps[torus.ixJ] != null)
+        renderTorusHalf(torus,
+                        getColix(torus.colixJ, colixes, atoms, torus.ixJ),
+                        true);
+      return;
+    }
+    
+    short colix = getColix(torus.colixI, colixes, atoms, torus.ixI);
+    g3d.setColix(colix);
+    for (int i = torus.stripPointArrays.length; --i >= 0; ) {
+      Point3f[] strip = torus.stripPointArrays[i];
+      short[] normixes = torus.stripNormixesArrays[i];
+      for (int j = strip.length; --j >= 0; )
+        viewer.transformPoint(strip[j], screensTorusStrip[j]);
+      for (int j = strip.length; --j >= 0; ) {
+        g3d.drawPixel(screensTorusStrip[j]);
+      }
+    }
   }
 
   short getColix(short colix, short[] colixes, Atom[] atoms, int index) {

@@ -151,6 +151,10 @@ class Normix3D {
     return getNormix(vector.x, vector.y, vector.z);
   }
 
+  short getInverseNormix(Vector3f vector) {
+    return getNormix(-vector.x, -vector.y, -vector.z);
+  }
+
   final BitSet bsNull = new BitSet();
   final BitSet bsConsidered = new BitSet();
 

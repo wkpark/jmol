@@ -2149,6 +2149,10 @@ final public class Graphics3D {
     return normix3d.getNormix(vector);
   }
 
+  public short getInverseNormix(Vector3f vector) {
+    return normix3d.getInverseNormix(vector);
+  }
+
   public Vector3f[] getGeodesicVertexVectors() {
     return Geodesic3D.getVertexVectors();
   }

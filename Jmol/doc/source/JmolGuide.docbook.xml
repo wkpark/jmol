@@ -17,13 +17,13 @@
     <title>Command Line Options</title>
     <para>
       The program jmol has (at this moment) one command line
-      option: -script. De current syntax is:
+      option: -script. The current syntax is:
       <cmdsynopsis>
 	<command>jmol</command>
 	<arg>-script <arg choice="req"><replaceable>rasmol.script</replaceable></arg></arg>
       </cmdsynopsis>
       This makes it possible to start jmol with a Rasmol script.
-      The syntax of these scripts is explained in <link linkend="rasmol"></link>.
+      The syntax of these scripts is explained in <link linkend="rasmol" endterm="rasmol.title" />.
     </para>
     <para>
       Alternatively, jmol can be started with one argument, being a
@@ -364,8 +364,8 @@ be animated with "Vibrate...".
     </section>
   </chapter>
 
-  <chapter id="rasmol">
-    <title>Rasmol Scripts</title>
+  <chapter id="rasmol" xreflabel="Rasmol Scripts">
+    <title id="rasmol.title">Rasmol Scripts</title>
     <para>
       The scripting language within Jmol is inherited from another
       3D viewer, Rasmol. Note that it this time, only a limited

@@ -163,13 +163,17 @@
 	</target>
 
 	<target name="dist.tar.gz" depends="dist">
-		<tar tarfile="jmol-${version}.tar" basedir="${dist.dir}">
+		<tar tarfile="jmol-${version}.tar" basedir="${dist.dir}" excludes="**">
+			<!-- The excludes="**" attribute in the tag above is a workaround
+			     for a problem in Ant 1.3 -->
 			<tarfileset dir="${dist.dir}" mode="755">
 				<include name="jmol-${version}/jmol"/>
 				<include name="jmol-${version}/jmol.bat"/>
 			</tarfileset>
 			<tarfileset dir="${dist.dir}">
 				<include name="jmol-${version}/**"/>
+				<exclude name="jmol-${version}/jmol"/>
+				<exclude name="jmol-${version}/jmol.bat"/>
 			</tarfileset>
 		</tar>
 		<gzip zipfile="jmol-${version}.tar.gz" src="jmol-${version}.tar"/>
@@ -217,16 +221,21 @@
 	</target>
 
 	<target name="sourcedist.tar.gz" depends="sourcedist">
-		<tar tarfile="jmol-${version}.source.tar" basedir="${dist.dir}">
-			<tarfileset dir="${dist.dir}" mode="755">
+		<tar tarfile="jmol-${version}.source.tar" basedir="${sourcedist.dir}"
+				excludes="**">
+			<!-- The excludes="**" attribute in the tag above is a workaround
+			     for a problem in Ant 1.3 -->
+			<tarfileset dir="${sourcedist.dir}" mode="755">
 				<include name="jmol-${version}/jmol"/>
 				<include name="jmol-${version}/jmol.bat"/>
 			</tarfileset>
-			<tarfileset dir="${dist.dir}">
+			<tarfileset dir="${sourcedist.dir}">
 				<include name="jmol-${version}/**"/>
+				<exclude name="jmol-${version}/jmol"/>
+				<exclude name="jmol-${version}/jmol.bat"/>
 			</tarfileset>
 		</tar>
-		<gzip zipfile="jmol-${version}.source.tar.gz" src="jmol.source.tar"/>
+		<gzip zipfile="jmol-${version}.source.tar.gz" src="jmol-${version}.source.tar"/>
 		<delete file="jmol-${version}.source.tar" />
 	</target>
 

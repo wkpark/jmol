@@ -3,11 +3,17 @@ org/openscience/jmol/DisplaySettings.java
 org/openscience/jmol/PhysicalProperty.java
 org/openscience/jmol/AtomType.java
 org/openscience/jmol/Atom.java
+org/openscience/jmol/Bond.java
 org/openscience/jmol/Vibration.java
 org/openscience/jmol/ChemFrame.java
 org/openscience/jmol/ChemFile.java
 org/openscience/jmol/AtomRenderer.java
 org/openscience/jmol/BondRenderer.java
+org/openscience/jmol/QuickdrawBondRenderer.java
+org/openscience/jmol/WireframeBondRenderer.java
+org/openscience/jmol/LineBondRenderer.java
+org/openscience/jmol/ShadingBondRenderer.java
+org/openscience/jmol/RendererUtilities.java
 org/openscience/jmol/HeapSorter.java
 org/openscience/jmol/ArrowLine.java
 org/openscience/jmol/ChemFrameRenderer.java
@@ -45,3 +51,4 @@ org/openscience/jmol/CACheReader.java
 org/openscience/jmol/ReaderFactory.java
 org/openscience/jmol/MdlReader.java
 org/openscience/jmol/CMLResolver.java
+

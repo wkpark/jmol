@@ -34,8 +34,8 @@ import java.util.BitSet;
 
 public class NucleotidePolymer extends Polymer {
 
-  NucleotidePolymer(Chain chain, Group[] groups) {
-    super(chain, groups);
+  NucleotidePolymer(Model model, Group[] groups) {
+    super(model, groups);
   }
 
   public Atom getNucleotidePhosphorusAtom(int groupIndex) {
@@ -91,12 +91,10 @@ public class NucleotidePolymer extends Polymer {
   }
 
   public void calcHydrogenBonds() {
-    Model model = chain.model;
-    for (int i = model.getChainCount(); --i >= 0; ) {
-      Chain otherChain = model.getChain(i);
-      if (otherChain == chain) // don't look at self
+    for (int i = model.getPolymerCount(); --i >= 0; ) {
+      Polymer otherPolymer = model.getPolymer(i);
+      if (otherPolymer == this) // don't look at self
         continue;
-      Polymer otherPolymer = otherChain.getPolymer();
       if (otherPolymer == null || !(otherPolymer instanceof NucleotidePolymer))
         continue;
       lookForHbonds((NucleotidePolymer)otherPolymer);
@@ -152,7 +150,7 @@ public class NucleotidePolymer extends Polymer {
     //    System.out.println("createHydrogenBond:" +
     // atom1.getAtomNumber() + "<->" + atom2.getAtomNumber());
     if (atom1 != null && atom2 != null) {
-      Frame frame = chain.model.mmset.frame;
+      Frame frame = model.mmset.frame;
       frame.bondAtoms(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE);
     }
   }

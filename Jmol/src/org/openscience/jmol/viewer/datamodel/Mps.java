@@ -33,13 +33,13 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 /****************************************************************
- * Mcps stands for Model-Chain-Polymer-Shape
+ * Mps stands for Model-Chain-Polymer-Shape
  ****************************************************************/
-abstract class Mcps extends Shape {
+abstract class Mps extends Shape {
 
   Mmset mmset;
 
-  Mcpsmodel[] mcpsmodels;
+  Mpsmodel[] mcpsmodels;
 
   final void initShape() {
     mmset = frame.mmset;
@@ -70,63 +70,63 @@ abstract class Mcps extends Shape {
       mcpsmodels[m].setColix(palette, colix, bs);
   }
 
-  abstract Mcpschain allocateMcpschain(Polymer polymer);
+  abstract Mpspolymer allocateMpspolymer(Polymer polymer);
 
   void initialize() {
     if (mcpsmodels == null) {
       int modelCount = mmset == null ? 0 : mmset.getModelCount();
       Model[] models = mmset.getModels();
-      mcpsmodels = new Mcpsmodel[modelCount];
+      mcpsmodels = new Mpsmodel[modelCount];
       for (int i = modelCount; --i >= 0; )
-        mcpsmodels[i] = new Mcpsmodel(models[i]);
+        mcpsmodels[i] = new Mpsmodel(models[i]);
     }
   }
 
-  int getMcpsmodelCount() {
+  int getMpsmodelCount() {
     return mcpsmodels.length;
   }
 
-  Mcpsmodel getMcpsmodel(int i) {
+  Mpsmodel getMpsmodel(int i) {
     return mcpsmodels[i];
   }
 
-  class Mcpsmodel {
-    Mcpschain[] mcpschains;
+  class Mpsmodel {
+    Mpspolymer[] mpspolymers;
     int modelIndex;
     
-    Mcpsmodel(Model model) {
-      mcpschains = new Mcpschain[model.getChainCount()];
+    Mpsmodel(Model model) {
+      mpspolymers = new Mpspolymer[model.getPolymerCount()];
       this.modelIndex = model.modelIndex;
-      for (int i = mcpschains.length; --i >= 0; )
-        mcpschains[i] = allocateMcpschain(model.getChain(i).getPolymer());
+      for (int i = mpspolymers.length; --i >= 0; )
+        mpspolymers[i] = allocateMpspolymer(model.getPolymer(i));
     }
     
     void setMad(short mad, BitSet bsSelected) {
-      for (int i = mcpschains.length; --i >= 0; ) {
-        Mcpschain chain = mcpschains[i];
-        if (chain.polymerCount > 0)
-          chain.setMad(mad, bsSelected);
+      for (int i = mpspolymers.length; --i >= 0; ) {
+        Mpspolymer polymer = mpspolymers[i];
+        if (polymer.polymerCount > 0)
+          polymer.setMad(mad, bsSelected);
       }
     }
 
     void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = mcpschains.length; --i >= 0; ) {
-        Mcpschain chain = mcpschains[i];
-        if (chain.polymerCount > 0)
-          chain.setColix(palette, colix, bsSelected);
+      for (int i = mpspolymers.length; --i >= 0; ) {
+        Mpspolymer polymer = mpspolymers[i];
+        if (polymer.polymerCount > 0)
+          polymer.setColix(palette, colix, bsSelected);
       }
     }
 
-    int getMcpschainCount() {
-      return mcpschains.length;
+    int getMpspolymerCount() {
+      return mpspolymers.length;
     }
 
-    Mcpschain getMcpschain(int i) {
-      return mcpschains[i];
+    Mpspolymer getMpspolymer(int i) {
+      return mpspolymers[i];
     }
   }
 
-  abstract class Mcpschain {
+  abstract class Mpspolymer {
     Polymer polymer;
     short madOn;
     short madHelixSheet;
@@ -141,7 +141,7 @@ abstract class Mcps extends Shape {
     Point3f[] leadMidpoints;
     Vector3f[] wingVectors;
 
-    Mcpschain(Polymer polymer, int madOn,
+    Mpspolymer(Polymer polymer, int madOn,
               int madHelixSheet, int madTurnRandom, int madDnaRna) {
       this.polymer = polymer;
       this.madOn = (short)madOn;
@@ -202,7 +202,7 @@ abstract class Mcps extends Shape {
             (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
         }
       }
-      System.out.println("unrecognized Mcps.getSpecial(" +
+      System.out.println("unrecognized Mps.getSpecial(" +
                          mad + ")");
       return 0;
     }

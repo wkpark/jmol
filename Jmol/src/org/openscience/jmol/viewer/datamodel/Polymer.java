@@ -34,12 +34,20 @@ import java.util.BitSet;
 
 abstract public class Polymer {
 
-  Chain chain;
+  Model model;
   Group[] groups;
   int count;
 
   private int[] atomIndices;
 
+  Polymer(Model model, Group[] groups) {
+    this.model = model;
+    this.groups = groups;
+    this.count = groups.length;
+    for (int i = count; --i >= 0; )
+      groups[i].setPolymer(this);
+  }
+  
   // these arrays will be one longer than the polymerCount
   // we probably should have better names for these things
   // holds center points between alpha carbons or sugar phosphoruses
@@ -47,23 +55,23 @@ abstract public class Polymer {
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
 
-  static Polymer allocatePolymer(Chain chain) {
+  static Polymer allocatePolymer(Model model, Chain chain) {
     //    System.out.println("allocatePolymer()");
     Group[] polymerGroups;
     polymerGroups = getAminoGroups(chain);
     if (polymerGroups != null) {
       //      System.out.println("an AminoPolymer");
-      return new AminoPolymer(chain, polymerGroups);
+      return new AminoPolymer(model, polymerGroups);
     }
     polymerGroups = getAlphaCarbonGroups(chain);
     if (polymerGroups != null) {
       //      System.out.println("an AlphaCarbonPolymer");
-      return new AlphaCarbonPolymer(chain, polymerGroups);
+      return new AlphaCarbonPolymer(model, polymerGroups);
     }
     polymerGroups = getNucleotideGroups(chain);
     if (polymerGroups != null) {
       //      System.out.println("a NucleotidePolymer");
-      return new NucleotidePolymer(chain, polymerGroups);
+      return new NucleotidePolymer(model, polymerGroups);
     }
     //    System.out.println("no polymer");
     return null;
@@ -142,14 +150,13 @@ abstract public class Polymer {
     return groups;
   }
   
-  Polymer(Chain chain, Group[] groups) {
-    this.chain = chain;
-    this.groups = groups;
-    this.count = groups.length;
-    for (int i = count; --i >= 0; )
-      groups[i].setPolymer(this);
+  ////////////////////////////////////////////////////////////////
+  // for now, a polymer only comes from a single chain
+  ////////////////////////////////////////////////////////////////
+  char getChainID() {
+    return groups[0].getChainID();
   }
-  
+
   public int getCount() {
     return count;
   }

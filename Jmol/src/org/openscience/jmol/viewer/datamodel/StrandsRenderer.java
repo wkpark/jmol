@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-class StrandsRenderer extends McpsRenderer {
+class StrandsRenderer extends MpsRenderer {
 
   Strands strands;
   Point3f pointT = new Point3f();
@@ -61,8 +61,8 @@ class StrandsRenderer extends McpsRenderer {
 
   boolean isNucleotidePolymer;
 
-  void renderMcpschain(Mcps.Mcpschain mcpschain) {
-    Strands.Schain schain = (Strands.Schain)mcpschain;
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    Strands.Schain schain = (Strands.Schain)mpspolymer;
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);

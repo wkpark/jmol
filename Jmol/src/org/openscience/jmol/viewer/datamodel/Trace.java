@@ -28,13 +28,13 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import java.util.BitSet;
 
-class Trace extends Mcps {
+class Trace extends Mps {
 
-  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
+  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
     return new Tchain(polymer);
   }
 
-  class Tchain extends Mcps.Mcpschain {
+  class Tchain extends Mps.Mpspolymer {
     Tchain(Polymer polymer) {
       super(polymer, 600, 1500, 500, 1500);
     }

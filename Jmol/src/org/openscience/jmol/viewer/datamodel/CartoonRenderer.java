@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-class CartoonRenderer extends McpsRenderer {
+class CartoonRenderer extends MpsRenderer {
 
   final Point3f pointT = new Point3f();
 
@@ -88,8 +88,8 @@ class CartoonRenderer extends McpsRenderer {
   Point3i[] ribbonTopScreens;
   Point3i[] ribbonBottomScreens;
 
-  void renderMcpschain( Mcps.Mcpschain mcpsChain) {
-    Cartoon.Cchain strandsChain = (Cartoon.Cchain)mcpsChain;
+  void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
+    Cartoon.Cchain strandsChain = (Cartoon.Cchain)mpspolymer;
     if (strandsChain.wingVectors != null) {
       polymerCount = strandsChain.polymerCount;
       polymerGroups = strandsChain.polymerGroups;

@@ -122,13 +122,17 @@ final public class Mmset {
     temporary hack for backward compatibility with drawing code
   */
 
+  /*
   public Group[] getMainchain(int i) {
     return models[0].getMainchain(i);
   }
+  */
 
+  /*
   public Chain getChain(int i) {
     return models[0].getChain(i);
   }
+  */
 
   public int getChainCount() {
     int chainCount = 0;

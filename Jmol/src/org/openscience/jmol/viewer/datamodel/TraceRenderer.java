@@ -31,16 +31,12 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class TraceRenderer extends McpsRenderer {
-
-  void render() {
-    super.render();
-  }
+class TraceRenderer extends MpsRenderer {
 
   boolean isNucleotidePolymer;
 
-  void renderMcpschain(Mcps.Mcpschain mcpschain) {
-    Trace.Tchain tchain = (Trace.Tchain)mcpschain;
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    Trace.Tchain tchain = (Trace.Tchain)mpspolymer;
     isNucleotidePolymer = tchain.polymer instanceof NucleotidePolymer;
     polymerCount = tchain.polymerCount;
     if (polymerCount == 0)

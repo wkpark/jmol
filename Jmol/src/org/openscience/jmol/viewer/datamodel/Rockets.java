@@ -29,13 +29,13 @@ import org.openscience.jmol.viewer.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-class Rockets extends Mcps {
+class Rockets extends Mps {
 
-  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
+  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
     return new Cchain(polymer);
   }
 
-  class Cchain extends Mcps.Mcpschain {
+  class Cchain extends Mps.Mpspolymer {
 
     Cchain(Polymer polymer) {
       super(polymer, -2, 3000, 500, 5000);

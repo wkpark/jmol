@@ -32,8 +32,8 @@ import java.util.BitSet;
 
 public class AminoPolymer extends AlphaCarbonPolymer {
 
-  AminoPolymer(Chain chain, Group[] groups) {
-    super(chain, groups);
+  AminoPolymer(Model model, Group[] groups) {
+    super(model, groups);
   }
 
   boolean hasWingPoints() { return true; }
@@ -200,7 +200,7 @@ public class AminoPolymer extends AlphaCarbonPolymer {
     groupDonor.setAminoBackboneHbondOffset(aminoBackboneHbondOffset);
     Atom nitrogen = groupDonor.getNitrogenAtom();
     Atom oxygen = groups[indexCarbonylGroup].getCarbonylOxygenAtom();
-    Frame frame = chain.model.mmset.frame;
+    Frame frame = model.mmset.frame;
     frame.bondAtoms(nitrogen, oxygen, order);
   }
 }

@@ -31,15 +31,15 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class BackboneRenderer extends McpsRenderer {
+class BackboneRenderer extends MpsRenderer {
 
-  void renderMcpschain(Mcps.Mcpschain mcpschain) {
-    renderTraceChain((Backbone.Bbchain)mcpschain);
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    renderTraceChain((Backbone.Bbpolymer)mpspolymer);
   }
   
-  void renderTraceChain(Backbone.Bbchain bbchain) {
-    render1Chain(bbchain.polymerCount, bbchain.polymer.getLeadAtomIndices(),
-                 bbchain.mads, bbchain.colixes);
+  void renderTraceChain(Backbone.Bbpolymer bbpolymer) {
+    render1Chain(bbpolymer.polymerCount, bbpolymer.polymer.getLeadAtomIndices(),
+                 bbpolymer.mads, bbpolymer.colixes);
   }
 
   void render1Chain(int polymerCount, int[] atomIndices,

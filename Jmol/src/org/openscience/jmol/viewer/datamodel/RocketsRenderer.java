@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-class RocketsRenderer extends McpsRenderer {
+class RocketsRenderer extends MpsRenderer {
 
   Point3i s0 = new Point3i();
   Point3i s1 = new Point3i();
@@ -42,8 +42,8 @@ class RocketsRenderer extends McpsRenderer {
 
   Rockets cartoon;
 
-  void renderMcpschain(Mcps.Mcpschain mcpschain) {
-    Rockets.Cchain cchain = (Rockets.Cchain)mcpschain;
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
     render1Chain(cchain.polymer, cchain.mads, cchain.colixes);
   }
 

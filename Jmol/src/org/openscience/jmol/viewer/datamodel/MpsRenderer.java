@@ -30,25 +30,25 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-abstract class McpsRenderer extends ShapeRenderer {
+abstract class MpsRenderer extends ShapeRenderer {
 
   void render() {
     if (shape == null)
       return;
-    Mcps mcps = (Mcps)shape;
-    for (int m = mcps.getMcpsmodelCount(); --m >= 0; ) {
-      Mcps.Mcpsmodel mcpsmodel = mcps.getMcpsmodel(m);
+    Mps mcps = (Mps)shape;
+    for (int m = mcps.getMpsmodelCount(); --m >= 0; ) {
+      Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);
       if (displayModelIndex >= 0 && displayModelIndex != mcpsmodel.modelIndex)
         continue;
-      for (int c = mcpsmodel.getMcpschainCount(); --c >= 0; ) {
-        Mcps.Mcpschain mcpschain = mcpsmodel.getMcpschain(c);
-        if (mcpschain.polymerCount >= 2)
-          renderMcpschain(mcpschain);
+      for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0; ) {
+        Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);
+        if (mpspolymer.polymerCount >= 2)
+          renderMpspolymer(mpspolymer);
       }
     }
   }
 
-  abstract void renderMcpschain(Mcps.Mcpschain mcpschain);
+  abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
 
   ////////////////////////////////////////////////////////////////
   // some utilities

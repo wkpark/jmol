@@ -30,7 +30,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-class Strands extends Mcps {
+class Strands extends Mps {
 
   /****************************************************************
    * M. Carson and C.E. Bugg (1986)
@@ -38,11 +38,11 @@ class Strands extends Mcps {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    ****************************************************************/
 
-  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
+  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
     return new Schain(polymer);
   }
 
-  class Schain extends Mcps.Mcpschain {
+  class Schain extends Mps.Mpspolymer {
 
     Schain(Polymer polymer) {
       super(polymer, -2, 3000, 800, 5000);

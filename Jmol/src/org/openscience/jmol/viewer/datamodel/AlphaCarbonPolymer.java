@@ -34,8 +34,8 @@ import java.util.BitSet;
 
 public class AlphaCarbonPolymer extends Polymer {
 
-  AlphaCarbonPolymer(Chain chain, Group[] groups) {
-    super(chain, groups);
+  AlphaCarbonPolymer(Model model, Group[] groups) {
+    super(model, groups);
   }
 
   public Atom getAlphaCarbonAtom(int groupIndex) {

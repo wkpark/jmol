@@ -33,7 +33,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
 
-class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
+class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
 
   Ribbons strands;
 
@@ -60,8 +60,8 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
 
   boolean isNucleotidePolymer;
 
-  void renderMcpschain( Mcps.Mcpschain mcpsChain) {
-    Ribbons.Schain strandsChain = (Ribbons.Schain)mcpsChain;
+  void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
+    Ribbons.Schain strandsChain = (Ribbons.Schain)mpspolymer;
     if (strandsChain.wingVectors != null) {
       isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
       render1Chain(strandsChain.polymerCount,

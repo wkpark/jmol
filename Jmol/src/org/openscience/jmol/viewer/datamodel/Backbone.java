@@ -28,15 +28,15 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import java.util.BitSet;
 
-class Backbone extends Mcps {
+class Backbone extends Mps {
 
-  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
-    return new Bbchain(polymer);
+  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
+    return new Bbpolymer(polymer);
   }
 
-  class Bbchain extends Mcps.Mcpschain {
+  class Bbpolymer extends Mps.Mpspolymer {
 
-    Bbchain(Polymer polymer) {
+    Bbpolymer(Polymer polymer) {
       super(polymer, 1, 1500, 500, 2000);
     }
 

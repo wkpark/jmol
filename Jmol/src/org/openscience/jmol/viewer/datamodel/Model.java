@@ -31,50 +31,61 @@ import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
 
-final public class Model {
+final class Model {
 
   Mmset mmset;
   int modelNumber;
-  public int modelIndex;
+  int modelIndex;
 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
 
+  private int polymerCount = 0;
+  private Polymer[] polymers = new Polymer[8];
 
-  public Model(Mmset mmset, int modelIndex, int modelNumber) {
+
+  Model(Mmset mmset, int modelIndex, int modelNumber) {
     this.mmset = mmset;
     this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
   }
 
-  public void freeze() {
+  void freeze() {
     //    System.out.println("Mmset.freeze() chainCount=" + chainCount);
     chains = (Chain[])Util.setLength(chains, chainCount);
     for (int i = chainCount; --i >= 0; ) {
       //      System.out.println(" chain:" + i);
       chains[i].freeze();
+      addPolymer(Polymer.allocatePolymer(this, chains[i]));
+    }
+    polymers = (Polymer[])Util.setLength(polymers, polymerCount);
+  }
+
+  void addSecondaryStructure(byte type, char chainID,
+                             int startSeqcode, int endSeqcode) {
+    for (int i = polymerCount; --i >= 0; ) {
+      Polymer polymer = polymers[i];
+      if (polymer.getChainID() == chainID)
+        polymer.addSecondaryStructure(type, startSeqcode, endSeqcode);
     }
   }
 
-  public void addSecondaryStructure(byte type, char chainID,
-                                    int startSeqcode, int endSeqcode) {
-    Chain chain = getChain(chainID);
-    if (chain != null)
-      chain.addSecondaryStructure(type, startSeqcode, endSeqcode);
-  }
-
-  public int getChainCount() {
+  int getChainCount() {
     return chainCount;
   }
 
-  public int getGroupCount() {
+  int getPolymerCount() {
+    return polymerCount;
+  }
+
+  int getGroupCount() {
     int groupCount = 0;
     for (int i = chainCount; --i >= 0; )
       groupCount += chains[i].getGroupCount();
     return groupCount;
   }
 
-  public Chain getChain(char chainID) {
+  Chain getChain(char chainID) {
     for (int i = chainCount; --i >= 0; ) {
       Chain chain = chains[i];
       if (chain.chainID == chainID)
@@ -83,9 +94,11 @@ final public class Model {
     return null;
   }
 
-  public Chain getChain(int chainIndex) {
+  /*
+    Chain getChain(int chainIndex) {
     return chains[chainIndex];
-  }
+    }
+  */
 
   Chain getOrAllocateChain(char chainID) {
     //    System.out.println("chainID=" + chainID + " -> " + (chainID + 0));
@@ -96,13 +109,21 @@ final public class Model {
       chains = (Chain[])Util.doubleLength(chains);
     return chains[chainCount++] = new Chain(this, chainID);
   }
-  
-  public Group[] getMainchain(int chainIndex) {
-    return chains[chainIndex].getMainchain();
+
+  void addPolymer(Polymer polymer) {
+    if (polymer == null)
+      return;
+    if (polymerCount == polymers.length)
+      polymers = (Polymer[])Util.doubleLength(polymers);
+    polymers[polymerCount++] = polymer;
+  }
+
+  Polymer getPolymer(int polymerIndex) {
+    return polymers[polymerIndex];
   }
 
   void calcHydrogenBonds() {
-    for (int i = chainCount; --i >= 0; )
-      chains[i].calcHydrogenBonds();
+    for (int i = polymerCount; --i >= 0; )
+      polymers[i].calcHydrogenBonds();
   }
 }

@@ -178,9 +178,11 @@ abstract class ModelReader {
     ichNextParse = 0;
     for (int i = 0; i < tokenCount; ++i)
       tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
+    /*
     System.out.println("-----------\nline:" + line);
     for (int i = 0; i < tokenCount; ++i)
       System.out.println("token[" + i + "]=" + tokens[i]);
+    */
     return tokens;
   }
 

@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre16";
+  public final static String version = "10pre16a";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -549,7 +549,7 @@ final public class JmolConstants {
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
    */
   public final static short[] covalentMars = {
-    2000, //   0  Xx big enough to bring attention to itself
+    0, //   0  Xx big enough to bring attention to itself
     230, //   1  H
     930, //   2  He
     680, //   3  Li
@@ -559,8 +559,8 @@ final public class JmolConstants {
     680, //   7  N
     680, //   8  O
     640, //   9  F
-    //    1120, //  10  Ne
-    0,   //  10  Ne
+    //    1120, //  10  Ne // this will need to change back once we get covalent
+    0,   //  10  Ne        // bonding orders in place
     970, //  11  Na
     1100, //  12  Mg
     1350, //  13  Al

@@ -37,141 +37,55 @@
 	    jmolButton(script, "some animated macromolecule");
 	  </script>
 	  <br />
+	  <hr />
 
-	  Play once<br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="300" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="anim mode once; frame 1; delay 0.5; anim on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="anim mode once; frame 1; delay 0.5; anim on" />
-	  </applet>
+	  <script>
+	    jmolLink("Play once", "anim mode once; frame 1; delay 0.5; anim on");
+	  </script>
 	  <br />
-
-	  Play repeatedly, backwards and forwards, with 2 second delays<br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="300" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="anim mode palindrome 2 2 ; anim on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="anim mode palindrome 2 2 ; anim on" />
-	  </applet>
+	  <script>
+	    jmolLink("Play repeatedly, backwards and forwards, with 2 second delays",
+	             "anim mode palindrome 2 2 ; anim on");
+	  </script>
 	  <br />
+	  <script>
+	    jmolLink("Stop animation", "anim off");
+	  </script>
 
-	  Stop animation<br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="300" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="anim off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="anim off" />
-	  </applet>
 	  <br />
+	  <hr />
 
-	  Show frames <br />
+	  Show individual movie frames <br />
 
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="frame 1" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame 1" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="frame next" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame next" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="frame prev" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame prev" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="100" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="frame all" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="frame all" />
-	  </applet>
+	  <script>
+	    jmolButton("frame 1");
+	    jmolButton("frame next");
+	    jmolButton("frame prev");
+	    jmolButton("frame all");
+	  </script>
 	  <br />
 
 	  Combining spin with animations can be useful<br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spin on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spin on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spin off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spin off" />
-	  </applet>
+	  <script>
+	    jmolButton("spin on");
+	    jmolButton("spin off");
+	  </script>
 	  <br />
-
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill 15%" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill 15%" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill 0.25" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill 0.25" />
-	  </applet>
+	  <script>
+	    jmolButton("spacefill 20%");
+	    jmolButton("spacefill on");
+	    jmolButton("spacefill off");
+	  </script>
 	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="spacefill off" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="spacefill off" />
-	  </applet>
+	  <script>
+	    jmolButton("wireframe 0.1");
+	    jmolButton("wireframe on");
+	    jmolButton("wireframe off");
+	  </script>
 	  <br />
-
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="wireframe on" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="wireframe on" />
-	  </applet>
-	  <applet code="JmolAppletControl" archive="../jmol/JmolApplet.jar"
-		  height="20" width="200" mayscript="true" >
-	    <param name="type"  value="button" />
-	    <param name="label"  value="wireframe 0.1" />
-	    <param name="target" value="jmol" />
-	    <param name="script" value="wireframe 0.1" />
-	  </applet>
-	  <br />
-
+	  
 	</td>
-	
+
       </tr>
     </table>
   </body>

@@ -1,38 +1,31 @@
 <html>
-<head><title>jmol applet alpha-helix demo</title>
-</head>
-<body>
-<table border="1">
-<tr>
-<td>
-<h2>amino acids</h2>
-<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="../jmol" width="350" height="350" mayscript="true" >
-	<param name="progressbar"   value="true" />
-	<param name="progresscolor" value="blue" />
-	<param name="boxmessage"    value="Downloading JmolApplet ..." />
-	<param name="boxbgcolor"    value="black" />
-	<param name="boxfgcolor"    value="white" />
-
-</applet>
-</td>
-
-<td>
-<script>
-var doc = document;
-function writeAminoControl(basename, label) {
-  doc.writeln('<td>');
-  doc.writeln('<applet code="JmolAppletControl" archive="JmolApplet.jar"');
-  doc.writeln('  codebase="../jmol"');
-  doc.writeln('  height="14" width="14" mayscript="true" >');
-  doc.writeln('  <param name="type"   value="chimePush" />');
-  doc.writeln('  <param name="target" value="jmol" />');
-  doc.writeln('  <param name="script" value="load ' +
-              basename + '.pdb.gz" />');
-  doc.writeln('</applet>');
-  doc.writeln(label);
-  doc.writeln('</td>');
-  }
+  <head>
+    <title>jmol applet alpha-helix demo</title>
+    <script src="../jmol/Jmol.js"></script>
+    <script>jmolSetCodebase("../jmol");</script>
+  </head>
+  <body>
+    <form>
+      <table border="1">
+	<tr>
+	  <td>
+	    <h2>amino acids</h2>
+	    <script>jmolApplet(350);</script>
+	  </td>
+	  
+	  <td>
+	    <script>
+	      var doc = document;
+	      function writeAminoControl(basename, label) {
+	      doc.open(); doc.writeln('<td>'); doc.close();
+	      
+	      jmolButton("load " + basename + ".pdb.gz", "X");
+	      doc.open();
+	      doc.writeln(label);
+	      doc.writeln("</td>");
+	      doc.close();
+	      }
+	      
 doc.writeln('<table border=0><tr>');
   writeAminoControl('ala', 'ala - alanine');
   writeAminoControl('arg', 'arg - arginine');
@@ -106,5 +99,6 @@ doc.writeln('<br />');
 
 </tr>
 </table>
+</form>
 </body>
 </html>

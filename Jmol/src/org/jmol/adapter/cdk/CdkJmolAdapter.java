@@ -236,6 +236,9 @@ public class CdkJmolAdapter extends JmolAdapter {
     public String getPdbAtomRecord() {
       return (String)atom.getProperty("pdb.record");
     }
+    public String getAtomName() {
+        return atom.getAtomTypeName();
+    }
     public char getChainID() {
         String chainID = (String)atom.getProperty("pdb.chainID");
         // System.out.println("chainID: " + chainID);

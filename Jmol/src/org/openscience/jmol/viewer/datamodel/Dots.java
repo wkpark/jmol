@@ -119,7 +119,7 @@ public class Dots extends Shape {
   final Point3f pointT1 = new Point3f();
 
     
-  public void initGraphic() {
+  public void initShape() {
     dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
     bsDotsOn = new BitSet();
     geodesicVertices = dotsRenderer.geodesic.vertices;

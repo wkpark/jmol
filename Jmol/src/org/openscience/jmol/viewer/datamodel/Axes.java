@@ -45,7 +45,6 @@ public class Axes extends Shape {
     new Point3f( 0, 0,-1)
   };
 
-  byte mode;
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
   {
@@ -53,32 +52,19 @@ public class Axes extends Shape {
       axisPoints[i] = new Point3f();
   }
 
-  public void setShow(boolean show) {
-    this.show = show;
-    this.mode = (show ? JmolConstants.AXES_BBOX : JmolConstants.AXES_NONE);
-    if (mode == JmolConstants.AXES_NONE)
-      return;
-    System.out.println("setting originPoint!");
+  public void initShape() {
     originPoint.set(viewer.getBoundingBoxCenter());
     Point3f corner = viewer.getBoundingBoxCorner();
     for (int i = 6; --i >= 0; ) {
       Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);
-      if (mode == JmolConstants.AXES_BBOX) {
-        // we have just set the axisPoint to be a unit on a single axis
-        // therefore only one of these values (x, y, or z) will be nonzero
-        // it will have value 1 or -1
-        axisPoint.x *= corner.x;
-        axisPoint.y *= corner.y;
-        axisPoint.z *= corner.z;
-      }
+      // we have just set the axisPoint to be a unit on a single axis
+      // therefore only one of these values (x, y, or z) will be nonzero
+      // it will have value 1 or -1
+      axisPoint.x *= corner.x;
+      axisPoint.y *= corner.y;
+      axisPoint.z *= corner.z;
       axisPoint.add(originPoint);
     }
-  }
-
-  public void setMad(short mad, BitSet bsSelected) {
-  }
-  
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
   }
 }

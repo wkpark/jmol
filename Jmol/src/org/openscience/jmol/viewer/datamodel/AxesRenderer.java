@@ -43,7 +43,7 @@ class AxesRenderer extends ShapeRenderer {
   
   void render() {
     Axes axes = (Axes)shape;
-    if (axes.mode == JmolConstants.AXES_NONE)
+    if (! axes.show)
       return;
     final Point3i[] axisScreens = frameRenderer.getTempScreens(7);
     final Point3i originScreen = axisScreens[6];

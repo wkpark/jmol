@@ -2029,7 +2029,7 @@ public class Eval implements Runnable {
   }
 
   void setBoundbox() throws ScriptException {
-    viewer.setShowBoundingBox(getSetBoolean());
+    viewer.setShapeShow(JmolConstants.SHAPE_BBOX, getSetBoolean());
   }
 
   void setFrank() throws ScriptException {

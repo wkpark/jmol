@@ -38,10 +38,10 @@ abstract public class Shape {
   final public void setViewerFrame(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     this.frame = frame;
-    initGraphic();
+    initShape();
   }
 
-  public void initGraphic() {
+  public void initShape() {
   }
 
   public void setShow(boolean show) {

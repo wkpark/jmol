@@ -58,10 +58,7 @@ class Bbox extends Shape {
   final static byte edges[] =
   {0,1, 0,2, 0,4, 1,3, 1,5, 2,3, 2,6, 3,7, 4,5, 4,6, 5,7, 6,7};
 
-  public void setShow(boolean show) {
-    this.show = show;
-    if (! show)
-      return;
+  public void initShape() {
     Point3f pointOrigin = viewer.getBoundingBoxCenter();
     Point3f pointCorner = viewer.getBoundingBoxCorner();
     for (int i = 0; i < 8; ++i) {
@@ -72,11 +69,5 @@ class Bbox extends Shape {
       bboxPoint.z *= pointCorner.z;
       bboxPoint.add(pointOrigin);
     }
-  }
-
-  public void setMad(short mad, BitSet bsSelected) {
-  }
-  
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
   }
 }

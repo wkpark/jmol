@@ -39,7 +39,7 @@ public class Unitcell extends Shape {
 
   final static float toRadians = (float)Math.PI * 2 / 360;
 
-  public void initGraphic() {
+  public void initShape() {
     float[] notionalUnitcell = frame.notionalUnitcell;
     float[][] crystalScaleMatrix = frame.crystalScaleMatrix;
     dumpCellData(notionalUnitcell, crystalScaleMatrix);
@@ -122,11 +122,5 @@ public class Unitcell extends Shape {
         System.out.print(" " + crystalScaleMatrix[i][j]);
       System.out.println("");
     }
-  }
-
-  public void setMad(short mad, BitSet bsSelected) {
-  }
-  
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
   }
 }

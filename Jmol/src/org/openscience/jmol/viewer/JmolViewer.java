@@ -1301,6 +1301,7 @@ final public class JmolViewer {
 
   public void setShapeShow(int refGraphic, boolean show) {
     getFrame().setShapeShow(refGraphic, show);
+    refresh();
   }
 
   public boolean getShapeShow(int refShape) {
@@ -1431,7 +1432,7 @@ final public class JmolViewer {
     if (key.equals("showAxes"))
       return getShowAxes();
     if (key.equals("showBoundingBox"))
-      return getShowBoundingBox();
+      return getShapeShow(JmolConstants.SHAPE_BBOX);
     if (key.equals("showUnitcell"))
       return getShapeShow(JmolConstants.SHAPE_UNITCELL);
     if (key.equals("showHydrogens"))
@@ -1468,7 +1469,7 @@ final public class JmolViewer {
     if (key.equals("showAxes"))
       { setShowAxes(value); return; }
     if (key.equals("showBoundingBox"))
-      { setShowBoundingBox(value); return; }
+      { setShapeShow(JmolConstants.SHAPE_BBOX, value); return; }
     if (key.equals("showUnitcell"))
       { setShapeShow(JmolConstants.SHAPE_UNITCELL, value); return; }
     if (key.equals("showHydrogens"))
@@ -1779,16 +1780,6 @@ final public class JmolViewer {
 
   public byte getModeAxes() {
     return axesManager.modeAxes;
-  }
-
-  public void setShowBoundingBox(boolean showBoundingBox) {
-    axesManager.setShowBoundingBox(showBoundingBox);
-    structuralChange = true;
-    refresh();
-  }
-
-  public boolean getShowBoundingBox() {
-    return axesManager.showBoundingBox;
   }
 
   public short getColixAxes() {

@@ -46,12 +46,6 @@ public class AxesManager {
                           modeAxes != JmolConstants.AXES_NONE);
   }
 
-  public boolean showBoundingBox = false;
-  public void setShowBoundingBox(boolean showBoundingBox) {
-    this.showBoundingBox = showBoundingBox;
-    viewer.setShapeShow(JmolConstants.SHAPE_BBOX, showBoundingBox);
-  }
-
   public short colixAxes;
   public void setColixAxes(short colixAxes) {
     this.colixAxes = colixAxes;

@@ -285,7 +285,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbShowBoundingBox =
       guimap.newJCheckBox("Prefs.showBoundingBox",
-                          viewer.getShowBoundingBox());
+                          viewer.getShapeShow(JmolConstants.SHAPE_BBOX));
     cbShowBoundingBox.addItemListener(checkBoxListener);
     fooPanel.add(cbShowBoundingBox);
 
@@ -981,7 +981,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     cbPerspectiveDepth.setSelected(viewer.getPerspectiveDepth());
     cbShowAxes.setSelected(viewer.getShowAxes());
-    cbShowBoundingBox.setSelected(viewer.getShowBoundingBox());
+    cbShowBoundingBox.setSelected(viewer.
+                                  getShapeShow(JmolConstants.SHAPE_BBOX));
+
     cbOrientationRasMolChime.setSelected(viewer.getOrientationRasMolChime());
 
     // Atom panel controls: 
@@ -1106,7 +1108,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setWireframeRotation(wireframeRotation);
     viewer.setPerspectiveDepth(perspectiveDepth);
     viewer.setShowAxes(showAxes);
-    viewer.setShowBoundingBox(showBoundingBox);
+    viewer.setShapeShow(JmolConstants.SHAPE_BBOX, showBoundingBox);
     viewer.setOrientationRasMolChime(orientationRasMolChime);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
@@ -1183,7 +1185,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        viewer.setShowBoundingBox(isSelected);
+        viewer.setShapeShow(JmolConstants.SHAPE_BBOX, isSelected);
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.orientationRasMolChime")) {
         orientationRasMolChime = isSelected;

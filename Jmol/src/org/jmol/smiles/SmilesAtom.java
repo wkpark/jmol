@@ -35,6 +35,7 @@ public class SmilesAtom {
   private Integer atomicMass;
   private int charge;
   private Integer hydrogenCount;
+  private int matchingAtom;
 
   private SmilesBond[] bonds;
   private int bondsCount;
@@ -51,6 +52,7 @@ public class SmilesAtom {
     this.symbol = null;
     this.atomicMass = null;
     this.charge = 0;
+    this.matchingAtom = -1;
     bonds = new SmilesBond[INITIAL_BONDS];
     bondsCount = 0;
   }
@@ -139,6 +141,14 @@ public class SmilesAtom {
 
   public void setCharge(int charge) {
     this.charge = charge;
+  }
+
+  public int getMatchingAtom() {
+    return matchingAtom;
+  }
+
+  public void setMatchingAtom(int atom) {
+    this.matchingAtom = atom;
   }
 
   public Integer getHydrogenCount() {

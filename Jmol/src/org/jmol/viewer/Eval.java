@@ -25,6 +25,8 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Font3D;
+import org.jmol.smiles.InvalidSmilesException;
+
 import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
@@ -1403,23 +1405,14 @@ class Eval implements Runnable {
     }
   }
 
-  BitSet getSubstructureSet(String smiles) {
-    System.out.println("smiles=" + smiles);
-    Frame frame = viewer.getFrame();
-    BitSet bsSubstructure = new BitSet();
-    ////////////////////////////////////////////////////////////////
-    // Nico,
-    // the test code below will select every atom if the element
-    // symbol is found in the string
-    //
-    for (int i = viewer.getAtomCount(); --i >= 0; ) {
-      Atom atom = frame.getAtomAt(i);
-      String elementSymbol = atom.getElementSymbol();
-      if (smiles.indexOf(elementSymbol) >= 0)
-        bsSubstructure.set(i);
+  BitSet getSubstructureSet(String smiles) throws ScriptException {
+    PatternMatcher matcher = new PatternMatcher(viewer);
+    try {
+      return matcher.getSubstructureSet(smiles);
+    } catch (InvalidSmilesException e) {
+      evalError(e.getMessage());
     }
-    ////////////////////////////////////////////////////////////////
-    return bsSubstructure;
+    return null;
   }
 
   int getProteinStructureType(Atom atom) {

@@ -30,6 +30,11 @@ import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
 
+/****************************************************************
+ * for some useful background info about hermite curves check out
+ * http://www.cubic.org/~submissive/sourcerer/hermite.htm
+ ****************************************************************/
+
 class Hermite3D {
 
   Graphics3D g3d;

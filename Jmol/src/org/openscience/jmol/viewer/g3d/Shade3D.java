@@ -27,32 +27,36 @@ package org.openscience.jmol.viewer.g3d;
 
 import javax.vecmath.Vector3f;
 
-public class Shade3D {
+public final class Shade3D {
 
-  public final static byte shadeAmbient = 0;
-  public static final byte shadeNormal = 40;
-  public static final byte shadeDarker = 16;
+  // there are 64 shades of a given color
+  // 0 = ambient
+  // 63 = brightest ... white
   public static final int shadeMax = 64;
+
+  private static byte shadeNormal = 48;
+
   // the light source vector
-  public static final float xLS = -1;
-  public static final float yLS = -1;
-  public static final float zLS = 1.5f;
-  public static final float magnitudeLight =
-    (float)Math.sqrt(xLS*xLS + yLS*yLS + zLS*zLS);
+  static final float xLightsource = -1;
+  static final float yLightsource = -1;
+  static float zLightsource = 1.5f;
+  static float magnitudeLight =
+    (float)Math.sqrt(xLightsource * xLightsource +
+                     yLightsource * yLightsource +
+                     zLightsource * zLightsource);
   // the light source vector normalized
-  private static float xLight = xLS / magnitudeLight;
-  private static float yLight = yLS / magnitudeLight;
-  private static float zLight = zLS / magnitudeLight;
+  static float xLight = xLightsource / magnitudeLight;
+  static float yLight = yLightsource / magnitudeLight;
+  static float zLight = zLightsource / magnitudeLight;
 
   // the viewer vector is always 0,0,1
 
-  public static int exponentSpecular = 5;
-  public static final float intensityDiffuseSource = 0.6f;
-  public static final float intensitySpecularSource = 0.4f;
-  public static final float intensityAmbient = 0;
-  public final static float ambientFraction = 0.6f;
-  public final static float ambientRange = 1 - ambientFraction;
-  public final static float intenseFraction = 0.95f;
+  static boolean specularOn = true;
+  static int specularExponent = 6;
+  static float intenseFraction = 0.4f;
+  static float intensitySpecular = 0.4f;
+  static float intensityDiffuse = 0.6f;
+  static float ambientFraction = 0.4f;
 
   public static int[] getShades(int rgb) {
     int[] shades = new int[shadeMax];
@@ -60,6 +64,8 @@ public class Shade3D {
     int red = (rgb >> 16) & 0xFF;
     int grn = (rgb >>  8) & 0xFF;
     int blu = rgb         & 0xFF;
+
+    float ambientRange = 1 - ambientFraction;
 
     shades[shadeNormal] = rgb(red, grn, blu);
     for (int i = 0; i < shadeNormal; ++i) {
@@ -105,23 +111,22 @@ public class Shade3D {
   }
   */
 
-  public final static int intensitySpecularSurfaceLimit = 44;
+  public final static int intensitySpecularSurfaceLimit = 48;
 
-  public static int calcIntensityNormalized(float x, float y, float z,
-                                             boolean tSpecular) {
+  public static int calcIntensityNormalized(float x, float y, float z) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
-    float intensity = intensityAmbient; // ambient component
+    float intensity = 0; // ambient component
     if (cosTheta > 0) {
-      intensity += cosTheta * intensityDiffuseSource; // diffuse component
+      intensity += cosTheta * intensityDiffuse; // diffuse component
       
-      if (tSpecular) {
+      if (specularOn) {
         // this is the dot product of the reflection and the viewer
         // but the viewer only has a z component
         float dotProduct = z * 2 * cosTheta - zLight;
         if (dotProduct > 0) {
-          for (int n = exponentSpecular; --n >= 0; )
+          for (int n = specularExponent; --n >= 0; )
             dotProduct *= dotProduct;
-          intensity += dotProduct * intensitySpecularSource; // specular
+          intensity += dotProduct * intensitySpecular; // specular
         }
       }
     }
@@ -130,4 +135,55 @@ public class Shade3D {
     return (byte)shade;
   }
 
+  public static void setSpecular(boolean specular) {
+    specularOn = specular;
+    dump();
+  }
+
+  public static boolean getSpecular() {
+    return specularOn;
+  }
+
+  public static void setLightsourceZ(float z) {
+    zLightsource = z;
+    magnitudeLight =
+      (float)Math.sqrt(xLightsource * xLightsource +
+                       yLightsource * yLightsource +
+                       zLightsource * zLightsource);
+    dump();
+  }
+
+  public static void setSpecularPower(int specularPower) {
+    if (specularPower >= 0)
+      intenseFraction = specularPower / 100f;
+    else
+      specularExponent = -specularPower;
+    dump();
+  }
+
+  public static void setAmbientPercent(int ambientPercent) {
+    ambientFraction = ambientPercent / 100f;
+    dump();
+  }
+
+  public static void setDiffusePercent(int diffusePercent) {
+    intensityDiffuse = diffusePercent / 100f;
+    dump();
+  }
+
+  public static void setSpecularPercent(int specularPercent) {
+    intensitySpecular = specularPercent / 100f;
+    dump();
+  }
+
+  static void dump() {
+    System.out.println("\n ambientPercent=" + ambientFraction +
+                       "\n diffusePercent=" + intensityDiffuse +
+                       "\n specularOn=" + specularOn +
+                       "\n specularPercent=" + intensitySpecular +
+                       "\n specularPower=" + intenseFraction +
+                       "\n specularExponent=" + specularExponent +
+                       "\n zLightsource=" + zLightsource +
+                       "\n shadeNormal=" + shadeNormal);
+  }
 }

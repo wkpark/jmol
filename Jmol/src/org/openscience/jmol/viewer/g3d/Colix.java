@@ -130,4 +130,9 @@ public class Colix {
       shades = ashades[colix] = Shade3D.getShades(argbs[colix]);
     return shades;
   }
+
+  public static void flushShades() {
+    for (int i = colixMax; --i >= 0; )
+      ashades[i] = null;
+  }
 }

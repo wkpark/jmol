@@ -669,7 +669,29 @@ final public class JmolViewer {
   }
 
   public boolean getSpecular() {
-    return colorManager.specular;
+    return colorManager.getSpecular();
+  }
+
+  public void setSpecularPower(int specularPower) {
+    colorManager.setSpecularPower(specularPower);
+  }
+
+  public void setAmbientPercent(int ambientPercent) {
+    colorManager.setAmbientPercent(ambientPercent);
+  }
+
+  public void setDiffusePercent(int diffusePercent) {
+    colorManager.setDiffusePercent(diffusePercent);
+  }
+
+  public void setSpecularPercent(int specularPercent) {
+    colorManager.setSpecularPercent(specularPercent);
+  }
+
+  // x & y light source coordinates are fixed at -1,-1
+  // z should be in the range 0, +/- 3 ?
+  public void setLightsourceZ(float z) {
+    colorManager.setLightsourceZ(z);
   }
 
   public int calcIntensity(float x, float y, float z) {

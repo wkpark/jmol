@@ -595,6 +595,14 @@ public class Eval implements Runnable {
     return false;
   }
 
+  int getSetInteger() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    if (statement[2].tok != Token.integer)
+      integerExpected();
+    return statement[2].intValue;
+  }
+
   BitSet copyBitSet(BitSet bitSet) {
     BitSet copy = new BitSet();
     copy.or(bitSet);
@@ -1518,6 +1526,15 @@ public class Eval implements Runnable {
     case Token.specular:
       setSpecular();
       break;
+    case Token.specpower:
+      setSpecPower();
+      break;
+    case Token.ambient:
+      setAmbient();
+      break;
+    case Token.diffuse:
+      setDiffuse();
+      break;
     case Token.spin:
       setSpin();
       break;
@@ -1529,7 +1546,6 @@ public class Eval implements Runnable {
       break;
 
       // not implemented
-    case Token.ambient:
     case Token.backfade:
     case Token.cartoon:
     case Token.hourglass:
@@ -1540,7 +1556,6 @@ public class Eval implements Runnable {
     case Token.radius:
     case Token.shadow:
     case Token.slabmode:
-    case Token.specpower:
     case Token.transparent:
     case Token.unitcell:
     case Token.vectps:
@@ -1887,9 +1902,7 @@ public class Eval implements Runnable {
   void setFontsize() throws ScriptException {
     int fontsize = 8;
     if (statement.length == 3) {
-      if (statement[2].tok != Token.integer)
-        integerExpected();
-      fontsize = statement[2].intValue;
+      fontsize=getSetInteger();
       if (fontsize > 72)
         numberOutOfRange();
     }
@@ -1972,7 +1985,24 @@ public class Eval implements Runnable {
   }
 
   void setSpecular() throws ScriptException {
-    viewer.setSpecular(getSetBoolean());
+    if (statement.length != 3)
+      booleanOrNumberExpected();
+    if (statement[2].tok == Token.integer)
+      viewer.setSpecularPercent(getSetInteger());
+    else
+      viewer.setSpecular(getSetBoolean());
+  }
+
+  void setSpecPower() throws ScriptException {
+    viewer.setSpecularPower(getSetInteger());
+  }
+
+  void setAmbient() throws ScriptException {
+    viewer.setAmbientPercent(getSetInteger());
+  }
+
+  void setDiffuse() throws ScriptException {
+    viewer.setDiffusePercent(getSetInteger());
   }
 
   void setSpin() throws ScriptException {

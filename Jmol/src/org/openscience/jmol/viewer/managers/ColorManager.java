@@ -316,19 +316,49 @@ public class ColorManager {
     return intensity;
   }
 
-  public boolean specular = true;
+  private void flushCaches() {
+    Colix.flushShades();
+    Sphere3D.flushImageCache();
+    viewer.refresh();
+  }
 
   public void setSpecular(boolean specular) {
-    if (this.specular != specular) {
-      Sphere3D.flushImageCache();
-      this.specular = specular;
-      viewer.refresh();
-    }
+    Shade3D.setSpecular(specular);
+    flushCaches();
+  }
+
+  public boolean getSpecular() {
+    return Shade3D.getSpecular();
+  }
+
+  public void setSpecularPower(int specularPower) {
+    Shade3D.setSpecularPower(specularPower);
+    flushCaches();
+  }
+
+  public void setAmbientPercent(int ambientPercent) {
+    Shade3D.setAmbientPercent(ambientPercent);
+    flushCaches();
+  }
+
+  public void setDiffusePercent(int diffusePercent) {
+    Shade3D.setDiffusePercent(diffusePercent);
+    flushCaches();
+  }
+
+  public void setSpecularPercent(int specularPercent) {
+    Shade3D.setSpecularPercent(specularPercent);
+    flushCaches();
+  }
+
+  public void setLightsourceZ(float dist) {
+    Shade3D.setLightsourceZ(dist);
+    flushCaches();
   }
 
   public int calcIntensity(float x, float y, float z) {
     float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
     return Shade3D.calcIntensityNormalized(x/magnitude, y/magnitude,
-                                           z/magnitude, specular);
+                                           z/magnitude);
   }
 }

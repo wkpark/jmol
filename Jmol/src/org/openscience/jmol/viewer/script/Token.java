@@ -209,6 +209,7 @@ public class Token {
   final static int fps          = setparam | 29;
   // jmol extensions
   final static int property     = setparam | 30;
+  final static int diffuse      = setparam | 31;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -421,6 +422,7 @@ public class Token {
 
     // jmol extensions
     "property",     new Token(property,        "property"),
+    "diffuse",      new Token(diffuse,         "diffuse"),
   
     // show parameters
     "information",  new Token(information,     "information"),

@@ -229,7 +229,7 @@ class Compiler {
               return invalidExpressionToken(ident);
           } else {
             // we are looking at the expression
-            if (tok != Token.identifier &&
+            if (tok != Token.identifier && tok != Token.set &&
                 (tok & (Token.expression | Token.predefinedset)) == 0)
               return invalidExpressionToken(ident);
           }
@@ -237,7 +237,7 @@ class Compiler {
         case Token.center:
         case Token.restrict:
         case Token.select:
-          if (tok != Token.identifier &&
+          if (tok != Token.identifier && tok != Token.set &&
               (tok & (Token.expression | Token.predefinedset)) == 0)
             return invalidExpressionToken(ident);
           break;

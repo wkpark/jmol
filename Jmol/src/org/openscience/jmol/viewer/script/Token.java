@@ -133,10 +133,10 @@ public class Token {
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expression;
-  final static int set          = command | 31 | expression|bool | negativeints;
+  final static int set          = command | 31 | bool | negativeints;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
-  final static int cpk          = command | 35 | setparam | bool |negativeints;
+  final static int cpk          = command | 35 | setparam | bool | negativeints;
   final static int ssbonds      = command | 36 | setparam | bool;
   final static int star         = command | 37 | bool;
   final static int stereo       = command | 38 | setspecial | bool | negativeints;

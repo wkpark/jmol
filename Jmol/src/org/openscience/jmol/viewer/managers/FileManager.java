@@ -26,6 +26,7 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.InputStream;
@@ -177,17 +178,28 @@ public class FileManager {
         break;
     try {
       InputStream in;
+      int length;
       if (appletDocumentBase == null) {
-        if (iurlPrefix >= 0)
-          in = (new URL(name)).openStream();
-        else
-          in = new FileInputStream(new File(name));
+        if (iurlPrefix >= 0) {
+          URL url = new URL(name);
+          URLConnection conn = url.openConnection();
+          length = conn.getContentLength();
+          in = conn.getInputStream();
+        }
+        else {
+          File file = new File(name);
+          length = (int)file.length();
+          in = new FileInputStream(file);
+        }
       } else {
         if (iurlPrefix >= 0 && appletProxy != null)
           name = appletProxy + "?url=" + URLEncoder.encode(name);
-        in = (new URL(appletDocumentBase, name)).openStream();
+        URL url = new URL(appletDocumentBase, name);
+        URLConnection conn = url.openConnection();
+        length = conn.getContentLength();
+        in = conn.getInputStream();
       }
-      return new MonitorInputStream(in, -1);
+      return new MonitorInputStream(in, length);
     } catch (Exception e) {
       errorMessage = "" + e;
     }
@@ -266,6 +278,7 @@ public class FileManager {
     int length;
     int position;
     int markPosition;
+    int readEventCount;
 
     MonitorInputStream(InputStream in, int length) {
       super(in);
@@ -274,22 +287,26 @@ public class FileManager {
     }
 
     public int read() throws IOException{
-      ++position;
-      //      System.out.println("read() position=" + position);
-      return super.read();
+      ++readEventCount;
+      int nextByte = super.read();
+      if (nextByte >= 0)
+        ++position;
+      return nextByte;
     }
 
     public int read(byte[] b) throws IOException {
+      ++readEventCount;
       int cb = super.read(b);
-      position += cb;
-      //      System.out.println("read(b) position=" + position);
+      if (cb > 0)
+        position += cb;
       return cb;
     }
 
     public int read(byte[] b, int off, int len) throws IOException {
+      ++readEventCount;
       int cb = super.read(b, off, len);
-      position += cb;
-      //      System.out.println("read(b, off, len) position=" + position);
+      if (cb > 0)
+        position += cb;
       return cb;
     }
 
@@ -297,19 +314,16 @@ public class FileManager {
       long cb = super.skip(n);
       // this will only work in relatively small files ... 2Gb
       position = (int)(position + cb);
-      //      System.out.println("skip(n) position=" + position);
       return cb;
     }
 
     public void mark(int readlimit) {
       super.mark(readlimit);
-      //      System.out.println("mark(readlimit) position=" + position);
       markPosition = position;
     }
 
     public void reset() throws IOException {
       position = markPosition;
-      //      System.out.println("reset() position=" + position);
       super.reset();
     }
   }

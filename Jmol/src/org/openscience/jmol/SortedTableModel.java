@@ -47,35 +47,39 @@ public class SortedTableModel extends ListeningTableModel {
 	boolean ascending = true;
 	CompareRows comparator = new CompareRows();
 	HeapSorter sorter = new HeapSorter(comparator);
-	
+
 	public SortedTableModel(TableModel model) {
 		super(model);
 		initializeIndexes();
 	}
 
 	class CompareRows implements HeapSorter.Comparator {
-		
+
 		public int compare(Object r1, Object r2) {
+
 			int row1 = ((Integer) r1).intValue();
 			int row2 = ((Integer) r2).intValue();
 			int result = 0;
 			int level = 0;
-			while (result == 0 && level < sortingColumns.size()) {
+			while ((result == 0) && (level < sortingColumns.size())) {
 				int column = ((Integer) sortingColumns.get(level)).intValue();
 				Object o1 = model.getValueAt(row1, column);
 				Object o2 = model.getValueAt(row2, column);
 				if ((o1 == null) && (o2 == null)) {
+
 					// Null objects are equal.
 					return 0;
 				} else if (o1 == null) {
+
 					// Null is less than anything.
 					return -1;
 				} else if (o2 == null) {
+
 					// Anything is greather than null.
 					return 1;
 				}
-				
-				result = ((Comparable)o1).compareTo(o2);
+
+				result = ((Comparable) o1).compareTo(o2);
 				++level;
 			}
 			if (!ascending) {
@@ -84,7 +88,7 @@ public class SortedTableModel extends ListeningTableModel {
 			return result;
 		}
 	}
-	
+
 	public void initializeIndexes() {
 
 		indexes = new Integer[model.getRowCount()];
@@ -143,15 +147,18 @@ public class SortedTableModel extends ListeningTableModel {
 		this.ascending = ascending;
 		Integer newSortColumn = new Integer(column);
 		sortingColumns.add(0, newSortColumn);
+
 		// Limit size of sorting columns so that it doesn't grow forever.
 		while (sortingColumns.size() > model.getColumnCount()) {
-			sortingColumns.remove(sortingColumns.size()-1);
+			sortingColumns.remove(sortingColumns.size() - 1);
 		}
 		sort();
 		super.tableChanged(new TableModelEvent(this));
-		changeSupport.firePropertyChange("sortColumn", oldSortColumn, newSortColumn);
+		changeSupport.firePropertyChange("sortColumn", oldSortColumn,
+				newSortColumn);
 		Boolean newSortDirection = new Boolean(ascending);
-		changeSupport.firePropertyChange("sortDirection", oldSortDirection, newSortDirection);
+		changeSupport.firePropertyChange("sortDirection", oldSortDirection,
+				newSortDirection);
 	}
 
 	/**
@@ -163,10 +170,11 @@ public class SortedTableModel extends ListeningTableModel {
 
 		table.setColumnSelectionAllowed(false);
 		MouseAdapter listMouseListener = new MouseAdapter() {
-			
+
 			boolean order = true;
-			
+
 			public void mouseClicked(MouseEvent e) {
+
 				TableColumnModel columnModel = table.getColumnModel();
 				int viewColumn = columnModel.getColumnIndexAtX(e.getX());
 				int column = table.convertColumnIndexToModel(viewColumn);
@@ -184,11 +192,13 @@ public class SortedTableModel extends ListeningTableModel {
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		changeSupport.addPropertyChangeListener(listener);
 	}
-	
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
+
+	public void removePropertyChangeListener(
+			PropertyChangeListener listener) {
 		changeSupport.removePropertyChangeListener(listener);
 	}
-	
-	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-	
+
+	private PropertyChangeSupport changeSupport =
+		new PropertyChangeSupport(this);
+
 }

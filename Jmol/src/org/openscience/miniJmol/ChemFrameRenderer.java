@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -5,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -44,18 +45,20 @@ public class ChemFrameRenderer {
 			return;
 		}
 		frame.transform();
-		if (!settings.getFastRendering() || atomReferences == null) {
-			if (atomReferences == null || atomReferences.length != frame.getNumberAtoms()) {
+		if (!settings.getFastRendering() || (atomReferences == null)) {
+			if ((atomReferences == null)
+					|| (atomReferences.length != frame.getNumberAtoms())) {
 				atomReferences = new AtomReference[frame.getNumberAtoms()];
-				for (int i=0; i < atomReferences.length; ++i) {
+				for (int i = 0; i < atomReferences.length; ++i) {
 					atomReferences[i] = new AtomReference();
 				}
 			}
-			for (int i=0; i < frame.getNumberAtoms(); ++i) {
+			for (int i = 0; i < frame.getNumberAtoms(); ++i) {
 				atomReferences[i].index = i;
-				atomReferences[i].z = frame.getAtoms()[i].getScreenPosition().z;
+				atomReferences[i].z =
+						frame.getAtoms()[i].getScreenPosition().z;
 			}
-			
+
 			if (frame.getNumberAtoms() > 1) {
 				sorter.sort(atomReferences);
 			}
@@ -65,27 +68,29 @@ public class ChemFrameRenderer {
 			if (settings.getShowBonds()) {
 				Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
 				while (bondIter.hasMoreElements()) {
-					Atom otherAtom = (Atom)bondIter.nextElement();
-					if (otherAtom.getScreenPosition().z < frame.getAtoms()[j].getScreenPosition().z) {
-						bondRenderer.paint(g, frame.getAtoms()[j],
-								otherAtom, settings);
+					Atom otherAtom = (Atom) bondIter.nextElement();
+					if (otherAtom.getScreenPosition().z
+							< frame.getAtoms()[j].getScreenPosition().z) {
+						bondRenderer.paint(g, frame.getAtoms()[j], otherAtom,
+								settings);
 					}
 				}
 			}
 			if (settings.getShowAtoms() && !settings.getFastRendering()) {
-				atomRenderer.paint(g, frame.getAtoms()[j], frame.getPickedAtoms()[j], settings,
-						false);
+				atomRenderer.paint(g, frame.getAtoms()[j],
+						frame.getPickedAtoms()[j], settings, false);
 			} else if (settings.getFastRendering()) {
-				atomRenderer.paint(g, frame.getAtoms()[j], frame.getPickedAtoms()[j], settings,
-						true);
+				atomRenderer.paint(g, frame.getAtoms()[j],
+						frame.getPickedAtoms()[j], settings, true);
 			}
 			if (settings.getShowBonds()) {
 				Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
 				while (bondIter.hasMoreElements()) {
-					Atom otherAtom = (Atom)bondIter.nextElement();
-					if (otherAtom.getScreenPosition().z >= frame.getAtoms()[j].getScreenPosition().z) {
-						bondRenderer.paint(g, frame.getAtoms()[j],
-								otherAtom, settings);
+					Atom otherAtom = (Atom) bondIter.nextElement();
+					if (otherAtom.getScreenPosition().z
+							>= frame.getAtoms()[j].getScreenPosition().z) {
+						bondRenderer.paint(g, frame.getAtoms()[j], otherAtom,
+								settings);
 					}
 				}
 			}
@@ -110,8 +115,10 @@ public class ChemFrameRenderer {
 
 	AtomReference[] atomReferences;
 
-	HeapSorter sorter = new HeapSorter( new HeapSorter.Comparator() {
+	HeapSorter sorter = new HeapSorter(new HeapSorter.Comparator() {
+
 		public int compare(Object atom1, Object atom2) {
+
 			AtomReference a1 = (AtomReference) atom1;
 			AtomReference a2 = (AtomReference) atom2;
 			if (a1.z < a2.z) {

@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -55,29 +55,33 @@ public class TestAtomTypesModel extends TestCase {
 	 * Set up for testing.
 	 */
 	public void setUp() {
+
 		atm1 = new AtomTypesModel();
-		at1 = BaseAtomType.get("type1", "root1", 0, 0.0, 0.0, 0.0, new Color(0, 0, 0));
+		at1 = BaseAtomType.get("type1", "root1", 0, 0.0, 0.0, 0.0,
+				new Color(0, 0, 0));
 		atm2 = new AtomTypesModel();
 		atm2.updateAtomType(at1);
-	} 
+	}
 
 	/**
 	 * Test the getColumnName method.
 	 * Expect appropriate strings for valid indexes and null for all else.
 	 */
 	public void testGetColumnName() {
+
 		assertEquals("Atom Type", atm1.getColumnName(0));
 		assertEquals("Atomic\nNumber", atm1.getColumnName(2));
 		assertEquals("Color", atm1.getColumnName(6));
 		assertEquals(null, atm1.getColumnName(-1));
 		assertEquals(null, atm1.getColumnName(20));
-	} 
+	}
 
 	/**
 	 * Test the get method.
 	 * Expect appropriate strings for valid indexes and null for all else.
 	 */
 	public void testGet() {
+
 		assertEquals(null, atm1.get("test"));
 		assertEquals(null, atm1.get(5));
 		assertEquals(null, atm1.get(-1));
@@ -85,13 +89,14 @@ public class TestAtomTypesModel extends TestCase {
 		assertEquals(null, atm2.get(null));
 		assertEquals("failed get(0)", at1, atm2.get(0));
 		assertEquals("failed get(type1)", at1, atm2.get("type1"));
-	} 
+	}
 
 	/**
 	 * Test the elements method.
 	 * Expect list of atom types.
 	 */
 	public void testElements() {
+
 		Enumeration types = atm1.elements();
 		assert("hasMoreElements() failed", false == types.hasMoreElements());
 
@@ -102,8 +107,9 @@ public class TestAtomTypesModel extends TestCase {
 		try {
 			types2.nextElement();
 			fail("no exception thrown at end of elements");
-		} catch (NoSuchElementException ex) {}
-	} 
+		} catch (NoSuchElementException ex) {
+		}
+	}
 
 	/**
 	 * Test updateAtomType method.
@@ -111,24 +117,27 @@ public class TestAtomTypesModel extends TestCase {
 	 * replacement of AtomType if name already in model.
 	 */
 	public void testUpdateAtomType() {
+
 		atm1.updateAtomType(at1);
 		assertEquals(at1, atm1.get(0));
 		assertEquals(null, atm1.get("root1"));
 		assertEquals(at1, atm1.get("type1"));
 
-		BaseAtomType tmpAt1 = BaseAtomType.get("temp type", "type1", 0, 0.0, 0.0, 0.0, new Color(0, 0, 0));
+		BaseAtomType tmpAt1 = BaseAtomType.get("temp type", "type1", 0, 0.0,
+								  0.0, 0.0, new Color(0, 0, 0));
 		atm1.updateAtomType(tmpAt1);
 		assertEquals(at1, atm1.get(0));
 		assertEquals(tmpAt1, atm1.get("temp type"));
 		assertEquals(at1, atm1.get("type1"));
 
-		BaseAtomType at1Replace = BaseAtomType.get("type1", "root2", 1, 0.0, 0.0, 0.0, new Color(0, 0, 0));
+		BaseAtomType at1Replace = BaseAtomType.get("type1", "root2", 1, 0.0,
+									  0.0, 0.0, new Color(0, 0, 0));
 		atm2.updateAtomType(at1Replace);
 		assertEquals(null, atm2.get(0));
 		assertEquals(at1Replace, atm2.get(1));
 		assertEquals(at1Replace, atm2.get("type1"));
 		assertEquals("root2", atm2.get(1).getRoot());
-	} 
+	}
 
 	/**
 	 * Test setValueAt method.
@@ -136,17 +145,20 @@ public class TestAtomTypesModel extends TestCase {
 	 * Expect set of BaseAtomType values if correct parameters, except for name.
 	 */
 	public void testSetValueAt() {
+
 		try {
 			atm1.setValueAt("test", 0, 0);
 			fail("exception not thrown on out of range index");
-		} catch (ArrayIndexOutOfBoundsException ex) {}
+		} catch (ArrayIndexOutOfBoundsException ex) {
+		}
 		atm2.setValueAt("test", 0, 1);
 		assertEquals("test", atm2.get(0).getRoot());
 		try {
 			atm2.setValueAt(new Integer(0), 0, 1);
 			fail("exception not thrown on invalid class");
-		} catch (ClassCastException ex) {}
-	} 
+		} catch (ClassCastException ex) {
+		}
+	}
 
 	/**
 	 * Test changing BaseAtomType name with setValueAt method.
@@ -158,13 +170,14 @@ public class TestAtomTypesModel extends TestCase {
 		assert(false == atm2.isCellEditable(0, 0));
 		atm2.setValueAt("test", 0, 0);
 		assertEquals("type1", atm2.get(0).getName());
-	} 
+	}
 
 	/**
 	 * Test isCellEditable method.
 	 * Expect false if invalid row or column 0. Otherwise expect true.
 	 */
 	public void testIsCellEditable() {
+
 		assert(false == atm2.isCellEditable(0, 0));
 		assert(false == atm2.isCellEditable(0, -1));
 		assert(false == atm2.isCellEditable(0, 23));
@@ -173,7 +186,7 @@ public class TestAtomTypesModel extends TestCase {
 		assert(true == atm2.isCellEditable(0, 2));
 		assert(true == atm2.isCellEditable(0, 3));
 		assert(true == atm2.isCellEditable(0, 5));
-	} 
+	}
 
 	/**
 	 * Test the getValueAt method.
@@ -181,6 +194,7 @@ public class TestAtomTypesModel extends TestCase {
 	 * correct parameters given. Otherwise an empty String is returned.
 	 */
 	public void testGetValueAt() {
+
 		try {
 			assert(atm1.getValueAt(0, 0) instanceof String);
 			assertEquals(0, ((String) atm1.getValueAt(0, 0)).length());
@@ -190,8 +204,8 @@ public class TestAtomTypesModel extends TestCase {
 			assertEquals(0, ((String) atm2.getValueAt(-1, -1)).length());
 		} catch (Exception ex) {
 			fail(ex.toString());
-		} 
-	} 
+		}
+	}
 
 	/**
 	 * Test the clear method.
@@ -199,12 +213,13 @@ public class TestAtomTypesModel extends TestCase {
 	 * that old atom types are not longer returned by get.
 	 */
 	public void testClear() {
+
 		assertEquals(5, atm2.getRowCount());
 		assertEquals(at1, atm2.get("type1"));
 		atm2.clear();
 		assertEquals(5, atm2.getRowCount());
 		assertEquals(null, atm2.get("type1"));
-	} 
+	}
 
 	/**
 	 * Test the getColumnClass method.
@@ -224,5 +239,5 @@ public class TestAtomTypesModel extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(TestAtomTypesModel.class);
 		return suite;
-	} 
+	}
 }

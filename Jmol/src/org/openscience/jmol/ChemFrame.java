@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -154,6 +154,7 @@ public class ChemFrame {
 	}
 
 	static void matscale(float xs, float ys, float zs) {
+
 		Matrix4d matrix = new Matrix4d();
 		matrix.setElement(0, 0, xs);
 		matrix.setElement(1, 1, ys);
@@ -646,43 +647,44 @@ public class ChemFrame {
 		if ((tvert == null) || (tvert.length < nvert * 3)) {
 			tvert = new int[nvert * 3];
 		}
-		for (int i=0; i < nvert*3; i += 3) {
-			Point3d pt = new Point3d(vert[i], vert[i+1], vert[i+2]);
+		for (int i = 0; i < nvert * 3; i += 3) {
+			Point3d pt = new Point3d(vert[i], vert[i + 1], vert[i + 2]);
 			mat.transform(pt);
 			tvert[i] = (int) pt.x;
-			tvert[i+1] = (int) pt.y;
-			tvert[i+2] = (int) pt.z;
+			tvert[i + 1] = (int) pt.y;
+			tvert[i + 2] = (int) pt.z;
 		}
 		if ((taxes == null) || (taxes.length < 12)) {
 			taxes = new int[12];
 		}
-		for (int i=0; i < 4*3; i += 3) {
-			Point3d pt = new Point3d(axes[i], axes[i+1], axes[i+2]);
+		for (int i = 0; i < 4 * 3; i += 3) {
+			Point3d pt = new Point3d(axes[i], axes[i + 1], axes[i + 2]);
 			mat.transform(pt);
 			taxes[i] = (int) pt.x;
-			taxes[i+1] = (int) pt.y;
-			taxes[i+2] = (int) pt.z;
+			taxes[i + 1] = (int) pt.y;
+			taxes[i + 2] = (int) pt.z;
 		}
 		if ((tcellaxes == null) || (tcellaxes.length < 12)) {
 			tcellaxes = new int[12];
 		}
-		for (int i=0; i < 4*3; i += 3) {
-			Point3d pt = new Point3d(cellaxes[i], cellaxes[i+1], cellaxes[i+2]);
+		for (int i = 0; i < 4 * 3; i += 3) {
+			Point3d pt = new Point3d(cellaxes[i], cellaxes[i + 1],
+							 cellaxes[i + 2]);
 			mat.transform(pt);
 			tcellaxes[i] = (int) pt.x;
-			tcellaxes[i+1] = (int) pt.y;
-			tcellaxes[i+2] = (int) pt.z;
+			tcellaxes[i + 1] = (int) pt.y;
+			tcellaxes[i + 2] = (int) pt.z;
 		}
 		if (hasVectors) {
 			if ((tvect == null) || (tvect.length < nvert * 3)) {
 				tvect = new int[nvert * 3];
 			}
-			for (int i=0; i < nvert*3; i += 3) {
-				Point3d pt = new Point3d(vert[i], vert[i+1], vert[i+2]);
+			for (int i = 0; i < nvert * 3; i += 3) {
+				Point3d pt = new Point3d(vert[i], vert[i + 1], vert[i + 2]);
 				mat.transform(pt);
 				tvert[i] = (int) pt.x;
-				tvert[i+1] = (int) pt.y;
-				tvert[i+2] = (int) pt.z;
+				tvert[i + 1] = (int) pt.y;
+				tvert[i + 2] = (int) pt.z;
 			}
 		}
 	}
@@ -1156,11 +1158,12 @@ public class ChemFrame {
 					float dr =
 						bondFudge
 							* ((float) a.getBaseAtomType().getCovalentRadius()
-							   + (float) b.getBaseAtomType().getCovalentRadius());
+							   + (float) b.getBaseAtomType()
+								   .getCovalentRadius());
 					float dr2 = dr * dr;
-	
+
 					if (d2 <= dr2) {
-	
+
 						// We found a bond
 						int k = nbonds;
 						if (k >= maxbonds) {
@@ -1173,7 +1176,8 @@ public class ChemFrame {
 							} else {
 								maxbonds *= 2;
 								Bond nb[] = new Bond[maxbonds];
-								System.arraycopy(bonds, 0, nb, 0, bonds.length);
+								System.arraycopy(bonds, 0, nb, 0,
+										bonds.length);
 								bonds = nb;
 								boolean bd[] = new boolean[maxbonds];
 								System.arraycopy(bondDrawn, 0, bd, 0,
@@ -1193,10 +1197,10 @@ public class ChemFrame {
 						bonds[k] = bt;
 						bondEnd1[k] = i;
 						bondEnd2[k] = j;
-	
+
 						int na = nBpA[i] + 1;
 						int nb = nBpA[j] + 1;
-	
+
 						if (na >= maxbonds) {
 							throw new JmolException("ChemFrame.rebond",
 									"max bonds per atom exceeded");
@@ -1205,12 +1209,12 @@ public class ChemFrame {
 							throw new JmolException("ChemFrame.rebond",
 									"max bonds per atom exceeded");
 						}
-	
+
 						inBonds[i][na - 1] = k;
 						inBonds[j][nb - 1] = k;
 						nBpA[j] = nb;
 						nBpA[i] = na;
-	
+
 						nbonds++;
 					}
 				}

@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -30,7 +30,7 @@ import java.util.*;
  * @author Bradley A. Smith (yeldar@home.com)
  * @version 1.0
  */
-public class Vibration  {
+public class Vibration {
 
 	/**
 	 * Create a vibration identified by the label.
@@ -56,7 +56,7 @@ public class Vibration  {
 	 * @param av atom vector in double[3] array
 	 */
 	public void addAtomVector(double[] av) {
-                Object d3 = (Object) av;
+		Object d3 = (Object) av;
 		atomVectors.addElement(d3);
 	}
 
@@ -67,11 +67,11 @@ public class Vibration  {
 	 * @return atom vector in double[3] array
 	 */
 	public double[] getAtomVector(int index) {
-		return (double[])atomVectors.elementAt(index);
+		return (double[]) atomVectors.elementAt(index);
 	}
 
 	/**
-	 * Gets the number of atom vectors in the vibration. 
+	 * Gets the number of atom vectors in the vibration.
 	 *
 	 * @return number of atom vectors
 	 */
@@ -87,7 +87,7 @@ public class Vibration  {
 	public Enumeration getAtomVectors() {
 		return atomVectors.elements();
 	}
-	
+
 	/**
 	 * Removes all atom vectors from this vibration.
 	 */

@@ -55,9 +55,9 @@ public class AtomRenderer {
 	 * Draws an atom on a particular graphics context.
 	 *
 	 * @param gc the Graphics context
-																	 * @param atom the atom to be drawn
+																																	 * @param atom the atom to be drawn
 	 * @param picked whether or not the atom has been selected and gets a "halo"
-																	 * @param settings the display settings
+																																	 * @param settings the display settings
 	 */
 	public void paint(Graphics gc, Atom atom, boolean picked,
 			DisplaySettings settings, boolean fastDraw) {
@@ -239,8 +239,8 @@ public class AtomRenderer {
 	}
 
 	/**
-																	 * Returns a normalized vector for the float[3] given.
-																	 */
+																																	 * Returns a normalized vector for the float[3] given.
+																																	 */
 	private static float[] normalize(float v[]) {
 
 		float len = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1]
@@ -260,7 +260,7 @@ public class AtomRenderer {
 
 	/**
 	 * The Canvas where all atoms will be drawn. This reference will be used for creating
-																	 * and displaying the images for shaded atom spheres.
+																																	 * and displaying the images for shaded atom spheres.
 	 */
 	private static Canvas canvas;
 

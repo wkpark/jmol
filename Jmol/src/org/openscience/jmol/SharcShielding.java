@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -63,19 +63,20 @@ public class SharcShielding {
 	 */
 	public SharcShielding() {
 	}
-	
+
 	/**
 	 *  Creates a SHARC NMR shielding with the method set by parsing a
 	 *  string representation. The expected format for the string is
 	 *  nmrMethod/abInitioMethod/basisSet//optimizationMethod/optimizationBasisSet.
 	 */
 	public SharcShielding(String method) {
+
 		int index = method.indexOf(separator + separator);
 		String nmrPart;
 		String optimizationPart = null;
 		if (index >= 0) {
 			nmrPart = method.substring(0, index);
-			optimizationPart = method.substring(index+2);
+			optimizationPart = method.substring(index + 2);
 		} else {
 			nmrPart = method;
 		}
@@ -85,7 +86,7 @@ public class SharcShielding {
 			nmrMethod = tokenizer.nextToken();
 		}
 		if (tokenizer.hasMoreTokens()) {
-			abInitioMethod= tokenizer.nextToken();
+			abInitioMethod = tokenizer.nextToken();
 		}
 		if (tokenizer.hasMoreTokens()) {
 			basisSet = tokenizer.nextToken();
@@ -94,7 +95,7 @@ public class SharcShielding {
 		if (optimizationPart != null) {
 			tokenizer = new StringTokenizer(optimizationPart, separator);
 			if (tokenizer.hasMoreTokens()) {
-				optimizationMethod= tokenizer.nextToken();
+				optimizationMethod = tokenizer.nextToken();
 			}
 			if (tokenizer.hasMoreTokens()) {
 				optimizationBasisSet = tokenizer.nextToken();
@@ -187,9 +188,10 @@ public class SharcShielding {
 	 *  @return the istropic shielding value, or 0.0 if the element is not found.
 	 */
 	public double getShielding(String element) {
+
 		double result = 0.0;
 		if (shieldings.containsKey(element)) {
-			result = ((Double)shieldings.get(element)).doubleValue();
+			result = ((Double) shieldings.get(element)).doubleValue();
 		}
 		return result;
 	}
@@ -209,6 +211,7 @@ public class SharcShielding {
 	 *  nmrMethod/abInitioMethod/basisSet//optimizationMethod/optimizationBasisSet.
 	 */
 	public String getMethod() {
+
 		StringBuffer result = new StringBuffer();
 		result.append(nmrMethod);
 		result.append(separator);
@@ -220,9 +223,9 @@ public class SharcShielding {
 		result.append(optimizationMethod);
 		result.append(separator);
 		result.append(optimizationBasisSet);
-		
+
 		return result.toString();
 	}
 }
 
-	
+

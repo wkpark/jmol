@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -5,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -24,6 +25,7 @@ package org.openscience.miniJmol;
 public class HeapSorter {
 
 	public interface Comparator {
+
 		/**
 		 *  Compares two objects.
 		 *
@@ -32,12 +34,12 @@ public class HeapSorter {
 		 */
 		int compare(Object o1, Object o2);
 	}
-	
+
 	/**
 	 *  A comparison function for the objects to be sorted.
 	 */
 	private Comparator order;
-	
+
 	/**
 	 *  Creates a sorter using the given comparision function.
 	 *
@@ -47,7 +49,7 @@ public class HeapSorter {
 	public HeapSorter(Comparator order) {
 		this.order = order;
 	}
-	
+
 	/**
 	 *  Sorts an array of objects.
 	 *
@@ -131,13 +133,14 @@ public class HeapSorter {
 		int temp = array[k - 1];
 		while (k <= N / 2) {
 			int j = k + k;
-			if ((j < N) && ((ascending && array[j - 1] < array[j])
-					|| (!ascending && array[j - 1] > array[j]))) {
+			if ((j < N)
+					&& ((ascending && (array[j - 1] < array[j]))
+						|| (!ascending && (array[j - 1] > array[j])))) {
 				++j;
 			}
-			if (temp == array[j - 1]
-					|| (ascending && temp > array[j -1])
-					|| (!ascending && temp < array[j - 1])) {
+			if ((temp == array[j - 1])
+					|| (ascending && (temp > array[j - 1]))
+						|| (!ascending && (temp < array[j - 1]))) {
 				break;
 			} else {
 				array[k - 1] = array[j - 1];

@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -21,38 +21,39 @@ package org.openscience.jmol;
 
 /**
  * A superclass to allow Jmol to talk to the transitory properties of atoms
- * or bonds.  For atoms, subclass PhysicalProperty to identify charge, 
+ * or bonds.  For atoms, subclass PhysicalProperty to identify charge,
  * NMR shielding, etc.   For bonds, subclass it to identify distances
  * harmonic force constants, etc.  For bends, subclass it to identify
- * angles, etc.  
+ * angles, etc.
  */
 public class PhysicalProperty {
-    String descriptor;
-    Object property;
 
-    public PhysicalProperty(String descriptor, Object property) {
-        this.descriptor = descriptor;
-        this.property = property;
-    }
+	String descriptor;
+	Object property;
 
-    /**
-     * return the String descriptor of this PhysicalProperty
-     */
-    public String getDescriptor() {
-        return descriptor;
-    }
+	public PhysicalProperty(String descriptor, Object property) {
+		this.descriptor = descriptor;
+		this.property = property;
+	}
 
-    /**
-     * return the value of this PhysicalProperty
-     */
-    public Object getProperty() {
-        return property;
-    }
+	/**
+	 * return the String descriptor of this PhysicalProperty
+	 */
+	public String getDescriptor() {
+		return descriptor;
+	}
 
-    /**
-     * return the string value of this PhysicalProperty
-     */
-    public String stringValue() {
-        return property.toString();
-    }
+	/**
+	 * return the value of this PhysicalProperty
+	 */
+	public Object getProperty() {
+		return property;
+	}
+
+	/**
+	 * return the string value of this PhysicalProperty
+	 */
+	public String stringValue() {
+		return property.toString();
+	}
 }

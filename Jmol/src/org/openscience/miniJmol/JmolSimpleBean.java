@@ -480,7 +480,7 @@ public class JmolSimpleBean extends java.awt.Panel
 	 * @param menuDesc Hmmm... See above!
 	 *
 	   public void setMenuDescriptionString(String menuDesc){
-																	  display.setMenuDescription(menuDesc);
+																																	  display.setMenuDescription(menuDesc);
 	   }
 
 	*/
@@ -489,9 +489,9 @@ public class JmolSimpleBean extends java.awt.Panel
 	/**
 	 * Returns true if passed "T" and "F" if passed false. Throws
 	 * IllegalArgumentException if parameter is not "T" ot "F"
-																	 *
+																																	 *
 	 * @param value String equal to either "T" or "F"
-																	 */
+																																	 */
 	protected boolean getBooleanFromString(String value) {
 
 		if (value.equalsIgnoreCase("T")) {
@@ -507,7 +507,7 @@ public class JmolSimpleBean extends java.awt.Panel
 	/**
 	 * Turns a string in the form '#RRGGBB' eg. '#FFFFFF' is white,
 	 * into a colour
-																	 */
+																																	 */
 	protected java.awt.Color getColourFromHexString(String colourName) {
 
 		if ((colourName == null) || (colourName.length() != 7)) {

@@ -165,11 +165,11 @@ public class DisplayPanel extends Canvas
 	}
 
 	/*
-																																	rotationString is a string which can specify any rotation.
-																																	The string is formatted as "xrot,yrot,xrot".
-																																	There is no Z-rot, since any rotation can be created as a combination
-																																	of X-Y-X rotations, and this way is programmatically much easier !
-																																	Angles are in degrees.
+																																																																	rotationString is a string which can specify any rotation.
+																																																																	The string is formatted as "xrot,yrot,xrot".
+																																																																	There is no Z-rot, since any rotation can be created as a combination
+																																																																	of X-Y-X rotations, and this way is programmatically much easier !
+																																																																	Angles are in degrees.
 	*/
 	public void doRotationString(String rotationString) {
 
@@ -230,7 +230,7 @@ public class DisplayPanel extends Canvas
 	}
 
 	/* Format is:
-																																	"FRAME=n;ROTATION=x,y,x;ZOOM=n;TRANSLATE=x,y"
+																																																																	"FRAME=n;ROTATION=x,y,x;ZOOM=n;TRANSLATE=x,y"
 	*/
 	public void doCustomViewString(String customView) {
 
@@ -288,7 +288,7 @@ public class DisplayPanel extends Canvas
 	}
 
 	/*
-																																	This routine sets the initial zoom factor.
+																																																																	This routine sets the initial zoom factor.
 	*/
 	public void setZoomFactor(float factor) {
 		zoomFactor = factor * 0.7f;
@@ -512,10 +512,10 @@ public class DisplayPanel extends Canvas
 				/*
 				float[] spin_quat = new float[4];
 				Trackball tb = new Trackball(spin_quat,
-																																																				(2.0f*x - drawWidth) / drawWidth,
-																																																				(drawHeight-2.0f*y) / drawHeight,
-																																																				(2.0f*prevx - drawWidth) / drawWidth,
-																																																				(drawHeight-2.0f*prevy) / drawHeight);
+																																																																																																				(2.0f*x - drawWidth) / drawWidth,
+																																																																																																				(drawHeight-2.0f*y) / drawHeight,
+																																																																																																				(2.0f*prevx - drawWidth) / drawWidth,
+																																																																																																				(drawHeight-2.0f*prevy) / drawHeight);
 
 				tb.add_quats(spin_quat, quat, quat);
 				tb.build_rotmatrix(amat, quat);
@@ -679,9 +679,11 @@ public class DisplayPanel extends Canvas
 				painted = false;
 				mat.setIdentity();
 				Matrix4d matrix = new Matrix4d();
-				matrix.setTranslation(new Vector3d(-(useMinBound.x + useMaxBound.x) / 2,
-					-(useMinBound.y + useMaxBound.y) / 2,
-					-(useMinBound.z + useMaxBound.z) / 2));
+				matrix.setTranslation(
+						new Vector3d(
+							-(useMinBound.x + useMaxBound.x) / 2,
+								-(useMinBound.y + useMaxBound.y) / 2,
+									-(useMinBound.z + useMaxBound.z) / 2));
 				mat.add(matrix);
 				mat.mul(amat, mat);
 				matrix.setIdentity();
@@ -692,8 +694,7 @@ public class DisplayPanel extends Canvas
 				mat.mul(tmat, mat);
 				matrix.setZero();
 				matrix.setTranslation(new Vector3d(drawWidth / 2,
-					drawHeight / 2,
-					drawWidth / 2));
+						drawHeight / 2, drawWidth / 2));
 				mat.add(matrix);
 				matIsValid = true;
 			}

@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -42,6 +42,7 @@ import java.util.Vector;
  * @version 1.0
  */
 public class Gaussian92Reader implements ChemFileReader {
+
 	/**
 	 * Create an Gaussian92 output reader.
 	 *
@@ -58,11 +59,13 @@ public class Gaussian92Reader implements ChemFileReader {
 	 * @exception IOException if an I/O error occurs
 	 */
 	public ChemFile read() throws IOException, Exception {
+
 		ChemFile file = new ChemFile();
 		ChemFrame frame = null;
 		String line = input.readLine();
+
 		// Find first set of coordinates
-		while (input.ready() && line != null) {
+		while (input.ready() && (line != null)) {
 			if (line.indexOf("Standard orientation:") >= 0) {
 				frame = new ChemFrame();
 				readCoordinates(frame);
@@ -71,24 +74,29 @@ public class Gaussian92Reader implements ChemFileReader {
 			line = input.readLine();
 		}
 		if (frame != null) {
+
 			// Read all other data
 			line = input.readLine();
-			while (input.ready() && line != null) {
+			while (input.ready() && (line != null)) {
 				if (line.indexOf("Standard orientation:") >= 0) {
+
 					// Found a set of coordinates
 					// Add current frame to file and create a new one.
 					file.frames.addElement(frame);
 					frame = new ChemFrame();
 					readCoordinates(frame);
-				} else  if (line.indexOf("SCF Done:") >= 0) {
+				} else if (line.indexOf("SCF Done:") >= 0) {
+
 					// Found an energy
 					frame.setInfo(line.trim());
-				} else  if (line.indexOf("Harmonic frequencies") >= 0) {
+				} else if (line.indexOf("Harmonic frequencies") >= 0) {
+
 					// Found a set of vibrations
 					readFrequencies(frame);
 				}
 				line = input.readLine();
 			}
+
 			// Add current frame to file
 			file.frames.addElement(frame);
 		}
@@ -101,7 +109,9 @@ public class Gaussian92Reader implements ChemFileReader {
 	 * @param frame  the destination ChemFrame
 	 * @exception IOException  if an I/O error occurs
 	 */
-	private void readCoordinates(ChemFrame frame) throws IOException, Exception {
+	private void readCoordinates(ChemFrame frame)
+			throws IOException, Exception {
+
 		String line;
 		line = input.readLine();
 		line = input.readLine();
@@ -109,34 +119,44 @@ public class Gaussian92Reader implements ChemFileReader {
 		line = input.readLine();
 		while (input.ready()) {
 			line = input.readLine();
-			if (line == null || line.indexOf("-----") >= 0) {
+			if ((line == null) || (line.indexOf("-----") >= 0)) {
 				break;
 			}
 			int atomicNumber;
 			StringReader sr = new StringReader(line);
 			StreamTokenizer token = new StreamTokenizer(sr);
 			token.nextToken();
+
 			// ignore first token
-            if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				atomicNumber = (int)token.nval;
+			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+				atomicNumber = (int) token.nval;
 				if (atomicNumber == 0) {
+
 					// skip dummy atoms
-                    continue;
+					continue;
 				}
-			} else  throw new IOException("Error reading coordinates");
+			} else {
+				throw new IOException("Error reading coordinates");
+			}
 			double x;
 			double y;
 			double z;
 			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 				x = token.nval;
-			} else  throw new IOException("Error reading coordinates");
+			} else {
+				throw new IOException("Error reading coordinates");
+			}
 			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 				y = token.nval;
-			} else  throw new IOException("Error reading coordinates");
+			} else {
+				throw new IOException("Error reading coordinates");
+			}
 			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 				z = token.nval;
-			} else  throw new IOException("Error reading coordinates");
-			frame.addVert(atomicNumber, (float)x, (float)y, (float)z);
+			} else {
+				throw new IOException("Error reading coordinates");
+			}
+			frame.addVert(atomicNumber, (float) x, (float) y, (float) z);
 		}
 	}
 
@@ -146,12 +166,14 @@ public class Gaussian92Reader implements ChemFileReader {
 	 * @param frame  the destination ChemFrame
 	 * @exception IOException  if an I/O error occurs
 	 */
-	private void readFrequencies(ChemFrame frame) throws IOException, Exception {
+	private void readFrequencies(ChemFrame frame)
+			throws IOException, Exception {
+
 		String line;
+
 		// Find second instance of string
-        line = input.readLine();
-		while (input.ready() && line.indexOf("Harmonic frequencies") <
-			0) {
+		line = input.readLine();
+		while (input.ready() && (line.indexOf("Harmonic frequencies") < 0)) {
 			line = input.readLine();
 		}
 		line = input.readLine();
@@ -178,25 +200,33 @@ public class Gaussian92Reader implements ChemFileReader {
 				StringReader vectorRead = new StringReader(line);
 				token = new StreamTokenizer(vectorRead);
 				token.nextToken();
+
 				// ignore first token
-                token.nextToken();
+				token.nextToken();
+
 				// ignore second token
-                for (int j = 0; j < currentVibs.size(); ++j) {
+				for (int j = 0; j < currentVibs.size(); ++j) {
 					double[] v = new double[3];
 					if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 						v[0] = token.nval;
-					} else  throw new IOException("Error reading frequencies");
+					} else {
+						throw new IOException("Error reading frequencies");
+					}
 					if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 						v[1] = token.nval;
-					} else  throw new IOException("Error reading frequencies");
+					} else {
+						throw new IOException("Error reading frequencies");
+					}
 					if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 						v[2] = token.nval;
-					} else  throw new IOException("Error reading frequencies");
-					((Vibration)currentVibs.elementAt(j)).addAtomVector(v);
+					} else {
+						throw new IOException("Error reading frequencies");
+					}
+					((Vibration) currentVibs.elementAt(j)).addAtomVector(v);
 				}
 			}
 			for (int i = 0; i < currentVibs.size(); ++i) {
-				frame.addVibration((Vibration)currentVibs.elementAt(i));
+				frame.addVibration((Vibration) currentVibs.elementAt(i));
 			}
 			line = input.readLine();
 			line = input.readLine();

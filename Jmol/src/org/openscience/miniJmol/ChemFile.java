@@ -24,11 +24,11 @@ import java.util.Vector;
 public class ChemFile {
 
 	/**
-																	 * Frames contained by this file.
-																	 *
-																	 * @shapeType AggregationLink
-																	 * @associates <b>ChemFrame</b>
-																	 */
+																																	 * Frames contained by this file.
+																																	 *
+																																	 * @shapeType AggregationLink
+																																	 * @associates <b>ChemFrame</b>
+																																	 */
 	private Vector frames = new Vector(1);
 	private boolean bondsEnabled = true;
 	private Vector propertyList = new Vector();
@@ -64,8 +64,8 @@ public class ChemFile {
 
 	/**
 	 * Adds a frame to this file.
-																	 *
-																	 * @param frame the frame to be added
+																																	 *
+																																	 * @param frame the frame to be added
 	 */
 	public void addFrame(ChemFrame frame) {
 		frames.addElement(frame);
@@ -81,16 +81,16 @@ public class ChemFile {
 	/**
 	 * Returns a list of descriptions for physical properties
 	 * contained by this file.
-																	 */
+																																	 */
 	public Vector getPropertyList() {
 		return propertyList;
 	}
 
 	/**
-																	 * Adds a property description to the property list.
-																	 *
-																	 * @param prop the property description
-																	 */
+																																	 * Adds a property description to the property list.
+																																	 *
+																																	 * @param prop the property description
+																																	 */
 	public void addProperty(String prop) {
 		if (propertyList.indexOf(prop) < 0) {
 			propertyList.addElement(prop);

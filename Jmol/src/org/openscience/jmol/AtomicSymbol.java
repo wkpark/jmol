@@ -6,12 +6,12 @@
  *  modify it under the terms of the GNU Lesser General Public
  *  License as published by the Free Software Foundation; either
  *  version 2.1 of the License, or (at your option) any later version.
- *  
+ *
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  *  Lesser General Public License for more details.
- *  
+ *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
@@ -25,9 +25,9 @@ import java.util.Hashtable;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class AtomicSymbol {
-	
+
 	static Hashtable atomicSymbols = new Hashtable();
-		
+
 	static {
 		atomicSymbols.put(new String("XX"), new Integer(0));
 		atomicSymbols.put("H", new Integer(1));
@@ -66,13 +66,14 @@ public class AtomicSymbol {
 		atomicSymbols.put("Se", new Integer(34));
 		atomicSymbols.put("Br", new Integer(35));
 		atomicSymbols.put("Kr", new Integer(36));
-	}		
+	}
 
 	static int elementToAtomicNumber(String label) {
+
 		int number = 0;
-		
+
 		if (atomicSymbols.containsKey(label)) {
-			number = ((Integer)atomicSymbols.get(label)).intValue();
+			number = ((Integer) atomicSymbols.get(label)).intValue();
 		}
 		return number;
 	}

@@ -35,29 +35,29 @@ public class DTDResolver implements EntityResolver {
 /*
 public class DTDResolver implements EntityResolver {
 
-				public InputSource resolveEntity (String publicId, String systemId) {
-				if (systemId.equalsIgnoreCase("cml.dtd") ||
-						systemId.equalsIgnoreCase("CML-1999-05-15.dtd")) {
-						try
-								{
-										String fname = "org/openscience/miniJmol/Data/cml.dtd";
+								public InputSource resolveEntity (String publicId, String systemId) {
+								if (systemId.equalsIgnoreCase("cml.dtd") ||
+												systemId.equalsIgnoreCase("CML-1999-05-15.dtd")) {
+												try
+																{
+																				String fname = "org/openscience/miniJmol/Data/cml.dtd";
 //                    String fname = "cml.dtd";
-										URL url = getClass().getClassLoader().getResource(fname);
+																				URL url = getClass().getClassLoader().getResource(fname);
 //                    URL url = new URL(fname);
-										InputStream is = url.openStream();
-										BufferedReader r = new BufferedReader(new InputStreamReader(is));
-										return new InputSource(r);
-								}
-						catch(Exception exc)
-								{
-										System.out.println("Error while trying to read CML DTD: " + exc.toString());
-										return null;
-								}
+																				InputStream is = url.openStream();
+																				BufferedReader r = new BufferedReader(new InputStreamReader(is));
+																				return new InputSource(r);
+																}
+												catch(Exception exc)
+																{
+																				System.out.println("Error while trying to read CML DTD: " + exc.toString());
+																				return null;
+																}
 
-				} else {
-						// use the default behaviour
-						return null;
+								} else {
+												// use the default behaviour
+												return null;
+								}
 				}
-		}
 }
 */

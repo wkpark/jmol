@@ -196,7 +196,7 @@ public class PdbMolecule {
 
   public PdbAtom allocatePdbAtom(int atomIndex, int modelNumber, String pdbRecord) {
       char chainID = pdbRecord.charAt(21);
-      short groupSequence = Integer.MIN_VALUE;
+      short groupSequence = Short.MIN_VALUE;
       try {
 	  groupSequence = Short.parseShort(pdbRecord.substring(22, 26).trim());
       } catch (NumberFormatException e) {

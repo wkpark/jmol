@@ -4,16 +4,14 @@
 [
 <!ENTITY appletIntro        SYSTEM "applet/intro_fr.docbook.xml">
 <!ENTITY appletBrowsers     SYSTEM "applet/browsers_fr.docbook.xml">
-<!ENTITY appletBrowsers     SYSTEM "applet/hardware_fr.docbook.xml">
+<!ENTITY appletHardware     SYSTEM "applet/hardware_fr.docbook.xml">
 <!ENTITY appletServerConfig SYSTEM "applet/serverconfig_fr.docbook.xml">
 <!ENTITY appletUsage        SYSTEM "applet/usage_fr.docbook.xml">
-<!ENTITY appletJavaScript   SYSTEM "applet/javascript_fr.docbook.xml">
-<!ENTITY appletScripting    SYSTEM "applet/scripting_fr.docbook.xml">
 ]
 >
 <!--
   French translation 
-  Translated from default version : JmolAppletGuide.docbook.xml (v 1.12)
+  Translated from default version : JmolAppletGuide.docbook.xml (v 1.13)
 -->
 <book id="jmol-applet-guide" lang="fr">
 
@@ -23,8 +21,7 @@
 
   &appletIntro;
   &appletBrowsers;
+  &appletHardware;
   &appletServerConfig;
   &appletUsage;
-  &appletJavaScript;
-  &appletScripting;
 </book>

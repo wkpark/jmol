@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : serverconfig.docbook.xml (v 1.3)
+  Translated from default version : serverconfig.docbook.xml (v 1.4)
 -->
 <chapter>
   <title>Configuration du Serveur Web pour l'Applet Jmol</title>
@@ -9,129 +9,20 @@
     applet Java.
   </para>
   <para>
-    Le fichier JmolApplet.properties peut &ecirc;tre utilis&eacute; pour
-    configuration des valeurs par d&eacute;faut pour l'applet.
+    Les fichiers JmolApplet.jar et Jmol.js sont plac&eacute;s dans un
+    r&eacute;pertoire sur votre serveur web.
+    Nous recommandons de les placer dans un r&eacute;pertoire de m&ecirc;me
+    niveau ou un sous r&eacute;pertoire de vos pages .html ... quelque chose
+    comme <command>../jmol</command> ou <command>./jmol</command>
   </para>
   <para>
-    Le fichier JmolAppletProxy.cgi peut &ecirc;tre configur&eacute; pour
-    permettre &agrave; l'Applet Jmol de r&eacute;cup&eacute;rer des
-    mod&egrave;les mol&eacute;culaires sur des serveurs web distants.
+    Toutes les classes Java dont l'applet a besoin sont contenues dans le
+    fichier JmolApplet.jar.
   </para>
-  <section>
-    <title>JmolApplet.jar</title>
-    <para>
-      Le fichier JmolApplet.jar est plac&eacute; dans une r&eacute;pertoire
-      sur votre serveur web. Il est habituellement plac&eacute; dans le
-      m&ecirc;me r&eacute;pertoire que vos pages .html, bien qu'il puisse
-      &ecirc;tre mis &agrave; un autre emplacement.
-    </para>
-    <para>
-      Toutes les classes Java dont l'applet a besoin sont contenues dans le
-      fichier JmolApplet.jar.
-    </para>
-    <para>
-      L'applet fonctionne en tant qu'applet non sign&eacute;/non s&ucirc;re.
-      Par cons&eacute;quent, aucune &eacute;tape suppl&eacute;mentaire n'est
-      n&eacute;cessaire pour la v&eacute;rification de l'authenticit&eacute;
-      de l'applet du c&ocirc;t&eacute; de l'utilisateur.
-    </para>
-  </section>
-  <section>
-    <title>JmolApplet.properties</title>
-    <para>
-      Vous pouvez &eacute;ventuellement placer un fichier nomm&eacute;
-      JmolApplet.properties dans le m&ecirc;me r&eacute;pertoire que le fichier
-      JmolApplet.jat. Ce fichier peut contenir des propri&eacute;t&eacute;s
-      par d&eacute;faut qui remplaceront les valeurs par d&eacute;faut en dur
-      dans l'Applet Jmol. Ces valeurs par d&eacute;faut peuvent &agrave; leur
-      leur tour &ecirc;tre remplac&eacute;es par des valeurs
-      sp&eacute;cifi&eacute;es dans des champs <command>APPLET</command> dans
-      les pages .html.
-    </para>
-    <para>
-      Le format de ce fichier est impos&eacute; par les classes de
-      propri&eacute;t&eacute;s java. Les valeurs dans le fichier sont des
-      paires <command>nom=valeur</command>. Les noms dans le fichier sont
-      sensibles &agrave; la diff&eacute;rence entre majuscules et minuscules
-      (au contraire des param&egrave;tres du champ html
-      <command>APPLET</command>. Pour une liste de param&egrave;tres, se
-      reporter au fichier JmolApplet.properties qui est fourni avec cette
-      distribution.
-    </para>
-    <para>
-      Remarque: Si vous d&eacute;cidez d'utiliser JmolAppletProxy alors
-      l'emplacement de JmolAppletProxy.cgi est d&eacute;fini par une
-      propri&eacute;t&eacute; dans le fichier JmolApplet.properties:
-      <programlisting><![CDATA[
-        # in the same directory as the applet
-        JmolAppletProxy=JmolAppletProxy.cgi
-
-        #in the /cgi-bin/directory of the server
-        JmolAppletProxy=/cgi-bin/JmolAppletProxy.cgi
-
-        #I prefer to use my own proxy written as a .jsp, thank you
-        JmolAppletProxy=/myDirectory/MyOwnProxy.jsp
-        ]]>
-      </programlisting>
-    </para>
-  </section>
-  <section>
-    <title>JmolAppletProxy.cgi</title>
-    <para>
-      Une applet non s&ucirc;re doit s'ex&eacute;cuter dans des limites
-      impos&eacute;es par le Gestionnaire de S&eacute;curit&eacute; du
-      navigateur web. Ceci signifie que l'applet peut ne pas avoir acc&egrave;s
-      aux fichiers sur le disque dur local. En plus, ceci signifie que l'applet
-      peut uniquement acc&eacute;der &agrave; des fichiers situ&eacute;s sur
-      le m&ecirc;me serveur web que celui d'o&ugrave; l'applet a
-      &eacute;t&eacute; t&eacute;l&eacute;charg&eacute;e.
-    </para>
-    <para>
-      Malheureusement, ceci signifie que l'Applet Jmol ne peut pas charger
-      directement des mod&egrave;les mol&eacute;culaires depuis d'autres
-      serveurs web, tels que Protein Data Bank (Base de Donn&eacute;es de
-      Prot&eacute;ines)
-      <ulink url="http://www.rcsb.org/pdb">www.rcsb.org/pdb</ulink>,
-      ou la base de donn&eacute;es cactus maintenue par le Nationale Cancer
-      Institute (Institut National du Cancer)
-      <ulink url="http://cactus.nci.nih.gov">cactus.nci.nih.gov</ulink>.
-    </para>
-    <para>
-      Le fichier JmolAppletProxy.cgi fournit un m&eacute;canisme pour
-      permettre l'acc&egrave;s distant &agrave; des mod&egrave;les
-      mol&eacute;culaires stock&eacute;s sur des serveurs web distants.
-      Le JmolAppletProxy fonctionne en tant que cgi sur le serveur web qui
-      h&eacute;berge l'Applet Jmol.
-    </para>
-    <para>
-      Le m&eacute;canisme fonctionne de la mani&egrave;re suivante : les
-      requ&ecirc;tes pour charger des mod&egrave;les mol&eacute;culaires
-      depuis des serveurs web distants sont rout&eacute; au travers de
-      JmolAppletProxy. Le JmolAppletProxy recoit ces requ&ecirc;tes,
-      r&eacute;cup&egrave;re les mod&egrave;les mol&eacute;culaires, et
-      renvoi le contenu &agrave; l'Applet Jmol.
-    </para>
-    <para>
-      Le fichier JmolAppletProxy.cgi est &eacute;crit en Perl. Il utilise le
-      module CGI pour g&eacute;rer les requ&ecirc;tes des clients, et le module
-      LWP pour r&eacute;cup&eacute;rer les mod&egrave;les mol&eacute;culaires
-      sur les serveurs web distants.
-    </para>
-    <para>
-      Votre serveur web peut &ecirc;tre configur&eacute; de telle sorte que
-      les programmes cgi ne peuvent &ecirc;tre lanc&eacute;s que depuis des
-      r&eacute;pertoires sp&eacute;cifiques. L'emplacement du fichier
-      JmolAppletProxy.cgi sur votre serveur web peut &ecirc;tre
-      pr&eacute;cis&eacute; dans le fichier JmolApplet.properties.
-    </para>
-    <para>
-      Vous pouvez d&eacute;cider d'&eacute;crire votre propre proxy. L'Applet
-      Jmol fait une requ&ecirc;te GET avec un seul param&egrave;tre
-      nomm&eacute; <command>url</command>. La valeur pass&eacute;e est
-      cod&eacute;e sous la forme d'une URL:
-      <programlisting>
-        http://myJmolServer/cgi-bin/JmolAppletProxy.cgi?url=[encodedURL]
-      </programlisting>
-    </para>
-  </section>
+  <para>
+    L'applet fonctionne en tant qu'applet non sign&eacute;e/non s&ucirc;re.
+    Par cons&eacute;quent, aucune &eacute;tape suppl&eacute;mentaire n'est
+    n&eacute;cessaire pour la v&eacute;rification de l'authenticit&eacute;
+    de l'applet du c&ocirc;t&eacute; de l'utilisateur.
+  </para>
 </chapter>

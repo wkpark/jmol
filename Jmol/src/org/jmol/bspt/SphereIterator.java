@@ -174,6 +174,8 @@ public class SphereIterator {
 
   /**
    * checks one tuple for distance
+   * @param t
+   * @return boolean
    */
   private boolean isWithinRadius(Tuple t) {
     float dist2;

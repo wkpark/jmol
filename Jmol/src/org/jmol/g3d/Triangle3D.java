@@ -171,7 +171,7 @@ class Triangle3D {
       rgb16sW[i] = new Rgb16();
       rgb16sE[i] = new Rgb16();
     }
-  };
+  }
 
   void reallocRasterArrays(int n) {
     n = (n + 31) & ~31;

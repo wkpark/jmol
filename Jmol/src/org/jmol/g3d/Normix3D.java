@@ -27,7 +27,6 @@ package org.jmol.g3d;
 
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
-import java.util.Hashtable;
 import java.util.Random;
 
 /**
@@ -61,9 +60,9 @@ class Normix3D {
     // 12, 42, 162, 642, 2562
     this.g3d = g3d;
     geodesic3d = g3d.geodesic3d;
-    vertexVectors = geodesic3d.vertexVectors;
-    neighborVertexes = geodesic3d.getNeighborVertexes(level);
-    normixCount = geodesic3d.getVertexCount(level);
+    vertexVectors = Geodesic3D.vertexVectors;
+    neighborVertexes = Geodesic3D.getNeighborVertexes(level);
+    normixCount = Geodesic3D.getVertexCount(level);
     intensities = new byte[normixCount];
     transformedVectors = new Vector3f[normixCount];
     for (int i = normixCount; --i >= 0; )
@@ -239,13 +238,13 @@ class Normix3D {
   }
 
   void geodesicDump() {
-    for (int level = 0; level <= g3d.HIGHEST_GEODESIC_LEVEL; ++level) {
-      int vertexCount = geodesic3d.getVertexCount(level);
+    for (int level = 0; level <= Graphics3D.HIGHEST_GEODESIC_LEVEL; ++level) {
+      int vertexCount = Geodesic3D.getVertexCount(level);
       System.out.println("level=" + level +
                          " vertexCount=" + vertexCount +
-                         " faceCount=" + geodesic3d.getFaceCount(level));
-      short[] neighborVertexes = geodesic3d.getNeighborVertexes(level);
-      short[] faceVertexes = geodesic3d.getFaceVertexes(level);
+                         " faceCount=" + Geodesic3D.getFaceCount(level));
+      short[] neighborVertexes = Geodesic3D.getNeighborVertexes(level);
+      short[] faceVertexes = Geodesic3D.getFaceVertexes(level);
       System.out.println("neighborVertexes.length=" +
                          neighborVertexes.length +
                          " faceVertexes.length=" +

@@ -36,7 +36,7 @@ translate:
 	for guide in $(GUIDES); do \
 		for lang in $(LANG); do \
 			$(XML2PO) -e -p $${guide}.$${lang}.po -o ../$${guide}_$${lang}.tmp ../$${guide}.$(XMLSUFFIX) ; \
-			sed -e 's!$${guide}\.$${lang}!$${lang}!' < ../$${guide}_$${lang}.tmp > ../$${guide}_$${lang}.$(XMLSUFFIX) ; \
+			sed -e "s!$${guide}\.$${lang}!$${lang}!" < ../$${guide}_$${lang}.tmp > ../$${guide}_$${lang}.$(XMLSUFFIX) ; \
 			rm ../$${guide}_$${lang}.tmp ; \
 		done ; \
 	done

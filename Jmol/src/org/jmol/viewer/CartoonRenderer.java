@@ -131,6 +131,13 @@ class CartoonRenderer extends MpsRenderer {
                                   leadMidpointScreens[i + 1]);
         }
         lastWasSpecial = isSpecial;
+      } else {
+        // miguel 2004 12 13
+        // bug [ 1014874 ] Beta pleated sheet arrowheads
+        // if a segment is not being rendered then we need to
+        // reset our flag so that the arrowhead will be drawn
+        // for the next segment
+        lastWasSpecial = false;
       }
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);

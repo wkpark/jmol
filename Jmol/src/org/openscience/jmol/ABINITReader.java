@@ -343,7 +343,7 @@ public class ABINITReader extends DefaultChemFileReader {
     String info = "";
     String line;
     int count = 0;
-
+    String energy = "";
 
     //We assume we have only 1 dataset.
 
@@ -477,9 +477,9 @@ public class ABINITReader extends DefaultChemFileReader {
           }
         }
       } else if (fieldVal.equals("Cartesian")
-          && nextAbinitToken(false).equals("coordinates")) {
-
-
+                 && nextAbinitToken(false).equals("coordinates")) {
+                 
+                 
 
         nextAbinitToken(false);    //read "(bohr)"
         for (int i = 0; i < natom; i++) {
@@ -489,6 +489,17 @@ public class ABINITReader extends DefaultChemFileReader {
                 * angstromPerBohr;
           }
         }
+
+      } else if (fieldVal.equals("At") &&
+                 nextAbinitToken(false).equals("the")){
+        //Read: "end of Broyden step  0, total energy=" (7 tokens)
+        for (int i=0; i<7; i++) {
+          nextAbinitToken(false);
+        }
+        nextAbinitToken(false);
+        energy = fieldVal;
+
+        //Energy is the last thing to be read --> store data
 
         //Set the atom types
         int[] atomType = new int[natom];
@@ -504,13 +515,17 @@ public class ABINITReader extends DefaultChemFileReader {
 
         //use defaults value
         crystalFile.setCrystalBox(new CrystalBox());
+        
+        //generate the frame
         crystalFile.generateCrystalFrame();
+        
+        //Add the Energy Property to the frame
+        crystalFile.getFrame(crystalFile.getNumberOfFrames()-1)
+          .addProperty(new Energy(FortranFormat.atof(energy)));
+      } //end if "Cartesian coordinates"
 
 
-      }                            //end if "Cartesian coordinates"
-
-
-      // It is unnecessary to scan the end of the line. 
+      // It is unnecessary to scan the end of the line.
       // Go directly to the next line
       nextAbinitToken(true);
     }                              //end while

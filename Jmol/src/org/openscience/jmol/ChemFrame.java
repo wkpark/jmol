@@ -202,12 +202,13 @@ public class ChemFrame extends AtomContainer {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(String name, double x, double y, double z) {
-    return addAtom(name, name, x, y, z);
+  public int addAtom(String name, double x, double y, double z,
+                     ProteinProp pprop) {
+    return addAtom(BaseAtomType.get(name, name), x, y, z, pprop);
   }
 
   public int addAtom(String name, String root, double x, double y, double z) {
-    return addAtom(BaseAtomType.get(name, root), x, y, z);
+    return addAtom(BaseAtomType.get(name, root), x, y, z, null);
   }
 
   /**
@@ -220,6 +221,11 @@ public class ChemFrame extends AtomContainer {
    * @param z the z coordinate of the new atom
    */
   public int addAtom(BaseAtomType type, double x, double y, double z) {
+    return addAtom(type, x, y, z, null);
+  }
+
+  public int addAtom(BaseAtomType type, double x, double y, double z,
+                     ProteinProp pprop) {
 
     clearBounds();
     int i = numberOfAtoms;
@@ -227,7 +233,7 @@ public class ChemFrame extends AtomContainer {
       setAtomArraySize(2 * atoms.length);
     }
 
-    atoms[i] = new Atom(type, numberOfAtoms, x, y, z);
+    atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
 
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {

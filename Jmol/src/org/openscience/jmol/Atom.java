@@ -44,7 +44,7 @@ public class Atom extends org.openscience.cdk.Atom {
    * @param the type of this atom.
    */
   public Atom(BaseAtomType atomType, int atomNumber,
-              double x, double y, double z) {
+              double x, double y, double z, ProteinProp pprop) {
     super(atomType.getSymbol(), new Point3d(x, y, z));
     super.setID(atomType.getID());
     try {
@@ -56,6 +56,7 @@ public class Atom extends org.openscience.cdk.Atom {
     }
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
+    this.pprop = pprop;
   }
 
   /**
@@ -92,6 +93,11 @@ public class Atom extends org.openscience.cdk.Atom {
     return getAtomicNumber() == 1;
   }
   
+  ProteinProp pprop = null;
+  public ProteinProp getProteinProp() {
+    return pprop;
+  }
+
   /**
    * Adds a <code>PhysicalProperty</code> to this atom if not already defined.
    * If a <code>PhysicalProperty</code> with the same description already

@@ -635,7 +635,6 @@ class Compiler {
         return rightParenthesisExpected();
       return true;
     }
-    System.out.println("I am here");
     return unrecognizedExpressionToken();
   }
 

@@ -27,6 +27,7 @@ package org.openscience.jmol.script;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Atom;
+import org.openscience.jmol.ProteinProp;
 import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
@@ -579,15 +580,24 @@ public class Eval implements Runnable {
   BitSet getHeteroSet() {
     ChemFrame frame = control.getFrame();
     BitSet bsHetero = new BitSet();
-    System.out.println("hetero set not implemented");
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop != null && pprop.isHetero())
+        bsHetero.set(i);
+    }
     return bsHetero;
   }
 
   BitSet getAminoSet(Token tokenAmino) {
-    BitSet bs = new BitSet();
-    System.out.println("amino sets not implemented:" + tokenAmino.value);
-    bs.set(tokenAmino.tok & 0x1F);
-    return bs;
+    String strResidue = (String)tokenAmino.value;
+    ChemFrame frame = control.getFrame();
+    BitSet bsAmino = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop != null && pprop.isResidue(strResidue))
+        bsAmino.set(i);
+    }
+    return bsAmino;
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {

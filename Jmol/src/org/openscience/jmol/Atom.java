@@ -65,6 +65,14 @@ public class Atom extends org.openscience.cdk.Atom {
     this.pprop = pprop;
   }
 
+  public Atom(org.openscience.cdk.Atom atom) {
+    super(atom.getSymbol(), atom.getPoint3D());
+    super.setID(atom.getID());
+    this.atomNumber = atomNumber;
+    this.pprop = pprop;
+    this.atomType = new AtomType(this);
+  }
+
   /**
    * Returns the atom's number.
    */

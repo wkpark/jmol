@@ -47,9 +47,13 @@ public class Unitcell extends SelectionIndependentShape {
     float[] notionalUnitcell = frame.notionalUnitcell;
     Matrix3f crystalScaleMatrix = frame.crystalScaleMatrix;
     Vector3f crystalTranslateVector = frame.crystalTranslateVector;
+    Matrix3f crystalScaleMatrixTranspose = frame.crystalScaleMatrixTranspose;
     Matrix3f matrixUnitcellToOrthogonal = frame.matrixUnitcellToOrthogonal;
-    dumpCellData(notionalUnitcell, crystalScaleMatrix,
-                 crystalTranslateVector, matrixUnitcellToOrthogonal);
+    dumpCellData(notionalUnitcell,
+                 crystalScaleMatrix,
+                 crystalTranslateVector,
+                 crystalScaleMatrixTranspose,
+                 matrixUnitcellToOrthogonal);
     hasUnitcell = notionalUnitcell != null;
     if (hasUnitcell) {
       float a = this.a = notionalUnitcell[0];
@@ -111,6 +115,7 @@ public class Unitcell extends SelectionIndependentShape {
   void dumpCellData(float[] notionalUnitcell,
                     Matrix3f crystalScaleMatrix,
                     Vector3f crystalTranslateVector,
+                    Matrix3f crystalScaleMatrixTranspose,
                     Matrix3f matrixUnitcellToOrthogonal) {
     if (notionalUnitcell == null) {
       System.out.println("notional unitcell is null");
@@ -123,6 +128,7 @@ public class Unitcell extends SelectionIndependentShape {
 
     System.out.println("scale matrix:\n" + crystalScaleMatrix);
     System.out.println("translate vector:\n" + crystalTranslateVector);
+    System.out.println("transpose:\n" + crystalScaleMatrixTranspose);
     System.out.println("inverted matrix:\n" + matrixUnitcellToOrthogonal);
   }
 }

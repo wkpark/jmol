@@ -48,6 +48,20 @@ public class FrameBuilder {
     boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
 
     Frame frame = new Frame(viewer, atomCount, modelType, hasPdbRecords);
+
+    /****************************************************************
+     * crystal cell must come first, in case atom coordinates
+     * need to be transformed to fit in the crystal cell
+     ****************************************************************/
+    frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile,
+                                                          frameNumber));
+    frame.setCrystalScaleMatrix(adapter.getCrystalScaleMatrix(clientFile,
+                                                              frameNumber));
+    frame.setCrystalScaleTranslate(adapter.
+                                   getCrystalScaleTranslate(clientFile,
+                                                            frameNumber));
+
+
     for (JmolModelAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile, frameNumber);
          iterAtom.hasNext(); ) {
@@ -93,14 +107,6 @@ public class FrameBuilder {
           frame.addLineShape(new Line(point1, point2, true));
         }
     }
-
-    frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile,
-                                                          frameNumber));
-    frame.setCrystalScaleMatrix(adapter.getCrystalScaleMatrix(clientFile,
-                                                              frameNumber));
-    frame.setCrystalScaleTranslate(adapter.
-                                   getCrystalScaleTranslate(clientFile,
-                                                            frameNumber));
 
     if (hasPdbRecords) {
       String[] structures =

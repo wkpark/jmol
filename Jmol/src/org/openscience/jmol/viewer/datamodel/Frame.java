@@ -55,6 +55,7 @@ public class Frame {
   public Bond[] bonds;
   public float[] notionalUnitcell;
   public Matrix3f crystalScaleMatrix;
+  public Matrix3f crystalScaleMatrixTranspose;
   public Vector3f crystalTranslateVector;
   public Matrix3f matrixUnitcellToOrthogonal;
 
@@ -80,6 +81,8 @@ public class Frame {
 
   public void freeze() {
     htAtomMap = null;
+    if (crystalScaleMatrix != null)
+      putAtomsInsideUnitcell();
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
           (hasPdbRecords && (bondCount < (atomCount / 2))))
@@ -841,17 +844,19 @@ public class Frame {
       this.notionalUnitcell = notionalUnitcell;
   }
 
-  public void setCrystalScaleMatrix(float[] crystalScaleMatrix) {
-    if (crystalScaleMatrix == null)
+  public void setCrystalScaleMatrix(float[] crystalScaleMatrixArray) {
+    if (crystalScaleMatrixArray == null)
       return;
-    if (crystalScaleMatrix.length != 9) {
+    if (crystalScaleMatrixArray.length != 9) {
       System.out.println("crystalScaleMatrix.length != 9 :" + 
                         crystalScaleMatrix);
       return;
     }
-    this.crystalScaleMatrix = new Matrix3f(crystalScaleMatrix);
+    crystalScaleMatrix = new Matrix3f(crystalScaleMatrixArray);
+    crystalScaleMatrixTranspose = new Matrix3f();
+    crystalScaleMatrixTranspose.transpose(crystalScaleMatrix);
     matrixUnitcellToOrthogonal = new Matrix3f();
-    matrixUnitcellToOrthogonal.invert(this.crystalScaleMatrix);
+    matrixUnitcellToOrthogonal.invert(crystalScaleMatrix);
   }
 
   public void setCrystalScaleTranslate(float[] crystalScaleTranslate) {
@@ -867,5 +872,20 @@ public class Frame {
 
   public ShapeRenderer getRenderer(int refShape) {
     return frameRenderer.getRenderer(refShape);
+  }
+
+  void putAtomsInsideUnitcell() {
+    System.out.println("moving them :-)");
+    for (int i = atomCount; --i >= 0; ) {
+      putAtomInsideUnitcell(atoms[i]);
+    }
+    System.out.println("moved them :-)");
+  }
+
+  void putAtomInsideUnitcell(Atom atom) {
+    Point3f point = atom.point3f;
+    point.x += 1000;
+    point.y += 1000;
+    point.z += 1000;
   }
 }

@@ -31,26 +31,19 @@ import org.jmol.api.JmolAdapter;
 import java.io.BufferedReader;
 
 // client-specific imports
-import org.openscience.cdk.ChemFile;
-import org.openscience.cdk.CDKConstants;
-import org.openscience.cdk.ChemSequence;
-import org.openscience.cdk.ChemModel;
-import org.openscience.cdk.SetOfMolecules;
-import org.openscience.cdk.Crystal;
-import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.Atom;
-import org.openscience.cdk.Bond;
+import org.openscience.cdk.*;
 import org.openscience.cdk.config.AtomTypeFactory;
 import org.openscience.cdk.exception.CDKException;
 import org.openscience.cdk.geometry.CrystalGeometryTools;
-import org.openscience.cdk.tools.manipulator.SetOfMoleculesManipulator;
-import org.openscience.cdk.tools.manipulator.ChemFileManipulator;
+import org.openscience.cdk.tools.manipulator.*;
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
 
 public class CdkJmolAdapter extends JmolAdapter {
 
+  public final static String ATOM_SET_INDEX = "org.jmol.adapter.cdk.ATOM_SET_INDEX";
+    
   public CdkJmolAdapter(Logger logger) {
     super("CdkJmolAdapter", logger);
   }
@@ -132,6 +125,18 @@ public class CdkJmolAdapter extends JmolAdapter {
    * The frame related methods
    * **************************************************************/
 
+  public int getAtomSetCount(Object clientFile) {
+    ChemFile chemFile = (ChemFile)clientFile;
+    ChemSequence chemSequence = chemFile.getChemSequence(0);
+    ChemModel[] chemModels = chemSequence.getChemModels();
+    ChemModel chemModel = chemModels[0];
+    SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
+    if (setOfMolecules != null) {
+      return setOfMolecules.getMoleculeCount();
+    }
+    return super.getAtomSetCount(clientFile);
+  }
+   
   private AtomContainer getAtomContainer(Object clientFile) {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);
@@ -140,9 +145,15 @@ public class CdkJmolAdapter extends JmolAdapter {
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
     Crystal crystal = chemModel.getCrystal();
     if (setOfMolecules != null) {
-      AtomContainer molecule =
-        SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
-      return molecule;
+      Molecule[] molecules = setOfMolecules.getMolecules();
+      AtomContainer superMolecule = new AtomContainer();
+      for (int molCounter=0; molCounter<molecules.length; molCounter++) {
+        AtomContainerManipulator.setAtomProperties(molecules[molCounter],
+          ATOM_SET_INDEX, new Integer(molCounter)
+        );
+        superMolecule.add(molecules[molCounter]);
+      }
+      return superMolecule;
     } else if (crystal != null) {
       // create 3D coordinates before returning the object
       CrystalGeometryTools.fractionalToCartesian(crystal);
@@ -239,6 +250,14 @@ public class CdkJmolAdapter extends JmolAdapter {
     public String getAtomName() {
         return atom.getAtomTypeName();
     }
+    public int getAtomSetIndex() {
+        Integer indexInt = (Integer)atom.getProperty(ATOM_SET_INDEX);
+        System.out.println("indexInt: " + indexInt);
+        if (indexInt != null) {
+            return indexInt.intValue();
+        }
+        return super.getAtomSetIndex();
+    }
     public char getChainID() {
         String chainID = (String)atom.getProperty("pdb.chainID");
         // System.out.println("chainID: " + chainID);
@@ -258,12 +277,15 @@ public class CdkJmolAdapter extends JmolAdapter {
     public int getSequenceNumber() {
         //String sequence = (String)atom.getProperty("pdb.resSeq");
         // System.out.println("sequence: " + sequence);
-        try {
-            int sequenceInt = Integer.parseInt((String)atom.getProperty("pdb.resSeq"));
-            // System.out.println("     int: " + sequenceInt);
-            return sequenceInt;
-        } catch (Exception exception) {
-            exception.printStackTrace();
+        String sequenceNumber = (String)atom.getProperty("pdb.resSeq");
+        if (sequenceNumber != null && sequenceNumber.length() > 0) {
+            try {
+                int sequenceInt = Integer.parseInt(sequenceNumber);
+                // System.out.println("     int: " + sequenceInt);
+                return sequenceInt;
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
         }
         return super.getSequenceNumber();
     }

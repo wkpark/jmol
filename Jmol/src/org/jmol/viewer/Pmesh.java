@@ -29,6 +29,7 @@ import org.jmol.g3d.*;
 import java.util.BitSet;
 import java.io.BufferedReader;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 class Pmesh extends SelectionIndependentShape {
 
@@ -76,6 +77,7 @@ class Pmesh extends SelectionIndependentShape {
         allocMesh(null);
       currentMesh.clear();
       readPmesh(br);
+      currentMesh.initialize();
       currentMesh.visible = true;
       currentMesh.transparent = false;
       return;
@@ -334,6 +336,7 @@ class Pmesh extends SelectionIndependentShape {
     
     int vertexCount;
     Point3f[] vertices;
+    short[] normixes;
     int polygonCount;
     int[][] polygonIndexes;
     
@@ -347,6 +350,36 @@ class Pmesh extends SelectionIndependentShape {
       vertices = null;
       polygonIndexes = null;
     }
+
+    void initialize() {
+      Vector3f[] vectorSums = new Vector3f[vertexCount];
+      for (int i = vertexCount; --i >= 0; )
+        vectorSums[i] = new Vector3f();
+      sumVertexNormals(vectorSums);
+      normixes = new short[vertexCount];
+      for (int i = vertexCount; --i >= 0; ) {
+        normixes[i] = g3d.getNormix(vectorSums[i]);
+        /*
+        System.out.println("vectorSums[" + i + "]=" + vectorSums[i] +
+                           " -> normix:" + normixes[i]);
+        */
+      }
+    }
+
+    void sumVertexNormals(Vector3f[] vectorSums) {
+      final Vector3f vNormalizedNormal = new Vector3f();
+
+      for (int i = polygonCount; --i >= 0; ) {
+        int[] pi = polygonIndexes[i];
+        g3d.calcNormalizedNormal(vertices[pi[0]],
+                                 vertices[pi[1]],
+                                 vertices[pi[2]],
+                                 vNormalizedNormal);
+        for (int j = pi.length; --j >= 0; ) {
+          int k = pi[j];
+          vectorSums[k].add(vNormalizedNormal);
+        }
+      }
+    }
   }
 }
-

@@ -364,6 +364,13 @@ class Normix3D {
       ++playoffCounts[playoffLevel];
     return champion;
   }
+
+  static byte tempIntensity;
+
+  byte getIntensity(short normix) {
+    tempIntensity = (byte)((tempIntensity + 17) & 0x3F);
+    return tempIntensity;
+  }
 }
 
 class Node {

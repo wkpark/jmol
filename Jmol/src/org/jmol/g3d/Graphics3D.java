@@ -43,7 +43,7 @@ import javax.vecmath.Vector3f;
  * A pure software implementation of a 3D graphics engine.
  * No hardware required.
  * Depending upon what you are rendering ... some people say it
- * is pretty fast.
+ * is <i>pretty fast</i>.
  *
  * @author Miguel, miguel@jmol.org
  */
@@ -788,6 +788,30 @@ final public class Graphics3D {
   }
 
   public void fillTriangle(short colix, boolean transparent,
+                           Point3i screenA, short normixA,
+                           Point3i screenB, short normixB,
+                           Point3i screenC, short normixC) {
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
+    t = triangle3d.ay;
+    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
+    t = triangle3d.az;
+    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
+
+    if (normixA == normixB && normixA == normixC) {
+      setColorNoisy(colix, normix3d.getIntensity(normixA));
+      triangle3d.fillTriangle(transparent, false);
+    } else {
+      int[] shades = getShades(colix);
+      triangle3d.setGouraud(shades[normix3d.getIntensity(normixA)],
+                            shades[normix3d.getIntensity(normixB)],
+                            shades[normix3d.getIntensity(normixC)]);
+      triangle3d.fillTriangle(transparent, true);
+    }
+  }
+
+  public void fillTriangle(short colix, boolean transparent,
                            Point3i screenA, Point3i screenB, Point3i screenC) {
     calcSurfaceShade(colix, transparent, screenA, screenB, screenC);
     int[] t;
@@ -798,7 +822,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangleNoisy(transparent);
+    triangle3d.fillTriangle(transparent, false);
   }
 
   public final static byte ALPHA_OFF         = 0;
@@ -817,7 +841,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = Xyzd.getZ(xyzdA); t[1] = Xyzd.getZ(xyzdB); t[2] = Xyzd.getZ(xyzdC);
 
-    triangle3d.fillTriangleNoisy(transparent);
+    triangle3d.fillTriangle(transparent, false);
   }
 
   public void fillTriangle(short colix, Point3f screenA,
@@ -831,6 +855,21 @@ final public class Graphics3D {
                                 Point3i screenC, Point3i screenD) {
     fillTriangle(colix, transparent, screenA, screenB, screenC);
     fillTriangle(colix, transparent, screenA, screenC, screenD);
+  }
+
+  public void fillQuadrilateral(short colix, boolean transparent,
+                                Point3i screenA, short normixA,
+                                Point3i screenB, short normixB,
+                                Point3i screenC, short normixC,
+                                Point3i screenD, short normixD) {
+    fillTriangle(colix, transparent,
+                 screenA, normixA,
+                 screenB, normixB,
+                 screenC, normixC);
+    fillTriangle(colix, transparent,
+                 screenA, normixA,
+                 screenC, normixC,
+                 screenD, normixD);
   }
 
   public void fillQuadrilateral(int argb,
@@ -858,7 +897,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangleNoisy(false);
+    triangle3d.fillTriangle(false, false);
   }
 
   public void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC) {
@@ -871,7 +910,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
 
-    triangle3d.fillTriangleNoisy(false);
+    triangle3d.fillTriangle(false, false);
   }
 
   public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
@@ -883,7 +922,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
 
-    triangle3d.fillTriangleNoisy(false);
+    triangle3d.fillTriangle(false, false);
   }
 
   int intensity = 0;
@@ -948,7 +987,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = zA; t[1] = zB; t[2] = zC;
 
-    triangle3d.fillTriangleNoisy(false);
+    triangle3d.fillTriangle(false, false);
   }
 
   public void fillTriangle(short colix, boolean transparent,
@@ -968,7 +1007,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = zA; t[1] = zB; t[2] = zC;
 
-    triangle3d.fillTriangleNoisy(transparent);
+    triangle3d.fillTriangle(transparent, false);
   }
 
   final Point3i warrenA = new Point3i();
@@ -995,7 +1034,7 @@ final public class Graphics3D {
     t = triangle3d.az;
     t[0] = zA; t[1] = zB; t[2] = zC;
 
-    triangle3d.fillTriangleNoisy(false);
+    triangle3d.fillTriangle(false, false);
   }
 
   public void drawTriangle(short colix, int xA, int yA, int zA,
@@ -1249,6 +1288,65 @@ final public class Graphics3D {
       }
       ++offsetPbuf;
       zScaled += zIncrementScaled;
+    }
+    //    System.out.println("");
+  }
+
+  void plotGouraudPixelsClipped(int count, int x, int y,
+                                int zAtLeft, int zPastRight,
+                                Rgb16 rgb16Left, Rgb16 rgb16Right,
+                                boolean tScreened) {
+    //    System.out.print("plotPixelsClipped z values:");
+    /*
+    System.out.println("plotPixelsClipped count=" + count + "x,y,z=" +
+                       x + "," + y + "," + zAtLeft + " -> " + zPastRight);
+    */
+    if (count <= 0 || y < 0 || y >= height || x >= width ||
+        (zAtLeft < slab && zPastRight < slab) ||
+        (zAtLeft > depth && zPastRight > depth))
+      return;
+    int rScaled = rgb16Left.rScaled << 8;
+    int rIncrement = ((rgb16Right.rScaled - rScaled) << 8) / count;
+    int gScaled = rgb16Left.gScaled;
+    int gIncrement = (rgb16Right.gScaled - gScaled) / count;
+    int bScaled = rgb16Left.bScaled;
+    int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+    
+    // scale the z coordinates;
+    int zScaled = (zAtLeft << 10) + (1 << 9);
+    int dz = zPastRight - zAtLeft;
+    int roundFactor = count / 2;
+    int zIncrementScaled =
+      ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
+    if (x < 0) {
+      x = -x;
+      zScaled += zIncrementScaled * x;
+      count -= x;
+      if (count <= 0)
+        return;
+      x = 0;
+    }
+    if (count + x > width)
+      count = width - x;
+    boolean flipflop = ((x ^ y) & 1) == 0;
+    int offsetPbuf = y * width + x;
+    while (--count >= 0) {
+      int z = zScaled >> 10;
+      //      System.out.print(" " + z);
+      if ((!tScreened || (flipflop = !flipflop)) &&
+          (z >= slab && z <= depth && z < zbuf[offsetPbuf])) {
+        zbuf[offsetPbuf] = (short)z;
+        pbuf[offsetPbuf] = (0xFF00000 |
+                            (rScaled & 0xFF0000) |
+                            (gScaled & 0xFF00) |
+                            (bScaled >> 8) & 0xFF);
+          
+      }
+      ++offsetPbuf;
+      zScaled += zIncrementScaled;
+      rScaled += rIncrement;
+      gScaled += gIncrement;
+      bScaled += bIncrement;
     }
     //    System.out.println("");
   }
@@ -1964,5 +2062,20 @@ final public class Graphics3D {
     }
     System.out.println("error converting string to color:" + strColor);
     return Color.pink;
+  }
+
+  final Vector3f vAB = new Vector3f();
+  final Vector3f vAC = new Vector3f();
+
+  public void calcNormalizedNormal(Point3f pointA, Point3f pointB,
+                                   Point3f pointC, Vector3f vNormNorm) {
+    vAB.sub(pointB, pointA);
+    vAC.sub(pointC, pointA);
+    vNormNorm.cross(vAB, vAC);
+    vNormNorm.normalize();
+  }
+
+  public short getNormix(Vector3f vector) {
+    return normix3d.getNormix(vector);
   }
 }

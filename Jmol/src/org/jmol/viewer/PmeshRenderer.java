@@ -42,6 +42,7 @@ class PmeshRenderer extends ShapeRenderer {
     int vertexCount = mesh.vertexCount;
     int[][] polygonIndexes = mesh.polygonIndexes;
     Point3f[] vertices = mesh.vertices;
+    short[] normixes = mesh.normixes;
     Point3i[] screens = viewer.allocTempScreens(vertexCount);
     short colix = mesh.meshColix;
     g3d.setColix(colix);
@@ -49,19 +50,24 @@ class PmeshRenderer extends ShapeRenderer {
       viewer.transformPoint(vertices[i], screens[i]);
     for (int i = mesh.polygonCount; --i >= 0; ) {
       int[] vertexIndexes = polygonIndexes[i];
-      if (vertexIndexes.length == 3)
+      int iA = vertexIndexes[0];
+      int iB = vertexIndexes[1];
+      int iC = vertexIndexes[2];
+      if (vertexIndexes.length == 3) {
         g3d.fillTriangle(colix, mesh.transparent,
-                         screens[vertexIndexes[0]],
-                         screens[vertexIndexes[1]],
-                         screens[vertexIndexes[2]]);
-      else if (vertexIndexes.length == 4)
+                         screens[iA], normixes[iA],
+                         screens[iB], normixes[iB],
+                         screens[iC], normixes[iC]);
+      } else if (vertexIndexes.length == 4) {
+        int iD = vertexIndexes[3];
         g3d.fillQuadrilateral(colix, mesh.transparent,
-                              screens[vertexIndexes[0]],
-                              screens[vertexIndexes[1]],
-                              screens[vertexIndexes[2]],
-                              screens[vertexIndexes[3]]);
-      else
+                              screens[iA], normixes[iA],
+                              screens[iB], normixes[iB],
+                              screens[iC], normixes[iC],
+                              screens[iD], normixes[iD]);
+      } else {
         System.out.println("PmeshRenderer: polygon with > 4 sides");
+      }
     }
     viewer.freeTempScreens(screens);
   }

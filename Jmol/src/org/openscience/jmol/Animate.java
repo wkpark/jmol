@@ -200,10 +200,16 @@ public class Animate extends JDialog implements ActionListener,Runnable {
                 if (currentFrame < nframes-1) {
                     currentFrame++;
                 } else {
-		    currentFrame = 0;
+
+                    /* leave the pointer on the last frame and halt if
+                       user doesn't want to repeat.  Otherwise, reset to
+                       frame zero and keep going.
+                    */
 		    if (!repeat) {
 			animThread = null;
-		    }
+		    } else {
+                        currentFrame = 0;
+                    }
                 }
                 setFrame(currentFrame, true);     
                 /* 

@@ -30,13 +30,13 @@ import java.util.BitSet;
 
 class Backbone extends Mcps {
 
-  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
-    return new Chain(polymer);
+  Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
+    return new Bbchain(polymer);
   }
 
-  class Chain extends Mcps.Chain {
+  class Bbchain extends Mcps.Mcpschain {
 
-    Chain(PdbPolymer polymer) {
+    Bbchain(PdbPolymer polymer) {
       super(polymer, 1, 1500, 500);
     }
 

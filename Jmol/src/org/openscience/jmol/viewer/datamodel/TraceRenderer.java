@@ -39,12 +39,12 @@ class TraceRenderer extends McpsRenderer {
     alphas = null;
   }
 
-  void renderMcpsChain(Mcps.Chain mcpgChain) {
-    Trace.Chain traceChain = (Trace.Chain)mcpgChain;
-    render1Chain(traceChain.polymerCount,
-                 traceChain.polymerGroups,
-                 traceChain.mads,
-                 traceChain.colixes);
+  void renderMcpschain(Mcps.Mcpschain mcpschain) {
+    Trace.Tchain tchain = (Trace.Tchain)mcpschain;
+    render1Chain(tchain.polymerCount,
+                 tchain.polymerGroups,
+                 tchain.mads,
+                 tchain.colixes);
   }
 
   Point3i[] screens;

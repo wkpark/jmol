@@ -38,15 +38,15 @@ class Strands extends Mcps {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    ****************************************************************/
 
-  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
-    return new Chain(polymer);
+  Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
+    return new Schain(polymer);
   }
 
-  class Chain extends Mcps.Chain {
+  class Schain extends Mcps.Mcpschain {
     Point3f[] centers;
     Vector3f[] vectors;
 
-    Chain(PdbPolymer polymer) {
+    Schain(PdbPolymer polymer) {
       super(polymer, -2, 1500, 500);
       if (polymerCount > 0) {
         centers = new Point3f[polymerCount + 1];

@@ -37,7 +37,7 @@ abstract class Mcps extends Shape {
 
   PdbFile pdbFile;
 
-  Model[] models;
+  Mcpsmodel[] mcpsmodels;
 
   final void initShape() {
     pdbFile = frame.pdbFile;
@@ -46,8 +46,8 @@ abstract class Mcps extends Shape {
   void setSize(int size, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
-    for (int m = models.length; --m >= 0; )
-      models[m].setMad(mad, bsSelected);
+    for (int m = mcpsmodels.length; --m >= 0; )
+      mcpsmodels[m].setMad(mad, bsSelected);
   }
   
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -64,66 +64,66 @@ abstract class Mcps extends Shape {
     } else {
       return;
     }
-    for (int m = models.length; --m >= 0; )
-      models[m].setColix(palette, colix, bs);
+    for (int m = mcpsmodels.length; --m >= 0; )
+      mcpsmodels[m].setColix(palette, colix, bs);
   }
 
-  abstract Chain allocateMcpsChain(PdbPolymer polymer);
+  abstract Mcpschain allocateMcpschain(PdbPolymer polymer);
 
   void initialize() {
-    if (models == null) {
+    if (mcpsmodels == null) {
       int modelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
-      models = new Model[modelCount];
+      mcpsmodels = new Mcpsmodel[modelCount];
       for (int i = modelCount; --i >= 0; )
-        models[i] = new Model(pdbFile.getModel(i));
+        mcpsmodels[i] = new Mcpsmodel(pdbFile.getModel(i));
     }
   }
 
-  int getModelCount() {
-    return models.length;
+  int getMcpsmodelCount() {
+    return mcpsmodels.length;
   }
 
-  Model getMcpsModel(int i) {
-    return models[i];
+  Mcpsmodel getMcpsmodel(int i) {
+    return mcpsmodels[i];
   }
 
-  class Model {
-    Chain[] chains;
+  class Mcpsmodel {
+    Mcpschain[] mcpschains;
     int modelNumber;
     
-    Model(PdbModel model) {
-      chains = new Chain[model.getChainCount()];
+    Mcpsmodel(PdbModel model) {
+      mcpschains = new Mcpschain[model.getChainCount()];
       this.modelNumber = model.getModelNumber();
-      for (int i = chains.length; --i >= 0; )
-        chains[i] = allocateMcpsChain(model.getChain(i).getPolymer());
+      for (int i = mcpschains.length; --i >= 0; )
+        mcpschains[i] = allocateMcpschain(model.getChain(i).getPolymer());
     }
     
     void setMad(short mad, BitSet bsSelected) {
-      for (int i = chains.length; --i >= 0; ) {
-        Chain chain = chains[i];
+      for (int i = mcpschains.length; --i >= 0; ) {
+        Mcpschain chain = mcpschains[i];
         if (chain.polymerCount > 0)
           chain.setMad(mad, bsSelected);
       }
     }
 
     void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = chains.length; --i >= 0; ) {
-        Chain chain = chains[i];
+      for (int i = mcpschains.length; --i >= 0; ) {
+        Mcpschain chain = mcpschains[i];
         if (chain.polymerCount > 0)
           chain.setColix(palette, colix, bsSelected);
       }
     }
 
-    int getChainCount() {
-      return chains.length;
+    int getMcpschainCount() {
+      return mcpschains.length;
     }
 
-    Chain getMcpsChain(int i) {
-      return chains[i];
+    Mcpschain getMcpschain(int i) {
+      return mcpschains[i];
     }
   }
 
-  abstract class Chain {
+  abstract class Mcpschain {
     PdbPolymer polymer;
     short madOn;
     short madHelixSheet;
@@ -134,7 +134,7 @@ abstract class Mcps extends Shape {
     short[] colixes;
     short[] mads;
     
-    Chain(PdbPolymer polymer, int madOn, int madHelixSheet, int madTurnRandom) {
+    Mcpschain(PdbPolymer polymer, int madOn, int madHelixSheet, int madTurnRandom) {
       this.polymer = polymer;
       this.madOn = (short)madOn;
       this.madHelixSheet = (short)madHelixSheet;

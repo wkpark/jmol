@@ -30,12 +30,12 @@ import java.util.BitSet;
 
 class Trace extends Mcps {
 
-  Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
-    return new Chain(polymer);
+  Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
+    return new Tchain(polymer);
   }
 
-  class Chain extends Mcps.Chain {
-    Chain(PdbPolymer polymer) {
+  class Tchain extends Mcps.Mcpschain {
+    Tchain(PdbPolymer polymer) {
       super(polymer, 600, 1500, 500);
     }
   }

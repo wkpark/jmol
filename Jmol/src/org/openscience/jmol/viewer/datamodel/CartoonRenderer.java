@@ -42,10 +42,9 @@ class CartoonRenderer extends McpsRenderer {
 
   Cartoon cartoon;
 
-  void renderMcpsChain(Mcps.Chain mcpgChain) {
-    Cartoon.Chain cartoonChain = (Cartoon.Chain)mcpgChain;
-    render1Chain(cartoonChain.polymer,
-                 cartoonChain.mads, cartoonChain.colixes);
+  void renderMcpschain(Mcps.Mcpschain mcpschain) {
+    Cartoon.Cchain cchain = (Cartoon.Cchain)mcpschain;
+    render1Chain(cchain.polymer, cchain.mads, cchain.colixes);
   }
 
   void render1Chain(PdbPolymer polymer, short[] mads, short[] colixes) {

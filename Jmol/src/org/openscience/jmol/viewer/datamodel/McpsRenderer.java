@@ -36,17 +36,17 @@ abstract class McpsRenderer extends ShapeRenderer {
     if (shape == null)
       return;
     Mcps mcps = (Mcps)shape;
-    for (int m = mcps.getModelCount(); --m >= 0; ) {
-      Mcps.Model model = mcps.getMcpsModel(m);
-      if (displayModel > 0 && displayModel != model.modelNumber)
+    for (int m = mcps.getMcpsmodelCount(); --m >= 0; ) {
+      Mcps.Mcpsmodel mcpsmodel = mcps.getMcpsmodel(m);
+      if (displayModel > 0 && displayModel != mcpsmodel.modelNumber)
         continue;
-      for (int c = model.getChainCount(); --c >= 0; ) {
-        Mcps.Chain mcpsChain = model.getMcpsChain(c);
-        if (mcpsChain.polymerCount >= 2)
-          renderMcpsChain(mcpsChain);
+      for (int c = mcpsmodel.getMcpschainCount(); --c >= 0; ) {
+        Mcps.Mcpschain mcpschain = mcpsmodel.getMcpschain(c);
+        if (mcpschain.polymerCount >= 2)
+          renderMcpschain(mcpschain);
       }
     }
   }
 
-  abstract void renderMcpsChain(Mcps.Chain mcpsChain);
+  abstract void renderMcpschain(Mcps.Mcpschain mcpschain);
 }

@@ -61,21 +61,21 @@ class StrandsRenderer extends McpsRenderer {
   float strandSeparation;
   float baseOffset;
 
-  void renderMcpsChain(Mcps.Chain mcpgChain) {
-    Strands.Chain strandsChain = (Strands.Chain)mcpgChain;
-    polymerCount = strandsChain.polymerCount;
+  void renderMcpschain(Mcps.Mcpschain mcpschain) {
+    Strands.Schain schain = (Strands.Schain)mcpschain;
+    polymerCount = schain.polymerCount;
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
-    render1Chain(strandsChain.polymerCount,
-                 strandsChain.polymerGroups,
-                 strandsChain.centers,
-                 strandsChain.vectors,
-                 strandsChain.mads,
-                 strandsChain.colixes);
+    render1Chain(schain.polymerCount,
+                 schain.polymerGroups,
+                 schain.centers,
+                 schain.vectors,
+                 schain.mads,
+                 schain.colixes);
   }
 
 

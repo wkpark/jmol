@@ -33,13 +33,13 @@ import javax.vecmath.Point3i;
 
 class BackboneRenderer extends McpsRenderer {
 
-  void renderMcpsChain(Mcps.Chain mcpgChain) {
-    renderTraceChain((Backbone.Chain)mcpgChain);
+  void renderMcpschain(Mcps.Mcpschain mcpschain) {
+    renderTraceChain((Backbone.Bbchain)mcpschain);
   }
   
-  void renderTraceChain(Backbone.Chain backboneChain) {
-    render1Chain(backboneChain.polymerCount, backboneChain.polymer.getAtomIndices(),
-                 backboneChain.mads, backboneChain.colixes);
+  void renderTraceChain(Backbone.Bbchain bbchain) {
+    render1Chain(bbchain.polymerCount, bbchain.polymer.getAtomIndices(),
+                 bbchain.mads, bbchain.colixes);
   }
 
   void render1Chain(int polymerCount, int[] atomIndices,

@@ -123,8 +123,6 @@ public class MeasurementShape extends LineShape
     int yT = (y + yEnd) / 2;
     int zT = (z + zEnd) / 2;
     g25d.drawString(strMeasurement, control.getColixDistance(), xT, yT, zT);
-    System.out.println("paintMeasurementString : " + strMeasurement +
-                       " @" + x + "," + y + "," + z );
   }
 
   public int[] getAtomList() {

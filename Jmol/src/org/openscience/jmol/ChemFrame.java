@@ -165,7 +165,7 @@ public class ChemFrame extends AtomContainer {
             jmolAtom = (Atom)atom;
         }
         AtomTypeList.getInstance().configure(jmolAtom);
-        jmolAtom.setAtomNumber(this.getAtomCount());
+        //        jmolAtom.setAtomNumber(this.getAtomCount());
         super.addAtom(jmolAtom);
     }
 

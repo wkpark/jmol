@@ -24,8 +24,8 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.Atom;
-import org.openscience.jmol.ChemFrame;
+import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.JmolFrame;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.MeasureWatcher;
 
@@ -157,13 +157,14 @@ public class Measure extends JDialog implements MeasureWatcher {
       fireTableCellUpdated(row, col);
     }
 
-    public void updateRow(int row, int i, String n, double[] c) {
+    public void updateRow(int row, int i, String n,
+                          double x, double y, double z) {
 
-      data[row][1] = (new Integer(i)).toString();
+      data[row][1] = "" + i;
       data[row][2] = n;
-      data[row][3] = (new Double(c[0])).toString();
-      data[row][4] = (new Double(c[1])).toString();
-      data[row][5] = (new Double(c[2])).toString();
+      data[row][3] = "" + x;
+      data[row][4] = "" + y;
+      data[row][5] = "" + z;
       fireTableDataChanged();
     }
 
@@ -330,12 +331,14 @@ public class Measure extends JDialog implements MeasureWatcher {
         return;
       }
     }
-    ChemFrame cf = control.getFrame();
-    Atom a = cf.getJmolAtomAt(measured);
-    double[] c = cf.getAtomCoords(measured);
+    JmolFrame frame = control.getJmolFrame();
+    AtomShape atom = frame.getAtomAt(measured);
     selection[currentAtom] = measured;
 
-    mtm.updateRow(currentAtom, a.getAtomNumber() + 1, a.getSymbol(), c);
+    mtm.updateRow(currentAtom,
+                  measured,
+                  atom.getAtomicSymbol(),
+                  atom.getX(), atom.getY(), atom.getZ());
     if (currentAtom < measure - 1) {
       currentAtom++;
       table.setRowSelectionInterval(currentAtom, currentAtom);

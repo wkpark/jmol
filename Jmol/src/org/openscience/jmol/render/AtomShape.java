@@ -361,12 +361,28 @@ public class AtomShape extends Shape {
    * but soon they will go through an interface which defines their behavior
    */
 
+  public String getAtomicSymbol() {
+    return atom.getSymbol();
+  }
+
   public int getAtomicNumber() {
     return atom.getAtomicNumber();
   }
 
   public Point3d getPoint3d() {
     return atom.getPoint3D();
+  }
+
+  public double getX() {
+    return atom.getPoint3D().x;
+  }
+
+  public double getY() {
+    return atom.getPoint3D().y;
+  }
+
+  public double getZ() {
+    return atom.getPoint3D().z;
   }
 
   public double getVanderwaalsRadius() {

@@ -28,6 +28,7 @@ import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
 
 public interface JmolAtom {
+  String getSymbol();
   int getAtomicNumber();
   double getVanderwaalsRadius();
   Point3d getPoint3D();

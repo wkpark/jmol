@@ -59,7 +59,8 @@ final class CommandHistory
     */
    String getCommandUp()
    {
-      pos--;
+      if (commandList.size() > 0) pos--;
+      System.out.println("New pos: " + pos);
       return getCommand();
    }
 
@@ -70,7 +71,8 @@ final class CommandHistory
     */
    String getCommandDown()
    {
-      pos++;
+      if (commandList.size() > 0) pos++;
+      System.out.println("New pos: " + pos);
       return getCommand();
    }
 
@@ -79,33 +81,23 @@ final class CommandHistory
     *  
     * @return the String value of a command
     */
-   private String getCommand()
-   {
-      if (pos == 0)
-      {
-         return "";
-      }
-      else
-      {
-         int size = commandList.size();
-
-         if (size > 0)
-         {
-            if (pos > 0)
-            {
-               return (String) commandList.get((pos - 1) % size);
-            }
-            else
-            {
-               return (String) commandList.get(
-                  size - (Math.abs(1 + pos)) % size - 1);
-            }
-         }
-         else
-         {
-            return "";
-         }
-      }
+   private String getCommand() {
+       if (pos == 0) {
+           return "";
+       } else {
+           int size = commandList.size();
+           
+           if (size > 0){
+               if (pos > size) {
+                   pos = pos - size;
+               } else if (pos < 0) {
+                   pos = pos + size + 1;
+               }
+               return (String) commandList.get(pos-1);
+           } else {
+               return "";
+           }
+       }
    }
 
    /**

@@ -490,6 +490,17 @@ public class CrystalFile extends ChemFile {
       }        //end j
     }          //end i
 
+    if (boxEdges.isEmpty()) { //In the case the unit box frame collapse (because the user asked for it),
+      for (int l = 0; l < boxEdgesTemplate.size(); l++) {  // a unit frame is still drawn because
+	redEdge[0] = ((Point3d) boxEdgesTemplate.elementAt(l)).x; // the calcBoundingBox 
+	redEdge[1] = ((Point3d) boxEdgesTemplate.elementAt(l)).y; // need it
+	redEdge[2] = ((Point3d) boxEdgesTemplate.elementAt(l)).z;
+	cartEdge = MathUtil.mulVec(op, redEdge);
+	boxEdges.addElement(new Point3d(cartEdge[0], cartEdge[1],
+					cartEdge[2]));
+      }    //end l;
+    }
+    
     return boxEdges;
 
   }    //end generate UnitBoxFrame

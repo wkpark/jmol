@@ -34,7 +34,8 @@ import java.awt.Rectangle;
  */
 public abstract class Shape {
 
-  public int x, y, z; // screen coordinates after transformation
+  // screen coordinates after transformation
+  public int x, y, z;
   // note that this z is used for the z-order sort process
   // remember that for perspective depth calculations all values
   // of z are <= 0 ... 0 is at the surface of the screen and

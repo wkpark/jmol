@@ -247,6 +247,9 @@ public class Eval implements Runnable {
       case Token.move:
         move();
         break;
+      case Token.slab:
+        slab();
+        break;
         // not implemented
       case Token.backbone:
       case Token.bond:
@@ -268,7 +271,6 @@ public class Eval implements Runnable {
       case Token.save:
       case Token.set:
       case Token.show:
-      case Token.slab:
       case Token.spacefill:
       case Token.ssbonds:
       case Token.star:
@@ -321,6 +323,10 @@ public class Eval implements Runnable {
 
   void booleanExpected() throws ScriptException {
     evalError("boolean expected");
+  }
+
+  void booleanOrPercentExpected() throws ScriptException {
+    evalError("boolean or percent expected");
   }
 
   void integerExpected() throws ScriptException {
@@ -624,7 +630,7 @@ public class Eval implements Runnable {
       control.setZoomEnabled(false);
       break;
     default:
-      booleanExpected();
+      booleanOrPercentExpected();
     }
   }
 
@@ -675,7 +681,8 @@ public class Eval implements Runnable {
         maxAccel = statement[11].intValue;
     }
 
-    int zoom = control.getZoomPercent();
+    int zoom = control.getZoomPercentSetting();
+    int slab = control.getSlabPercentSetting();
     int transX = control.getTranslationXPercent();
     int transY = control.getTranslationYPercent();
     int transZ = control.getTranslationZPercent();
@@ -705,6 +712,8 @@ public class Eval implements Runnable {
         control.translateToYPercent(transY + dTransY * i / totalSteps);
       if (dTransZ != 0)
         control.translateToZPercent(transZ + dTransZ * i / totalSteps);
+      if (dSlab != 0)
+        control.slabToPercent(slab + dSlab * i / totalSteps);
       int timeSpent = (int)(System.currentTimeMillis() - timeBegin);
       int timeAllowed = i * timePerStep;
       if (timeSpent < timeAllowed) {
@@ -721,5 +730,25 @@ public class Eval implements Runnable {
       }
     }
     control.setInMotion(false);
+  }
+
+  void slab() throws ScriptException {
+    if (statement[1].tok == Token.integer) {
+      int percent = statement[1].intValue;
+      if (percent < 0 || percent > 100)
+        outOfRange();
+      control.slabToPercent(percent);
+      return;
+    }
+    switch (statement[1].tok) {
+    case Token.on:
+      control.setSlabEnabled(true);
+      break;
+    case Token.off:
+      control.setSlabEnabled(false);
+      break;
+    default:
+      booleanOrPercentExpected();
+    }
   }
 }

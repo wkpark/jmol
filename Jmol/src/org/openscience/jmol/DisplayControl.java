@@ -383,6 +383,10 @@ final public class DisplayControl {
     return zoomPercent;
   }
 
+  public int getZoomPercentSetting() {
+    return zoomPercentSetting;
+  }
+
   public void zoomToPercent(int percent) {
     zoomPercentSetting = percent;
     calcZoom();
@@ -417,19 +421,28 @@ final public class DisplayControl {
   public final static int SLABSOLID = 3;
   public final static int SLABSECTION = 4;
 
-  private boolean slabEnabled = false;
-  private int modeSlab;
-  private int slabPercentSetting = 100;
+  public boolean slabEnabled = false;
+  public int modeSlab;
+  public int slabValue;
+  public int slabPercentSetting = 100;
 
   public boolean getSlabEnabled() {
     return slabEnabled;
   }
 
-  public void setSlabPercent(int percentSlab) {
+  public int getSlabPercentSetting() {
+    return slabPercentSetting;
+  }
+
+  public void slabToPercent(int percentSlab) {
+    System.out.println("slabToPercent(" + percentSlab + ")");
     this.slabPercentSetting = percentSlab;
+    calcSlab();
+    recalc();
   }
 
   public void setSlabEnabled(boolean slabEnabled) {
+    System.out.println("setSlabEnabled("+ slabEnabled + ")");
     if (this.slabEnabled != slabEnabled) {
       this.slabEnabled = slabEnabled;
       calcSlab();
@@ -446,8 +459,18 @@ final public class DisplayControl {
 
   private void calcSlab() {
     if (slabEnabled) {
-      
+      // all transformed z coordinates are negative
+      // a slab percentage of 100 should map to zero
+      // a slab percentage of 0 should map to -diameter
+      int radius =
+        (int)(chemframe.getRotationRadius() * scalePixelsPerAngstrom);
+      slabValue = (int)((-100+slabPercentSetting) * 2*radius / 100);
+      System.out.println("slabValue=" + slabValue);
     }
+  }
+
+  private int getSlabValue() {
+    return slabValue;
   }
 
   public Matrix4d getPovRotateMatrix() {
@@ -470,7 +493,7 @@ final public class DisplayControl {
     // you absolutely *must* watch the order of these operations
     matrixTransform.setIdentity();
     // first, translate the coordinates back to the center
-    vectorTemp.set(getFrame().getRotationCenter());
+    vectorTemp.set(chemframe.getRotationCenter());
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);
@@ -481,7 +504,7 @@ final public class DisplayControl {
     // this is important for scaling
     vectorTemp.x = 0;
     vectorTemp.y = 0;
-    vectorTemp.z = getFrame().getRotationRadius();
+    vectorTemp.z = chemframe.getRotationRadius();
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);
     // now scale to screen coordinates
@@ -535,10 +558,16 @@ final public class DisplayControl {
   }
 
   public void homePosition() {
+    // FIXME -- need to hold repaint during this process, but first 
+    // figure out the interaction with the current holdRepaint setting
     setCenter(null);
     clearSelection();
-    matrixRotate.setIdentity();         // no rotations
     scaleFitToScreen();
+    matrixRotate.setIdentity();         // no rotations
+    setSlabEnabled(false);              // no slabbing
+    slabToPercent(100);
+    setZoomEnabled(true);
+    zoomToPercent(100);
     recalc();
   }
 
@@ -577,7 +606,7 @@ final public class DisplayControl {
     if (minScreenDimension > 2)
       minScreenDimension -= 2;
     scalePixelsPerAngstrom =
-      minScreenDimension / 2 / getFrame().getRotationRadius();
+      minScreenDimension / 2 / chemframe.getRotationRadius();
     if (perspectiveDepth) {
       double scaleFactor = (cameraZ + minScreenDimension/2) / (double)cameraZ;
       scaleFactor += .02f; // don't know why I need this, but seems I do -- mth
@@ -637,6 +666,7 @@ final public class DisplayControl {
       mlistChanged(new MeasurementListEvent(mlist));
     }
     homePosition();
+    // don't know if I need this firm recalc here or not
     recalcFirmly();
   }
 
@@ -802,7 +832,7 @@ final public class DisplayControl {
   }
 
   public void setCenter(Point3d center) {
-    getFrame().setRotationCenter(center);
+    chemframe.setRotationCenter(center);
   }
 
   private boolean holdRepaint;
@@ -859,14 +889,14 @@ final public class DisplayControl {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(((org.openscience.jmol.Atom)getFrame().getAtomAt(i)).getPosition());
+      center.add(((org.openscience.jmol.Atom)chemframe.getAtomAt(i)).getPosition());
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity
     } else {
       center = null;
     }
-    getFrame().setRotationCenter(center);
+    chemframe.setRotationCenter(center);
     clearSelection();
     scaleFitToScreen();
     recalc();
@@ -924,9 +954,9 @@ final public class DisplayControl {
   private boolean autoBond = true;
 
   public void rebond() {
-    if (getFrame() != null) {
+    if (chemframe != null) {
       try {
-        getFrame().rebond();
+        chemframe.rebond();
       } catch (Exception e){
       }
     }

@@ -116,6 +116,10 @@ public class ChemFrameRenderer {
     }
                               
     for (int i = 0; i < shapes.length; ++i) {
+      if (control.slabEnabled) {
+        if (shapes[i].z > control.slabValue)
+          continue;
+      }
       shapes[i].render(g, rectClip, control);
     }
   }

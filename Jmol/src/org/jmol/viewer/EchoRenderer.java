@@ -24,21 +24,16 @@
  */
 package org.jmol.viewer;
 
+class EchoRenderer extends ShapeRenderer {
 
-import java.awt.Component;
-
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  void render() {
+    Echo echo = (Echo)shape;
+    
+    if (echo.topText != null)
+      echo.topText.render(g3d);
+    if (echo.middleText != null)
+      echo.middleText.render(g3d);
+    if (echo.bottomText != null)
+      echo.bottomText.render(g3d);
   }
 }

@@ -25,57 +25,57 @@
 package org.jmol.viewer;
 import java.lang.reflect.Array;
 
-final public class Util {
+final class Util {
 
-  public static Object ensureLength(Object array, int minimumLength) {
+  static Object ensureLength(Object array, int minimumLength) {
     if (array != null && Array.getLength(array) >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
-  public static String[] ensureLength(String[] array, int minimumLength) {
+  static String[] ensureLength(String[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
-  public static short[] ensureLength(short[] array, int minimumLength) {
+  static short[] ensureLength(short[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
-  public static byte[] ensureLength(byte[] array, int minimumLength) {
+  static byte[] ensureLength(byte[] array, int minimumLength) {
     if (array != null && array.length >= minimumLength)
       return array;
     return setLength(array, minimumLength);
   }
 
-  public static Object doubleLength(Object array) {
+  static Object doubleLength(Object array) {
     return setLength(array, 2 * Array.getLength(array));
   }
 
-  public static String[] doubleLength(String[] array) {
+  static String[] doubleLength(String[] array) {
     return setLength(array, 2 * array.length);
   }
 
-  public static float[] doubleLength(float[] array) {
+  static float[] doubleLength(float[] array) {
     return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static int[] doubleLength(int[] array) {
+  static int[] doubleLength(int[] array) {
     return setLength(array, (array == null ? 16 : 2 * array.length));
   }
   
-  public static short[] doubleLength(short[] array) {
+  static short[] doubleLength(short[] array) {
     return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static byte[] doubleLength(byte[] array) {
+  static byte[] doubleLength(byte[] array) {
     return setLength(array, (array == null ? 16 : 2 * array.length));
   }
 
-  public static Object setLength(Object array, int newLength) {
+  static Object setLength(Object array, int newLength) {
     Object t =
       Array.newInstance(array.getClass().getComponentType(), newLength);
     int oldLength = Array.getLength(array);
@@ -84,7 +84,7 @@ final public class Util {
     return t;
   }
 
-  public static String[] setLength(String[] array, int newLength) {
+  static String[] setLength(String[] array, int newLength) {
     String[] t = new String[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -94,7 +94,7 @@ final public class Util {
     return t;
   }
   
-  public static float[] setLength(float[] array, int newLength) {
+  static float[] setLength(float[] array, int newLength) {
     float[] t = new float[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -104,7 +104,7 @@ final public class Util {
     return t;
   }
   
-  public static int[] setLength(int[] array, int newLength) {
+  static int[] setLength(int[] array, int newLength) {
     int[] t = new int[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -114,7 +114,7 @@ final public class Util {
     return t;
   }
   
-  public static short[] setLength(short[] array, int newLength) {
+  static short[] setLength(short[] array, int newLength) {
     short[] t = new short[newLength];
     if (array != null) {
       int oldLength = array.length;
@@ -124,7 +124,7 @@ final public class Util {
     return t;
   }
 
-  public static byte[] setLength(byte[] array, int newLength) {
+  static byte[] setLength(byte[] array, int newLength) {
     byte[] t = new byte[newLength];
     if (array != null) {
       int oldLength = array.length;

@@ -22,23 +22,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.jmol.viewer;
+import org.jmol.g3d.*;
 
+class Prueba extends SelectionIndependentShape {
 
-import java.awt.Component;
-
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  void initShape() {
+    colix = Graphics3D.RED;
   }
 }

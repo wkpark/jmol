@@ -24,21 +24,8 @@
  */
 package org.jmol.viewer;
 
-
-import java.awt.Component;
-
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
-  }
+interface AtomIterator {
+  boolean hasNext();
+  Atom next();
+  void release();
 }

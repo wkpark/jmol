@@ -24,7 +24,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.viewer.datamodel.Frame;
 import java.util.BitSet;
 
 class PickingManager {

@@ -24,21 +24,21 @@
  */
 package org.jmol.viewer;
 
+class FrankRenderer extends ShapeRenderer {
 
-import java.awt.Component;
+  void render() {
+    Frank frank = (Frank)shape;
+    short mad = frank.mad;
+    if (mad == 0)
+      return;
+    frank.calcMetrics();
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+    if (frank.font3d == null)
+      System.out.println("que? frank.font3d = null?");
 
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+    g3d.drawString(Frank.frankString, frank.font3d, frank.colix, frank.bgcolix,
+                   g3d.getRenderWidth()-frank.frankWidth-Frank.frankMargin,
+                   g3d.getRenderHeight()-frank.frankDescent-Frank.frankMargin,
+                   0);
   }
 }

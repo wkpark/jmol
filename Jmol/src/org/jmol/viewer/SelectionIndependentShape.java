@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2004  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -22,23 +22,38 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.jmol.viewer;
 
+import org.jmol.g3d.Font3D;
 
-import java.awt.Component;
+import java.util.BitSet;
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+abstract class SelectionIndependentShape extends Shape {
 
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
+  short mad;
+  short colix;
+  short bgcolix;
+  Font3D font3d;
 
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
+  void setSize(int size, BitSet bsSelected) {
+    this.mad = (short)size;
   }
   
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  void setProperty(String propertyName, Object value, BitSet bs) {
+    if ("color" == propertyName) {
+      colix = g3d.getColix(value);
+      return;
+    }
+
+    if ("font" == propertyName) {
+      font3d = (Font3D)value;
+      return;
+    }
+
+    if ("bgcolor" == propertyName) {
+      bgcolix = g3d.getColix(value);
+      return;
+    }
   }
 }

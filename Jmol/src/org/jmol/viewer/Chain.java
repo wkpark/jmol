@@ -24,21 +24,49 @@
  */
 package org.jmol.viewer;
 
+import java.util.BitSet;
 
-import java.awt.Component;
+final class Chain {
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+  Frame frame;
+  Model model;
+  char chainID;
+  int groupCount;
+  Group[] groups = new Group[16];
 
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
+  //  private Group[] mainchain;
 
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
+  Chain(Frame frame, Model model, char chainID) {
+    this.frame = frame;
+    this.model = model;
+    this.chainID = chainID;
+  }
+
+  void freeze() {
+    groups = (Group[])Util.setLength(groups, groupCount);
   }
   
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  void addGroup(Group group) {
+    if (groupCount == groups.length)
+      groups = (Group[])Util.doubleLength(groups);
+    groups[groupCount++] = group;
+  }
+  
+  Group getGroup(int groupIndex) {
+    return groups[groupIndex];
+  }
+  
+  int getGroupCount() {
+    return groupCount;
+  }
+
+  void selectAtoms(BitSet bs) {
+    Frame frame = model.mmset.frame;
+    Atom[] atoms = frame.getAtoms();
+    for (int i = frame.getAtomCount(); --i >= 0; ) {
+      Atom atom = atoms[i];
+      if (atom.getChain() == this)
+        bs.set(i);
+    }
   }
 }

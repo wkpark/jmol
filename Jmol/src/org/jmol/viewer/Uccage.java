@@ -24,21 +24,26 @@
  */
 package org.jmol.viewer;
 
+import javax.vecmath.Point3f;
 
-import java.awt.Component;
+class Uccage extends SelectionIndependentShape {
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+  boolean hasUnitcell;
+  float a,b,c,alpha,beta,gamma;
+  Point3f[] vertices;
 
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
+  void initShape() {
+    colix = viewer.getColixAxes(); // do this, or it will be BLACK
 
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+    float[] notionalUnitcell = frame.notionalUnitcell;
+    hasUnitcell = notionalUnitcell != null;
+    if (hasUnitcell) {
+      a = notionalUnitcell[0];
+      b = notionalUnitcell[1];
+      c = notionalUnitcell[2];
+      alpha = notionalUnitcell[3];
+      beta  = notionalUnitcell[4];
+      gamma = notionalUnitcell[5];
+    }
   }
 }

@@ -24,21 +24,11 @@
  */
 package org.jmol.viewer;
 
+class Turn extends ProteinStructure {
 
-import java.awt.Component;
-
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  Turn(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
+    super(apolymer, JmolConstants.PROTEIN_STRUCTURE_TURN,
+          monomerIndex, monomerCount);
   }
 }
+

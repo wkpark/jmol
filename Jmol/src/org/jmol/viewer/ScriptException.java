@@ -24,21 +24,27 @@
  */
 package org.jmol.viewer;
 
+class ScriptException extends Exception {
 
-import java.awt.Component;
+  String message;
+  String line;
+  String filename;
+  int linenumber;
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
+  ScriptException(String message, String line,
+                         String filename, int linenumber) {
+    this.message = message;
+    this.line = line;
+    this.filename = filename;
+    this.linenumber = linenumber;
   }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+
+  public String toString() {
+    String str = "ScriptException:" + message;
+    if (line != null)
+      str += "\n    Script line:" + line;
+    if (filename != null)
+      str += "\n           File:" + filename + " Line number:" + linenumber;
+    return str;
   }
 }

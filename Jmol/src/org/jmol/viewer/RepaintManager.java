@@ -25,8 +25,6 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
-import org.jmol.viewer.datamodel.FrameRenderer;
-import org.jmol.viewer.datamodel.Frame;
 
 import java.awt.Image;
 import java.awt.Rectangle;

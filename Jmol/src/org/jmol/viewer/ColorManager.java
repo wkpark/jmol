@@ -25,8 +25,6 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
-import org.jmol.viewer.datamodel.Atom;
-import org.jmol.viewer.datamodel.Frame;
 import java.awt.Color;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;

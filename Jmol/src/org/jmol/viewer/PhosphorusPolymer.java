@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2004  The Jmol Development Team
+ * Copyright (C) 2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -24,21 +24,9 @@
  */
 package org.jmol.viewer;
 
+class PhosphorusPolymer extends Polymer {
 
-import java.awt.Component;
-
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
-  }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  PhosphorusPolymer(Monomer[] monomers) {
+    super(monomers);
   }
 }

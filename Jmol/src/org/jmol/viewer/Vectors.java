@@ -22,23 +22,44 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.jmol.viewer;
 
+import java.util.BitSet;
 
-import java.awt.Component;
+class Vectors extends Shape {
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+  String[] strings;
+  short[] mads;
+  short[] colixes;
 
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
+  void initShape() {
+    if (frame.hasVibrationVectors) {
+      mads = new short[frame.atomCount];
+      colixes = new short[frame.atomCount];
+    }
   }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+
+  void setSize(int size, BitSet bsSelected) {
+    if (frame.hasVibrationVectors) {
+      short mad = (short)size;
+      //Atom[] atoms = frame.atoms;
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i))
+          mads[i] = mad;
+    }
+  }
+
+  void setProperty(String propertyName, Object value,
+                          BitSet bsSelected) {
+    if (frame.hasVibrationVectors) {
+      //Atom[] atoms = frame.atoms;
+      if ("color" == propertyName) {
+        short colix = g3d.getColix(value);
+        for (int i = frame.atomCount; --i >= 0; )
+          if (bsSelected.get(i))
+            colixes[i] = colix;
+      }
+    } 
   }
 }

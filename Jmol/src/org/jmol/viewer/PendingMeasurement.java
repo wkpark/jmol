@@ -24,21 +24,27 @@
  */
 package org.jmol.viewer;
 
+class PendingMeasurement extends Measurement {
 
-import java.awt.Component;
+  boolean isActive = false;
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
+  PendingMeasurement(Frame frame) {
+    super(frame, null);
+    this.countPlusIndices = new int[5];
   }
-  
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+
+  void setCountPlusIndices(int[] countPlusIndices) {
+    if (countPlusIndices == null) {
+      count = 0;
+      isActive = false;
+    } else {
+      count = countPlusIndices[0];
+      System.arraycopy(countPlusIndices, 0, this.countPlusIndices, 0,
+                       count + 1);
+      isActive = true;
+    }
+    formatMeasurement();
   }
 }
+
+

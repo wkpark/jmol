@@ -22,23 +22,34 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.jmol.viewer;
 
 
-import java.awt.Component;
+import java.util.BitSet;
 
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+class Sssticks extends Sticks {
 
-class MouseManager14 extends MouseManager11
-  implements MouseWheelListener {
-
-  MouseManager14(Component component, Viewer viewer) {
-    super(component, viewer);
-    component.addMouseWheelListener(this);
+  void setSize(int size, BitSet bsSelected) {
+    short mad = (short)size;
+    setMadBond(mad, JmolConstants.BOND_SULFUR_MASK, bsSelected);
   }
   
- public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
+  void setProperty(String propertyName, Object value,
+                          BitSet bsSelected) {
+    if ("color" == propertyName) {
+      short colix = g3d.getColix(value);
+      setColixBond(colix, JmolConstants.BOND_SULFUR_MASK, bsSelected);
+      return;
+    }
+    if ("colorScheme" == propertyName) {
+      if (value instanceof String) {
+        if ("cpk" == (String)value) {
+          setColixBond((short)0, JmolConstants.BOND_SULFUR_MASK, bsSelected);
+          return;
+        }
+      }
+      return;
+    }
   }
 }

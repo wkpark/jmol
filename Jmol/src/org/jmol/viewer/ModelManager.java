@@ -25,7 +25,6 @@
 package org.jmol.viewer;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.viewer.datamodel.Frame;
 
 import java.util.BitSet;
 import java.util.Hashtable;

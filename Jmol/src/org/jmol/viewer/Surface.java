@@ -28,6 +28,7 @@ package org.jmol.viewer;
 import javax.vecmath.*;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Enumeration;
 
 /****************************************************************
  * The Dots and DotsRenderer classes implement vanderWaals and Connolly
@@ -148,14 +149,17 @@ class Surface extends Shape {
         surfaceConvexMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
       }
+      if (radiusP > 0 && htToruses == null)
+        htToruses = new Hashtable();
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           setAtomI(i);
           getNeighbors(bsSelected);
           calcConvexMap();
-          calcToruses();
-          calcCavities();
+          calcTorusesI();
+          calcAndSaveCavitiesI();
         }
+      saveToruses();
     }
     if (surfaceConvexMaps == null)
       surfaceConvexMax = 0;
@@ -255,7 +259,7 @@ class Surface extends Shape {
   }
 
   void setNeighborJ(int indexNeighbor) {
-    indexJ = neighborIndices[indexNeighbor];
+    indexJ = neighborIndexes[indexNeighbor];
     atomJ = neighbors[indexNeighbor];
     radiusJ = atomJ.getVanderwaalsRadiusFloat();
     radiiJP2 = neighborPlusProbeRadii2[indexNeighbor];
@@ -264,7 +268,7 @@ class Surface extends Shape {
   }
 
   void setNeighborK(int indexNeighbor) {
-    indexK = neighborIndices[indexNeighbor];
+    indexK = neighborIndexes[indexNeighbor];
     centerK = neighborCenters[indexNeighbor];
     atomK = neighbors[indexNeighbor];
     radiusK = atomK.getVanderwaalsRadiusFloat();
@@ -310,7 +314,7 @@ class Surface extends Shape {
   // I have no idea what this number should be
   int neighborCount;
   Atom[] neighbors = new Atom[16];
-  int[] neighborIndices = new int[16];
+  int[] neighborIndexes = new int[16];
   Point3f[] neighborCenters = new Point3f[16];
   float[] neighborPlusProbeRadii2 = new float[16];
   
@@ -337,13 +341,13 @@ class Surface extends Shape {
         continue;
       if (neighborCount == neighbors.length) {
         neighbors = (Atom[])Util.doubleLength(neighbors);
-        neighborIndices = Util.doubleLength(neighborIndices);
+        neighborIndexes = Util.doubleLength(neighborIndexes);
         neighborCenters = (Point3f[])Util.doubleLength(neighborCenters);
         neighborPlusProbeRadii2 = Util.doubleLength(neighborPlusProbeRadii2);
       }
       neighbors[neighborCount] = neighbor;
       neighborCenters[neighborCount] = neighbor.point3f;
-      neighborIndices[neighborCount] = neighbor.atomIndex;
+      neighborIndexes[neighborCount] = neighbor.atomIndex;
       float neighborPlusProbeRadii = neighborRadius + radiusP;
       neighborPlusProbeRadii2[neighborCount] =
         neighborPlusProbeRadii * neighborPlusProbeRadii;
@@ -362,27 +366,15 @@ class Surface extends Shape {
     */
   }
 
-  void calcToruses() {
-    System.out.println("calcToruses! radiusP=" + radiusP);
+  void calcTorusesI() {
     if (radiusP == 0)
       return;
-    if (htToruses == null) {
-      torusCount = 0;
-      toruses = new Torus[32];
-      htToruses = new Hashtable();
-    }
     for (int iJ = neighborCount; --iJ >= 0; ) {
-      if (indexI >= neighborIndices[iJ])
+      if (indexI >= neighborIndexes[iJ])
         continue;
       setNeighborJ(iJ);
-      torusIJ = getTorus(atomI, atomJ);
-      if (torusIJ == null)
-        continue;
-      if (torusCount == toruses.length)
-        toruses = (Torus[])Util.doubleLength(toruses);
-      toruses[torusCount++] = torusIJ;
+      calcTorusIJ();
     }
-    System.out.println("torusCount=" + torusCount);
   }
 
   void deleteUnusedToruses() {
@@ -432,6 +424,8 @@ class Surface extends Shape {
     float outerAngle;
     AxisAngle4f aaRotate;
     short colixI, colixJ;
+    int cavityCount;
+    Cavity[] cavities;
 
     Torus(Point3f centerI, int indexI, Point3f centerJ, int indexJ,
           Point3f center, float radius) {
@@ -498,32 +492,74 @@ class Surface extends Shape {
       aaRotate = new AxisAngle4f();
       aaRotate.set(matrixT);
     }
+
+    void addCavity(Cavity cavity) {
+      if (cavities == null)
+        cavities = new Cavity[4];
+      else if (cavityCount == cavities.length)
+        cavities = (Cavity[])Util.doubleLength(cavities);
+      cavities[cavityCount++] = cavity;
+    }
   }
 
-  Torus getTorus(Atom atomI, Atom atomJ) {
-    int indexI = atomI.atomIndex;
-    int indexJ = atomJ.atomIndex;
+  void calcTorusIJ() {
     // indexI < indexJ is tested previously in calcTorus
     if (indexI >= indexJ)
       throw new NullPointerException();
     Long key = new Long(((long)indexI << 32) + indexJ);
     Object value = htToruses.get(key);
-    if (value != null) {
-      if (value instanceof Torus) {
-        Torus torus = (Torus)value;
-        return torus;
-      }
-      return null;
-    }
+    if (value != null)
+      return;
     float radius = calcTorusRadius();
     if (radius == 0) {
       htToruses.put(key, Boolean.FALSE);
-      return null;
+      return;
     }
     Point3f center = calcTorusCenter();
+
+    float holeRadius = radius - radiusP;
+    for (int n = neighborCount; --n >= 0; ) {
+      int k = neighborIndexes[n];
+      if (k == indexJ)
+        continue;
+      // see whether or not the probe would fit
+      // at the farthest point from k
+      //
+      // 1. find the closest point on the torus plane to center K
+      // 2. calculate vector from that point to center torus
+      // 3. normalize
+      // 4. scale by torus radius
+      // 5. take distanceSquared to center K
+      // 6. see if that distanceSquared > neighborPlusProbeRadii2
+    }
+    
+
     Torus torus = new Torus(centerI, indexI, centerJ, indexJ, center, radius);
     htToruses.put(key, torus);
-    return torus;
+  }
+
+  void saveToruses() {
+    if (radiusP == 0)
+      return;
+    if (toruses == null)
+      toruses = new Torus[128];
+    for (Enumeration e = htToruses.elements(); e.hasMoreElements(); ) {
+      Object value = e.nextElement();
+      if (value instanceof Torus) {
+        Torus torus = (Torus)value;
+        if (torusCount == toruses.length)
+          toruses = (Torus[])Util.doubleLength(toruses);
+        toruses[torusCount++] = torus;
+      }
+    }
+  }
+
+  Torus getTorus(int atomIndexA, int atomIndexB) {
+    if (atomIndexA >= atomIndexB)
+      throw new NullPointerException();
+    Long key = new Long(((long)atomIndexA << 32) + atomIndexB);
+    Object value = htToruses.get(key);
+    return (value instanceof Torus) ? (Torus)value : null;
   }
 
   Point3f calcTorusCenter() {
@@ -555,7 +591,7 @@ class Surface extends Shape {
   }
 
 
-  void calcCavities() {
+  void calcAndSaveCavitiesI() {
     if (radiusP == 0)
       return;
     if (cavities == null) {
@@ -563,11 +599,11 @@ class Surface extends Shape {
       cavityCount = 0;
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
-      if (indexI >= neighborIndices[iJ])
+      if (indexI >= neighborIndexes[iJ])
         continue;
       setNeighborJ(iJ);
       for (int iK = neighborCount; --iK >= 0; ) {
-        if (indexJ >= neighborIndices[iK])
+        if (indexJ >= neighborIndexes[iK])
           continue;
         setNeighborK(iK);
         float distanceJK2 = centerJ.distanceSquared(centerK);
@@ -602,27 +638,33 @@ class Surface extends Shape {
   }
 
   void getCavitiesIJK() {
-    torusIJ = getTorus(atomI, atomJ);
-    torusIK = getTorus(atomI, atomK);
+    torusIJ = getTorus(indexI, indexJ);
+    torusIK = getTorus(indexI, indexK);
     if (torusIJ == null || torusIK == null) {
       System.out.println("null torus found?");
       return;
     }
     uIJK.cross(torusIJ.axisVector, torusIK.axisVector);
+    if (Float.isNaN(uIJK.x)) // linear
+      return;
     uIJK.normalize();
     if (! calcBaseIJK() || ! calcHeightIJK())
       return;
-    probeIJK.scaleAdd(heightIJK, uIJK, baseIJK);
-    if (checkProbeIJK())
-      addCavity(new Cavity());
-    probeIJK.scaleAdd(-heightIJK, uIJK, baseIJK);
-    if (checkProbeIJK())
-      addCavity(new Cavity());
+    for (int i = -1; i <= 1; i += 2) {
+      probeIJK.scaleAdd(i * heightIJK, uIJK, baseIJK);
+      Cavity cavity = null;
+      if (checkProbeIJK()) {
+        cavity = new Cavity();
+        addCavity(cavity);
+        torusIJ.addCavity(cavity);
+        torusIK.addCavity(cavity);
+      }
+    }
   }
 
   boolean checkProbeIJK() {
     for (int i = neighborCount; --i >= 0; ) {
-      int neighborIndex = neighborIndices[i];
+      int neighborIndex = neighborIndexes[i];
       if (neighborIndex == indexI ||
           neighborIndex == indexJ ||
           neighborIndex == indexK)
@@ -755,8 +797,14 @@ class Surface extends Shape {
     Vector3f v3 = uIJK;
     p3.set(centerI);
     v2v3.cross(v2, v3);
+    if (Float.isNaN(v2v3.x))
+      return false;
     v3v1.cross(v3, v1);
+    if (Float.isNaN(v3v1.x))
+      return false;
     v1v2.cross(v1, v2);
+    if (Float.isNaN(v1v2.x))
+      return false;
     float denominator = v1.dot(v2v3);
     if (denominator == 0)
       return false;
@@ -764,6 +812,8 @@ class Surface extends Shape {
     baseIJK.scaleAdd(v2.dot(p2), v3v1, baseIJK);
     baseIJK.scaleAdd(v3.dot(p3), v1v2, baseIJK);
     baseIJK.scale(1 / denominator);
+    if (Float.isNaN(baseIJK.x))
+      return false;
     return true;
   }
   
@@ -775,6 +825,7 @@ class Surface extends Shape {
     if (height2 <= 0)
       return false;
     heightIJK = (float)Math.sqrt(height2);
+    System.out.println("heightIJK=" + heightIJK);
     return true;
   }
 

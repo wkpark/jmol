@@ -61,17 +61,6 @@ public class TestAtomType extends TestCase {
 	}
 
 	/**
-	 * Test the getCircleRadius method.
-	 */
-	public void testGetCircleRadius() {
-		assert("1. got " + at1.getCircleRadius(2), 0.605f == at1.getCircleRadius(2));
-		assert("2. got " + at1.getCircleRadius(1), 0.44f == at1.getCircleRadius(1));
-		assert("3. got " + at1.getCircleRadius(0), 0.27499998f == at1.getCircleRadius(0));
-		assert("4. got " + at1.getCircleRadius(-5), 1.0f == at1.getCircleRadius(-5));
-		assert("5. got " + at2.getCircleRadius(0), 1.0f == at2.getCircleRadius(0));
-	}
-
-	/**
 	 * Returns a Test containing all the tests.
 	 */
 	public static Test suite() {

@@ -209,13 +209,13 @@ final public class DisplayControl {
   }
 
   public void rotateToX(int angleDegrees) {
-    rotateToX(Math.toRadians(angleDegrees));
+    rotateToX(toRadians(angleDegrees));
   }
   public void rotateToY(int angleDegrees) {
-    rotateToY(Math.toRadians(angleDegrees));
+    rotateToY(toRadians(angleDegrees));
   }
   public void rotateToZ(int angleDegrees) {
-    rotateToZ(Math.toRadians(angleDegrees));
+    rotateToZ(toRadians(angleDegrees));
   }
 
   public void rotateByX(double angleRadians) {
@@ -231,13 +231,17 @@ final public class DisplayControl {
     refresh();
   }
   public void rotateByX(int angleDegrees) {
-    rotateByX(Math.toRadians(angleDegrees));
+    rotateByX(toRadians(angleDegrees));
   }
   public void rotateByY(int angleDegrees) {
-    rotateByY(Math.toRadians(angleDegrees));
+    rotateByY(toRadians(angleDegrees));
   }
   public void rotateByZ(int angleDegrees) {
-    rotateByZ(Math.toRadians(angleDegrees));
+    rotateByZ(toRadians(angleDegrees));
+  }
+
+  public static double toRadians(int degrees) {
+    return degrees / 360.0 * 2 * Math.PI;
   }
 
   public void rotate(AxisAngle4d axisAngle) {

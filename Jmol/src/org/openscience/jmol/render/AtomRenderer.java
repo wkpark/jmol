@@ -62,13 +62,11 @@ public class AtomRenderer {
     fastRendering = control.getFastRendering();
     useGraphics2D = control.getUseGraphics2D();
     colorSelection = control.getColorSelection();
-    colorText = control.getColorText();
   }
 
   boolean fastRendering;
   boolean useGraphics2D;
   Color colorSelection;
-  Color colorText;
 
   Atom atom;
   int x;

@@ -74,7 +74,7 @@ public class Distance extends Measurement implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getColorText());
+    g.setColor(control.getColorDistance());
     String s = distanceFormat.sprintf(getDistance());
     int j = fontMetrics.stringWidth(s);
 

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -255,13 +254,13 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     g2dPanel.setLayout(new GridLayout(0, 4));
     g2dPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.graphics2DPanelLabel")));
-    graphics2D = control.getWantsGraphics2D();
+    //    graphics2D = control.getWantsGraphics2D();
     cbGraphics2D = guimap.newJCheckBox("Prefs.graphics2D", graphics2D);
     cbGraphics2D.addItemListener(checkBoxListener);
-    antialias = control.getWantsAntialias();
+    //    antialias = control.getWantsAntialias();
     cbAntialias = guimap.newJCheckBox("Prefs.antialias", antialias);
     cbAntialias.addItemListener(checkBoxListener);
-    antialiasAlways = control.getWantsAntialiasAlways();
+    //    antialiasAlways = control.getWantsAntialiasAlways();
     cbAntialiasAlways = guimap.newJCheckBox("Prefs.antialiasAlways",
                                             antialiasAlways);
     cbAntialiasAlways.addItemListener(checkBoxListener);
@@ -944,7 +943,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.textLabel")));
 
-    isLabelAtomColor = control.getIsLabelAtomColor();
+    isLabelAtomColor = control.getColorLabel() == null;
     cbIsLabelAtomColor =
       guimap.newJCheckBox("Prefs.isLabelAtomColor", isLabelAtomColor);
     cbIsLabelAtomColor.addItemListener(checkBoxListener);
@@ -965,7 +964,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
               .getString("Prefs.textChooserTitle"), colorText);
         colorText = color;
         tButton.setBackground(colorText);
-        control.setColorText(colorText);
+        control.setColorLabel(colorText);
         props.put("colorText", Integer.toString(colorText.getRGB()));
       }
     };
@@ -980,7 +979,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
           .getString("Prefs.bondLabel")));
 
-    isBondAtomColor = control.getIsBondAtomColor();
+    isBondAtomColor = control.getColorBond() == null;
     cbIsBondAtomColor =
       guimap.newJCheckBox("Prefs.isBondAtomColor", isBondAtomColor);
     cbIsBondAtomColor.addItemListener(checkBoxListener);
@@ -1318,10 +1317,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     control.setColorOutline(colorOutline);
     control.setColorSelection(colorSelection);
-    control.setIsLabelAtomColor(isLabelAtomColor);
-    control.setColorText(colorText);
-    control.setIsBondAtomColor(isBondAtomColor);
-    control.setColorBond(colorBond);
+    control.setColorLabel(isLabelAtomColor ? null : colorText);
+    control.setColorBond(isBondAtomColor ? null : colorBond);
     control.setPercentVdwAtom(percentVdwAtom);
     control.setStyleAtom(styleAtom);
     control.setStyleLabel(styleLabel);
@@ -1346,8 +1343,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setWireframeRotation(wireframeRotation);
     control.setPerspectiveDepth(perspectiveDepth);
     control.setShowDarkerOutline(showDarkerOutline);
-    control.setIsLabelAtomColor(isLabelAtomColor);
-    control.setIsBondAtomColor(isBondAtomColor);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1414,12 +1409,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         oButton.setEnabled(!showDarkerOutline);
       } else if (key.equals("Prefs.isLabelAtomColor")) {
         isLabelAtomColor = isSelected;
-        control.setIsLabelAtomColor(isLabelAtomColor);
+        control.setColorLabel(isLabelAtomColor ? null : colorText);
         props.put("isLabelAtomColor", strSelected);
         tButton.setEnabled(!isLabelAtomColor);
       } else if (key.equals("Prefs.isBondAtomColor")) {
         isBondAtomColor = isSelected;
-        control.setIsBondAtomColor(isBondAtomColor);
+        control.setColorBond(isBondAtomColor ? null : colorBond);
         props.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.graphics2D")) {

@@ -26,15 +26,19 @@ package org.openscience.jmol;
 
 import java.util.Iterator;
 
-public abstract class JmolAtomIterator implements Iterator {
+public class JmolAtomIterator implements Iterator {
 
-  public abstract boolean hasNext();
+  public boolean hasNext() {
+    return false;
+  }
 
   public Object next() {
     return nextAtom();
   }
 
-  public abstract Atom nextAtom();
+  public Atom nextAtom() {
+    return null;
+  }
 
   public boolean allBonds() {
     return true;

@@ -47,22 +47,12 @@ public class ColorManager {
   private AtomColors atomColors = AtomColors.getInstance();
   private AtomColorer colorProfile = AtomColors.getInstance();
   public int modeAtomColorProfile = DisplayControl.ATOMTYPE;
-  public void setModeAtomColorProfile(int mode, boolean setDefault,
-                                      JmolAtomIterator iter) {
-    AtomColorer colorProfile;
+  public void setModeAtomColorProfile(int mode) {
+    this.modeAtomColorProfile = mode;
     if (mode == DisplayControl.ATOMTYPE)
       colorProfile = atomColors;
     else
       colorProfile = chargeColors;
-    if (setDefault) {
-      this.modeAtomColorProfile = mode;
-      this.colorProfile = colorProfile;
-    }
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      Color color = colorProfile.getAtomColor(atom);
-      atom.atomShape.setColorAtom(color);
-    }
   }
 
   public int getModeAtomColorProfile() {
@@ -107,21 +97,8 @@ public class ColorManager {
     colorBond = c;
   }
 
-  public boolean isLabelAtomColor;
-  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
-    this.isLabelAtomColor = isLabelAtomColor;
-  }
-
-  public Color colorText = Color.black;
-  public void setColorText(Color c) {
-    colorText = c;
-  }
-  public Color getColorText() {
-    return colorText;
-  }
-
   public Color colorLabel = Color.black;
-  public void setColorLabel(Color c) {
+  public void setColorLabel (Color c) {
     colorLabel = c;
   }
 
@@ -129,24 +106,15 @@ public class ColorManager {
   public void setColorDistance(Color c) {
     colorDistance = c;
   }
-  public Color getColorDistance() {
-    return colorDistance;
-  }
 
   public Color colorAngle = Color.black;
   public void setColorAngle(Color c) {
     colorAngle = c;
   }
-  public Color getColorAngle() {
-    return colorAngle;
-  }
 
   public Color colorDihedral = Color.black;
   public void setColorDihedral(Color c) {
     colorDihedral = c;
-  }
-  public Color getColorDihedral() {
-    return colorDihedral;
   }
 
   public Color colorBackground = Color.white;
@@ -155,9 +123,6 @@ public class ColorManager {
       colorBackground = Color.getColor("colorBackground");
     else
       colorBackground = bg;
-  }
-  public Color getColorBackground() {
-    return colorBackground;
   }
   
   // FIXME NEEDSWORK -- arrow vector stuff

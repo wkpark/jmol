@@ -38,20 +38,10 @@ public class LabelManager {
   }
 
   public byte styleLabel = DisplayControl.NOLABELS;
-  public void setStyleLabel(byte styleLabel, boolean setDefault,
-                            JmolAtomIterator iter) {
-    if (setDefault)
-      this.styleLabel = styleLabel;
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      atom.atomShape.setLabel(getLabel(styleLabel, atom));
-    }
+  public void setStyleLabel(byte styleLabel) {
+    this.styleLabel = styleLabel;
   }
-
-  public String getLabelAtom(Atom atom) {
-    return getLabel(styleLabel, atom);
-  }
-
+  
   public String strFontFace = "Helvetica";
   public void setFontFace(String strFontFace) {
     this.strFontFace = strFontFace;
@@ -75,7 +65,7 @@ public class LabelManager {
     return font;
   }
 
-  private String getLabel(byte styleLabel, Atom atom) {
+  public String getLabelAtom(byte styleLabel, Atom atom) {
     String label = null;
     switch (styleLabel) {
     case DisplayControl.SYMBOLS:

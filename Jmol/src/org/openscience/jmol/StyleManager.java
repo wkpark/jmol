@@ -38,64 +38,24 @@ public class StyleManager {
     this.control = control;
   }
 
-  public void initializeAtomShapes() {
-    JmolAtomIterator iter = control.getChemFileIterator();
-    while (iter.hasNext()) {
-      Atom atom = iter.nextAtom();
-      atom.setAtomShape(new AtomShape(atom,
-                                      styleAtom, -percentVdwAtom,
-                                      control.getColorAtom(atom),
-                                      styleBond, percentAngstromBond * 10,
-                                      control.getIsBondAtomColor()
-                                      ? null : control.getColorBond(),
-                                      control.getLabelAtom(atom)));
-    }
-  }
-
   public byte styleAtom = DisplayControl.QUICKDRAW;
-  public void setStyleAtom(byte styleAtom, boolean setDefault,
-                           JmolAtomIterator iter) {
-    if (setDefault)
-      this.styleAtom = styleAtom;
-    while (iter.hasNext())
-      iter.nextAtom().atomShape.setStyleAtom(styleAtom);
+  public void setStyleAtom(byte styleAtom) {
+    this.styleAtom = styleAtom;
   }
 
   public int percentVdwAtom = 20;
-  public void setPercentVdwAtom(int percentVdwAtom, boolean setDefault,
-                           JmolAtomIterator iter) {
-    if (setDefault)
-      this.percentVdwAtom = percentVdwAtom;
-    while (iter.hasNext())
-      iter.nextAtom().atomShape.setMadAtom(-percentVdwAtom);
+  public void setPercentVdwAtom(int percentVdwAtom) {
+    this.percentVdwAtom = percentVdwAtom;
   }
 
   public byte styleBond = DisplayControl.QUICKDRAW;
-  public void setStyleBond(byte styleBond, boolean setDefault,
-                           JmolAtomIterator iter) {
-    if (setDefault)
-      this.styleBond = styleBond;
-    while (iter.hasNext()) {
-      if (iter.allBonds())
-        iter.nextAtom().atomShape.setStyleAllBonds(styleBond);
-      else
-        iter.nextAtom().atomShape.setStyleBond(styleBond, iter.indexBond());
-    }
+  public void setStyleBond(byte styleBond) {
+    this.styleBond = styleBond;
   }
 
   public int percentAngstromBond = 10;
-  public void setPercentAngstromBond(int percentAngstromBond,
-                                     boolean setDefault,
-                                     JmolAtomIterator iter) {
-    if (setDefault)
-      this.percentAngstromBond = percentAngstromBond;
-    int mad = percentAngstromBond * 10;
-    while (iter.hasNext()) {
-      if (iter.allBonds())
-        iter.nextAtom().atomShape.setMadAllBonds(mad);
-      else
-        iter.nextAtom().atomShape.setMadBond(mad, iter.indexBond());
-    }
+  public void setPercentAngstromBond(int percentAngstromBond) {
+    this.percentAngstromBond = percentAngstromBond;
   }
 
   public void setColorBond(Color colorBond, JmolAtomIterator iter) {

@@ -62,6 +62,7 @@ final public class DisplayControl {
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
   public LabelRenderer labelRenderer;
+  public Distributor distributor;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -84,6 +85,7 @@ final public class DisplayControl {
     repaintManager = new RepaintManager(this);
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
+    distributor = new Distributor(this);
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
@@ -408,11 +410,8 @@ final public class DisplayControl {
    ****************************************************************/
 
   public void setModeAtomColorProfile(int mode) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    colorManager.setModeAtomColorProfile(mode, empty,
-                                         empty ? iterAll() : iterSelection());
+    colorManager.setModeAtomColorProfile(mode);
+    distributor.setColorAtom(null, iterAtomMenu());
     refresh();
   }
 
@@ -442,22 +441,13 @@ final public class DisplayControl {
     return colorManager.colorRubberband;
   }
 
-  public void setIsLabelAtomColor(boolean isLabelAtomColor) {
-    colorManager.setIsLabelAtomColor(isLabelAtomColor);
+  public void setColorLabel(Color c) {
+    colorManager.setColorLabel(c);
     refresh();
   }
 
-  public boolean getIsLabelAtomColor() {
-    return colorManager.isLabelAtomColor;
-  }
-
-  public void setColorText(Color c) {
-    colorManager.setColorText(c);
-    refresh();
-  }
-
-  public Color getColorText() {
-    return colorManager.colorText;
+  public Color getColorLabel() {
+    return colorManager.colorLabel;
   }
 
   public void setColorDistance(Color c) {
@@ -545,27 +535,10 @@ final public class DisplayControl {
     return colorManager.getColorTransparent(color);
   }
 
-  public void setIsBondAtomColor(boolean isBondAtomColor) {
-    setColorBond(null);
-  }
-
-  public boolean getIsBondAtomColor() {
-    return colorManager.isBondAtomColor;
-  }
-
+  // note that colorBond could be null -- meaning inherit atom color
   public void setColorBond(Color colorBond) {
-    boolean empty = selectionManager.isEmpty();
-    if (empty) {
-      if (colorBond == null)
-        colorManager.setIsBondAtomColor(true);
-      else {
-        colorManager.setIsBondAtomColor(false);
-        colorManager.setColorBond(colorBond);
-      }
-    }
-    if (!modelManager.haveFile)
-      return;
-    styleManager.setColorBond(colorBond, empty ? iterAll() : iterBond());
+    colorManager.setColorBond(colorBond);
+    distributor.setColorBond(colorBond, iterBondMenu());
     refresh();
   }
 
@@ -670,7 +643,7 @@ final public class DisplayControl {
 
   public void setChemFile(ChemFile chemfile) {
     modelManager.setChemFile(chemfile);
-    styleManager.initializeAtomShapes();
+    distributor.initializeAtomShapes();
     homePosition();
     // don't know if I need this firm refresh here or not
     refreshFirmly();
@@ -878,25 +851,40 @@ final public class DisplayControl {
    * delegated to StyleManager
    ****************************************************************/
 
-  private JmolAtomIterator iterAll() {
-    return modelManager.getChemFileIterator();
-  }
+  /*
+   * for rasmol compatibility with continued menu operation:
+   *  - if it is from the menu & nothing selected
+   *    * set the setting
+   *    * apply to all
+   *  - if it is from the menu and something is selected
+   *    * apply to selection
+   *  - if it is from a script
+   *    * apply to selection
+   *    * possibly set the setting for some things
+   */
 
-  private JmolAtomIterator iterSelection() {
+  JmolAtomIterator iterNull = new JmolAtomIterator();
+
+  private JmolAtomIterator iterAtomMenu() {
+    if (! modelManager.haveFile)
+      return iterNull;
+    if (selectionManager.isEmpty())
+      return modelManager.getChemFileIterator();
     return modelManager.getChemFrameIterator(selectionManager.bsSelection);
   }
 
-  private JmolAtomIterator iterBond() {
+  private JmolAtomIterator iterBondMenu() {
+    if (! modelManager.haveFile)
+      return iterNull;
+    if (selectionManager.isEmpty())
+      return modelManager.getChemFileIterator();
     return modelManager.getChemFrameIterator(selectionManager.bsSelection,
                                              false);
   }
 
   public void setStyleAtom(byte style) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    styleManager.setStyleAtom(style, empty,
-                              empty ? iterAll() : iterSelection());
+    styleManager.setStyleAtom(style);
+    distributor.setStyleAtom(style, iterAtomMenu());
     refresh();
   }
 
@@ -905,11 +893,8 @@ final public class DisplayControl {
   }
 
   public void setPercentVdwAtom(int percentVdwAtom) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    styleManager.setPercentVdwAtom(percentVdwAtom, empty,
-                                   empty ? iterAll() : iterSelection());
+    styleManager.setPercentVdwAtom(percentVdwAtom);
+    distributor.setMadAtom(-percentVdwAtom, iterAtomMenu());
     refresh();
   }
 
@@ -918,11 +903,8 @@ final public class DisplayControl {
   }
 
   public void setStyleBond(byte style) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    styleManager.setStyleBond(style, empty,
-                              empty ? iterAll() : iterBond());
+    styleManager.setStyleBond(style);
+    distributor.setStyleBond(style, iterBondMenu());
     refresh();
   }
 
@@ -931,11 +913,8 @@ final public class DisplayControl {
   }
 
   public void setPercentAngstromBond(int percentAngstromBond) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    styleManager.setPercentAngstromBond(percentAngstromBond, empty,
-                                        empty ? iterAll() : iterBond());
+    styleManager.setPercentAngstromBond(percentAngstromBond);
+    distributor.setMadBond(percentAngstromBond * 10, iterBondMenu());
     refresh();
   }
 
@@ -1003,7 +982,7 @@ final public class DisplayControl {
 
   public void setWireframeRotation(boolean wireframeRotation) {
     styleManager.setWireframeRotation(wireframeRotation);
-    // no need to refresh
+    // no need to refresh since we are not currently rotating
   }
 
   public boolean getWireframeRotation() {
@@ -1046,11 +1025,8 @@ final public class DisplayControl {
    ****************************************************************/
 
   public void setStyleLabel(byte style) {
-    if (!modelManager.haveFile)
-      return;
-    boolean empty = selectionManager.isEmpty();
-    labelManager.setStyleLabel(style, empty,
-                               empty ? iterAll() : iterSelection());
+    labelManager.setStyleLabel(style);
+    distributor.setStyleLabel(style, iterAtomMenu());
     refresh();
   }
 
@@ -1059,7 +1035,11 @@ final public class DisplayControl {
   }
 
   public String getLabelAtom(Atom atom) {
-    return labelManager.getLabelAtom(atom);
+    return labelManager.getLabelAtom(labelManager.styleLabel, atom);
+  }
+
+  public String getLabelAtom(byte styleLabel, Atom atom) {
+    return labelManager.getLabelAtom(styleLabel, atom);
   }
 
   public Font getLabelFont(int diameter) {

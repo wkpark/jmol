@@ -90,7 +90,7 @@ public class Dihedral extends Measurement implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getColorText());
+    g.setColor(control.getColorDihedral());
     String s = dihedralFormat.sprintf(getDihedral());
     int j = fontMetrics.stringWidth(s);
 

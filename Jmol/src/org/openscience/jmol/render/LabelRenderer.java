@@ -58,11 +58,11 @@ public class LabelRenderer {
   public void setGraphicsContext(Graphics g, Rectangle clip) {
     this.g = g;
     this.clip = clip;
-    colorText = control.getColorText();
-    isLabelAtomColor = control.getIsLabelAtomColor();
+    colorLabel = control.getColorLabel();
+    isLabelAtomColor = colorLabel == null;
   }
 
-  Color colorText;
+  Color colorLabel;
   boolean isLabelAtomColor;
 
   public void render(AtomShape atomShape) {
@@ -73,7 +73,7 @@ public class LabelRenderer {
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
     int labelHeight = fontMetrics.getAscent();
-    g.setColor(isLabelAtomColor ? atomShape.colorAtom : colorText);
+    g.setColor(isLabelAtomColor ? atomShape.colorAtom : colorLabel);
     
     int labelWidth = fontMetrics.stringWidth(strLabel);
     ++labelWidth; // bias rounding to the left;
@@ -98,7 +98,7 @@ public class LabelRenderer {
           // so divide the diameter by 2
           font = control.getLabelFont(atomShape.diameter / 2);
           g.setFont(font);
-          g.setColor(colorText);
+          g.setColor(colorLabel);
           String s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);

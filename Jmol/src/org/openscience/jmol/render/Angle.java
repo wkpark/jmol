@@ -78,7 +78,7 @@ public class Angle extends Measurement implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g.setFont(font);
     FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getColorText());
+    g.setColor(control.getColorAngle());
     String s = angleFormat.sprintf(getAngle());
     int j = fontMetrics.stringWidth(s);
 

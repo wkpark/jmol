@@ -68,10 +68,10 @@ final public class FrameBuilder {
           elementNumberFromSymbol(iterAtom.getElementSymbol());
       frame.addAtom(iterAtom.getModelNumber(), iterAtom.getUniqueID(),
                     elementNumber,
+                    iterAtom.getAtomName(),
                     iterAtom.getAtomicCharge(),
                     iterAtom.getOccupancy(),
                     iterAtom.getBfactor(),
-                    iterAtom.getAtomTypeName(),
                     iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
                     iterAtom.getPdbAtomRecord(),
                     iterAtom.getClientAtomReference());

@@ -179,7 +179,7 @@ public abstract class ModelAdapter {
     abstract public Object getUniqueID();
     public int getElementNumber() { return -1; }
     public String getElementSymbol() { return null; }
-    public String getAtomTypeName() { return null; }
+    public String getAtomName() { return null; }
     public int getAtomicCharge() { return 0; }
     abstract public float getX();
     abstract public float getY();

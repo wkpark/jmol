@@ -36,6 +36,8 @@ class ModelResolver {
   final static int MOL = 1;
   final static int JME = 2;
   final static int PDB = 3;
+  final static int CML = 4;
+  final static int SHELX = 5;
 
   static Object resolveModel(String name, BufferedReader bufferedReader)
     throws Exception {
@@ -53,6 +55,15 @@ class ModelResolver {
     case PDB:
       model = new PdbModel(bufferedReader);
       break;
+    case CML:
+      /*
+      model = new CmlModel(bufferedReader);
+      */
+      System.out.println("CML not yet supported!");
+      return "CML not yet supported!";
+    case SHELX:
+      model = new ShelXModel(bufferedReader);
+      break;
     default:
       return "unrecognized file format";
     }
@@ -64,49 +75,55 @@ class ModelResolver {
   static int determineModel(BufferedReader bufferedReader)
     throws Exception {
     bufferedReader.mark(512);
-    String line1 = bufferedReader.readLine();
-    String line2 = bufferedReader.readLine();
-    String line3 = bufferedReader.readLine();
-    String line4 = bufferedReader.readLine();
+    String[] lines = new String[4];
+    for (int i = 0; i < lines.length; ++i) {
+      // this is not really correct ... should probably stay null
+      String line = bufferedReader.readLine();
+      lines[i] = line != null ? line : "";
+    }
     bufferedReader.reset();
-    if (line1 == null)
-      line1 = "";
-    if (line2 == null)
-      line2 = "";
-    if (line3 == null)
-      line3 = "";
-    if (line4 == null)
-      line4 = "";
     try {
-      int atomCount = Integer.parseInt(line1.trim());
+      int atomCount = Integer.parseInt(lines[0].trim());
       return XYZ;
     } catch (NumberFormatException e) {
     }
-    if (line4.length() >= 6) {
-      String line4trimmed = line4.trim();
+    if (lines[3].length() >= 6) {
+      String line4trimmed = lines[3].trim();
       if (line4trimmed.endsWith("V2000") ||
           line4trimmed.endsWith("v2000") ||
           line4trimmed.endsWith("V3000"))
         return MOL;
       try {
-        Integer.parseInt(line4.substring(0, 3).trim());
-        Integer.parseInt(line4.substring(3, 6).trim());
+        Integer.parseInt(lines[3].substring(0, 3).trim());
+        Integer.parseInt(lines[3].substring(3, 6).trim());
         return MOL;
       } catch (NumberFormatException nfe) {
       }
     }
     for (int i = pdbRecords.length; --i >= 0; ) {
       String recordTag = pdbRecords[i];
-      if (line1.startsWith(recordTag) || line2.startsWith(recordTag) ||
-          line3.startsWith(recordTag) || line4.startsWith(recordTag))
-        return PDB;
+      for (int j = lines.length; --j >= 0; )
+        if (lines[j].startsWith(recordTag))
+          return PDB;
     }
-    if (line2 == null || line2.trim().length() == 0)
-      return JME;
+    for (int i = cmlRecords.length; --i >= 0; ) {
+      String cmlTag = cmlRecords[i];
+      for (int j = lines.length; --j >= 0; )
+        if (lines[j].indexOf(cmlTag) != -1)
+          return CML;
+    }
+    for (int i = shelxRecords.length; --i >= 0; ) {
+      String shelxTag = shelxRecords[i];
+      for (int j = lines.length; --j >= 0; )
+        if (lines[j].startsWith(shelxTag))
+          return SHELX;
+    }
+    if (lines[1] == null || lines[1].trim().length() == 0)
+      return JME; // this is really quite broken :-)
     return UNKNOWN;
   }
 
-  private final static String[] pdbRecords = {
+  final static String[] pdbRecords = {
     "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
 
@@ -118,4 +135,10 @@ class ModelResolver {
 
     "ATOM  ", "HETATM", "MODEL ",
   };
+
+  final static String[] cmlRecords =
+  { "<atom", "<molecule", "<reaction", "<cml", "<bond", "\"cml.dtd\""};
+
+  final static String[] shelxRecords =
+  {"TITL ", "ZERR ", "LATT ", "SYMM ", "CELL "};
 }

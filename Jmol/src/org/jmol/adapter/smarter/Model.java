@@ -31,11 +31,14 @@ abstract class Model {
   int atomCount;
   int bondCount;
   String modelName;
+  boolean cartesianCoordinates = true;
   Atom[] atoms = new Atom[512];
-  Bond[] bonds = new Bond[1024];
+  Bond[] bonds = new Bond[0];
   String errorMessage;
   String fileHeader;
 
+  String spaceGroup;
+  float wavelength = Float.NaN;
   float[] notionalUnitcell;
   float[] pdbScaleMatrix;
   float[] pdbScaleTranslate;
@@ -78,5 +81,13 @@ abstract class Model {
       if (modelName.length() > 0)
         this.modelName = modelName;
     }
+  }
+
+  static float floatFromString(String str) throws NumberFormatException {
+    return Float.valueOf(str).floatValue();
+  }
+
+  static int intFromString(String str) throws NumberFormatException {
+    return Integer.parseInt(str);
   }
 }

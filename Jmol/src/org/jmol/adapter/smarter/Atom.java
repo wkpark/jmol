@@ -26,14 +26,19 @@
 package org.jmol.adapter.smarter;
 
 class Atom {
-  int modelNumber;
+  int modelNumber = 1;
   String elementSymbol;
+  String atomName;
   int atomicCharge;
+  int scatterFactor = Integer.MIN_VALUE;
   float x, y, z;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
   float occupancy = Float.NaN;
   String pdbAtomRecord;
+
+  Atom() {
+  }
 
   Atom(int modelNumber, String symbol, int charge,
        float x, float y, float z,

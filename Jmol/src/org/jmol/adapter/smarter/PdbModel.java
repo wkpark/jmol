@@ -42,8 +42,6 @@ class PdbModel extends Model {
 
   PdbModel(BufferedReader reader) throws Exception {
     modelType = ModelAdapter.MODEL_TYPE_PDB;
-    atoms = new Atom[512];
-    bonds = new Bond[32];
     pdbStructureRecords = new String[32];
     fileHeader = "";
     boolean accumulatingHeader = true;

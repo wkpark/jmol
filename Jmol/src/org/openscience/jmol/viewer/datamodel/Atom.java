@@ -60,10 +60,10 @@ public class Atom implements Bspt.Tuple {
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
               byte elementNumber,
+              String atomName,
               int atomicCharge,
               float occupancy,
               float bfactor,
-              String atomName,
               float x, float y, float z,
               PdbFile pdbFile, String pdbAtomRecord) {
     JmolViewer viewer = frame.viewer;

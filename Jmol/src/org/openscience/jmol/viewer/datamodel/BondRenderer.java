@@ -105,19 +105,18 @@ class BondRenderer extends Renderer {
     case 1:
     case 2:
     case 3:
-      renderCylinder(0, false);
+      renderCylinder(0);
       break;
     case JmolConstants.BOND_AROMATIC:
       bondOrder = 2;
-      renderCylinder(getAromaticDottedBondMask(bond), true);
+      renderCylinder(getAromaticDottedBondMask(bond));
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:
       renderTriangle(bond);
       break;
     case JmolConstants.BOND_HYDROGEN:
-      bondOrder = 1;
-      renderCylinder(1, true);
+      renderHbondDashed();
     }
   }
 
@@ -137,7 +136,7 @@ class BondRenderer extends Renderer {
     return order;
   }
 
-  private void renderCylinder(int dottedMask, boolean shortDotted) {
+  private void renderCylinder(int dottedMask) {
     boolean lineBond = (styleBond == JmolConstants.STYLE_WIREFRAME ||
                         wireframeRotating ||
                         width <= 1);
@@ -159,7 +158,7 @@ class BondRenderer extends Renderer {
     }
     if (bondOrder == 1) {
       if ((dottedMask & 1) != 0) {
-        drawDashed(lineBond, shortDotted, xA, yA, zA, xB, yB, zB);
+        drawDashed(lineBond, xA, yA, zA, xB, yB, zB);
       } else {
         if (lineBond)
           g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
@@ -176,8 +175,7 @@ class BondRenderer extends Renderer {
     resetAxisCoordinates(lineBond);
     while (true) {
       if ((dottedMask & 1) != 0) {
-        drawDashed(lineBond, shortDotted,
-                   xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+        drawDashed(lineBond, xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       } else {
         if (lineBond)
           g3d.drawLine(colixA, colixB,
@@ -356,7 +354,7 @@ class BondRenderer extends Renderer {
     return null;
   }
 
-  void drawDashed(boolean lineBond, boolean shortDotted,
+  void drawDashed(boolean lineBond,
                   int xA, int yA, int zA,
                   int xB, int yB, int zB) {
     int dx = xB - xA;
@@ -366,11 +364,11 @@ class BondRenderer extends Renderer {
     while (i <= 9) {
       int xS = xA + (dx * i) / 12;
       int yS = yA + (dy * i) / 12;
-      int zS = zA + (dy * i) / 12;
+      int zS = zA + (dz * i) / 12;
       i += 3;
       int xE = xA + (dx * i) / 12;
       int yE = yA + (dy * i) / 12;
-      int zE = zA + (dy * i) / 12;
+      int zE = zA + (dz * i) / 12;
       i += 2;
       if (lineBond)
         g3d.drawLine(colixA, colixB, xS, yS, zS, xE, yE, zE);
@@ -379,6 +377,31 @@ class BondRenderer extends Renderer {
                          xS, yS, zS, xE, yE, zE);
     }
   }
+
+  void renderHbondDashed() {
+    boolean lineBond = (styleBond == JmolConstants.STYLE_WIREFRAME ||
+                        wireframeRotating ||
+                        width <= 1);
+   int dx = xB - xA;
+    int dy = yB - yA;
+    int dz = zB - zA;
+    int i = 1;
+    while (i < 10) {
+      int xS = xA + (dx * i) / 10;
+      int yS = yA + (dy * i) / 10;
+      int zS = zA + (dz * i) / 10;
+      short colixS = i < 5 ? colixA : colixB;
+      i += 2;
+      int xE = xA + (dx * i) / 10;
+      int yE = yA + (dy * i) / 10;
+      int zE = zA + (dz * i) / 10;
+      short colixE = i < 5 ? colixA : colixB;
+      ++i;
+      if (lineBond)
+        g3d.drawLine(colixS, colixE, xS, yS, zS, xE, yE, zE);
+      else 
+        g3d.fillCylinder(colixS, colixE, Graphics3D.ENDCAPS_FLAT, width,
+                         xS, yS, zS, xE, yE, zE);
+    }
+  }
 }
-
-

@@ -695,7 +695,7 @@ public class ChemFrame extends AtomContainer {
 
     public boolean hasNext() {
       while (true) {
-        if (! bigHit) {
+        if (! bigHit && bondedAtoms != null) {
           while (++ibond < bondedAtoms.length) {
             int indexOtherAtom = bondedAtoms[ibond].getAtomNumber();
             if (set.get(indexOtherAtom)) {

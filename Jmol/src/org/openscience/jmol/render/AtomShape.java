@@ -216,7 +216,7 @@ public class AtomShape extends Shape {
           if (otherAtomBonds[j] == atom) {
             control.bondRenderer.render(this, i, atomShapeOther, j,
                                         atom.getBondOrder(atomOther));
-            // FIXME implement atom.getBondOrder(int)
+            // FIXME implement atom.getBondOrder(int indexBond)
           }
         }
       }

@@ -29,8 +29,11 @@ import org.openscience.jmol.viewer.JmolViewer;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Canvas;
+/*
+  see comment below
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentAdapter;
+*/
 
 public class AppletCanvas extends Canvas {
 
@@ -38,19 +41,24 @@ public class AppletCanvas extends Canvas {
 
   public void setJmolViewer(JmolViewer viewer) {
     this.viewer = viewer;
+    /*
     viewer.setScreenDimension(getSize());
     addComponentListener(new MyComponentListener());
+    */
   }
 
-  public void updateSize() {
+  /*
+  private void updateSize() {
     viewer.setScreenDimension(getSize());
   }
+  */
 
   public void update(Graphics g) {
     paint(g);
   }
 
   public void paint(Graphics g) {
+    viewer.setScreenDimension(getSize());
     g.drawImage(viewer.renderScreenImage(g.getClipBounds()), 0, 0, null);
   }
 
@@ -64,6 +72,11 @@ public class AppletCanvas extends Canvas {
     return true;
   }
 
+  /*
+    There is a problem on old macintoshes with
+      ClassNotFound java.awt.ComponentEvent
+    getting rid of this *might* solve the problem
+
   class MyComponentListener extends ComponentAdapter {
     public void componentResized(ComponentEvent e) {
       updateSize();
@@ -72,4 +85,5 @@ public class AppletCanvas extends Canvas {
       updateSize();
     }
   }
+  */
 }

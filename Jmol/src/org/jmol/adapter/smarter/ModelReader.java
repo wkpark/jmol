@@ -61,6 +61,8 @@ abstract class ModelReader {
 
   static float[] decimalScale =
   {0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f, 0.000001f, 0.0000001f, 0.00000001f};
+  static float[] tensScale =
+  {10, 100, 1000, 10000, 100000, 1000000};
 
   static float parseFloatChecked(String str, int ichStart, int ichMax) {
     boolean digitSeen = false;
@@ -92,6 +94,24 @@ abstract class ModelReader {
       value = Integer.MIN_VALUE;
     else if (negative)
       value = -value;
+    if (ich < ichMax && (ch == 'E' || ch == 'e')) {
+      if (++ich >= ichMax)
+        return Float.NaN;
+      ch = str.charAt(ich);
+      if ((ch == '+') && (++ich >= ichMax))
+        return Float.NaN;
+      int exponent = parseIntChecked(str, ich, ichMax);
+      if (exponent == Integer.MIN_VALUE)
+        return Float.NaN;
+      if (exponent > 0)
+        value *= ((exponent < tensScale.length)
+                  ? tensScale[exponent - 1]
+                  : Math.pow(10, exponent));
+      else if (exponent < 0)
+        value *= ((-exponent < decimalScale.length)
+                  ? decimalScale[-exponent - 1]
+                  : Math.pow(10, exponent));
+    }
     //    System.out.println("parseFloat(" + str + "," + ichStart + "," +
     //                       ichMax + ") -> " + value);
     return value;
@@ -177,3 +197,4 @@ abstract class ModelReader {
     return str.substring(ich, ichLast + 1);
   }
 }
+

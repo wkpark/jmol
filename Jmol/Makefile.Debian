@@ -3,15 +3,14 @@ DESTDIR =
 BIN     = $(DESTDIR)/usr/X11R6/bin
 LIBS    = ${DESTDIR}/usr/share/java
 
-VERSION="0.7"
+VERSION="20010504"
 
-all: archive
+all:
 
 archive: 
 application:
 
 archive: application
-	ant jar
 
 clean:
 	ant clean

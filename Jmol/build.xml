@@ -7,6 +7,7 @@
 	<property name="lib.dir" value="jars" />
 	<property name="classes.dir" value="classes" />
 	<property name="dist.dir" value="dist" />
+  <property name="sourcedist.dir" value="sourcedist" />
 	<property name="javadoc.dir" value="javadoc" />
 
 	<property name="docbook.dir" value="${user.dir}/../docbook" />
@@ -131,6 +132,55 @@
 		<tar tarfile="jmol.tar" basedir="${dist.dir}" includes="**"/>
 		<gzip zipfile="jmol-${version}.tar.gz" src="jmol.tar"/>
 		<delete file="jmol.tar" />
+	</target>
+
+	<target name="sourcedist">
+		<mkdir dir="${sourcedist.dir}/jmol-${version}"/>
+		<copy todir="${sourcedist.dir}/jmol-${version}/${lib.dir}" >
+			<fileset dir="${lib.dir}">
+				<exclude name="jmol*.jar" />
+				<exclude name="swing.jar" />
+				<exclude name="junit.jar" />
+				<exclude name="saxon.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${sourcedist.dir}/jmol-${version}" >
+			<fileset dir=".">
+				<include name="jmol" />
+				<include name="jmol.mac" />
+				<include name="jmol.bat" />
+				<include name="*.txt" />
+			</fileset>
+      <fileset dir="src" />
+		</copy>
+		<copy todir="${sourcedist.dir}/jmol-${version}/samples" >
+			<fileset dir="samples" />
+		</copy>
+		
+		<mkdir dir="${sourcedist.dir}/jmol-applet-${version}"/>
+		<copy todir="${sourcedist.dir}/jmol-applet-${version}/${lib.dir}" >
+			<fileset dir="${lib.dir}">
+				<exclude name="jmol.jar" />
+				<exclude name="jas.jar" />
+				<exclude name="Acme.jar" />
+				<exclude name="swing.jar" />
+				<exclude name="junit.jar" />
+				<exclude name="multi.jar" />
+				<exclude name="saxon.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${sourcedist.dir}/jmol-applet-${version}" >
+			<fileset dir=".">
+				<include name="*.txt" />
+			</fileset>
+      <fileset dir="src" />
+		</copy>
+	</target>
+  
+  <target name="sourcedist.tar.gz" depends="sourcedist">
+		<tar tarfile="jmol.source.tar" basedir="${sourcedist.dir}" includes="**"/>
+		<gzip zipfile="jmol-${version}.source.tar.gz" src="jmol.source.tar"/>
+		<delete file="jmol.source.tar" />
 	</target>
 
 	<target name="clean">

@@ -31,12 +31,14 @@
       <h4>Debian Apt-get</h4>
       <p>
         Debian users can also apt-get the package from 
-        <a href="http://mentors.debian.net/">mentors.debian.net</a> by adding:
+        <a href="http://www.wgdd.de/debs/">www.wgdd.de/debs/</a> by adding:
         <pre><tt>
-deb http://mentors.debian.net/debian unstable main contrib
-deb-src http://mentors.debian.net/debian unstable main contrib
+deb http://www.wgdd.de/debian unstable main contrib non-free
+deb-src http://www.wgdd.de/debian unstable main contrib non-free
         </tt></pre>
-        to /etc/apt/sources.list, and doing 'apt-get update &amp;&amp; apt-get install jmol/unstable'.
+        to /etc/apt/sources.list, and doing 'apt-get update &amp;&amp; apt-get install jmol/unstable'. 
+        The repository has changed, because <a href="http://mentors.debian.net/">mentors.debian.net</a> 
+        will no longer provide binary-packages.
       </p>
     </section>
 

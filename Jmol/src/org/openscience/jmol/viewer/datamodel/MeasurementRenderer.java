@@ -37,32 +37,34 @@ import javax.vecmath.AxisAngle4f;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-public class MeasurementRenderer {
+class MeasurementRenderer extends Renderer {
 
-  JmolViewer viewer;
-  public MeasurementRenderer(JmolViewer viewer) {
+  MeasurementRenderer(JmolViewer viewer) {
     this.viewer = viewer;
   }
-
-  Graphics3D g3d;
-  Rectangle clip;
-  JmolFrame frame;
 
   short colixDistance;
   boolean showMeasurementLabels;
 
   MeasurementShape measurement;
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle clip, JmolFrame frame) {
+  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+                                 JmolFrame frame) {
     this.g3d = g3d;
-    this.clip = clip;
+    this.rectClip = rectClip;
     this.frame = frame;
 
     colixDistance = viewer.getColixDistance();
     showMeasurementLabels = viewer.getShowMeasurementLabels();
   }
 
-  public void render(MeasurementShape measurement) {
+  void render(Object objMeasurements) {
+    MeasurementShape[] measurementShapes = (MeasurementShape[])objMeasurements;
+    for (int i = frame.measurementShapeCount; --i >= 0; )
+      render(measurementShapes[i]);
+  }
+
+  void render(MeasurementShape measurement) {
     this.measurement = measurement;
     switch(measurement.count) {
     case 2:

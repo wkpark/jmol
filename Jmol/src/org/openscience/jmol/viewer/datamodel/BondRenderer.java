@@ -31,19 +31,17 @@ import org.openscience.jmol.viewer.g3d.Colix;
 
 import java.awt.Rectangle;
 
-public class BondRenderer {
+class BondRenderer extends Renderer {
 
-  JmolViewer viewer;
-  public BondRenderer(JmolViewer viewer) {
+  BondRenderer(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  Graphics3D g3d;
-  Rectangle clip;
-
-  public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
+  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+                                 JmolFrame frame) {
     this.g3d = g3d;
-    this.clip = clip;
+    this.rectClip = rectClip;
+    this.frame = frame;
 
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
@@ -77,7 +75,13 @@ public class BondRenderer {
     g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
-  public void render(BondShape bondShape) {
+  void render(Object objBondShapes) {
+    BondShape[] bondShapes = (BondShape[])objBondShapes;
+    for (int i = frame.bondShapeCount; --i >= 0; )
+      render(bondShapes[i]);
+  }
+
+  void render(BondShape bondShape) {
     styleBond = bondShape.style;
     if (styleBond == JmolViewer.NONE)
       return;
@@ -238,11 +242,11 @@ public class BondRenderer {
     rectTemp.y = yMin;
     rectTemp.width = width;
     rectTemp.height = height;
-    boolean visible = clip.intersects(rectTemp);
+    boolean visible = rectClip.intersects(rectTemp);
     /*
     System.out.println("bond " + x + "," + y + "->" + x2 + "," + y2 +
-                       " & " + clip.x + "," + clip.y +
-                       " W " + clip.width + " H " + clip.height +
+                       " & " + rectClip.x + "," + rectClip.y +
+                       " W " + rectClip.width + " H " + rectClip.height +
                        "->" + visible);
     visible = true;
     */

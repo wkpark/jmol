@@ -32,7 +32,7 @@ import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
-public class LabelRenderer {
+public class LabelRenderer extends Renderer {
 
   JmolViewer viewer;
   public LabelRenderer(JmolViewer viewer) {
@@ -42,9 +42,11 @@ public class LabelRenderer {
   Graphics3D g3d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
+  public void setGraphicsContext(Graphics3D g3d, Rectangle clip,
+                                 JmolFrame frame) {
     this.g3d = g3d;
     this.clip = clip;
+    this.frame = frame;
     colixLabel = viewer.getColixLabel();
     isLabelAtomColor = colixLabel == 0;
   }
@@ -52,10 +54,17 @@ public class LabelRenderer {
   short colixLabel;
   boolean isLabelAtomColor;
 
-  public void render(AtomShape atomShape) {
-    String strLabel = atomShape.strLabel;
-    if (strLabel == null)
-      return;
+  void render(Object objAtomShapes) {
+    AtomShape[] atomShapes = (AtomShape[])objAtomShapes;
+    for (int i = frame.atomShapeCount; --i >= 0; ) {
+      AtomShape atomShape = atomShapes[i];
+      String strLabel = atomShape.strLabel;
+      if (strLabel != null)
+          render(atomShape, strLabel);
+    }
+  }
+
+  public void render(AtomShape atomShape, String strLabel) {
     Font font = viewer.getLabelFont(atomShape.diameter);
     if (font == null)
       return;

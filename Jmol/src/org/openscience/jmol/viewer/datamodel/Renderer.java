@@ -29,17 +29,25 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.g3d.Shade3D;
+import java.awt.Rectangle;
 
-class RibbonsRenderer extends Renderer {
+abstract class Renderer {
 
-  RibbonsRenderer(JmolViewer viewer) {
-    this.viewer = viewer;
+  JmolViewer viewer;
+  Graphics3D g3d;
+  Rectangle rectClip;
+  JmolFrame frame;
+
+  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+                                 JmolFrame frame) {
+    this.g3d = g3d;
+    this.rectClip = rectClip;
+    this.frame = frame;
   }
 
-  void render(Object objRibbons) {
-    Ribbons ribbons = (Ribbons)objRibbons;
-    if (ribbons != null)
-      g3d.drawLine(Colix.RED, 0, 0, 0, 10, 10, 0);
+  void transform(Object obj) {
   }
+
+  abstract void render(Object obj);
 }
 

@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.managers;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.datamodel.FrameRenderer;
+import org.openscience.jmol.viewer.datamodel.JmolFrame;
 
 import java.awt.Image;
 import java.awt.Graphics;
@@ -107,7 +108,7 @@ public class RepaintManager {
     this.tOversample = tOversample;
   }
 
-  public void render(Graphics3D g3d, Rectangle rectClip) {
+  public void render(Graphics3D g3d, Rectangle rectClip, JmolFrame frame) {
     g3d.beginRendering(tOversample);
     if (tOversample) {
       rectOversample.x = rectClip.x << 1;
@@ -119,7 +120,7 @@ public class RepaintManager {
     g3d.clearScreenBuffer(viewer.getColorBackground(),
                            rectClip.x, rectClip.y,
                            rectClip.width, rectClip.height);
-    frameRenderer.render(g3d, rectClip);
+    frameRenderer.render(g3d, rectClip, frame);
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)
       g3d.drawRect(viewer.getColixRubberband(),

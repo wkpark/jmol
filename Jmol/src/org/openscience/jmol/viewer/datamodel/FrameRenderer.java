@@ -44,87 +44,65 @@ public class FrameRenderer {
   private TraceRenderer traceRenderer;
   ArcTest arctest;
   Gtest gtest;
-  JmolFrame frame;
 
   public FrameRenderer(JmolViewer viewer) {
     this.viewer = viewer;
     atomRenderer = new AtomRenderer(viewer);
     bondRenderer = new BondRenderer(viewer);
-    //    labelRenderer = new LabelRenderer(viewer);
-    //    measurementRenderer = new MeasurementRenderer(viewer);
+    labelRenderer = new LabelRenderer(viewer);
+    measurementRenderer = new MeasurementRenderer(viewer);
     //    dotsRenderer = new DotsRenderer(viewer);
     //    ribbonsRenderer = new RibbonsRenderer(viewer);
     //    traceRenderer = new TraceRenderer(viewer);
-    arctest = new ArcTest(viewer);
-    gtest = new Gtest(viewer);
   }
   
-  private void setGraphicsContext(Graphics3D g3d, Rectangle rectClip) {
-    frame = viewer.getJmolFrame();
-    atomRenderer.setGraphicsContext(g3d, rectClip);
-    bondRenderer.setGraphicsContext(g3d, rectClip);
-    if (labelRenderer != null)
-      labelRenderer.setGraphicsContext(g3d, rectClip);
-    if (measurementRenderer != null)
-      measurementRenderer.setGraphicsContext(g3d, rectClip, frame);
+  private void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+                                  JmolFrame frame) {
+    atomRenderer.setGraphicsContext(g3d, rectClip, frame);
+    bondRenderer.setGraphicsContext(g3d, rectClip, frame);
+    labelRenderer.setGraphicsContext(g3d, rectClip, frame);
+    measurementRenderer.setGraphicsContext(g3d, rectClip, frame);
     if (dotsRenderer != null)
       dotsRenderer.setGraphicsContext(g3d, rectClip, frame);
     if (ribbonsRenderer != null)
       ribbonsRenderer.setGraphicsContext(g3d, rectClip, frame);
     if (traceRenderer != null)
       traceRenderer.setGraphicsContext(g3d, rectClip, frame);
-    arctest.setGraphicsContext(g3d, rectClip, frame);
-    gtest.setGraphicsContext(g3d, rectClip, frame);
   }
 
-  public void render(Graphics3D g3d, Rectangle rectClip) {
-    setGraphicsContext(g3d, rectClip);
+  public void render(Graphics3D g3d, Rectangle rectClip, JmolFrame frame) {
+    setGraphicsContext(g3d, rectClip, frame);
 
     if (frame.atomShapeCount <= 0)
       return;
 
     viewer.calcTransformMatrices();
 
-    //    arctest.transform();
-    //    arctest.render();
-    gtest.transform();
-    gtest.render();
-
-
     AtomShape[] atomShapes = frame.atomShapes;
-    for (int i = frame.atomShapeCount; --i >= 0; ) {
-      AtomShape atomShape = atomShapes[i];
-      atomShape.transform(viewer);
-      atomRenderer.render(atomShape);
-      if (atomShape.strLabel != null) {
-        if (labelRenderer == null)
-          labelRenderer = new LabelRenderer(viewer);
-        labelRenderer.render(atomShape);
-      }
+    atomRenderer.transform(atomShapes);
+    atomRenderer.render(atomShapes);
+    labelRenderer.transform(atomShapes);
+    labelRenderer.render(atomShapes);
+    BondShape[] bondShapes = frame.bondShapes;
+    bondRenderer.transform(bondShapes);
+    bondRenderer.render(bondShapes);
+    
+    if (frame.measurementShapeCount > 0) {
+      measurementRenderer.render(frame.measurementShapes);
     }
 
     if (frame.dots != null) {
-      if (dotsRenderer == null)
-        dotsRenderer = new DotsRenderer(viewer);
       dotsRenderer.transform(frame.dots);
       dotsRenderer.render(frame.dots);
     }
     if (frame.ribbons != null) {
-      if (ribbonsRenderer == null)
-        ribbonsRenderer = new RibbonsRenderer(viewer);
       ribbonsRenderer.transform(frame.ribbons);
       ribbonsRenderer.render(frame.ribbons);
     }
     if (frame.trace != null) {
-      if (traceRenderer == null)
-        traceRenderer = new TraceRenderer(viewer);
       traceRenderer.transform(frame.trace);
       traceRenderer.render(frame.trace);
     }
-
-    BondShape[] bondShapes = frame.bondShapes;
-    for (int i = frame.bondShapeCount; --i >= 0; )
-      bondRenderer.render(bondShapes[i]);
 
     for (int i = frame.lineShapeCount; --i >= 0; ) {
       LineShape lineShape = frame.lineShapes[i];
@@ -136,16 +114,6 @@ public class FrameRenderer {
       LineShape cellLine = frame.crystalCellLines[i];
       cellLine.transform(viewer);
       cellLine.render(g3d, viewer);
-    }
-
-    if (frame.measurementShapeCount > 0) {
-      if (measurementRenderer == null)
-        measurementRenderer = new MeasurementRenderer(viewer);
-      for (int i = frame.measurementShapeCount; --i >= 0; ) {
-        MeasurementShape measurementShape = frame.measurementShapes[i];
-        //      measurementShape.transform(viewer);
-        measurementRenderer.render(measurementShape);
-      }
     }
 
     if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {

@@ -39,11 +39,8 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-public class DotsRenderer {
+class DotsRenderer extends Renderer {
 
-  JmolViewer viewer;
-  Graphics3D g3d;
-  JmolFrame frame;
   boolean perspectiveDepth;
   short colixConcave;
   short colixConvex;
@@ -55,7 +52,7 @@ public class DotsRenderer {
 
   final static int[] mapNull = Dots.mapNull;
 
-  public DotsRenderer(JmolViewer viewer) {
+  DotsRenderer(JmolViewer viewer) {
     this.viewer = viewer;
     this.geodesic = new Geodesic(); // 12 vertices
     geodesic.quadruple(); // 12 * 4 - 6 = 42 vertices
@@ -65,10 +62,9 @@ public class DotsRenderer {
 
   }
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
                                  JmolFrame frame) {
-    this.g3d = g3d;
-    this.frame = frame;
+    super.setGraphicsContext(g3d, rectClip, frame);
     perspectiveDepth = viewer.getPerspectiveDepth();
     colixConcave = viewer.getColixDotsConcave();
     colixConvex = viewer.getColixDotsConvex();
@@ -77,11 +73,12 @@ public class DotsRenderer {
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
   }
 
-  void transform(Dots dots) {
+  void transform(Object objDots) {
     geodesic.transform();
   }
 
-  public void render(Dots dots) {
+  void render(Object objDots) {
+    Dots dots = (Dots)objDots;
     if (dots == null)
       return;
     AtomShape[] atomShapes = frame.atomShapes;
@@ -133,7 +130,7 @@ public class DotsRenderer {
     }
   }
 
-  public void renderConvex(AtomShape atomShape, int[] visibilityMap) {
+  void renderConvex(AtomShape atomShape, int[] visibilityMap) {
     geodesic.calcScreenPoints(visibilityMap,
                               atomShape.getVanderwaalsRadius(),
                               atomShape.x, atomShape.y, atomShape.z);

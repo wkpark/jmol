@@ -29,36 +29,47 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Rectangle;
 
-public class AtomRenderer {
+class AtomRenderer extends Renderer {
 
-  JmolViewer viewer;
-  public AtomRenderer(JmolViewer viewer) {
+  AtomRenderer(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  Graphics3D g3d;
-  Rectangle clip;
   int minX, maxX, minY, maxY;
   boolean wireframeRotating;
   boolean showHydrogens;
   short colixSelection;
 
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
+  void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
+                                 JmolFrame frame) {
     this.g3d = g3d;
-    this.clip = clip;
+    this.rectClip = rectClip;
+    this.frame = frame;
 
-    minX = clip.x;
-    maxX = minX + clip.width;
-    minY = clip.y;
-    maxY = minY + clip.height;
+    minX = rectClip.x;
+    maxX = minX + rectClip.width;
+    minY = rectClip.y;
+    maxY = minY + rectClip.height;
 
     wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showHydrogens = viewer.getShowHydrogens();
   }
 
-  public void render(AtomShape atomShape) {
+  void transform(Object objAtomShapes) {
+    AtomShape[] atomShapes = (AtomShape[])objAtomShapes;
+    for (int i = frame.atomShapeCount; --i >= 0; )
+      atomShapes[i].transform(viewer);
+  }
+
+  void render(Object objAtomShapes) {
+    AtomShape[] atomShapes = (AtomShape[])objAtomShapes;
+    for (int i = frame.atomShapeCount; --i >= 0; )
+      render(atomShapes[i]);
+  }
+
+  void render(AtomShape atomShape) {
     if (!showHydrogens && atomShape.atomicNumber == 1)
       return;
     byte styleAtom = atomShape.styleAtom;

@@ -29,28 +29,15 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.g3d.Shade3D;
-import java.awt.Rectangle;
 
-public class TraceRenderer {
+class TraceRenderer extends Renderer {
 
-  JmolViewer viewer;
-  Graphics3D g3d;
-  JmolFrame frame;
-
-  public TraceRenderer(JmolViewer viewer) {
+  TraceRenderer(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip,
-                                 JmolFrame frame) {
-    this.g3d = g3d;
-    this.frame = frame;
-  }
-
-  void transform(Trace trace) {
-  }
-
-  public void render(Trace trace) {
+  void render(Object objTrace) {
+    Trace trace = (Trace)objTrace;
     if (trace != null)
       g3d.drawLine(Colix.GREEN, 0, 0, 0, 10, 10, 0);
   }

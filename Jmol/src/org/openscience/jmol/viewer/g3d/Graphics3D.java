@@ -247,8 +247,8 @@ final public class Graphics3D {
     }
   }
 
-  public void fillCircleCentered(short colixFill,
-                                 int x, int y, int z, int diameter) {
+  public void fillCircleCentered(short colixFill, int diameter, 
+                                 int x, int y, int z) {
     if (diameter == 0 || z < slab)
       return;
     int r = (diameter + 1) / 2;

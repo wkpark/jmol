@@ -42,6 +42,8 @@ public class Atom implements Bspt.Tuple {
   public PdbAtom pdbAtom;
   Frame frame;
   public Point3f point3f;
+  // don't store this as a Point3i because allocating lots of
+  // small objects will create more work for the garbabe collector
   int x, y, z;
   byte styleAtom;
   short marAtom;
@@ -64,7 +66,8 @@ public class Atom implements Bspt.Tuple {
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
     if (pdbMolecule != null)
-      pdbAtom = pdbMolecule.getPdbAtom(atomIndex, viewer.getPdbAtomRecord(clientAtom));
+      pdbAtom = pdbMolecule.getPdbAtom(atomIndex,
+                                       viewer.getPdbAtomRecord(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 
@@ -195,7 +198,8 @@ public boolean isBonded(Atom atomOther) {
   public void setMarAtom(short marAtom) {
     if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
+      marAtom =
+        (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
   }
 
@@ -203,7 +207,8 @@ public boolean isBonded(Atom atomOther) {
     if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
     this.styleAtom = styleAtom;
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
+      marAtom =
+        (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
   }
         

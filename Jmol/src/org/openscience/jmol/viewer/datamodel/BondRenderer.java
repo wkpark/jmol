@@ -60,7 +60,7 @@ class BondRenderer extends Renderer {
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = width + 2 * halowidth;
-    g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
+    g3d.fillScreenedCircleCentered(colixSelection, halodiameter, x, y, z+1);
   }
 
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {

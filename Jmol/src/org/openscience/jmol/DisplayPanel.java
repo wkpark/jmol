@@ -118,7 +118,6 @@ public class DisplayPanel extends JPanel
   }
 
   public void start() {
-    AtomType.setJPanel(this);
     this.addMouseListener(new MyAdapter());
     this.addMouseMotionListener(new MyMotionAdapter());
     RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);

@@ -33,22 +33,12 @@ import java.awt.Component;
 public class AtomType {
 
   private BaseAtomType baseType;
-  private static Component jpanel;
 
   /** color is specified also at atom itself.
    *  if color == null then it uses the color of
    *  the base type
    */
   private Color color = null;
-
-  /**
-   * Sets the JPanel where all atoms will be drawn
-   *
-   * @param jp the JPanel
-   */
-  public static void setJPanel(Component jp) {
-    jpanel = jp;
-  }
 
   /**
    * Constructor

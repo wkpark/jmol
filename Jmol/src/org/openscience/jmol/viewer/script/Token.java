@@ -167,7 +167,7 @@ public class Token {
   final static int mesh         = command | 62;
   final static int prueba       = command | 63;
   final static int rocket       = command | 64;
-  final static int surface      = command | 65;
+  final static int surface      = command | predefinedset | 65;
 
   // parameters
   final static int ambient      = setparam |  0;

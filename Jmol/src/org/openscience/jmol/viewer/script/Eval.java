@@ -860,6 +860,7 @@ public class Eval implements Runnable {
       case Token.solvent:
       case Token.identifier:
       case Token.sidechain:
+      case Token.surface:
         stack[sp++] = lookupIdentifierValue((String)instruction.value);
         break;
       case Token.opLT:

@@ -138,4 +138,27 @@ public class StyleManager {
     viewer.setColorMeasurement(Color.white);
     viewer.setColorLabel(null);
   }
+
+  public int spinX, spinY, spinZ, spinFps;
+  public boolean spinOn;
+  public void setSpinX(int value) {
+    spinX = value;
+    System.out.println("spinX=" + spinX);
+  }
+  public void setSpinY(int value) {
+    spinY = value;
+    System.out.println("spinY=" + spinY);
+  }
+  public void setSpinZ(int value) {
+    spinZ = value;
+    System.out.println("spinZ=" + spinZ);
+  }
+  public void setSpinFps(int value) {
+    spinFps = value;
+    System.out.println("spinFps=" + spinFps);
+  }
+  public void setSpinOn(boolean spinOn) {
+    this.spinOn = spinOn;
+    System.out.println("spinOn=" + spinOn);
+  }
 }

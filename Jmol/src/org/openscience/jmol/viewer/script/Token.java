@@ -148,7 +148,7 @@ public class Token {
   final static int loop         = command | 49;
   final static int move         = command | 50 | negativeints;
   final static int view         = command | 51;
-  final static int spin         = command | 53 | showparam | bool;
+  final static int spin         = command | 53 | setparam | showparam | bool;
   final static int list         = command | 54 | showparam;
   final static int display3d    = command | 55;
   // jmol commands
@@ -199,9 +199,9 @@ public class Token {
   final static int mlp          = setparam | 26 | showparam;
   final static int molsurface   = setparam | 27;
   final static int debugscript  = setparam | 28;
-  //
+  final static int fps          = setparam | 29;
   // jmol extensions
-  final static int property     = setparam | 29;
+  final static int property     = setparam | 30;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -408,6 +408,7 @@ public class Token {
     "mlp",          new Token(mlp,             "mlp"),
     "molsurface",   new Token(molsurface,      "molsurface"),
     "debugscript",  new Token(debugscript,     "debugscript"),
+    "fps",          new Token(fps,             "fps"),
 
     // jmol extensions
     "property",     new Token(property,        "property"),

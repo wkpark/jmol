@@ -372,6 +372,10 @@ public class Eval implements Runnable {
       case Token.cartoon:
         cartoon();
         break;
+      case Token.spin:
+        spin();
+        break;
+
         // not implemented
       case Token.bond:
       case Token.clipboard:
@@ -392,7 +396,6 @@ public class Eval implements Runnable {
       case Token.write:
         // chime extended commands
       case Token.view:
-      case Token.spin:
       case Token.list:
       case Token.display3d:
         viewer.scriptStatus("Script command not implemented:" + token.value);
@@ -1540,6 +1543,9 @@ public class Eval implements Runnable {
     case Token.specular:
       setSpecular();
       break;
+    case Token.spin:
+      setSpin();
+      break;
 
       /*
     case Token.spacefill:
@@ -1870,6 +1876,19 @@ public class Eval implements Runnable {
     viewer.setCartoonRadius(width);
   }
 
+  void spin() throws ScriptException {
+    boolean spinOn = false;
+    switch (statement[1].tok) {
+    case Token.on:
+      spinOn = true;
+    case Token.off:
+      break;
+    default:
+      booleanExpected();
+    }
+    viewer.setSpinOn(spinOn);
+  }
+      
   /****************************************************************
    * SET implementations
    ****************************************************************/
@@ -2006,6 +2025,29 @@ public class Eval implements Runnable {
 
   void setSpecular() throws ScriptException {
     viewer.setSpecular(getSetBoolean());
+  }
+
+  void setSpin() throws ScriptException {
+    if (statement.length != 4 ||
+        statement[3].tok != Token.integer)
+      integerExpected();
+    int value = statement[3].intValue;
+    switch (statement[2].tok) {
+    case Token.x:
+      viewer.setSpinX(value);
+      break;
+    case Token.y:
+      viewer.setSpinY(value);
+      break;
+    case Token.z:
+      viewer.setSpinZ(value);
+      break;
+    case Token.fps:
+      viewer.setSpinFps(value);
+      break;
+    default:
+      unrecognizedSetParameter();
+    }
   }
 
   /*

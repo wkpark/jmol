@@ -1610,6 +1610,44 @@ final public class JmolViewer {
     styleManager.setRasmolDefaults();
   }
 
+  public void setSpinX(int value) {
+    styleManager.setSpinX(value);
+  }
+  public int getSpinX() {
+    return styleManager.spinX;
+  }
+
+  public void setSpinY(int value) {
+    styleManager.setSpinY(value);
+  }
+  public int getSpinY() {
+    return styleManager.spinY;
+  }
+
+
+  public void setSpinZ(int value) {
+    styleManager.setSpinZ(value);
+  }
+  public int getSpinZ() {
+    return styleManager.spinZ;
+  }
+
+
+  public void setSpinFps(int value) {
+    styleManager.setSpinFps(value);
+  }
+  public int getSpinFps() {
+    return styleManager.spinFps;
+  }
+
+  public void setSpinOn(boolean spinOn) {
+    styleManager.setSpinOn(spinOn);
+  }
+  public boolean getSpinOn() {
+    return styleManager.spinOn;
+  }
+
+
   /****************************************************************
    * delegated to LabelManager
    ****************************************************************/

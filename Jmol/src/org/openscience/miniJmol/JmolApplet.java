@@ -36,6 +36,7 @@
  * warrants that it will not use or redistribute the Software for such
  * purposes.  
  */
+//MARK
 package org.openscience.miniJmol;
 
 import java.awt.event.*;

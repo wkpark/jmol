@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre16e";
+  public final static String version = "10pre16f";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -561,124 +561,125 @@ final public class JmolConstants {
   };
 
   /**
-   * Default table of covalent Radii.
+   * Default table of covalent Radii + valence
    * stored as a short mar ... Milli Angstrom Radius
+   * valence is stored in the top 4 bits
    * Used for bonding atoms when the client does not supply bonds. 
    * Values taken from OpenBabel.
    * @see <a href='http://openbabel.sourceforge.net'>openbabel.sourceforge.net</a>
    */
-  public final static short[] covalentMars = {
-    0, //   0  Xx big enough to bring attention to itself
-    230, //   1  H
-    930, //   2  He
-    680, //   3  Li
-    350, //   4  Be
-    830, //   5  B
-    680, //   6  C
-    680, //   7  N
-    680, //   8  O
-    640, //   9  F
+  private final static short[] covalentMarsAndValence = {
+    (0 << 12) + 0, //   0  Xx big enough to bring attention to itself
+    (1 << 12) + 230, //   1  H
+    (0 << 12) + 930, //   2  He
+    (1 << 12) + 680, //   3  Li
+    (2 << 12) + 350, //   4  Be
+    (3 << 12) + 830, //   5  B
+    (4 << 12) + 680, //   6  C
+    (4 << 12) + 680, //   7  N
+    (2 << 12) + 680, //   8  O
+    (1 << 12) + 640, //   9  F
     //    1120, //  10  Ne // this will need to change back once we get covalent
-    0,   //  10  Ne        // bonding orders in place
-    970, //  11  Na
-    1100, //  12  Mg
-    1350, //  13  Al
-    1200, //  14  Si
-    750, //  15  P
-    1020, //  16  S
-    990, //  17  Cl
-    1570, //  18  Ar
-    1330, //  19  K
-    990, //  20  Ca
-    1440, //  21  Sc
-    1470, //  22  Ti
-    1330, //  23  V
-    1350, //  24  Cr
-    1350, //  25  Mn
-    1340, //  26  Fe
-    1330, //  27  Co
-    1500, //  28  Ni
-    1520, //  29  Cu
-    1450, //  30  Zn
-    1220, //  31  Ga
-    1170, //  32  Ge
-    1210, //  33  As
-    1220, //  34  Se
-    1210, //  35  Br
-    1910, //  36  Kr
-    1470, //  37  Rb
-    1120, //  38  Sr
-    1780, //  39  Y
-    1560, //  40  Zr
-    1480, //  41  Nb
-    1470, //  42  Mo
-    1350, //  43  Tc
-    1400, //  44  Ru
-    1450, //  45  Rh
-    1500, //  46  Pd
-    1590, //  47  Ag
-    1690, //  48  Cd
-    1630, //  49  In
-    1460, //  50  Sn
-    1460, //  51  Sb
-    1470, //  52  Te
-    1400, //  53  I
-    1980, //  54  Xe
-    1670, //  55  Cs
-    1340, //  56  Ba
-    1870, //  57  La
-    1830, //  58  Ce
-    1820, //  59  Pr
-    1810, //  60  Nd
-    1800, //  61  Pm
-    1800, //  62  Sm
-    1990, //  63  Eu
-    1790, //  64  Gd
-    1760, //  65  Tb
-    1750, //  66  Dy
-    1740, //  67  Ho
-    1730, //  68  Er
-    1720, //  69  Tm
-    1940, //  70  Yb
-    1720, //  71  Lu
-    1570, //  72  Hf
-    1430, //  73  Ta
-    1370, //  74  W
-    1350, //  75  Re
-    1370, //  76  Os
-    1320, //  77  Ir
-    1500, //  78  Pt
-    1500, //  79  Au
-    1700, //  80  Hg
-    1550, //  81  Tl
-    1540, //  82  Pb
-    1540, //  83  Bi
-    1680, //  84  Po
-    1700, //  85  At
-    2400, //  86  Rn
-    2000, //  87  Fr
-    1900, //  88  Ra
-    1880, //  89  Ac
-    1790, //  90  Th
-    1610, //  91  Pa
-    1580, //  92  U
-    1550, //  93  Np
-    1530, //  94  Pu
-    1510, //  95  Am
-    1500, //  96  Cm
-    1500, //  97  Bk
-    1500, //  98  Cf
-    1500, //  99  Es
-    1500, // 100  Fm
-    1500, // 101  Md
-    1500, // 102  No
-    1500, // 103  Lr
-    1600, // 104  Rf
-    1600, // 105  Db
-    1600, // 106  Sg
-    1600, // 107  Bh
-    1600, // 108  Hs
-    1600, // 109  Mt
+    (0 << 12) + 0,   //  10  Ne        // bonding orders in place
+    (1 << 12) + 970, //  11  Na
+    (2 << 12) + 1100, //  12  Mg
+    (6 << 12) + 1350, //  13  Al
+    (6 << 12) + 1200, //  14  Si
+    (5 << 12) + 750, //  15  P
+    (6 << 12) + 1020, //  16  S
+    (1 << 12) + 990, //  17  Cl
+    (0 << 12) + 1570, //  18  Ar
+    (1 << 12) + 1330, //  19  K
+    (2 << 12) + 990, //  20  Ca
+    (6 << 12) + 1440, //  21  Sc
+    (6 << 12) + 1470, //  22  Ti
+    (6 << 12) + 1330, //  23  V
+    (6 << 12) + 1350, //  24  Cr
+    (short)((8 << 12) + 1350), //  25  Mn
+    (6 << 12) + 1340, //  26  Fe
+    (6 << 12) + 1330, //  27  Co
+    (6 << 12) + 1500, //  28  Ni
+    (6 << 12) + 1520, //  29  Cu
+    (6 << 12) + 1450, //  30  Zn
+    (3 << 12) + 1220, //  31  Ga
+    (4 << 12) + 1170, //  32  Ge
+    (3 << 12) + 1210, //  33  As
+    (2 << 12) + 1220, //  34  Se
+    (1 << 12) + 1210, //  35  Br
+    (0 << 12) + 1910, //  36  Kr
+    (1 << 12) + 1470, //  37  Rb
+    (2 << 12) + 1120, //  38  Sr
+    (6 << 12) + 1780, //  39  Y
+    (6 << 12) + 1560, //  40  Zr
+    (6 << 12) + 1480, //  41  Nb
+    (6 << 12) + 1470, //  42  Mo
+    (6 << 12) + 1350, //  43  Tc
+    (6 << 12) + 1400, //  44  Ru
+    (6 << 12) + 1450, //  45  Rh
+    (6 << 12) + 1500, //  46  Pd
+    (6 << 12) + 1590, //  47  Ag
+    (6 << 12) + 1690, //  48  Cd
+    (3 << 12) + 1630, //  49  In
+    (4 << 12) + 1460, //  50  Sn
+    (3 << 12) + 1460, //  51  Sb
+    (2 << 12) + 1470, //  52  Te
+    (1 << 12) + 1400, //  53  I
+    (0 << 12) + 1980, //  54  Xe
+    (1 << 12) + 1670, //  55  Cs
+    (2 << 12) + 1340, //  56  Ba
+    (1 << 12) + 1870, //  57  La
+    (6 << 12) + 1830, //  58  Ce
+    (6 << 12) + 1820, //  59  Pr
+    (6 << 12) + 1810, //  60  Nd
+    (6 << 12) + 1800, //  61  Pm
+    (6 << 12) + 1800, //  62  Sm
+    (6 << 12) + 1990, //  63  Eu
+    (6 << 12) + 1790, //  64  Gd
+    (6 << 12) + 1760, //  65  Tb
+    (6 << 12) + 1750, //  66  Dy
+    (6 << 12) + 1740, //  67  Ho
+    (6 << 12) + 1730, //  68  Er
+    (6 << 12) + 1720, //  69  Tm
+    (6 << 12) + 1940, //  70  Yb
+    (6 << 12) + 1720, //  71  Lu
+    (6 << 12) + 1570, //  72  Hf
+    (6 << 12) + 1430, //  73  Ta
+    (6 << 12) + 1370, //  74  W
+    (6 << 12) + 1350, //  75  Re
+    (6 << 12) + 1370, //  76  Os
+    (6 << 12) + 1320, //  77  Ir
+    (6 << 12) + 1500, //  78  Pt
+    (6 << 12) + 1500, //  79  Au
+    (6 << 12) + 1700, //  80  Hg
+    (3 << 12) + 1550, //  81  Tl
+    (4 << 12) + 1540, //  82  Pb
+    (3 << 12) + 1540, //  83  Bi
+    (2 << 12) + 1680, //  84  Po
+    (1 << 12) + 1700, //  85  At
+    (0 << 12) + 2400, //  86  Rn
+    (1 << 12) + 2000, //  87  Fr
+    (2 << 12) + 1900, //  88  Ra
+    (6 << 12) + 1880, //  89  Ac
+    (6 << 12) + 1790, //  90  Th
+    (6 << 12) + 1610, //  91  Pa
+    (6 << 12) + 1580, //  92  U
+    (6 << 12) + 1550, //  93  Np
+    (6 << 12) + 1530, //  94  Pu
+    (6 << 12) + 1510, //  95  Am
+    (6 << 12) + 1500, //  96  Cm
+    (6 << 12) + 1500, //  97  Bk
+    (6 << 12) + 1500, //  98  Cf
+    (6 << 12) + 1500, //  99  Es
+    (6 << 12) + 1500, // 100  Fm
+    (6 << 12) + 1500, // 101  Md
+    (6 << 12) + 1500, // 102  No
+    (6 << 12) + 1500, // 103  Lr
+    (6 << 12) + 1600, // 104  Rf
+    (6 << 12) + 1600, // 105  Db
+    (6 << 12) + 1600, // 106  Sg
+    (6 << 12) + 1600, // 107  Bh
+    (6 << 12) + 1600, // 108  Hs
+    (6 << 12) + 1600, // 109  Mt
   };
 
   /****************************************************************
@@ -1092,7 +1093,15 @@ final public class JmolConstants {
           return ionicMars[iMid];
       }
     }
-    return covalentMars[elementNumber];
+    return (short)(covalentMarsAndValence[elementNumber] & 0x0FFF);
+  }
+
+  public static int getMaximumValence(int elementNumber, int charge) {
+    if (charge != 0) {
+      // I don't know what this should be
+      return 8;
+    }
+    return (covalentMarsAndValence[elementNumber] >> 12) & 0x0F;
   }
 
 
@@ -1250,13 +1259,14 @@ final public class JmolConstants {
     // java compiler should eliminate all of this code.
     if ((elementSymbols.length != elementNames.length) ||
         (elementSymbols.length != vanderwaalsMars.length) ||
-        (elementSymbols.length != covalentMars.length) ||
+        (elementSymbols.length != covalentMarsAndValence.length) ||
         (elementSymbols.length != argbsCpk.length)) {
       System.out.println("ERROR!!! Element table length mismatch:" +
                          "\n elementSymbols.length=" + elementSymbols.length +
                          "\n elementNames.length=" + elementNames.length +
                          "\n vanderwaalsMars.length=" + vanderwaalsMars.length+
-                         "\n covalentMars.length=" + covalentMars.length +
+                         "\n covalentMarsAndValence.length=" +
+                         covalentMarsAndValence.length +
                          "\n argbsCpk.length=" + argbsCpk.length);
     }
   }

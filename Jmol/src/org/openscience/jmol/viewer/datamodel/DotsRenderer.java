@@ -84,6 +84,8 @@ class DotsRenderer extends ShapeRenderer {
       return;
     for (int i = dots.torusCount; --i >= 0; ) {
       Dots.Torus torus = tori[i];
+      if (torus == null)
+        continue;
       boolean onI = dotsConvexMaps[torus.indexI] != null;
       boolean onJ = dotsConvexMaps[torus.indexJ] != null;
       if (bondSelectionModeOr) {

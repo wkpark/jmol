@@ -102,7 +102,6 @@ public class Dots extends Shape {
   int torusCount;
   Torus[] tori;
 
-  BitSet bsToriCalculated;
   Hashtable htTori;
 
   int indexI, indexJ, indexK;
@@ -134,7 +133,6 @@ public class Dots extends Shape {
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
-      bsToriCalculated = null;
       htTori = null;
       torusCount = 0;
       cavities = null;
@@ -164,15 +162,17 @@ public class Dots extends Shape {
           calcCavities();
         }
     } else {
-      // turn off the selected dots
-      // 1.1 jvm does not have BitSet.andNot()
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
           dotsConvexMaps[i] = null;
+      turnOffTori();
       int i;
       for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
         {}
-      dotsConvexMax = i+1;
+      dotsConvexMax = i + 1;
+      for (i = torusCount; --i >= 0 && tori[i] == null; )
+        {}
+      torusCount = i + 1;
     }
   }
 
@@ -322,11 +322,8 @@ public class Dots extends Shape {
     if (htTori == null) {
       torusCount = 0;
       tori = new Torus[32];
-      bsToriCalculated = new BitSet();
       htTori = new Hashtable();
     }
-    if (bsToriCalculated.get(indexI))
-      return;
     for (int iJ = neighborCount; --iJ >= 0; ) {
       if (indexI >= neighborIndices[iJ])
         continue;
@@ -340,6 +337,17 @@ public class Dots extends Shape {
       if (torusCount == tori.length)
         tori = (Torus[])Util.doubleLength(tori);
       tori[torusCount++] = torusIJ;
+    }
+  }
+
+  void turnOffTori() {
+    for (int i = torusCount; --i >= 0; ) {
+      Torus torus = tori[i];
+      if (torus == null)
+        continue;
+      if (dotsConvexMaps[torus.indexI] == null &&
+          dotsConvexMaps[torus.indexJ] == null)
+        tori[i] = null;
     }
   }
 

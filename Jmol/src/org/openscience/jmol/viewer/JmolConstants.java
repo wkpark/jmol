@@ -1682,7 +1682,8 @@ final public class JmolConstants {
     "2H2*",
     " H1*",
     " H5T",
-    " H3T", // 29
+    " H3T",
+    "2HO*", // 30
   };
   
   public final static short RESID_AMINO_MAX = 22;

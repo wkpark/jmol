@@ -548,7 +548,7 @@ public class Token {
     "@amino _g<=22",
     "@aromatic his,phe,trp,tyr",
     //    "@backbone amino & _a<=3,nucleic & _a>=4 & _a<=15",
-    "@backbone amino & _a<=3,nucleic & (_a>=8 & _a<=29)",
+    "@backbone amino & _a<=3,nucleic & (_a>=8 & _a<=30)",
     "@mainchain backbone",
     "@basic arg,his,lys",
     "@bonded _bondedcount>0",
@@ -557,6 +557,7 @@ public class Token {
     "@charged acidic,basic",
     "@cyclic his,phe,pro,trp,tyr",
     //    "@cystine",
+    "@dna nucleic & !within(group,(_a=15,_a=30))",
     "@helix _structure=3",
     //    "@hetero", handled specially
     // doc on hydrophobic is inconsistent
@@ -576,9 +577,10 @@ public class Token {
     "@positive basic",
     "@protein amino", // + common post-translational modifications ??
     // selected - special and is handled at runtime
+    "@rna nucleic & within(group,_a=15)",
     "@sheet _structure=2",
-    "@sidechain protein and !backbone", // doc & code inconsistent
-    "@base nucleic and !backbone",
+    "@sidechain protein & !backbone", // doc & code inconsistent
+    "@base nucleic & !backbone",
     "@small ala,gly,ser",
     "@solvent _g>=69 & _g<=73", // water or ions
     "@surface !buried",
@@ -586,7 +588,7 @@ public class Token {
     "@water _g=69,_g=70,_g=71",
     "@hoh water",
 
-    "@nucleic _g>=23 & _g<=68",
+    "@nucleic within(group,(_a>=8 & _a<=30))",
     "@purine _g>=23 & _g<=28",
     "@pyrimidine _g>=29 & _g<=34",
     "@a _g=23,_g=24,_g>=35 & _g<=36,_g>=51 & _g<=53",
@@ -595,6 +597,7 @@ public class Token {
     "@t _g=31,_g=32,_g>=63 & _g<=65",
     "@u _g=33,_g=34,_g>=47 & _g<=50,_g>=66 & _g<=68",
     "@i _g=27,_g=28,_g>=57 & _g<=59",
+    
 
     // "@hydrogen _e=1", handled specially
     "@helium _e=2",

@@ -1576,4 +1576,25 @@ final public class JmolViewer {
     return Colix.getColix(modelManager.getColorAtom(atomicNumber,
                                                     clientAtom, scheme));
   }
+
+  ////////////////////////////////////////////////////////////////
+  // Access to atom properties for clients
+  ////////////////////////////////////////////////////////////////
+
+  public String getAtomicSymbol(int i) {
+    return getJmolFrame().getAtomAt(i).getAtomicSymbol();
+  }
+
+  public double getAtomX(int i) {
+    return getJmolFrame().getAtomAt(i).getAtomX();
+  }
+
+  public double getAtomY(int i) {
+    return getJmolFrame().getAtomAt(i).getAtomY();
+  }
+
+  public double getAtomZ(int i) {
+    return getJmolFrame().getAtomAt(i).getAtomZ();
+  }
+
 }

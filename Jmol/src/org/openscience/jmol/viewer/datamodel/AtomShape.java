@@ -264,15 +264,15 @@ public class AtomShape implements Bspt.Tuple {
     return point3d;
   }
 
-  public double getX() {
+  public double getAtomX() {
     return point3d.x;
   }
 
-  public double getY() {
+  public double getAtomY() {
     return point3d.y;
   }
 
-  public double getZ() {
+  public double getAtomZ() {
     return point3d.z;
   }
 

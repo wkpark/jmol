@@ -286,7 +286,7 @@ public class Jmol extends JPanel {
     say("Initializing Measurements...");
     mlist = new MeasurementList(frame, viewer);
     meas = new Measure(frame, viewer);
-    meas.setMeasurementList(mlist);
+    //    meas.setMeasurementList(mlist);
     display.setMeasure(meas);
     //    mlist.addMeasurementListListener(display);
 

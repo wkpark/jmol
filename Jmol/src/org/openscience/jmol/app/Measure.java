@@ -24,8 +24,6 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.viewer.datamodel.AtomShape;
-import org.openscience.jmol.viewer.datamodel.JmolFrame;
 import org.openscience.jmol.viewer.JmolViewer;
 
 import java.io.File;
@@ -82,7 +80,7 @@ public class Measure extends JDialog {
   };
 
   private JmolViewer viewer;
-  private MeasurementList mlist;
+  //  private MeasurementList mlist;
 
   // The actions:
 
@@ -251,9 +249,9 @@ public class Measure extends JDialog {
     centerDialog();
   }
 
-  public void setMeasurementList(MeasurementList mlist) {
-    this.mlist = mlist;
-  }
+  //  public void setMeasurementList(MeasurementList mlist) {
+  //    this.mlist = mlist;
+  //  }
 
   private void initialize() {
 
@@ -330,14 +328,13 @@ public class Measure extends JDialog {
         return;
       }
     }
-    JmolFrame frame = viewer.getJmolFrame();
-    AtomShape atom = frame.getAtomAt(measured);
     selection[currentAtom] = measured;
-
     mtm.updateRow(currentAtom,
                   measured,
-                  atom.getAtomicSymbol(),
-                  atom.getX(), atom.getY(), atom.getZ());
+                  viewer.getAtomicSymbol(measured),
+                  viewer.getAtomX(measured),
+                  viewer.getAtomY(measured),
+                  viewer.getAtomZ(measured));
     if (currentAtom < measure - 1) {
       currentAtom++;
       table.setRowSelectionInterval(currentAtom, currentAtom);

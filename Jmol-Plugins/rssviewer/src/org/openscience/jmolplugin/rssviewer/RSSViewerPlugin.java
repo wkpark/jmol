@@ -24,6 +24,10 @@
  */
 package org.openscience.jmol.plugin;
 
+import org.openscience.jmol.ChemFile;
+import org.openscience.jmol.ChemFrame;
+import org.openscience.jmol.Convertor;
+import org.openscience.jmol.DisplayControl;
 import org.openscience.cdk.AtomContainer;
 import org.openscience.cdk.ChemModel;
 import org.openscience.cdk.ChemSequence;
@@ -49,8 +53,10 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.Dimension;
 import java.awt.event.*;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.*;
 import javax.swing.table.AbstractTableModel;
+
 
 /**
  * Plugin that can read RSS sources and extract molecular content
@@ -60,9 +66,14 @@ import javax.swing.table.AbstractTableModel;
  */
 public class RSSViewerPlugin implements JmolPluginInterface {
 
+    private DisplayControl control = null;
     private Vector channels = null;
     private JTree rssTree = null;
     private RSSContentModel channelContent = null;
+    
+    public void setDisplayControl(DisplayControl control) {
+        this.control = control;
+    }
     
     public void start() {
         channels = new Vector();
@@ -164,6 +175,28 @@ public class RSSViewerPlugin implements JmolPluginInterface {
         // A table showing the entries in the channel
         channelContent = new RSSContentModel();
         JTable channelTable = new JTable(channelContent);
+        channelTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        ListSelectionModel rowSM = channelTable.getSelectionModel();
+        rowSM.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                // Ignore extra messages
+                if (e.getValueIsAdjusting()) return;
+                
+                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+                if (lsm.isSelectionEmpty()) {
+                    // no rows are selected
+                } else {
+                    int selectedRow = lsm.getMinSelectionIndex();
+                    ChemModel model = channelContent.getValueAt(selectedRow);
+                    AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
+                    ChemFrame frame = Convertor.convert(control, container);
+                    ChemFile file = new ChemFile(control, true);
+                    file.addFrame(frame);
+                    control.setChemFile(file);
+                }
+            }
+        });
+        
         channelTable.validate();
         JScrollPane contentPane = new JScrollPane(channelTable);
         contentPane.validate();
@@ -246,7 +279,7 @@ public class RSSViewerPlugin implements JmolPluginInterface {
                 return "";
             } else if (column == 3) {
                 AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
-                System.out.println(container);
+                // System.out.println(container);
                 MFAnalyser analyser = new MFAnalyser(container);
                 return analyser.getMolecularFormula();
             } else if (column == 4) {
@@ -257,6 +290,10 @@ public class RSSViewerPlugin implements JmolPluginInterface {
             return "Error";
         }
     
+        public ChemModel getValueAt(int row) {
+            return (ChemModel)models.elementAt(row);
+        }
+
         public boolean isCellEditable(int row, int col) {
             return false;
         }

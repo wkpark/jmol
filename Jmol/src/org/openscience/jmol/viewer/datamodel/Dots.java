@@ -155,11 +155,13 @@ public class Dots extends Shape {
         if (bsDotsOn.get(i)) {
           if (i >= dotsConvexCount)
             dotsConvexCount = i + 1;
+          /*
           if (dotsConvexMaps[i] != null)
             continue;
+          */
           colixes[i] = viewer.getColixDotsConvex();
           setAtomI(i);
-          getNeighbors();
+          getNeighbors(bsSelected);
           calcConvexMap();
           calcTori();
           calcCavities();
@@ -202,6 +204,7 @@ public class Dots extends Shape {
   }
 
   void setAtomI(int indexI) {
+    System.out.println("Dots.setAtomI(" + indexI + ")");
     this.indexI = indexI;
     atomI = frame.atoms[indexI];
     centerI = atomI.point3f;
@@ -270,7 +273,10 @@ public class Dots extends Shape {
   Point3f[] neighborCenters = new Point3f[16];
   float[] neighborPlusProbeRadii2 = new float[16];
   
-  void getNeighbors() {
+  void getNeighbors(BitSet bsSelected) {
+    System.out.println("Dots.getNeighbors radiusI=" + radiusI +
+                       " diameterP=" + diameterP +
+                       " maxVdw=" + frame.getMaxVanderwaalsRadius());
     AtomIterator iter =
       frame.getWithinIterator(atomI, radiusI + diameterP +
                               frame.getMaxVanderwaalsRadius());
@@ -279,11 +285,12 @@ public class Dots extends Shape {
       Atom neighbor = iter.next();
       if (neighbor == atomI)
         continue;
+      // only consider selected neighbors
+      if (! bsSelected.get(neighbor.atomIndex))
+        continue;
       float neighborRadius = neighbor.getVanderwaalsRadiusFloat();
-      float neighborRadii2 = neighborRadius + radiusP;
-      neighborRadii2 *= neighborRadii2;
-      if (radiiIP2 + neighborRadii2 <=
-          centerI.distanceSquared(neighbor.point3f))
+      if (centerI.distance(neighbor.point3f) >
+          radiusI + radiusP + radiusP + neighborRadius)
         continue;
       if (neighborCount == neighbors.length) {
         neighbors = (Atom[])Util.doubleLength(neighbors);
@@ -294,7 +301,9 @@ public class Dots extends Shape {
       neighbors[neighborCount] = neighbor;
       neighborCenters[neighborCount] = neighbor.point3f;
       neighborIndices[neighborCount] = neighbor.atomIndex;
-      neighborPlusProbeRadii2[neighborCount] = neighborRadii2;
+      float neighborPlusProbeRadii = neighborRadius + radiusP;
+      neighborPlusProbeRadii2[neighborCount] =
+        neighborPlusProbeRadii * neighborPlusProbeRadii;
       ++neighborCount;
     }
     /*

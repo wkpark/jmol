@@ -85,7 +85,7 @@ Many people, but the coordinator and primary developer is Dan Gezelter
 based on a sample atoms-only MoleculeViewer written by James Gosling.
 We're also using some icons from Dean S. Jones, GIF and PPM encoders
 from Jef Poskanzer, and the JPG encoder is from James Weeks.  The
-Gaussian log file importer was written by Christoph Steinbeck.  The
+Gaussian log file importer was written by Chris Steinbeck.  The
 CML file parser was written by E.L. Willighagen.  The normal mode
 animation code (and many of the file readers) came from Bradley A. Smith.
 Anyone who wants to submit code to the Jmol project is welcome to 

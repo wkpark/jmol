@@ -68,7 +68,7 @@ class Jmol extends JPanel {
     private Measure meas;
     private MeasurementList mlist;
     private RecentFilesDialog recentFiles;
-    private ScriptWindow scriptWindow;
+    protected ScriptWindow scriptWindow;
     protected static JFrame frame;
     private ChemFile cf;
     private JFileChooser openChooser = new JFileChooser();
@@ -84,7 +84,7 @@ class Jmol extends JPanel {
     
     private static JFrame consoleframe;
 
-    private DisplaySettings settings = new DisplaySettings();
+    protected DisplaySettings settings = new DisplaySettings();
 /** The name of the currently open file **/
     public String currentFileName="";
 

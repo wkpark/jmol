@@ -3,7 +3,19 @@
  *
  * Copyright (c) 2000 Egon L. Willighagen All Rights Reserved.
  *
- * GPL 2.0 license.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package org.openscience.jmol;
 
@@ -22,7 +34,7 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
         super(boss.frame,"Rasmol Scripts",true);
         window = boss;
         getContentPane().setLayout(new java.awt.BorderLayout());
-        output = new JTextArea(20,60);
+        output = new JTextArea(20,30);
         output.setEditable(false);
         output.append("> ");
 	JScrollPane scrollPane = new JScrollPane(output);
@@ -30,7 +42,7 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
         input = new JTextField();
         input.addActionListener(new ActionListener() {
 
-            private RasMolScriptHandler scripthandler = new RasMolScriptHandler(window);
+            private RasMolScriptHandler scripthandler = new RasMolScriptHandler(window, output);
 
             public void actionPerformed(ActionEvent e) {
                 String command = input.getText();
@@ -42,7 +54,6 @@ public class ScriptWindow extends JDialog implements java.awt.event.WindowListen
 		try { 
 		    scripthandler.handle(command);
 		} catch (RasMolScriptException rasmolerror) {
-		    output.append("Error:\n");
                     output.append(rasmolerror.getMessage());
                     output.append("\n");
 		}

@@ -106,6 +106,11 @@ public abstract class MouseManager {
       return;
     // left button was pressed
 
+    if (viewer.frankClicked(x, y)) {
+      viewer.popupMenu(x, y);
+      return;
+    }
+
     int atomIndex = viewer.findNearestAtomIndex(x, y);
     switch (modeMouse) {
     case JmolConstants.MOUSE_PICK:

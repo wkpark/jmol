@@ -186,6 +186,11 @@ public class ModelManager {
     frame.deleteAtom(atomIndex);
   }
 
+  public boolean frankClicked(int x, int y) {
+    return (getShapeSize(JmolConstants.SHAPE_FRANK) != 0 &&
+            frame.frankClicked(x, y));
+  }
+
   public int findNearestAtomIndex(int x, int y) {
     return frame.findNearestAtomIndex(x, y);
   }

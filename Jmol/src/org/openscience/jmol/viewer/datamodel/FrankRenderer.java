@@ -27,22 +27,9 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
-import java.awt.Rectangle;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 class FrankRenderer extends ShapeRenderer {
-
-  private final static String frankString = "Jmol";
-  private final static String frankFontName = "Serif";
-  private final static int frankFontStyle = Font.BOLD;
-  private final static int frankFontSize = 14;
-  private final static int frankMargin = 4;
-  Font frankFont;
-  int frankWidth;
-  int frankDescent;
 
   void render() {
     Frank frank = (Frank)shape;
@@ -50,16 +37,10 @@ class FrankRenderer extends ShapeRenderer {
     if (mad == 0)
       return;
 
-    if (frankFont == null) {
-      frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
-      FontMetrics fm = g3d.getFontMetrics(frankFont);
-      frankWidth = fm.stringWidth(frankString);
-      frankDescent = fm.getDescent();
-    }
-    g3d.setFont(frankFont);
-    g3d.drawString(frankString, frank.colix,
-                   g3d.width - frankWidth - frankMargin,
-                   g3d.height - frankDescent - frankMargin,
+    g3d.setFont(frank.frankFont);
+    g3d.drawString(frank.frankString, frank.colix,
+                   g3d.width - frank.frankWidth - frank.frankMargin,
+                   g3d.height - frank.frankDescent - frank.frankMargin,
                    0);
   }
 }

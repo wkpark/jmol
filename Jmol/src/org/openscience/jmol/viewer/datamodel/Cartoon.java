@@ -31,7 +31,7 @@ import org.openscience.jmol.viewer.pdb.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class Cartoon extends Mcps {
+class Cartoon extends Mcps {
 
   Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);

@@ -30,7 +30,7 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Trace extends Mcps {
+class Trace extends Mcps {
 
   Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);

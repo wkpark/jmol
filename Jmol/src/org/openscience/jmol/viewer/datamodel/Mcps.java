@@ -34,24 +34,24 @@ import java.util.BitSet;
 /****************************************************************
  * Mcps stands for Model-Chain-Polymer-Shape
  ****************************************************************/
-abstract public class Mcps extends Shape {
+abstract class Mcps extends Shape {
 
   PdbFile pdbFile;
 
   Model[] models;
 
-  final public void initShape() {
+  final void initShape() {
     pdbFile = frame.pdbFile;
   }
 
-  public void setSize(int size, BitSet bsSelected) {
+  void setSize(int size, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
     for (int m = models.length; --m >= 0; )
       models[m].setMad(mad, bsSelected);
   }
   
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();
     byte palette = 0;
     short colix = 0;
@@ -99,7 +99,7 @@ abstract public class Mcps extends Shape {
         chains[i] = allocateMcpsChain(model.getChain(i).getPolymer());
     }
     
-    public void setMad(short mad, BitSet bsSelected) {
+    void setMad(short mad, BitSet bsSelected) {
       for (int i = chains.length; --i >= 0; ) {
         Chain chain = chains[i];
         if (chain.polymerCount > 0)
@@ -107,7 +107,7 @@ abstract public class Mcps extends Shape {
       }
     }
 
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
+    void setColix(byte palette, short colix, BitSet bsSelected) {
       for (int i = chains.length; --i >= 0; ) {
         Chain chain = chains[i];
         if (chain.polymerCount > 0)
@@ -205,7 +205,7 @@ abstract public class Mcps extends Shape {
       hasTemperatureRange = true;
     }
 
-    public void setMad(short mad, BitSet bsSelected) {
+    void setMad(short mad, BitSet bsSelected) {
       int[] atomIndices = polymer.getAtomIndices();
       for (int i = polymerCount; --i >= 0; ) {
         if (bsSelected.get(atomIndices[i]))
@@ -215,7 +215,7 @@ abstract public class Mcps extends Shape {
         mads[polymerCount] = mads[polymerCount - 1];
     }
 
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
+    void setColix(byte palette, short colix, BitSet bsSelected) {
       int[] atomIndices = polymer.getAtomIndices();
       for (int i = polymerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];

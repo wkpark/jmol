@@ -235,7 +235,7 @@ final public class Frame {
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape)shapeClass.newInstance();
-      shape.setViewerFrame(viewer, this);
+      shape.setViewerG3dFrame(viewer, g3d, this);
       return shape;
     } catch (Exception e) {
       System.out.println("Could not instantiate shape:" + classBase +
@@ -476,6 +476,13 @@ final public class Frame {
   /****************************************************************
    * selection handling
    ****************************************************************/
+  public boolean frankClicked(int x, int y) {
+    Shape frankShape = shapes[JmolConstants.SHAPE_FRANK];
+    if (frankShape == null)
+      return false;
+    return frankShape.wasClicked(x, y);
+  }
+
   final static int selectionPixelLeeway = 5;
 
   public int findNearestAtomIndex(int x, int y) {

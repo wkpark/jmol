@@ -988,6 +988,10 @@ final public class JmolViewer {
     return modelManager.getBondCount();
   }
 
+  public boolean frankClicked(int x, int y) { 
+    return modelManager.frankClicked(x, y);
+  }
+
   public int findNearestAtomIndex(int x, int y) {
     return modelManager.findNearestAtomIndex(x, y);
   }

@@ -25,6 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
+import org.openscience.jmol.viewer.g3d.*;
 
 import javax.vecmath.Point3f;
 import java.util.BitSet;
@@ -33,9 +34,11 @@ abstract public class Shape {
 
   JmolViewer viewer;
   Frame frame;
+  Graphics3D g3d;
 
-  final public void setViewerFrame(JmolViewer viewer, Frame frame) {
+  final void setViewerG3dFrame(JmolViewer viewer, Graphics3D g3d, Frame frame) {
     this.viewer = viewer;
+    this.g3d = g3d;
     this.frame = frame;
     initShape();
   }
@@ -43,14 +46,18 @@ abstract public class Shape {
   void initShape() {
   }
 
-  public void setSize(int size, BitSet bsSelected) {
+  void setSize(int size, BitSet bsSelected) {
   }
 
-  public void setProperty(String propertyName, Object value,
+  void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     System.out.println("unassigned property:" + propertyName + ":" + value);
   }
 
-  public void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
+  boolean wasClicked(int x, int y) {
+    return false;
+  }
+
+  void checkBoundsMinMax(Point3f pointMin, Point3f pointMax) {
   }
 }

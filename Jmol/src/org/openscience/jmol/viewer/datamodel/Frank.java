@@ -25,9 +25,37 @@
 
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
 public class Frank extends SelectionIndependentShape {
+
+  final static String frankString = "Jmol";
+  final static String frankFontName = "Serif";
+  final static int frankFontStyle = Font.BOLD;
+  final static int frankFontSize = 14;
+  final static int frankMargin = 4;
+
+  Font frankFont;
+  int frankWidth;
+  int frankAscent;
+  int frankDescent;
+
+
   void initShape() {
     colix = Graphics3D.GRAY;
+
+    frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
+    FontMetrics fm = g3d.getFontMetrics(frankFont);
+    frankWidth = fm.stringWidth(frankString);
+    frankDescent = fm.getDescent();
+    frankAscent = fm.getAscent();
+  }
+
+  boolean wasClicked(int x, int y) {
+    return (g3d.width > 0 &&
+            g3d.height > 0 &&
+            x > g3d.width - frankWidth - frankMargin &&
+            y > g3d.height - frankAscent - frankMargin);
   }
 }

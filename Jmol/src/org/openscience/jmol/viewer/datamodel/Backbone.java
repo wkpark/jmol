@@ -30,7 +30,7 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Backbone extends Mcps {
+class Backbone extends Mcps {
 
   Mcps.Chain allocateMcpsChain(PdbPolymer polymer) {
     return new Chain(polymer);
@@ -42,7 +42,7 @@ public class Backbone extends Mcps {
       super(polymer, 1, 1500, 500);
     }
 
-    public void setSize(int size, BitSet bsSelected) {
+    void setSize(int size, BitSet bsSelected) {
       short mad = (short)size;
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       int[] atomIndices = polymer.getAtomIndices();

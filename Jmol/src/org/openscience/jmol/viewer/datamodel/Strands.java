@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class Strands extends Mcps {
+class Strands extends Mcps {
 
   /****************************************************************
    * M. Carson and C.E. Bugg (1986)

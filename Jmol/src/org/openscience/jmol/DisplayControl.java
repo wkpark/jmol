@@ -44,6 +44,18 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.AxisAngle4d;
 
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import org.openscience.jmol.io.ChemFileReader;
+import org.openscience.jmol.io.ReaderFactory;
+
 final public class DisplayControl {
 
   public static DisplayControl control;
@@ -976,9 +988,71 @@ final public class DisplayControl {
     return transparent;
   }
 
-  public boolean openFile(String filename) {
-    return Jmol.openFilename(filename);
+  URL appletDocumentBase = null;
+  public void setAppletDocumentBase(URL base) {
+    appletDocumentBase = base;
   }
+
+  // mth jan 2003 -- there must be a better way to do this!?
+  final String[] urlPrefixes = {"http:", "https:", "ftp:"};
+
+  public String openFile(String filename) {
+    try {
+      InputStream istream = null;
+      int i;
+      for (i = 0; i < urlPrefixes.length; ++i) {
+        if (filename.startsWith(urlPrefixes[i]))
+          break;
+      }
+      if (i < urlPrefixes.length) {
+        URL url = new URL(filename);
+        istream = url.openStream();
+      } else if (appletDocumentBase != null) {
+        URL url = new URL(appletDocumentBase, filename);
+        istream = url.openStream();
+      } else {
+        File file = new File(filename);
+        istream = new FileInputStream(file);
+      }
+      openInputStream(istream);
+    } catch (Exception e) {
+      return "" + e;
+    }
+    return null;
+  }
+
+  private void openInputStream(InputStream istream) throws JmolException {
+    InputStreamReader isr = new InputStreamReader(istream);
+    BufferedReader bufreader = new BufferedReader(isr);
+    try {
+      ChemFileReader reader = null;
+      try {
+        reader = ReaderFactory.createReader(bufreader);
+      } catch (IOException ex) {
+        throw new JmolException("readMolecule",
+            "Error determining input format: " + ex);
+      }
+      if (reader == null) {
+        throw new JmolException("readMolecule", "Unknown input format");
+      }
+      ChemFile newChemFile = reader.read();
+
+      if (newChemFile != null) {
+        if (newChemFile.getNumberOfFrames() > 0) {
+          setChemFile(newChemFile);
+        } else {
+          throw new JmolException("readMolecule",
+              "the input appears to be empty");
+        }
+      } else {
+        throw new JmolException("readMolecule",
+            "unknown error reading input");
+      }
+    } catch (IOException ex) {
+      throw new JmolException("readMolecule", "Error reading input: " + ex);
+    }
+  }
+
 
   public void scriptEcho(String str) {
     // FIXME -- if there is a script window it should go there
@@ -988,12 +1062,12 @@ final public class DisplayControl {
 
   public void translateToXPercent(int percent) {
     // FIXME -- what is the proper RasMol interpretation of this with zooming?
-    xTranslation = (dimCurrent.width / 2) + dimCurrent.width * percent / 100;
+    xTranslation = (dimCurrent.width/2) + dimCurrent.width * percent / 100;
     recalc();
   }
 
   public void translateToYPercent(int percent) {
-    yTranslation = (dimCurrent.height / 2) + dimCurrent.height * percent / 100;
+    yTranslation = (dimCurrent.height/2) + dimCurrent.height * percent / 100;
     recalc();
   }
 

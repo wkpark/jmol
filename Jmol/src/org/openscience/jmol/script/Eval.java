@@ -261,7 +261,7 @@ public class Eval implements Runnable {
         System.out.println("Script command not implemented:" + token.value);
         break;
       default:
-        UnrecognizedCommand(token);
+        unrecognizedCommand(token);
         return;
       }
     }
@@ -280,56 +280,56 @@ public class Eval implements Runnable {
     return script.substring(ichBegin, ichEnd);
   }
 
-  void EvalError(String message) throws ScriptException {
+  void evalError(String message) throws ScriptException {
     throw new ScriptException(message, getLine(), filename, getLinenumber());
   }
 
-  void UnrecognizedCommand(Token token) throws ScriptException {
-    EvalError("unrecognized command:" + token.value);
+  void unrecognizedCommand(Token token) throws ScriptException {
+    evalError("unrecognized command:" + token.value);
   }
 
-  void FilenameExpected() throws ScriptException {
-    EvalError("filename expected");
+  void filenameExpected() throws ScriptException {
+    evalError("filename expected");
   }
 
-  void BooleanExpected() throws ScriptException {
-    EvalError("boolean expected");
+  void booleanExpected() throws ScriptException {
+    evalError("boolean expected");
   }
 
-  void IntegerExpected() throws ScriptException {
-    EvalError("integer expected");
+  void integerExpected() throws ScriptException {
+    evalError("integer expected");
   }
 
-  void NumberExpected() throws ScriptException {
-    EvalError("number expected");
+  void numberExpected() throws ScriptException {
+    evalError("number expected");
   }
 
-  void AxisExpected() throws ScriptException {
-    EvalError("x y z axis expected");
+  void axisExpected() throws ScriptException {
+    evalError("x y z axis expected");
   }
 
-  void ColorExpected() throws ScriptException {
-    EvalError("color expected");
+  void colorExpected() throws ScriptException {
+    evalError("color expected");
   }
 
-  void UnrecognizedExpression() throws ScriptException {
-    EvalError("runtime unrecognized expression");
+  void unrecognizedExpression() throws ScriptException {
+    evalError("runtime unrecognized expression");
   }
 
-  void UndefinedVariable() throws ScriptException {
-    EvalError("variable undefined");
+  void undefinedVariable() throws ScriptException {
+    evalError("variable undefined");
   }
 
-  void BadArgumentCount() throws ScriptException {
-    EvalError("bad argument count");
+  void badArgumentCount() throws ScriptException {
+    evalError("bad argument count");
   }
 
-  void OutOfRange() throws ScriptException {
-    EvalError("out of range");
+  void outOfRange() throws ScriptException {
+    evalError("out of range");
   }
 
-  void ErrorLoadingScript(String msg) throws ScriptException {
-    EvalError("error loading script -> " + msg);
+  void errorLoadingScript(String msg) throws ScriptException {
+    evalError("error loading script -> " + msg);
   }
 
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
@@ -386,7 +386,7 @@ public class Eval implements Runnable {
         String variable = (String)instruction.value;
         Token[] definition = (Token[])variables.get(variable);
         if (definition == null)
-          UndefinedVariable();
+          undefinedVariable();
         stack[sp++] = expression(definition, 2);
         break;
       case Token.opLT:
@@ -399,11 +399,11 @@ public class Eval implements Runnable {
         comparatorInstruction(instruction, bs);
         break;
       default:
-        UnrecognizedExpression();
+        unrecognizedExpression();
       }
     }
     if (sp != 1)
-      EvalError("atom expression compiler error - stack over/underflow");
+      evalError("atom expression compiler error - stack over/underflow");
     return stack[0];
   }
 
@@ -462,7 +462,7 @@ public class Eval implements Runnable {
 
   void background() throws ScriptException {
     if ((statement[1].tok & Token.colorparam) == 0)
-      ColorExpected();
+      colorExpected();
     control.setColorBackground(new Color(statement[1].intValue));
   }
 
@@ -495,11 +495,11 @@ public class Eval implements Runnable {
 
   void load() throws ScriptException {
     if (statement[1].tok != Token.string)
-      FilenameExpected();
+      filenameExpected();
     String filename = (String)statement[1].value;
-    if (!control.openFile(filename)) {
-      // FIXME -- should I throw an exception here? what does rasmol do?
-    }
+    String errMsg = control.openFile(filename);
+    if (errMsg != null)
+      evalError(errMsg);
   }
 
   void refresh() throws ScriptException {
@@ -518,7 +518,7 @@ public class Eval implements Runnable {
 
   void rotate() throws ScriptException {
     if (statement[2].tok != Token.integer)
-      IntegerExpected();
+      integerExpected();
     int degrees = statement[2].intValue;
     switch (statement[1].tok) {
     case Token.x:
@@ -531,19 +531,19 @@ public class Eval implements Runnable {
       control.rotateByZ(degrees);
       break;
     default:
-      AxisExpected();
+      axisExpected();
     }
   }
 
   void script() throws ScriptException {
     if (statement[1].tok != Token.string)
-      FilenameExpected();
+      filenameExpected();
     String filename = (String)statement[1].value;
     Eval eval = new Eval(control);
     if (eval.loadFile(filename, scriptLevel+1))
       eval.run();
     else
-      ErrorLoadingScript(eval.errorMessage);
+      errorLoadingScript(eval.errorMessage);
   }
 
   void select() throws ScriptException {
@@ -556,10 +556,10 @@ public class Eval implements Runnable {
 
   void translate() throws ScriptException {
     if (statement[2].tok != Token.integer)
-      IntegerExpected();
+      integerExpected();
     int percent = statement[2].intValue;
     if (percent > 100 || percent < -100)
-      OutOfRange();
+      outOfRange();
     switch (statement[1].tok) {
     case Token.x:
       control.translateToXPercent(percent);
@@ -571,7 +571,7 @@ public class Eval implements Runnable {
       control.translateToZPercent(percent);
       break;
     default:
-      AxisExpected();
+      axisExpected();
     }
   }
 
@@ -579,7 +579,7 @@ public class Eval implements Runnable {
     if (statement[1].tok == Token.integer) {
       int percent = statement[1].intValue;
       if (percent < 10 || percent > 500)
-        OutOfRange();
+        outOfRange();
       control.zoomToPercent(percent);
       return;
     }
@@ -591,7 +591,7 @@ public class Eval implements Runnable {
       control.setZoomEnabled(false);
       break;
     default:
-      BooleanExpected();
+      booleanExpected();
     }
   }
 
@@ -607,7 +607,7 @@ public class Eval implements Runnable {
       millis = (long)(((Double)token.value).doubleValue() * 1000);
       break;
     default:
-      IntegerExpected();
+      integerExpected();
     }
     try {
       Thread.sleep(millis);
@@ -617,10 +617,10 @@ public class Eval implements Runnable {
 
   void move() throws ScriptException {
     if (statement.length < 10 || statement.length > 12)
-      BadArgumentCount();
+      badArgumentCount();
     for (int i = 1; i < statement.length; ++i)
       if (statement[i].tok != Token.integer)
-        IntegerExpected();
+        integerExpected();
     int dRotX = statement[1].intValue;
     int dRotY = statement[2].intValue;
     int dRotZ = statement[3].intValue;

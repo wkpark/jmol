@@ -96,8 +96,8 @@ public class Gaussian94Reader implements ChemFileReader {
 					// Add properties to PropertyList in ChemFile; otherwise,
 					// menu of properties doesn't include option for this
 					// data
-					Vector filePL = file.getPropertyList();
-					Vector fp = frame.getFrameProps();
+					Vector filePL = file.getAtomPropertyList();
+					Vector fp = frame.getAtomProps();
 					for (int i = 0; i < fp.size(); i++) {
 						if (filePL.indexOf(fp.elementAt(i)) < 0) {
 							filePL.addElement(fp.elementAt(i));

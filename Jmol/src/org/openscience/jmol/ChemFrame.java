@@ -67,8 +67,10 @@ public class ChemFrame {
     AtomType[] atoms;  // array of atom types
     Bond[] bonds;      // array of bonds
     Vector[] aProps;   // array of Vector of atom properties
-    Vector frameProps; // Vector of all the properties present in this frame
-    boolean hasProperties = false;
+    Vector atomProps;  // Vector of all the atom properties present in this frame
+    Vector frameProps; // Vector of all the frame properties present in this frame
+    boolean hasFrameProperties = false;
+    boolean hasAtomProperties = false;
     boolean hasVectors = false;
     int[] ZsortMap;
     int nvert = 0;
@@ -158,6 +160,7 @@ public class ChemFrame {
     public ChemFrame(int na) {
         this.maxvert = na;
         frameProps = new Vector();
+        atomProps = new Vector();
         vert = new float[na * 3];
         vect = new float[na * 3];
         atoms = new AtomType[na];
@@ -183,6 +186,7 @@ public class ChemFrame {
     public ChemFrame() {
         this.maxvert = 100;
         frameProps = new Vector();
+        atomProps = new Vector();
         vert = new float[100 * 3];
         vect = new float[100 * 3];
         atoms = new AtomType[100];
@@ -202,11 +206,31 @@ public class ChemFrame {
     }
 
     /** 
-     * returns a Vector containing the list of PhysicalProperty descriptors
-     * present in this frame
+     * returns a Vector containing the list of Physical Properties
+     * associated with this
      */
     public Vector getFrameProps() {
         return frameProps;
+    }
+
+    /**
+     * Adds a PhysicalProperty to this ChemFrame
+     *
+     * @param property the PhysicalProperty to be added.
+     */
+    public void addFrameProperty(PhysicalProperty property) {
+        String desc = property.getDescriptor();
+        if (frameProps.indexOf(desc) < 0) {
+            frameProps.addElement(desc);
+        }
+    }
+
+    /** 
+     * returns a Vector containing the list of PhysicalProperty descriptors
+     * present for the atoms in this frame
+     */
+    public Vector getAtomProps() {
+        return atomProps;
     }
 
     /**
@@ -389,7 +413,7 @@ public class ChemFrame {
     public int addPropertiedVert(String name, float x, float y, float z, 
                                  Vector props) throws Exception {
 
-        hasProperties = true;
+        hasAtomProperties = true;
         int i = addVert(name, x, y, z);
         aProps[i] = props;
 
@@ -407,40 +431,40 @@ public class ChemFrame {
                 vect[k+2] = (float)(z + vtmp[2]);
             }
             
-            // Update the frameProps if we found a new property
-            if (frameProps.indexOf(desc) < 0) {
-                frameProps.addElement(desc);
+            // Update the atomProps if we found a new property
+            if (atomProps.indexOf(desc) < 0) {
+                atomProps.addElement(desc);
             }
             
         }
         return i;
     }
 
-	/**
-	 * Adds a PhysicalProperty to the atom at the specified index.
-	 *
-	 * @param vertexIndex index of the vertex to which property is added.
-	 * @param property the PhysicalProperty to be added.
-	 */
-	public void addProperty(int vertexIndex, PhysicalProperty property) {
-		aProps[vertexIndex].addElement(property);
-		String desc = property.getDescriptor();
-		if (desc.equals("Vector") && property instanceof VProperty) {
-			hasVectors = true;
-			VProperty vp = (VProperty) property;
-			double[] vtmp = new double[3];
-			vtmp = vp.getVector();
-			int k = vertexIndex*3;
-			vect[k] = (float)(vert[k] + vtmp[0]);
+    /**
+     * Adds a PhysicalProperty to the atom at the specified index.
+     *
+     * @param vertexIndex index of the vertex to which property is added.
+     * @param property the PhysicalProperty to be added.
+     */
+    public void addProperty(int vertexIndex, PhysicalProperty property) {
+        aProps[vertexIndex].addElement(property);
+        String desc = property.getDescriptor();
+        if (desc.equals("Vector") && property instanceof VProperty) {
+            hasVectors = true;
+            VProperty vp = (VProperty) property;
+            double[] vtmp = new double[3];
+            vtmp = vp.getVector();
+            int k = vertexIndex*3;
+            vect[k] = (float)(vert[k] + vtmp[0]);
 			vect[k+1] = (float)(vert[k+1] + vtmp[1]);
 			vect[k+2] = (float)(vert[k+2] + vtmp[2]);
-		}
-		// Update the frameProps if we found a new property
-		if (frameProps.indexOf(desc) < 0) {
-			frameProps.addElement(desc);
-		}
-	}
-
+        }
+        // Update the atomProps if we found a new property
+        if (atomProps.indexOf(desc) < 0) {
+            atomProps.addElement(desc);
+        }
+    }
+    
     /** 
      * returns the number of atoms in the ChemFrame
      */

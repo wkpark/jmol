@@ -75,7 +75,7 @@ public class CMLSaver extends FileSaver {
       
       frame_count++;
 	
-      Vector fp = cf.getFrameProps();
+      Vector fp = cf.getAtomProps();
       // test if we have charges or vectors in this frame:
       for (int i = 0; i < fp.size(); i++) {
           String prop = (String) fp.elementAt(i);

@@ -86,7 +86,7 @@ public class XYZSaver extends FileSaver {
                 w.write(s2 + "\n", 0, s2.length()+1);
             }
 
-            Vector fp = cf.getFrameProps();
+            Vector fp = cf.getAtomProps();
 
             // Create some dummy properties:
             Charge c = new Charge(0.0);

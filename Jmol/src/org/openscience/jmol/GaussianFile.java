@@ -103,8 +103,8 @@ public class GaussianFile extends ChemFile
             frames.addElement(cf);
             Vector fp = cf.getFrameProps();
             for (int i = 0; i < fp.size(); i++) {
-                if (PropertyList.indexOf(fp.elementAt(i)) < 0) {
-                    PropertyList.addElement(fp.elementAt(i));
+                if (AtomPropertyList.indexOf(fp.elementAt(i)) < 0) {
+                    AtomPropertyList.addElement(fp.elementAt(i));
                 }
             }
             nframes++;

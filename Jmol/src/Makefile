@@ -36,6 +36,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/Dihedral.java \
 		org/openscience/jmol/DisplaySettings.java \
 		org/openscience/jmol/Distance.java \
+		org/openscience/jmol/Energy.java \
 		org/openscience/jmol/FileSaver.java \
 		org/openscience/jmol/FileTyper.java \
 		org/openscience/jmol/FortranFormat.java \
@@ -65,6 +66,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/PDBReader.java \
 		org/openscience/jmol/PhysicalProperty.java \
 		org/openscience/jmol/Preferences.java \
+		org/openscience/jmol/PropertyGraph.java \
 		org/openscience/jmol/ReaderFactory.java \
 		org/openscience/jmol/Splash.java \
 		org/openscience/jmol/StatusBar.java \

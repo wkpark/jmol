@@ -64,7 +64,7 @@ public class XYZFile extends ChemFile {
         do{
             ChemFrame cf = readFrame(r);                
             frames.addElement(cf);
-            Vector fp = cf.getFrameProps();
+            Vector fp = cf.getAtomProps();
             for (int i = 0; i < fp.size(); i++) {
                 if (PropertyList.indexOf(fp.elementAt(i)) < 0) {
                     PropertyList.addElement(fp.elementAt(i));

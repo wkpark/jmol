@@ -64,6 +64,7 @@ class Jmol extends JPanel {
     private static Preferences prefs;
     private static Animate anim;
     private static Vibrate vib;
+    private static PropertyGraph pg;
     private Measure meas;
     private MeasurementList mlist;
     private static JFrame frame;
@@ -124,9 +125,12 @@ class Jmol extends JPanel {
         display = new displayPanel(status, settings);
         splash.showStatus("Initializing Preferences...");
         prefs = new Preferences(frame, display);
-        splash.showStatus("Initializing Animate and Vibrate...");
+        splash.showStatus("Initializing Animate...");
         anim = new Animate(frame, display);
+        splash.showStatus("Initializing Vibrate...");
         vib = new Vibrate(frame, display);
+        splash.showStatus("Initializing Property Graph...");
+        pg = new PropertyGraph(frame, display);
         splash.showStatus("Initializing Measurements...");
         mlist = new MeasurementList(frame, display);
         meas = new Measure(frame, display);
@@ -269,10 +273,11 @@ class Jmol extends JPanel {
         Action[] measActions = meas.getActions();
         Action[] mlistActions = mlist.getActions();
         Action[] vibActions = vib.getActions();
+        Action[] pgActions = pg.getActions();
         
         int nactions = defaultActions.length + displayActions.length + 
             prefActions.length + animActions.length + vibActions.length +
-            measActions.length + mlistActions.length; 
+            measActions.length + mlistActions.length + pgActions.length; 
         
         Action[] theActions = new Action[nactions];
 
@@ -303,6 +308,11 @@ class Jmol extends JPanel {
                          +prefActions.length+animActions.length + 
                          measActions.length + mlistActions.length, 
                          vibActions.length); 
+        System.arraycopy(pgActions, 0, theActions, 
+                         defaultActions.length+displayActions.length 
+                         +prefActions.length+animActions.length + 
+                         measActions.length + mlistActions.length +
+                         vibActions.length, pgActions.length);
         return theActions;
     }
     
@@ -730,6 +740,7 @@ class Jmol extends JPanel {
     public static final String prefsAction = "prefs";
     public static final String animAction = "animate";
     public static final String vibAction = "vibrate";
+    public static final String graphAction = "graph";
     public static final String whatsnewAction = "whatsnew";
     public static final String uguideAction = "uguide";
     public static final String atompropsAction = "atomprops";
@@ -946,8 +957,9 @@ class Jmol extends JPanel {
                             display.setChemFile(cf);
                             anim.setChemFile(cf);
                             vib.setChemFile(cf);
+                            pg.setChemFile(cf);
                             frame.setTitle(theFile.getName());     
-                            apm.replaceList(cf.getPropertyList());
+                            apm.replaceList(cf.getAtomPropertyList());
                             mlist.clear();
                         }
                     }catch(java.io.FileNotFoundException e2){

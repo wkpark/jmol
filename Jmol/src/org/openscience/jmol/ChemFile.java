@@ -48,7 +48,8 @@ public class ChemFile {
     @associates <b>ChemFrame</b>*/
     Vector frames;
     int nframes = 0;
-    Vector PropertyList = new Vector();
+    Vector AtomPropertyList = new Vector();
+    Vector FramePropertyList = new Vector();
     /**
      * Very simple class that should be subclassed for each different
      * kind of file that can be read by Jmol.
@@ -79,8 +80,16 @@ public class ChemFile {
      * returns the vector containing the descriptive list of Physical
      * properties that this file contains.  
      */
-    public Vector getPropertyList() {
-        return PropertyList;
+    public Vector getAtomPropertyList() {
+        return AtomPropertyList;
+    }
+
+    /**
+     * returns the vector containing the descriptive list of Frame
+     * properties that this file contains.  
+     */
+    public Vector getFramePropertyList() {
+        return FramePropertyList;
     }
     
 }

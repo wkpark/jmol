@@ -21,47 +21,47 @@ import org.openscience.cml.*;
  * @see ChemFrame
  */
 public class CMLReader implements ChemFileReader {
-
-	/**
-	 * Creates a CML reader.
-	 *
-	 * @param input source of CML data
-	 */
+    
+    /**
+     * Creates a CML reader.
+     *
+     * @param input source of CML data
+     */
     public CMLReader(Reader input) {
-		this.input = input;
-	}
-
-	/**
-	 * Read the CML data.
-	 */
-	public ChemFile read() throws IOException {
-		try {
-			InputSource source = new InputSource(input);
-			Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
-			EntityResolver resolver = new DTDResolver();
-			CMLHandler handler = new CMLHandler(new JMolCDO());
-			parser.setEntityResolver(resolver);
-			parser.setDocumentHandler(handler);
-			parser.parse(source);
-			ChemFile file = new ChemFile();
-			Enumeration framesIter = ((JMolCDO)handler.returnCDO()).returnChemFrames().elements();
-			while (framesIter.hasMoreElements()) {
-				file.frames.addElement((ChemFrame)framesIter.nextElement());
-			}
-			return file;
-		} catch (ClassNotFoundException ex) {
-			throw new IOException(ex.toString());
-		} catch (InstantiationException ex) {
-			throw new IOException(ex.toString());
-		} catch (SAXException ex) {
-			throw new IOException(ex.toString());
-		} catch (IllegalAccessException ex) {
-			throw new IOException(ex.toString());
-		}
+        this.input = input;
     }
 
-	/**
-	 * The source for CML data.
-	 */
-	private Reader input;
+    /**
+     * Read the CML data.
+     */
+    public ChemFile read() throws IOException {
+        try {
+            InputSource source = new InputSource(input);
+            Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
+            EntityResolver resolver = new DTDResolver();
+            CMLHandler handler = new CMLHandler(new JMolCDO());
+            parser.setEntityResolver(resolver);
+            parser.setDocumentHandler(handler);
+            parser.parse(source);
+            ChemFile file = new ChemFile();
+            Enumeration framesIter = ((JMolCDO)handler.returnCDO()).returnChemFrames().elements();
+            while (framesIter.hasMoreElements()) {
+                file.frames.addElement((ChemFrame)framesIter.nextElement());
+            }
+            return file;
+        } catch (ClassNotFoundException ex) {
+            throw new IOException(ex.toString());
+        } catch (InstantiationException ex) {
+            throw new IOException(ex.toString());
+        } catch (SAXException ex) {
+            throw new IOException(ex.toString());
+        } catch (IllegalAccessException ex) {
+            throw new IOException(ex.toString());
+        }
+    }
+
+    /**
+     * The source for CML data.
+     */
+    private Reader input;
 }

@@ -83,6 +83,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         currentFrame = 0;
         haveFile = true;
         display.setChemFile(cf);
+		setFrame(currentFrame, true);
     }
 
     private void createExtraFrames() {
@@ -354,17 +355,9 @@ public class Animate extends JDialog implements ActionListener,Runnable {
         iSlider.setPaintTicks(true);
         iSlider.setMajorTickSpacing(4);
         iSlider.setPaintLabels(true);
-        iSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e)  {
-                    stop();
-                    JSlider source = (JSlider)e.getSource();
-                    int n = source.getValue();
-                    numberExtraFrames = n;
-                    createExtraFrames();
-                }
-            });
-        
-        JCheckBox iC = new JCheckBox(jrh.getString("interpCBLabel"));
+        iSlider.addChangeListener(new NondragChangeListener());
+		
+        JCheckBox iC = new JCheckBox(jrh.getString("interpCBLabel"), true);
         iC.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     stop();
@@ -521,6 +514,28 @@ public class Animate extends JDialog implements ActionListener,Runnable {
 		}
 	}
 
+	class NondragChangeListener implements ChangeListener {
+		private boolean overrideIsAdjusting = false;
+		public NondragChangeListener() {
+			// Workaround for documented bug 4246117 for JDK 1.2.2
+			if (System.getProperty("java.version").equals("1.2.2")
+				&& System.getProperty("java.vendor").startsWith("Sun Micro")) {
+				overrideIsAdjusting = true;
+			}
+		}
+		public void stateChanged(ChangeEvent e)  {
+			stop();
+			JSlider source = (JSlider)e.getSource();
+			if (overrideIsAdjusting || !source.getValueIsAdjusting()) {
+				int n = source.getValue();
+				if (n != numberExtraFrames) {
+					numberExtraFrames = n;
+					createExtraFrames();
+				}
+			}
+		}
+	}
+        
 } 
 
 

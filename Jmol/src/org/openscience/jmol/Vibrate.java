@@ -422,7 +422,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
          */
         public VibrateAction() {
             super("vibrate");
-            this.setEnabled(true);
+            this.setEnabled(false);
         }
         
         /**

@@ -14,11 +14,9 @@
     <table width="100%">
       <tr>
         <td align="left" valign="center">
-          <a href="[root]/">
-            <img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/>
-          </a>
+          <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
+          &language;
         </td>
-        &language;
         <td align="right" valign="center">
           <font size="2">
             <a href="[root]/">Home</a> |

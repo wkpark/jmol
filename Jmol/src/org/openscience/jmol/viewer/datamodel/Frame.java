@@ -531,76 +531,43 @@ final public class Frame {
   }
 
   private final WithinIterator withinAtomIterator = new WithinIterator();
-  private final WithinIterator withinPointIterator = new WithinIterator();
-  private final PointWrapper pointWrapper = new PointWrapper();
 
   public AtomIterator getWithinIterator(Atom atomCenter,
                                              float radius) {
-    withinAtomIterator.initialize(atomCenter, radius);
+    withinAtomIterator.initialize(atomCenter.modelIndex, atomCenter, radius);
     return withinAtomIterator;
-  }
-
-  public AtomIterator getWithinIterator(Point3f point, float radius) {
-    pointWrapper.setPoint(point);
-    withinPointIterator.initialize(pointWrapper, radius);
-    return withinPointIterator;
   }
 
   class WithinIterator implements AtomIterator {
 
-    Bspt.SphereIterator iterCurrent;
+    int bsptIndex;
     Bspt.Tuple center;
     float radius;
-    int bsptIndexLast;
-    
+    Bspt.SphereIterator bsptIter;
 
-    void initialize(Bspt.Tuple center, float radius) {
+    void initialize(int bsptIndex, Bspt.Tuple center, float radius) {
+      initializeBspf();
+      this.bsptIndex = bsptIndex;
+      bsptIter = bspf.getSphereIterator(bsptIndex);
       this.center = center;
       this.radius = radius;
-      iterCurrent = null;
-      bsptIndexLast = getBsptCount();
+      bsptIter.initialize(center, radius);
     }
-
+    
     public boolean hasNext() {
-      while (true) {
-        if (iterCurrent != null && iterCurrent.hasMoreElements())
-          return true;
-        if (bsptIndexLast == 0)
-          return false;
-        iterCurrent = bspf.getSphereIterator(--bsptIndexLast);
-        if (iterCurrent != null)
-          iterCurrent.initialize(center, radius);
-      }
+      return bsptIter.hasMoreElements();
     }
-
+    
     public Atom next() {
-      return (Atom)iterCurrent.nextElement();
+      return (Atom)bsptIter.nextElement();
     }
-
+    
     public void release() {
-      iterCurrent = null;
-      for (int i = getBsptCount(); --i >= 0; ) {
-        Bspt.SphereIterator iter = bspf.getSphereIterator(i);
-        if (iter != null)
-          iter.release();
-      }
+      bsptIter.release();
+      bsptIter = null;
     }
   }
-
-  class PointWrapper implements Bspt.Tuple {
-    Point3f point;
-    
-    void setPoint(Point3f point) {
-      this.point.set(point);
-    }
-    
-    public float getDimensionValue(int dim) {
-      return (dim == 0
-	      ? point.x
-	      : (dim == 1 ? point.y : point.z));
-    }
-  }
-
+  
   ////////////////////////////////////////////////////////////////
   // autobonding stuff
   ////////////////////////////////////////////////////////////////

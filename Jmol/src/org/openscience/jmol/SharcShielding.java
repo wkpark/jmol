@@ -51,7 +51,7 @@ public class SharcShielding {
 	/**
 	 *  Map of element to magnetic shielding.
 	 */
-	Map shieldings = new HashMap();
+	Hashtable shieldings = new Hashtable();
 
 	/**
 	 *  String separator used in method notation.

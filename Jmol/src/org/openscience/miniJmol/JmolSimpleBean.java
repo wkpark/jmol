@@ -45,6 +45,7 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
+import java.io.*;
 
 /**
  * Subset version of JMol which appears as a componant and can be controlled with strings.
@@ -166,12 +167,24 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 	 */
     public void setAtomPropertiesFromURL(String propertiesURL){
         try {
-			AtomTypeSet ats1 = new AtomTypeSet();
-			java.net.URL url1 = new java.net.URL(propertiesURL);
-			ats1.load(url1.openStream());
+            AtomTypeSet ats1 = new AtomTypeSet();
+            java.net.URL url1 = new java.net.URL(propertiesURL);
+            ats1.load(url1.openStream());
         } catch(java.io.IOException e1) {
-			System.err.println("Error loading atom properties from URL '" + propertiesURL + "': " + e1);
-		}
+            System.err.println("Error loading atom properties from URL '" + propertiesURL + "': " + e1);
+        }
+        
+        typesReady = true;
+        ready = areWeReady();
+    }
+
+    public void setAtomPropertiesFromStream(InputStream is){
+        try {
+            AtomTypeSet ats1 = new AtomTypeSet();
+            ats1.load(is);
+        } catch(java.io.IOException e1) {
+            System.err.println("Error loading atom properties from Stream'" + is.toString() + "': " + e1);
+        }
         
         typesReady = true;
         ready = areWeReady();

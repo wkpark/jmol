@@ -28,7 +28,7 @@ import java.net.URL;
 class CalculateChemicalShifts extends AbstractAction {
     ChemFile chemFile;
     AtomPropsMenu propertiesMenu;
-    Map shieldings;
+    Hashtable shieldings;
     SelectSharcReference dialog;
     
     static String RF = "org/openscience/jmol/Data/refs_c4h12si1_data.sharc";
@@ -46,12 +46,18 @@ class CalculateChemicalShifts extends AbstractAction {
                 InputStreamReader isr = new InputStreamReader(url.openStream());
                 BufferedReader br = new BufferedReader(isr);
                 SharcReader sr1 = new SharcReader(br);
-                shieldings = new HashMap(); 
+                shieldings = new Hashtable(); 
                 while (sr1.hasNext()) {
                     SharcShielding ss1 = sr1.next();
                     shieldings.put(ss1.getMethod(), ss1);
                 }
-                String[] shieldingNames = (String[])shieldings.keySet().toArray(new String[0]);
+               
+                String[] shieldingNames = new String[shieldings.size()];
+                int i = 0;
+                for (Enumeration k = shieldings.keys();k.hasMoreElements();) {
+                    shieldingNames[i] = (String)k.nextElement();
+                    i++;
+                }
                 
                 dialog = new SelectSharcReference(null, shieldingNames, true);
             } catch (Exception ex) {
@@ -98,9 +104,9 @@ class CalculateChemicalShifts extends AbstractAction {
 			for (int i=0; i < frame.getNvert(); ++i) {
 				String element = frame.getAtomType(i).getBaseAtomType().getName();
 				Vector properties = frame.getVertProps(i);
-				Iterator propIter = properties.iterator();
-				while (propIter.hasNext()) {
-					Object prop = propIter.next();
+				Enumeration propIter = properties.elements();
+				while (propIter.hasMoreElements()) {
+					Object prop = propIter.nextElement();
 					if (prop instanceof NMRShielding) {
 						NMRShielding shield1 = (NMRShielding)prop;
 

@@ -70,7 +70,8 @@ public class SharcReader {
 			for (int j=0; j < 4; ++j) {
 				tokenizer2.nextToken();
 			}
-			double value = Double.parseDouble(tokenizer2.nextToken());
+                        
+                        double value = new Double(tokenizer2.nextToken()).doubleValue();
 
 			result.setShielding(element, value);
 		}

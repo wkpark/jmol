@@ -111,32 +111,31 @@ SOURCES = org/openscience/jmol/Jmol.java \
 CLASSES = $(SOURCES:%.java=%.class)
 
 APPLET_SOURCES = org/openscience/miniJmol/JmolApplet.java \
-		org/openscience/miniJmol/Atom.java \
-		org/openscience/miniJmol/AtomTypeSet.java \
-		org/openscience/miniJmol/BaseAtomType.java \
-		org/openscience/miniJmol/BondRenderer.java \
-		org/openscience/miniJmol/ChemFile.java \
-		org/openscience/miniJmol/ChemFileReader.java \
-		org/openscience/miniJmol/ChemFrame.java \
-		org/openscience/miniJmol/CMLHandler.java \
-		org/openscience/miniJmol/CMLReader.java \
-		org/openscience/miniJmol/DTDResolver.java \
-		org/openscience/miniJmol/Gaussian98Reader.java \
-		org/openscience/miniJmol/JMolCDO.java \
-		org/openscience/miniJmol/JmolBeanTest.java \
-		org/openscience/miniJmol/JmolSimpleBean.java \
-		org/openscience/miniJmol/Matrix3D.java \
-		org/openscience/miniJmol/PDBReader.java \
-		org/openscience/miniJmol/ReaderFactory.java \
-		org/openscience/miniJmol/StatusDisplay.java \
-		org/openscience/miniJmol/XYZReader.java \
-		org/openscience/miniJmol/displayPanel.java
+                 org/openscience/miniJmol/Atom.java \
+                 org/openscience/miniJmol/AtomRenderer.java \
+                 org/openscience/miniJmol/AtomTypeSet.java \
+                 org/openscience/miniJmol/BaseAtomType.java \
+                 org/openscience/miniJmol/BondRenderer.java \
+                 org/openscience/miniJmol/CMLHandler.java \
+                 org/openscience/miniJmol/CMLReader.java \
+                 org/openscience/miniJmol/ChemFile.java \
+                 org/openscience/miniJmol/ChemFileReader.java \
+                 org/openscience/miniJmol/ChemFrame.java \
+                 org/openscience/miniJmol/DTDResolver.java \
+                 org/openscience/miniJmol/Gaussian98Reader.java \
+                 org/openscience/miniJmol/JmolSimpleBean.java \
+                 org/openscience/miniJmol/Matrix3D.java \
+                 org/openscience/miniJmol/NoBondsEnumeration.java \
+                 org/openscience/miniJmol/PDBReader.java \
+                 org/openscience/miniJmol/StatusDisplay.java \
+                 org/openscience/miniJmol/XYZReader.java \
+                 org/openscience/miniJmol/displayPanel.java
 
 APPLET_CLASSES = $(APPLET_SOURCES:%.java=%.class)
 
 APPLET_JMOL_SOURCES = org/openscience/jmol/FortranFormat.java \
-		org/openscience/jmol/PhysicalProperty.java \
-		org/openscience/jmol/DisplaySettings.java
+                      org/openscience/jmol/DisplaySettings.java \
+		      org/openscience/jmol/PhysicalProperty.java \
 
 APPLET_JMOL_CLASSES = $(APPLET_JMOL_SOURCES:%.java=%.class)
 
@@ -166,7 +165,7 @@ applet: $(APPLET_CLASSES) $(APPLET_JMOL_CLASSES)
 tests: $(TEST_CLASSES)
 
 applet_archive: applet
-	$(JAR) cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES)
+	$(JAR) cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES) org/openscience/jmol/Data/AtomTypes
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar

@@ -135,7 +135,7 @@ class Atom {
 	 */
 	public void clearBondedAtoms() {
 		if (bondedAtoms!=null) {
-			bondedAtoms.clear();
+			bondedAtoms.removeAllElements();
 		}
 	}
 

@@ -98,12 +98,12 @@ public class TestAtomTypesModel extends TestCase {
   public void testElements() {
 
     Enumeration types = atm1.elements();
-    assert("hasMoreElements() failed", false == types.hasMoreElements());
+    assertTrue("hasMoreElements() failed", false == types.hasMoreElements());
 
     Enumeration types2 = atm2.elements();
-    assert("hasMoreElements() failed", true == types2.hasMoreElements());
+    assertTrue("hasMoreElements() failed", true == types2.hasMoreElements());
     assertEquals("first nextElement() failed", at1, types2.nextElement());
-    assert("hasMoreElements() failed", false == types2.hasMoreElements());
+    assertTrue("hasMoreElements() failed", false == types2.hasMoreElements());
     try {
       types2.nextElement();
       fail("no exception thrown at end of elements");
@@ -167,7 +167,7 @@ public class TestAtomTypesModel extends TestCase {
    */
   public void testNameSetValueAt() {
     assertEquals("type1", atm2.get(0).getName());
-    assert(false == atm2.isCellEditable(0, 0));
+    assertTrue(false == atm2.isCellEditable(0, 0));
     atm2.setValueAt("test", 0, 0);
     assertEquals("type1", atm2.get(0).getName());
   }
@@ -178,14 +178,14 @@ public class TestAtomTypesModel extends TestCase {
    */
   public void testIsCellEditable() {
 
-    assert(false == atm2.isCellEditable(0, 0));
-    assert(false == atm2.isCellEditable(0, -1));
-    assert(false == atm2.isCellEditable(0, 23));
-    assert(false == atm2.isCellEditable(0, 0));
-    assert(true == atm2.isCellEditable(0, 1));
-    assert(true == atm2.isCellEditable(0, 2));
-    assert(true == atm2.isCellEditable(0, 3));
-    assert(true == atm2.isCellEditable(0, 5));
+    assertTrue(!atm2.isCellEditable(0, 0));
+    assertTrue(!atm2.isCellEditable(0, -1));
+    assertTrue(!atm2.isCellEditable(0, 23));
+    assertTrue(!atm2.isCellEditable(0, 0));
+    assertTrue(atm2.isCellEditable(0, 1));
+    assertTrue(atm2.isCellEditable(0, 2));
+    assertTrue(atm2.isCellEditable(0, 3));
+    assertTrue(atm2.isCellEditable(0, 5));
   }
 
   /**
@@ -196,11 +196,11 @@ public class TestAtomTypesModel extends TestCase {
   public void testGetValueAt() {
 
     try {
-      assert(atm1.getValueAt(0, 0) instanceof String);
+      assertTrue(atm1.getValueAt(0, 0) instanceof String);
       assertEquals(0, ((String) atm1.getValueAt(0, 0)).length());
-      assert(atm2.getValueAt(0, 0) instanceof String);
+      assertTrue(atm2.getValueAt(0, 0) instanceof String);
       assertEquals(at1.getName(), (String) atm2.getValueAt(0, 0));
-      assert(atm2.getValueAt(-1, -1) instanceof String);
+      assertTrue(atm2.getValueAt(-1, -1) instanceof String);
       assertEquals(0, ((String) atm2.getValueAt(-1, -1)).length());
     } catch (Exception ex) {
       fail(ex.toString());

@@ -60,7 +60,7 @@ public class TestAtomTypeSet extends TestCase {
     at1 = BaseAtomType.get("type1", "root1", 0, 0.0, 0.0, 0.0,
             new Color(0, 0, 0));
     ats2 = new AtomTypeSet();
-    assert("setUp failed", ats2.add(at1));
+    assertTrue("setUp failed", ats2.add(at1));
   }
 
   /**
@@ -68,8 +68,8 @@ public class TestAtomTypeSet extends TestCase {
    * Expect true for ats1 and false for ats2.
    */
   public void testIsEmpty() {
-    assert(ats1.isEmpty());
-    assert(!ats2.isEmpty());
+    assertTrue(ats1.isEmpty());
+    assertTrue(!ats2.isEmpty());
   }
 
   /**
@@ -78,9 +78,9 @@ public class TestAtomTypeSet extends TestCase {
   public void testAdd() {
 
     assertEquals(0, ats1.size());
-    assert(ats1.add(at1));
+    assertTrue(ats1.add(at1));
     assertEquals(1, ats1.size());
-    assert(!ats1.add(at1));
+    assertTrue(!ats1.add(at1));
     assertEquals(1, ats1.size());
   }
 
@@ -91,8 +91,8 @@ public class TestAtomTypeSet extends TestCase {
 
     try {
       ats1.load(getClass().getResourceAsStream("Data/AtomTypes"));
-      assert(ats1.size() > 100);
-      assert(ats1.contains(BaseAtomType.get("CAR")));
+      assertTrue(ats1.size() > 100);
+      assertTrue(ats1.contains(BaseAtomType.get("CAR")));
     } catch (IOException ex) {
       fail("load failed: " + ex.toString());
     }

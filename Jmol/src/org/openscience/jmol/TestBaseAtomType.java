@@ -63,9 +63,9 @@ public class TestBaseAtomType extends TestCase {
     assertEquals("type1", at1.getName());
     assertEquals("root1", at1.getRoot());
     assertEquals(1, at1.getAtomicNumber());
-    assert(1.1 == at1.getMass());
-    assert(2.2 == at1.getVdwRadius());
-    assert(3.3 == at1.getCovalentRadius());
+    assertTrue(1.1 == at1.getMass());
+    assertTrue(2.2 == at1.getVdwRadius());
+    assertTrue(3.3 == at1.getCovalentRadius());
     assertEquals(new Color(4, 5, 6), at1.getColor());
     assertEquals("type2", at2.getName());
     assertEquals(null, at2.getRoot());

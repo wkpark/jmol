@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.script;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.datamodel.AtomIterator;
@@ -916,32 +916,32 @@ public class Eval implements Runnable {
 
   void backbone() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolViewer.WIREFRAME;
+    byte style = JmolConstants.STYLE_WIREFRAME;
     short mar = -1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      style = JmolViewer.NONE;
+      style = JmolConstants.STYLE_NONE;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = JmolViewer.SHADED;
+      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = JmolViewer.SHADED;
+      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("shaded")) {
-        viewer.setStyleBond(JmolViewer.SHADED);
+        viewer.setStyleBond(JmolConstants.STYLE_SHADED);
         return;
       }
     default:
@@ -1025,25 +1025,25 @@ public class Eval implements Runnable {
   }
 
   void colorAtom(int itoken) throws ScriptException {
-    byte scheme = JmolViewer.ATOMTYPE;
+    byte scheme = JmolConstants.PALETTE_CPK;
     Color color = null;
     switch (statement[itoken].tok) {
     case Token.spacefill:
       break;
     case Token.charge:
-      scheme = JmolViewer.ATOMCHARGE;
+      scheme = JmolConstants.PALETTE_CHARGE;
       break;
     case Token.structure:
-      scheme = JmolViewer.STRUCTURE;
+      scheme = JmolConstants.PALETTE_STRUCTURE;
       break;
     case Token.amino:
-      scheme = JmolViewer.AMINO;
+      scheme = JmolConstants.PALETTE_AMINO;
       break;
     case Token.shapely:
-      scheme = JmolViewer.SHAPELY;
+      scheme = JmolConstants.PALETTE_SHAPELY;
       break;
     case Token.chain:
-      scheme = JmolViewer.CHAIN;
+      scheme = JmolConstants.PALETTE_CHAIN;
       break;
 
     case Token.group:
@@ -1052,7 +1052,7 @@ public class Eval implements Runnable {
       notImplemented(itoken);
       return;
     case Token.colorRGB:
-      scheme = JmolViewer.COLOR;
+      scheme = JmolConstants.PALETTE_COLOR;
       color = getColorParam(itoken);
       break;
     default:
@@ -1154,9 +1154,9 @@ public class Eval implements Runnable {
     viewer.invertSelection();
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
-    viewer.setStyleBondScript(JmolViewer.NONE, Bond.ALL);
+    viewer.setStyleBondScript(JmolConstants.STYLE_NONE, Bond.ALL);
     viewer.setBondSelectionModeOr(bondmode);
-    viewer.setStyleAtomScript(JmolViewer.NONE);
+    viewer.setStyleAtomScript(JmolConstants.STYLE_NONE);
     viewer.setLabelScript(null);
     // also need to turn off backbones, ribbons, strands, cartoons
     viewer.invertSelection();
@@ -1476,14 +1476,14 @@ public class Eval implements Runnable {
 
   void spacefill() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolViewer.SHADED;
+    byte style = JmolConstants.STYLE_SHADED;
     short mar = -999;
     switch (tok) {
     case Token.on:
       mar = -100; // spacefill with no args goes to 100%
       break;
     case Token.off:
-      style = JmolViewer.NONE;
+      style = JmolConstants.STYLE_NONE;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
@@ -1500,7 +1500,7 @@ public class Eval implements Runnable {
       mar = (short)(angstroms * 1000);
       break;
     case Token.wireframe:
-      style = JmolViewer.WIREFRAME;
+      style = JmolConstants.STYLE_WIREFRAME;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
@@ -1517,32 +1517,32 @@ public class Eval implements Runnable {
 
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolViewer.WIREFRAME;
+    byte style = JmolConstants.STYLE_WIREFRAME;
     short mar = -1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      style = JmolViewer.NONE;
+      style = JmolConstants.STYLE_NONE;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = JmolViewer.SHADED;
+      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = JmolViewer.SHADED;
+      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("shaded")) {
-        viewer.setStyleBond(JmolViewer.SHADED);
+        viewer.setStyleBond(JmolConstants.STYLE_SHADED);
         return;
       }
     default:
@@ -1687,10 +1687,10 @@ public class Eval implements Runnable {
   void setAxes() throws ScriptException {
     if (statement.length != 3)
       badArgumentCount();
-    byte modeAxes = JmolViewer.AXES_NONE;
+    byte modeAxes = JmolConstants.AXES_NONE;
     switch (statement[2].tok) {
     case Token.on:
-      modeAxes = JmolViewer.AXES_BBOX;
+      modeAxes = JmolConstants.AXES_BBOX;
     case Token.off:
       break;
     default:
@@ -1827,11 +1827,11 @@ public class Eval implements Runnable {
 
   /*
   void setSpacefill() throws ScriptException {
-    byte style = JmolViewer.SHADING;
+    byte style = JmolConstants.STYLE_SHADED;
     if (statement.length == 3) {
       switch (statement[2].tok) {
       case Token.wireframe:
-        style = JmolViewer.WIREFRAME;
+        style = JmolConstants.STYLE_WIREFRAME;
         break;
       case Token.identifier:
         String str = (String)statement[2].value;
@@ -1846,22 +1846,22 @@ public class Eval implements Runnable {
           break;
         }
         if (str.equals("none")) {
-          style = JmolViewer.NONE;
+          style = JmolConstants.STYLE_NONE;
           break;
         }
       default:
         unrecognizedStyleParameter();
       }
     }
-    viewer.setStyleAtomScript(JmolViewer.SHADING);
+    viewer.setStyleAtomScript(JmolConstants.STYLE_SHADED);
   }
 
   void setBond() throws ScriptException {
-    byte style = JmolViewer.SHADING;
+    byte style = JmolConstants.STYLE_SHADED;
     if (statement.length == 3) {
       switch (statement[2].tok) {
       case Token.wireframe:
-        style = JmolViewer.WIREFRAME;
+        style = JmolConstants.STYLE_WIREFRAME;
         break;
       case Token.identifier:
         String str = (String)statement[2].value;
@@ -1876,14 +1876,14 @@ public class Eval implements Runnable {
           break;
         }
         if (str.equals("none")) {
-          style = JmolViewer.NONE;
+          style = JmolConstants.STYLE_NONE;
           break;
         }
       default:
         unrecognizedStyleParameter();
       }
     }
-    viewer.setStyleBondScript(JmolViewer.SHADING);
+    viewer.setStyleBondScript(JmolConstants.STYLE_SHADED);
   }
   */
 }

@@ -29,7 +29,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.cdk.*;
 
 /**

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.*;
 
 import jas.hist.ScatterPlotSource;

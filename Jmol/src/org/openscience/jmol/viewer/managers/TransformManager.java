@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import java.awt.Dimension;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;

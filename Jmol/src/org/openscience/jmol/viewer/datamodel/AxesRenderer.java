@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import java.awt.Rectangle;
@@ -52,7 +52,7 @@ class AxesRenderer extends Renderer {
   
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     Axes axes = frame.axes;
-    if (axes.mode == JmolViewer.AXES_NONE)
+    if (axes.mode == JmolConstants.AXES_NONE)
       return;
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = 6; --i >= 0; )

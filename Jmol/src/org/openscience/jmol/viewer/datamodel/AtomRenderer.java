@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import java.awt.Rectangle;
 
@@ -76,7 +76,7 @@ class AtomRenderer extends Renderer {
     if (!showHydrogens && atom.atomicNumber == 1)
       return;
     byte styleAtom = atom.styleAtom;
-    if (styleAtom <= JmolViewer.NONE)
+    if (styleAtom <= JmolConstants.STYLE_NONE)
       return;
     int x = atom.x;
     int y = atom.y;
@@ -89,7 +89,7 @@ class AtomRenderer extends Renderer {
         y - radius >= maxY)
       return;
 
-    if (styleAtom == JmolViewer.SHADED && !wireframeRotating)
+    if (styleAtom == JmolConstants.STYLE_SHADED && !wireframeRotating)
       g3d.fillSphereCentered(atom.colixAtom, diameter, x, y, z);
     else
       g3d.drawCircleCentered(atom.colixAtom, diameter, x, y, z);

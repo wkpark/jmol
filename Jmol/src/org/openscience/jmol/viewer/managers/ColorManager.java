@@ -24,8 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.protein.PdbAtom;
@@ -39,7 +38,7 @@ public class ColorManager {
   JmolViewer viewer;
   JmolModelAdapter modelAdapter;
   boolean suppliesAtomArgb;
-  public byte schemeDefault = JmolViewer.ATOMTYPE;
+  public byte paletteDefault = JmolConstants.PALETTE_CPK;
 
   public ColorManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
@@ -53,12 +52,12 @@ public class ColorManager {
       System.out.println("WARNING! argbsPdbShapely.length not consistent");
   }
 
-  public void setSchemeDefault(byte scheme) {
-    schemeDefault = scheme;
+  public void setPaletteDefault(byte palette) {
+    paletteDefault = palette;
   }
 
-  public byte getSchemeDefault() {
-    return schemeDefault;
+  public byte getPaletteDefault() {
+    return paletteDefault;
   }
 
   public Color colorSelection = Color.orange;
@@ -528,19 +527,19 @@ public class ColorManager {
   }
 
   public short getColixAtom(Atom atom) {
-    return getColixAtomScheme(atom, schemeDefault);
+    return getColixAtomPalette(atom, paletteDefault);
   }
 
-  public short getColixAtomScheme(Atom atom, byte scheme) {
+  public short getColixAtomPalette(Atom atom, byte palette) {
     int argb = 0;
     PdbAtom pdbatom = atom.pdbatom;
     if (suppliesAtomArgb) {
-      argb = modelAdapter.getAtomArgb(atom.clientAtom, scheme);
+      argb = modelAdapter.getAtomArgb(atom.clientAtom, palette);
       if (argb != 0)
         return Colix.getColix(argb);
       System.out.println("JmolModelAdapter.getColorAtom returned null");
     }
-    switch (scheme) {
+    switch (palette) {
     case JmolModelAdapter.COLORSCHEME_CPK:
       argb = JmolModelAdapter.argbsCpk[atom.atomicNumber];
       break;

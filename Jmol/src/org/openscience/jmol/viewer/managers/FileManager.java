@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.net.MalformedURLException;

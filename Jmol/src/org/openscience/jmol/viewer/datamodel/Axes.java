@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import java.awt.Font;
@@ -57,14 +57,14 @@ public class Axes {
 
   public void setMode(byte mode) {
     this.mode = mode;
-    if (mode == JmolViewer.AXES_NONE)
+    if (mode == JmolConstants.AXES_NONE)
       return;
     originPoint.set(viewer.getBoundingBoxCenter());
     Point3f corner = viewer.getBoundingBoxCorner();
     for (int i = 6; --i >= 0; ) {
       Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);
-      if (mode == JmolViewer.AXES_BBOX) {
+      if (mode == JmolConstants.AXES_BBOX) {
         // we have just set the axisPoint to be a unit on a single axis
         // therefore only one of these values (x, y, or z) will be nonzero
         // it will have value 1 or -1

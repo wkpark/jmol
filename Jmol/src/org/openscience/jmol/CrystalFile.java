@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.util.*;
 import org.openscience.cdk.geometry.BondTools;
 import java.util.Vector;

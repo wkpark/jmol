@@ -25,7 +25,7 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -86,7 +86,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   private void setRotateMode() {
       Jmol.setRotateButton();
-      viewer.setModeMouse(JmolViewer.ROTATE);
+      viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
       viewer.setSelectionHaloEnabled(false);
   }
     
@@ -237,7 +237,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleAtom(JmolViewer.NONE);
+      viewer.setStyleAtom(JmolConstants.STYLE_NONE);
     }
   }
 
@@ -249,7 +249,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleAtom(JmolViewer.SHADED);
+      viewer.setStyleAtom(JmolConstants.STYLE_SHADED);
     }
   }
 
@@ -261,7 +261,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleAtom(JmolViewer.WIREFRAME);
+      viewer.setStyleAtom(JmolConstants.STYLE_WIREFRAME);
     }
   }
 
@@ -273,7 +273,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile(JmolViewer.ATOMCHARGE);
+      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_CHARGE);
     }
   }
 
@@ -285,7 +285,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile(JmolViewer.ATOMTYPE);
+      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_CPK);
     }
   }
 
@@ -297,7 +297,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleBond(JmolViewer.NONE);
+      viewer.setStyleBond(JmolConstants.STYLE_NONE);
     }
   }
 
@@ -309,7 +309,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleBond(JmolViewer.SHADED);
+      viewer.setStyleBond(JmolConstants.STYLE_SHADED);
     }
   }
 
@@ -321,7 +321,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleBond(JmolViewer.WIREFRAME);
+      viewer.setStyleBond(JmolConstants.STYLE_WIREFRAME);
     }
   }
 
@@ -333,7 +333,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolViewer.PICK);
+      viewer.setModeMouse(JmolConstants.MOUSE_PICK);
       viewer.setSelectionHaloEnabled(true);
       status.setStatus(1, "Select Atoms");
     }
@@ -347,7 +347,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolViewer.DELETE);
+      viewer.setModeMouse(JmolConstants.MOUSE_DELETE);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, "Delete Atoms");
     }
@@ -361,7 +361,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolViewer.ROTATE);
+      viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
@@ -375,7 +375,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolViewer.ZOOM);
+      viewer.setModeMouse(JmolConstants.MOUSE_ZOOM);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
@@ -389,7 +389,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolViewer.XLATE);
+      viewer.setModeMouse(JmolConstants.MOUSE_XLATE);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
@@ -477,7 +477,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolViewer.NOLABELS);
+      viewer.setStyleLabel(JmolConstants.LABEL_NONE);
     }
   }
 
@@ -489,7 +489,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolViewer.SYMBOLS);
+      viewer.setStyleLabel(JmolConstants.LABEL_SYMBOL);
     }
   }
 
@@ -501,7 +501,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolViewer.TYPES);
+      viewer.setStyleLabel(JmolConstants.LABEL_TYPENAME);
     }
   }
 
@@ -513,7 +513,7 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleLabel(JmolViewer.NUMBERS);
+      viewer.setStyleLabel(JmolConstants.LABEL_ATOMNO);
     }
   }
 

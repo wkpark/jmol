@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import java.util.Date;
 import java.awt.Color;
 import java.text.SimpleDateFormat;

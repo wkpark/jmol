@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.datamodel.AtomIterator;
 import org.openscience.jmol.viewer.datamodel.Bond;
@@ -77,12 +77,12 @@ public class DistributionManager {
       iter.next().setColix(colixBond);
   }
 
-  public void setColixAtom(byte scheme, short colix, AtomIterator iter) {
+  public void setColixAtom(byte palette, short colix, AtomIterator iter) {
     boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
       Atom atom = iter.next();
       short colixT = (useColorProfile
-                      ? viewer.getColixAtomScheme(atom, scheme) : colix);
+                      ? viewer.getColixAtomPalette(atom, palette) : colix);
       atom.setColixAtom(colixT);
     }
   }

@@ -25,7 +25,7 @@
 package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;

@@ -26,8 +26,7 @@
 package org.openscience.jmol.adapters;
 
 // these are standard and should be needed by all adapters
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.*;
 
 import java.awt.Color;
 import java.io.BufferedReader;

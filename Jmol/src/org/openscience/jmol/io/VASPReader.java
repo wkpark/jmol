@@ -26,7 +26,7 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.AtomicSymbol;
 import org.openscience.jmol.AtomTypeList;
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.CrystalFile;
 import java.util.Vector;

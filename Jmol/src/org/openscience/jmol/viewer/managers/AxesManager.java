@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Colix;
 
 public class AxesManager {
@@ -38,7 +38,7 @@ public class AxesManager {
     setColixAxesText(Colix.LIGHTGRAY);
   }
 
-  public byte modeAxes = JmolViewer.AXES_NONE;
+  public byte modeAxes = JmolConstants.AXES_NONE;
   public void setModeAxes(byte modeAxes) {
     this.modeAxes = modeAxes;
     viewer.getFrame().setModeAxes(modeAxes);

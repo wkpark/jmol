@@ -24,8 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.FrameBuilder;
 import org.openscience.jmol.viewer.datamodel.Atom;

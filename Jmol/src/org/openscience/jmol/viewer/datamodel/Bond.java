@@ -24,7 +24,7 @@
  */
 
 package org.openscience.jmol.viewer.datamodel;
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
@@ -91,7 +91,7 @@ public class Bond {
     this.atom2 = atom2;
     this.order = (byte)order;
     this.style = (order == BACKBONE
-                  ? JmolViewer.NONE
+                  ? JmolConstants.STYLE_NONE
                   : viewer.getStyleBond());
     this.mar = viewer.getMarBond();
     this.colix = viewer.getColixBond();
@@ -135,9 +135,9 @@ public class Bond {
   }
 
   public float getRadius() {
-    if (style == JmolViewer.NONE) return 0;
+    if (style == JmolConstants.STYLE_NONE) return 0;
     float radius = mar/1000f;
-    if (style == JmolViewer.WIREFRAME)
+    if (style == JmolConstants.STYLE_WIREFRAME)
       return -radius;
     return radius;
   }

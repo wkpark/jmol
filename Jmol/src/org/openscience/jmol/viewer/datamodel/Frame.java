@@ -25,8 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.protein.PdbMolecule;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
@@ -213,7 +212,7 @@ public class Frame {
 
   Axes axes;
   public void setModeAxes(byte modeAxes) {
-    if (modeAxes != JmolViewer.AXES_NONE && axes == null)
+    if (modeAxes != JmolConstants.AXES_NONE && axes == null)
       axes = new Axes(viewer);
     if (axes != null)
       axes.setMode(modeAxes);
@@ -586,7 +585,7 @@ public class Frame {
       bspt = new Bspt(3);
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
-        if (atom.styleAtom >= JmolViewer.NONE) // don't add deleted atoms
+        if (atom.styleAtom >= JmolConstants.STYLE_NONE) // not deleted atoms
           bspt.addTuple(atom);
       }
       sphereIter = bspt.allocateSphereIterator();

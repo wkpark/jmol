@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import java.awt.Component;
 import java.awt.Rectangle;
@@ -51,22 +51,11 @@ public abstract class MouseManager {
     this.viewer = viewer;
   }
 
-  public static final int ROTATE =     JmolViewer.ROTATE;
-  public static final int ZOOM =       JmolViewer.ZOOM;
-  public static final int XLATE =      JmolViewer.XLATE;
-  public static final int PICK =       JmolViewer.PICK;
-  public static final int DELETE =     JmolViewer.DELETE;
-  public static final int MEASURE =    JmolViewer.MEASURE;
-  public static final int DEFORM =     JmolViewer.DEFORM;
-  public static final int ROTATE_Z =   JmolViewer.ROTATE_Z;
-  public static final int SLAB_PLANE = JmolViewer.SLAB_PLANE;
-  public static final int POPUP_MENU = JmolViewer.POPUP_MENU;
-
   public static final String[] modeNames = {
     "ROTATE", "ZOOM", "XLATE", "PICK", "DELETE", "MEASURE", "DEFORM",
     "ROTATE_Z", "SLAB_PLANE"};
 
-  public int modeMouse = ROTATE;
+  public int modeMouse = JmolConstants.MOUSE_ROTATE;
   public void setMode(int mode) {
     if (logMouseEvents)
       System.out.println("MouseManager.setMode(" + modeNames[mode] + ")");
@@ -118,7 +107,7 @@ public abstract class MouseManager {
 
     int atomIndex = viewer.findNearestAtomIndex(x, y);
     switch (modeMouse) {
-    case PICK:
+    case JmolConstants.MOUSE_PICK:
       rubberbandSelectionMode = true;
       xAnchor = x;
       yAnchor = y;
@@ -132,11 +121,11 @@ public abstract class MouseManager {
           viewer.toggleSelection(atomIndex);
       }
       break;
-    case DELETE:
+    case JmolConstants.MOUSE_DELETE:
       if (atomIndex != -1)
         viewer.deleteAtom(atomIndex);
       break;
-    case MEASURE:
+    case JmolConstants.MOUSE_MEASURE:
       if (atomIndex != -1) {
         viewer.measureSelection(atomIndex);
       }
@@ -181,14 +170,14 @@ public abstract class MouseManager {
       // added this modifiersWhenPressed check because of bad
       // behavior on WinME
       viewer.popupMenu(x, y);
-    } else if (modeMouse == PICK) {
+    } else if (modeMouse == JmolConstants.MOUSE_PICK) {
       rubberbandSelectionMode = false;
       component.repaint();
     }
   }
 
   int getMode(int modifiers) {
-    if (modeMouse != ROTATE)
+    if (modeMouse != JmolConstants.MOUSE_ROTATE)
       return modeMouse;
     /* RASMOL
     // mth - I think that right click should be reserved for a popup menu
@@ -204,17 +193,17 @@ public abstract class MouseManager {
     return ROTATE;
     */
     if ((modifiers & SHIFT_RIGHT) == SHIFT_RIGHT)
-      return ROTATE_Z;
+      return JmolConstants.MOUSE_ROTATE_Z;
     if ((modifiers & CTRL_RIGHT) == CTRL_RIGHT)
-      return XLATE;
+      return JmolConstants.MOUSE_XLATE;
     if ((modifiers & RIGHT) == RIGHT)
-      return POPUP_MENU;
+      return JmolConstants.MOUSE_POPUP_MENU;
     if ((modifiers & SHIFT_LEFT) == SHIFT_LEFT)
-      return ZOOM;
+      return JmolConstants.MOUSE_ZOOM;
     if ((modifiers & CTRL_LEFT) == CTRL_LEFT)
-      return SLAB_PLANE;
+      return JmolConstants.MOUSE_SLAB_PLANE;
     if ((modifiers & LEFT) == LEFT)
-      return ROTATE;
+      return JmolConstants.MOUSE_ROTATE;
     return modeMouse;
   }
 
@@ -224,22 +213,22 @@ public abstract class MouseManager {
     xCurrent = x;
     yCurrent = y;
     switch (getMode(modifiers)) {
-    case ROTATE:
+    case JmolConstants.MOUSE_ROTATE:
       viewer.rotateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
       break;
-    case ROTATE_Z:
+    case JmolConstants.MOUSE_ROTATE_Z:
       viewer.rotateZBy(xPrevious - xCurrent);
       break;
-    case XLATE:
+    case JmolConstants.MOUSE_XLATE:
       viewer.translateXYBy(xCurrent - xPrevious, yCurrent - yPrevious);
       break;
-    case ZOOM:
+    case JmolConstants.MOUSE_ZOOM:
       viewer.zoomBy(yCurrent - yPrevious);
       break;
-    case SLAB_PLANE:
+    case JmolConstants.MOUSE_SLAB_PLANE:
       viewer.slabBy(yCurrent - yPrevious);
       break;
-    case PICK:
+    case JmolConstants.MOUSE_PICK:
       if (viewer.haveFile()) {
         calcRectRubberBand();
         BitSet selectedAtoms = viewer.findAtomsInRectangle(rectRubber);
@@ -250,7 +239,7 @@ public abstract class MouseManager {
         }
       }
       break;
-    case POPUP_MENU:
+    case JmolConstants.MOUSE_POPUP_MENU:
       break;
     }
     xPrevious = xCurrent;

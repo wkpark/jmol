@@ -26,7 +26,7 @@ package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import java.awt.event.*;
 import javax.swing.AbstractAction;

@@ -25,8 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.protein.PdbAtom;
@@ -192,19 +191,19 @@ public boolean isBonded(Atom atomOther) {
    */
 
   public void setStyleAtom(byte styleAtom) {
-    if (this.styleAtom == JmolViewer.DELETED) return;
+    if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
       this.styleAtom = styleAtom;
   }
 
   public void setMarAtom(short marAtom) {
-    if (this.styleAtom == JmolViewer.DELETED) return;
+    if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
   }
 
   public void setStyleMarAtom(byte styleAtom, short marAtom) {
-    if (this.styleAtom == JmolViewer.DELETED) return;
+    if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
     this.styleAtom = styleAtom;
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
@@ -212,7 +211,7 @@ public boolean isBonded(Atom atomOther) {
   }
         
   public int getRasMolRadius() {
-    if (styleAtom <= JmolViewer.NONE)
+    if (styleAtom <= JmolConstants.STYLE_NONE)
       return 0;
     return marAtom / 4;
   }
@@ -302,10 +301,10 @@ public boolean isBonded(Atom atomOther) {
   }
 
   public float getRadius() {
-    if (styleAtom <= JmolViewer.NONE)
+    if (styleAtom <= JmolConstants.STYLE_NONE)
       return 0;
     float radius = marAtom / 1000f;
-    if (styleAtom == JmolViewer.WIREFRAME) return -radius;
+    if (styleAtom == JmolConstants.STYLE_WIREFRAME) return -radius;
     return radius;
   }
 
@@ -315,7 +314,7 @@ public boolean isBonded(Atom atomOther) {
 
   public Object markDeleted() {
     deleteAllBonds();
-    styleAtom = JmolViewer.DELETED;
+    styleAtom = JmolConstants.STYLE_DELETED;
     Object clientAtom = this.clientAtom;
     this.clientAtom = null;
     return clientAtom;

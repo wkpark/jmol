@@ -143,24 +143,6 @@ final public class JmolViewer {
   private boolean structuralChange = false;
 
 
-  public final static byte NOLABELS  = 0;
-  public final static byte SYMBOLS   = 1;
-  public final static byte TYPES     = 2;
-  public final static byte NUMBERS   = 3;
-
-  public final static byte DELETED   =-1;
-  public final static byte NONE      = 0;
-  public final static byte WIREFRAME = 1;
-  public final static byte SHADED    = 2;
-    
-  public final static byte COLOR      =-1;
-  public final static byte ATOMTYPE   = 0;
-  public final static byte ATOMCHARGE = 1;
-  public final static byte STRUCTURE  = 2;
-  public final static byte AMINO      = 3;
-  public final static byte SHAPELY    = 4;
-  public final static byte CHAIN      = 5;
-
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
     // figure out the interaction with the current holdRepaint setting
@@ -480,15 +462,15 @@ final public class JmolViewer {
    * delegated to ColorManager
    ****************************************************************/
 
-  public void setModeAtomColorProfile(byte scheme) {
-    colorManager.setSchemeDefault(scheme);
-    distributionManager.setColixAtom(scheme, Colix.NULL,
+  public void setModeAtomColorProfile(byte palette) {
+    colorManager.setPaletteDefault(palette);
+    distributionManager.setColixAtom(palette, Colix.NULL,
                                      atomIteratorSelected());
     refresh();
   }
 
   public byte getModeAtomColorProfile() {
-    return colorManager.schemeDefault;
+    return colorManager.paletteDefault;
   }
 
   public void setColorSelection(Color c) {
@@ -719,16 +701,6 @@ final public class JmolViewer {
   /****************************************************************
    * delegated to MouseManager
    ****************************************************************/
-  public static final int ROTATE = 0;
-  public static final int ZOOM = 1;
-  public static final int XLATE = 2;
-  public static final int PICK = 3;
-  public static final int DELETE = 4;
-  public static final int MEASURE = 5;
-  public static final int DEFORM = 6; // mth -- what is this?
-  public static final int ROTATE_Z = 7;
-  public static final int SLAB_PLANE = 8;
-  public static final int POPUP_MENU = 9;
 
   public void setModeMouse(int modeMouse) {
     mouseManager.setMode(modeMouse);
@@ -1471,13 +1443,6 @@ final public class JmolViewer {
     return styleManager.marBond;
   }
 
-  public final static byte MB_NEVER =     0;
-  public final static byte MB_WIREFRAME = 1;
-  public final static byte MB_SMALL =     2;
-  public final static byte MB_ALWAYS =    3;
-
-  public final static short marMultipleBondSmallMaximum = 128;
-
   public void setModeMultipleBond(byte modeMultipleBond) {
     styleManager.setModeMultipleBond(modeMultipleBond);
     refresh();
@@ -1601,16 +1566,12 @@ final public class JmolViewer {
    * delegated to AxesManager
    ****************************************************************/
 
-  public final static byte AXES_NONE = 0;
-  public final static byte AXES_UNIT = 1;
-  public final static byte AXES_BBOX = 2;
-
   public void setShowAxes(boolean showAxes) {
-    setModeAxes(showAxes ? AXES_BBOX : AXES_NONE);
+    setModeAxes(showAxes ? JmolConstants.AXES_BBOX : JmolConstants.AXES_NONE);
   }
 
   public boolean getShowAxes() {
-    return axesManager.modeAxes != AXES_NONE;
+    return axesManager.modeAxes != JmolConstants.AXES_NONE;
   }
 
   public void setModeAxes(byte modeAxes) {
@@ -1685,8 +1646,8 @@ final public class JmolViewer {
     return colorManager.getColixAtom(atom);
   }
 
-  public short getColixAtomScheme(Atom atom, byte scheme) {
-    return colorManager.getColixAtomScheme(atom, scheme);
+  public short getColixAtomPalette(Atom atom, byte palette) {
+    return colorManager.getColixAtomPalette(atom, palette);
   }
 
   ////////////////////////////////////////////////////////////////

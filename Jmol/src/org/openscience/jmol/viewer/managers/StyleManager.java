@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -37,7 +37,7 @@ public class StyleManager {
     this.viewer = viewer;
   }
 
-  public byte styleAtom = JmolViewer.SHADED;
+  public byte styleAtom = JmolConstants.STYLE_SHADED;
   public void setStyleAtom(byte styleAtom) {
     this.styleAtom = styleAtom;
   }
@@ -47,7 +47,7 @@ public class StyleManager {
     this.percentVdwAtom = percentVdwAtom;
   }
 
-  public byte styleBond = JmolViewer.SHADED;
+  public byte styleBond = JmolConstants.STYLE_SHADED;
   public void setStyleBond(byte styleBond) {
     this.styleBond = styleBond;
   }
@@ -57,7 +57,7 @@ public class StyleManager {
     this.marBond =marBond;
   }
 
-  public byte modeMultipleBond = JmolViewer.MB_SMALL;
+  public byte modeMultipleBond = JmolConstants.MULTIBOND_SMALL;
   public void setModeMultipleBond(byte modeMultipleBond) {
     this.modeMultipleBond = modeMultipleBond;
   }
@@ -129,8 +129,8 @@ public class StyleManager {
 
   public void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setStyleBond(JmolViewer.SHADED);
-    viewer.setStyleAtom(JmolViewer.SHADED);
+    viewer.setStyleBond(JmolConstants.STYLE_SHADED);
+    viewer.setStyleAtom(JmolConstants.STYLE_SHADED);
     viewer.setColorBackground(Color.white);
     setTextColors(Color.black);
     viewer.setColorLabel(Color.black);
@@ -138,8 +138,8 @@ public class StyleManager {
 
   public void setRasmolDefaults() {
     setCommonDefaults();
-    viewer.setStyleBond(JmolViewer.WIREFRAME);
-    viewer.setStyleAtom(JmolViewer.NONE);
+    viewer.setStyleBond(JmolConstants.STYLE_WIREFRAME);
+    viewer.setStyleAtom(JmolConstants.STYLE_NONE);
     viewer.setColorBackground(Color.black);
     setTextColors(Color.white);
     viewer.setColorLabel(null);

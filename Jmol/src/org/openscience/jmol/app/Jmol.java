@@ -23,8 +23,7 @@
  *  02111-1307  USA.
  */
 package org.openscience.jmol.app;
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolModelAdapter;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.JmolStatusListener;
 
 import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
@@ -1234,7 +1233,7 @@ public class Jmol extends JPanel {
       ImageTyper it = new ImageTyper(exportChooser);
 
       // GIF doesn't support more than 8 bits:
-      if (viewer.getStyleAtom() == JmolViewer.SHADED) {
+      if (viewer.getStyleAtom() == JmolConstants.STYLE_SHADED) {
         it.disableGIF();
       }
       exportChooser.setAccessory(it);

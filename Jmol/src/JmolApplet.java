@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.JmolStatusListener;
 import org.openscience.jmol.adapters.SimpleModelAdapter;
 //import org.openscience.jmol.adapters.CdkJmolModelAdapter;
@@ -309,8 +309,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
    ****************************************************************/
 
   private final String[] styleStrings = {"SHADED", "WIREFRAME"};
-  private final byte[] styles = {JmolViewer.SHADED,
-                                 JmolViewer.WIREFRAME};
+  private final byte[] styles = {JmolConstants.STYLE_SHADED,
+                                 JmolConstants.STYLE_WIREFRAME};
 
   public void setStyle(String style) {
     for (int i = 0; i < styleStrings.length; ++i) {
@@ -323,9 +323,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   private final String[] labelStyleStrings = {"NONE","SYMBOL","NUMBER"};
-  private final byte[] labelStyles = {JmolViewer.NOLABELS,
-                                      JmolViewer.SYMBOLS,
-                                      JmolViewer.NUMBERS};
+  private final byte[] labelStyles = {JmolConstants.LABEL_NONE,
+                                      JmolConstants.LABEL_SYMBOL,
+                                      JmolConstants.LABEL_ATOMNO};
 
   public void setLabelStyle(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {

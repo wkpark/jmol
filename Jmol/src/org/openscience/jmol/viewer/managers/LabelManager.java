@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.managers;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 
@@ -39,7 +39,7 @@ public class LabelManager {
     this.viewer = viewer;
   }
 
-  public byte styleLabel = JmolViewer.NOLABELS;
+  public byte styleLabel = JmolConstants.LABEL_NONE;
   public void setStyleLabel(byte styleLabel) {
     this.styleLabel = styleLabel;
   }
@@ -86,13 +86,13 @@ public class LabelManager {
   public String getLabelAtom(byte styleLabel, Atom atom, int atomIndex) {
     String label = null;
     switch (styleLabel) {
-    case JmolViewer.SYMBOLS:
+    case JmolConstants.LABEL_SYMBOL:
       label = atom.getAtomicSymbol();
       break;
-    case JmolViewer.TYPES:
+    case JmolConstants.LABEL_TYPENAME:
       label = atom.getAtomTypeName();
        break;
-    case JmolViewer.NUMBERS:
+    case JmolConstants.LABEL_ATOMNO:
       label = "" + (atomIndex + 1);
       break;
     }

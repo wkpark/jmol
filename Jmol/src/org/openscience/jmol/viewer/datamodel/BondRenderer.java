@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 
@@ -80,7 +80,7 @@ class BondRenderer extends Renderer {
 
   void render(Bond bond) {
     styleBond = bond.style;
-    if (styleBond == JmolViewer.NONE)
+    if (styleBond == JmolConstants.STYLE_NONE)
       return;
     Atom atom1 = bond.atom1;
     Atom atom2 = bond.atom2;
@@ -120,9 +120,9 @@ class BondRenderer extends Renderer {
     if ((order & Bond.COVALENT) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||
-          modeMultipleBond == JmolViewer.MB_NEVER ||
-          (modeMultipleBond == JmolViewer.MB_SMALL &&
-           marBond > JmolViewer.marMultipleBondSmallMaximum))
+          modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
+          (modeMultipleBond == JmolConstants.MULTIBOND_SMALL &&
+           marBond > JmolConstants.marMultipleBondSmallMaximum))
           // there used to be a test here for order == -1 ? why ? 
         return 1;
     }
@@ -130,7 +130,7 @@ class BondRenderer extends Renderer {
   }
 
   private void renderCylinder() {
-    boolean lineBond = (styleBond == viewer.WIREFRAME ||
+    boolean lineBond = (styleBond == JmolConstants.STYLE_WIREFRAME ||
                         wireframeRotating ||
                         width <= 1);
     if (dx == 0 && dy == 0) {

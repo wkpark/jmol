@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.viewer.g3d;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 final class Line3D {
 

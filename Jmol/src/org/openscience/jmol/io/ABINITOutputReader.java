@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.CrystalFile;
 import org.openscience.jmol.CrystalBox;

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 import java.util.Vector;
 import java.util.Enumeration;
 import org.openscience.cdk.Atom;

@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.app;
 
-import org.openscience.jmol.viewer.JmolViewer;
+import org.openscience.jmol.viewer.*;
 
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
@@ -372,7 +372,7 @@ public class MeasurementTable extends JDialog {
     if (! inPickingMode) {
       inPickingMode = true;
       previousMouseMode = viewer.getModeMouse();
-      viewer.setModeMouse(JmolViewer.MEASURE);
+      viewer.setModeMouse(JmolConstants.MOUSE_MEASURE);
     }
     pickedAtomCount = 0;
     updatePickingTableData();

@@ -10,8 +10,11 @@ JAVA_HOME=/usr/local/jdk1.2.2
 #JAVA_HOME=/usr/local/linux-jdk1.2
 #JAVA_HOME=/usr/java
 #
+# FreeBSD:
+#JAVA_HOME=/usr/local/jdk1.1.8
+#
 # AIX:
-# JAVA_HOME=/usr/jdk_base
+#JAVA_HOME=/usr/jdk_base
 #
 # IRIX:
 #JAVA_HOME=/usr/java
@@ -31,18 +34,29 @@ export THREADS_FLAG
 JAVA_COMPILER=sunwjit
 export JAVA_COMPILER
 #
-# This classpath line should be OK for JDK 1.2.  Comment it out if you have 1.1
-#
-CLASSPATH=${JMOL_HOME}/jars/jmol.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/plot.jar
-#
-# This classpath line should be OK for JDK 1.1.  Comment it out if you have 1.2
-#
-#CLASSPATH=$JMOL_HOME/jars/jmol.jar:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:$JMOL_HOME/jars/swing.jar:$JMOL_HOME/jars/multi.jar:$JMOL_HOME/jars/sax.jar:$JMOL_HOME/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/plot.jar
-#
 ####################################################################
 #
 # You shouldn't need to change anything else.
 #
+# Setting the CLASSPATH
+#
+CLASSPATH=${JMOL_HOME}/jars/jmol.jar
+#
+# Figure out what version of Java we are running
+#
+JVERL=`$JAVA_HOME/bin/java -version 2>&1`
+JVMin=`echo $JVERL | awk -F\" '{print $2}' | awk -F. '{print $2}'`
+# 
+# below Java 1.2, insert some classpath stuff for swing:
+#
+if [ "x$JVMin" = "x1" ]; then
+     echo "Using Java 1.1 classpath"
+     CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:$JMOL_HOME/jars/swing.jar:$JMOL_HOME/jars/multi.jar
+fi
+#
+# Now post-fix some jar files on the end of the classpath:
+#
+CLASSPATH=$CLASSPATH:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/plot.jar
 export JMOL_HOME
 export CLASSPATH
 #

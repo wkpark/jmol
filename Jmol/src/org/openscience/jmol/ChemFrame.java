@@ -611,13 +611,13 @@ public class ChemFrame {
                                  aProps[j/3], pickedAtoms[j/3]);
             
                 if (settings.getShowVectors() && hasVectors) {
-                ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
-                                             tvect[j], tvect[j+1], 
-                                             false, true,
-                                             0, 
-                                             3+(int)(tvect[j+2]/ScreenScale));
-            }
-            
+                    ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
+                                                 tvect[j], tvect[j+1], 
+                                                 false, true,
+                                                 0, 
+                                                 3+(int)(tvect[j+2]/ScreenScale));
+                }
+                
         }
 
         if (dlist != null) {

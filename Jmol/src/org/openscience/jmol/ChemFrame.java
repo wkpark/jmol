@@ -24,6 +24,7 @@ import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Point3f;
+import java.io.PrintStream;
 
 /**
  *  Data representation for a molecule in a particular set of coordinates.
@@ -559,6 +560,12 @@ public class ChemFrame implements Transformable {
 
     for (int i = 0; i < numberAtoms; i++) {
       atoms[i].clearBondedAtoms();
+    }
+  }
+
+  public void dumpAtoms(PrintStream out) {
+    for (int i = 0; i < numberAtoms; ++i) {
+      out.println(atoms[i].toString());
     }
   }
 

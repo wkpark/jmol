@@ -43,6 +43,8 @@ import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector3f;
+import java.io.PrintStream;
+import java.io.FileOutputStream;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -886,7 +888,33 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
+      PrintStream out = null;
+      try {
+        out = new PrintStream(new FileOutputStream("jmolbug.log", true));
+      } catch (Exception ex) {
+        System.out.println("error opening jmolbug.log:" + ex.getMessage());
+        out = System.out;
+      }
+      out.println("Before home ---------------");
+      out.println("dimCurrent=" + dimCurrent);
+      out.println("chemframe.getRadius()=" + chemframe.getRadius());
+      out.println("chemframe.getCenter()=" + chemframe.getCenter());
+      out.println("scalePixelsPerAngstrom=" + scalePixelsPerAngstrom);
+      out.println("matrixRotate=" + matrixRotate);
+      out.println("matrixTranslate=" + matrixRotate);
+      out.println("matrixView=" + getViewTransformMatrix());
+      chemframe.dumpAtoms(out);
       homePosition();
+      out.println("After home ----------------");
+      out.println("dimCurrent=" + dimCurrent);
+      out.println("chemframe.getRadius()=" + chemframe.getRadius());
+      out.println("chemframe.getCenter()=" + chemframe.getCenter());
+      out.println("scalePixelsPerAngstrom=" + scalePixelsPerAngstrom);
+      out.println("matrixRotate=" + matrixRotate);
+      out.println("matrixTranslate=" + matrixRotate);
+      out.println("matrixView=" + getViewTransformMatrix());
+      chemframe.dumpAtoms(out);
+      out.println("---------------------------");
       repaint();
     }
   }

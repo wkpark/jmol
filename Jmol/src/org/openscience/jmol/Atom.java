@@ -330,6 +330,12 @@ public class Atom {
    */
   private Vector properties = new Vector();
 
+  public String toString() {
+    String type = getType().getRoot();
+    return "Atom{" + type + " #" + atomNumber + " @" +
+      position + " @" + screenX + "," + screenY + "," + screenZ + "}";
+  }
+
   static class NoBondsEnumeration implements Enumeration {
 
     public boolean hasMoreElements() {

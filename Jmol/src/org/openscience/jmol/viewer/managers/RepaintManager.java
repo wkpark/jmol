@@ -88,7 +88,7 @@ public class RepaintManager {
 
   public int animationFps = 10;
   public void setAnimationFps(int animationFps) {
-    if (animationFps >= 1 && animationFps <= 30)
+    if (animationFps >= 1 && animationFps <= 50)
       this.animationFps = animationFps;
     else
       System.out.println("invalid animationFps:" + animationFps);

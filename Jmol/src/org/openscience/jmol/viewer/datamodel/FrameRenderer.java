@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import javax.vecmath.Point3i;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
@@ -111,21 +112,15 @@ public class FrameRenderer {
     }
 
     if (viewer.getModeAxes() != JmolViewer.AXES_NONE) {
-      Shape[] axisShapes = viewer.getAxes().getShapes();
-      for (int i = axisShapes.length; --i >= 0; ) {
-        Shape axisShape = axisShapes[i];
-        axisShape.transform(viewer);
-        axisShape.render(g3d, viewer);
-      }
+      Axes axes = viewer.getAxes();
+      axes.transform();
+      axes.render(g3d);
     }
 
     if (viewer.getShowBoundingBox()) {
-      Shape[] bboxShapes = viewer.getBoundingBox().getBboxShapes();
-      for (int i = bboxShapes.length; --i >= 0; ) {
-        Shape bboxShape = bboxShapes[i];
-        bboxShape.transform(viewer);
-        bboxShape.render(g3d, viewer);
-      }
+      BoundingBox bbox = viewer.getBoundingBox();
+      bbox.transform();
+      bbox.render(g3d);
     }
   }
 
@@ -136,6 +131,12 @@ public class FrameRenderer {
                                      x, y, z, xOffset, yOffset);
   }
   
+  public void renderStringOutside(String str, short colix, int pointsFontsize,
+                                  Point3i screen) {
+    labelRenderer.renderStringOutside(str, colix, pointsFontsize,
+                                      screen.x, screen.y, screen.z);
+  }
+
   public void renderStringOutside(String str, short colix, int pointsFontsize,
                                   int x, int y, int z) {
     labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);

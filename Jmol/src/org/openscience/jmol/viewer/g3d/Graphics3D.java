@@ -406,6 +406,16 @@ final public class Graphics3D {
   }
   
 
+  public void drawLine(Point3i pointA, Point3i pointB) {
+    line3d.drawLine(argbCurrent,
+                    pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z, false);
+  }
+
+  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+    line3d.drawLine(Colix.getArgb(colix),
+                    pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z, true);
+  }
+
   public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, true);
   }

@@ -36,12 +36,7 @@ public class Axes {
 
   JmolViewer viewer;
 
-  OriginShape originShape;
-  AxisShape[] axisShapes;
-  Shape[] allShapes;
-
-  final Point3f pointOrigin = new Point3f();
-  Point3f[] unitAxisPoints = {
+  final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
     new Point3f( 0, 1, 0),
     new Point3f( 0, 0, 1),
@@ -50,34 +45,29 @@ public class Axes {
     new Point3f( 0, 0,-1)
   };
 
-  String[] axisLabels = { "+X", "+Y", "+Z",
-                          null, null, null
+  final Point3f originPoint = new Point3f();
+  final Point3i originScreen = new Point3i();
+  final Point3f[] axisPoints = new Point3f[6];
+  final Point3i[] axisScreens = new Point3i[6];
 
-  };
+  String[] axisLabels = { "+X", "+Y", "+Z",
+                          null, null, null };
 
   public Axes(JmolViewer viewer) {
     this.viewer = viewer;
-
-    originShape = new OriginShape();
-    allShapes = new Shape[1 + 6];
-    allShapes[0] = originShape;
-    axisShapes = new AxisShape[6];
-    for (int i = 0; i < 6; ++i)
-      allShapes[i+1] = axisShapes[i] =
-        new AxisShape(new Point3f(unitAxisPoints[i]), axisLabels[i]);
-  }
-
-  public Shape[] getShapes() {
-    return allShapes;
+    for (int i = 6; --i >= 0; ) {
+      axisPoints[i] = new Point3f();
+      axisScreens[i] = new Point3i();
+    }
   }
 
   public void recalc(byte modeAxes) {
     if (modeAxes == JmolViewer.AXES_NONE)
       return;
-    pointOrigin.set(viewer.getBoundingBoxCenter());
+    originPoint.set(viewer.getBoundingBoxCenter());
     Point3f corner = viewer.getBoundingBoxCorner();
-    for (int i = 0; i < 6; ++i) {
-      Point3f axisPoint = axisShapes[i].getPoint();
+    for (int i = 6; --i >= 0; ) {
+      Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);
       if (modeAxes == JmolViewer.AXES_BBOX) {
         // we have just set the axisPoint to be a unit on a single axis
@@ -87,61 +77,28 @@ public class Axes {
         axisPoint.y *= corner.y;
         axisPoint.z *= corner.z;
       }
-      axisPoint.add(pointOrigin);
+      axisPoint.add(originPoint);
     }
   }
-
-  final static int xOffsetLabel = 5;
-  final static int yOffsetLabel = -5;
-  final static int axisFontsize = 14;
-
-  class OriginShape extends Shape {
-    public void transform(JmolViewer viewer) {
-      Point3i screen = viewer.transformPoint(pointOrigin);
-      x = screen.x;
-      y = screen.y;
-      z = screen.z;
-    }
-
-    public void render(Graphics3D g3d, JmolViewer viewer) {
-      short colix = viewer.getColixAxes();
-      for (int i = 0; i < 6; ++i) {
-        AxisShape axis = axisShapes[i];
-        if (axis.z <= z)
-          g3d.drawLine(colix, x, y, z, axis.x, axis.y, axis.z);
-      }
-    }
-  }
-
-  class AxisShape extends Shape {
-    Point3f pointAxisEnd;
-    String label;
-    AxisShape(Point3f pointAxisEnd, String label) {
-      this.pointAxisEnd = pointAxisEnd;
-      this.label = label;
-    }
-
-    Point3f getPoint() {
-      return pointAxisEnd;
-    }
-
-    public void transform(JmolViewer viewer) {
-      Point3i screen = viewer.transformPoint(pointAxisEnd);
-      x = screen.x;
-      y = screen.y;
-      z = screen.z;
-    }
   
-    public void render(Graphics3D g3d, JmolViewer viewer) {
-      if (z > originShape.z) {
-        g3d.drawLine(viewer.getColixAxes(), x, y, z,
-                      originShape.x, originShape.y, originShape.z);
-      }
-      if (label != null) {
-        viewer.getFrameRenderer().
-          renderStringOutside(label, viewer.getColixAxesText(),
-                              axisFontsize, x, y, z);
-      }
+  public void transform() {
+    viewer.transformPoint(originPoint, originScreen);
+    for (int i = 6; --i >= 0; )
+      viewer.transformPoint(axisPoints[i], axisScreens[i]);
+  }
+
+  final static int axisFontsize = 14;
+  
+  public void render(Graphics3D g3d) {
+    short colixAxes = viewer.getColixAxes();
+    short colixAxesText = viewer.getColixAxesText();
+    FrameRenderer frameRenderer = viewer.getFrameRenderer();
+    for (int i = 6; --i >= 0; ) {
+      g3d.drawDottedLine(colixAxes, originScreen, axisScreens[i]);
+      String label = axisLabels[i];
+      if (label != null)
+        frameRenderer.renderStringOutside(label, colixAxesText,
+                                          axisFontsize, axisScreens[i]);
     }
   }
 }

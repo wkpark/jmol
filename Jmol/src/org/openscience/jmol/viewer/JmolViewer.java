@@ -387,6 +387,10 @@ final public class JmolViewer {
     return transformManager.transformPoint(pointAngstroms);
   }
 
+  public void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
+    transformManager.transformPoint(pointAngstroms, pointScreen);
+  }
+
   public void transformVector(Vector3f vectorAngstroms,
                               Vector3f vectorTransformed) {
     transformManager.transformVector(vectorAngstroms, vectorTransformed);

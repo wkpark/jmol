@@ -483,6 +483,10 @@ public class TransformManager {
     return unscaled;
   }
 
+  public void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
+    pointScreen.set(transformPoint(pointAngstroms));
+  }
+
   public Point3i transformPoint(Point3f pointAngstroms) {
     matrixPointTransform.transform(pointAngstroms, point3dScreenTemp);
     int z = (int)(point3dScreenTemp.z + 0.5);

@@ -1,0 +1,6 @@
+This module is intended for containing source code of Jmol Plugins. Each plugin
+must use a separate subdir in this module.
+
+Current plugins:
+
+rssviewer               Viewer of RSS channels with chemical content

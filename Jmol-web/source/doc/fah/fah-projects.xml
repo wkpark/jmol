@@ -1573,7 +1573,7 @@
   <fah_proj number="971" name="p971_fkcomp_dock" file="y"
     server="171.64.122.132" atoms="14923" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="972" name="p972_fklig_dock_M24"
+  <fah_proj number="972" name="p972_fklig_dock_M24" file="y"
     server="171.64.122.132" atoms="1261" preferred="22" deadline="33"
     credit="122" frames="100" code="DG" contact="guha"/>
   <fah_proj number="973" name="p973_fkcomp_dock_M24" file="y"
@@ -2528,13 +2528,13 @@
   <fah_proj number="1600" name="p1600_c20MUreGS" file="y"
     server="171.64.122.127" atoms="17368" preferred="29" deadline="42"
     credit="146" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="1601" name="p1601_NTL8MUreGS"
+  <fah_proj number="1601" name="p1601_NTL8MUreGS" file="y"
     server="171.64.122.127" atoms="3366" preferred="10" deadline="13"
     credit="41" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="1602" name="p1602_NTL4MUreGS" file="y"
     server="171.64.122.127" atoms="3411" preferred="9" deadline="12"
     credit="38" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="1603" name="p1603_NTL1MUreGS"
+  <fah_proj number="1603" name="p1603_NTL1MUreGS" file="y"
     server="171.64.122.127" atoms="3403" preferred="8" deadline="11"
     credit="33" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="1604" name="p1604_NTL0MUreGS" file="y"

@@ -34,8 +34,8 @@
       <fileset dir="../Jmol/appletweb" includes="JmolApplet.properties" />
     </copy>
     <copy todir="${build.html}/head" overwrite="yes">
-      <fileset dir="../Jmol-HEAD" includes="JmolApplet.jar" />
-      <fileset dir="../Jmol-HEAD/appletweb" includes="JmolApplet.properties" />
+      <fileset dir="../Jmol" includes="JmolApplet.jar" />
+      <fileset dir="../Jmol/appletweb" includes="JmolApplet.properties" />
     </copy>
     <copy todir="${build.html}/documentation" overwrite="yes">
       <fileset dir="../Jmol/build/doc" includes="**/*" />

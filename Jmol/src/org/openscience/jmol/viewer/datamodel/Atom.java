@@ -684,28 +684,7 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public String getInfo() {
-    StringBuffer info = new StringBuffer();
-    info.append(getAtomName());
-    String group3 = getGroup3();
-    if (group3 != null) {
-      info.append(' ');
-      info.append(group3);
-    }
-    int seqcode = getSeqcode();
-    if (seqcode != -1) {
-      info.append(' ');
-      info.append(group.getSeqcodeString());
-    }
-    char chainID = getChainID();
-    if (chainID != 0) {
-      info.append(" Chain:");
-      info.append(chainID);
-    }
-    if (group.chain.frame.getModelCount() > 1) {
-      info.append(" Model:");
-      info.append(getModelTag());
-    }
-    return "" + info;
+    return getIdentity();
   }
 
   String getIdentity() {
@@ -738,6 +717,8 @@ public final class Atom implements Bspt.Tuple {
       info.append("/");
       info.append(getModelTag());
     }
+    info.append(" #");
+    info.append(getAtomNumber());
     return "" + info;
   }
 

@@ -344,6 +344,7 @@ final public class FrameBuilder {
                                                specialAtomIndexes, atoms);
     } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
                JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+      //      System.out.println("AlphaMonomer.validateAndAllocate");
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
                                                specialAtomIndexes, atoms);

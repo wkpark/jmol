@@ -36,37 +36,39 @@ public class AlphaPolymer extends Polymer {
   void addSecondaryStructure(byte type,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
-    int polymerIndexStart, polymerIndexEnd;
-    if ((polymerIndexStart = getIndex(startChainID, startSeqcode)) == -1 ||
-        (polymerIndexEnd = getIndex(endChainID, endSeqcode)) == -1)
+    int indexStart, indexEnd;
+    if ((indexStart = getIndex(startChainID, startSeqcode)) == -1 ||
+        (indexEnd = getIndex(endChainID, endSeqcode)) == -1)
       return;
-    int structureCount = polymerIndexEnd - polymerIndexStart + 1;
+    addSecondaryStructure(type, indexStart, indexEnd);
+  }
+
+  void addSecondaryStructure(byte type, int indexStart, int indexEnd) {
+    int structureCount = indexEnd - indexStart + 1;
     if (structureCount < 1) {
       System.out.println("structure definition error\n" +
-                         " polymerIndexStart:" + polymerIndexStart +
-                         " polymerIndexEnd:" + polymerIndexEnd +
-                         " startSeqcode=" + Group.getSeqcodeString(startSeqcode) +
-                         " endSeqcode=" + Group.getSeqcodeString(endSeqcode));
+                         " indexStart:" + indexStart +
+                         " indexEnd:" + indexEnd);
       return;
     }
     ProteinStructure proteinstructure = null;
     switch(type) {
     case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-      proteinstructure = new Helix(this, polymerIndexStart, structureCount);
+      proteinstructure = new Helix(this, indexStart, structureCount);
       break;
     case JmolConstants.PROTEIN_STRUCTURE_SHEET:
       if (this instanceof AminoPolymer)
         proteinstructure = new Sheet((AminoPolymer)this,
-                                   polymerIndexStart, structureCount);
+                                   indexStart, structureCount);
       break;
     case JmolConstants.PROTEIN_STRUCTURE_TURN:
-      proteinstructure = new Turn(this, polymerIndexStart, structureCount);
+      proteinstructure = new Turn(this, indexStart, structureCount);
       break;
     default:
       System.out.println("unrecognized secondary structure type");
       return;
     }
-    for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
+    for (int i = indexStart; i <= indexEnd; ++i)
       monomers[i].setStructure(proteinstructure);
   }
 

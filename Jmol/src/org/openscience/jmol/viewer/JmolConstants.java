@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre11b";
+  public final static String version = "10pre11c";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1690,7 +1690,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
   public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;
   // this is for groups that only contain an alpha carbon
-  public final static int ATOMID_ALPHA_ONLY_MASK = 1 << 3;
+  public final static int ATOMID_ALPHA_ONLY_MASK = 1 << ATOMID_ALPHA_CARBON;
   // this is entries 5 through through 11 ... 7 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x7F << 5;
 

@@ -39,8 +39,13 @@ public class AminoPolymer extends AlphaPolymer {
 
   boolean hasWingPoints() { return true; }
 
+  boolean hbondsAlreadyCalculated;
+
   void calcHydrogenBonds() {
-    calcProteinMainchainHydrogenBonds();
+    if (! hbondsAlreadyCalculated) {
+      calcProteinMainchainHydrogenBonds();
+      hbondsAlreadyCalculated = true;
+    }
   }
 
 
@@ -199,5 +204,56 @@ public class AminoPolymer extends AlphaPolymer {
     Atom oxygen = recipient.getCarbonylOxygenAtom();
     Frame frame = model.mmset.frame;
     frame.bondAtoms(nitrogen, oxygen, order);
+  }
+
+  void calculateStructures() {
+    calcHydrogenBonds();
+    char[] structureTags = new char[count];
+    /*
+     * If someone wants to work on this code for secondary structure
+     * recognition that would be great
+     *
+     * miguel 2004 06 16
+     */
+
+    findPitch(3, 4, '4', structureTags);
+
+    /*
+    System.out.println("secondaryStructureTags:");
+    for (int i = 0; i < count; ++i)
+      System.out.println("" + i + " : " + structureTags[i]);
+    */
+
+    int iStart = 0;
+    while (iStart < count) {
+      if (structureTags[iStart] != '4') {
+        ++iStart;
+        continue;
+      }
+      int iMax;
+      for (iMax = iStart + 1;
+           iMax < count && structureTags[iMax] == '4';
+           ++iMax)
+        { }
+      addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
+                            iStart, iMax - 1);
+      iStart = iMax;
+    }
+  }
+
+  void findPitch(int minRunLength, int pitch, char tag, char[] tags) {
+    int runLength = 0;
+    for (int i = 0; i < count; ++i) {
+      if (mainchainHbondOffsets[i] == pitch) {
+        ++runLength;
+        if (runLength == minRunLength)
+          for (int j = minRunLength; --j >= 0; )
+            tags[i - j] = tag;
+        else if (runLength > minRunLength)
+          tags[i] = tag;
+      } else {
+        runLength = 0;
+      }
+    }
   }
 }

@@ -13,7 +13,7 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="10pre1" />
+  <property name="version" value="10pre2" />
 
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
@@ -221,7 +221,7 @@
 	<include name="**/*.html" />
       </fileset>
     </copy>
-    <jar jarfile="jmol.jar" manifest="${manifest}" >
+    <jar jarfile="Jmol.jar" manifest="${manifest}" >
       <fileset dir="${classes.dir}" >
 	<exclude name="**/.*" />
 	<exclude name="**/Test*.class" />
@@ -297,7 +297,7 @@
     <mkdir dir="${dist.dir}/jmol-${version}"/>
     <copy todir="${dist.dir}/jmol-${version}" >
       <fileset dir=".">
-	<include name="jmol.jar" />
+	<include name="Jmol.jar" />
 	<include name="JmolApplet.jar" />
 	<include name="jmol" />
 	<include name="jmol.sh" />
@@ -513,7 +513,7 @@
     <delete dir="${appletjars.dir}"/>
     <delete>
       <fileset dir=".">
-	<include name="jmol.jar" />
+	<include name="Jmol.jar" />
 	<include name="JmolApplet.jar" />
       </fileset>
     </delete>
@@ -526,7 +526,7 @@
   </target>
   
   <target name="run" id="run" depends="main">
-    <java fork="true" jar="jmol.jar" />
+    <java fork="true" jar="Jmol.jar" />
   </target>
 
   <!-- ********************************
@@ -614,7 +614,7 @@
     <echo message="Generating beta test release"/>
     <zip destfile="Jmol${version}.zip" >
       <zipfileset dir="." prefix="Jmol${version}/">
-	<include name="jmol.jar"/>
+	<include name="Jmol.jar"/>
 	<include name="JmolApplet.jar"/>
       </zipfileset>
       <zipfileset dir="appletweb" prefix="Jmol${version}/">

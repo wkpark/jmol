@@ -7,14 +7,14 @@ while [ `echo $1 | egrep '^-D' | wc -l` != 0 ]; do
 	shift
 done
 
-if [ -f ./jmol.jar ] ; then
-  jarpath=./jmol.jar
-elif [ -f $JMOL_HOME/jmol.jar ] ; then
-  jarpath=$JMOL_HOME/jmol.jar
-elif [ -f /usr/share/jmol/jmol.jar ] ; then
-  jarpath=/usr/share/jmol/jmol.jar
+if [ -f ./Jmol.jar ] ; then
+  jarpath=./Jmol.jar
+elif [ -f $JMOL_HOME/Jmol.jar ] ; then
+  jarpath=$JMOL_HOME/Jmol.jar
+elif [ -f /usr/share/jmol/Jmol.jar ] ; then
+  jarpath=/usr/share/jmol/Jmol.jar
 else
-  echo jmol.jar not found
+  echo Jmol.jar not found
   exit
 fi
 $command -jar $jarpath $@

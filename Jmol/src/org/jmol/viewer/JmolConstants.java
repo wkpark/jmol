@@ -123,7 +123,10 @@ final public class JmolConstants {
    * Extended Bond Definition Types
    *
    */
-  public final static short BOND_COVALENT      = 3;
+  public final static short BOND_COVALENT_SINGLE = 1;
+  public final static short BOND_COVALENT_DOUBLE = 2;
+  public final static short BOND_COVALENT_TRIPLE = 3;
+  public final static short BOND_COVALENT_MASK   = 3;
   public final static short BOND_AROMATIC_MASK = (1 << 2);
   public final static short BOND_AROMATIC      = (1 << 2) | 1;
   public final static short BOND_STEREO_MASK   = (3 << 3);
@@ -140,6 +143,8 @@ final public class JmolConstants {
   public final static short BOND_H_MINUS_3     = (6 << BOND_HBOND_SHIFT);
   public final static short BOND_H_MINUS_4     = (7 << BOND_HBOND_SHIFT);
   public final static short BOND_H_NUCLEOTIDE  = (8 << BOND_HBOND_SHIFT);
+  public final static short BOND_PARTIAL01     = (1 << 10);
+  public final static short BOND_PARTIAL12     = (1 << 11);
 
   public final static short BOND_ALL_MASK      = (short)0xFFFF;
 

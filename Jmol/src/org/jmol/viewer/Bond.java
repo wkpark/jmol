@@ -57,7 +57,7 @@ class Bond {
   }
 
   boolean isCovalent() {
-    return (order & JmolConstants.BOND_COVALENT) != 0;
+    return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
   }
 
   boolean isStereo() {

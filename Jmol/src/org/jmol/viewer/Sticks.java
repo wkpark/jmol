@@ -32,19 +32,19 @@ class Sticks extends Shape {
 
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
-    setMadBond(mad, JmolConstants.BOND_COVALENT, bsSelected);
+    setMadBond(mad, JmolConstants.BOND_COVALENT_MASK, bsSelected);
   }
   
   void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("color" == propertyName) {
       short colix = g3d.getColix(value);
-      setColixBond(colix, JmolConstants.BOND_COVALENT, bsSelected);
+      setColixBond(colix, JmolConstants.BOND_COVALENT_MASK, bsSelected);
       return;
     }
     if ("colorScheme" == propertyName) {
       if (value instanceof String && "cpk" == (String)value) {
-        setColixBond((short)0, JmolConstants.BOND_COVALENT, bsSelected);
+        setColixBond((short)0, JmolConstants.BOND_COVALENT_MASK, bsSelected);
         return;
       }
     }

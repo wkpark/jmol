@@ -173,7 +173,7 @@ class SticksRenderer extends ShapeRenderer {
   int getRenderBondOrder(int order) {
     if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
       order &= ~JmolConstants.BOND_SULFUR_MASK;
-    if ((order & JmolConstants.BOND_COVALENT) != 0) {
+    if ((order & JmolConstants.BOND_COVALENT_MASK) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||

@@ -48,10 +48,16 @@ import java.util.Properties;
  ****************************************************************/
 public abstract class JmolAdapter {
   
-  public final static byte ORDER_AROMATIC    = (byte)(1 << 2);
-  public final static byte ORDER_HBOND       = (byte)(1 << 6);
-  public final static byte ORDER_STEREO_NEAR = (byte)((1 << 3) | 1);
-  public final static byte ORDER_STEREO_FAR  = (byte)((2 << 3) | 2);
+  public final static short ORDER_COVALENT_SINGLE = 1;
+  public final static short ORDER_COVALENT_DOUBLE = 2;
+  public final static short ORDER_COVALENT_TRIPLE = 3;
+  public final static short ORDER_AROMATIC        = (1 << 2);
+  public final static short ORDER_HBOND           = (1 << 6);
+  public final static short ORDER_STEREO_NEAR     = ((1 << 3) | 1);
+  public final static short ORDER_STEREO_FAR      = ((2 << 3) | 2);
+  public final static short ORDER_PARTIAL01       = (1 << 10);
+  public final static short ORDER_PARTIAL12       = (1 << 11);
+    
 
   //////////////////////////////////////////////////////////////////
   // file related

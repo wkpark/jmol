@@ -202,6 +202,10 @@ public class Eval implements Runnable {
   }
 
   public void run() {
+    // this refresh is here to ensure that the screen has been painted ...
+    // since it could be a problem when an applet is loaded with a script
+    // ready to run. 
+    refresh();
     long timeBegin = 0;
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
@@ -1017,11 +1021,11 @@ public class Eval implements Runnable {
     control.defineMeasure(args);
   }
 
-  void refresh() throws ScriptException {
+  void refresh() {
     control.requestRepaintAndWait();
   }
 
-  void reset() throws ScriptException {
+  void reset() {
     control.homePosition();
   }
 

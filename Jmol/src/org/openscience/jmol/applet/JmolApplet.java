@@ -212,18 +212,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
     }
   }
 
-  /**
-   * <b>For Javascript:<\b> Gets the rendering style for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
-   */
-  public String getLabelRenderingStyleDescription() {
-    //    return myBean.getLabelRenderingStyleDescription();
-    return "FOO";
-  }
-
-  /**
-   * <b>For Javascript:<\b> Sets whether they view automatically goes to wireframe when they model is rotated.
-   * @param doesIt String either 'T' or 'F'
-   */
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     control.setPerspectiveDepth(perspectiveDepth);
   }

@@ -1013,7 +1013,7 @@ final public class DisplayControl {
     if (strFilename != null) {
       if (! eval.loadFile(strFilename))
         return eval.getErrorMessage();
-      eval.run();
+      eval.start();
     }
     return null;
   }
@@ -1022,7 +1022,7 @@ final public class DisplayControl {
     if (strScript != null) {
       if (! eval.loadString(strScript))
         return eval.getErrorMessage();
-      eval.run();
+      eval.start();
     }
     return null;
   }

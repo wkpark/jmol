@@ -127,14 +127,22 @@ public class Dots extends Shape {
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
-      htTori = null;
       torusCount = 0;
+      htTori = null;
+      tori = null;
       cavities = null;
       radiusP = viewer.getCurrentSolventProbeRadius();
       diameterP = 2 * radiusP;
     }
     int atomCount = frame.atomCount;
-    dotsConvexMax = 0;
+    // always delete old surfaces for selected atoms
+    if (dotsConvexMaps != null) {
+      for (int i = atomCount; --i >= 0; )
+        if (bsSelected.get(i))
+          dotsConvexMaps[i] = null;
+      turnOffTori();
+    }
+    // now, calculate surface for selected atoms
     if (mad != 0) {
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
@@ -142,12 +150,6 @@ public class Dots extends Shape {
       }
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          if (i >= dotsConvexMax)
-            dotsConvexMax = i + 1;
-          /*
-          if (dotsConvexMaps[i] != null)
-            continue;
-          */
           colixes[i] = viewer.getColixDotsConvex();
           setAtomI(i);
           getNeighbors(bsSelected);
@@ -155,19 +157,12 @@ public class Dots extends Shape {
           calcTori();
           calcCavities();
         }
-    } else {
-      for (int i = atomCount; --i >= 0; )
-        if (bsSelected.get(i))
-          dotsConvexMaps[i] = null;
-      turnOffTori();
-      int i;
-      for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
-        {}
-      dotsConvexMax = i + 1;
-      for (i = torusCount; --i >= 0 && tori[i] == null; )
-        {}
-      torusCount = i + 1;
     }
+    // update this count to speed up dotsRenderer
+    int i;
+    for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
+      {}
+    dotsConvexMax = i + 1;
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -319,12 +314,8 @@ public class Dots extends Shape {
       htTori = new Hashtable();
     }
     for (int iJ = neighborCount; --iJ >= 0; ) {
-      /*
-      if (indexI >= neighborIndices[iJ])
-        continue;
-      */
       setNeighborJ(iJ);
-      torusIJ = getTorus(atomI, indexI, atomJ, indexJ);
+      torusIJ = getTorus(atomI, atomJ);
       if (torusIJ == null)
         continue;
       calcTorusProbeMap(torusIJ);
@@ -337,14 +328,28 @@ public class Dots extends Shape {
   }
 
   void turnOffTori() {
+    boolean torusDeleted = false;
+    System.out.println("begin turnOffTori torusCount=" + torusCount);
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = tori[i];
       if (torus == null)
         continue;
-      if (dotsConvexMaps[torus.indexI] == null &&
-          dotsConvexMaps[torus.indexJ] == null)
+      if (dotsConvexMaps[torus.indexI] == null) {
+        torusDeleted = true;
         tori[i] = null;
+      }
     }
+    if (torusDeleted) {
+      int iDestination = 0;
+      for (int iSource = 0; iSource < torusCount; ++iSource) {
+        if (tori[iSource] != null)
+          tori[iDestination++] = tori[iSource];
+      }
+      for (int i = torusCount; --i >= iDestination; )
+        tori[i] = null;
+      torusCount = iDestination;
+    }
+    System.out.println("end turnOffTori torusCount=" + torusCount);
   }
 
   final Matrix3f matrixT = new Matrix3f();
@@ -381,6 +386,10 @@ public class Dots extends Shape {
   final Vector3f vectorZ = new Vector3f(0, 0, 1);
   final Vector3f vectorX = new Vector3f(1, 0, 0);
 
+  final Point3f pointTorusP = new Point3f();
+  final Vector3f vectorPI = new Vector3f();
+  final Vector3f vectorPJ = new Vector3f();
+
   class Torus {
     int indexI, indexJ;
     Point3f center;
@@ -395,12 +404,14 @@ public class Dots extends Shape {
     AxisAngle4f aaRotate;
 
     Torus(Point3f centerI, int indexI, Point3f centerJ, int indexJ,
-          Point3f center, float radius, Vector3f axisVector) {
+          Point3f center, float radius) {
       this.indexI = indexI;
       this.indexJ = indexJ;
       this.center = center;
       this.radius = radius;
-      this.axisVector = axisVector;
+
+      axisVector = new Vector3f();
+      axisVector.sub(centerJ, centerI);
 
       if (axisVector.x == 0)
         unitRadialVector = new Vector3f(1, 0, 0);
@@ -419,17 +430,23 @@ public class Dots extends Shape {
       tangentVector.cross(radialVector, axisVector);
       tangentVector.normalize();
 
-      pointT.set(center);
-      pointT.add(radialVector);
+      pointTorusP.add(center, radialVector);
+
+      vectorPI.sub(centerI, pointTorusP);
+      vectorPI.normalize();
+      vectorPI.scale(radiusP);
+
+      vectorPJ.sub(centerJ, pointTorusP);
+      vectorPJ.normalize();
+      vectorPJ.scale(radiusP);
 
       outerRadial = new Vector3f();
-      outerRadial.sub(centerI, pointT);
+      outerRadial.add(vectorPI, vectorPJ);
       outerRadial.normalize();
       outerRadial.scale(radiusP);
 
-      vectorT.sub(centerJ, pointT);
-      outerAngle = vectorT.angle(outerRadial) / 2;
-      
+      outerAngle = vectorPJ.angle(vectorPI) / 2;
+
       float angle = vectorZ.angle(axisVector);
       if (angle == 0) {
         matrixT.setIdentity();
@@ -453,9 +470,9 @@ public class Dots extends Shape {
     }
   }
 
-  final static Boolean boxedFalse = new Boolean(false);
-
-  Torus getTorus(Atom atomI, int indexI, Atom atomJ, int indexJ) {
+  Torus getTorus(Atom atomI, Atom atomJ) {
+    int indexI = atomI.atomIndex;
+    int indexJ = atomJ.atomIndex;
     Long key = new Long(((long)indexI << 32) + indexJ);
     Object value = htTori.get(key);
     if (value != null) {
@@ -467,14 +484,11 @@ public class Dots extends Shape {
     }
     float radius = calcTorusRadius();
     if (radius == 0) {
-      htTori.put(key, boxedFalse);
+      htTori.put(key, Boolean.FALSE);
       return null;
     }
     Point3f center = calcTorusCenter();
-    Vector3f axisVector = new Vector3f();
-    axisVector.sub(centerI, centerJ);
-    Torus torus = new Torus(centerI, indexI, centerJ, indexJ,
-                            center, radius, axisVector);
+    Torus torus = new Torus(centerI, indexI, centerJ, indexJ, center, radius);
     htTori.put(key, torus);
     return torus;
   }
@@ -532,8 +546,8 @@ public class Dots extends Shape {
   }
 
   void getCavitiesIJK() {
-    torusIJ = getTorus(atomI, indexI, atomJ, indexJ);
-    torusIK = getTorus(atomI, indexI, atomK, indexK);
+    torusIJ = getTorus(atomI, atomJ);
+    torusIK = getTorus(atomI, atomK);
     if (torusIJ == null || torusIK == null) {
       System.out.println("null torus found?");
       return;

@@ -710,30 +710,29 @@ public final class Atom implements Bspt.Tuple {
 
   String getIdentity() {
     StringBuffer info = new StringBuffer();
-    if (atomName != null)
-      info.append(atomName);
-    else {
-      info.append(getElementSymbol());
-      info.append(" ");
-      info.append(getAtomNumber());
-    }
     String group3 = getGroup3();
+    String seqcodeString = getSeqcodeString();
+    char chainID = getChainID();
     if (group3 != null && group3.length() > 0) {
-      info.append(" [");
+      info.append("[");
       info.append(group3);
       info.append("]");
     }
-    /*
-    int seqcode = getSeqcode();
-    System.out.println("seqcode=" + seqcode);
-    if (seqcode != -1) {
-      info.append(seqcode);
-    }
-    */
-    char chainID = getChainID();
+    if (seqcodeString != null)
+      info.append(seqcodeString);
     if (chainID != 0 && chainID != ' ') {
       info.append(":");
       info.append(chainID);
+    }
+    if (atomName != null) {
+      if (info.length() > 0)
+        info.append(".");
+      info.append(atomName);
+    }
+    if (info.length() == 0) {
+      info.append(getElementSymbol());
+      info.append(" ");
+      info.append(getAtomNumber());
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append("/");

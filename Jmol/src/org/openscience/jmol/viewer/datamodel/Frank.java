@@ -31,9 +31,9 @@ public class Frank extends SelectionIndependentShape {
 
   final static String frankString = "Jmol";
   final static String defaultFontName = "SansSerif";
-  final static String defaultFontStyle = "Normal";
-  final static short defaultFontColix = Graphics3D.OLIVE;
-  final static int defaultFontSize = 14;
+  final static String defaultFontStyle = "Bold";
+  final static short defaultFontColix = Graphics3D.GRAY;
+  final static int defaultFontSize = 16;
   final static int frankMargin = 4;
 
   Font3D currentMetricsFont3d;

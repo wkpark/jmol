@@ -139,6 +139,13 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     }
   }
 
+  private boolean getBooleanValue(String propertyName, boolean defaultValue) {
+    String value = getValue(propertyName, defaultValue ? "true" : "");
+    return (value.equalsIgnoreCase("true") ||
+            value.equalsIgnoreCase("on") ||
+            value.equalsIgnoreCase("yes"));
+  }
+
   private String getValue(String propertyName, String defaultValue) {
     String stringValue = getParameter(propertyName);
     if (stringValue != null)
@@ -193,19 +200,17 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       emulate = getValueLowerCase("emulate", "jmol");
       if (emulate.equals("chime")) {
         viewer.setRasmolDefaults();
+        viewer.setColorBackground(getValue("bgcolor", "black"));
+        viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));
       } else {
         viewer.setJmolDefaults();
         viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
         setStyle(getValue("style", "shaded"));
         setLabelStyle(getValue("label", "none"));
         viewer.setColorBackground(getValue("bgcolor", "white"));
-        String wfr = getValue("wireframeRotation", "false");
-        setWireframeRotation(wfr.equalsIgnoreCase("on") ||
-                             wfr.equalsIgnoreCase("true"));
-        
-        String pd = getValue("perspectiveDepth", "true");
-        setPerspectiveDepth(pd.equalsIgnoreCase("on") ||
-                            pd.equalsIgnoreCase("true"));
+        viewer.setWireframeRotation(getBooleanValue("wireframeRotation",
+                                                    true));
+        viewer.setPerspectiveDepth(getBooleanValue("perspectiveDepth", true));
       }
       
       load(getValue("load", null));

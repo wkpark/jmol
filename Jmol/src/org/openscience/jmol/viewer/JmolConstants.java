@@ -28,7 +28,7 @@ final public class JmolConstants {
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
-  public static String version="10pre1";
+  public static String version="10pre2";
   public final static String copyright="(C) 2003 The Jmol Development Team";
 
   public final static byte LABEL_NONE     = 0;

@@ -84,58 +84,79 @@ public class FileManager {
   }
 
   public InputStream getInputStreamFromName(String name) {
-    URL url = getURLFromName(name);
-    if (url != null) {
+    if (isURL) {
+      URL url = getURLFromName(name);
+      if (url != null) {
+        try {
+          return url.openStream();
+        } catch (IOException e) {
+          errorMessage = e.getMessage();
+        }
+      }
+    } else {
       try {
-        return url.openStream();
-      } catch (IOException e) {
+        return new FileInputStream(file);
+      } catch (FileNotFoundException fnf) {
+        errorMessage = "File Not Found:" + fnf.getMessage();
       }
     }
     return null;
   }
 
+  private boolean isURL;
   private String fullPathName;
   private String fileName;
+  private File file;
+  private String errorMessage;
 
   private void getNames(String name) {
     fullPathName = fileName = null;
+    isURL = false;
     if (name == null)
       return;
     if (appletDocumentBase != null) {
+      isURL = true;
       try {
         URL url = new URL(appletDocumentBase, name);
         fullPathName = url.toString();
         fileName = url.getFile();
       } catch (MalformedURLException e) {
+        errorMessage = e.getMessage();
       }
       return;
     }
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
+        isURL = true;
         try {
           URL url = new URL(name);
           fullPathName = url.toString();
           fileName = url.getFile();
         } catch (MalformedURLException e) {
+          errorMessage = e.getMessage();
         }
         return;
       }
     }
-    File file = new File(name);
+    isURL = false;
+    file = new File(name);
     fullPathName = file.getAbsolutePath();
     fileName = file.getName();
   }
 
   public String openFile(String name) {
     System.out.println("openFile(" + name + ")");
+    errorMessage = null;
     getNames(name);
+    if (errorMessage != null)
+      return errorMessage;
     System.out.println(" fullPathName=" + fullPathName +
                        " fileName=" + fileName);
-    if (fullPathName == null)
-      return "invalid url/filename:" + name;
     InputStream istream = getInputStreamFromName(name);
+    if (errorMessage != null)
+      return errorMessage;
     if (istream == null)
-        return "error opening url/filename:" + name;
+      return "error opening url/filename";
     return openInputStream(fullPathName, fileName, istream);
   }
 
@@ -161,7 +182,7 @@ public class FileManager {
       return openReader(fullPathName, fileName,
                         new InputStreamReader(istreamToRead));
     } catch (IOException ioe) {
-      return "Error reading stream header: " + ioe;
+      return ioe.getMessage();
     }
   }
 

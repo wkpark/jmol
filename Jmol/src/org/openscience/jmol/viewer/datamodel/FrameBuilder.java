@@ -31,24 +31,17 @@ final public class FrameBuilder {
 
   final JmolViewer viewer;
   final JmolModelAdapter adapter;
-  Object clientFile;
-  final int frameNumber;
 
-  public FrameBuilder(JmolViewer viewer,
-                      JmolModelAdapter adapter,
-                      Object clientFile,
-                      int frameNumber) {
+  public FrameBuilder(JmolViewer viewer, JmolModelAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
-    this.clientFile = clientFile;
-    this.frameNumber = frameNumber;
   }
 
   protected void finalize() {
     System.out.println("FrameBuilder.finalize() called!");
   }
 
-  public Frame buildFrame() {
+  public Frame buildFrame(Object clientFile, int frameNumber) {
     long timeBegin = System.currentTimeMillis();
     int atomCount = adapter.getAtomCount(clientFile, frameNumber);
     int modelType = adapter.getModelType(clientFile);
@@ -104,7 +97,6 @@ final public class FrameBuilder {
     long msToBuild = System.currentTimeMillis() - timeBegin;
     System.out.println("Build a frame:" + msToBuild + " ms");
     adapter.finish(clientFile);
-    clientFile = null;
     return frame;
   }
 }

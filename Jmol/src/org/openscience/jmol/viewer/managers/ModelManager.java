@@ -39,14 +39,17 @@ import java.awt.Color;
 
 public class ModelManager {
 
-  JmolViewer viewer;
-  JmolModelAdapter modelAdapter;
+  final JmolViewer viewer;
+  final JmolModelAdapter modelAdapter;
+
   final Frame nullFrame;
+  final FrameBuilder frameBuilder;
 
   public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
-    this.nullFrame = new Frame(viewer);
+    nullFrame = new Frame(viewer);
+    frameBuilder = new FrameBuilder(viewer, modelAdapter);
   }
 
   public String fullPathName;
@@ -83,15 +86,11 @@ public class ModelManager {
       modelHeader = modelAdapter.getModelHeader(clientFile);
       frameCount = modelAdapter.getFrameCount(clientFile);
       frames = new Frame[frameCount];
-      for (int i = 0; i < frameCount; ++i) {
-        // FIXME mth 2004 02 23 - allocate one FrameBuilder and reuse it
-        frames[i] =
-          new FrameBuilder(viewer, modelAdapter, clientFile, i).buildFrame();
-      }
+      for (int i = 0; i < frameCount; ++i)
+        frames[i] = frameBuilder.buildFrame(clientFile, i);
 
       haveFile = true;
     }
-    viewer.notifyFileLoaded(fullPathName, fileName, modelName, clientFile);
   }
 
   public Frame getFrame() {

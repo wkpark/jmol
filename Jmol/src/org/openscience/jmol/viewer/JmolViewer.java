@@ -857,6 +857,13 @@ final public class JmolViewer {
   }
   
   public String getOpenFileError() {
+    String errorMsg = getOpenFileError1();
+    System.gc();
+    System.runFinalization();
+    return errorMsg;
+  }
+
+  public String getOpenFileError1() {
     String fullPathName = fileManager.getFullPathName();
     String fileName = fileManager.getFileName();
     Object clientFile = fileManager.waitForClientFileOrErrorMessage();
@@ -868,10 +875,6 @@ final public class JmolViewer {
     openClientFile(fullPathName, fileName, clientFile);
     notifyFileLoaded(fullPathName, fileName,
                      modelManager.getModelName(), clientFile);
-    System.gc();
-    System.runFinalization();
-    System.gc();
-    System.runFinalization();
     return null;
   }
 
@@ -881,7 +884,7 @@ final public class JmolViewer {
 
   public void openClientFile(String fullPathName, String fileName,
                              Object clientFile) {
-    // maybe there needs to be a call to clear() 
+    // maybe there needs to be a call to clear()
     // or something like that here
     // for when CdkEditBus calls this directly
     pushHoldRepaint();

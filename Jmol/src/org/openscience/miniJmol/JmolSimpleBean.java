@@ -427,6 +427,19 @@ public class JmolSimpleBean extends java.awt.Panel
 		}
 	}
 
+  /**
+   * Sets the picked atoms.
+   *
+   * @param pickedAtoms a boolean array containing true or false representing
+   * picked or not picked for each atom in the molecule.
+   */
+  public void setPickedAtoms(boolean[] pickedAtoms) {
+    ChemFrame cf = display.getFrame();
+    cf.deselectAll();
+    cf.setPickedAtoms(pickedAtoms);
+  }
+
+
 	/**
 	 * Sets whether they view automatically goes to wireframe when they model is rotated.
 	 * @param doesIt String either "T" or "F"

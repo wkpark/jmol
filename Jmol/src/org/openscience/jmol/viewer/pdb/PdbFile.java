@@ -181,7 +181,17 @@ final public class PdbFile {
   }
 
   public int getChainCount() {
-    return pdbmodels[0].getChainCount();
+    int chainCount = 0;
+    for (int i = modelCount; --i >= 0; )
+      chainCount += pdbmodels[i].getChainCount();
+    return chainCount;
+  }
+
+  public int getGroupCount() {
+    int groupCount = 0;
+    for (int i = modelCount; --i >= 0; )
+      groupCount += pdbmodels[i].getGroupCount();
+    return groupCount;
   }
 
   public void calcHydrogenBonds() {

@@ -67,21 +67,21 @@ final public class PdbChain {
     return groups[groupCount++] = group;
   }
 
-  public PdbGroup getResidue(int groupIndex) {
+  public PdbGroup getGroup(int groupIndex) {
     return groups[groupIndex];
   }
   
-  public int getResidueCount() {
+  public int getGroupCount() {
     return groupCount;
   }
 
-  public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
+  public Point3f getGroupAlphaCarbonPoint(int groupIndex) {
     return groups[groupIndex].getAlphaCarbonAtom().point3f;
   }
 
   // to get something other than the alpha carbon atom
-  public Point3f getResiduePoint(int groupIndex, int mainchainIndex) {
-    return getResidue(groupIndex).getMainchainAtom(mainchainIndex).point3f;
+  public Point3f getGroupPoint(int groupIndex, int mainchainIndex) {
+    return getGroup(groupIndex).getMainchainAtom(mainchainIndex).point3f;
   }
 
   int mainchainHelper(boolean addGroups) {

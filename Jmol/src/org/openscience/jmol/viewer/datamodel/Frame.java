@@ -168,6 +168,14 @@ final public class Frame {
     return modelCount;
   }
 
+  public int getChainCount() {
+    return (hasPdbRecords ? pdbFile.getChainCount() : 0);
+  }
+
+  public int getGroupCount() {
+    return (hasPdbRecords ? pdbFile.getGroupCount() : 0);
+  }
+
   public int getAtomCount() {
     return atomCount;
   }

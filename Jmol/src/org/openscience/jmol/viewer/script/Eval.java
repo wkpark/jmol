@@ -1362,15 +1362,23 @@ public class Eval implements Runnable {
 
   void label() throws ScriptException {
     String strLabel = (String)statement[1].value;
-    if (strLabel.equalsIgnoreCase("on"))
-      strLabel = "<default>";
-    else if (strLabel.equalsIgnoreCase("off"))
+    if (strLabel.equalsIgnoreCase("on")) {
+      // from the RasMol 2.6b2 manual: RasMol uses the label
+      // "%n%r:%c.%a" if the molecule contains more than one chain:
+      // "%e%i" if the molecule has only a single residue (a small molecule) and
+      // "%n%r.%a" otherwise.
+      if (viewer.getChainCount() > 1)
+        strLabel = "%n%r:%c.%a";
+      else if (viewer.getGroupCount() <= 1)
+        strLabel = "%e%i";
+      else
+        strLabel = "%n%r.%a";
+    } else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
     viewer.setLabel(strLabel);
   }
 
   void load() throws ScriptException {
-    System.out.println(">>>>>>>>>>>>>>>> load script command seen");
     int i = 1;
     // ignore optional file format
     if (statement[i].tok == Token.identifier)

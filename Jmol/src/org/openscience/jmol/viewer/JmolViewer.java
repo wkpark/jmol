@@ -985,6 +985,14 @@ final public class JmolViewer {
     return modelManager.getModelCount();
   }
 
+  public int getChainCount() {
+    return modelManager.getChainCount();
+  }
+
+  public int getGroupCount() {
+    return modelManager.getGroupCount();
+  }
+
   public int getAtomCount() {
     return modelManager.getAtomCount();
   }

@@ -126,6 +126,14 @@ public class ModelManager {
     return (frame == null) ? 0 : frame.getModelCount();
   }
 
+  public int getChainCount() {
+    return (frame == null) ? 0 : frame.getChainCount();
+  }
+
+  public int getGroupCount() {
+    return (frame == null) ? 0 : frame.getGroupCount();
+  }
+
   public int getAtomCount() {
     return (frame == null) ? 0 : frame.getAtomCount();
   }

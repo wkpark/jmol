@@ -70,6 +70,13 @@ final public class PdbModel {
     return chainCount;
   }
 
+  public int getGroupCount() {
+    int groupCount = 0;
+    for (int i = chainCount; --i >= 0; )
+      groupCount += chains[i].getGroupCount();
+    return groupCount;
+  }
+
   public PdbChain getChain(char chainID) {
     for (int i = chainCount; --i >= 0; ) {
       PdbChain chain = chains[i];

@@ -304,9 +304,9 @@ public class PovrayStyleWriter {
     BaseAtomType a = cf.getAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
 
-    double c_x = (cf.getXMax() + cf.getXMin()) / 2.0;
-    double c_y = (cf.getYMax() + cf.getYMin()) / 2.0;
-    double c_z = (cf.getZMax() + cf.getZMin()) / 2.0;
+    float c_x = cf.getCenter().x;
+    float c_y = cf.getCenter().y;
+    float c_z = cf.getCenter().z;
 
     Matrix4d cmat = new Matrix4d();
 
@@ -340,9 +340,9 @@ public class PovrayStyleWriter {
       BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
         throws IOException {
 
-    float c_x = (cf.getXMax() + cf.getXMin()) / 2.0f;
-    float c_y = (cf.getYMax() + cf.getYMin()) / 2.0f;
-    float c_z = (cf.getZMax() + cf.getZMin()) / 2.0f;
+    float c_x = cf.getCenter().x;
+    float c_y = cf.getCenter().y;
+    float c_z = cf.getCenter().z;
 
     Matrix4d cmat = new Matrix4d();
 

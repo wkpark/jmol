@@ -81,9 +81,7 @@ public class ChemFrame implements Transformable {
    */
   private Vector dhlist;
 
-  private Point3f min;
-  private Point3f max;
-  private Point3f center;
+  private Point3f centerPoint;
   private float radius;
 
   static void setBondFudge(float bf) {
@@ -294,37 +292,7 @@ public class ChemFrame implements Transformable {
 
   public Point3f getCenter() {
     findBounds();
-    return center;
-  }
-
-  public float getXMin() {
-    findBounds();
-    return min.x;
-  }
-
-  public float getXMax() {
-    findBounds();
-    return max.x;
-  }
-
-  public float getYMin() {
-    findBounds();
-    return min.y;
-  }
-
-  public float getYMax() {
-    findBounds();
-    return max.y;
-  }
-
-  public float getZMin() {
-    findBounds();
-    return min.z;
-  }
-
-  public float getZMax() {
-    findBounds();
-    return max.z;
+    return centerPoint;
   }
 
   /**
@@ -446,8 +414,7 @@ public class ChemFrame implements Transformable {
    * Clears the bounds cache for this model.
    */
   private void clearBounds() {
-    min = null;
-    max = null;
+    centerPoint = null;
     radius = 0.0f;
   }
 
@@ -455,43 +422,45 @@ public class ChemFrame implements Transformable {
    * Find the bounds of this model.
    */
   private void findBounds() {
-    if ((max != null) || (atoms == null) || (numberAtoms <= 0))
+    if ((centerPoint != null) || (atoms == null) || (numberAtoms <= 0))
       return;
 
-    min = new Point3f(atoms[0].getPosition());
-    max = new Point3f(min);
+    // First, find the center of the molecule. Current definition is the center
+    // of the cartesian coordinates as stored in the file. Note that this is
+    // not really the center because an atom could be stuck way up in one of
+    // the corners of the box
+    Point3f position = atoms[0].getPosition();
+    float minX = position.x, maxX = minX;
+    float minY = position.y, maxY = minY;
+    float minZ = position.z, maxZ = minZ;
+
     for (int i = 1; i < numberAtoms; ++i) {
-      float x = atoms[i].getPosition().x;
-      if (x < min.x) {
-        min.x = x;
-      }
-      if (x > max.x) {
-        max.x = x;
-      }
-      float y = atoms[i].getPosition().y;
-      if (y < min.y) {
-        min.y = y;
-      }
-      if (y > max.y) {
-        max.y = y;
-      }
-      float z = atoms[i].getPosition().z;
-      if (z < min.z) {
-        min.z = z;
-      }
-      if (z > max.z) {
-        max.z = z;
-      }
+      position = atoms[i].getPosition();
+      float x = position.x;
+      if (x < minX) { minX = x; }
+      if (x > maxX) { maxX = x; }
+      float y = position.y;
+      if (y < minY) { minY = y; }
+      if (y > maxY) { maxY = y; }
+      float z = position.z;
+      if (z < minZ) { minZ = z; }
+      if (z > maxZ) { maxZ = z; }
     }
-    center = new Point3f((min.x + max.x) / 2,
-                         (min.y + max.y) / 2,
-                         (min.z + max.z) / 2);
+    centerPoint = new Point3f((minX + maxX) / 2,
+                              (minY + maxY) / 2,
+                              (minZ + maxZ) / 2);
+
+    // Now that we have defined the center, find the radius to the outermost
+    // atom, including the radius of the atom itself. Note that this is
+    // currently the vdw radius as scaled by the vdw display radius as set
+    // in preferences. This is *not* recalculated if the user changes the
+    // display scale ... perhaps it should be. 
     radius = 0.0f;
     float atomSphereFactor = (float) Jmol.settings.getAtomSphereFactor();
     for (int i = 0; i < numberAtoms; ++i) {
       Atom atom = atoms[i];
       Point3f posAtom = atom.getPosition();
-      float distAtom = center.distance(posAtom);
+      float distAtom = centerPoint.distance(posAtom);
       distAtom += (atom.getType().getVdwRadius() * atomSphereFactor);
       if (distAtom > radius)
         radius = distAtom;

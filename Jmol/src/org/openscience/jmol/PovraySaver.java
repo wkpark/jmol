@@ -20,6 +20,7 @@
 package org.openscience.jmol;
 
 import java.util.Date;
+import java.awt.Color;
 import java.text.SimpleDateFormat;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -50,7 +51,6 @@ public class PovraySaver extends FileSaver {
   private int framenumber = 0;
   private Matrix4d amat, tmat, zmat, ttmat;
   private float xfac, edge;
-  private float dx, dy, dz;
   private int screenWidth, screenHeight;
   protected ChemFile cf;
 
@@ -85,7 +85,7 @@ public class PovraySaver extends FileSaver {
    *
    * @param bgColor The background color.
    */
-  public void setBackgroundColor(java.awt.Color bgColor) {
+  public void setBackgroundColor(Color bgColor) {
     background = povrayColor(bgColor);
   }
 
@@ -181,10 +181,6 @@ public class PovraySaver extends FileSaver {
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
 
-    dx = (cf.getXMax() - cf.getXMin());
-    dy = (cf.getXMax() - cf.getYMin());
-    dz = (cf.getZMax() - cf.getZMin());
-
     Vector3d tvect = new Vector3d();
     ttmat.get(tvect);
     tvect.x /= xfac;
@@ -192,16 +188,23 @@ public class PovraySaver extends FileSaver {
     tvect.z /= xfac;
     ttmat.set(tvect);
 
-    edge = dx;
-    if (edge < dy) {
-      edge = dy;
-    }
-    if (edge < dz) {
-      edge = dz;
-    }
-
+    // mth 2002 nov 15
+    // Instead of approximating the dimensions of the atom, I switched to
+    // using the radius. I don't understand how the variable 'edge' is being
+    // used, but this is effectively what the code was doing.
+    edge = cf.getRadius() * 2;
+    // I don't understand these scaling operations. In fact, the molecules I
+    // tested look better without them. But I am afraid to remove this code
+    // without understanding it.
     edge /= Math.pow(zmat.getScale(), 2);
+    // This one really looks like a fudge factor to me. 
     edge /= 0.7;
+    // there is something else going on, because the povray rendering of
+    // the molecule is not in *exactly* the same position on the screen as
+    // the jmol rendering. 
+    // perhaps this is just because povray (presumably) does a better job
+    // of generating perspective so the locations of the atoms are more
+    // accurate under povray
 
     myStyle.setAmat(amat);
     myStyle.setTmat(ttmat);
@@ -234,7 +237,7 @@ public class PovraySaver extends FileSaver {
     w.write("// the correct aspect ratio.\n" + "\n");
     w.write("#declare Width = " + screenWidth + ";\n");
     w.write("#declare Height = " + screenHeight + ";\n");
-    w.write("#declare Ratio = Width / Height\n" + "\n");
+    w.write("#declare Ratio = Width / Height\n" + ";\n");
     w.write("#declare zoom = " + edge + ";\n\n");
     w.write("camera{\n");
     w.write("  location < 0, 0, zoom>\n" + "\n");
@@ -365,10 +368,10 @@ public class PovraySaver extends FileSaver {
    *
    * @return A string representaion of the color in povray rgb format.
    */
-  protected String povrayColor(java.awt.Color col) {
-    float tff = (float) 255.0;
-    return "rgb<" + ((float) col.getRed() / tff) + ","
-        + ((float) col.getGreen() / tff) + ","
-          + ((float) col.getBlue() / tff) + ">";
+  protected String povrayColor(Color color) {
+    return "rgb<" +
+      color.getRed() / 255f + "," +
+      color.getGreen() / 255f + "," +
+      color.getBlue() / 255f + ">";
   }
 }

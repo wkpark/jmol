@@ -324,7 +324,6 @@ class Bond {
   int order;
 
   Bond(int atomIndex1, int atomIndex2, int order) {
-    System.out.println("Bond : " + atomIndex1 + "+" + atomIndex2 + " : " + order);
     this.atomIndex1 = atomIndex1;
     this.atomIndex2 = atomIndex2;
     this.order = order;
@@ -408,7 +407,7 @@ class JmeModel extends Model {
     atoms = new Atom[atomCount];
     for (int i = 0; i < atomCount; ++i) {
       String atom = tokenizer.nextToken();
-      System.out.println("atom=" + atom);
+      //      System.out.println("atom=" + atom);
       int indexColon = atom.indexOf(':');
       String atomicSymbol = (indexColon > 0
                              ? atom.substring(0, indexColon)
@@ -426,9 +425,9 @@ class JmeModel extends Model {
       int atomIndex1 = Integer.parseInt(tokenizer.nextToken());
       int atomIndex2 = Integer.parseInt(tokenizer.nextToken());
       int order = Integer.parseInt(tokenizer.nextToken());
-      System.out.println("bond "+atomIndex1+"->"+atomIndex2+" "+order);
+      //      System.out.println("bond "+atomIndex1+"->"+atomIndex2+" "+order);
       if (order < 1) {
-        System.out.println("Stereo found:" + order);
+        //        System.out.println("Stereo found:" + order);
         order = ((order == -1)
                  ? JmolConstants.BOND_STEREO_NEAR : JmolConstants.BOND_STEREO_FAR);
       }

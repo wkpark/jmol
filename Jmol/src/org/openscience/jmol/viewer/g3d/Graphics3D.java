@@ -387,6 +387,10 @@ final public class Graphics3D {
     line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, true);
   }
 
+  public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
+    line3d.drawLine(argbCurrent, x1, y1, z1, x2, y2, z2, true);
+  }
+
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     line3d.drawLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2, false);

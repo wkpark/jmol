@@ -39,7 +39,8 @@ public class FrameRenderer {
   BondRenderer bondRenderer;
   LabelRenderer labelRenderer;
   DotsRenderer dotsRenderer;
-    ArcTest arctest;
+  ArcTest arctest;
+  JmolFrame frame;
 
   public FrameRenderer(JmolViewer viewer) {
     this.viewer = viewer;
@@ -51,19 +52,19 @@ public class FrameRenderer {
   }
   
   private void setGraphicsContext(Graphics3D g3d, Rectangle rectClip) {
+    frame = viewer.getJmolFrame();
     atomRenderer.setGraphicsContext(g3d, rectClip);
     bondRenderer.setGraphicsContext(g3d, rectClip);
     labelRenderer.setGraphicsContext(g3d, rectClip);
-    dotsRenderer.setGraphicsContext(g3d, rectClip);
+    dotsRenderer.setGraphicsContext(g3d, rectClip, frame);
     arctest.setGraphicsContext(g3d, rectClip);
   }
 
   public void render(Graphics3D g3d, Rectangle rectClip) {
-    JmolFrame frame = viewer.getJmolFrame();
+    setGraphicsContext(g3d, rectClip);
+
     if (frame.atomShapeCount <= 0)
       return;
-
-    setGraphicsContext(g3d, rectClip);
 
     viewer.calcTransformMatrices();
 
@@ -78,12 +79,7 @@ public class FrameRenderer {
       atomRenderer.render(atomShape);
     }
 
-    int[][] dotsConvexMaps = frame.dotsConvexMaps;
-    for (int i = frame.dotsConvexCount; --i >= 0; ) {
-      int[] map = dotsConvexMaps[i];
-      if (map != null)
-        dotsRenderer.render(atomShapes[i], map);
-    }
+    dotsRenderer.render();
 
     BondShape[] bondShapes = frame.bondShapes;
     for (int i = frame.bondShapeCount; --i >= 0; )

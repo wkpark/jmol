@@ -167,33 +167,13 @@ public class JmolFrame {
     addBondShape(atomShape1.bondMutually(atomShape2, order));
   }
 
-  int dotsConvexCount;
-  int[][] dotsConvexMaps;
+  Dots dots;
 
   public void setDotsOn(boolean dotsOn, BitSet bsSelected) {
-    if (dotsOn) {
-      if (dotsConvexMaps == null)
-        dotsConvexMaps = new int[atomShapeCount][];
-      else if (dotsConvexMaps.length < atomShapeCount) {
-        int[][] t = new int[atomShapeCount][];
-        System.arraycopy(dotsConvexMaps, 0, t, 0,
-                         dotsConvexMaps.length);
-        dotsConvexMaps = t;
-      }
-      DotsRenderer dotsRenderer = frameRenderer.dotsRenderer;
-      for (int i = atomShapeCount; --i >= 0; )
-        if (bsSelected.get(i) && dotsConvexMaps[i] == null)
-          dotsConvexMaps[i] =
-            dotsRenderer.calcVisibilityMap(atomShapes[i]);
-    } else {
-      for (int i = atomShapeCount; --i >= 0; )
-        if (bsSelected.get(i))
-          dotsConvexMaps[i] = null;
-    }
-    int iLast = dotsConvexMaps.length;
-    while (--iLast > 0 && dotsConvexMaps[iLast] == null)
-      {}
-    dotsConvexCount = iLast + 1;
+    if (dotsOn && dots == null)
+      dots = new Dots(viewer, this, frameRenderer.dotsRenderer);
+    if (dots != null)
+      dots.setDotsOn(dotsOn, bsSelected);
   }
 
   Point3f centerBoundingBox;

@@ -43,27 +43,27 @@ public class ArcTest {
 
   JmolViewer viewer;
   Graphics3D g3d;
-    Vector3f[] vertices;
-    Vector3f[] verticesTransformed;
-    final static int numVertices = 32;
-    Matrix3f matrix1, matrix2, matrixT;
-    AxisAngle4f aa1, aa2, aaT, aa;
-    Quat4f quat;
-    Point3f center, pointT;
-    Vector3f vector1, vectorT;
-    Vector3f vector2;
-    Vector3f vectorAxis;
+  Vector3f[] vertices;
+  Vector3f[] verticesTransformed;
+  final static int numVertices = 32;
+  Matrix3f matrix1, matrix2, matrixT;
+  AxisAngle4f aa1, aa2, aaT, aa;
+  Quat4f quat;
+  Point3f center, pointT;
+  Vector3f vector1, vectorT;
+  Vector3f vector2;
+  Vector3f vectorAxis;
 
   public ArcTest(JmolViewer viewer) {
     this.viewer = viewer;
     vertices = new Vector3f[numVertices];
     verticesTransformed = new Vector3f[numVertices];
     for (int i = numVertices; --i >= 0; ) {
-	double radians = 2 * Math.PI * i / numVertices;
-	vertices[i] = new Vector3f((float)Math.sin(radians),
-				   (float)Math.cos(radians),
-				   0);
-	verticesTransformed[i] = new Vector3f();
+      double radians = 2 * Math.PI * i / numVertices;
+      vertices[i] = new Vector3f((float)Math.sin(radians),
+                                 (float)Math.cos(radians),
+                                 0);
+      verticesTransformed[i] = new Vector3f();
     }
     matrix1 = new Matrix3f();
     matrix2 = new Matrix3f();
@@ -85,35 +85,35 @@ public class ArcTest {
   }
 
   void transform() {
-      /*
+    /*
       for (int i = numVertices; --i >= 0; ) {
-	  Vector3f t = verticesTransformed[i];
-	  matrix.transform(vertices[i], t);
-	  viewer.transformVector(t, t);
+      Vector3f t = verticesTransformed[i];
+      matrix.transform(vertices[i], t);
+      viewer.transformVector(t, t);
       }
-      */
+    */
   }
 
-    public void render() {
-	g3d.setColix(Colix.BLUE);
-	/*
-	for (int i = numVertices; --i >= 0; ) {
-	    Vector3f vertex = verticesTransformed[i];
-	    g3d.plotPixelClipped((int)(vertex.x + 40),
-				 (int)(vertex.y + 40),
-				 (int)(vertex.z + 40));
-	}
-	*/
-	int dotCount = 32;
-	float stepAngle = aa.angle / dotCount;
-	aaT.set(aa);
-	for (int i = dotCount; --i >= 0; ) {
-	    aaT.angle = i * stepAngle;
-	    matrixT.set(aaT);
-	    pointT.set(center);
-	    pointT.add(vector1);
-	    matrixT.transform(pointT);
-	    g3d.plotPoint(viewer.transformPoint(pointT));
-	}
+  public void render() {
+    g3d.setColix(Colix.BLUE);
+    /*
+      for (int i = numVertices; --i >= 0; ) {
+      Vector3f vertex = verticesTransformed[i];
+      g3d.plotPixelClipped((int)(vertex.x + 40),
+      (int)(vertex.y + 40),
+      (int)(vertex.z + 40));
+      }
+    */
+    int dotCount = 32;
+    float stepAngle = aa.angle / dotCount;
+    aaT.set(aa);
+    for (int i = dotCount; --i >= 0; ) {
+      aaT.angle = i * stepAngle;
+      matrixT.set(aaT);
+      pointT.set(center);
+      pointT.add(vector1);
+      matrixT.transform(pointT);
+      g3d.plotPoint(viewer.transformPoint(pointT));
     }
+  }
 }

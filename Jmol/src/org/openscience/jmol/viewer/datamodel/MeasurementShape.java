@@ -41,11 +41,11 @@ public class MeasurementShape extends LineShape {
   public int[] atomIndices;
   public String strMeasurement;
 
-    public Point3f center, pointT;
-    Vector3f vector21, vector23, vectorAxis;
-    public int count;
-    AxisAngle4f aa, aaT;
-    Matrix3f matrixT;
+  public Point3f center, pointT;
+  Vector3f vector21;
+  public int count;
+  AxisAngle4f aa, aaT;
+  Matrix3f matrixT;
 
   public MeasurementShape(JmolViewer viewer, int count, int[] atomIndices) {
     Point3f point1 = viewer.getPoint3f(atomIndices[0]);
@@ -64,22 +64,26 @@ public class MeasurementShape extends LineShape {
       point3 = viewer.getPoint3f(atomIndices[2]);
       vector21 = new Vector3f(point1);
       vector21.sub(point2);
-      vector23 = new Vector3f(point3);
+      Vector3f vector23 = new Vector3f(point3);
       vector23.sub(point2);
       float angle = vector21.angle(vector23);
       float degrees = toDegrees(angle);
       strMeasurement = formatAngle(degrees);
+      float len21 = vector21.length();
+      float len23 = vector23.length();
+      if (len21 < len23)
+        vector23.scale(len21/len23);
+      else
+        vector21.scale(len23/len21);
 
-      pointOrigin = new Point3f(point1);
-      pointOrigin.scaleAdd(3, point2);
-      pointOrigin.scale(0.25f);
-      pointEnd = new Point3f(point3);
-      pointEnd.scaleAdd(3, point2);
-      pointEnd.scale(0.25f);
+      pointOrigin = new Point3f(point2);
+      pointOrigin.add(vector21);
+      pointEnd = new Point3f(point2);
+      pointEnd.add(vector23);
 
       center = point2;
 
-      vectorAxis = new Vector3f();
+      Vector3f vectorAxis = new Vector3f();
       vectorAxis.cross(vector21, vector23);
       aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, angle);
 
@@ -109,57 +113,40 @@ public class MeasurementShape extends LineShape {
   }
 
   public void render(Graphics3D g3d, JmolViewer viewer) {
-      if (count == 3) {
-	  renderArc(g3d, viewer);
-      } else {
-	  g3d.drawDottedLine(viewer.getColixDistance(),
-			     x, y, z, xEnd, yEnd, zEnd);
-	  if (viewer.getShowMeasurementLabels())
-	      paintMeasurementString(g3d, viewer);
-      }
+    if (count == 3) {
+      renderArc(g3d, viewer);
+    } else {
+      g3d.drawDottedLine(viewer.getColixDistance(),
+                         x, y, z, xEnd, yEnd, zEnd);
+    }
+    if (viewer.getShowMeasurementLabels())
+      paintMeasurementString(g3d, viewer);
   }
 
   public void renderArc(Graphics3D g3d, JmolViewer viewer) {
-      g3d.setColix(viewer.getColixDistance());
-      int dotCount = 32;
-      float stepAngle = aa.angle / dotCount;
-      aaT.set(aa);
-      for (int i = dotCount; --i >= 0; ) {
-	  aaT.angle = i * stepAngle;
-	  matrixT.set(aaT);
-	  pointT.set(vector21);
-	  matrixT.transform(pointT);
-	  pointT.add(center);
-	  g3d.plotPoint(viewer.transformPoint(pointT));
-      }
-      int xC, yC, zC;
-      Point3i screen = viewer.transformPoint(center);
-      xC = screen.x; yC = screen.y; zC = screen.z;
+    g3d.setColix(viewer.getColixDistance());
+    // this needs to vary based upon pixelsPerAngstrom
+    int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
+    float stepAngle = aa.angle / dotCount;
+    aaT.set(aa);
+    for (int i = dotCount; --i >= 0; ) {
+      aaT.angle = i * stepAngle;
+      matrixT.set(aaT);
       pointT.set(vector21);
-      pointT.scale(1.5f);
+      pointT.scale(0.75f);
+      matrixT.transform(pointT);
       pointT.add(center);
-      screen = viewer.transformPoint(pointT);
-      g3d.drawDottedLine(viewer.getColixDistance(),
-			 xC, yC, zC, screen.x, screen.y, screen.z);
-      pointT.set(vector23);
-      pointT.scale(1.5f);
-      pointT.add(center);
-      screen = viewer.transformPoint(pointT);
-      g3d.drawDottedLine(viewer.getColixDistance(),
-			 xC, yC, zC, screen.x, screen.y, screen.z);
+      g3d.plotPoint(viewer.transformPoint(pointT));
+    }
+    int xC, yC, zC;
+    Point3i pointC = viewer.transformPoint(center);
+    g3d.drawDottedLine(viewer.getColixDistance(),
+                       pointC.x, pointC.y, pointC.z, x, y, z);
+    g3d.drawDottedLine(viewer.getColixDistance(),
+                       pointC.x, pointC.y, pointC.z, xEnd, yEnd, zEnd);
   }
 
 
-  /**
-   * The format used for displaying distance values.
-   */
-  /*
-  private static PrintfFormat distanceFormat =
-    new PrintfFormat("%0.3f \u00c5");
-  private static PrintfFormat angleFormat = new PrintfFormat("%0.1f\u00b0");
-  private static PrintfFormat dihedralFormat = new PrintfFormat("%0.1f\u00b0");
-  */
-  
   String formatDistance(float dist) {
     dist = (int)(dist * 1000 + 0.5f);
     dist /= 1000;
@@ -212,7 +199,7 @@ public class MeasurementShape extends LineShape {
   }
 
   public float computeDihedral(Point3f p1, Point3f p2,
-                                Point3f p3, Point3f p4) {
+                               Point3f p3, Point3f p4) {
 
     float ijx = p1.x - p2.x;
     float ijy = p1.y - p2.y;

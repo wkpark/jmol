@@ -493,6 +493,8 @@ final public class DisplayControl {
   }
 
   public void homePosition() {
+    setCenter(null);
+    clearSelection();
     matrixRotate.setIdentity();         // no rotations
     scaleFitToScreen();
     recalc();
@@ -583,6 +585,7 @@ final public class DisplayControl {
   private MeasurementList mlist = null;
 
   public void setChemFile(ChemFile chemfile) {
+    // FIXME -- I think I need to disable repaints during this process
     this.chemfile = chemfile;
     haveFile = true;
     nframes = chemfile.getNumberOfFrames();
@@ -591,8 +594,8 @@ final public class DisplayControl {
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
-    clearSelection();
     homePosition();
+    recalcFirmly();
   }
 
   public boolean haveFile() {
@@ -772,6 +775,10 @@ final public class DisplayControl {
   }
 
   Object monitorRepaint = new Object();
+
+  private void recalcFirmly() {
+    panel.repaint();
+  }
 
   private void recalc() {
     if (repaintPending)
@@ -997,24 +1004,41 @@ final public class DisplayControl {
   // mth jan 2003 -- there must be a better way for me to do this!?
   final String[] urlPrefixes = {"http:", "https:", "ftp:"};
 
-  public String openFile(String filename) {
+  public URL getURLFromName(String name) {
+    URL url = null;
+    int i;
+    for (i = 0; i < urlPrefixes.length; ++i) {
+      if (name.startsWith(urlPrefixes[i]))
+        break;
+    }
     try {
-      InputStream istream = null;
-      int i;
-      for (i = 0; i < urlPrefixes.length; ++i) {
-        if (filename.startsWith(urlPrefixes[i]))
-          break;
+      if (i < urlPrefixes.length)
+        url = new URL(name);
+      else if (appletDocumentBase != null)
+        url = new URL(appletDocumentBase, name);
+      else
+        url = new URL("file", null, name);
+    } catch (MalformedURLException e) {
+    }
+    return url;
+  }
+
+  public InputStream getInputStreamFromName(String name) {
+    URL url = getURLFromName(name);
+    if (url != null) {
+      try {
+        return url.openStream();
+      } catch (IOException e) {
       }
-      if (i < urlPrefixes.length) {
-        URL url = new URL(filename);
-        istream = url.openStream();
-      } else if (appletDocumentBase != null) {
-        URL url = new URL(appletDocumentBase, filename);
-        istream = url.openStream();
-      } else {
-        File file = new File(filename);
-        istream = new FileInputStream(file);
-      }
+    }
+    return null;
+  }
+
+  public String openFile(String name) {
+    InputStream istream = getInputStreamFromName(name);
+    if (istream == null)
+        return "error opening url/filename " + name;
+    try {
       openInputStream(istream);
     } catch (Exception e) {
       return "" + e;

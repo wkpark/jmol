@@ -137,6 +137,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
     control.setShowAtoms(true);
     control.zoomToPercent(100);
     control.setPercentVdwAtom(20);
+    control.setModeBondDraw(DisplayControl.SHADING);
+    control.setModeAtomDraw(DisplayControl.SHADING);
     /*
     double zoomFactor = 1;
 
@@ -546,14 +548,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   /**
-   * <b>For Javascript:<\b> Takes the argument, reads it as a URL and sets it as the current model.
-   * @param modelURL The URL of the model we want.
-   */
-  public void setModelToRenderFromURL(String modelURLString) {
-    control.openFile(modelURLString);
-  }
-
-  /**
    * <b>For Javascript:<\b> Takes the argument, reads it as a file and allocates this as the current atom types- eg radius etc.
    * @param atomTypesFile The filename of the properties we want.
    */
@@ -624,37 +618,38 @@ public class JmolApplet extends Applet implements StatusDisplay {
   /**
    * <b>For Javascript:<\b> Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
    */
-  public void setAtomRenderingStyle(String style) {
-    //    myBean.setAtomRenderingStyle(style);
-  }
-
-  /**
-   * <b>For Javascript:<\b> Gets the rendering mode for atoms. Values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'.
-   */
-  public String getAtomRenderingStyleDescription() {
-    return getAtomRenderingStyleDescription();
-  }
-
-  /**
-   * <b>For Javascript:<\b> Sets the rendering mode for bonds. Valid values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'.
-   */
-  public void setBondRenderingStyle(String style) {
-    //    myBean.setBondRenderingStyle(style);
-  }
-
-  /**
-   * <b>For Javascript:<\b> Gets the rendering mode for bonds. Values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'.
-   */
-  public String getBondRenderingStyleDescription() {
-    //    return myBean.getBondRenderingStyleDescription();
-    return "FOO";
+  private final String[] atomStyles = {"QUICKDRAW", "SHADED", "WIREFRAME"};
+  private final int[] atomModes = {DisplayControl.QUICKDRAW,
+                                   DisplayControl.SHADING,
+                                   DisplayControl.WIREFRAME};
+  private final int[] bondModes = {DisplayControl.QUICKDRAW,
+                                   DisplayControl.SHADING,
+                                   DisplayControl.LINE};
+  public void setRenderingStyle(String style) {
+    for (int i = 0; i < atomStyles.length; ++i) {
+      if (atomStyles[i].equalsIgnoreCase(style)) {
+        control.setModeAtomDraw(atomModes[i]);
+        control.setModeBondDraw(bondModes[i]);
+        return;
+      }
+    }
   }
 
   /**
    * <b>For Javascript:<\b> Sets the rendering mode for labels. Valid values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'.
    */
+  private final String[] labelStyles = {"NONE","SYMBOLS","TYPES","NUMBERS"};
+  private final int[] labelModes = {DisplayControl.NOLABELS,
+                                    DisplayControl.SYMBOLS,
+                                    DisplayControl.TYPES,
+                                    DisplayControl.NUMBERS};
   public void setLabelRenderingStyle(String style) {
-    //    myBean.setLabelRenderingStyle(style);
+    for (int i = 0; i < labelStyles.length; ++i) {
+      if (labelStyles[i].equalsIgnoreCase(style)) {
+        control.setModeLabel(labelModes[i]);
+        return;
+      }
+    }
   }
 
   /**
@@ -669,12 +664,25 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * <b>For Javascript:<\b> Sets whether they view automatically goes to wireframe when they model is rotated.
    * @param doesIt String either 'T' or 'F'
    */
-  public void setAutoWireframe(String doesIt) {
-    //    myBean.setAutoWireframe(doesIt);
+  public void setPerspectiveDepth(boolean perspectiveDepth) {
+    control.setPerspectiveDepth(perspectiveDepth);
   }
 
-  public void scriptInline(String script) {
+  public void setWireframeRotation(boolean wireframeRotation) {
+    control.setWireframeRotation(wireframeRotation);
+  }
+
+  public void rasmolScript(String scriptName) {
+    if (eval.loadFile(scriptName))
+      eval.run();
+  }
+
+  public void rasmolScriptInline(String script) {
     if (eval.loadString(script))
       eval.run();
+  }
+
+  public void load(String modelName) {
+    control.openFile(modelName);
   }
 }

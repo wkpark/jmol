@@ -85,12 +85,12 @@ public class Eval implements Runnable {
   }
 
   boolean loadFile(String filename, int scriptLevel) {
+    InputStream istream = control.getInputStreamFromName(filename);
+    if (istream == null)
+      return false;
     BufferedReader reader = null;
-    try {
-      reader = new BufferedReader(new FileReader(filename));
-    } catch (FileNotFoundException e) {
-      return FileNotFound(filename);
-    }
+    reader = new BufferedReader(new InputStreamReader(istream));
+
     String script = "";
     try {
       while (true) {
@@ -507,13 +507,7 @@ public class Eval implements Runnable {
   }
 
   void reset() throws ScriptException {
-    control.zoomToPercent(100);
-    control.setZoomEnabled(true);
-    control.rotateFront();
-    control.setCenter(null);
-    control.translateToXPercent(0);
-    control.translateToYPercent(0);
-    control.translateToZPercent(0);
+    control.homePosition();
   }
 
   void rotate() throws ScriptException {

@@ -14,6 +14,8 @@ org/openscience/jmol/ChemFrame.java
 org/openscience/jmol/ChemFile.java
 org/openscience/jmol/CrystalFile.java
 org/openscience/jmol/CrystalFrame.java
+org/openscience/jmol/UnitCellBox.java
+org/openscience/jmol/CrystalBox.java
 org/openscience/jmol/FortranFormat.java
 org/openscience/jmol/AtomTypeSet.java
 org/openscience/jmol/StatusDisplay.java
@@ -51,6 +53,7 @@ org/openscience/jmol/io/MdlReader.java
 org/openscience/jmol/io/CMLResolver.java
 org/openscience/jmol/io/DefaultChemFileReader.java
 org/openscience/jmol/io/ABINITReader.java
+org/openscience/jmol/io/ABINITInputReader.java
 org/openscience/jmol/io/GhemicalMMReader.java
 org/openscience/jmol/io/ShelXReader.java
 org/openscience/jmol/render/AtomRenderer.java
@@ -61,8 +64,11 @@ org/openscience/jmol/render/MeasureRenderer.java
 org/openscience/jmol/render/Shape.java
 org/openscience/jmol/render/AtomShape.java
 org/openscience/jmol/render/AtomVectorShape.java
+org/openscience/jmol/render/VectorShape.java
+org/openscience/jmol/render/LineShape.java
 org/openscience/jmol/render/AtomColors.java
 org/openscience/jmol/script/Eval.java
 org/openscience/jmol/script/Token.java
 org/openscience/jmol/script/Compiler.java
 org/openscience/jmol/script/ScriptException.java
+org/openscience/jmol/util/MathUtil.java

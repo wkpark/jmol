@@ -128,7 +128,9 @@
         </param>
         
         <param name="loadInline">
-          CML or other file format data stored inline. 
+          CML data stored inline. (Unfortunately, newline characters
+	  get ignored inside the double quotes in HTML elements. Therefore,
+	  it is not possible to pass other file formats using loadInline.
         </param>
         
         <param name="bgcolor">
@@ -210,7 +212,11 @@
 
         <param name="script">
 	  Allows you to specify a script which is to be run when
-	  the applet is loaded.
+	  the applet is loaded. Note that web browsers remove the newline
+	  character from element values, even inside double quotes. Therefore,
+	  you <i>must</i> separate script statements with a semicolon
+	  character, even though they may be on multiple lines in your
+	  HTML file.
         <appletExample>
 <![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
         width="200" height="200">

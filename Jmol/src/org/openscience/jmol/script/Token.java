@@ -88,174 +88,174 @@ class Token {
   final static int setspecial        = (1 << 20);
 
   // rasmol commands
-  final static int backbone     = command |  0 | predefinedset | bool;
-  final static int background   = command |  1 | colorparam | setspecial;
-  final static int bond         = command |  2 | bool;
-  final static int cartoon      = command |  3 | setspecial;
-  final static int center       = command |  4 | showparam | expression;
-  final static int clipboard    = command |  5;
-  final static int color        = command |  6 | colorparam;
-  final static int connect      = command |  7 | bool;
-  final static int cpk          = command |  8;
-  final static int define       = command |  9 | expression;
-  final static int dots         = command | 10 | bool;
-  final static int echo         = command | 11 | specialstring;
-  final static int exit         = command | 12;
-  final static int hbonds       = command | 13 | setparam | bool;
-  final static int help         = command | 14;
-  final static int label        = command | 15 | bool;
+  // backbone
+  final static int background   = command |  0 | colorparam | setspecial;
+  final static int bond         = command |  1 | bool;
+  final static int cartoon      = command |  2 | setspecial;
+  final static int center       = command |  3 | showparam | expression;
+  final static int clipboard    = command |  4;
+  final static int color        = command |  5 | colorparam;
+  final static int connect      = command |  6 | bool;
+  final static int cpk          = command |  7;
+  final static int define       = command |  8 | expression;
+  final static int dots         = command |  9 | bool;
+  final static int echo         = command | 10 | specialstring;
+  final static int exit         = command | 11;
+  final static int hbonds       = command | 12 | setparam | bool;
+  final static int help         = command | 13;
+  final static int label        = command | 14 | bool;
   // FIXME -- why did I have load tagged as a setparam?
-  final static int load         = command | 16 | specialstring; // setparam;
-  final static int molecule     = command | 17;
-  final static int monitor      = command | 18 | setspecial | bool;
-  final static int pause        = command | 19;
-  final static int print        = command | 20;
-  final static int quit         = command | 21;
-  final static int refresh      = command | 22;
-  final static int renumber     = command | 23 | negativeints;
-  final static int reset        = command | 24;
-  final static int restrict     = command | 25 | expression;
-  final static int ribbons      = command | 26 | bool;
-  final static int rotate       = command | 27 | bool | negativeints;
-  final static int save         = command | 28;
-  final static int script       = command | 29 | specialstring;
-  final static int select       = command | 30 | expression;
-  final static int set          = command | 31 | bool | negativeints;
-  final static int show         = command | 32;
-  final static int slab         = command | 33 | bool;
-  final static int source       = command | 34 | specialstring;
-  final static int spacefill    = command | 35 | bool;
-  final static int ssbonds      = command | 36 | setparam | bool;
-  final static int star         = command | 37 | bool;
-  final static int stereo       = command | 38
+  final static int load         = command | 15 | specialstring; // setparam;
+  final static int molecule     = command | 16;
+  final static int monitor      = command | 17 | setspecial | bool;
+  final static int pause        = command | 18;
+  final static int print        = command | 19;
+  final static int quit         = command | 20;
+  final static int refresh      = command | 21;
+  final static int renumber     = command | 22 | negativeints;
+  final static int reset        = command | 23;
+  final static int restrict     = command | 24 | expression;
+  final static int ribbons      = command | 25 | bool;
+  final static int rotate       = command | 26 | bool | negativeints;
+  final static int save         = command | 27;
+  final static int script       = command | 28 | specialstring;
+  final static int select       = command | 29 | expression;
+  final static int set          = command | 30 | bool | negativeints;
+  final static int show         = command | 31;
+  final static int slab         = command | 32 | bool;
+  final static int source       = command | 33 | specialstring;
+  final static int spacefill    = command | 34 | bool;
+  final static int ssbonds      = command | 35 | setparam | bool;
+  final static int star         = command | 36 | bool;
+  final static int stereo       = command | 37
     | setspecial | bool | negativeints;
-  final static int strands      = command | 39 | setspecial | bool;
-  final static int structure    = command | 40;
-  final static int trace        = command | 41 | bool;
-  final static int translate    = command | 42 | negativeints;
-  final static int unbond       = command | 43;
-  final static int wireframe    = command | 44 | bool;
-  final static int write        = command | 45 | setparam;
-  final static int zap          = command | 46;
-  final static int zoom         = command | 47 | showparam | bool;
+  final static int strands      = command | 38 | setspecial | bool;
+  final static int structure    = command | 39;
+  final static int trace        = command | 40 | bool;
+  final static int translate    = command | 41 | negativeints;
+  final static int unbond       = command | 42;
+  final static int wireframe    = command | 43 | bool;
+  final static int write        = command | 44 | setparam;
+  final static int zap          = command | 45;
+  final static int zoom         = command | 46 | showparam | bool;
   // chime commands
-  final static int delay        = command | 48;
-  final static int loop         = command | 49;
-  final static int move         = command | 50 | negativeints;
-  final static int view         = command | 51;
-  final static int restore      = command | 52;
-  final static int spin         = command | 53 | showparam | bool;
-  final static int list         = command | 54 | showparam;
-  final static int display3d    = command | 55;
+  final static int delay        = command | 47;
+  final static int loop         = command | 48;
+  final static int move         = command | 49 | negativeints;
+  final static int view         = command | 50;
+  final static int restore      = command | 51;
+  final static int spin         = command | 52 | showparam | bool;
+  final static int list         = command | 53 | showparam;
+  final static int display3d    = command | 54;
 
   // parameters
-  final static int ambient              = setparam |  0;
-  final static int axes                 = setparam |  1;
+  final static int ambient      = setparam |  0;
+  final static int axes         = setparam |  1;
   // background
-  final static int backfade             = setparam |  2;
-  final static int bondmode             = setparam |  3;
-  final static int bonds                = setparam |  4;
-  final static int boundbox             = setparam |  5;
+  final static int backfade     = setparam |  2;
+  final static int bondmode     = setparam |  3;
+  final static int bonds        = setparam |  4;
+  final static int boundbox     = setparam |  5;
   // cartoon
-  final static int cisangle             = setparam |  6;
-  final static int display              = setparam |  7;
-  final static int fontsize             = setparam |  8;
-  final static int fontstroke           = setparam |  9;
+  final static int cisangle     = setparam |  6;
+  final static int display      = setparam |  7;
+  final static int fontsize     = setparam |  8;
+  final static int fontstroke   = setparam |  9;
   // hbonds
-  final static int hetero               = setparam | 10 | predefinedset;
-  final static int hourglass            = setparam | 11;
-  final static int hydrogen             = setparam | 12 | predefinedset;
-  final static int kinemage             = setparam | 13;
-  final static int menus                = setparam | 14;
+  // hetero
+  final static int hourglass    = setparam | 10;
+  // hydrogen
+  final static int kinemage     = setparam | 11;
+  final static int menus        = setparam | 12;
   // monitor
-  final static int mouse                = setparam | 15;
-  final static int picking              = setparam | 16;
-  final static int radius               = setparam | 17 | atomproperty;
-  final static int shadow               = setparam | 18;
-  final static int slabmode             = setparam | 19;
-  final static int solvent              = setparam | 20 | predefinedset;
-  final static int specular             = setparam | 21;
-  final static int specpower            = setparam | 22;
+  final static int mouse        = setparam | 13;
+  final static int picking      = setparam | 14;
+  final static int radius       = setparam | 15 | atomproperty;
+  final static int shadow       = setparam | 16;
+  final static int slabmode     = setparam | 17;
+  // solvent
+  final static int specular     = setparam | 18;
+  final static int specpower    = setparam | 19;
   // ssbonds
   // stereo
   // strands
-  final static int transparent          = setparam | 23;
-  final static int unitcell             = setparam | 24;
-  final static int vectps               = setparam | 25;
+  final static int transparent  = setparam | 20;
+  final static int unitcell     = setparam | 21;
+  final static int vectps       = setparam | 22;
   // write
 
   // chime set parameters
-  final static int charge               = setparam | 26;
-  final static int clear                = setparam | 27;
-  final static int gaussian             = setparam | 28;
+  final static int charge       = setparam | 23;
+  final static int clear        = setparam | 24;
+  final static int gaussian     = setparam | 25;
   // load
-  final static int mep                  = setparam | 29;
-  final static int mlp                  = setparam | 30 | showparam;
-  final static int molsurface           = setparam | 31;
+  final static int mep          = setparam | 26;
+  final static int mlp          = setparam | 27 | showparam;
+  final static int molsurface   = setparam | 28;
 
-  final static int information          = showparam |  0;
-  final static int phipsi               = showparam |  1;
+  final static int information  = showparam |  0;
+  final static int phipsi       = showparam |  1;
   // center centre
-  final static int ramprint             = showparam |  2;
-  final static int rotation             = showparam |  3;
+  final static int ramprint     = showparam |  2;
+  final static int rotation     = showparam |  3;
   // selected
-  final static int group                = showparam |  4;
-  final static int chain                = showparam |  5;
-  final static int atom                 = showparam |  6;
-  final static int sequence             = showparam |  7;
-  final static int symmetry             = showparam |  8;
-  final static int translation          = showparam |  9;
+  final static int group        = showparam |  4;
+  final static int chain        = showparam |  5;
+  final static int atom         = showparam |  6;
+  final static int sequence     = showparam |  7;
+  final static int symmetry     = showparam |  8;
+  final static int translation  = showparam |  9;
   // zoom
   // chime show parameters
-  final static int residue              = showparam | 10;
-  final static int model                = showparam | 11;
+  final static int residue      = showparam | 10;
+  final static int model        = showparam | 11;
   // mlp
   // list
   // spin
   final static int all                  = showparam | 13 | expression;
 
   // atom expression operators
-  final static int leftparen            = expression |  0;
-  final static int rightparen           = expression |  1;
-  final static int hyphen               = expression |  2;
-  final static int opAnd                = expression |  3;
-  final static int opOr                 = expression |  4;
-  final static int opNot                = expression |  5;
-  final static int within               = expression | 12;
-  final static int plus                 = expression | 13;
-  final static int pick                 = expression | 14;
+  final static int leftparen    = expression |  0;
+  final static int rightparen   = expression |  1;
+  final static int hyphen       = expression |  2;
+  final static int opAnd        = expression |  3;
+  final static int opOr         = expression |  4;
+  final static int opNot        = expression |  5;
+  final static int within       = expression | 12;
+  final static int plus         = expression | 13;
+  final static int pick         = expression | 14;
 
-  final static int atomno               = atomproperty | 0;
-  final static int elemno               = atomproperty | 1;
-  final static int resno                = atomproperty | 2;
+  final static int atomno       = atomproperty | 0;
+  final static int elemno       = atomproperty | 1;
+  final static int resno        = atomproperty | 2;
   // radius;
-  final static int temperature          = atomproperty | 3;
+  final static int temperature  = atomproperty | 3;
 
-  final static int opGT                 = comparator |  0;
-  final static int opGE                 = comparator |  1;
-  final static int opLE                 = comparator |  2;
-  final static int opLT                 = comparator |  3;
-  final static int opEQ                 = comparator |  4;
-  final static int opNE                 = comparator |  5;
+  final static int opGT         = comparator |  0;
+  final static int opGE         = comparator |  1;
+  final static int opLE         = comparator |  2;
+  final static int opLT         = comparator |  3;
+  final static int opEQ         = comparator |  4;
+  final static int opNE         = comparator |  5;
 
-  final static int off                  = bool |  0;
-  final static int on                   = bool |  1;
+  final static int off          = bool |  0;
+  final static int on           = bool |  1;
 
-  final static int dash                 = misc |  0; //backbone
-  final static int user                 = misc |  1; //spacefill & star
-  final static int x                    = misc |  2;
-  final static int y                    = misc |  3;
-  final static int z                    = misc |  4;
-  final static int none                 = misc |  5 | expression;
-  final static int normal               = misc |  7;
-  final static int rasmol               = misc |  8;
-  final static int insight              = misc |  9;
-  final static int quanta               = misc | 10;
-  final static int ident                = misc | 11;
-  final static int distance             = misc | 12;
-  final static int angle                = misc | 13;
-  final static int torsion              = misc | 14;
-  final static int coord                = misc | 15;
+  final static int dash         = misc |  0; //backbone
+  final static int user         = misc |  1; //spacefill & star
+  final static int x            = misc |  2;
+  // y
+  final static int z            = misc |  4;
+  final static int none         = misc |  5 | expression;
+  final static int normal       = misc |  7;
+  final static int rasmol       = misc |  8;
+  final static int insight      = misc |  9;
+  final static int quanta       = misc | 10;
+  final static int ident        = misc | 11;
+  final static int distance     = misc | 12;
+  final static int angle        = misc | 13;
+  final static int torsion      = misc | 14;
+  final static int coord        = misc | 15;
   
   final static int at          = predefinedset |  0;
   final static int acidic      = predefinedset |  1;
@@ -264,57 +264,58 @@ class Token {
   final static int alpha       = predefinedset |  4;
   final static int amino       = predefinedset |  5;
   final static int aromatic    = predefinedset |  6;
-  // backbone
-  final static int basic       = predefinedset |  7;
-  final static int bonded      = predefinedset |  8;
-  final static int buried      = predefinedset |  9;
-  final static int cg          = predefinedset | 10;
-  final static int charged     = predefinedset | 11;
-  final static int cyclic      = predefinedset | 12;
-  final static int cystine     = predefinedset | 13;
-  final static int helix       = predefinedset | 14;
-  // hetero
-  // hydrogen
-  final static int hydrophobic = predefinedset | 15;
-  final static int ions        = predefinedset | 16;
-  final static int large       = predefinedset | 17;
-  final static int ligand      = predefinedset | 18;
-  final static int medium      = predefinedset | 19;
-  final static int neutral     = predefinedset | 20;
-  final static int nucleic     = predefinedset | 21;
-  final static int polar       = predefinedset | 22;
-  final static int protein     = predefinedset | 23;
-  final static int purine      = predefinedset | 24;
-  final static int pyrimidine  = predefinedset | 25;
-  final static int selected    = predefinedset | 26 | showparam;
-  final static int sheet       = predefinedset | 27;
-  final static int sidechain   = predefinedset | 28;
-  final static int small       = predefinedset | 29;
-  // solvent
-  final static int surface     = predefinedset | 30;
-  final static int turn        = predefinedset | 31;
-  final static int water       = predefinedset | 32;
+  final static int backbone    = predefinedset |  7 | command |  bool;
+  final static int basic       = predefinedset |  8;
+  final static int bonded      = predefinedset |  9;
+  final static int buried      = predefinedset | 10;
+  final static int cg          = predefinedset | 11;
+  final static int charged     = predefinedset | 12;
+  final static int cyclic      = predefinedset | 13;
+  final static int cystine     = predefinedset | 14;
+  final static int helix       = predefinedset | 15;
+  final static int hetero      = predefinedset | 16 | setparam;
+  final static int hydrogen    = predefinedset | 17 | setparam;
+  final static int hydrophobic = predefinedset | 18;
+  final static int ions        = predefinedset | 19;
+  final static int large       = predefinedset | 20;
+  final static int ligand      = predefinedset | 21;
+  final static int medium      = predefinedset | 22;
+  final static int neutral     = predefinedset | 23;
+  final static int nucleic     = predefinedset | 24;
+  final static int polar       = predefinedset | 25;
+  final static int protein     = predefinedset | 26;
+  final static int purine      = predefinedset | 27;
+  final static int pyrimidine  = predefinedset | 28;
+  final static int selected    = predefinedset | 29 | showparam;
+  final static int sheet       = predefinedset | 30;
+  final static int sidechain   = predefinedset | 31;
+  final static int small       = predefinedset | 32;
+  final static int solvent     = predefinedset | 33 | setparam;
+  final static int surface     = predefinedset | 34;
+  final static int turn        = predefinedset | 35;
+  final static int water       = predefinedset | 36;
   // amino acids
-  final static int ala         = predefinedset | 33;
-  final static int arg         = predefinedset | 34;
-  final static int asn         = predefinedset | 35;
-  final static int asp         = predefinedset | 36;
-  final static int cys         = predefinedset | 37;
-  final static int glu         = predefinedset | 38;
-  final static int gln         = predefinedset | 39;
-  final static int gly         = predefinedset | 40;
-  final static int his         = predefinedset | 41;
-  final static int ile         = predefinedset | 42;
-  final static int leu         = predefinedset | 43;
-  final static int lys         = predefinedset | 44;
-  final static int met         = predefinedset | 45;
-  final static int phe         = predefinedset | 46;
-  final static int pro         = predefinedset | 47;
-  final static int ser         = predefinedset | 48;
-  final static int thr         = predefinedset | 49;
-  final static int trp         = predefinedset | 50;
-  final static int tyr         = predefinedset | 51;
-  final static int val         = predefinedset | 52;
+  final static int ala         = predefinedset | 37;
+  final static int arg         = predefinedset | 38;
+  final static int asn         = predefinedset | 39;
+  final static int asp         = predefinedset | 40;
+  final static int cys         = predefinedset | 41;
+  final static int glu         = predefinedset | 42;
+  final static int gln         = predefinedset | 43;
+  final static int gly         = predefinedset | 44;
+  final static int his         = predefinedset | 45;
+  final static int ile         = predefinedset | 46;
+  final static int leu         = predefinedset | 47;
+  final static int lys         = predefinedset | 48;
+  final static int met         = predefinedset | 49;
+  final static int phe         = predefinedset | 50;
+  final static int pro         = predefinedset | 51;
+  final static int ser         = predefinedset | 52;
+  final static int thr         = predefinedset | 53;
+  final static int trp         = predefinedset | 54;
+  final static int y           = predefinedset | 55 | misc;
+  final static int tyr         = y;
+  final static int val         = predefinedset | 56;
 
   final static int black                = colorparam |  0;
   final static int blue                 = colorparam |  1;
@@ -343,7 +344,7 @@ class Token {
 
   final static Object[] arrayPairs  = {
     // commands
-    "backbone",          new Token(backbone,   "backbone"),
+    // backbone
     "background",        new Token(background, "background"),
     "bond",              new Token(bond,       "bond"),
     "cartoon",           new Token(cartoon,    "cartoon"),
@@ -415,9 +416,9 @@ class Token {
     "display",      new Token(display,         "display"),
     "fontsize",     new Token(fontsize,        "fontsize"),
     "fontstroke",   new Token(fontstroke,      "fontstroke"),
-    "hetero",       new Token(hetero,          "hetero"),
+    // hetero
     "hourglass",    new Token(hourglass,       "hourglass"),
-    "hydrogen",     new Token(hydrogen,        "hydrogen"),
+    // hydrogen
     "kinemage",     new Token(kinemage,        "kinemage"),
     "menus",        new Token(menus,           "menus"),
     "mouse",        new Token(mouse,           "mouse"),
@@ -425,7 +426,7 @@ class Token {
     "radius",       new Token(radius,          "radius"),
     "shadow",       new Token(shadow,          "shadow"),
     "slabmode",     new Token(slabmode,        "slabmode"),
-    "solvent",      new Token(solvent,         "solvent"),
+    // solvent
     "specular",     new Token(specular,        "specular"),
     "specpower",    new Token(specpower,       "specpower"),
     "transparent",  new Token(transparent,     "transparent"),
@@ -511,72 +512,76 @@ class Token {
     "alpha",        new Token(alpha, "alpha"),
     "amino",        new Token(amino, "amino"),
     "aromatic",     new Token(aromatic, "aromatic"),
+    "backbone",     new Token(backbone,   "backbone"),
     "basic",        new Token(basic, "basic"),
     "bonded",       new Token(bonded, "bonded"),
     "buried",       new Token(buried, "buried"),
-    "cg",           new Token(cg, "cg"),
-    "charged",      new Token(charged, "charged"),
-    "cyclic",       new Token(cyclic, "cyclic"),
-    "cystine",      new Token(cystine, "cystine"),
-    "helix",        new Token(helix, "helix"),
-    "hydrophobic",  new Token(hydrophobic, "hydrophobic"),
-    "ions",         new Token(ions, "ions"),
-    "large",        new Token(large, "large"),
-    "ligand",       new Token(ligand, "ligand"),
-    "medium",       new Token(medium, "medium"),
-    "neutral",      new Token(neutral, "neutral"),
-    "nucleic",      new Token(nucleic, "nucleic"),
-    "polar",        new Token(polar, "polar"),
-    "protein",      new Token(protein, "protein"),
-    "purine",       new Token(purine, "purine"),
-    "pyrimidine",   new Token(pyrimidine, "pyrimidine"),
-    "selected",     new Token(selected, "selected"),
-    "sheet",        new Token(sheet, "sheet"),
-    "sidechain",    new Token(sidechain, "sidechain"),
-    "small",        new Token(small, "small"),
-    "surface",      new Token(surface, "surface"),
-    "turn",         new Token(turn, "turn"),
-    "water",        new Token(water, "water"),
+    "cg",           new Token(cg,              "cg"),
+    "charged",      new Token(charged,         "charged"),
+    "cyclic",       new Token(cyclic,          "cyclic"),
+    "cystine",      new Token(cystine,         "cystine"),
+    "helix",        new Token(helix,           "helix"),
+    "hetero",       new Token(hetero,          "hetero"),
+    "hydrogen",     new Token(hydrogen,        "hydrogen"),
+    "hydrophobic",  new Token(hydrophobic,     "hydrophobic"),
+    "ions",         new Token(ions,            "ions"),
+    "large",        new Token(large,           "large"),
+    "ligand",       new Token(ligand,          "ligand"),
+    "medium",       new Token(medium,          "medium"),
+    "neutral",      new Token(neutral,         "neutral"),
+    "nucleic",      new Token(nucleic,         "nucleic"),
+    "polar",        new Token(polar,           "polar"),
+    "protein",      new Token(protein,         "protein"),
+    "purine",       new Token(purine,          "purine"),
+    "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
+    "selected",     new Token(selected,        "selected"),
+    "sheet",        new Token(sheet,           "sheet"),
+    "sidechain",    new Token(sidechain,       "sidechain"),
+    "small",        new Token(small,           "small"),
+    "solvent",      new Token(solvent,         "solvent"),
+    "surface",      new Token(surface,         "surface"),
+    "turn",         new Token(turn,            "turn"),
+    "water",        new Token(water,           "water"),
 
-    "ala",       new Token(ala, "ala"),
+    "ala",       new Token(ala,                "ala"),
     "a",         null,
-    "arg",       new Token(arg, "arg"),
+    "arg",       new Token(arg,                "arg"),
     "r",         null,
-    "asn",       new Token(asn, "asn"),
+    "asn",       new Token(asn,                "asn"),
     "n",         null,
-    "asp",       new Token(asp, "asp"),
+    "asp",       new Token(asp,                "asp"),
     "d",         null,
-    "cys",       new Token(cys, "cys"),
+    "cys",       new Token(cys,                "cys"),
     "c",         null,
-    "glu",       new Token(glu, "glu"),
+    "glu",       new Token(glu,                "glu"),
     "e",         null,
-    "gln",       new Token(gln, "gln"),
+    "gln",       new Token(gln,                "gln"),
     "q",         null,
-    "gly",       new Token(gly, "gly"),
+    "gly",       new Token(gly,                "gly"),
     "g",         null,
-    "his",       new Token(his, "his"),
+    "his",       new Token(his,                "his"),
     "h",         null,
-    "ile",       new Token(ile, "ile"),
+    "ile",       new Token(ile,                "ile"),
     "i",         null,
-    "leu",       new Token(leu, "leu"),
+    "leu",       new Token(leu,                "leu"),
     "l",         null,
-    "lys",       new Token(lys, "lys"),
+    "lys",       new Token(lys,                "lys"),
     "k",         null,
-    "met",       new Token(met, "met"),
+    "met",       new Token(met,                "met"),
     "m",         null,
-    "phe",       new Token(phe, "phe"),
+    "phe",       new Token(phe,                "phe"),
     "f",         null,
-    "pro",       new Token(pro, "pro"),
+    "pro",       new Token(pro,                "pro"),
     "p",         null,
-    "ser",       new Token(ser, "ser"),
+    "ser",       new Token(ser,                "ser"),
     "s",         null,
-    "thr",       new Token(thr, "thr"),
+    "thr",       new Token(thr,                "thr"),
     "t",         null,
-    "trp",       new Token(trp, "trp"),
+    "trp",       new Token(trp,                "trp"),
     "w",         null,
-    "tyr",       new Token(tyr, "tyr"),
-    //    "y",       new Token(tyr, "y"), // what to do about this?
-    "val",       new Token(val, "val"),
+    "tyr",       new Token(tyr,                "tyr"),
+    "y",         new Token(y,                  "y"),
+    "val",       new Token(val,                "val"),
     "v",         null,
 
 

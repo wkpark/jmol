@@ -28,6 +28,8 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolModelAdapter;
 import org.openscience.jmol.viewer.datamodel.JmolFrame;
 import org.openscience.jmol.viewer.datamodel.JmolFrameBuilder;
+import org.openscience.jmol.viewer.datamodel.AtomShape;
+import org.openscience.jmol.viewer.protein.PdbAtom;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -252,45 +254,48 @@ public class ModelManager {
     return mapAtomicSymbolToAtomicNumber(clientAtom);
   }
 
-  public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
+  public String getAtomicSymbol(AtomShape atomShape) {
     if (suppliesAtomicSymbol) {
-      String atomicSymbol = modelAdapter.getAtomicSymbol(clientAtom);
+      String atomicSymbol = modelAdapter.getAtomicSymbol(atomShape.clientAtom);
       if (atomicSymbol != null)
         return atomicSymbol;
       System.out.println("JmolModelAdapter.getAtomicSymbol returned null");
     }
-    return JmolModelAdapter.atomicSymbols[atomicNumber];
+    return JmolModelAdapter.atomicSymbols[atomShape.atomicNumber];
   }
 
-  public String getAtomTypeName(int atomicNumber, Object clientAtom) {
+  public String getAtomTypeName(AtomShape atomShape) {
     if (suppliesAtomTypeName) {
-      String atomTypeName = modelAdapter.getAtomTypeName(clientAtom);
+      String atomTypeName = modelAdapter.getAtomTypeName(atomShape.clientAtom);
       if (atomTypeName != null)
         return atomTypeName;
     }
-    return getAtomicSymbol(atomicNumber, clientAtom);
+    if (atomShape.pdbatom != null) {
+      return atomShape.pdbatom.getAtomName();
+    }
+    return getAtomicSymbol(atomShape);
   }
 
-  public float getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
+  public float getVanderwaalsRadius(AtomShape atomShape) {
     if (suppliesVanderwaalsRadius) {
-      float vanderwaalsRadius = modelAdapter.getVanderwaalsRadius(clientAtom);
+      float vanderwaalsRadius = modelAdapter.getVanderwaalsRadius(atomShape.clientAtom);
       if (vanderwaalsRadius > 0)
         return vanderwaalsRadius;
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
                          vanderwaalsRadius);
     }
-    return JmolModelAdapter.vanderwaalsRadii[atomicNumber];
+    return JmolModelAdapter.vanderwaalsRadii[atomShape.atomicNumber];
   }
 
-  public float getCovalentRadius(int atomicNumber, Object clientAtom) {
+  public float getCovalentRadius(AtomShape atomShape) {
     if (suppliesCovalentRadius) {
-      float covalentRadius = modelAdapter.getCovalentRadius(clientAtom);
+      float covalentRadius = modelAdapter.getCovalentRadius(atomShape.clientAtom);
       if (covalentRadius > 0)
         return covalentRadius;
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
                          covalentRadius);
     }
-    return JmolModelAdapter.covalentRadii[atomicNumber];
+    return JmolModelAdapter.covalentRadii[atomShape.atomicNumber];
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

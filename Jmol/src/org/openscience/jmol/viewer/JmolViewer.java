@@ -1676,20 +1676,20 @@ final public class JmolViewer {
     return modelManager.getAtomicNumber(clientAtom);
   }
 
-  public String getAtomicSymbol(int atomicNumber, Object clientAtom) {
-    return modelManager.getAtomicSymbol(atomicNumber, clientAtom);
+  public String getAtomicSymbol(AtomShape atomShape) {
+    return modelManager.getAtomicSymbol(atomShape);
   }
 
-  public String getAtomTypeName(int atomicNumber, Object clientAtom) {
-    return modelManager.getAtomTypeName(atomicNumber, clientAtom);
+  public String getAtomTypeName(AtomShape atomShape) {
+    return modelManager.getAtomTypeName(atomShape);
   }
 
-  public float getVanderwaalsRadius(int atomicNumber, Object clientAtom) {
-    return modelManager.getVanderwaalsRadius(atomicNumber, clientAtom);
+  public float getVanderwaalsRadius(AtomShape atomShape) {
+    return modelManager.getVanderwaalsRadius(atomShape);
   }
 
-  public float getCovalentRadius(int atomicNumber, Object clientAtom) {
-    return modelManager.getCovalentRadius(atomicNumber, clientAtom);
+  public float getCovalentRadius(AtomShape atomShape) {
+    return modelManager.getCovalentRadius(atomShape);
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

@@ -797,9 +797,9 @@ public class Token {
     "O3*",
     "C2*",
     "O2*",
-    "C1*",
+    "C1*", // 18
     "CA2", 
-   "SG",
+    "SG",
     "N1",
     "N2",
     "N3",
@@ -807,7 +807,8 @@ public class Token {
     "N6",
     "O2",
     "O4",
-    "O6"
+    "O6", // 28
+    "CB", // 29
   };
   
   private static Hashtable htAtom = new Hashtable();
@@ -817,12 +818,18 @@ public class Token {
     }
   }
 
-  public static String getAtomName(byte atomid) {
+  public static String getPdbAtomName(byte atomid) {
+    switch (atomid) {
+    case 1:
+      return "C\u03B1";
+    case 29:
+      return "C\u03B2";
+    }
     return (atomid < 0 || atomid >= atomNames.length)
       ? "??" : atomNames[atomid];
   }
 
-  public static byte getAtomid(String strAtom) {
+  public static byte getPdbAtomid(String strAtom) {
     Integer iatom = (Integer)htAtom.get(strAtom);
     return iatom == null ? -1 : (byte)iatom.intValue();
   }

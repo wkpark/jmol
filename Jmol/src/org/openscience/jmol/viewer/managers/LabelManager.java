@@ -106,54 +106,50 @@ public class LabelManager {
       return null;
     PdbAtom pdbatom = atomShape.getPdbAtom();
     String strLabel = "";
-    String strExpansion = "";
-    int ich = 0;
     int cch = strFormat.length();
-    char ch;
-    int ichPercent;
-    boolean percentFound =false;
-    while ((ichPercent = strFormat.indexOf('%', ich)) != -1) {
-      strFormat += strFormat.substring(ich, ichPercent);
+    int ich, ichPercent;
+    for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1; ) {
+      strLabel += strFormat.substring(ich, ichPercent);
       ich = ichPercent + 1;
       if (ich == cch) {
         --ich; // a percent sign at the end of the string
         break;
       }
-      strExpansion = "";
-      ch = strFormat.charAt(ich++);
+      int ch = strFormat.charAt(ich++);
       switch (ch) {
       case 'i':
-        strExpansion = "" + (atomIndex + 1);
+        strLabel += (atomIndex + 1);
         break;
-      case 'a': // FIXME -- mth -- a is not the same as e
+      case 'a':
+        strLabel += atomShape.getAtomTypeName();
+        break;
       case 'e':
-        strExpansion = atomShape.getAtomicSymbol();
+        strLabel += atomShape.getAtomicSymbol();
         break;
       case 'b': // these two are the same
       case 't':
         if (pdbatom != null)
-          strExpansion = "" + pdbatom.getTemperature();
+          strLabel += pdbatom.getTemperature();
         break;
       case 'c': // these two are the same
       case 's':
         if (pdbatom != null)
-          strExpansion = "" + pdbatom.getChain();
+          strLabel += pdbatom.getChain();
         break;
       case 'm':
-        strExpansion = "<X>";
+        strLabel += "<X>";
         break;
       case 'n':
         if (pdbatom != null)
-          strExpansion = "" + pdbatom.getResidue();
+          strLabel += pdbatom.getResidue();
         break;
       case 'r':
         if (pdbatom != null)
-          strExpansion = "" + pdbatom.getResno();
+          strLabel += pdbatom.getResno();
         break;
       default:
-        strExpansion = "" + ch;
+        strLabel += ch;
       }
-      strLabel += strExpansion;
     }
     strLabel += strFormat.substring(ich);
     return strLabel;

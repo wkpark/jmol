@@ -37,20 +37,20 @@ import javax.vecmath.Point3i;
 
 public class AtomShape implements Bspt.Tuple {
 
+  private short atomIndex = -1;
+  public byte atomicNumber;
   public Object clientAtom;
+  public PdbAtom pdbatom;
   JmolFrame frame;
   Point3f point3f;
   int x, y, z;
-  public byte atomicNumber;
   byte styleAtom;
-  private short atomIndex = -1;
   short marAtom;
   short colixAtom;
   short diameter;
   BondShape[] bonds;
 
   String strLabel;
-  public PdbAtom pdbatom;
 
   public AtomShape(JmolFrame frame, int atomIndex, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
@@ -199,9 +199,7 @@ public class AtomShape implements Bspt.Tuple {
   public void setMarAtom(short marAtom) {
     if (this.styleAtom == JmolViewer.DELETED) return;
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber,
-                                                          clientAtom));
+      marAtom = (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
   }
 
@@ -209,9 +207,7 @@ public class AtomShape implements Bspt.Tuple {
     if (this.styleAtom == JmolViewer.DELETED) return;
     this.styleAtom = styleAtom;
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber,
-                                                          clientAtom));
+      marAtom = (short)((-10 * marAtom) * frame.viewer.getVanderwaalsRadius(this));
     this.marAtom = marAtom;
   }
         
@@ -253,15 +249,15 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public int getAtomicNumber() {
-    return frame.viewer.getAtomicNumber(clientAtom);
+    return atomicNumber;
   }
 
   public String getAtomicSymbol() {
-    return frame.viewer.getAtomicSymbol(atomicNumber, clientAtom);
+    return frame.viewer.getAtomicSymbol(this);
   }
 
   public String getAtomTypeName() {
-    return frame.viewer.getAtomTypeName(atomicNumber, clientAtom);
+    return frame.viewer.getAtomTypeName(this);
   }
 
   public Point3f getPoint3f() {
@@ -287,11 +283,11 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public float getVanderwaalsRadius() {
-    return frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom);
+    return frame.viewer.getVanderwaalsRadius(this);
   }
 
   public float getCovalentRadius() {
-    return frame.viewer.getCovalentRadius(atomicNumber, clientAtom);
+    return frame.viewer.getCovalentRadius(this);
   }
 
   public short getColix() {

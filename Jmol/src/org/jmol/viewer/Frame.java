@@ -1173,7 +1173,7 @@ final class Frame {
 
     initializeBspf();
 
-    long timeBegin, timeEnd;
+    long timeBegin = 0;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
     for (int i = atomCount; --i >= 0; ) {
@@ -1200,7 +1200,7 @@ final class Frame {
     }
 
     if (showRebondTimes) {
-      timeEnd = System.currentTimeMillis();
+      long timeEnd = System.currentTimeMillis();
       System.out.println("Time to autoBond=" + (timeEnd - timeBegin));
     }
   }
@@ -1263,7 +1263,7 @@ final class Frame {
       return;
     }
     initializeBspf();
-    long timeBegin, timeEnd;
+    long timeBegin = 0;
     if (showRebondTimes)
       timeBegin = System.currentTimeMillis();
     for (int i = atomCount; --i >= 0; ) {
@@ -1294,7 +1294,7 @@ final class Frame {
     }
 
     if (showRebondTimes) {
-      timeEnd = System.currentTimeMillis();
+      long timeEnd = System.currentTimeMillis();
       System.out.println("Time to hbond=" + (timeEnd - timeBegin));
     }
   }

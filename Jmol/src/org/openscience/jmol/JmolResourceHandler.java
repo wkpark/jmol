@@ -98,10 +98,12 @@ class JmolResourceHandler {
     StringBuffer key = new StringBuffer();
     while (st.hasMoreTokens()) {
       key.append(st.nextToken());
-      if (st.hasMoreTokens()) key.append("_");
+      if (st.hasMoreTokens()) {
+        key.append("_");
+      }
     }
     String translatedText = getString(key.toString());
-    return (text != null) ? translatedText : text;
+    return (translatedText != null) ? translatedText : text;
   }
 
   public synchronized Object getObject(String key) {

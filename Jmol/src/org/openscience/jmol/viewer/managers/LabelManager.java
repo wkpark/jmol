@@ -44,13 +44,13 @@ public class LabelManager {
     this.styleLabel = styleLabel;
   }
   
-  public String strFontFace = "Helvetica";
+  public String strFontFace = "SansSerif";
   public void setFontFace(String strFontFace) {
     this.strFontFace = strFontFace;
   }
 
   public final static int pointsMin = 6;
-  public final static int pointsMax = 32;
+  public final static int pointsMax = 52;
 
   Font[] fonts = new Font[pointsMax - pointsMin + 1];
 
@@ -67,17 +67,20 @@ public class LabelManager {
   }
 
   public Font getLabelFont(int diameter) {
+    return getFontOfSize(pointsLabelFontSize);
+    /*
     int points = diameter * 3 / 4;
     if (pointsLabelFontSize != 0)
       points = pointsLabelFontSize;
     if (points < 6)
       return null;
     return getFontOfSize(points);
+    */
   }
 
-  public int pointsLabelFontSize = 0;
+  public int pointsLabelFontSize = 12;
   public void setLabelFontSize(int points) {
-    this.pointsLabelFontSize = points;
+    this.pointsLabelFontSize = points <= 0 ? 12 : points;
   }
 
   public String getLabelAtom(byte styleLabel, AtomShape atomShape,

@@ -60,18 +60,14 @@ public class LabelRenderer {
     if (font == null)
       return;
     g3d.setFont(font);
-    FontMetrics fontMetrics = g3d.getFontMetrics(font);
-    int ascent = fontMetrics.getAscent();
-    int descent = fontMetrics.getDescent();
-    int height = ascent + descent;
-    
-    int labelWidth = fontMetrics.stringWidth(strLabel);
-    ++labelWidth; // bias rounding to the left;
+
+    int zLabel = atomShape.z - atomShape.diameter/2 - 2;
+    if (zLabel < 0) zLabel = 0;
     g3d.drawString(strLabel,
-                    isLabelAtomColor ? atomShape.colixAtom : colixLabel,
-                    atomShape.x - labelWidth / 2,
-                    atomShape.y - (height + 1) / 2 + ascent,
-                    atomShape.z - atomShape.diameter/2 - 2
+                   isLabelAtomColor ? atomShape.colixAtom : colixLabel,
+                   atomShape.x + 4,
+                   atomShape.y - 4,
+                   zLabel
                    );
   }
 

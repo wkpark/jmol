@@ -1701,7 +1701,8 @@ public class Eval implements Runnable {
       if (fontsize > 72)
         numberOutOfRange();
     }
-    viewer.setLabelFontSize(fontsize);
+    // this is a kludge/hack to be somewhat compatible with RasMol
+    viewer.setLabelFontSize(fontsize + 4);
   }
 
   void setHetero() throws ScriptException {

@@ -623,7 +623,7 @@
     </java>
   </target>
 
-  <target name="betarelease" depends="main">
+  <target name="betarelease" depends="main doc">
     <echo message="Generating beta test release"/>
     <zip destfile="Jmol${version}.zip" >
       <zipfileset dir="." prefix="Jmol${version}/">

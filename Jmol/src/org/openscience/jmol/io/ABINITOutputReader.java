@@ -135,6 +135,12 @@ public class ABINITOutputReader extends ABINITReader {
      * to parse things such as "integer*double".
      */
 
+
+    // set rprim to cubic. This is the default if rprim is not define
+    rprim[0][0]=1;
+    rprim[1][1]=1;
+    rprim[2][2]=1;
+
     inputBuffer.mark(1024 * 1024);
     // Analyze which DATASET are available 
     // (need to analyse up to  "-outvars:")
@@ -156,7 +162,7 @@ public class ABINITOutputReader extends ABINITReader {
 
 
     
-        
+    
     inputBuffer.mark(1024 * 1024);
     // Read the value of preprocessed input variables  (First pass)
     // (starting from "-outvars:")
@@ -229,8 +235,10 @@ public class ABINITOutputReader extends ABINITReader {
 
     count = 0;
     while (fieldVal != null) {
-      if (fieldVal.equals("zatnum") ||
+      if (fieldVal.equals("zatnum") || fieldVal.equals("znucl") ||
 	  fieldVal.equals("zatnum" +
+			  dataset.elementAt(selectedDataset)) ||
+	  fieldVal.equals("znucl" +
 			  dataset.elementAt(selectedDataset))) {
         for (int i = 0; i < ntype; i++) {
           nextAbinitToken(false);
@@ -263,7 +271,7 @@ public class ABINITOutputReader extends ABINITReader {
 
     echoPreprocessedVariables();
 
-
+    inputBuffer.reset();
     //Go to the selected DATASET
     nextAbinitToken(true);
     while (fieldVal != null) {

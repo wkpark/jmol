@@ -63,14 +63,10 @@ class ModelResolver {
   static String determineModelReader(BufferedReader bufferedReader,
                                      ModelAdapter.Logger logger)
     throws Exception {
-    bufferedReader.mark(512);
     String[] lines = new String[4];
-    for (int i = 0; i < lines.length; ++i) {
-      // this is not really correct ... should probably stay null
-      String line = bufferedReader.readLine();
-      lines[i] = line != null ? line : "";
-    }
-    bufferedReader.reset();
+    LimitedLineReader llr = new LimitedLineReader(bufferedReader, 2048);
+    for (int i = 0; i < lines.length; ++i)
+      lines[i] = llr.readLineWithNewline();
     if (lines[3].length() >= 6) {
       String line4trimmed = lines[3].trim();
       if (line4trimmed.endsWith("V2000") ||
@@ -162,4 +158,36 @@ class ModelResolver {
 
   final static String[] containsFormats =
   { "Cml", "Gaussian" };
+}
+
+class LimitedLineReader {
+  int readLimit;
+  char[] buf;
+  int cchBuf;
+  int ichCurrent;
+
+  LimitedLineReader(BufferedReader bufferedReader, int readLimit)
+    throws Exception {
+    this.readLimit = readLimit;
+    bufferedReader.mark(readLimit);
+    buf = new char[readLimit];
+    cchBuf = bufferedReader.read(buf);
+    ichCurrent = 0;
+    bufferedReader.reset();
+  }
+
+  String readLineWithNewline() {
+    int ich = ichCurrent;
+    char ch = 0;
+    while (ich < cchBuf && (ch = buf[ich++]) != '\r' && ch != '\n')
+      ;
+    if (ich < cchBuf && ch == '\r' && buf[ich] == '\n')
+      ++ich;
+    int cchLine = ich - ichCurrent;
+    StringBuffer sb = new StringBuffer(cchLine);
+    sb.append(buf, ichCurrent, cchLine);
+    ichCurrent = ich;
+    String strLine = "" + sb;
+    return strLine;
+  }
 }

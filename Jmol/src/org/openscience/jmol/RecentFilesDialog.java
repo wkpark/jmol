@@ -32,12 +32,10 @@ public class RecentFilesDialog extends JDialog
 
   private boolean ready = false;
   private String fileName = null;
-  private String fileType = null;
   private static final int MAX_FILES = 10;
   private JButton okButton;
   private JButton cancelButton;
   private String[] files = new String[MAX_FILES];
-  private String[] fileTypes = new String[MAX_FILES];
   private JList fileList;
   java.util.Properties props;
 
@@ -74,7 +72,6 @@ public class RecentFilesDialog extends JDialog
     props = Jmol.getHistoryFile().getProperties();
     for (int i = 0; i < MAX_FILES; i++) {
       files[i] = props.getProperty("recentFilesFile" + i);
-      fileTypes[i] = props.getProperty("recentFilesType" + i);
     }
   }
 
@@ -102,19 +99,16 @@ public class RecentFilesDialog extends JDialog
     if (currentPosition > 0) {
       for (int i = currentPosition; i < MAX_FILES - 1; i++) {
         files[i] = files[i + 1];
-        fileTypes[i] = fileTypes[i + 1];
       }
     }
 
     // Shift everything down one
     for (int j = MAX_FILES - 2; j >= 0; j--) {
       files[j + 1] = files[j];
-      fileTypes[j + 1] = fileTypes[j];
     }
 
     //Insert file at head of list
     files[0] = name;
-    fileTypes[0] = type;
     fileList.setListData(files);
     fileList.setSelectedIndex(0);
     pack();
@@ -127,7 +121,6 @@ public class RecentFilesDialog extends JDialog
     for (int i = 0; i < 10; i++) {
       if (files[i] != null) {
         props.setProperty("recentFilesFile" + i, files[i]);
-        props.setProperty("recentFilesType" + i, fileTypes[i]);
       }
     }
 
@@ -141,13 +134,6 @@ public class RecentFilesDialog extends JDialog
     return fileName;
   }
 
-  /**
-   *   @return String The type of the file picked or null if the action was aborted.
-  **/
-  public String getFileType() {
-    return fileType;
-  }
-
   public void windowClosing(java.awt.event.WindowEvent e) {
     cancel();
     close();
@@ -155,7 +141,6 @@ public class RecentFilesDialog extends JDialog
 
   void cancel() {
     fileName = null;
-    fileType = null;
   }
 
   void close() {
@@ -169,7 +154,6 @@ public class RecentFilesDialog extends JDialog
       int fileIndex = fileList.getSelectedIndex();
       if (fileIndex < files.length) {
         fileName = files[fileIndex];
-        fileType = fileTypes[fileIndex];
         close();
       }
     } else if (e.getSource() == cancelButton) {

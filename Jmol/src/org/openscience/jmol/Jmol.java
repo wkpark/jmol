@@ -351,7 +351,7 @@ class Jmol extends JPanel {
 
       // Open a file if on is given as an argument
       if (initialFile != null) {
-        window.openFile(initialFile, "LetJmolDetermine");
+        window.openFile(initialFile);
       }
 
       // Oke, by now it is time to execute the script
@@ -418,7 +418,7 @@ class Jmol extends JPanel {
    * Opens a file with a hint to use a particular reader, defaulting to
    * the ReaderFactory if the hint doesn't match any known file types.
    */
-  public void openFile(File theFile, String typeHint) {
+  public void openFile(File theFile) {
 
     if (theFile != null) {
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
@@ -427,29 +427,12 @@ class Jmol extends JPanel {
       try {
         FileInputStream is = new FileInputStream(theFile);
 
-        if (typeHint.equals("PDB")) {
-          ChemFileReader reader = new PDBReader(new InputStreamReader(is));
-          newChemFile = reader.read();
-        } else if (typeHint.equals("CML")) {
-          ChemFileReader reader = new CMLReader(theFile.toURL());
-          newChemFile = ((CMLReader) reader).readValidated();
-        } else if (typeHint.equals("XYZ (xmol)")) {
-          ChemFileReader reader = new XYZReader(new InputStreamReader(is));
-          newChemFile = reader.read();
-        } else if (typeHint.equals("Ghemical Molecular Dynamics")) {
-          ChemFileReader reader =
-            new GhemicalMMReader(new InputStreamReader(is));
-          newChemFile = reader.read();
-        } else {
-
-          // Try to automagically determine file type:
-          ChemFileReader reader =
-            ReaderFactory.createReader(new InputStreamReader(is));
-          if (reader == null) {
-            throw new JmolException("openFile", "Unknown file type");
-          }
-          newChemFile = reader.read();
+        ChemFileReader reader =
+          ReaderFactory.createReader(new InputStreamReader(is));
+        if (reader == null) {
+          throw new JmolException("openFile", "Unknown file type");
         }
+        newChemFile = reader.read();
 
         if (newChemFile != null) {
           if (newChemFile.getNumberFrames() > 0) {
@@ -459,7 +442,7 @@ class Jmol extends JPanel {
             currentFileName = theFile.getName();
 
             // Add the file to the recent files list
-            recentFiles.addFile(theFile.toString(), typeHint);
+            recentFiles.addFile(theFile.toString(), "auto");
           } else {
             JOptionPane.showMessageDialog(Jmol.this,
                 "The file \"" + theFile + "\" appears to be empty."
@@ -528,9 +511,6 @@ class Jmol extends JPanel {
 
     }
 
-    // Add the file to the recent files list
-    //              recentFiles.addFile(theFile.toString(), typeHint);
-    //              frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
   }
 
 
@@ -1184,7 +1164,7 @@ class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File theFile = openChooser.getSelectedFile();
-        openFile(theFile, "");
+        openFile(theFile);
         return;
       }
     }
@@ -1340,9 +1320,7 @@ class Jmol extends JPanel {
       recentFiles.show();
       String selection = recentFiles.getFile();
       if (selection != null) {
-        System.out.println("Recent File: " + selection + " ("
-            + recentFiles.getFileType() + ")");
-        openFile(new File(selection), recentFiles.getFileType());
+        openFile(new File(selection));
       }
     }
   }

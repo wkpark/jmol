@@ -76,9 +76,8 @@ class RasMolScriptHandler {
             file = (String) st.nextElement();
           } else {
             file = param;
-            param = "CML";
           }
-          program.openFile(new File(file), param);
+          program.openFile(new File(file));
         } else {
           throw new RasMolScriptException("Error: omitted parameter.");
         }

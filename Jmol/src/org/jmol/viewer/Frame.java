@@ -1053,15 +1053,15 @@ final class Frame {
     return bspf.getBsptCount();
   }
 
-  private final WithinIterator withinAtomIterator = new WithinIterator();
+  private final WithinModelIterator withinModelIterator =
+    new WithinModelIterator();
 
-  AtomIterator getWithinIterator(Atom atomCenter,
-                                             float radius) {
-    withinAtomIterator.initialize(atomCenter.modelIndex, atomCenter, radius);
-    return withinAtomIterator;
+  AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
+    withinModelIterator.initialize(atomCenter.modelIndex, atomCenter, radius);
+    return withinModelIterator;
   }
 
-  class WithinIterator implements AtomIterator {
+  class WithinModelIterator implements AtomIterator {
 
     int bsptIndex;
     Tuple center;
@@ -1091,6 +1091,51 @@ final class Frame {
     }
   }
   
+  private final WithinAnyModelIterator
+    withinAnyModelIterator = new WithinAnyModelIterator();
+
+  AtomIterator getWithinAnyModelIterator(Atom atomCenter, float radius) {
+    withinAnyModelIterator.initialize(atomCenter, radius);
+    return withinAnyModelIterator;
+  }
+
+  class WithinAnyModelIterator implements AtomIterator {
+
+    int bsptIndex;
+    Tuple center;
+    float radius;
+    SphereIterator bsptIter;
+
+    void initialize(Tuple center, float radius) {
+      initializeBspf();
+      bsptIndex = bspf.getBsptCount();
+      bsptIter = null;
+      this.center = center;
+      this.radius = radius;
+    }
+    
+    public boolean hasNext() {
+      while (bsptIter == null || !bsptIter.hasMoreElements()) {
+        if (--bsptIndex < 0) {
+          bsptIter = null;
+          return false;
+        }
+        bsptIter = bspf.getSphereIterator(bsptIndex);
+        bsptIter.initialize(center, radius);
+      }
+      return true;
+    }
+    
+    public Atom next() {
+      return (Atom)bsptIter.nextElement();
+    }
+    
+    public void release() {
+      bsptIter.release();
+      bsptIter = null;
+    }
+  }
+
   ////////////////////////////////////////////////////////////////
   // autobonding stuff
   ////////////////////////////////////////////////////////////////

@@ -209,7 +209,7 @@ class Polyhedra extends SelectionIndependentShape {
                                          BitSet bsVertices) {
     Atom atom = frame.getAtomAt(atomIndex);
     int otherAtomCount = 0;
-    AtomIterator withinIterator = frame.getWithinIterator(atom, radius);
+    AtomIterator withinIterator = frame.getWithinModelIterator(atom, radius);
     while (withinIterator.hasNext()) {
       Atom other = withinIterator.next();
       if (other == atom)

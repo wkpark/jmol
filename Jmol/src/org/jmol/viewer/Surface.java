@@ -346,8 +346,8 @@ class Surface extends Shape {
                        " maxVdw=" + frame.getMaxVanderwaalsRadius());
     */
     AtomIterator iter =
-      frame.getWithinIterator(atomI, radiusI + diameterP +
-                              frame.getMaxVanderwaalsRadius());
+      frame.getWithinModelIterator(atomI, radiusI + diameterP +
+                                   frame.getMaxVanderwaalsRadius());
     neighborCount = 0;
     while (iter.hasNext()) {
       Atom neighbor = iter.next();

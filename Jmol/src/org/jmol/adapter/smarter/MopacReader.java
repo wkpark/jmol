@@ -44,8 +44,9 @@ class MopacReader extends AtomSetCollectionReader {
 
     String line;
     while ((line = input.readLine()) != null && ! line.startsWith(" ---")) {
-      if (line.indexOf("MOLECULAR POINT GROUP") >= 0)
-        hasSymmetry = true;
+      if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
+        //hasSymmetry = true;
+      }
     }
 
     while ((line = input.readLine()) != null) {
@@ -79,8 +80,11 @@ class MopacReader extends AtomSetCollectionReader {
    * </pre>
    * They are expected to be found in the file <i>before</i> the 
    * cartesian coordinate section.
+   * 
+   * @param input
+   * @throws Exception
    */
-  void processAtomicCharges(BufferedReader input) throws Exception {
+void processAtomicCharges(BufferedReader input) throws Exception {
     discardLines(input, 2);
     //    System.out.println("Reading atomic charges");
     baseAtomIndex = atomSetCollection.atomCount;
@@ -111,6 +115,9 @@ class MopacReader extends AtomSetCollectionReader {
    *      2         C        1.3952    0.0000    0.0000
    *      3         C        2.0927    1.2078    0.0000
    * </pre>
+   * 
+   * @param input
+   * @throws Exception
    */
   void processCoordinates(BufferedReader input) throws Exception {
     //    System.out.println("Reading coordinates");
@@ -239,6 +246,6 @@ class MopacReader extends AtomSetCollectionReader {
   /**
    * Whether the input file has symmetry elements reported.
    */
-  private boolean hasSymmetry = false;
+  //private boolean hasSymmetry = false;
   
 }

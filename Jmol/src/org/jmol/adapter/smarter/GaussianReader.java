@@ -303,8 +303,8 @@ class GaussianReader extends AtomSetCollectionReader {
     String[] red_masses; String[] frc_consts; String[] intensities;
  
     while ((line = reader.readLine()) != null &&
-            line.indexOf(":")<0)
-      ;
+            line.indexOf(":")<0) {
+    }
     if (line == null)
       throw (new Exception("No frequencies encountered"));
     

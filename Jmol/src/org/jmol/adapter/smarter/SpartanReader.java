@@ -34,7 +34,6 @@ class SpartanReader extends AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection("spartan");
 
     try {
-      String line;
       if (discardLinesUntilContains(reader, "Cartesian Coordinates (Ang") !=
           null)
         readAtoms(reader);
@@ -55,9 +54,8 @@ class SpartanReader extends AtomSetCollectionReader {
   void readAtoms(BufferedReader reader) throws Exception {
     discardLinesUntilBlank(reader);
     String line;
-    int atomNum;
     while ((line = reader.readLine()) != null &&
-           (atomNum = parseInt(line, 0, 3)) > 0) {
+           (/*atomNum = */parseInt(line, 0, 3)) > 0) {
       String elementSymbol = parseToken(line, 4, 6);
       String atomName = parseToken(line, 7, 13);
       float x = parseFloat(line, 17, 30);
@@ -74,10 +72,6 @@ class SpartanReader extends AtomSetCollectionReader {
 
   void readFrequencies(BufferedReader reader) throws Exception {
     int totalFrequencyCount = 0;
-    float[] frequencies = new float[5];
-    float[] xComponents = new float[5];
-    float[] yComponents = new float[5];
-    float[] zComponents = new float[5];
 
     while (true) {
       String line = discardLinesUntilNonBlank(reader);

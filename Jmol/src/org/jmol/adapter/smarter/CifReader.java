@@ -270,8 +270,8 @@ class CifReader extends AtomSetCollectionReader {
         break;
       if (chFirst == ' ') {
         int i;
-        for (i = lineLength; --i >= 0 && line.charAt(i) == ' '; )
-          ;
+        for (i = lineLength; --i >= 0 && line.charAt(i) == ' '; ) {
+        }
         if (i < 0)
           break;
       }

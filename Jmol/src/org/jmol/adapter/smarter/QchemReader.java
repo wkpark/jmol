@@ -99,7 +99,7 @@ class QchemReader extends AtomSetCollectionReader {
     String line;
     while ((line = reader.readLine()) != null &&
            !line.startsWith(" --")) {
-    String centerNumber = parseToken(line, 0, 5);
+    /*String centerNumber = */parseToken(line, 0, 5);
     String aname = parseToken(line, 6, 12);
     if (aname.indexOf("X") == 1) {
       // skip dummy atoms
@@ -123,7 +123,8 @@ class QchemReader extends AtomSetCollectionReader {
     int modelNumber = 1;
     String line;
     while ((line = reader.readLine()) != null &&
-           ! line.startsWith(" Frequency:"));
+           ! line.startsWith(" Frequency:")) {
+    }
     if (line == null)
       return;
     do {

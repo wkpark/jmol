@@ -82,7 +82,7 @@ class Resolver {
       }
     }
     try {
-      int atomCount = Integer.parseInt(lines[0].trim());
+      /*int atomCount = */Integer.parseInt(lines[0].trim());
       return "Xyz";
     } catch (NumberFormatException e) {
     }
@@ -218,8 +218,8 @@ class LimitedLineReader {
       int ichBeginningOfLine = ichCurrent;
       char ch = 0;
       while (ichCurrent < cchBuf &&
-             (ch = buf[ichCurrent++]) != '\r' && ch != '\n')
-        ;
+             (ch = buf[ichCurrent++]) != '\r' && ch != '\n') {
+      }
       if (ch == '\r' && ichCurrent < cchBuf && buf[ichCurrent] == '\n')
         ++ichCurrent;
       int cchLine = ichCurrent - ichBeginningOfLine;

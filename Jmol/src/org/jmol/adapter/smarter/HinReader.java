@@ -86,7 +86,7 @@ class HinReader extends AtomSetCollectionReader {
   void processMol(String line) {
     atomSetCollection.newAtomSet();
     String molName = getMolName(line);
-    atomSetCollection.setAtomSetName(getMolName(line));
+    atomSetCollection.setAtomSetName(molName);
     atomIndex = 0;
     baseAtomIndex = atomSetCollection.atomCount;
   }

@@ -36,7 +36,6 @@ class GamessReader extends AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection("gamess");
 
     try {
-      String line;
       discardLinesUntilContains(reader, "COORDINATES (BOHR)");
       readAtomsInBohrCoordinates(reader);
       discardLinesUntilContains(reader, "FREQUENCIES IN CM");
@@ -75,7 +74,6 @@ class GamessReader extends AtomSetCollectionReader {
   void readFrequencies(BufferedReader reader) throws Exception {
     int totalFrequencyCount = 0;
     int atomCountInFirstModel = atomSetCollection.atomCount;
-    float[] frequencies = new float[5];
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
     float[] zComponents = new float[5];

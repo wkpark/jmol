@@ -200,7 +200,7 @@ class PdbReader extends ModelReader {
       /****************************************************************/
       if (serial >= serialMap.length)
         serialMap = setLength(serialMap, serial + 500);
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.modelNumber = currentModelNumber;
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;

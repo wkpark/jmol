@@ -162,7 +162,7 @@ class ShelxReader extends ModelReader {
       }
       */
 
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.atomName = atomName;
       atom.scatterFactor = scatterFactor;
       atom.x = a;

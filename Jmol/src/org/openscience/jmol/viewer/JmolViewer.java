@@ -972,9 +972,6 @@ final public class JmolViewer {
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
     homePosition();
-    // don't know if I need this firm refresh here or not
-    // FIXME mth -- we need to clear definitions when we open a new file
-    // but perhaps not if we are in the midst of executing a script?
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
     setStructuralChange();
@@ -983,6 +980,7 @@ final public class JmolViewer {
 
   public void clear() {
     repaintManager.clearAnimation();
+    transformManager.clearVibration();
     modelManager.setClientFile(null, null, null);
     clearMeasurements();
     refresh();

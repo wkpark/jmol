@@ -85,7 +85,7 @@ class XyzReader extends ModelReader {
         vectorY = chargeAndOrVector[j - 2];
         vectorZ = chargeAndOrVector[j - 1];
       }
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.modelNumber = modelNumber;
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;

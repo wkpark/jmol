@@ -114,7 +114,7 @@ class HinReader extends ModelReader {
       return;
     }
 
-    Atom atom = model.newAtom();
+    Atom atom = model.addNewAtom();
     atom.modelNumber = modelNumber;
     atom.elementSymbol = tokens[3];
     atom.partialCharge = parseFloat(tokens[6]);
@@ -148,9 +148,9 @@ class HinReader extends ModelReader {
           " atom #" + fileAtomNumber;
         return;
       }
-      model.newBond(modelBaseAtomIndex + atomIndex,
-                    modelBaseAtomIndex + otherAtomNumber - 1,
-                    bondOrder);
+      model.addNewBond(modelBaseAtomIndex + atomIndex,
+                       modelBaseAtomIndex + otherAtomNumber - 1,
+                       bondOrder);
     }
     ++atomIndex;
   }

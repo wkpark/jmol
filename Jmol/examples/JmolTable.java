@@ -22,6 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 import org.jmol.api.ModelAdapter;
 import org.jmol.adapter.smarter.SmarterModelAdapter;
 import org.openscience.jmol.viewer.JmolViewer;
@@ -33,6 +34,7 @@ import javax.swing.*;
 
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -57,6 +59,7 @@ import java.awt.Component;
  *
  * @author Rajarshi Guha
  */
+
 public class JmolTable {
 
     private static int structureCellHeight = 300;
@@ -92,14 +95,17 @@ public class JmolTable {
         JTable mtable = new JTable( new JmolPanelJTableModel(data, colNames) );
         mtable.setShowGrid(true);
 
-        // set row heights
-        for (int i = 0; i < nmol; i++) {
-            mtable.setRowHeight(i, structureCellHeight);
-        }
+        // add a TableolumnModelListener so we can catch column
+        // resizes and change row heights accordingly
+        mtable.getColumnModel().addColumnModelListener( new JmolColumnModelListener(mtable) );
+        
 
         // allow cell selections
-        mtable.setColumnSelectionAllowed(true);
-        mtable.setRowSelectionAllowed(true);
+        mtable.setCellSelectionEnabled(true);
+
+        // disable movement of columns. This is needed since we
+        // set the CellRenderer and CellEditor for a specific column
+        mtable.getTableHeader().setReorderingAllowed(false);
             
 
         // set up scroll bar
@@ -118,6 +124,29 @@ public class JmolTable {
         frame.pack();
         frame.setSize(300, 300);
         frame.setVisible(true);
+    }
+       
+    static class JmolColumnModelListener implements TableColumnModelListener {
+        JTable table;
+        public JmolColumnModelListener(JTable t) {
+            this.table = t;
+        }
+        public void columnAdded(TableColumnModelEvent e) {
+        }
+        public void columnRemoved(TableColumnModelEvent e) {
+        }
+        public void columnMoved(TableColumnModelEvent e) {
+        }
+        public void columnMarginChanged(ChangeEvent e) {
+            int colwidth = this.table.getColumnModel().getColumn(STRUCTURE_COL).getWidth();
+            int rowcount = this.table.getRowCount();
+            for (int i = 0; i < this.table.getRowCount(); i++) {
+                this.table.setRowHeight(i, colwidth);
+            }
+
+        }
+        public void columnSelectionChanged(ListSelectionEvent e) {
+        }
     }
 
     static class JmolPanelJTableModel extends AbstractTableModel {
@@ -163,7 +192,6 @@ public class JmolTable {
         public Component getTableCellRendererComponent( 
                 JTable table,  Object value, boolean isSelected, 
                 boolean hasFocus, int rowIndex, int vColIndex ) {
-           // return plist[rowIndex];
            return (JmolPanel)value;
                 }
 
@@ -180,7 +208,6 @@ public class JmolTable {
                 JTable table, Object value, boolean isSelected,
                 int row, int column) {
             return (JmolPanel)value;
-            //return plist[row];
                 }
         public Object getCellEditorValue() {
             return new Object();
@@ -201,24 +228,24 @@ public class JmolTable {
 
 
 class JmolPanel extends JPanel {
-  JmolViewer viewer;
-  ModelAdapter adapter;
-  JmolPanel() {
-    adapter = new SmarterModelAdapter(null);
-    viewer = new JmolViewer(this, adapter);
-  }
-  
-  public JmolViewer getViewer() {
-    return viewer;
-  }
-  
-  final Dimension currentSize = new Dimension();
-  public void paint(Graphics g) {
-    viewer.setScreenDimension(getSize(currentSize));
-    Rectangle rectClip = new Rectangle();
-    g.getClipBounds(rectClip);
-    viewer.renderScreenImage(g, currentSize, rectClip);
-  }
+    JmolViewer viewer;
+    ModelAdapter adapter;
+    JmolPanel() {
+        adapter = new SmarterModelAdapter(null);
+        viewer = new JmolViewer(this, adapter);
+    }
+
+    public JmolViewer getViewer() {
+        return viewer;
+    }
+    final Dimension currentSize = new Dimension();
+    public void paint(Graphics g) {
+        viewer.setScreenDimension(getSize(currentSize));
+        Rectangle rectClip = new Rectangle();
+        g.getClipBounds(rectClip);
+        viewer.renderScreenImage(g, currentSize, rectClip);
+    }
+
 }
 
 

@@ -242,7 +242,7 @@ class CifReader extends ModelReader {
            line.charAt(0) != '#';
          line = reader.readLine()) {
       tokenizer.setString(line);
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
           tokenizer.setString(reader.readLine());

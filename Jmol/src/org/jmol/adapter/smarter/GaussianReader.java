@@ -132,7 +132,7 @@ class GaussianReader extends ModelReader {
       float z = parseFloat(line, coordinateBase + 24, coordinateBase + 36);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         continue;
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.elementNumber = (byte)elementNumber;
       atom.x = x; atom.y = y; atom.z = z;
       ++atomCount;

@@ -293,7 +293,7 @@ class CmlReader extends ModelReader {
                            tokenCount + " order:" + order);
         */
         if (tokenCount == 2 && order > 0)
-          model.newBond(tokens[0], tokens[1], order);
+          model.addNewBond(tokens[0], tokens[1], order);
         return;
       }
       if ("bondArray".equals(localName)) {

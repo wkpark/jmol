@@ -127,7 +127,7 @@ class GhemicalMMReader extends ModelReader {
                 
                 // Store atoms
                 for (int i = 0; i < numberOfAtoms; i++) {
-                    Atom atom = model.newAtom();
+                    Atom atom = model.addNewAtom();
                     // atom.elementSymbol = "None";
                     atom.elementNumber = atoms[i];
                     atom.x = atomxs[i];

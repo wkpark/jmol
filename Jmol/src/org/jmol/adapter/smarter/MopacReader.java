@@ -174,7 +174,7 @@ class MopacReader extends ModelReader {
             if (token.nextToken() != StreamTokenizer.TT_NUMBER) {
                 break;
             }
-            Atom atom = model.newAtom();
+            Atom atom = model.addNewAtom();
             // atom.modelNumber = modelNumber;
             if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
                 atom.elementNumber = (byte) token.nval;

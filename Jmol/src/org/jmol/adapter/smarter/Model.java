@@ -82,7 +82,7 @@ class Model {
     return clone;
   }
 
-  Atom newAtom() {
+  Atom addNewAtom() {
     Atom atom = new Atom();
     addAtom(atom);
     return atom;
@@ -99,24 +99,24 @@ class Model {
     mapMostRecentAtomName();
   }
 
-  Bond newBond(int atomIndex1, int atomIndex2) {
-    return newBond(atomIndex1, atomIndex2, 1);
+  Bond addNewBond(int atomIndex1, int atomIndex2) {
+    return addNewBond(atomIndex1, atomIndex2, 1);
   }
 
-  Bond newBond(String atomName1, String atomName2) {
-    return newBond(atomName1, atomName2, 1);
+  Bond addNewBond(String atomName1, String atomName2) {
+    return addNewBond(atomName1, atomName2, 1);
   }
 
-  Bond newBond(int atomIndex1, int atomIndex2, int order) {
+  Bond addNewBond(int atomIndex1, int atomIndex2, int order) {
     Bond bond = new Bond(atomIndex1, atomIndex2, order);
     addBond(bond);
     return bond;
   }
   
-  Bond newBond(String atomName1, String atomName2, int order) {
-    return newBond(getAtomNameIndex(atomName1),
-                   getAtomNameIndex(atomName2),
-                   order);
+  Bond addNewBond(String atomName1, String atomName2, int order) {
+    return addNewBond(getAtomNameIndex(atomName1),
+                      getAtomNameIndex(atomName2),
+                      order);
   }
 
   void addBond(Bond bond) {

@@ -74,7 +74,7 @@ class JaguarReader extends ModelReader {
         elementSymbol = atomName.substring(0, 2);
       else
         elementSymbol = atomName.substring(0, 1);
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       atom.x = x; atom.y = y; atom.z = z;

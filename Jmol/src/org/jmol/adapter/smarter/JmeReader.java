@@ -65,7 +65,7 @@ class JmeReader extends ModelReader {
       float x = parseFloat(tokenizer.nextToken());
       float y = parseFloat(tokenizer.nextToken());
       float z = 0;
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.x = x; atom.y = y; atom.z = z;
     }

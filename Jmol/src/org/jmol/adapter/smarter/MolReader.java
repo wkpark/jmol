@@ -60,7 +60,7 @@ class MolReader extends ModelReader {
         if (chargeCode != 0)
           charge = 4 - chargeCode;
       }
-      Atom atom = model.newAtom();
+      Atom atom = model.addNewAtom();
       atom.elementSymbol = elementSymbol;
       atom.formalCharge = charge;
       atom.x = x; atom.y = y; atom.z = z;

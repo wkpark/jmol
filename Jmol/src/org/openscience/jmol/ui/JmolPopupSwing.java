@@ -38,6 +38,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.util.StringTokenizer;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
@@ -100,7 +101,7 @@ public class JmolPopupSwing extends JPopupMenu {
         ((JMenu)menu).add(jmi);
       return;
     }
-    StringTokenizer st = new StringTokenizer(getValue(key));
+    StringTokenizer st = new StringTokenizer(value);
     while (st.hasMoreTokens()) {
       String item = st.nextToken();
       if (item.endsWith("Menu")) {
@@ -128,7 +129,6 @@ public class JmolPopupSwing extends JPopupMenu {
           jmi = jcmi;
         } else {
           jmi = new JMenuItem(word);
-          getValue(item);
           jmi.addActionListener(mil);
           jmi.setActionCommand(item);
         }
@@ -141,11 +141,20 @@ public class JmolPopupSwing extends JPopupMenu {
   }
 
   private String getValue(String key) {
-    return rbStructure.getString(key);
+    try {
+      return rbStructure.getString(key);
+    } catch (MissingResourceException e) {
+      return null;
+    }
   }
 
   private String getWord(String key) {
-    return rbWords.getString(key);
+    String str = key;
+    try {
+      str = rbWords.getString(key);
+    } catch (MissingResourceException e) {
+    }
+    return str;
   }
 
   Hashtable htCheckbox = new Hashtable();

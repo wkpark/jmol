@@ -91,6 +91,9 @@ class FoldingXyzReader extends AtomSetCollectionReader {
           	    Atom.isValidElementSymbol(c1, c2)) {
           	  carCount = 2;
           	}
+          	if ((c1 == 'C') && (c2 =='L')) {
+              carCount = 2;
+          	}
           }
           atom.elementSymbol = atom.atomName.substring(0, carCount);
 	    }

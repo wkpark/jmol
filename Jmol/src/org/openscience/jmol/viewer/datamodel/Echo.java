@@ -61,13 +61,13 @@ public class Echo extends Shape {
     System.out.println("Echo.setProperty(" + propertyName + "," + value + ")");
     */
 
-    if ("color".equals(propertyName)) {
+    if ("color" == propertyName) {
       if (currentText != null)
         currentText.colix = g3d.getColix(value);
       return;
     }
 
-    if ("font".equals(propertyName)) {
+    if ("font" == propertyName) {
       if (currentText != null) {
         currentText.font3d = (Font3D)value;
         currentText.recalc();
@@ -75,70 +75,70 @@ public class Echo extends Shape {
       return;
     }
     
-    if ("echo".equals(propertyName)) {
+    if ("echo" == propertyName) {
       if (currentText != null) {
         currentText.text = (String)value;
         currentText.recalc();
       }
     }
 
-    if ("off".equals(propertyName)) {
+    if ("off" == propertyName) {
       currentText = null;
       if (topText != null) topText.text = null;
       if (middleText != null) middleText.text = null;
       if (bottomText != null) bottomText.text = null;
     }
     
-    if ("target".equals(propertyName)) {
-      String target = (String)value;
-      if ("top".equals(target)) {
-        if (topText == null)
+    if ("target" == propertyName) {
+      String target = ((String)value).intern();
+      if ("top" == target) {
+       if (topText == null)
           topText = new Text(TOP, CENTER,
                              g3d.getFont3D(FONTFACE, FONTSIZE), COLOR);
         currentText = topText;
         return;
       }
     
-      if ("middle".equals(target)) {
-        if (middleText == null)
+      if ("middle" == target) {
+       if (middleText == null)
           middleText = new Text(MIDDLE, CENTER,
                                 g3d.getFont3D(FONTFACE, FONTSIZE), COLOR);
         currentText = middleText;
         return;
       }
       
-      if ("bottom".equals(target)) {
-        if (bottomText == null)
+      if ("bottom" == target) {
+       if (bottomText == null)
           bottomText = new Text(BOTTOM, LEFT,
                                 g3d.getFont3D(FONTFACE, FONTSIZE), COLOR);
         currentText = bottomText;
         return;
       }
 
-      if ("none".equals(target)) {
-        currentText = null;
+      if ("none" == target) {
+       currentText = null;
         return;
       }
       System.out.println("unrecognized target:" + target);
       return;
     }
 
-    if ("align".equals(propertyName)) {
+    if ("align" == propertyName) {
       if (currentText == null)
         return;
-      String align = (String)value;
-      if ("left".equals(align)) {
-        currentText.align = LEFT;
+      String align = ((String)value).intern();
+      if ("left" == align) {
+       currentText.align = LEFT;
         return;
       }
       
-      if ("center".equals(align)) {
-        currentText.align = CENTER;
+      if ("center" == align) {
+       currentText.align = CENTER;
         return;
       }
       
-      if ("right".equals(align)) {
-        currentText.align = RIGHT;
+      if ("right" == align) {
+       currentText.align = RIGHT;
         return;
       }
       System.out.println("unrecognized align:" + align);

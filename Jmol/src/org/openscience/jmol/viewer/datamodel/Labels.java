@@ -49,7 +49,7 @@ public class Labels extends Shape {
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     Atom[] atoms = frame.atoms;
-    if ("color".equals(propertyName)) {
+    if ("color" == propertyName) {
       short colix = g3d.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
@@ -63,12 +63,12 @@ public class Labels extends Shape {
         }
     }
     
-    if ("label".equals(propertyName)) {
+    if ("label" == propertyName) {
       String strLabel = (String)value;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
-          String label = getLabelAtom(strLabel, atom, i);
+          String label = atom.formatLabel(strLabel);
           if (strings == null || i >= strings.length) {
             if (label == null)
               continue;
@@ -79,7 +79,7 @@ public class Labels extends Shape {
       return;
     }
     
-    if ("fontsize".equals(propertyName)) {
+    if ("fontsize" == propertyName) {
       int fontsize = ((Integer)value).intValue();
       if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE) {
         fontBids = null;
@@ -92,7 +92,7 @@ public class Labels extends Shape {
       return;
     }
     
-    if ("font".equals(propertyName)) {
+    if ("font" == propertyName) {
       byte bid = ((Font3D)value).bid;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
@@ -106,7 +106,7 @@ public class Labels extends Shape {
       return;
     }
 
-    if ("offset".equals(propertyName)) {
+    if ("offset" == propertyName) {
       int offset = ((Integer)value).intValue();
       if (offset == 0)
         offset = Short.MIN_VALUE;
@@ -156,97 +156,4 @@ public class Labels extends Shape {
     return t;
   }
 
-  String getLabelAtom(String strFormat, Atom atom, int atomIndex) {
-    if (strFormat == null || strFormat.equals(""))
-      return null;
-    String strLabel = "";
-    int cch = strFormat.length();
-    int ich, ichPercent;
-    for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1; ) {
-      if (ich != ichPercent)
-        strLabel += strFormat.substring(ich, ichPercent);
-      ich = ichPercent + 1;
-      if (ich == cch) {
-        --ich; // a percent sign at the end of the string
-        break;
-      }
-      char ch = strFormat.charAt(ich++);
-      switch (ch) {
-      case 'i':
-        strLabel += atom.getAtomNumber();
-        break;
-      case 'a':
-        strLabel += atom.getAtomName();
-        break;
-      case 'e':
-        strLabel += atom.getElementSymbol();
-        break;
-      case 'x':
-        strLabel += atom.getAtomX();
-        break;
-      case 'y':
-        strLabel += atom.getAtomY();
-        break;
-      case 'z':
-        strLabel += atom.getAtomZ();
-        break;
-      case 'C':
-        int charge = atom.getAtomicCharge();
-        if (charge > 0)
-          strLabel += "" + charge + "+";
-        else if (charge < 0)
-          strLabel += "" + -charge + "-";
-        else
-          strLabel += "0";
-        break;
-      case 'V':
-        strLabel += atom.getVanderwaalsRadiusFloat();
-        break;
-      case 'I':
-        strLabel += atom.getBondingRadiusFloat();
-        break;
-      case 'b': // these two are the same
-      case 't':
-        strLabel += (atom.getBfactor100() / 100.0);
-        break;
-      case 'q':
-        strLabel += atom.getOccupancy();
-        break;
-      case 'c': // these two are the same
-      case 's':
-        strLabel += atom.getChainID();
-        break;
-      case 'M':
-        strLabel += "/" + atom.getModelNumber();
-        break;
-      case 'm':
-        strLabel += "<X>";
-        break;
-      case 'n':
-        strLabel += atom.getGroup3();
-        break;
-      case 'r':
-        strLabel += atom.getSeqcodeString();
-        break;
-      case '{': // client property name
-        int ichCloseBracket = strFormat.indexOf('}', ich);
-        if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
-          String propertyName = strFormat.substring(ich, ichCloseBracket);
-          String value = atom.getClientAtomStringProperty(propertyName);
-          if (value != null)
-            strLabel += value;
-          ich = ichCloseBracket + 1;
-          break;
-        }
-        // malformed will fall into
-      default:
-        strLabel += "%" + ch;
-      }
-    }
-    strLabel += strFormat.substring(ich);
-    if (strLabel.length() == 0)
-      return null;
-    else
-      return strLabel.intern();
-  }
 }

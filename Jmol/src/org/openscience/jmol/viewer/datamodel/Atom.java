@@ -108,16 +108,13 @@ public class Atom implements Bspt.Tuple {
                          : (byte)occupancy));
     this.bfactor100 =
       (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
-    atomName = (atomName != null
-                ? atomName.intern()
-                : JmolConstants.elementSymbols[elementNumber]);
-    this.atomName = atomName;
+    this.atomSerial = atomSerial;
+    this.atomName = (atomName == null ? null : atomName.intern());
     specialAtomID = lookupSpecialAtomID(atomName);
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
     this.isHetero = isHetero;
-    this.atomSerial = atomSerial;
     // this does not belong here
     // put it in the higher level and pass in the group
     group = pdbFile.registerAtom(this, modelNumber, chainID,
@@ -314,7 +311,8 @@ public class Atom implements Bspt.Tuple {
   }
 
   public String getAtomName() {
-    return atomName;
+    return (atomName != null
+            ? atomName : JmolConstants.elementSymbols[elementNumber]);
   }
   
   public String getPdbAtomName4() {
@@ -568,9 +566,167 @@ public class Atom implements Bspt.Tuple {
   }
 
   byte lookupSpecialAtomID(String atomName) {
-    Integer boxedAtomID = (Integer)htAtom.get(atomName);
-    if (boxedAtomID != null)
-      return (byte)(boxedAtomID.intValue());
+    if (atomName != null) {
+      Integer boxedAtomID = (Integer)htAtom.get(atomName);
+      if (boxedAtomID != null)
+        return (byte)(boxedAtomID.intValue());
+    }
     return -1;
+  }
+
+  String formatLabel(String strFormat) {
+    if (strFormat == null || strFormat.equals(""))
+      return null;
+    String strLabel = "";
+    int cch = strFormat.length();
+    int ich, ichPercent;
+    for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1; ) {
+      if (ich != ichPercent)
+        strLabel += strFormat.substring(ich, ichPercent);
+      ich = ichPercent + 1;
+      if (ich == cch) {
+        --ich; // a percent sign at the end of the string
+        break;
+      }
+      char ch = strFormat.charAt(ich++);
+      switch (ch) {
+      case 'i':
+        strLabel += getAtomNumber();
+        break;
+      case 'a':
+        strLabel += atomName;
+        break;
+      case 'e':
+        strLabel += JmolConstants.elementSymbols[elementNumber];
+        break;
+      case 'x':
+        strLabel += point3f.x;
+        break;
+      case 'y':
+        strLabel += point3f.y;
+        break;
+      case 'z':
+        strLabel += point3f.z;
+        break;
+      case 'C':
+        int charge = getAtomicCharge();
+        if (charge > 0)
+          strLabel += "" + charge + "+";
+        else if (charge < 0)
+          strLabel += "" + -charge + "-";
+        else
+          strLabel += "0";
+        break;
+      case 'V':
+        strLabel += getVanderwaalsRadiusFloat();
+        break;
+      case 'I':
+        strLabel += getBondingRadiusFloat();
+        break;
+      case 'b': // these two are the same
+      case 't':
+        strLabel += (getBfactor100() / 100.0);
+        break;
+      case 'q':
+        strLabel += occupancy;
+        break;
+      case 'c': // these two are the same
+      case 's':
+        strLabel += getChainID();
+        break;
+      case 'M':
+        strLabel += "/" + getModelNumber();
+        break;
+      case 'm':
+        strLabel += "<X>";
+        break;
+      case 'n':
+        strLabel += getGroup3();
+        break;
+      case 'r':
+        strLabel += getSeqcodeString();
+        break;
+      case 'U':
+        strLabel += getIdentity();
+        break;
+      case '{': // client property name
+        int ichCloseBracket = strFormat.indexOf('}', ich);
+        if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
+          String propertyName = strFormat.substring(ich, ichCloseBracket);
+          String value = getClientAtomStringProperty(propertyName);
+          if (value != null)
+            strLabel += value;
+          ich = ichCloseBracket + 1;
+          break;
+        }
+        // malformed will fall into
+      default:
+        strLabel += "%" + ch;
+      }
+    }
+    strLabel += strFormat.substring(ich);
+    if (strLabel.length() == 0)
+      return null;
+    else
+      return strLabel.intern();
+  }
+
+  public String getInfo() {
+    StringBuffer info = new StringBuffer();
+    info.append(atomName);
+    String group3 = getGroup3();
+    if (group3 != null) {
+      info.append(' ');
+      info.append(group3);
+    }
+    int seqcode = getSeqcode();
+    if (seqcode != -1) {
+      info.append(' ');
+      info.append(seqcode);
+    }
+    char chainID = getChainID();
+    if (chainID != 0) {
+      info.append(" Chain:");
+      info.append(chainID);
+    }
+    if (frame.getModelCount() > 1) {
+      info.append(" Model:");
+      info.append(modelNumber);
+    }
+    return "" + info;
+  }
+
+  public String getIdentity() {
+    StringBuffer info = new StringBuffer();
+    if (atomName != null)
+      info.append(atomName);
+    else {
+      info.append(getElementSymbol());
+      info.append(" ");
+      info.append(getAtomNumber());
+    }
+    String group3 = getGroup3();
+    if (group3 != null && group3.length() > 0) {
+      info.append(" [");
+      info.append(group3);
+      info.append("]");
+    }
+    /*
+    int seqcode = getSeqcode();
+    System.out.println("seqcode=" + seqcode);
+    if (seqcode != -1) {
+      info.append(seqcode);
+    }
+    */
+    char chainID = getChainID();
+    if (chainID != 0 && chainID != ' ') {
+      info.append(":");
+      info.append(chainID);
+    }
+    if (frame.getModelCount() > 1) {
+      info.append("/");
+      info.append(modelNumber);
+    }
+    return "" + info;
   }
 }

@@ -39,7 +39,7 @@ public class Sticks extends Shape {
   
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
-    if ("color".equals(propertyName)) {
+    if ("color" == propertyName) {
       short colix = g3d.getColix(value);
       setColixBond(colix, JmolConstants.BOND_COVALENT, bsSelected);
       return;

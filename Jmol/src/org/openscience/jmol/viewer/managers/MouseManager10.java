@@ -48,31 +48,32 @@ public class MouseManager10 extends MouseManager {
 
   public boolean handleEvent(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers, clickCount = e.clickCount;
+    long time = e.when;
     modifiers = applyLeftMouse(modifiers);
     switch (e.id) {
     case Event.MOUSE_DOWN:
       xWhenPressed = x; yWhenPressed = y; modifiersWhenPressed = modifiers;
-      mousePressed(x, y, modifiers, false, e.when);
+      mousePressed(time, x, y, modifiers, false);
       break;
     case Event.MOUSE_DRAG:
-      mouseDragged(x, y, modifiers);
+      mouseDragged(time, x, y, modifiers);
       break;
     case Event.MOUSE_ENTER:
-      mouseEntered(x, y);
+      mouseEntered(time, x, y);
       break;
     case Event.MOUSE_EXIT:
-      mouseExited(x, y);
+      mouseExited(time, x, y);
       break;
     case Event.MOUSE_MOVE:
-      mouseMoved(x, y, modifiers);
+      mouseMoved(time, x, y, modifiers);
       break;
     case Event.MOUSE_UP:
-      mouseReleased(x, y, modifiers);
+      mouseReleased(time, x, y, modifiers);
       // simulate a mouseClicked event for us
       if (x == xWhenPressed && y == yWhenPressed &&
           modifiers == modifiersWhenPressed) {
         // the underlying code will turn this into dbl clicks for us
-        mouseClicked(x, y, modifiers, 1, e.when);
+        mouseClicked(time, x, y, modifiers, 1);
       }
       break;
     default:

@@ -40,6 +40,6 @@ public class MouseManager14 extends MouseManager11
   }
   
   public void mouseWheelMoved(MouseWheelEvent e) {
-    mouseWheel(e.getWheelRotation(), e.getModifiers());
+    mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
   }
 }

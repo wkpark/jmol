@@ -239,14 +239,16 @@ public class ModelManager {
 
   public void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
-    // Hashtables cannot store null values :-(
     Hashtable props = shapeProperties[shapeType];
     if (props == null)
       props = shapeProperties[shapeType] = new Hashtable();
-    /*
+
+    // be sure to intern all propertyNames!
+    propertyName = propertyName.intern();
     System.out.println("propertyName=" + propertyName + "\n" +
                        "value=" + value);
-    */
+
+    // Hashtables cannot store null values :-(
     props.put(propertyName, value != null ? value : NULL_SURROGATE);
     if (frame != null)
       frame.setShapeProperty(shapeType, propertyName, value, bsSelected);
@@ -277,17 +279,7 @@ public class ModelManager {
   ////////////////////////////////////////////////////////////////
 
   public String getAtomInfo(int i) {
-    Atom atom = frame.atoms[i];
-    String info =
-      "Atom: " + atom.getElementSymbol() + " " + atom.getAtomNumber() +
-      " " + atom.getGroup3() + " " + atom.getSeqcodeString() +
-      " Chain:" + atom.getChainID() + " Model:" + atom.getModelID();
-    return info;
-    /*
-    return "Atom: " + pdbAtom.getAtomName() + " " + atom.getAtomNumber() +
-      " " + pdbAtom.getGroup3() + " " + pdbAtom.getSeqcodeString() +
-      " Chain:" + pdbAtom.getChainID() + " Model: " + pdbAtom.getModelID();
-    */
+    return frame.atoms[i].getInfo();
   }
 
 /*

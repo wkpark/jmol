@@ -1391,6 +1391,23 @@ final public class JmolViewer {
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
   }
 
+  int hoverAtomIndex = -1;
+  public void hoverOn(int atomIndex) {
+    if ((eval == null || !eval.isActive()) && atomIndex != hoverAtomIndex) {
+      setShapeSize(JmolConstants.SHAPE_HOVER, 1);
+      setShapeProperty(JmolConstants.SHAPE_HOVER,
+                       "target", new Integer(atomIndex));
+      hoverAtomIndex = atomIndex;
+    }
+  }
+
+  public void hoverOff() {
+    if (hoverAtomIndex >= 0) {
+      setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
+      hoverAtomIndex = -1;
+    }
+  }
+
   public void setLabel(String strLabel) {
     if (strLabel != null) // force the class to load and display
       setShapeSize(JmolConstants.SHAPE_LABELS,
@@ -1445,11 +1462,9 @@ final public class JmolViewer {
   public void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
 
-    /*
     System.out.println("JmolViewer.setShapeProperty("+
                        JmolConstants.shapeClassBases[shapeID]+
                        "," + propertyName + "," + value + ")");
-    */
     modelManager.setShapeProperty(shapeID, propertyName, value,
                                   selectionManager.bsSelection);
     refresh();

@@ -292,19 +292,25 @@ final public class Graphics3D {
 
   public void drawRect(short colix, int x, int y, int width, int height) {
     argbCurrent = getArgb(colix);
-    int xRight = x + width;
+    int xRight = x + width - 1;
     drawLine(x, y, 0, xRight, y, 0);
-    int yBottom = y + height;
+    int yBottom = y + height - 1;
     drawLine(x, y, 0, x, yBottom, 0);
-    drawLine(x, yBottom, 0, xRight, yBottom, 0);
     drawLine(xRight, y, 0, xRight, yBottom, 0);
+    drawLine(x, yBottom, 0, xRight + 1, yBottom, 0);
   }
 
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
+    drawString(str, font3dCurrent, colix, xBaseline, yBaseline, z);
+  }
+  
+  public void drawString(String str, Font3D font3d, short colix,
+                         int xBaseline, int yBaseline, int z) {
+    font3dCurrent = font3d;
+    argbCurrent = getArgb(colix);
     if (z < slab)
       return;
-    argbCurrent = getArgb(colix);
     Text3D.plot(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(),
                 z, argbCurrent, str, font3dCurrent, this);
   }
@@ -603,7 +609,9 @@ final public class Graphics3D {
     hermite3d.render(false, colix, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
-  public void fillRect(int x, int y, int z, int widthFill, int heightFill) {
+  public void fillRect(short colix,
+                       int x, int y, int z, int widthFill, int heightFill) {
+    argbCurrent = getArgb(colix);
     if (x < 0) {
       widthFill += x;
       if (widthFill <= 0)
@@ -623,8 +631,8 @@ final public class Graphics3D {
     }
     if (y + heightFill > height)
       heightFill = height - y;
-    while (--height >= 0)
-      plotPixelsUnclipped(width, x, y++, z, false);
+    while (--heightFill >= 0)
+      plotPixelsUnclipped(widthFill, x, y++, z, false);
   }
 
   public void drawPixel(Point3i point) {
@@ -1064,6 +1072,7 @@ final public class Graphics3D {
                             Font3D.FONT_STYLE_PLAIN, fontSize);
   }
     
+  // {"Plain", "Bold", "Italic", "BoldItalic"};
   public Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
     return Font3D.getFont3D(platform, Font3D.getFontFaceID(fontFace),
                             Font3D.getFontStyleID(fontStyle), fontSize);

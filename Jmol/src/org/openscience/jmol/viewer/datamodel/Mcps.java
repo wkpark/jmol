@@ -54,11 +54,11 @@ abstract class Mcps extends Shape {
     initialize();
     byte palette = 0;
     short colix = 0;
-    if (propertyName.equals("colorScheme")) {
+    if ("colorScheme" == propertyName) {
       if (value == null)
         return;
       palette = viewer.getPalette((String)value);
-    } else if ("color".equals(propertyName)) {
+    } else if ("color" == propertyName) {
       palette = JmolConstants.PALETTE_COLOR;
       colix = g3d.getColix(value);
     } else {

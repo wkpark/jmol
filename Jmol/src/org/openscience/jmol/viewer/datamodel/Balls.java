@@ -40,14 +40,14 @@ public class Balls extends Shape {
   public void setProperty(String propertyName, Object value, BitSet bs) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
-    if ("color".equals(propertyName)) {
+    if ("color" == propertyName) {
       short colix = g3d.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
           atoms[i].setColixAtom(colix);
       return;
     }
-    if ("colorScheme".equals(propertyName)) {
+    if ("colorScheme" == propertyName) {
       if (value != null) {
         byte palette = viewer.getPalette((String)value);
         for (int i = atomCount; --i >= 0; ) {

@@ -1999,12 +1999,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_UCCAGE   = 11;
   public final static int SHAPE_FRANK    = 12;
   public final static int SHAPE_ECHO     = 13;
-  public final static int SHAPE_MAX      = 14;
+  public final static int SHAPE_HOVER    = 14;
+  public final static int SHAPE_MAX      = 15;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Labels", "Measures",
     "Backbone", "Trace", "Cartoon", "Strands", "Dots",
-    "Axes", "Bbcage", "Uccage", "Frank", "Echo"
+    "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover"
   };
 
   // all of these things are compile-time constants

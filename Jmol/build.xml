@@ -189,7 +189,6 @@
     <uptodate property="libjars.uptodate" targetfile="${appjars.dir}">
       <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
       <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
-      <srcfiles dir="${lib.dir}" includes="gnujaxp.jar"/>
       <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
       <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
       <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
@@ -213,7 +212,6 @@
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/gnujaxp.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
@@ -247,7 +245,7 @@
     <uptodate property="appletjars.uptodate"
 	      targetfile="${appletjars.dir}">
       <srcfiles dir="${lib.dir}"
-		includes="jmolappletcdk.jar,gnujaxp-saxonly.jar,vecmath1.2-1.14.jar"/>
+		includes="jmolappletcdk.jar,vecmath1.2-1.14.jar"/>
     </uptodate>
   </target>
   
@@ -365,7 +363,6 @@
     <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
 	<include name="*.jar" />
-	<exclude name="gnujaxp-saxonly.jar" />
 	<exclude name="junit.jar" />
 	<exclude name="saxon.jar" />
       </fileset>

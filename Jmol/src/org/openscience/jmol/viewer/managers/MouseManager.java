@@ -34,12 +34,17 @@ import java.util.BitSet;
 
 public abstract class MouseManager {
 
+  final static int HOVER_TIME = 1000;
+
   Component component;
   JmolViewer viewer;
 
+  Thread hoverWatcherThread;
+
   int previousDragX, previousDragY;
   public int xCurrent, yCurrent;
-
+  long timeCurrent;
+  
   int modifiersWhenPressed;
   boolean wasDragged;
 
@@ -55,6 +60,8 @@ public abstract class MouseManager {
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;
     this.viewer = viewer;
+    hoverWatcherThread = new Thread(new HoverWatcher());
+    hoverWatcherThread.start();
   }
 
   public static final String[] modeNames = {
@@ -128,20 +135,21 @@ public abstract class MouseManager {
   long previousPressedTime;
   int pressedCount;
 
-  void mousePressed(int x, int y, int modifiers, boolean isPopupTrigger,
-                    long pressedTime) {
+  void mousePressed(long time, int x, int y, int modifiers,
+                    boolean isPopupTrigger) {
     if (previousPressedX == x && previousPressedY == y &&
         previousPressedModifiers == modifiers && 
-        (pressedTime - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
+        (time - previousPressedTime) < MAX_DOUBLE_CLICK_MILLIS) {
       ++pressedCount;
     } else {
       pressedCount = 1;
     }
 
+    hoverOff();
     previousPressedX = previousDragX = xCurrent = x;
     previousPressedY = previousDragY = yCurrent = y;
     previousPressedModifiers = modifiers;
-    previousPressedTime = pressedTime;
+    previousPressedTime = timeCurrent = time;
 
     if (logMouseEvents)
       System.out.println("mousePressed("+x+","+y+","+modifiers+
@@ -169,20 +177,26 @@ public abstract class MouseManager {
     }
   }
 
-  void mouseEntered(int x, int y) {
+  void mouseEntered(long time, int x, int y) {
     if (logMouseEvents)
       System.out.println("mouseEntered("+x+","+y+")");
+    hoverOff();
+    timeCurrent = time;
     xCurrent = x; yCurrent = y;
   }
 
-  void mouseExited(int x, int y) {
+  void mouseExited(long time, int x, int y) {
     if (logMouseEvents)
       System.out.println("mouseExited("+x+","+y+")");
+    hoverOff();
+    timeCurrent = time;
     xCurrent = x; yCurrent = y;
     exitMeasurementMode();
   }
 
-  void mouseReleased(int x, int y, int modifiers) {
+  void mouseReleased(long time, int x, int y, int modifiers) {
+    hoverOff();
+    timeCurrent = time;
     xCurrent = x; yCurrent = y;
     if (logMouseEvents)
       System.out.println("mouseReleased("+x+","+y+","+modifiers+")");
@@ -193,24 +207,24 @@ public abstract class MouseManager {
   int previousClickModifiers, previousClickCount;
   long previousClickTime;
 
-  void mouseClicked(int x, int y, int modifiers, int clickCount,
-                    long clickTime) {
+  void mouseClicked(long time, int x, int y, int modifiers, int clickCount) {
     // clickCount is not reliable on some platforms
     // so we will just deal with it ourselves
     if (previousClickX == x && previousClickY == y &&
         previousClickModifiers == modifiers && clickCount == 1 &&
-        (clickTime - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
+        (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
       clickCount = previousClickCount + 1;
     }
+    hoverOff();
     xCurrent = previousClickX = x; yCurrent = previousClickY = y;
     previousClickModifiers = modifiers;
     previousClickCount = clickCount;
-    previousClickTime = clickTime;
+    timeCurrent = previousClickTime = time;
 
     if (logMouseEvents)
       System.out.println("mouseClicked("+x+","+y+","+modifiers+
                          ",clickCount="+clickCount+
-                         ",time=" + (clickTime - previousClickTime) +
+                         ",time=" + (time - previousClickTime) +
                          ")");
     if (! viewer.haveFrame())
       return;
@@ -259,11 +273,13 @@ public abstract class MouseManager {
     }
   }
 
-  void mouseDragged(int x, int y, int modifiers) {
+  void mouseDragged(long time, int x, int y, int modifiers) {
     if (logMouseEvents)
       System.out.println("mouseDragged("+x+","+y+","+modifiers + ")");
     int deltaX = x - previousDragX;
     int deltaY = y - previousDragY;
+    hoverOff();
+    timeCurrent = time;
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
     wasDragged = true;
     viewer.setInMotion(true);
@@ -380,12 +396,17 @@ mol is a collaboratively developed visualization an    return ROTATE;
 
 */
 
-  void mouseMoved(int x, int y, int modifiers) {
+  int mouseMovedX, mouseMovedY;
+  long mouseMovedTime;
+
+  void mouseMoved(long time, int x, int y, int modifiers) {
     /*
     if (logMouseEvents)
       System.out.println("mouseMoved("+x+","+y+","+modifiers"+)");
     */
-    xCurrent = x; yCurrent = y;
+    hoverOff();
+    timeCurrent = mouseMovedTime = time;
+    mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;
     if (measurementMode | hoverActive) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
       if (measurementMode)
@@ -396,7 +417,9 @@ mol is a collaboratively developed visualization an    return ROTATE;
   final static float wheelClickFractionUp = 1.25f;
   final static float wheelClickFractionDown = 1/wheelClickFractionUp;
 
-  void mouseWheel(int rotation, int modifiers) {
+  void mouseWheel(long time, int rotation, int modifiers) {
+    hoverOff();
+    timeCurrent = time;
     if (rotation == 0)
       return;
     if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {
@@ -483,5 +506,38 @@ mol is a collaboratively developed visualization an    return ROTATE;
       viewer.toggleMeasurement(measurementCountPlusIndices);
     }
     exitMeasurementMode();
+  }
+
+  void hoverOn(int atomIndex) {
+    viewer.hoverOn(atomIndex);
+  }
+
+  void hoverOff() {
+    viewer.hoverOff();
+  }
+
+  class HoverWatcher implements Runnable {
+    public void run() {
+      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+      while (true) {
+        try {
+          Thread.sleep(1000);
+          if (xCurrent == mouseMovedX &&
+              yCurrent == mouseMovedY &&
+              timeCurrent == mouseMovedTime) { // the last event was mouse move
+            long currentTime = System.currentTimeMillis();
+            int howLong = (int)(currentTime - mouseMovedTime);
+            if (howLong > HOVER_TIME) {
+              int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
+              if (atomIndex != -1)
+                hoverOn(atomIndex);
+            }
+          }
+        } catch (InterruptedException ie) {
+          System.out.println("InterruptedException!");
+          return;
+        }
+      }
+    }
   }
 }

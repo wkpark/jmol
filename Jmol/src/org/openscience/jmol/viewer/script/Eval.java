@@ -329,6 +329,9 @@ public class Eval implements Runnable {
       case Token.label:
         label();
         break;
+      case Token.hover:
+        hover();
+        break;
       case Token.load:
         load();
         break;
@@ -1300,6 +1303,7 @@ public class Eval implements Runnable {
     case Token.frank:
     case Token.echo:
     case Token.monitor:
+    case Token.hover:
       colorObject(tok, 2);
       break;
     case Token.identifier:
@@ -1360,47 +1364,11 @@ public class Eval implements Runnable {
       viewer.setColorAtomScript(palette, color);
       return;
     }
-    int shapeType = 0;
-    switch(tokObject) {
-    case Token.trace:
-      shapeType = JmolConstants.SHAPE_TRACE;
-      break;
-    case Token.backbone:
-      shapeType = JmolConstants.SHAPE_BACKBONE;
-      break;
-    case Token.ribbons:
-    case Token.strands:
-      shapeType = JmolConstants.SHAPE_STRANDS;
-      break;
-    case Token.cartoon:
-      shapeType = JmolConstants.SHAPE_CARTOON;
-      break;
-    case Token.dots:
-      shapeType = JmolConstants.SHAPE_DOTS;
-      break;
-    case Token.axes:
-      shapeType = JmolConstants.SHAPE_AXES;
-      break;
-    case Token.unitcell:
-      shapeType = JmolConstants.SHAPE_UCCAGE;
-      break;
-    case Token.boundbox:
-      shapeType = JmolConstants.SHAPE_BBCAGE;
-      break;
-    case Token.frank:
-      shapeType = JmolConstants.SHAPE_FRANK;
-      break;
-    case Token.echo:
-      shapeType = JmolConstants.SHAPE_ECHO;
-      break;
-    case Token.monitor:
+    int shapeType = getShapeType(tokObject);
+    if (tokObject == Token.monitor) {
       // monitor is broken (and others probably also)
       // unless the PALETTE is color when you say 'none'
       palette = JmolConstants.PALETTE_COLOR;
-      shapeType = JmolConstants.SHAPE_MEASURES;
-      break;
-    default:
-      unrecognizedColorObject();
     }
     viewer.setShapeColor(shapeType, palette, color);
   }
@@ -1443,6 +1411,15 @@ public class Eval implements Runnable {
     } else if (strLabel.equalsIgnoreCase("off"))
       strLabel = null;
     viewer.setLabel(strLabel);
+  }
+
+  void hover() throws ScriptException {
+    String strLabel = (String)statement[1].value;
+    if (strLabel.equalsIgnoreCase("on"))
+      strLabel = "%U";
+    else if (strLabel.equalsIgnoreCase("off"))
+      strLabel = null;
+    viewer.setShapeProperty(JmolConstants.SHAPE_HOVER, "label", strLabel);
   }
 
   void load() throws ScriptException {
@@ -2219,6 +2196,9 @@ public class Eval implements Runnable {
       break;
     case Token.label:
       shapeType = JmolConstants.SHAPE_LABELS;
+      break;
+    case Token.hover:
+      shapeType = JmolConstants.SHAPE_HOVER;
       break;
     default:
       unrecognizedColorObject();

@@ -161,6 +161,7 @@ public class Token {
   final static int frame        = command | 57;
   // jmol commands
   final static int font         = command | 58;
+  final static int hover        = command | 59 | specialstring;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -396,6 +397,7 @@ public class Token {
     "frame",             new Token(frame,      "frame"),
     // jmol commands
     "font",              new Token(font,       "font"),
+    "hover",             new Token(hover,      "hover"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

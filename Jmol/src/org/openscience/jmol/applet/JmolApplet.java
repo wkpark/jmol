@@ -98,9 +98,9 @@ public class JmolApplet extends java.applet.Applet
     myBean.setBondsShown(true);
     String bonds = getParameter("BONDS");
     if (bonds != null) {
-      if (bonds.equals("OFF")) {
+      if (bonds.equalsIgnoreCase("OFF")) {
         myBean.setBondsShown(false);
-      } else if (bonds.equals("NEVER")) {
+      } else if (bonds.equalsIgnoreCase("NEVER")) {
         myBean.setBondsShown(false);
         bondsEnabled = false;
         helpMessage = "Keys: S- change style; L- Show labels";
@@ -122,7 +122,7 @@ public class JmolApplet extends java.applet.Applet
       myBean.setCustomViews(customViews);
     }
     String wfr = getParameter("WIREFRAMEROTATION");
-    if ((wfr != null) && (wfr.equals("OFF"))) {
+    if ((wfr != null) && (wfr.equalsIgnoreCase("OFF"))) {
       myBean.setWireframeRotation(false);
     }
 
@@ -153,7 +153,7 @@ public class JmolApplet extends java.applet.Applet
         ChemFileReader cfr = null;
         ReaderProgress readerProgress = new ReaderProgress(this);
         if ((getParameter("FORMAT") != null)
-            && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")) {
+            && getParameter("FORMAT").equalsIgnoreCase("CMLSTRING")) {
           StringBuffer cmlString = new StringBuffer();
           cmlString.append(convertEscapeChars(model));
           cfr = new CMLReader(new java.io.StringReader(cmlString.toString()));
@@ -220,6 +220,11 @@ public class JmolApplet extends java.applet.Applet
     String pickmode = getParameter("PICKMODE");
     if (pickmode != null) {
       myBean.setPickingMode(pickmode);
+    }
+
+    String atomLabels = getParameter("ATOMLABELS");
+    if (atomLabels != null) {
+      myBean.setLabelRenderingStyle(atomLabels);
     }
   }
 
@@ -353,11 +358,11 @@ public class JmolApplet extends java.applet.Applet
 
           //Right replace this token
           String tokenString = token.toString();
-          if (tokenString.equals("&lt")) {
+          if (tokenString.equalsIgnoreCase("&lt")) {
             out.append(lessThan);
-          } else if (tokenString.equals("&gt")) {
+          } else if (tokenString.equalsIgnoreCase("&gt")) {
             out.append(moreThan);
-          } else if (tokenString.equals("&quot")) {
+          } else if (tokenString.equalsIgnoreCase("&quot")) {
             out.append(quote);
           }
         } else {
@@ -469,13 +474,13 @@ public class JmolApplet extends java.applet.Applet
   public void keyTyped(KeyEvent e) {
 
     String keyChar = new Character(e.getKeyChar()).toString();
-    if (keyChar.equals("s") || keyChar.equals("S")) {
+    if (keyChar.equalsIgnoreCase("s")) {
       mode++;
       mode %= drawModeNames.length;
       setStatusMessage("JmolApplet: Changing rendering style to "
           + drawModeNames[mode]);
       setRenderingStyle();
-    } else if (keyChar.equals("l") || keyChar.equals("L")) {
+    } else if (keyChar.equalsIgnoreCase("l")) {
       labelMode++;
       labelMode %= 4;
       if (labelMode == 0) {
@@ -495,7 +500,7 @@ public class JmolApplet extends java.applet.Applet
         myBean.setBondRenderingStyle("NONE");
       }
     } else if ((bondsEnabled)
-        && ((keyChar.equals("b") || keyChar.equals("B")))) {
+        && (keyChar.equalsIgnoreCase("b"))) {
       myBean.toggleBonds();
     }
   }

@@ -286,7 +286,7 @@ public class ColorManager {
       break;
     case JmolConstants.PALETTE_SHAPELY:
       index = atom.getGroupID();
-      if (index >= JmolConstants.GROUPID_AMINO_MAX)
+      if (index >= JmolConstants.GROUPID_SHAPELY_MAX)
         index = 0;
       argb = JmolConstants.argbsShapely[index];
       break;

@@ -1336,17 +1336,25 @@ final public class JmolConstants {
 
     0xFFFF00FF, // ASX
     0xFFFF00FF, // GLX
-    /*
-      FIXME - mth 2004 05 29
-      this is broken because it needs to be put in alignment with
-      the new groupID ordering
     0xFFFF00FF, // UNK
 
     0xFFA0A0FF, // A
-    0xFFFF8C4B, // C
+    0xFFA0A0FF, // A
+
     0xFFFF7070, // G
+    0xFFFF7070, // G
+
+    0xFF80FFFF, // I miguel made up this color
+    0xFF80FFFF, // I
+    
+    0xFFFF8C4B, // C
+    0xFFFF8C4B, // C
+
     0xFFA0FFA0, // T
-    */
+    0xFFA0FFA0, // T
+
+    0xFFFF8080, // U miguel made up this color
+    0xFFFF8080, // U
   };
 
   /**
@@ -1788,6 +1796,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static short GROUPID_AMINO_MAX = 23;
 
+  public final static short GROUPID_SHAPELY_MAX = 36;
+
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
     "", //  0 this is the null group
@@ -2052,7 +2062,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       System.out.println("argbsAmino wrong length");
       throw new NullPointerException();
     }
-    if (argbsShapely.length != GROUPID_AMINO_MAX) {
+    if (argbsShapely.length != GROUPID_SHAPELY_MAX) {
       System.out.println("argbsShapely wrong length");
       throw new NullPointerException();
     }

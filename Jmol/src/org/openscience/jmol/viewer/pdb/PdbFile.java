@@ -96,15 +96,26 @@ public class PdbFile {
       } else
         continue;
 
-      short startID = 0;
-      short endID = -1;
+      short startSequence = 0;
+      short endSequence = 0;
       try {
-        startID =
-          Short.parseShort(structureRecord.substring(startIndex,
+        int startSequenceNumber = 
+          Integer.parseInt(structureRecord.substring(startIndex,
                                                      startIndex + 4).trim());
-        endID =
-          Short.parseShort(structureRecord.substring(endIndex,
+        char startInsertionCode = structureRecord.charAt(startIndex + 4);
+        int endSequenceNumber =
+          Integer.parseInt(structureRecord.substring(endIndex,
                                                      endIndex + 4).trim());
+        char endInsertionCode = structureRecord.charAt(endIndex + 4);
+        /*
+        startSequence = PdbGroup.getSequence(startSequenceNumber,
+                                             startInsertionCode);
+        endSequence = PdbGroup.getSequence(endSequenceNumber,
+                                           endInsertionCode);
+        */
+        startSequence = (short)startSequenceNumber;
+        endSequence = (short)endSequenceNumber;
+        
       } catch (NumberFormatException e) {
         System.out.println("secondary structure record error");
         continue;
@@ -113,7 +124,8 @@ public class PdbFile {
       char chainID = structureRecord.charAt(chainIDIndex);
 
       for (int j = modelCount; --j >= 0; )
-        models[j].addSecondaryStructure(chainID, type, startID, endID);
+        models[j].addSecondaryStructure(chainID, type,
+                                        startSequence, endSequence);
     }
   }
 

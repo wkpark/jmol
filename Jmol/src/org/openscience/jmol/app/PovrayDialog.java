@@ -27,7 +27,6 @@ import org.openscience.jmol.viewer.*;
 
 import org.openscience.jmol.*;
 
-import org.openscience.jmol.io.PovraySaver;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;

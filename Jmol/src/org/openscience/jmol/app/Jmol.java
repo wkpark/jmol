@@ -433,13 +433,6 @@ public class Jmol extends JPanel {
     actions.addAll(Arrays.asList(defaultActions));
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));
-    //    actions.addAll(Arrays.asList(anim.getActions()));
-    //    actions.addAll(Arrays.asList(vib.getActions()));
-    //    actions.addAll(Arrays.asList(crystprop.getActions()));
-    //    actions.addAll(Arrays.asList(makecrystal.getActions()));
-    //    actions.addAll(Arrays.asList(transform.getActions()));
-    //    actions.addAll(Arrays.asList(pg.getActions()));
-
     return (Action[]) actions.toArray(new Action[0]);
   }
 

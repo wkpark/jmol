@@ -105,26 +105,23 @@ public class NucleotidePolymer extends Polymer {
     }
   }
 
-  void createHydrogenBond(Atom atom1, Atom atom2) {
-    System.out.println("createHydrogenBond:" + atom1 + "<->" + atom2);
-  }
-
   void lookForHbonds(NucleotidePolymer other) {
     for (int i = count; --i >= 0; ) {
       Group myNucleotide = groups[i];
       Atom myN1 = myNucleotide.getPurineN1();
       if (myN1 != null) {
+        System.out.println("lookForHbonds myN1=" + myN1.atomIndex + " " + myN1);
         Atom bestN3 = null;
-        float minDist = 5*5;
+        float minDist2 = 5*5;
         Group otherNucleotide = null;
         for (int j = other.count; --j >= 0; ) {
           otherNucleotide = other.groups[j];
           Atom otherN3 = otherNucleotide.getPyrimidineN3();
           if (otherN3 != null) {
             float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);
-            if (dist2 < minDist) {
+            if (dist2 < minDist2) {
               bestN3 = otherN3;
-              minDist = dist2;
+              minDist2 = dist2;
             }
           }
         }
@@ -151,4 +148,11 @@ public class NucleotidePolymer extends Polymer {
       }
     }
   }
+
+  void createHydrogenBond(Atom atom1, Atom atom2) {
+    System.out.println("createHydrogenBond:" + atom1 + "<->" + atom2);
+    Frame frame = chain.pdbmodel.pdbfile.frame;
+    frame.addHydrogenBond(atom1, atom2);
+  }
+
 }

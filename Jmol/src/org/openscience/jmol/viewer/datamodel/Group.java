@@ -362,6 +362,9 @@ final public class Group {
       nucleotideIndices[atomid -
                         JmolConstants.ATOMID_NUCLEOTIDE_MIN] =
         atomIndex;
+      if (atomid == JmolConstants.ATOMID_N1) {
+        System.out.println("register " + this + " N1=" + atomIndex);
+      }
     }
     ++nucleicCount;
   }
@@ -398,10 +401,12 @@ final public class Group {
   }
 
   Atom getPurineN1() {
-    return ((groupID >= 23 && groupID <= 28)
-            ? getAtomIndex(JmolConstants.ATOMID_N1 -
-                           JmolConstants.ATOMID_NUCLEOTIDE_MIN)
-            : null);
+    Atom n1 = ((groupID >= 23 && groupID <= 28)
+               ? getAtomIndex(JmolConstants.ATOMID_N1 -
+                              JmolConstants.ATOMID_NUCLEOTIDE_MIN)
+               : null);
+    System.out.println("getPurineN1(" + this + ") -> " + n1);
+    return n1;
   }
 
   Atom getPyrimidineN3() {

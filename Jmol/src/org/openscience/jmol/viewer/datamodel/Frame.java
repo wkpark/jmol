@@ -26,8 +26,7 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.protein.PdbMolecule;
-import org.openscience.jmol.viewer.protein.PdbAtom;
+import org.openscience.jmol.viewer.protein.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import java.util.Hashtable;
@@ -73,12 +72,12 @@ public class Frame {
     this(viewer, JmolConstants.MODEL_TYPE_OTHER, false);
   }
 
-  public void finalize() {
+  public void freeze() {
     htAtomMap = null;
     if (bondCount == 0 && viewer.getAutoBond())
       rebond();
     if (hasPdbRecords)
-      pdbMolecule.finalize(atomCount, atoms);
+      pdbMolecule.freeze();
   }
 
   public Atom addAtom(Object clientAtom) {
@@ -88,7 +87,7 @@ public class Frame {
       System.arraycopy(atoms, 0, newAtoms, 0, atoms.length);
       atoms = newAtoms;
     }
-    Atom atom = new Atom(this, atomCount, clientAtom);
+    Atom atom = new Atom(this, atomCount, pdbMolecule, clientAtom);
     atoms[atomCount++] = atom;
     if (htAtomMap != null)
       htAtomMap.put(clientAtom, atom);

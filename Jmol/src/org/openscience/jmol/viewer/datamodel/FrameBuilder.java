@@ -120,7 +120,7 @@ public class FrameBuilder {
         frame.pdbMolecule.setStructureRecords(structures);
     }
       
-    frame.finalize();
+    frame.freeze();
     return frame;
   }
 }

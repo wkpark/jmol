@@ -26,9 +26,8 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.protein.PdbAtom;
+import org.openscience.jmol.viewer.g3d.*;
+import org.openscience.jmol.viewer.protein.*;
 
 import java.awt.Rectangle;
 
@@ -42,7 +41,7 @@ public class Atom implements Bspt.Tuple {
   public Object clientAtom;
   public PdbAtom pdbAtom;
   Frame frame;
-  Point3f point3f;
+  public Point3f point3f;
   int x, y, z;
   byte styleAtom;
   short marAtom;
@@ -52,22 +51,20 @@ public class Atom implements Bspt.Tuple {
 
   String strLabel;
 
-  public Atom(Frame frame, int atomIndex, Object clientAtom) {
+  public Atom(Frame frame, int atomIndex,
+              PdbMolecule pdbMolecule, Object clientAtom) {
     JmolViewer viewer = frame.viewer;
     this.frame = frame;
     this.atomIndex = (short)atomIndex;
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
-    if (frame.hasPdbRecords()) {
-      String pdbRecord = viewer.getPdbAtomRecord(clientAtom);
-      if (pdbRecord != null)
-        pdbAtom = new PdbAtom(pdbRecord);
-    }
     this.colixAtom = viewer.getColixAtom(this);
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
     this.point3f = new Point3f(viewer.getAtomX(clientAtom),
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
+    if (pdbMolecule != null)
+      pdbAtom = pdbMolecule.getPdbAtom(atomIndex, viewer.getPdbAtomRecord(clientAtom));
     this.strLabel = viewer.getLabelAtom(this, atomIndex);
   }
 

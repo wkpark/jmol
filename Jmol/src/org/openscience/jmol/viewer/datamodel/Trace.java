@@ -41,10 +41,8 @@ public class Trace {
 
   boolean initialized;
   int chainCount;
-  Atom[][] chains;
   short[][] madsChains;
   short[][] colixesChains;
-  Point3f[][] midPointsChains;
 
   Trace(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
@@ -56,14 +54,12 @@ public class Trace {
   public void setMad(short mad, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
-    if (! initialized)
-      initialize();
-    for (int i = chainCount; --i >= 0; ) {
-      Atom[] alphas = chains[i];
+    initialize();
+    for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
       short[] mads = madsChains[i];
-      for (int j = alphas.length; --j >= 0; ) {
-        Atom alpha = alphas[j];
-        if (bsSelected.get(alpha.getAtomIndex()))
+      PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
+      for (int j = mainchain.length; --j >= 0; ) {
+        if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
           mads[j] = mad;
       }
     }
@@ -72,47 +68,30 @@ public class Trace {
   public void setColor(byte palette, short colix, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
-    if (! initialized)
-      initialize();
-    boolean usePalette = (colix == 0);
-    for (int i = chainCount; --i >= 0; ) {
-      Atom[] alphas = chains[i];
+    initialize();
+    for (int i = pdbMolecule.getChainCount(); --i >= 0; ) {
       short[] colixes = colixesChains[i];
-      for (int j = alphas.length; --j >= 0; ) {
-        Atom alpha = alphas[j];
-        if (bsSelected.get(alpha.getAtomIndex()))
-          colixes[j] = 
-            usePalette ? viewer.getColixAtomPalette(alpha, palette) : colix;
+      PdbResidue[] mainchain = pdbMolecule.getMainchain(i);
+      for (int j = mainchain.length; --j >= 0; ) {
+        int atomIndex = mainchain[j].getAlphaCarbonIndex();
+        if (bsSelected.get(atomIndex))
+          colixes[j] =
+            (colix == 0 ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette) : colix);
       }
     }
   }
-  
-  void initialize() {
-    chains = pdbMolecule.getAlphaChains();
-    chainCount = chains.length;
-    madsChains = new short[chainCount][];
-    colixesChains = new short[chainCount][];
-    midPointsChains = new Point3f[chainCount][];
-    for (int i = chainCount; --i >= 0; ) {
-      int chainLength = chains[i].length;
-      madsChains[i] = new short[chainLength];
-      colixesChains[i] = new short[chainLength];
-      calcMidPoints(chains[i],
-                    midPointsChains[i] = new Point3f[chainLength + 1]);
-    }
-    initialized = true;
-  }
 
-  void calcMidPoints(Atom[] alphas, Point3f[] midPoints) {
-    int chainLength = alphas.length;
-    Point3f atomPrevious = alphas[0].point3f;
-    midPoints[0] = atomPrevious;
-    for (int i = 1; i < chainLength; ++i) {
-      Point3f mid = midPoints[i] = new Point3f(atomPrevious);
-      atomPrevious = alphas[i].point3f;
-      mid.add(atomPrevious);
-      mid.scale(0.5f);
+  void initialize() {
+    if (! initialized) {
+      chainCount = pdbMolecule.getChainCount();
+      madsChains = new short[chainCount][];
+      colixesChains = new short[chainCount][];
+      for (int i = chainCount; --i >= 0; ) {
+        int chainLength = pdbMolecule.getMainchain(i).length;
+        madsChains[i] = new short[chainLength];
+        colixesChains[i] = new short[chainLength];
+      }
+      initialized = true;
     }
-    midPoints[chainLength] = atomPrevious;
   }
 }

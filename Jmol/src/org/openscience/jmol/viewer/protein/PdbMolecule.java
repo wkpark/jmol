@@ -26,6 +26,7 @@ package org.openscience.jmol.viewer.protein;
 import org.openscience.jmol.viewer.datamodel.Frame;
 import org.openscience.jmol.viewer.datamodel.Atom;
 
+import javax.vecmath.Point3f;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -41,42 +42,42 @@ public class PdbMolecule {
     this.structureRecords = structureRecords;
   }
 
-  public void finalize(int atomCount, Atom[] atoms) {
-    propogateAtomStructure(atomCount, atoms);
+  public void freeze() {
+    System.out.println("PdbMolecule.freeze() called");
+    if (chainCount != chains.length) {
+      PdbChain[] t = new PdbChain[chainCount];
+      System.arraycopy(chains, 0, t, 0, chainCount);
+      chains = t;
+    }
+    System.out.println("chainCount=" + chainCount);
+    for (int i = chainCount; --i >= 0; )
+      chains[i].freeze();
+    propogateSecondaryStructure();
   }
 
-  private void propogateAtomStructure(int atomCount, Atom[] atoms) {
+  private void propogateSecondaryStructure() {
     if (structureRecords == null)
       return;
-
-    Hashtable ht = new Hashtable();
-    for (int i = atomCount; --i >= 0; ) {
-      PdbAtom pdbatom = atoms[i].pdbAtom;
-      if (pdbatom == null)
-        continue;
-      int residueNum = pdbatom.getResidueNumber();
-      Integer boxed = new Integer(residueNum);
-      Vector v = (Vector)ht.get(boxed);
-      if (v == null)
-        ht.put(boxed, v = new Vector());
-      v.addElement(pdbatom);
-    }
-
     for (int i = structureRecords.length; --i >= 0; ) {
       String structure = structureRecords[i];
-      byte type = PdbAtom.STRUCTURE_NONE;
+      byte type = PdbResidue.STRUCTURE_NONE;
+      int chainIDIndex = 19;
       int startIndex = 0;
       int endIndex = 0;
       if (structure.startsWith("HELIX ")) {
-        type = PdbAtom.STRUCTURE_HELIX;
+        System.out.println("HELIX");
+        type = PdbResidue.STRUCTURE_HELIX;
         startIndex = 21;
         endIndex = 33;
       } else if (structure.startsWith("SHEET ")) {
-        type = PdbAtom.STRUCTURE_SHEET;
+        System.out.println("SHEET");
+        type = PdbResidue.STRUCTURE_SHEET;
+        chainIDIndex = 21;
         startIndex = 22;
         endIndex = 33;
       } else if (structure.startsWith("TURN  ")) {
-        type = PdbAtom.STRUCTURE_TURN;
+        System.out.println("TURN");
+        type = PdbResidue.STRUCTURE_TURN;
         startIndex = 20;
         endIndex = 31;
       } else
@@ -88,95 +89,117 @@ public class PdbMolecule {
         start = Integer.parseInt(structure.substring(startIndex, startIndex + 4).trim());
         end = Integer.parseInt(structure.substring(endIndex, endIndex + 4).trim());
       } catch (NumberFormatException e) {
-        System.out.println("number format exception");
+        System.out.println("secondary structure record error");
         continue;
       }
-        
-      for (int j = start; j <= end; ++j) {
-        Vector v = (Vector)ht.get(new Integer(j));
-        if (v == null)
-          continue;
-        for (int k = v.size(); --k >= 0; ) {
-          PdbAtom pdbatom = (PdbAtom)v.elementAt(k);
-          pdbatom.setStructureType(type);
-        }
+
+      System.out.println("start=" + start + " end=" + end);
+
+      PdbChain chain = getPdbChain(structure.charAt(chainIDIndex));
+      if (chain == null) {
+        System.out.println("secondary structure record error");
+        continue;
       }
+      chain.propogateSecondaryStructure(type, start, end);
     }
   }
-
-  char chainCurrent;
-  int alphaCountCurrent;
-  Atom[] alphasCurrent;
 
   int chainCount = 0;
-  char[] chainIDs;
-  Atom[][] chains;
+  PdbChain[] chains = new PdbChain[8];
 
-  public Atom[][] getAlphaChains() {
-    if (chains == null)
-      buildAlphaChains();
-    return chains;
+  public int getChainCount() {
+    return chainCount;
   }
 
-  void buildAlphaChains() {
-    initializeAlphaChains();
-    int atomCount = frame.getAtomCount();
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atom = frame.getAtomAt(i);
-      PdbAtom pdbAtom = atom.pdbAtom;
-      if (pdbAtom == null || pdbAtom.getAtomID() != 1) // FIXME!! needs a symbol
-        continue;
-      addAlpha(atom);
+  public PdbResidue[] getMainchain(int chainIndex) {
+    return chains[chainIndex].getMainchain();
+  }
+
+  /*
+  Point3f[][] midpointsChains;
+
+  public Point3f[][] getMidpointsChains() {
+    calcMidpoints();
+    return midpointsChains;
+  }
+
+  public Point3f[] getMidpointsChain(int chainIndex) {
+    calcMidpoints();
+    return midpointsChains[chainIndex];
+  }
+  */
+
+  /*
+  void calcMidpoints() {
+    //    buildAlphaChains();
+    midpointsChains = new Point3f[chainIDCount][];
+    for (int i = chainIDCount; --i >= 0; ) {
+      Atom[] alphaChain = alphaChains[i];
+      int chainLength = alphaChain.length;
+      calcMidpoints(alphaChain, midpointsChains[i] = new Point3f[chainLength + 1]);
     }
-    finalizeAlphaChains();
   }
 
-  void initializeAlphaChains() {
-    chainCount = 0;
-    chainIDs = new char[8];
-    chains = new Atom[8][];
-
-    alphaCountCurrent = 0;
-    alphasCurrent = new Atom[64];
-    chainCurrent = '\u0000';
-  }
-
-  void addAlpha(Atom atom) {
-    char chain = atom.pdbAtom.getChainID();
-    if (chain != chainCurrent) {
-      if (alphaCountCurrent > 0)
-        addCurrentChain();
-      alphaCountCurrent = 0;
-      chainCurrent = chain;
+  void calcMidpoints(Atom[] alphas, Point3f[] midpoints) {
+    int chainLength = alphas.length;
+    Point3f atomPrevious = alphas[0].point3f;
+    midpoints[0] = atomPrevious;
+    for (int i = 1; i < chainLength; ++i) {
+      Point3f mid = midpoints[i] = new Point3f(atomPrevious);
+      atomPrevious = alphas[i].point3f;
+      mid.add(atomPrevious);
+      mid.scale(0.5f);
     }
-    if (alphaCountCurrent == alphasCurrent.length) {
-      Atom[] t = new Atom[alphaCountCurrent * 2];
-      System.arraycopy(alphasCurrent, 0, t, 0, alphaCountCurrent);
-      alphasCurrent = t;
+    midpoints[chainLength] = atomPrevious;
+  }
+  */
+  
+  PdbChain getPdbChain(char chainID) {
+    for (int i = chainCount; --i >= 0; ) {
+      PdbChain chain = chains[i];
+      if (chain.chainID == chainID)
+        return chain;
     }
-    alphasCurrent[alphaCountCurrent++] = atom;
+    return null;
   }
 
-  void addCurrentChain() {
+  PdbChain getOrAllocPdbChain(char chainID) {
+    PdbChain chain = getPdbChain(chainID);
+    if (chain != null)
+      return chain;
     if (chainCount == chains.length) {
-      Atom[][] t = new Atom[chainCount * 2][];
+      PdbChain[] t = new PdbChain[chainCount * 2];
       System.arraycopy(chains, 0, t, 0, chainCount);
       chains = t;
     }
-    Atom[] newChain = new Atom[alphaCountCurrent];
-    System.arraycopy(alphasCurrent, 0, newChain, 0, alphaCountCurrent);
-    chains[chainCount] = newChain;
-    chainIDs[chainCount++] = chainCurrent;
+    return chains[chainCount++] = new PdbChain(chainID);
   }
 
-  void finalizeAlphaChains() {
-    if (alphaCountCurrent != 0)
-      addCurrentChain();
-    if (chainCount != chains.length) {
-      Atom[][] t = new Atom[chainCount][];
-      System.arraycopy(chains, 0, t, 0, chainCount);
-      chains = t;
+
+  char chainIDCurrent = '\uFFFF';
+  int resNumberCurrent = -1;
+  PdbResidue pdbResidueCurrent;
+
+  PdbResidue allocResidue(char chainID, int resNumber, String residue3) {
+    PdbChain chain = getOrAllocPdbChain(chainID);
+    PdbResidue residue = new PdbResidue(chainID, resNumber, residue3);
+    chain.addResidue(residue);
+    return residue;
+  }
+
+  public PdbAtom getPdbAtom(int atomIndex, String pdbRecord) {
+    try {
+      char chainID = pdbRecord.charAt(21);
+      int resNumber = Integer.parseInt(pdbRecord.substring(22, 26).trim());
+      if (chainID != chainIDCurrent || resNumber != resNumberCurrent) {
+        pdbResidueCurrent = allocResidue(chainID, resNumber, pdbRecord.substring(17, 20));
+        chainIDCurrent = chainID;
+        resNumberCurrent = resNumber;
+      }
+      return pdbResidueCurrent.newPdbAtom(atomIndex, pdbRecord);
+    } catch (NumberFormatException e) {
+      System.out.println("bad residue number in: " + pdbRecord);
     }
-    alphasCurrent = null;
+    return null;
   }
 }

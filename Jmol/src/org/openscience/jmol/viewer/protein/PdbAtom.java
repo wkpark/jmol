@@ -30,23 +30,17 @@ import java.util.Hashtable;
 
 public class PdbAtom {
 
-  public final static byte STRUCTURE_NONE = 0;
-  public final static byte STRUCTURE_HELIX = 1;
-  public final static byte STRUCTURE_SHEET = 2;
-  public final static byte STRUCTURE_TURN = 3;
-
   // FIXME mth -- a very quick/dirty/ugly implementation
   // just to get some complex queries running
+  public PdbResidue pdbResidue;
   public String recordPdb;
-  short resid;
   short atomid;
   int atomNumber;
-  public byte structureType = STRUCTURE_NONE;
 
-  public PdbAtom(String recordPdb) {
+  public PdbAtom(PdbResidue pdbResidue, String recordPdb) {
+    this.pdbResidue = pdbResidue;
     this.recordPdb = recordPdb;
 
-    resid = lookupResid(recordPdb.substring(17, 20));
     atomid = lookupAtomid(recordPdb.substring(12, 16));
     atomNumber = -999999;
     try {
@@ -60,7 +54,7 @@ public class PdbAtom {
   }
 
   public boolean isResidue(String residue) {
-    return recordPdb.regionMatches(true, 17, residue, 0, 3);
+    return pdbResidue.isResidue(residue);
   }
 
   public String getName() {
@@ -68,20 +62,15 @@ public class PdbAtom {
   }
 
   public String getResidue() {
-    return residueNames3[resid];
+    return pdbResidue.getResidue3();
   }
 
   public int getResidueNumber() {
-    int num = -1;
-    try {
-      num = Integer.parseInt(recordPdb.substring(22, 26).trim());
-    } catch (NumberFormatException e)
-      {}
-    return num;
+    return pdbResidue.getResidueNumber();
   }
 
   public short getResID() {
-    return resid;
+    return pdbResidue.resid;
   }
 
   public short getAtomID() {
@@ -97,19 +86,7 @@ public class PdbAtom {
   }
 
   public boolean isResidueNameMatch(String strWildcard) {
-    if (strWildcard.length() != 3) {
-      System.err.println("residue wildcard length != 3");
-      return false;
-    }
-    String strResidue = getResidue();
-    for (int i = 0; i < 3; ++i) {
-      char charWild = strWildcard.charAt(i);
-      if (charWild == '?')
-        continue;
-      if (charWild != strResidue.charAt(i))
-        return false;
-    }
-    return true;
+    return pdbResidue.isResidueNameMatch(strWildcard);
   }
 
   public boolean isAtomNameMatch(String strPattern) {
@@ -131,13 +108,7 @@ public class PdbAtom {
   }
 
   public int getResno() {
-    int chain = 0;
-    try {
-      chain = Integer.parseInt(recordPdb.substring(22, 26).trim());
-    } catch (NumberFormatException e) {
-      System.out.println("Resno is not an integer:" + recordPdb);
-    }
-    return chain;
+    return pdbResidue.getResno();
   }
 
   public int getTemperature() {
@@ -156,12 +127,16 @@ public class PdbAtom {
     return recordPdb.charAt(21);
   }
 
-  public void setStructureType(byte structureType) {
-    this.structureType = structureType;
-  }
-
   public int getAtomNumber() {
     return atomNumber;
+  }
+
+  public void setStructureType(byte type) {
+    pdbResidue.structureType = type;
+  }
+
+  public int getProteinStructureType() {
+    return pdbResidue.structureType;
   }
 
   /*
@@ -270,34 +245,4 @@ public class PdbAtom {
       return boxedAtomid.shortValue();
     return addAtomName(strAtom);
   }
-
-  private static Hashtable htResidue = new Hashtable();
-  static String[] residueNames3 = new String[128];
-  static short residMax = 0;
-
-  static {
-    for (int i = 0; i < JmolConstants.predefinedResidueNames3.length; ++i)
-      addResidueName(JmolConstants.predefinedResidueNames3[i]);
-  }
-
-  synchronized static short addResidueName(String name) {
-    if (residMax == residueNames3.length) {
-      String[] t;
-      t = new String[residMax * 2];
-      System.arraycopy(residueNames3, 0, t, 0, residMax);
-      residueNames3 = t;
-    }
-    short resid = residMax++;
-    residueNames3[resid] = name;
-    htResidue.put(name, new Short(resid));
-    return resid;
-  }
-
-  short lookupResid(String strRes3) {
-    Short boxedResid = (Short)htResidue.get(strRes3);
-    if (boxedResid != null)
-      return boxedResid.shortValue();
-    return addResidueName(strRes3);
-  }
-
 }

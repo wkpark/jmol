@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="jars/Acme.jar"/>
 	<classpathentry kind="lib" path="jars/commons-cli-1.0.jar"/>
 	<classpathentry kind="lib" path="jars/itext-0.94.jar"/>
+	<classpathentry kind="src" path="examples"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -22,15 +22,24 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+
 import org.jmol.adapter.cdk.CdkJmolAdapter;
-import org.jmol.api.*;
-
-import org.openscience.cdk.*;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.vecmath.*;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolViewer;
+import org.openscience.cdk.Atom;
+import org.openscience.cdk.Crystal;
 
 /**
  * Another example of integrating the Jmol viewer into a CDK application.
@@ -79,33 +88,34 @@ public class CDKIntegration3 {
     }
     
     final static String strScript = "set unitcell on; select *; spacefill on;";
-}
 
-class ApplicationCloser extends WindowAdapter {
-    public void windowClosing(WindowEvent e) {
-        System.exit(0);
+    static class ApplicationCloser extends WindowAdapter {
+        public void windowClosing(WindowEvent e) {
+            System.exit(0);
+        }
     }
-}
 
-class JmolPanel extends JPanel {
-    JmolViewer viewer;
-    JmolAdapter adapter;
-    JmolPanel() {
-        // use CDK IO
-        adapter = new CdkJmolAdapter(null);
-        viewer = JmolViewer.allocateViewer(this, adapter);
-    }
+    static class JmolPanel extends JPanel {
+        JmolViewer viewer;
+        JmolAdapter adapter;
+        
+        JmolPanel() {
+            // use CDK IO
+            adapter = new CdkJmolAdapter(null);
+            viewer = JmolViewer.allocateViewer(this, adapter);
+        }
     
-    public JmolViewer getViewer() {
-        return viewer;
-    }
+        public JmolViewer getViewer() {
+            return viewer;
+        }
     
-    final Dimension currentSize = new Dimension();
-    final Rectangle rectClip = new Rectangle();
+        final Dimension currentSize = new Dimension();
+        final Rectangle rectClip = new Rectangle();
     
-    public void paint(Graphics g) {
-        viewer.setScreenDimension(getSize(currentSize));
-        g.getClipBounds(rectClip);
-        viewer.renderScreenImage(g, currentSize, rectClip);
+        public void paint(Graphics g) {
+            viewer.setScreenDimension(getSize(currentSize));
+            g.getClipBounds(rectClip);
+            viewer.renderScreenImage(g, currentSize, rectClip);
+        }
     }
 }

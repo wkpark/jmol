@@ -22,12 +22,20 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-import org.jmol.api.*;
-import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolSimpleViewer;
 
 /**
  * A example of integrating the Jmol viewer into a java application.
@@ -70,32 +78,32 @@ public class Integration {
     "H -0.76923955 -0.59357141 0.0\n";
 
   final static String strScript = "delay; move 360 0 0 0 0 0 0 0 4;";
-}
 
-class ApplicationCloser extends WindowAdapter {
-  public void windowClosing(WindowEvent e) {
-    System.exit(0);
-  }
-}
-
-class JmolPanel extends JPanel {
-  JmolSimpleViewer viewer;
-  JmolAdapter adapter;
-  JmolPanel() {
-    adapter = new SmarterJmolAdapter(null);
-    viewer = JmolSimpleViewer.allocateSimpleViewer(this, adapter);
+  static class ApplicationCloser extends WindowAdapter {
+    public void windowClosing(WindowEvent e) {
+      System.exit(0);
+    }
   }
 
-  public JmolSimpleViewer getViewer() {
-    return viewer;
-  }
+  static class JmolPanel extends JPanel {
+    JmolSimpleViewer viewer;
+    JmolAdapter adapter;
+    JmolPanel() {
+      adapter = new SmarterJmolAdapter(null);
+      viewer = JmolSimpleViewer.allocateSimpleViewer(this, adapter);
+    }
 
-  final Dimension currentSize = new Dimension();
-  final Rectangle rectClip = new Rectangle();
+    public JmolSimpleViewer getViewer() {
+      return viewer;
+    }
 
-  public void paint(Graphics g) {
-    getSize(currentSize);
-    g.getClipBounds(rectClip);
-    viewer.renderScreenImage(g, currentSize, rectClip);
+    final Dimension currentSize = new Dimension();
+    final Rectangle rectClip = new Rectangle();
+
+    public void paint(Graphics g) {
+      getSize(currentSize);
+      g.getClipBounds(rectClip);
+      viewer.renderScreenImage(g, currentSize, rectClip);
+    }
   }
 }

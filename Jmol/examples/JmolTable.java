@@ -23,30 +23,28 @@
  *  02111-1307  USA.
  */
 
-import org.jmol.api.JmolAdapter;
-import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.jmol.viewer.JmolViewer;
-import org.jmol.viewer.JmolStatusListener;
-
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.AbstractCellEditor;
-import java.awt.Dimension;
-
-import javax.swing.event.*;
-import java.awt.event.*;
-import java.util.*;
-
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
+import org.jmol.api.JmolAdapter;
+import org.jmol.api.JmolViewer;
+import org.jmol.adapter.smarter.SmarterJmolAdapter;
 
 /**
  * A example of integrating the Jmol viewer into a JTable.
@@ -62,8 +60,7 @@ import java.awt.Component;
 
 public class JmolTable {
 
-    private static int structureCellHeight = 300;
-    private static int STRUCTURE_COL = 0;
+    static int STRUCTURE_COL = 0;
 
     public static void main(String[] args) {
 
@@ -139,7 +136,6 @@ public class JmolTable {
         }
         public void columnMarginChanged(ChangeEvent e) {
             int colwidth = this.table.getColumnModel().getColumn(STRUCTURE_COL).getWidth();
-            int rowcount = this.table.getRowCount();
             for (int i = 0; i < this.table.getRowCount(); i++) {
                 this.table.setRowHeight(i, colwidth);
             }
@@ -232,7 +228,7 @@ class JmolPanel extends JPanel {
     JmolAdapter adapter;
     JmolPanel() {
         adapter = new SmarterJmolAdapter(null);
-        viewer = new JmolViewer(this, adapter);
+        viewer = JmolViewer.allocateViewer(this, adapter);
     }
 
     public JmolViewer getViewer() {

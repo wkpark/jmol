@@ -26,8 +26,35 @@ import java.util.Enumeration;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 
+/**
+ * Stores and manipulations information and properties of
+ * atoms.
+ */
 public class Atom {
   
+  /**
+   * Creates an atom at the given position with the given atom type.
+   *
+   * @param at the atom type.
+   * @param position the Cartesian coordinate of the atom.
+   */
+  public Atom(BaseAtomType at, Point3f position) {
+    this.atomType = new AtomType(at);
+    this.position = position;
+  }
+
+  /**
+   * Creates an atom at the given position with the given atom type and atom number.
+   *
+   * @param at the atom type.
+   * @param position the Cartesian coordinate of the atom.
+   * @param atomNumber the number assigned to the atom.
+   */
+  public Atom(BaseAtomType at, Point3f position, int atomNumber) {
+    this(at, position);
+    this.atomNumber = atomNumber;
+  }
+
   /**
    * Creates an atom with the given type.
    *
@@ -65,6 +92,15 @@ public class Atom {
     if (!hasProperty(property.getDescriptor())) {
       properties.addElement(property);
     }
+  }
+
+  /**
+   * Sets the list of properties for this atom.
+   *
+   * @param propList a list of properties
+   */
+  public void setProperties(Vector propList) {
+    properties = propList;
   }
 
   /**
@@ -291,7 +327,6 @@ public class Atom {
    * A list of properties
    */
   private Vector properties = new Vector();
-
   
   static class NoBondsEnumeration implements Enumeration {
   
@@ -304,4 +339,5 @@ public class Atom {
     }
   }
 }
+
 

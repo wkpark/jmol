@@ -17,23 +17,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.miniJmol;
-
-import java.util.EventListener;
+package org.openscience.jmol;
 
 /**
- * Allows monitoring of progress of file reader activities.
- *
- * @author Bradley A. Smith (bradley@baysmith.com)
- */
-interface ReaderListener extends EventListener {
-  
-  /**
-   * Indicates that a new frame has been read.
-   *
-   * @param event information about the event.
-   */
-  public void frameRead(ReaderEvent event);
-  
+ *  Allows a function to produce a status message to an
+ *  unknown component.
+*/
+public interface StatusDisplay {
+  void setStatusMessage(String statusMessage);
 }
-

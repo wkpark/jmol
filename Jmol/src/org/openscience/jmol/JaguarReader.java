@@ -35,9 +35,23 @@ class JaguarReader implements ChemFileReader {
     this.input = new BufferedReader(input);
   }
 
-  public ChemFile read() throws Exception {
+  /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = null;
 
     // Find energy
@@ -68,7 +82,7 @@ class JaguarReader implements ChemFileReader {
     return file;
   }
 
-  void readCoordinates(ChemFrame mol) throws Exception {
+  void readCoordinates(ChemFrame mol) throws IOException {
 
     String line;
     while (input.ready()) {
@@ -85,22 +99,22 @@ class JaguarReader implements ChemFileReader {
       if (token.nextToken() == StreamTokenizer.TT_WORD) {
         atomicNumber = atomLabelToAtomicNumber(token.sval);
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         x = token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         y = token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         z = token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
@@ -120,7 +134,7 @@ class JaguarReader implements ChemFileReader {
   }
 
 
-  void readFrequencies(ChemFrame mol) throws Exception {
+  void readFrequencies(ChemFrame mol) throws IOException {
 
     String line;
     line = input.readLine();
@@ -150,7 +164,7 @@ class JaguarReader implements ChemFileReader {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[0] = token.nval;
           } else {
-            throw new Exception("Error reading frequencies");
+            throw new IOException("Error reading frequencies");
           }
         }
 
@@ -163,7 +177,7 @@ class JaguarReader implements ChemFileReader {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[1] = token.nval;
           } else {
-            throw new Exception("Error reading frequencies");
+            throw new IOException("Error reading frequencies");
           }
         }
 
@@ -176,7 +190,7 @@ class JaguarReader implements ChemFileReader {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[2] = token.nval;
           } else {
-            throw new Exception("Error reading frequencies");
+            throw new IOException("Error reading frequencies");
           }
           currentFreqs[j].addAtomVector((double[]) currentVectors[j]);
         }
@@ -190,6 +204,48 @@ class JaguarReader implements ChemFileReader {
           break;
         }
       }
+    }
+  }
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
     }
   }
 }

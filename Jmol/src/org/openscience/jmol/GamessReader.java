@@ -60,14 +60,28 @@ public class GamessReader implements ChemFileReader {
   }
 
   /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  /**
    * Read the GAMESS output.
    *
    * @return a ChemFile with the coordinates, energies, and vibrations.
    * @exception IOException if an I/O error occurs
    */
-  public ChemFile read() throws IOException, Exception {
+  public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
 
@@ -130,7 +144,7 @@ public class GamessReader implements ChemFileReader {
    * @exception IOException  if an I/O error occurs
    */
   private void readCoordinates(ChemFrame frame, boolean unitsAreBohr)
-          throws IOException, Exception {
+          throws IOException {
 
     double unitsScaling = 1.0;
     if (unitsAreBohr) {
@@ -187,7 +201,7 @@ public class GamessReader implements ChemFileReader {
    * @exception IOException  if an I/O error occurs
    */
   private void readFrequencies(ChemFrame frame)
-          throws IOException, Exception {
+          throws IOException {
 
     String line;
     line = input.readLine();
@@ -288,4 +302,46 @@ public class GamessReader implements ChemFileReader {
    * The source for GAMESS data.
    */
   private BufferedReader input;
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
+    }
+  }
 }

@@ -52,10 +52,50 @@ public class ChemFrame {
   private String info;                    // The title or info string for this frame.
   private Atom[] atoms;               // array of atom types
   private Vector properties = new Vector();
-  private int[] ZsortMap;
   private int numberAtoms = 0;
 
-  private Vector dlist, alist, dhlist;    // distance, angle, dihedral lists
+  /**
+   * Returns whether the atom at the given index is picked.
+   */
+  boolean isAtomPicked(int index) {
+    return pickedAtoms[index];
+  }
+  
+  /**
+   * Returns the list of distance measurements.
+   */
+  Vector getDistanceMeasurements() {
+    return dlist;
+  }
+  
+  /**
+   * List of distance measurements.
+   */
+  private Vector dlist;
+  
+  /**
+   * Returns the list of angle measurements.
+   */
+  Vector getAngleMeasurements() {
+    return alist;
+  }
+  
+  /**
+   * List of angle measurements.
+   */
+  private Vector alist;
+  
+  /**
+   * Returns the list of dihedral measurements.
+   */
+  Vector getDihedralMeasurements() {
+    return dhlist;
+  }
+  
+  /**
+   * List of dihedral measurements.
+   */
+  private Vector dhlist;
 
   private Point3f min;
   private Point3f max;
@@ -282,6 +322,13 @@ public class ChemFrame {
   }
 
   /**
+   * Returns the atoms in this frame.
+   */
+  public Atom[] getAtoms() {
+    return atoms;
+  }
+
+  /**
    *  Returns the number of atoms in this frame.
    *
    *  @return the number of atoms in this frame.
@@ -350,183 +397,6 @@ public class ChemFrame {
       Point3d pt = new Point3d(atoms[i].getPosition());
       mat.transform(pt);
       atoms[i].transform(mat);
-    }
-  }
-
-  /**
-   * Paint this model to a graphics context.  It uses the matrix
-   * associated with this model to map from model space to screen
-   * space.
-   *
-   * @param g the Graphics context to paint to
-   */
-  public synchronized void paint(Graphics g, DisplaySettings settings) {
-
-    if ((atoms == null) || (numberAtoms <= 0)) {
-      return;
-    }
-    boolean drawHydrogen = settings.getShowHydrogens();
-    transform();
-
-
-    int zs[] = ZsortMap;
-    if (zs == null) {
-      ZsortMap = zs = new int[numberAtoms];
-      for (int i = numberAtoms; --i >= 0; ) {
-        zs[i] = i;
-      }
-    }
-
-    //Added by T.GREY for quick-draw on move support
-    if (!settings.getFastRendering()) {
-
-      /*
-       * I use a bubble sort since from one iteration to the next, the sort
-       * order is pretty stable, so I just use what I had last time as a
-       * "guess" of the sorted order.  With luck, this reduces O(N log N)
-       * to O(N)
-       */
-
-      for (int i = numberAtoms - 1; --i >= 0; ) {
-        boolean flipped = false;
-        for (int j = 0; j <= i; j++) {
-          int a = zs[j];
-          int b = zs[j + 1];
-          if (atoms[a].getScreenPosition().z > atoms[b].getScreenPosition().z) {
-            zs[j + 1] = a;
-            zs[j] = b;
-            flipped = true;
-          }
-        }
-        if (!flipped) {
-          break;
-        }
-      }
-    }
-    if (numberAtoms <= 0) {
-      return;
-    }
-
-    for (int i = 0; i < numberAtoms; ++i) {
-      int j = zs[i];
-      Atom atom = atoms[j];
-      if (drawHydrogen
-            || (atom.getType().getAtomicNumber() != 1)) {
-        if (settings.getShowBonds()) {
-          Enumeration bondIter = atom.getBondedAtoms();
-          while (bondIter.hasMoreElements()) {
-            Atom otherAtom = (Atom) bondIter.nextElement();
-            if (drawHydrogen
-                  || (otherAtom.getType().getAtomicNumber() != 1)) {
-              if (otherAtom.getScreenPosition().z
-                      < atom.getScreenPosition().z) {
-                bondRenderer.paint(g, atom, otherAtom, settings);
-              }
-            }
-          }
-        }
-  
-        if (settings.getShowAtoms()) {
-          atomRenderer.paint(g, atom, pickedAtoms[j],
-                  settings);
-        }
-  
-        if (settings.getShowBonds()) {
-          Enumeration bondIter = atom.getBondedAtoms();
-          while (bondIter.hasMoreElements()) {
-            Atom otherAtom = (Atom) bondIter.nextElement();
-            if (drawHydrogen
-                  || (otherAtom.getType().getAtomicNumber() != 1)) {
-              if (otherAtom.getScreenPosition().z
-                      >= atom.getScreenPosition().z) {
-                bondRenderer.paint(g, atom, otherAtom, settings);
-              }
-            }
-          }
-        }
-  
-        if (settings.getShowVectors()) {
-          if (atom.getVector() != null) {
-            double vectorLength = atom.getPosition().distance(atom.getVector());
-            double atomRadius =
-                settings.getCircleRadius((int) atom.getScreenPosition().z,
-                  atom.getType().getVdwRadius());
-            double vectorScreenLength =
-                settings.getScreenSize((int) (vectorLength * atom.getScreenVector().z));
-            
-            ArrowLine al = new ArrowLine(g, atom.getScreenPosition().x,
-              atom.getScreenPosition().y,
-                atom.getScreenVector().x,
-                  atoms[j].getScreenVector().y,
-                    false, true, atomRadius + vectorScreenLength, vectorScreenLength / 30.0);
-          }
-        }
-      }
-
-    }
-
-    if (dlist != null) {
-      for (Enumeration e = dlist.elements(); e.hasMoreElements(); ) {
-        Distance d = (Distance) e.nextElement();
-        int[] al = d.getAtomList();
-        int l = al[0];
-        int j = al[1];
-        try {
-          d.paint(g, settings, (int) atoms[l].getScreenPosition().x,
-            (int) atoms[l].getScreenPosition().y,
-              (int) atoms[l].getScreenPosition().z,
-                (int) atoms[j].getScreenPosition().x,
-                  (int) atoms[j].getScreenPosition().y,
-                    (int) atoms[j].getScreenPosition().z);
-        } catch (Exception ex) {
-        }
-      }
-    }
-    if (alist != null) {
-      for (Enumeration e = alist.elements(); e.hasMoreElements(); ) {
-        Angle an = (Angle) e.nextElement();
-        int[] al = an.getAtomList();
-        int l = al[0];
-        int j = al[1];
-        int k = al[2];
-        try {
-          an.paint(g, settings, (int) atoms[l].getScreenPosition().x,
-            (int) atoms[l].getScreenPosition().y,
-              (int) atoms[l].getScreenPosition().z,
-                (int) atoms[j].getScreenPosition().x,
-                  (int) atoms[j].getScreenPosition().y,
-                    (int) atoms[j].getScreenPosition().z,
-                      (int) atoms[k].getScreenPosition().x,
-                        (int) atoms[k].getScreenPosition().y,
-                          (int) atoms[k].getScreenPosition().z);
-        } catch (Exception ex) {
-        }
-      }
-    }
-    if (dhlist != null) {
-      for (Enumeration e = dhlist.elements(); e.hasMoreElements(); ) {
-        Dihedral dh = (Dihedral) e.nextElement();
-        int[] dhl = dh.getAtomList();
-        int l = dhl[0];
-        int j = dhl[1];
-        int k = dhl[2];
-        int m = dhl[3];
-        try {
-          dh.paint(g, settings, (int) atoms[l].getScreenPosition().x,
-            (int) atoms[l].getScreenPosition().y,
-              (int) atoms[l].getScreenPosition().z,
-                (int) atoms[j].getScreenPosition().x,
-                  (int) atoms[j].getScreenPosition().y,
-                    (int) atoms[j].getScreenPosition().z,
-                      (int) atoms[k].getScreenPosition().x,
-                        (int) atoms[k].getScreenPosition().y,
-                          (int) atoms[k].getScreenPosition().z,
-                            (int) atoms[m].getScreenPosition().x,
-                              (int) atoms[m].getScreenPosition().y,
-                                (int) atoms[m].getScreenPosition().z);
-        } catch (Exception ex) {
-        }
-      }
     }
   }
 
@@ -722,7 +592,22 @@ public class ChemFrame {
   }
 
   /**
-   * Find the bounding box of this model
+   * Find the bounds of this model.
+   */
+  public void findBounds() {
+    findBB();
+  }
+  
+  public Point3f getMinimumBounds() {
+    return min;
+  }
+
+  public Point3f getMaximumBounds() {
+    return max;
+  }
+
+  /**
+   * Find the bounds of this model.
    */
   public void findBB() {
 
@@ -809,16 +694,21 @@ public class ChemFrame {
 
   }
 
-  /**
-   * Renderer for atoms.
-   */
-  private AtomRenderer atomRenderer = new AtomRenderer();
-
-  /**
-   * Renderer for bonds.
-   */
-  private BondRenderer bondRenderer = new BondRenderer();
-
   private boolean bondsEnabled;
+
+  public void setMat(Matrix4d newmat) {
+    mat = newmat;
+  }
+
+  public void setPickedAtoms(boolean[] newPickedAtoms) {
+    pickedAtoms = newPickedAtoms;
+  }
+
+  /**
+   * Returns whether each atom in this frame is picked.
+   */
+  public boolean[] getPickedAtoms() {
+    return pickedAtoms;
+  }
 }
 

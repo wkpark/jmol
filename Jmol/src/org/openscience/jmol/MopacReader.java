@@ -44,14 +44,28 @@ class MopacReader implements ChemFileReader {
   }
 
   /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  /**
    * Read the MOPAC output.
    *
    * @return a ChemFile with the coordinates, energies, and vibrations.
    * @exception IOException if an I/O error occurs
    */
-  public ChemFile read() throws Exception {
+  public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = null;
     String line;
     String frameInfo = null;
@@ -94,7 +108,7 @@ class MopacReader implements ChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  void readCoordinates(ChemFrame mol) throws IOException, Exception {
+  void readCoordinates(ChemFrame mol) throws IOException {
 
     String line;
     while (input.ready()) {
@@ -114,22 +128,22 @@ class MopacReader implements ChemFileReader {
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         atomicNumber = (int) token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         x = token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         y = token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
         z = token.nval;
       } else {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
       mol.addAtom(atomicNumber, (float) x, (float) y, (float) z);
     }
@@ -141,7 +155,7 @@ class MopacReader implements ChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  void readFrequencies(ChemFrame mol) throws IOException, Exception {
+  void readFrequencies(ChemFrame mol) throws IOException {
 
     String line;
     line = readLine();
@@ -173,7 +187,7 @@ class MopacReader implements ChemFileReader {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[0] = token.nval;
           } else {
-            throw new Exception("Error reading frequencies");
+            throw new IOException("Error reading frequencies");
           }
         }
 
@@ -187,7 +201,7 @@ class MopacReader implements ChemFileReader {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[1] = token.nval;
           } else {
-            throw new Exception("Error reading frequencies");
+            throw new IOException("Error reading frequencies");
           }
         }
 
@@ -201,7 +215,7 @@ class MopacReader implements ChemFileReader {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[2] = token.nval;
           } else {
-            throw new Exception("Error reading frequencies");
+            throw new IOException("Error reading frequencies");
           }
           currentFreqs[j].addAtomVector((double[]) currentVectors[j]);
         }
@@ -226,6 +240,48 @@ class MopacReader implements ChemFileReader {
       line = input.readLine();
     }
     return line;
+  }
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
+    }
   }
 }
 

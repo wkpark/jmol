@@ -207,6 +207,6 @@ public class XYZReader implements ChemFileReader {
       listener.frameRead(readerEvent);
     }
   }
- 
+  
   private BufferedReader input;
 }

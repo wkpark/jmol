@@ -47,9 +47,23 @@ class DaltonReader implements ChemFileReader {
     this.input = new BufferedReader(input);
   }
 
-  public ChemFile read() throws Exception {
+  /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = null;
 
     // Find energy
@@ -79,7 +93,7 @@ class DaltonReader implements ChemFileReader {
   }
 
 
-  void readAtomTypes() throws Exception {
+  void readAtomTypes() throws IOException {
 
     atomTypeMap.clear();
 
@@ -94,7 +108,7 @@ class DaltonReader implements ChemFileReader {
       }
       StringTokenizer tokenizer = new StringTokenizer(line);
       if (tokenizer.countTokens() < 3) {
-        throw new Exception("Error reading atom types");
+        throw new IOException("Error reading atom types");
       }
       String label = tokenizer.nextToken();
       tokenizer.nextToken();
@@ -109,7 +123,7 @@ class DaltonReader implements ChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  void readCoordinates(ChemFrame mol) throws IOException, Exception {
+  void readCoordinates(ChemFrame mol) throws IOException {
 
     String line;
     line = input.readLine();
@@ -125,7 +139,7 @@ class DaltonReader implements ChemFileReader {
       double z;
       StringTokenizer tokenizer = new StringTokenizer(line);
       if (tokenizer.countTokens() < 3) {
-        throw new Exception("Error reading coordinates");
+        throw new IOException("Error reading coordinates");
       }
 
       String label = tokenizer.nextToken();
@@ -150,7 +164,7 @@ class DaltonReader implements ChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  void readFrequencies(ChemFrame mol) throws Exception {
+  void readFrequencies(ChemFrame mol) throws IOException {
 
     String line;
     line = input.readLine();
@@ -220,6 +234,48 @@ class DaltonReader implements ChemFileReader {
 
       // Skip blank line between frequency sets
       line = input.readLine();
+    }
+  }
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
     }
   }
 }

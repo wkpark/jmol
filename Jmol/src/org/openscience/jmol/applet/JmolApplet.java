@@ -17,14 +17,14 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.miniJmol;
+package org.openscience.jmol.applet;
 
+import org.openscience.jmol.*;
 import java.awt.event.MouseListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.KeyEvent;
 import java.io.InputStream;
-import org.openscience.jmol.FortranFormat;
 
 /**
  *  @author Bradley A. Smith (bradley@baysmith.com)
@@ -126,9 +126,17 @@ public class JmolApplet extends java.applet.Applet
     try {
       if ((atomtypes == null) || (atomtypes.length() == 0)) {
         atis = getClass().getResourceAsStream(atomTypesFileName);
+        if (atis == null) {
+          System.err.println("Unable to open the atom types resource \""
+              + atomTypesFileName + "\"");
+        }
       } else {
         java.net.URL atURL = new java.net.URL(getDocumentBase(), atomtypes);
         atis = atURL.openStream();
+        if (atis == null) {
+          System.err.println("Unable to open the atom types URL \""
+              + atomTypesFileName + "\"");
+        }
       }
       myBean.setAtomPropertiesFromStream(atis);
     } catch (java.io.IOException ex) {

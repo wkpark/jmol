@@ -17,10 +17,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.miniJmol;
+package org.openscience.jmol.applet;
 
-import org.openscience.jmol.DisplaySettings;
-import org.openscience.jmol.FortranFormat;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -32,6 +30,7 @@ import java.util.NoSuchElementException;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
+import org.openscience.jmol.*;
 
 public class DisplayPanel extends Canvas
         implements java.awt.event.ComponentListener,

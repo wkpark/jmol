@@ -126,6 +126,7 @@
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
         <exclude name="**/Test*.class" />
+        <exclude name="**/jmol/applet/*" />
         <include name="**/jmol/**" />
         <include name="com/**" />
         <include name="freeware/**" />
@@ -135,16 +136,9 @@
     <jar jarfile="${lib.dir}/jmol-applet.jar" >
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
-        <include name="**/miniJmol/**" />
-        <include name="**/jmol/FortranFormat.class" />
-        <include name="**/jmol/Matrix3D.class" />
-        <include name="**/jmol/DisplaySettings.class" />
-        <include name="**/jmol/PhysicalProperty.class" />
-        <include name="**/jmol/BaseAtomType.class" />
-        <include name="**/jmol/AtomTypeSet.class" />
-        <include name="**/jmol/DTDResolver.class" />
-        <include name="**/jmol/Data/cml.dtd.txt" />
-      </fileset>
+        <include name="**/jmol/applet/**" />
+        <include name="**/jmol/**" />
+        </fileset>
     </jar>
   </target>
 

@@ -17,7 +17,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.miniJmol;
+package org.openscience.jmol;
 
 import java.util.EventListener;
 
@@ -26,7 +26,7 @@ import java.util.EventListener;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-class ReaderProgress implements ReaderListener {
+public class ReaderProgress implements ReaderListener {
   
   /**
    * Used for reporting the number of frames read.
@@ -79,4 +79,5 @@ class ReaderProgress implements ReaderListener {
   }
   
 }
+
 

@@ -17,12 +17,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.miniJmol;
+package org.openscience.jmol.applet;
 
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.event.WindowEvent;
+import org.openscience.jmol.*;
 
 public class JmolBeanTest {
 

@@ -17,10 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.miniJmol;
+package org.openscience.jmol.applet;
 
-import org.openscience.jmol.DisplaySettings;
-import org.openscience.jmol.AtomTypeSet;
+import org.openscience.jmol.*;
 import java.awt.BorderLayout;
 import java.io.InputStream;
 import java.net.URL;

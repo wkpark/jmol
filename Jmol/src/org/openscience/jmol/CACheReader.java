@@ -21,6 +21,7 @@ package org.openscience.jmol;
 
 import java.io.*;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * A reader for CAChe molstruct files
@@ -55,14 +56,28 @@ public class CACheReader implements ChemFileReader {
   }
 
   /**
+   * Whether bonds are enabled in the files and frames read.
+   */
+  private boolean bondsEnabled = true;
+  
+  /**
+   * Sets whether bonds are enabled in the files and frames which are read.
+   *
+   * @param bondsEnabled if true, enables bonds.
+   */
+  public void setBondsEnabled(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
+  
+  /**
    * Read in CAChe molstruct data
    *
    * @return a ChemFile with the coordinates
    * @exception IOException if an I/O error occurs
    */
-  public ChemFile read() throws IOException, Exception {
+  public ChemFile read() throws IOException {
 
-    ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile(bondsEnabled);
     ChemFrame frame = null;
     String line = input.readLine();
     System.out.println(line);
@@ -117,7 +132,7 @@ public class CACheReader implements ChemFileReader {
    *
    */
   private void readCoordinates(ChemFrame frame)
-          throws IOException, Exception {
+          throws IOException {
 
     String line;
     while (input.ready()) {
@@ -169,6 +184,48 @@ public class CACheReader implements ChemFileReader {
       // have to add atomic number because ChemFrame does the atomtyping 
       // maybe that is where to check on fixing Zr atoms...
       frame.addAtom(anum, (float) x, (float) y, (float) z);
+    }
+  }
+
+  /**
+   * Holder of reader event listeners.
+   */
+  private Vector listenerList = new Vector();
+  
+  /**
+   * An event to be sent to listeners. Lazily initialized.
+   */
+  private ReaderEvent readerEvent = null;
+  
+  /**
+   * Adds a reader listener.
+   *
+   * @param l the reader listener to add.
+   */
+  public void addReaderListener(ReaderListener l) {
+    listenerList.addElement(l);
+  }
+  
+  /**
+   * Removes a reader listener.
+   *
+   * @param l the reader listener to remove.
+   */
+  public void removeReaderListener(ReaderListener l) {
+    listenerList.remove(l);
+  }
+  
+  /**
+   * Sends a frame read event to the reader listeners.
+   */
+  private void fireFrameRead() {
+    for (int i = 0; i < listenerList.size(); ++i) {
+      ReaderListener listener = (ReaderListener) listenerList.elementAt(i);
+      // Lazily create the event:
+      if (readerEvent == null) {
+        readerEvent = new ReaderEvent(this);
+      }
+      listener.frameRead(readerEvent);
     }
   }
 }

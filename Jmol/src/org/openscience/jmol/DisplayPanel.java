@@ -77,7 +77,7 @@ public class DisplayPanel extends JPanel
   private Measure m = null;
   private MeasurementList mlist = null;
   protected DisplaySettings settings;
-
+  
   public DisplayPanel(StatusBar status, DisplaySettings settings) {
     this.status = status;
     this.settings = settings;
@@ -487,7 +487,7 @@ public class DisplayPanel extends JPanel
       g.fillRect(0, 0, getSize().width, getSize().height);
       g.setColor(fg);
 
-      md.paint(g, settings);
+      frameRenderer.paint(g, md, settings);
       if (rubberband) {
         g.setColor(fg);
         g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
@@ -497,6 +497,8 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
+  
   public boolean isPainting() {
     return !painted;
   }

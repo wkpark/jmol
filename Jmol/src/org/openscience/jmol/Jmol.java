@@ -19,82 +19,84 @@
  */
 package org.openscience.jmol;
 
-import java.io.File;
-
-
+import Acme.JPM.Encoders.GifEncoder;
+import Acme.JPM.Encoders.ImageEncoder;
+import Acme.JPM.Encoders.PpmEncoder;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfTemplate;
+import com.lowagie.text.pdf.PdfWriter;
 import com.obrador.JpegEncoder;
-import java.awt.Container;
-import java.awt.Image;
-import java.awt.PrintJob;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Window;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.Graphics2D;
 import java.awt.Graphics;
-import java.awt.Toolkit;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Dialog;
-import java.awt.Frame;
+import java.awt.PrintJob;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
+import java.awt.geom.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.OutputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.PrintStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.StringReader;
-import java.io.BufferedReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Reader;
-import java.util.Vector;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
-import java.util.MissingResourceException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EventObject;
+import java.util.Hashtable;
 import java.util.Locale;
-import javax.swing.JToolBar;
-import javax.swing.JFileChooser;
+import java.util.MissingResourceException;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.JTextArea;
-import javax.swing.JViewport;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
-import javax.swing.JScrollPane;
-import javax.swing.JMenuBar;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JToggleButton;
-import javax.swing.JPanel;
-import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
-import javax.swing.UIManager;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.SwingConstants;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import Acme.JPM.Encoders.GifEncoder;
-import Acme.JPM.Encoders.PpmEncoder;
-import Acme.JPM.Encoders.ImageEncoder;
-
-import java.awt.Graphics2D;
-import java.awt.*;
-import java.awt.geom.*;
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.JViewport;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 
 /**
  * The main class in Jmol.
@@ -115,7 +117,7 @@ class Jmol extends JPanel {
   StatusBar status;
   private AtomPropsMenu apm;
   static AtomTypeTable atomTypeTable;
-  private Preferences prefs;
+  private PreferencesDialog preferencesDialog;
   private Animate anim;
   private Vibrate vib;
   private CrystalPropertiesDialog crystprop;
@@ -218,7 +220,7 @@ class Jmol extends JPanel {
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
         .translate("Initializing Preferences..."));
-    prefs = new Preferences(frame, display);
+    preferencesDialog = new PreferencesDialog(frame, display);
     splash.showStatus(resourceHandler.translate("Initializing Animate..."));
     anim = new Animate(model, frame);
     model.addPropertyChangeListener(anim);
@@ -587,52 +589,18 @@ class Jmol extends JPanel {
    */
   public Action[] getActions() {
 
-    Action[] displayActions = display.getActions();
-    Action[] prefActions = prefs.getActions();
-    Action[] animActions = anim.getActions();
-    Action[] measActions = meas.getActions();
-    Action[] mlistActions = mlist.getActions();
-    Action[] vibActions = vib.getActions();
-    Action[] crystpropActions = crystprop.getActions();
-    Action[] pgActions = pg.getActions();
+    ArrayList actions = new ArrayList();
+    actions.addAll(Arrays.asList(defaultActions));
+    actions.addAll(Arrays.asList(display.getActions()));
+    actions.addAll(Arrays.asList(preferencesDialog.getActions()));
+    actions.addAll(Arrays.asList(anim.getActions()));
+    actions.addAll(Arrays.asList(meas.getActions()));
+    actions.addAll(Arrays.asList(mlist.getActions()));
+    actions.addAll(Arrays.asList(vib.getActions()));
+    actions.addAll(Arrays.asList(crystprop.getActions()));
+    actions.addAll(Arrays.asList(pg.getActions()));
 
-    int nactions = defaultActions.length + displayActions.length
-                     + prefActions.length + animActions.length
-                     + vibActions.length + measActions.length
-                     + mlistActions.length + pgActions.length
-                     + crystpropActions.length;
-
-    Action[] theActions = new Action[nactions];
-
-    // YARG.  This is way ugly.  Clean this up!
-
-    System.arraycopy(defaultActions, 0, theActions, 0, defaultActions.length);
-    System.arraycopy(displayActions, 0, theActions, defaultActions.length,
-        displayActions.length);
-    System.arraycopy(prefActions, 0, theActions,
-        defaultActions.length + displayActions.length, prefActions.length);
-    System.arraycopy(animActions, 0, theActions,
-        defaultActions.length + displayActions.length + prefActions.length,
-          animActions.length);
-    System.arraycopy(measActions, 0, theActions,
-        defaultActions.length + displayActions.length + prefActions.length
-          + animActions.length, measActions.length);
-    System.arraycopy(mlistActions, 0, theActions,
-        defaultActions.length + displayActions.length + prefActions.length
-          + animActions.length + measActions.length, mlistActions.length);
-    System.arraycopy(vibActions, 0, theActions,
-        defaultActions.length + displayActions.length + prefActions.length
-          + animActions.length + measActions.length + mlistActions.length,
-            vibActions.length);
-    System.arraycopy(pgActions, 0, theActions,
-        defaultActions.length + displayActions.length + prefActions.length
-          + animActions.length + measActions.length + mlistActions.length
-            + vibActions.length, pgActions.length);
-    System.arraycopy(crystpropActions, 0, theActions,
-        defaultActions.length + displayActions.length + prefActions.length
-          + animActions.length + measActions.length + mlistActions.length
-            + vibActions.length + pgActions.length, crystpropActions.length);
-    return theActions;
+    return (Action[]) actions.toArray(new Action[0]);
   }
 
   /**

@@ -27,6 +27,7 @@ package org.openscience.jmol;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.io.InputStream;
+import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.StringReader;
 import java.io.Reader;
+import java.util.zip.GZIPInputStream;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.ReaderFactory;
 
@@ -104,16 +106,31 @@ public class FileManager {
     return openReader(new StringReader(strModel));
   }
 
+  byte[] abMagic = new byte[4];
   private String openInputStream(InputStream istream) {
-    return openReader(new InputStreamReader(istream));
+    BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
+    InputStream istreamToRead = bistream;
+    bistream.mark(5);
+    int countRead = 0;
+    try {
+      countRead = bistream.read(abMagic, 0, 4);
+      bistream.reset();
+      if (countRead == 4) {
+        if (abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B) {
+          istreamToRead = new GZIPInputStream(bistream);
+        }
+      }
+      return openReader(new InputStreamReader(istreamToRead));
+    } catch (IOException ioe) {
+      return "Error reading stream header: " + ioe;
+    }
   }
 
   private String openReader(Reader rdr) {
-    BufferedReader bufreader = new BufferedReader(rdr);
     try {
       ChemFileReader reader = null;
       try {
-        reader = ReaderFactory.createReader(control, bufreader);
+        reader = ReaderFactory.createReader(control, rdr);
         /*
           FIXME -- need to notify the awt component of file change
         firePropertyChange(openFileProperty, oldFile, currentFile);

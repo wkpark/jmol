@@ -98,6 +98,7 @@ public final class Bspt {
     }
   }
 
+  /*
   public String toString() {
     return eleRoot.toString();
   }
@@ -105,6 +106,7 @@ public final class Bspt {
   public void dump() {
     eleRoot.dump(0);
   }
+  */
 
   /*
   public Enumeration enum() {
@@ -235,7 +237,7 @@ public final class Bspt {
     float radius2;
     float foundDistance2; // the dist squared of a found Element;
 
-    // when set, only the hemisphere sphere .GT. or .EQ. the point
+    // when set, only the hemisphere sphere .GE. the point
     // (on the first dim) is returned
     boolean tHemisphere;
 
@@ -357,7 +359,7 @@ public final class Bspt {
 
   interface Element {
     boolean addTuple(Tuple tuple);
-    void dump(int level);
+    //    void dump(int level);
     boolean isLeafWithSpace();
   }
 
@@ -404,6 +406,7 @@ public final class Bspt {
       return true;
     }
 
+    /*
     public String toString() {
       return eleLE.toString() + dim + ":" + splitValue + "\n" + eleGE.toString();
     }
@@ -416,6 +419,7 @@ public final class Bspt {
       System.out.println(">" + splitValue);
       eleGE.dump(level + 1);
     }
+    */
 
     public boolean isLeafWithSpace() {
       return false;
@@ -458,9 +462,11 @@ public final class Bspt {
               tuples[leafCountMax - 1].getDimensionValue(dim)) / 2;
     }
 
+    /*
     public String toString() {
       return "leaf:" + count + "\n";
     }
+    */
 
     public boolean addTuple(Tuple tuple) {
       if (count == leafCountMax)
@@ -469,6 +475,7 @@ public final class Bspt {
       return true;
     }
 
+    /*
     public void dump(int level) {
       for (int i = 0; i < count; ++i) {
         Tuple t = tuples[i];
@@ -479,6 +486,7 @@ public final class Bspt {
         System.out.println("" + t.getDimensionValue(dimMax - 1));
       }
     }
+    */
 
     public boolean isLeafWithSpace() {
       return count < leafCountMax;
@@ -486,6 +494,7 @@ public final class Bspt {
   }
 }
 
+/*
 class Point implements Bspt.Tuple {
   float x;
   float y;
@@ -509,3 +518,4 @@ class Point implements Bspt.Tuple {
     return "<" + x + "," + y + "," + z + ">";
   }
 }
+*/

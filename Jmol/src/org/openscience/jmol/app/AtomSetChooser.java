@@ -88,8 +88,8 @@ ActionListener, ChangeListener, Runnable {
    * Sequence if atom set indexes in current tree selection for a branch,
    * or siblings for a leaf.
    */
-  int indexes[];
-  int currentIndex=-1;
+  private int indexes[];
+  private int currentIndex=-1;
   
   /**
    * Maximum value for the fps slider.
@@ -344,7 +344,7 @@ ActionListener, ChangeListener, Runnable {
    * @param section String of the section that the controller belongs to.
    * @return The JPanel
    */
-  public JPanel createVCRController(String section) {
+  private JPanel createVCRController(String section) {
     JPanel controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
     controlPanel.setBorder(new TitledBorder(
@@ -377,11 +377,15 @@ ActionListener, ChangeListener, Runnable {
       return;
     }
     try {
+      int index = 0; // default for branch selection
       if (node.isLeaf()) {
-        setAtomSet((AtomSet) node);
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+        setIndexes(parent); // the indexes are based what is in the parent
+        index = parent.getIndex(node); // find out which index I had there
       } else { // selected branch
-        setAtomSetCollection(node, true);
+        setIndexes(node);
       }
+      showAtomSetIndex(index, true);
     }
     catch (Exception exception) {
  //     exception.printStackTrace();
@@ -389,41 +393,24 @@ ActionListener, ChangeListener, Runnable {
   }
   
   /**
-   * Show atom set node and update dependent views/controllers.
-   * @param node The atom set node
-   */
-  public void setAtomSet(AtomSet node) {
-    setIndexes((DefaultMutableTreeNode) node.getParent());
-    setAtomSet(node.getAtomSetIndex(), true);
-  }
-  
-  /**
-   * Sets the atomSetCollection to the leafs of the node.
-   * @param node The node whose leafs needs to be the collection
-   * @param bSetAtomSet If true sets the atom set to the first on in the collection
-   */
-  public void setAtomSetCollection(DefaultMutableTreeNode node, 
-      boolean bSetAtomSet) {
-    setIndexes(node);
-    if (bSetAtomSet) setAtomSet(indexes[0], true);
-    propertiesTextArea.setText("Collection has " +
-        node.getLeafCount() + " AtomSets");
-  }
-  
-  /**
-   * Show atom set and update dependent views/controllers
-   * @param atomSetIndex Index of atom set to be shown
+   * Show an atom set from the indexes array
+   * @param index The index in the index array
    * @param bSetSelectSlider If true, updates the selectSlider
    */
-  public void setAtomSet(int atomSetIndex, boolean bSetSelectSlider) {
-    //    viewer.setDisplayModelIndex(atomSetIndex);  // does not update
-    viewer.evalStringQuiet("frame "+viewer.getModelNumber(atomSetIndex));
-    infoLabel.setText(viewer.getModelName(atomSetIndex));
-    showProperties(viewer.getModelProperties(atomSetIndex));
-    currentIndex = getAtomSetCollectionIndex(atomSetIndex);
+  protected void showAtomSetIndex(int index, boolean bSetSelectSlider) {
     if (bSetSelectSlider) {
-      if (currentIndex>=0)
-        selectSlider.setValue(currentIndex);
+      selectSlider.setValue(index); // slider calls back to really set the frame
+      return;
+    }
+    try {
+      currentIndex = index;
+      int atomSetIndex = indexes[index];
+      //    viewer.setDisplayModelIndex(atomSetIndex);  // does not update
+      viewer.evalStringQuiet("frame " + viewer.getModelNumber(atomSetIndex));
+      infoLabel.setText(viewer.getModelName(atomSetIndex));
+      showProperties(viewer.getModelProperties(atomSetIndex));
+    } catch (Exception e) {
+      // if this fails, ignore it.
     }
   }
   
@@ -431,7 +418,7 @@ ActionListener, ChangeListener, Runnable {
    * Sets the indexes to the atomSetIndex values of each leaf of the node.
    * @param node The node whose leaf's atomSetIndex values should be used
    */
-  public void setIndexes(DefaultMutableTreeNode node) {
+  protected void setIndexes(DefaultMutableTreeNode node) {
     int atomSetCount = node.getLeafCount();
     indexes = new int[atomSetCount];
     Enumeration e = node.depthFirstEnumeration();
@@ -446,17 +433,6 @@ ActionListener, ChangeListener, Runnable {
     selectSlider.setMaximum(atomSetCount-1);
   }
   
-  public int getAtomSetCollectionIndex(int atomSetIndex) {
-    int count = indexes.length;
-    int idx = 0;
-    while (idx<count && indexes[idx]!=atomSetIndex) {
-      idx++;
-    }
-    if (idx >= count)
-      idx = -1;
-    return idx;
-  }
-  
   public void actionPerformed (ActionEvent e) {
     String cmd = e.getActionCommand();
     String parts[]=cmd.split("\\.");
@@ -467,9 +443,9 @@ ActionListener, ChangeListener, Runnable {
         if (section.equals("collection")) {
           if (REWIND.equals(cmd)) {
             animThread = null;
-            setAtomSet(indexes[0], true);
+            showAtomSetIndex(0, true);
           } else if (PREVIOUS.equals(cmd)) {
-            setAtomSet(indexes[currentIndex-1], true);
+            showAtomSetIndex(currentIndex-1, true);
           } else if (PLAY.equals(cmd)) {
             if (animThread == null) {
               animThread = new Thread(this,"Animation");
@@ -478,10 +454,10 @@ ActionListener, ChangeListener, Runnable {
           } else if (PAUSE.equals(cmd)) {
              animThread = null;
           } else if (NEXT.equals(cmd)) {
-            setAtomSet(indexes[currentIndex+1], true);
+            showAtomSetIndex(currentIndex+1, true);
           } else if (FF.equals(cmd)) {
             animThread = null;
-            setAtomSet(indexes[indexes.length-1], true);
+            showAtomSetIndex(indexes.length-1, true);
           }
         } else if (section.equals("vector")) {
           if (REWIND.equals(cmd)) {
@@ -521,7 +497,7 @@ ActionListener, ChangeListener, Runnable {
     }
     
     if (foundFrequency) {
-      setAtomSet(indexes[index],true);      
+      showAtomSetIndex(index, true);      
     }
   }
   
@@ -529,7 +505,7 @@ ActionListener, ChangeListener, Runnable {
     Object src = e.getSource();
     int value = ((JSlider)src).getValue();
     if (src == selectSlider) {
-      setAtomSet(indexes[value], false);
+      showAtomSetIndex(value, false);
     } else if (src == fpsSlider) {
       if (value == 0)
         fpsSlider.setValue(1);  // make sure I never set it to 0...
@@ -554,7 +530,7 @@ ActionListener, ChangeListener, Runnable {
    * AtomSetChooser window
    * @param properties Properties to be shown.
    */
-  public void showProperties(Properties properties) {
+  protected void showProperties(Properties properties) {
     boolean needLF = false;
     propertiesTextArea.setText("");
     if (properties != null) {
@@ -697,7 +673,7 @@ ActionListener, ChangeListener, Runnable {
             animThread = null; // stop the animation thread
           }
         }
-        setAtomSet(indexes[currentIndex],true);
+        showAtomSetIndex(currentIndex, true); // update the view
         try {
           // sleep for the amount of time required for the fps setting
           // NB the viewer's fps setting is never 0, so I could

@@ -126,6 +126,8 @@
 				<include name="**/jmol/PhysicalProperty.class" />
 				<include name="**/jmol/BaseAtomType.class" />
 				<include name="**/jmol/AtomTypeSet.class" />
+				<include name="**/jmol/DTDResolver.class" />
+				<include name="**/jmol/Data/cml.dtd.txt" />
 			</fileset>
 		</jar>
 	</target>

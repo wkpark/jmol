@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.ParserFactory;
 import org.openscience.cml.CMLHandler;
 import javax.swing.event.EventListenerList;
+import org.openscience.jmol.DTDResolver;
 
 /**
  * CML files contain a single ChemFrame object.

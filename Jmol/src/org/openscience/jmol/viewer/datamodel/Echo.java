@@ -54,7 +54,7 @@ public class Echo extends Shape {
   void initShape() {
   }
 
-  public void setProperty(String propertyName, Object value,
+  void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     /*
     System.out.println("Echo.setProperty(" + propertyName + "," + value + ")");

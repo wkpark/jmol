@@ -43,11 +43,11 @@ public class AminoPolymer extends AlphaCarbonPolymer {
   }
 
   // to get something other than the alpha carbon atom
-  public Point3f getResiduePoint(int groupIndex, int mainchainIndex) {
+  Point3f getResiduePoint(int groupIndex, int mainchainIndex) {
     return groups[groupIndex].getMainchainAtom(mainchainIndex).point3f;
   }
 
-  public void calcHydrogenBonds() {
+  void calcHydrogenBonds() {
     calcProteinMainchainHydrogenBonds();
   }
 

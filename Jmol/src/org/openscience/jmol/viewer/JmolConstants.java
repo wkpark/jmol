@@ -1238,12 +1238,12 @@ final public class JmolConstants {
   /**
    * Default table of PdbStructure colors
    */
-  public final static byte SECONDARY_STRUCTURE_NONE = 0;
-  public final static byte SECONDARY_STRUCTURE_TURN = 1;
-  public final static byte SECONDARY_STRUCTURE_SHEET = 2;
-  public final static byte SECONDARY_STRUCTURE_HELIX = 3;
-  public final static byte SECONDARY_STRUCTURE_DNA = 4;
-  public final static byte SECONDARY_STRUCTURE_RNA = 5;
+  public final static byte PROTEIN_STRUCTURE_NONE = 0;
+  public final static byte PROTEIN_STRUCTURE_TURN = 1;
+  public final static byte PROTEIN_STRUCTURE_SHEET = 2;
+  public final static byte PROTEIN_STRUCTURE_HELIX = 3;
+  public final static byte PROTEIN_STRUCTURE_DNA = 4;
+  public final static byte PROTEIN_STRUCTURE_RNA = 5;
 
   /****************************************************************
    * In DRuMS, RasMol, and Chime, quoting from
@@ -1264,12 +1264,12 @@ final public class JmolConstants {
    *This correction was made above on Dec 5, 1998.
    ****************************************************************/
   public final static int[] argbsPdbStructure = {
-    0xFFFFFFFF, // SECONDARY_STRUCTURE_NONE
-    0xFF6080FF, // SECONDARY_STRUCTURE_TURN
-    0xFFFFC800, // SECONDARY_STRUCTURE_SHEET
-    0xFFFF0080, // SECONDARY_STRUCTURE_HELIX
-    0xFFAE00FE, // SECONDARY_STRUCTURE_DNA
-    0xFFFD0162, // SECONDARY_STRUCTURE_RNA
+    0xFFFFFFFF, // PROTEIN_STRUCTURE_NONE
+    0xFF6080FF, // PROTEIN_STRUCTURE_TURN
+    0xFFFFC800, // PROTEIN_STRUCTURE_SHEET
+    0xFFFF0080, // PROTEIN_STRUCTURE_HELIX
+    0xFFAE00FE, // PROTEIN_STRUCTURE_DNA
+    0xFFFD0162, // PROTEIN_STRUCTURE_RNA
   };
 
   public final static int argbPdbAminoDefault =  0xFFBEA06E; // tan

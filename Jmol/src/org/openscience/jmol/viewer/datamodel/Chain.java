@@ -33,14 +33,14 @@ import java.util.BitSet;
 
 final public class Chain {
 
-  public Model model;
-  public char chainID;
+  Model model;
+  char chainID;
   int groupCount;
   Group[] groups = new Group[16];
 
   //  private Group[] mainchain;
 
-  public Chain(Model model, char chainID) {
+  Chain(Model model, char chainID) {
     this.model = model;
     this.chainID = chainID;
   }
@@ -59,11 +59,11 @@ final public class Chain {
     return groups[groupCount++] = group;
   }
 
-  public Group getGroup(int groupIndex) {
+  Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }
   
-  public int getGroupCount() {
+  int getGroupCount() {
     return groupCount;
   }
 

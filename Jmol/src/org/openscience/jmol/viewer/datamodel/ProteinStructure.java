@@ -27,7 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public abstract class AminoStructure {
+abstract class ProteinStructure {
 
   AlphaCarbonPolymer acpolymer;
   byte type;
@@ -38,8 +38,8 @@ public abstract class AminoStructure {
   Vector3f axisUnitVector;
   Point3f[] segments;
 
-  AminoStructure(AlphaCarbonPolymer acpolymer, byte type,
-                 int polymerIndex, int polymerCount) {
+  ProteinStructure(AlphaCarbonPolymer acpolymer, byte type,
+                   int polymerIndex, int polymerCount) {
     this.acpolymer = acpolymer;
     this.type = type;
     this.polymerIndex = polymerIndex;
@@ -97,15 +97,15 @@ public abstract class AminoStructure {
     point.scaleAdd(projectedLength, axisA);
   }
 
-  public int getPolymerCount() {
+  int getPolymerCount() {
     return polymerCount;
   }
 
-  public int getPolymerIndex() {
+  int getPolymerIndex() {
     return polymerIndex;
   }
 
-  public int getIndex(Group group) {
+  int getIndex(Group group) {
     Group[] groups = acpolymer.groups;
     int i;
     for (i = polymerCount; --i >= 0; )
@@ -114,23 +114,23 @@ public abstract class AminoStructure {
     return i;
   }
 
-  public Point3f[] getSegments() {
+  Point3f[] getSegments() {
     if (segments == null)
       calcSegments();
     return segments;
   }
 
-  public Point3f getAxisStartPoint() {
+  Point3f getAxisStartPoint() {
     calcAxis();
     return axisA;
   }
 
-  public Point3f getAxisEndPoint() {
+  Point3f getAxisEndPoint() {
     calcAxis();
     return axisB;
   }
 
-  public Point3f getStructureMidPoint(int index) {
+  Point3f getStructureMidPoint(int index) {
     if (segments == null)
       calcSegments();
     /*

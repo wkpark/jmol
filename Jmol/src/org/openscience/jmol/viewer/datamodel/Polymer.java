@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-abstract public class Polymer {
+abstract class Polymer {
 
   Model model;
   Group[] groups;
@@ -157,15 +157,15 @@ abstract public class Polymer {
     return groups[0].getChainID();
   }
 
-  public int getCount() {
+  int getCount() {
     return count;
   }
   
-  public Group[] getGroups() {
+  Group[] getGroups() {
     return groups;
   }
   
-  public int[] getLeadAtomIndices() {
+  int[] getLeadAtomIndices() {
     if (atomIndices == null) {
       atomIndices = new int[count];
       for (int i = count; --i >= 0; )
@@ -174,7 +174,7 @@ abstract public class Polymer {
     return atomIndices;
   }
   
-  public int getIndex(int seqcode) {
+  int getIndex(int seqcode) {
     int i;
     for (i = count; --i >= 0; )
       if (groups[i].seqcode == seqcode)
@@ -182,11 +182,11 @@ abstract public class Polymer {
     return i;
   }
 
-  abstract public Point3f getLeadPoint(int polymerIndex);
+  abstract Point3f getLeadPoint(int polymerIndex);
 
-  abstract public Atom getLeadAtom(int polymerIndex);
+  abstract Atom getLeadAtom(int polymerIndex);
 
-  public void getLeadMidPoint(int groupIndex, Point3f midPoint) {
+  void getLeadMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex == count) {
       --groupIndex;
     } else if (groupIndex > 0) {

@@ -29,7 +29,7 @@ import java.awt.Color;
 import java.util.BitSet;
 
 public class Balls extends Shape {
-  public void setSize(int size, BitSet bsSelected) {
+  void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0; )
@@ -37,7 +37,7 @@ public class Balls extends Shape {
         atoms[i].setMadAtom(mad);
   }
 
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  void setProperty(String propertyName, Object value, BitSet bs) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {

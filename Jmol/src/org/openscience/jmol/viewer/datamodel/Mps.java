@@ -171,12 +171,12 @@ abstract class Mps extends Shape {
         }
         // fall into;
       case -2: // trace structure
-        switch (polymerGroups[groupIndex].getStructureType()) {
-        case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-        case JmolConstants.SECONDARY_STRUCTURE_HELIX:
+        switch (polymerGroups[groupIndex].getProteinStructureType()) {
+        case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+        case JmolConstants.PROTEIN_STRUCTURE_HELIX:
           return madHelixSheet;
-        case JmolConstants.SECONDARY_STRUCTURE_DNA:
-        case JmolConstants.SECONDARY_STRUCTURE_RNA:
+        case JmolConstants.PROTEIN_STRUCTURE_DNA:
+        case JmolConstants.PROTEIN_STRUCTURE_RNA:
           return madDnaRna;
         default:
           return madTurnRandom;

@@ -167,13 +167,13 @@ final public class Mmset {
       this.startSeqcode = startSeqcode;
       this.endSeqcode = endSeqcode;
       if ("helix".equals(typeName))
-        type = JmolConstants.SECONDARY_STRUCTURE_HELIX;
+        type = JmolConstants.PROTEIN_STRUCTURE_HELIX;
       else if ("sheet".equals(typeName))
-        type = JmolConstants.SECONDARY_STRUCTURE_SHEET;
+        type = JmolConstants.PROTEIN_STRUCTURE_SHEET;
       else if ("turn".equals(typeName))
-        type = JmolConstants.SECONDARY_STRUCTURE_TURN;
+        type = JmolConstants.PROTEIN_STRUCTURE_TURN;
       else
-        type = JmolConstants.SECONDARY_STRUCTURE_NONE;
+        type = JmolConstants.PROTEIN_STRUCTURE_NONE;
     }
   }
 }

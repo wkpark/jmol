@@ -38,26 +38,26 @@ public class AlphaCarbonPolymer extends Polymer {
     super(model, groups);
   }
 
-  public Atom getAlphaCarbonAtom(int groupIndex) {
+  Atom getAlphaCarbonAtom(int groupIndex) {
     return groups[groupIndex].getAlphaCarbonAtom();
   }
 
-  public Atom getLeadAtom(int groupIndex) {
+  Atom getLeadAtom(int groupIndex) {
     return getAlphaCarbonAtom(groupIndex);
   }
 
-  public Point3f getLeadPoint(int groupIndex) {
+  Point3f getLeadPoint(int groupIndex) {
     return getLeadAtom(groupIndex).point3f;
   }
 
-  public Point3f getResidueAlphaCarbonPoint(int groupIndex) {
+  Point3f getResidueAlphaCarbonPoint(int groupIndex) {
     return getAlphaCarbonAtom(groupIndex).point3f;
   }
 
-  public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
+  void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < count &&
         groups[groupIndex].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex].aminostructure.
+      midPoint.set(groups[groupIndex].proteinstructure.
                    getStructureMidPoint(groupIndex));
       /*
         System.out.println("" + groupIndex} + "isHelixOrSheet" +
@@ -65,7 +65,7 @@ public class AlphaCarbonPolymer extends Polymer {
       */
     } else if (groupIndex > 0 &&
                groups[groupIndex - 1].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex - 1].aminostructure.
+      midPoint.set(groups[groupIndex - 1].proteinstructure.
                    getStructureMidPoint(groupIndex));
       /*
         System.out.println("" + groupIndex + "previous isHelixOrSheet" +
@@ -91,31 +91,31 @@ public class AlphaCarbonPolymer extends Polymer {
       System.out.println("structure definition error");
       return;
     }
-    AminoStructure aminostructure = null;
+    ProteinStructure proteinstructure = null;
     switch(type) {
-    case JmolConstants.SECONDARY_STRUCTURE_HELIX:
-      aminostructure = new Helix(this, polymerIndexStart, structureCount);
+    case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+      proteinstructure = new Helix(this, polymerIndexStart, structureCount);
       break;
-    case JmolConstants.SECONDARY_STRUCTURE_SHEET:
+    case JmolConstants.PROTEIN_STRUCTURE_SHEET:
       if (this instanceof AminoPolymer)
-        aminostructure = new Sheet((AminoPolymer)this,
+        proteinstructure = new Sheet((AminoPolymer)this,
                                    polymerIndexStart, structureCount);
       break;
-    case JmolConstants.SECONDARY_STRUCTURE_TURN:
-      aminostructure = new Turn(this, polymerIndexStart, structureCount);
+    case JmolConstants.PROTEIN_STRUCTURE_TURN:
+      proteinstructure = new Turn(this, polymerIndexStart, structureCount);
       break;
     default:
       System.out.println("unrecognized secondary structure type");
       return;
     }
     for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
-      groups[i].setStructure(aminostructure);
+      groups[i].setStructure(proteinstructure);
   }
 
-  public boolean isProtein() {
+  boolean isProtein() {
     return true;
   }
 
-  public void calcHydrogenBonds() {
+  void calcHydrogenBonds() {
   }
 }

@@ -122,7 +122,7 @@ public class Dots extends Shape {
   final Point3f pointT1 = new Point3f();
 
     
-  public void initShape() {
+  void initShape() {
     dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
     bsDotsOn = new BitSet();
     geodesicVertices = dotsRenderer.geodesic.vertices;
@@ -130,7 +130,7 @@ public class Dots extends Shape {
     geodesicMap = allocateBitmap(geodesicCount);
   }
 
-  public void setSize(int size, BitSet bsSelected) {
+  void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     this.mad = mad;
     if (radiusP != viewer.getSolventProbeRadius()) {
@@ -177,7 +177,7 @@ public class Dots extends Shape {
     }
   }
 
-  public void setProperty(String propertyName, Object value, BitSet bs) {
+  void setProperty(String propertyName, Object value, BitSet bs) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
     if ("color".equals(propertyName)) {

@@ -90,7 +90,7 @@ public final class Bspt {
     this.eleRoot = new Leaf();
   }
 
-  public void addTuple(Tuple tuple) {
+  void addTuple(Tuple tuple) {
     if (! eleRoot.addTuple(tuple)) {
       eleRoot = new Node(0, dimMax, (Leaf) eleRoot);
       if (! eleRoot.addTuple(tuple))
@@ -99,17 +99,17 @@ public final class Bspt {
   }
 
   /*
-  public String toString() {
+  String toString() {
     return eleRoot.toString();
   }
 
-  public void dump() {
+  void dump() {
     eleRoot.dump(0);
   }
   */
 
   /*
-  public Enumeration enum() {
+  Enumeration enum() {
     return new EnumerateAll();
   }
 
@@ -134,11 +134,11 @@ public final class Bspt {
       i = 0;
     }
 
-    public boolean hasMoreElements() {
+    boolean hasMoreElements() {
       return (i < leaf.count) || (sp > 0);
     }
 
-    public Object nextElement() {
+    Object nextElement() {
       if (i == leaf.count) {
         //        System.out.println("-->" + stack[sp-1].splitValue);
         Element ele = stack[--sp].eleGE;
@@ -154,7 +154,7 @@ public final class Bspt {
     }
   }
 
-  public Enumeration enumNear(Tuple center, float distance) {
+  Enumeration enumNear(Tuple center, float distance) {
     return new EnumerateNear(center, distance);
   }
 
@@ -188,7 +188,7 @@ public final class Bspt {
       i = 0;
     }
 
-    public boolean hasMoreElements() {
+    boolean hasMoreElements() {
       if (i < leaf.count)
         return true;
       if (sp == 0)
@@ -214,13 +214,13 @@ public final class Bspt {
       return true;
     }
 
-    public Object nextElement() {
+    Object nextElement() {
       return leaf.tuples[i++];
     }
   }
   */
 
-  public SphereIterator allocateSphereIterator() {
+  SphereIterator allocateSphereIterator() {
     return new SphereIterator();
   }
 
@@ -246,7 +246,7 @@ public final class Bspt {
       stack = new Node[stackDepth];
     }
 
-    public void initialize(Tuple center, float radius) {
+    void initialize(Tuple center, float radius) {
       this.center = center;
       this.radius = radius;
       this.radius2 = radius*radius;
@@ -270,12 +270,12 @@ public final class Bspt {
       leafIndex = 0;
     }
 
-    public void initializeHemisphere(Tuple center, float radius) {
+    void initializeHemisphere(Tuple center, float radius) {
       initialize(center, radius);
       tHemisphere = true;
     }
 
-    public void release() {
+    void release() {
       for (int i = stackDepth; --i >= 0; )
         stack[i] = null;
     }
@@ -300,7 +300,7 @@ public final class Bspt {
       return true;
     }
     
-    public boolean hasMoreElements() {
+    boolean hasMoreElements() {
       while (true) {
         for ( ; leafIndex < leaf.count; ++leafIndex)
           if (isWithin(leaf.tuples[leafIndex]))
@@ -328,17 +328,17 @@ public final class Bspt {
       }
     }
 
-    public Object nextElement() {
+    Object nextElement() {
       return leaf.tuples[leafIndex++];
     }
 
-    public float foundDistance2() {
+    float foundDistance2() {
       return foundDistance2;
     }
   }
 
-  public interface Tuple {
-    public float getDimensionValue(int dim);
+  interface Tuple {
+    float getDimensionValue(int dim);
   }
 
   interface Element {
@@ -391,11 +391,11 @@ public final class Bspt {
     }
 
     /*
-    public String toString() {
+    String toString() {
       return eleLE.toString() + dim + ":" + splitValue + "\n" + eleGE.toString();
     }
 
-    public void dump(int level) {
+    void dump(int level) {
       System.out.println("");
       eleLE.dump(level + 1);
       for (int i = 0; i < level; ++i)
@@ -450,7 +450,7 @@ public final class Bspt {
         throw new NullPointerException("Bspt leaf splitting error");
     }
 
-    public float getSplitValue(int dim) {
+    float getSplitValue(int dim) {
       if (count != leafCountMax)
         throw new NullPointerException("Bspt leaf splitting too soon");
       return (tuples[0].getDimensionValue(dim) +
@@ -458,7 +458,7 @@ public final class Bspt {
     }
 
     /*
-    public String toString() {
+    String toString() {
       return "leaf:" + count + "\n";
     }
     */
@@ -471,7 +471,7 @@ public final class Bspt {
     }
 
     /*
-    public void dump(int level) {
+    void dump(int level) {
       for (int i = 0; i < count; ++i) {
         Tuple t = tuples[i];
         for (int j = 0; j < level; ++j)
@@ -501,7 +501,7 @@ class Point implements Bspt.Tuple {
     this.z = z;
   }
 
-  public float getDimensionValue(int dim) {
+  float getDimensionValue(int dim) {
     if (dim == 0)
       return x;
     if (dim == 1)
@@ -509,7 +509,7 @@ class Point implements Bspt.Tuple {
     return z;
   }
 
-  public String toString() {
+  String toString() {
     return "<" + x + "," + y + "," + z + ">";
   }
 }

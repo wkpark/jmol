@@ -40,11 +40,11 @@ public final class Bspf {
     sphereIterators = new Bspt.SphereIterator[0];
   }
 
-  public int getBsptCount() {
+  int getBsptCount() {
     return bspts.length;
   }
   
-  public void addTuple(int bsptIndex, Bspt.Tuple tuple) {
+  void addTuple(int bsptIndex, Bspt.Tuple tuple) {
     if (bsptIndex >= bspts.length) {
       Bspt[] t = new Bspt[bsptIndex + 1];
       System.arraycopy(bspts, 0, t, 0, bspts.length);
@@ -56,7 +56,7 @@ public final class Bspf {
     bspt.addTuple(tuple);
   }
 
-  public Bspt.SphereIterator getSphereIterator(int bsptIndex) {
+  Bspt.SphereIterator getSphereIterator(int bsptIndex) {
     if (bsptIndex >= sphereIterators.length) {
       Bspt.SphereIterator[] t = new Bspt.SphereIterator[bsptIndex + 1];
       System.arraycopy(sphereIterators, 0, t, 0, sphereIterators.length);

@@ -92,7 +92,7 @@ public class FrameRenderer {
                         screen.x, screen.y, screen.z, g3d);
   }
 
-  public void renderStringOutside(String str, short colix, Font3D font3d,
+  void renderStringOutside(String str, short colix, Font3D font3d,
                                   int x, int y, int z, Graphics3D g3d) {
     g3d.setColix(colix);
     g3d.setFont(font3d);

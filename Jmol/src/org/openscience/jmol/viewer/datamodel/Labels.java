@@ -47,7 +47,7 @@ public class Labels extends Shape {
                                   JmolConstants.LABEL_DEFAULT_FONTSIZE);
   }
 
-  public void setProperty(String propertyName, Object value,
+  void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {

@@ -169,7 +169,7 @@ final public class FrameBuilder {
   }
 
 
-  public void addAtom(Frame frame,
+  void addAtom(Frame frame,
                       int modelID, Object atomUid,
                       byte atomicNumber,
                       String atomName, 
@@ -227,7 +227,7 @@ final public class FrameBuilder {
     htAtomMap.put(atomUid, atom);
   }
 
-  public void bondAtoms(Object atomUid1, Object atomUid2,
+  void bondAtoms(Object atomUid1, Object atomUid2,
                              int order) {
     Atom atom1 = (Atom)htAtomMap.get(atomUid1);
     if (atom1 == null) {

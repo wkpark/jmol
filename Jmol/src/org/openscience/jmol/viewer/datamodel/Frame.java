@@ -36,8 +36,8 @@ import java.awt.Rectangle;
 
 final public class Frame {
 
-  public JmolViewer viewer;
-  public FrameRenderer frameRenderer;
+  JmolViewer viewer;
+  FrameRenderer frameRenderer;
   // NOTE: these strings are interned and are lower case
   // therefore, we can do == comparisions against string constants
   // if (modelTypeName == "xyz")
@@ -50,19 +50,19 @@ final public class Frame {
   float maxVanderwaalsRadius = Integer.MIN_VALUE;
 
   int atomCount;
-  public Atom[] atoms;
+  Atom[] atoms;
   Object[] clientAtomReferences;
   int bondCount;
-  public Bond[] bonds;
+  Bond[] bonds;
   private final static int growthIncrement = 250;
   boolean fileCoordinatesAreFractional;
-  public float[] notionalUnitcell;
-  public Matrix3f matrixNotional;
-  public Matrix3f pdbScaleMatrix;
-  public Matrix3f pdbScaleMatrixTranspose;
-  public Vector3f pdbTranslateVector;
-  public Matrix3f matrixEuclideanToFractional;
-  public Matrix3f matrixFractionalToEuclidean;
+  float[] notionalUnitcell;
+  Matrix3f matrixNotional;
+  Matrix3f pdbScaleMatrix;
+  Matrix3f pdbScaleMatrixTranspose;
+  Vector3f pdbTranslateVector;
+  Matrix3f matrixEuclideanToFractional;
+  Matrix3f matrixFractionalToEuclidean;
 
   BitSet elementsPresent;
   BitSet groupsPresent;
@@ -89,7 +89,7 @@ final public class Frame {
     return exportModelAdapter;
   }
 
-  public void freeze() {
+  void freeze() {
     if (notionalUnitcell != null)
       doUnitcellStuff();
     if (viewer.getAutoBond()) {
@@ -129,7 +129,6 @@ final public class Frame {
     }
   }
 
-
   public int getAtomIndexFromAtomNumber(int atomNumber) {
     for (int i = atomCount; --i >= 0; ) {
       if (atoms[i].getAtomNumber() == atomNumber)
@@ -158,7 +157,7 @@ final public class Frame {
     return atomCount;
   }
 
-  public Atom[] getAtoms() {
+  Atom[] getAtoms() {
     return atoms;
   }
 
@@ -186,7 +185,7 @@ final public class Frame {
     bonds[bondCount++] = bond;
   }
 
-  public void bondAtoms(Atom atom1, Atom atom2,
+  void bondAtoms(Atom atom1, Atom atom2,
                              int order) {
     addBond(atom1.bondMutually(atom2, order));
   }
@@ -284,7 +283,7 @@ final public class Frame {
     }
   }
 
-  public void clearBounds() {
+  void clearBounds() {
     rotationCenter = null;
     rotationRadius = 0;
   }
@@ -584,7 +583,7 @@ final public class Frame {
     rebond(true);
   }
 
-  public void rebond(boolean deleteFirst) {
+  void rebond(boolean deleteFirst) {
     if (deleteFirst)
       deleteAllBonds();
     if (maxBondingRadius == Integer.MIN_VALUE)
@@ -657,7 +656,7 @@ final public class Frame {
 
   boolean useRasMolHbondsCalculation = true;
 
-  public void calcHbonds() {
+  void calcHbonds() {
     if (hbondsCalculated)
       return;
     hbondsCalculated = true;
@@ -703,7 +702,7 @@ final public class Frame {
   }
 
 
-  public void deleteAllBonds() {
+  void deleteAllBonds() {
     for (int i = bondCount; --i >= 0; ) {
       bonds[i].deleteAtomReferences();
       bonds[i] = null;
@@ -711,7 +710,7 @@ final public class Frame {
     bondCount = 0;
   }
 
-  public void deleteBond(Bond bond) {
+  void deleteBond(Bond bond) {
     // what a disaster ... I hate doing this
     for (int i = bondCount; --i >= 0; ) {
       if (bonds[i] == bond) {
@@ -724,7 +723,7 @@ final public class Frame {
     }
   }
 
-  public void deleteCovalentBonds() {
+  void deleteCovalentBonds() {
     int indexNoncovalent = 0;
     for (int i = 0; i < bondCount; ++i) {
       Bond bond = bonds[i];
@@ -741,18 +740,18 @@ final public class Frame {
     bondCount = indexNoncovalent;
   }
 
-  public void deleteAtom(int atomIndex) {
+  void deleteAtom(int atomIndex) {
     clearBspf();
     atoms[atomIndex].markDeleted();
   }
 
-  public float getMaxVanderwaalsRadius() {
+  float getMaxVanderwaalsRadius() {
     if (maxVanderwaalsRadius == Integer.MIN_VALUE)
       findMaxRadii();
     return maxVanderwaalsRadius;
   }
 
-  public void setNotionalUnitcell(float[] notionalUnitcell) {
+  void setNotionalUnitcell(float[] notionalUnitcell) {
     if (notionalUnitcell != null && notionalUnitcell.length != 6)
       System.out.println("notionalUnitcell length incorrect:" +
                          notionalUnitcell);
@@ -760,7 +759,7 @@ final public class Frame {
       this.notionalUnitcell = notionalUnitcell;
   }
 
-  public void setPdbScaleMatrix(float[] pdbScaleMatrixArray) {
+  void setPdbScaleMatrix(float[] pdbScaleMatrixArray) {
     if (pdbScaleMatrixArray == null)
       return;
     if (pdbScaleMatrixArray.length != 9) {
@@ -773,7 +772,7 @@ final public class Frame {
     pdbScaleMatrixTranspose.transpose(pdbScaleMatrix);
   }
 
-  public void setPdbScaleTranslate(float[] pdbScaleTranslate) {
+  void setPdbScaleTranslate(float[] pdbScaleTranslate) {
     if (pdbScaleTranslate == null)
       return;
     if (pdbScaleTranslate.length != 3) {
@@ -786,7 +785,7 @@ final public class Frame {
 
   // FIXME mth 2004 05 04 - do NOT pass a null in here
   // figure out what to do about the g3d when allocating a shape renderer
-  public ShapeRenderer getRenderer(int shapeType) {
+  ShapeRenderer getRenderer(int shapeType) {
     return frameRenderer.getRenderer(shapeType, null);
   }
 

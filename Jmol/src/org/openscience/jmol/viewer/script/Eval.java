@@ -1111,7 +1111,7 @@ public class Eval implements Runnable {
           continue;
         break;
       case Token._structure:
-        propertyValue = getSecondaryStructureType(atom);
+        propertyValue = getProteinStructureType(atom);
         if (propertyValue == -1)
           continue;
         break;
@@ -1237,8 +1237,8 @@ public class Eval implements Runnable {
     }
   }
 
-  int getSecondaryStructureType(Atom atom) {
-    return atom.getSecondaryStructureType();
+  int getProteinStructureType(Atom atom) {
+    return atom.getProteinStructureType();
   }
 
 

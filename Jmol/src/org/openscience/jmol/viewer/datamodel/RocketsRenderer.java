@@ -93,35 +93,35 @@ class RocketsRenderer extends MpsRenderer {
     int midPointCount = polymerCount + 1;
     Point3f[] cordMidPoints = viewer.allocTempPoints(midPointCount);
     Group residuePrev = null;
-    AminoStructure aminostructurePrev = null;
+    ProteinStructure proteinstructurePrev = null;
     Point3f point;
     for (int i = 0; i < polymerCount; ++i) {
       point = cordMidPoints[i];
       Group residue = polymerGroups[i];
       if (isSpecials[i]) {
-        AminoStructure aminostructure = residue.aminostructure;
-        point.set(i - 1 != aminostructure.getPolymerIndex()
-                  ? aminostructure.getAxisStartPoint()
-                  : aminostructure.getAxisEndPoint());
+        ProteinStructure proteinstructure = residue.proteinstructure;
+        point.set(i - 1 != proteinstructure.getPolymerIndex()
+                  ? proteinstructure.getAxisStartPoint()
+                  : proteinstructure.getAxisEndPoint());
 
         //        if (i != structure.getStartResidueIndex()) {
         //          point.add(structure.getAxisEndPoint());
         //          point.scale(0.5f);
         //        }
         residuePrev = residue;
-        aminostructurePrev = aminostructure;
+        proteinstructurePrev = proteinstructure;
       } else {
-        if (aminostructurePrev != null)
-          point.set(aminostructurePrev.getAxisEndPoint());
+        if (proteinstructurePrev != null)
+          point.set(proteinstructurePrev.getAxisEndPoint());
         else
           aminopolymer.getLeadMidPoint(i, point);
         residuePrev = null;
-        aminostructurePrev = null;
+        proteinstructurePrev = null;
       }
     }
     point = cordMidPoints[polymerCount];
-    if (aminostructurePrev != null)
-      point.set(aminostructurePrev.getAxisEndPoint());
+    if (proteinstructurePrev != null)
+      point.set(proteinstructurePrev.getAxisEndPoint());
     else
       aminopolymer.getLeadMidPoint(polymerCount, point);
     return cordMidPoints;
@@ -142,26 +142,26 @@ class RocketsRenderer extends MpsRenderer {
   Point3i screenC = new Point3i();
 
   void renderSpecialSegment(Group group, short colix, short mad) {
-    AminoStructure aminostructure = group.aminostructure;
+    ProteinStructure proteinstructure = group.proteinstructure;
     if (tPending) {
-      if (aminostructure == aminostructurePending &&
+      if (proteinstructure == proteinstructurePending &&
           mad == madPending &&
           colix == colixPending &&
-          aminostructure.getIndex(group) == endIndexPending + 1) {
+          proteinstructure.getIndex(group) == endIndexPending + 1) {
         ++endIndexPending;
         return;
       }
       renderPending();
     }
-    aminostructurePending = aminostructure;
-    startIndexPending = endIndexPending = aminostructure.getIndex(group);
+    proteinstructurePending = proteinstructure;
+    startIndexPending = endIndexPending = proteinstructure.getIndex(group);
     colixPending = colix;
     madPending = mad;
     tPending = true;
   }
 
   boolean tPending;
-  AminoStructure aminostructurePending;
+  ProteinStructure proteinstructurePending;
   int startIndexPending;
   int endIndexPending;
   short madPending;
@@ -174,9 +174,9 @@ class RocketsRenderer extends MpsRenderer {
 
   void renderPending() {
     if (tPending) {
-      Point3f[] segments = aminostructurePending.getSegments();
+      Point3f[] segments = proteinstructurePending.getSegments();
       boolean tEnd =
-        (endIndexPending == aminostructurePending.getPolymerCount() - 1);
+        (endIndexPending == proteinstructurePending.getPolymerCount() - 1);
 
       /*
       System.out.println("structurePending.getPolymerCount()=" +
@@ -186,7 +186,7 @@ class RocketsRenderer extends MpsRenderer {
                          " endIndexPending=" + endIndexPending);
       System.out.println("tEnd=" + tEnd);
       */
-      if (aminostructurePending instanceof Helix)
+      if (proteinstructurePending instanceof Helix)
         renderPendingHelix(segments[startIndexPending],
                            segments[endIndexPending],
                            segments[endIndexPending + 1],
@@ -246,7 +246,7 @@ class RocketsRenderer extends MpsRenderer {
    1, 4, 5, 3};
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
-    Sheet sheet = (Sheet)aminostructurePending;
+    Sheet sheet = (Sheet)proteinstructurePending;
     float scale = madPending / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale * 1.25f);
@@ -306,7 +306,7 @@ class RocketsRenderer extends MpsRenderer {
   final Point3f pointCorner = new Point3f();
 
   void drawBox(Point3f pointA, Point3f pointB) {
-    Sheet sheet = (Sheet)aminostructurePending;
+    Sheet sheet = (Sheet)proteinstructurePending;
     float scale = madPending / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale);

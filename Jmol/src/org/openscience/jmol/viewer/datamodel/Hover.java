@@ -58,7 +58,7 @@ public class Hover extends Shape {
     colixForeground = Graphics3D.BLACK;
   }
 
-  public void setProperty(String propertyName, Object value,
+  void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("target" == propertyName) {
       if (value == null)

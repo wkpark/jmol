@@ -33,20 +33,20 @@ import javax.vecmath.Point3f;
 
 final public class Group {
 
-  public Frame frame;
-  public Chain chain;
-  public Polymer polymer;
-  public int seqcode;
-  public short groupID;
-  public AminoStructure aminostructure;
+  Frame frame;
+  Chain chain;
+  Polymer polymer;
+  int seqcode;
+  short groupID;
+  ProteinStructure proteinstructure;
 
   // FIXME - mth 2004 05 17
   // these two arrays of indices need to be merged
   // one is for amino acid residues
   // the other is for nucleotide bases
-  public int[] mainchainIndices;
+  int[] mainchainIndices;
 
-  public int[] nucleotideIndices;
+  int[] nucleotideIndices;
   int atomIndexNucleotidePhosphorus = -1;
   int atomIndexNucleotideWing = -1;
   int atomIndexRnaO2Prime = -1;
@@ -56,7 +56,7 @@ final public class Group {
   short aminoBackboneHbondOffset = 0;
 
 
-  public Group(Frame frame, Chain chain,
+  Group(Frame frame, Chain chain,
                   int sequenceNumber, char insertionCode, String group3) {
     this.frame = frame;
     this.chain = chain;
@@ -66,21 +66,21 @@ final public class Group {
     this.groupID = getGroupID(group3);
   }
 
-  public void setPolymer(Polymer polymer) {
+  void setPolymer(Polymer polymer) {
     this.polymer = polymer;
   }
 
-  public void setStructure(AminoStructure aminostructure) {
-    this.aminostructure = aminostructure;
+  void setStructure(ProteinStructure proteinstructure) {
+    this.proteinstructure = proteinstructure;
   }
 
-  public byte getStructureType() {
-    if (aminostructure != null)
-      return aminostructure.type;
+  byte getProteinStructureType() {
+    if (proteinstructure != null)
+      return proteinstructure.type;
     if (hasNucleotidePhosphorus()) {
       if (atomIndexRnaO2Prime != -1)
-        return JmolConstants.SECONDARY_STRUCTURE_RNA;
-      return JmolConstants.SECONDARY_STRUCTURE_DNA;
+        return JmolConstants.PROTEIN_STRUCTURE_RNA;
+      return JmolConstants.PROTEIN_STRUCTURE_DNA;
     }
     return 0;
   }
@@ -89,7 +89,7 @@ final public class Group {
     return group3Names[groupID].equalsIgnoreCase(group3);
   }
 
-  public String getGroup3() {
+  String getGroup3() {
     return group3Names[groupID];
   }
 
@@ -97,19 +97,19 @@ final public class Group {
     return group3Names[groupID];
   }
 
-  public int getSeqcode() {
+  int getSeqcode() {
     return seqcode;
   }
 
-  public String getSeqcodeString() {
+  String getSeqcodeString() {
     return getSeqcodeString(seqcode);
   }
 
-  public short getGroupID() {
+  short getGroupID() {
     return groupID;
   }
 
-  public boolean isGroup3Match(String strWildcard) {
+  boolean isGroup3Match(String strWildcard) {
     int cchWildcard = strWildcard.length();
     int ichWildcard = 0;
     String group3 = group3Names[groupID];
@@ -136,18 +136,18 @@ final public class Group {
     return true;
   }
 
-  public char getChainID() {
+  char getChainID() {
     return chain.chainID;
   }
 
-  public boolean isHelix() {
-    return aminostructure != null &&
-      aminostructure.type == JmolConstants.SECONDARY_STRUCTURE_HELIX;
+  boolean isHelix() {
+    return proteinstructure != null &&
+      proteinstructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
   }
 
-  public boolean isHelixOrSheet() {
-    return aminostructure != null &&
-      aminostructure.type >= JmolConstants.SECONDARY_STRUCTURE_SHEET;
+  boolean isHelixOrSheet() {
+    return proteinstructure != null &&
+      proteinstructure.type >= JmolConstants.PROTEIN_STRUCTURE_SHEET;
   }
 
   /****************************************************************
@@ -234,44 +234,44 @@ final public class Group {
     return true;
   }
 
-  public Atom getLeadAtom() {
+  Atom getLeadAtom() {
     if (hasNucleotidePhosphorus())
       return getNucleotidePhosphorusAtom();
     return getAlphaCarbonAtom();
     
   }
 
-  public int getLeadAtomIndex() {
+  int getLeadAtomIndex() {
     if (hasNucleotidePhosphorus())
       return atomIndexNucleotidePhosphorus;
     return getAlphaCarbonIndex();
   }
 
-  public Atom getWingAtom() {
+  Atom getWingAtom() {
     if (hasNucleotidePhosphorus())
       return getNucleotideWingAtom();
     return getCarbonylOxygenAtom();
   }
 
-  public int getWingAtomIndex() {
+  int getWingAtomIndex() {
     if (hasNucleotidePhosphorus())
       return atomIndexNucleotideWing;
     return getAlphaCarbonIndex();
   }
 
-  public int getAlphaCarbonIndex() {
+  int getAlphaCarbonIndex() {
     if (mainchainIndices == null)
       return -1;
     return mainchainIndices[1];
   }
 
-  public int getCarbonylOxygenIndex() {
+  int getCarbonylOxygenIndex() {
     if (mainchainIndices == null)
       return -1;
     return mainchainIndices[3];
   }
 
-  public Atom getMainchainAtom(int i) {
+  Atom getMainchainAtom(int i) {
     int j;
     if (mainchainIndices == null || (j = mainchainIndices[i]) == -1) {
       System.out.println("I am a mainchain atom returning null because " +
@@ -285,23 +285,23 @@ final public class Group {
     return getAtomIndex(j);
   }
 
-  public Atom getNitrogenAtom() {
+  Atom getNitrogenAtom() {
     return getMainchainAtom(0);
   }
 
-  public Atom getAlphaCarbonAtom() {
+  Atom getAlphaCarbonAtom() {
     return getMainchainAtom(1);
   }
 
-  public Atom getCarbonylCarbonAtom() {
+  Atom getCarbonylCarbonAtom() {
     return getMainchainAtom(2);
   }
 
-  public Atom getCarbonylOxygenAtom() {
+  Atom getCarbonylOxygenAtom() {
     return getMainchainAtom(3);
   }
 
-  public Point3f getAlphaCarbonPoint() {
+  Point3f getAlphaCarbonPoint() {
     return getMainchainAtom(1).point3f;
   }
 
@@ -336,7 +336,7 @@ final public class Group {
       : "" + (seqcode >> 8) + '^' + (char)(seqcode & 0xFF);
   }
 
-  public boolean isProline() {
+  boolean isProline() {
     // this is the index into JmolConstants.predefinedGroup3Names
     return groupID == JmolConstants.GROUPID_PROLINE;
   }

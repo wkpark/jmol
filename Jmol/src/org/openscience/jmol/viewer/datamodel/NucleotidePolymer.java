@@ -59,7 +59,7 @@ public class NucleotidePolymer extends Polymer {
   public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < count &&
         groups[groupIndex].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex].aminostructure.
+      midPoint.set(groups[groupIndex].proteinstructure.
                    getStructureMidPoint(groupIndex));
       /*
         System.out.println("" + groupIndex} + "isHelixOrSheet" +
@@ -67,7 +67,7 @@ public class NucleotidePolymer extends Polymer {
       */
     } else if (groupIndex > 0 &&
                groups[groupIndex - 1].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex - 1].aminostructure.
+      midPoint.set(groups[groupIndex - 1].proteinstructure.
                    getStructureMidPoint(groupIndex));
       /*
         System.out.println("" + groupIndex + "previous isHelixOrSheet" +

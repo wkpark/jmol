@@ -53,24 +53,24 @@ public class Bond {
     this.colix = colix;
   }
 
-  public Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
+  Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
     this(atom1, atom2, order, 
          viewer.getMadBond(), viewer.getColixBond(order));
   }
 
-  public boolean isCovalent() {
+  boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT) != 0;
   }
 
-  public boolean isStereo() {
+  boolean isStereo() {
     return (order & JmolConstants.BOND_STEREO_MASK) != 0;
   }
 
-  public boolean isAromatic() {
+  boolean isAromatic() {
     return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
   }
 
-  public void deleteAtomReferences() {
+  void deleteAtomReferences() {
     if (atom1 != null)
       atom1.deleteBond(this);
     if (atom2 != null)
@@ -78,11 +78,11 @@ public class Bond {
     atom1 = atom2 = null;
   }
 
-  public void setMad(short mad) {
+  void setMad(short mad) {
     this.mad = mad;
   }
 
-  public void setColix(short colix) {
+  void setColix(short colix) {
     this.colix = colix;
   }
 

@@ -27,11 +27,11 @@ import org.openscience.jmol.viewer.JmolConstants;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class Sheet extends AminoStructure {
+class Sheet extends ProteinStructure {
 
   AminoPolymer aminopolymer;
   Sheet(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
-    super(aminopolymer, JmolConstants.SECONDARY_STRUCTURE_SHEET,
+    super(aminopolymer, JmolConstants.PROTEIN_STRUCTURE_SHEET,
           polymerIndex, polymerCount);
     this.aminopolymer = aminopolymer;
   }
@@ -90,13 +90,13 @@ public class Sheet extends AminoStructure {
     }
   }
 
-  public Vector3f getWidthUnitVector() {
+  Vector3f getWidthUnitVector() {
     if (widthUnitVector == null)
       calcSheetUnitVectors();
     return widthUnitVector;
   }
 
-  public Vector3f getHeightUnitVector() {
+  Vector3f getHeightUnitVector() {
     if (heightUnitVector == null)
       calcSheetUnitVectors();
     return heightUnitVector;

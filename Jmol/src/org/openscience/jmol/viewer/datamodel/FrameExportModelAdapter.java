@@ -37,10 +37,10 @@ import java.awt.Rectangle;
 
 final public class FrameExportModelAdapter extends ModelAdapter {
 
-  public JmolViewer viewer;
-  public Frame frame;
+  JmolViewer viewer;
+  Frame frame;
 
-  public FrameExportModelAdapter(JmolViewer viewer, Frame frame) {
+  FrameExportModelAdapter(JmolViewer viewer, Frame frame) {
     super("FrameExportModelAdapter", null);
     this.viewer = viewer;
     this.frame = frame;

@@ -278,7 +278,7 @@ public class ColorManager {
       break;
     case JmolConstants.PALETTE_STRUCTURE:
       argb = JmolConstants.
-        argbsPdbStructure[atom.getSecondaryStructureType()];
+        argbsPdbStructure[atom.getProteinStructureType()];
       break;
     case JmolConstants.PALETTE_AMINO:
       {

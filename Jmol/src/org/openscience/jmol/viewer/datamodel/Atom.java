@@ -37,7 +37,7 @@ import javax.vecmath.Point3i;
 
 public final class Atom implements Bspt.Tuple {
 
-  public final static byte VISIBLE_FLAG = 0x01;
+  final static byte VISIBLE_FLAG = 0x01;
 
   Group group;
   public int atomIndex;
@@ -64,7 +64,7 @@ public final class Atom implements Bspt.Tuple {
   byte specialAtomID;
   float partialCharge;
 
-  public Atom(Group group,
+  Atom(Group group,
               int atomIndex,
               byte elementNumber,
               String atomName,
@@ -105,7 +105,7 @@ public final class Atom implements Bspt.Tuple {
     }
   }
 
-  public boolean isBonded(Atom atomOther) {
+  boolean isBonded(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0; ) {
         Bond bond = bonds[i];
@@ -116,7 +116,7 @@ public final class Atom implements Bspt.Tuple {
     return false;
   }
 
-  public Bond bondMutually(Atom atomOther, int order) {
+  Bond bondMutually(Atom atomOther, int order) {
     if (isBonded(atomOther))
       return null;
     Bond bond = new Bond(this, atomOther, order, group.frame.viewer);
@@ -136,7 +136,7 @@ public final class Atom implements Bspt.Tuple {
     bonds[i] = bond;
   }
 
-  public void deleteBondedAtom(Atom atomToDelete) {
+  void deleteBondedAtom(Atom atomToDelete) {
     if (bonds == null)
       return;
     for (int i = bonds.length; --i >= 0; ) {
@@ -150,7 +150,7 @@ public final class Atom implements Bspt.Tuple {
     }
   }
 
-  public void deleteAllBonds() {
+  void deleteAllBonds() {
     if (bonds == null)
       return;
     for (int i = bonds.length; --i >= 0; )
@@ -161,7 +161,7 @@ public final class Atom implements Bspt.Tuple {
     }
   }
 
-  public void deleteBond(Bond bond) {
+  void deleteBond(Bond bond) {
     for (int i = bonds.length; --i >= 0; )
       if (bonds[i] == bond) {
         deleteBond(i);
@@ -169,7 +169,7 @@ public final class Atom implements Bspt.Tuple {
       }
   }
 
-  public void deleteBond(int i) {
+  void deleteBond(int i) {
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;
@@ -184,11 +184,11 @@ public final class Atom implements Bspt.Tuple {
     bonds = bondsNew;
   }
 
-  public void clearBonds() {
+  void clearBonds() {
     bonds = null;
   }
 
-  public int getBondedAtomIndex(int bondIndex) {
+  int getBondedAtomIndex(int bondIndex) {
     Bond bond = bonds[bondIndex];
     return (((bond.atom1 == this)
              ? bond.atom2
@@ -214,7 +214,7 @@ public final class Atom implements Bspt.Tuple {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setMadAtom(short madAtom) {
+  void setMadAtom(short madAtom) {
     if (this.madAtom == JmolConstants.MAR_DELETED) return;
     if (madAtom == -1000) // temperature
       madAtom = (short)(bfactor100 * 10 * 2);
@@ -242,22 +242,22 @@ public final class Atom implements Bspt.Tuple {
     return n;
   }
 
-  public Bond[] getBonds() {
+  Bond[] getBonds() {
     return bonds;
   }
 
-  public void setColixAtom(short colixAtom) {
+  void setColixAtom(short colixAtom) {
     this.colixAtom = colixAtom;
   }
 
-  public void setLabel(String strLabel) {
+  void setLabel(String strLabel) {
     group.frame.setLabel(strLabel, atomIndex);
   }
 
   final static int MIN_Z = 100;
   final static int MAX_Z = 14383;
 
-  public void transform(JmolViewer viewer) {
+  void transform(JmolViewer viewer) {
     if (madAtom == JmolConstants.MAR_DELETED)
       return;
     Point3i screen = viewer.transformPoint(point3f, vibrationVector);
@@ -284,11 +284,11 @@ public final class Atom implements Bspt.Tuple {
             ? atomName : JmolConstants.elementSymbols[elementNumber]);
   }
   
-  public String getPdbAtomName4() {
+  String getPdbAtomName4() {
     return atomName == null ? "" : atomName;
   }
 
-  public String getGroup3() {
+  String getGroup3() {
     return group.getGroup3();
   }
 
@@ -336,7 +336,7 @@ public final class Atom implements Bspt.Tuple {
     return formalChargeAndFlags >> 4;
   }
 
-  public boolean isVisible() {
+  boolean isVisible() {
     return (formalChargeAndFlags & VISIBLE_FLAG) != 0;
   }
 
@@ -369,20 +369,20 @@ public final class Atom implements Bspt.Tuple {
   // FIXME mth 2003-01-10
   // store the vdw & covalent mars in the atom when the atom is created
   // then you can eliminate all the calls involving the model manager
-  public short getVanderwaalsMar() {
+  short getVanderwaalsMar() {
     return JmolConstants.vanderwaalsMars[elementNumber];
   }
 
-  public float getVanderwaalsRadiusFloat() {
+  float getVanderwaalsRadiusFloat() {
     return JmolConstants.vanderwaalsMars[elementNumber] / 1000f;
   }
 
-  public short getBondingMar() {
+  short getBondingMar() {
     return JmolConstants.getBondingMar(elementNumber,
                                        formalChargeAndFlags >> 4);
   }
   
-  public float getBondingRadiusFloat() {
+  float getBondingRadiusFloat() {
     return getBondingMar() / 1000f;
   }
 
@@ -417,7 +417,7 @@ public final class Atom implements Bspt.Tuple {
     return group;
   }
 
-  public Polymer getPolymer() {
+  Polymer getPolymer() {
     return group.polymer;
   }
 
@@ -425,11 +425,11 @@ public final class Atom implements Bspt.Tuple {
     return group.chain;
   }
 
-  public Model getModel() {
+  Model getModel() {
     return group.chain.model;
   }
   
-  public String getClientAtomStringProperty(String propertyName) {
+  String getClientAtomStringProperty(String propertyName) {
     Object[] clientAtomReferences = group.frame.clientAtomReferences;
     return
       ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
@@ -439,25 +439,25 @@ public final class Atom implements Bspt.Tuple {
                                       propertyName)));
   }
 
-  public boolean isDeleted() {
+  boolean isDeleted() {
     return madAtom == JmolConstants.MAR_DELETED;
   }
 
-  public void markDeleted() {
+  void markDeleted() {
     deleteAllBonds();
     madAtom = JmolConstants.MAR_DELETED;
     xyzd = Xyzd.NaN;
   }
 
-  public byte getSecondaryStructureType() {
-    return group.getStructureType();
+  public byte getProteinStructureType() {
+    return group.getProteinStructureType();
   }
 
   public short getGroupID() {
     return group.groupID;
   }
 
-  public String getSeqcodeString() {
+  String getSeqcodeString() {
     return group.getSeqcodeString();
   }
 
@@ -469,7 +469,7 @@ public final class Atom implements Bspt.Tuple {
     return specialAtomID;
   }
 
-  public void demoteSpecialAtomImposter() {
+  void demoteSpecialAtomImposter() {
     specialAtomID = -1;
   }
   
@@ -662,7 +662,7 @@ public final class Atom implements Bspt.Tuple {
     return "" + info;
   }
 
-  public String getIdentity() {
+  String getIdentity() {
     StringBuffer info = new StringBuffer();
     if (atomName != null)
       info.append(atomName);

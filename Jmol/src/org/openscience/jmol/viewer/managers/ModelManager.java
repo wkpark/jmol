@@ -201,9 +201,11 @@ public class ModelManager {
     this.minBondDistance = minBondDistance;
   }
 
+  /*
   public void deleteAtom(int atomIndex) {
     frame.deleteAtom(atomIndex);
   }
+  */
 
   public boolean frankClicked(int x, int y) {
     return (getShapeSize(JmolConstants.SHAPE_FRANK) != 0 &&
@@ -293,7 +295,7 @@ public class ModelManager {
   ////////////////////////////////////////////////////////////////
 
   public String getAtomInfo(int i) {
-    return frame.atoms[i].getInfo();
+    return frame.getAtomAt(i).getInfo();
   }
 
 /*
@@ -309,66 +311,66 @@ public String getAtomInfoChime(int i) {
 */
 
   public String getElementSymbol(int i) {
-    return frame.atoms[i].getElementSymbol();
+    return frame.getAtomAt(i).getElementSymbol();
   }
 
   public int getElementNumber(int i) {
-    return frame.atoms[i].getElementNumber();
+    return frame.getAtomAt(i).getElementNumber();
   }
 
   public String getAtomName(int i) {
-    return frame.atoms[i].getAtomName();
+    return frame.getAtomAt(i).getAtomName();
   }
 
   public int getAtomNumber(int i) {
-    return frame.atoms[i].getAtomNumber();
+    return frame.getAtomAt(i).getAtomNumber();
   }
 
   public float getAtomX(int i) {
-    return frame.atoms[i].getAtomX();
+    return frame.getAtomAt(i).getAtomX();
   }
 
   public float getAtomY(int i) {
-    return frame.atoms[i].getAtomY();
+    return frame.getAtomAt(i).getAtomY();
   }
 
   public float getAtomZ(int i) {
-    return frame.atoms[i].getAtomZ();
+    return frame.getAtomAt(i).getAtomZ();
   }
 
   public Point3f getAtomPoint3f(int i) {
-    return frame.atoms[i].getPoint3f();
+    return frame.getAtomAt(i).getPoint3f();
   }
 
   public float getAtomRadius(int i) {
-    return frame.atoms[i].getRadius();
+    return frame.getAtomAt(i).getRadius();
   }
 
   public short getAtomColix(int i) {
-    return frame.atoms[i].getColix();
+    return frame.getAtomAt(i).getColix();
   }
 
   public Point3f getBondPoint3f1(int i) {
-    return frame.bonds[i].atom1.getPoint3f();
+    return frame.getBondAt(i).atom1.getPoint3f();
   }
 
   public Point3f getBondPoint3f2(int i) {
-    return frame.bonds[i].atom2.getPoint3f();
+    return frame.getBondAt(i).atom2.getPoint3f();
   }
 
   public float getBondRadius(int i) {
-    return frame.bonds[i].getRadius();
+    return frame.getBondAt(i).getRadius();
   }
 
   public short getBondOrder(int i) {
-    return frame.bonds[i].getOrder();
+    return frame.getBondAt(i).getOrder();
   }
 
   public short getBondColix1(int i) {
-    return frame.bonds[i].getColix1();
+    return frame.getBondAt(i).getColix1();
   }
 
   public short getBondColix2(int i) {
-    return frame.bonds[i].getColix2();
+    return frame.getBondAt(i).getColix2();
   }
 }

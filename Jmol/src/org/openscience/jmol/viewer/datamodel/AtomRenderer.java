@@ -71,12 +71,25 @@ class AtomRenderer extends ShapeRenderer {
     g3d.setFont(labelFont);
 
     Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      atom.transform(viewer);
-      render(atom);
-      if (atom.strLabel != null)
-        renderLabel(atom);
+    int displayModel = this.displayModel;
+    if (displayModel == -1) {
+      for (int i = frame.atomCount; --i >= 0; ) {
+        Atom atom = atoms[i];
+        atom.transform(viewer);
+        render(atom);
+        if (atom.strLabel != null)
+          renderLabel(atom);
+      }
+    } else {
+      for (int i = frame.atomCount; --i >= 0; ) {
+        Atom atom = atoms[i];
+        if (atom.modelNumber != displayModel)
+          continue;
+        atom.transform(viewer);
+        render(atom);
+        if (atom.strLabel != null)
+          renderLabel(atom);
+      }
     }
   }
 

@@ -1198,7 +1198,8 @@ final public class JmolViewer {
 
   public Image renderScreenImage(Rectangle rectClip) {
     manageScriptTermination();
-    repaintManager.render(g3d, rectClip, modelManager.getFrame());
+    repaintManager.render(g3d, rectClip,
+                          modelManager.getFrame(), repaintManager.displayModel);
     return g3d.getScreenImage();
   }
 

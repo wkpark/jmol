@@ -49,13 +49,15 @@ abstract class ShapeRenderer {
   Graphics3D g3d;
   Rectangle rectClip;
   Frame frame;
+  int displayModel;
   Shape shape;
 
   void render(Graphics3D g3d, Rectangle rectClip,
-              Frame frame, Shape shape) {
+              Frame frame, int displayModel, Shape shape) {
     this.g3d = g3d;
     this.rectClip = rectClip;
     this.frame = frame;
+    this.displayModel = displayModel;
     this.shape = shape;
     render();
   }

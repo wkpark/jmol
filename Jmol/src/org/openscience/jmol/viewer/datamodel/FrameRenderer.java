@@ -53,32 +53,33 @@ public class FrameRenderer {
     renderers = new ShapeRenderer[JmolConstants.SHAPE_MAX];
   }
 
-  public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+  public void render(Graphics3D g3d, Rectangle rectClip,
+                     Frame frame, int displayModel) {
 
-    if (frame.atomCount <= 0)
+    if (frame.atomCount <= 0 || displayModel == 0)
       return;
 
     viewer.calcTransformMatrices();
 
-    atomRenderer.render(g3d, rectClip, frame, null);
-    bondRenderer.render(g3d, rectClip, frame, null);
+    atomRenderer.render(g3d, rectClip, frame, displayModel, null);
+    bondRenderer.render(g3d, rectClip, frame, displayModel, null);
     if (frame.measurementCount > 0) {
       if (measurementRenderer == null)
         measurementRenderer = new MeasurementRenderer(viewer, this);
-      measurementRenderer.render(g3d, rectClip, frame, null);
+      measurementRenderer.render(g3d, rectClip, frame, displayModel, null);
     }
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape == null)
         continue;
-      getRenderer(i).render(g3d, rectClip, frame, shape);
+      getRenderer(i).render(g3d, rectClip, frame, displayModel, shape);
     }
 
     if (frame.lineCount > 0) {
       if (lineRenderer == null)
         lineRenderer = new LineRenderer(viewer, this);
-      lineRenderer.render(g3d, rectClip, frame, null);
+      lineRenderer.render(g3d, rectClip, frame, displayModel, null);
     }
   }
 

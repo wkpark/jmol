@@ -45,6 +45,10 @@ final public class PdbModel {
     this.modelNumber = modelNumber;
   }
 
+  public int getModelNumber() {
+    return modelNumber;
+  }
+
   public void freeze() {
     if (chainCount != chains.length) {
       PdbChain[] t = new PdbChain[chainCount];

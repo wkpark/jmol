@@ -1833,8 +1833,10 @@ public class Eval implements Runnable {
     case Token.mode:
     case Token.direction:
     case Token.fps:
-    case Token.frame:
       System.out.println("anim subcommand not implemented");
+      break;
+    case Token.frame:
+      frame(3);
       break;
     default:
       unrecognizedSubcommand();
@@ -1976,16 +1978,20 @@ public class Eval implements Runnable {
   }
       
   void frame() throws ScriptException {
-    checkLength2();
+    frame(2);
+  }
+
+  void frame(int length) throws ScriptException {
+    checkStatementLength(length);
     int model = 0;
-    switch(statement[1].tok) {
+    switch(statement[length - 1].tok) {
     case Token.all:
     case Token.asterisk:
       model = -1;
     case Token.none:
       break;
     case Token.integer:
-      model = statement[1].intValue;
+      model = statement[length - 1].intValue;
       break;
     default:
       integerExpected();

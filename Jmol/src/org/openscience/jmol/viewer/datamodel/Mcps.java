@@ -76,9 +76,11 @@ abstract public class Mcps extends Shape {
 
   class Model {
     Chain[] chains;
+    int modelNumber;
     
     Model(PdbModel model) {
       chains = new Chain[model.getChainCount()];
+      this.modelNumber = model.getModelNumber();
       for (int i = chains.length; --i >= 0; )
         chains[i] = allocateMcpsChain(model.getChain(i).getPolymer());
     }

@@ -114,7 +114,8 @@ public class RepaintManager {
     this.tOversample = tOversample;
   }
 
-  public void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
+  public void render(Graphics3D g3d, Rectangle rectClip,
+                     Frame frame, int displayModel) {
     g3d.validateRectClip(rectClip);
     g3d.beginRendering(tOversample);
     if (tOversample) {
@@ -125,7 +126,7 @@ public class RepaintManager {
       rectClip = rectOversample;
     }
     g3d.clearScreenBuffer(viewer.getColorBackground().getRGB(), rectClip);
-    frameRenderer.render(g3d, rectClip, frame);
+    frameRenderer.render(g3d, rectClip, frame, displayModel);
     viewer.checkCameraDistance();
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)

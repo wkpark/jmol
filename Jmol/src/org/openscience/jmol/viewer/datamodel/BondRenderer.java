@@ -83,8 +83,18 @@ class BondRenderer extends ShapeRenderer {
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
 
     Bond[] bonds = frame.bonds;
-    for (int i = frame.bondCount; --i >= 0; )
-      render(bonds[i]);
+    int displayModel = this.displayModel;
+    if (displayModel == -1) {
+      for (int i = frame.bondCount; --i >= 0; )
+        render(bonds[i]);
+    } else {
+      for (int i = frame.bondCount; --i >= 0; ) {
+        Bond bond = bonds[i];
+        if (bond.atom1.modelNumber != displayModel)
+          continue;
+        render(bond);
+      }
+    }
   }
 
   void render(Bond bond) {

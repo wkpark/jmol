@@ -13,6 +13,7 @@
 <contributor id="JJ"><name>Jochen Junker</name><email>jochen.junker@yale.edu</email></contributor>
 <contributor id="CR"><name>Christian Ribeaud</name><email>christian.ribeaud@genedata.com</email></contributor>
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
+<contributor id="MH"><name>Miguel Howard</name></contributor>
 </contributors>
 
 <changes version="jmol-5">
@@ -36,7 +37,16 @@
     fixed, the feature will be reinstated.
   </change>
   <change contributor="FD">
-    ABINIT crystal properties dialog, and unit cell visualization.
+    Crystal properties dialog, and unit cell visualization has been added.
+  </change>
+  <change contributor="FD">
+    ABINIT energy data reading is added.
+  </change>
+  <change contributor="EW">
+    Added reader for ShelX97 files containing a crystal structure.
+  </change>
+  <change contributor="MH">
+    Translated part of the Jmol GUI into Spanish.
   </change>
 </changes>
 

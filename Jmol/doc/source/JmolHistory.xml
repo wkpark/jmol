@@ -46,11 +46,14 @@
     Added reader for ShelX97 files containing a crystal structure.
   </change>
   <change contributor="MH">
-    Translated part of the Jmol GUI into Spanish.
+    Translated the Jmol GUI into Spanish.
   </change>
   <change contributor="EW">
     Fixed the PropertyGraph. Data is no longer duplicated on reopening the dialog
     and data of previous file is deleted when opening a new one.
+  </change>
+  <change contributor="MH">
+    Applied a patch that speeds up the painting process considerably.
   </change>
 </changes>
 

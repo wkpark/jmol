@@ -25,8 +25,8 @@
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.JmolStatusListener;
+import org.jmol.viewer.JmolViewer;
+import org.jmol.viewer.JmolStatusListener;
 
 import java.awt.*;
 import java.awt.event.*;

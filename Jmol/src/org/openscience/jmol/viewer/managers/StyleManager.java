@@ -121,18 +121,12 @@ public class StyleManager {
     viewer.setMarBond((short)100);
   }
 
-  void setTextColors(Color color) {
-    viewer.setColorDistance(color);
-    viewer.setColorAngle(color);
-    viewer.setColorDihedral(color);
-  }
-
   public void setJmolDefaults() {
     setCommonDefaults();
     viewer.setStyleBond(JmolConstants.STYLE_SHADED);
     viewer.setStyleAtom(JmolConstants.STYLE_SHADED);
     viewer.setColorBackground(Color.white);
-    setTextColors(Color.black);
+    viewer.setColorMeasurements(Color.black);
     viewer.setColorLabel(Color.black);
   }
 
@@ -141,7 +135,7 @@ public class StyleManager {
     viewer.setStyleBond(JmolConstants.STYLE_WIREFRAME);
     viewer.setStyleAtom(JmolConstants.STYLE_NONE);
     viewer.setColorBackground(Color.black);
-    setTextColors(Color.white);
+    viewer.setColorMeasurements(Color.white);
     viewer.setColorLabel(null);
   }
 }

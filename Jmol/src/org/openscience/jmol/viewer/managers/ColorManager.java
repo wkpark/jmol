@@ -145,6 +145,11 @@ public class ColorManager {
     colixDihedral = Colix.getColix(c);
   }
 
+  public void setColorMeasurements(Color c) {
+    colorDistance = colorAngle = colorDihedral = c;
+    colixDistance = colixAngle = colixDihedral = Colix.getColix(c);
+  }
+
   public Color colorBackground = Color.white;
   public short colixBackground = Colix.WHITE;
   public void setColorBackground(Color bg) {

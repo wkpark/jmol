@@ -494,34 +494,39 @@ final public class JmolViewer {
     setColorDotsSaddle(color);
   }
 
-    public void setColorDotsSaddle(Color color) {
-	colorManager.setColorDotsSaddle(color);
-    }
-    public short getColixDotsSaddle() {
-	return colorManager.colixDotsSaddle;
-    }
+  public void setColorDotsSaddle(Color color) {
+    colorManager.setColorDotsSaddle(color);
+  }
+  public short getColixDotsSaddle() {
+    return colorManager.colixDotsSaddle;
+  }
+  
 
-
-    public void setColorDotsConvex(Color color) {
-	colorManager.setColorDotsConvex(color);
-    }
-    public short getColixDotsConvex() {
-	return colorManager.colixDotsConvex;
-    }
-
-    public void setColorDotsConcave(Color color) {
-	colorManager.setColorDotsConcave(color);
-    }
-    public short getColixDotsConcave() {
-	return colorManager.colixDotsConcave;
-    }
-
+  public void setColorDotsConvex(Color color) {
+    colorManager.setColorDotsConvex(color);
+  }
+  public short getColixDotsConvex() {
+    return colorManager.colixDotsConvex;
+  }
+  
+  public void setColorDotsConcave(Color color) {
+    colorManager.setColorDotsConcave(color);
+  }
+  public short getColixDotsConcave() {
+    return colorManager.colixDotsConcave;
+  }
+  
   public Color getColorLabel() {
     return colorManager.colorLabel;
   }
 
   public short getColixLabel() {
     return colorManager.colixLabel;
+  }
+
+  public void setColorMeasurements(Color c) {
+    colorManager.setColorMeasurements(c);
+    refresh();
   }
 
   public void setColorDistance(Color c) {

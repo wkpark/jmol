@@ -115,17 +115,21 @@ public class AtomRenderer {
       gc.setColor(settings.getTextColor());
 
       switch (settings.getLabelMode()) {
-      case DisplaySettings.SYMBOLS :
-        j = fontMetrics.stringWidth(atom.getType().getRoot());
-        gc.drawString(atom.getType().getRoot(), x - j / 2, y + k / 2);
+      case DisplaySettings.SYMBOLS:
+        if (atom.getType() != null && atom.getType().getRoot() != null) {
+          j = fontMetrics.stringWidth(atom.getType().getRoot());
+          gc.drawString(atom.getType().getRoot(), x - j / 2, y + k / 2);
+        }
         break;
 
-      case DisplaySettings.TYPES :
-        j = fontMetrics.stringWidth(atom.getType().getName());
-        gc.drawString(atom.getType().getName(), x - j / 2, y + k / 2);
+      case DisplaySettings.TYPES:
+        if (atom.getType() != null && atom.getType().getName() != null) {
+          j = fontMetrics.stringWidth(atom.getType().getName());
+          gc.drawString(atom.getType().getName(), x - j / 2, y + k / 2);
+        }
         break;
 
-      case DisplaySettings.NUMBERS :
+      case DisplaySettings.NUMBERS:
         s = Integer.toString(atom.getAtomNumber() + 1);
         j = fontMetrics.stringWidth(s);
         gc.drawString(s, x - j / 2, y + k / 2);

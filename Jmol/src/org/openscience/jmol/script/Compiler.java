@@ -613,14 +613,14 @@ class Compiler {
     case Token.resno:
     case Token.radius:
     case Token.temperature:
-    case Token.bondedcount:
+    case Token._bondedcount:
+    case Token._resid:
       return clauseComparator();
     case Token.within:
       return clauseWithin();
     default:
       int tok = tokPeek();
-      if (((tok & Token.predefinedset) != Token.predefinedset) &&
-          ((tok & Token.aminoacidset) != Token.aminoacidset))
+      if ((tok & Token.predefinedset) != Token.predefinedset)
         break;
     case Token.all:
     case Token.none:
@@ -724,7 +724,7 @@ class Compiler {
       return badRGBColor();
     int rgb = atoken[i+1].intValue << 16 | atoken[i+3].intValue << 8 |
       atoken[i+5].intValue;
-    atokenNew[i] = new Token(Token.colorparam, rgb, "[R,G,B]");
+    atokenNew[i] = new Token(Token.colorRGB, rgb, "[R,G,B]");
     return true;
   }
 }

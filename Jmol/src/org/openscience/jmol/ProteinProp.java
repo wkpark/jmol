@@ -56,6 +56,13 @@ public class ProteinProp {
     return recordPdb.substring(17, 20);
   }
 
+  public byte getResID() {
+    Integer res = (Integer)htResidue.get(getResidue());
+    if (res == null)
+      return -1;
+    return (byte)res.intValue();
+  }
+
   public int getResno() {
     int chain = 0;
     try {

@@ -125,6 +125,12 @@ public class AtomShape extends Shape {
     this.marAtom = marAtom;
   }
         
+  public int getRasMolRadius() {
+    if (styleAtom == DisplayControl.NONE)
+      return 0;
+    return marAtom / 4;
+  }
+
   public void setStyleAllBonds(byte styleBond) {
     for (int i = numBonds; --i >= 0; )
       styleBonds[i] = styleBond;

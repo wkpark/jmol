@@ -55,7 +55,7 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean haltExecution;
 
-  final static boolean logMessages = false;
+  final static boolean logMessages = true;
 
   public Eval(DisplayControl control) {
     compiler = new Compiler(this);
@@ -467,12 +467,12 @@ public class Eval implements Runnable {
         stack[sp++] = new BitSet();
         break;
       case Token.integer:
-        // FIXME mth -- this is selecting on atom#, not residue#
-        int thisInt = instruction.intValue;
-        bs = new BitSet();
-        if (thisInt >= 0 && thisInt < numberOfAtoms)
-          bs.set(thisInt);
-        stack[sp++] = bs;
+        stack[sp++] = getResidueSet(instruction.intValue);
+        break;
+      case Token.hyphen:
+        int min = instruction.intValue;
+        int last = ((Integer)instruction.value).intValue();
+        stack[sp++] = getResidueSet(min, last);
         break;
       case Token.opOr:
         bs = stack[--sp];
@@ -485,17 +485,6 @@ public class Eval implements Runnable {
       case Token.opNot:
         bs = stack[sp - 1];
         notSet(bs);
-        break;
-      case Token.hyphen:
-        // FIXME mth -- this is selecting on atom#, not residue#
-        int min = instruction.intValue;
-        int last = ((Integer)instruction.value).intValue();
-        int max = last + 1;
-        if (max > numberOfAtoms)
-          max = numberOfAtoms;
-        bs = stack[sp++] = new BitSet(max);
-        for (int i = min; i < max; ++i)
-          bs.set(i);
         break;
       case Token.within:
         bs = stack[sp - 1];
@@ -511,6 +500,7 @@ public class Eval implements Runnable {
       case Token.hetero:
         stack[sp++] = getHeteroSet();
         break;
+      case Token.y:
       case Token.identifier:
         String variable = (String)instruction.value;
         BitSet value = lookupValue(variable, false);
@@ -530,9 +520,6 @@ public class Eval implements Runnable {
       case Token.amino:
         stack[sp++] = getAllAminosSet();
         break;
-      case Token.water:
-        stack[sp++] = getResidueSet("HOH");
-          break;
       case Token.backbone:
       case Token.alpha:
       case Token.cystine:
@@ -549,10 +536,6 @@ public class Eval implements Runnable {
         stack[sp++] = new BitSet();
         break;
       default:
-        if ((instruction.tok & Token.aminoacidset) == Token.aminoacidset) {
-          stack[sp++] = getResidueSet((String)instruction.value);
-          break;
-        }
         unrecognizedExpression();
       }
     }
@@ -605,16 +588,43 @@ public class Eval implements Runnable {
 
   BitSet getResidueSet(String strResidue) {
     ChemFrame frame = control.getFrame();
-    BitSet bsAmino = new BitSet();
+    BitSet bsResidue = new BitSet();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
       ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
       if (pprop != null && pprop.isResidue(strResidue))
-        bsAmino.set(i);
+        bsResidue.set(i);
     }
-    return bsAmino;
+    return bsResidue;
+  }
+
+  BitSet getResidueSet(int resno) {
+    ChemFrame frame = control.getFrame();
+    BitSet bsResidue = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop != null && pprop.getResno() == resno)
+        bsResidue.set(i);
+    }
+    return bsResidue;
+  }
+
+  BitSet getResidueSet(int resnoMin, int resnoLast) {
+    ChemFrame frame = control.getFrame();
+    BitSet bsResidue = new BitSet();
+    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+      if (pprop == null)
+        continue;
+      int atomResno = pprop.getResno();
+      if (atomResno >= resnoMin && atomResno <= resnoLast)
+        bsResidue.set(i);
+    }
+    return bsResidue;
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
+    if (logMessages)
+      System.out.println("looking up:" + variable);
     Object value = variables.get(variable);
     if (value != null) {
       if (value instanceof Token[]) {
@@ -656,15 +666,23 @@ public class Eval implements Runnable {
         break;
       case Token.temperature:
         propertyValue = getTemperature(atom);
+        if (propertyValue == -1)
+          return;
         break;
       case Token.resno:
         propertyValue = getResno(atom);
+        if (propertyValue == -1)
+          return;
+        break;
+      case Token._resid:
+       propertyValue = getResID(atom);
+        if (propertyValue == -1)
+          return;
         break;
       case Token.radius:
-        // FIXME -- should this be the currently displayed radius?
-        propertyValue = (int)(atom.getVdwRadius() * 250);
+        propertyValue = atom.getAtomShape().getRasMolRadius();
         break;
-      case Token.bondedcount:
+      case Token._bondedcount:
         propertyValue = atom.getBondedCount();
         break;
       }
@@ -732,21 +750,29 @@ public class Eval implements Runnable {
   int getResno(Atom atom) {
     ProteinProp pprop = atom.getProteinProp();
     if (pprop == null)
-      return 0;
+      return -1;
     return pprop.getResno();
   }
 
   int getTemperature(Atom atom) {
     ProteinProp pprop = atom.getProteinProp();
     if (pprop == null)
-      return 0;
+      return -1;
     return pprop.getTemperature();
   }
+
+  int getResID(Atom atom) {
+    ProteinProp pprop = atom.getProteinProp();
+    if (pprop == null)
+      return -1;
+    return pprop.getResID();
+  }
+
 
   Color getColorParam(int itoken) throws ScriptException {
     if (itoken >= statement.length)
       colorExpected();
-    if ((statement[itoken].tok & Token.colorparam) != Token.colorparam)
+    if (statement[itoken].tok != Token.colorRGB)
       colorExpected();
     return new Color(statement[itoken].intValue);
   }
@@ -754,7 +780,7 @@ public class Eval implements Runnable {
   Color getColorOrNoneParam(int itoken) throws ScriptException {
     if (itoken >= statement.length)
       colorExpected();
-    if ((statement[itoken].tok & Token.colorparam) == Token.colorparam)
+    if (statement[itoken].tok == Token.colorRGB)
       return new Color(statement[itoken].intValue);
     if (statement[itoken].tok != Token.none)
       colorExpected();
@@ -783,9 +809,7 @@ public class Eval implements Runnable {
     if (statement.length > 3 || statement.length < 2)
       badArgumentCount();
     switch (statement[1].tok) {
-    default:
-      if ((statement[1].tok & Token.colorparam) != Token.colorparam)
-        invalidArgument();
+    case Token.colorRGB:
     case Token.spacefill:
     case Token.amino:
     case Token.chain:
@@ -814,6 +838,8 @@ public class Eval implements Runnable {
     case Token.ssbonds:
       notImplemented(1);
       break;
+    default:
+      invalidArgument();
     }
   }
 
@@ -835,12 +861,12 @@ public class Eval implements Runnable {
     case Token.user:
       notImplemented(itoken);
       return;
-    default:
-      if ((statement[itoken].tok & Token.colorparam) != Token.colorparam)
-        invalidArgument();
+    case Token.colorRGB:
       mode = DisplayControl.COLOR;
       color = getColorParam(itoken);
       break;
+    default:
+        invalidArgument();
     }
     control.setColorAtomScript(mode, color);
   }

@@ -84,7 +84,6 @@ class Token {
   // so, just delete the set command from the token list
   // but not for hbonds nor ssbonds
   final static int setspecial        = (1 << 20);
-  final static int aminoacidset      = (1 << 21) | expression;
 
   final static int varArgCount     = (1 << 22);
   final static int onDefault1      = (1 << 23) | 1;
@@ -230,7 +229,8 @@ class Token {
   final static int resno        = atomproperty | 2;
   // radius;
   final static int temperature  = atomproperty | 3;
-  final static int bondedcount  = atomproperty | 4;
+  final static int _bondedcount = atomproperty | 4;
+  final static int _resid       = atomproperty | 5;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -246,7 +246,7 @@ class Token {
   final static int dash         = misc |  0; //backbone
   final static int user         = misc |  1; //spacefill & star
   final static int x            = misc |  2;
-  // y
+  final static int y            = misc | 3 | predefinedset;
   final static int z            = misc |  4;
   final static int none         = misc |  5 | expression;
   final static int normal       = misc |  7;
@@ -262,6 +262,7 @@ class Token {
   final static int rightsquare  = misc | 17;
   final static int shapely      = misc | 18;
   final static int restore      = misc | 19; // chime extended
+  final static int colorRGB     = misc | 20 | colorparam;
 
   final static int alpha       = predefinedset |  0;
   final static int amino       = predefinedset |  1;
@@ -277,54 +278,6 @@ class Token {
   final static int sidechain   = predefinedset | 11;
   final static int solvent     = predefinedset | 12 | setparam;
   final static int turn        = predefinedset | 13;
-  final static int water       = predefinedset | 14;
-  // amino acids
-  final static int ala         = aminoacidset |  0;
-  final static int arg         = aminoacidset |  1;
-  final static int asn         = aminoacidset |  2;
-  final static int asp         = aminoacidset |  3;
-  final static int cys         = aminoacidset |  4;
-  final static int glu         = aminoacidset |  5;
-  final static int gln         = aminoacidset |  6;
-  final static int gly         = aminoacidset |  7;
-  final static int his         = aminoacidset |  8;
-  final static int ile         = aminoacidset |  9;
-  final static int leu         = aminoacidset | 10;
-  final static int lys         = aminoacidset | 11;
-  final static int met         = aminoacidset | 12;
-  final static int phe         = aminoacidset | 13;
-  final static int pro         = aminoacidset | 14;
-  final static int ser         = aminoacidset | 15;
-  final static int thr         = aminoacidset | 16;
-  final static int trp         = aminoacidset | 17;
-  final static int y           = aminoacidset | 18 | misc;
-  final static int tyr         = y;
-  final static int val         = aminoacidset | 19;
-
-  final static int black                = colorparam |  0;
-  final static int blue                 = colorparam |  1;
-  final static int bluetint             = colorparam |  2;
-  final static int brown                = colorparam |  3;
-  final static int cyan                 = colorparam |  4;
-  final static int gold                 = colorparam |  5;
-  final static int grey                 = colorparam |  6;
-  final static int green                = colorparam |  7;
-  final static int greenblue            = colorparam |  8;
-  final static int greentint            = colorparam |  9;
-  final static int hotpink              = colorparam | 10;
-  final static int magenta              = colorparam | 11;
-  final static int orange               = colorparam | 12;
-  final static int pink                 = colorparam | 13;
-  final static int pinktint             = colorparam | 14;
-  final static int purple               = colorparam | 15;
-  final static int red                  = colorparam | 16;
-  final static int redorange            = colorparam | 17;
-  final static int seagreen             = colorparam | 18;
-  final static int skyblue              = colorparam | 19;
-  final static int violet               = colorparam | 20;
-  final static int white                = colorparam | 21;
-  final static int yellow               = colorparam | 22;
-  final static int yellowtint           = colorparam | 23;
 
   final static Token tokenOn = new Token(on, 1, "on");
 
@@ -435,6 +388,7 @@ class Token {
     "group",        new Token(group,           "group"),
     "chain",        new Token(chain,           "chain"),
     "atom",         new Token(atom,            "atom"),
+    "atoms",        null,
     "sequence",     new Token(sequence,        "sequence"),
     "symmetry",     new Token(symmetry,        "symmetry"),
     "translation",  new Token(translation,     "translation"),
@@ -469,7 +423,8 @@ class Token {
     "elemno",       new Token(elemno, "elemno"),
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
-    "_bondedcount", new Token(bondedcount, "_bondedcount"),
+    "_bondedcount", new Token(_bondedcount, "_bondedcount"),
+    "_resid",       new Token(_resid, "_resid"),
 
     "off",          new Token(off, 0, "off"),
     "false",        null,
@@ -481,7 +436,7 @@ class Token {
     "dash",         new Token(dash, "dash"),
     "user",         new Token(user, "user"),
     "x",            new Token(x, "x"),
-    // y
+    "y",            new Token(y, "y"),
     "z",            new Token(z, "z"),
     "all",          new Token(all, "all"),
     "*",            null,
@@ -513,8 +468,8 @@ class Token {
     "sidechain",    new Token(sidechain,       "sidechain"),
     "solvent",      new Token(solvent,         "solvent"),
     "turn",         new Token(turn,            "turn"),
-    "water",        new Token(water,           "water"),
 
+    /*
     "ala",       new Token(ala,                "ALA"),
     "a",         null,
     "arg",       new Token(arg,                "ARG"),
@@ -552,35 +507,36 @@ class Token {
     "trp",       new Token(trp,                "TRP"),
     "w",         null,
     "tyr",       new Token(tyr,                "TYR"),
-    "y",         new Token(y,                  "y"),
+    */
+    /*
     "val",       new Token(val,                "VAL"),
     "v",         null,
+    */
 
-
-    "black",      new Token(black,      0x000000, "black"),
-    "blue",       new Token(blue,       0x0000FF, "blue"),
-    "bluetint",   new Token(bluetint,   0xAFD7FF, "bluetint"),
-    "brown",      new Token(brown,      0xAF7559, "brown"),
-    "cyan",       new Token(cyan,       0x00FFFF, "cyan"),
-    "gold",       new Token(gold,       0xFC9C00, "gold"),
-    "grey",       new Token(grey,       0x7D7D7D, "grey"),
-    "green",      new Token(green,      0x00FF00, "green"),
-    "greenblue",  new Token(greenblue,  0x2E8B57, "greenblue"),
-    "greentint",  new Token(greentint,  0x98FFB3, "greentint"),
-    "hotpink",    new Token(hotpink,    0xFF0065, "hotpink"),
-    "magenta",    new Token(magenta,    0xFF00FF, "magenta"),
-    "orange",     new Token(orange,     0xFFA500, "orange"),
-    "pink",       new Token(pink,       0xFF6575, "pink"),
-    "pinktint",   new Token(pinktint,   0xFFABBB, "pinktint"),
-    "purple",     new Token(purple,     0xA020F0, "purple"),
-    "red",        new Token(red,        0xFF0000, "red"),
-    "redorange",  new Token(redorange,  0xFF4500, "redorange"),
-    "seagreen",   new Token(seagreen,   0x00FA6D, "seagreen"),
-    "skyblue",    new Token(skyblue,    0x3A90FF, "skyblue"),
-    "violet",     new Token(violet,     0xEE82EE, "violet"),
-    "white",      new Token(white,      0xFFFFFF, "white"),
-    "yellow",     new Token(yellow,     0xFFFF00, "yellow"),
-    "yellowtint", new Token(yellowtint, 0xF6F675, "yellowtint"),
+    "black",      new Token(colorRGB, 0x000000, "black"),
+    "blue",       new Token(colorRGB, 0x0000FF, "blue"),
+    "bluetint",   new Token(colorRGB, 0xAFD7FF, "bluetint"),
+    "brown",      new Token(colorRGB, 0xAF7559, "brown"),
+    "cyan",       new Token(colorRGB, 0x00FFFF, "cyan"),
+    "gold",       new Token(colorRGB, 0xFC9C00, "gold"),
+    "grey",       new Token(colorRGB, 0x7D7D7D, "grey"),
+    "green",      new Token(colorRGB, 0x00FF00, "green"),
+    "greenblue",  new Token(colorRGB, 0x2E8B57, "greenblue"),
+    "greentint",  new Token(colorRGB, 0x98FFB3, "greentint"),
+    "hotpink",    new Token(colorRGB, 0xFF0065, "hotpink"),
+    "magenta",    new Token(colorRGB, 0xFF00FF, "magenta"),
+    "orange",     new Token(colorRGB, 0xFFA500, "orange"),
+    "pink",       new Token(colorRGB, 0xFF6575, "pink"),
+    "pinktint",   new Token(colorRGB, 0xFFABBB, "pinktint"),
+    "purple",     new Token(colorRGB, 0xA020F0, "purple"),
+    "red",        new Token(colorRGB, 0xFF0000, "red"),
+    "redorange",  new Token(colorRGB, 0xFF4500, "redorange"),
+    "seagreen",   new Token(colorRGB, 0x00FA6D, "seagreen"),
+    "skyblue",    new Token(colorRGB, 0x3A90FF, "skyblue"),
+    "violet",     new Token(colorRGB, 0xEE82EE, "violet"),
+    "white",      new Token(colorRGB, 0xFFFFFF, "white"),
+    "yellow",     new Token(colorRGB, 0xFFFF00, "yellow"),
+    "yellowtint", new Token(colorRGB, 0xF6F675, "yellowtint"),
     "[",          new Token(leftsquare,  "["),
     "]",          new Token(rightsquare, "]")
   };
@@ -593,9 +549,9 @@ class Token {
     //    "@alpha approximatly *.CA", // whatever that means
     //    "@amino",
     "@aromatic h,f,w,y",
-    "@backbone (protein or nucleic) & !sidechain",
+    "@backbone (protein or nucleic) & !sidechain", "@mainchain backbone",
     "@basic r,h,k",
-    "@bonded _bondedcount=0",
+    "@bonded _bondedcount>0",
     "@buried a,c,i,l,m,f,w,v", // doesn't seem right to me
     "@cg c,g",
     "@charged acidic,basic",
@@ -629,9 +585,30 @@ class Token {
     "@solvent water,ions",
     "@surface !buried",
     //    "@turn",
-    //    "@water"
+    "@water _resid=47", "@hoh water",
 
-    "@hydrogen elemno=1",
+    "@ala _resid=0", "@a ala",
+    "@gly _resid=1", "@g gly",
+    "@leu _resid=2", "@l leu",
+    "@ser _resid=3", "@s ser",
+    "@val _resid=4", "@v val",
+    "@thr _resid=5", "@t thr",
+    "@lys _resid=6", "@k lys",
+    "@asp _resid=7", "@d asp",
+    "@ile _resid=8", "@i ile",
+    "@asn _resid=9", "@n asn",
+    "@glu _resid=10", "@e glu",
+    "@pro _resid=11", "@p pro",
+    "@arg _resid=12", "@r arg",
+    "@phe _resid=13", "@f phe",
+    "@gln _resid=14", "@q gln",
+    "@tyr _resid=15", "@y tyr",
+    "@his _resid=16", "@h his",
+    "@cys _resid=17", "@c cys",
+    "@met _resid=18", "@m met",
+    "@trp _resid=19", "@w trp",
+
+    // "@hydrogen elemno=1",
     "@helium elemno=2",
     "@lithium elemno=3",
     "@beryllium elemno=4",
@@ -694,5 +671,137 @@ class Token {
       "-" + tok +
       ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue) +
       ((value == null) ? "" : ":" + value) + "]";
+  }
+
+  // amino acids
+  public final static byte RESID_ALA =  0;
+  public final static byte RESID_GLY =  1;
+  public final static byte RESID_LEU =  2;
+  public final static byte RESID_SER =  3;
+  public final static byte RESID_VAL =  4;
+  public final static byte RESID_THR =  5;
+  public final static byte RESID_LYS =  6;
+  public final static byte RESID_ASP =  7;
+  public final static byte RESID_ILE =  8;
+  public final static byte RESID_ASN =  9;
+  public final static byte RESID_GLU = 10;
+  public final static byte RESID_PRO = 11;
+  public final static byte RESID_ARG = 12;
+  public final static byte RESID_PHE = 13;
+  public final static byte RESID_GLN = 14;
+  public final static byte RESID_TYR = 15;
+  public final static byte RESID_HIS = 16;
+  public final static byte RESID_CYS = 17;
+  public final static byte RESID_MET = 18;
+  public final static byte RESID_TRP = 19;
+
+  public final static byte RESID_ASX = 20;
+  public final static byte RESID_GLX = 21;
+  public final static byte RESID_PCA = 22;
+  public final static byte RESID_HYP = 23;
+
+  // FIXME mth -- in the rasmol source they have are using PCA as the
+  // last amino acid. What is the scoop on HYP?
+  public final static byte RESID_AMINO_LAST = 22;
+
+  // DNA Nucleotides
+  public final static byte RESID_A   = 24;
+  public final static byte RESID_C   = 25;
+  public final static byte RESID_G   = 26;
+  public final static byte RESID_T   = 27;
+
+  // RNA Nucleotides
+  public final static byte RESID_U   = 28;
+  public final static byte RESID_PLUSU  = 29; // plus U
+  public final static byte RESID_I   = 30;
+  public final static byte RESID_1MA = 31;
+  public final static byte RESID_5MC = 32;
+  public final static byte RESID_OMC = 33; // Letter O not zero
+  public final static byte RESID_1MG = 34;
+  public final static byte RESID_2MG = 35;
+  public final static byte RESID_M2G = 36;
+  public final static byte RESID_7MG = 37;
+  public final static byte RESID_OMG = 38; // letter
+  public final static byte RESID_YG  = 39;
+  public final static byte RESID_H2U = 40;
+  public final static byte RESID_5MU = 42;
+  public final static byte RESID_PSU = 43;
+
+  public final static byte RESID_NUCLEOTIDES_LAST = 43;
+
+  //Miscellaneous
+  public final static byte RESID_UNK = 44;
+  public final static byte RESID_ACE = 45;
+  public final static byte RESID_FOR = 46;
+  public final static byte RESID_HOH = 47;
+  public final static byte RESID_DOD = 48;
+  public final static byte RESID_SO4 = 49;
+  public final static byte RESID_PO4 = 50;
+  public final static byte RESID_NAD = 51;
+  public final static byte RESID_COA = 52;
+  public final static byte RESID_NAP = 53;
+  public final static byte RESID_NDP = 54;
+
+  public final static byte RESID_MAX = 55;
+
+  private static String[] residues3 = {
+    // this table taken directly from RasMol source molecule.h
+    
+    /*===============*/
+    /*  Amino Acids  */
+    /*===============*/
+
+/* Ordered by Cumulative Frequency in Brookhaven *
+ * Protein Databank, December 1991               */
+
+          "ALA", /* 8.4% */     "GLY", /* 8.3% */
+          "LEU", /* 8.0% */     "SER", /* 7.5% */
+          "VAL", /* 7.1% */     "THR", /* 6.4% */
+          "LYS", /* 5.8% */     "ASP", /* 5.5% */
+          "ILE", /* 5.2% */     "ASN", /* 4.9% */
+          "GLU", /* 4.9% */     "PRO", /* 4.4% */
+          "ARG", /* 3.8% */     "PHE", /* 3.7% */
+          "GLN", /* 3.5% */     "TYR", /* 3.5% */
+          "HIS", /* 2.3% */     "CYS", /* 2.0% */
+          "MET", /* 1.8% */     "TRP", /* 1.4% */
+
+          "ASX", "GLX", "PCA", "HYP",
+
+    /*===================*/
+    /*  DNA Nucleotides  */
+    /*===================*/
+          "  A", "  C", "  G", "  T",
+
+    /*===================*/
+    /*  RNA Nucleotides  */
+    /*===================*/
+          "  U", " +U", "  I", "1MA", 
+          "5MC", "OMC", "1MG", "2MG", 
+          "M2G", "7MG", "OMG", " YG", 
+          "H2U", "5MU", "PSU",
+
+    /*=================*/
+    /*  Miscellaneous  */ 
+    /*=================*/
+          "UNK", "ACE", "FOR", "HOH",
+          "DOD", "SO4", "PO4", "NAD",
+          "COA", "NAP", "NDP"  };
+
+  private static Hashtable htResidue = new Hashtable();
+  static {
+    for (int i = 0; i < residues3.length; ++i) {
+      htResidue.put(residues3[i], new Integer(i));
+    }
+  }
+
+  public static String getResidue3(byte resid) {
+    return (resid < 0 || resid > RESID_MAX) ? "???" : residues3[resid];
+  }
+
+  public static byte getResid(String residue3) {
+    Integer res = (Integer)htResidue.get(residue3);
+    if (res == null)
+      return -1;
+    return (byte)res.intValue();
   }
 }

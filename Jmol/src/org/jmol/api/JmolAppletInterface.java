@@ -38,7 +38,11 @@ public interface JmolAppletInterface {
   public void loadInline(String strModel);
 
   /**
-   * Deprecated
+   * @deprecated
+   * @param buttonWindow
+   * @param buttonName
+   * @param script
+   * @param buttonCallback
    */
   public void scriptButton(JSObject buttonWindow, String buttonName,
                            String script, String buttonCallback);

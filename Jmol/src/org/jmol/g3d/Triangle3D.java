@@ -37,7 +37,7 @@ class Triangle3D {
     this.g3d = g3d;
   }
 
-  /****************************************************************
+  /*===============================================================
    * 2004 05 12 - mth
    * I have been working hard to get the triangles to render
    * correctly when lines are drawn only once.
@@ -55,7 +55,7 @@ class Triangle3D {
    * I do not understand why this is the case
    * so, the triangle drawing now paints overlapping edges by one pixel
    *
-   ****************************************************************/
+   *==============================================================*/
   
 
   void fillTriangleNoisy(boolean transparent) {

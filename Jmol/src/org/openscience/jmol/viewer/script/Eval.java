@@ -364,6 +364,9 @@ public class Eval implements Runnable {
       case Token.dots:
         dots();
         break;
+      case Token.trace:
+        trace();
+        break;
         // not implemented
       case Token.bond:
       case Token.cartoon:
@@ -383,7 +386,6 @@ public class Eval implements Runnable {
       case Token.stereo:
       case Token.strands:
       case Token.structure:
-      case Token.trace:
       case Token.unbond:
       case Token.write:
         // chime extended commands
@@ -1643,6 +1645,39 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setDotsOn(dotsOn);
+  }
+
+  void trace() throws ScriptException {
+    float radius = 0;
+    int tok = statement[1].tok;
+    switch (tok) {
+    case Token.on:
+      radius = 0.33f;
+      break;
+    case Token.off:
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        numberOutOfRange();
+      radius = radiusRasMol * 4 / 1000f;
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[1].value).floatValue();
+      if (angstroms >= 2)
+        numberOutOfRange();
+      radius = angstroms;
+      break;
+    case Token.identifier:
+      String id = (String)statement[1].value;
+      if (id.equalsIgnoreCase("temperature")) {
+        radius = -1;
+        return;
+      }
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setTrace(radius);
   }
 
   /****************************************************************

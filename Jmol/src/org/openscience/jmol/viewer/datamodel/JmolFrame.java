@@ -188,7 +188,7 @@ public class JmolFrame {
 
   public void setDotsOn(boolean dotsOn, BitSet bsSelected) {
     if (dotsOn && dots == null)
-      dots = new Dots(viewer, this, frameRenderer.dotsRenderer);
+      dots = new Dots(viewer, this, frameRenderer.getDotsRenderer());
     if (dots != null)
       dots.setDotsOn(dotsOn, bsSelected);
   }
@@ -197,9 +197,18 @@ public class JmolFrame {
 
   public void setRibbons(int ribbonType, BitSet bsSelected) {
     if (ribbonType != 0 && ribbons == null)
-      ribbons = new Ribbons(viewer, this, frameRenderer.ribbonsRenderer);
+      ribbons = new Ribbons(viewer, this, frameRenderer.getRibbonsRenderer());
     if (ribbons != null)
       ribbons.setRibbons(ribbonType, bsSelected);
+  }
+
+  Trace trace;
+
+  public void setTrace(float radius, BitSet bsSelected) {
+    if (radius != 0 && trace == null)
+      trace = new Trace(viewer, this, frameRenderer.getTraceRenderer());
+    if (trace != null)
+      trace.setTrace(radius, bsSelected);
   }
 
   Point3f centerBoundingBox;

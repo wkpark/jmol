@@ -1189,6 +1189,10 @@ final public class JmolViewer {
     getJmolFrame().setDotsOn(dotsOn, selectionManager.bsSelection);
   }
 
+  public void setTrace(float radius) {
+    getJmolFrame().setTrace(radius, selectionManager.bsSelection);
+  }
+
   boolean rasmolHydrogenSetting = true;
   public void setRasmolHydrogenSetting(boolean b) {
     rasmolHydrogenSetting = b;

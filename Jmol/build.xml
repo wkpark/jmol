@@ -13,7 +13,7 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="10pre7" />
+  <property name="version" value="10pre8" />
 
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
@@ -148,27 +148,14 @@
     <delete includeEmptyDirs="true">
       <fileset dir="${applet.classes.dir}/org/openscience/jmol">
 	<include name="*.class" />
-	<include name="io/" />
-	<include name="util/" />
-	<exclude name="adapters/SimpleModelAdapter.class" />
       </fileset>
     </delete>
     
 
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
-	<!-- DEPRECATED I think
-	     <include name="**/*.dtd" />
-	     <include name="**/*.txt" />
-	-->
 	<include name="**/ui/*.properties" />
       </fileset>
-      <!-- DEPRECATED I think
-	   <fileset dir="${source.dir}/org/openscience/jmol/applet">
-	   <include name="Data/AtomTypes.txt" />
-	   <include name="Data/cml1_0.dtd.txt" />
-	   </fileset>
-      -->
     </copy>
   </target>
 

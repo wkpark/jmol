@@ -78,7 +78,7 @@ class RasMolScriptHandler {
 			    while (command2 != null) {
 				// note that is does not handle exceptions as the
 				// first exception should *crash* the "script" command 
-				handle(command);
+				handle(command2);
 				command2 = reader.readLine();
 			    }
 			} else {

@@ -12,21 +12,23 @@
     <para>Prerequisites:
       <itemizedlist>
         <listitem>
-          <para>Java 2 JDK (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>)
+          <para>Java 2 JDK 1.4
+	  (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>)
+	  
           </para>
         </listitem>
         <listitem>
-          <para>Apache Ant (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>)
+          <para>Apache Ant
+	  (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>)
           </para>
         </listitem>
-        <listitem>
-          <para>DocBook XSL (<ulink url="http://sourceforge.net/project/showfiles.php?group_id=21935">http://sourceforge.net/project/showfiles.php?group_id=21935</ulink>) </para></listitem>
         <listitem>
           <para>Jmol source code </para>
         </listitem>
       </itemizedlist>
       The Jmol source code can be either downloaded
-      (see <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge project files</ulink>)
+      (see <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629">
+      SourceForge project files</ulink>)
       or checked out from the CVS repository
       (see <ulink url="http://sourceforge.net/cvs/?group_id=23629">SourceForge CVS access</ulink>).
     </para>
@@ -37,13 +39,15 @@
 
     <para>On Unix,
       <programlisting>
-        <prompt>/home/user/programming/Jmol&gt;</prompt> <command>ant -Ddocbook.dir=/home/user/programming/docbook-xsl</command>
+        <prompt>/home/user/programming/Jmol&gt;</prompt>
+	<command>ant -Ddocbook.dir=/home/user/programming/docbook-xsl</command>
       </programlisting>
     </para>
 
     <para>On Windows,
       <programlisting>
-        <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Ddocbook.dir=h:\programming\docbook-xsl</command>
+        <prompt>h:\programming\Jmol&gt;</prompt>
+	<command>ant -Ddocbook.dir=h:\programming\docbook-xsl</command>
       </programlisting>
     </para>
 
@@ -60,8 +64,10 @@
           The applet needs to be compiled with javac 1.2, to be compatible with many older browsers.
           This can be done by doing:
           <programlisting>
-            <prompt>h:\programming\Jmol&gt;</prompt> <command>setenv JAVA_HOME /path/to/java1.2</command>
-            <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Dbuild.compiler=classic</command>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+	    <command>setenv JAVA_HOME /path/to/java1.2</command>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+	    <command>ant -Dbuild.compiler=classic</command>
           </programlisting>
         </para>
       </section>
@@ -71,8 +77,10 @@
           The application requires to be compiled with javac from J2SDK 1.4 or higher. 
           This can be done by doing:
           <programlisting>
-            <prompt>h:\programming\Jmol&gt;</prompt> <command>setenv JAVA_HOME /path/to/java1.4</command>
-            <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Dbuild.compiler=javac1.4</command>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+	    <command>setenv JAVA_HOME /path/to/java1.4</command>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+	    <command>ant -Dbuild.compiler=javac1.4</command>
           </programlisting>
         </para>
       </section>
@@ -90,8 +98,10 @@
       On Windows, the environment variable JMOL_HOME must be set to the development
       directory, and then the jmol.bat script can be executed. For example:
       <programlisting>
-        <prompt>H:\programming\Jmol&gt;</prompt> <command>set JMOL_HOME=h:\programming\Jmol</command>
-        <prompt>H:\programming\Jmol&gt;</prompt> <command>jmol.bat</command>
+        <prompt>H:\programming\Jmol&gt;</prompt>
+	<command>set JMOL_HOME=h:\programming\Jmol</command>
+        <prompt>H:\programming\Jmol&gt;</prompt>
+	<command>jmol.bat</command>
       </programlisting>
     </para>
   </chapter>
@@ -395,9 +405,8 @@
       should be commited to CVS under the Jmol/packaging
       directory. Currently the following packages are available:
       <itemizedlist>
-        <listitem><para>RPM (by Bradley Smith) </para></listitem>
         <listitem><para>Debian (by Egon Willighagen) </para></listitem>
-        <listitem><para>MacOS (by Dan Gezelter) </para></listitem>
+        <listitem><para>RPM (by Miguel Howard) </para></listitem>
       </itemizedlist>
     </para>
   </chapter>

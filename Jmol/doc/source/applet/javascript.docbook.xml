@@ -113,8 +113,7 @@
   <section>
     <title>document.jmol.setStyle(String style)</title>
     <para>
-      Set the atom/bond rendering style to one of 'SHADED',
-      'QUICKDRAW' or 'WIREFRAME'
+      Set the atom/bond rendering style to 'SHADED' or 'WIREFRAME'
     </para>
   </section>
   <section>

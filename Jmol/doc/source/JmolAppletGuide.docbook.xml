@@ -2,11 +2,12 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
   "../xml-dtd-4.2/docbookx.dtd"
 [
-<!ENTITY appletIntro      SYSTEM "applet/intro.docbook.xml">
-<!ENTITY appletBrowsers   SYSTEM "applet/browsers.docbook.xml">
-<!ENTITY appletUsage      SYSTEM "applet/usage.docbook.xml">
-<!ENTITY appletJavaScript SYSTEM "applet/javascript.docbook.xml">
-<!ENTITY appletScripting  SYSTEM "applet/scripting.docbook.xml">
+<!ENTITY appletIntro        SYSTEM "applet/intro.docbook.xml">
+<!ENTITY appletBrowsers     SYSTEM "applet/browsers.docbook.xml">
+<!ENTITY appletServerConfig SYSTEM "applet/serverconfig.docbook.xml">
+<!ENTITY appletUsage        SYSTEM "applet/usage.docbook.xml">
+<!ENTITY appletJavaScript   SYSTEM "applet/javascript.docbook.xml">
+<!ENTITY appletScripting    SYSTEM "applet/scripting.docbook.xml">
 ]
 >
 <book id="jmol-applet-guide">
@@ -17,6 +18,7 @@
 
   &appletIntro;
   &appletBrowsers;
+  &appletServerConfig;
   &appletUsage;
   &appletJavaScript;
   &appletScripting;

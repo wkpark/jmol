@@ -41,7 +41,7 @@
 	width="350" height="350" align="right">
 	<param name="load"    value="molecules/caffeine.xyz">
 	<param name="bgcolor" value="#DDDDFF">
-	<param name="style"   value="quickdraw">
+	<param name="style"   value="wireframe">
 	<param name="label"   value="symbol">
 	<param name="script"  value="move 0 0 360 0 0 0 0 0 5">
 	<param name="wireframeRotation" value="true">
@@ -58,7 +58,7 @@
     a molecule is loaded from a relative URL on the web server
     (molecules/caffeine.xyz),
     the background color is set to a light blue (#DDDDFF),
-    the style is set so that shaded atoms/bonds are not used (quickdraw),
+    the style is set so that shaded atoms/bonds are not used (wireframe),
     atoms are labeled with their atomic symbol (symbol),
     a script is run which rotates 360 degrees around the z axis in 5
     seconds,
@@ -83,7 +83,7 @@
       <listitem>
 	<para>
 	  style - The rendering style for atoms and bonds:
-	  SHADED, WIREFRAME or QUICKDRAW
+	  SHADED or WIREFRAME (QUICKDRAW is deprecated)
 	</para>
       </listitem>
       <listitem>
@@ -123,13 +123,6 @@
       </para>
     </section>
     <section>
-      <title>quickdraw</title>
-      <para>
-	Renders atoms and bonds as flat, solid-colored circles
-	and rectangles. 
-      </para>
-    </section>
-    <section>
       <title>wireframe</title>
       <para>
 	Atoms are drawn as unfilled circles. Bonds are drawn as
@@ -139,6 +132,17 @@
 	Note: If rendering performance is unacceptably slow when dealing
 	with very large molecules, the WIREFRAMEROTATION option can be
 	used to switch to wireframe mode during rotations and translations.
+      </para>
+    </section>
+    <section>
+      <title>quickdraw - Deprecated</title>
+      <para>
+	Renders atoms and bonds as flat, solid-colored circles
+	and rectangles. 
+      </para>
+      <para>
+      	Note:The quickdraw style is deprecated and will be removed from
+	future releases of Jmol.
       </para>
     </section>
   </section>

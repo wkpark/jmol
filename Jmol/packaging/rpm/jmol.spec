@@ -6,7 +6,7 @@ Copyright: GPL
 Group: Applications/Science
 Packager: Bradley A. Smith <bradley@baysmith.com>
 Source0: jmol-@version@.source.tar.gz
-Source1: docbook-1.29.tar.gz
+Source1: docbook-xsl-1.40.tar.gz
 BuildArchitectures: noarch
 BuildRoot: /var/tmp/%{name}-buildroot
 
@@ -38,12 +38,10 @@ install -m 755 jmol $RPM_BUILD_ROOT/usr/share/jmol-%{version}
 ln -s /usr/share/jmol-%{version}/jmol $RPM_BUILD_ROOT/usr/bin/jmol
 install -m 755 jars/jmol.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/Acme.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
-install -m 755 jars/aelfred.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
-install -m 755 jars/cml.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
+install -m 755 jars/cdk-cml.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
+install -m 755 jars/gnujaxp.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/jas.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/multi.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
-install -m 755 jars/sax.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
-install -m 755 jars/swing.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 install -m 755 jars/vecmath1.1-1.12.jar $RPM_BUILD_ROOT/usr/share/jmol-%{version}/jars
 
 %clean

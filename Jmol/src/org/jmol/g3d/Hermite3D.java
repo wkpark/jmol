@@ -277,6 +277,11 @@ class Hermite3D {
                       Point3i p0, Point3i p1, Point3i p2, Point3i p3,//top strand segment
                       Point3i p4, Point3i p5, Point3i p6, Point3i p7) {//bottom strand segment
     
+    if (! fill) {
+      render2x(fill, colix, tension, p0, p1, p2, p3, p4, p5, p6, p7);
+      return;
+    }
+
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;
     int x2 = p2.x, y2 = p2.y, z2 = p2.z;
     int xT1 = ( (x2 - p0.x) * tension) / 8;

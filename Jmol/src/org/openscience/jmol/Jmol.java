@@ -720,7 +720,7 @@ class Jmol extends JPanel {
    * Fetch the menu item that was created for the given
    * command.
    * @param cmd  Name of the action.
-   * @returns item created for the given command or null
+   * @return item created for the given command or null
    *  if one wasn't created.
    */
   protected JMenuItem getMenuItem(String cmd) {
@@ -1376,7 +1376,7 @@ class Jmol extends JPanel {
    * Returns a new File referenced by the property 'user.dir', or null
    * if the property is not defined.
    *
-   * @returns  a File to the user directory
+   * @return  a File to the user directory
    */
   static File getUserDirectory() {
     if (System.getProperty("user.dir") == null) {

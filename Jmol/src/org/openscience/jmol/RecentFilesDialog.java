@@ -135,14 +135,14 @@ public class RecentFilesDialog extends JDialog
   }
 
   /**
-   *   @returns String The name of the file picked or null if the action was aborted.
+   *   @return String The name of the file picked or null if the action was aborted.
   **/
   public String getFile() {
     return fileName;
   }
 
   /**
-          @returns String The type of the file picked or null if the action was aborted.
+   *   @return String The type of the file picked or null if the action was aborted.
   **/
   public String getFileType() {
     return fileType;

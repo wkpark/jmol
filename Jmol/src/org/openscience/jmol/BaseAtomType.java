@@ -46,7 +46,7 @@ public class BaseAtomType {
    * @param vdwRadius the van der Waals radius (helps determine drawing size)
    * @param covalentRadius the covalent radius (helps determine bonding)
    * @param color the color for drawing
-   * @returns the atom type corresponding to the name.
+   * @return the atom type corresponding to the name.
    */
   public static BaseAtomType get(String name, String root, int atomicNumber,
       double mass, double vdwRadius, double covalentRadius, Color color) {
@@ -60,8 +60,8 @@ public class BaseAtomType {
    * atomic number.
    *
    * @param atomicNumber  atomic number of the atom type to find.
-   * @returns the first atom type with atomic number matching
-   *          parameter, or null if not found.
+   * @return the first atom type with atomic number matching
+   *         parameter, or null if not found.
    */
   public static BaseAtomType get(int atomicNumber) {
 
@@ -82,7 +82,7 @@ public class BaseAtomType {
    * with default values.
    *
    * @param name the name of this atom type (e.g. CA for alpha carbon)
-   * @returns the atom type corresponding to the name.
+   * @return the atom type corresponding to the name.
    */
   public static BaseAtomType get(String name) {
 
@@ -98,7 +98,7 @@ public class BaseAtomType {
    * Returns true if the BaseAtomType with the name given exists.
    *
    * @param name the name of this atom type (e.g. CA for alpha carbon).
-   * @returns true if the atom type exists.
+   * @return true if the atom type exists.
    */
   public static boolean exists(String name) {
     return typePool.containsKey(name);

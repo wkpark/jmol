@@ -178,7 +178,7 @@ public class AtomRenderer {
    *
    * @param ballColor color for the sphere.
    * @param settings the display settings used for the light source.
-   * @returns an image of a shaded sphere.
+   * @return an image of a shaded sphere.
    */
   private static Image sphereSetup(Color ballColor,
       DisplaySettings settings) {

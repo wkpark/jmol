@@ -28,7 +28,7 @@ public class ChargeColorProfile implements ColorProfile {
 
     /**
      * @param   a       Atom for which the color must be returned
-     * @returns         Color for charged atom
+     * @return          Color for charged atom
      */
     public Color getColor(Atom a) {
         Charge ct = (Charge) a.getProperty(Charge.DESCRIPTION);

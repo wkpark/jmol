@@ -27,7 +27,7 @@ public class DefaultColorProfile implements ColorProfile {
 
     /**
      * @param   a       Atom for which the color must be returned
-     * @returns         Color for charged atom
+     * @return          Color for charged atom
      */
      public Color getColor(Atom a) {
         return a.getType().getColor();

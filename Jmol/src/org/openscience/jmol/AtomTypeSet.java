@@ -36,7 +36,7 @@ public class AtomTypeSet extends Hashtable {
    * present.
    *
    * @param at  AtomType to be added to the set.
-   * @returns true if the set did not already contain the AtomType.
+   * @return true if the set did not already contain the AtomType.
    */
   boolean add(BaseAtomType at) {
 

@@ -53,17 +53,16 @@ ific
  * @version 1.0 */
 public class ABINITReader implements ChemFileReader {
 
+    public static final double angstromPerBohr = 0.529177249;
+
+    // This variable will be used to parse the input file
+    private StringTokenizer st;
+
     /**
      * Create an ABINIT output reader.
      *
      * @param input source of ABINIT data
      */
-
-    public static final double angstromPerBohr = 0.529177249;
-
-    // This variable will be used to parse the input file
-    private StringTokenizer st;
-   
     public ABINITReader(Reader input) {
 	this.input = new BufferedReader(input);
     }

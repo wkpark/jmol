@@ -125,6 +125,12 @@
 				<include name="*.txt" />
 			</fileset>
 		</copy>
+		<chmod perm="+x">
+			<fileset dir="${dist.dir}/jmol-${version}">
+				<include name="jmol"/>
+				<include name="jmol.bat"/>
+			</fileset>
+		</chmod>
 		<copy todir="${dist.dir}/jmol-${version}/samples" >
 			<fileset dir="samples" />
 		</copy>

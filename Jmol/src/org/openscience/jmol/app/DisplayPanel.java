@@ -239,7 +239,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_CHARGE);
+      viewer.setModeAtomColorProfile(JmolConstants.PALETTE_FORMALCHARGE);
     }
   }
 

@@ -35,9 +35,11 @@ abstract class ShapeRenderer {
   FrameRenderer frameRenderer;
 
   final void setViewerFrameRenderer(JmolViewer viewer,
-                                    FrameRenderer frameRenderer) {
+                                    FrameRenderer frameRenderer,
+                                    Graphics3D g3d) {
     this.viewer = viewer;
     this.frameRenderer = frameRenderer;
+    this.g3d = g3d;
     initRenderer();
   }
 

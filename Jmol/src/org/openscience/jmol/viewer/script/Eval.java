@@ -1286,7 +1286,8 @@ public class Eval implements Runnable {
     case Token.shapely:
     case Token.structure:
     case Token.temperature:
-    case Token.charge:
+    case Token.formalCharge:
+    case Token.partialCharge:
     case Token.user:
       colorObject(Token.atom, 1);
       break;
@@ -1340,14 +1341,15 @@ public class Eval implements Runnable {
     // I do not like this 'palette' scheme
     // I need to change it so that you can pass either a java.awt.Color
     // or an object that uniquely identifies the various palettes
+    // this should be an object which is either a Color or a String
     byte palette = JmolConstants.PALETTE_CPK;
     Color color = null;
     switch (statement[itoken].tok) {
     case Token.none:
     case Token.cpk:
       break;
-    case Token.charge:
-      palette = JmolConstants.PALETTE_CHARGE;
+    case Token.formalCharge:
+      palette = JmolConstants.PALETTE_FORMALCHARGE;
       break;
     case Token.partialCharge:
       palette = JmolConstants.PALETTE_PARTIALCHARGE;

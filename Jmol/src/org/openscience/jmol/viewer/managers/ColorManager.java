@@ -250,22 +250,31 @@ public class ColorManager {
       return g3d.getChangableColix(id, argbsCpk[id]);
     case JmolConstants.PALETTE_PARTIALCHARGE:
       /*
-      // here a reasonable color should be picked
-      // because I do not know how those 0xFF stuff can be calculated
-      // I use the int color scheme :)
-      int i = 4;
-      float charge = atom.getAtomicPartialCharge();
-      if (charge < 0) {
-          // assume charges in [-1,0>
-          charge = charge*JmolConstants.CHARGE_MIN;
-      } else if (charge > 0) {
-          // assume charges in <0,1]
-          charge = charge*JmolConstants.CHARGE_MAX;
-      } */
-      argb = JmolConstants.argbsCharge[4];
+        This code assumes that the range of partial charges is
+        [-1, 1].
+        It also explicitly constructs colors red (negative) and
+        blue (positive)
+        Using colors other than these would make the shading
+        calculations more difficult
+      */
+      float partialCharge = atom.getPartialCharge();
+      if (Float.isNaN(partialCharge) ||
+          partialCharge == 0) {
+        argb = 0xFFFFFFFF; // white
+      } else if (partialCharge < 0) {
+        if (partialCharge < -1)
+          partialCharge = -1;
+        int byteVal = 0xFF - ((int)(255 * -partialCharge) & 0xFF);
+        argb = 0xFFFF0000 | (byteVal << 8) | byteVal;
+      } else { // partialCharge > 0
+        if (partialCharge > 1)
+          partialCharge = 1;
+        int byteVal = 0xFF - ((int)(255 * partialCharge) & 0xFF);
+        argb = 0xFF0000FF | (byteVal << 16) | (byteVal << 8);
+      }
       break;
-    case JmolConstants.PALETTE_CHARGE:
-      int i = atom.getAtomicCharge() - JmolConstants.CHARGE_MIN;
+    case JmolConstants.PALETTE_FORMALCHARGE:
+      int i = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
       argb = JmolConstants.argbsCharge[i];
       break;
     case JmolConstants.PALETTE_STRUCTURE:

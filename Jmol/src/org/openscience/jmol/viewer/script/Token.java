@@ -202,20 +202,20 @@ public class Token {
   // write
 
   // chime set parameters
-  final static int charge       = setparam | 22;
-  final static int clear        = setparam | 23;
-  final static int gaussian     = setparam | 24;
+  final static int clear        = setparam | 22;
+  final static int gaussian     = setparam | 23;
   // load
-  final static int mep          = setparam | 25;
-  final static int mlp          = setparam | 26 | showparam;
-  final static int molsurface   = setparam | 27;
-  final static int debugscript  = setparam | 28;
-  final static int scale3d      = setparam | 29;
+  final static int mep          = setparam | 24;
+  final static int mlp          = setparam | 25 | showparam;
+  final static int molsurface   = setparam | 26;
+  final static int debugscript  = setparam | 27;
+  final static int scale3d      = setparam | 28;
   // jmol extensions
-  final static int property     = setparam | 30;
-  final static int diffuse      = setparam | 31;
-  final static int labeloffset  = setparam | 32;
-  final static int frank        = setparam | 33;
+  final static int property     = setparam | 29;
+  final static int diffuse      = setparam | 30;
+  final static int labeloffset  = setparam | 31;
+  final static int frank        = setparam | 32;
+  final static int formalCharge = setparam | 33;
   final static int partialCharge= setparam | 34;
 
   final static int information  = showparam |  0;
@@ -330,6 +330,13 @@ public class Token {
     "atomno", "elemno", "resno", "radius", "temperature", "model",
     "_bondedcount", "_groupID", "_atomID", "_structure"};
 
+  /*
+    Note that the RasMol scripting language is case-insensitive.
+    So, the compiler turns all identifiers to lower-case before
+    looking up in the hash table. 
+    Therefore, the left column of this array *must* be lower-case
+  */
+
   final static Object[] arrayPairs  = {
     // commands
     "backbone",          new Token(backbone,  onDefault1, "backbone"),
@@ -432,7 +439,6 @@ public class Token {
     "unitcell",     new Token(unitcell,        "unitcell"),
     "vectps",       new Token(vectps,          "vectps"),
     // chime setparams
-    "charge",       new Token(charge,          "charge"),
     "clear",        new Token(clear,           "clear"),
     "gaussian",     new Token(gaussian,        "gaussian"),
     "mep",          new Token(mep,             "mep"),
@@ -447,7 +453,10 @@ public class Token {
     "diffuse",      new Token(diffuse,         "diffuse"),
     "labeloffset",  new Token(labeloffset,     "labeloffset"),
     "frank",        new Token(frank,           "frank"),
-    "partialCharge",new Token(partialCharge,   "partialCharge"),
+    // must be lower case - see comment above
+    "formalcharge", new Token(formalCharge,    "formalCharge"),
+    "charge",       null,
+    "partialcharge",new Token(partialCharge,   "partialCharge"),
   
     // show parameters
     "information",  new Token(information,     "information"),

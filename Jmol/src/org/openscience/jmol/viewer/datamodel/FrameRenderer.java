@@ -57,17 +57,17 @@ public class FrameRenderer {
       Shape shape = frame.shapes[i];
       if (shape == null)
         continue;
-      getRenderer(i).render(g3d, rectClip, frame, displayModel, shape);
+      getRenderer(i, g3d).render(g3d, rectClip, frame, displayModel, shape);
     }
   }
 
-  ShapeRenderer getRenderer(int refShape) {
+  ShapeRenderer getRenderer(int refShape, Graphics3D g3d) {
     if (renderers[refShape] == null)
-      renderers[refShape] = allocateRenderer(refShape);
+      renderers[refShape] = allocateRenderer(refShape, g3d);
     return renderers[refShape];
   }
 
-  ShapeRenderer allocateRenderer(int refShape) {
+  ShapeRenderer allocateRenderer(int refShape, Graphics3D g3d) {
     String classBase =
       JmolConstants.shapeClassBases[refShape] + "Renderer";
     String className = "org.openscience.jmol.viewer.datamodel." + classBase;
@@ -75,7 +75,7 @@ public class FrameRenderer {
     try {
       Class shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer)shapeClass.newInstance();
-      renderer.setViewerFrameRenderer(viewer, this);
+      renderer.setViewerFrameRenderer(viewer, this, g3d);
       return renderer;
     } catch (Exception e) {
       System.out.println("Could not instantiate renderer:" + classBase +

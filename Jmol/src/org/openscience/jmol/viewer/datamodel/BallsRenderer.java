@@ -72,11 +72,11 @@ class BallsRenderer extends ShapeRenderer {
     int diameter = Xyzd.getD(xyzd);
     boolean hasHalo = viewer.hasSelectionHalo(atom);
     if (diameter == 0 && !hasHalo) {
-      atom.chargeAndFlags &= ~Atom.VISIBLE_FLAG;
+      atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
       return;
     }
     // mth 2004 04 02 ... hmmm ... I don't like this here ... looks ugly
-    atom.chargeAndFlags |= Atom.VISIBLE_FLAG;
+    atom.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
 
     if (!wireframeRotating)
       g3d.fillSphereCentered(atom.colixAtom, xyzd);

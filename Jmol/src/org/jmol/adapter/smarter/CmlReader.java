@@ -122,17 +122,19 @@ class CmlReader extends ModelReader {
     }
     
     int parseBondToken(String str) {
-      if (str.equals("S")) {
-        return 1;
-      } else if (str.equals("D")) {
-        return 2;
-      } else if (str.equals("T")) {
-        return 3;
-      } else if (str.equals("A")) {
-        return ModelAdapter.ORDER_AROMATIC;
-      } else {
-        return parseInt(str);
-      } 
+      if (str.length() == 1) {
+        switch (str.charAt(0)) {
+        case 'S':
+          return 1;
+        case 'D':
+          return 2;
+        case 'T':
+          return 3;
+        case 'A':
+          return ModelAdapter.ORDER_AROMATIC;
+        }
+      }
+      return parseInt(str);
     }
 
     void breakOutAtomTokens(String str) {
@@ -189,6 +191,7 @@ class CmlReader extends ModelReader {
         return;
       }
       if ("atom".equals(qName)) {
+        elementContext = ATOM;
         atom = new Atom();
         for (int i = atts.getLength(); --i >= 0; ) {
           String attLocalName = atts.getLocalName(i);
@@ -329,6 +332,7 @@ class CmlReader extends ModelReader {
         } else if (elementContext == ATOM) {
           if ("jmol:charge".equals(dictRef)) {
             atom.partialCharge = parseFloat(chars);
+            //System.out.println("jmol.partialCharge=" + atom.partialCharge);
           }
         }
         keepChars = false;

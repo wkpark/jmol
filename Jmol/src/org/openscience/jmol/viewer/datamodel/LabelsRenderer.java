@@ -93,7 +93,6 @@ class LabelsRenderer extends ShapeRenderer {
   
   void renderLabel(Atom atom, String strLabel, short colix, short bgcolix,
                    int labelOffsetX, int labelOffsetY) {
-    System.out.println("labelOffsetY=" + labelOffsetY);
     int msgWidth = fontMetrics.stringWidth(strLabel);
     int boxWidth = msgWidth + 8;
     int boxHeight = msgHeight + 8;

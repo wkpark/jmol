@@ -30,18 +30,6 @@ import java.awt.Rectangle;
 
 public class Bond {
 
-  /*
-  public final static byte COVALENT    = 3;
-  public final static byte STEREO      = (1 << 2);
-  public final static byte STEREO_NEAR = (1 << 2) | 1;
-  public final static byte STEREO_FAR  = (1 << 2) | 2;
-  public final static byte AROMATIC    = (1 << 3) | 1;
-  public final static byte SULFUR      = 1 << 4;
-  public final static byte HYDROGEN    = 1 << 5;
-
-  public final static byte ALL         = (byte)0xFF;
-  */
-
   public Atom atom1;
   public Atom atom2;
   byte order;
@@ -58,6 +46,8 @@ public class Bond {
     this.atom2 = atom2;
     if (atom1.elementNumber == 16 && atom2.elementNumber == 16)
       order |= JmolConstants.BOND_SULFUR_MASK;
+    if (order == JmolConstants.BOND_AROMATIC_MASK)
+      order = JmolConstants.BOND_AROMATIC;
     this.order = (byte)order;
     this.mad = mad;
     this.colix = colix;

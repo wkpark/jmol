@@ -28,7 +28,6 @@ import org.openscience.jmol.viewer.JmolStatusListener;
 
 import org.jmol.api.ModelAdapter;
 import org.jmol.adapter.cdk.CdkModelAdapter;
-import org.jmol.adapter.simple.SimpleModelAdapter;
 import org.jmol.adapter.smarter.SmarterModelAdapter;
 
 import org.openscience.cdk.applications.plugin.CDKPluginManager;
@@ -160,16 +159,13 @@ public class Jmol extends JPanel {
     if (adapter.equals("smarter")) {
       System.out.println("using Smarter Model Adapter");
       modelAdapter = new SmarterModelAdapter(null);
-    } else if (adapter.equals("simple")) {
-      System.out.println("using Simple Model Adapter");
-      modelAdapter = new SimpleModelAdapter(null);
     } else if (adapter.equals("cdk")) {
       System.out.println("using CDK Model Adapter");
       modelAdapter = new CdkModelAdapter(null);
     } else {
       System.out.println("unrecognized model adapter:" + adapter +
-                         " -- using Simple");
-      modelAdapter = new SimpleModelAdapter(null);
+                         " -- using Smarter");
+      modelAdapter = new SmarterModelAdapter(null);
     }
 
     viewer = new JmolViewer(display, modelAdapter);

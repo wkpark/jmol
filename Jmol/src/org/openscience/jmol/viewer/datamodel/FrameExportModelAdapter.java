@@ -81,7 +81,8 @@ final public class FrameExportModelAdapter extends ModelAdapter {
     public Object getUniqueID() { return new Integer(iatom); }
     public int getElementNumber() { return atom.elementNumber; }
     public String getElementSymbol() { return atom.getElementSymbol(); }
-    public int getAtomicCharge() { return atom.getAtomicCharge(); }
+    public int getFormalCharge() { return atom.getFormalCharge(); }
+    public float getPartialCharge() { return atom.getPartialCharge(); }
     public float getX() { return atom.getAtomX(); }
     public float getY() { return atom.getAtomY(); }
     public float getZ() { return atom.getAtomZ(); }

@@ -191,7 +191,8 @@ public abstract class ModelAdapter {
     public int getElementNumber() { return -1; }
     public String getElementSymbol() { return null; }
     public String getAtomName() { return null; }
-    public int getAtomicCharge() { return 0; }
+    public int getFormalCharge() { return 0; }
+    public float getPartialCharge() { return Float.NaN; }
     abstract public float getX();
     abstract public float getY();
     abstract public float getZ();

@@ -51,16 +51,17 @@ final public class JmolConstants {
     
   public final static byte PALETTE_COLOR         =-1;
   public final static byte PALETTE_CPK           = 0;
-  public final static byte PALETTE_CHARGE        = 1;
+  public final static byte PALETTE_FORMALCHARGE  = 1;
   public final static byte PALETTE_STRUCTURE     = 2;
   public final static byte PALETTE_AMINO         = 3;
   public final static byte PALETTE_SHAPELY       = 4;
   public final static byte PALETTE_CHAIN         = 5;
-  public final static byte PALETTE_MAX           = 6;
-  public final static byte PALETTE_PARTIALCHARGE = 7;
+  public final static byte PALETTE_PARTIALCHARGE = 6;
+  public final static byte PALETTE_MAX           = 7;
 
   public final static String[] colorSchemes =
-    { "cpk", "charge", "structure", "amino", "shapely", "chain" };
+    { "cpk", "charge", "structure", "amino",
+      "shapely", "chain", "formalCharge"};
 
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;
@@ -649,8 +650,8 @@ final public class JmolConstants {
    *  (scanned for Jmol by Phillip Barak, Jan 2004)
    ****************************************************************/
 
-  public final static int CHARGE_MIN = -4;
-  public final static int CHARGE_MAX = 7;
+  public final static int FORMAL_CHARGE_MIN = -4;
+  public final static int FORMAL_CHARGE_MAX = 7;
   public final static short[] ionicLookupTable = {
     (1 << 4) + (-1 + 4),  // 1,-1,1.54,"H"
     (3 << 4) + (1 + 4),   // 3,1,0.68,"Li"
@@ -1687,12 +1688,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
         throw new NullPointerException();
       }
     }
-    if (argbsCharge.length != CHARGE_MAX - CHARGE_MIN + 1) {
+    if (argbsCharge.length != FORMAL_CHARGE_MAX - FORMAL_CHARGE_MIN + 1) {
       System.out.println("charge color table length");
       throw new NullPointerException();
     }
     if (shapeClassBases.length != SHAPE_MAX) {
       System.out.println("graphicBaseClasses wrong length");
+      throw new NullPointerException();
+    }
+    if (colorSchemes.length != PALETTE_MAX) {
+      System.out.println("colorSchemes wrong length");
       throw new NullPointerException();
     }
   }

@@ -98,10 +98,10 @@ class SticksRenderer extends ShapeRenderer {
     int order = bond.order;
     Atom atomA = bond.atom1;
     short colixAtomA = atomA.colixAtom;
-    atomA.chargeAndFlags |= Atom.VISIBLE_FLAG;
+    atomA.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     Atom atomB = bond.atom2;
     short colixAtomB = atomB.colixAtom;
-    atomB.chargeAndFlags |= Atom.VISIBLE_FLAG;
+    atomB.formalChargeAndFlags |= Atom.VISIBLE_FLAG;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,

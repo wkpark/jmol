@@ -48,7 +48,7 @@ public class Atom implements Bspt.Tuple {
   //  private short x, y, z;
   //  private short diameter;
   public byte elementNumber;
-  byte chargeAndFlags;
+  byte formalChargeAndFlags;
   // maybe move this out of here ... the value is almost always 100
   byte occupancy;
   Vector3f vibrationVector;
@@ -63,12 +63,13 @@ public class Atom implements Bspt.Tuple {
   int atomSerial;
   public String atomName;
   byte specialAtomID;
+  float partialCharge;
 
   public Atom(Frame frame, int atomIndex,
               int modelNumber,
               byte elementNumber,
               String atomName,
-              int atomicCharge,
+              int formalCharge, float partialCharge,
               int occupancy,
               float bfactor,
               float x, float y, float z,
@@ -104,7 +105,8 @@ public class Atom implements Bspt.Tuple {
     this.atomIndex = atomIndex;
     this.modelNumber = (short)modelNumber;
     this.elementNumber = elementNumber;
-    this.chargeAndFlags = (byte)(atomicCharge << 4);
+    this.formalChargeAndFlags = (byte)(formalCharge << 4);
+    this.partialCharge = partialCharge; // temporarily here
     this.occupancy = (occupancy < 0
                       ? (byte)0
                       : (occupancy > 100
@@ -356,8 +358,12 @@ public class Atom implements Bspt.Tuple {
     return isHetero;
   }
 
-  public int getAtomicCharge() {
-    return chargeAndFlags >> 4;
+  public int getFormalCharge() {
+    return formalChargeAndFlags >> 4;
+  }
+
+  public float getPartialCharge() {
+    return partialCharge;
   }
 
   public Point3f getPoint3f() {
@@ -394,7 +400,8 @@ public class Atom implements Bspt.Tuple {
   }
 
   public short getBondingMar() {
-    return JmolConstants.getBondingMar(elementNumber, chargeAndFlags >> 4);
+    return JmolConstants.getBondingMar(elementNumber,
+                                       formalChargeAndFlags >> 4);
   }
   
   public float getBondingRadiusFloat() {
@@ -587,13 +594,20 @@ public class Atom implements Bspt.Tuple {
         strLabel += point3f.z;
         break;
       case 'C':
-        int charge = getAtomicCharge();
-        if (charge > 0)
-          strLabel += "" + charge + "+";
-        else if (charge < 0)
-          strLabel += "" + -charge + "-";
+        int formalCharge = getFormalCharge();
+        if (formalCharge > 0)
+          strLabel += "" + formalCharge + "+";
+        else if (formalCharge < 0)
+          strLabel += "" + -formalCharge + "-";
         else
           strLabel += "0";
+        break;
+      case 'P':
+        float partialCharge = getPartialCharge();
+        if (Float.isNaN(partialCharge))
+          strLabel += "?";
+        else
+          strLabel += partialCharge;
         break;
       case 'V':
         strLabel += getVanderwaalsRadiusFloat();
@@ -709,7 +723,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   boolean isCursorOnTop(int xCursor, int yCursor, Atom competitor) {
-    if ((chargeAndFlags & VISIBLE_FLAG) == 0)
+    if ((formalChargeAndFlags & VISIBLE_FLAG) == 0)
       return false;
     int r = Xyzd.getD(xyzd) / 2;
     if (r < 4)

@@ -27,6 +27,8 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolStatusListener;
 import org.openscience.jmol.viewer.JmolMeasureWatcher;
 
+import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
+
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
 import org.openscience.cdk.io.ReaderFactory;
@@ -227,7 +229,7 @@ public class Jmol extends JPanel {
     say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    viewer = new JmolViewer(display, new DeprecatedAdapter());
+    viewer = new JmolViewer(display, new DeprecatedJmolModelAdapter());
     display.setViewer(viewer);
 
     //    viewer.addPropertyChangeListener(display);

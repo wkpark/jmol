@@ -26,7 +26,7 @@
 import org.openscience.jmol.applet.*;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolStatusListener;
-import org.openscience.jmol.DeprecatedAdapter;
+import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
 import org.openscience.jmol.ui.JmolPopup;
 
 import java.applet.Applet;
@@ -87,7 +87,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     canvas = new AppletCanvas();
-    viewer = new JmolViewer(canvas, new DeprecatedAdapter());
+    viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter());
     canvas.setJmolViewer(viewer);
     viewer.setJmolStatusListener(this);
 

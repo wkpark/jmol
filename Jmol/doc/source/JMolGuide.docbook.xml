@@ -5,7 +5,7 @@
     <title>JMol Documentation</title>
   </bookinfo>
   
-  <chapter>
+  <chapter id="intro">
     <title>Introduction</title>
     <para>
       JMol is far more than just a Java based tool for 
@@ -13,7 +13,7 @@
     </para>
   </chapter>
 
-  <chapter>
+  <chapter id="commandlineoptions">
     <title>Command Line Options</title>
     <para>
       The program jmol has (at this moment) one command line
@@ -35,7 +35,7 @@
     </para>
   </chapter>        
   
-  <chapter>
+  <chapter id="menudesc">
     <title>Menu description</title>
     <section>
       <title>The File menu</title>

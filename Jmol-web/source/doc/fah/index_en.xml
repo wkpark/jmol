@@ -62,6 +62,9 @@
                     onclick='showProjectDescription()'/>
                   <input type='button' value='XML'
                     onclick='showXMLFile()'/>
+                  <small>
+                    <fah_count_files/> files / <fah_count_projects/> projects.
+                  </small>
                 </td>
               </tr>
               <tr>

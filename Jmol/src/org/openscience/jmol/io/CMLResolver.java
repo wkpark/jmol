@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2002 The Jmol Development Team
+ * Copyright 2002-2003 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -88,10 +87,10 @@ public class CMLResolver implements EntityResolver2 {
     if ((systemId.indexOf("cml.dtd") >= 0)
         || (systemId.indexOf("cml1_0.dtd") >= 0)
           || (systemId.indexOf("cml-1999-05-15.dtd") >= 0)) {
-      input = getInputSource("Data/cml1_0.dtd.txt");
+      input = getInputSource("org/openscience/jmol/Data/cml1_0.dtd.txt");
     } else if ((systemId.indexOf("cml1_0_1.dtd") >= 0)
         || (systemId.indexOf("cml-2001-04-06.dtd") >= 0)) {
-      input = getInputSource("Data/cml1_0_1.dtd.txt");
+      input = getInputSource("org/openscience/jmol/Data/cml1_0_1.dtd.txt");
     } else {
       System.err.println("jmol.CMLResolver: Could not resolve \"" + systemId
           + "\"");
@@ -108,10 +107,9 @@ public class CMLResolver implements EntityResolver2 {
    */
   private InputSource getInputSource(String resource) {
 
-    InputStream input = getClass().getResourceAsStream(resource);
+    InputStream input = this.getClass().getClassLoader().getResourceAsStream(resource);
     if (input != null) {
-      return new InputSource(
-          new BufferedReader(new InputStreamReader(input)));
+      return new InputSource(new BufferedReader(new InputStreamReader(input)));
     }
     System.err.println("jmol.CMLResolver: Unable to find resource \""
         + resource + "\"");

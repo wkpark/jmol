@@ -1349,16 +1349,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     0xFFF5DEB3, // wheat
     0xFF00BFFF, // deepskyblue
-    0xFF66CDAA, // mediumaquamarine
     0xFFCD5C5C, // indianred
+    0xFF66CDAA, // mediumaquamarine
     0xFF9ACD32, // yellowgreen
     0xFFEE82EE, // violet
     0xFF00CED1, // darkturquoise
     0xFF00FF7F, // springgreen
     0xFF3CB371, // mediumseagreen
 
-    0xFFBDB76B, // darkkhaki
     0xFF00008B, // darkblue
+    0xFFBDB76B, // darkkhaki
     0xFF006400, // darkgreen
     0xFF800000, // maroon
     0xFF808000, // olive
@@ -1372,34 +1372,34 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     // ' '->0 'A'->1, 'B'->2
     0xFFffffff, // ' ' & '0' white
     //
-    0xFFC0D0FF, // skyblue
-    0xFFB0FFB0, // pastel green
-    0xFFFFC0C8, // pink
-    0xFFFFFF80, // pastel yellow
-    0xFFFFC0FF, // pastel magenta
-    0xFFB0F0F0, // pastel cyan
-    0xFFFFD070, // pastel gold
-    0xFFF08080, // lightcoral
+    0xFFC0D0FF - 0x00202020, // skyblue
+    0xFFB0FFB0 - 0x00202018, // pastel green
+    0xFFFFC0C8 - 0x00202018, // pink
+    0xFFFFFF80 - 0x00202010, // pastel yellow
+    0xFFFFC0FF - 0x00202020, // pastel magenta
+    0xFFB0F0F0 - 0x00202020, // pastel cyan
+    0xFFFFD070 - 0x00202010, // pastel gold
+    0xFFF08080 - 0x00202010, // lightcoral
 
-    0xFFF5DEB3, // wheat
-    0xFF00BFFF, // deepskyblue
-    0xFF66CDAA, // mediumaquamarine
-    0xFFCD5C5C, // indianred
-    0xFF9ACD32, // yellowgreen
-    0xFFEE82EE, // violet
-    0xFF00CED1, // darkturquoise
-    0xFF00FF7F, // springgreen
-    0xFF3CB371, // mediumseagreen
+    0xFFF5DEB3 - 0x00202020, // wheat
+    0xFF00BFFF - 0x00001820, // deepskyblue
+    0xFFCD5C5C - 0x00181010, // indianred
+    0xFF66CDAA - 0x00101818, // mediumaquamarine
+    0xFF9ACD32 - 0x00101808, // yellowgreen
+    0xFFEE82EE - 0x00201020, // violet
+    0xFF00CED1 - 0x00001820, // darkturquoise
+    0xFF00FF7F - 0x00002010, // springgreen
+    0xFF3CB371 - 0x00081810, // mediumseagreen
 
-    0xFFBDB76B, // darkkhaki
-    0xFF00008B, // darkblue
-    0xFF006400, // darkgreen
-    0xFF800000, // maroon
-    0xFF808000, // olive
-    0xFF800080, // purple
-    0xFF008080, // teal
-    0xFFB8860B, // darkgoldenrod
-    0xFFB22222, // firebrick
+    0xFF00008B + 0x00000020, // darkblue
+    0xFFBDB76B - 0x00181810, // darkkhaki
+    0xFF006400 + 0x00002000, // darkgreen
+    0xFF800000 + 0x00200000, // maroon
+    0xFF808000 + 0x00202000, // olive
+    0xFF800080 + 0x00200020, // purple
+    0xFF008080 + 0x00002020, // teal
+    0xFFB8860B + 0x00202008, // darkgoldenrod
+    0xFFB22222 + 0x00101010, // firebrick
   };
 
   /*

@@ -511,7 +511,7 @@ public class Token {
     "@amino _resid<=22",
     "@aromatic his,phe,trp,tyr",
     //    "@backbone amino & _atomid<=3,nucleic & _atomid>=4 & _atomid<=15",
-    "@backbone amino&_atomid<=3",
+    "@backbone amino & _atomid<=3,nucleic & (_atomid>=8 & _atomid<=29)",
     "@mainchain backbone",
     "@basic arg,his,lys",
     "@bonded _bondedcount>0",
@@ -527,7 +527,7 @@ public class Token {
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
     "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
-    "@ions _resid=49,_resid=50",
+    "@ions _resid=69,_resid=70",
     "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
     "@ligand hetero & !solvent",
     "@medium asn,asp,cys,pro,thr,val",
@@ -540,23 +540,24 @@ public class Token {
     "@protein amino", // + common post-translational modifications ??
     // selected - special and is handled at runtime
     "@sheet _structure=2",
-    "@sidechain (protein or nucleic) and !backbone", // doc & code inconsistent
+    "@sidechain protein and !backbone", // doc & code inconsistent
+    "@base nucleic and !backbone",
     "@small ala,gly,ser",
-    "@solvent _resid>=47 & _resid<=50", // water or ions
+    "@solvent _resid>=69 & _resid<=72", // water or ions
     "@surface !buried",
     "@turn _structure=1",
-    "@water _resid=47,_resid=48",
+    "@water _resid=69,_resid=70",
     "@hoh water",
 
-    "@nucleic _resid>=23 & _resid<=46",
+    "@nucleic _resid>=23 & _resid<=68",
     "@purine _resid>=23 & _resid<=28",
     "@pyrimidine _resid>=29 & _resid<=34",
-    "@a _resid=23,_resid=24",
-    "@c _resid=29,_resid=30",
-    "@g _resid=25,_resid=26",
-    "@t _resid=31,_resid=32",
-    "@u _resid=33,_resid=34",
-    "@i _resid=27,_resid=28",
+    "@a _resid=23,_resid=24,_resid>=35 & _resid <=36,_resid>=51 & _resid<=53",
+    "@c _resid=29,_resid=30,_resid>=37 & _resid<=38,_resid>=60 & _resid<=62",
+    "@g _resid=25,_resid=26,_resid>=39 & _resid<=45,_resid>=54 & _resid<=56",
+    "@t _resid=31,_resid=32,_resid>=63 & _resid<=65",
+    "@u _resid=33,_resid=34,_resid>=47 & _resid<=50,_resid>=66 & _resid<=68",
+    "@i _resid=27,_resid=28,_resid>=57 & _resid<=59",
 
     // "@hydrogen _e=1", handled specially
     "@helium _e=2",

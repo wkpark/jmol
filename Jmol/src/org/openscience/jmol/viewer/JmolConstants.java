@@ -1019,6 +1019,29 @@ final public class JmolConstants {
     " C  ", // imposter CA
     " C  ", // imposter C
     " O  ", // imposter O
+    
+    " P  ",
+    " O1P",
+    " O2P", // 10
+    " O3P",
+    " O5*",
+    " O4*",
+    " O3*",
+    " O2*", // 15
+    " C5*",
+    " C4*",
+    " C3*",
+    " C2*",
+    " C1*", // 20
+    "1H5*",
+    "2H5*",
+    " H4*",
+    " H3*",
+    "1H2*", // 25
+    "2H2*",
+    " H1*",
+    " H5T",
+    " H3T", // 29
   };
   
   public final static short RESID_AMINO_MAX = 22;
@@ -1066,26 +1089,53 @@ final public class JmolConstants {
     " +U",
 
     "1MA", // 35
+    "AMO",
     "5MC",
     "OMC",
     "1MG",
-    "2MG",
-    "M2G", // 40
+    "2MG", // 40
+    "M2G",
     "7MG",
+    "G7M",
     "OMG",
-    " YG",
+    " YG", // 45
+    "QUO",
     "H2U",
     "5MU",
-    "PSU", // 46
+    "4SU",
+    "PSU", // 50
     
+    "AMP",
+    "ADP",
+    "ATP",
     
-
+    "GMP",
+    "GDP", // 55
+    "GTP",
+    
+    "IMP",
+    "IDP",
+    "ITP",
+    
+    "CMP", // 60
+    "CDP",
+    "CTP",
+    
+    "TMP",
+    "TDP",
+    "TTP", // 65
+    
+    "UMP",
+    "UDP",
+    "UTP", // 68
+   
+    
     // water && solvent
-    "HOH", // 47
-    "DOD", // 48
+    "HOH", // 69
+    "DOD", // 70
     // ions && solvent
-    "PO4", // 49 phosphate ions
-    "SO4", // 50 sulphate ions 
+    "PO4", // 71 phosphate ions
+    "SO4", // 72 sulphate ions 
     
   };
 

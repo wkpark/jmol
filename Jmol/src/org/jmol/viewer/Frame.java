@@ -1003,7 +1003,7 @@ final class Frame {
 
   void initializeBspf() {
     if (bspf == null) {
-      long timeBegin, timeEnd;
+      long timeBegin = 0;
       if (showRebondTimes)
         timeBegin = System.currentTimeMillis();
       bspf = new Bspf(3);
@@ -1029,7 +1029,7 @@ final class Frame {
         }
       }
       if (showRebondTimes) {
-        timeEnd = System.currentTimeMillis();
+        long timeEnd = System.currentTimeMillis();
         System.out.println("time to build bspf=" + (timeEnd - timeBegin) +
                            " ms");
         bspf.stats();

@@ -1,0 +1,263 @@
+<!--
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2004  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
+-->
+<!--
+  French translation 
+  Translated from default version : index.en.html (v 1.1)
+-->
+<html lang="fr">
+  <head>
+    <title>Jmol - V&#x00E9;rification du Navigateur</title>
+    <script src="../jmol/Jmol.js"></script>
+  </head>
+  <body>
+    <img src="../images/Jmol_smallLogo.jpg" />
+    <hr />
+    <h1>Jmol - V&#x00E9;rification du Navigateur</h1>
+    <p>
+      L'applet Jmol a besoin d'un navigateur web qui supporte les applets Java.
+    </p>
+    <p>
+      De plus, la plupart des pages web qui utilisent l'applet Jmol incluent des
+      contr&#x00F4;les HTML (boutons, cases &#x00E0; cocher, ...) qui envoient des
+      scripts pour contr&#x00F4;ler l'applet Jmol. Pour que ces contr&#x00F4;les
+      fonctionnent normalement le navigateur doit aussi supporter JavaScript et les
+      communications LiveConnect entre JavaScript et les applets Java.
+    </p>
+
+    <hr />
+    <script>
+      var msgNetscape47Win = 
+      "<p>Bien que Jmol supporte normalement NS47 sous Windows, il semble y avoir " +
+      "de petits probl&#x00E9;mes li&#x00E8;s aux &#x00E8;v&#x00E8;nements souris " +
+      "et des probl&#x00E8;mes occasionnels JavaScript/LiveConnect. </p>" +
+      "<p>De plus, l'&#x00E8;tat de l'applet n'est pas r&#x00E8;initialis&#x00E8; " +
+      "quand une page web est recharg&#x00E8;e, ce qui entra&#x00EE;ne parfois que " +
+      "les cases &#x00E0; cocher et les boutons radio ne correspondent plus &#x00E0; " +
+      "l'apparaence de l'applet. </p>" +
+      "<p>Nous vous recommandons de penser &#x00E0; passer &#x00E0; un navigateur " +
+      "plus r&#x00E9;cent. </p>";
+
+      var msgNoGetElementById =
+      "<p>Il semble que ce soit un ancien navigateur web qui ne supporte pas les " +
+      "standards actuels des navigateurs. Jmol et/ou les boutons qui " +
+      "contr&#x00F4;lent Jmol ne marcheront probablement pas correctement avec " +
+      "ce navigateur. Nous vous recommandons de passer &#x00E0; un navigateur" +
+      "plus r&#x009;cent. </p>";
+
+      var msgGenericNoJava =
+      "<p>Votre navigateur web indique que Java n'est pas activ&#x00E9;. " +
+      "L'applet Jmol a besoin du support Java de votre navigateur web.<br/>" +
+      "Veuillez t&#x00E9;l&#x00E9;charger Java depuis " +
+      "<a href='http://www.java.com' target='_blank'>www.java.com " +
+      "<img border='0' src='get_java_red_button.gif' /></a> " +
+      "et/ou configurer votre navigateur pour activer les applets java. </p>";
+
+      var msgGenericOK =
+      "<p>Votre navigateur web semble supporter correctemenr Jmol. </p>"
+      "<p>Si vous rencontrez des probl&#x00E8;mes, veuillez les indiquer &#x00E0; "
+      "<code>jmol-developers@lists.sf.net</code></p>";
+
+      var msgNoLiveConnectMac =
+      "<p>L'applet Jmol elle-m&x00EA;me fonctionnera correctement. " +
+      "N&#x00E9;anmoins, les pages web construites avec des contr&#x00F4;les " +
+      "HTML tels que boutons, cases &#x00E0; cocher et liens ne fonctionneront " +
+      "pas correctement car les contr&#x00F4;les ne peuvent pas envoyer de " +
+      "commandes de script &#x00E0; l'applet Jmol.</p>" +
+      "<p>Nous vous recommandons d'utiliser Safari ou un autre navigateur " +
+      "Macintosh qui supporte les communications LiveConnect entre JavaScript " +
+      " et les applets Java.</p>";
+
+      var msgMacIE =
+      "<p>Microsoft Internet Explorer sur Macintosh ne supporte pas " +
+      "les communications LiveConnect entre JavaScript et les applets Java. </p>";
+
+      var msgMacOldSafari =
+      "<p>Les versions anciennes de Safari ne supportent pas " +
+      "les communications LiveConnect entre JavaScript et les applets Java. </p>";
+
+      var msgMacMozillaOldJava =
+      "<p>Netscape/Mozilla/FireFox sur Macintosh n'ont pas acc&#x00E8;s " +
+      "&#x00E0; la derni&#x00E8;re version de Java et ne supportent donc pas ";
+      "les communications LiveConnect entre JavaScript et les applets Java. </p>";
+
+      var msgMacMozillaAlternative =
+      "<p>Ou vous pouvez essayer d'installer et d'utiliser le Plug-in Java " +
+      "Macintosh OS X depuis " +
+      "<a href='http://javaplugin.sourceforge.net' target='_blank'>" +
+      "javaplugin.sourceforge.net</a>";
+
+      var msgMacOpera754OrLess =
+      "<p>Cette version d'Opera sur Macintosh semble avoir des " +
+      "probl&#x00E8;mes &#x00E0; ex&#x00E9;cuter des applets. </p>" +
+      "Nous vous recommandons d'utiliser Safari ou un autre navigateur " +
+      "Macintosh qui ex&#x00E9;cute correctement les applet Java et permet " +
+      "les communications LiveConnect entre JavaScript les applets Java. </p>";
+
+      var msgLinuxKonqueror331OrLess =
+      "<p>Toutes les version de Konqueror sur Linux/Unix jusqu'&#x00E0; 3.3.1 " +
+      "ont des anomalies dans le support des applets java. " +
+      "L'&#x00E9;quipe Jmol a averti l'&#x00E9;quipe Konquere et " +
+      "l'&#x00E9;quipe Konqueror s'en occupe.</p>" +
+      "<p>Une version de Konqueror plus r&#x00E9;cente que 3.3.1 peut avoir " +
+      "r&#x00E9;gl&#x00E9; le probl&#x00E8;me. Ou vous pouvez utiliser un " +
+      "navigateur de la famille Mozilla.</p>";
+
+      var msgOK =
+      "<p>Votre navigateur semble &#x00EA;tre compatible avec Jmol.</p>" +
+      "<p>Si vous rencontrez des probl&#x00E8;mes avec Jmol " +
+      "s'ex&#x00E9;cutant dans votre navigateur, veuillez nous avertir " +
+      "&#x00E0; " +
+      "<code>jmol-developers@lists.sf.net</code></p>";
+
+      var msg = "";
+      var mozillaVersion = "";
+      var javaVersion = 0;
+      var state = "yellow";
+
+      with (_jmol) {
+        if (browser == "mozilla" && browserVersion >= 5) {
+          var indexRV = ua.indexOf("rv:");
+          if (indexRV > 0) {
+            var rv = ua.substring(indexRV + 3);
+            var indexEnd = rv.indexOf(")");
+            var indexSemi = rv.indexOf(";");
+            if (indexEnd < 0 || (indexSemi > 0 && indexSemi < indexEnd))
+              indexEnd = indexSemi;
+            if (indexEnd > 0)
+              mozillaVersion = " " + rv.substring(0, indexEnd);
+          }
+        }
+        do {
+          if (isNetscape47Win)
+            { msg = msgNetscape47Win; break; }
+          if (os == "mac" && browser == "mozilla" && browserVersion >= 5) {
+            eval("try{javaVersion=" +
+                 "java.lang.System.getProperty('java.version');" +
+                  "} catch (e) { }");
+            if (javaVersion < 1.4) {
+              msg = msgMacMozillaOldJava + msgNoLiveConnectMac +
+                    msgMacMozillaAlternative;
+              break;
+            }
+          }
+          if (! isJavaEnabled)
+            { msg = msgGenericNoJava; state = "red"; break; }
+          if (! hasGetElementById)
+            { msg = msgNoGetElementById; state = "red"; break; }
+          if (os == "mac" && browser == "msie")
+            { msg = msgMacIE + msgNoLiveConnectMac; break; }
+          if (os == "mac" && browser == "safari" && browserVersion < 125.1)
+            { msg = msgMacOldSafari + msgNoLiveConnectMac; break; }
+          if (os == "mac" && browser == "opera" && browserVersion <= 7.54)
+            { msg = msgMacOpera754OrLess; state = "red"; break; }
+          if ((os == "win" && browser == "msie") ||
+              (os == "win" && browser == "mozilla" && browserVersion >= 5) ||
+              (os == "win" && browser == "opera" && browserVersion >= 7.54) ||
+              ((os == "linux" || os == "unix") &&
+               browser == "mozilla" && browserVersion >= 5))
+            { state = "green"; break; }
+          if ((os == "linux" || os == "unix") &&
+              browser == "konqueror" && browserVersion <= 3.3)
+            { msg = msgLinuxKonqueror331OrLess; state = "red"; break; }
+        } while (false); // this 'loop' is here only to allow use of 'break'
+
+        document.writeln("<p><font size='+1'>Votre navigateur web semble &#x00EA;tre " +
+                         "<code>" +
+                         browser + "/" + browserVersion + mozillaVersion +
+                         "</code>" +
+                         " tournant sur <code>" + os + "</code></font></p>");
+        document.writeln("<table bgcolor='" + state + "' border='1'>" +
+                         "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                         "</td></tr></table>");
+        if (msg == "")
+          msg == msgOK;
+        document.writeln(msg);
+      }
+    </script>
+    <hr />
+    <table border="1">
+      <tr>
+        <td>Syst&#x00E8;me d'exploitation</td>
+        <td>
+          <script>
+            document.write(_jmol.os);
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Navigateur web
+        </td>
+        <td>
+          <script>
+            document.write(_jmol.browser);
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Version du navigateur
+        </td>
+        <td>
+          <script>
+            document.write(_jmol.browserVersion);
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          navigator.userAgent
+        </td>
+        <td>
+          <script>
+            document.write(navigator.userAgent);
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          a getElementById()
+        </td>
+        <td>
+          <script>
+            document.write(!!document.getElementById);
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          navigator.javaEnabled()
+        </td>
+        <td>
+          <script>
+            document.write(navigator.javaEnabled());
+          </script>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -170,8 +170,6 @@ public class DisplayPanel extends JPanel
   private SymbolsAction symbolsAction = new SymbolsAction();
   private TypesAction typesAction = new TypesAction();
   private NumbersAction numbersAction = new NumbersAction();
-  private BondsAction bondsAction = new BondsAction();
-  private AtomsAction atomsAction = new AtomsAction();
   private HydrogensAction hydrogensAction = new HydrogensAction();
   private VectorsAction vectorsAction = new VectorsAction();
   private MeasurementsAction measurementsAction =
@@ -183,32 +181,6 @@ public class DisplayPanel extends JPanel
   private PerspectiveAction perspectiveAction = new PerspectiveAction();
   private AxesAction axesAction = new AxesAction();
   private BoundboxAction boundboxAction = new BoundboxAction();
-
-  class BondsAction extends AbstractAction {
-
-    public BondsAction() {
-      super("bonds");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowBonds(cbmi.isSelected());
-    }
-  }
-
-  class AtomsAction extends AbstractAction {
-
-    public AtomsAction() {
-      super("atoms");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowAtoms(cbmi.isSelected());
-    }
-  }
 
   class HydrogensAction extends AbstractAction {
 
@@ -674,8 +646,7 @@ public class DisplayPanel extends JPanel
       bnoneAction, bwireframeAction, bshadingAction,
       plainAction,
       symbolsAction, typesAction, numbersAction,
-      bondsAction, atomsAction, hydrogensAction,
-      vectorsAction, measurementsAction,
+      hydrogensAction, vectorsAction, measurementsAction,
       selectallAction, deselectallAction,
       homeAction, wireframerotationAction, perspectiveAction,
       axesAction, boundboxAction,
@@ -715,15 +686,21 @@ public class DisplayPanel extends JPanel
   }
 
   private long timeBegin;
+  private boolean wereInMotion;
+  private boolean inMotion;
 
   private void startPaintClock() {
     timeBegin = System.currentTimeMillis();
+    inMotion = control.getInMotion();
+    if (!wereInMotion & inMotion)
+      resetTimes();
   }
 
   private void stopPaintClock() {
     int time = (int)(System.currentTimeMillis() - timeBegin);
     recordTime(time);
     showTimes();
+    wereInMotion = inMotion;
   }
 
   private String fmt(int num) {

@@ -27,6 +27,7 @@ package org.openscience.jmol.script;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.JmolFrame;
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.AtomShapeIterator;
 import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.ProteinProp;
 import java.io.*;
@@ -860,38 +861,14 @@ public class Eval implements Runnable {
 
   void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
     double distance = ((Double)instruction.value).doubleValue();
-    double distanceSquared = distance*distance;
     JmolFrame frame = control.getJmolFrame();
-    for (int i = control.getAtomCount(); --i >= 0; ) {
-      if (bs.get(i)) {
-        // the atom itself is in the set
-
-        bsResult.set(i);
-        continue;
-      }
-      if (isWithin(distanceSquared, frame.getAtomAt(i).getPoint3d(), bs))
-        bsResult.set(i);
+    AtomShapeIterator iterSelected = frame.getAtomIterator(bs);
+    while (iterSelected.hasNext()) {
+      AtomShapeIterator iterWithin =
+        frame.getWithinIterator(iterSelected.next(), distance);
+      while (iterWithin.hasNext())
+        bsResult.set(iterWithin.next().atomIndex);
     }
-  }
-
-  boolean isWithin(double distanceSquared, Point3d point, BitSet bs) {
-    JmolFrame frame = control.getJmolFrame();
-    for (int i = control.getAtomCount(); --i >= 0; ) {
-      if (! bs.get(i))
-        continue;
-      Point3d pointB = frame.getAtomAt(i).getPoint3d();
-      double d = point.x - pointB.x;
-      double d2 = d*d;
-      if (d2 > distanceSquared) continue;
-      d = point.y - pointB.y;
-      d2 += d*d;
-      if (d2 > distanceSquared) continue;
-      d = point.z - pointB.z;
-      d2 += d*d;
-      if (d2 <= distanceSquared)
-        return true;
-    }
-    return false;
   }
 
   int getResno(AtomShape atom) {

@@ -295,7 +295,7 @@ public class TransformManager {
   ****************************************************************/
   public boolean perspectiveDepth = true;
   public double cameraDepth = 3;
-  public int cameraZ;
+  public int cameraZ = 1000; // prevent divide by zero on startup
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     this.perspectiveDepth = perspectiveDepth;
@@ -441,26 +441,19 @@ public class TransformManager {
 
   public Point3i transformPoint(Point3d pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3dScreenTemp);
-    int x = (int)(point3dScreenTemp.x +
-                  (point3dScreenTemp.x >= 0 ? 0.5 : -0.5));
-    int y = (int)(point3dScreenTemp.y +
-                  (point3dScreenTemp.y >= 0 ? 0.5 : -0.5));
-    int z = (int)(point3dScreenTemp.z +
-                  (point3dScreenTemp.z >= 0 ? 0.5 : -0.5));
+    int z = (int)(point3dScreenTemp.z + 0.5);
     if (z < 0) {
       System.out.println("WARNING! DANGER! z < 0! transformPoint()");
       z = 0;
     }
+    point3iScreenTemp.z = z;
     if (perspectiveDepth) {
-      int depth = cameraZ + z;
-      point3iScreenTemp.x = ((x * cameraZ) / depth) + xTranslation;
-      point3iScreenTemp.y = ((y * cameraZ) / depth) + yTranslation;
-      point3iScreenTemp.z = z;
-    } else {
-      point3iScreenTemp.x = x + xTranslation;
-      point3iScreenTemp.y = y + yTranslation;
-      point3iScreenTemp.z = z;
+      double perspectiveFactor = (double)cameraZ / (cameraZ + z);
+      point3dScreenTemp.x *= perspectiveFactor;
+      point3dScreenTemp.y *= perspectiveFactor;
     }
+    point3iScreenTemp.x = (int)(point3dScreenTemp.x + xTranslation);
+    point3iScreenTemp.y = (int)(point3dScreenTemp.y + yTranslation);
     return point3iScreenTemp;
   }
 

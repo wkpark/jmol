@@ -35,7 +35,7 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
 
-public class AtomShape extends Shape {
+public class AtomShape extends Shape implements Bspt.Tuple {
 
   public JmolFrame frame;
   public short atomIndex = -1;
@@ -53,27 +53,21 @@ public class AtomShape extends Shape {
 
   public String strLabel;
   
-  public AtomShape(JmolFrame frame, Object clientAtom) {
+  public AtomShape(JmolFrame frame, int atomIndex, Object clientAtom) {
     DisplayControl control = frame.control;
     this.frame = frame;
+    this.atomIndex = (short)atomIndex;
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) control.getAtomicNumber(clientAtom);
     this.colixAtom = control.getColixAtom(atomicNumber, clientAtom);
-    this.strLabel = control.getLabelAtom(atomicNumber, clientAtom, 0);
+    this.strLabel = control.getLabelAtom(atomicNumber, clientAtom, atomIndex);
     this.colixDots = 0;
     this.marDots = 0;
     setStyleMarAtom(control.getStyleAtom(), control.getMarAtom());
     this.point3d = control.getPoint3d(clientAtom);
   }
 
-  // FIXME need to pass in the atomIndex to the AtomShape constructor
-  public void setAtomIndex(int atomIndex) {
-    this.atomIndex = (short)atomIndex;
-  }
-
   public int getAtomIndex() {
-    if (atomIndex == -1)
-      throw new IndexOutOfBoundsException();
     return atomIndex;
   }
 
@@ -88,13 +82,14 @@ public class AtomShape extends Shape {
     return false;
   }
 
-  public void bondMutually(AtomShape atomShapeOther, int order) {
+  public BondShape bondMutually(AtomShape atomShapeOther, int order) {
     if (isBonded(atomShapeOther))
-      return;
+      return null;
     BondShape bondShape = new BondShape(this, atomShapeOther, order,
                                         frame.control);
     addBond(bondShape);
     atomShapeOther.addBond(bondShape);
+    return bondShape;
   }
 
   private void addBond(BondShape bondShape) {
@@ -260,9 +255,8 @@ public class AtomShape extends Shape {
   public void render(Graphics25D g25d, DisplayControl control) {
     if (atomicNumber == 1 && !control.getShowHydrogens())
       return;
-    if (control.getShowBonds())
-      renderBonds(control);
-    if (control.getShowAtoms() && isClipVisible(control.atomRenderer.clip))
+    renderBonds(control);
+    if (isClipVisible(control.atomRenderer.clip))
       control.atomRenderer.render(this);
     if (strLabel != null)
       control.labelRenderer.render(this);
@@ -379,8 +373,18 @@ public class AtomShape extends Shape {
     return point3d.z;
   }
 
+  public double getDimensionValue(int dimension) {
+    return (dimension == 0
+            ? point3d.x
+            : (dimension == 1 ? point3d.y : point3d.z));
+  }
+
   public double getVanderwaalsRadius() {
     return frame.control.getVanderwaalsRadius(atomicNumber, clientAtom);
+  }
+
+  public double getCovalentRadius() {
+    return getVanderwaalsRadius();
   }
 
   public ProteinProp getProteinProp() {

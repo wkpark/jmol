@@ -109,8 +109,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initApplication() {
     control.pushHoldRepaint();
     {
-      control.setShowBonds(true);
-      control.setShowAtoms(true);
       control.setPercentVdwAtom(20);
       control.zoomToPercent(100);
       control.setStyleBond(DisplayControl.SHADED);

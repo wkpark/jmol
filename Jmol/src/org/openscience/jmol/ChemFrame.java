@@ -263,6 +263,8 @@ public class ChemFrame extends AtomContainer {
    * Walk through this frame and find all bonds again.
    */
   public void rebond() {
+    if (true)
+      return;
     if (true) {
       bsptBond();
       return;
@@ -432,16 +434,15 @@ public class ChemFrame extends AtomContainer {
 
   private static final Point3d zeroPoint = new Point3d();
   private void buildJmolFrame() {
-    jmframe = new JmolFrame(control);
     int atomCount = getAtomCount();
+    jmframe = new JmolFrame(control, atomCount);
     char chainLast = '?';
     int indexLastCA = -1;
     AtomShape atomShapeLastCA = null;
     ProteinProp pprop = null;
     for (int i = 0; i < atomCount; ++i) {
       Atom jmolAtom = getJmolAtomAt(i);
-      AtomShape atomShape = new AtomShape(jmframe, jmolAtom);
-      jmframe.addAtomShape(atomShape);
+      AtomShape atomShape = jmframe.addAtom(jmolAtom);
       Atom[] bondedAtoms = jmolAtom.getBondedAtoms();
       if (bondedAtoms != null)
         for (int j = bondedAtoms.length; --j >= 0; ) {
@@ -494,7 +495,7 @@ public class ChemFrame extends AtomContainer {
         }
       }
     }
-
+    jmframe.finalize();
   }
 
   public JmolFrame getJmolFrame() {

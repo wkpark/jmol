@@ -1,5 +1,4 @@
 org/openscience/jmol/applet/AppletCanvas.java
-org/openscience/jmol/applet/NonJavaSort.java
 org/openscience/jmol/BaseAtomType.java
 org/openscience/jmol/AtomTypeList.java
 org/openscience/jmol/JmolException.java
@@ -40,7 +39,6 @@ org/openscience/jmol/AtomicSymbol.java
 org/openscience/jmol/MeasurementManager.java
 org/openscience/jmol/MeasurementWatcher.java
 org/openscience/jmol/MeasurementInterface.java
-org/openscience/jmol/UseJavaSort.java
 org/openscience/jmol/JmolAtomIterator.java
 org/openscience/jmol/ProteinProp.java
 org/openscience/jmol/JmolCDO.java

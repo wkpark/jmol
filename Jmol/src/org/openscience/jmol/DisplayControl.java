@@ -1019,6 +1019,10 @@ final public class DisplayControl {
     checkOversample();
   }
 
+  public boolean getInMotion() {
+    return repaintManager.inMotion;
+  }
+
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
     repaintManager.setWantsGraphics2D(wantsGraphics2D);
   }
@@ -1436,24 +1440,6 @@ final public class DisplayControl {
 
   public boolean getShowMultipleBonds() {
     return styleManager.showMultipleBonds;
-  }
-
-  public void setShowAtoms(boolean showAtoms) {
-    styleManager.setShowAtoms(showAtoms);
-    refresh();
-  }
-
-  public boolean getShowAtoms() {
-    return styleManager.showAtoms;
-  }
-
-  public void setShowBonds(boolean showBonds) {
-    styleManager.setShowBonds(showBonds);
-    refresh();
-  }
-
-  public boolean getShowBonds() {
-    return styleManager.showBonds;
   }
 
   public void setShowHydrogens(boolean showHydrogens) {

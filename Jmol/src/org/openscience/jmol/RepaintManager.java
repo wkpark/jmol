@@ -157,15 +157,13 @@ public class RepaintManager {
     g25d.clearScreenBuffer(control.getColorBackground(),
                            rectClip.x, rectClip.y,
                            rectClip.width, rectClip.height);
-    if (control.getFrame() != null) {
-      control.setGraphicsContext(g25d, rectClip);
-      control.getJmolFrame().render(g25d, control);
+    control.setGraphicsContext(g25d, rectClip);
+    control.getJmolFrame().render(g25d, control);
 
-      Rectangle band = control.getRubberBandSelection();
-      if (band != null)
-        g25d.drawRect(control.getColixRubberband(),
-                      band.x, band.y, band.width, band.height);
-    }
+    Rectangle band = control.getRubberBandSelection();
+    if (band != null)
+      g25d.drawRect(control.getColixRubberband(),
+                    band.x, band.y, band.width, band.height);
     g25d.endRendering();
     notifyRepainted();
   }

@@ -161,49 +161,44 @@ public class PovraySaver extends FileSaver {
 
     try {
 
-      if (control.getShowAtoms()) {
-
-        w.write("//***********************************************\n");
-        w.write("// List of all of the atoms\n");
-        w.write("//***********************************************\n");
-        w.write("\n");
-
-        // Loop through the atoms and write them out:
-
-        for (int i = 0; i < cf.getAtomCount(); i++) {
-          // don't write out if atom is a hydrogen and !showhydrogens
-          if (drawHydrogen
-              || (cf.getJmolAtomAt(i).getAtomicNumber() != 1)) {
-            style.writeAtom(w, i, cf);
-          }
+      w.write("//***********************************************\n");
+      w.write("// List of all of the atoms\n");
+      w.write("//***********************************************\n");
+      w.write("\n");
+      
+      // Loop through the atoms and write them out:
+      
+      for (int i = 0; i < cf.getAtomCount(); i++) {
+        // don't write out if atom is a hydrogen and !showhydrogens
+        if (drawHydrogen
+            || (cf.getJmolAtomAt(i).getAtomicNumber() != 1)) {
+          style.writeAtom(w, i, cf);
         }
       }
 
       /* write the bonds */
 
-      if (control.getShowBonds()) {
-
-        Hashtable bondsDrawn = new Hashtable();
-
-        w.write("\n");
-        w.write("\n");
-        w.write("//***********************************************\n");
-        w.write("// The list of bonds\n");
-        w.write("//***********************************************\n");
-        w.write("\n");
-
-        for (int i = 0; i < cf.getAtomCount(); ++i) {
-          Atom atom1 = (org.openscience.jmol.Atom)cf.getAtomAt(i);
-          Atom[] bondedAtoms = atom1.getBondedAtoms();
-          if (bondedAtoms == null)
-            continue;
-          for (int j = 0; j < bondedAtoms.length; ++j) {
-            Atom atom2 = (Atom) bondedAtoms[j];
-            if ((bondsDrawn.get(atom2) == null)
-                || !bondsDrawn.get(atom2).equals(atom1)) {
-              style.writeBond(w, atom1, atom2, cf);
-              bondsDrawn.put(atom1, atom2);
-            }
+      
+      Hashtable bondsDrawn = new Hashtable();
+      
+      w.write("\n");
+      w.write("\n");
+      w.write("//***********************************************\n");
+      w.write("// The list of bonds\n");
+      w.write("//***********************************************\n");
+      w.write("\n");
+      
+      for (int i = 0; i < cf.getAtomCount(); ++i) {
+        Atom atom1 = (org.openscience.jmol.Atom)cf.getAtomAt(i);
+        Atom[] bondedAtoms = atom1.getBondedAtoms();
+        if (bondedAtoms == null)
+          continue;
+        for (int j = 0; j < bondedAtoms.length; ++j) {
+          Atom atom2 = (Atom) bondedAtoms[j];
+          if ((bondsDrawn.get(atom2) == null)
+              || !bondsDrawn.get(atom2).equals(atom1)) {
+            style.writeBond(w, atom1, atom2, cf);
+            bondsDrawn.put(atom1, atom2);
           }
         }
       }

@@ -12,8 +12,7 @@
         website, which also explains where these plugins are installed.
       </p>
       <p>
-        Both Jmol $VERSION$ and Jmol 10 support plugins. The latter needs to 
-        be started as <i>java -Dmodel=cdk -jar jmol.jar</i>. The first cannot run
+        Both Jmol $VERSION$ and Jmol 10 support plugins. Version 9 cannot run
         all plugins though, e.g. the DirBrowser plugin does not work.
         The RSSViewer plugin does work in both versions.
       </p>

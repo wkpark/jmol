@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -21,6 +22,9 @@ package org.openscience.jmol;
 import java.awt.Graphics;
 import java.awt.*;
 import java.util.*;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Point3d;
 
 /**
  *  Data representation for a molecule in a particular set of coordinates.
@@ -32,7 +36,7 @@ public class ChemFrame {
 
 	private static float bondFudge = 1.12f;
 	private static boolean AutoBond = true;
-	private static Matrix3D mat;
+	private static Matrix4d mat;
 	private static float[] axes = {
 		0.0f, 0.0f, 0.0f,					// axis vectors in
 		1.0f, 0.0f, 0.0f,					// real space
@@ -98,9 +102,8 @@ public class ChemFrame {
 	/**@shapeType AggregationLink
 	@associates <b>Vibration</b>*/
 	static {
-		mat = new Matrix3D();
-		mat.xrot(0);
-		mat.yrot(0);
+		mat = new Matrix4d();
+		mat.setIdentity();
 	}
 
 	/**
@@ -146,20 +149,27 @@ public class ChemFrame {
 		return AutoBond;
 	}
 
-	static void matmult(Matrix3D m) {
-		mat.mult(m);
+	static void matmult(Matrix4d matrix) {
+		mat.mul(matrix, mat);
 	}
 
 	static void matscale(float xs, float ys, float zs) {
-		mat.scale(xs, ys, zs);
+		Matrix4d matrix = new Matrix4d();
+		matrix.setElement(0, 0, xs);
+		matrix.setElement(1, 1, ys);
+		matrix.setElement(2, 2, zs);
+		matrix.setElement(3, 3, 1.0);
+		mat.mul(matrix, mat);
 	}
 
 	static void mattranslate(float xt, float yt, float zt) {
-		mat.translate(xt, yt, zt);
+		Matrix4d matrix = new Matrix4d();
+		matrix.setTranslation(new Vector3d(xt, yt, zt));
+		mat.add(matrix);
 	}
 
 	static void matunit() {
-		mat.unit();
+		mat.setIdentity();
 	}
 
 	/**
@@ -636,20 +646,44 @@ public class ChemFrame {
 		if ((tvert == null) || (tvert.length < nvert * 3)) {
 			tvert = new int[nvert * 3];
 		}
-		mat.transform(vert, tvert, nvert);
+		for (int i=0; i < nvert*3; i += 3) {
+			Point3d pt = new Point3d(vert[i], vert[i+1], vert[i+2]);
+			mat.transform(pt);
+			tvert[i] = (int) pt.x;
+			tvert[i+1] = (int) pt.y;
+			tvert[i+2] = (int) pt.z;
+		}
 		if ((taxes == null) || (taxes.length < 12)) {
 			taxes = new int[12];
 		}
-		mat.transform(axes, taxes, 4);
+		for (int i=0; i < 4*3; i += 3) {
+			Point3d pt = new Point3d(axes[i], axes[i+1], axes[i+2]);
+			mat.transform(pt);
+			taxes[i] = (int) pt.x;
+			taxes[i+1] = (int) pt.y;
+			taxes[i+2] = (int) pt.z;
+		}
 		if ((tcellaxes == null) || (tcellaxes.length < 12)) {
 			tcellaxes = new int[12];
 		}
-		mat.transform(cellaxes, tcellaxes, 4);
+		for (int i=0; i < 4*3; i += 3) {
+			Point3d pt = new Point3d(cellaxes[i], cellaxes[i+1], cellaxes[i+2]);
+			mat.transform(pt);
+			tcellaxes[i] = (int) pt.x;
+			tcellaxes[i+1] = (int) pt.y;
+			tcellaxes[i+2] = (int) pt.z;
+		}
 		if (hasVectors) {
 			if ((tvect == null) || (tvect.length < nvert * 3)) {
 				tvect = new int[nvert * 3];
 			}
-			mat.transform(vect, tvect, nvert);
+			for (int i=0; i < nvert*3; i += 3) {
+				Point3d pt = new Point3d(vert[i], vert[i+1], vert[i+2]);
+				mat.transform(pt);
+				tvert[i] = (int) pt.x;
+				tvert[i+1] = (int) pt.y;
+				tvert[i+2] = (int) pt.z;
+			}
 		}
 	}
 
@@ -1201,44 +1235,4 @@ public class ChemFrame {
 		return vibrations.elements();
 	}
 }
-
-/*
- * @(#)ChemFrame.java    1.0 98/08/27
- *
- * Copyright (c) 1998 J. Daniel Gezelter All Rights Reserved.
- *
- * J. Daniel Gezelter grants you ("Licensee") a non-exclusive, royalty
- * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * This software is provided "AS IS," without a warranty of any
- * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
- * EXCLUDED.  J. DANIEL GEZELTER AND HIS LICENSORS SHALL NOT BE LIABLE
- * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
- * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
- * EVENT WILL J. DANIEL GEZELTER OR HIS LICENSORS BE LIABLE FOR ANY
- * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
- * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
- * INABILITY TO USE SOFTWARE, EVEN IF J. DANIEL GEZELTER HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
- * This software is not designed or intended for use in on-line
- * control of aircraft, air traffic, aircraft navigation or aircraft
- * communications; or in the design, construction, operation or
- * maintenance of any nuclear facility. Licensee represents and
- * warrants that it will not use or redistribute the Software for such
- * purposes.
- */
-
 

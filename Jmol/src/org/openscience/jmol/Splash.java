@@ -1,21 +1,22 @@
-/*
-  
-  Fire 'n' Forget Splash screen, instantiate A.S.A.P. in the main class
-  
-  Constructor:
-  
-      Splash splash = new Splash(this, ImageIcon ii);
-  
-  where 'this' is the main frame that will display on screen
-  
-  requires 1.1
-  
-  Originally by: Ralph (ralph@truleigh.demon.co.uk) May 98
-  Modifications by: Dan Gezelter (gezelter@chem.columbia.edu) November 98
-  Now uses ImageIcon which is loaded in the calling class...
-  
-*/
 
+/*
+ * Copyright 2001 The Jmol Development Team
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *  
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
+ */
 package org.openscience.jmol;
 
 import javax.swing.Timer;
@@ -30,7 +31,6 @@ public class Splash extends Window {
     private static final int BORDERSIZE = 10;
     private static final Color BORDERCOLOR = Color.blue;
     Toolkit tk;
-    //Added by T.Grey for status line
     private String status = "Loading...";
     private int textY;
     private int statusTop;
@@ -51,12 +51,10 @@ public class Splash extends Window {
         Dimension screenSize = tk.getScreenSize();
         setBackground(BORDERCOLOR);
         int w = imgWidth + (BORDERSIZE * 2);
-        //T.Grey status line support
         int h = imgHeight + (BORDERSIZE * 2) + STATUSSIZE;
         int x = (screenSize.width - w) /2;
         int y = (screenSize.height - h) /2;
         setBounds(x, y, w, h);
-        //T.Grey status line support
         statusTop = BORDERSIZE+imgHeight;
         textY = BORDERSIZE+STATUSSIZE+imgHeight+1;
         show();
@@ -66,14 +64,12 @@ public class Splash extends Window {
     public void paint(Graphics g) {
         g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight, 
                     this);
-        //T.Grey status line support
         g.setColor(BORDERCOLOR);
         g.fillRect(BORDERSIZE,statusTop, imgWidth, textY);
         g.setColor(TEXTCOLOR);
         g.drawString(status,BORDERSIZE,textY);
     }
     
-    //T.Grey status line support
     public void showStatus(String message){
         status = message;
         Graphics g = this.getGraphics();

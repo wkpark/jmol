@@ -1,20 +1,21 @@
 
 /*
- * Copyright (C) 2001  The Jmol Development Team
+ * Copyright 2001 The Jmol Development Team
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *  
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ *  02111-1307  USA.
  */
 package org.openscience.jmol;
 
@@ -22,6 +23,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -45,11 +48,9 @@ import javax.swing.text.*;
     private int fileType;
     private int nframes = 0;
     private static int prevx, prevy, outx, outy;
-    private static float xtheta, ytheta, ztheta;
-    private static Matrix3D amat = new Matrix3D(); // Matrix to do mouse angular rotations.
-    private static Matrix3D tmat = new Matrix3D(); // Matrix to do translations.
-    private static Matrix3D zmat = new Matrix3D(); // Matrix to do zooming.
-    private static Matrix3D mat = new Matrix3D();  // Final matrix for assembly on screen.
+    private static Matrix4d amat = new Matrix4d(); // Matrix to do mouse angular rotations.
+    private static Matrix4d tmat = new Matrix4d(); // Matrix to do translations.
+    private static Matrix4d zmat = new Matrix4d(); // Matrix to do zooming.
     float[] quat = new float[4];    
     double mtmp[];
     String names[];
@@ -120,22 +121,32 @@ import javax.swing.text.*;
         init();
     }
 
-//Added by T.GREY for POVRAY support
-/**Returns transform matrix assosiated with the current viewing transform**/
-    public Matrix3D getViewTransformMatrix(){
-       Matrix3D viewMatrix = new Matrix3D();
-       viewMatrix.translate(-(xmin + xmax) / 2,
-                             -(ymin + ymax) / 2,
-                             -(zmin + zmax) / 2);
-       viewMatrix.mult(amat);
-       viewMatrix.scale(xfac, -xfac, xfac);
-       viewMatrix.mult(tmat);
-       viewMatrix.mult(zmat);
-       viewMatrix.translate(getSize().width / 2,
-                            getSize().height / 2,
-                            getSize().width / 2);
-       return viewMatrix;
-    }
+	/**
+	 *  Returns transform matrix assosiated with the current viewing transform.
+	 */
+	public Matrix4d getViewTransformMatrix(){
+		Matrix4d viewMatrix = new Matrix4d();
+		viewMatrix.setIdentity();
+		Matrix4d matrix = new Matrix4d();
+		matrix.setTranslation(new Vector3d(-(xmin + xmax) / 2,
+			-(ymin + ymax) / 2,
+			-(zmin + zmax) / 2));
+		viewMatrix.add(matrix);
+		viewMatrix.mul(amat, viewMatrix);
+		matrix.setIdentity();
+		matrix.setElement(0, 0, xfac);
+		matrix.setElement(1, 1, -xfac);
+		matrix.setElement(2, 2, xfac);
+		viewMatrix.mul(matrix, viewMatrix);
+		viewMatrix.mul(tmat, viewMatrix);
+		viewMatrix.mul(zmat, viewMatrix);
+		matrix.setZero();
+		matrix.setTranslation(new Vector3d(getSize().width / 2,
+			getSize().height / 2,
+			getSize().width / 2));
+		viewMatrix.add(matrix);
+		return viewMatrix;
+	}
 
     public void init() {
         md.findBB();
@@ -285,20 +296,21 @@ import javax.swing.text.*;
                 tb.build_rotmatrix(amat, quat);                
 
                 */
-                xtheta = (prevy - y) * (360.0f / getSize().width);
-                ytheta = (x - prevx) * (360.0f / getSize().height);
-                
-                amat.xrot(xtheta);
-                amat.yrot(ytheta);
-                
-                mat.mult(amat);
+				double xtheta = (y - prevy) * (2.0 * Math.PI / getSize().width);
+				double ytheta = (x - prevx) * (2.0 * Math.PI / getSize().height);
+				Matrix4d matrix = new Matrix4d();
+				matrix.rotX(xtheta);
+				amat.mul(matrix, amat);
+				matrix.rotY(ytheta);
+				amat.mul(matrix, amat);
             }
 
             if (mode == XLATE) {
                 float dx = (x - prevx);
                 float dy = (y - prevy);
-                tmat.translate(dx, dy, 0);
-                mat.mult(tmat);
+				Matrix4d matrix = new Matrix4d();
+				matrix.setTranslation(new Vector3d(dx, dy, 0.0));
+                tmat.add(matrix);
             }                                                   
 
             if (mode == ZOOM) {
@@ -307,8 +319,12 @@ import javax.swing.text.*;
                 float ys = 1.0f + 
                     (float)(prevy-y) / (float)getSize().height;
                 float s = (xs + ys)/2.0f;
-                zmat.scale(s, s, s);
-                mat.mult(zmat);
+				Matrix4d matrix = new Matrix4d();
+				matrix.setElement(0, 0, s);
+				matrix.setElement(1, 1, s);
+				matrix.setElement(2, 2, s);
+				matrix.setElement(3, 3, 1.0);
+				zmat.mul(matrix, zmat);
                 xfac *= s*s;
                 settings.setAtomScreenScale(xfac);
                 settings.setBondScreenScale(xfac);
@@ -401,26 +417,17 @@ import javax.swing.text.*;
                 /*
                   start with the unit matrix
                 */
-                amat.unit();
-                tmat.unit();
-                zmat.unit();
+                amat.setIdentity();
+                tmat.setIdentity();
+                zmat.setIdentity();
                 quat[0] = 0.0f;
                 quat[1] = 0.0f;
                 quat[2] = 0.0f;
                 quat[3] = 1.0f;                   
                 initialized = true;
             }
-            ChemFrame.matunit();      
-            ChemFrame.mattranslate(-(xmin + xmax) / 2,
-                             -(ymin + ymax) / 2,
-                             -(zmin + zmax) / 2);
-            ChemFrame.matmult(amat);
-            ChemFrame.matscale(xfac, -xfac, xfac);
-            ChemFrame.matmult(tmat);
-            ChemFrame.matmult(zmat);
-            ChemFrame.mattranslate(getSize().width / 2, 
-                                   getSize().height / 2, 
-                                   getSize().width / 2);
+            ChemFrame.matunit();
+			ChemFrame.matmult(getViewTransformMatrix());
             settings.setAtomZOffset(getSize().width/2);
 
             g.setColor(bg);
@@ -735,9 +742,8 @@ import javax.swing.text.*;
             this.setEnabled(true);
         }
         
-        public void actionPerformed(ActionEvent e) {            
-            amat.xrot(0.0f);
-            amat.yrot(0.0f);
+        public void actionPerformed(ActionEvent e) {
+			amat.setIdentity();
             repaint();
         }
     }
@@ -750,8 +756,7 @@ import javax.swing.text.*;
         }
         
         public void actionPerformed(ActionEvent e) {            
-            amat.xrot(90.0f);
-            amat.yrot(0.0f);
+            amat.rotX(Math.toRadians(90.0));
             repaint();
         }
     }
@@ -764,8 +769,7 @@ import javax.swing.text.*;
         }
         
         public void actionPerformed(ActionEvent e) {            
-            amat.xrot(-90.0f);
-            amat.yrot(0.0f);
+            amat.rotX(Math.toRadians(-90.0));
             repaint();
         }
     }
@@ -778,8 +782,7 @@ import javax.swing.text.*;
         }
         
         public void actionPerformed(ActionEvent e) {            
-            amat.xrot(0.0f);
-            amat.yrot(90.0f);
+            amat.rotY(Math.toRadians(90.0));
             repaint();
         }
     }
@@ -792,8 +795,7 @@ import javax.swing.text.*;
         }
         
         public void actionPerformed(ActionEvent e) {            
-            amat.xrot(0.0f);
-            amat.yrot(-90.0f);
+            amat.rotY(Math.toRadians(-90.0));
             repaint();
         }
     }
@@ -855,9 +857,9 @@ import javax.swing.text.*;
         }
         
         public void actionPerformed(ActionEvent e) {            
-            amat.unit();
-            tmat.unit();
-            zmat.unit();
+            amat.setIdentity();
+            tmat.setIdentity();
+            zmat.setIdentity();
             md.findBB();
             xmin = md.getXMin();
             xmax = md.getXMax();
@@ -939,51 +941,12 @@ import javax.swing.text.*;
      */
     public void rotate(int axis, float angle) {
 	if (axis == X_AXIS) {
-	    amat.xrot(angle);
+	    amat.rotX(Math.toRadians(angle));
 	} else if (axis == Y_AXIS) {
-	    amat.yrot(angle);
+	    amat.rotY(Math.toRadians(angle));
 	} else if (axis == Z_AXIS) {
-	    amat.zrot(angle);
+	    amat.rotZ(Math.toRadians(angle));
 	}
     }
 }
-
-/*
- * @(#)DisplayPanel.java    1.0 98/08/27
- *
- * Copyright (c) 1998 J. Daniel Gezelter All Rights Reserved.
- *
- * J. Daniel Gezelter grants you ("Licensee") a non-exclusive, royalty
- * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions 
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * This software is provided "AS IS," without a warranty of any
- * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
- * EXCLUDED.  J. DANIEL GEZELTER AND HIS LICENSORS SHALL NOT BE LIABLE
- * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
- * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
- * EVENT WILL J. DANIEL GEZELTER OR HIS LICENSORS BE LIABLE FOR ANY
- * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
- * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
- * INABILITY TO USE SOFTWARE, EVEN IF J. DANIEL GEZELTER HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
- * This software is not designed or intended for use in on-line
- * control of aircraft, air traffic, aircraft navigation or aircraft
- * communications; or in the design, construction, operation or
- * maintenance of any nuclear facility. Licensee represents and
- * warrants that it will not use or redistribute the Software for such
- * purposes.  
- */
 

@@ -19,9 +19,9 @@
 	    
 	    <script>
 	      jmolRadioGroup([
-	        "load diffGear.pdb.gz",
-		"load fineMotion970116.pdb.gz",
-		"load finalPump96.09.06.pdb.gz"
+	        ["load diffGear.pdb.gz", "diffGear"],
+		["load fineMotion970116.pdb.gz", "fineMotion"],
+		["load finalPump96.09.06.pdb.gz", "finalPump"]
 		]);
 
 	      jmolHtml("<hr />");
@@ -63,6 +63,12 @@
 	      jmolButton("select hydrogen; cpk off");
 	      jmolBr();
 	    </script>
+	    <hr />
+	    <i>
+	      <script>
+		jmolCheckbox("set spin x 10; set spin y 10; spin on", "spin off", "spin it!");
+	      </script>
+	    </i>
 	  </td>
 	</tr>
       </table>

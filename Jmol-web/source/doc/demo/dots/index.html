@@ -10,7 +10,7 @@
 	<tr>
 	  <td>
 	    <h2>ddt</h2>
-	    <script>jmolApplet(400, "ddt.xyz.gz");</script>
+	    <script>jmolApplet(400, "ddt.xyz.gz", "cpk 95%; wireframe .5; dots on");</script>
 	  </td>
 	  
 	  <td>
@@ -22,30 +22,32 @@
 	    <br />
 	    <b>dots surface:</b><br />
 	    <script>
+	      jmolHtml("<i>");
 	      jmolRadioGroup([
-	        ["dots off", "<i>no dots</i><br />", "checked"],
-		["set solvent off; dots on", "<i>vanderWaals dots surface</i><br />"],
-		["set solvent on; dots on", "<i>solvent-accessible surface</i><br />"]
-		]);
+	      ["dots off", "no dots"],
+	      ["set solvent off; dots on", "vanderWaals dots surface", "checked"],
+	      ["set solvent on; dots on", "solvent-accessible surface"]
+	      ], "<br />");
+	      jmolHtml("</i>");
 	      jmolBr();
 	      jmolHtml("<b>spacefill:</b><br />");
 	      jmolRadioGroup([
 	        "spacefill off",
-		["spacefill 20%", null, "checked"],
-		"spacefill 95%"
-		]);
+		"spacefill 20%",
+		["spacefill 95%", null, "checked"]
+		], "<br />");
 	      jmolBr();
 	      jmolHtml("<b>wireframe:</b><br />");
 	      jmolRadioGroup([
 	        "wireframe off",
 		"wireframe on",
-		["wireframe .15", null, "checked"],
+		"wireframe .15",
 		"wireframe .25",
-		"wireframe .35"
-		]);
+		["wireframe .5", null, "checked"]
+		], "<br />");
 	      jmolBr();
 
-	      jmolButton("color dotsSaddle blue; color dotsConcave red",
+	      jmolButton("color dotsSaddle blue; color dotsConcave red; color dotsConvex yellow",
 	                 "show saddles and cavities");
 	    </script>
 	  </td>

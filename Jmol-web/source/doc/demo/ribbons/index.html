@@ -18,8 +18,7 @@
 	    <script>
 	      function modelRadio(model) {
 	        var script = "load " + model + ".gz; cpk off; wireframe; ribbons";
-		jmolRadio(script, model);
-		jmolHtml(" &nbsp; ");
+		jmolRadio(script, model, false, "&nbsp ");
 	      }
 
 	      modelRadio("1CRN.pdb");
@@ -32,14 +31,8 @@
 	    a ribbons which smoothly traces the midpoints of adjacent
 	    alpha carbon atoms (or phosphorus atoms in nucleotide chains).
 	    The ribbon is perpendicular to the peptide plane. <br />
+	    <p />
 	    
-	    &nbsp;&nbsp;
-	    <script>
-	      jmolCheckbox("ribbons on", "ribbons off", "ribbons on/off");
-	    </script>
-	    <br />
-	  
-	  
 	    Color your ribbons the way you like<br />
 	    <script>
 	      jmolRadioGroup([
@@ -48,18 +41,16 @@
 	        "color ribbons amino",
 		"color ribbons skyblue",
 		"color ribbons yellow"
-		]);
+		], "<br />");
 	    </script>
 	    <br />
 
-	    With or without wireframe<br />
-	    &nbsp;&nbsp;
 	    <script>
 	      jmolCheckbox("wireframe on", "wireframe off", "wireframe on/off", "checked");
 	    </script>
 	    <br />
 	    
-	    With or without spacefill<br />
+	    spacefill
 	    &nbsp;&nbsp;
 	    <script>
 	      jmolRadioGroup([

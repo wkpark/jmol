@@ -24,9 +24,9 @@
 	      &nbsp;&nbsp;backbone
 	      <script>
 		jmolRadioGroup([
-		["backbone off", "off ", "checked"],
-		["backbone 0.3", "0.3 "],
-		["backbone 0.6", "0.6 "]
+		["backbone off", "off", "checked"],
+		["backbone 0.3", "0.3"],
+		["backbone 0.6", "0.6"]
 		]);
 	      </script>
 	    </b>
@@ -35,14 +35,16 @@
 	    By default, the backbone bond color is inherited from the
 	    atoms (as with other bonds). You can explicitly change
 	    the backbone color. <br />
-	    <script>
-	      jmolRadioGroup([
-	        ["color backbone none", null, "checked"],
+	    <b>
+	      <script>
+		jmolRadioGroup([
+		["color backbone none", null, "checked"],
 		"color backbone firebrick",
 		"color backbone greenyellow",
 		"color backbone structure"
-		]);
-	    </script>
+		], "<br />");
+	      </script>
+	    </b>
 	    <br />
 	    <hr />
 
@@ -53,11 +55,11 @@
 	      &nbsp;&nbsp;trace
 	      <script>
 		jmolRadioGroup([
-		["trace off", "off ", "checked"],
-		["trace 0.4", "0.4 "],
-		["trace 0.8", "0.8 "],
+		["trace off", "off", "checked"],
+		["trace 0.4", "0.4"],
+		["trace 0.8", "0.8"],
 		["trace structure", "structure"]
-	      ]);
+		]);
 	      </script>
 	    </b>
 	    <br />
@@ -66,13 +68,19 @@
 	    HELIX, TURN, and SHEET. Color by 'amino' and color by
 	    'shapely' assign different colors
 	    to different amino acids.<br />
-	    <script>
-	      jmolRadioGroup([
-	        ["color trace none", null, "checked"],
+	    <b>
+	      <script>
+		jmolRadioGroup([
+		["color trace none", null, "checked"],
 		"color trace structure",
 		"color trace amino",
 		"color trace shapely"
-		]);
+		], "<br />");
+	      </script>
+	    </b>
+	    <hr />
+	    <script>
+	      jmolCheckbox("wireframe on", "wireframe off", "<i>show wireframe</i>", "checked");
 	    </script>
 	  </td>
 	</tr>

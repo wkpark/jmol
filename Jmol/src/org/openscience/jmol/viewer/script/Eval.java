@@ -1095,7 +1095,7 @@ public class Eval implements Runnable {
       viewer.setColorBackboneScript(getColorOrNoneParam(2));
       break;
     case Token.monitor:
-      viewer.setColorMeasurements(getColorOrNoneParam(2));
+      viewer.setColorMeasurement(getColorOrNoneParam(2));
       break;
     case Token.atom:
     case Token.trace:

@@ -524,8 +524,8 @@ final public class JmolViewer {
     return colorManager.colixLabel;
   }
 
-  public void setColorMeasurements(Color c) {
-    colorManager.setColorMeasurements(c);
+  public void setColorMeasurement(Color c) {
+    colorManager.setColorMeasurement(c);
     refresh();
   }
 

@@ -92,6 +92,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private Color colorText;
   private Color colorBond;
   private Color colorVector;
+  private Color colorMeasurement;
   private byte styleAtom;
   private byte modeAtomColorProfile;
   private byte styleLabel;
@@ -104,6 +105,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private double VibrateVectorScale;
   private int VibrationFrames;
   private JButton bButton, pButton, tButton, eButton, vButton;
+  private JButton measurementColorButton;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
@@ -149,6 +151,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "isBondAtomColor",                "true",
     "colorBond",                      "0",
     "colorVector",                    "0",
+    "colorMeasurement",               "0",
     "VibrateAmplitudeScale",          "0.7",
     "VibrateVectorScale",             "1.0",
     "VibrationFrames",                "20",
@@ -160,6 +163,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "styleAtom",                      "0",
     "styleBond",                      "1",
     "colorVector",                    "16777215",
+    "colorMeasurement",               "16777215",
   };
 
   private JmolViewer viewer;
@@ -839,6 +843,38 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     vectorPanel.add(vButton, BorderLayout.CENTER);
     colorPanel.add(vectorPanel);
 
+    // measurement color panel
+    JPanel measurementColorPanel = new JPanel();
+    measurementColorPanel.setLayout(new BorderLayout());
+    measurementColorPanel
+      .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+                                  .getString("Prefs.measurementColorLabel")));
+    measurementColorButton = new JButton();
+    measurementColorButton.setBackground(colorVector);
+    measurementColorButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.measurementColorToolTip"));
+    ActionListener startMeasurementColorChooser = new ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+
+        Color color =
+          JColorChooser
+            .showDialog(measurementColorButton,
+                        JmolResourceHandler.getInstance()
+                        .getString("Prefs.measurementColorChooserTitle"),
+                        colorMeasurement);
+        colorMeasurement = color;
+        measurementColorButton.setBackground(colorMeasurement);
+        viewer.setColorMeasurement(colorMeasurement);
+        currentProperties.put("colorMeasurement",
+                              Integer.toString(colorMeasurement.getRGB()));
+        viewer.refresh();
+      }
+    };
+    measurementColorButton.addActionListener(startMeasurementColorChooser);
+    measurementColorPanel.add(measurementColorButton, BorderLayout.CENTER);
+    colorPanel.add(measurementColorPanel);
+
     return colorPanel;
   }
 
@@ -1029,6 +1065,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     eButton.setBackground(colorBond);
     eButton.setEnabled(!isBondAtomColor);
     vButton.setBackground(colorVector);
+    measurementColorButton.setBackground(colorMeasurement);
 
     // Vibrate panel controls
     vasSlider.setValue((int) (100.0 * Vibrate.getAmplitudeScale()));
@@ -1094,6 +1131,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     isBondAtomColor = Boolean.getBoolean("isBondAtomColor");
     colorBond = Color.getColor("colorBond");
     colorVector = Color.getColor("colorVector");
+    colorMeasurement = Color.getColor("colorMeasurement");
     styleAtom = (byte)Integer.getInteger("styleAtom").intValue();
     styleLabel = (byte)Integer.getInteger("styleLabel").intValue();
     styleBond = (byte)Integer.getInteger("styleBond").intValue();
@@ -1122,6 +1160,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setStyleBond(styleBond);
     viewer.setMarBond(marBond);
     viewer.setColorVector(colorVector);
+    viewer.setColorMeasurement(colorMeasurement);
     viewer.setColorBackground(colorBackground);
     viewer.setMinBondDistance(minBondDistance);
     viewer.setBondTolerance(bondTolerance);

@@ -127,7 +127,6 @@ final public class JmolViewer {
     measurementManager = new MeasurementManager(this);
     distributionManager = new DistributionManager(this);
 
-    eval = new Eval(this);
     g3d = new Graphics3D(this);
   
   }
@@ -774,7 +773,7 @@ final public class JmolViewer {
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
     // but perhaps not if we are in the midst of executing a script?
-    eval.clearDefinitionsAndLoadPredefined();
+    eval = null;
     setStructuralChange();
     popHoldRepaint();
   }
@@ -1052,8 +1051,7 @@ final public class JmolViewer {
   }
 
   public Image renderScreenImage(Rectangle rectClip) {
-    if (eval.hasTerminationNotification())
-      manageScriptTermination();
+    manageScriptTermination();
     repaintManager.render(g3d, rectClip, modelManager.getFrame());
     return g3d.getScreenImage();
   }
@@ -1079,12 +1077,14 @@ final public class JmolViewer {
    ****************************************************************/
 
   public Eval getEval() {
+    if (eval == null)
+      eval = new Eval(this);
     return eval;
   }
 
   public String evalFile(String strFilename) {
     if (strFilename != null) {
-      if (! eval.loadScriptFile(strFilename))
+      if (! getEval().loadScriptFile(strFilename))
         return eval.getErrorMessage();
       eval.start();
     }
@@ -1093,7 +1093,7 @@ final public class JmolViewer {
 
   public String evalString(String strScript) {
     if (strScript != null) {
-      if (! eval.loadScriptString(strScript))
+      if (! getEval().loadScriptString(strScript))
         return eval.getErrorMessage();
       eval.start();
     }
@@ -1101,7 +1101,8 @@ final public class JmolViewer {
   }
 
   public void haltScriptExecution() {
-    eval.haltExecution();
+    if (eval != null)
+      eval.haltExecution();
   }
 
   public void setStyleMarAtomScript(byte style, short mar) {
@@ -1198,14 +1199,16 @@ final public class JmolViewer {
       jmolStatusListener.notifyFileNotLoaded(fullPathName, errorMsg);
   }
 
-  public void manageScriptTermination() {
-    String strErrorMessage = eval.getErrorMessage();
-    int msWalltime = eval.getExecutionWalltime();
-    eval.resetTerminationNotification();
-    if (jmolStatusListener != null)
-      jmolStatusListener.notifyScriptTermination(strErrorMessage,
+  private void manageScriptTermination() {
+    if (eval != null && eval.hasTerminationNotification()) {
+      String strErrorMessage = eval.getErrorMessage();
+      int msWalltime = eval.getExecutionWalltime();
+      eval.resetTerminationNotification();
+      if (jmolStatusListener != null)
+        jmolStatusListener.notifyScriptTermination(strErrorMessage,
                                                    msWalltime);
     }
+  }
 
   public void scriptEcho(String strEcho) {
     if (jmolStatusListener != null)

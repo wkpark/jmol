@@ -307,7 +307,7 @@ public class Sphere3D {
     } while (--nLines > 0);
   }
 
-  final static int maxSphereCache = 64;
+  final static int maxSphereCache = 128;
   static int[][] sphereShapeCache = new int[maxSphereCache][];
   byte[] intensities = new byte[maxSphereCache * maxSphereCache];
   byte[] heights = new byte[maxSphereCache * maxSphereCache];

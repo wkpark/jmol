@@ -287,6 +287,7 @@ public class Jmol extends JPanel {
     dropper.addPropertyChangeListener (new PropertyChangeListener () {
         
         public void propertyChange (PropertyChangeEvent evt) {
+            System.out.println("Drop triggered...");
             f.setCursor (Cursor.getPredefinedCursor (Cursor.WAIT_CURSOR));
             
             if (evt.getPropertyName ().equals (FileDropper.FD_PROPERTY_FILENAME)) {

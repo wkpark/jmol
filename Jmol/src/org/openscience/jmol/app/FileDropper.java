@@ -73,21 +73,25 @@ public class FileDropper implements DropTargetListener {
 		}
 
 		public void dragOver(DropTargetDragEvent dtde) {
+            System.out.println("DropOver detected...");
 		}
 
 		public void dragEnter(DropTargetDragEvent dtde) {
+            System.out.println("DropEnter detected...");
 			dtde.acceptDrag (DnDConstants.ACTION_COPY_OR_MOVE);
 		}
 
 		public void dragExit(DropTargetEvent dtde) {
+            System.out.println("DropExit detected...");
 		}
 
 		public void dropActionChanged(DropTargetDragEvent dtde) {
 		}
 
 		public void drop (DropTargetDropEvent dtde) {
+            System.out.println("Drop detected...");
 			Transferable t = dtde.getTransferable ();
-			if (t.isDataFlavorSupported (DataFlavor.javaFileListFlavor)) {
+            if (t.isDataFlavorSupported (DataFlavor.javaFileListFlavor)) {
 				dtde.acceptDrop (DnDConstants.ACTION_COPY_OR_MOVE);
 				Object o = null;
 

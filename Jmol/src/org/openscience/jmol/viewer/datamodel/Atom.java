@@ -680,7 +680,7 @@ public final class Atom implements Bspt.Tuple {
     int seqcode = getSeqcode();
     if (seqcode != -1) {
       info.append(' ');
-      info.append(seqcode);
+      info.append(group.getSeqcodeString());
     }
     char chainID = getChainID();
     if (chainID != 0) {

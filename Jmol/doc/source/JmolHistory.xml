@@ -80,6 +80,9 @@
     Completed much of the CdkJmolAdapter: PDB properties are now supported, and 
     ChemSequence/ChemModel is mapped to AtomSetCollection/AtomSet.
   </change>
+  <change contributor="EW">
+    Added reading of input structures from Mopac files.
+  </change>
 </changes>
 
 <changes version="jmol-10">

@@ -46,7 +46,11 @@ class MopacReader extends AtomSetCollectionReader {
     String line;
     while ((line = input.readLine()) != null && ! line.startsWith(" ---")) {
       if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
-        //hasSymmetry = true;
+          // hasSymmetry = true;
+      } else if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
+          atomSetCollection.newAtomSet();
+          atomSetCollection.setAtomSetName("Input Structure");
+          processCoordinates(input);
       }
     }
 
@@ -87,7 +91,9 @@ class MopacReader extends AtomSetCollectionReader {
    */
 void processAtomicCharges(BufferedReader input) throws Exception {
     discardLines(input, 2);
-    //    System.out.println("Reading atomic charges");
+    // System.out.println("Reading atomic charges");
+    atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
+    atomSetCollection.setAtomSetName(""); // start with an empty name
     baseAtomIndex = atomSetCollection.atomCount;
     int expectedAtomNumber = 0;
     String line;
@@ -131,7 +137,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
    * @throws Exception
    */
   void processCoordinates(BufferedReader input) throws Exception {
-    //    System.out.println("processCoordinates()");
+    // System.out.println("processCoordinates()");
     discardLines(input, 3);
     int expectedAtomNumber = 0;
     String line;
@@ -142,12 +148,18 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       ++expectedAtomNumber;
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in coordinates");
-      /*String elementSymbol = */parseToken(line, ichNextParse);
+      String elementSymbol = parseToken(line, ichNextParse);
 
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
+      if (atom == null) {
+          atom = atomSetCollection.addNewAtom(); // if no charges were found first
+      }
+      atom.atomSerial = atomNumber;
+      atom.elementSymbol = elementSymbol;
       atom.x = parseFloat(line, ichNextParse);
       atom.y = parseFloat(line, ichNextParse);
       atom.z = parseFloat(line, ichNextParse);
+      System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
     }
   }
   

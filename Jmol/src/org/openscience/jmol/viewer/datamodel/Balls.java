@@ -28,7 +28,8 @@ package org.openscience.jmol.viewer.datamodel;
 import java.util.BitSet;
 
 public class Balls extends Shape {
-  public void setMad(short mad, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
+    short mad = (short)size;
     Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0; )
       if (bsSelected.get(i))

@@ -507,7 +507,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         JSlider source = (JSlider) e.getSource();
         marBond = (short)source.getValue();
         //        viewer.setMarBondDefault(marBond);
-        viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)(marBond * 2));
+        viewer.setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
         currentProperties.put("marBond", "" + marBond);
       }
     });
@@ -1100,7 +1100,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setPercentVdwAtom(percentVdwAtom);
     //    viewer.setStyleLabel(styleLabel);
     //viewer.setPropertyStyleString(AtomPropsMode);
-    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)(marBond * 2));
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
     viewer.setColorVector(colorVector);
     viewer.setColorMeasurement(colorMeasurement);
     viewer.setColorBackground(colorBackground);

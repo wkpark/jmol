@@ -190,7 +190,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       loadInline(getValue("loadInline", null));
       if (getBooleanValue("frank", true)) {
         System.out.println("frank is ON");
-        viewer.setShapeMad(JmolConstants.SHAPE_FRANK, (short)-1);
+        viewer.setShapeSize(JmolConstants.SHAPE_FRANK, -1);
       }
 
       animFrameCallback = getValue("AnimFrameCallback", null);

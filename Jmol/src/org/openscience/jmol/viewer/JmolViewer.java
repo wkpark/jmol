@@ -643,14 +643,6 @@ final public class JmolViewer {
     return colorManager.colorBond;
   }
 
-  public Color getColorHbond() {
-    return colorManager.colorHbond;
-  }
-
-  public Color getColorSsbond() {
-    return colorManager.colorSsbond;
-  }
-
   public short getColixBond(int order) {
     if (order == JmolConstants.BOND_HYDROGEN)
       return colorManager.colixHbond;
@@ -1348,20 +1340,20 @@ final public class JmolViewer {
   }
 
   public void setShapeShow(int shapeType, boolean show) {
-    setShapeMad(shapeType, (short)(show ? -1 : 0));
+    setShapeSize(shapeType, show ? -1 : 0);
   }
   
   public boolean getShapeShow(int shapeType) {
-    return getShapeMad(shapeType) != 0;
+    return getShapeSize(shapeType) != 0;
   }
   
-  public void setShapeMad(int shapeType, short mad) {
-    modelManager.setShapeMad(shapeType, mad, selectionManager.bsSelection);
+  public void setShapeSize(int shapeType, int size) {
+    modelManager.setShapeSize(shapeType, size, selectionManager.bsSelection);
     refresh();
   }
   
-  public short getShapeMad(int shapeType) {
-    return modelManager.getShapeMad(shapeType);
+  public int getShapeSize(int shapeType) {
+    return modelManager.getShapeSize(shapeType);
   }
   
   public void setShapeColor(int shapeType, byte palette, Color color) {
@@ -1654,7 +1646,7 @@ final public class JmolViewer {
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
-    setShapeMad(JmolConstants.SHAPE_BALLS, (short)-percentVdwAtom);
+    setShapeSize(JmolConstants.SHAPE_BALLS, -percentVdwAtom);
   }
 
   public int getPercentVdwAtom() {

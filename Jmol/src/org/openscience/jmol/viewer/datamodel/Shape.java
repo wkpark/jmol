@@ -43,7 +43,7 @@ abstract public class Shape {
   void initShape() {
   }
 
-  public void setMad(short mad, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
   }
 
   public void setColix(byte palette, short colix, BitSet bsSelected) {

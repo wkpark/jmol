@@ -32,7 +32,8 @@ import java.util.BitSet;
 
 public class Sticks extends Shape {
 
-  public void setMad(short mad, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
+    short mad = (short)size;
     setMadBond(mad, JmolConstants.BOND_COVALENT, bsSelected);
   }
   

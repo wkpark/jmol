@@ -119,7 +119,7 @@ public class StyleManager {
     viewer.setPerspectiveDepth(true);
     viewer.setBondTolerance(0.45f);
     viewer.setMinBondDistance(0.40f);
-    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)(150 * 2));
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 150 * 2);
   }
 
   public void setJmolDefaults() {
@@ -135,7 +135,7 @@ public class StyleManager {
     viewer.setAxesOrientationRasmol(true);
     setZeroBasedXyzRasmol(true);
     viewer.setPercentVdwAtom(0);
-    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)1);
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 1);
   }
 
   public boolean showFrank;

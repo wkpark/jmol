@@ -204,19 +204,19 @@ public class ModelManager {
    * shape support
    ****************************************************************/
 
-  short[] shapeMads = new short[JmolConstants.SHAPE_MAX];
+  int[] shapeSizes = new int[JmolConstants.SHAPE_MAX];
   byte[] shapePalettes = new byte[JmolConstants.SHAPE_MAX];
   short[] shapeColixes = new short[JmolConstants.SHAPE_MAX];
   Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
-  public void setShapeMad(int shapeType, short mad, BitSet bsSelected) {
-    shapeMads[shapeType] = mad;
+  public void setShapeSize(int shapeType, int size, BitSet bsSelected) {
+    shapeSizes[shapeType] = size;
     if (frame != null)
-      frame.setShapeMad(shapeType, mad, bsSelected);
+      frame.setShapeSize(shapeType, size, bsSelected);
   }
   
-  public short getShapeMad(int shapeType) {
-    return shapeMads[shapeType];
+  public int getShapeSize(int shapeType) {
+    return shapeSizes[shapeType];
   }
   
   public void setShapeColix(int shapeType, byte palette, 

@@ -34,8 +34,8 @@ abstract public class SelectionIndependentShape extends Shape {
   short mad;
   short colix;
 
-  public void setMad(short mad, BitSet bsSelected) {
-    this.mad = mad;
+  public void setSize(int size, BitSet bsSelected) {
+    this.mad = (short)size;
   }
   
   public void setColix(byte palette, short colix, BitSet bsSelected) {

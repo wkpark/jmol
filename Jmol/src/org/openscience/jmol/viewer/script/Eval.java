@@ -1440,13 +1440,13 @@ public class Eval implements Runnable {
     viewer.invertSelection();
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
-    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, (short)0);
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
     viewer.setBondSelectionModeOr(bondmode);
     viewer.setLabelScript(null);
 
     for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT;
          --shapeType >= 0; )
-      viewer.setShapeMad(shapeType, (short)0);
+      viewer.setShapeSize(shapeType, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
     viewer.invertSelection();
@@ -1741,7 +1741,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeMad(JmolConstants.SHAPE_BALLS, mad);
+    viewer.setShapeSize(JmolConstants.SHAPE_BALLS, mad);
   }
 
   void wireframe() throws ScriptException {
@@ -1768,7 +1768,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeMad(JmolConstants.SHAPE_STICKS, mad);
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad);
   }
 
   void ssbonds() throws ScriptException {
@@ -2007,7 +2007,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeMad(JmolConstants.SHAPE_DOTS, mad);
+    viewer.setShapeSize(JmolConstants.SHAPE_DOTS, mad);
   }
 
   void proteinShape(int shapeType) throws ScriptException {
@@ -2034,7 +2034,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    viewer.setShapeMad(shapeType, mad);
+    viewer.setShapeSize(shapeType, mad);
   }
 
   void spin() throws ScriptException {
@@ -2201,23 +2201,23 @@ public class Eval implements Runnable {
   }
 
   void setAxes() throws ScriptException {
-    viewer.setShapeMad(JmolConstants.SHAPE_AXES,
-                       getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_AXES,
+                        getSetAxesTypeMad());
   }
 
   void setBoundbox() throws ScriptException {
-    viewer.setShapeMad(JmolConstants.SHAPE_BBCAGE,
-                       getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_BBCAGE,
+                        getSetAxesTypeMad());
   }
 
   void setUnitcell() throws ScriptException {
-    viewer.setShapeMad(JmolConstants.SHAPE_UCCAGE,
-                       getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE,
+                        getSetAxesTypeMad());
   }
 
   void setFrank() throws ScriptException {
-    viewer.setShapeMad(JmolConstants.SHAPE_FRANK,
-                       getSetAxesTypeMad());
+    viewer.setShapeSize(JmolConstants.SHAPE_FRANK,
+                        getSetAxesTypeMad());
   }
 
   void setColor() throws ScriptException {

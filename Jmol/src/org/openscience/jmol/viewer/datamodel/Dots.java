@@ -129,7 +129,8 @@ public class Dots extends Shape {
     geodesicMap = allocateBitmap(geodesicCount);
   }
 
-  public void setMad(short mad, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
+    short mad = (short)size;
     this.mad = mad;
     if (radiusP != viewer.getSolventProbeRadius()) {
       dotsConvexCount = 0;

@@ -42,7 +42,8 @@ public class Backbone extends Mcps {
       super(polymer);
     }
 
-    public void setMad(short mad, BitSet bsSelected) {
+    public void setSize(int size, BitSet bsSelected) {
+      short mad = (short)size;
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       int[] atomIndices = polymer.getAtomIndices();
       for (int i = polymerCount - 1; --i >= 0; ) {

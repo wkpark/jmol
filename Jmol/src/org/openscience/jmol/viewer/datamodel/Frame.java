@@ -253,11 +253,11 @@ final public class Frame {
     }
   }
   
-  public void setShapeMad(int shapeType, short mad, BitSet bsSelected) {
-    if (mad != 0)
+  public void setShapeSize(int shapeType, int size, BitSet bsSelected) {
+    if (size != 0)
       checkShape(shapeType);
     if (shapes[shapeType] != null)
-      shapes[shapeType].setMad(mad, bsSelected);
+      shapes[shapeType].setSize(size, bsSelected);
   }
 
   public void setShapeColix(int shapeType, byte palette,

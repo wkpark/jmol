@@ -90,25 +90,8 @@ public class Convertor {
             int NOatoms = ac.getAtomCount();
             ChemFrame converted = new ChemFrame(NOatoms);
             for (int i=0; i<NOatoms; i++) {
-                org.openscience.cdk.Atom atom = ac.getAtomAt(i);
-                javax.vecmath.Point3d xyz = atom.getPoint3D();
-                if (atom.getPoint3D() != null) {
-                } else if (atom.getPoint2D() != null) {
-                    xyz =
-                        new javax.vecmath.Point3d(
-                            atom.getX2D(),
-                            atom.getY2D(),
-                            0.0
-                        );
-                } else {
-                    xyz = new javax.vecmath.Point3d(0.0, 0.0, 0.0);
-                }
-                converted.addAtom(
-                    atom.getSymbol(),
-                    (float)xyz.x,
-                    (float)xyz.y,
-                    (float)xyz.z
-                );
+                org.openscience.cdk.Atom atom = (org.openscience.cdk.Atom)ac.getAtomAt(i).clone();
+                converted.addAtom(atom);
             }
             return converted;
         } else {

@@ -24,6 +24,7 @@ import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.ProteinProp;
+import org.openscience.jmol.Atom;
 import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -112,7 +113,13 @@ public class PDBReader extends DefaultChemFileReader {
         double x = FortranFormat.atof(sx);
         double y = FortranFormat.atof(sy);
         double z = FortranFormat.atof(sz);
-        frame.addAtom(atype, x, y, z, new ProteinProp(line));
+        Atom atom = new Atom(new org.openscience.cdk.Atom(atype));
+        atom.setX3D(x);
+        atom.setY3D(y);
+        atom.setZ3D(z);
+        atom.setProteinProp(new ProteinProp(line));
+        frame.addAtom(atom);
+        
 /*
  * The following code for processing CONECT records has several defects.
  * 1. It uses a StringTokenizer to parse the CONECT record. This is

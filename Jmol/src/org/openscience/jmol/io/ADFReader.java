@@ -23,6 +23,7 @@ import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
 import org.openscience.jmol.AtomicSymbol;
+import org.openscience.cdk.Atom;
 import java.util.Vector;
 import java.util.Hashtable;
 import java.io.Reader;
@@ -136,8 +137,10 @@ public class ADFReader extends DefaultChemFileReader {
       token.nextToken();
 
       // ignore first token
+      String symbol = "";
       if (token.nextToken() == StreamTokenizer.TT_WORD) {
-        atomicNumber = AtomicSymbol.elementToAtomicNumber(token.sval);
+          symbol = token.sval;
+        atomicNumber = AtomicSymbol.elementToAtomicNumber(symbol);
         if (atomicNumber == 0) {
 
           // skip dummy atoms
@@ -171,7 +174,12 @@ public class ADFReader extends DefaultChemFileReader {
       } else {
         throw new IOException("Error reading coordinates");
       }
-      frame.addAtom(atomicNumber, x, y, z);
+      Atom atom = new Atom(symbol);
+      atom.setX3D(x);
+      atom.setY3D(y);
+      atom.setZ3D(z);
+      atom.setAtomicNumber(atomicNumber);
+      frame.addAtom(atom);
     }
   }
 

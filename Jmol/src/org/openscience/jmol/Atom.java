@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2002-2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -36,20 +36,6 @@ import javax.vecmath.Matrix4d;
  * atoms.
  */
 public class Atom extends org.openscience.cdk.Atom {
-
-  /**
-   * Creates an atom with the given type.
-   *
-   * @param the type of this atom.
-   */
-  public Atom(BaseAtomType baseAtomType, int atomNumber,
-              double x, double y, double z, ProteinProp pprop) {
-    super(baseAtomType.getSymbol(), new Point3d(x, y, z));
-    super.setID(baseAtomType.getID());
-    this.baseAtomType = baseAtomType;
-    this.atomNumber = atomNumber;
-    this.pprop = pprop;
-  }
 
   /**
    * Creates an atom with the given type.
@@ -95,6 +81,10 @@ public class Atom extends org.openscience.cdk.Atom {
   ProteinProp pprop = null;
   public ProteinProp getProteinProp() {
     return pprop;
+  }
+
+  public void setProteinProp(ProteinProp pprop) {
+    this.pprop = pprop;
   }
 
   /**

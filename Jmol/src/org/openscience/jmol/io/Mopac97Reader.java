@@ -22,6 +22,7 @@ package org.openscience.jmol.io;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Vibration;
+import org.openscience.cdk.Atom;
 import java.util.Vector;
 import java.io.Reader;
 import java.io.StreamTokenizer;
@@ -142,9 +143,18 @@ class Mopac97Reader extends DefaultChemFileReader {
         throw new IOException("Error reading coordinates");
       }
       if (atomName != null) {
-        mol.addAtom(atomName, x, y, z, null);
+        Atom atom = new Atom(atomName);
+        atom.setX3D(x);
+        atom.setY3D(y);
+        atom.setZ3D(z);
+        mol.addAtom(atom);
       } else {
-        mol.addAtom(atomicNumber, x, y, z);
+        Atom atom = new Atom("");
+        atom.setAtomicNumber(atomicNumber);
+        atom.setX3D(x);
+        atom.setY3D(y);
+        atom.setZ3D(z);
+        mol.addAtom(atom);
       }
     }
   }

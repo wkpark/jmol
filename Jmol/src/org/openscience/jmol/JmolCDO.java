@@ -20,6 +20,7 @@ package org.openscience.jmol;
 
 import java.util.Vector;
 import java.util.Enumeration;
+import org.openscience.cdk.Atom;
 import org.openscience.cdk.io.cml.cdopi.ANIMATIONCDO;
 import org.openscience.cdk.io.cml.cdopi.CDOAcceptedObjects;
 
@@ -201,7 +202,12 @@ public final class JmolCDO extends ANIMATIONCDO {
     double z = FortranFormat.atof(atomZ.trim());
 
     try {
-      int index = currentFrame.addAtom(atomType.trim(), x, y, z, null);
+        org.openscience.cdk.Atom atom = new org.openscience.cdk.Atom(atomType.trim());
+        atom.setX3D(x);
+        atom.setY3D(y);
+        atom.setZ3D(z);
+        currentFrame.addAtom(atom);
+        int index = currentFrame.getAtomCount();
       if (partialCharge.length() > 0) {
         //        System.out.println("Adding charge for atom " + index);
         double c = FortranFormat.atof(partialCharge);

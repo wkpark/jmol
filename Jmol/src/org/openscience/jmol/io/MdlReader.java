@@ -21,6 +21,7 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
+import org.openscience.cdk.Atom;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -102,7 +103,11 @@ public class MdlReader extends DefaultChemFileReader {
       double z = Double.valueOf(line.substring(20, 30).trim()).doubleValue();
       String atomSymbol = line.substring(31, 34).trim();
 
-      frame.addAtom(atomSymbol, x, y, z, null);
+      Atom atom = new Atom(atomSymbol);
+      atom.setX3D(x);
+      atom.setY3D(y);
+      atom.setZ3D(z);
+      frame.addAtom(atom);
     }
 
     // Read bonds

@@ -27,6 +27,7 @@ package org.openscience.jmol.io;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.FortranFormat;
+import org.openscience.cdk.Atom;
 import java.util.StringTokenizer;
 import javax.vecmath.Point3d;
 import java.io.Reader;
@@ -155,7 +156,12 @@ public class XYZReader extends DefaultChemFileReader {
           y = convertToDouble(sy, readingBohr);
           z = convertToDouble(sz, readingBohr);
 
-          int atomIndex = frame.addAtom(aname, x, y, z, null);
+          org.openscience.cdk.Atom atom = new org.openscience.cdk.Atom(aname);
+          atom.setX3D(x);
+          atom.setY3D(y);
+          atom.setZ3D(z);
+          frame.addAtom(atom);
+          int atomIndex = frame.getAtomCount();
 
           if ((numberTokens == 5) || (numberTokens > 7)) {
             double c = FortranFormat.atof(st.nextToken());

@@ -18,6 +18,7 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.Atom;
 import org.openscience.cdk.AtomContainer;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
@@ -151,63 +152,6 @@ public class ChemFrame extends AtomContainer {
     return info;
   }
 
-  /**
-   * Adds an atom to the frame and finds all bonds between the
-   * new atom and pre-existing atoms in the frame
-   *
-   * @param name the name of the extended atom type for the new atom
-   * @param x the x coordinate of the new atom
-   * @param y the y coordinate of the new atom
-   * @param z the z coordinate of the new atom
-   */
-  public int addAtom(String name, double x, double y, double z) {
-    return addAtom(BaseAtomType.get(name, name), x, y, z, null);
-  }
-
-  public int addAtom(String name, double x, double y, double z,
-                     ProteinProp pprop) {
-    return addAtom(BaseAtomType.get(name, name), x, y, z, pprop);
-  }
-
-  public int addAtom(String name, String root, double x, double y, double z) {
-    return addAtom(BaseAtomType.get(name, root), x, y, z, null);
-  }
-
-  /**
-   * Adds an atom to the frame and finds all bonds between the
-   * new atom and pre-existing atoms in the frame
-   *
-   * @param type atom type for the new atom
-   * @param x the x coordinate of the new atom
-   * @param y the y coordinate of the new atom
-   * @param z the z coordinate of the new atom
-   */
-  public int addAtom(BaseAtomType type, double x, double y, double z) {
-    return addAtom(type, x, y, z, null);
-  }
-
-  public int addAtom(BaseAtomType type, double x, double y, double z,
-                     ProteinProp pprop) {
-
-    clearBounds();
-    int i = numberOfAtoms;
-    if (i >= atoms.length) {
-      setAtomArraySize(2 * atoms.length);
-    }
-
-    atoms[i] = new Atom(type, numberOfAtoms, x, y, z, pprop);
-    AtomTypeList.getInstance().configure(atoms[i]);
-    if (DisplayControl.control.getAutoBond()) {
-      for (int j = 0; j < i; j++) {
-        if (Atom.closeEnoughToBond(atoms[i], atoms[j],
-                                   DisplayControl.control.getBondFudge())) {
-          addBond(i, j);
-        }
-      }
-    }
-    return numberOfAtoms++;
-  }
-
   public int addAtom(Atom type, double x, double y, double z) {
       return addAtom(type, x, y, z, null);
   }
@@ -244,11 +188,13 @@ public class ChemFrame extends AtomContainer {
    */
   public int addAtom(int atomicNumber, double x, double y, double z) {
 
-    BaseAtomType baseType = BaseAtomType.get(atomicNumber);
-    if (baseType == null) {
-      return -1;
-    }
-    return addAtom(baseType, x, y, z);
+      org.openscience.cdk.Atom atom = new org.openscience.cdk.Atom("");
+      atom.setAtomicNumber(atomicNumber);
+      atom.setX3D(x);
+      atom.setY3D(y);
+      atom.setZ3D(z);
+      addAtom(atom);
+      return getAtomCount();
   }
 
   /**

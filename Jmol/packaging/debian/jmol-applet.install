@@ -1,0 +1,5 @@
+JmolApplet.jar usr/share/jmol-applet
+
+appletweb/* usr/share/jmol-applet
+
+build/doc/JmolA*.html usr/share/doc/jmol-applet/html

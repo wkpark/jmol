@@ -1,2 +1,4 @@
-jmol-*
-jmol_*
+files
+*.debhelper
+*.substvars
+patched*

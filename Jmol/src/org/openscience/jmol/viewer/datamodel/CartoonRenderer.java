@@ -62,60 +62,108 @@ class CartoonRenderer extends Renderer {
   }
   
   int residueCount;
+  PdbResidue[] residues;
+  Point3i[] screens;
+  Atom[] alphas;
+  boolean[] isSpecials;
+  Point3f[] cordMidPoints;
 
-  void render1Chain(PdbChain pdbchain,
-                    short[] mads, short[] colixes) {
+  void initializeChain(PdbChain pdbchain) {
     residueCount = pdbchain.getResidueCount();
-    Point3i[] screens = getScreens(pdbchain);
-    Atom[] alphas = getAlphas(pdbchain);
-    for (int i = pdbchain.getResidueCount(); --i >= 0; ) {
-      short colix = colixes[i];
-      if (colix == 0)
-        colix = alphas[i].colixAtom;
-      render1Segment(screens, alphas, colix, mads, i);
-    }
+    isSpecials = frameRenderer.getTempBooleans(residueCount);
+    residues = pdbchain.getMainchain();
+    cordMidPoints = calcCordMidPoints(pdbchain);
+    screens = getScreens(pdbchain);
+    alphas = getAlphas(pdbchain);
   }
 
-  Point3f[] calcStructureMidPoints(PdbChain pdbchain) {
+  Point3f[] calcCordMidPoints(PdbChain pdbchain) {
     int count = residueCount + 1;
-    Point3f[] structureMidPoints = frameRenderer.getTempPoints(count);
-    for (int i = count; --i >= 0; )
-      pdbchain.getStructureMidPoint(i, structureMidPoints[i]);
-    return structureMidPoints;
+    Point3f[] cordMidPoints = frameRenderer.getTempPoints(count);
+    PdbResidue residuePrev = null;
+    PdbStructure structurePrev = null;
+    Point3f point;
+    for (int i = 0; i < residueCount; ++i) {
+      point = cordMidPoints[i];
+      PdbResidue residue = residues[i];
+      if (isSpecials[i] = residue.isHelixOrSheet()) {
+        PdbStructure structure = residue.structure;
+        point.set(i - 1 != structure.getStartResidueIndex()
+                  ? structure.getAxisStartPoint()
+                  : structure.getAxisEndPoint());
+
+        //        if (i != structure.getStartResidueIndex()) {
+        //          point.add(structure.getAxisEndPoint());
+        //          point.scale(0.5f);
+        //        }
+        residuePrev = residue;
+        structurePrev = structure;
+      } else {
+        if (structurePrev != null)
+          point.set(structurePrev.getAxisEndPoint());
+        else
+          pdbchain.getAlphaCarbonMidPoint(i, point);
+        residuePrev = null;
+        structurePrev = null;
+      }
+    }
+    point = cordMidPoints[residueCount];
+    if (structurePrev != null)
+      point.set(structurePrev.getAxisEndPoint());
+    else
+      pdbchain.getAlphaCarbonMidPoint(residueCount, point);
+    return cordMidPoints;
   }
 
   Point3i[] getScreens(PdbChain pdbchain) {
     int count = residueCount + 1;
-    Point3f[] structureMidPoints = calcStructureMidPoints(pdbchain);
     Point3i[] screens = frameRenderer.getTempScreens(count);
     for (int i = count; --i >= 0; ) {
-      viewer.transformPoint(structureMidPoints[i], screens[i]);
-      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);
+      viewer.transformPoint(cordMidPoints[i], screens[i]);
+      //      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);
     }
     return screens;
   }
 
   Atom[] getAlphas(PdbChain pdbchain) {
     Atom[] alphas = frameRenderer.getTempAtoms(residueCount);
-    PdbResidue[] residues = pdbchain.getMainchain();
     for (int i = residueCount; --i >= 0; )
       alphas[i] = residues[i].getAlphaCarbonAtom();
     return alphas;
   }
 
-  void render1Segment(Point3i[] screens, Atom[] alphas,
-                      short colix, short[] mads, int i) {
+  void render1Chain(PdbChain pdbchain,
+                    short[] mads, short[] colixes) {
+    initializeChain(pdbchain);
+    clearPending();
+    for (int i = 0; i < residueCount; ++i) {
+      short colix = colixes[i];
+      if (colix == 0)
+        colix = alphas[i].colixAtom;
+      PdbResidue residue = residues[i];
+      if (residue.isHelixOrSheet())
+        renderSpecialSegment(residue, i, colix, mads[i]);
+      else
+        renderCordSegment(colix, mads, i);
+    }
+    renderPending();
+  }
+
+  void renderCordSegment(short colix, short[] mads, int i) {
     int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
     int iNext1 = i + 1; if (iNext1 > residueCount) iNext1 = residueCount;
     int iNext2 = i + 2; if (iNext2 > residueCount) iNext2 = residueCount;
     
-    int madThis = mads[i];
-    int madBeg = (mads[iPrev1] + madThis) / 2;
+    int madThis, madBeg, madEnd;
+    madThis = madBeg = madEnd = mads[i];
+    if (! isSpecials[iPrev1])
+      madBeg = (mads[iPrev1] + madThis) / 2;
+    if (! isSpecials[iNext1])
+      madEnd = (mads[iNext1] + madThis) / 2;
     int diameterBeg = viewer.scaleToScreen(screens[i].z, madBeg);
-    int madEnd = (mads[iNext1] + madThis) / 2;
     int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
     int diameterMid = viewer.scaleToScreen(alphas[i].z, madThis);
-    g3d.fillHermite(colix, diameterBeg, diameterMid, diameterEnd,
+    g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
                     screens[iPrev1], screens[i],
                     screens[iNext1], screens[iNext2]);
     /*
@@ -209,7 +257,7 @@ class CartoonRenderer extends Renderer {
   }
 
   void render1Segment(short colix) {
-    g3d.fillHermite(colix, diameterBeg, diameterMid, diameterEnd,
+    g3d.fillHermite(colix, 3, diameterBeg, diameterMid, diameterEnd,
                     s0, s1, s2, s3);
   }
 
@@ -243,6 +291,11 @@ class CartoonRenderer extends Renderer {
   int endIndexPending;
   short madPending;
   short colixPending;
+  int[] shadesPending;
+
+  void clearPending() {
+    tPending = false;
+  }
 
   void renderPending() {
     if (tPending) {
@@ -251,15 +304,21 @@ class CartoonRenderer extends Renderer {
       int indexStart = startIndexPending - indexStructureStart;
       int indexEnd = endIndexPending - indexStructureStart;
       boolean tEnd = (indexEnd == structurePending.getResidueCount() - 1);
+      /*
+      System.out.println("indexStructureStart=" + indexStructureStart +
+                         " indexStart=" + indexStart + " indexEnd=" + indexEnd +
+                         " startIndexPending=" + startIndexPending +
+                         " endIndexPending=" + endIndexPending);
+      */
       if (structurePending instanceof Helix)
         renderPendingHelix(segments[indexStart],
-                           segments[indexEnd - 1],
                            segments[indexEnd],
+                           segments[indexEnd + 1],
                            tEnd);
       else
         renderPendingSheet(segments[indexStart],
-                           segments[indexEnd - 1],
                            segments[indexEnd],
+                           segments[indexEnd + 1],
                            tEnd);
       tPending = false;
     }
@@ -289,6 +348,7 @@ class CartoonRenderer extends Renderer {
 
   void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
+    shadesPending = Colix.getShades(colixPending);
     if (tEnd) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);
       drawBox(pointStart, pointBeforeEnd);
@@ -315,27 +375,34 @@ class CartoonRenderer extends Renderer {
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale * 1.25f);
     scaledHeightVector.set(sheet.getHeightUnitVector());
-    scaledHeightVector.scale(scale / 4);
+    scaledHeightVector.scale(scale / 3);
     pointCorner.add(scaledWidthVector, scaledHeightVector);
     pointCorner.scaleAdd(-0.5f, base);
     pointTipOffset.set(scaledHeightVector);
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    g3d.fillTriangle(colixPending,
+    int argb = calcSurfaceArgb(0, 1, 4);
+    g3d.fillTriangle(argb,
                      screenCorners[0],
                      screenCorners[1],
                      screenCorners[4]);
-    g3d.fillTriangle(colixPending,
+    g3d.fillTriangle(argb,
                      screenCorners[2],
                      screenCorners[3],
                      screenCorners[5]);
-    for (int i = 0; i < 12; i += 4)
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[arrowHeadFaces[i]],
-                            screenCorners[arrowHeadFaces[i + 1]],
-                            screenCorners[arrowHeadFaces[i + 2]],
-                            screenCorners[arrowHeadFaces[i + 3]]);
+    for (int i = 0; i < 12; i += 4) {
+      int i0 = arrowHeadFaces[i];
+      int i1 = arrowHeadFaces[i + 1];
+      int i2 = arrowHeadFaces[i + 2];
+      int i3 = arrowHeadFaces[i + 3];
+      argb = calcSurfaceArgb(i0, i1, i3);
+      g3d.fillQuadrilateral(argb,
+                            screenCorners[i0],
+                            screenCorners[i1],
+                            screenCorners[i2],
+                            screenCorners[i3]);
+    }
     /*
     Sheet sheet = (Sheet)structurePending;
     Vector3f widthUnitVector = sheet.getWidthUnitVector();
@@ -374,12 +441,24 @@ class CartoonRenderer extends Renderer {
     lengthVector.sub(pointB, pointA);
     buildBox(pointCorner, scaledWidthVector,
              scaledHeightVector, lengthVector);
-    for (int i = 0; i < 6; ++i)
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[boxFaces[i * 4]],
-                            screenCorners[boxFaces[i * 4 + 1]],
-                            screenCorners[boxFaces[i * 4 + 2]],
-                            screenCorners[boxFaces[i * 4 + 3]]);
+    for (int i = 0; i < 6; ++i) {
+      int i0 = boxFaces[i * 4];
+      int i1 = boxFaces[i * 4 + 1];
+      int i2 = boxFaces[i * 4 + 2];
+      int i3 = boxFaces[i * 4 + 3];
+      int argb = calcSurfaceArgb(i0, i1, i3);
+      g3d.fillQuadrilateral(argb,
+                            screenCorners[i0],
+                            screenCorners[i1],
+                            screenCorners[i2],
+                            screenCorners[i3]);
+    }
+  }
+
+  int calcSurfaceArgb(int iA, int iB, int iC) {
+    return shadesPending[viewer.calcSurfaceIntensity(corners[iA],
+                                                     corners[iB],
+                                                     corners[iC])];
   }
 
   final static byte[] boxFaces =
@@ -389,7 +468,7 @@ class CartoonRenderer extends Renderer {
     0, 4, 5, 1,
     7, 5, 4, 6,
     7, 6, 2, 3,
-    7, 3, 2, 6 };
+    7, 3, 1, 5 };
 
   final Point3f[] corners = new Point3f[8];
   final Point3i[] screenCorners = new Point3i[8];

@@ -609,6 +609,11 @@ final public class JmolViewer {
     return colorManager.colorBond;
   }
 
+  public int calcSurfaceIntensity(Point3f pointA, Point3f pointB,
+                                   Point3f pointC) {
+    return colorManager.calcSurfaceIntensity(pointA, pointB, pointC);
+  }
+
   /****************************************************************
    * delegated to SelectionManager
    ****************************************************************/

@@ -225,4 +225,11 @@ public class FrameRenderer {
     return tempAtoms;
   }
 
+  private boolean[] tempBooleans = new boolean[32];
+  public boolean[] getTempBooleans(int n) {
+    if (tempBooleans.length < n)
+      tempBooleans = new boolean[n + (n >> 1)];
+    return tempBooleans;
+  }
+
 }

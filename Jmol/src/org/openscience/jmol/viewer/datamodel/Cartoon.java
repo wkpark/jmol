@@ -65,7 +65,7 @@ public class Cartoon {
             if (mad == -4000)
               mads[j] = 1000; // cartoon temperature goes here
             else
-              mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 3000 : 1000);
+              mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 3000 : 500);
           } else {
             mads[j] = mad;
           }

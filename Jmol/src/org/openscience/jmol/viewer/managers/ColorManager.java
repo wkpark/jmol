@@ -26,12 +26,14 @@ package org.openscience.jmol.viewer.managers;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.Atom;
-import org.openscience.jmol.viewer.g3d.Colix;
+import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.protein.PdbAtom;
 import org.openscience.jmol.viewer.script.Token;
 
 import java.awt.Color;
 import java.util.Hashtable;
+import javax.vecmath.Vector3f;
+import javax.vecmath.Point3f;
 
 public class ColorManager {
 
@@ -273,5 +275,24 @@ public class ColorManager {
   }
 
   public void flushCachedColors() {
+  }
+
+  final Vector3f vAB = new Vector3f();
+  final Vector3f vAC = new Vector3f();
+  final Vector3f vNormal = new Vector3f();
+  final Vector3f vRotated = new Vector3f();
+
+  public int calcSurfaceIntensity(Point3f pA, Point3f pB, Point3f pC) {
+    vAB.sub(pB, pA);
+    vAC.sub(pC, pA);
+    vNormal.cross(vAB, vAC);
+    viewer.transformVector(vNormal, vRotated);
+    int intensity =
+      vRotated.z >= 0
+      ? Shade3D.calcIntensity(-vRotated.x, -vRotated.y,vRotated.z)
+      : Shade3D.calcIntensity(vRotated.x, vRotated.y, -vRotated.z);
+    if (intensity > Shade3D.intensitySpecularSurfaceLimit)
+      intensity = Shade3D.intensitySpecularSurfaceLimit;
+    return intensity;
   }
 }

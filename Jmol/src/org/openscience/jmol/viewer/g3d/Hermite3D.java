@@ -54,17 +54,17 @@ public class Hermite3D {
     }
   }
 
-  public void render(boolean tFill, short colix,
+  public void render(boolean tFill, short colix, int tension,
                      int diameterBeg, int diameterMid, int diameterEnd,
                      Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;
     int x2 = p2.x, y2 = p2.y, z2 = p2.z;
-    int xT1 = (x2 - p0.x) * 7 / 8;
-    int yT1 = (y2 - p0.y) * 7 / 8;
-    int zT1 = (z2 - p0.z) * 7 / 8;
-    int xT2 = (p3.x - x1) * 7 / 8;
-    int yT2 = (p3.y - y1) * 7 / 8;
-    int zT2 = (p3.z - z1) * 7 / 8;
+    int xT1 = ((x2 - p0.x) * tension) / 8;
+    int yT1 = ((y2 - p0.y) * tension) / 8;
+    int zT1 = ((z2 - p0.z) * tension) / 8;
+    int xT2 = ((p3.x - x1) * tension) / 8;
+    int yT2 = ((p3.y - y1) * tension) / 8;
+    int zT2 = ((p3.z - z1) * tension) / 8;
     sA[0] = 0;
     pA[0].set(p1);
     sB[0] = 1;

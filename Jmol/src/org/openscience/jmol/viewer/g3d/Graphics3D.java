@@ -457,6 +457,27 @@ final public class Graphics3D {
     triangle3d.fillTriangle();
   }
 
+  public void fillQuadrilateral(int argb,
+                                Point3i screenA, Point3i screenB,
+                                Point3i screenC, Point3i screenD) {
+    fillTriangle(argb, screenA, screenB, screenC);
+    fillTriangle(argb, screenA, screenC, screenD);
+ }
+
+  public void fillTriangle(int argb, Point3i screenA,
+                           Point3i screenB, Point3i screenC) {
+    argbCurrent = argb;
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = screenA.x; t[1] = screenB.x; t[2] = screenC.x;
+    t = triangle3d.ay;
+    t[0] = screenA.y; t[1] = screenB.y; t[2] = screenC.y;
+    t = triangle3d.az;
+    t[0] = screenA.z; t[1] = screenB.z; t[2] = screenC.z;
+
+    triangle3d.fillTriangle();
+  }
+
   int intensity = 0;
 
   void calcSurfaceShade(short colix, Point3i screenA,
@@ -551,16 +572,16 @@ final public class Graphics3D {
 
   }
 
-  public void fillHermite(short colix, int diameterBeg,
+  public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(true, colix, diameterBeg, diameterMid, diameterEnd,
+    hermite3d.render(true, colix, tension, diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);
   }
   
-  public void drawHermite(short colix, 
+  public void drawHermite(short colix, int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(false, colix, 0, 0, 0, s0, s1, s2, s3);
+    hermite3d.render(false, colix, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {

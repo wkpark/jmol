@@ -132,7 +132,7 @@ class StrandsRenderer extends Renderer {
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
       colix = residue.getAlphaCarbonAtom().colixAtom;
-    g3d.drawHermite(colix, screens[iPrev], screens[i],
+    g3d.drawHermite(colix, 7, screens[iPrev], screens[i],
                     screens[iNext], screens[iNext2]);
   }
 }

@@ -99,7 +99,7 @@ public class Shade3D {
     return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
   }
 
-  public static byte calcIntensity(float x, float y, float z, float magnitude){
+  public static byte calcIntensity(float x, float y, float z, float magnitude) {
     return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
   }
 

@@ -33,7 +33,7 @@ import java.util.BitSet;
 class Mesh extends Mcps {
 
   Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
-    return new Mchain(polymer);
+    return new Schain(polymer);
   }
 
   /* note that this code is exactly the same as
@@ -41,11 +41,11 @@ class Mesh extends Mcps {
      consolidate these things
   */
 
-  class Mchain extends Mcps.Mcpschain {
+  class Schain extends Mcps.Mcpschain {
     Point3f[] centers;
     Vector3f[] vectors;
 
-    Mchain(PdbPolymer polymer) {
+    Schain(PdbPolymer polymer) {
       super(polymer, -2, 1500, 500);
       if (polymerCount > 0) {
         centers = new Point3f[polymerCount + 1];

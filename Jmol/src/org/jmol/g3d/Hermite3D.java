@@ -28,8 +28,8 @@ package org.jmol.g3d;
 import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
-import java.util.Vector;
 import javax.vecmath.Point3i;
+import java.util.Vector;
 
 /****************************************************************
  * for some useful background info about hermite curves check out
@@ -123,22 +123,24 @@ class Hermite3D {
     } while (sp >= 0);
   }
 
-  public void render2(boolean fill,//use fill to draw filled polygons
-                      short colix, int tension,
-                      Point3i p0, Point3i p1,//top strand segment
-                      Point3i p2, Point3i p3,//bottom strand segment
-                      Point3i p4, Point3i p5,
-                      Point3i p6, Point3i p7) {
 
-    Point3i[] endPoints = {p1, p2, p5, p6};
-    // stores all points for top+bottom strands of 1 segment
-    Vector points = new Vector(10);
+
+
+  public void render2(boolean fill, short colix, int tension,
+                      Point3i p0, Point3i p1, Point3i p2, Point3i p3,//top strand segment
+                      Point3i p4, Point3i p5, Point3i p6, Point3i p7) {//bottom strand segment
+
+    Point3i[] endPoints = {p2, p1, p6, p5};
+    Vector points = new Vector(10); // stores all points for top+bottom strands of 1 segment
     int whichPoint = 0;
 
-    //first and last points automatically included
-    int numTopStrandPoints = 2;
-    // could make it so you can set this from script command
-    float numPointsPerSegment = 5.0f;
+    int numTopStrandPoints = 2; //first and last points automatically included
+    float numPointsPerSegment = 5.0f;//use 5 for mesh
+
+     if(fill)
+      numPointsPerSegment = 10.0f; // could make it so you can set this from script command
+
+
     float interval = (1.0f / numPointsPerSegment);
     float currentInt = 0.0f;
 
@@ -155,7 +157,7 @@ class Hermite3D {
     sB[0] = 1;
     pB[0].set(p2);
     sp = 0;
-    g3d.setColix(colix);
+    //g3d.setColix(colix);
 
      for (int strands = 2; strands > 0; strands--) {
        if (strands == 1) {
@@ -187,7 +189,9 @@ class Hermite3D {
            // I tried drawing short cylinder segments here,
            // but drawing spheres was faster
            float s = sA[sp];
-           g3d.plotPixelClipped(a); //draw outside edges of mesh
+
+          g3d.fillSphereCentered(colix, 3, a);
+         //draw outside edges of mesh
 
            if (s < 1.0f - currentInt) { //if first point over the interval
              Point3i temp = new Point3i();
@@ -224,14 +228,36 @@ class Hermite3D {
        while (sp >= 0);
        points.add(endPoints[whichPoint++]);
      } //end of for loop - processed top and bottom strands
+     int size = points.size();
+     if (fill) {//RIBBONS
+       Point3i t1 = null;
+       Point3i b1 = null;
+       Point3i t2 = null;
+       Point3i b2 = null;
+       int top = 1;
 
-   //paint
-   for(int top = 0;
-       top < numTopStrandPoints && (top+numTopStrandPoints) < points.size();
-       top++){
-     g3d.drawLine((Point3i)points.elementAt(top),
-                  (Point3i)points.elementAt(top+numTopStrandPoints));
-   }
+       for (;top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++) {
+         t1 = (Point3i) points.elementAt(top - 1);
+         b1 = (Point3i) points.elementAt(numTopStrandPoints + (top - 1));
+         t2 = (Point3i) points.elementAt(top);
+         b2 = (Point3i) points.elementAt(numTopStrandPoints + top);
+
+         g3d.fillTriangle(colix, t1, b1, t2);
+         g3d.fillTriangle(colix, b2, t2, b1);
+       }
+       if((numTopStrandPoints*2) != size){//BUG(DC09_MAY_2004): not sure why but
+         //sometimes misses triangle at very start of segment
+         //temp fix - will inestigate furture
+         g3d.fillTriangle(colix, p1, p5, t2);
+         g3d.fillTriangle(colix, b2, t2, p5);
+       }
+     }
+     else {//MESH
+       for (int top = 0;
+            top < numTopStrandPoints && (top + numTopStrandPoints) < size; top++) {
+       g3d.drawLine(colix, (Point3i) points.elementAt(top), (Point3i) points.elementAt(top + numTopStrandPoints));
+     }}
+
   }
 
 }

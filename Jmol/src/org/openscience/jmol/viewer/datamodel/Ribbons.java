@@ -33,14 +33,14 @@ import java.util.BitSet;
 class Ribbons extends Mcps {
 
   Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
-    return new Rchain(polymer);
+    return new Schain(polymer);
   }
 
-  class Rchain extends Mcps.Mcpschain {
+  class Schain extends Mcps.Mcpschain {
     Point3f[] centers;
     Vector3f[] vectors;
 
-    Rchain(PdbPolymer polymer) {
+    Schain(PdbPolymer polymer) {
       super(polymer, -2, 1500, 500);
       if (polymerCount > 0) {
         centers = new Point3f[polymerCount + 1];

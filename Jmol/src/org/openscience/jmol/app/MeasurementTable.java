@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2002-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *

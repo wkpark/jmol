@@ -109,8 +109,6 @@
 WIREFRAME</a>
 <a href="javascript:document.jmol.setStyle('SHADED')">
 SHADED</a>
-<a href="javascript:document.jmol.setStyle('QUICKDRAW')">
-QUICKDRAW</a>
 <br>
 <a href="javascript:document.jmol.load('aspirina.mol');">
 aspirina.mol</a>

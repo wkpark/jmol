@@ -140,14 +140,14 @@
           The rendering style used for atoms and bonds.  One of:
           <ul>
             <li>shaded &lt;default&gt;</li>
-            <li>quickdraw</li>
             <li>wireframe</li>
+	    <li>quickdraw <i>deprecated</i></li>
           </ul>
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
   <PARAM NAME="load" VALUE="methanol1.cml"/>
-  <PARAM NAME="style" VALUE="quickdraw"/>
+  <PARAM NAME="style" VALUE="shaded"/>
 </APPLET>]]>
 </appletExample>
 <appletExample>

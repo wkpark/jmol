@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ package org.openscience.jmol;
 import java.awt.Graphics;
 import java.util.Enumeration;
 import java.util.Vector;
+import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3f;
 
 /**
@@ -39,18 +40,19 @@ public class ChemFrameRenderer {
    * @param g the Graphics context to paint to
    */
   public synchronized void paint(Graphics g, ChemFrame frame,
-      DisplaySettings settings) {
+      DisplaySettings settings, Matrix4d matrix) {
 
     if (frame.getNumberOfAtoms() <= 0) {
       return;
     }
     boolean drawHydrogen = settings.getShowHydrogens();
-    frame.transform();
-    
+
     if (shapes == null || frame.hashCode() != frameHashCode
         || settings.hashCode() != previousSettingsHashCode) {
       frameHashCode = frame.hashCode();
       previousSettingsHashCode = settings.hashCode();
+      transformables.clear();
+      transformables.addElement(frame);
       double maxMagnitude = -1.0;
       double minMagnitude = Double.MAX_VALUE;
       Vector shapesList = new Vector();
@@ -102,10 +104,11 @@ public class ChemFrameRenderer {
         
         // The three primitives vectors with arrows
         for (int i = 0; i < 3; i++) {
-          shapesList.addElement(new VectorShape(settings, frame.getMatrix(),
-              zeroPoint,
-                new Point3f(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
-                  true));
+          VectorShape vector = new VectorShape(settings, zeroPoint,
+              new Point3f(rprimd[i][0], rprimd[i][1], rprimd[i][2]), false,
+                true);
+          shapesList.addElement(vector);
+          transformables.addElement(vector);
         }
         
         // The full primitive cell
@@ -113,9 +116,11 @@ public class ChemFrameRenderer {
           // Depends on the settings...TODO
           Vector boxEdges = crystalFrame.getBoxEdges();
           for (int i = 0; i < boxEdges.size(); i = i + 2) {
-            shapesList.addElement(new LineShape(settings, frame.getMatrix(),
+            LineShape line = new LineShape(settings,
                 (Point3f) boxEdges.elementAt(i),
-                  (Point3f) boxEdges.elementAt(i + 1)));
+                  (Point3f) boxEdges.elementAt(i + 1));
+            shapesList.addElement(line);
+            transformables.addElement(line);
           }
         }
       }
@@ -125,6 +130,12 @@ public class ChemFrameRenderer {
       for (int i = 0; i < shapes.length && shapeIter.hasMoreElements(); ++i) {
         shapes[i] = (Shape) shapeIter.nextElement();
       }
+    }
+    
+    Enumeration iter = transformables.elements();
+    while (iter.hasMoreElements()) {
+      Transformable t1 = (Transformable) iter.nextElement();
+      t1.transform(matrix);
     }
     shapeSorter.sort(shapes);
     
@@ -138,6 +149,8 @@ public class ChemFrameRenderer {
   int previousSettingsHashCode;
   
   Shape[] shapes;
+  
+  Vector transformables = new Vector();
   
   HeapSorter shapeSorter = new HeapSorter(new HeapSorter.Comparator() {
 

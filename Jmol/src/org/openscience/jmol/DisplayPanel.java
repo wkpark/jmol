@@ -283,7 +283,8 @@ public class DisplayPanel extends JPanel
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        Atom atom = md.getNearestAtom(e.getX(), e.getY());
+        Atom atom = md.getNearestAtom(e.getX(), e.getY(),
+            getViewTransformMatrix());
         if (atom != null) {
           if (mode == PICK) {
             if (e.isShiftDown()) {
@@ -403,7 +404,8 @@ public class DisplayPanel extends JPanel
           rbottom = y;
         }
         if (haveFile) {
-          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright, rbottom);
+          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright,
+              rbottom, getViewTransformMatrix());
           if (e.isShiftDown()) {
             settings.addPickedAtoms(selectedAtoms);
           } else {
@@ -481,15 +483,14 @@ public class DisplayPanel extends JPanel
         quat[3] = 1.0f;
         initialized = true;
       }
-      ChemFrame.matunit();
-      ChemFrame.matmult(getViewTransformMatrix());
+      Matrix4d matrix = getViewTransformMatrix();
       settings.setAtomZOffset(getSize().width / 2);
 
       g.setColor(bg);
       g.fillRect(0, 0, getSize().width, getSize().height);
       g.setColor(fg);
 
-      frameRenderer.paint(g, md, settings);
+      frameRenderer.paint(g, md, settings, matrix);
       measureRenderer.paint(g, md, settings);
       if (rubberband) {
         g.setColor(fg);

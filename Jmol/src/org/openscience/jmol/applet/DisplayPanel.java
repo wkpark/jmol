@@ -456,7 +456,7 @@ public class DisplayPanel extends Canvas
     public void mouseClicked(MouseEvent e) {
 
       if (haveFile) {
-        Atom atom = md.getNearestAtom(e.getX(), e.getY());
+        Atom atom = md.getNearestAtom(e.getX(), e.getY(), mat);
         if (pickingMode == MULTIPLEPICK) {
           settings.addPickedAtom(atom);
         } else {
@@ -562,7 +562,8 @@ public class DisplayPanel extends Canvas
           rbottom = y;
         }
         if (haveFile) {
-          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright, rbottom);
+          Atom[] selectedAtoms = md.findAtomsInRegion(rleft, rtop, rright,
+              rbottom, mat);
           if (e.isShiftDown()) {
             settings.addPickedAtoms(selectedAtoms);
           } else {
@@ -695,14 +696,13 @@ public class DisplayPanel extends Canvas
       if (!painted) {
 
         // Only re-render image buffer if image has changed or have new image buffer.
-        md.setMat(mat);
         settings.setAtomZOffset(drawWidth / 2);
 
         g.setColor(bg);
         g.fillRect(0, 0, drawWidth, drawHeight);
         g.setColor(fg);
 
-        chemFrameRenderer.paint(g, md, settings);
+        chemFrameRenderer.paint(g, md, settings, mat);
 
         //md.paint(g, settings);
         if (rubberband) {

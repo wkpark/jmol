@@ -4,21 +4,19 @@ import java.awt.Graphics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 
-class VectorShape implements Shape {
+class VectorShape implements Shape, Transformable {
 
   DisplaySettings settings;
-  Matrix4d mat;
   Point3f origPoint;
   Point3f endPoint;
   boolean arrowStart;
   boolean arrowEnd;
 
 
-  VectorShape(DisplaySettings settings, Matrix4d mat, Point3f origPoint,
+  VectorShape(DisplaySettings settings, Point3f origPoint,
       Point3f endPoint, boolean arrowStart, boolean arrowEnd) {
 
     this.settings = settings;
-    this.mat = mat;
     this.origPoint = origPoint;
     this.endPoint = endPoint;
     this.arrowStart = arrowStart;
@@ -31,12 +29,14 @@ class VectorShape implements Shape {
     return buffer.toString();
   }
 
+  public void transform(Matrix4d matrix) {
+    matrix.transform(origPoint, screenPositionOrig);
+    matrix.transform(endPoint, screenPositionEnd);
+  }
+
   public void render(Graphics g) {
 
     double scaling = 1.0;
-
-    mat.transform(origPoint, screenPositionOrig);
-    mat.transform(endPoint, screenPositionEnd);
 
 
     ArrowLine al = new ArrowLine(g, screenPositionOrig.x,

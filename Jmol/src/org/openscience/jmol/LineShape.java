@@ -4,18 +4,16 @@ import java.awt.Graphics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix4d;
 
-class LineShape implements Shape {
+class LineShape implements Shape, Transformable {
 
   DisplaySettings settings;
-  Matrix4d mat;
   Point3f origPoint;
   Point3f endPoint;
 
-  LineShape(DisplaySettings settings, Matrix4d mat, Point3f origPoint,
+  LineShape(DisplaySettings settings, Point3f origPoint,
       Point3f endPoint) {
 
     this.settings = settings;
-    this.mat = mat;
     this.origPoint = origPoint;
     this.endPoint = endPoint;
   }
@@ -26,11 +24,12 @@ class LineShape implements Shape {
     return buffer.toString();
   }
 
+  public void transform(Matrix4d matrix) {
+    matrix.transform(origPoint, screenPositionOrig);
+    matrix.transform(endPoint, screenPositionEnd);
+  }
+  
   public void render(Graphics g) {
-
-    mat.transform(origPoint, screenPositionOrig);
-    mat.transform(endPoint, screenPositionEnd);
-
 
     PlainLine al = new PlainLine(g, screenPositionOrig.x,
                      screenPositionOrig.y, screenPositionEnd.x,

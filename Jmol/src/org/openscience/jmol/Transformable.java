@@ -19,21 +19,21 @@
  */
 package org.openscience.jmol;
 
-import java.awt.Graphics;
+import javax.vecmath.Matrix4d;
 
 /**
- * Provides an interface for graphical components so that
- * proper depth rendering occurs using z-buffering. Improper
- * depth rendering will still occur for spatially intersecting
- * shapes. This is an unavoidable limitation of the pseudo-3D
- * rendering implemented here.
+ * Provides an interface for objects which are transformed
+ * from 3D to 2D coordinates.
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-interface Shape {
+interface Transformable {
 
-  public void render(Graphics g);
-
-  public double getZ();
+  /**
+   * Transform this object using the given transformation matrix.
+   *
+   * @param matrix the transformation matrix.
+   */
+  public void transform(Matrix4d matrix);
 
 }

@@ -34,11 +34,10 @@ import javax.vecmath.Point3f;
  *  @author  Bradley A. Smith (bradley@baysmith.com)
  *  @author  J. Daniel Gezelter
  */
-public class ChemFrame {
+public class ChemFrame implements Transformable {
 
   private static float bondFudge = 1.12f;
   private static boolean AutoBond = true;
-  private static Matrix4d mat;
 
   // This stuff can vary for each frame in the dynamics:
 
@@ -86,13 +85,6 @@ public class ChemFrame {
   private Point3f min;
   private Point3f max;
 
-  /**@shapeType AggregationLink
-  @associates <b>Vibration</b>*/
-  static {
-    mat = new Matrix4d();
-    mat.setIdentity();
-  }
-
   static void setBondFudge(float bf) {
     bondFudge = bf;
   }
@@ -107,30 +99,6 @@ public class ChemFrame {
 
   static boolean getAutoBond() {
     return AutoBond;
-  }
-
-  static void matmult(Matrix4d matrix) {
-    mat.mul(matrix, mat);
-  }
-
-  static void matscale(float xs, float ys, float zs) {
-
-    Matrix4d matrix = new Matrix4d();
-    matrix.setElement(0, 0, xs);
-    matrix.setElement(1, 1, ys);
-    matrix.setElement(2, 2, zs);
-    matrix.setElement(3, 3, 1.0);
-    mat.mul(matrix, mat);
-  }
-
-  static void mattranslate(float xt, float yt, float zt) {
-    Matrix4d matrix = new Matrix4d();
-    matrix.setTranslation(new Vector3d(xt, yt, zt));
-    mat.add(matrix);
-  }
-
-  static void matunit() {
-    mat.setIdentity();
   }
 
   /**
@@ -387,15 +355,15 @@ public class ChemFrame {
   /**
    * Transform all the points in this model
    */
-  public void transform() {
+  public void transform(Matrix4d matrix) {
 
     if (numberAtoms <= 0) {
       return;
     }
     for (int i = 0; i < numberAtoms; ++i) {
       Point3d pt = new Point3d(atoms[i].getPosition());
-      mat.transform(pt);
-      atoms[i].transform(mat);
+      matrix.transform(pt);
+      atoms[i].transform(matrix);
     }
   }
 
@@ -408,12 +376,12 @@ public class ChemFrame {
    * @param y2 the y coordinate of point 2 of the region's bounding rectangle
    * @return the atoms in the region
    */
-  public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2) {
+  public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2, Matrix4d matrix) {
 
     if (numberAtoms <= 0) {
       return new Atom[0];
     }
-    transform();
+    transform(matrix);
     Vector atomsInRegion = new Vector();
     for (int i = 0; i < numberAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
@@ -447,12 +415,12 @@ public class ChemFrame {
    * @param y the y screen coordinate
    * @return the atom drawn closest to the coordinates.
    */
-  public Atom getNearestAtom(int x, int y) {
+  public Atom getNearestAtom(int x, int y, Matrix4d matrix) {
 
     if (numberAtoms <= 0) {
       return null;
     }
-    transform();
+    transform(matrix);
     int dx, dy, dr2;
     Atom smallest = null;
     int smallr2 = Integer.MAX_VALUE;
@@ -574,10 +542,6 @@ public class ChemFrame {
 
   private boolean bondsEnabled;
 
-  public void setMat(Matrix4d newmat) {
-    mat = newmat;
-  }
-
   /**
    * Adds a single bond between the two atoms given.
    *
@@ -611,12 +575,5 @@ public class ChemFrame {
     }
   }
 
-  /**
-   * Returns the transformation matrix.
-   */
-  public Matrix4d getMatrix() {
-    return mat;
-  }
-  
 }
 

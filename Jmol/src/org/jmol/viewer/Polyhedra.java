@@ -40,6 +40,7 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
+    System.out.println("Polyhedra.setProperty(" + propertyName + "," + value);
     if ("bonds" == propertyName) {
       deletePolyhedra(bs);
       buildBondsPolyhedra(bs);
@@ -71,6 +72,11 @@ class Polyhedra extends SelectionIndependentShape {
       colix = g3d.getColix(value);
       //      System.out.println("color polyhedra:" + colix);
       setColix(colix, bs);
+      return;
+    }
+    if ("colorScheme" == propertyName) {
+      if ("cpk" == value)
+        setColix((short)0, bs);
       return;
     }
     if ("radius" == propertyName) {

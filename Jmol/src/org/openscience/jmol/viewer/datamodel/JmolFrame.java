@@ -44,9 +44,9 @@ public class JmolFrame {
 
   final static int growthIncrement = 128;
   int atomShapeCount = 0;
-  AtomShape[] atomShapes;
+  public AtomShape[] atomShapes;
   int bondShapeCount = 0;
-  BondShape[] bondShapes;
+  public BondShape[] bondShapes;
 
   public JmolFrame(JmolViewer viewer, int atomCount,
                    boolean hasPdbRecords) {
@@ -95,6 +95,14 @@ public class JmolFrame {
 
   public AtomShape getAtomAt(int atomIndex) {
     return atomShapes[atomIndex];
+  }
+
+  public int getBondCount() {
+    return bondShapeCount;
+  }
+
+  public BondShape getBondAt(int bondIndex) {
+    return bondShapes[bondIndex];
   }
 
   public boolean hasPdbRecords() {

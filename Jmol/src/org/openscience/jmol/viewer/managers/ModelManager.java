@@ -77,8 +77,8 @@ public class ModelManager {
   public int atomCount = 0;
   public boolean haveFile = false;
   public int currentFrameNumber;
-  public JmolFrame jmolFrame;
-  public JmolFrame[] jmolFrames;
+  public JmolFrame frame;
+  public JmolFrame[] frames;
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
@@ -89,10 +89,10 @@ public class ModelManager {
       fullPathName = fileName = modelName = null;
       frameCount = 0;
       currentFrameNumber = -1;
-      jmolFrame = null;
+      frame = null;
       atomCount = 0;
       haveFile = false;
-      jmolFrames = null;
+      frames = null;
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
@@ -103,7 +103,7 @@ public class ModelManager {
           modelName = null;
       }
       frameCount = viewer.getFrameCount(clientFile);
-      jmolFrames = new JmolFrame[frameCount];
+      frames = new JmolFrame[frameCount];
       haveFile = true;
     }
     viewer.notifyFileLoaded(fullPathName, fileName, modelName, clientFile);
@@ -114,7 +114,7 @@ public class ModelManager {
   }
 
   public JmolFrame getJmolFrame() {
-    return (jmolFrame == null) ? nullJmolFrame : jmolFrame;
+    return (frame == null) ? nullJmolFrame : frame;
   }
 
   public String getModelName() {
@@ -122,19 +122,19 @@ public class ModelManager {
   }
 
   public double getRotationRadius() {
-    return jmolFrame.getRotationRadius();
+    return frame.getRotationRadius();
   }
 
   public Point3d getRotationCenter() {
-    return jmolFrame.getRotationCenter();
+    return frame.getRotationCenter();
   }
 
   public Point3d getBoundingBoxCenter() {
-    return jmolFrame.getBoundingBoxCenter();
+    return frame.getBoundingBoxCenter();
   }
 
   public Point3d getBoundingBoxCorner() {
-    return jmolFrame.getBoundingBoxCorner();
+    return frame.getBoundingBoxCorner();
   }
   
   public int getFrameCount() {
@@ -147,12 +147,12 @@ public class ModelManager {
 
   public void setFrame(int frameNumber) {
     if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
-      jmolFrame = jmolFrames[frameNumber];
-      if (jmolFrame == null)
-        jmolFrame = jmolFrames[frameNumber] =
+      frame = frames[frameNumber];
+      if (frame == null)
+        frame = frames[frameNumber] =
           new JmolFrameBuilder(viewer, clientFile, frameNumber)
           .buildJmolFrame();
-      atomCount = jmolFrame.getAtomCount();
+      atomCount = frame.getAtomCount();
       hasPdbRecords = jmolModelAdapter.hasPdbRecords(clientFile, frameNumber);
     }
   }
@@ -161,8 +161,12 @@ public class ModelManager {
     return atomCount;
   }
 
+  public int getBondCount() {
+    return frame.getBondCount();
+  }
+
   public Point3d getPoint3d(int atomIndex) {
-    return jmolFrame.getAtomAt(atomIndex).getPoint3d();
+    return frame.getAtomAt(atomIndex).getPoint3d();
   }
 
   public void setCenterAsSelected() {
@@ -181,17 +185,17 @@ public class ModelManager {
     } else {
       center = null;
     }
-    jmolFrame.setRotationCenter(center);
+    frame.setRotationCenter(center);
   }
 
   public void setRotationCenter(Point3d center) {
-    jmolFrame.setRotationCenter(center);
+    frame.setRotationCenter(center);
   }
 
   public boolean autoBond = true;
 
   public void rebond() {
-    jmolFrame.rebond();
+    frame.rebond();
   }
 
   public void setAutoBond(boolean ab) {
@@ -213,15 +217,15 @@ public class ModelManager {
   public void deleteAtom(int atomIndex) {
     throw new NullPointerException();
     // not implemented
-    //    jmolFrame.deleteAtom(atomIndex);
+    //    frame.deleteAtom(atomIndex);
   }
 
   public int findNearestAtomIndex(int x, int y) {
-    return jmolFrame.findNearestAtomIndex(x, y);
+    return frame.findNearestAtomIndex(x, y);
   }
 
   public BitSet findAtomsInRectangle(Rectangle rectRubber) {
-    return jmolFrame.findAtomsInRectangle(rectRubber);
+    return frame.findAtomsInRectangle(rectRubber);
   }
 
   /****************************************************************
@@ -345,4 +349,55 @@ public class ModelManager {
     return boxedAtomicNumber.intValue();
   }
 
+  ////////////////////////////////////////////////////////////////
+  // Access to atom properties for clients
+  ////////////////////////////////////////////////////////////////
+
+  public String getAtomicSymbol(int i) {
+    return frame.atomShapes[i].getAtomicSymbol();
+  }
+
+  public double getAtomX(int i) {
+    return frame.atomShapes[i].getAtomX();
+  }
+
+  public double getAtomY(int i) {
+    return frame.atomShapes[i].getAtomY();
+  }
+
+  public double getAtomZ(int i) {
+    return frame.atomShapes[i].getAtomZ();
+  }
+
+  public Point3d getAtomPoint3d(int i) {
+    return frame.atomShapes[i].getPoint3d();
+  }
+
+  public double getAtomRadius(int i) {
+    return frame.atomShapes[i].getRadius();
+  }
+
+  public short getAtomColix(int i) {
+    return frame.atomShapes[i].getColix();
+  }
+
+  public Point3d getBondPoint3d1(int i) {
+    return frame.bondShapes[i].atomShape1.getPoint3d();
+  }
+
+  public Point3d getBondPoint3d2(int i) {
+    return frame.bondShapes[i].atomShape2.getPoint3d();
+  }
+
+  public double getBondRadius(int i) {
+    return frame.bondShapes[i].getRadius();
+  }
+
+  public short getBondColix1(int i) {
+    return frame.bondShapes[i].getColix1();
+  }
+
+  public short getBondColix2(int i) {
+    return frame.bondShapes[i].getColix2();
+  }
 }

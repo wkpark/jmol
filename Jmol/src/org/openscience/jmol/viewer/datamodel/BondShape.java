@@ -40,8 +40,8 @@ public class BondShape {
   public final static byte BACKBONE = 4;
   public final static byte ALL = COVALENT | BACKBONE;
 
-  AtomShape atomShape1;
-  AtomShape atomShape2;
+  public AtomShape atomShape1;
+  public AtomShape atomShape2;
   byte order;
   byte style;
   short mar;
@@ -105,6 +105,18 @@ public class BondShape {
 
   public void setColix(short colix) {
     this.colix = colix;
+  }
+
+  public double getRadius() {
+    return mar/1000.0;
+  }
+
+  public short getColix1() {
+    return (colix != 0 ? colix : atomShape1.colixAtom);
+  }
+
+  public short getColix2() {
+    return (colix != 0 ? colix : atomShape2.colixAtom);
   }
 }
 

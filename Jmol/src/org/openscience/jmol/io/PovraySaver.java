@@ -24,84 +24,41 @@
  */
 package org.openscience.jmol.io;
 
-import org.openscience.jmol.ChemFile;
-import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.Atom;
 import org.openscience.jmol.viewer.JmolViewer;
 import java.util.Date;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.Enumeration;
 import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
-import java.io.PrintStream;
-import java.io.Writer;
 import java.io.IOException;
 import java.io.OutputStream;
+import javax.vecmath.Point3d;
+import javax.vecmath.Matrix4d;
 
-/**
- * Generates files for viewing in the freeware povray raytracer
- * (http://www.povray.org).
- *
- * <p> The types of atoms and bonds is
- * controlled by PovrayStyleWriter
- *
- *  @author Bradley A. Smith (bradley@baysmith.com)
- *  @author Thomas James Grey
- */
-public class PovraySaver extends FileSaver {
+public class PovraySaver {
 
-  private JmolViewer viewer;
-  private PovrayStyleWriter style;
-  private int framenumber = 0;
+  BufferedWriter bw;
+  JmolViewer viewer;
   
-  private double edge;
-  protected ChemFile cf;
+  Matrix4d rotationMatrix;
+  Matrix4d transformMatrix;
 
-  /**
-   * Constructor.
-   *
-   * @param cf The <code>ChemFile</code> object that is being written.
-   * @param out The <code>OutputStream</code> which will be written to.
-   */
-  public PovraySaver(ChemFile cf, OutputStream out, PovrayStyleWriter style,
-                     JmolViewer viewer) throws IOException {
-
-    super(cf, out);
-
-    //Hack hack- keep a pointer of our own as FileSaver's is private
-    this.cf = cf;
-
-    this.style = style;
+  public PovraySaver(JmolViewer viewer, OutputStream out) {
+    this.bw = new BufferedWriter(new OutputStreamWriter(out), 8192);
     this.viewer = viewer;
   }
 
-  public void writeFileStart(ChemFile cf, BufferedWriter w)
-      throws IOException {
-
-    // POvray files don't work like this! Each frame is a separate file so this method is redundant.
+  void out(String str) throws IOException {
+    bw.write(str);
   }
 
-  public void writeFileEnd(ChemFile cf, BufferedWriter w) throws IOException {
-
-    //Again this is meaningless as each frame is a file.
-  }
-
-  /**
-   * Writes a single frame in povray format to the Writer.
-   *
-   * @param cf the ChemFrame to write
-   * @param w the Writer to write it to
-   */
-  public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
-    edge = viewer.getJmolFrame().getRotationRadius() * 2;
+  public void writeFrame() throws IOException {
+    double edge = viewer.getJmolFrame().getRotationRadius() * 2;
     edge *= 1.1; // for some reason I need a little more margin
     edge /= viewer.getZoomPercent() / 100.0;
 
-    style.setRotate(viewer.getPovRotateMatrix());
-    style.setTranslate(viewer.getPovTranslateMatrix());
+    rotationMatrix = viewer.getPovRotateMatrix();
+    transformMatrix = viewer.getUnscaledTransformMatrix();
 
     Date now = new Date();
     SimpleDateFormat sdf =
@@ -109,125 +66,75 @@ public class PovraySaver extends FileSaver {
 
     String now_st = sdf.format(now);
 
-    w.write("//******************************************************\n");
-    w.write("// Jmol generated povray script.\n");
-    w.write("//\n");
-    w.write("// This script was generated on :\n");
-    w.write("// " + now_st + "\n");
-    String s2 = cf.getInfo();
-    if (s2 != null) {
-      w.write("//\n");
-      w.write("// Frame comment:" + s2 + "\n");
-    }
-    w.write("//******************************************************\n");
-    w.write("\n");
-    w.write("\n");
-    w.write("//******************************************************\n");
-    w.write("// Declare the resolution, camera, and light sources.\n");
-    w.write("//******************************************************\n");
-    w.write("\n");
-    w.write("// NOTE: if you plan to render at a different resoltion,\n");
-    w.write("// be sure to update the following two lines to maintain\n");
-    w.write("// the correct aspect ratio.\n" + "\n");
-    w.write("#declare Width = "+ viewer.getScreenDimension().width + ";\n");
-    w.write("#declare Height = "+ viewer.getScreenDimension().height + ";\n");
-    w.write("#declare Ratio = Width / Height;\n");
-    w.write("#declare zoom = " + edge + ";\n\n");
-    w.write("camera{\n");
-    w.write("  location < 0, 0, zoom>\n" + "\n");
-    w.write("  // Ratio is negative to switch povray to\n");
-    w.write("  // a right hand coordinate system.\n");
-    w.write("\n");
-    w.write("  right < -Ratio , 0, 0>\n");
-    w.write("  look_at < 0, 0, 0 >\n");
-    w.write("}\n");
-    w.write("\n");
+    out("//******************************************************\n");
+    out("// Jmol generated povray script.\n");
+    out("//\n");
+    out("// This script was generated on :\n");
+    out("// " + now_st + "\n");
+    out("//******************************************************\n");
+    out("\n");
+    out("\n");
+    out("//******************************************************\n");
+    out("// Declare the resolution, camera, and light sources.\n");
+    out("//******************************************************\n");
+    out("\n");
+    out("// NOTE: if you plan to render at a different resoltion,\n");
+    out("// be sure to update the following two lines to maintain\n");
+    out("// the correct aspect ratio.\n" + "\n");
+    out("#declare Width = "+ viewer.getScreenDimension().width + ";\n");
+    out("#declare Height = "+ viewer.getScreenDimension().height + ";\n");
+    out("#declare Ratio = Width / Height;\n");
+    out("#declare zoom = " + edge + ";\n\n");
+    out("camera{\n");
+    out("  location < 0, 0, zoom>\n" + "\n");
+    out("  // Ratio is negative to switch povray to\n");
+    out("  // a right hand coordinate system.\n");
+    out("\n");
+    out("  right < -Ratio , 0, 0>\n");
+    out("  look_at < 0, 0, 0 >\n");
+    out("}\n");
+    out("\n");
 
-    w.write("background { color " +
+    out("background { color " +
             povrayColor(viewer.getColorBackground()) + " }\n");
-    w.write("\n");
+    out("\n");
 
-    w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
-    w.write("light_source { < -zoom, zoom, zoom> "
+    out("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
+    out("light_source { < -zoom, zoom, zoom> "
         + " rgb <1.0,1.0,1.0> }\n");
-    w.write("\n");
-    w.write("\n");
+    out("\n");
+    out("\n");
 
-    style.writeAtomsAndBondsMacros(w, cf, viewer.getPercentVdwAtom() / 100.0,
-                                   viewer.getMarBond() / 1000.0);
-
-    boolean drawHydrogen = viewer.getShowHydrogens();
-
-
-    try {
-
-      w.write("//***********************************************\n");
-      w.write("// List of all of the atoms\n");
-      w.write("//***********************************************\n");
-      w.write("\n");
-      
-      // Loop through the atoms and write them out:
-      
-      for (int i = 0; i < cf.getAtomCount(); i++) {
-        // don't write out if atom is a hydrogen and !showhydrogens
-        if (drawHydrogen
-            || (cf.getJmolAtomAt(i).getAtomicNumber() != 1)) {
-          style.writeAtom(w, i, cf);
-        }
-      }
-
-      /* write the bonds */
-
-      
-      Hashtable bondsDrawn = new Hashtable();
-      
-      w.write("\n");
-      w.write("\n");
-      w.write("//***********************************************\n");
-      w.write("// The list of bonds\n");
-      w.write("//***********************************************\n");
-      w.write("\n");
-      
-      for (int i = 0; i < cf.getAtomCount(); ++i) {
-        Atom atom1 = (org.openscience.jmol.Atom)cf.getAtomAt(i);
-        Atom[] bondedAtoms = atom1.getBondedAtoms();
-        if (bondedAtoms == null)
-          continue;
-        for (int j = 0; j < bondedAtoms.length; ++j) {
-          Atom atom2 = (Atom) bondedAtoms[j];
-          if ((bondsDrawn.get(atom2) == null)
-              || !bondsDrawn.get(atom2).equals(atom1)) {
-            style.writeBond(w, atom1, atom2, cf);
-            bondsDrawn.put(atom1, atom2);
-          }
-        }
-      }
-
-    } catch (IOException e) {
-      throw e;
-    }
-
+    out("//***********************************************\n");
+    out("// macros for common shapes\n");
+    out("//***********************************************\n");
+    out("\n");
+    
+    writeMacros();
+    
+    out("//***********************************************\n");
+    out("// List of all of the atoms\n");
+    out("//***********************************************\n");
+    out("\n");
+    
+    for (int i = 0; i < viewer.getAtomCount(); i++)
+      writeAtom(i);
+    
+    out("\n");
+    out("//***********************************************\n");
+    out("// The list of bonds\n");
+    out("//***********************************************\n");
+    out("\n");
+    
+    for (int i = 0; i < viewer.getBondCount(); ++i)
+      writeBond(i);
   }
 
-  /**
-   * The default implemention of this method writes all frames to
-   * one file- we override to open a new file for each frame.
-   *
-   * @throws IOException
-   */
-  public synchronized void writeFile() throws IOException {
+  public synchronized void writeFile() {
 
     try {
-      BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out),
-                           1024);
-
-      //System.out.println("MARK "+framenumber);
-      ChemFrame cfr = cf.getFrame(framenumber);
-      writeFrame(cfr, w);
-      w.flush();
-      w.close();
-      out.flush();
-      out.close();
+      writeFrame();
+      bw.close();
     } catch (IOException e) {
       System.out.println("Got IOException " + e + " trying to write frame.");
     }
@@ -246,5 +153,86 @@ public class PovraySaver extends FileSaver {
       color.getRed() / 255f + "," +
       color.getGreen() / 255f + "," +
       color.getBlue() / 255f + ">";
+  }
+
+  void writeMacros() throws IOException {
+    out("#macro atom(X, Y, Z, RADIUS, R, G, B)\n" +
+        " sphere{<X,Y,Z>,RADIUS\n" +
+        "  texture{ pigment{rgb<R,G,B>} finish{\n" + 
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "#end\n\n");
+    out("#macro bond1(X1, Y1, Z1, X2, Y2, Z2, RADIUS, R, G, B)\n" +
+        " cylinder{<X1,Y1,Z1>,<X2,Y2,Z2>,RADIUS\n" +
+        "  texture{ pigment{rgb<R,G,B>} finish{\n" +
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  sphere{<X1,Y1,Z1>,RADIUS\n" +
+        "   texture{ pigment{rgb<R,G,B>} finish{\n" + 
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  sphere{<X2,Y2,Z2>,RADIUS\n" +
+        "   texture{ pigment{rgb<R,G,B>} finish{\n" + 
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "#end\n\n");
+    out("#macro bond2(X1, Y1, Z1, XC, YC, ZC, X2, Y2, Z2, " +
+        "RADIUS, R1, G1, B1, R2, G2, B2)\n" +
+        " cylinder{<X1, Y1, Z1>, <XC, YC, ZC>, RADIUS\n" +
+        "  texture{ pigment{rgb<R1, G1, B1>} finish{\n" +
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        " cylinder{<XC, YC, ZC>, <X2, Y2, Z2>, RADIUS\n" +
+        "  texture{ pigment{rgb<R2,G2,B2>} finish{\n" +
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  sphere{<X1,Y1,Z1>,RADIUS\n" +
+        "   texture{ pigment{rgb<R1,G1,B1>} finish{\n" + 
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "  sphere{<X2,Y2,Z2>,RADIUS\n" +
+        "   texture{ pigment{rgb<R2,G2,B2>} finish{\n" + 
+        "   ambient .2 diffuse .6 specular 1 roughness .001 metallic}}}\n" +
+        "#end\n\n");
+  }
+
+  Point3d point1 = new Point3d();
+  Point3d point2 = new Point3d();
+  Point3d pointC = new Point3d();
+
+  void writeAtom(int i) throws IOException {
+    transformMatrix.transform(viewer.getAtomPoint3d(i), point1);
+    double radius = viewer.getAtomRadius(i);
+    Color color = viewer.getAtomColor(i);
+    double r = color.getRed() / 255.0;
+    double g = color.getGreen() / 255.0;
+    double b = color.getBlue() / 255.0;
+    out("atom(" + point1.x + "," + point1.y + "," + point1.z + ",\n" +
+        "     " + radius + ",\n" +
+        "     " + r + "," + g + "," + b + ")\n");
+  }
+
+  void writeBond(int i) throws IOException {
+    transformMatrix.transform(viewer.getBondPoint3d1(i), point1);
+    transformMatrix.transform(viewer.getBondPoint3d2(i), point2);
+    double radius = viewer.getBondRadius(i);
+    Color color1 = viewer.getBondColor1(i);
+    Color color2 = viewer.getBondColor2(i);
+    double r1 = color1.getRed() / 255.0;
+    double g1 = color1.getGreen() / 255.0;
+    double b1 = color1.getBlue() / 255.0;
+    
+    if (color1.equals(color2)) {
+      out("bond1(" + point1.x + "," + point1.y + "," + point1.z + ",\n" +
+          "      " + point2.x + "," + point2.y + "," + point2.z + ",\n" +
+          "      " + radius + ",\n" +
+          "      " + r1 + "," + g1 + "," + b1 + ")\n");
+    } else {
+      pointC.set(point1);
+      pointC.add(point2);
+      pointC.scale(0.5);
+      double r2 = color2.getRed() / 255.0;
+      double g2 = color2.getGreen() / 255.0;
+      double b2 = color2.getBlue() / 255.0;
+      out("bond2(" + point1.x + "," + point1.y + "," + point1.z + ",\n" +
+          "      " + pointC.x + "," + pointC.y + "," + pointC.z + ",\n" +
+          "      " + point2.x + "," + point2.y + "," + point2.z + ",\n" +
+          "      " + radius + ",\n" +
+          "      " + r1 + "," + g1 + "," + b1 + ",\n" +
+          "      " + r2 + "," + g2 + "," + b2 + ")\n");
+    }
   }
 }

@@ -439,6 +439,17 @@ public class TransformManager {
     // and all z coordinates are >= 0
   }
 
+  public Matrix4d getUnscaledTransformMatrix() {
+    Matrix4d unscaled = new Matrix4d();
+    unscaled.setIdentity();
+    vectorTemp.set(viewer.getRotationCenter());
+    matrixTemp.setZero();
+    matrixTemp.setTranslation(vectorTemp);
+    unscaled.sub(matrixTemp);
+    unscaled.mul(matrixRotate, unscaled);
+    return unscaled;
+  }
+
   public Point3i transformPoint(Point3d pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3dScreenTemp);
     int z = (int)(point3dScreenTemp.z + 0.5);

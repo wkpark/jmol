@@ -1298,14 +1298,11 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
 
-      String baseName = "jmol";
       if (currentFile != null) {
         currentFile.getName().substring(0,
             currentFile.getName().lastIndexOf("."));
       }
-      PovrayDialog pvsd = new PovrayDialog(frame, viewer,
-                                           (ChemFile)viewer.getClientFile(),
-                                           baseName);
+      new PovrayDialog(frame, viewer);
     }
 
   }

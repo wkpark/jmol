@@ -383,6 +383,10 @@ final public class JmolViewer {
     return transformManager.getPovTranslateMatrix();
   }
 
+  public Matrix4d getUnscaledTransformMatrix() {
+    return transformManager.getUnscaledTransformMatrix();
+  }
+
   public void calcViewTransformMatrix() {
     transformManager.calcViewTransformMatrix();
   }
@@ -809,6 +813,10 @@ final public class JmolViewer {
 
   public int getAtomCount() {
     return modelManager.getAtomCount();
+  }
+
+  public int getBondCount() {
+    return modelManager.getBondCount();
   }
 
   public Point3d getPoint3d(int atomIndex) {
@@ -1582,19 +1590,50 @@ final public class JmolViewer {
   ////////////////////////////////////////////////////////////////
 
   public String getAtomicSymbol(int i) {
-    return getJmolFrame().getAtomAt(i).getAtomicSymbol();
+    return modelManager.getAtomicSymbol(i);
   }
 
   public double getAtomX(int i) {
-    return getJmolFrame().getAtomAt(i).getAtomX();
+    return modelManager.getAtomX(i);
   }
 
   public double getAtomY(int i) {
-    return getJmolFrame().getAtomAt(i).getAtomY();
+    return modelManager.getAtomY(i);
   }
 
   public double getAtomZ(int i) {
-    return getJmolFrame().getAtomAt(i).getAtomZ();
+    return modelManager.getAtomZ(i);
   }
 
+  public Point3d getAtomPoint3d(int i) {
+    return modelManager.getAtomPoint3d(i);
+  }
+
+  public double getAtomRadius(int i) {
+    return modelManager.getAtomRadius(i);
+  }
+
+  public Color getAtomColor(int i) {
+    return Colix.getColor(modelManager.getAtomColix(i));
+  }
+
+  public Point3d getBondPoint3d1(int i) {
+    return modelManager.getBondPoint3d1(i);
+  }
+
+  public Point3d getBondPoint3d2(int i) {
+    return modelManager.getBondPoint3d2(i);
+  }
+
+  public double getBondRadius(int i) {
+    return modelManager.getBondRadius(i);
+  }
+
+  public Color getBondColor1(int i) {
+    return Colix.getColor(modelManager.getBondColix1(i));
+  }
+
+  public Color getBondColor2(int i) {
+    return Colix.getColor(modelManager.getBondColix2(i));
+  }
 }

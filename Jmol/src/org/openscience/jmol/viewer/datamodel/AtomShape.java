@@ -290,6 +290,14 @@ public class AtomShape implements Bspt.Tuple {
     return frame.viewer.getCovalentRadius(atomicNumber, clientAtom);
   }
 
+  public short getColix() {
+    return colixAtom;
+  }
+
+  public double getRadius() {
+    return (styleAtom == JmolViewer.NONE) ? 0 : marAtom / 1000.0;
+  }
+
   public ProteinProp getProteinProp() {
     return pprop;
   }

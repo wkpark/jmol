@@ -28,7 +28,6 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.*;
 
 import org.openscience.jmol.io.PovraySaver;
-import org.openscience.jmol.io.PovrayStyleWriter;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -50,6 +49,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import java.io.FileNotFoundException;
+import java.io.File;
 
 /**
  * A dialog for controling the creation of a povray input file from a
@@ -62,7 +63,6 @@ import javax.swing.border.TitledBorder;
 public class PovrayDialog extends JDialog {
 
   private JmolViewer viewer;
-  private ChemFile currentFile;
   private boolean callPovray = true;
   private boolean doAntiAlias = true;
   private boolean displayWhileRendering = true;
@@ -88,14 +88,12 @@ public class PovrayDialog extends JDialog {
    * @param dp The interacting display we are reproducing (source of view angle info etc)
    * @param bn The default name to base frame names on
    */
-  public PovrayDialog(JFrame f, JmolViewer viewer,
-                      ChemFile cf, String bn) {
+  public PovrayDialog(JFrame f, JmolViewer viewer) {
 
     super(f, JmolResourceHandler.getInstance()
         .getString("Povray.povrayDialogTitle"), true);
     this.viewer = viewer;
-    currentFile = cf;
-    basename = bn;
+    basename = "jmol";
 
     //Take the height and width settings from the JFrame
     Dimension d = viewer.getScreenDimension();
@@ -342,19 +340,16 @@ public class PovrayDialog extends JDialog {
     // File theFile = new.getSelectedFile();
     commandLine = commandLineField.getText();
     String filename = basename + ".pov";
-    java.io.File theFile = new java.io.File(savePath, filename);
-    PovrayStyleWriter style = new PovrayStyleWriter(viewer);
+    File theFile = new File(savePath, filename);
     if (theFile != null) {
       try {
         java.io.FileOutputStream os = new java.io.FileOutputStream(theFile);
-
-        PovraySaver povs = new PovraySaver(currentFile, os, style, viewer);
+      
+        PovraySaver povs = new PovraySaver(viewer, os);
         povs.writeFile();
-        os.flush();
-        os.close();
-
-      } catch (Exception exc) {
-        exc.printStackTrace();
+      } catch (FileNotFoundException fnf) {
+        System.out.println("Povray Dialog FileNotFoundException:" + theFile);
+        return;
       }
     }
     try {

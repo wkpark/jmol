@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-import java.applet.Applet;
+import java.applet.*;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
@@ -33,10 +33,8 @@ public class JmolAppletRegistry {
   String name;
   boolean mayScript;
   Applet applet;
+  AppletContext appletContext;
   String strJavaVendor, strJavaVersion, strOSName;
-  boolean ns4;
-  JSObject jsoWindow;
-  JSObject jsoTop;
 
   public JmolAppletRegistry(String name, boolean mayScript, Applet applet) {
     if (name == null || name.length() == 0)
@@ -44,51 +42,21 @@ public class JmolAppletRegistry {
     this.name = name;
     this.mayScript = mayScript;
     this.applet = applet;
+    this.appletContext = applet.getAppletContext();
     strJavaVendor = System.getProperty("java.vendor");
     strJavaVersion = System.getProperty("java.version");
     strOSName = System.getProperty("os.name");
+    /*
     if (mayScript) {
-      jsoWindow = JSObject.getWindow(applet);
-      System.out.println("JmolAppletRegistry: jsoWindow=" + jsoWindow);
-    }
-    ns4 = (strJavaVendor.startsWith("Netscape") &
-           strJavaVersion.startsWith("1.1"));
-    if (! ns4)
-      checkIn(name, applet);
-    else if (mayScript)
-      checkInJavascript(name, applet);
-    else
-      System.out.println("WARNING!! mayscript not specified");
-  }
-
-  public void scriptButton(String targetName, String script, String buttonCallback) {
-    if (targetName == null || targetName.length() == 0) {
-      System.out.println("no targetName specified");
-      return;
-    }
-    if (! ns4) {
-      Object target = htRegistry.get(targetName);
-      if (target == null) {
-        System.out.println("target " + targetName + " not found");
-        return;
-      }
-      if (! (target instanceof JmolApplet)) {
-        System.out.println("target " + targetName + " is not a JmolApplet");
-        return;
-      }
-      JmolApplet targetJmolApplet = (JmolApplet)target;
-      targetJmolApplet.scriptButton(jsoWindow, name, script, buttonCallback);
-    } else {
-      if (! mayScript) {
-        System.out.println("WARNING!! mayscript not specified");
-      } else if (jsoTop == null) {
-        System.out.println("jsoTop == null ?");
-      } else {
-        jsoTop.call("runJmolAppletScript",
-                    new Object[] { targetName, jsoWindow, name,
-                                   script, buttonCallback });
+      try {
+        jsoWindow = JSObject.getWindow(applet);
+        System.out.println("JmolAppletRegistry: jsoWindow=" + jsoWindow);
+      } catch (Exception e) {
+        System.out.println("exception trying to get jsoWindow");
       }
     }
+    */
+    checkIn(name, applet);
   }
 
   public Enumeration applets() {
@@ -102,8 +70,90 @@ public class JmolAppletRegistry {
     if (name != null)
       htRegistry.put(name, applet);
   }
+
+  JSObject getJsoWindow() {
+    JSObject jsoWindow = null;
+    if (mayScript) {
+      try {
+        jsoWindow = JSObject.getWindow(applet);
+      } catch (Exception e) {
+        System.out.println("exception trying to get jsoWindow");
+      }
+    } else {
+      System.out.println("mayScript not specified for:" + name);
+    }
+    return jsoWindow;
+  }
+
+  JSObject getJsoTop() {
+    JSObject jsoTop = null;
+    JSObject jsoWindow = getJsoWindow();
+    if (jsoWindow != null) {
+      try {
+        jsoTop = (JSObject)jsoWindow.getMember("top");
+      } catch (Exception e) {
+        System.out.println("exception trying to get window.top");
+      }
+    }
+    return jsoTop;
+  }
   
-  String functionRunJmolAppletScript=
+  public void scriptButton(String targetName, String script,
+                           String buttonCallback) {
+    if (targetName == null || targetName.length() == 0) {
+      System.out.println("no targetName specified");
+      return;
+    }
+    if (tryDirect(targetName, script, buttonCallback) ||
+        tryJavaScript(targetName, script, buttonCallback)) {
+      return;
+    }
+    System.out.println("unable to find target:" + targetName);
+  }
+
+  private boolean tryDirect(String targetName, String script,
+                            String buttonCallback) {
+    System.out.println("tryDirect trying appletContext");
+    Object target = appletContext.getApplet(targetName);
+    if (target == null) {
+      System.out.println("... trying registry");
+      target = htRegistry.get(targetName);
+    }
+    if (target == null) {
+      System.out.println("tryDirect failed to find applet:" + targetName);
+      return false;
+    }
+    if (! (target instanceof JmolApplet)) {
+      System.out.println("target " + targetName + " is not a JmolApplet");
+      return true;
+    }
+    JmolApplet targetJmolApplet = (JmolApplet)target;
+    targetJmolApplet.scriptButton((buttonCallback == null
+                                   ? null : getJsoWindow()),
+                                  name, script, buttonCallback);
+    return true;
+  }
+
+  private boolean tryJavaScript(String targetName, String script,
+                                   String buttonCallback) {
+    if (mayScript) {
+      JSObject jsoTop = getJsoTop();
+      if (jsoTop != null) {
+        try {
+          jsoTop.eval(functionRunJmolAppletScript);
+          jsoTop.call("runJmolAppletScript",
+                      new Object[] { targetName, getJsoWindow(), name,
+                                     script, buttonCallback });
+          return true;
+        } catch (Exception e) {
+          System.out.println("exception calling JavaScript");
+        }
+      }
+    }
+    return false;
+  }
+
+  final static String functionRunJmolAppletScript=
     // w = win, n = name, t = target, s = script
     "function runJmolAppletScript(t,w,n,s,b){" +
     " function getApplet(w,t){" +
@@ -128,14 +178,4 @@ public class JmolAppletRegistry {
     " }" +
     " a.scriptButton(w,n,s,b);" +
     "}\n";
-
-  void checkInJavascript(String name, Applet applet) {
-    if (jsoWindow != null) {
-      jsoTop = (JSObject)jsoWindow.getMember("top");
-      Object t;
-      t = jsoTop.eval("top.runJmolAppletScript == undefined");
-      if (((Boolean)t).booleanValue())
-        jsoTop.eval(functionRunJmolAppletScript);
-    }
-  }
 }

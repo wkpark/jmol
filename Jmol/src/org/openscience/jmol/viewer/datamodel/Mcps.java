@@ -142,7 +142,7 @@ abstract class Mcps extends Shape {
       this.madHelixSheet = (short)madHelixSheet;
       this.madTurnRandom = (short)madTurnRandom;
 
-      polymerCount = polymer.getCount();
+      polymerCount = polymer == null ? 0 : polymer.getCount();
       if (polymerCount > 0) {
         colixes = new short[polymerCount];
         mads = new short[polymerCount + 1];

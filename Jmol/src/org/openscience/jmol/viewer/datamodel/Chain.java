@@ -48,7 +48,7 @@ final public class Chain {
 
   void freeze() {
     groups = (Group[])Util.setLength(groups, groupCount);
-    polymer = new Polymer(this);
+    polymer = Polymer.allocatePolymer(this);
   }
   
   Group allocateGroup(int sequenceNumber, char insertionCode,
@@ -117,9 +117,8 @@ final public class Chain {
 
   void addSecondaryStructure(byte type,
                              int startSeqcode, int endSeqcode) {
-    if (polymer == null)
-      polymer = new Polymer(this);
-    polymer.addSecondaryStructure(type, startSeqcode, endSeqcode);
+    if (polymer != null)
+      polymer.addSecondaryStructure(type, startSeqcode, endSeqcode);
   }
 
   public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {

@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-final public class Polymer {
+public class Polymer {
 
   Chain chain;
   Group[] groups;
@@ -40,11 +40,10 @@ final public class Polymer {
 
   private int[] atomIndices;
 
-  public Polymer(Chain chain) {
-    this.chain = chain;
-
+  static Polymer allocatePolymer(Chain chain) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
+    int count = 0;
     for (int i = 0; i < chain.groupCount; ++i ) {
       Group group = chainGroups[i];
       if (! group.hasFullMainchain())
@@ -53,20 +52,22 @@ final public class Polymer {
       if (firstNonMainchain == i)
         ++firstNonMainchain;
     }
-    if (count < 2) {
-      count = 0;
-    } else if (count == firstNonMainchain) {
-      // either a complete match or the polymer is at the front of the chain
-      groups = chainGroups;
-    } else {
-      groups = new Group[count];
-      for (int i = 0, j = 0; i < chain.groupCount; ++i) {
-        Group group = chainGroups[i];
-        if (! group.hasFullMainchain())
-          continue;
-        groups[j++] = group;
-      }
+    if (count < 2)
+      return null;
+    Group[] groups = new Group[count];
+    for (int i = 0, j = 0; i < chain.groupCount; ++i) {
+      Group group = chainGroups[i];
+      if (! group.hasFullMainchain())
+        continue;
+      groups[j++] = group;
     }
+    return new Polymer(chain, groups);
+  }
+
+  private Polymer(Chain chain, Group[] groups) {
+    this.chain = chain;
+    this.groups = groups;
+    this.count = groups.length;
     for (int i = count; --i >= 0; )
       groups[i].setPolymer(this);
   }
@@ -103,7 +104,7 @@ final public class Polymer {
 
   public void getAlphaCarbonMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex == count) {
-      groupIndex = count - 1;
+      --groupIndex;
     } else if (groupIndex > 0) {
       midPoint.set(groups[groupIndex].getAlphaCarbonPoint());
       midPoint.add(groups[groupIndex-1].getAlphaCarbonPoint());

@@ -62,35 +62,42 @@
       page. In this case, the data is passed as the value of the
       the "loadInline" parameter. The following applet displays the
       same molecule as above, but the CML data is
-      embedded rather than in a file.
+      embedded rather than in a file. Note, the single quotes around
+      the PARAM VALUE attribute, combined with the double quotes in the
+      CML source code.
       
 <appletExample>
 <![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar" 
         WIDTH="200" HEIGHT="200">
-  <PARAM NAME="loadInline" VALUE="
-<?xml version='1.0' ?>
-<!DOCTYPE molecule
-  SYSTEM 'http://www.xml-cml.org/dtd/cml1_0.dtd' []>
-<molecule id='METHANOL'>
-  <atomArray>
-    <stringArray builtin='id'>
-      a1 a2 a3 a4 a5 a6
-    </stringArray>
-    <stringArray builtin='elementType'>
-      C O H H H H
-    </stringArray>
-    <floatArray builtin='x3' units='pm'>
-      -0.748 0.558 -1.293 -1.263 -0.699 0.716
-    </floatArray>
-    <floatArray builtin='y3' units='pm'>
-      -0.015 0.420 0.202 0.754 -0.934 1.404
-    </floatArray>
-    <floatArray builtin='z3' units='pm'>
-      0.024 -0.278 -0.901 0.600 0.609 0.137
-    </floatArray>
-  </atomArray>
+  <PARAM NAME="loadInline" VALUE='
+<molecule id="methanol">
+  <atomArray atomID="a1 a2 a3 a4 a5 a6"
+    elementType="C O H H H H"
+    x3="-0.748 0.558 -1.293 -1.263 -0.699 0.716"
+    y3="-0.015 0.420  0.202  0.754 -0.934 1.404"
+    z3="0.024 -0.278 -0.901  0.600  0.609 0.137"/>
 </molecule>
-"/>
+'/>
+</APPLET>]]>
+</appletExample>
+      </p>
+
+    <p>The use of &lt; characters in attribute values lead to invalid (X)HTML code, but all
+    browsers seem to accept it. If valid X(HTML) code is important to you, you need to escape
+    all &lt;'s with &amp;lt;, as in:
+
+<appletExample>
+<![CDATA[<APPLET CODE="JmolApplet" ARCHIVE="JmolApplet.jar"
+        WIDTH="200" HEIGHT="200">
+  <PARAM NAME="loadInline" VALUE='
+&lt;molecule id="methanol">
+  &lt;atomArray atomID="a1 a2 a3 a4 a5 a6"
+    elementType="C O H H H H"
+    x3="-0.748 0.558 -1.293 -1.263 -0.699 0.716"
+    y3="-0.015 0.420  0.202  0.754 -0.934 1.404"
+    z3="0.024 -0.278 -0.901  0.600  0.609 0.137"/>
+&lt;/molecule>
+'/>
 </APPLET>]]>
 </appletExample>
       </p>

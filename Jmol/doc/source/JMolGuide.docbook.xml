@@ -420,6 +420,18 @@ animation. With Animate the animation can be viewed.
         </para>
       </section>
       <section>
+        <title>script</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>script</command>
+            <arg choice="req"><replaceable>filename</replaceable></arg>
+	  </cmdsynopsis>
+	</para>
+        <para>
+          Loads and execute a script file from disk.
+        </para>
+      </section>
+      <section>
         <title>exit</title>
         <para>
 	  <cmdsynopsis>
@@ -437,7 +449,24 @@ animation. With Animate the animation can be viewed.
     </section>
     <section>
       <title>Colour Commands</title>
-      <para> </para>
+      <section>
+        <title>colour or color</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>colour</command>
+            <arg><replaceable>object</replaceable></arg>
+            <arg choice="req"><replaceable>colour</replaceable></arg>
+	  </cmdsynopsis>
+	</para>
+        <para>
+	  Gives selected objects a colour as specified by the colour 
+          value. Note that color is synonymous with colour.
+	</para>
+	<para>
+	  Currently accepted colour values: black, red, grey, blue, 
+          green, cyan, magenta, orange, white and pink.
+	</para>
+      </section>
     </section>
     <section>
       <title>Manipulation Commands</title>
@@ -507,6 +536,41 @@ animation. With Animate the animation can be viewed.
       <title>Colour Schemes</title>
       <para> </para>
     </section>
+    <section>
+      <title>Parameters</title>
+      <section>
+        <title>shadows</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>set shadows</command>
+            <group> 
+	      <arg>true</arg>
+	      <arg>false</arg>
+	    </group>
+	  </cmdsynopsis>
+	</para>
+        <para>
+	  Turns on shading when rendering.
+	</para>
+      </section>
+      <section>
+        <title>autorefresh</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>set refresh</command>
+            <group> 
+	      <arg>true</arg>
+	      <arg>false</arg>
+	    </group>
+	  </cmdsynopsis>
+	</para>
+        <para>
+	  Does a scripted refresh after every command. Slows
+	  down the process a bit, but can be handy when entering
+	  commands manually.
+	</para>
+      </section>
+    </section>	
   </chapter>
 
 </book>

@@ -491,8 +491,19 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     repaint();
   }
 
+  char inlineNewlineChar = '|';
+
   public void loadInline(String strModel) {
     if (strModel != null) {
+      if (inlineNewlineChar != 0) {
+        int len = strModel.length();
+        int i;
+        for (i = 0; i < len && strModel.charAt(0) == ' '; ++i)
+          ;
+        if (i < len && strModel.charAt(i) == inlineNewlineChar)
+          strModel = strModel.substring(i + 1);
+        strModel = strModel.replace(inlineNewlineChar, '\n');
+      }
       viewer.openStringInline(strModel);
       setStatusMessage(viewer.getOpenFileError());
     }

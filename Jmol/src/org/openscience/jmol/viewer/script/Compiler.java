@@ -312,7 +312,7 @@ class Compiler {
     int ichT = ichToken + 1;
     char ch;
     while (ichT < cchScript &&
-           (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != 'n')
+           (ch = script.charAt(ichT)) != ';' && ch != '\r' && ch != '\n')
       ++ichT;
     cchToken = ichT - ichToken;
     return true;

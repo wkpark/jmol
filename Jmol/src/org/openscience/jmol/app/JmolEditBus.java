@@ -103,10 +103,30 @@ public class JmolEditBus implements CDKEditBus {
     }
 
     public ChemModel getChemModel() {
-        throw new NoSuchMethodError();
+        if (viewer.getModelCount() < 0) {
+            return null;
+        } else {
+            ChemModel model = new ChemModel();
+            SetOfMolecules moleculeSet = new SetOfMolecules();
+            Molecule molecule = new Molecule();
+            // copy the atoms
+            for (int i=0; viewer.getAtomCount(); i++) {
+                Atom atom = new Atom(viewer.getAtomName(i));
+                atom.setPoint3d(new Point3d(viewer.getAtomPoint3f(i)));
+                molecule.addAtom(atom);
+            }
+            // copy the bonds
+            for (int i=0; viewer.getBondCount(); i++) {
+                molecule.addBond();
+            }
+        }
     }
     
     public ChemFile getChemFile() {
-        throw new NoSuchMethodError();
+        ChemFile file = new ChemFile();
+        ChemSequence sequence = new ChemSequence();
+        sequence.addChemModel(getChemModel()); // better to get all models
+        file.addChemSequence(sequence);
+        return file;
     }
 }

@@ -412,7 +412,7 @@ class Compiler {
   boolean lookingAtString() {
     if (ichToken == cchScript)
       return false;
-    if (script.charAt(ichToken) != '=')
+    if (script.charAt(ichToken) != '"')
       return false;
     // remove support for single quote
     // in order to use it in atom expressions

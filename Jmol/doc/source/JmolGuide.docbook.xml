@@ -97,7 +97,8 @@
         <title>Script...</title>
         <para>
           Opens a window where Rasmol scripting commands can be executed.
-          <xref linkend="rasmol" /> contains information about Rasmol Scripts.
+	  <xref linkend="rasmol" />
+	  contains information about RasMol/Chime Scripts.
         </para>
       </section>
       <section>
@@ -550,168 +551,559 @@
       supply feedback in case of bugs and/or unexpected behavior. 
     </para>
     <para>
-      Jmol supports the majority of RasMol/Chime scripting commands. 
+      Jmol currently supports many (most?) of RasMol/Chime scripting commands. 
+    </para>
+    <para>
+      Most movement, selection, atom expression and color commands are
+      operational.
+    </para>
+    <para>
+      Things that explicitly do *not* work are protein rendering formats such
+      as ribbons, cartoons, strands, etc. Jmol does not perform lighting
+      and surface rendering on the fly, so settings such as ambient, shadows,
+      specular and specpower are not available. Finally, Jmol does not have
+      a true 3D graphics engine, so renderings of intersecting surfaces
+      are not handled properly. This occurs when Atoms are rendered with
+      larger vanderWaals percentages (such as 50% or more).
+    </para>
+    <para>
+      Please give us feedback on what features you would like. This will help
+      us prioritize future development.
     </para>
     <section>
-      <title>background &lt;color&gt;</title>
-      <para>
-	Sets color of the background. See Color Specification.
-      </para>
+      <title>RasMol/Chime commands</title>
+      <section>
+	<title>background &lt;color&gt;</title>
+	<para>
+	  Sets color of the background. See Color Specification.
+	</para>
+      </section>
+      <section>
+	<title>center {&lt;expression&gt;}</title>
+	<para>
+	  Sets the center of rotation to be the center of the set of atoms
+	  defined by the expression. 
+	  This is calculated as the mean value of the coordinates of the
+	  selected atoms along each of the respective axes.
+	  If no atoms are selected then the center
+	  is set to the center of the bounding box (the default).
+	</para>
+      </section>
+      <section>
+	<title>Color {&lt;object&gt;} &lt;color&gt;</title>
+	<para>
+	  Colors the object with the specified color. If no object is given
+	  then atom is assumed. Currently supported objects are atoms, bonds,
+	  labels and axes.
+	</para>
+      </section>
+      <section>
+	<title>cpk &lt;boolean&gt; | cpk &lt;value&gt;</title>
+	<para>
+	  Renders selected atoms as shaded spheres.
+	</para>
+	<para>
+	  A boolean value renders the spheres with the vanderWaals radius.
+	  The current jmol implementation does a poor job of rendering
+	  these because the renderer does nothandle intersecting objects. 
+	</para>
+	<para>
+	  A decimal value specifies sphere radius in Angstroms.
+	</para>
+	<para>
+	  A positive integer specifies sphere radius in RasMol units,
+	  1/250th of an Angstrom.
+	</para>
+	<para>
+	  Jmol extension: 
+	  A negative integer specifies sphere radius as a percentage of
+	  the vanderWaals radius. Thus, a value of -25 specifies that the
+	  selected atoms should be rendered with a sphere radius of 25%
+	  of the vanderWaals radius for that element.
+	</para>
+	<para>
+	  cpk is synonymous with spacefill.
+	</para>
+      </section>
+      <section>
+	<title>define &lt;variable&gt; &lt;expression&gt;</title>
+	<para>
+	  defines the specified variable to the the atoms selected by
+	  the expression;
+	</para>
+      </section>
+      <section>
+	<title>echo &lt;string&gt;</title>
+	<para>
+	  Prints the specified string to the console. (We need to find a
+	  better place to send the output. Status line?)
+	</para>
+      </section>
+      <section>
+	<title>exit</title>
+	<para>
+	  Stops execution of the current script. In the case of a script
+	  which is being run as a child script, execution continues with
+	  the parent.
+	</para>
+	<para>
+	  For programmers, this is a 'return' statement.
+	</para>
+      </section>
+      <section>
+	<title>label &lt;boolean&gt; | label &lt;string&gt;</title>
+	<para>
+	  Allows you to specify a label to be shown with the selected atoms.
+	  %a  Atom Name
+	  %b %t Protein B-Factor/Temperature
+	  %c %s Protein chain
+	  %e Element atomic symbol
+	  %i Atom serial number
+	  %m single letter amino acid code
+	  %n 3 letter residue name
+	  %r PDB residue number
+	</para>
+      </section>
+      <section>
+	<title>load {&lt;format&gt;} &lt;filename | url&gt;</title>
+	<para>
+	  Loads the specified file or URL. 
+	</para>
+	<para>
+	  Jmol automatically determines file type based upon the contents
+	  of the file. Therefore, the format parameter is ignored.
+	  It is allowed for backward compatibility with RasMol/Chime.
+	</para>
+      </section>
+      <section>
+	<title>monitor &lt;number&gt; &lt;number&gt; {&lt;number&gt;} {&lt;number&gt;}</title>
+	<para>
+	  Renders a measurement between the specified atoms.
+	</para>
+	<para>
+	  Two atoms specify a distance measurement.
+	</para>
+	<para>
+	  Jmol extension: Three atoms specify an angle measurement.
+	</para>
+	<para>
+	  Jmol extension: Four atoms specify a dihedral angle measurement.
+	</para>
+      </section>
+      <section>
+	<title>quit</title>
+	<para>
+	  In the current release of Jmol, quit is synonymous with exit.
+	</para>
+	<para>
+	  This is inconsistent with RasMol, where quit means to exit
+	  the program. 
+	</para>
+      </section>
+      <section>
+	<title>refresh</title>
+	<para>
+	  Forces screen repaint during script execution.
+	  (Frankly, I am not sure under what circumstances this would be
+	  necessary?)
+	</para>
+      </section>
+      <section>
+	<title>reset</title>
+	<para>
+	  Resets molecule to its original position: zoom 100; center; 
+	  translate x 0; translate y 0;
+	</para>
+      </section>
+      <section>
+	<title>restrict &lt;expression&gt;</title>
+	<para>
+	  Selects the atoms identified by expression and hides all atoms
+	  and bonds which are outside the selection set.
+	</para>
+      </section>
+      <section>
+	<title>rotate &lt;axis&gt; &lt;value&gt;</title>
+	<para>
+	  Rotates the model the specified angle about the specified axis.
+	  Integer values specify degrees. Decimal values specify radians.
+	</para>
+      </section>
+      <section>
+	<title>script &lt;filename | url&gt;</title>
+	<para>
+	  Loads and executes the specified script file/url. The
+	  hash/pound/sharp character (#) character marks a comment to the
+	  end of the line. The semicolon character (;) separates multiple
+	  statements on the same line. A script file may load another script
+	  file, up to 10 deep.
+	</para>
+	<para>
+	  The command *source* is a synonym for *script*.
+	</para>
+      </section>
+      <section>
+	<title>select {&lt;expression%gt;}</title>
+	<para>
+	  Selects the atoms identified by the expression. 
+	</para>
+	<para>
+	  If no expression is given then all atoms are selected.
+	</para>
+	<para>
+	  Note that RasMol does not hilite selections. To see the selected
+	  atoms use the command 'set display selected'
+	</para>
+	<para>
+	  (This is a problem area for Jmol. If you have suggestions on how
+	  this can be improved please let us know.)
+	</para>
+      </section>
+      <section>
+	<title>set &lt;parameter%gt; {&lt;value&gt;}</title>
+	<para>
+	  See separate section for set parameters.
+	</para>
+      </section>
+      <section>
+	<title>slab &lt;boolean&gt; | &lt;percentage&gt;</title>
+	<para>
+	  Slab mode provides a z-clipping plane that allows you to specify
+	  the percentage of the molecule to be displayed. 
+	</para>
+	<para>
+	  A boolean parameter turns slabbing on or off.
+	</para>
+	<para>
+	  A percentage from 0 to 100 controls the amount of the molecult
+	  to be shown. A value of 0 shows nothing. A value of 100 shows
+	  everything. A value of 50 shows the back 50% of the molecule. A
+	  value of 25 shows the back quarte of the molecule.
+	</para>
+	<para>
+	  (I have never seen the term slab used in this way before. As far
+	  as I know, the term is only used in RasMol.)
+	</para>
+      </section>
+      <section>
+	<title>spacefill {&lt;boolean&gt;} | &lt;value&gt;</title>
+	<para>
+	  see cpk
+	</para>
+      </section>
+      <section>
+	<title>translate &lt;axis&gt; &lt;value&gt;</title>
+	<para>
+	  Moves the molecule along the specified axes according to the amount
+	  specified by value. Value ranges from -100 to 100, and represents
+	  the percentage of the display window.
+	  Negative values move to the left (for the x axis) and down
+	  (for the y axis). A value of 100 will move the
+	  molecule completely out of the window. A value of 50 will move the
+	  center of the molecule to the edge of the window. 
+	</para>
+	<para>
+	  (A translation along the z axis is defined in the RasMol
+	  documentation. As far as I can tell, it does nothing. If anybody
+	  knows anything different, please let us know.)
+	</para>
+      </section>
+      <section>
+	<title>wireframe {&lt;boolean&gt;} | &lt;value&gt;</title>
+	<para>
+	  In RasMol terminology, wireframe refers to the bonds drawn between
+	  the atoms. A boolean value of 'on' draws the selected bonds as
+	  lines. Alternatively, a numeric value may be used to specify
+	  the radius of the bonds. A decimal value specifies Angstroms.
+	  An integer value specifies RasMol units (1/250th Angstrom).
+	</para>
+      </section>
+      <section>
+	<title>zap</title>
+	<para>
+	  Clears the currently loaded molecule.
+	</para>
+	<para>
+	  RasMol forces you to 'zap' prior to loading a new molecule. Jmol
+	  currently does not have this restriction and does not enforce it.
+	</para>
+      </section>
+      <section>
+	<title>zoom {&lt;boolean&gt;} | &lt;percentage&gt;</title>
+	<para>
+	  Allows you to enlarge (or shrink) the molecule.
+	</para>
+	<para>
+	  A boolean value turns zooming on or off.
+	</para>
+	<para>
+	  A percentage value specifies the zoom percentage. 100 is the default
+	  value. The smallest acceptable value is 10. The largest acceptable
+	  value is 500. (Note that these are arbitrary restrictions that
+	  were put in for RasMol compatiblity. If someone wants to lift
+	  these restrictions please let us know.)
+	</para>
+	<para>
+	  The default size in Jmol is calculated so that all molecules are
+	  completely visible on the screen through all rotations using the
+	  default vanderWaals rendering percentage as defined in 
+	  Edit->Preferences...
+	</para>
+      </section>
     </section>
     <section>
-      <title>center {&lt;expression&gt;}</title>
-      <para>
-	Sets the center of rotation to be the center of the set of atoms
-	defined by the expression. If no atoms are selected then the center
-	is set to the center of the bounding box (the default).
-      </para>
-    </section>
-    <section>
-      <title>Color {&lt;object&gt;} &lt;color&gt;</title>
-      <para>
-	Colors the object with the specified color. If no object is given
-	then atom is assumed. Currently supported objects are atoms, bonds,
-	labels and axes.
-      </para>
-    </section>
-    <section>
-      <title>cpk &lt;boolean&gt; | cpk &lt;value&gt;</title>
-      <para>
-	Renders selected atoms as spheres.
-      </para>
-      <para>
-	A boolean value renders the
-	spheres with the vanderWaals radius. The current jmol implementation
-	does a poor job of rendering these because the renderer does not
-	handle intersecting objects. 
-      </para>
-      <para>
-	A decimal value specifies sphere radius in Angstroms.
-      </para>
-      <para>
-	A positive integer specifies sphere radius in RasMol units,
-	1/250th of an Angstrom.
-      </para>
-      <para>
-	A negative integer specifies sphere radius as a percentage of
-	the vanderWaals radius. Thus, a value of -25 specifies that the
-	selected atoms should be rendered with a sphere radius of 25%
-	of the vanderWaals radius for that element.
-      </para>
-      <para>
-	cpk is synonymous with spacefill.
-      </para>
-    </section>
-    <section>
-      <title>define &lt;variable&gt; &lt;expression&gt;</title>
-      <para>
-	defines the specified variable to the the atoms selected by
-	the expression;
-      </para>
-    </section>
-    <section>
-      <title>echo &lt;string&gt;</title>
-      <para>
-	Prints the specified string to the console. (We need to find a
-	better place to send the output. Status line?)
-      </para>
-    </section>
-    <section>
-      <title>exit</title>
-      <para>
-	Stops script execution.
-      </para>
-    </section>
-    <section>
-      <title>label &lt;boolean&gt; | label &lt;string&gt;</title>
-      <para>
-	Allows you to specify a label to be shown with the selected atoms.
-	%a  Atom Name
-	%b %t Protein B-Factor/Temperature
-	%c %s Protein chain
-	%e Element atomic symbol
-	%i Atom serial number
-	%m single letter amino acid code
-	%n 3 letter residue name
-	%r PDB residue number
-      </para>
-    </section>
-    <section>
-      <title>load {&lt;format&gt;} &lt;filename | url&gt;</title>
-      <para>
-	The format parameter is ignored. It is allowed for backward
-	compatibility with RasMol/Chime.
-      </para>
-    </section>
-    <section>
-      <title>monitor &lt;number&gt; &lt;number&gt; {&lt;number&gt;} {&lt;number&gt;}</title>
-      <para>
-	Renders a measurement between the specified atoms.
-      </para>
-      <para>
-	Two atoms specify a distance measurement.
-      </para>
-      <para>
-	Three atoms specify an angle measurement.
-      </para>
-      <para>
-	Four atoms specify a dihedral angle measurement.
-      </para>
-    </section>
-    <section>
-      <title>refresh</title>
-      <para>
-	Forces screen repaint during script execution. (Not sure under
-	what circumstances this would be necessary?)
-      </para>
-    </section>
-    <section>
-      <title>reset</title>
-      <para>
-	Resets molecule to its original position: zoom 100; center; 
-	translate x 0; translate y 0;
-      </para>
-    </section>
-    <section>
-      <title>restrict &lt;expression&gt;</title>
-      <para>
-	Selects the atoms identified by expression and hides all atoms
-	and bonds which are outside the selection set.
-      </para>
-    </section>
-    <section>
-      <title>rotate &lt;axis&gt; &lt;value&gt;</title>
-      <para>
-	Rotates the model the specified angle about the specified axis.
-	Integer values specify degrees. Decimal values specify radians.
-      </para>
-    </section>
-    <section>
-      <title>script &lt;filename | url&gt;</title>
-      <para>
-	Loads and executes the specified script file/url. The
-	hash/pound/sharp character (#) character marks a comment to the
-	end of the line. The semicolon character (;) separates multiple
-	statements on the same line. A script file may load another script
-	file, up to 10 deep.
-      </para>
-      <para>
-	The command *source* is a synonym for *script*.
-      </para>
-    </section>
-    <section>
-      <title>set &lt;parameter%gt; {&lt;value&gt;}</title>
-      <para>
-	See separate section for set parameters.
-      </para>
+      <title>Set Parameters</title>
+      <section>
+	<title>set axes on | off</title>
+	<para>
+	  Controls the display of cartesians axes with origin at the
+	  center of the bounding box.
+	</para>
+      </section>
+      <section>
+	<title>set background &lt;color&gt;</title>
+	<para>
+	  Synonymous with the background command.
+	</para>
+      </section>
+      <section>
+	<title>set bondmode and | or</title>
+	<para>
+	  Atom expressions are used to select atoms. The selection of bonds
+	  is controled by the bondmode setting. When set to 'and', the
+	  default, a bond is selected only if both atoms are selected. When
+	  set to 'or' a bond is selected if either atom is selected.
+	</para>
+	<para>
+	  You may want to select bonds in order to control their color 
+	  (color bonds &lt;color&gt;) or their size (wireframe 32).
+	</para>
+      </section>
+      <section>
+	<title>set bonds on | off</title>
+	<para>
+	  Controls the display of double and triple bonds. When the setting
+	  is off then all bonds are shown as single bonds.
+	</para>
+	<para>
+	  Note that there are several factors which control rendering of
+	  multiple bonds. 1) Whether or not the file contains bond
+	  connection information. 2) whether or not Jmol calculates multiple
+	  bonds 3) whether or not the bond setting is on or off (this setting)
+	  4) the size of the bonds.
+	</para>
+	<para>
+	  Item 4 needs a little more explanation. RasMol only shows multiple
+	  bonds if the radius of the bonds is &lt;= 32 RasMol units
+	  (32/250 = 0.128 Angstroms). Presumably this is done because
+	  multiple bonds would look ugly if they were larger. 
+	  Jmol currently respects this for backward compatibility with
+	  existing scripts.
+	</para>
+      </section>
+      <section>
+	<title>set boundbox on | off </title>
+	<para>
+	  Controls rending of the bounding box which completely encloses the
+	  molecule. The bounding box is defined by the minimum and maximum
+	  coordinate values of the centers of the atoms along each of the
+	  x, y and z axes.
+	</para>
+      </section>
+      <section>
+	<title>set display normal | selected</title>
+	<para>
+	  RasMol does not hilite or change colors on selected atoms. 
+	  You can 'set display selected' to go to some wild color scheme.
+	  Jmol implements this by using 'halos' around the selected atoms.
+	  'set display normal' turns off the halos.
+	</para>
+	<para>
+	  This is a problem area for us and we would like feedback from
+	  experienced users on how this should behave. We want to maintain
+	  compatibility with existing RasMol/Chime scripts,
+	  but we think that the visual
+	  feedback of selection halos is good during script development.
+	  We also think that new/inexperienced users would benefit from
+	  using the halos. Any suggestions/ideas/feedback would be appreciated.
+	</para>
+      </section>
+      <section>
+	<title>set fontsize &lt;value&gt;</title>
+	<para>
+	  Sets the fontsize used for atom and monitor labels.
+	</para>
+	<para>
+	  Jmol extension: A value of 0 specifies the Jmol default size.
+	  The Jmol default size is calculated as a function of the atom
+	  size. So small atoms use a small font and large atoms use a 
+	  large font.
+	</para>
+	<para>
+	  This is another area where we would like user feedback on how
+	  we can extend the functionality while maintaining backward
+	  compatibility with existing RasMol/Chime scripts.
+	</para>
+      </section>
+      <section>
+	<title>set hetero on | off</title>
+	<para>
+	  Controls the default selection behavior of heterogenous atoms
+	  in protein molecules in .PDB files. When turned 'on' the command
+	  'select all' will include heterogenous atoms that are included
+	  in the .PDB file.
+	</para>
+	<para>
+	  See also: the predefined set 'hetero' and the
+	  'set hydrogen on | off' command.
+	</para>
+      </section>
+      <section>
+	<title>set hydrogen on | off</title>
+	<para>
+	  Controls the default selection behavior of hydrogen atoms
+	  in protein molecules in .PDB files. When turned 'on' the command
+	  'select all' will include hydrogen atoms that are included
+	  in the .PDB file.
+	</para>
+	<para>
+	  See also: 'set hetero on | off' command.
+	</para>
+	<para>
+	  (But .PDB files do not usually include hydrogen atoms?)	
+	</para>
+      </section>
+      <section>
+	<title>set monitor on | off</title>
+	<para>
+	  In RasMol terminology, a 'monitor' is a distance measurement.
+	  These are called 'measurements' in the Jmol menus.
+	  This command controls the display of the numeric labels (for
+	  distance, angle, or dihedral angle). That is, with
+	  'set monitor off' the lines will still be drawn, but the
+	  measurement values will not be shown.
+	</para>
+	<para>
+	  See also: monitor command
+	</para>
+      </section>
     </section>
     <section>
       <title>Atom Expressions</title>
-      <para> </para>
+      <para>
+	Atom expressions are queries which specify selection criteria
+	for sets of atoms. They are used as parameters to several commands,
+	particularly 'select', 'restrict' and 'define'. 
+      </para>
+      <para>
+	Most of the selection criteria are protein and .PDB file related.
+	If you have used RasMol then you know what these things are. And
+	all RasMol atom expressions should work. 
+      </para>
+      <para>
+	The following are some examples using the select command:
+	select all
+	select *
+	select elemno=1 // selects hydrogens
+	select elemno=1 or elemno=6 or elemno=8 // H, C, O
+      </para>
+      <para>
+	The following are some more complicated protein-specific expressions:
+	select cys // cystines
+	select cys.CA // alpha carbons in cystines
+	select cys*A.CA // alpha carbons in cystines in chain A
+	select 1 // all atoms in residue 1
+	select 1A.C? // all carbons in residue 1 of chain a
+      </para>
+      <section>
+	<title>boolean operators</title>
+	<para>
+	  Boolean operators 'and', 'or' and 'not' can be used to combine
+	  sets of selected atoms. These operators can be abbreviated as
+	  '&amp;', '|' and '!', respectively. 
+	</para>
+      </section>
+      <section>
+	<title>comparison operators</title>
+	<para>
+	  Comparisons can be made based upon a few selected atom attributes.
+	  Comparisons are always of the form
+	  &lt;attribute&gt; &lt;comparator&gt; &lt;value&gt;
+	</para>
+	<para>
+	  Acceptable attributes are:
+	  elemno (element number)
+	  atomno (atom number)
+	  radius (current spacefill radius in RasMol units)
+	  temperature (protein .PDB anisotropic temperature value)
+	  resno (protein .PDB residue number)
+	</para>
+	<para>
+	  Comparators are:
+	  = or ==
+	  &lt;&gt; or != or /=
+	  &lt;, &lt;=, &gt;=, &gt;
+	</para>
+      </section>
+      <section>
+	<title>within(&lt;distance&gt;, &lt;set&gt;)</title>
+	<para>
+	  The within function can be used to select all atoms that
+	  are within a specified distance from any atoms in the
+	  given set. Of course the he resulting set can be combined
+	  using boolean operators to build more complex specifications.
+	</para>
+	<para>
+	  If the distance contains a decimal point (dot) then the
+	  number is interpreted as angstroms. If the distance is an
+	  integer then the units are RasMol units.
+	</para>
+	<para>
+	  // all atoms within 2 angstroms of a chlorine atom
+	  select within(2.0, chlorine)
+	  // all nitrogens more than 3 angstroms away from any carbon
+	  select nitrogen &amp; !within(3.0, carbon)
+	</para>
+      </section>
     </section>
     <section>
       <title>Predefined Sets</title>
-      <para> </para>
+      <para>
+	Predefined sets consist of 'all', 'none', 'selected', the element
+	names, and a number of protein .PDB specific sets.
+      </para>
+      <para>
+	'all' and 'none' should be self-explanatory. 'selected' allows you
+	to use the currently selected set of atoms in a subsequent
+	atom expression.
+      </para>
+      <para>
+	Element names can be used instead of 'elemno=#'. Both singular
+	and plural forms of the element names may be used. The following
+	are all equivalent:
+	'select hydrogen', 'select hydrogens', 'select elemno=1',
+	'select elemno==1'
+      </para>
+      <para>
+	When working with protein molecules in .PDB files you can use
+	a number of predefined sets to select the atoms in amino acids
+	or selected groups of amino acids.
+      </para>
+      <para>
+	All three letter amino abbreviations work. There are also single
+	letter abbreviations which work. All are compatible with RasMol.
+	ala(a), arg(r), asn(n), asp(d), cys(c), glu(e), gln(q), gly(g),
+	his(h), ile(i), leu(l), lys(k), met(m), phe(f), pro(p), ser(s),
+	thr(t), trp(w), tyr(y), val(v)
+      </para>
+      <para>
+	The following sets are defined as in RasMol: at, acidic, acyclic,
+	aliphatic, alpha, amino, aromatic, backbone, basic, bonded,
+	buried, cg, charged, cyclic, cystine, helix, hetero, hydrogen,
+	hydrophobic, ions, large, ligand, medium, neutral, nucleic,
+	polar, protein, purine, pyrimidine, sheet, sidechain, small,
+	solvent, surface, turn, water.
+      </para>
     </section>
     <section>
       <title>Rendering Commands</title>

@@ -29,6 +29,7 @@ final class Model {
   Mmset mmset;
   int modelIndex;
   String modelTag;
+  int minSeqcode, maxSeqcode;
 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
@@ -49,6 +50,17 @@ final class Model {
     for (int i = 0; i < chainCount; ++i)
       chains[i].freeze();
     polymers = (Polymer[])Util.setLength(polymers, polymerCount);
+
+    if (chainCount > 0) {
+      minSeqcode = chains[0].minSeqcode;
+      maxSeqcode = chains[0].maxSeqcode;
+      for (int i = chainCount; --i > 0; ) {
+        if (chains[i].minSeqcode < minSeqcode)
+          minSeqcode = chains[i].minSeqcode;
+        if (chains[i].maxSeqcode > maxSeqcode)
+          maxSeqcode = chains[i].maxSeqcode;
+      }
+    }
   }
 
   void addSecondaryStructure(byte type,

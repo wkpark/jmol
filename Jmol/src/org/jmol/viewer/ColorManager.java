@@ -299,6 +299,13 @@ class ColorManager {
               ? JmolConstants.argbsChainHetero
               : JmolConstants.argbsChainAtom)[chain];
       break;
+    case JmolConstants.PALETTE_GROUP_SCALE:
+      index = quantize(viewer.getMinSeqcode(),
+                       viewer.getMaxSeqcode(),
+                       atom.getSeqcode(),
+                       JmolConstants.argbsGroupScale.length);
+      argb = JmolConstants.argbsGroupScale[index];
+      break;
     }
     if (argb == 0)
       return Graphics3D.HOTPINK;

@@ -1292,6 +1292,14 @@ final public class Viewer implements JmolViewer {
     return modelManager.getGroupsPresentBitSet();
   }
 
+  int getMinSeqcode() {
+    return modelManager.getMinSeqcode();
+  }
+
+  int getMaxSeqcode() {
+    return modelManager.getMaxSeqcode();
+  }
+
   /****************************************************************
    * delegated to MeasurementManager
    ****************************************************************/

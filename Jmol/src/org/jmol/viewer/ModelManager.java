@@ -328,6 +328,14 @@ class ModelManager {
     return (frame == null) ? null : frame.getGroupsPresentBitSet();
   }
 
+  int getMinSeqcode() {
+    return (frame == null) ? 0 : frame.getMinSeqcode();
+  }
+
+  int getMaxSeqcode() {
+    return (frame == null) ? 0 : frame.getMaxSeqcode();
+  }
+
   ////////////////////////////////////////////////////////////////
   // Access to atom properties for clients
   ////////////////////////////////////////////////////////////////

@@ -32,6 +32,7 @@ final class Chain {
   Model model;
   char chainID;
   int groupCount;
+  int minSeqcode, maxSeqcode;
   Group[] groups = new Group[16];
 
   //  private Group[] mainchain;
@@ -47,6 +48,14 @@ final class Chain {
   }
   
   void addGroup(Group group) {
+    int groupSeqcode = group.seqcode;
+    if (groupCount == 0)
+      minSeqcode = maxSeqcode = groupSeqcode;
+    else if (groupSeqcode < minSeqcode)
+      minSeqcode = groupSeqcode;
+    else if (groupSeqcode > maxSeqcode)
+      maxSeqcode = groupSeqcode;
+
     if (groupCount == groups.length)
       groups = (Group[])Util.doubleLength(groups);
     groups[groupCount++] = group;

@@ -1456,6 +1456,14 @@ final class Frame {
     }
   }
 
+  int getMinSeqcode() {
+    return mmset.minSeqcode;
+  }
+
+  int getMaxSeqcode() {
+    return mmset.maxSeqcode;
+  }
+
   void findMaxRadii() {
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];

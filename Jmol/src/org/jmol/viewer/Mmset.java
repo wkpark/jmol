@@ -39,6 +39,8 @@ final class Mmset {
   private Properties[] modelProperties = new Properties[1];
   private Model[] models = new Model[1];
 
+  int minSeqcode, maxSeqcode;
+
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
 
@@ -81,8 +83,18 @@ final class Mmset {
       models[i].freeze();
     }
     propogateSecondaryStructure();
-  }
 
+    if (modelCount > 0) {
+      minSeqcode = models[0].minSeqcode;
+      maxSeqcode = models[0].maxSeqcode;
+      for (int i = modelCount; --i > 0; ) {
+        if (models[i].minSeqcode < minSeqcode)
+          minSeqcode = models[i].minSeqcode;
+        if (models[i].maxSeqcode > maxSeqcode)
+          maxSeqcode = models[i].maxSeqcode;
+      }
+    }
+  }
 
   void setModelSetProperties(Properties modelSetProperties) {
     this.modelSetProperties = modelSetProperties;

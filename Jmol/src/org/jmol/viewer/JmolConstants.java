@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre20a";
+  public final static String version = "10pre20b";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -60,12 +60,13 @@ final public class JmolConstants {
   public final static byte PALETTE_TYPE          = 7;
   public final static byte PALETTE_TEMPERATURE   = 8;
   public final static byte PALETTE_FIXEDTEMP     = 9;
-  public final static byte PALETTE_MAX           = 10;
+  public final static byte PALETTE_GROUP_SCALE   = 10;
+  public final static byte PALETTE_MAX           = 11;
 
   public final static String[] colorSchemes =
     { "cpk", "charge", "structure", "amino",
       "shapely", "chain", "partialCharge", "type",
-      "temperature", "fixedtemperature"};
+      "temperature", "fixedtemperature", "group"};
 
   public final static byte AXES_NONE = 0;
   public final static byte AXES_UNIT = 1;
@@ -1600,6 +1601,79 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFF2020FF, //
     0xFF1010FF, //
     0xFF0000FF, // blue
+  };
+
+  // a bad name ... but chosen by RasMol
+  public final static int[] argbsGroupScale = {
+    0xFF0000FF,
+    //0xFF0010FF,
+    0xFF0020FF,
+    //0xFF0030FF,
+    0xFF0040FF,
+    //0xFF0050FF,
+    0xFF0060FF,
+    //0xFF0070FF,
+    0xFF0080FF,
+    //0xFF0090FF,
+    0xFF00A0FF,
+    //0xFF00B0FF,
+    0xFF00C0FF,
+    //0xFF00D0FF,
+    0xFF00E0FF,
+    //0xFF00F0FF,
+
+    0xFF00FFFF,
+    //0xFF00FFF0,
+    0xFF00FFE0,
+    //0xFF00FFD0,
+    0xFF00FFC0,
+    //0xFF00FFB0,
+    0xFF00FFA0,
+    //0xFF00FF90,
+    0xFF00FF80,
+    //0xFF00FF70,
+    0xFF00FF60,
+    //0xFF00FF50,
+    0xFF00FF40,
+    //0xFF00FF30,
+    0xFF00FF20,
+    //0xFF00FF10,
+
+    0xFF00FF00,
+    //0xFF10FF00,
+    0xFF20FF00,
+    //0xFF30FF00,
+    0xFF40FF00,
+    //0xFF50FF00,
+    0xFF60FF00,
+    //0xFF70FF00,
+    0xFF80FF00,
+    //0xFF90FF00,
+    0xFFA0FF00,
+    //0xFFB0FF00,
+    0xFFC0FF00,
+    //0xFFD0FF00,
+    0xFFE0FF00,
+    //0xFFF0FF00,
+
+    0xFFFFFF00,
+    //0xFFFFF000,
+    0xFFFFE000,
+    //0xFFFFD000,
+    0xFFFFC000,
+    //0xFFFFB000,
+    0xFFFFA000,
+    //0xFFFF9000,
+    0xFFFF8000,
+    //0xFFFF7000,
+    0xFFFF6000,
+    //0xFFFF5000,
+    0xFFFF4000,
+    //0xFFFF3000,
+    0xFFFF2000,
+    //0xFFFF1000,
+
+    0xFFFF0000,
   };
 
   public final static String[] specialAtomNames = {

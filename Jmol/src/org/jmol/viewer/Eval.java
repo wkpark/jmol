@@ -1532,8 +1532,10 @@ class Eval implements Runnable {
     case Token.fixedtemp:
       palette = JmolConstants.PALETTE_FIXEDTEMP;
       break;
-
     case Token.group:
+      palette = JmolConstants.PALETTE_GROUP_SCALE;
+      break;
+
     case Token.user:
       notImplemented(itoken);
       return;

@@ -80,22 +80,6 @@ public class DisplayPanel extends JPanel implements ComponentListener {
   // current dimensions of the display screen
   private static final Rectangle rectClip = new Rectangle();
 
-  private Measure measure = null;
-
-  /*
-  public Viewer getViewer() {
-    return viewer;
-  }
-  */
-
-  public void setMeasure(Measure measure) {
-    this.measure = measure;
-  }
-
-  public void firePickedMeasure(int atomnum) {
-    measure.firePicked(atomnum);
-  }
-
   public void start() {
     addComponentListener(this);
   }
@@ -349,12 +333,8 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     }
 
     public void actionPerformed(ActionEvent e) {
-      if (measure.isShowing()) {
-        viewer.setModeMouse(JmolViewer.MEASURE);
-      } else {
-        viewer.setModeMouse(JmolViewer.PICK);
-        viewer.setSelectionHaloEnabled(true);
-      }
+      viewer.setModeMouse(JmolViewer.PICK);
+      viewer.setSelectionHaloEnabled(true);
       status.setStatus(1, "Select Atoms");
     }
   }

@@ -149,8 +149,7 @@ public class Jmol extends JPanel {
   private MakeCrystal makecrystal;
   private TransformDialog transform;
   private PropertyGraph pg;
-  private Measure meas;
-  private MeasurementList mlist;
+  private MeasurementTable measurementTable;
   private RecentFilesDialog recentFiles;
   public ScriptWindow scriptWindow;
   protected JFrame frame;
@@ -284,11 +283,7 @@ public class Jmol extends JPanel {
     // pcs.addPropertyChangeListener(pg);
 
     say("Initializing Measurements...");
-    mlist = new MeasurementList(frame, viewer);
-    meas = new Measure(frame, viewer);
-    //    meas.setMeasurementList(mlist);
-    display.setMeasure(meas);
-    //    mlist.addMeasurementListListener(display);
+    measurementTable = new MeasurementTable(viewer, frame);
 
     // install the command table
     say("Building Command Hooks...");
@@ -345,6 +340,8 @@ public class Jmol extends JPanel {
     pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
     pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
     pcs.addPropertyChangeListener(chemFileProperty, printAction);
+    pcs.addPropertyChangeListener(chemFileProperty,
+                                  viewMeasurementTableAction);
 
     jmolpopup = new JmolPopup(viewer, display);
 
@@ -497,8 +494,6 @@ public class Jmol extends JPanel {
     actions.addAll(Arrays.asList(display.getActions()));
     actions.addAll(Arrays.asList(preferencesDialog.getActions()));
     actions.addAll(Arrays.asList(anim.getActions()));
-    actions.addAll(Arrays.asList(meas.getActions()));
-    actions.addAll(Arrays.asList(mlist.getActions()));
     actions.addAll(Arrays.asList(vib.getActions()));
     actions.addAll(Arrays.asList(crystprop.getActions()));
     actions.addAll(Arrays.asList(makecrystal.getActions()));
@@ -967,6 +962,9 @@ public class Jmol extends JPanel {
   private PovrayAction povrayAction = new PovrayAction();
   private PdfAction pdfAction = new PdfAction();
   private PrintAction printAction = new PrintAction();
+  private ViewMeasurementTableAction viewMeasurementTableAction
+    = new ViewMeasurementTableAction();
+
 
   /**
    * Actions defined by the Jmol class
@@ -976,7 +974,7 @@ public class Jmol extends JPanel {
     new CloseAction(), new ExitAction(), new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new AtompropsAction(), new ConsoleAction(),
     chemicalShifts, new RecentFilesAction(), povrayAction, pdfAction,
-    new ScriptAction()
+    new ScriptAction(), viewMeasurementTableAction
   };
 
   class CloseAction extends AbstractAction {
@@ -1068,7 +1066,6 @@ public class Jmol extends JPanel {
 
     public PrintAction() {
       super(printActionProperty);
-      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1148,7 +1145,6 @@ public class Jmol extends JPanel {
 
     SaveAction() {
       super(saveasAction);
-      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1200,7 +1196,6 @@ public class Jmol extends JPanel {
 
     ExportAction() {
       super(exportActionProperty);
-      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1293,7 +1288,6 @@ public class Jmol extends JPanel {
 
     public PovrayAction() {
       super(povrayActionProperty);
-      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1311,7 +1305,6 @@ public class Jmol extends JPanel {
 
     public PdfAction() {
       super(pdfActionProperty);
-      setEnabled(false);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -1354,6 +1347,17 @@ public class Jmol extends JPanel {
       }
     }
 
+  }
+
+  class ViewMeasurementTableAction extends MoleculeDependentAction {
+
+    public ViewMeasurementTableAction() {
+      super("viewMeasurementTable");
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      measurementTable.activate();
+    }
   }
 
   /**
@@ -1435,7 +1439,7 @@ public class Jmol extends JPanel {
     }
 
     public void measureSelection(int atomIndex) {
-      meas.firePicked(atomIndex);
+      measurementTable.firePicked(atomIndex);
     }
   }
 

@@ -50,7 +50,7 @@ public abstract class MouseManager {
   int xAnchor, yAnchor;
   final static Rectangle rectRubber = new Rectangle();
 
-  private static final boolean logMouseEvents = false;
+  private static final boolean logMouseEvents = true;
 
   public MouseManager(Component component, JmolViewer viewer) {
     this.component = component;

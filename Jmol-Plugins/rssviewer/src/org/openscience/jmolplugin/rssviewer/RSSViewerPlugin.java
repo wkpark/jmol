@@ -30,6 +30,7 @@ import org.openscience.cdk.ChemSequence;
 import org.openscience.cdk.ChemFile;
 import org.openscience.cdk.applications.swing.SortedTableModel;
 import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.geometry.GeometryTools;
 import org.openscience.cdk.io.ChemicalRSSReader;
 import org.openscience.cdk.tools.ChemModelManipulator;
 import org.openscience.cdk.tools.MFAnalyser;
@@ -223,7 +224,7 @@ public class RSSViewerPlugin implements CDKPluginInterface {
         private Vector models;
         
         final String[] columnNames = {
-            "title", "date", "time", "chemFormula", "description", "link"
+            "title", "date", "chemFormula", "dimension"
         };
     
         public RSSContentModel() {
@@ -272,21 +273,24 @@ public class RSSViewerPlugin implements CDKPluginInterface {
             if (model == null) {
                 return "";
             }
+            AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
             if (column == 0) {
                 return model.getProperty(ChemicalRSSReader.RSS_ITEM_TITLE);
             } else if (column == 1) {
                 return model.getProperty(ChemicalRSSReader.RSS_ITEM_DATE);
             } else if (column == 2) {
-                return "";
-            } else if (column == 3) {
-                AtomContainer container = ChemModelManipulator.getAllInOneContainer(model);
-                // System.out.println(container);
+                container = ChemModelManipulator.getAllInOneContainer(model);
                 MFAnalyser analyser = new MFAnalyser(container);
                 return analyser.getMolecularFormula();
-            } else if (column == 4) {
-                return model.getProperty(ChemicalRSSReader.RSS_ITEM_DESCRIPTION);
-            } else if (column == 5) {
-                return model.getProperty(ChemicalRSSReader.RSS_ITEM_LINK);
+            } else if (column == 3) {
+                int dim = 0;
+                if (GeometryTools.has2DCoordinates(container)) {
+                    dim += 2;
+                }
+                if (GeometryTools.has3DCoordinates(container)) {
+                    dim += 3;
+                }
+                return dim + "D";
             }
             return "Error";
         }

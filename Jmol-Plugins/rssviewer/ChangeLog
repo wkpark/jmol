@@ -5,6 +5,8 @@ $Revision$:
 version 0.2
 -----------------------------
 - now uses CDKPluginInterface/CDKEditBus architecture
+- removed time, description, link fields from chemical table
+- added dimension field to chemical table
 
 version 0.1
 -----------------------------

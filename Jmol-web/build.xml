@@ -20,6 +20,11 @@
     <mkdir    dir="${doc.dir}/images"/>
     <mkdir    dir="${build.html}"/>
 
+    <!-- Copy files from Jmol history -->
+  	<copy todir="${doc.dir}/changes" overwrite="yes">
+      <fileset dir="${jmol-doc-dir}/doc/source/history" includes="**/*"/>
+    </copy>
+
     <!-- Generate index html files for each language -->
   	<antcall target="html_lang">
   	  <param name="lang_value" value="en"/>

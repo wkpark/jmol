@@ -156,7 +156,9 @@ public class ABINITOutputReader extends ABINITReader {
     inputBuffer.mark(1024 * 1024);
     // Read the value of preprocessed input variables  (First pass)
     // (starting from "-outvars:")
-    while (fieldVal != null) {
+    int counter=0;  //stop reading the file (first pass) when 
+                    //counter is 8 (means that every relevant variables are read).
+    while (fieldVal != null && counter < 8) {
       if (fieldVal.equals("acell") ||
 	  fieldVal.equals("acell" + dataset.elementAt(selectedDataset))) {
         acell = new double[3];
@@ -165,36 +167,46 @@ public class ABINITOutputReader extends ABINITReader {
           acell[i] = FortranFormat.atof(fieldVal)
 	    * ANGSTROMPERBOHR;    //in angstrom
         }
+	counter++;
       } else if (fieldVal.equals("enunit") ||
 		 fieldVal.equals("enunit" + 
 				 dataset.elementAt(selectedDataset))) {
 	nextAbinitToken(false);
 	enunit = Integer.parseInt(fieldVal);
+	counter++;
       } else if (fieldVal.equals("ionmov") ||
 		 fieldVal.equals("ionmov" + 
 				 dataset.elementAt(selectedDataset))) {
 	nextAbinitToken(false);
 	ionmov = Integer.parseInt(fieldVal);
+	counter++;
       } else if (fieldVal.equals("natom") ||
 		 fieldVal.equals("natom" +
 				 dataset.elementAt(selectedDataset))) {
         nextAbinitToken(false);
         natom = Integer.parseInt(fieldVal);
+	counter++;
       } else if (fieldVal.equals("nband") ||
 		 fieldVal.equals("nband" +
 				 dataset.elementAt(selectedDataset))) {
         nextAbinitToken(false);
         nband = Integer.parseInt(fieldVal);
-      } else if (fieldVal.equals("ntype") ||
+	counter++;
+      } else if (fieldVal.equals("ntype") ||   // ntype is deprecated in abinit v4 and is replaced by ntypat
 		 fieldVal.equals("ntype" +
-				 dataset.elementAt(selectedDataset))) {
+				 dataset.elementAt(selectedDataset))  ||
+		 fieldVal.equals("ntypat") ||  
+		 fieldVal.equals("ntypat" +
+				 dataset.elementAt(selectedDataset))  ) {
         nextAbinitToken(false);
         ntype = Integer.parseInt(fieldVal);
+	counter++;
       } else if (fieldVal.equals("nkpt") ||
 		 fieldVal.equals("nkpt" +
 				 dataset.elementAt(selectedDataset))) {
         nextAbinitToken(false);
         nkpt = Integer.parseInt(fieldVal);
+	counter++;
       } else if (fieldVal.equals("rprim") ||
 		 fieldVal.equals("rprim" +
 				 dataset.elementAt(selectedDataset))) {
@@ -205,7 +217,7 @@ public class ABINITOutputReader extends ABINITReader {
             rprim[i][j] = FortranFormat.atof(fieldVal);
           }
         }
-	break;   //rprim is the last in the list. No need to continue.
+	counter++;
       } //end if
       // It is unnecessary to scan the end of the line. 
       // Go directly to the next line
@@ -233,9 +245,12 @@ public class ABINITOutputReader extends ABINITReader {
           zatnum[i] = (int) FortranFormat.atof(fieldVal);
         }
         break; // zatnum is the last in the list
-      } else if (fieldVal.equals("type") ||
+      } else if (fieldVal.equals("type") ||   // type is deprecated since v4. Use typat instead.
 		 fieldVal.equals("type" +
-				 dataset.elementAt(selectedDataset))) {
+				 dataset.elementAt(selectedDataset)) ||
+		 fieldVal.equals("typat") ||
+		 fieldVal.equals("typat" +
+				 dataset.elementAt(selectedDataset)) ) {
         for (int i = 0; i < natom; i++) {
           nextAbinitToken(false);
           type[i] = Integer.parseInt(fieldVal);
@@ -300,12 +315,12 @@ public class ABINITOutputReader extends ABINITReader {
     logger.info("natom: " + natom);
     logger.info("nband: " + nband);
     logger.info("nkpt: " + nkpt);
-    logger.info("ntype: " + ntype);
+    logger.info("ntypat (ntype is deprecated): " + ntype);
     logger.info("rprim: ");
     logger.info("   "+rprim[0][0]+" "+rprim[0][1]+" "+rprim[0][2]);
     logger.info("   "+rprim[1][0]+" "+rprim[1][1]+" "+rprim[1][2]);
     logger.info("   "+rprim[2][0]+" "+rprim[2][1]+" "+rprim[2][2]);
-    logger.info("type: ");
+    logger.info("typat (type is deprecated): ");
     for (int i = 0; i< natom; i++) {
       logger.info(type[i] + " ");
     }

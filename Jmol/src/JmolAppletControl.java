@@ -52,10 +52,12 @@ public class JmolAppletControl extends Applet {
   private final static int typeChimeRadio =  2;
   private final static int typeButton =      3;
   private final static int typeCheckbox =    4;
+  private final static int typeImmediate =   5;
 
   // put these in lower case
   private final static String[] typeNames =
-  {"chimepush", "chimetoggle", "chimeradio", "button", "checkbox"};
+  {"chimepush", "chimetoggle", "chimeradio",
+   "button", "checkbox", "immediate"};
 
   String myName;
   boolean mayScript;
@@ -146,6 +148,8 @@ public class JmolAppletControl extends Applet {
     setLayout(new GridLayout(1, 1));
     add(allocateControl());
     logWarnings();
+    if (type == typeImmediate)
+      runScript();
   }
   
   public boolean action(Event e, Object what) {
@@ -154,6 +158,7 @@ public class JmolAppletControl extends Applet {
       toggleState = !toggleState;
       awtButton.setLabel(toggleState ? "X" : "");
       // fall into;
+    case typeImmediate: // this is here to facilitate debuggin
     case typeChimePush:
     case typeButton:
       runScript();
@@ -203,6 +208,9 @@ public class JmolAppletControl extends Applet {
       return awtButton = new Button(toggleState ? "X" : "");
     case typeCheckbox:
       return awtCheckbox = new Checkbox(label, toggleState);
+    case typeImmediate:
+      toggleState = true;
+      return awtButton = new Button("immediate");
     }
     return new Button("?");
   }

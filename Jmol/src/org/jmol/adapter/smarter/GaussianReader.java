@@ -76,27 +76,29 @@ class GaussianReader extends AtomSetCollectionReader {
    * <code>Center Numbers</code> in the z-matrix orientation may be different
    * from those in the population analysis!
    *
-   * <p>Single point or frequency calculations always have an <code>Input</code> 
-   * orientation. If symmetry is used a <code>Standard</code> will be present too.
+   * <p>Single point or frequency calculations always have an
+   * <code>Input</code> orientation. If symmetry is used a
+   * <code>Standard</code> will be present too.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    * @return The AtomSetCollection representing the interpreted Gaussian text.
    **/
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)
+    throws Exception {
 
     atomSetCollection = new AtomSetCollection("gaussian");
 
     try {
       String line;
       int lineNum = 0;
-      // I need to keep track of the number of orientations read for a particular
-      // calculation (step) since they have the same energy.
+      // I need to keep track of the number of orientations read for a
+      // particular calculation (step) since they have the same energy.
       // Do not reset the energy when a new orientation is read since a new
-      // energy will be calculated and reported if necessary (this is needed for
-      // the special case when convergence in the optimization is reached: the
-      // orientations are reported but no new energy is/needs to be calculated.
-      // The energy still does not end up in the title because the nOrientations
-      // is reset....
+      // energy will be calculated and reported if necessary (this is needed
+      // for the special case when convergence in the optimization is reached:
+      // the orientations are reported but no new energy is/needs to be
+      // calculated. The energy still does not end up in the title because
+      // the nOrientations is reset....
       
       int nOrientations = 0;
       while ((line = reader.readLine()) != null) {
@@ -111,14 +113,16 @@ class GaussianReader extends AtomSetCollectionReader {
           readAtoms(reader, line);
         } else if (line.startsWith(" SCF Done:")) {
           readSCFDone(reader,line, nOrientations);
-          atomSetCollection.atomSetProperties[atomSetCollection.currentAtomSetIndex]
-             .list(System.out);
+          atomSetCollection.
+            atomSetProperties[atomSetCollection.currentAtomSetIndex].
+            list(System.out);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
         } else if (line.startsWith(" Total atomic charges:") ||
                    line.startsWith(" Mulliken atomic charges:")) {
-          // NB this only works for the Standard or Input orientation of the molecule
-          // since it does not list the values for the dummy atoms in the z-matrix
+          // NB this only works for the Standard or Input orientation of
+          // the molecule since it does not list the values for the
+          // dummy atoms in the z-matrix
           readPartialCharges(reader);
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
@@ -150,15 +154,19 @@ class GaussianReader extends AtomSetCollectionReader {
    * @param nOrientations The number of orientations read that need to have
    *           these results associated with them.
    **/
-  private void readSCFDone(BufferedReader reader, String line, int nOrientations) 
-    throws Exception {
+  private void readSCFDone(BufferedReader reader,
+                           String line,
+                           int nOrientations) throws Exception {
     String tokens[] = getTokens(line,11);
     scfKey = tokens[0];
     scfEnergy = tokens[2]+" "+tokens[3];
     // now set the names for the last nOrientations
-    for (int asci=atomSetCollection.currentAtomSetIndex, n=nOrientations; --n >= 0; --asci) {
+    for (int asci = atomSetCollection.currentAtomSetIndex, n = nOrientations;
+         --n >= 0;
+         --asci) {
       atomSetCollection.setAtomSetName(
-        scfKey+" = " + scfEnergy + " " + atomSetCollection.getAtomSetName(asci), asci
+        scfKey+" = " + scfEnergy + " " +
+        atomSetCollection.getAtomSetName(asci), asci
       );
     }
     // also set the properties for them
@@ -178,13 +186,13 @@ class GaussianReader extends AtomSetCollectionReader {
    */
   private void setAtomSetProperties(String key, String value, int n) {
     for (int asci=atomSetCollection.currentAtomSetIndex; --n >= 0; --asci) {
-      atomSetCollection.setAtomSetProperty(key,value,asci);
+      atomSetCollection.setAtomSetProperty(key, value, asci);
     }    
   }
   
 /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
-     NB I currently use the firstCoordinateOffset value to determine where X starts,
-     I could use the number of tokens - 3, and read the last 3...
+     NB I currently use the firstCoordinateOffset value to determine where
+     X starts, I could use the number of tokens - 3, and read the last 3...
 */
 
 // GAUSSIAN 04 format
@@ -278,8 +286,9 @@ class GaussianReader extends AtomSetCollectionReader {
    * @param reader BufferedReader associated with the Gaussian output text.
    **/
   private void readFrequencies(BufferedReader reader) throws Exception {
-    String line, tokens[];
-    String symmetries[], frequencies[], red_masses[], frc_consts[], intensities[];
+    String line;
+    String[] tokens; String[] symmetries; String[] frequencies;
+    String[] red_masses; String[] frc_consts; String[] intensities;
     boolean firstTime = true;     // flag for first time through
 
     while ((line = reader.readLine()) != null &&

@@ -471,11 +471,13 @@ class AtomShape implements Shape {
   private static final HashMap ballImages = new HashMap();
   private static final int scalableSize = 32;
   private static final int maxSmoothedSize = 200;
-  private static final int smoothedMarginFactor = 16;
-  private static final int minShadingBufferSize =
-    maxCachedSize + maxCachedSize/smoothedMarginFactor;
+  // I am getting severe graphical artifacts around the edges when
+  // rendering hints are turned on. Therefore, I am adding a margin
+  // to shaded rendering in order to cut down on edge effects
+  private static final int artifactMargin = 4;
+  private static final int minShadingBufferSize = maxCachedSize;
   private static final int maxShadingBufferSize =
-    maxSmoothedSize + maxSmoothedSize/smoothedMarginFactor;
+    maxSmoothedSize + artifactMargin*2;
     
   
   private void renderShadedAtom(int x, int y, int diameter, Color color) {
@@ -493,12 +495,11 @@ class AtomShape implements Shape {
       g2.setColor(getDarker(color));
       g2.drawOval(x - radius, y - radius, diameter, diameter);
     } else if (diameter < maxCachedSize) {
-      int margin = diameter / smoothedMarginFactor;
       g2.drawImage(shadedImages[diameter],
-                   x - radius - margin, y - radius - margin, null);
+                   x - radius, y - radius, null);
     } else if (diameter < maxSmoothedSize) {
       drawScaledShadedAtom(g2, shadedImages[0], x, y,
-                           diameter, diameter / smoothedMarginFactor);
+                           diameter, artifactMargin);
     } else {
       // too big ... just forget the smoothing
       Ellipse2D circle =
@@ -514,10 +515,10 @@ class AtomShape implements Shape {
   private void loadShadedSphereCache(Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
     for (int d = minCachedSize; d < maxCachedSize; ++d) {
-      shadedImages[d] = gradientPaintSphere(color, d, d/16, true);
+      shadedImages[d] = gradientPaintSphere(color, d, 0, true);
     }
     shadedImages[0] = gradientPaintSphere(color, scalableSize,
-                                          scalableSize/16, false);
+                                          artifactMargin, false);
     ballImages.put(color, shadedImages);
     }
 
@@ -535,8 +536,8 @@ class AtomShape implements Shape {
     GradientPaint gp;
     int lightPct = 2;
     int lighteningPct = 20;
-    int colorPct = 55;
-    int darkeningPct = 80;
+    int colorPct = 65;
+    int darkeningPct = 85;
 
     g2Scale.setPaint(lighter);
     g2Scale.drawLine(0, 0, lightPct, 0);
@@ -595,10 +596,6 @@ class AtomShape implements Shape {
   private static WritableRaster rasterMask;
   private static BufferedImage biAlphaMask;
 
-  // I am getting severe graphical artifacts around the edges when
-  // rendering hints are turned on. Therefore, I am adding a margin
-  // to shaded rendering in order to cut down on edge effects
-
   private void applyCircleMask(Graphics2D g, int diameter, int margin) {
     // mth 2002 nov 12
     // a 4 bit greyscale mask would/should be sufficient here, but there
@@ -613,12 +610,11 @@ class AtomShape implements Shape {
     }
     int size = diameter + 2*margin;
     if (size > sizeMask) {
-      sizeMask = size + size/2;
+      sizeMask = size * 2;
       if (sizeMask < minShadingBufferSize)
         sizeMask = minShadingBufferSize;
       if (sizeMask > maxShadingBufferSize)
         sizeMask = maxShadingBufferSize;
-      System.out.println("reallocating mask " + sizeMask);
       biMask = new BufferedImage(sizeMask, sizeMask,
                                  BufferedImage.TYPE_BYTE_GRAY);
       g2Mask = biMask.createGraphics();
@@ -646,7 +642,7 @@ class AtomShape implements Shape {
                             int x, int y, int diameter, int margin) {
     final int size = diameter + 2*margin;
     if (size > sizeShadingBuffer) {
-      sizeShadingBuffer = size + (size / 2); // leave some room to grow
+      sizeShadingBuffer = size * 2; // leave some room to grow
       if (sizeShadingBuffer < minShadingBufferSize)
         sizeShadingBuffer = minShadingBufferSize;
       if (sizeShadingBuffer > maxShadingBufferSize)
@@ -667,6 +663,10 @@ class AtomShape implements Shape {
     g2.setClip(upperleftX, upperleftY, size, size);
     g2.drawImage(biShadingBuffer, upperleftX, upperleftY, null);
     g2.setClip(null);
+    //    g2.drawImage(biShadingBuffer,
+    //                 upperleftX, upperleftY, lowerrightX, lowerrightY,
+    //                 0, 0, size, size,
+    //                 null);
   }
 
   /**

@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -133,8 +133,8 @@ class Jmol extends JPanel {
     vib = new Vibrate(frame, display);
     splash.showStatus("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
-    splash.showStatus("Initializing Script Windos...");
-    scriptWindow = new ScriptWindow(this);
+    splash.showStatus("Initializing Script Window...");
+    scriptWindow = new ScriptWindow(frame, new RasMolScriptHandler(this));
     splash.showStatus("Initializing Property Graph...");
     pg = new PropertyGraph(frame);
     splash.showStatus("Initializing Measurements...");

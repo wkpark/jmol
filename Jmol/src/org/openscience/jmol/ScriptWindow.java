@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -19,77 +19,82 @@
  */
 package org.openscience.jmol;
 
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowListener;
 
-public class ScriptWindow extends JDialog
-        implements java.awt.event.WindowListener,
-          java.awt.event.ActionListener {
+/**
+ * Window for entering script commands. Also displays errors which may result.
+ * The processing of script commands is delegated to a
+ * <code>RasMolScriptHandler</code>.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ */
+public class ScriptWindow extends JDialog implements WindowListener,
+    ActionListener {
 
   private JTextArea output;
   private JTextField input;
-  private JButton close;
+  private JButton closeButton;
+  private RasMolScriptHandler scriptHandler;
 
-  private Jmol window;
+  public ScriptWindow(JFrame frame, RasMolScriptHandler scriptHandler) {
 
-  private boolean autorefresh = false;
-
-  public ScriptWindow(Jmol boss) {
-
-    super(boss.frame, "Rasmol Scripts", false);
-    window = boss;
-    getContentPane().setLayout(new java.awt.BorderLayout());
+    super(frame, "Rasmol Scripts", false);
+    this.scriptHandler = scriptHandler;
+    getContentPane().setLayout(new BorderLayout());
     output = new JTextArea(20, 30);
     output.setEditable(false);
     output.append("> ");
     JScrollPane scrollPane = new JScrollPane(output);
-    getContentPane().add("North", scrollPane);
+    getContentPane().add(scrollPane, BorderLayout.NORTH);
+
+    scriptHandler.setOutput(output);
+
     input = new JTextField();
-    input.addActionListener(new ActionListener() {
-
-      private RasMolScriptHandler scripthandler =
-        new RasMolScriptHandler(window, output);
-
-      public void actionPerformed(ActionEvent e) {
-
-        String command = input.getText();
-        output.append(command);
-        output.append("\n");
-        input.setText(null);
-
-        // execute script
-        try {
-          scripthandler.handle(command);
-        } catch (RasMolScriptException rasmolerror) {
-          output.append(rasmolerror.getMessage());
-          output.append("\n");
-        } catch (Exception exp) {
-          output.append("Error: " + exp.toString());
-          output.append("\n");
-        }
-
-        // do a refresh if "set autorefresh true"
-        if (autorefresh) {
-          window.repaint();
-        }
-
-        // return prompt
-        output.append("> ");
-      }
-    });
-    getContentPane().add("Center", input);
-    close = new JButton("Close");
-    close.addActionListener(this);
-    getContentPane().add("South", close);
-    setLocationRelativeTo(boss);
+    input.addActionListener(this);
+    getContentPane().add(input, BorderLayout.CENTER);
+    closeButton = new JButton("Close");
+    closeButton.addActionListener(this);
+    getContentPane().add(closeButton, BorderLayout.SOUTH);
+    setLocationRelativeTo(frame);
     pack();
   }
 
-  public void windowClosing(java.awt.event.WindowEvent e) {
-    hide();
+  public void actionPerformed(ActionEvent e) {
+
+    if (e.getSource() == closeButton) {
+      hide();
+    } else {
+      String command = input.getText();
+      output.append(command);
+      output.append("\n");
+      input.setText(null);
+  
+      // execute script
+      try {
+        scriptHandler.handle(command);
+      } catch (RasMolScriptException rasmolerror) {
+        output.append(rasmolerror.getMessage());
+        output.append("\n");
+      } catch (Exception exp) {
+        output.append("Error: " + exp.toString());
+        output.append("\n");
+      }
+  
+      // return prompt
+      output.append("> ");
+    }
   }
 
-  public void actionPerformed(java.awt.event.ActionEvent e) {
+  public void windowClosing(java.awt.event.WindowEvent e) {
     hide();
   }
 
@@ -111,7 +116,4 @@ public class ScriptWindow extends JDialog
   public void windowDeactivated(java.awt.event.WindowEvent e) {
   }
 
-  public void setAutoRefresh(boolean val) {
-    this.autorefresh = val;
-  }
 }

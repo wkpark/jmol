@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -25,19 +25,22 @@ import java.awt.Color;
 import javax.swing.JTextArea;
 
 /**
- *  Suggested by Henry Rzepa. This handler will deal with both
- *  typed commando's and command line scripts:
+ * Processes RasMol script commands. Suggested by Henry Rzepa.
+ * Script commands can be entired through the script window or on the
+ * command line. For example,
+ * <blockquote><tt>
+ *   jmol -script <i>rasmol.script</i>
+ * </tt></blockquote>
  *
- *     jmol -script <rasmol.script>
- *
- *  @author Bradley A. Smith (bradley@baysmith.com)
- *  @author Egon L. Willighagen
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ * @author Egon L. Willighagen
  */
 class RasMolScriptHandler {
 
   private Jmol program;
   private JTextArea output;
-
+  private boolean autoRefresh = false;
+  
   RasMolScriptHandler(Jmol program) {
     this.program = program;
     this.output = null;
@@ -48,6 +51,10 @@ class RasMolScriptHandler {
     this.output = output;
   }
 
+  void setOutput(JTextArea output) {
+    this.output = output;
+  }
+  
   public void handle(String command) throws RasMolScriptException {
 
     StringTokenizer st = new StringTokenizer(command);
@@ -211,6 +218,9 @@ class RasMolScriptHandler {
       } else {
         throw new RasMolScriptException("Unrecognized command: " + command);
       }
+      if (autoRefresh) {
+        program.display.repaint();
+      }
     }
   }
 
@@ -232,7 +242,7 @@ class RasMolScriptHandler {
       }
     } else if (param.equals("autorefresh")) {
       try {
-        program.scriptWindow.setAutoRefresh(val);
+        autoRefresh = val;
       } catch (Exception e) {
         throw new RasMolScriptException("Error: cannot set autorefresh.");
       }

@@ -49,6 +49,7 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/JMolCDO.java \
 		org/openscience/jmol/JmolException.java \
 		org/openscience/jmol/JmolResourceHandler.java \
+		org/openscience/jmol/JmolFileFilter.java \
 		org/openscience/jmol/JpegEncoder.java \
 		org/openscience/jmol/ListNode.java \
 		org/openscience/jmol/LoopedStreams.java \

@@ -6,8 +6,8 @@
 JMOL_HOME=${JMOL_HOME:-/home/maul/gezelter/gezelter/Jmol}
 #
 # Solaris:
-# JAVA_HOME=/usr/local/jdk1.1.8
 JAVA_HOME=/usr/local/jdk1.2.2
+#JAVA_HOME=/usr/local/linux-jdk1.2
 #JAVA_HOME=/usr/java
 #
 # AIX:

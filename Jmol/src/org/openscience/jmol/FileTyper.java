@@ -116,7 +116,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
                     result = (String)source.getSelectedItem();
                     int resultNo = source.getSelectedIndex();
                     if (resultNo > 0){
-                        myChooser.setFileFilter(new FileFilter(extensions[resultNo],
+                        myChooser.setFileFilter(new JmolFileFilter(extensions[resultNo],
                                                                result,true));
                     }
                     if (result.equals(jrh.getString("Gaussian"))) {
@@ -189,7 +189,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
             String lastSection = f.getName();
             if (lastSection.startsWith("*.")){
                String type = lastSection.substring(2);
-               myChooser.setFileFilter(new FileFilter(type,null,true));
+               myChooser.setFileFilter(new JmolFileFilter(type,null,true));
             }else if (UseFileExtensions) {
                 if (fname.endsWith("xyz")) {
                     cb.setSelectedIndex(1); 

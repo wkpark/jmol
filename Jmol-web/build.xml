@@ -41,6 +41,9 @@
   	<antcall target="html_lang">
   	  <param name="lang_value" value="nl"/>
   	</antcall>
+  	<antcall target="html_lang">
+  	  <param name="lang_value" value="pt"/>
+  	</antcall>
   	
     <!-- Copy other files -->
     <copy todir="${build.html}" overwrite="yes"> 

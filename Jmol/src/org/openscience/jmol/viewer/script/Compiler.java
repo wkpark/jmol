@@ -1060,18 +1060,35 @@ class Compiler {
   }
 
   boolean compileRGB(Token[] atoken, int i, Token[] atokenNew) {
-    if (atoken.length != i + 7 ||
-        atoken[i  ].tok != Token.leftsquare ||
-        atoken[i+1].tok != Token.integer    ||
-        atoken[i+2].tok != Token.opOr       ||
-        atoken[i+3].tok != Token.integer    ||
-        atoken[i+4].tok != Token.opOr       ||
-        atoken[i+5].tok != Token.integer    ||
-        atoken[i+6].tok != Token.rightsquare)
-      return badRGBColor();
-    int rgb = atoken[i+1].intValue << 16 | atoken[i+3].intValue << 8 |
-      atoken[i+5].intValue;
-    atokenNew[i] = new Token(Token.colorRGB, rgb, "[R,G,B]");
-    return true;
+    if (atoken.length == i + 7 &&
+        atoken[i  ].tok == Token.leftsquare &&
+        atoken[i+1].tok == Token.integer    &&
+        atoken[i+2].tok == Token.opOr       &&
+        atoken[i+3].tok == Token.integer    &&
+        atoken[i+4].tok == Token.opOr       &&
+        atoken[i+5].tok == Token.integer    &&
+        atoken[i+6].tok == Token.rightsquare) {
+      int rgb = atoken[i+1].intValue << 16 | atoken[i+3].intValue << 8 |
+        atoken[i+5].intValue;
+      atokenNew[i] = new Token(Token.colorRGB, rgb, "[R,G,B]");
+      return true;
+    }
+    // chime also accepts [xRRGGBB]
+    if (atoken.length == i + 3 &&
+        atoken[i  ].tok == Token.leftsquare &&
+        atoken[i+1].tok == Token.identifier &&
+        atoken[i+2].tok == Token.rightsquare) {
+      String hex = (String)atoken[i+1].value;
+      if (hex.length() == 7 &&
+          hex.charAt(0) == 'x') {
+        try {
+          int rgb = Integer.parseInt(hex.substring(1), 16);
+          atokenNew[i] = new Token(Token.colorRGB, rgb, "[xRRGGBB]");
+          return true;
+        } catch (NumberFormatException e) {
+        }
+      }
+    }
+    return badRGBColor();
   }
 }

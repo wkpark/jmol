@@ -528,9 +528,6 @@ public final class Atom implements Bspt.Tuple {
       if (specialAtomName != null) {
         Integer boxedI = new Integer(i);
         htAtom.put(specialAtomName, boxedI);
-        String starredAtomName = generateStarredAtomName(specialAtomName);
-        if (starredAtomName != null)
-          htAtom.put(starredAtomName, boxedI);
       }
     }
   }
@@ -545,11 +542,12 @@ public final class Atom implements Bspt.Tuple {
   static String generatePrimeAtomName(String starredAtomName) {
     int starIndex = starredAtomName.indexOf('*');
     if (starIndex < 0)
-      return null;
+      return starredAtomName;
     return starredAtomName.replace('*', '\'');
   }
 
   byte lookupSpecialAtomID(String atomName) {
+    atomName = generatePrimeAtomName(atomName);
     if (atomName != null) {
       Integer boxedAtomID = (Integer)htAtom.get(atomName);
       if (boxedAtomID != null)

@@ -210,20 +210,22 @@ public class DotsRenderer {
     return dotCount;
   }
 
+  /**
+   * So, I need some help with this.
+   * I cannot think of a good way to render this cavity.
+   * The shapes are spherical triangle, but are very irregular.
+   * In the center of aromatic rings there are 2-4 ... which looks ugly
+   * So, if you have an idea how to render this, please let me know.
+   */
   void renderCavity(Dots.Cavity cavity) {
+    g3d.setColix(colixConcave);
     Point3i screen;
     screen = viewer.transformPoint(cavity.pointIP);
-    int xIP = screen.x;
-    int yIP = screen.y;
-    int zIP = screen.z;
+    g3d.drawPixel(screen);
     screen = viewer.transformPoint(cavity.pointJP);
-    int xJP = screen.x;
-    int yJP = screen.y;
-    int zJP = screen.z;
+    g3d.drawPixel(screen);
     screen = viewer.transformPoint(cavity.pointKP);
-    g3d.drawLine(colixConcave, xIP, yIP, zIP, xJP, yJP, zJP);
-    g3d.drawLine(colixConcave, xIP, yIP, zIP, screen.x, screen.y, screen.z);
-    g3d.drawLine(colixConcave, xJP, yJP, zJP, screen.x, screen.y, screen.z);
+    g3d.drawPixel(screen);
   }
 
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

@@ -102,19 +102,20 @@ final public class JmolViewer {
     strJavaVendor = System.getProperty("java.vendor");
     strOSName = System.getProperty("os.name");
     strJavaVersion = System.getProperty("java.version");
-    // FIXME to run on MacOS9
-    // on Netscape MacOS9 they don't have a 1.1 event model,
-    // so they should not be jvm11orGreater
     jvm11orGreater = (strJavaVersion.compareTo("1.1") >= 0 &&
-                      strJavaVendor != "apple");
+                      // Netscape on MacOS does not implement 1.1 event model
+                      ! (strJavaVendor.startsWith("Netscape") &&
+                         strJavaVersion.compareTo("1.1.5") <= 0 &&
+                         "Mac OS".equals(strOSName)));
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
-
+    
     System.out.println(JmolConstants.copyright +
                        "\nJmol Version " + JmolConstants.version +
                        "  " + JmolConstants.date +
-                       "\nJava " + strJavaVendor + " " + strJavaVersion +
-                       " " + strOSName);
+                       "\njava.vendor:" + strJavaVendor +
+                       "\njava.version:" + strJavaVersion +
+                       "\nos.name:" + strOSName);
 
     g3d = new Graphics3D(this);
     colorManager = new ColorManager(this, g3d);

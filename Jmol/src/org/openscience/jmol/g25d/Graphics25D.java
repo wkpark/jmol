@@ -44,6 +44,7 @@ final public class Graphics25D {
   ShadedBondRenderer shadedBondRenderer;
   Sphere25D sphere25d;
   Triangle25D triangle25d;
+  Cylinder25D cylinder25d;
   Image img;
   Graphics g;
   int width,height,size;
@@ -73,6 +74,7 @@ final public class Graphics25D {
     this.shadedBondRenderer = new ShadedBondRenderer(control, this);
     this.sphere25d = new Sphere25D(control, this);
     this.triangle25d = new Triangle25D(control, this);
+    this.cylinder25d = new Cylinder25D(control, this);
   }
 
   public void setEnabled(boolean value) {
@@ -468,7 +470,8 @@ final public class Graphics25D {
       shadedBondRenderer.render(color, ax, ay, az);
       return;
     }
-    drawPolygon4(color, ax, ay, az);
+    cylinder25d.paintCylinderShape(ax[0], ay[0], az[0], ax[1], ay[1], az[1],
+                                   15, color);
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {

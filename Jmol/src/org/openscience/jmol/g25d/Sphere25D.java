@@ -46,7 +46,7 @@ public class Sphere25D {
     int argb = color.getRGB();
     x -= (diameter + 1) / 2;
     y -= (diameter + 1) / 2;
-    SphereShape ss = SphereShape.get(diameter);
+    SphereShape ss = getSphereShape(diameter);
     byte[] intensities = ss.intensities;
     byte[] heights = ss.heights;
     int[] shades = Shade25D.getShades(argb);
@@ -60,31 +60,20 @@ public class Sphere25D {
         ++offset;
       }
   }
-}
-
-class SphereShape {
-  int diameter;
-  byte[] intensities;
-  byte[] heights;
 
   static final double[] lightSource = {-1, -1, 1.5};
   static int exponentSpecular = 5;
   static double intensityDiffuseSource = .6;
   static double intensitySpecularSource = .8;
   static double intensityAmbient = .5;
+  
+  final static int intensityNormal = Shade25D.shadeNormal;
+  final static int intensityMax = Shade25D.shadeMax;
 
-  static final int intensityNormal = Shade25D.shadeNormal;
-  static final int intensityMax = Shade25D.shadeMax;
-
-  private SphereShape(int diameter) {
-    this.diameter = diameter;
-    initialize(diameter, intensityNormal, intensityMax, lightSource);
-  }
-
-  static int maxSphereCache = 64;
+  final static int maxSphereCache = 64;
   static SphereShape[] sphereShapeCache = new SphereShape[maxSphereCache];
 
-  static SphereShape get(int diameter) {
+  SphereShape getSphereShape(int diameter) {
     SphereShape ss;
     if (diameter > maxSphereCache)
       diameter = maxSphereCache;
@@ -96,100 +85,111 @@ class SphereShape {
     return ss;
   }
 
-  void initialize(int diameter, int intensityNormal, int intensityMax,
-                  double[] lightsource) {
-    double vectNormal[] = new double[3];
-    double vectReflection[] = new double[3];
-    double vectTemp[] = new double[3];
-    double vectViewer[] = {0, 0, 1};
-    double radius = diameter / 2.0;
-    int offset = 0;
+  class SphereShape {
+    int diameter;
+    byte[] intensities;
+    byte[] heights;
 
-    intensities = new byte[diameter*diameter];
-    heights = new byte[diameter*diameter];
+    private SphereShape(int diameter) {
+      this.diameter = diameter;
+      initialize(diameter, intensityNormal, intensityMax, lightSource);
+    }
 
-    // Normalize the vectLightSource vector:
-    double[] vectLightSource = new double[3];
-    for (int i = 0; i < 3; ++ i)
-      vectLightSource[i] = lightsource[i];
-    normalize(vectLightSource);
-    double k1 = -radius + .5;
-    for (int i = 0; i < diameter; ++i, ++k1) {
-      double k2 = -radius + .5;
-      for (int j = 0; j < diameter; ++j, ++k2) {
-        vectNormal[0] = k2;
-        vectNormal[1] = k1;
-        double len1 = Math.sqrt(k2 * k2 + k1 * k1);
-        if (len1 <= radius) {
-          vectNormal[2] = radius * Math.cos(Math.asin(len1 / radius));
-          int zheight = (int)(vectNormal[2] + .5);
-          normalize(vectNormal);
-          double cosTheta = dotProduct(vectNormal, vectLightSource);
-          double intensitySpecular = 0.0;
-          double intensityDiffuse = 0.0;
-          if (cosTheta > 0) {
-            intensityDiffuse = cosTheta * intensityDiffuseSource;
+    void initialize(int diameter, int intensityNormal, int intensityMax,
+                    double[] lightsource) {
+      double vectNormal[] = new double[3];
+      double vectReflection[] = new double[3];
+      double vectTemp[] = new double[3];
+      double vectViewer[] = {0, 0, 1};
+      double radius = diameter / 2.0;
+      int offset = 0;
 
-            scale(2 * cosTheta, vectNormal, vectTemp);
-            sub(vectTemp, vectLightSource, vectReflection);
+      intensities = new byte[diameter*diameter];
+      heights = new byte[diameter*diameter];
 
-            double dpRV = dotProduct(vectReflection, vectViewer);
-            if (dpRV < 0.0)
-              dpRV = 0.0;
-            // dpRV = Math.pow(dpRV, 25);
-            for (int n = exponentSpecular; --n >= 0; )
-              dpRV *= dpRV;
-            intensitySpecular = dpRV * intensitySpecularSource;
+      // Normalize the vectLightSource vector:
+      double[] vectLightSource = new double[3];
+      for (int i = 0; i < 3; ++ i)
+        vectLightSource[i] = lightsource[i];
+      normalize(vectLightSource);
+      double k1 = -radius + .5;
+      for (int i = 0; i < diameter; ++i, ++k1) {
+        double k2 = -radius + .5;
+        for (int j = 0; j < diameter; ++j, ++k2) {
+          vectNormal[0] = k2;
+          vectNormal[1] = k1;
+          double len1 = Math.sqrt(k2 * k2 + k1 * k1);
+          if (len1 <= radius) {
+            vectNormal[2] = radius * Math.cos(Math.asin(len1 / radius));
+            int zheight = (int)(vectNormal[2] + .5);
+            normalize(vectNormal);
+            double cosTheta = dotProduct(vectNormal, vectLightSource);
+            double intensitySpecular = 0.0;
+            double intensityDiffuse = 0.0;
+            if (cosTheta > 0) {
+              intensityDiffuse = cosTheta * intensityDiffuseSource;
+
+              scale(2 * cosTheta, vectNormal, vectTemp);
+              sub(vectTemp, vectLightSource, vectReflection);
+
+              double dpRV = dotProduct(vectReflection, vectViewer);
+              if (dpRV < 0.0)
+                dpRV = 0.0;
+              // dpRV = Math.pow(dpRV, 25);
+              for (int n = exponentSpecular; --n >= 0; )
+                dpRV *= dpRV;
+              intensitySpecular = dpRV * intensitySpecularSource;
+            }
+            double intensity =
+              intensitySpecular + intensityDiffuse + intensityAmbient;
+            int shade = (int)(intensityNormal * intensity);
+            if (shade >= intensityMax) shade = intensityMax-1;
+            intensities[offset] = (byte)shade;
+            heights[offset] = (byte)zheight;
+          } else {
+            intensities[offset] = -1;
+            heights[offset] = -1;
           }
-          double intensity =
-            intensitySpecular + intensityDiffuse + intensityAmbient;
-          int shade = (int)(intensityNormal * intensity);
-          if (shade >= intensityMax) shade = intensityMax-1;
-          intensities[offset] = (byte)shade;
-          heights[offset] = (byte)zheight;
-        } else {
-          intensities[offset] = -1;
-          heights[offset] = -1;
+          ++offset;
         }
-        ++offset;
       }
     }
-  }
 
-  private void normalize(double v[]) {
+    private void normalize(double v[]) {
 
-    double mag = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (Math.abs(mag - 0.0) < java.lang.Double.MIN_VALUE) {
-      v[0] = 0.0;
-      v[1] = 0.0;
-      v[2] = 0.0;
-    } else {
-      v[0] = v[0] / mag;
-      v[1] = v[1] / mag;
-      v[2] = v[2] / mag;
+      double mag = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+      if (Math.abs(mag - 0.0) < java.lang.Double.MIN_VALUE) {
+        v[0] = 0.0;
+        v[1] = 0.0;
+        v[2] = 0.0;
+      } else {
+        v[0] = v[0] / mag;
+        v[1] = v[1] / mag;
+        v[2] = v[2] / mag;
+      }
     }
-  }
 
-  private double dotProduct(double[] v1, double[] v2) {
-    return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-  }
+    private double dotProduct(double[] v1, double[] v2) {
+      return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+    }
 
-  private void scale(double a, double[] v, double[] vResult) {
-    vResult[0] = a * v[0];
-    vResult[1] = a * v[1];
-    vResult[2] = a * v[2];
-  }
+    private void scale(double a, double[] v, double[] vResult) {
+      vResult[0] = a * v[0];
+      vResult[1] = a * v[1];
+      vResult[2] = a * v[2];
+    }
 
-  private void add(double[] v1, double[] v2, double[] vSum) {
-    vSum[0] = v1[0] + v2[0];
-    vSum[1] = v1[1] + v2[1];
-    vSum[2] = v1[2] + v2[2];
-  }
+    private void add(double[] v1, double[] v2, double[] vSum) {
+      vSum[0] = v1[0] + v2[0];
+      vSum[1] = v1[1] + v2[1];
+      vSum[2] = v1[2] + v2[2];
+    }
 
-  private void sub(double[] v1, double[] v2, double[] vDiff) {
-    vDiff[0] = v1[0] - v2[0];
-    vDiff[1] = v1[1] - v2[1];
-    vDiff[2] = v1[2] - v2[2];
-  }
+    private void sub(double[] v1, double[] v2, double[] vDiff) {
+      vDiff[0] = v1[0] - v2[0];
+      vDiff[1] = v1[1] - v2[1];
+      vDiff[2] = v1[2] - v2[2];
+    }
 
+  }
 }

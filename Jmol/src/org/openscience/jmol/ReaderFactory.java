@@ -62,6 +62,13 @@ public abstract class ReaderFactory {
 
       buffer.mark(1024);
       line = buffer.readLine();
+      
+      // If the first line contains mm1gp, then the file is identified
+      // as a Ghemical Molecular Dynamics file
+      if (line.indexOf("mm1gp") >= 0) {
+        return new GhemicalMMReader(buffer);
+      }
+
       buffer.readLine();
       buffer.readLine();
       String line4 = buffer.readLine();

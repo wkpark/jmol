@@ -342,6 +342,9 @@ class Jmol extends JPanel {
         } else if (typeHint.equals("XYZ (xmol)")) {
           ChemFileReader reader = new XYZReader(new InputStreamReader(is));
           cf = reader.read();
+        } else if (typeHint.equals("Ghemical Molecular Dynamics")) {
+          ChemFileReader reader = new GhemicalMMReader(new InputStreamReader(is));
+          cf = reader.read();
         } else {
 
           // Try to automagically determine file type:

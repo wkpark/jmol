@@ -39,7 +39,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
   }
   private String[] Choices = {
     jrh.getString("Automatic"), jrh.getString("XYZ"), jrh.getString("PDB"),
-    jrh.getString("CML")
+    jrh.getString("CML"), jrh.getString("GhemicalMM")
   };
 
   // Default is the first one:
@@ -121,6 +121,8 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
           cb.setSelectedIndex(2);
         } else if (fname.endsWith("cml")) {
           cb.setSelectedIndex(3);
+        } else if (fname.endsWith("mm1gp")) {
+          cb.setSelectedIndex(4);
         } else {
           cb.setSelectedIndex(0);
         }

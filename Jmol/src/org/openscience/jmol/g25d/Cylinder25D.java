@@ -49,7 +49,11 @@ public class Cylinder25D {
   private int dx, dy, dz;
   private boolean tEvenDiameter;
   private int diameter;
+
+  private float radius2, cosTheta, cosPhi, sinPhi;
   
+  private float[] samples = new float[32];
+
   public void render(short colix1, short colix2, int diameter,
                      int xOrigin, int yOrigin, int zOrigin,
                      int dx, int dy, int dz) {
@@ -66,15 +70,54 @@ public class Cylinder25D {
     this.tEvenDiameter = (diameter & 1) == 0;
     
     float radius = diameter / 2.0f;
-    float radius2 = radius*radius;
+    this.radius2 = radius*radius;
     int mag2d2 = dx*dx + dy*dy;
     float mag2d = (float)Math.sqrt(mag2d2);
     float mag3d = (float)Math.sqrt(mag2d2 + dz*dz);
-    float cosTheta = dz / mag3d;
-    float cosPhi = dx / mag2d;
-    float sinPhi = dy / mag2d;
+    this.cosTheta = dz / mag3d;
+    this.cosPhi = dx / mag2d;
+    this.sinPhi = dy / mag2d;
+
+    int n;
+    float x, y, z, h, xR, yR;
+    float yMax = radius * 0.7f;
+
+    for (n = 0, y = 1/6f; y < yMax ; y += 1/3f) {
+      if (n == samples.length) {
+        float[] t = new float[samples.length * 2];
+        System.arraycopy(samples, 0, t, 0, samples.length);
+        samples = t;
+      }
+      h = (float)Math.sqrt(radius2 - y*y);
+      samples[n++] = h;
+      samples[n++] = y;
+    }
 
     initRotatedPoints();
+
+    int i = 0;
+    while (i < n) {
+      y = -samples[i++];
+      x = samples[i++] * cosTheta;
+      rotateAndPlot(x, y);
+    }
+    while (i > 0) {
+      y = -samples[--i];
+      x = samples[--i] * cosTheta;
+      rotateAndPlot(x, y);
+    }
+    while (i < n) {
+      x = samples[i++] * cosTheta;
+      y = samples[i++];
+      rotateAndPlot(x, y);
+    }
+    while (i > 0) {
+      x = samples[--i] * cosTheta;
+      y = samples[--i];
+      rotateAndPlot(x, y);
+    }
+
+    /*
     for (float y = -radius + 1/4f; y < radius; y += 1/2f) {
       float y2 = y * y;
       float h = (float)Math.sqrt(radius2 - y2);
@@ -84,8 +127,17 @@ public class Cylinder25D {
       float yR = x * sinPhi + y * cosPhi;
       plotRotatedPoint(xR, yR, z);
     }
+    */
+
     plotLastRotatedPoint();
     renderEndcaps();
+  }
+
+  void rotateAndPlot(float x, float y) {
+    float z = (float)Math.sqrt(radius2 - x*x - y*y);
+    float xR = x * cosPhi - y * sinPhi;
+    float yR = x * sinPhi + y * cosPhi;
+    plotRotatedPoint(xR, yR, z);
   }
 
   private int xLast, yLast, zLast, intensityLast, countLast;
@@ -129,6 +181,7 @@ public class Cylinder25D {
         zLast = (zLast + countLast/2) / countLast;
         intensityLast = (intensityLast + countLast/2) / countLast;
       }
+      //      System.out.println("plot " + xLast + "," + yLast);
       g25d.plotLineDelta(shades1[intensityLast], shades2[intensityLast],
                          xOrigin + xLast, yOrigin + yLast,
                          zOrigin - zLast,
@@ -151,7 +204,6 @@ public class Cylinder25D {
         }
         int zInterpolate = (zLast + zBeforeLast) / 2;
         int intensityInterpolate = (intensityLast + intensityBeforeLast) / 2;
-
         /*
         System.out.println(" before=" + xBeforeLast + "," + yBeforeLast +
                            " last=" + xLast + "," + yLast + " -> " +

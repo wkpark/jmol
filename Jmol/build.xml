@@ -67,26 +67,58 @@
     <uptodate property="docbook-xsl.uptodate"
 	      targetfile="build/${docbook-xsl}"
 	      srcfile="doc/${docbook-xsl}.tar.gz" />
-    <uptodate property="jmolGuide.uptodate" 
-	      targetfile="build/doc/JmolUserGuide/index.html">
-      <srcfiles dir="doc/source"
-		includes="JmolGuide.docbook.xml, guide/*.docbook.xml" />
-    </uptodate>
-    <uptodate property="jmolHistory.uptodate"
-	      targetfile="build/doc/JmolHistory/ChangeLog.html">
-      <srcfiles dir="doc/source"
-		includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
-    </uptodate>
-    <uptodate property="jmolDevelopersGuide.uptodate"
-	      targetfile="build/doc/JmolDevelopersGuide.html">
-      <srcfiles dir="doc/source"
-		includes="JmolDevelopersGuide.docbook.xml" />
-    </uptodate>
-    <uptodate property="jmolAppletGuide.uptodate"
-	      targetfile="build/doc/JmolAppletGuide.html">
-      <srcfiles dir="doc/source"
-		includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml" />
-    </uptodate>
+
+  	<condition property="jmolGuide.uptodate">
+      <and>
+        <uptodate targetfile="build/doc/JmolUserGuide/index.html">
+          <srcfiles dir="doc/source"
+            includes="JmolGuide.docbook.xml, guide/*.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolUserGuide_fr/index.html">
+          <srcfiles dir="doc/source"
+            includes="JmolGuide_fr.docbook.xml, guide/*_fr.docbook.xml"/>
+        </uptodate>
+  	  </and>
+  	</condition>
+
+    <condition property="jmolHistory.uptodate">
+      <and>
+        <uptodate targetfile="build/doc/JmolHistory/ChangeLog.html">
+          <srcfiles dir="doc/source"
+            includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolHistory/ChangeLog_fr.html">
+          <srcfiles dir="doc/source"
+            includes="JmolHistory_fr.xml,JmolHistoryToHtml.xsl" />
+        </uptodate>
+      </and>
+  	</condition>
+
+  	<condition property="jmolDevelopersGuide.uptodate">
+      <and>
+        <uptodate targetfile="build/doc/JmolDevelopersGuide.html">
+          <srcfiles dir="doc/source"
+            includes="JmolDevelopersGuide.docbook.xml"/>
+        </uptodate>
+        <uptodate targetfile="build/doc/JmolDevelopersGuide_fr.html">
+          <srcfiles dir="doc/source"
+            includes="JmolDevelopersGuide_fr.docbook.xml"/>
+        </uptodate>
+  	  </and>
+  	</condition>
+
+    <condition property="jmolAppletGuide.uptodate">
+      <and>
+        <uptodate targetfile="build/doc/JmolAppletGuide.html">
+          <srcfiles dir="doc/source"
+            includes="JmolAppletGuide.docbook.xml, applet/*.docbook.xml"/>
+      	</uptodate>
+        <uptodate targetfile="build/doc/JmolAppletGuide_fr.html">
+          <srcfiles dir="doc/source"
+            includes="JmolAppletGuide_fr.docbook.xml, applet/*_fr.docbook.xml"/>
+      	</uptodate>
+      </and>
+    </condition>
 
     <available classname="com.icl.saxon.StyleSheet"
 	       classpath="${lib.dir}/saxon.jar"
@@ -578,7 +610,7 @@
   </target>
 
   <target name="jmolGuide" id="jmolGuide" depends="initdoc"
-	  unless="jmolGuide.uptodate" >
+    unless="jmolGuide.uptodate" >
     <echo message="Generating user's guide" />
     <mkdir dir="build/doc/JmolUserGuide" />
     <java fork="true" dir="build/doc/JmolUserGuide"
@@ -589,9 +621,20 @@
       <arg value="../../../doc/source/JmolGuide.docbook.xml" />
       <arg value="../../${docbook-xsl}/html/chunk.xsl" />
     </java>
+    <echo message="Generating user's guide (fr)" />
+    <mkdir dir="build/doc/JmolUserGuide_fr" />
+    <java fork="true" dir="build/doc/JmolUserGuide_fr"
+	  classname="com.icl.saxon.StyleSheet"
+	  classpath="${lib.dir}/saxon.jar" >
+      <jvmarg value="${proxyHost}" />
+      <jvmarg value="${proxyPort}" />
+      <arg value="../../../doc/source/JmolGuide_fr.docbook.xml" />
+      <arg value="../../${docbook-xsl}/html/chunk.xsl" />
+    </java>
   </target>
 
-  <target name="jmolHistory" id="jmolHistory" depends="initdoc" unless="jmolHistory.uptodate" >
+  <target name="jmolHistory" id="jmolHistory"
+    depends="initdoc" unless="jmolHistory.uptodate" >
     <echo message="Generating history of changes" />
     <mkdir dir="build/doc/JmolHistory" />
     <java fork="true" dir="build/doc/JmolHistory"
@@ -602,23 +645,42 @@
       <arg value="../../../doc/source/JmolHistory.xml" />
       <arg value="../../../doc/source/JmolHistoryToHtml.xsl" />
     </java>
-  </target>
-
-  <target name="jmolDevelopersGuide" id="jmolDevelopersGuide" depends="initdoc"
-	  unless="jmolDevelopersGuide.uptodate" >
-    <echo message="Generating developer's guide" />
-    <java fork="true" dir="build/doc"
+    <echo message="Generating history of changes (fr)" />
+    <java fork="true" dir="build/doc/JmolHistory"
 	  classname="com.icl.saxon.StyleSheet"
 	  classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="ChangeLog_fr.html" />
+      <arg value="../../../doc/source/JmolHistory_fr.xml" />
+      <arg value="../../../doc/source/JmolHistoryToHtml.xsl" />
+      <arg value="lang=fr" />
+    </java>
+  </target>
+
+  <target name="jmolDevelopersGuide" id="jmolDevelopersGuide"
+    depends="initdoc" unless="jmolDevelopersGuide.uptodate" >
+    <echo message="Generating developer's guide" />
+    <java fork="true" dir="build/doc"
+      classname="com.icl.saxon.StyleSheet"
+      classpath="${lib.dir}/saxon.jar" >
       <arg value="-o" />
       <arg value="JmolDevelopersGuide.html" />
       <arg value="../../doc/source/JmolDevelopersGuide.docbook.xml" />
       <arg value="../${docbook-xsl}/html/docbook.xsl" />
     </java>
+    <echo message="Generating developer's guide (fr)" />
+    <java fork="true" dir="build/doc"
+      classname="com.icl.saxon.StyleSheet"
+      classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="JmolDevelopersGuide_fr.html" />
+      <arg value="../../doc/source/JmolDevelopersGuide_fr.docbook.xml" />
+      <arg value="../${docbook-xsl}/html/docbook.xsl" />
+    </java>
   </target>
 
   <target name="jmolAppletGuide" id="jmolAppletGuide" depends="initdoc"
-	  unless="jmolAppletGuide.uptodate" >
+    unless="jmolAppletGuide.uptodate" >
     <echo message="Generating applet guide" />
     <java fork="true" dir="build/doc"
 	  classname="com.icl.saxon.StyleSheet"
@@ -626,6 +688,15 @@
       <arg value="-o" />
       <arg value="JmolAppletGuide.html" />
       <arg value="../../doc/source/JmolAppletGuide.docbook.xml" />
+      <arg value="../${docbook-xsl}/html/docbook.xsl" />
+    </java>
+    <echo message="Generating applet guide (fr)" />
+    <java fork="true" dir="build/doc"
+      classname="com.icl.saxon.StyleSheet"
+      classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="JmolAppletGuide_fr.html" />
+      <arg value="../../doc/source/JmolAppletGuide_fr.docbook.xml" />
       <arg value="../${docbook-xsl}/html/docbook.xsl" />
     </java>
   </target>

@@ -1,0 +1,552 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "../xml-dtd-4.2/docbookx.dtd"
+>
+<!--
+  French translation 
+  Translated from default version : JmolDevelopersGuide.docbook.xml (v 1.16)
+-->
+<book id="jmol-devel-guide" lang="fr">
+  <bookinfo>
+    <title>Guide du D&eacute;veloppeur Jmol</title>
+  </bookinfo>
+
+  <chapter id="Prerequisites">
+    <title>Pr&eacute;requis</title>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>Java 2 JDK 1.4
+	  (<ulink url="http://java.sun.com/">
+	    http://java.sun.com/</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+          <para>Apache Ant
+	  (<ulink url="http://jakarta.apache.org/ant">
+	    http://jakarta.apache.org/ant</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+	  <para>CVS
+	    (La documentation de CVS est &agrave;
+	    <ulink url="http://cvsbook.red-bean.com/cvsbook.html">
+	      http://cvsbook.red-bean.com/cvsbook.html
+	    </ulink>)
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
+
+  <chapter id="CheckingOutJmol">
+    <title>R&eacute;cup&eacute;rer Jmol par CVS</title>
+    <para>
+      A compl&eacute;ter.
+    </para>
+  </chapter>
+
+  <chapter id="BuildingJmol">
+    <title>Construire Jmol</title>
+    <para>Pr&eacute;requis:
+      <itemizedlist>
+        <listitem>
+          <para>Java 2 JDK 1.4
+          (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+          <para>Apache Ant
+          (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+          <para>Code soure de Jmol</para>
+        </listitem>
+      </itemizedlist>
+      Le code source de Jmol peut &ecirc;tre soit t&eacute;l&eacute;charg&eacute;
+      (cf. <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629">
+      SourceForge project files</ulink>)
+      soit r&eacute;cup&eacute;r&eacute; depuis le repository CVS
+      (cf. <ulink url="http://sourceforge.net/cvs/?group_id=23629">SourceForge CVS access</ulink>).
+    </para>
+
+    <para>Une fois les pr&eacute;requis remplis, Jmol peut &ecirc;tre construit
+      depuis la racine du r&eacute;pertoire des sources avec la commande:
+    </para>
+
+    <para>Sous Unix,
+      <programlisting>
+        <prompt>/home/user/programming/Jmol&gt;</prompt>
+        <command>ant -Ddocbook.dir=/home/user/programming/docbook-xsl</command>
+      </programlisting>
+    </para>
+
+    <para>Sous Windows,
+      <programlisting>
+        <prompt>h:\programming\Jmol&gt;</prompt>
+        <command>ant -Ddocbook.dir=h:\programming\docbook-xsl</command>
+      </programlisting>
+    </para>
+
+    <para>
+      o&ugrave; <parameter class="command">docbook.dir</parameter> est &eacute;gal
+	  au chemin absolu vers DocBook XSL.
+    </para>
+
+    <section>
+      <title>Compiler avec diff&eacute;rentes JVM</title>
+      <section>
+        <title>Compiler avec Java 1.2</title>
+        <para>
+          L'applet doit &ecirc;tre compil&eacute;e avec javac 1.2, pour &ecirc;tre compatible avec beaucoup d'anciens navigateurs.
+          Ceci peut &ecirc;tre fait avec:
+          <programlisting>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+            <command>setenv JAVA_HOME /path/to/java1.2</command>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+            <command>ant -Dbuild.compiler=classic</command>
+          </programlisting>
+        </para>
+      </section>
+      <section>
+        <title>Compiler avec Java 1.4</title>
+        <para>
+          L'application doit &ecirc;tre compil&eacute;e avec javac du J2SDK 1.4 ou sup&eacute;rieur.
+          Ceci peut &ecirc;tre fait avec:
+          <programlisting>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+            <command>setenv JAVA_HOME /path/to/java1.4</command>
+            <prompt>h:\programming\Jmol&gt;</prompt>
+            <command>ant -Dbuild.compiler=javac1.4</command>
+          </programlisting>
+        </para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter id="RunningJmol">
+    <title>Ex&eacute;cuter Jmol</title>
+    <para>
+      Sous Unix, la version de d&eacute;veloppement de Jmol est
+      lanc&eacute;e simplement en ex&eacute;cutant le script jmol
+      dans le r&eacute;pertoire de d&eacute;veloppement Jmol.
+    </para>
+
+    <para>
+      Sous Windows, la variable d'envionnement JMOL_HOME doit &ecirc;tre
+      positionn&eacute;e vers le r&eacute;pertoire de d&eacute;veloppement
+      directory, et ensuite le script jmol.bat peut &ecirc;tre
+      ex&eacute;cut&eacute;. Par exemple:
+      <programlisting>
+        <prompt>H:\programming\Jmol&gt;</prompt>
+        <command>set JMOL_HOME=h:\programming\Jmol</command>
+        <prompt>H:\programming\Jmol&gt;</prompt>
+        <command>jmol.bat</command>
+      </programlisting>
+    </para>
+  </chapter>
+
+  <chapter id="CodingStandard">
+    <title>R&egrave;gles de Programmation</title>
+    <para>
+      Le code source de Jmol doit &ecirc;tre &eacute;crit dans un style
+      qui respecte
+      <ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">
+        "The Elements of Java Style" by Vermeulen, et al
+      </ulink>.
+    </para>
+  </chapter>
+
+  <chapter id="Releasing">
+    <title>G&eacute;n&eacute;rer une livraison</title>
+    <para>
+      La g&eacute;n&eacute;ration d'une livraison est une des
+      responsabilit&eacute;s essentielle du responsable du projet.
+      Une livraison est constitu&eacute;e des distributions .zip et
+      .tar.gz. Les packages binaires ne font pas partie de la livraison
+      de Jmol, mais le responsable de la livraison informera les packagers
+      &agrave; temps pour g&eacute;n&eacute;rer les package binaires.
+    </para>
+    <para>
+      Une livraison de Jmol est constitu&eacute;e &agrave; la fois de
+      l'application <emphasis>et</emphasis> de l'applet. Les deux doivent
+      fonctionner comme attendu.
+    </para>
+    <section id="testing">
+      <title>Tester avant la livraison</title>
+      <para>
+        Dans le r&eacute;pertoire <filename class="directory">samples/</filename>
+        un certain nombre de fichiers de test sont pr&eacute;sents
+        pour les filtres d'entr&eacute;e. Avant chaque livraison, il faut
+        v&eacute;rifier que tous les fichiers de ce r&eacute;pertoire
+        sont lisibles.
+      </para>
+      <para>
+        Le tableau suivant donne le nom de tous les fichiers, les classes
+        de lecture qui devrait le lire, et les fen&ecirc;tres
+        <emphasis>Extra</emphasis> qui devraient &ecirc;tre disponibles.
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry><para>fichier</para></entry>
+                <entry><para>lecture</para></entry>
+                <entry><para>extra</para></entry>
+              </row>
+            </thead>
+            <tbody>
+            <row>
+              <entry><para>1crn.pdb</para></entry>
+              <entry><para>PDBReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>4-cyanopheylnitrene-Benzazirine-TS.g94.out</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para>Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ammonia.adf.out</para></entry>
+              <entry><para>ADFReader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>azt.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>bulk_Si.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+            </row>
+            <row>
+              <entry><para>caffeine.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>CdSe_nanocrystal.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>ch3oh_ace.out</para></entry>
+              <entry><para>Aces2Reader</para></entry>
+              <entry><para>Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ch3oh_g94.out</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ch3oh_gam.out</para></entry>
+              <entry><para>GamessReader</para></entry>
+              <entry><para>Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ch4-opt.out</para></entry>
+              <entry><para>JaguarReader</para></entry>
+              <entry><para>Animate</para></entry>
+            </row>
+            <row>
+              <entry><para>cholesterol.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>Cl2O.log</para></entry>
+              <entry><para>GamessReader</para></entry>
+              <entry><para>Animate</para></entry>
+            </row>
+            <row>
+              <entry><para>conformeren.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para>Animate, Graph</para></entry>
+              </row>
+              <row>
+              <entry><para>cs2.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>cyclohexane_chair.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>cyclohexane_movie.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>ddt.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>diels-alder_movie.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>dna.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>estron.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>ethanol.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>ethene.mm1gp</para></entry>
+              <entry><para>ChemicalMMReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>frame_1.res</para></entry>
+              <entry><para>ShelXReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>g98.out</para></entry>
+              <entry><para>Gaussian98Reader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+              </row>
+              <row>
+              <entry><para>glycine-crystal.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>HfO2_mol_opt.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>HfO2_on_Si_relax.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>met-enkaphalin_movie.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>methanol1.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>methanol2.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>pdhch3.in</para></entry>
+              <entry><para>Jaguar Input is not yet supported</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>phenol-without-para-G.g98.out</para></entry>
+              <entry><para>Gaussian98Reader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+              </row>
+              <row>
+              <entry><para>phenylnitrene.g92.out</para></entry>
+              <entry><para>Gaussian92Reader</para></entry>
+              <entry><para>Vibrate</para></entry>
+              </row>
+              <row>
+              <entry><para>phenylnitrene.g94.out</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>slab_7Si_3Vac_2x.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>slab_7Si_3Vac_2x_relax_2x1.out</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal, Animate, Graph</para></entry>
+              </row>
+              <row>
+              <entry><para>SN1_reaction.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>SN1_reaction.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>SN2_reaction.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>t54.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>taxol.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>test.mol</para></entry>
+              <entry><para>MdlReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>tms.log</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para>Animate, Chemical Shift</para></entry>
+              </row>
+              <row>
+              <entry><para>toluene.pdb</para></entry>
+              <entry><para>PDBReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>viagra.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>zeolite_AFl.out</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal, Graph, Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>zoloft.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+    </section>
+  </chapter>
+
+  <chapter id="Packaging">
+    <title>Packaging</title>
+    <para>
+      Des packages de distribution seront faits pour chaque plateforme
+      pour laquelle un d&eacute;veloppeur s'engage &agrave; fournir
+	  un support. Un fichier utilis&eacute; pour cr&eacute;er les packages
+      devrait &ecirc;tre commit&eacute; sous CVS dans le r&eacute;pertoire
+      Jmol/packaging. Actuellement, les packages suivants sont disponibles:
+      <itemizedlist>
+        <listitem><para>Debian (par Egon Willighagen) </para></listitem>
+        <listitem><para>RPM (par Miguel Howard) </para></listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
+
+  <chapter id="CVS">
+    <title>Travailler avec CVS</title>
+    <para>
+      Ce chapitre donne des informations sur la mani&egrave;re de
+      travailler avec la base CVS de Jmol sur SourceForge.
+    </para>
+    <section id="tagging">
+      <title>Etiquetter sous CVS</title>
+      <para>
+        Il est important d'&eacute;tiquetter sous CVS quand une distribution
+        est faite. Ceci permet de r&eacute;cup&eacute;rer
+        ult&eacute;rieurement le code source exact de cette livraison
+        depuis CVS. Ceci peut &ecirc;tre fait avec
+        <command>cvs tag <parameter>tag-name</parameter></command> dans
+        le r&eacute;pertoire o&ugrave; les fichiers CVS sont stock&eacute;s.
+      </para>
+    </section>
+    <section id="branching">
+      <title>Branches CVS</title>
+      <para>
+        Il est parfois pratique d'avoir des branches s&eacute;par&eacute;es
+        pour travailler. Une branche pour une livraison &agrave; venir, et
+        une branche pour la version non stabilis&eacute;e. Les corrections
+        d'anomalies mineures peuvent &ecirc;tre faites dans la branche
+        stable, tandis que les modifications importantes peuvent &ecirc;tre
+        faites dans la branche non stabilis&eacute;e. Ce chapitre explique
+        comment acc&eacute;der, utiliser et cr&eacute;er des branches.
+      </para>
+      <section id="branch_access">
+        <title>Acc&eacute;der &agrave; une branche</title>
+        <para>
+          La commande
+          <command>cvs checkout <parameter>module</parameter></command>
+          r&eacute;cup&egrave;re par d&eacute;faut le code de la branche
+          HEAD, qui est la branche non stabilis&eacute;e de Jmol.
+        </para>
+        <para>
+          L'acc&egrave;s &agrave; une branche sp&eacute;cifique peut se
+          faire avec, par exemple pour la branche b6:
+          <programlisting>cvs checkout -r b6 -d Jmol-6 Jmol</programlisting>
+          Cette commande r&eacute;cup&egrave;rera une copie du module Jmol
+          de la branche b6 dans un r&eacute;pertoire nomm&eacute;
+          <filename class="directory">Jmol-6</filename>.
+        </para>
+        <para>
+          Pour d&eacute;terminer &agrave; quelle branche appartient un
+          fichier particulier stock&eacute; localement, vous pouvez faire
+          <command>cvs status <parameter>file</parameter></command>.
+        </para>
+      </section>
+      <section id="branch_creating">
+        <title>Cr&eacute;er une branche</title>
+        <para>
+          Une branche de HEAD peut &ecirc;tre cr&eacute;&eacute;e avec la
+          commande <command>cvs rtag -b -r 
+          HEAD <parameter>branch-name</parameter> 
+          <parameter>module</parameter></command>.
+        </para>
+      </section>
+      <section id="branch_merging">
+        <title>Fusionner des branches</title>
+        <para>
+          Les corrections d'anomalies qui ont &eacute;t&eacute;
+          commit&eacute;es dans une branche peuvent &ecirc;tre
+          fusionn&eacute;es &agrave; la branche HEAD. Pour faire ceci,
+          r&eacute;cup&eacute;rer (ou mettre &agrave; jour) une branche
+          HEAD, et taper dans ce r&eacute;pertoire la commande
+          <command>cvs update -j <parameter>branch-to-merge</parameter></command>.
+          Apr&egrave;s ceci la branche depuis laquelle les modifications ont
+          &eacute;t&eacute; fusionn&eacute;es avec HEAD devrait &ecirc;tre
+          &eacute;tiquett&eacute;e pour permettre de fusionner aussi des
+          modifications ult&eacute;rieures avec HEAD. Par exemple, une
+          session pourrait ressembler &agrave;
+          <programlisting>
+> cd ~/data/SF/Jmol/Jmol-HEAD
+> cvs update -j b6
+> cd ~/data/SF/Jmol/Jmol-6
+> cvs tag b6-merged-20030725
+          </programlisting>
+          Les modifications faites apr&egrave;s cette fusion &agrave; la
+          branche b6 peuvent alors &ecirc;tre fusionn&eacute;es avec HEAD:
+          <programlisting>
+> cd ~/data/SF/Jmol/Jmol-HEAD
+> cvs update -j b6-merged-20030725 -j b6
+> cd ~/data/SF/Jmol/Jmol-6
+> cvs tag b6-merged-20031011
+          </programlisting>
+        </para>
+      </section>
+    </section>
+  </chapter>
+</book>

@@ -1,0 +1,18 @@
+<!--
+  French translation 
+  Translated from default version : hardware.docbook.xml (v 1.1)
+-->
+<chapter>
+  <title>Exigences Mat&eacute;riel et Syst&egrave;me d'exploitation</title>
+  <para>
+    Nous recommandons une machine avec un processeur &agrave; 600 MHz et
+    256 Mo de RAM. Cecic devrait correspondre &agrave; presque toutes les
+    machines construites ce si&egrave;cle.
+  </para>
+  <para>
+    Si vous avez un processeur plus ancien avec un syst&egrave;me
+    d'exploitation plus r&eacute;cent/mis &agrave; jour, (comme Mac OSX ou
+    WinXP) alors nous recommandons <emphasis>fortement</emphasis>> que vous
+    ayez au moins 256 Mo de RAM ... plus &eacute;tant mieux.
+  </para>
+</chapter>

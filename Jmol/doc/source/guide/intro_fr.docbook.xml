@@ -1,0 +1,17 @@
+<!--
+  French translation 
+  Translated from default version : intro.docbook.xml (v 1.2)
+-->
+<chapter id="intro">
+<title>Introduction</title>
+<para>
+  Jmol est une application et une applet bas&eacute;es sur Java
+  pour l'affichage d'informations chimiques 3D.
+</para>
+<para>
+  Les classes de la partie centrale de chimie pour Jmol sont issues
+  du Chemistry Development Kit, un projet opensource bas&eacute; &agrave;
+  <ulink url="http://cdk.sourceforge.net">cdk.sourceforge.net</ulink>
+</para>
+</chapter>
+

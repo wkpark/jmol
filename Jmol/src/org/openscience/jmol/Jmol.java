@@ -78,12 +78,14 @@ class Jmol extends JPanel {
     
     public static File UserPropsFile;
     public static File UserAtypeFile;
-    public static File FileHistoryFile;
+    public static File HistoryPropsFile;
     
     private static JFrame consoleframe;
 
     private DisplaySettings settings = new DisplaySettings();
     private RecentFilesDialog recentFiles;
+/** The name of the currently open file **/
+    public String currentFileName="";
 
     static {
         if (System.getProperty("user.home") == null) {
@@ -95,9 +97,11 @@ class Jmol extends JPanel {
         JmolResourceHandler.initialize("org.openscience.jmol.Properties.Jmol");        
         UserPropsFile = new File(ujmoldir, "properties");
         UserAtypeFile = new File(ujmoldir, "AtomTypes");
-        FileHistoryFile = new File(ujmoldir, "FileHistory");
+        HistoryPropsFile = new File(ujmoldir, "history");
         jrh = new JmolResourceHandler("Jmol");
     }
+/** Header at top of Jmol history file **/
+    static String HistroyFileHeader = "Jmol's persistant values";
     
     Jmol(Splash splash) {
 	super(true);
@@ -298,6 +302,7 @@ class Jmol extends JPanel {
                     mlist.clear();
 					
 					chemicalShifts.setChemFile(cf, apm);
+                    currentFileName = theFile.getName();
                 }
 // Add the file to the recent files list
                 recentFiles.addFile(theFile.toString(), typeHint);
@@ -814,6 +819,7 @@ class Jmol extends JPanel {
     public static final String atompropsAction = "atomprops";
     public static final String printAction = "print";
     public static final String recentFilesAction = "recentFiles";
+    public static final String povrayAction = "povray";
 
     class UndoHandler implements UndoableEditListener {
 
@@ -853,7 +859,8 @@ class Jmol extends JPanel {
         redoAction,
 	new ConsoleAction(),
 	chemicalShifts,
-      new RecentFilesAction()
+      new RecentFilesAction(),
+      new PovrayAction()
             };        
     
     class ConsoleAction extends AbstractAction {
@@ -1142,9 +1149,20 @@ class Jmol extends JPanel {
            recentFiles.show();
            String selection = recentFiles.getFile();
            if (selection != null){
+              System.out.println("Recent File: "+selection+" ("+recentFiles.getFileType()+")");
              openFile(new File(selection), recentFiles.getFileType());
-System.out.println("Recent File: "+selection+" ("+recentFiles.getFileType()+")");
            }
+        }
+    }
+
+    class PovrayAction extends AbstractAction {
+        public PovrayAction() {
+            super(povrayAction);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            String basename = currentFileName.substring(0,currentFileName.lastIndexOf("."));
+            PovrayDialog pvsd = new PovrayDialog(frame,display,getCurrentFile(),basename);
         }
     }
 

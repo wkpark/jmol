@@ -45,102 +45,91 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
     private static JmolResourceHandler jrh;
     private boolean ready = false;
     private String fileName = "BUG";
-    private String fileType = "BUG"; 
+    private String fileType = "BUG";
+    private static final int MAX_FILES = 10;
     private JButton okBut;
-    private String[] files = new String[10];
-    private String[] fileTypes = new String[10];
+    private String[] files = new String[MAX_FILES];
+    private String[] fileTypes = new String[MAX_FILES];
     private JList fileList;
-//    static {
-//        jrh = new JmolResourceHandler("Jmol");
-//    }
     private static JmolResourceHandler rch = new JmolResourceHandler("RecentFiles");
-    private int numFiles = 0;
+    java.util.Properties props;
 
 /** Creates a hidden recent files dialog **/
-       public RecentFilesDialog(java.awt.Frame boss){
-            super(boss,rch.getString("windowTitle"),true);
-            getFiles();
-             getContentPane().setLayout(new java.awt.BorderLayout());
-             okBut = new JButton(rch.getString("okLabel"));
-     okBut.addActionListener(this);
-     getContentPane().add("South",okBut);
-     fileList = new JList(files);
-     fileList.setSelectedIndex(0);
-     fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-     getContentPane().add("Center",fileList);
-     setLocationRelativeTo(boss);
-     pack();
-       }
+     public RecentFilesDialog(java.awt.Frame boss){
+        super(boss,rch.getString("windowTitle"),true);
+        props = new java.util.Properties();
+        getFiles();
+        getContentPane().setLayout(new java.awt.BorderLayout());
+        okBut = new JButton(rch.getString("okLabel"));
+        okBut.addActionListener(this);
+        getContentPane().add("South",okBut);
+        fileList = new JList(files);
+        fileList.setSelectedIndex(0);
+        fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        getContentPane().add("Center",fileList);
+        setLocationRelativeTo(boss);
+        pack();
+     }
 
   private void getFiles(){
     try{
-      java.io.BufferedReader in = new java.io.BufferedReader(new java.io.FileReader(Jmol.FileHistoryFile));
-      String file;
-      String type;
-      numFiles = 0;
-      boolean carryon = true;
-      while(carryon){
-        file = in.readLine();
-        type = in.readLine();
-        if (file != null && type != null){
-          files[numFiles] = file;
-          fileTypes[numFiles]=type;
-          numFiles++;
-          if (numFiles >= 10){
-            carryon = false;
-          }
-        }else{
-          carryon = false;
-        }
+      java.io.FileInputStream in = new java.io.FileInputStream(Jmol.HistoryPropsFile);
+      props.load(in);
+      for (int i=0; i< MAX_FILES; i++){
+        files[i] = props.getProperty("recentFilesFile"+i);
+        fileTypes[i] = props.getProperty("recentFilesType"+i);
       }
-      in.close();
-    }catch (java.io.FileNotFoundException e){
-      files[0]=" ";
-      fileTypes[0]=" ";
     }catch(java.io.IOException e){
-      files[0] = "Error opening history!!";
-      files[1] = e.toString();
+        System.err.println("RecentFiles: Error opening histroy!");
     }
-     }
+  }
 
   /** Adds this file and type to the history. If already present, this file is premoted to the top position. **/
    public void addFile(String name, String type){
-           int currentPosition = -1;
-           for (int i =0; i< numFiles; i++){
-                if (files[i].equals(name)){
-                   currentPosition = i;
-               }
-           }
-           if (currentPosition > 0){
-             for (int i=currentPosition;i<numFiles;i++){
-                files[i] = files[i+1];
-               fileTypes[i]=fileTypes[i+1];
-            }
+       int currentPosition = -1;
+//Find if file is already present
+       for (int i =0; i< MAX_FILES; i++){
+          if (files[i]!=null && files[i].equals(name)){
+            currentPosition = i;
           }
-           for (int j=8; j>=0; j--){
-              files[j+1] = files[j];
-              fileTypes[j+1]=fileTypes[j];
-    }
-    files[0] = name;
-    fileTypes[0]=type;
-    if(numFiles <10 && currentPosition < 0){
-      numFiles++;
-    }
-    fileList.setListData(files);
-    fileList.setSelectedIndex(0);
-    pack();
-    saveList();
+       }
+//No change so cope out
+       if (currentPosition == 0){
+        return;
+       }
+//present so shift files below current position up one, removing current position
+       if (currentPosition > 0){
+         for (int i=currentPosition;i<MAX_FILES-1;i++){
+           files[i] = files[i+1];
+           fileTypes[i+1]=fileTypes[i];
+         }
+       }
+// Shift everything down one
+       for (int j=MAX_FILES-2; j>=0; j--){
+          files[j+1] = files[j];
+          fileTypes[j+1]=fileTypes[j];
+       }
+//Insert file at head of list
+       files[0] = name;
+       fileTypes[0]=type;
+       fileList.setListData(files);
+      fileList.setSelectedIndex(0);
+      pack();
+      saveList();
   }
 
   /** Saves the list to the history file. Called automaticaly when files are added **/
    public void saveList(){
+    for (int i=0; i< 10; i++){
+     if (files[i]!=null){
+       props.setProperty("recentFilesFile"+i,files[i]);
+       props.setProperty("recentFilesType"+i,fileTypes[i]);
+     }
+//System.out.println(i+" "+props.getProperty("recentFilesFile"+i));
+    }
     try{
-      java.io.Writer out = new java.io.FileWriter(Jmol.FileHistoryFile);
-      for (int i=0; i< numFiles;i++){
-        out.write(files[i]+"\n"); 
-        out.write(fileTypes[i]+"\n");
-      }
-      out.close();
+      java.io.FileOutputStream out = new java.io.FileOutputStream(Jmol.HistoryPropsFile);
+      props.store(out,Jmol.HistroyFileHeader);
     }catch(java.io.IOException e){
       System.err.println("Error saving history!! "+e);
     }
@@ -150,7 +139,7 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
 @returns String The name of the file picked or null if the action was aborted.
 **/
       public String getFile(){
-         if (!ready){};
+         while(!ready){};
          return fileName;
      }
 
@@ -158,7 +147,7 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
 @returns String The type of the file picked or null if the action was aborted.
 **/
     public String getFileType(){
-         if (!ready){};
+         while(!ready){};
          return fileType;
     }
 

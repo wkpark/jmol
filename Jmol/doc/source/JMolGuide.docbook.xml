@@ -68,6 +68,16 @@
         <title>Exit</title>
 	<para>Quits this Jmol session.</para>
       </section>
+      <section>
+        <title>Recent Files...</title>
+	<para>
+          Brings up a dialog with a list of the
+          files the program has been asked to
+          open recently. The file can be opened
+          again by selecting it and clicking the
+          ok button.
+        </para>
+      </section>
     </section>
     <section>
       <title>The Edit menu</title>
@@ -168,6 +178,14 @@
       </section>
       <section>
         <title>Wire Frame Rotation</title>
+          <para>
+            When manipulating large molecules, the renderer
+             maybe rather slow. When this option is checked,
+             the program uses a fast drawing mode when the 
+             molecule is being moved. When the mouse is 
+             released, the molecule is draw in the
+             current style.
+          </para>
       </section>
       <section>
         <title>Bonds</title>

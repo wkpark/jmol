@@ -132,6 +132,23 @@ public class displayPanel extends JPanel
         init();
     }
 
+//Added by T.GREY for POVRAY support
+/**Returns transform matrix assosiated with the current viewing transform**/
+    public Matrix3D getViewTransformMatrix(){
+       Matrix3D viewMatrix = new Matrix3D();
+       viewMatrix.translate(-(xmin + xmax) / 2,
+                             -(ymin + ymax) / 2,
+                             -(zmin + zmax) / 2);
+       viewMatrix.mult(amat);
+       viewMatrix.scale(xfac, -xfac, xfac);
+       viewMatrix.mult(tmat);
+       viewMatrix.mult(zmat);
+       viewMatrix.translate(getSize().width / 2,
+                            getSize().height / 2,
+                            getSize().width / 2);
+       return viewMatrix;
+    }
+
     public void init() {
         md.findBB();
         if (mlist != null) {

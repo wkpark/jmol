@@ -282,12 +282,12 @@ public class RasMolScriptHandler {
   private void list(String objectType) throws RasMolScriptException {
 
     if (objectType.equals("atoms")) {
-      for (int i = 0; i < program.display.chemframe.getNumberOfAtoms(); i++) {
+      for (int i = 0; i < program.display.getFrame().getNumberOfAtoms(); i++) {
         StringBuffer sb = new StringBuffer();
         sb.append("  ");
         sb.append(i + 1);
         sb.append(" ");
-        sb.append(program.display.chemframe.getAtomAt(i).getSymbol());
+        sb.append(program.display.getFrame().getAtomAt(i).getSymbol());
         println(sb.toString());
       }
     } else {
@@ -299,7 +299,7 @@ public class RasMolScriptHandler {
   private void select(String value) throws RasMolScriptException {
 
     if (value.equals("all") || value.equals("*")) {
-      program.settings.addPickedAtoms(program.display.chemframe.getAtoms());
+      program.settings.addPickedAtoms(program.display.getFrame().getAtoms());
     } else if (value.equals("none")) {
       program.settings.clearPickedAtoms();
     } else if (value.indexOf(',') != -1) {
@@ -308,7 +308,7 @@ public class RasMolScriptHandler {
         String subexpr = (String) st.nextElement();
         try {
           int atom = Integer.parseInt(subexpr);
-          program.display.getSettings().addPickedAtom(program.display.chemframe.getAtomAt(atom));
+          program.display.getSettings().addPickedAtom(program.display.getFrame().getAtomAt(atom));
         } catch (NumberFormatException e) {
           throw new RasMolScriptException("Error: invalid expression: "
               + subexpr);
@@ -317,7 +317,7 @@ public class RasMolScriptHandler {
     } else {
       try {
         int atom = Integer.parseInt(value);
-        program.display.getSettings().addPickedAtom(program.display.chemframe.getAtomAt(atom));
+        program.display.getSettings().addPickedAtom(program.display.getFrame().getAtomAt(atom));
       } catch (NumberFormatException e) {
         throw new RasMolScriptException("Error: invalid expression: "
             + value);
@@ -366,7 +366,7 @@ public class RasMolScriptHandler {
         program.display.getSettings().getPickedAtoms().elements();
       for (int i = 0; i < selectedAtoms.length; ++i) {
         int atom = selectedAtoms[i];
-        program.display.chemframe.getAtomAt(atom - 1).setColor(this.getColor(value));
+        program.display.getFrame().getAtomAt(atom - 1).setColor(this.getColor(value));
       }
 
     } else {

@@ -113,7 +113,6 @@ public interface JmolModelAdapter {
    */
   public boolean suppliesAtomArgb();
 
-
   /*****************************************************************
    * file related
    ****************************************************************/
@@ -286,6 +285,14 @@ public interface JmolModelAdapter {
    * @see #getAtomicSymbol(Object clientAtom)
    */
   public int getAtomicNumber(Object clientAtom);
+
+  /**
+   * Returns the atomic charge of the clientAtom previously returned by
+   * an AtomIterator.
+   *
+   * The client must implement this ... although it can always return 0
+   */
+  public int getAtomicCharge(Object clientAtom);
 
   /**
    * Returns the atomicSymbol of the clientAtom previously returned by

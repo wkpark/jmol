@@ -262,6 +262,10 @@ public class ModelManager {
     return JmolConstants.atomicSymbols[atom.atomicNumber];
   }
 
+  public int getAtomicCharge(Object clientAtom) {
+    return modelAdapter.getAtomicCharge(clientAtom);
+  }
+
   public String getAtomTypeName(Atom atom) {
     if (suppliesAtomTypeName) {
       String atomTypeName = modelAdapter.getAtomTypeName(atom.clientAtom);

@@ -242,6 +242,10 @@ public class SimpleModelAdapter implements JmolModelAdapter {
   public int getAtomicNumber(Object clientAtom) {
     return -1;
   }
+
+  public int getAtomicCharge(Object clientAtom) {
+    return ((Atom)clientAtom).atomicCharge;
+  }
   
   public String getAtomicSymbol(Object clientAtom) {
     return ((Atom)clientAtom).atomicSymbol;
@@ -305,6 +309,7 @@ public class SimpleModelAdapter implements JmolModelAdapter {
 
 class Atom {
   String atomicSymbol;
+  int atomicCharge;
   float x, y, z;
   String pdbAtomRecord;
   int pdbModelNumber;

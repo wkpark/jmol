@@ -44,6 +44,7 @@ public class Atom implements Bspt.Tuple {
   short x, y, z;
   short diameter;
   public byte atomicNumber;
+  byte atomicCharge;
   byte styleAtom;
   short marAtom;
   short colixAtom;
@@ -58,6 +59,7 @@ public class Atom implements Bspt.Tuple {
     this.atomIndex = atomIndex;
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
+    this.atomicCharge = (byte) viewer.getAtomicCharge(clientAtom);
     this.colixAtom = viewer.getColixAtom(this);
     setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
     this.point3f = new Point3f(viewer.getAtomX(clientAtom),

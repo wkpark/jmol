@@ -275,6 +275,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   public int getAtomicNumber(Object clientAtom) {
     return ((Atom)clientAtom).getAtomicNumber();
   }
+
+  public int getAtomicCharge(Object clientAtom) {
+    return 0;
+  }
   
   public String getAtomicSymbol(Object clientAtom) {
     return ((Atom)clientAtom).getSymbol();

@@ -96,14 +96,11 @@ public class ScriptWindow extends JDialog
     String strErrorMessage = control.evalString(strCommand);
     if (strErrorMessage != null)
       console.outputError(strErrorMessage);
-
-    System.out.println("enterPressed:" + strCommand);
   }
 
   public void actionPerformed(ActionEvent e) {
 
     if (e.getSource() == closeButton) {
-      System.out.println("closeButton");
       hide();
     } else {
       String command = input.getText();
@@ -262,9 +259,7 @@ class ConsoleDocument extends DefaultStyledDocument {
     if (ichNewline > 0)
       str = str.substring(0, ichNewline);
     if (ichNewline != 0) {
-      System.out.println("insertString(" + offs + "," + str + ")");
       if (offs < offsetAfterPrompt) {
-        System.out.println("offs < minimumOffset");
         offs = getLength();
       }
       super.insertString(offs, str, attUserInput);
@@ -287,9 +282,7 @@ class ConsoleDocument extends DefaultStyledDocument {
 
   public void remove(int offs, int len)
     throws BadLocationException {
-    System.out.println("remove(" + offs + "," + len + ")" );
     if (offs < offsetAfterPrompt) {
-      System.out.println("offs < minimumOffset");
       len -= offsetAfterPrompt - offs;
       if (len <= 0)
         return;
@@ -301,15 +294,11 @@ class ConsoleDocument extends DefaultStyledDocument {
 
   public void replace(int offs, int length, String str, AttributeSet attrs)
     throws BadLocationException {
-    System.out.println("replace(" + offs + "," + length + "," + str + ")" );
     if (offs < offsetAfterPrompt) {
-      System.out.println("offs < minimumOffset");
       if (offs + length < offsetAfterPrompt) {
-        System.out.println("offs + length < minimumOffs");
         offs = getLength();
         length = 0;
       } else {
-        System.out.println("offs + length >= minimumOffs");
         length -= offsetAfterPrompt - offs;
         offs = offsetAfterPrompt;
       }

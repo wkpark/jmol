@@ -34,12 +34,12 @@ import java.io.IOException;
 import java.net.URL;
 import org.openscience.jmol.io.ReaderProgress;
 import org.openscience.jmol.io.ReaderFactory;
-import org.openscience.jmol.StatusDisplay;
+import org.openscience.jmol.JmolStatusListener;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.CMLReader;
 
-public class JmolApplet extends Applet implements StatusDisplay {
+public class JmolApplet extends Applet implements JmolStatusListener {
 
   AppletCanvas canvas;
   DisplayControl control;
@@ -128,6 +128,12 @@ public class JmolApplet extends Applet implements StatusDisplay {
   public void setStatusMessage(String statusMessage) {
     if (statusMessage != null)
       showStatus(statusMessage);
+  }
+
+  public void scriptEcho(String strEcho) {
+  }
+
+  public void notifyScriptTermination(String errorMessage, int msWalltime) {
   }
 
   //METHODS FOR JAVASCRIPT

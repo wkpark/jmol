@@ -127,7 +127,7 @@ echo "Materials science"
 delay 1;
 
 set echo top right; font echo 24; color echo lightGoldenrodYellow
-echo "Metalurgy"
+echo "Metallurgy"
 delay 1;
 
 set echo middle left; font echo 24; color echo tomato

@@ -1460,6 +1460,12 @@ public class Eval implements Runnable {
     case Token.vector:
       colorObject(tok, 2);
       break;
+    case Token.rubberband:
+      viewer.setColorRubberband(getColorParam(2));
+      break;
+    case Token.background:
+      viewer.setColorBackground(getColorParam(2));
+      break;
     case Token.identifier:
 	String str = (String)statement[1].value;
 	if (str.equalsIgnoreCase("dotsConvex"))

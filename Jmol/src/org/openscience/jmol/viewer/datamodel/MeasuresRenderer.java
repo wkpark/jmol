@@ -224,22 +224,24 @@ class MeasuresRenderer extends ShapeRenderer {
     int[] countPlusIndices = pendingMeasurement.countPlusIndices;
     if (! pendingMeasurement.isActive || count < 2)
       return;
+    short colixRubberband = viewer.getColixRubberband();
     if (countPlusIndices[count] == -1)
-      renderPendingWithCursor(pendingMeasurement);
+      renderPendingWithCursor(pendingMeasurement, colixRubberband);
     else
-      renderMeasurement(pendingMeasurement, Graphics3D.PINK);
+      renderMeasurement(pendingMeasurement, colixRubberband);
   }
   
-  void renderPendingWithCursor(PendingMeasurement pendingMeasurement) {
+  void renderPendingWithCursor(PendingMeasurement pendingMeasurement,
+                               short colixRubberband) {
     int count = pendingMeasurement.count;
     if (count < 2)
       return;
     if (count > 2)
-      renderMeasurement(count - 1, pendingMeasurement, Graphics3D.PINK, false);
+      renderMeasurement(count - 1, pendingMeasurement, colixRubberband, false);
     Atom atomLast = frame.getAtomAt(pendingMeasurement.
                                     countPlusIndices[count - 1]);
     int lastZ = atomLast.getScreenZ() - atomLast.getScreenD() - 10;
     drawSegment(atomLast.getScreenX(), atomLast.getScreenY(), lastZ,
-                viewer.getCursorX(), viewer.getCursorY(), 0, Graphics3D.PINK);
+                viewer.getCursorX(), viewer.getCursorY(), 0, colixRubberband);
   }
 }

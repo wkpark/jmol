@@ -609,6 +609,10 @@ final public class JmolViewer {
     return colorManager.getColixSelection();
   }
 
+  public void setColorRubberband(Color color) {
+    colorManager.setColorRubberband(color);
+  }
+
   public short getColixRubberband() {
     return colorManager.colixRubberband;
   }

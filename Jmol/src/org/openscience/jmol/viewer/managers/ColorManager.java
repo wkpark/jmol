@@ -115,6 +115,13 @@ public class ColorManager {
     return colixRubberband;
   }
 
+  public void setColorRubberband(Color color) {
+    if (color == null)
+      color = Color.pink;
+    colorRubberband = color;
+    colixRubberband = g3d.getColix(color);
+  }
+
   public boolean isBondAtomColor = true;
   public void setIsBondAtomColor(boolean isBondAtomColor) {
     this.isBondAtomColor = isBondAtomColor;

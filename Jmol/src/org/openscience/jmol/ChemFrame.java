@@ -612,6 +612,48 @@ public class ChemFrame {
 		return bonds[index];
 	}
 
+    /**
+     * Returns the atom index of the first endpoint of the given bond.
+     *
+     * @param index the index of the bond.
+     * @return the atom at the first endpoint of the bond.
+     */
+    public int getBondEnd1(int index) {
+        return bondEnd1[index];
+    }
+
+    /**
+     * Returns the atom index of the first endpoint of the given bond.
+     *
+     * @param index the index of the bond.
+     * @return the atom at the first endpoint of the bond.
+     */
+    public int getBondEnd2(int index) {
+        return bondEnd2[index];
+    }
+    
+    /**
+     * Returns the Number of Bonds that connect to an atom.
+     *
+     * @param index the index of the atom.
+     * @return the number of bonds that this atom connects with.
+     */
+    public int getNumberOfBondsForAtom(int index) {
+        return nBpA[index];
+    }
+
+    /**
+     * Returns the index of the atom at the other end of a bond.
+     *
+     * @param theAtom the index of the first atom in the bond
+     * @param theBond which of the bonds that that theAtom has (NB: this is <b>not</b> the index of the bond in the overall bond list)
+     * @return the index of the other atom on the end of the bond
+     */
+    public int getOtherBondedAtom(int theAtom, int theBond) {
+        return inBonds[theAtom][theBond];
+    }
+            
+
 	/**
 	 * returns the coordinates of the i'th atom
 	 *

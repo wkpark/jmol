@@ -433,7 +433,10 @@ public class Jmol extends JPanel {
 
       // Open a file if one is given as an argument
       if (modelFilename != null)
+        {
         jmol.viewer.openFile(modelFilename);
+        jmol.viewer.getOpenFileError();
+        }
 
       // Oke, by now it is time to execute the script
       if (scriptFilename != null) {
@@ -1107,6 +1110,7 @@ public class Jmol extends JPanel {
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
         viewer.openFile(file.getAbsolutePath());
+        viewer.getOpenFileError();
         return;
       }
     }
@@ -1130,6 +1134,7 @@ public class Jmol extends JPanel {
         if (url.indexOf("://") == -1)
           url = "http://" + url;
         viewer.openFile(url);
+        viewer.getOpenFileError();
       }
       return;
     }
@@ -1292,6 +1297,7 @@ public class Jmol extends JPanel {
       String selection = recentFiles.getFile();
       if (selection != null) {
         viewer.openFile(selection);
+        viewer.getOpenFileError();
       }
     }
   }

@@ -163,12 +163,11 @@ public class Eval implements Runnable {
   }
 
   boolean loadScriptFileInternal(String filename) {
-    InputStream istream = viewer.getInputStreamFromName(filename);
-    if (istream == null)
-      return false;
-    BufferedReader reader = null;
-    reader = new BufferedReader(new InputStreamReader(istream));
-
+    Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
+    if (! (t instanceof InputStream))
+      return LoadError((String) t);
+    BufferedReader reader =
+      new BufferedReader(new InputStreamReader((InputStream) t));
     String script = "";
     try {
       while (true) {
@@ -1078,7 +1077,7 @@ public class Eval implements Runnable {
       badArgumentCount();
     String filename = (String)statement[i].value;
     viewer.openFile(filename);
-    String errMsg = viewer.waitForOpenErrorMessage();
+    String errMsg = viewer.getOpenFileError();
     if (errMsg != null)
       evalError(errMsg);
     if (logMessages)

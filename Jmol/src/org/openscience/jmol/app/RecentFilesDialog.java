@@ -46,7 +46,6 @@ import javax.swing.JPanel;
 class RecentFilesDialog extends JDialog implements ActionListener,
     WindowListener {
 
-  private boolean ready = false;
   private String selectedFileName = null;
   private static final int MAX_FILES = 10;
   private JButton okButton;
@@ -179,7 +178,6 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   }
 
   void close() {
-    ready = true;
     hide();
   }
 
@@ -201,7 +199,6 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   }
 
   public void windowOpened(java.awt.event.WindowEvent e) {
-    ready = false;
   }
 
   public void windowIconified(java.awt.event.WindowEvent e) {

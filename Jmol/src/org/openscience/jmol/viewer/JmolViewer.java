@@ -704,12 +704,8 @@ final public class JmolViewer {
     fileManager.setAppletContext(documentBase, codeBase, appletProxy);
   }
 
-  public URL getURLFromName(String name) {
-    return fileManager.getURLFromName(name);
-  }
-
-  public InputStream getInputStreamFromName(String name) {
-    return fileManager.getInputStreamFromName(name);
+  public Object getInputStreamOrErrorMessageFromName(String name) {
+    return fileManager.getInputStreamOrErrorMessageFromName(name);
   }
 
   public void openFile(String name) {
@@ -718,14 +714,23 @@ final public class JmolViewer {
   }
 
   public void openStringInline(String strModel) {
+    clear();
     fileManager.openStringInline(strModel);
   }
-
-  public String waitForOpenErrorMessage() {
-    String errorMsg = fileManager.waitForOpenErrorMessage();
-    if (errorMsg != null)
-      notifyFileNotLoaded(fileManager.getFullPathName(), errorMsg);
-    return errorMsg;
+  
+  public String getOpenFileError() {
+    String fullPathName = fileManager.getFullPathName();
+    String fileName = fileManager.getFileName();
+    Object clientFile = fileManager.waitForClientFileOrErrorMessage();
+    if (clientFile instanceof String || clientFile == null) {
+      String errorMsg = (String) clientFile;
+      notifyFileNotLoaded(fullPathName, errorMsg);
+      return errorMsg;
+    }
+    setClientFile(fullPathName, fileName, clientFile);
+    notifyFileLoaded(fullPathName, fileName,
+                     modelManager.getModelName(), clientFile);
+    return null;
   }
 
   /****************************************************************

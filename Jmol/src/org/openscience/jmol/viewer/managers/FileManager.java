@@ -60,6 +60,8 @@ public class FileManager {
   private String fileName;
   private File file;
 
+  private FileOpenThread fileOpenThread;
+
 
   public FileManager(JmolViewer viewer) {
     this.viewer = viewer;
@@ -71,27 +73,39 @@ public class FileManager {
     classifyName(name);
     if (openErrorMessage != null)
       return;
-    InputStream istream = getInputStreamFromName(name);
-    if (openErrorMessage != null)
-      return;
-    if (istream == null) {
-      openErrorMessage = "error opening url/filename:" + name;
-      return;
-    }
-    openErrorMessage = openInputStream(fullPathName, fileName, istream);
+    fileOpenThread = new FileOpenThread(fullPathName, name);
+    fileOpenThread.run();
   }
 
   public void openStringInline(String strModel) {
-    openErrorMessage = openReader("StringInline", "StringInline",
-                                  new StringReader(strModel));
+    openErrorMessage = null;
+    fullPathName = fileName = "string";
+    fileOpenThread = new FileOpenThread(fullPathName,
+                                        new StringReader(strModel));
+    fileOpenThread.run();
   }
 
-  public String waitForOpenErrorMessage() {
-    return openErrorMessage;
+  public Object waitForClientFileOrErrorMessage() {
+    Object clientFile = null;
+    if (fileOpenThread != null) {
+      clientFile = fileOpenThread.clientFile;
+      if (fileOpenThread.errorMessage != null)
+        openErrorMessage = fileOpenThread.errorMessage;
+      else if (clientFile == null)
+        openErrorMessage = "Client file is null loading:" + nameAsGiven;
+      fileOpenThread = null;
+    }
+    if (openErrorMessage != null)
+      return openErrorMessage;
+    return clientFile;
   }
 
   public String getFullPathName() {
     return fullPathName != null ? fullPathName : nameAsGiven;
+  }
+
+  public String getFileName() {
+    return fileName != null ? fileName : nameAsGiven;
   }
 
   public void setAppletContext(URL documentBase, URL codeBase,
@@ -103,56 +117,6 @@ public class FileManager {
 
   // mth jan 2003 -- there must be a better way for me to do this!?
   final String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
-
-  public URL getURLFromName(String name) {
-    URL url = null;
-    int i;
-    for (i = 0; i < urlPrefixes.length; ++i) {
-      if (name.startsWith(urlPrefixes[i]))
-        break;
-    }
-    try {
-      if (appletDocumentBase != null) {
-        // we are running as an applet
-        System.out.println("an applet will try to open the URL:" + name);
-        if (i < urlPrefixes.length)
-          if (appletProxy != null)
-            name = appletProxy + "?url=" + URLEncoder.encode(name);
-        url = new URL(appletDocumentBase, name);
-      } else {
-        url = (i < urlPrefixes.length
-               ? new URL(name)
-               : new URL("file", null, name));
-      }
-    } catch (MalformedURLException e) {
-      System.out.println("MalformedURLException:" + e);
-    }
-    System.out.println("returning url=" + url);
-    return url;
-  }
-
-  public InputStream getInputStreamFromName(String name) {
-    if (isURL) {
-      URL url = getURLFromName(name);
-      if (url != null) {
-        try {
-          System.out.println("getting ready to open url=" + url);
-          InputStream is = url.openStream();
-          return is;
-        } catch (IOException e) {
-          System.out.println("error doing a url.openStream:" + e.getMessage());
-          openErrorMessage = e.getMessage();
-        }
-      }
-    } else {
-      try {
-        return new FileInputStream(file);
-      } catch (FileNotFoundException fnf) {
-        openErrorMessage = "File Not Found:" + fnf.getMessage();
-      }
-    }
-    return null;
-  }
 
   private void classifyName(String name) {
     isURL = false;
@@ -193,35 +157,92 @@ public class FileManager {
     fileName = file.getName();
   }
 
-  byte[] abMagic = new byte[4];
-  private String openInputStream(String fullPathName, String fileName,
-                                 InputStream istream) {
-    BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
-    InputStream istreamToRead = bistream;
-    bistream.mark(5);
-    int countRead = 0;
+  public Object getInputStreamOrErrorMessageFromName(String name) {
+    System.out.println("getInputStreamOrErrorMessageFromName name=" + name);
+    String errorMessage = null;
+    int iurlPrefix;
+    for (iurlPrefix = urlPrefixes.length; --iurlPrefix >= 0; )
+      if (name.startsWith(urlPrefixes[iurlPrefix]))
+        break;
     try {
-      countRead = bistream.read(abMagic, 0, 4);
-      bistream.reset();
-      if (countRead == 4) {
-        if (abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B) {
-          istreamToRead = new GZIPInputStream(bistream);
-        }
+      if (appletDocumentBase == null) {
+        if (iurlPrefix >= 0)
+          return (new URL(name)).openStream();
+        else
+          return new FileInputStream(new File(name));
+      } else {
+        if (iurlPrefix >= 0 && appletProxy != null)
+          name = appletProxy + "?url=" + URLEncoder.encode(name);
+        return (new URL(appletDocumentBase, name)).openStream();
       }
-      return openReader(fullPathName, fileName,
-                        new InputStreamReader(istreamToRead));
-    } catch (IOException ioe) {
-      return ioe.getMessage();
+    } catch (Exception e) {
+      errorMessage = "" + e;
     }
+    return errorMessage;
   }
 
-  private String openReader(String fullPathName, String fileName,
-                            Reader reader) {
-    Object clientFile = viewer.getJmolModelAdapter()
-      .openBufferedReader(viewer, fullPathName, new BufferedReader(reader));
-    if (clientFile instanceof String)
-      return (String)clientFile;
-    viewer.setClientFile(fullPathName, fileName, clientFile);
-    return null;
+  class FileOpenThread implements Runnable {
+    boolean terminated;
+    String errorMessage;
+    String fullPathName;
+    String nameAsGiven;
+    Object clientFile;
+    Reader reader;
+
+    FileOpenThread(String fullPathName, String nameAsGiven) {
+      this.fullPathName = fullPathName;
+      this.nameAsGiven = nameAsGiven;
+    }
+
+    FileOpenThread(String name, Reader reader) {
+      nameAsGiven = fullPathName = name;
+      openReader(reader);
+    }
+
+    public void run() {
+      if (reader != null) {
+        openReader(reader);
+      } else {
+        Object t = getInputStreamOrErrorMessageFromName(nameAsGiven);
+        if (! (t instanceof InputStream)) {
+          errorMessage = (t == null
+                          ? "error opening:" + nameAsGiven
+                          : (String)t);
+        } else {
+          openInputStream(fullPathName, fileName, (InputStream) t);
+        }
+      }
+      terminated = true;
+    }
+
+    byte[] abMagic = new byte[4];
+    private void openInputStream(String fullPathName, String fileName,
+                                 InputStream istream) {
+      BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
+      InputStream istreamToRead = bistream;
+      bistream.mark(5);
+      int countRead = 0;
+      try {
+        countRead = bistream.read(abMagic, 0, 4);
+        bistream.reset();
+        if (countRead == 4) {
+          if (abMagic[0] == (byte)0x1F && abMagic[1] == (byte)0x8B) {
+            istreamToRead = new GZIPInputStream(bistream);
+          }
+        }
+        openReader(new InputStreamReader(istreamToRead));
+      } catch (IOException ioe) {
+        errorMessage = ioe.getMessage();
+      }
+    }
+
+    private void openReader(Reader reader) {
+      Object clientFile = viewer.getJmolModelAdapter()
+        .openBufferedReader(viewer, fullPathName, new BufferedReader(reader));
+      if (clientFile instanceof String)
+        errorMessage = (String)clientFile;
+      else
+        this.clientFile = clientFile;
+    }
   }
 }

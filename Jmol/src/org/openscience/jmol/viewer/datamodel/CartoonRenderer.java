@@ -57,6 +57,8 @@ class CartoonRenderer extends McpgRenderer {
     initializeChain(polymer);
     clearPending();
     for (int i = 0; i < polymerCount; ++i) {
+      if (mads[i] == 0)
+        continue;
       short colix = colixes[i];
       if (colix == 0)
         colix = alphas[i].colixAtom;

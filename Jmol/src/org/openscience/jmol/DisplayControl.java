@@ -755,6 +755,12 @@ final public class DisplayControl {
     control.popHoldRepaint();
   }
 
+  public void clear() {
+    modelManager.setChemFile(null);
+    clearMeasurements();
+    refresh();
+  }
+
   public ChemFile getChemFile() {
     return modelManager.getChemFile();
   }

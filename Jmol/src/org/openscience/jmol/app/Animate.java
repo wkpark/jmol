@@ -92,13 +92,18 @@ public class Animate extends JDialog implements ActionListener,
 
   private void restoreInFile() {
 
-    nframes = inFile.getNumberOfFrames();
-    cf = inFile;
-    progressSlider.setMaximum(nframes);
     currentFrame = 0;
-    haveFile = true;
-    control.setChemFile(cf);
-    setFrame(currentFrame, true);
+    cf = inFile;
+    haveFile = inFile != null;
+    if (haveFile) {
+      nframes = inFile.getNumberOfFrames();
+      progressSlider.setMaximum(nframes);
+      haveFile = true;
+      control.setChemFile(cf);
+      setFrame(currentFrame, true);
+    } else {
+      setVisible(false);
+    }
   }
 
   private void createExtraFrames() {

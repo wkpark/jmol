@@ -51,9 +51,15 @@ public class ModelManager {
   public void setChemFile(ChemFile chemfile) {
     ChemFile chemfilePrevious = this.chemfile;
     this.chemfile = chemfile;
-    nframes = chemfile.getNumberOfFrames();
-    this.chemframe = chemfile.getFrame(0);
-    haveFile = true;
+    if (chemfile != null) {
+      nframes = chemfile.getNumberOfFrames();
+      this.chemframe = chemfile.getFrame(0);
+      haveFile = true;
+    } else {
+      nframes = 0;
+      this.chemframe = null;
+      haveFile = false;
+    }
     pcs.firePropertyChange(DisplayControl.PROP_CHEM_FILE,
                            chemfilePrevious, chemfile);
   }

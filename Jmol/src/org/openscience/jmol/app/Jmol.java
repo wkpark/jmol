@@ -236,7 +236,7 @@ public class Jmol extends JPanel {
     control = new DisplayControl(strJvmVersion, display);
     display.setDisplayControl(control);
 
-    control.addPropertyChangeListener(display);
+    //    control.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
         .translate("Initializing Preferences..."));
     preferencesDialog = new PreferencesDialog(frame, guimap, control);

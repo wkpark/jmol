@@ -321,6 +321,9 @@ public class Eval implements Runnable {
       case Token.translate:
         translate();
         break;
+      case Token.zap:
+        zap();
+        break;
       case Token.zoom:
         zoom();
         break;
@@ -374,7 +377,6 @@ public class Eval implements Runnable {
       case Token.trace:
       case Token.unbond:
       case Token.write:
-      case Token.zap:
         // chime extended commands
       case Token.view:
       case Token.spin:
@@ -1168,6 +1170,10 @@ public class Eval implements Runnable {
     default:
       axisExpected();
     }
+  }
+
+  void zap() {
+    control.clear();
   }
 
   void zoom() throws ScriptException {

@@ -94,6 +94,8 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
     hasGraphableProperties = false;
     GPs = new Vector();
     this.inputFile = inputFile;
+    if (inputFile == null)
+      return;
 
     // Check for graphable properties
 

@@ -334,6 +334,8 @@ public class Vibrate extends JDialog implements ActionListener,
       frameCombo.removeAllItems();
     }
     frameIds.removeAllElements();
+    if (inputFile == null)
+      return;
     for (int i = 0; i < inputFile.getNumberOfFrames(); ++i) {
       ChemFrame frame2 = inputFile.getFrame(i);
       if (frame2.getNumberVibrations() > 0) {

@@ -30,6 +30,7 @@ import java.awt.image.MemoryImageSource;
 import java.awt.image.Kernel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
+import java.awt.Composite;
 import java.awt.AlphaComposite;
 import java.awt.Polygon;
 import java.awt.Color;
@@ -329,8 +330,8 @@ class AtomShape implements Shape {
     }
   }
 
-  private final static int[] xPoints = new int[4];
-  private final static int[] yPoints = new int[4];
+  private static final int[] xPoints = new int[4];
+  private static final int[] yPoints = new int[4];
 
   private void drawBondRectangle(int x1Bond, int y1Bond, Color color1,
                                  int x2Bond, int y2Bond, Color color2,
@@ -465,17 +466,25 @@ class AtomShape implements Shape {
     }
   }
 
-  final private static int minCachedImage = 4;
-  final private static int maxCachedImage = 50;
-  final private static HashMap ballImages = new HashMap();
-
+  private static final int minCachedSize = 4;
+  private static final int maxCachedSize = 50;
+  private static final HashMap ballImages = new HashMap();
+  private static final int scalableSize = 32;
+  private static final int maxSmoothedSize = 200;
+  private static final int smoothedMarginFactor = 16;
+  private static final int minShadingBufferSize =
+    maxCachedSize + maxCachedSize/smoothedMarginFactor;
+  private static final int maxShadingBufferSize =
+    maxSmoothedSize + maxSmoothedSize/smoothedMarginFactor;
+    
+  
   private void renderShadedAtom(int x, int y, int diameter, Color color) {
     if (! ballImages.containsKey(color)) {
-      loadShadedCache(color);
+      loadShadedSphereCache(color);
     }
     Image[] shadedImages = (Image[]) ballImages.get(color);
     int radius = diameter / 2;
-    if (diameter < minCachedImage) {
+    if (diameter < minCachedSize) {
       // the area drawn by an oval is 1 larger than the area
       // filled by an oval
       --diameter;
@@ -483,9 +492,15 @@ class AtomShape implements Shape {
       g2.fillOval(x - radius, y - radius, diameter, diameter);
       g2.setColor(getDarker(color));
       g2.drawOval(x - radius, y - radius, diameter, diameter);
-    } else if (diameter < maxCachedImage) {
-      g2.drawImage(shadedImages[diameter], x - radius, y - radius, null);
+    } else if (diameter < maxCachedSize) {
+      int margin = diameter / smoothedMarginFactor;
+      g2.drawImage(shadedImages[diameter],
+                   x - radius - margin, y - radius - margin, null);
+    } else if (diameter < maxSmoothedSize) {
+      drawScaledShadedAtom(g2, shadedImages[0], x, y,
+                           diameter, diameter / smoothedMarginFactor);
     } else {
+      // too big ... just forget the smoothing
       Ellipse2D circle =
         new Ellipse2D.Float((float)(x-radius), (float)(y-radius),
                             (float)diameter, (float)diameter);
@@ -496,24 +511,19 @@ class AtomShape implements Shape {
     }
   }
   
-  private void loadShadedCache(Color color) {
-    Image shadedImages[] = new Image[maxCachedImage];
-    for (int d = minCachedImage; d < maxCachedImage; ++d) {
-      shadedImages[d] = generateShadedSphere(color, d, true);
+  private void loadShadedSphereCache(Color color) {
+    Image shadedImages[] = new Image[maxCachedSize];
+    for (int d = minCachedSize; d < maxCachedSize; ++d) {
+      shadedImages[d] = gradientPaintSphere(color, d, d/16, true);
     }
-    shadedImages[0] = generateShadedSphere(color, 50, false);
+    shadedImages[0] = gradientPaintSphere(color, scalableSize,
+                                          scalableSize/16, false);
     ballImages.put(color, shadedImages);
     }
 
-  private Image generateShadedSphere(Color color, int diameter,
-                                     boolean applyCircleMask) {
-    // Image img = sphereSetup(color, diameter, settings);
-    return gradientPaintSphere(color, diameter, applyCircleMask);
-  }
-
   private static Color colorTransparent = new Color(0, 0, 0, 0);
   private static Color colorGradScale = null;
-  private static BufferedImage gradScale = new BufferedImage(150, 1, 
+  private static BufferedImage gradScale = new BufferedImage(101, 1, 
                                            BufferedImage.TYPE_INT_ARGB);
   private static Graphics2D g2Scale = gradScale.createGraphics();
 
@@ -523,10 +533,10 @@ class AtomShape implements Shape {
     Color lighter = Color.white;
     Color darker = getDarker(color).darker();
     GradientPaint gp;
-    int lightPct = 3;
-    int lighteningPct = 15;
+    int lightPct = 2;
+    int lighteningPct = 20;
     int colorPct = 55;
-    int darkeningPct = 85;
+    int darkeningPct = 80;
 
     g2Scale.setPaint(lighter);
     g2Scale.drawLine(0, 0, lightPct, 0);
@@ -545,41 +555,53 @@ class AtomShape implements Shape {
     g2Scale.drawLine(colorPct, 0, darkeningPct, 0);
 
     g2Scale.setPaint(darker);
-    g2Scale.drawLine(darkeningPct, 0, 149, 0);
+    g2Scale.drawLine(darkeningPct, 0, 101, 0);
   }
 
   private BufferedImage gradientPaintSphere(Color color,
                                             int diameter,
+                                            int margin,
                                             boolean applyCircleMask) {
     checkGradientScale(color);
-    BufferedImage bi = new BufferedImage(diameter, diameter,
+    int size = diameter + (2 * margin);
+    BufferedImage bi = new BufferedImage(size, size,
                                          BufferedImage.TYPE_INT_ARGB);
     Graphics2D g = bi.createGraphics();
     g.setPaint(colorTransparent);
     g.fillRect(0, 0, diameter, diameter);
-    float shiny = 25f * diameter / 100;
+    float shiny = margin + (25f * diameter / 100);
 
-    for (int i = 0; i < diameter; ++ i) {
+    for (int i = 0; i < size; ++ i) {
       double i2Shiny = i-shiny; i2Shiny *= i2Shiny;
-      for (int j = 0; j < diameter; ++j) {
+      for (int j = 0; j < size; ++j) {
         double j2Shiny = j-shiny; j2Shiny *= j2Shiny;
         double mag = Math.sqrt(i2Shiny + j2Shiny);
         int pct = (int)(mag * 100 / diameter);
+        if (pct > 100) { pct = 100; };
         int co = gradScale.getRGB(pct, 0);
         bi.setRGB(i, j, co);
       }
     }
     if (applyCircleMask)
-      applyCircleMask(g, diameter);
+      applyCircleMask(g, diameter, margin);
     return bi;
   }
 
   private static byte[] mapRGBA;
   private static IndexColorModel cmMask;
+  private static int sizeMask = 0;
+  private static BufferedImage biMask = null;
+  private static Graphics2D g2Mask;
+  private static WritableRaster rasterMask;
+  private static BufferedImage biAlphaMask;
 
-  private void applyCircleMask(Graphics2D g, int diameter) {
-    // mth 2002 nov 123
-    // a 4 bit greyscale mask would be sufficient here, but there
+  // I am getting severe graphical artifacts around the edges when
+  // rendering hints are turned on. Therefore, I am adding a margin
+  // to shaded rendering in order to cut down on edge effects
+
+  private void applyCircleMask(Graphics2D g, int diameter, int margin) {
+    // mth 2002 nov 12
+    // a 4 bit greyscale mask would/should be sufficient here, but there
     // was a bug in my JVM (or a bug in my head) which prevented it
     // from working
     if (mapRGBA == null) {
@@ -589,20 +611,62 @@ class AtomShape implements Shape {
       }
       cmMask = new IndexColorModel(8, 256, mapRGBA, mapRGBA, mapRGBA, mapRGBA);
     }
-    BufferedImage biMask = new BufferedImage(diameter, diameter,
-                                             BufferedImage.TYPE_BYTE_GRAY);
-    Graphics2D gMask = biMask.createGraphics();
-    gMask.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                           RenderingHints.VALUE_ANTIALIAS_ON);
-    gMask.setPaint(Color.black);
-    gMask.fillRect(0, 0, diameter, diameter);
-    gMask.setPaint(Color.white);
-    gMask.fillOval(0, 0, diameter, diameter);
-    WritableRaster rasterMask = biMask.getRaster();
-    BufferedImage biAlphaMask =
-      new BufferedImage(cmMask, rasterMask, false, null);
+    int size = diameter + 2*margin;
+    if (size > sizeMask) {
+      sizeMask = size + size/2;
+      if (sizeMask < minShadingBufferSize)
+        sizeMask = minShadingBufferSize;
+      if (sizeMask > maxShadingBufferSize)
+        sizeMask = maxShadingBufferSize;
+      System.out.println("reallocating mask " + sizeMask);
+      biMask = new BufferedImage(sizeMask, sizeMask,
+                                 BufferedImage.TYPE_BYTE_GRAY);
+      g2Mask = biMask.createGraphics();
+      g2Mask.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                              RenderingHints.VALUE_ANTIALIAS_ON);
+      rasterMask = biMask.getRaster();
+      biAlphaMask = new BufferedImage(cmMask, rasterMask, false, null);
+    }
+    g2Mask.setPaint(Color.black);
+    g2Mask.fillRect(0, 0, size, size);
+    g2Mask.setPaint(Color.white);
+    g2Mask.fillOval(margin, margin, diameter, diameter);
+
+    Composite foo = g.getComposite();
     g.setComposite(AlphaComposite.DstIn);
     g.drawImage(biAlphaMask, 0, 0, null);
+    g.setComposite(foo);
+  }
+
+  private static int sizeShadingBuffer = 0;
+  private static BufferedImage biShadingBuffer = null;
+  private static Graphics2D g2ShadingBuffer = null;
+
+  void drawScaledShadedAtom(Graphics2D g2, Image image,
+                            int x, int y, int diameter, int margin) {
+    final int size = diameter + 2*margin;
+    if (size > sizeShadingBuffer) {
+      sizeShadingBuffer = size + (size / 2); // leave some room to grow
+      if (sizeShadingBuffer < minShadingBufferSize)
+        sizeShadingBuffer = minShadingBufferSize;
+      if (sizeShadingBuffer > maxShadingBufferSize)
+        sizeShadingBuffer = maxShadingBufferSize;
+      biShadingBuffer = new BufferedImage(sizeShadingBuffer, sizeShadingBuffer,
+                                          BufferedImage.TYPE_INT_ARGB);
+      g2ShadingBuffer = biShadingBuffer.createGraphics();
+      g2ShadingBuffer.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                              RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    }
+    g2ShadingBuffer.drawImage(image, 0, 0, size, size, null);
+    applyCircleMask(g2ShadingBuffer, diameter, margin);
+    int radius = diameter / 2;
+    int upperleftX = x - radius - margin;
+    int upperleftY = y - radius - margin;
+    int lowerrightX = upperleftX + diameter + margin;
+    int lowerrightY = upperleftY + diameter + margin;
+    g2.setClip(upperleftX, upperleftY, size, size);
+    g2.drawImage(biShadingBuffer, upperleftX, upperleftY, null);
+    g2.setClip(null);
   }
 
   /**

@@ -46,17 +46,18 @@ final class Line3D {
     }
   }
 
-  void drawDashedLine(int argb, int xA, int yA, int zA,
-                      int xB, int yB, int zB, int run, int rise) {
+  void drawDashedLine(int argbA, int argbB, int run, int rise,
+                      int xA, int yA, int zA,
+                      int xB, int yB, int zB) {
     int dxBA = xB - xA, dyBA = yB - yA, dzBA = zB - zA;
     switch (visibilityCheck(xA, yA, zA, xB, yB, zB)) {
     case VISIBILITY_UNCLIPPED:
-      plotDashedLineDeltaUnclipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
-                                   run, rise);
+      plotDashedLineDeltaUnclipped(argbA, argbB, run, rise,
+                                   xA, yA, zA, dxBA, dyBA, dzBA);
       break;
     case VISIBILITY_CLIPPED:
-      plotDashedLineDeltaClipped(argb, xA, yA, zA, dxBA, dyBA, dzBA,
-                                 run, rise);
+      plotDashedLineDeltaClipped(argbA, argbB, run, rise,
+                                 xA, yA, zA, dxBA, dyBA, dzBA);
     }
   }
 
@@ -133,89 +134,11 @@ final class Line3D {
     return code;
   }
 
-  void plotLineDeltaUnclipped(int argb,
-                              int x1, int y1, int z1, int dx, int dy, int dz) {
-    int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
-    int width = g3d.width;
-    int offset = y1 * width + x1;
-    if (z1 < zbuf[offset]) {
-      zbuf[offset] = (short)z1;
-      pbuf[offset] = argb;
-    }
-    if (dx == 0 && dy == 0)
-      return;
-
-    // int xCurrent = x1;
-    // int yCurrent = y1;
-    int xIncrement = 1;
-    // int yIncrement = 1;
-    int yOffsetIncrement = width;
-
-    if (dx < 0) {
-      dx = -dx;
-      xIncrement = -1;
-    }
-    if (dy < 0) {
-      dy = -dy;
-      // yIncrement = -1;
-      yOffsetIncrement = -width;
-    }
-    int twoDx = dx + dx, twoDy = dy + dy;
-
-    // the z dimension and the z increment are stored with a fractional
-    // component in the bottom 10 bits.
-    int zCurrentScaled = z1 << 10;
-    if (dy <= dx) {
-      int roundingFactor = dx - 1;
-      if (dz < 0) roundingFactor = -roundingFactor;
-      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
-      int twoDxAccumulatedYError = 0;
-      for (int n = dx - 1; --n >= 0; ) {
-        // xCurrent += xIncrement;
-        offset += xIncrement;
-        zCurrentScaled += zIncrementScaled;
-        twoDxAccumulatedYError += twoDy;
-        if (twoDxAccumulatedYError > dx) {
-          // yCurrent += yIncrement;
-          offset += yOffsetIncrement;
-          twoDxAccumulatedYError -= twoDx;
-        }
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = argb;
-        }
-      }
-      return;
-    }
-    int roundingFactor = dy - 1;
-    if (dy < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
-    int twoDyAccumulatedXError = 0;
-    for (int n = dy - 1; --n >= 0; ) {
-      // yCurrent += yIncrement;
-      offset += yOffsetIncrement;
-      zCurrentScaled += zIncrementScaled;
-      twoDyAccumulatedXError += twoDx;
-      if (twoDyAccumulatedXError > dy) {
-        // xCurrent += xIncrement;
-        offset += xIncrement;
-        twoDyAccumulatedXError -= twoDy;
-      }
-      int zCurrent = zCurrentScaled >> 10;
-      if (zCurrent < zbuf[offset]) {
-        zbuf[offset] = (short)zCurrent;
-        pbuf[offset] = argb;
-      }
-    }
-  }
-
-  void plotDashedLineDeltaUnclipped(int argb, int x, int y, int z,
-                                    int dx, int dy, int dz,
-                                    int run, int rise) {
+  void plotDashedLineDeltaUnclipped(int argb1, int argb2, int run, int rise, 
+                                    int x, int y, int z,
+                                    int dx, int dy, int dz) {
     if (rise >= run) {
-      plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
+      plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
       return;
     }
     int runIndex = 0;
@@ -225,7 +148,7 @@ final class Line3D {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
-      pbuf[offset] = argb;
+      pbuf[offset] = argb1;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -255,7 +178,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      for (int n = dx - 1; --n >= 0; ) {
+      for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
         // xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -268,44 +191,44 @@ final class Line3D {
         int zCurrent = zCurrentScaled >> 10;
         if (runIndex < rise  && zCurrent < zbuf[offset]) {
           zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = argb;
+          pbuf[offset] = n > nMid ? argb1 : argb2;
         }
         ++runIndex;
         if (runIndex == run)
           runIndex = 0;
       }
-      return;
-    }
-    int roundingFactor = dy - 1;
-    if (dy < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
-    int twoDyAccumulatedXError = 0;
-    for (int n = dy - 1; --n >= 0; ) {
-      // yCurrent += yIncrement;
-      offset += yOffsetIncrement;
-      zCurrentScaled += zIncrementScaled;
-      twoDyAccumulatedXError += twoDx;
-      if (twoDyAccumulatedXError > dy) {
-        // xCurrent += xIncrement;
-        offset += xIncrement;
-        twoDyAccumulatedXError -= twoDy;
+    } else {
+      int roundingFactor = dy - 1;
+      if (dy < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+      int twoDyAccumulatedXError = 0;
+      for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        // yCurrent += yIncrement;
+        offset += yOffsetIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          // xCurrent += xIncrement;
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (runIndex < rise && zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] = n > nMid ? argb1 : argb2;
+        }
+        ++runIndex;
+        if (runIndex == run)
+          runIndex = 0;
       }
-      int zCurrent = zCurrentScaled >> 10;
-      if (runIndex < rise && zCurrent < zbuf[offset]) {
-        zbuf[offset] = (short)zCurrent;
-        pbuf[offset] = argb;
-      }
-      ++runIndex;
-      if (runIndex == run)
-        runIndex = 0;
     }
   }
 
-  void plotDashedLineDeltaClipped(int argb, int x, int y, int z,
-                                  int dx, int dy, int dz,
-                                  int run, int rise) {
+  void plotDashedLineDeltaClipped(int argb1, int argb2, int run, int rise,
+                                  int x, int y, int z,
+                                  int dx, int dy, int dz) {
     if (rise >= run) {
-      plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
+      plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
       return;
     }
     int runIndex = 0;
@@ -316,7 +239,7 @@ final class Line3D {
     if (x >= 0 && x < width && y >= 0 && y < height) {
       if (z >= slab && z < zbuf[offset]) {
         zbuf[offset] = (short)z;
-        pbuf[offset] = argb;
+        pbuf[offset] = argb1;
       }
     }
     if (dx == 0 && dy == 0)
@@ -347,7 +270,7 @@ final class Line3D {
       if (dz < 0) roundingFactor = -roundingFactor;
       int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
       int twoDxAccumulatedYError = 0;
-      for (int n = dx - 1; --n >= 0; ) {
+      for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
         xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -363,40 +286,41 @@ final class Line3D {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent >= slab && zCurrent < zbuf[offset]) {
             zbuf[offset] = (short)zCurrent;
-            pbuf[offset] = argb;
+            pbuf[offset] = n > nMid ? argb1 : argb2;
           }
         }
         ++runIndex;
         if (runIndex == run)
           runIndex = 0;
       }
-    }
-    int roundingFactor = dy - 1;
-    if (dy < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
-    int twoDyAccumulatedXError = 0;
-    for (int n = dy - 1; --n > 0; ) {
-      yCurrent += yIncrement;
-      offset += yOffsetIncrement;
-      zCurrentScaled += zIncrementScaled;
-      twoDyAccumulatedXError += twoDx;
-      if (twoDyAccumulatedXError > dy) {
-        xCurrent += xIncrement;
-        offset += xIncrement;
-        twoDyAccumulatedXError -= twoDy;
-      }
-      if (runIndex < rise &&
-          xCurrent >= 0 && xCurrent < width &&
-          yCurrent >= 0 && yCurrent < height) {
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent >= slab && zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = argb;
+    } else {
+      int roundingFactor = dy - 1;
+      if (dy < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+      int twoDyAccumulatedXError = 0;
+      for (int n = dy - 1, nMid = n / 2; --n > 0; ) {
+        yCurrent += yIncrement;
+        offset += yOffsetIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          xCurrent += xIncrement;
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
         }
+        if (runIndex < rise &&
+            xCurrent >= 0 && xCurrent < width &&
+            yCurrent >= 0 && yCurrent < height) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = n > nMid ? argb1 : argb2;
+          }
+        }
+        ++runIndex;
+        if (runIndex == run)
+          runIndex = 0;
       }
-      ++runIndex;
-      if (runIndex == run)
-        runIndex = 0;
     }
   }
 
@@ -587,26 +511,26 @@ final class Line3D {
           pbuf[offset] = n > nMid ? argb1 : argb2;
         }
       }
-      return;
-    }
-    int roundingFactor = dy - 1;
-    if (dz < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
-    int twoDyAccumulatedXError = 0;
-    for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
-      // yCurrent += yIncrement;
-      offset += yOffsetIncrement;
-      zCurrentScaled += zIncrementScaled;
-      twoDyAccumulatedXError += twoDx;
-      if (twoDyAccumulatedXError > dy) {
-        // xCurrent += xIncrement;
-        offset += xIncrement;
-        twoDyAccumulatedXError -= twoDy;
-      }
-      int zCurrent = zCurrentScaled >> 10;
-      if (zCurrent < zbuf[offset]) {
-        zbuf[offset] = (short)zCurrent;
-        pbuf[offset] = n > nMid ? argb1 : argb2;
+    } else {
+      int roundingFactor = dy - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+      int twoDyAccumulatedXError = 0;
+      for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        // yCurrent += yIncrement;
+        offset += yOffsetIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          // xCurrent += xIncrement;
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] = n > nMid ? argb1 : argb2;
+        }
       }
     }
   }
@@ -671,28 +595,28 @@ final class Line3D {
           }
         }
       }
-      return;
-    }
-    int roundingFactor = dy - 1;
-    if (dz < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
-    int twoDyAccumulatedXError = 0;
-    for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
-      yCurrent += yIncrement;
-      offset += yOffsetIncrement;
-      zCurrentScaled += zIncrementScaled;
-      twoDyAccumulatedXError += twoDx;
-      if (twoDyAccumulatedXError > dy) {
-        xCurrent += xIncrement;
-        offset += xIncrement;
-        twoDyAccumulatedXError -= twoDy;
-      }
-      if (xCurrent >= 0 && xCurrent < width &&
-          yCurrent >= 0 && yCurrent < height) {
-        int zCurrent = zCurrentScaled >> 10;
-        if (zCurrent >= slab && zCurrent < zbuf[offset]) {
-          zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = n > nMid ? argb1 : argb2;
+    } else {
+      int roundingFactor = dy - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+      int twoDyAccumulatedXError = 0;
+      for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        yCurrent += yIncrement;
+        offset += yOffsetIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          xCurrent += xIncrement;
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        if (xCurrent >= 0 && xCurrent < width &&
+            yCurrent >= 0 && yCurrent < height) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = n > nMid ? argb1 : argb2;
+          }
         }
       }
     }

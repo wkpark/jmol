@@ -342,25 +342,23 @@ final public class Graphics3D {
     platform.clearScreenBuffer(argbBackground, rectClip);
   }
 
-  public void drawDottedLine(short colix,
+  public void drawDashedLine(short colix, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawDashedLine(Colix.getArgb(colix), x1, y1, z1, x2, y2, z2,
-                          2, 1);
+    int argb = Colix.getArgb(colix);
+    line3d.drawDashedLine(argb, argb, run, rise, x1, y1, z1, x2, y2, z2);
   }
 
-  public void drawDottedLine(short colix1, short colix2,
+  public void drawDottedLine(short colix,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
-    int argb1 = Colix.getArgb(colix1);
-    if (colix1 == colix2) {
-      line3d.drawDashedLine(argb1, x1, y1, z1, x2, y2, z2, 2, 1);
-      return;
-    }
-    int xMid = (x1 + x2) / 2;
-    int yMid = (y1 + y2) / 2;
-    int zMid = (z1 + z2) / 2;
-    line3d.drawDashedLine(argb1, x1, y1, z1, xMid, yMid, zMid, 2, 1);
-    line3d.drawDashedLine(Colix.getArgb(colix2), xMid, yMid, zMid, x2, y2, z2,
-                          2, 1);
+    int argb = Colix.getArgb(colix);
+    line3d.drawDashedLine(argb, argb, 2, 1, x1, y1, z1, x2, y2, z2);
+  }
+
+  public void drawDashedLine(short colix1, short colix2, int run, int rise,
+                             int x1, int y1, int z1, int x2, int y2, int z2) {
+        
+    line3d.drawDashedLine(Colix.getArgb(colix1), Colix.getArgb(colix2),
+                          run, rise, x1, y1, z1, x2, y2, z2);
   }
   
 
@@ -378,14 +376,21 @@ final public class Graphics3D {
   }
 
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
-    line3d.drawDashedLine(Colix.getArgb(colix),
-                          pointA.x, pointA.y, pointA.z,
-                          pointB.x, pointB.y, pointB.z,
-                          2, 1);
+    drawDashedLine(colix, 2, 1, pointA, pointB);
   }
 
-  public void drawDottedLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    line3d.drawDashedLine(argbCurrent, x1, y1, z1, x2, y2, z2, 2, 1);
+  public void drawDashedLine(short colix, int run, int rise,
+                             Point3i pointA, Point3i pointB) {
+    int argb = Colix.getArgb(colix);
+    line3d.drawDashedLine(argb, argb, run, rise,
+                          pointA.x, pointA.y, pointA.z,
+                          pointB.x, pointB.y, pointB.z);
+  }
+
+  public void drawDashedLine(int run, int rise,
+                             int x1, int y1, int z1, int x2, int y2, int z2) {
+    line3d.drawDashedLine(argbCurrent, argbCurrent, run, rise,
+                          x1, y1, z1, x2, y2, z2);
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
@@ -809,23 +814,12 @@ final public class Graphics3D {
     }
   }
   
-  void plotLineDelta(int argb, int x, int y, int z, int dx, int dy, int dz) {
-    if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
-        y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
-        z < slab || z + dz < slab)
-      line3d.plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
-    else
-      line3d.plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
-  }
-
   void plotLineDelta(int argb1, int argb2,
                      int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
         z < slab || z + dz < slab)
       line3d.plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
-    else if (argb1 == argb2)
-      line3d.plotLineDeltaUnclipped(argb1, x, y, z, dx, dy, dz);
     else 
       line3d.plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
   }

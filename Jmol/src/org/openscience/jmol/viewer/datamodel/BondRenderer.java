@@ -160,12 +160,12 @@ class BondRenderer extends Renderer {
       boolean tDotted = (dottedMask & 1) != 0;
       if (lineBond) {
         if (tDotted)
-          g3d.drawDottedLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+          g3d.drawDashedLine(colixA, colixB, 6, 3, xA, yA, zA, xB, yB, zB);
         else 
           g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
         if (tDotted)
-          g3d.drawDottedLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+          g3d.drawDashedLine(colixA, colixB, 6, 3, xA, yA, zA, xB, yB, zB);
         else
           g3d.fillCylinder(colixA, colixB, endcaps,
                          width, xA, yA, zA, xB, yB, zB);
@@ -182,14 +182,14 @@ class BondRenderer extends Renderer {
       dottedMask >>= 1;
       if (lineBond) {
         if (tDotted)
-          g3d.drawDottedLine(colixA, colixB,
+          g3d.drawDashedLine(colixA, colixB, 6, 3,
                              xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
         else
           g3d.drawLine(colixA, colixB,
                        xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
       } else {
         if (tDotted)
-          g3d.drawDottedLine(colixA, colixB,
+          g3d.drawDashedLine(colixA, colixB, 6, 3,
                              xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
         else
           g3d.fillCylinder(colixA, colixB, endcaps, width,
@@ -276,7 +276,7 @@ class BondRenderer extends Renderer {
   private void renderDotted() {
     if (dx == 0 && dy == 0)
       return;
-    g3d.drawDottedLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    g3d.drawDashedLine(colixA, colixB, 6, 3, xA, yA, zA, xB, yB, zB);
   }
 
   private static float wideWidthAngstroms = 0.4f;

@@ -64,8 +64,8 @@ public class Cylinder3D {
                      int dxB, int dyB, int dzB) {
     this.diameter = diameter;
     if (diameter <= 1) {
-      if (diameter == 1)
-        g3d.plotLineDelta(colixA, colixB, xA, yA, zA, dxB, dyB, dzB);
+      g3d.plotLineDelta(Colix.getArgb(colixA), Colix.getArgb(colixB),
+                        xA, yA, zA, dxB, dyB, dzB);
       return;
     }
     this.xA = xA; this.yA = yA; this.zA = zA;
@@ -325,7 +325,7 @@ public class Cylinder3D {
     this.diameter = diameter;
     if (diameter <= 1) {
       if (diameter == 1)
-        g3d.plotLineDelta(colixA, xA, yA, zA, dxB, dyB, dzB);
+        g3d.plotLineDelta(colixA, colixA, xA, yA, zA, dxB, dyB, dzB);
       return;
     }
     this.endcaps = endcap;
@@ -354,11 +354,14 @@ public class Cylinder3D {
                        yRaster[i] + "," + zRaster[i] + ")" +
                        " iUp=" + iUp);
     */
-    g3d.plotLineDelta(shadesA[iUp],
+    int argb = shadesA[iUp];
+    g3d.plotLineDelta(argb, argb,
                       xUp, yUp, zUp, xTip - xUp, yTip - yUp, zTip - zUp);
-    if (! (endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0))
-      g3d.plotLineDelta(shadesA[0],
+    if (! (endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
+      argb = shadesA[0];
+      g3d.plotLineDelta(argb, argb,
                         xDn, yDn, zDn, xTip - xDn, yTip - yDn, zTip - zDn);
+    }
   }
 
   void calcArgbEndcap(boolean tCylinder) {

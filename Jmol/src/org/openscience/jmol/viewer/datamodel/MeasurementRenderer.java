@@ -86,7 +86,7 @@ class MeasurementRenderer extends Renderer {
     if (zA < 0) zA = 0;
     int zB = atomB.z - zOffset;
     if (zB < 0) zB = 0;
-    g3d.drawDottedLine(colixDistance,
+    g3d.drawDashedLine(colixDistance, 2, 1,
                        atomA.x, atomA.y, zA, atomB.x, atomB.y, zB);
     paintMeasurementString((atomA.x + atomB.x) / 2,
                            (atomA.y + atomB.y) / 2,

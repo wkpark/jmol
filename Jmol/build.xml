@@ -12,8 +12,8 @@
   <property name="tests.classes.dir" value="${build.dir}/classes-tests" />
   <property name="applet.classes.dir" value="${build.dir}/applet-classes" />
   <property name="tests.dir" value="${build.dir}/unit.tests" />
-  <property name="dist.dir" value="dist" />
-  <property name="sourcedist.dir" value="sourcedist" />
+  <property name="dist.dir" value="${build.dir}/dist" />
+  <property name="sourcedist.dir" value="${build.dir}/sourcedist" />
   <property name="doc.dir" value="doc" />
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
@@ -207,6 +207,7 @@
         <exclude name="swing.jar" />
         <exclude name="junit.jar" />
         <exclude name="saxon.jar" />
+        <exclude name="baysmith-io.jar" />
       </fileset>
     </copy>
     <copy todir="${dist.dir}/jmol-${version}" >
@@ -237,6 +238,9 @@
         <exclude name="junit.jar" />
         <exclude name="multi.jar" />
         <exclude name="saxon.jar" />
+        <exclude name="gnujaxp.jar" />
+        <exclude name="baysmith-io.jar" />
+        <exclude name="itext-0.94.jar" />
       </fileset>
     </copy>
     <copy todir="${dist.dir}/jmol-applet-${version}" >
@@ -297,15 +301,16 @@
   
 
   <target name="dist.zip" depends="dist">
-    <zip zipfile="jmol-${version}.zip" basedir="${dist.dir}"
+    <zip zipfile="${build.dir}/jmol-${version}.zip" basedir="${dist.dir}"
       includes="jmol-${version}/**" />
     
-    <zip zipfile="jmol-applet-${version}.zip" basedir="${dist.dir}"
+    <zip zipfile="${build.dir}/jmol-applet-${version}.zip" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**" />
   </target>
 
   <target name="dist.tar.gz" depends="dist">
-    <tar tarfile="jmol-${version}.tar" basedir="${dist.dir}" excludes="**">
+    <tar tarfile="${build.dir}/jmol-${version}.tar" basedir="${dist.dir}"
+        excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
            for a problem in Ant 1.3 -->
       <tarfileset dir="${dist.dir}" mode="755">
@@ -318,13 +323,15 @@
         <exclude name="jmol-${version}/jmol.bat"/>
       </tarfileset>
     </tar>
-    <gzip zipfile="jmol-${version}.tar.gz" src="jmol-${version}.tar"/>
-    <delete file="jmol-${version}.tar" />
+    <gzip zipfile="${build.dir}/jmol-${version}.tar.gz"
+        src="${build.dir}/jmol-${version}.tar"/>
+    <delete file="${build.dir}/jmol-${version}.tar" />
     
-    <tar tarfile="jmol-applet-${version}.tar" basedir="${dist.dir}"
-      includes="jmol-applet-${version}/**"/>
-    <gzip zipfile="jmol-applet-${version}.tar.gz" src="jmol-applet-${version}.tar"/>
-    <delete file="jmol-applet-${version}.tar" />
+    <tar tarfile="${build.dir}/jmol-applet-${version}.tar" basedir="${dist.dir}"
+      includes="${build.dir}/jmol-applet-${version}/**"/>
+    <gzip zipfile="${build.dir}/jmol-applet-${version}.tar.gz"
+        src="${build.dir}/jmol-applet-${version}.tar"/>
+    <delete file="${build.dir}/jmol-applet-${version}.tar" />
   </target>
 
   <target name="sourcedist">
@@ -354,12 +361,13 @@
   </target>
 
   <target name="sourcedist.zip" depends="sourcedist">
-    <zip zipfile="jmol-${version}.source.zip" basedir="${sourcedist.dir}" includes="**" />
+    <zip zipfile="${build.dir}/jmol-${version}.source.zip"
+        basedir="${sourcedist.dir}" includes="**" />
   </target>
 
   <target name="sourcedist.tar.gz" depends="sourcedist">
-    <tar tarfile="jmol-${version}.source.tar" basedir="${sourcedist.dir}"
-        excludes="**">
+    <tar tarfile="${build.dir}/jmol-${version}.source.tar"
+        basedir="${sourcedist.dir}" excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
            for a problem in Ant 1.3 -->
       <tarfileset dir="${sourcedist.dir}" mode="755">
@@ -372,8 +380,9 @@
         <exclude name="jmol-${version}/jmol.bat"/>
       </tarfileset>
     </tar>
-    <gzip zipfile="jmol-${version}.source.tar.gz" src="jmol-${version}.source.tar"/>
-    <delete file="jmol-${version}.source.tar" />
+    <gzip zipfile="${build.dir}/jmol-${version}.source.tar.gz"
+        src="${build.dir}/jmol-${version}.source.tar"/>
+    <delete file="${build.dir}/jmol-${version}.source.tar" />
   </target>
 
   <target name="clean">
@@ -390,15 +399,7 @@
 
   <target name="spotless" depends="clean">
     <delete dir="${build.dir}"/>
-    <delete>
-      <fileset dir=".">
-        <include name="jmol-*.zip" />
-        <include name="jmol-*.tar.gz" />
-      </fileset>
-    </delete>
     <delete dir="${javadoc.dir}"/>
-    <delete dir="${dist.dir}"/>
-    <delete dir="${sourcedist.dir}"/>
   </target>
   
   <target name="run" depends="classes">

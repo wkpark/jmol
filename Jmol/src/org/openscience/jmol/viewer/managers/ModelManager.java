@@ -79,7 +79,6 @@ public class ModelManager {
       }
       modelFileHeader = modelAdapter.getModelFileHeader(clientFile);
       frame = frameBuilder.buildFrame(clientFile);
-
       haveFile = true;
     }
   }
@@ -103,6 +102,10 @@ public class ModelManager {
 
   public String getModelFileHeader() {
     return modelFileHeader;
+  }
+
+  public boolean hasVibrationVectors() {
+    return frame.hasVibrationVectors();
   }
 
   public float getRotationRadius() {
@@ -253,8 +256,10 @@ public class ModelManager {
 
     // be sure to intern all propertyNames!
     propertyName = propertyName.intern();
+    /*
     System.out.println("propertyName=" + propertyName + "\n" +
                        "value=" + value);
+    */
 
     // Hashtables cannot store null values :-(
     props.put(propertyName, value != null ? value : NULL_SURROGATE);

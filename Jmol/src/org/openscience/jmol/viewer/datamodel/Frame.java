@@ -64,6 +64,8 @@ final public class Frame {
   Matrix3f matrixEuclideanToFractional;
   Matrix3f matrixFractionalToEuclidean;
 
+  boolean hasVibrationVectors;
+
   BitSet elementsPresent;
   BitSet groupsPresent;
 
@@ -77,8 +79,6 @@ final public class Frame {
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.g3d;
 
-    checkShape(JmolConstants.SHAPE_BALLS);
-    checkShape(JmolConstants.SHAPE_STICKS);
   }
 
   FrameExportModelAdapter exportModelAdapter;
@@ -90,13 +90,21 @@ final public class Frame {
   }
 
   void freeze() {
+    ////////////////////////////////////////////////////////////////
+    // convert fractional coordinates to cartesian
     if (notionalUnitcell != null)
       doUnitcellStuff();
+
+    ////////////////////////////////////////////////////////////////
+    // perform bonding if necessary
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
           (modelTypeName == "pdb" && (bondCount < (atomCount / 2))))
         rebond(false);
     }
+
+    ////////////////////////////////////////////////////////////////
+    // resize arrays
     if (atomCount < atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount);
     if (clientAtomReferences != null &&
@@ -105,10 +113,26 @@ final public class Frame {
         (Object[])Util.setLength(clientAtomReferences, atomCount);
     if (bondCount < bonds.length)
       bonds = (Bond[])Util.setLength(bonds, bondCount);
+
+    ////////////////////////////////////////////////////////////////
+    // see if there are any vectors
+    for (int i = atomCount; --i >= 0; )
+      if (atoms[i].vibrationVector != null) {
+        hasVibrationVectors = true;
+      }
+
+    ////////////////////////////////////////////////////////////////
+    //
     hackAtomSerialNumbersForAnimations();
+
+    ////////////////////////////////////////////////////////////////
+    // find things for the popup menus
     findElementsPresent();
     findGroupsPresent();
     mmset.freeze();
+
+    checkShape(JmolConstants.SHAPE_BALLS);
+    checkShape(JmolConstants.SHAPE_STICKS);
   }
 
   void hackAtomSerialNumbersForAnimations() {
@@ -188,6 +212,10 @@ final public class Frame {
   void bondAtoms(Atom atom1, Atom atom2,
                              int order) {
     addBond(atom1.bondMutually(atom2, order));
+  }
+
+  public boolean hasVibrationVectors() {
+    return hasVibrationVectors;
   }
 
   Shape allocateShape(int shapeType) {

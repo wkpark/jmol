@@ -48,7 +48,7 @@ abstract public class Shape {
 
   void setSize(int size, BitSet bsSelected) {
   }
-
+  
   void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     System.out.println("unassigned property:" + propertyName + ":" + value);

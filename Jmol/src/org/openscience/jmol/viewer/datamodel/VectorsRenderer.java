@@ -32,6 +32,8 @@ import javax.vecmath.*;
 class VectorsRenderer extends ShapeRenderer {
 
   void render() {
+    if (! frame.hasVibrationVectors)
+      return;
     Atom[] atoms = frame.atoms;
     Vectors vectors = (Vectors)shape;
     short[] mads = vectors.mads;
@@ -65,17 +67,38 @@ class VectorsRenderer extends ShapeRenderer {
     if (atom.madAtom == JmolConstants.MAR_DELETED)
       return false;
 
-    Vector3f vibrationVector = atom.vibrationVector;
-    pointVectorEnd.add(atom.point3f, vibrationVector);
-    viewer.transformPoint(pointVectorEnd, vibrationVector, screenVectorEnd);
+    // to have the vectors stay in the the same spot
+    /*
+    float vectorScale = viewer.getVectorScale();
+    pointVectorEnd.scaleAdd(vectorScale, atom.vibrationVector, atom.point3f);
+    viewer.transformPoint(pointVectorEnd, screenVectorEnd);
     diameter = (mad <= 20)
       ? mad
       : viewer.scaleToScreen(screenVectorEnd.z, mad);
-    pointArrowHead.scaleAdd(arrowHeadBase, vibrationVector, atom.point3f);
-    viewer.transformPoint(pointArrowHead, vibrationVector, screenArrowHead);
+    pointArrowHead.scaleAdd(vectorScale * arrowHeadBase,
+                            atom.vibrationVector, atom.point3f);
+    viewer.transformPoint(pointArrowHead, screenArrowHead);
     headWidthPixels = diameter * 3 / 2;
-    if (headWidthPixels < 3)
-      headWidthPixels = 3;
+    if (headWidthPixels < diameter + 2)
+      headWidthPixels = diameter + 2;
+    return true;
+    */
+
+    // to have the vectors move when vibration is turned on
+    float vectorScale = viewer.getVectorScale();
+    pointVectorEnd.scaleAdd(vectorScale, atom.vibrationVector, atom.point3f);
+    viewer.transformPoint(pointVectorEnd, atom.vibrationVector,
+                          screenVectorEnd);
+    diameter = (mad <= 20)
+      ? mad
+      : viewer.scaleToScreen(screenVectorEnd.z, mad);
+    pointArrowHead.scaleAdd(vectorScale * arrowHeadBase,
+                            atom.vibrationVector, atom.point3f);
+    viewer.transformPoint(pointArrowHead, atom.vibrationVector,
+                          screenArrowHead);
+    headWidthPixels = diameter * 3 / 2;
+    if (headWidthPixels < diameter + 2)
+      headWidthPixels = diameter + 2;
     return true;
   }
   

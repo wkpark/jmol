@@ -146,8 +146,6 @@ final public class JmolViewer {
     return mouseManager.handleOldJvm10Event(e);
   }
 
-  private boolean structuralChange = false;
-
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
     // figure out the interaction with the current holdRepaint setting
@@ -155,18 +153,6 @@ final public class JmolViewer {
     selectAll();
     transformManager.homePosition();
     refresh();
-  }
-
-  public boolean hasStructuralChange() {
-    return structuralChange;
-  }
-
-  public void setStructuralChange() {
-    this.structuralChange = true;
-  }
-
-  public void resetStructuralChange() {
-    structuralChange = false;
   }
 
   public final Hashtable imageCache = new Hashtable();
@@ -976,7 +962,10 @@ final public class JmolViewer {
     homePosition();
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
-    setStructuralChange();
+    // there probably needs to be a better startup mechanism for shapes
+    if (modelManager.hasVibrationVectors())
+      setShapeSize(JmolConstants.SHAPE_VECTORS, 1);
+    
     popHoldRepaint();
   }
 
@@ -984,6 +973,7 @@ final public class JmolViewer {
     repaintManager.clearAnimation();
     transformManager.clearVibration();
     modelManager.setClientFile(null, null, null);
+    selectionManager.clearSelection();
     clearMeasurements();
     refresh();
   }
@@ -1133,7 +1123,6 @@ final public class JmolViewer {
 
   public void rebond() {
     modelManager.rebond();
-    structuralChange = true;
     refresh();
   }
 
@@ -1963,7 +1952,6 @@ final public class JmolViewer {
 
   public void setShowVectors(boolean showVectors) {
     styleManager.setShowVectors(showVectors);
-    setStructuralChange();
     refresh();
   }
 

@@ -6,9 +6,9 @@
   <body>
     <form> <!-- form tags should always be used around UI controls -->
       <script>
-        jmolInitialize("../../jmol",
-                       "../../browsercheck/unsupportedBrowser.html",
-                       "../../browsercheck/noJava.html");
+        jmolInitialize("../../jmol");
+        jmolCheckBrowser("popup", "../../browsercheck", "onClick");
+
         jmolSetAppletColor("skyblue"); // if you don't want black
 
 	// 200x200 & file from another directory

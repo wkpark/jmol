@@ -6,9 +6,8 @@
   </head>
   <body>
     <script>
-      jmolInitialize("../../jmol",
-                     "../../browsercheck/unsupportedBrowser.html",
-                     "../../browsercheck/noJava.html");
+      jmolInitialize("../../jmol");
+      jmolCheckBrowser("popup", "../../browsercheck", "onClick");
     </script>
     <form>
       <table border="1">

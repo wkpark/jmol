@@ -176,7 +176,8 @@ public class Measure extends JDialog {
    */
   public Measure(JFrame f, DisplayPanel dp) {
 
-    super(f, "Measure", false);
+    super(f, JmolResourceHandler.getInstance()
+             .getString("Measure.windowTitle"), false);
     this.display = dp;
     commands = new Hashtable();
     Action[] actions = getActions();
@@ -315,10 +316,14 @@ public class Measure extends JDialog {
     for (int i = 0; i < 4; i++) {
       if (selection[i] == measured) {
 
-        String error = "You must have " + measure
-                         + " unique atoms for this measurement.";
+        JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 
-        JOptionPane.showMessageDialog(null, error, "Invalid Input",
+        String error = jrh.translate("You must have") + " " +
+                       measure + " " +
+                       jrh.translate("unique atoms for this measurement.");
+
+        JOptionPane.showMessageDialog(null, error,
+            jrh.translate("Invalid Input"),
             JOptionPane.ERROR_MESSAGE);
         return;
       }
@@ -349,8 +354,11 @@ public class Measure extends JDialog {
         boolean ok = mlist.deleteMatchingAngle(selection[0], selection[1],
                        selection[2]);
         if (!ok) {
-          String error = "No matching Angle was found";
-          JOptionPane.showMessageDialog(null, error, "Invalid Input",
+          JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+
+          String error = jrh.translate("No matching Angle was found");
+          JOptionPane.showMessageDialog(null, error,
+              jrh.translate("Invalid Input"),
               JOptionPane.ERROR_MESSAGE);
         }
       }
@@ -365,8 +373,11 @@ public class Measure extends JDialog {
         boolean ok = mlist.deleteMatchingDihedral(selection[0], selection[1],
                        selection[2], selection[3]);
         if (!ok) {
-          String error = "No matching Dihedral was found";
-          JOptionPane.showMessageDialog(null, error, "Invalid Input",
+          JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+
+          String error = jrh.translate("No matching Dihedral was found");
+          JOptionPane.showMessageDialog(null, error,
+              jrh.translate("Invalid Input"),
               JOptionPane.ERROR_MESSAGE);
         }
       }
@@ -379,8 +390,11 @@ public class Measure extends JDialog {
       } else {
         boolean ok = mlist.deleteMatchingDistance(selection[0], selection[1]);
         if (!ok) {
-          String error = "No matching Distance was found";
-          JOptionPane.showMessageDialog(null, error, "Invalid Input",
+          JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+
+          String error = jrh.translate("No matching Distance was found");
+          JOptionPane.showMessageDialog(null, error,
+              jrh.translate("Invalid Input"),
               JOptionPane.ERROR_MESSAGE);
         }
       }

@@ -64,7 +64,8 @@ public class MeasurementList extends JDialog {
   protected ListNode distances, angles, dihedrals;
   protected DefaultTreeModel treeModel;
   protected JTree tree;
-  protected JButton xButton = new JButton("Delete Measurement");
+  protected JButton xButton = new JButton(
+    JmolResourceHandler.getInstance().translate("Delete Measurement"));
 
   private Vector distanceList = new Vector(10);
   private Vector angleList = new Vector(10);

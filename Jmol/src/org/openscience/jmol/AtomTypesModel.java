@@ -32,8 +32,8 @@ class AtomTypesModel extends AbstractTableModel {
   protected int numRows = 0;
 
   protected static final String[] names = {
-    "Atom Type", "Base\nAtom Type", "Atomic\nNumber", "Atomic\nMass",
-    "Van derWaals\nRadius", "Covalent\nRadius", "Color"
+    "Atom Type", "Base Atom Type", "Atomic Number", "Atomic Mass",
+    "Van derWaals Radius", "Covalent Radius", "Color"
   };
   protected static final Class[] classes = {
     String.class, String.class, Integer.class, Double.class, Double.class,
@@ -54,7 +54,7 @@ class AtomTypesModel extends AbstractTableModel {
     if ((index < 0) || (index > names.length)) {
       return null;
     }
-    return names[index];
+    return JmolResourceHandler.getInstance().translate(names[index]);
   }
 
   public synchronized int getColumnCount() {

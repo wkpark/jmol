@@ -387,9 +387,13 @@ public class AtomTypeTable extends JDialog implements ActionListener {
           colorEditor.currentColor = colorChooser.getColor();
         }
       };
-      final JDialog dialog = JColorChooser.createDialog(button,
-                               "Pick a Color", true, colorChooser,
-                               okListener, null);    //XXXDoublecheck this is OK
+      final JDialog dialog = JColorChooser
+          .createDialog(button,
+                        JmolResourceHandler.getInstance()
+                        .translate("Pick a Color"),
+                        true, colorChooser,
+                        okListener, null);
+                        // XXX Doublecheck this is OK
 
       //Here's the code that brings up the dialog.
       button.addActionListener(new ActionListener() {

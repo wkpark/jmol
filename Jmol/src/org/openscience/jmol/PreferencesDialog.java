@@ -159,7 +159,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   public PreferencesDialog(JFrame f, DisplayPanel dp) {
 
-    super(f, "Preferences", false);
+    super(f, false);
+    JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+    this.setTitle(jrh.translate("Preferences"));
+
     this.display = dp;
     initVariables();
     commands = new Hashtable();
@@ -178,43 +181,29 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel vectors = buildVectorsPanel();
     JPanel colors = buildColorsPanel();
     JPanel vibrate = buildVibratePanel();
-    tabs.addTab(JmolResourceHandler.getInstance()
-        .getString("Prefs.displayLabel"), null, disp);
-    tabs.addTab(JmolResourceHandler.getInstance()
-        .getString("Prefs.atomsLabel"), null, atoms);
-    tabs.addTab(JmolResourceHandler.getInstance()
-        .getString("Prefs.bondsLabel"), null, bonds);
-    tabs.addTab(JmolResourceHandler.getInstance()
-        .getString("Prefs.vectorsLabel"), null, vectors);
-    tabs.addTab(JmolResourceHandler.getInstance()
-        .getString("Prefs.colorsLabel"), null, colors);
-    tabs.addTab(JmolResourceHandler.getInstance()
-        .getString("Prefs.vibrateLabel"), null, vibrate);
+    tabs.addTab(jrh.getString("Prefs.displayLabel"), null, disp);
+    tabs.addTab(jrh.getString("Prefs.atomsLabel"), null, atoms);
+    tabs.addTab(jrh.getString("Prefs.bondsLabel"), null, bonds);
+    tabs.addTab(jrh.getString("Prefs.vectorsLabel"), null, vectors);
+    tabs.addTab(jrh.getString("Prefs.colorsLabel"), null, colors);
+    tabs.addTab(jrh.getString("Prefs.vibrateLabel"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    resetButton =
-      new JButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.resetLabel"));
+    resetButton = new JButton(jrh.getString("Prefs.resetLabel"));
     resetButton.addActionListener(this);
     buttonPanel.add(resetButton);
-    
-    cancelButton =
-      new JButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.cancelButton"));
+
+    cancelButton = new JButton(jrh.getString("Prefs.cancelButton"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
-    
-    applyButton =
-      new JButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.applyButton"));
+
+    applyButton = new JButton(jrh.getString("Prefs.applyButton"));
     applyButton.addActionListener(this);
     buttonPanel.add(applyButton);
-    
-    okButton =
-      new JButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.okLabel"));
+
+    okButton = new JButton(jrh.getString("Prefs.okLabel"));
     okButton.addActionListener(this);
     buttonPanel.add(okButton);
     getRootPane().setDefaultButton(okButton);
@@ -222,9 +211,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     container.add(tabs, BorderLayout.CENTER);
     container.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(container);
-    
+
     updateComponents();
-    
+
     pack();
     centerDialog();
   }

@@ -40,14 +40,11 @@ final public class FrameBuilder {
     this.adapter = adapter;
   }
 
-  boolean fileHasHbonds;
-
   public Frame buildFrame(Object clientFile) {
     long timeBegin = System.currentTimeMillis();
     String fileTypeName = adapter.getFileTypeName(clientFile);
-    initializeBuild(adapter.getEstimatedAtomCount(clientFile));
-
     Frame frame = new Frame(viewer, fileTypeName);
+    initializeBuild(frame, adapter.getEstimatedAtomCount(clientFile));
 
     /****************************************************************
      * crystal cell must come first, in case atom coordinates
@@ -98,13 +95,15 @@ final public class FrameBuilder {
               iterAtom.getClientAtomReference());
     }
 
-    fileHasHbonds = false;
+    frame.fileHasHbonds = false;
+
     {
       JmolAdapter.BondIterator iterBond =
         adapter.getBondIterator(clientFile);
       if (iterBond != null)
         while (iterBond.hasNext())
-          bondAtoms(iterBond.getAtomUniqueID1(),
+          bondAtoms(frame,
+                    iterBond.getAtomUniqueID1(),
                     iterBond.getAtomUniqueID2(),
                     iterBond.getEncodedOrder());
     }
@@ -120,13 +119,6 @@ final public class FrameBuilder {
                               iterStructure.getEndChainID(),
                               iterStructure.getEndSequenceNumber(),
                               iterStructure.getEndInsertionCode());
-    frame.atomCount = atomCount;
-    frame.atoms = atoms;
-    frame.clientAtomReferences = clientAtomReferences;
-    frame.bondCount = bondCount;
-    frame.bonds = bonds;
-    frame.fileHasHbonds = fileHasHbonds;
-
     frame.doUnitcellStuff();
     frame.doAutobond();
     finalizeGroupBuild(frame);
@@ -168,29 +160,28 @@ final public class FrameBuilder {
   int currentGroupSequenceNumber;
   char currentGroupInsertionCode;
   
+  /*
   int atomCount;
   Atom[] atoms;
   Object[] clientAtomReferences;
 
   int bondCount;
   Bond[] bonds;
+  */
 
   private final Hashtable htAtomMap = new Hashtable();
 
 
-  void initializeBuild(int atomCountEstimate) {
+  void initializeBuild(Frame frame, int atomCountEstimate) {
     currentModel = null;
     currentChainID = '\uFFFF';
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
 
-    this.atomCount = 0;
     if (atomCountEstimate <= 0)
       atomCountEstimate = ATOM_GROWTH_INCREMENT;
-    atoms = new Atom[atomCountEstimate];
-    clientAtomReferences = null;
-    this.bondCount = 0;
-    bonds = new Bond[2 * atomCountEstimate];
+    frame.atoms = new Atom[atomCountEstimate];
+    frame.bonds = new Bond[2 * atomCountEstimate];
     htAtomMap.clear();
     initializeGroupBuild();
   }
@@ -198,9 +189,6 @@ final public class FrameBuilder {
   void finalizeBuild() {
     currentModel = null;
     currentChain = null;
-    atoms = null;
-    clientAtomReferences = null;
-    bonds = null;
     htAtomMap.clear();
   }
 
@@ -235,11 +223,15 @@ final public class FrameBuilder {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
       startGroup(currentChain, group3,
-                 groupSequenceNumber, groupInsertionCode, atomCount);
+                 groupSequenceNumber, groupInsertionCode, frame.atomCount);
     }
+    if (frame.atomCount == frame.atoms.length)
+      frame.atoms =
+        (Atom[])Util.setLength(frame.atoms,
+                               frame.atomCount + ATOM_GROWTH_INCREMENT);
     Atom atom = new Atom(viewer,
                          currentModelIndex,
-                         atomCount,
+                         frame.atomCount,
                          atomicNumber,
                          atomName,
                          formalCharge, partialCharge,
@@ -249,23 +241,22 @@ final public class FrameBuilder {
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ);
 
-    if (atomCount == atoms.length)
-      atoms = (Atom[])Util.setLength(atoms, atomCount + ATOM_GROWTH_INCREMENT);
-    atoms[atomCount] = atom;
+    frame.atoms[frame.atomCount] = atom;
     if (clientAtomReference != null) {
-      if (clientAtomReferences == null)
-        clientAtomReferences = new Object[atoms.length];
-      else if (clientAtomReferences.length <= atomCount)
-        clientAtomReferences =
-          (Object[])Util.setLength(clientAtomReferences, atoms.length);
-      clientAtomReferences[atomCount] = clientAtomReference;
+      if (frame.clientAtomReferences == null)
+        frame.clientAtomReferences = new Object[frame.atoms.length];
+      else if (frame.clientAtomReferences.length <= frame.atomCount)
+        frame.clientAtomReferences =
+          (Object[])Util.setLength(frame.clientAtomReferences,
+                                   frame.atoms.length);
+      frame.clientAtomReferences[frame.atomCount] = clientAtomReference;
     }
-    ++atomCount;
+    ++frame.atomCount;
     htAtomMap.put(atomUid, atom);
   }
 
-  void bondAtoms(Object atomUid1, Object atomUid2,
-                 int order) {
+  void bondAtoms(Frame frame,
+                 Object atomUid1, Object atomUid2, int order) {
     Atom atom1 = (Atom)htAtomMap.get(atomUid1);
     if (atom1 == null) {
       System.out.println("bondAtoms cannot find atomUid1?");
@@ -276,16 +267,17 @@ final public class FrameBuilder {
       System.out.println("bondAtoms cannot find atomUid2?");
       return;
     }
-    if (bondCount == bonds.length)
-      bonds = (Bond[])Util.setLength(bonds,
-                                     bondCount + 2 * ATOM_GROWTH_INCREMENT);
+    if (frame.bondCount == frame.bonds.length)
+      frame.bonds =
+        (Bond[])Util.setLength(frame.bonds,
+                               frame.bondCount + 2 * ATOM_GROWTH_INCREMENT);
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     Bond bond = atom1.bondMutually(atom2, order, viewer);
     if (bond != null) {
-      bonds[bondCount++] = bond;
+      frame.bonds[frame.bondCount++] = bond;
       if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-        fileHasHbonds = true;
+        frame.fileHasHbonds = true;
     }
   }
 
@@ -313,10 +305,12 @@ final public class FrameBuilder {
     // groups get defined going up
     groups = new Group[groupCount];
     for (int i = 0; i < groupCount; ++i) {
-      distinguishAndPropogateGroup(i, chains[i], group3s[i], seqcodes[i],
+      distinguishAndPropogateGroup(frame,
+                                   i, chains[i], group3s[i], seqcodes[i],
                                    firstAtomIndexes[i],
-                                   i == groupCount - 1
-                                   ? atomCount : firstAtomIndexes[i + 1]);
+                                   (i == groupCount - 1
+                                    ? frame.atomCount
+                                    : firstAtomIndexes[i + 1]));
       chains[i] = null;
       group3s[i] = null;
     }
@@ -342,7 +336,7 @@ final public class FrameBuilder {
     ++groupCount;
   }
 
-  void distinguishAndPropogateGroup(int groupIndex,
+  void distinguishAndPropogateGroup(Frame frame, int groupIndex,
                                     Chain chain, String group3, int seqcode,
                                     int firstAtomIndex, int maxAtomIndex) {
     //    System.out.println("distinguish & propogate group:" +
@@ -356,7 +350,7 @@ final public class FrameBuilder {
       specialAtomIndexes[i] = Integer.MIN_VALUE;
     
     for (int i = maxAtomIndex; --i >= firstAtomIndex; ) {
-      int specialAtomID = atoms[i].specialAtomID;
+      int specialAtomID = frame.atoms[i].specialAtomID;
       if (specialAtomID > 0) {
         if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
           distinguishingBits |= 1 << specialAtomID;
@@ -375,24 +369,26 @@ final public class FrameBuilder {
       //      System.out.println("may be an AminoMonomer");
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
-                                               specialAtomIndexes, atoms);
+                                               specialAtomIndexes, frame.atoms);
     } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
       //      System.out.println("AlphaMonomer.validateAndAllocate");
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
                                                firstAtomIndex, lastAtomIndex,
-                                               specialAtomIndexes, atoms);
+                                               specialAtomIndexes,
+                                               frame.atoms);
     } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
                 JmolConstants.ATOMID_NUCLEIC_MASK)) {
       group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
                                                  firstAtomIndex, lastAtomIndex,
-                                                 specialAtomIndexes, atoms);
+                                                 specialAtomIndexes,
+                                                 frame.atoms);
     } else if (distinguishingBits ==
                JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
       // System.out.println("PhosphorusMonomer.validateAndAllocate");
       group =
         PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
                                               firstAtomIndex, lastAtomIndex,
-                                              specialAtomIndexes, atoms);
+                                              specialAtomIndexes, frame.atoms);
     }
     if (group == null)
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
@@ -402,7 +398,7 @@ final public class FrameBuilder {
 
     ////////////////////////////////////////////////////////////////
     for (int i = maxAtomIndex; --i >= firstAtomIndex; )
-      atoms[i].setGroup(group);
+      frame.atoms[i].setGroup(group);
   }
 
   ////////////////////////////////////////////////////////////////

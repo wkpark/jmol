@@ -122,6 +122,8 @@ final public class Frame {
         break;
       }
 
+    System.out.println("hasVibrationVectors:" + hasVibrationVectors);
+
     ////////////////////////////////////////////////////////////////
     //
     hackAtomSerialNumbersForAnimations();

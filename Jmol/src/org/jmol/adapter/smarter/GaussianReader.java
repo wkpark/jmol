@@ -65,6 +65,12 @@ class GaussianReader extends AtomSetCollectionReader {
   private int scanPoint = -1;
   
   /**
+   * The number of equivalent atom sets.
+   * <p>Needed to associate identical properties to multiple atomsets
+   */
+  private int equivalentAtomSets = 0;
+  
+  /**
    * Reads a Collection of AtomSets from a BufferedReader.
    *
    * <p>New AtomSets are generated when an <code>Input</code>,
@@ -98,24 +104,14 @@ class GaussianReader extends AtomSetCollectionReader {
     try {
       String line;
       int lineNum = 0;
-      // I need to keep track of the number of orientations read for a
-      // particular calculation (step) since they have the same energy.
-      // Do not reset the energy when a new orientation is read since a new
-      // energy will be calculated and reported if necessary (this is needed
-      // for the special case when convergence in the optimization is reached:
-      // the orientations are reported but no new energy is/needs to be
-      // calculated. The energy still does not end up in the title because
-      // the nOrientations is reset....
-      
-      int nOrientations = 0;
+
       while ((line = reader.readLine()) != null) {
         if (line.startsWith(" Step number")) {
-          nOrientations = 0; // reset the number of orientations
+          equivalentAtomSets = 0;
           // check for scan point information
           int scanPointIndex= line.indexOf("scan point");
           if (scanPointIndex>0) {
             scanPoint = parseInt(line,scanPointIndex+10);
-            System.out.println("Scan point is " + scanPoint);
           } else {
             scanPoint = -1; // no scan point information
           }
@@ -126,13 +122,13 @@ class GaussianReader extends AtomSetCollectionReader {
           if (scanPoint>=0) scanPoint++;
         } else if (line.indexOf("Input orientation:") >= 0 ||
             line.indexOf("Z-Matrix orientation:") >= 0) {
-          ++nOrientations; // is always the first orientation
+          ++equivalentAtomSets;
           readAtoms(reader, line);
         } else if (line.indexOf("Standard orientation:") >= 0) {
-          ++nOrientations; // is always the second orientation
+          ++equivalentAtomSets;
           readAtoms(reader, line);
         } else if (line.startsWith(" SCF Done:")) {
-          readSCFDone(reader,line, nOrientations);
+          readSCFDone(reader,line);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
         } else if (line.startsWith(" Total atomic charges:") ||
@@ -157,7 +153,6 @@ class GaussianReader extends AtomSetCollectionReader {
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
     }
-    atomSetCollection.atomSetCollectionProperties.list(System.out);
     
     return atomSetCollection;
   }
@@ -172,44 +167,21 @@ class GaussianReader extends AtomSetCollectionReader {
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    * @param line The input line containing SCF Done:.
-   * @param nOrientations The number of orientations read that need to have
-   *           these results associated with them.
    * @throws Exception If an error occurs
    **/
-  private void readSCFDone(BufferedReader reader,
-      String line,
-      int nOrientations) throws Exception {
+  private void readSCFDone(BufferedReader reader, String line) throws Exception {
     String tokens[] = getTokens(line,11);
     scfKey = tokens[0];
     scfEnergy = tokens[2]+" "+tokens[3];
-    // now set the names for the last nOrientations
-    for (int asci = atomSetCollection.currentAtomSetIndex, n = nOrientations;
-    --n >= 0;
-    --asci) {
-      atomSetCollection.setAtomSetName(
-          scfKey+" = " + scfEnergy + " " +
-          atomSetCollection.getAtomSetName(asci), asci
-      );
-    }
+    // now set the names for the last equivalentAtomSets
+    atomSetCollection.setAtomSetNames(scfKey+" = " + scfEnergy, equivalentAtomSets);
     // also set the properties for them
-    setAtomSetProperties(scfKey, scfEnergy, nOrientations);
+    atomSetCollection.setAtomSetProperties(scfKey, scfEnergy, equivalentAtomSets);
     tokens = getTokens(reader.readLine());
-    setAtomSetProperties(tokens[0], tokens[2], nOrientations);
-    setAtomSetProperties(tokens[3], tokens[5], nOrientations);
+    atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
+    atomSetCollection.setAtomSetProperties(tokens[3], tokens[5], equivalentAtomSets);
     tokens = getTokens(reader.readLine());
-    setAtomSetProperties(tokens[0], tokens[2], nOrientations);
-  }
-  
-  /**
-   * Sets the same properties for the last n atomSets.
-   * @param key The key for the property
-   * @param value The value of the property
-   * @param n The number of last AtomSets that need these set
-   */
-  private void setAtomSetProperties(String key, String value, int n) {
-    for (int asci=atomSetCollection.currentAtomSetIndex; --n >= 0; --asci) {
-      atomSetCollection.setAtomSetProperty(key, value, asci);
-    }    
+    atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
   }
   
   /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED

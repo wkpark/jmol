@@ -242,7 +242,7 @@ ActionListener, ChangeListener, Runnable {
         JmolResourceHandler.translateX("AtomSetChooser.collection.repeat.label"),
         false);
     JPanel vcrpanel = createVCRController("collection");
-    vcrpanel.add(repeatCheckBox, 0); // put the repeat text box in the vcr control
+    vcrpanel.add(repeatCheckBox); // put the repeat text box in the vcr control
     // VCR-like play controller
     row.add(vcrpanel);
     // fps slider
@@ -627,12 +627,13 @@ ActionListener, ChangeListener, Runnable {
     }
     treeModel.setRoot(root);
     treeModel.reload(); 
-    // make sure that we start with the whole set selected
-//    tree.setSelectionPath(tree.getPathForRow(0));
-    // en/dis able the tree and selec slider based on # of atomsets
-    boolean haveChildren = root.getChildCount()>0;
-    tree.setEnabled(haveChildren);
-    selectSlider.setEnabled(haveChildren);
+
+    // en/dis able the tree based on whether the root has children
+    tree.setEnabled(root.getChildCount()>0);
+    // disable the slider and set it up so that we don't have anything selected..
+    indexes = null;
+    currentIndex = -1;
+    selectSlider.setEnabled(false);  
   }
   
   /**

@@ -37,6 +37,9 @@ import java.io.BufferedReader;
  * energy gradients with vector information of the gradients,
  * and frequencies with an AtomSet for every separate frequency containing
  * vector information of the vibrational mode.
+ * <p>Note that the different modules give quite different formatted output
+ * so it is not certain that all modules will be properly interpreted.
+ * Most testing has been done with the SCF and DFT tasks.
 **/
 
 class NWChemReader extends AtomSetCollectionReader {
@@ -44,40 +47,70 @@ class NWChemReader extends AtomSetCollectionReader {
   /**
    * Conversion factor from atomic units to Angstrom based on the NWChem
    * reported conversion value.
-   **/
+   */
   private final static float AU2ANGSTROM = (float) (1.0/1.889725989);  
     
-  /** The number of the task begin interpreted. */
+  /**
+   * The number of the task begin interpreted.
+   * <p>Used for the construction of the 'path' for the atom set.
+   */
   private int taskNumber = 1;
   
-  /** The number of atomsets read for an optimization step. */
-  private int atomSetsInStep = 0;
+  /**
+   * The number of equivalent atom sets.
+   * <p>Needed to associate identical properties to multiple atomsets
+   */
+  private int equivalentAtomSets = 0;
   
+  /**
+   * The type of energy last calculated.
+   */
+  private String energyKey = "";
+  /**
+   * The last calculated energy value.
+   */
+  private String energyValue = "";
+  
+  // need to remember a bit of the state of what was read before...
+  private boolean converged;
+  private boolean haveEnergy;
+  private boolean haveAt;
+  private boolean inInput;
+ 
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
     atomSetCollection = new AtomSetCollection("nwchem");
-
+    init();
     try {
       String line;
       while ((line = reader.readLine()) != null) {
-        if (line.startsWith("          Step")) {
-          atomSetsInStep = 0;
+         if (line.startsWith("          Step")) {
+           init();
+        } else if (line.startsWith("      Symmetry information")) {
+          readSymmetry(reader);
+        } else if (line.indexOf("Total") >= 0) {
+          readTotal(reader, line);          
+        } else if (line.indexOf("@") >= 0) {
+          readAtSign(reader, line);
+        } else if (line.startsWith("      Optimization converged")) {
+          converged = true;
         } else if (line.indexOf("Output coordinates in angstroms") >= 0) {
-          atomSetsInStep++;
+          equivalentAtomSets++;
           readAtoms(reader);
         } else if (line.indexOf("ENERGY GRADIENTS") >=0 ) {
-          atomSetsInStep++;
+          equivalentAtomSets++;
           readGradients(reader);
-        } else if (line.indexOf("NWChem Nuclear Hessian and Frequency Analysis") >=0 ) {
+        } else if (line.indexOf(
+            "NWChem Nuclear Hessian and Frequency Analysis") >=0 ) {
           readFrequencies(reader);
         } else if (line.startsWith(" Task  times")) {
+          init();
           taskNumber++; // starting a new task
-        }
-        /* else if (line.startsWith(" Total atomic charges:") ||
-                    line.startsWith(" Mulliken atomic charges:")) {
+        } else if (line.trim().startsWith("NWChem")) {
+          readNWChemLine(reader, line);
+        } else if (line.startsWith("  Mulliken analysis of the total density")) {
           readPartialCharges(reader);
         }
-        */
       }
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -89,7 +122,87 @@ class NWChemReader extends AtomSetCollectionReader {
     }
     return atomSetCollection;
   }
+  
+  private void init() {
+    haveEnergy = false;
+    haveAt = false;
+    converged = false;
+    inInput = false;
+    equivalentAtomSets = 0;
+  }
+  
+  private void setEnergies(String key, String value, int nAtomSets) {
+    energyKey = key;
+    energyValue = value;
+    atomSetCollection.setAtomSetProperties(
+        energyKey, energyValue, equivalentAtomSets);
+    atomSetCollection.setAtomSetNames(
+        energyKey+" = "+energyValue, equivalentAtomSets);
+    haveEnergy = true;
+  }
 
+  private void setEnergy(String key, String value) {
+    energyKey = key;
+    energyValue = value;
+    atomSetCollection.setAtomSetProperty(energyKey, energyValue);
+    atomSetCollection.setAtomSetName(energyKey+" = "+energyValue);
+    haveEnergy = true;
+  }
+
+  /**
+   * Read the symmetry information and set the property.
+   * @param reader BufferedReader associated with the NWChem output file.
+   * @throws Exception If an error occurs.
+   */
+  private void readSymmetry(BufferedReader reader) throws Exception {
+    discardLines(reader,2);
+    String tokens[] = getTokens(reader.readLine());
+    atomSetCollection.setAtomSetProperties("Symmetry group name",
+        tokens[tokens.length-1], equivalentAtomSets);
+  }
+  
+  private void readNWChemLine(BufferedReader reader, String line) {
+    // currently only keep track of whether I am in the input module or not.
+    inInput = (line.indexOf("NWChem Input Module") >= 0);
+  }
+  
+  /**
+   * Interpret a line starting with a line with "Total" in it.
+   * <p>Determine whether it reports the energy, if so set the property and name(s)
+   * @param reader BufferedReader associated with the NWChem output file.
+   * @param line IF an exception occurs.
+   */
+  private void readTotal(BufferedReader reader, String line) {
+    String tokens[] = getTokens(line);
+    try {
+      if (tokens[2].startsWith("energy")) {
+        // in an optimization an energy is reported in a follow up step
+        // that energy I don't want so only set the energy once
+        if (!haveAt)
+          setEnergies("E("+tokens[1]+")", tokens[tokens.length-1], equivalentAtomSets);
+      }
+    } catch (Exception e) {
+      // ignore any problems in dealing with the line
+    }
+  }
+  
+  private void readAtSign(BufferedReader reader, String line) throws Exception {
+    if (line.charAt(2)=='S') {
+      discardLines(reader, 1); // skip over the line with the --- in it
+      line = reader.readLine();
+    }
+    String tokens[] = getTokens(line);
+    if (!haveEnergy) { // if didn't already have the energies, set them now
+      setEnergies("E", tokens[2], equivalentAtomSets);
+    } else {
+      // @ comes after gradients, so 'reset' the energies for additional
+      // atom sets that may be been parsed.
+      setEnergies(energyKey, energyValue, equivalentAtomSets);
+    }
+    atomSetCollection.setAtomSetProperties("Step", tokens[1], equivalentAtomSets);
+    haveAt = true;
+  }
+   
 // NWChem Output coordinates
 /*
   Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
@@ -112,10 +225,12 @@ class NWChemReader extends AtomSetCollectionReader {
     discardLines(reader, 3); // skip blank line, titles and dashes
     String line;
     String tokens[];
+    haveEnergy = false;
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
         "Task "+taskNumber+
-        SmarterJmolAdapter.PATH_SEPARATOR+"Geometry");
+        (inInput?SmarterJmolAdapter.PATH_SEPARATOR+"Input":
+         SmarterJmolAdapter.PATH_SEPARATOR+"Geometry"));
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
@@ -123,6 +238,13 @@ class NWChemReader extends AtomSetCollectionReader {
       atom.x = parseFloat(tokens[3]);
       atom.y = parseFloat(tokens[4]);
       atom.z = parseFloat(tokens[5]);
+    }
+    // only if was converged, use the last energy for the name and properties
+    if (converged) {
+      setEnergy(energyKey, energyValue);
+      atomSetCollection.setAtomSetProperty("Step", "converged");
+    } else if (inInput) {
+      atomSetCollection.setAtomSetName("Input");
     }
   }
   
@@ -154,10 +276,13 @@ class NWChemReader extends AtomSetCollectionReader {
     String line;
     String tokens[];
     atomSetCollection.newAtomSet();
+    if (equivalentAtomSets > 1)
+      atomSetCollection.cloneLastAtomSetProperties();
+    atomSetCollection.setAtomSetProperty("vector","gradient");
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
         "Task "+taskNumber+
         SmarterJmolAdapter.PATH_SEPARATOR+"Gradients");
-    while ( (line = reader.readLine()).length() > 0) {
+   while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
@@ -171,8 +296,7 @@ class NWChemReader extends AtomSetCollectionReader {
       atom.vectorY = -parseFloat(tokens[6]);
       atom.vectorZ = -parseFloat(tokens[7]);
     }
-  }
-
+ }
 
 // SAMPLE FREQUENCY OUTPUT
 // First the structure. The atom column has real element names (not the tags)
@@ -356,7 +480,29 @@ class NWChemReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
       atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5] + " KM/mol", idx);
       atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path, idx);
+//      atomSetCollection.setAtomSetProperty("vector","frequency");
    }
+  }
+  
+  /**
+   * Reads partial charges and assigns them only to the last atom set. 
+   * @param reader The reader from which to read the charges
+   * @throws Exception When an I/O error or discardlines error occurs
+   */
+  void readPartialCharges(BufferedReader reader) throws Exception {
+    String tokens[];
+    discardLines(reader, 4);
+    for (int i = atomSetCollection.getLastAtomSetAtomIndex();
+    i < atomSetCollection.atomCount;
+    ++i) {
+      // first skip over the dummy atoms (not sure whether that really is needed..)
+      while (atomSetCollection.atoms[i].elementNumber == 0)
+        ++i;
+      // assign the partial charge
+      tokens = getTokens(reader.readLine());
+      atomSetCollection.atoms[i].partialCharge = 
+        parseInt(tokens[2]) - parseFloat(tokens[3]);
+    }
   }
 
   /**

@@ -290,6 +290,16 @@ class AtomSetCollection {
   void setAtomSetName(String atomSetName, int atomSetIndex) {
     atomSetNames[atomSetIndex] = atomSetName;
   }
+  
+  /**
+   * Sets the atom set names of the last n atomSets
+   * @param atomSetName The name
+   * @param n The number of last AtomSets that need these set
+   */
+  void setAtomSetNames(String atomSetName, int n) {
+    for (int idx = currentAtomSetIndex; --n >= 0; --idx)
+      setAtomSetName( atomSetName, idx);
+  }
 
   /**
   * Sets the number for the current AtomSet
@@ -324,6 +334,36 @@ class AtomSetCollection {
     atomSetProperties[atomSetIndex].put(key, value);
   }
 
+  /**
+   * Sets the same properties for the last n atomSets.
+   * @param key The key for the property
+   * @param value The value of the property
+   * @param n The number of last AtomSets that need these set
+   */
+  void setAtomSetProperties(String key, String value, int n) {
+    for (int idx=currentAtomSetIndex; --n >= 0; --idx) {
+      setAtomSetProperty(key, value, idx);
+    }    
+  }
+  
+
+  /**
+   * Clones the properties of the last atom set and associates it
+   * with the current atom set. 
+   */
+  void cloneLastAtomSetProperties() {
+    cloneAtomSetProperties(currentAtomSetIndex-1);
+  }
+
+  /**
+   * Clones the properties of an atom set and associated it with the
+   * current atom set.
+   * @param index The index of the atom set whose properties are to be cloned.
+   */
+  void cloneAtomSetProperties(int index) {
+    atomSetProperties[currentAtomSetIndex] = 
+      (Properties) atomSetProperties[index].clone();
+  }
 /*
   // currently not needed because we take the atomSetCount directly
   int getAtomSetCount() {

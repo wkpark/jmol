@@ -29,13 +29,15 @@ class ArrowLine {
   private boolean arrowStart = false;
   private boolean arrowEnd = true;
 
-  private double length = 0.0;
   private double scaling = 1.0;
   private double ctheta = 0.0;
   private double stheta = 0.0;
 
   private float x1;
   private float y1;
+  private float x2;
+  private float y2;
+  private double magnitude;
   private static float arrowHeadSize = 10.0f;
   private static float arrowHeadRadius = 1.0f;
   
@@ -64,24 +66,24 @@ class ArrowLine {
 
   public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
           boolean arrowStart, boolean arrowEnd) {
-    this(gc, x1, y1, x2, y2, arrowStart, arrowEnd,
-      Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1)), 1.0);
+    this(gc, x1, y1, x2, y2, arrowStart, arrowEnd, 1.0);
   }
 
    public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
-          boolean arrowStart, boolean arrowEnd, double length, double scaling) {
+          boolean arrowStart, boolean arrowEnd, double scaling) {
 
-    this.length = length;
     this.scaling = scaling;
     this.arrowStart = arrowStart;
     this.arrowEnd = arrowEnd;
     this.x1 = x1;
     this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
 
     double dy = y2 - y1;
     double dx = x2 - x1;
     
-    double magnitude = Math.sqrt(dx*dx + dy*dy);
+    magnitude = Math.sqrt(dx*dx + dy*dy);
     
     if (Math.abs(magnitude - 0.0) < Double.MIN_VALUE) {
       return;
@@ -96,16 +98,14 @@ class ArrowLine {
   public void paint(Graphics gc) {
     gc.setColor(vectorColor);
     
-    gc.drawLine((int) x1, (int) y1, (int) (x1 + length*ctheta), (int) (y1 + length*stheta));
+
+    gc.drawLine((int) x1, (int) y1, (int) (x2 + 2.0*arrowHeadSize*ctheta), (int) (y2 + 2.0*arrowHeadSize*stheta));
     
-    if (Math.abs(length - 0.0) < Double.MIN_VALUE) {
-      return;
-    }
     if (arrowStart) {
       paintArrowHead(gc, 0.0, false);
     }
     if (arrowEnd) {
-      paintArrowHead(gc, length, true);
+      paintArrowHead(gc, magnitude + 2.0*arrowHeadSize, true);
     }
   }
 

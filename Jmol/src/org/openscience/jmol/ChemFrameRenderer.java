@@ -100,18 +100,11 @@ public class ChemFrameRenderer {
   
         if (settings.getShowVectors()) {
           if (atom.getVector() != null) {
-            double vectorLength = atom.getPosition().distance(atom.getVector());
-            double atomRadius =
-                settings.getCircleRadius((int) atom.getScreenPosition().z,
-                  atom.getType().getVdwRadius());
-            double vectorScreenLength =
-                settings.getScreenSize((int) (vectorLength * atom.getScreenVector().z));
-            
             ArrowLine al = new ArrowLine(g, atom.getScreenPosition().x,
               atom.getScreenPosition().y,
                 atom.getScreenVector().x,
                   frame.getAtoms()[j].getScreenVector().y,
-                    false, true, atomRadius + vectorScreenLength, vectorScreenLength / 30.0);
+                    false, true);
           }
         }
       }

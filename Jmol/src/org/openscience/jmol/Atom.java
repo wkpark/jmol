@@ -220,7 +220,7 @@ public class Atom {
   public void transform(Matrix4d transformationMatrix) {
     transformationMatrix.transform(position, screenPosition);
     if (vector != null) {
-      screenVector.add(position, vector);
+      screenVector.scaleAdd(2.0f, vector, position);
       transformationMatrix.transform(screenVector);
     }
   }

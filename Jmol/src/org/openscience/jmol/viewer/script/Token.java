@@ -465,6 +465,7 @@ public class Token {
     "_groupID",     new Token(_groupID, "_groupID"),
     "_g",           null,
     "_atomID",      new Token(_atomID, "_atomID"),
+    "_a",           null,
     "_structure",   new Token(_structure, "_structure"),
 
     "off",          new Token(off, 0, "off"),
@@ -510,11 +511,11 @@ public class Token {
     "@acidic asp,glu",
     "@acyclic amino&!cyclic",
     "@aliphatic ala,gly,ile,leu,val",
-    "@alpha _atomid=1", // rasmol doc says "approximately *.CA" - whatever?
+    "@alpha _a=1", // rasmol doc says "approximately *.CA" - whatever?
     "@amino _g<=22",
     "@aromatic his,phe,trp,tyr",
-    //    "@backbone amino & _atomid<=3,nucleic & _atomid>=4 & _atomid<=15",
-    "@backbone amino & _atomid<=3,nucleic & (_atomid>=8 & _atomid<=29)",
+    //    "@backbone amino & _a<=3,nucleic & _a>=4 & _a<=15",
+    "@backbone amino & _a<=3,nucleic & (_a>=8 & _a<=29)",
     "@mainchain backbone",
     "@basic arg,his,lys",
     "@bonded _bondedcount>0",

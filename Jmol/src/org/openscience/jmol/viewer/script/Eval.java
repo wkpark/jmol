@@ -33,6 +33,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Matrix4f;
+import javax.vecmath.Matrix3f;
 
 class Context {
   String filename;
@@ -2857,6 +2858,9 @@ public class Eval implements Runnable {
   Matrix4f matrixStart;
   Matrix4f matrixEnd;
   Matrix4f matrixStep;
+  Matrix4f matrixInvert;
+  Matrix4f matrixAfter;
+  Matrix4f matrixConfirmIdentity;
   
   void moveto() throws ScriptException {
     if (statementLength < 5 || statementLength > 7)
@@ -2875,29 +2879,101 @@ public class Eval implements Runnable {
       matrixStart = new Matrix4f();
       matrixEnd = new Matrix4f();
       matrixStep = new Matrix4f();
+      matrixInvert = new Matrix4f();
+      matrixAfter = new Matrix4f();
+      matrixConfirmIdentity = new Matrix4f();
     }
     if (degrees < 0.01f && degrees > -0.01f) {
       matrixEnd.setIdentity();
     } else {
+      if (axisX == 0 && axisY == 0 && axisZ == 0) {
+        // invalid ... no rotation
+        int sleepTime = (int)(floatSecondsTotal * 1000) - 30;
+        if (sleepTime > 0) {
+          try {
+            Thread.sleep(sleepTime);
+          } catch (InterruptedException ie) {
+          }
+        }
+        return;
+      }
       aaMoveTo.set(axisX, axisY, axisZ, degrees * (float)Math.PI / 180);
       matrixEnd.set(aaMoveTo);
     }
     viewer.getRotation(matrixStart);
-    matrixStart.invert();
-    matrixStep.mul(matrixStart, matrixEnd);
+    matrixInvert.invert(matrixStart);
+    matrixConfirmIdentity.mul(matrixInvert, matrixStart);
+    System.out.println("---------confirm identity\n" +
+                       matrixConfirmIdentity);
+
+    Matrix3f foo =
+      new Matrix3f(matrixStart.m00, matrixStart.m01, matrixStart.m02,
+                   matrixStart.m10, matrixStart.m11, matrixStart.m12,
+                   matrixStart.m20, matrixStart.m21, matrixStart.m22);
+    Matrix3f fooInvert = new Matrix3f();
+    Matrix3f fooIdentity = new Matrix3f();
+
+    fooInvert.invert(foo);
+    fooIdentity.mul(foo, fooInvert);
+
+    System.out.println("---------confirm identity of foo\n" +
+                       fooIdentity);
+
+                   
+
+    matrixStep.mul(matrixInvert, matrixEnd);
+    aaStep.set(matrixStep);
+    System.out.println("\nmatrixStart=\n" + matrixStart +
+                       "\nmatrixInvert=\n" + matrixInvert +
+                       "\nmatrixStep=\n" + matrixStep +
+                       "\naaStep=\n" + aaStep);
+
+                       
+
+    if (aaStep.angle > 0.01f || aaStep.angle < -0.01f)
+      viewer.rotate(aaStep);
+
+    viewer.getRotation(matrixAfter);
+    System.out.println("\nmatrixEnd=\n" + matrixEnd +
+                       "\nmatrixAfter=\n" + matrixAfter);
+
+    viewer.requestRepaintAndWait();
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException ie) {
+    }
+    if (false) {
     int totalSteps = (int)(floatSecondsTotal * fps);
-    if (totalSteps > 1) {
-      aaStep.set(matrixStep);
+    aaStep.set(matrixStep);
+    System.out.println(" aaStep x=" + aaStep.x + " y=" + aaStep.y +
+                       " z=" + aaStep.z + " angle=" + aaStep.angle);
+    if (totalSteps > 1
+        && (aaStep.angle > 0.01f || aaStep.angle < -0.01f)) {
       aaStep.angle /= totalSteps;
-      int stepTime = 1000 / fps;
+      int frameTimeMillis = 1000 / fps;
+      long targetTime = System.currentTimeMillis();
       for (int i = 1; i < totalSteps; ++i) {
         viewer.rotate(aaStep);
         viewer.requestRepaintAndWait();
+        targetTime += frameTimeMillis;
+        int sleepTime = (int)(System.currentTimeMillis() - targetTime);
+        sleepTime = 100; // for testing
+        if (sleepTime > 0) {
+          try {
+            Thread.sleep(sleepTime);
+          } catch (InterruptedException ie) {
+          }
+        }
+      }
+    } else {
+      int sleepTime = (int)(floatSecondsTotal * 1000) - 30;
+      if (sleepTime > 0) {
         try {
-          Thread.sleep(stepTime);
+          Thread.sleep(sleepTime);
         } catch (InterruptedException ie) {
         }
       }
+    }
     }
     viewer.setRotation(matrixEnd);
   }

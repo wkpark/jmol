@@ -112,10 +112,11 @@
 	  <srcfiles dir="doc/source"
 		    includes="JmolDevelopersGuide_fr.docbook.xml"/>
 	</uptodate>
-	<uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
+<!--	<uptodate targetfile="build/doc/JmolDevelopersGuide_de.html">
 	  <srcfiles dir="doc/source"
 		    includes="JmolDevelopersGuide_de.docbook.xml"/>
 	</uptodate>
+-->
       </and>
     </condition>
 

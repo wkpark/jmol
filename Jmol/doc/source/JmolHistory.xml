@@ -28,6 +28,9 @@
   <change contributor="BS">
     Fixed bugs 547574 and 548591.
   </change>
+  <change contributor="BS">
+    Adjustable scaling of vector length from -2.0 to 2.0 times length.
+  </change>
 </changes>
 
 <changes version="jmol-2">

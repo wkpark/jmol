@@ -40,6 +40,7 @@ class ArrowLine {
   private double magnitude;
   private static float arrowHeadSize = 10.0f;
   private static float arrowHeadRadius = 1.0f;
+  private static float arrowLength = 1.0f;
   
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
@@ -48,19 +49,27 @@ class ArrowLine {
     vectorColor = c;
   }
 
-  static void setLengthScale(float ls) {
+  static void setArrowHeadSize(float ls) {
     arrowHeadSize = 10.0f * ls;
   }
 
-  static float getLengthScale() {
+  static float getArrowHeadSize() {
     return arrowHeadSize / 10.0f;
   }
 
-  static void setRadiusScale(float rs) {
+  static void setLengthScale(float ls) {
+    arrowLength = ls;
+  }
+
+  static float getLengthScale() {
+    return arrowLength;
+  }
+
+  static void setArrowHeadRadius(float rs) {
     arrowHeadRadius = rs;
   }
 
-  static float getRadiusScale() {
+  static float getArrowHeadRadius() {
     return arrowHeadRadius;
   }
 
@@ -98,14 +107,19 @@ class ArrowLine {
   public void paint(Graphics gc) {
     gc.setColor(vectorColor);
     
-
-    gc.drawLine((int) x1, (int) y1, (int) (x2 + 2.0*arrowHeadSize*ctheta), (int) (y2 + 2.0*arrowHeadSize*stheta));
+    double offset = arrowHeadSize;
+    if (arrowLength < 0.0) {
+      offset = -offset;
+    }
+    gc.drawLine((int) x1, (int) y1,
+        (int) (x1 + (offset + magnitude*arrowLength)*ctheta),
+        (int) (y1 + (offset + magnitude*arrowLength)*stheta));
     
     if (arrowStart) {
       paintArrowHead(gc, 0.0, false);
     }
     if (arrowEnd) {
-      paintArrowHead(gc, magnitude + 2.0*arrowHeadSize, true);
+      paintArrowHead(gc, offset + magnitude*arrowLength, true);
     }
   }
 
@@ -113,6 +127,9 @@ class ArrowLine {
     double directionSign = 1.0;
     if (forwardArrow) {
       directionSign = -1.0;
+    }
+    if (lengthOffset < 0.0) {
+      directionSign = -directionSign;
     }
     double px = lengthOffset;
     double py = 0.0;

@@ -50,8 +50,9 @@ public class Preferences extends JDialog {
   private static int AtomLabelMode;
   private static String AtomPropsMode;
   private static int BondRenderMode;
-  private static float ArrowHeadLengthScale;
-  private static float ArrowHeadRadiusScale;
+  private static float ArrowHeadSize;
+  private static float ArrowHeadRadius;
+  private static float ArrowLengthScale;
   private static double AutoTimeout;
   private static float BondFudge;
   private static double BondWidth;
@@ -68,7 +69,7 @@ public class Preferences extends JDialog {
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender;
   private JSlider mtSlider, fovSlider, sfSlider;
-  private JSlider bfSlider, bwSlider, ahSlider, arSlider;
+  private JSlider bfSlider, bwSlider, ahSlider, arSlider, alSlider;
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
@@ -114,8 +115,9 @@ public class Preferences extends JDialog {
     props.put("AutoBond", "true");
     props.put("BondWidth", "0.1");
     props.put("BondFudge", "1.12");
-    props.put("ArrowHeadLengthScale", "1.0");
-    props.put("ArrowHeadRadiusScale", "1.0");
+    props.put("ArrowHeadSize", "1.0");
+    props.put("ArrowHeadRadius", "1.0");
+    props.put("ArrowLengthScale", "1.0");
     props.put("backgroundColor", "16777215");
     props.put("outlineColor", "0");
     props.put("pickedColor", "16762880");
@@ -681,7 +683,7 @@ public class Preferences extends JDialog {
     ahPanel.setLayout(new BorderLayout());
     ahPanel.setBorder(new TitledBorder(jrh.getString("ahLabel")));
     ahSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-            (int) (100.0f * ArrowLine.getLengthScale()));
+            (int) (100.0f * ArrowLine.getArrowHeadSize()));
     ahSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     ahSlider.setPaintTicks(true);
     ahSlider.setMajorTickSpacing(40);
@@ -710,10 +712,10 @@ public class Preferences extends JDialog {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        ArrowHeadLengthScale = source.getValue() / 100.0f;
-        ArrowLine.setLengthScale(ArrowHeadLengthScale);
-        props.put("ArrowHeadLengthScale",
-                Float.toString(ArrowHeadLengthScale));
+        ArrowHeadSize = source.getValue() / 100.0f;
+        ArrowLine.setArrowHeadSize(ArrowHeadSize);
+        props.put("ArrowHeadSize",
+                Float.toString(ArrowHeadSize));
         display.repaint();
       }
     });
@@ -724,7 +726,7 @@ public class Preferences extends JDialog {
     arPanel.setLayout(new BorderLayout());
     arPanel.setBorder(new TitledBorder(jrh.getString("arLabel")));
     arSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-            (int) (100.0f * ArrowLine.getRadiusScale()));
+            (int) (100.0f * ArrowLine.getArrowHeadRadius()));
     arSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     arSlider.setPaintTicks(true);
     arSlider.setMajorTickSpacing(40);
@@ -752,15 +754,67 @@ public class Preferences extends JDialog {
       public void stateChanged(ChangeEvent e) {
 
         JSlider source = (JSlider) e.getSource();
-        ArrowHeadRadiusScale = source.getValue() / 100.0f;
-        ArrowLine.setRadiusScale(ArrowHeadRadiusScale);
-        props.put("ArrowHeadRadiusScale",
-                Float.toString(ArrowHeadRadiusScale));
+        ArrowHeadRadius = source.getValue() / 100.0f;
+        ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
+        props.put("ArrowHeadRadius",
+                Float.toString(ArrowHeadRadius));
         display.repaint();
       }
     });
     arPanel.add(arSlider, BorderLayout.SOUTH);
     vPanel.add(arPanel);
+
+    JPanel alPanel = new JPanel();
+    alPanel.setLayout(new BorderLayout());
+    alPanel.setBorder(new TitledBorder(jrh.getString("alLabel")));
+    alSlider = new JSlider(JSlider.HORIZONTAL, -200, 200,
+            (int) (100.0f * ArrowLine.getLengthScale()));
+    alSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    alSlider.setPaintTicks(true);
+    alSlider.setMajorTickSpacing(50);
+    alSlider.setPaintLabels(true);
+    alSlider.getLabelTable().put(new Integer(-200),
+            new JLabel("-2.0", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(-150),
+            new JLabel("-1.5", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(-100),
+            new JLabel("-1.0", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(-50),
+            new JLabel("-0.5", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(0),
+            new JLabel("0.0", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(50),
+            new JLabel("0.5", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(100),
+            new JLabel("1.0", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(150),
+            new JLabel("1.5", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.getLabelTable().put(new Integer(200),
+            new JLabel("2.0", JLabel.CENTER));
+    alSlider.setLabelTable(alSlider.getLabelTable());
+    alSlider.addChangeListener(new ChangeListener() {
+
+      public void stateChanged(ChangeEvent e) {
+
+        JSlider source = (JSlider) e.getSource();
+        ArrowLengthScale = source.getValue() / 100.0f;
+        ArrowLine.setLengthScale(ArrowLengthScale);
+        props.put("ArrowLengthScale",
+                Float.toString(ArrowLengthScale));
+        display.repaint();
+      }
+    });
+    alPanel.add(alSlider, BorderLayout.SOUTH);
+    vPanel.add(alPanel);
 
     return vPanel;
   }
@@ -1091,8 +1145,9 @@ public class Preferences extends JDialog {
     bfSlider.setValue((int) (50.0 * ChemFrame.getBondFudge()));
 
     // Vector panel controls:
-    ahSlider.setValue((int) (100.0f * ArrowLine.getLengthScale()));
-    arSlider.setValue((int) (100.0f * ArrowLine.getRadiusScale()));
+    ahSlider.setValue((int) (100.0f * ArrowLine.getArrowHeadSize()));
+    arSlider.setValue((int) (100.0f * ArrowLine.getArrowHeadRadius()));
+    alSlider.setValue((int) (100.0f * ArrowLine.getLengthScale()));
 
     // Color panel controls:
     bButton.setBackground(backgroundColor);
@@ -1133,10 +1188,12 @@ public class Preferences extends JDialog {
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
     // Doubles and Floats are special:
-    ArrowHeadLengthScale =
-            new Float(props.getProperty("ArrowHeadLengthScale")).floatValue();
-    ArrowHeadRadiusScale =
-            new Float(props.getProperty("ArrowHeadRadiusScale")).floatValue();
+    ArrowHeadSize =
+            new Float(props.getProperty("ArrowHeadSize")).floatValue();
+    ArrowHeadRadius =
+            new Float(props.getProperty("ArrowHeadRadius")).floatValue();
+    ArrowLengthScale =
+            new Float(props.getProperty("ArrowLengthScale")).floatValue();
     BondFudge = new Float(props.getProperty("BondFudge")).floatValue();
     AutoTimeout = new Double(props.getProperty("AutoTimeout")).doubleValue();
     BondWidth = new Double(props.getProperty("BondWidth")).doubleValue();
@@ -1160,8 +1217,9 @@ public class Preferences extends JDialog {
     display.getSettings().setBondWidth((float) BondWidth);
     display.getSettings().setBondDrawMode(BondRenderMode);
     ArrowLine.setVectorColor(vectorColor);
-    ArrowLine.setRadiusScale(ArrowHeadRadiusScale);
-    ArrowLine.setLengthScale(ArrowHeadLengthScale);
+    ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
+    ArrowLine.setArrowHeadSize(ArrowHeadSize);
+    ArrowLine.setLengthScale(ArrowLengthScale);
     DisplayPanel.setBackgroundColor(backgroundColor);
     DisplayPanel.setFieldOfView(FieldOfView);
     DisplayPanel.setPerspective(Perspective);

@@ -322,12 +322,6 @@ final public class Graphics3D {
   
   public void drawString(String str, Font3D font3d, short colix, short bgcolix,
                          int xBaseline, int yBaseline, int z) {
-    if (font3d == null || font3d.fontMetrics == null) {
-      System.out.println("Graphics3d.drawString ... font3d=" + font3d +
-                         " font3d.fontMetrics=" + font3d.fontMetrics);
-      return;
-    }
-
     //    System.out.println("Graphics3D.drawString(" + str + "," + font3d +
     //                       ", ...)");
 
@@ -1202,22 +1196,19 @@ final public class Graphics3D {
    ****************************************************************/
 
   public Font3D getFont3D(int fontSize) {
-    Font3D.initialize(platform);
     return Font3D.getFont3D(Font3D.FONT_FACE_SANS,
-                            Font3D.FONT_STYLE_PLAIN, fontSize);
+                            Font3D.FONT_STYLE_PLAIN, fontSize, platform);
   }
 
   public Font3D getFont3D(String fontFace, int fontSize) {
-    Font3D.initialize(platform);
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            Font3D.FONT_STYLE_PLAIN, fontSize);
+                            Font3D.FONT_STYLE_PLAIN, fontSize, platform);
   }
     
   // {"Plain", "Bold", "Italic", "BoldItalic"};
   public Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
-    Font3D.initialize(platform);
     return Font3D.getFont3D(Font3D.getFontFaceID(fontFace),
-                            Font3D.getFontStyleID(fontStyle), fontSize);
+                            Font3D.getFontStyleID(fontStyle), fontSize, platform);
   }
 
   public byte getFontFid(int fontSize) {

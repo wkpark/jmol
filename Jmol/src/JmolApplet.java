@@ -134,7 +134,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
     appletRegistry = new JmolAppletRegistry(htmlName, mayScript, this);
 
-    loadProperties();
+    //    loadProperties();
     initWindows();
     initApplication();
   }
@@ -162,6 +162,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     }
   }
     
+  /*
   PropertyResourceBundle appletProperties = null;
 
   private void loadProperties() {
@@ -174,6 +175,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       System.out.println("JmolApplet.loadProperties() -> " + ex);
     }
   }
+  */
 
   private boolean getBooleanValue(String propertyName, boolean defaultValue) {
     String value = getValue(propertyName, defaultValue ? "true" : "");
@@ -186,6 +188,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     String stringValue = getParameter(propertyName);
     if (stringValue != null)
       return stringValue;
+    /*
     if (appletProperties != null) {
       try {
         stringValue = appletProperties.getString(propertyName);
@@ -193,6 +196,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       } catch (MissingResourceException ex) {
       }
     }
+    */
     return defaultValue;
   }
 

@@ -60,7 +60,7 @@ final public class Font3D {
   ////////////////////////////////////////////////////////////////
   
   static Graphics graphicsOffscreen;
-  static void initialize(Platform3D platform) {
+  static synchronized void initialize(Platform3D platform) {
     if (graphicsOffscreen == null)
       graphicsOffscreen = platform.allocateOffscreenImage(1, 1).getGraphics();
   }
@@ -70,7 +70,10 @@ final public class Font3D {
   private static short[] fontkeys = new short[FONT_ALLOCATION_UNIT];
   private static Font3D[] font3ds = new Font3D[FONT_ALLOCATION_UNIT];
 
-  static Font3D getFont3D(int fontface, int fontstyle, int fontsize) {
+  static Font3D getFont3D(int fontface, int fontstyle, int fontsize,
+                          Platform3D platform) {
+    if (graphicsOffscreen == null)
+      initialize(platform);
     /*
     System.out.println("Font3D.getFont3D("  + fontFaces[fontface] + "," +
                        fontStyles[fontstyle] + "," + fontsize + ")");
@@ -79,6 +82,7 @@ final public class Font3D {
       fontsize = 63;
     short fontkey =
       (short)(((fontface & 3) << 8) | ((fontstyle & 3) << 6) | fontsize);
+    // watch out for race condition here!
     for (int i = fontkeyCount; --i > 0; )
       if (fontkey == fontkeys[i])
         return font3ds[i];
@@ -95,6 +99,10 @@ final public class Font3D {
   
   public static synchronized Font3D allocFont3D(short fontkey, int fontface,
                                                 int fontstyle, int fontsize) {
+    // recheck in case another process just allocated one
+    for (int i = fontkeyCount; --i > 0; )
+      if (fontkey == fontkeys[i])
+        return font3ds[i];
     int fontIndexNext = fontkeyCount++;
     if (fontIndexNext == fontkeys.length) {
       short[] t0 = new short[fontIndexNext + FONT_ALLOCATION_UNIT];
@@ -105,15 +113,18 @@ final public class Font3D {
       System.arraycopy(font3ds, 0, t1, 0, fontIndexNext);
       font3ds = t1;
     }
-    fontkeys[fontIndexNext] = fontkey;
     Font font = new Font(fontFaces[fontface], fontstyle, fontsize);
     if (graphicsOffscreen == null)
       System.out.println("Font3D.graphicsOffscreen not initialized");
     FontMetrics fontMetrics = graphicsOffscreen.getFontMetrics(font);
-    return
-      font3ds[fontIndexNext] = new Font3D((byte)fontIndexNext,
-                                          fontface, fontstyle, fontsize,
-                                          font, fontMetrics);
+    Font3D font3d = new Font3D((byte)fontIndexNext,
+                               fontface, fontstyle, fontsize,
+                               font, fontMetrics);
+    // you must set the font3d before setting the fontkey in order
+    // to prevent a race condition with getFont3D
+    font3ds[fontIndexNext] = font3d;
+    fontkeys[fontIndexNext] = fontkey;
+    return font3d;
   }
 
   public final static int FONT_FACE_SANS  = 0;

@@ -36,6 +36,9 @@ class FrankRenderer extends ShapeRenderer {
       return;
     frank.calcMetrics();
 
+    if (frank.font3d == null)
+      System.out.println("que? frank.font3d = null?");
+
     g3d.drawString(frank.frankString, frank.font3d, frank.colix, frank.bgcolix,
                    g3d.width - frank.frankWidth - frank.frankMargin,
                    g3d.height - frank.frankDescent - frank.frankMargin,

@@ -50,10 +50,14 @@ final public class DisplayControl {
   private Dimension dimCurrent;
   private int minScreenDimension;
 
-  private float scalePixelsPerAngstrom;
+  public float scalePixelsPerAngstrom;
   private float scaleDefaultPixelsPerAngstrom;
-  private int xTranslate;
-  private int yTranslate;
+  public float zoomScale;
+  public int xTranslation;
+  public int yTranslation;
+  public float cameraDepth = 3;
+  public static int cameraZ = 750;
+
   private final Matrix4f matrixRotate = new Matrix4f();
   private final Matrix4f matrixViewTransform = new Matrix4f();
   private final Matrix4f matrixTemp = new Matrix4f();
@@ -296,19 +300,13 @@ final public class DisplayControl {
     return settings.isAtomPicked(atom);
   }
 
-  /*
-  public void setScalePixelsPerAngstrom() {
-    panel.setScalePixelsPerAngstrom();
-  }
-  */
-
   public float getScalePixelsPerAngstrom() {
     return scalePixelsPerAngstrom;
   }
 
   public void translateBy(int xDelta, int yDelta) {
-    xTranslate += xDelta;
-    yTranslate += yDelta;
+    xTranslation += xDelta;
+    yTranslation += yDelta;
   }
 
   public void rotateBy(int xDelta, int yDelta) {
@@ -317,23 +315,26 @@ final public class DisplayControl {
     // if you grab an atom near the outside edge of the molecule,
     // you can essentially "pull it" across the screen and it will
     // track with the mouse cursor
-    // the current zoom factor should be taken into account here
+
+    // the accelerator is just a slop factor ... it felt a litte slow to me
+    float rotateAccelerator = 1.1f;
 
     // a change in the x coordinate generates a rotation about the y axis
-    float ytheta = (float)Math.PI * xDelta / minScreenDimension;
-    rotateByY(ytheta);
-    float xtheta = (float)Math.PI * yDelta / minScreenDimension;
-    rotateByX(xtheta);
+    float ytheta = (float)Math.PI * xDelta / minScreenDimension / zoomScale;
+    rotateByY(ytheta * rotateAccelerator);
+    float xtheta = (float)Math.PI * yDelta / minScreenDimension / zoomScale;
+    rotateByX(xtheta * rotateAccelerator);
     recalc();
   }
 
   public void multiplyZoomScale(float scale) {
-    scalePixelsPerAngstrom *= scale;
+    zoomScale *= scale;
+    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomScale;
     recalc();
   }
 
   public float getZoomScale() {
-    return scalePixelsPerAngstrom / scaleDefaultPixelsPerAngstrom;
+    return zoomScale;
   }
 
   public Matrix4f getPovRotateMatrix() {
@@ -344,8 +345,8 @@ final public class DisplayControl {
     Matrix4f matrixPovTranslate = new Matrix4f();
     matrixPovTranslate.setIdentity();
     matrixPovTranslate.get(vectorTemp);
-    vectorTemp.x = (xTranslate - dimCurrent.width/2) / scalePixelsPerAngstrom;
-    vectorTemp.y = -(yTranslate - dimCurrent.height/2)
+    vectorTemp.x = (xTranslation - dimCurrent.width/2) / scalePixelsPerAngstrom;
+    vectorTemp.y = -(yTranslation - dimCurrent.height/2)
       / scalePixelsPerAngstrom; // invert y axis
     vectorTemp.z = 0;
     matrixPovTranslate.set(vectorTemp);
@@ -374,35 +375,21 @@ final public class DisplayControl {
     matrixTemp.set(scalePixelsPerAngstrom);
     matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
     matrixViewTransform.mul(matrixTemp, matrixViewTransform);
-    // now translate to the translate coordinates
-    /*
-    matrixTemp.setZero();
-    vectorTemp.x = xTranslate;
-    vectorTemp.y = yTranslate;
-    vectorTemp.z = 0;
-    matrixTemp.setTranslation(vectorTemp);
-    matrixViewTransform.add(matrixTemp);
-    */
+    // note that the image is still centered at 0, 0
+    // translations come later (to deal with perspective)
+    // and all z coordinates are <= 0
   }
 
   public void transformPoint(Point3f pointAngstroms, Point3f pointScreen) {
     matrixViewTransform.transform(pointAngstroms, pointScreen);
     if (perspectiveDepth) {
       int depth = cameraZ - (int)pointScreen.z;
-      pointScreen.x = (((int)pointScreen.x * cameraZ) / depth) + xTranslate;
-      pointScreen.y = (((int)pointScreen.y * cameraZ) / depth) + yTranslate;
+      pointScreen.x = (((int)pointScreen.x * cameraZ) / depth) + xTranslation;
+      pointScreen.y = (((int)pointScreen.y * cameraZ) / depth) + yTranslation;
     } else {
-      pointScreen.x += xTranslate;
-      pointScreen.y += yTranslate;
+      pointScreen.x += xTranslation;
+      pointScreen.y += yTranslation;
     }
-  }
-
-  public void setPerspectiveDepth(boolean perspectiveDepth) {
-    this.perspectiveDepth = perspectiveDepth;
-  }
-
-  public boolean isPerspectiveDepth() {
-    return perspectiveDepth;
   }
 
   public Matrix4f getTransformMatrix() {
@@ -410,11 +397,33 @@ final public class DisplayControl {
   }
 
   public int xTranslation() {
-    return xTranslate;
+    return xTranslation;
   }
 
   public int yTranslation() {
-    return yTranslate;
+    return yTranslation;
+  }
+
+  public void setPerspectiveDepth(boolean perspectiveDepth) {
+    this.perspectiveDepth = perspectiveDepth;
+    scaleFitToScreen();
+    recalc();
+  }
+
+  public boolean isPerspectiveDepth() {
+    return perspectiveDepth;
+  }
+
+  public void setCameraDepth(float depth) {
+    cameraDepth = depth;
+  }
+
+  public float getCameraDepth() {
+    return cameraDepth;
+  }
+
+  public int getCameraZ() {
+    return cameraZ;
   }
 
   public void homePosition() {
@@ -438,8 +447,8 @@ final public class DisplayControl {
   }
   public void scaleFitToScreen() {
     // translate to the middle of the screen
-    xTranslate = dimCurrent.width / 2;
-    yTranslate = dimCurrent.height / 2;
+    xTranslation = dimCurrent.width / 2;
+    yTranslation = dimCurrent.height / 2;
     // find smaller screen dimension
     minScreenDimension = dimCurrent.width;
     if (dimCurrent.height < minScreenDimension)
@@ -455,10 +464,13 @@ final public class DisplayControl {
       minScreenDimension / 2 / getFrame().getRotationRadius();
     if (perspectiveDepth) {
       float scaleFactor = (cameraZ + minScreenDimension / 2) / (float)cameraZ;
-      scaleFactor += .03f; // don't know why I need this, but I do -- mth
+      scaleFactor += .02f; // don't know why I need this, but seems I do -- mth
       scalePixelsPerAngstrom *= scaleFactor;
     }
+    // these are important!
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
+    zoomScale = 1f;
+    cameraZ = (int)cameraDepth * minScreenDimension;
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
@@ -663,10 +675,9 @@ final public class DisplayControl {
     recalc();
   }
 
-  public final static int cameraZ = 750;
   public int getScreenDiameter(int z, float vdwRadius) {
     if (z > 0)
-      System.out.println("?QUE?--------");
+      System.out.println("--?QUE? no way that z > 0--");
     int d = (int)(2 * vdwRadius *
                   scalePixelsPerAngstrom * getAtomSphereFactor());
     if (perspectiveDepth)

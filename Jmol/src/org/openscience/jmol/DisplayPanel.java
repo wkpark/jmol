@@ -302,6 +302,7 @@ public class DisplayPanel extends JPanel
   private RightAction rightAction = new RightAction();
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
+  private PerspectiveAction perspectiveAction = new PerspectiveAction();
   private Test1Action test1Action = new Test1Action();
   private Test2Action test2Action = new Test2Action();
   private Test3Action test3Action = new Test3Action();
@@ -668,6 +669,19 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class PerspectiveAction extends AbstractAction {
+
+    public PerspectiveAction() {
+      super("perspective");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setPerspectiveDepth(cbmi.isSelected());
+    }
+  }
+
   class Test1Action extends AbstractAction {
 
     public Test1Action() {
@@ -803,7 +817,8 @@ public class DisplayPanel extends JPanel
     Action[] defaultActions = {
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
-      defineCenterAction, test1Action, test2Action, test3Action, test4Action,
+      defineCenterAction, perspectiveAction,
+      test1Action, test2Action, test3Action, test4Action,
       aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
       bshadingAction, blineAction, bwireframeAction, plainAction,
       symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,

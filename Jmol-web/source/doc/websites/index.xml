@@ -22,9 +22,21 @@
 	  </a>
 	</li>
 	<li>
-	  <a href="http://bip.weizmann.ac.il/oca/">
-	    Weizmann Institute of Science, OCA
+	  <a href="http://www.weizmann.ac.il">
+	    Weizmann Institute of Science
 	  </a>
+	  <ul>
+	    <li>
+	      <a href="http://bip.weizmann.ac.il/oca/">
+		OCA database system
+	      </a>
+	    </li>
+	    <li>
+	      <a href="http://bip.weizmann.ac.il/hypare/">
+		HyPare - Predicting Association Rate Enhancement
+	      </a>
+	    </li>
+	  </ul>
 	</li>
 	<li>
 	  <a href="http://www.imb-jena.de/IMAGE_PDB_SEARCH.html">

@@ -227,6 +227,7 @@ public abstract class MouseManager {
     xCurrent = x;
     yCurrent = y;
     switch (getMode(modifiers)) {
+    case JmolConstants.MOUSE_MEASURE:
     case JmolConstants.MOUSE_ROTATE:
 		//if (logMouseEvents)
 		  //System.out.println("mouseDragged Rotate("+x+","+y+","+modifiers+","+clickCount+")");

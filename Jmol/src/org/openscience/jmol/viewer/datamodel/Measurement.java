@@ -74,8 +74,8 @@ public class Measurement {
     case 4:
       pointC = frame.getAtomPoint3f(atomIndices[2]);
       pointD = frame.getAtomPoint3f(atomIndices[3]);
-      float dihedral = computeDihedral(pointA, pointB, pointC, pointD);
-      strMeasurement = formatAngle(dihedral);
+      float torsion = computeTorsion(pointA, pointB, pointC, pointD);
+      strMeasurement = formatAngle(torsion);
       break;
     default:
       System.out.println("Invalid count to measurement shape:" + count);
@@ -125,8 +125,8 @@ public class Measurement {
              atomIndices[3] == this.atomIndices[0]));
   }
 
-  public float computeDihedral(Point3f p1, Point3f p2,
-                               Point3f p3, Point3f p4) {
+  public float computeTorsion(Point3f p1, Point3f p2,
+                              Point3f p3, Point3f p4) {
 
     float ijx = p1.x - p2.x;
     float ijy = p1.y - p2.y;
@@ -162,11 +162,11 @@ public class Measurement {
       cosang = -1;
     }
 
-    float dihedral = toDegrees((float)Math.acos(cosang));
+    float torsion = toDegrees((float)Math.acos(cosang));
     float dot  =  ijx*cx + ijy*cy + ijz*cz;
     float absDot =  (float)Math.abs(dot);
-    dihedral = (dot/absDot > 0) ? dihedral : -dihedral;
-    return dihedral;
+    torsion = (dot/absDot > 0) ? torsion : -torsion;
+    return torsion;
   }
 
   public static float toDegrees(float angrad) {

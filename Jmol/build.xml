@@ -104,11 +104,11 @@
       <and>
         <uptodate targetfile="build/doc/JmolHistory/ChangeLog.html">
           <srcfiles dir="doc/source"
-                    includes="JmolHistory.xml,JmolHistoryToHtml.xsl" />
+                    includes="JmolHistory.xml,JmolHistoryToHtml.xsl,history/changes.xml" />
         </uptodate>
         <uptodate targetfile="build/doc/JmolHistory/ChangeLog_fr.html">
           <srcfiles dir="doc/source"
-                    includes="JmolHistory_fr.xml,JmolHistoryToHtml.xsl" />
+                    includes="JmolHistory_fr.xml,JmolHistoryToHtml.xsl,history/changes_fr.xml" />
         </uptodate>
       </and>
     </condition>

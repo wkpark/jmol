@@ -261,7 +261,7 @@ support for assertions (which were introduced in 1.4).
 	<include name="**/*.html" />
       </fileset>
     </copy>
-    <jar jarfile="Jmol.jar" manifest="${manifest}"  index="true">
+    <jar jarfile="Jmol.jar" manifest="${manifest}">
       <fileset dir="${classes.dir}" >
 	<exclude name="**/.*" />
 	<exclude name="**/Test*.class" />
@@ -382,7 +382,7 @@ support for assertions (which were introduced in 1.4).
 	 includes="jmol-${version}/**" />
     -->
 
-    <tar tarfile="build/dist/jmol-${version}-binary.tgz"
+    <tar tarfile="build/dist/jmol-${version}-binary.tar.gz"
 	 compression="gzip" >
       <tarfileset dir="build/dist"
 		  excludes="*/jmol,*/jmol.sh"
@@ -455,7 +455,7 @@ support for assertions (which were introduced in 1.4).
 	 includes="jmol-${version}/**" />
     -->
 
-    <tar tarfile="build/dist/jmol-${version}-full.tgz"
+    <tar tarfile="build/dist/jmol-${version}-full.tar.gz"
 	 compression="gzip" >
       <tarfileset dir="build/dist"
 		  excludes="*/jmol,*/jmol.sh"

@@ -399,11 +399,14 @@ public class Eval implements Runnable {
       case Token.dots:
         dots();
         break;
-      case Token.ribbons:
-        // for now, just let ribbons and strands do the same thing
-        System.out.println("sorry - ribbons not implemented, using strands");
       case Token.strands:
         proteinShape(JmolConstants.SHAPE_STRANDS);
+        break;
+      case Token.mesh:
+        proteinShape(JmolConstants.SHAPE_MESH);
+        break;
+      case Token.ribbons:
+        proteinShape(JmolConstants.SHAPE_RIBBONS);
         break;
       case Token.trace:
         proteinShape(JmolConstants.SHAPE_TRACE);
@@ -1307,6 +1310,7 @@ public class Eval implements Runnable {
     case Token.atom:
     case Token.trace:
     case Token.backbone:
+    case Token.mesh:
     case Token.strands:
     case Token.ribbons:
     case Token.cartoon:
@@ -2231,56 +2235,29 @@ public class Eval implements Runnable {
       evalError("Invalid modelID:" + modelID);
   }
 
-  int getShapeType(int tok) throws ScriptException {
-    int shapeType = 0;
-    switch(tok) {
-    case Token.trace:
-      shapeType = JmolConstants.SHAPE_TRACE;
-      break;
-    case Token.backbone:
-      shapeType = JmolConstants.SHAPE_BACKBONE;
-      break;
-    case Token.ribbons:
-    case Token.strands:
-      shapeType = JmolConstants.SHAPE_STRANDS;
-      break;
-    case Token.cartoon:
-      shapeType = JmolConstants.SHAPE_CARTOON;
-      break;
-    case Token.dots:
-      shapeType = JmolConstants.SHAPE_DOTS;
-      break;
-    case Token.axes:
-      shapeType = JmolConstants.SHAPE_AXES;
-      break;
-    case Token.unitcell:
-      shapeType = JmolConstants.SHAPE_UCCAGE;
-      break;
-    case Token.boundbox:
-      shapeType = JmolConstants.SHAPE_BBCAGE;
-      break;
-    case Token.frank:
-      shapeType = JmolConstants.SHAPE_FRANK;
-      break;
-    case Token.echo:
-      shapeType = JmolConstants.SHAPE_ECHO;
-      break;
-    case Token.monitor:
-      shapeType = JmolConstants.SHAPE_MEASURES;
-      break;
-    case Token.label:
-      shapeType = JmolConstants.SHAPE_LABELS;
-      break;
-    case Token.hover:
-      shapeType = JmolConstants.SHAPE_HOVER;
-      break;
-    case Token.vectors:
-      shapeType = JmolConstants.SHAPE_VECTORS;
-      break;
-    default:
-      unrecognizedColorObject();
+  // note that this array *MUST* be in the same sequence as the
+  // SHAPE_* constants in JmolConstants
+  
+  private final static int[] shapeToks =
+  {Token.atom, Token.bonds, Token.label, Token.vectors,
+   Token.monitor, Token.dots, Token.backbone,
+   Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbons,
+   Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
+   Token.hover};
+
+  static {
+    if (shapeToks.length != JmolConstants.SHAPE_MAX) {
+      System.out.println("shapeToks mismatch");
+      throw new NullPointerException();
     }
-    return shapeType;
+  }
+
+  int getShapeType(int tok) throws ScriptException {
+    for (int i = shapeToks.length; --i >= 0; )
+      if (tok == shapeToks[i])
+        return i;
+    unrecognizedColorObject();
+    return -1;
   }
 
   void font() throws ScriptException {

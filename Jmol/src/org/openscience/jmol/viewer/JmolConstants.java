@@ -1649,6 +1649,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int MEASURE_DEFAULT_FONTSIZE = 15;
   public final static int AXES_DEFAULT_FONTSIZE = 14;
 
+  ////////////////////////////////////////////////////////////////
+  // do not rearrange/modify these shapes without
+  // updating the String[] shapeBaseClasses below &&
+  // also updating Eval.java to confirm consistent
+  // conversion from tokens to shapes
+  ////////////////////////////////////////////////////////////////
+
   public final static int SHAPE_BALLS    = 0;
   public final static int SHAPE_STICKS   = 1;
   public final static int SHAPE_LABELS   = 2;

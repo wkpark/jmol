@@ -41,10 +41,14 @@ public abstract class ReaderFactory {
    * @return  If the input type is determined, a
    *   ChemFileReader subclass is returned; otherwise,
    *   null is returned.
-   * @exception IOException  if an I/O error occurs
+   * @throws IOException  if an I/O error occurs
+   * @throws IllegalArgumentException if the input is null
    */
   public static ChemFileReader createReader(Reader input) throws IOException {
 
+    if (input == null) {
+      throw new IllegalArgumentException("input cannot be null");
+    }
     BufferedReader buffer = new BufferedReader(input);
     String line = null;
 
@@ -67,7 +71,7 @@ public abstract class ReaderFactory {
       buffer.mark(1024 * 1024);
       while ((buffer.ready()) && (line != null)) {
         line = buffer.readLine();
-        if (line.indexOf("natom") >= 0) {
+        if (line != null && line.indexOf("natom") >= 0) {
           buffer.reset();
           return new ABINITReader(buffer);
         }

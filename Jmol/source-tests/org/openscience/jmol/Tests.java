@@ -41,6 +41,7 @@ public class Tests {
     suite.addTest(AtomTypeTest.suite());
     suite.addTest(AtomTypeSetTest.suite());
     suite.addTest(AtomTypesModelTest.suite());
+    suite.addTest(ReaderFactoryTest.suite());
     suite.addTest(Gaussian98ReaderTest.suite());
     return suite;
   }

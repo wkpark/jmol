@@ -32,7 +32,7 @@ import javax.vecmath.Point3f;
 public class PdbChain {
 
   public char chainID;
-  int firstResidueNumber;
+  short firstResidueID;
   int residueCount;
   PdbResidue[] residues = new PdbResidue[16];
   PdbResidue[] mainchain;
@@ -50,10 +50,10 @@ public class PdbChain {
   }
   
   void addResidue(PdbResidue residue) {
-    int residueNumber = residue.resNumber;
+    short residueID = residue.residueID;
     if (residueCount == 0)
-      firstResidueNumber = residueNumber;
-    int residueIndex = residueNumber - firstResidueNumber;
+      firstResidueID = residueID;
+    int residueIndex = residueID - firstResidueID;
     if (residueIndex < 0) {
       System.out.println("residue out of sequence?");
       return;
@@ -68,23 +68,25 @@ public class PdbChain {
       residueCount = residueIndex + 1;
   }
 
-  PdbResidue getResidue(int residueNumber) {
-    int residueIndex = residueNumber - firstResidueNumber;
-    if (residueIndex < 0 || residueIndex >= residueCount)
-      return null;
+  PdbResidue getResidue(int residueIndex) {
     return residues[residueIndex];
   }
-
+  
   int getResidueCount() {
     return residueCount;
   }
 
-  Point3f getResiduePoint(int residueNumber) {
-    return getResidue(residueNumber).getAlphaCarbonAtom().point3f;
+  short getFirstResidueID() {
+    return firstResidueID;
   }
 
-  Point3f getResiduePoint(int residueNumber, int mainchainIndex) {
-    return getResidue(residueNumber).getMainchainAtom(mainchainIndex).point3f;
+  Point3f getResidueAlphaCarbonPoint(int residueIndex) {
+    return residues[residueIndex].getAlphaCarbonAtom().point3f;
+  }
+
+  // to get something other than the alpha carbon atom
+  Point3f getResiduePoint(int residueIndex, int mainchainIndex) {
+    return getResidue(residueIndex).getMainchainAtom(mainchainIndex).point3f;
   }
 
   int mainchainHelper(boolean addResidues) {
@@ -120,39 +122,36 @@ public class PdbChain {
   }
 
   void addSecondaryStructure(byte type,
-                             int startResidueNumber, int endResidueNumber) {
-    for (int i = startResidueNumber; i <= endResidueNumber; ++i)
-      if (getResidue(i) == null) {
-        System.out.println("structure definition error");
-        return;
-      }
+                             short startResidueID, short endResidueID) {
+    int structureIndex = startResidueID - firstResidueID;
+    int structureCount = endResidueID - startResidueID + 1;
+    if (structureCount < 1 ||
+        structureIndex < 0 ||
+        endResidueID > (firstResidueID + residueCount)) {
+      System.out.println("structure definition error");
+      return;
+    }
     PdbStructure structure;
     switch(type) {
     case JmolConstants.SECONDARY_STRUCTURE_HELIX:
-      structure = new Helix(this, startResidueNumber, endResidueNumber);
+      structure = new Helix(this, structureIndex, structureCount);
       break;
     case JmolConstants.SECONDARY_STRUCTURE_SHEET:
-      structure = new Sheet(this, startResidueNumber, endResidueNumber);
+      structure = new Sheet(this, structureIndex, structureCount);
       break;
     case JmolConstants.SECONDARY_STRUCTURE_TURN:
-      structure = new Turn(this, startResidueNumber, endResidueNumber);
+      structure = new Turn(this, structureIndex, structureCount);
       break;
     default:
       System.out.println("unrecognized secondary structure type");
       return;
     }
-    for (int i = residueCount; --i >= 0; ) {
-      PdbResidue residue = residues[i];
-      int resNumber = residue.resNumber;
-      if (resNumber >= startResidueNumber && resNumber <= endResidueNumber)
-        residue.setStructure(structure);
-    }
-    
+    for (int i = structureIndex + structureCount; --i >= structureIndex; )
+      residues[i].setStructure(structure);
   }
 
-  void getAlphaCarbonMidPoint(int residueNumber, Point3f midPoint) {
-    int residueIndex = residueNumber - firstResidueNumber;
-    if (residueIndex >= residueCount) {
+  void getAlphaCarbonMidPoint(int residueIndex, Point3f midPoint) {
+    if (residueIndex == residueCount) {
       residueIndex = residueCount - 1;
     } else if (residueIndex > 0) {
       midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
@@ -163,18 +162,17 @@ public class PdbChain {
     midPoint.set(residues[residueIndex].getAlphaCarbonPoint());
   }
 
-  void getStructureMidPoint(int residueNumber, Point3f midPoint) {
-    int residueIndex = residueNumber - firstResidueNumber;
+  void getStructureMidPoint(int residueIndex, Point3f midPoint) {
     if (residueIndex < residueCount &&
         residues[residueIndex].isHelixOrSheet()) {
       midPoint.set(residues[residueIndex].structure.
-                   getStructureMidPoint(residueNumber));
+                   getStructureMidPoint(residueIndex));
     } else if (residueIndex > 0 &&
                residues[residueIndex - 1].isHelixOrSheet()) {
       midPoint.set(residues[residueIndex - 1].structure.
-                   getStructureMidPoint(residueNumber));
+                   getStructureMidPoint(residueIndex));
     } else {
-      getAlphaCarbonMidPoint(residueNumber, midPoint);
+      getAlphaCarbonMidPoint(residueIndex, midPoint);
     }
   }
 }

@@ -85,18 +85,20 @@ public class PdbMolecule {
         continue;
       }
 
-      int start = 0;
-      int end = -1;
+      short startID = 0;
+      short endID = -1;
       try {
-        start = Integer.parseInt(structureRecord.substring(startIndex,
+        startID =
+          Short.parseShort(structureRecord.substring(startIndex,
                                                      startIndex + 4).trim());
-        end = Integer.parseInt(structureRecord.substring(endIndex,
-                                                   endIndex + 4).trim());
+        endID =
+          Short.parseShort(structureRecord.substring(endIndex,
+                                                     endIndex + 4).trim());
       } catch (NumberFormatException e) {
         System.out.println("secondary structure record error");
         continue;
       }
-      chain.addSecondaryStructure(type, start, end);
+      chain.addSecondaryStructure(type, startID, endID);
     }
   }
 

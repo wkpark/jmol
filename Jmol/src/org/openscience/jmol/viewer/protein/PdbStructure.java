@@ -31,20 +31,21 @@ public abstract class PdbStructure {
 
   PdbChain chain;
   byte type;
-  int residueStart;
-  int residueEnd;
-  int count;
+  int startResidueIndex;
+  int endResidueIndex;
+  int residueCount;
   Point3f center;
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
   Point3f[] segments;
 
-  PdbStructure(PdbChain chain, byte type, int residueStart, int residueEnd) {
+  PdbStructure(PdbChain chain, byte type,
+               int startResidueIndex, int residueCount) {
     this.chain = chain;
     this.type = type;
-    this.residueStart = residueStart;
-    this.residueEnd = residueEnd;
-    this.count = residueEnd - residueStart + 1;
+    this.startResidueIndex = startResidueIndex;
+    this.residueCount = residueCount;
+    this.endResidueIndex = startResidueIndex + residueCount - 1;
   }
 
   void calcAxis() {
@@ -54,12 +55,12 @@ public abstract class PdbStructure {
     if (segments != null)
       return;
     calcAxis();
-    segments = new Point3f[count + 1];
-    segments[count] = axisB;
+    segments = new Point3f[residueCount + 1];
+    segments[residueCount] = axisB;
     segments[0] = axisA;
-    for (int i = 1; i < count; ++i) {
+    for (int i = residueCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
-      chain.getAlphaCarbonMidPoint(residueStart + i, point);
+      chain.getAlphaCarbonMidPoint(startResidueIndex + i, point);
       projectOntoAxis(point);
     }
   }
@@ -75,11 +76,11 @@ public abstract class PdbStructure {
   }
 
   public int getResidueCount() {
-    return count;
+    return residueCount;
   }
 
-  public int getResidueNumberStart() {
-    return residueStart;
+  public int getStartResidueIndex() {
+    return startResidueIndex;
   }
 
   public Point3f[] getSegments() {
@@ -98,10 +99,9 @@ public abstract class PdbStructure {
     return axisB;
   }
 
-  public Point3f getStructureMidPoint(int residueNumber) {
+  public Point3f getStructureMidPoint(int residueIndex) {
     if (segments == null)
       calcSegments();
-    return segments[residueNumber - residueStart];
+    return segments[residueIndex - startResidueIndex];
   }
-
 }

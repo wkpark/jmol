@@ -29,25 +29,28 @@ import javax.vecmath.Vector3f;
 
 public class Sheet extends PdbStructure {
 
-  Sheet(PdbChain chain, int residueStart, int residueEnd) {
+  Sheet(PdbChain chain, int startResidueIndex, int residueCount) {
     super(chain, JmolConstants.SECONDARY_STRUCTURE_SHEET,
-          residueStart, residueEnd);
+          startResidueIndex, residueCount);
   }
 
   void calcAxis() {
     if (axisA != null)
       return;
-    chain.getAlphaCarbonMidPoint(residueStart + 1, axisA = new Point3f());
-    chain.getAlphaCarbonMidPoint(residueEnd, axisB = new Point3f());
+    axisA = new Point3f();
+    chain.getAlphaCarbonMidPoint(startResidueIndex + 1, axisA);
+    axisB = new Point3f();
+    chain.getAlphaCarbonMidPoint(endResidueIndex, axisB);
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
-    Point3f tempA, tempB;
-    chain.getAlphaCarbonMidPoint(residueStart, tempA = new Point3f());
+    Point3f tempA = new Point3f();
+    chain.getAlphaCarbonMidPoint(startResidueIndex, tempA);
     projectOntoAxis(tempA);
-    chain.getAlphaCarbonMidPoint(residueEnd + 1, tempB = new Point3f());
+    Point3f tempB = new Point3f();
+    chain.getAlphaCarbonMidPoint(startResidueIndex + residueCount, tempB);
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
@@ -55,22 +58,22 @@ public class Sheet extends PdbStructure {
 
   Vector3f widthUnitVector;
   Vector3f heightUnitVector;
-
+  
   void calcSheetUnitVectors() {
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
-      vectorCOSum.sub(chain.getResiduePoint(residueStart, 3),
-                      chain.getResiduePoint(residueStart, 2));
-      for (int i = 1; i < count; ++i) {
-        vectorCO.sub(chain.getResiduePoint(residueStart, 3),
-                     chain.getResiduePoint(residueStart, 2));
+      vectorCOSum.sub(chain.getResiduePoint(startResidueIndex, 3),
+                      chain.getResiduePoint(startResidueIndex, 2));
+      for (int i = residueCount; --i > 0; ) {
+        vectorCO.sub(chain.getResiduePoint(startResidueIndex + i, 3),
+                     chain.getResiduePoint(startResidueIndex + i, 2));
         if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)
           vectorCOSum.add(vectorCO);
         else
           vectorCOSum.sub(vectorCO);
       }
-      heightUnitVector = vectorCO;
+      heightUnitVector = vectorCO; // just reuse the same temp vector;
       heightUnitVector.cross(axisUnitVector, vectorCOSum);
       heightUnitVector.normalize();
       widthUnitVector = vectorCOSum;

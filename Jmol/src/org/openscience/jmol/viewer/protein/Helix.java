@@ -30,37 +30,40 @@ import javax.vecmath.Vector3f;
 
 public class Helix extends PdbStructure {
 
-  Helix(PdbChain chain, int residueStart, int residueEnd) {
+  Helix(PdbChain chain, int startResidueIndex, int residueCount) {
     super(chain, JmolConstants.SECONDARY_STRUCTURE_HELIX,
-          residueStart, residueEnd);
+          startResidueIndex, residueCount);
   }
 
   // copied from sheet -- not correct
   void calcAxis() {
     if (axisA != null)
       return;
-    chain.getAlphaCarbonMidPoint(residueStart + 1, axisA = new Point3f());
-    chain.getAlphaCarbonMidPoint(residueEnd, axisB = new Point3f());
+    axisA = new Point3f();
+    chain.getAlphaCarbonMidPoint(startResidueIndex + 1, axisA);
+    axisB = new Point3f();
+    chain.getAlphaCarbonMidPoint(endResidueIndex, axisB);
 
-    axisUnitVector = new Vector3f(axisB);
-    axisUnitVector.sub(axisA);
+    axisUnitVector = new Vector3f();
+    axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
-    Point3f temp = new Point3f();
     float dist;
+    Point3f temp = new Point3f();
 
-    chain.getAlphaCarbonMidPoint(residueStart, temp = new Point3f());
+    chain.getAlphaCarbonMidPoint(startResidueIndex + 1, temp);
     dist = axisB.distance(temp);
     axisA.set(axisUnitVector);
     axisA.scaleAdd(-dist, axisB);
 
-    chain.getAlphaCarbonMidPoint(residueEnd + 1, temp);
+    chain.getAlphaCarbonMidPoint(endResidueIndex, temp);
     dist = axisA.distance(temp);
     axisB.set(axisUnitVector);
     axisB.scaleAdd(dist, axisA);
   }
 
 
+  /*
   void calcAxisFoo() {
     if (axisA != null)
       return;
@@ -68,7 +71,7 @@ public class Helix extends PdbStructure {
     Point3f[] points = new Point3f[count];
     float[] lengths = new float[count];
     for (int i = count; --i >= 0; ) {
-      Point3f point = new Point3f(chain.getResiduePoint(i + residueStart));
+      Point3f point = new Point3f(chain.getResiduePoint(i + startResidueID));
       point.sub(center);
       points[i] = point;
       lengths[i] = length(point);
@@ -86,6 +89,7 @@ public class Helix extends PdbStructure {
     axisB = new Point3f(length * cosineX, length * cosineY, length * cosineZ);
     axisB.add(center);
   }
+  */
 
   /****************************************************************
    * see:
@@ -101,10 +105,10 @@ public class Helix extends PdbStructure {
 
   void calcCenter() {
     if (center == null) {
-      center = new Point3f(chain.getResiduePoint(residueEnd));
-      for (int i = residueStart; i < residueEnd; ++i)
-        center.add(chain.getResiduePoint(i));
-      center.scale(1f/count);
+      center = new Point3f(chain.getResidueAlphaCarbonPoint(endResidueIndex));
+      for (int i = startResidueIndex; i < endResidueIndex; ++i)
+        center.add(chain.getResidueAlphaCarbonPoint(i));
+      center.scale(1f/residueCount);
       System.out.println("structure center is at :" + center);
     }
   }

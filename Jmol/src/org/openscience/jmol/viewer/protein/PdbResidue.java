@@ -34,15 +34,15 @@ public class PdbResidue {
   public PdbStructure structure;
   public PdbMolecule pdbmolecule;
   public char chainID;
-  public short resNumber;
+  public short residueID;
   public short resid;
   int[] mainchainIndices;
 
   public PdbResidue(PdbMolecule pdbmolecule, char chainID,
-                    short resNumber, short resid) {
+                    short residueID, short resid) {
     this.pdbmolecule = pdbmolecule;
     this.chainID = chainID;
-    this.resNumber = resNumber;
+    this.residueID = residueID;
     this.resid = resid;
   }
 
@@ -62,8 +62,8 @@ public class PdbResidue {
     return residueNames3[resid];
   }
 
-  public short getResidueNumber() {
-    return resNumber;
+  public short getResidueID() {
+    return residueID;
   }
 
   public short getResID() {

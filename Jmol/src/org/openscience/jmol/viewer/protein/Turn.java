@@ -27,9 +27,9 @@ import org.openscience.jmol.viewer.JmolConstants;
 
 public class Turn extends PdbStructure {
 
-  Turn(PdbChain chain, int residueFirst, int residueLast) {
+  Turn(PdbChain chain, int startResidueIndex, int residueCount) {
     super(chain, JmolConstants.SECONDARY_STRUCTURE_TURN,
-          residueFirst, residueLast);
+          startResidueIndex, residueCount);
   }
 }
 

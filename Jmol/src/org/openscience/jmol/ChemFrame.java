@@ -80,9 +80,10 @@ public class ChemFrame extends AtomContainer {
    */
   private Vector dhlist;
 
-  private Point3d centerGeometric;
+  Point3d centerBoundingBox;
+  Point3d cornerBoundingBox;
   private Point3d centerRotation;
-  private double radiusGeometric;
+  private double radiusBoundingBox;
   private double radiusRotation;
   private double minAtomVectorMagnitude;
   private double maxAtomVectorMagnitude;
@@ -303,12 +304,17 @@ public class ChemFrame extends AtomContainer {
 
   public double getGeometricRadius() {
     findBounds();
-    return radiusGeometric;
+    return radiusBoundingBox;
   }
 
-  public Point3d getGeometricCenter() {
+  public Point3d getBoundingBoxCenter() {
     findBounds();
-    return centerGeometric;
+    return centerBoundingBox;
+  }
+
+  public Point3d getBoundingBoxCorner() {
+    findBounds();
+    return cornerBoundingBox;
   }
 
   public Point3d getRotationCenter() {
@@ -324,10 +330,10 @@ public class ChemFrame extends AtomContainer {
   public void setRotationCenter(Point3d newCenterOfRotation) {
     if (newCenterOfRotation != null) {
       centerRotation = newCenterOfRotation;
-      radiusRotation = calculateRadius(centerRotation);
+      radiusRotation = calcRadius(centerRotation);
     } else {
-      centerRotation = centerGeometric;
-      radiusRotation = radiusGeometric;
+      centerRotation = centerBoundingBox;
+      radiusRotation = radiusBoundingBox;
     }
   }
 
@@ -440,8 +446,8 @@ public class ChemFrame extends AtomContainer {
    * Clears the bounds cache for this model.
    */
   private void clearBounds() {
-    centerGeometric = centerRotation = null;
-    radiusGeometric = radiusRotation =
+    centerBoundingBox = centerRotation = null;
+    radiusBoundingBox = radiusRotation =
       minAtomVectorMagnitude = maxAtomVectorMagnitude = atomVectorRange = 0f;
   }
 
@@ -449,11 +455,12 @@ public class ChemFrame extends AtomContainer {
    * Find the bounds of this model.
    */
   private void findBounds() {
-    if ((centerGeometric != null) || (atoms == null) || (numberOfAtoms <= 0))
+    if ((centerBoundingBox != null) || (atoms == null) || (numberOfAtoms <= 0))
       return;
-    centerGeometric = centerRotation = calculateGeometricCenter();
+    calcBoundingBox();
+    centerRotation = centerBoundingBox;
     calculateAtomVectorMagnitudeRange();
-    radiusGeometric = radiusRotation = calculateRadius(centerGeometric);
+    radiusBoundingBox = radiusRotation = calcRadius(centerBoundingBox);
   }
 
   void calculateAtomVectorMagnitudeRange() {
@@ -473,14 +480,14 @@ public class ChemFrame extends AtomContainer {
     atomVectorRange = maxAtomVectorMagnitude - minAtomVectorMagnitude;
   }
 
-  Point3d calculateGeometricCenter() {
+  void calcBoundingBox() {
     /**
      * Note that this method is overridden by CrystalFrame
      */
-    // First, find the center of the molecule. Current definition is the center
-    // of the cartesian coordinates as stored in the file.
+    // bounding box is defined as the center of the cartesian coordinates
+    // as stored in the file
     // Note that this is not really the geometric center of the molecule
-    // we need to do a Minimal Enclosing Sphere calculation
+    // ... for this we would need to do a Minimal Enclosing Sphere calculation
     Point3d position = atoms[0].getPosition();
     double minX = position.x, maxX = minX;
     double minY = position.y, maxY = minY;
@@ -498,12 +505,14 @@ public class ChemFrame extends AtomContainer {
       if (z < minZ) { minZ = z; }
       if (z > maxZ) { maxZ = z; }
     }
-    return new Point3d((minX + maxX) / 2,
-                       (minY + maxY) / 2,
-                       (minZ + maxZ) / 2);
+    centerBoundingBox = new Point3d((minX + maxX) / 2,
+                                    (minY + maxY) / 2,
+                                    (minZ + maxZ) / 2);
+    cornerBoundingBox = new Point3d(maxX, maxY, maxZ);
+    cornerBoundingBox.sub(centerBoundingBox);
   }
 
-  double calculateRadius(Point3d center) {
+  double calcRadius(Point3d center) {
     /**
      * Note that this method is overridden by CrystalFrame
      */

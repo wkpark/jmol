@@ -109,5 +109,27 @@ public class LabelRenderer {
       }
     }
   }
+
+  public void renderStringOffset(String label, Color color, int points,
+                                 int x, int y, int xOffset, int yOffset) {
+    g.setColor(color);
+    Font font = control.getFontOfSize(points);
+    g.setFont(font);
+    FontMetrics fontMetrics = g.getFontMetrics(font);
+    int labelHeight = fontMetrics.getAscent();
+    if (yOffset > 0)
+      y += yOffset + labelHeight;
+    else if (yOffset == 0)
+      y += labelHeight / 2;
+    else
+      y += yOffset;
+    if (xOffset > 0)
+      x += xOffset;
+    else if (xOffset == 0)
+      x -= fontMetrics.stringWidth(label);
+    else
+      x += xOffset - fontMetrics.stringWidth(label);
+    g.drawString(label, x, y);
+  }
 }
 

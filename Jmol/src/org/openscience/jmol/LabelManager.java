@@ -26,6 +26,7 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.render.AtomShape;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.util.BitSet;
 

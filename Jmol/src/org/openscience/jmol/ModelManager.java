@@ -68,6 +68,15 @@ public class ModelManager {
     return chemframe.getRotationCenter();
   }
 
+  public Point3d getBoundingBoxCenter() {
+    return chemframe.getBoundingBoxCenter();
+  }
+
+  public Point3d getBoundingBoxCorner() {
+    return chemframe.getBoundingBoxCorner();
+  }
+  
+
   public void setFrame(int fr) {
     if (haveFile && fr >= 0 && fr < nframes) {
         setFrame(chemfile.getFrame(fr));

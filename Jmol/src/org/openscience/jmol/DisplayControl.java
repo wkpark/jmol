@@ -27,6 +27,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
+import org.openscience.jmol.render.Axes;
 
 import java.awt.Image;
 import java.awt.Color;
@@ -59,6 +60,7 @@ final public class DisplayControl {
   public RepaintManager repaintManager;
   public StyleManager styleManager;
   public LabelManager labelManager;
+  public AxesManager axesManager;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
   public LabelRenderer labelRenderer;
@@ -85,6 +87,7 @@ final public class DisplayControl {
     repaintManager = new RepaintManager(this);
     styleManager = new StyleManager(this);
     labelManager = new LabelManager(this);
+    axesManager = new AxesManager(this);
     distributor = new Distributor(this);
 
     atomRenderer = new AtomRenderer(this);
@@ -717,17 +720,29 @@ final public class DisplayControl {
     return modelManager.getRotationCenter();
   }
 
+  public Point3d getBoundingBoxCenter() {
+    return modelManager.getBoundingBoxCenter();
+  }
+
+  public Point3d getBoundingBoxCorner() {
+    return modelManager.getBoundingBoxCorner();
+  }
+
+  // FIXME mth -- consolidate these two calls to setFrame
+
   public void setFrame(int fr) {
     modelManager.setFrame(fr);
-    structuralChange = true;
     clearSelection();
+    recalcAxes();
+    structuralChange = true;
     refresh();
   }
 
   public void setFrame(ChemFrame frame) {
     modelManager.setFrame(frame);
-    structuralChange = true;
     clearSelection();
+    recalcAxes();
+    structuralChange = true;
     refresh();
   }
 
@@ -1183,4 +1198,47 @@ final public class DisplayControl {
     return labelManager.getLabelFont(diameter);
   }
 
+  public Font getFontOfSize(int points) {
+    return labelManager.getFontOfSize(points);
+  }
+  
+  public void renderStringOffset(String str, Color color, int points,
+                                 int x, int y, int xOffset, int yOffset) {
+    labelRenderer.renderStringOffset(str, color, points,
+                                     x, y, xOffset, yOffset);
+  }
+
+  /****************************************************************
+   * delegated to AxesManager
+   ****************************************************************/
+
+  public final static byte AXES_NONE = 0;
+  public final static byte AXES_UNIT = 1;
+  public final static byte AXES_BBOX = 2;
+
+  public void setModeAxes(byte modeAxes) {
+    axesManager.setModeAxes(modeAxes);
+    structuralChange = true;
+    refresh();
+  }
+
+  public void recalcAxes() {
+    axesManager.recalc();
+  }
+
+  public byte getModeAxes() {
+    return axesManager.modeAxes;
+  }
+
+  public Axes getAxes() {
+    return axesManager.axes;
+  }
+
+  public Color getColorAxes() {
+    return axesManager.colorAxes;
+  }
+
+  public Color getColorAxesText() {
+    return axesManager.colorAxesText;
+  }
 }

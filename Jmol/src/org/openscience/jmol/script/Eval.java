@@ -991,6 +991,9 @@ public class Eval implements Runnable {
 
   void set() throws ScriptException {
     switch(statement[1].tok) {
+    case Token.axes:
+      setAxes();
+      break;
     case Token.bondmode:
       setBondmode();
       break;
@@ -1005,7 +1008,6 @@ public class Eval implements Runnable {
       break;
       // not implemented
     case Token.ambient:
-    case Token.axes:
     case Token.backfade:
     case Token.boundbox:
     case Token.cartoon:
@@ -1124,6 +1126,21 @@ public class Eval implements Runnable {
   /****************************************************************
    * SET implementations
    ****************************************************************/
+
+  void setAxes() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    byte modeAxes = DisplayControl.AXES_NONE;
+    switch (statement[2].tok) {
+    case Token.on:
+      modeAxes = DisplayControl.AXES_BBOX;
+    case Token.off:
+      break;
+    default:
+      booleanExpected();
+    }
+    control.setModeAxes(modeAxes);
+  }
 
   void setBondmode() throws ScriptException {
     if (statement.length != 3)

@@ -65,7 +65,7 @@ public class CrystalFrame extends ChemFrame {
     return this.boxEdges;
   }
 
-  public Point3d calculateGeometricCenter() {
+  void calcBoundingBox() {
     Point3d position = (Point3d) boxEdges.elementAt(0);
     double minX = position.x, maxX = minX;
     double minY = position.y, maxY = minY;
@@ -83,17 +83,19 @@ public class CrystalFrame extends ChemFrame {
       if (z < minZ) { minZ = z; }
       if (z > maxZ) { maxZ = z; }
     }
-    return new Point3d((minX + maxX) / 2,
-                       (minY + maxY) / 2,
-                       (minZ + maxZ) / 2);
+    centerBoundingBox = new Point3d((minX + maxX) / 2,
+                                    (minY + maxY) / 2,
+                                    (minZ + maxZ) / 2);
+    cornerBoundingBox = new Point3d(maxX, maxY, maxZ);
+    cornerBoundingBox.sub(centerBoundingBox);
   }
 
   // arrowhead size isn't included because it is currently in screen
   // coordinates .. oh well. 
-  public double calculateRadius(Point3d center) {
+  public double calcRadius(Point3d center) {
     // initialize to be the radius of the atoms ...
     // just in case there are atoms outside the box
-    double radius = super.calculateRadius(center);
+    double radius = super.calcRadius(center);
     for (int i = 0, size = boxEdges.size(); i < size; ++i) {
       Point3d position = (Point3d) boxEdges.elementAt(i);
       double dist = center.distance(position);

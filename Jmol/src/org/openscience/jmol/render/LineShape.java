@@ -5,7 +5,6 @@ import org.openscience.jmol.*;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4d;
 
 class LineShape extends Shape {
 

@@ -68,6 +68,13 @@ public class ChemFrameRenderer {
           }
         }
       }
+      if (control.getModeAxes() != DisplayControl.AXES_NONE) {
+        Axes axes = control.getAxes();
+        shapesVector.addElement(axes.getOriginShape());
+        Shape[] shapes = axes.getAxisShapes();
+        for (int i = shapes.length; --i >= 0; )
+          shapesVector.addElement(shapes[i]);
+      }
       
       if (frame instanceof CrystalFrame) {
         CrystalFrame crystalFrame = (CrystalFrame) frame;
@@ -96,7 +103,7 @@ public class ChemFrameRenderer {
       shapes = new Shape[shapesVector.size()];
       shapesVector.copyInto(shapes);
     }
-    
+
     control.calcViewTransformMatrix();
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].transform(control);

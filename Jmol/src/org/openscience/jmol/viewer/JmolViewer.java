@@ -1137,6 +1137,10 @@ final public class JmolViewer {
     modelManager.setRotationCenter(center);
   }
 
+  public Point3f getCenter() {
+    return modelManager.getRotationCenter();
+  }
+
   public void setCenterBitSet(BitSet bsCenter) {
     modelManager.setCenterBitSet(bsCenter);
     scaleFitToScreen();

@@ -2805,9 +2805,11 @@ public class Eval implements Runnable {
     case Token.axisangle:
       showAxisAngle();
       break;
+    case Token.center:
+      showCenter();
+      break;
 
       // not implemented
-    case Token.center:
     case Token.zoom:
     case Token.spin:
     case Token.list:
@@ -2853,6 +2855,10 @@ public class Eval implements Runnable {
 
   void showAxisAngle() {
     showString("axis-angle rotation = " + viewer.getAxisAngleText());
+  }
+
+  void showCenter() {
+    showString("center = " + viewer.getCenter());
   }
 
   AxisAngle4f aaMoveTo;

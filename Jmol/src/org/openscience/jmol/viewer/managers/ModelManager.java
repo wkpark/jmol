@@ -117,10 +117,6 @@ public class ModelManager {
       frame.increaseRotationRadius(increaseInAngstroms);
   }
 
-  public Point3f getRotationCenter() {
-    return (frame == null) ? null : frame.getRotationCenter();
-  }
-
   public Point3f getBoundingBoxCenter() {
     return (frame == null) ? null : frame.getBoundingBoxCenter();
   }
@@ -179,6 +175,10 @@ public class ModelManager {
   public void setRotationCenter(Point3f center) {
     if (frame != null)
       frame.setRotationCenter(center);
+  }
+
+  public Point3f getRotationCenter() {
+    return (frame == null ? null : frame.getRotationCenter());
   }
 
   public boolean autoBond = true;

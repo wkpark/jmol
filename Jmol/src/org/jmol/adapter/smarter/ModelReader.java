@@ -98,6 +98,7 @@ abstract class ModelReader {
     else if (negative)
       value = -value;
     if (ich < ichMax && (ch == 'E' || ch == 'e')) {
+      System.out.println("Exponent seen!");
       if (++ich >= ichMax)
         return Float.NaN;
       ch = str.charAt(ich);
@@ -114,10 +115,11 @@ abstract class ModelReader {
         value *= ((-exponent < decimalScale.length)
                   ? decimalScale[-exponent - 1]
                   : Math.pow(10, exponent));
+    } else {
+      ichNextParse = ich; // the exponent code finds its own ichNextParse
     }
     //    System.out.println("parseFloat(" + str + "," + ichStart + "," +
     //                       ichMax + ") -> " + value);
-    ichNextParse = ich;
     return value;
   }
   

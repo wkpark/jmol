@@ -103,6 +103,7 @@ class GhemicalMMReader extends ModelReader {
 
   void processAtoms(BufferedReader input, String line) throws Exception {
     int atomCount = parseInt(line, 6);
+    System.out.println("atomCount=" + atomCount);
     for (int i = 0; i < atomCount; ++i) {
       if (model.atomCount != i)
         throw new Exception("GhemicalMMReader error #1");
@@ -126,6 +127,8 @@ class GhemicalMMReader extends ModelReader {
       String orderCode = parseToken(line, ichNextParse);
       int order = 0;
       switch(orderCode.charAt(0)) {
+      case 'C': // Conjugated (aromatic)
+        ++order; // our code for aromatic is 4;
       case 'T':
         ++order;
       case 'D':

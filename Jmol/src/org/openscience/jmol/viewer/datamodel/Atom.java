@@ -573,6 +573,9 @@ public final class Atom implements Bspt.Tuple {
       case 'z':
         strLabel += point3f.z;
         break;
+      case 'X':
+        strLabel += atomIndex;
+        break;
       case 'C':
         int formalCharge = getFormalCharge();
         if (formalCharge > 0)

@@ -242,6 +242,7 @@ class Compiler {
     case ']':
     case '+':
     case '?':
+    case '@':
       break;
     case '<':
     case '=':
@@ -282,7 +283,7 @@ class Compiler {
                               eval.filename, lineCurrent);
   }
   
-  private boolean compile1() {
+  boolean compile1() {
     script = eval.script;
     cchScript = script.length();
     ichToken = 0;
@@ -396,7 +397,8 @@ class Compiler {
         case Token.center:
         case Token.restrict:
         case Token.select:
-          if (token.tok != Token.identifier &&
+          if ((token.tok != Token.identifier) &&
+              (token.tok & Token.predefinedset) == 0 &&
               (token.tok & Token.expression) == 0)
             return InvalidExpressionToken(ident);
           break;
@@ -590,6 +592,9 @@ class Compiler {
     case Token.radius:
     case Token.temperature:
       return clauseComparator();
+    default:
+      if ((tokPeek() & Token.predefinedset) == 0)
+        break;
     case Token.all:
     case Token.none:
     case Token.identifier:

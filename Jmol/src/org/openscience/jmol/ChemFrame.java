@@ -479,9 +479,9 @@ public class ChemFrame extends AtomContainer {
      * Note that this method is overridden by CrystalFrame
      */
     // First, find the center of the molecule. Current definition is the center
-    // of the cartesian coordinates as stored in the file. Note that this is
-    // not really the center because an atom could be stuck way up in one of
-    // the corners of the box
+    // of the cartesian coordinates as stored in the file.
+    // Note that this is not really the geometric center of the molecule
+    // we need to do a Minimal Enclosing Sphere calculation
     Point3d position = atoms[0].getPosition();
     double minX = position.x, maxX = minX;
     double minY = position.y, maxY = minY;

@@ -58,6 +58,7 @@ public class Eval implements Runnable {
   public Eval(DisplayControl control) {
     compiler = new Compiler(this);
     this.control = control;
+    clearDefinitionsAndLoadPredefined();
   }
 
   boolean load(String filename, String script, int scriptLevel) {
@@ -90,7 +91,6 @@ public class Eval implements Runnable {
     long timeBegin = 0;
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
-      System.out.println("loadFile called:" + timeBegin);
     }
     InputStream istream = control.getInputStreamFromName(filename);
     if (istream == null)
@@ -164,6 +164,29 @@ public class Eval implements Runnable {
     }
     str += "END\n";
     return str;
+  }
+
+  private void clearDefinitionsAndLoadPredefined() {
+    variables.clear();
+
+    System.out.println("loading predefined:");
+    int cPredef = Token.predefinitions.length;
+    for (int iPredef = 0; iPredef < cPredef; iPredef++) {
+      script = Token.predefinitions[iPredef];
+      System.out.println("script:" + script);
+      if (compiler.compile1()) {
+        Token[] statement = aatoken[0];
+        if (statement.length > 2) {
+          int tok = statement[1].tok;
+          if (tok == Token.identifier || (tok & Token.predefinedset) != 0) {
+            String variable = (String)statement[1].value;
+            variables.put(variable, statement);
+            continue;
+          }
+        }
+      }
+      System.out.println("predefined set error:" + script);
+    }
   }
 
   public void run() {
@@ -376,8 +399,10 @@ public class Eval implements Runnable {
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
+    System.out.println("start to evaluate expression");
     for (int pc = pcStart; pc < code.length; ++pc) {
       Token instruction = code[pc];
+      System.out.println("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
@@ -424,9 +449,11 @@ public class Eval implements Runnable {
       case Token.selected:
         stack[sp++] = copyBitSet(control.getSelectionSet());
         break;
+      case Token.hydrogen:
+      case Token.solvent:
       case Token.identifier:
         String variable = (String)instruction.value;
-        BitSet value = (BitSet)variables.get(variable);
+        BitSet value = lookupValue(variable, false);
         if (value == null)
           undefinedVariable();
         stack[sp++] = copyBitSet(value);
@@ -441,13 +468,35 @@ public class Eval implements Runnable {
         comparatorInstruction(instruction, bs);
         break;
       default:
-        if ((instruction.tok & Token.predefinedset) == 0)
-          unrecognizedExpression();
+        unrecognizedExpression();
       }
     }
     if (sp != 1)
       evalError("atom expression compiler error - stack over/underflow");
     return stack[0];
+  }
+
+  BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
+    Object value = variables.get(variable);
+    if (value != null) {
+      if (value instanceof Token[]) {
+        value = expression((Token[])value, 2);
+        variables.put(variable, value);
+      }
+      return (BitSet)value;
+    }
+    if (plurals)
+      return null;
+    int len = variable.length();
+    if (len < 5) // iron is the shortest
+      return null;
+    if (variable.charAt(len - 1) != 's')
+      return null;
+    if (variable.endsWith("ies"))
+      variable = variable.substring(0, len-3) + 'y';
+    else
+      variable = variable.substring(0, len-1);
+    return lookupValue(variable, true);
   }
 
   void comparatorInstruction(Token instruction, BitSet bs)
@@ -531,6 +580,11 @@ public class Eval implements Runnable {
     variables.put(variable, (expression(statement, 2)));
   }
 
+  void predefine(Token[] statement) {
+    String variable = (String)statement[1].value;
+    variables.put(variable, statement);
+  }
+
   void echo() throws ScriptException {
     if (statement.length == 2 && statement[1].tok == Token.string)
       control.scriptEcho((String)statement[1].value);
@@ -588,7 +642,9 @@ public class Eval implements Runnable {
   void select() throws ScriptException {
     if (statement.length == 1) {
       // FIXME -- what is behavior when there are no arguments to select
+      // doc says behavior is dependent upon hetero and hydrogen parameters
     } else {
+      System.out.println("inside select");
       control.setSelectionSet(expression(statement, 1));
     }
   }

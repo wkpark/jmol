@@ -261,41 +261,41 @@ class Token {
   final static int rightsquare  = misc | 17;
   final static int restore      = misc | 18; // chime extended
   
-  final static int at          = predefinedset |  0;
-  final static int acidic      = predefinedset |  1;
-  final static int acyclic     = predefinedset |  2;
-  final static int aliphatic   = predefinedset |  3;
+  //  final static int at          = predefinedset |  0;
+  //  final static int acidic      = predefinedset |  1;
+  //  final static int acyclic     = predefinedset |  2;
+  //  final static int aliphatic   = predefinedset |  3;
   final static int alpha       = predefinedset |  4;
   final static int amino       = predefinedset |  5;
-  final static int aromatic    = predefinedset |  6;
+  //  final static int aromatic    = predefinedset |  6;
   // backbone
-  final static int basic       = predefinedset |  8;
-  final static int bonded      = predefinedset |  9;
-  final static int buried      = predefinedset | 10;
-  final static int cg          = predefinedset | 11;
-  final static int charged     = predefinedset | 12;
-  final static int cyclic      = predefinedset | 13;
+  //  final static int basic       = predefinedset |  8;
+  //  final static int bonded      = predefinedset |  9;
+  //  final static int buried      = predefinedset | 10;
+  //  final static int cg          = predefinedset | 11;
+  //  final static int charged     = predefinedset | 12;
+  //  final static int cyclic      = predefinedset | 13;
   final static int cystine     = predefinedset | 14;
   final static int helix       = predefinedset | 15;
   final static int hetero      = predefinedset | 16 | setparam;
   final static int hydrogen    = predefinedset | 17 | setparam;
   final static int hydrophobic = predefinedset | 18;
   final static int ions        = predefinedset | 19;
-  final static int large       = predefinedset | 20;
+  //  final static int large       = predefinedset | 20;
   final static int ligand      = predefinedset | 21;
-  final static int medium      = predefinedset | 22;
-  final static int neutral     = predefinedset | 23;
-  final static int nucleic     = predefinedset | 24;
-  final static int polar       = predefinedset | 25;
+  //  final static int medium      = predefinedset | 22;
+  //  final static int neutral     = predefinedset | 23;
+  //  final static int nucleic     = predefinedset | 24;
+  //  final static int polar       = predefinedset | 25;
   final static int protein     = predefinedset | 26;
-  final static int purine      = predefinedset | 27;
-  final static int pyrimidine  = predefinedset | 28;
+  //  final static int purine      = predefinedset | 27;
+  //  final static int pyrimidine  = predefinedset | 28;
   final static int selected    = predefinedset | 29 | showparam;
   final static int sheet       = predefinedset | 30;
   final static int sidechain   = predefinedset | 31;
-  final static int small       = predefinedset | 32;
+  //  final static int small       = predefinedset | 32;
   final static int solvent     = predefinedset | 33 | setparam;
-  final static int surface     = predefinedset | 34;
+  //  final static int surface     = predefinedset | 34;
   final static int turn        = predefinedset | 35;
   final static int water       = predefinedset | 36;
   // amino acids
@@ -361,6 +361,7 @@ class Token {
     "colour",            null,
     "connect",           new Token(connect,  varArgCount, "connect"),
     "define",            new Token(define,   varArgCount, "define"),
+    "@",                 null,
     "dots",              new Token(dots,      onDefault1, "dots"),
     "echo",              new Token(echo,     varArgCount, "echo"),
     "exit",              new Token(exit,               0, "exit"),
@@ -514,41 +515,41 @@ class Token {
 
     "restore",           new Token(restore,    "restore"),
   
-    "at",           new Token(at, "at"),
-    "acidic",       new Token(acidic, "acidic"),
-    "acyclic",      new Token(acyclic, "acyclic"),
-    "aliphatic",    new Token(aliphatic, "aliphatic"),
+    //    "at",           new Token(at, "at"),
+    //    "acidic",       new Token(acidic, "acidic"),
+    //    "acyclic",      new Token(acyclic, "acyclic"),
+    //    "aliphatic",    new Token(aliphatic, "aliphatic"),
     "alpha",        new Token(alpha, "alpha"),
     "amino",        new Token(amino, "amino"),
-    "aromatic",     new Token(aromatic, "aromatic"),
+    //    "aromatic",     new Token(aromatic, "aromatic"),
     // backbone
-    "basic",        new Token(basic, "basic"),
-    "bonded",       new Token(bonded, "bonded"),
-    "buried",       new Token(buried, "buried"),
-    "cg",           new Token(cg,              "cg"),
-    "charged",      new Token(charged,         "charged"),
-    "cyclic",       new Token(cyclic,          "cyclic"),
+    //    "basic",        new Token(basic, "basic"),
+    //    "bonded",       new Token(bonded, "bonded"),
+    //    "buried",       new Token(buried, "buried"),
+    //    "cg",           new Token(cg,              "cg"),
+    //    "charged",      new Token(charged,         "charged"),
+    //    "cyclic",       new Token(cyclic,          "cyclic"),
     "cystine",      new Token(cystine,         "cystine"),
     "helix",        new Token(helix,           "helix"),
     "hetero",       new Token(hetero,          "hetero"),
     "hydrogen",     new Token(hydrogen,        "hydrogen"),
     "hydrophobic",  new Token(hydrophobic,     "hydrophobic"),
     "ions",         new Token(ions,            "ions"),
-    "large",        new Token(large,           "large"),
+    //    "large",        new Token(large,           "large"),
     "ligand",       new Token(ligand,          "ligand"),
-    "medium",       new Token(medium,          "medium"),
-    "neutral",      new Token(neutral,         "neutral"),
-    "nucleic",      new Token(nucleic,         "nucleic"),
-    "polar",        new Token(polar,           "polar"),
+    //    "medium",       new Token(medium,          "medium"),
+    //    "neutral",      new Token(neutral,         "neutral"),
+    //    "nucleic",      new Token(nucleic,         "nucleic"),
+    //    "polar",        new Token(polar,           "polar"),
     "protein",      new Token(protein,         "protein"),
-    "purine",       new Token(purine,          "purine"),
-    "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
+    //    "purine",       new Token(purine,          "purine"),
+    //    "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
     "selected",     new Token(selected,        "selected"),
     "sheet",        new Token(sheet,           "sheet"),
     "sidechain",    new Token(sidechain,       "sidechain"),
-    "small",        new Token(small,           "small"),
+    //    "small",        new Token(small,           "small"),
     "solvent",      new Token(solvent,         "solvent"),
-    "surface",      new Token(surface,         "surface"),
+    //    "surface",      new Token(surface,         "surface"),
     "turn",         new Token(turn,            "turn"),
     "water",        new Token(water,           "water"),
 
@@ -623,74 +624,88 @@ class Token {
   };
 
   static String[] predefinitions = {
-    "at a,t",
-    "acidic d,e",
-    "acyclic a,r,n,d,c,e,q,g,i,l,k,m,s,t,v",
-    "aliphatic a,g,i,l,v",
-    //    "alpha approximatly *.CA", // whatever that means
-    //    "amino",
-    "aromatic h,f,w,y",
-    "backbone (protein or nucleic) & !sidechain",
-    "basic r,h,k",
-    "bonded _bondedcount>0",
-    "buried a,c,i,l,m,f,w,v", // doesn't seem right to me
-    "cg c,g",
-    "charged r,d,e,h,k",
-    "cyclic h,f,p,w,y",
-    //    "cystine",
-    //    "helix",
-    //    "hetero",
+    "@at a,t",
+    "@acidic d,e",
+    "@acyclic a,r,n,d,c,e,q,g,i,l,k,m,s,t,v",
+    "@aliphatic a,g,i,l,v",
+    //    "@alpha approximatly *.CA", // whatever that means
+    //    "@amino",
+    "@aromatic h,f,w,y",
+    "@backbone (protein or nucleic) & !sidechain",
+    "@basic r,h,k",
+    "@bonded _bondedcount>0",
+    "@buried a,c,i,l,m,f,w,v", // doesn't seem right to me
+    "@cg c,g",
+    "@charged r,d,e,h,k",
+    "@cyclic h,f,p,w,y",
+    //    "@cystine",
+    //    "@helix",
+    //    "@hetero",
     // doc on hydrophobic is inconsistent
     // text description of hydrophobic says this
-    //    "hydrophobic ala,leu,val,ile,pro,phe,met,trp",
+    //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
-    "hydrophobic a,g,i,l,m,f,p,w,y,v",
-    //    "ions",
-    "large r,e,q,h,i,l,k,m,f,w,y",
-    //    "ligand",
-    "medium n,d,c,p,t,v",
+    "@hydrophobic a,g,i,l,m,f,p,w,y,v",
+    //    "@ions",
+    "@large r,e,q,h,i,l,k,m,f,w,y",
+    //    "@ligand",
+    "@medium n,d,c,p,t,v",
     // doc is inconsistent
     // is h basic or neutral
-    "neutral amino & !(acidic,basic)",
-    "nucleic a,c,g,t",
-    "polar r,n,d,c,e,q,h,k,s,t",
-    //    "protein amino + common post-translational modifications",
-    "purine a,g",
-    "pyrimidine c,t",
+    "@neutral a,n,c,q,g,h,i,l,m,f,p,s,t,w,y,v",
+    "@nucleic a,c,g,t",
+    "@polar r,n,d,c,e,q,h,k,s,t",
+    //    "@protein amino + common post-translational modifications",
+    "@purine a,g",
+    "@pyrimidine c,t",
     // selected - special and is handled at runtime
-    //    "sheet"
-    //    "sidechain (protein or nucleic) and !backbone",
-    "small a,g,s",
-    "solvent water,ions",
-    "surface r,n,d,e,q,g,h,k,p,s,t,y",
-    //    "turn",
-    //    "water"
+    //    "@sheet"
+    //    "@sidechain (protein or nucleic) and !backbone",
+    "@small a,g,s",
+    "@solvent water,ions",
+    "@surface r,n,d,e,q,g,h,k,p,s,t,y",
+    //    "@turn",
+    //    "@water"
 
-    // FIXME - check spelling of elements
-    "hydrogen elemno==1",
-    "helium elemno=2",
-    "lithium elemno=3",
-    "berelium elemno=4",
-    "barium elemno=5",
-    "carbon elemno=6",
-    "nitrogen elemno=7",
-    "oxygen elemno=8",
-    "florine elemno=9",
-    "neon elemno=10",
-    "sodium elemno=11",
-    "magnesium elemno=12",
-    "aluminum elemno=13", // don't forget to add the british spelling
-    "silicon elemno=14",
-    "phosphorus elemno=15",
-    "sulphur elemno=16",
-    "clorine elemno=17",
-    "argon elemno=18",
-    "potassium elemno=19",
-    "calcium elemno=20",
-    "tin elemno=21",
-    "iron elemno=26",
-    "copper elemno=29",
-    "zinc elemno=30",
+    "@hydrogen elemno=1",
+    "@helium elemno=2",
+    "@lithium elemno=3",
+    "@beryllium elemno=4",
+    "@barium elemno=5",
+    "@carbon elemno=6",
+    "@nitrogen elemno=7",
+    "@oxygen elemno=8",
+    "@fluorine elemno=9",
+    "@neon elemno=10",
+    "@sodium elemno=11",
+    "@magnesium elemno=12",
+    "@aluminum elemno=13",  //US
+    "@aluminium elemno=13", //UK
+    "@silicon elemno=14",
+    "@phosphorus elemno=15",
+    "@sulfur elemno=16",   //US
+    "@sulphur elemno=16",   //UK
+    "@chlorine elemno=17",
+    "@argon elemno=18",
+    "@potassium elemno=19",
+    "@calcium elemno=20",
+    "@scandium elemno=21",
+    "@titanium elemno=22",
+    "@vanadium elemno=23",
+    "@chromium elemno=24",
+    "@manganese elemno=25",
+    "@iron elemno=26",
+    "@cobolt elemno=27",
+    "@nickel elemno=28",
+    "@copper elemno=29",
+    "@zinc elemno=30",
+    "@gallium elemno=31",
+    "@germanium elemno=32",
+    "@arsenic elemno=33",
+    "@selenium elemno=34",
+    "@bromine elemno=35",
+    "@krypton elemno=36",
+    // that is enough for now
   };
 
   static Hashtable map = new Hashtable();

@@ -3,7 +3,7 @@
   <body>
     <title>Molecular visualization websites</title>
     
-    <!-- $ID: $ -->
+    <!-- $Id$ -->
     
     <section title="Websites using Jmol">
       <p>A few websites use Jmol to display molecules. Below is a partial list.
@@ -12,9 +12,9 @@
       </p>
       <ul>
 	<li>
-	  <a href="http://www.woc.sci.kun.nl">
+	  <a href="http://www.woc.science.ru.nl">
 	    Dutch Dictionary on Organic Chemistry
-	  </a> - University of Nijmegen, Netherlands
+	  </a> - Radboud University Nijmegen, The Netherlands
 	</li>
 	<li>
 	  <a href="http://www.ebi.ac.uk/msd-srv/chempdb/">

@@ -382,8 +382,8 @@ public class Eval implements Runnable {
       case Token.wireframe:
         wireframe();
         break;
-      case Token.animate:
-        animate();
+      case Token.animation:
+        animation();
         break;
       case Token.dots:
         dots();
@@ -586,6 +586,10 @@ public class Eval implements Runnable {
 
   void unrecognizedSubcommand() throws ScriptException {
     evalError("unrecognized subcommand");
+  }
+
+  void subcommandExpected() throws ScriptException {
+    evalError("subcommand expected");
   }
 
   void setspecialShouldNotBeHere() throws ScriptException {
@@ -1810,6 +1814,26 @@ public class Eval implements Runnable {
     viewer.setMarHBond(mar);
   }
 
+  void animation() throws ScriptException {
+    if (statement.length < 2)
+      subcommandExpected();
+    int tok = statement[1].tok;
+    switch(tok) {
+    case Token.on:
+    case Token.off:
+    case Token.information:
+    case Token.mode:
+    case Token.direction:
+    case Token.fps:
+    case Token.frame:
+      System.out.println("anim subcommand not implemented");
+      break;
+    default:
+      unrecognizedSubcommand();
+    }
+  }
+
+  /*
   void animate() throws ScriptException {
     if (statement.length < 2 || statement[1].tok != Token.identifier)
       unrecognizedSubcommand();
@@ -1880,6 +1904,7 @@ public class Eval implements Runnable {
     }
     viewer.setInMotion(false);
   }
+  */
 
   void dots() throws ScriptException {
     short mad = 0;

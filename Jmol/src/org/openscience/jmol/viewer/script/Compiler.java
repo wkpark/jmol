@@ -452,26 +452,38 @@ class Compiler {
   boolean lookingAtPositiveDecimal() {
     int ichT = ichToken;
     char ch = 'X';
-    while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT)))
       ++ichT;
     if (ichT == cchScript || ch != '.')
       return false;
+    // to support 1.ca, let's check the character after the dot
+    // to determine if it is an alpha
+    if (ch == '.' && (ichT + 1 < cchScript) && isAlphabetic(script.charAt(ichT + 1)))
+      return false;
     ++ichT;
-    while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
     return cchToken > 1; // decimal point plust at least one digit
   }
 
+  boolean isAlphabetic(char ch) {
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+  }
+
+  boolean isDigit(char ch) {
+    return ch >= '0' && ch <= '9';
+  }
+
   boolean lookingAtSeqcode() {
     int ichT = ichToken;
     char ch = ' ';
-    while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT)))
       ++ichT;
     if (ichT == ichToken || ichT + 2 > cchScript || ch != '^')
       return false;
     ch = script.charAt(++ichT);
-    if (! ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')))
+    if (! isAlphabetic(ch))
       return false;
     ++ichT;
     cchToken = ichT - ichToken;
@@ -480,8 +492,7 @@ class Compiler {
 
   boolean lookingAtPositiveInteger() {
     int ichT = ichToken;
-    char ch;
-    while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
+    while (ichT < cchScript && isDigit(script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
     return cchToken > 0;
@@ -493,8 +504,7 @@ class Compiler {
     if (script.charAt(ichToken) != '-')
       return false;
     int ichT = ichToken + 1;
-    char ch;
-    while (ichT < cchScript && (ch = script.charAt(ichT)) >= '0' && ch <= '9')
+    while (ichT < cchScript && isDigit(script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
     return cchToken > 1; // minus sign plus at least 1 digit
@@ -538,9 +548,8 @@ class Compiler {
         return false;
     case '?': // include question marks in identifier for atom expressions
       while (ichT < cchScript &&
-             (((ch = script.charAt(ichT)) >= 'a' && ch <= 'z') ||
-              (ch >= 'A' && ch <= 'Z') ||
-              (ch >= '0' && ch <= '9') ||
+             (isAlphabetic(ch = script.charAt(ichT)) ||
+              isDigit(ch) ||
               ch == '_' || ch == '?'))
         ++ichT;
       break;

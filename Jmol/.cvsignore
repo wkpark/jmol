@@ -1,6 +1,5 @@
-jars/jmol-applet.jar
-jars/jmol.jar
 *.tar.gz
 dist
+sourcedist
 classes
 generatedSource

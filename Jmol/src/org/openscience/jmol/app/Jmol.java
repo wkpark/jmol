@@ -67,7 +67,7 @@ public class Jmol extends JPanel {
   private PreferencesDialog preferencesDialog;
   MeasurementTable measurementTable;
   RecentFilesDialog recentFiles;
-  private JMenu recentFilesMenu;
+  //private JMenu recentFilesMenu;
   public ScriptWindow scriptWindow;
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
@@ -316,29 +316,24 @@ public class Jmol extends JPanel {
 
     Options options = new Options();
     options.addOption("h", "help", false, "give this help page");
-    options.addOption(
-        OptionBuilder.withLongOpt("script").
-                      withDescription("script to run").
-                      withValueSeparator('=').
-                      hasArg().
-                      create("s")
-    );
-    options.addOption(
-        OptionBuilder.withArgName("property=value").
-                      hasArg().
-                      withValueSeparator().
-                      withDescription(
-"supported options are given below").
-                      create("D")
-    );
     
-    options.addOption(
-        OptionBuilder.withLongOpt("geometry").
-                      withDescription("window size 500x500").
-                      withValueSeparator().
-                      hasArg().
-                      create("g")
-    );
+    OptionBuilder.withLongOpt("script");
+    OptionBuilder.withDescription("script to run");
+    OptionBuilder.withValueSeparator('=');
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("s"));
+    
+    OptionBuilder.withArgName("property=value");
+    OptionBuilder.hasArg();
+    OptionBuilder.withValueSeparator();
+    OptionBuilder.withDescription("supported options are given below");
+    options.addOption(OptionBuilder.create("D"));
+    
+    OptionBuilder.withLongOpt("geometry");
+    OptionBuilder.withDescription("window size 500x500");
+    OptionBuilder.withValueSeparator();
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("g"));
 
     CommandLine line = null;
     try {
@@ -816,7 +811,7 @@ public class Jmol extends JPanel {
       if (item.endsWith("Menu")) {
         JMenu pm;
         if ("recentFilesMenu".equals(item)) {
-          pm = recentFilesMenu = createMenu(item);
+          /*recentFilesMenu = */pm = createMenu(item);
         } else {
           pm = createMenu(item);
         }
@@ -864,12 +859,12 @@ public class Jmol extends JPanel {
   private static final String openAction = "open";
   private static final String openurlAction = "openurl";
   private static final String newAction = "new";
-  private static final String saveasAction = "saveas";
+  //private static final String saveasAction = "saveas";
   private static final String exportActionProperty = "export";
   private static final String closeAction = "close";
   private static final String exitAction = "exit";
   private static final String aboutAction = "about";
-  private static final String vibAction = "vibrate";
+  //private static final String vibAction = "vibrate";
   private static final String whatsnewAction = "whatsnew";
   private static final String uguideAction = "uguide";
   private static final String printActionProperty = "print";

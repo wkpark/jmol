@@ -91,11 +91,13 @@ public class AtomPropsMenu extends JMenu {
 
       JRadioButtonMenuItem rbmi = (JRadioButtonMenuItem) e.getSource();
       String mode = rbmi.getText();
+      /*
       if (mode.equals("None")) {
         control.setPropertyStyleString("");
       } else {
         control.setPropertyStyleString(rbmi.getText());
       }
+      */
     }
   };
 

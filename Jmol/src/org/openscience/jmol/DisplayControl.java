@@ -35,7 +35,6 @@ import org.openscience.jmol.render.MeasurementShape;
 import org.openscience.jmol.render.AtomShapeIterator;
 import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.render.BondShapeIterator;
-import org.openscience.jmol.render.JmolAtom;
 import org.openscience.jmol.script.Eval;
 import org.openscience.jmol.g25d.Graphics25D;
 import org.openscience.jmol.g25d.Colix;
@@ -86,6 +85,8 @@ final public class DisplayControl {
   public Java12 java12;
   public Graphics25D g25d;
 
+  public ClientAtomAdapter clientAtomAdapter;
+
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
   public boolean jvm14orGreater = false;
@@ -109,6 +110,8 @@ final public class DisplayControl {
     axesManager = new AxesManager(this);
     measurementManager = new MeasurementManager(this);
     distributor = new Distributor(this);
+
+    clientAtomAdapter = new DeprecatedAtomAdapter();
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
@@ -553,14 +556,6 @@ final public class DisplayControl {
 
   public Color getColorFromString(String colorName) {
     return colorManager.getColorFromString(colorName);
-  }
-
-  public short getColixAtom(JmolAtom atom) {
-    return colorManager.getColixAtom((Atom)atom);
-  }
-
-  public short getColixAtom(byte mode, JmolAtom atom) {
-    return colorManager.getColixAtom(mode, (Atom)atom);
   }
 
   // note that colorBond could be null -- meaning inherit atom color
@@ -1512,6 +1507,7 @@ final public class DisplayControl {
     return styleManager.getMeasureFont(size);
   }
 
+  /*
   public void setPropertyStyleString(String s) {
     styleManager.setPropertyStyleString(s);
     refresh();
@@ -1520,6 +1516,7 @@ final public class DisplayControl {
   public String getPropertyStyleString() {
     return styleManager.propertyStyleString;
   }
+  */
 
   public void setWireframeRotation(boolean wireframeRotation) {
     styleManager.setWireframeRotation(wireframeRotation);
@@ -1579,16 +1576,19 @@ final public class DisplayControl {
     return labelManager.styleLabel;
   }
 
-  public String getLabelAtom(JmolAtom atom) {
-    return labelManager.getLabelAtom(labelManager.styleLabel, (Atom)atom);
+  public String getLabelAtom(Object clientAtom) {
+    return labelManager.getLabelAtom(labelManager.styleLabel,
+                                     (Atom)clientAtom);
   }
 
-  public String getLabelAtom(byte styleLabel, JmolAtom atom) {
-    return labelManager.getLabelAtom(styleLabel, (Atom)atom);
+  public String getLabelAtom(byte styleLabel, Object clientAtom) {
+    return labelManager.getLabelAtom(styleLabel,
+                                     (Atom)clientAtom);
   }
 
-  public String getLabelAtom(String strLabel, JmolAtom atom) {
-    return labelManager.getLabelAtom(strLabel, (Atom)atom);
+  public String getLabelAtom(String strLabel, Object clientAtom) {
+    return labelManager.getLabelAtom(strLabel,
+                                     (Atom)clientAtom);
   }
 
   public void setLabelFontSize(int points) {
@@ -1676,15 +1676,36 @@ final public class DisplayControl {
    * Jmol Adapter routines - for now they are here
    ****************************************************************/
 
-  public int getAtomicNumber(JmolAtom atom) {
-    return atom.getAtomicNumber();
+  public int getAtomicNumber(Object clientAtom) {
+    return clientAtomAdapter.getAtomicNumber(clientAtom);
   }
 
-  public double getVanderwaalsRadius(JmolAtom atom) {
-    return atom.getVanderwaalsRadius();
+  public String getAtomicSymbol(Object clientAtom) {
+    return clientAtomAdapter.getAtomicSymbol(clientAtom);
   }
 
-  public Point3d getPoint3d(JmolAtom atom) {
-    return atom.getPoint3D();
+  public String getAtomTypeName(Object clientAtom) {
+    return clientAtomAdapter.getAtomTypeName(clientAtom);
+  }
+
+  public double getVanderwaalsRadius(Object clientAtom) {
+    return clientAtomAdapter.getVanderwaalsRadius(clientAtom);
+  }
+
+  public Point3d getPoint3d(Object clientAtom) {
+    return clientAtomAdapter.getPoint3d(clientAtom);
+  }
+
+  public ProteinProp getProteinProp(Object clientAtom) {
+    return clientAtomAdapter.getProteinProp(clientAtom);
+  }
+
+  public short getColixAtom(Object clientAtom) {
+    return Colix.getColix(clientAtomAdapter.getColor(clientAtom,
+                                        colorManager.modeAtomColorProfile));
+  }
+
+  public short getColixAtom(byte mode, Object clientAtom) {
+    return Colix.getColix(clientAtomAdapter.getColor(clientAtom, mode));
   }
 }

@@ -469,14 +469,15 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         .getString("Prefs.apNChoice"));
     aProps.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.apUChoice"));
-    aProps.setSelectedItem(control.getPropertyStyleString());
+    aProps.setSelectedItem("");
+    //    aProps.setSelectedItem(control.getPropertyStyleString());
     aProps.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         JComboBox source = (JComboBox) e.getSource();
         AtomPropsMode = (String) source.getSelectedItem();
-        control.setPropertyStyleString(AtomPropsMode);
+        // control.setPropertyStyleString(AtomPropsMode);
         props.put("AtomPropsMode", AtomPropsMode);
       }
     });
@@ -1345,7 +1346,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setPercentVdwAtom(percentVdwAtom);
     control.setStyleAtom(styleAtom);
     control.setStyleLabel(styleLabel);
-    control.setPropertyStyleString(AtomPropsMode);
+    //control.setPropertyStyleString(AtomPropsMode);
     control.setStyleBond(styleBond);
     control.setMarBond(marBond);
     control.setColorVector(colorVector);

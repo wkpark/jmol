@@ -80,8 +80,8 @@ public class Distributor {
     boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
-      short colixT = useColorProfile
-        ? control.getColixAtom(mode, atomShape.atom) : colix;
+      short colixT = useColorProfile 
+       ? control.getColixAtom(mode, atomShape.clientAtom) : colix;
       atomShape.setColixAtom(colixT);
     }
   }
@@ -89,14 +89,16 @@ public class Distributor {
   public void setStyleLabel(byte styleLabel, AtomShapeIterator iter) {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
-      atomShape.setLabel(control.getLabelAtom(styleLabel, atomShape.atom));
+      atomShape.setLabel(control.getLabelAtom(styleLabel,
+                                              atomShape.clientAtom));
     }
   }
 
   public void setLabel(String strLabel, AtomShapeIterator iter) {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
-      atomShape.setLabel(control.getLabelAtom(strLabel, atomShape.atom));
+      atomShape.setLabel(control.getLabelAtom(strLabel,
+                                              atomShape.clientAtom));
     }
   }
 
@@ -106,7 +108,7 @@ public class Distributor {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.next();
       if (colixDots == 0)
-        colixT = control.getColixAtom(atomShape.atom);
+        colixT = control.getColixAtom(atomShape.clientAtom);
       atomShape.setColixMarDots(colixT, marDots);
     }
   }

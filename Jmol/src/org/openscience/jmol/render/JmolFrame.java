@@ -57,7 +57,7 @@ public class JmolFrame {
     atomShape.setAtomIndex(atomShapeCount);
     atomShapes[atomShapeCount++] = atomShape;
     if (htAtomMap != null)
-      htAtomMap.put(atomShape.atom, atomShape);
+      htAtomMap.put(atomShape.clientAtom, atomShape);
   }
 
   public int getAtomCount() {
@@ -75,27 +75,29 @@ public class JmolFrame {
       htAtomMap = new Hashtable();
       for (int i = atomShapeCount; --i >= 0; ) {
         AtomShape atomShape = atomShapes[i];
-        htAtomMap.put(atomShape.atom, atomShape);
+        htAtomMap.put(atomShape.clientAtom, atomShape);
       }
     }
   }
 
-  public void bondAtomShapes(JmolAtom atom1, JmolAtom atom2, int order) {
+  public void bondAtomShapes(Object clientAtom1, Object clientAtom2,
+                             int order) {
     if (htAtomMap == null)
       initAtomMap();
-    AtomShape atomShape1 = (AtomShape)htAtomMap.get(atom1);
+    AtomShape atomShape1 = (AtomShape)htAtomMap.get(clientAtom1);
     if (atomShape1 == null)
       return;
-    AtomShape atomShape2 = (AtomShape)htAtomMap.get(atom2);
+    AtomShape atomShape2 = (AtomShape)htAtomMap.get(clientAtom2);
     if (atomShape2 == null)
       return;
     atomShape1.bondMutually(atomShape2, order);
   }
 
-  public void bondAtomShapes(AtomShape atomShape1, JmolAtom atom2, int order) {
+  public void bondAtomShapes(AtomShape atomShape1, Object clientAtom2,
+                             int order) {
     if (htAtomMap == null)
       initAtomMap();
-    AtomShape atomShape2 = (AtomShape)htAtomMap.get(atom2);
+    AtomShape atomShape2 = (AtomShape)htAtomMap.get(clientAtom2);
     if (atomShape2 == null)
       return;
     atomShape1.bondMutually(atomShape2, order);

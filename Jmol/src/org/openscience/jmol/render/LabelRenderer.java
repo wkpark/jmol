@@ -25,24 +25,12 @@
 
 package org.openscience.jmol.render;
 
-import org.openscience.jmol.*;
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Component;
+import java.awt.Rectangle;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Rectangle;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.awt.Composite;
-import java.awt.AlphaComposite;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
-import java.awt.RenderingHints;
-import java.util.Enumeration;
 
 public class LabelRenderer {
 
@@ -87,10 +75,12 @@ public class LabelRenderer {
                     );
 
     // FIXME -- mth -- understand this property stuff
+    /*
     if (!control.getPropertyStyleString().equals("")) {
 
       // check to make sure this atom has this property:
-      Enumeration propIter = ((Atom)atomShape.atom).getAtomicProperties().elements();
+      Atom atom = (Atom)atomShape.clientAtom;
+      Enumeration propIter = atom.getAtomicProperties().elements();
       while (propIter.hasMoreElements()) {
         PhysicalProperty p = (PhysicalProperty) propIter.nextElement();
         if (p.getDescriptor().equals(control.getPropertyStyleString())) {
@@ -114,6 +104,7 @@ public class LabelRenderer {
         }
       }
     }
+    */
   }
 
   public void renderStringOffset(String label, short colix, int points,

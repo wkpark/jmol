@@ -27,14 +27,8 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomShape;
 import org.openscience.jmol.g25d.Colix;
 
-import org.openscience.cdk.renderer.color.AtomColorer;
-import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
-import org.openscience.jmol.render.AtomColors;
-
 import java.awt.Color;
 import java.util.Hashtable;
-import java.util.BitSet;
-import java.util.Vector;
 
 public class ColorManager {
 
@@ -42,11 +36,7 @@ public class ColorManager {
 
   ColorManager(DisplayControl control) {
     this.control = control;
-    colorProfiles.addElement(AtomColors.getInstance());
-    colorProfiles.addElement(new PartialAtomicChargeColors());
   }
-
-  private Vector colorProfiles = new Vector();;
 
   public byte modeAtomColorProfile = DisplayControl.ATOMTYPE;
   public void setModeAtomColorProfile(byte mode) {
@@ -162,38 +152,10 @@ public class ColorManager {
     this.showDarkerOutline = showDarkerOutline;
   }
 
-  public Color getColorAtom(Atom atom) {
-    return getColorAtom(modeAtomColorProfile, atom);
-  }
-
-  public short getColixAtom(Atom atom) {
-    return Colix.getColix(getColorAtom(modeAtomColorProfile, atom));
-  }
-
-  public Color getColorAtom(byte mode, Atom atom) {
-    if (mode > colorProfiles.size()) {
-        return Color.white;
-    }
-    Color color =
-      ((AtomColorer)colorProfiles.elementAt(mode)).getAtomColor(atom);
-    return color;
-  }
-
-  public short getColixAtom(byte mode, Atom atom) {
-    return Colix.getColix(getColorAtom(mode, atom));
-  }
-
   public void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
       setColorBackground(getColorFromString(colorName));
   }
-
-  /*
-  public void setColorForeground(String colorName) {
-    // what is this supposed to do?
-    // setColorForeground(getColorFromHexString(colorName));
-  }
-  */
 
   // official HTML 4.0 color names & values
   private static final Object[] aHtmlColors = {

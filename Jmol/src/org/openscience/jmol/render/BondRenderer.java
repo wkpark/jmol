@@ -25,12 +25,11 @@
 
 package org.openscience.jmol.render;
 
-import org.openscience.jmol.*;
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 import org.openscience.jmol.g25d.Colix;
 
 import java.awt.Rectangle;
-import java.util.Hashtable;
 
 public class BondRenderer {
 

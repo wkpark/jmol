@@ -23,14 +23,22 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.render;
+package org.openscience.jmol;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
+import java.awt.Color;
 
-public interface JmolAtom {
-  String getSymbol();
-  int getAtomicNumber();
-  double getVanderwaalsRadius();
-  Point3d getPoint3D();
-  ProteinProp getProteinProp();
+public interface ClientAtomAdapter {
+
+  public final static int COLORSCHEME_CPK = 0;
+  public final static int COLORSCHEME_CHARGE = 1;
+  public final static int COLORSCHEME_MAX = 2;
+
+  public int getAtomicNumber(Object clientAtom);
+  public String getAtomicSymbol(Object clientAtom);
+  public String getAtomTypeName(Object clientAtom);
+  public double getVanderwaalsRadius(Object clientAtom);
+  public Point3d getPoint3d(Object clientAtom);
+  public ProteinProp getProteinProp(Object clientAtom);
+  public Color getColor(Object clientAtom, int colorScheme);
 }

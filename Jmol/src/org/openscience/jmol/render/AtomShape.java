@@ -39,7 +39,8 @@ public class AtomShape extends Shape {
 
   public JmolFrame frame;
   public short atomIndex = -1;
-  public JmolAtom atom;
+  public Object clientAtom;
+  public Point3d point3d;
   public boolean isHydrogen;
   public byte styleAtom;
   public short marAtom;
@@ -52,25 +53,26 @@ public class AtomShape extends Shape {
 
   public String strLabel;
   
-  public AtomShape(JmolFrame frame, JmolAtom atom, boolean isHydrogen,
+  public AtomShape(JmolFrame frame, Object clientAtom, boolean isHydrogen,
                    byte styleAtom, short marAtom, short colixAtom,
                    String strLabel) {
     this.frame = frame;
-    this.atom = atom;
+    this.clientAtom = clientAtom;
     this.isHydrogen = isHydrogen;
     this.colixAtom = colixAtom;
     this.strLabel = strLabel;
     this.colixDots = 0;
     this.marDots = 0;
     setStyleMarAtom(styleAtom, marAtom);
+    this.point3d = frame.control.getPoint3d(clientAtom);
   }
 
-  public AtomShape(JmolFrame frame, JmolAtom atom) {
-    this(frame, atom, frame.control.getAtomicNumber(atom) == 1,
+  public AtomShape(JmolFrame frame, Object clientAtom) {
+    this(frame, clientAtom, frame.control.getAtomicNumber(clientAtom) == 1,
          frame.control.getStyleAtom(),
          frame.control.getMarAtom(),
-         frame.control.getColixAtom(atom),
-         frame.control.getLabelAtom(atom));
+         frame.control.getColixAtom(clientAtom),
+         frame.control.getLabelAtom(clientAtom));
   }
 
   public void setAtomIndex(int atomIndex) {
@@ -202,21 +204,24 @@ public class AtomShape extends Shape {
 
   public void setMarAtom(short marAtom) {
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) * atom.getVanderwaalsRadius());
+      marAtom = (short)((-10 * marAtom) *
+                        frame.control.getVanderwaalsRadius(clientAtom));
     this.marAtom = marAtom;
   }
 
   public void setStyleMarAtom(byte styleAtom, short marAtom) {
     this.styleAtom = styleAtom;
     if (marAtom < 0)
-      marAtom = (short)((-10 * marAtom) * atom.getVanderwaalsRadius());
+      marAtom = (short)((-10 * marAtom) *
+                        frame.control.getVanderwaalsRadius(clientAtom));
     this.marAtom = marAtom;
   }
         
   public void setColixMarDots(short colixDots, short marDots) {
     this.colixDots = colixDots;
     if (marDots < 0)
-      marDots = (short)((-10 * marDots) * atom.getVanderwaalsRadius());
+      marDots = (short)((-10 * marDots) *
+                        frame.control.getVanderwaalsRadius(clientAtom));
     this.marDots = marDots;
   }
 
@@ -250,7 +255,7 @@ public class AtomShape extends Shape {
   }
 
   public void transform(DisplayControl control) {
-    Point3i screen = control.transformPoint(atom.getPoint3D());
+    Point3i screen = control.transformPoint(point3d);
     x = screen.x;
     y = screen.y;
     z = screen.z;
@@ -362,34 +367,34 @@ public class AtomShape extends Shape {
    */
 
   public String getAtomicSymbol() {
-    return atom.getSymbol();
+    return frame.control.getAtomicSymbol(clientAtom);
   }
 
   public int getAtomicNumber() {
-    return atom.getAtomicNumber();
+    return frame.control.getAtomicNumber(clientAtom);
   }
 
   public Point3d getPoint3d() {
-    return atom.getPoint3D();
+    return point3d;
   }
 
   public double getX() {
-    return atom.getPoint3D().x;
+    return point3d.x;
   }
 
   public double getY() {
-    return atom.getPoint3D().y;
+    return point3d.y;
   }
 
   public double getZ() {
-    return atom.getPoint3D().z;
+    return point3d.z;
   }
 
   public double getVanderwaalsRadius() {
-    return atom.getVanderwaalsRadius();
+    return frame.control.getVanderwaalsRadius(clientAtom);
   }
 
   public ProteinProp getProteinProp() {
-    return atom.getProteinProp();
+    return frame.control.getProteinProp(clientAtom);
   }
 }

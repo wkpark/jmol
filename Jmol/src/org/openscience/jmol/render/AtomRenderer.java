@@ -27,21 +27,7 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Rectangle;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.MemoryImageSource;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.awt.Composite;
-import java.awt.AlphaComposite;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
-import java.awt.RenderingHints;
-import java.util.Enumeration;
 
 public class AtomRenderer {
 
@@ -64,7 +50,6 @@ public class AtomRenderer {
   boolean fastRendering;
   short colixSelection;
 
-  JmolAtom atom;
   int x;
   int y;
   int z;
@@ -78,7 +63,6 @@ public class AtomRenderer {
 
   public void render(AtomShape atomShape) {
     styleAtom = atomShape.styleAtom;
-    atom = atomShape.atom;
     x = atomShape.x;
     y = atomShape.y;
     z = atomShape.z;

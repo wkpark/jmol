@@ -26,7 +26,6 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.render.JmolAtom;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3d;
@@ -37,7 +36,7 @@ import javax.vecmath.Matrix4d;
  * atoms.
  */
 public class Atom extends org.openscience.cdk.Atom
-  implements Bspt.Tuple, JmolAtom {
+  implements Bspt.Tuple {
 
   /**
    * Creates an atom with the given type.

@@ -35,7 +35,7 @@ import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-
+import javax.vecmath.Matrix3f;
 
 /**
  * Provides high-level graphics primitives for 3D visualization.
@@ -680,6 +680,9 @@ final public class Graphics3D {
     yLast = height - 1;
     setRectClip(rectClip);
     platform.obtainScreenBuffer();
+  }
+
+  public void setRotationMatrix(Matrix3f rotationMatrix) {
   }
 
   public void endRendering() {

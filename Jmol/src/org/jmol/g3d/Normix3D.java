@@ -26,6 +26,7 @@
 package org.jmol.g3d;
 
 import javax.vecmath.Vector3f;
+import javax.vecmath.Matrix3f;
 import java.util.Hashtable;
 import java.util.Random;
 
@@ -51,6 +52,8 @@ class Normix3D {
   private final static boolean TIMINGS = false;
 
   private final static int level = 3;
+
+  private final Matrix3f rotationMatrix = new Matrix3f();
 
   Normix3D(Graphics3D g3d) {
     // 12, 42, 162, 642, 2562
@@ -370,6 +373,10 @@ class Normix3D {
   byte getIntensity(short normix) {
     tempIntensity = (byte)((tempIntensity + 17) & 0x3F);
     return tempIntensity;
+  }
+
+  void setRotationMatrix(Matrix3f rotationMatrix) {
+    this.rotationMatrix.set(rotationMatrix);
   }
 }
 

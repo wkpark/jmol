@@ -24,60 +24,89 @@
 package org.jmol.bspt;
 
 /**
- * Nodes of the bspt. It is a binary tree so nodes contain two children.
- * A splitValue tells which child should be followed. Values <= splitValue
- * are stored down eleLE. Values >= splitValue are stored down eleGE.
+ * Nodes of the bspt. It is a binary tree so nodes contain two children,
+ * called left and right.
+ * Nodes split along one dimension. The instance variable dim holds
+ * the dimension along which this node is split.
+ * Each child holds the minimum and maximum values for its subtree
+ * when split along the specified dim.
+ *<p>
+ * The current implementation allows for the case where the maximum
+ * left value is == the minimum right value. This can happen when
+ * the tree is filled with coordinate values that contain the same
+ * value along one dimension ... as with very regular crystals
+ *<p>
+ * The tree is not kept balanced.
  *
  * @author Miguel, miguel@jmol.org
  */
 class Node extends Element {
-  Element eleLE;
   int dim;
-  float splitValue;
-  Element eleGE;
+  float minLeft, maxLeft;
+  Element eleLeft;
+  float minRight, maxRight;
+  Element eleRight;
   
-  Node(Bspt bspt, int level, Leaf leafLE) {
+  Node(Bspt bspt, int level, Leaf leafLeft) {
     this.bspt = bspt;
     if (level == bspt.treeDepth) {
       bspt.treeDepth = level + 1;
       if (bspt.treeDepth >= Bspt.MAX_TREE_DEPTH)
         System.out.println("BSPT tree depth too great:" + bspt.treeDepth);
     }
-    if (leafLE.count != Bspt.leafCountMax)
+    if (leafLeft.count != Bspt.leafCountMax)
       throw new NullPointerException();
-    eleLE = leafLE;
     dim = level % bspt.dimMax;
-    leafLE.sort(dim);
-    if (true) {
-      // split based upon the mean of the two middle values
-      splitValue =
-        (leafLE.tuples[Bspt.leafCountMax/2 - 1].getDimensionValue(dim) +
-         leafLE.tuples[Bspt.leafCountMax/2].getDimensionValue(dim)) / 2;
-      eleGE = new Leaf(bspt, leafLE, Bspt.leafCountMax/2);
-    } else {
-      // split based upon the mean of the high and low values;
-      splitValue =
-        (leafLE.tuples[0].getDimensionValue(dim) +
-         leafLE.tuples[Bspt.leafCountMax - 1].getDimensionValue(dim)) / 2;
-      int i;
-      for (i = 0; i < Bspt.leafCountMax; ++i)
-        if (leafLE.tuples[i].getDimensionValue(dim) > splitValue)
-          break;
-      if (i == Bspt.leafCountMax)
-        i /= 2; // entire leaf must be filled with duplicates
-      eleGE = new Leaf(bspt, leafLE, i);
-    }
+    leafLeft.sort(dim);
+    Leaf leafRight = new Leaf(bspt, leafLeft, Bspt.leafCountMax / 2);
+    minLeft = leafLeft.tuples[0].getDimensionValue(dim);
+    maxLeft = leafLeft.tuples[leafLeft.count - 1].getDimensionValue(dim);
+    minRight = leafRight.tuples[0].getDimensionValue(dim);
+    maxRight = leafRight.tuples[leafRight.count - 1].getDimensionValue(dim);
+    
+    eleLeft = leafLeft;
+    eleRight = leafRight;
     count = Bspt.leafCountMax;
   }
   
   Element addTuple(int level, Tuple tuple) {
     float dimValue = tuple.getDimensionValue(dim);
-    if (dimValue < splitValue ||
-        (dimValue == splitValue && eleLE.count <= eleGE.count))
-      eleLE = eleLE.addTuple(level + 1, tuple);
-    else
-      eleGE = eleGE.addTuple(level + 1, tuple);
     ++count;
+    boolean addLeft;
+    if (dimValue < maxLeft) {
+      addLeft = true;
+    } else if (dimValue > minRight) {
+      addLeft = false;
+    } else if (dimValue == maxLeft) {
+      if (dimValue == minRight) {
+        if (eleLeft.count < eleRight.count)
+          addLeft = true;
+        else
+          addLeft = false;
+      } else {
+        addLeft = true;
+      }
+    } else if (dimValue == minRight) {
+      addLeft = false;
+    } else {
+      if (eleLeft.count < eleRight.count)
+        addLeft = true;
+      else
+        addLeft = false;
+    }
+    if (addLeft) {
+      if (dimValue < minLeft)
+        minLeft = dimValue;
+      else if (dimValue > maxLeft)
+        maxLeft = dimValue;
+      eleLeft = eleLeft.addTuple(level + 1, tuple);
+    } else {
+      if (dimValue < minRight)
+        minRight = dimValue;
+      else if (dimValue > maxRight)
+        maxRight = dimValue;
+      eleRight = eleRight.addTuple(level + 1, tuple);
+    }
     return this;
   }
   

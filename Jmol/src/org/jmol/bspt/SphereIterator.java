@@ -37,7 +37,7 @@ package org.jmol.bspt;
 public class SphereIterator {
   Bspt bspt;
 
-  Node[] stack;
+  Element[] stack;
   int sp;
   int leafIndex;
   Leaf leaf;
@@ -56,12 +56,13 @@ public class SphereIterator {
   SphereIterator(Bspt bspt) {
     this.bspt = bspt;
     centerValues = new float[bspt.dimMax];
-    stack = new Node[bspt.treeDepth];
+    stack = new Element[bspt.treeDepth];
   }
 
   /**
    * initialize to return all points within the sphere defined
-   * by <code>center</code> and <code>radius</code>.
+   * by center and radius
+   *
    * @param center
    * @param radius
    */
@@ -72,36 +73,23 @@ public class SphereIterator {
     this.tHemisphere = false;
     for (int dim = bspt.dimMax; --dim >= 0; )
       centerValues[dim] = center.getDimensionValue(dim);
-    sp = 0;
-    Element ele = bspt.eleRoot;
-    while (ele instanceof Node) {
-      Node node = (Node) ele;
-      float minValue = centerValues[node.dim];
-      if (! tHemisphere || node.dim != 0)
-        minValue -= radius;
-      if (minValue <= node.splitValue) {
-        if (sp == bspt.treeDepth)
-          System.out.println("Bspt.SphereIterator tree stack overflow");
-        stack[sp++] = node;
-        ele = node.eleLE;
-      } else {
-        ele = node.eleGE;
-      }
-    }
-    leaf = (Leaf)ele;
-    leafIndex = 0;
+    leaf = null;
+    stack[0] = bspt.eleRoot;
+    sp = 1;
+    findLeftLeaf();
   }
 
   /**
    * initialize to return all points within the hemisphere defined
-   * by <code>center</code> and <code>radius</code>.
+   * by center and radius.
    *<p>
    * the points returned are those that have a coordinate value >=
-   * to <code>center</code> along the first (x) dimension
+   * to center along the first (x) dimension
    *<p>
    * Note that if you are iterating through all points, and two
-   * points are within <code>radius</code> and have the same
-   * x coordinate, then each will return the other
+   * points are within radius and have the same
+   * x coordinate, then each will return the other.
+   *
    * @param center
    * @param radius
    */
@@ -118,7 +106,76 @@ public class SphereIterator {
       stack[i] = null;
   }
 
-  private boolean isWithin(Tuple t) {
+  /**
+   * normal iterator predicate
+   *
+   * @return boolean
+   */
+  public boolean hasMoreElements() {
+    while (leaf != null) {
+      for ( ; leafIndex < leaf.count; ++leafIndex)
+        if (isWithinRadius(leaf.tuples[leafIndex]))
+          return true;
+      findLeftLeaf();
+    }
+    return false;
+  }
+
+  /**
+   * normal iterator method
+   *
+   * @return Tuple
+   */
+  public Tuple nextElement() {
+    return leaf.tuples[leafIndex++];
+  }
+
+  /**
+   * After calling nextElement(), allows one to find out
+   * the value of the distance squared. To get the distance
+   * just take the sqrt.
+   *
+   * @return float
+   */
+  public float foundDistance2() {
+    return foundDistance2;
+  }
+
+  /**
+   * does the work
+   */
+  private void findLeftLeaf() {
+    leaf = null;
+    if (sp == 0)
+      return;
+    Element ele = stack[--sp];
+    while (ele instanceof Node) {
+      Node node = (Node)ele;
+      float centerValue = centerValues[node.dim];
+      float maxValue = centerValue + radius;
+      float minValue = centerValue;
+      if (! tHemisphere || node.dim != 0)
+        minValue -= radius;
+      if (minValue <= node.maxLeft && maxValue >= node.minLeft) {
+        if (maxValue >= node.minRight && minValue <= node.maxRight)
+          stack[sp++] = node.eleRight;
+        ele = node.eleLeft;
+      } else if (maxValue >= node.minRight && minValue <= node.maxRight) {
+        ele = node.eleRight;
+      } else {
+        if (sp == 0)
+          return;
+        ele = stack[--sp];
+      }
+    }
+    leaf = (Leaf)ele;
+    leafIndex = 0;
+  }
+
+  /**
+   * checks one tuple for distance
+   */
+  private boolean isWithinRadius(Tuple t) {
     float dist2;
     float distT;
     distT = t.getDimensionValue(0) - centerValues[0];
@@ -138,64 +195,5 @@ public class SphereIterator {
     return true;
   }
     
-  /**
-   * normal iterator predicate
-   * @return boolean
-   */
-  public boolean hasMoreElements() {
-    while (true) {
-      for ( ; leafIndex < leaf.count; ++leafIndex)
-        if (isWithin(leaf.tuples[leafIndex]))
-          return true;
-      if (sp == 0)
-        return false;
-      Element ele = stack[--sp];
-      Node node;
-      while (ele instanceof Node) {
-        node = (Node) ele;
-        if (centerValues[node.dim] + radius < node.splitValue) {
-          if (sp == 0)
-            return false;
-          ele = stack[--sp];
-        } else {
-          ele = node.eleGE;
-          while (ele instanceof Node) {
-            node = (Node) ele;
-            float minValue = centerValues[node.dim];
-            if (!tHemisphere || node.dim != 0)
-              minValue -= radius;
-            if (minValue <= node.splitValue) {
-              if (sp == bspt.treeDepth)
-                System.out.println("Bspt.SphereIterator tree stack overflow");
-              stack[sp++] = node;
-              ele = node.eleLE;
-            } else {
-              ele = node.eleGE;
-            }
-          }
-        }
-      }
-      leaf = (Leaf)ele;
-      leafIndex = 0;
-    }
-  }
-
-  /**
-   * normal iterator method
-   * @return Tuple
-   */
-  public Tuple nextElement() {
-    return leaf.tuples[leafIndex++];
-  }
-
-  /**
-   * After calling nextElement(), allows one to find out
-   * the value of the distance squared. To get the distance
-   * just take the sqrt.
-   * @return float
-   */
-  public float foundDistance2() {
-    return foundDistance2;
-  }
 }
 

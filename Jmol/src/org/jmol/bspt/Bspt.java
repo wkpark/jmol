@@ -68,7 +68,7 @@ package org.jmol.bspt;
 
 public final class Bspt {
 
-  final static int leafCountMax = 4;
+  final static int leafCountMax = 2;
   // this corresponds to the max height of the tree
   final static int MAX_TREE_DEPTH = 100;
   int treeDepth;

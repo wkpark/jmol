@@ -117,15 +117,6 @@ final public class DisplayControl {
     return settings.getBondWidth();
   }
 
-  public void setBondScreenScale(float scale) {
-    settings.setBondScreenScale(scale);
-    recalc();
-  }
-
-  public float getBondScreenScale() {
-    return scalePixelsPerAngstrom;
-  }
-
   public void setOutlineColor(Color c) {
     settings.setOutlineColor(c);
     recalc();
@@ -243,24 +234,6 @@ final public class DisplayControl {
     return settings.getDrawBondsToAtomCenters();
   }
 
-  public void setVectorScreenScale(float scale) {
-    settings.setVectorScreenScale(scale);
-    recalc();
-  }
-
-  public float getVectorScreenScale() {
-    return scalePixelsPerAngstrom;
-  }
-
-  public void setAtomScreenScale(float scale) {
-    settings.setAtomScreenScale(scale);
-    recalc();
-  }
-
-  public float getAtomScreenScale() {
-    return scalePixelsPerAngstrom;
-  }
-
   public void setAtomSphereFactor(float f) {
     settings.setAtomSphereFactor(f);
     recalc();
@@ -354,9 +327,6 @@ final public class DisplayControl {
 
   public void multiplyZoomScale(float scale) {
     scalePixelsPerAngstrom *= scale;
-    setAtomScreenScale(scalePixelsPerAngstrom);
-    settings.setBondScreenScale(scalePixelsPerAngstrom);
-    settings.setVectorScreenScale(scalePixelsPerAngstrom);
     recalc();
   }
 
@@ -451,10 +421,6 @@ final public class DisplayControl {
     scalePixelsPerAngstrom =
       minScreenDimension / 2 / getFrame().getRotationRadius();
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
-
-    setAtomScreenScale(scalePixelsPerAngstrom);
-    settings.setBondScreenScale(scalePixelsPerAngstrom);
-    settings.setVectorScreenScale(scalePixelsPerAngstrom);
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
@@ -659,25 +625,19 @@ final public class DisplayControl {
     recalc();
   }
 
-  /**
-   * Returns the on-screen radius of an atom with the given radius.
-   *
-   * @param z z position in screen space
-   */
-
+  public final static int cameraZ = 750;
   public int getScreenDiameter(int z, float vdwRadius) {
     // all z's are <= 0
     // so the more negative z is, the smaller the radius
     float d = 2 * vdwRadius * scalePixelsPerAngstrom * getAtomSphereFactor();
-    return (int)((d * 750) / (750 - z));
+    return (int)((d * cameraZ) / (cameraZ - z));
   }
 
-  private int atomZOffset = 1;
-  private float atomDepthFactor = 0.33f;
-
-  public void setAtomZOffset(int z) {
-    settings.setAtomZOffset(z);
-    atomZOffset = z;
+  public float scaleToScreen(int z, float sizeAngstroms) {
+    // all z's are <= 0
+    // so the more negative z is, the smaller the screen scale
+    float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
+    return ((pixelSize * cameraZ) / (cameraZ - z));
   }
 
   public float[] getLightSource() {

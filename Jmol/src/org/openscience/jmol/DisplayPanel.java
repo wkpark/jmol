@@ -265,9 +265,6 @@ public class DisplayPanel extends JPanel
       }
       control.maybeEnableAntialiasing(g);
 
-      // need to get this out of here
-      control.setAtomZOffset(dimCurrent.width / 2);
-
       frameRenderer.paint(g, rectClip, control);
       measureRenderer.paint(g, rectClip, control);
       if (rubberbandSelectionMode) {

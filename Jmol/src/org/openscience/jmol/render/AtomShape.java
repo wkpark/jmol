@@ -124,8 +124,7 @@ public class AtomShape implements Shape {
     labelMode = control.getLabelMode();
     wireframeRotation = control.getFastRendering();
     drawBondsToAtomCenters = control.getDrawBondsToAtomCenters();
-    halfBondWidth =
-      (float)(0.5 * control.getBondWidth() * control.getBondScreenScale());
+    halfBondWidth = control.scaleToScreen(0, 0.5f * control.getBondWidth());
     showDarkerOutline = control.getShowDarkerOutline();
     outlineColor = control.getOutlineColor();
     pickedColor = control.getPickedColor();

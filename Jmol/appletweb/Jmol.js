@@ -51,44 +51,18 @@ function jmolSetCodebase(codebase) {
 }
 
 function jmolApplet(size, modelFilename, script, nameSuffix) {
-  with (_jmol) {
-    if (! nameSuffix)
-      nameSuffix = appletCount;
-    ++appletCount;
-    if (! script)
-      script = "select *";
-    var sz = _jmolGetAppletSize(size);
-    var t;
-    t = "<applet name='jmol" + nameSuffix + "' id='jmol" + nameSuffix + 
-        "' code='JmolApplet' archive='JmolApplet.jar'\n" +
-        "  codebase=" + codebase + "\n" +
-        "  width='" + sz[0] + "' height='" + sz[1] +
-        "' mayscript='true'>\n" +
-        "  <param name='progressbar' value='true' />\n" +
-        "  <param name='progresscolor' value='" +
-        progresscolor + "' />\n" +
-        "  <param name='boxmessage' value='" +
-        boxmessage + "' />\n" +
-        "  <param name='boxbgcolor' value='" +
-        boxbgcolor + "' />\n" +
-        "  <param name='boxfgcolor' value='" +
-        boxfgcolor + "' />\n" +
-        "  <param name='bgcolor' value='" + bgcolor + "' />\n";
+  _jmolApplet(size, modelFilename, null, script, nameSuffix);
+}
 
-    if (modelFilename)
-      t += "  <param name='load' value='" +
-           modelbase + "/" + modelFilename + "' />\n";
-    if (script)
-      t += "  <param name='script' value='" + script + "' />\n";
-    t += "</applet>\n";
-    jmolSetTarget(nameSuffix);
-    if (debugAlert)
-      alert("jmolApplet(" + size + "," + modelFilename + "," +
-            script + "," + name + " ->\n" + t);
-    document.open(); // NS4 compatibility
-    document.write(t);
-    document.close(); // NS4 compatibility
-  }
+function jmolAppletInline(size, inlineModel, script, nameSuffix) {
+  _jmolApplet(size, null, _jmolConvertInline(inlineModel), script, nameSuffix);
+}
+
+function _jmolConvertInline(model) {
+  var inlineModel = model.replace(/\r|\n|\r\n/g, "|");
+  if (_jmol.debugAlert)
+    alert("inline model:\n" + inlineModel);
+  return inlineModel;
 }
 
 function jmolScript(script, targetSuffix) {
@@ -144,7 +118,8 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   var cssText = cssClass ? "class='" + cssClass + "' " : "";
   var t = "<input type='checkbox' onClick='_jmolCbClick(this," +
           indexChecked + "," + indexUnchecked + "," + _jmol.targetSuffix +
-          ")' onMouseover='_jmolCbOver(this," + indexChecked + "," + indexUnchecked +
+          ")' onMouseover='_jmolCbOver(this," + indexChecked + "," +
+          indexUnchecked +
           ");return true' onMouseout='_jmolMouseOut()' " +
 	  (isChecked ? "checked " : "") + cssText + "/>";
   document.open();
@@ -158,7 +133,8 @@ function jmolRadio(groupName, script, isChecked, cssClass) {
   var scriptIndex = _jmolAddScript(script);
   var cssText = cssClass ? "class='" + cssClass + "' " : "";
   var t = "<input name='" + groupName +
-          "' type='radio' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
+          "' type='radio' onClick='_jmolClick(" + scriptIndex +
+          _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
 	  (isChecked ? "checked " : "") + cssText + "/>";
@@ -170,7 +146,8 @@ function jmolRadio(groupName, script, isChecked, cssClass) {
 function jmolLink(text, script, cssClass) {
   var scriptIndex = _jmolAddScript(script);
   var cssText = cssClass ? "class='" + cssClass + "' " : "";
-  var t = "<a href='javascript:_jmolClick(" + scriptIndex + _jmol.targetText +
+  var t = "<a href='javascript:_jmolClick(" + scriptIndex +
+          _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
           cssText + ">" + text + "</a>";
@@ -201,6 +178,49 @@ targetSuffix: 0,
 targetText: "",
 scripts: []
 };
+
+function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
+  with (_jmol) {
+    if (! nameSuffix)
+      nameSuffix = appletCount;
+    ++appletCount;
+    if (! script)
+      script = "select *";
+    var sz = _jmolGetAppletSize(size);
+    var t;
+    t = "<applet name='jmol" + nameSuffix + "' id='jmol" + nameSuffix + 
+        "' code='JmolApplet' archive='JmolApplet.jar'\n" +
+        "  codebase='" + codebase + "'\n" +
+        "  width='" + sz[0] + "' height='" + sz[1] +
+        "' mayscript='true'>\n" +
+        "  <param name='progressbar' value='true' />\n" +
+        "  <param name='progresscolor' value='" +
+        progresscolor + "' />\n" +
+        "  <param name='boxmessage' value='" +
+        boxmessage + "' />\n" +
+        "  <param name='boxbgcolor' value='" +
+        boxbgcolor + "' />\n" +
+        "  <param name='boxfgcolor' value='" +
+        boxfgcolor + "' />\n" +
+        "  <param name='bgcolor' value='" + bgcolor + "' />\n";
+
+    if (modelFilename)
+      t += "  <param name='load' value='" +
+           modelbase + "/" + modelFilename + "' />\n";
+    else if (inlineModel)
+      t += "  <param name='inline' value='" + inlineModel + "' />\n";
+    if (script)
+      t += "  <param name='script' value='" + script + "' />\n";
+    t += "</applet>\n";
+    jmolSetTarget(nameSuffix);
+    if (debugAlert)
+      alert("jmolApplet(" + size + "," + modelFilename + "," +
+            script + "," + name + " ->\n" + t);
+    document.open(); // NS4 compatibility
+    document.write(t);
+    document.close(); // NS4 compatibility
+  }
+}
 
 function _jmolGetAppletSize(size) {
   var width, height;

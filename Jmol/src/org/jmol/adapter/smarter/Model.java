@@ -66,6 +66,13 @@ class Model {
     pdbStructureRecords = null;
   }
 
+  void discardPreviousAtoms() {
+    for (int i = atomCount; --i >= 0; )
+      atoms[i] = null;
+    atomCount = 0;
+    atomNameMap.clear();
+  }
+
   Atom newAtom() {
     Atom atom = new Atom();
     addAtom(atom);

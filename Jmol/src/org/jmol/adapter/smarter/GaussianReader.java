@@ -33,15 +33,17 @@ class GaussianReader extends ModelReader {
   Model readModel(BufferedReader reader) throws Exception {
 
     model = new Model("gaussian");
-    int modelNumber = 0;
 
     try {
       String line;
       while ((line = reader.readLine()) != null) {
         if (line.indexOf("Standard orientation:") >= 0) {
-          readAtoms(reader, ++modelNumber);
+          // we only take the last set of atoms before the frequencies
+          model.discardPreviousAtoms();
+          readAtoms(reader);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
+          break;
         }
       }
     } catch (Exception ex) {
@@ -54,12 +56,12 @@ class GaussianReader extends ModelReader {
     return model;
   }
     
-  void readAtoms(BufferedReader reader, int modelNumber) throws Exception {
+  void readAtoms(BufferedReader reader) throws Exception {
     discardLines(reader, 4);
     String line;
     while ((line = reader.readLine()) != null &&
            !line.startsWith(" --")) {
-      int atomNumber = parseInt(line);
+      String centerNumber = parseToken(line, 0, 5);
       int elementNumber = parseInt(line, 13);
       if (elementNumber <= 0 || elementNumber > 110)
         continue;
@@ -71,9 +73,10 @@ class GaussianReader extends ModelReader {
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         continue;
       Atom atom = model.newAtom();
-      atom.modelNumber = modelNumber;
+      atom.atomName = centerNumber;
       atom.elementNumber = (byte)elementNumber;
       atom.x = x; atom.y = y; atom.z = z;
+      model.mapAtomName(atom);
     }
   }
 

@@ -98,4 +98,10 @@ public abstract class PdbStructure {
     return axisB;
   }
 
+  public Point3f getStructureMidPoint(int residueNumber) {
+    if (segments == null)
+      calcSegments();
+    return segments[residueNumber - residueStart];
+  }
+
 }

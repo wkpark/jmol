@@ -107,6 +107,10 @@ public class PdbMolecule {
     return chainCount;
   }
 
+  public PdbChain getChain(int chainIndex) {
+    return chains[chainIndex];
+  }
+
   public PdbResidue[] getMainchain(int chainIndex) {
     return chains[chainIndex].getMainchain();
   }

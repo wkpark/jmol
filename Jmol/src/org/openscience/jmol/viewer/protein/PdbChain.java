@@ -75,6 +75,10 @@ public class PdbChain {
     return residues[residueIndex];
   }
 
+  int getResidueCount() {
+    return residueCount;
+  }
+
   Point3f getResiduePoint(int residueNumber) {
     return getResidue(residueNumber).getAlphaCarbonAtom().point3f;
   }
@@ -160,10 +164,15 @@ public class PdbChain {
   }
 
   void getStructureMidPoint(int residueNumber, Point3f midPoint) {
-    int i = residueNumber;
-    if (i > residueCount)
-      i = residueCount - 1;
-    if (residues[i].isHelixOrSheet()) {
+    int residueIndex = residueNumber - firstResidueNumber;
+    if (residueIndex < residueCount &&
+        residues[residueIndex].isHelixOrSheet()) {
+      midPoint.set(residues[residueIndex].structure.
+                   getStructureMidPoint(residueNumber));
+    } else if (residueIndex > 0 &&
+               residues[residueIndex - 1].isHelixOrSheet()) {
+      midPoint.set(residues[residueIndex - 1].structure.
+                   getStructureMidPoint(residueNumber));
     } else {
       getAlphaCarbonMidPoint(residueNumber, midPoint);
     }

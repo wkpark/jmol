@@ -50,7 +50,6 @@ class AppletCanvas extends Canvas {
 
   public void updateSize() {
     Dimension dimT = getSize();
-    System.out.println("updateSize");
     if (dimT.equals(dimCurrent))
       return;
     dimCurrent = dimT;

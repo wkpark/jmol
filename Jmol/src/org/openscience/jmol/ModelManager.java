@@ -28,6 +28,7 @@ import org.openscience.jmol.Atom;
 
 import java.util.BitSet;
 import javax.vecmath.Point3d;
+import java.awt.Rectangle;
 
 public class ModelManager {
 
@@ -150,7 +151,21 @@ public class ModelManager {
     mlist.addDihedral(atom1, atom2, atom3, atom4);
   }
 
-  public void deleteAtom(Atom atom) {
-    chemframe.deleteAtom(atom);
+  public void deleteAtom(int atomIndex) {
+    chemframe.deleteAtom(atomIndex);
+  }
+
+  public int findNearestAtomIndex(int x, int y) {
+    return chemframe.findNearestAtomIndex(x, y);
+  }
+
+  public BitSet findAtomsInRectangle(Rectangle rectRubber) {
+    return chemframe.findAtomsInRectangle(rectRubber);
+    /*
+    return chemframe.findAtomsInRegion(rectRubber.x,
+                                       rectRubber.y,
+                                       rectRubber.x + rectRubber.width,
+                                       rectRubber.y + rectRubber.height);
+    */
   }
 }

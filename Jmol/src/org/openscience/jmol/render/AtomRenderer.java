@@ -105,7 +105,8 @@ public class AtomRenderer {
   }
 
   private void renderAtom() {
-    if (!control.getFastRendering() && control.isSelected(atom)) {
+    if (!control.getFastRendering() &&
+        control.isSelected(atom.getAtomNumber())) {
       int halowidth = diameter / 3;
       if (halowidth < 2)
         halowidth = 2;
@@ -390,6 +391,7 @@ public class AtomRenderer {
        break;
 
     case DisplayControl.NUMBERS:
+      // Note that this is incremented by one for display purposes
       label = Integer.toString(atom.getAtomNumber() + 1);
       break;
 

@@ -31,6 +31,7 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseMotionAdapter;
+import java.util.BitSet;
 /*
     REMOVE COMMENT TO ENABLE WHEELMOUSE
 import java.awt.event.MouseWheelEvent;
@@ -145,26 +146,25 @@ public class MouseManager {
           control.homePosition();
           return;
         }
-        Atom atom = control.getFrame().getNearestAtom(e.getX(), e.getY());
+        int atomIndex = control.findNearestAtomIndex(e.getX(), e.getY());
         switch (modeMouse) {
         case PICK:
           if (!e.isShiftDown()) {
             control.clearSelection();
-            if (atom != null)
-              control.addSelection(atom);
+            if (atomIndex != -1)
+              control.addSelection(atomIndex);
           } else {
-            if (atom != null) 
-              control.toggleSelection(atom);
+            if (atomIndex != -1) 
+              control.toggleSelection(atomIndex);
           }
           break;
         case DELETE:
-          if (atom != null)
-            control.deleteAtom(atom);
+          if (atomIndex != -1)
+            control.deleteAtom(atomIndex);
           break;
         case MEASURE:
-          System.out.println("MEASURE clicked");
-          if (atom != null && measure != null) {
-            measure.firePicked(atom.getAtomNumber());
+          if (atomIndex != -1 && measure != null) {
+            measure.firePicked(atomIndex);
           }
         }
       }
@@ -236,17 +236,12 @@ public class MouseManager {
       case PICK:
         calcRectRubberBand();
         if (control.haveFile()) {
-          // FIXME -- do this work inside the control 
-          Atom[] selectedAtoms =control.getFrame().
-            findAtomsInRegion(rectRubber.x,
-                              rectRubber.y,
-                              rectRubber.x + rectRubber.width,
-                              rectRubber.y + rectRubber.height);
+          System.out.println("we're pickin' bits, buddy");
+          BitSet selectedAtoms = control.findAtomsInRectangle(rectRubber);
           if (e.isShiftDown()) {
             control.addSelection(selectedAtoms);
           } else {
-            control.clearSelection();
-            control.addSelection(selectedAtoms);
+            control.setSelectionSet(selectedAtoms);
           }
         }
         break;

@@ -23,6 +23,8 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.BitSet;
+import java.awt.Rectangle;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import java.io.PrintStream;
@@ -257,6 +259,10 @@ public class ChemFrame extends AtomContainer {
 
   /**
    * Deletes an Atom from the frame
+   * FIXME - mth
+   * Rather than deleting, I think it may be better if we change this to
+   * set a *deleted* flag. That way, atom numbers do not change and other
+   * things work better
    */
   public void deleteAtom(Atom a) {
     clearBounds();
@@ -269,6 +275,16 @@ public class ChemFrame extends AtomContainer {
       }
     }
     for (int i = atomID; i < numberAtoms -1; i++) {
+      atoms[i] = atoms[i + 1];
+    }
+    atoms[numberAtoms - 1] = null;
+    numberAtoms--;
+    rebond();
+  }
+
+  public void deleteAtom(int atomIndex) {
+    clearBounds();
+    for (int i = atomIndex; i < numberAtoms -1; i++) {
       atoms[i] = atoms[i + 1];
     }
     atoms[numberAtoms - 1] = null;
@@ -360,6 +376,53 @@ public class ChemFrame extends AtomContainer {
     return coords;
   }
 
+  final static int selectionPixelLeeway = 5;
+
+  public int findNearestAtomIndex(int x, int y) {
+    /*
+     * FIXME
+     * mth - this code has problems
+     * 1. doesn't take radius of atom into account until too late
+     * 2. doesn't take Z dimension into account, so it could select an atom
+     *    which is behind the one the user wanted
+     * 3. doesn't take into account the fact that hydrogens could be hidden
+     *    you can select a region and get extra hydrogens
+     */
+    if (numberAtoms <= 0)
+      return -1;
+    Atom atomNearest = null;
+    int indexNearest = -1;
+    int r2Nearest = Integer.MAX_VALUE;
+    for (int i = 0; i < numberAtoms; ++i) {
+      Atom atom = atoms[i];
+      int dx = atom.getScreenX() - x;
+      int dx2 = dx * dx;
+      if (dx2 > r2Nearest)
+        continue;
+      int dy = atom.getScreenY() - y;
+      int dy2 = dy * dy;
+      if (dy2 + dx2 > r2Nearest)
+        continue;
+      atomNearest = atom; // this will definitely happen the first time through
+      r2Nearest = dx2 + dy2;
+      indexNearest = i;
+    }
+    int rNearest = (int)Math.sqrt(r2Nearest);
+    return (rNearest > atomNearest.getScreenRadius() + selectionPixelLeeway)
+      ? -1
+      : indexNearest;
+  }
+    
+  BitSet bsFoundRectangle = new BitSet();
+  public BitSet findAtomsInRectangle(Rectangle rect) {
+    bsFoundRectangle.clear();
+    for (int i = 0; i < numberAtoms; ++i) {
+      if (rect.contains(atoms[i].getScreenX(), atoms[i].getScreenY()))
+        bsFoundRectangle.set(i);
+    }
+    return bsFoundRectangle;
+  }
+
   /**
    * Find all atoms within designated region.
    *
@@ -369,6 +432,7 @@ public class ChemFrame extends AtomContainer {
    * @param y2 the y coordinate of point 2 of the region's bounding rectangle
    * @return the atoms in the region
    */
+  /*
   public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2) {
 
     if (numberAtoms <= 0) {
@@ -398,7 +462,7 @@ public class ChemFrame extends AtomContainer {
 	}
 	return false;
     }
-
+  */
   /**
    * Finds the atom nearest the given screen coordinates.
    *
@@ -407,12 +471,6 @@ public class ChemFrame extends AtomContainer {
    * @return the atom drawn closest to the coordinates.
    * note that this will return null if the atom is more than 5 pixels
    * outside the radius of the atom
-   * mth - this code has problems
-   * 1. doesn't take radius of atom into account until too late
-   * 2. doesn't take Z dimension into account, so it could select an atom
-   *    which is behind the one the user wanted
-   * 3. doesn't take into account the fact that hydrogens could be hidden
-   *    you can select a region and get extra hydrogens
    */
   public Atom getNearestAtom(int x, int y) {
     if (numberAtoms <= 0) {

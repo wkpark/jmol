@@ -84,7 +84,7 @@ final public class DisplayControl {
     control = this;
     colorManager = new ColorManager(this);
     transformManager = new TransformManager(this);
-    selectionManager = new SelectionManager();
+    selectionManager = new SelectionManager(this);
     mouseManager = new MouseManager(awtComponent, this);
     fileManager = new FileManager(this);
     modelManager = new ModelManager(this);
@@ -233,14 +233,6 @@ final public class DisplayControl {
     return percentVdwAtom;
   }
 
-  public void setFastRendering(boolean fastRendering) {
-    repaintManager.setFastRendering(fastRendering);
-  }
-
-  public boolean getFastRendering() {
-    return repaintManager.fastRendering;
-  }
-
   public String propertyMode = "";
   public void setPropertyMode(String s) {
     propertyMode = s;
@@ -265,59 +257,6 @@ final public class DisplayControl {
     maybeEnableAntialiasing(g);
   }
 
-  private void maybeEnableAntialiasing(Graphics g) {
-    repaintManager.maybeEnableAntialiasing(g);
-  }
-
-  public void maybeDottedStroke(Graphics g) {
-    repaintManager.maybeDottedStroke(g);
-  }
-
-  public void setChemFile(ChemFile chemfile) {
-    modelManager.setChemFile(chemfile);
-    homePosition();
-    // don't know if I need this firm refresh here or not
-    refreshFirmly();
-  }
-
-  public boolean haveFile() {
-    return modelManager.haveFile();
-  }
-
-  public ChemFrame getFrame() {
-    return modelManager.chemframe;
-  }
-
-  public double getRotationRadius() {
-    return modelManager.getRotationRadius();
-  }
-
-  public Point3d getRotationCenter() {
-    return modelManager.getRotationCenter();
-  }
-
-  public void setFrame(int fr) {
-    modelManager.setFrame(fr);
-    structuralChange = true;
-    clearSelection();
-    refresh();
-  }
-
-  public void setFrame(ChemFrame frame) {
-    modelManager.setFrame(frame);
-    structuralChange = true;
-    clearSelection();
-    refresh();
-  }
-
-  public int numberOfAtoms() {
-    return modelManager.numberOfAtoms();
-  }
-
-  public void mlistChanged(MeasurementListEvent mle) {
-    modelManager.mlistChanged(mle);
-  }
-
   public boolean wireframeRotation = false;
   public void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
@@ -328,90 +267,8 @@ final public class DisplayControl {
     return wireframeRotation;
   }
 
-  public void setInMotion(boolean inMotion) {
-    repaintManager.setInMotion(inMotion);
-  }
-
-  public void setWantsGraphics2D(boolean wantsGraphics2D) {
-    repaintManager.setWantsGraphics2D(wantsGraphics2D);
-  }
-
-  public boolean getWantsGraphics2D() {
-    return repaintManager.wantsGraphics2D;
-  }
-
-  public boolean getUseGraphics2D() {
-    return repaintManager.useGraphics2D;
-  }
-
-  public void setWantsAntialias(boolean wantsAntialias) {
-    repaintManager.setWantsAntialias(wantsAntialias);
-  }
-
-  public boolean getWantsAntialias() {
-    return repaintManager.wantsAntialias;
-  }
-
-  public void setWantsAntialiasAlways(boolean wantsAntialiasAlways) {
-    repaintManager.setWantsAntialiasAlways(wantsAntialiasAlways);
-  }
-
-  public boolean getWantsAntialiasAlways() {
-    return repaintManager.wantsAntialiasAlways;
-  }
-
-  public Image takeSnapshot() {
-    return repaintManager.takeSnapshot();
-  }
-
-  public void setCenter(Point3d center) {
-    modelManager.setRotationCenter(center);
-  }
-
-  public void setHoldRepaint(boolean holdRepaint) {
-    repaintManager.setHoldRepaint(holdRepaint);
-  }
-
-  private void refreshFirmly() {
-    repaintManager.refreshFirmly();
-  }
-
-  public void refresh() {
-    repaintManager.refresh();
-  }
-
-  public void requestRepaintAndWait() {
-    repaintManager.requestRepaintAndWait();
-  }
-
-  public void notifyRepainted() {
-    repaintManager.notifyRepainted();
-  }
-
-  public void setCenterAsSelected() {
-    modelManager.setCenterAsSelected();
-    clearSelection();
-    scaleFitToScreen();
-    refresh();
-  }
-
   public boolean hasStructuralChange() {
     return structuralChange;
-  }
-
-  public void defineMeasure(int atom1, int atom2) {
-    modelManager.defineMeasure(atom1, atom2);
-    refresh();
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3) {
-    modelManager.defineMeasure(atom1, atom2, atom3);
-    refresh();
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
-    modelManager.defineMeasure(atom1, atom2, atom3, atom4);
-    refresh();
   }
 
   public void resetStructuralChange() {
@@ -422,29 +279,6 @@ final public class DisplayControl {
   public void flushCachedImages() {
     imageCache.clear();
     colorManager.flushCachedColors();
-  }
-
-  public void rebond() {
-    modelManager.rebond();
-    refresh();
-  }
-
-  public void setBondFudge(double bf) {
-    modelManager.setBondFudge(bf);
-    refresh();
-  }
-
-  public double getBondFudge() {
-    return modelManager.bondFudge;
-  }
-
-  public void setAutoBond(boolean ab) {
-    modelManager.setAutoBond(ab);
-    refresh();
-  }
-
-  public boolean getAutoBond() {
-    return modelManager.autoBond;
   }
 
   // FIXME NEEDSWORK -- arrow vector stuff
@@ -493,18 +327,9 @@ final public class DisplayControl {
     System.out.println(str);
   }
 
-  public void deleteAtom(Atom atom) {
-    // FIXME -- there are problems with deleting atoms
-    // for example, the selection set gets messed up
-    modelManager.deleteAtom(atom);
-    //            status.setStatus(2, "Atom deleted"); 
-    structuralChange = true;
-    refresh();
-  }
-
   /****************************************************************
-   delegated to TransformManager
-  ****************************************************************/
+   * delegated to TransformManager
+   ****************************************************************/
 
   public void rotateXYBy(int xDelta, int yDelta) {
     transformManager.rotateXYBy(xDelta, yDelta);
@@ -750,8 +575,8 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   delegated to ColorManager
-  ****************************************************************/
+   * delegated to ColorManager
+   ****************************************************************/
 
   public void setModeAtomColorProfile(int mode) {
     colorManager.setModeAtomColorProfile(mode);
@@ -868,45 +693,40 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   delegated to SelectionManager
-  ****************************************************************/
+   * delegated to SelectionManager
+   ****************************************************************/
 
-  public void addSelection(Atom atom) {
-    selectionManager.addSelection(atom);
+  public void addSelection(int atomIndex) {
+    selectionManager.addSelection(atomIndex);
     refresh();
   }
 
-  public void removeSelection(Atom atom) {
-    selectionManager.removeSelection(atom);
+  public void addSelection(BitSet set) {
+    selectionManager.addSelection(set);
     refresh();
   }
 
-  public void toggleSelection(Atom atom) {
-    selectionManager.toggleSelection(atom);
+  public void toggleSelection(int atomIndex) {
+    selectionManager.toggleSelection(atomIndex);
     refresh();
   }
 
-  public void addSelection(Atom[] atoms) {
-    selectionManager.addSelection(atoms);
-    refresh();
-  }
-
-  public void removeSelection(Atom[] atoms) {
-    selectionManager.removeSelection(atoms);
-    refresh();
-  }
-
-  public void clearSelection() {
-    selectionManager.clearSelection();
-    refresh();
+  public boolean isSelected(int atomIndex) {
+    return selectionManager.isSelected(atomIndex);
   }
 
   public int countSelection() {
     return selectionManager.countSelection();
   }
 
-  public boolean isSelected(Atom atom) {
-    return selectionManager.isSelected(atom);
+  public void selectAll() {
+    selectionManager.selectAll();
+    refresh();
+  }
+
+  public void clearSelection() {
+    selectionManager.clearSelection();
+    refresh();
   }
 
   public void setSelectionSet(BitSet set) {
@@ -919,8 +739,8 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   delegated to MouseManager
-  ****************************************************************/
+   * delegated to MouseManager
+   ****************************************************************/
   public static final int ROTATE = 0;
   public static final int ZOOM = 1;
   public static final int XLATE = 2;
@@ -948,8 +768,8 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   delegated to FileManager
-  ****************************************************************/
+   * delegated to FileManager
+   ****************************************************************/
 
   public void setAppletDocumentBase(URL base) {
     fileManager.setAppletDocumentBase(base);
@@ -966,4 +786,198 @@ final public class DisplayControl {
   public String openFile(String name) {
     return fileManager.openFile(name);
   }
+
+  /****************************************************************
+   * delegated to ModelManager
+   ****************************************************************/
+
+  public void setChemFile(ChemFile chemfile) {
+    modelManager.setChemFile(chemfile);
+    homePosition();
+    // don't know if I need this firm refresh here or not
+    refreshFirmly();
+  }
+
+  public boolean haveFile() {
+    return modelManager.haveFile();
+  }
+
+  public ChemFrame getFrame() {
+    return modelManager.chemframe;
+  }
+
+  public double getRotationRadius() {
+    return modelManager.getRotationRadius();
+  }
+
+  public Point3d getRotationCenter() {
+    return modelManager.getRotationCenter();
+  }
+
+  public void setFrame(int fr) {
+    modelManager.setFrame(fr);
+    structuralChange = true;
+    clearSelection();
+    refresh();
+  }
+
+  public void setFrame(ChemFrame frame) {
+    modelManager.setFrame(frame);
+    structuralChange = true;
+    clearSelection();
+    refresh();
+  }
+
+  public int numberOfAtoms() {
+    return modelManager.numberOfAtoms();
+  }
+
+  public void mlistChanged(MeasurementListEvent mle) {
+    modelManager.mlistChanged(mle);
+  }
+
+  public int findNearestAtomIndex(int x, int y) {
+    return modelManager.findNearestAtomIndex(x, y);
+  }
+
+  public BitSet findAtomsInRectangle(Rectangle rectRubberBand) {
+    return modelManager.findAtomsInRectangle(rectRubberBand);
+  }
+
+  public void setCenter(Point3d center) {
+    modelManager.setRotationCenter(center);
+  }
+
+  public void setCenterAsSelected() {
+    modelManager.setCenterAsSelected();
+    clearSelection();
+    scaleFitToScreen();
+    refresh();
+  }
+
+  public void defineMeasure(int atom1, int atom2) {
+    modelManager.defineMeasure(atom1, atom2);
+    refresh();
+  }
+
+  public void defineMeasure(int atom1, int atom2, int atom3) {
+    modelManager.defineMeasure(atom1, atom2, atom3);
+    refresh();
+  }
+
+  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
+    modelManager.defineMeasure(atom1, atom2, atom3, atom4);
+    refresh();
+  }
+
+  public void rebond() {
+    modelManager.rebond();
+    refresh();
+  }
+
+  public void setBondFudge(double bf) {
+    modelManager.setBondFudge(bf);
+    refresh();
+  }
+
+  public double getBondFudge() {
+    return modelManager.bondFudge;
+  }
+
+  public void setAutoBond(boolean ab) {
+    modelManager.setAutoBond(ab);
+    refresh();
+  }
+
+  public boolean getAutoBond() {
+    return modelManager.autoBond;
+  }
+
+  public void deleteAtom(int atomIndex) {
+    // FIXME -- there are problems with deleting atoms
+    // for example, the selection set gets messed up
+    // The answer is that delete does *not* delete, it only *hides*
+    // in fact, this is completely compatible with rasmol
+    modelManager.deleteAtom(atomIndex);
+    //            status.setStatus(2, "Atom deleted"); 
+    structuralChange = true;
+    refresh();
+  }
+
+  /****************************************************************
+   * delegated to RepaintManager
+   ****************************************************************/
+
+  public void setFastRendering(boolean fastRendering) {
+    repaintManager.setFastRendering(fastRendering);
+  }
+
+  public boolean getFastRendering() {
+    return repaintManager.fastRendering;
+  }
+
+  private void maybeEnableAntialiasing(Graphics g) {
+    repaintManager.maybeEnableAntialiasing(g);
+  }
+
+  public void maybeDottedStroke(Graphics g) {
+    repaintManager.maybeDottedStroke(g);
+  }
+
+  public void setInMotion(boolean inMotion) {
+    repaintManager.setInMotion(inMotion);
+  }
+
+  public void setWantsGraphics2D(boolean wantsGraphics2D) {
+    repaintManager.setWantsGraphics2D(wantsGraphics2D);
+  }
+
+  public boolean getWantsGraphics2D() {
+    return repaintManager.wantsGraphics2D;
+  }
+
+  public boolean getUseGraphics2D() {
+    return repaintManager.useGraphics2D;
+  }
+
+  public void setWantsAntialias(boolean wantsAntialias) {
+    repaintManager.setWantsAntialias(wantsAntialias);
+  }
+
+  public boolean getWantsAntialias() {
+    return repaintManager.wantsAntialias;
+  }
+
+  public void setWantsAntialiasAlways(boolean wantsAntialiasAlways) {
+    repaintManager.setWantsAntialiasAlways(wantsAntialiasAlways);
+  }
+
+  public boolean getWantsAntialiasAlways() {
+    return repaintManager.wantsAntialiasAlways;
+  }
+
+  public Image takeSnapshot() {
+    return repaintManager.takeSnapshot();
+  }
+
+  public void setHoldRepaint(boolean holdRepaint) {
+    repaintManager.setHoldRepaint(holdRepaint);
+  }
+
+  private void refreshFirmly() {
+    repaintManager.refreshFirmly();
+  }
+
+  public void refresh() {
+    repaintManager.refresh();
+  }
+
+  public void requestRepaintAndWait() {
+    repaintManager.requestRepaintAndWait();
+  }
+
+  public void notifyRepainted() {
+    repaintManager.notifyRepainted();
+  }
+
 }

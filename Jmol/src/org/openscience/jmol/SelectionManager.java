@@ -28,37 +28,32 @@ import java.util.BitSet;
 
 public class SelectionManager {
 
+  DisplayControl control;
+
+  public SelectionManager(DisplayControl control) {
+    this.control = control;
+  }
+
   private final BitSet bsNull = new BitSet();
   public final BitSet bsSelection = new BitSet();
 
-  public void addSelection(Atom atom) {
-    bsSelection.set(atom.getAtomNumber());
+  public void addSelection(int atomIndex) {
+    bsSelection.set(atomIndex);
   }
 
-  public void removeSelection(Atom atom) {
-    bsSelection.clear(atom.getAtomNumber());
+  public void addSelection(BitSet set) {
+    bsSelection.or(set);
   }
 
-  public void toggleSelection(Atom atom) {
-    int atomNum = atom.getAtomNumber();
-    if (bsSelection.get(atomNum))
-      bsSelection.clear(atomNum);
+  public void toggleSelection(int atomIndex) {
+    if (bsSelection.get(atomIndex))
+      bsSelection.clear(atomIndex);
     else
-      bsSelection.set(atomNum);
+      bsSelection.set(atomIndex);
   }
 
-  public void addSelection(Atom[] atoms) {
-    for (int i = 0; i < atoms.length; ++i)
-      bsSelection.set(atoms[i].getAtomNumber());
-  }
-
-  public void removeSelection(Atom[] atoms) {
-    for (int i = 0; i < atoms.length; ++i)
-      bsSelection.clear(atoms[i].getAtomNumber());
-  }
-
-  public void clearSelection() {
-    bsSelection.and(bsNull);
+  public boolean isSelected(int atomIndex) {
+    return bsSelection.get(atomIndex);
   }
 
   public int countSelection() {
@@ -69,8 +64,13 @@ public class SelectionManager {
     return count;
   }
 
-  public boolean isSelected(Atom atom) {
-    return bsSelection.get(atom.getAtomNumber());
+  public void selectAll() {
+    for (int i = control.numberOfAtoms(); --i >= 0; )
+      bsSelection.set(i);
+  }
+
+  public void clearSelection() {
+    bsSelection.and(bsNull);
   }
 
   public void setSelectionSet(BitSet set) {

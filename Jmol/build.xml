@@ -330,7 +330,7 @@
     <delete file="${build.dir}/jmol-${version}.tar" />
     
     <tar tarfile="${build.dir}/jmol-applet-${version}.tar" basedir="${dist.dir}"
-      includes="${build.dir}/jmol-applet-${version}/**"/>
+      includes="jmol-applet-${version}/**"/>
     <gzip zipfile="${build.dir}/jmol-applet-${version}.tar.gz"
         src="${build.dir}/jmol-applet-${version}.tar"/>
     <delete file="${build.dir}/jmol-applet-${version}.tar" />
@@ -346,10 +346,14 @@
     <copy todir="${sourcedist.dir}/jmol-${version}" >
       <fileset dir=".">
         <include name="*" />
+        <exclude name="${build.dir}" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${source.dir}" >
       <fileset dir="${source.dir}" />
+    </copy>
+    <copy todir="${sourcedist.dir}/jmol-${version}/${tests.source.dir}" >
+      <fileset dir="${tests.source.dir}" />
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${doc.dir}" >
       <fileset dir="${doc.dir}" />
@@ -386,6 +390,9 @@
         src="${build.dir}/jmol-${version}.source.tar"/>
     <delete file="${build.dir}/jmol-${version}.source.tar" />
   </target>
+
+  <target name="main-dists" description="Builds primary distributions."
+      depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
 
   <target name="clean">
     <delete dir="${classes.dir}"/>

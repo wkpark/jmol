@@ -24,6 +24,7 @@
     <jar href="jars/jas.jar" />
     <jar href="jars/gnujaxp.jar" />
     <jar href="jars/cdk-cml.jar" />
+    <jar href="jars/itext-0.94.jar" />
   </resources>
 
   <security>

@@ -29,6 +29,7 @@ import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
 import java.util.Properties;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
@@ -101,6 +102,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
   
   public Properties getAtomSetProperties(Object clientFile, int atomSetIndex) {
     return ((AtomSetCollection)clientFile).getAtomSetProperties(atomSetIndex);
+  }
+  
+  public DefaultMutableTreeNode getAtomSetCollectionTree(Object clientFile) {
+    return ((AtomSetCollection)clientFile).getAtomSetCollectionTree();
   }
 
   /* **************************************************************

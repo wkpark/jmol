@@ -61,9 +61,15 @@ public class ModelManager {
   //  public int currentFrameNumber;
   public Frame frame;
   //  public Frame[] frames;
+  
+  private Object clientFile; // RPFK Sorry I had to add this...
+  public Object getClientFile() {
+    return clientFile;
+  }
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
+    this.clientFile = clientFile; // RPFK added
     if (clientFile == null) {
       fullPathName = fileName = modelSetName = modelFileHeader = null;
       frame = null;

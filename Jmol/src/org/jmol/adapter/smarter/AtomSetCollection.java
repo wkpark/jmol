@@ -25,8 +25,10 @@
 
 package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
+import org.jmol.api.AtomSet;
 import java.util.Hashtable;
 import java.util.Properties;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 class AtomSetCollection {
   String fileTypeName;
@@ -49,6 +51,7 @@ class AtomSetCollection {
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
   Properties[] atomSetProperties = new Properties[16];
+  DefaultMutableTreeNode atomSetCollectionTree;
 
   String errorMessage;
   String fileHeader;
@@ -330,4 +333,30 @@ class AtomSetCollection {
   Properties getAtomSetProperties(int atomSetIndex) {
     return atomSetProperties[atomSetIndex];
   }
+  
+  /**
+   * if an AtomSetCollectionTree does not exist, creates a flat hierarchy,
+   * otherwise returns the hierarchy as determined during reading of the file.
+   *
+   * <p>Maybe we should just return null if a tree model was not defined and
+   * have the application build a flat one itself?
+   */
+  public DefaultMutableTreeNode getAtomSetCollectionTree() {
+    if (atomSetCollectionTree == null) {      
+      // create a tree with the top the fileTypeName String object
+      atomSetCollectionTree = new DefaultMutableTreeNode(
+        new DefaultMutableTreeNode(fileTypeName)
+      );
+      // add each atomSetName
+      for (int idx = 0; idx<atomSetCount; idx++) {
+      	atomSetCollectionTree.add(
+      	  new DefaultMutableTreeNode(
+      	    new AtomSet(idx,getAtomSetName(idx))
+      	  )
+      	);
+      }
+    }
+    return atomSetCollectionTree;
+  }
+  
 }

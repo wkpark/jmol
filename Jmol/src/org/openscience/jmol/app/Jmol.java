@@ -73,6 +73,7 @@ public class Jmol extends JPanel {
   private RecentFilesDialog recentFiles;
   private JMenu recentFilesMenu;
   public ScriptWindow scriptWindow;
+  public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
   private static File currentDir;
@@ -180,6 +181,8 @@ public class Jmol extends JPanel {
     recentFiles = new RecentFilesDialog(frame);
     say("Initializing Script Window...");
     scriptWindow = new ScriptWindow(viewer, frame);
+    say("Initializing AtomSetChooser Window...");
+    atomSetChooser = new AtomSetChooser(viewer, frame);
     viewer.setJmolStatusListener(new MyJmolStatusListener());
 
     say("Initializing Measurements...");
@@ -864,6 +867,7 @@ public class Jmol extends JPanel {
   private static final String povrayActionProperty = "povray";
   private static final String pdfActionProperty = "pdf";
   private static final String scriptAction = "script";
+  private static final String atomsetchooserAction = "atomsetchooser";
 
 
   // --- action implementations -----------------------------------
@@ -886,7 +890,8 @@ public class Jmol extends JPanel {
     new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
     new RecentFilesAction(), povrayAction, pdfAction,
-    new ScriptWindowAction(), viewMeasurementTableAction
+    new ScriptWindowAction(), new AtomSetChooserAction(),
+    viewMeasurementTableAction
   };
 
   class CloseAction extends AbstractAction {
@@ -1142,6 +1147,16 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       scriptWindow.show();
+    }
+  }
+  
+  class AtomSetChooserAction extends AbstractAction {
+    public AtomSetChooserAction() {
+      super(atomsetchooserAction);
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+      atomSetChooser.show();
     }
   }
 

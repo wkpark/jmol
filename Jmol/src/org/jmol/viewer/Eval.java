@@ -418,8 +418,8 @@ class Eval implements Runnable {
       case Token.strands:
         proteinShape(JmolConstants.SHAPE_STRANDS);
         break;
-      case Token.mesh:
-        proteinShape(JmolConstants.SHAPE_MESH);
+      case Token.meshRibbon:
+        proteinShape(JmolConstants.SHAPE_MESHRIBBON);
         break;
       case Token.ribbon:
         proteinShape(JmolConstants.SHAPE_RIBBONS);
@@ -1455,7 +1455,7 @@ class Eval implements Runnable {
     case Token.hbonds:
     case Token.trace:
     case Token.backbone:
-    case Token.mesh:
+    case Token.meshRibbon:
     case Token.strands:
     case Token.ribbon:
     case Token.prueba:
@@ -2389,7 +2389,7 @@ class Eval implements Runnable {
   {Token.atom, Token.bonds, Token.hbonds, Token.ssbonds,
    Token.label, Token.vector,
    Token.monitor, Token.dots, Token.backbone,
-   Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbon,
+   Token.trace, Token.cartoon, Token.strands, Token.meshRibbon, Token.ribbon,
    Token.rocket,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
    Token.hover,

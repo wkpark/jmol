@@ -160,7 +160,7 @@ class Token {
   final static int hover        = command | 81 | specialstring;
   final static int vibration    = command | 82;
   final static int vector       = command | 83;
-  final static int mesh         = command | 84;
+  final static int meshRibbon   = command | 84;
   final static int prueba       = command | 85;
   final static int rocket       = command | 86;
   final static int surface      = command | predefinedset | 87;
@@ -438,7 +438,7 @@ class Token {
     "vibration",         new Token(vibration,  "vibration"),
     "vector",            new Token(vector,   varArgCount, "vector"),
     "vectors",           null,
-    "mesh",              new Token(mesh,      onDefault1, "mesh"),
+    "meshribbon",        new Token(meshRibbon,onDefault1, "meshribbon"),
     "prueba",            new Token(prueba,    onDefault1, "prueba"),
     "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,

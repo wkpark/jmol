@@ -740,6 +740,27 @@ final public class Graphics3D {
     triangle3d.fillTriangleNoisy(transparent);
   }
 
+  public void fillTriangle(int argb,
+                           int xA, int yA, int zA,
+                           int xB, int yB, int zB,
+                           int xC, int yC, int zC) {
+    /*
+    System.out.println("fillTriangle:" + xA + "," + yA + "," + zA + "->" +
+                       xB + "," + yB + "," + zB + "->" +
+                       xC + "," + yC + "," + zC);
+    */
+    argbCurrent = argbNoisyUp = argbNoisyDn = argb;
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = xA; t[1] = xB; t[2] = xC;
+    t = triangle3d.ay;
+    t[0] = yA; t[1] = yB; t[2] = yC;
+    t = triangle3d.az;
+    t[0] = zA; t[1] = zB; t[2] = zC;
+
+    triangle3d.fillTriangleNoisy(false);
+  }
+
   public void drawTriangle(short colix, int xA, int yA, int zA,
                            int xB, int yB, int zB, int xC, int yC, int zC) {
     /*

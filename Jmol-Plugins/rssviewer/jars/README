@@ -1,3 +1,0 @@
-The plugin needs the CDKPluginInterface to compile.
-And, additionally, the cdk-core.jar, cdk-standard.jar 
-cdk-io.jar and cdk-extra.jar.

@@ -1,6 +1,6 @@
-This module is intended for containing source code of Jmol Plugins. Each plugin
-must use a separate subdir in this module.
+Jmol Plugins are now replaced by CDK plugins. More information about these
+can be found at:
 
-Current plugins:
+  http://cdk.sf.net/plugins.html
 
-rssviewer               Viewer of RSS channels with chemical content
+This module is from now on obsolete.

@@ -47,88 +47,16 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import com.obrador.JpegEncoder;
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Cursor;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.awt.Graphics2D;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.PrintJob;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.geom.*;
-import java.beans.PropertyChangeSupport;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EventObject;
-import java.util.Hashtable;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.UIManager;
-import javax.swing.event.MenuListener;
-import javax.swing.event.MenuEvent;
+import java.awt.print.*;
+import java.beans.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
-/**
- * The main class in Jmol.
- *
- * @author Bradley A. Smith (bradley@baysmith.com)
- * @author Peter Murray-Rust
- */
 public class Jmol extends JPanel {
 
   /**
@@ -1081,20 +1009,15 @@ public class Jmol extends JPanel {
    **/
   public void print() {
 
-    Toolkit tk = Toolkit.getDefaultToolkit();
-    PrintJob pJob = tk.getPrintJob(frame, "Jmol Print Job", null);
-
-    if (pJob != null) {
-      Graphics pg = pJob.getGraphics();
-      if (pg != null) {
-        display.print(pg);
-
-        // Flush the print job
-        pg.dispose();
+    PrinterJob job = PrinterJob.getPrinterJob();
+    job.setPrintable(display);
+    if (job.printDialog()) {
+      try {
+        job.print();
+      } catch (PrinterException e) {
+        System.out.println("" + e);
       }
-      pJob.end();
     }
-  
   }
 
   class OpenAction extends NewAction {

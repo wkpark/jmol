@@ -27,30 +27,15 @@ package org.openscience.jmol.app;
 import org.openscience.jmol.*;
 import org.openscience.jmol.viewer.*;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.ComponentListener;
-import javax.swing.event.MenuListener;
-import javax.swing.event.MenuEvent;
-import javax.swing.Action;
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JPanel;
-import javax.swing.RepaintManager;
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.event.*;
+import java.awt.print.*;
+import javax.swing.*;
+import javax.swing.event.*;
 
-public class DisplayPanel extends JPanel implements ComponentListener {
+public class DisplayPanel extends JPanel
+  implements ComponentListener, Printable {
   private StatusBar status;
   private GuiMap guimap;
   private JmolViewer viewer;
@@ -114,8 +99,6 @@ public class DisplayPanel extends JPanel implements ComponentListener {
       startPaintClock();
     g.getClipBounds(rectClip);
     Image image = viewer.renderScreenImage(rectClip);
-    g.setColor(viewer.getColorBackground());
-    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     g.drawImage(image, 0, 0, null);
     if (showPaintTime)
       stopPaintClock();
@@ -123,6 +106,18 @@ public class DisplayPanel extends JPanel implements ComponentListener {
 
   public Image takeSnapshot() {
     return viewer.getScreenImage();
+  }
+
+  public int print(Graphics g, PageFormat pf, int pageIndex) {
+    Graphics2D g2 = (Graphics2D)g;
+    if (pageIndex > 0)
+      return Printable.NO_SUCH_PAGE;
+    rectClip.x = rectClip.y = 0;
+    rectClip.width = viewer.getScreenWidth();
+    rectClip.height = viewer.getScreenHeight();
+    Image image = viewer.renderScreenImage(rectClip);
+    g.drawImage(image, (int)pf.getImageableX(), (int)pf.getImageableY(), null);
+    return Printable.PAGE_EXISTS;
   }
 
   // The actions:

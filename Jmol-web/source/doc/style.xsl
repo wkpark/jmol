@@ -2,7 +2,9 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
   <xsl:output method="html" indent="yes"/>
-
+  <xsl:param name="lang" select="'en'"/>
+  <xsl:param name="project_xml" select="'project.xml'"/>
+  
   <xsl:template match="document">
     <xsl:apply-templates/>
   </xsl:template>
@@ -79,8 +81,10 @@
   </xsl:template>
 
   <xsl:template match="/">
-    <xsl:variable name="project" select="document('project.xml')/project"/>
-    <html lang="en">
+    <xsl:variable name="project" select="document($project_xml)/project"/>
+    <xsl:text disable-output-escaping="yes">&lt;html lang="</xsl:text>
+    <xsl:value-of select="$lang" disable-output-escaping="yes"/>
+    <xsl:text disable-output-escaping="yes">"&gt;</xsl:text>
     <head>
       <xsl:choose>
         <xsl:when test="/document/properties/title"><title><xsl:value-of select="/document/body/title"/></title></xsl:when>
@@ -131,7 +135,7 @@
       </table>
 
     </body>
-    </html>
+	<xsl:text disable-output-escaping="yes">&lt;/html&gt;</xsl:text>
   </xsl:template>
 
 

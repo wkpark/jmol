@@ -21,8 +21,8 @@
     <style basedir="${doc.dir}"
       destdir="${build.html}"
       style="${doc.dir}/style.xsl"
-      includes="**/index.xml"
-    />
+      includes="**/index.xml">
+    </style>
     <copy todir="${build.html}" overwrite="yes"> 
       <fileset dir="${doc.dir}" includes="license.txt,document.dtd"/>
     </copy>
@@ -32,7 +32,8 @@
     </copy>
 
     <copy todir="${build.html}/docs" overwrite="yes">
-      <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*" />
+      <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*"
+               excludes="**/*_fr.html,**/*_fr,**/*_fr/*" />
     </copy>
 
     <replace dir="${build.html}" includes="**/*.html">
@@ -54,6 +55,62 @@
 
     <chmod perm="ug=rw,o=r" dir="${build.html}" includes="**/*" />
 
+  	<antcall target="html_lang">
+  	  <param name="lang_value" value="fr"/>
+  	</antcall>
   </target>
-</project>
 
+  <!-- Language dependent target -->
+  <target name="html_lang">
+	<mkdir dir="${build.html}"/>
+  	<mkdir dir="${build.html}/${lang_value}"/>
+
+    <!-- Generate index.html files -->
+    <style
+      basedir="${doc.dir}"
+      destdir="${build.html}/${lang_value}"
+      style="${doc.dir}/style.xsl"
+      includes="**/index_${lang_value}.xml">
+      <mapper type="glob" from="*_${lang_value}.xml" to="*.html"/>
+      <param name="lang" expression="${lang_value}"/>
+      <param name="project_xml" expression="project_${lang_value}.xml"/>
+    </style>
+
+    <!-- Copy other files -->
+    <copy todir="${build.html}/${lang_value}" overwrite="yes">
+      <fileset dir="${doc.dir}" includes="license.txt,document.dtd"/>
+    </copy>
+    <copy todir="${build.html}/${lang_value}" overwrite="yes">
+      <fileset dir="${doc.dir}"
+        excludes="**/*.xml,**/*.xsl,**/*~" />
+    </copy>
+
+    <!-- Copy files from Jmol docs -->
+    <copy todir="${build.html}/${lang_value}/docs" overwrite="yes">
+      <fileset dir="${jmol-doc-dir}/build/doc"
+        includes="**/*_${lang_value}.html,**/*_${lang_value}/*"/>
+    </copy>
+
+    <!-- Replace content of files with variables -->
+    <replace dir="${build.html}/${lang_value}" includes="**/*.html">
+      <replacefilter token="$$VERSION$$" value="${version}"/>
+      <replacefilter token="$$APPLET-VERSION$$" value="${applet-version}"/>
+    </replace>
+  	
+    <!-- Replace paths -->
+    <replace dir="${build.html}/${lang_value}" includes="*.html">
+      <replacefilter token="[images]"   value="images"/>
+      <replacefilter token="[root]"     value="."/>
+      <replacefilter token="[codebase]" value="jmol"/>
+    </replace>
+    <replace dir="${build.html}/${lang_value}" includes="*/*.html">
+      <replacefilter token="[images]"   value="../images"/>
+      <replacefilter token="[root]"     value=".."/>
+      <replacefilter token="[codebase]" value="../jmol"/>
+    </replace>
+
+    <!-- Change permissions -->
+    <chmod perm="ug=rw,o=r" dir="${build.html}/${lang_value}" includes="**/*"/>
+  </target>
+
+</project>

@@ -23,9 +23,9 @@
  *  02111-1307  USA.
  */
 
-function jmolDebugAlert(enableAlerts) {
-  _jmol.debugAlert = (enableAlerts == undefined || enableAlerts)
-}
+////////////////////////////////////////////////////////////////
+// Basic Scripting infrastruture
+////////////////////////////////////////////////////////////////
 
 function jmolSetCodebase(codebase) {
   _jmol.codebase = codebase ? codebase : ".";
@@ -53,6 +53,10 @@ function jmolSetAppletColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
 function jmolApplet(size, modelFilename, script, nameSuffix) {
   _jmolApplet(size, modelFilename, null, script, nameSuffix);
 }
+
+////////////////////////////////////////////////////////////////
+// Basic controls
+////////////////////////////////////////////////////////////////
 
 function jmolButton(script, label) {
   var scriptIndex = _jmolAddScript(script);
@@ -141,6 +145,10 @@ function jmolBr() {
 // advanced scripting functions
 ////////////////////////////////////////////////////////////////
 
+function jmolDebugAlert(enableAlerts) {
+  _jmol.debugAlert = (enableAlerts == undefined || enableAlerts)
+}
+
 function jmolAppletInline(size, inlineModel, script, nameSuffix) {
   _jmolApplet(size, null, _jmolConvertInline(inlineModel), script, nameSuffix);
 }
@@ -152,23 +160,21 @@ function jmolSetTarget(targetSuffix) {
 
 function jmolScript(script, targetSuffix) {
   if (script) {
-    var target = "jmol" + (targetSuffix ? targetSuffix : "0");
-    if (document.getElementById)
-      document.getElementById(target).script(script);
+    var applet = _jmolFindApplet(targetSuffix);
+    if (applet)
+      return applet.script(script);
     else
-      document[target].script(script); // NS4 compatibility
+      alert("could not find applet " + targetSuffix);
   }
 }
 
 function jmolLoadInline(model, targetSuffix) {
   if (model) {
-    var target = "jmol" + (targetSuffix ? targetSuffix : "0");
-    var applet;
-    if (document.getElementById)
-      applet = document.getElementById(target);
+    var applet = _jmolFindApplet(targetSuffix);
+    if (applet)
+      return applet.loadInline(model);
     else
-      applet = document[target]; // NS4 compatibility
-    applet.loadInline(model);
+      alert("could not find applet " + targetSuffix);
   }
 }
 
@@ -272,7 +278,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       script = "select *";
     var sz = _jmolGetAppletSize(size);
     var t;
-    t = "<applet name='jmol" + nameSuffix + "' id='jmol" + nameSuffix +
+    t = "<applet name='jmol-" + nameSuffix + "' id='jmol-" + nameSuffix +
         "' " + appletCssClass +
         " code='JmolApplet' archive='JmolApplet.jar'\n" +
         " codebase='" + codebase + "'\n" +
@@ -327,6 +333,35 @@ function _jmolGetAppletSize(size) {
   if (! (height >= 25 && height <= 2000))
     height = 300;
   return [width, height];
+}
+
+function _jmolFindApplet(targetSuffix) {
+  var target = "jmol-" + (targetSuffix ? targetSuffix : "0");
+  var applet = _jmolFindAppletWindow(window, target);
+  if (applet == undefined) // search the frames from the top
+    applet = _jmolFindAppletWindow(top, target);
+  return applet;
+}
+
+function _jmolFindAppletWindow(win, target) {
+  var applet;
+  var frames = win.frames;
+  if (frames && frames.length) { // look in all the frames below this window
+    for (var i = 0; i < frames.length; ++i) {
+      applet = _jmolFindAppletWindow(frames[i++], target);
+      if (applet)
+        break;
+    }
+  } else { // look for the applet in this window
+    var doc = win.document;
+    if (doc.getElementById) // this is the DOM way to do it
+      applet = doc.getElementById(target);
+    else if (doc.applets) // NS4 compatibility
+      applet = doc.applets[target];
+    else // this also works on NS4 & may help with some other old browsers
+      applet = doc[target];
+  }
+  return applet;
 }
 
 function _jmolAddScript(script) {

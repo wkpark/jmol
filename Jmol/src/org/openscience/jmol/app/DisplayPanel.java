@@ -113,7 +113,10 @@ public class DisplayPanel extends JPanel implements ComponentListener {
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    g.drawImage(viewer.renderScreenImage(rectClip), 0, 0, null);
+    Image image = viewer.renderScreenImage(rectClip);
+    g.setColor(viewer.getColorBackground());
+    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
+    g.drawImage(image, 0, 0, null);
     if (showPaintTime)
       stopPaintClock();
   }

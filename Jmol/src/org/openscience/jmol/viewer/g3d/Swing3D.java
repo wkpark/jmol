@@ -39,7 +39,7 @@ final public class Swing3D extends Platform3D {
 
   public void allocatePixelBuf() {
     BufferedImage bi =
-      new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+      new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
     WritableRaster wr = bi.getRaster();
     DataBuffer db = wr.getDataBuffer();
     DataBufferInt dbi = (DataBufferInt) db;
@@ -48,7 +48,7 @@ final public class Swing3D extends Platform3D {
   }
 
   Image allocateOffscreenImage(int width, int height) {
-    return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+    return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
   }
 
 }

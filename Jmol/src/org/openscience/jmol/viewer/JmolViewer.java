@@ -1309,19 +1309,19 @@ final public class JmolViewer {
   void setTestFlag1(boolean value) {
     testFlag1 = value;
   }
-  boolean getTestFlag1() {
+  public boolean getTestFlag1() {
     return testFlag1;
   }
   void setTestFlag2(boolean value) {
     testFlag2 = value;
   }
-  boolean getTestFlag2() {
+  public boolean getTestFlag2() {
     return testFlag2;
   }
   void setTestFlag3(boolean value) {
     testFlag3 = value;
   }
-  boolean getTestFlag3() {
+  public boolean getTestFlag3() {
     return testFlag3;
   }
 

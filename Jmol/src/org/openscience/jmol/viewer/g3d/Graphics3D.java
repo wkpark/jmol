@@ -320,13 +320,13 @@ final public class Graphics3D {
     // ready to go.
     if (heightClip <= 0 || widthClip <= 0)
       return;
-    int argbBackground = colorBackground.getRGB();
     int offsetSrc = yClip * width + xClip;
     int offsetT = offsetSrc;
     int count = widthClip;
+    //    int argbBackground = viewer.getColorBackground().getRGB();
     do {
       zbuf[offsetT] = zBackground;
-      pbuf[offsetT++] = argbBackground;
+      pbuf[offsetT++] = 0; // argbBackground;
     } while (--count > 0);
     int offsetDst = offsetSrc;
     while (--heightClip > 0) {

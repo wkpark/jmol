@@ -2150,11 +2150,11 @@ final public class Graphics3D {
   }
 
   public Vector3f[] getGeodesicVertexVectors() {
-    return geodesic3d.getVertexVectors();
+    return Geodesic3D.getVertexVectors();
   }
 
   public int getGeodesicVertexCount(int level) {
-    return geodesic3d.getVertexCount(level);
+    return Geodesic3D.getVertexCount(level);
   }
 
   public Vector3f[] getTransformedVertexVectors() {
@@ -2162,11 +2162,11 @@ final public class Graphics3D {
   }
 
   public int getGeodesicFaceCount(int level) {
-    return geodesic3d.getFaceCount(level);
+    return Geodesic3D.getFaceCount(level);
   }
 
   public short[] getGeodesicFaceVertexes(int level) {
-    return geodesic3d.getFaceVertexes(level);
+    return Geodesic3D.getFaceVertexes(level);
   }
 
   public short[] getGeodesicFaceNormixes(int level) {

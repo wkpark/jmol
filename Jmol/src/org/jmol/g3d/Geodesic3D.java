@@ -247,7 +247,7 @@ class Geodesic3D {
 
       float champD = g3d.normix3d.distance(vertexVectors[normix], t);
       int champ = normix;
-      int vertexCount = getVertexCount(g3d.normix3d.level);
+      int vertexCount = getVertexCount(Normix3D.level);
       for (int k = vertexCount; --k >= 0; ) {
         float d = g3d.normix3d.distance(vertexVectors[k], t);
         if (d < champD) {

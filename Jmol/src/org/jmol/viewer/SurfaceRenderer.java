@@ -25,8 +25,9 @@
 
 package org.jmol.viewer;
 
-import java.util.Hashtable;
 import javax.vecmath.*;
+
+import org.jmol.g3d.Graphics3D;
 
 class SurfaceRenderer extends ShapeRenderer {
 
@@ -277,7 +278,7 @@ class SurfaceRenderer extends ShapeRenderer {
     short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
     short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
     short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
-    short colix0 = g3d.YELLOW;
+    short colix0 = Graphics3D.YELLOW;
                         
 
     g3d.fillTriangle(false,

@@ -31,6 +31,7 @@ import java.awt.Image;
 import java.awt.image.MemoryImageSource;
 import java.awt.FontMetrics;
 import java.awt.Font;
+import java.awt.Rectangle;
 
 final public class Awt3D extends Platform3D {
 
@@ -41,11 +42,11 @@ final public class Awt3D extends Platform3D {
     this.component = component;
   }
 
-  public void allocatePixelBuf() {
-    pixelBuf = new int[width * height];
-    mis = new MemoryImageSource(width, height, pixelBuf, 0, width);
+  public void allocatePixelBuffer() {
+    pBuffer = new int[size];
+    mis = new MemoryImageSource(width, height, pBuffer, 0, width);
     mis.setAnimated(true);
-    imagePixelBuf = component.createImage(mis);
+    imagePixelBuffer = component.createImage(mis);
   }
 
   public void notifyEndOfRendering() {

@@ -284,15 +284,80 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     paint(g);
   }
 
+  public boolean showPaintTime = true;
+
   public void paint(Graphics g) {
+    if (showPaintTime)
+      startPaintClock();
     Dimension size = jvm12orGreater ? jvm12.getSize() : size();
     viewer.setScreenDimension(size);
-    Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
+    Rectangle rectClip =
+      jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
     g.drawImage(viewer.renderScreenImage(rectClip), 0, 0, null);
+    if (showPaintTime) {
+      stopPaintClock();
+      showTimes(10, 10, g);
+    }
   }
 
   public boolean handleEvent(Event e) {
     return viewer.handleEvent(e);
+  }
+
+  // code to record last and average times
+  // last and average of all the previous times are shown in the status window
+
+  private static int timeLast = 0;
+  private static int timeCount;
+  private static int timeTotal;
+
+  private void resetTimes() {
+    timeCount = timeTotal = 0;
+    timeLast = -1;
+  }
+
+  private void recordTime(int time) {
+    if (timeLast != -1) {
+      timeTotal += timeLast;
+      ++timeCount;
+    }
+    timeLast = time;
+  }
+
+  private long timeBegin;
+  private int lastMotionEventNumber;
+
+  private void startPaintClock() {
+    timeBegin = System.currentTimeMillis();
+    int motionEventNumber = viewer.motionEventNumber;
+    if (lastMotionEventNumber != motionEventNumber) {
+      lastMotionEventNumber = motionEventNumber;
+      resetTimes();
+    }
+  }
+
+  private void stopPaintClock() {
+    int time = (int)(System.currentTimeMillis() - timeBegin);
+    recordTime(time);
+  }
+
+  private String fmt(int num) {
+    if (num < 0)
+      return "---";
+    if (num < 10)
+      return "  " + num;
+    if (num < 100)
+      return " " + num;
+    return "" + num;
+  }
+
+  private void showTimes(int x, int y, Graphics g) {
+    int timeAverage =
+      (timeCount == 0)
+      ? -1
+      : (timeTotal + timeCount/2) / timeCount; // round, don't truncate
+    g.setColor(Color.green);
+    g.drawString(fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms", x, y);
   }
 
   //METHODS FOR JAVASCRIPT

@@ -28,31 +28,52 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Rectangle;
 
 abstract public class Platform3D {
 
   int width, height;
-  Image imagePixelBuf;
-  int[] pixelBuf;
+  int size;
+  Image imagePixelBuffer;
+  int[] pBuffer;
+  short[] zBuffer;
   int widthOffscreen, heightOffscreen;
   Image imageOffscreen;
   Graphics gOffscreen;
 
-  abstract void allocatePixelBuf();
+  final static short ZBUFFER_BACKGROUND = 32767;
 
-  public int[] allocatePixelBuf(int width, int height) {
+  abstract void allocatePixelBuffer();
+
+  void allocateBuffers(int width, int height) {
     this.width = width;
     this.height = height;
-    if (imagePixelBuf != null)
-      imagePixelBuf.flush();
-    allocatePixelBuf();
-    return pixelBuf;
+    size = width * height;
+    zBuffer = new short[size];
+    if (imagePixelBuffer != null)
+      imagePixelBuffer.flush();
+    allocatePixelBuffer();
   }
 
-  public void notifyEndOfRendering() {
+  void clearScreenBuffer(int argbBackground, Rectangle rectClip) {
+    int offsetSrc = rectClip.y * width + rectClip.x;
+    int countPerLine = rectClip.width;
+    int offsetT = offsetSrc;
+    for (int i = countPerLine; --i >= 0; ) {
+      zBuffer[offsetT] = ZBUFFER_BACKGROUND;
+      pBuffer[offsetT++] = argbBackground;
+    }
+    int offsetDst = offsetSrc + width; 
+    for (int nLines = rectClip.height-1; --nLines >= 0; offsetDst += width) {
+      System.arraycopy(pBuffer, offsetSrc, pBuffer, offsetDst, countPerLine);
+      System.arraycopy(zBuffer, offsetSrc, zBuffer, offsetDst, countPerLine);
+    }
   }
 
-  public FontMetrics getFontMetrics(Font font) {
+  void notifyEndOfRendering() {
+  }
+
+  FontMetrics getFontMetrics(Font font) {
     if (gOffscreen == null)
       checkOffscreenSize(16, 64);
     return gOffscreen.getFontMetrics(font);
@@ -60,7 +81,7 @@ abstract public class Platform3D {
 
   abstract Image allocateOffscreenImage(int width, int height);
 
-  public void checkOffscreenSize(int width, int height) {
+  void checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
       return;
     if (imageOffscreen != null) {

@@ -25,30 +25,38 @@
 
 package org.openscience.jmol.viewer.g3d;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
-import java.awt.FontMetrics;
-import java.awt.Font;
+import java.awt.Rectangle;
+import java.util.Arrays;
 
 final public class Swing3D extends Platform3D {
 
-  public void allocatePixelBuf() {
+  void allocatePixelBuffer() {
     BufferedImage bi =
-      new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+      new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     WritableRaster wr = bi.getRaster();
     DataBuffer db = wr.getDataBuffer();
     DataBufferInt dbi = (DataBufferInt) db;
-    pixelBuf = dbi.getData();
-    imagePixelBuf = bi;
+    pBuffer = dbi.getData();
+    imagePixelBuffer = bi;
+  }
+
+  void clearScreenBuffer(int argbBackground, Rectangle rectClip) {
+    if (((rectClip.width ^ width) | (rectClip.height ^ height) |
+         rectClip.x | rectClip.y) == 0) {
+      Arrays.fill(zBuffer, ZBUFFER_BACKGROUND);
+      Arrays.fill(pBuffer, argbBackground);
+    } else {
+      super.clearScreenBuffer(argbBackground, rectClip);
+    }
   }
 
   Image allocateOffscreenImage(int width, int height) {
-    return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
   }
 
 }

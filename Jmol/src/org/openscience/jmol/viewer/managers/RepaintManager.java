@@ -117,9 +117,7 @@ public class RepaintManager {
       rectOversample.height = rectClip.height << 1;
       rectClip = rectOversample;
     }
-    g3d.clearScreenBuffer(viewer.getColorBackground(),
-                           rectClip.x, rectClip.y,
-                           rectClip.width, rectClip.height);
+    g3d.clearScreenBuffer(viewer.getColorBackground().getRGB(), rectClip);
     frameRenderer.render(g3d, rectClip, frame);
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)

@@ -33,7 +33,7 @@ import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Shape;
+import java.awt.Rectangle;
 import javax.vecmath.Point3i;
 
 final public class Graphics3D {
@@ -65,15 +65,15 @@ final public class Graphics3D {
   int[] pbuf4;
   short[] zbuf4;
 
-  final static int zBackground = 32767;
-
   int argbCurrent;
+  boolean jvm12orGreater;
   Font fontCurrent;
   FontMetrics fontmetricsCurrent;
 
   public Graphics3D(JmolViewer viewer) {
     this.viewer = viewer;
-    if (viewer.jvm12orGreater) {
+    jvm12orGreater = viewer.jvm12orGreater;
+    if (jvm12orGreater) {
       platform = new Swing3D();
     } else {
       platform = new Awt3D(viewer.getAwtComponent());
@@ -105,8 +105,9 @@ final public class Graphics3D {
       return;
     }
 
-    pbuf = pbuf1 = platform.allocatePixelBuf(width, height);
-    zbuf = zbuf1 = new short[size1];
+    platform.allocateBuffers(width, height);
+    pbuf = pbuf1 = platform.pBuffer;
+    zbuf = zbuf1 = platform.zBuffer;
     
     //    pbuf4 = new int[size4];
     //    zbuf4 = new short[size4];
@@ -137,7 +138,7 @@ final public class Graphics3D {
   }
 
   public Image getScreenImage() {
-    return platform.imagePixelBuf;
+    return platform.imagePixelBuffer;
   }
 
   public void setColor(Color color) {
@@ -311,29 +312,12 @@ final public class Graphics3D {
     platform.notifyEndOfRendering();
   }
 
-  public void clearScreenBuffer(Color colorBackground,int xClip, int yClip,
-                                int widthClip, int heightClip) {
+  public void clearScreenBuffer(int argbBackground, Rectangle rectClip) {
     // mth 2003 08 07
-    // this is the easiest and probably best place to take advantage
-    // of multiple processors
-    // have a thread whose repsonsibility it is to keep a buffer clean and
+    // this may be an easy place to take advantage of multiple processors
+    // have a thread whose responsibility it is to keep a buffer clean and
     // ready to go.
-    if (heightClip <= 0 || widthClip <= 0)
-      return;
-    int offsetSrc = yClip * width + xClip;
-    int offsetT = offsetSrc;
-    int count = widthClip;
-    //    int argbBackground = viewer.getColorBackground().getRGB();
-    do {
-      zbuf[offsetT] = zBackground;
-      pbuf[offsetT++] = 0; // argbBackground;
-    } while (--count > 0);
-    int offsetDst = offsetSrc;
-    while (--heightClip > 0) {
-      offsetDst += width;
-      System.arraycopy(pbuf, offsetSrc, pbuf, offsetDst, widthClip);
-      System.arraycopy(zbuf, offsetSrc, zbuf, offsetDst, widthClip);
-    }
+    platform.clearScreenBuffer(argbBackground, rectClip);
   }
 
   public void drawDottedLine(short colix,

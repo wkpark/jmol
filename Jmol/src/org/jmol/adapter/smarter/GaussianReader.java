@@ -38,11 +38,6 @@ class GaussianReader extends AtomSetCollectionReader {
   // if it turns out to be a G94 file, this will be reset.
   private int firstCoordinateOffset = 3;
   
-  private int atomCount  = 0;  // the number of atoms in the last read model
-  // it looks like model numbers really need to start with 1 and not 0 otherwise
-  // a single frequency calculation can not go to the first frequency
-
-  
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
     atomSetCollection = new AtomSetCollection("gaussian");
@@ -51,11 +46,12 @@ class GaussianReader extends AtomSetCollectionReader {
       String line;
       int lineNum = 0;
       while ((line = reader.readLine()) != null) {
-        if (line.indexOf("Standard orientation:") >= 0) {
-          readAtoms(reader);
+        if (line.indexOf("Input orientation:") >= 0 ||
+            line.indexOf("Standard orientation:") >= 0) {
+          readAtoms(reader, line);
 //          System.out.println("Interpret Standard orientation: " + modelCount);
         } else if (line.indexOf("Z-Matrix orientation:") >= 0) {
-          readAtoms(reader);
+          readAtoms(reader, line);
 //          System.out.println("Interpret Z-Matrix orientation: " + modelCount);
         } else if (line.startsWith(" Harmonic frequencies")) {
           // NB this only works for the standard orientation of the molecule
@@ -112,12 +108,11 @@ class GaussianReader extends AtomSetCollectionReader {
  ---------------------------------------------------------------------
 */
 
-  private void readAtoms(BufferedReader reader) throws Exception {
-    discardLines(reader, 4);
-    String line;
-    String tokens[];
+  private void readAtoms(BufferedReader reader, String line) throws Exception {
     atomSetCollection.newAtomSet();
-    atomCount = 0; // we have no atoms for this model yet
+    atomSetCollection.setAtomSetName(line.trim());
+    discardLines(reader, 4);
+    String tokens[];
     while ((line = reader.readLine()) != null &&
            !line.startsWith(" --")) {
       tokens = getTokens(line); // get the tokens in the line
@@ -130,7 +125,6 @@ class GaussianReader extends AtomSetCollectionReader {
       atom.x = parseFloat(tokens[offset]);
       atom.y = parseFloat(tokens[++offset]);
       atom.z = parseFloat(tokens[++offset]);
-      ++atomCount;
     }
   }
 
@@ -182,7 +176,6 @@ class GaussianReader extends AtomSetCollectionReader {
 
   private void readFrequencies(BufferedReader reader) throws Exception {
     String line, tokens[];
-    int nNewModels = 0;           // number of new models to make
     boolean firstTime = true;     // flag for first time through
     // tracks the first model the frequencies are for
     int modelNumber = atomSetCollection.atomSetCount;
@@ -195,23 +188,26 @@ class GaussianReader extends AtomSetCollectionReader {
       throw (new Exception("No frequencies encountered"));
       
     do {
-      // FIXME deal with frequency line here
-      tokens = getTokens(line);
+      tokens = getTokens(line, 15);
       
-      // determine the number of frequencies to interpret in this set of lines
-      int nFreq = tokens.length - 2; // Frequencies and -- come in as two tokens
-      //      System.out.println("Detected " + nFreq + " frequencies in line\n  "+line);
-      
-      // determine and duplicate the number of models needed to put the vectors on
+      int frequencyCount = tokens.length;
+      int numNewModels = frequencyCount;
       if (firstTime) {
-        nNewModels = nFreq - 1; // so I need to create 1 model less than the # of freqs
+        // so I need to create 1 model less than the # of freqs
+        --numNewModels;
         firstTime = false;      // really do this only the first time
-      } else {
-        nNewModels = nFreq;   // I need to create new models for every frequency
       }
-      for (int i = nNewModels; --i >= 0; )
+      for (int i = 0; i < numNewModels; ++i) {
         atomSetCollection.cloneLastAtomSet();
-      int firstModelAtom = atomSetCollection.atomCount - nFreq * atomCount;
+        atomSetCollection.setAtomSetName(tokens[i]);
+      }
+      int atomCount = atomSetCollection.getLastAtomSetAtomCount();
+      int firstModelAtom =
+        atomSetCollection.atomCount - frequencyCount * atomCount;
+
+      System.out.println("atomCount=" + atomCount +
+                         " frequencyCount=" + frequencyCount +
+                         " firstModelAtom=" + firstModelAtom);
       
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith(reader, " Atom AN");
@@ -220,7 +216,8 @@ class GaussianReader extends AtomSetCollectionReader {
       for (int i = 0; i < atomCount; ++i) {
         tokens = getTokens(reader.readLine());
         int atomCenterNumber = parseInt(tokens[0]);
-        for (int j = 0, offset=FREQ_FIRST_VECTOR_OFFSET; j < nFreq; ++j) {
+        for (int j = 0, offset=FREQ_FIRST_VECTOR_OFFSET;
+             j < frequencyCount; ++j) {
           int atomOffset = firstModelAtom+j*atomCount + atomCenterNumber - 1 ;
           Atom atom = atomSetCollection.atoms[atomOffset];
           atom.vectorX = parseFloat(tokens[offset++]);
@@ -229,9 +226,11 @@ class GaussianReader extends AtomSetCollectionReader {
         }
       }
       discardLines(reader, 2);
+      // RPFK: why check for the " Frequencies --"? empty
+      //      line denotes end of frequencies..
+      // miguel: because it seemed more specific to me
     } while ((line = reader.readLine()) != null &&
              (line.startsWith(" Frequencies --"))); // more to be read
-    // RPFK: why check for the " Frequencies --"? empty line denotes end of frequencies..
   }
 
 /* SAMPLE Mulliken Charges OUTPUT from G98 */
@@ -246,17 +245,11 @@ class GaussianReader extends AtomSetCollectionReader {
 */
   void readPartialCharges(BufferedReader reader) throws Exception {
     discardLines(reader, 1);
-    for (int i = atomCount, atomOffset = atomSetCollection.atomCount - atomCount; --i >= 0; ++atomOffset)
-      atomSetCollection.atoms[atomOffset].partialCharge =
+    for (int i = atomSetCollection.getLastAtomSetAtomIndex();
+         i < atomSetCollection.atomCount;
+         ++i) {
+      atomSetCollection.atoms[i].partialCharge =
         parseFloat(getTokens(reader.readLine())[2]);
-  }
-
-  // duplicate the last model
-  private void duplicateLastModel() {
-    Atom[] atoms = atomSetCollection.atoms;
-    atomSetCollection.newAtomSet();
-    int atomOffset = atomSetCollection.atomCount - atomCount; // first atom to be duplicated
-    for (int i = atomCount; --i >= 0; )
-      atomSetCollection.newCloneAtom(atoms[atomOffset++]);
+    }
   }
 }

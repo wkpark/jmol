@@ -170,12 +170,18 @@ abstract class AtomSetCollectionReader {
   }
 
   String[] getTokens(String line) {
+    return getTokens(line, 0);
+  }
+
+  String[] getTokens(String line, int ich) {
     if (line == null)
       return null;
     int cchLine = line.length();
-    int tokenCount = countTokens(line);
+    if (ich > cchLine)
+      return null;
+    int tokenCount = countTokens(line, ich);
     String[] tokens = new String[tokenCount];
-    ichNextParse = 0;
+    ichNextParse = ich;
     for (int i = 0; i < tokenCount; ++i)
       tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
     /*
@@ -186,11 +192,10 @@ abstract class AtomSetCollectionReader {
     return tokens;
   }
 
-  int countTokens(String line) {
+  int countTokens(String line, int ich) {
     int tokenCount = 0;
     if (line != null) {
       int ichMax = line.length();
-      int ich = 0;
       char ch;
       while (true) {
         while (ich < ichMax && ((ch = line.charAt(ich)) == ' ' || ch == '\t'))
@@ -280,6 +285,10 @@ abstract class AtomSetCollectionReader {
   }
 
   static String[] doubleLength(String[] array) {
+    return setLength(array, array.length * 2);
+  }
+
+  static Object doubleLength(Object[] array) {
     return setLength(array, array.length * 2);
   }
 

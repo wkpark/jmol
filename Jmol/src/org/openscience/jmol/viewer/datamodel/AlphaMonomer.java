@@ -33,19 +33,30 @@ public class AlphaMonomer extends Monomer {
                         int sequenceNumber, char insertionCode,
                         Atom[] atoms,
                         int firstAtomIndex, int lastAtomIndex) {
-    AlphaMonomer alphaMonomer =
-      new AlphaMonomer(chain, group3, sequenceNumber, insertionCode,
-                       firstAtomIndex, lastAtomIndex);
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      alphaMonomer.registerAtom(atoms[i]);
-    return alphaMonomer;
+    if (firstAtomIndex != lastAtomIndex)
+      return null;
+    if (atoms[firstAtomIndex].specialAtomID !=
+        JmolConstants.ATOMID_ALPHA_CARBON) // better not happen
+      throw new NullPointerException();
+    return new AlphaMonomer(chain, group3, sequenceNumber, insertionCode,
+                            firstAtomIndex);
   }
   
   
   AlphaMonomer(Chain chain, String group3,
-               int sequenceNumber, char insertionCode,
-               int firstAtomIndex, int lastAtomIndex) {
+               int sequenceNumber, char insertionCode, int atomIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
-          firstAtomIndex, lastAtomIndex);
+          atomIndex, atomIndex);
   }
+
+  boolean isAlphaMonomer() { return true; }
+
+  int getLeadAtomIndex() { return firstAtomIndex; }
+
+  int getWingAtomIndex() {
+    System.out.println("AlphaMonomer.getWingAtomIndex() was called ... " +
+                       "but I have no wingman");
+    return -1;
+  };
+
 }

@@ -31,7 +31,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
-public class Monomer extends Group {
+abstract class Monomer extends Group {
 
   Polymer polymer;
   ProteinStructure proteinstructure;
@@ -54,18 +54,6 @@ public class Monomer extends Group {
   int distinguishingBits;
 
 
-  static Monomer validateAndAllocate(Chain chain, String group3,
-                                     int sequenceNumber, char insertionCode,
-                                     Atom[] atoms,
-                                     int firstAtomIndex, int lastAtomIndex) {
-    Monomer monomer = new Monomer(chain, group3, sequenceNumber, insertionCode,
-                                  firstAtomIndex, lastAtomIndex);
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      monomer.registerAtom(atoms[i]);
-    return monomer;
-  }
-                                     
-
   Monomer(Chain chain, String group3,
           int sequenceNumber, char insertionCode,
           int firstAtomIndex, int lastAtomIndex) {
@@ -76,6 +64,16 @@ public class Monomer extends Group {
   void setPolymer(Polymer polymer) {
     this.polymer = polymer;
   }
+
+  ////////////////////////////////////////////////////////////////
+  //
+
+  boolean isAminoMonomer() { return false; }
+  boolean isAlphaMonomer() { return false; }
+  boolean isNucleicMonomer() { return false; }
+
+  //
+  ////////////////////////////////////////////////////////////////
 
   void setStructure(ProteinStructure proteinstructure) {
     this.proteinstructure = proteinstructure;
@@ -110,7 +108,7 @@ public class Monomer extends Group {
 
   static String[] group3Names = new String[128];
   static short group3NameCount = 0;
-
+  
   static {
     for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i)
       addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
@@ -186,30 +184,17 @@ public class Monomer extends Group {
     return true;
   }
 
-  Atom getLeadAtom() {
-    if (hasNucleotidePhosphorus())
-      return getNucleotidePhosphorusAtom();
-    return getAlphaCarbonAtom();
-    
+  final Atom getLeadAtom() {
+    return chain.frame.atoms[getLeadAtomIndex()];
   }
 
-  int getLeadAtomIndex() {
-    if (hasNucleotidePhosphorus())
-      return atomIndexNucleotidePhosphorus;
-    return getAlphaCarbonIndex();
+  abstract int getLeadAtomIndex();
+
+  final Atom getWingAtom() {
+    return chain.frame.atoms[getWingAtomIndex()];
   }
 
-  Atom getWingAtom() {
-    if (hasNucleotidePhosphorus())
-      return getNucleotideWingAtom();
-    return getCarbonylOxygenAtom();
-  }
-
-  int getWingAtomIndex() {
-    if (hasNucleotidePhosphorus())
-      return atomIndexNucleotideWing;
-    return getAlphaCarbonIndex();
-  }
+  abstract int getWingAtomIndex();
 
   int getAlphaCarbonIndex() {
     if (mainchainIndices == null)

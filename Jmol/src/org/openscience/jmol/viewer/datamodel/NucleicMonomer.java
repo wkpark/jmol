@@ -48,4 +48,11 @@ public class NucleicMonomer extends Monomer {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
   }
+
+  boolean isNucleicMonomer() { return true; }
+
+  int getLeadAtomIndex() { return -1; };
+
+  int getWingAtomIndex() { return -1; };
+
 }

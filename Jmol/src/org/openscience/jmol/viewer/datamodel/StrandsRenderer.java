@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-class StrandsRenderer extends Renderer {
+class StrandsRenderer extends McgRenderer {
 
   StrandsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     super(viewer, frameRenderer);
@@ -77,13 +77,26 @@ class StrandsRenderer extends Renderer {
   float strandSeparation;
   float baseOffset;
 
-  void render() {
-    this.strands = frame.strands;
+  void renderMcgChain(Mcg.Chain mcgChain) {
+    Strands.Chain strandsChain = (Strands.Chain)mcgChain;
+    if (strandsChain.mainchainLength < 2)
+      return;
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
+    
+    render1Chain(strandsChain.mainchain,
+                 strandsChain.centers,
+                 strandsChain.vectors,
+                 strandsChain.mads,
+                 strandsChain.colixes);
+  }
+
+  /*
+  void render() {
+    this.strands = frame.strands;
 
     if (strands == null || !strands.initialized)
       return;
@@ -99,7 +112,8 @@ class StrandsRenderer extends Renderer {
                      vectorsChains[i], madsChains[i], colixesChains[i]);
     }
   }
-  
+  */
+
   void render1Chain(PdbGroup[] mainchain, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screens;

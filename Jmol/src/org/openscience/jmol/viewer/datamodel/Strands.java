@@ -33,102 +33,75 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-public class Strands {
-
-  JmolViewer viewer;
-  Frame frame;
-  boolean hasPdbRecords;
-  PdbFile pdbFile;
-
-  boolean initialized;
-  int chainCount;
-  short[][] madsChains;
-  short[][] colixesChains;
-  Point3f[][] centersChains;
-  Vector3f[][] vectorsChains;
+public class Strands extends Mcg {
 
   /****************************************************************
    * M. Carson and C.E. Bugg (1986)
    * Algorithm for Ribbon Models of Proteins. J.Mol.Graphics 4:121-122.
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    ****************************************************************/
+
+  Strands(JmolViewer viewer, Frame frame) {
+    super(viewer, frame);
+  }
+
+  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
+    return new Chain(pdbChain);
+  }
+
+  class Chain extends Mcg.Chain {
+    int mainchainLength;
+    PdbGroup[] mainchain;
+    Point3f[] centers;
+    Vector3f[] vectors;
+
+    Chain(PdbChain pdbChain) {
+      super(pdbChain);
+      frame = pdbChain.model.file.frame;
+      mainchain = pdbChain.getMainchain();
+      mainchainLength = mainchain.length;
+      if (mainchainLength < 2) {
+        mainchainLength = 0;
+        return;
+      }
+      colixes = new short[mainchainLength];
+      mads = new short[mainchainLength + 1];
+      centers = new Point3f[mainchainLength + 1];
+      vectors = new Vector3f[mainchainLength + 1];
+      calcCentersAndVectors(mainchain, centers, vectors);
+    }
+
+    public void setMad(short mad, BitSet bsSelected) {
+      for (int i = mainchainLength; --i >= 0; ) {
+        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
+          if (mad < 0) {
+            mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 1500 : 500);
+          } else {
+            mads[i] = mad;
+          }
+      }
+      if (mainchainLength > 0)
+        mads[mainchainLength] = mads[mainchainLength - 1];
+    }
+
+    public void setColix(byte palette, short colix, BitSet bsSelected) {
+      for (int i = mainchainLength; --i >= 0; ) {
+        int atomIndex = mainchain[i].getAlphaCarbonIndex();
+        if (bsSelected.get(atomIndex))
+          colixes[i] =
+            palette > JmolConstants.PALETTE_CPK
+            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+            : colix;
+      }
+    }
+
+  }
+
   Vector3f vectorA = new Vector3f();
   Vector3f vectorB = new Vector3f();
   Vector3f vectorC = new Vector3f();
   Vector3f vectorD = new Vector3f();
   
-
-  Strands(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
-    hasPdbRecords = frame.hasPdbRecords;
-    pdbFile = frame.pdbFile;
-  }
-
-  public void setMad(short mad, BitSet bsSelected) {
-    if (! hasPdbRecords)
-      return;
-    initialize();
-    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
-      short[] mads = madsChains[i];
-      if (mads == null)
-        continue;
-      PdbGroup[] mainchain = pdbFile.getMainchain(i);
-      for (int j = mainchain.length; --j >= 0; ) {
-        if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
-          if (mad < 0) {
-            mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 1500 : 500);
-          } else {
-            mads[j] = mad;
-          }
-      }
-      // the last one in the chain needs to
-      // set the size for the following point
-      mads[mainchain.length] = mads[mainchain.length-1];
-    }
-  }
-
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    if (! hasPdbRecords)
-      return;
-    initialize();
-    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
-      short[] colixes = colixesChains[i];
-      if (colixes == null)
-        continue;
-      PdbGroup[] mainchain = pdbFile.getMainchain(i);
-      for (int j = mainchain.length; --j >= 0; ) {
-        int atomIndex = mainchain[j].getAlphaCarbonIndex();
-        if (bsSelected.get(atomIndex))
-          colixes[j] =
-            (colix == 0 ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette) : colix);
-      }
-    }
-  }
-
-  void initialize() {
-    if (! initialized) {
-      chainCount = pdbFile.getChainCount();
-      madsChains = new short[chainCount][];
-      colixesChains = new short[chainCount][];
-      centersChains = new Point3f[chainCount][];
-      vectorsChains = new Vector3f[chainCount][];
-      for (int i = chainCount; --i >= 0; ) {
-        int chainLength = pdbFile.getMainchain(i).length;
-        System.out.println("chainLength=" + chainLength);
-        if (chainLength > 1) {
-          colixesChains[i] = new short[chainLength];
-          madsChains[i] = new short[chainLength + 1];
-          centersChains[i] = new Point3f[chainLength + 1];
-          vectorsChains[i] = new Vector3f[chainLength + 1];
-          calcCentersAndVectors(pdbFile.getMainchain(i),
-                                centersChains[i], vectorsChains[i]);
-        }
-      }
-      initialized = true;
-    }
-  }
-
   void calcCentersAndVectors(PdbGroup[] mainchain,
                              Point3f[] centers, Vector3f[] vectors) {
     Point3f alphaPointPrev, alphaPoint;
@@ -144,7 +117,8 @@ public class Strands {
       center.scale(0.5f);
       centers[i] = center;
       vectorA.sub(alphaPoint, alphaPointPrev);
-      vectorB.sub(mainchain[i-1].getCarbonylOxygenAtom().point3f, alphaPointPrev);
+      vectorB.sub(mainchain[i-1].getCarbonylOxygenAtom().point3f,
+                  alphaPointPrev);
       vectorC.cross(vectorA, vectorB);
       vectorD.cross(vectorC, vectorA);
       vectorD.normalize();

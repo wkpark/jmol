@@ -1220,16 +1220,6 @@ final public class JmolViewer {
                                selectionManager.bsSelection);
   }
 
-  public void setStrandsWidth(float width) {
-    getFrame().setStrandsMad((short)(width * 1000),
-                             selectionManager.bsSelection);
-  }
-
-  public void setStrandsColor(byte palette, Color color) {
-    getFrame().setStrandsColix(palette, Colix.getColix(color),
-                               selectionManager.bsSelection);
-  }
-
   int strandsCount = 5;
 
   public void setStrandsCount(int strandsCount) {

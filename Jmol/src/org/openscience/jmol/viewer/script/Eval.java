@@ -1172,7 +1172,8 @@ public class Eval implements Runnable {
       break;
     case Token.ribbons:
     case Token.strands:
-      viewer.setStrandsColor(palette, color);
+      viewer.setGraphicColor(JmolConstants.GRAPHIC_STRANDS,
+                             palette, color);
       break;
     case Token.cartoon:
       viewer.setGraphicColor(JmolConstants.GRAPHIC_CARTOON,
@@ -1887,11 +1888,11 @@ public class Eval implements Runnable {
   }
 
   void strands() throws ScriptException {
-    float width = 0;
+    short mad = 0;
     int tok = statement[1].tok;
     switch (tok) {
     case Token.on:
-      width = -1; // means take default
+      mad = -1; // means take default
       break;
     case Token.off:
       break;
@@ -1899,18 +1900,18 @@ public class Eval implements Runnable {
       int widthRasMol = statement[1].intValue;
       if (widthRasMol >= 500)
         numberOutOfRange();
-      width = widthRasMol * 4 / 1000f;
+      mad = (short)(widthRasMol * 4);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms > 4)
         numberOutOfRange();
-      width = angstroms;
+      mad = (short)(angstroms * 1000);
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setStrandsWidth(width);
+    viewer.setGraphicMad(JmolConstants.GRAPHIC_STRANDS, mad);
   }
 
   void cartoon() throws ScriptException {

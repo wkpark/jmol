@@ -109,12 +109,13 @@ public class FrameRenderer {
         cartoonRenderer = new CartoonRenderer(viewer, this);
       cartoonRenderer.render(g3d, rectClip, frame, null);
     }
-    */
+
     if (frame.strands != null) {
       if (strandsRenderer == null)
         strandsRenderer = new StrandsRenderer(viewer, this);
       strandsRenderer.render(g3d, rectClip, frame, null);
     }
+    */
 
     if (frame.lineCount > 0) {
       if (lineRenderer == null)
@@ -141,6 +142,8 @@ public class FrameRenderer {
       return new BboxRenderer(viewer, this);
     case JmolConstants.GRAPHIC_CARTOON:
       return new CartoonRenderer(viewer, this);
+    case JmolConstants.GRAPHIC_STRANDS:
+      return new StrandsRenderer(viewer, this);
     }
     return null;
   }

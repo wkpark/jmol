@@ -204,7 +204,6 @@ public class Frame {
   }
 
   Graphic allocateGraphic(int refGraphic) {
-    System.out.println("allocateGraphic(" + refGraphic + ")");
     switch (refGraphic) {
     case JmolConstants.GRAPHIC_BACKBONE:
       return new Backbone(viewer, this);
@@ -216,6 +215,8 @@ public class Frame {
       return new Bbox(viewer, this);
     case JmolConstants.GRAPHIC_CARTOON:
       return new Cartoon(viewer, this);
+    case JmolConstants.GRAPHIC_STRANDS:
+      return new Strands(viewer, this);
     }
     return null;
   }
@@ -250,6 +251,7 @@ public class Frame {
       graphics[refGraphic].setColix(palette, colix, bsSelected);
   }
 
+  /*
   Strands strands;
 
   public void setStrandsMad(short mad, BitSet bsSelected) {
@@ -266,6 +268,7 @@ public class Frame {
     if (strands != null)
       strands.setColix(palette, colix, bsSelected);
   }
+  */
 
   Point3f centerBoundingBox;
   Point3f cornerBoundingBox;

@@ -128,7 +128,7 @@ public class Token {
   final static int renumber     = command | 23 | negativeints;
   final static int reset        = command | 24;
   final static int restrict     = command | 25 | expression;
-  final static int ribbons      = command | 26 | bool;
+  final static int ribbon       = command | 26 | bool;
   final static int rotate       = command | 27 | bool | negativeints;
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
@@ -163,7 +163,7 @@ public class Token {
   final static int font         = command | 58;
   final static int hover        = command | 59 | specialstring;
   final static int vibration    = command | 60;
-  final static int vectors      = command | 61;
+  final static int vector       = command | 61;
   final static int mesh         = command | 62;
   final static int prueba       = command | 63;
 
@@ -373,7 +373,8 @@ public class Token {
     "renumber",          new Token(renumber,  onDefault1, "renumber"),
     "reset",             new Token(reset,              0, "reset"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
-    "ribbons",           new Token(ribbons,   onDefault1, "ribbons"),
+    "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
+    "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),
     "save",              new Token(save,     varArgCount, "save"),
     "script",            new Token(script,             1, "script"),
@@ -411,7 +412,8 @@ public class Token {
     "font",              new Token(font,       "font"),
     "hover",             new Token(hover,      "hover"),
     "vibration",         new Token(vibration,  "vibration"),
-    "vectors",           new Token(vectors,   onDefault1, "vectors"),
+    "vector",            new Token(vector,    onDefault1, "vector"),
+    "vectors",           null,
     "mesh",              new Token(mesh,      onDefault1, "mesh"),
     "prueba",            new Token(prueba, onDefault1, "prueba"),
 

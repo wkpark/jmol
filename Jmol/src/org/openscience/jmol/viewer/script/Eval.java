@@ -387,8 +387,8 @@ public class Eval implements Runnable {
       case Token.wireframe:
         wireframe();
         break;
-      case Token.vectors:
-        vectors();
+      case Token.vector:
+        vector();
         break;
       case Token.animation:
         animation();
@@ -405,7 +405,7 @@ public class Eval implements Runnable {
       case Token.mesh:
         proteinShape(JmolConstants.SHAPE_MESH, 1);
         break;
-      case Token.ribbons:
+      case Token.ribbon:
         proteinShape(JmolConstants.SHAPE_RIBBONS, 1);
         break;
       case Token.prueba:
@@ -1315,7 +1315,7 @@ public class Eval implements Runnable {
     case Token.backbone:
     case Token.mesh:
     case Token.strands:
-    case Token.ribbons:
+    case Token.ribbon:
     case Token.prueba:
     case Token.cartoon:
     case Token.dots:
@@ -1326,7 +1326,7 @@ public class Eval implements Runnable {
     case Token.echo:
     case Token.monitor:
     case Token.hover:
-    case Token.vectors:
+    case Token.vector:
       colorObject(tok, 2);
       break;
     case Token.identifier:
@@ -1909,7 +1909,7 @@ public class Eval implements Runnable {
                             new Integer(mad));
   }
 
-  void vectors() throws ScriptException {
+  void vector() throws ScriptException {
     int tok = statement[1].tok;
     short mad = 1;
     switch (tok) {
@@ -2244,9 +2244,9 @@ public class Eval implements Runnable {
   // SHAPE_* constants in JmolConstants
   
   private final static int[] shapeToks =
-  {Token.atom, Token.bonds, Token.label, Token.vectors,
+  {Token.atom, Token.bonds, Token.label, Token.vector,
    Token.monitor, Token.dots, Token.backbone,
-   Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbons,
+   Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbon,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
    Token.hover,
    Token.prueba,

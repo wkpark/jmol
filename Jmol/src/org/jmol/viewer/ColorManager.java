@@ -389,6 +389,6 @@ class ColorManager {
   }
 
   int calcIntensity(float x, float y, float z) {
-    return g3d.calcIntensity(x, y, z);
+    return Graphics3D.calcIntensity(x, y, z);
   }
 }

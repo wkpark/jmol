@@ -40,11 +40,32 @@ import org.jmol.api.JmolAdapter;
 class CmlReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-    SAXParserFactory spf = SAXParserFactory.newInstance();
-    SAXParser saxp = spf.newSAXParser();
     atomSetCollection = new AtomSetCollection("cml");
 
-    XMLReader xmlr = saxp.getXMLReader();
+    XMLReader xmlr = null;
+    // JAXP is preferred (comes with Sun JVM 1.4.0 and higher)
+    if (xmlr == null) {
+        try {
+            javax.xml.parsers.SAXParserFactory spf = javax.xml.parsers.SAXParserFactory.newInstance();
+            spf.setNamespaceAware(true);
+            javax.xml.parsers.SAXParser saxParser = spf.newSAXParser();
+            xmlr = saxParser.getXMLReader();
+            System.out.println("Using JAXP/SAX XML parser.");
+        } catch (Exception e) {
+            System.out.println("Could not instantiate JAXP/SAX XML reader: " + e.getMessage());
+        }
+    }
+    // Aelfred is the first alternative.
+    if (xmlr == null) {
+        try {
+            xmlr = (XMLReader)this.getClass().getClassLoader().
+                    loadClass("gnu.xml.aelfred2.XmlReader").
+                    newInstance();
+            System.out.println("Using Aelfred2 XML parser.");
+        } catch (Exception e) {
+            System.out.println("Could not instantiate Aelfred2 XML reader!");
+        }
+    }
     //    System.out.println("opening InputSource");
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");

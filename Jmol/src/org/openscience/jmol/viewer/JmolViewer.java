@@ -593,16 +593,16 @@ final public class JmolViewer {
     return colorManager.colixAngle;
   }
 
-  public void setColorDihedral(Color c) {
-    colorManager.setColorDihedral(c);
+  public void setColorTorsion(Color c) {
+    colorManager.setColorTorsion(c);
     refresh();
   }
-  public Color getColorDihedral() {
-    return colorManager.colorDihedral;
+  public Color getColorTorsion() {
+    return colorManager.colorTorsion;
   }
 
-  public short getColixDihedral() {
-    return colorManager.colixDihedral;
+  public short getColixTorsion() {
+    return colorManager.colixTorsion;
   }
 
   public void setColorVector(Color c) {

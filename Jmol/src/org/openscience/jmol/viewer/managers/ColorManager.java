@@ -170,30 +170,30 @@ public class ColorManager {
       colixDotsSaddle = colixDotsSaddleDefault;
   }
 
-  public Color colorDistance = Color.black;
-  public short colixDistance = Graphics3D.BLACK;
+  public Color colorDistance = Color.white;
+  public short colixDistance = Graphics3D.WHITE;
   public void setColorDistance(Color c) {
     colorDistance = c;
     colixDistance = g3d.getColix(c);
   }
 
-  public Color colorAngle = Color.black;
-  public short colixAngle = Graphics3D.BLACK;
+  public Color colorAngle = Color.white;
+  public short colixAngle = Graphics3D.WHITE;
   public void setColorAngle(Color c) {
     colorAngle = c;
     colixAngle = g3d.getColix(c);
   }
 
-  public Color colorDihedral = Color.black;
-  public short colixDihedral = Graphics3D.BLACK;
-  public void setColorDihedral(Color c) {
-    colorDihedral = c;
-    colixDihedral = g3d.getColix(c);
+  public Color colorTorsion = Color.white;
+  public short colixTorsion = Graphics3D.WHITE;
+  public void setColorTorsion(Color c) {
+    colorTorsion = c;
+    colixTorsion = g3d.getColix(c);
   }
 
   public void setColorMeasurement(Color c) {
-    colorDistance = colorAngle = colorDihedral = c;
-    colixDistance = colixAngle = colixDihedral = g3d.getColix(c);
+    colorDistance = colorAngle = colorTorsion = c;
+    colixDistance = colixAngle = colixTorsion = g3d.getColix(c);
   }
 
   public Color colorBackground = Color.white;

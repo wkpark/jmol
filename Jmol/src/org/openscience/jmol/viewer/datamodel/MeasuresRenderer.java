@@ -50,7 +50,6 @@ class MeasuresRenderer extends ShapeRenderer {
     colixDistance = viewer.getColixDistance();
     showMeasurementLabels = viewer.getShowMeasurementLabels();
     measurementMad = viewer.getMeasurementMad();
-    System.out.println("render measurementMad=" + measurementMad);
 
     Measurement[] measurements = frame.measurements;
     for (int i = frame.measurementCount; --i >= 0; )
@@ -67,7 +66,7 @@ class MeasuresRenderer extends ShapeRenderer {
       renderAngle();
       break;
     case 4:
-      renderDihedral();
+      renderTorsion();
       break;
     default:
       throw new NullPointerException();
@@ -108,7 +107,7 @@ class MeasuresRenderer extends ShapeRenderer {
   }
                            
 
-  void renderDihedral() {
+  void renderTorsion() {
     Atom atomA = frame.getAtomAt(measurement.atomIndices[0]);
     Atom atomB = frame.getAtomAt(measurement.atomIndices[1]);
     Atom atomC = frame.getAtomAt(measurement.atomIndices[2]);

@@ -456,6 +456,9 @@ final public class Frame {
   Measurement[] measurements = null;
 
   public void addMeasurement(int count, int[] atomIndices) {
+    // turn on the display of measures
+    setShapeSize(JmolConstants.SHAPE_MEASURES, 1, null);
+
     Measurement measureNew = new Measurement(this, count, atomIndices);
     if (measurements == null ||
         measurementCount == measurements.length) {
@@ -468,6 +471,7 @@ final public class Frame {
       measurements = newShapes;
     }
     measurements[measurementCount++] = measureNew;
+
   }
 
   public void clearMeasurements() {

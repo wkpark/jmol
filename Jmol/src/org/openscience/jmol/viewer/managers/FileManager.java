@@ -30,6 +30,7 @@ import java.net.URLEncoder;
 import java.net.MalformedURLException;
 import java.io.InputStream;
 import java.io.BufferedInputStream;
+import java.io.FilterInputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.File;
@@ -175,16 +176,18 @@ public class FileManager {
       if (name.startsWith(urlPrefixes[iurlPrefix]))
         break;
     try {
+      InputStream in;
       if (appletDocumentBase == null) {
         if (iurlPrefix >= 0)
-          return (new URL(name)).openStream();
+          in = (new URL(name)).openStream();
         else
-          return new FileInputStream(new File(name));
+          in = new FileInputStream(new File(name));
       } else {
         if (iurlPrefix >= 0 && appletProxy != null)
           name = appletProxy + "?url=" + URLEncoder.encode(name);
-        return (new URL(appletDocumentBase, name)).openStream();
+        in = (new URL(appletDocumentBase, name)).openStream();
       }
+      return new MonitorInputStream(in, -1);
     } catch (Exception e) {
       errorMessage = "" + e;
     }
@@ -256,6 +259,58 @@ public class FileManager {
         errorMessage = (String)clientFile;
       else
         this.clientFile = clientFile;
+    }
+  }
+
+  class MonitorInputStream extends FilterInputStream {
+    int length;
+    int position;
+    int markPosition;
+
+    MonitorInputStream(InputStream in, int length) {
+      super(in);
+      this.length = length;
+      this.position = 0;
+    }
+
+    public int read() throws IOException{
+      ++position;
+      //      System.out.println("read() position=" + position);
+      return super.read();
+    }
+
+    public int read(byte[] b) throws IOException {
+      int cb = super.read(b);
+      position += cb;
+      //      System.out.println("read(b) position=" + position);
+      return cb;
+    }
+
+    public int read(byte[] b, int off, int len) throws IOException {
+      int cb = super.read(b, off, len);
+      position += cb;
+      //      System.out.println("read(b, off, len) position=" + position);
+      return cb;
+    }
+
+    public long skip(long n) throws IOException {
+      long cb = super.skip(n);
+      // this will only work in relatively small files ... 2Gb
+      position = (int)(position + cb);
+      //      System.out.println("skip(n) position=" + position);
+      return cb;
+    }
+
+    public void mark(int readlimit) {
+      super.mark(readlimit);
+      //      System.out.println("mark(readlimit) position=" + position);
+      markPosition = position;
+    }
+
+    public void reset() throws IOException {
+      position = markPosition;
+      //      System.out.println("reset() position=" + position);
+      super.reset();
     }
   }
 }

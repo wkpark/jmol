@@ -58,7 +58,7 @@ class Triangle3D {
    ****************************************************************/
   
 
-  void fillTriangleNoisy() {
+  void fillTriangleNoisy(boolean transparent) {
     int iMinY = 0;
     if (ay[1] < ay[0]) iMinY = 1;
     if (ay[2] < ay[iMinY]) iMinY = 2;
@@ -110,7 +110,7 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0);
       }
     }
-    fillRaster(yMin, nLines);
+    fillRaster(yMin, nLines, transparent);
   }
 
   int[] axW = new int[32], azW = new int[32];
@@ -176,7 +176,7 @@ class Triangle3D {
     }
   }
 
-  void fillRaster(int y, int numLines) {
+  void fillRaster(int y, int numLines, boolean tScreened) {
     //    System.out.println("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     if (y < 0) {
@@ -188,7 +188,8 @@ class Triangle3D {
       numLines = g3d.height - y;
     for ( ; --numLines >= 0; ++y, ++i) {
       int xW = axW[i];
-      g3d.plotNoisyPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i]);
+      g3d.plotNoisyPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i],
+                                 tScreened);
     }
   }
 }

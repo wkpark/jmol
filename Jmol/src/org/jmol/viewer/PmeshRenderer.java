@@ -45,16 +45,16 @@ class PmeshRenderer extends ShapeRenderer {
     for (int i = pmesh.polygonCount; --i >= 0; ) {
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes.length == 3)
-        g3d.fillTriangle(colix,
-                         screens[vertexIndexes[0]],
-                         screens[vertexIndexes[1]],
-                         screens[vertexIndexes[2]]);
+        g3d.fillTransparentTriangle(colix,
+                                    screens[vertexIndexes[0]],
+                                    screens[vertexIndexes[1]],
+                                    screens[vertexIndexes[2]]);
       else if (vertexIndexes.length == 4)
-        g3d.fillQuadrilateral(colix,
-                              screens[vertexIndexes[0]],
-                              screens[vertexIndexes[1]],
-                              screens[vertexIndexes[2]],
-                              screens[vertexIndexes[3]]);
+        g3d.fillTransparentQuadrilateral(colix,
+                                         screens[vertexIndexes[0]],
+                                         screens[vertexIndexes[1]],
+                                         screens[vertexIndexes[2]],
+                                         screens[vertexIndexes[3]]);
       else
         System.out.println("huh?");
     }

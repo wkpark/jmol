@@ -314,7 +314,7 @@ class Cylinder3D {
       g3d.setColorNoisy(colixEndcap, intensityEndcap);
       g3d.plotNoisyPixelsClipped(count,
                                  xT + xMin,  yT + y, zT - zXMin - 1,
-                                 zT - zXMax - 1);
+                                 zT - zXMax - 1, false);
     }
   }
 

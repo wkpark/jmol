@@ -97,8 +97,6 @@ class Pmesh extends SelectionIndependentShape {
 
   int[] readPolygon(BufferedReader br) throws Exception {
     int vertexIndexCount = parseInt(br.readLine());
-    System.out.println("Pmesh.readPolygon vertexIndexCount=" +
-                       vertexIndexCount);
     if (vertexIndexCount < 4)
       return null;
     int vertexCount = vertexIndexCount - 1;

@@ -27,8 +27,6 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 
-//import java.awt.Graphics;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3d;
@@ -109,7 +107,7 @@ public class BoundingBox {
         BboxShape bboxOther = bboxShapes[indexOther];
         if (z > bboxOther.z || (z == bboxOther.z && myIndex > indexOther)) {
           if (! colorSet) {
-            g25d.setColor(control.getColorAxes()); // use another color?
+            g25d.setColix(control.getColixAxes()); // use another color?
             colorSet = true;
           }
           g25d.drawLine(x, y, z, bboxOther.x, bboxOther.y, bboxOther.z);

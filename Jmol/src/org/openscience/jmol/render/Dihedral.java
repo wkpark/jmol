@@ -77,8 +77,7 @@ public class Dihedral implements MeasurementInterface {
     int zb = (z3 + z4) / 2;
 
     control.maybeDottedStroke(g25d);
-    g25d.setColor(control.getColorDihedral());
-    g25d.drawLine(xa, ya, za, xb, yb, zb);
+    g25d.drawLine(control.getColixDihedral(), xa, ya, za, xb, yb, zb);
     control.defaultStroke(g25d);
   }
 
@@ -100,14 +99,13 @@ public class Dihedral implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g25d.setFont(font);
     FontMetrics fontMetrics = g25d.getFontMetrics(font);
-    g25d.setColor(control.getColorDihedral());
     int j = fontMetrics.stringWidth(strDihedral);
 
     int xloc = (x1 + x2 + x3 + x4) / 4;
     int yloc = (y1 + y2 + y3 + y4) / 4;
     int zloc = (z1 + z2 + z3 + z4) / 4;
 
-    g25d.drawString(strDihedral, xloc, yloc, zloc);
+    g25d.drawString(strDihedral, control.getColixDihedral(), xloc, yloc, zloc);
   }
 
   public int[] getAtomList() {

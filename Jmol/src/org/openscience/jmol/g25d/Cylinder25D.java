@@ -28,15 +28,12 @@ package org.openscience.jmol.g25d;
 import org.openscience.jmol.*;
 
 import java.awt.Component;
-//import java.awt.Graphics;
 import java.awt.image.MemoryImageSource;
-import java.awt.Color;
 import java.util.Hashtable;
 
 public class Cylinder25D {
 
   static int foo = 0;
-
 
   DisplayControl control;
   Graphics25D g25d;
@@ -45,26 +42,28 @@ public class Cylinder25D {
     this.g25d = g25d;
   }
 
-  void test(Color color, int diameter, int x, int y, int z,
-            int dx, int dy, int dz) {
-    CylinderShape cs = new CylinderShape(diameter * 2,
+  void test(short colix1, short colix2,int diameter,
+            int x, int y, int z, int dx, int dy, int dz) {
+    CylinderShape cs = new CylinderShape(diameter,
                                          x, y, z,
                                          dx, dy, dz);
-    cs.render(Color.green, x, y, z, dx, dy, dz);
+    cs.render(colix1, colix2, x, y, z, dx, dy, dz);
   }
 
-  void renderClipped0(Color color, int diameter, int x, int y, int z,
+  void renderClipped0(short colix, int diameter, int x, int y, int z,
             int dx, int dy, int dz) {
     CylinderShape cs = new CylinderShape(diameter,
                                          x, y, z,
                                          dx, dy, dz);
-    cs.render(color, x, y, z, dx, dy, dz);
+    cs.render(colix, colix, x, y, z, dx, dy, dz);
   }
 
-  void renderClipped(Color color, int diameter, int x1, int y1, int z1,
-                     int dx, int dy, int dz) {
+  void renderClipped(short colix1, short colix2, int diameter,
+                     int x1, int y1, int z1, int dx, int dy, int dz) {
+    if (true)
+      return;
     Sphere25D sphere25d = g25d.sphere25d;
-    sphere25d.render(color, diameter, x1, y1, z1);
+    sphere25d.render(colix1, diameter, x1, y1, z1);
     if (dx == 0 && dy == 0)
       return;
 
@@ -101,7 +100,7 @@ public class Cylinder25D {
           twoDxAccumulatedYError -= twoDx;
         }
         int zCurrent = zCurrentScaled >> 10;
-        sphere25d.render(color, diameter, xCurrent, yCurrent, zCurrent);
+        sphere25d.render(colix1, diameter, xCurrent, yCurrent, zCurrent);
       } while (--n > 0);
       return;
     }
@@ -119,99 +118,8 @@ public class Cylinder25D {
         twoDyAccumulatedXError -= twoDy;
       }
       int zCurrent = zCurrentScaled >> 10;
-      sphere25d.render(color, diameter, xCurrent, yCurrent, zCurrent);
+      sphere25d.render(colix1, diameter, xCurrent, yCurrent, zCurrent);
     } while (--n > 0);
-  }
-
-  // test code
-  /*
-  void paintCylinderShape(int x1, int y1, int z1, int x2, int y2, int z2,
-                          int diameter, Color color) {
-    int x = (x1 + x2) / 2;
-    int y = (y1 + y2) / 2;
-    int z = (z2 + z2) / 2;
-    int[] shades = Shade25D.getShades(color);
-    int intensity = getIntensity(x1, y1, z1, x2, y2, z2);
-    Color shaded = new Color(shades[intensity]);
-    g25d.fillCircleCentered(shaded, shaded, x, y, z, diameter);
-  }
-  */
-
-
-  int getIntensity(int x1, int y1, int z1, int x2, int y2, int z2) {
-    // Normalize the vectLightSource vector:
-    double[] vectLightSource = new double[3];
-    for (int i = 0; i < 3; ++ i)
-      vectLightSource[i] = Sphere25D.lightSource[i];
-    normalize(vectLightSource);
-
-    double[] vectNormal = new double[3];
-    double[] vectTemp = new double[3];
-    double[] vectReflection = new double[3];
-    double vectViewer[] = {0, 0, 1};
-
-    vectNormal[0] = x2 - x1;
-    vectNormal[1] = y2 - y1;
-    vectNormal[2] = z2 - z1;
-    normalize(vectNormal);
-    double cosTheta = dotProduct(vectNormal, vectLightSource);
-    double intensitySpecular = 0.0;
-    double intensityDiffuse = 0.0;
-    if (cosTheta > 0) {
-      intensityDiffuse = cosTheta * Sphere25D.intensityDiffuseSource;
-      scale(2 * cosTheta, vectNormal, vectTemp);
-      sub(vectTemp, vectLightSource, vectReflection);
- 
-      double dpRV = dotProduct(vectReflection, vectViewer);
-      if (dpRV < 0.0)
-        dpRV = 0.0;
-      // dpRV = Math.pow(dpRV, 25);
-      for (int n = Sphere25D.exponentSpecular; --n >= 0; )
-        dpRV *= dpRV;
-      intensitySpecular = dpRV * Sphere25D.intensitySpecularSource;
-    }
-    double intensity =
-      intensitySpecular + intensityDiffuse + Sphere25D.intensityAmbient;
-    int shade = (int)(Sphere25D.intensityNormal * intensity);
-    if (shade >= Sphere25D.intensityMax) shade = Sphere25D.intensityMax-1;
-    return shade;
-  }
-
-
-  private void normalize(double v[]) {
-
-    double mag = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (Math.abs(mag - 0.0) < java.lang.Double.MIN_VALUE) {
-      v[0] = 0.0;
-      v[1] = 0.0;
-      v[2] = 0.0;
-    } else {
-      v[0] = v[0] / mag;
-      v[1] = v[1] / mag;
-      v[2] = v[2] / mag;
-    }
-  }
-
-  private double dotProduct(double[] v1, double[] v2) {
-    return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-  }
-
-  private void scale(double a, double[] v, double[] vResult) {
-    vResult[0] = a * v[0];
-    vResult[1] = a * v[1];
-    vResult[2] = a * v[2];
-  }
-
-  private void add(double[] v1, double[] v2, double[] vSum) {
-    vSum[0] = v1[0] + v2[0];
-    vSum[1] = v1[1] + v2[1];
-    vSum[2] = v1[2] + v2[2];
-  }
-
-  private void sub(double[] v1, double[] v2, double[] vDiff) {
-    vDiff[0] = v1[0] - v2[0];
-    vDiff[1] = v1[1] - v2[1];
-    vDiff[2] = v1[2] - v2[2];
   }
 
   class CylinderShape {
@@ -219,6 +127,19 @@ public class Cylinder25D {
     int _2b;
     int dxTheta;
     int dyTheta;
+    int mag2d;
+
+    boolean tLine;
+    int x1, y1, x2, y2;
+    int radius2; // radius squared
+    int diameter;
+    int dx, dy, dz;
+
+    boolean tEven;
+    int evenCorrection;
+
+    short colix;
+    int[] shades;
 
     long A, B, C, F;
     long twoA, twoB, twoC, _Adiv4, _Bdiv4;
@@ -237,14 +158,18 @@ public class Cylinder25D {
                          int dx, int dy, int dz) {
       radius3d2 = (diameter*diameter) / 4.0;
       int mag2d2 = dx*dx + dy*dy;
-      int mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
+      mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
       int mag3d2 = mag2d2 + dz*dz;
       int mag3d = (int)(Math.sqrt(mag3d2) + 0.5);
-      this._2a = diameter;
+      this._2a = this.diameter = diameter;
+      tEven = (diameter & 1) == 1;
+      evenCorrection = (diameter & 1) - 1;
       this._2b = diameter - diameter * mag2d / mag3d;
+      this.radius2 = ((diameter * diameter) + 2) / 4;
 
-      this.dxTheta = dx;
-      this.dyTheta = -dy;
+      this.dxTheta = this.dx = dx;
+      this.dyTheta = -(this.dy = dy);
+      this.dz = dz;
 
       this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
 
@@ -252,24 +177,25 @@ public class Cylinder25D {
       System.out.println("origin="+xOrigin+","+yOrigin+","+zOrigin+
                          " diam=" + diameter);
       */
-      ellipse0a();
-      calcCriticalPoints();
-      allocRaster();
-      rasterize();
+      if (_2b > 0) {
+        calcEllipseFactors();
+        calcCriticalPoints();
+        // we need to check and see whether or not there is a tight
+        // cluster of points. If so, then we will have problems, so
+        // just draw a line
+        if ((xE > xN) &&                   // not vertical
+            !(xNE == xSE && yNE == ySE) && // not horizontal
+            !(xNE == -xSE && yNE == -ySE)  // not horizontal
+            ) {
+          rasterizeEllipse();
+          return;
+        }
+      }
+      tLine = true;
+      calcLineFactors();
     }
 
-    void allocRaster() {
-      ibRaster = 0;
-      raster = new byte[16 * 4];
-    }
-
-    void reallocRaster() {
-      byte[] t = new byte[2 * raster.length];
-      System.arraycopy(raster, 0, t, 0, ibRaster);
-      raster = t;
-    }
-
-    void ellipse0a() {
+    void calcEllipseFactors() {
       int dx2 = dxTheta*dxTheta;
       int dy2 = dyTheta*dyTheta;
       int dx2_plus_dy2=dx2+dy2;
@@ -405,7 +331,19 @@ public class Cylinder25D {
       return n;
     }
 
-    void rasterize() {
+    void allocRaster() {
+      ibRaster = 0;
+      raster = new byte[_2a * 4 * 2];
+    }
+
+    void reallocRaster() {
+      byte[] t = new byte[2 * raster.length];
+      System.arraycopy(raster, 0, t, 0, ibRaster);
+      raster = t;
+    }
+
+    void rasterizeEllipse() {
+      allocRaster();
       int xCurrent = xN;
       int yCurrent = yN;
       recordCoordinate(xCurrent, yCurrent);
@@ -519,29 +457,29 @@ public class Cylinder25D {
       //assert xCurrent == xS && yCurrent == yS;
     }
 
-    void render0(Color color, int x, int y, int z, int dx, int dy, int dz) {
-      int[] shades = Shade25D.getShades(color);
-      for (int i = 0; i < ibRaster; i += 4) {
-        g25d.setColor(shades[raster[i+3]]);
-        g25d.plotLineDelta(x + raster[i],
-                           y + raster[i+1],
-                           z + raster[i+2], dx, dy, dz);
-        g25d.plotLineDelta(x - raster[i],
-                           y - raster[i+1],
-                           z - raster[i+2], dx, dy, dz);
+    void render(short colix1, short colix2,
+                int x, int y, int z, int dx, int dy, int dz) {
+      int[] shades1 = Colix.getShades(colix1);
+      int[] shades2 = Colix.getShades(colix2);
+      if (tLine) {
+        plotEdgewiseCylinder(shades1, shades2, x1, y1, x2, y2);
+        return;
       }
-    }
-
-    void render(Color color, int x, int y, int z, int dx, int dy, int dz) {
-      int[] shades = Shade25D.getShades(color);
       for (int i = 0; i < ibRaster; i += 4) {
-        g25d.setColor(shades[raster[i+3]]);
-        g25d.plotPixelClipped(x + raster[i],
-                              y + raster[i+1],
-                              z + raster[i+2]);
-        g25d.plotPixelClipped(x - raster[i],
-                              y - raster[i+1],
-                              z - raster[i+2]);
+        int x0 = raster[i];
+        int y0 = raster[i+1];
+        int z0 = raster[i+2];
+        int intensity = raster[i+3];
+        g25d.plotLineDelta(shades1[intensity], shades2[intensity],
+                           x + ((x0 > 0 && tEven) ? x0 - 1 : x0),
+                           y + ((y0 > 0 && tEven) ? y0 - 1 : y0),
+                           z + z0,
+                           dx, dy, dz);
+        g25d.plotLineDelta(shades1[intensity], shades2[intensity],
+                           x - ((x0 < 0 && tEven) ? x0 - 1 : x0),
+                           y - ((y0 < 0 && tEven) ? y0 - 1 : y0),
+                           z - z0,
+                           dx, dy, dz);
       }
     }
 
@@ -550,10 +488,7 @@ public class Cylinder25D {
       double t = radius3d2 - (x*x + y*y);
       if (t > 0)
         z = (int)(Math.sqrt(t) + 0.5);
-      if (foo == Shade25D.shadeMax)
-        foo = 0;
-      byte shade = (byte) foo;
-      ++foo;
+      byte shade = Shade25D.getIntensity(x, y, z);
       //      System.out.println("record " + x + "," + y + "," + z);
       if (ibRaster == raster.length)
         reallocRaster();
@@ -561,6 +496,90 @@ public class Cylinder25D {
       raster[ibRaster++] = (byte)y;
       raster[ibRaster++] = (byte)z;
       raster[ibRaster++] = shade;
+    }
+
+    /****************************************************************
+     * When the cylinder is laying in the plane, then the profile
+     * is a line instead of an ellipse
+     ****************************************************************/
+
+    void calcLineFactors() {
+      int radius = diameter / 2;
+      /*
+      System.out.println("dy=" + dy + " dx=" + dx + " mag2d=" + mag2d +
+                         " diameter=" + diameter);
+      */
+      x1 = -(radius * -dy + -dy/2) / mag2d;
+      y1 = -(radius * dx + dx/2) / mag2d;
+      x2 = x1 + (diameter * -dy + -dy/2) / mag2d;
+      y2 = y1 + (diameter * dx + dx/2) / mag2d;
+    }
+
+    int[] shades1;
+    int[] shades2;
+
+    void plotEdgewiseCylinder(int[] shades1, int[] shades2,
+                              int x1, int y1, int x2, int y2) {
+      this.shades1 = shades1;
+      this.shades2 = shades2;
+
+      int dx = x2 - x1;
+      int dy = y2 - y1;
+
+      if (dx == 0 && dy == 0)
+        return;
+
+      int xCurrent = x1;
+      int yCurrent = y1;
+      int xIncrement = 1;
+      int yIncrement = 1;
+
+      if (dx < 0) {
+        dx = -dx;
+        xIncrement = -1;
+      }
+      if (dy < 0) {
+        dy = -dy;
+        yIncrement = -1;
+      }
+      int twoDx = dx << 1, twoDy = dy << 1;
+
+      if (dy <= dx) {
+        int twoDxAccumulatedYError = 0;
+        int n = dx;
+        do {
+          xCurrent += xIncrement;
+          twoDxAccumulatedYError += twoDy;
+          if (twoDxAccumulatedYError > dx) {
+            plotEdgewise1(xCurrent, yCurrent);
+            yCurrent += yIncrement;
+            twoDxAccumulatedYError -= twoDx;
+          }
+          plotEdgewise1(xCurrent, yCurrent);
+        } while (--n > 0);
+        return;
+      }
+      int twoDyAccumulatedXError = 0;
+      int n = dy;
+      do {
+        yCurrent += yIncrement;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          plotEdgewise1(xCurrent, yCurrent);
+          xCurrent += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        plotEdgewise1(xCurrent, yCurrent);
+      } while (--n > 0);
+    }
+
+    void plotEdgewise1(int x, int y) {
+      int z2 = radius2 - (x*x + y*y);
+      int z = (z2 <= 0) ? 0 : (int)(Math.sqrt(z2) + 0.5);
+
+      byte intensity = Shade25D.getIntensity(x, y, z);
+      g25d.plotLineDelta(shades1[intensity], shades2[intensity],
+                         xOrigin + x, yOrigin + y, zOrigin - z, dx, dy, dz);
     }
   }
 }

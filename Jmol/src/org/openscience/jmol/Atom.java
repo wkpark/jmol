@@ -27,7 +27,6 @@ package org.openscience.jmol;
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.AtomShape;
-import java.awt.Color;
 import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3d;
@@ -230,7 +229,7 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
       bondedAtoms = bondedAtomsNew;
     }
     bondedAtoms[i] = toAtom;
-    if (bondOrder > 1) {
+    if (bondOrder != 1) {
       int[] bondOrdersNew = new int[i + 1];
       if (bondOrders != null)
         System.arraycopy(bondOrders, 0, bondOrdersNew, 0, bondOrders.length);
@@ -277,7 +276,7 @@ public class Atom extends org.openscience.cdk.Atom implements Bspt.Tuple {
             (bondOrders==null || bondOrders.length<=i) ? 1 : bondOrders[i] + 1;
       }
     }
-    return -1;
+    return 0;
   }
 
   public int getBondedCount() {

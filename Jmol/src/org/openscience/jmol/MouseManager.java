@@ -27,7 +27,6 @@ package org.openscience.jmol;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.DisplayControl;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Dimension;

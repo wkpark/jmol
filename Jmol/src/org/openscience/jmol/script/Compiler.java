@@ -213,7 +213,7 @@ class Compiler {
           } else {
             // we are looking at the expression
             if (token.tok != Token.identifier &&
-                (token.tok & Token.expression) == 0)
+                (token.tok & (Token.expression | Token.predefinedset)) == 0)
               return invalidExpressionToken(ident);
           }
           break;

@@ -38,7 +38,6 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.Composite;
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Double;
 import java.awt.RenderingHints;
@@ -60,13 +59,13 @@ public class AtomRenderer {
 
     fastRendering = control.getFastRendering();
     useGraphics2D = control.getUseGraphics2D();
-    colorSelection = control.getColorSelection();
+    colixSelection = control.getColixSelection();
     g25dEnabled = control.getGraphics25DEnabled();
   }
 
   boolean fastRendering;
   boolean useGraphics2D;
-  Color colorSelection;
+  short colixSelection;
   boolean g25dEnabled;
 
   Atom atom;
@@ -75,8 +74,8 @@ public class AtomRenderer {
   int z;
   int diameter;
   byte styleAtom;
-  Color color;
-  Color colorOutline;
+  short colix;
+  short colixOutline;
 
   int radius;
   int xUpperLeft;
@@ -92,12 +91,12 @@ public class AtomRenderer {
     radius = (diameter + 1) / 2;
     xUpperLeft = x - radius;
     yUpperLeft = y - radius;
-    color = atomShape.colorAtom;
-    colorOutline = control.getColorAtomOutline(styleAtom, color);
+    colix = atomShape.colixAtom;
+    colixOutline = control.getColixAtomOutline(styleAtom, colix);
     if (control.hasSelectionHalo(atom))
       renderHalo();
     if (atomShape.marDots > 0)
-      renderDots(atomShape.colorDots, atomShape.diameterDots);
+      renderDots(atomShape.colixDots, atomShape.diameterDots);
     if (styleAtom != DisplayControl.NONE &&
         styleAtom != DisplayControl.INVISIBLE)
       renderAtom();
@@ -109,19 +108,19 @@ public class AtomRenderer {
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
-    g25d.fillCircleCentered(colorSelection, x, y, z+1, halodiameter);
+    g25d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
-  private void renderDots(Color colorDots, int diameterDots) {
-    g25d.drawDotsCentered(colorDots, x, y, z, diameterDots);
+  private void renderDots(short colixDots, int diameterDots) {
+    g25d.drawDotsCentered(colixDots, x, y, z, diameterDots);
   }
 
   private void renderAtom() {
     if (styleAtom == DisplayControl.SHADING && !fastRendering)
-      g25d.fillSphereCentered(colorOutline, color, x, y, z, diameter);
+     g25d.fillSphereCentered(colixOutline, colix, x, y, z, diameter);
     else if (fastRendering || styleAtom == DisplayControl.WIREFRAME)
-      g25d.drawCircleCentered(color, x, y, z, diameter);
+      g25d.drawCircleCentered(colix, x, y, z, diameter);
     else
-      g25d.fillCircleCentered(colorOutline, color, x, y, z, diameter);
+      g25d.fillCircleCentered(colixOutline, colix, x, y, z, diameter);
   }
 }

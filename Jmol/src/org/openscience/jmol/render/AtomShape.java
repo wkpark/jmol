@@ -27,10 +27,9 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
 import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g25d.Colix;
 
-//import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Color;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3i;
@@ -40,39 +39,44 @@ public class AtomShape extends Shape {
   public Atom atom;
   public byte styleAtom;
   public short marAtom;
-  public Color colorAtom;
+  public short colixAtom;
   public int diameter;
   public short marDots = 0;
-  public Color colorDots;
+  public short colixDots;
   public int diameterDots = 0;
   public int numBonds;
-  public int[] bondWidths;  // after a delete operation, these arrays
+  public byte[] bondOrders;
+  public short[] bondWidths;  // after a delete operation, these arrays
   public byte[] styleBonds; // will be longer than numBonds
   public short[] marBonds;
-  public Color[] colorBonds;
+  public short[] acolixBonds;
   public String strLabel;
   
   public AtomShape(Atom atom,
-                   byte styleAtom, short marAtom, Color colorAtom,
-                   byte styleBond, short marBond, Color colorBond,
+                   byte styleAtom, short marAtom, short colixAtom,
+                   byte styleBond, short marBond, short colixBond,
                    String strLabel) {
     this.atom = atom;
     numBonds = atom.getBondedCount();
-    bondWidths = new int[numBonds];
+    bondOrders = new byte[numBonds];
+    fixBondOrders();
+
+    bondWidths = new short[numBonds];
     styleBonds = new byte[numBonds];
     marBonds = new short[numBonds];
-    colorBonds = new Color[numBonds];
+    acolixBonds = new short[numBonds];
     setStyleMarAtom(styleAtom, marAtom);
     setStyleMarAllBonds(styleBond, marBond);
-    setColorAllBonds(colorBond);
-    this.colorAtom = colorAtom;
+    setStyleMarAllBackbones(DisplayControl.NONE, (short)0);
+    setColixAllBonds(colixBond);
+    this.colixAtom = colixAtom;
     this.strLabel = strLabel;
   }
 
   public AtomShape(Atom atom, DisplayControl c) {
     this(atom,
-         c.getStyleAtom(), c.getMarAtom(), c.getColorAtom(atom),
-         c.getStyleBond(), c.getMarBond(), c.getColorBond(),
+         c.getStyleAtom(), c.getMarAtom(), c.getColixAtom(atom),
+         c.getStyleBond(), c.getMarBond(), c.getColixBond(),
          c.getLabelAtom(atom));
   }
 
@@ -84,10 +88,19 @@ public class AtomShape extends Shape {
     --numBonds;
     int numAbove = numBonds - i;
     if (numAbove > 0) {
+      System.arraycopy(bondOrders, i+1, bondOrders, i, numAbove);
       System.arraycopy(bondWidths, i+1, bondWidths, i, numAbove);
       System.arraycopy(styleBonds, i+1, styleBonds, i, numAbove);
       System.arraycopy(marBonds,   i+1, marBonds,   i, numAbove);
-      System.arraycopy(colorBonds, i+1, colorBonds, i, numAbove);
+      System.arraycopy(acolixBonds, i+1, acolixBonds, i, numAbove);
+    }
+  }
+
+  private void fixBondOrders() {
+    Atom[] bondedAtoms = atom.getBondedAtoms();
+    for (int i = numBonds; --i >= 0 ; ) {
+      Atom atomOther = bondedAtoms[i];
+      bondOrders[i] = (byte) atom.getBondOrder(atomOther);
     }
   }
 
@@ -127,8 +140,8 @@ public class AtomShape extends Shape {
     this.marAtom = marAtom;
   }
         
-  public void setColorMarDots(Color colorDots, short marDots) {
-    this.colorDots = colorDots;
+  public void setColixMarDots(short colixDots, short marDots) {
+    this.colixDots = colixDots;
     if (marDots < 0)
       marDots = (short)((-10 * marDots) * atom.getVanderwaalsRadius());
     this.marDots = marDots;
@@ -142,45 +155,105 @@ public class AtomShape extends Shape {
 
   public void setStyleAllBonds(byte styleBond) {
     for (int i = numBonds; --i >= 0; )
-      styleBonds[i] = styleBond;
+      if (bondOrders[i] > 0)
+        styleBonds[i] = styleBond;
+  }
+
+  public void setStyleAllBackbones(byte styleBackbone) {
+    for (int i = numBonds; --i >= 0; )
+      if (bondOrders[i] == -1)
+        styleBonds[i] = styleBackbone;
   }
 
   public void setMarAllBonds(short marBond) {
     for (int i = numBonds; --i >= 0; )
-      marBonds[i] = marBond;
+      if (bondOrders[i] > 0)
+        marBonds[i] = marBond;
+  }
+
+  public void setMarAllBackbones(short marBackbone) {
+    for (int i = numBonds; --i >= 0; )
+      if (bondOrders[i] == -1)
+        marBonds[i] = marBackbone;
   }
 
   public void setStyleMarAllBonds(byte styleBond, short marBond) {
     for (int i = numBonds; --i >= 0; ) {
-      styleBonds[i] = styleBond;
-      marBonds[i] = marBond;
+      if (bondOrders[i] > 0) {
+        styleBonds[i] = styleBond;
+        marBonds[i] = marBond;
+      }
+    }
+  }
+
+  public void setStyleMarAllBackbones(byte styleBackbone, short marBackbone) {
+    for (int i = numBonds; --i >= 0; ) {
+      if (bondOrders[i] == -1) {
+        styleBonds[i] = styleBackbone;
+        marBonds[i] = marBackbone;
+      }
     }
   }
 
   public void setStyleBond(byte styleBond, int indexBond) {
-    styleBonds[indexBond] = styleBond;
+    if (bondOrders[indexBond] > 0) 
+      styleBonds[indexBond] = styleBond;
   }
 
   public void setMarBond(short marBond, int indexBond) {
-    marBonds[indexBond] = marBond;
+    if (bondOrders[indexBond] > 0)
+      marBonds[indexBond] = marBond;
   }
 
   public void setStyleMarBond(byte styleBond, short marBond, int indexBond) {
-    styleBonds[indexBond] = styleBond;
-    marBonds[indexBond] = marBond;
+    if (bondOrders[indexBond] > 0) {
+      styleBonds[indexBond] = styleBond;
+      marBonds[indexBond] = marBond;
+    }
   }
 
-  public void setColorAtom(Color colorAtom) {
-    this.colorAtom = colorAtom;
+  public void setStyleBackbone(byte styleBond, int indexBond) {
+    if (bondOrders[indexBond] == -1)
+      styleBonds[indexBond] = styleBond;
   }
 
-  public void setColorAllBonds(Color colorBond) {
+  public void setMarBackbone(short marBackbone, int indexBackbone) {
+    if (bondOrders[indexBackbone] == -1)
+      marBonds[indexBackbone] = marBackbone;
+  }
+
+  public void setStyleMarBackbone(byte styleBackbone,
+                                  short marBackbone, int indexBackbone) {
+    if (bondOrders[indexBackbone] == -1) {
+      styleBonds[indexBackbone] = styleBackbone;
+      marBonds[indexBackbone] = marBackbone;
+    }
+  }
+
+  public void setColixAtom(short colixAtom) {
+    this.colixAtom = colixAtom;
+  }
+
+  public void setColixAllBonds(short colixBond) {
     for (int i = numBonds; --i >= 0; )
-      colorBonds[i] = colorBond;
+      if (bondOrders[i] > 0)
+        acolixBonds[i] = colixBond;
   }
 
-  public void setColorBond(Color colorBond, int indexBond) {
-    colorBonds[indexBond] = colorBond;
+  public void setColixBond(short colixBond, int indexBond) {
+    if (bondOrders[indexBond] > 0)
+      acolixBonds[indexBond] = colixBond;
+  }
+
+  public void setColixAllBackbones(short colixBackbone) {
+    for (int i = numBonds; --i >= 0; )
+      if (bondOrders[i] == -1)
+        acolixBonds[i] = colixBackbone;
+  }
+
+  public void setColixBackbone(short colixBackbone, int indexBackbone) {
+    if (bondOrders[indexBackbone] == -1)
+      acolixBonds[indexBackbone] = colixBackbone;
   }
 
   public void setLabel(String strLabel) {
@@ -197,7 +270,7 @@ public class AtomShape extends Shape {
     if (marDots > 0)
       diameterDots = control.scaleToScreen(z, marDots * 2);
     for (int i = numBonds; --i >= 0; )
-      bondWidths[i] = control.scaleToScreen(z, marBonds[i] * 2);
+      bondWidths[i] = (short)control.scaleToScreen(z, marBonds[i] * 2);
   }
 
   public void render(Graphics25D g25d, DisplayControl control) {
@@ -228,7 +301,7 @@ public class AtomShape extends Shape {
         for (int j = atomShapeOther.numBonds; --j >= 0; ) {
           if (otherAtomBonds[j] == atom) {
             control.bondRenderer.render(this, i, atomShapeOther, j,
-                                        atom.getBondOrder(atomOther));
+                                        bondOrders[i]);
             // FIXME implement atom.getBondOrder(int indexBond)
           }
         }

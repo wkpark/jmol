@@ -426,9 +426,12 @@ public class TransformManager {
 
   public Point3i transformPoint(Point3d pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3dScreenTemp);
-    int x = (int)point3dScreenTemp.x;
-    int y = (int)point3dScreenTemp.y;
-    int z = (int)point3dScreenTemp.z;
+    int x = (int)(point3dScreenTemp.x +
+                  (point3dScreenTemp.x >= 0 ? 0.5 : -0.5));
+    int y = (int)(point3dScreenTemp.y +
+                  (point3dScreenTemp.y >= 0 ? 0.5 : -0.5));
+    int z = (int)(point3dScreenTemp.z +
+                  (point3dScreenTemp.z >= 0 ? 0.5 : -0.5));
     if (z < 0) {
       System.out.println("WARNING! DANGER! z < 0! transformPoint()");
       z = 0;

@@ -27,8 +27,6 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 
-//import java.awt.Graphics;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3d;
@@ -112,7 +110,7 @@ public class Axes {
         AxisShape axis = axisShapes[i];
         if (axis.z <= z) {
           if (!colorSet)
-            g25d.setColor(control.getColorAxes());
+            g25d.setColix(control.getColixAxes());
           g25d.drawLine(x, y, z, axis.x, axis.y, axis.z);
         }
       }
@@ -140,39 +138,13 @@ public class Axes {
   
     public void render(Graphics25D g25d, DisplayControl control) {
       if (z > originShape.z) {
-        g25d.setColor(control.getColorAxes());
+        g25d.setColix(control.getColixAxes());
         g25d.drawLine(x, y, z,
                       originShape.x, originShape.y, originShape.z);
       }
       if (label != null)
-        control.renderStringOutside(label, control.getColorAxes(),
+        control.renderStringOutside(label, control.getColixAxesText(),
                                     axisFontsize, x, y, z);
     }
-
-    /*
-    public void render(Graphics g, DisplayControl control) {
-      if (z > originShape.z) {
-        g.setColor(control.getColorAxes());
-        g.drawLine(x, y, originShape.x, originShape.y);
-      }
-      if (label != null) {
-        int xLabel;
-        int yLabel;
-        int dx = x - originShape.x;
-        int dy = y - originShape.y;
-        if (dx == 0 && dy == 0) {
-          xLabel = x;
-          yLabel = y;
-        } else {
-          int dist = (int) Math.sqrt(dx*dx + dy*dy);
-          xLabel = originShape.x + ((dist + axisFontsize) * dx / dist);
-          yLabel = originShape.y + ((dist + 2 + axisFontsize / 2) * dy / dist);
-        }
-        control.renderStringOffset(label, Color.green,
-                                   axisFontsize,
-                                   xLabel, yLabel, 0, 0);
-      }
-    }
-    */
   }
 }

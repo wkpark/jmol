@@ -39,7 +39,6 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.Composite;
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Double;
 import java.awt.RenderingHints;
@@ -58,11 +57,11 @@ public class LabelRenderer {
   public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
     this.g25d = g25d;
     this.clip = clip;
-    colorLabel = control.getColorLabel();
-    isLabelAtomColor = colorLabel == null;
+    colixLabel = control.getColixLabel();
+    isLabelAtomColor = colixLabel == 0;
   }
 
-  Color colorLabel;
+  short colixLabel;
   boolean isLabelAtomColor;
 
   public void render(AtomShape atomShape) {
@@ -78,10 +77,10 @@ public class LabelRenderer {
     int descent = fontMetrics.getDescent();
     int height = ascent + descent;
     
-    g25d.setColor(isLabelAtomColor ? atomShape.colorAtom : colorLabel);
     int labelWidth = fontMetrics.stringWidth(strLabel);
     ++labelWidth; // bias rounding to the left;
     g25d.drawString(strLabel,
+                    isLabelAtomColor ? atomShape.colixAtom : colixLabel,
                     atomShape.x - labelWidth / 2,
                     atomShape.y - (height + 1) / 2 + ascent,
                     atomShape.z - atomShape.diameter/2 - 2
@@ -104,23 +103,22 @@ public class LabelRenderer {
           // so divide the diameter by 2
           font = control.getLabelFont(atomShape.diameter / 2);
           g25d.setFont(font);
-          g25d.setColor(colorLabel);
           String s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);
           }
           int k = 2 + (int) (atomShape.diameter/2 / 1.4142136f);
-          g25d.drawString(s, atomShape.x + k, atomShape.y - k,
+          g25d.drawString(s, colixLabel,
+                          atomShape.x + k, atomShape.y - k,
                           atomShape.z - atomShape.diameter/2 - 2);
         }
       }
     }
   }
 
-  public void renderStringOffset(String label, Color color, int points,
+  public void renderStringOffset(String label, short colix, int points,
                                  int x, int y, int z,
                                  int xOffset, int yOffset) {
-    g25d.setColor(color);
     Font font = control.getFontOfSize(points);
     g25d.setFont(font);
     FontMetrics fontMetrics = g25d.getFontMetrics(font);
@@ -138,15 +136,12 @@ public class LabelRenderer {
       x -= fontMetrics.stringWidth(label) / 2;
     else
       x += xOffset - fontMetrics.stringWidth(label);
-    g25d.drawString(label, x, y, z);
+    g25d.drawString(label, colix, x, y, z);
   }
 
-  public void renderStringOutside(String label, Color color, int points,
+  public void renderStringOutside(String label, short colix, int points,
                                   int x, int y, int z) {
-    //    System.out.println("render string outside " + x + "," + y);
-    //    g25d.setColor(Color.blue);
-    //    g25d.fillRect(x-1, y-1, 3, 3);
-    g25d.setColor(color);
+    g25d.setColix(colix);
     Font font = control.getFontOfSize(points);
     g25d.setFont(font);
     FontMetrics fontMetrics = g25d.getFontMetrics(font);
@@ -167,7 +162,7 @@ public class LabelRenderer {
     }
     int xLabelBaseline = xLabelCenter - labelWidth / 2;
     int yLabelBaseline = yLabelCenter + labelAscent / 2;
-    g25d.drawString(label, xLabelBaseline, yLabelBaseline, z);
+    g25d.drawString(label, colix, xLabelBaseline, yLabelBaseline, z);
   }
 }
 

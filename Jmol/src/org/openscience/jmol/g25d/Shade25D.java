@@ -32,20 +32,55 @@ import java.util.Hashtable;
 
 public class Shade25D {
 
-  public static final int shadeNormal = 64;
+  public static final byte shadeNormal = 64;
+  public static final byte shadeDarker = 56;
   public static final int shadeMax = 128;
+  public static final float[] vectLightSource = {-1, -1, 1.5f};
+  public static final float[] vectViewer = {0, 0, 1};
+  public static int exponentSpecular = 5;
+  public static final float intensityDiffuseSource = 0.6f;
+  public static final float intensitySpecularSource = 0.8f;
+  public static final float intensityAmbient = 0.5f;
+  static boolean tInitialized;
+  
+  static synchronized void initialize() {
+    if (tInitialized)
+      return;
+    normalize(vectLightSource);
+    initializeCache();
+    tInitialized = true;
+  }
+
+  static final int minNormalCache = -4;
+  static final int maxNormalCache = 4;
+  static final int numCache = maxNormalCache - minNormalCache + 1;
+  static final int numCache2 = numCache * numCache;
+  static final int numCache3 = numCache2 * numCache;
+  static final byte[] shadeCache = new byte[numCache3];
+
+  static void initializeCache() {
+    for (int x = minNormalCache; x <= maxNormalCache; ++x)
+      for (int y = minNormalCache; y <= maxNormalCache; ++y)
+        for (int z = minNormalCache; z <= maxNormalCache; ++z) {
+          int offsetCache =
+            (x-minNormalCache) * numCache2 +
+            (y-minNormalCache) * numCache +
+            (z-minNormalCache);
+          shadeCache[offsetCache] = calcIntensity(x, y, z);
+        }
+  }
 
   Color color;
   int[] shades = new int[shadeMax];
 
   private Shade25D(Color color) {
     this.color = color;
-    initialize(color.getRGB());
+    calcShades(color.getRGB());
   }
 
   private static Hashtable htCache = new Hashtable();
 
-  public Shade25D getShade(Color color) {
+  public static Shade25D getShade(Color color) {
     Shade25D shade = (Shade25D) htCache.get(color);
     if (shade == null) {
       shade = new Shade25D(color);
@@ -70,8 +105,8 @@ public class Shade25D {
   public static int[] getShades(int rgb) {
     return getShades(new Color(rgb));
   }
-  
-  private void initialize(int rgb) {
+
+  private void calcShades(int rgb) {
     int red = (rgb >> 16) & 0xFF;
     int grn = (rgb >>  8) & 0xFF;
     int blu = rgb         & 0xFF;
@@ -110,5 +145,92 @@ public class Shade25D {
       str += StringFromRgb(shades[shade]) + "\n";
     str += "\n";
     return str;
+  }
+
+  public static byte getIntensity(int x1,int y1,int z1,int x2,int y2,int z2) {
+    return getIntensity(x2 - x1, y2 - y1, z2 - z1);
+  }
+
+
+  public static byte getIntensity(int x, int y, int z) {
+    if (x <= maxNormalCache && x >= minNormalCache &&
+        y <= maxNormalCache && y >= minNormalCache &&
+        z <= maxNormalCache && z >= minNormalCache) {
+      int offsetCache =
+        (x-minNormalCache) * numCache2 +
+        (y-minNormalCache) * numCache +
+        (z-minNormalCache);
+      return shadeCache[offsetCache];
+    }
+    return calcIntensity(x, y, z);
+  }
+
+  static final float[] vectNormal = new float[3];
+  static final float[] vectTemp = new float[3];
+  static final float[] vectReflection = new float[3];
+
+  static synchronized byte calcIntensity(float x, float y, float z) {
+
+    vectNormal[0] = x;
+    vectNormal[1] = y;
+    vectNormal[2] = z;
+    normalize(vectNormal);
+    float cosTheta = dotProduct(vectNormal, vectLightSource);
+    float intensitySpecular = 0;
+    float intensityDiffuse = 0;
+    if (cosTheta > 0) {
+      intensityDiffuse = cosTheta * intensityDiffuseSource;
+      scale(2 * cosTheta, vectNormal, vectTemp);
+      sub(vectTemp, vectLightSource, vectReflection);
+ 
+      float dpRV = dotProduct(vectReflection, vectViewer);
+      if (dpRV < 0)
+        dpRV = 0;
+      for (int n = exponentSpecular; --n >= 0; )
+        dpRV *= dpRV;
+      intensitySpecular = dpRV * intensitySpecularSource;
+    }
+    float intensity =
+      intensitySpecular + intensityDiffuse + intensityAmbient;
+    int shade = (int)(shadeNormal * intensity + 0.5f);
+    if (shade >= shadeMax) shade = shadeMax-1;
+    return (byte)shade;
+  }
+
+
+  private static void normalize(float v[]) {
+
+    float mag = (float)Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    if (Math.abs(mag - 0) <= java.lang.Float.MIN_VALUE) {
+      v[0] = 0;
+      v[1] = 0;
+      v[2] = 0;
+    } else {
+      v[0] = v[0] / mag;
+      v[1] = v[1] / mag;
+      v[2] = v[2] / mag;
+    }
+  }
+
+  private static float dotProduct(float[] v1, float[] v2) {
+    return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+  }
+
+  private static void scale(float a, float[] v, float[] vResult) {
+    vResult[0] = a * v[0];
+    vResult[1] = a * v[1];
+    vResult[2] = a * v[2];
+  }
+
+  private static void add(float[] v1, float[] v2, float[] vSum) {
+    vSum[0] = v1[0] + v2[0];
+    vSum[1] = v1[1] + v2[1];
+    vSum[2] = v1[2] + v2[2];
+  }
+
+  private static void sub(float[] v1, float[] v2, float[] vDiff) {
+    vDiff[0] = v1[0] - v2[0];
+    vDiff[1] = v1[1] - v2[1];
+    vDiff[2] = v1[2] - v2[2];
   }
 }

@@ -66,6 +66,7 @@ final public class Graphics25D {
   public Graphics25D(DisplayControl control) {
     this.control = control;
     this.g = g;
+    Shade25D.initialize();
     if (control.jvm12orGreater && ! forceAWT ) {
       platform = new Swing25D();
     } else {
@@ -124,12 +125,20 @@ final public class Graphics25D {
     argbCurrent = color.getRGB();
   }
 
-  public void setColor(int argb) {
+  public void setArgb(int argb) {
     if (! usePbuf) {
       g.setColor(new Color(argb));
       return;
     }
     argbCurrent = argb;
+  }
+
+  public void setColix(short colix) {
+    if (! usePbuf) {
+      g.setColor(Colix.getColor(colix));
+      return;
+    }
+    argbCurrent = Colix.getArgb(colix);
   }
 
   int[] imageBuf = new int[256];
@@ -176,13 +185,13 @@ final public class Graphics25D {
     System.out.println("drawImage(... width,height) not implemented");
   }
 
-  public void drawCircleCentered(Color color, int x, int y, int z,
+  public void drawCircleCentered(short colix, int x, int y, int z,
                                  int diameter) {
     if (diameter == 0)
       return;
     int r = (diameter + 1) / 2;
     if (! usePbuf) {
-      g.setColor(color);
+      g.setColor(Colix.getColor(colix));
       if (diameter <= 2) {
         if (diameter == 1) {
           g.drawLine(x, y, x, y);
@@ -196,7 +205,7 @@ final public class Graphics25D {
       }
       return;
     }
-    argbCurrent = color.getRGB();
+    argbCurrent = Colix.getArgb(colix);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       if (diameter <= 2) {
         if (diameter == 1) {
@@ -228,17 +237,17 @@ final public class Graphics25D {
     }
   }
 
-  public void fillCircleCentered(Color colorFill,
+  public void fillCircleCentered(short colixFill,
                                  int x, int y, int z, int diameter) {
     if (diameter == 0)
       return;
     int r = (diameter + 1) / 2;
     if (! usePbuf) {
-      g.setColor(colorFill);
+      g.setColor(Colix.getColor(colixFill));
       g.fillOval(x - r, y - r, diameter, diameter);
       return;
     }
-    argbCurrent = colorFill.getRGB();
+    argbCurrent = Colix.getArgb(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < width) {
       plotFilledCircleCenteredUnclipped(x, y, z, diameter);
     } else {
@@ -246,20 +255,20 @@ final public class Graphics25D {
     }
   }
 
-  public void fillCircleCentered(Color colorOutline, Color colorFill,
+  public void fillCircleCentered(short colixOutline, short colixFill,
                                  int x, int y, int z, int diameter) {
     if (diameter == 0)
       return;
     int r = (diameter + 1) / 2;
     if (! usePbuf) {
-      g.setColor(colorFill);
+      g.setColor(Colix.getColor(colixFill));
       g.fillOval(x -= r, y -= r, diameter, diameter);
       --diameter;
-      g.setColor(colorOutline);
+      g.setColor(Colix.getColor(colixOutline));
       g.drawOval(x, y, diameter, diameter);
       return;
     }
-    argbCurrent = colorOutline.getRGB();
+    argbCurrent = Colix.getArgb(colixOutline);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       if (diameter <= 2) {
         if (diameter == 1) {
@@ -273,7 +282,7 @@ final public class Graphics25D {
         }
       } else {
         plotCircleCenteredUnclipped(x, y, z, diameter);
-        argbCurrent = colorFill.getRGB();
+        argbCurrent = Colix.getArgb(colixFill);
         plotFilledCircleCenteredUnclipped(x, y, z, diameter);
       }
     } else {
@@ -289,41 +298,38 @@ final public class Graphics25D {
         }
       } else {
         plotCircleCenteredClipped(x, y, z, diameter);
-        argbCurrent = colorFill.getRGB();
+        argbCurrent = Colix.getArgb(colixFill);
         plotFilledCircleCenteredClipped(x, y, z, diameter);
       }
     }
   }
 
-  public void drawDotsCentered(Color colorDots, 
+  public void drawDotsCentered(short colixDots, 
                                int x, int y, int z, int diameterDots) {
     if (! usePbuf)
       return;
-    /*
-    int r = diameterVdw / 2;
-    int argbDots = colorDots.getRGB();
-    for (int i = -r; i < r; i += 5)
-      for (int j = -r; j < r; j += 5)
-        plotPixelClipped(argbDots, x + i, y + j, z - r);
-    */
-    dots25d.render(colorDots, diameterDots, x, y, z);
+    dots25d.render(colixDots, diameterDots, x, y, z);
   }
 
-  public void fillSphereCentered(Color colorOutline, Color colorFill,
+  public void fillSphereCentered(short colixOutline, short colixFill,
                                  int x, int y, int z, int diameter) {
     int r = (diameter + 1) / 2;
     if (! usePbuf)
       shadedSphereRenderer.render(x - r, y - r, z,
-                                  diameter, colorFill, colorOutline);
+                                  diameter,
+                                  Colix.getColor(colixFill),
+                                  Colix.getColor(colixOutline));
     else
-      sphere25d.render(colorFill, diameter, x, y, z);
+      sphere25d.render(colixFill, diameter, x, y, z);
   }
 
-  public void drawRect(int x, int y, int width, int height) {
+  public void drawRect(short colix, int x, int y, int width, int height) {
     if (! usePbuf) {
+      g.setColor(Colix.getColor(colix));
       g.drawRect(x, y, width, height);
       return;
     }
+    argbCurrent = Colix.getArgb(colix);
     int xRight = x + width;
     drawLine(x, y, 0, xRight, y, 0);
     int yBottom = y + height;
@@ -332,11 +338,14 @@ final public class Graphics25D {
     drawLine(xRight, y, 0, xRight, yBottom, 0);
   }
 
-  public void drawString(String str, int xBaseline, int yBaseline, int z) {
+  public void drawString(String str, short colix,
+                         int xBaseline, int yBaseline, int z) {
     if (! usePbuf) {
+      g.setColor(Colix.getColor(colix));
       g.drawString(str, xBaseline, yBaseline);
       return;
     }
+    argbCurrent = Colix.getArgb(colix);
     Text25D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(),
                  z, argbCurrent,
                  str, fontCurrent, this, control.getAwtComponent());
@@ -442,6 +451,37 @@ final public class Graphics25D {
     drawLine(x1, y1, z1, x2, y2, z2);
   }
 
+  public void drawLine(short colix,
+                       int x1, int y1, int z1, int x2, int y2, int z2) {
+    if (! usePbuf) {
+      g.setColor(Colix.getColor(colix));
+      g.drawLine(x1, y1, x2, y2);
+      return;
+    }
+    argbCurrent = Colix.getArgb(colix);
+    drawLine(x1, y1, z1, x2, y2, z2);
+  }
+
+  public void drawLine(short colix1, short colix2,
+                       int x1, int y1, int z1, int x2, int y2, int z2) {
+    if (colix1 == colix2) {
+      drawLine(colix1, x1, y1, z1, x2, y2, z2);
+      return;
+    }
+    if (! usePbuf ||
+        x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
+        y1 < 0 || y1 >= height || y2 < 0 || y2 >= height) {
+      int xMid = (x1 + x2) / 2;
+      int yMid = (y1 + y2) / 2;
+      int zMid = (z1 + z2) / 2;
+      drawLine(colix1, x1, y1, z1, xMid, yMid, zMid);
+      drawLine(colix2, xMid, yMid, zMid, x2, y2, z2);
+    } else {
+      plotLineDeltaUnclipped(Colix.getArgb(colix1), Colix.getArgb(colix2),
+                             x1, y1, z1, x2-x1, y2-y1, z2-z1);
+    }
+  }
+
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     if (! usePbuf) {
       g.drawLine(x1, y1, x2, y2);
@@ -454,22 +494,39 @@ final public class Graphics25D {
         return;
       int dx = x2 - x1;
       int dy = y2 - y1;
+      int dz = z2 - z1;
+
+
       if (cc1 != 0) { //cohen-sutherland line clipping
-        if      ((cc1 & xLT) != 0) { y1 +=      (-x1 * dy) / dx; x1 = 0; }
-        else if ((cc1 & xGT) != 0) { y1 += ((xLast-x1)*dy) / dx; x1 = xLast; }
-        else if ((cc1 & yLT) != 0) { x1 +=      (-y1 * dx) / dy; y1 = 0; }
-        else                       { x1 += ((yLast-y1)*dx) / dy; y1 = yLast; }
+        if      ((cc1 & xLT) != 0)
+          { y1 +=      (-x1 * dy)/dx; z1 +=      (-x1 * dz)/dx; x1 = 0; }
+        else if ((cc1 & xGT) != 0)
+          { y1 += ((xLast-x1)*dy)/dx; z1 += ((xLast-x1)*dz)/dx; x1 = xLast; }
+        else if ((cc1 & yLT) != 0)
+          { x1 +=      (-y1 * dx)/dy; z1 +=      (-y1 * dz)/dy; y1 = 0; }
+        else
+          { x1 += ((yLast-y1)*dx)/dy; z1 += ((yLast-y1)*dz)/dy; y1 = yLast; }
         cc1 = clipCode(x1, y1);
       } else {
-        if      ((cc2 & xLT) != 0) { y2 +=      (-x2 * dy) / dx; x2 = 0; }
-        else if ((cc2 & xGT) != 0) { y2 += ((xLast-x2)*dy) / dx; x2 = xLast; }
-        else if ((cc2 & yLT) != 0) { x2 +=      (-y2 * dx) / dy; y2 = 0; }
-        else                       { x2 += ((yLast-y2)*dx) / dy; y2 = yLast; }
+        if      ((cc2 & xLT) != 0)
+          { y2 +=      (-x2 * dy)/dx; z2 +=      (-x2 * dz)/dx; x2 = 0; }
+        else if ((cc2 & xGT) != 0)
+          { y2 += ((xLast-x2)*dy)/dx; z2 += ((xLast-x2)*dz)/dx; x2 = xLast; }
+        else if ((cc2 & yLT) != 0)
+          { x2 +=      (-y2 * dx)/dy; z2 +=      (-y2 * dz)/dy; y2 = 0; }
+        else
+          { x2 += ((yLast-y2)*dx)/dy; z2 += ((yLast-y2)*dz)/dy; y2 = yLast; }
         cc2 = clipCode(x2, y2);
       }
     }
     plotLineDeltaUnclipped(x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
+
+  /*
+  public void drawLineDelta(int x1, int y1, int z1, int dx, int dy, int dz) {
+    drawLine(x1, y1, z1, x1 + dx, y1 + dy, z1 + dz);
+  }
+  */
 
   public void drawPixel(int x, int y, int z) {
     if (! usePbuf) {
@@ -485,11 +542,29 @@ final public class Graphics25D {
     }
   }
 
-  public void drawPolygon4(Color colorOutline, int[] ax, int[] ay, int[] az) {
-    setColor(colorOutline);
+  public void drawPolygon4(short colixOutline, int[] ax, int[] ay, int[] az) {
+    setColix(colixOutline);
     drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
     for (int i = 3; --i >= 0; )
       drawLine(ax[i], ay[i], az[i], ax[i+1], ay[i+1], az[i+1]);
+  }
+
+  public void fillPolygon4(short colixFill,
+                           int[] ax, int[] ay, int[] az) {
+    if (! usePbuf) {
+      g.setColor(Colix.getColor(colixFill));
+      g.fillPolygon(ax, ay, 4);
+      return;
+    }
+    argbCurrent = Colix.getArgb(colixFill);
+    System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
+    System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
+    System.arraycopy(az, 0, triangle25d.az, 0, 3);
+    triangle25d.fillTriangle();
+    triangle25d.ax[1] = ax[3];
+    triangle25d.ay[1] = ay[3];
+    triangle25d.az[1] = az[3];
+    triangle25d.fillTriangle();
   }
 
   public void fillPolygon4(Color colorFill,
@@ -510,31 +585,30 @@ final public class Graphics25D {
     triangle25d.fillTriangle();
   }
 
-  public void fillPolygon4(Color colorOutline, Color colorFill,
+  public void fillPolygon4(short colixOutline, short colixFill,
                            int[] ax, int[] ay, int[] az) {
     if (! usePbuf) {
-      g.setColor(colorFill);
+      g.setColor(Colix.getColor(colixFill));
       g.fillPolygon(ax, ay, 4);
-      g.setColor(colorOutline);
+      g.setColor(Colix.getColor(colixOutline));
       g.drawPolygon(ax, ay, 4);
       return;
     }
-    drawPolygon4(colorOutline, ax, ay, az);
-    fillPolygon4(colorFill, ax, ay, az);
+    drawPolygon4(colixOutline, ax, ay, az);
+    fillPolygon4(colixFill, ax, ay, az);
   }
 
-  public void fillCylinder(Color color,
-                           int x1, int y1, int z1, int w1,
-                           int x2, int y2, int z2, int w2) {
-    cylinder25d.test(color, (w1 + w2) / 2,
+  public void fillCylinder(short colix1, short colix2, int w,
+                           int x1, int y1, int z1, int x2, int y2, int z2) {
+    cylinder25d.test(colix1, colix2, w,
                      x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
-    cylinder25d.renderClipped(color, (w1 + w2) / 2,
+    cylinder25d.renderClipped(colix1, colix2, w,
                               x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
-  public void fillShadedPolygon4(Color color, int ax[], int ay[], int az[]) {
+  public void fillShadedPolygon4(short colix, int ax[], int ay[], int az[]) {
     if (! usePbuf) {
-      shadedBondRenderer.render(color, ax, ay, az);
+      shadedBondRenderer.render(Colix.getColor(colix), ax, ay, az);
       return;
     }
     System.out.println("fillShadedPolygon4 with pbuf ?que?");
@@ -584,6 +658,7 @@ final public class Graphics25D {
       code |= 8;
     else if (x >= width)
       code |= 4;
+
     if (y < 0)
       code |= 2;
     else if (y >= height)
@@ -719,16 +794,22 @@ final public class Graphics25D {
     }
   }
   
-  void plotLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    plotLineDeltaUnclipped(x1, y1, z1, x2-x1, y2-y1, z2-z1);
-  }
-
-  void plotLineDelta(int x, int y, int z, int dx, int dy, int dz) {
-    if (x < 0 || x >= width || x + dx < 0 || x + dx > width ||
+  void plotLineDelta(int argb1, int argb2,
+                     int x, int y, int z, int dx, int dy, int dz) {
+    if (argb1 == argb2) {
+      argbCurrent = argb1;
+      if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
+          y < 0 || y >= height || y + dy < 0 || y + dy >= height)
+        drawLine(x, y, z, x+dx, y+dy, z+dz);
+      else
+        plotLineDeltaUnclipped(x, y, z, dx, dy, dz);
+      return;
+    }
+    if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height)
-      drawLine(x, y, z, x+dx, y+dy, z+dz);
+      plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
     else
-      plotLineDeltaUnclipped(x, y, z, dx, dy, dz);
+      plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
   }
 
   void plotLineDeltaUnclipped(int x1, int y1, int z1, int dx, int dy, int dz) {
@@ -803,6 +884,298 @@ final public class Graphics25D {
       if (zCurrent < zbuf[offset]) {
         zbuf[offset] = (short)zCurrent;
         pbuf[offset] = argbCurrent;
+      }
+    } while (--n > 0);
+  }
+
+  void plotLineDeltaUnclippedGradient(int argb1, int argb2,
+                              int x1, int y1, int z1, int dx, int dy, int dz) {
+    int r1 = (argb1 >> 16) & 0xFF;
+    int g1 = (argb1 >> 8) & 0xFF;
+    int b1 = argb1 & 0xFF;
+    int r2 = (argb2 >> 16) & 0xFF;
+    int g2 = (argb2 >> 8) & 0xFF;
+    int b2 = argb2 & 0xFF;
+    int dr = r2 - r1;
+    int dg = g2 - g1;
+    int db = b2 - b1;
+    int rScaled = r1 << 10;
+    int gScaled = g1 << 10;
+    int bScaled = b1 << 10;
+    int offset = y1 * width + x1;
+    if (z1 < zbuf[offset]) {
+      zbuf[offset] = (short)z1;
+      pbuf[offset] = argb1;
+    }
+    if (dx == 0 && dy == 0)
+      return;
+
+    // int xCurrent = x1;
+    // int yCurrent = y1;
+    int xIncrement = 1;
+    // int yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      // yIncrement = -1;
+      yOffsetIncrement = -width;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      int n = dx;
+      int nTransition = n >> 2;
+      int nColor2 = (n - nTransition) / 2;
+      int nColor1 = n - nColor2;
+      if (nTransition <= 0)
+        nTransition = 1;
+      int drScaled = (dr << 10) / nTransition;
+      int dgScaled = (dg << 10) / nTransition;
+      int dbScaled = (db << 10) / nTransition;
+      do {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          // yCurrent += yIncrement;
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] =
+            (n > nColor1) ? argb1 :
+            (n <= nColor2) ? argb2 :
+            0xFF000000 | 
+            ((rScaled << 6) & 0x00FF0000) |
+            ((gScaled >> 2) & 0x0000FF00) |
+            (bScaled >> 10);
+        }
+        if (n <= nColor1) {
+          rScaled += drScaled;
+          gScaled += dgScaled;
+          bScaled += dbScaled;
+        }
+      } while (--n > 0);
+      return;
+    }
+    int roundingFactor = dy - 1;
+    if (dz < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int twoDyAccumulatedXError = 0;
+    int n = dy;
+    int nTransition = n >> 2;
+    int nColor2 = (n - nTransition) / 2;
+    int nColor1 = n - nColor2;
+    if (nTransition <= 0)
+      nTransition = 1;
+    int drScaled = (dr << 10) / nTransition;
+    int dgScaled = (dg << 10) / nTransition;
+    int dbScaled = (db << 10) / nTransition;
+    do {
+      // yCurrent += yIncrement;
+      offset += yOffsetIncrement;
+      zCurrentScaled += zIncrementScaled;
+      twoDyAccumulatedXError += twoDx;
+      if (twoDyAccumulatedXError > dy) {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        twoDyAccumulatedXError -= twoDy;
+      }
+      int zCurrent = zCurrentScaled >> 10;
+      if (zCurrent < zbuf[offset]) {
+        zbuf[offset] = (short)zCurrent;
+        pbuf[offset] =
+          (n > nColor1) ? argb1 :
+          (n <= nColor2) ? argb2 :
+          0xFF000000 | 
+          ((rScaled << 6) & 0x00FF0000) |
+          ((gScaled >> 2) & 0x0000FF00) |
+          (bScaled >> 10);
+      }
+      if (n <= nColor1) {
+        rScaled += drScaled;
+        gScaled += dgScaled;
+        bScaled += dbScaled;
+      }
+    } while (--n > 0);
+  }
+
+  void plotLineDeltaUnclipped(int argb1, int argb2,
+                              int x1, int y1, int z1, int dx, int dy, int dz) {
+    int offset = y1 * width + x1;
+    if (z1 < zbuf[offset]) {
+      zbuf[offset] = (short)z1;
+      pbuf[offset] = argb1;
+    }
+    if (dx == 0 && dy == 0)
+      return;
+
+    // int xCurrent = x1;
+    // int yCurrent = y1;
+    int xIncrement = 1;
+    // int yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      // yIncrement = -1;
+      yOffsetIncrement = -width;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      int n = dx, nMid = n / 2;
+      do {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          // yCurrent += yIncrement;
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] = n > nMid ? argb1 : argb2;
+        }
+      } while (--n > 0);
+      return;
+    }
+    int roundingFactor = dy - 1;
+    if (dz < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int twoDyAccumulatedXError = 0;
+    int n = dy, nMid = n / 2;
+    do {
+      // yCurrent += yIncrement;
+      offset += yOffsetIncrement;
+      zCurrentScaled += zIncrementScaled;
+      twoDyAccumulatedXError += twoDx;
+      if (twoDyAccumulatedXError > dy) {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        twoDyAccumulatedXError -= twoDy;
+      }
+      int zCurrent = zCurrentScaled >> 10;
+      if (zCurrent < zbuf[offset]) {
+        zbuf[offset] = (short)zCurrent;
+        pbuf[offset] = n > nMid ? argb1 : argb2;
+      }
+    } while (--n > 0);
+  }
+
+  void plotLineDeltaClipped(int argb1, int argb2,
+                            int x1, int y1, int z1, int dx, int dy, int dz) {
+    int width = this.width;
+    int height = this.height;
+    int offset = y1 * width + x1;
+    if (x1 >= 0 && x1 < width &&
+        y1 >= 0 && y1 < height) {
+      if (z1 < zbuf[offset]) {
+        zbuf[offset] = (short)z1;
+        pbuf[offset] = argb1;
+      }
+    }
+    if (dx == 0 && dy == 0)
+      return;
+
+    int xCurrent = x1;
+    int yCurrent = y1;
+    int xIncrement = 1;
+    int yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      yIncrement = -1;
+      yOffsetIncrement = -width;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      int n = dx, nMid = n / 2;
+      do {
+        xCurrent += xIncrement;
+        offset += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          yCurrent += yIncrement;
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        if (xCurrent >= 0 && xCurrent < width &&
+            yCurrent >= 0 && yCurrent < height) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = n > nMid ? argb1 : argb2;
+          }
+        }
+      } while (--n > 0);
+      return;
+    }
+    int roundingFactor = dy - 1;
+    if (dz < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int twoDyAccumulatedXError = 0;
+    int n = dy, nMid = n / 2;
+    do {
+      yCurrent += yIncrement;
+      offset += yOffsetIncrement;
+      zCurrentScaled += zIncrementScaled;
+      twoDyAccumulatedXError += twoDx;
+      if (twoDyAccumulatedXError > dy) {
+        xCurrent += xIncrement;
+        offset += xIncrement;
+        twoDyAccumulatedXError -= twoDy;
+      }
+      if (xCurrent >= 0 && xCurrent < width &&
+          yCurrent >= 0 && yCurrent < height) {
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          pbuf[offset] = n > nMid ? argb1 : argb2;
+        }
       }
     } while (--n > 0);
   }

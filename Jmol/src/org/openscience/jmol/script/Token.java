@@ -74,7 +74,11 @@ public class Token {
   final static int atomproperty      = (1 << 14) | expression;
   // every predefined is also valid in an expression context
   final static int comparator        = (1 << 15) | expression;
-  final static int predefinedset     = (1 << 16) | expression;
+  // FIXME mth 2003 07 19
+  // "backbone on" is not compiling because it is also a predefinedset
+  // so, I am taking a stab in the dark by not defining it as an expression
+  // ... we'll see
+  final static int predefinedset     = (1 << 16); // | expression;
   final static int colorparam        = (1 << 17);
   final static int specialstring     = (1 << 18); // load, echo, label
   // generally, the minus sign is used to denote atom ranges
@@ -90,7 +94,7 @@ public class Token {
   final static int setDefaultOn    = (1 << 24);
 
   // rasmol commands
-  final static int backbone     = command |  0 | predefinedset;
+  final static int backbone     = command |  0 | bool | predefinedset;
   final static int background   = command |  1 | colorparam | setspecial;
   final static int bond         = command |  2 | setparam | bool;
   final static int cartoon      = command |  3 | setparam;

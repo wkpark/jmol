@@ -147,10 +147,9 @@ public class RepaintManager {
       if (control.getShowMeasurements())
         control.measureRenderer.paint(g25d, rectClip, control);
       Rectangle band = control.getRubberBandSelection();
-      if (band != null) {
-        g25d.setColor(control.getColorRubberband());
-        g25d.drawRect(band.x, band.y, band.width, band.height);
-      }
+      if (band != null)
+        g25d.drawRect(control.getColixRubberband(),
+                      band.x, band.y, band.width, band.height);
     }
     notifyRepainted();
   }

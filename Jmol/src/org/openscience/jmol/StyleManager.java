@@ -27,8 +27,6 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomShape;
 
 import java.awt.Font;
-import java.awt.Color;
-import java.util.BitSet;
 
 public class StyleManager {
 

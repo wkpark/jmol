@@ -90,14 +90,13 @@ public class Distance implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g25d.setFont(font);
     FontMetrics fontMetrics = g25d.getFontMetrics(font);
-    g25d.setColor(control.getColorDistance());
     int j = fontMetrics.stringWidth(strDistance);
     int z = (z1 + z2) / 2;
     if (x2 == x1) {
-      g25d.drawString(strDistance,
+      g25d.drawString(strDistance, control.getColixDistance(),
                       x1 + 1, ((y1 + y2) / 2) + 1, z);
     } else {
-      g25d.drawString(strDistance,
+      g25d.drawString(strDistance, control.getColixDistance(),
                       (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1, z);
     }
   }

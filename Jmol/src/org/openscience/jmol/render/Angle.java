@@ -78,8 +78,7 @@ public class Angle implements MeasurementInterface {
     int zB = (z3 + z2) / 2;
 
     control.maybeDottedStroke(g25d);
-    g25d.setColor(control.getColorAngle());
-    g25d.drawLine(xA, yA, zA, xB, yB, zB);
+    g25d.drawLine(control.getColixAngle(), xA, yA, zA, xB, yB, zB);
     control.defaultStroke(g25d);
   }
 
@@ -99,14 +98,13 @@ public class Angle implements MeasurementInterface {
     Font font = control.getMeasureFont(avgRadius);
     g25d.setFont(font);
     FontMetrics fontMetrics = g25d.getFontMetrics(font);
-    g25d.setColor(control.getColorAngle());
     int j = fontMetrics.stringWidth(strAngle);
 
     int xloc = (2 * x2 + x1 + x3) / 4;
     int yloc = (2 * y2 + y1 + y3) / 4;
     int zloc = (2 * z2 + z1 + z3) / 4;
 
-    g25d.drawString(strAngle, xloc, yloc, zloc);
+    g25d.drawString(strAngle, control.getColixAngle(), xloc, yloc, zloc);
   }
 
   public int[] getAtomList() {

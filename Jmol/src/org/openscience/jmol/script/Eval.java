@@ -276,6 +276,9 @@ public class Eval implements Runnable {
       statement = aatoken[pc++];
       Token token = statement[0];
       switch (token.tok) {
+      case Token.backbone:
+        backbone();
+        break;
       case Token.background:
         background();
         break;
@@ -360,7 +363,6 @@ public class Eval implements Runnable {
         dots();
         break;
         // not implemented
-      case Token.backbone:
       case Token.bond:
       case Token.cartoon:
       case Token.clipboard:
@@ -929,6 +931,53 @@ public class Eval implements Runnable {
     return null;
   }
 
+  void backbone() throws ScriptException {
+    int tok = statement[1].tok;
+    byte style = DisplayControl.WIREFRAME;
+    short mar = -1;
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      style = DisplayControl.NONE;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        numberOutOfRange();
+      mar = (short)(radiusRasMol * 4);
+      style = DisplayControl.SHADING;
+      break;
+    case Token.decimal:
+      double angstroms = ((Double)statement[1].value).doubleValue();
+      if (angstroms >= 2)
+        numberOutOfRange();
+      mar = (short)(angstroms * 1000);
+      style = DisplayControl.SHADING;
+      break;
+    case Token.identifier:
+      String id = (String)statement[1].value;
+      if (id.equalsIgnoreCase("shaded")) {
+        control.setStyleBond(DisplayControl.SHADING);
+        return;
+      }
+      if (id.equalsIgnoreCase("box")) {
+        control.setStyleBond(DisplayControl.BOX);
+        return;
+      }
+      if (id.equalsIgnoreCase("quickdraw")) {
+        control.setStyleBond(DisplayControl.QUICKDRAW);
+        return;
+      }
+    default:
+      booleanOrNumberExpected();
+    }
+    if (mar == -1)
+      control.setStyleBackboneScript(style);
+    else
+      control.setStyleMarBackboneScript(style, mar);
+  }
+
   void background() throws ScriptException {
     control.setColorBackground(getColorParam(1));
   }
@@ -977,6 +1026,8 @@ public class Eval implements Runnable {
       control.setColorDots(getColorOrNoneParam(2));
       break;
     case Token.backbone:
+      control.setColorBackboneScript(getColorOrNoneParam(2));
+      break;
     case Token.ribbons:
     case Token.hbonds:
     case Token.ssbonds:

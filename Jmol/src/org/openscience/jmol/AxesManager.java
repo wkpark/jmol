@@ -26,7 +26,7 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
-import java.awt.Color;
+import org.openscience.jmol.g25d.Colix;
 
 public class AxesManager {
 
@@ -40,8 +40,8 @@ public class AxesManager {
 
     axes = new Axes(control);
     bbox = new BoundingBox(control);
-    setColorAxes(Color.lightGray);
-    setColorAxesText(Color.lightGray);
+    setColixAxes(Colix.LIGHTGRAY);
+    setColixAxesText(Colix.LIGHTGRAY);
   }
 
   public byte modeAxes = DisplayControl.AXES_NONE;
@@ -64,13 +64,13 @@ public class AxesManager {
     }
   }
 
-  public Color colorAxes;
-  public void setColorAxes(Color colorAxes) {
-    this.colorAxes = colorAxes;
+  public short colixAxes;
+  public void setColixAxes(short colixAxes) {
+    this.colixAxes = colixAxes;
   }
 
-  public Color colorAxesText;
-  public void setColorAxesText(Color colorAxesText) {
-    this.colorAxesText = colorAxesText;
+  public short colixAxesText;
+  public void setColixAxesText(short colixAxesText) {
+    this.colixAxesText = colixAxesText;
   }
 }

@@ -27,9 +27,9 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
 import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g25d.Colix;
 
 import java.awt.Rectangle;
-import java.awt.Color;
 import java.util.Hashtable;
 
 public class BondRenderer {
@@ -48,7 +48,7 @@ public class BondRenderer {
 
     fastRendering = control.getFastRendering();
     showAtoms = control.getShowAtoms();
-    colorSelection = control.getColorSelection();
+    colixSelection = control.getColixSelection();
     showMultipleBonds = control.getShowMultipleBonds();
     modeMultipleBond = control.getModeMultipleBond();
     showAxis = control.getDebugShowAxis();
@@ -57,7 +57,7 @@ public class BondRenderer {
 
   boolean fastRendering;
   boolean showAtoms;
-  Color colorSelection;
+  short colixSelection;
   boolean showMultipleBonds;
   byte modeMultipleBond;
   boolean showAxis;
@@ -69,12 +69,12 @@ public class BondRenderer {
   int dx2, dy2, dz2;
   int mag2d, mag2d2, halfMag2d;
   int mag3d, mag3d2;
-  Color color1, color2;
+  short colix1, colix2;
   boolean sameColor;
   int radius1, diameter1;
   int radius2, diameter2;
   int width1, width2;
-  Color outline1, outline2;
+  short outline1, outline2;
   byte styleAtom1, styleAtom2;
   int bondOrder;
   byte styleBond;
@@ -87,7 +87,7 @@ public class BondRenderer {
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
-    g25d.fillCircleCentered(colorSelection, x, y, z+1, halodiameter);
+    g25d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
   public void render(AtomShape atomShape1, int index1,
@@ -106,13 +106,13 @@ public class BondRenderer {
         width1 = width2 = (width1 + width2) / 2;
     }
 
-    color1 = atomShape1.colorBonds[index1];
-    if (color1 == null)
-      color1 = atomShape1.colorAtom;
-    color2 = atomShape2.colorBonds[index2];
-    if (color2 == null)
-      color2 = atomShape2.colorAtom;
-    sameColor = color1.equals(color2);
+    colix1 = atomShape1.acolixBonds[index1];
+    if (colix1 == 0)
+      colix1 = atomShape1.colixAtom;
+    colix2 = atomShape2.acolixBonds[index2];
+    if (colix2 == 0)
+      colix2 = atomShape2.colixAtom;
+    sameColor = colix1 == colix2;
 
     if (!showAtoms) {
       diameter1 = diameter2 = 0;
@@ -136,7 +136,8 @@ public class BondRenderer {
         !showMultipleBonds ||
         modeMultipleBond == DisplayControl.MB_NEVER ||
         (modeMultipleBond == DisplayControl.MB_SMALL &&
-         marBond > DisplayControl.marMultipleBondSmallMaximum))
+         marBond > DisplayControl.marMultipleBondSmallMaximum) ||
+        order == -1)
       return 1;
     return order;
   }
@@ -153,32 +154,22 @@ public class BondRenderer {
       return; // the pixels from the atoms will nearly cover the bond
     if (!showAtoms && bondOrder == 1 &&
         (fastRendering || styleBond == control.WIREFRAME)) {
-      g25d.setColor(color1);
-      if (sameColor) {
-        g25d.drawLineInside(x1, y1, z1, x2, y2, z2);
-      } else {
-        int xMid = (x1 + x2) / 2;
-        int yMid = (y1 + y2) / 2;
-        int zMid = (z1 + z2) / 2;
-        g25d.drawLineInside(x1, y1, z1, xMid, yMid, zMid);
-        g25d.setColor(color2);
-        g25d.drawLineInside(xMid, yMid, zMid, x2, y2, z2);
-      }
+      g25d.drawLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
       return;
     }
     radius1 = diameter1 >> 1;
     radius2 = diameter2 >> 1;
     mag2d = (int)Math.sqrt(mag2d2);
     // if the front atom (radius1) has completely obscured the bond, stop
-    if (radius1 >= mag2d)
+    if (radius1 > mag2d)
       return;
     halfMag2d = mag2d / 2;
     mag3d = (int)Math.sqrt(mag3d2);
     int radius1Bond = radius1 * mag2d / mag3d;
     int radius2Bond = radius2 * mag2d / mag3d;
 
-    outline1 = control.getColorAtomOutline(styleBond, color1);
-    outline2 = control.getColorAtomOutline(styleBond, color2);
+    outline1 = control.getColixAtomOutline(styleBond, colix1);
+    outline2 = control.getColixAtomOutline(styleBond, colix2);
 
     this.bondOrder = bondOrder;
 
@@ -187,8 +178,8 @@ public class BondRenderer {
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
-      color1 = outline1;
-      color2 = outline2;
+      colix1 = outline1;
+      colix2 = outline2;
       lineBond = true;
     }
     resetAxisCoordinates(lineBond);
@@ -204,14 +195,14 @@ public class BondRenderer {
       stepAxisCoordinates();
     }
     if (showAxis) {
-      Color color = control.transparentGreen();
-      g25d.setColor(color);
+      short colix = control.transparentGreen();
+      g25d.setColix(colix);
       g25d.drawLine(x1 + 5, y1, z1, x1 - 5, y1, z1);
       g25d.drawLine(x1, y1 + 5, z1, x1, y1 - 5, z1);
-      g25d.drawCircleCentered(color, x1, y1, z1, 10);
+      g25d.drawCircleCentered(colix, x1, y1, z1, 10);
       g25d.drawLine(x2 + 5, y2, z2, x2 - 5, y2, z2);
       g25d.drawLine(x2, y2 + 5, z2, x2, y2 - 5, z2);
-      g25d.drawCircleCentered(color, x2, y2, z2, 10);
+      g25d.drawCircleCentered(colix, x2, y2, z2, 10);
     }
   }
 
@@ -225,18 +216,7 @@ public class BondRenderer {
 
   void lineBond() {
     if (g25dEnabled) {
-      if (sameColor) {
-        g25d.setColor(color1);
-        g25d.drawLineInside(xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
-      } else {
-        int xMid = (xAxis1 + xAxis2) / 2;
-        int yMid = (yAxis1 + yAxis2) / 2;
-        int zMid = (zAxis1 + zAxis2) / 2;
-        g25d.setColor(color1);
-        g25d.drawLineInside(xAxis1, yAxis1, z1, xMid, yMid, zMid);
-        g25d.setColor(color2);
-        g25d.drawLineInside(xMid, yMid, zMid, xAxis2, yAxis2, z2);
-      }
+      g25d.drawLine(colix1, colix2, xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
       return;
     }
     calcMag2dLine();
@@ -245,7 +225,7 @@ public class BondRenderer {
     if (sameColor || distanceExit >= mag2dLine / 2 ) {
       if (distanceExit + distanceSurface2 >= mag2dLine)
         return;
-      g25d.setColor(color2);
+      g25d.setColix(colix2);
       g25d.drawLineInside(xExit, yExit, zExit,
                           xSurface2, ySurface2, zSurface2);
       return;
@@ -253,26 +233,15 @@ public class BondRenderer {
     int xMid = (xAxis1 + xAxis2) / 2;
     int yMid = (yAxis1 + yAxis2) / 2;
     int zMid = (zAxis1 + zAxis2) / 2;
-    g25d.setColor(color1);
+    g25d.setColix(colix1);
     g25d.drawLineInside(xExit, yExit, zExit, xMid, yMid, zMid);
-    g25d.setColor(color2);
+    g25d.setColix(colix2);
     g25d.drawLineInside(xMid, yMid, zMid, xSurface2, ySurface2, zSurface2);
   }
 
   void cylinderBond() {
-    if (sameColor) {
-      g25d.fillCylinder(color1,
-                        xAxis1, yAxis1, z1, width1, xAxis2, yAxis2, z2, width2);
-    } else {
-      int xMid = (xAxis1 + xAxis2) / 2;
-      int yMid = (yAxis1 + yAxis2) / 2;
-      int zMid = (zAxis1 + zAxis2) / 2;
-      int wMid = (width1 + width2) / 2;
-      g25d.fillCylinder(color1,
-                        xAxis1, yAxis1, z1, width1, xMid, yMid, zMid, wMid);
-      g25d.fillCylinder(color2, xMid, yMid, zMid, wMid,
-                        xAxis2, yAxis2, z2, width2);
-    }
+    g25d.fillCylinder(colix1, colix2, (width1 + width2) / 2,
+                      xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
   }
 
 
@@ -329,79 +298,50 @@ public class BondRenderer {
         axPoly[1] = xSurfaceTop; ayPoly[1] = ySurfaceTop;
         axPoly[2] = xSurfaceBot; ayPoly[2] = ySurfaceBot;
         axPoly[3] = xExitBot; ayPoly[3] = yExitBot;
-        polyBond1(styleBond, color2, outline2);
+        polyBond1(styleBond, colix2, outline2);
       }
     } else {
       axPoly[0] = xExitTop; ayPoly[0] = yExitTop;
       axPoly[1] = xMidTop; ayPoly[1] = yMidTop;
       axPoly[2] = xMidBot; ayPoly[2] = yMidBot;
       axPoly[3] = xExitBot; ayPoly[3] = yExitBot;
-      polyBond1(styleBond, color1, outline1);
+      polyBond1(styleBond, colix1, outline1);
 
       axPoly[0] = xMidTop; ayPoly[0] = yMidTop;
       axPoly[1] = xSurfaceTop; ayPoly[1] = ySurfaceTop;
       axPoly[2] = xSurfaceBot; ayPoly[2] = ySurfaceBot;
       axPoly[3] = xMidBot; ayPoly[3] = yMidBot;
-      polyBond1(styleBond, color2, outline2);
+      polyBond1(styleBond, colix2, outline2);
     }
   }
 
-  void polyBond1(byte styleBond, Color color, Color outline) {
+  void polyBond1(byte styleBond, short colix, short outline) {
     switch(styleBond) {
     case DisplayControl.BOX:
-      g25d.drawPolygon4(color, axPoly, ayPoly, azPoly);
+      g25d.drawPolygon4(colix, axPoly, ayPoly, azPoly);
       break;
     case DisplayControl.SHADING:
-      g25d.fillShadedPolygon4(color, axPoly, ayPoly, azPoly);
+      g25d.fillShadedPolygon4(colix, axPoly, ayPoly, azPoly);
       break;
     case DisplayControl.QUICKDRAW:
-      g25d.fillPolygon4(outline, color, axPoly, ayPoly, azPoly);
+      g25d.fillPolygon4(outline, colix, axPoly, ayPoly, azPoly);
       break;
     }
   }
 
   void drawEndCaps() {
     if (!showAtoms || (styleAtom1 == DisplayControl.NONE))
-      drawEndCap(xAxis1, yAxis1, zAxis1, width1, color1, outline1);
+      drawEndCap(xAxis1, yAxis1, zAxis1, width1, colix1, outline1);
     if (!showAtoms || (styleAtom2 == DisplayControl.NONE))
-      drawEndCap(xAxis2, yAxis2, zAxis2, width2, color2, outline2);
+      drawEndCap(xAxis2, yAxis2, zAxis2, width2, colix2, outline2);
   }
 
   void drawEndCap(int x, int y, int z, int diameter,
-                  Color color, Color outline) {
+                  short colix, short outline) {
     if (styleBond == DisplayControl.SHADING)
-      g25d.fillCircleCentered(outline, color, x, y, z, diameter);
+      g25d.fillCircleCentered(outline, colix, x, y, z, diameter);
     else if (styleBond == DisplayControl.QUICKDRAW)
-      g25d.fillCircleCentered(outline, color, x, y, z, diameter);
-  }
-
-  private final Hashtable htShades = new Hashtable();
-  private final static int maxShade = 16;
-  Color[] getShades(Color color, Color darker) {
-    Color[] shades = (Color[])htShades.get(color);
-    if (shades == null) {
-      int colorR = color.getRed();
-      int colorG = color.getGreen();
-      int colorB = color.getBlue();
-      colorR += colorR / 12; if (colorR > 255) colorR = 255;
-      colorG += colorG / 12; if (colorG > 255) colorG = 255;
-      colorB += colorB / 12; if (colorB > 255) colorB = 255;
-      int darkerR = darker.getRed(),   rangeR = colorR - darkerR;
-      int darkerG = darker.getGreen(), rangeG = colorG - darkerG;
-      int darkerB = darker.getBlue(),  rangeB = colorB - darkerB;
-      shades = new Color[maxShade];
-      for (int i = 0; i < maxShade; ++i) {
-        double distance = (float)i / (maxShade - 1);
-        double percentage = Math.sqrt(1 - distance);
-        int r = darkerR + (int)(percentage * rangeR);
-        int g = darkerG + (int)(percentage * rangeG);
-        int b = darkerB + (int)(percentage * rangeB);
-        int rgb = 0xFF << 24 | r << 16 | g << 8 | b;
-        shades[i] = new Color(rgb);
-      }
-      htShades.put(color, shades);
-    }
-    return shades;
+      g25d.fillCircleCentered(outline, colix, x, y, z, diameter);
   }
 
   int xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2;
@@ -437,7 +377,7 @@ public class BondRenderer {
       xAxis2 -= dxStep2; yAxis2 -= dyStep2;
     }
     if (showAxis) {
-      g25d.setColor(control.transparentGrey());
+      g25d.setColix(control.transparentGrey());
       g25d.drawLine(x1 + dy, y1 - dx, z1, x1 - dy, y1 + dx, z1);
       g25d.drawLine(x2 + dy, y2 - dx, z2, x2 - dy, y2 + dx, z2);
     }
@@ -472,7 +412,7 @@ public class BondRenderer {
     mag2dLineSquared = dxLine*dxLine + dyLine*dyLine;
     mag2dLine = (int)Math.sqrt(mag2dLineSquared);
     if (showAxis) {
-      g25d.setColor(Color.cyan);
+      g25d.setColix(Colix.CYAN);
       g25d.drawLine(xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2);
     }
   }
@@ -519,8 +459,8 @@ public class BondRenderer {
     }
   }
 
-  void dot(int x, int y, int z, Color co) {
-    g25d.setColor(co);
+  void dot(int x, int y, int z, short co) {
+    g25d.setColix(co);
     g25d.fillRect(x-1, y-1, z, 2, 2);
   }
 

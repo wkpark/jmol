@@ -109,13 +109,13 @@ public class ChemFrameRenderer {
       shapes[i].transform(control);
     }
     
-    if (! control.getGraphics25DEnabled()) {
-      if (control.jvm12orGreater) {
-        UseJavaSort.sortShapes(shapes);
-      } else {
-        NonJavaSort.sortShapes(shapes);
-      }
+    if (control.jvm12orGreater) {
+      UseJavaSort.sortShapes(shapes);
+    } else {
+      NonJavaSort.sortShapes(shapes);
+    }
 
+    if (! control.getGraphics25DEnabled()) {
       boolean slabEnabled = control.getSlabEnabled();
       int slabValue = control.getSlabValue();
       for (int i = 0; i < shapes.length; ++i) {
@@ -126,7 +126,7 @@ public class ChemFrameRenderer {
         shapes[i].render(g25d, control);
       }
     } else {
-      for (int i = shapes.length; --i >= 0; ) {
+      for (int i = shapes.length; --i >= 0 ; ) {
         shapes[i].render(g25d, control);
       }
     }

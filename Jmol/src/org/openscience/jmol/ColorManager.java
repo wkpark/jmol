@@ -25,6 +25,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.g25d.Colix;
 
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
@@ -56,16 +57,21 @@ public class ColorManager {
   }
 
   public Color colorOutline = Color.black;
+  public short colixOutline = Colix.BLACK;
   public void setColorOutline(Color c) {
     colorOutline = c;
+    colixOutline = Colix.getColix(c);
   }
 
   public Color colorSelection = Color.orange;
+  public short colixSelection = Colix.ORANGE;
   public Color colorSelectionTransparent;
+  public short colixSelectionTransparent;
   public void setColorSelection(Color c) {
     if (colorSelection == null || !colorSelection.equals(c)) {
       colorSelection = c;
       colorSelectionTransparent = null;
+      colixSelectionTransparent = 0;
     }
   }
   public Color getColorSelection() {
@@ -74,10 +80,20 @@ public class ColorManager {
     }
     return colorSelectionTransparent;
   }
+  public short getColixSelection() {
+    if (colixSelectionTransparent == 0)
+      colixSelectionTransparent = Colix.getColix(getColorSelection());
+    return colixSelectionTransparent;
+  }
 
   public Color colorRubberband = Color.pink;
+  public short colixRubberband = Colix.PINK;
   public Color getColorRubberband() {
     return colorRubberband;
+  }
+
+  public short getColixRubberband() {
+    return colixRubberband;
   }
 
   public boolean isBondAtomColor = true;
@@ -86,50 +102,64 @@ public class ColorManager {
   }
 
   public Color colorBond = null;
+  public short colixBond = 0;
   public void setColorBond(Color c) {
     colorBond = c;
+    colixBond = Colix.getColix(c);
   }
 
   public Color colorLabel = Color.black;
-  public void setColorLabel(Color c) {
-    colorLabel = c;
+  public short colixLabel = Colix.BLACK;
+  public void setColorLabel(Color color) {
+    colorLabel = color;
+    colixLabel = Colix.getColix(color);
   }
 
   public Color colorDots = Color.blue;
-  public void setColorDots(Color c) {
-    colorDots = c;
+  public short colixDots = Colix.BLUE;
+  public void setColorDots(Color color) {
+    colorDots = color;
+    colixDots = Colix.getColix(color);
   }
 
   public Color colorDistance = Color.black;
+  public short colixDistance = Colix.BLACK;
   public void setColorDistance(Color c) {
     colorDistance = c;
+    colixDistance = Colix.getColix(c);
   }
 
   public Color colorAngle = Color.black;
+  public short colixAngle = Colix.BLACK;
   public void setColorAngle(Color c) {
     colorAngle = c;
+    colixAngle = Colix.getColix(c);
   }
 
   public Color colorDihedral = Color.black;
+  public short colixDihedral = Colix.BLACK;
   public void setColorDihedral(Color c) {
     colorDihedral = c;
+    colixDihedral = Colix.getColix(c);
   }
 
   public Color colorBackground = Color.white;
+  public short colixBackground = Colix.WHITE;
   public void setColorBackground(Color bg) {
     if (bg == null)
       colorBackground = Color.getColor("colorBackground");
     else
       colorBackground = bg;
+    colixBackground = Colix.getColix(colorBackground);
   }
-  
+
   // FIXME NEEDSWORK -- arrow vector stuff
   public Color colorVector = Color.black;
-
+  public short colixVector = Colix.BLACK;
   public void setColorVector(Color c) {
     colorVector = c;
+    colixVector = Colix.getColix(c);
   }
-
   public Color getColorVector() {
     return colorVector;
   }
@@ -143,6 +173,10 @@ public class ColorManager {
     return getColorAtom(modeAtomColorProfile, atom);
   }
 
+  public short getColixAtom(Atom atom) {
+    return Colix.getColix(getColorAtom(modeAtomColorProfile, atom));
+  }
+
   public Color getColorAtom(byte mode, Atom atom) {
     if (mode > colorProfiles.size()) {
         return Color.white;
@@ -153,12 +187,23 @@ public class ColorManager {
     return color;
   }
 
+  public short getColixAtom(byte mode, Atom atom) {
+    return Colix.getColix(getColorAtom(mode, atom));
+  }
+
   public Color getColorAtomOutline(byte style, Color color) {
     Color outline =
       (showDarkerOutline || style == DisplayControl.SHADING)
       ? getDarker(color) : colorOutline;
     if (modeTransparentColors)
       outline = getColorTransparent(outline);
+    return outline;
+  }
+
+  public short getColixAtomOutline(byte style, short colix) {
+    short outline =
+      (showDarkerOutline || style == DisplayControl.SHADING)
+      ? Colix.getColixDarker(colix) : colixOutline;
     return outline;
   }
 
@@ -193,15 +238,21 @@ public class ColorManager {
     return transparent;
   }
 
+  public short getColixTransparent(short colix) {
+    return Colix.getColix(getColorTransparent(Colix.getColor(colix)));
+  }
+
   public void setColorBackground(String colorName) {
     if (colorName != null && colorName.length() > 0)
       setColorBackground(getColorFromString(colorName));
   }
 
+  /*
   public void setColorForeground(String colorName) {
     // what is this supposed to do?
     // setColorForeground(getColorFromHexString(colorName));
   }
+  */
 
   // official HTML 4.0 color names & values
   private static final Object[] aHtmlColors = {
@@ -248,10 +299,9 @@ public class ColorManager {
           return color;
       }
     }
-    System.out.println("error converting tsring to color:" + strColor);
+    System.out.println("error converting string to color:" + strColor);
     return Color.pink;
   }
-
 
   public void flushCachedColors() {
     colorSelectionTransparent = null;

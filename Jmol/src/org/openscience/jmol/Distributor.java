@@ -27,8 +27,6 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomShape;
 import org.openscience.cdk.renderer.color.AtomColorer;
 
-import java.awt.Color;
-
 public class Distributor {
 
   DisplayControl control;
@@ -88,23 +86,53 @@ public class Distributor {
     }
   }
 
-  public void setColorBond(Color colorBond, JmolAtomIterator iter) {
+  public void setStyleBackbone(byte styleBackbone, JmolAtomIterator iter) {
     while (iter.hasNext()) {
       AtomShape atomShape = iter.nextAtom().getAtomShape();
       if (iter.allBonds())
-        atomShape.setColorAllBonds(colorBond);
+        atomShape.setStyleAllBackbones(styleBackbone);
       else
-        atomShape.setColorBond(colorBond, iter.indexBond());
+        atomShape.setStyleBackbone(styleBackbone, iter.indexBond());
     }
   }
 
-  public void setColorAtom(byte mode, Color color, JmolAtomIterator iter) {
-    boolean useColorProfile = color == null;
+  public void setStyleMarBackbone(byte style,short mar,JmolAtomIterator iter) {
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
+      if (iter.allBonds())
+        atomShape.setStyleMarAllBackbones(style, mar);
+      else
+        atomShape.setStyleMarBackbone(style, mar,iter.indexBond());
+    }
+  }
+
+  public void setColixBond(short colixBond, JmolAtomIterator iter) {
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
+      if (iter.allBonds())
+        atomShape.setColixAllBonds(colixBond);
+      else
+        atomShape.setColixBond(colixBond, iter.indexBond());
+    }
+  }
+
+  public void setColixBackbone(short colixBackbone, JmolAtomIterator iter) {
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.nextAtom().getAtomShape();
+      if (iter.allBonds())
+        atomShape.setColixAllBackbones(colixBackbone);
+      else
+        atomShape.setColixBackbone(colixBackbone, iter.indexBond());
+    }
+  }
+
+  public void setColixAtom(byte mode, short colix, JmolAtomIterator iter) {
+    boolean useColorProfile = colix == 0;
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
-      Color colorT = useColorProfile
-        ? control.getColorAtom(mode, atom) : color;
-      atom.getAtomShape().setColorAtom(colorT);
+      short colixT = useColorProfile
+        ? control.getColixAtom(mode, atom) : colix;
+      atom.getAtomShape().setColixAtom(colixT);
     }
   }
 
@@ -122,14 +150,14 @@ public class Distributor {
     }
   }
 
-  public void setColorMarDots(Color colorDots, short marDots,
+  public void setColixMarDots(short colixDots, short marDots,
                               JmolAtomIterator iter) {
-    Color colorT = colorDots;
+    short colixT = colixDots;
     while (iter.hasNext()) {
       Atom atom = iter.nextAtom();
-      if (colorDots == null)
-        colorT = control.getColorAtom(atom);
-      atom.getAtomShape().setColorMarDots(colorT, marDots);
+      if (colixDots == 0)
+        colixT = control.getColixAtom(atom);
+      atom.getAtomShape().setColixMarDots(colixT, marDots);
     }
   }
 

@@ -28,9 +28,7 @@ package org.openscience.jmol.g25d;
 import org.openscience.jmol.*;
 
 import java.awt.Component;
-//import java.awt.Graphics;
 import java.awt.image.MemoryImageSource;
-import java.awt.Color;
 import java.util.Hashtable;
 
 public class Triangle25D {

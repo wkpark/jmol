@@ -29,7 +29,6 @@ import org.openscience.jmol.DisplayControl;
 
 import java.awt.Component;
 import java.awt.image.MemoryImageSource;
-import java.awt.Color;
 import java.util.Hashtable;
 
 public class Dots25D {
@@ -59,8 +58,8 @@ public class Dots25D {
     }
   }
 
-  void render(Color color, int diameter, int x, int y, int z) {
-    int argb = color.getRGB();
+  void render(short colix, int diameter, int x, int y, int z) {
+    int argb = Colix.getArgb(colix);
     double radius = diameter / 2.0;
     for (double phi = 0.0; phi <= Math.PI/2; phi += Math.PI/12) {
       double r = radius * Math.cos(phi);

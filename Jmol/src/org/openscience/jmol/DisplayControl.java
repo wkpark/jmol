@@ -33,6 +33,7 @@ import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
 import org.openscience.jmol.script.Eval;
 import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g25d.Colix;
 
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -447,7 +448,7 @@ final public class DisplayControl {
 
   public void setModeAtomColorProfile(byte mode) {
     colorManager.setModeAtomColorProfile(mode);
-    distributor.setColorAtom(mode, null, iterAtom());
+    distributor.setColixAtom(mode, Colix.NULL, iterAtom());
     refresh();
   }
 
@@ -472,22 +473,29 @@ final public class DisplayControl {
   public Color getColorSelection() {
     return colorManager.getColorSelection();
   }
-
-  public Color getColorRubberband() {
-    return colorManager.colorRubberband;
+  public short getColixSelection() {
+    return colorManager.getColixSelection();
   }
 
-  public void setColorLabel(Color c) {
-    colorManager.setColorLabel(c);
+  public short getColixRubberband() {
+    return colorManager.colixRubberband;
+  }
+
+  public void setColorLabel(Color color) {
+    colorManager.setColorLabel(color);
     refresh();
   }
 
-  public void setColorDots(Color c) {
-    colorManager.setColorDots(c);
+  public void setColorDots(Color color) {
+    colorManager.setColorDots(color);
   }
 
   public Color getColorLabel() {
     return colorManager.colorLabel;
+  }
+
+  public short getColixLabel() {
+    return colorManager.colixLabel;
   }
 
   public void setColorDistance(Color c) {
@@ -499,6 +507,10 @@ final public class DisplayControl {
     return colorManager.colorDistance;
   }
 
+  public short getColixDistance() {
+    return colorManager.colixDistance;
+  }
+
   public void setColorAngle(Color c) {
     colorManager.setColorAngle(c);
     refresh();
@@ -508,12 +520,20 @@ final public class DisplayControl {
     return colorManager.colorAngle;
   }
 
+  public short getColixAngle() {
+    return colorManager.colixAngle;
+  }
+
   public void setColorDihedral(Color c) {
     colorManager.setColorDihedral(c);
     refresh();
   }
   public Color getColorDihedral() {
     return colorManager.colorDihedral;
+  }
+
+  public short getColixDihedral() {
+    return colorManager.colixDihedral;
   }
 
   public void setColorVector(Color c) {
@@ -539,26 +559,24 @@ final public class DisplayControl {
     refresh();
   }
 
-  /*
-  public void setColorForeground(String colorName) {
-    colorManager.setColorForeground(colorName);
-  }
-  */
-
   public Color getColorFromString(String colorName) {
     return colorManager.getColorFromString(colorName);
   }
 
-  public Color getColorAtom(Atom atom) {
-    return colorManager.getColorAtom(atom);
+  public short getColixAtom(Atom atom) {
+    return colorManager.getColixAtom(atom);
   }
 
-  public Color getColorAtom(byte mode, Atom atom) {
-    return colorManager.getColorAtom(mode, atom);
+  public short getColixAtom(byte mode, Atom atom) {
+    return colorManager.getColixAtom(mode, atom);
   }
 
   public Color getColorAtomOutline(byte style, Color color) {
     return colorManager.getColorAtomOutline(style, color);
+  }
+
+  public short getColixAtomOutline(byte style, short colix) {
+    return colorManager.getColixAtomOutline(style, colix);
   }
 
   public void setShowDarkerOutline(boolean showDarkerOutline) {
@@ -578,35 +596,39 @@ final public class DisplayControl {
     colorManager.setModeTransparentColors(modeTransparentColors);
   }
 
-  public Color getColorTransparent(Color color) {
-    return colorManager.getColorTransparent(color);
+  public short getColixTransparent(short colix) {
+    return colorManager.getColixTransparent(colix);
   }
 
   // note that colorBond could be null -- meaning inherit atom color
   public void setColorBond(Color colorBond) {
     colorManager.setColorBond(colorBond);
-    distributor.setColorBond(colorBond, iterBond());
+    distributor.setColixBond(Colix.getColix(colorBond), iterBond());
     refresh();
+  }
+
+  public short getColixBond() {
+    return colorManager.colixBond;
   }
 
   public Color getColorBond() {
     return colorManager.colorBond;
   }
 
-  public Color transparentRed() {
-    return getColorTransparent(Color.red);
+  public short transparentRed() {
+    return getColixTransparent(Colix.RED);
   }
 
-  public Color transparentGreen() {
-    return getColorTransparent(Color.green);
+  public short transparentGreen() {
+    return getColixTransparent(Colix.GREEN);
   }
 
-  public Color transparentBlue() {
-    return getColorTransparent(Color.blue);
+  public short transparentBlue() {
+    return getColixTransparent(Colix.BLUE);
   }
 
-  public Color transparentGrey() {
-    return getColorTransparent(Color.gray);
+  public short transparentGrey() {
+    return getColixTransparent(Colix.GRAY);
   }
 
   /****************************************************************
@@ -1166,16 +1188,28 @@ final public class DisplayControl {
     distributor.setStyleMarBond(style, mar, iterBond());
   }
 
+  public void setStyleMarBackboneScript(byte style, short mar) {
+    distributor.setStyleMarBackbone(style, mar, iterBond());
+  }
+
   public void setStyleBondScript(byte style) {
     distributor.setStyleBond(style, iterBond());
   }
 
+  public void setStyleBackboneScript(byte style) {
+    distributor.setStyleBackbone(style, iterBond());
+  }
+
   public void setColorAtomScript(byte mode, Color color) {
-    distributor.setColorAtom(mode, color, iterAtom());
+    distributor.setColixAtom(mode, Colix.getColix(color), iterAtom());
   }
 
   public void setColorBondScript(Color color) {
-    distributor.setColorBond(color, iterBond());
+    distributor.setColixBond(Colix.getColix(color), iterBond());
+  }
+
+  public void setColorBackboneScript(Color color) {
+    distributor.setColixBackbone(Colix.getColix(color), iterBond());
   }
 
   public void setLabelScript(String strLabel) {
@@ -1183,7 +1217,7 @@ final public class DisplayControl {
   }
 
   public void setMarDots(short marDots) {
-    distributor.setColorMarDots(colorManager.colorDots, marDots, iterAtom());
+    distributor.setColixMarDots(colorManager.colixDots, marDots, iterAtom());
   }
 
   boolean rasmolHydrogenSetting = true;
@@ -1549,16 +1583,16 @@ final public class DisplayControl {
     return labelManager.getFontOfSize(points);
   }
   
-  public void renderStringOffset(String str, Color color, int points,
+  public void renderStringOffset(String str, short colix, int points,
                                  int x, int y, int z,
                                  int xOffset, int yOffset) {
-    labelRenderer.renderStringOffset(str, color, points,
+    labelRenderer.renderStringOffset(str, colix, points,
                                      x, y, z, xOffset, yOffset);
   }
 
-  public void renderStringOutside(String str, Color color, int pointsFontsize,
+  public void renderStringOutside(String str, short colix, int pointsFontsize,
                                   int x, int y, int z) {
-    labelRenderer.renderStringOutside(str, color, pointsFontsize, x, y, z);
+    labelRenderer.renderStringOutside(str, colix, pointsFontsize, x, y, z);
   }
 
   /****************************************************************
@@ -1609,12 +1643,12 @@ final public class DisplayControl {
     return axesManager.bbox;
   }
 
-  public Color getColorAxes() {
-    return axesManager.colorAxes;
+  public short getColixAxes() {
+    return axesManager.colixAxes;
   }
 
-  public Color getColorAxesText() {
-    return axesManager.colorAxesText;
+  public short getColixAxesText() {
+    return axesManager.colixAxesText;
   }
 
 }

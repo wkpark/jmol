@@ -28,218 +28,357 @@ package org.openscience.jmol.g25d;
 import org.openscience.jmol.*;
 
 import java.awt.Component;
-//import java.awt.Graphics;
 import java.awt.image.MemoryImageSource;
-import java.awt.Color;
 import java.util.Hashtable;
 
 public class Sphere25D {
 
   DisplayControl control;
   Graphics25D g25d;
+  byte[] semicircles;
+  int[] semicircleIndex;
+
+  final static int numFoo = 512;
+  final static int shiftDivFoo = 9;
+  short[] heightsFoo;
+
   public Sphere25D(DisplayControl control, Graphics25D g25d) {
     this.control = control;
     this.g25d = g25d;
+
+    /*
+    semicircles = new byte[127*256 + 128];
+    semicircleIndex = new int[256];
+    int offset = 0;
+    for (int d = 1; d < 255; ++d) {
+      semicircleIndex[d] = offset;
+      float radius = d / 2.0f;
+      float radius2 = radius*radius;
+      for (int i = 0; i < d; ++i) {
+        float len = i - radius;
+        float len2 = len*len;
+        float z = (float)Math.sqrt(radius2 - len2);
+        semicircles[offset++] = (byte)(z + 0.5f);
+      }
+    }
+    */
   }
 
-  void render(Color color, int diameter, int x, int y, int z) {
+  void render3(short colix, int diameter, int xC, int yC, int zC) {
     if (diameter >= maxSphereCache)
       diameter = maxSphereCache;
     int radius = (diameter + 1) / 2;
-    if (x-radius < 0 || x+radius >= g25d.width ||
-        y-radius < 0 || y+radius >= g25d.height)
-      renderClipped(color, diameter, x, y, z);
-    else
-      renderUnclipped(color, diameter, x, y, z);
-  }
-
-  void renderClipped(Color color, int diameter, int x, int y, int z) {
-    if (diameter >= maxSphereCache)
-      diameter = maxSphereCache;
-    int argb = color.getRGB();
-    if (diameter >= maxSphereCache)
-      diameter = maxSphereCache;
-    x -= (diameter + 1) / 2;
-    y -= (diameter + 1) / 2;
-    SphereShape ss = getSphereShape(diameter);
-    byte[] intensities = ss.intensities;
-    byte[] heights = ss.heights;
-    int[] shades = Shade25D.getShades(argb);
-    int offsetSphere = 0;
-    for (int i = 0; i < diameter; ++i) 
-      for (int j = 0; j < diameter; ++j) {
-        int intensity = intensities[offsetSphere];
-        if (intensity >= 0)
+    float r = diameter / 2.0f;
+    float radius2 = r * r;
+    g25d.argbCurrent = Colix.getArgb(colix);
+    int xUL = xC - radius;
+    int yUL = yC - radius;
+    int[] shades = Colix.getShades(colix);
+    
+    float yF = -radius + 0.5f;
+    for (int i = 0; i < diameter; ++i, ++yF) {
+      float y2 = yF * yF;
+      int y = yUL + i;
+      float xF = -radius + 0.5f;
+      for (int j = 0; j < diameter; ++j, ++xF) {
+        float z2 = radius2 - y2 - xF*xF;
+        if (z2 >= 0) {
+          float zF = (float)Math.sqrt(z2);
+          int intensity = Shade25D.calcIntensity(xF, yF, zF);
+          int x = xUL + j;
+          int z = zC - (int)(zF + 0.5f);
           g25d.plotPixelClipped(shades[intensity],
-                                x+i, y+j, z - heights[offsetSphere]);
-        ++offsetSphere;
+                                x, y, z);
+        }
       }
+    }
   }
 
-  void renderUnclipped(Color color, int diameter, int x, int y, int z) {
+  void renderBigUnclipped(int[] shades, int diameter, int x, int y, int z) {
+    float r = diameter / 2.0f;
+    float r2 = r * r;
+    
+    float yF = -r + 0.5f;
+    int zMin = z - ((diameter + 1) >> 1);
+    int width = g25d.width;
+    int[] pbuf = g25d.pbuf;
+    short[] zbuf = g25d.zbuf;
+    int y0 = y;
+    int offsetPbufBeginLine = width * y + x;
+    for (int i = 0; i < diameter;
+         ++i, ++y0, ++yF, offsetPbufBeginLine += width) {
+      float y2 = yF * yF;
+      float xF = -r + 0.5f;
+      int x0 = x;
+      int offsetPbuf = offsetPbufBeginLine;
+      for (int j = 0; j < diameter;
+           ++j, ++x0, ++xF, ++offsetPbuf) {
+        if (zbuf[offsetPbuf] <= zMin)
+          continue;
+        float z2 = r2 - y2 - xF*xF;
+        if (z2 >= 0) {
+          float zF = (float)Math.sqrt(z2);
+          int z0 = z - (int)(zF + 0.5f);
+          if (zbuf[offsetPbuf] <= z0)
+            continue;
+          int intensity = Shade25D.calcIntensity(xF, yF, zF);
+          pbuf[offsetPbuf] = shades[intensity];
+          zbuf[offsetPbuf] = (short) z0;
+        }
+      }
+    }
+  }
+
+  void renderBigClipped(int[] shades, int diameter, int x, int y, int z) {
+    // FIXME optimize me some
+    float r = diameter / 2.0f;
+    float r2 = r * r;
+
+    float yF = -r + 0.5f;
+    int y0 = y;
+    for (int i = 0; i < diameter; ++i, ++y0, ++yF) {
+      float y2 = yF * yF;
+      float xF = -r + 0.5f;
+      int x0 = x;
+      for (int j = 0; j < diameter; ++j, ++x0, ++xF) {
+        float z2 = r2 - y2 - xF*xF;
+        if (z2 >= 0) {
+          float zF = (float)Math.sqrt(z2);
+          int intensity = Shade25D.calcIntensity(xF, yF, zF);
+          int z0 = z - (int)(zF + 0.5f);
+          g25d.plotPixelClipped(shades[intensity],
+                                x0, y0, z0);
+        }
+      }
+    }
+  }
+
+  /*
+  void render1(short colix, int diameter, int x, int y, int z) {
     if (diameter >= maxSphereCache)
       diameter = maxSphereCache;
-    int argb = color.getRGB();
-    if (diameter >= maxSphereCache)
-      diameter = maxSphereCache;
-    x -= (diameter + 1) / 2;
-    y -= (diameter + 1) / 2;
-    SphereShape ss = getSphereShape(diameter);
-    byte[] intensities = ss.intensities;
-    byte[] heights = ss.heights;
-    int[] shades = Shade25D.getShades(argb);
+    int radius = (diameter + 1) / 2;
+    x -= radius;
+    y -= radius;
+    g25d.argbCurrent = Colix.getArgb(colix);
+    int offsetRows = semicircleIndex[diameter];
+    for (int i = diameter; --i >= 0; ++y) {
+      int n = semicircles[offsetRows++];
+      int numToPlot = n+n;
+      int offsetCols = semicircleIndex[numToPlot];
+      int numToSkip = diameter - n;
+      int xT = x + numToSkip;
+      while(--numToPlot >= 0)
+        g25d.plotPixelClipped(xT++, y, z - semicircles[offsetCols++]);
+    }
+  }
+  */
+  
+  void render(short colix, int diameter, int x, int y, int z) {
+    int radius = diameter >> 1;
+    x -= radius;
+    y -= radius;
+    int[] shades = Colix.getShades(colix);
+    if (diameter >= maxSphereCache) {
+      if (x < 0 || x+diameter >= g25d.width ||
+          y < 0 || y+diameter >= g25d.height)
+        renderBigClipped(shades, diameter, x, y, z);
+      else
+        renderBigUnclipped(shades, diameter, x, y, z);
+      return;
+    } 
+    byte[] ss = getSphereShape(diameter);
+    if (x < 0 || x+diameter >= g25d.width ||
+        y < 0 || y+diameter >= g25d.height)
+      renderShapeClipped(shades, ss, diameter, x, y, z);
+    else
+      renderShapeUnclipped(shades, ss, diameter, x, y, z);
+  }
+
+
+  void renderShapeUnclipped(int[] shades, byte[] sphereShape,
+                            int diameter, int x, int y, int z) {
     int[] pbuf = g25d.pbuf;
     short[] zbuf = g25d.zbuf;
     int offsetSphere = 0;
     int width = g25d.width;
-    int offsetPbuf = width * y + x;
-    int scanlineIncrement = width - diameter;
-    for (int i = diameter; --i >= 0; ) {
-      for (int j = diameter; --j >= 0; ) {
-        int intensity = intensities[offsetSphere];
-        if (intensity >= 0) {
-          short zPixel = (short)(z - heights[offsetSphere]);
-          if (zPixel < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = zPixel;
-            pbuf[offsetPbuf] = shades[intensity];
-          }
+    int offsetNorthBeginLine = width * y + x;
+    int offsetSouthBeginLine = offsetNorthBeginLine + (diameter - 1) * width;
+    int halfDiameter = (diameter + 1) / 2;
+    int i = halfDiameter;
+    do {
+      int plotCount = sphereShape[offsetSphere++];
+      int skipCount = halfDiameter - plotCount;
+      int offsetNW = offsetNorthBeginLine + skipCount;
+      int offsetNE = offsetNorthBeginLine + diameter - skipCount - 1;
+      int offsetSW = offsetSouthBeginLine + skipCount;
+      int offsetSE = offsetSouthBeginLine + diameter - skipCount - 1;
+      do {
+        int zPixel = (short)(z - sphereShape[offsetSphere++]);
+        if (zPixel < zbuf[offsetNW]) {
+          zbuf[offsetNW] = (short)zPixel;
+          pbuf[offsetNW] = shades[sphereShape[offsetSphere]];
         }
         ++offsetSphere;
-        ++offsetPbuf;
-      }
-      offsetPbuf += scanlineIncrement;
-    }
+        if (zPixel < zbuf[offsetNE]) {
+          zbuf[offsetNE] = (short)zPixel;
+          pbuf[offsetNE] = shades[sphereShape[offsetSphere]];
+        }
+        ++offsetSphere;
+        if (zPixel < zbuf[offsetSW]) {
+          zbuf[offsetSW] = (short)zPixel;
+          pbuf[offsetSW] = shades[sphereShape[offsetSphere]];
+        }
+        ++offsetSphere;
+        if (zPixel < zbuf[offsetSE]) {
+          zbuf[offsetSE] = (short)zPixel;
+          pbuf[offsetSE] = shades[sphereShape[offsetSphere]];
+        }
+        ++offsetSphere;
+        ++offsetNW;
+        --offsetNE;
+        ++offsetSW;
+        --offsetSE;
+        } while (--plotCount > 0);
+      offsetNorthBeginLine += width;
+      offsetSouthBeginLine -= width;
+    } while (--i > 0);
   }
 
-  static final double[] lightSource = {-1, -1, 1.5};
-  static int exponentSpecular = 5;
-  static double intensityDiffuseSource = .6;
-  static double intensitySpecularSource = .8;
-  static double intensityAmbient = .5;
-  
-  final static int intensityNormal = Shade25D.shadeNormal;
-  final static int intensityMax = Shade25D.shadeMax;
+  void renderShapeClipped(int[] shades, byte[] sphereShape,
+                            int diameter, int x, int y, int z) {
+    int[] pbuf = g25d.pbuf;
+    short[] zbuf = g25d.zbuf;
+    int offsetSphere = 0;
+    int width = g25d.width;
+    int height = g25d.height;
+    int diameterMinus1 = diameter - 1;
+    int offsetNorthBeginLine = width * y + x;
+    int offsetSouthBeginLine = offsetNorthBeginLine + diameterMinus1 * width;
+    int halfDiameter = (diameter + 1) / 2;
+    int i = halfDiameter;
+    int yNorth = y;
+    int ySouth = y + diameterMinus1;
+    do {
+      boolean tNorthVisible = yNorth >= 0 && yNorth < height;
+      boolean tSouthVisible = ySouth >= 0 && ySouth < height;
+      int plotCount = sphereShape[offsetSphere++];
+      int skipCount = halfDiameter - plotCount;
+      int offsetNW = offsetNorthBeginLine + skipCount;
+      int offsetNE = offsetNorthBeginLine + diameterMinus1 - skipCount;
+      int offsetSW = offsetSouthBeginLine + skipCount;
+      int offsetSE = offsetSouthBeginLine + diameterMinus1 - skipCount;
+      int xWest = x + skipCount;
+      int xEast = x + diameterMinus1 - skipCount;
+      do {
+        boolean tWestVisible = xWest >= 0 && xWest < width;
+        boolean tEastVisible = xEast >= 0 && xEast < width;
+        int zPixel = (short)(z - sphereShape[offsetSphere++]);
+        if (tNorthVisible) {
+          if (tWestVisible && zPixel < zbuf[offsetNW]) {
+            zbuf[offsetNW] = (short)zPixel;
+            pbuf[offsetNW] = shades[sphereShape[offsetSphere]];
+          }
+          if (tEastVisible && zPixel < zbuf[offsetNE]) {
+            zbuf[offsetNE] = (short)zPixel;
+            pbuf[offsetNE] = shades[sphereShape[offsetSphere+1]];
+          }
+        }
+        offsetSphere += 2;
+        
+        if (tSouthVisible) {
+          if (tWestVisible && zPixel < zbuf[offsetSW]) {
+            zbuf[offsetSW] = (short)zPixel;
+            pbuf[offsetSW] = shades[sphereShape[offsetSphere]];
+          }
+          if (tEastVisible && zPixel < zbuf[offsetSE]) {
+            zbuf[offsetSE] = (short)zPixel;
+            pbuf[offsetSE] = shades[sphereShape[offsetSphere+1]];
+          }
+        }
+        offsetSphere += 2;
+        
+        ++xWest;
+        --xEast;
+        ++offsetNW;
+        --offsetNE;
+        ++offsetSW;
+        --offsetSE;
+      } while (--plotCount > 0);
+      ++yNorth;
+      --ySouth;
+      offsetNorthBeginLine += width;
+      offsetSouthBeginLine -= width;
+    } while (--i > 0);
+  }
 
-  final static int maxSphereCache = 128;
-  static SphereShape[] sphereShapeCache = new SphereShape[maxSphereCache];
+  final static int maxSphereCache = 64;
+  static byte[][] sphereShapeCache = new byte[maxSphereCache][];
+  byte[] intensities = new byte[maxSphereCache * maxSphereCache];
+  byte[] heights = new byte[maxSphereCache * maxSphereCache];
 
-  SphereShape getSphereShape(int diameter) {
-    SphereShape ss;
+  byte[] getSphereShape(int diameter) {
+    byte[] ss;
     if (diameter > maxSphereCache)
       diameter = maxSphereCache;
-    --diameter;
-    ss = sphereShapeCache[diameter];
+    ss = sphereShapeCache[diameter - 1];
     if (ss != null)
       return ss;
-    ss = sphereShapeCache[diameter] = new SphereShape(diameter + 1);
+    ss = sphereShapeCache[diameter - 1] = createSphereShape(diameter);
     return ss;
   }
 
-  class SphereShape {
-    int diameter;
-    byte[] intensities;
-    byte[] heights;
-
-    private SphereShape(int diameter) {
-      this.diameter = diameter;
-      initialize(diameter, intensityNormal, intensityMax, lightSource);
-    }
-
-    void initialize(int diameter, int intensityNormal, int intensityMax,
-                    double[] lightsource) {
-      double vectNormal[] = new double[3];
-      double vectReflection[] = new double[3];
-      double vectTemp[] = new double[3];
-      double vectViewer[] = {0, 0, 1};
-      double radius = diameter / 2.0;
-      int offset = 0;
-
-      intensities = new byte[diameter*diameter];
-      heights = new byte[diameter*diameter];
-
-      // Normalize the vectLightSource vector:
-      double[] vectLightSource = new double[3];
-      for (int i = 0; i < 3; ++ i)
-        vectLightSource[i] = lightsource[i];
-      normalize(vectLightSource);
-      double k1 = -radius + .5;
-      for (int i = 0; i < diameter; ++i, ++k1) {
-        double k2 = -radius + .5;
-        for (int j = 0; j < diameter; ++j, ++k2) {
-          vectNormal[0] = k2;
-          vectNormal[1] = k1;
-          double len1 = Math.sqrt(k2 * k2 + k1 * k1);
-          if (len1 <= radius) {
-            vectNormal[2] = radius * Math.cos(Math.asin(len1 / radius));
-            int zheight = (int)(vectNormal[2] + .5);
-            normalize(vectNormal);
-            double cosTheta = dotProduct(vectNormal, vectLightSource);
-            double intensitySpecular = 0.0;
-            double intensityDiffuse = 0.0;
-            if (cosTheta > 0) {
-              intensityDiffuse = cosTheta * intensityDiffuseSource;
-
-              scale(2 * cosTheta, vectNormal, vectTemp);
-              sub(vectTemp, vectLightSource, vectReflection);
-
-              double dpRV = dotProduct(vectReflection, vectViewer);
-              if (dpRV < 0.0)
-                dpRV = 0.0;
-              // dpRV = Math.pow(dpRV, 25);
-              for (int n = exponentSpecular; --n >= 0; )
-                dpRV *= dpRV;
-              intensitySpecular = dpRV * intensitySpecularSource;
-            }
-            double intensity =
-              intensitySpecular + intensityDiffuse + intensityAmbient;
-            int shade = (int)(intensityNormal * intensity);
-            if (shade >= intensityMax) shade = intensityMax-1;
-            intensities[offset] = (byte)shade;
-            heights[offset] = (byte)zheight;
-          } else {
-            intensities[offset] = -1;
-            heights[offset] = -1;
-          }
-          ++offset;
+  byte[] createSphereShape(int diameter) {
+    float radius = diameter / 2.0f;
+    float radius2 = radius * radius;
+    int offset = 0;
+    
+    int visibleCount = 0;
+    int countNW = 0;
+    int halfDiameter = (diameter + 1) / 2;
+    
+    float y = -radius + 0.5f;
+    for (int i = 0; i < diameter; ++i, ++y) {
+      float y2 = y * y;
+      float x = -radius + 0.5f;
+      for (int j = 0; j < diameter; ++j, ++x) {
+        float z2 = radius2 - y2 - x*x;
+        if (z2 >= 0) {
+          float z = (float)Math.sqrt(z2);
+          intensities[offset] = Shade25D.calcIntensity(x, y, z);
+          heights[offset] = (byte)(z + 0.5f);
+          if (x < halfDiameter && y < halfDiameter)
+            ++countNW;
+        } else {
+          intensities[offset] = -1;
+          heights[offset] = -1;
         }
+        ++offset;
       }
     }
-
-    private void normalize(double v[]) {
-
-      double mag = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-      if (Math.abs(mag - 0.0) < java.lang.Double.MIN_VALUE) {
-        v[0] = 0.0;
-        v[1] = 0.0;
-        v[2] = 0.0;
-      } else {
-        v[0] = v[0] / mag;
-        v[1] = v[1] / mag;
-        v[2] = v[2] / mag;
+    
+    byte[] sphereShape = new byte[diameter + 5*countNW];
+    
+    int offset2 = 0;
+    int offsetCount;
+    int r = diameter / 2;
+    for(int i = 0; i < halfDiameter; ++i) {
+      int offsetNorth = i*diameter;
+      int offsetSouth = (diameter - i - 1) * diameter;
+      int j = 0;
+      while (j < halfDiameter && heights[offsetNorth + j] == -1)
+        ++j;
+      int plotCount = halfDiameter - j;
+      sphereShape[offset2++] = (byte)plotCount;
+      while (j < halfDiameter) {
+        sphereShape[offset2++] = heights[offsetNorth + j];
+        sphereShape[offset2++] = intensities[offsetNorth + j];
+        sphereShape[offset2++] = intensities[offsetNorth + diameter - j - 1];
+        sphereShape[offset2++] = intensities[offsetSouth + j];
+        sphereShape[offset2++] = intensities[offsetSouth + diameter - j - 1];
+        ++j;
       }
     }
-
-    private double dotProduct(double[] v1, double[] v2) {
-      return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-    }
-
-    private void scale(double a, double[] v, double[] vResult) {
-      vResult[0] = a * v[0];
-      vResult[1] = a * v[1];
-      vResult[2] = a * v[2];
-    }
-
-    private void add(double[] v1, double[] v2, double[] vSum) {
-      vSum[0] = v1[0] + v2[0];
-      vSum[1] = v1[1] + v2[1];
-      vSum[2] = v1[2] + v2[2];
-    }
-
-    private void sub(double[] v1, double[] v2, double[] vDiff) {
-      vDiff[0] = v1[0] - v2[0];
-      vDiff[1] = v1[1] - v2[1];
-      vDiff[2] = v1[2] - v2[2];
-    }
-
+    return sphereShape;
   }
 }

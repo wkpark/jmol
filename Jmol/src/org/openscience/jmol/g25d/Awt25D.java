@@ -49,7 +49,6 @@ final public class Awt25D implements Platform25D {
     this.width = width;
     this.height = height;
     this.enabledPbuf = enabledPbuf;
-    System.out.println("allocateImage enabled:" + enabledPbuf);
     if (enabledPbuf) {
       pbuf = new int[width * height];
       mis = new MemoryImageSource(width, height, pbuf, 0, width);

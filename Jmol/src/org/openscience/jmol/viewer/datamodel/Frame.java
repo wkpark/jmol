@@ -77,7 +77,7 @@ public class Frame {
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
           (hasPdbRecords && (bondCount < (atomCount / 2))))
-        rebond();
+        rebond(false);
     }
     if (hasPdbRecords)
       pdbMolecule.freeze();
@@ -703,7 +703,12 @@ public class Frame {
   private float minBondDistance2;
 
   public void rebond() {
-    deleteAllBonds();
+    rebond(true);
+  }
+
+  public void rebond(boolean deleteFirst) {
+    if (deleteFirst)
+      deleteAllBonds();
     bondTolerance = viewer.getBondTolerance();
     minBondDistance = viewer.getMinBondDistance();
     minBondDistance2 = minBondDistance*minBondDistance;

@@ -324,6 +324,7 @@ class Bond {
   int order;
 
   Bond(int atomIndex1, int atomIndex2, int order) {
+    System.out.println("Bond : " + atomIndex1 + "+" + atomIndex2 + " : " + order);
     this.atomIndex1 = atomIndex1;
     this.atomIndex2 = atomIndex2;
     this.order = order;
@@ -475,8 +476,7 @@ class MolModel extends Model {
 
 class PdbModel extends Model {
   String line;
-  int atomIndexA;
-    
+
   PdbModel(BufferedReader reader) throws Exception {
     atoms = new Atom[512];
     bonds = new Bond[32];
@@ -543,28 +543,43 @@ class PdbModel extends Model {
       bonds = t;
     }
     try {
-      atomIndexA = Integer.parseInt(line.substring(6, 11).trim()) - 1;
-      for (int i = 11; i < 31; i += 5)
-        if (! conect1(i))
+      int conectAtom = Integer.parseInt(line.substring(6, 11).trim()) - 1;
+      for (int i = 0; i < 4; ++i) {
+        int conectTarget = getConectTarget(i);
+        if (conectTarget == -1)
           return;
+        --conectTarget;
+        if (bondCount > 0) {
+          Bond bond = bonds[bondCount - 1];
+          if (bond.atomIndex1 == conectAtom &&
+              bond.atomIndex2 == conectTarget) {
+            ++bond.order;
+            continue;
+          }
+        }
+        bonds[bondCount++] = new Bond(conectAtom, conectTarget, 1);
+      }
     } catch (NumberFormatException e) {
+    } catch (StringIndexOutOfBoundsException e) {
     }
   }
 
-  boolean conect1(int offset) {
-    try {
-      String str = line.substring(offset, offset + 5).trim();
-      if (str.length() == 0)
-        return false;
-      int atomIndexB = Integer.parseInt(line.substring(offset, offset + 5).trim()) - 1;
-      bonds[bondCount++] = new Bond(atomIndexA, atomIndexB, 1);
-      return true;
-    } catch (StringIndexOutOfBoundsException e) {
-    } catch (NumberFormatException e) {
+  int getConectTarget(int i) {
+    int offset = i * 5 + 11;
+    int offsetEnd = offset + 5;
+    if (offsetEnd <= line.length()) {
+      String str = line.substring(offset, offsetEnd).trim();
+      if (str.length() > 0) {
+        try {
+          int target = Integer.parseInt(str);
+          return target;
+        } catch (NumberFormatException e) {
+        }
+      }
     }
-    return false;
+    return -1;
   }
-  
+
   void structure() {
     if (pdbStructureRecordCount == pdbStructureRecords.length) {
       String[] t = new String[2 * pdbStructureRecordCount];

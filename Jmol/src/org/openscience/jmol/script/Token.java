@@ -34,7 +34,7 @@ class Token {
 
   int tok;
   Object value;
-  int intValue;
+  int intValue = Integer.MAX_VALUE;
 
   static String str;
   static Matcher m;
@@ -63,8 +63,7 @@ class Token {
   final static int keyword      = 6;
 
   final static String[] astrType = {
-    "nada", "identifier", "integer", "decimal", "string", "unknown", "keyword",
-    "range"
+    "nada", "identifier", "integer", "decimal", "string", "unknown", "keyword"
   };
 
   final static int command           = (1 <<  8);
@@ -675,6 +674,8 @@ class Token {
           System.out.println("tokCommand != nada");
           Token[] atoken = new Token[ltoken.size()];
           ltoken.copyInto(atoken);
+          if ((atoken[0].tok & expression) != 0)
+            atoken = compileExpression(atoken);
           lltoken.add(atoken);
           ltoken.setSize(0);
           tokCommand = nada;
@@ -710,9 +711,8 @@ class Token {
       if (lookingAt(patternLookup, "lookup")) {
         String ident = m.group().toLowerCase();
         Token token = (Token) map.get(ident);
-        if (token == null) {
-          throw new ScriptException("get to work buddy:" + ident);
-        }
+        if (token == null)
+          token = new Token(identifier, ident);
         switch (tokCommand) {
         case nada:
           tokenCommand = token;
@@ -737,15 +737,13 @@ class Token {
             throw new ScriptException("Cannot show:" + ident);
           break;
         case define:
-          if ((ltoken.size() == 1) && (token == null))
-            token = new Token(Token.identifier, ident);
-          else if ((ltoken.size() >= 2) && ((token.tok & expression) == 0))
+          if ((ltoken.size() >= 2) && ((token.tok & expression) == 0))
             throw new ScriptException("Invalid expression token:" + ident);
           break;
         case center:
         case restrict:
         case select:
-          if ((token.tok & expression) == 0)
+          if (token.tok != identifier && (token.tok & expression) == 0)
             throw new ScriptException("Invalid expression token:" + ident);
           break;
         }
@@ -764,7 +762,9 @@ class Token {
 
   public String toString() {
     return "Token[" + astrType[tok<=keyword ? tok : keyword] +
-      ":" + value + "]";
+      "-" + tok +
+      ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue) +
+      ((value == null) ? "" : ":" + value) + "]";
   }
 
   Token lookAhead(Token[] atoken, int i) {
@@ -784,6 +784,7 @@ class Token {
 
     clausePrimitive  ::= clauseInteger |
                          clauseComparator | 
+                         all | none |
                          identifier
                          ( clauseOr )
 
@@ -792,6 +793,14 @@ class Token {
     clauseComparator ::= atomproperty comparatorop integer
   */
 
+  public static Token[] compileExpression(Token[] atoken)
+    throws ScriptException {
+    int i = 1;
+    if (atoken[0].tok == define)
+      i = 2;
+    return compileExpression(atoken, i);
+  }
+
   static Vector ltokenPostfix = null;
   static Token[] atokenInfix;
   static int itokenInfix;
@@ -799,6 +808,8 @@ class Token {
   public static Token[] compileExpression(Token[] atoken, int itoken)
     throws ScriptException {
     ltokenPostfix = new Vector();
+    for (int i = 0; i < itoken; ++i)
+      ltokenPostfix.add(atoken[i]);
     atokenInfix = atoken;
     itokenInfix = itoken;
     clauseOr();
@@ -806,6 +817,11 @@ class Token {
       throw new ScriptException("end of expression expected");
     Token[] atokenPostfix = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenPostfix);
+    System.out.println("compiled expression:");
+    for (int i = 0; i < atokenPostfix.length; ++i) {
+      System.out.print(" " + atokenPostfix[i]);
+    }
+    System.out.println("");
     return atokenPostfix;
   }
 
@@ -861,6 +877,8 @@ class Token {
     case temperature:
       clauseComparator();
       break;
+    case all:
+    case none:
     case identifier:
       ltokenPostfix.add(tokenNext());
       break;
@@ -903,6 +921,8 @@ class Token {
       throw new ScriptException("integer expected after comparison operator");
     Token tokenValue = tokenNext();
     int val = tokenValue.intValue;
+    System.out.println("atomProperty=" + tokenAtomProperty +
+                       " comparator=" + tokenComparator);
     ltokenPostfix.add(new Token(tokenComparator.tok,
                                 tokenAtomProperty.tok,
                                 new Integer(val)));

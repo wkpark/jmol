@@ -75,6 +75,10 @@ public class Atom extends org.openscience.cdk.Atom {
     return atomType.getBaseAtomType();
   }
 
+  public double getVdwRadius() {
+    return atomType.getBaseAtomType().getVdwRadius();
+  }
+
   /**
    * Returns whether this atom is a hydrogen atom.
    *

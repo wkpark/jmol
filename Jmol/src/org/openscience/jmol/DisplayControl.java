@@ -37,6 +37,7 @@ import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
 import java.util.Hashtable;
+import java.util.BitSet;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Matrix4d;
@@ -298,7 +299,7 @@ final public class DisplayControl {
     return propertyMode;
   }
 
-  private SelectionSet setPicked = new SelectionSet();
+  private final SelectionSet setPicked = new SelectionSet();
 
   public void addSelection(Atom atom) {
     setPicked.addSelection(atom.getAtomNumber());
@@ -348,8 +349,12 @@ final public class DisplayControl {
     return setPicked.isSelected(atom.getAtomNumber());
   }
 
-  public void setSelectionSet(SelectionSet set) {
-    setPicked = set;
+  public void setSelectionSet(BitSet set) {
+    clearSelection();
+    int num = numberOfAtoms(); // FIXME -- probably should store this someplace
+    for (int i = 0; i < num; ++i)
+      if (set.get(i))
+        setPicked.addSelection(i);
     recalc();
   }
 

@@ -25,9 +25,12 @@
 package org.openscience.jmol.script;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.SelectionSet;
+import org.openscience.jmol.ChemFrame;
+import org.openscience.jmol.Atom;
 import java.io.*;
 import java.awt.Color;
+import java.util.BitSet;
+import java.util.Hashtable;
 
 public class Eval {
 
@@ -110,6 +113,9 @@ public class Eval {
       case Token.background:
         background();
         break;
+      case Token.define:
+        define();
+        break;
       case Token.echo:
         echo();
         break;
@@ -135,7 +141,6 @@ public class Eval {
       case Token.color:
       case Token.connect:
       case Token.cpk:
-      case Token.define:
       case Token.dots:
       case Token.exit:
       case Token.hbonds:
@@ -195,48 +200,144 @@ public class Eval {
   }
 
   void UnrecognizedExpression() throws ScriptException {
-    throw new ScriptException("unrecognized expression");
+    throw new ScriptException("runtime unrecognized expression");
+  }
+
+  void UndefinedVariable() throws ScriptException {
+    throw new ScriptException("variable undefined");
   }
 
   void BadArgumentCount() throws ScriptException {
     throw new ScriptException("bad argument count");
   }
 
-  SelectionSet expression(int iStart) throws ScriptException {
-    // FIXME -- this is a mega-kludge - need a real expression evaluator
-    int lastInt = 0;
-    boolean rangeSelection = false;
-    SelectionSet set = new SelectionSet();
-    for (int i = iStart; i < statement.length; ++i) {
-      System.out.println("expression token:" + statement[i]);
-      switch (statement[i].tok) {
+  BitSet expression(Token[] code, int pcStart) throws ScriptException {
+    int numberOfAtoms = control.numberOfAtoms();
+    BitSet bs;
+    BitSet[] stack = new BitSet[10];
+    int sp = 0;
+    for (int pc = pcStart; pc < code.length; ++pc) {
+      Token instruction = code[pc];
+      switch (instruction.tok) {
       case Token.all:
-        for (int j = 0, num = control.numberOfAtoms(); j < num; ++j)
-          set.addSelection(j);
+        bs = stack[sp++] = new BitSet(numberOfAtoms);
+        for (int i = 0; i < numberOfAtoms; ++i)
+          bs.set(i);
         break;
       case Token.none:
-        set.clearSelection();
+        stack[sp++] = new BitSet();
         break;
       case Token.integer:
-        int thisInt = statement[i].intValue;
-        if (rangeSelection) {
-          for (int j = lastInt + 1; j <= thisInt - 1; ++j)
-            set.addSelection(j);
-          rangeSelection = false;
-        }
-        set.addSelection(thisInt);
-        lastInt = thisInt;
+        int thisInt = instruction.intValue;
+        bs = new BitSet();
+        if (thisInt >= 0 && thisInt < numberOfAtoms)
+          bs.set(thisInt);
+        stack[sp++] = bs;
         break;
       case Token.opOr:
+        bs = stack[--sp];
+        stack[sp-1].or(bs);
+        break;
+      case Token.opAnd:
+        bs = stack[--sp];
+        stack[sp-1].and(bs);
+        break;
+      case Token.opNot:
+        bs = stack[sp - 1];
+        for (int i = 0; i < numberOfAtoms; ++i) {
+          if (bs.get(i))
+            bs.clear(i);
+          else
+            bs.set(i);
+        }
         break;
       case Token.hyphen:
-        rangeSelection = true;
+        int min = instruction.intValue;
+        int last = ((Integer)instruction.value).intValue();
+        int max = last + 1;
+        if (max > numberOfAtoms)
+          max = numberOfAtoms;
+        bs = stack[sp++] = new BitSet(max);
+        for (int i = min; i < max; ++i)
+          bs.set(i);
+        break;
+      case Token.identifier:
+        String variable = (String)instruction.value;
+        Token[] definition = (Token[])variables.get(variable);
+        if (definition == null)
+          UndefinedVariable();
+        stack[sp++] = expression(definition, 2);
+        break;
+      case Token.opLT:
+      case Token.opLE:
+      case Token.opGE:
+      case Token.opGT:
+      case Token.opEQ:
+      case Token.opNE:
+        bs = stack[sp++] = new BitSet();
+        comparatorInstruction(instruction, bs);
         break;
       default:
         UnrecognizedExpression();
       }
     }
-    return set;
+    if (sp != 1)
+      throw new ScriptException("atom expression compiler error" +
+                                " - stack over/underflow");
+    return stack[0];
+  }
+
+  void comparatorInstruction(Token instruction, BitSet bs)
+    throws ScriptException {
+    int comparator = instruction.tok;
+    int property = instruction.intValue;
+    int propertyValue = 0;
+    int comparisonValue = ((Integer)instruction.value).intValue();
+    int numberOfAtoms = control.numberOfAtoms();
+    ChemFrame frame = control.getFrame();
+    for (int i = 0; i < numberOfAtoms; ++i) {
+      Atom atom = frame.getAtomAt(i);
+      switch (property) {
+      case Token.atomno:
+        propertyValue = i;
+        break;
+      case Token.elemno:
+        propertyValue = atom.getAtomicNumber();
+        break;
+      case Token.temperature:
+      case Token.resno:
+        // FIXME -- what is resno?
+        propertyValue = -1;
+        break;
+      case Token.radius:
+        // FIXME -- confirm that RasMol units are 250 per angstrom
+        propertyValue = (int)(atom.getVdwRadius() * 250);
+        break;
+      }
+      boolean match = false;
+      switch (comparator) {
+      case Token.opLT:
+        match = propertyValue < comparisonValue;
+        break;
+      case Token.opLE:
+        match = propertyValue <= comparisonValue;
+        break;
+      case Token.opGE:
+        match = propertyValue >= comparisonValue;
+        break;
+      case Token.opGT:
+        match = propertyValue > comparisonValue;
+        break;
+      case Token.opEQ:
+        match = propertyValue == comparisonValue;
+        break;
+      case Token.opNE:
+        match = propertyValue != comparisonValue;
+        break;
+      }
+      if (match)
+        bs.set(i);
+    }
   }
 
   Color colorsRasmol[] = {
@@ -272,6 +373,13 @@ public class Eval {
     if ((statement[1].tok & Token.colorparam) == 0)
       ColorExpected();
     control.setBackgroundColor(colorsRasmol[statement[1].intValue]);
+  }
+
+  Hashtable variables = new Hashtable();
+
+  void define() throws ScriptException {
+    String variable = (String)statement[1].value;
+    variables.put(variable, statement);
   }
 
   void echo() throws ScriptException {
@@ -333,7 +441,7 @@ public class Eval {
     if (statement.length == 1) {
       // FIXME -- what is behavior when there are no arguments to select
     } else {
-      control.setSelectionSet(expression(1));
+      control.setSelectionSet(expression(statement, 1));
     }
   }
 }

@@ -98,7 +98,6 @@ class Geodesic3D {
     4, 9, 5,
     5, 10, 1,
 
-
     6, 1, 10,
     7, 2, 6,
     8, 3, 7,
@@ -114,31 +113,44 @@ class Geodesic3D {
 
   // every vertex has 6 neighbors ... except at the beginning of the world
   final static short[] neighborVertexesIcosahedron = {
-    1, 2,3,4,5, -1, // 0
-    0, 5,10,6,2,-1, // 1
-    0, 1,6,7,3, -1, // 2
-    0, 2,7,8,4, -1, // 3
+    1, 2, 3, 4, 5,-1, // 0
+    0, 5,10, 6, 2,-1, // 1
+    0, 1, 6, 7, 3,-1, // 2
+    0, 2, 7, 8, 4,-1, // 3
 
-    0, 3,8,9,5, -1, // 4
-    0, 4,9,10,1,-1, // 5
-    1,10,11,7,2,-1, // 6
-    2,6,11,8,3, -1, // 7
+    0, 3, 8, 9, 5,-1, // 4
+    0, 4, 9,10, 1,-1, // 5
+    1,10,11, 7, 2,-1, // 6
+    2, 6,11, 8, 3,-1, // 7
 
-    3,7,11,9,4, -1, // 8
-    4,8,11,10,5,-1, // 9
-    5,9,11,6,1, -1, // 10
-    6,7,8,9,10, -1 // 11
+    3, 7,11, 9, 4,-1, // 8
+    4, 8,11,10, 5,-1, // 9
+    5, 9,11, 6, 1,-1, // 10
+    6, 7, 8, 9,10,-1 // 11
   };
 
-  int maxLevel;
-  Vector3f[] vertexVectors;
-  Vector3f[] transformedVertexVectors;
-  short[] vertexCounts;
-  short[][] neighborVertexesArrays;
-  short[][] faceVertexesArrays;
+  /**
+   * 4 levels, 0 through 3
+   */
+  final static int maxLevel = 4;
+  static short[] vertexCounts;
+  static short[][] neighborVertexesArrays;
+  static short[][] faceVertexesArrays;
+  static Vector3f[] vertexVectors;
 
-  Geodesic3D(Graphics3D g3d, int lastLevel) {
-    maxLevel = lastLevel + 1;
+  Vector3f[] transformedVertexVectors;
+
+  Geodesic3D(Graphics3D g3d) {
+    if (vertexCounts == null)
+      initialize();
+    transformedVertexVectors = new Vector3f[vertexVectors.length];
+    for (int i = vertexVectors.length; --i >= 0; )
+      transformedVertexVectors[i] = new Vector3f();
+  }
+
+  private synchronized void initialize() {
+    if (vertexCounts != null)
+      return;
     vertexCounts = new short[maxLevel];
     neighborVertexesArrays = new short[maxLevel][];
     faceVertexesArrays = new short[maxLevel][];
@@ -161,16 +173,12 @@ class Geodesic3D {
     faceVertexesArrays[0] = faceVertexesIcosahedron;
     neighborVertexesArrays[0] = neighborVertexesIcosahedron;
     vertexCounts[0] = 12;
-
-    for (int i = 0; i < lastLevel; ++i)
+    
+    for (int i = 0; i < maxLevel - 1; ++i)
       quadruple(i);
-
-    transformedVertexVectors = new Vector3f[vertexVectors.length];
-    for (int i = vertexVectors.length; --i >= 0; )
-      transformedVertexVectors[i] = new Vector3f();
-
+    
     if (DUMP) {
-      for (int i = 0; i <= lastLevel; ++i) {
+      for (int i = 0; i < maxLevel; ++i) {
         System.out.println("geodesic level " + i +
                            " vertexCount= " + getVertexCount(i) +
                            " faceCount=" + getFaceCount(i) +
@@ -178,33 +186,33 @@ class Geodesic3D {
       }
     }
   }
-
-  short getVertexCount(int level) {
+  
+  static short getVertexCount(int level) {
     return vertexCounts[level];
   }
 
-  int getFaceCount(int level) {
+  static int getFaceCount(int level) {
     return faceVertexesArrays[level].length / 3;
   }
 
-  int getEdgeCount(int level) {
+  static int getEdgeCount(int level) {
     return getVertexCount(level) + getFaceCount(level) - 2;
   }
 
-  short[] getNeighborVertexes(int level) {
+  static short[] getNeighborVertexes(int level) {
     return neighborVertexesArrays[level];
   }
 
-  short[] getFaceVertexes(int level) {
+  static short[] getFaceVertexes(int level) {
     return faceVertexesArrays[level];
   }
 
-  short vertexNext;
-  Hashtable htVertex;
+  private static short vertexNext;
+  private static Hashtable htVertex;
     
-  final static boolean VALIDATE = true;
+  private final static boolean VALIDATE = true;
 
-  private void quadruple(int level) {
+  private static void quadruple(int level) {
     if (DUMP)
       System.out.println("quadruple(" + level + ")");
     htVertex = new Hashtable();
@@ -301,7 +309,8 @@ class Geodesic3D {
     htVertex = null;
   }
 
-  void addNeighboringVertexes(short[] neighborVertexes, short v1, short v2) {
+  private static void addNeighboringVertexes(short[] neighborVertexes,
+                                             short v1, short v2) {
     for (int i = v1 * 6, iMax = i + 6; i < iMax; ++i) {
       if (neighborVertexes[i] == v2)
         return;
@@ -326,7 +335,7 @@ class Geodesic3D {
     return neighborVertexes[offset];
   }
     
-  private short getVertex(short v1, short v2) {
+  private static short getVertex(short v1, short v2) {
     if (v1 > v2) {
       short t = v1;
       v1 = v2;

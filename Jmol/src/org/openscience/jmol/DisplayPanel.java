@@ -69,7 +69,8 @@ public class DisplayPanel extends JPanel
   private static float scalePixelsPerAngstrom;
   private static float scaleDefaultPixelsPerAngstrom;
   private static final Matrix4f matrixRotate = new Matrix4f();
-  private static final Matrix4f matrixTranslate = new Matrix4f();
+  private static int xTranslate;
+  private static int yTranslate;
   private static final Matrix4f matrixViewTransform = new Matrix4f();
   private static final Matrix4f matrixTemp = new Matrix4f();
   private static final Vector3f vectorTemp = new Vector3f();
@@ -155,11 +156,13 @@ public class DisplayPanel extends JPanel
   }
 
   public Matrix4f getPovTranslateMatrix() {
-    Matrix4f matrixPovTranslate = new Matrix4f(matrixTranslate);
+    Matrix4f matrixPovTranslate = new Matrix4f();
+    matrixPovTranslate.setIdentity();
     matrixPovTranslate.get(vectorTemp);
-    vectorTemp.x /= scalePixelsPerAngstrom;
-    vectorTemp.y /= -scalePixelsPerAngstrom; // need to invert y axis
-    vectorTemp.z /= scalePixelsPerAngstrom;
+    vectorTemp.x = (xTranslate - dimCurrent.width/2) / scalePixelsPerAngstrom;
+    vectorTemp.y = -(yTranslate - dimCurrent.height/2)
+      / scalePixelsPerAngstrom; // invert y axis
+    vectorTemp.z = 0;
     matrixPovTranslate.set(vectorTemp);
     return matrixPovTranslate;
   }
@@ -182,23 +185,22 @@ public class DisplayPanel extends JPanel
     matrixTemp.set(scalePixelsPerAngstrom);
     matrixTemp.m11=-scalePixelsPerAngstrom; // invert y dimension
     matrixViewTransform.mul(matrixTemp, matrixViewTransform);
-    // translate
-    matrixViewTransform.mul(matrixTranslate, matrixViewTransform);
-    // now translate to the center of the screen
+    // now translate to the translate coordinates
     matrixTemp.setZero();
     // This z dimension is here because of the approximations used
     // to calculate atom sizes
     vectorTemp.x =
-      vectorTemp.z = dimCurrent.width / 2;
-    vectorTemp.y = dimCurrent.height / 2;
+      vectorTemp.z = xTranslate;
+    vectorTemp.y = yTranslate;
     matrixTemp.setTranslation(vectorTemp);
     matrixViewTransform.add(matrixTemp);
     return matrixViewTransform;
   }
 
   public void homePosition() {
-    matrixRotate.setIdentity();
-    matrixTranslate.setIdentity();
+    matrixRotate.setIdentity();         // no rotations
+    xTranslate = dimCurrent.width / 2;  // middle of the screen
+    yTranslate = dimCurrent.height / 2;
     scaleFitToScreen();
     setRotateMode();
   }
@@ -349,8 +351,8 @@ public class DisplayPanel extends JPanel
       }
 
       if (modeMouse == XLATE) {
-        matrixTranslate.m03 += (x - prevx);
-        matrixTranslate.m13 += (y - prevy);
+        xTranslate += (x - prevx);
+        yTranslate += (y - prevy);
       }
 
       if (modeMouse == ZOOM) {

@@ -180,6 +180,24 @@ final class Shade3D {
     return (byte)intensity;
   }
 
+  static byte calcDitheredNoisyIntensity(float x, float y, float z, float r) {
+    // add some randomness to prevent banding
+    int fp8Intensity = (int)(calcFloatIntensityNormalized(x/r, y/r, z/r)
+			* shadeLast * (1 << 8));
+    int intensity = fp8Intensity >> 8;
+    // this cannot overflow because the if the float intensity is 1.0
+    // then intensity will be == shadeLast
+    // but there will be no fractional component, so the next test will fail
+    if ((fp8Intensity & 0xFF) > nextRandom8Bit())
+      ++intensity;
+    int random16bit = seed & 0xFFFF;
+    if (random16bit < 65536 / 3 && intensity > 0)
+      --intensity;
+    else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
+      ++intensity;
+    return (byte)intensity;
+  }
+
   /*
     This is a linear congruential pseudorandom number generator,
     as defined by D. H. Lehmer and described by Donald E. Knuth in

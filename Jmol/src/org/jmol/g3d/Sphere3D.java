@@ -236,10 +236,10 @@ class Sphere3D {
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           int height = (int)z;
-          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z);
-          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z);
-          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z);
-          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z);
+          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z, radiusF);
+          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z, radiusF);
+          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z, radiusF);
+          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z, radiusF);
           int packed = (height |
                         (intensitySE << 7) |
                         (intensitySW << 13) |
@@ -270,7 +270,7 @@ class Sphere3D {
           float z2 = 130*130 - xF*xF - yF*yF;
           if (z2 > 0) {
             float z = (float)Math.sqrt(z2);
-            intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, z);
+            intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, z, 130);
           }
           sphereIntensities[(j << 8) + i] = intensity;
         }
@@ -317,7 +317,6 @@ class Sphere3D {
     int x2Status = (x2 < 0) ? -1 : (x2 < g3d.width) ? 0 : 1;
     int y2 = y + r * ySign;
     int y2Status = (y2 < 0) ? -1 : (y2 < g3d.height) ? 0 : 1;
-    int z2 = z - r;
     int z2Status = (z < g3d.slab) ? -1 : 0;
 
 
@@ -350,6 +349,7 @@ class Sphere3D {
       int offsetPbuf = (offsetPbufBeginLine += width) - xSign;
       int s2 = r2 - i2;
       int z0 = z - r;
+      int y8 = ((i * ySign + r) << 8) / dDivisor;
       for (int j = 0, j2 = 0; j2 <= s2;
            j2 += j + j + 1, ++j) {
         if (zbuf[offsetPbuf += xSign] <= z0)
@@ -359,7 +359,6 @@ class Sphere3D {
         if (zbuf[offsetPbuf] <= z0)
           continue;
         int x8 = ((j * xSign + r) << 8) / dDivisor;
-        int y8 = ((i * ySign + r) << 8) / dDivisor;
         pbuf[offsetPbuf] = shades[sphereIntensities[(y8 << 8) + x8]];
         zbuf[offsetPbuf] = (short) z0;
       }
@@ -402,6 +401,7 @@ class Sphere3D {
       int s2 = r2 - i2;
       int z0 = z - r;
       int xCurrent = x - xSign;
+      int y8 = ((i * ySign + r) << 8) / dDivisor;
       for (int j = 0, j2 = 0; j2 <= s2;
            j2 += j + j + 1, ++j, offsetPbuf += xSign) {
         xCurrent += xSign;
@@ -422,7 +422,6 @@ class Sphere3D {
         if (z0 < slab || z0 > depth || zbuf[offsetPbuf] <= z0)
           continue;
         int x8 = ((j * xSign + r) << 8) / dDivisor;
-        int y8 = ((i * ySign + r) << 8) / dDivisor;
         pbuf[offsetPbuf] = shades[sphereIntensities[(y8 << 8) + x8]];
         zbuf[offsetPbuf] = (short) z0;
       }

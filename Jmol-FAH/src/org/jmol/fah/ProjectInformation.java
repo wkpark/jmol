@@ -36,7 +36,6 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 import java.util.zip.ZipInputStream;
@@ -888,7 +887,9 @@ public class ProjectInformation {
     }
 
     //Check for differences with EM
-    if ((info._emDeadline != null) && (!info._emDeadline.equals(info._staticPreferred))) {
+    if ((info._psPreferred == null) &&
+        (info._emDeadline != null) &&
+        (!info._emDeadline.equals(info._staticPreferred))) {
       different = true;
     }
     if ((info._emFrames != null) && (!info._emFrames.equals(info._staticFrames))) {
@@ -1082,8 +1083,17 @@ public class ProjectInformation {
     }
 
     //Print preferred difference
-    if (((info._emDeadline != null) && (!info._emDeadline.equals(info._staticPreferred))) ||
-        ((info._psPreferred != null) && (!info._psPreferred.equals(info._staticPreferred)))) {
+    boolean preferredDifferent = false;
+    if (info._psPreferred != null) {
+        if (!info._psPreferred.equals(info._staticPreferred)) {
+            preferredDifferent = true;
+        }
+    } else {
+        if ((info._emDeadline != null) && (!info._emDeadline.equals(info._staticPreferred))) {
+            preferredDifferent = true;
+        }
+    }
+    if (preferredDifferent) {
       outputText("  Preferred: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticPreferred != null) {
@@ -1122,9 +1132,18 @@ public class ProjectInformation {
     }
 
     //Print points difference
-    if (((info._emValue != null) && (!info._emValue.equals(info._staticValue))) ||
-        ((info._psValue != null) && (!info._psValue.equals(info._staticValue))) ||
-        ((info._qdValue != null) && (!info._qdValue.equals(info._staticValue)))) {
+    boolean pointsDifferent = false;
+    if (info._psValue != null) {
+        if (!info._psValue.equals(info._staticValue)) {
+            pointsDifferent = true;
+        }
+    } else {
+        if (((info._emValue != null) && (!info._emValue.equals(info._staticValue))) ||
+            ((info._qdValue != null) && (!info._qdValue.equals(info._staticValue)))) {
+            pointsDifferent = true;
+        }
+    }
+    if (pointsDifferent) {
       outputText("  Points: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticValue != null) {

@@ -29,7 +29,7 @@ import org.openscience.jmol.viewer.JmolStatusListener;
 
 import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
 import org.openscience.jmol.adapters.CdkJmolModelAdapter;
-import org.openscience.jmol.adapters.XyzJmolModelAdapter;
+import org.openscience.jmol.adapters.SimpleModelAdapter;
 
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -239,9 +239,9 @@ public class Jmol extends JPanel {
     String adapter= System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
       adapter = "cdk";
-    if (adapter.equals("xyz")) {
-      System.out.println("using Xyz Model Adapter");
-      modelAdapter = new XyzJmolModelAdapter();
+    if (adapter.equals("simple")) {
+      System.out.println("using Simple Model Adapter");
+      modelAdapter = new SimpleModelAdapter();
     } else if (adapter.equals("jmol")) {
       System.out.println("using jmol Deprecated Model Adapter");
       modelAdapter = new DeprecatedJmolModelAdapter();

@@ -83,7 +83,6 @@ class RecentFilesDialog extends JDialog implements ActionListener,
         public void mouseClicked(MouseEvent e) {
           if (e.getClickCount() == 2) {
             int dblClickIndex = fileList.locationToIndex(e.getPoint());
-            System.out.println("dblClickIndex=" + dblClickIndex);
             if (dblClickIndex >= 0 &&
                 dblClickIndex < files.length &&
                 files[dblClickIndex] != null) {

@@ -130,7 +130,6 @@ public class AtomShape implements Bspt.Tuple {
   public void deleteAllBonds() {
     if (bonds == null)
       return;
-    System.out.println("bonds.length=" + bonds.length);
     for (int i = bonds.length; --i >= 0; )
       frame.deleteBond(bonds[i]);
     if (bonds != null) {
@@ -148,7 +147,6 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public void deleteBond(int i) {
-    System.out.println("deleting bond " + i);
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;

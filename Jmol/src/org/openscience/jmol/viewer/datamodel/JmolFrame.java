@@ -624,7 +624,7 @@ public class JmolFrame {
     }
   }
 
-  final static boolean showRebondTimes = true;
+  final static boolean showRebondTimes = false;
 
   private float bondTolerance;
   private float minBondDistance;
@@ -672,8 +672,8 @@ public class JmolFrame {
           if (chainThis == chainLast) {
             if (pprop.getName().equals("CA")) {
               if (atomLastCA != null) {
-              bondAtomShapes(atom, atomLastCA,
-                             BondShape.BACKBONE);
+		  bondAtomShapes(atom, atomLastCA,
+				 BondShape.BACKBONE);
               }
               atomLastCA = atom;
             }

@@ -45,7 +45,6 @@ public class ModelManager {
   boolean suppliesVanderwaalsRadius;
   boolean suppliesCovalentRadius;
   boolean suppliesAtomColor;
-  boolean hasPdbRecords;
   final JmolFrame nullJmolFrame;
 
 
@@ -153,7 +152,6 @@ public class ModelManager {
           new JmolFrameBuilder(viewer, clientFile, frameNumber)
           .buildJmolFrame();
       atomCount = frame.getAtomCount();
-      hasPdbRecords = jmolModelAdapter.hasPdbRecords(clientFile, frameNumber);
     }
   }
 
@@ -299,8 +297,6 @@ public class ModelManager {
   }
 
   public String getPdbAtomRecord(Object clientAtom) {
-    if (! hasPdbRecords)
-      return null;
     return jmolModelAdapter.getPdbAtomRecord(clientAtom);
   }
 
@@ -341,12 +337,19 @@ public class ModelManager {
       return 0;
     }
     Integer boxedAtomicNumber = (Integer)htAtomicMap.get(atomicSymbol);
-    if (boxedAtomicNumber == null) {
-      System.out.println("JmolModelAdapter does not supply getAtomicNumber() and '" +
-                         atomicSymbol + "' is not a recognized symbol");
-      return 0;
+    if (boxedAtomicNumber != null)
+	return boxedAtomicNumber.intValue();
+    if (atomicSymbol.length() == 2 &&
+	Character.isUpperCase(atomicSymbol.charAt(1))) {
+	boxedAtomicNumber = (Integer)htAtomicMap.get("" +
+						     atomicSymbol.charAt(0) +
+						     Character.toLowerCase(atomicSymbol.charAt(1)));
+	if (boxedAtomicNumber != null)
+	    return boxedAtomicNumber.intValue();
     }
-    return boxedAtomicNumber.intValue();
+    System.out.println("JmolModelAdapter does not supply getAtomicNumber() and '" +
+		       atomicSymbol + "' is not a recognized symbol");
+    return 0;
   }
 
   ////////////////////////////////////////////////////////////////

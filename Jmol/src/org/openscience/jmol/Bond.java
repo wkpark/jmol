@@ -26,20 +26,15 @@ import java.util.Enumeration;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class Bond {
+public class Bond extends org.openscience.cdk.Bond {
 
-  private Atom atom1;
-  private Atom atom2;
-
-  public Bond(Atom a1, Atom a2) {
-    this.atom1 = a1;
-    this.atom2 = a2;
+  public Bond(org.openscience.cdk.Atom a1, org.openscience.cdk.Atom a2) {
+    super(a1, a2, 1.0);
   }
 
   public boolean bindsHydrogen() {
-
-    if ((atom1.getAtomicNumber() == 1)
-        || (atom2.getAtomicNumber() == 1)) {
+    if ((super.getAtomAt(1).getAtomicNumber() == 1) ||
+        (super.getAtomAt(2).getAtomicNumber() == 1)) {
       return true;
     } else {
       return false;

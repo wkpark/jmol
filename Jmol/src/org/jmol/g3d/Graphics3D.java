@@ -484,9 +484,18 @@ final public class Graphics3D {
   public void fillQuadrilateral(short colix,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {
-    fillTriangle(colix, screenA, screenB, screenC);
-    fillTriangle(colix, screenA, screenC, screenD);
- }
+    calcSurfaceShade(colix, screenA, screenB, screenC);
+    fillTriangle(argbCurrent, screenA, screenB, screenC);
+    fillTriangle(argbCurrent, screenA, screenC, screenD);
+  }
+
+  public void fillQuadrilateral(short colix,
+                                Point3f screenA, Point3f screenB,
+                                Point3f screenC, Point3f screenD) {
+    calcSurfaceShade(colix, screenA, screenB, screenC);
+    fillTriangle(argbCurrent, screenA, screenB, screenC);
+    fillTriangle(argbCurrent, screenA, screenC, screenD);
+  }
 
   public void fillTriangle(short colix, Point3i screenA,
                            Point3i screenB, Point3i screenC) {
@@ -537,12 +546,38 @@ final public class Graphics3D {
     triangle3d.fillTriangle();
   }
 
+  public void fillTriangle(int argb, Point3f screenA,
+                           Point3f screenB, Point3f screenC) {
+    argbCurrent = argb;
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = (int)screenA.x; t[1] = (int)screenB.x; t[2] = (int)screenC.x;
+    t = triangle3d.ay;
+    t[0] = (int)screenA.y; t[1] = (int)screenB.y; t[2] = (int)screenC.y;
+    t = triangle3d.az;
+    t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
+
+    triangle3d.fillTriangle();
+  }
+
   int intensity = 0;
   
+  void diff(Vector3f v, Point3i s1, Point3i s2) {
+    v.x = s1.x - s2.x;
+    v.y = s1.y - s2.y;
+    v.z = s1.z - s2.z;
+  }
+
   void calcSurfaceShade(short colix, Point3i screenA,
                         Point3i screenB, Point3i screenC) {
+    diff(vectorAB, screenB, screenA);
+    diff(vectorAC, screenC, screenA);
+    vectorNormal.cross(vectorAB, vectorAC);
+    int intensity =
+      vectorNormal.z >= 0
+      ? calcIntensity(-vectorNormal.x, -vectorNormal.y, vectorNormal.z)
+      : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
     argbCurrent = getShades(colix)[intensity];
-    intensity = (intensity + 10) & 63;
   }
 
 
@@ -557,8 +592,8 @@ final public class Graphics3D {
     vectorNormal.cross(vectorAB, vectorAC);
     int intensity =
       vectorNormal.z >= 0
-      ? calcIntensity(vectorNormal.x, -vectorNormal.y, vectorNormal.z)
-      : calcIntensity(-vectorNormal.x, vectorNormal.y, -vectorNormal.z);
+      ? calcIntensity(-vectorNormal.x, -vectorNormal.y, vectorNormal.z)
+      : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
     argbCurrent = getShades(colix)[intensity];
   }
 

@@ -165,6 +165,7 @@ public class Token {
   final static int vibration    = command | 60;
   final static int vectors      = command | 61;
   final static int mesh         = command | 62;
+  final static int prueba       = command | 63;
 
   // parameters
   final static int ambient      = setparam |  0;
@@ -412,6 +413,7 @@ public class Token {
     "vibration",         new Token(vibration,  "vibration"),
     "vectors",           new Token(vectors,   onDefault1, "vectors"),
     "mesh",              new Token(mesh,      onDefault1, "mesh"),
+    "prueba",            new Token(prueba, onDefault1, "prueba"),
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

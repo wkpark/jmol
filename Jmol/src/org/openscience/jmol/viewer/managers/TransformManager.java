@@ -524,6 +524,11 @@ public class TransformManager {
     return unscaled;
   }
 
+  public void transformPoints(int count, Point3f[] angstroms, Point3i[] screens) {
+    for (int i = count; --i >= 0; )
+      screens[i].set(transformPoint(angstroms[i]));
+  }
+
   public void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {
     pointScreen.set(transformPoint(pointAngstroms));
   }

@@ -1685,7 +1685,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_FRANK    = 15;
   public final static int SHAPE_ECHO     = 16;
   public final static int SHAPE_HOVER    = 17;
-  public final static int SHAPE_MAX      = 18;
+  public final static int SHAPE_PRUEBA   = 18;
+  public final static int SHAPE_MAX      = 19;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Labels", "Vectors", "Measures",
@@ -1693,7 +1694,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Backbone", "Trace",
     "Cartoon",
     "Strands", "Mesh", "Ribbons",
-    "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover"
+    "Axes", "Bbcage", "Uccage", "Frank", "Echo", "Hover",
+    "Prueba"
   };
 
   // all of these things are compile-time constants

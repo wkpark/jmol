@@ -408,6 +408,9 @@ public class Eval implements Runnable {
       case Token.ribbons:
         proteinShape(JmolConstants.SHAPE_RIBBONS, 1);
         break;
+      case Token.prueba:
+        proteinShape(JmolConstants.SHAPE_PRUEBA, 1);
+        break;
       case Token.trace:
         proteinShape(JmolConstants.SHAPE_TRACE, 2);
         break;
@@ -1313,6 +1316,7 @@ public class Eval implements Runnable {
     case Token.mesh:
     case Token.strands:
     case Token.ribbons:
+    case Token.prueba:
     case Token.cartoon:
     case Token.dots:
     case Token.axes:
@@ -2244,7 +2248,9 @@ public class Eval implements Runnable {
    Token.monitor, Token.dots, Token.backbone,
    Token.trace, Token.cartoon, Token.strands, Token.mesh, Token.ribbons,
    Token.axes, Token.boundbox, Token.unitcell, Token.frank, Token.echo,
-   Token.hover};
+   Token.hover,
+   Token.prueba,
+  };
 
   static {
     if (shapeToks.length != JmolConstants.SHAPE_MAX) {

@@ -15,6 +15,19 @@
     </p>
   </section>
 
+  <section title="Which JVM should I use on Win32 Internet Explorer?">
+    <p>
+      We strongly recommend that you install the Sun Java Plug-in
+      from <a href="http://www.java.com">www.java.com</a>
+    </p>
+    <p>
+      Jmol runs fine on the Microsoft JVM that was included with
+      Internet Explorer up until 2002(?). However, since Microsoft
+      no longer supports this product, we strongly recommend that
+      you upgrade.
+    </p>
+  </section>
+
   <section
    title="Why does it get so much slower when I make the window bigger?">
     <p>

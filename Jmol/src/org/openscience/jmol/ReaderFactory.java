@@ -116,8 +116,10 @@ public abstract class ReaderFactory {
         return new DaltonReader(buffer);
       } else if (line.indexOf("Jaguar") >= 0) {
         return new JaguarReader(buffer);
-      } else if (line.indexOf("MOPAC") >= 0) {
-        return new MopacReader(buffer);
+      } else if (line.indexOf("MOPAC:  VERSION  7.00") >= 0) {
+        return new Mopac7Reader(buffer);
+      } else if (line.indexOf("MOPAC  97.00") >= 0) {
+        return new Mopac97Reader(buffer);
       } else if (line.startsWith("HEADER")) {
         return new PDBReader(buffer);
       } else if (line.startsWith("molstruct")) {

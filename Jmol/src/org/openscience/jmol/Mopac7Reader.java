@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,11 @@ import java.io.*;
 import java.util.Vector;
 
 /**
- *  Reads Mopac output files.
+ *  Reads Mopac 7 output files.
  *
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
-class MopacReader implements ChemFileReader {
+class Mopac7Reader implements ChemFileReader {
 
   /**
    * The source for data.
@@ -39,7 +39,7 @@ class MopacReader implements ChemFileReader {
    *
    * @param input source of MOPAC data
    */
-  public MopacReader(Reader input) {
+  public Mopac7Reader(Reader input) {
     this.input = new BufferedReader(input);
   }
 

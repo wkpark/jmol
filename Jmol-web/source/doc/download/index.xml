@@ -4,9 +4,15 @@
     <title>Download Jmol</title>
     
     <section title="Requirements">
-      <p>The Jmol application requires Java 1.4 or higher. The latest
+      <p>The standalone Jmol application requires Java 1.4 or higher.
+      The latest
       <a href="http://java.sun.com/j2se/">Java 2 Platform Standard Edition</a>
       is recommended.
+      </p>
+
+      <p>The Jmol web browser applet runs on most browser Java Virtual
+      Machines, including the Microsoft and Netscape 4.7* implementations
+      of the Java 1.1 JVM. 
       </p>
 
     </section>

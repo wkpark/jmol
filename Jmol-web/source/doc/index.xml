@@ -5,10 +5,13 @@
 
     <header>
       <p>
-      Jmol is a free, open source molecule viewer written in Java. It is a
-      collaboratively developed visualization and measurement tool for chemical
-      scientists. Jmol is an active project, and there are new features being
-      added to it. Users are encouraged to modify it to fit their needs and to
+      Jmol is a free, open source molecule viewer written in Java. It runs
+      as a standalone application and as a web browser applet.
+      </p>
+      <p>
+      Jmol is a collaboratively developed visualization and measurement tool
+      for scientists and educators. New features being added on an ongoing
+      basis. Users are encouraged to modify it to fit their needs and to
       contribute their changes to the project.
       </p>
     </header>
@@ -19,6 +22,18 @@
           and as a web browser applet</li>
 
         <li>Supports RasMol/Chime scripting</li>
+
+        <li>Displays inter-atomic distances, bond
+          angles, and dihedral angles.</li>
+        
+        <li>Displays vectors (velocity, dipole, etc.),
+          charges, and atomic symbols.</li>
+        
+        <li>Can display unit cell boxes, and energy bands.</li>
+
+        <li>Animates the results of simulations.</li>
+        
+        <li>Animates the computed vibrational modes.</li>
 
         <li>Reads many types of files: 
           <a href="http://www.abinit.org/" TARGET="_top">ABINIT</a>,
@@ -40,25 +55,11 @@
           XYZ (XMol).
         </li>
 
-        <li>Animates the results of simulations.</li>
-        
-        <li>Displays measurements inter-atomic distances, bond
-          angles, and dihedral angles from atomic coordinates as a
-          simulation progresses.</li>
-        
-        <li>Animates the computed vibrational modes from any of the
-        quantum chemistry packages mentioned above.</li>
-
-        <li>Displays vectors (velocity, dipole, etc.),
-          charges, atomic symbols, or atomic indexes during
-          animation.</li>
-        
         <li>Prints or exports images in these formats:
           GIF, JPG, PPM, BMP, PNG, PDF,
           PostScript, and PovRay (including animations).
         </li>
         
-        <li>Can display unit cell boxes, and energy bands.</li>
       </ul>
     </section>
 

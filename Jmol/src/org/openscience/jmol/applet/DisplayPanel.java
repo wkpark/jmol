@@ -119,7 +119,7 @@ public class DisplayPanel extends Canvas
     //      setBackground(java.awt.Color.black);
     //      backgroundColor = (java.awt.Color.black);
     setForeground(java.awt.Color.white);
-    AtomRenderer.setCanvas(this);
+    AtomRenderer.setImageComponent(this);
     this.addMouseListener(new MyAdapter());
     this.addComponentListener(this);
     this.addMouseMotionListener(new MyMotionAdapter());

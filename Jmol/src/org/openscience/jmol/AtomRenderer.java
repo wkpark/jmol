@@ -19,7 +19,7 @@
  */
 package org.openscience.jmol;
 
-import java.awt.Canvas;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
@@ -35,12 +35,12 @@ import java.util.Hashtable;
 public class AtomRenderer {
 
   /**
-   * Sets the Canvas where all atoms will be drawn.
+   * Sets the Component where all atoms will be drawn.
    *
-   * @param c the Canvas
+   * @param c the Component
    */
-  public static void setCanvas(Canvas c) {
-    canvas = c;
+  public static void setImageComponent(Component c) {
+    imageComponent = c;
   }
 
   /**
@@ -94,7 +94,7 @@ public class AtomRenderer {
         ballImages.put(atom.getType().getColor(), shadedImage);
       }
       gc.drawImage(shadedImage, x - radius, y - radius, diameter, diameter,
-              canvas);
+              imageComponent);
       break;
 
     default :
@@ -227,7 +227,7 @@ public class AtomRenderer {
         }
       }
     }
-    return canvas.createImage(new MemoryImageSource(i, i, model, 0, i));
+    return imageComponent.createImage(new MemoryImageSource(i, i, model, 0, i));
   }
 
   /**
@@ -250,10 +250,10 @@ public class AtomRenderer {
   }
 
   /**
-   * The Canvas where all atoms will be drawn. This reference will be used for creating
-                                                                                                                                                                                                                                                                   * and displaying the images for shaded atom spheres.
+   * The Component where all atoms will be drawn. This reference will be used for
+   * creating and displaying the images for shaded atom spheres.
    */
-  private static Canvas canvas;
+  private static Component imageComponent;
 
   /**
    * Pool of atom images for shaded renderings.

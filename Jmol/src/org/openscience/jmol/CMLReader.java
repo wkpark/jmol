@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -88,13 +88,9 @@ public class CMLReader extends DefaultChemFileReader {
       } else {
         parser.parse(url.toString());
       }
-      ChemFile file = new ChemFile(bondsEnabled);
-      Enumeration framesIter =
-        ((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
-      while (framesIter.hasMoreElements()) {
-        file.addFrame((ChemFrame) framesIter.nextElement());
-        fireFrameRead();
-      }
+
+      ChemFile file = ((JMolCDO) handler.returnCDO()).returnChemFile();
+      
       return file;
     } catch (SAXException ex) {
       throw new IOException("CMLReader exception: " + ex);
@@ -124,13 +120,9 @@ public class CMLReader extends DefaultChemFileReader {
         source = new InputSource(url.toString());
       }
       parser.parse(source);
-      ChemFile file = new ChemFile(bondsEnabled);
-      Enumeration framesIter =
-        ((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
-      while (framesIter.hasMoreElements()) {
-        file.addFrame((ChemFrame) framesIter.nextElement());
-        fireFrameRead();
-      }
+
+      ChemFile file = ((JMolCDO) handler.returnCDO()).returnChemFile();
+
       return file;
     } catch (SAXException ex) {
       throw new IOException("CMLReader exception: " + ex);

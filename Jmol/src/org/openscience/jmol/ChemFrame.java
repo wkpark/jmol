@@ -261,9 +261,29 @@ public class ChemFrame implements Transformable {
    * Deletes an Atom from the frame
    */
   public void deleteAtom(int atomID) {
-
     clearBounds();
-    for (int i = atomID; i < numberAtoms; i++) {
+    for (int i = atomID; i < numberAtoms -1; i++) {
+      atoms[i] = atoms[i + 1];
+    }
+    atoms[numberAtoms - 1] = null;
+    numberAtoms--;
+    rebond();
+  }
+
+  /**
+   * Deletes an Atom from the frame
+   */
+  public void deleteAtom(Atom a) {
+    clearBounds();
+    // deteremine atomID
+    int atomID = 0;
+    for (int i = 0; i < numberAtoms; i++) {
+      if (atoms[i].hashCode() == a.hashCode()) {
+        atomID = i;
+        i = numberAtoms;
+      }
+    }
+    for (int i = atomID; i < numberAtoms -1; i++) {
       atoms[i] = atoms[i + 1];
     }
     atoms[numberAtoms - 1] = null;

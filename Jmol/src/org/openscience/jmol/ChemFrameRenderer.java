@@ -47,10 +47,14 @@ public class ChemFrameRenderer {
     }
     boolean drawHydrogen = settings.getShowHydrogens();
 
-    if (shapes == null || frame.hashCode() != frameHashCode
-        || settings.hashCode() != previousSettingsHashCode) {
+    if (shapes == null || // did not shapes yet
+        frame.hashCode() != frameHashCode || // frame itself is changed
+        settings.hashCode() != previousSettingsHashCode || // settings have changed
+        frame.getNumberOfAtoms() != numberAtoms // #atoms changed (e.g. a delete)
+       ) {
       frameHashCode = frame.hashCode();
       previousSettingsHashCode = settings.hashCode();
+      numberAtoms = frame.getNumberOfAtoms();
       transformables.clear();
       transformables.addElement(frame);
       double maxMagnitude = -1.0;
@@ -138,16 +142,17 @@ public class ChemFrameRenderer {
       t1.transform(matrix);
     }
     shapeSorter.sort(shapes);
-    
+
     for (int i = 0; i < shapes.length; ++i) {
       shapes[i].render(g);
     }
-    
+
   }
 
   int frameHashCode;
   int previousSettingsHashCode;
-  
+  int numberAtoms;
+
   Shape[] shapes;
   
   Vector transformables = new Vector();

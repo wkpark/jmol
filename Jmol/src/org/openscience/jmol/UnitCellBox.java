@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -132,6 +132,30 @@ public class UnitCellBox {
       this.atomPos = atomPos;
     }
   }
+  /**
+   * Create a UnitCellBox starting from a ChemFrame.
+   * ChemFrame's atoms become the base atoms.
+   *
+   */
+  public UnitCellBox(float[][] rprim, float[] acell, ChemFrame chemFrame) {
+    this.isPrimVectorsCart = true;
+    this.edges = null;
+    this.angles = null;
+    this.rprim = rprim;
+    this.acell = acell;
+    this.atomType = new int[chemFrame.getNumberOfAtoms()];
+    atomPos = new float[chemFrame.getNumberOfAtoms()][3];
+    Atom atom;
+    for (int i=0; i < chemFrame.getNumberOfAtoms(); i++) {
+      atom = chemFrame.getAtomAt(i);
+      atomType[i] = atom.getType().getAtomicNumber();
+      atomPos[i][0] = atom.getPosition().x;
+      atomPos[i][1] = atom.getPosition().y;
+      atomPos[i][2] = atom.getPosition().z;
+    }
+    this.atomPos = cartToRed(atomPos, getRprimd());
+  }
+  
 
   /**
    * Creates a new <code>UnitCellBox</code> instance.

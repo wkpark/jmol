@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,14 @@
 package org.openscience.jmol;
 
 import java.util.Vector;
+import java.util.Enumeration;
 import org.openscience.cdk.io.cml.cdopi.ANIMATIONCDO;
 import org.openscience.cdk.io.cml.cdopi.CDOAcceptedObjects;
 
 public final class JMolCDO extends ANIMATIONCDO {
 
-  private Vector allFrames;
+  private ChemFile file;
   private ChemFrame currentFrame;
-  private int frameNumber;
 
   private String atomType;
   private String atomX;
@@ -35,20 +35,23 @@ public final class JMolCDO extends ANIMATIONCDO {
   private String atomZ;
   private String partialCharge;
 
+  //Crystal
+  private float[][] rprimd; //the dimensional primitive vectors
+
   public JMolCDO() {
-    allFrames = new Vector();
     currentFrame = new ChemFrame();
-    frameNumber = 0;
+    file = new ChemFile();
   }
 
   public void startDocument() {
   }
 
   public void endDocument() {
-    if (allFrames.size() == 0) {
+    if (file.getNumberOfFrames() == 0) {
       this.endFrame();
     }
   }
+    
 
   public void startObject(String type) {
 
@@ -65,7 +68,10 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Frame")) {
       this.startFrame();
     } else if (type.equals("Crystal")) {
-
+      this.startCrystal();
+      if (!(file instanceof CrystalFile)) {
+	file = new CrystalFile();
+      }
       // assume frame has been started       
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at StartObject -> "
@@ -88,6 +94,7 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Frame")) {
       this.endFrame();
     } else if (type.equals("Crystal")) {
+      this.endCrystal();
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at EndObject -> "
           + type);
@@ -110,8 +117,13 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Frame")) {
       this.setFrameProperty(proptype, propvalue);
     } else if (type.equals("Crystal")) {
-
-      // need not to anything yet
+      //this.setCrystalProperty(proptype, propvalue);
+    } else if (type.equals("a-axis")) {
+      this.setCrystalProperty(type, proptype, propvalue);
+    } else if (type.equals("b-axis")) {
+      this.setCrystalProperty(type, proptype, propvalue);
+    } else if (type.equals("c-axis")) {
+      this.setCrystalProperty(type, proptype, propvalue);
     } else {
       System.err
           .println("DEBUG: unknown CDO Object Type at SetObjectProperty -> "
@@ -126,16 +138,33 @@ public final class JMolCDO extends ANIMATIONCDO {
   }
 
   public void startFrame() {
-    ++frameNumber;
     currentFrame = new ChemFrame();
   }
-
+  
   public void endFrame() {
-    allFrames.addElement(currentFrame);
+    if (file instanceof CrystalFile) {
+      float[] acell = {1.0f ,1.0f ,1.0f};
+      UnitCellBox unitCellBox = new UnitCellBox(rprimd, acell, currentFrame);
+      ((CrystalFile)file).setUnitCellBox(unitCellBox);
+      ((CrystalFile)file).generateCrystalFrame();
+      //Set title
+      file.getFrame(file.getNumberOfFrames() - 1) 
+	.setInfo(currentFrame.getInfo());
+      //Set PhysicalProperties
+      Vector fp = currentFrame.getFrameProperties();
+      Enumeration ef = fp.elements();
+      while (ef.hasMoreElements()) {
+	PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
+	file.getFrame(file.getNumberOfFrames() - 1)
+	  .addProperty(pf);	
+      }
+    } else {
+      file.addFrame(currentFrame);
+    }
   }
 
   public void setFrameProperty(String type, String value) {
-
+    
     if (type.equals("title")) {
       currentFrame.setInfo(value);
     } else if (type.equals("energy")) {
@@ -144,6 +173,7 @@ public final class JMolCDO extends ANIMATIONCDO {
       currentFrame.addProperty(prop);
     }
   }
+  
 
   public void startMolecule() {
   }
@@ -167,25 +197,26 @@ public final class JMolCDO extends ANIMATIONCDO {
   }
 
   public void endAtom() {
-
     double x = FortranFormat.atof(atomX.trim());
     double y = FortranFormat.atof(atomY.trim());
     double z = FortranFormat.atof(atomZ.trim());
+    
     try {
       int index = currentFrame.addAtom(atomType.trim(), (float) x, (float) y,
-                    (float) z);
+				       (float) z);
       if (partialCharge.length() > 0) {
-        System.out.println("Adding charge for atom " + index);
-        double c = FortranFormat.atof(partialCharge);
-        currentFrame.getAtomAt(index).addProperty(new Charge(c));
+	System.out.println("Adding charge for atom " + index);
+	double c = FortranFormat.atof(partialCharge);
+	currentFrame.getAtomAt(index).addProperty(new Charge(c));
       } else {
-        System.out.println("Not adding charge for atom " + index);
+	System.out.println("Not adding charge for atom " + index);
       }
     } catch (Exception e) {
       System.out.println("JMolCDO error while adding atom: " + e);
+    
     }
   }
-
+  
   public void setAtomProperty(String type, String value) {
 
     if (type.equals("type")) {
@@ -205,8 +236,46 @@ public final class JMolCDO extends ANIMATIONCDO {
     }
   }
 
-  public Vector returnChemFrames() {
-    return allFrames;
+  public void startCrystal() {
+    rprimd = new float[3][3];
+  }
+  
+  public void endCrystal() {
+  }
+  
+  public void setCrystalProperty(String type, String proptype, String value) {
+    
+    if (type.equals("a-axis")) {
+      if (proptype.equals("x")) {
+	rprimd[0][0] = (float) FortranFormat.atof(value);
+      } else if (proptype.equals("y")) {
+	rprimd[0][1] = (float) FortranFormat.atof(value);
+      } else if (proptype.equals("z")) {
+	rprimd[0][2] = (float) FortranFormat.atof(value);
+      }
+    }
+    if (type.equals("b-axis")) {
+      if (proptype.equals("x")) {
+	rprimd[1][0] = (float) FortranFormat.atof(value);
+      } else if (proptype.equals("y")) {
+	rprimd[1][1] = (float) FortranFormat.atof(value);
+      } else if (proptype.equals("z")) {
+	rprimd[1][2] = (float) FortranFormat.atof(value);
+      }
+    }
+    if (type.equals("c-axis")) {
+      if (proptype.equals("x")) {
+	rprimd[2][0] = (float) FortranFormat.atof(value);
+      } else if (proptype.equals("y")) {
+	rprimd[2][1] = (float) FortranFormat.atof(value);
+      } else if (proptype.equals("z")) {
+	rprimd[2][2] = (float) FortranFormat.atof(value);
+      }
+    }
+  }
+  
+  public ChemFile returnChemFile() {
+    return file;
   }
 
   public void setDocumentProperty(String type, String value) {

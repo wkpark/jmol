@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -56,6 +56,14 @@ class JaguarReader extends DefaultChemFileReader {
         }
         frame = new ChemFrame();
         readCoordinates(frame);
+      } else if (line.indexOf("new geometry:") >= 0) {
+        line = input.readLine();
+        line = input.readLine();
+        if (frame != null) {
+          file.addFrame(frame);
+        }
+        frame = new ChemFrame();
+        readCoordinates(frame);
       } else if (line.indexOf("harmonic frequencies in cm") >= 0) {
         line = input.readLine();
         line = input.readLine();
@@ -70,6 +78,7 @@ class JaguarReader extends DefaultChemFileReader {
     return file;
   }
 
+  // read cartesian coordinates
   void readCoordinates(ChemFrame mol) throws IOException {
 
     String line;

@@ -14,7 +14,15 @@ class CrystalFrame extends ChemFrame {
   //boxEdges.elementAt(1) = *end* of the *first* edge of the box
   //boxEdges.elementAt(2) = *origin* of the *second* edge of the box
   //etc.
-  private Vector boxEdges;
+  private Vector boxEdges; //Vector of Point3f
+  
+  public CrystalFrame() {
+    
+  }
+
+  public CrystalFrame(int na) {
+    super(na);
+  }
 
   void setRprimd(float[][] rprimd) {
     this.rprimd = rprimd;

@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -331,7 +331,7 @@ public class DisplayPanel extends JPanel
             }
             recalc();
           } else if (mode == DELETE) {
-            md.deleteAtom(atom.getAtomNumber());
+            md.deleteAtom(atom);
             recalc();
             status.setStatus(2, "Atom deleted");
           } else if (mode == MEASURE) {
@@ -758,7 +758,11 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       // switch mode;
-      mode = PICK;
+      if (m.isShowing()) {
+        mode = MEASURE;
+      } else {
+        mode = PICK;
+      }
       status.setStatus(1, "Select Atoms");
     }
   }

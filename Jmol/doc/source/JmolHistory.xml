@@ -52,8 +52,9 @@
     Fixed the PropertyGraph. Data is no longer duplicated on reopening the dialog
     and data of previous file is deleted when opening a new one.
   </change>
-  <change contributor="MH">
-    Applied a patch that speeds up the painting process considerably.
+  <change contributor="EW">
+    Fixed NullPointerException in deleting atom, and bug in determining wether
+    the ChemFrameRenderer should update its cache.
   </change>
 </changes>
 

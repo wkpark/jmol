@@ -1,6 +1,6 @@
 
 /*
- * Copyright 2001 The Jmol Development Team
+ * Copyright 2002 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -57,6 +57,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.border.TitledBorder;
+import java.util.Vector;
+import javax.vecmath.Point3f;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -125,7 +127,11 @@ public class Animate extends JDialog implements ActionListener,
       int numberVertices = Math.min(fromFrame.getNumberOfAtoms(),
           toFrame.getNumberOfAtoms());
       for (int i = 0; i < numberExtraFrames; i++) {
-        extraFrames[i] = new ChemFrame(numberVertices);
+	if (fromFrame instanceof CrystalFrame) {
+	  extraFrames[i] = new CrystalFrame(numberVertices);
+	} else {
+	  extraFrames[i] = new ChemFrame(numberVertices);
+	}
       }
 
       // Linearly interpolate new coordinates for extra frames
@@ -151,6 +157,62 @@ public class Animate extends JDialog implements ActionListener,
           }
         }
       }
+
+      // Linearly interpolate primitive vectors and unit cell edges
+      if (fromFrame instanceof CrystalFrame) {
+	  float[][] fromRprimd = ((CrystalFrame)fromFrame).getRprimd();
+	  float[][] toRprimd = ((CrystalFrame)toFrame).getRprimd();
+	  float[][] stepRprimd = new float[3][3];
+	  Vector fromBoxEdges = ((CrystalFrame)fromFrame).getBoxEdges();
+	  Vector toBoxEdges = ((CrystalFrame)toFrame).getBoxEdges();
+	  Vector stepBoxEdges = new Vector(fromBoxEdges.size());
+
+	  for (int i=0; i<3;i++) { //Primitive vectors steps
+	    for (int j=0; j<3;j++) {
+	      stepRprimd[i][j] = (toRprimd[i][j] - fromRprimd[i][j])/
+		(numberExtraFrames + 1);
+	    }
+	  }
+	  
+	  for (int i=0; i< fromBoxEdges.size(); i++) { //Box edges steps
+	    Point3f step = new Point3f();
+	    step.x = (((Point3f)toBoxEdges.elementAt(i)).x 
+		      - ((Point3f)fromBoxEdges.elementAt(i)).x) /
+	      (numberExtraFrames + 1);
+	    step.y = (((Point3f)toBoxEdges.elementAt(i)).y 
+		      - ((Point3f)fromBoxEdges.elementAt(i)).y) /
+	      (numberExtraFrames + 1);
+	    step.z = (((Point3f)toBoxEdges.elementAt(i)).z 
+		      - ((Point3f)fromBoxEdges.elementAt(i)).z) /
+	      (numberExtraFrames + 1);
+	    stepBoxEdges.addElement(step);
+	  }
+
+	  for (int k = 0; k < numberExtraFrames; k++) {
+	    float[][] newRprimd = new float[3][3];
+	    for (int i=0; i<3;i++) {
+	      for (int j=0; j<3;j++) {
+		newRprimd[i][j]=fromRprimd[i][j] + (k + 1)* stepRprimd[i][j];
+	      }
+	    }
+	    Vector newBoxEdges = new Vector(stepBoxEdges.size());
+	    for (int i=0; i < stepBoxEdges.size(); i++) {
+	      Point3f newPoint = new Point3f();
+	      newPoint.x = ((Point3f)fromBoxEdges.elementAt(i)).x + (k + 1) 
+		* ((Point3f)stepBoxEdges.elementAt(i)).y;
+	      newPoint.y = ((Point3f)fromBoxEdges.elementAt(i)).y + (k + 1) 
+		* ((Point3f)stepBoxEdges.elementAt(i)).z;
+	      newPoint.z = ((Point3f)fromBoxEdges.elementAt(i)).z + (k + 1) 
+		* ((Point3f)stepBoxEdges.elementAt(i)).x;
+	      newBoxEdges.addElement(newPoint);
+	    }
+
+	    ((CrystalFrame)extraFrames[k]).setRprimd(newRprimd);
+	    ((CrystalFrame)extraFrames[k]).setBoxEdges(newBoxEdges);
+
+	  }
+      }
+      
 
       // Add interpolated frames
       for (int i = 0; i < numberExtraFrames; i++) {

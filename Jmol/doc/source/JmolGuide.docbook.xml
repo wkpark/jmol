@@ -26,8 +26,7 @@
       The syntax of these scripts is explained in <link linkend="rasmol" endterm="rasmol.title" />.
     </para>
     <para>
-      Alternatively, jmol can be started with one argument, being a
-      CML file:
+      Alternatively, jmol can be started with one argument, being a file name:
       <cmdsynopsis>
         <command>jmol</command>
         <arg choice="req"><replaceable>file</replaceable></arg>
@@ -39,7 +38,10 @@
         In addition to the above command line options there is also one
         important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
         With this option the GUI language can be set. At this moment
-        these languages are supported: <literal>en</literal>, <literal>nl</literal>.
+        these languages are supported: 
+        <literal>en</literal>, 
+        <literal>es</literal>, and
+        <literal>nl</literal>.
       </para>
       <para>
         Alternatively, you can also use the <envar>LANG</envar> environment variable
@@ -72,15 +74,21 @@
         </para>
       </section>
       <section>
+        <title>Recent Files...</title>
+        <para>
+          Brings up a dialog with a list of the
+          files the program has been asked to
+          open recently. The file can be opened
+          again by selecting it and clicking the
+          Open button.
+        </para>
+      </section>
+      <section>
         <title>Script...</title>
         <para>
           Opens a window where Rasmol scripting commands can be executed.
           <xref linkend="rasmol" /> contains information about Rasmol Scripts.
         </para>
-      </section>
-      <section>
-        <title>Close</title>
-        <para> </para>
       </section>
       <section>
         <title>Save As...</title>
@@ -94,8 +102,10 @@
           <para>
             Jmol can export images of the following types:
             <itemizedlist>
+              <listitem><para>BMP</para></listitem>
               <listitem><para>GIF</para></listitem>
               <listitem><para>JPG</para></listitem>
+              <listitem><para>PNG</para></listitem>
               <listitem><para>PPM</para></listitem>
             </itemizedlist>
           </para>
@@ -114,40 +124,58 @@
       </section>
       <section>
         <title>Print</title>
-        <para> </para>
+        <para> 
+          Postscript files can be exported directly to printer and to file.
+        </para>
       </section>
       <section>
         <title>Exit</title>
-	<para>Quits this Jmol session.</para>
-      </section>
-      <section>
-        <title>Recent Files...</title>
-	<para>
-          Brings up a dialog with a list of the
-          files the program has been asked to
-          open recently. The file can be opened
-          again by selecting it and clicking the
-          ok button.
-        </para>
+        <para>Quits this Jmol session.</para>
       </section>
     </section>
     <section>
       <title>The Edit menu</title>
       <section>
         <title>Select All</title>
-        <para> </para>
+        <para>
+          Selects all atoms in the view screen.
+        </para>
       </section>
       <section>
         <title>Deselect All</title>
-        <para> </para>
+        <para> 
+          Deselects all atoms in the view screen.
+        </para>
       </section>
       <section>
         <title>Atom Properties...</title>
-        <para> </para>
+        <para> 
+          This menu opens a dialog in which atomic properties can be added of
+          a large number of atom types. These properties include
+          the colors used to depict atoms.
+        </para>
       </section>
       <section>
         <title>Preferences...</title>
-        <para> </para>
+        <para> 
+          This menu opens a dialog to change settings and make user customized
+          preferences.
+        </para>
+        <section>
+          <title>Display Tab</title>
+          <para>
+            In these frame a few display settings can be changed. By default
+            anti-aliasing is turned off. Turning it on improves the images considerable
+            but will also reduce the animation performance.
+          </para>
+        </section>
+        <section>
+          <title>Colors Tab</title>
+          <para>
+            In these frame some general display colors can be changed.
+            Like the background color, and the color used to highlight selected atoms.
+          </para>
+        </section>
       </section>
     </section>
     <section>
@@ -173,7 +201,7 @@
         </section>
         <section>
           <title>Wire Frame</title>	  
-	  <para> </para>
+          <para> </para>
         </section>
       </section>      
       <section>
@@ -253,11 +281,9 @@
       </section>
       <section>
         <title>Hydrogens</title>
-	<para> </para>
-      </section>
-      <section>
-        <title>Axes</title>
-	<para> </para>
+        <para> 
+          Turns on/off the display of hydrogen atoms.
+        </para>
       </section>
     </section>
     <section>
@@ -352,6 +378,11 @@ be animated with "Vibrate...".
           is viewed. This option currently only works when reading a
           CML animation with energies given for each frame.</para>
         <para>An example file is supplied: conformeren.cml.</para>
+      </section>
+      <section>
+        <title>Crystal Properties...</title>
+        <para>This opens a window in which crystal properties can be
+        set.</para>
       </section>
     </section>
     <section>

@@ -965,6 +965,8 @@ final public class Graphics3D {
   }
 
   public short getColix(Object obj) {
+    if (obj == null)
+      return 0;
     if (obj instanceof Color)
       return getColix((Color)obj);
     if (obj instanceof Integer)

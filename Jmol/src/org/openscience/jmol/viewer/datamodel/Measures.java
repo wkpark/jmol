@@ -115,7 +115,9 @@ public class Measures extends Shape {
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if ("color".equals(propertyName))
-      { colix = g3d.getColix(value); return; }
+      {
+        System.out.println("Measures.color set to:" + value);
+        colix = g3d.getColix(value); return; }
     else if ("font".equals(propertyName))
       { font3d = (Font3D)value; return; }
     else if ("define".equals(propertyName))

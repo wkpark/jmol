@@ -1309,7 +1309,6 @@ public class Eval implements Runnable {
     case Token.temperature:
     case Token.charge:
     case Token.user:
-    case Token.monitor:
       colorObject(Token.atom, 1);
       break;
     case Token.bond:
@@ -1337,6 +1336,7 @@ public class Eval implements Runnable {
     case Token.unitcell:
     case Token.frank:
     case Token.echo:
+    case Token.monitor:
       colorObject(tok, 2);
       break;
     case Token.identifier:

@@ -78,7 +78,6 @@ final public class Graphics25D {
   public Graphics25D(DisplayControl control) {
     this.control = control;
     this.g = g;
-    Shade25D.initialize();
     if (control.jvm12orGreater && ! forceAWT ) {
       platform = new Swing25D();
     } else {
@@ -703,10 +702,8 @@ final public class Graphics25D {
 
   public void fillCylinder(short colix1, short colix2, int w,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
-    cylinder25d.test(colix1, colix2, w,
-                     x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
-    cylinder25d.renderClipped(colix1, colix2, w,
-                              x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+    cylinder25d.render(colix1, colix2, w,
+                       x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
   public void fillShadedPolygon4(short colix, int ax[], int ay[], int az[]) {

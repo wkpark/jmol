@@ -36,8 +36,19 @@ public class Shade25D {
   public static final byte shadeNormal = 24;
   public static final byte shadeDarker = 16;
   public static final int shadeMax = 64;
-  public static final float[] vectLightSource = {-1, -1, 1.5f};
-  public static final float[] vectViewer = {0, 0, 1};
+  // the light source vector
+  public static final float xLS = -1;
+  public static final float yLS = -1;
+  public static final float zLS = 1.5f;
+  public static final float magnitudeLight =
+    (float)Math.sqrt(xLS*xLS + yLS*yLS + zLS*zLS);
+  // the light source vector normalized
+  private static float xLight = xLS / magnitudeLight;
+  private static float yLight = yLS / magnitudeLight;
+  private static float zLight = zLS / magnitudeLight;
+
+  // the viewer vector is always 0,0,1
+
   public static int exponentSpecular = 5;
   public static final float intensityDiffuseSource = 0.6f;
   public static final float intensitySpecularSource = 0.4f;
@@ -45,35 +56,6 @@ public class Shade25D {
   public final static float ambientFraction = 0.6f;
   public final static float ambientRange = 1 - ambientFraction;
   public final static float intenseFraction = 0.95f;
-  static boolean tInitialized;
-  
-  static synchronized void initialize() {
-    if (tInitialized)
-      return;
-    normalize(vectLightSource);
-    initializeCache();
-    tInitialized = true;
-  }
-
-  static final int minNormalCache = -5;
-  static final int maxNormalCache = 5;
-  static final int numCache = maxNormalCache - minNormalCache + 1;
-  // z is positive only
-  // x & y are over full range
-  static final int numCache2 = numCache * numCache;
-  static final byte[] shadeCache = new byte[(maxNormalCache + 1) * numCache2];
-
-  static void initializeCache() {
-    for (int z = 0; z <= maxNormalCache; ++z)
-      for (int y = minNormalCache; y <= maxNormalCache; ++y)
-        for (int x = minNormalCache; x <= maxNormalCache; ++x) {
-          int offsetCache =
-            z * numCache2 +
-            (y-minNormalCache) * numCache +
-            (x-minNormalCache);
-          shadeCache[offsetCache] = calcIntensity(x, y, z);
-        }
-  }
 
   Color color;
   int[] shades = new int[shadeMax];
@@ -156,92 +138,33 @@ public class Shade25D {
     return str;
   }
 
-  public static byte getIntensity(int x1,int y1,int z1,int x2,int y2,int z2) {
-    return getIntensity(x2 - x1, y2 - y1, z2 - z1);
+  public static byte calcIntensity(float x, float y, float z) {
+    float magnitude = (float)Math.sqrt(x*x + y*y + z*z);
+    return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
   }
 
-
-  public static byte getIntensity(int x, int y, int z) {
-    if (z < 0)
-      return shadeAmbient; // this isn't really true, but we never see back surfaces
-    if (x <= maxNormalCache && x >= minNormalCache &&
-        y <= maxNormalCache && y >= minNormalCache &&
-        z <= maxNormalCache && z >= minNormalCache) {
-      int offsetCache =
-        z * numCache2 +
-        (y-minNormalCache) * numCache +
-        (x-minNormalCache);
-      return shadeCache[offsetCache];
-    }
-    return calcIntensity(x, y, z);
+  public static byte calcIntensity(float x, float y, float z, float magnitude){
+    return calcIntensityNormalized(x/magnitude, y/magnitude, z/magnitude);
   }
 
-  static final float[] vectNormal = new float[3];
-  static final float[] vectTemp = new float[3];
-  static final float[] vectReflection = new float[3];
+  public static byte calcIntensityNormalized(float x, float y, float z) {
 
-  public static synchronized byte calcIntensity(float x, float y, float z) {
-
-    vectNormal[0] = x;
-    vectNormal[1] = y;
-    vectNormal[2] = z;
-    normalize(vectNormal);
-    float cosTheta = dotProduct(vectNormal, vectLightSource);
-    float intensitySpecular = 0;
-    float intensityDiffuse = 0;
+    float cosTheta = x*xLight + y*yLight + z*zLight;
+    float intensity = intensityAmbient; // ambient component
     if (cosTheta > 0) {
-      intensityDiffuse = cosTheta * intensityDiffuseSource;
-      scale(2 * cosTheta, vectNormal, vectTemp);
-      sub(vectTemp, vectLightSource, vectReflection);
- 
-      float dpRV = dotProduct(vectReflection, vectViewer);
-      if (dpRV < 0)
-        dpRV = 0;
-      for (int n = exponentSpecular; --n >= 0; )
-        dpRV *= dpRV;
-      intensitySpecular = dpRV * intensitySpecularSource;
+      intensity += cosTheta * intensityDiffuseSource; // diffuse component
+
+      // this is the dot product of the reflection and the viewer
+      // but the viewer only has a z component
+      float dotProduct = z * 2 * cosTheta - zLight;
+      if (dotProduct > 0) {
+        for (int n = exponentSpecular; --n >= 0; )
+          dotProduct *= dotProduct;
+        intensity += dotProduct * intensitySpecularSource; // specular
+      }
     }
-    float intensity =
-      intensitySpecular + intensityDiffuse + intensityAmbient;
     int shade = (int)(shadeMax * intensity + 0.5f);
     if (shade >= shadeMax) shade = shadeMax-1;
     return (byte)shade;
-  }
-
-
-  private static void normalize(float v[]) {
-
-    float mag = (float)Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    if (Math.abs(mag - 0) <= java.lang.Float.MIN_VALUE) {
-      v[0] = 0;
-      v[1] = 0;
-      v[2] = 0;
-    } else {
-      v[0] = v[0] / mag;
-      v[1] = v[1] / mag;
-      v[2] = v[2] / mag;
-    }
-  }
-
-  private static float dotProduct(float[] v1, float[] v2) {
-    return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
-  }
-
-  private static void scale(float a, float[] v, float[] vResult) {
-    vResult[0] = a * v[0];
-    vResult[1] = a * v[1];
-    vResult[2] = a * v[2];
-  }
-
-  private static void add(float[] v1, float[] v2, float[] vSum) {
-    vSum[0] = v1[0] + v2[0];
-    vSum[1] = v1[1] + v2[1];
-    vSum[2] = v1[2] + v2[2];
-  }
-
-  private static void sub(float[] v1, float[] v2, float[] vDiff) {
-    vDiff[0] = v1[0] - v2[0];
-    vDiff[1] = v1[1] - v2[1];
-    vDiff[2] = v1[2] - v2[2];
   }
 }

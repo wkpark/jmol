@@ -83,10 +83,7 @@ class AppletCanvas extends Canvas {
     }
     // transfer the clipping rectangle to our offscreen buffer
     // also, we will use rectClip later in the rendering process
-    if (control.jvm12orGreater)
-      g.getClipBounds(rectClip);
-    else
-      rectClip = g.getClipBounds();
+    rectClip = g.getClipBounds();
     if (rectClip.width == 0 || rectClip.height == 0) {
       System.out.println("?Que?");
       rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);

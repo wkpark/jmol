@@ -5,6 +5,7 @@ org/openscience/jmol/BaseAtomType.java
 org/openscience/jmol/JmolException.java
 org/openscience/jmol/DisplaySettings.java
 org/openscience/jmol/DisplayControl.java
+org/openscience/jmol/Java12.java
 org/openscience/jmol/ColorManager.java
 org/openscience/jmol/TransformManager.java
 org/openscience/jmol/SelectionManager.java
@@ -83,6 +84,7 @@ org/openscience/jmol/render/Axes.java
 org/openscience/jmol/render/BoundingBox.java
 org/openscience/jmol/render/LabelRenderer.java
 org/openscience/jmol/render/ShadedSphereRenderer.java
+org/openscience/jmol/render/SphereG2D.java
 org/openscience/jmol/script/Eval.java
 org/openscience/jmol/script/Token.java
 org/openscience/jmol/script/Compiler.java

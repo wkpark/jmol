@@ -26,44 +26,31 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+
 import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-import java.awt.Composite;
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Ellipse2D.Double;
-import java.awt.RenderingHints;
-import java.util.Enumeration;
 
 public class ShadedSphereRenderer {
 
   DisplayControl control;
+  SphereG2D sphereG2D;
   public ShadedSphereRenderer(DisplayControl control) {
     this.control = control;
+    if (control.jvm12orGreater)
+      sphereG2D = new SphereG2D();
   }
 
-  private static final int minCachedSize = 4;
-  private static final int maxCachedSize = 100;
-  private static final int scalableSize = 47;
-  private static final int maxSmoothedSize = 200;
+  static final int minCachedSize = 4;
+  static final int maxCachedSize = 100;
+  static final int scalableSize = 47;
+  static final int maxSmoothedSize = 200;
   // I am getting severe graphical artifacts around the edges when
   // rendering hints are turned on. Therefore, I am adding a margin
   // to shaded rendering in order to cut down on edge effects
-  private static final int artifactMargin = 4;
-  private static final int minShadingBufferSize = maxCachedSize;
-  private static final int maxShadingBufferSize =
-    maxSmoothedSize + artifactMargin*2;
-    
+  static final int artifactMargin = 4;
   
   public void render(Graphics g, int xUpperLeft, int yUpperLeft,
                       int diameter, Color color, Color outline) {
@@ -98,21 +85,14 @@ public class ShadedSphereRenderer {
     if (! control.getUseGraphics2D()) {
       g.drawImage(imgSphere, xUpperLeft, yUpperLeft,
                   diameter, diameter, null);
-      return;
+    } else if (diameter < maxSmoothedSize) {
+      sphereG2D.drawSphereG2D(g, imgSphere,
+                              xUpperLeft - artifactMargin,
+                              yUpperLeft - artifactMargin,
+                              diameter, artifactMargin);
+    } else {
+      sphereG2D.drawClippedSphereG2D(g, imgSphere, xUpperLeft, yUpperLeft, diameter);
     }
-    if (diameter < maxSmoothedSize) {
-      drawScaledShadedAtom((Graphics2D) g, imgSphere,
-                           xUpperLeft - artifactMargin,
-                           yUpperLeft - artifactMargin,
-                           diameter, artifactMargin);
-    }
-    // too big ... just forget the smoothing
-    // but we *can* clip it to eliminate fat pixels
-    Ellipse2D circle =
-      new Ellipse2D.Double(xUpperLeft, yUpperLeft, diameter, diameter);
-    g.setClip(circle);
-    g.drawImage(imgSphere, xUpperLeft, yUpperLeft, diameter, diameter, null);
-    g.setClip(null);
   }
 
   private static final double[] lightSource = { -1.0f, -1.0f, 2.0f };
@@ -127,95 +107,10 @@ public class ShadedSphereRenderer {
   
   private Image loadShadedSphereCache(DisplayControl control, Color color,
                                       Image[] shadedImages, int diameter) {
-    Image imgSphere;
-    if (! control.getUseGraphics2D()) {
-      // note that if we are not using Graphics2D then there is no margin
-      Component component = control.getAwtComponent();
-      imgSphere = shadedImages[diameter] =
-        sphereSetup(component, color, diameter, lightSource);
-    } else {
-      // but if we *are* then there is a margin of one
-      BufferedImage bi = new BufferedImage(diameter+2, diameter+2,
-                                           BufferedImage.TYPE_INT_ARGB);
-      Graphics2D g2 = bi.createGraphics();
-      drawScaledShadedAtom(g2, shadedImages[0], 0, 0, diameter, 1);
-      g2.dispose();
-      imgSphere = shadedImages[diameter] = bi;
-    }
-    return imgSphere;
-  }
-  
-  private static byte[] mapRGBA;
-  private static IndexColorModel cmMask;
-  private static int sizeMask = 0;
-  private static BufferedImage biMask = null;
-  private static Graphics2D g2Mask;
-  private static WritableRaster rasterMask;
-  private static BufferedImage biAlphaMask;
-
-  private void applyCircleMask(Graphics2D g, int diameter, int margin) {
-    // mth 2002 nov 12
-    // a 4 bit greyscale mask would/should be sufficient here, but there
-    // was a bug in my JVM (or a bug in my head) which prevented it
-    // from working
-    if (mapRGBA == null) {
-      mapRGBA = new byte[256];
-      for (int i = 0; i < 256; ++ i) {
-        mapRGBA[i] = (byte) i;
-      }
-      cmMask = new IndexColorModel(8, 256, mapRGBA, mapRGBA, mapRGBA, mapRGBA);
-    }
-    int size = diameter + 2*margin;
-    if (size > sizeMask) {
-      sizeMask = size * 2;
-      if (sizeMask < minShadingBufferSize)
-        sizeMask = minShadingBufferSize;
-      if (sizeMask > maxShadingBufferSize)
-        sizeMask = maxShadingBufferSize;
-      biMask = new BufferedImage(sizeMask, sizeMask,
-                                 BufferedImage.TYPE_BYTE_GRAY);
-      g2Mask = biMask.createGraphics();
-      g2Mask.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                              RenderingHints.VALUE_ANTIALIAS_ON);
-      rasterMask = biMask.getRaster();
-      biAlphaMask = new BufferedImage(cmMask, rasterMask, false, null);
-    }
-    g2Mask.setColor(Color.black);
-    g2Mask.fillRect(0, 0, size, size);
-    g2Mask.setColor(Color.white);
-    g2Mask.fillOval(margin, margin, diameter, diameter);
-
-    Composite foo = g.getComposite();
-    g.setComposite(AlphaComposite.DstIn);
-    g.drawImage(biAlphaMask, 0, 0, null);
-    g.setComposite(foo);
-  }
-
-  private static int sizeShadingBuffer = 0;
-  private static BufferedImage biShadingBuffer = null;
-  private static Graphics2D g2ShadingBuffer = null;
-
-  void drawScaledShadedAtom(Graphics2D g2, Image image,
-                            int xUpperLeft, int yUpperLeft,
-                            int diameter, int margin) {
-    final int size = diameter + 2*margin;
-    if (size > sizeShadingBuffer) {
-      sizeShadingBuffer = size * 2; // leave some room to grow
-      if (sizeShadingBuffer < minShadingBufferSize)
-        sizeShadingBuffer = minShadingBufferSize;
-      if (sizeShadingBuffer > maxShadingBufferSize)
-        sizeShadingBuffer = maxShadingBufferSize;
-      biShadingBuffer = new BufferedImage(sizeShadingBuffer, sizeShadingBuffer,
-                                          BufferedImage.TYPE_INT_ARGB);
-      g2ShadingBuffer = biShadingBuffer.createGraphics();
-      g2ShadingBuffer.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-                              RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-    }
-    g2ShadingBuffer.drawImage(image, 0, 0, size, size, null);
-    applyCircleMask(g2ShadingBuffer, diameter, margin);
-    g2.setClip(xUpperLeft, yUpperLeft, size, size);
-    g2.drawImage(biShadingBuffer, xUpperLeft, yUpperLeft, null);
-    g2.setClip(null);
+    return shadedImages[diameter] =
+      control.getUseGraphics2D()
+      ? sphereG2D.imageSphereG2D(shadedImages[0], diameter)
+      : sphereSetup(control.getAwtComponent(), color, diameter, lightSource);
   }
 
   /**
@@ -301,4 +196,3 @@ public class ShadedSphereRenderer {
     }
   }
 }
-

@@ -1077,7 +1077,8 @@ public class Eval implements Runnable {
     if (statement.length != i + 1)
       badArgumentCount();
     String filename = (String)statement[i].value;
-    String errMsg = viewer.openFile(filename);
+    viewer.openFile(filename);
+    String errMsg = viewer.waitForOpenErrorMessage();
     if (errMsg != null)
       evalError(errMsg);
     if (logMessages)

@@ -46,14 +46,53 @@ import org.openscience.jmol.io.ReaderFactory;
 public class FileManager {
 
   JmolViewer viewer;
+  private String openErrorMessage;
+
+  // for applet proxy
+  URL appletDocumentBase = null;
+  URL appletCodeBase = null;
+  String appletProxy = null;
+
+  // for expanding names into full path names
+  private boolean isURL;
+  private String nameAsGiven;
+  private String fullPathName;
+  private String fileName;
+  private File file;
+
 
   public FileManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  URL appletDocumentBase = null;
-  URL appletCodeBase = null;
-  String appletProxy = null;
+  public void openFile(String name) {
+    nameAsGiven = name;
+    openErrorMessage = fullPathName = fileName = null;
+    classifyName(name);
+    if (openErrorMessage != null)
+      return;
+    InputStream istream = getInputStreamFromName(name);
+    if (openErrorMessage != null)
+      return;
+    if (istream == null) {
+      openErrorMessage = "error opening url/filename:" + name;
+      return;
+    }
+    openErrorMessage = openInputStream(fullPathName, fileName, istream);
+  }
+
+  public void openStringInline(String strModel) {
+    openErrorMessage = openReader("StringInline", "StringInline",
+                                  new StringReader(strModel));
+  }
+
+  public String waitForOpenErrorMessage() {
+    return openErrorMessage;
+  }
+
+  public String getFullPathName() {
+    return fullPathName != null ? fullPathName : nameAsGiven;
+  }
 
   public void setAppletContext(URL documentBase, URL codeBase,
                                String jmolAppletProxy) {
@@ -93,9 +132,6 @@ public class FileManager {
   }
 
   public InputStream getInputStreamFromName(String name) {
-    classifyName(name);
-    if (errorMessage != null)
-      return null;
     if (isURL) {
       URL url = getURLFromName(name);
       if (url != null) {
@@ -105,27 +141,20 @@ public class FileManager {
           return is;
         } catch (IOException e) {
           System.out.println("error doing a url.openStream:" + e.getMessage());
-          errorMessage = e.getMessage();
+          openErrorMessage = e.getMessage();
         }
       }
     } else {
       try {
         return new FileInputStream(file);
       } catch (FileNotFoundException fnf) {
-        errorMessage = "File Not Found:" + fnf.getMessage();
+        openErrorMessage = "File Not Found:" + fnf.getMessage();
       }
     }
     return null;
   }
 
-  private boolean isURL;
-  private String fullPathName;
-  private String fileName;
-  private File file;
-  private String errorMessage;
-
   private void classifyName(String name) {
-    errorMessage = fullPathName = fileName = null;
     isURL = false;
     if (name == null)
       return;
@@ -139,7 +168,7 @@ public class FileManager {
         fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
                                           fullPathName.length());
       } catch (MalformedURLException e) {
-        errorMessage = e.getMessage();
+        openErrorMessage = e.getMessage();
       }
       return;
     }
@@ -153,7 +182,7 @@ public class FileManager {
           fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
                                             fullPathName.length());
         } catch (MalformedURLException e) {
-          errorMessage = e.getMessage();
+          openErrorMessage = e.getMessage();
         }
         return;
       }
@@ -164,26 +193,9 @@ public class FileManager {
     fileName = file.getName();
   }
 
-  public String openFile(String name) {
-    System.out.println("openFile(" + name + ")");
-    InputStream istream = getInputStreamFromName(name);
-    if (errorMessage != null)
-      return errorMessage;
-    if (istream == null)
-      return "error opening url/filename:" + name;
-    //    System.out.println(" fullPathName=" + fullPathName +
-    //                       " fileName=" + fileName);
-    return openInputStream(fullPathName, fileName, istream);
-  }
-
-  public String openStringInline(String strModel) {
-    return openReader(null, "StringInline", new StringReader(strModel));
-  }
-
   byte[] abMagic = new byte[4];
   private String openInputStream(String fullPathName, String fileName,
                                  InputStream istream) {
-    System.out.println("entering openInputStream");
     BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
     InputStream istreamToRead = bistream;
     bistream.mark(5);

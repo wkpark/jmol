@@ -268,7 +268,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void load(String modelName) {
     if (modelName != null) {
       System.out.println("trying to load:" + modelName);
-      String strError = viewer.openFile(modelName);
+      viewer.openFile(modelName);
+      String strError = viewer.waitForOpenErrorMessage();
       System.out.println(strError != null ? strError : "no errors");
 
       setStatusMessage(strError);
@@ -277,8 +278,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void loadInline(String strModel) {
     if (strModel != null) {
-      String strError = viewer.openStringInline(strModel);
-      setStatusMessage(strError);
+      viewer.openStringInline(strModel);
+      setStatusMessage(viewer.waitForOpenErrorMessage());
     }
   }
 }

@@ -712,16 +712,20 @@ final public class JmolViewer {
     return fileManager.getInputStreamFromName(name);
   }
 
-  public String openFile(String name) {
+  public void openFile(String name) {
     clear();
-    String errorMsg = fileManager.openFile(name);
-    if (errorMsg != null)
-      notifyFileNotLoaded(name, errorMsg);
-    return errorMsg;
+    fileManager.openFile(name);
   }
 
-  public String openStringInline(String strModel) {
-    return fileManager.openStringInline(strModel);
+  public void openStringInline(String strModel) {
+    fileManager.openStringInline(strModel);
+  }
+
+  public String waitForOpenErrorMessage() {
+    String errorMsg = fileManager.waitForOpenErrorMessage();
+    if (errorMsg != null)
+      notifyFileNotLoaded(fileManager.getFullPathName(), errorMsg);
+    return errorMsg;
   }
 
   /****************************************************************

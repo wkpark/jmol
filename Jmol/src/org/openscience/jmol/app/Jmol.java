@@ -432,11 +432,8 @@ public class Jmol extends JPanel {
 
 
       // Open a file if one is given as an argument
-      if (modelFilename != null) {
-        String msgError = jmol.viewer.openFile(modelFilename);
-        if (msgError != null)
-          System.out.println("File error: " + msgError);
-      }
+      if (modelFilename != null)
+        jmol.viewer.openFile(modelFilename);
 
       // Oke, by now it is time to execute the script
       if (scriptFilename != null) {

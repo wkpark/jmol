@@ -123,6 +123,7 @@ final public class FrameBuilder {
   private final static int ATOM_GROWTH_INCREMENT = 2000;
 
   int currentModelID;
+  int currentModelIndex;
   Model currentModel;
   char currentChainID;
   Chain currentChain;
@@ -170,21 +171,22 @@ final public class FrameBuilder {
 
 
   void addAtom(Frame frame,
-                      int modelID, Object atomUid,
-                      byte atomicNumber,
-                      String atomName, 
-                      int formalCharge, float partialCharge,
-                      int occupancy,
-                      float bfactor,
-                      float x, float y, float z,
-                      boolean isHetero, int atomSerial, char chainID,
-                      String group3,
-                      int groupSequenceNumber, char groupInsertionCode,
-                      float vectorX, float vectorY, float vectorZ,
-                      Object clientAtomReference) {
+               int modelID, Object atomUid,
+               byte atomicNumber,
+               String atomName, 
+               int formalCharge, float partialCharge,
+               int occupancy,
+               float bfactor,
+               float x, float y, float z,
+               boolean isHetero, int atomSerial, char chainID,
+               String group3,
+               int groupSequenceNumber, char groupInsertionCode,
+               float vectorX, float vectorY, float vectorZ,
+               Object clientAtomReference) {
     if (modelID != currentModelID) {
       currentModelID = modelID;
       currentModel = frame.mmset.getOrAllocateModel(modelID);
+      currentModelIndex = frame.mmset.getModelIndex(modelID);
       currentChainID = '\uFFFF';
     }
     if (chainID != currentChainID) {
@@ -200,7 +202,8 @@ final public class FrameBuilder {
         currentChain.allocateGroup(group3,
                                    groupSequenceNumber, groupInsertionCode);
     }
-    Atom atom = new Atom(currentGroup,
+    Atom atom = new Atom(viewer,
+                         currentModelIndex,
                          atomCount,
                          atomicNumber,
                          atomName,
@@ -210,6 +213,8 @@ final public class FrameBuilder {
                          x, y, z,
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ);
+
+    atom.setGroup(currentGroup);
     currentGroup.registerAtom(atom);
 
     if (atomCount == atoms.length)

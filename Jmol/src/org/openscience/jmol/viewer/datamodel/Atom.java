@@ -64,18 +64,18 @@ public final class Atom implements Bspt.Tuple {
   byte specialAtomID;
   float partialCharge;
 
-  Atom(Group group,
-              int atomIndex,
-              byte elementNumber,
-              String atomName,
-              int formalCharge, float partialCharge,
-              int occupancy,
-              float bfactor,
-              float x, float y, float z,
-              boolean isHetero, int atomSerial, char chainID,
-              float vibrationX, float vibrationY, float vibrationZ) {
-    this.group = group;
-    this.modelIndex = (short)group.chain.model.modelIndex;
+  Atom(JmolViewer viewer,
+       int modelIndex,
+       int atomIndex,
+       byte elementNumber,
+       String atomName,
+       int formalCharge, float partialCharge,
+       int occupancy,
+       float bfactor,
+       float x, float y, float z,
+       boolean isHetero, int atomSerial, char chainID,
+       float vibrationX, float vibrationY, float vibrationZ) {
+    this.modelIndex = (short)modelIndex;
     this.atomIndex = atomIndex;
     this.elementNumber = elementNumber;
     if (formalCharge == Integer.MIN_VALUE)
@@ -92,7 +92,6 @@ public final class Atom implements Bspt.Tuple {
     this.atomSerial = atomSerial;
     this.atomName = (atomName == null ? null : atomName.intern());
     specialAtomID = lookupSpecialAtomID(atomName);
-    JmolViewer viewer = group.chain.frame.viewer;
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
@@ -103,6 +102,10 @@ public final class Atom implements Bspt.Tuple {
         !Float.isNaN(vibrationZ)) {
       vibrationVector = new Vector3f(vibrationX, vibrationY, vibrationZ);
     }
+  }
+
+  void setGroup(Group group) {
+    this.group = group;
   }
 
   boolean isBonded(Atom atomOther) {

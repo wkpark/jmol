@@ -1,5 +1,5 @@
 /*
- * BaseAtomType.java
+ * AtomType.java
  * 
  * Copyright (C) 1999  Bradley A. Smith
  * 
@@ -83,29 +83,6 @@ public class AtomType {
     private static float screenScale = 1.0f;
     private static int zOffset = 1;
     private static float depthFactor = 0.33f;
-    /**
-     * QUICKDRAW mode draws a filled circle
-     */
-    public static final int QUICKDRAW = 0;
-    /**
-     * SHADING mode draws a lighted sphere
-     */
-    public static final int SHADING = 1;
-    /**
-     * WIREFRAME mode draws a transparent circle
-     */
-    public static final int WIREFRAME = 2;
-    private static int DrawMode = QUICKDRAW;
-    public static final int NOLABELS = 0;
-    public static final int SYMBOLS = 1;
-    public static final int TYPES = 2;
-    public static final int NUMBERS = 3;
-    private static int LabelMode = NOLABELS;
-    private static String PropsMode = "";
-    private static boolean drawText = false;
-    private static Color outlineColor = Color.black;
-    private static Color pickedColor  = Color.orange;
-    private static Color textColor = Color.black;
     private static double sphereFactor = 0.2;  /* static vars, once for each 
                                                   class, not once per instance
                                                   of class */
@@ -146,62 +123,6 @@ public class AtomType {
 
     public static double getSphereFactor() {
         return sphereFactor;
-    }
-
-    public static void setQuickDraw() {
-        DrawMode = QUICKDRAW;
-    }
-
-    public static void setShading() {
-        DrawMode = SHADING;
-    }
-
-    public static void setWireFrame() {
-        DrawMode = WIREFRAME;
-    }
-
-    public static void setRenderMode(int i) {
-        DrawMode = i;
-    }
-
-    public static void setLabelMode(int i) {
-        LabelMode = i;
-    }
-
-    /**
-     * sets which physical property we want to interrogate on-screen:
-     *
-     * @param s The string descriptor of the physical property.
-     */
-    public static void setPropsMode(String s) {
-        PropsMode = s;
-    }
-
-    public static void setOutlineColor(Color c) {
-        outlineColor = c;
-    }
-
-    public static void setPickedColor(Color c) {
-        pickedColor = c;
-    }
-
-    public static void setTextColor(Color c) {
-        textColor = c;
-    }
-
-    public static int getRenderMode() {
-        return DrawMode;
-    }
-
-    public static int getLabelMode() {
-        return LabelMode;
-    }
-
-    /*
-     * returns the current value of the physical property drawing mode
-     */
-    public static String getPropsMode() {
-        return PropsMode;
     }
 
     /**
@@ -318,15 +239,15 @@ public class AtomType {
         if (picked) {
             int halo = radius + 5;
             int halo2 = 2 * halo;
-            gc.setColor(pickedColor);
+            gc.setColor(DisplaySettings.getPickedColor());
             gc.fillOval(x - halo, y - halo, halo2, halo2);
         }
-        switch( DrawMode ) {
-        case WIREFRAME:
+        switch( DisplaySettings.getAtomDrawMode() ) {
+        case DisplaySettings.WIREFRAME:
             gc.setColor(baseType.getColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
-        case SHADING:
+        case DisplaySettings.SHADING:
 			Image shadedImage;
 			if (ballImages.containsKey(baseType.getColor())) {
 				shadedImage = (Image)ballImages.get(baseType.getColor());
@@ -340,30 +261,30 @@ public class AtomType {
         default:
             gc.setColor(baseType.getColor());
             gc.fillOval(x - radius, y - radius, diameter, diameter);
-            gc.setColor(outlineColor);
+            gc.setColor(DisplaySettings.getOutlineColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
         }
 
-        if (LabelMode != NOLABELS) {
+        if (DisplaySettings.getLabelMode() != DisplaySettings.NOLABELS) {
             int j = 0;
             String s;
             Font font = new Font("Helvetica", Font.PLAIN, radius);
             gc.setFont(font);
             FontMetrics fontMetrics = gc.getFontMetrics(font);
             int k = fontMetrics.getAscent();
-            gc.setColor(textColor);
+            gc.setColor(DisplaySettings.getTextColor());
                 
-            switch( LabelMode ) {
-            case SYMBOLS:
+            switch( DisplaySettings.getLabelMode() ) {
+            case DisplaySettings.SYMBOLS:
                 j = fontMetrics.stringWidth(baseType.getRoot());
                 gc.drawString(baseType.getRoot(), x-j/2, y+k/2); 
                 break;
-            case TYPES:
+            case DisplaySettings.TYPES:
                 j = fontMetrics.stringWidth(baseType.getName());
                 gc.drawString(baseType.getName(), x-j/2, y+k/2);
                 break;
-            case NUMBERS:
+            case DisplaySettings.NUMBERS:
                 s = new Integer(n).toString();
                 j = fontMetrics.stringWidth(s);
                 gc.drawString(s, x-j/2, y+k/2);
@@ -373,16 +294,16 @@ public class AtomType {
             }
         }
 
-        if (!PropsMode.equals("")) {
+        if (!DisplaySettings.getPropertyMode().equals("")) {
             // check to make sure this atom has this property:
             for (int i = 0; i < props.size(); i++) {
                 PhysicalProperty p = (PhysicalProperty)props.elementAt(i);
-                if (p.getDescriptor().equals(PropsMode)) {
+                if (p.getDescriptor().equals(DisplaySettings.getPropertyMode())) {
                     // OK, we had this property.  Let's draw the value on 
                     // screen:
                     Font font = new Font("Helvetica", Font.PLAIN, radius/2);
                     gc.setFont(font);
-                    gc.setColor(textColor);
+                    gc.setColor(DisplaySettings.getTextColor());
                     String s = p.stringValue();
                     if (s.length() > 5) 
                         s = s.substring(0,5);
@@ -420,23 +341,6 @@ public class AtomType {
         }
         return v2;
     }
-
-
-	public String getName() {
-		return baseType.getName();
-	}
-
-	public String getRoot() {
-		return baseType.getRoot();
-	}
-
-	public Color getColor() {
-		return baseType.getColor();
-	}
-
-	public double getCovalentRadius() {
-		return baseType.getCovalentRadius();
-	}
 
 	public BaseAtomType getBaseAtomType() {
 		return baseType;

@@ -47,8 +47,6 @@ class Distance extends Measurement implements MeasurementInterface {
     private double distance;
     private boolean computed = false;
     private ChemFrame fcf;
-    private static Color distanceColor = Color.black;
-    private static Color textColor = Color.black;
     
     public Distance(int a1, int a2) {
         super();        
@@ -64,7 +62,7 @@ class Distance extends Measurement implements MeasurementInterface {
     }
 
     private void paintDistLine(Graphics g, int x1, int y1, int x2, int y2) {
-        g.setColor(distanceColor);
+        g.setColor(DisplaySettings.getDistanceColor());
         String vers = System.getProperty("java.version");
         if (vers.compareTo("1.2") >= 0) {
             Graphics2D g2 = (Graphics2D) g;
@@ -78,22 +76,6 @@ class Distance extends Measurement implements MeasurementInterface {
         }
     }
 
-    /**
-     * Sets the color of the text string drawn for the distance
-     * @param c the color 
-     */      
-    public static void setTextColor(Color c) {
-        textColor = c;
-    }
-
-    /**
-     * Sets the color of the line drawn for distance
-     * @param c the color 
-     */      
-    public static void setDistanceColor(Color c) {
-        distanceColor = c;
-    }
-
     private void paintDistString(Graphics g, 
                                  int x1, int y1, int z1, 
                                  int x2, int y2, int z2) {
@@ -105,7 +87,7 @@ class Distance extends Measurement implements MeasurementInterface {
                              (int)(getAvgRadius(z1,z2)));
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics(font);
-        g.setColor(textColor);
+        g.setColor(DisplaySettings.getTextColor());
         String s = (new Double(getDistance())).toString();
         if (s.length() > 5) 
             s = s.substring(0,5);

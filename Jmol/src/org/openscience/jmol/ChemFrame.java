@@ -387,8 +387,8 @@ public class ChemFrame {
             float dz = vert[3*j+2] - z;
             d2 += dx*dx + dy*dy + dz*dz;
             AtomType b = atoms[j];
-            float dr = bondFudge*((float) type.getCovalentRadius() + 
-                                  (float) b.getCovalentRadius());
+            float dr = bondFudge*((float) type.getBaseAtomType().getCovalentRadius() + 
+                                  (float) b.getBaseAtomType().getCovalentRadius());
             float dr2 = dr*dr;
             
             if (d2 <= dr2) {
@@ -925,8 +925,8 @@ public class ChemFrame {
                 float dz = vert[3*j+2] - az;
                 d2 += dx*dx + dy*dy + dz*dz;
                 AtomType b = atoms[j];
-                float dr = bondFudge*((float) a.getCovalentRadius() + 
-                                  (float) b.getCovalentRadius());
+                float dr = bondFudge*((float) a.getBaseAtomType().getCovalentRadius() + 
+                                  (float) b.getBaseAtomType().getCovalentRadius());
                 float dr2 = dr*dr;
                 
                 if (d2 <= dr2) {

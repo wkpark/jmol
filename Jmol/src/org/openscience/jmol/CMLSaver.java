@@ -104,7 +104,7 @@ public class CMLSaver extends FileSaver {
 
         AtomType a = cf.getAtomType(i);
 	if (elementTypes.length() > 0) elementTypes += " ";
-        elementTypes += a.getName();
+        elementTypes += a.getBaseAtomType().getName();
 
         double[] pos = cf.getVertCoords(i);
 	if (x3s.length() > 0) x3s += " ";

@@ -50,25 +50,7 @@ public class Bond {
 
     private static JPanel jpanel;
     private static float screenScale;
-    /**
-     * QUICKDRAW mode draws a filled circle
-     */
-    public static final int QUICKDRAW = 0;
-    /**
-     * SHADING mode draws a lighted sphere
-     */
-    public static final int SHADING = 1;
-    /**
-     * WIREFRAME mode draws a transparent circle
-     */
-    public static final int WIREFRAME = 2;
-    /**
-     * LINE mode draws a line
-     */
-    public static final int LINE = 3;
-    private static int DrawMode = QUICKDRAW;
     private static boolean bondsToAtomCenters = false;
-    private static Color outlineColor = Color.black;
     private static float Smoothness=0.7f;
     private static double bondwidth = 0.1;   /* static vars, once for each 
                                                 class, not once per instance
@@ -92,30 +74,6 @@ public class Bond {
         return bondwidth;
     }
 
-    public static void setQuickDraw() {
-        DrawMode = QUICKDRAW;
-    }
-
-    public static void setShading() {
-        DrawMode = SHADING;
-    }
-
-    public static void setLine() {
-        DrawMode = LINE;
-    }
-
-    public static void setWireFrame() {
-        DrawMode = WIREFRAME;
-    }
-
-    public static void setRenderMode(int i) {
-        DrawMode = i;
-    }
-
-    public static int getRenderMode() {
-        return DrawMode;
-    }
-
     public static void toggleBondsToAtomCenters() {
         bondsToAtomCenters = !bondsToAtomCenters;
     }
@@ -128,20 +86,11 @@ public class Bond {
         return bondsToAtomCenters;
     }
 
-    public static void setOutlineColor(Color c) {
-        outlineColor = c;
-    }
-
-    public static Color getOutlineColor() {
-        return outlineColor;
-    }
-
-
     public Bond(AtomType at1, AtomType at2) {
         this.at1 = at1;
         this.at2 = at2;
-        col1 = at1.getColor();
-        col2 = at2.getColor();
+        col1 = at1.getBaseAtomType().getColor();
+        col2 = at2.getBaseAtomType().getColor();
     }        
 
     public void paint(Graphics gc, int x1, int y1, int z1, 
@@ -216,7 +165,7 @@ public class Bond {
         }
 
         // Duck out quickly if just line mode:
-	if (DrawMode == LINE || useLine){
+	if (DisplaySettings.getBondDrawMode() == DisplaySettings.LINE || useLine){
             gc.setColor(col1);
             gc.drawLine(x1+dx1, y1+dy1, xmp, ymp);
             gc.setColor(col2);
@@ -262,14 +211,14 @@ public class Bond {
 	    
 	    Polygon poly2 = new Polygon(xpoints, ypoints, 4);
 
-            switch( DrawMode ) {
-            case WIREFRAME:
+            switch( DisplaySettings.getBondDrawMode() ) {
+            case DisplaySettings.WIREFRAME:
                 gc.setColor(col1);
                 gc.drawPolygon(poly1);
                 gc.setColor(col2);
                 gc.drawPolygon(poly2);
                 break;
-            case SHADING:
+            case DisplaySettings.SHADING:
                 for (int i = (int)(2.0*halfbw); i > -1 ; i--) {
                     double len = i / (2.0*halfbw);
                     // System.out.println("len = " + len);
@@ -343,11 +292,11 @@ public class Bond {
             default:
                 gc.setColor(col1);
                 gc.fillPolygon(poly1);
-                gc.setColor(outlineColor);
+                gc.setColor(DisplaySettings.getOutlineColor());
                 gc.drawPolygon(poly1);
                 gc.setColor(col2);
                 gc.fillPolygon(poly2);
-                gc.setColor(outlineColor);
+                gc.setColor(DisplaySettings.getOutlineColor());
                 gc.drawPolygon(poly2);
                 break;
             }

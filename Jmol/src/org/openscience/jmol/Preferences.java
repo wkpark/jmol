@@ -420,12 +420,12 @@ public class Preferences extends JDialog {
         aRender.addItem(jrh.getString("aSChoice"));
         aRender.addItem(jrh.getString("aWFChoice"));
         renderPanel.add(aRender);
-        aRender.setSelectedIndex(AtomType.getRenderMode());
+        aRender.setSelectedIndex(DisplaySettings.getAtomDrawMode());
         aRender.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 AtomRenderMode = source.getSelectedIndex();
-                AtomType.setRenderMode(AtomRenderMode);
+                DisplaySettings.setAtomDrawMode(AtomRenderMode);
                 props.put("AtomRenderMode", Integer.toString(AtomRenderMode));
                 display.repaint();
             }
@@ -442,12 +442,12 @@ public class Preferences extends JDialog {
         aLabel.addItem(jrh.getString("aTLChoice"));
         aLabel.addItem(jrh.getString("aNLChoice"));
         labelPanel.add(aLabel);
-        aLabel.setSelectedIndex(AtomType.getLabelMode());
+        aLabel.setSelectedIndex(DisplaySettings.getLabelMode());
         aLabel.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 AtomLabelMode = source.getSelectedIndex();
-                AtomType.setLabelMode(AtomLabelMode);
+                DisplaySettings.setLabelMode(AtomLabelMode);
                 props.put("AtomLabelMode", Integer.toString(AtomLabelMode));
                 display.repaint();
             }
@@ -465,12 +465,12 @@ public class Preferences extends JDialog {
         aProps.addItem(jrh.getString("apNChoice"));
         aProps.addItem(jrh.getString("apUChoice"));
         propsPanel.add(aProps);
-        aProps.setSelectedItem(AtomType.getPropsMode());
+        aProps.setSelectedItem(DisplaySettings.getPropertyMode());
         aProps.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 AtomPropsMode = (String)source.getSelectedItem();
-                AtomType.setPropsMode(AtomPropsMode);
+                DisplaySettings.setPropertyMode(AtomPropsMode);
                 props.put("AtomPropsMode", AtomPropsMode);
                 display.repaint();
             }
@@ -527,12 +527,12 @@ public class Preferences extends JDialog {
         bRender.addItem(jrh.getString("bSChoice"));
         bRender.addItem(jrh.getString("bWFChoice"));
         bRender.addItem(jrh.getString("bLChoice"));
-        bRender.setSelectedIndex(Bond.getRenderMode());
+        bRender.setSelectedIndex(DisplaySettings.getBondDrawMode());
         bRender.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 JComboBox source = (JComboBox)e.getSource();
                 BondRenderMode = source.getSelectedIndex();
-                Bond.setRenderMode(BondRenderMode);
+                DisplaySettings.setBondDrawMode(BondRenderMode);
                 props.put("BondRenderMode", Integer.toString(BondRenderMode));
                 display.repaint();
             }
@@ -794,8 +794,7 @@ public class Preferences extends JDialog {
                                                        outlineColor);
                 outlineColor = color;
                 oButton.setBackground(outlineColor);
-                AtomType.setOutlineColor(outlineColor); 
-                Bond.setOutlineColor(outlineColor);
+                DisplaySettings.setOutlineColor(outlineColor); 
                 props.put("outlineColor", Integer.toString(outlineColor.getRGB()));
                 display.repaint();
                 
@@ -818,7 +817,7 @@ public class Preferences extends JDialog {
                                                        pickedColor);
                 pickedColor = color;
                 pButton.setBackground(pickedColor);
-                AtomType.setPickedColor(pickedColor); 
+                DisplaySettings.setPickedColor(pickedColor); 
                 props.put("pickedColor", Integer.toString(pickedColor.getRGB()));
                 display.repaint();
                 
@@ -841,7 +840,7 @@ public class Preferences extends JDialog {
                                                        textColor);
                 textColor = color;
                 tButton.setBackground(textColor);
-                AtomType.setTextColor(textColor); 
+                DisplaySettings.setTextColor(textColor); 
                 props.put("textColor", Integer.toString(textColor.getRGB()));
                 display.repaint();
                 
@@ -1006,11 +1005,11 @@ public class Preferences extends JDialog {
         cV.setSelected(ChemFrame.getShowVectors());
         cH.setSelected(ChemFrame.getShowHydrogens());
         // Atom panel controls:
-        aRender.setSelectedIndex(AtomType.getRenderMode());
-        aLabel.setSelectedIndex(AtomType.getLabelMode());
+        aRender.setSelectedIndex(DisplaySettings.getAtomDrawMode());
+        aLabel.setSelectedIndex(DisplaySettings.getLabelMode());
         sfSlider.setValue((int) (100.0 * AtomType.getSphereFactor()));
         // Bond panel controls:
-        bRender.setSelectedIndex(Bond.getRenderMode());        
+        bRender.setSelectedIndex(DisplaySettings.getBondDrawMode());        
         abYes.setSelected(ChemFrame.getAutoBond());
         bwSlider.setValue((int) (100.0 * Bond.getBondWidth()));
         bfSlider.setValue((int) (50.0 * ChemFrame.getBondFudge()));
@@ -1065,16 +1064,15 @@ public class Preferences extends JDialog {
         SphereFactor = new Double(props.getProperty("SphereFactor")).doubleValue();
         VibrationScale = new Double(props.getProperty("VibrationScale")).doubleValue();
 
-        AtomType.setOutlineColor(outlineColor);            
-        AtomType.setPickedColor(pickedColor);
-        AtomType.setTextColor(textColor);
+        DisplaySettings.setOutlineColor(outlineColor);            
+        DisplaySettings.setPickedColor(pickedColor);
+        DisplaySettings.setTextColor(textColor);
         AtomType.setSphereFactor(SphereFactor);
-        AtomType.setRenderMode(AtomRenderMode);
-        AtomType.setLabelMode(AtomLabelMode);
-        AtomType.setPropsMode(AtomPropsMode);
-        Bond.setOutlineColor(outlineColor);
+        DisplaySettings.setAtomDrawMode(AtomRenderMode);
+        DisplaySettings.setLabelMode(AtomLabelMode);
+        DisplaySettings.setPropertyMode(AtomPropsMode);
         Bond.setBondWidth(BondWidth);
-        Bond.setRenderMode(BondRenderMode);
+        DisplaySettings.setBondDrawMode(BondRenderMode);
         ArrowLine.setVectorColor(vectorColor);
         ArrowLine.setRadiusScale(ArrowHeadLengthScale);
         ArrowLine.setLengthScale(ArrowHeadRadiusScale);

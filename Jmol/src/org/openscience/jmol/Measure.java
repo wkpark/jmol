@@ -270,7 +270,7 @@ public class Measure extends JDialog {
         double[] c = cf.getVertCoords(measured);
         selection[currentAtom] = measured;
       
-        mtm.updateRow(currentAtom, measured, a.getName(), c);
+        mtm.updateRow(currentAtom, measured, a.getBaseAtomType().getName(), c);
         if (currentAtom < measure-1) {
             currentAtom++;
             table.setRowSelectionInterval(currentAtom, currentAtom);

@@ -108,7 +108,7 @@ public class XYZSaver extends FileSaver {
             for (int i = 0; i < cf.getNvert(); i++) {
                 
                 AtomType a = cf.getAtomType(i);
-                st = a.getName();
+                st = a.getBaseAtomType().getName();
                 
                 double[] pos = cf.getVertCoords(i);
                 st = st + tab + 

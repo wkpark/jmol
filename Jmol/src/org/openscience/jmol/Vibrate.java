@@ -273,7 +273,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
                 coord[1] += force[1] * scaling;
                 coord[2] += force[2] * scaling;
                 try {
-                    newFrame.addPropertiedVert(atomType.getName(), (float)coord
+                    newFrame.addPropertiedVert(atomType.getBaseAtomType().getName(), (float)coord
                                                [0], (float)coord[1], (float)coord[2], newProps);
                 } catch (Exception ex) {
                     System.out.println(ex);

@@ -123,7 +123,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
                     newCoord[2] = fromCoord[2] + (i+1)*step[2];
                     Vector newProps = new Vector();
                     try {
-                        extraFrames[i].addPropertiedVert(atomType.getName(), 
+                        extraFrames[i].addPropertiedVert(atomType.getBaseAtomType().getName(), 
                                                          (float)newCoord[0], 
                                                          (float)newCoord[1], 
                                                          (float)newCoord[2], 

@@ -95,12 +95,12 @@ public class AtomPropsMenu extends JMenu {
             JRadioButtonMenuItem rbmi = (JRadioButtonMenuItem) e.getSource();
             String mode = rbmi.getText();
             if(mode.equals("None")) 
-                AtomType.setPropsMode("");
+                DisplaySettings.setPropertyMode("");
             else if (mode.equals("Vector")) {
-                AtomType.setPropsMode(""); 
+                DisplaySettings.setPropertyMode(""); 
                 ChemFrame.setShowVectors(true);
             } else
-                AtomType.setPropsMode(rbmi.getText());            
+                DisplaySettings.setPropertyMode(rbmi.getText());            
             Jmol.display.repaint();
         }
     };

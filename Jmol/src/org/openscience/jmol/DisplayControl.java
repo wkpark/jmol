@@ -27,9 +27,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
-//import org.openscience.jmol.render.ChemFrameRenderer;
 import org.openscience.jmol.render.JmolFrame;
-//import org.openscience.jmol.render.MeasureRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
 import org.openscience.jmol.render.AtomShape;
@@ -80,8 +78,6 @@ final public class DisplayControl {
   public LabelManager labelManager;
   public AxesManager axesManager;
   public MeasurementManager measurementManager;
-  //  public ChemFrameRenderer frameRenderer;
-  //  public MeasureRenderer measureRenderer;
   public AtomRenderer atomRenderer;
   public BondRenderer bondRenderer;
   public LabelRenderer labelRenderer;
@@ -101,7 +97,6 @@ final public class DisplayControl {
     jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJvmVersion.compareTo("1.4") >= 0);
 
-    //    control = this;
     colorManager = new ColorManager(this);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
@@ -115,8 +110,6 @@ final public class DisplayControl {
     measurementManager = new MeasurementManager(this);
     distributor = new Distributor(this);
 
-    //    frameRenderer = new ChemFrameRenderer();
-    //    measureRenderer = new MeasureRenderer();
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
     labelRenderer = new LabelRenderer(this);
@@ -127,7 +120,6 @@ final public class DisplayControl {
 
     g25d = new Graphics25D(this);
   
-    // System.out.println("New DisplayControl");
   }
 
   public Component getAwtComponent() {
@@ -922,10 +914,6 @@ final public class DisplayControl {
     return modelManager.numberOfAtoms();
   }
 
-  public Atom[] getCurrentFrameAtoms() {
-    return modelManager.getCurrentFrameAtoms();
-  }
-
   public int findNearestAtomIndex(int x, int y) {
     return modelManager.findNearestAtomIndex(x, y);
   }
@@ -998,14 +986,6 @@ final public class DisplayControl {
     selectAll();
     structuralChange = true;
     refresh();
-  }
-
-  public JmolAtomIterator getChemFileIterator() {
-    return modelManager.getChemFileIterator();
-  }
-
-  public JmolAtomIterator getChemFrameIterator(BitSet set) {
-    return modelManager.getChemFrameIterator(set);
   }
 
   public void addPropertyChangeListener(PropertyChangeListener pcl) {

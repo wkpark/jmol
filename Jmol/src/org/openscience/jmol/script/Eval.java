@@ -858,21 +858,25 @@ public class Eval implements Runnable {
   }
 
   void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
+    /*
     double distance = ((Double)instruction.value).doubleValue();
     double distanceSquared = distance*distance;
     Atom[] atoms = control.getFrame().getJmolAtoms();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
       if (bs.get(i)) {
         // the atom itself is in the set
+
         bsResult.set(i);
         continue;
       }
       if (isWithin(distanceSquared, atoms[i].getPoint3D(), bs))
         bsResult.set(i);
     }
+    */
   }
 
   boolean isWithin(double distanceSquared, Point3d point, BitSet bs) {
+    /*
     Atom[] atoms = control.getFrame().getJmolAtoms();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
       if (! bs.get(i))
@@ -889,6 +893,7 @@ public class Eval implements Runnable {
       if (d2 <= distanceSquared)
         return true;
     }
+    */
     return false;
   }
 

@@ -36,9 +36,6 @@ import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;
 import java.util.Enumeration;
-import java.util.BitSet;
-import java.awt.Rectangle;
-import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import java.io.PrintStream;
 
@@ -57,15 +54,6 @@ public class ChemFrame extends AtomContainer {
 
   private String info;     // The title or info string for this frame.
   private Vector properties = new Vector();
-
-  Point3d centerBoundingBox;
-  Point3d cornerBoundingBox;
-  private Point3d centerRotation;
-  private double radiusBoundingBox;
-  private double radiusRotation;
-  private double minAtomVectorMagnitude;
-  private double maxAtomVectorMagnitude;
-  private double atomVectorRange;
 
   /**
    * Constructor for a ChemFrame with a known number of atoms.
@@ -186,7 +174,7 @@ public class ChemFrame extends AtomContainer {
 
   public int addAtom(Atom type, double x, double y, double z,
                      ProteinProp pprop) {
-      clearBounds();
+    //      clearBounds();
       int i = getAtomCount();
       
       Atom atom = new Atom(control, type, i, x, y, z, pprop);
@@ -231,14 +219,8 @@ public class ChemFrame extends AtomContainer {
   public void deleteAtom(int atomIndex) {
       Atom atomDeleted = (org.openscience.jmol.Atom)getAtomAt(atomIndex);
       removeAtom(atomDeleted);
-      clearBounds();
+      //      clearBounds();
       atomDeleted.delete();
-  }
-
-  public double getGeometricRadius() {
-    if (jmframe == null)
-      buildJmolFrame();
-    return jmframe.getGeometricRadius();
   }
 
   /**
@@ -254,7 +236,7 @@ public class ChemFrame extends AtomContainer {
    * Dummy method now, because this.addAtom(cdk.Atom) ensures that
    * the stored Atom's are jmol.Atom's.
    */
-  public Atom[] getJmolAtoms() {
+  private Atom[] getJmolAtoms() {
       Atom[] atoms = new Atom[getAtomCount()];
       for (int i=0; i<getAtomCount(); i++) {
           atoms[i] = getJmolAtomAt(i);
@@ -274,117 +256,6 @@ public class ChemFrame extends AtomContainer {
       position.x, position.y, position.z
     };
     return coords;
-  }
-
-  /**
-   * Clears the bounds cache for this model.
-   */
-  private void clearBounds() {
-    if (jmframe == null)
-      buildJmolFrame();
-    jmframe.clearBounds();
-  }
-
-  /**
-   * Find the bounds of this model.
-   */
-
-  private void findBounds() {
-    if ((centerBoundingBox != null) || (atoms == null) || (getAtomCount() <= 0))
-      return;
-    calcBoundingBox();
-    centerRotation = centerBoundingBox;
-    calculateAtomVectorMagnitudeRange();
-    radiusBoundingBox = radiusRotation = calcRadius(centerBoundingBox);
-  }
-
-  void calculateAtomVectorMagnitudeRange() {
-    minAtomVectorMagnitude = maxAtomVectorMagnitude = -1;
-    for (int i = 0; i < getAtomCount(); ++i) {
-        Atom atom = getJmolAtomAt(i);
-      if (!atom.hasVector()) continue;
-      double magnitude=atom.getVectorMagnitude();
-      if (magnitude > maxAtomVectorMagnitude) {
-        maxAtomVectorMagnitude = magnitude;
-      }
-      if ((magnitude < minAtomVectorMagnitude) ||
-          (minAtomVectorMagnitude == -1)) {
-        minAtomVectorMagnitude = magnitude;
-      }
-    }
-    atomVectorRange = maxAtomVectorMagnitude - minAtomVectorMagnitude;
-  }
-
-  void calcBoundingBox() {
-    //
-    // Note that this method is overridden by CrystalFrame
-    //
-    // bounding box is defined as the center of the cartesian coordinates
-    // as stored in the file
-    // Note that this is not really the geometric center of the molecule
-    // ... for this we would need to do a Minimal Enclosing Sphere calculation
-    Point3d position = atoms[0].getPoint3D();
-    double minX = position.x, maxX = minX;
-    double minY = position.y, maxY = minY;
-    double minZ = position.z, maxZ = minZ;
-
-    for (int i = 1; i < getAtomCount(); ++i) {
-      position = atoms[i].getPoint3D();
-      double x = position.x;
-      if (x < minX) { minX = x; }
-      if (x > maxX) { maxX = x; }
-      double y = position.y;
-      if (y < minY) { minY = y; }
-      if (y > maxY) { maxY = y; }
-      double z = position.z;
-      if (z < minZ) { minZ = z; }
-      if (z > maxZ) { maxZ = z; }
-    }
-    centerBoundingBox = new Point3d((minX + maxX) / 2,
-                                    (minY + maxY) / 2,
-                                    (minZ + maxZ) / 2);
-    cornerBoundingBox = new Point3d(maxX, maxY, maxZ);
-    cornerBoundingBox.sub(centerBoundingBox);
-  }
-
-  double calcRadius(Point3d center) {
-    //
-    // Note that this method is overridden by CrystalFrame
-    //
-    // Now that we have defined the center, find the radius to the outermost
-    // atom, including the radius of the atom itself. Note that this is
-    // currently the vdw radius as scaled by the vdw display radius as set
-    // in preferences. This is *not* recalculated if the user changes the
-    // display scale ... perhaps it should be.
-    // Atom Vectors should be included in this calculation so they don't get
-    // clipped off the screen during rotations ... but I don't understand
-    // them yet ... so they are not included. samples/cs2.xyz has atom vectors
-    //
-    // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
-    double radius = 0.0f;
-    double atomSphereFactor = control.getPercentVdwAtom() / 100.0;
-    Atom[] atoms = getJmolAtoms();
-    for (int i = 0; i < atoms.length; ++i) {
-      Atom atom = atoms[i];
-      Point3d posAtom = atom.getPoint3D();
-      double distAtom = center.distance(posAtom);
-      double radiusVdw = atom.getVanderwaalsRadius();
-      double distVdw = distAtom + (radiusVdw * atomSphereFactor);
-      
-      if (distVdw > radius)
-        radius = distVdw;
-      if (atom.hasVector()) {
-        // mth 2002 nov
-        // this calculation isn't right, but I can't get it to work with
-        // samples/cs2.syz when I try to use
-        // double distVector = center.distance(atom.getScaledVector());
-        // So I am over-estimating and giving up for the day. 
-        double distVector = distAtom + atom.getVectorMagnitude();
-        if (distVector > radius)
-          radius = distVector;
-      }
-    }
-    return radius;
   }
 
   /**
@@ -518,15 +389,6 @@ public class ChemFrame extends AtomContainer {
     atom.setVector(vector3d);
   }
 
-  private void setAtomArraySize(int newArraySize) {
-    Atom[] nat = new Atom[newArraySize];
-    int countToMove = atoms.length;
-    if (newArraySize < countToMove)
-      countToMove = newArraySize;
-    System.arraycopy(atoms, 0, nat, 0, countToMove);
-    atoms = nat;
-  }
-
   private boolean bondsEnabled;
   public boolean getBondsEnabled() {
     return bondsEnabled;
@@ -564,13 +426,6 @@ public class ChemFrame extends AtomContainer {
       Atom[] atoms = getJmolAtoms();
       for (int i = 0; i < atoms.length; i++) {
           atoms[i].clearBondedAtoms();
-      }
-  }
-
-  public void dumpAtoms(PrintStream out) {
-      Atom[] atoms = getJmolAtoms();
-      for (int i = 0; i < atoms.length; i++) {
-          out.println(atoms[i].toString());
       }
   }
 
@@ -618,105 +473,4 @@ public class ChemFrame extends AtomContainer {
       buildJmolFrame();
     return jmframe;
   }
-
-  public JmolAtomIterator getAtomIterator() {
-    return new ChemFrameIterator();
-  }
-
-  class ChemFrameIterator extends JmolAtomIterator {
-    int iAtom = 0;
-
-    public boolean hasNext() {
-      return (iAtom < getAtomCount());
-    }
-
-    public Atom nextAtom() {
-      return (org.openscience.jmol.Atom)getAtomAt(iAtom++);
-    }
-  }
-
-  public JmolAtomIterator getJmolAtomIterator(BitSet set) {
-    return new ChemFrameSetIterator(set);
-  }
-
-  class ChemFrameSetIterator extends JmolAtomIterator {
-    BitSet set;
-    int iatom = 0;
-
-    public ChemFrameSetIterator(BitSet set) {
-      this.set = set;
-    }
-
-    public boolean hasNext() {
-      for ( ; iatom < getAtomCount(); ++iatom)
-        if (set.get(iatom))
-          return true;
-      return false;
-    }
-
-    public Atom nextAtom() {
-      return (org.openscience.jmol.Atom)getAtomAt(iatom++);
-    }
-  }
-
-  public JmolAtomIterator getJmolBondIterator(BitSet set, boolean bondmodeOr) {
-    return new ChemFrameBondSetIterator(set, bondmodeOr);
-  }
-
-  class ChemFrameBondSetIterator extends JmolAtomIterator {
-    BitSet set;
-    boolean bondmodeOr;
-    int iatom;
-    int ibond;
-    boolean bigHit;
-    Atom atom;
-    Atom[] bondedAtoms;
-
-    public ChemFrameBondSetIterator(BitSet set, boolean bondmodeOr) {
-      this.set = set;
-      this.bondmodeOr = bondmodeOr;
-      bigHit = true;
-      iatom = -1;
-    }
-
-    public boolean hasNext() {
-      while (true) {
-        if (! bigHit && bondedAtoms != null) {
-          while (++ibond < bondedAtoms.length) {
-            int indexOtherAtom = bondedAtoms[ibond].getAtomNumber();
-            if (set.get(indexOtherAtom)) {
-              bigHit = false;
-              return true;
-            }
-          }
-        }
-        boolean isSelected;
-        do {
-          if (++iatom >= getAtomCount())
-            return false;
-          atom = (org.openscience.jmol.Atom)getAtomAt(iatom);
-          isSelected = set.get(iatom);
-          if (isSelected && bondmodeOr)
-            return bigHit = true;
-        } while (!isSelected && !bondmodeOr);
-        bondedAtoms = atom.getBondedAtoms();
-        bigHit = false;
-        ibond = -1;
-      }
-    }
-
-    public Atom nextAtom() {
-      return atom;
-    }
-
-    public boolean allBonds() {
-      return bigHit;
-    }
-
-    public int indexBond() {
-      return ibond;
-    }
-  }
-
 }
-

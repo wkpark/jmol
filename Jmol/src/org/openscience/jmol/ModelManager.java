@@ -128,9 +128,11 @@ public class ModelManager {
     return (chemframe == null) ? 0 : chemframe.getAtomCount();
   }
 
+  /*
   public Atom[] getCurrentFrameAtoms() {
     return chemframe.getJmolAtoms();
   }
+  */
 
   public ChemFrame[] getFrames() {
     return chemfile.getFrames();
@@ -198,14 +200,6 @@ public class ModelManager {
 
   public JmolAtomIterator getChemFileIterator() {
     return chemfile.getJmolAtomIterator();
-  }
-
-  public JmolAtomIterator getChemFrameIterator(BitSet set) {
-    return chemframe.getJmolAtomIterator(set);
-  }
-
-  public JmolAtomIterator getChemFrameIterator(BitSet set,boolean bondmodeOr) {
-    return chemframe.getJmolBondIterator(set, bondmodeOr);
   }
 
   public int findNearestAtomIndex(int x, int y) {

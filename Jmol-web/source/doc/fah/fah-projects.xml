@@ -206,7 +206,7 @@
   <fah_proj number="239" name="p239_NTL8MUre99p" file="y"
     server="171.64.122.127" atoms="3366" preferred="10" deadline="13"
     credit="42" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="240" name="p240_NTL4MUre99p"
+  <fah_proj number="240" name="p240_NTL4MUre99p" file="y"
     server="171.64.122.127" atoms="3411" preferred="9" deadline="12"
     credit="38" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="241" name="p241_NTL1MUre99p" file="y"
@@ -224,7 +224,7 @@
   <fah_proj number="245" name="p245_vil1MUreGS" file="y"
     server="171.64.122.127" atoms="6127" preferred="12" deadline="17"
     credit="54" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="246" name="p246_vil0MUreGS"
+  <fah_proj number="246" name="p246_vil0MUreGS" file="y"
     server="171.64.122.127" atoms="6409" preferred="12" deadline="16"
     credit="53" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="247" name="p247_c28MUreGS" file="y"
@@ -1350,7 +1350,7 @@
   <fah_proj number="864" name="p864_p53dimer864" file="y"
     server="171.64.122.108" atoms="12179" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="865" name="p865_p53dimer865"
+  <fah_proj number="865" name="p865_p53dimer865" file="y"
     server="171.64.122.108" atoms="12212" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="866" name="p866_p53dimer866" file="y"
@@ -1382,6 +1382,12 @@
     credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="875" name="p875_p53dimer875"
     server="171.65.103.157" atoms="12230" preferred="30" deadline="45"
+    credit="155" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="876" name="p876_p53mut876" file="y"
+    server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="877" name="p877_p53mut877"
+    server="171.65.103.157" atoms="12223" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
 
   <!-- Projects 900 to 999 -->
@@ -1558,7 +1564,7 @@
   <fah_proj number="970" name="p970_fklig_dock" file="y"
     server="171.64.122.132" atoms="1261" preferred="22" deadline="33"
     credit="122" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="971" name="p971_fkcomp_dock"
+  <fah_proj number="971" name="p971_fkcomp_dock" file="y"
     server="171.64.122.132" atoms="14923" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
   <fah_proj number="972" name="p972_fklig_dock_M24"
@@ -1943,11 +1949,14 @@
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1140" name="p1140_RIBO_FSpeptide_EXT_nospring" file="y"
-    server="171.65.103.156" atoms="84665" preferred="56" deadline="82"
+    server="171.65.103.156" atoms="84665" preferred="36" deadline="82"
     credit="600" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1141" name="p1141_RIBO_FSpeptide_HEL_nospring" file="y"
-    server="171.65.103.156" atoms="84665" preferred="56" deadline="82"
+    server="171.65.103.156" atoms="84665" preferred="36" deadline="82"
     credit="600" frames="100" code="G" contact="csnow"/>
+  <fah_proj number="1142" name="p1142_p1130_L939_K12M_355K"
+    server="171.64.122.143" atoms="393" preferred="5" deadline="7"
+    credit="25" frames="40" code="T" contact="csnow"/>
 
   <!-- Projects 1200 to 1299 -->
   <fah_proj number="1200" name="p1200_A21nat94_gbsa305K"
@@ -2549,7 +2558,10 @@
   <fah_proj number="1900" name="p1900_32_water_molecules" file="y"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
     credit="125" frames="100" code="Q" contact="NA"/>
-  <fah_proj number="1901" name="p1901_32_water_molecules"
+  <fah_proj number="1901" name="p1901_32_water_molecules" file="y"
+    server="171.64.122.113" atoms="96" preferred="12" deadline="19"
+    credit="125" frames="100" code="Q" contact="NA"/>
+  <fah_proj number="1902" name="p1902_32_water_molecules"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
     credit="125" frames="100" code="Q" contact="NA"/>
     

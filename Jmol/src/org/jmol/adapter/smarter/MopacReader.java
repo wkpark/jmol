@@ -37,6 +37,8 @@ class MopacReader extends AtomSetCollectionReader {
     
   String frameInfo;
   int baseAtomIndex;
+  
+  private boolean chargesFound = false;
 
   AtomSetCollection readAtomSetCollection(BufferedReader input) throws Exception {
     atomSetCollection = new AtomSetCollection("mopac");
@@ -47,10 +49,10 @@ class MopacReader extends AtomSetCollectionReader {
     while ((line = input.readLine()) != null && ! line.startsWith(" ---")) {
       if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
           // hasSymmetry = true;
-      } else if (line.indexOf("CARTESIAN COORDINATES") >= 0) {
-          atomSetCollection.newAtomSet();
-          atomSetCollection.setAtomSetName("Input Structure");
+      } else if (line.trim().equals("CARTESIAN COORDINATES")) {
+          System.out.println("Found input structure...");
           processCoordinates(input);
+          atomSetCollection.setAtomSetName("Input Structure");
       }
     }
 
@@ -59,10 +61,12 @@ class MopacReader extends AtomSetCollectionReader {
         processTotalEnergy(line);
       else if (line.indexOf("ATOMIC CHARGES") >= 0)
         processAtomicCharges(input);
-      else if (line.indexOf("CARTESIAN COORDINATES") >= 0 ||
-               line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0)
+      else if (line.trim().equals("CARTESIAN COORDINATES"))
         processCoordinates(input);
-      else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
+      else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
+        processCoordinates(input);
+        atomSetCollection.setAtomSetName("Orientation in Force Field");
+      } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
         processFrequencies(input);
     }
     return atomSetCollection;
@@ -91,9 +95,8 @@ class MopacReader extends AtomSetCollectionReader {
    */
 void processAtomicCharges(BufferedReader input) throws Exception {
     discardLines(input, 2);
-    // System.out.println("Reading atomic charges");
+    System.out.println("Reading atomic charges");
     atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
-    atomSetCollection.setAtomSetName(""); // start with an empty name
     baseAtomIndex = atomSetCollection.atomCount;
     int expectedAtomNumber = 0;
     String line;
@@ -108,6 +111,9 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       atom.elementSymbol = parseToken(line, ichNextParse);
       atom.partialCharge = parseFloat(line, ichNextParse);
     }
+    System.out.println("#atoms" + atomSetCollection.atomCount);
+    System.out.println("#models" + atomSetCollection.atomSetCount);
+    chargesFound = true;
   }
     
   /**
@@ -137,11 +143,23 @@ void processAtomicCharges(BufferedReader input) throws Exception {
    * @throws Exception
    */
   void processCoordinates(BufferedReader input) throws Exception {
-    // System.out.println("processCoordinates()");
+    System.out.println("processCoordinates()");
     discardLines(input, 3);
     int expectedAtomNumber = 0;
+
+    System.out.println("chargesFound: " + chargesFound);
+    
+    if (!chargesFound) {
+      System.out.println("No model created yet, so doing so now...");
+      atomSetCollection.newAtomSet();
+      baseAtomIndex = atomSetCollection.atomCount;
+    } else {
+      chargesFound = false;
+    }
+
     String line;
     while ((line = input.readLine()) != null) {
+      System.out.println("Processing line: " + line);
       int atomNumber = parseInt(line);
       if (atomNumber == Integer.MIN_VALUE) // blank line
         break;
@@ -152,6 +170,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
 
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
       if (atom == null) {
+          System.out.println("No atom defined yet, creating one now...");
           atom = atomSetCollection.addNewAtom(); // if no charges were found first
       }
       atom.atomSerial = atomNumber;
@@ -161,6 +180,10 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       atom.z = parseFloat(line, ichNextParse);
       System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
     }
+    System.out.println("#atoms" + atomSetCollection.atomCount);
+    System.out.println("#models" + atomSetCollection.atomSetCount);
+    System.out.println("chargesFound: " + chargesFound);
+    System.out.println("processCoordinates(END)");
   }
   
 

@@ -1182,7 +1182,7 @@ public class Eval implements Runnable {
     throws ScriptException {
     int comparator = instruction.tok;
     int property = instruction.intValue;
-    int propertyValue = 0;
+    float propertyValue = 0; // just for temperature
     int comparisonValue = ((Integer)instruction.value).intValue();
     int numberOfAtoms = viewer.getAtomCount();
     Frame frame = viewer.getFrame();
@@ -1199,6 +1199,7 @@ public class Eval implements Runnable {
         propertyValue = atom.getBfactor100();
         if (propertyValue < 0)
           continue;
+        propertyValue /= 100;
         break;
       case Token.occupancy:
         propertyValue = atom.getOccupancy();

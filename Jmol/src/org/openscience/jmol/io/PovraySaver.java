@@ -163,28 +163,12 @@ public class PovraySaver extends FileSaver {
 
         // Loop through the atoms and write them out:
 
-        boolean write_out = true;
-
-
         for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
-
           // don't write out if atom is a hydrogen and !showhydrogens
-
-          if (!drawHydrogen
-              && (((org.openscience.jmol.Atom)cf.getAtomAt(i)).getType().getAtomicNumber() == 1)) {
-
-            // atom is a hydrogen and should not be written
-
-            write_out = false;
-          }
-
-          if (write_out) {
+          if (drawHydrogen
+              || (cf.getJmolAtomAt(i).getType().getAtomicNumber() != 1)) {
             style.writeAtom(w, i, cf);
           }
-
-          write_out = true;
-
-
         }
       }
 

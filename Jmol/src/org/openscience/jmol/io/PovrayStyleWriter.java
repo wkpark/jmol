@@ -207,7 +207,10 @@ public class PovrayStyleWriter {
 
     //Holy cow. Well, we should now know what types there are
     for (int j = 0; j < numTypes; j++) {
-      BaseAtomType at = ((org.openscience.jmol.Atom)cf.getAtomAt(indexOfExampleAtom[j])).getType();
+      BaseAtomType at = cf.getJmolAtomAt(indexOfExampleAtom[j]).getType();
+      // FIXME mth -- this needs to come out for v6
+      // I am leaving it in until we fix the getVdwRadius() problem
+      System.out.println("at.getVdwRadius()->" + at.getVdwRadius());
       String def =
         "//****************************************************\n"
           + "// DEFINE " + typeName[j] + " MACROS\n"
@@ -302,7 +305,7 @@ public class PovrayStyleWriter {
   public void writeAtom(BufferedWriter w, int atomIndex, ChemFrame cf)
       throws IOException {
 
-    BaseAtomType a = ((org.openscience.jmol.Atom)cf.getAtomAt(atomIndex)).getType();
+    BaseAtomType a = cf.getJmolAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
 
     double c_x = cf.getRotationCenter().x;

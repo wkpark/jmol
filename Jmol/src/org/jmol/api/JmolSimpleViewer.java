@@ -30,9 +30,7 @@ import java.awt.Rectangle;
 import java.awt.Image;
 
 /**
- * <p>
- * This is the high-level API for the JmolViewer for simple access
- * </p>
+ * This is the high-level API for the JmolViewer for simple access.
  * <p>
  * We will implement a low-level API at some point
  **/

@@ -83,7 +83,7 @@ public class Measure extends JDialog {
   private ChemFile cf;
 
   private DisplayPanel display;
-  private MouseManager mouseman;
+  private DisplayControl control;
   private MeasurementList mlist;
 
   // The actions:
@@ -184,12 +184,12 @@ public class Measure extends JDialog {
    * @param f the parent frame
    * @param dp the DisplayPanel in which the animation will take place
    */
-  public Measure(JFrame f, DisplayPanel dp, MouseManager mouseman) {
+  public Measure(JFrame f, DisplayPanel dp, DisplayControl control) {
 
     super(f, JmolResourceHandler.getInstance()
              .getString("Measure.windowTitle"), false);
     this.display = dp;
-    this.mouseman = mouseman;
+    this.control = control;
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -294,8 +294,8 @@ public class Measure extends JDialog {
       mButton.setText(JmolResourceHandler.getInstance()
           .getString("Measure.addLabel"));
     }
-    oldMode = mouseman.getMode();
-    mouseman.setMode(MouseManager.MEASURE);
+    oldMode = control.getModeMouse();
+    control.setModeMouse(DisplayControl.MEASURE);
     disableActions();
     show();
   }
@@ -315,7 +315,7 @@ public class Measure extends JDialog {
 
   public void close() {
 
-    mouseman.setMode(oldMode);
+    control.setModeMouse(oldMode);
     this.setVisible(false);
     mtm.wipe();
     mButton.setEnabled(false);

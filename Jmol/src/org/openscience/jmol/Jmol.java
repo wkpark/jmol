@@ -131,7 +131,6 @@ public class Jmol extends JPanel {
 
   public DisplayControl control;
 
-  private MouseManager mouseman;
   private DisplayPanel display;
   private StatusBar status;
   private AtomPropsMenu apm;
@@ -239,11 +238,9 @@ public class Jmol extends JPanel {
     splash.showStatus(resourceHandler
         .translate("Initializing 3D display..."));
     //
-    control = new DisplayControl();
-    display = new DisplayPanel(status, guimap, control);
-    control.setAwtComponent(display);
-    mouseman = new MouseManager(display, control);
-    display.setMouseManager(mouseman);
+    display = new DisplayPanel(status, guimap);
+    control = new DisplayControl(display);
+    display.setDisplayControl(control);
 
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
@@ -278,10 +275,10 @@ public class Jmol extends JPanel {
     splash.showStatus(resourceHandler
         .translate("Initializing Measurements..."));
     mlist = new MeasurementList(frame, display);
-    meas = new Measure(frame, display, mouseman);
+    meas = new Measure(frame, display, control);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
-    mouseman.setMeasure(meas);
+    control.setMeasureMouse(meas);
     mlist.addMeasurementListListener(display);
     port.add(display);
 

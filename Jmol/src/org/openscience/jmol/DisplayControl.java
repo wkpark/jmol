@@ -32,6 +32,7 @@ import java.awt.Graphics2D;
 import java.awt.BasicStroke;
 import java.awt.RenderingHints;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Component;
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -54,15 +55,23 @@ import org.openscience.jmol.io.ReaderFactory;
 final public class DisplayControl {
 
   public static DisplayControl control;
+  Component awtComponent;
   ColorManager colorManager;
   TransformManager transformManager;
   SelectionManager selectionManager;
+  MouseManager mouseManager;
 
-  public DisplayControl() {
+  public DisplayControl(Component awtComponent) {
     control = this;
+    this.awtComponent = awtComponent;
     colorManager = new ColorManager(this);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager();
+    mouseManager = new MouseManager(awtComponent, this);
+  }
+
+  public Component getAwtComponent() {
+    return awtComponent;
   }
 
   public final static int NOLABELS =  0;
@@ -81,17 +90,7 @@ final public class DisplayControl {
   // they are currently used by Atom and AtomShape for transforms & rendering
   public boolean inMotion = false;
 
-  private Component panel;
-
   private boolean structuralChange = false;
-
-  public void setAwtComponent(Component component) {
-    this.panel = component;
-  }
-
-  public Component getAwtComponent() {
-    return panel;
-  }
 
   public int modeLabel = NOLABELS;
   public void setModeLabel(int mode) {
@@ -390,7 +389,7 @@ final public class DisplayControl {
 
   public Image takeSnapshot() {
     return null;
-    //return panel.takeSnapshot();
+    //return awtComponent.takeSnapshot();
   }
 
   public void setCenter(Point3d center) {
@@ -404,14 +403,14 @@ final public class DisplayControl {
     if (this.holdRepaint != holdRepaint) {
       this.holdRepaint = holdRepaint;
       if (!holdRepaint && repaintPending)
-        panel.repaint();
+        awtComponent.repaint();
     }
   }
 
   Object monitorRepaint = new Object();
 
   private void recalcFirmly() {
-    panel.repaint();
+    awtComponent.repaint();
   }
 
   private void recalc() {
@@ -419,7 +418,7 @@ final public class DisplayControl {
       return;
     repaintPending = true;
     if (! holdRepaint)
-      panel.repaint();
+      awtComponent.repaint();
   }
 
   public void refresh() {
@@ -428,7 +427,7 @@ final public class DisplayControl {
 
   public void requestRepaintAndWait() {
     synchronized(monitorRepaint) {
-      panel.repaint();
+      awtComponent.repaint();
       try {
         monitorRepaint.wait();
       } catch (InterruptedException e) {
@@ -1062,5 +1061,34 @@ final public class DisplayControl {
 
   public BitSet getSelectionSet() {
     return selectionManager.bsSelection;
+  }
+
+  /****************************************************************
+   delegated to MouseManager
+  ****************************************************************/
+  public static final int ROTATE = 0;
+  public static final int ZOOM = 1;
+  public static final int XLATE = 2;
+  public static final int PICK = 3;
+  public static final int DELETE = 4;
+  public static final int MEASURE = 5;
+  public static final int DEFORM = 6; // mth -- what is this?
+  public static final int ROTATE_Z = 7;
+  public static final int SLAB_PLANE = 8;
+
+  public void setModeMouse(int modeMouse) {
+    mouseManager.setMode(modeMouse);
+  }
+
+  public int getModeMouse() {
+    return mouseManager.modeMouse;
+  }
+
+  public void setMeasureMouse(Measure measure) {
+    mouseManager.setMeasure(measure);
+  }
+
+  public Rectangle getRubberBandSelection() {
+    return mouseManager.getRubberBand();
   }
 }

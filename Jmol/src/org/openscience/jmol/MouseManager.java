@@ -51,21 +51,21 @@ public class MouseManager {
     component.addMouseMotionListener(new MyMouseMotionListener());
   }
 
-  public static final int ROTATE = 0;
-  public static final int ZOOM = 1;
-  public static final int XLATE = 2;
-  public static final int PICK = 3;
-  public static final int DELETE = 4;
-  public static final int MEASURE = 5;
-  public static final int DEFORM = 6; // mth -- what is this?
-  public static final int ROTATE_Z = 7;
-  public static final int SLAB_PLANE = 8;
+  public static final int ROTATE =     DisplayControl.ROTATE;
+  public static final int ZOOM =       DisplayControl.ZOOM;
+  public static final int XLATE =      DisplayControl.XLATE;
+  public static final int PICK =       DisplayControl.PICK;
+  public static final int DELETE =     DisplayControl.DELETE;
+  public static final int MEASURE =    DisplayControl.MEASURE;
+  public static final int DEFORM =     DisplayControl.DEFORM;
+  public static final int ROTATE_Z =   DisplayControl.ROTATE_Z;
+  public static final int SLAB_PLANE = DisplayControl.SLAB_PLANE;
 
   public static final String[] modeNames = {
     "ROTATE", "ZOOM", "XLATE", "PICK", "DELETE", "MEASURE", "DEFORM",
     "ROTATE_Z", "SLAB_PLANE"};
 
-  private int modeMouse = ROTATE;
+  public int modeMouse = ROTATE;
   public void setMode(int mode) {
     //    System.out.println("MouseManager.setMode(" + modeNames[mode] + ")");
     modeMouse = mode;

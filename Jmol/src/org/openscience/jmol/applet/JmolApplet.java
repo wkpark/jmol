@@ -20,7 +20,6 @@
 package org.openscience.jmol.applet;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.MouseManager;
 import org.openscience.jmol.AtomTypeSet;
 import org.openscience.jmol.script.Eval;
 
@@ -91,7 +90,6 @@ public class JmolApplet extends Applet implements StatusDisplay {
 
   AppletCanvas canvas;
   DisplayControl control;
-  MouseManager mouseman;
 
   Eval eval;
   
@@ -112,16 +110,13 @@ public class JmolApplet extends Applet implements StatusDisplay {
   
   public void initWindows() {
 
-    control = new DisplayControl();
-    canvas = new AppletCanvas(control);
+    canvas = new AppletCanvas();
+    control = new DisplayControl(canvas);
+    canvas.setDisplayControl(control);
 
     String vers = System.getProperty("java.version");
     control.setJvm12orGreater(vers.compareTo("1.2") >= 0);
-    control.setAwtComponent(canvas);
     control.setAppletDocumentBase(getDocumentBase());
-
-    mouseman = new MouseManager(canvas, control);
-    canvas.setMouseManager(mouseman);
 
     canvas.addMouseListener(new MyMouseListener());
     canvas.addKeyListener(new MyKeyListener());
@@ -486,19 +481,19 @@ public class JmolApplet extends Applet implements StatusDisplay {
         break;
       case 'p':
       case 'P':
-        mouseman.setMode(MouseManager.PICK);
+        control.setModeMouse(DisplayControl.PICK);
         break;
       case 't':
       case 'T':
-        mouseman.setMode(MouseManager.XLATE);
+        control.setModeMouse(DisplayControl.XLATE);
         break;
       case 'r':
       case 'R':
-        mouseman.setMode(MouseManager.ROTATE);
+        control.setModeMouse(DisplayControl.ROTATE);
         break;
       case 'z':
       case 'Z':
-        mouseman.setMode(MouseManager.ZOOM);
+        control.setModeMouse(DisplayControl.ZOOM);
         break;
       }
     }

@@ -5,6 +5,10 @@ org/openscience/jmol/BaseAtomType.java
 org/openscience/jmol/JmolException.java
 org/openscience/jmol/DisplaySettings.java
 org/openscience/jmol/DisplayControl.java
+org/openscience/jmol/ColorManager.java
+org/openscience/jmol/TransformManager.java
+org/openscience/jmol/SelectionManager.java
+org/openscience/jmol/MouseManager.java
 org/openscience/jmol/PhysicalProperty.java
 org/openscience/jmol/AtomType.java
 org/openscience/jmol/Atom.java
@@ -26,7 +30,6 @@ org/openscience/jmol/AtomicSymbol.java
 org/openscience/jmol/Measurement.java
 org/openscience/jmol/MeasurementList.java
 org/openscience/jmol/MeasurementListEvent.java
-org/openscience/jmol/MouseManager.java
 org/openscience/jmol/UseJavaSort.java
 org/openscience/jmol/JmolCDO.java
 org/openscience/jmol/io/ReaderEvent.java

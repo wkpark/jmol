@@ -53,15 +53,12 @@ public class DisplayPanel extends JPanel
   private StatusBar status;
   private GuiMap guimap;
   private DisplayControl control;
-  private MouseManager mouseman;
   
   private String displaySpeed;
 
-  public DisplayPanel(StatusBar status, GuiMap guimap,
-                      DisplayControl control) {
+  public DisplayPanel(StatusBar status, GuiMap guimap) {
     this.status = status;
     this.guimap = guimap;
-    this.control = control;
     if (System.getProperty("painttime", "false").equals("true"))
       showPaintTime = true;
     displaySpeed = System.getProperty("display.speed");
@@ -70,8 +67,8 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  public void setMouseManager(MouseManager mouseman) {
-    this.mouseman = mouseman;
+  public void setDisplayControl(DisplayControl control) {
+    this.control = control;
   }
 
   // for now, default to true
@@ -103,7 +100,7 @@ public class DisplayPanel extends JPanel
 
   private void setRotateMode() {
       Jmol.setRotateButton();
-      mouseman.setMode(MouseManager.ROTATE);
+      control.setModeMouse(DisplayControl.ROTATE);
   }
     
   public ChemFrame getFrame() {
@@ -151,7 +148,7 @@ public class DisplayPanel extends JPanel
       // needs to take z-order into account
       if (control.getShowMeasurements())
         measureRenderer.paint(g, rectClip, control);
-      Rectangle rect = mouseman.getRubberBand();
+      Rectangle rect = control.getRubberBandSelection();
       if (rect != null) {
         g.setColor(control.getColorRubberband());
         g.drawRect(rect.x, rect.y, rect.width, rect.height);
@@ -434,9 +431,9 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       if (measure.isShowing()) {
-        mouseman.setMode(MouseManager.MEASURE);
+        control.setModeMouse(DisplayControl.MEASURE);
       } else {
-        mouseman.setMode(MouseManager.PICK);
+        control.setModeMouse(DisplayControl.PICK);
       }
       status.setStatus(1, "Select Atoms");
     }
@@ -450,7 +447,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      mouseman.setMode(MouseManager.DELETE);
+      control.setModeMouse(DisplayControl.DELETE);
       status.setStatus(1, "Delete Atoms");
     }
   }
@@ -463,7 +460,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      mouseman.setMode(MouseManager.ROTATE);
+      control.setModeMouse(DisplayControl.ROTATE);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -476,7 +473,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      mouseman.setMode(MouseManager.ZOOM);
+      control.setModeMouse(DisplayControl.ZOOM);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -489,7 +486,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      mouseman.setMode(MouseManager.XLATE);
+      control.setModeMouse(DisplayControl.XLATE);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }

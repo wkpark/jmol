@@ -21,7 +21,6 @@ package org.openscience.jmol.applet;
 
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.MouseManager;
 import org.openscience.jmol.render.ChemFrameRenderer;
 import org.openscience.jmol.render.MeasureRenderer;
 
@@ -37,7 +36,6 @@ import java.awt.event.ComponentAdapter;
 class AppletCanvas extends Canvas {
 
   private DisplayControl control;
-  private MouseManager mouseman;
 
   private Image bufferOffscreen;
   private Graphics graphicsOffscreen;
@@ -45,13 +43,9 @@ class AppletCanvas extends Canvas {
   private Dimension dimCurrent;
   private final Rectangle rectClip = new Rectangle();
 
-  public AppletCanvas(DisplayControl control) {
+  public void setDisplayControl(DisplayControl control) {
     this.control = control;
     addComponentListener(new MyComponentListener());
-  }
-
-  public void setMouseManager(MouseManager mouseman) {
-    this.mouseman = mouseman;
   }
 
   public void updateSize() {
@@ -111,7 +105,7 @@ class AppletCanvas extends Canvas {
       control.maybeEnableAntialiasing(g);
       frameRenderer.paint(g, rectClip, control);
       measureRenderer.paint(g, rectClip, control);
-      Rectangle rect = mouseman.getRubberBand();
+      Rectangle rect = control.getRubberBandSelection();
       if (rect != null) {
         g.setColor(control.getColorRubberband());
         g.drawRect(rect.x, rect.y, rect.width, rect.height);

@@ -34,7 +34,7 @@ class CifReader extends ModelReader {
 
   BufferedReader reader;
   String line;
-  SpaceAndSingleQuoteTokenizer tokenizer = new SpaceAndSingleQuoteTokenizer();
+  RidiculousFileFormatTokenizer tokenizer = new RidiculousFileFormatTokenizer();
 
   void initialize() {
     notionalUnitcell = new float[6];
@@ -560,7 +560,59 @@ class CifReader extends ModelReader {
   // special tokenizer class
   ////////////////////////////////////////////////////////////////
 
-  class SpaceAndSingleQuoteTokenizer {
+  /**
+   *<p>
+   * regarding the treatment of single quotes vs. primes in
+   * cif file, PMR wrote:
+   *</p>
+   *<p>
+   *   * There is a formal grammar for CIF
+   * (see http://www.iucr.org/iucr-top/cif/index.html)
+   * which confirms this. The textual explanation is
+   *<p />
+   *<p>
+   * 14. Matching single or double quote characters (' or ") may
+   * be used to bound a string representing a non-simple data value
+   * provided the string does not extend over more than one line.
+   *<p />
+   *<p>
+   * 15. Because data values are invariably separated from other
+   * tokens in the file by white space, such a quote-delimited
+   * character string may contain instances of the character used
+   * to delimit the string provided they are not followed by white
+   * space. For example, the data item
+   *<code>
+   *  _example  'a dog's life'
+   *</code>
+   * is legal; the data value is a dog's life.
+   *</p>
+   *<p>
+   * [PMR - the terminating character(s) are quote+whitespace.
+   * That would mean that:
+   *<code>
+   *  _example 'Jones' life'
+   *</code>
+   * would be an error
+   *</p>
+   *<p>
+   * The CIF format was developed in that late 1980's under the aegis of the
+   * International Union of Crystallography (I am a consultant to the COMCIFs 
+   * committee). It was ratified by the Union and there have been several 
+   * workshops. mmCIF is an extension of CIF which includes a relational 
+   * structure. The formal publications are:
+   *</p>
+   *<p>
+   * Hall, S. R. (1991). "The STAR File: A New Format for Electronic Data 
+   * Transfer and Archiving", J. Chem. Inform. Comp. Sci., 31, 326-333.
+   * Hall, S. R., Allen, F. H. and Brown, I. D. (1991). "The Crystallographic
+   * Information File (CIF): A New Standard Archive File for Crystallography",
+   * Acta Cryst., A47, 655-685.
+   * Hall, S.R. & Spadaccini, N. (1994). "The STAR File: Detailed 
+   * Specifications," J. Chem. Info. Comp. Sci., 34, 505-508.
+   *</p>
+   */
+    
+  class RidiculousFileFormatTokenizer {
     String str;
     int ich;
     int cch;
@@ -574,42 +626,41 @@ class CifReader extends ModelReader {
     }
 
     boolean hasMoreTokens() {
-      while (ich < cch && (str.charAt(ich)) == ' ')
+      char ch;
+      while (ich < cch && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
         ++ich;
       return ich < cch;
     }
 
+    /* assume that hasMoreTokens() has been called and that
+     * ich is pointing at a non-white character
+     */
     String nextToken() {
       if (ich == cch)
         return null;
       int ichStart = ich;
-      if (str.charAt(ichStart) != '\'') {
-        while (ich < cch && str.charAt(ich) != ' ')
+      char ch = str.charAt(ichStart);
+      if (ch != '\'' && ch != '"') {
+        while (ich < cch && (ch = str.charAt(ich)) != ' ' && ch != '\t')
           ++ich;
         return str.substring(ichStart, ich);
       }
-      boolean embeddedQuote = false;
-      boolean containsEmbeddedQuote = false;
-      while (++ich < cch &&
-             (str.charAt(ich) != '\'' ||
-              (embeddedQuote = (ich+1 < cch && str.charAt(ich+1) == '\''))))
-        if (embeddedQuote) {
-          ++ich;
-          embeddedQuote = false;
-          containsEmbeddedQuote = true;
-        }
+      char chOpeningQuote = ch;
+      boolean previousCharacterWasQuote = false;
+      while (++ich < cch) {
+        ch = str.charAt(ich);
+        if (previousCharacterWasQuote && (ch == ' ' || ch == '\t'))
+          break;
+        previousCharacterWasQuote = (ch == chOpeningQuote);
+      }
       if (ich == cch) {
+        if (previousCharacterWasQuote) // close quote was last char of string
+          return str.substring(ichStart + 1, ich - 1);
         // reached the end of the string without finding closing '
         return str.substring(ichStart, ich);
       }
-      String token = str.substring(ichStart + 1, ich++);
-      if (! containsEmbeddedQuote)
-        return token;
-      StringBuffer sb = new StringBuffer(token);
-      for (int i = sb.length(); --i >= 0; )
-        if (sb.charAt(i) == '\'') // found a quote
-          sb.deleteCharAt(i--); // skip over the previous one
-      return new String(sb);
+      ++ich; // throw away the last white character
+      return str.substring(ichStart + 1, ich - 2);
     }
   }
 }

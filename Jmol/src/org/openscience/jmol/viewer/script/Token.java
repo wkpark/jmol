@@ -504,21 +504,21 @@ public class Token {
 
   static String[] predefinitions = {
     "@at a,t",
-    "@acidic d,e",
-    "@acyclic a,r,n,d,c,e,q,g,i,l,k,m,s,t,v",
-    "@aliphatic a,g,i,l,v",
+    "@acidic asp,glu",
+    "@acyclic amino&!cyclic",
+    "@aliphatic ala,gly,ile,leu,val",
     "@alpha _atomid=1", // rasmol doc says "approximately *.CA" - whatever?
     "@amino _resid<=22",
-    "@aromatic h,f,w,y",
+    "@aromatic his,phe,trp,tyr",
     //    "@backbone amino & _atomid<=3,nucleic & _atomid>=4 & _atomid<=15",
-    "@backbone amino & _atomid<=3",
+    "@backbone amino&_atomid<=3",
     "@mainchain backbone",
-    "@basic r,h,k",
+    "@basic arg,his,lys",
     "@bonded _bondedcount>0",
-    "@buried a,c,i,l,m,f,w,v",
+    "@buried ala,cys,ile,leu,met,phe,trp,val",
     "@cg c,g",
     "@charged acidic,basic",
-    "@cyclic h,f,p,w,y",
+    "@cyclic his,phe,pro,trp,tyr",
     //    "@cystine",
     "@helix _structure=3",
     //    "@hetero", handled specially
@@ -526,17 +526,17 @@ public class Token {
     // text description of hydrophobic says this
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
-    "@hydrophobic a,g,i,l,m,f,p,w,y,v",
+    "@hydrophobic ala,gly,ile,leu,met,phe,pro,trp,tyr,val",
     "@ions _resid=29,_resid=30",
-    "@large r,e,q,h,i,l,k,m,f,w,y",
+    "@large arg,glu,gln,his,ile,leu,lys,met,phe,trp,tyr",
     "@ligand hetero & !solvent",
-    "@medium n,d,c,p,t,v",
+    "@medium asn,asp,cys,pro,thr,val",
     // doc is inconsistent
     // is h basic or neutral
     "@negative acidic",
-    "@neutral a,n,c,q,g,h,i,l,m,f,p,s,t,w,y,v",
+    "@neutral amino&!(acidic,basic)",
     "@nucleic a,c,g,t",
-    "@polar !hydrophobic",
+    "@polar amino&!hydrophobic",
     "@positive basic",
     "@protein amino", // + common post-translational modifications ??
     "@purine a,g",
@@ -544,11 +544,17 @@ public class Token {
     // selected - special and is handled at runtime
     "@sheet _structure=2",
     "@sidechain (protein or nucleic) and !backbone", // doc & code inconsistent
-    "@small a,g,s",
+    "@small ala,gly,ser",
     "@solvent _resid>=27 & _resid<=30", // water or ions
     "@surface !buried",
     "@turn _structure=1",
-    "@water _resid=27,_resid=28", "@hoh water",
+    "@water _resid=27,_resid=28",
+    "@hoh water",
+
+    "@a _resid=23",
+    "@c _resid=24",
+    "@g _resid=25",
+    "@t _resid=26",
 
     /*
       eliminated because some of these conflict with nucleic acids

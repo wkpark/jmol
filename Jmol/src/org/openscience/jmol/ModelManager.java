@@ -128,6 +128,10 @@ public class ModelManager {
     return (chemframe == null) ? 0 : chemframe.getAtomCount();
   }
 
+  public int getAtomCount() {
+    return getJmolFrame().getAtomCount();
+  }
+
   /*
   public Atom[] getCurrentFrameAtoms() {
     return chemframe.getJmolAtoms();

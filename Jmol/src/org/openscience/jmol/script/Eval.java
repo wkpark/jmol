@@ -25,8 +25,9 @@
 package org.openscience.jmol.script;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.Atom;
+import org.openscience.jmol.render.JmolFrame;
+import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.ProteinProp;
 import java.io.*;
 import java.awt.Color;
@@ -528,7 +529,7 @@ public class Eval implements Runnable {
   }
 
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
-    int numberOfAtoms = control.numberOfAtoms();
+    int numberOfAtoms = control.getAtomCount();
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
@@ -623,7 +624,7 @@ public class Eval implements Runnable {
   }
 
   void notSet(BitSet bs) {
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+    for (int i = control.getAtomCount(); --i >= 0; ) {
       if (bs.get(i))
         bs.clear(i);
       else
@@ -632,10 +633,10 @@ public class Eval implements Runnable {
   }
 
   BitSet getHeteroSet() {
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsHetero = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop != null && pprop.isHetero())
         bsHetero.set(i);
     }
@@ -645,10 +646,10 @@ public class Eval implements Runnable {
   BitSet getHydrogenSet() {
     if (logMessages)
       control.scriptStatus("getHydrogenSet()");
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsHydrogen = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      Atom atom = frame.getJmolAtomAt(i);
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      AtomShape atom = frame.getAtomAt(i);
       if (atom.getAtomicNumber() == 1)
         bsHydrogen.set(i);
     }
@@ -656,10 +657,10 @@ public class Eval implements Runnable {
   }
 
   BitSet getResidueSet(String strResidue) {
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsResidue = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop != null && pprop.isResidue(strResidue))
         bsResidue.set(i);
     }
@@ -667,10 +668,10 @@ public class Eval implements Runnable {
   }
 
   BitSet getResidueSet(int resno) {
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsResidue = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop != null && pprop.getResno() == resno)
         bsResidue.set(i);
     }
@@ -678,10 +679,10 @@ public class Eval implements Runnable {
   }
 
   BitSet getResidueSet(int resnoMin, int resnoLast) {
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsResidue = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop == null)
         continue;
       int atomResno = pprop.getResno();
@@ -697,9 +698,9 @@ public class Eval implements Runnable {
       control.scriptStatus("residue name spec != 3 :" + resNameSpec);
       return bsRes;
     }
-    ChemFrame frame = control.getFrame();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    JmolFrame frame = control.getJmolFrame();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop == null)
         continue;
       if (pprop.isResidueNameMatch(resNameSpec))
@@ -709,10 +710,10 @@ public class Eval implements Runnable {
   }
 
   BitSet getSpecNumber(int number) {
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsResno = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop == null)
         continue;
       if (number == pprop.getResno())
@@ -723,10 +724,10 @@ public class Eval implements Runnable {
 
   BitSet getSpecChain(char chain) {
     chain = Character.toUpperCase(chain);
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsChain = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop == null)
         continue;
       if (chain == pprop.getChain())
@@ -737,10 +738,10 @@ public class Eval implements Runnable {
 
   BitSet getSpecAtom(String atomSpec) {
     atomSpec = atomSpec.toUpperCase();
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsAtom = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop == null)
         continue;
       if (pprop.isAtomNameMatch(atomSpec))
@@ -750,10 +751,10 @@ public class Eval implements Runnable {
   }
 
   BitSet getResidueWildcard(String strWildcard) {
-    ChemFrame frame = control.getFrame();
+    JmolFrame frame = control.getJmolFrame();
     BitSet bsResidue = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
+      ProteinProp pprop = frame.getAtomAt(i).getProteinProp();
       if (pprop == null)
         continue;
       if (pprop.isResidueNameMatch(strWildcard))
@@ -793,10 +794,10 @@ public class Eval implements Runnable {
     int property = instruction.intValue;
     int propertyValue = 0;
     int comparisonValue = ((Integer)instruction.value).intValue();
-    int numberOfAtoms = control.numberOfAtoms();
-    ChemFrame frame = control.getFrame();
+    int numberOfAtoms = control.getAtomCount();
+    JmolFrame frame = control.getJmolFrame();
     for (int i = 0; i < numberOfAtoms; ++i) {
-      Atom atom = frame.getJmolAtomAt(i);
+      AtomShape atom = frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
         propertyValue = i + 1; // in the user world the atoms start with 1
@@ -825,10 +826,10 @@ public class Eval implements Runnable {
           continue;
         break;
       case Token.radius:
-        propertyValue = atom.getAtomShape().getRasMolRadius();
+        propertyValue = atom.getRasMolRadius();
         break;
       case Token._bondedcount:
-        propertyValue = atom.getBondedCount();
+        propertyValue = atom.getCovalentBondCount();
         break;
       }
       boolean match = false;
@@ -858,30 +859,27 @@ public class Eval implements Runnable {
   }
 
   void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
-    /*
     double distance = ((Double)instruction.value).doubleValue();
     double distanceSquared = distance*distance;
-    Atom[] atoms = control.getFrame().getJmolAtoms();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+    JmolFrame frame = control.getJmolFrame();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
       if (bs.get(i)) {
         // the atom itself is in the set
 
         bsResult.set(i);
         continue;
       }
-      if (isWithin(distanceSquared, atoms[i].getPoint3D(), bs))
+      if (isWithin(distanceSquared, frame.getAtomAt(i).getPoint3d(), bs))
         bsResult.set(i);
     }
-    */
   }
 
   boolean isWithin(double distanceSquared, Point3d point, BitSet bs) {
-    /*
-    Atom[] atoms = control.getFrame().getJmolAtoms();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
+    JmolFrame frame = control.getJmolFrame();
+    for (int i = control.getAtomCount(); --i >= 0; ) {
       if (! bs.get(i))
         continue;
-      Point3d pointB = atoms[i].getPoint3D();
+      Point3d pointB = frame.getAtomAt(i).getPoint3d();
       double d = point.x - pointB.x;
       double d2 = d*d;
       if (d2 > distanceSquared) continue;
@@ -893,26 +891,25 @@ public class Eval implements Runnable {
       if (d2 <= distanceSquared)
         return true;
     }
-    */
     return false;
   }
 
-  int getResno(Atom atom) {
+  int getResno(AtomShape atom) {
     ProteinProp pprop = atom.getProteinProp();
     return (pprop == null) ? -1 : pprop.getResno();
   }
 
-  int getTemperature(Atom atom) {
+  int getTemperature(AtomShape atom) {
     ProteinProp pprop = atom.getProteinProp();
     return (pprop == null) ? -1 : pprop.getTemperature();
   }
 
-  int getResID(Atom atom) {
+  int getResID(AtomShape atom) {
     ProteinProp pprop = atom.getProteinProp();
     return (pprop == null) ? -1 : pprop.getResID();
   }
 
-  int getAtomID(Atom atom) {
+  int getAtomID(AtomShape atom) {
     ProteinProp pprop = atom.getProteinProp();
     return (pprop == null) ? -1 : pprop.getAtomID();
   }
@@ -1128,7 +1125,7 @@ public class Eval implements Runnable {
         integerExpected();
     }
     int argCount = statement.length - 1;
-    int numAtoms = control.numberOfAtoms();
+    int numAtoms = control.getAtomCount();
     int[] args = new int[argCount];
     for (int i = 0; i < argCount; ++i) {
       Token token = statement[i + 1];
@@ -1155,7 +1152,7 @@ public class Eval implements Runnable {
     control.invertSelection();
     boolean bondmode = control.getBondSelectionModeOr();
     control.setBondSelectionModeOr(true);
-    control.setStyleBondScript(DisplayControl.NONE);
+    control.setStyleBondScript(DisplayControl.NONE, BondShape.ALL);
     control.setBondSelectionModeOr(bondmode);
     control.setStyleAtomScript(DisplayControl.NONE);
     control.setLabelScript(null);

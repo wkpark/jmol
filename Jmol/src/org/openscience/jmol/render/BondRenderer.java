@@ -79,6 +79,8 @@ public class BondRenderer {
 
   public void render(AtomShape atomShape1, AtomShape atomShape2, int order,
                      byte style, short mar, short colix, int width) {
+    if (style == DisplayControl.NONE)
+      return;
     if (atomShape1.z > atomShape2.z) {
       AtomShape t = atomShape1;
       atomShape1 = atomShape2;
@@ -108,7 +110,7 @@ public class BondRenderer {
   }
 
   int getRenderBondOrder(int order) {
-    if (order == 1 ||
+    if (order == 1 || order == BondShape.BACKBONE ||
         !showMultipleBonds ||
         modeMultipleBond == DisplayControl.MB_NEVER ||
         (modeMultipleBond == DisplayControl.MB_SMALL &&

@@ -27,6 +27,7 @@ package org.openscience.jmol;
 import org.openscience.jmol.Bspt;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.render.ArrowLineShape;
 import org.openscience.jmol.render.LineShape;
 import org.openscience.jmol.render.JmolFrame;
@@ -432,20 +433,44 @@ public class ChemFrame extends AtomContainer {
   private static final Point3d zeroPoint = new Point3d();
   private void buildJmolFrame() {
     jmframe = new JmolFrame(control);
-    for (int i = getAtomCount(); --i >= 0; ) {
+    int atomCount = getAtomCount();
+    char chainLast = '?';
+    int indexLastCA = -1;
+    AtomShape atomShapeLastCA = null;
+    ProteinProp pprop = null;
+    for (int i = 0; i < atomCount; ++i) {
       Atom jmolAtom = getJmolAtomAt(i);
       AtomShape atomShape = new AtomShape(jmframe, jmolAtom);
       jmframe.addAtomShape(atomShape);
       Atom[] bondedAtoms = jmolAtom.getBondedAtoms();
       if (bondedAtoms != null)
         for (int j = bondedAtoms.length; --j >= 0; ) {
-          jmframe.bondAtomShapes(atomShape, bondedAtoms[j], jmolAtom.getBondOrder(j));
+          jmframe.bondAtomShapes(atomShape, bondedAtoms[j],
+                                 jmolAtom.getBondOrder(j));
         }
       if (jmolAtom.hasVector()) {
         Point3d atomPoint = jmolAtom.getPoint3D();
         Point3d vectorPoint = new Point3d(jmolAtom.getVector());
         vectorPoint.scaleAdd(2, atomPoint);
         jmframe.addLineShape(new ArrowLineShape(atomPoint, vectorPoint));
+      }
+      pprop = jmolAtom.getProteinProp();
+      if (pprop != null) {
+        char chainThis = pprop.getChain();
+        if (chainThis == chainLast) {
+          if (pprop.getName().equals("CA")) {
+            if (atomShapeLastCA != null) {
+              jmframe.bondAtomShapes(atomShapeLastCA, atomShape,
+                                     BondShape.BACKBONE);
+            }
+            atomShapeLastCA = atomShape;
+          }
+        } else {
+          chainLast = chainThis;
+          atomShapeLastCA = null;
+        }
+      } else {
+        chainLast = '?';
       }
     }
 
@@ -455,17 +480,21 @@ public class ChemFrame extends AtomContainer {
       
       // The three primitives vectors with arrows
       for (int i = 0; i < 3; i++)
-        jmframe.addLineShape(new ArrowLineShape(zeroPoint, new Point3d(rprimd[i])));
+        jmframe.addLineShape(new ArrowLineShape(zeroPoint,
+                                                new Point3d(rprimd[i])));
       
       // The full primitive cell
       if (true) {
         // Depends on the settings...TODO
         Vector boxEdges = crystalFrame.getBoxEdges();
-        for (int i = 0; i < boxEdges.size(); i = i + 2)
-          jmframe.addLineShape(new LineShape((Point3d) boxEdges.elementAt(i),
-                                             (Point3d) boxEdges.elementAt(i + 1)));
+        for (int i = 0; i < boxEdges.size(); i = i + 2) {
+          LineShape ls = new LineShape((Point3d) boxEdges.elementAt(i),
+                                       (Point3d) boxEdges.elementAt(i + 1));
+          jmframe.addCrystalCellLine(ls);
+        }
       }
     }
+
   }
 
   public JmolFrame getJmolFrame() {

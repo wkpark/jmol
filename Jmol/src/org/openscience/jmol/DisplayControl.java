@@ -852,6 +852,10 @@ final public class DisplayControl {
     return modelManager.numberOfAtoms();
   }
 
+  public int getAtomCount() {
+    return modelManager.getAtomCount();
+  }
+
   public int findNearestAtomIndex(int x, int y) {
     return modelManager.findNearestAtomIndex(x, y);
   }
@@ -1173,6 +1177,10 @@ final public class DisplayControl {
 
   public void setStyleBondScript(byte style) {
     distributor.setStyle(style, bondIteratorSelected(BondShape.COVALENT));
+  }
+
+  public void setStyleBondScript(byte style, byte bondType) {
+    distributor.setStyle(style, bondIteratorSelected(bondType));
   }
 
   public void setStyleBackboneScript(byte style) {

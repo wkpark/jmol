@@ -60,6 +60,10 @@ public class JmolFrame {
       htAtomMap.put(atomShape.atom, atomShape);
   }
 
+  public int getAtomCount() {
+    return atomShapeCount;
+  }
+
   public AtomShape getAtomAt(int atomIndex) {
     return atomShapes[atomIndex];
   }
@@ -97,7 +101,8 @@ public class JmolFrame {
     atomShape1.bondMutually(atomShape2, order);
   }
 
-  public void bondAtomShapes(AtomShape atomShape1, AtomShape atomShape2, int order) {
+  public void bondAtomShapes(AtomShape atomShape1, AtomShape atomShape2,
+                             int order) {
     atomShape1.bondMutually(atomShape2, order);
   }
 
@@ -156,33 +161,56 @@ public class JmolFrame {
   }
 
   private void calcBoundingBox() {
-    /**
-     * Note that this method is overridden by CrystalFrame
-     */
     // bounding box is defined as the center of the cartesian coordinates
     // as stored in the file
     // Note that this is not really the geometric center of the molecule
     // ... for this we would need to do a Minimal Enclosing Sphere calculation
-    Point3d point = atomShapes[0].getPoint3d();
     double minX, minY, minZ, maxX, maxY, maxZ;
-    minX = maxX = point.x;
-    minY = maxY = point.y;
-    minZ = maxZ = point.z;
-
-    for (int i = atomShapeCount; --i > 0; ) { // note that the 0 element was set above
-      point = atomShapes[i].getPoint3d();
-      double t;
-      t = point.x;
-      if (t < minX) { minX = t; }
-      else if (t > maxX) { maxX = t; }
-      t = point.y;
-      if (t < minY) { minY = t; }
-      else if (t > maxY) { maxY = t; }
-      t = point.z;
-      if (t < minZ) { minZ = t; }
-      else if (t > maxZ) { maxZ = t; }
+    Point3d point;
+    if (crystalCellLineCount == 0) { // non-crystal, so find extremes of atoms
+      point = atomShapes[0].getPoint3d();
+      minX = maxX = point.x;
+      minY = maxY = point.y;
+      minZ = maxZ = point.z;
+      
+      for (int i = atomShapeCount; --i > 0; ) {
+        // note that the 0 element was set above
+        point = atomShapes[i].getPoint3d();
+        double t;
+        t = point.x;
+        if (t < minX) { minX = t; }
+        else if (t > maxX) { maxX = t; }
+        t = point.y;
+        if (t < minY) { minY = t; }
+        else if (t > maxY) { maxY = t; }
+        t = point.z;
+        if (t < minZ) { minZ = t; }
+        else if (t > maxZ) { maxZ = t; }
+      }
+    } else { // a crystal cell, so use center of crystal cell box
+      point = crystalCellLines[0].getPoint1();
+      minX = maxX = point.x;
+      minY = maxY = point.y;
+      minZ = maxZ = point.z;
+      for (int i = crystalCellLineCount; --i >= 0; ) {
+        point = crystalCellLines[i].getPoint1();
+        int j = 0;
+        do {
+          double t;
+          t = point.x;
+          if (t < minX) { minX = t; }
+          else if (t > maxX) { maxX = t; }
+          t = point.y;
+          if (t < minY) { minY = t; }
+          else if (t > maxY) { maxY = t; }
+          t = point.z;
+          if (t < minZ) { minZ = t; }
+          else if (t > maxZ) { maxZ = t; }
+          point = crystalCellLines[i].getPoint2();
+        } while (j++ == 0);
+      }
     }
-
+      
     centerBoundingBox = new Point3d((minX + maxX) / 2,
                                     (minY + maxY) / 2,
                                     (minZ + maxZ) / 2);
@@ -191,27 +219,12 @@ public class JmolFrame {
   }
 
   private double calcRadius(Point3d center) {
-    /**
-     * Note that this method is overridden by CrystalFrame
-     */
-    // Now that we have defined the center, find the radius to the outermost
-    // atom, including the radius of the atom itself. Note that this is
-    // currently the vdw radius as scaled by the vdw display radius as set
-    // in preferences. This is *not* recalculated if the user changes the
-    // display scale ... perhaps it should be.
-    // Atom Vectors should be included in this calculation so they don't get
-    // clipped off the screen during rotations ... but I don't understand
-    // them yet ... so they are not included. samples/cs2.xyz has atom vectors
-    //
-    // examples of crystal vectors samples/estron.cml samples/bulk_Si.in
     double radius = 0.0f;
-    //    double atomSphereFactor = control.getPercentVdwAtom() / 100.0;
     for (int i = atomShapeCount; --i >= 0; ) {
       AtomShape atomShape = atomShapes[i];
       Point3d posAtom = atomShape.getPoint3d();
       double distAtom = center.distance(posAtom);
       double radiusVdw = atomShape.getVanderwaalsRadius();
-      //      double distVdw = distAtom + (radiusVdw * atomSphereFactor);
       double distVdw = distAtom + radiusVdw;
       
       if (distVdw > radius)
@@ -231,6 +244,16 @@ public class JmolFrame {
     }
     for (int i = lineShapeCount; --i >= 0; ) {
       LineShape ls = lineShapes[i];
+      double distLineEnd;
+      distLineEnd = center.distance(ls.getPoint1());
+      if (distLineEnd > radius)
+        radius = distLineEnd;
+      distLineEnd = center.distance(ls.getPoint2());
+      if (distLineEnd > radius)
+        radius = distLineEnd;
+    }
+    for (int i = crystalCellLineCount; --i >= 0; ) {
+      LineShape ls = crystalCellLines[i];
       double distLineEnd;
       distLineEnd = center.distance(ls.getPoint1());
       if (distLineEnd > radius)
@@ -262,7 +285,8 @@ public class JmolFrame {
         bboxShapeCount = bboxShapes.length;
       }
       int shapeCount =
-        atomShapeCount + lineShapeCount + measurementShapeCount +
+        atomShapeCount + lineShapeCount + crystalCellLineCount +
+        measurementShapeCount +
         axisShapeCount + bboxShapeCount;
       shapes = new Shape[shapeCount];
       int i = 0;
@@ -273,6 +297,10 @@ public class JmolFrame {
       if (lineShapes != null) {
         System.arraycopy(lineShapes, 0, shapes, i, lineShapeCount);
         i += lineShapeCount;
+      }
+      if (crystalCellLines != null) {
+        System.arraycopy(crystalCellLines, 0, shapes, i, crystalCellLineCount);
+        i += crystalCellLineCount;
       }
       if (measurementShapes != null) {
         System.arraycopy(measurementShapes, 0,
@@ -343,6 +371,20 @@ public class JmolFrame {
       lineShapes = newShapes;
     }
     lineShapes[lineShapeCount++] = shape;
+  }
+
+  private int crystalCellLineCount = 0;
+  private LineShape[] crystalCellLines = null;
+
+  public void addCrystalCellLine(LineShape line) {
+    if (crystalCellLines == null ||
+        crystalCellLineCount == crystalCellLines.length) {
+      LineShape[] newShapes = new LineShape[crystalCellLineCount + lineGrowthIncrement];
+      if (crystalCellLines != null)
+        System.arraycopy(crystalCellLines, 0, newShapes, 0, crystalCellLineCount);
+      crystalCellLines = newShapes;
+    }
+    crystalCellLines[crystalCellLineCount++] = line;
   }
 
   final static int measurementGrowthIncrement = 16;

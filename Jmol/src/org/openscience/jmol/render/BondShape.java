@@ -38,6 +38,7 @@ public class BondShape {
 
   public final static byte COVALENT = 3;
   public final static byte BACKBONE = 4;
+  public final static byte ALL = COVALENT | BACKBONE;
 
   public AtomShape atomShape1;
   public AtomShape atomShape2;
@@ -69,7 +70,9 @@ public class BondShape {
     this.atomShape1 = atomShape1;
     this.atomShape2 = atomShape2;
     this.order = (byte)order;
-    this.style = control.getStyleBond();
+    this.style = (order == BACKBONE
+                  ? DisplayControl.NONE
+                  : control.getStyleBond());
     this.mar = control.getMarBond();
     this.colix = control.getColixBond();
   }

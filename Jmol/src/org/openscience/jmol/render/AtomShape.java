@@ -28,6 +28,7 @@ package org.openscience.jmol.render;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.g25d.Graphics25D;
 import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.ProteinProp;
 
 import java.awt.Rectangle;
 
@@ -225,6 +226,16 @@ public class AtomShape extends Shape {
     return marAtom / 4;
   }
 
+  public int getCovalentBondCount() {
+    if (bonds == null)
+      return 0;
+    int n = 0;
+    for (int i = bonds.length; --i >= 0; )
+      if ((bonds[i].order & BondShape.COVALENT) != 0)
+        ++n;
+    return n;
+  }
+
   public BondShape[] getBonds() {
     return bonds;
   }
@@ -350,11 +361,19 @@ public class AtomShape extends Shape {
    * but soon they will go through an interface which defines their behavior
    */
 
+  public int getAtomicNumber() {
+    return atom.getAtomicNumber();
+  }
+
   public Point3d getPoint3d() {
     return atom.getPoint3D();
   }
 
   public double getVanderwaalsRadius() {
     return atom.getVanderwaalsRadius();
+  }
+
+  public ProteinProp getProteinProp() {
+    return atom.getProteinProp();
   }
 }

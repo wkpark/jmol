@@ -25,10 +25,11 @@
 
 package org.openscience.jmol.render;
 import javax.vecmath.Point3d;
-import java.awt.Color;
+import org.openscience.jmol.ProteinProp;
 
 public interface JmolAtom {
   int getAtomicNumber();
   double getVanderwaalsRadius();
   Point3d getPoint3D();
-  }
+  ProteinProp getProteinProp();
+}

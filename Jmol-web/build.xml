@@ -34,7 +34,7 @@
     </copy>
     <copy todir="${build.html}" overwrite="yes">
       <fileset dir="${doc.dir}"
-               excludes="**/*.xml,**/*.xsl,**/*~" />
+               excludes="**/*.xml,**/*.xsl,**/*~,**/cache.properties"/>
     </copy>
   	<copy todir="${build.html}/fah" overwrite="yes"
   		  file="${doc.dir}/fah/fah-projects.xml" />

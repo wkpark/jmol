@@ -32,11 +32,13 @@
     />
     
     <!-- Do the copy using scp -->
-    <echo message="Copying all filtes to Jmol website"/>
+    <echo message="Copying all files to Jmol website"/>
     <scp
       todir="${ssh.user}:${ssh.password}@shell.sourceforge.net:/home/groups/j/jm/jmol/htdocs"
       trust="yes" failonerror="false">
-      <fileset dir="${from.dir}"/>
+      <fileset dir="${from.dir}">
+        <modified/>
+      </fileset>
     </scp>
     
   </target>

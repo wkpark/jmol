@@ -60,6 +60,7 @@ final public class DisplayControl {
   TransformManager transformManager;
   SelectionManager selectionManager;
   MouseManager mouseManager;
+  FileManager fileManager;
 
   public DisplayControl(Component awtComponent) {
     control = this;
@@ -68,6 +69,7 @@ final public class DisplayControl {
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager();
     mouseManager = new MouseManager(awtComponent, this);
+    fileManager = new FileManager(this);
   }
 
   public Component getAwtComponent() {
@@ -564,89 +566,6 @@ final public class DisplayControl {
     return arrowHeadRadius;
   }
 
-  URL appletDocumentBase = null;
-  public void setAppletDocumentBase(URL base) {
-    appletDocumentBase = base;
-  }
-
-  // mth jan 2003 -- there must be a better way for me to do this!?
-  final String[] urlPrefixes = {"http:", "https:", "ftp:"};
-
-  public URL getURLFromName(String name) {
-    URL url = null;
-    int i;
-    for (i = 0; i < urlPrefixes.length; ++i) {
-      if (name.startsWith(urlPrefixes[i]))
-        break;
-    }
-    try {
-      if (i < urlPrefixes.length)
-        url = new URL(name);
-      else if (appletDocumentBase != null)
-        url = new URL(appletDocumentBase, name);
-      else
-        url = new URL("file", null, name);
-    } catch (MalformedURLException e) {
-    }
-    return url;
-  }
-
-  public InputStream getInputStreamFromName(String name) {
-    URL url = getURLFromName(name);
-    if (url != null) {
-      try {
-        return url.openStream();
-      } catch (IOException e) {
-      }
-    }
-    return null;
-  }
-
-  public String openFile(String name) {
-    InputStream istream = getInputStreamFromName(name);
-    if (istream == null)
-        return "error opening url/filename " + name;
-    try {
-      openInputStream(istream);
-    } catch (Exception e) {
-      return "" + e;
-    }
-    return null;
-  }
-
-  private void openInputStream(InputStream istream) throws JmolException {
-    InputStreamReader isr = new InputStreamReader(istream);
-    BufferedReader bufreader = new BufferedReader(isr);
-    try {
-      ChemFileReader reader = null;
-      try {
-        reader = ReaderFactory.createReader(bufreader);
-      } catch (IOException ex) {
-        throw new JmolException("readMolecule",
-            "Error determining input format: " + ex);
-      }
-      if (reader == null) {
-        throw new JmolException("readMolecule", "Unknown input format");
-      }
-      ChemFile newChemFile = reader.read();
-
-      if (newChemFile != null) {
-        if (newChemFile.getNumberOfFrames() > 0) {
-          setChemFile(newChemFile);
-        } else {
-          throw new JmolException("readMolecule",
-              "the input appears to be empty");
-        }
-      } else {
-        throw new JmolException("readMolecule",
-            "unknown error reading input");
-      }
-    } catch (IOException ex) {
-      throw new JmolException("readMolecule", "Error reading input: " + ex);
-    }
-  }
-
-
   public void scriptEcho(String str) {
     // FIXME -- if there is a script window it should go there
     // for an applet it needs to go someplace else
@@ -1090,5 +1009,25 @@ final public class DisplayControl {
 
   public Rectangle getRubberBandSelection() {
     return mouseManager.getRubberBand();
+  }
+
+  /****************************************************************
+   delegated to FileManager
+  ****************************************************************/
+
+  public void setAppletDocumentBase(URL base) {
+    fileManager.setAppletDocumentBase(base);
+  }
+
+  public URL getURLFromName(String name) {
+    return fileManager.getURLFromName(name);
+  }
+
+  public InputStream getInputStreamFromName(String name) {
+    return fileManager.getInputStreamFromName(name);
+  }
+
+  public String openFile(String name) {
+    return fileManager.openFile(name);
   }
 }

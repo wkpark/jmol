@@ -98,6 +98,7 @@ public abstract class MouseManager {
   }
 
   void mousePressed(int x, int y, int modifiers) {
+    System.out.println("mousePressed(" + x + "," + y + "," + modifiers + ")");
     if (! viewer.haveFile())
       return;
     xCurrent = xPrevious = x;
@@ -153,6 +154,7 @@ public abstract class MouseManager {
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
 
   void mouseClicked(int x, int y, int modifiers) {
+    System.out.println("mouseClicked(" + x + "," + y + "," + modifiers + ")");
   }
 
   void mouseEntered(int x, int y, int modifiers) {
@@ -162,6 +164,7 @@ public abstract class MouseManager {
   }
 
   void mouseReleased(int x, int y, int modifiers) {
+    System.out.println("mouseReleased(" + x + "," + y + "," + modifiers + ")");
     viewer.setInMotion(false);
     if ((modifiers & CTRL_SHIFT_RIGHT) == RIGHT &&
         (modifiersWhenPressed & CTRL_SHIFT_RIGHT) == RIGHT) {

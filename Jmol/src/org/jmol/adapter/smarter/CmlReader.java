@@ -224,7 +224,7 @@ class CmlReader extends AtomSetCollectionReader {
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes atts)
     {
-      /* */
+      /*
         System.out.println("startElement(" + namespaceURI + "," + localName +
         "," + qName + "," + atts +  ")");
       /* */
@@ -386,7 +386,7 @@ class CmlReader extends AtomSetCollectionReader {
     
     public void endElement(String uri, String localName,
                            String qName)  {
-      /* */
+      /*
         System.out.println("endElement(" + uri + "," + localName +
         "," + qName + ")");
       /* */

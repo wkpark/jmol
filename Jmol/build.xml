@@ -714,8 +714,10 @@
 	<include name="JmolApplet.jar"/>
       </zipfileset>
       <zipfileset dir="appletweb" prefix="Jmol${version}/">
-	<include name="JmolApplet.properties"/>
 	<include name="Jmol.js"/>
+      </zipfileset>
+      <zipfileset dir="jars" prefix="Jmol${version}/">
+	<include name="gnujaxp.jar"/>
       </zipfileset>
     </zip>
   </target>

@@ -90,8 +90,17 @@ public class BondShape {
     this.mar = mar;
   }
 
+  public void setStyleMar(byte style, short mar) {
+    this.style = style;
+    this.mar = mar;
+  }
+
   public void setColix(short colix) {
     this.colix = colix;
+  }
+
+  public AtomShape getOtherAtomShape(AtomShape atomShape) {
+    return (atomShape == atomShape1) ? atomShape2 : atomShape1;
   }
   
   public void render(DisplayControl control) {

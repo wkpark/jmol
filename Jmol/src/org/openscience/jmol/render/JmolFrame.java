@@ -406,4 +406,89 @@ public class JmolFrame {
     return bsFoundRectangle;
   }
 
+  public AtomShapeIterator getAtomIterator(BitSet bsSelected) {
+    return new SelectedAtomShapeIterator(bsSelected);
+  }
+
+  class SelectedAtomShapeIterator implements AtomShapeIterator {
+
+    int iAtomShape;
+    BitSet bsSelected;
+
+    SelectedAtomShapeIterator(BitSet bsSelected) {
+      this.bsSelected = bsSelected;
+      iAtomShape = 0;
+    }
+
+    public boolean hasNext() {
+      for ( ; iAtomShape < atomShapeCount; ++iAtomShape)
+        if (bsSelected.get(iAtomShape))
+          return true;
+      return false;
+    }
+
+    public AtomShape next() {
+      return atomShapes[iAtomShape++];
+    }
+  }
+
+  public BondShapeIterator getBondIterator(byte bondType, BitSet bsSelected) {
+    return new SelectedCovalentBondIterator(bondType, bsSelected);
+  }
+
+  class SelectedCovalentBondIterator implements BondShapeIterator {
+    BitSet bsSelected;
+    int bondType;
+
+    int iAtomShape;
+    boolean tHaveAtom;
+    int iBondShape;
+    int iAtomShapeCurrent;
+    AtomShape atomShapeCurrent;
+    BondShape[] bondsCurrent;
+    boolean bondSelectionModeOr;
+
+    SelectedCovalentBondIterator(byte bondType, BitSet bsSelected) {
+      this.bondType = bondType;
+      this.bsSelected = bsSelected;
+      iAtomShape = iBondShape = 0;
+      bondSelectionModeOr = control.getBondSelectionModeOr();
+    }
+
+    public boolean hasNext() {
+      while (true) {
+        while (atomShapeCurrent == null ||
+               bondsCurrent == null ||
+               iBondShape == bondsCurrent.length) {
+          if (iAtomShape == atomShapeCount)
+            return false;
+          iAtomShapeCurrent = iAtomShape++;
+          atomShapeCurrent=atomShapes[iAtomShapeCurrent];
+          bondsCurrent = atomShapeCurrent.bonds;
+          iBondShape = 0;
+        }
+        for ( ; iBondShape < bondsCurrent.length; ++iBondShape) {
+          BondShape bondShape = bondsCurrent[iBondShape];
+          if ((bondShape.order & bondType) == 0)
+            continue;
+          AtomShape atomShapeOther =
+            (bondShape.atomShape1 != atomShapeCurrent ?
+             bondShape.atomShape1 : bondShape.atomShape2);
+          boolean tOtherSelected = bsSelected.get(atomShapeOther.atomIndex);
+          if (bondSelectionModeOr) {
+            if (!tOtherSelected || bondShape.atomShape1 == atomShapeCurrent)
+              return true;
+          } else {
+            if (tOtherSelected && bondShape.atomShape1 == atomShapeCurrent)
+              return true;
+          }
+        }
+      }
+    }
+
+    public BondShape next() {
+      return bondsCurrent[iBondShape++];
+    }
+  }
+
 }

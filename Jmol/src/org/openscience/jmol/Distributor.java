@@ -24,8 +24,11 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.JmolFrame;
 import org.openscience.jmol.render.AtomShape;
+import org.openscience.jmol.render.AtomShapeIterator;
 import org.openscience.jmol.render.BondShape;
+import org.openscience.jmol.render.BondShapeIterator;
 import org.openscience.cdk.renderer.color.AtomColorer;
 
 public class Distributor {
@@ -35,6 +38,10 @@ public class Distributor {
   public Distributor(DisplayControl control) {
     this.control = control;
   }
+
+  /****************************************************************
+   * the ChemFrame guys
+   ****************************************************************/
 
   public void setStyleAtom(byte styleAtom, JmolAtomIterator iter) {
     while (iter.hasNext()) {
@@ -58,19 +65,19 @@ public class Distributor {
   }
 
   public void setStyle(byte styleBond, byte bondType) {
-    BondShapeIterator iter = new BondShapeIterator(bondType);
+    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
     while (iter.hasNext())
       iter.nextBondShape().setStyle(styleBond);
   }
 
   public void setMar(short marBond, byte bondType) {
-    BondShapeIterator iter = new BondShapeIterator(bondType);
+    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
     while (iter.hasNext())
       iter.nextBondShape().setMar(marBond);
   }
 
   public void setStyleMar(byte style, short mar, byte bondType) {
-    BondShapeIterator iter = new BondShapeIterator(bondType);
+    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
     while (iter.hasNext()) {
       BondShape bond = iter.nextBondShape();
       bond.setStyle(style);
@@ -79,7 +86,7 @@ public class Distributor {
   }
 
   public void setColix(short colixBond, byte bondType) {
-    BondShapeIterator iter = new BondShapeIterator(bondType);
+    ChemframeBondIterator iter = new ChemframeBondIterator(bondType);
     while (iter.hasNext())
       iter.nextBondShape().setColix(colixBond);
   }
@@ -119,7 +126,7 @@ public class Distributor {
     }
   }
 
-  class BondShapeIterator {
+  class ChemframeBondIterator {
 
     JmolAtomIterator iterAtomSelected;
     boolean bondSelectionModeOr;
@@ -129,7 +136,7 @@ public class Distributor {
     int ibondCurrent;
     int bondType;
 
-    BondShapeIterator(byte bondType) {
+    ChemframeBondIterator(byte bondType) {
       this.bondType = bondType;
       iterAtomSelected = control.iterAtomSelected();
       bondSelectionModeOr = control.getBondSelectionModeOr();
@@ -164,6 +171,80 @@ public class Distributor {
     
     public BondShape nextBondShape() {
       return bondCurrent;
+    }
+  }
+
+  /****************************************************************
+   * the JmolFrame guys
+   ****************************************************************/
+
+  public void setStyleAtom(byte styleAtom, AtomShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setStyleAtom(styleAtom);
+  }
+
+  public void setMarAtom(short marAtom, AtomShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setMarAtom(marAtom);
+  }
+
+  public void setStyleMarAtom(byte style, short mar, AtomShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setStyleMarAtom(style, mar);
+  }
+
+  public void setStyle(byte styleBond, BondShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setStyle(styleBond);
+  }
+
+  public void setMar(short marBond, BondShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setMar(marBond);
+  }
+
+  public void setStyleMar(byte style, short mar, BondShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setStyleMar(style, mar);
+  }
+
+  public void setColix(short colixBond, BondShapeIterator iter) {
+    while (iter.hasNext())
+      iter.next().setColix(colixBond);
+  }
+
+  public void setColixAtom(byte mode, short colix, AtomShapeIterator iter) {
+    boolean useColorProfile = colix == 0;
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.next();
+      short colixT = useColorProfile
+        ? control.getColixAtom(mode, atomShape.atom) : colix;
+      atomShape.setColixAtom(colixT);
+    }
+  }
+
+  public void setStyleLabel(byte styleLabel, AtomShapeIterator iter) {
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.next();
+      atomShape.setLabel(control.getLabelAtom(styleLabel, atomShape.atom));
+    }
+  }
+
+  public void setLabel(String strLabel, AtomShapeIterator iter) {
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.next();
+      atomShape.setLabel(control.getLabelAtom(strLabel, atomShape.atom));
+    }
+  }
+
+  public void setColixMarDots(short colixDots, short marDots,
+                              AtomShapeIterator iter) {
+    short colixT = colixDots;
+    while (iter.hasNext()) {
+      AtomShape atomShape = iter.next();
+      if (colixDots == 0)
+        colixT = control.getColixAtom(atomShape.atom);
+      atomShape.setColixMarDots(colixT, marDots);
     }
   }
 }

@@ -37,7 +37,7 @@ import javax.vecmath.Point3i;
 public class AtomShape extends Shape {
 
   public JmolAtom atom;
-  private short atomIndex = -1;
+  public short atomIndex = -1;
   public boolean isHydrogen;
   public byte styleAtom;
   public short marAtom;

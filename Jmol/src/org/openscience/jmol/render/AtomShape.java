@@ -74,24 +74,24 @@ public class AtomShape implements Shape {
     return buffer.toString();
   }
 
-  public void render(Graphics g, Rectangle rectClip, DisplayControl control) {
-    renderBonds();
-    renderAtom();
-    renderLabel();
+  public void render(Graphics g, Rectangle clip, DisplayControl control) {
+    renderBonds(g, clip, control);
+    renderAtom(g, clip, control);
+    renderLabel(g, clip, control);
   }
   
-  public void renderBonds() {
-    if (!showBonds || (!showHydrogens && atom.isHydrogen()))
+  public void renderBonds(Graphics g, Rectangle clip, DisplayControl control) {
+    if (!control.showBonds || (!control.showHydrogens && atom.isHydrogen()))
       return;
     Enumeration bondIter = atom.getBondedAtoms();
     while (bondIter.hasMoreElements()) {
       Atom otherAtom = (Atom) bondIter.nextElement();
       int z = atom.screenZ;
       int zOther = otherAtom.screenZ;
-      if ((showHydrogens || !otherAtom.isHydrogen()) &&
+      if ((control.showHydrogens || !otherAtom.isHydrogen()) &&
           (z > zOther) ||
           ((z==zOther) && (atom.getAtomNumber() > otherAtom.getAtomNumber())))
-        renderBond(g, atom, otherAtom);
+        renderBond(g, control, atom, otherAtom);
     }
   }
   
@@ -99,53 +99,8 @@ public class AtomShape implements Shape {
     return atom.screenZ;
   }
   
-  private static boolean showAtoms;
-  private static boolean showHydrogens;
-  private static boolean showBonds;
-  private static boolean wireframeRotation;
-  private static int bondDrawMode;
-  private static int atomDrawMode;
-  private static int labelMode;
-  private static boolean mouseDragged;
-  private static DisplayControl control;
-  private static double bondWidthAngstroms;
-  private static double bondSeparationAngstroms;
-  private static boolean showDarkerOutline;
-  private static Color outlineColor;
-  private static Color pickedColor;
-  private static Color backgroundColor;
-  private static Graphics g;
-  private static org.openscience.cdk.renderer.color.AtomColorer colorProfile;
-
-  public static void prepareRendering(Graphics gc, Rectangle rectClip,
-                                      DisplayControl ctrl) {
-    g = gc;
-    control = ctrl;
-    atomDrawMode = control.getAtomDrawMode();
-    bondDrawMode = control.getBondDrawMode();
-    showAtoms = control.getShowAtoms();
-    showHydrogens = control.getShowHydrogens();
-    showBonds = control.getShowBonds();
-    labelMode = control.getLabelMode();
-    wireframeRotation = control.getFastRendering();
-    bondWidthAngstroms = control.getBondWidth();
-    bondSeparationAngstroms = (bondWidthAngstroms * 3) / 2;
-    showDarkerOutline = control.getShowDarkerOutline();
-    outlineColor = control.getOutlineColor();
-    pickedColor = control.getPickedColor();
-    backgroundColor = control.getBackgroundColor();
-    mouseDragged = control.mouseDragged;
-    if (control.getAtomColorProfile() == DisplayControl.ATOMCHARGE) {
-        colorProfile = new org.openscience.cdk.renderer.color.PartialAtomicChargeColors();
-    } else {
-        colorProfile = AtomColors.getInstance();
-    }
-  }
-
-  //private static BondRenderer shadingBondRenderer=new ShadingBondRenderer();
-
-  public void renderLabel() {
-    if (labelMode == DisplayControl.NOLABELS)
+  public void renderLabel(Graphics g, Rectangle clip, DisplayControl control) {
+    if (control.labelMode == control.NOLABELS)
       return;
     int x = atom.screenX;
     int y = atom.screenY;
@@ -162,7 +117,7 @@ public class AtomShape implements Shape {
     g.setColor(control.getTextColor());
     
     String label = null;
-    switch (labelMode) {
+    switch (control.labelMode) {
     case DisplayControl.SYMBOLS:
       label = atom.getSymbol();
       break;
@@ -209,20 +164,21 @@ public class AtomShape implements Shape {
   // are being clipped when they are obscured by the atom
   private static final boolean showCoveredBonds = false;
 
-  public void renderBond(Graphics g, Atom atom1, Atom atom2) {
-    Color color1 = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom1);
-    Color color2 = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom2);
+  public void renderBond(Graphics g, DisplayControl control,
+                         Atom atom1, Atom atom2) {
+    Color color1 = getAtomColor(control, atom1);
+    Color color2 = getAtomColor(control, atom2);
     int x1 = atom1.screenX, y1 = atom1.screenY;
     int x2 = atom2.screenX, y2 = atom2.screenY;
     int dx = x2 - x1, dx2 = dx * dx;
     int dy = y2 - y1, dy2 = dy * dy;
     int magnitude2 = dx2 + dy2;
-    if ((magnitude2 <= 2) || (wireframeRotation && magnitude2 <= 49))
+    if ((magnitude2 <= 2) || (control.fastRendering && magnitude2 <= 49))
       return; // also avoid divide by zero when magnitude == 0
-    if (showAtoms && (magnitude2 <= 16))
+    if (control.showAtoms && (magnitude2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
-    if (!showAtoms &&
-        (wireframeRotation || (bondDrawMode == DisplayControl.LINE))) {
+    if (!control.showAtoms &&
+        (control.fastRendering || control.bondDrawMode==control.LINE)) {
       // the trivial case of no atoms and only lines
       if (color1.equals(color2)) {
         g.setColor(color1);
@@ -238,7 +194,7 @@ public class AtomShape implements Shape {
       return;
     }
     int diameter1, radius1, diameter2, radius2;
-    if (!showAtoms) {
+    if (!control.showAtoms) {
       diameter1 = radius1 = diameter2 = radius2 = 0;
     } else {
       diameter1 = atom1.screenDiameter;
@@ -256,7 +212,7 @@ public class AtomShape implements Shape {
     double cosine = magnitude / Math.sqrt(magnitude2 + dz2);
     int radius1Bond = (int)(radius1 * cosine);
     int radius2Bond = (int)(radius2 * cosine);
-    if (((atomDrawMode != DisplayControl.WIREFRAME) || !showCoveredBonds) &&
+    if ((control.atomDrawMode != control.WIREFRAME || !showCoveredBonds) &&
         (magnitude < radius1 + radius2Bond)) {
       // the shapes are solid and the front atom (radius1) has
       // completely obscured the bond
@@ -275,9 +231,8 @@ public class AtomShape implements Shape {
     // width at z2. but ...
     // just take the average of the two z's and don't worry about it
     int avgZ = (z1 + z2) / 2;
-    double halfBondWidth
-      = control.scaleToScreen(avgZ, bondWidthAngstroms/2);
-    if ((atomDrawMode == DisplayControl.WIREFRAME) && showCoveredBonds) {
+    double halfBondWidth = control.scaleToScreen(avgZ, control.bondWidth/2);
+    if (control.atomDrawMode==control.WIREFRAME && showCoveredBonds) {
       x1Edge = x1Bond;
       y1Edge = y1Bond;
     } else {
@@ -285,39 +240,38 @@ public class AtomShape implements Shape {
       y1Edge = y1 + ((radius1 - arcFactor) * dy) / magnitude;
     }
 
-    if (wireframeRotation ||
-        (bondDrawMode == DisplayControl.LINE)) {
-      drawLineBond(g,
+    if (control.fastRendering || control.bondDrawMode==control.LINE) {
+      drawLineBond(g, control,
                    x1Bond, y1Bond, color1,
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, color2,
                    dx, dy, magnitude, bondOrder, halfBondWidth);
       return;
     }
-    if (bondDrawMode != DisplayControl.SHADING) {
-      Color outline1 = getOutline(color1);
-      Color outline2 = getOutline(color2);
+    if (control.bondDrawMode != control.SHADING) {
+      Color outline1 = getOutline(control, color1);
+      Color outline2 = getOutline(control, color2);
       if (halfBondWidth < .75) {
-        drawLineBond(g,
-                     x1Bond, y1Bond, (bondDrawMode == DisplayControl.WIREFRAME
+        drawLineBond(g, control,
+                     x1Bond, y1Bond, (control.bondDrawMode == control.WIREFRAME
                                       ? color1 : outline1),
                      x1Edge, y1Edge,
-                     x2Bond, y2Bond, (bondDrawMode == DisplayControl.WIREFRAME
+                     x2Bond, y2Bond, (control.bondDrawMode == control.WIREFRAME
                                       ? color2 : outline2),
                      dx, dy, magnitude, bondOrder, halfBondWidth);
         return;
       }
-      drawRectBond(g,
+      drawRectBond(g, control,
                    x1Bond, y1Bond, color1, outline1,
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, color2, outline2,
-                   bondDrawMode != DisplayControl.WIREFRAME,
+                   control.bondDrawMode != control.WIREFRAME,
                    dx, dy, magnitude, bondOrder, halfBondWidth, halfBondWidth);
       return;
     }
     // drawing shaded bonds
-    if (mouseDragged || (int)halfBondWidth < 2) {
-      drawRectBond(g,
+    if (control.mouseDragged || (int)halfBondWidth < 2) {
+      drawRectBond(g, control,
                    x1Bond, y1Bond, color1, getDarker(color1),
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, color2, getDarker(color2),
@@ -355,7 +309,7 @@ public class AtomShape implements Shape {
       int model2 = 0xFF << 24 | r2 << 16 | g2 << 8 | b2;
       Color co2 = new Color(model2);
 
-      drawRectBond(g,
+      drawRectBond(g, control,
                    x1Bond, y1Bond, co1, outline1,
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, co2, outline2,
@@ -375,7 +329,7 @@ public class AtomShape implements Shape {
 
   private static final int separationIncrement = 4;
 
-  private void drawLineBond(final Graphics g,
+  private void drawLineBond(final Graphics g, DisplayControl control,
                             int x1, int y1, final Color color1,
                             int xEdge, int yEdge,
                             int x2, int y2, final Color color2,
@@ -424,7 +378,7 @@ public class AtomShape implements Shape {
   private static final int[] xBondRectPoints = new int[4];
   private static final int[] yBondRectPoints = new int[4];
 
-  private void drawRectBond(final Graphics g,
+  private void drawRectBond(final Graphics g, DisplayControl control,
                             final int x1, final int y1,
                             final Color color1, final Color color1Outline,
                             final int xEdge, final int yEdge,
@@ -546,12 +500,22 @@ public class AtomShape implements Shape {
     return darker;
   }
 
-  private Color getOutline(Color color) {
-    return showDarkerOutline ? getDarker(color) : outlineColor;
+  private Color getAtomColor(DisplayControl control, Atom atom) {
+    org.openscience.cdk.renderer.color.AtomColorer colorProfile;
+    if (control.getAtomColorProfile() == DisplayControl.ATOMCHARGE)
+        colorProfile =
+          new org.openscience.cdk.renderer.color.PartialAtomicChargeColors();
+    else
+        colorProfile = AtomColors.getInstance();
+    return colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
   }
 
-  private void renderAtom() {
-    if (!showAtoms || (!showHydrogens && atom.isHydrogen()))
+  private Color getOutline(DisplayControl control, Color color) {
+    return control.showDarkerOutline ? getDarker(color) : control.outlineColor;
+  }
+
+  private void renderAtom(Graphics g, Rectangle clip, DisplayControl control) {
+    if (!control.showAtoms || (!control.showHydrogens && atom.isHydrogen()))
       return;
     int x = atom.screenX;
     int y = atom.screenY;
@@ -559,36 +523,35 @@ public class AtomShape implements Shape {
     int diameter = atom.screenDiameter;
     int radius = diameter >> 1;
 
-    if (!wireframeRotation && control.isSelected(atom)) {
+    if (!control.fastRendering && control.isSelected(atom)) {
       int halowidth = diameter / 3;
       if (halowidth < 2)
         halowidth = 2;
       int halodiameter = diameter + 2 * halowidth;
       int haloradius = radius + halowidth;
-      g.setColor(pickedColor);
+      g.setColor(control.pickedColor);
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
-    Color color = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
+    Color color = getAtomColor(control, atom);
     g.setColor(color);
     if (diameter <= 3) {
       if (diameter > 0) {
-        if ((atomDrawMode == DisplayControl.WIREFRAME) && (diameter == 3))
+        if (control.atomDrawMode==control.WIREFRAME && diameter==3)
           g.drawRect(x - radius, y - radius, 2, 2);
         else
           g.fillRect(x - radius, y - radius, diameter, diameter);
       }
     } else {
-      if (! wireframeRotation && (atomDrawMode == DisplayControl.SHADING)) {
-        renderShadedAtom(x, y, diameter, color);
+      if (!control.fastRendering && control.atomDrawMode==control.SHADING) {
+        renderShadedAtom(g, control, x, y, diameter, color);
         return;
       }
       // the area *drawn* by an oval is 1 larger than the area
       // *filled* by an oval
       --diameter;
-      if (! wireframeRotation &&
-          (atomDrawMode != DisplayControl.WIREFRAME)) {
+      if (!control.fastRendering && control.atomDrawMode!=control.WIREFRAME) {
         g.fillOval(x - radius, y - radius, diameter, diameter);
-        g.setColor(getOutline(color));
+        g.setColor(getOutline(control, color));
       }
       g.drawOval(x - radius, y - radius, diameter, diameter);
     }
@@ -607,9 +570,10 @@ public class AtomShape implements Shape {
     maxSmoothedSize + artifactMargin*2;
     
   
-  private void renderShadedAtom(int x, int y, int diameter, Color color) {
+  private void renderShadedAtom(Graphics g, DisplayControl control,
+                                int x, int y, int diameter, Color color) {
     if (! control.imageCache.containsKey(color)) {
-      loadShadedSphereCache(color);
+      loadShadedSphereCache(control, color);
     }
     Image[] shadedImages = (Image[]) control.imageCache.get(color);
     int radius = diameter / 2;
@@ -626,11 +590,12 @@ public class AtomShape implements Shape {
       g.drawImage(shadedImages[diameter],
                    x - radius - 1, y - radius - 1, null);
     } else {
-      renderLargeShadedAtom(g, shadedImages[0], x, y, diameter);
+      renderLargeShadedAtom(g, control, shadedImages[0], x, y, diameter);
     }
   }
 
-  private void renderLargeShadedAtom(Graphics g, Image imgSphere,
+  private void renderLargeShadedAtom(Graphics g, DisplayControl control,
+                                     Image imgSphere,
                                     int x, int y, int diameter) {
     int radius = diameter / 2;
     if (! control.useGraphics2D) {
@@ -654,17 +619,18 @@ public class AtomShape implements Shape {
   }
   
   private static final double[] lightSource = { -1.0f, -1.0f, 2.0f };
-  private void loadShadedSphereCache(Color color) {
+  private void loadShadedSphereCache(DisplayControl control, Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
+    Component component = control.getDisplayPanel();
     control.imageCache.put(color, shadedImages);
     if (! control.useGraphics2D) {
       for (int d = minCachedSize; d < maxCachedSize; ++d) {
-        shadedImages[d] = sphereSetup(color, d+2, lightSource, false);
+        shadedImages[d] = sphereSetup(component, color, d+2, lightSource);
       }
-      shadedImages[0] = sphereSetup(color, scalableSize, lightSource, false);
+      shadedImages[0] = sphereSetup(component,color,scalableSize,lightSource);
       return;
     }
-    shadedImages[0] = sphereSetup(color, scalableSize, lightSource, false);
+    shadedImages[0] = sphereSetup(component, color, scalableSize, lightSource);
     for (int d = minCachedSize; d < maxCachedSize; ++d) {
       BufferedImage bi = new BufferedImage(d+2, d+2,
                                            BufferedImage.TYPE_INT_ARGB);
@@ -758,8 +724,8 @@ public class AtomShape implements Shape {
   /**
    * Creates a shaded atom image.
    */
-  private static Image sphereSetup(Color ballColor, int diameter,
-      double[] lightSource, boolean doNotClip) {
+  private static Image sphereSetup(Component component, Color ballColor,
+                                   int diameter, double[] lightSource) {
 
     double v1[] = new double[3];
     double v2[] = new double[3];
@@ -780,7 +746,7 @@ public class AtomShape implements Shape {
         v1[0] = k2;
         v1[1] = k1;
         double len1 = Math.sqrt(k2 * k2 + k1 * k1);
-        if (doNotClip || len1 <= radius) {
+        if (len1 <= radius) {
           int red2 = 0;
           int green2 = 0;
           int blue2 = 0;
@@ -817,9 +783,8 @@ public class AtomShape implements Shape {
         }
       }
     }
-    return control.getDisplayPanel().
-      createImage(new MemoryImageSource(diameter, diameter,
-                                        model, 0, diameter));
+    return component.createImage(new MemoryImageSource(diameter, diameter,
+                                                       model, 0, diameter));
   }
 
   /**

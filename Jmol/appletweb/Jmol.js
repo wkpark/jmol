@@ -453,9 +453,9 @@ with (_jmol) {
   isNetscape47Win = (os == "win" && browser == "mozilla" &&
                      browserVersion >= 4.78 && browserVersion <= 4.8);
 
-  if (os != "mac") {
+  if (os == "win") {
     isBrowserCompliant = hasGetElementById || isNetscape47Win;
-  } else { // mac is the problem child :-(
+  } else if (os == "mac") { // mac is the problem child :-(
     if (browser == "mozilla" && browserVersion >= 5) {
       // miguel 2004 11 17
       // checking the plugins array does not work because
@@ -471,6 +471,13 @@ with (_jmol) {
         !((browser == "msie") ||
           (browser == "safari" && browserVersion < 125.1));
     }
+  } else if (os == "linux" || os == "unix") {
+    if (browser == "konqueror" && browserVersion <= 3.3)
+      isBrowserCompliant = false;
+    else
+      isBrowserCompliant = hasGetElementById;
+  } else { // other OS
+    isBrowserCompliant = hasGetElementById;
   }
 
   // possibly more checks in the future for this

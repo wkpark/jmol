@@ -157,7 +157,7 @@ applet_archive: applet
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar
-	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/NMRReferences org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/doc/*.html 
+	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/NMRReferences org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/doc/*.html  org/openscience/jmol/Data/*.html
 	chmod 664 ../jars/jmol.jar
 
 # suggested by Christoph Steinbeck:

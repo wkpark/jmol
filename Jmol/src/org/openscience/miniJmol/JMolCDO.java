@@ -5,7 +5,7 @@
  *
  */
 
-package org.openscience.jmol;
+package org.openscience.miniJmol;
 
 import org.openscience.cdopi.*;
 import java.util.Vector;

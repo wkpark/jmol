@@ -75,7 +75,7 @@ public class ChemFrame {
     int[] ZsortMap;
     int nvert = 0;
     int nbonds, maxbonds, maxvert;
-    int maxbpa = 12;     // maximum number of bonds per atom
+    int maxbpa = 20;     // maximum number of bonds per atom
     int[] nBpA;          // number of bonds per atom
     int[][] inBonds;     // atom i's membership in it's jth bond points 
                          // to which bond?

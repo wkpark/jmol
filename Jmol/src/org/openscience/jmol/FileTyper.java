@@ -202,7 +202,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
                 } else if (fname.endsWith("cml")) {
                     cb.setSelectedIndex(4);
                 } else{
-                    cb.setSelectedIndex(5);
+                    cb.setSelectedIndex(0);
                 }
             }            
         }

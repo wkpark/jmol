@@ -1211,7 +1211,7 @@ final public class Graphics3D {
   }
 
 
-  public int calcIntensity(float x, float y, float z) {
+  static public int calcIntensity(float x, float y, float z) {
     return Shade3D.calcIntensity(x, y, z);
   }
 

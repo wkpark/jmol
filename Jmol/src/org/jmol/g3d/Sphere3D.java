@@ -46,167 +46,19 @@ package org.jmol.g3d;
 class Sphere3D {
 
   Graphics3D g3d;
-  byte[] semicircles;
-  int[] semicircleIndex;
-
-  final static int numFoo = 512;
-  final static int shiftDivFoo = 9;
-  short[] heightsFoo;
 
   Sphere3D(Graphics3D g3d) {
     this.g3d = g3d;
-
-    /*
-    semicircles = new byte[127*256 + 128];
-    semicircleIndex = new int[256];
-    int offset = 0;
-    for (int d = 1; d < 255; ++d) {
-      semicircleIndex[d] = offset;
-      float radius = d / 2.0f;
-      float radius2 = radius*radius;
-      for (int i = 0; i < d; ++i) {
-        float len = i - radius;
-        float len2 = len*len;
-        float z = (float)Math.sqrt(radius2 - len2);
-        semicircles[offset++] = (byte)(z + 0.5f);
-      }
-    }
-    */
-  }
-
-  /*
-  void render3(short colix, int diameter, int xC, int yC, int zC) {
-    if (diameter >= maxSphereCache)
-      diameter = maxSphereCache;
-    int radius = (diameter + 1) / 2;
-    float r = diameter / 2.0f;
-    float radius2 = r * r;
-    g3d.argbCurrent = g3d.getArgb(colix);
-    int xUL = xC - radius;
-    int yUL = yC - radius;
-    int[] shades = g3d.getShades(colix);
-    
-    float yF = -radius + 0.5f;
-    for (int i = 0; i < diameter; ++i, ++yF) {
-      float y2 = yF * yF;
-      int y = yUL + i;
-      float xF = -radius + 0.5f;
-      for (int j = 0; j < diameter; ++j, ++xF) {
-        float z2 = radius2 - y2 - xF*xF;
-        if (z2 >= 0) {
-          float zF = (float)Math.sqrt(z2);
-          int intensity = calcIntensity(xF, yF, zF);
-          int x = xUL + j;
-          int z = zC - (int)(zF + 0.5f);
-          g3d.plotPixelClipped(shades[intensity], x, y, z);
-        }
-      }
-    }
-  }
-  */
-
-  void renderBigUnclipped(int[] shades, int diameter, int x, int y, int z) {
-    int radius = diameter / 2;
-    x -= radius;
-    y -= radius;
-    float r = diameter / 2.0f;
-    float r2 = r * r;
-    
-    float yF = -r + 0.5f;
-    int zMin = z - ((diameter + 1) >> 1);
-    int width = g3d.width;
-    int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
-    int y0 = y;
-    int offsetPbufBeginLine = width * y + x;
-    for (int i = 0; i < diameter;
-         ++i, ++y0, ++yF, offsetPbufBeginLine += width) {
-      float y2 = yF * yF;
-      float xF = -r + 0.5f;
-      int x0 = x;
-      int offsetPbuf = offsetPbufBeginLine;
-      for (int j = 0; j < diameter;
-           ++j, ++x0, ++xF, ++offsetPbuf) {
-        if (zbuf[offsetPbuf] <= zMin)
-          continue;
-        float z2 = r2 - y2 - xF*xF;
-        if (z2 >= 0) {
-          float zF = (float)Math.sqrt(z2);
-          int z0 = z - (int)(zF + 0.5f);
-          if (zbuf[offsetPbuf] <= z0)
-            continue;
-          int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
-          pbuf[offsetPbuf] = shades[intensity];
-          zbuf[offsetPbuf] = (short) z0;
-        }
-      }
-    }
-  }
-
-  // thanks to nico for eliminating the function call to put up the pixels
-  void renderBigClipped(int[] shades, int diameter, int x, int y, int z) {
-    int radius = diameter / 2;
-    x -= radius;
-    y -= radius;
-    float r = diameter / 2.0f;
-    float r2 = r * r;
-    
-    float yF = -r + 0.5f;
-    int zMin = z - ((diameter + 1) >> 1);
-    int width = g3d.width, height = g3d.height;
-    int slab = g3d.slab, depth = g3d.depth;
-    int[] pbuf = g3d.pbuf;
-    short[] zbuf = g3d.zbuf;
-    int y0 = y;
-    int offsetPbufBeginLine = width * y + x;
-    int iBegin = 0;
-    if (y < 0) {
-      iBegin = -y0;
-      y0 = 0;
-      yF += iBegin;
-      offsetPbufBeginLine += iBegin * width;
-    }
-    int iEnd = diameter;
-    if (y + iEnd > height) {
-      iEnd = height - y;
-    }
-    for (int i = iBegin; i < iEnd;
-         ++i, ++y0, ++yF, offsetPbufBeginLine += width) {
-      float y2 = yF * yF;
-      float xF = -r + 0.5f;
-      int x0 = x;
-      int offsetPbuf = offsetPbufBeginLine;
-      int jBegin = 0;
-      if (x < 0) {
-      	jBegin = -x0;
-      	x0 = 0;
-      	xF += jBegin;
-      	offsetPbuf += jBegin;
-      }
-      int jEnd = diameter;
-      if (x + jEnd > width) {
-      	jEnd = width - x;
-      }
-      for (int j = jBegin; j < jEnd;
-           ++j, ++x0, ++xF, ++offsetPbuf) {
-        if (zbuf[offsetPbuf] <= zMin)
-          continue;
-        float z2 = r2 - y2 - xF*xF;
-        if (z2 >= 0) {
-          float zF = (float)Math.sqrt(z2);
-          int z0 = z - (int)(zF + 0.5f);
-          if (z0 >= slab && z0 <= depth && z0 < zbuf[offsetPbuf]) {
-            int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
-            pbuf[offsetPbuf] = shades[intensity];
-            zbuf[offsetPbuf] = (short) z0;
-          }
-        }
-      }
-    }
   }
 
   void render(short colix, int diameter, int x, int y, int z) {
     int[] shades = g3d.getShades(colix);
+    if (diameter >= maxSphereCache) {
+      renderLargeSphere(shades, diameter, x, y, z);
+      return;
+    }
+    if (diameter > maxOddSizeSphere)
+      diameter &= ~1;
     int radius = (diameter + 1) >> 1;
     int minX = x - radius, maxX = x + radius;
     int minY = y - radius, maxY = y + radius;
@@ -215,24 +67,15 @@ class Sphere3D {
         maxY < 0 || minY >= g3d.height ||
         z < g3d.slab || minZ > g3d.depth)
       return;
-    boolean clipped = (minX < 0 || maxX >= g3d.width ||
-                       minY < 0 || maxY >= g3d.height ||
-                       minZ < g3d.slab || z > g3d.depth);
-    if (diameter >= maxSphereCache) {
-      if (clipped)
-        renderBigClipped(shades, diameter, x, y, z);
-      else
-        renderBigUnclipped(shades, diameter, x, y, z);
-      return;
-    } 
     int[] ss = getSphereShape(diameter);
-    if (clipped)
+    if (minX < 0 || maxX >= g3d.width ||
+        minY < 0 || maxY >= g3d.height ||
+        minZ < g3d.slab || z > g3d.depth)
       renderShapeClipped(shades, ss, diameter, x, y, z);
     else
       renderShapeUnclipped(shades, ss, diameter, x, y, z);
   }
   
-
   void renderShapeUnclipped(int[] shades, int[] sphereShape,
                             int diameter, int x, int y, int z) {
     int[] pbuf = g3d.pbuf;
@@ -375,6 +218,7 @@ class Sphere3D {
   }
 
   final static int maxSphereCache = 128;
+  final static int maxOddSizeSphere = 49;
   static int[][] sphereShapeCache = new int[maxSphereCache][];
   byte[] intensities = new byte[maxSphereCache * maxSphereCache];
   byte[] heights = new byte[maxSphereCache * maxSphereCache];
@@ -442,5 +286,189 @@ class Sphere3D {
       sphereShape[offset2 - 1] |= 0x80000000;
     }
     return sphereShape;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // Sphere shading cache for Large spheres
+  ////////////////////////////////////////////////////////////////
+
+  static boolean sphereShadingCalculated = false;
+  final static byte[] sphereIntensities = new byte[256 * 256];
+
+  void calcSphereShading() {
+    System.out.println("calcSphereShading");
+    if (! sphereShadingCalculated) {
+      float xF = -127.5f;
+      for (int i = 0; i < 256; ++xF, ++i) {
+        float yF = -127.5f;
+        for (int j = 0; j < 256; ++yF, ++j) {
+          byte intensity = 0;
+          float z2 = 130*130 - xF*xF - yF*yF;
+          if (z2 > 0) {
+            float z = (float)Math.sqrt(z2);
+            intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, z);
+          }
+          sphereIntensities[(j << 8) + i] = intensity;
+        }
+      }
+      int min = 127, max = -127;
+      for (int i = 65536; --i >= 0; )
+        if (sphereIntensities[i] < min)
+          min = sphereIntensities[i];
+        else if (sphereIntensities[i] > max)
+          max = sphereIntensities[i];
+      System.out.println(" min=" + min + " max=" + max);
+      sphereShadingCalculated = true;
+    }
+  }
+
+  static byte calcSphereIntensity(int x, int y, int r) {
+    int d = 2*r + 1;
+    x += r;
+    if (x < 0)
+      x = 0;
+    int x8 = (x << 8) / d;
+    if (x8 > 0xFF)
+      x8 = 0xFF;
+    y += r;
+    if (y < 0)
+      y = 0;
+    int y8 = (y << 8) / d;
+    if (y8 > 0xFF)
+      y8 = 0xFF;
+    return sphereIntensities[(y8 << 8) + x8];
+  }
+
+  void renderLargeSphere(int[] shades, int diameter, int x, int y, int z) {
+    if (! sphereShadingCalculated)
+      calcSphereShading();
+    renderQuadrant(shades, diameter, x, y, z, -1, -1);
+    renderQuadrant(shades, diameter, x, y, z, -1,  1);
+    renderQuadrant(shades, diameter, x, y, z,  1, -1);
+    renderQuadrant(shades, diameter, x, y, z,  1,  1);
+  }
+
+
+  void renderQuadrant(int[] shades, int diameter,
+                      int x, int y, int z,
+                      int xSign, int ySign) {
+    int xStatus = (x < 0) ? -1 : (x < g3d.width) ? 0 : 1;
+    int yStatus = (y < 0) ? -1 : (y < g3d.height) ? 0 : 1;
+    int zStatus = (z < g3d.depth) ? 0 : 1;
+    int r = diameter / 2;
+    int x2 = x + r * xSign;
+    int x2Status = (x2 < 0) ? -1 : (x2 < g3d.width) ? 0 : 1;
+    int y2 = y + r * ySign;
+    int y2Status = (y2 < 0) ? -1 : (y2 < g3d.height) ? 0 : 1;
+    int z2 = z - r;
+    int z2Status = (z < g3d.slab) ? -1 : 0;
+
+
+    if (xStatus < 0 && x2Status < 0 || xStatus > 0 && x2Status > 0 ||
+        yStatus < 0 && y2Status < 0 || yStatus > 0 && y2Status > 0)
+      return;
+    if (xStatus == 0 && x2Status == 0 &&
+        yStatus == 0 && y2Status == 0 &&
+        zStatus == 0 && z2Status == 0)
+      renderQuadrantUnclipped(shades, diameter, x, y, z, xSign, ySign);
+    else
+      renderQuadrantClipped(shades, diameter, x, y, z, xSign, ySign);
+  }
+
+  void renderQuadrantUnclipped(int[] shades, int diameter,
+                               int x, int y, int z,
+                               int xSign, int ySign) {
+    int r = diameter / 2;
+    int r2 = r * r;
+    int dDivisor = r * 2 + 1;
+
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width;
+    int offsetPbufBeginLine = width * y + x;
+    if (ySign < 0)
+      width = -width;
+    offsetPbufBeginLine -= width;
+    for (int i = 0, i2 = 0; i2 <= r2; i2 += i + i + 1, ++i) {
+      int offsetPbuf = (offsetPbufBeginLine += width) - xSign;
+      int s2 = r2 - i2;
+      int z0 = z - r;
+      for (int j = 0, j2 = 0; j2 <= s2;
+           j2 += j + j + 1, ++j) {
+        if (zbuf[offsetPbuf += xSign] <= z0)
+          continue;
+        int k = (int)Math.sqrt(s2 - j2);
+        z0 = z - k;
+        if (zbuf[offsetPbuf] <= z0)
+          continue;
+        int x8 = ((j * xSign + r) << 8) / dDivisor;
+        int y8 = ((i * ySign + r) << 8) / dDivisor;
+        pbuf[offsetPbuf] = shades[sphereIntensities[(y8 << 8) + x8]];
+        zbuf[offsetPbuf] = (short) z0;
+      }
+    }
+  }
+
+  void renderQuadrantClipped(int[] shades, int diameter,
+                             int x, int y, int z,
+                             int xSign, int ySign) {
+    int r = diameter / 2;
+    int r2 = r * r;
+    int dDivisor = r * 2 + 1;
+
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int slab = g3d.slab;
+    int depth = g3d.depth;
+    int height = g3d.height;
+    int width = g3d.width;
+    int offsetPbufBeginLine = width * y + x;
+    int lineIncrement = width;
+    if (ySign < 0)
+      lineIncrement = -width;
+    int yCurrent = y - ySign;
+    for (int i = 0, i2 = 0;
+         i2 <= r2;
+         i2 += i + i + 1, ++i, offsetPbufBeginLine += lineIncrement) {
+      yCurrent += ySign;
+      if (yCurrent < 0) {
+        if (ySign < 0)
+          return;
+        continue;
+      }
+      if (yCurrent >= height) {
+        if (ySign > 0)
+          return;
+        continue;
+      }
+      int offsetPbuf = offsetPbufBeginLine;
+      int s2 = r2 - i2;
+      int z0 = z - r;
+      int xCurrent = x - xSign;
+      for (int j = 0, j2 = 0; j2 <= s2;
+           j2 += j + j + 1, ++j, offsetPbuf += xSign) {
+        xCurrent += xSign;
+        if (xCurrent < 0) {
+          if (xSign < 0)
+            break;
+          continue;
+        }
+        if (xCurrent >= width) {
+          if (xSign > 0)
+            break;
+          continue;
+        }
+        if (zbuf[offsetPbuf] <= z0)
+          continue;
+        int k = (int)Math.sqrt(s2 - j2);
+        z0 = z - k;
+        if (z0 < slab || z0 > depth || zbuf[offsetPbuf] <= z0)
+          continue;
+        int x8 = ((j * xSign + r) << 8) / dDivisor;
+        int y8 = ((i * ySign + r) << 8) / dDivisor;
+        pbuf[offsetPbuf] = shades[sphereIntensities[(y8 << 8) + x8]];
+        zbuf[offsetPbuf] = (short) z0;
+      }
+    }
   }
 }

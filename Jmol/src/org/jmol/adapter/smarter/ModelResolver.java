@@ -61,8 +61,7 @@ class ModelResolver {
   }
 
   static String determineModelReader(BufferedReader bufferedReader,
-                                     ModelAdapter.Logger logger)
-    throws Exception {
+                                     ModelAdapter.Logger logger) throws Exception {
     String[] lines = new String[4];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 2048);
     for (int i = 0; i < lines.length; ++i)
@@ -141,11 +140,16 @@ class ModelResolver {
   final static String[] jaguarRecords =
   { "  |  Jaguar version", };
 
+  final static String[] hinRecords = 
+  {"mol "};
+
   final static String[][] startsWithRecords =
-  { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords, jaguarRecords };
+  { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
+    jaguarRecords, hinRecords };
 
   final static String[] startsWithFormats =
-  { "Pdb", "Shelx", "Cif", "GhemicalMM", "Jaguar" };
+  { "Pdb", "Shelx", "Cif", "GhemicalMM",
+    "Jaguar", "Hin" };
 
   ////////////////////////////////////////////////////////////////
   // contains formats

@@ -24,6 +24,8 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.g25d.Graphics25D;
+
 import java.awt.Image;
 import java.awt.Graphics;
 import java.awt.Component;
@@ -132,21 +134,21 @@ public class RepaintManager {
     notify();
   }
 
-  public void render(Graphics g, Rectangle rectClip) {
-    g.setColor(control.getColorBackground());
-    g.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
+  public void render(Graphics25D g25d, Rectangle rectClip) {
+    g25d.setColor(control.getColorBackground());
+    g25d.fillRect(rectClip.x, rectClip.y, rectClip.width, rectClip.height);
     if (control.getFrame() != null) {
-      control.setGraphicsContext(g, rectClip);
-      control.frameRenderer.paint(g, control);
+      control.setGraphicsContext(g25d, rectClip);
+      control.frameRenderer.paint(g25d, control);
       // FIXME -- measurements rendered incorrectly
       // this is in the wrong spot because the display of measurements
       // needs to take z-order into account
       if (control.getShowMeasurements())
-        control.measureRenderer.paint(g, rectClip, control);
+        control.measureRenderer.paint(g25d, rectClip, control);
       Rectangle band = control.getRubberBandSelection();
       if (band != null) {
-        g.setColor(control.getColorRubberband());
-        g.drawRect(band.x, band.y, band.width, band.height);
+        g25d.setColor(control.getColorRubberband());
+        g25d.drawRect(band.x, band.y, band.width, band.height);
       }
     }
     notifyRepainted();

@@ -26,8 +26,8 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Color;
 import java.util.Hashtable;
@@ -39,11 +39,11 @@ public class BondRenderer {
     this.control = control;
   }
 
-  Graphics g;
+  Graphics25D g25d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics g, Rectangle clip) {
-    this.g = g;
+  public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
+    this.g25d = g25d;
     this.clip = clip;
 
     fastRendering = control.getFastRendering();
@@ -80,14 +80,15 @@ public class BondRenderer {
   
   private void renderHalo() {
     int diameter = (width1 + width2 + 1) / 2;
-    int x = (x1 + x2) / 2, y = (y1 + y2) / 2;
+    int x = (x1 + x2) / 2, y = (y1 + y2) / 2, z = (z1 + z2) / 2;
     int halowidth = diameter / 4;
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
-    g.setColor(colorSelection);
-    g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
+    g25d.setColor(colorSelection);
+    g25d.fillOval(x - haloradius, y - haloradius, z,
+                  halodiameter, halodiameter);
   }
 
   public void render(AtomShape atomShape1, int index1,
@@ -153,15 +154,16 @@ public class BondRenderer {
       return; // the pixels from the atoms will nearly cover the bond
     if (!showAtoms && bondOrder == 1 &&
         (fastRendering || styleBond == control.WIREFRAME)) {
-      g.setColor(color1);
+      g25d.setColor(color1);
       if (sameColor) {
-        drawLineInside(g, x1, y1, x2, y2);
+        drawLineInside(g25d, x1, y1, z1, x2, y2, z2);
       } else {
         int xMid = (x1 + x2) / 2;
         int yMid = (y1 + y2) / 2;
-        drawLineInside(g, x1, y1, xMid, yMid);
-        g.setColor(color2);
-        drawLineInside(g, xMid, yMid, x2, y2);
+        int zMid = (z1 + z2) / 2;
+        drawLineInside(g25d, x1, y1, z1, xMid, yMid, zMid);
+        g25d.setColor(color2);
+        drawLineInside(g25d, xMid, yMid, zMid, x2, y2, z2);
       }
       return;
     }
@@ -201,13 +203,13 @@ public class BondRenderer {
       stepAxisCoordinates();
     }
     if (showAxis) {
-      g.setColor(control.transparentGreen());
-      g.drawLine(x1 + 5, y1, x1 - 5, y1);
-      g.drawLine(x1, y1 + 5, x1, y1 - 5);
-      g.drawOval(x1-5, y1-5, 10, 10);
-      g.drawLine(x2 + 5, y2, x2 - 5, y2);
-      g.drawLine(x2, y2 + 5, x2, y2 - 5);
-      g.drawOval(x2-5, y2-5, 10, 10);
+      g25d.setColor(control.transparentGreen());
+      g25d.drawLine(x1 + 5, y1, z1, x1 - 5, y1, z1);
+      g25d.drawLine(x1, y1 + 5, z1, x1, y1 - 5, z1);
+      g25d.drawOval(x1-5, y1-5, z1, 10, 10);
+      g25d.drawLine(x2 + 5, y2, z2, x2 - 5, y2, z2);
+      g25d.drawLine(x2, y2 + 5, z2, x2, y2 - 5, z2);
+      g25d.drawOval(x2-5, y2-5, z2, 10, 10);
     }
   }
 
@@ -216,7 +218,8 @@ public class BondRenderer {
 
   int[] axPoly = new int[4];
   int[] ayPoly = new int[4];
-  int xExit, yExit;
+  int[] azPoly = new int[4];
+  int xExit, yExit, zExit;
 
   void lineBond() {
     calcMag2dLine();
@@ -225,16 +228,18 @@ public class BondRenderer {
     if (sameColor || distanceExit >= mag2dLine / 2 ) {
       if (distanceExit + distanceSurface2 >= mag2dLine)
         return;
-      g.setColor(color2);
-      drawLineInside(g, xExit, yExit, xSurface2, ySurface2);
+      g25d.setColor(color2);
+      drawLineInside(g25d, xExit, yExit, zExit,
+                     xSurface2, ySurface2, zSurface2);
       return;
     }
     int xMid = (xAxis1 + xAxis2) / 2;
     int yMid = (yAxis1 + yAxis2) / 2;
-    g.setColor(color1);
-    drawLineInside(g, xExit, yExit, xMid, yMid);
-    g.setColor(color2);
-    drawLineInside(g, xMid, yMid, xSurface2, ySurface2);
+    int zMid = (zAxis1 + zAxis2) / 2;
+    g25d.setColor(color1);
+    drawLineInside(g25d, xExit, yExit, zExit, xMid, yMid, zMid);
+    g25d.setColor(color2);
+    drawLineInside(g25d, xMid, yMid, zMid, xSurface2, ySurface2, zSurface2);
   }
 
 
@@ -309,10 +314,10 @@ public class BondRenderer {
   }
 
   void polyBond1(byte styleBond, Color color, Color outline) {
-    g.setColor(color);
+    g25d.setColor(color);
     switch(styleBond) {
     case DisplayControl.BOX:
-      g.drawPolygon(axPoly, ayPoly, 4);
+      g25d.drawPolygon(axPoly, ayPoly, azPoly, 4);
       break;
     case DisplayControl.SHADING:
       if (width1 > 4) {
@@ -322,33 +327,34 @@ public class BondRenderer {
         for (int i = numPasses; --i >= 0; ) {
           Color shade = shades[i * maxShade / numPasses];
           if (firstPass) {
-            drawInside(g, shade, 2, axPoly, ayPoly);
+            drawInside(g25d, shade, 2, axPoly, ayPoly, azPoly);
             firstPass = false;
           } else {
             stepPolygon();
-            g.setColor(shade);
+            g25d.setColor(shade);
           }
-          g.fillPolygon(axPoly, ayPoly, 4);
+          g25d.fillPolygon(axPoly, ayPoly, azPoly, 4);
         }
         break;
       } // else fall into QUICKDRAW
     case DisplayControl.QUICKDRAW:
-      g.fillPolygon(axPoly, ayPoly, 4);
-      drawInside(g, outline, 2, axPoly, ayPoly);
+      g25d.fillPolygon(axPoly, ayPoly, 4);
+      drawInside(g25d, outline, 2, axPoly, ayPoly, azPoly);
       break;
     }
   }
 
   void drawEndCaps() {
     if (!showAtoms || (styleAtom1 == DisplayControl.NONE))
-      drawEndCap(xAxis1, yAxis1, width1, color1, outline1);
+      drawEndCap(xAxis1, yAxis1, zAxis1, width1, color1, outline1);
     if (!showAtoms || (styleAtom2 == DisplayControl.NONE))
-      drawEndCap(xAxis2, yAxis2, width2, color2, outline2);
+      drawEndCap(xAxis2, yAxis2, zAxis2, width2, color2, outline2);
   }
 
   private ShadedSphereRenderer shadedSphereRenderer;
 
-  void drawEndCap(int x, int y, int diameter, Color color, Color outline) {
+  void drawEndCap(int x, int y, int z, int diameter,
+                  Color color, Color outline) {
     int radiusCap, xUpperLeft, yUpperLeft;
     radiusCap = (diameter+1) / 2;
     xUpperLeft = x - radiusCap;
@@ -356,29 +362,30 @@ public class BondRenderer {
     switch (styleBond) {
     case DisplayControl.QUICKDRAW:
       --diameter; // don't forget that a drawn circle is one larger
-      g.setColor(color);
-      g.fillOval(xUpperLeft, yUpperLeft, diameter, diameter);
-      g.setColor(outline);
-      g.drawOval(xUpperLeft, yUpperLeft, diameter, diameter);
+      g25d.setColor(color);
+      g25d.fillOval(xUpperLeft, yUpperLeft, diameter, diameter);
+      g25d.setColor(outline);
+      g25d.drawOval(xUpperLeft, yUpperLeft, diameter, diameter);
       break;
     case DisplayControl.SHADING:
       if (shadedSphereRenderer == null)
         shadedSphereRenderer = new ShadedSphereRenderer(control);
-      shadedSphereRenderer.render(g, xUpperLeft, yUpperLeft, diameter,
-                                  color, outline);
+      shadedSphereRenderer.render(g25d, xUpperLeft, yUpperLeft, z,
+                                  diameter, color, outline);
     }
   }
 
   int offset1, offset2, doffset;
 
-  void drawInside(Graphics g, Color color, int width, int[] ax, int[] ay) {
+  void drawInside(Graphics25D g25d, Color color, int width,
+                  int[] ax, int[] ay, int[] az) {
     // mth dec 2002
     // I am not happy with this implementation, but for now it is the most
     // effective kludge I could come up with to deal with the fact that
     // the brush is offset to the lower right of the point when drawing
     if (color == null)
       return;
-    g.setColor(color);
+    g25d.setColor(color);
     int iNW = 0;
     int iNE = 1;
     int iSE = 2;
@@ -390,15 +397,18 @@ public class BondRenderer {
       iT = iSE; iSE = iSW; iSW = iT;
       top = !top;
     }
-    drawInside1(g, top, ax[iNW], ay[iNW], ax[iNE], ay[iNE]);
+    drawInside1(g25d, top, ax[iNW], ay[iNW], az[iNW],
+                ax[iNE], ay[iNE], az[iNE]);
     if (width > 1)
-      drawInside1(g, !top, ax[iSW], ay[iSW], ax[iSE], ay[iSE]);
+      drawInside1(g25d, !top, ax[iSW], ay[iSW], az[iSW],
+                  ax[iSE], ay[iSE], az[iSE]);
   }
 
   private final static boolean applyDrawInsideCorrection = true;
-  void drawInside1(Graphics g, boolean top, int x1, int y1, int x2, int y2) {
+  void drawInside1(Graphics25D g25d, boolean top,
+                   int x1, int y1, int z1, int x2, int y2, int z2) {
     if (!applyDrawInsideCorrection) {
-      drawLineInside(g, x1, y1, x2, y2);
+      drawLineInside(g25d, x1, y1, z1, x2, y2, z2);
       return;
     }
     int dx = x2 - x1, dy = y2 - y1;
@@ -434,10 +444,10 @@ public class BondRenderer {
       } else if (dx == dy) {
         if (top) {
           ++y1; --x2;
-          g.drawLine(x1, y1, x2, y2);
+          g25d.drawLine(x1, y1, z1, x2, y2, z2);
           --x1; --x2;
         } else {
-          g.drawLine(x1+1, y1, x2, y2-1);
+          g25d.drawLine(x1+1, y1, z1, x2, y2-1, z2);
           --x2; --y2;
         }
       }
@@ -466,16 +476,18 @@ public class BondRenderer {
         }
       }
     }
-    g.drawLine(x1, y1, x2, y2);
+    g25d.drawLine(x1, y1, z1, x2, y2, z2);
   }
 
   private final static boolean applyLineInsideCorrection = true;
 
-  void drawLineInside(Graphics g, int x1, int y1, int x2, int y2) {
+  void drawLineInside(Graphics25D g25d,
+                      int x1, int y1, int z1, int x2, int y2, int z2) {
     if (applyLineInsideCorrection) {
       if (x2 < x1) {
         int xT = x1; x1 = x2; x2 = xT;
         int yT = y1; y1 = y2; y2 = yT;
+        int zT = z1; z1 = z2; z2 = zT;
       }
       int dx = x2 - x1, dy = y2 - y1;
       if (dy >= 0) {
@@ -490,7 +502,7 @@ public class BondRenderer {
           --y1;
       }
     }
-    g.drawLine(x1, y1, x2, y2);
+    g25d.drawLine(x1, y1, z1, x2, y2, z2);
   }
 
   private final Hashtable htShades = new Hashtable();
@@ -522,7 +534,7 @@ public class BondRenderer {
     return shades;
   }
 
-  int xAxis1, yAxis1, xAxis2, yAxis2;
+  int xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2;
   int dxWidth1, dyWidth1, dxWidth2, dyWidth2;
   int dxHalf1, dyHalf1, dxHalf2, dyHalf2;
   int half2, otherHalf2;
@@ -541,7 +553,8 @@ public class BondRenderer {
     dxStep1 = step1 * dy / mag2d; dyStep1 = step1 * -dx / mag2d;
     dxStep2 = step2 * dy / mag2d; dyStep2 = step2 * -dx / mag2d;
 
-    xAxis1 = x1; yAxis1 = y1;     xAxis2 = x2; yAxis2 = y2;
+    xAxis1 = x1; yAxis1 = y1; zAxis1 = z1;
+    xAxis2 = x2; yAxis2 = y2; zAxis2 = z2;
     offsetAxis1 = offsetAxis2 = 0;
 
     if (bondOrder == 2) {
@@ -554,9 +567,9 @@ public class BondRenderer {
       xAxis2 -= dxStep2; yAxis2 -= dyStep2;
     }
     if (showAxis) {
-      g.setColor(control.transparentGrey());
-      g.drawLine(x1 + dy, y1 - dx, x1 - dy, y1 + dx);
-      g.drawLine(x2 + dy, y2 - dx, x2 - dy, y2 + dx);
+      g25d.setColor(control.transparentGrey());
+      g25d.drawLine(x1 + dy, y1 - dx, z1, x1 - dy, y1 + dx, z1);
+      g25d.drawLine(x2 + dy, y2 - dx, z2, x2 - dy, y2 + dx, z2);
     }
     if (lineBond)
       return;
@@ -589,12 +602,12 @@ public class BondRenderer {
     mag2dLineSquared = dxLine*dxLine + dyLine*dyLine;
     mag2dLine = (int)Math.sqrt(mag2dLineSquared);
     if (showAxis) {
-      g.setColor(Color.cyan);
-      g.drawLine(xAxis1, yAxis1, xAxis2, yAxis2);
+      g25d.setColor(Color.cyan);
+      g25d.drawLine(xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2);
     }
   }
 
-  int xSurface1, ySurface1, xSurface2, ySurface2;
+  int xSurface1, ySurface1, zSurface1, xSurface2, ySurface2, zSurface2;
   int distanceSurface2;
 
   private static final boolean calcSurface1 = false;
@@ -625,6 +638,10 @@ public class BondRenderer {
     int dySlice2 = distanceSurface2 * dyLine / mag2dLine;
     xSurface2 = xAxis2 - dxSlice2;
     ySurface2 = yAxis2 - dySlice2;
+    // FIXME mth 2003 06 02
+    // need to calc zSurface2 correctly
+    zSurface2 = z2;
+    
 
     if (showAxis) {
       dot(xSurface1, ySurface1, control.transparentBlue());
@@ -633,12 +650,13 @@ public class BondRenderer {
   }
 
   void dot(int x, int y, Color co) {
-    g.setColor(co);
-    g.fillRect(x-1, y-1, 2, 2);
+    g25d.setColor(co);
+    g25d.fillRect(x-1, y-1, 2, 2);
   }
 
   double[] intersectionCoords = new double[4];
   int distanceExit;
+
   void calcExitPoint() {
     int count = intersectCircleLine(x1, y1, diameter1-1,
                                     xAxis1, yAxis1, xAxis2, yAxis2,
@@ -658,6 +676,10 @@ public class BondRenderer {
       //
       xExit = (int)(intersectionCoords[0]);
       yExit = (int)(intersectionCoords[1]);
+      // FIXME mth 2003 06 02 - this zExit is not correct
+      // with a good z-buffer implementation,
+      // perhaps we don't need to calculate this
+      zExit = z1;
       int dx = xExit - x1, dy = yExit - y1;
       distanceExit = (int)Math.sqrt(dx*dx + dy*dy);
       if (showAxis)

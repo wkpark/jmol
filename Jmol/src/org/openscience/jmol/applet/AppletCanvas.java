@@ -28,6 +28,7 @@ import org.openscience.jmol.Atom;
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.ChemFrameRenderer;
 import org.openscience.jmol.render.MeasureRenderer;
+import org.openscience.jmol.g25d.Graphics25D;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -43,7 +44,7 @@ public class AppletCanvas extends Canvas {
   private DisplayControl control;
 
   private Image bufferOffscreen;
-  private Graphics graphicsOffscreen;
+  private Graphics25D g25dOffscreen;
 
   private Dimension dimCurrent;
 
@@ -59,15 +60,15 @@ public class AppletCanvas extends Canvas {
     dimCurrent = dimT;
     if ((dimCurrent.width > 0) && (dimCurrent.height > 0)) {
       bufferOffscreen = allocateBuffer();
-      if (graphicsOffscreen != null)
-        graphicsOffscreen.dispose();
-      graphicsOffscreen = bufferOffscreen.getGraphics();
+      if (g25dOffscreen != null)
+        g25dOffscreen.dispose();
+      g25dOffscreen = new Graphics25D(control, bufferOffscreen.getGraphics());
     } else {
       dimCurrent = null;
       bufferOffscreen = null;
-      if (graphicsOffscreen != null) {
-        graphicsOffscreen.dispose();
-        graphicsOffscreen = null;
+      if (g25dOffscreen != null) {
+        g25dOffscreen.dispose();
+        g25dOffscreen = null;
       }
     }
     control.setScreenDimension(dimCurrent);
@@ -93,8 +94,8 @@ public class AppletCanvas extends Canvas {
       rectClip.setBounds(0, 0, dimCurrent.width, dimCurrent.height);
     }
     // transfer the clipping rectangle to our offscreen buffer
-    graphicsOffscreen.setClip(rectClip);
-    control.render(graphicsOffscreen, rectClip);
+    g25dOffscreen.setClip(rectClip);
+    control.render(g25dOffscreen, rectClip);
     g.drawImage(bufferOffscreen, 0, 0, null);
   }
 

@@ -24,13 +24,14 @@
  */
 package org.openscience.jmol.render;
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
 import freeware.PrintfFormat;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+//import java.awt.Graphics;
 
 public class Angle implements MeasurementInterface {
 
@@ -55,25 +56,31 @@ public class Angle implements MeasurementInterface {
     strAngle = angleFormat.sprintf(angle);
   }
 
-  public void paint(Graphics g, DisplayControl control, boolean showLabel) {
-    paintAngleLine(g, control);
+  public void paint(Graphics25D g25d,
+                    DisplayControl control, boolean showLabel) {
+    paintAngleLine(g25d, control);
     if (showLabel)
-      paintAngleString(g, control);
+      paintAngleString(g25d, control);
   }
 
-  private void paintAngleLine(Graphics g, DisplayControl control) {
-    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
-    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
-    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY();
-    int xa = (x1 + x2) / 2;
-    int ya = (y1 + y2) / 2;
-    int xb = (x3 + x2) / 2;
-    int yb = (y3 + y2) / 2;
+  private void paintAngleLine(Graphics25D g25d, DisplayControl control) {
+    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
+      z1 = atom1.getScreenZ();
+    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
+      z2 = atom2.getScreenZ();
+    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY(),
+      z3 = atom3.getScreenZ();
+    int xA = (x1 + x2) / 2;
+    int yA = (y1 + y2) / 2;
+    int zA = (z1 + z2) / 2;
+    int xB = (x3 + x2) / 2;
+    int yB = (y3 + y2) / 2;
+    int zB = (z3 + z2) / 2;
 
-    control.maybeDottedStroke(g);
-    g.setColor(control.getColorAngle());
-    g.drawLine(xa, ya, xb, yb);
-    control.defaultStroke(g);
+    control.maybeDottedStroke(g25d);
+    g25d.setColor(control.getColorAngle());
+    g25d.drawLine(xA, yA, zA, xB, yB, zB);
+    control.defaultStroke(g25d);
   }
 
   /**
@@ -81,7 +88,7 @@ public class Angle implements MeasurementInterface {
    */
   private static PrintfFormat angleFormat = new PrintfFormat("%0.1f\u00b0");
   
-  private void paintAngleString(Graphics g, DisplayControl control) {
+  private void paintAngleString(Graphics25D g25d, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
 	d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
@@ -90,15 +97,15 @@ public class Angle implements MeasurementInterface {
 	d3 = atom3.getScreenDiameter();
     int avgRadius = (d1 + d2 + d3) / 6;
     Font font = control.getMeasureFont(avgRadius);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getColorAngle());
+    g25d.setFont(font);
+    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g25d.setColor(control.getColorAngle());
     int j = fontMetrics.stringWidth(strAngle);
 
     int xloc = (2 * x2 + x1 + x3) / 4;
     int yloc = (2 * y2 + y1 + y3) / 4;
 
-    g.drawString(strAngle, xloc, yloc);
+    g25d.drawString(strAngle, xloc, yloc);
   }
 
   public int[] getAtomList() {

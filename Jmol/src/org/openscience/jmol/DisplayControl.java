@@ -32,6 +32,7 @@ import org.openscience.jmol.render.MeasureRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
 import org.openscience.jmol.script.Eval;
+import org.openscience.jmol.g25d.Graphics25D;
 
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -39,8 +40,8 @@ import java.awt.PopupMenu;
 import java.awt.Image;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+//import java.awt.Graphics;
+//import java.awt.Graphics2D;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
@@ -153,11 +154,11 @@ final public class DisplayControl {
     refresh();
   }
 
-  public void setGraphicsContext(Graphics g, Rectangle rectClip) {
-    atomRenderer.setGraphicsContext(g, rectClip);
-    bondRenderer.setGraphicsContext(g, rectClip);
-    labelRenderer.setGraphicsContext(g, rectClip);
-    maybeEnableAntialiasing(g);
+  public void setGraphicsContext(Graphics25D g25d, Rectangle rectClip) {
+    atomRenderer.setGraphicsContext(g25d, rectClip);
+    bondRenderer.setGraphicsContext(g25d, rectClip);
+    labelRenderer.setGraphicsContext(g25d, rectClip);
+    maybeEnableAntialiasing(g25d);
   }
 
   public boolean hasStructuralChange() {
@@ -1077,10 +1078,10 @@ final public class DisplayControl {
     repaintManager.notifyRepainted();
   }
 
-  public void render(Graphics g, Rectangle rectClip) {
+  public void render(Graphics25D g25d, Rectangle rectClip) {
     if (eval.hasTerminationNotification())
       manageScriptTermination();
-    repaintManager.render(g, rectClip);
+    repaintManager.render(g25d, rectClip);
   }
 
 
@@ -1088,19 +1089,19 @@ final public class DisplayControl {
    * routines for java12
    ****************************************************************/
   
-  private void maybeEnableAntialiasing(Graphics g) {
+  private void maybeEnableAntialiasing(Graphics25D g25d) {
     if (repaintManager.useGraphics2D)
-      java12.enableAntialiasing(g, repaintManager.enableAntialiasing());
+      g25d.enableAntialiasing(repaintManager.enableAntialiasing());
   }
 
-  public void maybeDottedStroke(Graphics g) {
+  public void maybeDottedStroke(Graphics25D g25d) {
     if (repaintManager.useGraphics2D)
-      java12.dottedStroke(g);
+      g25d.dottedStroke();
   }
 
-  public void defaultStroke(Graphics g) {
+  public void defaultStroke(Graphics25D g25d) {
     if (repaintManager.useGraphics2D)
-      java12.defaultStroke(g);
+      g25d.defaultStroke();
   }
 
   /****************************************************************

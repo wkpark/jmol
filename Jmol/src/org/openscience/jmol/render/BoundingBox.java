@@ -25,8 +25,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -98,7 +99,7 @@ public class BoundingBox {
       z = (int)screen.z;
     }
   
-    public void render(Graphics g, DisplayControl control) {
+    public void render(Graphics25D g25d, DisplayControl control) {
       // the points I am connected with are at the indices obtained
       // by XORing each of the three bits of my index
       boolean colorSet = false;
@@ -107,10 +108,10 @@ public class BoundingBox {
         BboxShape bboxOther = bboxShapes[indexOther];
         if (z > bboxOther.z || (z == bboxOther.z && myIndex > indexOther)) {
           if (! colorSet) {
-            g.setColor(control.getColorAxes()); // use another color?
+            g25d.setColor(control.getColorAxes()); // use another color?
             colorSet = true;
           }
-          g.drawLine(x, y, bboxOther.x, bboxOther.y);
+          g25d.drawLine(x, y, z, bboxOther.x, bboxOther.y, bboxOther.z);
         }
       }
     }

@@ -25,8 +25,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Rectangle;
 import javax.vecmath.Point3d;
 
@@ -59,9 +60,9 @@ class LineShape extends Shape {
       z = zEnd;
   }
   
-  public void render(Graphics g, DisplayControl control) {
-    g.setColor(control.getColorVector());
-    g.drawLine(x, y, xEnd, yEnd);
+  public void render(Graphics25D g25d, DisplayControl control) {
+    g25d.setColor(control.getColorVector());
+    g25d.drawLine(x, y, z, xEnd, yEnd, zEnd);
   }
 }
 

@@ -25,8 +25,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import javax.vecmath.Point3d;
 
 public class VectorShape extends LineShape {
@@ -51,11 +52,10 @@ public class VectorShape extends LineShape {
     return "Primitive vector shape";
   }
 
-  public void render(Graphics g, DisplayControl control) {
+  public void render(Graphics25D g25d, DisplayControl control) {
     double scaling = 1.0;
-    ArrowLine al = new ArrowLine(g, control, x, y, xEnd, yEnd,
-                                 false,
-                                 arrowStart, arrowEnd, scaling);
+    ArrowLine al = new ArrowLine(g25d, control, x, y, z, xEnd, yEnd, zEnd,
+                                 false, arrowStart, arrowEnd, scaling);
 
   }
 

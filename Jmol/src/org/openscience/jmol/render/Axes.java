@@ -25,8 +25,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -104,14 +105,14 @@ public class Axes {
       z = (int)screen.z;
     }
 
-    public void render(Graphics g, DisplayControl control) {
+    public void render(Graphics25D g25d, DisplayControl control) {
       boolean colorSet = false;
       for (int i = 0; i < 6; ++i) {
         AxisShape axis = axisShapes[i];
         if (axis.z <= z) {
           if (!colorSet)
-            g.setColor(control.getColorAxes());
-          g.drawLine(x, y, axis.x, axis.y);
+            g25d.setColor(control.getColorAxes());
+          g25d.drawLine(x, y, z, axis.x, axis.y, axis.z);
         }
       }
     }
@@ -136,10 +137,11 @@ public class Axes {
       z = (int)screen.z;
     }
   
-    public void render(Graphics g, DisplayControl control) {
+    public void render(Graphics25D g25d, DisplayControl control) {
       if (z > originShape.z) {
-        g.setColor(control.getColorAxes());
-        g.drawLine(x, y, originShape.x, originShape.y);
+        g25d.setColor(control.getColorAxes());
+        g25d.drawLine(x, y, z,
+                      originShape.x, originShape.y, originShape.z);
       }
       if (label != null)
         control.renderStringOutside(label, control.getColorAxes(),

@@ -26,8 +26,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Color;
 
@@ -189,12 +190,12 @@ public class AtomShape extends Shape {
       bondWidths[i] = control.scaleToScreen(z, marBonds[i] * 2);
   }
 
-  public void render(Graphics g, DisplayControl control) {
+  public void render(Graphics25D g25d, DisplayControl control) {
     if (!control.getShowHydrogens() && atom.isHydrogen()) {
       return;
     }
     if (control.getShowBonds()) {
-      renderBonds(g, control);
+      renderBonds(control);
     }
     if (control.getShowAtoms() && isClipVisible(control.atomRenderer.clip)) {
       control.atomRenderer.render(this);
@@ -203,7 +204,7 @@ public class AtomShape extends Shape {
       control.labelRenderer.render(this);
   }
 
-  public void renderBonds(Graphics g, DisplayControl control) {
+  public void renderBonds(DisplayControl control) {
     Atom[] bondedAtoms = atom.getBondedAtoms();
     if (bondedAtoms == null) {
       return;

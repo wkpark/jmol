@@ -26,12 +26,11 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
@@ -52,11 +51,11 @@ public class AtomRenderer {
     this.control = control;
   }
 
-  Graphics g;
+  Graphics25D g25d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics g, Rectangle clip) {
-    this.g = g;
+  public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
+    this.g25d = g25d;
     this.clip = clip;
 
     fastRendering = control.getFastRendering();
@@ -108,28 +107,30 @@ public class AtomRenderer {
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
-    g.setColor(colorSelection);
-    g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
+    g25d.setColor(colorSelection);
+    g25d.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
   }
 
   private void renderAtom() {
     if (styleAtom == DisplayControl.SHADING && !fastRendering) {
       if (shadedSphereRenderer == null)
         shadedSphereRenderer = new ShadedSphereRenderer(control);
-      shadedSphereRenderer.render(g, xUpperLeft, yUpperLeft, diameter,
+      shadedSphereRenderer.render(g25d, xUpperLeft, yUpperLeft, z, diameter,
                                   color, colorOutline);
       return;
     }
     if (diameter <= 2) {
       if (diameter > 0) {
-        g.setColor(styleAtom == DisplayControl.WIREFRAME
-                   ? color : colorOutline);
+        g25d.setColor(styleAtom == DisplayControl.WIREFRAME
+                      ? color : colorOutline);
         if (diameter == 1) {
-          g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft, yUpperLeft);
+          g25d.drawPixel(x, y, z);
         } else {
-          g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft+1, yUpperLeft);
+          g25d.drawLine(xUpperLeft, yUpperLeft, z,
+                        xUpperLeft+1, yUpperLeft, z);
           ++yUpperLeft;
-          g.drawLine(xUpperLeft, yUpperLeft, xUpperLeft+1, yUpperLeft);
+          g25d.drawLine(xUpperLeft, yUpperLeft, z,
+                        xUpperLeft+1, yUpperLeft, z);
         }
       }
       return;
@@ -137,13 +138,13 @@ public class AtomRenderer {
     // the area *drawn* by an oval is 1 larger than the area
     // *filled* by an oval because of the stroke offset
     int diamT = diameter-1;
-    g.setColor(color);
+    g25d.setColor(color);
     if (!fastRendering && styleAtom != DisplayControl.WIREFRAME) {
       // diamT should work here, but if background dots are appearing
       // just inside the circles then change the parameter to *diameter*
-      g.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
-      g.setColor(colorOutline);
+      g25d.fillOval(xUpperLeft, yUpperLeft, diamT, diamT);
+      g25d.setColor(colorOutline);
     }
-    g.drawOval(xUpperLeft, yUpperLeft, diamT, diamT);
+    g25d.drawOval(xUpperLeft, yUpperLeft, diamT, diamT);
   }
 }

@@ -24,13 +24,14 @@
  */
 package org.openscience.jmol.render;
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
 import javax.vecmath.Point3d;
 
 import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+//import java.awt.Graphics;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -54,18 +55,19 @@ public class Distance implements MeasurementInterface {
     strDistance = formatDistance(distance);
   }
 
-  public void paint(Graphics g, DisplayControl control, boolean showLabel) {
-    paintDistLine(g, control);
+  public void paint(Graphics25D g25d, DisplayControl control,
+                    boolean showLabel) {
+    paintDistLine(g25d, control);
     if (showLabel)
-      paintDistString(g, control);
+      paintDistString(g25d, control);
   }
 
-  private void paintDistLine(Graphics g, DisplayControl control) {
-    control.maybeDottedStroke(g);
-    g.setColor(control.getColorDistance());
-    g.drawLine(atom1.getScreenX(), atom1.getScreenY(),
-	       atom2.getScreenX(), atom2.getScreenY());
-    control.defaultStroke(g);
+  private void paintDistLine(Graphics25D g25d, DisplayControl control) {
+    control.maybeDottedStroke(g25d);
+    g25d.setColor(control.getColorDistance());
+    g25d.drawLine(atom1.getScreenX(), atom1.getScreenY(), atom1.getScreenZ(),
+                  atom2.getScreenX(), atom2.getScreenY(), atom2.getScreenZ());
+    control.defaultStroke(g25d);
   }
 
   /**
@@ -77,7 +79,7 @@ public class Distance implements MeasurementInterface {
     return distanceFormat.sprintf(dist);
   }
 
-  private void paintDistString(Graphics g, DisplayControl control) {
+  private void paintDistString(Graphics25D g25d, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
       d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
@@ -86,14 +88,14 @@ public class Distance implements MeasurementInterface {
     int avgRadius = (d1 + d2) / 4;
 
     Font font = control.getMeasureFont(avgRadius);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getColorDistance());
+    g25d.setFont(font);
+    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g25d.setColor(control.getColorDistance());
     int j = fontMetrics.stringWidth(strDistance);
     if (x2 == x1) {
-      g.drawString(strDistance, x1 + 1, ((y1 + y2) / 2) + 1);
+      g25d.drawString(strDistance, x1 + 1, ((y1 + y2) / 2) + 1);
     } else {
-      g.drawString(strDistance, (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1);
+      g25d.drawString(strDistance, (x1 + x2) / 2 - j - 1, (y1 + y2) / 2 - 1);
     }
   }
 

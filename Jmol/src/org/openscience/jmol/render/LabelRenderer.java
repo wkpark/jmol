@@ -26,12 +26,12 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
+
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
@@ -52,11 +52,11 @@ public class LabelRenderer {
     this.control = control;
   }
 
-  Graphics g;
+  Graphics25D g25d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics g, Rectangle clip) {
-    this.g = g;
+  public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
+    this.g25d = g25d;
     this.clip = clip;
     colorLabel = control.getColorLabel();
     isLabelAtomColor = colorLabel == null;
@@ -70,15 +70,15 @@ public class LabelRenderer {
     if (strLabel == null)
       return;
     Font font = control.getLabelFont(atomShape.diameter);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
+    g25d.setFont(font);
+    FontMetrics fontMetrics = g25d.getFontMetrics(font);
     int labelHeight = fontMetrics.getAscent();
-    g.setColor(isLabelAtomColor ? atomShape.colorAtom : colorLabel);
+    g25d.setColor(isLabelAtomColor ? atomShape.colorAtom : colorLabel);
     
     int labelWidth = fontMetrics.stringWidth(strLabel);
     ++labelWidth; // bias rounding to the left;
     labelHeight -= 2; // this should not be necessary, but looks like it is;
-    g.drawString(strLabel,
+    g25d.drawString(strLabel,
                  atomShape.x - labelWidth / 2, atomShape.y + labelHeight / 2);
 
     // FIXME -- mth -- understand this property stuff
@@ -97,14 +97,14 @@ public class LabelRenderer {
           // but getLabelFont works with diameters
           // so divide the diameter by 2
           font = control.getLabelFont(atomShape.diameter / 2);
-          g.setFont(font);
-          g.setColor(colorLabel);
+          g25d.setFont(font);
+          g25d.setColor(colorLabel);
           String s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);
           }
           int k = 2 + (int) (atomShape.diameter/2 / 1.4142136f);
-          g.drawString(s, atomShape.x + k, atomShape.y - k);
+          g25d.drawString(s, atomShape.x + k, atomShape.y - k);
         }
       }
     }
@@ -112,10 +112,10 @@ public class LabelRenderer {
 
   public void renderStringOffset(String label, Color color, int points,
                                  int x, int y, int xOffset, int yOffset) {
-    g.setColor(color);
+    g25d.setColor(color);
     Font font = control.getFontOfSize(points);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
+    g25d.setFont(font);
+    FontMetrics fontMetrics = g25d.getFontMetrics(font);
     int labelHeight = fontMetrics.getAscent();
     labelHeight -= 2; // this should not be necessary, but looks like it is;
     if (yOffset > 0)
@@ -130,18 +130,18 @@ public class LabelRenderer {
       x -= fontMetrics.stringWidth(label) / 2;
     else
       x += xOffset - fontMetrics.stringWidth(label);
-    g.drawString(label, x, y);
+    g25d.drawString(label, x, y);
   }
 
   public void renderStringOutside(String label, Color color, int points,
                                   int x, int y) {
     //    System.out.println("render string outside " + x + "," + y);
-    //    g.setColor(Color.blue);
-    //    g.fillRect(x-1, y-1, 3, 3);
-    g.setColor(color);
+    //    g25d.setColor(Color.blue);
+    //    g25d.fillRect(x-1, y-1, 3, 3);
+    g25d.setColor(color);
     Font font = control.getFontOfSize(points);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
+    g25d.setFont(font);
+    FontMetrics fontMetrics = g25d.getFontMetrics(font);
     int labelAscent = fontMetrics.getAscent();
     int labelWidth = fontMetrics.stringWidth(label);
     int xLabelCenter, yLabelCenter;
@@ -159,7 +159,7 @@ public class LabelRenderer {
     }
     int xLabelBaseline = xLabelCenter - labelWidth / 2;
     int yLabelBaseline = yLabelCenter + labelAscent / 2;
-    g.drawString(label, xLabelBaseline, yLabelBaseline);
+    g25d.drawString(label, xLabelBaseline, yLabelBaseline);
   }
 }
 

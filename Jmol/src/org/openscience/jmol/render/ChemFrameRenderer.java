@@ -25,8 +25,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Iterator;
 import java.util.Enumeration;
@@ -34,21 +35,9 @@ import java.util.Vector;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.applet.NonJavaSort;
 
-/**
- *  Drawing methods for ChemFrame.
- *
- *  @author Bradley A. Smith (bradley@baysmith.com)
- */
 public class ChemFrameRenderer {
 
-  /**
-   * Paint this model to a graphics context.  It uses the matrix
-   * associated with this model to map from model space to screen
-   * space.
-   *
-   * @param g the Graphics context to paint to
-   */
-  public void paint(Graphics g, DisplayControl control) {
+  public void paint(Graphics25D g25d, DisplayControl control) {
     ChemFrame frame = control.getFrame();
     int numAtoms = frame.getAtomCount();
     if (numAtoms <= 0) {
@@ -133,7 +122,7 @@ public class ChemFrameRenderer {
         if (shapes[i].z > slabValue)
           continue;
       }
-      shapes[i].render(g, control);
+      shapes[i].render(g25d, control);
     }
   }
 

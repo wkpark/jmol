@@ -25,7 +25,9 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
-import java.awt.Graphics;
+import org.openscience.jmol.g25d.Graphics25D;
+
+//import java.awt.Graphics;
 import javax.vecmath.Point3d;
 
 public class AtomVectorShape extends Shape {
@@ -47,7 +49,7 @@ public class AtomVectorShape extends Shape {
     return "Atom vector shape for " + atom + ": z = " + z;
   }
 
-  public void render(Graphics g, DisplayControl control) {
+  public void render(Graphics25D g25d, DisplayControl control) {
     // FIXME I think that much/all of this could be moved to instance creation
     double magnitude = atom.getVector().distance(zeroPoint);
     double scaling = 1;
@@ -55,9 +57,10 @@ public class AtomVectorShape extends Shape {
       scaling = (magnitude - minMagnitude) / magnitudeRange  + 0.5f;
     }
     ArrowLine al =
-      new ArrowLine(g, control, atom.getScreenX(), atom.getScreenY(),
-                    x, y, true,
-                    false, true, scaling);
+      new ArrowLine(g25d, control,
+                    atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(),
+                    x, y, z,
+                    true, false, true, scaling);
   }
 
   public void transform(DisplayControl control) {

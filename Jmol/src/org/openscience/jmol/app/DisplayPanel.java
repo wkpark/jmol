@@ -25,6 +25,8 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
+
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -136,26 +138,26 @@ public class DisplayPanel extends JPanel
   }
 
   private void allocScreenBuf(Dimension dim) {
-    if (g2ScreenBuf != null)
-      g2ScreenBuf.dispose();
+    if (g25ScreenBuf != null)
+      g25ScreenBuf.dispose();
     if (dim.width == 0 || dim.height == 0) {
-      g2ScreenBuf = null;
+      g25ScreenBuf = null;
       biScreenBuf = null;
     } else {
       biScreenBuf = new BufferedImage(dimCurrent.width, dimCurrent.height,
                                       BufferedImage.TYPE_INT_ARGB);
-      g2ScreenBuf = biScreenBuf.createGraphics();
+      g25ScreenBuf = new Graphics25D(control, biScreenBuf.createGraphics());
     }
   }
 
   BufferedImage biScreenBuf;
-  Graphics2D g2ScreenBuf;
+  Graphics25D g25ScreenBuf;
 
   public void paint(Graphics g) {
     if (showPaintTime)
       startPaintClock();
     g.getClipBounds(rectClip);
-    control.render(g2ScreenBuf, rectClip);
+    control.render(g25ScreenBuf, rectClip);
     g.drawImage(biScreenBuf, 0, 0, null);
     if (showPaintTime)
       stopPaintClock();

@@ -25,9 +25,10 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
 import java.awt.Color;
-import java.awt.Graphics;
+//import java.awt.Graphics;
 
 public class ArrowLine {
 
@@ -39,10 +40,8 @@ public class ArrowLine {
   private double ctheta = 0.0;
   private double stheta = 0.0;
 
-  private double x1;
-  private double y1;
-  private double x2;
-  private double y2;
+  private double x1, y1, z1;
+  private double x2, y2, z2;
   private double magnitude;
 
   static int[] xpoints = new int[4];
@@ -55,8 +54,9 @@ public class ArrowLine {
   }
   */
 
-  public ArrowLine(Graphics gc, DisplayControl control,
-                   double x1, double y1, double x2, double y2,
+  public ArrowLine(Graphics25D g25d, DisplayControl control,
+                   double x1, double y1, double z1,
+                   double x2, double y2, double z2,
                    boolean drawLine,
                    boolean arrowStart, boolean arrowEnd, double scaling) {
     this.scaling = scaling;
@@ -65,8 +65,10 @@ public class ArrowLine {
     this.arrowEnd = arrowEnd;
     this.x1 = x1;
     this.y1 = y1;
+    this.z1 = z1;
     this.x2 = x2;
     this.y2 = y2;
+    this.z2 = z2;
 
     double dy = y2 - y1;
     double dx = x2 - x1;
@@ -80,12 +82,12 @@ public class ArrowLine {
     ctheta = dx / magnitude;
     stheta = dy / magnitude;
 
-    paint(gc, control);
+    paint(g25d, control);
   }
 
-  public void paint(Graphics gc, DisplayControl control) {
+  public void paint(Graphics25D g25d, DisplayControl control) {
 
-    gc.setColor(control.getColorVector());
+    g25d.setColor(control.getColorVector());
 
     double arrowLengthScale = control.getArrowLengthScale();
     double arrowHeadRadius = control.getArrowHeadRadius();
@@ -95,20 +97,25 @@ public class ArrowLine {
       offset = -offset;
     }
     if (drawLine) {
-      gc.drawLine((int) x1, (int) y1,
-                  (int)(x1 + (offset + magnitude*arrowLengthScale) * ctheta),
-                  (int)(y1 + (offset + magnitude*arrowLengthScale) * stheta));
+      // FIXME mth 2003 06 02
+      // the z2 dimension here is wrong
+      // figure out what is going on here, get rid of the doubles, and fix it
+      g25d.drawLine((int) x1, (int) y1, (int) z1,
+                    (int)(x1 + (offset + magnitude*arrowLengthScale)*ctheta),
+                    (int)(y1 + (offset + magnitude*arrowLengthScale)*stheta),
+                    (int) z2
+                    );
     }
     if (arrowStart) {
-      paintArrowHead(gc, 0.0, false, arrowHeadSize, arrowHeadRadius);
+      paintArrowHead(g25d, 0.0, false, arrowHeadSize, arrowHeadRadius);
     }
     if (arrowEnd) {
-      paintArrowHead(gc, offset + magnitude * arrowLengthScale, true,
+      paintArrowHead(g25d, offset + magnitude * arrowLengthScale, true,
                      arrowHeadSize, arrowHeadRadius);
     }
   }
 
-  public void paintArrowHead(Graphics gc, double lengthOffset,
+  public void paintArrowHead(Graphics25D g25d, double lengthOffset,
                              boolean forwardArrow,
                              double arrowHeadSize, double arrowHeadRadius) {
 
@@ -139,7 +146,7 @@ public class ArrowLine {
 
     xpoints[3] = (int) (x1 + rx * ctheta - ry * stheta);
     ypoints[3] = (int) (y1 + rx * stheta + ry * ctheta);
-    gc.fillPolygon(xpoints, ypoints, 4);
+    g25d.fillPolygon(xpoints, ypoints, 4);
   }
 }
 

@@ -25,7 +25,8 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import java.awt.Graphics;
+import org.openscience.jmol.g25d.Graphics25D;
+
 import java.awt.Rectangle;
 
 /**
@@ -46,7 +47,7 @@ public abstract class Shape {
   // of z are <= 0 ... 0 is at the surface of the screen and
   // more negative is further back away from the screen
 
-  abstract public void render(Graphics g, DisplayControl control);
+  abstract public void render(Graphics25D g25d, DisplayControl control);
 
   abstract public void transform(DisplayControl control);
 }

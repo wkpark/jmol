@@ -26,6 +26,8 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -49,13 +51,14 @@ class SphereG2D {
     return bi;
   }
 
-  void drawClippedSphereG2D(Graphics g, Image imgSphere, int x, int y, int d) {
+  void drawClippedSphereG2D(Graphics25D g25d,
+                            Image imgSphere, int x, int y, int d) {
     // too big ... just forget the smoothing
     // but we *can* clip it to eliminate fat pixels
     Ellipse2D circle = new Ellipse2D.Double(x, y, d, d);
-    g.setClip(circle);
-    g.drawImage(imgSphere, x, y, d, d, null);
-    g.setClip(null);
+    g25d.setClip(circle);
+    g25d.drawImage(imgSphere, x, y, d, d, null);
+    g25d.setClip(null);
   }
   
   private static byte[] mapRGBA;
@@ -134,4 +137,28 @@ class SphereG2D {
     g2.drawImage(biShadingBuffer, xUpperLeft, yUpperLeft, null);
     g2.setClip(null);
   }
+
+  void drawSphereG2D(Graphics25D g25d, Image image,
+                     int xUpperLeft, int yUpperLeft,
+                     int diameter, int margin) {
+    final int size = diameter + 2*margin;
+    if (size > sizeShadingBuffer) {
+      sizeShadingBuffer = size * 2; // leave some room to grow
+      if (sizeShadingBuffer < minShadingBufferSize)
+        sizeShadingBuffer = minShadingBufferSize;
+      if (sizeShadingBuffer > maxShadingBufferSize)
+        sizeShadingBuffer = maxShadingBufferSize;
+      biShadingBuffer = new BufferedImage(sizeShadingBuffer, sizeShadingBuffer,
+                                          BufferedImage.TYPE_INT_ARGB);
+      g2ShadingBuffer = biShadingBuffer.createGraphics();
+      g2ShadingBuffer.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                              RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+    }
+    g2ShadingBuffer.drawImage(image, 0, 0, size, size, null);
+    applyCircleMask(g2ShadingBuffer, diameter, margin);
+    g25d.setClip(xUpperLeft, yUpperLeft, size, size);
+    g25d.drawImage(biShadingBuffer, xUpperLeft, yUpperLeft, null);
+    g25d.setClip(null);
+  }
+  
 }

@@ -24,12 +24,13 @@
  */
 package org.openscience.jmol.render;
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
 import freeware.PrintfFormat;
 import javax.vecmath.Point3d;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+//import java.awt.Graphics;
 
 /**
  *  @author  Bradley A. Smith (bradley@baysmith.com)
@@ -56,26 +57,29 @@ public class Dihedral implements MeasurementInterface {
     strDihedral = dihedralFormat.sprintf(dihedral);
   }
 
-  public void paint(Graphics g, DisplayControl control, boolean showLabel) {
-    paintDihedralLine(g, control);
+  public void paint(Graphics25D g25d,
+                    DisplayControl control, boolean showLabel) {
+    paintDihedralLine(g25d, control);
     if (showLabel)
-      paintDihedralString(g, control);
+      paintDihedralString(g25d, control);
   }
 
-  private void paintDihedralLine(Graphics g, DisplayControl control) {
-    int x1 = atom1.getScreenX(), y1 = atom1.getScreenY();
-    int x2 = atom2.getScreenX(), y2 = atom2.getScreenY();
-    int x3 = atom3.getScreenX(), y3 = atom3.getScreenY();
-    int x4 = atom4.getScreenX(), y4 = atom4.getScreenY();
+  private void paintDihedralLine(Graphics25D g25d, DisplayControl control) {
+    int x1=atom1.getScreenX(), y1=atom1.getScreenY(), z1=atom1.getScreenZ();
+    int x2=atom2.getScreenX(), y2=atom2.getScreenY(), z2=atom2.getScreenZ();
+    int x3=atom3.getScreenX(), y3=atom3.getScreenY(), z3=atom3.getScreenZ();
+    int x4=atom4.getScreenX(), y4=atom4.getScreenY(), z4=atom4.getScreenZ();
     int xa = (x1 + x2) / 2;
     int ya = (y1 + y2) / 2;
+    int za = (z1 + z2) / 2;
     int xb = (x3 + x4) / 2;
     int yb = (y3 + y4) / 2;
+    int zb = (z3 + z4) / 2;
 
-    control.maybeDottedStroke(g);
-    g.setColor(control.getColorDihedral());
-    g.drawLine(xa, ya, xb, yb);
-    control.defaultStroke(g);
+    control.maybeDottedStroke(g25d);
+    g25d.setColor(control.getColorDihedral());
+    g25d.drawLine(xa, ya, za, xb, yb, zb);
+    control.defaultStroke(g25d);
   }
 
   /**
@@ -83,7 +87,7 @@ public class Dihedral implements MeasurementInterface {
    */
   private static PrintfFormat dihedralFormat = new PrintfFormat("%0.1f\u00b0");
   
-  private void paintDihedralString(Graphics g, DisplayControl control) {
+  private void paintDihedralString(Graphics25D g25d, DisplayControl control) {
     int x1 = atom1.getScreenX(), y1 = atom1.getScreenY(),
 	d1 = atom1.getScreenDiameter();
     int x2 = atom2.getScreenX(), y2 = atom2.getScreenY(),
@@ -94,15 +98,15 @@ public class Dihedral implements MeasurementInterface {
 	d4 = atom4.getScreenDiameter();
     int avgRadius = (d1 + d2 + d3 + d4) / 8;
     Font font = control.getMeasureFont(avgRadius);
-    g.setFont(font);
-    FontMetrics fontMetrics = g.getFontMetrics(font);
-    g.setColor(control.getColorDihedral());
+    g25d.setFont(font);
+    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g25d.setColor(control.getColorDihedral());
     int j = fontMetrics.stringWidth(strDihedral);
 
     int xloc = (x1 + x2 + x3 + x4) / 4;
     int yloc = (y1 + y2 + y3 + y4) / 4;
 
-    g.drawString(strDihedral, xloc, yloc);
+    g25d.drawString(strDihedral, xloc, yloc);
   }
 
   public int[] getAtomList() {

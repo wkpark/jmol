@@ -24,8 +24,9 @@
  */
 package org.openscience.jmol.render;
 import org.openscience.jmol.*;
+import org.openscience.jmol.g25d.Graphics25D;
 
-import java.awt.Graphics;
+//import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.Enumeration;
 
@@ -43,7 +44,7 @@ public class MeasureRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  public synchronized void paint(Graphics g, Rectangle rectClip,
+  public synchronized void paint(Graphics25D g25d, Rectangle rectClip,
                                  DisplayControl control) {
     ChemFrame frame = control.getFrame();
     boolean showMeasurementLabels = control.getShowMeasurementLabels();
@@ -52,19 +53,19 @@ public class MeasureRenderer {
     e = control.getDistanceMeasurements().elements();
     while (e.hasMoreElements()) {
       Distance d = (Distance) e.nextElement();
-      d.paint(g, control, showMeasurementLabels);
+      d.paint(g25d, control, showMeasurementLabels);
     }
 
     e = control.getAngleMeasurements().elements();
     while (e.hasMoreElements()) {
       Angle an = (Angle) e.nextElement();
-      an.paint(g, control, showMeasurementLabels);
+      an.paint(g25d, control, showMeasurementLabels);
     }
 
     e = control.getDihedralMeasurements().elements();
     while (e.hasMoreElements()) {
       Dihedral dh = (Dihedral) e.nextElement();
-      dh.paint(g, control, showMeasurementLabels);
+      dh.paint(g25d, control, showMeasurementLabels);
     }
   }
 }

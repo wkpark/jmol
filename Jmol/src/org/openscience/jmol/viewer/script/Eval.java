@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.script;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.datamodel.*;
 import org.openscience.jmol.viewer.pdb.*;
+import org.openscience.jmol.viewer.g3d.Font3D;
 import java.io.*;
 import java.awt.Color;
 import java.util.BitSet;
@@ -2277,9 +2278,8 @@ public class Eval implements Runnable {
     }
     System.out.println("font <obj> fontsize=" + fontsize);
     System.out.println("fontface=" + fontface + " fontstyle=" + fontstyle);
-    byte fontid = viewer.getFontID(fontsize, fontface, fontstyle);
-    System.out.println("fontid=" + fontid);
-    viewer.setShapeProperty(shapeType, "font", new Byte(fontid));
+    Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
+    viewer.setShapeProperty(shapeType, "font", font3d);
   }
 
   /****************************************************************

@@ -27,8 +27,6 @@ package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
-import java.awt.Font;
-
 class FrankRenderer extends ShapeRenderer {
 
   void render() {
@@ -37,7 +35,7 @@ class FrankRenderer extends ShapeRenderer {
     if (mad == 0)
       return;
 
-    g3d.setFontID(frank.frankFontID);
+    g3d.setFont3D(frank.font3d);
     g3d.drawString(frank.frankString, frank.colix,
                    g3d.width - frank.frankWidth - frank.frankMargin,
                    g3d.height - frank.frankDescent - frank.frankMargin,

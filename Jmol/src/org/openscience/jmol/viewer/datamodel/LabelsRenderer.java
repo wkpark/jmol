@@ -27,17 +27,13 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
-
-import java.awt.Font;
-import java.awt.FontMetrics;
-
+import org.openscience.jmol.viewer.g3d.Font3D;
 
 class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
   int fontSizePrevious = -1;
-  byte labelFontID;
-  FontMetrics labelFontMetrics;
+  Font3D font3d;
 
   void render() {
     fontSizePrevious = -1;
@@ -64,9 +60,8 @@ class LabelsRenderer extends ShapeRenderer {
          ? JmolConstants.LABEL_DEFAULT_FONTSIZE
          : sizes[i]);
       if (fontSize != fontSizePrevious) {
-        byte fontID = labelFontID = g3d.getFontID(fontSize);
-        g3d.setFontID(fontID);
-        labelFontMetrics = g3d.getFontMetrics();
+        g3d.setFontOfSize(fontSize);
+        font3d = g3d.getFont3D();
         fontSizePrevious = fontSize;
       }
       short offset = offsets == null || i >= offsets.length ? 0 : offsets[i];
@@ -101,7 +96,7 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelOffsetX > 0) {
       xOffset = labelOffsetX;
     } else {
-      xOffset = -labelFontMetrics.stringWidth(strLabel);
+      xOffset = -font3d.fontMetrics.stringWidth(strLabel);
       if (labelOffsetX == 0)
         xOffset /= 2;
       else
@@ -111,7 +106,7 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelOffsetY > 0) {
       yOffset = labelOffsetY;
     } else {
-      yOffset = -labelFontMetrics.getAscent();
+      yOffset = -font3d.fontMetrics.getAscent();
       if (labelOffsetY == 0)
         yOffset /= 2;
       else

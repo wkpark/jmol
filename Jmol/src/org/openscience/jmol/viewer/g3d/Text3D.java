@@ -27,7 +27,6 @@ package org.openscience.jmol.viewer.g3d;
 
 import java.awt.Component;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Image;
 import java.awt.Graphics;
@@ -58,10 +57,10 @@ class Text3D {
   int size;
   int[] bitmap;
 
-  Text3D(String text, Font font, Platform3D platform) {
-    calcMetrics(text, font, platform);
+  Text3D(String text, Font3D font3d, Platform3D platform) {
+    calcMetrics(text, font3d);
     platform.checkOffscreenSize(width, height);
-    renderOffscreen(text, font, platform);
+    renderOffscreen(text, font3d, platform);
     rasterize(platform);
   }
 
@@ -95,20 +94,20 @@ class Text3D {
 
   */
 
-  void calcMetrics(String text, Font font, Platform3D platform) {
-    FontMetrics fontMetrics = platform.getFontMetrics(font);
+  void calcMetrics(String text, Font3D font3d) {
+    FontMetrics fontMetrics = font3d.fontMetrics;
     ascent = fontMetrics.getAscent();
     height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
     size = width*height;
   }
 
-  void renderOffscreen(String text, Font font, Platform3D platform) {
+  void renderOffscreen(String text, Font3D font3d, Platform3D platform) {
     Graphics g = platform.gOffscreen;
     g.setColor(Color.black);
     g.fillRect(0, 0, width, height);
     g.setColor(Color.white);
-    g.setFont(font);
+    g.setFont(font3d.font);
     g.drawString(text, 0, ascent);
   }
 
@@ -163,42 +162,35 @@ class Text3D {
     }
   }
 
-  static Hashtable htText = new Hashtable();
+  static Hashtable htFont3d = new Hashtable();
   
   // FIXME mth
   // we have a synchronization issue/race condition  here with multiple
   // so only one Text3D can be generated at a time
 
-  synchronized static Text3D getText3D(String text, Font font,
+  synchronized static Text3D getText3D(String text, Font3D font3d,
                                          Platform3D platform) {
-    int size = font.getSize();
-    Text3D[] at25d = (Text3D[])htText.get(text);
-    if (at25d != null) {
-      if (size <= at25d.length) {
-        Text3D t25d = at25d[size - 1];
-        if (t25d != null)
-          return t25d;
-      } else {
-        Text3D[] at25dNew = new Text3D[size + 8];
-        System.arraycopy(at25d, 0, at25dNew, 0, at25d.length);
-        at25d = at25dNew;
-        htText.put(text, at25d);
-      }
+
+    Hashtable htForThisFont = (Hashtable)htFont3d.get(font3d);
+    if (htForThisFont != null) {
+      Text3D text3d = (Text3D)htForThisFont.get(text);
+      if (text3d != null)
+        return text3d;
     } else {
-      at25d = new Text3D[size + 8];
-      htText.put(text, at25d);
+      htForThisFont = new Hashtable();
+      htFont3d.put(font3d, htForThisFont);
     }
-    Text3D text3d = new Text3D(text, font, platform);
-    at25d[size - 1] = text3d;
+    Text3D text3d = new Text3D(text, font3d, platform);
+    htForThisFont.put(text, text3d);
     return text3d;
   }
 
   static void plot(int x, int y, int z, int argb,
-                   String text, Font font, Graphics3D g3d) {
-    Text3D text25d = getText3D(text, font, g3d.platform);
-    int[] bitmap = text25d.bitmap;
-    int textWidth = text25d.width;
-    int textHeight = text25d.height;
+                   String text, Font3D font3d, Graphics3D g3d) {
+    Text3D text3d = getText3D(text, font3d, g3d.platform);
+    int[] bitmap = text3d.bitmap;
+    int textWidth = text3d.width;
+    int textHeight = text3d.height;
     if (x + textWidth < 0 || x > g3d.width ||
         y + textHeight < 0 || y > g3d.height)
       return;

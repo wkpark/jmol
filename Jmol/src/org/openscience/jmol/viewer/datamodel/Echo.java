@@ -27,6 +27,7 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
+import org.openscience.jmol.viewer.g3d.Font3D;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
@@ -66,7 +67,7 @@ public class Echo extends Shape {
 
     if ("font".equals(propertyName)) {
       if (currentText != null) {
-        currentText.fontid = ((Byte)value).byteValue();
+        currentText.font3d = (Font3D)value;
         currentText.recalc();
       }
       return;
@@ -91,7 +92,7 @@ public class Echo extends Shape {
       if ("top".equals(target)) {
         if (topText == null)
           topText = new Text(TOP, CENTER,
-                             g3d.getFontID(FONTSIZE, FONTFACE), COLOR);
+                             g3d.getFont3D(FONTFACE, FONTSIZE), COLOR);
         currentText = topText;
         return;
       }
@@ -99,7 +100,7 @@ public class Echo extends Shape {
       if ("middle".equals(target)) {
         if (middleText == null)
           middleText = new Text(MIDDLE, CENTER,
-                                g3d.getFontID(FONTSIZE, FONTFACE), COLOR);
+                                g3d.getFont3D(FONTFACE, FONTSIZE), COLOR);
         currentText = middleText;
         return;
       }
@@ -107,7 +108,7 @@ public class Echo extends Shape {
       if ("bottom".equals(target)) {
         if (bottomText == null)
           bottomText = new Text(BOTTOM, LEFT,
-                                g3d.getFontID(FONTSIZE, FONTFACE), COLOR);
+                                g3d.getFont3D(FONTFACE, FONTSIZE), COLOR);
         currentText = bottomText;
         return;
       }
@@ -147,17 +148,17 @@ public class Echo extends Shape {
     String text;
     int align;
     int valign;
-    byte fontid;
+    Font3D font3d;
     short colix;
     
     int width;
     int ascent;
     int descent;
 
-    Text(int valign, int align, byte fontid, short colix) {
+    Text(int valign, int align, Font3D font3d, short colix) {
       this.align = align;
       this.valign = valign;
-      this.fontid = fontid;
+      this.font3d = font3d;
       this.colix = colix;
     }
 
@@ -166,7 +167,7 @@ public class Echo extends Shape {
         text = null;
         return;
       }
-      FontMetrics fm = g3d.getFontMetrics(fontid);
+      FontMetrics fm = font3d.fontMetrics;
       width = fm.stringWidth(text);
       descent = fm.getDescent();
       ascent = fm.getAscent();
@@ -189,11 +190,7 @@ public class Echo extends Shape {
       else
         y = g3d.height - descent - 1;
 
-      System.out.println("Echo.render fontid=" + fontid +
-                         " fontsize=" + g3d.getFontSize(fontid) +
-                         " fontface=" + g3d.getFontFaceString(fontid) +
-                         " fontstyle=" + g3d.getFontStyleString(fontid));
-      g3d.setFontID(fontid);
+      g3d.setFont3D(font3d);
       g3d.drawString(text, colix, x, y, 0);
     }
   }

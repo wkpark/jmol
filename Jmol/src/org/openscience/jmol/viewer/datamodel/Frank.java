@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
-import java.awt.Font;
+import org.openscience.jmol.viewer.g3d.Font3D;
 import java.awt.FontMetrics;
 
 public class Frank extends SelectionIndependentShape {
@@ -36,7 +36,7 @@ public class Frank extends SelectionIndependentShape {
   final static int frankFontSize = 14;
   final static int frankMargin = 4;
 
-  byte frankFontID;
+  Font3D font3d;
   int frankWidth;
   int frankAscent;
   int frankDescent;
@@ -46,8 +46,8 @@ public class Frank extends SelectionIndependentShape {
     colix = Graphics3D.GRAY;
 
     
-    frankFontID = g3d.getFontID(frankFontSize, frankFontName, frankFontStyle);
-    FontMetrics fm = g3d.getFontMetrics(frankFontID);
+    font3d = g3d.getFont3D(frankFontName, frankFontStyle, frankFontSize);
+    FontMetrics fm = font3d.fontMetrics;
     frankWidth = fm.stringWidth(frankString);
     frankDescent = fm.getDescent();
     frankAscent = fm.getAscent();

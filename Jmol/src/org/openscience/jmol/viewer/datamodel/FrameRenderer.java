@@ -33,7 +33,6 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.awt.Rectangle;
 
-import java.awt.Font;
 import java.awt.FontMetrics;
 
 public class FrameRenderer {

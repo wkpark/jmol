@@ -34,7 +34,6 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-import java.awt.Font;
 import java.awt.FontMetrics;
 
 class MeasuresRenderer extends ShapeRenderer {

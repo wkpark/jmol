@@ -1889,8 +1889,8 @@ final public class JmolViewer {
   ////////////////////////////////////////////////////////////////
   // font stuff
   ////////////////////////////////////////////////////////////////
-  public byte getFontID(int fontsize, String fontface, String fontstyle) {
-    return g3d.getFontID(fontsize, fontface, fontstyle);
+  public Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
+    return g3d.getFont3D(fontFace, fontStyle, fontSize);
   }
 
   ////////////////////////////////////////////////////////////////

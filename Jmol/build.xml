@@ -13,7 +13,7 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="10.00" />
+  <property name="version" value="10.00.05" />
 
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
@@ -402,6 +402,8 @@ support for assertions (which were introduced in 1.4).
 	<pathelement path="JmolApplet2.jar" />
 	<pathelement path="JmolApplet3.jar" />
 	<pathelement path="JmolApplet4.jar" />
+	<pathelement path="JmolApplet5.jar" />
+	<pathelement path="JmolApplet6.jar" />
       </indexjars>
     </jar>
 
@@ -414,7 +416,7 @@ support for assertions (which were introduced in 1.4).
     <copy todir="build/dist/jmol-${version}" >
       <fileset dir=".">
 	<include name="Jmol.jar" />
-	<include name="JmolApplet.jar" />
+	<include name="JmolApplet*.jar" />
 	<include name="jmol" />
 	<include name="jmol.sh" />
 	<include name="jmol.mac" />

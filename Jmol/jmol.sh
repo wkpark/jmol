@@ -1,8 +1,8 @@
 #!/bin/sh
 
-# Collect -D options as java arguments
+# Collect -D & -m options as java arguments
 command=java
-while [ `echo $1 | egrep '^-D' | wc -l` != 0 ]; do
+while [ `echo $1 | egrep '^-D|^-m' | wc -l` != 0 ]; do
 	command="$command $1"
 	shift
 done

@@ -1,5 +1,5 @@
 
-Copyright 1998-2004 The Jmol Development Team
+Copyright 1998-2005 The Jmol Development Team
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -66,4 +66,3 @@ Jakarta Commons CLI
   Used for parsing command line optinos. Distributed with The Apache Software
   License, Version 1.1. Copyright (c) 1999-2001 The Apache Software Foundation.
   See http://jakarta.apache.org/commons/cli/.
-

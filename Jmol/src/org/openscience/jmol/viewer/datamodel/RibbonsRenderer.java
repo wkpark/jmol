@@ -69,28 +69,28 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
     return screens;
   }
 
-  int polymerCount;
   int strandCount;
-  float halfStrandCount;
   float strandSeparation;
   float baseOffset;
 
+  boolean isNucleotidePolymer;
+
   void renderMcpschain( Mcps.Mcpschain mcpsChain) {
     Ribbons.Schain strandsChain = (Ribbons.Schain)mcpsChain;
-    polymerCount = strandsChain.polymerCount;
-
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
 
-    if (strandsChain.vectors != null)
+    if (strandsChain.vectors != null) {
+      isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
       render1Chain(strandsChain.polymerCount,
                    strandsChain.polymerGroups,
                    strandsChain.centers,
                    strandsChain.vectors,
                    strandsChain.mads,
                    strandsChain.colixes);
+    }
   }
 
 
@@ -129,7 +129,8 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
       colix = group.getLeadAtom().colixAtom;
     
     //change false -> true to fill in mesh
-    g3d.drawHermite(true, colix, 7, screensTop[iPrev], screensTop[i],
+    g3d.drawHermite(true, colix, isNucleotidePolymer ? 4 : 7,
+                    screensTop[iPrev], screensTop[i],
                     screensTop[iNext], screensTop[iNext2],
                     screensBottom[iPrev], screensBottom[i],
                     screensBottom[iNext], screensBottom[iNext2]

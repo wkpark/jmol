@@ -39,8 +39,11 @@ class TraceRenderer extends McpsRenderer {
     centerAtoms = null;
   }
 
+  boolean isNucleotidePolymer;
+
   void renderMcpschain(Mcps.Mcpschain mcpschain) {
     Trace.Tchain tchain = (Trace.Tchain)mcpschain;
+    isNucleotidePolymer = tchain.polymer instanceof NucleotidePolymer;
     render1Chain(tchain.polymer,
                  tchain.polymerCount,
                  tchain.polymerGroups,
@@ -102,7 +105,8 @@ class TraceRenderer extends McpsRenderer {
     int madEnd = (mads[iNext1] + madThis) / 2;
     int diameterEnd = viewer.scaleToScreen(screens[iNext1].z, madEnd);
     int diameterMid = viewer.scaleToScreen(centerAtoms[i].getScreenZ(), madThis);
-    g3d.fillHermite(colix, 7, diameterBeg, diameterMid, diameterEnd,
+    g3d.fillHermite(colix, isNucleotidePolymer ? 4 : 7,
+                    diameterBeg, diameterMid, diameterEnd,
                     screens[iPrev1], screens[i],
                     screens[iNext1], screens[iNext2]);
   }

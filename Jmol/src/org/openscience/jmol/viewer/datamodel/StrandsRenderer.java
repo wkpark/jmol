@@ -55,27 +55,29 @@ class StrandsRenderer extends McpsRenderer {
     return screens;
   }
 
-  int polymerCount;
   int strandCount;
-  float halfStrandCount;
   float strandSeparation;
   float baseOffset;
 
+  boolean isNucleotidePolymer;
+
   void renderMcpschain(Mcps.Mcpschain mcpschain) {
     Strands.Schain schain = (Strands.Schain)mcpschain;
-    polymerCount = schain.polymerCount;
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
-    render1Chain(schain.polymerCount,
-                 schain.polymerGroups,
-                 schain.centers,
-                 schain.vectors,
-                 schain.mads,
-                 schain.colixes);
+    if (schain.vectors != null) {
+      isNucleotidePolymer = schain.polymer instanceof NucleotidePolymer;
+      render1Chain(schain.polymerCount,
+                   schain.polymerGroups,
+                   schain.centers,
+                   schain.vectors,
+                   schain.mads,
+                   schain.colixes);
+    }
   }
 
 
@@ -115,7 +117,8 @@ class StrandsRenderer extends McpsRenderer {
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
       colix = group.getLeadAtom().colixAtom;
-    g3d.drawHermite(colix, 7, screens[iPrev], screens[i],
+    g3d.drawHermite(colix, isNucleotidePolymer ? 4 : 7,
+                    screens[iPrev], screens[i],
                     screens[iNext], screens[iNext2]);
   }
 }

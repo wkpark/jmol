@@ -97,15 +97,21 @@ class Cylinder3D {
     radius = diameter / 2.0f;
     radius2 = radius*radius;
     int mag2d2 = dxB*dxB + dyB*dyB;
-    float mag2d = (float)Math.sqrt(mag2d2);
-    float mag3d = (float)Math.sqrt(mag2d2 + dzB*dzB);
-    /*
-    System.out.println("dxB=" + dxB + " dyB=" + dyB + " dzB=" + dzB +
-                       " mag2d=" + mag2d + " mag3d=" + mag3d);
-    */
-    this.cosTheta = dzB / mag3d;
-    this.cosPhi = (mag2d > 0 ? dxB / mag2d : 1);
-    this.sinPhi = (mag2d > 0 ? dyB / mag2d : 0);
+    if (mag2d2 == 0) {
+      cosTheta = 1;
+      cosPhi = 1;
+      sinPhi = 0;
+    } else {
+      float mag2d = (float)Math.sqrt(mag2d2);
+      float mag3d = (float)Math.sqrt(mag2d2 + dzB*dzB);
+      /*
+        System.out.println("dxB=" + dxB + " dyB=" + dyB + " dzB=" + dzB +
+        " mag2d=" + mag2d + " mag3d=" + mag3d);
+      */
+      cosTheta = dzB / mag3d;
+      cosPhi = dxB / mag2d;
+      sinPhi = dyB / mag2d;
+    }
     
     calcRotatedPoint(  0f, 0);
     calcRotatedPoint(0.5f, 1);

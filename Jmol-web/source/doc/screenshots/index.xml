@@ -22,6 +22,16 @@
         Display of bounding box and axes of coordinates space.
         Note the transparency of the yellow halo around selected atoms.
       </screenshot>
+      <screenshot image="hemes.jpg">
+        Hemoglobin with backbone trace colored by chain and spacefilled hemes.
+        <i>This image taken from the pre-release development version
+        of Jmol v10.</i>
+      </screenshot>
+      <screenshot image="bbdots.jpg">
+        A few residues with backbone in blue and vdw dots surface. 
+        <i>This image taken from the pre-release development version
+        of Jmol v10.</i>
+      </screenshot>
     </screenshots>
   </section>
 

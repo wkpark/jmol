@@ -56,6 +56,8 @@
       <replacefilter token="[codebase]" value="../jmol" />
     </replace>
 
+    <chmod perm="ug=rw,o=r" dir="${build.html}" includes="**/*" />
+
   </target>
 </project>
 

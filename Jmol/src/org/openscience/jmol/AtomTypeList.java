@@ -71,7 +71,7 @@ public class AtomTypeList {
                 ReadAtypes(SAU);
             }
         } catch (Exception exc) {
-            System.err.println("Error while reading AtomTypes.");
+            System.err.println("Error while reading AtomTypes." + exc);
         }
     }
 
@@ -82,7 +82,7 @@ public class AtomTypeList {
         try {
             ReadAtypes(SAU);
         } catch (Exception exc) {
-            System.err.println("Error while reading AtomTypes.");
+            System.err.println("Error while reading AtomTypes." + exc);
         }
     }
 
@@ -158,7 +158,7 @@ public class AtomTypeList {
     }
 
     private void ReadAtypes(String configFile) throws Exception {
-        // System.out.print("Reading config file... ");
+        System.out.print("Reading config file... ");
         AtomTypeFactory atf = new AtomTypeFactory(configFile);
         
         org.openscience.cdk.AtomType[] types = atf.getAllAtomTypes();

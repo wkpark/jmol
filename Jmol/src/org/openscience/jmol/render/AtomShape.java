@@ -102,8 +102,9 @@ public class AtomShape implements Shape {
   private static int bondDrawMode;
   private static int atomDrawMode;
   private static int labelMode;
+  private static boolean isChanging;
   private static DisplaySettings settings;
-  private static double halfBondWidth;
+  private static float halfBondWidth;
   private static boolean showDarkerOutline;
   private static Color outlineColor;
   private static Color pickedColor;
@@ -123,13 +124,15 @@ public class AtomShape implements Shape {
     labelMode = settings.getLabelMode();
     fastRendering = settings.getFastRendering();
     drawBondsToAtomCenters = settings.getDrawBondsToAtomCenters();
-    halfBondWidth = 0.5 *
-      settings.getBondWidth() * settings.getBondScreenScale();
+    halfBondWidth =
+      (float)(0.5 * settings.getBondWidth() * settings.getBondScreenScale());
     showDarkerOutline = settings.getShowDarkerOutline();
     outlineColor = settings.getOutlineColor();
     pickedColor = settings.getPickedColor();
     // backgroundColor should be in settings
     backgroundColor = DisplayPanel.getBackgroundColor();
+    // I hate this ... have to integrate panel & settings
+    isChanging = DisplayPanel.isChanging();
     if (settings.getAtomColorProfile() == DisplaySettings.ATOMCHARGE) {
         colorProfile = new ChargeColorProfile();
     } else {
@@ -289,19 +292,74 @@ public class AtomShape implements Shape {
       y1Edge = y1 + ((radius1 - arcFactor) * dy) / magnitude;
     }
 
-    if (bondDrawMode == DisplaySettings.LINE) {
+    if ((bondDrawMode == DisplaySettings.LINE) ||
+        (halfBondWidth < .75f)) {
       drawLineBond(g,
                    x1Bond, y1Bond, color1,
                    x1Edge, y1Edge,
                    x2Bond, y2Bond, color2,
                    dx, dy, magnitude, bondOrder, halfBondWidth);
-    } else {
+      return;
+    }
+    if (bondDrawMode != DisplaySettings.SHADING) {
       drawRectBond(g,
-                   x1Bond, y1Bond, color1, getOutline(color1),
+                   x1Bond, y1Bond, color1,
+                   (halfBondWidth < 1.5f) ? null : getOutline(color1),
                    x1Edge, y1Edge,
-                   x2Bond, y2Bond, color2, getOutline(color2),
+                   x2Bond, y2Bond, color2,
+                   (halfBondWidth < 1.5f) ? null : getOutline(color2),
                    bondDrawMode != DisplaySettings.WIREFRAME,
-                   dx, dy, magnitude, bondOrder, halfBondWidth);
+                   dx, dy, magnitude, bondOrder, halfBondWidth, halfBondWidth);
+      return;
+    }
+    // drawing shaded bonds
+    if (isChanging || (int)halfBondWidth < 3) {
+      drawRectBond(g,
+                   x1Bond, y1Bond, color1, getDarker(color1),
+                   x1Edge, y1Edge,
+                   x2Bond, y2Bond, color2, getDarker(color2),
+                   true,
+                   dx, dy, magnitude, bondOrder, halfBondWidth, halfBondWidth);
+      return;
+    }
+    Color darker1 = getDarker(color1), outline1 = darker1;
+    Color bright1 = color1;
+    Color darker2 = getDarker(color2), outline2 = darker2;
+    Color bright2 = color2;
+
+    int atom1R = darker1.getRed(),   range1R = bright1.getRed() - atom1R;
+    int atom1G = darker1.getGreen(), range1G = bright1.getGreen() - atom1G;
+    int atom1B = darker1.getBlue(),  range1B = bright1.getBlue() - atom1B;
+    int atom2R = darker2.getRed(),   range2R = bright2.getRed() - atom2R;
+    int atom2G = darker2.getGreen(), range2G = bright2.getGreen() - atom2G;
+    int atom2B = darker2.getBlue(),  range2B = bright2.getBlue() - atom2B;
+
+    int numPasses = (int)halfBondWidth;
+    float widthT = halfBondWidth;
+    for (int i = 0; i < numPasses; ++i, widthT -= 1.0) {
+      // numPasses must be > 1 because of test above
+      float pct = (float) i / (numPasses - 1);
+      int r1 = atom1R + (int)(pct * range1R);
+      int g1 = atom1G + (int)(pct * range1G);
+      int b1 = atom1B + (int)(pct * range1B);
+      int r2 = atom2R + (int)(pct * range2R);
+      int g2 = atom2G + (int)(pct * range2G);
+      int b2 = atom2B + (int)(pct * range2B);
+
+      // Bitwise masking to make color model:
+      int model1 = 0xFF << 24 | r1 << 16 | g1 << 8 | b1;
+      Color co1 = new Color(model1);
+      int model2 = 0xFF << 24 | r2 << 16 | g2 << 8 | b2;
+      Color co2 = new Color(model2);
+
+      drawRectBond(g,
+                   x1Bond, y1Bond, co1, outline1,
+                   x1Edge, y1Edge,
+                   x2Bond, y2Bond, co2, outline2,
+                   true, dx, dy, magnitude, bondOrder,
+                   widthT, halfBondWidth);
+      // only draw the outline the first time around
+      outline1 = outline2 = null;
     }
   }
 
@@ -319,7 +377,7 @@ public class AtomShape implements Shape {
                             int xEdge, int yEdge,
                             int x2, int y2, final Color color2,
                             final int dx, final int dy, final int magnitude,
-                            int bondOrder, final double halfBondWidth) {
+                            int bondOrder, final float halfBondWidth) {
     if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
       return;
     int sepUp = (int) (separationIncrement * halfBondWidth);
@@ -371,7 +429,8 @@ public class AtomShape implements Shape {
                             final Color color2, final Color color2Outline,
                             final boolean boolFill,
                             final int dx, final int dy, final int magnitude,
-                            int bondOrder, final double halfBondWidth) {
+                            int bondOrder, final float halfBondWidth,
+                            final float separationWidth) {
     if (! isVisible(x1, y1, xEdge, yEdge, x2, y2))
       return;
     // offsets for the width of the bond rectangle
@@ -389,8 +448,8 @@ public class AtomShape implements Shape {
     int xMidTop = (x1Top + x2Top) / 2, yMidTop = (y1Top + y2Top) / 2;
     int xMidBot = (x1Bot + x2Bot) / 2, yMidBot = (y1Bot + y2Bot) / 2;
 
-    int sepUp = (int) (separationIncrement * halfBondWidth);
-    int sepDn = sepUp - (int)((separationIncrement * 2) * halfBondWidth);
+    int sepUp = (int) (separationIncrement * separationWidth);
+    int sepDn = sepUp - (int)((separationIncrement * 2) * separationWidth);
     int xOffset = (sepDn * dy) / magnitude;
     int yOffset = (sepUp * dx) / magnitude;
     if (bondOrder == 2) {

@@ -96,7 +96,7 @@ public class DisplayPanel extends JPanel
 
   private boolean antialiasCapable = false;
   //Added T.GREY for moveDraw support- should be true while mouse is dragged
-  private boolean mouseDragged = false;
+  private static boolean mouseDragged = false;
   private boolean wireFrameRotation = false;
   private Measure measure = null;
   private MeasurementList mlist = null;
@@ -416,6 +416,10 @@ public class DisplayPanel extends JPanel
 
   public static Color getBackgroundColor() {
     return backgroundColor;
+  }
+
+  public static boolean isChanging() {
+    return mouseDragged;
   }
 
   public void paint(Graphics g) {

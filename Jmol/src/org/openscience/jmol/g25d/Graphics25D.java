@@ -43,6 +43,7 @@ final public class Graphics25D {
   Image img;
   Graphics g;
   int width,height,size;
+  int xLast, yLast;
   int[] pbuf;
   short[] zbuf;
 
@@ -66,7 +67,6 @@ final public class Graphics25D {
   }
 
   public void setEnabled(boolean value) {
-    System.out.println("Graphics25D.setEnabled(" + value +")");
     if (enabled != value) {
       enabled = value;
       setSize(width, height);
@@ -76,7 +76,9 @@ final public class Graphics25D {
   public void setSize(int width, int height) {
     System.out.println("Graphics25D.setSize(" + width + "," + height + ")");
     this.width = width;
+    xLast = width - 1;
     this.height = height;
+    yLast = height - 1;
     this.size = width * height;
     if (g != null)
       g.dispose();
@@ -301,12 +303,28 @@ final public class Graphics25D {
       g.drawLine(x1, y1, x2, y2);
       return;
     }
-    if (x1 >= 0 && x1 < width && y1 >= 0 && y1 <= height &&
-        x2 >= 0 && x2 < width && y2 >= 0 && y2 <= height) {
-      plotLineDeltaUnclipped(x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
-    } else {
-      plotLineDeltaClipped(x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+    int cc1 = clipCode(x1, y1);
+    int cc2 = clipCode(x2, y2);
+    while ((cc1 | cc2) != 0) {
+      if ((cc1 & cc2) != 0)
+        return;
+      int dx = x2 - x1;
+      int dy = y2 - y1;
+      if (cc1 != 0) { //cohen-sutherland line clipping
+        if      ((cc1 & xLT) != 0) { y1 +=      (-x1 * dy) / dx; x1 = 0; }
+        else if ((cc1 & xGT) != 0) { y1 += ((xLast-x1)*dy) / dx; x1 = xLast; }
+        else if ((cc1 & yLT) != 0) { x1 +=      (-y1 * dx) / dy; y1 = 0; }
+        else                       { x1 += ((yLast-y1)*dx) / dy; y1 = yLast; }
+        cc1 = clipCode(x1, y1);
+      } else {
+        if      ((cc2 & xLT) != 0) { y2 +=      (-x2 * dy) / dx; x2 = 0; }
+        else if ((cc2 & xGT) != 0) { y2 += ((xLast-x2)*dy) / dx; x2 = xLast; }
+        else if ((cc2 & yLT) != 0) { x2 +=      (-y2 * dx) / dy; y2 = 0; }
+        else                       { x2 += ((yLast-y2)*dx) / dy; y2 = yLast; }
+        cc2 = clipCode(x2, y2);
+      }
     }
+    plotLineDeltaUnclipped(x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
   public void drawPixel(int x, int y, int z) {
@@ -370,6 +388,24 @@ final public class Graphics25D {
    * the plotting routines
    ****************************************************************/
 
+
+  final static int xLT = 8;
+  final static int xGT = 4;
+  final static int yLT = 2;
+  final static int yGT = 1;
+
+  private final int clipCode(int x, int y) {
+    int code = 0;
+    if (x < 0)
+      code |= 8;
+    else if (x >= width)
+      code |= 4;
+    if (y < 0)
+      code |= 2;
+    else if (y >= height)
+      code |= 1;
+    return code;
+  }
 
   void plotPixelClipped(int x, int y, int z) {
     if (x < 0 || x >= width ||
@@ -467,61 +503,6 @@ final public class Graphics25D {
     }
   }
   
-  void plotLineDeltaClipped(int x1, int y1, int z1, int dx, int dy, int dz) {
-    int xCurrent = x1;
-    int yCurrent = y1;
-    int xIncrement = 1, yIncrement = 1;
-
-    if (dx < 0) {
-      dx = -dx;
-      xIncrement = -1;
-    }
-    if (dy < 0) {
-      dy = -dy;
-      yIncrement = -1;
-    }
-    int twoDx = dx + dx, twoDy = dy + dy;
-    plotPixelClipped(xCurrent, yCurrent, z1);
-    if (dx == 0 && dy == 0)
-      return;
-    // the z dimension and the z increment are stored with a fractional
-    // component in the bottom 10 bits.
-    int zCurrentScaled = z1 << 10;
-    if (dy <= dx) {
-      int roundingFactor = dx - 1;
-      if (dz < 0) roundingFactor = -roundingFactor;
-      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
-      int twoDxAccumulatedYError = 0;
-      int n = dx;
-      do {
-        xCurrent += xIncrement;
-        zCurrentScaled += zIncrementScaled;
-        twoDxAccumulatedYError += twoDy;
-        if (twoDxAccumulatedYError > dx) {
-          yCurrent += yIncrement;
-          twoDxAccumulatedYError -= twoDx;
-        }
-        plotPixelClipped(xCurrent, yCurrent, zCurrentScaled >> 10);
-      } while (--n > 0);
-      return;
-    }
-    int roundingFactor = dy - 1;
-    if (dy < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
-    int twoDyAccumulatedXError = 0;
-    int n = dy;
-    do {
-      yCurrent += yIncrement;
-      zCurrentScaled += zIncrementScaled;
-      twoDyAccumulatedXError += twoDx;
-      if (twoDyAccumulatedXError > dy) {
-        xCurrent += xIncrement;
-        twoDyAccumulatedXError -= twoDy;
-      }
-      plotPixelClipped(xCurrent, yCurrent, zCurrentScaled >> 10);
-    } while (--n > 0);
-  }
-
   void plotLineDeltaUnclipped(int x1, int y1, int z1, int dx, int dy, int dz) {
     int offset = y1 * width + x1;
     if (z1 < zbuf[offset]) {
@@ -531,9 +512,11 @@ final public class Graphics25D {
     if (dx == 0 && dy == 0)
       return;
 
-    int xCurrent = x1;
-    int yCurrent = y1;
-    int xIncrement = 1, yIncrement = 1, yOffsetIncrement = width;
+    // int xCurrent = x1;
+    // int yCurrent = y1;
+    int xIncrement = 1;
+    // int yIncrement = 1;
+    int yOffsetIncrement = width;
 
     if (dx < 0) {
       dx = -dx;
@@ -541,7 +524,7 @@ final public class Graphics25D {
     }
     if (dy < 0) {
       dy = -dy;
-      yIncrement = -1;
+      // yIncrement = -1;
       yOffsetIncrement = -width;
     }
     int twoDx = dx + dx, twoDy = dy + dy;
@@ -556,12 +539,12 @@ final public class Graphics25D {
       int twoDxAccumulatedYError = 0;
       int n = dx;
       do {
-        xCurrent += xIncrement;
+        // xCurrent += xIncrement;
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
         twoDxAccumulatedYError += twoDy;
         if (twoDxAccumulatedYError > dx) {
-          yCurrent += yIncrement;
+          // yCurrent += yIncrement;
           offset += yOffsetIncrement;
           twoDxAccumulatedYError -= twoDx;
         }
@@ -579,12 +562,12 @@ final public class Graphics25D {
     int twoDyAccumulatedXError = 0;
     int n = dy;
     do {
-      yCurrent += yIncrement;
+      // yCurrent += yIncrement;
       offset += yOffsetIncrement;
       zCurrentScaled += zIncrementScaled;
       twoDyAccumulatedXError += twoDx;
       if (twoDyAccumulatedXError > dy) {
-        xCurrent += xIncrement;
+        // xCurrent += xIncrement;
         offset += xIncrement;
         twoDyAccumulatedXError -= twoDy;
       }

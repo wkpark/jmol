@@ -45,6 +45,7 @@ class Normix3D {
   final Graphics3D g3d;
   final Vector3f[] transformedVectors;
   final byte[] intensities;
+  final byte[] intensities2Sided;
   final int normixCount;
 
   final static short[][] faceNormixesArrays =
@@ -61,6 +62,7 @@ class Normix3D {
     this.g3d = g3d;
     normixCount = Geodesic3D.getVertexCount(NORMIX_GEODESIC_LEVEL);
     intensities = new byte[normixCount];
+    intensities2Sided = new byte[normixCount];
     transformedVectors = new Vector3f[normixCount];
     for (int i = normixCount; --i >= 0; )
       transformedVectors[i] = new Vector3f();
@@ -155,6 +157,10 @@ class Normix3D {
     return getNormix(-vector.x, -vector.y, -vector.z);
   }
 
+  short get2SidedNormix(Vector3f vector) {
+    return (short)~getNormix(vector.x, vector.y, vector.z);
+  }
+
   final BitSet bsNull = new BitSet();
   final BitSet bsConsidered = new BitSet();
 
@@ -230,6 +236,8 @@ class Normix3D {
   }
 
   byte getIntensity(short normix) {
+    if (normix < 0)
+      return intensities2Sided[~normix];
     return intensities[normix];
   }
 
@@ -253,7 +261,12 @@ class Normix3D {
         z = -z;
       }
       */
-      intensities[i] = Shade3D.calcIntensityNormalized(x, y, z);
+      byte intensity = Shade3D.calcIntensityNormalized(x, y, z);
+      intensities[i] = intensity;
+      if (z >= 0)
+        intensities2Sided[i] = intensity;
+      else
+        intensities2Sided[i] = Shade3D.calcIntensityNormalized(-x, -y, -z);
     }
   }
 

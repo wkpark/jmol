@@ -358,7 +358,7 @@ class Pmesh extends SelectionIndependentShape {
       sumVertexNormals(vectorSums);
       normixes = new short[vertexCount];
       for (int i = vertexCount; --i >= 0; ) {
-        normixes[i] = g3d.getNormix(vectorSums[i]);
+        normixes[i] = g3d.get2SidedNormix(vectorSums[i]);
         /*
         System.out.println("vectorSums[" + i + "]=" + vectorSums[i] +
                            " -> normix:" + normixes[i]);

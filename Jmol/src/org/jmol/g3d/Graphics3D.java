@@ -2153,6 +2153,10 @@ final public class Graphics3D {
     return normix3d.getInverseNormix(vector);
   }
 
+  public short get2SidedNormix(Vector3f vector) {
+    return normix3d.get2SidedNormix(vector);
+  }
+
   public Vector3f[] getGeodesicVertexVectors() {
     return Geodesic3D.getVertexVectors();
   }

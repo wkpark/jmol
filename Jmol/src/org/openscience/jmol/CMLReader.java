@@ -39,13 +39,16 @@ public class CMLReader implements ChemFileReader {
             InputSource source = new InputSource(input);
             Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
             EntityResolver resolver = new DTDResolver();
-            CMLHandler handler = new CMLHandler(new JMolCDO());
+            JMolCDO cdo = new JMolCDO();
+            CMLHandler handler = new CMLHandler(cdo);
+            ((CMLHandler)handler).registerConvention("JMOL-ANIMATION", new JMOLANIMATIONConvention(cdo));
             parser.setEntityResolver(resolver);
             parser.setDocumentHandler(handler);
             parser.parse(source);
             ChemFile file = new ChemFile();
             Enumeration framesIter = ((JMolCDO)handler.returnCDO()).returnChemFrames().elements();
             while (framesIter.hasMoreElements()) {
+                System.err.println("New Frame!!!!!!!");
                 file.frames.addElement((ChemFrame)framesIter.nextElement());
             }
             return file;

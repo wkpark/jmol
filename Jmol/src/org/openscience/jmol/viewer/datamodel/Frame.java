@@ -194,15 +194,6 @@ public class Frame {
       dots.setDotsOn(dotsOn, bsSelected);
   }
 
-  Ribbons ribbons;
-
-  public void setRibbons(int ribbonType, BitSet bsSelected) {
-    if (ribbonType != 0 && ribbons == null)
-      ribbons = new Ribbons(viewer, this);
-    if (ribbons != null)
-      ribbons.setRibbons(ribbonType, bsSelected);
-  }
-
   Graphic allocateGraphic(int refGraphic) {
     switch (refGraphic) {
     case JmolConstants.GRAPHIC_BACKBONE:
@@ -250,25 +241,6 @@ public class Frame {
     if (graphics[refGraphic] != null)
       graphics[refGraphic].setColix(palette, colix, bsSelected);
   }
-
-  /*
-  Strands strands;
-
-  public void setStrandsMad(short mad, BitSet bsSelected) {
-    if (mad != 0 && strands == null)
-      strands = new Strands(viewer, this);
-    if (strands != null)
-      strands.setMad(mad, bsSelected);
-  }
-  
-  public void setStrandsColix(byte palette, short colix, BitSet bsSelected) {
-    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) &&
-        strands == null)
-      strands = new Strands(viewer, this);
-    if (strands != null)
-      strands.setColix(palette, colix, bsSelected);
-  }
-  */
 
   Point3f centerBoundingBox;
   Point3f cornerBoundingBox;

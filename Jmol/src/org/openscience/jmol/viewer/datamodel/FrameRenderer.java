@@ -43,8 +43,6 @@ public class FrameRenderer {
   BondRenderer bondRenderer;
   MeasurementRenderer measurementRenderer;
   DotsRenderer dotsRenderer;
-  RibbonsRenderer ribbonsRenderer;
-  StrandsRenderer strandsRenderer;
   LineRenderer lineRenderer;
   CellLineRenderer cellLineRenderer;
 
@@ -76,11 +74,6 @@ public class FrameRenderer {
         dotsRenderer = new DotsRenderer(viewer, this);
       dotsRenderer.render(g3d, rectClip, frame, null);
     }
-    if (frame.ribbons != null) {
-      if (ribbonsRenderer == null)
-        ribbonsRenderer = new RibbonsRenderer(viewer, this);
-      ribbonsRenderer.render(g3d, rectClip, frame, null);
-    }
 
     for (int i = 0; i < JmolConstants.GRAPHIC_MAX; ++i) {
       Graphic graphic = frame.graphics[i];
@@ -91,31 +84,6 @@ public class FrameRenderer {
         renderer = renderers[i] = allocateRenderer(i);
       renderer.render(g3d, rectClip, frame, graphic);
     }
-
-    /*
-    if (frame.trace != null) {
-      if (traceRenderer == null)
-        traceRenderer = new TraceRenderer(viewer, this);
-      traceRenderer.render(g3d, rectClip, frame, frame.trace);
-    }
-
-    if (frame.backbone != null) {
-      if (backboneRenderer == null)
-        backboneRenderer = new BackboneRenderer(viewer, this);
-      backboneRenderer.render(g3d, rectClip, frame, frame.backbone);
-    }
-    if (frame.cartoon != null) {
-      if (cartoonRenderer == null)
-        cartoonRenderer = new CartoonRenderer(viewer, this);
-      cartoonRenderer.render(g3d, rectClip, frame, null);
-    }
-
-    if (frame.strands != null) {
-      if (strandsRenderer == null)
-        strandsRenderer = new StrandsRenderer(viewer, this);
-      strandsRenderer.render(g3d, rectClip, frame, null);
-    }
-    */
 
     if (frame.lineCount > 0) {
       if (lineRenderer == null)

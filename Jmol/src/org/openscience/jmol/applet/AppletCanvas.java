@@ -32,7 +32,7 @@ import java.awt.Canvas;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentAdapter;
 
-class AppletCanvas extends Canvas {
+public class AppletCanvas extends Canvas {
 
   private DisplayControl control;
 

@@ -186,14 +186,17 @@
     <mkdir dir="${applet.classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
         debug="on" deprecation="on" target="1.1"
-        includesfile="applet.classes">
-      <classpath refid="project.class.path" />
-    </javac>
+        includesfile="applet.classes" classpathref="project.class.path" />
+    <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
+        debug="on" deprecation="on" target="1.1"
+        includes="JmolApplet.java" classpathref="project.class.path" />
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
-        <include name="**/applet/Data/*" />
         <include name="**/*.dtd" />
         <include name="**/*.txt" />
+      </fileset>
+      <fileset dir="${source.dir}/org/openscience/jmol/applet">
+        <include name="Data/AtomTypes.txt" />
       </fileset>
     </copy>
   </target>

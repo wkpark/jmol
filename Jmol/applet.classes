@@ -1,4 +1,3 @@
-org/openscience/jmol/applet/JmolApplet.java
 org/openscience/jmol/applet/AppletCanvas.java
 org/openscience/jmol/applet/NonJavaSort.java
 org/openscience/jmol/BaseAtomType.java

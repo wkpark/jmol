@@ -153,7 +153,7 @@ public class NucleotidePolymer extends Polymer {
     // atom1.getAtomNumber() + "<->" + atom2.getAtomNumber());
     if (atom1 != null && atom2 != null) {
       Frame frame = chain.pdbmodel.pdbfile.frame;
-      frame.addHydrogenBond(atom1, atom2);
+      frame.bondAtoms(atom1, atom2, JmolConstants.BOND_H_NUCLEOTIDE);
     }
   }
 

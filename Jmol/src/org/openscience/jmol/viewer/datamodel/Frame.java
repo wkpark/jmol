@@ -227,10 +227,6 @@ final public class Frame {
 
   private Hashtable htAtomMap = new Hashtable();
 
-  public void addHydrogenBond(Atom atom1, Atom atom2) {
-    addBond(atom1.bondMutually(atom2, JmolConstants.BOND_H_REGULAR));
-  }
-
   private void addBond(Bond bond) {
     if (bond == null)
       return;

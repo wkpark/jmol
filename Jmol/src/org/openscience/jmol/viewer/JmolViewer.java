@@ -108,7 +108,9 @@ final public class JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
 
-    System.out.println("Jmol Version " + JmolConstants.version +
+    System.out.println(JmolConstants.copyright +
+                       "\nJmol Version " + JmolConstants.version +
+                       "  " + JmolConstants.date +
                        "\nJava " + strJavaVendor + " " + strJavaVersion +
                        " " + strOSName);
 

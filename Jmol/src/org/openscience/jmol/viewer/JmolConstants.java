@@ -30,8 +30,10 @@ final public class JmolConstants {
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
-  public static String version="10pre5a";
-  public final static String copyright="(C) 2004 The Jmol Development Team";
+  public final static String copyright = "(C) 2004 The Jmol Development Team";
+  public final static String version = "10pre5c";
+  public final static String date = "$DATE$";
+  public final static boolean officialRelease = false;
 
   public final static byte LABEL_NONE     = 0;
   public final static byte LABEL_SYMBOL   = 1;

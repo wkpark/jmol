@@ -63,4 +63,19 @@ class CrystalFrame extends ChemFrame {
                        (minY + maxY) / 2,
                        (minZ + maxZ) / 2);
   }
+
+  // arrowhead size isn't included because it is currently in screen
+  // coordinates .. oh well. 
+  float calculateRadius(Point3f center) {
+    // initialize to be the radius of the atoms ...
+    // just in case there are atoms outside the box
+    float radius = super.calculateRadius(center);
+    for (int i = 0, size = boxEdges.size(); i < size; ++i) {
+      Point3f position = (Point3f) boxEdges.elementAt(i);
+      float dist = center.distance(position);
+      if (dist > radius)
+        radius = dist;
+    }
+    return radius;
+  }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   Hungarian translation 
-  Translated from default version : project_en.xml (v 1.4)
+  Translated from default version : project_en.xml (v 1.5)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY language SYSTEM "language.xml" >
@@ -54,13 +54,13 @@
   </links>
 
   <notice>
-    <p>
+    <p><small>
       A honlapot fenntartja
       <a href="http://www.sf.net/projects/jmol/">
         <img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
           alt="SourceForge Logo" align="middle"/>
       </a>
-    </p>
+    </small></p>
   </notice>
 
 </project>

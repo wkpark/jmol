@@ -59,10 +59,13 @@
   </links>
 
   <notice>
-    <p>Hosted by 
-    <a href="http://www.sf.net/projects/jmol/"><img
-    src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
-    alt="SourceForge Logo" align="middle" /></a></p>
+    <p><small>
+      Hosted by 
+      <a href="http://www.sf.net/projects/jmol/">
+        <img src="http://www.sf.net/sflogo.php?group_id=23629" border="0" 
+          alt="SourceForge Logo" align="middle" />
+      </a>
+    </small></p>
   </notice>
 
 </project>

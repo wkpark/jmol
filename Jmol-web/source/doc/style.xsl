@@ -57,13 +57,13 @@
     <xsl:if test="@title">
       <xsl:choose>
         <xsl:when test='$level=2'>
-          <a name="{@title}"><h2><xsl:value-of select="@title"/></h2></a>
+          <h2><a name="{@title}"><xsl:value-of select="@title"/></a></h2>
         </xsl:when>
         <xsl:when test='$level=3'>
-          <a name="{@title}"><h3><xsl:value-of select="@title"/></h3></a>
+          <h3><a name="{@title}"><xsl:value-of select="@title"/></a></h3>
         </xsl:when>
         <xsl:when test='$level=4'>
-          <a name="{@title}"><h4><xsl:value-of select="@title"/></h4></a>
+          <h4><a name="{@title}"><xsl:value-of select="@title"/></a></h4>
         </xsl:when>
         <xsl:when test='$level>=5'>
           <h5><xsl:copy-of select="@title"/></h5>
@@ -90,9 +90,9 @@
 
   <xsl:template match="/">
     <xsl:variable name="project" select="document($project_xml)/project"/>
-    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html PUBLIC</xsl:text>
-    <xsl:text disable-output-escaping="yes">"-//W3C//DTD XHTML 1.0 Transitional//EN"</xsl:text>
-    <xsl:text disable-output-escaping="yes">"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;</xsl:text>
+    <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE HTML PUBLIC </xsl:text>
+    <xsl:text disable-output-escaping="yes">"-//W3C//DTD HTML 4.01 Transitional//EN" </xsl:text>
+    <xsl:text disable-output-escaping="yes">"http://www.w3.org/TR/html4/loose.dtd"&gt;</xsl:text>
     <xsl:text disable-output-escaping="yes">&lt;html lang="</xsl:text>
     <xsl:value-of select="$lang" disable-output-escaping="yes"/>
     <xsl:text disable-output-escaping="yes">"&gt;</xsl:text>
@@ -139,7 +139,7 @@
           <tr>
             <td align="center">
               <xsl:for-each select="$project/notice">
-                <small><xsl:copy-of select="./*"/></small>
+                <xsl:copy-of select="./*"/>
               </xsl:for-each>
             </td>
           </tr>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   Hungarian translation 
-  Translated from default version : index_en.xml (v 1.11)
+  Translated from default version : index_en.xml (v 1.12)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -14,35 +14,33 @@
     <form name="fahForm" action="">
       <script src="./fah.js" type="text/javascript"></script>
       <script src="./createProjectList.js" type="text/javascript"></script>
-      <table border="1">
-      <tr>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr><td>
         <table border="0"><tr>
           <td>
             <script type="text/javascript">jmolApplet(350, "", "Fah");</script>
           </td>
           <td valign="top">
-            <table border="0" cellpadding="0" cellspacing="0">
-              <script type="text/javascript">
-                addRowStanfordLogo();
-                addRowProjectNumber("Project");
-                addRowProjectName("N&#x00E9;v");
-                addRowProjectCredit("Pont&#x00E9;rt&#x00E9;k");
-                addRowProjectAtoms("Atomok sz&#x00E1;ma");
-                addRowProjectPreferred("El&#x00F5;nyben r&#x00E9;szes&#x00ED;tett hat&#x00E1;rid&#x00F5;");
-                addRowProjectDeadline("V&#x00E9;gs&#x00F5; hat&#x00E1;rid&#x00F5;");
-                addRowProjectFrames("Framek");
-                addRowProjectCode("K&#x00F3;dol&#x00E1;s");
-                addRowButtons(
-                  "A project le&#x00ED;r&#x00E1;sa",
-                  "Old&#x00F3;szer elrejt&#x00E9;se",
-                  "<fah_count_files/> f&#x00E1;jl / <fah_count_projects/> project.");
-                addRowCurrentXyz(
-                  "Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre");
-              </script>
-            </table>
+            <script type="text/javascript">
+              addRowStanfordLogo();
+              addRowProjectNumber("Project");
+              addRowProjectName("N&#x00E9;v");
+              addRowProjectCredit("Pont&#x00E9;rt&#x00E9;k");
+              addRowProjectAtoms("Atomok sz&#x00E1;ma");
+              addRowProjectPreferred("El&#x00F5;nyben r&#x00E9;szes&#x00ED;tett hat&#x00E1;rid&#x00F5;");
+              addRowProjectDeadline("V&#x00E9;gs&#x00F5; hat&#x00E1;rid&#x00F5;");
+              addRowProjectFrames("Framek");
+              addRowProjectCode("K&#x00F3;dol&#x00E1;s");
+              addRowButtons(
+                "A project le&#x00ED;r&#x00E1;sa",
+                "Old&#x00F3;szer elrejt&#x00E9;se",
+                "<fah_count_files/> f&#x00E1;jl / <fah_count_projects/> project.");
+              addRowCurrentXyz(
+                "Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre");
+            </script>
           </td>
         </tr></table>
-      </tr>
+      </td></tr>
 
       <tr>
         <td class="btfah">

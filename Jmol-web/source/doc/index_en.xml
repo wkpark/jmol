@@ -7,7 +7,7 @@
       <table border="1" width="600" bgcolor="#FFFAF0"
 	     cellpadding="10">
 	<tr>
-	  <td><script>
+	  <td><script type="text/javascript">
 	    jmolApplet(300, "script script/promotion1.en.txt");
 	  </script></td>
 	  <td>

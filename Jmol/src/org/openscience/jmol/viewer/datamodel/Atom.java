@@ -526,10 +526,11 @@ public final class Atom implements Bspt.Tuple {
     for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
       String specialAtomName = JmolConstants.specialAtomNames[i];
       if (specialAtomName != null) {
-        htAtom.put(specialAtomName, new Integer(i));
-        String alternateAtomName = generateStarredAtomName(specialAtomName);
-        if (alternateAtomName != null)
-          htAtom.put(specialAtomName, new Integer(i));
+        Integer boxedI = new Integer(i);
+        htAtom.put(specialAtomName, boxedI);
+        String starredAtomName = generateStarredAtomName(specialAtomName);
+        if (starredAtomName != null)
+          htAtom.put(starredAtomName, boxedI);
       }
     }
   }

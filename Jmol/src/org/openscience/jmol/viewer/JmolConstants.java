@@ -1539,13 +1539,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // nucleic acid backbone sugar
     //
-    "O5*", //  5 - sugar 5' oxygen
-    "C5*", //  6 - sugar 5' carbon
-    "C4*", //  7 - sugar ring 4' carbon
-    "C3*", //  8 - sugar ring 3' carbon
-    "O3*", //  9 - sugar 3' oxygen
-    "C2*", // 10 - sugar ring 2' carbon
-    "C1*", // 11 - sugar ring 1' carbon
+    "O5'", //  5 - sugar 5' oxygen
+    "C5'", //  6 - sugar 5' carbon
+    "C4'", //  7 - sugar ring 4' carbon
+    "C3'", //  8 - sugar ring 3' carbon
+    "O3'", //  9 - sugar 3' oxygen
+    "C2'", // 10 - sugar ring 2' carbon
+    "C1'", // 11 - sugar ring 1' carbon
 
     // reserved for future expansion ... lipids & carbohydrates
     null, null, null, null, // 12 - 15
@@ -1588,19 +1588,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "O2P", // 49 - second equivalent oxygen on phosphorus of phosphate
     
 
-    "O4*", // 50 - sugar ring 4' oxygen ... not present in +T ... maybe others
-    "O2*", // 51 - sugar 2' oxygen, unique to RNA
+    "O4'", // 50 - sugar ring 4' oxygen ... not present in +T ... maybe others
+    "O2'", // 51 - sugar 2' oxygen, unique to RNA
 
     // nucleic acid backbone hydrogens
     //
-    "1H5*", // 52 - first  equivalent H on sugar 5' carbon
-    "2H5*", // 53 - second  equivalent H on sugar 5' carbon 
-    "H4*",  // 54 - H on sugar ring 4' carbon
-    "H3*",  // 55 - H on sugar ring 3' carbon
-    "1H2*", // 56 - first equivalent H on sugar ring 2' carbon
-    "2H2*", // 57 - second equivalent H on sugar ring 2' carbon
-    "2HO*", // 58 - H on sugar 2' oxygen, unique to RNA 
-    "H1*",  // 59 - H on sugar ring 1' carbon 
+    "1H5'", // 52 - first  equivalent H on sugar 5' carbon
+    "2H5'", // 53 - second  equivalent H on sugar 5' carbon 
+    "H4'",  // 54 - H on sugar ring 4' carbon
+    "H3'",  // 55 - H on sugar ring 3' carbon
+    "1H2'", // 56 - first equivalent H on sugar ring 2' carbon
+    "2H2'", // 57 - second equivalent H on sugar ring 2' carbon
+    "2HO'", // 58 - H on sugar 2' oxygen, unique to RNA 
+    "H1'",  // 59 - H on sugar ring 1' carbon 
     //
     "H3T",  // 60 - 3' terminus hydrogen
     //

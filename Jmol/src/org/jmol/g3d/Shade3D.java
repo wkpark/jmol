@@ -172,7 +172,7 @@ final class Shade3D {
     // but there will be no fractional component, so the next test will fail
     if ((fp8Intensity & 0xFF) > nextRandom8Bit())
       ++intensity;
-    int random16bit = (int)seed & 0xFFFF;
+    int random16bit = seed & 0xFFFF;
     if (random16bit < 65536 / 3 && intensity > 0)
       --intensity;
     else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
@@ -205,6 +205,8 @@ final class Shade3D {
    * RANDU is the classic example of a poor random number generator.
    * But it is very cheap to calculate and is good enough for our purposes.
    *</p>
+   *
+   * @return Next random
    */
   static int nextRandom8Bit() {
     int t = seed;

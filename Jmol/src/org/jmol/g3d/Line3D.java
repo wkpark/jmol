@@ -83,8 +83,16 @@ final class Line3D {
    * integer rounding errors which cause cracking to occur in 'solid'
    * surfaces, the lines are actually drawn from their original end-points.
    *</p>
+   *
+   * @param x1
+   * @param y1
+   * @param z1
+   * @param x2
+   * @param y2
+   * @param z2
+   * @return Visibility (see VISIBILITY_... constants);
    */
-  int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
+int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
     int cc1 = clipCode(x1, y1, z1);
     int cc2 = clipCode(x2, y2, z2);
     if ((cc1 | cc2) == 0)
@@ -502,7 +510,7 @@ final class Line3D {
       (intensity < Shade3D.shadeLast ? intensity + 1 : intensity);
     int intensityDn =
       (intensity > 0 ? intensity - 1 : intensity);
-    int fp8Fraction = fp8Intensity & 0xFF;
+    //int fp8Fraction = fp8Intensity & 0xFF;
     int argb1 = shades1[intensity];
     int argb1Up = shades1[intensityUp];
     int argb1Dn = shades1[intensityDn];

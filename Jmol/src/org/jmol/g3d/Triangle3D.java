@@ -95,7 +95,7 @@ class Triangle3D {
       generateRaster(nLines, iMinY, iMaxY, axE, azE, 0);
     } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
-      int dzMaxMin = az[iMaxY] - az[iMinY];
+      //int dzMaxMin = az[iMaxY] - az[iMinY];
       int roundFactor;
       roundFactor = nLines / 2;
       if (dxMaxMin < 0) roundFactor = -roundFactor;

@@ -399,7 +399,7 @@ class Sphere3D {
     float radiusF2 = radiusF * radiusF;
     int offset = 0;
     
-    int visibleCount = 0;
+    //int visibleCount = 0;
     int countSE = 0;
     int radius = diameter / 2;
     
@@ -425,7 +425,7 @@ class Sphere3D {
     
     int[] sphereShape = new int[countSE];
     int offset2 = 0;
-    int offsetCount;
+    //int offsetCount;
 
     for(int i = radius; i < diameter; ++i) {
       int offsetRowSouth = i*diameter;

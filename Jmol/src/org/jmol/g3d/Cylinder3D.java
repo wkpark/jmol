@@ -47,7 +47,7 @@ class Cylinder3D {
   private int xA, yA, zA;
   private int dxB, dyB, dzB;
   private boolean tEvenDiameter;
-  private int evenCorrection;
+  //private int evenCorrection;
   private int diameter;
   private byte endcaps;
   private boolean tEndcapOpen;
@@ -59,7 +59,7 @@ class Cylinder3D {
   private float radius, radius2, cosTheta, cosPhi, sinPhi;
 
   int sampleCount;
-  private float[] samples = new float[32];
+  //private float[] samples = new float[32];
 
   void render(short colixA, short colixB, byte endcaps, int diameter,
                      int xA, int yA, int zA,
@@ -158,8 +158,8 @@ class Cylinder3D {
 
   void plotRaster(int i) {
     int fp8Up = fp8IntensityUp[i];
-    int iUp = fp8Up >> 8;
-    int iUpNext = iUp < Shade3D.shadeLast ? iUp + 1 : iUp;
+    //int iUp = fp8Up >> 8;
+    //int iUpNext = iUp < Shade3D.shadeLast ? iUp + 1 : iUp;
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +

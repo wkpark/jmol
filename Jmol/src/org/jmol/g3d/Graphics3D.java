@@ -2170,6 +2170,6 @@ final public class Graphics3D {
   }
 
   public short[] getGeodesicFaceNormixes(int level) {
-    return geodesic3d.getFaceNormixes(level);
+    return normix3d.getFaceNormixes(level);
   }
 }

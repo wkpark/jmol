@@ -132,9 +132,10 @@ class SurfaceRenderer extends ShapeRenderer {
         // use the normix for the face. Something is wrong somewhere
         // but I give up.
         // just use gouraud shading, in spite of performance penalty
+        short normix = geodesicFaceNormixes[i];
         g3d.fillTriangle(colix, false,
-                         screens[vA], vA, 
-                         screens[vB], vB, 
+                         screens[vA], vA,
+                         screens[vB], vB,
                          screens[vC], vC);
       }
     }

@@ -81,7 +81,7 @@ class Surface extends Shape {
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
   private final static int GEODESIC_CALC_LEVEL = 3;
-  int geodesicRenderingLevel = 2;
+  int geodesicRenderingLevel = 1;
 
   int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
   int[][] surfaceConvexMaps;

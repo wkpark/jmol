@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!--
+  Hungarian translation 
+  Translated from default version : index_en.xml (v 1.6)
+-->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY projects SYSTEM "fah-projects.xml" >
+]>
+<document>
+  <body>
+    <title>Jmol Applet a Folding@Home r&#x00E9;sz&#x00E9;re</title>
+    <section>
+
+    <form name="fahForm">
+      <table border="1">
+      <tr>
+        <table border="0"><tr>
+          <td>
+            <script>jmolApplet(350, "", "Fah");</script>
+          </td>
+          <td valign="top">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td align="center" colspan="2">
+                  <a href="http://folding.stanford.edu">
+                    <img src="FAHlogoButton.jpg" alt="fah-logo" border="0"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <td><label>Project:</label></td>
+                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>N&#x00E9;v:</label></td>
+                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>Pont&#x00E9;rt&#x00E9;k:</label></td>
+                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>Atomok sz&#x00E1;ma:</label></td>
+                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>El&#x00F5;nyben r&#x00E9;szes&#x00ED;tett hat&#x00E1;rid&#x00F5;:</label></td>
+                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>V&#x00E9;gs&#x00F5; hat&#x00E1;rid&#x00F5;:</label></td>
+                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>Framek:</label></td>
+                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td><label>K&#x00F3;dol&#x00E1;s:</label></td>
+                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
+              </tr>
+              <tr>
+                <td align="left" colspan="2">
+                  <br/>
+                  <input type='button' value='A project le&#x00ED;r&#x00E1;sa'
+                    onclick='showProjectDescription()'/>
+                  <input type='button' value='XML'
+                    onclick='showXMLFile()'/>
+                  <small>
+                    <fah_count_files/> f&#x00E1;jl / <fah_count_projects/> project.
+                  </small>
+                </td>
+              </tr>
+              <tr>
+                <td align="left" colspan="2">
+                  <small><i>
+                    Ha vannak <b>current.xyz</b> f&#x00E1;jljaid a hi&#x00E1;nyz&#x00F3; projectekhez, k&#x00E9;rlek k&#x00FC;ldd el &#x00F5;ket a nicove@users.sourceforge.net c&#x00ED;mre
+                  </i></small>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr></table>
+      </tr>
+
+      <tr>
+        <td class="btfah">
+          <script>
+            &projects;
+          </script>
+        </td>
+      </tr>
+      </table>
+    </form></section>
+  </body>
+</document>

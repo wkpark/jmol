@@ -622,7 +622,7 @@ public class Token {
     // selected - special and is handled at runtime
     "@rna nucleic & within(group,_a=15)",
     "@sheet _structure=2",
-    "@sidechain protein & !backbone", // doc & code inconsistent
+    "@sidechain (protein,nucleic) & !backbone", // doc & code inconsistent
     "@small ala,gly,ser",
     "@solvent _g>=69 & _g<=73", // water or ions
     "@surface !buried",

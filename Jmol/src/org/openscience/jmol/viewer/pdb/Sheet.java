@@ -53,10 +53,12 @@ public class Sheet extends PdbStructure {
 
     Point3f tempA = new Point3f();
     polymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
-    projectOntoAxis(tempA);
+    if (! lowerNeighborIsHelixOrSheet())
+      projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
     polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
-    projectOntoAxis(tempB);
+    if (! upperNeighborIsHelixOrSheet())
+      projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
   }

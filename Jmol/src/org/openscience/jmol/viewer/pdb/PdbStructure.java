@@ -74,6 +74,19 @@ public abstract class PdbStructure {
     }
   }
 
+  boolean lowerNeighborIsHelixOrSheet() {
+    if (polymerIndex == 0)
+      return false;
+    return polymer.groups[polymerIndex - 1].isHelixOrSheet();
+  }
+
+  boolean upperNeighborIsHelixOrSheet() {
+    int upperNeighborIndex = polymerIndex + polymerCount;
+    if (upperNeighborIndex == polymer.count)
+      return false;
+    return polymer.groups[upperNeighborIndex].isHelixOrSheet();
+  }
+
   final Vector3f vectorProjection = new Vector3f();
 
   void projectOntoAxis(Point3f point) {

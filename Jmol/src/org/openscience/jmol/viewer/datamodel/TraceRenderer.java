@@ -60,6 +60,8 @@ class TraceRenderer extends McpgRenderer {
     if (count > 0) {
       calcMidPoints(count, groups);
       for (int i = count; --i >= 0; ) {
+        if (mads[i] == 0)
+          continue;
         short colix = colixes[i];
         if (colix == 0)
           colix = alphas[i].colixAtom;

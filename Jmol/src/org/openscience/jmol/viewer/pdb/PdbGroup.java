@@ -86,11 +86,12 @@ public class PdbGroup {
       return false;
     }
     String group3 = group3Names[groupID];
+    int cchGroup3 = group3.length();
     for (int i = 0; i < 3; ++i) {
       char charWild = strWildcard.charAt(i);
       if (charWild == '?')
         continue;
-      if (charWild != group3.charAt(i))
+      if (i >= cchGroup3 || charWild != group3.charAt(i))
         return false;
     }
     return true;

@@ -1472,6 +1472,14 @@ final public class JmolConstants {
   
   public final static short RESID_AMINO_MAX = 22;
 
+  /****************************************************************
+   * PDB file format spec says that the 'residue name' must be
+   * right-justified. However, Eric Martz says that some files
+   * are not. Therefore, we will be 'flexible' in reading the
+   * group name ... we will trim() when read in the field.
+   * So a 'group3' can now be less than 3 characters long.
+   ****************************************************************/
+
   public final static String[] predefinedGroup3Names = {
     // taken from PDB spec
     "ALA", // 0
@@ -1501,18 +1509,18 @@ final public class JmolConstants {
     // if you change these numbers you *must* update
     // the predefined sets in script.Token.java
 
-    "  A", // 23
-    " +A",
-    "  G", // 25
-    " +G",
-    "  I", // 27
-    " +I",
-    "  C", // 29
-    " +C",
-    "  T", // 31
-    " +T",
-    "  U", // 33
-    " +U",
+    "A", // 23
+    "+A",
+    "G", // 25
+    "+G",
+    "I", // 27
+    "+I",
+    "C", // 29
+    "+C",
+    "T", // 31
+    "+T",
+    "U", // 33
+    "+U",
 
     "1MA", // 35
     "AMO",
@@ -1524,7 +1532,7 @@ final public class JmolConstants {
     "7MG",
     "G7M",
     "OMG",
-    " YG", // 45
+    "YG", // 45
     "QUO",
     "H2U",
     "5MU",

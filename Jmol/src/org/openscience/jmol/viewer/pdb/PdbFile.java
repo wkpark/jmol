@@ -155,7 +155,7 @@ public class PdbFile {
         chainID != chainIDCurrent ||
         seqcode != seqcodeCurrent)
       setCurrentResidue(modelID, chainID,
-                        seqcode, pdbRecord.substring(17, 20));
+                        seqcode, pdbRecord.substring(17, 20).trim());
     return groupCurrent.allocatePdbAtom(atomIndex, pdbRecord);
   }
 

@@ -753,6 +753,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         colorBond = color;
         eButton.setBackground(colorBond);
         //        viewer.setColorBond(colorBond);
+        viewer.setSticksColor(colorBond);
         currentProperties.put("colorBond", "" + colorBond.getRGB());
       }
     };
@@ -1097,6 +1098,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setColorSelection(colorSelection);
     viewer.setColorLabel(isLabelAtomColor ? null : colorText);
     //    viewer.setColorBond(isBondAtomColor ? null : colorBond);
+    viewer.setSticksColor(isBondAtomColor ? null : colorBond);
     viewer.setPercentVdwAtom(percentVdwAtom);
     //    viewer.setStyleLabel(styleLabel);
     //viewer.setPropertyStyleString(AtomPropsMode);
@@ -1174,6 +1176,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       } else if (key.equals("Prefs.isBondAtomColor")) {
         isBondAtomColor = isSelected;
         //        viewer.setColorBond(isBondAtomColor ? null : colorBond);
+        viewer.setSticksColor(isBondAtomColor ? null : colorBond);
         currentProperties.put("isBondAtomColor", strSelected);
         eButton.setEnabled(!isBondAtomColor);
       } else if (key.equals("Prefs.wireframeRotation")) {

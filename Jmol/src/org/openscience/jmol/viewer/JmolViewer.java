@@ -1382,6 +1382,14 @@ final public class JmolViewer {
                                   selectionManager.bsSelection);
     refresh();
   }
+
+  public void setShapeColorProperty(int shapeType, Color color) {
+    setShapeProperty(shapeType, "color", color);
+  }
+
+  public void setSticksColor(Color color) {
+    setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);
+  }
   
   public Object getShapeProperty(int shapeType, String propertyName) {
     return modelManager.getShapeProperty(shapeType, propertyName);

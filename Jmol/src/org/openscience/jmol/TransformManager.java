@@ -291,7 +291,7 @@ public class TransformManager {
   ****************************************************************/
   public boolean perspectiveDepth = true;
   public double cameraDepth = 3;
-  public int cameraZ = 750;
+  public int cameraZ;
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     this.perspectiveDepth = perspectiveDepth;
@@ -332,16 +332,8 @@ public class TransformManager {
 
   public void scaleFitToScreen() {
     if (dimCurrent == null || control.getFrame() == null)  {
-      // FIXME -- what is proper startup sequence in this case? 
       return;
     }
-
-    // FIXME perspective view resize - mth dec 2003
-    // there is some problem with perspective view with the screen is
-    // resized larger. only shows up in perspective view. things are being
-    // displayed larger than they should be. that is, rotations can go
-    // off the edge of the screen. goes away when home is hit
-
     // translate to the middle of the screen
     xTranslation = dimCurrent.width / 2;
     yTranslation = dimCurrent.height / 2;
@@ -359,15 +351,18 @@ public class TransformManager {
     scalePixelsPerAngstrom =
       minScreenDimension / 2 / control.getRotationRadius();
     if (perspectiveDepth) {
+      cameraZ = (int)(cameraDepth * minScreenDimension);
       double scaleFactor = (cameraZ + minScreenDimension/2) / (double)cameraZ;
-      scaleFactor += .02f; // don't know why I need this, but seems I do -- mth
+      // mth - for some reason, I can make the scaleFactor bigger in this
+      // case. I do not know why, but there is extra space around the edges.
+      // I have looked at it three times and still cannot figure it out
+      // so just bump it up a bit.
+      scaleFactor += 0.02;
       scalePixelsPerAngstrom *= scaleFactor;
     }
-    // these are important!
     scaleDefaultPixelsPerAngstrom = scalePixelsPerAngstrom;
     zoomPercentSetting = zoomPercent = 100;
     zoomEnabled = true;
-    cameraZ = (int)cameraDepth * minScreenDimension;
   }
 
   public int screenAtomDiameter(int z, Atom atom, int percentVdw) {

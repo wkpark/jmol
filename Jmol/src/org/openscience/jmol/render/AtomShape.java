@@ -279,7 +279,9 @@ public class AtomShape implements Shape {
     int y2Bond = y2 - ((radius2Bond - arcFactor) * dy) / magnitude;
     int x1Edge;
     int y1Edge;
-    // technically, this bond width is not correct, but ...
+    // technically, this bond width is not correct in that it is
+    // not in perspective. the width at z1 should be wider than the
+    // width at z2. but ...
     // just take the average of the two z's and don't worry about it
     int avgZ = (z1 + z2) / 2;
     double halfBondWidth
@@ -293,8 +295,7 @@ public class AtomShape implements Shape {
     }
 
     if (wireframeRotation ||
-        (bondDrawMode == DisplayControl.LINE) ||
-        (halfBondWidth < .75f)) {
+        (bondDrawMode == DisplayControl.LINE)) {
       drawLineBond(g,
                    x1Bond, y1Bond, color1,
                    x1Edge, y1Edge,
@@ -303,12 +304,22 @@ public class AtomShape implements Shape {
       return;
     }
     if (bondDrawMode != DisplayControl.SHADING) {
+      Color outline1 = getOutline(color1);
+      Color outline2 = getOutline(color2);
+      if (halfBondWidth < .75) {
+        drawLineBond(g,
+                     x1Bond, y1Bond, (bondDrawMode == DisplayControl.WIREFRAME
+                                      ? color1 : outline1),
+                     x1Edge, y1Edge,
+                     x2Bond, y2Bond, (bondDrawMode == DisplayControl.WIREFRAME
+                                      ? color2 : outline2),
+                     dx, dy, magnitude, bondOrder, halfBondWidth);
+        return;
+      }
       drawRectBond(g,
-                   x1Bond, y1Bond, color1,
-                   (halfBondWidth < 1.5f) ? null : getOutline(color1),
+                   x1Bond, y1Bond, color1, outline1,
                    x1Edge, y1Edge,
-                   x2Bond, y2Bond, color2,
-                   (halfBondWidth < 1.5f) ? null : getOutline(color2),
+                   x2Bond, y2Bond, color2, outline2,
                    bondDrawMode != DisplayControl.WIREFRAME,
                    dx, dy, magnitude, bondOrder, halfBondWidth, halfBondWidth);
       return;

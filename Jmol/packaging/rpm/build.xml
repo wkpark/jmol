@@ -1,7 +1,7 @@
 <project name="Jmol.rpm" default="main" basedir=".">
 
 	<property name="name" value="jmol" />
-	<property name="version" value="1" />
+	<property name="version" value="2" />
 	<property name="release" value="1" />
 	<property name="jmol.dir" value="../.." />
 	<property name="dist.dir" value="dist" />

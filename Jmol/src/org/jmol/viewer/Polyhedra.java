@@ -163,31 +163,37 @@ class Polyhedra extends SelectionIndependentShape {
     }
 
     void copyOctahedronVertices(Atom[] otherAtoms) {
-      vertices[0] = otherAtoms[5];
+      int i;
+      i = getFarthestAtomIndex(centralAtom.point3f, otherAtoms);
+      vertices[0] = otherAtoms[i];
+      otherAtoms[i] = null;
+      foo(0, 5, otherAtoms);
+      foo(0, 1, otherAtoms);
+      foo(1, 3, otherAtoms);
+      foo(1, 2, otherAtoms);
+      foo(1, 4, otherAtoms);
+    }
+  
+    void foo(int i, int j, Atom[] atoms) {
+      int k = getFarthestAtomIndex(vertices[i].point3f, atoms);
+      vertices[j] = atoms[k];
+      atoms[k] = null;
+    }
+    
+    int getFarthestAtomIndex(Point3f point3f, Atom[] atoms) {
       float dist2Max = 0;
       int indexFarthest = -1;
-      for (int i = 5; --i > 0; ) {
-        float dist2 =
-          centralAtom.point3f.distanceSquared(otherAtoms[i].point3f);
-        if (dist2 > dist2Max)
-          indexFarthest = i;
+      for (int i = atoms.length; --i >= 0; ) {
+        Atom atom = atoms[i];
+        if (atom != null) {
+          float dist2 = point3f.distance(atom.point3f);
+          if (dist2 > dist2Max) {
+            dist2Max = dist2;
+            indexFarthest = i;
+          }
+        }
       }
-      vertices[5] = otherAtoms[indexFarthest];
-      for (int i = indexFarthest; i < 4; ++i)
-        otherAtoms[i] = otherAtoms[i + 1];
-      Point3f pointEast = (vertices[1] = otherAtoms[4]).point3f;
-      dist2Max = 0;
-      indexFarthest = -1;
-      for (int i = 3; --i >= 0; ) {
-        float dist2 = pointEast.distanceSquared(otherAtoms[i].point3f);
-        if (dist2 > dist2Max)
-          indexFarthest = i;
-      }
-      vertices[3] = otherAtoms[indexFarthest];
-      for (int i = indexFarthest; i < 2; ++i)
-        otherAtoms[i] = otherAtoms[i + 1];
-      vertices[2] = otherAtoms[0];
-      vertices[4] = otherAtoms[1];
+    return indexFarthest;
     }
   }
 }

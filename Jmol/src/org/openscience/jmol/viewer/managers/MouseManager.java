@@ -98,14 +98,15 @@ public abstract class MouseManager {
   final static long MAX_DOUBLE_CLICK_MILLIS = 700;
   
   final static int LEFT = 16;
-  final static int MIDDLE = Event.ALT_MASK;  // 8
-  final static int ALT = Event.ALT_MASK;     // 8
+  final static int MIDDLE = Event.ALT_MASK;  // 8 note that MIDDLE
+  final static int ALT = Event.ALT_MASK;     // 8 and ALT are the same
   final static int RIGHT = Event.META_MASK;  // 4
   final static int CTRL = Event.CTRL_MASK;   // 2
   final static int SHIFT = Event.SHIFT_MASK; // 1
   final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
   final static int CTRL_SHIFT = CTRL | SHIFT;
   final static int CTRL_LEFT = CTRL | LEFT;
+  final static int ALT_LEFT = ALT | LEFT;
   final static int SHIFT_LEFT = SHIFT | LEFT;
   final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
   final static int CTRL_RIGHT = CTRL | RIGHT;
@@ -191,6 +192,7 @@ public abstract class MouseManager {
         viewer.notifyPicked(nearestAtomIndex);
       }
       break;
+    case ALT_LEFT:
     case MIDDLE:
       viewer.zoomToPercent(100);
       break;
@@ -224,6 +226,7 @@ public abstract class MouseManager {
         addToMeasurement(nearestAtomIndex, true);
       }
       break;
+    case ALT_LEFT:
     case MIDDLE:
       viewer.homePosition();
       break;
@@ -240,6 +243,7 @@ public abstract class MouseManager {
     case LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
       break;
+    case ALT_LEFT:
     case MIDDLE:
       viewer.translateXYBy(deltaX, deltaY);
       break;

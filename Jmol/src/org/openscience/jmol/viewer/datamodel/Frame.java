@@ -66,6 +66,8 @@ final public class Frame {
 
   boolean hasVibrationVectors;
 
+  boolean structuresDefined;
+
   BitSet elementsPresent;
 
   int groupCount;
@@ -111,11 +113,15 @@ final public class Frame {
     for (int i = atomCount; --i >= 0; )
       if (atoms[i].vibrationVector != null) {
         hasVibrationVectors = true;
+        break;
       }
 
     ////////////////////////////////////////////////////////////////
     //
     hackAtomSerialNumbersForAnimations();
+
+    if (! structuresDefined)
+      mmset.calculateStructures();
 
     ////////////////////////////////////////////////////////////////
     // find things for the popup menus
@@ -143,6 +149,17 @@ final public class Frame {
       }
       atom.atomSerial = modelAtomIndex++;
     }
+  }
+
+  public void defineStructure(String structureType,
+                              char startChainID,
+                              int startSequenceNumber, char startInsertionCode,
+                              char endChainID,
+                              int endSequenceNumber, char endInsertionCode) {
+    structuresDefined = true;
+    mmset.defineStructure(structureType, startChainID,
+                          startSequenceNumber, startInsertionCode,
+                          endChainID, endSequenceNumber, endInsertionCode);
   }
 
   public int getAtomIndexFromAtomNumber(int atomNumber) {

@@ -201,6 +201,9 @@ abstract class Polymer {
   abstract void addSecondaryStructure(byte type,
                                       char chainIdStart, int startSeqcode,
                                       char chainIdEnd, int endSeqcode);
+
+  void calculateStructures() { }
+
   abstract boolean isProtein();
 
   abstract void calcHydrogenBonds();

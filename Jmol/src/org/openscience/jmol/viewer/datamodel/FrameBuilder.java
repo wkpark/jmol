@@ -99,13 +99,13 @@ final public class FrameBuilder {
       adapter.getStructureIterator(clientFile);
     if (iterStructure != null) 
       while (iterStructure.hasNext())
-        frame.mmset.defineStructure(iterStructure.getStructureType(),
-                                    iterStructure.getStartChainID(),
-                                    iterStructure.getStartSequenceNumber(),
-                                    iterStructure.getStartInsertionCode(),
-                                    iterStructure.getEndChainID(),
-                                    iterStructure.getEndSequenceNumber(),
-                                    iterStructure.getEndInsertionCode());
+        frame.defineStructure(iterStructure.getStructureType(),
+                              iterStructure.getStartChainID(),
+                              iterStructure.getStartSequenceNumber(),
+                              iterStructure.getStartInsertionCode(),
+                              iterStructure.getEndChainID(),
+                              iterStructure.getEndSequenceNumber(),
+                              iterStructure.getEndInsertionCode());
   
     frame.atomCount = atomCount;
     frame.atoms = atoms;

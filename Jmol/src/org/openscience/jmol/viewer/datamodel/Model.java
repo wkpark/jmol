@@ -68,6 +68,11 @@ final class Model {
     }
   }
 
+  void calculateStructures() {
+    for (int i = polymerCount; --i >= 0; )
+      polymers[i].calculateStructures();
+  }
+
   int getChainCount() {
     return chainCount;
   }

@@ -43,15 +43,15 @@ final public class Mmset {
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
 
-  public Mmset(Frame frame) {
+  Mmset(Frame frame) {
     this.frame = frame;
   }
-
-  public void defineStructure(String structureType,
-                              char startChainID,
-                              int startSequenceNumber, char startInsertionCode,
-                              char endChainID,
-                              int endSequenceNumber, char endInsertionCode) {
+  
+  void defineStructure(String structureType,
+                       char startChainID,
+                       int startSequenceNumber, char startInsertionCode,
+                       char endChainID,
+                       int endSequenceNumber, char endInsertionCode) {
     /*
     System.out.println("Mmset.defineStructure(" + structureType + "," +
                        chainID + "," +
@@ -69,7 +69,12 @@ final public class Mmset {
                                                  endInsertionCode));
   }
 
-  public void freeze() {
+  void calculateStructures() {
+    for (int i = modelCount; --i >= 0; )
+      models[i].calculateStructures();
+  }
+
+  void freeze() {
     //    System.out.println("Mmset.freeze() modelCount=" + modelCount);
     for (int i = modelCount; --i >= 0; ) {
       //      System.out.println(" model " + i);

@@ -206,23 +206,23 @@ public class AminoPolymer extends AlphaPolymer {
     frame.bondAtoms(nitrogen, oxygen, order);
   }
 
+  /*
+   * If someone wants to work on this code for secondary structure
+   * recognition that would be great
+   *
+   * miguel 2004 06 16
+
+   
   void calculateStructures() {
     calcHydrogenBonds();
     char[] structureTags = new char[count];
-    /*
-     * If someone wants to work on this code for secondary structure
-     * recognition that would be great
-     *
-     * miguel 2004 06 16
-     */
 
     findPitch(3, 4, '4', structureTags);
 
-    /*
-    System.out.println("secondaryStructureTags:");
-    for (int i = 0; i < count; ++i)
-      System.out.println("" + i + " : " + structureTags[i]);
-    */
+
+    //    System.out.println("secondaryStructureTags:");
+    //    for (int i = 0; i < count; ++i)
+    //      System.out.println("" + i + " : " + structureTags[i]);
 
     int iStart = 0;
     while (iStart < count) {
@@ -256,4 +256,6 @@ public class AminoPolymer extends AlphaPolymer {
       }
     }
   }
+
+  */
 }

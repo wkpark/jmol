@@ -183,7 +183,7 @@ public class SimpleModelAdapter extends JmolModelAdapter {
   }
 
   public JmolModelAdapter.BondIterator
-    getCovalentBondIterator(Object clientFile) {
+    getBondIterator(Object clientFile) {
     return new BondIterator((Model)clientFile);
   }
 
@@ -308,8 +308,8 @@ abstract class Model {
   int atomCount;
   int bondCount;
   String modelName;
-  Atom[] atoms;
-  Bond[] bonds;
+  Atom[] atoms = new Atom[512];
+  Bond[] bonds = new Bond[1024];
   String errorMessage;
   String fileHeader;
   float[] notionalUnitcell;
@@ -328,6 +328,24 @@ abstract class Model {
     bonds = null;
     notionalUnitcell = pdbScaleMatrix = pdbScaleTranslate = null;
     pdbStructureRecords = null;
+  }
+
+  void addAtom(Atom atom) {
+    if (atomCount == atoms.length) {
+      Atom[] t = new Atom[atomCount + 512];
+      System.arraycopy(atoms, 0, t, 0, atomCount);
+      atoms = t;
+    }
+    atoms[atomCount++] = atom;
+  }
+
+  void addBond(Bond bond) {
+    if (bondCount == bonds.length) {
+      Bond[] t = new Bond[bondCount + 1024];
+      System.arraycopy(bonds, 0, t, 0, bondCount);
+      bonds = t;
+    }
+    bonds[bondCount++] = bond;
   }
 
   void setModelName(String modelName) {
@@ -351,7 +369,6 @@ class XyzModel extends Model {
         else
           reader.readLine();
         readAtoms(reader, modelNumber, modelCount);
-        atomCount += modelCount;
         ++modelNumber;
       }
     } catch (Exception ex) {
@@ -377,10 +394,6 @@ class XyzModel extends Model {
 
   void readAtoms(BufferedReader reader, int modelNumber, int modelCount)
     throws Exception {
-    Atom[] t = new Atom[atomCount + modelCount];
-    if (atomCount > 0)
-      System.arraycopy(atoms, 0, t, 0, atomCount);
-    atoms = t;
     float[] chargeAndOrVector = new float[4];
     for (int i = 0; i < modelCount; ++i) {
       StringTokenizer tokenizer =
@@ -401,8 +414,8 @@ class XyzModel extends Model {
         vectorY = chargeAndOrVector[j - 2];
         vectorZ = chargeAndOrVector[j - 1];
       }
-      atoms[atomCount + i] = new Atom(modelNumber, elementSymbol, charge,
-                                      x, y, z, vectorX, vectorY, vectorZ);
+      addAtom(new Atom(modelNumber, elementSymbol, charge,
+                       x, y, z, vectorX, vectorY, vectorZ));
     }
   }
 }
@@ -415,20 +428,19 @@ class JmeModel extends Model {
     try {
       line = reader.readLine();
       tokenizer = new StringTokenizer(line, "\t ");
-      atomCount = Integer.parseInt(tokenizer.nextToken());
+      int atomCount = Integer.parseInt(tokenizer.nextToken());
       System.out.println("atomCount=" + atomCount);
-      bondCount = Integer.parseInt(tokenizer.nextToken());
+      int bondCount = Integer.parseInt(tokenizer.nextToken());
       setModelName("JME");
-      readAtoms();
-      readBonds();
+      readAtoms(atomCount);
+      readBonds(bondCount);
     } catch (Exception ex) {
       errorMessage = "Could not read file:" + ex;
       System.out.println(errorMessage);
     }
   }
     
-  void readAtoms() throws Exception {
-    atoms = new Atom[atomCount];
+  void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String atom = tokenizer.nextToken();
       //      System.out.println("atom=" + atom);
@@ -439,12 +451,11 @@ class JmeModel extends Model {
       float x = Float.valueOf(tokenizer.nextToken()).floatValue();
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = 0;
-      atoms[i] = new Atom(elementSymbol, 0, x, y, z);
+      addAtom(new Atom(elementSymbol, 0, x, y, z));
     }
   }
 
-  void readBonds() throws Exception {
-    bonds = new Bond[bondCount];
+  void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       int atomIndex1 = Integer.parseInt(tokenizer.nextToken());
       int atomIndex2 = Integer.parseInt(tokenizer.nextToken());
@@ -453,9 +464,10 @@ class JmeModel extends Model {
       if (order < 1) {
         //        System.out.println("Stereo found:" + order);
         order = ((order == -1)
-                 ? JmolConstants.BOND_STEREO_NEAR : JmolConstants.BOND_STEREO_FAR);
+                 ? JmolConstants.BOND_STEREO_NEAR
+                 : JmolConstants.BOND_STEREO_FAR);
       }
-      bonds[i] = new Bond(atomIndex1-1, atomIndex2-1, order);
+      addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
   }
 }
@@ -467,15 +479,14 @@ class MolModel extends Model {
     reader.readLine();
     reader.readLine();
     String countLine = reader.readLine();
-    atomCount = Integer.parseInt(countLine.substring(0, 3).trim());
-    bondCount = Integer.parseInt(countLine.substring(3, 6).trim());
-    readAtoms(reader);
-    readBonds(reader);
+    int atomCount = Integer.parseInt(countLine.substring(0, 3).trim());
+    int bondCount = Integer.parseInt(countLine.substring(3, 6).trim());
+    readAtoms(reader, atomCount);
+    readBonds(reader, bondCount);
   }
   
   // www.mdli.com/downloads/public/ctfile/ctfile.jsp
-  void readAtoms(BufferedReader reader) throws Exception {
-    atoms = new Atom[atomCount];
+  void readAtoms(BufferedReader reader, int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
       String line = reader.readLine();
       String elementSymbol = line.substring(31,34).trim();
@@ -489,12 +500,11 @@ class MolModel extends Model {
           charge = 4 - chargeCode;
       }
 
-      atoms[i] = new Atom(elementSymbol, charge, x, y, z);
+      addAtom(new Atom(elementSymbol, charge, x, y, z));
     }
   }
 
-  void readBonds(BufferedReader reader) throws Exception {
-    bonds = new Bond[bondCount];
+  void readBonds(BufferedReader reader, int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       String line = reader.readLine();
       int atomIndex1 = Integer.parseInt(line.substring(0, 3).trim());
@@ -502,7 +512,7 @@ class MolModel extends Model {
       int order = Integer.parseInt(line.substring(6, 9).trim());
       if (order == 4)
         order = JmolConstants.BOND_AROMATIC;
-      bonds[i] = new Bond(atomIndex1-1, atomIndex2-1, order);
+      addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
     }
   }
 }
@@ -626,18 +636,13 @@ class PdbModel extends Model {
       float z =
         Float.valueOf(line.substring(46, 54).trim()).floatValue();
       /****************************************************************/
-      if (atomCount == atoms.length) {
-        Atom[] t = new Atom[atomCount + 512];
-        System.arraycopy(atoms, 0, t, 0, atomCount);
-        atoms = t;
-      }
       if (serial >= serialMap.length) {
         int[] t = new int[serial + 500];
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      atoms[atomCount++] = new Atom(currentModelNumber, elementSymbol,
-                                    charge, x, y, z, line);
+      addAtom(new Atom(currentModelNumber, elementSymbol,
+                       charge, x, y, z, line));
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {
@@ -646,11 +651,6 @@ class PdbModel extends Model {
   }
 
   void conect() {
-    if (bondCount + 4 >= bonds.length) {
-      Bond[] t = new Bond[bonds.length + 256];
-      System.arraycopy(bonds, 0, t, 0, bondCount);
-      bonds = t;
-    }
     int sourceSerial = -1;
     int sourceIndex = -1;
     try {
@@ -678,9 +678,9 @@ class PdbModel extends Model {
         }
         if (i >= 4)
           System.out.println("hbond:" + sourceIndex + "->" + targetIndex);
-        bonds[bondCount++] = new Bond(sourceIndex, targetIndex,
-                                      i < 4
-                                      ? 1 : JmolModelAdapter.ORDER_HBOND);
+        addBond(new Bond(sourceIndex, targetIndex,
+                         i < 4
+                         ? 1 : JmolModelAdapter.ORDER_HBOND));
       }
     } catch (Exception e) {
     }

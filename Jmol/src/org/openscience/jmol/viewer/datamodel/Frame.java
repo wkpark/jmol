@@ -182,11 +182,15 @@ final public class Frame {
   public void bondAtoms(Object atomUid1, Object atomUid2,
                              int order) {
     Atom atom1 = (Atom)htAtomMap.get(atomUid1);
-    if (atom1 == null)
+    if (atom1 == null) {
+      System.out.println("Frame.bondAtoms cannot find atomUid1?");
       return;
+    }
     Atom atom2 = (Atom)htAtomMap.get(atomUid2);
-    if (atom2 == null)
+    if (atom2 == null) {
+      System.out.println("Frame.bondAtoms cannot find atomUid2?");
       return;
+    }
     addBond(atom1.bondMutually(atom2, order));
   }
 

@@ -76,6 +76,87 @@ public class DisplaySettings {
    */
   public static final int ATOMCHARGE = 1;
 
+
+  /**
+   * Returns whether these settings are equal to another.
+   *
+   * @param obj the other settings.
+   * @return true if the settings are equal.
+   */
+  public boolean equals(Object obj) {
+    if (obj == this) {
+      return true;
+    }
+    if (!(obj instanceof DisplaySettings)) {
+      return false;
+    }
+    DisplaySettings otherSettings = (DisplaySettings) obj;
+    return labelMode == otherSettings.labelMode
+        && atomDrawMode == otherSettings.atomDrawMode
+        && atomColorProfile == otherSettings.atomColorProfile
+        && bondDrawMode == otherSettings.bondDrawMode
+        && bondWidth == otherSettings.bondWidth
+        && bondScreenScale == otherSettings.bondScreenScale
+        && (outlineColor == otherSettings.outlineColor ||
+            (outlineColor != null && outlineColor.equals(otherSettings.outlineColor)))
+        && (propertyMode == otherSettings.propertyMode ||
+            (propertyMode != null && propertyMode.equals(otherSettings.propertyMode)))
+        && (pickedColor == otherSettings.pickedColor ||
+            (pickedColor != null && pickedColor.equals(otherSettings.pickedColor)))
+        && (textColor == otherSettings.textColor ||
+            (textColor != null && textColor.equals(otherSettings.textColor)))
+        && (distanceColor == otherSettings.distanceColor ||
+            (distanceColor != null && propertyMode.equals(otherSettings.distanceColor)))
+        && (angleColor == otherSettings.angleColor ||
+            (angleColor != null && propertyMode.equals(otherSettings.angleColor)))
+        && (dihedralColor == otherSettings.dihedralColor ||
+            (dihedralColor != null && propertyMode.equals(otherSettings.dihedralColor)))
+        && ShowAtoms == otherSettings.ShowAtoms
+        && ShowBonds == otherSettings.ShowBonds
+        && ShowVectors == otherSettings.ShowVectors
+        && ShowHydrogens == otherSettings.ShowHydrogens
+        && vectorScreenScale == otherSettings.vectorScreenScale
+        && atomScreenScale == otherSettings.atomScreenScale
+        && atomZOffset == otherSettings.atomZOffset
+        && atomDepthFactor == otherSettings.atomDepthFactor
+        && atomSphereFactor == otherSettings.atomSphereFactor
+        && doFastRendering == otherSettings.doFastRendering;
+  }
+  
+  /**
+   * Returns the hash code for this object.
+   *
+   * @return the hash code for this object.
+   */
+  public int hashCode() {
+    int result = 17;
+    result = 37*result + labelMode;
+    result = 37*result + atomDrawMode;
+    result = 37*result + atomColorProfile;
+    result = 37*result + bondDrawMode;
+    result = 37*result + Float.floatToIntBits(bondWidth);
+    result = 37*result + Float.floatToIntBits(bondScreenScale);
+    result = 37*result + (outlineColor == null ? 0 : outlineColor.hashCode());
+    result = 37*result + (propertyMode == null ? 0 : propertyMode.hashCode());
+    result = 37*result + (pickedColor == null ? 0 : pickedColor.hashCode());
+    result = 37*result + (textColor == null ? 0 : textColor.hashCode());
+    result = 37*result + (distanceColor == null ? 0 : distanceColor.hashCode());
+    result = 37*result + (angleColor == null ? 0 : angleColor.hashCode());
+    result = 37*result + (dihedralColor == null ? 0 : dihedralColor.hashCode());
+    result = 37*result + (ShowAtoms ? 0 : 1);
+    result = 37*result + (ShowBonds ? 0 : 1);
+    result = 37*result + (ShowVectors ? 0 : 1);
+    result = 37*result + (ShowHydrogens ? 0 : 1);
+    result = 37*result + Float.floatToIntBits(vectorScreenScale);
+    result = 37*result + Float.floatToIntBits(atomScreenScale);
+    result = 37*result + atomZOffset;
+    result = 37*result + Float.floatToIntBits(atomDepthFactor);
+    long longValue = Double.doubleToLongBits(atomSphereFactor);
+    result = 37*result + (int)(longValue ^ (longValue >>>32));
+    result = 37*result + (doFastRendering ? 0 : 1);
+    return result;
+  }
+
   /**
    * Sets the display style for labels.
    */

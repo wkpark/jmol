@@ -47,37 +47,53 @@ public class ChemFrameRenderer {
     boolean drawHydrogen = settings.getShowHydrogens();
     frame.transform();
     
-    if (shapes == null || frame.hashCode() != frameId) {
-      frameId = frame.hashCode();
+    if (shapes == null || frame.hashCode() != frameHashCode
+        || settings.hashCode() != previousSettingsHashCode) {
+      frameHashCode = frame.hashCode();
+      previousSettingsHashCode = settings.hashCode();
       double maxMagnitude = -1.0;
       double minMagnitude = Double.MAX_VALUE;
       Vector shapesList = new Vector();
       for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
         Atom atom = frame.getAtomAt(i);
-        shapesList.addElement(new AtomShape(atom, settings, frame.isAtomPicked(i)));
-        shapesList.addElement(new AtomLabelShape(atom, settings));
-        Enumeration bondIter = atom.getBondedAtoms();
-        while (bondIter.hasMoreElements()) {
-          Atom otherAtom = (Atom) bondIter.nextElement();
-          shapesList.addElement(new BondShape(atom, otherAtom, settings));
+        if (settings.getShowAtoms() && (settings.getShowHydrogens()
+            || !atom.isHydrogen())) {
+          shapesList.addElement(new AtomShape(atom, settings, frame.isAtomPicked(i)));
+          shapesList.addElement(new AtomLabelShape(atom, settings));
+        }
+        if (settings.getShowBonds()) {
+          Enumeration bondIter = atom.getBondedAtoms();
+          while (bondIter.hasMoreElements()) {
+            Atom otherAtom = (Atom) bondIter.nextElement();
+            if (settings.getShowHydrogens()
+                || (!atom.isHydrogen() && !otherAtom.isHydrogen())) {
+              shapesList.addElement(new BondShape(atom, otherAtom, settings));
+            }
+          }
         }
 
-        Point3f vector = atom.getVector();
-        if (vector != null) {
-          double magnitude = vector.distance(zeroPoint);
-          if (magnitude > maxMagnitude) {
-            maxMagnitude = magnitude;
-          }
-          if (magnitude < minMagnitude) {
-            minMagnitude = magnitude;
+        if (settings.getShowVectors()) {
+          Point3f vector = atom.getVector();
+          if (vector != null) {
+            double magnitude = vector.distance(zeroPoint);
+            if (magnitude > maxMagnitude) {
+              maxMagnitude = magnitude;
+            }
+            if (magnitude < minMagnitude) {
+              minMagnitude = magnitude;
+            }
           }
         }
       }
       
-      double magnitudeRange = maxMagnitude - minMagnitude;
-      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-        Atom atom = frame.getAtomAt(i);
-        shapesList.addElement(new AtomVectorShape(atom, settings, minMagnitude, magnitudeRange));
+      if (settings.getShowVectors()) {
+        double magnitudeRange = maxMagnitude - minMagnitude;
+        for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+          Atom atom = frame.getAtomAt(i);
+          if (settings.getShowHydrogens() || !atom.isHydrogen()) {
+            shapesList.addElement(new AtomVectorShape(atom, settings, minMagnitude, magnitudeRange));
+          }
+        }
       }
       
       shapes = new Shape[shapesList.size()];
@@ -94,7 +110,8 @@ public class ChemFrameRenderer {
     
   }
 
-  int frameId;
+  int frameHashCode;
+  int previousSettingsHashCode;
   
   Shape[] shapes;
   

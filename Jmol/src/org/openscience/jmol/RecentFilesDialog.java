@@ -44,10 +44,11 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
     
     private static JmolResourceHandler jrh;
     private boolean ready = false;
-    private String fileName = "BUG";
-    private String fileType = "BUG";
+    private String fileName = null;
+    private String fileType = null;
     private static final int MAX_FILES = 10;
-    private JButton okBut;
+    private JButton okButton;
+    private JButton cancelButton;
     private String[] files = new String[MAX_FILES];
     private String[] fileTypes = new String[MAX_FILES];
     private JList fileList;
@@ -60,9 +61,14 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
         props = new java.util.Properties();
         getFiles();
         getContentPane().setLayout(new java.awt.BorderLayout());
-        okBut = new JButton(rch.getString("okLabel"));
-        okBut.addActionListener(this);
-        getContentPane().add("South",okBut);
+		JPanel buttonPanel = new JPanel();
+        okButton = new JButton(rch.getString("okLabel"));
+        okButton.addActionListener(this);
+		buttonPanel.add(okButton);
+        cancelButton = new JButton(rch.getString("cancelLabel"));
+        cancelButton.addActionListener(this);
+		buttonPanel.add(cancelButton);
+        getContentPane().add("South", buttonPanel);
         fileList = new JList(files);
         fileList.setSelectedIndex(0);
         fileList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -104,7 +110,7 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
        if (currentPosition > 0){
            for (int i=currentPosition;i<MAX_FILES-1;i++){
                files[i] = files[i+1];
-               fileTypes[i+1]=fileTypes[i];
+               fileTypes[i]=fileTypes[i+1];
            }
        }
        // Shift everything down one
@@ -138,34 +144,47 @@ public class RecentFilesDialog extends JDialog implements java.awt.event.WindowL
         }
     }
 
-    /** This method will block until a file has been picked.  
+    /**
      *   @returns String The name of the file picked or null if the action was aborted.
     **/
     public String getFile(){
-        while(!ready){};
         return fileName;
     }
 
-    /** This method will block until a file has been picked.
+    /**
         @returns String The type of the file picked or null if the action was aborted.
     **/
     public String getFileType(){
-        while(!ready){};
         return fileType;
     }
 
     public void windowClosing(java.awt.event.WindowEvent e){
-        fileName = null;
-        fileType = null;
-        hide();
-        ready=true;
+		cancel();
+		close();
     }
 
+	void cancel() {
+		fileName = null;
+		fileType = null;
+	}
+
+	void close() {
+		ready = true;
+		hide();
+	}
+	
     public void actionPerformed(java.awt.event.ActionEvent e){
-        fileName =  files[fileList.getSelectedIndex()];
-        fileType = fileTypes[fileList.getSelectedIndex()];
-        hide();
-        ready=true;
+		if (e.getSource() == okButton) {
+			int fileIndex = fileList.getSelectedIndex();
+			if (fileIndex < files.length) {
+				fileName =  files[fileIndex];
+				fileType = fileTypes[fileIndex];
+				close();
+			}
+		} else if (e.getSource() == cancelButton) {
+			cancel();
+			close();
+		}
     }
 
     public void windowClosed(java.awt.event.WindowEvent e){

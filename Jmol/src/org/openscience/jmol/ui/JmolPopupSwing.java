@@ -27,6 +27,7 @@ package org.openscience.jmol.ui;
 import org.openscience.jmol.viewer.*;
 
 import java.awt.Component;
+import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -41,6 +42,7 @@ import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.BitSet;
 
 public class JmolPopupSwing extends JPopupMenu {
 
@@ -87,7 +89,7 @@ public class JmolPopupSwing extends JPopupMenu {
 
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
-      String script = getValue(e.getActionCommand());
+      String script = e.getActionCommand();
       if (script != null)
         viewer.evalString(script);
     }
@@ -101,52 +103,45 @@ public class JmolPopupSwing extends JPopupMenu {
     }
   }
 
-  void addMenuItems(String key, Object menu) {
+  void addMenuItems(String key, JComponent menu) {
     String value = getValue(key);
     if (value == null) {
       JMenuItem jmi = new JMenuItem("#" + key);
-      if (menu instanceof JPopupMenu)
-        ((JPopupMenu)menu).add(jmi);
-      else
-        ((JMenu)menu).add(jmi);
+      addToMenu(menu, jmi);
       return;
     }
     StringTokenizer st = new StringTokenizer(value);
     while (st.hasMoreTokens()) {
       String item = st.nextToken();
+      String word = getWord(item);
       if (item.endsWith("Menu")) {
-        String word = getWord(item);
-        JMenu subMenu = new JMenu(word);
-        addMenuItems(item, subMenu);
-        if (menu instanceof JPopupMenu)
-          ((JPopupMenu)menu).add(subMenu);
+        JMenu subMenu;
+        if (item.endsWith("ComputedMenu"))
+          subMenu = getComputedMenu(word, item);
         else
-          ((JMenu)menu).add(subMenu);
+          addMenuItems(item, subMenu = new JMenu(word));
+        addToMenu(menu, subMenu);
       } else if (item.equals("-")) {
         if (menu instanceof JPopupMenu)
           ((JPopupMenu)menu).addSeparator();
         else
           ((JMenu)menu).addSeparator();
       } else {
-        String word = getWord(item);
         JMenuItem jmi;
         if (item.endsWith("Checkbox")) {
           //System.out.println("I see a cheeckbox named:" + item);
           JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(word);
           String basename = item.substring(0, item.length() - 8);
-          jcmi.setActionCommand(basename);
+          jcmi.setActionCommand(getScriptValue(basename));
           jcmi.addItemListener(cmil);
           rememberCheckbox(basename, jcmi);
           jmi = jcmi;
         } else {
           jmi = new JMenuItem(word);
           jmi.addActionListener(mil);
-          jmi.setActionCommand(item);
+          jmi.setActionCommand(getScriptValue(item));
         }
-        if (menu instanceof JPopupMenu)
-          ((JPopupMenu)menu).add(jmi);
-        else
-          ((JMenu)menu).add(jmi);
+        addToMenu(menu, jmi);
       }
     }
   }
@@ -157,6 +152,10 @@ public class JmolPopupSwing extends JPopupMenu {
     } catch (MissingResourceException e) {
       return null;
     }
+  }
+
+  private String getScriptValue(String key) {
+    return getValue(key);
   }
 
   private String getWord(String key) {
@@ -172,5 +171,36 @@ public class JmolPopupSwing extends JPopupMenu {
 
   void rememberCheckbox(String key, JCheckBoxMenuItem cbmi) {
     htCheckbox.put(key, cbmi);
+  }
+
+  JMenu elementComputedMenu;
+
+  JMenu getComputedMenu(String word, String key) {
+    if ("elementComputedMenu".equals(key)) {
+      elementComputedMenu = new JMenu(word);
+      return elementComputedMenu;
+    }
+    return new JMenu("unrecognized ComputedMenu:" + key);
+  }
+
+  void addToMenu(JComponent menu, JComponent item) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu)menu).add(item);
+    else
+      ((JMenu)menu).add(item);
+  }
+
+  void updateElementComputedMenu(BitSet elementsPresentBitSet) {
+    elementComputedMenu.removeAll();
+    for (int i = 0; i < JmolConstants.elementNames.length; ++i) {
+      if (elementsPresentBitSet.get(i)) {
+        String elementName = JmolConstants.elementNames[i];
+        String elementSymbol = JmolConstants.elementSymbols[i];
+        JMenuItem jmi = new JMenuItem(elementSymbol + " - " + elementName);
+        jmi.addActionListener(mil);
+        jmi.setActionCommand("select " + elementName);
+        addToMenu(elementComputedMenu, jmi);
+      }
+    }
   }
 }

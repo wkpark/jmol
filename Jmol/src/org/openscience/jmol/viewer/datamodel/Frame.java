@@ -68,6 +68,8 @@ final public class Frame {
   public Matrix3f matrixEuclideanToFractional;
   public Matrix3f matrixFractionalToEuclidean;
 
+  BitSet elementsPresent;
+
   public Frame(JmolViewer viewer, String modelTypeName, int atomCount) {
     this.viewer = viewer;
     // NOTE: these strings are interned and are lower case
@@ -103,6 +105,7 @@ final public class Frame {
         rebond(false);
     }
     pdbFile.freeze();
+    findElementsPresent();
   }
 
   public Atom addAtom(int modelNumber, Object atomUid,
@@ -1011,5 +1014,15 @@ final public class Frame {
   }
 
   void setLabel(String label, int atomIndex) {
+  }
+
+  void findElementsPresent() {
+    elementsPresent = new BitSet();
+    for (int i = atomCount; --i >= 0; )
+      elementsPresent.set(atoms[i].elementNumber);
+  }
+
+  public BitSet getElementsPresentBitSet() {
+    return elementsPresent;
   }
 }

@@ -1197,6 +1197,7 @@ public class Jmol extends JPanel {
       frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
       pcs.firePropertyChange(chemFileProperty, null, clientFile);
+      jmolpopup.updateComputedMenus();
     }
 
     public void notifyFileNotLoaded(String fullPathName, String errorMsg) {

@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import java.util.MissingResourceException;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.BitSet;
 
 // mth 2003 05 27
 // This class is built with awt instead of swing so that it will
@@ -167,5 +168,8 @@ public class JmolPopupAwt extends PopupMenu {
 
   void rememberCheckbox(String key, CheckboxMenuItem cbmi) {
     htCheckbox.put(key, cbmi);
+  }
+
+  void updateElementComputedMenu(BitSet elementsPresentBitSet) {
   }
 }

@@ -1155,6 +1155,10 @@ final public class JmolViewer {
     return modelManager.getAtomIndexFromAtomNumber(atomNumber);
   }
 
+  public BitSet getElementsPresentBitSet() {
+    return modelManager.getElementsPresentBitSet();
+  }
+
   /****************************************************************
    * delegated to MeasurementManager
    ****************************************************************/

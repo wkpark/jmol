@@ -222,6 +222,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
                                String modelName, Object clientFile) {
     if (loadStructCallback != null && jsoWindow != null)
       jsoWindow.call(loadStructCallback, new Object[] {htmlName});
+    if (jmolpopup != null)
+      jmolpopup.updateComputedMenus();
   }
 
   public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
@@ -499,11 +501,16 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       // long beginTime = System.currentTimeMillis();
       // System.out.println("LoadPopupThread starting ");
       // this is a background task
+      JmolPopup popup;
       try {
-        jmolpopup = new JmolPopup(viewer, jmolApplet);
+        popup = new JmolPopup(viewer, jmolApplet);
       } catch (Exception e) {
         System.out.println("JmolPopup not loaded");
+        return;
       }
+      if (viewer.haveFrame())
+        popup.updateComputedMenus();
+      jmolpopup = popup;
       // long runTime = System.currentTimeMillis() - beginTime;
       // System.out.println("LoadPopupThread finished " + runTime + " ms");
     }

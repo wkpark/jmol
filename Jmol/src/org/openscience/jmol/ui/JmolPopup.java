@@ -26,13 +26,16 @@ package org.openscience.jmol.ui;
 import org.openscience.jmol.viewer.*;
 import java.awt.Component;
 import java.util.ResourceBundle;
+import java.util.BitSet;
 
 public class JmolPopup {
+  JmolViewer viewer;
   JmolPopupSwing popupSwing;
   JmolPopupAwt popupAwt;
   boolean useSwing;
 
   public JmolPopup(JmolViewer viewer, Component parent) {
+    this.viewer = viewer;
     ResourceBundle rbStructure =
       ResourceBundle.getBundle("org.openscience.jmol.ui." +
                                "JmolPopupStructure");
@@ -52,5 +55,14 @@ public class JmolPopup {
       popupSwing.showSwing(x, y);
     else
       popupAwt.showAwt(x, y);
+  }
+
+  public void updateComputedMenus() {
+    BitSet elementsPresentBitSet = viewer.getElementsPresentBitSet();
+    if (useSwing)
+      popupSwing.updateElementComputedMenu(elementsPresentBitSet);
+    else
+      popupAwt.updateElementComputedMenu(elementsPresentBitSet);
+      
   }
 }

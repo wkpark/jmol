@@ -85,9 +85,7 @@ public class BondRenderer {
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
-    int haloradius = (halodiameter + 1) / 2;
-    g25d.fillCircle(colorSelection,
-                    x - haloradius, y - haloradius, z, halodiameter);
+    g25d.fillCircleCentered(colorSelection, x, y, z+1, halodiameter);
   }
 
   public void render(AtomShape atomShape1, int index1,
@@ -206,10 +204,10 @@ public class BondRenderer {
       g25d.setColor(color);
       g25d.drawLine(x1 + 5, y1, z1, x1 - 5, y1, z1);
       g25d.drawLine(x1, y1 + 5, z1, x1, y1 - 5, z1);
-      g25d.drawCircle(color, x1-5, y1-5, z1, 10);
+      g25d.drawCircleCentered(color, x1, y1, z1, 10);
       g25d.drawLine(x2 + 5, y2, z2, x2 - 5, y2, z2);
       g25d.drawLine(x2, y2 + 5, z2, x2, y2 - 5, z2);
-      g25d.drawCircle(color, x2-5, y2-5, z2, 10);
+      g25d.drawCircleCentered(color, x2, y2, z2, 10);
     }
   }
 
@@ -355,15 +353,15 @@ public class BondRenderer {
 
   void drawEndCap(int x, int y, int z, int diameter,
                   Color color, Color outline) {
-    int radiusCap, xUpperLeft, yUpperLeft;
-    radiusCap = (diameter+1) / 2;
-    xUpperLeft = x - radiusCap;
-    yUpperLeft = y - radiusCap;
     switch (styleBond) {
     case DisplayControl.QUICKDRAW:
-      g25d.fillCircle(outline, color, xUpperLeft, yUpperLeft, z, diameter);
+      g25d.fillCircleCentered(outline, color, x, y, z, diameter);
       break;
     case DisplayControl.SHADING:
+      int radiusCap, xUpperLeft, yUpperLeft;
+      radiusCap = (diameter+1) / 2;
+      xUpperLeft = x - radiusCap;
+      yUpperLeft = y - radiusCap;
       if (shadedSphereRenderer == null)
         shadedSphereRenderer = new ShadedSphereRenderer(control);
       shadedSphereRenderer.render(g25d, xUpperLeft, yUpperLeft, z,

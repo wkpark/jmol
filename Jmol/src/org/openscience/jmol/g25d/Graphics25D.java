@@ -74,7 +74,6 @@ final public class Graphics25D {
   }
 
   public void setSize(int width, int height) {
-    System.out.println("Graphics25D.setSize(" + width + "," + height + ")");
     this.width = width;
     xLast = width - 1;
     this.height = height;
@@ -93,7 +92,6 @@ final public class Graphics25D {
     g = platform.getGraphics();
     usePbuf = capable & enabled;
     if (usePbuf) {
-      System.out.println("using pbuf");
       pbuf = platform.getPbuf();
       zbuf = new short[size];
     }
@@ -148,91 +146,122 @@ final public class Graphics25D {
     g.drawImage(image, x, y, width, height, null);
   }
 
-  public void drawCircle(Color color, int x, int y, int z, int diameter) {
+  public void drawCircleCentered(Color color, int x, int y, int z,
+                                 int diameter) {
+    if (diameter == 0)
+      return;
+    int r = (diameter + 1) / 2;
     if (! usePbuf) {
       g.setColor(color);
-      g.drawOval(x, y, diameter-1, diameter-1);
+      if (diameter <= 2) {
+        if (diameter == 1) {
+          g.drawLine(x, y, x, y);
+        } else {
+          g.drawLine(x-1, y, x, y);
+          --y;
+          g.drawLine(x-1, y, x, y);
+        }
+      } else {
+        g.drawOval(x - r, y - r, diameter-1, diameter-1);
+      }
       return;
     }
     argbDraw = color.getRGB();
-    int r = (diameter + 1) / 2;
     if (x >= r && x + r < width && y >= r && y + r < height) {
-      plotCircleCenteredUnclipped(x + r, y + r, z, r);
+      if (diameter <= 2) {
+        if (diameter == 1) {
+          plotPixelUnclipped(x, y, z);
+        } else {
+          plotPixelUnclipped(x, y, z);
+          plotPixelUnclipped(x-1, y, z);
+          --y;
+          plotPixelUnclipped(x, y, z);
+          plotPixelUnclipped(x-1, y, z);
+        }
+      } else {
+        plotCircleCenteredUnclipped(x, y, z, diameter);
+      }
     } else {
-      plotCircleCenteredClipped(x + r, y + r, z, r);
+      if (diameter <= 2) {
+        if (diameter == 1) {
+          plotPixelClipped(x, y, z);
+        } else {
+          plotPixelClipped(x, y, z);
+          plotPixelClipped(x-1, y, z);
+          --y;
+          plotPixelClipped(x, y, z);
+          plotPixelClipped(x-1, y, z);
+        }
+      } else {
+        plotCircleCenteredClipped(x + r, y + r, z, r);
+      }
     }
   }
 
-  public void fillCircle(Color colorFill,
-                         int x, int y, int z, int diameter) {
+  public void fillCircleCentered(Color colorFill,
+                                 int x, int y, int z, int diameter) {
+    if (diameter == 0)
+      return;
+    int r = (diameter + 1) / 2;
     if (! usePbuf) {
       g.setColor(colorFill);
-      g.fillOval(x, y, diameter, diameter);
+      g.fillOval(x - r, y - r, diameter, diameter);
       return;
     }
     argbDraw = colorFill.getRGB();
-    int r = (diameter + 1) / 2;
     if (x >= r && x + r < width && y >= r && y + r < width) {
-      plotFilledCircleCenteredUnclipped(x + r, y + r, z, r);
+      plotFilledCircleCenteredUnclipped(x, y, z, diameter);
     } else {
-      plotFilledCircleCenteredClipped(x + r, y + r, z, r);
+      plotFilledCircleCenteredClipped(x, y, z, diameter);
     }
   }
 
-  public void fillCircle(Color colorOutline, Color colorFill,
-                         int x, int y, int z, int diameter) {
+  public void fillCircleCentered(Color colorOutline, Color colorFill,
+                                 int x, int y, int z, int diameter) {
+    if (diameter == 0)
+      return;
+    int r = (diameter + 1) / 2;
     if (! usePbuf) {
       g.setColor(colorFill);
-      g.fillOval(x, y, diameter, diameter);
+      g.fillOval(x -= r, y -= r, diameter, diameter);
       --diameter;
       g.setColor(colorOutline);
       g.drawOval(x, y, diameter, diameter);
       return;
     }
     argbDraw = colorOutline.getRGB();
-    int r = (diameter + 1) / 2;
-    if (x >= r && x + r < width && y >= r && y + r < width) {
-      plotCircleCenteredUnclipped(x + r, y + r, z, r);
-      argbDraw = colorFill.getRGB();
-      plotFilledCircleCenteredUnclipped(x + r, y + r, z, r);
-    } else {
-      plotCircleCenteredClipped(x + r, y + r, z, r);
-      argbDraw = colorFill.getRGB();
-      plotFilledCircleCenteredClipped(x + r, y + r, z, r);
-    }
-  }
-
-  public void fillSquare2(int x, int y, int z) {
-    if (! usePbuf) {
-      g.drawLine(x, y, x+1, y);
-      ++y;
-      g.drawLine(x, y, x+1, y);
-      return;
-    }
-    if (x >= 0 && y >= 0 && x+1 < width && y+1 < height) {
-      int offset = y * width + x;
-      if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
-        pbuf[offset] = argbDraw;
-      }
-      ++offset;
-      if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
-        pbuf[offset] = argbDraw;
-      }
-      offset += width;
-      if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
-        pbuf[offset] = argbDraw;
-      }
-      --offset;
-      if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
-        pbuf[offset] = argbDraw;
+    if (x >= r && x + r < width && y >= r && y + r < height) {
+      if (diameter <= 2) {
+        if (diameter == 1) {
+          plotPixelUnclipped(x, y, z);
+        } else {
+          plotPixelUnclipped(x, y, z);
+          plotPixelUnclipped(x-1, y, z);
+          --y;
+          plotPixelUnclipped(x, y, z);
+          plotPixelUnclipped(x-1, y, z);
+        }
+      } else {
+        plotCircleCenteredUnclipped(x, y, z, diameter);
+        argbDraw = colorFill.getRGB();
+        plotFilledCircleCenteredUnclipped(x, y, z, diameter);
       }
     } else {
-      plotPixelsClipped(2, x, y, z);
-      plotPixelsClipped(2, x, y+1, z);
+      if (diameter <= 2) {
+        if (diameter == 1) {
+          plotPixelClipped(x, y, z);
+        } else {
+          plotPixelClipped(x, y, z);
+          plotPixelClipped(x-1, y, z);
+          --y;
+          plotPixelClipped(x, y, z);
+          plotPixelClipped(x-1, y, z);
+        }
+      } else {
+        plotCircleCenteredClipped(x, y, z, diameter);
+        argbDraw = colorFill.getRGB();
+        plotFilledCircleCenteredClipped(x, y, z, diameter);
+      }
     }
   }
 
@@ -420,6 +449,17 @@ final public class Graphics25D {
     }
   }
 
+  void forcePixel(Color co, int x, int y) {
+    if (x < 0 || x >= width ||
+        y < 0 || y >= height
+        //        || z < 0 || z >= 8192
+        )
+      return;
+    int offset = y * width + x;
+    zbuf[offset] = 0;
+    pbuf[offset] = co.getRGB();
+  }
+
   void plotPixelUnclipped(int x, int y, int z) {
     int offset = y * width + x;
     if (z < zbuf[offset]) {
@@ -580,9 +620,12 @@ final public class Graphics25D {
   }
 
   int xCenter, yCenter, zCenter;
+  int sizeCorrection;
 
   void plotCircleCenteredClipped(int xCenter, int yCenter, int zCenter,
-                                 int r) {
+                                 int diameter) {
+    int r = diameter / 2;
+    this.sizeCorrection = 1 - (diameter & 1);
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.zCenter = zCenter;
@@ -605,7 +648,9 @@ final public class Graphics25D {
   }
 
   void plotCircleCenteredUnclipped(int xCenter, int yCenter, int zCenter,
-                                   int r) {
+                                   int diameter) {
+    int r = diameter / 2;
+    this. sizeCorrection = 1 - (diameter & 1);
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.zCenter = zCenter;
@@ -628,45 +673,59 @@ final public class Graphics25D {
   }
 
   void plot8CircleCenteredClipped(int dx, int dy) {
-    plotPixelClipped(xCenter + dx, yCenter + dy, zCenter);
-    plotPixelClipped(xCenter + dx, yCenter - dy, zCenter);
-    plotPixelClipped(xCenter - dx, yCenter + dy, zCenter);
+    plotPixelClipped(xCenter + dx - sizeCorrection,
+                     yCenter + dy - sizeCorrection, zCenter);
+    plotPixelClipped(xCenter + dx - sizeCorrection, yCenter - dy, zCenter);
+    plotPixelClipped(xCenter - dx, yCenter + dy - sizeCorrection, zCenter);
     plotPixelClipped(xCenter - dx, yCenter - dy, zCenter);
 
-    plotPixelClipped(xCenter + dy, yCenter + dx, zCenter);
-    plotPixelClipped(xCenter + dy, yCenter - dx, zCenter);
-    plotPixelClipped(xCenter - dy, yCenter + dx, zCenter);
+    plotPixelClipped(xCenter + dy - sizeCorrection,
+                     yCenter + dx - sizeCorrection, zCenter);
+    plotPixelClipped(xCenter + dy - sizeCorrection, yCenter - dx, zCenter);
+    plotPixelClipped(xCenter - dy, yCenter + dx - sizeCorrection, zCenter);
     plotPixelClipped(xCenter - dy, yCenter - dx, zCenter);
   }
 
   void plot8CircleCenteredUnclipped(int dx, int dy) {
-    plotPixelUnclipped(xCenter + dx, yCenter + dy, zCenter);
-    plotPixelUnclipped(xCenter + dx, yCenter - dy, zCenter);
-    plotPixelUnclipped(xCenter - dx, yCenter + dy, zCenter);
+    plotPixelUnclipped(xCenter + dx - sizeCorrection,
+                       yCenter + dy - sizeCorrection, zCenter);
+    plotPixelUnclipped(xCenter + dx - sizeCorrection, yCenter - dy, zCenter);
+    plotPixelUnclipped(xCenter - dx, yCenter + dy - sizeCorrection, zCenter);
     plotPixelUnclipped(xCenter - dx, yCenter - dy, zCenter);
 
-    plotPixelUnclipped(xCenter + dy, yCenter + dx, zCenter);
-    plotPixelUnclipped(xCenter + dy, yCenter - dx, zCenter);
-    plotPixelUnclipped(xCenter - dy, yCenter + dx, zCenter);
+    plotPixelUnclipped(xCenter + dy-sizeCorrection,
+                       yCenter + dx-sizeCorrection, zCenter);
+    plotPixelUnclipped(xCenter + dy - sizeCorrection, yCenter - dx, zCenter);
+    plotPixelUnclipped(xCenter - dy, yCenter + dx - sizeCorrection, zCenter);
     plotPixelUnclipped(xCenter - dy, yCenter - dx, zCenter);
   }
 
   void plot8FilledCircleCenteredClipped(int dx, int dy) {
-    plotPixelsClipped(2*dx + 1, xCenter - dx, yCenter + dy, zCenter);
-    plotPixelsClipped(2*dx + 1, xCenter - dx, yCenter - dy, zCenter);
-    plotPixelsClipped(2*dy + 1, xCenter - dy, yCenter + dx, zCenter);
-    plotPixelsClipped(2*dy + 1, xCenter - dy, yCenter - dx, zCenter);
+    plotPixelsClipped(2*dx + 1 - sizeCorrection,
+                      xCenter - dx, yCenter + dy - sizeCorrection, zCenter);
+    plotPixelsClipped(2*dx + 1 - sizeCorrection,
+                      xCenter - dx, yCenter - dy, zCenter);
+    plotPixelsClipped(2*dy + 1 - sizeCorrection,
+                      xCenter - dy, yCenter + dx - sizeCorrection, zCenter);
+    plotPixelsClipped(2*dy + 1 - sizeCorrection,
+                      xCenter - dy, yCenter - dx, zCenter);
   }
 
   void plot8FilledCircleCenteredUnclipped(int dx, int dy) {
-    plotPixelsUnclipped(2*dx + 1, xCenter - dx, yCenter + dy, zCenter);
-    plotPixelsUnclipped(2*dx + 1, xCenter - dx, yCenter - dy, zCenter);
-    plotPixelsUnclipped(2*dy + 1, xCenter - dy, yCenter + dx, zCenter);
-    plotPixelsUnclipped(2*dy + 1, xCenter - dy, yCenter - dx, zCenter);
+    plotPixelsUnclipped(2*dx + 1 - sizeCorrection,
+                        xCenter - dx, yCenter + dy - sizeCorrection, zCenter);
+    plotPixelsUnclipped(2*dx + 1 - sizeCorrection,
+                        xCenter - dx, yCenter - dy, zCenter);
+    plotPixelsUnclipped(2*dy + 1 - sizeCorrection,
+                        xCenter - dy, yCenter + dx - sizeCorrection, zCenter);
+    plotPixelsUnclipped(2*dy + 1 - sizeCorrection,
+                        xCenter - dy, yCenter - dx, zCenter);
   }
 
   void plotFilledCircleCenteredClipped(int xCenter, int yCenter, int zCenter,
-                                       int r) {
+                                       int diameter) {
+    int r = diameter / 2;
+    this. sizeCorrection = 1 - (diameter & 1);
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.zCenter = zCenter;
@@ -689,7 +748,8 @@ final public class Graphics25D {
   }
 
   void plotFilledCircleCenteredUnclipped(int xCenter, int yCenter, int zCenter,
-                                       int r) {
+                                       int d) {
+    int r = d / 2;
     this.xCenter = xCenter;
     this.yCenter = yCenter;
     this.zCenter = zCenter;

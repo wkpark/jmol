@@ -2045,7 +2045,7 @@ public class Eval implements Runnable {
     switch(statement[offset].tok) {
     case Token.all:
     case Token.asterisk:
-      modelID = -1;
+      modelID = 0;
     case Token.none:
       break;
     case Token.integer:

@@ -77,9 +77,11 @@ public class RepaintManager {
   }
 
   public int animationDirection = 1;
+  int currentDirection = 1;
   public void setAnimationDirection(int animationDirection) {
-    if (animationDirection == 1 || animationDirection == -1)
-      this.animationDirection = animationDirection;
+    if (animationDirection == 1 || animationDirection == -1) {
+      this.animationDirection = currentDirection = animationDirection;
+    }
     else
       System.out.println("invalid animationDirection:" + animationDirection);
   }
@@ -113,7 +115,7 @@ public class RepaintManager {
   public boolean setAnimationRelative(int direction) {
     if (displayModelID == 0)
       return false;
-    int modelIndexNext = displayModelIndex + direction;
+    int modelIndexNext = displayModelIndex + currentDirection;
     /*
     System.out.println("setAnimationRelative: displayModel=" + displayModel +
                        " modelIndex=" + modelIndex +
@@ -132,7 +134,7 @@ public class RepaintManager {
         modelIndexNext = 0;
         break;
       case 2:
-        animationDirection = -1;
+        currentDirection = -1;
         modelIndexNext = modelCount - 2;
       }
     } else if (modelIndexNext < 0) {
@@ -143,7 +145,7 @@ public class RepaintManager {
         modelIndexNext = modelCount -1;
         break;
       case 2:
-        animationDirection = 1;
+        currentDirection = 1;
         modelIndexNext = 1;
       }
     }
@@ -246,25 +248,37 @@ public class RepaintManager {
   }
 
   
+  public void clearAnimation() {
+    setAnimationOn(false);
+    setDisplayModelID(0);
+    setAnimationDirection(1);
+    setAnimationFps(10);
+    setAnimationReplayMode(0);
+  }
+
   public boolean animationOn = false;
   AnimationThread animationThread;
   public void setAnimationOn(boolean animationOn) {
-    int modelCount = viewer.getModelCount();
-    if (modelCount <= 1)
-      animationOn = false;
-    if (animationOn) {
-      setDisplayModelIndex(animationDirection == 1 ? 0 : modelCount - 1);
-      if (animationThread == null) {
-        animationThread = new AnimationThread();
-        animationThread.start();
-      }
-    } else {
+    if (! animationOn || ! viewer.haveFrame()) {
       if (animationThread != null) {
         animationThread.interrupt();
         animationThread = null;
       }
+      this.animationOn = false;
+      return;
     }
-    this.animationOn = animationOn;
+    int modelCount = viewer.getModelCount();
+    if (modelCount <= 1) {
+      this.animationOn = false;
+      return;
+    }
+    currentDirection = animationDirection;
+    setDisplayModelIndex(animationDirection == 1 ? 0 : modelCount - 1);
+    if (animationThread == null) {
+      animationThread = new AnimationThread();
+      animationThread.start();
+    }
+    this.animationOn = true;
   }
 
   class AnimationThread extends Thread implements Runnable {

@@ -900,6 +900,7 @@ final public class JmolViewer {
   }
 
   public void clear() {
+    repaintManager.clearAnimation();
     modelManager.setClientFile(null, null, null);
     clearMeasurements();
     refresh();

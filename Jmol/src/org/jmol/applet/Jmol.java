@@ -71,7 +71,7 @@ import java.net.MalformedURLException;
 
 */
 
-public class Jmol implements WrappedApplet {
+public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   JmolViewer viewer;
   boolean jvm12orGreater;

@@ -53,13 +53,15 @@ public class AppletWrapper extends Applet {
   private Color bgcolor;
   private Color textColor;
 
-  WrappedApplet wrappedApplet;
+  public WrappedApplet wrappedApplet;
 
   private long startTime;
   private int clockX;
   private int clockBaseline;
   private int clockWidth;
 
+
+  private static int MINIMUM_ELAPSED_SECONDS = 1;
 
   private static String fontFace = "sansserif";
   private static int fontSizeDivisor = 18;
@@ -129,22 +131,24 @@ public class AppletWrapper extends Applet {
       }
     }
 
-    int messageBaseline = imageBottom + fontAscent;
-    if (messageBaseline < dim.height/2)
-      messageBaseline = dim.height / 2;
-    else if (messageBaseline >= dim.height)
-      messageBaseline = dim.height - 1;
-    g.setFont(font);
-    g.drawString(preloadTextMessage, 10, messageBaseline);
-
     long elapsedTime = (System.currentTimeMillis() - startTime) / 1000;
-    String clockText = "" + elapsedTime + " seconds";
-    clockWidth = fontMetrics.stringWidth(clockText);
-    clockX = dim.width - clockWidth - 5;
-    if (clockX < 0)
-      clockX = 0;
-    clockBaseline = dim.height - 5;
-    g.drawString(clockText, clockX, clockBaseline);
+    if (elapsedTime >= MINIMUM_ELAPSED_SECONDS) {
+      int messageBaseline = imageBottom + fontAscent;
+      if (messageBaseline < dim.height/2)
+        messageBaseline = dim.height / 2;
+      else if (messageBaseline >= dim.height)
+        messageBaseline = dim.height - 1;
+      g.setFont(font);
+      g.drawString(preloadTextMessage, 10, messageBaseline);
+      
+      String clockText = "" + elapsedTime + " seconds";
+      clockWidth = fontMetrics.stringWidth(clockText);
+      clockX = dim.width - clockWidth - 5;
+      if (clockX < 0)
+        clockX = 0;
+      clockBaseline = dim.height - 5;
+      g.drawString(clockText, clockX, clockBaseline);
+    }
   }
   
   public void paint(Graphics g) {
@@ -259,23 +263,6 @@ public class AppletWrapper extends Applet {
     return false;
   }
   
-  public void scriptButton(JSObject buttonWindow, String buttonName,
-                           String script, String buttonCallback) {
-    if (wrappedApplet != null)
-      wrappedApplet.scriptButton(buttonWindow, buttonName,
-                              script, buttonCallback);
-  }
-  
-  public void script(String script) {
-    if (wrappedApplet != null)
-      wrappedApplet.script(script);
-  }
-  
-  public void loadInline(String strModel) {
-    if (wrappedApplet != null)
-      wrappedApplet.loadInline(strModel);
-  }
-
   synchronized String getNextPreloadClassName() {
     if (preloadClassNames == null ||
         preloadClassIndex == preloadClassNames.length)

@@ -1,9 +1,3 @@
 
-Name: org/jmol/api
-Sealed: true
-
-Name: org/openscience/jmol
-Sealed: true
-
-Name: org/jmol/applet
+Name: org/jmol/g3d
 Sealed: true

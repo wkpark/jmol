@@ -1,0 +1,3 @@
+
+Name: org/openscience/jmol
+Sealed: true

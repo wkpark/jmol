@@ -28,7 +28,7 @@
 var undefined; // for IE 5 ... wherein undefined is undefined
 
 var _jmolArchivePath = "JmolApplet0.jar";
-var _jmolLastJar = 4;
+var _jmolLastJar = 6;
 for (var i = 1; i <= _jmolLastJar; ++i)
   _jmolArchivePath = _jmolArchivePath + ",JmolApplet" + i + ".jar";
 

@@ -31,6 +31,10 @@
  * see org.jmol.applet.JmolApplet
  *
  */
+
+import org.jmol.api.JmolAppletInterface;
+import netscape.javascript.JSObject;
+
 public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
 
   public JmolApplet() {
@@ -42,15 +46,38 @@ public class JmolApplet extends org.jmol.appletwrapper.AppletWrapper {
 
   private final static String[] preloadClasses = {
     "javax.vecmath.Point3f+",
-    ".Vector3f+", ".Matrix3f+", ".Point3i+",
-
     "org.jmol.g3d.Graphics3D",
-    ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix", ".Shade3D",
-
     "org.jmol.adapter.smarter.SmarterJmolAdapter",
-    ".Atom", ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader",
+    "org.openscience.jmol.ui.JmolPopup",
+
+    "javax.vecmath.Vector3f+",
+    ".Matrix3f+", ".Point3i+",
+
+    "org.jmol.g3d.Sphere3D",
+    ".Line3D", ".Cylinder3D", ".Colix", ".Shade3D",
+
+    "org.jmol.adapter.smarter.Atom",
+    ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader",
     ".Resolver",
 
-    "org.openscience.jmol.ui.JmolPopup",
   };
+
+  public void script(String script) {
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).script(script);
+  }
+  
+  public void loadInline(String strModel) {
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).loadInline(strModel);
+  }
+
+  public void scriptButton(JSObject buttonWindow, String buttonName,
+                           String script, String buttonCallback) {
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).scriptButton(buttonWindow,
+                                                        buttonName,
+                                                        script,
+                                                        buttonCallback);
+  }
 }

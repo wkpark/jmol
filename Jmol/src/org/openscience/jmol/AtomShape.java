@@ -77,8 +77,8 @@ class AtomShape implements Shape {
     Enumeration bondIter = atom.getBondedAtoms();
     while (bondIter.hasMoreElements()) {
       Atom otherAtom = (Atom) bondIter.nextElement();
-      int z = (int)atom.getScreenPosition().z;
-      int zOther = (int)otherAtom.getScreenPosition().z;
+      int z = atom.screenZ;
+      int zOther = otherAtom.screenZ;
       if ((showHydrogens || !otherAtom.isHydrogen()) &&
           (z > zOther) ||
           ((z==zOther) && (atom.getAtomNumber() > otherAtom.getAtomNumber())))
@@ -86,8 +86,8 @@ class AtomShape implements Shape {
     }
   }
   
-  public double getZ() {
-    return atom.getScreenPosition().z;
+  public int getZ() {
+    return atom.screenZ;
   }
   
   private static AtomRenderer atomRenderer;
@@ -137,9 +137,9 @@ class AtomShape implements Shape {
   public void renderLabel() {
     if (labelMode == DisplaySettings.NOLABELS)
       return;
-    int x = (int) atom.getScreenPosition().x;
-    int y = (int) atom.getScreenPosition().y;
-    int z = (int) atom.getScreenPosition().z;
+    int x = atom.screenX;
+    int y = atom.screenY;
+    int z = atom.screenZ;
     int diameter =
       (int) (2.0f
         * settings.getCircleRadius(z, atom.getType().getVdwRadius()));
@@ -205,10 +205,10 @@ class AtomShape implements Shape {
     Color color1 = colorProfile.getColor(atom1);
     Color color2 = colorProfile.getColor(atom2);
 
-    int x1 = (int) atom1.getScreenPosition().x;
-    int y1 = (int) atom1.getScreenPosition().y;
-    int x2 = (int) atom2.getScreenPosition().x;
-    int y2 = (int) atom2.getScreenPosition().y;
+    int x1 = atom1.screenX;
+    int y1 = atom1.screenY;
+    int x2 = atom2.screenX;
+    int y2 = atom2.screenY;
     int dx = x2 - x1;
     int dx2 = dx * dx;
     int dy = y2 - y1;
@@ -238,8 +238,8 @@ class AtomShape implements Shape {
       shadingBondRenderer.paint(g2, atom1, atom2, settings);
       return;
     }
-    int z1 = (int) atom1.getScreenPosition().z;
-    int z2 = (int) atom2.getScreenPosition().z;
+    int z1 = atom1.screenZ;
+    int z2 = atom2.screenZ;
     int dz = z2 - z1;
     int dz2 = dz * dz;
     int diameter1 =
@@ -425,9 +425,9 @@ class AtomShape implements Shape {
   private void renderAtom() {
     if (!showAtoms || (!showHydrogens && atom.isHydrogen()))
       return;
-    int x = (int) atom.getScreenPosition().x;
-    int y = (int) atom.getScreenPosition().y;
-    int z = (int) atom.getScreenPosition().z;
+    int x = atom.screenX;
+    int y = atom.screenY;
+    int z = atom.screenZ;
     int diameter =
       (int) (2.0f
         * settings.getCircleRadius(z, atom.getType().getVdwRadius()));

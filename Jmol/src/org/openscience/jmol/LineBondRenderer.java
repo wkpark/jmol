@@ -53,12 +53,12 @@ public class LineBondRenderer implements BondRenderer {
         colorProfile = new DefaultColorProfile();
     }
 
-    int x1 = (int) atom1.getScreenPosition().x;
-    int y1 = (int) atom1.getScreenPosition().y;
-    int z1 = (int) atom1.getScreenPosition().z;
-    int x2 = (int) atom2.getScreenPosition().x;
-    int y2 = (int) atom2.getScreenPosition().y;
-    int z2 = (int) atom2.getScreenPosition().z;
+    int x1 = atom1.screenX;
+    int y1 = atom1.screenY;
+    int z1 = atom1.screenZ;
+    int x2 = atom2.screenX;
+    int y2 = atom2.screenY;
+    int z2 = atom2.screenZ;
 
     double dx = x2 - x1;
     double dy = y2 - y1;

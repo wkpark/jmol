@@ -31,27 +31,8 @@ import javax.vecmath.Matrix4d;
  */
 public class Atom {
 
-  /**
-   * Creates an atom at the given position with the given atom type.
-   *
-   * @param at the atom type.
-   * @param position the Cartesian coordinate of the atom.
-   */
-  public Atom(BaseAtomType at, Point3f position) {
+  public Atom(BaseAtomType at) {
     this.atomType = new AtomType(at);
-    this.position = position;
-  }
-
-  /**
-   * Creates an atom at the given position with the given atom type and atom number.
-   *
-   * @param at the atom type.
-   * @param position the Cartesian coordinate of the atom.
-   * @param atomNumber the number assigned to the atom.
-   */
-  public Atom(BaseAtomType at, Point3f position, int atomNumber) {
-    this(at, position);
-    this.atomNumber = atomNumber;
   }
 
   /**
@@ -59,9 +40,13 @@ public class Atom {
    *
    * @param the type of this atom.
    */
-  public Atom(BaseAtomType atomType, int atomNumber) {
+  public Atom(BaseAtomType atomType, int atomNumber,
+              float x, float y, float z) {
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
+    this.position.x = x;
+    this.position.y = y;
+    this.position.z = z;
   }
 
   /**
@@ -176,19 +161,12 @@ public class Atom {
   }
 
   /**
-   * Sets the atom's position.
-   */
-  public void setPosition(Point3f position) {
-    this.position.set(position);
-  }
-
-  /**
    * Returns the atom's on-screen position. Note: the atom must
    * first be transformed. Otherwise, a point at the origin is returned.
    */
-  public Point3f getScreenPosition() {
-    return new Point3f(screenPosition);
-  }
+  //  public Point3f getScreenPosition() {
+  //    return new Point3f(screenPosition);
+  //  }
 
   /**
    * Returns the atom's vector, or null if not set.
@@ -230,6 +208,9 @@ public class Atom {
   public void transform(Matrix4d transformationMatrix) {
 
     transformationMatrix.transform(position, screenPosition);
+    screenX = (int) screenPosition.x;
+    screenY = (int) screenPosition.y;
+    screenZ = (int) screenPosition.z;
     if (vector != null) {
       screenVector.scaleAdd(2.0f, vector, position);
       transformationMatrix.transform(screenVector);
@@ -319,6 +300,10 @@ public class Atom {
    * Position in screen space.
    */
   private Point3f screenPosition = new Point3f();
+
+  public int screenX;
+  public int screenY;
+  public int screenZ;
 
   /**
    * A list of atoms to which this atom is bonded. Lazily initialized.

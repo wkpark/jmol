@@ -132,8 +132,8 @@ public class ChemFrameRenderer {
     Arrays.sort(shapes,
                 new Comparator() {
                   public int compare(Object shape1, Object shape2) {
-                    int z1 = (int) ((Shape) shape1).getZ();
-                    int z2 = (int) ((Shape) shape2).getZ();
+                    int z1 = ((Shape) shape1).getZ();
+                    int z2 = ((Shape) shape2).getZ();
                     if (z1 < z2)
                       return -1;
                     if (z1 == z2)

@@ -34,6 +34,6 @@ interface Shape {
 
   public void render(Graphics g);
 
-  public double getZ();
+  public int getZ();
 
 }

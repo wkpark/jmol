@@ -35,8 +35,8 @@ class BondShape implements Shape {
     bondRenderer.paint(g, atom1, atom2, settings);
   }
   
-  public double getZ() {
-    return 0.75*atom1.getScreenPosition().z + 0.25*atom2.getScreenPosition().z;
+  public int getZ() {
+    return (3*atom1.screenZ + atom2.screenZ)/4;
   }
   
   

@@ -37,7 +37,6 @@ import org.openscience.cdk.tools.AtomTypeFactory;
 import org.openscience.cdk.tools.ChemFileManipulator;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.util.*;
 import org.openscience.jmol.viewer.JmolViewer;
 
 import java.util.StringTokenizer;

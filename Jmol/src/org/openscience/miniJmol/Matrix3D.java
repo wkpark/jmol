@@ -30,6 +30,8 @@
 
 package org.openscience.miniJmol;
 
+import javax.vecmath.Point3f;
+
 /** A fairly conventional 3D matrix object that can transform sets of
     3D points and perform a variety of manipulations on the transform */
 class Matrix3D {
@@ -219,9 +221,18 @@ class Matrix3D {
 	    tv[i + 2] = (int) (x * lzx + y * lzy + z * lzz + lzo);
 	}
     }
+    /**
+	 * Transform a point from Point3f p into Point3f tp.
+	 */
+    void transform(Point3f p, Point3f tp) {
+	    tp.x = (p.x * xx + p.y * xy + p.z * xz + xo);
+	    tp.y = (p.x * yx + p.y * yy + p.z * yz + yo);
+	    tp.z = (p.x * zx + p.y * zy + p.z * zz + zo);
+    }
     public String toString() {
 	return ("[" + xo + "," + xx + "," + xy + "," + xz + ";"
 		+ yo + "," + yx + "," + yy + "," + yz + ";"
 		+ zo + "," + zx + "," + zy + "," + zz + "]");
     }
 }
+

@@ -116,8 +116,8 @@ class PatternMatcher {
     Atom atom = frame.getAtomAt(i);
 
     // Check symbol
-    if ((!patternAtom.getSymbol().equals("*")) &&
-        (!patternAtom.getSymbol().equals(atom.getElementSymbol()))) {
+    if ((patternAtom.getSymbol() != "*") &&
+        (patternAtom.getSymbol() != atom.getElementSymbol())) {
       canMatch = false;
     }
     // Check atomic mass : NO because Jmol doesn't know about atomic mass

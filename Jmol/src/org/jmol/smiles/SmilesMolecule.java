@@ -55,9 +55,7 @@ public class SmilesMolecule {
   public SmilesAtom createAtom() {
     if (atomsCount >= atoms.length) {
       SmilesAtom[] tmp = new SmilesAtom[atoms.length * 2];
-      for (int i = 0; i < atoms.length; i++) {
-        tmp[i] = atoms[i];
-      }
+      System.arraycopy(atoms, 0, tmp, 0, atoms.length);
       atoms = tmp;
     }
     SmilesAtom atom = new SmilesAtom(atomsCount);
@@ -87,9 +85,7 @@ public class SmilesMolecule {
       int bondType) {
     if (bondsCount >= bonds.length) {
       SmilesBond[] tmp = new SmilesBond[bonds.length * 2];
-      for (int i = 0; i < bonds.length; i++) {
-        tmp[i] = bonds[i];
-      }
+      System.arraycopy(bonds, 0, tmp, 0, bonds.length);
       bonds = tmp;
     }
     SmilesBond bond = new SmilesBond(atom1, atom2, bondType);

@@ -226,7 +226,7 @@ public class SmilesParser {
     // Atomic mass
   	int index = 0;
   	char firstChar = smiles.charAt(index);
-  	Integer atomicMass = null;
+  	int atomicMass = Integer.MIN_VALUE;
   	if ((firstChar >= '0') && (firstChar <= '9')) {
   	  int currentIndex = index;
   	  while ((currentIndex < smiles.length()) &&
@@ -236,7 +236,7 @@ public class SmilesParser {
   	  }
   	  String sub = smiles.substring(index, currentIndex);
   	  try {
-  	    atomicMass = Integer.valueOf(sub);
+  	    atomicMass = Integer.parseInt(sub);
   	  } catch (NumberFormatException e) {
   	    throw new InvalidSmilesException("Non numeric atomic mass");
   	  }
@@ -270,7 +270,7 @@ public class SmilesParser {
     }
 
     // Hydrogen count
-    Integer hydrogenCount = null;
+    int hydrogenCount = Integer.MIN_VALUE;
     if (index < smiles.length()) {
       firstChar = smiles.charAt(index);
       if (firstChar == 'H') {
@@ -284,18 +284,18 @@ public class SmilesParser {
         if (currentIndex > index) {
           String sub = smiles.substring(index, currentIndex);
           try {
-            hydrogenCount = Integer.valueOf(sub);
+            hydrogenCount = Integer.parseInt(sub);
           } catch (NumberFormatException e) {
             throw new InvalidSmilesException("Non numeric hydrogen count");
           }
         } else {
-          hydrogenCount = new Integer(1);
+          hydrogenCount = 1;
         }
         index = currentIndex;
       }
     }
-    if ((hydrogenCount == null) && (complete)) {
-      hydrogenCount = new Integer(0);
+    if ((hydrogenCount == Integer.MIN_VALUE) && (complete)) {
+      hydrogenCount = 0;
     }
 
     // Charge

@@ -883,7 +883,11 @@ final public class Frame {
 
   void doUnitcellStuff() {
     constructFractionalMatrices();
+    /*
+      mth 2004 03 06
+      We do not want to pack the unitcell automatically.
     putAtomsInsideUnitcell();
+    */
   }
 
   void constructFractionalMatrices() {

@@ -39,8 +39,8 @@ public class Helix extends PdbStructure {
   void calcAxis() {
     if (axisA != null)
       return;
-    chain.getResidueMidPoint(residueStart + 1, axisA = new Point3f());
-    chain.getResidueMidPoint(residueEnd, axisB = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueStart + 1, axisA = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueEnd, axisB = new Point3f());
 
     axisUnitVector = new Vector3f(axisB);
     axisUnitVector.sub(axisA);
@@ -49,12 +49,12 @@ public class Helix extends PdbStructure {
     Point3f temp = new Point3f();
     float dist;
 
-    chain.getResidueMidPoint(residueStart, temp = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueStart, temp = new Point3f());
     dist = axisB.distance(temp);
     axisA.set(axisUnitVector);
     axisA.scaleAdd(-dist, axisB);
 
-    chain.getResidueMidPoint(residueEnd + 1, temp);
+    chain.getAlphaCarbonMidPoint(residueEnd + 1, temp);
     dist = axisA.distance(temp);
     axisB.set(axisUnitVector);
     axisB.scaleAdd(dist, axisA);

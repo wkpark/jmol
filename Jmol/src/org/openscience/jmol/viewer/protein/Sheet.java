@@ -37,17 +37,17 @@ public class Sheet extends PdbStructure {
   void calcAxis() {
     if (axisA != null)
       return;
-    chain.getResidueMidPoint(residueStart + 1, axisA = new Point3f());
-    chain.getResidueMidPoint(residueEnd, axisB = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueStart + 1, axisA = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueEnd, axisB = new Point3f());
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
     Point3f tempA, tempB;
-    chain.getResidueMidPoint(residueStart, tempA = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueStart, tempA = new Point3f());
     projectOntoAxis(tempA);
-    chain.getResidueMidPoint(residueEnd + 1, tempB = new Point3f());
+    chain.getAlphaCarbonMidPoint(residueEnd + 1, tempB = new Point3f());
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
@@ -96,14 +96,14 @@ public class Sheet extends PdbStructure {
     float projectedLength;
 
     axisB = new Point3f();
-    chain.getResidueMidPoint(residueEnd + 1, axisB);
+    chain.getAlphaCarbonMidPoint(residueEnd + 1, axisB);
     vectorT.sub(axisB, tempA);
     projectedLength = vectorT.dot(axisUnitVector);
     axisB.set(axisUnitVector);
     axisB.scaleAdd(projectedLength, tempA);
 
     axisA = new Point3f();
-    chain.getResidueMidPoint(residueStart, axisA);
+    chain.getAlphaCarbonMidPoint(residueStart, axisA);
     vectorT.sub(axisA, tempB);
     projectedLength = vectorT.dot(axisUnitVector);
     axisA.set(axisUnitVector);

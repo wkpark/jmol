@@ -146,7 +146,7 @@ public class PdbChain {
     
   }
 
-  void getResidueMidPoint(int residueNumber, Point3f midPoint) {
+  void getAlphaCarbonMidPoint(int residueNumber, Point3f midPoint) {
     int residueIndex = residueNumber - firstResidueNumber;
     if (residueIndex >= residueCount) {
       residueIndex = residueCount - 1;

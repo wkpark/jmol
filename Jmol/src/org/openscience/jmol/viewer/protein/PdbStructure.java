@@ -59,7 +59,7 @@ public abstract class PdbStructure {
     segments[0] = axisA;
     for (int i = 1; i < count; ++i) {
       Point3f point = segments[i] = new Point3f();
-      chain.getResidueMidPoint(residueStart + i, point);
+      chain.getAlphaCarbonMidPoint(residueStart + i, point);
       projectOntoAxis(point);
     }
   }

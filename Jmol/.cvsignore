@@ -1,0 +1,6 @@
+jars/jmol-applet.jar
+jars/jmol.jar
+*.tar.gz
+dist
+classes
+generatedSource

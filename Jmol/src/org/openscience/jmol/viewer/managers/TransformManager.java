@@ -557,7 +557,6 @@ public class TransformManager {
                            "  ->  " + point3fScreenTemp);
         z = 1;
       }
-      throw new NullPointerException();
     }
     point3iScreenTemp.z = z;
     if (perspectiveDepth) {

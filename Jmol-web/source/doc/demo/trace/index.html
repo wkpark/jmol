@@ -10,6 +10,12 @@
 <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
         codebase="../jmol"
         width="400" height="400" mayscript="true" >
+	<param name="progressbar"   value="true" />
+	<param name="progresscolor" value="blue" />
+	<param name="boxmessage"    value="Downloading JmolApplet ..." />
+	<param name="boxbgcolor"    value="black" />
+	<param name="boxfgcolor"    value="white" />
+
         <param name="load"      value="1crn.pdb.gz" />
 	<param name="script"    value="spacefill off; wireframe" />
 </applet>

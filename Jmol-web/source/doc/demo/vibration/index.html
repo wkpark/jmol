@@ -9,6 +9,12 @@
 	  <applet name="jmol" code="JmolApplet"
 		  archive="../jmol/JmolApplet.jar"
 		  width="300" height="300" mayscript="true" >
+	    <param name="progressbar"   value="true" />
+	    <param name="progresscolor" value="blue" />
+	    <param name="boxmessage"    value="Downloading JmolApplet ..." />
+	    <param name="boxbgcolor"    value="black" />
+	    <param name="boxfgcolor"    value="white" />
+
 	    <param name="load"      value="phenylnitrene.g94.out.gz" />
 	    <param name="script"    value="
 		   wireframe .1; cpk off;

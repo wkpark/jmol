@@ -210,7 +210,6 @@ abstract public class Polymer {
     leadMidpoints = new Point3f[count + 1];
     wingVectors = new Vector3f[count + 1];
     boolean hasWingPoints = hasWingPoints();
-    hasWingPoints = false;
     
     Vector3f vectorA = new Vector3f();
     Vector3f vectorB = new Vector3f();
@@ -229,9 +228,9 @@ abstract public class Polymer {
       leadMidpoints[i] = midpoint;
       if (hasWingPoints) {
         vectorA.sub(leadPoint, leadPointPrev);
-        vectorB.sub(getWingPoint(i - 1), leadPointPrev);
+        vectorB.sub(leadPointPrev, getWingPoint(i - 1));
         vectorC.cross(vectorA, vectorB);
-        vectorD.cross(vectorC, vectorA);
+        vectorD.cross(vectorA, vectorC);
         vectorD.normalize();
         if (previousVectorD != null &&
             previousVectorD.angle(vectorD) > Math.PI/2)

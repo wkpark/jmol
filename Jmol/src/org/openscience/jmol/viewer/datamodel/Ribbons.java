@@ -38,7 +38,7 @@ class Ribbons extends Mcps {
 
   class Schain extends Mcps.Mcpschain {
     Schain(Polymer polymer) {
-      super(polymer, -2, 1500, 500, 3000);
+      super(polymer, -2, 3000, 800, 5000);
     }
   }
 }

@@ -306,7 +306,7 @@ public class Eval implements Runnable {
       Token token = statement[0];
       switch (token.tok) {
       case Token.backbone:
-        proteinShape(JmolConstants.SHAPE_BACKBONE, 2);
+        proteinShape(JmolConstants.SHAPE_BACKBONE);
         break;
       case Token.background:
         background();
@@ -400,22 +400,22 @@ public class Eval implements Runnable {
         dots();
         break;
       case Token.strands:
-        proteinShape(JmolConstants.SHAPE_STRANDS, 1);
+        proteinShape(JmolConstants.SHAPE_STRANDS);
         break;
       case Token.mesh:
-        proteinShape(JmolConstants.SHAPE_MESH, 1);
+        proteinShape(JmolConstants.SHAPE_MESH);
         break;
       case Token.ribbon:
-        proteinShape(JmolConstants.SHAPE_RIBBONS, 1);
+        proteinShape(JmolConstants.SHAPE_RIBBONS);
         break;
       case Token.prueba:
-        proteinShape(JmolConstants.SHAPE_PRUEBA, 1);
+        proteinShape(JmolConstants.SHAPE_PRUEBA);
         break;
       case Token.trace:
-        proteinShape(JmolConstants.SHAPE_TRACE, 2);
+        proteinShape(JmolConstants.SHAPE_TRACE);
         break;
       case Token.cartoon:
-        proteinShape(JmolConstants.SHAPE_CARTOON, 2);
+        proteinShape(JmolConstants.SHAPE_CARTOON);
         break;
       case Token.spin:
         spin();
@@ -2142,8 +2142,7 @@ public class Eval implements Runnable {
     viewer.setShapeSize(JmolConstants.SHAPE_DOTS, mad);
   }
 
-  void proteinShape(int shapeType,
-                    int radiusOrDiameter) throws ScriptException {
+  void proteinShape(int shapeType) throws ScriptException {
     short mad = 0;
     int tok = statement[1].tok;
     switch (tok) {
@@ -2168,13 +2167,13 @@ public class Eval implements Runnable {
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
-      mad = (short)(radiusRasMol * 4 * radiusOrDiameter);
+      mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms > 4)
         numberOutOfRange();
-      mad = (short)(angstroms * 1000 * radiusOrDiameter);
+      mad = (short)(angstroms * 1000 * 2);
       break;
     default:
       booleanOrNumberExpected();

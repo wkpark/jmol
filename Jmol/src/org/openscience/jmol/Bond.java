@@ -39,7 +39,7 @@ public class Bond {
   public boolean bindsHydrogen() {
 
     if ((atom1.getType().getAtomicNumber() == 1)
-            || (atom2.getType().getAtomicNumber() == 1)) {
+        || (atom2.getType().getAtomicNumber() == 1)) {
       return true;
     } else {
       return false;
@@ -54,6 +54,7 @@ public class Bond {
    * @return the bond order, or -1 if the bond was not found.
    */
   public static int getBondOrder(Atom atom1, Atom atom2) {
+
     int bondOrder = -1;
     Enumeration bonds = atom1.getBondedAtoms();
     Enumeration bondOrders = atom1.getBondOrders();

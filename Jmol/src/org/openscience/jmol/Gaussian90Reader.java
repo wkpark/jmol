@@ -54,7 +54,7 @@ public class Gaussian90Reader extends DefaultChemFileReader {
   public Gaussian90Reader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the Gaussian90 output.
    *
@@ -112,8 +112,7 @@ public class Gaussian90Reader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readCoordinates(ChemFrame frame)
-          throws IOException {
+  private void readCoordinates(ChemFrame frame) throws IOException {
 
     String line;
     line = input.readLine();
@@ -169,8 +168,7 @@ public class Gaussian90Reader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readFrequencies(ChemFrame frame)
-          throws IOException {
+  private void readFrequencies(ChemFrame frame) throws IOException {
 
     String line;
 

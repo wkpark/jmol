@@ -30,7 +30,7 @@ import javax.vecmath.Matrix4d;
  * atoms.
  */
 public class Atom {
-  
+
   /**
    * Creates an atom at the given position with the given atom type.
    *
@@ -63,7 +63,7 @@ public class Atom {
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
   }
-  
+
   /**
    * Returns the atom's number.
    */
@@ -79,7 +79,7 @@ public class Atom {
   public BaseAtomType getType() {
     return atomType.getBaseAtomType();
   }
-  
+
   /**
    * Adds a <code>PhysicalProperty</code> to this atom if not already defined.
    * If a <code>PhysicalProperty</code> with the same description already
@@ -108,6 +108,7 @@ public class Atom {
    * @return the <code>PhysicalProperty</code>, or null if not found.
    */
   public PhysicalProperty getProperty(String description) {
+
     Enumeration e = properties.elements();
     while (e.hasMoreElements()) {
       PhysicalProperty fp = (PhysicalProperty) e.nextElement();
@@ -117,7 +118,7 @@ public class Atom {
     }
     return null;
   }
-  
+
   /**
    * Returns the <code>PhysicalProperty</code>'s associated with this atom.
    *
@@ -139,7 +140,7 @@ public class Atom {
     }
     return false;
   }
-  
+
   /**
    * Returns this atom's color.
    *
@@ -148,7 +149,7 @@ public class Atom {
   public Color getColor() {
     return atomType.getColor();
   }
-  
+
   /**
    * Sets this atom's color.
    *
@@ -157,14 +158,14 @@ public class Atom {
   public void setColor(Color color) {
     atomType.setColor(color);
   }
-  
+
   /**
    * Returns the atom's position.
    */
   public Point3f getPosition() {
     return new Point3f(position);
   }
-  
+
   /**
    * Sets the atom's position.
    */
@@ -189,11 +190,12 @@ public class Atom {
     }
     return new Point3f(vector);
   }
-  
+
   /**
    * Sets the atom's vector.
    */
   public void setVector(Point3f vector) {
+
     if (vector == null) {
       this.vector = null;
     } else {
@@ -217,6 +219,7 @@ public class Atom {
    * the given matrix.
    */
   public void transform(Matrix4d transformationMatrix) {
+
     transformationMatrix.transform(position, screenPosition);
     if (vector != null) {
       screenVector.scaleAdd(2.0f, vector, position);
@@ -224,10 +227,11 @@ public class Atom {
     }
   }
 
-/**
-   * Adds an atom to this atom's bonded list.
-   */
+  /**
+     * Adds an atom to this atom's bonded list.
+     */
   public void addBondedAtom(Atom toAtom, int bondOrder) {
+
     if (bondedAtoms == null) {
       bondedAtoms = new Vector();
     }
@@ -277,14 +281,15 @@ public class Atom {
    * factor of each other.
    */
   public static boolean closeEnoughToBond(Atom atom1, Atom atom2,
-          float distanceFudgeFactor) {
+      float distanceFudgeFactor) {
 
     if (atom1 != atom2) {
       float squaredDistanceBetweenAtoms =
         atom1.position.distanceSquared(atom2.position);
-      float bondingDistance = distanceFudgeFactor
-        * ((float) atom1.atomType.getBaseAtomType().getCovalentRadius()
-           + (float) atom2.atomType.getBaseAtomType().getCovalentRadius());
+      float bondingDistance =
+        distanceFudgeFactor
+          * ((float) atom1.atomType.getBaseAtomType().getCovalentRadius()
+             + (float) atom2.atomType.getBaseAtomType().getCovalentRadius());
 
       if (squaredDistanceBetweenAtoms <= bondingDistance * bondingDistance) {
         return true;
@@ -295,7 +300,7 @@ public class Atom {
 
   private AtomType atomType;
   private int atomNumber;
-  
+
   /**
    * Position in world space.
    */
@@ -330,13 +335,13 @@ public class Atom {
    * A list of properties
    */
   private Vector properties = new Vector();
-  
+
   static class NoBondsEnumeration implements Enumeration {
-  
+
     public boolean hasMoreElements() {
       return false;
     }
-  
+
     public Object nextElement() throws java.util.NoSuchElementException {
       throw new java.util.NoSuchElementException();
     }

@@ -23,7 +23,7 @@ package org.openscience.jmol;
  *
  */
 public class SelectSharcReference extends javax.swing.JDialog
-        implements java.awt.event.ActionListener {
+    implements java.awt.event.ActionListener {
 
   private javax.swing.JPanel buttonPanel;
   private javax.swing.JButton okButton;
@@ -36,7 +36,7 @@ public class SelectSharcReference extends javax.swing.JDialog
    *  Creates new form SelectSharcReference
    */
   public SelectSharcReference(java.awt.Frame parent, Object[] values,
-          boolean modal) {
+      boolean modal) {
     super(parent, modal);
     initComponents(values);
     pack();

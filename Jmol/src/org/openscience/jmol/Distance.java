@@ -44,14 +44,14 @@ class Distance extends Measurement implements MeasurementInterface {
   }
 
   public void paint(
-          Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2)
-            throws Exception {
+      Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2)
+        throws Exception {
     paintDistLine(g, settings, x1, y1, x2, y2);
     paintDistString(g, settings, x1, y1, z1, x2, y2, z2);
   }
 
   private void paintDistLine(Graphics g, DisplaySettings settings, int x1,
-          int y1, int x2, int y2) {
+      int y1, int x2, int y2) {
 
     g.setColor(settings.getDistanceColor());
     String vers = System.getProperty("java.version");
@@ -69,7 +69,7 @@ class Distance extends Measurement implements MeasurementInterface {
   }
 
   private void paintDistString(Graphics g, DisplaySettings settings, int x1,
-          int y1, int z1, int x2, int y2, int z2) {
+      int y1, int z1, int x2, int y2, int z2) {
 
     double run = (double) (x2 - x1);
     double rise = (double) (y2 - y1);
@@ -103,7 +103,7 @@ class Distance extends Measurement implements MeasurementInterface {
     BaseAtomType b = cf.getAtomAt(Atoms[1]).getType();
 
     return (settings.getCircleRadius(z1, a.getVdwRadius()) + settings.getCircleRadius(z2, b.getVdwRadius()))
-            / 2.0f;
+        / 2.0f;
   }
 
 

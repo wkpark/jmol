@@ -44,7 +44,7 @@ public class LineBondRenderer implements BondRenderer {
    * @param settings the display settings
    */
   public void paint(Graphics gc, Atom atom1, Atom atom2,
-          DisplaySettings settings) {
+      DisplaySettings settings) {
 
     int x1 = (int) atom1.getScreenPosition().x;
     int y1 = (int) atom1.getScreenPosition().y;
@@ -58,36 +58,38 @@ public class LineBondRenderer implements BondRenderer {
     double dx2 = dx * dx;
     double dy2 = dy * dy;
     double magnitude = Math.sqrt(dx2 + dy2);
-    
+
     double ctheta = dx / magnitude;
     double stheta = dy / magnitude;
-    
+
     double radius1 = 0.0;
-    
-    if (!(settings.getDrawBondsToAtomCenters() || settings.getFastRendering())) {
+
+    if (!(settings.getDrawBondsToAtomCenters()
+        || settings.getFastRendering())) {
+
       // Adjust radius by perspective based upon z difference.
       double dz = z2 - z1;
-      double costheta = Math.sqrt(dx2 + dy2)
-                        / Math.sqrt(dx2 + dy2 + dz * dz);
+      double costheta = Math.sqrt(dx2 + dy2) / Math.sqrt(dx2 + dy2 + dz * dz);
       radius1 = costheta
-              * (double) settings.getCircleRadius(z1,
-                atom1.getType().getVdwRadius());
-      double radius2 = costheta
-              * (double) settings.getCircleRadius(z2,
-                atom2.getType().getVdwRadius());
+          * (double) settings.getCircleRadius(z1,
+            atom1.getType().getVdwRadius());
+      double radius2 =
+        costheta
+          * (double) settings.getCircleRadius(z2,
+                                              atom2.getType().getVdwRadius());
 
       double bondLengthSquared = dx2 + dy2;
-  
+
       if (bondLengthSquared <= (radius1 + radius2) * (radius1 + radius2)) {
         return;
       }
-      
+
     }
 
     magnitude *= 0.5;
-    
+
     double halfBondWidth = 0.5 * settings.getBondWidth()
-                      * settings.getBondScreenScale();
+                             * settings.getBondScreenScale();
 
     int bondOrder = Bond.getBondOrder(atom1, atom2);
 
@@ -96,16 +98,17 @@ public class LineBondRenderer implements BondRenderer {
       bondSeparation *= 2.0;
     }
     int[] points;
-    if (!settings.getFastRendering() && (bondOrder == 2 || bondOrder == 3)) {
+    if (!settings.getFastRendering()
+        && ((bondOrder == 2) || (bondOrder == 3))) {
       points = RendererUtilities.getBondLine(x1, y1, ctheta, stheta, radius1,
           bondSeparation * halfBondWidth, magnitude);
       gc.drawLine(points[0], points[1], points[2], points[3]);
-      
+
       points = RendererUtilities.getBondLine(x1, y1, ctheta, stheta, radius1,
           -bondSeparation * halfBondWidth, magnitude);
       gc.drawLine(points[0], points[1], points[2], points[3]);
     }
-    if (settings.getFastRendering() || bondOrder == 1 || bondOrder == 3) {
+    if (settings.getFastRendering() || (bondOrder == 1) || (bondOrder == 3)) {
       points = RendererUtilities.getBondLine(x1, y1, ctheta, stheta, radius1,
           0.0, magnitude);
       gc.drawLine(points[0], points[1], points[2], points[3]);

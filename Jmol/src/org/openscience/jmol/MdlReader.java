@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Reads MDL CTfile format files. 
+ * Reads MDL CTfile format files.
  * For information about the format, see http://www.mdli.com/.
  *
  * <h3>Current limitations</h3>
@@ -65,8 +65,7 @@ public class MdlReader extends DefaultChemFileReader {
   /**
    * Parses the MOL file into a ChemFrame.
    */
-  public ChemFrame readFrame()
-      throws IOException {
+  public ChemFrame readFrame() throws IOException {
 
     ChemFrame frame = new ChemFrame(bondsEnabled);
 
@@ -75,7 +74,7 @@ public class MdlReader extends DefaultChemFileReader {
     if (line != null) {
       frame.setInfo(line.trim());
     }
-    
+
     // Ignore the next two lines.
     line = input.readLine();
     line = input.readLine();
@@ -85,7 +84,7 @@ public class MdlReader extends DefaultChemFileReader {
     if (line == null) {
       return null;
     }
-    
+
     int numberOfAtoms = Integer.parseInt(line.substring(0, 3).trim());
     int numberOfBonds = Integer.parseInt(line.substring(3, 6).trim());
 
@@ -103,7 +102,7 @@ public class MdlReader extends DefaultChemFileReader {
 
       frame.addAtom(atomSymbol, x, y, z);
     }
-    
+
     // Read bonds
     frame.clearBonds();
     for (int i = 0; i < numberOfBonds; i++) {
@@ -114,9 +113,9 @@ public class MdlReader extends DefaultChemFileReader {
       int atom0 = Integer.parseInt(line.substring(0, 3).trim());
       int atom1 = Integer.parseInt(line.substring(3, 6).trim());
       int bondOrder = Integer.parseInt(line.substring(6, 9).trim());
-      frame.addBond(atom0-1, atom1-1, bondOrder);
+      frame.addBond(atom0 - 1, atom1 - 1, bondOrder);
     }
-    
+
     fireFrameRead();
     return frame;
   }

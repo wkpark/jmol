@@ -45,7 +45,7 @@ import javax.swing.JPanel;
  *  @author  J. Daniel Gezelter
  */
 public class DisplayPanel extends JPanel
-        implements Runnable, MeasurementListListener {
+    implements Runnable, MeasurementListListener {
 
   public static int X_AXIS = 1;
   public static int Y_AXIS = 2;
@@ -90,7 +90,7 @@ public class DisplayPanel extends JPanel
   private Measure m = null;
   private MeasurementList mlist = null;
   protected DisplaySettings settings;
-  
+
   public DisplayPanel(StatusBar status, DisplaySettings settings) {
     this.status = status;
     this.settings = settings;
@@ -174,7 +174,7 @@ public class DisplayPanel extends JPanel
     viewMatrix.setIdentity();
     Matrix4d matrix = new Matrix4d();
     matrix.setTranslation(new Vector3d(-(xmin + xmax) / 2,
-            -(ymin + ymax) / 2, -(zmin + zmax) / 2));
+        -(ymin + ymax) / 2, -(zmin + zmax) / 2));
     viewMatrix.add(matrix);
     viewMatrix.mul(amat, viewMatrix);
     matrix.setIdentity();
@@ -186,7 +186,7 @@ public class DisplayPanel extends JPanel
     viewMatrix.mul(zmat, viewMatrix);
     matrix.setZero();
     matrix.setTranslation(new Vector3d(getSize().width / 2,
-            getSize().height / 2, getSize().width / 2));
+        getSize().height / 2, getSize().width / 2));
     viewMatrix.add(matrix);
     return viewMatrix;
   }
@@ -260,7 +260,7 @@ public class DisplayPanel extends JPanel
     MeasurementList source = (MeasurementList) mle.getSource();
     mlist = source;
     md.updateMlists(mlist.getDistanceList(), mlist.getAngleList(),
-            mlist.getDihedralList());
+        mlist.getDihedralList());
   }
 
   class MyAdapter extends MouseAdapter {
@@ -283,7 +283,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void mouseClicked(MouseEvent e) {
-    
+
       if (haveFile) {
         if (mode == PICK) {
           if (e.isShiftDown()) {
@@ -296,7 +296,7 @@ public class DisplayPanel extends JPanel
           status.setStatus(2, n + " Atoms Selected");
         } else if (mode == DELETE) {
           md.deleteSelectedAtom(e.getX(), e.getY());
-          repaint(); // this seems to have no effect...
+          repaint();    // this seems to have no effect...
           status.setStatus(2, "Atom Deleted");
         } else if (mode == MEASURE) {
           m.firePicked(md.pickMeasuredAtom(e.getX(), e.getY()));
@@ -466,9 +466,9 @@ public class DisplayPanel extends JPanel
         //comment out the next 5 lines if compiling under 1.1
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+            RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-                RenderingHints.VALUE_RENDER_QUALITY);
+            RenderingHints.VALUE_RENDER_QUALITY);
       }
     }
 
@@ -518,7 +518,7 @@ public class DisplayPanel extends JPanel
 
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
   MeasureRenderer measureRenderer = new MeasureRenderer();
-  
+
   public boolean isPainting() {
     return !painted;
   }
@@ -997,12 +997,12 @@ public class DisplayPanel extends JPanel
   public Action[] getActions() {
 
     Action[] defaultActions = {
-      deleteAction, pickAction, rotateAction, zoomAction, xlateAction, frontAction,
-      topAction, bottomAction, rightAction, leftAction, aquickdrawAction,
-      ashadingAction, awireframeAction, bquickdrawAction, bshadingAction,
-      blineAction, bwireframeAction, plainAction, symbolsAction, typesAction,
-      numbersAction, bondsAction, atomsAction, vectorsAction, hydrogensAction,
-      selectallAction, deselectallAction,
+      deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
+      frontAction, topAction, bottomAction, rightAction, leftAction,
+      aquickdrawAction, ashadingAction, awireframeAction, bquickdrawAction,
+      bshadingAction, blineAction, bwireframeAction, plainAction,
+      symbolsAction, typesAction, numbersAction, bondsAction, atomsAction,
+      vectorsAction, hydrogensAction, selectallAction, deselectallAction,
       homeAction, wireframerotationAction
     };
     return defaultActions;

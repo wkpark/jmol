@@ -88,6 +88,12 @@ import Acme.JPM.Encoders.GifEncoder;
 import Acme.JPM.Encoders.PpmEncoder;
 import Acme.JPM.Encoders.ImageEncoder;
 
+/**
+ * The main class in Jmol.
+ *
+ * @author Bradley A. Smith (bradley@baysmith.com)
+ * @author Peter Murray-Rust
+ */
 class Jmol extends JPanel {
 
   private JScrollPane scroller;
@@ -135,13 +141,14 @@ class Jmol extends JPanel {
 
   static {
     if (System.getProperty("javawebstart.version") != null) {
+
       // If the property is found, Jmol is running with Java Web Start. To fix
       // bug 4621090, the security manager is set to null.
       System.setSecurityManager(null);
     }
     if (System.getProperty("user.home") == null) {
       System.err.println(
-              "Error starting Jmol: the property 'user.home' is not defined.");
+          "Error starting Jmol: the property 'user.home' is not defined.");
       System.exit(1);
     }
     File ujmoldir = new File(new File(System.getProperty("user.home")),
@@ -149,7 +156,8 @@ class Jmol extends JPanel {
     ujmoldir.mkdirs();
     UserPropsFile = new File(ujmoldir, "properties");
     UserAtypeFile = new File(ujmoldir, "AtomTypes");
-    historyFile = new HistoryFile(new File(ujmoldir, "history"), "Jmol's persistent values");
+    historyFile = new HistoryFile(new File(ujmoldir, "history"),
+        "Jmol's persistent values");
   }
 
   Jmol(Splash splash) {
@@ -158,8 +166,8 @@ class Jmol extends JPanel {
     this.splash = splash;
     splash.showStatus("Initializing Swing...");
     try {
-      UIManager.setLookAndFeel(UIManager
-              .getCrossPlatformLookAndFeelClassName());
+      UIManager
+          .setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
     } catch (Exception exc) {
       System.err.println("Error loading L&F: " + exc);
     }
@@ -171,7 +179,9 @@ class Jmol extends JPanel {
     port = scroller.getViewport();
 
     try {
-      String vpFlag = JmolResourceHandler.getInstance().getString("Jmol.ViewportBackingStore");
+      String vpFlag =
+        JmolResourceHandler.getInstance()
+          .getString("Jmol.ViewportBackingStore");
       Boolean bs = new Boolean(vpFlag);
       port.setBackingStoreEnabled(bs.booleanValue());
     } catch (MissingResourceException mre) {
@@ -259,38 +269,38 @@ class Jmol extends JPanel {
     addPropertyChangeListener(moleculeProperty, printAction);
   }
 
-// refactored by petermr for use outside Jmol
+  public static Jmol getJmol(JFrame frame) {
 
-	public static Jmol getJmol(JFrame frame) {
-		JmolResourceHandler jrh = JmolResourceHandler.getInstance();
-	    ImageIcon splash_image = jrh.getIcon("Jmol.splash");
-        Splash splash = new Splash(frame, splash_image);
-	    splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-	    splash.showStatus("Creating main window...");
-	    frame.setTitle(jrh.getString("Jmol.Title"));
-	    frame.setBackground(Color.lightGray);
-	    frame.getContentPane().setLayout(new BorderLayout());
-	    splash.showStatus("Initializing Jmol...");
-	    Jmol window = new Jmol(splash);
-        frame.getContentPane().add("Center", window);
-	    frame.addWindowListener(new Jmol.AppCloser());
-	    frame.pack();
-	    frame.setSize(400, 400);
-        ImageIcon jmolIcon = JmolResourceHandler.getInstance().getIcon("Jmol.icon");
-        Image iconImage = jmolIcon.getImage();
-        frame.setIconImage(iconImage);
-        splash.showStatus("Launching main frame...");
-	    frame.show();
-	    return window;
-	}
+    JmolResourceHandler jrh = JmolResourceHandler.getInstance();
+    ImageIcon splash_image = jrh.getIcon("Jmol.splash");
+    Splash splash = new Splash(frame, splash_image);
+    splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    splash.showStatus("Creating main window...");
+    frame.setTitle(jrh.getString("Jmol.Title"));
+    frame.setBackground(Color.lightGray);
+    frame.getContentPane().setLayout(new BorderLayout());
+    splash.showStatus("Initializing Jmol...");
+    Jmol window = new Jmol(splash);
+    frame.getContentPane().add("Center", window);
+    frame.addWindowListener(new Jmol.AppCloser());
+    frame.pack();
+    frame.setSize(400, 400);
+    ImageIcon jmolIcon =
+      JmolResourceHandler.getInstance().getIcon("Jmol.icon");
+    Image iconImage = jmolIcon.getImage();
+    frame.setIconImage(iconImage);
+    splash.showStatus("Launching main frame...");
+    frame.show();
+    return window;
+  }
 
   public static void main(String[] args) {
 
     // Read the first argument as a file name:
     File initialFile = null;
     File script = null;
-// PMR
-		String cmlString = null;
+
+    String cmlString = null;
 
     /* to be compatible with current arguments:
               1 argument  -> filename of file to read
@@ -315,9 +325,10 @@ class Jmol extends JPanel {
 
       /* Read only one argument as a file name for now: */
       String astring = args[0];
-  	  if (astring.equals("-test")) {
-		cmlString = "<molecule id=\"METHANOL\"><atomArray><stringArray builtin=\"id\">a1 a2 a3 a4 a5 a6</stringArray><stringArray builtin=\"elementType\">C O H H H H</stringArray><floatArray builtin=\"x3\" units=\"pm\">-0.748 0.558 -1.293 -1.263 -0.699 0.716</floatArray>					 <floatArray builtin=\"y3\" units=\"pm\">-0.015 0.420 0.202 0.754 -0.934 1.404</floatArray>					 <floatArray builtin=\"z3\" units=\"pm\">0.024 -0.278 -0.901 0.600 0.609 0.137</floatArray></atomArray></molecule>";
-	  } else {
+      if (astring.equals("-test")) {
+        cmlString =
+            "<molecule id=\"METHANOL\"><atomArray><stringArray builtin=\"id\">a1 a2 a3 a4 a5 a6</stringArray><stringArray builtin=\"elementType\">C O H H H H</stringArray><floatArray builtin=\"x3\" units=\"pm\">-0.748 0.558 -1.293 -1.263 -0.699 0.716</floatArray>                                  <floatArray builtin=\"y3\" units=\"pm\">-0.015 0.420 0.202 0.754 -0.934 1.404</floatArray>                                      <floatArray builtin=\"z3\" units=\"pm\">0.024 -0.278 -0.901 0.600 0.609 0.137</floatArray></atomArray></molecule>";
+      } else {
         initialFile = new File(getUserDirectory(), astring);
         if (!initialFile.exists()) {
           System.out.println("File not found: " + initialFile.toString());
@@ -330,21 +341,20 @@ class Jmol extends JPanel {
       String vers = System.getProperty("java.version");
       if (vers.compareTo("1.1.2") < 0) {
         System.out.println("!!!WARNING: Swing components require a "
-                + "1.1.2 or higher version VM!!!");
+            + "1.1.2 or higher version VM!!!");
       }
 
-// refactored by petermr
       frame = new JFrame();
       Jmol window = getJmol(frame);
 
       // Open a file if on is given as an argument
       if (initialFile != null) {
         window.openFile(initialFile, "LetJmolDetermine");
-// PMR
-			} else if (cmlString != null) {
-				window.readCML(cmlString);
 
-			}
+      } else if (cmlString != null) {
+        window.readCML(cmlString);
+
+      }
 
       // Oke, by now it is time to execute the script
       if (script != null) {
@@ -386,19 +396,19 @@ class Jmol extends JPanel {
       ConsoleTextArea consoleTextArea = new ConsoleTextArea();
       consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
       consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
-              java.awt.BorderLayout.CENTER);
+          java.awt.BorderLayout.CENTER);
     } catch (IOException e) {
       JTextArea errorTextArea = new JTextArea();
       errorTextArea.setFont(java.awt.Font.decode("monospaced"));
       consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
-              java.awt.BorderLayout.CENTER);
+          java.awt.BorderLayout.CENTER);
       errorTextArea.append("Could not create ConsoleTextArea: " + e);
     }
 
     Point location = frame.getLocation();
     Dimension size = frame.getSize();
     consoleframe.setBounds(location.x, location.y + size.height, size.width,
-            200);
+        200);
 
     // I'd prefer that the console stay out of the way until requested,
     // so I'm commenting this line out for now...
@@ -424,12 +434,13 @@ class Jmol extends JPanel {
           newChemFile = reader.read();
         } else if (typeHint.equals("CML")) {
           ChemFileReader reader = new CMLReader(theFile.toURL());
-          newChemFile = ((CMLReader)reader).readValidated();
+          newChemFile = ((CMLReader) reader).readValidated();
         } else if (typeHint.equals("XYZ (xmol)")) {
           ChemFileReader reader = new XYZReader(new InputStreamReader(is));
           newChemFile = reader.read();
         } else if (typeHint.equals("Ghemical Molecular Dynamics")) {
-          ChemFileReader reader = new GhemicalMMReader(new InputStreamReader(is));
+          ChemFileReader reader =
+            new GhemicalMMReader(new InputStreamReader(is));
           newChemFile = reader.read();
         } else {
 
@@ -453,29 +464,29 @@ class Jmol extends JPanel {
             recentFiles.addFile(theFile.toString(), typeHint);
           } else {
             JOptionPane.showMessageDialog(Jmol.this,
-                  "The file \"" + theFile +"\" appears to be empty."
+                "The file \"" + theFile + "\" appears to be empty."
                   + "\nIf this is in error, please contact the Jmol development team.",
-                  "Empty file", JOptionPane.ERROR_MESSAGE);
+                    "Empty file", JOptionPane.ERROR_MESSAGE);
           }
         } else {
           JOptionPane.showMessageDialog(Jmol.this,
-                "Unknown error reading file \"" + theFile +"\"."
+              "Unknown error reading file \"" + theFile + "\"."
                 + "\nPlease contact the Jmol development team.",
-                "Unknown error", JOptionPane.ERROR_MESSAGE);
+                  "Unknown error", JOptionPane.ERROR_MESSAGE);
         }
 
       } catch (java.io.FileNotFoundException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-                "Unable to find file \"" + theFile + "\"",
-                "File not found", JOptionPane.ERROR_MESSAGE);
+            "Unable to find file \"" + theFile + "\"", "File not found",
+              JOptionPane.ERROR_MESSAGE);
       } catch (JmolException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-                "Unable to determine type for file \"" + theFile + "\"",
-                "Unknown file type", JOptionPane.ERROR_MESSAGE);
+            "Unable to determine type for file \"" + theFile + "\"",
+              "Unknown file type", JOptionPane.ERROR_MESSAGE);
       } catch (Exception ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-                "Unexpected exception: " + ex.getMessage()
-                + "\nPlease contact the Jmol development team.",
+            "Unexpected exception: " + ex.getMessage()
+              + "\nPlease contact the Jmol development team.",
                 "Unexpected error", JOptionPane.ERROR_MESSAGE);
         ex.printStackTrace();
       } finally {
@@ -485,42 +496,44 @@ class Jmol extends JPanel {
     }
   }
 
-// transfer molecule to Jmol as serialized XML string (petermr)
-	public void readCML(String s) {
-		StringReader sr = new StringReader(s);
-		readCML(sr);
-	}
+  // transfer molecule to Jmol as serialized XML string
+  public void readCML(String s) {
+    StringReader sr = new StringReader(s);
+    readCML(sr);
+  }
 
-// transfer CML molecule to Jmol as string representation (petermr)
-	public void readCML(StringReader sr) {
-		ChemFileReader reader = new CMLReader(sr);
-		try {
-			chemFile = reader.read();
-		} catch (Exception e) {
-			System.out.println("Exception: "+e);
-			return;
-		}
+  // transfer CML molecule to Jmol as string representation
+  public void readCML(StringReader sr) {
 
-		System.out.println("READING CML");
-		String name = "from Jumbo";
-		if (chemFile != null) {
-			display.setChemFile(chemFile);
-			anim.setChemFile(chemFile);
-			vib.setChemFile(chemFile);
-			pg.setChemFile(chemFile);
-			apm.replaceList(chemFile.getAtomPropertyList());
-			mlist.clear();
+    ChemFileReader reader = new CMLReader(sr);
+    try {
+      chemFile = reader.read();
+    } catch (Exception e) {
+      System.out.println("Exception: " + e);
+      return;
+    }
 
-			chemicalShifts.setChemFile(chemFile, apm);
-			currentFileName = "from Jumbo";
+    System.out.println("READING CML");
+    String name = "from Jumbo";
+    if (chemFile != null) {
+      display.setChemFile(chemFile);
+      anim.setChemFile(chemFile);
+      vib.setChemFile(chemFile);
+      pg.setChemFile(chemFile);
+      apm.replaceList(chemFile.getAtomPropertyList());
+      mlist.clear();
 
-			frame.setTitle(currentFileName);
+      chemicalShifts.setChemFile(chemFile, apm);
+      currentFileName = "from Jumbo";
 
-		}
-// Add the file to the recent files list
-//		recentFiles.addFile(theFile.toString(), typeHint);
-//		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	}
+      frame.setTitle(currentFileName);
+
+    }
+
+    // Add the file to the recent files list
+    //              recentFiles.addFile(theFile.toString(), typeHint);
+    //              frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+  }
 
 
 
@@ -535,6 +548,7 @@ class Jmol extends JPanel {
 
 
   void setChemFile(ChemFile chemFile) {
+
     ChemFile oldChemFile = this.chemFile;
     this.chemFile = chemFile;
     display.setChemFile(chemFile);
@@ -581,28 +595,26 @@ class Jmol extends JPanel {
 
     System.arraycopy(defaultActions, 0, theActions, 0, defaultActions.length);
     System.arraycopy(displayActions, 0, theActions, defaultActions.length,
-            displayActions.length);
+        displayActions.length);
     System.arraycopy(prefActions, 0, theActions,
-            defaultActions.length + displayActions.length,
-              prefActions.length);
+        defaultActions.length + displayActions.length, prefActions.length);
     System.arraycopy(animActions, 0, theActions,
-            defaultActions.length + displayActions.length
-              + prefActions.length, animActions.length);
+        defaultActions.length + displayActions.length + prefActions.length,
+          animActions.length);
     System.arraycopy(measActions, 0, theActions,
-            defaultActions.length + displayActions.length
-              + prefActions.length + animActions.length, measActions.length);
+        defaultActions.length + displayActions.length + prefActions.length
+          + animActions.length, measActions.length);
     System.arraycopy(mlistActions, 0, theActions,
-            defaultActions.length + displayActions.length
-              + prefActions.length + animActions.length + measActions.length,
-                mlistActions.length);
+        defaultActions.length + displayActions.length + prefActions.length
+          + animActions.length + measActions.length, mlistActions.length);
     System.arraycopy(vibActions, 0, theActions,
-            defaultActions.length + displayActions.length
-              + prefActions.length + animActions.length + measActions.length
-                + mlistActions.length, vibActions.length);
+        defaultActions.length + displayActions.length + prefActions.length
+          + animActions.length + measActions.length + mlistActions.length,
+            vibActions.length);
     System.arraycopy(pgActions, 0, theActions,
-            defaultActions.length + displayActions.length
-              + prefActions.length + animActions.length + measActions.length
-                + mlistActions.length + vibActions.length, pgActions.length);
+        defaultActions.length + displayActions.length + prefActions.length
+          + animActions.length + measActions.length + mlistActions.length
+            + vibActions.length, pgActions.length);
     return theActions;
   }
 
@@ -642,20 +654,25 @@ class Jmol extends JPanel {
 
     JMenuItem mi;
     if (isRadio) {
-      mi = new JRadioButtonMenuItem(JmolResourceHandler.getInstance().getString("Jmol." + cmd + labelSuffix));
+      mi = new JRadioButtonMenuItem(JmolResourceHandler.getInstance()
+          .getString("Jmol." + cmd + labelSuffix));
     } else {
-      String checked = JmolResourceHandler.getInstance().getString("Jmol." + cmd + checkSuffix);
+      String checked = JmolResourceHandler.getInstance().getString("Jmol."
+                         + cmd + checkSuffix);
       if (checked != null) {
         boolean c = false;
         if (checked.equals("true")) {
           c = true;
         }
-        mi = new JCheckBoxMenuItem(JmolResourceHandler.getInstance().getString("Jmol." + cmd + labelSuffix), c);
+        mi = new JCheckBoxMenuItem(JmolResourceHandler.getInstance()
+            .getString("Jmol." + cmd + labelSuffix), c);
       } else {
-        mi = new JMenuItem(JmolResourceHandler.getInstance().getString("Jmol." + cmd + labelSuffix));
+        mi = new JMenuItem(JmolResourceHandler.getInstance().getString("Jmol."
+            + cmd + labelSuffix));
       }
     }
-    String mnem = JmolResourceHandler.getInstance().getString("Jmol." + cmd + mnemonicSuffix);
+    String mnem = JmolResourceHandler.getInstance().getString("Jmol." + cmd
+                    + mnemonicSuffix);
     if (mnem != null) {
       char mn = mnem.charAt(0);
       mi.setMnemonic(mn);
@@ -675,12 +692,14 @@ class Jmol extends JPanel {
             }
     }
     */
-    ImageIcon f = JmolResourceHandler.getInstance().getIcon("Jmol." + cmd + imageSuffix);
+    ImageIcon f = JmolResourceHandler.getInstance().getIcon("Jmol." + cmd
+                    + imageSuffix);
     if (f != null) {
       mi.setHorizontalTextPosition(JButton.RIGHT);
       mi.setIcon(f);
     }
-    String astr = JmolResourceHandler.getInstance().getString("Jmol." + cmd + actionSuffix);
+    String astr = JmolResourceHandler.getInstance().getString("Jmol." + cmd
+                    + actionSuffix);
     if (astr == null) {
       astr = cmd;
     }
@@ -724,7 +743,8 @@ class Jmol extends JPanel {
   private Component createToolbar() {
 
     toolbar = new JToolBar();
-    String[] tool1Keys = tokenize(JmolResourceHandler.getInstance().getString("Jmol.toolbar"));
+    String[] tool1Keys =
+      tokenize(JmolResourceHandler.getInstance().getString("Jmol.toolbar"));
     for (int i = 0; i < tool1Keys.length; i++) {
       if (tool1Keys[i].equals("-")) {
         toolbar.addSeparator();
@@ -757,17 +777,22 @@ class Jmol extends JPanel {
    */
   protected AbstractButton createToolbarButton(String key) {
 
-    ImageIcon ii = JmolResourceHandler.getInstance().getIcon("Jmol." + key + imageSuffix);
+    ImageIcon ii = JmolResourceHandler.getInstance().getIcon("Jmol." + key
+                     + imageSuffix);
     AbstractButton b = new JButton(ii);
-    String isToggleString = JmolResourceHandler.getInstance().getString("Jmol." + key + "Toggle");
+    String isToggleString =
+      JmolResourceHandler.getInstance().getString("Jmol." + key + "Toggle");
     if (isToggleString != null) {
       boolean isToggle = Boolean.valueOf(isToggleString).booleanValue();
       if (isToggle) {
         b = new JToggleButton(ii);
         toolbarButtonGroup.add(b);
-        String isSelectedString = JmolResourceHandler.getInstance().getString("Jmol." + key + "ToggleSelected");
+        String isSelectedString =
+          JmolResourceHandler.getInstance().getString("Jmol." + key
+            + "ToggleSelected");
         if (isSelectedString != null) {
-          boolean isSelected = Boolean.valueOf(isSelectedString).booleanValue();
+          boolean isSelected =
+            Boolean.valueOf(isSelectedString).booleanValue();
           b.setSelected(isSelected);
         }
       }
@@ -775,12 +800,14 @@ class Jmol extends JPanel {
     b.setRequestFocusEnabled(false);
     b.setMargin(new Insets(1, 1, 1, 1));
 
-    String astr = JmolResourceHandler.getInstance().getString("Jmol." + key + actionSuffix);
+    String astr = JmolResourceHandler.getInstance().getString("Jmol." + key
+                    + actionSuffix);
     if (astr == null) {
       astr = key;
     }
     Action a = getAction(astr);
     if (a != null) {
+
       // b = new JButton(a);
       b.setActionCommand(astr);
       b.addActionListener(a);
@@ -790,7 +817,8 @@ class Jmol extends JPanel {
       b.setEnabled(false);
     }
 
-    String tip = JmolResourceHandler.getInstance().getString("Jmol." + key + tipSuffix);
+    String tip = JmolResourceHandler.getInstance().getString("Jmol." + key
+                   + tipSuffix);
     if (tip != null) {
       b.setToolTipText(tip);
     }
@@ -834,7 +862,8 @@ class Jmol extends JPanel {
     JMenuItem mi;
     JMenuBar mb = new JMenuBar();
 
-    String[] menuKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol.menubar"));
+    String[] menuKeys =
+      tokenize(JmolResourceHandler.getInstance().getString("Jmol.menubar"));
     for (int i = 0; i < menuKeys.length; i++) {
       if (menuKeys[i].equals("-")) {
         mb.add(Box.createHorizontalGlue());
@@ -844,7 +873,8 @@ class Jmol extends JPanel {
         if (m != null) {
           mb.add(m);
         }
-        String mnem = JmolResourceHandler.getInstance().getString("Jmol." + menuKeys[i] + mnemonicSuffix);
+        String mnem = JmolResourceHandler.getInstance().getString("Jmol."
+                        + menuKeys[i] + mnemonicSuffix);
         if (mnem != null) {
           char mn = mnem.charAt(0);
           m.setMnemonic(mn);
@@ -864,26 +894,31 @@ class Jmol extends JPanel {
     // Get list of items from resource file:
     String[] itemKeys;
     if (isPopup) {
-      itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol." + key + popupSuffix));
+      itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol."
+          + key + popupSuffix));
     } else {
-      itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol." + key));
+      itemKeys = tokenize(JmolResourceHandler.getInstance().getString("Jmol."
+          + key));
     }
 
     // Get label associated with this menu:
-    JMenu menu = new JMenu(JmolResourceHandler.getInstance().getString("Jmol." + key + "Label"));
+    JMenu menu = new JMenu(JmolResourceHandler.getInstance().getString("Jmol."
+                   + key + "Label"));
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {
 
       // Check to see if it is a radio group:
-      String radiogroup = JmolResourceHandler.getInstance().getString("Jmol." + itemKeys[i] + radioSuffix);
+      String radiogroup = JmolResourceHandler.getInstance().getString("Jmol."
+                            + itemKeys[i] + radioSuffix);
       if (radiogroup != null) {
 
         // Get the list of items in the radio group:
         String[] radioKeys = tokenize(radiogroup);
 
         // See what is the selected member of the radio group:
-        String si = JmolResourceHandler.getInstance().getString("Jmol." + itemKeys[i] + selectedSuffix);
+        String si = JmolResourceHandler.getInstance().getString("Jmol."
+                      + itemKeys[i] + selectedSuffix);
 
         // Create the button group:
         ButtonGroup bg = new ButtonGroup();
@@ -904,11 +939,12 @@ class Jmol extends JPanel {
         } else {
 
           // Check to see if it is a popup menu:
-          String popup = JmolResourceHandler.getInstance().getString("Jmol." + itemKeys[i] + popupSuffix);
+          String popup = JmolResourceHandler.getInstance().getString("Jmol."
+                           + itemKeys[i] + popupSuffix);
           if (popup != null) {
             if (popup.equals("prop")) {
-              apm = new AtomPropsMenu(JmolResourceHandler.getInstance().getString("Jmol." + itemKeys[i] + "Label"),
-                      settings);
+              apm = new AtomPropsMenu(JmolResourceHandler.getInstance()
+                  .getString("Jmol." + itemKeys[i] + "Label"), settings);
               menu.add(apm);
             } else {
               JMenu pm;
@@ -1040,12 +1076,10 @@ class Jmol extends JPanel {
    * Actions defined by the Jmol class
    */
   private Action[] defaultActions = {
-    new NewAction(), new OpenAction(), saveAction,
-    printAction, exportAction, new ExitAction(),
-    new AboutAction(), new WhatsNewAction(), new UguideAction(),
-    new AtompropsAction(), new ConsoleAction(),
-    chemicalShifts, new RecentFilesAction(), povrayAction,
-    new ScriptAction()
+    new NewAction(), new OpenAction(), saveAction, printAction, exportAction,
+    new ExitAction(), new AboutAction(), new WhatsNewAction(),
+    new UguideAction(), new AtompropsAction(), new ConsoleAction(),
+    chemicalShifts, new RecentFilesAction(), povrayAction, new ScriptAction()
   };
 
   class ConsoleAction extends AbstractAction {
@@ -1305,7 +1339,7 @@ class Jmol extends JPanel {
       String selection = recentFiles.getFile();
       if (selection != null) {
         System.out.println("Recent File: " + selection + " ("
-                + recentFiles.getFileType() + ")");
+            + recentFiles.getFileType() + ")");
         openFile(new File(selection), recentFiles.getFileType());
       }
     }

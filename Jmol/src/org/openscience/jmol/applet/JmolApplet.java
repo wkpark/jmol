@@ -35,7 +35,7 @@ import org.openscience.jmol.CMLReader;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class JmolApplet extends java.applet.Applet
-        implements MouseListener, KeyListener, StatusDisplay {
+    implements MouseListener, KeyListener, StatusDisplay {
 
   private static String appletInfo =
     "Jmol Applet.  Part of the OpenScience project.  See www.openscience.org/Jmol for more information";
@@ -153,7 +153,7 @@ public class JmolApplet extends java.applet.Applet
         ChemFileReader cfr = null;
         ReaderProgress readerProgress = new ReaderProgress(this);
         if ((getParameter("FORMAT") != null)
-                && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")) {
+            && getParameter("FORMAT").toUpperCase().equals("CMLSTRING")) {
           StringBuffer cmlString = new StringBuffer();
           cmlString.append(convertEscapeChars(model));
           cfr = new CMLReader(new java.io.StringReader(cmlString.toString()));
@@ -165,16 +165,16 @@ public class JmolApplet extends java.applet.Applet
             String fileName = modelURL.getFile();
             int fileNameIndex = fileName.lastIndexOf('/');
             if (fileNameIndex >= 0) {
-              fileName = fileName.substring(fileNameIndex+1);
+              fileName = fileName.substring(fileNameIndex + 1);
             }
             readerProgress.setFileName(fileName);
           } catch (java.net.MalformedURLException e) {
             throw new RuntimeException(("Got MalformedURL for model: "
-                    + e.toString()));
+                + e.toString()));
           }
           cfr = ReaderFactory
-                  .createReader(new java.io
-                    .InputStreamReader(modelURL.openStream()));
+              .createReader(new java.io
+                .InputStreamReader(modelURL.openStream()));
         }
         if (cfr != null) {
           cfr.addReaderListener(readerProgress);
@@ -404,7 +404,7 @@ public class JmolApplet extends java.applet.Applet
           lastWasSpace = true;
         }
       } else if (Character.isLetterOrDigit(current) || (current == dot)
-              || (current == minus)) {
+          || (current == minus)) {
 
         //Copy through to output
         out.append(current);
@@ -473,7 +473,7 @@ public class JmolApplet extends java.applet.Applet
       mode++;
       mode %= drawModeNames.length;
       setStatusMessage("JmolApplet: Changing rendering style to "
-              + drawModeNames[mode]);
+          + drawModeNames[mode]);
       setRenderingStyle();
     } else if (keyChar.equals("l") || keyChar.equals("L")) {
       labelMode++;
@@ -495,7 +495,7 @@ public class JmolApplet extends java.applet.Applet
         myBean.setBondRenderingStyle("NONE");
       }
     } else if ((bondsEnabled)
-            && ((keyChar.equals("b") || keyChar.equals("B")))) {
+        && ((keyChar.equals("b") || keyChar.equals("B")))) {
       myBean.toggleBonds();
     }
   }
@@ -509,7 +509,7 @@ public class JmolApplet extends java.applet.Applet
    * @param aliasedEndOfLine If 'T' then EOL chars should be replaced by % symbols otherwise 'F'.
    */
   public void setModelToRenderFromXYZString(String xyzString,
-          String aliasedEndOfLine) {
+      String aliasedEndOfLine) {
 
     String aliasedEOL = aliasedEndOfLine.toUpperCase();
     String hugeXYZString = xyzString;
@@ -519,7 +519,7 @@ public class JmolApplet extends java.applet.Applet
     try {
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
-          cfr.setBondsEnabled(bondsEnabled);
+      cfr.setBondsEnabled(bondsEnabled);
       myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
@@ -536,7 +536,7 @@ public class JmolApplet extends java.applet.Applet
     try {
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
-          cfr.setBondsEnabled(bondsEnabled);
+      cfr.setBondsEnabled(bondsEnabled);
       myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();
@@ -555,12 +555,12 @@ public class JmolApplet extends java.applet.Applet
         modelURL = new java.net.URL(getDocumentBase(), modelURLString);
       } catch (java.net.MalformedURLException e) {
         throw new RuntimeException(("Got MalformedURL for model: "
-                + e.toString()));
+            + e.toString()));
       }
       ChemFileReader cfr =
         ReaderFactory
           .createReader(new java.io.InputStreamReader(modelURL.openStream()));
-          cfr.setBondsEnabled(bondsEnabled);
+      cfr.setBondsEnabled(bondsEnabled);
       myBean.setModel(cfr.read());
     } catch (java.io.IOException e) {
       e.printStackTrace();

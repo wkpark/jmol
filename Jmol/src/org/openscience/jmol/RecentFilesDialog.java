@@ -28,8 +28,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 public class RecentFilesDialog extends JDialog
-        implements java.awt.event.WindowListener,
-          java.awt.event.ActionListener {
+    implements java.awt.event.WindowListener, java.awt.event.ActionListener {
 
   private boolean ready = false;
   private String fileName = null;
@@ -45,15 +44,20 @@ public class RecentFilesDialog extends JDialog
   /** Creates a hidden recent files dialog **/
   public RecentFilesDialog(java.awt.Frame boss) {
 
-    super(boss, JmolResourceHandler.getInstance().getString("RecentFiles.windowTitle"), true);
+    super(boss, JmolResourceHandler.getInstance()
+        .getString("RecentFiles.windowTitle"), true);
     props = new java.util.Properties();
     getFiles();
     getContentPane().setLayout(new java.awt.BorderLayout());
     JPanel buttonPanel = new JPanel();
-    okButton = new JButton(JmolResourceHandler.getInstance().getString("RecentFiles.okLabel"));
+    okButton =
+        new JButton(JmolResourceHandler.getInstance()
+          .getString("RecentFiles.okLabel"));
     okButton.addActionListener(this);
     buttonPanel.add(okButton);
-    cancelButton = new JButton(JmolResourceHandler.getInstance().getString("RecentFiles.cancelLabel"));
+    cancelButton =
+        new JButton(JmolResourceHandler.getInstance()
+          .getString("RecentFiles.cancelLabel"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
     getContentPane().add("South", buttonPanel);
@@ -126,7 +130,7 @@ public class RecentFilesDialog extends JDialog
         props.setProperty("recentFilesType" + i, fileTypes[i]);
       }
     }
-    
+
     Jmol.getHistoryFile().addProperties(props);
   }
 

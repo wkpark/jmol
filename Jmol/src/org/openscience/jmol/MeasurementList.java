@@ -101,12 +101,19 @@ public class MeasurementList extends JDialog {
     JPanel mPanel = new JPanel();
     mPanel.setLayout(new BorderLayout());
 
-    top = new DefaultMutableTreeNode(JmolResourceHandler.getInstance().getString("MeasurementList.mLabel"));
+    top = new DefaultMutableTreeNode(JmolResourceHandler.getInstance()
+        .getString("MeasurementList.mLabel"));
     treeModel = new DefaultTreeModel(top);
 
-    distances = new ListNode(JmolResourceHandler.getInstance().getString("MeasurementList.distanceLabel"), distanceList);
-    angles = new ListNode(JmolResourceHandler.getInstance().getString("MeasurementList.angleLabel"), angleList);
-    dihedrals = new ListNode(JmolResourceHandler.getInstance().getString("MeasurementList.dihedralLabel"), dihedralList);
+    distances =
+        new ListNode(JmolResourceHandler.getInstance()
+          .getString("MeasurementList.distanceLabel"), distanceList);
+    angles =
+        new ListNode(JmolResourceHandler.getInstance()
+          .getString("MeasurementList.angleLabel"), angleList);
+    dihedrals =
+        new ListNode(JmolResourceHandler.getInstance()
+          .getString("MeasurementList.dihedralLabel"), dihedralList);
 
     treeModel.insertNodeInto(distances, top, top.getChildCount());
     treeModel.insertNodeInto(angles, top, top.getChildCount());
@@ -115,7 +122,7 @@ public class MeasurementList extends JDialog {
     tree = new JTree(treeModel);
     tree.setEditable(false);
     tree.getSelectionModel()
-            .setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        .setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.setShowsRootHandles(true);
 
     //Listen for when the selection changes.

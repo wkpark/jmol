@@ -38,8 +38,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.BorderLayout;
 
-public class FileTyper extends JPanel implements PropertyChangeListener,
-    ItemListener {
+public class FileTyper extends JPanel
+    implements PropertyChangeListener, ItemListener {
 
   private JCheckBox useFileExtensionCheckBox;
   private JLabel fileTypeLabel;
@@ -69,7 +69,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     JPanel fileTypePanel = new JPanel();
     fileTypePanel.setBorder(new EmptyBorder(5, 5, 5, 5));
     fileTypePanel.setLayout(new GridBagLayout());
-    
+
     JLabel fillerLabel = new JLabel();
     GridBagConstraints gridBagConstraints = new GridBagConstraints();
     gridBagConstraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -77,13 +77,16 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     gridBagConstraints.weightx = 1.0;
     gridBagConstraints.weighty = 1.0;
     fileTypePanel.add(fillerLabel, gridBagConstraints);
-    
-    
-    useFileExtensionCheckBox = new JCheckBox(JmolResourceHandler.getInstance()
-        .getString("FileTyper.useFileExtensionCheckBox"), useFileExtension);
+
+
+    useFileExtensionCheckBox =
+        new JCheckBox(JmolResourceHandler.getInstance()
+          .getString("FileTyper.useFileExtensionCheckBox"), useFileExtension);
     useFileExtensionCheckBox.addItemListener(this);
-    String mnemonic = JmolResourceHandler.getInstance().getString("FileTyper.useFileExtensionMnemonic");
-    if (mnemonic != null && mnemonic.length() > 0) {
+    String mnemonic =
+      JmolResourceHandler.getInstance()
+        .getString("FileTyper.useFileExtensionMnemonic");
+    if ((mnemonic != null) && (mnemonic.length() > 0)) {
       useFileExtensionCheckBox.setMnemonic(mnemonic.charAt(0));
     }
     gridBagConstraints = new GridBagConstraints();
@@ -91,8 +94,9 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     fileTypePanel.add(useFileExtensionCheckBox, gridBagConstraints);
 
     gridBagConstraints = new GridBagConstraints();
-    fileTypeLabel = new JLabel(JmolResourceHandler.getInstance()
-        .getString("FileTyper.fileTypeLabel"));
+    fileTypeLabel =
+        new JLabel(JmolResourceHandler.getInstance()
+          .getString("FileTyper.fileTypeLabel"));
     fileTypeLabel.setForeground(Color.black);
     fileTypePanel.add(fileTypeLabel, gridBagConstraints);
     fileTypeComboBox = new JComboBox(choices);
@@ -100,9 +104,9 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     fileTypePanel.add(fileTypeComboBox, gridBagConstraints);
     fileTypeComboBox.setSelectedIndex(defaultTypeIndex);
     fileTypeComboBox.addItemListener(this);
-    
+
     add(fileTypePanel, BorderLayout.CENTER);
-    
+
     setUseFileExtension(useFileExtension);
   }
 
@@ -118,8 +122,9 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
     fileTypeLabel.setEnabled(!useFileExtension);
     fileTypeComboBox.setEnabled(!useFileExtension);
   }
-  
+
   public void itemStateChanged(ItemEvent event) {
+
     if (event.getSource() == useFileExtensionCheckBox) {
       if (event.getStateChange() == ItemEvent.DESELECTED) {
         setUseFileExtension(false);
@@ -132,7 +137,7 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
   }
 
   public void propertyChange(PropertyChangeEvent event) {
-    
+
     String property = event.getPropertyName();
     if (useFileExtension) {
       if (property.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
@@ -150,6 +155,6 @@ public class FileTyper extends JPanel implements PropertyChangeListener,
       }
     }
   }
-  
+
 }
 

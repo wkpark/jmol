@@ -46,7 +46,7 @@ class RasMolScriptHandler {
   private Jmol program;
   private JTextArea output;
   private boolean autoRefresh = false;
-  
+
   RasMolScriptHandler(Jmol program) {
     this.program = program;
     this.output = null;
@@ -60,7 +60,7 @@ class RasMolScriptHandler {
   void setOutput(JTextArea output) {
     this.output = output;
   }
-  
+
   public void handle(String command) throws RasMolScriptException {
 
     StringTokenizer st = new StringTokenizer(command);
@@ -210,11 +210,11 @@ class RasMolScriptHandler {
               program.display.rotate(axisCode, f);
             } else {
               throw new RasMolScriptException(
-                      "Error: angle and axis omitted.");
+                  "Error: angle and axis omitted.");
             }
           } else {
             throw new RasMolScriptException("Error: invalid axis (" + axis
-                    + ")");
+                + ")");
           }
         } else {
           throw new RasMolScriptException("Error: angle and axis omitted.");
@@ -231,7 +231,7 @@ class RasMolScriptHandler {
   }
 
   private void setParam(String param, String value)
-          throws RasMolScriptException {
+      throws RasMolScriptException {
 
     boolean val = checkBoolean(value);
     if (param.equals("shadows")) {
@@ -286,13 +286,12 @@ class RasMolScriptHandler {
         sb.append("  ");
         sb.append(i + 1);
         sb.append(" ");
-        sb.append(program.display.md.getAtomAt(i).getType()
-                .getRoot());
+        sb.append(program.display.md.getAtomAt(i).getType().getRoot());
         println(sb.toString());
       }
     } else {
       throw new RasMolScriptException("Unrecognized object type: "
-              + objectType);
+          + objectType);
     }
   }
 
@@ -311,7 +310,7 @@ class RasMolScriptHandler {
           program.display.md.selectAtomByNumber(atom);
         } catch (NumberFormatException e) {
           throw new RasMolScriptException("Error: invalid expression: "
-                  + subexpr);
+              + subexpr);
         }
       }
     } else {
@@ -320,7 +319,7 @@ class RasMolScriptHandler {
         program.display.md.selectAtomByNumber(atom);
       } catch (NumberFormatException e) {
         throw new RasMolScriptException("Error: invalid expression: "
-                + value);
+            + value);
       }
     }
   }
@@ -357,7 +356,7 @@ class RasMolScriptHandler {
   }
 
   private void setColor(String object, String value)
-          throws RasMolScriptException {
+      throws RasMolScriptException {
 
     if (object.equals("atom")) {
 

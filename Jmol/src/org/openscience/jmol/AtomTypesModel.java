@@ -162,7 +162,7 @@ class AtomTypesModel extends AbstractTableModel {
     boolean addedRow = false;
 
     int i = 0;
-    while (!found && i < nextEmptyRow && i < data.size()) {
+    while (!found && (i < nextEmptyRow) && (i < data.size())) {
       at = (BaseAtomType) data.elementAt(i);
       if (name.equals(at.getName())) {
         found = true;

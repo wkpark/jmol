@@ -62,12 +62,12 @@ public class CMLSaver extends FileSaver {
   }
 
   public void writeFileStart(ChemFile cf, BufferedWriter w)
-          throws IOException {
+      throws IOException {
 
     // Preamble for CML Files
     w.write("<?xml version=\"1.0\" ?>");
     w.newLine();
-    
+
     if (mode == ANIMATION) {
       w.write("<list convention=\"");
       if (mode == ANIMATION) {
@@ -114,7 +114,7 @@ public class CMLSaver extends FileSaver {
     StringBuffer z3s = new StringBuffer();
     StringBuffer formalCharges = new StringBuffer();
     String lineSeparator = System.getProperty("line.separator");
-    
+
     int count = 0;
 
     for (int i = 0; i < cf.getNumberOfAtoms(); i++) {

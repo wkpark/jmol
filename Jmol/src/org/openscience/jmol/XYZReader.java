@@ -83,7 +83,7 @@ public class XYZReader extends DefaultChemFileReader {
   public XYZReader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the XYZ output.
    *
@@ -130,9 +130,10 @@ public class XYZReader extends DefaultChemFileReader {
           y = FortranFormat.atof(sy);
           z = FortranFormat.atof(sz);
 
-          int atomIndex = frame.addAtom(aname, (float) x, (float) y, (float) z);
+          int atomIndex = frame.addAtom(aname, (float) x, (float) y,
+                            (float) z);
 
-          if (numberTokens == 5 || numberTokens > 7) {
+          if ((numberTokens == 5) || (numberTokens > 7)) {
             double c = FortranFormat.atof(st.nextToken());
             frame.getAtomAt(atomIndex).addProperty(new Charge(c));
           }
@@ -152,5 +153,5 @@ public class XYZReader extends DefaultChemFileReader {
       line = input.readLine();
     }
     return file;
-  }  
+  }
 }

@@ -397,7 +397,7 @@ public class DisplaySettings {
     float depth = (float) (z - atomZOffset) / (2.0f * atomZOffset);
     float tmp = atomScreenScale * ((float) raw + atomDepthFactor * depth);
     if (tmp < 0.0f) {
-        tmp = 1.0f;
+      tmp = 1.0f;
     }
     return tmp;
   }

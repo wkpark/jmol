@@ -96,14 +96,17 @@ public class ChemFile {
    * Returns a list of the names of atom properties on frames in this file.
    */
   public Vector getAtomPropertyList() {
+
     Vector descriptions = new Vector();
     Enumeration frameIter = frames.elements();
     while (frameIter.hasMoreElements()) {
       ChemFrame frame = (ChemFrame) frameIter.nextElement();
       if (frame.getNumberOfAtoms() > 0) {
-        Enumeration properties = frame.getAtomAt(0).getProperties().elements();
+        Enumeration properties =
+          frame.getAtomAt(0).getProperties().elements();
         while (properties.hasMoreElements()) {
-          PhysicalProperty property = (PhysicalProperty) properties.nextElement();
+          PhysicalProperty property =
+            (PhysicalProperty) properties.nextElement();
           if (!descriptions.contains(property.getDescriptor())) {
             descriptions.addElement(property.getDescriptor());
           }
@@ -117,16 +120,18 @@ public class ChemFile {
    * Returns a list of the names of frame properties in this file.
    */
   public Vector getFramePropertyList() {
+
     Vector descriptions = new Vector();
     Enumeration frameIter = frames.elements();
     while (frameIter.hasMoreElements()) {
       ChemFrame frame = (ChemFrame) frameIter.nextElement();
       Enumeration properties = frame.getFrameProperties().elements();
       while (properties.hasMoreElements()) {
-        PhysicalProperty property = (PhysicalProperty) properties.nextElement();
-          if (!descriptions.contains(property.getDescriptor())) {
-            descriptions.addElement(property.getDescriptor());
-          }
+        PhysicalProperty property =
+          (PhysicalProperty) properties.nextElement();
+        if (!descriptions.contains(property.getDescriptor())) {
+          descriptions.addElement(property.getDescriptor());
+        }
       }
     }
     return descriptions;

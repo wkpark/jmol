@@ -60,36 +60,37 @@ public class ShadingBondRenderer implements BondRenderer {
     double dx2 = dx * dx;
     double dy2 = dy * dy;
     double magnitude = Math.sqrt(dx2 + dy2);
-    
+
     double ctheta = dx / magnitude;
     double stheta = dy / magnitude;
-    
+
     double radius1 = 0.0;
-    
+
     if (!settings.getDrawBondsToAtomCenters()) {
+
       // Adjust radius by perspective based upon z difference.
       double dz = z2 - z1;
-      double costheta = Math.sqrt(dx2 + dy2)
-                        / Math.sqrt(dx2 + dy2 + dz * dz);
+      double costheta = Math.sqrt(dx2 + dy2) / Math.sqrt(dx2 + dy2 + dz * dz);
       radius1 = costheta
-              * (double) settings.getCircleRadius(z1,
-                atom1.getType().getVdwRadius());
-      double radius2 = costheta
-              * (double) settings.getCircleRadius(z2,
-                atom2.getType().getVdwRadius());
+          * (double) settings.getCircleRadius(z1,
+            atom1.getType().getVdwRadius());
+      double radius2 =
+        costheta
+          * (double) settings.getCircleRadius(z2,
+                                              atom2.getType().getVdwRadius());
 
       double bondLengthSquared = dx2 + dy2;
-  
+
       if (bondLengthSquared <= (radius1 + radius2) * (radius1 + radius2)) {
         return;
       }
-      
+
     }
 
     magnitude *= 0.5;
 
     double halfBondWidth = 0.5 * settings.getBondWidth()
-                         * settings.getBondScreenScale();
+                             * settings.getBondScreenScale();
 
     int bondOrder = Bond.getBondOrder(atom1, atom2);
 
@@ -109,24 +110,26 @@ public class ShadingBondRenderer implements BondRenderer {
       int model1 = -16777216 | red1 << 16 | green1 << 8 | blue1;
       gc.setColor(new Color(model1));
 
-    if (bondOrder == 2 || bondOrder == 3) {
-      Polygon poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta, stheta,
-          radius1, bondSeparation * halfBondWidth, magnitude,
-          len * halfBondWidth);
+      if ((bondOrder == 2) || (bondOrder == 3)) {
+        Polygon poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta,
+                          stheta, radius1, bondSeparation * halfBondWidth,
+                          magnitude, len * halfBondWidth);
 
-      gc.fillPolygon(poly1);
-      
-      poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta, stheta, radius1,
-          -bondSeparation * halfBondWidth, magnitude, len * halfBondWidth);
+        gc.fillPolygon(poly1);
 
-      gc.fillPolygon(poly1);
-    }
-    if (bondOrder == 1 || bondOrder == 3) {
-      Polygon poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta, stheta,
-          radius1, 0.0, magnitude, len * halfBondWidth);
+        poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta, stheta,
+            radius1, -bondSeparation * halfBondWidth, magnitude,
+              len * halfBondWidth);
 
-      gc.fillPolygon(poly1);
-    }
+        gc.fillPolygon(poly1);
+      }
+      if ((bondOrder == 1) || (bondOrder == 3)) {
+        Polygon poly1 = RendererUtilities.getBondPolygon(x1, y1, ctheta,
+                          stheta, radius1, 0.0, magnitude,
+                          len * halfBondWidth);
+
+        gc.fillPolygon(poly1);
+      }
 
     }
   }

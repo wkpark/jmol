@@ -32,7 +32,8 @@ class RendererUtilities {
    * Do not use objects of this class; only static methods should be used.
    */
   private RendererUtilities() {
-    throw new RuntimeException("The RendererUtilities objects should not be used.");
+    throw new RuntimeException(
+        "The RendererUtilities objects should not be used.");
   }
 
   /**
@@ -56,8 +57,8 @@ class RendererUtilities {
    */
   public static Polygon getBondPolygon(int x1, int y1, double cosOfAngle,
       double sinOfAngle, double startOffset, double perpendicularOffset,
-      double length, double halfWidth) {
-    
+        double length, double halfWidth) {
+
     int xpoints[] = new int[4];
     int ypoints[] = new int[4];
 
@@ -65,21 +66,33 @@ class RendererUtilities {
     double yOffset = halfWidth * cosOfAngle;
     double xDisplacement = -perpendicularOffset * sinOfAngle;
     double yDisplacement = perpendicularOffset * cosOfAngle;
-    xpoints[0] = x1 + (int) Math.round(-xOffset + xDisplacement + startOffset * cosOfAngle);
-    ypoints[0] = y1 + (int) Math.round(yOffset + yDisplacement + startOffset * sinOfAngle);
-    
-    xpoints[1] = x1 + (int) Math.round(xOffset + xDisplacement + startOffset * cosOfAngle);
-    ypoints[1] = y1 + (int) Math.round(-yOffset + yDisplacement + startOffset * sinOfAngle);
-    
-    xpoints[2] = x1 + (int) Math.round(xOffset + xDisplacement + length * cosOfAngle);
-    ypoints[2] = y1 + (int) Math.round(-yOffset + yDisplacement + length * sinOfAngle);
-    
-    xpoints[3] = x1 + (int) Math.round(-xOffset + xDisplacement + length * cosOfAngle);
-    ypoints[3] = y1 + (int) Math.round(yOffset + yDisplacement + length * sinOfAngle);
+    xpoints[0] = x1
+        + (int) Math.round(-xOffset + xDisplacement
+          + startOffset * cosOfAngle);
+    ypoints[0] = y1
+        + (int) Math.round(yOffset + yDisplacement
+          + startOffset * sinOfAngle);
+
+    xpoints[1] = x1
+        + (int) Math.round(xOffset + xDisplacement
+          + startOffset * cosOfAngle);
+    ypoints[1] = y1
+        + (int) Math.round(-yOffset + yDisplacement
+          + startOffset * sinOfAngle);
+
+    xpoints[2] = x1
+        + (int) Math.round(xOffset + xDisplacement + length * cosOfAngle);
+    ypoints[2] = y1
+        + (int) Math.round(-yOffset + yDisplacement + length * sinOfAngle);
+
+    xpoints[3] = x1
+        + (int) Math.round(-xOffset + xDisplacement + length * cosOfAngle);
+    ypoints[3] = y1
+        + (int) Math.round(yOffset + yDisplacement + length * sinOfAngle);
 
     return new Polygon(xpoints, ypoints, 4);
   }
-  
+
   /**
    * Creates a line from the given coordinates
    * and in the direction of the given angle. The angle is represented by the
@@ -100,15 +113,17 @@ class RendererUtilities {
    */
   public static int[] getBondLine(int x1, int y1, double cosOfAngle,
       double sinOfAngle, double startOffset, double perpendicularOffset,
-      double length) {
-    
+        double length) {
+
     int points[] = new int[4];
 
     double xDisplacement = -perpendicularOffset * sinOfAngle;
     double yDisplacement = perpendicularOffset * cosOfAngle;
-    points[0] = x1 + (int) Math.round(xDisplacement + startOffset * cosOfAngle);
-    points[1] = y1 + (int) Math.round(yDisplacement + startOffset * sinOfAngle);
-    
+    points[0] = x1
+        + (int) Math.round(xDisplacement + startOffset * cosOfAngle);
+    points[1] = y1
+        + (int) Math.round(yDisplacement + startOffset * sinOfAngle);
+
     points[2] = x1 + (int) Math.round(xDisplacement + length * cosOfAngle);
     points[3] = y1 + (int) Math.round(yDisplacement + length * sinOfAngle);
 

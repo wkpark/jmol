@@ -27,6 +27,7 @@ import java.util.Vector;
 import java.util.Hashtable;
 import java.awt.Color;
 import java.awt.Component;
+
 //import javax.swing.*;
 
 public class AtomType {
@@ -63,9 +64,9 @@ public class AtomType {
    * @param Bl blue component for drawing colored atoms
    */
   public AtomType(String name, String root, int AtomicNumber, double mass,
-          double vdwRadius, double covalentRadius, int Rl, int Gl, int Bl) {
+      double vdwRadius, double covalentRadius, int Rl, int Gl, int Bl) {
     baseType = BaseAtomType.get(name, root, AtomicNumber, mass, vdwRadius,
-            covalentRadius, new Color(Rl, Gl, Bl));
+        covalentRadius, new Color(Rl, Gl, Bl));
   }
 
   /**

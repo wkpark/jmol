@@ -58,13 +58,13 @@ public abstract class FileSaver {
   // Methods that subclasses implement.
   // All of the work is done in writeFrame.  
   abstract void writeFrame(ChemFrame cfr, BufferedWriter w)
-          throws IOException;
+      throws IOException;
 
   // Here in case we need to write preamble material before all frames.
   abstract void writeFileStart(ChemFile cf, BufferedWriter w)
-          throws IOException;
+      throws IOException;
 
   // Here in case we need to write postamble material after all frames.
   abstract void writeFileEnd(ChemFile cf, BufferedWriter w)
-          throws IOException;
+      throws IOException;
 }

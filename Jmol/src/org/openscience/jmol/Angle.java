@@ -42,14 +42,14 @@ class Angle extends Measurement implements MeasurementInterface {
   }
 
   public void paint(
-          Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3)
-            throws Exception {
+      Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3)
+        throws Exception {
     paintAngleLine(g, settings, x1, y1, x2, y2, x3, y3);
     paintAngleString(g, settings, x1, y1, z1, x2, y2, z2, x3, y3, z3);
   }
 
   private void paintAngleLine(Graphics g, DisplaySettings settings, int x1,
-          int y1, int x2, int y2, int x3, int y3) {
+      int y1, int x2, int y2, int x3, int y3) {
 
     int xa = (x1 + x2) / 2;
     int ya = (y1 + y2) / 2;
@@ -74,7 +74,7 @@ class Angle extends Measurement implements MeasurementInterface {
 
 
   private void paintAngleString(Graphics g, DisplaySettings settings, int x1,
-          int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3) {
+      int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3) {
 
     Font font = new Font("Helvetica", Font.PLAIN,
                   (int) (getAvgRadius(settings, z1, z2, z3)));
@@ -96,7 +96,7 @@ class Angle extends Measurement implements MeasurementInterface {
   }
 
   public float getAvgRadius(DisplaySettings settings, int z1, int z2,
-          int z3) {
+      int z3) {
 
     if (cf == null) {
       return 0.0f;
@@ -107,7 +107,7 @@ class Angle extends Measurement implements MeasurementInterface {
     BaseAtomType c = cf.getAtomAt(Atoms[2]).getType();
 
     return (settings.getCircleRadius(z1, a.getVdwRadius()) + settings.getCircleRadius(z2, b.getVdwRadius()) + settings.getCircleRadius(z3, c.getVdwRadius()))
-            / 3.0f;
+        / 3.0f;
   }
 
   public int[] getAtomList() {
@@ -135,7 +135,7 @@ class Angle extends Measurement implements MeasurementInterface {
 
   public String toString() {
     return ("[" + Atoms[0] + "," + Atoms[1] + "," + Atoms[2] + " = "
-            + getAngle() + "]");
+        + getAngle() + "]");
   }
 
   public double getAngle() {

@@ -49,7 +49,7 @@ public class BaseAtomType {
    * @returns the atom type corresponding to the name.
    */
   public static BaseAtomType get(String name, String root, int atomicNumber,
-          double mass, double vdwRadius, double covalentRadius, Color color) {
+      double mass, double vdwRadius, double covalentRadius, Color color) {
     BaseAtomType at = get(name);
     at.set(root, atomicNumber, mass, vdwRadius, covalentRadius, color);
     return at;
@@ -124,7 +124,7 @@ public class BaseAtomType {
    * @param color the color for drawing
    */
   public void set(String root, int atomicNumber, double mass,
-          double vdwRadius, double covalentRadius, Color color) {
+      double vdwRadius, double covalentRadius, Color color) {
 
     this.root = root;
     this.atomicNumber = atomicNumber;
@@ -151,8 +151,7 @@ public class BaseAtomType {
     at.vdwRadius = Double.valueOf(st1.nextToken()).doubleValue();
     at.covalentRadius = Double.valueOf(st1.nextToken()).doubleValue();
     at.color = new Color(Integer.parseInt(st1.nextToken()),
-            Integer.parseInt(st1.nextToken()),
-              Integer.parseInt(st1.nextToken()));
+        Integer.parseInt(st1.nextToken()), Integer.parseInt(st1.nextToken()));
     return at;
   }
 
@@ -286,18 +285,16 @@ public class BaseAtomType {
     boolean nameEqual = name.equals(at.name);
     boolean rootEqual = root.equals(at.root);
     boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
-    boolean massEqual =
-      (Double.doubleToLongBits(mass)
-        == Double.doubleToLongBits(at.mass));
-    boolean vdwRadiiEqual =
-      (Double.doubleToLongBits(vdwRadius)
-        == Double.doubleToLongBits(at.vdwRadius));
+    boolean massEqual = (Double.doubleToLongBits(mass)
+                          == Double.doubleToLongBits(at.mass));
+    boolean vdwRadiiEqual = (Double.doubleToLongBits(vdwRadius)
+                              == Double.doubleToLongBits(at.vdwRadius));
     boolean covalentRadiiEqual =
       (Double.doubleToLongBits(covalentRadius)
         == Double.doubleToLongBits(at.covalentRadius));
     boolean colorEqual = color.equals(at.color);
     return (nameEqual && rootEqual && atomicNumberEqual && massEqual
-            && vdwRadiiEqual && covalentRadiiEqual && colorEqual);
+        && vdwRadiiEqual && covalentRadiiEqual && colorEqual);
   }
 
   /**
@@ -306,28 +303,29 @@ public class BaseAtomType {
    * @return the hash code.
    */
   public int hashCode() {
+
     if (hashCode == 0) {
       int result = 17;
-      result = 37*result + name.hashCode();
-      result = 37*result + root.hashCode();
-      result = 37*result + atomicNumber;
+      result = 37 * result + name.hashCode();
+      result = 37 * result + root.hashCode();
+      result = 37 * result + atomicNumber;
       long longHashValue = Double.doubleToLongBits(mass);
-      result = 37*result + (int)(longHashValue ^ (longHashValue >> 32));
+      result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
       longHashValue = Double.doubleToLongBits(vdwRadius);
-      result = 37*result + (int)(longHashValue ^ (longHashValue >> 32));
+      result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
       longHashValue = Double.doubleToLongBits(covalentRadius);
-      result = 37*result + (int)(longHashValue ^ (longHashValue >> 32));
-      result = 37*result + color.hashCode();
+      result = 37 * result + (int) (longHashValue ^ (longHashValue >> 32));
+      result = 37 * result + color.hashCode();
       hashCode = result;
     }
     return hashCode;
   }
-  
+
   /**
    * The hash code for this object. It is lazily initialized.
    */
   private volatile int hashCode = 0;
-  
+
   /**
    * Returns a String representation of this atom type.
    */

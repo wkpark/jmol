@@ -51,10 +51,10 @@ public class TestSharcReader extends TestCase {
 
     try {
       sr1 = new SharcReader(
-              new BufferedReader(
-                new InputStreamReader(
-                  getClass().getResourceAsStream(
-                    "Data/refs_c4h12si1_data.sharc"))));
+          new BufferedReader(
+            new InputStreamReader(
+              getClass().getResourceAsStream(
+                "Data/refs_c4h12si1_data.sharc"))));
     } catch (IOException ex) {
       fail(ex.toString());
     }

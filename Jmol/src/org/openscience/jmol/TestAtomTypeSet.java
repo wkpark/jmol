@@ -61,7 +61,7 @@ public class TestAtomTypeSet extends TestCase {
 
     ats1 = new AtomTypeSet();
     at1 = BaseAtomType.get("type1", "root1", 0, 0.0, 0.0, 0.0,
-            new Color(0, 0, 0));
+        new Color(0, 0, 0));
     ats2 = new AtomTypeSet();
     assertTrue("setUp failed", ats2.add(at1));
   }

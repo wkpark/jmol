@@ -37,29 +37,31 @@ public class ChemFrameRenderer {
    *
    * @param g the Graphics context to paint to
    */
-  public synchronized void paint(Graphics g, ChemFrame frame, DisplaySettings settings) {
+  public synchronized void paint(Graphics g, ChemFrame frame,
+      DisplaySettings settings) {
 
     if (frame.getNumberOfAtoms() <= 0) {
       return;
     }
     boolean drawHydrogen = settings.getShowHydrogens();
     frame.transform();
-		if (!settings.getFastRendering() || atomReferences == null) {
-			if (atomReferences == null || atomReferences.length != frame.getNumberOfAtoms()) {
-				atomReferences = new AtomReference[frame.getNumberOfAtoms()];
-				for (int i=0; i < atomReferences.length; ++i) {
-					atomReferences[i] = new AtomReference();
-				}
-			}
-			for (int i=0; i < frame.getNumberOfAtoms(); ++i) {
-				atomReferences[i].index = i;
-				atomReferences[i].z = frame.getAtomAt(i).getScreenPosition().z;
-			}
-			
-			if (frame.getNumberOfAtoms() > 1) {
-				sorter.sort(atomReferences);
-			}
-		}
+    if (!settings.getFastRendering() || (atomReferences == null)) {
+      if ((atomReferences == null)
+          || (atomReferences.length != frame.getNumberOfAtoms())) {
+        atomReferences = new AtomReference[frame.getNumberOfAtoms()];
+        for (int i = 0; i < atomReferences.length; ++i) {
+          atomReferences[i] = new AtomReference();
+        }
+      }
+      for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
+        atomReferences[i].index = i;
+        atomReferences[i].z = frame.getAtomAt(i).getScreenPosition().z;
+      }
+
+      if (frame.getNumberOfAtoms() > 1) {
+        sorter.sort(atomReferences);
+      }
+    }
 
     double maxMagnitude = -1.0;
     double minMagnitude = Double.MAX_VALUE;
@@ -82,61 +84,60 @@ public class ChemFrameRenderer {
     for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
       int j = atomReferences[i].index;
       Atom atom = frame.getAtomAt(j);
-      if (drawHydrogen
-            || (atom.getType().getAtomicNumber() != 1)) {
+      if (drawHydrogen || (atom.getType().getAtomicNumber() != 1)) {
         if (settings.getShowBonds()) {
           Enumeration bondIter = atom.getBondedAtoms();
           while (bondIter.hasMoreElements()) {
             Atom otherAtom = (Atom) bondIter.nextElement();
             if (drawHydrogen
-                  || (otherAtom.getType().getAtomicNumber() != 1)) {
+                || (otherAtom.getType().getAtomicNumber() != 1)) {
               if (otherAtom.getScreenPosition().z
-                      < atom.getScreenPosition().z) {
+                  < atom.getScreenPosition().z) {
                 bondRenderer.paint(g, atom, otherAtom, settings);
               }
             }
           }
         }
-  
+
         if (settings.getShowAtoms()) {
-          atomRenderer.paint(g, atom, frame.isAtomPicked(j),
-                  settings);
+          atomRenderer.paint(g, atom, frame.isAtomPicked(j), settings);
         }
-  
+
         if (settings.getShowBonds()) {
           Enumeration bondIter = atom.getBondedAtoms();
           while (bondIter.hasMoreElements()) {
             Atom otherAtom = (Atom) bondIter.nextElement();
             if (drawHydrogen
-                  || (otherAtom.getType().getAtomicNumber() != 1)) {
+                || (otherAtom.getType().getAtomicNumber() != 1)) {
               if (otherAtom.getScreenPosition().z
-                      >= atom.getScreenPosition().z) {
+                  >= atom.getScreenPosition().z) {
                 bondRenderer.paint(g, atom, otherAtom, settings);
               }
             }
           }
         }
-        
+
         if (settings.getShowVectors()) {
           if (atom.getVector() != null) {
             double magnitude = atom.getVector().distance(zeroPoint);
-            double scaling = (magnitude - minMagnitude) / magnitudeRange + 0.5;
+            double scaling = (magnitude - minMagnitude) / magnitudeRange
+                               + 0.5;
             ArrowLine al = new ArrowLine(g, atom.getScreenPosition().x,
-              atom.getScreenPosition().y,
-                atom.getScreenVector().x,
-                  atom.getScreenVector().y,
-                    false, true, scaling);
+                             atom.getScreenPosition().y,
+                             atom.getScreenVector().x,
+                             atom.getScreenVector().y, false, true, scaling);
           }
         }
-        
+
       }
     }
   }
 
   private BondRenderer getBondRenderer(DisplaySettings settings) {
+
     BondRenderer renderer;
     if (settings.getFastRendering()
-        || settings.getBondDrawMode() == DisplaySettings.LINE) {
+        || (settings.getBondDrawMode() == DisplaySettings.LINE)) {
       renderer = lineBondRenderer;
     } else if (settings.getBondDrawMode() == DisplaySettings.SHADING) {
       renderer = shadingBondRenderer;
@@ -147,7 +148,7 @@ public class ChemFrameRenderer {
     }
     return renderer;
   }
-  
+
   /**
    * Renderer for atoms.
    */
@@ -160,26 +161,28 @@ public class ChemFrameRenderer {
   private BondRenderer lineBondRenderer = new LineBondRenderer();
   private BondRenderer shadingBondRenderer = new ShadingBondRenderer();
   private BondRenderer wireframeBondRenderer = new WireframeBondRenderer();
-  
-	class AtomReference {
-		int index = 0;
-		float z = 0.0f;
-	}
 
-	AtomReference[] atomReferences;
+  class AtomReference {
+    int index = 0;
+    float z = 0.0f;
+  }
 
-	HeapSorter sorter = new HeapSorter( new HeapSorter.Comparator() {
-		public int compare(Object atom1, Object atom2) {
-			AtomReference a1 = (AtomReference) atom1;
-			AtomReference a2 = (AtomReference) atom2;
-			if (a1.z < a2.z) {
-				return -1;
-			} else if (a1.z > a2.z) {
-				return 1;
-			}
-			return 0;
-		}
-	});
+  AtomReference[] atomReferences;
+
+  HeapSorter sorter = new HeapSorter(new HeapSorter.Comparator() {
+
+    public int compare(Object atom1, Object atom2) {
+
+      AtomReference a1 = (AtomReference) atom1;
+      AtomReference a2 = (AtomReference) atom2;
+      if (a1.z < a2.z) {
+        return -1;
+      } else if (a1.z > a2.z) {
+        return 1;
+      }
+      return 0;
+    }
+  });
 
   /**
    * Point for calculating lengths of vectors.

@@ -59,12 +59,17 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
     super(fr, "Jmol Help", true);
 
     try {
-      URL helpURL = this.getClass().getClassLoader().getResource(JmolResourceHandler.getInstance().getString("Help.helpURL"));
+      URL helpURL =
+        this.getClass().getClassLoader()
+          .getResource(JmolResourceHandler.getInstance()
+            .getString("Help.helpURL"));
       if (helpURL != null) {
         html = new JEditorPane(helpURL);
       } else {
         html = new JEditorPane("text/plain",
-                "Unable to find url '" + JmolResourceHandler.getInstance().getString("Help.helpURL") + "'.");
+            "Unable to find url '"
+              + JmolResourceHandler.getInstance().getString("Help.helpURL")
+                + "'.");
       }
       html.setEditable(false);
       html.addHyperlinkListener(this);
@@ -91,7 +96,9 @@ public class HelpDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok = new JButton(JmolResourceHandler.getInstance().getString("Help.okLabel"));
+    JButton ok =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Help.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

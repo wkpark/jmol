@@ -32,10 +32,11 @@ import java.io.IOException;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 class JaguarReader extends DefaultChemFileReader {
+
   public JaguarReader(Reader input) {
     super(input);
   }
-  
+
   public ChemFile read() throws IOException {
 
     ChemFile file = new ChemFile(bondsEnabled);

@@ -31,7 +31,7 @@ import javax.swing.event.TableModelEvent;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class ListeningTableModel extends AbstractTableModel
-        implements TableModelListener {
+    implements TableModelListener {
 
   /**
    *  Creates a listening table model for the given table model. This table

@@ -136,12 +136,12 @@ public class HeapSorter {
     while (k <= N / 2) {
       int j = k + k;
       if ((j < N)
-              && ((ascending && (array[j - 1] < array[j]))
-                || (!ascending && (array[j - 1] > array[j])))) {
+          && ((ascending && (array[j - 1] < array[j]))
+            || (!ascending && (array[j - 1] > array[j])))) {
         ++j;
       }
       if ((temp == array[j - 1]) || (ascending && (temp > array[j - 1]))
-              || (!ascending && (temp < array[j - 1]))) {
+          || (!ascending && (temp < array[j - 1]))) {
         break;
       } else {
         array[k - 1] = array[j - 1];

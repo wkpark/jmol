@@ -65,7 +65,7 @@ public class PDBReader extends DefaultChemFileReader {
   public PDBReader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the PDB data.
    */
@@ -89,7 +89,7 @@ public class PDBReader extends DefaultChemFileReader {
       }
 
       if (command.equalsIgnoreCase("ATOM")
-              || command.equalsIgnoreCase("HETATM")) {
+          || command.equalsIgnoreCase("HETATM")) {
 
         String atype = new String(line.substring(12, 16).trim());
         String sx = new String(line.substring(30, 38).trim());
@@ -101,12 +101,13 @@ public class PDBReader extends DefaultChemFileReader {
         double z = FortranFormat.atof(sz);
         frame.addAtom(atype, (float) x, (float) y, (float) z);
       } else if (command.equalsIgnoreCase("CONECT")) {
+
         // read connectivity information
         if (!bondsCleared) {
-            frame.clearBonds();
-            bondsCleared = true;
+          frame.clearBonds();
+          bondsCleared = true;
         }
-        
+
         String atom = new String(line.substring(6, 11).trim());
         String connectedAtoms = new String(line.substring(12).trim());
         StringTokenizer linet = new StringTokenizer(connectedAtoms);
@@ -120,25 +121,24 @@ public class PDBReader extends DefaultChemFileReader {
          */
         Hashtable tmp = new Hashtable(10);
         while (linet.hasMoreTokens()) {
-            String connectedAtom = linet.nextToken();
-            Integer neighbour = new Integer(connectedAtom);
-            if (tmp.containsKey(neighbour)) {
-                tmp.put(neighbour,
-                        new Integer(((Integer)tmp.get(neighbour)).intValue()+1));
-            } else {
-                tmp.put(neighbour, new Integer(1));
-            }
+          String connectedAtom = linet.nextToken();
+          Integer neighbour = new Integer(connectedAtom);
+          if (tmp.containsKey(neighbour)) {
+            tmp.put(neighbour,
+                new Integer(((Integer) tmp.get(neighbour)).intValue() + 1));
+          } else {
+            tmp.put(neighbour, new Integer(1));
+          }
         }
         Enumeration neighbours = tmp.keys();
         int atomi = Integer.parseInt(atom);
         while (neighbours.hasMoreElements()) {
-            Integer neighbour = (Integer)neighbours.nextElement();
-            int atomj = neighbour.intValue();
-            int bondorder = ((Integer)tmp.get(neighbour)).intValue();
-            frame.addBond(atomi-1, atomj-1, bondorder);
-            System.out.println("Stored bond: " + atomi + " "
-                                               + atomj + " "
-                                               + bondorder);
+          Integer neighbour = (Integer) neighbours.nextElement();
+          int atomj = neighbour.intValue();
+          int bondorder = ((Integer) tmp.get(neighbour)).intValue();
+          frame.addBond(atomi - 1, atomj - 1, bondorder);
+          System.out.println("Stored bond: " + atomi + " " + atomj + " "
+              + bondorder);
         }
       } else if (command.equalsIgnoreCase("END")) {
         file.addFrame(frame);
@@ -153,5 +153,5 @@ public class PDBReader extends DefaultChemFileReader {
     file.addFrame(frame);
     fireFrameRead();
     return file;
-  }  
+  }
 }

@@ -56,7 +56,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
   public Gaussian98Reader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the Gaussian98 output.
    *
@@ -128,8 +128,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readCoordinates(ChemFrame frame)
-            throws IOException {
+  private void readCoordinates(ChemFrame frame) throws IOException {
 
     String line = input.readLine();
     line = input.readLine();
@@ -190,8 +189,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readFrequencies(ChemFrame frame)
-          throws IOException {
+  private void readFrequencies(ChemFrame frame) throws IOException {
 
     String line;
     line = input.readLine();
@@ -256,7 +254,7 @@ public class Gaussian98Reader extends DefaultChemFileReader {
    * Reads NMR nuclear shieldings.
    */
   private void readNMRData(ChemFrame frame, String labelLine)
-          throws IOException {
+      throws IOException {
 
     // Determine label for properties
     String label;
@@ -316,5 +314,5 @@ public class Gaussian98Reader extends DefaultChemFileReader {
       st1.nextToken();
     }
     return st1.nextToken() + "/" + st1.nextToken();
-  }  
+  }
 }

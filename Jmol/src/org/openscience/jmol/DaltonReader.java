@@ -49,7 +49,7 @@ class DaltonReader extends DefaultChemFileReader {
   public DaltonReader(Reader input) {
     super(input);
   }
-  
+
   public ChemFile read() throws IOException {
 
     ChemFile file = new ChemFile(bondsEnabled);
@@ -141,6 +141,7 @@ class DaltonReader extends DefaultChemFileReader {
       }
       System.out.println(tokenizer.countTokens());
       if (tokenizer.countTokens() > 3) {
+
         // Atom contains a symmetry label; ignore.
         tokenizer.nextToken();
       }
@@ -189,8 +190,10 @@ class DaltonReader extends DefaultChemFileReader {
       for (int i = 0; i < mol.getNumberOfAtoms(); ++i) {
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
+
         // ignore first token
         tokenizer.nextToken();
+
         // Look for x which indicates vectors are next.
         String token = tokenizer.nextToken();
         while (!token.equals("x") && tokenizer.hasMoreTokens()) {
@@ -199,14 +202,16 @@ class DaltonReader extends DefaultChemFileReader {
         for (int j = 0; j < currentFreqs.size(); ++j) {
           currentVectors[j] = new double[3];
           ((double[]) currentVectors[j])[0] =
-                  (new Double(tokenizer.nextToken())).doubleValue()
-                    * angstromPerBohr;
+              (new Double(tokenizer.nextToken())).doubleValue()
+                * angstromPerBohr;
         }
 
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
+
         // ignore first token
         tokenizer.nextToken();
+
         // Look for y which indicates vectors are next.
         token = tokenizer.nextToken();
         while (!token.equals("y") && tokenizer.hasMoreTokens()) {
@@ -214,12 +219,13 @@ class DaltonReader extends DefaultChemFileReader {
         }
         for (int j = 0; j < currentFreqs.size(); ++j) {
           ((double[]) currentVectors[j])[1] =
-                  (new Double(tokenizer.nextToken())).doubleValue()
-                    * angstromPerBohr;
+              (new Double(tokenizer.nextToken())).doubleValue()
+                * angstromPerBohr;
         }
 
         line = input.readLine();
         tokenizer = new StringTokenizer(line);
+
         // ignore first token
         // Look for z which indicates vectors are next.
         token = tokenizer.nextToken();
@@ -228,10 +234,10 @@ class DaltonReader extends DefaultChemFileReader {
         }
         for (int j = 0; j < currentFreqs.size(); ++j) {
           ((double[]) currentVectors[j])[2] =
-                  (new Double(tokenizer.nextToken())).doubleValue()
-                    * angstromPerBohr;
+              (new Double(tokenizer.nextToken())).doubleValue()
+                * angstromPerBohr;
           ((Vibration) currentFreqs.elementAt(j))
-                  .addAtomVector((double[]) currentVectors[j]);
+              .addAtomVector((double[]) currentVectors[j]);
         }
 
         // Skip blank line between each atom
@@ -244,6 +250,6 @@ class DaltonReader extends DefaultChemFileReader {
       // Skip blank line between frequency sets
       line = input.readLine();
     }
-  }  
+  }
 }
 

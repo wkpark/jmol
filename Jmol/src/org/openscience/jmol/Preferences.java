@@ -178,16 +178,24 @@ public class Preferences extends JDialog {
     JPanel vectors = buildVectorsPanel();
     JPanel colors = buildColorsPanel();
     JPanel vibrate = buildVibratePanel();
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.displayLabel"), null, disp);
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.atomsLabel"), null, atoms);
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.bondsLabel"), null, bonds);
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.vectorsLabel"), null, vectors);
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.colorsLabel"), null, colors);
-    tabs.addTab(JmolResourceHandler.getInstance().getString("Prefs.vibrateLabel"), null, vibrate);
+    tabs.addTab(JmolResourceHandler.getInstance()
+        .getString("Prefs.displayLabel"), null, disp);
+    tabs.addTab(JmolResourceHandler.getInstance()
+        .getString("Prefs.atomsLabel"), null, atoms);
+    tabs.addTab(JmolResourceHandler.getInstance()
+        .getString("Prefs.bondsLabel"), null, bonds);
+    tabs.addTab(JmolResourceHandler.getInstance()
+        .getString("Prefs.vectorsLabel"), null, vectors);
+    tabs.addTab(JmolResourceHandler.getInstance()
+        .getString("Prefs.colorsLabel"), null, colors);
+    tabs.addTab(JmolResourceHandler.getInstance()
+        .getString("Prefs.vibrateLabel"), null, vibrate);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton save = new JButton(JmolResourceHandler.getInstance().getString("Prefs.saveLabel"));
+    JButton save =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.saveLabel"));
     save.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -195,7 +203,9 @@ public class Preferences extends JDialog {
       }
     });
     buttonPanel.add(save);
-    JButton reset = new JButton(JmolResourceHandler.getInstance().getString("Prefs.resetLabel"));
+    JButton reset =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.resetLabel"));
     reset.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -203,7 +213,9 @@ public class Preferences extends JDialog {
       }
     });
     buttonPanel.add(reset);
-    JButton ok = new JButton(JmolResourceHandler.getInstance().getString("Prefs.okLabel"));
+    JButton ok =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -232,10 +244,14 @@ public class Preferences extends JDialog {
 
     JPanel aaPanel = new JPanel();
     aaPanel.setLayout(new BoxLayout(aaPanel, BoxLayout.Y_AXIS));
-    aaPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aaLabel")));
+    aaPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.aaLabel")));
     ButtonGroup aaGroup = new ButtonGroup();
-    aaYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.aaYesLabel"));
-    aaNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.aaNoLabel"));
+    aaYes =
+        new JRadioButton(JmolResourceHandler.getInstance()
+          .getString("Prefs.aaYesLabel"));
+    aaNo = new JRadioButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.aaNoLabel"));
     aaYes.addItemListener(radioButtonListener);
     aaNo.addItemListener(radioButtonListener);
     aaGroup.add(aaYes);
@@ -257,10 +273,13 @@ public class Preferences extends JDialog {
 
     JPanel pPanel = new JPanel();
     pPanel.setLayout(new BoxLayout(pPanel, BoxLayout.Y_AXIS));
-    pPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.pLabel")));
+    pPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.pLabel")));
     ButtonGroup pGroup = new ButtonGroup();
-    pYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.pYesLabel"));
-    pNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.pNoLabel"));
+    pYes = new JRadioButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.pYesLabel"));
+    pNo = new JRadioButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.pNoLabel"));
     pYes.addItemListener(radioButtonListener);
     pNo.addItemListener(radioButtonListener);
     pGroup.add(pYes);
@@ -274,18 +293,21 @@ public class Preferences extends JDialog {
 
     JPanel choicesPanel = new JPanel();
     choicesPanel.setLayout(new GridLayout(0, 4));
-    choicesPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.cLabel")));
-    cB = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cBLabel"),
-            display.getSettings().getShowBonds());
+    choicesPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.cLabel")));
+    cB = new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Prefs.cBLabel"), display.getSettings().getShowBonds());
     cB.addItemListener(checkBoxListener);
-    cA = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cALabel"),
-            display.getSettings().getShowAtoms());
+    cA = new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Prefs.cALabel"), display.getSettings().getShowAtoms());
     cA.addItemListener(checkBoxListener);
-    cV = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cVLabel"),
-            display.getSettings().getShowVectors());
+    cV = new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Prefs.cVLabel"), display.getSettings().getShowVectors());
     cV.addItemListener(checkBoxListener);
-    cH = new JCheckBox(JmolResourceHandler.getInstance().getString("Prefs.cHLabel"),
-            display.getSettings().getShowHydrogens());
+    cH = new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Prefs.cHLabel"), display.getSettings()
+          .getShowHydrogens());
     cH.addItemListener(checkBoxListener);
     choicesPanel.add(cB);
     choicesPanel.add(cA);
@@ -294,8 +316,12 @@ public class Preferences extends JDialog {
 
     JPanel fovPanel = new JPanel();
     fovPanel.setLayout(new BorderLayout());
-    fovPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.fovLabel")));
-    JLabel fovLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.fovExpl"), JLabel.CENTER);
+    fovPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.fovLabel")));
+    JLabel fovLabel =
+      new JLabel(JmolResourceHandler.getInstance().getString("Prefs.fovExpl"),
+        JLabel.CENTER);
     fovPanel.add(fovLabel, BorderLayout.NORTH);
     fovSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, (int) FieldOfView);
     fovSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -334,12 +360,16 @@ public class Preferences extends JDialog {
 
     JPanel renderPanel = new JPanel();
     renderPanel.setLayout(new BoxLayout(renderPanel, BoxLayout.Y_AXIS));
-    renderPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-            .getString("Prefs.aRenderStyleLabel")));
+    renderPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.aRenderStyleLabel")));
     aRender = new JComboBox();
-    aRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.aQDChoice"));
-    aRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.aSChoice"));
-    aRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.aWFChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aQDChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aSChoice"));
+    aRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aWFChoice"));
     renderPanel.add(aRender);
     aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
     aRender.addItemListener(new ItemListener() {
@@ -358,12 +388,18 @@ public class Preferences extends JDialog {
 
     JPanel labelPanel = new JPanel();
     labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
-    labelPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aLabelStyleLabel")));
+    labelPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.aLabelStyleLabel")));
     aLabel = new JComboBox();
-    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aPLChoice"));
-    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aSLChoice"));
-    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aTLChoice"));
-    aLabel.addItem(JmolResourceHandler.getInstance().getString("Prefs.aNLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aPLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aSLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aTLChoice"));
+    aLabel.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.aNLChoice"));
     labelPanel.add(aLabel);
     aLabel.setSelectedIndex(display.getSettings().getLabelMode());
     aLabel.addItemListener(new ItemListener() {
@@ -383,12 +419,18 @@ public class Preferences extends JDialog {
 
     JPanel propsPanel = new JPanel();
     propsPanel.setLayout(new BoxLayout(propsPanel, BoxLayout.Y_AXIS));
-    propsPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aPropsStyleLabel")));
+    propsPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.aPropsStyleLabel")));
     aProps = new JComboBox();
-    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apPChoice"));
-    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apCChoice"));
-    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apNChoice"));
-    aProps.addItem(JmolResourceHandler.getInstance().getString("Prefs.apUChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.apPChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.apCChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.apNChoice"));
+    aProps.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.apUChoice"));
     propsPanel.add(aProps);
     aProps.setSelectedItem(display.getSettings().getPropertyMode());
     aProps.addItemListener(new ItemListener() {
@@ -408,11 +450,14 @@ public class Preferences extends JDialog {
 
     JPanel sfPanel = new JPanel();
     sfPanel.setLayout(new BorderLayout());
-    sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.aSizeLabel")));
-    JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.aSizeExpl"), JLabel.CENTER);
+    sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.aSizeLabel")));
+    JLabel sfLabel =
+      new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.aSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
     sfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-            (int) (100.0 * display.getSettings().getAtomSphereFactor()));
+        (int) (100.0 * display.getSettings().getAtomSphereFactor()));
     sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     sfSlider.setPaintTicks(true);
     sfSlider.setMajorTickSpacing(20);
@@ -450,13 +495,18 @@ public class Preferences extends JDialog {
 
     JPanel renderPanel = new JPanel();
     renderPanel.setLayout(new BoxLayout(renderPanel, BoxLayout.Y_AXIS));
-    renderPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-            .getString("Prefs.bRenderStyleLabel")));
+    renderPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.bRenderStyleLabel")));
     bRender = new JComboBox();
-    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bQDChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bSChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bWFChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance().getString("Prefs.bLChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.bQDChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.bSChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.bWFChoice"));
+    bRender.addItem(JmolResourceHandler.getInstance()
+        .getString("Prefs.bLChoice"));
     bRender.setSelectedIndex(display.getSettings().getBondDrawMode());
     bRender.addItemListener(new ItemListener() {
 
@@ -475,10 +525,15 @@ public class Preferences extends JDialog {
 
     JPanel autobondPanel = new JPanel();
     autobondPanel.setLayout(new BoxLayout(autobondPanel, BoxLayout.Y_AXIS));
-    autobondPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.autoBondLabel")));
+    autobondPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.autoBondLabel")));
     ButtonGroup abGroup = new ButtonGroup();
-    abYes = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.abYesLabel"));
-    abNo = new JRadioButton(JmolResourceHandler.getInstance().getString("Prefs.abNoLabel"));
+    abYes =
+        new JRadioButton(JmolResourceHandler.getInstance()
+          .getString("Prefs.abYesLabel"));
+    abNo = new JRadioButton(JmolResourceHandler.getInstance()
+        .getString("Prefs.abNoLabel"));
     abGroup.add(abYes);
     abGroup.add(abNo);
     autobondPanel.add(abYes);
@@ -507,34 +562,36 @@ public class Preferences extends JDialog {
 
     JPanel bwPanel = new JPanel();
     bwPanel.setLayout(new BorderLayout());
-    bwPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.bondWidthLabel")));
-    JLabel bwLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.bondWidthExpl"),
-                       JLabel.CENTER);
+    bwPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.bondWidthLabel")));
+    JLabel bwLabel =
+      new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.bondWidthExpl"), JLabel.CENTER);
     bwPanel.add(bwLabel, BorderLayout.NORTH);
     bwSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-            (int) (100.0 * display.getSettings().getBondWidth()));
+        (int) (100.0 * display.getSettings().getBondWidth()));
     bwSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bwSlider.setPaintTicks(true);
     bwSlider.setMajorTickSpacing(20);
     bwSlider.setMinorTickSpacing(10);
     bwSlider.setPaintLabels(true);
     bwSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     bwSlider.setLabelTable(bwSlider.getLabelTable());
     bwSlider.getLabelTable().put(new Integer(20),
-            new JLabel("0.2", JLabel.CENTER));
+        new JLabel("0.2", JLabel.CENTER));
     bwSlider.setLabelTable(bwSlider.getLabelTable());
     bwSlider.getLabelTable().put(new Integer(40),
-            new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", JLabel.CENTER));
     bwSlider.setLabelTable(bwSlider.getLabelTable());
     bwSlider.getLabelTable().put(new Integer(60),
-            new JLabel("0.6", JLabel.CENTER));
+        new JLabel("0.6", JLabel.CENTER));
     bwSlider.setLabelTable(bwSlider.getLabelTable());
     bwSlider.getLabelTable().put(new Integer(80),
-            new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", JLabel.CENTER));
     bwSlider.setLabelTable(bwSlider.getLabelTable());
     bwSlider.getLabelTable().put(new Integer(100),
-            new JLabel("1.0", JLabel.CENTER));
+        new JLabel("1.0", JLabel.CENTER));
     bwSlider.setLabelTable(bwSlider.getLabelTable());
 
     bwSlider.addChangeListener(new ChangeListener() {
@@ -557,31 +614,32 @@ public class Preferences extends JDialog {
 
     JPanel bfPanel = new JPanel();
     bfPanel.setLayout(new BorderLayout());
-    bfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.bondFudgeLabel")));
+    bfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.bondFudgeLabel")));
     bfSlider = new JSlider(JSlider.HORIZONTAL, 0, 100,
-            (int) (50.0 * ChemFrame.getBondFudge()));
+        (int) (50.0 * ChemFrame.getBondFudge()));
     bfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     bfSlider.setPaintTicks(true);
     bfSlider.setMajorTickSpacing(20);
     bfSlider.setMinorTickSpacing(10);
     bfSlider.setPaintLabels(true);
     bfSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     bfSlider.setLabelTable(bfSlider.getLabelTable());
     bfSlider.getLabelTable().put(new Integer(20),
-            new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", JLabel.CENTER));
     bfSlider.setLabelTable(bfSlider.getLabelTable());
     bfSlider.getLabelTable().put(new Integer(40),
-            new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", JLabel.CENTER));
     bfSlider.setLabelTable(bfSlider.getLabelTable());
     bfSlider.getLabelTable().put(new Integer(60),
-            new JLabel("1.2", JLabel.CENTER));
+        new JLabel("1.2", JLabel.CENTER));
     bfSlider.setLabelTable(bfSlider.getLabelTable());
     bfSlider.getLabelTable().put(new Integer(80),
-            new JLabel("1.6", JLabel.CENTER));
+        new JLabel("1.6", JLabel.CENTER));
     bfSlider.setLabelTable(bfSlider.getLabelTable());
     bfSlider.getLabelTable().put(new Integer(100),
-            new JLabel("2.0", JLabel.CENTER));
+        new JLabel("2.0", JLabel.CENTER));
     bfSlider.setLabelTable(bfSlider.getLabelTable());
 
     bfSlider.addChangeListener(new ChangeListener() {
@@ -620,35 +678,37 @@ public class Preferences extends JDialog {
 
     JPanel sample = new JPanel();
     sample.setLayout(new BorderLayout());
-    sample.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.sampleLabel")));
+    sample.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.sampleLabel")));
     vPanel.add(sample);
 
     JPanel ahPanel = new JPanel();
     ahPanel.setLayout(new BorderLayout());
-    ahPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.ahLabel")));
+    ahPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.ahLabel")));
     ahSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-            (int) (100.0f * ArrowLine.getArrowHeadSize()));
+        (int) (100.0f * ArrowLine.getArrowHeadSize()));
     ahSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     ahSlider.setPaintTicks(true);
     ahSlider.setMajorTickSpacing(40);
     ahSlider.setPaintLabels(true);
     ahSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     ahSlider.setLabelTable(ahSlider.getLabelTable());
     ahSlider.getLabelTable().put(new Integer(40),
-            new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", JLabel.CENTER));
     ahSlider.setLabelTable(ahSlider.getLabelTable());
     ahSlider.getLabelTable().put(new Integer(80),
-            new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", JLabel.CENTER));
     ahSlider.setLabelTable(ahSlider.getLabelTable());
     ahSlider.getLabelTable().put(new Integer(120),
-            new JLabel("1.2", JLabel.CENTER));
+        new JLabel("1.2", JLabel.CENTER));
     ahSlider.setLabelTable(ahSlider.getLabelTable());
     ahSlider.getLabelTable().put(new Integer(160),
-            new JLabel("1.6", JLabel.CENTER));
+        new JLabel("1.6", JLabel.CENTER));
     ahSlider.setLabelTable(ahSlider.getLabelTable());
     ahSlider.getLabelTable().put(new Integer(200),
-            new JLabel("2.0", JLabel.CENTER));
+        new JLabel("2.0", JLabel.CENTER));
     ahSlider.setLabelTable(ahSlider.getLabelTable());
 
     ahSlider.addChangeListener(new ChangeListener() {
@@ -658,8 +718,7 @@ public class Preferences extends JDialog {
         JSlider source = (JSlider) e.getSource();
         ArrowHeadSize = source.getValue() / 100.0f;
         ArrowLine.setArrowHeadSize(ArrowHeadSize);
-        props.put("ArrowHeadSize",
-                Float.toString(ArrowHeadSize));
+        props.put("ArrowHeadSize", Float.toString(ArrowHeadSize));
         display.repaint();
       }
     });
@@ -668,30 +727,31 @@ public class Preferences extends JDialog {
 
     JPanel arPanel = new JPanel();
     arPanel.setLayout(new BorderLayout());
-    arPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.arLabel")));
+    arPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.arLabel")));
     arSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-            (int) (100.0f * ArrowLine.getArrowHeadRadius()));
+        (int) (100.0f * ArrowLine.getArrowHeadRadius()));
     arSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     arSlider.setPaintTicks(true);
     arSlider.setMajorTickSpacing(40);
     arSlider.setPaintLabels(true);
     arSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     arSlider.setLabelTable(arSlider.getLabelTable());
     arSlider.getLabelTable().put(new Integer(40),
-            new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", JLabel.CENTER));
     arSlider.setLabelTable(arSlider.getLabelTable());
     arSlider.getLabelTable().put(new Integer(80),
-            new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", JLabel.CENTER));
     arSlider.setLabelTable(arSlider.getLabelTable());
     arSlider.getLabelTable().put(new Integer(120),
-            new JLabel("1.2", JLabel.CENTER));
+        new JLabel("1.2", JLabel.CENTER));
     arSlider.setLabelTable(arSlider.getLabelTable());
     arSlider.getLabelTable().put(new Integer(160),
-            new JLabel("1.6", JLabel.CENTER));
+        new JLabel("1.6", JLabel.CENTER));
     arSlider.setLabelTable(arSlider.getLabelTable());
     arSlider.getLabelTable().put(new Integer(200),
-            new JLabel("2.0", JLabel.CENTER));
+        new JLabel("2.0", JLabel.CENTER));
     arSlider.setLabelTable(arSlider.getLabelTable());
     arSlider.addChangeListener(new ChangeListener() {
 
@@ -700,8 +760,7 @@ public class Preferences extends JDialog {
         JSlider source = (JSlider) e.getSource();
         ArrowHeadRadius = source.getValue() / 100.0f;
         ArrowLine.setArrowHeadRadius(ArrowHeadRadius);
-        props.put("ArrowHeadRadius",
-                Float.toString(ArrowHeadRadius));
+        props.put("ArrowHeadRadius", Float.toString(ArrowHeadRadius));
         display.repaint();
       }
     });
@@ -710,40 +769,41 @@ public class Preferences extends JDialog {
 
     JPanel alPanel = new JPanel();
     alPanel.setLayout(new BorderLayout());
-    alPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.alLabel")));
+    alPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.alLabel")));
     alSlider = new JSlider(JSlider.HORIZONTAL, -200, 200,
-            (int) (100.0f * ArrowLine.getLengthScale()));
+        (int) (100.0f * ArrowLine.getLengthScale()));
     alSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     alSlider.setPaintTicks(true);
     alSlider.setMajorTickSpacing(50);
     alSlider.setPaintLabels(true);
     alSlider.getLabelTable().put(new Integer(-200),
-            new JLabel("-2.0", JLabel.CENTER));
+        new JLabel("-2.0", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(-150),
-            new JLabel("-1.5", JLabel.CENTER));
+        new JLabel("-1.5", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(-100),
-            new JLabel("-1.0", JLabel.CENTER));
+        new JLabel("-1.0", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(-50),
-            new JLabel("-0.5", JLabel.CENTER));
+        new JLabel("-0.5", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(50),
-            new JLabel("0.5", JLabel.CENTER));
+        new JLabel("0.5", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(100),
-            new JLabel("1.0", JLabel.CENTER));
+        new JLabel("1.0", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(150),
-            new JLabel("1.5", JLabel.CENTER));
+        new JLabel("1.5", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.getLabelTable().put(new Integer(200),
-            new JLabel("2.0", JLabel.CENTER));
+        new JLabel("2.0", JLabel.CENTER));
     alSlider.setLabelTable(alSlider.getLabelTable());
     alSlider.addChangeListener(new ChangeListener() {
 
@@ -752,8 +812,7 @@ public class Preferences extends JDialog {
         JSlider source = (JSlider) e.getSource();
         ArrowLengthScale = source.getValue() / 100.0f;
         ArrowLine.setLengthScale(ArrowLengthScale);
-        props.put("ArrowLengthScale",
-                Float.toString(ArrowLengthScale));
+        props.put("ArrowLengthScale", Float.toString(ArrowLengthScale));
         display.repaint();
       }
     });
@@ -770,21 +829,26 @@ public class Preferences extends JDialog {
 
     JPanel backgroundPanel = new JPanel();
     backgroundPanel.setLayout(new BorderLayout());
-    backgroundPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.bgLabel")));
+    backgroundPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.bgLabel")));
     bButton = new JButton();
     bButton.setBackground(backgroundColor);
-    bButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.bgToolTip"));
+    bButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.bgToolTip"));
     ActionListener startBackgroundChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color = JColorChooser.showDialog(bButton,
-                        JmolResourceHandler.getInstance().getString("Prefs.bgChooserTitle"), backgroundColor);
+        Color color =
+          JColorChooser
+            .showDialog(bButton, JmolResourceHandler.getInstance()
+              .getString("Prefs.bgChooserTitle"), backgroundColor);
         backgroundColor = color;
         bButton.setBackground(backgroundColor);
         DisplayPanel.setBackgroundColor(backgroundColor);
         props.put("backgroundColor",
-                Integer.toString(backgroundColor.getRGB()));
+            Integer.toString(backgroundColor.getRGB()));
         display.repaint();
 
       }
@@ -795,16 +859,21 @@ public class Preferences extends JDialog {
 
     JPanel outlinePanel = new JPanel();
     outlinePanel.setLayout(new BorderLayout());
-    outlinePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.outlineLabel")));
+    outlinePanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.outlineLabel")));
     oButton = new JButton();
     oButton.setBackground(outlineColor);
-    oButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.outlineToolTip"));
+    oButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.outlineToolTip"));
     ActionListener startOutlineChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color = JColorChooser.showDialog(oButton,
-                        JmolResourceHandler.getInstance().getString("Prefs.outlineChooserTitle"), outlineColor);
+        Color color =
+          JColorChooser
+            .showDialog(oButton, JmolResourceHandler.getInstance()
+              .getString("Prefs.outlineChooserTitle"), outlineColor);
         outlineColor = color;
         oButton.setBackground(outlineColor);
         display.getSettings().setOutlineColor(outlineColor);
@@ -819,16 +888,21 @@ public class Preferences extends JDialog {
 
     JPanel pickedPanel = new JPanel();
     pickedPanel.setLayout(new BorderLayout());
-    pickedPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.pickedLabel")));
+    pickedPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.pickedLabel")));
     pButton = new JButton();
     pButton.setBackground(pickedColor);
-    pButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.pickedToolTip"));
+    pButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.pickedToolTip"));
     ActionListener startPickedChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color = JColorChooser.showDialog(pButton,
-                        JmolResourceHandler.getInstance().getString("Prefs.pickedChooserTitle"), pickedColor);
+        Color color =
+          JColorChooser
+            .showDialog(pButton, JmolResourceHandler.getInstance()
+              .getString("Prefs.pickedChooserTitle"), pickedColor);
         pickedColor = color;
         pButton.setBackground(pickedColor);
         display.getSettings().setPickedColor(pickedColor);
@@ -843,16 +917,21 @@ public class Preferences extends JDialog {
 
     JPanel textPanel = new JPanel();
     textPanel.setLayout(new BorderLayout());
-    textPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.textLabel")));
+    textPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.textLabel")));
     tButton = new JButton();
     tButton.setBackground(textColor);
-    tButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.textToolTip"));
+    tButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.textToolTip"));
     ActionListener startTextChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color = JColorChooser.showDialog(tButton,
-                        JmolResourceHandler.getInstance().getString("Prefs.textChooserTitle"), textColor);
+        Color color =
+          JColorChooser
+            .showDialog(tButton, JmolResourceHandler.getInstance()
+              .getString("Prefs.textChooserTitle"), textColor);
         textColor = color;
         tButton.setBackground(textColor);
         display.getSettings().setTextColor(textColor);
@@ -867,16 +946,21 @@ public class Preferences extends JDialog {
 
     JPanel vectorPanel = new JPanel();
     vectorPanel.setLayout(new BorderLayout());
-    vectorPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.vectorLabel")));
+    vectorPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.vectorLabel")));
     vButton = new JButton();
     vButton.setBackground(vectorColor);
-    vButton.setToolTipText(JmolResourceHandler.getInstance().getString("Prefs.vectorToolTip"));
+    vButton.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Prefs.vectorToolTip"));
     ActionListener startVectorChooser = new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
 
-        Color color = JColorChooser.showDialog(vButton,
-                        JmolResourceHandler.getInstance().getString("Prefs.vectorChooserTitle"), vectorColor);
+        Color color =
+          JColorChooser
+            .showDialog(vButton, JmolResourceHandler.getInstance()
+              .getString("Prefs.vectorChooserTitle"), vectorColor);
         vectorColor = color;
         vButton.setBackground(vectorColor);
         ArrowLine.setVectorColor(vectorColor);
@@ -900,37 +984,40 @@ public class Preferences extends JDialog {
     JPanel notePanel = new JPanel();
     notePanel.setLayout(new BorderLayout());
     notePanel.setBorder(new EtchedBorder());
-    JLabel noteLabel = new JLabel(JmolResourceHandler.getInstance().getString("Prefs.vibNoteLabel"));
+    JLabel noteLabel =
+      new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.vibNoteLabel"));
     notePanel.add(noteLabel, BorderLayout.CENTER);
     vibratePanel.add(notePanel);
 
     JPanel vasPanel = new JPanel();
     vasPanel.setLayout(new BorderLayout());
-    vasPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-            .getString("Prefs.vibAmplitudeScaleLabel")));
+    vasPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.vibAmplitudeScaleLabel")));
     vasSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-            (int) (100.0 * Vibrate.getAmplitudeScale()));
+        (int) (100.0 * Vibrate.getAmplitudeScale()));
     vasSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     vasSlider.setPaintTicks(true);
     vasSlider.setMajorTickSpacing(40);
     vasSlider.setPaintLabels(true);
     vasSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     vasSlider.setLabelTable(vasSlider.getLabelTable());
     vasSlider.getLabelTable().put(new Integer(40),
-            new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", JLabel.CENTER));
     vasSlider.setLabelTable(vasSlider.getLabelTable());
     vasSlider.getLabelTable().put(new Integer(80),
-            new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", JLabel.CENTER));
     vasSlider.setLabelTable(vasSlider.getLabelTable());
     vasSlider.getLabelTable().put(new Integer(120),
-            new JLabel("1.2", JLabel.CENTER));
+        new JLabel("1.2", JLabel.CENTER));
     vasSlider.setLabelTable(vasSlider.getLabelTable());
     vasSlider.getLabelTable().put(new Integer(160),
-            new JLabel("1.6", JLabel.CENTER));
+        new JLabel("1.6", JLabel.CENTER));
     vasSlider.setLabelTable(vasSlider.getLabelTable());
     vasSlider.getLabelTable().put(new Integer(200),
-            new JLabel("2.0", JLabel.CENTER));
+        new JLabel("2.0", JLabel.CENTER));
     vasSlider.setLabelTable(vasSlider.getLabelTable());
 
     vasSlider.addChangeListener(new ChangeListener() {
@@ -941,7 +1028,7 @@ public class Preferences extends JDialog {
         VibrateAmplitudeScale = source.getValue() / 100.0;
         Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
         props.put("VibrateAmplitudeScale",
-                Double.toString(VibrateAmplitudeScale));
+            Double.toString(VibrateAmplitudeScale));
       }
     });
     vasPanel.add(vasSlider, BorderLayout.SOUTH);
@@ -949,31 +1036,32 @@ public class Preferences extends JDialog {
 
     JPanel vvsPanel = new JPanel();
     vvsPanel.setLayout(new BorderLayout());
-    vvsPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-            .getString("Prefs.vibVectorScaleLabel")));
+    vvsPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.vibVectorScaleLabel")));
     vvsSlider = new JSlider(JSlider.HORIZONTAL, 0, 200,
-            (int) (100.0 * Vibrate.getVectorScale()));
+        (int) (100.0 * Vibrate.getVectorScale()));
     vvsSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     vvsSlider.setPaintTicks(true);
     vvsSlider.setMajorTickSpacing(40);
     vvsSlider.setPaintLabels(true);
     vvsSlider.getLabelTable().put(new Integer(0),
-            new JLabel("0.0", JLabel.CENTER));
+        new JLabel("0.0", JLabel.CENTER));
     vvsSlider.setLabelTable(vvsSlider.getLabelTable());
     vvsSlider.getLabelTable().put(new Integer(40),
-            new JLabel("0.4", JLabel.CENTER));
+        new JLabel("0.4", JLabel.CENTER));
     vvsSlider.setLabelTable(vvsSlider.getLabelTable());
     vvsSlider.getLabelTable().put(new Integer(80),
-            new JLabel("0.8", JLabel.CENTER));
+        new JLabel("0.8", JLabel.CENTER));
     vvsSlider.setLabelTable(vvsSlider.getLabelTable());
     vvsSlider.getLabelTable().put(new Integer(120),
-            new JLabel("1.2", JLabel.CENTER));
+        new JLabel("1.2", JLabel.CENTER));
     vvsSlider.setLabelTable(vvsSlider.getLabelTable());
     vvsSlider.getLabelTable().put(new Integer(160),
-            new JLabel("1.6", JLabel.CENTER));
+        new JLabel("1.6", JLabel.CENTER));
     vvsSlider.setLabelTable(vvsSlider.getLabelTable());
     vvsSlider.getLabelTable().put(new Integer(200),
-            new JLabel("2.0", JLabel.CENTER));
+        new JLabel("2.0", JLabel.CENTER));
     vvsSlider.setLabelTable(vvsSlider.getLabelTable());
 
     vvsSlider.addChangeListener(new ChangeListener() {
@@ -991,10 +1079,11 @@ public class Preferences extends JDialog {
 
     JPanel vfPanel = new JPanel();
     vfPanel.setLayout(new BorderLayout());
-    vfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Prefs.vibFrameLabel")));
+    vfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.vibFrameLabel")));
 
     vfSlider = new JSlider(JSlider.HORIZONTAL, 0, 50,
-            Vibrate.getNumberFrames());
+        Vibrate.getNumberFrames());
     vfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     vfSlider.setPaintTicks(true);
     vfSlider.setMajorTickSpacing(5);
@@ -1069,7 +1158,7 @@ public class Preferences extends JDialog {
     aRender.setSelectedIndex(display.getSettings().getAtomDrawMode());
     aLabel.setSelectedIndex(display.getSettings().getLabelMode());
     sfSlider.setValue((int) (100.0
-            * display.getSettings().getAtomSphereFactor()));
+        * display.getSettings().getAtomSphereFactor()));
 
     // Bond panel controls:
     bRender.setSelectedIndex(display.getSettings().getBondDrawMode());
@@ -1120,21 +1209,20 @@ public class Preferences extends JDialog {
 
     // Doubles and Floats are special:
     ArrowHeadSize =
-            new Float(props.getProperty("ArrowHeadSize")).floatValue();
+        new Float(props.getProperty("ArrowHeadSize")).floatValue();
     ArrowHeadRadius =
-            new Float(props.getProperty("ArrowHeadRadius")).floatValue();
+        new Float(props.getProperty("ArrowHeadRadius")).floatValue();
     ArrowLengthScale =
-            new Float(props.getProperty("ArrowLengthScale")).floatValue();
+        new Float(props.getProperty("ArrowLengthScale")).floatValue();
     BondFudge = new Float(props.getProperty("BondFudge")).floatValue();
     BondWidth = new Double(props.getProperty("BondWidth")).doubleValue();
     FieldOfView = new Float(props.getProperty("FieldOfView")).floatValue();
     SphereFactor =
-            new Double(props.getProperty("SphereFactor")).doubleValue();
+        new Double(props.getProperty("SphereFactor")).doubleValue();
     VibrateAmplitudeScale =
-            new Double(props.getProperty("VibrateAmplitudeScale"))
-              .doubleValue();
+        new Double(props.getProperty("VibrateAmplitudeScale")).doubleValue();
     VibrateVectorScale =
-            new Double(props.getProperty("VibrateVectorScale")).doubleValue();
+        new Double(props.getProperty("VibrateVectorScale")).doubleValue();
 
     display.getSettings().setOutlineColor(outlineColor);
     display.getSettings().setPickedColor(pickedColor);
@@ -1196,20 +1284,28 @@ public class Preferences extends JDialog {
     public void itemStateChanged(ItemEvent e) {
 
       JCheckBox cb = (JCheckBox) e.getSource();
-      if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cBLabel"))) {
+      if (cb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.cBLabel"))) {
         ShowBonds = cb.isSelected();
         display.getSettings().setShowBonds(ShowBonds);
         props.put("ShowBonds", new Boolean(ShowBonds).toString());
-      } else if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cALabel"))) {
+      } else if (cb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.cALabel"))) {
         ShowAtoms = cb.isSelected();
         display.getSettings().setShowAtoms(ShowAtoms);
         display.getSettings().setDrawBondsToAtomCenters(!ShowAtoms);
         props.put("ShowAtoms", new Boolean(ShowAtoms).toString());
-      } else if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cVLabel"))) {
+      } else if (cb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.cVLabel"))) {
         ShowVectors = cb.isSelected();
         display.getSettings().setShowVectors(ShowVectors);
         props.put("ShowVectors", new Boolean(ShowVectors).toString());
-      } else if (cb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.cHLabel"))) {
+      } else if (cb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.cHLabel"))) {
         ShowHydrogens = cb.isSelected();
         display.getSettings().setShowHydrogens(ShowHydrogens);
         props.put("ShowHydrogens", new Boolean(ShowHydrogens).toString());
@@ -1226,22 +1322,30 @@ public class Preferences extends JDialog {
     public void itemStateChanged(ItemEvent e) {
 
       JRadioButton rb = (JRadioButton) e.getSource();
-      if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.aaYesLabel"))) {
+      if (rb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.aaYesLabel"))) {
         AntiAliased = rb.isSelected();
         display.setAntiAliased(AntiAliased);
         props.put("AntiAliased", new Boolean(AntiAliased).toString());
         display.repaint();
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.aaNoLabel"))) {
+      } else if (rb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.aaNoLabel"))) {
         AntiAliased = !rb.isSelected();
         display.setAntiAliased(AntiAliased);
         props.put("AntiAliased", new Boolean(AntiAliased).toString());
         display.repaint();
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.pYesLabel"))) {
+      } else if (rb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.pYesLabel"))) {
         Perspective = rb.isSelected();
         DisplayPanel.setPerspective(Perspective);
         props.put("Perspective", new Boolean(Perspective).toString());
         display.repaint();
-      } else if (rb.getText().equals(JmolResourceHandler.getInstance().getString("Prefs.pNoLabel"))) {
+      } else if (rb.getText()
+          .equals(JmolResourceHandler.getInstance()
+            .getString("Prefs.pNoLabel"))) {
         Perspective = !rb.isSelected();
         DisplayPanel.setPerspective(Perspective);
         props.put("Perspective", new Boolean(Perspective).toString());

@@ -30,72 +30,75 @@ import java.io.OutputStream;
  */
 public class PdbSaver extends FileSaver {
 
-    /**
-     * Creates a PDB file saver.
-     *
-     * @param cf the ChemFile to dump.
-     * @param out the stream to write the file to.
-     */
-    public PdbSaver(ChemFile cf, OutputStream out) throws IOException {
-        super(cf, out);
-    }
+  /**
+   * Creates a PDB file saver.
+   *
+   * @param cf the ChemFile to dump.
+   * @param out the stream to write the file to.
+   */
+  public PdbSaver(ChemFile cf, OutputStream out) throws IOException {
+    super(cf, out);
+  }
 
-    public void writeFileStart(ChemFile cf, BufferedWriter w) throws IOException{
-      atomNumber = 1;
-      // No preamble for PDB files
-    }
-    
-    public void writeFileEnd(ChemFile cf, BufferedWriter w) throws IOException{
-      // No postamble for PDB files
-    }
+  public void writeFileStart(ChemFile cf, BufferedWriter w)
+      throws IOException {
+    atomNumber = 1;
 
-    /**
-     * The number of the next atom to be written. Used to give each
-     * atom a unique serial number.
-     */
-    int atomNumber = 1;
+    // No preamble for PDB files
+  }
 
-    /**
-     * Writes a single frame in PDB format to the Writer.
-     *
-     * @param cf the ChemFrame to write
-     * @param w the Writer to write it to
-     */
-    public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
+  public void writeFileEnd(ChemFile cf, BufferedWriter w) throws IOException {
 
-      int na = 0;
-      String info = "";
-      String st = "";
-      String tab = "\t";
-      boolean writecharge = false;
-      boolean writevect = false;
+    // No postamble for PDB files
+  }
 
-      String hetatmRecordName = "HETATM";
-      String terRecordName = "TER";
-      PrintfFormat serialFormat = new PrintfFormat("%5d");
-      PrintfFormat atomNameFormat = new PrintfFormat("%-4s");
-      PrintfFormat positionFormat = new PrintfFormat("%8.3f");
-      
-      // Loop through the atoms and write them out:
-      StringBuffer buffer = new StringBuffer();
-      for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
-        buffer.setLength(0);
-        buffer.append(hetatmRecordName);
-        buffer.append(serialFormat.sprintf(atomNumber));
-        buffer.append(' ');
-        Atom atom = cf.getAtomAt(i);
-        buffer.append(atomNameFormat.sprintf(atom.getType().getName()));
-        buffer.append(" MOL          ");
-        Point3f position = atom.getPosition();
-        buffer.append(positionFormat.sprintf(position.x));
-        buffer.append(positionFormat.sprintf(position.y));
-        buffer.append(positionFormat.sprintf(position.z));
+  /**
+   * The number of the next atom to be written. Used to give each
+   * atom a unique serial number.
+   */
+  int atomNumber = 1;
 
-        w.write(buffer.toString(), 0, buffer.length());
-        w.newLine();
-        ++atomNumber;
-      }
-      w.write(terRecordName, 0, terRecordName.length());
+  /**
+   * Writes a single frame in PDB format to the Writer.
+   *
+   * @param cf the ChemFrame to write
+   * @param w the Writer to write it to
+   */
+  public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
+
+    int na = 0;
+    String info = "";
+    String st = "";
+    String tab = "\t";
+    boolean writecharge = false;
+    boolean writevect = false;
+
+    String hetatmRecordName = "HETATM";
+    String terRecordName = "TER";
+    PrintfFormat serialFormat = new PrintfFormat("%5d");
+    PrintfFormat atomNameFormat = new PrintfFormat("%-4s");
+    PrintfFormat positionFormat = new PrintfFormat("%8.3f");
+
+    // Loop through the atoms and write them out:
+    StringBuffer buffer = new StringBuffer();
+    for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
+      buffer.setLength(0);
+      buffer.append(hetatmRecordName);
+      buffer.append(serialFormat.sprintf(atomNumber));
+      buffer.append(' ');
+      Atom atom = cf.getAtomAt(i);
+      buffer.append(atomNameFormat.sprintf(atom.getType().getName()));
+      buffer.append(" MOL          ");
+      Point3f position = atom.getPosition();
+      buffer.append(positionFormat.sprintf(position.x));
+      buffer.append(positionFormat.sprintf(position.y));
+      buffer.append(positionFormat.sprintf(position.z));
+
+      w.write(buffer.toString(), 0, buffer.length());
       w.newLine();
+      ++atomNumber;
     }
+    w.write(terRecordName, 0, terRecordName.length());
+    w.newLine();
+  }
 }

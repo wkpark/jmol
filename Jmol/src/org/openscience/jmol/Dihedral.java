@@ -47,15 +47,15 @@ class Dihedral extends Measurement implements MeasurementInterface {
   }
 
   public void paint(
-          Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int x4, int y4, int z4)
-            throws Exception {
+      Graphics g, DisplaySettings settings, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int x4, int y4, int z4)
+        throws Exception {
     paintDihedralLine(g, settings, x1, y1, x2, y2, x3, y3, x4, y4);
     paintDihedralString(g, settings, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4,
-            y4, z4);
+        y4, z4);
   }
 
   private void paintDihedralLine(Graphics g, DisplaySettings settings,
-          int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+      int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
 
     int xa = (x1 + x2) / 2;
     int ya = (y1 + y2) / 2;
@@ -78,8 +78,8 @@ class Dihedral extends Measurement implements MeasurementInterface {
   }
 
   private void paintDihedralString(Graphics g, DisplaySettings settings,
-          int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3,
-            int z3, int x4, int y4, int z4) {
+      int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3,
+        int x4, int y4, int z4) {
 
     Font font = new Font("Helvetica", Font.PLAIN,
                   (int) (getAvgRadius(settings, z1, z2, z3, z4)));
@@ -100,7 +100,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
   }
 
   private float getAvgRadius(DisplaySettings settings, int z1, int z2,
-          int z3, int z4) {
+      int z3, int z4) {
 
     if (cf == null) {
       return 0.0f;
@@ -112,9 +112,9 @@ class Dihedral extends Measurement implements MeasurementInterface {
     BaseAtomType d = cf.getAtomAt(Atoms[3]).getType();
 
     return (settings.getCircleRadius(z1, a.getVdwRadius())
-            + settings.getCircleRadius(z2, b.getVdwRadius())
-              + settings.getCircleRadius(z3, c.getVdwRadius())
-                + settings.getCircleRadius(z4, d.getVdwRadius())) / 4.0f;
+        + settings.getCircleRadius(z2, b.getVdwRadius())
+          + settings.getCircleRadius(z3, c.getVdwRadius())
+            + settings.getCircleRadius(z4, d.getVdwRadius())) / 4.0f;
   }
 
   public int[] getAtomList() {
@@ -126,11 +126,11 @@ class Dihedral extends Measurement implements MeasurementInterface {
     /* Lazy way out. Just make sure that we're one of the 2
        ordered permutations. */
     if ((Atoms[0] == a1) && (Atoms[1] == a2) && (Atoms[2] == a3)
-            && (Atoms[3] == a4)) {
+        && (Atoms[3] == a4)) {
       return true;
     } else {
       if ((Atoms[0] == a4) && (Atoms[1] == a3) && (Atoms[2] == a2)
-              && (Atoms[3] == a1)) {
+          && (Atoms[3] == a1)) {
         return true;
       }
     }
@@ -139,7 +139,7 @@ class Dihedral extends Measurement implements MeasurementInterface {
 
   public String toString() {
     return ("[" + Atoms[0] + "," + Atoms[1] + "," + Atoms[2] + "," + Atoms[3]
-            + " = " + getDihedral() + "]");
+        + " = " + getDihedral() + "]");
   }
 
   public double getDihedral() {

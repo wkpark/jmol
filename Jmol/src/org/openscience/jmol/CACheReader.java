@@ -42,6 +42,7 @@ import java.io.IOException;
  */
 
 public class CACheReader extends DefaultChemFileReader {
+
   /**
    * Create an CAChe output reader.
    *
@@ -51,7 +52,7 @@ public class CACheReader extends DefaultChemFileReader {
     super(input);
     System.out.println("Parsing CAChe Molstruct File");
   }
-  
+
   /**
    * Read in CAChe molstruct data
    *
@@ -114,8 +115,7 @@ public class CACheReader extends DefaultChemFileReader {
    * @exception IOException if an I/O error occurs.
    *
    */
-  private void readCoordinates(ChemFrame frame)
-          throws IOException {
+  private void readCoordinates(ChemFrame frame) throws IOException {
 
     String line;
     while (input.ready()) {

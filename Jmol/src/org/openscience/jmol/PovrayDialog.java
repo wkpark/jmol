@@ -81,7 +81,8 @@ public class PovrayDialog extends JDialog {
    */
   public PovrayDialog(JFrame f, DisplayPanel dp, ChemFile cf, String bn) {
 
-    super(f, JmolResourceHandler.getInstance().getString("Povray.povrayDialogTitle"), true);
+    super(f, JmolResourceHandler.getInstance()
+        .getString("Povray.povrayDialogTitle"), true);
     display = dp;
     currentFile = cf;
     basename = bn;
@@ -101,10 +102,16 @@ public class PovrayDialog extends JDialog {
 
     //GUI for save name selection
     JPanel justSavingPanel = new JPanel(new GridLayout(2, 1));
-    justSavingPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Povray.savingPov")));
+    justSavingPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Povray.savingPov")));
     JPanel savePanel = new JPanel(new BorderLayout());
-    savePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Povray.workingName")));
-    savePanel.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.workingNameTip"));
+    savePanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Povray.workingName")));
+    savePanel
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.workingNameTip"));
     saveField = new JTextField(basename, 20);
     saveField.addActionListener(new ActionListener() {
 
@@ -119,11 +126,16 @@ public class PovrayDialog extends JDialog {
     //GUI for save path selection
     JPanel savePathPanel = new JPanel(new BorderLayout());
     savePathPanel
-            .setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Povray.workingDirectory")));
-    savePathPanel.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.workingDirectoryTip"));
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Povray.workingDirectory")));
+    savePathPanel
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.workingDirectoryTip"));
     savePathLabel = new JLabel(savePath);
     savePathPanel.add(savePathLabel, BorderLayout.CENTER);
-    JButton savePathButton = new JButton(JmolResourceHandler.getInstance().getString("Povray.selectButton"));
+    JButton savePathButton =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Povray.selectButton"));
     savePathButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -139,19 +151,29 @@ public class PovrayDialog extends JDialog {
     GridBagLayout gridBagLayout2 = new GridBagLayout();
 
     JPanel povOptionsPanel = new JPanel(gridBagLayout2);
-    povOptionsPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Povray.povOptions")));
-    JCheckBox runPovCheck = new JCheckBox(JmolResourceHandler.getInstance().getString("Povray.runPov"), true);
-    runPovCheck.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.runPovTip"));
+    povOptionsPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Povray.povOptions")));
+    JCheckBox runPovCheck =
+      new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Povray.runPov"), true);
+    runPovCheck
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.runPovTip"));
     runPovCheck.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
 
         if (e.getStateChange() == ItemEvent.SELECTED) {
           callPovray = true;
-          goButton.setText(JmolResourceHandler.getInstance().getString("Povray.goLabel"));
+          goButton
+              .setText(JmolResourceHandler.getInstance()
+                .getString("Povray.goLabel"));
         } else if (e.getStateChange() == ItemEvent.DESELECTED) {
           callPovray = false;
-          goButton.setText(JmolResourceHandler.getInstance().getString("Povray.saveLabel"));
+          goButton
+              .setText(JmolResourceHandler.getInstance()
+                .getString("Povray.saveLabel"));
         }
         povrayPathButton.setEnabled(callPovray);
         antiAlias.setEnabled(callPovray);
@@ -162,8 +184,12 @@ public class PovrayDialog extends JDialog {
     povOptionsPanel.add(runPovCheck);
     gridBagLayout2.setConstraints(runPovCheck, gridBagConstraints);
 
-    antiAlias = new JCheckBox(JmolResourceHandler.getInstance().getString("Povray.antiAlias"), doAntiAlias);
-    antiAlias.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.antiAliasTip"));
+    antiAlias =
+        new JCheckBox(JmolResourceHandler.getInstance()
+          .getString("Povray.antiAlias"), doAntiAlias);
+    antiAlias
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.antiAliasTip"));
     antiAlias.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
@@ -180,10 +206,11 @@ public class PovrayDialog extends JDialog {
     gridBagLayout2.setConstraints(antiAlias, gridBagConstraints);
 
     displayWhileRenderingBox =
-            new JCheckBox(JmolResourceHandler.getInstance().getString("Povray.displayWhileRendering"),
-              displayWhileRendering);
+        new JCheckBox(JmolResourceHandler.getInstance()
+          .getString("Povray.displayWhileRendering"), displayWhileRendering);
     displayWhileRenderingBox
-            .setToolTipText(JmolResourceHandler.getInstance().getString("Povray.displayWhileRenderingTip"));
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.displayWhileRenderingTip"));
     displayWhileRenderingBox.addItemListener(new ItemListener() {
 
       public void itemStateChanged(ItemEvent e) {
@@ -198,15 +225,20 @@ public class PovrayDialog extends JDialog {
     });
     povOptionsPanel.add(displayWhileRenderingBox);
     gridBagLayout2.setConstraints(displayWhileRenderingBox,
-            gridBagConstraints);
+        gridBagConstraints);
 
     JPanel povrayPathPanel = new JPanel(new FlowLayout());
     povrayPathPanel
-            .setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Povray.povrayExecutable")));
-    povrayPathPanel.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.povrayExecutableTip"));
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Povray.povrayExecutable")));
+    povrayPathPanel
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.povrayExecutableTip"));
     povrayPathLabel = new JLabel(povrayPath);
     povrayPathPanel.add(povrayPathLabel);
-    povrayPathButton = new JButton(JmolResourceHandler.getInstance().getString("Povray.selectButton"));
+    povrayPathButton =
+        new JButton(JmolResourceHandler.getInstance()
+          .getString("Povray.selectButton"));
     povrayPathButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -220,10 +252,15 @@ public class PovrayDialog extends JDialog {
     //GUI for command selection
     JPanel commandLinePanel = new JPanel();
     commandLinePanel
-            .setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Povray.commandLineTitle")));
-    commandLinePanel.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.commandLineTip"));
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Povray.commandLineTitle")));
+    commandLinePanel
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.commandLineTip"));
     commandLineField = new JTextField(commandLine, 30);
-    commandLineField.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.commandLineTip"));
+    commandLineField
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.commandLineTip"));
     commandLineField.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -239,8 +276,12 @@ public class PovrayDialog extends JDialog {
     //GUI for panel with go, cancel and stop (etc) buttons
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    goButton = new JButton(JmolResourceHandler.getInstance().getString("Povray.goLabel"));
-    goButton.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.goButtonTip"));
+    goButton =
+        new JButton(JmolResourceHandler.getInstance()
+          .getString("Povray.goLabel"));
+    goButton
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.goButtonTip"));
     goButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -248,8 +289,12 @@ public class PovrayDialog extends JDialog {
       }
     });
     buttonPanel.add(goButton);
-    JButton cancelButton = new JButton(JmolResourceHandler.getInstance().getString("Povray.cancelLabel"));
-    cancelButton.setToolTipText(JmolResourceHandler.getInstance().getString("Povray.cancelButtonTip"));
+    JButton cancelButton =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Povray.cancelLabel"));
+    cancelButton
+        .setToolTipText(JmolResourceHandler.getInstance()
+          .getString("Povray.cancelButtonTip"));
     cancelButton.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -380,7 +425,7 @@ public class PovrayDialog extends JDialog {
   protected void updateCommandLine() {
 
     if ((savePath == null) || (povrayPath == null) || (basename == null)
-            || (commandLine == null)) {
+        || (commandLine == null)) {
       commandLine = "null component string";
     }
 
@@ -393,7 +438,7 @@ public class PovrayDialog extends JDialog {
     //        commandLine = commandLineField.getText();
 
     commandLine = (povrayPath + " +I" + savePath + basename + ".pov" + " +O"
-            + savePath + basename + ".tga" + " +FT");
+        + savePath + basename + ".tga" + " +FT");
 
     if ((outputWidth > 0) && (outputHeight > 0)) {
       commandLine = commandLine + " +H" + outputHeight + " +W" + outputWidth;
@@ -450,9 +495,9 @@ public class PovrayDialog extends JDialog {
 
     java.util.Properties props = Jmol.getHistoryFile().getProperties();
     povrayPath = props.getProperty("povrayPath",
-            System.getProperty("user.home"));
+        System.getProperty("user.home"));
     savePath = props.getProperty("povraySavePath",
-            System.getProperty("user.home"));
+        System.getProperty("user.home"));
   }
 
   /**

@@ -37,7 +37,8 @@ class JmolResourceHandler {
   private ResourceBundle resourceBundle;
 
   private JmolResourceHandler() {
-    resourceBundle = ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
+    resourceBundle =
+        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
   }
 
   public static JmolResourceHandler getInstance() {
@@ -46,7 +47,7 @@ class JmolResourceHandler {
     }
     return instance;
   }
-  
+
   public synchronized ImageIcon getIcon(String key) {
 
     String imageName = null;
@@ -56,21 +57,21 @@ class JmolResourceHandler {
       imageName = "org/openscience/jmol/images/" + resourceName;
     } catch (MissingResourceException e) {
     }
-    
+
     if (imageName != null) {
       URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
       if (imageUrl != null) {
         return new ImageIcon(imageUrl);
       } else {
         System.err.println("Warning: unable to load " + resourceName
-                + " for icon " + key + ".");
+            + " for icon " + key + ".");
       }
     }
     return null;
   }
-  
+
   public synchronized String getString(String key) {
-    
+
     String result = null;
     try {
       result = resourceBundle.getString(key);
@@ -78,9 +79,9 @@ class JmolResourceHandler {
     }
     return result;
   }
-  
+
   public synchronized Object getObject(String key) {
-    
+
     Object result = null;
     try {
       result = resourceBundle.getObject(key);
@@ -88,6 +89,6 @@ class JmolResourceHandler {
     }
     return result;
   }
-  
+
 }
 

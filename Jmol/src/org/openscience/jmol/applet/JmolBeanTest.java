@@ -40,7 +40,7 @@ public class JmolBeanTest {
     myFrame.getContentPane().setLayout(new BorderLayout());
     myFrame.getContentPane().add(myXMLThing1, "Center");
     myFrame.getContentPane().add(javax.swing.Box.createHorizontalStrut(400),
-            "North");
+        "North");
     myFrame.getContentPane().add(p2, "East");
     try {
       java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");

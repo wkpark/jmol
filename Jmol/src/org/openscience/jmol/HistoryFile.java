@@ -37,17 +37,17 @@ class HistoryFile {
    * The data stored in the history file.
    */
   private Properties properties = new Properties();
-  
+
   /**
    * The location of the history file.
    */
   File file;
-  
+
   /**
    * The information written to the header of the history file.
    */
   String header;
-  
+
   /**
    * Creates a history file.
    *
@@ -59,7 +59,7 @@ class HistoryFile {
     this.header = header;
     load();
   }
-  
+
   /**
    * Adds the given properties to the history. If a property existed previously,
    * it will be replaced.
@@ -67,6 +67,7 @@ class HistoryFile {
    * @param properties the properties to add.
    */
   void addProperties(Properties properties) {
+
     Enumeration keys = properties.keys();
     while (keys.hasMoreElements()) {
       String key = (String) keys.nextElement();
@@ -75,18 +76,19 @@ class HistoryFile {
     }
     save();
   }
-  
+
   /**
    * Returns the properties stored in the history file.
    */
   Properties getProperties() {
     return new Properties(properties);
   }
-  
+
   /**
    * Loads properties from the history file.
    */
   private void load() {
+
     try {
       FileInputStream input = new FileInputStream(file);
       properties.load(input);
@@ -95,11 +97,12 @@ class HistoryFile {
       System.err.println("Error loading history: " + ex);
     }
   }
-  
+
   /**
    * Saves properties to the history file.
    */
   private void save() {
+
     try {
       FileOutputStream output = new FileOutputStream(file);
       properties.store(output, header);

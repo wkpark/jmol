@@ -54,18 +54,18 @@ public abstract class ReaderFactory {
       buffer.mark(255);
       line = getLine(buffer);
       buffer.reset();
-      
+
       // If XML, assume CML.
-      if (line != null && line.startsWith("<?xml")) {
+      if ((line != null) && line.startsWith("<?xml")) {
         return new CMLReader(buffer);
       }
 
       buffer.mark(1024);
       line = buffer.readLine();
-      
+
       // If the first line contains mm1gp, then the file is identified
       // as a Ghemical Molecular Dynamics file
-      if (line != null && line.indexOf("mm1gp") >= 0) {
+      if ((line != null) && (line.indexOf("mm1gp") >= 0)) {
         return new GhemicalMMReader(buffer);
       }
 
@@ -76,7 +76,7 @@ public abstract class ReaderFactory {
 
       // If the fourth line contains the MDL Ctab version tag,
       // the file is identified as an MDL file.
-      if (line4 != null && line4.trim().endsWith("V2000")) {
+      if ((line4 != null) && line4.trim().endsWith("V2000")) {
         return new MdlReader(buffer);
       }
 
@@ -87,6 +87,7 @@ public abstract class ReaderFactory {
           return new XYZReader(buffer);
         }
       } catch (NumberFormatException nfe) {
+
         // Integer not found on first line; therefore not a XYZ file
       }
 
@@ -118,8 +119,8 @@ public abstract class ReaderFactory {
         return new JaguarReader(buffer);
       } else if (line.indexOf("MOPAC:  VERSION  7.00") >= 0) {
         return new Mopac7Reader(buffer);
-      } else if (line.indexOf("MOPAC  97.00") >= 0
-          || line.indexOf("MOPAC2002") >= 0) {
+      } else if ((line.indexOf("MOPAC  97.00") >= 0)
+          || (line.indexOf("MOPAC2002") >= 0)) {
         return new Mopac97Reader(buffer);
       } else if (line.startsWith("HEADER")) {
         return new PDBReader(buffer);
@@ -144,8 +145,7 @@ public abstract class ReaderFactory {
     StringBuffer sb1 = new StringBuffer();
     int c1 = buffer.read();
     while ((c1 > 0)
-            && ((c1 == '\n') || (c1 == '\r') || (c1 == ' ')
-              || (c1 == '\t'))) {
+        && ((c1 == '\n') || (c1 == '\r') || (c1 == ' ') || (c1 == '\t'))) {
       c1 = buffer.read();
     }
     while ((c1 > 0) && (c1 != '\n') && (c1 != '\r') && (c1 != '>')) {

@@ -65,10 +65,11 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Frame")) {
       this.startFrame();
     } else if (type.equals("Crystal")) {
+
       // assume frame has been started       
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at StartObject -> "
-              + type);
+          + type);
     }
   }
 
@@ -89,12 +90,12 @@ public final class JMolCDO extends ANIMATIONCDO {
     } else if (type.equals("Crystal")) {
     } else {
       System.err.println("DEBUG: unknown CDO Object Type at EndObject -> "
-              + type);
+          + type);
     }
   }
 
   public void setObjectProperty(String type, String proptype,
-          String propvalue) {
+      String propvalue) {
 
     if (type.equals("Atom")) {
       this.setAtomProperty(proptype, propvalue);
@@ -112,9 +113,9 @@ public final class JMolCDO extends ANIMATIONCDO {
 
       // need not to anything yet
     } else {
-      System.err.println(
-              "DEBUG: unknown CDO Object Type at SetObjectProperty -> "
-                + type);
+      System.err
+          .println("DEBUG: unknown CDO Object Type at SetObjectProperty -> "
+            + type);
     }
   }
 
@@ -171,7 +172,8 @@ public final class JMolCDO extends ANIMATIONCDO {
     double y = FortranFormat.atof(atomY.trim());
     double z = FortranFormat.atof(atomZ.trim());
     try {
-      int index = currentFrame.addAtom(atomType.trim(), (float) x, (float) y, (float) z);
+      int index = currentFrame.addAtom(atomType.trim(), (float) x, (float) y,
+                    (float) z);
       if (partialCharge.length() > 0) {
         System.out.println("Adding charge for atom " + index);
         double c = FortranFormat.atof(partialCharge);

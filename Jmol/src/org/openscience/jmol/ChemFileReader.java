@@ -36,14 +36,14 @@ public interface ChemFileReader {
    * @exception IOException if an I/O error occurs
    */
   public ChemFile read() throws IOException;
-  
+
   /**
    * Sets whether bonds are enabled in the files and frames which are read.
    *
    * @param bondsEnabled if true, enables bonds.
    */
   public void setBondsEnabled(boolean bondsEnabled);
-  
+
   /**
    * Adds a reader listener.
    *

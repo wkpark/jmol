@@ -106,6 +106,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     } catch (Exception e1) {
       try {
         URL url = this.getClass().getClassLoader().getResource(SAU);
+
         // URL url = ClassLoader.getSystemResource(SAU);
         ReadAtypes(url.openStream());
       } catch (Exception e2) {
@@ -117,7 +118,9 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
   public AtomTypeTable(JFrame fr) {
 
-    super(fr, JmolResourceHandler.getInstance().getString("AtomTypeTable.Title"), true);
+    super(fr,
+        JmolResourceHandler.getInstance().getString("AtomTypeTable.Title"),
+          true);
 
     // Create a model of the data.
     atModel = new AtomTypesModel();
@@ -128,8 +131,10 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     // Change sort icon when sort properties change.
     sorter.addPropertyChangeListener(new PropertyChangeListener() {
 
-      ImageIcon iconUp = JmolResourceHandler.getInstance().getIcon("AtomTypeTable.upImage");
-      ImageIcon iconDown = JmolResourceHandler.getInstance().getIcon("AtomTypeTable.downImage");
+      ImageIcon iconUp =
+        JmolResourceHandler.getInstance().getIcon("AtomTypeTable.upImage");
+      ImageIcon iconDown =
+        JmolResourceHandler.getInstance().getIcon("AtomTypeTable.downImage");
 
       public void propertyChange(PropertyChangeEvent event) {
 
@@ -190,7 +195,9 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton save = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.saveLabel"));
+    JButton save =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("AtomTypeTable.saveLabel"));
     save.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -198,7 +205,9 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       }
     });
     buttonPanel.add(save);
-    JButton revert = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.revertLabel"));
+    JButton revert =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("AtomTypeTable.revertLabel"));
     revert.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -206,7 +215,9 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       }
     });
     buttonPanel.add(revert);
-    JButton cancel = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.cancelLabel"));
+    JButton cancel =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("AtomTypeTable.cancelLabel"));
     cancel.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -214,7 +225,9 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       }
     });
     buttonPanel.add(cancel);
-    JButton OK = new JButton(JmolResourceHandler.getInstance().getString("AtomTypeTable.OKLabel"));
+    JButton OK =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("AtomTypeTable.OKLabel"));
     OK.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -225,15 +238,21 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
     JToolBar toolbar = new JToolBar();
 
-    JButton natb = new JButton(JmolResourceHandler.getInstance().getIcon("AtomTypeTable.newAtypeImage"));
+    JButton natb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("AtomTypeTable.newAtypeImage"));
     natb.setMargin(new Insets(1, 1, 1, 1));
-    natb.setToolTipText(JmolResourceHandler.getInstance().getString("AtomTypeTable.newAtypeTooltip"));
+    natb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("AtomTypeTable.newAtypeTooltip"));
     natb.setActionCommand("newatype");
     natb.addActionListener(this);
 
-    JButton datb = new JButton(JmolResourceHandler.getInstance().getIcon("AtomTypeTable.delAtypeImage"));
+    JButton datb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("AtomTypeTable.delAtypeImage"));
     datb.setMargin(new Insets(1, 1, 1, 1));
-    datb.setToolTipText(JmolResourceHandler.getInstance().getString("AtomTypeTable.delAtypeTooltip"));
+    datb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("AtomTypeTable.delAtypeTooltip"));
     datb.setActionCommand("delatype");
     datb.addActionListener(this);
 
@@ -282,14 +301,14 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     if (arg == "newatype") {
 
       // ADD CODE HERE TO ADD AN ATOM TYPE
-      System.out.println(
-              "Not yet implemented: User wants to add an atom type!");
+      System.out
+          .println("Not yet implemented: User wants to add an atom type!");
     }
     if (arg == "delatype") {
 
       // ADD CODE HERE TO DELETE AN ATOM TYPE
-      System.out.println(
-              "Not yet implemented: User wants to delete an atom type!");
+      System.out
+          .println("Not yet implemented: User wants to delete an atom type!");
     }
   }
 
@@ -306,21 +325,21 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     }
 
     public Component getTableCellRendererComponent(JTable table,
-            Object color, boolean isSelected, boolean hasFocus, int row,
-              int column) {
+        Object color, boolean isSelected, boolean hasFocus, int row,
+          int column) {
 
       this.setBackground((Color) color);
       if (isBordered) {
         if (isSelected) {
           if (selectedBorder == null) {
             selectedBorder = BorderFactory.createMatteBorder(2, 5, 2, 5,
-                    table.getSelectionBackground());
+                table.getSelectionBackground());
           }
           setBorder(selectedBorder);
         } else {
           if (unselectedBorder == null) {
             unselectedBorder = BorderFactory.createMatteBorder(2, 5, 2, 5,
-                    table.getBackground());
+                table.getBackground());
           }
           setBorder(unselectedBorder);
         }
@@ -356,43 +375,45 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
       //Set up the dialog that the button brings up.
       final JColorChooser colorChooser = new JColorChooser();
-      
+
       //XXX: PENDING: add the following when setPreviewPanel
       //XXX: starts working.
       //JComponent preview = new ColorRenderer(false);
       //preview.setPreferredSize(new Dimension(50, 10));
       //colorChooser.setPreviewPanel(preview);
       ActionListener okListener = new ActionListener() {
-	      
-	      public void actionPerformed(ActionEvent e) {
-		  colorEditor.currentColor = colorChooser.getColor();
-	      }
-	  };
-      final JDialog dialog = JColorChooser.createDialog(button, "Pick a Color",
-							true, colorChooser, okListener, null);    //XXXDoublecheck this is OK
-      
+
+        public void actionPerformed(ActionEvent e) {
+          colorEditor.currentColor = colorChooser.getColor();
+        }
+      };
+      final JDialog dialog = JColorChooser.createDialog(button,
+                               "Pick a Color", true, colorChooser,
+                               okListener, null);    //XXXDoublecheck this is OK
+
       //Here's the code that brings up the dialog.
       button.addActionListener(new ActionListener() {
-	      
-	      public void actionPerformed(ActionEvent e) {
-		  
-		  button.setBackground(colorEditor.currentColor);
-		  colorChooser.setColor(colorEditor.currentColor);
-		  
-		  //Without the following line, the dialog comes up
-		  //in the middle of the screen.
-		  //dialog.setLocationRelativeTo(button);
-		  dialog.show();
-	      }
-	  });
+
+        public void actionPerformed(ActionEvent e) {
+
+          button.setBackground(colorEditor.currentColor);
+          colorChooser.setColor(colorEditor.currentColor);
+
+          //Without the following line, the dialog comes up
+          //in the middle of the screen.
+          //dialog.setLocationRelativeTo(button);
+          dialog.show();
+        }
+      });
     } catch (VerifyError e) {
-	/* not catching this gives problems on 
-           "SunOS ac9 5.8 Generic_108528-10 sun4u sparc SUNW,Ultra-5_10" with
-           java version "1.2.2" Solaris VM (build Solaris_JDK_1.2.2_07a, native threads, sunwjit) 
-	   
-           See also: http://www.geocrawler.com/lists/3/SourceForge/11143/0/
-	   date: 22 January 2002
-	*/
+
+      /* not catching this gives problems on
+         "SunOS ac9 5.8 Generic_108528-10 sun4u sparc SUNW,Ultra-5_10" with
+         java version "1.2.2" Solaris VM (build Solaris_JDK_1.2.2_07a, native threads, sunwjit)
+
+         See also: http://www.geocrawler.com/lists/3/SourceForge/11143/0/
+         date: 22 January 2002
+      */
     }
   }
 
@@ -436,7 +457,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
+        boolean isSelected, int row, int column) {
       ((JButton) editorComponent).setText(value.toString());
       currentColor = (Color) value;
       return editorComponent;
@@ -581,7 +602,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
               bl = new Integer(sb).intValue();
             } catch (NumberFormatException nfe) {
               throw new JmolException("AtomTypeTable.ReadAtypes",
-                      "Malformed Number");
+                  "Malformed Number");
             }
 
             AtomType at = new AtomType(name, rootType, an, mass, vdw,
@@ -591,7 +612,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
 
           } else {
             throw new JmolException("AtomTypeTable.ReadAtypes",
-                    "Wrong Number of fields");
+                "Wrong Number of fields");
           }
         }
       }    // end while
@@ -599,7 +620,7 @@ public class AtomTypeTable extends JDialog implements ActionListener {
       is.close();
 
     }      // end Try
-            catch (IOException e) {
+        catch (IOException e) {
     }
 
   }

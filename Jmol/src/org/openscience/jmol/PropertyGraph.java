@@ -407,7 +407,7 @@ class ArrayDataSource implements ScatterPlotSource {
   }
 
   public ScatterEnumeration startEnumeration(double xMin, double xMax,
-          double yMin, double yMax) {
+      double yMin, double yMax) {
     return new FixedEnumeration(xData, yData, xMin, xMax, yMin, yMax);
   }
 
@@ -434,7 +434,7 @@ class ArrayDataSource implements ScatterPlotSource {
     }
 
     public FixedEnumeration(double[] xdata, double[] ydata, double xMin,
-            double xMax, double yMin, double yMax) {
+        double xMax, double yMin, double yMax) {
 
       this.xdata = xdata;
       this.ydata = ydata;
@@ -457,7 +457,7 @@ class ArrayDataSource implements ScatterPlotSource {
         }
       } else {
         while (!((xdata[pos] >= m_xmin) && (xdata[pos] <= m_xmax)
-                && (ydata[pos] >= m_ymin) && (ydata[pos] <= m_ymax))) {
+            && (ydata[pos] >= m_ymin) && (ydata[pos] <= m_ymax))) {
 
           //skip points that don't satisfy the conditions
           pos++;

@@ -37,8 +37,8 @@ import java.awt.event.WindowListener;
  *
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
-public class ScriptWindow extends JDialog implements WindowListener,
-    ActionListener {
+public class ScriptWindow extends JDialog
+    implements WindowListener, ActionListener {
 
   private JTextArea output;
   private JTextField input;
@@ -77,7 +77,7 @@ public class ScriptWindow extends JDialog implements WindowListener,
       output.append(command);
       output.append("\n");
       input.setText(null);
-  
+
       // execute script
       try {
         scriptHandler.handle(command);
@@ -88,7 +88,7 @@ public class ScriptWindow extends JDialog implements WindowListener,
         output.append("Error: " + exp.toString());
         output.append("\n");
       }
-  
+
       // return prompt
       output.append("> ");
     }

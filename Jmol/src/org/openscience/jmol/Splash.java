@@ -74,7 +74,7 @@ public class Splash extends Window {
   public void paint(Graphics g) {
 
     g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight,
-            this);
+        this);
     g.setColor(BORDERCOLOR);
     g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
     g.setColor(TEXTCOLOR);

@@ -32,6 +32,7 @@ import java.io.IOException;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 class Mopac7Reader extends DefaultChemFileReader {
+
   /**
    * Create an MOPAC output reader.
    *
@@ -40,7 +41,7 @@ class Mopac7Reader extends DefaultChemFileReader {
   public Mopac7Reader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the MOPAC output.
    *
@@ -58,7 +59,7 @@ class Mopac7Reader extends DefaultChemFileReader {
       if (line.indexOf("TOTAL ENERGY") >= 0) {
         frameInfo = line.trim();
       } else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE CALCULATION")
-              >= 0) {
+          >= 0) {
         for (int i = 0; i < 3; ++i) {
           line = input.readLine();
         }
@@ -220,10 +221,10 @@ class Mopac7Reader extends DefaultChemFileReader {
 
     String line = input.readLine();
     while ((line != null) && (line.length() > 0)
-            && Character.isDigit(line.charAt(0))) {
+        && Character.isDigit(line.charAt(0))) {
       line = input.readLine();
     }
     return line;
-  }  
+  }
 }
 

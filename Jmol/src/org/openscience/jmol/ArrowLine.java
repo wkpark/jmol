@@ -41,7 +41,7 @@ class ArrowLine {
   private static float arrowHeadSize = 10.0f;
   private static float arrowHeadRadius = 1.0f;
   private static float arrowLength = 1.0f;
-  
+
   static int[] xpoints = new int[4];
   static int[] ypoints = new int[4];
 
@@ -74,12 +74,12 @@ class ArrowLine {
   }
 
   public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
-          boolean arrowStart, boolean arrowEnd) {
+      boolean arrowStart, boolean arrowEnd) {
     this(gc, x1, y1, x2, y2, arrowStart, arrowEnd, 1.0);
   }
 
-   public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
-          boolean arrowStart, boolean arrowEnd, double scaling) {
+  public ArrowLine(Graphics gc, float x1, float y1, float x2, float y2,
+      boolean arrowStart, boolean arrowEnd, double scaling) {
 
     this.scaling = scaling;
     this.arrowStart = arrowStart;
@@ -91,13 +91,13 @@ class ArrowLine {
 
     double dy = y2 - y1;
     double dx = x2 - x1;
-    
-    magnitude = Math.sqrt(dx*dx + dy*dy);
-    
+
+    magnitude = Math.sqrt(dx * dx + dy * dy);
+
     if (Math.abs(magnitude - 0.0) < Double.MIN_VALUE) {
       return;
     }
-    
+
     ctheta = dx / magnitude;
     stheta = dy / magnitude;
 
@@ -105,25 +105,28 @@ class ArrowLine {
   }
 
   public void paint(Graphics gc) {
+
     gc.setColor(vectorColor);
-    
+
     double offset = arrowHeadSize;
     if (arrowLength < 0.0) {
       offset = -offset;
     }
     gc.drawLine((int) x1, (int) y1,
-        (int) (x1 + (offset + magnitude*arrowLength)*ctheta),
-        (int) (y1 + (offset + magnitude*arrowLength)*stheta));
-    
+        (int) (x1 + (offset + magnitude * arrowLength) * ctheta),
+          (int) (y1 + (offset + magnitude * arrowLength) * stheta));
+
     if (arrowStart) {
       paintArrowHead(gc, 0.0, false);
     }
     if (arrowEnd) {
-      paintArrowHead(gc, offset + magnitude*arrowLength, true);
+      paintArrowHead(gc, offset + magnitude * arrowLength, true);
     }
   }
 
-  public void paintArrowHead(Graphics gc, double lengthOffset, boolean forwardArrow) {
+  public void paintArrowHead(Graphics gc, double lengthOffset,
+      boolean forwardArrow) {
+
     double directionSign = 1.0;
     if (forwardArrow) {
       directionSign = -1.0;
@@ -134,10 +137,10 @@ class ArrowLine {
     double px = lengthOffset;
     double py = 0.0;
     double ly = scaling * arrowHeadSize * arrowHeadRadius;
-    double lx = lengthOffset + directionSign * 2.0*scaling*arrowHeadSize;
+    double lx = lengthOffset + directionSign * 2.0 * scaling * arrowHeadSize;
     double rx = lx;
     double ry = -ly;
-    double mx = lengthOffset + directionSign * 1.5*scaling*arrowHeadSize;
+    double mx = lengthOffset + directionSign * 1.5 * scaling * arrowHeadSize;
     double my = 0.0;
 
     xpoints[0] = (int) (x1 + px * ctheta - py * stheta);

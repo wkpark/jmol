@@ -135,9 +135,8 @@ public class Animate extends JDialog implements ActionListener, Runnable {
           newCoord[1] = fromCoord[1] + (i + 1) * step[1];
           newCoord[2] = fromCoord[2] + (i + 1) * step[2];
           try {
-            extraFrames[i].addAtom(atom.getType(),
-                  (float) newCoord[0], (float) newCoord[1],
-                    (float) newCoord[2]);
+            extraFrames[i].addAtom(atom.getType(), (float) newCoord[0],
+                (float) newCoord[1], (float) newCoord[2]);
           } catch (Exception ex) {
             System.out.println(ex);
             ex.printStackTrace();
@@ -277,7 +276,9 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
     JPanel progressPanel = new JPanel();
     progressPanel.setLayout(new BorderLayout());
-    progressPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Animate.progressLabel")));
+    progressPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Animate.progressLabel")));
     progressSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     progressSlider.addChangeListener(new ChangeListener() {
 
@@ -296,15 +297,20 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
     JPanel infoPanel = new JPanel();
     infoPanel.setLayout(new BorderLayout());
-    infoPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Animate.infoLabel")));
+    infoPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Animate.infoLabel")));
     infoPanel.add(infoLabel);
     container.add(infoPanel);
 
     JPanel rcPanel = new JPanel();
     rcPanel.setLayout(new BoxLayout(rcPanel, BoxLayout.X_AXIS));
-    rcPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Animate.controlsLabel")));
+    rcPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Animate.controlsLabel")));
 
-    JCheckBox rC = new JCheckBox(JmolResourceHandler.getInstance().getString("Animate.repeatCBLabel"), false);
+    JCheckBox rC =
+      new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Animate.repeatCBLabel"), false);
     rC.setSelected(repeat);
     rC.addItemListener(new ItemListener() {
 
@@ -313,39 +319,57 @@ public class Animate extends JDialog implements ActionListener, Runnable {
       }
     });
 
-    JButton rwb = new JButton(JmolResourceHandler.getInstance().getIcon("Animate.rewindImage"));
+    JButton rwb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("Animate.rewindImage"));
     rwb.setMargin(new Insets(1, 1, 1, 1));
-    rwb.setToolTipText(JmolResourceHandler.getInstance().getString("Animate.rewindTooltip"));
+    rwb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Animate.rewindTooltip"));
     rwb.setActionCommand("rewind");
     rwb.addActionListener(this);
 
-    JButton plb = new JButton(JmolResourceHandler.getInstance().getIcon("Animate.playImage"));
+    JButton plb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("Animate.playImage"));
     plb.setMargin(new Insets(1, 1, 1, 1));
-    plb.setToolTipText(JmolResourceHandler.getInstance().getString("Animate.playTooltip"));
+    plb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Animate.playTooltip"));
     plb.setActionCommand("play");
     plb.addActionListener(this);
 
-    JButton pb = new JButton(JmolResourceHandler.getInstance().getIcon("Animate.pauseImage"));
+    JButton pb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("Animate.pauseImage"));
     pb.setMargin(new Insets(1, 1, 1, 1));
-    pb.setToolTipText(JmolResourceHandler.getInstance().getString("Animate.pauseTooltip"));
+    pb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Animate.pauseTooltip"));
     pb.setActionCommand("pause");
     pb.addActionListener(this);
 
-    JButton nb = new JButton(JmolResourceHandler.getInstance().getIcon("Animate.nextImage"));
+    JButton nb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("Animate.nextImage"));
     nb.setMargin(new Insets(1, 1, 1, 1));
-    nb.setToolTipText(JmolResourceHandler.getInstance().getString("Animate.nextTooltip"));
+    nb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Animate.nextTooltip"));
     nb.setActionCommand("next");
     nb.addActionListener(this);
 
-    JButton prb = new JButton(JmolResourceHandler.getInstance().getIcon("Animate.prevImage"));
+    JButton prb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("Animate.prevImage"));
     prb.setMargin(new Insets(1, 1, 1, 1));
-    prb.setToolTipText(JmolResourceHandler.getInstance().getString("Animate.prevTooltip"));
+    prb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Animate.prevTooltip"));
     prb.setActionCommand("prev");
     prb.addActionListener(this);
 
-    JButton ffb = new JButton(JmolResourceHandler.getInstance().getIcon("Animate.ffImage"));
+    JButton ffb =
+      new JButton(JmolResourceHandler.getInstance()
+        .getIcon("Animate.ffImage"));
     ffb.setMargin(new Insets(1, 1, 1, 1));
-    ffb.setToolTipText(JmolResourceHandler.getInstance().getString("Animate.ffTooltip"));
+    ffb.setToolTipText(JmolResourceHandler.getInstance()
+        .getString("Animate.ffTooltip"));
     ffb.setActionCommand("ff");
     ffb.addActionListener(this);
 
@@ -365,7 +389,9 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
     JPanel speedPanel = new JPanel();
     speedPanel.setLayout(new BorderLayout());
-    speedPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Animate.speedLabel")));
+    speedPanel
+        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Animate.speedLabel")));
     JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 1, 11, speed);
     speedSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
     speedSlider.setPaintTicks(true);
@@ -384,7 +410,8 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
     JPanel iPanel = new JPanel();
     iPanel.setLayout(new BorderLayout());
-    iPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("Animate.interpLabel")));
+    iPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Animate.interpLabel")));
 
     iSlider = new JSlider(JSlider.HORIZONTAL, 0, 20, numberExtraFrames);
     iSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
@@ -393,7 +420,9 @@ public class Animate extends JDialog implements ActionListener, Runnable {
     iSlider.setPaintLabels(true);
     iSlider.addChangeListener(new NondragChangeListener());
 
-    JCheckBox iC = new JCheckBox(JmolResourceHandler.getInstance().getString("Animate.interpCBLabel"), false);
+    JCheckBox iC =
+      new JCheckBox(JmolResourceHandler.getInstance()
+        .getString("Animate.interpCBLabel"), false);
     iC.setSelected(false);
     iC.addItemListener(new ItemListener() {
 
@@ -411,8 +440,9 @@ public class Animate extends JDialog implements ActionListener, Runnable {
       }
     });
 
-    JLabel iL = new JLabel(JmolResourceHandler.getInstance().getString("Animate.interpSLabel"),
-                  SwingConstants.CENTER);
+    JLabel iL =
+      new JLabel(JmolResourceHandler.getInstance()
+        .getString("Animate.interpSLabel"), SwingConstants.CENTER);
     iL.setLabelFor(iSlider);
     iPanel.add(iC, BorderLayout.NORTH);
     iPanel.add(iSlider, BorderLayout.CENTER);
@@ -422,7 +452,9 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton dis = new JButton(JmolResourceHandler.getInstance().getString("Animate.dismissLabel"));
+    JButton dis =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("Animate.dismissLabel"));
     dis.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -573,7 +605,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
       // Workaround for documented bug 4246117 for JDK 1.2.2
       if (System.getProperty("java.version").equals("1.2.2")
-              && System.getProperty("java.vendor").startsWith("Sun Micro")) {
+          && System.getProperty("java.vendor").startsWith("Sun Micro")) {
         overrideIsAdjusting = true;
       }
     }

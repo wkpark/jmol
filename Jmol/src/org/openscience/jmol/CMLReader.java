@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -36,6 +37,7 @@ import org.xml.sax.InputSource;
  * @see ChemFrame
  */
 public class CMLReader extends DefaultChemFileReader {
+
   private URL url;
 
   /**
@@ -76,7 +78,7 @@ public class CMLReader extends DefaultChemFileReader {
       JMolCDO cdo = new JMolCDO();
       CMLHandler handler = new CMLHandler(cdo);
       handler.registerConvention("JMOL-ANIMATION",
-              new JMOLANIMATIONConvention(cdo));
+          new JMOLANIMATIONConvention(cdo));
       parser.setContentHandler(handler);
       parser.setEntityResolver(new CMLResolver());
       parser.setErrorHandler(new CMLErrorHandler());
@@ -112,7 +114,7 @@ public class CMLReader extends DefaultChemFileReader {
       JMolCDO cdo = new JMolCDO();
       CMLHandler handler = new CMLHandler(cdo);
       handler.registerConvention("JMOL-ANIMATION",
-              new JMOLANIMATIONConvention(cdo));
+          new JMOLANIMATIONConvention(cdo));
       parser.setContentHandler(handler);
       parser.setEntityResolver(new CMLResolver());
       InputSource source;
@@ -133,5 +135,5 @@ public class CMLReader extends DefaultChemFileReader {
     } catch (SAXException ex) {
       throw new IOException("CMLReader exception: " + ex);
     }
-  }  
+  }
 }

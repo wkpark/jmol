@@ -52,7 +52,7 @@ public class TestBaseAtomType extends TestCase {
    */
   public void setUp() {
     at1 = BaseAtomType.get("type1", "root1", 1, 1.1, 2.2, 3.3,
-            new Color(4, 5, 6));
+        new Color(4, 5, 6));
     at2 = BaseAtomType.get("type2");
   }
 

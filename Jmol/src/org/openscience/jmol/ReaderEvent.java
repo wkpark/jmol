@@ -29,7 +29,7 @@ import java.util.EventObject;
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
 class ReaderEvent extends EventObject {
-  
+
   /**
    * Creates a reader event.
    *
@@ -38,6 +38,6 @@ class ReaderEvent extends EventObject {
   ReaderEvent(Object source) {
     super(source);
   }
-  
+
 }
 

@@ -99,7 +99,7 @@ public class MeasurementListEvent extends java.util.EventObject {
    *
    * <p> The <I>op</I> should be one of: ADD, UPDATE and DELETE.  */
   public MeasurementListEvent(MeasurementList source, int type, int which,
-          int op) {
+      int op) {
     super(source);
     this.type = type;
     this.which = which;

@@ -32,6 +32,7 @@ import java.io.IOException;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 class Mopac97Reader extends DefaultChemFileReader {
+
   /**
    * Create an MOPAC output reader.
    *
@@ -40,7 +41,7 @@ class Mopac97Reader extends DefaultChemFileReader {
   public Mopac97Reader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the MOPAC output.
    *
@@ -60,7 +61,8 @@ class Mopac97Reader extends DefaultChemFileReader {
       } else if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
         hasSymmetry = true;
       } else if (line.trim().equals("CARTESIAN COORDINATES")
-          || line.indexOf("ORIENTATION OF MOLECULE IN FORCE CALCULATION") >= 0) {
+          || (line.indexOf("ORIENTATION OF MOLECULE IN FORCE CALCULATION")
+            >= 0)) {
         for (int i = 0; i < 3; ++i) {
           line = input.readLine();
         }
@@ -233,16 +235,16 @@ class Mopac97Reader extends DefaultChemFileReader {
 
     String line = input.readLine();
     while ((line != null) && (line.length() > 0)
-            && Character.isDigit(line.charAt(0))) {
+        && Character.isDigit(line.charAt(0))) {
       line = input.readLine();
     }
     return line;
-  }  
-  
+  }
+
   /**
    * Whether the input file has symmetry elements reported.
    */
   private boolean hasSymmetry = false;
-  
+
 }
 

@@ -48,8 +48,8 @@ public class ChemFrame {
 
   // This stuff can vary for each frame in the dynamics:
 
-  private String info;                    // The title or info string for this frame.
-  private Atom[] atoms;               // array of atom types
+  private String info;     // The title or info string for this frame.
+  private Atom[] atoms;    // array of atom types
   private Vector properties = new Vector();
   private int numberAtoms = 0;
 
@@ -57,43 +57,45 @@ public class ChemFrame {
    * Returns whether the atom at the given index is picked.
    */
   boolean isAtomPicked(int index) {
+
     if (index >= pickedAtoms.length) {
-      throw new IllegalArgumentException("isAtomPicked(): atom index to large");
+      throw new IllegalArgumentException(
+          "isAtomPicked(): atom index to large");
     }
     return pickedAtoms[index];
   }
-  
+
   /**
    * Returns the list of distance measurements.
    */
   Vector getDistanceMeasurements() {
     return dlist;
   }
-  
+
   /**
    * List of distance measurements.
    */
   private Vector dlist;
-  
+
   /**
    * Returns the list of angle measurements.
    */
   Vector getAngleMeasurements() {
     return alist;
   }
-  
+
   /**
    * List of angle measurements.
    */
   private Vector alist;
-  
+
   /**
    * Returns the list of dihedral measurements.
    */
   Vector getDihedralMeasurements() {
     return dhlist;
   }
-  
+
   /**
    * List of dihedral measurements.
    */
@@ -165,7 +167,7 @@ public class ChemFrame {
   public ChemFrame(int na) {
     this(na, true);
   }
-  
+
   public ChemFrame(int na, boolean bondsEnabled) {
 
     atoms = new Atom[na];
@@ -224,8 +226,9 @@ public class ChemFrame {
   }
 
   public boolean hasAtomProperty(String description) {
+
     boolean result = false;
-    for (int i=0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberAtoms; ++i) {
       if (atoms[i].hasProperty(description)) {
         result = true;
       }
@@ -320,16 +323,17 @@ public class ChemFrame {
    * Deletes an Atom from the frame
    */
   public void deleteAtom(int atomID) {
-    
+
     clearBounds();
-    for (int i=atomID; i<numberAtoms; i++) {
-      atoms[i] = atoms[i+1];
+    for (int i = atomID; i < numberAtoms; i++) {
+      atoms[i] = atoms[i + 1];
     }
-    atoms[numberAtoms-1] = null;
+    atoms[numberAtoms - 1] = null;
     numberAtoms--;
     try {
       rebond();
     } catch (Exception e) {
+
       // could not rebond atoms
     }
   }
@@ -656,7 +660,7 @@ public class ChemFrame {
     min = null;
     max = null;
   }
-  
+
   /**
    * Find the bounds of this model.
    */
@@ -665,7 +669,7 @@ public class ChemFrame {
     if ((atoms == null) || (numberAtoms <= 0)) {
       return;
     }
-    
+
     min = new Point3f(atoms[0].getPosition());
     max = new Point3f(min);
     for (int i = 1; i < numberAtoms; ++i) {
@@ -748,6 +752,7 @@ public class ChemFrame {
   }
 
   public void setPickedAtoms(boolean[] newPickedAtoms) {
+
     int copyLength = newPickedAtoms.length;
     if (copyLength > pickedAtoms.length) {
       copyLength = pickedAtoms.length;
@@ -794,6 +799,6 @@ public class ChemFrame {
       atoms[i].clearBondedAtoms();
     }
   }
-  
+
 }
 

@@ -50,7 +50,8 @@ class CalculateChemicalShifts extends AbstractAction {
 
     if (shieldings == null) {
       try {
-      	URL url = this.getClass().getClassLoader().getResource(RF);
+        URL url = this.getClass().getClassLoader().getResource(RF);
+
         // URL url = ClassLoader.getSystemResource(RF);
         InputStreamReader isr = new InputStreamReader(url.openStream());
         BufferedReader br = new BufferedReader(isr);
@@ -79,7 +80,7 @@ class CalculateChemicalShifts extends AbstractAction {
   public void setChemFile(ChemFile file, AtomPropsMenu menu) {
 
     setEnabled(false);
-    
+
     propertiesMenu = menu;
     chemFile = file;
     if (chemFile == null) {
@@ -88,19 +89,19 @@ class CalculateChemicalShifts extends AbstractAction {
     if (shieldings == null) {
       return;
     }
-    
+
     boolean foundShielding = false;
     for (int frameIndex = 0;
-          !foundShielding && frameIndex < chemFile.getNumberFrames();
+        !foundShielding && (frameIndex < chemFile.getNumberFrames());
           ++frameIndex) {
       ChemFrame frame = chemFile.getFrame(frameIndex);
       for (int atomIndex = 0;
-            !foundShielding && atomIndex < frame.getNumberOfAtoms();
+          !foundShielding && (atomIndex < frame.getNumberOfAtoms());
             ++atomIndex) {
         Atom atom = frame.getAtomAt(atomIndex);
         Vector properties = atom.getProperties();
         for (int propertyIndex = 0;
-              !foundShielding && propertyIndex < properties.size();
+            !foundShielding && (propertyIndex < properties.size());
               ++propertyIndex) {
           if (properties.elementAt(propertyIndex) instanceof NMRShielding) {
             foundShielding = true;

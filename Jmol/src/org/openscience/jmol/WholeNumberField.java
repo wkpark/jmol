@@ -71,7 +71,7 @@ public class WholeNumberField extends JTextField {
   protected class WholeNumberDocument extends PlainDocument {
 
     public void insertString(int offs, String str, AttributeSet a)
-            throws BadLocationException {
+        throws BadLocationException {
 
       char[] source = str.toCharArray();
       char[] result = new char[source.length];

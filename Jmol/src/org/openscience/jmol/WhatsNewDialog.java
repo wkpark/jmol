@@ -59,13 +59,16 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
     super(fr, "What's New in Jmol", true);
 
     try {
-      URL changeLogURL = this.getClass().getClassLoader().getResource(JmolResourceHandler.getInstance().getString("WhatsNew.changeLogURL"));
+      URL changeLogURL =
+        this.getClass().getClassLoader()
+          .getResource(JmolResourceHandler.getInstance()
+            .getString("WhatsNew.changeLogURL"));
       if (changeLogURL != null) {
         html = new JEditorPane(changeLogURL);
       } else {
-        html = new JEditorPane("text/plain",
-                "Unable to find url '" + JmolResourceHandler.getInstance().getString("WhatsNew.changeLogURL")
-                  + "'.");
+        html = new JEditorPane("text/plain", "Unable to find url '"
+            + JmolResourceHandler.getInstance().getString("WhatsNew.changeLogURL")
+              + "'.");
       }
       html.setEditable(false);
       html.addHyperlinkListener(this);
@@ -92,7 +95,9 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton ok = new JButton(JmolResourceHandler.getInstance().getString("WhatsNew.okLabel"));
+    JButton ok =
+      new JButton(JmolResourceHandler.getInstance()
+        .getString("WhatsNew.okLabel"));
     ok.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

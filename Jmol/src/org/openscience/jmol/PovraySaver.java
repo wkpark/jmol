@@ -163,7 +163,7 @@ public class PovraySaver extends FileSaver {
   }
 
   public void writeFileStart(ChemFile cf, BufferedWriter w)
-          throws IOException {
+      throws IOException {
 
     // POvray files don't work like this! Each frame is a separate file so this method is redundant.
   }
@@ -254,12 +254,12 @@ public class PovraySaver extends FileSaver {
 
     w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
     w.write("light_source { < -zoom, zoom, zoom> "
-            + " rgb <1.0,1.0,1.0> }\n");
+        + " rgb <1.0,1.0,1.0> }\n");
     w.write("\n");
     w.write("\n");
 
     myStyle.writeAtomsAndBondsMacros(w, cf, settings.getAtomSphereFactor(),
-            settings.getBondWidth());
+        settings.getBondWidth());
 
     boolean drawHydrogen = settings.getShowHydrogens();
 
@@ -283,8 +283,7 @@ public class PovraySaver extends FileSaver {
           // don't write out if atom is a hydrogen and !showhydrogens
 
           if (!drawHydrogen
-                  && (cf.getAtomAt(i).getType().getAtomicNumber()
-                    == 1)) {
+              && (cf.getAtomAt(i).getType().getAtomicNumber() == 1)) {
 
             // atom is a hydrogen and should not be written
 
@@ -306,7 +305,7 @@ public class PovraySaver extends FileSaver {
       if (settings.getShowBonds()) {
 
         Hashtable bondsDrawn = new Hashtable();
-        
+
         w.write("\n");
         w.write("\n");
         w.write("//***********************************************\n");
@@ -319,7 +318,8 @@ public class PovraySaver extends FileSaver {
           Enumeration bondIter = atom1.getBondedAtoms();
           while (bondIter.hasMoreElements()) {
             Atom atom2 = (Atom) bondIter.nextElement();
-            if (bondsDrawn.get(atom2) == null || !bondsDrawn.get(atom2).equals(atom1)) {
+            if ((bondsDrawn.get(atom2) == null)
+                || !bondsDrawn.get(atom2).equals(atom1)) {
               myStyle.writeBond(w, atom1, atom2, cf);
               bondsDrawn.put(atom1, atom2);
             }
@@ -368,7 +368,7 @@ public class PovraySaver extends FileSaver {
   protected String povrayColor(java.awt.Color col) {
     float tff = (float) 255.0;
     return "rgb<" + ((float) col.getRed() / tff) + ","
-            + ((float) col.getGreen() / tff) + ","
-              + ((float) col.getBlue() / tff) + ">";
+        + ((float) col.getGreen() / tff) + ","
+          + ((float) col.getBlue() / tff) + ">";
   }
 }

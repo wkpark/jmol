@@ -27,14 +27,14 @@ import java.util.EventListener;
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
 interface ReaderListener extends EventListener {
-  
+
   /**
    * Indicates that a new frame has been read.
    *
    * @param event information about the event.
    */
   public void frameRead(ReaderEvent event);
-  
+
 }
 
 

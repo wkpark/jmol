@@ -77,7 +77,7 @@ public class ConsoleTextArea extends JTextArea {
           }
         } catch (IOException e) {
           JOptionPane.showMessageDialog(null,
-                  "Error reading from BufferedReader: " + e);
+              "Error reading from BufferedReader: " + e);
           System.exit(1);
         }
       }

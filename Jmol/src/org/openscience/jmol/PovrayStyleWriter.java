@@ -199,8 +199,8 @@ public class PovrayStyleWriter {
    * @throws IOException
    */
   public void writeAtomsAndBondsMacros(
-          BufferedWriter w, ChemFrame cf, double atomSphereFactor, float bond_width)
-            throws IOException {
+      BufferedWriter w, ChemFrame cf, double atomSphereFactor, float bond_width)
+        throws IOException {
 
     findAtomTypes(cf);
 
@@ -280,7 +280,7 @@ public class PovrayStyleWriter {
           int[] tempExamples = new int[maxTypes];
           System.arraycopy(typeName, 0, tempNames, 0, oldMaxTypes);
           System.arraycopy(indexOfExampleAtom, 0, tempExamples, 0,
-                  oldMaxTypes);
+              oldMaxTypes);
           typeName = tempNames;
           indexOfExampleAtom = tempExamples;
         }
@@ -299,7 +299,7 @@ public class PovrayStyleWriter {
    * @throws IOException
    */
   public void writeAtom(BufferedWriter w, int atomIndex, ChemFrame cf)
-          throws IOException {
+      throws IOException {
 
     BaseAtomType a = cf.getAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
@@ -336,8 +336,9 @@ public class PovrayStyleWriter {
    *
    * @throws IOException
    */
-  public void writeBond(BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
-          throws IOException {
+  public void writeBond(
+      BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
+        throws IOException {
 
     float c_x = (cf.getXMax() + cf.getXMin()) / 2.0f;
     float c_y = (cf.getYMax() + cf.getYMin()) / 2.0f;
@@ -367,16 +368,15 @@ public class PovrayStyleWriter {
 
     /* The first part of the bond */
 
-    w.write("make_" + getAtomName(atom1) + "_bond( " + taloc_1.x
-            + ", " + taloc_1.y + ", " + taloc_1.z + ", " + (taloc_1.x + dx)
-              + ", " + (taloc_1.y + dy) + ", " + (taloc_1.z + dz) + " )\n");
+    w.write("make_" + getAtomName(atom1) + "_bond( " + taloc_1.x + ", "
+        + taloc_1.y + ", " + taloc_1.z + ", " + (taloc_1.x + dx) + ", "
+          + (taloc_1.y + dy) + ", " + (taloc_1.z + dz) + " )\n");
 
     /* The second part of the bond */
 
-    w.write("make_" + getAtomName(atom2) + "_bond( " + taloc_2.x
-            + ", " + taloc_2.y + ", " + taloc_2.z + ", " + (taloc_2.x - dx)
-              + ", " + (taloc_2.y - dy) + ", " + (taloc_2.z - dz) + " )\n"
-                + "\n");
+    w.write("make_" + getAtomName(atom2) + "_bond( " + taloc_2.x + ", "
+        + taloc_2.y + ", " + taloc_2.z + ", " + (taloc_2.x - dx) + ", "
+          + (taloc_2.y - dy) + ", " + (taloc_2.z - dz) + " )\n" + "\n");
   }
 
   /**
@@ -403,8 +403,8 @@ public class PovrayStyleWriter {
     java.awt.Color col = at.getColor();
     float tff = (float) 255.0;
     return "rgb < " + ((float) col.getRed() / tff) + ", "
-            + ((float) col.getGreen() / tff) + ", "
-              + ((float) col.getBlue() / tff) + ">";
+        + ((float) col.getGreen() / tff) + ", "
+          + ((float) col.getBlue() / tff) + ">";
   }
 
   /**

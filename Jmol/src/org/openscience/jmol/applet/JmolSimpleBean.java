@@ -31,7 +31,7 @@ import org.openscience.jmol.AtomTypeSet;
  * Subset version of JMol which appears as a componant and can be controlled with strings.
 **/
 public class JmolSimpleBean extends java.awt.Panel
-        implements java.awt.event.ComponentListener {
+    implements java.awt.event.ComponentListener {
 
   private DisplaySettings settings = new DisplaySettings();
   private DisplayPanel display;
@@ -90,8 +90,8 @@ public class JmolSimpleBean extends java.awt.Panel
 
     if (cf.getNumberFrames() > 1) {
       animPanel =
-              new java.awt
-                .Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+          new java.awt
+            .Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
       java.awt.Button btn = new java.awt.Button("Prev");
       btn.setActionCommand("PREV");
       btn.addActionListener(display);
@@ -109,8 +109,8 @@ public class JmolSimpleBean extends java.awt.Panel
     }
     if ((customViews != null) && (customViews.length() > 0)) {
       customViewPanel =
-              new java.awt
-                .Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+          new java.awt
+            .Panel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
       java.util.StringTokenizer st =
         new java.util.StringTokenizer(customViews);
       try {
@@ -162,7 +162,7 @@ public class JmolSimpleBean extends java.awt.Panel
       ats1.load(propertiesURL.openStream());
     } catch (java.io.IOException e1) {
       System.err.println("Error loading atom properties from URL '"
-              + propertiesURL + "': " + e1);
+          + propertiesURL + "': " + e1);
     }
 
     typesReady = true;
@@ -182,7 +182,7 @@ public class JmolSimpleBean extends java.awt.Panel
       ats1.load(url1.openStream());
     } catch (java.io.IOException e1) {
       System.err.println("Error loading atom properties from URL '"
-              + propertiesURL + "': " + e1);
+          + propertiesURL + "': " + e1);
     }
 
     typesReady = true;
@@ -196,7 +196,7 @@ public class JmolSimpleBean extends java.awt.Panel
       ats1.load(is);
     } catch (java.io.IOException e1) {
       System.err.println("Error loading atom properties from Stream'"
-              + is.toString() + "': " + e1);
+          + is.toString() + "': " + e1);
     }
 
     typesReady = true;
@@ -317,7 +317,7 @@ public class JmolSimpleBean extends java.awt.Panel
       settings.setAtomDrawMode(DisplaySettings.WIREFRAME);
     } else {
       throw new IllegalArgumentException("Unknown atom rendering style: "
-              + style);
+          + style);
     }
     display.displaySettingsChanged();
     display.repaint();
@@ -354,7 +354,7 @@ public class JmolSimpleBean extends java.awt.Panel
       settings.setBondDrawMode(DisplaySettings.WIREFRAME);
     } else {
       throw new IllegalArgumentException("Unknown bond rendering style: "
-              + style);
+          + style);
     }
     display.displaySettingsChanged();
     display.repaint();
@@ -394,7 +394,7 @@ public class JmolSimpleBean extends java.awt.Panel
       settings.setLabelMode(DisplaySettings.NUMBERS);
     } else {
       throw new IllegalArgumentException("Unknown label rendering style: "
-              + style);
+          + style);
     }
     display.displaySettingsChanged();
     display.repaint();
@@ -533,7 +533,7 @@ public class JmolSimpleBean extends java.awt.Panel
 
     if ((colourName == null) || (colourName.length() != 7)) {
       throw new IllegalArgumentException("Colour name: " + colourName
-              + " is either null ot not seven chars long");
+          + " is either null ot not seven chars long");
     }
     java.awt.Color colour = null;
     try {

@@ -26,22 +26,22 @@ package org.openscience.jmol;
  * @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class ReaderProgress implements ReaderListener {
-  
+
   /**
    * Used for reporting the number of frames read.
    */
   private int frameCount = 0;
-  
+
   /**
    * Prefix for the progress message.
    */
   private String prefix = "Frame ";
-  
+
   /**
    * Used to display the progress message.
    */
   private StatusDisplay statusDisplay;
-  
+
   /**
    * Creates a progress monitor which displays messages on the given status
    * display.
@@ -51,7 +51,7 @@ public class ReaderProgress implements ReaderListener {
   public ReaderProgress(StatusDisplay statusDisplay) {
     this.statusDisplay = statusDisplay;
   }
-  
+
   /**
    * Sets the name of the file being read. This information is included in the
    * progress message.
@@ -59,13 +59,14 @@ public class ReaderProgress implements ReaderListener {
    * @param fileName the name of the file being read.
    */
   public void setFileName(String fileName) {
+
     if (fileName == null) {
       this.prefix = "Frame ";
     } else {
       this.prefix = fileName + ": frame ";
     }
   }
-  
+
   /**
    * Updates status when a new frame is read.
    *
@@ -73,10 +74,10 @@ public class ReaderProgress implements ReaderListener {
    */
   public void frameRead(ReaderEvent event) {
     ++frameCount;
-    
+
     statusDisplay.setStatusMessage(prefix + frameCount + " read.");
   }
-  
+
 }
 
 

@@ -58,7 +58,7 @@ public class AtomRenderer {
                                                                                                                                                                                                                                                                    * @param settings the display settings
    */
   public void paint(Graphics gc, Atom atom, boolean picked,
-          DisplaySettings settings) {
+      DisplaySettings settings) {
 
     int x = (int) atom.getScreenPosition().x;
     int y = (int) atom.getScreenPosition().y;
@@ -94,7 +94,7 @@ public class AtomRenderer {
         ballImages.put(atom.getType().getColor(), shadedImage);
       }
       gc.drawImage(shadedImage, x - radius, y - radius, diameter, diameter,
-              imageComponent);
+          imageComponent);
       break;
 
     default :
@@ -115,21 +115,21 @@ public class AtomRenderer {
       gc.setColor(settings.getTextColor());
 
       switch (settings.getLabelMode()) {
-      case DisplaySettings.SYMBOLS:
-        if (atom.getType() != null && atom.getType().getRoot() != null) {
+      case DisplaySettings.SYMBOLS :
+        if ((atom.getType() != null) && (atom.getType().getRoot() != null)) {
           j = fontMetrics.stringWidth(atom.getType().getRoot());
           gc.drawString(atom.getType().getRoot(), x - j / 2, y + k / 2);
         }
         break;
 
-      case DisplaySettings.TYPES:
-        if (atom.getType() != null && atom.getType().getName() != null) {
+      case DisplaySettings.TYPES :
+        if ((atom.getType() != null) && (atom.getType().getName() != null)) {
           j = fontMetrics.stringWidth(atom.getType().getName());
           gc.drawString(atom.getType().getName(), x - j / 2, y + k / 2);
         }
         break;
 
-      case DisplaySettings.NUMBERS:
+      case DisplaySettings.NUMBERS :
         s = Integer.toString(atom.getAtomNumber() + 1);
         j = fontMetrics.stringWidth(s);
         gc.drawString(s, x - j / 2, y + k / 2);
@@ -173,7 +173,7 @@ public class AtomRenderer {
    * @returns an image of a shaded sphere.
    */
   private static Image sphereSetup(Color ballColor,
-          DisplaySettings settings) {
+      DisplaySettings settings) {
 
     float v1[] = new float[3];
     float v2[] = new float[3];
@@ -214,11 +214,11 @@ public class AtomRenderer {
             float len5 = 100.0f * len4;
             len5 = Math.max(len5, 0.0f);
             red2 = (int) ((float) (ballColor.getRed() * 155) * len2 + 100.0
-                    + len5);
+                + len5);
             green2 = (int) ((float) (ballColor.getGreen() * 155) * len2
-                    + 100.0 + len5);
+                + 100.0 + len5);
             blue2 = (int) ((float) (ballColor.getBlue() * 155) * len2 + 100.0
-                    + len5);
+                + len5);
             red2 = Math.min(red2, 255);
             green2 = Math.min(green2, 255);
             blue2 = Math.min(blue2, 255);
@@ -231,7 +231,8 @@ public class AtomRenderer {
         }
       }
     }
-    return imageComponent.createImage(new MemoryImageSource(i, i, model, 0, i));
+    return imageComponent.createImage(new MemoryImageSource(i, i, model, 0,
+        i));
   }
 
   /**

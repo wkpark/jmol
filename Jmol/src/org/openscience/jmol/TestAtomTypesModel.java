@@ -61,7 +61,7 @@ public class TestAtomTypesModel extends TestCase {
 
     atm1 = new AtomTypesModel();
     at1 = BaseAtomType.get("type1", "root1", 0, 0.0, 0.0, 0.0,
-            new Color(0, 0, 0));
+        new Color(0, 0, 0));
     atm2 = new AtomTypesModel();
     atm2.updateAtomType(at1);
   }

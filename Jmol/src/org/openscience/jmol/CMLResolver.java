@@ -82,7 +82,7 @@ public class CMLResolver implements EntityResolver2 {
    * @return the InputSource to the DTD or null if the resolution failed.
    */
   public InputSource resolveEntity(String publicId, String systemId) {
-    
+
     InputSource input = null;
     systemId = systemId.toLowerCase();
     if ((systemId.indexOf("cml.dtd") >= 0)

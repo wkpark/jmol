@@ -42,7 +42,7 @@ public class TestGaussian98Reader extends TestCase {
       String sampleFileName = "samples/g98.out";
       if (System.getProperty("jmol.home") != null) {
         sampleFileName = System.getProperty("jmol.home") + "/"
-                + sampleFileName;
+            + sampleFileName;
       }
       reader1 = new Gaussian98Reader(new FileReader(sampleFileName));
     } catch (IOException ex) {
@@ -56,11 +56,11 @@ public class TestGaussian98Reader extends TestCase {
       ChemFile cf1 = reader1.read();
       assertEquals(8, cf1.getNumberFrames());
       assertEquals(
-              "SCF Done:  E(UHF) =  -304.909591195     A.U. after   38 cycles",
-                cf1.getFrame(0).getInfo());
+          "SCF Done:  E(UHF) =  -304.909591195     A.U. after   38 cycles",
+            cf1.getFrame(0).getInfo());
       assertEquals(
-              "SCF Done:  E(UHF) =  -304.912139784     A.U. after    1 cycles",
-                cf1.getFrame(7).getInfo());
+          "SCF Done:  E(UHF) =  -304.912139784     A.U. after    1 cycles",
+            cf1.getFrame(7).getInfo());
     } catch (Exception ex) {
       ex.printStackTrace();
       fail(ex.toString());

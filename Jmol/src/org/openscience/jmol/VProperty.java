@@ -28,7 +28,7 @@ package org.openscience.jmol;
 public class VProperty extends PhysicalProperty {
 
   public static final String DESCRIPTION = "Vector";
-  
+
   /**
    * Constructor for VProperty
    * @param v The 3-vector containing the VProperty

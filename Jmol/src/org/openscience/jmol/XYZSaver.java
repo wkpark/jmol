@@ -40,7 +40,7 @@ public class XYZSaver extends FileSaver {
   }
 
   public void writeFileStart(ChemFile cf, BufferedWriter w)
-          throws IOException {
+      throws IOException {
 
     // No preamble for XYZ Files
   }
@@ -83,8 +83,8 @@ public class XYZSaver extends FileSaver {
 
         double[] pos = cf.getAtomCoords(i);
         st = st + "\t" + new Double(pos[0]).toString() + "\t"
-                + new Double(pos[1]).toString() + "\t"
-                  + new Double(pos[2]).toString();
+            + new Double(pos[1]).toString() + "\t"
+              + new Double(pos[2]).toString();
 
         if (writecharge) {
           Charge ct = (Charge) a.getProperty(Charge.DESCRIPTION);

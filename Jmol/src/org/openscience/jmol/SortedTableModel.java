@@ -153,10 +153,10 @@ public class SortedTableModel extends ListeningTableModel {
     sort();
     super.tableChanged(new TableModelEvent(this));
     changeSupport.firePropertyChange("sortColumn", oldSortColumn,
-            newSortColumn);
+        newSortColumn);
     Boolean newSortDirection = new Boolean(ascending);
     changeSupport.firePropertyChange("sortDirection", oldSortDirection,
-            newSortDirection);
+        newSortDirection);
   }
 
   /**

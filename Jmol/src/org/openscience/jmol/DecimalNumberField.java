@@ -69,7 +69,7 @@ public class DecimalNumberField extends JTextField {
   protected class DecimalNumberDocument extends PlainDocument {
 
     public void insertString(int offs, String str, AttributeSet a)
-            throws BadLocationException {
+        throws BadLocationException {
 
       char[] source = str.toCharArray();
       char[] result = new char[source.length];
@@ -83,9 +83,9 @@ public class DecimalNumberField extends JTextField {
           result[j++] = source[i];
         } else {
           toolkit.beep();
-          System.err.println(
-                  "Attempting to insert illegal character in decimal: "
-                    + source[i]);
+          System.err
+              .println("Attempting to insert illegal character in decimal: "
+                + source[i]);
         }
       }
       super.insertString(offs, new String(result, 0, j), a);

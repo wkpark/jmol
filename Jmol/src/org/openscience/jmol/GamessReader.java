@@ -62,7 +62,7 @@ public class GamessReader extends DefaultChemFileReader {
   public GamessReader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the GAMESS output.
    *
@@ -134,7 +134,7 @@ public class GamessReader extends DefaultChemFileReader {
    * @exception IOException  if an I/O error occurs
    */
   private void readCoordinates(ChemFrame frame, boolean unitsAreBohr)
-          throws IOException {
+      throws IOException {
 
     double unitsScaling = 1.0;
     if (unitsAreBohr) {
@@ -190,8 +190,7 @@ public class GamessReader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readFrequencies(ChemFrame frame)
-          throws IOException {
+  private void readFrequencies(ChemFrame frame) throws IOException {
 
     String line;
     line = input.readLine();
@@ -204,9 +203,10 @@ public class GamessReader extends DefaultChemFileReader {
       line = input.readLine();
     }
     line = input.readLine();
-    while (line != null && line.indexOf("FREQUENCY:") >= 0) {
+    while ((line != null) && (line.indexOf("FREQUENCY:") >= 0)) {
       int colonIndex = line.indexOf(':');
-      StringReader freqValRead = new StringReader(line.substring(colonIndex+1));
+      StringReader freqValRead = new StringReader(line.substring(colonIndex
+                                   + 1));
       StreamTokenizer token = new StreamTokenizer(freqValRead);
       Vector vibs = new Vector();
       while (token.nextToken() != StreamTokenizer.TT_EOF) {
@@ -235,6 +235,7 @@ public class GamessReader extends DefaultChemFileReader {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
+
         // ignore first token
         token.nextToken();
 
@@ -255,6 +256,7 @@ public class GamessReader extends DefaultChemFileReader {
         line = input.readLine();
         vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
+
         // ignore first token
         token.nextToken();
 
@@ -268,6 +270,7 @@ public class GamessReader extends DefaultChemFileReader {
         line = input.readLine();
         vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
+
         // ignore first token
         token.nextToken();
 
@@ -285,10 +288,10 @@ public class GamessReader extends DefaultChemFileReader {
       }
       for (int i = 0; i < 15; ++i) {
         line = input.readLine();
-        if (line != null && line.indexOf("FREQUENCY:") >= 0) {
+        if ((line != null) && (line.indexOf("FREQUENCY:") >= 0)) {
           break;
         }
       }
     }
-  }  
+  }
 }

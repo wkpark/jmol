@@ -25,7 +25,7 @@ package org.openscience.jmol;
 public class Charge extends PhysicalProperty {
 
   public static final String DESCRIPTION = "Atomic Charge";
-  
+
   /**
    * Creates an atomic charge property.
    *

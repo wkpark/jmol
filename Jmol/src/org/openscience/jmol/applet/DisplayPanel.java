@@ -38,8 +38,8 @@ import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.ChemFrameRenderer;
 
 public class DisplayPanel extends Canvas
-        implements java.awt.event.ComponentListener,
-          java.awt.event.ActionListener {
+    implements java.awt.event.ComponentListener,
+      java.awt.event.ActionListener {
 
   private String message = "Waiting for structure...";
   private DisplaySettings settings;
@@ -183,13 +183,13 @@ public class DisplayPanel extends Canvas
     try {
       rotTheta = (float) FortranFormat.atof(st.nextToken());
       Matrix4d matrix = new Matrix4d();
-      matrix.rotY(rotTheta*Math.PI/180.0);
+      matrix.rotY(rotTheta * Math.PI / 180.0);
       amat.mul(matrix, amat);
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotX(rotTheta*Math.PI/180.0);
+      matrix.rotX(rotTheta * Math.PI / 180.0);
       amat.mul(matrix, amat);
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotZ(rotTheta*Math.PI/180.0);
+      matrix.rotZ(rotTheta * Math.PI / 180.0);
       amat.mul(matrix, amat);
     } catch (NoSuchElementException E) {
     }
@@ -680,8 +680,8 @@ public class DisplayPanel extends Canvas
         mat.setIdentity();
         Matrix4d matrix = new Matrix4d();
         matrix.setTranslation(new Vector3d(-(useMinBound.x + useMaxBound.x)
-                / 2, -(useMinBound.y + useMaxBound.y) / 2,
-                  -(useMinBound.z + useMaxBound.z) / 2));
+            / 2, -(useMinBound.y + useMaxBound.y) / 2,
+              -(useMinBound.z + useMaxBound.z) / 2));
         mat.add(matrix);
         mat.mul(amat, mat);
         matrix.setIdentity();
@@ -692,7 +692,7 @@ public class DisplayPanel extends Canvas
         mat.mul(tmat, mat);
         matrix.setZero();
         matrix.setTranslation(new Vector3d(drawWidth / 2, drawHeight / 2,
-                drawWidth / 2));
+            drawWidth / 2));
         mat.add(matrix);
         matIsValid = true;
       }

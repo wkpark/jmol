@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -76,6 +77,7 @@ public class GhemicalMMReader extends DefaultChemFileReader {
       if ("!Header".equals(command)) {
       } else if ("!Info".equals(command)) {
       } else if ("!Atoms".equals(command)) {
+
         // determine number of atoms to read
         numberOfAtoms = Integer.parseInt(st.nextToken());
         atoms = new int[numberOfAtoms];
@@ -83,20 +85,21 @@ public class GhemicalMMReader extends DefaultChemFileReader {
         atomys = new float[numberOfAtoms];
         atomzs = new float[numberOfAtoms];
 
-        for (int i=0; i<numberOfAtoms; i++) {
+        for (int i = 0; i < numberOfAtoms; i++) {
           line = input.readLine();
           StringTokenizer atomInfoFields = new StringTokenizer(line);
           int atomID = Integer.parseInt(atomInfoFields.nextToken());
           atoms[atomID] = Integer.parseInt(atomInfoFields.nextToken());
         }
       } else if ("!Bonds".equals(command)) {
+
         // determine number of bonds to read
         numberOfBonds = Integer.parseInt(st.nextToken());
         bondatomid1 = new int[numberOfAtoms];
         bondatomid2 = new int[numberOfAtoms];
         bondorder = new int[numberOfAtoms];
 
-        for (int i=0; i<numberOfBonds; i++) {
+        for (int i = 0; i < numberOfBonds; i++) {
           line = input.readLine();
           StringTokenizer bondInfoFields = new StringTokenizer(line);
           bondatomid1[i] = Integer.parseInt(bondInfoFields.nextToken());
@@ -109,38 +112,41 @@ public class GhemicalMMReader extends DefaultChemFileReader {
           } else if ("T".equals(order)) {
             bondorder[i] = 3;
           } else {
+
             // ignore order, i.e. set to single
             bondorder[i] = 1;
           }
         }
       } else if ("!Coord".equals(command)) {
-        for (int i=0; i<numberOfAtoms; i++) {
+        for (int i = 0; i < numberOfAtoms; i++) {
           line = input.readLine();
           StringTokenizer atomInfoFields = new StringTokenizer(line);
           int atomID = Integer.parseInt(atomInfoFields.nextToken());
           float x = Float.valueOf(atomInfoFields.nextToken()).floatValue();
           float y = Float.valueOf(atomInfoFields.nextToken()).floatValue();
           float z = Float.valueOf(atomInfoFields.nextToken()).floatValue();
-          atomxs[atomID] = x*(float)10; // convert to Angstrom
-          atomys[atomID] = y*(float)10;
-          atomzs[atomID] = z*(float)10;
+          atomxs[atomID] = x * (float) 10;    // convert to Angstrom
+          atomys[atomID] = y * (float) 10;
+          atomzs[atomID] = z * (float) 10;
         }
       } else if ("!Charges".equals(command)) {
       } else if ("!End".equals(command)) {
+
         // Store atoms
         for (int i = 0; i < numberOfAtoms; i++) {
-        frame.addAtom(atoms[i], atomxs[i], atomys[i], atomzs[i]);
+          frame.addAtom(atoms[i], atomxs[i], atomys[i], atomzs[i]);
         }
 
         // Store bonds
         frame.clearBonds();
         for (int i = 0; i < numberOfBonds; i++) {
-        frame.addBond(bondatomid1[i], bondatomid2[i], bondorder[i]);
+          frame.addBond(bondatomid1[i], bondatomid2[i], bondorder[i]);
         }
 
         fireFrameRead();
         return frame;
       } else {
+
         // disregard this line
       }
 

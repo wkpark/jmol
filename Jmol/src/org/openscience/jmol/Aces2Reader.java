@@ -61,7 +61,7 @@ public class Aces2Reader extends DefaultChemFileReader {
   public Aces2Reader(Reader input) {
     super(input);
   }
-  
+
   /**
    * Read the Aces2 output.
    *
@@ -121,8 +121,7 @@ public class Aces2Reader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readCoordinates(ChemFrame frame)
-          throws IOException {
+  private void readCoordinates(ChemFrame frame) throws IOException {
 
     String line;
     line = input.readLine();
@@ -176,8 +175,7 @@ public class Aces2Reader extends DefaultChemFileReader {
    * @param frame  the destination ChemFrame
    * @exception IOException  if an I/O error occurs
    */
-  private void readFrequencies(ChemFrame frame)
-          throws IOException {
+  private void readFrequencies(ChemFrame frame) throws IOException {
 
     String line;
     line = input.readLine();
@@ -220,19 +218,19 @@ public class Aces2Reader extends DefaultChemFileReader {
             v[0] = token.nval;
           } else {
             throw new IOException(
-                    "Error reading frequencies: first coordinate");
+                "Error reading frequencies: first coordinate");
           }
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             v[1] = token.nval;
           } else {
             throw new IOException(
-                    "Error reading frequencies: second coordinate");
+                "Error reading frequencies: second coordinate");
           }
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             v[2] = token.nval;
           } else {
             throw new IOException(
-                    "Error reading frequencies: third coordinate");
+                "Error reading frequencies: third coordinate");
           }
           ((Vibration) currentVibs.elementAt(j)).addAtomVector(v);
         }
@@ -249,5 +247,5 @@ public class Aces2Reader extends DefaultChemFileReader {
         break;
       }
     }
-  }  
+  }
 }

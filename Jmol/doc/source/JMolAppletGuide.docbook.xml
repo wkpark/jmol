@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<book>
+  <bookinfo>
+    <title>JMol Applet Documentation</title>
+  </bookinfo>
+  
+  <chapter>
+    <title>Introduction</title>
+    <para>
+      The JMol Applet is an offshoot of the main Jmol application, allowing
+      the display of 3D chemical information from within any Java 1.1 enabled
+      browser.
+    </para>
+  </chapter>
+  
+  <chapter>
+    <title>Jmol Applet Usage</title>
+    <section>
+      <title>Embedding the Jmol Applet in a Web Page</title>
+      <para>
+        To embed the Jmol Applet in a web page, you need a number of 
+        java "jar" files.  These contain the JmolApplet program.  The first two
+        files are required for the applet to function at all, while the other
+        two are only required for loading CML formatted chemical data files.
+      </para>
+      <para>
+        The core jar files are:
+      <itemizedlist>
+      <listitem><para>JmolApplet.jar</para></listitem>
+      <listitem><para>vecmath1.1-1.12.jar</para></listitem>
+      </itemizedlist>
+      </para>
+      <para>
+        The CML jar files are:
+      <itemizedlist>
+      <listitem><para>sax.jar</para></listitem>
+      <listitem><para>aelfred.jar</para></listitem>
+      </itemizedlist>
+      </para>
+      <para>
+        These need to be somewhere on your website where they can be read by
+        someone surfing your site.  Next, insert the following code into the
+        relevant part of your web page:
+      </para>
+      <para>
+        &lt APPLET CODE="org.openscience.miniJmol.JmolApplet.class"
+          ARCHIVE="JmolApplet.jar,vecmath1.1-1.12.jar"
+          WIDTH=400 HEIGHT=400 ALIGN="LEFT" &gt
+          &lt PARAM NAME=MODEL VALUE="caffeine.xyz" &gt
+          &lt PARAM NAME=FORMAT VALUE="XYZ" &gt
+          &lt PARAM NAME=ATOMTYPES VALUE="Atomtypes" &gt
+        &lt /APPLET &gt
+      </para>
+      <para>
+        Here, the ARCHIVE points to where the jar files are located on your
+        website.  You also need to add sax.jar and aelfred.jar for CML files.
+        The WIDTH, HEIGHT and ALIGN parameters are all part of the APPLET tag,
+        and are documented in any HTML reference book.  WIDTH and HEIGHT will
+        determine the size of the box that Jmol has to play with.  The ALIGN
+        tag can be set top a number of different values, but the most useful
+        are LEFT (in which case text wraps around the right side of Jmol),
+        RIGHT (in which case text wraps around the left side of Jmol),
+        and BASELINE (in which case there will be no text to the left or right
+        of the Jmol applet.
+      </para>
+      <para>
+        The tags PARAM NAME= VALUE= combinations are passed directly to Jmol,
+        and are not interpreted by the web browser.  There are a number of
+        different parameters, which are described in the next section.  The
+        most important ones are MODEL, FORMAT and ATOMTYPES.  For many types
+        of atom files, it is only necessary to specify the MODEL parameter,
+        which should be the URL of the chemical file that you wish to display.
+        Supported formats are:
+        <itemizedlist>
+        <listitem><para>CML</para></listitem>
+        <listitem><para>Gaussian 98</para></listitem>
+        <listitem><para>PDB</para></listitem>
+        <listitem><para>XYZ</para></listitem>
+        </itemizedlist>
+      </para>
+      <para>
+        Additionally, the FORMAT parameter can be set to CMLSTRING, in which
+        case the MODEL parameter is assumed to contain the entire CML file,
+        not a URL.  Example: &lt PARAM NAME=FORMAT VALUE="CMLSTRING" &gt
+      </para>
+      <para>
+        Previous versions of the Jmol Applet required the ATOMTYPES parameter
+        to be set, to define the size and color that the various different
+        atomic species would be drawn.  Now, if the ATOMTYPES parameter is
+        not specified, a default set of colors and sizes are used.
+        However, it is always useful to be able to adjust how atoms appear on
+        the screen, or to add elements which are not included in the default
+        atom definitions.
+      </para>
+      <para>
+        To specify your own atomtypes, simply set the ATOMTYPES parameter to
+        the URL of a file containing the atom type information.  This file
+        is a text file, with a line for each atom type definition.  Columns
+        are seperated by whitespace (tabs and/or spaces).  In order, the columns
+        are: AtomType(1), BaseAtomType(2), AtomicNumber(3), Mass(4), vanDerWallRadius(5), covalentRadius(6), ColorRed(7), ColorGreen(8), ColorBlue(9).
+      </para>
+      <para>
+        The AtomType column contains the name of the atom type in the same
+        format as contained in your data file.  The BaseAtomType then contains
+        the atom symbol for the type.  The color that the atom will be drawn
+        in is determined by the 3 color columns.  These values should be in
+        the range 0 to 255.  Here are some sample lines out of the atom types
+        file:
+        <itemizedlist>
+        <listitem><para>C1 C 6 12.011 1.50 0.77 255 0 0</para></listitem>
+        <listitem><para>C2 C 6 12.011 1.65 0.77 0 255 0</para></listitem>
+        <listitem><para>C3 C 6 12.011 1.65 0.77 0 0 255</para></listitem>
+        <listitem><para>He He 2 4.003 1.40 0.93 255 255 255</para></listitem>
+        </itemizedlist>
+        Here, the three different types C1, C2 and C3 all represent carbon.
+        But if you want to draw sp1, sp2 and sp3 bonded atoms in different
+        colors, you can change your atom file to have C1, C2 and C3
+        representing the different bond hybridisations.  The sample atom
+        file above would show C sp1 in red, C sp2 in green and C sp3 in blue.
+        Helium atoms would be shown in white.
+      </para>
+    </section>
+    <title>Jmol Applet Parameters</title>
+    <section>
+      <para>
+        The complete list of Jmol Applet parameters (as of 16th September 2000) is:
+        <itemizedlist>
+        <listitem><para>BCOLOUR - The color of the background</para></listitem>
+        <listitem><para>FCOLOUR - The color of the labels, etc.</para></listitem>
+        <listitem><para>STYLE - The rendering style, can be SHADED, WIREFRAME or QUICKDRAW</para></listitem>
+        <listitem><para>WIREFRAMEROTATION - Can be ON or OFF, default is ON</para></listitem>
+        <listitem><para>BONDS - Display bonds ?  can be ON, OFF or NEVER.</para></listitem>
+        <listitem><para>ZOOM - How much the initial zoom is, defaults to 1</para></listitem>
+        <listitem><para>ATOMSIZE - A factor to increase the size of the atoms (not the same as ZOOM), defaults to 1</para></listitem>
+        <listitem><para>CUSTOMVIEWS - Contains a formatted string which sets up buttons for custom rotations, zooms and frame selection.</para></listitem>
+        </itemizedlist>
+      </para>
+      <para>
+        STYLE - specifies the initial rendering style, which can be
+        subsequently changed by the user.
+      </para>
+      <para>
+        BONDS - specifies whether bonds should be initially shown or not.  The
+        special value NEVER means that bonds can not be toggled by the user.
+        This value is available, since large chemical files may be slow to
+        load because of Jmol attempting to calculate the atomic bonds.
+      </para>
+      <para>
+        ZOOM - specifies a factor for the initial zoom.  However, this seems
+        to be a little bit buggy.  A value of 1.2 will give you more zoom,
+        while 0.8 will give you less zoom, etc.  However, value far away from
+        1.0 may mess up the perspective a little bit.
+      </para>
+      <para>
+        ATOMSIZE - specifies a factor for increasing the size of rendered atoms.
+        This does not change the bond sizes, or do any zooming.
+      </para>
+      <para>
+        CUSTOMVIEWS - specifies a list of buttons that will appear at the top
+        of the Jmol box.  Each of these buttons can do custom zooming, rotating,
+        translating and frame selection.  The format of this parameter is:
+      </para>
+      <para>
+        VALUE="Button 1 Name{Button1Action1;Button1Action2;...}Button 2 Name{Button2Action1;...}..."
+      </para>
+      <para>
+        The text "Button 1 Name" will appear on the button.  This text may
+        have spaces in it, but cannot contain the { or } characters.
+        The set of actions within the braces will be performed when the button
+        is pressed.  The actions must be separated by semicolons, and cannot
+        have spaces embedded in them.  Valid actions are:
+        <itemizedlist>
+        <listitem><para>HOME - Resets rotation, translation and zoom to the original values</para></listitem>
+        <listitem><para>FRAME=frameno - Selects frame "frameno" from a multi-frame chemical file</para></listitem>
+        <listitem><para>ZOOM=factor - Zooms by the specified factor</para></listitem>
+        <listitem><para>TRANSLATE=dx,dy - Translates the view by (dx,dy).</para></listitem>
+        <listitem><para>ROTATE=ry1,rx,ry2 - Rotates the frame around the y-axis by ry1 degrees, followed by rotate around x-axis of ry degrees, followed by another y-axis rotation of ry2 degrees.  This allows for any rotation to be specified.</para></listitem>
+        </itemizedlist>
+      </para>
+      <section>
+        <title>Atom Style</title>
+        <section>
+          <title>Quick Draw</title>
+          <para>
+            Views molecules without shading. Preferred on slower
+            computers.
+          </para>
+        </section>
+        <section>
+          <title>Shading</title>
+          <para>
+            Views molecules with shading. Since this takes more
+            calculations, this only works well on faster computers.
+          </para>
+        </section>
+        <section>
+          <title>Wire Frame</title>	  
+        </section>
+      </section>      
+      <section>
+        <title>Bond Style</title>
+        <section>
+          <title>Quick Draw</title>	  
+        </section>
+        <section>
+          <title>Shading</title>	  
+        </section>
+        <section>
+          <title>Wire Frame</title>	  
+        </section>
+        <section>
+          <title>Lines</title>	  
+        </section>
+      </section>
+      <section>
+        <title>Atom Labels</title>
+        <section>
+          <title>No Atom Labels</title>	  
+          <para>
+            View the atoms without any label.
+          </para>
+        </section>
+        <section>
+          <title>Atomic Symbols</title>	  
+          <para>
+            Label the atoms with their symbol.
+          </para>
+        </section>
+        <section>
+          <title>Atom Types</title>
+          <para>
+            Label the atoms with their atom type.
+          </para>
+        </section>
+        <section>
+          <title>Atom Numbers</title>	  
+        </section>
+      </section>
+      <section>
+        <title>Property Labels</title>
+        <section>
+          <title>None</title>	  
+        </section>
+      </section>
+    </section>
+  </chapter>
+
+</book>

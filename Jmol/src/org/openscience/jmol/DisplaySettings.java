@@ -544,7 +544,7 @@ public class DisplaySettings {
    * the atoms and out of the plane.
    */
   private float[] lightSource = {
-    1.0f, -1.0f, 2.0f
+    -1.0f, -1.0f, 2.0f
   };
 
   /**

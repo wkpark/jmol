@@ -502,7 +502,8 @@ public class AtomShape implements Shape {
       else
         g.drawPolygon(xBondRectPoints, yBondRectPoints, 4);
 
-      if (color1Outline != null) {
+      // don't draw outlines if we did not fill
+      if (boolFill && color1Outline != null) {
         int xOutlineTop, yOutlineTop, xOutlineBot, yOutlineBot;
         if (color1Outline.equals(color2Outline) ||
             !isVisible(x1Top, y1Top, xEdgeTop, yEdgeTop, xMidTop, yMidTop)) {

@@ -547,8 +547,8 @@ public final class Atom implements Bspt.Tuple {
   }
 
   byte lookupSpecialAtomID(String atomName) {
-    atomName = generatePrimeAtomName(atomName);
     if (atomName != null) {
+      atomName = generatePrimeAtomName(atomName);
       Integer boxedAtomID = (Integer)htAtom.get(atomName);
       if (boxedAtomID != null)
         return (byte)(boxedAtomID.intValue());

@@ -227,7 +227,7 @@ class TransformManager {
       sb.append(" ");
       sb.append(tY);
     }
-    return "" + sb;
+    return "" + sb + ";";
   }
 
   /*
@@ -305,40 +305,37 @@ class TransformManager {
     if (rY != 0) {
       sb.append("; rotate y");
       truncate1(sb, rY);
+      sb.append(';');
     }
     if (rZ2 != 0) {
       sb.append("; rotate z");
       truncate1(sb, rZ2);
     }
-    sb.append(";");
     int zoom = getZoomPercent();
     if (zoom != 100) {
-      sb.append(" zoom ");
+      sb.append("; zoom ");
       sb.append(zoom);
-      sb.append(";");
     }
     int tX = getTranslationXPercent();
     if (tX != 0) {
-      sb.append(" translate x ");
+      sb.append("; translate x ");
       sb.append(tX);
-      sb.append(";");
     }
     int tY = getTranslationYPercent();
     if (tY != 0) {
-      sb.append(" translate y ");
+      sb.append("; translate y ");
       sb.append(tY);
-      sb.append(";");
     }
-    return "" + sb;
+    return "" + sb + ';';
   }
 
   static void truncate0(StringBuffer sb, float val) {
-    sb.append(" ");
+    sb.append(' ');
     sb.append(Math.round(val));
   }
 
   static void truncate1(StringBuffer sb, float val) {
-    sb.append(" ");
+    sb.append(' ');
     sb.append(Math.round(val * 10) / 10f);
   }
 

@@ -124,7 +124,6 @@ public class StyleManager {
   public void setJmolDefaults() {
     setCommonDefaults();
     viewer.setStyleBond(JmolConstants.STYLE_SHADED);
-    viewer.setStyleAtom(JmolConstants.STYLE_SHADED);
     viewer.setColorBackground(Color.white);
     viewer.setColorMeasurement(Color.black);
     viewer.setColorLabel(Color.black);
@@ -133,7 +132,6 @@ public class StyleManager {
   public void setRasmolDefaults() {
     setCommonDefaults();
     viewer.setStyleBond(JmolConstants.STYLE_WIREFRAME);
-    viewer.setStyleAtom(JmolConstants.STYLE_NONE);
     viewer.setColorBackground(Color.black);
     viewer.setColorMeasurement(Color.white);
     viewer.setColorLabel(null);

@@ -606,7 +606,7 @@ public class Frame {
       bspf = new Bspf(3);
       for (int i = atomCount; --i >= 0; ) {
         Atom atom = atoms[i];
-        if (atom.styleAtom >= JmolConstants.STYLE_NONE) // not deleted atoms
+        if (atom.marAtom != JmolConstants.MAR_DELETED) // not deleted atoms
           bspf.addTuple(atom.getModelID(), atom);
       }
     }

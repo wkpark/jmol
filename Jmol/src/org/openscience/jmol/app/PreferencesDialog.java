@@ -93,7 +93,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private Color colorBond;
   private Color colorVector;
   private Color colorMeasurement;
-  private byte styleAtom;
   private byte modeAtomColorProfile;
   private byte styleLabel;
   private byte styleBond;
@@ -107,7 +106,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JButton bButton, pButton, tButton, eButton, vButton;
   private JButton measurementColorButton;
   private JRadioButton pYes, pNo, abYes, abNo;
-  private JComboBox aRender, aLabel, aProps, bRender, cRender;
+  private JComboBox aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
   private JSlider bdSlider, bwSlider, btSlider, ahSlider, arSlider, alSlider;
   private JSlider vasSlider;
@@ -136,7 +135,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "showAxes",                       "false",
     "showBoundingBox",                "false",
     "orientationRasMolChime",         "true",
-    "styleAtom",                      "2",
     "styleBond",                      "2",
     "styleLabel",                     "0",
     "percentVdwAtom",                 "20",
@@ -160,10 +158,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   final static String[] rasmolOverrides = {
     "colorBackground",                "0",
     "isLabelAtomColor",               "true",
-    "styleAtom",                      "0",
     "styleBond",                      "1",
     "colorVector",                    "16777215",
     "colorMeasurement",               "16777215",
+    "percentVdwAtom",                 "0",
   };
 
   private JmolViewer viewer;
@@ -335,34 +333,37 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JPanel atomPanel = new JPanel(new GridBagLayout());
     GridBagConstraints constraints;
 
-    JLabel atomStyleLabel = new JLabel(JmolResourceHandler.getInstance()
-          .getString("Prefs.atomStyleLabel"));
-    constraints = new GridBagConstraints();
-    constraints.anchor = GridBagConstraints.EAST;
-    atomPanel.add(atomStyleLabel, constraints);
-    aRender = new JComboBox();
-    aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aNoneChoice"));
-    aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aWFChoice"));
-    aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aSChoice"));
-    aRender.setSelectedIndex(viewer.getStyleAtom());
-    aRender.addItemListener(new ItemListener() {
+    JPanel sfPanel = new JPanel();
+    sfPanel.setLayout(new BorderLayout());
+    sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+        .getString("Prefs.atomSizeLabel")));
+    JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance()
+        .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
+    sfPanel.add(sfLabel, BorderLayout.NORTH);
+    sfSlider =
+      new JSlider(JSlider.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
+    sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    sfSlider.setPaintTicks(true);
+    sfSlider.setMajorTickSpacing(20);
+    sfSlider.setMinorTickSpacing(10);
+    sfSlider.setPaintLabels(true);
+    sfSlider.addChangeListener(new ChangeListener() {
 
-      public void itemStateChanged(ItemEvent e) {
+      public void stateChanged(ChangeEvent e) {
 
-        JComboBox source = (JComboBox) e.getSource();
-        styleAtom = (byte)source.getSelectedIndex();
-        viewer.setStyleAtom(styleAtom);
-        currentProperties.put("styleAtom", Integer.toString(styleAtom));
+        JSlider source = (JSlider) e.getSource();
+        percentVdwAtom = source.getValue();
+        viewer.setPercentVdwAtom(percentVdwAtom);
+        currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
       }
     });
-
+    sfPanel.add(sfSlider, BorderLayout.CENTER);
     constraints = new GridBagConstraints();
-    constraints.anchor = GridBagConstraints.WEST;
     constraints.gridwidth = GridBagConstraints.REMAINDER;
-    atomPanel.add(aRender, constraints);
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    atomPanel.add(sfPanel, constraints);
+
 
     JLabel atomColoringLabel = new JLabel(JmolResourceHandler.getInstance()
           .getString("Prefs.atomColoringLabel"));
@@ -417,37 +418,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     constraints.anchor = GridBagConstraints.WEST;
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     atomPanel.add(aLabel, constraints);
-
-    JPanel sfPanel = new JPanel();
-    sfPanel.setLayout(new BorderLayout());
-    sfPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-        .getString("Prefs.atomSizeLabel")));
-    JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
-    sfPanel.add(sfLabel, BorderLayout.NORTH);
-    sfSlider =
-      new JSlider(JSlider.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
-    sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    sfSlider.setPaintTicks(true);
-    sfSlider.setMajorTickSpacing(20);
-    sfSlider.setMinorTickSpacing(10);
-    sfSlider.setPaintLabels(true);
-    sfSlider.addChangeListener(new ChangeListener() {
-
-      public void stateChanged(ChangeEvent e) {
-
-        JSlider source = (JSlider) e.getSource();
-        percentVdwAtom = source.getValue();
-        viewer.setPercentVdwAtom(percentVdwAtom);
-        currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
-      }
-    });
-    sfPanel.add(sfSlider, BorderLayout.CENTER);
-    constraints = new GridBagConstraints();
-    constraints.gridwidth = GridBagConstraints.REMAINDER;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    constraints.weightx = 1.0;
-    atomPanel.add(sfPanel, constraints);
 
     JLabel filler = new JLabel();
     constraints = new GridBagConstraints();
@@ -1044,7 +1014,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cbOrientationRasMolChime.setSelected(viewer.getOrientationRasMolChime());
 
     // Atom panel controls: 
-    aRender.setSelectedIndex(viewer.getStyleAtom());
     aLabel.setSelectedIndex(viewer.getStyleLabel());
     sfSlider.setValue(viewer.getPercentVdwAtom());
 
@@ -1132,7 +1101,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     colorBond = Color.getColor("colorBond");
     colorVector = Color.getColor("colorVector");
     colorMeasurement = Color.getColor("colorMeasurement");
-    styleAtom = (byte)Integer.getInteger("styleAtom").intValue();
     styleLabel = (byte)Integer.getInteger("styleLabel").intValue();
     styleBond = (byte)Integer.getInteger("styleBond").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
@@ -1154,7 +1122,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setColorLabel(isLabelAtomColor ? null : colorText);
     viewer.setColorBond(isBondAtomColor ? null : colorBond);
     viewer.setPercentVdwAtom(percentVdwAtom);
-    viewer.setStyleAtom(styleAtom);
     viewer.setStyleLabel(styleLabel);
     //viewer.setPropertyStyleString(AtomPropsMode);
     viewer.setStyleBond(styleBond);

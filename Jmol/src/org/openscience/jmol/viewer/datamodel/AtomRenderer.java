@@ -71,21 +71,20 @@ class AtomRenderer extends Renderer {
   void render(Atom atom) {
     if (!showHydrogens && atom.atomicNumber == 1)
       return;
-    byte styleAtom = atom.styleAtom;
-    if (styleAtom <= JmolConstants.STYLE_NONE)
+    int diameter = atom.diameter;
+    if (diameter == 0)
       return;
+    int radius = (diameter + 1) / 2;
     int x = atom.x;
     int y = atom.y;
     int z = atom.z;
-    int diameter = atom.diameter;
-    int radius = (diameter + 1) / 2;
     if (x + radius < minX ||
         x - radius >= maxX ||
         y + radius < minY ||
         y - radius >= maxY)
       return;
 
-    if (styleAtom == JmolConstants.STYLE_SHADED && !wireframeRotating)
+    if (!wireframeRotating)
       g3d.fillSphereCentered(atom.colixAtom, diameter, x, y, z);
     else
       g3d.drawCircleCentered(atom.colixAtom, diameter, x, y, z);

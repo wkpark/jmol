@@ -36,6 +36,8 @@ final public class JmolConstants {
   public final static byte LABEL_TYPENAME = 2;
   public final static byte LABEL_ATOMNO   = 3;
 
+  public final static short MAR_DELETED = Short.MIN_VALUE;
+
   public final static byte STYLE_DELETED   =-1;
   public final static byte STYLE_NONE      = 0;
   public final static byte STYLE_WIREFRAME = 1;

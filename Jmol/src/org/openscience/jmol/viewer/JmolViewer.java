@@ -1194,35 +1194,31 @@ final public class JmolViewer {
       eval.haltExecution();
   }
 
-  public void setStyleMarAtomScript(byte style, short mar) {
-    distributionManager.setStyleMarAtom(style, mar, atomIteratorSelected());
-  }
-
-  public void setStyleAtomScript(byte style) {
-    distributionManager.setStyleAtom(style, atomIteratorSelected());
+  public void setMarAtom(short mar) {
+    distributionManager.setMarAtom(mar, atomIteratorSelected());
   }
 
   public void setStyleMarBondScript(byte style, short mar) {
     distributionManager
-      .setStyleMar(style, mar,
-                   bondIteratorSelected(JmolConstants.BOND_COVALENT));
+      .setStyleMarBond(style, mar,
+                       bondIteratorSelected(JmolConstants.BOND_COVALENT));
   }
 
   public void setStyleMarSsBondScript(byte style, short mar) {
     distributionManager
-      .setStyleMar(style, mar,
-                   bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
+      .setStyleMarBond(style, mar,
+                       bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
   }
 
   public void setStyleMarHBondScript(byte style, short mar) {
     getFrame().calcHbonds();
     distributionManager
-      .setStyleMar(style, mar,
-                   bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
+      .setStyleMarBond(style, mar,
+                       bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
   public void setStyleBondScript(byte style, byte bondType) {
-    distributionManager.setStyle(style, bondIteratorSelected(bondType));
+    distributionManager.setStyleBond(style, bondIteratorSelected(bondType));
   }
 
   public void setColorAtomScript(byte palette, Color color) {
@@ -1549,16 +1545,6 @@ final public class JmolViewer {
    *    * possibly set the setting for some things
    */
 
-  public void setStyleAtom(byte style) {
-    styleManager.setStyleAtom(style);
-    distributionManager.setStyleAtom(style, atomIteratorSelected());
-    refresh();
-  }
-
-  public byte getStyleAtom() {
-    return styleManager.styleAtom;
-  }
-
   public void setPercentVdwAtom(int percentVdwAtom) {
     styleManager.setPercentVdwAtom(percentVdwAtom);
     distributionManager.setMarAtom((short)-percentVdwAtom,
@@ -1577,7 +1563,7 @@ final public class JmolViewer {
   public void setStyleBond(byte style) {
     styleManager.setStyleBond(style);
     distributionManager
-      .setStyle(style, bondIteratorSelected(JmolConstants.BOND_COVALENT));
+      .setStyleBond(style, bondIteratorSelected(JmolConstants.BOND_COVALENT));
     refresh();
   }
 
@@ -1588,7 +1574,7 @@ final public class JmolViewer {
   public void setMarBond(short marBond) {
     styleManager.setMarBond(marBond);
     distributionManager
-      .setMar(marBond, bondIteratorSelected(JmolConstants.BOND_COVALENT));
+      .setMarBond(marBond, bondIteratorSelected(JmolConstants.BOND_COVALENT));
     refresh();
   }
 

@@ -436,6 +436,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
    * mth 2003 02
    ****************************************************************/
 
+  /****************************************************************
+   * FIXME mth 2004 01 12
+   * these routines are all DEPRECATED
+   ****************************************************************/
+
   private final String[] styleStrings = {"SHADED", "WIREFRAME"};
   private final byte[] styles = {JmolConstants.STYLE_SHADED,
                                  JmolConstants.STYLE_WIREFRAME};
@@ -443,7 +448,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void setStyle(String style) {
     for (int i = 0; i < styleStrings.length; ++i) {
       if (styleStrings[i].equalsIgnoreCase(style)) {
-        viewer.setStyleAtom(styles[i]);
+        //        viewer.setStyleAtom(styles[i]);
         viewer.setStyleBond(styles[i]);
         return;
       }

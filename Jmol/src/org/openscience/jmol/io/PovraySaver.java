@@ -355,10 +355,7 @@ public class PovraySaver {
     float r = color.getRed() / 255f;
     float g = color.getGreen() / 255f;
     float b = color.getBlue() / 255f;
-    if (radius > 0)
-      out("atom("+x+","+y+","+z+","+radius+","+r+","+g+","+b+")\n");
-    else
-      out("ring("+x+","+y+","+z+","+(-radius)+","+r+","+g+","+b+")\n");
+    out("atom("+x+","+y+","+z+","+radius+","+r+","+g+","+b+")\n");
   }
 
   void writeBond(int i) throws IOException {

@@ -1253,7 +1253,7 @@ public class Eval implements Runnable {
     viewer.setStyleBondScript(JmolConstants.STYLE_NONE,
                               JmolConstants.BOND_ALL_MASK);
     viewer.setBondSelectionModeOr(bondmode);
-    viewer.setStyleAtomScript(JmolConstants.STYLE_NONE);
+    viewer.setMarAtom((short)0);
     viewer.setLabelScript(null);
     // also need to turn off backbones, ribbons, strands, cartoons
     viewer.invertSelection();
@@ -1579,7 +1579,6 @@ public class Eval implements Runnable {
   }
 
   void cpk() throws ScriptException {
-    byte style = JmolConstants.STYLE_SHADED;
     short mar = -999;
     int tok = Token.on;
     if (statement.length > 1) {
@@ -1596,7 +1595,7 @@ public class Eval implements Runnable {
       mar = -100; // cpk with no args goes to 100%
       break;
     case Token.off:
-      style = JmolConstants.STYLE_NONE;
+      mar = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
@@ -1618,9 +1617,6 @@ public class Eval implements Runnable {
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
       break;
-    case Token.wireframe:
-      style = JmolConstants.STYLE_WIREFRAME;
-      break;
     case Token.temperature:
       mar = -1000;
       break;
@@ -1631,10 +1627,7 @@ public class Eval implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    if (mar == -999)
-      viewer.setStyleAtomScript(style);
-    else
-      viewer.setStyleMarAtomScript(style, mar);
+    viewer.setMarAtom(mar);
   }
 
   void wireframe() throws ScriptException {

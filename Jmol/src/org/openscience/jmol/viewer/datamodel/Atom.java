@@ -45,7 +45,6 @@ public class Atom implements Bspt.Tuple {
   short diameter;
   public byte atomicNumber;
   public byte atomicCharge;
-  byte styleAtom;
   short marAtom;
   short colixAtom;
   Bond[] bonds;
@@ -61,7 +60,7 @@ public class Atom implements Bspt.Tuple {
     this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
     this.atomicCharge = (byte) viewer.getAtomicCharge(clientAtom);
     this.colixAtom = viewer.getColixAtom(this);
-    setStyleMarAtom(viewer.getStyleAtom(), viewer.getMarAtom());
+    setMarAtom(viewer.getMarAtom());
     this.point3f = new Point3f(viewer.getAtomX(clientAtom),
 			       viewer.getAtomY(clientAtom),
 			       viewer.getAtomZ(clientAtom));
@@ -188,13 +187,8 @@ public class Atom implements Bspt.Tuple {
    *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
-  public void setStyleAtom(byte styleAtom) {
-    if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
-      this.styleAtom = styleAtom;
-  }
-
   public void setMarAtom(short marAtom) {
-    if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
+    if (this.marAtom == JmolConstants.MAR_DELETED) return;
     if (marAtom == -1000) // temperature
       marAtom = getPdbTemperatureMar();
     else if (marAtom < 0)
@@ -203,19 +197,8 @@ public class Atom implements Bspt.Tuple {
     this.marAtom = marAtom;
   }
 
-  public void setStyleMarAtom(byte styleAtom, short marAtom) {
-    if (this.styleAtom == JmolConstants.STYLE_DELETED) return;
-    this.styleAtom = styleAtom;
-    if (marAtom == -1000) // temperature
-      marAtom = getPdbTemperatureMar();
-    else if (marAtom < 0)
-      marAtom =
-        (short)(-marAtom * frame.viewer.getVanderwaalsMar(this) / 100);
-    this.marAtom = marAtom;
-  }
-        
   public int getRasMolRadius() {
-    if (styleAtom <= JmolConstants.STYLE_NONE)
+    if (marAtom == JmolConstants.MAR_DELETED)
       return 0;
     return marAtom / 4;
   }
@@ -244,6 +227,8 @@ public class Atom implements Bspt.Tuple {
   }
 
   public void transform(JmolViewer viewer) {
+    if (marAtom == JmolConstants.MAR_DELETED)
+      return;
     Point3i screen = viewer.transformPoint(point3f);
     int t;
 
@@ -336,11 +321,9 @@ public class Atom implements Bspt.Tuple {
   }
 
   public float getRadius() {
-    if (styleAtom <= JmolConstants.STYLE_NONE)
+    if (marAtom == JmolConstants.MAR_DELETED)
       return 0;
-    float radius = marAtom / 1000f;
-    if (styleAtom == JmolConstants.STYLE_WIREFRAME) return -radius;
-    return radius;
+    return marAtom / 1000f;
   }
 
   public short getModelID() {
@@ -394,7 +377,8 @@ public class Atom implements Bspt.Tuple {
 
   public Object markDeleted() {
     deleteAllBonds();
-    styleAtom = JmolConstants.STYLE_DELETED;
+    marAtom = JmolConstants.MAR_DELETED;
+    x = y = z = diameter = 0;
     Object clientAtom = this.clientAtom;
     this.clientAtom = null;
     return clientAtom;

@@ -42,32 +42,22 @@ public class DistributionManager {
    * the JmolFrame guys
    ****************************************************************/
 
-  public void setStyleAtom(byte styleAtom, AtomIterator iter) {
-    while (iter.hasNext())
-      iter.next().setStyleAtom(styleAtom);
-  }
-
   public void setMarAtom(short marAtom, AtomIterator iter) {
     while (iter.hasNext())
       iter.next().setMarAtom(marAtom);
   }
 
-  public void setStyleMarAtom(byte style, short mar, AtomIterator iter) {
-    while (iter.hasNext())
-      iter.next().setStyleMarAtom(style, mar);
-  }
-
-  public void setStyle(byte styleBond, BondIterator iter) {
+  public void setStyleBond(byte styleBond, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setStyle(styleBond);
   }
 
-  public void setMar(short marBond, BondIterator iter) {
+  public void setMarBond(short marBond, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setMar(marBond);
   }
 
-  public void setStyleMar(byte style, short mar, BondIterator iter) {
+  public void setStyleMarBond(byte style, short mar, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setStyleMar(style, mar);
   }

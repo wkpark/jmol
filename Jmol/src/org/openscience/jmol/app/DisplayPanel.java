@@ -152,7 +152,6 @@ public class DisplayPanel extends JPanel
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
   private aNoneAction anoneAction = new aNoneAction();
-  private aWireframeAction awireframeAction = new aWireframeAction();
   private aShadingAction ashadingAction = new aShadingAction();
   private aChargeColorAction acchargeAction = new aChargeColorAction();
   private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
@@ -252,7 +251,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleAtom(JmolConstants.STYLE_NONE);
+      viewer.setMarAtom((short)0);
+      viewer.refresh();
     }
   }
 
@@ -264,19 +264,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleAtom(JmolConstants.STYLE_SHADED);
-    }
-  }
-
-  class aWireframeAction extends AbstractAction {
-
-    public aWireframeAction() {
-      super("awireframe");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setStyleAtom(JmolConstants.STYLE_WIREFRAME);
+      viewer.setMarAtom(viewer.getMarAtom());
+      viewer.refresh();
     }
   }
 
@@ -631,7 +620,7 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
-      anoneAction, awireframeAction, ashadingAction,
+      anoneAction, ashadingAction,
       bnoneAction, bwireframeAction, bshadingAction,
       plainAction,
       symbolsAction, typesAction, numbersAction,

@@ -28,6 +28,7 @@ package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 
 import java.io.BufferedReader;
+import java.util.Properties;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
@@ -77,16 +78,17 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public String getAtomSetCollectionName(Object clientFile) {
     return ((AtomSetCollection)clientFile).collectionName;
   }
+  
+  public Properties getAtomSetCollectionProperties(Object clientFile) {
+    return ((AtomSetCollection)clientFile).atomSetCollectionProperties;
+  }
 
   public String getFileHeader(Object clientFile) {
     return ((AtomSetCollection)clientFile).fileHeader;
   }
   
   public int getAtomSetCount(Object clientFile) {
-    // we need to implement this
-    // the current AtomSetCollection does not have support for this
-    // but now we need it
-    return ((AtomSetCollection)clientFile).getAtomSetCount();
+    return ((AtomSetCollection)clientFile).atomSetCount;
   }
 
   public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
@@ -95,6 +97,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public String getAtomSetName(Object clientFile, int atomSetIndex) {
     return ((AtomSetCollection)clientFile).getAtomSetName(atomSetIndex);
+  }
+  
+  public Properties getAtomSetProperties(Object clientFile, int atomSetIndex) {
+    return ((AtomSetCollection)clientFile).getAtomSetProperties(atomSetIndex);
   }
 
   /* **************************************************************
@@ -120,6 +126,16 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public float[] getPdbScaleTranslate(Object clientFile) {
     return ((AtomSetCollection)clientFile).pdbScaleTranslate;
   }
+  
+/*
+  // not redefined for the smarterJmolAdapter, but we probably 
+  // should do something similar like that. This would required
+  // us to add a Properties to the Atom, I guess...
+  public String getClientAtomStringProperty(Object clientAtom,
+                                            String propertyName) {
+    return null;
+  }
+*/
 
   public JmolAdapter.AtomIterator
     getAtomIterator(Object clientFile) {

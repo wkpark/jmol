@@ -43,6 +43,7 @@ class GaussianReader extends AtomSetCollectionReader {
   private int firstCoordinateOffset = 3;
   
   private String scfEnergy = ""; // SCF energy of current atomSet
+  private String scfKey = ""; // the type of SCF energy reported
   
   /**
    * Reads a Collection of AtomSets from a BufferedReader.
@@ -97,7 +98,9 @@ class GaussianReader extends AtomSetCollectionReader {
           ++nOrientations; // is always the second orientation
           readAtoms(reader, line);
         } else if (line.startsWith(" SCF Done:")) {
-          readSCFDone(line,nOrientations);
+          readSCFDone(reader,line, nOrientations);
+          atomSetCollection.atomSetProperties[atomSetCollection.currentAtomSetIndex]
+             .list(System.out);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
         } else if (line.startsWith(" Total atomic charges:") ||
@@ -129,15 +132,34 @@ class GaussianReader extends AtomSetCollectionReader {
    * @param nOrientations The number of orientations read that need to have
    *           these results associated with them.
    **/
-  private void readSCFDone(String line, int nOrientations) {
+  private void readSCFDone(BufferedReader reader, String line, int nOrientations) 
+    throws Exception {
     String tokens[] = getTokens(line,11);
-    scfEnergy = tokens[0]+" = "+tokens[2]+" "+tokens[3];
+    scfKey = tokens[0];
+    scfEnergy = tokens[2]+" "+tokens[3];
     // now set the names for the last nOrientations
-    for (int asci=atomSetCollection.currentAtomSetIndex; --nOrientations >= 0; --asci) {
+    for (int asci=atomSetCollection.currentAtomSetIndex, n=nOrientations; --n >= 0; --asci) {
       atomSetCollection.setAtomSetName(
-        scfEnergy + " " + atomSetCollection.getAtomSetName(asci), asci
+        scfKey+" = " + scfEnergy + " " + atomSetCollection.getAtomSetName(asci), asci
       );
     }
+    // also set the properties for them
+    setAtomSetProperties(scfKey, scfEnergy, nOrientations);
+    tokens = getTokens(reader.readLine());
+    setAtomSetProperties(tokens[0], tokens[2], nOrientations);
+    setAtomSetProperties(tokens[3], tokens[5], nOrientations);
+    tokens = getTokens(reader.readLine());
+    setAtomSetProperties(tokens[0], tokens[2], nOrientations);
+  }
+  
+  /**
+   * Sets the same properties for the last atomSets
+   * @param
+   */
+  private void setAtomSetProperties(String key, String value, int n) {
+    for (int asci=atomSetCollection.currentAtomSetIndex; --n >= 0; --asci) {
+      atomSetCollection.setAtomSetProperty(key,value,asci);
+    }    
   }
   
 /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
@@ -234,7 +256,8 @@ class GaussianReader extends AtomSetCollectionReader {
    * @param reader BufferedReader associated with the Gaussian output text.
    **/
   private void readFrequencies(BufferedReader reader) throws Exception {
-    String line, tokens[], symmetries[], intensities[];
+    String line, tokens[];
+    String symmetries[], frequencies[], red_masses[], frc_consts[], intensities[];
     boolean firstTime = true;     // flag for first time through
 
     while ((line = reader.readLine()) != null &&
@@ -250,9 +273,12 @@ class GaussianReader extends AtomSetCollectionReader {
     {
       // we now have the line with the vibration numbers in them, but don't need it
       symmetries = getTokens(reader.readLine()); // read symmetry labels
-      tokens = getTokens(reader.readLine(), 15); // read frequencies
-      int frequencyCount = tokens.length;        // 
+      // read only the 4 properties that always should be there...
+      frequencies = getTokens(discardLinesUntilStartsWith(reader," Frequencies"), 15);
+      red_masses = getTokens(discardLinesUntilStartsWith(reader," Red. masses"), 15);
+      frc_consts = getTokens(discardLinesUntilStartsWith(reader," Frc consts"), 15);
       intensities = getTokens(discardLinesUntilStartsWith(reader," IR Inten"), 15);
+      int frequencyCount = frequencies.length;        // 
 
       int numNewModels = frequencyCount;
       // temporarily do not put the vectors on the last orientation, but clone it
@@ -268,9 +294,23 @@ class GaussianReader extends AtomSetCollectionReader {
 */
       for (int i = 0; i < numNewModels; ++i) {
         atomSetCollection.cloneLastAtomSet();
-        atomSetCollection.setAtomSetName(symmetries[i]+" "+
-           tokens[i]+" cm-1, Inten = " + intensities[i] + " KM/Mole " + scfEnergy);
+        atomSetCollection.setAtomSetName(
+           symmetries[i] + " " +
+           frequencies[i]+" cm-1, Inten = " +
+           intensities[i] + " KM/Mole " +
+           scfKey + " = " + scfEnergy
+        );
+        // set the properties
+        atomSetCollection.setAtomSetProperty(scfKey, scfEnergy);
+        atomSetCollection.setAtomSetProperty("Frequency",frequencies[i]+" cm**-1");
+        atomSetCollection.setAtomSetProperty("Reduced Mass",red_masses[i]+" AMU");
+        atomSetCollection.setAtomSetProperty("Force Constant",frc_consts[i]+" mDyne/A");
+        atomSetCollection.setAtomSetProperty("IR Intensity",intensities[i]+" KM/Mole");
+        // show the properties we have so far:
+        atomSetCollection.atomSetProperties[atomSetCollection.currentAtomSetIndex]
+           .list(System.out);
       }
+      
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int firstModelAtom =
         atomSetCollection.atomCount - frequencyCount * atomCount;

@@ -107,7 +107,7 @@ public abstract class JmolAdapter {
   /**
    * Get the properties for this atomSetCollection
    *
-   * Not yet implemented
+   * Not yet implemented everywhere, it is in the smarterJmolAdapter
    */
   public Properties getAtomSetCollectionProperties(Object clientFile) {
     return null;
@@ -122,9 +122,9 @@ public abstract class JmolAdapter {
 
   /**
    * The number of atomSets in the file
-   * NOTE WARNING:
-   * This is currently broken, but is not used.
-   * This is associated with the work for getAtomSetName
+   *
+   * <p>NOTE WARNING:
+   * <br>Not yet implemented everywhere, it is in the smarterJmolAdapter
    */
   public int getAtomSetCount(Object clientFile) { return 1; }
 

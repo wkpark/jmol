@@ -26,10 +26,12 @@
 package org.jmol.adapter.smarter;
 import org.jmol.api.JmolAdapter;
 import java.util.Hashtable;
+import java.util.Properties;
 
 class AtomSetCollection {
   String fileTypeName;
   String collectionName;
+  Properties atomSetCollectionProperties = new Properties();
 
   final static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
@@ -46,6 +48,7 @@ class AtomSetCollection {
   int[] atomSetNumbers = new int[16];
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
+  Properties[] atomSetProperties = new Properties[16];
 
   String errorMessage;
   String fileHeader;
@@ -95,6 +98,9 @@ class AtomSetCollection {
     return clone;
   }
 
+  // FIX ME This should really also clone the other things pertaining
+  // to an atomSet, like the bonds (which probably should be remade...)
+  // but also the atomSetProperties and atomSetName...
   void cloneFirstAtomSet() {
     newAtomSet();
     for (int i = 0, firstCount = atomSetAtomCounts[0]; i < firstCount; ++i)
@@ -114,7 +120,7 @@ class AtomSetCollection {
       newCloneAtom(atoms[atomIndex]);
     //    System.out.println("after atomCount=" + atomCount);
   }
-
+  
   int getFirstAtomSetAtomCount() {
     return atomSetAtomCounts[0];
   }
@@ -248,25 +254,65 @@ class AtomSetCollection {
       atomSetNames = AtomSetCollectionReader.doubleLength(atomSetNames);
       atomSetAtomCounts =
         AtomSetCollectionReader.doubleLength(atomSetAtomCounts);
+      atomSetProperties = 
+        (Properties[]) AtomSetCollectionReader.doubleLength(atomSetProperties);
     }
     atomSetNumbers[currentAtomSetIndex] = atomSetCount;
   }
 
+  /**
+  * Sets the name for the current AtomSet
+  * @param atomSetName The name to be associated with the current AtomSet
+  */
   void setAtomSetName(String atomSetName) {
     atomSetNames[currentAtomSetIndex] = atomSetName;
   }
   
+  /**
+  * Sets the name for an AtomSet
+  * @param atomSetName The number to be associated with the AtomSet
+  * @param atomsetIndex The index of the AtomSet that needs the association
+  */
   void setAtomSetName(String atomSetName, int atomSetIndex) {
     atomSetNames[atomSetIndex] = atomSetName;
   }
 
+  /**
+  * Sets the number for the current AtomSet.
+  * @param atomSetNumber The number for the current AtomSet.
+  */
   void setAtomSetNumber(int atomSetNumber) {
     atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
   }
+  
+  /**
+  * Sets a property for the AtomSet
+  * @param atomSetNumber The number for the AtomSet
+  * @param atomSetIndex The index of the AtomSet that needs the association
+  */
+  void setAtomSetProperty(String key, String value) {
+    setAtomSetProperty(key, value, currentAtomSetIndex);
+  }
 
+  /**
+  * Sets the a property for the an AtomSet
+  * @param key The key for the property
+  # @param value The value to be associated with the key
+  * @param atomSetIndex The index of the AtomSet that needs the association
+  */
+  void setAtomSetProperty(String key, String value, int atomSetIndex) {
+    // lazy instantiation of the Properties object
+    if (atomSetProperties[atomSetIndex] == null)
+      atomSetProperties[atomSetIndex] = new Properties();
+    atomSetProperties[atomSetIndex].setProperty(key,value);
+  }
+
+/*
+  // currently not needed because we take the atomSetCount directly
   int getAtomSetCount() {
     return atomSetCount;
   }
+*/
 
   int getAtomSetNumber(int atomSetIndex) {
     return atomSetNumbers[atomSetIndex];
@@ -274,5 +320,9 @@ class AtomSetCollection {
 
   String getAtomSetName(int atomSetIndex) {
     return atomSetNames[atomSetIndex];
+  }
+  
+  Properties getAtomSetProperties(int atomSetIndex) {
+    return atomSetProperties[atomSetIndex];
   }
 }

@@ -64,6 +64,13 @@ public class AtomShape extends Shape {
     this.strLabel = strLabel;
   }
 
+  public AtomShape(Atom atom, DisplayControl c) {
+    this(atom,
+         c.getStyleAtom(), c.getMarAtom(), c.getColorAtom(atom),
+         c.getStyleBond(), c.getMarBond(), c.getColorBond(),
+         c.getLabelAtom(atom));
+  }
+
   public String toString() {
     return "Atom shape for " + atom + ": z = " + z;
   }
@@ -71,16 +78,20 @@ public class AtomShape extends Shape {
   /*
    * What is a MAR?
    *  - just a term that I made up
-   *  - an abbreviation for Milli Angstrom Diameter
-   * that is
+   *  - an abbreviation for Milli Angstrom Radius
+   * that is:
    *  - a *radius* of either a bond or an atom
    *  - in *millis*, or thousandths of an *angstrom*
-   *  - stored as an integer
+   *  - stored as a short
    *
    * However! In the case of an atom radius, if the parameter
    * gets passed in as a negative number, then that number
    * represents a percentage of the vdw radius of that atom.
    * This is converted to a normal MAR as soon as possible
+   *
+   * (I know everyone hates bytes & shorts, but I like them ...
+   *  gives me some tiny level of type-checking ...
+   *  a rudimentary form of enumerations/user-defined primitive types)
    */
 
   public void setStyleAtom(byte styleAtom) {

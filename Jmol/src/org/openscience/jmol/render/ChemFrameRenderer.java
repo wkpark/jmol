@@ -53,6 +53,11 @@ public class ChemFrameRenderer {
       shapesVector.removeAllElements();
       for (int i = 0; i < numAtoms; ++i) {
         Atom atom = (org.openscience.jmol.Atom)frame.getAtomAt(i);
+        AtomShape atomShape = atom.getAtomShape();
+        if (atomShape == null) {
+          atomShape = new AtomShape(atom, control);
+          atom.setAtomShape(atomShape);
+        }
         shapesVector.addElement(atom.getAtomShape());
       }
       if (control.getShowVectors()) {

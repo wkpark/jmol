@@ -142,8 +142,33 @@ public class FileManager {
   public void setAppletContext(URL documentBase, URL codeBase,
                                String jmolAppletProxy) {
     appletDocumentBase = documentBase;
+    System.out.println("appletDocumentBase=" + documentBase);
+    //    dumpDocumentBase("" + documentBase);
     appletCodeBase = codeBase;
     appletProxy = jmolAppletProxy;
+  }
+
+  void dumpDocumentBase(String documentBase) {
+    System.out.println("dumpDocumentBase:" + documentBase);
+    Object inputStreamOrError =
+      getInputStreamOrErrorMessageFromName(documentBase);
+    if (inputStreamOrError == null) {
+      System.out.println("?Que? ?null?");
+    } else if (inputStreamOrError instanceof String) {
+      System.out.println("Error:" + inputStreamOrError);
+    } else {
+      BufferedReader br =
+        new BufferedReader(new
+                           InputStreamReader((InputStream)inputStreamOrError));
+      String line;
+      try {
+        while ((line = br.readLine()) != null)
+          System.out.println(line);
+        br.close();
+      } catch (Exception ex) {
+        System.out.println("exception caught:" + ex);
+      }
+    }
   }
 
   // mth jan 2003 -- there must be a better way for me to do this!?

@@ -45,6 +45,7 @@ public class JmolAppletRegistry {
     strJavaVendor = System.getProperty("java.vendor");
     strJavaVersion = System.getProperty("java.version");
     strOSName = System.getProperty("os.name");
+    jsoWindow = JSObject.getWindow(applet);
     ns4 = strJavaVendor.startsWith("Netscape") & strJavaVersion.startsWith("1.1");
     if (ns4)
       checkInJavascript(name,applet);
@@ -52,7 +53,7 @@ public class JmolAppletRegistry {
       checkIn(name, applet);
   }
 
-  public void scriptButton(String targetName, String script) {
+  public void scriptButton(String targetName, String script, String buttonCallback) {
     if (targetName == null || targetName.length() == 0) {
       System.out.println("no targetName specified");
       return;
@@ -68,10 +69,10 @@ public class JmolAppletRegistry {
         return;
       }
       JmolApplet targetJmolApplet = (JmolApplet)target;
-      targetJmolApplet.scriptButton(script, null, null, name);
+      targetJmolApplet.scriptButton(jsoWindow, name, script, buttonCallback);
     } else {
       jsoTop.call("runJmolAppletScript",
-                  new Object[] { jsoWindow, name, targetName, script });
+                  new Object[] { targetName, jsoWindow, name, script, buttonCallback });
     }
   }
 
@@ -89,7 +90,7 @@ public class JmolAppletRegistry {
   
   String functionRunJmolAppletScript=
     // w = win, n = name, t = target, s = script
-    "function runJmolAppletScript(w,n,t,s){" +
+    "function runJmolAppletScript(t,w,n,s,b){" +
     " function getApplet(w,t){" +
     "  var a;" +
     "  if(w.document.applets!=undefined){" +
@@ -110,12 +111,11 @@ public class JmolAppletRegistry {
     "  alert('cannot find JmolApplet:' + t);" +
     "  return;" +
     " }" +
-    " a.script(s);" +
+    " a.scriptButton(w,n,s,b);" +
     "}";
 
   void checkInJavascript(String name, Applet applet) {
     if (name != null) {
-      jsoWindow = JSObject.getWindow(applet);
       jsoTop = (JSObject)jsoWindow.getMember("top");
       Object t;
       t = jsoTop.eval("top.runJmolAppletScript == undefined");

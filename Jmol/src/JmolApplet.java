@@ -333,15 +333,18 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   private final Object[] buttonCallbackBefore = { null, new Boolean(false)};
   private final Object[] buttonCallbackAfter = { null, new Boolean(true)};
 
-  public void scriptButton(String script, JSObject buttonWindow,
-                           String buttonCallback, String buttonName) {
+  public void scriptButton(JSObject buttonWindow, String buttonName,
+                           String script, String buttonCallback) {
     System.out.println(htmlName + " button:" + buttonName +
                        " script:" + script +
-                       " buttonCallback:" + buttonCallback);
+                       " buttonCallback:" + buttonCallback +
+                       " buttonWindow:" + buttonWindow);
     if (buttonCallback != null) {
       System.out.println("!!!! calling back " + buttonCallback);
       buttonCallbackBefore[0] = buttonName;
+      System.out.println("trying...");
       buttonWindow.call(buttonCallback, buttonCallbackBefore);
+      System.out.println("made it");
 
       buttonCallbackNotificationPending = true;
       this.buttonCallback = buttonCallback;

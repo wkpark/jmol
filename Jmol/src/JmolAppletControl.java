@@ -237,7 +237,7 @@ public class JmolAppletControl extends Applet {
       System.out.println(typeName + " with name" + myName + " has no target?");
       return;
     }
-    appletRegistry.scriptButton(targetName, scriptToRun);
+    appletRegistry.scriptButton(targetName, scriptToRun, buttonCallback);
   }
 }
 

@@ -36,6 +36,9 @@ abstract class Monomer extends Group {
   Polymer polymer;
   ProteinStructure proteinstructure;
 
+  byte leadAtomOffset;
+  byte wingAtomOffset = -1;
+
   // FIXME - mth 2004 05 17
   // these two arrays of indices need to be merged
   // one is for amino acid residues
@@ -71,7 +74,10 @@ abstract class Monomer extends Group {
   boolean isAminoMonomer() { return false; }
   boolean isAlphaMonomer() { return false; }
   boolean isNucleicMonomer() { return false; }
-
+  public boolean isDna() { return false; }
+  public boolean isRna() { return false; }
+  final public boolean isProtein() { return isAlphaMonomer(); }
+  final public boolean isNucleic() { return isNucleicMonomer(); }
   //
   ////////////////////////////////////////////////////////////////
 
@@ -82,11 +88,10 @@ abstract class Monomer extends Group {
   byte getProteinStructureType() {
     if (proteinstructure != null)
       return proteinstructure.type;
-    if (hasNucleotidePhosphorus()) {
-      if (atomIndexRnaO2Prime != -1)
-        return JmolConstants.PROTEIN_STRUCTURE_RNA;
-      return JmolConstants.PROTEIN_STRUCTURE_DNA;
-    }
+    if (isNucleic())
+      return (isRna()
+              ? JmolConstants.PROTEIN_STRUCTURE_RNA
+              : JmolConstants.PROTEIN_STRUCTURE_DNA);
     return 0;
   }
   
@@ -139,198 +144,48 @@ abstract class Monomer extends Group {
     return -1;
   }
 
-  /*
-  void assignAtom(Atom atom) {
-    PdbAtom pdbAtom = new PdbAtom(this, atom.atomIndex, pdbRecord);
-    if (pdbAtom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! registerMainchainAtomIndex(pdbAtom.atomID, atom.atomIndex))
-        pdbAtom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
-    }
-    return pdbAtom;
-  }
-  */
-
-  void registerAtom(Atom atom) {
-    byte specialAtomID = atom.getSpecialAtomID();
-    if (specialAtomID <= 0)
-      return;
-    if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
-      distinguishingBits |= 1 << specialAtomID;
-    if (specialAtomID < JmolConstants.ATOMID_DEFINING_PROTEIN_MAX) {
-      if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
-        atom.demoteSpecialAtomImposter();
-      return;
-    }
-    /*
-    if (specialAtomID < JmolConstants.ATOMID_DEFINING_NUCLEOTIDE_MAX) {
-      registerNucleicAtomIndex(specialAtomID, atom.atomIndex);
-      return;
-    }
-    */
+  final Atom getAtomFromOffset(byte offset) {
+    if (offset == -1)
+      return null;
+    return chain.frame.atoms[firstAtomIndex + (offset & 0xFF)];
   }
 
-  boolean registerMainchainAtomIndex(short atomid, int atomIndex) {
-    if (mainchainIndices == null) {
-      mainchainIndices = new int[4];
-      for (int i = 4; --i >= 0; )
-        mainchainIndices[i] = -1;
-    }
-    if (mainchainIndices[atomid - 1] != -1) {
-      // my residue already has a mainchain atom with this atomid
-      // I must be an imposter
-      return false;
-    }
-    mainchainIndices[atomid - 1] = atomIndex;
-    return true;
+  final Point3f getAtomPointFromOffset(byte offset) {
+    if (offset == -1)
+      return null;
+    return chain.frame.atoms[firstAtomIndex + (offset & 0xFF)].point3f;
+  }
+
+  final int getLeadAtomIndex() {
+    return firstAtomIndex + (leadAtomOffset & 0xFF);
   }
 
   final Atom getLeadAtom() {
-    return chain.frame.atoms[getLeadAtomIndex()];
+    return getAtomFromOffset(leadAtomOffset);
   }
 
-  abstract int getLeadAtomIndex();
+  final Point3f getLeadAtomPoint() {
+    return getAtomPointFromOffset(leadAtomOffset);
+  }
 
   final Atom getWingAtom() {
-    return chain.frame.atoms[getWingAtomIndex()];
-  }
-
-  abstract int getWingAtomIndex();
-
-  int getAlphaCarbonIndex() {
-    if (mainchainIndices == null)
-      return -1;
-    return mainchainIndices[1];
-  }
-
-  int getCarbonylOxygenIndex() {
-    if (mainchainIndices == null)
-      return -1;
-    return mainchainIndices[3];
-  }
-
-  Atom getMainchainAtom(int i) {
-    int j;
-    if (mainchainIndices == null || (j = mainchainIndices[i]) == -1) {
-      System.out.println("I am a mainchain atom returning null because " +
-                         " mainchainIndices==null? " +
-                         (mainchainIndices == null));
-      System.out.println("chain '" + chain.chainID + "'");
-      System.out.println("group3=" + getGroup3());
-      System.out.println("sequence=" + getSeqcodeString());
-      return null;
+    if (wingAtomOffset == -1) {
+      System.out.println("Monomer.getWingAtomIndex() called ... " +
+                         "but I have no wing man");
+      throw new NullPointerException();
     }
-    return getAtomIndex(j);
+    return getAtomFromOffset(wingAtomOffset);
   }
 
-  Atom getNitrogenAtom() {
-    return getMainchainAtom(0);
+  final Point3f getWingAtomPoint() {
+    return getWingAtom().point3f;
   }
 
-  Atom getAlphaCarbonAtom() {
-    return getMainchainAtom(1);
-  }
-
-  Atom getCarbonylCarbonAtom() {
-    return getMainchainAtom(2);
-  }
-
-  Atom getCarbonylOxygenAtom() {
-    return getMainchainAtom(3);
-  }
-
-  Point3f getAlphaCarbonPoint() {
-    return getMainchainAtom(1).point3f;
-  }
-
-  boolean hasAlphaCarbon() {
-    return (mainchainIndices != null) && (mainchainIndices[1] != -1);
-  }
-
-  boolean hasFullMainchain() {
-    if (mainchainIndices == null)
-      return false;
-    for (int i = 4; --i >= 0; )
-      if (mainchainIndices[i] == -1)
-        return false;
-    return true;
-  }
-
-  public static int getSeqcode(int sequenceNumber, char insertionCode) {
-    if (sequenceNumber == Integer.MIN_VALUE)
-      return sequenceNumber;
-    if (insertionCode >= 'a' && insertionCode <= 'z')
-      insertionCode -= 'a' - 'A';
-    else if (insertionCode < 'A' || insertionCode > 'Z')
-      insertionCode = '\0';
-    return (sequenceNumber << 8) + insertionCode;
-  }
-
-  public static String getSeqcodeString(int seqcode) {
-    if (seqcode == Integer.MIN_VALUE)
-      return null;
-    return (seqcode & 0xFF) == 0
-      ? "" + (seqcode >> 8)
-      : "" + (seqcode >> 8) + '^' + (char)(seqcode & 0xFF);
-  }
-
-  boolean isProline() {
-    // this is the index into JmolConstants.predefinedGroup3Names
-    return groupID == JmolConstants.GROUPID_PROLINE;
-  }
-
-  /*
-  void registerNucleicAtomIndex(short atomid, int atomIndex) {
-    if (atomid == JmolConstants.ATOMID_NUCLEOTIDE_PHOSPHORUS) {
-      if (atomIndexNucleotidePhosphorus < 0) {
-        ++nucleicCount;
-        atomIndexNucleotidePhosphorus = atomIndex;
-      }
-      return;
-    }
-    if (atomid == JmolConstants.ATOMID_NUCLEOTIDE_WING) {
-      if (atomIndexNucleotideWing < 0) {
-        ++nucleicCount;
-        atomIndexNucleotideWing = atomIndex;
-      }
-      return;
-    }
-    if (atomid == JmolConstants.ATOMID_RNA_O2PRIME)
-      atomIndexRnaO2Prime = atomIndex;
-    if (atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MIN &&
-        atomid < JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
-      if (nucleotideIndices == null)
-        allocateNucleotideIndices();
-      nucleotideIndices[atomid -
-                        JmolConstants.ATOMID_NUCLEOTIDE_MIN] =
-        atomIndex;
-    }
-    ++nucleicCount;
-  }
-
-
-  void allocateNucleotideIndices() {
-    nucleotideIndices =
-      new int[JmolConstants.ATOMID_NUCLEOTIDE_MAX -
-              JmolConstants.ATOMID_NUCLEOTIDE_MIN];
-    for (int i = nucleotideIndices.length; --i >= 0; )
-      nucleotideIndices[i] = -1;
-  }
-  */
+  ////////////////////////////////////////////////////////////////
+  // try to get rid of these 
 
   Atom getNucleotidePhosphorusAtom() {
     return getAtomIndex(atomIndexNucleotidePhosphorus);
-  }
-
-  Atom getNucleotideWingAtom() {
-    if (atomIndexNucleotidePhosphorus < 0)
-      return null;
-    return getAtomIndex(atomIndexNucleotideWing);
-  }
-
-  boolean hasNucleotidePhosphorus() {
-    return (atomIndexNucleotidePhosphorus >= 0 &&
-            atomIndexNucleotideWing >= 0 &&
-            nucleicCount > 5);
   }
 
   Atom getNucleotideAtomID(int atomid) {
@@ -413,6 +268,7 @@ abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
+  /*
   public boolean isProtein() {
     return ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
             JmolConstants.ATOMID_PROTEIN_MASK);
@@ -434,4 +290,5 @@ abstract class Monomer extends Group {
     return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
             JmolConstants.ATOMID_RNA_MASK);
   }
+  */
 }

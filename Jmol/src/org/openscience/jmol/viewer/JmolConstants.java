@@ -1662,7 +1662,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_N4 = 76;
   public final static int ATOMID_N6 = 78;
   public final static int ATOMID_N2 = 79;
-  public final static int ATOMID_NUCLEOTIDE_WING = 69;
+  // this is currently defined as C6
+  public final static int ATOMID_NUCLEIC_WING = 69;
 
   // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
   public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;
@@ -1670,9 +1671,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_ALPHA_ONLY_MASK = 1 << 3;
   // this is entries 5 through through 15 ... 11 bits
   public final static int ATOMID_NUCLEIC_MASK = 0x07FF << 5;
+
+  // this is a problem ... should O2' be part of the distingushing bits?
   // RNA also includes the O2'
-  public final static int ATOMID_RNA_MASK =
-    ATOMID_NUCLEIC_MASK | ATOMID_RNA_O2PRIME;
+  //  public final static int ATOMID_RNA_MASK =
+  //    ATOMID_NUCLEIC_MASK | ATOMID_RNA_O2PRIME;
+
   // this is the MAX of the backbone ... everything < MAX is backbone
   public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 32;
   public final static int ATOMID_BACKBONE_MAX = 64;

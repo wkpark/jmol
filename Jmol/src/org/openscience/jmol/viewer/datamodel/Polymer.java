@@ -86,7 +86,7 @@ abstract class Polymer {
       if (! (group instanceof Monomer))
         continue;
       Monomer monomer = (Monomer)group;
-      if (! monomer.hasFullMainchain())
+      if (! monomer.isAminoMonomer())
         continue;
       ++count;
       if (firstNonMainchain == i)
@@ -100,7 +100,7 @@ abstract class Polymer {
       if (! (group instanceof Monomer))
         continue;
       Monomer monomer = (Monomer)group;
-      if (! monomer.hasFullMainchain())
+      if (! monomer.isAminoMonomer())
         continue;
       monomers[j++] = monomer;
     }
@@ -117,7 +117,7 @@ abstract class Polymer {
       if (! (group instanceof Monomer))
         continue;
       Monomer monomer = (Monomer)group;
-      if (! monomer.hasAlphaCarbon())
+      if (! monomer.isAlphaMonomer())
         continue;
       ++count;
       if (firstNonMainchain == i)
@@ -131,7 +131,7 @@ abstract class Polymer {
       if (! (group instanceof Monomer))
         continue;
       Monomer monomer = (Monomer)group;
-      if (! monomer.hasAlphaCarbon())
+      if (! monomer.isAlphaMonomer())
         continue;
       monomers[j++] = monomer;
     }
@@ -148,7 +148,7 @@ abstract class Polymer {
       if (! (group instanceof Monomer))
         continue;
       Monomer monomer = (Monomer)group;
-      if (! monomer.hasNucleotidePhosphorus())
+      if (! monomer.isNucleicMonomer())
         continue;
       ++count;
     }
@@ -160,7 +160,7 @@ abstract class Polymer {
       if (! (group instanceof Monomer))
         continue;
       Monomer monomer = (Monomer)group;
-      if (! monomer.hasNucleotidePhosphorus())
+      if (! monomer.isNucleicMonomer())
         continue;
       monomers[j++] = monomer;
     }
@@ -200,9 +200,13 @@ abstract class Polymer {
     return i;
   }
 
-  abstract Point3f getLeadPoint(int polymerIndex);
+  final Point3f getLeadPoint(int monomerIndex) {
+    return monomers[monomerIndex].getLeadAtomPoint();
+  }
 
-  abstract Atom getLeadAtom(int polymerIndex);
+  final Atom getLeadAtom(int monomerIndex) {
+    return monomers[monomerIndex].getLeadAtom();
+  }
 
   void getLeadMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex == count) {
@@ -218,8 +222,12 @@ abstract class Polymer {
   
   boolean hasWingPoints() { return false; }
 
-  Point3f getWingPoint(int polymerIndex) { return null; }
-
+  // this might change in the future ... if we calculate a wing point
+  // without an atom for an AlphaPolymer
+  final Point3f getWingPoint(int polymerIndex) {
+    return monomers[polymerIndex].getWingAtomPoint();
+  }
+  
   abstract void addSecondaryStructure(byte type,
                                       int startSeqcode, int endSeqcode);
   abstract boolean isProtein();

@@ -31,28 +31,69 @@ public class NucleicMonomer extends Monomer {
   static Monomer
     validateAndAllocate(Chain chain, String group3,
                         int sequenceNumber, char insertionCode,
-                        Atom[] atoms,
+                        int distinguishingBits, Atom[] atoms,
                         int firstAtomIndex, int lastAtomIndex) {
-    NucleicMonomer alphaMonomer =
+
+    int phosphorusIndex = -1;
+    int wingIndex = -1;
+    int o2PrimeIndex = -1;
+
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i) {
+      Atom atom = atoms[i];
+      switch (atoms[i].specialAtomID) {
+      case JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS:
+        if (phosphorusIndex < 0) {
+          phosphorusIndex = i;
+          continue;
+        }
+        break;
+      case JmolConstants.ATOMID_NUCLEIC_WING:
+        if (wingIndex < 0) {
+          wingIndex = i;
+          continue;
+        }
+        break;
+      case JmolConstants.ATOMID_RNA_O2PRIME:
+        if (o2PrimeIndex < 0) {
+          o2PrimeIndex = i;
+          continue;
+        }
+        break;
+      default:
+        continue;
+      }
+      atoms[i].specialAtomID = 0; // reset all imposters
+    }
+
+    // this is just testing if anybody is less than 0
+    if ((phosphorusIndex | wingIndex) < 0)
+      throw new NullPointerException();
+
+    NucleicMonomer nucleicMonomer =
       new NucleicMonomer(chain, group3, sequenceNumber, insertionCode,
-                         firstAtomIndex, lastAtomIndex);
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      alphaMonomer.registerAtom(atoms[i]);
-    return alphaMonomer;
+                         firstAtomIndex, lastAtomIndex,
+                         phosphorusIndex, wingIndex, o2PrimeIndex);
+    return nucleicMonomer;
   }
-  
-  
+
   NucleicMonomer(Chain chain, String group3,
                  int sequenceNumber, char insertionCode,
-                 int firstAtomIndex, int lastAtomIndex) {
+                 int firstAtomIndex, int lastAtomIndex,
+                 int phosphorusIndex, int wingIndex,
+                 int o2PrimeIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
+    this.hasRnaO2Prime = o2PrimeIndex >= 0;
+
+    this.leadAtomOffset = (byte)(phosphorusIndex - firstAtomIndex);
+    this.wingAtomOffset = (byte)(wingIndex - firstAtomIndex);
   }
+
+  boolean hasRnaO2Prime;
 
   boolean isNucleicMonomer() { return true; }
 
-  int getLeadAtomIndex() { return -1; };
+  public boolean isDna() { return ! hasRnaO2Prime; }
 
-  int getWingAtomIndex() { return -1; };
-
+  public boolean isRna() { return hasRnaO2Prime; }
 }

@@ -38,22 +38,6 @@ public class AlphaPolymer extends Polymer {
     super(model, monomers);
   }
 
-  Atom getAlphaCarbonAtom(int groupIndex) {
-    return monomers[groupIndex].getAlphaCarbonAtom();
-  }
-
-  Atom getLeadAtom(int groupIndex) {
-    return getAlphaCarbonAtom(groupIndex);
-  }
-
-  Point3f getLeadPoint(int groupIndex) {
-    return getLeadAtom(groupIndex).point3f;
-  }
-
-  Point3f getResidueAlphaCarbonPoint(int groupIndex) {
-    return getAlphaCarbonAtom(groupIndex).point3f;
-  }
-
   void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < count &&
         monomers[groupIndex].isHelixOrSheet()) {

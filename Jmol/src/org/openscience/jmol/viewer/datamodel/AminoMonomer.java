@@ -26,20 +26,20 @@ package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
 
-public class AminoMonomer extends Monomer {
-  // I don't think that this should extend AlphaMonomer ...
-  // ... too much risk of conflict
+import javax.vecmath.Point3f;
+
+public class AminoMonomer extends AlphaMonomer {
 
   static Monomer
     validateAndAllocate(Chain chain, String group3,
                         int sequenceNumber, char insertionCode,
-                        Atom[] atoms,
+                        int distinguishingBits, Atom[] atoms,
                         int firstAtomIndex, int lastAtomIndex) {
-    int aminoNitrogenIndex = Integer.MIN_VALUE;
-    int alphaCarbonIndex = Integer.MIN_VALUE;
-    int carbonylCarbonIndex = Integer.MIN_VALUE;
-    int carbonylOxygenIndex = Integer.MIN_VALUE;
-    int terminatingOxtIndex = Integer.MIN_VALUE;
+    int aminoNitrogenIndex = -1;
+    int alphaCarbonIndex = -1;
+    int carbonylCarbonIndex = -1;
+    int carbonylOxygenIndex = -1;
+    int terminatingOxtIndex = -1;
 
     for (int i = firstAtomIndex; i <= lastAtomIndex; ++i) {
       Atom atom = atoms[i];
@@ -92,8 +92,6 @@ public class AminoMonomer extends Monomer {
                        aminoNitrogenIndex, alphaCarbonIndex,
                        carbonylCarbonIndex, carbonylOxygenIndex,
                        terminatingOxtIndex);
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      aminoMonomer.registerAtom(atoms[i]);
     return aminoMonomer;
   }
   
@@ -106,30 +104,39 @@ public class AminoMonomer extends Monomer {
                int terminatingOxtIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
+    this.leadAtomOffset = (byte)(alphaCarbonIndex - firstAtomIndex);
+    this.wingAtomOffset = (byte)(carbonylOxygenIndex - firstAtomIndex);
+
     this.aminoNitrogenOffset = (byte)(aminoNitrogenIndex - firstAtomIndex);
-    this.alphaCarbonOffset = (byte)(alphaCarbonIndex - firstAtomIndex);
     this.carbonylCarbonOffset = (byte)(carbonylCarbonIndex - firstAtomIndex);
-    this.carbonylOxygenOffset = (byte)(carbonylOxygenIndex - firstAtomIndex);
     this.terminatingOxtOffset =
       (byte)(terminatingOxtIndex < 0
-             ? 255 : terminatingOxtIndex - firstAtomIndex);
+             ? -1 : terminatingOxtIndex - firstAtomIndex);
   }
 
   byte aminoNitrogenOffset;
-  byte alphaCarbonOffset;
   byte carbonylCarbonOffset;
-  byte carbonylOxygenOffset;
   byte terminatingOxtOffset;
   
   boolean isAminoMonomer() { return true; }
-  
-  int getLeadAtomIndex()  {
-    //    System.out.println("AminoMonomer.getLeadAtomIndex()");
-    return firstAtomIndex + (alphaCarbonOffset & 0xFF);
+
+  Atom getNitrogenAtom() {
+    return getAtomFromOffset(aminoNitrogenOffset);
   }
-  
-  int getWingAtomIndex() {
-    //    System.out.println("AminoMonomer.getWingAtomIndex()");
-    return firstAtomIndex + (carbonylOxygenOffset & 0xFF);
+
+  Point3f getNitrogenAtomPoint() {
+    return getAtomPointFromOffset(aminoNitrogenOffset);
+  }
+
+  Point3f getCarbonylCarbonAtomPoint() {
+    return getAtomPointFromOffset(carbonylCarbonOffset);
+  }
+
+  Atom getCarbonylOxygenAtom() {
+    return getWingAtom();
+  }
+
+  Point3f getCarbonylOxygenAtomPoint() {
+    return getWingAtomPoint();
   }
 }

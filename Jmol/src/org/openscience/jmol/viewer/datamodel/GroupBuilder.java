@@ -106,21 +106,22 @@ final class GroupBuilder {
       group = AminoMonomer.validateAndAllocate(chain, group3,
                                                groupSequenceNumber,
                                                groupInsertionCode,
-                                               atoms, firstAtomIndex,
-                                               lastAtomIndex);
+                                               distinguishingBits, atoms,
+                                               firstAtomIndex, lastAtomIndex);
     } else if ((distinguishingBits & JmolConstants.ATOMID_ALPHA_ONLY_MASK) ==
                JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
       group = AlphaMonomer.validateAndAllocate(chain, group3,
                                                groupSequenceNumber,
                                                groupInsertionCode,
-                                               atoms, firstAtomIndex,
-                                               lastAtomIndex);
+                                               distinguishingBits, atoms,
+                                               firstAtomIndex, lastAtomIndex);
     } else if ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
                JmolConstants.ATOMID_NUCLEIC_MASK) {
       group = NucleicMonomer.validateAndAllocate(chain, group3,
                                                  groupSequenceNumber,
                                                  groupInsertionCode,
-                                                 atoms, firstAtomIndex,
+                                                 distinguishingBits, atoms,
+                                                 firstAtomIndex,
                                                  lastAtomIndex);
     }
     if (group == null)

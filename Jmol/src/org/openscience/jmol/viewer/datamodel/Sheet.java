@@ -40,8 +40,8 @@ class Sheet extends ProteinStructure {
     if (axisA != null)
       return;
     if (monomerCount == 2) {
-      axisA = aminoPolymer.getResidueAlphaCarbonPoint(monomerIndex);
-      axisB = aminoPolymer.getResidueAlphaCarbonPoint(monomerIndex + 1);
+      axisA = aminoPolymer.getLeadPoint(monomerIndex);
+      axisB = aminoPolymer.getLeadPoint(monomerIndex + 1);
     } else {
       axisA = new Point3f();
       aminoPolymer.getLeadMidPoint(monomerIndex + 1, axisA);
@@ -68,6 +68,8 @@ class Sheet extends ProteinStructure {
   Vector3f widthUnitVector;
   Vector3f heightUnitVector;
   
+  /*
+    FIXME
   void calcSheetUnitVectors() {
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
@@ -90,15 +92,22 @@ class Sheet extends ProteinStructure {
     }
   }
 
+  */
   Vector3f getWidthUnitVector() {
+    return null;
+    /*
     if (widthUnitVector == null)
       calcSheetUnitVectors();
     return widthUnitVector;
+    */
   }
 
   Vector3f getHeightUnitVector() {
+    return null;
+    /*
     if (heightUnitVector == null)
       calcSheetUnitVectors();
     return heightUnitVector;
+    */
   }
 }

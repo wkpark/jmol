@@ -84,9 +84,9 @@ class Helix extends ProteinStructure {
   void calcCenter() {
     if (center == null) {
       int i = monomerIndex + monomerCount - 1;
-      center = new Point3f(apolymer.getResidueAlphaCarbonPoint(i));
+      center = new Point3f(apolymer.getLeadPoint(i));
       while (--i >= monomerIndex)
-        center.add(apolymer.getResidueAlphaCarbonPoint(i));
+        center.add(apolymer.getLeadPoint(i));
       center.scale(1f/monomerCount);
       //      System.out.println("structure center is at :" + center);
     }

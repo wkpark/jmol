@@ -42,20 +42,8 @@ public class NucleotidePolymer extends Polymer {
     return monomers[monomerIndex].getNucleotidePhosphorusAtom();
   }
 
-  public Atom getLeadAtom(int monomerIndex) {
-    return getNucleotidePhosphorusAtom(monomerIndex);
-  }
-
-  public Point3f getLeadPoint(int monomerIndex) {
-    return getLeadAtom(monomerIndex).point3f;
-  }
-
   boolean hasWingPoints() { return true; }
 
-  Point3f getWingPoint(int polymerIndex) {
-    return monomers[polymerIndex].getWingAtom().point3f;
-  }
-  
   public void getStructureMidPoint(int monomerIndex, Point3f midPoint) {
     if (monomerIndex < count &&
         monomers[monomerIndex].isHelixOrSheet()) {

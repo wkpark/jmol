@@ -38,15 +38,6 @@ public class AminoPolymer extends AlphaPolymer {
 
   boolean hasWingPoints() { return true; }
 
-  Point3f getWingPoint(int polymerIndex) {
-    return monomers[polymerIndex].getWingAtom().point3f;
-  }
-
-  // to get something other than the alpha carbon atom
-  Point3f getResiduePoint(int groupIndex, int mainchainIndex) {
-    return monomers[groupIndex].getMainchainAtom(mainchainIndex).point3f;
-  }
-
   void calcHydrogenBonds() {
     calcProteinMainchainHydrogenBonds();
   }
@@ -60,19 +51,19 @@ public class AminoPolymer extends AlphaPolymer {
     Point3f oxygenPoint;
     
     for (int i = 0; i < count; ++i) {
-      Monomer residue = monomers[i];
+      AminoMonomer residue = (AminoMonomer)monomers[i];
       /****************************************************************
        * This does not acount for the first nitrogen in the chain
        * is there some way to predict where it's hydrogen is?
        * mth 20031219
        ****************************************************************/
       if (i > 0 && residue.getGroupID() != JmolConstants.GROUPID_PROLINE) {
-        Point3f nitrogenPoint = residue.getNitrogenAtom().point3f;
+        Point3f nitrogenPoint = residue.getNitrogenAtomPoint();
         aminoHydrogenPoint.add(nitrogenPoint, vectorPreviousOC);
         bondAminoHydrogen(i, aminoHydrogenPoint);
       }
-      carbonPoint = residue.getCarbonylCarbonAtom().point3f;
-      oxygenPoint = residue.getCarbonylOxygenAtom().point3f;
+      carbonPoint = residue.getCarbonylCarbonAtomPoint();
+      oxygenPoint = residue.getCarbonylOxygenAtomPoint();
       vectorPreviousOC.sub(carbonPoint, oxygenPoint);
     }
   }
@@ -84,9 +75,9 @@ public class AminoPolymer extends AlphaPolymer {
   private final static double QConst = -332 * 0.42 * 0.2 * 1000;
 
   void bondAminoHydrogen(int indexDonor, Point3f hydrogenPoint) {
-    Monomer source = monomers[indexDonor];
-    Point3f sourceAlphaPoint = source.getAlphaCarbonPoint();
-    Point3f sourceNitrogenPoint = source.getNitrogenAtom().point3f;
+    AminoMonomer source = (AminoMonomer)monomers[indexDonor];
+    Point3f sourceAlphaPoint = source.getLeadAtomPoint();
+    Point3f sourceNitrogenPoint = source.getNitrogenAtomPoint();
     int energyMin1 = 0;
     int energyMin2 = 0;
     int indexMin1 = -1;
@@ -96,8 +87,8 @@ public class AminoPolymer extends AlphaPolymer {
         //        System.out.println(" i=" +i + " indexDonor=" + indexDonor);
         continue;
       }
-      Monomer target = monomers[i];
-      Point3f targetAlphaPoint = target.getAlphaCarbonPoint();
+      AminoMonomer target = (AminoMonomer)monomers[i];
+      Point3f targetAlphaPoint = target.getLeadAtomPoint();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 > maxHbondAlphaDistance2)
         continue;
@@ -119,13 +110,13 @@ public class AminoPolymer extends AlphaPolymer {
   }
 
   int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
-                      Monomer target) {
-    Point3f targetOxygenPoint = target.getCarbonylOxygenAtom().point3f;
+                      AminoMonomer target) {
+    Point3f targetOxygenPoint = target.getCarbonylOxygenAtomPoint();
     float distOH2 = targetOxygenPoint.distanceSquared(hydrogenPoint);
     if (distOH2 < minimumHbondDistance2)
       return -9900;
 
-    Point3f targetCarbonPoint = target.getCarbonylCarbonAtom().point3f;
+    Point3f targetCarbonPoint = target.getCarbonylCarbonAtomPoint();
     float distCH2 = targetCarbonPoint.distanceSquared(hydrogenPoint);
     if (distCH2 < minimumHbondDistance2)
       return -9900;
@@ -196,10 +187,11 @@ public class AminoPolymer extends AlphaPolymer {
     }
     //    System.out.println("createResidueHydrogenBond(" + indexAminoGroup +
     //                       "," + indexCarbonylGroup);
-    Monomer monomerDonor = monomers[indexAminoGroup];
-    monomerDonor.setAminoBackboneHbondOffset(aminoBackboneHbondOffset);
-    Atom nitrogen = monomerDonor.getNitrogenAtom();
-    Atom oxygen = monomers[indexCarbonylGroup].getCarbonylOxygenAtom();
+    AminoMonomer donor = (AminoMonomer)monomers[indexAminoGroup];
+    donor.setAminoBackboneHbondOffset(aminoBackboneHbondOffset);
+    Atom nitrogen = donor.getNitrogenAtom();
+    AminoMonomer recipient = (AminoMonomer)monomers[indexCarbonylGroup];
+    Atom oxygen = recipient.getCarbonylOxygenAtom();
     Frame frame = model.mmset.frame;
     frame.bondAtoms(nitrogen, oxygen, order);
   }

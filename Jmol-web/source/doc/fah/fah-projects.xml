@@ -1458,6 +1458,9 @@
   <fah_proj number="960" name="p960_pa_nat_sf2" file="y"
     server="171.65.103.153" atoms="737" preferred="8" deadline="13"
     credit="48" frames="100" code="G" contact="guha"/>
+  <fah_proj number="961" name="p961_pa_f31g_drf2"
+    server="171.64.122.132" atoms="724" preferred="8" deadline="13"
+    credit="48" frames="100" code="G" contact="guha"/>
   <fah_proj number="997"
     credit="10"/>
   <fah_proj number="998"

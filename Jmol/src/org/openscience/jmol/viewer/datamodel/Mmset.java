@@ -38,7 +38,7 @@ final public class Mmset {
 
   private int modelCount = 0;
   private Model[] models = new Model[1];
-  private int[] modelIDs = new int[1];
+  private String[] modelTags = new String[1];
 
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
@@ -77,23 +77,24 @@ final public class Mmset {
   }
 
 
-  Model getOrAllocateModel(int modelID) {
+  Model getOrAllocateModel(String modelTag) {
+    modelTag = modelTag.intern();
     for (int i = modelCount; --i >= 0; )
-      if (modelIDs[i] == modelID)
+      if (modelTags[i] == modelTag)
         return models[i];
     if (modelCount == models.length) {
       models = (Model[])Util.doubleLength(models);
-      modelIDs = Util.doubleLength(modelIDs);
+      modelTags = Util.doubleLength(modelTags);
     }
-    modelIDs[modelCount] = modelID;
-    Model model = new Model(this, modelCount, modelID);
+    modelTags[modelCount] = modelTag;
+    Model model = new Model(this, modelCount, modelTag);
     models[modelCount++] = model;
     return model;
   }
 
-  int getModelIndex(int modelID) {
+  int getModelIndex(String modelTag) {
     int i;
-    for (i = modelCount; --i >= 0 && modelIDs[i] != modelID; )
+    for (i = modelCount; --i >= 0 && !modelTags[i].equals(modelTag); )
       ;
     return i;
   }

@@ -470,8 +470,16 @@ public final class Atom implements Bspt.Tuple {
     return group.getSeqcodeString();
   }
 
-  public int getModelID() {
-    return group.chain.model.modelNumber;
+  public String getModelTag() {
+    return group.chain.model.modelTag;
+  }
+
+  public int getModelTagNumber() {
+    try {
+      return Integer.parseInt(group.chain.model.modelTag);
+    } catch (NumberFormatException nfe) {
+      return 0;
+    }
   }
   
   public byte getSpecialAtomID() {
@@ -635,7 +643,7 @@ public final class Atom implements Bspt.Tuple {
         strT = "" + getPolymerLength();
         break;
       case 'M':
-        strT = "/" + getModelID();
+        strT = "/" + getModelTag();
         break;
       case 'm':
         strT = "<X>";
@@ -692,7 +700,7 @@ public final class Atom implements Bspt.Tuple {
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append(" Model:");
-      info.append(getModelID());
+      info.append(getModelTag());
     }
     return "" + info;
   }
@@ -726,7 +734,7 @@ public final class Atom implements Bspt.Tuple {
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append("/");
-      info.append(getModelID());
+      info.append(getModelTag());
     }
     return "" + info;
   }

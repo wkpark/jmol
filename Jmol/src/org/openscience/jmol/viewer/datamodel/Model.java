@@ -34,8 +34,8 @@ import java.util.Vector;
 final class Model {
 
   Mmset mmset;
-  int modelNumber;
   int modelIndex;
+  String modelTag;
 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
@@ -44,10 +44,10 @@ final class Model {
   private Polymer[] polymers = new Polymer[8];
 
 
-  Model(Mmset mmset, int modelIndex, int modelNumber) {
+  Model(Mmset mmset, int modelIndex, String modelTag) {
     this.mmset = mmset;
     this.modelIndex = modelIndex;
-    this.modelNumber = modelNumber;
+    this.modelTag = modelTag;
   }
 
   void freeze() {

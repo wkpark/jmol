@@ -165,8 +165,8 @@ final public class Frame {
     return mmset.getModelCount();
   }
 
-  public int getModelIndex(int modelID) {
-    return mmset.getModelIndex(modelID);
+  public int getModelIndex(String modelTag) {
+    return mmset.getModelIndex(modelTag);
   }
 
   public int getChainCount() {

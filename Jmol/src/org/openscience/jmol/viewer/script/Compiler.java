@@ -1183,10 +1183,19 @@ class Compiler {
       return true;
     }
     Token tokenModel = tokenNext();
-    if (tokenModel.tok != Token.integer)
+    switch (tokenModel.tok) {
+    case Token.string:
+    case Token.integer:
+    case Token.identifier:
+    case Token.x:
+    case Token.y:
+    case Token.z:
+      break;
+    default:
       return invalidModelSpecification();
+    }
     return generateResidueSpecCode(new Token(Token.spec_model,
-                                             tokenModel.intValue, "spec_model"));
+                                             (String)tokenModel.value));
   }
 
   boolean clauseAtomSpec() {

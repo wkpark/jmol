@@ -978,8 +978,8 @@ final public class JmolViewer {
     return modelManager.getModelFileHeader();
   }
 
-  public int getModelIndex(int modelID) {
-    return modelManager.getModelIndex(modelID);
+  public int getModelIndex(String modelTag) {
+    return modelManager.getModelIndex(modelTag);
   }
 
   public boolean haveFrame() {
@@ -1271,10 +1271,6 @@ final public class JmolViewer {
   public void setAnimationPrevious() {
     if (repaintManager.setAnimationPrevious())
       refresh();
-  }
-
-  public boolean setDisplayModelID(int modelID) {
-    return repaintManager.setDisplayModelID(modelID);
   }
 
   public boolean setDisplayModelIndex(int modelIndex) {

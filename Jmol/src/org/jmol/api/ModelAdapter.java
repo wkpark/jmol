@@ -117,9 +117,16 @@ public abstract class ModelAdapter {
   public int getModelCount(Object clientFile) { return 1; }
 
   /**
-   * The model number for each model
+   * The model tag for each model.
+   *<p>
+   * For a PDB file, this is is the model number.
    */
-  public int getModelNumber(Object clientFile, int modelIndex) { return 1; }
+  public String getModelTag(Object clientFile, int modelIndex)
+  { return "" + getModelNumber(clientFile, modelIndex); }
+
+  public int getModelNumber(Object clientFile, int modelIndex) {
+    return 1;
+  }
 
   /**
    * The properties for each model
@@ -186,7 +193,8 @@ public abstract class ModelAdapter {
    ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
-    public int getModelNumber(){ return 1; }
+    public String getModelTag(){ return "" + getModelNumber(); }
+    public int getModelNumber() { return 1; }
     abstract public Object getUniqueID();
     public int getElementNumber() { return -1; }
     public String getElementSymbol() { return null; }

@@ -70,7 +70,8 @@ final public class FrameBuilder {
         elementNumber = JmolConstants.
           elementNumberFromSymbol(iterAtom.getElementSymbol());
       addAtom(frame,
-              iterAtom.getModelNumber(), iterAtom.getUniqueID(),
+              iterAtom.getModelTag().intern(),
+              iterAtom.getUniqueID(),
               elementNumber,
               iterAtom.getAtomName(),
               iterAtom.getFormalCharge(),
@@ -126,7 +127,7 @@ final public class FrameBuilder {
 
   private final static int ATOM_GROWTH_INCREMENT = 2000;
 
-  int currentModelID;
+  String currentModelTag;
   int currentModelIndex;
   Model currentModel;
   char currentChainID;
@@ -145,7 +146,7 @@ final public class FrameBuilder {
 
 
   void initializeBuild(int atomCountEstimate) {
-    currentModelID = Integer.MIN_VALUE;
+    currentModelTag = null;
     currentModel = null;
     currentChainID = '\uFFFF';
     currentChain = null;
@@ -173,7 +174,7 @@ final public class FrameBuilder {
 
 
   void addAtom(Frame frame,
-               int modelID, Object atomUid,
+               String modelTag, Object atomUid,
                byte atomicNumber,
                String atomName, 
                int formalCharge, float partialCharge,
@@ -185,10 +186,10 @@ final public class FrameBuilder {
                int groupSequenceNumber, char groupInsertionCode,
                float vectorX, float vectorY, float vectorZ,
                Object clientAtomReference) {
-    if (modelID != currentModelID) {
-      currentModelID = modelID;
-      currentModel = frame.mmset.getOrAllocateModel(modelID);
-      currentModelIndex = frame.mmset.getModelIndex(modelID);
+    if (modelTag != currentModelTag) {
+      currentModelTag = modelTag;
+      currentModel = frame.mmset.getOrAllocateModel(modelTag);
+      currentModelIndex = frame.mmset.getModelIndex(modelTag);
       currentChainID = '\uFFFF';
     }
     if (chainID != currentChainID) {

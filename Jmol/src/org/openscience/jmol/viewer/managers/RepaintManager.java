@@ -48,26 +48,14 @@ public class RepaintManager {
   public int displayModelIndex = 0;
 
   public boolean setDisplayModelIndex(int modelIndex) {
-    if (modelIndex > 0) {
-      Frame frame = viewer.getFrame();
-      if (modelIndex >= frame.getModelCount()) {
-        System.out.println("bad model index");
-        return false;
-      }
-    }
+    Frame frame = viewer.getFrame();
+    if (modelIndex < 0 || modelIndex >= frame.getModelCount())
+      displayModelIndex = -1;
+    else
+      displayModelIndex = modelIndex;
     this.displayModelIndex = modelIndex;
     viewer.notifyFrameChanged(modelIndex);
     return true;
-  }
-
-  public boolean setDisplayModelID(int modelID) {
-    int i = -1;
-    if (modelID != 0) {
-      i = viewer.getModelIndex(modelID);
-      if (i < 0)
-        return false;
-    }
-    return setDisplayModelIndex(i);
   }
 
   public int animationDirection = 1;
@@ -252,7 +240,7 @@ public class RepaintManager {
   
   public void clearAnimation() {
     setAnimationOn(false);
-    setDisplayModelID(1);
+    setDisplayModelIndex(0);
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(0, 0, 0);

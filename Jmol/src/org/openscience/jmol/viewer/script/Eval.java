@@ -491,7 +491,8 @@ public class Eval implements Runnable {
       switch (token.tok) {
       case Token.spec_model:
         strbufLog.append("/");
-        // fall into
+        strbufLog.append("" + token.value);
+        break;
       case Token.integer:
         strbufLog.append(token.intValue);
         continue;
@@ -816,7 +817,7 @@ public class Eval implements Runnable {
         stack[sp++] = getSpecAtom((String)instruction.value);
         break;
       case Token.spec_model:
-        stack[sp++] = getSpecModel(instruction.intValue);
+        stack[sp++] = getSpecModel((String)instruction.value);
         break;
       case Token.protein:
         stack[sp++] = getProteinSet();
@@ -1153,9 +1154,9 @@ public class Eval implements Runnable {
         bsResult.set(i);
   }
 
-  BitSet getSpecModel(int modelID) {
+  BitSet getSpecModel(String modelTag) {
     BitSet bsModel = new BitSet(viewer.getAtomCount());
-    selectModelIndexAtoms(viewer.getModelIndex(modelID), bsModel);
+    selectModelIndexAtoms(viewer.getModelIndex(modelTag), bsModel);
     return bsModel;
   }
 
@@ -1214,7 +1215,7 @@ public class Eval implements Runnable {
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.model:
-        propertyValue = atom.getModelID();
+        propertyValue = atom.getModelTagNumber();
         break;
       default:
         unrecognizedAtomProperty(property);
@@ -2310,15 +2311,15 @@ public class Eval implements Runnable {
       viewer.setAnimationPrevious();
       return;
     }
-    int modelID = 0;
+    String modelTag = null;
     switch(statement[offset].tok) {
     case Token.all:
     case Token.asterisk:
-      modelID = 0;
+      break;
     case Token.none:
       break;
     case Token.integer:
-      modelID = statement[offset].intValue;
+      modelTag = "" + statement[offset].intValue;
       break;
     case Token.identifier:
       String ident = (String)statement[offset].value;
@@ -2330,11 +2331,13 @@ public class Eval implements Runnable {
         viewer.setAnimationPrevious();
         return;
       }
+      modelTag = (String)statement[offset].value;
+      break;
     default:
       invalidArgument();
     }
-    if (! viewer.setDisplayModelID(modelID))
-      evalError("Invalid modelID:" + modelID);
+    int modelIndex = viewer.getModelIndex(modelTag);
+    viewer.setDisplayModelIndex(modelIndex);
   }
 
   // note that this array *MUST* be in the same sequence as the

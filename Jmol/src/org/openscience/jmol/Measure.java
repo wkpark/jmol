@@ -292,11 +292,11 @@ public class Measure extends JDialog {
       }
     }
     ChemFrame cf = display.getFrame();
-    AtomType a = cf.getAtomAt(measured);
+    Atom a = cf.getAtomAt(measured);
     double[] c = cf.getAtomCoords(measured);
     selection[currentAtom] = measured;
 
-    mtm.updateRow(currentAtom, measured, a.getBaseAtomType().getName(), c);
+    mtm.updateRow(currentAtom, measured, a.getType().getName(), c);
     if (currentAtom < measure - 1) {
       currentAtom++;
       table.setRowSelectionInterval(currentAtom, currentAtom);

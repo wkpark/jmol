@@ -130,11 +130,11 @@ public class CMLSaver extends FileSaver {
       }
       ids += "a" + i;
 
-      AtomType a = cf.getAtomAt(i);
+      Atom a = cf.getAtomAt(i);
       if (elementTypes.length() > 0) {
         elementTypes += " ";
       }
-      elementTypes += a.getBaseAtomType().getName();
+      elementTypes += a.getType().getName();
 
       double[] pos = cf.getAtomCoords(i);
       if (x3s.length() > 0) {

@@ -76,7 +76,7 @@ public class ChemFrame {
   private int[] tvect;                    // vector ends transformed to screen space
   private int[] taxes;                    // axes transformed to screen space
   private int[] tcellaxes;                // axes transformed to screen space
-  private AtomType[] atoms;               // array of atom types
+  private Atom[] atoms;               // array of atom types
   private Bond[] bonds;                   // array of bonds
   private Vector[] aProps;                // array of Vector of atom properties
   private Vector atomProps;    // Vector of all the atom properties present in this frame
@@ -86,7 +86,7 @@ public class ChemFrame {
   private boolean hasVectors = false;
   private int[] ZsortMap;
   private int nvert = 0;
-  private int nbonds, maxbonds, maxvert;
+  private int nbonds, maxbonds;
   private int maxbpa = 20;                // maximum number of bonds per atom
   private int[] nBpA;                     // number of bonds per atom
   private int[][] inBonds;                // atom i's membership in it's jth bond points 
@@ -180,12 +180,11 @@ public class ChemFrame {
    */
   public ChemFrame(int na) {
 
-    this.maxvert = na;
     frameProps = new Vector();
     atomProps = new Vector();
     vert = new float[na * 3];
     vect = new float[na * 3];
-    atoms = new AtomType[na];
+    atoms = new Atom[na];
     aProps = new Vector[na];
     pickedAtoms = new boolean[na];
     nBpA = new int[na];
@@ -206,26 +205,7 @@ public class ChemFrame {
    *
    */
   public ChemFrame() {
-
-    this.maxvert = 100;
-    frameProps = new Vector();
-    atomProps = new Vector();
-    vert = new float[100 * 3];
-    vect = new float[100 * 3];
-    atoms = new AtomType[100];
-    aProps = new Vector[100];
-    pickedAtoms = new boolean[100];
-    nBpA = new int[100];
-    inBonds = new int[100][maxbpa];
-    for (int i = 0; i < 100; i++) {
-      vert[3 * i] = 0.0f;
-      vert[3 * i + 1] = 0.0f;
-      vert[3 * i + 2] = 0.0f;
-      vect[3 * i] = 0.0f;
-      vect[3 * i + 1] = 0.0f;
-      vect[3 * i + 2] = 0.0f;
-      pickedAtoms[i] = false;
-    }
+    this(100);
   }
 
   /**
@@ -325,7 +305,7 @@ public class ChemFrame {
    */
   public int addAtom(String name, float x, float y, float z)
           throws Exception {
-    return addAtom(new AtomType(BaseAtomType.get(name)), x, y, z);
+    return addAtom(BaseAtomType.get(name), x, y, z);
   }
 
   /**
@@ -337,44 +317,15 @@ public class ChemFrame {
    * @param y the y coordinate of the new atom
    * @param z the z coordinate of the new atom
    */
-  public int addAtom(AtomType type, float x, float y, float z)
+  public int addAtom(BaseAtomType type, float x, float y, float z)
           throws Exception {
 
     int i = nvert;
-    if (i >= maxvert) {
-      System.out.println("Increasing vector size!");
-      maxvert *= 2;
-
-      float nv[] = new float[maxvert * 3];
-      System.arraycopy(vert, 0, nv, 0, vert.length);
-      vert = nv;
-
-      AtomType nat[] = new AtomType[maxvert];
-      System.arraycopy(atoms, 0, nat, 0, atoms.length);
-      atoms = nat;
-
-      Vector nap[] = new Vector[maxvert];
-      System.arraycopy(aProps, 0, nap, 0, aProps.length);
-      aProps = nap;
-
-      float nve[] = new float[maxvert * 3];
-      System.arraycopy(vect, 0, nve, 0, vect.length);
-      vect = nve;
-
-      boolean np[] = new boolean[maxvert];
-      System.arraycopy(pickedAtoms, 0, np, 0, pickedAtoms.length);
-      pickedAtoms = np;
-
-      int nbpa[] = new int[maxvert];
-      System.arraycopy(nBpA, 0, nbpa, 0, nBpA.length);
-      nBpA = nbpa;
-
-      int inb2[][] = new int[maxvert][maxbpa];
-      System.arraycopy(inBonds, 0, inb2, 0, inBonds.length);
-      inBonds = inb2;
+    if (i >= vert.length) {
+      increaseArraySizes(2 * vert.length);
     }
 
-    atoms[i] = type;
+    atoms[i] = new Atom(type);
     nBpA[i] = 0;
     aProps[i] = new Vector();
     if (AutoBond) {
@@ -384,10 +335,10 @@ public class ChemFrame {
         float dy = vert[3 * j + 1] - y;
         float dz = vert[3 * j + 2] - z;
         d2 += dx * dx + dy * dy + dz * dz;
-        AtomType b = atoms[j];
+        Atom b = atoms[j];
         float dr = bondFudge
-                     * ((float) type.getBaseAtomType().getCovalentRadius()
-                        + (float) b.getBaseAtomType().getCovalentRadius());
+                     * ((float) atoms[i].getType().getCovalentRadius()
+                        + (float) b.getType().getCovalentRadius());
         float dr2 = dr * dr;
 
         if (d2 <= dr2) {
@@ -417,7 +368,7 @@ public class ChemFrame {
               bondEnd2 = be2;
             }
           }
-          Bond bond = new Bond(type, b);
+          Bond bond = new Bond(atoms[i], b);
           bonds[k] = bond;
           bondEnd1[k] = i;
           bondEnd2[k] = j;
@@ -468,7 +419,7 @@ public class ChemFrame {
     if (baseType == null) {
       return -1;
     }
-    return addAtom(new AtomType(baseType), x, y, z);
+    return addAtom(baseType, x, y, z);
   }
 
   /**
@@ -594,7 +545,7 @@ public class ChemFrame {
    *  @param index the index of the atom.
    *  @return the atom at the given index.
    */
-  public AtomType getAtomAt(int index) {
+  public Atom getAtomAt(int index) {
     return atoms[index];
   }
 
@@ -823,7 +774,6 @@ public class ChemFrame {
     }
     int lg = 0;
     int lim = nvert;
-    AtomType ls[] = atoms;
     if ((lim <= 0) || (nvert <= 0)) {
       return;
     }
@@ -864,7 +814,7 @@ public class ChemFrame {
 
         // don't paint if atom is a hydrogen and !showhydrogens
         if (!drawHydrogen
-                && (atoms[j / 3].getBaseAtomType().getAtomicNumber() == 1)) {
+                && (atoms[j / 3].getType().getAtomicNumber() == 1)) {
 
           // atom is an hydrogen and should not be painted
         } else {
@@ -1177,7 +1127,7 @@ public class ChemFrame {
     // do a n*(n-1) scan to get new bonds:
     if (AutoBond) {
       for (int i = 0; i < nvert - 1; i++) {
-        AtomType a = atoms[i];
+        Atom a = atoms[i];
         float ax = vert[3 * i];
         float ay = vert[3 * i + 1];
         float az = vert[3 * i + 2];
@@ -1187,10 +1137,10 @@ public class ChemFrame {
           float dy = vert[3 * j + 1] - ay;
           float dz = vert[3 * j + 2] - az;
           d2 += dx * dx + dy * dy + dz * dz;
-          AtomType b = atoms[j];
+          Atom b = atoms[j];
           float dr = bondFudge
-                       * ((float) a.getBaseAtomType().getCovalentRadius()
-                          + (float) b.getBaseAtomType().getCovalentRadius());
+                       * ((float) a.getType().getCovalentRadius()
+                          + (float) b.getType().getCovalentRadius());
           float dr2 = dr * dr;
 
           if (d2 <= dr2) {
@@ -1264,6 +1214,37 @@ public class ChemFrame {
 
   public Enumeration getVibrations() {
     return vibrations.elements();
+  }
+
+  private void increaseArraySizes(int newArraySize) {
+
+    float nv[] = new float[newArraySize * 3];
+    System.arraycopy(vert, 0, nv, 0, vert.length);
+    vert = nv;
+
+    Atom nat[] = new Atom[newArraySize];
+    System.arraycopy(atoms, 0, nat, 0, atoms.length);
+    atoms = nat;
+
+    Vector nap[] = new Vector[newArraySize];
+    System.arraycopy(aProps, 0, nap, 0, aProps.length);
+    aProps = nap;
+
+    float nve[] = new float[newArraySize * 3];
+    System.arraycopy(vect, 0, nve, 0, vect.length);
+    vect = nve;
+
+    boolean np[] = new boolean[newArraySize];
+    System.arraycopy(pickedAtoms, 0, np, 0, pickedAtoms.length);
+    pickedAtoms = np;
+
+    int nbpa[] = new int[newArraySize];
+    System.arraycopy(nBpA, 0, nbpa, 0, nBpA.length);
+    nBpA = nbpa;
+
+    int inb2[][] = new int[newArraySize][maxbpa];
+    System.arraycopy(inBonds, 0, inb2, 0, inBonds.length);
+    inBonds = inb2;
   }
 }
 

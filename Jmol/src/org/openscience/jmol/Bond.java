@@ -26,37 +26,22 @@ import javax.swing.*;
 
 public class Bond {
 
-  private static JPanel jpanel;
+  private Atom atom1;
+  private Atom atom2;
 
-  private AtomType at1, at2;
-  private Color col1, col2;
-
-  public static void setJPanel(JPanel jp) {
-    jpanel = jp;
-  }
-
-  public Bond(AtomType at1, AtomType at2) {
-    this.at1 = at1;
-    this.at2 = at2;
-    resetColors();
+  public Bond(Atom a1, Atom a2) {
+    this.atom1 = a1;
+    this.atom2 = a2;
   }
 
   public boolean bindsHydrogen() {
 
-    if ((at1.getBaseAtomType().getAtomicNumber() == 1)
-            || (at2.getBaseAtomType().getAtomicNumber() == 1)) {
+    if ((atom1.getType().getAtomicNumber() == 1)
+            || (atom2.getType().getAtomicNumber() == 1)) {
       return true;
     } else {
       return false;
     }
-  }
-
-  /* added to enforce recoloring of bonds when atom's
-   * is changed.
-  **/
-  public void resetColors() {
-    col1 = this.at1.getColor();
-    col2 = this.at2.getColor();
   }
 
   public void paint(Graphics gc, DisplaySettings settings, int x1, int y1,
@@ -90,10 +75,10 @@ public class Bond {
     } else {
       r1 = costheta
               * (double) settings.getCircleRadius(z1,
-                at1.getBaseAtomType().getVdwRadius());
+                atom1.getType().getVdwRadius());
       r2 = costheta
               * (double) settings.getCircleRadius(z2,
-                at2.getBaseAtomType().getVdwRadius());
+                atom2.getType().getVdwRadius());
     }
 
     double bl2 = run * run + rise * rise;
@@ -138,9 +123,9 @@ public class Bond {
 
     // Duck out quickly if just line mode:
     if ((settings.getBondDrawMode() == DisplaySettings.LINE) || useLine) {
-      gc.setColor(col1);
+      gc.setColor(atom1.getColor());
       gc.drawLine(x1 + dx1, y1 + dy1, xmp, ymp);
-      gc.setColor(col2);
+      gc.setColor(atom2.getColor());
       gc.drawLine(x2 + dx2, y2 + dy2, xmp, ymp);
       return;
     }
@@ -188,9 +173,9 @@ public class Bond {
 
       switch (settings.getBondDrawMode()) {
       case DisplaySettings.WIREFRAME :
-        gc.setColor(col1);
+        gc.setColor(atom1.getColor());
         gc.drawPolygon(poly1);
-        gc.setColor(col2);
+        gc.setColor(atom2.getColor());
         gc.drawPolygon(poly2);
         break;
 
@@ -199,16 +184,16 @@ public class Bond {
           double len = i / (2.0 * halfbw);
 
           // System.out.println("len = " + len);
-          int R1 = (int) ((float) col1.getRed() * (1.0f - len));
-          int G1 = (int) ((float) col1.getGreen() * (1.0f - len));
-          int B1 = (int) ((float) col1.getBlue() * (1.0f - len));
+          int R1 = (int) ((float) atom1.getColor().getRed() * (1.0f - len));
+          int G1 = (int) ((float) atom1.getColor().getGreen() * (1.0f - len));
+          int B1 = (int) ((float) atom1.getColor().getBlue() * (1.0f - len));
 
           // Bitwise masking to make color model:
           int model1 = -16777216 | R1 << 16 | G1 << 8 | B1;
 
-          int R2 = (int) ((float) col2.getRed() * (1.0f - len));
-          int G2 = (int) ((float) col2.getGreen() * (1.0f - len));
-          int B2 = (int) ((float) col2.getBlue() * (1.0f - len));
+          int R2 = (int) ((float) atom2.getColor().getRed() * (1.0f - len));
+          int G2 = (int) ((float) atom2.getColor().getGreen() * (1.0f - len));
+          int B2 = (int) ((float) atom2.getColor().getBlue() * (1.0f - len));
 
           // Bitwise masking to make color model:
           int model2 = -16777216 | R2 << 16 | G2 << 8 | B2;
@@ -270,11 +255,11 @@ public class Bond {
        * so we don't need to do it here.
        */
       default :
-        gc.setColor(col1);
+        gc.setColor(atom1.getColor());
         gc.fillPolygon(poly1);
         gc.setColor(settings.getOutlineColor());
         gc.drawPolygon(poly1);
-        gc.setColor(col2);
+        gc.setColor(atom2.getColor());
         gc.fillPolygon(poly2);
         gc.setColor(settings.getOutlineColor());
         gc.drawPolygon(poly2);
@@ -283,9 +268,9 @@ public class Bond {
 
     } else {
 
-      gc.setColor(col1);
+      gc.setColor(atom1.getColor());
       gc.drawLine(x1 + dx1, y1 + dy1, xmp, ymp);
-      gc.setColor(col2);
+      gc.setColor(atom2.getColor());
       gc.drawLine(x2 + dx2, y2 + dy2, xmp, ymp);
     }
   }

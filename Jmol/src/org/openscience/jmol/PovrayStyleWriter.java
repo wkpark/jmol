@@ -204,7 +204,7 @@ public class PovrayStyleWriter {
 
     //Holy cow. Well, we should now know what types there are
     for (int j = 0; j < numTypes; j++) {
-      BaseAtomType at = cf.getAtomAt(indexOfExampleAtom[j]).getBaseAtomType();
+      BaseAtomType at = cf.getAtomAt(indexOfExampleAtom[j]).getType();
       String def =
         "//****************************************************\n"
           + "// DEFINE " + typeName[j] + " MACROS\n"
@@ -299,7 +299,7 @@ public class PovrayStyleWriter {
   public void writeAtom(BufferedWriter w, int atomIndex, ChemFrame cf)
           throws IOException {
 
-    BaseAtomType a = cf.getAtomAt(atomIndex).getBaseAtomType();
+    BaseAtomType a = cf.getAtomAt(atomIndex).getType();
     double[] pos = cf.getAtomCoords(atomIndex);
 
     cf.findBB();
@@ -405,7 +405,7 @@ public class PovrayStyleWriter {
    */
   protected String povrayColor(ChemFrame cf, int indexOfExampleAtom) {
 
-    BaseAtomType at = cf.getAtomAt(indexOfExampleAtom).getBaseAtomType();
+    BaseAtomType at = cf.getAtomAt(indexOfExampleAtom).getType();
     java.awt.Color col = at.getColor();
     float tff = (float) 255.0;
     return "rgb < " + ((float) col.getRed() / tff) + ", "
@@ -425,7 +425,7 @@ public class PovrayStyleWriter {
    * @return The string representation of the atom type.
    */
   protected String getAtomName(ChemFrame cf, int atomIndex) {
-    return cf.getAtomAt(atomIndex).getBaseAtomType().getName();
+    return cf.getAtomAt(atomIndex).getType().getName();
   }
 
 }

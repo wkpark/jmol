@@ -101,7 +101,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
 
       // Linearly interpolate new coordinates for extra frames
       for (int k = 0; k < numberVertices; ++k) {
-        AtomType atomType = fromFrame.getAtomAt(k);
+        Atom atom = fromFrame.getAtomAt(k);
         double[] fromCoord = fromFrame.getAtomCoords(k);
         double[] toCoord = toFrame.getAtomCoords(k);
         double[] step = new double[3];
@@ -116,7 +116,7 @@ public class Animate extends JDialog implements ActionListener, Runnable {
           Vector newProps = new Vector();
           try {
             extraFrames[i]
-                    .addPropertiedAtom(atomType.getBaseAtomType().getName(),
+                    .addPropertiedAtom(atom.getType().getName(),
                       (float) newCoord[0], (float) newCoord[1],
                         (float) newCoord[2], newProps);
           } catch (Exception ex) {

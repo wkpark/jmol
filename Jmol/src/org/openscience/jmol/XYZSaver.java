@@ -99,8 +99,8 @@ public class XYZSaver extends FileSaver {
 
       for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
 
-        AtomType a = cf.getAtomAt(i);
-        st = a.getBaseAtomType().getName();
+        Atom a = cf.getAtomAt(i);
+        st = a.getType().getName();
 
         double[] pos = cf.getAtomCoords(i);
         st = st + tab + new Double(pos[0]).toString() + tab

@@ -270,7 +270,7 @@ class RasMolScriptHandler {
         sb.append("  ");
         sb.append(i + 1);
         sb.append(" ");
-        sb.append(program.display.md.getAtomAt(i).getBaseAtomType()
+        sb.append(program.display.md.getAtomAt(i).getType()
                 .getRoot());
         println(sb.toString());
       }
@@ -353,10 +353,6 @@ class RasMolScriptHandler {
         program.display.md.getAtomAt(atom - 1).setColor(this.getColor(value));
       }
 
-      // reset bond colors
-      for (int i = 0; i < program.display.md.getBondCount(); i++) {
-        program.display.md.getBondAt(i).resetColors();
-      }
     } else {
       throw new RasMolScriptException("Error: unknown object: " + object);
     }

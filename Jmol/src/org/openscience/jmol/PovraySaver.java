@@ -299,7 +299,7 @@ public class PovraySaver extends FileSaver {
           // don't write out if atom is a hydrogen and !showhydrogens
 
           if (!drawHydrogen
-                  && (cf.getAtomAt(i).getBaseAtomType().getAtomicNumber()
+                  && (cf.getAtomAt(i).getType().getAtomicNumber()
                     == 1)) {
 
             // atom is a hydrogen and should not be written

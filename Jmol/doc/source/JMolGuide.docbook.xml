@@ -1,0 +1,246 @@
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+<book>
+  <bookinfo>
+    <title>JMol Documentation</title>
+  </bookinfo>
+  
+  <chapter>
+    <title>Introduction</title>
+    <para>
+      JMol is far more than just a Java based tool for 
+      displaying 3D chemical information.
+    </para>
+  </chapter>
+  
+  <chapter>
+    <title>Menu description</title>
+    <section>
+      <title>The File menu</title>
+      <section>
+        <title>Open</title>
+      </section>
+      <section>
+        <title>Script...</title>
+      </section>
+      <section>
+        <title>Close</title>
+      </section>
+      <section>
+        <title>Save</title>
+      </section>
+      <section>
+        <title>Save As...</title>
+      </section>
+      <section>
+        <title>Export Image</title>
+      </section>
+      <section>
+        <title>Revert</title>
+      </section>
+      <section>
+        <title>Print</title>
+      </section>
+      <section>
+        <title>Exit</title>
+	<para>Quits the Jmol application</para>
+      </section>
+    </section>
+    <section>
+      <title>The Edit menu</title>
+      <section>
+        <title>Undo</title>
+      </section>
+      <section>
+        <title>Redo</title>
+      </section>
+      <section>
+        <title>Select All</title>
+      </section>
+      <section>
+        <title>Deselect All</title>
+      </section>
+      <section>
+        <title>Rebond Atoms</title>
+      </section>
+      <section>
+        <title>Command...</title>
+      </section>
+      <section>
+        <title>Atom Properties...</title>
+      </section>
+      <section>
+        <title>Preferences...</title>
+      </section>
+    </section>
+    <section>
+      <title>The Display menu</title>
+      <section>
+        <title>Atom Style</title>
+        <section>
+          <title>Quick Draw</title>	  
+        </section>
+        <section>
+          <title>Shading</title>	  
+        </section>
+        <section>
+          <title>Wire Frame</title>	  
+        </section>
+      </section>      
+      <section>
+        <title>Bond Style</title>
+        <section>
+          <title>Quick Draw</title>	  
+        </section>
+        <section>
+          <title>Shading</title>	  
+        </section>
+        <section>
+          <title>Wire Frame</title>	  
+        </section>
+        <section>
+          <title>Lines</title>	  
+        </section>
+      </section>
+      <section>
+        <title>Atom Labels</title>
+        <section>
+          <title>No Atom Labels</title>	  
+        </section>
+        <section>
+          <title>Atomic Symbols</title>	  
+        </section>
+        <section>
+          <title>Atom Types</title>	  
+        </section>
+        <section>
+          <title>Atom Numbers</title>	  
+        </section>
+      </section>
+      <section>
+        <title>Property Labels</title>
+        <section>
+          <title>None</title>	  
+        </section>
+      </section>
+      <section>
+        <title>Wire Frame Rotation</title>
+      </section>
+      <section>
+        <title>Bonds</title>
+      </section>
+      <section>
+        <title>Atoms</title>
+      </section>
+      <section>
+        <title>Vectors</title>
+      </section>
+      <section>
+        <title>Hydrogens</title>
+      </section>
+      <section>
+        <title>Dummy Atoms</title>
+      </section>
+      <section>
+        <title>Axes</title>
+      </section>
+      <section>
+        <title>Boundary Box</title>
+      </section>
+    </section>
+    <section>
+      <title>The View menu</title>
+      <section>
+        <title>Front</title>
+      </section>
+      <section>
+        <title>Top</title>
+      </section>
+      <section>
+        <title>Bottom</title>
+      </section>
+      <section>
+        <title>Right</title>
+      </section>
+      <section>
+        <title>Left</title>
+      </section>
+      <section>
+        <title>Split...</title>
+      </section>
+      <section>
+        <title>Set Split...</title>
+      </section>
+    </section>
+    <section>
+      <title>The Measure menu</title>
+      <section>
+        <title>Distance...</title>
+      </section>
+      <section>
+        <title>Angle...</title>
+      </section>
+      <section>
+        <title>Dihedral...</title>
+      </section>
+      <section>
+        <title>Delete Distance...</title>
+      </section>
+      <section>
+        <title>Delete Angle...</title>
+      </section>
+      <section>
+        <title>Delete Dihedral...</title>
+      </section>
+      <section>
+        <title>Clear all Distances...</title>
+      </section>
+      <section>
+        <title>Clear all Angles...</title>
+      </section>
+      <section>
+        <title>Clear all Dihedrals...</title>
+      </section>
+      <section>
+        <title>Clear all Measurements...</title>
+      </section>
+      <section>
+        <title>View Measurement List...</title>
+      </section>
+    </section>
+    <section>
+      <title>The Extras menu</title>
+      <section>
+        <title>Animate...</title>
+      </section>
+      <section>
+        <title>Vibrate...</title>
+      </section>
+      <section>
+        <title>Bounding Box...</title>
+      </section>
+      <section>
+        <title>IPC...</title>
+      </section>
+    </section>
+    <section>
+      <title>The Help menu</title>
+      <section>
+        <title>About Jmol</title>
+      </section>
+      <section>
+        <title>User Guide</title>
+	<para>Show this documentation.</para>
+      </section>
+      <section>
+        <title>What's New</title>
+      </section>
+      <section>
+        <title>Man Page</title>
+      </section>
+      <section>
+        <title>Jmol Console</title>
+      </section>
+    </section>
+  </chapter>
+
+</book>

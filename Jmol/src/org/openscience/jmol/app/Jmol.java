@@ -156,7 +156,6 @@ public class Jmol extends JPanel {
   
   private static int numWindows = 0;
   private static Dimension screenSize = null;
-  private static String strJvmVersion;
 
   /**
    * The current file.
@@ -202,8 +201,6 @@ public class Jmol extends JPanel {
     UserAtypeFile = new File(ujmoldir, "jmol_atomtypes.txt");
     historyFile = new HistoryFile(new File(ujmoldir, "history"),
         "Jmol's persistent values");
-        
-    strJvmVersion = System.getProperty("java.version");
   }
 
   Jmol(Splash splash, JFrame frame, Jmol parent) {
@@ -227,7 +224,7 @@ public class Jmol extends JPanel {
     say("Initializing 3D display...");
     //
     display = new DisplayPanel(status, guimap);
-    control = new DisplayControl(strJvmVersion, display);
+    control = new DisplayControl(display, new DeprecatedAdapter());
     display.setDisplayControl(control);
 
     //    control.addPropertyChangeListener(display);

@@ -25,6 +25,7 @@
 
 import org.openscience.jmol.applet.*;
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.DeprecatedAdapter;
 import org.openscience.jmol.script.Eval;
 import org.openscience.jmol.ui.JmolPopup;
 
@@ -86,10 +87,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   
   public void initWindows() {
 
-    String strJvmVersion = System.getProperty("java.version");
-
     canvas = new AppletCanvas();
-    control = new DisplayControl(strJvmVersion, canvas);
+    control = new DisplayControl(canvas, new DeprecatedAdapter());
     canvas.setDisplayControl(control);
     control.setJmolStatusListener(this);
 

@@ -67,7 +67,6 @@ public class JmolFrame {
   }
 
   public void finalize() {
-    System.out.println("JmolFrame.finalize()");
     htAtomMap = null;
     if (bondShapeCount == 0 && control.getAutoBond())
       rebond();
@@ -616,14 +615,13 @@ public class JmolFrame {
     }
   }
 
-  final static boolean showRebondTimes = true;
+  final static boolean showRebondTimes = false;
 
   private double bondTolerance;
   private double minBondDistance;
   private double minBondDistance2;
 
   public void rebond() {
-    System.out.println("JmolFrame.rebond()");
     deleteAllBonds();
     bondTolerance = control.getBondTolerance();
     minBondDistance = control.getMinBondDistance();

@@ -122,15 +122,12 @@ public class ModelManager {
   }
 
   public void setFrame(int frameNumber) {
-    System.out.println("setFrame(" + frameNumber+ ")");
     if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
       jmolFrame = jmolFrames[frameNumber];
       if (jmolFrame == null)
         jmolFrame = jmolFrames[frameNumber] =
-          (false // flip flop
-           ? control.getJmolFrame(clientFile, frameNumber)
-           : (new JmolFrameBuilder(control, clientFile, frameNumber)
-              .buildJmolFrame()));
+          new JmolFrameBuilder(control, clientFile, frameNumber)
+          .buildJmolFrame();
       atomCount = jmolFrame.getAtomCount();
     }
   }

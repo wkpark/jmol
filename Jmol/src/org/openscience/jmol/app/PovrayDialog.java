@@ -342,7 +342,7 @@ public class PovrayDialog extends JDialog {
     commandLine = commandLineField.getText();
     String filename = basename + ".pov";
     java.io.File theFile = new java.io.File(savePath, filename);
-    PovrayStyleWriter style = new PovrayStyleWriter();
+    PovrayStyleWriter style = new PovrayStyleWriter(control);
     if (theFile != null) {
       try {
         java.io.FileOutputStream os = new java.io.FileOutputStream(theFile);

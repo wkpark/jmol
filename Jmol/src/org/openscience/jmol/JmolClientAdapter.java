@@ -26,7 +26,6 @@
 package org.openscience.jmol;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
-import org.openscience.jmol.render.JmolFrame;
 import java.io.Reader;
 import java.awt.Color;
 import java.util.Iterator;
@@ -40,12 +39,13 @@ public interface JmolClientAdapter {
   public int getAtomCount(Object clientFile, int frameNumber);
   public boolean hasPdbRecords(Object clientFile, int frameNumber);
   public Iterator getAtomIterator(Object clientFile, int frameNumber);
-  public Iterator getCovalentBondIterator(Object clientFile, int frameNumber);
-  public Iterator getAssociationIterator(Object clientFile, int frameNumber);
-  public Iterator getVectorIterator(Object clientFile, int frameNumber);
-  public Iterator getCrystalCellIterator(Object clientFile, int frameNumber);
-
-  public JmolFrame getJmolFrame(Object clientFile, int frameNumber);
+  public BondIterator getCovalentBondIterator(Object clientFile,
+                                              int frameNumber);
+  public BondIterator getAssociationBondIterator(Object clientFile,
+                                                 int frameNumber);
+  public LineIterator getVectorIterator(Object clientFile, int frameNumber);
+  public LineIterator getCrystalCellIterator(Object clientFile,
+                                             int frameNumber);
 
   public final static int COLORSCHEME_CPK = 0;
   public final static int COLORSCHEME_CHARGE = 1;
@@ -59,4 +59,19 @@ public interface JmolClientAdapter {
   public Point3d getPoint3d(Object clientAtom);
   public String getPdbAtomRecord(Object clientAtom);
   public Color getColor(int atomicNumber, Object clientAtom, int colorScheme);
+
+  public abstract class BondIterator {
+    public abstract boolean hasNext();
+    public abstract Object next();
+    public abstract Object getAtom1();
+    public abstract Object getAtom2();
+    public abstract int getOrder();
+  }
+
+  public abstract class LineIterator {
+    public abstract boolean hasNext();
+    public abstract Object next();
+    public abstract Point3d getPoint1();
+    public abstract Point3d getPoint2();
+  }
 }

@@ -24,10 +24,10 @@
  */
 package org.openscience.jmol.io;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.BaseAtomType;
 import org.openscience.jmol.Atom;
-//import org.openscience.jmol.render.AtomColors;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Matrix4d;
@@ -137,6 +137,12 @@ import java.awt.Color;
  * @author Matthew A. Meineke
  */
 public class PovrayStyleWriter {
+
+  DisplayControl control;
+
+  public PovrayStyleWriter(DisplayControl control) {
+    this.control = control;
+  }
 
   /**
    * The number of different atom types found via
@@ -303,7 +309,7 @@ public class PovrayStyleWriter {
 
     double[] pos = cf.getAtomCoords(atomIndex);
 
-    Point3d center = cf.getJmolFrame().getRotationCenter();
+    Point3d center = control.getJmolFrame().getRotationCenter();
 
     double c_x = center.x;
     double c_y = center.y;
@@ -341,7 +347,7 @@ public class PovrayStyleWriter {
       BufferedWriter w, Atom atom1, Atom atom2, ChemFrame cf)
         throws IOException {
 
-    Point3d center = cf.getJmolFrame().getRotationCenter();
+    Point3d center = control.getRotationCenter();
 
     double c_x = center.x;
     double c_y = center.y;

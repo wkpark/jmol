@@ -25,6 +25,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
+import org.openscience.jmol.JmolClientAdapter;
 import java.util.Iterator;
 import javax.vecmath.Point3d;
 
@@ -42,65 +43,68 @@ public class JmolFrameBuilder {
   }
 
   public JmolFrame buildJmolFrame() {
+    JmolClientAdapter adapter = control.getClientAdapter();
     System.out.println("JmolFrameBuilder.buildJmolFrame()");
-    int atomCount = control.getAtomCount(clientFile, frameNumber);
-    boolean hasPdbRecords = control.hasPdbRecords(clientFile, frameNumber);
+    int atomCount = adapter.getAtomCount(clientFile, frameNumber);
+    boolean hasPdbRecords = adapter.hasPdbRecords(clientFile, frameNumber);
 
     JmolFrame frame = new JmolFrame(control, atomCount, hasPdbRecords);
-    for (Iterator iterAtom = control.getAtomIterator(clientFile, frameNumber);
+    for (Iterator iterAtom = adapter.getAtomIterator(clientFile, frameNumber);
          iterAtom.hasNext(); ) {
       frame.addAtom(iterAtom.next());
     }
 
-    for (Iterator iterBond = control.getCovalentBondIterator(clientFile,
-                                                             frameNumber);
-         iterBond.hasNext(); ) {
-      Object clientBond = iterBond.next();
-      //      frame.bondAtomShapes(control.getCovalentBondAtom1(clientBond),
-      //                   control.getCovalentBondAtom2(clientBond),
-      //                   control.getCovalentBondOrder(clientBond));
+    {
+      JmolClientAdapter.BondIterator iterCovalent =
+        adapter.getCovalentBondIterator(clientFile, frameNumber);
+      if (iterCovalent != null)
+        while (iterCovalent.hasNext()) {
+          iterCovalent.next();
+          frame.bondAtomShapes(iterCovalent.getAtom1(),
+                               iterCovalent.getAtom2(),
+                               iterCovalent.getOrder());
+        }
     }
 
-    for (Iterator iterAssoc = control.getAssociationIterator(clientFile,
-                                                             frameNumber);
-         iterAssoc.hasNext(); ) {
-      Object clientAssoc = iterAssoc.next();
-      //      frame.bondAtomShapes(control.getAssociationAtom1(clientAssoc),
-      //                   control.getAssociationAtom2(clientAssoc),
-      //                   control.getAssociationType(clientAssoc));
-    }
-      
-
-    for (Iterator iterVector = control.getVectorIterator(clientFile,
-                                                         frameNumber);
-         iterVector.hasNext(); ) {
-      Object clientVector = iterVector.next();
-      // Point3d pointOrigin = control.getVectorOrigin(clientVector);
-      // Point3d pointVector = control.getVectorVector(clientVector);
-      // frame.addLineShape(new ArrowLineShape(pointOrigin, pointVector));
+    {
+      JmolClientAdapter.BondIterator iterAssoc =
+        adapter.getAssociationBondIterator(clientFile, frameNumber);
+      if (iterAssoc != null)
+        while (iterAssoc.hasNext()) {
+          iterAssoc.next();
+          frame.bondAtomShapes(iterAssoc.getAtom1(),
+                               iterAssoc.getAtom2(),
+                               iterAssoc.getOrder());
+        }
     }
       
-
-    for (Iterator iterCell = control.getCrystalCellIterator(clientFile,
-                                                            frameNumber);
-         iterCell.hasNext(); ) {
-      Object clientCell = iterCell.next();
-      // Point3d point1 = control.getCrystalCellPoint1(clientCell);
-      // Point3d point2 = control.getCrystalCellPoint2(clientCell);
-      // LineShape ls = new LineShape(point1, point2);
-      // frame.addCrystalCellLine(ls);
+    {
+      JmolClientAdapter.LineIterator iterVector =
+        adapter.getVectorIterator(clientFile, frameNumber);
+      if (iterVector != null)
+        while (iterVector.hasNext()) {
+          iterVector.next();
+          frame.addLineShape(new ArrowLineShape(iterVector.getPoint1(),
+                                                iterVector.getPoint2()));
+        }
     }
 
-    /*
-      if (this instanceof CrystalFrame) {
-      CrystalFrame crystalFrame = (CrystalFrame) this;
-      double[][] rprimd = crystalFrame.getRprimd();
-      
-      // The three primitives vectors with arrows
-      for (int i = 0; i < 3; i++)
-        jmframe.addLineShape(new ArrowLineShape(zeroPoint,
-                                                new Point3d(rprimd[i])));
-    */
+    {
+      JmolClientAdapter.LineIterator iterCell =
+        adapter.getCrystalCellIterator(clientFile, frameNumber);
+      if (iterCell != null)
+        for (int i = 0; iterCell.hasNext(); ++i) {
+          iterCell.next();
+          LineShape line;
+          if (i < 3)
+            line = new ArrowLineShape(iterCell.getPoint1(),
+                                      iterCell.getPoint2());
+          else
+            line = new LineShape(iterCell.getPoint1(), iterCell.getPoint2());
+          frame.addCrystalCellLine(line);
+        }
+    }
+
     frame.finalize();
     return frame;
   }

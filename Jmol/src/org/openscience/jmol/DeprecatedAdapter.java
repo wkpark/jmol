@@ -26,7 +26,6 @@
 package org.openscience.jmol;
 import javax.vecmath.Point3d;
 import org.openscience.jmol.ProteinProp;
-import org.openscience.jmol.render.JmolFrame;
 import java.awt.Color;
 import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
@@ -35,6 +34,7 @@ import java.io.IOException;
 import org.openscience.jmol.io.ReaderFactory;
 import org.openscience.jmol.io.ChemFileReader;
 import java.util.Iterator;
+import java.util.Vector;
 
 public class DeprecatedAdapter implements JmolClientAdapter {
   AtomColorer[] colorSchemes;
@@ -86,10 +86,6 @@ public class DeprecatedAdapter implements JmolClientAdapter {
   }
 
 
-  public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
-    return getChemFrame(clientFile, frameNumber).getJmolFrame();
-  }
-
   /****************************************************************
    * The frame related methods
    ****************************************************************/
@@ -112,19 +108,23 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     return new AtomIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public Iterator getCovalentBondIterator(Object clientFile, int frameNumber) {
+  public JmolClientAdapter.BondIterator
+    getCovalentBondIterator(Object clientFile, int frameNumber) {
     return new CovalentBondIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public Iterator getAssociationIterator(Object clientFile, int frameNumber) {
-    return new AssociationIterator(getChemFrame(clientFile, frameNumber));
+  public JmolClientAdapter.BondIterator
+    getAssociationBondIterator(Object clientFile, int frameNumber) {
+    return null;
   }
 
-  public Iterator getVectorIterator(Object clientFile, int frameNumber) {
+  public JmolClientAdapter.LineIterator
+    getVectorIterator(Object clientFile, int frameNumber) {
     return new VectorIterator(getChemFrame(clientFile, frameNumber));
   }
 
-  public Iterator getCrystalCellIterator(Object clientFile, int frameNumber) {
+  public JmolClientAdapter.LineIterator
+    getCrystalCellIterator(Object clientFile, int frameNumber) {
     return new CrystalCellIterator(getChemFrame(clientFile, frameNumber));
   }
 
@@ -150,69 +150,113 @@ public class DeprecatedAdapter implements JmolClientAdapter {
     }
   }
 
-  class CovalentBondIterator implements Iterator {
+  class CovalentBondIterator extends JmolClientAdapter.BondIterator {
     ChemFrame chemFrame;
+    AtomIterator iterAtom;
+    Atom atom;
+    int ibond, bondedCount;
+    Atom atom2;
+    int order;
+
     CovalentBondIterator(ChemFrame chemFrame) {
       this.chemFrame = chemFrame;
+      iterAtom = new AtomIterator(chemFrame);
+      ibond = bondedCount = 0;
     }
     public boolean hasNext() {
-      return false;
+      while (ibond == bondedCount) {
+        if (!iterAtom.hasNext())
+          return false;
+        atom = (Atom)iterAtom.next();
+        ibond = 0;
+        bondedCount = atom.getBondedCount();
+      }
+      return true;
     }
     public Object next() {
+      atom2 = atom.getBondedAtom(ibond);
+      order = atom.getBondOrder(ibond);
+      ++ibond;
       return null;
     }
-    public void remove() {
-      throw new NullPointerException();
+    public Object getAtom1() {
+      return atom;
+    }
+    public Object getAtom2() {
+      return atom2;
+    }
+    public int getOrder() {
+      return order;
     }
   }
 
-  class AssociationIterator implements Iterator {
+  class VectorIterator extends JmolClientAdapter.LineIterator {
     ChemFrame chemFrame;
-    AssociationIterator(ChemFrame chemFrame) {
-      this.chemFrame = chemFrame;
-    }
-    public boolean hasNext() {
-      return false;
-    }
-    public Object next() {
-      return null;
-    }
-    public void remove() {
-      throw new NullPointerException();
-    }
-  }
+    AtomIterator iterAtom;
+    Atom atom;
+    Point3d point1, point2;
 
-  class VectorIterator implements Iterator {
-    ChemFrame chemFrame;
     VectorIterator(ChemFrame chemFrame) {
       this.chemFrame = chemFrame;
+      iterAtom = new AtomIterator(chemFrame);
     }
     public boolean hasNext() {
-      return false;
+      while (atom == null ||
+             !atom.hasVector()) {
+        if (! iterAtom.hasNext())
+          return false;
+        atom = (Atom)iterAtom.next();
+      }
+      return true;
     }
     public Object next() {
+      point1 = atom.getPoint3D();
+      point2 = new Point3d(atom.getVector());
+      point2.scaleAdd(2, point1);
+      atom = null;
       return null;
     }
-    public void remove() {
-      throw new NullPointerException();
+    public Point3d getPoint1() {
+      return point1;
+    }
+    public Point3d getPoint2() {
+      return point2;
     }
   }
 
-  class CrystalCellIterator implements Iterator {
-    ChemFrame chemFrame;
+
+  class CrystalCellIterator extends JmolClientAdapter.LineIterator {
+    boolean isCrystalFrame;
+    CrystalFrame crystalFrame;
+    Point3d point1, point2;
+    Vector boxEdges;
+    int ibox;
+      
     CrystalCellIterator(ChemFrame chemFrame) {
-      this.chemFrame = chemFrame;
+      isCrystalFrame = chemFrame instanceof CrystalFrame;
+      if (! isCrystalFrame)
+        return;
+      crystalFrame = (CrystalFrame)chemFrame;
+      boxEdges = crystalFrame.getBoxEdges();
     }
+
     public boolean hasNext() {
-      return false;
+      return (boxEdges != null && ibox < boxEdges.size());
     }
+
     public Object next() {
+      point1 = (Point3d)boxEdges.elementAt(ibox++);
+      point2 = (Point3d)boxEdges.elementAt(ibox++);
       return null;
     }
-    public void remove() {
-      throw new NullPointerException();
+    public Point3d getPoint1() {
+      return point1;
+    }
+    public Point3d getPoint2() {
+      return point2;
     }
   }
+
 
   /****************************************************************
    * The atom related methods

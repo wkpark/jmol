@@ -93,10 +93,13 @@ final public class DisplayControl {
   public boolean jvm12orGreater = false;
   public boolean jvm14orGreater = false;
 
-  public DisplayControl(String strJvmVersion, Component awtComponent) {
+  public DisplayControl(Component awtComponent,
+                        JmolClientAdapter clientAdapter) {
 
     this.awtComponent = awtComponent;
-    this.strJvmVersion = strJvmVersion;
+    this.clientAdapter = clientAdapter;
+
+    strJvmVersion = System.getProperty("java.version");
     jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJvmVersion.compareTo("1.4") >= 0);
 
@@ -113,7 +116,6 @@ final public class DisplayControl {
     measurementManager = new MeasurementManager(this);
     distributor = new Distributor(this);
 
-    clientAdapter = new DeprecatedAdapter();
 
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
@@ -1637,6 +1639,10 @@ final public class DisplayControl {
    * JmolClientAdapter routines
    ****************************************************************/
 
+  public JmolClientAdapter getClientAdapter() {
+    return clientAdapter;
+  }
+
   public Object openReader(String name, Reader reader) {
     return clientAdapter.openReader(this, name, reader);
   }
@@ -1647,38 +1653,6 @@ final public class DisplayControl {
 
   public String getModelName(Object clientFile) {
     return clientAdapter.getModelName(clientFile);
-  }
-
-  public int getAtomCount(Object clientFile, int frameNumber) {
-    return clientAdapter.getAtomCount(clientFile, frameNumber);
-  }
-
-  public boolean hasPdbRecords(Object clientFile, int frameNumber) {
-    return clientAdapter.hasPdbRecords(clientFile, frameNumber);
-  }
-
-  public Iterator getAtomIterator(Object clientFile, int frameNumber) {
-    return clientAdapter.getAtomIterator(clientFile, frameNumber);
-  }
-
-  public Iterator getCovalentBondIterator(Object clientFile, int frameNumber) {
-    return clientAdapter.getCovalentBondIterator(clientFile, frameNumber);
-  }
-
-  public Iterator getAssociationIterator(Object clientFile, int frameNumber) {
-    return clientAdapter.getAssociationIterator(clientFile, frameNumber);
-  }
-
-  public Iterator getVectorIterator(Object clientFile, int frameNumber) {
-    return clientAdapter.getVectorIterator(clientFile, frameNumber);
-  }
-
-  public Iterator getCrystalCellIterator(Object clientFile, int frameNumber) {
-    return clientAdapter.getCrystalCellIterator(clientFile, frameNumber);
-  }
-
-  public JmolFrame getJmolFrame(Object clientFile, int frameNumber) {
-    return clientAdapter.getJmolFrame(clientFile, frameNumber);
   }
 
   public int getAtomicNumber(Object clientAtom) {

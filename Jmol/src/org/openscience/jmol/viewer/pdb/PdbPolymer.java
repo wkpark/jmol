@@ -230,8 +230,8 @@ public class PdbPolymer {
   private final static float minimumHbondDistance2 = 0.5f;
   private final static double QConst = -332 * 0.42 * 0.2 * 1000;
 
-  void bondAminoHydrogen(int indexSource, Point3f hydrogenPoint) {
-    PdbGroup source = groups[indexSource];
+  void bondAminoHydrogen(int indexDonor, Point3f hydrogenPoint) {
+    PdbGroup source = groups[indexDonor];
     Point3f sourceAlphaPoint = source.getAlphaCarbonPoint();
     Point3f sourceNitrogenPoint = source.getNitrogenAtom().point3f;
     int energyMin1 = 0;
@@ -239,8 +239,8 @@ public class PdbPolymer {
     int indexMin1 = -1;
     int indexMin2 = -1;
     for (int i = count; --i >= 0; ) {
-      if ((i == indexSource || (i+1) == indexSource) || (i-1) == indexSource) {
-        //        System.out.println(" i=" +i + " indexSource=" + indexSource);
+      if ((i == indexDonor || (i+1) == indexDonor) || (i-1) == indexDonor) {
+        //        System.out.println(" i=" +i + " indexDonor=" + indexDonor);
         continue;
       }
       PdbGroup target = groups[i];
@@ -259,9 +259,9 @@ public class PdbPolymer {
       }
     }
     if (indexMin1 >= 0) {
-      createResidueHydrogenBond(indexSource, indexMin1);
+      createResidueHydrogenBond(indexDonor, indexMin1);
       if (indexMin2 >= 0)
-        createResidueHydrogenBond(indexSource, indexMin2);
+        createResidueHydrogenBond(indexDonor, indexMin2);
     }
   }
 

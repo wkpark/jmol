@@ -58,6 +58,8 @@ public class NucleicMonomer extends Monomer {
     -JmolConstants.ATOMID_S4,  // 19 S4   tU
 
     -JmolConstants.ATOMID_H5T_TERMINUS, // 20 H5T terminus
+    -JmolConstants.ATOMID_O5T_TERMINUS, // 21 O5T terminus
+    JmolConstants.ATOMID_O5_PRIME       // 22 O5' terminus
   };
 
   static Monomer
@@ -69,7 +71,7 @@ public class NucleicMonomer extends Monomer {
                                     specialAtomIndexes,
                                     interestingNucleicAtomIDs);
 
-    if (offsets == null || (offsets[0] == -1 && offsets[20] == -1))
+    if (offsets == null)
       return null;
     NucleicMonomer nucleicMonomer =
       new NucleicMonomer(chain, group3, seqcode,
@@ -84,8 +86,14 @@ public class NucleicMonomer extends Monomer {
                  byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
-    if (offsets[0] == -1)
-      offsets[0] = offsets[20];
+    if (offsets[0] == -1) {
+      byte leadOffset = offsets[20];
+      if (leadOffset == -1)
+        leadOffset = offsets[21];
+      if (leadOffset == -1)
+        leadOffset = offsets[22];
+      offsets[0] = leadOffset;
+    }
     this.hasRnaO2Prime = offsets[2] != -1;
     this.isPyrimidine = offsets[9] != -1;
     this.isPurine =

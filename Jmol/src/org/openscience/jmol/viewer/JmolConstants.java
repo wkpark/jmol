@@ -1537,28 +1537,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "C",   //  3 - carbonyl carbon
     "O",   //  4 - carbonyl oxygen
 
-    // nucleic acid backbone phosphate
-    //
-    "P",   //  5 - phosphate phosphorus
-    "O1P", //  6 - first equivalent oxygen on phosphorus of phosphate
-    "O2P", //  7 - second equivalent oxygen on phosphorus of phosphate
-    
     // nucleic acid backbone sugar
     //
-    "O5*", //  8 - sugar 5' oxygen
-    "C5*", //  9 - sugar 5' carbon
-    "C4*", // 10 - sugar ring 4' carbon
-    "O4*", // 11 - sugar ring 4' oxygen
-    "C3*", // 12 - sugar ring 3' carbon
-    "O3*", // 13 - sugar 3' oxygen
-    "C2*", // 14 - sugar ring 2' carbon
-    "C1*", // 15 - sugar ring 1' carbon
-
-    // Terminal nuclic aced
-    "H5T", // 16 - 5' terminus hydrogen which replaces P + O1P + O2P
+    "O5*", //  5 - sugar 5' oxygen
+    "C5*", //  6 - sugar 5' carbon
+    "C4*", //  7 - sugar ring 4' carbon
+    "C3*", //  8 - sugar ring 3' carbon
+    "O3*", //  9 - sugar 3' oxygen
+    "C2*", // 10 - sugar ring 2' carbon
+    "C1*", // 11 - sugar ring 1' carbon
 
     // reserved for future expansion ... lipids & carbohydrates
-    null, null, null, // 17 - 19
+    null, null, null, null, // 12 - 15
+    null, null, null, null, // 16 - 19
     null, null, null, null, // 20 - 23
     null, null, null, null, // 24 - 27
     null, null, null, null, // 28 - 31
@@ -1569,46 +1560,50 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     
     // protein backbone
     //
-    "OXT", // 32	//  6 - second carbonyl oxygen, C-terminus only
+    "OXT", // 32 - second carbonyl oxygen, C-terminus only
 
     // protein backbone hydrogens
     //
-    "H",   // 33 	//  2 - amino hydrogen
+    "H",   // 33 - amino hydrogen
     // these appear on the N-terminus end of 1ALE & 1LCD
-    "1H",  // 34        // N-terminus hydrogen
-    "2H",  // 35        // second N-terminus Hydrogen
-    "3H",  // 36        // third N-terminus Hydrogen
-    "HA",  // 37	// 33 - H on alpha carbon
-    "1HA", // 38	// 34 - H on alpha carbon in Gly only
-    "2HA",  // 39  	// 1ALE calls the two GLY hdrogens 1HA & 2HA
+    "1H",  // 34 - N-terminus hydrogen
+    "2H",  // 35 - second N-terminus Hydrogen
+    "3H",  // 36 - third N-terminus Hydrogen
+    "HA",  // 37 - H on alpha carbon
+    "1HA", // 38 - H on alpha carbon in Gly only
+    "2HA", // 39 - 1ALE calls the two GLY hdrogens 1HA & 2HA
 
     null,  // 40
     null,  // 41
     null,  // 42
     null,  // 43
     null,  // 44
-    null,  // 45
-    null,  // 46
-    null,  // 47
-    null,  // 48
-    null,  // 49
 
-    "O2*", // 50	// 23 - sugar 2' oxygen, unique to RNA
+    // Terminal nuclic acid
+    "H5T", // 45 - 5' terminus hydrogen which replaces P + O1P + O2P
+    "O5T", // 46 - 5' terminus hydrogen which replaces P + O1P + O2P
+    // nucleic acid backbone phosphate
+    "P",   // 47 - phosphate phosphorus
+    "O1P", // 48 - first equivalent oxygen on phosphorus of phosphate
+    "O2P", // 49 - second equivalent oxygen on phosphorus of phosphate
+    
+
+    "O4*", // 50 - sugar ring 4' oxygen ... not present in +T ... maybe others
+    "O2*", // 51 - sugar 2' oxygen, unique to RNA
 
     // nucleic acid backbone hydrogens
     //
-    "1H5*", // 51 - first  equivalent H on sugar 5' carbon
-    "2H5*", // 52 - second  equivalent H on sugar 5' carbon 
-    "H4*",  // 53 - H on sugar ring 4' carbon
-    "H3*",  // 54 - H on sugar ring 3' carbon
-    "1H2*", // 55 - first equivalent H on sugar ring 2' carbon
-    "2H2*", // 56 - second equivalent H on sugar ring 2' carbon
-    "2HO*", // 57 - H on sugar 2' oxygen, unique to RNA 
-    "H1*",  // 58 - H on sugar ring 1' carbon 
+    "1H5*", // 52 - first  equivalent H on sugar 5' carbon
+    "2H5*", // 53 - second  equivalent H on sugar 5' carbon 
+    "H4*",  // 54 - H on sugar ring 4' carbon
+    "H3*",  // 55 - H on sugar ring 3' carbon
+    "1H2*", // 56 - first equivalent H on sugar ring 2' carbon
+    "2H2*", // 57 - second equivalent H on sugar ring 2' carbon
+    "2HO*", // 58 - H on sugar 2' oxygen, unique to RNA 
+    "H1*",  // 59 - H on sugar ring 1' carbon 
     //
-    "H3T",  // 59 - 3' terminus hydrogen
+    "H3T",  // 60 - 3' terminus hydrogen
     //
-    null,   // 60
     null,   // 61
     null,   // 62
     null,   // 63
@@ -1650,9 +1645,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int ATOMID_MAX = specialAtomNames.length;
 
-  public final static byte ATOMID_DEFINING_PROTEIN_MAX = 5;
-  public final static byte ATOMID_DEFINING_NUCLEIC_MAX = 16;
-
   ////////////////////////////////////////////////////////////////
   // currently, ATOMIDs must be >= 0 && <= 127
   // if we need more then we can go to 255 by:
@@ -1661,14 +1653,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   //     so that we can store negative numbers
   ////////////////////////////////////////////////////////////////
 
-  public final static byte ATOMID_AMINO_NITROGEN = 1;
-  public final static byte ATOMID_ALPHA_CARBON = 2;
+  public final static byte ATOMID_AMINO_NITROGEN  = 1;
+  public final static byte ATOMID_ALPHA_CARBON    = 2;
   public final static byte ATOMID_CARBONYL_CARBON = 3;
   public final static byte ATOMID_CARBONYL_OXYGEN = 4;
-  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 5;
-  public final static byte ATOMID_H5T_TERMINUS = 16;
+  public final static byte ATOMID_O5_PRIME        = 5;
   public final static byte ATOMID_TERMINATING_OXT = 32;
-  public final static byte ATOMID_RNA_O2PRIME = 50;
+  public final static byte ATOMID_H5T_TERMINUS    = 45;
+  public final static byte ATOMID_O5T_TERMINUS    = 46;
+  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 47;
+  public final static byte ATOMID_RNA_O2PRIME     = 51;
   public final static byte ATOMID_N1 = 64;
   public final static byte ATOMID_C2 = 65;
   public final static byte ATOMID_N3 = 66;
@@ -1694,14 +1688,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;
   // this is for groups that only contain an alpha carbon
   public final static int ATOMID_ALPHA_ONLY_MASK = 1 << 3;
-  // this is entries 5 through through 15 ... 11 bits
-  public final static int ATOMID_NUCLEIC_MASK = 0x07FF << 5;
-  public final static int ATOMID_NUCLEIC_H5T_MASK = 0x01FF << 8;
-
-  // this is a problem ... should O2' be part of the distingushing bits?
-  // RNA also includes the O2'
-  //  public final static int ATOMID_RNA_MASK =
-  //    ATOMID_NUCLEIC_MASK | ATOMID_RNA_O2PRIME;
+  // this is entries 5 through through 11 ... 7 bits
+  public final static int ATOMID_NUCLEIC_MASK = 0x7F << 5;
 
   // this is the MAX of the backbone ... everything < MAX is backbone
   public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 32;

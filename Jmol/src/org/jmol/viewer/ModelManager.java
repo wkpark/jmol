@@ -68,10 +68,21 @@ class ModelManager {
           modelSetName = null;
       }
       if (modelSetName == null)
-        modelSetName = fileName;
+        modelSetName = reduceFilename(fileName);
       frame = new Frame(viewer, adapter, clientFile);
       haveFile = true;
     }
+  }
+
+  String reduceFilename(String fileName) {
+    if (fileName == null)
+      return null;
+    int ichDot = fileName.indexOf('.');
+    if (ichDot > 0)
+      fileName = fileName.substring(0, ichDot);
+    if (fileName.length() > 24)
+      fileName = fileName.substring(0, 20) + " ...";
+    return fileName;
   }
 
   String getClientAtomStringProperty(Object clientAtom,
@@ -91,7 +102,11 @@ class ModelManager {
     return modelSetName;
   }
 
-  String getCurrentFileName() {
+  String getModelSetFileName() {
+    return fileName;
+  }
+
+  String getModelSetPathName() {
     return fullPathName;
   }
 
@@ -167,6 +182,10 @@ class ModelManager {
 
   int getGroupCount() {
     return (frame == null) ? 0 : frame.getGroupCount();
+  }
+
+  int getPolymerCount() {
+    return (frame == null) ? 0 : frame.getPolymerCount();
   }
 
   int getAtomCount() {

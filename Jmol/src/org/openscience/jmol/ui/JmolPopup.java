@@ -43,6 +43,8 @@ abstract public class JmolPopup {
   Object aaresiduesComputedMenu;
   Object aboutMenu;
   Object consoleMenu;
+  Object modelSetInfoMenu;
+  String nullModelSetName;
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -61,20 +63,18 @@ abstract public class JmolPopup {
     addMenuItems("popupMenu", popupMenu, new PopupResourceBundle());
     addVersionAndDate(popupMenu);
     if (! viewer.isJvm12orGreater() && (consoleMenu != null))
-      disableMenu(consoleMenu);
+      enableMenu(consoleMenu, false);
   }
 
   public void updateComputedMenus() {
-    if (elementsComputedMenu != null) {
-      BitSet elementsPresentBitSet = viewer.getElementsPresentBitSet();
-      updateElementsComputedMenu(elementsPresentBitSet);
-    }
-    BitSet groupsPresentBitSet = viewer.getGroupsPresentBitSet();
-    if (aaresiduesComputedMenu != null)
-      updateAaresiduesComputedMenu(groupsPresentBitSet);
+    updateElementsComputedMenu(viewer.getElementsPresentBitSet());
+    updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
+    updateModelSetInfoMenu();
   }
 
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
+    if (elementsComputedMenu == null || elementsPresentBitSet == null)
+      return;
     removeAll(elementsComputedMenu);
     for (int i = 0; i < JmolConstants.elementNames.length; ++i) {
       if (elementsPresentBitSet.get(i)) {
@@ -88,6 +88,8 @@ abstract public class JmolPopup {
   }
   
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
+    if (aaresiduesComputedMenu == null || groupsPresentBitSet == null)
+      return;
     removeAll(aaresiduesComputedMenu);
     for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i) {
       if (groupsPresentBitSet.get(i)) {
@@ -95,6 +97,32 @@ abstract public class JmolPopup {
         String script = "select " + aaresidueName;
         addMenuItem(aaresiduesComputedMenu, aaresidueName, script);
       }
+    }
+  }
+
+  void updateModelSetInfoMenu() {
+    if (modelSetInfoMenu == null)
+      return;
+    String modelSetName = viewer.getModelSetName();
+    removeAll(modelSetInfoMenu);
+    if (modelSetName == null) {
+      renameMenu(modelSetInfoMenu, nullModelSetName);
+      enableMenu(modelSetInfoMenu, false);
+      return;
+    }
+    renameMenu(modelSetInfoMenu, modelSetName);
+    enableMenu(modelSetInfoMenu, true);
+    addMenuItem(modelSetInfoMenu, "atoms:" + viewer.getAtomCount());
+    addMenuItem(modelSetInfoMenu, "bonds:" + viewer.getBondCount());
+    addMenuSeparator(modelSetInfoMenu);
+    addMenuItem(modelSetInfoMenu, "groups:" + viewer.getGroupCount());
+    addMenuItem(modelSetInfoMenu, "chains:" + viewer.getChainCount());
+    addMenuItem(modelSetInfoMenu, "polymers:" + viewer.getPolymerCount());
+    addMenuItem(modelSetInfoMenu, "models:" + viewer.getModelCount());
+    if (viewer.showModelSetDownload()) {
+      addMenuSeparator(modelSetInfoMenu);
+      addMenuItem(modelSetInfoMenu,
+                  viewer.getModelSetFileName(), viewer.getModelSetPathName());
     }
   }
   
@@ -110,7 +138,7 @@ abstract public class JmolPopup {
                             PopupResourceBundle popupResourceBundle) {
     String value = popupResourceBundle.getStructure(key);
     if (value == null) {
-      addMenuItem(menu, "#" + key, null);
+      addMenuItem(menu, "#" + key);
       return;
     }
     StringTokenizer st = new StringTokenizer(value);
@@ -129,16 +157,19 @@ abstract public class JmolPopup {
           aboutMenu = subMenu;
         else if ("consoleMenu".equals(item))
           consoleMenu = subMenu;
+        else if ("modelSetInfoMenu".equals(item)) {
+          nullModelSetName = word;
+          modelSetInfoMenu = subMenu;
+          enableMenu(modelSetInfoMenu, false);
+        }
         addMenuSubMenu(menu, subMenu);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
+      } else if (item.endsWith("Checkbox")) {
+        String basename = item.substring(0, item.length() - 8);
+        addCheckboxMenuItem(menu, word, basename);
       } else {
-        if (item.endsWith("Checkbox")) {
-          String basename = item.substring(0, item.length() - 8);
-          addCheckboxMenuItem(menu, word, basename);
-       } else {
-          addMenuItem(menu, word, popupResourceBundle.getStructure(item));
-        }
+        addMenuItem(menu, word, popupResourceBundle.getStructure(item));
       }
     }
   }
@@ -152,14 +183,19 @@ abstract public class JmolPopup {
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
       String script = e.getActionCommand();
-      if (script != null) {
-        if (script.startsWith("http://")) {
-          viewer.showUrl(script);
-        } else if (script.length() != 0) {
-          viewer.evalStringQuiet(script);
-        }
+      if (script == null || script.length() == 0)
+        return;
+      if (script.startsWith("http:") || script.startsWith("file:") ||
+          script.startsWith("/")) {
+        viewer.showUrl(script);
+        return;
       }
+      viewer.evalStringQuiet(script);
     }
+  }
+
+  Object addMenuItem(Object menuItem, String entry) {
+    return addMenuItem(menuItem, entry, null);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -168,17 +204,19 @@ abstract public class JmolPopup {
 
   abstract void addMenuSeparator(Object menu);
 
-  abstract void disableMenu(Object menu);
+  abstract Object addMenuItem(Object menu, String entry, String script);
 
-  abstract void addMenuItem(Object menu, String entry);
-
-  abstract void addMenuItem(Object menu, String entry, String script);
+  abstract void updateMenuItem(Object menuItem, String entry, String script);
 
   abstract void addCheckboxMenuItem(Object menu, String entry,String basename);
 
   abstract void addMenuSubMenu(Object menu, Object subMenu);
 
   abstract Object newMenu(String menuName);
+
+  abstract void enableMenu(Object menu, boolean enable);
+
+  abstract void renameMenu(Object menu, String menuName);
 
   abstract void removeAll(Object menu);
 

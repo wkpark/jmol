@@ -128,21 +128,21 @@ public class JmolPopupAwt extends JmolPopup {
     ((Menu)menu).addSeparator();
   }
 
-  void disableMenu(Object menu) {
-    ((Menu)menu).setEnabled(false);
-  }
-
-  void addMenuItem(Object menu, String entry) {
+  Object addMenuItem(Object menu, String entry, String script) {
     MenuItem mi = new MenuItem(entry);
-    mi.setEnabled(false);
-    ((Menu)menu).add(mi);
-  }
-
-  void addMenuItem(Object menu, String entry, String script) {
-    MenuItem mi = new MenuItem(entry);
+    updateMenuItem(mi, entry, script);
     mi.addActionListener(mil);
-    mi.setActionCommand(script);
     addToMenu(menu, mi);
+    return mi;
+  }
+
+  void updateMenuItem(Object menuItem, String entry, String script) {
+    MenuItem mi = (MenuItem)menuItem;
+    mi.setLabel(entry);
+    mi.setActionCommand(script);
+    // miguel 2004 12 03
+    // greyed out menu entries are too hard to read
+    //    mi.setEnabled(script != null);
   }
 
   void addCheckboxMenuItem(Object menu, String entry, String basename) {
@@ -161,6 +161,10 @@ public class JmolPopupAwt extends JmolPopup {
     return new Menu(menuName);
   }
 
+  void renameMenu(Object menu, String newMenuName) {
+    ((Menu)menu).setLabel(newMenuName);
+  }
+
   Object newComputedMenu(String key, String word) {
     if ("elementComputedMenu".equals(key)) {
       elementComputedMenu = new Menu(word);
@@ -171,5 +175,9 @@ public class JmolPopupAwt extends JmolPopup {
 
   void removeAll(Object menu) {
     ((Menu)menu).removeAll();
+  }
+
+  void enableMenu(Object menu, boolean enable) {
+    ((Menu)menu).setEnabled(enable);
   }
 }

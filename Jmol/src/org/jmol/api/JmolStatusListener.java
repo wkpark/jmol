@@ -26,9 +26,8 @@ package org.jmol.api;
 
 public interface JmolStatusListener {
   public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile);
-
-  public void notifyFileNotLoaded(String fullPathName, String errorMsg);
+                               String modelName, Object clientFile,
+                               String errorMessage);
 
   public void setStatusMessage(String statusMessage);
 

@@ -1011,14 +1011,14 @@ final public class Viewer implements JmolViewer {
   }
 
   String getCurrentFileAsString() {
-    String fileName = modelManager.getCurrentFileName();
-    if (fileName == null)
+    String pathName = modelManager.getModelSetPathName();
+    if (pathName == null)
       return null;
-    return fileManager.getFileAsString(fileName);
+    return fileManager.getFileAsString(pathName);
   }
 
-  String getFileAsString(String fileName) {
-    return fileManager.getFileAsString(fileName);
+  String getFileAsString(String pathName) {
+    return fileManager.getFileAsString(pathName);
   }
 
    /////////////////////////////////////////////////////////////////
@@ -1049,11 +1049,20 @@ final public class Viewer implements JmolViewer {
     modelManager.setClientFile(null, null, null);
     selectionManager.clearSelection();
     clearMeasurements();
+    notifyFileLoaded(null, null, null, null);
     refresh();
   }
 
   public String getModelSetName() {
     return modelManager.getModelSetName();
+  }
+
+  public String getModelSetFileName() {
+    return modelManager.getModelSetFileName();
+  }
+
+  public String getModelSetPathName() {
+    return modelManager.getModelSetPathName();
   }
 
   String getModelSetTypeName() {
@@ -1181,12 +1190,16 @@ final public class Viewer implements JmolViewer {
     return modelManager.modelHasVibrationVectors(modelIndex);
   }
 
-  int getChainCount() {
+  public int getChainCount() {
     return modelManager.getChainCount();
   }
 
-  int getGroupCount() {
+  public int getGroupCount() {
     return modelManager.getGroupCount();
+  }
+
+  public int getPolymerCount() {
+    return modelManager.getPolymerCount();
   }
 
   public int getAtomCount() {
@@ -1814,12 +1827,13 @@ final public class Viewer implements JmolViewer {
                                String modelName, Object clientFile) {
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFileLoaded(fullPathName, fileName,
-                                          modelName, clientFile);
+                                          modelName, clientFile, null);
   }
 
   void notifyFileNotLoaded(String fullPathName, String errorMsg) {
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyFileNotLoaded(fullPathName, errorMsg);
+      jmolStatusListener.notifyFileLoaded(fullPathName, null, null, null,
+                                          errorMsg);
   }
 
   private void manageScriptTermination() {
@@ -2348,5 +2362,9 @@ final public class Viewer implements JmolViewer {
 
   Graphics3D getGraphics3D() {
     return g3d;
+  }
+
+  public boolean showModelSetDownload() {
+    return true;
   }
 }

@@ -282,15 +282,17 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName, Object clientFile) {
-    if (loadStructCallback != null && jsoWindow != null)
-      jsoWindow.call(loadStructCallback, new Object[] {htmlName});
+                               String modelName, Object clientFile,
+                               String errorMsg) {
+    if (errorMsg != null) {
+      showStatusAndConsole("File Error:" + errorMsg);
+      return;
+    }
+    if (fullPathName != null)
+      if (loadStructCallback != null && jsoWindow != null)
+        jsoWindow.call(loadStructCallback, new Object[] {htmlName});
     if (jmolpopup != null)
       jmolpopup.updateComputedMenus();
-  }
-
-  public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
-    showStatusAndConsole("File Error:" + errorMsg);
   }
 
   public void setStatusMessage(String statusMessage) {
@@ -352,6 +354,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void showUrl(String urlString) {
+    System.out.println("showUrl(" + urlString + ")");
     if (urlString != null && urlString.length() > 0) {
       try {
         URL url = new URL(urlString);

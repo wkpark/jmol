@@ -41,7 +41,6 @@ class MouseManager11 extends MouseManager
   }
 
   boolean handleOldJvm10Event(Event e) {
-    System.out.println("MouseManager11 does not handle events");
     return false;
   }
 

@@ -652,6 +652,10 @@ final class Frame {
     return mmset.getChainCount();
   }
 
+  int getPolymerCount() {
+    return mmset.getPolymerCount();
+  }
+
   int getGroupCount() {
     return mmset.getGroupCount();
   }

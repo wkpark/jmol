@@ -176,6 +176,13 @@ final class Mmset {
     return chainCount;
   }
 
+  int getPolymerCount() {
+    int polymerCount = 0;
+    for (int i = modelCount; --i >= 0; )
+      polymerCount += models[i].getPolymerCount();
+    return polymerCount;
+  }
+
   int getGroupCount() {
     int groupCount = 0;
     for (int i = modelCount; --i >= 0; )

@@ -1274,7 +1274,20 @@ public class Jmol extends JPanel {
 
   class MyJmolStatusListener implements JmolStatusListener {
     public void notifyFileLoaded(String fullPathName, String fileName,
-                                 String modelName, Object clientFile) {
+                                 String modelName, Object clientFile,
+                                 String errorMsg) {
+      if (errorMsg != null) {
+        JOptionPane.showMessageDialog(null,
+                                      fullPathName + '\n' + errorMsg,
+                                      "File not loaded",
+                                      JOptionPane.ERROR_MESSAGE);
+        return;
+      }
+      jmolpopup.updateComputedMenus();
+      if (fullPathName == null) {
+        // a 'clear/zap' operation
+        return;
+      }
       String title = "Jmol";
       if (modelName != null && fileName != null)
 	  title = fileName + " - " + modelName;
@@ -1285,14 +1298,6 @@ public class Jmol extends JPanel {
       frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
       pcs.firePropertyChange(chemFileProperty, null, clientFile);
-      jmolpopup.updateComputedMenus();
-    }
-
-    public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
-      JOptionPane.showMessageDialog(null,
-                                    fullPathName + '\n' + errorMsg,
-                                    "File not loaded",
-                                    JOptionPane.ERROR_MESSAGE);
     }
 
     public void notifyFrameChanged(int frameNo) {

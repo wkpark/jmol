@@ -107,13 +107,21 @@ public interface JmolViewer extends JmolSimpleViewer {
   public void setVibrationPeriod(float vibrationPeriod);
 
   public String getModelSetName();
+  public String getModelSetFileName();
+  public String getModelSetPathName();
   public Properties getModelSetProperties();
-  public int getModelCount();
   public int getModelNumber(int atomSetIndex);
   public String getModelName(int atomSetIndex);
   public Properties getModelProperties(int atomSetIndex);
   public String getModelProperty(int atomSetIndex, String propertyName);
   public boolean modelHasVibrationVectors(int atomSetIndex);
+
+  public int getModelCount();
+  public int getAtomCount();
+  public int getBondCount();
+  public int getGroupCount();
+  public int getChainCount();
+  public int getPolymerCount();
 
   public void setModeMouse(int modeMouse);
   public void setSelectionHaloEnabled(boolean haloEnabled);
@@ -166,9 +174,6 @@ public interface JmolViewer extends JmolSimpleViewer {
   public void setColorBackground(Color colorBackground);
   public void setColorBackground(String colorName);
 
-  public int getAtomCount();
-  public int getBondCount();
-
   public float getAtomRadius(int atomIndex);
   public Point3f getAtomPoint3f(int atomIndex);
   public Color getAtomColor(int atomIndex);
@@ -215,4 +220,6 @@ public interface JmolViewer extends JmolSimpleViewer {
 
   public boolean getBooleanProperty(String propertyName);
   public void setBooleanProperty(String propertyName, boolean value);
+
+  public boolean showModelSetDownload();
 }

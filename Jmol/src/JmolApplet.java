@@ -149,7 +149,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.setAppletContext(getDocumentBase(), getCodeBase(),
                             getValue("JmolAppletProxy", null));
 
-    jvm12orGreater = viewer.jvm12orGreater;
+    jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(this);
 
@@ -612,8 +612,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   private void loadPopupMenuAsBackgroundTask() {
-    if (viewer.strOSName.equals("Mac OS") && // no popup on MacOS 9 NetScape
-        viewer.strJavaVersion.equals("1.1.5"))
+    // no popup on MacOS 9 NetScape
+    if (viewer.getOperatingSystemName().equals("Mac OS") &&
+        viewer.getJavaVersion().equals("1.1.5"))
       return;
     new LoadPopupThread(this).run();
   }

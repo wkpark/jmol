@@ -95,7 +95,7 @@ final public class Frame {
     this.modelTypeName = fileTypeName.toLowerCase().intern();
     mmset = new Mmset(this);
     this.frameRenderer = viewer.getFrameRenderer();
-    this.g3d = viewer.g3d;
+    this.g3d = viewer.getGraphics3D();
 
 
     initializeBuild(adapter.getEstimatedAtomCount(clientFile));

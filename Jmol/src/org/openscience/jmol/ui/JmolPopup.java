@@ -48,7 +48,7 @@ abstract public class JmolPopup {
   }
 
   static public JmolPopup newJmolPopup(JmolViewer viewer) {
-    if (! viewer.jvm12orGreater || forceAwt)
+    if (! viewer.isJvm12orGreater() || forceAwt)
       return new JmolPopupAwt(viewer);
     return new JmolPopupSwing(viewer);
   }

@@ -73,28 +73,28 @@ import java.io.File;
 
 final public class JmolViewer {
 
-  public Component awtComponent;
-  public ColorManager colorManager;
-  public TransformManager transformManager;
-  public SelectionManager selectionManager;
-  public MouseManager mouseManager;
-  public FileManager fileManager;
-  public ModelManager modelManager;
-  public RepaintManager repaintManager;
-  public StyleManager styleManager;
-  public TempManager tempManager;
-  public PickingManager pickingManager;
-  public Eval eval;
-  public Graphics3D g3d;
+  Component awtComponent;
+  ColorManager colorManager;
+  TransformManager transformManager;
+  SelectionManager selectionManager;
+  MouseManager mouseManager;
+  FileManager fileManager;
+  ModelManager modelManager;
+  RepaintManager repaintManager;
+  StyleManager styleManager;
+  TempManager tempManager;
+  PickingManager pickingManager;
+  Eval eval;
+  Graphics3D g3d;
 
-  public JmolAdapter modelAdapter;
+  JmolAdapter modelAdapter;
 
-  public String strJavaVendor;
-  public String strJavaVersion;
-  public String strOSName;
-  public boolean jvm11orGreater = false;
-  public boolean jvm12orGreater = false;
-  public boolean jvm14orGreater = false;
+  String strJavaVendor;
+  String strJavaVersion;
+  String strOSName;
+  boolean jvm11orGreater = false;
+  boolean jvm12orGreater = false;
+  boolean jvm14orGreater = false;
 
   JmolStatusListener jmolStatusListener;
 
@@ -156,14 +156,14 @@ final public class JmolViewer {
     refresh();
   }
 
-  public final Hashtable imageCache = new Hashtable();
+  final Hashtable imageCache = new Hashtable();
   public void flushCachedImages() {
     imageCache.clear();
     colorManager.flushCachedColors();
   }
 
   public void logError(String strMsg) {
-    System.out.println("strMsg");
+    System.out.println(strMsg);
   }
 
   /****************************************************************
@@ -399,7 +399,8 @@ final public class JmolViewer {
     transformManager.transformPoint(pointAngstroms, pointScreen);
   }
 
-  public void transformPoints(Point3f[] pointsAngstroms, Point3i[] pointsScreens) {
+  public void transformPoints(Point3f[] pointsAngstroms,
+                              Point3i[] pointsScreens) {
     transformManager.transformPoints(pointsAngstroms.length,
                                      pointsAngstroms, pointsScreens);
   }
@@ -2229,4 +2230,23 @@ final public class JmolViewer {
     return g3d.getColor(modelManager.getBondColix2(i));
   }
 
+  ////////////////////////////////////////////////////////////////
+  //
+  ////////////////////////////////////////////////////////////////
+
+  public boolean isJvm12orGreater() {
+    return jvm12orGreater;
+  }
+
+  public String getOperatingSystemName() {
+    return strOSName;
+  }
+
+  public String getJavaVersion() {
+    return strJavaVersion;
+  }
+
+  public Graphics3D getGraphics3D() {
+    return g3d;
+  }
 }

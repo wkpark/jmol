@@ -256,6 +256,7 @@ public class RepaintManager {
     if (band != null)
       g3d.drawRect(viewer.getColixRubberband(),
                    band.x, band.y, 0, band.width, band.height);
+    viewer.notifyFrameChanged(displayModelID);
   }
 
   /****************************************************************

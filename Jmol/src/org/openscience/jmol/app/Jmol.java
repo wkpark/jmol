@@ -1204,6 +1204,10 @@ public class Jmol extends JPanel {
                                     JOptionPane.ERROR_MESSAGE);
     }
 
+    public void notifyFrameChanged(int frameNo) {
+        // don't do anything
+    }
+
     public void setStatusMessage(String statusMessage) {
       System.out.println("setStatusMessage:" + statusMessage);
     }

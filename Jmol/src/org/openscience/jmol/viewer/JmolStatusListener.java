@@ -42,6 +42,8 @@ public interface JmolStatusListener {
 
   public void notifyMeasurementsChanged();
 
+  public void notifyFrameChanged(int frameNo);
+
   public void notifyAtomPicked(int atomIndex, String strInfo);
 
 }

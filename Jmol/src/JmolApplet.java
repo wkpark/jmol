@@ -272,6 +272,13 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void notifyMeasurementsChanged() {
   }
 
+  public void notifyFrameChanged(int frameNo) {
+    System.out.println("notifyFrameChanged(" + frameNo +")");
+    if (animFrameCallback != null && jsoWindow != null)
+      jsoWindow.call(animFrameCallback,
+                     new Object[] {htmlName, new Integer(frameNo)});
+  }
+
   public void notifyAtomPicked(int atomIndex, String strInfo) {
     System.out.println("notifyAtomPicked(" + atomIndex + "," + strInfo +")");
     showStatus(strInfo);

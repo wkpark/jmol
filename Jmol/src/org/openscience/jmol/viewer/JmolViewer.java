@@ -1646,6 +1646,11 @@ final public class JmolViewer {
     this.jmolStatusListener = jmolStatusListener;
   }
 
+  public void notifyFrameChanged(int frameNo) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyFrameChanged(frameNo);
+  }
+
   public void notifyFileLoaded(String fullPathName, String fileName,
                                String modelName, Object clientFile) {
     if (jmolStatusListener != null)

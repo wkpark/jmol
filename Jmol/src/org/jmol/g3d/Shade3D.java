@@ -127,6 +127,11 @@ final class Shade3D {
                   * shadeLast + 0.5f);
   }
 
+  static byte calcIntensityNormalized(float x, float y, float z) {
+    return (byte)(calcFloatIntensityNormalized(x, y, z)
+                  * shadeLast + 0.5f);
+  }
+
   static int calcFp8Intensity(float x, float y, float z) {
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return (int)(calcFloatIntensityNormalized((float)(x/magnitude),

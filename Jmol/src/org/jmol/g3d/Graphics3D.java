@@ -57,6 +57,10 @@ final public class Graphics3D {
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
   Hermite3D hermite3d;
+  Geodesic3D geodesic3d;
+  Normix3D normix3d;
+
+  public final static int HIGHEST_GEODESIC_LEVEL = 3;
 
   boolean isFullSceneAntialiasingEnabled;
   boolean antialiasThisFrame;
@@ -96,6 +100,8 @@ final public class Graphics3D {
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
+    this.geodesic3d = new Geodesic3D(this, HIGHEST_GEODESIC_LEVEL);
+    this.normix3d = new Normix3D(this);
     //    setFontOfSize(13);
   }
   

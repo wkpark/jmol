@@ -35,8 +35,8 @@
       </xsl:if>
       </small>
     </xsl:for-each>
-    </xsl:if>
     <br/>
+    </xsl:if>
     <xsl:apply-templates select="section"/>
     <xsl:if test="footer">
       <br/>
@@ -51,20 +51,22 @@
   <!-- Process a section in the document. Nested sections are supported -->
   <xsl:template match="document//section">
     <xsl:variable name="level" select="count(ancestor::*)"/>
-    <xsl:choose>
-      <xsl:when test='$level=2'>
-        <a name="{@title}"><h2><xsl:value-of select="@title"/></h2></a>
-      </xsl:when>
-      <xsl:when test='$level=3'>
-        <a name="{@title}"><h3><xsl:value-of select="@title"/></h3></a>
-      </xsl:when>
-      <xsl:when test='$level=4'>
-        <a name="{@title}"><h4><xsl:value-of select="@title"/></h4></a>
-      </xsl:when>
-      <xsl:when test='$level>=5'>
-        <h5><xsl:copy-of select="@title"/></h5>
-      </xsl:when>
-    </xsl:choose>
+    <xsl:if test="@title">
+      <xsl:choose>
+        <xsl:when test='$level=2'>
+          <a name="{@title}"><h2><xsl:value-of select="@title"/></h2></a>
+        </xsl:when>
+        <xsl:when test='$level=3'>
+          <a name="{@title}"><h3><xsl:value-of select="@title"/></h3></a>
+        </xsl:when>
+        <xsl:when test='$level=4'>
+          <a name="{@title}"><h4><xsl:value-of select="@title"/></h4></a>
+        </xsl:when>
+        <xsl:when test='$level>=5'>
+          <h5><xsl:copy-of select="@title"/></h5>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:if>
     <blockquote>
       <xsl:apply-templates/>
     </blockquote>
@@ -208,7 +210,9 @@
   </xsl:template>
 
   <xsl:template match="section">
-    <br />
+    <xsl:if test="@title">
+      <br />
+    </xsl:if>
   </xsl:template>
 
   <xsl:template match="br">

@@ -90,34 +90,21 @@ public class BondRenderer {
     g25d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
+  /*
   public void render(AtomShape atomShape1, int index1,
                      AtomShape atomShape2, int index2,
                      int order) {
     styleAtom1 = atomShape1.styleAtom;
     styleAtom2 = atomShape2.styleAtom;
-    /*
-    styleBond = atomShape1.styleBonds[index1];
-    marBond = atomShape1.marBonds[index1];
-    */
     x1 = atomShape1.x; y1 = atomShape1.y; z1 = atomShape1.z;
     x2 = atomShape2.x; y2 = atomShape2.y; z2 = atomShape2.z;
-    /*
-    width1 = atomShape1.bondWidths[index1];
-    width2 = atomShape2.bondWidths[index2];
-    */
     if (width1 < 4 && width2 < 4) {
       // to smooth out narrow bonds
         width1 = width2 = (width1 + width2) / 2;
     }
 
-    /*
-    colix1 = atomShape1.acolixBonds[index1];
-    */
     if (colix1 == 0)
       colix1 = atomShape1.colixAtom;
-    /*
-    colix2 = atomShape2.acolixBonds[index2];
-    */
     if (colix2 == 0)
       colix2 = atomShape2.colixAtom;
     sameColor = colix1 == colix2;
@@ -138,6 +125,7 @@ public class BondRenderer {
     if (styleBond != DisplayControl.NONE)
       renderBond();
   }
+  */
 
   public void render(AtomShape atomShape1, AtomShape atomShape2, int order,
                      byte style, short mar, short colix, int diameter) {
@@ -197,10 +185,29 @@ public class BondRenderer {
     dz = z2 - z1; dz2 = dz * dz;
     mag2d2 = dx2 + dy2;
     mag3d2 = mag2d2 + dz2;
+    boolean lineBond = styleBond == control.WIREFRAME || fastRendering;
+    boolean cylinderBond = styleBond == control.SHADING && g25dEnabled;
+    if (mag2d2 == 0) {
+      if (cylinderBond) {
+        space1 = width1 / 8 + 3;
+        step1 = width1 + space1;
+        int y = y1 - ((bondOrder == 1)
+                      ? 0
+                      : (bondOrder == 2) ? step1 / 2 : step1);
+        do {
+          g25d.fillSphereCentered(control.getColixAtomOutline(styleBond, colix1),
+                                  colix1, x1, y, z1, width1);
+          y += step1;
+        } while (--bondOrder > 0);
+      }
+      return;
+    }
+    /*
     if (mag2d2 <= 2 || mag2d2 <= 49 && fastRendering)
       return; // also avoids divide by zero when magnitude == 0
     if (showAtoms && (mag2d2 <= 16))
       return; // the pixels from the atoms will nearly cover the bond
+    */
     if (!showAtoms && bondOrder == 1 &&
         (fastRendering || styleBond == control.WIREFRAME)) {
       g25d.drawLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
@@ -220,10 +227,6 @@ public class BondRenderer {
     outline1 = control.getColixAtomOutline(styleBond, colix1);
     outline2 = control.getColixAtomOutline(styleBond, colix2);
 
-    this.bondOrder = bondOrder;
-
-    boolean lineBond =
-      styleBond == control.WIREFRAME || fastRendering;
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
@@ -235,7 +238,7 @@ public class BondRenderer {
     while (true) {
       if (lineBond)
         lineBond();
-      else if (g25dEnabled && styleBond == control.SHADING)
+      else if (cylinderBond)
         cylinderBond();
       else
         polyBond(styleBond);

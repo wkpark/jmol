@@ -243,7 +243,7 @@ public class FileManager {
     String index = dadmlRI.getQuery();
     
     DBLIST dblist = new DBLIST();
-    String superdb = "http://cdk.sf.net/super.xml";
+    String superdb = "http://jmol.sf.net/super.xml";
     try {
       System.out.println("Downloading DADML super database: " + superdb);
       // Proxy authorization has to be ported from Chemistry Development Kit (CDK)

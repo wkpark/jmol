@@ -296,7 +296,7 @@ public class Measure extends JDialog {
     double[] c = cf.getAtomCoords(measured);
     selection[currentAtom] = measured;
 
-    mtm.updateRow(currentAtom, measured, a.getType().getName(), c);
+    mtm.updateRow(currentAtom, a.getAtomNumber()+1, a.getType().getName(), c);
     if (currentAtom < measure - 1) {
       currentAtom++;
       table.setRowSelectionInterval(currentAtom, currentAtom);

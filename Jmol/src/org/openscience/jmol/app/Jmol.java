@@ -87,6 +87,7 @@ public class Jmol extends JPanel {
   
   private static int numWindows = 0;
   private static Dimension screenSize = null;
+  int startupWidth, startupHeight;
 
   private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
@@ -133,9 +134,12 @@ public class Jmol extends JPanel {
         "Jmol's persistent values");
   }
 
-  Jmol(Splash splash, JFrame frame, Jmol parent) {
+  Jmol(Splash splash, JFrame frame, Jmol parent,
+       int startupWidth, int startupHeight) {
     super(true);
     this.frame = frame;
+    this.startupWidth = startupWidth;
+    this.startupHeight = startupHeight;
     numWindows++;
     
     frame.setTitle("Jmol");
@@ -264,7 +268,7 @@ public class Jmol extends JPanel {
     frame.getContentPane().add("Center", this);
     frame.addWindowListener(new Jmol.AppCloser());
     frame.pack();
-    frame.setSize(500, 550);
+    frame.setSize(startupWidth, startupHeight);
     ImageIcon jmolIcon =
       JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
@@ -273,7 +277,8 @@ public class Jmol extends JPanel {
     say("Launching main frame...");
   }
 
-  public static Jmol getJmol(JFrame frame) {
+  public static Jmol getJmol(JFrame frame,
+                             int startupWidth, int startupHeight) {
     ImageIcon splash_image = JmolResourceHandler.getIconX("splash");
     System.out.println("splash_image=" + splash_image);
     Splash splash = new Splash(frame, splash_image);
@@ -296,7 +301,7 @@ public class Jmol extends JPanel {
     // cache the current directory to speed up Jmol window creation
     currentDir = getUserDirectory();
     
-    Jmol window = new Jmol(splash, frame, null);
+    Jmol window = new Jmol(splash, frame, null, startupWidth, startupHeight);
     frame.show();
     return window;
   }
@@ -326,6 +331,14 @@ public class Jmol extends JPanel {
                       create("D")
     );
     
+    options.addOption(
+        OptionBuilder.withLongOpt("geometry").
+                      withDescription("window size 500x500").
+                      withValueSeparator().
+                      hasArg().
+                      create("g")
+    );
+
     CommandLine line = null;
     try {
         CommandLineParser parser = new PosixParser();
@@ -358,9 +371,22 @@ public class Jmol extends JPanel {
             + "1.1.2 or higher version VM!!!");
       }
 
-      // Get a Jmol frame
+      int startupWidth = 0, startupHeight = 0;
+      if (line.hasOption("g")) {
+        String geometry = line.getOptionValue("g");
+        int indexX = geometry.indexOf('x');
+        if (indexX > 0) {
+          startupWidth = parseInt(geometry.substring(0, indexX));
+          startupHeight = parseInt(geometry.substring(indexX + 1));
+        }
+      }
+      if (startupWidth <= 0 || startupHeight <= 0) {
+        startupWidth = 500;
+        startupHeight = 550;
+      }
+
       JFrame jmolFrame = new JFrame();
-      jmol = getJmol(jmolFrame);
+      jmol = getJmol(jmolFrame, startupWidth, startupHeight);
 
       // Process command line arguments
       args = line.getArgs();
@@ -415,6 +441,14 @@ public class Jmol extends JPanel {
     // so I'm commenting this line out for now...
     // consoleframe.show();
 
+  }
+
+  static int parseInt(String str) {
+    try {
+      return Integer.parseInt(str);
+    } catch (NumberFormatException nfe) {
+      return Integer.MIN_VALUE;
+    }
   }
 
   private void say(String message) {
@@ -870,7 +904,8 @@ public class Jmol extends JPanel {
       
       public void actionPerformed(ActionEvent e) {
           JFrame newFrame = new JFrame();
-          Jmol newJmol = new Jmol(null, newFrame, Jmol.this);
+          Jmol newJmol = new Jmol(null, newFrame, Jmol.this,
+                                  startupWidth, startupHeight);
           newFrame.show();
       }
       

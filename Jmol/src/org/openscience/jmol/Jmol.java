@@ -98,16 +98,16 @@ class Jmol extends JPanel {
     Jmol(Splash splash) {
 	super(true);
         
-   splash.showStatus("Initialising Swing...");
+        splash.showStatus("Initialising Swing...");
         try {
 	    UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 	} catch (Exception exc) {
 	    System.err.println("Error loading L&F: " + exc);
 	}
-
+        
 	setBorder(BorderFactory.createEtchedBorder());
 	setLayout(new BorderLayout());
-
+        
         scroller = new JScrollPane();
         port = scroller.getViewport();
         
@@ -120,14 +120,14 @@ class Jmol extends JPanel {
 	}
 
         status = (StatusBar)createStatusBar();
-   splash.showStatus("Initialising 3D display...");
+        splash.showStatus("Initialising 3D display...");
         display = new displayPanel(status, settings);
-   splash.showStatus("Initialising Preferences...");
+        splash.showStatus("Initialising Preferences...");
         prefs = new Preferences(frame, display);
-   splash.showStatus("Initialising Animate and Vibrate...");
+        splash.showStatus("Initialising Animate and Vibrate...");
         anim = new Animate(frame, display);
         vib = new Vibrate(frame, display);
-   splash.showStatus("Initialising Measurements...");
+        splash.showStatus("Initialising Measurements...");
         mlist = new MeasurementList(frame, display);
         meas = new Measure(frame, display);
         meas.setMeasurementList(mlist);
@@ -135,7 +135,7 @@ class Jmol extends JPanel {
         mlist.addMeasurementListListener(display);
         port.add(display);
 	// install the command table
-   splash.showStatus("Building Command Hooks...");
+        splash.showStatus("Building Command Hooks...");
 	commands = new Hashtable();
         Action[] actions = getActions();
 	for (int i = 0; i < actions.length; i++) {
@@ -150,14 +150,14 @@ class Jmol extends JPanel {
         }
         vib.addConflictingAction(getAction(openAction));
 	menuItems = new Hashtable();
-   splash.showStatus("Building Menubar...");
+        splash.showStatus("Building Menubar...");
 	menubar = createMenubar();
         add("North", menubar);
-
+        
 	JPanel panel = new JPanel();
 	panel.setLayout(new BorderLayout());	
 	panel.add("North",createToolbar1());
-
+        
         JPanel ip = new JPanel();
         ip.setLayout(new BorderLayout());
         ip.add("West", createToolbar2());
@@ -165,10 +165,10 @@ class Jmol extends JPanel {
 	panel.add("Center", ip);
         add("Center", panel);
         add("South", status);       
-   splash.showStatus("Starting display...");
+        splash.showStatus("Starting display...");
         display.start();        
     }
-
+    
     private static void beguine() {
         try {                        
             atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
@@ -205,24 +205,24 @@ class Jmol extends JPanel {
 
             ImageIcon splash_image = jrh.getIcon("splash");
             Splash splash = new Splash(frame, splash_image);
-      splash.showStatus("Creating main window...");
+            splash.showStatus("Creating main window...");
             frame.setTitle(jrh.getString("Title"));
             frame.setBackground(Color.lightGray);
             frame.getContentPane().setLayout(new BorderLayout());
-      splash.showStatus("Initialising Jmol...");
+            splash.showStatus("Initialising Jmol...");
             frame.getContentPane().add("Center", new Jmol(splash));
             frame.addWindowListener(new AppCloser());
             frame.pack();
             frame.setSize(500, 600);
-      splash.showStatus("Reading AtomTypes...");
+            splash.showStatus("Reading AtomTypes...");
             beguine();
-      splash.showStatus("Launching main frame...");
+            splash.showStatus("Launching main frame...");
             frame.show();
         } catch (Throwable t) {
             System.out.println("uncaught exception: " + t);
             t.printStackTrace();
         }
-
+        
         // Adding consoleframe to grab System.out & System.err
         consoleframe = new JFrame("Jmol Console");
         

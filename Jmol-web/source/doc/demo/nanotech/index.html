@@ -18,50 +18,63 @@
 	    <a href="http://www.imm.org">http://www.imm.org</a><br />
 	    
 	    <script>
-	      jmolRadioGroup([
-	        ["load diffGear.pdb.gz", "diffGear"],
-		["load fineMotion970116.pdb.gz", "fineMotion"],
-		["load finalPump96.09.06.pdb.gz", "finalPump"]
-		]);
+	      jmolMenu([
+	        ["load diffGear.pdb.gz; cpk off;", "diffGear"],
+		["load fineMotion970116.pdb.gz; cpk off;", "fineMotion"],
+		["load finalPump96.09.06.pdb.gz; cpk off;", "finalPump"]
+		], -1);
 
 	      jmolHtml("<hr />");
 
-	      jmolButton("select *; spacefill on");
-	      jmolBr();
-	      jmolButton("select *; cpk off; wireframe on");
-	      jmolBr();
-	      jmolButton("select *; cpk off; wireframe off");
-	      jmolBr();
-
+	      jmolCheckbox(
+	      "select *; wireframe",
+	      "select *; wireframe off",
+	      "wireframe bonds",
+	      "checked");
 	      jmolHtml("<hr />");
 
-	      jmolButton("select silicon; cpk on");
-	      jmolButton("select silicon; cpk off");
+	      jmolCheckbox(
+	      "select silicon; cpk on",
+	      "select silicon; cpk off",
+	      "silicon");
 	      jmolBr();
 
-	      jmolButton("select phosphorus; cpk on");
-	      jmolButton("select phosphorus; cpk off");
+	      jmolCheckbox(
+	      "select phosphorus; cpk on",
+	      "select phosphorus; cpk off",
+	      "phosphorus");
 	      jmolBr();
 
-	      jmolButton("select oxygen; cpk on");
-	      jmolButton("select oxygen; cpk off");
+	      jmolCheckbox(
+	      "select oxygen; cpk on",
+	      "select oxygen; cpk off",
+	      "oxygen");
 	      jmolBr();
 
-	      jmolButton("select carbon; cpk on");
-	      jmolButton("select carbon; cpk off");
+	      jmolCheckbox(
+	      "select carbon; cpk on",
+	      "select carbon; cpk off",
+	      "carbon");
 	      jmolBr();
 
-	      jmolButton("select nitrogen; cpk on");
-	      jmolButton("select nitrogen; cpk off");
+	      jmolCheckbox(
+	      "select nitrogen; cpk on",
+	      "select nitrogen; cpk off",
+	      "nitrogen");
 	      jmolBr();
 
-	      jmolButton("select sulfur; cpk on");
-	      jmolButton("select sulfur; cpk off");
+	      jmolCheckbox(
+	      "select sulfur; cpk on",
+	      "select sulfur; cpk off",
+	      "sulfur");
 	      jmolBr();
 
-	      jmolButton("select hydrogen; cpk on");
-	      jmolButton("select hydrogen; cpk off");
+	      jmolCheckbox(
+	      "select hydrogen; cpk on",
+	      "select hydrogen; cpk off",
+	      "hydrogen");
 	      jmolBr();
+
 	    </script>
 	    <hr />
 	    <i>

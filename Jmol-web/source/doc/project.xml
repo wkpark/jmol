@@ -26,8 +26,9 @@
 	    | <a href="[root]/history/">History</a> 
             | <a href="[root]/changes/">Changes</a>
 	    <br />
-            | <a href="[root]/preview/">Sneak Preview</a>
+            <a href="[root]/preview/">v10 Preview</a>
             | <a href="[root]/betatest/">Beta Test</a>
+	    | <a href="[root]/jslibrary/">JavaScript Library</a>
 	    | <a href="[root]/faqs/">FAQs</a>
 	    | <a href="[root]/technotes/">Tech Notes</a>
 	    | <a href=

@@ -1,18 +1,19 @@
 <html>
   <head>
-    <title>Sample Jmol.js usage</title>
-    <script src="../jmol/Jmol.js"></script>
+    <title>UI Controls example</title>
+    <script src="../jmol/Jmol.js"></script> <!-- REQUIRED -->
     <script>
-      jmolSetCodebase("../jmol");
-      jmolSetAppletColor("aliceblue");
+      jmolSetCodebase("../jmol"); // REQUIRED
+      jmolSetAppletColor("skyblue"); // if you don't want black
     </script>
   </head>
   <body>
     <form> <!-- Netscape 4 requires that INPUT tags be enclosed in FORM tags -->
       <script>
-	<!-- applet size is 200 pixels by 200 pixels -->
-	jmolApplet(200, "caffeine.xyz");
+	// 200x200 & file from another directory
+	jmolApplet(200, "../jssample0/caffeine.xyz");
 	jmolBr();
+	// a radio group
 	jmolHtml("atoms ");
 	jmolRadioGroup([
           ["spacefill off",  "off"],
@@ -20,18 +21,24 @@
 	  ["spacefill 100%", "100%"]
 	]);
 	jmolBr();
-	jmolHtml("bonds ");
-	jmolRadioGroup([
-	  ["wireframe on", "line"],
-	  ["wireframe 0.15", "0.15", "checked"],
-	  ["wireframe 0.25", "0.25"]
-	]);
-	jmolBr();
+	// a button
 	jmolButton("reset", "Reset to original orientation");
 	jmolBr();
+	// a checkbox
 	jmolCheckbox("spin on", "spin off", "spin");
 	jmolBr();
+	// a link
 	jmolLink("move 360 0 0 0 0 0 0 0 2", "Rotate once about the x axis");
+	jmolBr();
+	// a menu
+	jmolMenu([
+	"background white",
+	["background skyblue", null, "selected"],
+	"background yellow",
+	"background salmon",
+	"background palegreen",
+	"background black"
+	]);
       </script>
     </form>
   </body>

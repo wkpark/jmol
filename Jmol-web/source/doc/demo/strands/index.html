@@ -11,7 +11,10 @@
 	  <td>
 	    <h2>jellyfish <br /> Green Flourescent Protein 1gfl.pdb</h2>
 
-	    <script>jmolApplet(400, "1gfl.pdb.gz", "spacefill off; wireframe");</script>
+	    <script>
+	      jmolApplet(400, "1gfl.pdb.gz",
+	      "spacefill off; wireframe; strands on; color strands amino");
+	    </script>
 	  </td>
 	  
 	  <td>
@@ -23,31 +26,31 @@
 	    <script>
 	      jmolCheckbox("strands on", "strands off", "<i>strands on/off</i><br />");
 	      jmolHtml("Color your strands<br />");
-	      jmolRadioGroup([
-	        ["color strands none", null, "checked"],
+	      jmolMenu([
+	        "color strands none",
 		"color strands structure",
-		"color strands amino",
+		["color strands amino", null, "selected"],
 		"color strands shapely",
 		"color strands aquamarine",
 		"color strands slateblue",
 		"color strands goldenrod"
-		], "<br />");
+		], -1);
 	    </script>
 	    <br />
 
 	    Strand count<br />
 	    <script>
-	      jmolRadioGroup([
+	      jmolMenu([
 	      "set strands 1",
 	      "set strands 2",
 	      "set strands 3",
-	      ["set strands 5", null, "checked"],
+	      ["set strands 5", null, "selected"],
 	      "set strands 7",
 	      "set strands 9",
 	      "set strands 11",
 	      "set strands 15",
 	      "set strands 20"
-	      ], "<br />");
+	      ], -1);
 	    </script>
 	  </td>
 	</tr>

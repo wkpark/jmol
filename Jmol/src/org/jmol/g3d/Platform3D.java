@@ -43,7 +43,7 @@ abstract class Platform3D {
   Image imageOffscreen;
   Graphics gOffscreen;
 
-  final static boolean useClearingThread = true;
+  final static boolean useClearingThread = false;
 
   ClearingThread clearingThread;
 

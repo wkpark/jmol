@@ -190,8 +190,6 @@
       <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
       <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
       <srcfiles dir="${lib.dir}" includes="gnujaxp.jar"/>
-      <srcfiles dir="${lib.dir}" includes="multi.jar"/>
-      <srcfiles dir="${lib.dir}" includes="jas.jar"/>
       <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
       <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
       <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
@@ -216,8 +214,6 @@
     <unjar dest="${appjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/gnujaxp.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/multi.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/jas.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>

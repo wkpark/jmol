@@ -938,7 +938,7 @@ final public class JmolViewer {
     }
     openClientFile(fullPathName, fileName, clientFile);
     notifyFileLoaded(fullPathName, fileName,
-                     modelManager.getModelName(), clientFile);
+                     modelManager.getModelSetName(), clientFile);
     return null;
   }
 
@@ -970,12 +970,12 @@ final public class JmolViewer {
     refresh();
   }
 
-  public String getModelName() {
-    return modelManager.getModelName();
+  public String getModelSetName() {
+    return modelManager.getModelSetName();
   }
 
-  public String getModelHeader() {
-    return modelManager.getModelHeader();
+  public String getModelFileHeader() {
+    return modelManager.getModelFileHeader();
   }
 
   public boolean haveFrame() {

@@ -54,8 +54,8 @@ public class ModelManager {
 
   public String fullPathName;
   public String fileName;
-  public String modelName;
-  public String modelHeader;
+  public String modelSetName;
+  public String modelFileHeader;
   //  public int frameCount = 0;
   public boolean haveFile = false;
   //  public int currentFrameNumber;
@@ -65,20 +65,19 @@ public class ModelManager {
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
     if (clientFile == null) {
-      fullPathName = fileName = modelName = modelHeader = null;
+      fullPathName = fileName = modelSetName = modelFileHeader = null;
       frame = null;
       haveFile = false;
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
-      modelName = modelAdapter.getModelName(clientFile);
-      if (modelName != null) {
-        modelName = modelName.trim();
-        if (modelName.length() == 0)
-          modelName = null;
+      modelSetName = modelAdapter.getModelSetName(clientFile);
+      if (modelSetName != null) {
+        modelSetName = modelSetName.trim();
+        if (modelSetName.length() == 0)
+          modelSetName = null;
       }
-      modelName = modelAdapter.getModelName(clientFile);
-      modelHeader = modelAdapter.getModelHeader(clientFile);
+      modelFileHeader = modelAdapter.getModelFileHeader(clientFile);
       frame = frameBuilder.buildFrame(clientFile);
 
       haveFile = true;
@@ -98,12 +97,12 @@ public class ModelManager {
     return (frame == null) ? null : frame.getExportModelAdapter();
   }
 
-  public String getModelName() {
-    return modelName;
+  public String getModelSetName() {
+    return modelSetName;
   }
 
-  public String getModelHeader() {
-    return modelHeader;
+  public String getModelFileHeader() {
+    return modelFileHeader;
   }
 
   public float getRotationRadius() {

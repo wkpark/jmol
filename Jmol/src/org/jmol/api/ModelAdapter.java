@@ -94,21 +94,37 @@ public abstract class ModelAdapter {
   /**
    * returns the type of this model
    */
-  public String getModelTypeName(Object clientFile) { return "unknown"; }
+  public String getFileTypeName(Object clientFile) { return "unknown"; }
 
   /**
    * Some file formats contain a formal name of the molecule in the file.
    * If this method returns <code>null</code> then the JmolViewer will
    * automatically supply the file/URL name as a default.
    */
-  public String getModelName(Object clientFile) { return null; }
+  public String getModelSetName(Object clientFile) { return null; }
 
   /**
    * We may need the file header.
    * This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>
    */
-  public String getModelHeader(Object clientFile) { return null; }
+  public String getModelFileHeader(Object clientFile) { return null; }
+
+  /**
+   * The number of molecular models in the file
+   */
+
+  public int getModelCount(Object clientFile) { return 1; }
+
+  /**
+   * The model number for each model
+   */
+  public int getModelNumber(Object clientFile, int modelIndex) { return 1; }
+
+  /**
+   * The properties for each model
+   */
+  public String getModelProperties(Object clientFile, int modelIndex) { return null; }
 
   /**
    * The number of atoms contained in the file.

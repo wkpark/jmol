@@ -2754,7 +2754,7 @@ public class Eval implements Runnable {
   }
 
   void showPdbHeader() {
-    showString(viewer.getModelHeader());
+    showString(viewer.getModelFileHeader());
   }
 
   void showModel() {

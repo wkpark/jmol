@@ -69,15 +69,15 @@ public class SmarterModelAdapter extends ModelAdapter {
     }
   }
 
-  public String getModelTypeName(Object clientFile) {
+  public String getFileTypeName(Object clientFile) {
     return ((Model)clientFile).modelTypeName;
   }
 
-  public String getModelName(Object clientFile) {
+  public String getModelSetName(Object clientFile) {
     return ((Model)clientFile).modelName;
   }
 
-  public String getModelHeader(Object clientFile) {
+  public String getModelFileHeader(Object clientFile) {
     return ((Model)clientFile).fileHeader;
   }
 

@@ -46,8 +46,8 @@ final public class FrameExportModelAdapter extends ModelAdapter {
     this.frame = frame;
   }
 
-  public String getModelName(Object clientFile) {
-    return viewer.getModelName();
+  public String getModelSetName(Object clientFile) {
+    return viewer.getModelSetName();
   }
 
   public int getAtomCount(Object clientFile) {

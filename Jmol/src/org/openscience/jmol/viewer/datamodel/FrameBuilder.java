@@ -44,10 +44,10 @@ final public class FrameBuilder {
 
   public Frame buildFrame(Object clientFile) {
     long timeBegin = System.currentTimeMillis();
-    String modelTypeName = adapter.getModelTypeName(clientFile);
+    String fileTypeName = adapter.getFileTypeName(clientFile);
     int atomCount = adapter.getAtomCount(clientFile);
 
-    Frame frame = new Frame(viewer, modelTypeName, atomCount);
+    Frame frame = new Frame(viewer, fileTypeName, atomCount);
 
     /****************************************************************
      * crystal cell must come first, in case atom coordinates

@@ -93,6 +93,8 @@ public class AlphaPolymer extends Polymer {
    * </a>
    */
   void calculateStructures() {
+    if (count < 4)
+      return;
     float[] angles = calculateAnglesInDegrees();
     byte[] codes = calculateCodes(angles);
     checkBetaSheetAlphaHelixOverlap(codes, angles);

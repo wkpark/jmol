@@ -1,0 +1,179 @@
+<chapter>
+<title>Jmol Applet Usage</title>
+<section>
+  <title>Embedding the Jmol Applet in a Web Page</title>
+  <para>
+    To embed the Jmol Applet in a web page, you need only one
+    java archive file, <emphasis>JmolApplet.jar</emphasis>. All classes
+    and data files are included in this file. Put this file in the
+    directory on your webserver. 
+  </para>
+  <para>
+    The name of the applet class is <emphasis>JmolApplet</emphasis>.
+  </para>
+  <para>
+    The Jmol applet can be embedded in html pages using the 
+    APPLET html tag:
+    <programlisting><![CDATA[
+      <applet code="JmolApplet" archive="JmolApplet.jar"
+	width="350" height="350">
+	<param name="load" value="caffeine.xyz">
+	</applet>
+	]]>
+    </programlisting>
+  </para>
+  <para>
+    CODE identifies the name of the class, in this case 'JmolApplet' or
+    'JmolApplet.class'. ARCHIVE identifies the name of the jar file
+    where the classes for this applet are to be found. WIDTH and HEIGHT
+    specify the dimensions of the applet within the html page in pixels.
+  </para>
+  <para>
+    The PARAM tags are used to pass parameters to the applet. 
+    The LOAD parameter specifies the URL of the molecule file which
+    should be loaded. 
+  </para>
+  <para>
+    The following is a slightly more complicated version with a few
+    more options:
+    <programlisting><![CDATA[
+      <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	width="350" height="350" align="right">
+	<param name="load"    value="molecules/caffeine.xyz">
+	<param name="bgcolor" value="#DDDDFF">
+	<param name="style"   value="quickdraw">
+	<param name="label"   value="symbol">
+	<param name="script"  value="move 0 0 360 0 0 0 0 0 5">
+	<param name="wireframeRotation" value="true">
+	<param name="perspectiveDepth"  value="false">
+        </applet>
+        ]]>
+    </programlisting>
+  </para>
+  <para>
+    In this case the applet is given a name so that it can be referenced
+    from JavaScript code (applet="jmol"). The applet is aligned to the
+    right side of the page so that text flows to the left (align="right").
+    Using additional parameters (&lt;param name="*" value="*"&gt;)
+    a molecule is loaded from a relative URL on the web server
+    (molecules/caffeine.xyz),
+    the background color is set to a light blue (#DDDDFF),
+    the style is set so that shaded atoms/bonds are not used (quickdraw),
+    atoms are labeled with their atomic symbol (symbol),
+    a script is run which rotates 360 degrees around the z axis in 5
+    seconds,
+    wireframeRotation is turned on so that all movements
+    are done in wireframe mode,
+    and perspective depth is turned off so that the molecule rendering is
+    a flat projection to the screen with no size adjustment for atoms
+    and bonds further away from the viewer. 
+  </para>
+</section>
+<section>
+  <title>Jmol Applet Parameters</title>
+  <para>
+    The complete list of Jmol Applet parameters is as follows:
+    <itemizedlist>
+      <listitem>
+	<para>
+	  bgcolor - The color of the background: official html
+	  color names or #RRGGBB notation
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  style - The rendering style for atoms and bonds:
+	  SHADED, WIREFRAME or QUICKDRAW
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  label - The rendering style for atom labels:
+	  NONE, SYMBOL or NUMBER
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  wireframeRotation - Rotations use wireframe for faster rendering:
+	  TRUE or FALSE (defaults to FALSE)
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  perspectiveDepth - Rotations use wireframe for faster rendering:
+	  TRUE or FALSE (defaults to TRUE)
+	</para>
+      </listitem>
+      <listitem>
+	<para>
+	  script - RasMol/Chime script commands to execute
+	</para>
+      </listitem>
+    </itemizedlist>
+  </para>
+  <section>
+    <title>style</title>
+    <section>
+      <title>shaded</title>
+      <para>
+	Renders atoms and bonds as shaded spheres and cylinders. 
+	Shaded images are calculated and cached, so performance
+	should not be an issue except when dealing with very
+	large protein molecules. 
+      </para>
+    </section>
+    <section>
+      <title>quickdraw</title>
+      <para>
+	Renders atoms and bonds as flat, solid-colored circles
+	and rectangles. 
+      </para>
+    </section>
+    <section>
+      <title>wireframe</title>
+      <para>
+	Atoms are drawn as unfilled circles. Bonds are drawn as
+	single lines. 
+      </para>
+      <para>
+	Note: If rendering performance is unacceptably slow when dealing
+	with very large molecules, the WIREFRAMEROTATION option can be
+	used to switch to wireframe mode during rotations and translations.
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>Atom Labels</title>
+    <section>
+      <title>none</title>
+      <para>
+	View the atoms without any label. This is the default. 
+      </para>
+    </section>
+    <section>
+      <title>symbol</title>
+      <para>
+	Label the atoms with their element symbol. 
+      </para>
+    </section>
+    <section>
+      <title>number</title>
+      <para>
+	Label the atoms with their index number. 
+      </para>
+    </section>
+  </section>
+</section>
+<section>
+  <title>script</title>
+  <para>
+    The script parameter allows you to specify a script of
+    RasMol/Chime commands to be executed after the molecule file
+    is loaded.
+  </para>
+  <para>
+    Multiple script commands can be separated by the semicolon (;)
+    character.
+  </para>
+</section>
+</chapter>

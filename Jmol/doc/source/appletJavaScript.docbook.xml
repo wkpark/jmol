@@ -1,0 +1,152 @@
+<chapter>
+<title>JavaScript integration</title>
+<para>
+  Using JavaScript commands embedded in web pages, you can control
+  the behavior of the Jmol applet. This flexibility enables you to
+  create complex user interactions that are controlled using standard
+  web page elements.
+</para>
+<section>
+  <title>Web Browser support</title>
+  <para>
+    The underlying technology that supports this is known as LiveConnect.
+    The LiveConnect layer provides the data and method conversion interface
+    between the JavaScript world and the Java world.
+  </para>
+  <para>
+    Netscape and Internet Explorer have both supported LiveConnect for
+    some time.
+  </para>
+  <para>
+    The Konqueror browser does not yet support LiveConnect.
+  </para>
+  <para>
+    Unfortunately, the news is not good for Macintosh OS X. Internet
+    Explorer does not support LiveConnect.
+    Neither does Safari (which is based upon Konqueror).
+    (I have not yet checked Netscape on OS X.)
+  </para>
+</section>
+<section>
+  <title>JavaScript LiveConnect overview</title>
+  <para>
+    In order to reference an applet on an HTML page the applet must
+    be given a name. We recommend that you use the name 'jmol' as in:
+    <programlisting><![CDATA[
+      <applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
+	width="350" height="350">
+	<param name="load" value="caffeine.xyz">
+	</applet>
+	]]>
+    </programlisting>
+  </para>
+  <para>
+    If you would like to have multiple instances of the applet on a
+    single page then you should give them unique names.
+  </para>
+  <para>
+    With some browser versions you can sneak by without starting object
+    references with 'document'. However, this does not work with many
+    browsers. Therefore, we strongly recommend that you start all
+    your references with 'document'.
+  </para>
+  <para>
+    Therefore, assuming you have named your applet 'jmol', all your
+    references to the applet will start with 'document.jmol'. JavaScript
+    method references in this documentation will use this notation. 
+  </para>
+  <para>
+    Within a web page, there are several ways to invoke a JavaScript
+    method based upon user events. One method is to use the
+    'javascript:' protocol in an href, as in:
+    <programlisting><![CDATA[
+      <a href="javascript:document.jmol.load('dna.xyz')">
+	Load DNA molecule
+      </a>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    Another method is to use explicit JavaScript event tags, as in:
+    <programlisting><![CDATA[
+      <form name="myform">
+	<input type="button" value="Rotate X 90"
+	  onClick="document.jmol.script('rotate x 90')">
+	<input type="button" value="Rotate Y 90"
+	  onClick="document.jmol.script('rotate y 90')">
+	<input type="button" value="Rotate Z 90"
+	  onClick="document.jmol.script('rotate Z 90')">
+      </form>
+      ]]>
+    </programlisting>
+  </para>
+  <para>
+    For further information on JavaScript programming we recommend
+    that you search for JavaScript development resources on the web
+    or at your nearest technical bookstore.
+  </para>
+  <para>
+    To get things to run on an installed base of older Netscape and
+    IE browsers you may want to consider looking for 'old' documentation
+    rather than 'up to date' documentation. One good reference source is
+    http://developer.netscape.com/docs/manuals/js/client/jsguide/index.html	
+  </para>
+</section>
+<section>
+  <title>Jmol JavaScript API</title>
+  <section>
+    <title>document.jmol.load(String url)</title>
+    <para>
+      The 'load' method allows you to load a different molecular
+      model into the applet.
+    </para>
+  </section>
+  <section>
+    <title>document.jmol.loadInline(String model)</title>
+    <para>
+      At times it may be more convenient to store the contents
+      of the molecular model as a string in the HTML file itself.
+      The 'loadInline' method allows you to load a molecular model
+      of this type.
+    </para>
+  </section>
+  <section>
+    <title>document.jmol.setStyle(String style)</title>
+    <para>
+      Set the atom/bond rendering style to one of 'SHADED',
+      'QUICKDRAW' or 'WIREFRAME'
+    </para>
+  </section>
+  <section>
+    <title>document.jmol.setLabelStyle(String labelStyle)</title>
+    <para>
+      Set the atom label to be one of 'NONE', 'SYMBOL' or 'NUMBER'
+    </para>
+  </section>
+  <section>
+    <title>document.jmol.setWireframeRotation(boolean wfrMode)</title>
+    <para>
+      Controls whether or not rotations should be performed with
+      wireframe rendering. This should not be needed except on
+      very large molecules (or very old computers).
+    </para>
+  </section>
+  <section>
+    <title>document.jmol.setPerspectiveDepth(boolean pdMode)</title>
+    <para>
+      By default, atoms are rendered with perspective depth. That is,
+      objects further away are smaller. When perspective depth is set
+      to false you get a flat projection which is orthogonal to the
+      screen. 
+    </para>
+    <para>
+      The different projection modes are easily visible with
+      crystaline structures or when the enclosing boundbox is
+      turned on, as in:
+      <programlisting>
+	document.jmol.script('set boundbox on');
+      </programlisting>
+    </para>
+  </section>
+</section>
+</chapter>

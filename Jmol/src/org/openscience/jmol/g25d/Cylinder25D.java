@@ -42,19 +42,22 @@ public class Cylinder25D {
     this.g25d = g25d;
   }
 
+  private short colix1, colix2;
   private int[] shades1;
   private int[] shades2;
   private int xOrigin, yOrigin, zOrigin;
   private int dx, dy, dz;
   private boolean tEvenDiameter;
+  private int diameter;
   
   public void render(short colix1, short colix2, int diameter,
                      int xOrigin, int yOrigin, int zOrigin,
                      int dx, int dy, int dz) {
     this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
     this.dx = dx; this.dy = dy; this.dz = dz;
-    this.shades1 = Colix.getShades(colix1);
-    this.shades2 = Colix.getShades(colix2);
+    this.shades1 = Colix.getShades(this.colix1 = colix1);
+    this.shades2 = Colix.getShades(this.colix2 = colix2);
+    this.diameter = diameter;
     this.tEvenDiameter = (diameter & 1) == 0;
     
     float radius = diameter / 2.0f;
@@ -67,7 +70,7 @@ public class Cylinder25D {
     float sinPhi = dy / mag2d;
 
     initRotatedPoints();
-    for (float y = -radius + 0.25f; y < radius; y += .5) {
+    for (float y = -radius + 1/4f; y < radius; y += 1/2f) {
       float y2 = y * y;
       float h = (float)Math.sqrt(radius2 - y2);
       float x = h * cosTheta;
@@ -77,16 +80,17 @@ public class Cylinder25D {
       plotRotatedPoint(xR, yR, z);
     }
     plotLastRotatedPoint();
+    renderEndcaps();
   }
 
   private int xLast, yLast, zLast, intensityLast, countLast;
-  private boolean tPrev;
-  private int xPrev, yPrev, zPrev, intensityPrev;
+  private boolean tBeforeLast;
+  private int xBeforeLast, yBeforeLast, zBeforeLast, intensityBeforeLast;
 
   private void initRotatedPoints() {
     xLast = Integer.MAX_VALUE;
     countLast = 0;
-    tPrev = false;
+    tBeforeLast = false;
   }
 
   private void plotRotatedPoint(float xF, float yF, float zF) {
@@ -124,14 +128,30 @@ public class Cylinder25D {
                          xOrigin + xLast, yOrigin + yLast,
                          zOrigin - zLast,
                          dx, dy, dz);
-
-      if (tPrev && xLast != xPrev && yLast != yPrev) {
-        int zInterpolate = (zLast + zPrev) / 2;
-        int intensityInterpolate = (intensityLast + intensityPrev) / 2;
-        // FIXME ... current interpolation is not technically "correct"
+      int xDiff = xLast - xBeforeLast;
+      if (xDiff < 0)
+        xDiff = -xDiff;
+      int yDiff = yLast - yBeforeLast;
+      if (yDiff < 0)
+        yDiff = -yDiff;
+      if (tBeforeLast &&
+          ((xDiff > 1) || (yDiff > 1) || (xDiff != 0) && (yDiff != 0))) {
         int xInterpolate, yInterpolate;
-        xInterpolate = xLast;
-        yInterpolate = yPrev;
+        if (xDiff > 1 || yDiff > 1) {
+          xInterpolate = (xLast + xBeforeLast) / 2;
+          yInterpolate = (yLast + yBeforeLast) / 2;
+        } else {
+          xInterpolate = xLast;
+          yInterpolate = yBeforeLast;
+        }
+        int zInterpolate = (zLast + zBeforeLast) / 2;
+        int intensityInterpolate = (intensityLast + intensityBeforeLast) / 2;
+
+        /*
+        System.out.println(" before=" + xBeforeLast + "," + yBeforeLast +
+                           " last=" + xLast + "," + yLast + " -> " +
+                           xInterpolate + "," + yInterpolate);
+        */
         g25d.plotLineDelta(shades1[intensityInterpolate],
                            shades2[intensityInterpolate],
                            xOrigin + xInterpolate,
@@ -139,11 +159,16 @@ public class Cylinder25D {
                            zOrigin - zInterpolate,
                            dx, dy, dz);
       }
-      tPrev = true;
-      xPrev = xLast;
-      yPrev = yLast;
-      zPrev = zLast;
-      intensityPrev = intensityLast;
+      tBeforeLast = true;
+      xBeforeLast = xLast;
+      yBeforeLast = yLast;
+      zBeforeLast = zLast;
+      intensityBeforeLast = intensityLast;
     }
+  }
+
+  void renderEndcaps() {
+    g25d.fillSphereCentered(colix1, colix1, xOrigin, yOrigin, zOrigin, diameter);
+    g25d.fillSphereCentered(colix2, colix2, xOrigin+dx, yOrigin+dy, zOrigin+dz, diameter);
   }
 }

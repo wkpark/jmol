@@ -593,7 +593,7 @@ final public class Graphics25D {
         cc2 = clipCode(x2, y2);
       }
     }
-    plotLineDeltaUnclipped(x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+    plotLineDeltaUnclipped(argbCurrent, x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
   /*
@@ -840,6 +840,36 @@ final public class Graphics25D {
     }
   }
 
+  void plotPixelsClipped(int argb, int count, int x, int y, int zAtLeft, int zAtRight) {
+    if (y < 0 || y >= height || x >= width)
+      return;
+    // scale the z coordinates;
+    int zScaled = zAtLeft << 10;
+    int zIncrement = ((zAtRight << 10) - zScaled + (count + 1) / 2)/count;
+    // all Z values are positive, although zIncrement can be negative
+    // add 1/2 so that z rounds properly when truncated
+    zScaled += 1 << 9;
+    if (x < 0) {
+      x = -x;
+      zScaled += (zIncrement * x) / count;
+      count += x;      if (count < 0)
+        return;
+      x = 0;
+    }
+    if (count + x > width)
+      count = width - x;
+    int offsetPbuf = y * width + x;
+    while (--count >= 0) {
+      int z = zScaled >> 10;
+      if (z < zbuf[offsetPbuf]) {
+        zbuf[offsetPbuf] = (short)z;
+        pbuf[offsetPbuf] = argb;
+      }
+      ++offsetPbuf;
+      zScaled += zIncrement;
+    }
+  }
+
   void plotPixelsUnclipped(int count, int x, int y, int z) {
     int offsetPbuf = y * width + x;
     while (--count >= 0) {
@@ -894,29 +924,30 @@ final public class Graphics25D {
     }
   }
   
+  void plotLineDelta(int argb, int x, int y, int z, int dx, int dy, int dz) {
+    if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
+        y < 0 || y >= height || y + dy < 0 || y + dy >= height)
+      plotLineDeltaClipped(argb, argb, x, y, z, dx, dy, dz);
+    else
+      plotLineDeltaUnclipped(argb, x, y, z, dx, dy, dz);
+  }
+
   void plotLineDelta(int argb1, int argb2,
                      int x, int y, int z, int dx, int dy, int dz) {
-    if (argb1 == argb2) {
-      argbCurrent = argb1;
-      if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
-          y < 0 || y >= height || y + dy < 0 || y + dy >= height)
-        drawLine(x, y, z, x+dx, y+dy, z+dz);
-      else
-        plotLineDeltaUnclipped(x, y, z, dx, dy, dz);
-      return;
-    }
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
         y < 0 || y >= height || y + dy < 0 || y + dy >= height)
       plotLineDeltaClipped(argb1, argb2, x, y, z, dx, dy, dz);
-    else
+    else if (argb1 == argb2)
+      plotLineDeltaUnclipped(argb1, x, y, z, dx, dy, dz);
+    else 
       plotLineDeltaUnclipped(argb1, argb2, x, y, z, dx, dy, dz);
   }
 
-  void plotLineDeltaUnclipped(int x1, int y1, int z1, int dx, int dy, int dz) {
+  void plotLineDeltaUnclipped(int argb, int x1, int y1, int z1, int dx, int dy, int dz) {
     int offset = y1 * width + x1;
     if (z1 < zbuf[offset]) {
       zbuf[offset] = (short)z1;
-      pbuf[offset] = argbCurrent;
+      pbuf[offset] = argb;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -960,7 +991,7 @@ final public class Graphics25D {
         int zCurrent = zCurrentScaled >> 10;
         if (zCurrent < zbuf[offset]) {
           zbuf[offset] = (short)zCurrent;
-          pbuf[offset] = argbCurrent;
+          pbuf[offset] = argb;
         }
       } while (--n > 0);
       return;
@@ -983,7 +1014,7 @@ final public class Graphics25D {
       int zCurrent = zCurrentScaled >> 10;
       if (zCurrent < zbuf[offset]) {
         zbuf[offset] = (short)zCurrent;
-        pbuf[offset] = argbCurrent;
+        pbuf[offset] = argb;
       }
     } while (--n > 0);
   }

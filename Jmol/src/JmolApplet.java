@@ -115,6 +115,11 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       setWireframeRotation(wfr != null &&
                            (wfr.equalsIgnoreCase("on") ||
                             wfr.equalsIgnoreCase("true")));
+
+      String pd = getParameter("perspectiveDepth");
+      setPerspectiveDepth(pd == null ||
+                          pd.equalsIgnoreCase("on") ||
+                          pd.equalsIgnoreCase("true"));
       
       load(getParameter("load"));
       loadInline(getParameter("loadInline"));

@@ -36,4 +36,4 @@ if [ ! -e $libDir/jmol.jar ]; then
 	exit
 fi
 
-exec $command -Djmol.home="$JMOL_HOME" -cp $libDir/jmol.jar org.openscience.jmol.app.Jmol "$@"
+exec $command -Djmol.home="$JMOL_HOME" -jar $libDir/jmol.jar "$@"

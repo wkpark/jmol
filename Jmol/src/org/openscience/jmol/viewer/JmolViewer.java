@@ -246,7 +246,7 @@ final public class JmolViewer {
   }
 
   public static float toRadians(int degrees) {
-    return degrees / (360 * 2 * (float)Math.PI);
+    return (degrees * 2) * (float)(Math.PI / 360);
   }
 
   public void rotate(AxisAngle4f axisAngle) {

@@ -973,7 +973,7 @@ public interface JmolModelAdapter {
   public final static int[] argbsPdbChain = {
     // xwindows colors
     // ' '->0 'A'->1, 'B'->2
-    0xFFFA8072, // salmon
+    0xFF6B8E23, // OliveDrab
     0xFFFF0000, // red
     0xFF00FF00, // lime
     0xFF0000FF, // blue
@@ -987,7 +987,7 @@ public interface JmolModelAdapter {
     0xFF000080, // NavyBlue
     0xFFA020F0, // purple
     0xFF40E0D0, // turquoise
-    0xFF6B8E23, // OliveDrab
+    0xFFFA8072, // salmon
     0xFF00FF7F, // SpringGreen
   };
 }

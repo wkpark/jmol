@@ -159,7 +159,7 @@ public class BondRenderer {
       stepAxisCoordinates();
     }
     if (showAxis) {
-      g.setColor(transparentGreen);
+      g.setColor(control.transparentGreen());
       g.drawLine(x1 + 5, y1, x1 - 5, y1);
       g.drawLine(x1, y1 + 5, x1, y1 - 5);
       g.drawOval(x1-5, y1-5, 10, 10);
@@ -169,8 +169,10 @@ public class BondRenderer {
     }
   }
 
-  private final static Color transparentGreen = new Color(0x8000FF00, true);
   private static final boolean showAxis = false;
+
+  void initializeDebugColors() {
+  }
 
   int[] axPoly = new int[4];
   int[] ayPoly = new int[4];
@@ -265,11 +267,17 @@ public class BondRenderer {
       g.drawPolygon(axPoly, ayPoly, 4);
       break;
     case DisplayControl.SHADING:
-      if (width1 > 5) {
+      if (width1 > 3) {
+        boolean firstPass = true;
         int numPasses = calcNumShadeSteps();
         Color[] shades = getShades(color, Color.black);
         for (int i = numPasses; --i >= 0; ) {
-          g.setColor(shades[i * maxShade / numPasses]);
+          Color shade = shades[i * maxShade / numPasses];
+          if (firstPass) {
+            drawInside(g, shade, 2, axPoly, ayPoly);
+            firstPass = false;
+          }
+          g.setColor(shade);
           g.fillPolygon(axPoly, ayPoly, 4);
           stepPolygon();
         }
@@ -289,16 +297,26 @@ public class BondRenderer {
       drawEndCap(xAxis2, yAxis2, width2, color2, outline2);
   }
 
+  private ShadedSphereRenderer shadedSphereRenderer;
+
   void drawEndCap(int x, int y, int diameter, Color color, Color outline) {
-    if (styleBond == DisplayControl.QUICKDRAW) {
-      int radiusCap, xUpperLeft, yUpperLeft;
-      radiusCap = (diameter+1) / 2;
-      xUpperLeft = x - radiusCap;
-      yUpperLeft = y - radiusCap;
+    int radiusCap, xUpperLeft, yUpperLeft;
+    radiusCap = (diameter+1) / 2;
+    xUpperLeft = x - radiusCap;
+    yUpperLeft = y - radiusCap;
+    switch (styleBond) {
+    case DisplayControl.QUICKDRAW:
+      --diameter; // don't forget that a drawn circle is one larger
       g.setColor(color);
       g.fillOval(xUpperLeft, yUpperLeft, diameter, diameter);
       g.setColor(outline);
       g.drawOval(xUpperLeft, yUpperLeft, diameter, diameter);
+      break;
+    case DisplayControl.SHADING:
+      if (shadedSphereRenderer == null)
+        shadedSphereRenderer = new ShadedSphereRenderer(control);
+      shadedSphereRenderer.render(g, xUpperLeft, yUpperLeft, diameter,
+                                  color, outline);
     }
   }
 
@@ -317,7 +335,7 @@ public class BondRenderer {
     int iSE = 2;
     int iSW = 3;
     int iT;
-    boolean top = true;
+    boolean top = false;
     if (ax[iNE] < ax[iNW]) {
       iT = iNE; iNE = iNW; iNW = iT;
       iT = iSE; iSE = iSW; iSW = iT;
@@ -328,7 +346,7 @@ public class BondRenderer {
       drawInside1(g, !top, ax[iSW], ay[iSW], ax[iSE], ay[iSE]);
   }
 
-  private final static boolean applyDrawInsideCorrection = false;
+  private final static boolean applyDrawInsideCorrection = true;
   void drawInside1(Graphics g, boolean top, int x1, int y1, int x2, int y2) {
     if (!applyDrawInsideCorrection) {
       drawLineInside(g, x1, y1, x2, y2);
@@ -431,9 +449,15 @@ public class BondRenderer {
   Color[] getShades(Color color, Color darker) {
     Color[] shades = (Color[])htShades.get(color);
     if (shades == null) {
-      int darkerR = darker.getRed(),   rangeR = color.getRed() - darkerR;
-      int darkerG = darker.getGreen(), rangeG = color.getGreen() - darkerG;
-      int darkerB = darker.getBlue(),  rangeB = color.getBlue() - darkerB;
+      int colorR = color.getRed();
+      int colorG = color.getGreen();
+      int colorB = color.getBlue();
+      colorR += colorR / 12; if (colorR > 255) colorR = 255;
+      colorG += colorG / 12; if (colorG > 255) colorG = 255;
+      colorB += colorB / 12; if (colorB > 255) colorB = 255;
+      int darkerR = darker.getRed(),   rangeR = colorR - darkerR;
+      int darkerG = darker.getGreen(), rangeG = colorG - darkerG;
+      int darkerB = darker.getBlue(),  rangeB = colorB - darkerB;
       shades = new Color[maxShade];
       for (int i = 0; i < maxShade; ++i) {
         double distance = (float)i / (maxShade - 1);
@@ -479,7 +503,7 @@ public class BondRenderer {
       xAxis2 -= dxStep2; yAxis2 -= dyStep2;
     }
     if (showAxis) {
-      g.setColor(colorGreyTrans);
+      g.setColor(control.transparentGrey());
       g.drawLine(x1 + dy, y1 - dx, x1 - dy, y1 + dx);
       g.drawLine(x2 + dy, y2 - dx, x2 - dy, y2 + dx);
     }
@@ -555,15 +579,10 @@ public class BondRenderer {
     ySurface2 = yAxis2 + dySlice2;
 
     if (showAxis) {
-      dot(xSurface1, ySurface1, colorBlueTrans);
-      dot(xSurface2, ySurface2, colorBlueTrans);
+      dot(xSurface1, ySurface1, control.transparentBlue());
+      dot(xSurface2, ySurface2, control.transparentBlue());
     }
   }
-
-  Color colorGreenTrans = new Color(0x4000FF00, true);
-  Color colorBlueTrans = new Color(0x400000FF, true);
-  Color colorRedTrans = new Color(0x40FF0000, true);
-  Color colorGreyTrans = new Color(0x40808080, true);
 
   void dot(int x, int y, Color co) {
     g.setColor(co);
@@ -594,7 +613,7 @@ public class BondRenderer {
       int dx = xExit - x1, dy = yExit - y1;
       distanceExit = (int)Math.sqrt(dx*dx + dy*dy);
       if (showAxis)
-        dot(xExit, yExit, colorBlueTrans);
+        dot(xExit, yExit, control.transparentBlue());
     }
   }
   

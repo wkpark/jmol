@@ -1492,9 +1492,18 @@ public class Eval implements Runnable {
   }
 
   void spacefill() throws ScriptException {
-    int tok = statement[1].tok;
     byte style = JmolConstants.STYLE_SHADED;
     short mar = -999;
+    int tok = Token.on;
+    if (statement.length > 1) {
+      tok = statement[1].tok;
+      if (! ((statement.length == 2) ||
+             (statement.length == 3 &&
+              tok == Token.integer &&
+              statement[2].tok == Token.percent))) {
+        badArgumentCount();
+      }
+    }
     switch (tok) {
     case Token.on:
       mar = -100; // spacefill with no args goes to 100%
@@ -1504,11 +1513,17 @@ public class Eval implements Runnable {
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
-      if (radiusRasMol >= 500 || radiusRasMol < -100)
-        numberOutOfRange();
-      mar = (short)radiusRasMol;
-      if (radiusRasMol > 0)
-        mar *= 4;
+      if (statement.length == 2) {
+        if (radiusRasMol >= 500 || radiusRasMol < -100)
+          numberOutOfRange();
+        mar = (short)radiusRasMol;
+        if (radiusRasMol > 0)
+          mar *= 4;
+      } else {
+        if (radiusRasMol < 0 || radiusRasMol > 100)
+          numberOutOfRange();
+        mar = (short)-radiusRasMol; // use a negative number to specify %vdw
+      }
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();

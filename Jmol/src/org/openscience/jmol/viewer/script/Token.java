@@ -283,6 +283,7 @@ public class Token {
   final static int spec_chain           = misc | 25;
   final static int spec_model           = misc | 26;
   final static int spec_atom            = misc | 27;
+  final static int percent      = misc | 28;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -337,7 +338,7 @@ public class Token {
     "set",               new Token(set,      varArgCount, "set"),
     "show",              new Token(show,     varArgCount, "show"),
     "slab",              new Token(slab,      onDefault1, "slab"),
-    "spacefill",         new Token(spacefill, onDefault1, "spacefill"),
+    "spacefill",         new Token(spacefill,varArgCount, "spacefill"),
     "cpk",               null,
     "ssbonds",           new Token(ssbonds,   onDefault1, "ssbonds"),
     "star",              new Token(star,      onDefault1, "star"),
@@ -486,6 +487,7 @@ public class Token {
     "hydrogens",    null,
     "selected",     new Token(selected,        "selected"),
     "solvent",      new Token(solvent,         "solvent"),
+    "%",            new Token(percent,         "%"),
 
   };
 

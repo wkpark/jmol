@@ -440,6 +440,7 @@ class Compiler {
     case ':':
     case '@':
     case '.':
+    case '%':
       break;
     case '<':
     case '=':

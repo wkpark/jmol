@@ -32,7 +32,7 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 ////////////////////////////////////////////////////////////////
 
 function jmolInitialize(codebaseDirectory, unsupportedBrowserURL, noJavaURL) {
-  if (! codebase) {
+  if (! codebaseDirectory) {
     alert("codebaseDirectory is a required parameter to jmolInitialize");
     codebaseDirectory = ".";
   }
@@ -230,22 +230,38 @@ function jmolSetTarget(targetSuffix) {
 function jmolScript(script, targetSuffix) {
   if (script) {
     var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
-    var applet = _jmolFindApplet(target);
-    if (applet)
-      return applet.script(script);
-    else
-      alert("could not find applet " + target);
+//    while (! _jmol.ready[target])
+//      alert("The Jmol applet " + target + " is not loaded yet");
+//    if (! _jmol.ready[target])
+//      alert("The Jmol applet " + target + " is not loaded yet");
+//    if (document.applets[target] && ! document.applets[target].isActive())
+//       alert("The Jmol applet " + target + " is not yet active");
+//    else {
+      var applet = _jmolFindApplet(target);
+      if (applet)
+        return applet.script(script);
+      else
+        alert("could not find applet " + target);
+//    }
   }
 }
 
 function jmolLoadInline(model, targetSuffix) {
   if (model) {
     var target = "jmolApplet" + (targetSuffix ? targetSuffix : "0");
-    var applet = _jmolFindApplet(target);
-    if (applet)
-      return applet.loadInline(model);
-    else
-      alert("could not find applet " + target);
+//    while (! _jmol.ready[target])
+//      alert("The Jmol applet " + target + " is not loaded yet");
+//    if (! _jmol.ready[target])
+//      alert("The Jmol applet " + target + " is not loaded yet");
+//    if (document.applets[target] && ! document.applets[target].isActive())
+//       alert("The Jmol applet " + target + " is not yet active");
+//    else {
+      var applet = _jmolFindApplet(target);
+      if (applet)
+        return applet.loadInline(model);
+      else
+        alert("could not find applet " + target);
+//    }
   }
 }
 
@@ -431,7 +447,8 @@ isFullyCompliant: false,
 initialized: false,
 initChecked: false,
 
-previousOnloadHandler: null
+previousOnloadHandler: null,
+ready: {}
 }
 
 with (_jmol) {
@@ -477,15 +494,9 @@ with (_jmol) {
       // checking the plugins array does not work because
       // Netscape 7.2 OS X still has Java 1.3.1 listed even though
       // javaplugin.sf.net is installed to upgrade to 1.4.2
-      try {
-        // miguel 2004 11 17
-        // Netscape 7.2 is not catching this exception
-        // so the variables isBrowserCompliant and isJavaCompliant are not set
-        // ... I suppose no harm done
-        var javaVersion = java.lang.System.getProperty("java.version");
-        isBrowserCompliant = javaVersion >= "1.4.2";
-      } catch (e) {
-      }
+      eval("try {var v = java.lang.System.getProperty('java.version');" +
+           " _jmol.isBrowserCompliant = v >= '1.4.2';" +
+           " } catch (e) { }");
     } else {
       isBrowserCompliant = hasGetElementById &&
         !((browser == "msie") ||
@@ -509,7 +520,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
     var sz = _jmolGetAppletSize(size);
     var t;
     t = "<applet name='jmolApplet" + nameSuffix + "' id='jmolApplet" + nameSuffix +
-        "' " + appletCssClass +
+        "' " + appletCssText +
         " code='JmolApplet' archive='JmolApplet.jar'\n" +
         " codebase='" + codebase + "'\n" +
         " width='" + sz[0] + "' height='" + sz[1] +
@@ -523,7 +534,8 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
         boxbgcolor + "' />\n" +
         "  <param name='boxfgcolor' value='" +
         boxfgcolor + "' />\n" +
-        "  <param name='bgcolor' value='" + bgcolor + "' />\n";
+        "  <param name='bgcolor' value='" + bgcolor + "' />\n" +
+        "  <param name='ReadyCallback' value='_jmolReadyCallback' />\n";
 
     if (modelFilename)
       t += "  <param name='load' value='" +
@@ -534,6 +546,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       t += "  <param name='script' value='" + script + "' />\n";
     t += "</applet>\n";
     jmolSetTarget(nameSuffix);
+    ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)
       alert(t);
     document.write(t);
@@ -548,6 +561,12 @@ function _jmolInitCheck() {
     return;
   alert("jmolInitialize({codebase}, {badBrowseURL}, {badJavaURL})\n" +
         "  must be called before any other Jmol.js functions");
+}
+
+function _jmolReadyCallback(name) {
+  if (_jmol.debugAlert)
+    alert(name + " is ready");
+  _jmol.ready["" + name] = true;
 }
 
 function _jmolConvertInline(model) {

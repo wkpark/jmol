@@ -175,23 +175,24 @@ public class Sphere25D {
   */
   
   void render(short colix, int diameter, int x, int y, int z) {
-    if (diameter == 0)
+    if (diameter <= 1) {
+      if (diameter == 1)
+        g25d.plotPixelClipped(colix, x, y, z);
       return;
-    int radius = diameter >> 1;
-    x -= radius;
-    y -= radius;
+    }
+    int radius = (diameter + 1) >> 1;
     int[] shades = Colix.getShades(colix);
     if (diameter >= maxSphereCache) {
-      if (x < 0 || x+diameter >= g25d.width ||
-          y < 0 || y+diameter >= g25d.height)
+      if (x-radius < 0 || x+radius >= g25d.width ||
+          y-radius < 0 || y+radius >= g25d.height)
         renderBigClipped(shades, diameter, x, y, z);
       else
         renderBigUnclipped(shades, diameter, x, y, z);
       return;
     } 
     int[] ss = getSphereShape(diameter);
-    if (x < 0 || x+diameter >= g25d.width ||
-        y < 0 || y+diameter >= g25d.height)
+    if (x-radius < 0 || x+radius >= g25d.width ||
+        y-radius < 0 || y+radius >= g25d.height)
       renderShapeClipped(shades, ss, diameter, x, y, z);
     else
       renderShapeUnclipped(shades, ss, diameter, x, y, z);
@@ -204,44 +205,43 @@ public class Sphere25D {
     short[] zbuf = g25d.zbuf;
     int offsetSphere = 0;
     int width = g25d.width;
-    int offsetNorthBeginLine = width * y + x;
-    int offsetSouthBeginLine = offsetNorthBeginLine + (diameter - 1) * width;
-    int halfDiameter = (diameter + 1) / 2;
-    int i = halfDiameter;
+    int evenSizeCorrection = 1 - (diameter & 1);
+    int offsetSouthCenter = width * y + x;
+    int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
+    int nLines = (diameter + 1) / 2;
     do {
-      int plotCount = sphereShape[offsetSphere++];
-      int skipCount = halfDiameter - plotCount;
-      int offsetNW = offsetNorthBeginLine + skipCount;
-      int offsetNE = offsetNorthBeginLine + diameter - skipCount - 1;
-      int offsetSW = offsetSouthBeginLine + skipCount;
-      int offsetSE = offsetSouthBeginLine + diameter - skipCount - 1;
+      int offsetSE = offsetSouthCenter;
+      int offsetSW = offsetSouthCenter - evenSizeCorrection;
+      int offsetNE = offsetNorthCenter;
+      int offsetNW = offsetNorthCenter - evenSizeCorrection;
+      int packed;
       do {
-        int packed = sphereShape[offsetSphere++];
+        packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
-        if (zPixel < zbuf[offsetNW]) {
-          zbuf[offsetNW] = (short)zPixel;
-          pbuf[offsetNW] = shades[(packed >> 7) & 0x3F];
-        }
-        if (zPixel < zbuf[offsetNE]) {
-          zbuf[offsetNE] = (short)zPixel;
-          pbuf[offsetNE] = shades[(packed >> 13) & 0x3F];
+        if (zPixel < zbuf[offsetSE]) {
+          zbuf[offsetSE] = (short)zPixel;
+          pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
         }
         if (zPixel < zbuf[offsetSW]) {
           zbuf[offsetSW] = (short)zPixel;
-          pbuf[offsetSW] = shades[(packed >> 19) & 0x3F];
+          pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
         }
-        if (zPixel < zbuf[offsetSE]) {
-          zbuf[offsetSE] = (short)zPixel;
-          pbuf[offsetSE] = shades[(packed >> 25) & 0x3F];
+        if (zPixel < zbuf[offsetNE]) {
+          zbuf[offsetNE] = (short)zPixel;
+          pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
         }
-        ++offsetNW;
-        --offsetNE;
-        ++offsetSW;
-        --offsetSE;
-        } while (--plotCount > 0);
-      offsetNorthBeginLine += width;
-      offsetSouthBeginLine -= width;
-    } while (--i > 0);
+        if (zPixel < zbuf[offsetNW]) {
+          zbuf[offsetNW] = (short)zPixel;
+          pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+        }
+        ++offsetSE;
+        --offsetSW;
+        ++offsetNE;
+        --offsetNW;
+      } while (packed >= 0);
+      offsetSouthCenter += width;
+      offsetNorthCenter -= width;
+    } while (--nLines > 0);
   }
 
   void renderShapeClipped(int[] shades, int[] sphereShape,
@@ -326,26 +326,26 @@ public class Sphere25D {
   }
 
   int[] createSphereShape(int diameter) {
-    float radius = diameter / 2.0f;
-    float radius2 = radius * radius;
+    float radiusF = diameter / 2.0f;
+    float radiusF2 = radiusF * radiusF;
     int offset = 0;
     
     int visibleCount = 0;
-    int countNW = 0;
-    int halfDiameter = (diameter + 1) / 2;
+    int countSE = 0;
+    int radius = diameter / 2;
     
-    float y = -radius + 0.5f;
+    float y = -radiusF + 0.5f;
     for (int i = 0; i < diameter; ++i, ++y) {
       float y2 = y * y;
-      float x = -radius + 0.5f;
+      float x = -radiusF + 0.5f;
       for (int j = 0; j < diameter; ++j, ++x) {
-        float z2 = radius2 - y2 - x*x;
+        float z2 = radiusF2 - y2 - x*x;
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           intensities[offset] = Shade25D.calcIntensity(x, y, z);
           heights[offset] = (byte)(z + 0.5f);
-          if (x < halfDiameter && y < halfDiameter)
-            ++countNW;
+          if (j >= radius && i >= radius)
+            ++countSE;
         } else {
           intensities[offset] = -1;
           heights[offset] = -1;
@@ -354,28 +354,23 @@ public class Sphere25D {
       }
     }
     
-    int[] sphereShape = new int[diameter + countNW];
-    
+    int[] sphereShape = new int[countSE];
     int offset2 = 0;
     int offsetCount;
-    int r = diameter / 2;
-    for(int i = 0; i < halfDiameter; ++i) {
-      int offsetNorth = i*diameter;
-      int offsetSouth = (diameter - i - 1) * diameter;
-      int j = 0;
-      while (j < halfDiameter && heights[offsetNorth + j] == -1)
-        ++j;
-      int plotCount = halfDiameter - j;
-      sphereShape[offset2++] = plotCount;
-      while (j < halfDiameter) {
-        int packed = heights[offsetNorth + j];
-        packed |= (intensities[offsetNorth + j]) << 7;
-        packed |= (intensities[offsetNorth + diameter - j - 1]) << 13;
-        packed |= (intensities[offsetSouth + j]) << 19;
-        packed |= (intensities[offsetSouth + diameter - j - 1]) << 25;
+
+    for(int i = radius; i < diameter; ++i) {
+      int offsetRowSouth = i*diameter;
+      int offsetRowNorth = (diameter - i - 1) * diameter;
+      for (int j = radius;
+           j < diameter && heights[offsetRowSouth + j] != -1; ++j) {
+        int packed = heights[offsetRowSouth + j];
+        packed |= (intensities[offsetRowSouth + j]) << 7;
+        packed |= (intensities[offsetRowSouth + diameter - j - 1]) << 13;
+        packed |= (intensities[offsetRowNorth + j]) << 19;
+        packed |= (intensities[offsetRowNorth + diameter - j - 1]) << 25;
         sphereShape[offset2++] = packed;
-        ++j;
       }
+      sphereShape[offset2 - 1] |= 0x80000000;
     }
     return sphereShape;
   }

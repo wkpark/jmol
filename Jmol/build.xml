@@ -139,9 +139,17 @@
   <target name="applet-classes" id="applet-classes" depends="init">
     <mkdir dir="${applet.classes.dir}"/>
     <property name="build.compiler" value="javac1.1" />
+    <!-- mth 20040713 ... with the Sun Java 1.5 compiler the default
+	 source code version is 1.5. And one cannot generate code for
+	 a 1.1 virtual machine from 1.5 source. Therefore, in order to
+	 compile for the 1.1 jvm, we need to specify that the source
+	 version is 1.3. (Note that we cannot use source=1.4 because
+	 of assertions)
+    -->
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
 	   debug="${debug}" deprecation="${deprecation}"
-	   optimize="${optimization}" target="1.1"
+	   optimize="${optimization}"
+	   source="1.3" target="1.1"
 	   includesfile="applet.classes"
 	   classpathref="applet-project.class.path" />
     <!-- mth tried to use exclude and excludefiles, but it did not work -->

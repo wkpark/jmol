@@ -38,8 +38,8 @@ public class Sheet extends PdbStructure {
     if (axisA != null)
       return;
     if (polymerCount == 2) {
-      axisA = polymer.getResidueAlphaCarbonPoint(0);
-      axisB = polymer.getResidueAlphaCarbonPoint(1);
+      axisA = polymer.getResidueAlphaCarbonPoint(polymerIndex);
+      axisB = polymer.getResidueAlphaCarbonPoint(polymerIndex + 1);
     } else {
       axisA = new Point3f();
       polymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);

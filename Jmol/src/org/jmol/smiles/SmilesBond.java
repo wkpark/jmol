@@ -32,12 +32,16 @@ public class SmilesBond {
 
   // Bond orders
   public final static int TYPE_UNKOWN = -1;
+  public final static int TYPE_NONE = 0;
   public final static int TYPE_SINGLE = 1;
   public final static int TYPE_DOUBLE = 2;
   public final static int TYPE_TRIPLE = 3;
   public final static int TYPE_AROMATIC = 4;
+  public final static int TYPE_DIRECTIONAL_1 = 5;
+  public final static int TYPE_DIRECTIONAL_2 = 6;
 
   // Bond expressions
+  public final static char CODE_NONE = '.';
   public final static char CODE_SINGLE = '-';
   public final static char CODE_DOUBLE = '=';
   public final static char CODE_TRIPLE = '#';
@@ -68,9 +72,9 @@ public class SmilesBond {
    */
   public static int getBondTypeFromCode(char code) {
     switch (code) {
+    case CODE_NONE:
+      return TYPE_NONE;
     case CODE_SINGLE:
-    case CODE_DIRECTIONAL_1:
-    case CODE_DIRECTIONAL_2:
       return TYPE_SINGLE;
     case CODE_DOUBLE:
       return TYPE_DOUBLE;
@@ -78,6 +82,10 @@ public class SmilesBond {
       return TYPE_TRIPLE;
     case CODE_AROMATIC:
       return TYPE_AROMATIC;
+    case CODE_DIRECTIONAL_1:
+      return TYPE_DIRECTIONAL_1;
+    case CODE_DIRECTIONAL_2:
+      return TYPE_DIRECTIONAL_2;
     }
     return TYPE_UNKOWN;
   }

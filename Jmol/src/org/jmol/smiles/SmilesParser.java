@@ -196,6 +196,9 @@ public class SmilesParser {
     }
 
     // Next part of the SMILES String
+    if (index == 0) {
+      throw new InvalidSmilesException("Unexpected character: " + smiles.charAt(0));
+    }
     if (index < smiles.length()) {
       String subSmiles = smiles.substring(index);
       parseSmiles(molecule, subSmiles, currentAtom);
@@ -265,8 +268,49 @@ public class SmilesParser {
     index += size;
 
     // Chirality
+    String chiralClass = null;
+    int chiralOrder = Integer.MIN_VALUE;
     if (index < smiles.length()) {
-      //TODO
+      firstChar = smiles.charAt(index);
+      if (firstChar == '@') {
+        index++;
+        if (index < smiles.length()) {
+          firstChar = smiles.charAt(index);
+          if (firstChar == '@') {
+            index++;
+            chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
+            chiralOrder = 2;
+          } else if ((firstChar >= 'A') && (firstChar <= 'Z') && (firstChar != 'H')) {
+            if (index + 1 < smiles.length()) {
+              char secondChar = smiles.charAt(index);
+              if ((secondChar >= 'A') && (secondChar <= 'Z')) {
+                chiralClass = smiles.substring(index, index + 2);
+                index += 2;
+                int currentIndex = index;
+                while ((currentIndex < smiles.length()) &&
+                       (smiles.charAt(currentIndex) >= '0') &&
+                       (smiles.charAt(currentIndex) <= '9')) {
+                  currentIndex++;
+                }
+                if (currentIndex > index) {
+                  String sub = smiles.substring(index, currentIndex);
+                  try {
+                    chiralOrder = Integer.parseInt(sub);
+                  } catch (NumberFormatException e) {
+                    throw new InvalidSmilesException("Non numeric chiral order");
+                  }
+                } else {
+                  chiralOrder = 1;
+                }
+                index = currentIndex;
+              }
+            }
+          }
+        } else {
+          chiralClass = SmilesAtom.DEFAULT_CHIRALITY;
+          chiralOrder = 1;
+        }
+      }
     }
 
     // Hydrogen count
@@ -341,7 +385,7 @@ public class SmilesParser {
 
     // Final check
     if (index < smiles.length()) {
-      throw new InvalidSmilesException("Unexpected characters after atom definition");
+      throw new InvalidSmilesException("Unexpected characters after atom definition: " + smiles.substring(index));
     }
 
     // Create atom
@@ -349,12 +393,14 @@ public class SmilesParser {
       bondType = SmilesBond.TYPE_SINGLE;
     }
     SmilesAtom newAtom = molecule.createAtom();
-    if (currentAtom != null) {
+    if ((currentAtom != null) && (bondType != SmilesBond.TYPE_NONE)) {
       molecule.createBond(currentAtom, newAtom, bondType);
     }
     newAtom.setSymbol(atomSymbol);
     newAtom.setAtomicMass(atomicMass);
     newAtom.setCharge(charge);
+    newAtom.setChiralClass(chiralClass);
+    newAtom.setChiralOrder(chiralOrder);
     newAtom.setHydrogenCount(hydrogenCount);
     return newAtom;
   }
@@ -449,6 +495,26 @@ public class SmilesParser {
   }
 
   public static void main(String[] args) {
+    // Chapter 1 of SMILES tutorial
+    testMolecule("[H+]");
+    testMolecule("C");
+    testMolecule("O");
+    testMolecule("[OH3+]");
+    testMolecule("[2H]O[2H]");
+    testMolecule("[Au]");
+    testMolecule("CCO");
+    testMolecule("O=C=O");
+    testMolecule("C#N");
+    testMolecule("CC(=O)O");
+    testMolecule("C1CCCCC1");
+    testMolecule("C1CC2CCCCC2CC1");
+    //testMolecule("c1ccccc1");
+    //testMolecule("[Na+].[O-]c1ccccc1");
+    testMolecule("C/C=C/C");
+    testMolecule("N[C@@H](C)C(=O)O");
+    testMolecule("O[C@H]1CCCC[C@H]1O");
+    
+    // Chapter 2 of SMILES tutorial
     testMolecule("[S]");
     testMolecule("[Au]");
     testMolecule("C");
@@ -462,22 +528,66 @@ public class SmilesParser {
     testMolecule("[235U]");
     testMolecule("[*+2]");
     
+    // Chapter 3 of SMILES tutorail
     testMolecule("CC");
     testMolecule("C-C");
     testMolecule("[CH3]-[CH3]");
     testMolecule("C=O");
     testMolecule("C#N");
     testMolecule("C=C");
+    //testMolecule("cc");
     testMolecule("C=CC=C");
+    //testMolecule("cccc");
     
+    // Chapter 4 of SMILES tutorial
     testMolecule("CC(C)C(=O)O");
     testMolecule("FC(F)F");
     testMolecule("C(F)(F)F");
     testMolecule("O=Cl(=O)(=O)[O-]");
+    testMolecule("Cl(=O)(=O)(=O)[O-]");
     testMolecule("CCCC(C(=O)O)CCC");
     
+    // Chapter 5 of SMILES tutorial
     testMolecule("C1CCCCC1");
+    testMolecule("C1=CCCCC1");
     testMolecule("C=1CCCCC1");
+    testMolecule("C1CCCCC=1");
+    testMolecule("C=1CCCCC=1");
+    //testMolecule("c12c(cccc1)cccc2");
+    //testMolecule("c1cc2ccccc2cc1");
+    //testMolecule("c1ccccc1c2ccccc2");
+    //testMolecule("c1ccccc1c1ccccc1");
+    
+    // Chapter 6 of SMILES tutorial
+    testMolecule("[Na+].[Cl-]");
+    //testMolecule("[Na+].[O-]c1ccccc1");
+    //testMolecule("c1cc([O-].[Na+])ccc1");
+    testMolecule("C1.O2.C12");
+    testMolecule("CCO");
+    
+    // Chapter 7 of SMILES tutorial
+    testMolecule("C");
+    testMolecule("[C]");
+    testMolecule("[12C]");
+    testMolecule("[13C]");
+    testMolecule("[13CH4]");
+    testMolecule("F/C=C/F");
+    testMolecule("F\\C=C\\F");
+    testMolecule("F/C=C\\F");
+    testMolecule("F\\C=C/F");
+    testMolecule("F/C=C/C=C/C");
+    testMolecule("F/C=C/C=CC");
+    testMolecule("N[C@@H](C)C(=O)O");
+    testMolecule("N[C@H](C)C(=O)O");
+    testMolecule("O[C@H]1CCCC[C@H]1O");
+    testMolecule("C1C[C@H]2CCCC[C@H]2CC1");
+    testMolecule("OC(Cl)=[C@]=C(C)F");
+    testMolecule("OC(Cl)=[C@AL1]=C(C)F");
+    testMolecule("F[Po@SP1](Cl)(Br)I");
+    testMolecule("O=C[As@](F)(Cl)(Br)S");
+    testMolecule("O=C[Co@](F)(Cl)(Br)(I)S");
+    
+    // Chapter 8 of SMILES tutorial
   }
   */
 }

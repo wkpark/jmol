@@ -151,6 +151,8 @@ class PatternMatcher {
               }
               break;
             case SmilesBond.TYPE_SINGLE:
+            case SmilesBond.TYPE_DIRECTIONAL_1:
+            case SmilesBond.TYPE_DIRECTIONAL_2:
               if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_SINGLE) != 0) {
                 bondFound = true;
               }

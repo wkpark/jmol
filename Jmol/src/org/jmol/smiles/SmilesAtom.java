@@ -36,11 +36,20 @@ public class SmilesAtom {
   private int charge;
   private int hydrogenCount;
   private int matchingAtom;
+  private String chiralClass;
+  private int chiralOrder;
 
   private SmilesBond[] bonds;
   private int bondsCount;
 
   private final static int INITIAL_BONDS = 4;
+
+  public final static String DEFAULT_CHIRALITY = "";
+  public final static String CHIRALITY_ALLENE = "AL";
+  public final static String CHIRALITY_OCTAHEDRAL = "OH";
+  public final static String CHIRALITY_SQUARE_PLANAR = "SP";
+  public final static String CHIRALITY_TETRAHEDRAL = "TH";
+  public final static String CHIRALITY_TRIGONAL_BIPYRAMIDAL = "TB";
 
   /**
    * SmilesAtom constructor
@@ -54,6 +63,8 @@ public class SmilesAtom {
     this.charge = 0;
     this.hydrogenCount = Integer.MIN_VALUE;
     this.matchingAtom = -1;
+    this.chiralClass = null;
+    this.chiralOrder = Integer.MIN_VALUE;
     bonds = new SmilesBond[INITIAL_BONDS];
     bondsCount = 0;
   }
@@ -150,6 +161,22 @@ public class SmilesAtom {
 
   public void setMatchingAtom(int atom) {
     this.matchingAtom = atom;
+  }
+
+  public String getChiralClass() {
+    return chiralClass;
+  }
+
+  public void setChiralClass(String chiralClass) {
+    this.chiralClass = (chiralClass != null) ? chiralClass.intern() : null;
+  }
+
+  public int getChiralOrder() {
+    return chiralOrder;
+  }
+
+  public void setChiralOrder(int chiralOrder) {
+    this.chiralOrder = chiralOrder;
   }
 
   public int getHydrogenCount() {

@@ -99,13 +99,12 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
 
 function jmolRadioGroup(arrayOfRadioButtons, separatorHtml) {
   var type = typeof arrayOfRadioButtons;
-  if (type == "object" && type != null) {
+  if (type == "object" && type != null && arrayOfRadioButtons.length) {
     if (separatorHtml == undefined || separatorHtml == null)
       separatorHtml = "&nbsp; ";
     jmolStartRadioGroup();
     var length = arrayOfRadioButtons.length;
-    var i;
-    for (i = 0; i < length; ++i) {
+    for (var i = 0; i < length; ++i) {
       var radio = arrayOfRadioButtons[i];
       type = typeof radio;
       if (type == "object") {
@@ -127,6 +126,44 @@ function jmolLink(script, text) {
   document.open();
   document.write(t);
   document.close();
+}
+
+function jmolMenu(arrayOfMenuItems, size) {
+  var type = typeof arrayOfMenuItems;
+  if (type == "object" && type != null && arrayOfMenuItems.length) {
+    var length = arrayOfMenuItems.length;
+    if (typeof size != "number" || size == 1)
+      size = null;
+    else if (size < 0)
+      size = length;
+    var sizeText = size ? " size='" + size + "' " : "";
+    var t = "<select name='" + _jmol.menuGroupCount++ +
+            "' onChange='_jmolClick(this.value)' " +
+            sizeText + _jmol.menuCssText + ">";
+    for (var i = 0; i < length; ++i) {
+      var menuItem = arrayOfMenuItems[i];
+      type = typeof menuItem;
+      var script, text;
+      var isSelected = undefined;
+      if (type == "object" && menuItem != null) {
+        script = menuItem[0];
+        text = menuItem[1];
+        isSelected = menuItem[2];
+      } else {
+        script = text = menuItem;
+      }
+      if (text == undefined || text == null)
+        text = script;
+      var scriptIndex = _jmolAddScript(script);
+      var selectedText = isSelected ? "' selected>" : "'>";
+      t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+    }
+    t += "</select>";
+    alert("t=" + t);
+    document.open();
+    document.write(t);
+    document.close();
+  }
 }
 
 function jmolHtml(html) {
@@ -233,6 +270,12 @@ function jmolSetLinkCssClass(linkCssClass) {
   _jmol.linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
 }
 
+function jmolSetMenuCssClass(menuCssClass) {
+  _jmol.menuCssClass = menuCssClass;
+  _jmol.menuCssText =
+    menuCssClass ? "class='" + menuCssClass + "' " : "";
+}
+
 ////////////////////////////////////////////////////////////////
 // functions for INTERNAL USE ONLY which are subject to change
 // use at your own risk ... you have been WARNED!
@@ -252,6 +295,7 @@ modelbase: ".",
 appletCount: 0,
 
 radioGroupCount: 0,
+menuGroupCount: 0,
 
 appletCssClass: null,
 appletCssText: "",
@@ -263,10 +307,12 @@ radioCssClass: null,
 radioCssText: "",
 linkCssClass: null,
 linkCssText: "",
+menuCssClass: null,
+menuCssText: "",
 
 targetSuffix: 0,
 targetText: "",
-scripts: []
+scripts: [""]
 };
 
 function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
@@ -365,6 +411,8 @@ function _jmolFindAppletWindow(win, target) {
 }
 
 function _jmolAddScript(script) {
+  if (! script)
+    return 0;
   var index = _jmol.scripts.length;
   _jmol.scripts[index] = script;
   return index;

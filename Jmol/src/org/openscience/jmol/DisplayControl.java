@@ -722,6 +722,8 @@ final public class DisplayControl {
   public void setChemFile(ChemFile chemfile) {
     control.pushHoldRepaint();
     modelManager.setChemFile(chemfile);
+    // FIXME mth -- allocate atom shapes in the right place
+    distributor.initializeAtomShapes();
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file

@@ -37,9 +37,34 @@ public class Distributor {
     this.control = control;
   }
 
+  public void initializeAtomShapes() {
+    byte styleAtom = control.getStyleAtom();
+    short marAtom = control.getMarAtom();
+    byte styleBond = control.getStyleBond();
+    short marBond = control.getMarBond();
+    Color colorBond = control.getColorBond();
+    JmolAtomIterator iter = control.getChemFileIterator();
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      if (atom.atomShape == null)
+        atom.setAtomShape(new AtomShape(atom,
+                                        styleAtom, marAtom,
+                                        control.getColorAtom(atom),
+                                        styleBond, marBond,
+                                        colorBond,
+                                        control.getLabelAtom(atom)));
+    }
+  }
+
   public void setStyleAtom(byte styleAtom, JmolAtomIterator iter) {
-    while (iter.hasNext())
-      iter.nextAtom().atomShape.setStyleAtom(styleAtom);
+    while (iter.hasNext()) {
+      Atom atom = iter.nextAtom();
+      AtomShape atomShape = atom.atomShape;
+      if (atomShape == null)
+        System.out.println("how in the hell did you get here?");
+      atomShape.setStyleAtom(styleAtom);
+    }
+    //      iter.nextAtom().atomShape.setStyleAtom(styleAtom);
   }
 
   public void setMarAtom(short marAtom, JmolAtomIterator iter) {

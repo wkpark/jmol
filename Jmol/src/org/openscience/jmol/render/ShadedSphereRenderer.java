@@ -53,7 +53,7 @@ public class ShadedSphereRenderer {
   }
 
   private static final int minCachedSize = 4;
-  private static final int maxCachedSize = 50;
+  private static final int maxCachedSize = 100;
   private static final int scalableSize = 47;
   private static final int maxSmoothedSize = 200;
   // I am getting severe graphical artifacts around the edges when
@@ -84,12 +84,14 @@ public class ShadedSphereRenderer {
     }
     Image[] shadedImages = (Image[]) control.imageCache.get(color);
     if (shadedImages == null)
-      shadedImages = loadShadedSphereCache(control, color);
+      shadedImages = initializeShadedSphereCache(control, color);
 
     if (diameter < maxCachedSize) {
+      Image sphere = shadedImages[diameter];
+      if (sphere == null)
+        sphere = loadShadedSphereCache(control, color, shadedImages, diameter);
       // images in the cache have a clear margin of 1
-      g.drawImage(shadedImages[diameter],
-                   xUpperLeft - 1, yUpperLeft - 1, null);
+      g.drawImage(sphere, xUpperLeft - 1, yUpperLeft - 1, null);
       return;
     }
     Image imgSphere = shadedImages[0];
@@ -114,25 +116,31 @@ public class ShadedSphereRenderer {
   }
 
   private static final double[] lightSource = { -1.0f, -1.0f, 2.0f };
-  private Image[] loadShadedSphereCache(DisplayControl control, Color color) {
+  private Image[] initializeShadedSphereCache(DisplayControl control,
+                                              Color color) {
     Image shadedImages[] = new Image[maxCachedSize];
     Component component = control.getAwtComponent();
     control.imageCache.put(color, shadedImages);
     shadedImages[0] = sphereSetup(component, color, scalableSize, lightSource);
-    if (! control.getUseGraphics2D()) {
-      for (int d = minCachedSize; d < maxCachedSize; ++d) {
-        shadedImages[d] = sphereSetup(component, color, d+2, lightSource);
-      }
-    } else {
-      for (int d = minCachedSize; d < maxCachedSize; ++d) {
-        BufferedImage bi = new BufferedImage(d+2, d+2,
-                                             BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = bi.createGraphics();
-        drawScaledShadedAtom(g2, shadedImages[0], 0, 0, d, 1);
-        shadedImages[d] = bi;
-      }
-    }
     return shadedImages;
+  }
+  
+  private Image loadShadedSphereCache(DisplayControl control, Color color,
+                                      Image[] shadedImages, int diameter) {
+    Image imgSphere;
+    if (! control.getUseGraphics2D()) {
+      Component component = control.getAwtComponent();
+      imgSphere = shadedImages[diameter] =
+        sphereSetup(component, color, diameter+2, lightSource);
+    } else {
+      BufferedImage bi = new BufferedImage(diameter+2, diameter+2,
+                                           BufferedImage.TYPE_INT_ARGB);
+      Graphics2D g2 = bi.createGraphics();
+      drawScaledShadedAtom(g2, shadedImages[0], 0, 0, diameter, 1);
+      g2.dispose();
+      imgSphere = shadedImages[diameter] = bi;
+    }
+    return imgSphere;
   }
   
   private static byte[] mapRGBA;

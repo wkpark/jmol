@@ -31,6 +31,7 @@ import java.util.BitSet;
 
 public class Hover extends Shape {
 
+  /*
   private final static int LEFT = 0;
   private final static int CENTER = 1;
   private final static int RIGHT = 2;
@@ -38,6 +39,7 @@ public class Hover extends Shape {
   private final static int TOP = 0;
   private final static int BOTTOM = 1;
   private final static int MIDDLE = 2;
+  */
 
   private final static String FONTFACE = "Serif";
   private final static String FONTSTYLE = "Plain";

@@ -760,8 +760,7 @@ public final class Atom implements Bspt.Tuple {
     strLabel += strFormat.substring(ich);
     if (strLabel.length() == 0)
       return null;
-    else
-      return strLabel.intern();
+    return strLabel.intern();
   }
 
   public String getInfo() {

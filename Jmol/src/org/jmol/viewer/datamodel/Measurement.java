@@ -186,7 +186,7 @@ public class Measurement {
 
     float torsion = toDegrees((float)Math.acos(cosang));
     float dot  =  ijx*cx + ijy*cy + ijz*cz;
-    float absDot =  (float)Math.abs(dot);
+    float absDot =  Math.abs(dot);
     torsion = (dot/absDot > 0) ? torsion : -torsion;
     return torsion;
   }

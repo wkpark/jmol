@@ -90,7 +90,7 @@ class RocketsRenderer extends MpsRenderer {
   Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
     int midPointCount = monomerCount + 1;
     Point3f[] cordMidPoints = viewer.allocTempPoints(midPointCount);
-    Monomer residuePrev = null;
+    //Monomer residuePrev = null;
     ProteinStructure proteinstructurePrev = null;
     Point3f point;
     for (int i = 0; i < monomerCount; ++i) {
@@ -106,14 +106,14 @@ class RocketsRenderer extends MpsRenderer {
         //          point.add(structure.getAxisEndPoint());
         //          point.scale(0.5f);
         //        }
-        residuePrev = residue;
+        //residuePrev = residue;
         proteinstructurePrev = proteinstructure;
       } else {
         if (proteinstructurePrev != null)
           point.set(proteinstructurePrev.getAxisEndPoint());
         else
           aminopolymer.getLeadMidPoint(i, point);
-        residuePrev = null;
+        //residuePrev = null;
         proteinstructurePrev = null;
       }
     }
@@ -258,7 +258,7 @@ class RocketsRenderer extends MpsRenderer {
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    int argb = calcSurfaceArgb(0, 1, 4);
+    /*int argb = */calcSurfaceArgb(0, 1, 4);
     g3d.fillTriangle(colixPending,
                      screenCorners[0],
                      screenCorners[1],
@@ -272,7 +272,7 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = arrowHeadFaces[i + 1];
       int i2 = arrowHeadFaces[i + 2];
       int i3 = arrowHeadFaces[i + 3];
-      argb = calcSurfaceArgb(i0, i1, i3);
+      /*argb = */calcSurfaceArgb(i0, i1, i3);
       g3d.fillQuadrilateral(colixPending,
                             screenCorners[i0],
                             screenCorners[i1],
@@ -322,7 +322,7 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = boxFaces[i * 4 + 1];
       int i2 = boxFaces[i * 4 + 2];
       int i3 = boxFaces[i * 4 + 3];
-      int argb = calcSurfaceArgb(i0, i1, i3);
+      /*int argb = */calcSurfaceArgb(i0, i1, i3);
       g3d.fillQuadrilateral(colixPending,
                             screenCorners[i0],
                             screenCorners[i1],

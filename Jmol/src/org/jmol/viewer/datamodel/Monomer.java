@@ -91,9 +91,9 @@ abstract class Monomer extends Group {
 
   ////////////////////////////////////////////////////////////////
 
-  void setStructure(ProteinStructure proteinstructure) { };
-  ProteinStructure getProteinStructure() { return null; };
-  byte getProteinStructureType() { return 0; };
+  void setStructure(ProteinStructure proteinstructure) { }
+  ProteinStructure getProteinStructure() { return null; }
+  byte getProteinStructureType() { return 0; }
   boolean isHelix() { return false; }
   boolean isHelixOrSheet() { return false; }
 
@@ -199,6 +199,12 @@ abstract class Monomer extends Group {
   /**
    * Selects LeadAtom when this Monomer is clicked iff it is
    * closer to the user.
+   * 
+   * @param x
+   * @param y
+   * @param closest
+   * @param madBegin
+   * @param madEnd
    */
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {

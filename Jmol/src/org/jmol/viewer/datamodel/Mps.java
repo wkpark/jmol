@@ -324,6 +324,9 @@ abstract class Mps extends Shape {
      * 
      * BR
      *</code>
+     *
+     * @param bFactor100
+     * @return ?
      */
     short calcMeanPositionalDisplacement(int bFactor100) {
       return (short)(Math.sqrt(bFactor100/eightPiSquared100) * 1000);

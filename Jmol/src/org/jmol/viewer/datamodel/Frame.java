@@ -99,7 +99,7 @@ final public class Frame {
     this.viewer = viewer;
     this.adapter = adapter;
 
-    long timeBegin = System.currentTimeMillis();
+    //long timeBegin = System.currentTimeMillis();
     String fileTypeName = adapter.getFileTypeName(clientFile);
     // NOTE: these strings are interned and are lower case
     // therefore, we can do == comparisions against string constants
@@ -190,7 +190,7 @@ final public class Frame {
     finalizeGroupBuild();
     buildPolymers();
     freeze();
-    long msToBuild = System.currentTimeMillis() - timeBegin;
+    //long msToBuild = System.currentTimeMillis() - timeBegin;
     //    System.out.println("Build a frame:" + msToBuild + " ms");
     adapter.finish(clientFile);
     finalizeBuild();
@@ -889,9 +889,10 @@ final public class Frame {
   int measurementCount = 0;
   Measurement[] measurements = null;
 
-  /****************************************************************
+  /*==============================================================*
    * selection handling
-   ****************************************************************/
+   *==============================================================*/
+  
   public boolean frankClicked(int x, int y) {
     Shape frankShape = shapes[JmolConstants.SHAPE_FRANK];
     if (frankShape == null)
@@ -1067,9 +1068,9 @@ final public class Frame {
     minBondDistance = viewer.getMinBondDistance();
     minBondDistance2 = minBondDistance*minBondDistance;
 
-    char chainLast = '?';
-    int indexLastCA = -1;
-    Atom atomLastCA = null;
+    //char chainLast = '?';
+    //int indexLastCA = -1;
+    //Atom atomLastCA = null;
 
     initializeBspf();
 
@@ -1196,7 +1197,7 @@ final public class Frame {
       int elementNumber = atom.elementNumber;
       if (elementNumber != 7 && elementNumber != 8)
         continue;
-      float searchRadius = hbondMax;
+      //float searchRadius = hbondMax;
       Bspt.SphereIterator iter = bspf.getSphereIterator(atom.modelIndex);
       iter.initializeHemisphere(atom, hbondMax);
       while (iter.hasMoreElements()) {
@@ -1358,9 +1359,9 @@ final public class Frame {
     
     /* some intermediate variables */
     float cosAlpha = (float)Math.cos(toRadians * alpha);
-    float sinAlpha = (float)Math.sin(toRadians * alpha);
+    //float sinAlpha = (float)Math.sin(toRadians * alpha);
     float cosBeta  = (float)Math.cos(toRadians * beta);
-    float sinBeta  = (float)Math.sin(toRadians * beta);
+    //float sinBeta  = (float)Math.sin(toRadians * beta);
     float cosGamma = (float)Math.cos(toRadians * gamma);
     float sinGamma = (float)Math.sin(toRadians * gamma);
     
@@ -1601,7 +1602,7 @@ final public class Frame {
 
     float torsion = toDegrees((float)Math.acos(cosang));
     float dot  =  ijx*cx + ijy*cy + ijz*cz;
-    float absDot =  (float)Math.abs(dot);
+    float absDot =  Math.abs(dot);
     torsion = (dot/absDot > 0) ? torsion : -torsion;
     return torsion;
   }

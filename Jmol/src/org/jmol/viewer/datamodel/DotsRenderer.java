@@ -474,7 +474,7 @@ class DotsRenderer extends ShapeRenderer {
       return iVertexNew++;
     }
   }
-
+  /*
   private final static int[] allocateBitmap(int count) {
     return new int[(count + 31) >> 5];
   }
@@ -486,11 +486,11 @@ class DotsRenderer extends ShapeRenderer {
   private final static void clearBit(int[] bitmap, int i) {
     bitmap[(i >> 5)] &= ~(1 << (~i & 31));
   }
-
+  */
   private final static boolean getBit(int[] bitmap, int i) {
     return (bitmap[(i >> 5)] << (i & 31)) < 0;
   }
-
+  /*
   private final static void setAllBits(int[] bitmap, int count) {
     int i = count >> 5;
     if ((count & 31) != 0)
@@ -503,6 +503,6 @@ class DotsRenderer extends ShapeRenderer {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
   }
-    
+  */
 }
 

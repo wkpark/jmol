@@ -43,7 +43,7 @@ public class Vectors extends Shape {
   public void setSize(int size, BitSet bsSelected) {
     if (frame.hasVibrationVectors) {
       short mad = (short)size;
-      Atom[] atoms = frame.atoms;
+      //Atom[] atoms = frame.atoms;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i))
           mads[i] = mad;
@@ -53,7 +53,7 @@ public class Vectors extends Shape {
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if (frame.hasVibrationVectors) {
-      Atom[] atoms = frame.atoms;
+      //Atom[] atoms = frame.atoms;
       if ("color" == propertyName) {
         short colix = g3d.getColix(value);
         for (int i = frame.atomCount; --i >= 0; )

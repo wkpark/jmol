@@ -737,7 +737,7 @@ public class Dots extends Shape {
   }
 
 
-  /****************************************************************
+  /*==============================================================*
    * All that it is trying to do is calculate the base point between
    * the two probes. This is the intersection of three planes:
    * the plane defined by atoms IJK, the bisecting plane of torusIJ,
@@ -746,7 +746,7 @@ public class Dots extends Shape {
    * in the Connolly article... seemed too complicated ... :-(
    * This algorithm takes finds the intersection of three planes,
    * where each plane is defined by a normal + a point on the plane
-   ****************************************************************/
+   *==============================================================*/
   boolean calcBaseIJK() {
     Vector3f v1 = torusIJ.axisVector;
     p1.set(torusIJ.center);

@@ -145,7 +145,7 @@ public class Measures extends Shape {
 
   public Object getProperty(String property, int index) {
     //    System.out.println("Measures.getProperty(" +property + "," + index +")");
-    String propertyString = (String)property;
+    //String propertyString = (String)property;
     if ("count".equals(property))
       { return new Integer(measurementCount); }
     if ("countPlusIndices".equals(property)) {

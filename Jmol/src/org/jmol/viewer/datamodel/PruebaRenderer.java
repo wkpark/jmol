@@ -44,7 +44,7 @@ class PruebaRenderer extends ShapeRenderer {
   }
 
   void render() {
-    Prueba prueba = (Prueba)shape;
+    //Prueba prueba = (Prueba)shape;
 
     System.out.println("################################################################");
     System.out.println(" screens[0]=" + screens[0] +

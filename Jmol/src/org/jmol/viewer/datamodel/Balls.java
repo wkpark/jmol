@@ -61,7 +61,7 @@ public class Balls extends Shape {
 
   final static int minimumPixelSelectionRadius = 4;
 
-  /**
+  /*
    * This algorithm assumes that atoms are circles at the z-depth
    * of their center point. Therefore, it probably has some flaws
    * around the edges when dealing with intersecting spheres that
@@ -76,14 +76,14 @@ public class Balls extends Shape {
     if (frame.atomCount == 0)
       return;
     Atom champion = null;
-    int championIndex = -1;
+    //int championIndex = -1;
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom contender = frame.atoms[i];
       if (contender.isCursorOnTopOfVisibleAtom(x, y,
                                                minimumPixelSelectionRadius,
                                                champion)) {
         champion = contender;
-        championIndex = i;
+        //championIndex = i;
       }
     }
     closest.atom = champion;

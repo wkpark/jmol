@@ -65,13 +65,13 @@ abstract class ProteinStructure {
       apolymer.getLeadMidPoint(monomerIndex + i, point);
       projectOntoAxis(point);
     }
+    /*
     for (int i = 0; i < segments.length; ++i) {
       Point3f point = segments[i];
-      /*
       System.out.println("segment[" + i + "]=" +
                          point.x + "," + point.y + "," + point.z);
-      */
     }
+    */
   }
 
   boolean lowerNeighborIsHelixOrSheet() {

@@ -52,7 +52,7 @@ class CartoonRenderer extends MpsRenderer {
     } else {
       for (int i = count; --i >= 0; ) {
         pointT.set(vectors[i]);
-        boolean isSpecial = isSpecials[i];
+        //boolean isSpecial = isSpecials[i];
         short mad = mads[i];
         /*
         if (isSpecial && !lastWasSpecial)

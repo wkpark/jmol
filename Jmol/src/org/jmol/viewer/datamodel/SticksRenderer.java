@@ -53,14 +53,14 @@ class SticksRenderer extends ShapeRenderer {
   int bondOrder;
   short madBond;
   
-  private void renderHalo() {
+  /*private void renderHalo() {
     int x = (xA + xB) / 2, y = (yA + yB) / 2, z = (zA + zB) / 2;
     int halowidth = width / 4;
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = width + 2 * halowidth;
     g3d.fillScreenedCircleCentered(colixSelection, halodiameter, x, y, z+1);
-  }
+  }*/
 
   void render() {
 
@@ -268,7 +268,8 @@ class SticksRenderer extends ShapeRenderer {
   }
 
   Rectangle rectTemp = new Rectangle();
-  private boolean isClipVisible(int xA, int yA, int xB, int yB) {
+  
+  /*private boolean isClipVisible(int xA, int yA, int xB, int yB) {
     // this is not actually correct, but quick & dirty
     int xMin, width, yMin, height;
     if (xA < xB) {
@@ -302,21 +303,14 @@ class SticksRenderer extends ShapeRenderer {
     rectTemp.width = width;
     rectTemp.height = height;
     boolean visible = rectClip.intersects(rectTemp);
-    /*
-    System.out.println("bond " + x + "," + y + "->" + xB + "," + yB +
-                       " & " + rectClip.x + "," + rectClip.y +
-                       " W " + rectClip.width + " H " + rectClip.height +
-                       "->" + visible);
-    visible = true;
-    */
     return visible;
-  }
+  }*/
 
-  private void renderDotted() {
+  /*private void renderDotted() {
     if (dx == 0 && dy == 0)
       return;
     g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
-  }
+  }*/
 
   private static float wideWidthAngstroms = 0.4f;
 

@@ -53,7 +53,7 @@ public class Labels extends Shape {
       short colix = g3d.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          Atom atom = atoms[i];
+          //Atom atom = atoms[i];
           if (colixes == null || i >= colixes.length) {
             if (colix == 0)
               continue;
@@ -67,7 +67,7 @@ public class Labels extends Shape {
       short bgcolix = g3d.getColix(value);
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          Atom atom = atoms[i];
+          //Atom atom = atoms[i];
           if (bgcolixes == null || i >= bgcolixes.length) {
             if (bgcolix == 0)
               continue;

@@ -84,15 +84,14 @@ class MeasuresRenderer extends ShapeRenderer {
     if (measurementMad < 0) {
       g3d.drawDashedLine(colix, 4, 2, x1, y1, z1, x2, y2, z2);
       return 1;
-    } else {
-      int widthPixels = measurementMad;
-      if (measurementMad >= 20)
-        widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
-      g3d.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT,
-                       widthPixels, x1, y1, z1, x2, y2, z2);
-
-      return (widthPixels + 1) / 2;
     }
+    int widthPixels = measurementMad;
+    if (measurementMad >= 20)
+      widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
+    g3d.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT,
+                     widthPixels, x1, y1, z1, x2, y2, z2);
+
+    return (widthPixels + 1) / 2;
   }
 
   void renderDistance(short colix) {
@@ -209,7 +208,8 @@ class MeasuresRenderer extends ShapeRenderer {
       return;
     g3d.setFont(font3d);
     FontMetrics fontMetrics = font3d.fontMetrics;
-    int j = fontMetrics.stringWidth(strMeasurement);
+    //FIXME: Is the next line useful ?
+    /*int j = */fontMetrics.stringWidth(strMeasurement);
     g3d.drawString(strMeasurement, colix,
                    x+radius/2+2, y-radius/2, z - radius - 2);
   }

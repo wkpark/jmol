@@ -27,11 +27,11 @@ package org.jmol.viewer.datamodel;
 
 class Strands extends Mps {
 
-  /****************************************************************
+  /*==============================================================*
    * M. Carson and C.E. Bugg (1986)
    * Algorithm for Ribbon Models of Proteins. J.Mol.Graphics 4:121-122.
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
-   ****************************************************************/
+   *==============================================================*/
 
   Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
     return new Schain(polymer);

@@ -29,6 +29,14 @@ import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
 
+/**
+ * A reader for MDLI mol and sdf files.
+ *<p>
+ * <a href='http://www.mdli.com/downloads/public/ctfile/ctfile.jsp'>
+ * http://www.mdli.com/downloads/public/ctfile/ctfile.jsp
+ * </a>
+ *<p>
+ */
 class MolReader extends ModelReader {
     
   Model readModel(BufferedReader reader) throws Exception {
@@ -44,7 +52,6 @@ class MolReader extends ModelReader {
     return model;
   }
   
-  // www.mdli.com/downloads/public/ctfile/ctfile.jsp
   void readAtoms(BufferedReader reader, int atomCount)
     throws Exception {
     for (int i = 0; i < atomCount; ++i) {

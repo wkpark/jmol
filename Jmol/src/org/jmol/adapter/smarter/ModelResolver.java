@@ -193,15 +193,26 @@ class LimitedLineReader {
   String readLineWithNewline() {
     int ich = ichCurrent;
     char ch = 0;
-    while (ich < cchBuf && (ch = buf[ich++]) != '\r' && ch != '\n')
-      ;
-    if (ich < cchBuf && ch == '\r' && buf[ich] == '\n')
-      ++ich;
-    int cchLine = ich - ichCurrent;
-    StringBuffer sb = new StringBuffer(cchLine);
-    sb.append(buf, ichCurrent, cchLine);
-    ichCurrent = ich;
-    String strLine = "" + sb;
-    return strLine;
+    // for now, I am going to put in a hack here
+    // we have some CIF files with many lines of '#' comments
+    // I believe that for all formats we can flush if the first
+    // char of the line is a #
+    // if this becomes a problem then we will need to adjust
+    while (ich < cchBuf) {
+      while (ich < cchBuf && (ch = buf[ich++]) != '\r' && ch != '\n')
+        ;
+      if (ich < cchBuf && ch == '\r' && buf[ich] == '\n')
+        ++ich;
+      int cchLine = ich - ichCurrent;
+      if (cchBuf > 0 && buf[ich] == '#') // flush comment lines;
+        continue;
+      if (cchBuf == 0)
+        break;
+      StringBuffer sb = new StringBuffer(cchLine);
+      sb.append(buf, ichCurrent, cchLine);
+      ichCurrent = ich;
+      return "" + sb;
+    }
+    return "";
   }
 }

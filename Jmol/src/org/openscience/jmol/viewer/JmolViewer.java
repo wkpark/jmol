@@ -927,11 +927,13 @@ final public class JmolViewer {
     /*return*/ getOpenFileError();
   }
 
-  /****************************************************************
+  /**
+   * Opens the file, given the reader.
+   *
    * name is a text name of the file ... to be displayed in the window
    * no need to pass a BufferedReader ...
    * ... the FileManager will wrap a buffer around it
-   ****************************************************************/
+   */
   public void openReader(String fullPathName, String name, Reader reader) {
     clear();
     fileManager.openReader(fullPathName, name, reader);
@@ -1582,9 +1584,11 @@ final public class JmolViewer {
   public void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
 
+    /*
     System.out.println("JmolViewer.setShapeProperty("+
                        JmolConstants.shapeClassBases[shapeID]+
                        "," + propertyName + "," + value + ")");
+    */
     modelManager.setShapeProperty(shapeID, propertyName, value,
                                   selectionManager.bsSelection);
     refresh();

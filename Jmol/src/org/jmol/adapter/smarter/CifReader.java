@@ -28,6 +28,14 @@ import org.jmol.api.ModelAdapter;
 
 import java.io.BufferedReader;
 
+/**
+ * CIF file reader for CIF and mmCIF files.
+ *
+ *<p>
+ * <a href='http://www.iucr.org/iucr-top/cif/'>
+ * http://www.iucr.org/iucr-top/cif/
+ * </a>
+ */
 class CifReader extends ModelReader {
 
   float[] notionalUnitcell;
@@ -46,37 +54,25 @@ class CifReader extends ModelReader {
     this.reader = reader;
     model = new Model("cif");
     
-    while ((line = reader.readLine()) != null) {
-      if (line.length() == 0)
+    // this loop is a little tricky
+    // the CIF format seems to generate lots of problems for parsers
+    // the top of this loop should be ready to process the current line
+    // pay careful attention to the 'break' and 'continue' sequence
+    // or you will get stuck in an infinite loop
+    line = reader.readLine();
+    while (line != null) {
+      if (line.startsWith("loop_")) {
+        processLoopBlock();
+        // there is already an unprocessed line in the firing chamber
         continue;
-      char firstChar = line.charAt(0);
-      if (firstChar == '#')
-        continue;
-      if (firstChar != '_') {
-        if (line.startsWith("data_")) {
-          processDataParameter();
-          continue;
-        }
-        if (line.startsWith("loop_")) {
-          processLoopBlock();
-          continue;
-        }
-        continue;
+      } else if (line.startsWith("data_")) {
+        processDataParameter();
+      } else if (line.startsWith("_cell_")) {
+        processCellParameter();
+      } else if (line.startsWith("_symmetry_space_group_name_H-M")) {
+        processSymmetrySpaceGroupNameHM();
       }
-        
-      int spaceIndex = line.indexOf(' ');
-      if (spaceIndex == -1)
-        spaceIndex = line.length();
-      String command = line.substring(0, spaceIndex);
-      if (command.startsWith("_cell")) {
-        processCellParameter(command, spaceIndex);
-        continue;
-      }
-      if ("_symmetry_space_group_name_H-M".equals(command)) {
-        model.spaceGroup = line.substring(29).trim();
-        continue;
-      }
-      // skip command
+      line = reader.readLine();
     }
     checkUnitcell();
     return model;
@@ -112,16 +108,24 @@ class CifReader extends ModelReader {
       model.modelName = modelName;
   }
   
+  void processSymmetrySpaceGroupNameHM() {
+    model.spaceGroup = line.substring(29).trim();
+  }
+
   final static String[] cellParamNames =
   {"_cell_length_a", "_cell_length_b", "_cell_length_c",
    "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"};
   
-  void processCellParameter(String command, int spaceIndex) {
+  void processCellParameter() {
+    //    logger.log("processCellParameter() line:" + line);
+    String cellParameter = parseToken(line);
     for (int i = cellParamNames.length; --i >= 0; )
-      if (isMatch(command, cellParamNames[i])) {
-        notionalUnitcell[i] = parseFloat(line, spaceIndex);
+      if (isMatch(cellParameter, cellParamNames[i])) {
+        notionalUnitcell[i] = parseFloat(line, ichNextParse);
+        //        logger.log("value=" + notionalUnitcell[i]);
         return;
       }
+    //    logger.log("NOT");
   }
   
   void checkUnitcell() {
@@ -133,7 +137,9 @@ class CifReader extends ModelReader {
   }
   
   private void processLoopBlock() throws Exception {
+    //    logger.log("processLoopBlock()-------------------------");
     line = reader.readLine().trim();
+    //    logger.log("trimmed line:" + line);
     if (line.startsWith("_atom_site")) {
       processAtomSiteLoopBlock();
       return;
@@ -152,14 +158,28 @@ class CifReader extends ModelReader {
       return;
     }
     //    logger.log("Skipping loop block:" + line);
-    skipUntilEmptyOrCommentLine();
+    skipLoopHeaders();
+    skipLoopData();
   }
   
-  private void skipUntilEmptyOrCommentLine() throws Exception {
-    // skip everything until empty line, or comment line
+  private void skipLoopHeaders() throws Exception {
+    // skip everything that begins with _
     while (line != null &&
            (line = line.trim()).length() > 0 &&
-           line.charAt(0) != '#') {
+           line.charAt(0) == '_') {
+      line = reader.readLine();
+    }
+  }
+
+  private void skipLoopData() throws Exception {
+    // skip everything until empty line, or comment line
+    char ch;
+    while (line != null &&
+           (line = line.trim()).length() > 0 &&
+           (ch = line.charAt(0)) != '_' &&
+           ch != '#' &&
+           ! line.startsWith("loop_")) {
+      //      logger.log("skipLoopData just discarded:" + line);
       line = reader.readLine();
     }
   }
@@ -215,6 +235,7 @@ class CifReader extends ModelReader {
   }
 
   void processAtomSiteLoopBlock() throws Exception {
+    //    logger.log("processAtomSiteLoopBlock()-------------------------");
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
     int fieldCount = parseLoopParameters(atomFields,
@@ -233,7 +254,7 @@ class CifReader extends ModelReader {
     } else {
       // it is a different kind of _atom_site loop block
       //      logger.log("?que? no atom coordinates found");
-      skipUntilEmptyOrCommentLine();
+      skipLoopData();
       return;
     }
 
@@ -242,6 +263,7 @@ class CifReader extends ModelReader {
            line.charAt(0) != '#';
          line = reader.readLine()) {
       tokenizer.setString(line);
+      //      logger.log("reading an atom");
       Atom atom = model.addNewAtom();
       for (int i = 0; i < fieldCount; ++i) {
         if (! tokenizer.hasMoreTokens())
@@ -325,6 +347,7 @@ class CifReader extends ModelReader {
           continue outer_loop;
         }
     }
+    //    logger.log("parseLoopParameters sees fieldCount="+ fieldCount);
     return fieldCount;
   }
 
@@ -359,7 +382,7 @@ class CifReader extends ModelReader {
     for (int i = GEOM_BOND_PROPERTY_MAX; --i > 0; ) // only > 0, not >= 0
       if (! propertyReferenced[i]) {
         logger.log("?que? missing _geom_bond property:" + i);
-        skipUntilEmptyOrCommentLine();
+        skipLoopData();
         return;
       }
 
@@ -430,7 +453,7 @@ class CifReader extends ModelReader {
     for (int i = STRUCT_CONF_PROPERTY_MAX; --i > 0; ) // only > 0, not >= 0
       if (! propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
-        skipUntilEmptyOrCommentLine();
+        skipLoopData();
         return;
       }
 
@@ -514,7 +537,7 @@ class CifReader extends ModelReader {
     for (int i = STRUCT_SHEET_RANGE_PROPERTY_MAX; --i > 1; )
       if (! propertyReferenced[i]) {
         logger.log("?que? missing _struct_conf property:" + i);
-        skipUntilEmptyOrCommentLine();
+        skipLoopData();
         return;
       }
 
@@ -561,6 +584,7 @@ class CifReader extends ModelReader {
   ////////////////////////////////////////////////////////////////
 
   /**
+   * A special tokenizer class for dealing with quoted strings in CIF files.
    *<p>
    * regarding the treatment of single quotes vs. primes in
    * cif file, PMR wrote:

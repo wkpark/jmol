@@ -27,6 +27,11 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
+/**
+ * Have not been able to find any good description/reference of this
+ * file format. Suggestions appreciated
+ */
+
 class XyzReader extends ModelReader {
     
   Model readModel(BufferedReader reader) throws Exception {

@@ -95,7 +95,7 @@
 	       classpath="${lib.dir}/saxon.jar"
 	       property="xsl.available"/>
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
-      <srcfiles dir="${source.dir}" includes="**/*.java" />
+      <srcfiles dir="${source.dir}" includes="**/*.java, **/*.html" />
     </uptodate>
     <available file="${keystore.name}" property="keystore.present" />
     <!-- Optional proxy settings (if defined) -->
@@ -559,7 +559,8 @@
   <target name="javadoc" depends="initdoc" unless="javadoc.uptodate">
     <mkdir dir="${javadoc.dir}"/>
     <javadoc destdir="${javadoc.dir}" sourcepath="src"
-	     private="true" packagenames="org.openscience.*">
+	     private="true"
+	     packagenames="org.openscience.*,org.jmol.*">
       <classpath refid="project.class.path" />
     </javadoc>
   </target>

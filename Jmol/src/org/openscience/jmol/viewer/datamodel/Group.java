@@ -52,6 +52,8 @@ final public class Group {
   int nucleicCount = 0;
 
 
+  short aminoBackboneHbondOffset = 0;
+
 
   public Group(Chain chain,
                   int sequenceNumber, char insertionCode, String group3) {
@@ -450,4 +452,13 @@ final public class Group {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  void setAminoBackboneHbondOffset(int aminoBackboneHbondOffset) {
+    this.aminoBackboneHbondOffset = (short)aminoBackboneHbondOffset;
+  }
+  
+  int getAminoBackboneHbondOffset() {
+    return aminoBackboneHbondOffset;
+  }
 }

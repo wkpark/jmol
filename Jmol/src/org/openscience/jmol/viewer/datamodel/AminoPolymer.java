@@ -160,9 +160,19 @@ public class AminoPolymer extends AlphaCarbonPolymer {
     return energy;
   }
 
-  void createResidueHydrogenBond(int indexAmino, int indexCarbonyl) {
+  void createResidueHydrogenBond(int indexAminoGroup,
+                                 int indexCarbonylGroup) {
     int order;
-    switch (indexAmino - indexCarbonyl) {
+    int aminoBackboneHbondOffset = indexAminoGroup - indexCarbonylGroup;
+    /*
+    System.out.println("aminoBackboneHbondOffset=" +
+                       aminoBackboneHbondOffset +
+                       " amino:" +
+                       groups[indexAminoGroup].getSeqcodeString() +
+                       " carbonyl:" +
+                       groups[indexCarbonylGroup].getSeqcodeString());
+    */
+    switch (aminoBackboneHbondOffset) {
     case 2:
       order = JmolConstants.BOND_H_PLUS_2;
       break;
@@ -184,10 +194,12 @@ public class AminoPolymer extends AlphaCarbonPolymer {
     default:
       order = JmolConstants.BOND_H_REGULAR;
     }
-    //    System.out.println("createResidueHydrogenBond(" + indexAmino +
-    //                       "," + indexCarbonyl);
-    Atom nitrogen = groups[indexAmino].getNitrogenAtom();
-    Atom oxygen = groups[indexCarbonyl].getCarbonylOxygenAtom();
+    //    System.out.println("createResidueHydrogenBond(" + indexAminoGroup +
+    //                       "," + indexCarbonylGroup);
+    Group groupDonor = groups[indexAminoGroup];
+    groupDonor.setAminoBackboneHbondOffset(aminoBackboneHbondOffset);
+    Atom nitrogen = groupDonor.getNitrogenAtom();
+    Atom oxygen = groups[indexCarbonylGroup].getCarbonylOxygenAtom();
     Frame frame = chain.pdbmodel.pdbfile.frame;
     frame.bondAtoms(nitrogen, oxygen, order);
   }

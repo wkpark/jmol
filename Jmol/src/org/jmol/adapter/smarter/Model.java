@@ -26,7 +26,7 @@
 package org.jmol.adapter.smarter;
 import org.jmol.api.ModelAdapter;
 
-abstract class Model {
+class Model {
   int modelType = ModelAdapter.MODEL_TYPE_OTHER;
   int atomCount;
   int bondCount;
@@ -45,6 +45,12 @@ abstract class Model {
 
   int pdbStructureRecordCount;
   String[] pdbStructureRecords;
+
+  Model() { }
+
+  Model(int modelType) {
+    this.modelType = modelType;
+  }
 
   protected void finalize() {
     System.out.println("Model.finalize() called");
@@ -83,11 +89,4 @@ abstract class Model {
     }
   }
 
-  static float floatFromString(String str) throws NumberFormatException {
-    return Float.valueOf(str).floatValue();
-  }
-
-  static int intFromString(String str) throws NumberFormatException {
-    return Integer.parseInt(str);
-  }
 }

@@ -31,48 +31,32 @@ import java.io.BufferedReader;
 
 class ModelResolver {
 
-  final static int UNKNOWN = -1;
-  final static int XYZ = 0;
-  final static int MOL = 1;
-  final static int JME = 2;
-  final static int PDB = 3;
-  final static int CML = 4;
-  final static int SHELX = 5;
-
-  static Object resolveModel(String name, BufferedReader bufferedReader)
-    throws Exception {
-    Model model;
-    switch (determineModel(bufferedReader)) {
-    case XYZ:
-      model = new XyzModel(bufferedReader);
-      break;
-    case MOL:
-      model = new MolModel(bufferedReader);
-      break;
-    case JME:
-      model = new JmeModel(bufferedReader);
-      break;
-    case PDB:
-      model = new PdbModel(bufferedReader);
-      break;
-    case CML:
-      /*
-      model = new CmlModel(bufferedReader);
-      */
-      System.out.println("CML not yet supported!");
-      return "CML not yet supported!";
-    case SHELX:
-      model = new ShelXModel(bufferedReader);
-      break;
-    default:
+  static Object resolveModel(String name, BufferedReader bufferedReader,
+                             ModelAdapter.Logger logger) throws Exception {
+    ModelReader modelReader;
+    String modelReaderName = determineModelReader(bufferedReader);
+    if (modelReaderName == "Xyz")
+      modelReader = new XyzReader();
+    else if (modelReaderName == "Mol")
+      modelReader = new MolReader();
+    else if (modelReaderName == "Jme")
+      modelReader = new JmeReader();
+    else if (modelReaderName == "Pdb")
+      modelReader = new PdbReader();
+    else if (modelReaderName == "ShelX")
+      modelReader = new ShelXReader();
+    else if (modelReaderName == "Cml")
+      return "CML not yet supported";
+    else
       return "unrecognized file format";
-    }
+
+    Model model = modelReader.readModel(bufferedReader, logger);
     if (model.errorMessage != null)
       return model.errorMessage;
     return model;
   }
 
-  static int determineModel(BufferedReader bufferedReader)
+  static String determineModelReader(BufferedReader bufferedReader)
     throws Exception {
     bufferedReader.mark(512);
     String[] lines = new String[4];
@@ -84,7 +68,7 @@ class ModelResolver {
     bufferedReader.reset();
     try {
       int atomCount = Integer.parseInt(lines[0].trim());
-      return XYZ;
+      return "Xyz";
     } catch (NumberFormatException e) {
     }
     if (lines[3].length() >= 6) {
@@ -92,11 +76,11 @@ class ModelResolver {
       if (line4trimmed.endsWith("V2000") ||
           line4trimmed.endsWith("v2000") ||
           line4trimmed.endsWith("V3000"))
-        return MOL;
+        return "Mol";
       try {
         Integer.parseInt(lines[3].substring(0, 3).trim());
         Integer.parseInt(lines[3].substring(3, 6).trim());
-        return MOL;
+        return "Mol";
       } catch (NumberFormatException nfe) {
       }
     }
@@ -104,23 +88,23 @@ class ModelResolver {
       String recordTag = pdbRecords[i];
       for (int j = lines.length; --j >= 0; )
         if (lines[j].startsWith(recordTag))
-          return PDB;
+          return "Pdb";
     }
     for (int i = cmlRecords.length; --i >= 0; ) {
       String cmlTag = cmlRecords[i];
       for (int j = lines.length; --j >= 0; )
         if (lines[j].indexOf(cmlTag) != -1)
-          return CML;
+          return "Cml";
     }
     for (int i = shelxRecords.length; --i >= 0; ) {
       String shelxTag = shelxRecords[i];
       for (int j = lines.length; --j >= 0; )
         if (lines[j].startsWith(shelxTag))
-          return SHELX;
+          return "ShelX";
     }
     if (lines[1] == null || lines[1].trim().length() == 0)
-      return JME; // this is really quite broken :-)
-    return UNKNOWN;
+      return "Jme"; // this is really quite broken :-)
+    return "unknown";
   }
 
   final static String[] pdbRecords = {

@@ -53,7 +53,7 @@ public class SmarterModelAdapter extends ModelAdapter {
                                    BufferedReader bufferedReader) {
     try {
       Object modelOrErrorMessage =
-        ModelResolver.resolveModel(name, bufferedReader);
+        ModelResolver.resolveModel(name, bufferedReader, logger);
       if (modelOrErrorMessage instanceof String)
         return modelOrErrorMessage;
       if (modelOrErrorMessage instanceof Model) {
@@ -90,7 +90,7 @@ public class SmarterModelAdapter extends ModelAdapter {
   }
 
   public boolean hasPdbRecords(Object clientFile) {
-    return clientFile instanceof PdbModel;
+    return ((Model)clientFile).modelType == MODEL_TYPE_PDB;
   }
 
   public String[] getPdbStructureRecords(Object clientFile) {

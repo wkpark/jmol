@@ -76,7 +76,7 @@ public abstract class ModelAdapter {
    */
 
   String modelAdapterName;
-  Logger logger;
+  public Logger logger;
 
   public ModelAdapter(String modelAdapterName, Logger logger) {
     this.modelAdapterName = modelAdapterName;

@@ -1,7 +1,7 @@
 <section title="Hardware and runtime performance">
   <section title="What are the minimum hardware requirements?">
     <p>
-      300 Mhz CPU + 64 Mb RAM<br />
+      400 Mhz CPU + 128 Mb RAM<br />
       There is no absolute minimum. Performance is a function of
       molecule size, window size, and image complexity. <br />
       (On MacOS 9 you need more horsepower to make up for poor
@@ -11,19 +11,21 @@
   
   <section title="What are the recommended hardware requirements?">
     <p>
-      600 Mhz CPU + 256 Mb RAM -- Of course, more is better. 
+      750 Mhz CPU + 256 Mb RAM -- Of course, more is better. 
     </p>
   </section>
 
   <section
-   title="Why does it get so much slower when I make the screen bigger?">
+   title="Why does it get so much slower when I make the window bigger?">
     <p>
-      Twice as many pixels means twice as much work ...
+      Twice as many pixels means twice as much work ... and if your
+      applet is twice as wide and twice as high then you have 4 times
+      as many pixels so you get 1/4 the speed. 
     </p>
   </section>
 
-  <section title=
-	   "Is OpenGL or 3D hardware required to run the JmolApplet?">
+  <section
+   title="Is OpenGL or 3D hardware required to run the JmolApplet?">
     <p>
       No special hardware is required to run the JmolApplet.
       The graphics engine is a z-buffer implemented in Java,
@@ -35,16 +37,16 @@
   <section title="Performance is great! Why is it so fast?">
     <p>
       It does not use any Java graphics calls. The entire
-      image is built and sent to the screen with one
+      image is built offscreen and sent to the screen with one
       java.awt.Graphics.drawImage operation.
     </p>
   </section>
 
   <section title="Rendering speed is really slow. What can I do?">
     <ul>
-      <li>Get a faster machine</li>
+      <li>Get a faster machine ... something built this century</li>
       <li>Convince Sun to fix graphics performance problems</li>
-      <li>Get the source code and speed it up</li>
+      <li>Review the source code and help speed it up</li>
     </ul>
   </section>
 

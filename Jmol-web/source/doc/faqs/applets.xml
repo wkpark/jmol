@@ -25,10 +25,21 @@
     <p>No</p>
     <p>
       Applets get cached in the local browser cache. Subsequent uses of
-      the the	applet will pull the applet from the cache
+      the the applet will pull the applet from the cache
       (after confirming that the date/time/size have not changed
       on the web server). At least, that's the theory ...
       and it works correctly on the browsers I have seen :-)
+    </p>
+    <p>
+      <i>
+	Note that I am investigating several schemes to address this
+	request. I think it is possible to come up with a scheme
+	that would allow local installation to facilitate offline use.
+	The problem areas are 1) complexity for end-users associated
+	with a local installation, and 2) version control problems
+	when different web sites use different versions of the Jmol
+	applet.
+      </i>
     </p>
   </section>
 
@@ -54,12 +65,12 @@
     <p>
       While most browsers allow you to specify applet width and
       height in percentages, in practice this causes many problems.
-      It tends to generate lots of bugs during window resize
+      It tends to trigger lots of browser bugs during window resize
       operations.
     </p>
   </section>
   
-  <section title="what MIME types must be installed on the server?">
+  <section title="What MIME types must be installed on the server?">
     <p>
       None.
     </p>
@@ -70,6 +81,37 @@
     </p>
   </section>
 
+  <section title="Should I use APPLET, OBJECT or EMBED for my html tag?">
+    <p>
+      You should always use the <code>APPLET</code> tag.
+    </p>
+    <p>
+      <i>
+	Do not be confused by the Sun Java Plug-in developer documentation!
+      </i>
+    </p>
+    <p>
+      Unfortunately, the Sun Java Plug-in documentation does not do a good
+      job of explaining the current state of the world. The doc was written
+      several years ago and really needs to be cleaned up. In many places
+      it still seems to recommend the use of the <code>OBJECT</code> tag.
+      That is the way things used to be up until about 2002.
+      Since then the Sun Java
+      Plug-in has had direct support for the <code>APPLET</code>
+      tag on Microsoft
+      Internet Explorer, and this issue has essentially gone away.
+      However, Sun needs to maintain the doc for legacy corporate intranet
+      applications that were deployed using the <code>OBJECT</code> tag. 
+    </p>
+    <p>
+      Chapter 12 of the Sun Java Plug-in developer guide says:<br/>
+      With Internet Explorer it is recommended that you use the
+      APPLET tag for internet deployment.<br/>
+      ...<br/>
+      With Netscape it is recommended that you use the
+      APPLET tag for internet deployment.
+    </p>
+  </section>
 
 </section>    
 

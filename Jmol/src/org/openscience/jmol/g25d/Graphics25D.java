@@ -428,7 +428,7 @@ final public class Graphics25D {
     triangle25d.ax[1] = ax[3];
     triangle25d.ay[1] = ay[3];
     triangle25d.az[1] = az[3];
-    //    triangle25d.fillTriangle();
+    triangle25d.fillTriangle();
   }
 
   public void fillPolygon4(Color colorOutline, Color colorFill,

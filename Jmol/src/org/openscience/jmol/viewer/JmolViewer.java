@@ -39,6 +39,7 @@ import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
+import java.awt.Event;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
@@ -109,7 +110,10 @@ final public class JmolViewer {
     colorManager = new ColorManager(this, modelAdapter);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
-    mouseManager = new MouseManager(awtComponent, this);
+    if (jvm12orGreater) 
+      mouseManager = new MouseManager12(awtComponent, this);
+    else
+      mouseManager = new MouseManager10(awtComponent, this);
     fileManager = new FileManager(this);
     repaintManager = new RepaintManager(this);
     modelManager = new ModelManager(this, modelAdapter);
@@ -126,6 +130,10 @@ final public class JmolViewer {
 
   public Component getAwtComponent() {
     return awtComponent;
+  }
+
+  public boolean handleEvent(Event e) {
+    return mouseManager.handleEvent(e);
   }
 
   private boolean structuralChange = false;

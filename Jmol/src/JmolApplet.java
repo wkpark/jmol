@@ -257,6 +257,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     g.drawImage(viewer.renderScreenImage(rectClip), 0, 0, null);
   }
 
+  public boolean handleEvent(Event e) {
+    return viewer.handleEvent(e);
+  }
+
   //METHODS FOR JAVASCRIPT
 
   /****************************************************************

@@ -133,7 +133,7 @@ class AtomShape implements Shape {
     }
   }
 
-  private static BondRenderer shadingBondRenderer = new ShadingBondRenderer();
+  //private static BondRenderer shadingBondRenderer=new ShadingBondRenderer();
 
   public void renderLabel() {
     if (labelMode == DisplaySettings.NOLABELS)
@@ -241,11 +241,11 @@ class AtomShape implements Shape {
       }
       return;
     }
-    if (false && bondDrawMode == DisplaySettings.SHADING) {
-      shadingBondRenderer.paint(g2, atom2, atom1, settings);
-      shadingBondRenderer.paint(g2, atom1, atom2, settings);
-      return;
-    }
+    //    if (false && bondDrawMode == DisplaySettings.SHADING) {
+    //      shadingBondRenderer.paint(g2, atom2, atom1, settings);
+    //      shadingBondRenderer.paint(g2, atom1, atom2, settings);
+    //      return;
+    //    }
     int z1 = atom1.screenZ;
     int z2 = atom2.screenZ;
     int dz = z2 - z1;

@@ -98,7 +98,6 @@ public class DisplayPanel extends JPanel
     this.status = status;
     this.settings = settings;
     settings.addPropertyChangeListener(this);
-    ShadingAtomRenderer.setImageComponent(this);
     AtomShape.setImageComponent(this);
   }
 

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002-2003  The Jmol Development Team
+ * Copyright (C) 2003-2004  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -22,11 +22,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-
-/*
- * Creat el 28/07/2003
- *
- */
 package org.openscience.jmol.app;
 
 import java.util.*;
@@ -35,8 +30,9 @@ import java.util.*;
  * Implements a queue for a bash-like command history.
  * 
  * 
- * @author Agustí Sánchez Furrasola
+ * @author  Agust\u00ED S\u00E1nchez Furrasola
  * @version $Revision$
+ * @created 2003-07-28
  *
  */
 final class CommandHistory

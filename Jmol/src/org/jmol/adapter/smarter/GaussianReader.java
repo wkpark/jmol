@@ -2,7 +2,6 @@
  * $Author$
  * $Date$
  * $Revision$
- * modified by Rene Kanters 10/17/2004
  *
  * Copyright (C) 2004  The Jmol Development Team
  *
@@ -33,17 +32,31 @@ import java.io.BufferedReader;
  *
  **/
 class GaussianReader extends AtomSetCollectionReader {
-  // offset of atomic number in coordinate line
+  /**
+   *  Word index of atomic number in line with atom coordinates in an
+   * orientation block.
+   */
   private final static int STD_ORIENTATION_ATOMIC_NUMBER_OFFSET = 1;
-  // the offset of the first X vector of the first frequency in the frequency output
+  /**
+   * Word index of the first X vector of the first frequency in the
+   * frequency output.
+   */
   private final static int FREQ_FIRST_VECTOR_OFFSET = 2;
 
-  // the default offset for the coordinate output is that for G98 or G03
-  // if it turns out to be a G94 file, this will be reset.
+  /**
+   * The default offset for the coordinate output is that for G98 or G03.
+   * If it turns out to be a G94 file, this will be reset.
+   */
   private int firstCoordinateOffset = 3;
   
-  private String scfEnergy = ""; // SCF energy of current atomSet
-  private String scfKey = ""; // the type of SCF energy reported
+  /**
+   * Calculated SCF energy with units.
+   */
+  private String scfEnergy = "";
+  /**
+   * Key of the type of SCF energy calculated, e.g., E(RB+HF-PW91).
+   */
+  private String scfKey = "";
   
   /**
    * Reads a Collection of AtomSets from a BufferedReader.
@@ -65,7 +78,6 @@ class GaussianReader extends AtomSetCollectionReader {
    *
    * <p>Single point or frequency calculations always have an <code>Input</code> 
    * orientation. If symmetry is used a <code>Standard</code> will be present too.
-   * The frequency vectors are calculated for the last reported orientation.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    * @return The AtomSetCollection representing the interpreted Gaussian text.
@@ -127,6 +139,13 @@ class GaussianReader extends AtomSetCollectionReader {
  
   /**
    * Interprets the SCF Done: section.
+   *
+   * <p>The scfKey and scfEnergy will be set for further AtomSets that have
+   * the same molecular geometry (e.g., frequencies).
+   * The energy, convergence, -V/T and S**2 values will be set as properties
+   * for the atomSet.
+   *
+   * @param reader BufferedReader associated with the Gaussian output text.
    * @param line The input line.
    * @param nOrientations The number of orientations read that need to have
    *           these results associated with them.

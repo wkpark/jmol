@@ -87,12 +87,14 @@ class GaussianReader extends AtomSetCollectionReader {
       
       int nOrientations = 0;
       while ((line = reader.readLine()) != null) {
-        if (line.indexOf("Input orientation:") >= 0 ||
+        if (line.startsWith(" Step number")) {
+          nOrientations = 0;
+        } else if (line.indexOf("Input orientation:") >= 0 ||
             line.indexOf("Z-Matrix orientation:") >= 0) {
-          nOrientations = 1; // is always the first orientation
+          ++nOrientations; // is always the first orientation
           readAtoms(reader, line);
         } else if (line.indexOf("Standard orientation:") >= 0) {
-          nOrientations = 2; // is always the second orientation
+          ++nOrientations; // is always the second orientation
           readAtoms(reader, line);
         } else if (line.startsWith(" SCF Done:")) {
           readSCFDone(line,nOrientations);
@@ -224,15 +226,10 @@ class GaussianReader extends AtomSetCollectionReader {
  -------------------
 */
 
-  // If I were to put the frequency on the last model read I need to be
-  // smarter about when I need to duplicate the last model (now I really do it always)
-  // Maybe also should read the symmetry, frequencies and intensities of each....
-
   /**
    * Interprets the Harmonic frequencies section.
    *
-   * The vectors are added to a clones of the last read AtomSet.
-   * The AtomSetName for each clone is the frequency and the SCF energy.
+   * The vectors are added to a clone of the last read AtomSet.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    **/
@@ -246,8 +243,10 @@ class GaussianReader extends AtomSetCollectionReader {
     if (line == null)
       throw (new Exception("No frequencies encountered"));
     
+    // G98 ends the frequencies with a line with a space (03 an empty line)
+    // so I decided to read till the line is too short
     while ((line= reader.readLine()) != null &&
-           line.length() > 0)
+           line.length() > 15)
     {
       // we now have the line with the vibration numbers in them, but don't need it
       symmetries = getTokens(reader.readLine()); // read symmetry labels

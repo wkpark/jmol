@@ -46,20 +46,19 @@ public class ChemFrameRenderer {
   public synchronized void paint(Graphics g, Rectangle rectClip,
                                  DisplayControl control) {
     ChemFrame frame = control.getFrame();
-    DisplaySettings settings = control.getSettings();
     int numAtoms = frame.getNumberOfAtoms();
     if (numAtoms <= 0) {
       return;
     }
     int hcFrame = frame.hashCode();
-    int hcSettings = settings.hashCode();
     if (shapes == null || // did not do shapes yet
+        control.hasStructuralChange() || 
+        // FIXME -- these should be part of hasStructuralChange
         hcFrame != previousFrameHashCode || // frame itself is changed
-        hcSettings != previousSettingsHashCode || // settings have changed
         numAtoms != previousNumberAtoms // #atoms changed (e.g. a delete)
        ) {
+      control.resetStructuralChange();
       previousFrameHashCode = hcFrame;
-      previousSettingsHashCode = hcSettings;
       previousNumberAtoms = numAtoms;
       shapesList.clear();
       transformables.clear();
@@ -129,7 +128,6 @@ public class ChemFrameRenderer {
   }
 
   private int previousFrameHashCode;
-  private int previousSettingsHashCode;
   private int previousNumberAtoms;
 
   private Shape[] shapes = null;

@@ -36,16 +36,16 @@ import javax.vecmath.AxisAngle4d;
 
 final public class DisplayControl {
 
-  public static final int NOLABELS = DisplaySettings.NOLABELS;
-  public static final int SYMBOLS = DisplaySettings.SYMBOLS;
-  public static final int TYPES = DisplaySettings.TYPES;
-  public static final int NUMBERS = DisplaySettings.NUMBERS;
-  public static final int QUICKDRAW = DisplaySettings.QUICKDRAW;
-  public static final int SHADING = DisplaySettings.SHADING;
-  public static final int WIREFRAME = DisplaySettings.WIREFRAME;
-  public static final int LINE = DisplaySettings.LINE;
-  public static final int ATOMTYPE = DisplaySettings.ATOMTYPE;
-  public static final int ATOMCHARGE = DisplaySettings.ATOMCHARGE;
+  public static final int NOLABELS =  0;
+  public static final int SYMBOLS =   1;
+  public static final int TYPES =     2;
+  public static final int NUMBERS =   3;
+  public static final int QUICKDRAW = 0;
+  public static final int SHADING =   1;
+  public static final int WIREFRAME = 2;
+  public static final int LINE =      3;
+  public static final int ATOMTYPE =   0;
+  public static final int ATOMCHARGE = 1;
 
   
   // while these variables are public, they should be considered *read-only*
@@ -58,7 +58,6 @@ final public class DisplayControl {
   public final Matrix4d matrixTransform = new Matrix4d();
 
   private DisplayPanel panel;
-  private DisplaySettings settings;
 
   private int minScreenDimension;
   private Dimension dimCurrent;
@@ -72,10 +71,6 @@ final public class DisplayControl {
   private boolean perspectiveDepth = true;
   private boolean structuralChange = false;
 
-  DisplayControl() {
-    this.settings = new DisplaySettings();
-  }
-
   public void setDisplayPanel(DisplayPanel panel) {
     this.panel = panel;
   }
@@ -84,195 +79,209 @@ final public class DisplayControl {
     return panel;
   }
 
-  public DisplaySettings getSettings() {
-    return settings;
-  }
-  
+  public int labelMode = NOLABELS;
   public void setLabelMode(int mode) {
-    settings.setLabelMode(mode);
-    recalc();
+    if (labelMode != mode) {
+      labelMode = mode;
+      recalc();
+    }
   }
-
   public int getLabelMode() {
-    return settings.getLabelMode();
+    return labelMode;
   }
 
+  public int atomDrawMode = QUICKDRAW;
   public void setAtomDrawMode(int mode) {
-    settings.setAtomDrawMode(mode);
-    recalc();
+    if (atomDrawMode != mode) {
+      atomDrawMode = mode;
+      recalc();
+    }
   }
-
   public int getAtomDrawMode() {
-    return settings.getAtomDrawMode();
+    return atomDrawMode;
   }
 
+  public int atomColorProfile = ATOMTYPE;
   public void setAtomColorProfile(int mode) {
-    settings.setAtomColorProfile(mode);
-    recalc();
+    if (atomColorProfile != mode) {
+      atomColorProfile = mode;
+      recalc();
+    }
   }
 
   public int getAtomColorProfile() {
-    return settings.getAtomColorProfile();
+    return atomColorProfile;
   }
 
+  public int bondDrawMode = QUICKDRAW;
   public void setBondDrawMode(int mode) {
-    settings.setBondDrawMode(mode);
-    recalc();
+    if (bondDrawMode != mode) {
+      bondDrawMode = mode;
+      recalc();
+    }
   }
-
   public int getBondDrawMode() {
-    return settings.getBondDrawMode();
+    return bondDrawMode;
   }
 
+  public double bondWidth = .1;
   public void setBondWidth(double width) {
-    settings.setBondWidth(width);
+    bondWidth = width;
     recalc();
   }
-
   public double getBondWidth() {
-    return settings.getBondWidth();
+    return bondWidth;
   }
 
+  public Color outlineColor = Color.black;
   public void setOutlineColor(Color c) {
-    settings.setOutlineColor(c);
+    outlineColor = c;
     recalc();
   }
-
   public Color getOutlineColor() {
-    return settings.getOutlineColor();
+    return outlineColor;
   }
 
+  public Color pickedColor = Color.orange;
+  private Color pickedTranslucentColor;
   public void setPickedColor(Color c) {
-    settings.setPickedColor(c);
-    recalc();
+    if (pickedColor == null || !pickedColor.equals(c)) {
+      pickedColor = c;
+      pickedTranslucentColor = null;
+      recalc();
+    }
   }
-
-  private Color colorOpaquePicked = null;
-  private Color colorTransparentPicked = null;
   public Color getPickedColor() {
-    Color pickedCurrent = settings.getPickedColor();
-    if (colorTransparentPicked == null ||
-        colorOpaquePicked != pickedCurrent) {
-      colorTransparentPicked = colorOpaquePicked = pickedCurrent;
+    if (pickedTranslucentColor == null) {
+      pickedTranslucentColor = pickedColor;
       if (useGraphics2D) {
-        int rgba = (pickedCurrent.getRGB() & 0x00FFFFFF) | 0x80000000;
-        colorTransparentPicked = new Color(rgba, true);
+        int rgba = (pickedColor.getRGB() & 0x00FFFFFF) | 0x80000000;
+        pickedTranslucentColor = new Color(rgba, true);
       }
     }
-    return colorTransparentPicked;
+    return pickedTranslucentColor;
   }
 
+  public Color textColor = Color.black;
   public void setTextColor(Color c) {
-    settings.setTextColor(c);
+    textColor = c;
     recalc();
   }
-
   public Color getTextColor() {
-    return settings.getTextColor();
+    return textColor;
   }
 
-  public void setPropertyMode(String s) {
-    settings.setPropertyMode(s);
-    recalc();
-  }
-
-  public String getPropertyMode() {
-    return settings.getPropertyMode();
-  }
-
+  public Color distanceColor = Color.black;
   public void setDistanceColor(Color c) {
-    settings.setDistanceColor(c);
+    distanceColor = c;
     recalc();
   }
-
   public Color getDistanceColor() {
-    return settings.getDistanceColor();
+    return distanceColor;
   }
 
+  public Color angleColor = Color.black;
   public void setAngleColor(Color c) {
-    settings.setAngleColor(c);
+    angleColor = c;
     recalc();
   }
-
   public Color getAngleColor() {
-    return settings.getAngleColor();
+    return angleColor;
   }
 
+  public Color dihedralColor = Color.black;
   public void setDihedralColor(Color c) {
-    settings.setDihedralColor(c);
+    dihedralColor = c;
     recalc();
   }
-
   public Color getDihedralColor() {
-    return settings.getDihedralColor();
+    return dihedralColor;
   }
 
+  public boolean showAtoms = true;
   public void setShowAtoms(boolean showAtoms) {
-    settings.setShowAtoms(showAtoms);
-    recalc();
+    if (this.showAtoms != showAtoms) {
+      this.showAtoms = showAtoms;
+      recalc();
+    }
   }
-
   public boolean getShowAtoms() {
-    return settings.getShowAtoms();
+    return showAtoms;
   }
 
+  public boolean showBonds = true;
   public void setShowBonds(boolean showBonds) {
-    settings.setShowBonds(showBonds);
-    recalc();
+    if (this.showBonds != showBonds) {
+      this.showBonds = showBonds;
+      recalc();
+    }
   }
-
   public boolean getShowBonds() {
-    return settings.getShowBonds();
+    return showBonds;
   }
 
+  public boolean showVectors = false;
   public void setShowVectors(boolean showVectors) {
-    settings.setShowVectors(showVectors);
-    recalc();
+    if (this.showVectors != showVectors) {
+      this.showVectors = showVectors;
+      structuralChange = true;
+      recalc();
+    }
   }
-
   public boolean getShowVectors() {
-    return settings.getShowVectors();
+    return showVectors;
   }
 
+  public boolean showHydrogens = true;
   public void setShowHydrogens(boolean showHydrogens) {
-    settings.setShowHydrogens(showHydrogens);
-    recalc();
+    if (this.showHydrogens != showHydrogens) {
+      this.showHydrogens = showHydrogens;
+      recalc();
+    }
   }
-
   public boolean getShowHydrogens() {
-    return settings.getShowHydrogens();
+    return showHydrogens;
   }
 
+  public boolean showDarkerOutline = false;
   public void setShowDarkerOutline(boolean showDarkerOutline) {
-    settings.setShowDarkerOutline(showDarkerOutline);
-    recalc();
+    if (this.showDarkerOutline != showDarkerOutline) {
+      this.showDarkerOutline = showDarkerOutline;
+      recalc();
+    }
   }
-
   public boolean getShowDarkerOutline() {
-    return settings.getShowDarkerOutline();
+    return showDarkerOutline;
   }
 
-  public void setAtomSphereFactor(double f) {
-    settings.setAtomSphereFactor(f);
+  // FIXME -- change me to be a percentage
+  public double atomSphereFactor = 0.2;
+  public void setAtomSphereFactor(double d) {
+    atomSphereFactor = d;
     recalc();
   }
-
   public double getAtomSphereFactor() {
-    return settings.getAtomSphereFactor();
+    return atomSphereFactor;
   }
 
-  public void setAntiAliased(boolean antiAlias) {
-    settings.setAntiAliased(antiAlias);
-    recalc();
+  public boolean fastRendering = false;;
+  public void setFastRendering(boolean fastRendering) {
+    if (this.fastRendering != fastRendering) {
+      this.fastRendering = fastRendering;
+      recalc();
+    }
   }
-
-  public void setFastRendering(boolean b) {
-    settings.setFastRendering(b);
-    recalc();
-  }
-
   public boolean getFastRendering() {
-    return settings.getFastRendering();
+    return fastRendering;
+  }
+
+  public String propertyMode = "";
+  public void setPropertyMode(String s) {
+    propertyMode = s;
+    recalc();
+  }
+  public String getPropertyMode() {
+    return propertyMode;
   }
 
   private final SelectionSet setPicked = new SelectionSet();
@@ -525,6 +534,7 @@ final public class DisplayControl {
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
+    clearSelection();
     homePosition();
   }
 
@@ -539,7 +549,6 @@ final public class DisplayControl {
   public void setFrame(int fr) {
     if (haveFile && fr >= 0 && fr < nframes) {
         setFrame(chemfile.getFrame(fr));
-        recalc();
     }
   }
 
@@ -549,6 +558,7 @@ final public class DisplayControl {
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
+    clearSelection();
     recalc();
   }
 
@@ -581,9 +591,10 @@ final public class DisplayControl {
 
   public void setMouseDragged(boolean mouseDragged) {
     if (wireframeRotation && this.mouseDragged != mouseDragged)
-      settings.setFastRendering(mouseDragged);
-    if (this.mouseDragged && !mouseDragged)
-      recalc();
+      setFastRendering(mouseDragged);
+    if (this.mouseDragged && !mouseDragged && // hmmm ... a little too complex
+        useGraphics2D && wantsAntialias && !wantsAntialiasAlways)
+        recalc();
     this.mouseDragged = mouseDragged;
   }
 
@@ -744,7 +755,7 @@ final public class DisplayControl {
   public final Hashtable imageCache = new Hashtable();
   private void flushCachedImages() {
     imageCache.clear();
-    colorTransparentPicked = null;
+    pickedTranslucentColor = null;
   }
 
   // FIXME NEEDSWORK -- bond binding stuff
@@ -786,6 +797,7 @@ final public class DisplayControl {
 
   public void setVectorColor(Color c) {
     vectorColor = c;
+    recalc();
   }
 
   public Color getVectorColor() {
@@ -794,6 +806,7 @@ final public class DisplayControl {
 
   public void setArrowHeadSize(double ls) {
     arrowHeadSize = 10.0f * ls;
+    recalc();
   }
 
   public double getArrowHeadSize() {
@@ -810,6 +823,7 @@ final public class DisplayControl {
 
   public void setArrowLengthScale(double ls) {
     arrowLengthScale = ls;
+    recalc();
   }
 
   public double getArrowLengthScale() {
@@ -818,6 +832,7 @@ final public class DisplayControl {
 
   public void setArrowHeadRadius(double rs) {
     arrowHeadRadius = rs;
+    recalc();
   }
 
   public double getArrowHeadRadius() {

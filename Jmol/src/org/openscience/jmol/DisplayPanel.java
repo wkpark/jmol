@@ -338,7 +338,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setShowBonds(!control.getShowBonds());
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setShowBonds(cbmi.isSelected());
     }
   }
 
@@ -350,8 +351,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setShowAtoms(!control.getShowAtoms());
-      repaint();
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setShowAtoms(cbmi.isSelected());
     }
   }
 
@@ -363,7 +364,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setShowVectors(!control.getShowVectors());
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setShowVectors(cbmi.isSelected());
     }
   }
 
@@ -375,7 +377,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setShowHydrogens(!control.getShowHydrogens());
+      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
+      control.setShowVectors(cbmi.isSelected());
     }
   }
 
@@ -921,6 +924,7 @@ public class DisplayPanel extends JPanel
     return "" + num;
   }
 
+  // FIXME -- avg of the last set of rotations, not a moving avg
   private void showTimes() {
     int timeAverage = totalTime / cTimes;
     status.setStatus(3, fmt(lastTime) + "ms : " + fmt(timeAverage) + "ms");

@@ -67,5 +67,6 @@ class PmeshRenderer extends ShapeRenderer {
       else
         System.out.println("PmeshRenderer: polygon with > 4 sides");
     }
+    viewer.freeTempScreens(screens);
   }
 }

@@ -109,7 +109,9 @@ class NWChemReader extends AtomSetCollectionReader {
         } else if (line.trim().startsWith("NWChem")) {
           readNWChemLine(reader, line);
         } else if (line.startsWith("  Mulliken analysis of the total density")) {
-          readPartialCharges(reader);
+          // only do this if I have read an atom set in this task/step
+          if (equivalentAtomSets > 0)
+            readPartialCharges(reader);
         }
       }
     } catch (Exception ex) {

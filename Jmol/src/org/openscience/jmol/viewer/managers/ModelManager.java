@@ -58,9 +58,9 @@ public class ModelManager {
     suppliesVanderwaalsRadius = modelAdapter.suppliesVanderwaalsRadius();
     suppliesCovalentRadius = modelAdapter.suppliesCovalentRadius();
 
-    if (JmolConstants.vanderwaalsRadii.length != JmolConstants.atomicNumberMax)
+    if (JmolConstants.vanderwaalsMars.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! vanderwaalsRadii.length not consistent");
-    if (JmolConstants.covalentRadii.length != JmolConstants.atomicNumberMax)
+    if (JmolConstants.covalentMars.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! covalentRadii.length not consistent");
   }
 
@@ -283,7 +283,7 @@ public class ModelManager {
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
                          vanderwaalsRadius);
     }
-    return JmolConstants.vanderwaalsRadii[atom.atomicNumber];
+    return JmolConstants.vanderwaalsMars[atom.atomicNumber] / 1000f;
   }
 
   public float getCovalentRadius(Atom atom) {
@@ -294,7 +294,7 @@ public class ModelManager {
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
                          covalentRadius);
     }
-    return JmolConstants.covalentRadii[atom.atomicNumber];
+    return JmolConstants.covalentMars[atom.atomicNumber] / 1000f;
   }
 
   public String getPdbAtomRecord(Object clientAtom) {

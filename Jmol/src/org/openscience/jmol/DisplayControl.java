@@ -299,62 +299,60 @@ final public class DisplayControl {
     return propertyMode;
   }
 
-  private final SelectionSet setPicked = new SelectionSet();
+  private final BitSet bsNull = new BitSet();
+  private final BitSet bsSelection = new BitSet();
 
   public void addSelection(Atom atom) {
-    setPicked.addSelection(atom.getAtomNumber());
+    bsSelection.set(atom.getAtomNumber());
     recalc();
   }
 
   public void removeSelection(Atom atom) {
-    setPicked.removeSelection(atom.getAtomNumber());
+    bsSelection.clear(atom.getAtomNumber());
     recalc();
   }
 
   public void toggleSelection(Atom atom) {
     int atomNum = atom.getAtomNumber();
-    if (setPicked.isSelected(atomNum))
-      setPicked.removeSelection(atomNum);
+    if (bsSelection.get(atomNum))
+      bsSelection.clear(atomNum);
     else
-      setPicked.addSelection(atomNum);
+      bsSelection.set(atomNum);
     recalc();
   }
 
   public void addSelection(Atom[] atoms) {
     for (int i = 0; i < atoms.length; ++i)
-      setPicked.addSelection(atoms[i].getAtomNumber());
+      bsSelection.set(atoms[i].getAtomNumber());
     recalc();
   }
 
   public void removeSelection(Atom[] atoms) {
     for (int i = 0; i < atoms.length; ++i)
-      setPicked.removeSelection(atoms[i].getAtomNumber());
+      bsSelection.clear(atoms[i].getAtomNumber());
     recalc();
   }
 
-  public int[] getSelection() {
-    return setPicked.getSelection();
-  }
-
   public void clearSelection() {
-    setPicked.clearSelection();
+    bsSelection.and(bsNull);
     recalc();
   }
 
   public int countSelection() {
-    return setPicked.countSelection();
+    int count = 0;
+    for (int i = 0, size = bsSelection.size(); i < size; ++i)
+      if (bsSelection.get(i))
+        ++count;
+    return count;
   }
 
   public boolean isSelected(Atom atom) {
-    return setPicked.isSelected(atom.getAtomNumber());
+    return bsSelection.get(atom.getAtomNumber());
   }
 
   public void setSelectionSet(BitSet set) {
-    clearSelection();
-    int num = numberOfAtoms(); // FIXME -- probably should store this someplace
-    for (int i = 0; i < num; ++i)
-      if (set.get(i))
-        setPicked.addSelection(i);
+    bsSelection.and(bsNull);
+    bsSelection.or(set);
     recalc();
   }
 
@@ -752,16 +750,20 @@ final public class DisplayControl {
     recalc();
   }
   
-
   public void setCenterAsSelected() {
-    int[] picked = setPicked.getSelection();
-    Point3d center = null;
-    if (picked.length > 0) {
-      // just take the average of all the points
-      center = new Point3d(); // defaults to 0,0,0
-      for (int i = 0; i < picked.length; ++i)
-        center.add(new Point3d(getFrame().getAtomAt(picked[i]).getPosition()));
-      center.scale(1.0f / picked.length); // just divide by the quantity
+    int numberOfAtoms = numberOfAtoms();
+    int countSelected = 0;
+    Point3d  center = new Point3d(); // defaults to 0,00,
+    for (int i = 0; i < numberOfAtoms; ++i) {
+      if (!bsSelection.get(i))
+        continue;
+      ++countSelected;
+      center.add(getFrame().getAtomAt(i).getPosition());
+    }
+    if (countSelected > 0) {
+      center.scale(1.0f / countSelected); // just divide by the quantity
+    } else {
+      center = null;
     }
     getFrame().setRotationCenter(center);
     clearSelection();

@@ -115,12 +115,11 @@ class NWChemReader extends AtomSetCollectionReader {
     discardLines(reader, 3); // skip blank line, titles and dashes
     String line;
     String tokens[];
-    modelCount++;     // reading the next model
+    atomSetCollection.newAtomSet();
     atomCount = 0; // we have no atoms for this model yet
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
 			Atom atom = atomSetCollection.addNewAtom();
-			atom.modelNumber = modelCount;  // associate that current model number
 			atom.atomName = fixTag(tokens[1]);
 			atom.x = parseFloat(tokens[3]);
 			atom.y = parseFloat(tokens[4]);
@@ -154,12 +153,11 @@ class NWChemReader extends AtomSetCollectionReader {
     discardLines(reader, 3); // skip blank line, titles and dashes
     String line;
     String tokens[];
-    modelCount++;
+    atomSetCollection.newAtomSet();
     atomCount = 0; // we have no atoms for this model yet
     while ( (line = reader.readLine()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
 			Atom atom = atomSetCollection.addNewAtom();
-			atom.modelNumber = modelCount;  // associate that current model number
 			atom.atomName = fixTag(tokens[1]);
 			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
 			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
@@ -256,12 +254,11 @@ class NWChemReader extends AtomSetCollectionReader {
     discardLinesUntilContains(reader,"Atom information");
     discardLines(reader, 2);
     line = reader.readLine();
-    modelCount++;            // new model
+    atomSetCollection.newAtomSet();
     atomCount = 0;           // start with 0 atoms...
     do {
       tokens = getTokens(line);
 			Atom atom = atomSetCollection.addNewAtom();
-			atom.modelNumber = modelCount;
 			atom.elementSymbol = tokens[0];
 			atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
 			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
@@ -271,7 +268,8 @@ class NWChemReader extends AtomSetCollectionReader {
               (line.indexOf("---") < 0) );  
     
     // now we are ready to put the vibrations on the structure(s)
-    int modelNumber = modelCount; // the number of models before I start adding vectors
+    // the number of models before I start adding vectors
+    int modelNumber = atomSetCollection.atomSetCount;
     boolean firstTime = true;     // flag for first time 1 model less to duplicate..
     int nNewModels;               // the number of models to duplicate
 
@@ -295,7 +293,7 @@ class NWChemReader extends AtomSetCollectionReader {
         nNewModels = nFreq;   // I need to create new models for every frequency
       }
       for (int i = nNewModels; --i >= 0; )
-        duplicateLastModel();
+        atomSetCollection.cloneLastAtomSet();
 
       // firstModelAtom is the index in atomSetCollection.atoms that has the first atom
       // of the first model where the first to be read vibration needs to go
@@ -343,27 +341,4 @@ class NWChemReader extends AtomSetCollectionReader {
       return tag.substring(2)+"-Bq";
     return tag;
   }
-
-// duplicate the last model
-  /**
-   * Duplicates the last read AtomSet.
-   *<p>
-   * Useful for creating a duplicate of an AtomSet in order to put vibrational
-   * vectors on them for each vibrational mode encountered.
-   *<p><b>Note</b> Maybe we replace this by a method in the super
-   * class in which case it would require two arguments: the number of atoms in
-   * the last model (our local version of atomCount), and the modelNumber to be
-   * used for the cloned atoms. We could call it
-   * cloneAtomSet(int nAtoms, int modelNumber).
-   **/
-  private void duplicateLastModel() {
-    Atom[] atoms = atomSetCollection.atoms;
-    int atomOffset = atomSetCollection.atomCount - atomCount; // first atom to be duplicated
-    modelCount++;  // new count of models is increased
-    for (int i = atomCount; --i >= 0 ;) {
-      Atom atomNew = atomSetCollection.newCloneAtom(atoms[atomOffset++]);
-      atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
-    }
-  }
-
 }

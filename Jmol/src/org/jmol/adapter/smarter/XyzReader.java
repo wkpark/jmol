@@ -39,15 +39,11 @@ class XyzReader extends AtomSetCollectionReader {
     atomSetCollection = new AtomSetCollection("xyz");
 
     try {
-      int modelNumber = 1;
       int modelAtomCount;
       while ((modelAtomCount = readAtomCount(reader)) > 0) {
-        if (modelNumber == 1)
-          atomSetCollection.setCollectionName(reader.readLine());
-        else
-          reader.readLine();
-        readAtoms(reader, modelNumber, modelAtomCount);
-        ++modelNumber;
+        atomSetCollection.newAtomSet();
+        atomSetCollection.setAtomSetName(reader.readLine().trim());
+        readAtoms(reader, modelAtomCount);
       }
     } catch (Exception ex) {
       atomSetCollection.errorMessage = "Could not read file:" + ex;
@@ -64,16 +60,15 @@ class XyzReader extends AtomSetCollectionReader {
     }
     return 0;
   }
-  
+
   final float[] chargeAndOrVector = new float[4];
   final boolean isNaN[] = new boolean[4];
   
   void readAtoms(BufferedReader reader,
-                 int modelNumber, int modelAtomCount) throws Exception {
+                 int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
       String line = reader.readLine();
       Atom atom = atomSetCollection.addNewAtom();
-      atom.modelNumber = modelNumber;
       atom.elementSymbol = parseToken(line);
       atom.x = parseFloat(line, ichNextParse);
       atom.y = parseFloat(line, ichNextParse);

@@ -41,9 +41,11 @@ class AtomSetCollection {
   int structureCount;
   Structure[] structures = new Structure[16];
   
-  // atomName stuff
+  int atomSetCount;
+  int currentAtomSetNumber;
+  int[] atomSetNumbers = new int[16];
   String[] atomSetNames = new String[16];
-  int atomSetNameCount = 0;
+  int[] atomSetAtomCounts = new int[16];
 
   String errorMessage;
   String fileHeader;
@@ -78,12 +80,36 @@ class AtomSetCollection {
       atoms[i] = null;
     atomCount = 0;
     atomNameMap.clear();
+    atomSetCount = 0;
+    currentAtomSetNumber = 0;
+    for (int i = atomSetNumbers.length; --i >= 0; ) {
+      atomSetNumbers[i] = atomSetAtomCounts[i] = 0;
+      atomSetNames[i] = null;
+    }
   }
 
   Atom newCloneAtom(Atom atom) {
     Atom clone = atom.cloneAtom();
     addAtom(clone);
     return clone;
+  }
+
+  void cloneFirstAtomSet() {
+    newAtomSet();
+    for (int i = 0, firstCount = atomSetAtomCounts[0]; i < firstCount; ++i)
+      newCloneAtom(atoms[i]);
+  }
+
+  void cloneLastAtomSet() {
+    newAtomSet();
+    for (int i = atomSetAtomCounts[atomSetCount - 1], atomIndex = atomCount - i;
+         --i >= 0;
+         ++atomIndex)
+      newCloneAtom(atoms[atomIndex]);
+  }
+
+  int getFirstAtomSetAtomCount() {
+    return atomSetAtomCounts[0];
   }
 
   Atom addNewAtom() {
@@ -96,6 +122,12 @@ class AtomSetCollection {
     if (atomCount == atoms.length)
       atoms = (Atom[])AtomSetCollectionReader.setLength(atoms, atomCount + 512);
     atoms[atomCount++] = atom;
+    if (atomSetCount == 0) {
+      atomSetCount = 1;
+      currentAtomSetNumber = 1;
+    }
+    atom.atomSetNumber = currentAtomSetNumber;
+    ++atomSetAtomCounts[atomSetCount - 1];
   }
 
   void addAtomWithMappedName(Atom atom) {
@@ -180,37 +212,38 @@ class AtomSetCollection {
     return index;
   }
   
-  /**
-   * Sets the atomSetName.
-   *
-   * @param atomSetIndex The index of the atomSet to be named.
-   * @param atomSetName The name to be associated with the atomSet.
-   **/
-  void setAtomSetName(int atomSetIndex, String atomSetName) {
-    if (atomSetIndex > atomSetNames.length) {
-      // extend the atomSetNames array to be able to hold
-      int newAtomSetNameCount = atomSetNameCount;
-      if (atomSetNameCount < atomSetIndex) {
-        while (atomSetNameCount < atomSetIndex)
-          atomSetNameCount += 16;
-        atomSetNames = (String[])AtomSetCollectionReader.setLength(atomSetNames,
-                                                                atomSetNameCount);
-      }
-      atomSetNames[atomSetIndex] = atomSetName;
-    }
+  ////////////////////////////////////////////////////////////////
+  // atomSet stuff
+  ////////////////////////////////////////////////////////////////
+
+  void newAtomSet() {
+    newAtomSet(atomSetCount + 1);
   }
-  
-  /**
-   * Returns the AtomSetName.
-   *
-   * <P>If the atomSetIndex refers to an atomSet whose name is not set,
-   **/
-  public String getAtomSetName(int atomSetIndex) {
-    try {
-      return atomSetNames[atomSetIndex]; 
+
+  void newAtomSet(int atomSetNumber) {
+    ++atomSetCount;
+    if (atomSetCount > atomSetNumbers.length) {
+      atomSetNumbers = AtomSetCollectionReader.doubleLength(atomSetNumbers);
+      atomSetNames = AtomSetCollectionReader.doubleLength(atomSetNames);
+      atomSetAtomCounts = AtomSetCollectionReader.doubleLength(atomSetAtomCounts);
     }
-    finally {
-      return "AtomSet " + atomSetIndex; 
-    }
+    currentAtomSetNumber = atomSetNumber;
+    atomSetNumbers[atomSetCount - 1] = atomSetNumber;
+  }
+
+  void setAtomSetName(String atomSetName) {
+    atomSetNames[atomSetCount - 1] = atomSetName;
+  }
+
+  int getAtomSetCount() {
+    return atomSetCount;
+  }
+
+  int getAtomSetNumber(int atomSetIndex) {
+    return atomSetNumbers[atomSetIndex];
+  }
+
+  String getAtomSetName(int atomSetIndex) {
+    return atomSetNames[atomSetIndex];
   }
 }

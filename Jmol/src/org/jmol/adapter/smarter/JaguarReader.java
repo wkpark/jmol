@@ -60,14 +60,9 @@ class JaguarReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  int atomCount;
-  int modelCount;
-
   void readAtoms(BufferedReader reader) throws Exception {
     // we only take the last set of atoms before the frequencies
     atomSetCollection.discardPreviousAtoms();
-    atomCount = 0;
-    modelCount = 1;
     // start parsing the atoms
     discardLines(reader, 2);
     String line;
@@ -93,7 +88,6 @@ class JaguarReader extends AtomSetCollectionReader {
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       atom.x = x; atom.y = y; atom.z = z;
-      ++atomCount;
     }
   }
 
@@ -118,7 +112,10 @@ class JaguarReader extends AtomSetCollectionReader {
     C1   Y     0.06983 -0.05009  0.07631 -0.00001  0.00000  0.00000 -0.00283
     C1   Z     0.03571  0.10341  0.03519  0.00001  0.00000  0.00001 -0.08724
   */
+  int atomCount;
+  
   void readFrequencies(BufferedReader reader) throws Exception {
+    atomCount = atomSetCollection.getFirstAtomSetAtomCount();
     int modelNumber = 1;
     String line;
     while ((line = reader.readLine()) != null &&
@@ -166,7 +163,7 @@ class JaguarReader extends AtomSetCollectionReader {
       return;
     if (atomCenterNumber == 1) {
       if (modelNumber > 1)
-        createNewModel(modelNumber);
+        atomSetCollection.cloneFirstAtomSet();
     }
     Atom atom = atomSetCollection.atoms[(modelNumber - 1) * atomCount +
                             atomCenterNumber - 1];
@@ -175,18 +172,8 @@ class JaguarReader extends AtomSetCollectionReader {
     atom.vectorZ = z;
   }
 
-  void createNewModel(int modelNumber) {
-    modelCount = modelNumber - 1;
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
-      atomNew.modelNumber = modelNumber;
-    }
-  }
-
   void discardLines(BufferedReader reader, int nLines) throws Exception {
     for (int i = nLines; --i >= 0; )
       reader.readLine();
   }
-  
 }

@@ -58,7 +58,6 @@ class HinReader extends AtomSetCollectionReader {
   
   String errorMessage;
 
-  int modelNumber;
   int atomIndex;
   int baseAtomIndex;
   String[] tokens;
@@ -67,7 +66,6 @@ class HinReader extends AtomSetCollectionReader {
 
   void readAtoms(BufferedReader reader) throws Exception {
 
-    modelNumber = 0;
     tokens = new String[MAX_TOKENS];
     errorMessage = null;
 
@@ -86,10 +84,11 @@ class HinReader extends AtomSetCollectionReader {
   }
 
   void processMol(String line) {
-    atomSetCollection.setCollectionName(getMolName(line));
+    atomSetCollection.newAtomSet();
+    String molName = getMolName(line);
+    atomSetCollection.setAtomSetName(getMolName(line));
     atomIndex = 0;
     baseAtomIndex = atomSetCollection.atomCount;
-    ++modelNumber;
   }
 
   String getMolName(String line) {
@@ -108,7 +107,6 @@ class HinReader extends AtomSetCollectionReader {
     }
 
     Atom atom = atomSetCollection.addNewAtom();
-    atom.modelNumber = modelNumber;
     parseToken(line, ichNextParse); // discard
     atom.elementSymbol = parseToken(line, ichNextParse);
     parseToken(line, ichNextParse); // discard

@@ -35,7 +35,6 @@ class PdbReader extends AtomSetCollectionReader {
   int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
-  int currentModelNumber;
   int[] serialMap = new int[512];
 
   boolean isNMRdata;
@@ -204,7 +203,6 @@ class PdbReader extends AtomSetCollectionReader {
       if (serial >= serialMap.length)
         serialMap = setLength(serialMap, serial + 500);
       Atom atom = atomSetCollection.addNewAtom();
-      atom.modelNumber = currentModelNumber;
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
       atom.formalCharge = charge;
@@ -352,9 +350,8 @@ class PdbReader extends AtomSetCollectionReader {
       if (endModelColumn > lineLength)
         endModelColumn = lineLength;
       int modelNumber = parseInt(line, startModelColumn, endModelColumn);
-      if (modelNumber != currentModelNumber + 1)
-        logger.log("AtomSetCollection number sequence seems confused");
-      currentModelNumber = modelNumber;
+      atomSetCollection.newAtomSet(modelNumber);
+      atomSetCollection.setAtomSetName("" + modelNumber);
     } catch (NumberFormatException e) {
     }
   }

@@ -37,14 +37,12 @@ import java.io.BufferedReader;
 class MopacReader extends AtomSetCollectionReader {
     
   String frameInfo;
-  int modelNumber;
   int baseAtomIndex;
 
   AtomSetCollection readAtomSetCollection(BufferedReader input) throws Exception {
     atomSetCollection = new AtomSetCollection("mopac");
         
     frameInfo = null;
-    modelNumber = 1;
 
     String line;
     while ((line = input.readLine()) != null && ! line.startsWith(" ---")) {

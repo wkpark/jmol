@@ -275,6 +275,14 @@ abstract class AtomSetCollectionReader {
     return str.substring(ich, ichLast + 1);
   }
 
+  static int[] doubleLength(int[] array) {
+    return setLength(array, array.length * 2);
+  }
+
+  static String[] doubleLength(String[] array) {
+    return setLength(array, array.length * 2);
+  }
+
   static Object setLength(Object array, int newLength) {
     Object t =
       Array.newInstance(array.getClass().getComponentType(), newLength);
@@ -284,7 +292,17 @@ abstract class AtomSetCollectionReader {
     return t;
   }
 
-  int[] setLength(int[] array, int newLength) {
+  static String[] setLength(String[] array, int newLength) {
+    String[] t = new String[newLength];
+    if (array != null) {
+      int oldLength = array.length;
+      System.arraycopy(array, 0, t, 0, 
+                     oldLength < newLength ? oldLength : newLength);
+    }
+    return t;
+  }
+
+  static int[] setLength(int[] array, int newLength) {
     int oldLength = array.length;
     int[] t = new int[newLength];
     System.arraycopy(array, 0, t, 0, 
@@ -292,7 +310,7 @@ abstract class AtomSetCollectionReader {
     return t;
   }
 
-  float[] setLength(float[] array, int newLength) {
+  static float[] setLength(float[] array, int newLength) {
     int oldLength = array.length;
     float[] t = new float[newLength];
     System.arraycopy(array, 0, t, 0, 

@@ -39,7 +39,6 @@ class GaussianReader extends AtomSetCollectionReader {
   private int firstCoordinateOffset = 3;
   
   private int atomCount  = 0;  // the number of atoms in the last read model
-  private int modelCount = 0;  // the number of models I have  
   // it looks like model numbers really need to start with 1 and not 0 otherwise
   // a single frequency calculation can not go to the first frequency
 
@@ -117,14 +116,14 @@ class GaussianReader extends AtomSetCollectionReader {
     discardLines(reader, 4);
     String line;
     String tokens[];
-    modelCount++;     // reading the next model
+    atomSetCollection.newAtomSet();
     atomCount = 0; // we have no atoms for this model yet
     while ((line = reader.readLine()) != null &&
            !line.startsWith(" --")) {
       tokens = getTokens(line); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
-      atom.modelNumber = modelCount;  // associate that current model number
-      atom.elementNumber = (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
+      atom.elementNumber =
+        (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       int offset = firstCoordinateOffset;
@@ -185,11 +184,9 @@ class GaussianReader extends AtomSetCollectionReader {
     String line, tokens[];
     int nNewModels = 0;           // number of new models to make
     boolean firstTime = true;     // flag for first time through
-    int modelNumber = modelCount; // tracks the first model the frequencies are for
+    // tracks the first model the frequencies are for
+    int modelNumber = atomSetCollection.atomSetCount;
 
-    if (modelNumber < 1)
-      throw (new Exception("Not structure read before frequencies encountered"));
-    
     // get to the first set of frequencies
     while ((line = reader.readLine()) != null &&
            ! line.startsWith(" Frequencies --"))
@@ -207,14 +204,13 @@ class GaussianReader extends AtomSetCollectionReader {
       
       // determine and duplicate the number of models needed to put the vectors on
       if (firstTime) {
-        modelNumber--;          // use the first model to put the vectors on
         nNewModels = nFreq - 1; // so I need to create 1 model less than the # of freqs
         firstTime = false;      // really do this only the first time
       } else {
         nNewModels = nFreq;   // I need to create new models for every frequency
       }
       for (int i = nNewModels; --i >= 0; )
-        duplicateLastModel();
+        atomSetCollection.cloneLastAtomSet();
       int firstModelAtom = atomSetCollection.atomCount - nFreq * atomCount;
       
       // position to start reading the displacement vectors
@@ -232,7 +228,6 @@ class GaussianReader extends AtomSetCollectionReader {
           atom.vectorZ = parseFloat(tokens[offset++]);
         }
       }
-      modelNumber += nFreq;
       discardLines(reader, 2);
     } while ((line = reader.readLine()) != null &&
              (line.startsWith(" Frequencies --"))); // more to be read
@@ -259,11 +254,9 @@ class GaussianReader extends AtomSetCollectionReader {
   // duplicate the last model
   private void duplicateLastModel() {
     Atom[] atoms = atomSetCollection.atoms;
-    modelCount++;  // new count of models is increased
+    atomSetCollection.newAtomSet();
     int atomOffset = atomSetCollection.atomCount - atomCount; // first atom to be duplicated
-    for (int i = atomCount; --i >= 0;) {
-      Atom atomNew = atomSetCollection.newCloneAtom(atoms[atomOffset++]);
-      atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
-    }
+    for (int i = atomCount; --i >= 0; )
+      atomSetCollection.newCloneAtom(atoms[atomOffset++]);
   }
 }

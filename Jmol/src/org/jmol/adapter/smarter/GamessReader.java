@@ -56,6 +56,7 @@ class GamessReader extends AtomSetCollectionReader {
     reader.readLine(); // discard one line
     String line;
     String atomName;
+    atomSetCollection.newAtomSet();
     while ((line = reader.readLine()) != null &&
            (atomName = parseToken(line, 1, 6)) != null) {
       float x = parseFloat(line, 17, 37);
@@ -73,7 +74,7 @@ class GamessReader extends AtomSetCollectionReader {
 
   void readFrequencies(BufferedReader reader) throws Exception {
     int totalFrequencyCount = 0;
-    atomCountInFirstModel = atomSetCollection.atomCount;
+    int atomCountInFirstModel = atomSetCollection.atomCount;
     float[] frequencies = new float[5];
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
@@ -91,7 +92,7 @@ class GamessReader extends AtomSetCollectionReader {
           break;
         ++totalFrequencyCount;
         if (totalFrequencyCount > 1)
-          createNewModel(totalFrequencyCount);
+          atomSetCollection.cloneFirstAtomSet();
       }
       Atom[] atoms = atomSetCollection.atoms;
       discardLinesUntilBlank(reader);
@@ -116,17 +117,5 @@ class GamessReader extends AtomSetCollectionReader {
     for (int i = 0, start = 20; i < count; ++i, start += 12)
       components[i] = parseFloat(line, start, start + 12);
   }
-
-  int atomCountInFirstModel;
-  
-  void createNewModel(int modelNumber) {
-    //    System.out.println("createNewModel(" + modelNumber + ")");
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCountInFirstModel; ++i) {
-      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
-      atomNew.modelNumber = modelNumber;
-    }
-  }
-
 }
 

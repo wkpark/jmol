@@ -105,6 +105,15 @@ public abstract class JmolAdapter {
   public String getAtomSetCollectionName(Object clientFile) { return null; }
 
   /**
+   * Get the properties for this atomSetCollection
+   *
+   * Not yet implemented
+   */
+  public Properties getAtomSetCollectionProperties(Object clientFile) {
+    return null;
+  }
+
+  /**
    * We may need the file header.
    * This is currently only used for the script command 'show pdbheader'
    * Other than for pdb files, the client can return <code>null</code>

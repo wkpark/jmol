@@ -90,13 +90,11 @@ class QchemReader extends AtomSetCollectionReader {
   int frequencyLineSkipCount = 4;
 
   int atomCount;
-  int modelCount;
 
   void readAtoms(BufferedReader reader) throws Exception {
     // we only take the last set of atoms before the frequencies
     atomSetCollection.discardPreviousAtoms();
     atomCount = 0;
-    modelCount = 1;
     discardLines(reader, 2);
     String line;
     while ((line = reader.readLine()) != null &&
@@ -155,7 +153,7 @@ class QchemReader extends AtomSetCollectionReader {
     if (atomCenterNumber <= 0 || atomCenterNumber > atomCount)
       return;
     if (atomCenterNumber == 1 && modelNumber > 1)
-        createNewModel(modelNumber);
+      atomSetCollection.cloneFirstAtomSet();
     
     Atom atom = atomSetCollection.atoms[(modelNumber - 1) * atomCount +
                             atomCenterNumber - 1];
@@ -172,14 +170,4 @@ class QchemReader extends AtomSetCollectionReader {
          ++i)
       atomSetCollection.atoms[i].partialCharge = parseFloat(line, 29, 38);
   }
-
-  void createNewModel(int modelNumber) {
-    modelCount = modelNumber - 1;
-    Atom[] atoms = atomSetCollection.atoms;
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atomNew = atomSetCollection.newCloneAtom(atoms[i]);
-      atomNew.modelNumber = modelNumber;
-    }
-  }
-
 }

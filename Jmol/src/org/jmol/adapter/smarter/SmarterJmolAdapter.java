@@ -86,7 +86,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
     // we need to implement this
     // the current AtomSetCollection does not have support for this
     // but now we need it
-    return -1;
+    return ((AtomSetCollection)clientFile).getAtomSetCount();
+  }
+
+  public int getAtomSetNumber(Object clientFile, int atomSetIndex) {
+    return ((AtomSetCollection)clientFile).getAtomSetNumber(atomSetIndex);
   }
 
   public String getAtomSetName(Object clientFile, int atomSetIndex) {
@@ -151,7 +155,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       atom = atomSetCollection.atoms[iatom++];
       return true;
     }
-    public int getAtomSetNumber() { return atom.modelNumber; }
+    public int getAtomSetNumber() { return atom.atomSetNumber; }
     public Object getUniqueID() { return atom; }
     public String getElementSymbol() {
       if (atom.elementSymbol != null)

@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 
 class Atom implements Cloneable {
   int modelNumber = 1;
+  int atomSetNumber;
   String elementSymbol;
   byte elementNumber = -1;
   String atomName;

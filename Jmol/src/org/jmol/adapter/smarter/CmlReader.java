@@ -70,7 +70,6 @@ class CmlReader extends AtomSetCollectionReader {
     
     ////////////////////////////////////////////////////////////////
 
-    int moleculeCount = 0;
     Atom atom;
     float[] notionalUnitcell;
 
@@ -193,7 +192,8 @@ class CmlReader extends AtomSetCollectionReader {
         "," + qName + "," + atts +  ")");
       /* */
       if ("molecule".equals(localName)) {
-        ++moleculeCount;
+        atomSetCollection.newAtomSet();
+        // FIXME ... CML must have some kind of atomSetName here
         return;
       }
       if ("atom".equals(localName)) {
@@ -226,7 +226,6 @@ class CmlReader extends AtomSetCollectionReader {
         }
         if (! coords3D)
           atom.z = 0;
-        atom.modelNumber = moleculeCount;
         return;
       }
       if ("atomArray".equals(localName)) {
@@ -268,7 +267,6 @@ class CmlReader extends AtomSetCollectionReader {
         }
         for (int j = atomCount; --j >= 0; ) {
           Atom atom = atomArray[j];
-          atom.modelNumber = moleculeCount;
           if (! coords3D)
             atom.z = 0;
         }

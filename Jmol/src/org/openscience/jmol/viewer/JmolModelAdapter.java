@@ -116,42 +116,15 @@ public abstract class JmolModelAdapter {
   public boolean hasPdbRecords(Object clientFile, int frameNumber) {
     return false;
   }
+
   /**
-   * Returns an AtomIterator used to retrieve all the atoms in the file.
-   * This method may not return <code>null</code>.
-   * @see AtomIterator
+   * If hasPdbRecords(clientFile, frameNumber) returns true then structural
+   * PDB records are returned here as an array of strings. 
+   * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
+   * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
-  abstract public AtomIterator getAtomIterator(Object clientFile,
-                                               int frameNumber);
-  /**
-   * Returns a BondIterator. If this method returns <code>null</code> and no
-   * bonds are defined then the JmolViewer will automatically apply its
-   * rebonding code to build covalent bonds between atoms.
-   * @see BondIterator
-   */
-  public BondIterator getCovalentBondIterator(Object clientFile,
-                                              int frameNumber) {
-    return null;
-  }
-  /**
-   * This method is used to return associations between atoms. Associations are
-   * non-covalent bonds between atoms.
-   * This method is provided for convenience of implementation. The client may
-   * choose to return all associatoins as part of getCovalentBondIterator
-   * @see BondIterator
-   */
-  public BondIterator getAssociationBondIterator(Object clientFile,
-                                                 int frameNumber) {
-    return null;
-  }
-  /**
-   * This method returns all vectors which are part of the molecule file.
-   * Vectors are directional and have an arrowhead.
-   * @see LineIterator
-   */
-  public LineIterator getVectorIterator(Object clientFile, int frameNumber) {
-    return null;
-  }
+  abstract public String[] getPdbStructureRecords(Object clientFile, int frameNumber);
+
 
   /**
    * This method returns the parameters that define a crystal unitcell
@@ -173,6 +146,24 @@ public abstract class JmolModelAdapter {
     return null;
   }
 
+  /**
+   * Returns an AtomIterator used to retrieve all the atoms in the file.
+   * This method may not return <code>null</code>.
+   * @see AtomIterator
+   */
+  abstract public AtomIterator getAtomIterator(Object clientFile,
+                                               int frameNumber);
+  /**
+   * Returns a BondIterator. If this method returns <code>null</code> and no
+   * bonds are defined then the JmolViewer will automatically apply its
+   * rebonding code to build bonds between atoms.
+   * @see BondIterator
+   */
+  public BondIterator getBondIterator(Object clientFile,
+                                      int frameNumber) {
+    return null;
+  }
+
   /****************************************************************
    * AtomIterator is used to enumerate all the <code>clientAtom</code>
    * objects in a specified frame. 
@@ -181,36 +172,16 @@ public abstract class JmolModelAdapter {
    ****************************************************************/
   public abstract class AtomIterator {
     public abstract boolean hasNext();
-
     abstract public Object getUniqueID();
-
-    public int getAtomicNumber() {
-      return -1;
-    }
-
-    public String getAtomicSymbol() {
-      return null;
-    }
-
-    public String getAtomTypeName() {
-      return null;
-    }
-
-    public int getAtomicCharge() {
-      return 0;
-    }
-
+    public int getAtomicNumber() { return -1; }
+    public String getAtomicSymbol() { return null; }
+    public String getAtomTypeName() { return null; }
+    public int getAtomicCharge() { return 0; }
     abstract public float getX();
     abstract public float getY();
     abstract public float getZ();
-
-    public String getPdbAtomRecord() {
-      return null;
-    }
-
-    public int getPdbModelNumber(){
-      return -1;
-    }
+    public String getPdbAtomRecord() { return null; }
+    public int getPdbModelNumber(){ return -1; }
   }
 
   /****************************************************************
@@ -221,75 +192,8 @@ public abstract class JmolModelAdapter {
 
   public abstract class BondIterator {
     public abstract boolean hasNext();
-    /**
-     * Note that the moveNext() method does not return a value
-     */
-    public abstract void moveNext();
-    /**
-     * returns the first atom of a bond
-     */
-    public abstract Object getAtom1();
-    /**
-     * returns the second atom of a bond
-     */
-    public abstract Object getAtom2();
-
-    /**
-     * returns the order of the bond. Bond order can be 1, 2, 3,
-     * or a value from the extended bond definition table
-     */
+    public abstract Object getAtomUid1();
+    public abstract Object getAtomUid2();
     public abstract int getOrder();
   }
-
-  /**
-   * returns two endpoints which represent the endpoints of a line.
-   * For vectors, the arrowhead is at Point2
-   */
-  public abstract class LineIterator {
-    public abstract boolean hasNext();
-    /**
-     * Note that the next() method does not return a value
-     */
-    public abstract void moveNext();
-    /**
-     * The start of the line or vector
-     */
-    public abstract float getPoint1X();
-    public abstract float getPoint1Y();
-    public abstract float getPoint1Z();
-    /**
-     * The end of the line or vector. Note that a 'vector' is not really
-     * a 'vector'. It is just a line with an arrowhead. Therefore, Point2
-     * is an absolute position in 3d space
-     */
-    public abstract float getPoint2X();
-    public abstract float getPoint2Y();
-    public abstract float getPoint2Z();
-  }
-  
-  /**
-   * If hasPdbRecords(clientFile, frameNumber) returns true then individual
-   * PDB records for individual <code>clientAtom</code>s are returned here.
-   * The returned String is the exact string of the ATOM or HETATM from the .pdb
-   * file.
-   * @see #hasPdbRecords(Object clientFile, int frameNumber)
-   */
-  abstract public String getPdbAtomRecord(Object clientAtom);
-
-  /**
-   * If hasPdbRecords(clientFile, frameNumber) returns true then the model
-   * number for individual <code>clientAtom</code>s are returned here.
-   * This is necessary because the model number is not part of the pdbRecord.
-   * @see #hasPdbRecords(Object clientFile, int frameNumber)
-   */
-  abstract public int getPdbModelNumber(Object clientAtom);
-
-  /**
-   * If hasPdbRecords(clientFile, frameNumber) returns true then structural
-   * PDB records are returned here as an array of strings. 
-   * The individual strings are exact HELIX, SHEET, and TURN recordsfrom the .pdb file.
-   * @see #hasPdbRecords(Object clientFile, int frameNumber)
-   */
-  abstract public String[] getPdbStructureRecords(Object clientFile, int frameNumber);
-
 }

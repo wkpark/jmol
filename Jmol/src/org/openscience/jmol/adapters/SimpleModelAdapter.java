@@ -151,14 +151,14 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     return clientFile instanceof PdbModel;
   }
 
-  public JmolModelAdapter.AtomIterator
-    getAtomIterator(Object clientFile, int frameNumber) {
-    return new AtomIterator((Model)clientFile);
-  }
-
-  public JmolModelAdapter.BondIterator
-    getCovalentBondIterator(Object clientFile, int frameNumber) {
-    return new BondIterator((Model)clientFile);
+  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+    Model model = (Model)clientFile;
+    if (model.pdbStructureRecordCount == 0)
+      return null;
+    String[] t = new String[model.pdbStructureRecordCount];
+    System.arraycopy(model.pdbStructureRecords, 0, t, 0,
+                     model.pdbStructureRecordCount);
+    return t;
   }
 
   public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
@@ -171,6 +171,16 @@ public class SimpleModelAdapter extends JmolModelAdapter {
 
   public float[] getPdbScaleTranslate(Object clientFile, int frameNumber) {
     return ((Model)clientFile).pdbScaleTranslate;
+  }
+
+  public JmolModelAdapter.AtomIterator
+    getAtomIterator(Object clientFile, int frameNumber) {
+    return new AtomIterator((Model)clientFile);
+  }
+
+  public JmolModelAdapter.BondIterator
+    getCovalentBondIterator(Object clientFile, int frameNumber) {
+    return new BondIterator((Model)clientFile);
   }
 
   /****************************************************************
@@ -206,81 +216,30 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     Atom[] atoms;
     Bond[] bonds;
     int ibond;
+    Bond bond;
 
     BondIterator(Model model) {
       this.model = model;
       atoms = model.atoms;
       bonds = model.bonds;
-      ibond = -1;
+      ibond = 0;
     }
     public boolean hasNext() {
-      return ibond + 1 < model.bondCount;
+      if (ibond >= model.bondCount)
+        return false;
+      bond = bonds[ibond++];
+      return true;
     }
-    public void moveNext() {
-      ++ibond;
+    public Object getAtomUid1() {
+      return atoms[bond.atomIndex1];
     }
-    public Object getAtom1() {
-      return atoms[bonds[ibond].atomIndex1];
-    }
-    public Object getAtom2() {
-      return atoms[bonds[ibond].atomIndex2];
+    public Object getAtomUid2() {
+      return atoms[bond.atomIndex2];
     }
     public int getOrder() {
-      return bonds[ibond].order;
+      return bond.order;
     }
   }
-
-  /****************************************************************
-   * The atom related methods
-   ****************************************************************/
-
-  public int getAtomicNumber(Object clientAtom) {
-    return -1;
-  }
-
-  public int getAtomicCharge(Object clientAtom) {
-    return ((Atom)clientAtom).atomicCharge;
-  }
-  
-  public String getAtomicSymbol(Object clientAtom) {
-    return ((Atom)clientAtom).atomicSymbol;
-  }
-
-  public String getAtomTypeName(Object clientAtom) {
-    return null;
-  }
-
-  public float getAtomX(Object clientAtom) {
-    return ((Atom)clientAtom).x;
-  }
-
-  public float getAtomY(Object clientAtom) {
-    return ((Atom)clientAtom).y;
-  }
-
-  public float getAtomZ(Object clientAtom) {
-    return ((Atom)clientAtom).z;
-  }
-
-  public String getPdbAtomRecord(Object clientAtom){
-    return ((Atom)clientAtom).pdbAtomRecord;
-  }
-
-  public int getPdbModelNumber(Object clientAtom) {
-    Atom atom = (Atom)clientAtom;
-    return (atom.pdbAtomRecord != null) ? atom.pdbModelNumber : 0;
-  }
-
-  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
-    Model model = (Model)clientFile;
-    if (model.pdbStructureRecordCount == 0)
-      return null;
-    String[] t = new String[model.pdbStructureRecordCount];
-    System.arraycopy(model.pdbStructureRecords, 0, t, 0,
-                     model.pdbStructureRecordCount);
-    return t;
-  }
-
 }
 
 class Atom {

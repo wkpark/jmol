@@ -169,17 +169,20 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
   public boolean hasPdbRecords(Object clientFile, int frameNumber) {
     AtomContainer atomContainer = getAtomContainer(clientFile, frameNumber);
     return (atomContainer.getAtomCount() > 0 &&
-            getPdbAtomRecord(atomContainer.getAtomAt(0)) != null);
+            atomContainer.getAtomAt(0).getProperty("pdb.record") != null);
   }
 
-  public JmolModelAdapter.AtomIterator
-    getAtomIterator(Object clientFile, int frameNumber) {
-    return new AtomIterator(getAtomContainer(clientFile, frameNumber));
-  }
-
-  public JmolModelAdapter.BondIterator
-    getCovalentBondIterator(Object clientFile, int frameNumber) {
-    return new CovalentBondIterator(getAtomContainer(clientFile, frameNumber));
+  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
+    ChemFile chemFile = (ChemFile)clientFile;
+    ChemSequence chemSequence = chemFile.getChemSequence(0);
+    ChemModel chemModel = chemSequence.getChemModel(frameNumber);
+    Vector structureVector =
+      (Vector)chemModel.getProperty("pdb.structure.records");
+    if (structureVector == null)
+      return null;
+    String[] t = new String[structureVector.size()];
+    structureVector.copyInto(t);
+    return t;
   }
 
   public float[] getNotionalUnitcell(Object clientFile, int frameNumber) {
@@ -198,6 +201,16 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
         System.err.println("Cannot return notional unit cell params: no Crystal found");
     }
     return null;
+  }
+
+  public JmolModelAdapter.AtomIterator
+    getAtomIterator(Object clientFile, int frameNumber) {
+    return new AtomIterator(getAtomContainer(clientFile, frameNumber));
+  }
+
+  public JmolModelAdapter.BondIterator
+    getBondIterator(Object clientFile, int frameNumber) {
+    return new BondIterator(getAtomContainer(clientFile, frameNumber));
   }
 
   /****************************************************************
@@ -232,7 +245,7 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
 
   }
 
-  class CovalentBondIterator extends JmolModelAdapter.BondIterator {
+  class BondIterator extends JmolModelAdapter.BondIterator {
     
     AtomContainer atomContainer;
     Bond[] bonds;
@@ -240,22 +253,22 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     Bond bond;
     Atom[] bondedAtoms;
 
-    CovalentBondIterator(AtomContainer atomContainer) {
+    BondIterator(AtomContainer atomContainer) {
       this.atomContainer = atomContainer;
       bonds = atomContainer.getBonds();
       ibond = 0;
     }
     public boolean hasNext() {
-      return (ibond < bonds.length);
-    }
-    public void moveNext() {
+      if (ibond >= bonds.length)
+        return false;
       bond = bonds[ibond++];
       bondedAtoms = bond.getAtoms();
+      return true;
     }
-    public Object getAtom1() {
+    public Object getAtomUid1() {
       return (bondedAtoms.length == 2) ? bondedAtoms[0] : null;
     }
-    public Object getAtom2() {
+    public Object getAtomUid2() {
       return (bondedAtoms.length == 2) ? bondedAtoms[1] : null;
     }
     public int getOrder() {
@@ -263,102 +276,4 @@ public class CdkJmolModelAdapter extends JmolModelAdapter {
     }
   }
 
-  /****************************************************************
-   * The atom related methods
-   ****************************************************************/
-
-  public int getAtomicNumber(Object clientAtom) {
-    return ((Atom)clientAtom).getAtomicNumber();
-  }
-
-  public int getAtomicCharge(Object clientAtom) {
-    return 0;
-  }
-  
-  public String getAtomicSymbol(Object clientAtom) {
-    return ((Atom)clientAtom).getSymbol();
-  }
-
-  public String getAtomTypeName(Object clientAtom) {
-    return ((Atom)clientAtom).getAtomTypeName();
-  }
-
-  public float getAtomX(Object clientAtom) {
-    return (float)((Atom)clientAtom).getX3D();
-  }
-  public float getAtomY(Object clientAtom) {
-    return (float)((Atom)clientAtom).getY3D();
-  }
-  public float getAtomZ(Object clientAtom) {
-    return (float)((Atom)clientAtom).getZ3D();
-  }
-
-  public String getPdbAtomRecord(Object clientAtom){
-    String pdbRecord = (String)((Atom)clientAtom).getProperty("pdb.record");
-    return pdbRecord;
-  }
-
-  public int getPdbModelNumber(Object clientAtom) {
-    return 0;
-  }
-
-  public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
-    ChemFile chemFile = (ChemFile)clientFile;
-    ChemSequence chemSequence = chemFile.getChemSequence(0);
-    ChemModel chemModel = chemSequence.getChemModel(frameNumber);
-    Vector structureVector =
-      (Vector)chemModel.getProperty("pdb.structure.records");
-    if (structureVector == null)
-      return null;
-    String[] t = new String[structureVector.size()];
-    structureVector.copyInto(t);
-    return t;
-  }
-
-  class CrystalCellIterator extends JmolModelAdapter.LineIterator {
-    Crystal crystal;
-    Point3d point1, point2;
-    int ibox;
-      
-    CrystalCellIterator(Crystal crystal) {
-      this.crystal = crystal;
-      ibox=0;
-    }
-
-    public boolean hasNext() {
-      return (ibox < 3);
-    }
-
-    public void moveNext() {
-      point1 = new Point3d(0.0, 0.0, 0.0);
-      double[] axis = {0.0, 0.0, 0.0};
-      if (ibox == 0) {
-        axis = crystal.getA();
-      } else if (ibox == 1) {
-        axis = crystal.getB();
-      } else if (ibox == 2) {
-        axis = crystal.getC();
-      }
-      point2 = new Point3d(axis[0], axis[1], axis[2]);
-      ibox++;
-    }
-    public float getPoint1X() {
-      return (float)point1.x;
-    }
-    public float getPoint1Y() {
-      return (float)point1.y;
-    }
-    public float getPoint1Z() {
-      return (float)point1.z;
-    }
-    public float getPoint2X() {
-      return (float)point2.x;
-    }
-    public float getPoint2Y() {
-      return (float)point2.y;
-    }
-    public float getPoint2Z() {
-      return (float)point2.z;
-    }
-  }
 }

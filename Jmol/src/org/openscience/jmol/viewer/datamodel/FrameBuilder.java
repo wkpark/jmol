@@ -77,43 +77,13 @@ public class FrameBuilder {
     }
 
     {
-      JmolModelAdapter.BondIterator iterCovalent =
-        adapter.getCovalentBondIterator(clientFile, frameNumber);
-      if (iterCovalent != null)
-        while (iterCovalent.hasNext()) {
-          iterCovalent.moveNext();
-          frame.bondAtoms(iterCovalent.getAtom1(),
-                               iterCovalent.getAtom2(),
-                               iterCovalent.getOrder());
-        }
-    }
-
-    {
-      JmolModelAdapter.BondIterator iterAssoc =
-        adapter.getAssociationBondIterator(clientFile, frameNumber);
-      if (iterAssoc != null)
-        while (iterAssoc.hasNext()) {
-          iterAssoc.moveNext();
-          frame.bondAtoms(iterAssoc.getAtom1(),
-                          iterAssoc.getAtom2(),
-                          iterAssoc.getOrder());
-        }
-    }
-
-    {
-      JmolModelAdapter.LineIterator iterVector =
-        adapter.getVectorIterator(clientFile, frameNumber);
-      if (iterVector != null)
-        while (iterVector.hasNext()) {
-          iterVector.moveNext();
-	  Point3f point1 = new Point3f(iterVector.getPoint1X(),
-				       iterVector.getPoint1Y(),
-				       iterVector.getPoint1Z());
-	  Point3f point2 = new Point3f(iterVector.getPoint2X(),
-				       iterVector.getPoint2Y(),
-				       iterVector.getPoint2Z());
-          frame.addLineShape(new Line(point1, point2, true));
-        }
+      JmolModelAdapter.BondIterator iterBond =
+        adapter.getBondIterator(clientFile, frameNumber);
+      if (iterBond != null)
+        while (iterBond.hasNext())
+          frame.bondAtoms(iterBond.getAtomUid1(),
+                               iterBond.getAtomUid2(),
+                               iterBond.getOrder());
     }
 
     if (hasPdbRecords) {

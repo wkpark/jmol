@@ -60,4 +60,8 @@ org/openscience/jmol/AtomShape.java
 org/openscience/jmol/AtomVectorShape.java
 org/openscience/jmol/AtomLabelShape.java
 org/openscience/jmol/BondShape.java
+org/openscience/jmol/DefaultChemFileReader.java
+org/openscience/jmol/ChargeColorProfile.java
+org/openscience/jmol/ColorProfile.java
+org/openscience/jmol/DefaultColorProfile.java
 

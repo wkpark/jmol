@@ -1395,6 +1395,15 @@
   <fah_proj number="879" name="p879_p53dimer879" file="y"
     server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
     credit="136" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="880" name="p880_p53dimer880"
+    server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="881" name="p881_p53dimer881"
+    server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
+  <fah_proj number="882" name="p882_p53dimer882"
+    server="171.65.103.157" atoms="12247" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="ltchong"/>
 
   <!-- Projects 900 to 999 -->
   <fah_proj number="901"
@@ -2559,6 +2568,12 @@
   <fah_proj number="1803" name="p1803_Collagen_POG10_refolding" file="y"
     server="171.65.103.158" atoms="1116" preferred="14" deadline="21"
     credit="69" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1804" name="p1804_Collagen_PPG10_refolding_gamma" file="y"
+    server="171.65.103.158" atoms="1086" preferred="24" deadline="35"
+    credit="123" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1805" name="p1805_Collagen_POG10_refolding_gamma"
+    server="171.65.103.158" atoms="1116" preferred="26" deadline="37"
+    credit="130" frames="100" code="A" contact="spark7"/>
 
   <!-- Projects 1900 to 1999 -->
   <fah_proj number="1900" name="p1900_32_water_molecules" file="y"

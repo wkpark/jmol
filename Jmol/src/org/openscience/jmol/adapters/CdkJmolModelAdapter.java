@@ -49,6 +49,8 @@ import org.openscience.cdk.renderer.color.AtomColorer;
 import org.openscience.cdk.renderer.color.PartialAtomicChargeColors;
 
 import org.openscience.cdk.tools.AtomTypeFactory;
+import org.openscience.cdk.tools.SetOfMoleculesManipulator;
+import org.openscience.cdk.tools.ChemFileManipulator;
 
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -100,20 +102,20 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
       return "unknown error reading file";
     try {
       AtomTypeFactory factory = AtomTypeFactory.getInstance("jmol_atomtypes.txt");
-      AtomContainer atomContainer = getAtomContainer(chemFile, 0);
+      AtomContainer atomContainer = ChemFileManipulator.getAllInOneContainer(chemFile);
       Atom[] atoms = atomContainer.getAtoms();
       for (int i=0; i<atoms.length; i++) {
-        factory.configure(atoms[i]);
+        try {
+          factory.configure(atoms[i]);
+        } catch (CDKException exception) {
+          System.out.println("Could not configure atom: " + atoms[i]);
+        }
       }
     } catch (ClassNotFoundException exception) {
       // could not configure atoms... what to do?
       System.err.println(exception.toString());
       exception.printStackTrace();
     } catch (IOException exception) {
-      // could not configure atoms... what to do?
-      System.err.println(exception.toString());
-      exception.printStackTrace();
-    } catch (CDKException exception) {
       // could not configure atoms... what to do?
       System.err.println(exception.toString());
       exception.printStackTrace();
@@ -164,7 +166,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
     Crystal crystal = chemModel.getCrystal();
     if (setOfMolecules != null) {
-        Molecule molecule = setOfMolecules.getMolecule(0);
+        AtomContainer molecule = SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules);
         return molecule;
     } else if (crystal != null) {
         return crystal;

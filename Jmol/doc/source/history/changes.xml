@@ -21,6 +21,10 @@
   <change contributor="ST">
     Added Drag-and-Drop to the application for JVM 1.5 and better.
   </change>
+  <change contributor="EW">
+    Added the DADMLBrowser plugin allowing retrieving chemical information from
+    the internet by queries on indices and URIs like dadml://any/pdbid?1CRN.
+  </change>
 </changes>
 
 <changes version="jmol-10">

@@ -33,68 +33,68 @@ import javax.swing.ImageIcon;
 
 class JmolResourceHandler {
 
-	private static ResourceBundle rb;
-	private String baseKey;
+  private static ResourceBundle rb;
+  private String baseKey;
 
-	public static void initialize(String resources) {
-		JmolResourceHandler.rb = ResourceBundle.getBundle(resources);
-	}
+  public static void initialize(String resources) {
+    JmolResourceHandler.rb = ResourceBundle.getBundle(resources);
+  }
 
-	JmolResourceHandler(String string) {
-		baseKey = string;
-	}
+  JmolResourceHandler(String string) {
+    baseKey = string;
+  }
 
-	synchronized ImageIcon getIcon(String key) {
+  synchronized ImageIcon getIcon(String key) {
 
-		String iname = null;	// Image name
-		String resourceName = null;
-		try {
-			resourceName = rb.getString(getQualifiedKey(key));
-			iname = "org/openscience/jmol/images/" + resourceName;
-		} catch (MissingResourceException e) {
+    String iname = null;    // Image name
+    String resourceName = null;
+    try {
+      resourceName = rb.getString(getQualifiedKey(key));
+      iname = "org/openscience/jmol/images/" + resourceName;
+    } catch (MissingResourceException e) {
 
-			// Ignore
-		}
-		if (iname != null) {
-			URL imageUrl = ClassLoader.getSystemResource(iname);
-			if (imageUrl != null) {
-				return new ImageIcon(imageUrl);
-			} else {
-				System.err.println("Warning: unable to load " + resourceName
-						+ " for icon " + key + ".");
-			}
-		}
-		return null;
-	}
+      // Ignore
+    }
+    if (iname != null) {
+      URL imageUrl = ClassLoader.getSystemResource(iname);
+      if (imageUrl != null) {
+        return new ImageIcon(imageUrl);
+      } else {
+        System.err.println("Warning: unable to load " + resourceName
+                + " for icon " + key + ".");
+      }
+    }
+    return null;
+  }
 
-	synchronized String getString(String string) {
+  synchronized String getString(String string) {
 
-		String ret = null;
-		try {
-			ret = rb.getString(getQualifiedKey(string));
-		} catch (MissingResourceException e) {
-		}
-		if (ret != null) {
-			return ret;
-		}
-		return null;
-	}
+    String ret = null;
+    try {
+      ret = rb.getString(getQualifiedKey(string));
+    } catch (MissingResourceException e) {
+    }
+    if (ret != null) {
+      return ret;
+    }
+    return null;
+  }
 
-	synchronized Object getObject(String string) {
+  synchronized Object getObject(String string) {
 
-		Object o = null;
-		try {
-			o = rb.getObject(getQualifiedKey(string));
-		} catch (MissingResourceException e) {
-		}
-		if (o != null) {
-			return o;
-		}
-		return null;
-	}
+    Object o = null;
+    try {
+      o = rb.getObject(getQualifiedKey(string));
+    } catch (MissingResourceException e) {
+    }
+    if (o != null) {
+      return o;
+    }
+    return null;
+  }
 
-	synchronized String getQualifiedKey(String string) {
-		return baseKey + "." + string;
-	}
+  synchronized String getQualifiedKey(String string) {
+    return baseKey + "." + string;
+  }
 
 }

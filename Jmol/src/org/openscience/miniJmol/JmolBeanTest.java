@@ -26,71 +26,71 @@ import java.awt.event.WindowEvent;
 
 public class JmolBeanTest {
 
-	public static void main(String[] args) {
+  public static void main(String[] args) {
 
-		JFrame myFrame = new JFrame();
-		JmolSimpleBean myXMLThing1 = new JmolSimpleBean();
-		JmolSimpleBean myXMLThing2 = new JmolSimpleBean();
-		JPanel p2 = new JPanel(new BorderLayout());
-		p2.add(myXMLThing2, "Center");
-		p2.add(javax.swing.Box.createVerticalStrut(400), "East");
-		p2.add(javax.swing.Box.createHorizontalStrut(400), "North");
-		myFrame.getContentPane().setLayout(new BorderLayout());
-		myFrame.getContentPane().add(myXMLThing1, "Center");
-		myFrame.getContentPane()
-				.add(javax.swing.Box.createHorizontalStrut(400), "North");
-		myFrame.getContentPane().add(p2, "East");
-		try {
-			java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
-			ChemFileReader cfr1 = ReaderFactory.createReader(r1);
-			myXMLThing1.setAtomPropertiesFromFile("AtomTypes");
-			myXMLThing1.setModel(cfr1.read(new NoStatus(), true));
+    JFrame myFrame = new JFrame();
+    JmolSimpleBean myXMLThing1 = new JmolSimpleBean();
+    JmolSimpleBean myXMLThing2 = new JmolSimpleBean();
+    JPanel p2 = new JPanel(new BorderLayout());
+    p2.add(myXMLThing2, "Center");
+    p2.add(javax.swing.Box.createVerticalStrut(400), "East");
+    p2.add(javax.swing.Box.createHorizontalStrut(400), "North");
+    myFrame.getContentPane().setLayout(new BorderLayout());
+    myFrame.getContentPane().add(myXMLThing1, "Center");
+    myFrame.getContentPane().add(javax.swing.Box.createHorizontalStrut(400),
+            "North");
+    myFrame.getContentPane().add(p2, "East");
+    try {
+      java.io.Reader r1 = new java.io.FileReader("caffeine.xyz");
+      ChemFileReader cfr1 = ReaderFactory.createReader(r1);
+      myXMLThing1.setAtomPropertiesFromFile("AtomTypes");
+      myXMLThing1.setModel(cfr1.read(new NoStatus(), true));
 
-			java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
-			ChemFileReader cfr2 = ReaderFactory.createReader(r2);
-			myXMLThing2.setAtomPropertiesFromFile("AtomTypes");
-			myXMLThing2.setModel(cfr2.read(new NoStatus(), true));
-		} catch (java.io.FileNotFoundException e) {
-			System.out.println("File not found: " + e);
-		} catch (java.io.IOException e) {
-			System.out.println("IOException: " + e);
-		}
-		myFrame.pack();
-		myFrame.show();
-	}
+      java.io.Reader r2 = new java.io.FileReader("methanol1.cml");
+      ChemFileReader cfr2 = ReaderFactory.createReader(r2);
+      myXMLThing2.setAtomPropertiesFromFile("AtomTypes");
+      myXMLThing2.setModel(cfr2.read(new NoStatus(), true));
+    } catch (java.io.FileNotFoundException e) {
+      System.out.println("File not found: " + e);
+    } catch (java.io.IOException e) {
+      System.out.println("IOException: " + e);
+    }
+    myFrame.pack();
+    myFrame.show();
+  }
 
 
-	class Windowa implements java.awt.event.WindowListener {
+  class Windowa implements java.awt.event.WindowListener {
 
-		public void windowClosing(java.awt.event.WindowEvent e) {
-			System.exit(0);
-		}
+    public void windowClosing(java.awt.event.WindowEvent e) {
+      System.exit(0);
+    }
 
-		public void windowOpened(WindowEvent e) {
-		}
+    public void windowOpened(WindowEvent e) {
+    }
 
-		public void windowClosed(WindowEvent e) {
-		}
+    public void windowClosed(WindowEvent e) {
+    }
 
-		public void windowIconified(WindowEvent e) {
-		}
+    public void windowIconified(WindowEvent e) {
+    }
 
-		public void windowDeiconified(WindowEvent e) {
-		}
+    public void windowDeiconified(WindowEvent e) {
+    }
 
-		public void windowActivated(WindowEvent e) {
-		}
+    public void windowActivated(WindowEvent e) {
+    }
 
-		public void windowDeactivated(WindowEvent e) {
-		}
-	}
+    public void windowDeactivated(WindowEvent e) {
+    }
+  }
 
-	public java.awt.Dimension getMinimumSize() {
-		return new java.awt.Dimension(200, 200);
-	}
+  public java.awt.Dimension getMinimumSize() {
+    return new java.awt.Dimension(200, 200);
+  }
 }
 
 class NoStatus implements StatusDisplay {
-	public void setStatusMessage(String statusMessage) {
-	}
+  public void setStatusMessage(String statusMessage) {
+  }
 }

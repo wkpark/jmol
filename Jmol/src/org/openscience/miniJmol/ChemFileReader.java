@@ -29,12 +29,12 @@ import java.io.IOException;
  */
 public interface ChemFileReader {
 
-	/**
-	 * Read the data.
-	 *
-	 * @return a ChemFile with the data.
-	 * @exception IOException if an I/O error occurs
-	 */
-	ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
-			throws IOException;
+  /**
+   * Read the data.
+   *
+   * @return a ChemFile with the data.
+   * @exception IOException if an I/O error occurs
+   */
+  ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
+          throws IOException;
 }

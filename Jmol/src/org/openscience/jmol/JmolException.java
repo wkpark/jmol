@@ -21,16 +21,16 @@ package org.openscience.jmol;
 
 public class JmolException extends Exception {
 
-	private String routine;
+  private String routine;
 
-	public JmolException(String routine, String message) {
-		super(message);
+  public JmolException(String routine, String message) {
+    super(message);
 
-		// System.err.println(routine + " " + message);
-		this.routine = routine;
-	}
+    // System.err.println(routine + " " + message);
+    this.routine = routine;
+  }
 
-	public String getRoutine() {
-		return routine;
-	}
+  public String getRoutine() {
+    return routine;
+  }
 }

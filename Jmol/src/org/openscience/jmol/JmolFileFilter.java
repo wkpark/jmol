@@ -23,48 +23,48 @@ import java.io.File;
 
 public class JmolFileFilter extends javax.swing.filechooser.FileFilter {
 
-	private String endMask = ".";
-	private String name = "";
-	private boolean acceptNoDots = false;
+  private String endMask = ".";
+  private String name = "";
+  private boolean acceptNoDots = false;
 
-	/**Creates a filter which will accept only files ending in
-	 * mask. If acceptNoDot is true then files without an extension
-	 * are also accepted.
-	 * @param mask String in which accepted files will end
-	 * @param typeName Name of this type and colon, eg "Xmol", use null none for none
-	 * @param acceptNoDot If true then files without dots (eg Unix files) will be accepted.
-	 **/
-	public JmolFileFilter(String mask, String typeName, boolean acceptNoDot) {
+  /**Creates a filter which will accept only files ending in
+   * mask. If acceptNoDot is true then files without an extension
+   * are also accepted.
+   * @param mask String in which accepted files will end
+   * @param typeName Name of this type and colon, eg "Xmol", use null none for none
+   * @param acceptNoDot If true then files without dots (eg Unix files) will be accepted.
+   **/
+  public JmolFileFilter(String mask, String typeName, boolean acceptNoDot) {
 
-		endMask = mask.toLowerCase();
-		if (typeName != null) {
-			name = typeName + " (" + "*" + endMask + ")";
-		} else {
-			name = "*" + endMask;
-		}
-		acceptNoDots = acceptNoDot;
-	}
+    endMask = mask.toLowerCase();
+    if (typeName != null) {
+      name = typeName + " (" + "*" + endMask + ")";
+    } else {
+      name = "*" + endMask;
+    }
+    acceptNoDots = acceptNoDot;
+  }
 
-	/**Overrides accept() in
-	 * javax.swing.filechooser.FileFilter. Always accepts
-	 * directories.
-	 **/
-	public boolean accept(File f) {
+  /**Overrides accept() in
+   * javax.swing.filechooser.FileFilter. Always accepts
+   * directories.
+   **/
+  public boolean accept(File f) {
 
-		String fname = f.getName();
-		if (f.isDirectory()) {
-			return true;
-		} else if (fname.indexOf(".") == -1) {
-			return acceptNoDots;
-		} else {
-			return (fname.toLowerCase().endsWith(endMask));
-		}
-	}
+    String fname = f.getName();
+    if (f.isDirectory()) {
+      return true;
+    } else if (fname.indexOf(".") == -1) {
+      return acceptNoDots;
+    } else {
+      return (fname.toLowerCase().endsWith(endMask));
+    }
+  }
 
-	/**Overrides getDescription() in
-	 *  javax.swing.filechooser.FileFilter. Returns the current
-	 *  mask.**/
-	public String getDescription() {
-		return (name);
-	}
+  /**Overrides getDescription() in
+   *  javax.swing.filechooser.FileFilter. Returns the current
+   *  mask.**/
+  public String getDescription() {
+    return (name);
+  }
 }

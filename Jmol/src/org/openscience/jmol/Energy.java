@@ -24,13 +24,13 @@ package org.openscience.jmol;
  */
 public class Energy extends PhysicalProperty {
 
-	/**
-	 * Constructor for energy
-	 * @param c The energy of a frame
-	 */
-	public Energy(double e) {
-		super("Energy", new Double(e));
-		System.out.println("New ENERGY set!!!!!!!!!!!!!!!!!!!!!!");
-	}
+  /**
+   * Constructor for energy
+   * @param c The energy of a frame
+   */
+  public Energy(double e) {
+    super("Energy", new Double(e));
+    System.out.println("New ENERGY set!!!!!!!!!!!!!!!!!!!!!!");
+  }
 
 }

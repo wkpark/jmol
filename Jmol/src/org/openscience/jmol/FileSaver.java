@@ -23,46 +23,45 @@ import java.io.*;
 
 public abstract class FileSaver {
 
-	protected OutputStream out;
+  protected OutputStream out;
 
-	private ChemFile cf;
+  private ChemFile cf;
 
-	public FileSaver(ChemFile cf, OutputStream out) throws IOException {
-		this.cf = cf;
-		this.out = out;
-	}
+  public FileSaver(ChemFile cf, OutputStream out) throws IOException {
+    this.cf = cf;
+    this.out = out;
+  }
 
-	public synchronized void writeFile() throws IOException {
+  public synchronized void writeFile() throws IOException {
 
-		BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out),
-							   1024);
-		writeFileStart(cf, w);
-		int nframes = cf.nFrames();
-		try {
-			for (int i = 0; i < nframes; i++) {
-				ChemFrame cfr = cf.getFrame(i);
-				writeFrame(cfr, w);
-			}
-		} catch (IOException e) {
-			throw e;
-		}
-		writeFileEnd(cf, w);
-		w.flush();
-		w.close();
-		out.flush();
-		out.close();
-	}
+    BufferedWriter w = new BufferedWriter(new OutputStreamWriter(out), 1024);
+    writeFileStart(cf, w);
+    int nframes = cf.nFrames();
+    try {
+      for (int i = 0; i < nframes; i++) {
+        ChemFrame cfr = cf.getFrame(i);
+        writeFrame(cfr, w);
+      }
+    } catch (IOException e) {
+      throw e;
+    }
+    writeFileEnd(cf, w);
+    w.flush();
+    w.close();
+    out.flush();
+    out.close();
+  }
 
-	// Methods that subclasses implement.
-	// All of the work is done in writeFrame.  
-	abstract void writeFrame(ChemFrame cfr, BufferedWriter w)
-			throws IOException;
+  // Methods that subclasses implement.
+  // All of the work is done in writeFrame.  
+  abstract void writeFrame(ChemFrame cfr, BufferedWriter w)
+          throws IOException;
 
-	// Here in case we need to write preamble material before all frames.
-	abstract void writeFileStart(ChemFile cf, BufferedWriter w)
-			throws IOException;
+  // Here in case we need to write preamble material before all frames.
+  abstract void writeFileStart(ChemFile cf, BufferedWriter w)
+          throws IOException;
 
-	// Here in case we need to write postamble material after all frames.
-	abstract void writeFileEnd(ChemFile cf, BufferedWriter w)
-			throws IOException;
+  // Here in case we need to write postamble material after all frames.
+  abstract void writeFileEnd(ChemFile cf, BufferedWriter w)
+          throws IOException;
 }

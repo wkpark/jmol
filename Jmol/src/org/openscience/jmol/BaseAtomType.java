@@ -34,327 +34,326 @@ import java.util.Enumeration;
  */
 public class BaseAtomType {
 
-	/**
-	 * Gets the BaseAtomType corresponding to the given name and sets
-	 * its values to the parameters.
-	 *
-	 * @param name the name of this atom type (e.g. CA for alpha carbon)
-	 * @param root the root of this atom type (e.g. C for alpha carbon)
-	 * @param atomicNumber the atomic number (usually the number of
-	 *        protons of the root)
-	 * @param mass the atomic mass
-	 * @param vdwRadius the van der Waals radius (helps determine drawing size)
-	 * @param covalentRadius the covalent radius (helps determine bonding)
-	 * @param color the color for drawing
-	 * @returns the atom type corresponding to the name.
-	 */
-	public static BaseAtomType get(String name, String root,
-			int atomicNumber, double mass, double vdwRadius,
-				double covalentRadius, Color color) {
-		BaseAtomType at = get(name);
-		at.set(root, atomicNumber, mass, vdwRadius, covalentRadius, color);
-		return at;
-	}
+  /**
+   * Gets the BaseAtomType corresponding to the given name and sets
+   * its values to the parameters.
+   *
+   * @param name the name of this atom type (e.g. CA for alpha carbon)
+   * @param root the root of this atom type (e.g. C for alpha carbon)
+   * @param atomicNumber the atomic number (usually the number of
+   *        protons of the root)
+   * @param mass the atomic mass
+   * @param vdwRadius the van der Waals radius (helps determine drawing size)
+   * @param covalentRadius the covalent radius (helps determine bonding)
+   * @param color the color for drawing
+   * @returns the atom type corresponding to the name.
+   */
+  public static BaseAtomType get(String name, String root, int atomicNumber,
+          double mass, double vdwRadius, double covalentRadius, Color color) {
+    BaseAtomType at = get(name);
+    at.set(root, atomicNumber, mass, vdwRadius, covalentRadius, color);
+    return at;
+  }
 
-	/**
-	 * Returns the first occurence of an AtomType with the given
-	 * atomic number.
-	 *
-	 * @param atomicNumber  atomic number of the atom type to find.
-	 * @returns the first atom type with atomic number matching
-	 *          parameter, or null if not found.
-	 */
-	public static BaseAtomType get(int atomicNumber) {
+  /**
+   * Returns the first occurence of an AtomType with the given
+   * atomic number.
+   *
+   * @param atomicNumber  atomic number of the atom type to find.
+   * @returns the first atom type with atomic number matching
+   *          parameter, or null if not found.
+   */
+  public static BaseAtomType get(int atomicNumber) {
 
-		Enumeration iter = typePool.elements();
-		while (iter.hasMoreElements()) {
-			BaseAtomType at = (BaseAtomType) iter.nextElement();
-			if (atomicNumber == at.getAtomicNumber()) {
-				BaseAtomType atr = get(at.getRoot());
-				return atr;
-			}
-		}
-		return null;
-	}
+    Enumeration iter = typePool.elements();
+    while (iter.hasMoreElements()) {
+      BaseAtomType at = (BaseAtomType) iter.nextElement();
+      if (atomicNumber == at.getAtomicNumber()) {
+        BaseAtomType atr = get(at.getRoot());
+        return atr;
+      }
+    }
+    return null;
+  }
 
-	/**
-	 * Returns the BaseAtomType corresponding to the name given.
-	 * If a corresponding atom type does not exist, one will be created
-	 * with default values.
-	 *
-	 * @param name the name of this atom type (e.g. CA for alpha carbon)
-	 * @returns the atom type corresponding to the name.
-	 */
-	public static BaseAtomType get(String name) {
+  /**
+   * Returns the BaseAtomType corresponding to the name given.
+   * If a corresponding atom type does not exist, one will be created
+   * with default values.
+   *
+   * @param name the name of this atom type (e.g. CA for alpha carbon)
+   * @returns the atom type corresponding to the name.
+   */
+  public static BaseAtomType get(String name) {
 
-		if (exists(name)) {
-			return (BaseAtomType) typePool.get(name);
-		}
-		BaseAtomType at = new BaseAtomType(name);
-		typePool.put(name, at);
-		return at;
-	}
+    if (exists(name)) {
+      return (BaseAtomType) typePool.get(name);
+    }
+    BaseAtomType at = new BaseAtomType(name);
+    typePool.put(name, at);
+    return at;
+  }
 
-	/**
-	 * Returns true if the BaseAtomType with the name given exists.
-	 *
-	 * @param name the name of this atom type (e.g. CA for alpha carbon).
-	 * @returns true if the atom type exists.
-	 */
-	public static boolean exists(String name) {
-		return typePool.containsKey(name);
-	}
+  /**
+   * Returns true if the BaseAtomType with the name given exists.
+   *
+   * @param name the name of this atom type (e.g. CA for alpha carbon).
+   * @returns true if the atom type exists.
+   */
+  public static boolean exists(String name) {
+    return typePool.containsKey(name);
+  }
 
-	/**
-	 * Creates an atom type with the given name.
-	 *
-	 * @param name the name of this atom type (e.g. CA for alpha carbon)
-	 */
-	private BaseAtomType(String name) {
-		this.name = name;
-	}
+  /**
+   * Creates an atom type with the given name.
+   *
+   * @param name the name of this atom type (e.g. CA for alpha carbon)
+   */
+  private BaseAtomType(String name) {
+    this.name = name;
+  }
 
-	/**
-	 * Sets the values of this atom type.
-	 *
-	 * @param root the root of this atom type (e.g. C for alpha carbon)
-	 * @param atomicNumber the atomic number (usually the number of protons of the root)
-	 * @param mass the atomic mass
-	 * @param vdwRadius the van der Waals radius (helps determine drawing size)
-	 * @param covalentRadius the covalent radius (helps determine bonding)
-	 * @param color the color for drawing
-	 */
-	public void set(String root, int atomicNumber, double mass,
-			double vdwRadius, double covalentRadius, Color color) {
+  /**
+   * Sets the values of this atom type.
+   *
+   * @param root the root of this atom type (e.g. C for alpha carbon)
+   * @param atomicNumber the atomic number (usually the number of protons of the root)
+   * @param mass the atomic mass
+   * @param vdwRadius the van der Waals radius (helps determine drawing size)
+   * @param covalentRadius the covalent radius (helps determine bonding)
+   * @param color the color for drawing
+   */
+  public void set(String root, int atomicNumber, double mass,
+          double vdwRadius, double covalentRadius, Color color) {
 
-		this.root = root;
-		this.atomicNumber = atomicNumber;
-		this.mass = mass;
-		this.vdwRadius = vdwRadius;
-		this.covalentRadius = covalentRadius;
-		this.color = color;
-	}
+    this.root = root;
+    this.atomicNumber = atomicNumber;
+    this.mass = mass;
+    this.vdwRadius = vdwRadius;
+    this.covalentRadius = covalentRadius;
+    this.color = color;
+  }
 
-	/**
-	 * Converts the string into the BaseAtomType.
-	 *
-	 * @param s1 the string to be converted to an BaseAtomType
-	 */
-	public static BaseAtomType parse(String s1) {
+  /**
+   * Converts the string into the BaseAtomType.
+   *
+   * @param s1 the string to be converted to an BaseAtomType
+   */
+  public static BaseAtomType parse(String s1) {
 
-		StringTokenizer st1 = new StringTokenizer(s1, "\t ,;");
+    StringTokenizer st1 = new StringTokenizer(s1, "\t ,;");
 
-		String name = st1.nextToken();
-		BaseAtomType at = get(name);
-		at.root = st1.nextToken();
-		at.atomicNumber = Integer.parseInt(st1.nextToken());
-		at.mass = Double.valueOf(st1.nextToken()).doubleValue();
-		at.vdwRadius = Double.valueOf(st1.nextToken()).doubleValue();
-		at.covalentRadius = Double.valueOf(st1.nextToken()).doubleValue();
-		at.color = new Color(Integer.parseInt(st1.nextToken()),
-				Integer.parseInt(st1.nextToken()),
-					Integer.parseInt(st1.nextToken()));
-		return at;
-	}
+    String name = st1.nextToken();
+    BaseAtomType at = get(name);
+    at.root = st1.nextToken();
+    at.atomicNumber = Integer.parseInt(st1.nextToken());
+    at.mass = Double.valueOf(st1.nextToken()).doubleValue();
+    at.vdwRadius = Double.valueOf(st1.nextToken()).doubleValue();
+    at.covalentRadius = Double.valueOf(st1.nextToken()).doubleValue();
+    at.color = new Color(Integer.parseInt(st1.nextToken()),
+            Integer.parseInt(st1.nextToken()),
+              Integer.parseInt(st1.nextToken()));
+    return at;
+  }
 
-	/**
-	 * Returns the name.
-	 */
-	public String getName() {
-		return name;
-	}
+  /**
+   * Returns the name.
+   */
+  public String getName() {
+    return name;
+  }
 
-	/**
-	 * Sets the name.
-	 *
-	 * @param n the Name
-	 */
-	public void setName(String n) {
-		this.name = n;
-	}
+  /**
+   * Sets the name.
+   *
+   * @param n the Name
+   */
+  public void setName(String n) {
+    this.name = n;
+  }
 
-	/**
-	 * Returns the root.
-	 */
-	public String getRoot() {
-		return root;
-	}
+  /**
+   * Returns the root.
+   */
+  public String getRoot() {
+    return root;
+  }
 
-	/**
-	 * Sets the root.
-	 *
-	 * @param r the root
-	 */
-	public void setRoot(String r) {
-		this.root = r;
-	}
+  /**
+   * Sets the root.
+   *
+   * @param r the root
+   */
+  public void setRoot(String r) {
+    this.root = r;
+  }
 
-	/**
-	 * Returns the atomic number.
-	 */
-	public int getAtomicNumber() {
-		return atomicNumber;
-	}
+  /**
+   * Returns the atomic number.
+   */
+  public int getAtomicNumber() {
+    return atomicNumber;
+  }
 
-	/**
-	 * Sets the atomic number.
-	 *
-	 * @param an the atomicNumber
-	 */
-	public void setAtomicNumber(int an) {
-		this.atomicNumber = an;
-	}
+  /**
+   * Sets the atomic number.
+   *
+   * @param an the atomicNumber
+   */
+  public void setAtomicNumber(int an) {
+    this.atomicNumber = an;
+  }
 
-	/**
-	 * Returns the mass.
-	 */
-	public double getMass() {
-		return mass;
-	}
+  /**
+   * Returns the mass.
+   */
+  public double getMass() {
+    return mass;
+  }
 
-	/**
-	 * Sets the mass.
-	 *
-	 * @param m the mass
-	 */
-	public void setMass(double m) {
-		this.mass = m;
-	}
+  /**
+   * Sets the mass.
+   *
+   * @param m the mass
+   */
+  public void setMass(double m) {
+    this.mass = m;
+  }
 
-	/**
-	 * Returns the covalent radius.
-	 */
-	public double getCovalentRadius() {
-		return covalentRadius;
-	}
+  /**
+   * Returns the covalent radius.
+   */
+  public double getCovalentRadius() {
+    return covalentRadius;
+  }
 
-	/**
-	 * Sets the covalent radius.
-	 *
-	 * @param cr the covalent radius
-	 */
-	public void setCovalentRadius(double cr) {
-		this.covalentRadius = cr;
-	}
+  /**
+   * Sets the covalent radius.
+   *
+   * @param cr the covalent radius
+   */
+  public void setCovalentRadius(double cr) {
+    this.covalentRadius = cr;
+  }
 
-	/**
-	 * Returns the Van derWaals radius.
-	 */
-	public double getVdwRadius() {
-		return vdwRadius;
-	}
+  /**
+   * Returns the Van derWaals radius.
+   */
+  public double getVdwRadius() {
+    return vdwRadius;
+  }
 
-	/**
-	 * Sets the Van derWaals radius.
-	 *
-	 * @param vr the Van derWaals Radius
-	 */
-	public void setVdwRadius(double vr) {
-		this.vdwRadius = vr;
-	}
+  /**
+   * Sets the Van derWaals radius.
+   *
+   * @param vr the Van derWaals Radius
+   */
+  public void setVdwRadius(double vr) {
+    this.vdwRadius = vr;
+  }
 
-	/**
-	 * Returns the color.
-	 */
-	public Color getColor() {
-		return color;
-	}
+  /**
+   * Returns the color.
+   */
+  public Color getColor() {
+    return color;
+  }
 
-	/**
-	 * Sets the color.
-	 *
-	 * @param c the Color
-	 */
-	public void setColor(Color c) {
-		this.color = c;
-	}
+  /**
+   * Sets the color.
+   *
+   * @param c the Color
+   */
+  public void setColor(Color c) {
+    this.color = c;
+  }
 
-	/**
-	 * Returns true if this and the Object are equal.
-	 *
-	 * @param obj object for comparison.
-	 */
-	public boolean equals(Object obj) {
+  /**
+   * Returns true if this and the Object are equal.
+   *
+   * @param obj object for comparison.
+   */
+  public boolean equals(Object obj) {
 
-		if (obj instanceof BaseAtomType) {
-			BaseAtomType at = (BaseAtomType) obj;
-			boolean nameEqual = name.equals(at.name);
-			boolean rootEqual = root.equals(at.root);
-			boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
-			boolean massEqual = mass == at.mass;
-			boolean radiiEqual = (vdwRadius == at.vdwRadius)
-									 && (covalentRadius == at.covalentRadius);
-			boolean colorEqual = color.equals(at.color);
-			return (nameEqual && rootEqual && atomicNumberEqual && massEqual
-					&& radiiEqual && colorEqual);
-		}
-		return false;
-	}
+    if (obj instanceof BaseAtomType) {
+      BaseAtomType at = (BaseAtomType) obj;
+      boolean nameEqual = name.equals(at.name);
+      boolean rootEqual = root.equals(at.root);
+      boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
+      boolean massEqual = mass == at.mass;
+      boolean radiiEqual = (vdwRadius == at.vdwRadius)
+                             && (covalentRadius == at.covalentRadius);
+      boolean colorEqual = color.equals(at.color);
+      return (nameEqual && rootEqual && atomicNumberEqual && massEqual
+              && radiiEqual && colorEqual);
+    }
+    return false;
+  }
 
-	/**
-	 * Returns a String representation of this atom type.
-	 */
-	public String toString() {
+  /**
+   * Returns a String representation of this atom type.
+   */
+  public String toString() {
 
-		StringBuffer sb1 = new StringBuffer();
-		sb1.append(name);
-		sb1.append('\t');
-		sb1.append(root);
-		sb1.append('\t');
-		sb1.append(Integer.toString(atomicNumber));
-		sb1.append('\t');
-		sb1.append(Double.toString(mass));
-		sb1.append('\t');
-		sb1.append(Double.toString(vdwRadius));
-		sb1.append('\t');
-		sb1.append(Double.toString(covalentRadius));
-		sb1.append('\t');
-		sb1.append(Integer.toString(color.getRed()));
-		sb1.append('\t');
-		sb1.append(Integer.toString(color.getGreen()));
-		sb1.append('\t');
-		sb1.append(Integer.toString(color.getBlue()));
-		return sb1.toString();
-	}
+    StringBuffer sb1 = new StringBuffer();
+    sb1.append(name);
+    sb1.append('\t');
+    sb1.append(root);
+    sb1.append('\t');
+    sb1.append(Integer.toString(atomicNumber));
+    sb1.append('\t');
+    sb1.append(Double.toString(mass));
+    sb1.append('\t');
+    sb1.append(Double.toString(vdwRadius));
+    sb1.append('\t');
+    sb1.append(Double.toString(covalentRadius));
+    sb1.append('\t');
+    sb1.append(Integer.toString(color.getRed()));
+    sb1.append('\t');
+    sb1.append(Integer.toString(color.getGreen()));
+    sb1.append('\t');
+    sb1.append(Integer.toString(color.getBlue()));
+    return sb1.toString();
+  }
 
 
-	/**
-	 * Unique name of this atom type.
-	 */
-	protected String name;
+  /**
+   * Unique name of this atom type.
+   */
+  protected String name;
 
-	/**
-	 * Name of the atom type from which this one is derived.
-	 */
-	protected String root;
+  /**
+   * Name of the atom type from which this one is derived.
+   */
+  protected String root;
 
-	/**
-	 * Atomic number.
-	 */
-	protected int atomicNumber;
+  /**
+   * Atomic number.
+   */
+  protected int atomicNumber;
 
-	/**
-	 * Atomic mass.
-	 */
-	protected double mass;
+  /**
+   * Atomic mass.
+   */
+  protected double mass;
 
-	/**
-	 * Van der Waals radius.
-	 */
-	protected double vdwRadius;
+  /**
+   * Van der Waals radius.
+   */
+  protected double vdwRadius;
 
-	/**
-	 * Covalent radius.
-	 */
-	protected double covalentRadius;
+  /**
+   * Covalent radius.
+   */
+  protected double covalentRadius;
 
-	/**
-	 * Draw color.
-	 */
-	protected Color color;
+  /**
+   * Draw color.
+   */
+  protected Color color;
 
-	/**
-	 * Static pool of atom types.
-	 */
-	private static Hashtable typePool = new Hashtable();
+  /**
+   * Static pool of atom types.
+   */
+  private static Hashtable typePool = new Hashtable();
 }

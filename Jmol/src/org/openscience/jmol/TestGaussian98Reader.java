@@ -25,48 +25,48 @@ import java.util.*;
 
 public class TestGaussian98Reader extends TestCase {
 
-	public TestGaussian98Reader(String name) {
-		super(name);
-	}
+  public TestGaussian98Reader(String name) {
+    super(name);
+  }
 
-	Gaussian98Reader reader1;
+  Gaussian98Reader reader1;
 
-	public void setUp() {
+  public void setUp() {
 
-		try {
-			AtomTypeSet ats1 = new AtomTypeSet();
-			ats1.load(getClass().getResourceAsStream("Data/AtomTypes"));
-			String sampleFileName = "samples/g98.out";
-			if (System.getProperty("jmol.home") != null) {
-				sampleFileName = System.getProperty("jmol.home") + "/"
-						+ sampleFileName;
-			}
-			reader1 = new Gaussian98Reader(new FileReader(sampleFileName));
-		} catch (IOException ex) {
-			fail("unable to open Gaussian98 test file: " + ex.toString());
-		}
-	}
+    try {
+      AtomTypeSet ats1 = new AtomTypeSet();
+      ats1.load(getClass().getResourceAsStream("Data/AtomTypes"));
+      String sampleFileName = "samples/g98.out";
+      if (System.getProperty("jmol.home") != null) {
+        sampleFileName = System.getProperty("jmol.home") + "/"
+                + sampleFileName;
+      }
+      reader1 = new Gaussian98Reader(new FileReader(sampleFileName));
+    } catch (IOException ex) {
+      fail("unable to open Gaussian98 test file: " + ex.toString());
+    }
+  }
 
-	public void testRead() {
+  public void testRead() {
 
-		try {
-			ChemFile cf1 = reader1.read();
-			assertEquals(8, cf1.nFrames());
-			assertEquals(
-					"SCF Done:  E(UHF) =  -304.909591195     A.U. after   38 cycles",
-						cf1.getFrame(0).getInfo());
-			assertEquals(
-					"SCF Done:  E(UHF) =  -304.912139784     A.U. after    1 cycles",
-						cf1.getFrame(7).getInfo());
-		} catch (Exception ex) {
-			ex.printStackTrace();
-			fail(ex.toString());
-		}
-	}
+    try {
+      ChemFile cf1 = reader1.read();
+      assertEquals(8, cf1.nFrames());
+      assertEquals(
+              "SCF Done:  E(UHF) =  -304.909591195     A.U. after   38 cycles",
+                cf1.getFrame(0).getInfo());
+      assertEquals(
+              "SCF Done:  E(UHF) =  -304.912139784     A.U. after    1 cycles",
+                cf1.getFrame(7).getInfo());
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      fail(ex.toString());
+    }
+  }
 
 
-	public static Test suite() {
-		TestSuite suite = new TestSuite(TestGaussian98Reader.class);
-		return suite;
-	}
+  public static Test suite() {
+    TestSuite suite = new TestSuite(TestGaussian98Reader.class);
+    return suite;
+  }
 }

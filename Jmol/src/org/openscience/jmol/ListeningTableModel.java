@@ -31,76 +31,76 @@ import javax.swing.event.TableModelEvent;
  *  @author Bradley A. Smith (bradley@baysmith.com)
  */
 public class ListeningTableModel extends AbstractTableModel
-		implements TableModelListener {
+        implements TableModelListener {
 
-	/**
-	 *  Creates a listening table model for the given table model. This table
-	 *  model will listen for table change events from the given table model.
-	 */
-	public ListeningTableModel(TableModel model) {
-		this.model = model;
-		model.addTableModelListener(this);
-	}
+  /**
+   *  Creates a listening table model for the given table model. This table
+   *  model will listen for table change events from the given table model.
+   */
+  public ListeningTableModel(TableModel model) {
+    this.model = model;
+    model.addTableModelListener(this);
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public Object getValueAt(int aRow, int aColumn) {
-		return model.getValueAt(aRow, aColumn);
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public Object getValueAt(int aRow, int aColumn) {
+    return model.getValueAt(aRow, aColumn);
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public void setValueAt(Object aValue, int aRow, int aColumn) {
-		model.setValueAt(aValue, aRow, aColumn);
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public void setValueAt(Object aValue, int aRow, int aColumn) {
+    model.setValueAt(aValue, aRow, aColumn);
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public int getRowCount() {
-		return model.getRowCount();
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public int getRowCount() {
+    return model.getRowCount();
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public int getColumnCount() {
-		return model.getColumnCount();
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public int getColumnCount() {
+    return model.getColumnCount();
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public String getColumnName(int aColumn) {
-		return model.getColumnName(aColumn);
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public String getColumnName(int aColumn) {
+    return model.getColumnName(aColumn);
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public Class getColumnClass(int aColumn) {
-		return model.getColumnClass(aColumn);
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public Class getColumnClass(int aColumn) {
+    return model.getColumnClass(aColumn);
+  }
 
-	/**
-	 *  Forwards messages to the AbstractTableModel
-	 */
-	public boolean isCellEditable(int row, int column) {
-		return model.isCellEditable(row, column);
-	}
+  /**
+   *  Forwards messages to the AbstractTableModel
+   */
+  public boolean isCellEditable(int row, int column) {
+    return model.isCellEditable(row, column);
+  }
 
-	/**
-	 *  Forwards events to listeners of this model.
-	 */
-	public void tableChanged(TableModelEvent event) {
-		fireTableChanged(event);
-	}
+  /**
+   *  Forwards events to listeners of this model.
+   */
+  public void tableChanged(TableModelEvent event) {
+    fireTableChanged(event);
+  }
 
-	/**
-	 *  The actual table model.
-	 */
-	protected TableModel model;
+  /**
+   *  The actual table model.
+   */
+  protected TableModel model;
 }
 

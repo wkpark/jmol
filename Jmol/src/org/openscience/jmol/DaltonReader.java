@@ -38,192 +38,189 @@ import java.util.*;
  */
 class DaltonReader implements ChemFileReader {
 
-	static final double angstromPerBohr = 0.529177249;
+  static final double angstromPerBohr = 0.529177249;
 
-	BufferedReader input;
-	Hashtable atomTypeMap = new Hashtable();
+  BufferedReader input;
+  Hashtable atomTypeMap = new Hashtable();
 
-	public DaltonReader(Reader input) {
-		this.input = new BufferedReader(input);
-	}
+  public DaltonReader(Reader input) {
+    this.input = new BufferedReader(input);
+  }
 
-	public ChemFile read() throws Exception {
+  public ChemFile read() throws Exception {
 
-		ChemFile file = new ChemFile();
-		ChemFrame frame = null;
+    ChemFile file = new ChemFile();
+    ChemFrame frame = null;
 
-		// Find energy
-		String line;
-		while (input.ready()) {
-			line = input.readLine();
-			if (line.trim().startsWith("Total energy")) {
-				frame.setInfo(line.trim());
-			} else if (line.trim().startsWith("Atoms and basis sets")) {
-				readAtomTypes();
-			} else if (line.trim().startsWith("Molecular geometry")) {
-				if (frame != null) {
-					file.frames.addElement(frame);
-				}
-				frame = new ChemFrame();
-				readCoordinates(frame);
-			} else if (line.trim().startsWith("Normal Coordinates")) {
-				readFrequencies(frame);
-				break;
-			}
-		}
+    // Find energy
+    String line;
+    while (input.ready()) {
+      line = input.readLine();
+      if (line.trim().startsWith("Total energy")) {
+        frame.setInfo(line.trim());
+      } else if (line.trim().startsWith("Atoms and basis sets")) {
+        readAtomTypes();
+      } else if (line.trim().startsWith("Molecular geometry")) {
+        if (frame != null) {
+          file.frames.addElement(frame);
+        }
+        frame = new ChemFrame();
+        readCoordinates(frame);
+      } else if (line.trim().startsWith("Normal Coordinates")) {
+        readFrequencies(frame);
+        break;
+      }
+    }
 
-		// Add current frame to file
-		file.frames.addElement(frame);
+    // Add current frame to file
+    file.frames.addElement(frame);
 
-		return file;
-	}
+    return file;
+  }
 
 
-	void readAtomTypes() throws Exception {
+  void readAtomTypes() throws Exception {
 
-		atomTypeMap.clear();
+    atomTypeMap.clear();
 
-		String line;
-		for (int i = 0; i < 9; ++i) {
-			line = input.readLine();
-		}
-		while (input.ready()) {
-			line = input.readLine().trim();
-			if (line.startsWith("-----")) {
-				break;
-			}
-			StringTokenizer tokenizer = new StringTokenizer(line);
-			if (tokenizer.countTokens() < 3) {
-				throw new Exception("Error reading atom types");
-			}
-			String label = tokenizer.nextToken();
-			tokenizer.nextToken();
-			Integer atomicNumber = new Integer(tokenizer.nextToken());
-			atomTypeMap.put(label, atomicNumber);
-		}
-	}
+    String line;
+    for (int i = 0; i < 9; ++i) {
+      line = input.readLine();
+    }
+    while (input.ready()) {
+      line = input.readLine().trim();
+      if (line.startsWith("-----")) {
+        break;
+      }
+      StringTokenizer tokenizer = new StringTokenizer(line);
+      if (tokenizer.countTokens() < 3) {
+        throw new Exception("Error reading atom types");
+      }
+      String label = tokenizer.nextToken();
+      tokenizer.nextToken();
+      Integer atomicNumber = new Integer(tokenizer.nextToken());
+      atomTypeMap.put(label, atomicNumber);
+    }
+  }
 
-	/**
-	 * Reads a set of coordinates into ChemFrame.
-	 *
-	 * @param frame  the destination ChemFrame
-	 * @exception IOException  if an I/O error occurs
-	 */
-	void readCoordinates(ChemFrame mol) throws IOException, Exception {
+  /**
+   * Reads a set of coordinates into ChemFrame.
+   *
+   * @param frame  the destination ChemFrame
+   * @exception IOException  if an I/O error occurs
+   */
+  void readCoordinates(ChemFrame mol) throws IOException, Exception {
 
-		String line;
-		line = input.readLine();
-		line = input.readLine();
-		while (input.ready()) {
-			line = input.readLine().trim();
-			if (line.length() == 0) {
-				break;
-			}
-			int atomicNumber;
-			double x;
-			double y;
-			double z;
-			StringTokenizer tokenizer = new StringTokenizer(line);
-			if (tokenizer.countTokens() < 3) {
-				throw new Exception("Error reading coordinates");
-			}
+    String line;
+    line = input.readLine();
+    line = input.readLine();
+    while (input.ready()) {
+      line = input.readLine().trim();
+      if (line.length() == 0) {
+        break;
+      }
+      int atomicNumber;
+      double x;
+      double y;
+      double z;
+      StringTokenizer tokenizer = new StringTokenizer(line);
+      if (tokenizer.countTokens() < 3) {
+        throw new Exception("Error reading coordinates");
+      }
 
-			String label = tokenizer.nextToken();
-			if (atomTypeMap.containsKey(label)) {
-				atomicNumber = ((Integer) atomTypeMap.get(label)).intValue();
-			} else {
+      String label = tokenizer.nextToken();
+      if (atomTypeMap.containsKey(label)) {
+        atomicNumber = ((Integer) atomTypeMap.get(label)).intValue();
+      } else {
 
-				// Unrecognized atom type
-				atomicNumber = -1;
-			}
-			x = (new Double(tokenizer.nextToken())).doubleValue()
-					* angstromPerBohr;
-			y = (new Double(tokenizer.nextToken())).doubleValue()
-					* angstromPerBohr;
-			z = (new Double(tokenizer.nextToken())).doubleValue()
-					* angstromPerBohr;
+        // Unrecognized atom type
+        atomicNumber = -1;
+      }
+      x = (new Double(tokenizer.nextToken())).doubleValue() * angstromPerBohr;
+      y = (new Double(tokenizer.nextToken())).doubleValue() * angstromPerBohr;
+      z = (new Double(tokenizer.nextToken())).doubleValue() * angstromPerBohr;
 
-			mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
-		}
-	}
+      mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
+    }
+  }
 
-	/**
-	 * Reads a set of vibrations into ChemFrame.
-	 *
-	 * @param frame  the destination ChemFrame
-	 * @exception IOException  if an I/O error occurs
-	 */
-	void readFrequencies(ChemFrame mol) throws Exception {
+  /**
+   * Reads a set of vibrations into ChemFrame.
+   *
+   * @param frame  the destination ChemFrame
+   * @exception IOException  if an I/O error occurs
+   */
+  void readFrequencies(ChemFrame mol) throws Exception {
 
-		String line;
-		line = input.readLine();
-		line = input.readLine();
-		line = input.readLine();
+    String line;
+    line = input.readLine();
+    line = input.readLine();
+    line = input.readLine();
 
-		while (input.ready()) {
-			String headerLine = input.readLine().trim();
-			line = input.readLine().trim();
-			if (!line.startsWith("-----")) {
-				break;
-			}
+    while (input.ready()) {
+      String headerLine = input.readLine().trim();
+      line = input.readLine().trim();
+      if (!line.startsWith("-----")) {
+        break;
+      }
 
-			Vector currentFreqs = new Vector();
-			StringTokenizer tokenizer = new StringTokenizer(headerLine);
-			int numberOfCurrentFrequencies = tokenizer.countTokens() / 2;
-			for (int i = 0; i < numberOfCurrentFrequencies; ++i) {
-				tokenizer.nextToken();
-				String value = tokenizer.nextToken();
-				Vibration freq = new Vibration(value);
-				currentFreqs.addElement(freq);
-			}
-			Object[] currentVectors = new Object[currentFreqs.size()];
+      Vector currentFreqs = new Vector();
+      StringTokenizer tokenizer = new StringTokenizer(headerLine);
+      int numberOfCurrentFrequencies = tokenizer.countTokens() / 2;
+      for (int i = 0; i < numberOfCurrentFrequencies; ++i) {
+        tokenizer.nextToken();
+        String value = tokenizer.nextToken();
+        Vibration freq = new Vibration(value);
+        currentFreqs.addElement(freq);
+      }
+      Object[] currentVectors = new Object[currentFreqs.size()];
 
-			line = input.readLine();
+      line = input.readLine();
 
-			for (int i = 0; i < mol.getNvert(); ++i) {
-				line = input.readLine();
-				tokenizer = new StringTokenizer(line);
-				tokenizer.nextToken();		// ignore first token
-				tokenizer.nextToken();		// ignore second token
-				for (int j = 0; j < currentFreqs.size(); ++j) {
-					currentVectors[j] = new double[3];
-					((double[]) currentVectors[j])[0] =
-							(new Double(tokenizer.nextToken())).doubleValue()
-								* angstromPerBohr;
-				}
+      for (int i = 0; i < mol.getNvert(); ++i) {
+        line = input.readLine();
+        tokenizer = new StringTokenizer(line);
+        tokenizer.nextToken();    // ignore first token
+        tokenizer.nextToken();    // ignore second token
+        for (int j = 0; j < currentFreqs.size(); ++j) {
+          currentVectors[j] = new double[3];
+          ((double[]) currentVectors[j])[0] =
+                  (new Double(tokenizer.nextToken())).doubleValue()
+                    * angstromPerBohr;
+        }
 
-				line = input.readLine();
-				tokenizer = new StringTokenizer(line);
-				tokenizer.nextToken();		// ignore first token
-				tokenizer.nextToken();		// ignore second token
-				for (int j = 0; j < currentFreqs.size(); ++j) {
-					((double[]) currentVectors[j])[1] =
-							(new Double(tokenizer.nextToken())).doubleValue()
-								* angstromPerBohr;
-				}
+        line = input.readLine();
+        tokenizer = new StringTokenizer(line);
+        tokenizer.nextToken();    // ignore first token
+        tokenizer.nextToken();    // ignore second token
+        for (int j = 0; j < currentFreqs.size(); ++j) {
+          ((double[]) currentVectors[j])[1] =
+                  (new Double(tokenizer.nextToken())).doubleValue()
+                    * angstromPerBohr;
+        }
 
-				line = input.readLine();
-				tokenizer = new StringTokenizer(line);
-				tokenizer.nextToken();		// ignore first token
-				tokenizer.nextToken();		// ignore second token
-				for (int j = 0; j < currentFreqs.size(); ++j) {
-					((double[]) currentVectors[j])[2] =
-							(new Double(tokenizer.nextToken())).doubleValue()
-								* angstromPerBohr;
-					((Vibration) currentFreqs.elementAt(j))
-							.addAtomVector((double[]) currentVectors[j]);
-				}
+        line = input.readLine();
+        tokenizer = new StringTokenizer(line);
+        tokenizer.nextToken();    // ignore first token
+        tokenizer.nextToken();    // ignore second token
+        for (int j = 0; j < currentFreqs.size(); ++j) {
+          ((double[]) currentVectors[j])[2] =
+                  (new Double(tokenizer.nextToken())).doubleValue()
+                    * angstromPerBohr;
+          ((Vibration) currentFreqs.elementAt(j))
+                  .addAtomVector((double[]) currentVectors[j]);
+        }
 
-				// Skip blank line between each atom
-				line = input.readLine();
-			}
-			for (int i = 0; i < currentFreqs.size(); ++i) {
-				mol.addVibration((Vibration) currentFreqs.elementAt(i));
-			}
+        // Skip blank line between each atom
+        line = input.readLine();
+      }
+      for (int i = 0; i < currentFreqs.size(); ++i) {
+        mol.addVibration((Vibration) currentFreqs.elementAt(i));
+      }
 
-			// Skip blank line between frequency sets
-			line = input.readLine();
-		}
-	}
+      // Skip blank line between frequency sets
+      line = input.readLine();
+    }
+  }
 }
 

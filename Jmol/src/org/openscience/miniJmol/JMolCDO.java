@@ -25,190 +25,188 @@ import org.openscience.jmol.FortranFormat;
 
 public final class JMolCDO extends ANIMATIONCDO {
 
-	private Vector allFrames;
-	private ChemFrame currentFrame;
-	private int frameNo;
+  private Vector allFrames;
+  private ChemFrame currentFrame;
+  private int frameNo;
 
-	private String atomType;
-	private String atomX;
-	private String atomY;
-	private String atomZ;
+  private String atomType;
+  private String atomX;
+  private String atomY;
+  private String atomZ;
 
-	public JMolCDO() {
-		allFrames = new Vector();
-		currentFrame = new ChemFrame();
-		frameNo = 0;
-	}
+  public JMolCDO() {
+    allFrames = new Vector();
+    currentFrame = new ChemFrame();
+    frameNo = 0;
+  }
 
-	public void startDocument() {
-	}
+  public void startDocument() {
+  }
 
-	public void endDocument() {
-	}
+  public void endDocument() {
+  }
 
-	public void startObject(String type) {
+  public void startObject(String type) {
 
-		if (type.equals("Atom")) {
-			this.startAtom();
-		} else if (type.equals("Molecule")) {
-			this.startMolecule();
-		} else if (type.equals("Fragment")) {
-			this.startFragment();
-		} else if (type.equals("Bond")) {
-			this.startBond();
-		} else if (type.equals("Animation")) {
-			this.startAnimation();
-		} else if (type.equals("Frame")) {
-			this.startFrame();
-		} else {
-			System.err.println(
-					"DEBUG: unknown CDO Object Type at StartObject -> "
-						+ type);
-		}
-	}
+    if (type.equals("Atom")) {
+      this.startAtom();
+    } else if (type.equals("Molecule")) {
+      this.startMolecule();
+    } else if (type.equals("Fragment")) {
+      this.startFragment();
+    } else if (type.equals("Bond")) {
+      this.startBond();
+    } else if (type.equals("Animation")) {
+      this.startAnimation();
+    } else if (type.equals("Frame")) {
+      this.startFrame();
+    } else {
+      System.err.println("DEBUG: unknown CDO Object Type at StartObject -> "
+              + type);
+    }
+  }
 
-	public void endObject(String type) {
+  public void endObject(String type) {
 
-		if (type.equals("Atom")) {
-			this.endAtom();
-		} else if (type.equals("Molecule")) {
-			this.endMolecule();
-		} else if (type.equals("Fragment")) {
-			this.endFragment();
-		} else if (type.equals("Bond")) {
-			this.endBond();
-		} else if (type.equals("Animation")) {
-			this.endAnimation();
-		} else if (type.equals("Frame")) {
-			this.endFrame();
-		} else {
-			System.err.println(
-					"DEBUG: unknown CDO Object Type at EndObject -> " + type);
-		}
-	}
+    if (type.equals("Atom")) {
+      this.endAtom();
+    } else if (type.equals("Molecule")) {
+      this.endMolecule();
+    } else if (type.equals("Fragment")) {
+      this.endFragment();
+    } else if (type.equals("Bond")) {
+      this.endBond();
+    } else if (type.equals("Animation")) {
+      this.endAnimation();
+    } else if (type.equals("Frame")) {
+      this.endFrame();
+    } else {
+      System.err.println("DEBUG: unknown CDO Object Type at EndObject -> "
+              + type);
+    }
+  }
 
-	public void setObjectProperty(String type, String proptype,
-			String propvalue) {
+  public void setObjectProperty(String type, String proptype,
+          String propvalue) {
 
-		if (type.equals("Atom")) {
-			this.setAtomProperty(proptype, propvalue);
-		} else if (type.equals("Molecule")) {
-			this.setMoleculeProperty(proptype, propvalue);
-		} else if (type.equals("Fragment")) {
-			this.setFragmentProperty(proptype, propvalue);
-		} else if (type.equals("Bond")) {
-			this.setBondProperty(proptype, propvalue);
-		} else if (type.equals("Animation")) {
-			this.setAnimationProperty(proptype, propvalue);
-		} else if (type.equals("Frame")) {
-			this.setFrameProperty(proptype, propvalue);
-		} else {
-			System.err.println(
-					"DEBUG: unknown CDO Object Type at SetObjectProperty -> "
-						+ type);
-		}
-	}
+    if (type.equals("Atom")) {
+      this.setAtomProperty(proptype, propvalue);
+    } else if (type.equals("Molecule")) {
+      this.setMoleculeProperty(proptype, propvalue);
+    } else if (type.equals("Fragment")) {
+      this.setFragmentProperty(proptype, propvalue);
+    } else if (type.equals("Bond")) {
+      this.setBondProperty(proptype, propvalue);
+    } else if (type.equals("Animation")) {
+      this.setAnimationProperty(proptype, propvalue);
+    } else if (type.equals("Frame")) {
+      this.setFrameProperty(proptype, propvalue);
+    } else {
+      System.err.println(
+              "DEBUG: unknown CDO Object Type at SetObjectProperty -> "
+                + type);
+    }
+  }
 
-	public void startAnimation() {
-		System.out.println("startAnimation");
-	}
+  public void startAnimation() {
+    System.out.println("startAnimation");
+  }
 
-	public void endAnimation() {
-	}
+  public void endAnimation() {
+  }
 
-	public void startFrame() {
-		System.out.println("startFrame");
-		frameNo++;
-		currentFrame = new ChemFrame();
-	}
+  public void startFrame() {
+    System.out.println("startFrame");
+    frameNo++;
+    currentFrame = new ChemFrame();
+  }
 
-	public void endFrame() {
-		System.out.println("endFrame");
-		allFrames.addElement(currentFrame);
-	}
+  public void endFrame() {
+    System.out.println("endFrame");
+    allFrames.addElement(currentFrame);
+  }
 
-	public void setFrameProperty(String type, String value) {
-		System.out.println("setFrameProperty: " + type + "=" + value);
-		if (type.equals("title")) {
-			currentFrame.setInfo(value);
-		}
-	}
+  public void setFrameProperty(String type, String value) {
+    System.out.println("setFrameProperty: " + type + "=" + value);
+    if (type.equals("title")) {
+      currentFrame.setInfo(value);
+    }
+  }
 
-	public void startMolecule() {
-	}
+  public void startMolecule() {
+  }
 
-	public void endMolecule() {
-	}
+  public void endMolecule() {
+  }
 
-	public void startFragment() {
-	}
+  public void startFragment() {
+  }
 
-	public void endFragment() {
-	}
+  public void endFragment() {
+  }
 
-	public void startAtom() {
+  public void startAtom() {
 
-		System.out.println("startAtom");
-		atomType = "";
-		atomX = "";
-		atomY = "";
-		atomZ = "";
-	}
+    System.out.println("startAtom");
+    atomType = "";
+    atomX = "";
+    atomY = "";
+    atomZ = "";
+  }
 
-	public void endAtom() {
+  public void endAtom() {
 
-		System.out.println("endAtom: " + atomType + " " + atomX + " " + atomY
-				+ " " + atomZ);
-		double x = FortranFormat.atof(atomX.trim());
-		double y = FortranFormat.atof(atomY.trim());
-		double z = FortranFormat.atof(atomZ.trim());
-		try {
-			currentFrame.addAtom(atomType.trim(), (float) x, (float) y,
-					(float) z);
-		} catch (Exception e) {
-			System.out.println("JMolCDO error while adding atom: " + e);
-		}
-	}
+    System.out.println("endAtom: " + atomType + " " + atomX + " " + atomY
+            + " " + atomZ);
+    double x = FortranFormat.atof(atomX.trim());
+    double y = FortranFormat.atof(atomY.trim());
+    double z = FortranFormat.atof(atomZ.trim());
+    try {
+      currentFrame.addAtom(atomType.trim(), (float) x, (float) y, (float) z);
+    } catch (Exception e) {
+      System.out.println("JMolCDO error while adding atom: " + e);
+    }
+  }
 
-	public void setAtomProperty(String type, String value) {
+  public void setAtomProperty(String type, String value) {
 
-		System.out.println("setAtomProp: " + type + "=" + value);
-		if (type.equals("type")) {
-			atomType = value;
-		}
-		if (type.equals("x3")) {
-			atomX = value;
-		}
-		if (type.equals("y3")) {
-			atomY = value;
-		}
-		if (type.equals("z3")) {
-			atomZ = value;
-		}
-	}
+    System.out.println("setAtomProp: " + type + "=" + value);
+    if (type.equals("type")) {
+      atomType = value;
+    }
+    if (type.equals("x3")) {
+      atomX = value;
+    }
+    if (type.equals("y3")) {
+      atomY = value;
+    }
+    if (type.equals("z3")) {
+      atomZ = value;
+    }
+  }
 
-	public Vector returnChemFrames() {
-		return allFrames;
-	}
+  public Vector returnChemFrames() {
+    return allFrames;
+  }
 
-	public void setDocumentProperty(String type, String value) {
-	}
+  public void setDocumentProperty(String type, String value) {
+  }
 
-	public void setMoleculeProperty(String type, String value) {
-	}
+  public void setMoleculeProperty(String type, String value) {
+  }
 
-	public void setFragmentProperty(String type, String value) {
-	}
+  public void setFragmentProperty(String type, String value) {
+  }
 
-	public void setAnimationProperty(String type, String value) {
-	}
+  public void setAnimationProperty(String type, String value) {
+  }
 
-	public void setBondProperty(String type, String value) {
-	}
+  public void setBondProperty(String type, String value) {
+  }
 
-	public void startBond() {
-	}
+  public void startBond() {
+  }
 
-	public void endBond() {
-	}
+  public void endBond() {
+  }
 }

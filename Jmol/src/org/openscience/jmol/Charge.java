@@ -24,12 +24,12 @@ package org.openscience.jmol;
  */
 public class Charge extends PhysicalProperty {
 
-	/**
-	 * Constructor for charge
-	 * @param c The charge on the atom
-	 */
-	public Charge(double c) {
-		super("Atomic Charge", new Double(c));
-	}
+  /**
+   * Constructor for charge
+   * @param c The charge on the atom
+   */
+  public Charge(double c) {
+    super("Atomic Charge", new Double(c));
+  }
 
 }

@@ -28,44 +28,44 @@ import java.util.*;
  */
 public class TestAtomType extends TestCase {
 
-	/**
-	 * Creates a Test for the given method.
-	 */
-	public TestAtomType(String name) {
-		super(name);
-	}
+  /**
+   * Creates a Test for the given method.
+   */
+  public TestAtomType(String name) {
+    super(name);
+  }
 
-	/**
-	 * AtomType fixture.
-	 */
-	AtomType at1;
+  /**
+   * AtomType fixture.
+   */
+  AtomType at1;
 
-	/**
-	 * AtomType fixture.
-	 */
-	AtomType at2;
+  /**
+   * AtomType fixture.
+   */
+  AtomType at2;
 
-	/**
-	 * Set up for testing.
-	 */
-	public void setUp() {
-		at1 = new AtomType("type1", "root1", 1, 1.1, 2.2, 3.3, 4, 5, 6);
-		at2 = new AtomType("type2", "root2", 0, 0.0, 0.0, 0.0, 0, 0, 0);
-	}
+  /**
+   * Set up for testing.
+   */
+  public void setUp() {
+    at1 = new AtomType("type1", "root1", 1, 1.1, 2.2, 3.3, 4, 5, 6);
+    at2 = new AtomType("type2", "root2", 0, 0.0, 0.0, 0.0, 0, 0, 0);
+  }
 
-	/**
-	 * Test the constructors.
-	 */
-	public void testConstructors() {
-		assertEquals(BaseAtomType.get("type1"), at1.getBaseAtomType());
-		assertEquals(BaseAtomType.get("type2"), at2.getBaseAtomType());
-	}
+  /**
+   * Test the constructors.
+   */
+  public void testConstructors() {
+    assertEquals(BaseAtomType.get("type1"), at1.getBaseAtomType());
+    assertEquals(BaseAtomType.get("type2"), at2.getBaseAtomType());
+  }
 
-	/**
-	 * Returns a Test containing all the tests.
-	 */
-	public static Test suite() {
-		TestSuite suite = new TestSuite(TestAtomType.class);
-		return suite;
-	}
+  /**
+   * Returns a Test containing all the tests.
+   */
+  public static Test suite() {
+    TestSuite suite = new TestSuite(TestAtomType.class);
+    return suite;
+  }
 }

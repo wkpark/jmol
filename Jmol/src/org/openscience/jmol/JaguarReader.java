@@ -29,169 +29,168 @@ import java.util.Vector;
  */
 class JaguarReader implements ChemFileReader {
 
-	BufferedReader input;
+  BufferedReader input;
 
-	public JaguarReader(Reader input) {
-		this.input = new BufferedReader(input);
-	}
+  public JaguarReader(Reader input) {
+    this.input = new BufferedReader(input);
+  }
 
-	public ChemFile read() throws Exception {
+  public ChemFile read() throws Exception {
 
-		ChemFile file = new ChemFile();
-		ChemFrame frame = null;
+    ChemFile file = new ChemFile();
+    ChemFrame frame = null;
 
-		// Find energy
-		String line;
-		while (input.ready()) {
-			line = input.readLine();
-			if (line.indexOf("SCF energy:") >= 0) {
-				frame.setInfo(line.trim());
-			} else if (line.indexOf("Input geometry:") >= 0) {
-				line = input.readLine();
-				line = input.readLine();
-				if (frame != null) {
-					file.frames.addElement(frame);
-				}
-				frame = new ChemFrame();
-				readCoordinates(frame);
-			} else if (line.indexOf("harmonic frequencies in cm") >= 0) {
-				line = input.readLine();
-				line = input.readLine();
-				readFrequencies(frame);
-				break;
-			}
-		}
+    // Find energy
+    String line;
+    while (input.ready()) {
+      line = input.readLine();
+      if (line.indexOf("SCF energy:") >= 0) {
+        frame.setInfo(line.trim());
+      } else if (line.indexOf("Input geometry:") >= 0) {
+        line = input.readLine();
+        line = input.readLine();
+        if (frame != null) {
+          file.frames.addElement(frame);
+        }
+        frame = new ChemFrame();
+        readCoordinates(frame);
+      } else if (line.indexOf("harmonic frequencies in cm") >= 0) {
+        line = input.readLine();
+        line = input.readLine();
+        readFrequencies(frame);
+        break;
+      }
+    }
 
-		// Add current frame to file
-		file.frames.addElement(frame);
+    // Add current frame to file
+    file.frames.addElement(frame);
 
-		return file;
-	}
+    return file;
+  }
 
-	void readCoordinates(ChemFrame mol) throws Exception {
+  void readCoordinates(ChemFrame mol) throws Exception {
 
-		String line;
-		while (input.ready()) {
-			line = input.readLine();
-			if (line.trim().length() == 0) {
-				break;
-			}
-			int atomicNumber;
-			double x;
-			double y;
-			double z;
-			StringReader sr = new StringReader(line);
-			StreamTokenizer token = new StreamTokenizer(sr);
-			if (token.nextToken() == StreamTokenizer.TT_WORD) {
-				atomicNumber = atomLabelToAtomicNumber(token.sval);
-			} else {
-				throw new Exception("Error reading coordinates");
-			}
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				x = token.nval;
-			} else {
-				throw new Exception("Error reading coordinates");
-			}
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				y = token.nval;
-			} else {
-				throw new Exception("Error reading coordinates");
-			}
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				z = token.nval;
-			} else {
-				throw new Exception("Error reading coordinates");
-			}
-			mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
-		}
-	}
+    String line;
+    while (input.ready()) {
+      line = input.readLine();
+      if (line.trim().length() == 0) {
+        break;
+      }
+      int atomicNumber;
+      double x;
+      double y;
+      double z;
+      StringReader sr = new StringReader(line);
+      StreamTokenizer token = new StreamTokenizer(sr);
+      if (token.nextToken() == StreamTokenizer.TT_WORD) {
+        atomicNumber = atomLabelToAtomicNumber(token.sval);
+      } else {
+        throw new Exception("Error reading coordinates");
+      }
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        x = token.nval;
+      } else {
+        throw new Exception("Error reading coordinates");
+      }
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        y = token.nval;
+      } else {
+        throw new Exception("Error reading coordinates");
+      }
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        z = token.nval;
+      } else {
+        throw new Exception("Error reading coordinates");
+      }
+      mol.addVert(atomicNumber, (float) x, (float) y, (float) z);
+    }
+  }
 
-	static int atomLabelToAtomicNumber(String label) {
+  static int atomLabelToAtomicNumber(String label) {
 
-		StringBuffer elementLabel = new StringBuffer();
-		for (int i = 0; i < label.length(); ++i) {
-			if (Character.isLetter(label.charAt(i))) {
-				elementLabel.append(label.charAt(i));
-			} else {
-				break;
-			}
-		}
-		return AtomicSymbol.elementToAtomicNumber(elementLabel.toString());
-	}
+    StringBuffer elementLabel = new StringBuffer();
+    for (int i = 0; i < label.length(); ++i) {
+      if (Character.isLetter(label.charAt(i))) {
+        elementLabel.append(label.charAt(i));
+      } else {
+        break;
+      }
+    }
+    return AtomicSymbol.elementToAtomicNumber(elementLabel.toString());
+  }
 
 
-	void readFrequencies(ChemFrame mol) throws Exception {
+  void readFrequencies(ChemFrame mol) throws Exception {
 
-		String line;
-		line = input.readLine();
-		while (line.indexOf("frequencies") >= 0) {
-			StringReader freqValRead = new StringReader(line.substring(13));
-			StreamTokenizer token = new StreamTokenizer(freqValRead);
+    String line;
+    line = input.readLine();
+    while (line.indexOf("frequencies") >= 0) {
+      StringReader freqValRead = new StringReader(line.substring(13));
+      StreamTokenizer token = new StreamTokenizer(freqValRead);
 
-			Vector freqs = new Vector();
-			while (token.nextToken() != StreamTokenizer.TT_EOF) {
-				Vibration f = new Vibration(Double.toString(token.nval));
-				freqs.addElement(f);
-			}
-			Vibration[] currentFreqs = new Vibration[freqs.size()];
-			freqs.copyInto(currentFreqs);
-			Object[] currentVectors = new Object[currentFreqs.length];
+      Vector freqs = new Vector();
+      while (token.nextToken() != StreamTokenizer.TT_EOF) {
+        Vibration f = new Vibration(Double.toString(token.nval));
+        freqs.addElement(f);
+      }
+      Vibration[] currentFreqs = new Vibration[freqs.size()];
+      freqs.copyInto(currentFreqs);
+      Object[] currentVectors = new Object[currentFreqs.length];
 
-			line = input.readLine();
-			line = input.readLine();
-			for (int i = 0; i < mol.getNvert(); ++i) {
-				line = input.readLine();
-				StringReader vectorRead = new StringReader(line);
-				token = new StreamTokenizer(vectorRead);
-				token.nextToken();		// ignore first token
-				token.nextToken();		// ignore second token
-				for (int j = 0; j < currentFreqs.length; ++j) {
-					currentVectors[j] = new double[3];
-					if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-						((double[]) currentVectors[j])[0] = token.nval;
-					} else {
-						throw new Exception("Error reading frequencies");
-					}
-				}
+      line = input.readLine();
+      line = input.readLine();
+      for (int i = 0; i < mol.getNvert(); ++i) {
+        line = input.readLine();
+        StringReader vectorRead = new StringReader(line);
+        token = new StreamTokenizer(vectorRead);
+        token.nextToken();    // ignore first token
+        token.nextToken();    // ignore second token
+        for (int j = 0; j < currentFreqs.length; ++j) {
+          currentVectors[j] = new double[3];
+          if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+            ((double[]) currentVectors[j])[0] = token.nval;
+          } else {
+            throw new Exception("Error reading frequencies");
+          }
+        }
 
-				line = input.readLine();
-				vectorRead = new StringReader(line);
-				token = new StreamTokenizer(vectorRead);
-				token.nextToken();		// ignore first token
-				token.nextToken();		// ignore second token
-				for (int j = 0; j < currentFreqs.length; ++j) {
-					if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-						((double[]) currentVectors[j])[1] = token.nval;
-					} else {
-						throw new Exception("Error reading frequencies");
-					}
-				}
+        line = input.readLine();
+        vectorRead = new StringReader(line);
+        token = new StreamTokenizer(vectorRead);
+        token.nextToken();    // ignore first token
+        token.nextToken();    // ignore second token
+        for (int j = 0; j < currentFreqs.length; ++j) {
+          if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+            ((double[]) currentVectors[j])[1] = token.nval;
+          } else {
+            throw new Exception("Error reading frequencies");
+          }
+        }
 
-				line = input.readLine();
-				vectorRead = new StringReader(line);
-				token = new StreamTokenizer(vectorRead);
-				token.nextToken();		// ignore first token
-				token.nextToken();		// ignore second token
-				for (int j = 0; j < currentFreqs.length; ++j) {
-					if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-						((double[]) currentVectors[j])[2] = token.nval;
-					} else {
-						throw new Exception("Error reading frequencies");
-					}
-					currentFreqs[j]
-							.addAtomVector((double[]) currentVectors[j]);
-				}
-			}
-			for (int i = 0; i < currentFreqs.length; ++i) {
-				mol.addVibration(currentFreqs[i]);
-			}
-			for (int i = 0; i < 15; ++i) {
-				line = input.readLine();
-				if (line.indexOf("frequencies") >= 0) {
-					break;
-				}
-			}
-		}
-	}
+        line = input.readLine();
+        vectorRead = new StringReader(line);
+        token = new StreamTokenizer(vectorRead);
+        token.nextToken();    // ignore first token
+        token.nextToken();    // ignore second token
+        for (int j = 0; j < currentFreqs.length; ++j) {
+          if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+            ((double[]) currentVectors[j])[2] = token.nval;
+          } else {
+            throw new Exception("Error reading frequencies");
+          }
+          currentFreqs[j].addAtomVector((double[]) currentVectors[j]);
+        }
+      }
+      for (int i = 0; i < currentFreqs.length; ++i) {
+        mol.addVibration(currentFreqs[i]);
+      }
+      for (int i = 0; i < 15; ++i) {
+        line = input.readLine();
+        if (line.indexOf("frequencies") >= 0) {
+          break;
+        }
+      }
+    }
+  }
 }
 

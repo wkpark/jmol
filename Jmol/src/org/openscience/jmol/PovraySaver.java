@@ -248,7 +248,8 @@ public class PovraySaver extends FileSaver {
 
 
     w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
-    w.write("light_source { < -zoom, zoom, zoom> " + " rgb <1.0,1.0,1.0> }\n");
+    w.write("light_source { < -zoom, zoom, zoom> "
+            + " rgb <1.0,1.0,1.0> }\n");
     w.write("\n");
     w.write("\n");
 

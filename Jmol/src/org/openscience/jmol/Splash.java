@@ -26,69 +26,69 @@ import java.awt.event.*;
 
 public class Splash extends Window {
 
-	private Image splashImage;
-	private int imgWidth, imgHeight;
-	private String imgName;
-	private static final int BORDERSIZE = 10;
-	private static final Color BORDERCOLOR = Color.blue;
-	Toolkit tk;
-	private String status = "Loading...";
-	private int textY;
-	private int statusTop;
-	private static final int STATUSSIZE = 10;
-	private static final Color TEXTCOLOR = Color.white;
+  private Image splashImage;
+  private int imgWidth, imgHeight;
+  private String imgName;
+  private static final int BORDERSIZE = 10;
+  private static final Color BORDERCOLOR = Color.blue;
+  Toolkit tk;
+  private String status = "Loading...";
+  private int textY;
+  private int statusTop;
+  private static final int STATUSSIZE = 10;
+  private static final Color TEXTCOLOR = Color.white;
 
-	public Splash(Frame parent, ImageIcon ii) {
+  public Splash(Frame parent, ImageIcon ii) {
 
-		super(parent);
-		tk = Toolkit.getDefaultToolkit();
-		splashImage = ii.getImage();
-		imgWidth = splashImage.getWidth(this);
-		imgHeight = splashImage.getHeight(this);
-		showSplashScreen();
-		parent.addWindowListener(new WindowListener());
-	}
+    super(parent);
+    tk = Toolkit.getDefaultToolkit();
+    splashImage = ii.getImage();
+    imgWidth = splashImage.getWidth(this);
+    imgHeight = splashImage.getHeight(this);
+    showSplashScreen();
+    parent.addWindowListener(new WindowListener());
+  }
 
-	public void showSplashScreen() {
+  public void showSplashScreen() {
 
-		Dimension screenSize = tk.getScreenSize();
-		setBackground(BORDERCOLOR);
-		int w = imgWidth + (BORDERSIZE * 2);
-		int h = imgHeight + (BORDERSIZE * 2) + STATUSSIZE;
-		int x = (screenSize.width - w) / 2;
-		int y = (screenSize.height - h) / 2;
-		setBounds(x, y, w, h);
-		statusTop = BORDERSIZE + imgHeight;
-		textY = BORDERSIZE + STATUSSIZE + imgHeight + 1;
-		show();
+    Dimension screenSize = tk.getScreenSize();
+    setBackground(BORDERCOLOR);
+    int w = imgWidth + (BORDERSIZE * 2);
+    int h = imgHeight + (BORDERSIZE * 2) + STATUSSIZE;
+    int x = (screenSize.width - w) / 2;
+    int y = (screenSize.height - h) / 2;
+    setBounds(x, y, w, h);
+    statusTop = BORDERSIZE + imgHeight;
+    textY = BORDERSIZE + STATUSSIZE + imgHeight + 1;
+    show();
 
-	}
+  }
 
-	public void paint(Graphics g) {
+  public void paint(Graphics g) {
 
-		g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight,
-				this);
-		g.setColor(BORDERCOLOR);
-		g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
-		g.setColor(TEXTCOLOR);
-		g.drawString(status, BORDERSIZE, textY);
-	}
+    g.drawImage(splashImage, BORDERSIZE, BORDERSIZE, imgWidth, imgHeight,
+            this);
+    g.setColor(BORDERCOLOR);
+    g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
+    g.setColor(TEXTCOLOR);
+    g.drawString(status, BORDERSIZE, textY);
+  }
 
-	public void showStatus(String message) {
+  public void showStatus(String message) {
 
-		status = message;
-		Graphics g = this.getGraphics();
-		g.setColor(BORDERCOLOR);
-		g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
-		g.setColor(TEXTCOLOR);
-		g.drawString(status, BORDERSIZE, textY);
-	}
+    status = message;
+    Graphics g = this.getGraphics();
+    g.setColor(BORDERCOLOR);
+    g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
+    g.setColor(TEXTCOLOR);
+    g.drawString(status, BORDERSIZE, textY);
+  }
 
-	class WindowListener extends WindowAdapter {
+  class WindowListener extends WindowAdapter {
 
-		public void windowActivated(WindowEvent we) {
-			setVisible(false);
-			dispose();
-		}
-	}
+    public void windowActivated(WindowEvent we) {
+      setVisible(false);
+      dispose();
+    }
+  }
 }

@@ -29,30 +29,29 @@ import org.openscience.cml.*;
 
 public class CMLFile extends ChemFile {
 
-	private static final String pClass = "com.microstar.xml.SAXDriver";
+  private static final String pClass = "com.microstar.xml.SAXDriver";
 
-	private Vector cfs;
-	private int retFrame;
+  private Vector cfs;
+  private int retFrame;
 
-	/**
-	 * CML files contain a single ChemFrame object.
-	 * @see ChemFrame
-	 * @param is input stream for the PDB file
-	 */
-	public CMLFile(InputStream is) throws Exception {
+  /**
+   * CML files contain a single ChemFrame object.
+   * @see ChemFrame
+   * @param is input stream for the PDB file
+   */
+  public CMLFile(InputStream is) throws Exception {
 
-		super();
+    super();
 
-		InputSource input = new InputSource(is);
-		Parser parser = ParserFactory.makeParser(pClass);
-		EntityResolver resolver = new DTDResolver();
-		DocumentHandler handler =
-			new CMLHandler((CDOInterface) new JMolCDO());
-		parser.setEntityResolver(resolver);
-		parser.setDocumentHandler(handler);
-		parser.parse(input);
-		JMolCDO cdo = (JMolCDO) ((CMLHandler) handler).returnCDO();
-		frames = cdo.returnChemFrames();
-		System.out.println("Back in CMLFile...");
-	}
+    InputSource input = new InputSource(is);
+    Parser parser = ParserFactory.makeParser(pClass);
+    EntityResolver resolver = new DTDResolver();
+    DocumentHandler handler = new CMLHandler((CDOInterface) new JMolCDO());
+    parser.setEntityResolver(resolver);
+    parser.setDocumentHandler(handler);
+    parser.parse(input);
+    JMolCDO cdo = (JMolCDO) ((CMLHandler) handler).returnCDO();
+    frames = cdo.returnChemFrames();
+    System.out.println("Back in CMLFile...");
+  }
 }

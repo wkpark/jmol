@@ -24,54 +24,54 @@ import java.util.Vector;
 
 public class ChemFile {
 
-	/**@shapeType AggregationLink
-	@associates <b>ChemFrame</b>*/
-	Vector frames;
-	int nframes = 0;
-	Vector AtomPropertyList = new Vector();
-	Vector FramePropertyList = new Vector();
+  /**@shapeType AggregationLink
+  @associates <b>ChemFrame</b>*/
+  Vector frames;
+  int nframes = 0;
+  Vector AtomPropertyList = new Vector();
+  Vector FramePropertyList = new Vector();
 
-	/**
-	 * Very simple class that should be subclassed for each different
-	 * kind of file that can be read by Jmol.
-	 */
-	public ChemFile() {
-		frames = new Vector(1);
-	}
+  /**
+   * Very simple class that should be subclassed for each different
+   * kind of file that can be read by Jmol.
+   */
+  public ChemFile() {
+    frames = new Vector(1);
+  }
 
-	/**
-	 * returns a ChemFrame from a sequence of ChemFrames that make up
-	 * this ChemFile
-	 *
-	 * @see ChemFrame
-	 * @param whichframe which frame to return
-	 */
-	public ChemFrame getFrame(int whichframe) {
-		return (ChemFrame) frames.elementAt(whichframe);
-	}
+  /**
+   * returns a ChemFrame from a sequence of ChemFrames that make up
+   * this ChemFile
+   *
+   * @see ChemFrame
+   * @param whichframe which frame to return
+   */
+  public ChemFrame getFrame(int whichframe) {
+    return (ChemFrame) frames.elementAt(whichframe);
+  }
 
-	/**
-	 * returns the number of frames in this file
-	 */
-	public int nFrames() {
-		return frames.size();
-	}
+  /**
+   * returns the number of frames in this file
+   */
+  public int nFrames() {
+    return frames.size();
+  }
 
-	/**
-	 * returns the vector containing the descriptive list of Physical
-	 * properties that this file contains.
-	 */
-	public Vector getAtomPropertyList() {
-		return AtomPropertyList;
-	}
+  /**
+   * returns the vector containing the descriptive list of Physical
+   * properties that this file contains.
+   */
+  public Vector getAtomPropertyList() {
+    return AtomPropertyList;
+  }
 
-	/**
-	 * returns the vector containing the descriptive list of Frame
-	 * properties that this file contains.
-	 */
-	public Vector getFramePropertyList() {
-		return FramePropertyList;
-	}
+  /**
+   * returns the vector containing the descriptive list of Frame
+   * properties that this file contains.
+   */
+  public Vector getFramePropertyList() {
+    return FramePropertyList;
+  }
 
 }
 

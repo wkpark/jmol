@@ -31,6 +31,6 @@ import java.util.EventListener;
  */
 
 public interface MeasurementListListener extends java.util.EventListener {
-	public void mlistChanged(MeasurementListEvent mle);
+  public void mlistChanged(MeasurementListEvent mle);
 }
 

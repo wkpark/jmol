@@ -29,55 +29,55 @@ import java.beans.*;
  */
 public class TestBaseAtomType extends TestCase {
 
-	/**
-	 * Creates a Test for the given method.
-	 */
-	public TestBaseAtomType(String name) {
-		super(name);
-	}
+  /**
+   * Creates a Test for the given method.
+   */
+  public TestBaseAtomType(String name) {
+    super(name);
+  }
 
-	/**
-	 * BaseAtomType fixture.
-	 */
-	BaseAtomType at1;
+  /**
+   * BaseAtomType fixture.
+   */
+  BaseAtomType at1;
 
-	/**
-	 * BaseAtomType fixture.
-	 */
-	BaseAtomType at2;
+  /**
+   * BaseAtomType fixture.
+   */
+  BaseAtomType at2;
 
-	/**
-	 * Set up for testing.
-	 */
-	public void setUp() {
-		at1 = BaseAtomType.get("type1", "root1", 1, 1.1, 2.2, 3.3,
-				new Color(4, 5, 6));
-		at2 = BaseAtomType.get("type2");
-	}
+  /**
+   * Set up for testing.
+   */
+  public void setUp() {
+    at1 = BaseAtomType.get("type1", "root1", 1, 1.1, 2.2, 3.3,
+            new Color(4, 5, 6));
+    at2 = BaseAtomType.get("type2");
+  }
 
-	/**
-	 * Test the constructors.
-	 */
-	public void testConstructors() {
+  /**
+   * Test the constructors.
+   */
+  public void testConstructors() {
 
-		assertEquals("type1", at1.getName());
-		assertEquals("root1", at1.getRoot());
-		assertEquals(1, at1.getAtomicNumber());
-		assert(1.1 == at1.getMass());
-		assert(2.2 == at1.getVdwRadius());
-		assert(3.3 == at1.getCovalentRadius());
-		assertEquals(new Color(4, 5, 6), at1.getColor());
-		assertEquals("type2", at2.getName());
-		assertEquals(null, at2.getRoot());
-		assertEquals(0, at2.getAtomicNumber());
-		assertEquals(null, at2.getColor());
-	}
+    assertEquals("type1", at1.getName());
+    assertEquals("root1", at1.getRoot());
+    assertEquals(1, at1.getAtomicNumber());
+    assert(1.1 == at1.getMass());
+    assert(2.2 == at1.getVdwRadius());
+    assert(3.3 == at1.getCovalentRadius());
+    assertEquals(new Color(4, 5, 6), at1.getColor());
+    assertEquals("type2", at2.getName());
+    assertEquals(null, at2.getRoot());
+    assertEquals(0, at2.getAtomicNumber());
+    assertEquals(null, at2.getColor());
+  }
 
-	/**
-	 * Returns a Test containing all the tests.
-	 */
-	public static Test suite() {
-		TestSuite suite = new TestSuite(TestBaseAtomType.class);
-		return suite;
-	}
+  /**
+   * Returns a Test containing all the tests.
+   */
+  public static Test suite() {
+    TestSuite suite = new TestSuite(TestBaseAtomType.class);
+    return suite;
+  }
 }

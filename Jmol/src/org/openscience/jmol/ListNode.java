@@ -25,68 +25,67 @@ import java.util.Vector;
 
 public class ListNode extends DefaultMutableTreeNode {
 
-	/** Have the children of this node been loaded yet? */
-	protected boolean hasLoaded;
-	protected Vector v;
+  /** Have the children of this node been loaded yet? */
+  protected boolean hasLoaded;
+  protected Vector v;
 
-	/**
-	 * Constructs a new ListNode instance with o as the user
-	 * object.
-	 */
-	public ListNode(Object o) {
-		super(o);
-	}
+  /**
+   * Constructs a new ListNode instance with o as the user
+   * object.
+   */
+  public ListNode(Object o) {
+    super(o);
+  }
 
-	public ListNode(String s, Vector v) {
-		super((Object) s);
-		this.v = v;
-	}
+  public ListNode(String s, Vector v) {
+    super((Object) s);
+    this.v = v;
+  }
 
-	public boolean isLeaf() {
-		return false;
-	}
+  public boolean isLeaf() {
+    return false;
+  }
 
-	/**
-	 * If hasLoaded is false, meaning the children have not yet been
-	 * loaded, loadChildren is messaged and super is messaged for
-	 * the return value.
-	 */
-	public int getChildCount() {
-		if (!hasLoaded) {
-			loadChildren();
-		}
-		return super.getChildCount();
-	}
+  /**
+   * If hasLoaded is false, meaning the children have not yet been
+   * loaded, loadChildren is messaged and super is messaged for
+   * the return value.
+   */
+  public int getChildCount() {
+    if (!hasLoaded) {
+      loadChildren();
+    }
+    return super.getChildCount();
+  }
 
-	/**
-	 * Messaged the first time getChildCount is messaged.  Creates
-	 * children with names from the Vector.
-	 */
-	protected void loadChildren() {
+  /**
+   * Messaged the first time getChildCount is messaged.  Creates
+   * children with names from the Vector.
+   */
+  protected void loadChildren() {
 
-		DefaultMutableTreeNode newNode;
+    DefaultMutableTreeNode newNode;
 
-		if (v.isEmpty()) {
-			DefaultMutableTreeNode emptyNode =
-				new DefaultMutableTreeNode("Empty");
-			insert(emptyNode, 0);
-		} else {
+    if (v.isEmpty()) {
+      DefaultMutableTreeNode emptyNode = new DefaultMutableTreeNode("Empty");
+      insert(emptyNode, 0);
+    } else {
 
-			int counter = 0;
+      int counter = 0;
 
-			for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
-				newNode = new DefaultMutableTreeNode(e.nextElement());
-				insert(newNode, counter);
-				counter++;
-			}
-		}
-		hasLoaded = true;
-	}
+      for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
+        newNode = new DefaultMutableTreeNode(e.nextElement());
+        insert(newNode, counter);
+        counter++;
+      }
+    }
+    hasLoaded = true;
+  }
 
-	protected void update() {
-		removeAllChildren();
-		hasLoaded = false;
-		loadChildren();
-	}
+  protected void update() {
+    removeAllChildren();
+    hasLoaded = false;
+    loadChildren();
+  }
 
 }

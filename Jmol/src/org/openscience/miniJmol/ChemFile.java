@@ -23,78 +23,78 @@ import java.util.Vector;
 
 public class ChemFile {
 
-	/**
-																																	 * Frames contained by this file.
-																																	 *
-																																	 * @shapeType AggregationLink
-																																	 * @associates <b>ChemFrame</b>
-																																	 */
-	private Vector frames = new Vector(1);
-	private boolean bondsEnabled = true;
-	private Vector propertyList = new Vector();
+  /**
+                                                                                                                                                                                                                                                                   * Frames contained by this file.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @shapeType AggregationLink
+                                                                                                                                                                                                                                                                   * @associates <b>ChemFrame</b>
+                                                                                                                                                                                                                                                                   */
+  private Vector frames = new Vector(1);
+  private boolean bondsEnabled = true;
+  private Vector propertyList = new Vector();
 
-	/**
-	 * Very simple class that should be subclassed for each different
-	 * kind of file that can be read by Jmol.
-	 */
-	public ChemFile() {
-	}
+  /**
+   * Very simple class that should be subclassed for each different
+   * kind of file that can be read by Jmol.
+   */
+  public ChemFile() {
+  }
 
-	public ChemFile(boolean bondsEnabled) {
-		this.bondsEnabled = bondsEnabled;
-	}
+  public ChemFile(boolean bondsEnabled) {
+    this.bondsEnabled = bondsEnabled;
+  }
 
-	public boolean getBondsEnabled() {
-		return bondsEnabled;
-	}
+  public boolean getBondsEnabled() {
+    return bondsEnabled;
+  }
 
-	/**
-	 * returns a ChemFrame from a sequence of ChemFrames that make up
-	 * this ChemFile
-	 *
-	 * @see ChemFrame
-	 * @param whichframe which frame to return
-	 */
-	public ChemFrame getFrame(int whichframe) {
-		if (whichframe < frames.size()) {
-			return (ChemFrame) frames.elementAt(whichframe);
-		}
-		return null;
-	}
+  /**
+   * returns a ChemFrame from a sequence of ChemFrames that make up
+   * this ChemFile
+   *
+   * @see ChemFrame
+   * @param whichframe which frame to return
+   */
+  public ChemFrame getFrame(int whichframe) {
+    if (whichframe < frames.size()) {
+      return (ChemFrame) frames.elementAt(whichframe);
+    }
+    return null;
+  }
 
-	/**
-	 * Adds a frame to this file.
-																																	 *
-																																	 * @param frame the frame to be added
-	 */
-	public void addFrame(ChemFrame frame) {
-		frames.addElement(frame);
-	}
+  /**
+   * Adds a frame to this file.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @param frame the frame to be added
+   */
+  public void addFrame(ChemFrame frame) {
+    frames.addElement(frame);
+  }
 
-	/**
-	 * Returns the number of frames in this file.
-	 */
-	public int getNumberFrames() {
-		return frames.size();
-	}
+  /**
+   * Returns the number of frames in this file.
+   */
+  public int getNumberFrames() {
+    return frames.size();
+  }
 
-	/**
-	 * Returns a list of descriptions for physical properties
-	 * contained by this file.
-																																	 */
-	public Vector getPropertyList() {
-		return propertyList;
-	}
+  /**
+   * Returns a list of descriptions for physical properties
+   * contained by this file.
+                                                                                                                                                                                                                                                                   */
+  public Vector getPropertyList() {
+    return propertyList;
+  }
 
-	/**
-																																	 * Adds a property description to the property list.
-																																	 *
-																																	 * @param prop the property description
-																																	 */
-	public void addProperty(String prop) {
-		if (propertyList.indexOf(prop) < 0) {
-			propertyList.addElement(prop);
-		}
-	}
+  /**
+                                                                                                                                                                                                                                                                   * Adds a property description to the property list.
+                                                                                                                                                                                                                                                                   *
+                                                                                                                                                                                                                                                                   * @param prop the property description
+                                                                                                                                                                                                                                                                   */
+  public void addProperty(String prop) {
+    if (propertyList.indexOf(prop) < 0) {
+      propertyList.addElement(prop);
+    }
+  }
 }
 

@@ -42,87 +42,87 @@ import java.util.EventObject;
  */
 public class MeasurementListEvent extends java.util.EventObject {
 
-	/** Identifies the addtion of new measurements. */
-	public static final int ADD = 1;
+  /** Identifies the addtion of new measurements. */
+  public static final int ADD = 1;
 
-	/** Identifies a change to existing measurements. */
-	public static final int UPDATE = 0;
+  /** Identifies a change to existing measurements. */
+  public static final int UPDATE = 0;
 
-	/** Identifies the removal of measurements. */
-	public static final int DELETE = -1;
+  /** Identifies the removal of measurements. */
+  public static final int DELETE = -1;
 
-	/** Identifies the distance measurements. */
-	public static final int DISTANCE = 2;
+  /** Identifies the distance measurements. */
+  public static final int DISTANCE = 2;
 
-	/** Identifies the angle measurements. */
-	public static final int ANGLE = 3;
+  /** Identifies the angle measurements. */
+  public static final int ANGLE = 3;
 
-	/** Identifies the dihedral measurements. */
-	public static final int DIHEDRAL = 4;
+  /** Identifies the dihedral measurements. */
+  public static final int DIHEDRAL = 4;
 
-	/** Specifies all measurements of a class; */
-	public static final int ALL = -1;
+  /** Specifies all measurements of a class; */
+  public static final int ALL = -1;
 
-	protected int type;
-	protected int which;
-	protected int op;
+  protected int type;
+  protected int which;
+  protected int op;
 
-	/**
-	 *  All measurement requests have changed, listeners should
-	 *  discard any state that was based on the measurement list and
-	 *  requery the MeasurementList to get the vectors.
-	 */
-	public MeasurementListEvent(MeasurementList source) {
-		this(source, ALL, ALL, UPDATE);
-	}
+  /**
+   *  All measurement requests have changed, listeners should
+   *  discard any state that was based on the measurement list and
+   *  requery the MeasurementList to get the vectors.
+   */
+  public MeasurementListEvent(MeasurementList source) {
+    this(source, ALL, ALL, UPDATE);
+  }
 
-	/**
-	 *  This type of measurement has been updated.
-	 */
-	public MeasurementListEvent(MeasurementList source, int type) {
-		this(source, type, ALL, UPDATE);
-	}
+  /**
+   *  This type of measurement has been updated.
+   */
+  public MeasurementListEvent(MeasurementList source, int type) {
+    this(source, type, ALL, UPDATE);
+  }
 
-	/**
-	 *  The measurement of type <i>type</i> in position <i>which</i>
-	 *  has been updated.
-	 */
-	public MeasurementListEvent(MeasurementList source, int type, int which) {
-		this(source, type, which, UPDATE);
-	}
+  /**
+   *  The measurement of type <i>type</i> in position <i>which</i>
+   *  has been updated.
+   */
+  public MeasurementListEvent(MeasurementList source, int type, int which) {
+    this(source, type, which, UPDATE);
+  }
 
-	/**
-	 * The measurement of type <i>type</i> in poisition <i>which</i>
-	 * has had operation <i>op</i> done to it.  When <I>which</I> is
-	 * ALL, all measurements of the specified type are considered
-	 * changed.
-	 *
-	 * <p> The <I>op</I> should be one of: ADD, UPDATE and DELETE.  */
-	public MeasurementListEvent(MeasurementList source, int type, int which,
-			int op) {
-		super(source);
-		this.type = type;
-		this.which = which;
-		this.op = op;
-	}
+  /**
+   * The measurement of type <i>type</i> in poisition <i>which</i>
+   * has had operation <i>op</i> done to it.  When <I>which</I> is
+   * ALL, all measurements of the specified type are considered
+   * changed.
+   *
+   * <p> The <I>op</I> should be one of: ADD, UPDATE and DELETE.  */
+  public MeasurementListEvent(MeasurementList source, int type, int which,
+          int op) {
+    super(source);
+    this.type = type;
+    this.which = which;
+    this.op = op;
+  }
 
-	/** Returns the type of measurement that changed. */
-	public int getType() {
-		return type;
-	}
-	;
+  /** Returns the type of measurement that changed. */
+  public int getType() {
+    return type;
+  }
+  ;
 
-	/** Returns the position in the given measurement list that
-	 * underwent a change.
-	 */
-	public int getWhich() {
-		return which;
-	}
-	;
+  /** Returns the position in the given measurement list that
+   * underwent a change.
+   */
+  public int getWhich() {
+    return which;
+  }
+  ;
 
-	/** Returns the type of event - one of ADD, DELETE, or UPDATE */
-	public int getOp() {
-		return op;
-	}
-	;
+  /** Returns the type of event - one of ADD, DELETE, or UPDATE */
+  public int getOp() {
+    return op;
+  }
+  ;
 }

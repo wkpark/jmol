@@ -29,61 +29,61 @@ import java.util.Locale;
 
 public class DecimalNumberField extends JTextField {
 
-	private Toolkit toolkit;
-	private NumberFormat doubleFormatter;
+  private Toolkit toolkit;
+  private NumberFormat doubleFormatter;
 
-	public DecimalNumberField(int value, int columns) {
-		super(columns);
-		toolkit = Toolkit.getDefaultToolkit();
-		doubleFormatter = NumberFormat.getNumberInstance(Locale.US);
-		setValue(value);
-	}
+  public DecimalNumberField(int value, int columns) {
+    super(columns);
+    toolkit = Toolkit.getDefaultToolkit();
+    doubleFormatter = NumberFormat.getNumberInstance(Locale.US);
+    setValue(value);
+  }
 
-	public double getValue() {
+  public double getValue() {
 
-		double retVal = 0.0;
-		try {
-			retVal = doubleFormatter.parse(getText()).doubleValue();
-		} catch (ParseException e) {
+    double retVal = 0.0;
+    try {
+      retVal = doubleFormatter.parse(getText()).doubleValue();
+    } catch (ParseException e) {
 
-			// This should never happen because insertString allows
-			// only properly formatted data to get in the field.
-			toolkit.beep();
-		}
-		return retVal;
-	}
+      // This should never happen because insertString allows
+      // only properly formatted data to get in the field.
+      toolkit.beep();
+    }
+    return retVal;
+  }
 
-	public void setValue(int value) {
-		setText(doubleFormatter.format(value));
-	}
+  public void setValue(int value) {
+    setText(doubleFormatter.format(value));
+  }
 
-	protected Document createDefaultModel() {
-		return new DecimalNumberDocument();
-	}
+  protected Document createDefaultModel() {
+    return new DecimalNumberDocument();
+  }
 
-	protected class DecimalNumberDocument extends PlainDocument {
+  protected class DecimalNumberDocument extends PlainDocument {
 
-		public void insertString(int offs, String str, AttributeSet a)
-				throws BadLocationException {
+    public void insertString(int offs, String str, AttributeSet a)
+            throws BadLocationException {
 
-			char[] source = str.toCharArray();
-			char[] result = new char[source.length];
-			int j = 0;
+      char[] source = str.toCharArray();
+      char[] result = new char[source.length];
+      int j = 0;
 
-			String dot = new String(".");
-			char[] cdot = dot.toCharArray();
+      String dot = new String(".");
+      char[] cdot = dot.toCharArray();
 
-			for (int i = 0; i < result.length; i++) {
-				if (Character.isDigit(source[i]) || (source[i] == cdot[0])) {
-					result[j++] = source[i];
-				} else {
-					toolkit.beep();
-					System.err.println(
-							"Attempting to insert illegal character in decimal: "
-								+ source[i]);
-				}
-			}
-			super.insertString(offs, new String(result, 0, j), a);
-		}
-	}
+      for (int i = 0; i < result.length; i++) {
+        if (Character.isDigit(source[i]) || (source[i] == cdot[0])) {
+          result[j++] = source[i];
+        } else {
+          toolkit.beep();
+          System.err.println(
+                  "Attempting to insert illegal character in decimal: "
+                    + source[i]);
+        }
+      }
+      super.insertString(offs, new String(result, 0, j), a);
+    }
+  }
 }

@@ -28,32 +28,32 @@ package org.openscience.jmol;
  */
 public class PhysicalProperty {
 
-	String descriptor;
-	Object property;
+  String descriptor;
+  Object property;
 
-	public PhysicalProperty(String descriptor, Object property) {
-		this.descriptor = descriptor;
-		this.property = property;
-	}
+  public PhysicalProperty(String descriptor, Object property) {
+    this.descriptor = descriptor;
+    this.property = property;
+  }
 
-	/**
-	 * return the String descriptor of this PhysicalProperty
-	 */
-	public String getDescriptor() {
-		return descriptor;
-	}
+  /**
+   * return the String descriptor of this PhysicalProperty
+   */
+  public String getDescriptor() {
+    return descriptor;
+  }
 
-	/**
-	 * return the value of this PhysicalProperty
-	 */
-	public Object getProperty() {
-		return property;
-	}
+  /**
+   * return the value of this PhysicalProperty
+   */
+  public Object getProperty() {
+    return property;
+  }
 
-	/**
-	 * return the string value of this PhysicalProperty
-	 */
-	public String stringValue() {
-		return property.toString();
-	}
+  /**
+   * return the string value of this PhysicalProperty
+   */
+  public String stringValue() {
+    return property.toString();
+  }
 }

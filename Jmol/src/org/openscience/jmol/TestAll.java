@@ -26,26 +26,26 @@ import junit.framework.*;
  */
 public class TestAll {
 
-	/**
-	 * Executes the text interface to run the tests.
-	 */
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(suite());
-	}
+  /**
+   * Executes the text interface to run the tests.
+   */
+  public static void main(String[] args) {
+    junit.textui.TestRunner.run(suite());
+  }
 
-	/**
-	 * Returns a Test containing all the tests.
-	 */
-	public static Test suite() {
+  /**
+   * Returns a Test containing all the tests.
+   */
+  public static Test suite() {
 
-		TestSuite suite = new TestSuite();
-		suite.addTest(TestBaseAtomType.suite());
-		suite.addTest(TestAtomType.suite());
-		suite.addTest(TestAtomTypeSet.suite());
-		suite.addTest(TestAtomTypesModel.suite());
-		suite.addTest(TestGaussian98Reader.suite());
-		return suite;
-	}
+    TestSuite suite = new TestSuite();
+    suite.addTest(TestBaseAtomType.suite());
+    suite.addTest(TestAtomType.suite());
+    suite.addTest(TestAtomTypeSet.suite());
+    suite.addTest(TestAtomTypesModel.suite());
+    suite.addTest(TestGaussian98Reader.suite());
+    return suite;
+  }
 
 }
 

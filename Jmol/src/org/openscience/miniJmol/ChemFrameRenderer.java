@@ -30,104 +30,101 @@ import java.util.Enumeration;
  */
 public class ChemFrameRenderer {
 
-	/**
-	 * Paint this model to a graphics context.  It uses the matrix
-	 * associated with this model to map from model space to screen
-	 * space.
-	 *
-	 * @param g the Graphics context on which to paint
-	 * @param frame the ChemFrame to render
-	 * @param settings the display settings
-	 */
-	public void paint(Graphics g, ChemFrame frame, DisplaySettings settings) {
+  /**
+   * Paint this model to a graphics context.  It uses the matrix
+   * associated with this model to map from model space to screen
+   * space.
+   *
+   * @param g the Graphics context on which to paint
+   * @param frame the ChemFrame to render
+   * @param settings the display settings
+   */
+  public void paint(Graphics g, ChemFrame frame, DisplaySettings settings) {
 
-		if ((frame.getAtoms() == null) || (frame.getNumberAtoms() <= 0)) {
-			return;
-		}
-		frame.transform();
-		if (!settings.getFastRendering() || (atomReferences == null)) {
-			if ((atomReferences == null)
-					|| (atomReferences.length != frame.getNumberAtoms())) {
-				atomReferences = new AtomReference[frame.getNumberAtoms()];
-				for (int i = 0; i < atomReferences.length; ++i) {
-					atomReferences[i] = new AtomReference();
-				}
-			}
-			for (int i = 0; i < frame.getNumberAtoms(); ++i) {
-				atomReferences[i].index = i;
-				atomReferences[i].z =
-						frame.getAtoms()[i].getScreenPosition().z;
-			}
+    if ((frame.getAtoms() == null) || (frame.getNumberAtoms() <= 0)) {
+      return;
+    }
+    frame.transform();
+    if (!settings.getFastRendering() || (atomReferences == null)) {
+      if ((atomReferences == null)
+              || (atomReferences.length != frame.getNumberAtoms())) {
+        atomReferences = new AtomReference[frame.getNumberAtoms()];
+        for (int i = 0; i < atomReferences.length; ++i) {
+          atomReferences[i] = new AtomReference();
+        }
+      }
+      for (int i = 0; i < frame.getNumberAtoms(); ++i) {
+        atomReferences[i].index = i;
+        atomReferences[i].z = frame.getAtoms()[i].getScreenPosition().z;
+      }
 
-			if (frame.getNumberAtoms() > 1) {
-				sorter.sort(atomReferences);
-			}
-		}
-		for (int i = 0; i < frame.getNumberAtoms(); i++) {
-			int j = atomReferences[i].index;
-			if (settings.getShowBonds()) {
-				Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
-				while (bondIter.hasMoreElements()) {
-					Atom otherAtom = (Atom) bondIter.nextElement();
-					if (otherAtom.getScreenPosition().z
-							< frame.getAtoms()[j].getScreenPosition().z) {
-						bondRenderer.paint(g, frame.getAtoms()[j], otherAtom,
-								settings);
-					}
-				}
-			}
-			if (settings.getShowAtoms() && !settings.getFastRendering()) {
-				atomRenderer.paint(g, frame.getAtoms()[j],
-						frame.getPickedAtoms()[j], settings, false);
-			} else if (settings.getFastRendering()) {
-				atomRenderer.paint(g, frame.getAtoms()[j],
-						frame.getPickedAtoms()[j], settings, true);
-			}
-			if (settings.getShowBonds()) {
-				Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
-				while (bondIter.hasMoreElements()) {
-					Atom otherAtom = (Atom) bondIter.nextElement();
-					if (otherAtom.getScreenPosition().z
-							>= frame.getAtoms()[j].getScreenPosition().z) {
-						bondRenderer.paint(g, frame.getAtoms()[j], otherAtom,
-								settings);
-					}
-				}
-			}
+      if (frame.getNumberAtoms() > 1) {
+        sorter.sort(atomReferences);
+      }
+    }
+    for (int i = 0; i < frame.getNumberAtoms(); i++) {
+      int j = atomReferences[i].index;
+      if (settings.getShowBonds()) {
+        Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
+        while (bondIter.hasMoreElements()) {
+          Atom otherAtom = (Atom) bondIter.nextElement();
+          if (otherAtom.getScreenPosition().z
+                  < frame.getAtoms()[j].getScreenPosition().z) {
+            bondRenderer.paint(g, frame.getAtoms()[j], otherAtom, settings);
+          }
+        }
+      }
+      if (settings.getShowAtoms() && !settings.getFastRendering()) {
+        atomRenderer.paint(g, frame.getAtoms()[j], frame.getPickedAtoms()[j],
+                settings, false);
+      } else if (settings.getFastRendering()) {
+        atomRenderer.paint(g, frame.getAtoms()[j], frame.getPickedAtoms()[j],
+                settings, true);
+      }
+      if (settings.getShowBonds()) {
+        Enumeration bondIter = frame.getAtoms()[j].getBondedAtoms();
+        while (bondIter.hasMoreElements()) {
+          Atom otherAtom = (Atom) bondIter.nextElement();
+          if (otherAtom.getScreenPosition().z
+                  >= frame.getAtoms()[j].getScreenPosition().z) {
+            bondRenderer.paint(g, frame.getAtoms()[j], otherAtom, settings);
+          }
+        }
+      }
 
-		}
-	}
+    }
+  }
 
-	/**
-	 * Renderer for atoms.
-	 */
-	private AtomRenderer atomRenderer = new AtomRenderer();
+  /**
+   * Renderer for atoms.
+   */
+  private AtomRenderer atomRenderer = new AtomRenderer();
 
-	/**
-	 * Renderer for bonds.
-	 */
-	private BondRenderer bondRenderer = new BondRenderer();
+  /**
+   * Renderer for bonds.
+   */
+  private BondRenderer bondRenderer = new BondRenderer();
 
-	class AtomReference {
-		int index;
-		float z;
-	}
+  class AtomReference {
+    int index;
+    float z;
+  }
 
-	AtomReference[] atomReferences;
+  AtomReference[] atomReferences;
 
-	HeapSorter sorter = new HeapSorter(new HeapSorter.Comparator() {
+  HeapSorter sorter = new HeapSorter(new HeapSorter.Comparator() {
 
-		public int compare(Object atom1, Object atom2) {
+    public int compare(Object atom1, Object atom2) {
 
-			AtomReference a1 = (AtomReference) atom1;
-			AtomReference a2 = (AtomReference) atom2;
-			if (a1.z < a2.z) {
-				return -1;
-			} else if (a1.z > a2.z) {
-				return 1;
-			}
-			return 0;
-		}
-	});
+      AtomReference a1 = (AtomReference) atom1;
+      AtomReference a2 = (AtomReference) atom2;
+      if (a1.z < a2.z) {
+        return -1;
+      } else if (a1.z > a2.z) {
+        return 1;
+      }
+      return 0;
+    }
+  });
 
 }

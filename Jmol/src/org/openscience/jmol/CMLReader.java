@@ -34,76 +34,75 @@ import org.openscience.cml.*;
  */
 public class CMLReader implements ChemFileReader {
 
-	/**
-	 * Creates a CML reader.
-	 *
-	 * @param input source of CML data
-	 */
-	public CMLReader(Reader input) {
-		this.input = input;
-	}
+  /**
+   * Creates a CML reader.
+   *
+   * @param input source of CML data
+   */
+  public CMLReader(Reader input) {
+    this.input = input;
+  }
 
-	/**
-	 * Read the CML data.
-	 */
-	public ChemFile read() throws IOException {
+  /**
+   * Read the CML data.
+   */
+  public ChemFile read() throws IOException {
 
-		try {
-			InputSource source = new InputSource(input);
-			Parser parser =
-				ParserFactory.makeParser("com.microstar.xml.SAXDriver");
-			EntityResolver resolver = new DTDResolver();
-			JMolCDO cdo = new JMolCDO();
-			CMLHandler handler = new CMLHandler(cdo);
-			((CMLHandler) handler).registerConvention("JMOL-ANIMATION",
-					new JMOLANIMATIONConvention(cdo));
-			parser.setEntityResolver(resolver);
-			parser.setDocumentHandler(handler);
-			parser.parse(source);
-			ChemFile file = new ChemFile();
-			Enumeration framesIter =
-				((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
-			while (framesIter.hasMoreElements()) {
-				System.err.println("New Frame!!!!!!!");
+    try {
+      InputSource source = new InputSource(input);
+      Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
+      EntityResolver resolver = new DTDResolver();
+      JMolCDO cdo = new JMolCDO();
+      CMLHandler handler = new CMLHandler(cdo);
+      ((CMLHandler) handler).registerConvention("JMOL-ANIMATION",
+              new JMOLANIMATIONConvention(cdo));
+      parser.setEntityResolver(resolver);
+      parser.setDocumentHandler(handler);
+      parser.parse(source);
+      ChemFile file = new ChemFile();
+      Enumeration framesIter =
+        ((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
+      while (framesIter.hasMoreElements()) {
+        System.err.println("New Frame!!!!!!!");
 
-				ChemFrame frame = (ChemFrame) framesIter.nextElement();
+        ChemFrame frame = (ChemFrame) framesIter.nextElement();
 
-				file.frames.addElement(frame);
+        file.frames.addElement(frame);
 
-				Vector ap = frame.getAtomProps();
-				for (int i = 0; i < ap.size(); i++) {
-					if (file.AtomPropertyList.indexOf(ap.elementAt(i)) < 0) {
-						file.AtomPropertyList.addElement(ap.elementAt(i));
-					}
-				}
+        Vector ap = frame.getAtomProps();
+        for (int i = 0; i < ap.size(); i++) {
+          if (file.AtomPropertyList.indexOf(ap.elementAt(i)) < 0) {
+            file.AtomPropertyList.addElement(ap.elementAt(i));
+          }
+        }
 
-				Vector fp = frame.getFrameProps();
+        Vector fp = frame.getFrameProps();
 
-				for (int j = 0; j < fp.size(); j++) {
-					PhysicalProperty p = (PhysicalProperty) fp.elementAt(j);
-					String desc = p.getDescriptor();
+        for (int j = 0; j < fp.size(); j++) {
+          PhysicalProperty p = (PhysicalProperty) fp.elementAt(j);
+          String desc = p.getDescriptor();
 
-					// Update the frameProps if we found a new property
-					if (file.FramePropertyList.indexOf(desc) < 0) {
-						file.FramePropertyList.addElement(desc);
-					}
-				}
+          // Update the frameProps if we found a new property
+          if (file.FramePropertyList.indexOf(desc) < 0) {
+            file.FramePropertyList.addElement(desc);
+          }
+        }
 
-			}
-			return file;
-		} catch (ClassNotFoundException ex) {
-			throw new IOException(ex.toString());
-		} catch (InstantiationException ex) {
-			throw new IOException(ex.toString());
-		} catch (SAXException ex) {
-			throw new IOException(ex.toString());
-		} catch (IllegalAccessException ex) {
-			throw new IOException(ex.toString());
-		}
-	}
+      }
+      return file;
+    } catch (ClassNotFoundException ex) {
+      throw new IOException(ex.toString());
+    } catch (InstantiationException ex) {
+      throw new IOException(ex.toString());
+    } catch (SAXException ex) {
+      throw new IOException(ex.toString());
+    } catch (IllegalAccessException ex) {
+      throw new IOException(ex.toString());
+    }
+  }
 
-	/**
-	 * The source for CML data.
-	 */
-	private Reader input;
+  /**
+   * The source for CML data.
+   */
+  private Reader input;
 }

@@ -72,127 +72,127 @@ import java.util.StringTokenizer;
  * @version 1.0 */
 public class XYZReader implements ChemFileReader {
 
-	/**
-	 * Create an XYZ output reader.
-	 *
-	 * @param input source of XYZ data
-	 */
-	public XYZReader(Reader input) {
-		this.input = new BufferedReader(input);
-	}
+  /**
+   * Create an XYZ output reader.
+   *
+   * @param input source of XYZ data
+   */
+  public XYZReader(Reader input) {
+    this.input = new BufferedReader(input);
+  }
 
-	/**
-	 * Read the XYZ output.
-	 *
-	 * @return a ChemFile with the coordinates, charges, vectors, etc.
-	 * @exception IOException if an I/O error occurs
-	 */
-	public ChemFile read() throws IOException, Exception {
+  /**
+   * Read the XYZ output.
+   *
+   * @return a ChemFile with the coordinates, charges, vectors, etc.
+   * @exception IOException if an I/O error occurs
+   */
+  public ChemFile read() throws IOException, Exception {
 
-		ChemFile file = new ChemFile();
+    ChemFile file = new ChemFile();
 
-		int na = 0;
-		String info = "";
-		StringTokenizer st;
+    int na = 0;
+    String info = "";
+    StringTokenizer st;
 
-		String line = input.readLine();
-		while (input.ready() && (line != null)) {
-			st = new StringTokenizer(line, "\t ,;");
+    String line = input.readLine();
+    while (input.ready() && (line != null)) {
+      st = new StringTokenizer(line, "\t ,;");
 
-			String sn = st.nextToken();
-			na = Integer.parseInt(sn);
-			info = input.readLine();
-			System.out.println(info);
+      String sn = st.nextToken();
+      na = Integer.parseInt(sn);
+      info = input.readLine();
+      System.out.println(info);
 
-			ChemFrame frame = new ChemFrame(na);
-			frame.setInfo(info);
+      ChemFrame frame = new ChemFrame(na);
+      frame.setInfo(info);
 
-			String s;		// temporary variable used to store data as we read it
+      String s;        // temporary variable used to store data as we read it
 
-			for (int i = 0; i < na; i++) {
-				s = input.readLine();
-				if (s == null) {
-					break;
-				}
-				if (!s.startsWith("#")) {
-					double x = 0.0f, y = 0.0f, z = 0.0f, c = 0.0f;
-					double vect[] = new double[3];
-					st = new StringTokenizer(s, "\t ,;");
-					boolean readcharge = false;
-					boolean readvect = false;
-					int nt = st.countTokens();
+      for (int i = 0; i < na; i++) {
+        s = input.readLine();
+        if (s == null) {
+          break;
+        }
+        if (!s.startsWith("#")) {
+          double x = 0.0f, y = 0.0f, z = 0.0f, c = 0.0f;
+          double vect[] = new double[3];
+          st = new StringTokenizer(s, "\t ,;");
+          boolean readcharge = false;
+          boolean readvect = false;
+          int nt = st.countTokens();
 
-					switch (nt) {
-					case 1 :
-					case 2 :
-					case 3 :
-						throw new JmolException("XYZReader.read",
-								"Not enough fields on line.");
-					case 5 :	// atype, x, y, z, charge                    
-						readcharge = true;
-						break;
+          switch (nt) {
+          case 1 :
+          case 2 :
+          case 3 :
+            throw new JmolException("XYZReader.read",
+                    "Not enough fields on line.");
+          case 5 :     // atype, x, y, z, charge                    
+            readcharge = true;
+            break;
 
-					case 7 :	// atype, x, y, z, vx, vy, vz
-						readvect = true;
-						break;
+          case 7 :     // atype, x, y, z, vx, vy, vz
+            readvect = true;
+            break;
 
-					case 8 :	// atype, x, y, z, charge, vx, vy, vz
-						readcharge = true;
-						readvect = true;
-						break;
+          case 8 :     // atype, x, y, z, charge, vx, vy, vz
+            readcharge = true;
+            readvect = true;
+            break;
 
-					default :		// 4, 6, or > 8  fields, just read atype, x, y, z
-						break;
-					}
+          default :    // 4, 6, or > 8  fields, just read atype, x, y, z
+            break;
+          }
 
-					String aname = st.nextToken();
-					String sx = st.nextToken();
-					String sy = st.nextToken();
-					String sz = st.nextToken();
+          String aname = st.nextToken();
+          String sx = st.nextToken();
+          String sy = st.nextToken();
+          String sz = st.nextToken();
 
-					x = FortranFormat.atof(sx);
-					y = FortranFormat.atof(sy);
-					z = FortranFormat.atof(sz);
+          x = FortranFormat.atof(sx);
+          y = FortranFormat.atof(sy);
+          z = FortranFormat.atof(sz);
 
-					Vector props = new Vector();
+          Vector props = new Vector();
 
-					if (readcharge) {
-						String sc = st.nextToken();
-						c = FortranFormat.atof(sc);
-						Charge cp = new Charge(c);
-						props.addElement(cp);
-					}
+          if (readcharge) {
+            String sc = st.nextToken();
+            c = FortranFormat.atof(sc);
+            Charge cp = new Charge(c);
+            props.addElement(cp);
+          }
 
-					if (readvect) {
-						String svx = st.nextToken();
-						String svy = st.nextToken();
-						String svz = st.nextToken();
-						vect[0] = FortranFormat.atof(svx);
-						vect[1] = FortranFormat.atof(svy);
-						vect[2] = FortranFormat.atof(svz);
-						VProperty vp = new VProperty(vect);
-						props.addElement(vp);
-					}
+          if (readvect) {
+            String svx = st.nextToken();
+            String svy = st.nextToken();
+            String svz = st.nextToken();
+            vect[0] = FortranFormat.atof(svx);
+            vect[1] = FortranFormat.atof(svy);
+            vect[2] = FortranFormat.atof(svz);
+            VProperty vp = new VProperty(vect);
+            props.addElement(vp);
+          }
 
-					if (readcharge || readvect) {
-						frame.addPropertiedVert(aname, (float) x, (float) y,
-								(float) z, props);
-					} else {
-						frame.addVert(aname, (float) x, (float) y, (float) z);
-					}
-				}
-			}
-			file.frames.addElement(frame);
-			Vector fp = frame.getAtomProps();
-			for (int i = 0; i < fp.size(); i++) {
-				if (file.AtomPropertyList.indexOf(fp.elementAt(i)) < 0) {
-					file.AtomPropertyList.addElement(fp.elementAt(i));
-				}
-			}
-			line = input.readLine();
-		}
-		return file;
-	}
+          if (readcharge || readvect) {
+            frame.addPropertiedVert(aname, (float) x, (float) y, (float) z,
+                    props);
+          } else {
+            frame.addVert(aname, (float) x, (float) y, (float) z);
+          }
+        }
+      }
+      file.frames.addElement(frame);
+      Vector fp = frame.getAtomProps();
+      for (int i = 0; i < fp.size(); i++) {
+        if (file.AtomPropertyList.indexOf(fp.elementAt(i)) < 0) {
+          file.AtomPropertyList.addElement(fp.elementAt(i));
+        }
+      }
+      line = input.readLine();
+    }
+    return file;
+  }
 
-	private BufferedReader input;
+  private BufferedReader input;
 }

@@ -24,12 +24,12 @@ package org.openscience.jmol;
  */
 public class NMRShielding extends PhysicalProperty {
 
-	/**
-	 * Constructor for NMR Shielding
-	 * @param s The isotropic shielding of the atom
-	 */
-	public NMRShielding(double s) {
-		super("Isotropic Shielding", new Double(s));
-	}
+  /**
+   * Constructor for NMR Shielding
+   * @param s The isotropic shielding of the atom
+   */
+  public NMRShielding(double s) {
+    super("Isotropic Shielding", new Double(s));
+  }
 
 }

@@ -47,174 +47,174 @@ import java.util.StringTokenizer;
  */
 public class Gaussian98Reader implements ChemFileReader {
 
-	/**
-	 * Create an Gaussian98 output reader.
-	 *
-	 * @param input source of Gaussian98 data
-	 */
-	public Gaussian98Reader(Reader input) {
-		this.input = new BufferedReader(input);
-	}
+  /**
+   * Create an Gaussian98 output reader.
+   *
+   * @param input source of Gaussian98 data
+   */
+  public Gaussian98Reader(Reader input) {
+    this.input = new BufferedReader(input);
+  }
 
-	/**
-	 * Read the Gaussian98 output.
-	 *
-	 * @return a ChemFile with the coordinates, energies, and vibrations.
-	 * @exception IOException if an I/O error occurs
-	 */
-	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
-			throws IOException {
+  /**
+   * Read the Gaussian98 output.
+   *
+   * @return a ChemFile with the coordinates, energies, and vibrations.
+   * @exception IOException if an I/O error occurs
+   */
+  public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
+          throws IOException {
 
-		ChemFile file = new ChemFile(bondsEnabled);
-		ChemFrame frame = null;
-		String line = input.readLine();
-		String levelOfTheory = null;
-		int frameNum = 1;
+    ChemFile file = new ChemFile(bondsEnabled);
+    ChemFrame frame = null;
+    String line = input.readLine();
+    String levelOfTheory = null;
+    int frameNum = 1;
 
-		// Find first set of coordinates
-		while (input.ready() && (line != null)) {
-			if (line.indexOf("Standard orientation:") >= 0) {
+    // Find first set of coordinates
+    while (input.ready() && (line != null)) {
+      if (line.indexOf("Standard orientation:") >= 0) {
 
-				// Found a set of coordinates
-				frame = new ChemFrame(bondsEnabled);
-				readCoordinates(frame, putStatus, frameNum);
-				frameNum++;
-				break;
-			}
-			line = input.readLine();
-		}
-		if (frame != null) {
+        // Found a set of coordinates
+        frame = new ChemFrame(bondsEnabled);
+        readCoordinates(frame, putStatus, frameNum);
+        frameNum++;
+        break;
+      }
+      line = input.readLine();
+    }
+    if (frame != null) {
 
-			// Read all other data
-			line = input.readLine();
-			while (input.ready() && (line != null)) {
-				if (line.indexOf("Standard orientation:") >= 0) {
+      // Read all other data
+      line = input.readLine();
+      while (input.ready() && (line != null)) {
+        if (line.indexOf("Standard orientation:") >= 0) {
 
-					// Found a set of coordinates
-					// Add current frame to file and create a new one.
-					file.addFrame(frame);
-					frame = new ChemFrame(bondsEnabled);
-					readCoordinates(frame, putStatus, frameNum);
-					frameNum++;
-				} else if (line.indexOf("SCF Done:") >= 0) {
+          // Found a set of coordinates
+          // Add current frame to file and create a new one.
+          file.addFrame(frame);
+          frame = new ChemFrame(bondsEnabled);
+          readCoordinates(frame, putStatus, frameNum);
+          frameNum++;
+        } else if (line.indexOf("SCF Done:") >= 0) {
 
-					// Found an energy
-					frame.setInfo(line.trim());
-				} else if (line.indexOf("GINC") >= 0) {
+          // Found an energy
+          frame.setInfo(line.trim());
+        } else if (line.indexOf("GINC") >= 0) {
 
-					// Found calculation level of theory
-					levelOfTheory = parseLevelOfTheory(line);
-				}
-				line = input.readLine();
-			}
+          // Found calculation level of theory
+          levelOfTheory = parseLevelOfTheory(line);
+        }
+        line = input.readLine();
+      }
 
-			// Add current frame to file
-			file.addFrame(frame);
-		}
-		return file;
-	}
+      // Add current frame to file
+      file.addFrame(frame);
+    }
+    return file;
+  }
 
-	/**
-	 * Reads a set of coordinates into ChemFrame.
-	 *
-	 * @param frame  the destination ChemFrame
-	 * @exception IOException  if an I/O error occurs
-	 */
-	private void readCoordinates(
-			ChemFrame frame, StatusDisplay putStatus, int frameNum)
-				throws IOException {
+  /**
+   * Reads a set of coordinates into ChemFrame.
+   *
+   * @param frame  the destination ChemFrame
+   * @exception IOException  if an I/O error occurs
+   */
+  private void readCoordinates(
+          ChemFrame frame, StatusDisplay putStatus, int frameNum)
+            throws IOException {
 
-		StringBuffer stat = new StringBuffer();
-		int statpos = 0;
+    StringBuffer stat = new StringBuffer();
+    int statpos = 0;
 
-		stat.append("Reading Frame ");
-		stat.append(frameNum);
-		stat.append(": ");
-		String baseStat = stat.toString();
-		putStatus.setStatusMessage(stat.toString());
+    stat.append("Reading Frame ");
+    stat.append(frameNum);
+    stat.append(": ");
+    String baseStat = stat.toString();
+    putStatus.setStatusMessage(stat.toString());
 
-		String line = input.readLine();
-		line = input.readLine();
-		line = input.readLine();
-		line = input.readLine();
-		while (input.ready()) {
-			line = input.readLine();
-			if ((line == null) || (line.indexOf("-----") >= 0)) {
-				break;
-			}
-			int atomicNumber = 0;
-			StringReader sr = new StringReader(line);
-			StreamTokenizer token = new StreamTokenizer(sr);
-			token.nextToken();
+    String line = input.readLine();
+    line = input.readLine();
+    line = input.readLine();
+    line = input.readLine();
+    while (input.ready()) {
+      line = input.readLine();
+      if ((line == null) || (line.indexOf("-----") >= 0)) {
+        break;
+      }
+      int atomicNumber = 0;
+      StringReader sr = new StringReader(line);
+      StreamTokenizer token = new StreamTokenizer(sr);
+      token.nextToken();
 
-			// ignore first token
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				atomicNumber = (int) token.nval;
-				if (atomicNumber == 0) {
+      // ignore first token
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        atomicNumber = (int) token.nval;
+        if (atomicNumber == 0) {
 
-					// Skip dummy atoms. Dummy atoms must be skipped
-					// if frequencies are to be read because Gaussian
-					// does not report dummy atoms in frequencies, and
-					// the number of atoms is used for reading frequencies.
-					continue;
-				}
-			} else {
-				throw new IOException("Error reading coordinates");
-			}
-			token.nextToken();
+          // Skip dummy atoms. Dummy atoms must be skipped
+          // if frequencies are to be read because Gaussian
+          // does not report dummy atoms in frequencies, and
+          // the number of atoms is used for reading frequencies.
+          continue;
+        }
+      } else {
+        throw new IOException("Error reading coordinates");
+      }
+      token.nextToken();
 
-			// ignore third token
-			double x = 0.0;
-			double y = 0.0;
-			double z = 0.0;
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				x = token.nval;
-			} else {
-				throw new IOException("Error reading coordinates");
-			}
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				y = token.nval;
-			} else {
-				throw new IOException("Error reading coordinates");
-			}
-			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
-				z = token.nval;
-			} else {
-				throw new IOException("Error reading coordinates");
-			}
-			frame.addAtom(atomicNumber, (float) x, (float) y, (float) z);
-			if (statpos > 10) {
-				stat.setLength(0);
-				stat.append(baseStat);
-				statpos = 0;
-			} else {
-				stat.append(".");
-			}
-			putStatus.setStatusMessage(stat.toString());
-		}
-	}
+      // ignore third token
+      double x = 0.0;
+      double y = 0.0;
+      double z = 0.0;
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        x = token.nval;
+      } else {
+        throw new IOException("Error reading coordinates");
+      }
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        y = token.nval;
+      } else {
+        throw new IOException("Error reading coordinates");
+      }
+      if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
+        z = token.nval;
+      } else {
+        throw new IOException("Error reading coordinates");
+      }
+      frame.addAtom(atomicNumber, (float) x, (float) y, (float) z);
+      if (statpos > 10) {
+        stat.setLength(0);
+        stat.append(baseStat);
+        statpos = 0;
+      } else {
+        stat.append(".");
+      }
+      putStatus.setStatusMessage(stat.toString());
+    }
+  }
 
-	/**
-	 * Select the theory and basis set from the first archive line.
-	 */
-	private String parseLevelOfTheory(String line) {
+  /**
+   * Select the theory and basis set from the first archive line.
+   */
+  private String parseLevelOfTheory(String line) {
 
-		StringTokenizer st1 = new StringTokenizer(line, "\\");
+    StringTokenizer st1 = new StringTokenizer(line, "\\");
 
-		// Must contain at least 6 tokens
-		if (st1.countTokens() < 6) {
-			return null;
-		}
+    // Must contain at least 6 tokens
+    if (st1.countTokens() < 6) {
+      return null;
+    }
 
-		// Skip first four tokens
-		for (int i = 0; i < 4; ++i) {
-			st1.nextToken();
-		}
-		return st1.nextToken() + "/" + st1.nextToken();
-	}
+    // Skip first four tokens
+    for (int i = 0; i < 4; ++i) {
+      st1.nextToken();
+    }
+    return st1.nextToken() + "/" + st1.nextToken();
+  }
 
-	/**
-	 * The source for Gaussian98 data.
-	 */
-	private BufferedReader input;
+  /**
+   * The source for Gaussian98 data.
+   */
+  private BufferedReader input;
 }

@@ -23,8 +23,8 @@ import java.awt.Graphics;
 
 public interface MeasurementInterface {
 
-	public int[] getAtomList();
+  public int[] getAtomList();
 
-	public String toString();
+  public String toString();
 
 }

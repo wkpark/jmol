@@ -198,7 +198,8 @@ public class PovrayDialog extends JDialog {
       }
     });
     povOptionsPanel.add(displayWhileRenderingBox);
-    gridBagLayout2.setConstraints(displayWhileRenderingBox, gridBagConstraints);
+    gridBagLayout2.setConstraints(displayWhileRenderingBox,
+            gridBagConstraints);
 
     JPanel povrayPathPanel = new JPanel(new FlowLayout());
     povrayPathPanel

@@ -24,5 +24,5 @@ package org.openscience.miniJmol;
  *  unknown component.
 */
 public interface StatusDisplay {
-	void setStatusMessage(String statusMessage);
+  void setStatusMessage(String statusMessage);
 }

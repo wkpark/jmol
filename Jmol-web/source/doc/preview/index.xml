@@ -43,6 +43,14 @@
 	  <li><a href="[root]/demo/cartoons">cartoons</a> <i>--New!--</i></li>
 	</ul>
       </p>
+      <p>
+	These are the sample pages that are found in the discussion
+	of the <a href="[root]/jslibrary">Jmol.js JavaScript library</a>:
+	<ul>
+	  <li><a href="[root]/demo/jssample0">Very simple example</a></li>
+	  <li><a href="[root]/demo/jssample1">Example that includes UI controls</a></li>
+	</ul>
+      </p>
     </section>
 
   </body>

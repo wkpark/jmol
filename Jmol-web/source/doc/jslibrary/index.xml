@@ -207,9 +207,12 @@
 	    only be specified if you want to explicitly control the
 	    <code>name</code> and <code>id</code> attributes used as
 	    part of the <code>applet</code> tag. The suffix which you
-	    supply will be appended to the string "jmol-", so if you
-	    specify "foo" the attributes generated will be
-	    <code>name='jmol-foo' id='jmol-foo'</code>
+	    supply will be appended to the string "jmolApplet", so if you
+	    specify "Foo" the attributes generated will be
+	    <code>name='jmolAppletFoo' id='jmolAppletFoo'</code>.
+	    In a database application where you are writing records
+	    to a table you can feel free to provide an integer
+	    as your suffix. 
 	  </i>
 	</p>
 	<p>

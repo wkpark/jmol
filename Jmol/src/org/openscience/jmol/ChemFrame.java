@@ -322,6 +322,7 @@ public class ChemFrame {
     for (int i=atomID; i<numberAtoms; i++) {
       atoms[i] = atoms[i+1];
     }
+    atoms[numberAtoms-1] = null;
     numberAtoms--;
     try {
       rebond();

@@ -33,6 +33,7 @@ public final class JMolCDO extends ANIMATIONCDO {
   private String atomX;
   private String atomY;
   private String atomZ;
+  private String partialCharge;
 
   public JMolCDO() {
     allFrames = new Vector();
@@ -161,6 +162,7 @@ public final class JMolCDO extends ANIMATIONCDO {
     atomX = "";
     atomY = "";
     atomZ = "";
+    partialCharge = "";
   }
 
   public void endAtom() {
@@ -169,7 +171,14 @@ public final class JMolCDO extends ANIMATIONCDO {
     double y = FortranFormat.atof(atomY.trim());
     double z = FortranFormat.atof(atomZ.trim());
     try {
-      currentFrame.addAtom(atomType.trim(), (float) x, (float) y, (float) z);
+      int index = currentFrame.addAtom(atomType.trim(), (float) x, (float) y, (float) z);
+      if (partialCharge.length() > 0) {
+        System.out.println("Adding charge for atom " + index);
+        double c = FortranFormat.atof(partialCharge);
+        currentFrame.getAtomAt(index).addProperty(new Charge(c));
+      } else {
+        System.out.println("Not adding charge for atom " + index);
+      }
     } catch (Exception e) {
       System.out.println("JMolCDO error while adding atom: " + e);
     }
@@ -188,6 +197,9 @@ public final class JMolCDO extends ANIMATIONCDO {
     }
     if (type.equals("z3")) {
       atomZ = value;
+    }
+    if (type.equals("partialCharge")) {
+      partialCharge = value;
     }
   }
 

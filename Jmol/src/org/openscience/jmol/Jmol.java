@@ -205,6 +205,7 @@ class Jmol extends JPanel {
 
             ImageIcon splash_image = jrh.getIcon("splash");
             Splash splash = new Splash(frame, splash_image);
+            splash.setCursor(new Cursor(Cursor.WAIT_CURSOR));
             splash.showStatus("Creating main window...");
             frame.setTitle(jrh.getString("Title"));
             frame.setBackground(Color.lightGray);

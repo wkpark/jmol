@@ -1116,7 +1116,7 @@ public class Eval implements Runnable {
         badAtomNumber();
       args[i] = atomIndex;
     }
-    viewer.defineMeasure(args);
+    viewer.defineMeasurement(argCount, args);
   }
 
   void refresh() {

@@ -25,7 +25,6 @@
 package org.openscience.jmol.app;
 
 import org.openscience.jmol.viewer.JmolViewer;
-import org.openscience.jmol.viewer.datamodel.MeasurementShape;
 
 import java.io.File;
 import javax.swing.JTree;
@@ -95,9 +94,9 @@ public class MeasurementList extends JDialog {
           .translate("Measurement List"), false);
     this.viewer = viewer;
 
-    distanceList = viewer.getDistanceMeasurements();
-    angleList = viewer.getAngleMeasurements();
-    dihedralList = viewer.getDihedralMeasurements();
+    distanceList = new Vector();
+    angleList = new Vector();
+    dihedralList = new Vector();
 
     commands = new Hashtable();
     Action[] actions = getActions();
@@ -199,48 +198,25 @@ public class MeasurementList extends JDialog {
     centerDialog();
   }
 
+  private void refresh(int count, Vector vector) {
+    vector.removeAllElements();
+    Object[] measurements = viewer.getMeasurements(count);
+    for (int i = 0; i < measurements.length; ++i)
+      vector.addElement(measurements[i]);
+  }
+
   public void updateTree() {
 
+    refresh(2, distanceList);
+    refresh(3, angleList);
+    refresh(4, dihedralList);
+
     distances.update();
     angles.update();
     dihedrals.update();
+
     treeModel.reload(top);
   }
-
-  private void notifyControl() {
-    viewer.refresh();
-  }
-
-  public Vector getDistanceList() {
-    return distanceList;
-  }
-
-  public Vector getAngleList() {
-    return angleList;
-  }
-
-  public Vector getDihedralList() {
-    return dihedralList;
-  }
-
-  public void addDistance(int atom1, int atom2) {
-    viewer.defineMeasure(atom1, atom2);
-    distances.update();
-    treeModel.reload(distances);
-  }
-
-  public void addAngle(int atom1, int atom2, int atom3) {
-    viewer.defineMeasure(atom1, atom2, atom3);
-    angles.update();
-    treeModel.reload(angles);
-  }
-
-  public void addDihedral(int atom1, int atom2, int atom3, int atom4) {
-    viewer.defineMeasure(atom1, atom2, atom3, atom4);
-    dihedrals.update();
-    treeModel.reload(dihedrals);
-  }
-
 
   public void clear() {
 
@@ -251,31 +227,25 @@ public class MeasurementList extends JDialog {
     angles.update();
     dihedrals.update();
     treeModel.reload(top);
-    notifyControl();
   }
 
+  public void clearMeasurements() {
+    viewer.clearMeasurements();
+    updateTree();
+  }
   public void clearDistanceList() {
-
-    distanceList.removeAllElements();
-    distances.update();
-    treeModel.reload(distances);
-    notifyControl();
+    viewer.deleteMeasurements(2);
+    updateTree();
   }
 
   public void clearAngleList() {
-
-    angleList.removeAllElements();
-    angles.update();
-    treeModel.reload(angles);
-    notifyControl();
+    viewer.deleteMeasurements(3);
+    updateTree();
   }
 
   public void clearDihedralList() {
-
-    dihedralList.removeAllElements();
-    dihedrals.update();
-    treeModel.reload(dihedrals);
-    notifyControl();
+    viewer.deleteMeasurements(4);
+    updateTree();
   }
 
   protected void centerDialog() {
@@ -303,11 +273,8 @@ public class MeasurementList extends JDialog {
     if (node == null) {
       return;
     }
-
-    Object nodeInfo = node.getUserObject();
-    MeasurementShape measure = (MeasurementShape) nodeInfo;
-    String mType = nodeInfo.getClass().getName();
-    viewer.deleteMeasurement(measure);
+    viewer.deleteMeasurement(node.getUserObject());
+    updateTree();
   }
 
   public void enableActions() {
@@ -372,9 +339,7 @@ public class MeasurementList extends JDialog {
     }
 
     public void actionPerformed(ActionEvent e) {
-      clearDistanceList();
-      clearAngleList();
-      clearDihedralList();
+      clearMeasurements();
     }
   }
 

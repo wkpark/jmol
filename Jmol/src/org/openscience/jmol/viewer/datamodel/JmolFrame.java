@@ -415,6 +415,27 @@ public class JmolFrame {
     measurementShapes[measurementShapeCount++] = shape;
   }
 
+  public void clearMeasurementShapes() {
+    measurementShapeCount = 0;
+    measurementShapes = null;
+  }
+
+  public void deleteMeasurementShape(int imeasurement) {
+    System.arraycopy(measurementShapes, imeasurement+1,
+                     measurementShapes, imeasurement,
+                     measurementShapeCount - imeasurement - 1);
+    --measurementShapeCount;
+    measurementShapes[measurementShapeCount] = null;
+  }
+
+  public int getMeasurementShapeCount() {
+    return measurementShapeCount;
+  }
+
+  public MeasurementShape[] getMeasurementShapes() {
+    return measurementShapes;
+  }
+
   /****************************************************************
    * selection handling
    ****************************************************************/

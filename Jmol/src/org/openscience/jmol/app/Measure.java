@@ -351,11 +351,9 @@ public class Measure extends JDialog {
     switch (measure) {
     case ANGLE :
       if (action == ADD) {
-        viewer.defineMeasure(selection[0], selection[1], selection[2]);
+        viewer.defineMeasurement(3, selection);
       } else {
-        boolean ok =
-          viewer.deleteMatchingMeasurement(selection[0], selection[1],
-                                            selection[2]);
+        boolean ok = viewer.deleteMeasurement(3, selection);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 
@@ -369,12 +367,10 @@ public class Measure extends JDialog {
 
     case DIHEDRAL :
       if (action == ADD) {
-        viewer.defineMeasure(selection[0], selection[1],
-                              selection[2], selection[3]);
+        viewer.defineMeasurement(4, selection);
       } else {
         boolean ok =
-          viewer.deleteMatchingMeasurement(selection[0], selection[1],
-                                            selection[2], selection[3]);
+          viewer.deleteMeasurement(4, selection);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 
@@ -388,10 +384,10 @@ public class Measure extends JDialog {
 
     default :
       if (action == ADD) {
-        viewer.defineMeasure(selection[0], selection[1]);
+        viewer.defineMeasurement(2, selection);
       } else {
         boolean ok =
-          viewer.deleteMatchingMeasurement(selection[0], selection[1]);
+          viewer.deleteMeasurement(2, selection);
         if (!ok) {
           JmolResourceHandler jrh = JmolResourceHandler.getInstance();
 

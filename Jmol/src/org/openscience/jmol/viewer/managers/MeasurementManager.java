@@ -39,82 +39,72 @@ import java.beans.PropertyChangeSupport;
 public class MeasurementManager {
 
   JmolViewer viewer;
+  JmolFrame frame;
 
   public MeasurementManager(JmolViewer viewer) {
     this.viewer = viewer;
   }
 
-  public Vector distanceMeasurements = new Vector();
-  public Vector angleMeasurements = new Vector();
-  public Vector dihedralMeasurements = new Vector();
+  public void setJmolFrame(JmolFrame frame) {
+    this.frame = frame;
+    frame.clearMeasurementShapes();
+  }
 
   public void clearMeasurements() {
-    distanceMeasurements.removeAllElements();
-    angleMeasurements.removeAllElements();
-    dihedralMeasurements.removeAllElements();
+    frame.clearMeasurementShapes();
   }
 
-  public void defineMeasure(int[] atoms) {
-    switch (atoms.length) {
-    case 2:
-      defineMeasure(atoms[0], atoms[1]);
-      break;
-    case 3:
-      defineMeasure(atoms[0], atoms[1], atoms[2]);
-      break;
-    case 4:
-      defineMeasure(atoms[0], atoms[1], atoms[2], atoms[3]);
-      break;
-    default:
-      viewer.logError("unrecognized number of args to defineMeasure");
+  public MeasurementShape[] getMeasurements(int count) {
+    int numFound = 0;
+    int measurementShapeCount = viewer.getJmolFrame().getMeasurementShapeCount();
+    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
+    for (int i = measurementShapeCount; --i >= 0; )
+      if (measurementShapes[i].atomIndices.length == count)
+        ++numFound;
+    MeasurementShape[] foundMeasurements = new MeasurementShape[numFound];
+    for (int i = 0, j = 0; i < numFound; ++i, ++j) {
+      while (measurementShapes[j].atomIndices.length != count)
+        ++j;
+      foundMeasurements[i] = measurementShapes[j];
     }
+    return foundMeasurements;
   }
 
-  public void defineMeasure(int iatom1, int iatom2) {
-    JmolFrame frame = viewer.getJmolFrame();
-    MeasurementShape meas =
-      new MeasurementShape(iatom1, frame.getAtomAt(iatom1).getPoint3d(),
-                           iatom2, frame.getAtomAt(iatom2).getPoint3d());
-    frame.addMeasurementShape(meas);
-    distanceMeasurements.addElement(meas);
+  public void defineMeasurement(int count, int[] atomIndices) {
+    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
+    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
+      if (measurementShapes[i].sameAs(count, atomIndices))
+        return;
+    }
+    frame.addMeasurementShape(new MeasurementShape(viewer, count, atomIndices));
   }
 
-  public void defineMeasure(int iatom1, int iatom2, int iatom3) {
-    JmolFrame frame = viewer.getJmolFrame();
-    MeasurementShape meas =
-      new MeasurementShape(iatom1, frame.getAtomAt(iatom1).getPoint3d(),
-                           iatom2, frame.getAtomAt(iatom2).getPoint3d(),
-                           iatom3, frame.getAtomAt(iatom3).getPoint3d());
-    frame.addMeasurementShape(meas);
-    angleMeasurements.addElement(meas);
+  public boolean deleteMeasurement(MeasurementShape measurementShape) {
+    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
+    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
+      if (measurementShapes[i] == measurementShape) {
+        frame.deleteMeasurementShape(i);
+        return true;
+      }
+    }
+    return false;
   }
 
-  public void defineMeasure(int iatom1, int iatom2, int iatom3, int iatom4) {
-    JmolFrame frame = viewer.getJmolFrame();
-    MeasurementShape meas =
-      new MeasurementShape(iatom1, frame.getAtomAt(iatom1).getPoint3d(),
-                           iatom2, frame.getAtomAt(iatom2).getPoint3d(),
-                           iatom3, frame.getAtomAt(iatom3).getPoint3d(),
-                           iatom4, frame.getAtomAt(iatom4).getPoint3d());
-    frame.addMeasurementShape(meas);
-    dihedralMeasurements.addElement(meas);
+  public boolean deleteMeasurement(int count, int[] atomIndices) {
+    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
+    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
+      if (measurementShapes[i].sameAs(count, atomIndices)) {
+        frame.deleteMeasurementShape(i);
+        return true;
+      }
+    }
+    return false;
   }
 
-  public boolean deleteMeasurement(MeasurementShape measurement) {
-    return true;
+  public void deleteMeasurements(int count) {
+    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
+    for (int i = frame.getMeasurementShapeCount(); --i >= 0; )
+      if (measurementShapes[i].atomIndices.length == count)
+        frame.deleteMeasurementShape(i);
   }
-
-  public boolean deleteMatchingMeasurement(int atom1, int atom2) {
-    return true;
-  }
-
-  public boolean deleteMatchingMeasurement(int atom1, int atom2, int atom3) {
-    return true;
-  }
-
-  public boolean deleteMatchingMeasurement(int atom1, int atom2,
-                                           int atom3, int atom4) {
-    return true;
-  }
-
 }

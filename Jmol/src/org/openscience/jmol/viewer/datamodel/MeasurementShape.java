@@ -38,58 +38,56 @@ import java.awt.FontMetrics;
 public class MeasurementShape extends LineShape
   implements MeasurementInterface {
 
-  int[] atomIndices;
+  public int[] atomIndices;
   private String strMeasurement;
 
-  public MeasurementShape(int iatom1, Point3d point1,
-                          int iatom2, Point3d point2) {
-    super(point1, point2);
-    atomIndices = new int[2];
-    atomIndices[0] = iatom1;
-    atomIndices[1] = iatom2;
-    strMeasurement = distanceFormat.sprintf(point1.distance(point2));
-  }
+  public MeasurementShape(JmolViewer viewer, int count, int[] atomIndices) {
+    Point3d point1 = viewer.getPoint3d(atomIndices[0]);
+    Point3d point2 = viewer.getPoint3d(atomIndices[1]);
+    Point3d point3 = null;
+    Point3d point4 = null;
+    switch (count) {
+    case 2:
+      strMeasurement = distanceFormat.sprintf(point1.distance(point2));
 
-  public MeasurementShape(int iatom1, Point3d point1,
-                          int iatom2, Point3d point2,
-                          int iatom3, Point3d point3) {
-    atomIndices = new int[3];
-    atomIndices[0] = iatom1;
-    atomIndices[1] = iatom2;
-    atomIndices[2] = iatom3;
-    pointOrigin = new Point3d(point2);
-    pointOrigin.add(point1);
-    pointOrigin.scale(0.5);
-    pointEnd = new Point3d(point2);
-    pointEnd.add(point3);
-    pointEnd.scale(0.5);
+      pointOrigin = point1;
+      pointEnd = point2;
+      break;
+    case 3:
+      point3 = viewer.getPoint3d(atomIndices[2]);
+      Vector3d vector12 = new Vector3d(point1);
+      vector12.sub(point2);
+      Vector3d vector32 = new Vector3d(point3);
+      vector32.sub(point2);
+      double angle = toDegrees(vector12.angle(vector32));
+      strMeasurement = angleFormat.sprintf(angle);
 
-    Vector3d vector12 = new Vector3d(point1);
-    vector12.sub(point2);
-    Vector3d vector32 = new Vector3d(point3);
-    vector32.sub(point2);
-    double angle = toDegrees(vector12.angle(vector32));
-    strMeasurement = angleFormat.sprintf(angle);
-  }
+      pointOrigin = new Point3d(point2);
+      pointOrigin.add(point1);
+      pointOrigin.scale(0.5);
+      pointEnd = new Point3d(point2);
+      pointEnd.add(point3);
+      pointEnd.scale(0.5);
+      break;
+    case 4:
+      point3 = viewer.getPoint3d(atomIndices[2]);
+      point4 = viewer.getPoint3d(atomIndices[3]);
+      double dihedral = computeDihedral(point1, point2, point3, point4);
+      strMeasurement = dihedralFormat.sprintf(dihedral);
 
-  public MeasurementShape(int iatom1, Point3d point1,
-                          int iatom2, Point3d point2,
-                          int iatom3, Point3d point3,
-                          int iatom4, Point3d point4) {
-    atomIndices = new int[4];
-    atomIndices[0] = iatom1;
-    atomIndices[1] = iatom2;
-    atomIndices[2] = iatom3;
-    atomIndices[3] = iatom4;
-    pointOrigin = new Point3d(point1);
-    pointOrigin.add(point2);
-    pointOrigin.scale(0.5);
-    pointEnd = new Point3d(point3);
-    pointEnd.add(point4);
-    pointEnd.scale(0.5);
-
-    double dihedral = computeDihedral(point1, point2, point3, point4);
-    strMeasurement = dihedralFormat.sprintf(dihedral);
+      pointOrigin = new Point3d(point1);
+      pointOrigin.add(point2);
+      pointOrigin.scale(0.5);
+      pointEnd = new Point3d(point3);
+      pointEnd.add(point4);
+      pointEnd.scale(0.5);
+      break;
+    default:
+      System.out.println("Invalid count to measurement shape:" + count);
+      throw new IndexOutOfBoundsException();
+    }
+    this.atomIndices = new int[count];
+    System.arraycopy(atomIndices, 0, this.atomIndices, 0, count);
   }
 
   public void render(Graphics3D g3d, JmolViewer viewer) {
@@ -127,22 +125,20 @@ public class MeasurementShape extends LineShape
     return atomIndices;
   }
 
-  public boolean sameAs(int[] atomIndices) {
-    if (atomIndices.length != this.atomIndices.length)
+  public boolean sameAs(int count, int[] atomIndices) {
+    if (count != this.atomIndices.length)
       return false;
-    if (atomIndices.length == 2)
+    if (count == 2)
       return ((atomIndices[0] == this.atomIndices[0] &&
                atomIndices[1] == this.atomIndices[1]) ||
               (atomIndices[0] == this.atomIndices[1] &&
                atomIndices[1] == this.atomIndices[0]));
-    if (atomIndices.length == 3)
+    if (count == 3)
       return (atomIndices[1] == this.atomIndices[1] &&
               ((atomIndices[0] == this.atomIndices[0] &&
                 atomIndices[2] == this.atomIndices[2]) ||
                (atomIndices[0] == this.atomIndices[2] &&
                 atomIndices[2] == this.atomIndices[0])));
-    /* Lazy way out. Just make sure that we're one of the 2
-       ordered permutations. */
     return ((atomIndices[0] == this.atomIndices[0] &&
              atomIndices[1] == this.atomIndices[1] &&
              atomIndices[2] == this.atomIndices[2] &&

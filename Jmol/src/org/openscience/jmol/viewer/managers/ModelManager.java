@@ -164,6 +164,10 @@ public class ModelManager {
     return atomCount;
   }
 
+  public Point3d getPoint3d(int atomIndex) {
+    return jmolFrame.getAtomAt(atomIndex).getPoint3d();
+  }
+
   public void setCenterAsSelected() {
     int atomCount = getAtomCount();
     int countSelected = 0;
@@ -173,7 +177,7 @@ public class ModelManager {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(jmolFrame.getAtomAt(i).getPoint3d());
+      center.add(getPoint3d(i));
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity

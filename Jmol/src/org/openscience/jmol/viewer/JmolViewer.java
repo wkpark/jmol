@@ -800,11 +800,11 @@ final public class JmolViewer {
     return modelManager.getFrameCount();
   }
 
-  public void setFrame(int fr) {
-    modelManager.setFrame(fr);
+  public void setFrame(int frameNumber) {
+    modelManager.setFrame(frameNumber);
+    measurementManager.setJmolFrame(getJmolFrame());
     selectAll();
     recalcAxes();
-    clearMeasurements();
     structuralChange = true;
     refresh();
   }
@@ -815,6 +815,10 @@ final public class JmolViewer {
 
   public int getAtomCount() {
     return modelManager.getAtomCount();
+  }
+
+  public Point3d getPoint3d(int atomIndex) {
+    return modelManager.getPoint3d(atomIndex);
   }
 
   public int findNearestAtomIndex(int x, int y) {
@@ -908,63 +912,42 @@ final public class JmolViewer {
    * delegated to MeasurementManager
    ****************************************************************/
 
-  public Vector getDistanceMeasurements() {
-    return measurementManager.distanceMeasurements;
-  }
-
-  public Vector getAngleMeasurements() {
-    return measurementManager.angleMeasurements;
-  }
-
-  public Vector getDihedralMeasurements() {
-    return measurementManager.dihedralMeasurements;
+  public Object[] getMeasurements(int count) {
+    return measurementManager.getMeasurements(count);
   }
 
   public void clearMeasurements() {
     measurementManager.clearMeasurements();
   }
 
-  public void defineMeasure(int[] atomIndices) {
-    measurementManager.defineMeasure(atomIndices);
+  public void deleteMeasurements(int count) {
+    measurementManager.deleteMeasurements(count);
+  }
+
+  public void defineMeasurement(int count, int[] atomIndices) {
+    measurementManager.defineMeasurement(count, atomIndices);
     refresh();
   }
 
-  public void defineMeasure(int atom1, int atom2) {
-    measurementManager.defineMeasure(atom1, atom2);
-    refresh();
+  public boolean deleteMeasurement(Object measurement) {
+    boolean deleted =
+      measurementManager.deleteMeasurement((MeasurementShape)measurement);
+    if (deleted)
+      refresh();
+    return deleted;
   }
 
-  public void defineMeasure(int atom1, int atom2, int atom3) {
-    measurementManager.defineMeasure(atom1, atom2, atom3);
-    refresh();
-  }
-
-  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
-    measurementManager.defineMeasure(atom1, atom2, atom3, atom4);
-    refresh();
+  public boolean deleteMeasurement(int count, int[] atomIndices) {
+    boolean deleted =
+      measurementManager.deleteMeasurement(count, atomIndices);
+    if (deleted)
+      refresh();
+    return deleted;
   }
 
   public void measureSelection(int iatom) {
     if (jmolStatusListener != null)
       jmolStatusListener.measureSelection(iatom);
-  }
-
-  public boolean deleteMeasurement(MeasurementShape measurement) {
-    return measurementManager.deleteMeasurement(measurement);
-  }
-
-  public boolean deleteMatchingMeasurement(int atom1, int atom2) {
-    return measurementManager.deleteMatchingMeasurement(atom1, atom2);
-  }
-
-  public boolean deleteMatchingMeasurement(int atom1, int atom2, int atom3) {
-    return measurementManager.deleteMatchingMeasurement(atom1, atom2, atom3);
-  }
-
-  public boolean deleteMatchingMeasurement(int atom1, int atom2,
-                                           int atom3, int atom4) {
-    return measurementManager.deleteMatchingMeasurement(atom1, atom2,
-                                                        atom3, atom4);
   }
 
   /****************************************************************

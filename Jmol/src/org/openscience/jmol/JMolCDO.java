@@ -41,6 +41,10 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.startBond();
     } else if (type.equals("Animation")) {
       this.startAnimation();
+    } else if (type.equals("Frame")) {
+      this.startFrame();
+    } else {
+      System.err.println("DEBUG: unknown CDO Object Type at StartObject -> " + type);
     }
   }
  
@@ -55,6 +59,10 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.endBond();
     } else if (type.equals("Animation")) {
       this.endAnimation();
+    } else if (type.equals("Frame")) {
+      this.endFrame();
+    } else {
+      System.err.println("DEBUG: unknown CDO Object Type at EndObject -> " + type);
     }
   }
  
@@ -69,6 +77,10 @@ public final class JMolCDO extends ANIMATIONCDO {
       this.setBondProperty(proptype, propvalue);
     } else if (type.equals("Animation")) {
       this.setAnimationProperty(proptype, propvalue);
+    } else if (type.equals("Frame")) {
+      this.setFrameProperty(proptype, propvalue);
+    } else {
+      System.err.println("DEBUG: unknown CDO Object Type at SetObjectProperty -> " + type);
     }
   }                                                                                                                  
     public void startAnimation() {
@@ -90,15 +102,17 @@ public final class JMolCDO extends ANIMATIONCDO {
 
     public void setFrameProperty(String type, String value) {
         System.out.println("setFrameProperty: " + type + "=" + value);
-        if (type.equals("title")) currentFrame.setInfo(value);
+        if (type.equals("title")) {
+          currentFrame.setInfo(value);
+        } else if (type.equals("energy")) {
+          double energy = (new Double(value)).doubleValue();
+          Energy prop = new Energy(energy);
+          currentFrame.addFrameProperty((PhysicalProperty)prop);
+        }
     }
 
-    public void startMolecule() {
-      startFrame();
-    }
-    public void endMolecule() {
-      endFrame();
-    }
+    public void startMolecule() {}
+    public void endMolecule() {}
 
     public void startFragment() {}
     public void endFragment() {}
@@ -141,11 +155,6 @@ public final class JMolCDO extends ANIMATIONCDO {
     public void setMoleculeProperty(String type, String value) {
     }
     public void setFragmentProperty(String type, String value) {
-      if (type.equals("energy")) {
-        double energy = (new Double(value)).doubleValue();
-        Energy prop = new Energy(energy);
-        currentFrame.addFrameProperty((PhysicalProperty)prop);
-      }
     }
     public void setAnimationProperty(String type, String value) {
     }

@@ -30,89 +30,27 @@ import org.openscience.jmol.viewer.g3d.*;
 import org.openscience.jmol.viewer.pdb.*;
 import java.util.BitSet;
 
-public class Trace {
-
-  JmolViewer viewer;
-  Frame frame;
-  PdbFile pdbFile;
-
-  Tmodel[] tmodels;
+public class Trace extends Mcg {
 
   Trace(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
-    pdbFile = frame.pdbFile;
+    super(viewer, frame);
+  }
+  
+  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
+    return new Chain(pdbChain);
   }
 
-  public void setMad(short mad, BitSet bsSelected) {
-    initialize();
-    for (int m = tmodels.length; --m >= 0; )
-      tmodels[m].setMad(mad, bsSelected);
-  }
-
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    initialize();
-    for (int m = tmodels.length; --m >= 0; )
-      tmodels[m].setColix(palette, colix, bsSelected);
-  }
-
-  void initialize() {
-    if (tmodels == null) {
-      int tmodelCount = pdbFile == null ? 0 : pdbFile.getModelCount();
-      tmodels = new Tmodel[tmodelCount];
-      for (int i = tmodelCount; --i >= 0; )
-        tmodels[i] = new Tmodel(pdbFile.getModel(i));
-    }
-  }
-
-  int getTmodelCount() {
-    return tmodels.length;
-  }
-
-  Tmodel getTmodel(int i) {
-    return tmodels[i];
-  }
-
-  class Tmodel {
-    PdbModel model;
-    Tchain[] tchains;
-    
-    Tmodel(PdbModel model) {
-      this.model = model;
-      tchains = new Tchain[model.getChainCount()];
-      for (int i = tchains.length; --i >= 0; )
-        tchains[i] = new Tchain(model.getChain(i));
-    }
-    
-    public void setMad(short mad, BitSet bsSelected) {
-      for (int i = tchains.length; --i >= 0; )
-        tchains[i].setMad(mad, bsSelected);
-    }
-
-    public void setColix(byte palette, short colix, BitSet bsSelected) {
-      for (int i = tchains.length; --i >= 0; )
-        tchains[i].setColix(palette, colix, bsSelected);
-    }
-
-    int getTchainCount() {
-      return tchains.length;
-    }
-
-    Tchain getTchain(int i) {
-      return tchains[i];
-    }
-  }
-
-  class Tchain {
-    PdbChain chain;
+  class Chain extends Mcg.Chain {
     int mainchainLength;
     PdbGroup[] mainchain;
+    Frame frame;
     short[] colixes;
     short[] mads;
 
-    Tchain(PdbChain chain) {
-      this.chain = chain;
-      mainchain = chain.getMainchain();
+    Chain(PdbChain pdbChain) {
+      super(pdbChain);
+      frame = pdbChain.model.file.frame;
+      mainchain = pdbChain.getMainchain();
       mainchainLength = mainchain.length;
       if (mainchainLength > 0) {
         colixes = new short[mainchainLength];
@@ -138,7 +76,6 @@ public class Trace {
     }
 
     public void setColix(byte palette, short colix, BitSet bsSelected) {
-      Frame frame = chain.model.file.frame;
       for (int i = mainchainLength; --i >= 0; ) {
         int atomIndex = mainchain[i].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))

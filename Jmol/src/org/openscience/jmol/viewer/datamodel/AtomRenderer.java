@@ -48,7 +48,6 @@ class AtomRenderer extends Renderer {
 
 
   void render() {
-
     minX = rectClip.x;
     maxX = minX + rectClip.width;
     minY = rectClip.y;

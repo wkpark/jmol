@@ -66,64 +66,64 @@ public class FrameRenderer {
 
     viewer.calcTransformMatrices();
 
-    atomRenderer.render(g3d, rectClip, frame);
-    bondRenderer.render(g3d, rectClip, frame);
+    atomRenderer.render(g3d, rectClip, frame, null);
+    bondRenderer.render(g3d, rectClip, frame, null);
     if (frame.measurementCount > 0) {
       if (measurementRenderer == null)
         measurementRenderer = new MeasurementRenderer(viewer, this);
-      measurementRenderer.render(g3d, rectClip, frame);
+      measurementRenderer.render(g3d, rectClip, frame, null);
     }
     if (frame.dots != null) {
       if (dotsRenderer == null)
         dotsRenderer = new DotsRenderer(viewer, this);
-      dotsRenderer.render(g3d, rectClip, frame);
+      dotsRenderer.render(g3d, rectClip, frame, null);
     }
     if (frame.ribbons != null) {
       if (ribbonsRenderer == null)
         ribbonsRenderer = new RibbonsRenderer(viewer, this);
-      ribbonsRenderer.render(g3d, rectClip, frame);
+      ribbonsRenderer.render(g3d, rectClip, frame, frame.ribbons);
     }
     if (frame.trace != null) {
       if (traceRenderer == null)
         traceRenderer = new TraceRenderer(viewer, this);
-      traceRenderer.render(g3d, rectClip, frame);
+      traceRenderer.render(g3d, rectClip, frame, frame.trace);
     }
     if (frame.backbone != null) {
       if (backboneRenderer == null)
         backboneRenderer = new BackboneRenderer(viewer, this);
-      backboneRenderer.render(g3d, rectClip, frame);
+      backboneRenderer.render(g3d, rectClip, frame, frame.backbone);
     }
     if (frame.cartoon != null) {
       if (cartoonRenderer == null)
         cartoonRenderer = new CartoonRenderer(viewer, this);
-      cartoonRenderer.render(g3d, rectClip, frame);
+      cartoonRenderer.render(g3d, rectClip, frame, frame.cartoon);
     }
     if (frame.strands != null) {
       if (strandsRenderer == null)
         strandsRenderer = new StrandsRenderer(viewer, this);
-      strandsRenderer.render(g3d, rectClip, frame);
+      strandsRenderer.render(g3d, rectClip, frame, frame.strands);
     }
     if (frame.axes != null) {
       if (axesRenderer == null)
         axesRenderer = new AxesRenderer(viewer, this);
-      axesRenderer.render(g3d, rectClip, frame);
+      axesRenderer.render(g3d, rectClip, frame, frame.axes);
     }
     if (frame.bbox != null) {
       if (bboxRenderer == null)
         bboxRenderer = new BboxRenderer(viewer, this);
-      bboxRenderer.render(g3d, rectClip, frame);
+      bboxRenderer.render(g3d, rectClip, frame, frame.bbox);
     }
 
     if (frame.lineCount > 0) {
       if (lineRenderer == null)
         lineRenderer = new LineRenderer(viewer, this);
-      lineRenderer.render(g3d, rectClip, frame);
+      lineRenderer.render(g3d, rectClip, frame, null);
     }
 
     if (frame.cellLineCount > 0) {
       if (cellLineRenderer == null)
         cellLineRenderer = new CellLineRenderer(viewer, this);
-      cellLineRenderer.render(g3d, rectClip, frame);
+      cellLineRenderer.render(g3d, rectClip, frame, null);
     }
   }
 

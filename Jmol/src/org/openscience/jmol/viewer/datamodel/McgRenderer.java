@@ -26,30 +26,30 @@
 package org.openscience.jmol.viewer.datamodel;
 
 import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
-import org.openscience.jmol.viewer.g3d.Colix;
-import org.openscience.jmol.viewer.g3d.Shade3D;
+import org.openscience.jmol.viewer.g3d.*;
+import org.openscience.jmol.viewer.pdb.*;
 import java.awt.Rectangle;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
-abstract class Renderer {
+abstract class McgRenderer extends Renderer {
 
-  JmolViewer viewer;
-  FrameRenderer frameRenderer;
-
-  Graphics3D g3d;
-  Rectangle rectClip;
-  Frame frame;
-  Object renderObject;
-
-  void render(Graphics3D g3d, Rectangle rectClip,
-              Frame frame, Object renderObject) {
-    this.g3d = g3d;
-    this.rectClip = rectClip;
-    this.frame = frame;
-    this.renderObject = renderObject;
-    render();
+  McgRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
+    this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
   }
 
-  abstract void render();
-}
+  void render() {
+    if (renderObject == null)
+      return;
+    Mcg mcg = (Mcg)renderObject;
+    for (int m = mcg.getModelCount(); --m >= 0; ) {
+      Mcg.Model model = mcg.getMcgModel(m);
+      for (int c = model.getChainCount(); --c >= 0; ) {
+        renderMcgChain(model.getMcgChain(c));
+      }
+    }
+  }
 
+  abstract void renderMcgChain(Mcg.Chain mcgChain);
+}

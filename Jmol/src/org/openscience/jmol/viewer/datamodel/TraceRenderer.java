@@ -32,34 +32,30 @@ import java.awt.Rectangle;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-class TraceRenderer extends Renderer {
+class TraceRenderer extends McgRenderer {
 
   TraceRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
-  Trace trace;
-
   void render() {
-    this.trace = frame.trace;
-    if (trace == null)
-      return;
-    for (int m = trace.getTmodelCount(); --m >= 0; ) {
-      Trace.Tmodel tmodel = trace.getTmodel(m);
-      for (int c = tmodel.getTchainCount(); --c >= 0; ) {
-        Trace.Tchain tchain = tmodel.getTchain(c);
-        render1Chain(tchain.mainchain, tchain.mads, tchain.colixes);
-      }
-    }
+    super.render();
     screens = null;
     alphas = null;
   }
+
+  void renderMcgChain(Mcg.Chain mcgChain) {
+    renderTraceChain((Trace.Chain)mcgChain);
+  }
   
+  void renderTraceChain(Trace.Chain traceChain) {
+    render1Chain(traceChain.mainchain, traceChain.mads, traceChain.colixes);
+  }
+
   int mainchainLength;
   Point3i[] screens;
   Atom[] alphas;
-
+  
   void render1Chain(PdbGroup[] mainchain, short[] mads, short[] colixes) {
     mainchainLength = mainchain.length;
     if (mainchainLength > 0) {

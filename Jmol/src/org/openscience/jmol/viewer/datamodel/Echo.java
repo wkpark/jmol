@@ -63,26 +63,14 @@ public class Echo extends Shape {
       return;
     }
 
-    if ("fontsize".equals(propertyName)) {
+    if ("font".equals(propertyName)) {
       if (currentText != null) {
-        int fontsize = ((Integer)value).intValue();
-        String fontface = g3d.getFontFace(currentText.fontid);
-        currentText.fontid = g3d.getFontID(fontsize, fontface);
+        currentText.fontid = g3d.getFontID(value);
         currentText.recalc();
       }
       return;
     }
-
-    if ("fontface".equals(propertyName)) {
-      if (currentText != null) {
-        int fontsize = g3d.getFontSize(currentText.fontid);
-        String fontface = (String)value;
-        currentText.fontid = g3d.getFontID(fontsize, fontface);
-        currentText.recalc();
-      }
-      return;
-    }
-
+    
     if ("echo".equals(propertyName)) {
       if (currentText != null) {
         currentText.text = (String)value;

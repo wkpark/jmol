@@ -32,6 +32,7 @@ public class Frank extends SelectionIndependentShape {
 
   final static String frankString = "Jmol";
   final static String frankFontName = "Serif";
+  final static String frankFontStyle = "Bold";
   final static int frankFontSize = 14;
   final static int frankMargin = 4;
 
@@ -45,7 +46,7 @@ public class Frank extends SelectionIndependentShape {
     colix = Graphics3D.GRAY;
 
     
-    frankFontID = g3d.getFontID(frankFontSize, frankFontName);
+    frankFontID = g3d.getFontID(frankFontSize, frankFontName, frankFontStyle);
     FontMetrics fm = g3d.getFontMetrics(frankFontID);
     frankWidth = fm.stringWidth(frankString);
     frankDescent = fm.getDescent();

@@ -368,7 +368,6 @@ public class Token {
     "translate",         new Token(translate,varArgCount, "translate"),
     "unbond",            new Token(unbond,   varArgCount, "unbond"),
     "wireframe",         new Token(wireframe, onDefault1, "wireframe"),
-    "stick",             null,
     "write",             new Token(write,    varArgCount, "write"),
     "zap",               new Token(zap,                0, "zap"),
     "zoom",              new Token(zoom,      onDefault1, "zoom"),

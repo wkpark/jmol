@@ -50,6 +50,7 @@ public class MouseManager {
 
   private int xPrevious, yPrevious;
   private int xCurrent, yCurrent;
+  private int modifiersWhenPressed;
 
   private boolean rubberbandSelectionMode = false;
   private int xAnchor, yAnchor;
@@ -120,6 +121,7 @@ public class MouseManager {
   final static int RIGHT = InputEvent.BUTTON3_MASK;
   final static int SHIFT = InputEvent.SHIFT_MASK;
   final static int CTRL = InputEvent.CTRL_MASK;
+  final static int CTRL_SHIFT = CTRL | SHIFT;
   final static int CTRL_LEFT = CTRL | LEFT;
   final static int SHIFT_LEFT = SHIFT | LEFT;
   final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
@@ -131,6 +133,7 @@ public class MouseManager {
     public void mousePressed(MouseEvent e) {
       xCurrent = xPrevious = e.getX();
       yCurrent = yPrevious = e.getY();
+      modifiersWhenPressed = e.getModifiers();
       if (modeMouse == PICK) {
         rubberbandSelectionMode = true;
         xAnchor = xCurrent;
@@ -174,10 +177,14 @@ public class MouseManager {
     public void mouseReleased(MouseEvent e) {
       control.setInMotion(false);
       int modifiers = e.getModifiers();
-      if (e.isPopupTrigger() || (modifiers & CTRL_SHIFT_RIGHT) == RIGHT) {
+      if ((modifiersWhenPressed & CTRL_SHIFT) == 0 &&
+          (e.isPopupTrigger() || (modifiers & CTRL_SHIFT_RIGHT) == RIGHT)) {
         // mth 2003 05 27
         // the reason I am checking for RIGHT is because e.isPopupTrigger()
         // was failing on some platforms
+        // mth 2003 07 07
+        // added this modifiersWhenPressed check because of bad
+        // behavior on WinME
         control.popupMenu(e);
       } else if (modeMouse == PICK) {
         rubberbandSelectionMode = false;

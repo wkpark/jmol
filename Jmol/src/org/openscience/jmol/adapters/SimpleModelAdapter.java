@@ -54,7 +54,8 @@ public class SimpleModelAdapter implements JmolModelAdapter {
   final static int UNKNOWN = -1;
   final static int XYZ = 0;
   final static int MOL = 1;
-  final static int PDB = 2;
+  final static int JME = 2;
+  final static int PDB = 3;
 
   public Object openBufferedReader(JmolViewer viewer,
                                    String name, BufferedReader bufferedReader) {
@@ -67,6 +68,9 @@ public class SimpleModelAdapter implements JmolModelAdapter {
         break;
       case MOL:
         model = new MolModel(bufferedReader);
+        break;
+      case JME:
+        model = new JmeModel(bufferedReader);
         break;
       case PDB:
         model = new PdbModel(bufferedReader);
@@ -86,6 +90,7 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     throws Exception {
     bufferedReader.mark(512);
     String line1 = bufferedReader.readLine();
+    System.out.println("DetermineModel:" + line1);
     String line2 = bufferedReader.readLine();
     String line3 = bufferedReader.readLine();
     String line4 = bufferedReader.readLine();
@@ -112,6 +117,8 @@ public class SimpleModelAdapter implements JmolModelAdapter {
         line1.startsWith("ATOM  ") ||
         line1.startsWith("HETATM"))
       return PDB;
+    if (line2 == null || line2.trim().length() == 0)
+      return JME;
     return UNKNOWN;
   }
 
@@ -353,6 +360,57 @@ class XyzModel extends Model {
       float y = Float.valueOf(tokenizer.nextToken()).floatValue();
       float z = Float.valueOf(tokenizer.nextToken()).floatValue();
       atoms[i] = new Atom(atomicSymbol, x, y, z);
+    }
+  }
+}
+
+class JmeModel extends Model {
+  String line;
+  StringTokenizer tokenizer;
+
+  JmeModel(BufferedReader reader) {
+    try {
+      line = reader.readLine();
+      tokenizer = new StringTokenizer(line, "\t ");
+      atomCount = Integer.parseInt(tokenizer.nextToken());
+      System.out.println("atomCount=" + atomCount);
+      bondCount = Integer.parseInt(tokenizer.nextToken());
+      setModelName("JME");
+      readAtoms();
+      readBonds();
+    } catch (Exception ex) {
+      errorMessage = "Could not read file:" + ex;
+      System.out.println(errorMessage);
+    }
+  }
+    
+  void readAtoms() throws Exception {
+    atoms = new Atom[atomCount];
+    for (int i = 0; i < atomCount; ++i) {
+      String atom = tokenizer.nextToken();
+      System.out.println("atom=" + atom);
+      int indexColon = atom.indexOf(':');
+      String atomicSymbol = (indexColon > 0
+                             ? atom.substring(0, indexColon)
+                             : atom);
+      float x = Float.valueOf(tokenizer.nextToken()).floatValue();
+      float y = Float.valueOf(tokenizer.nextToken()).floatValue();
+      float z = 0;
+      atoms[i] = new Atom(atomicSymbol, x, y, z);
+    }
+  }
+
+  void readBonds() throws Exception {
+    bonds = new Bond[bondCount];
+    for (int i = 0; i < bondCount; ++i) {
+      int atomIndex1 = Integer.parseInt(tokenizer.nextToken());
+      int atomIndex2 = Integer.parseInt(tokenizer.nextToken());
+      int order = Integer.parseInt(tokenizer.nextToken());
+      System.out.println("bond " + atomIndex1 + "->" + atomIndex2+" "+order);
+      // por ahora, no esteroquimica
+      if (order < 1)
+        order = 1;
+      bonds[i] = new Bond(atomIndex1-1, atomIndex2-1, order);
     }
   }
 }

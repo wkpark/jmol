@@ -1136,42 +1136,10 @@ final class Frame {
   void checkValencesAndBond(Atom atomA, Atom atomB, int order) {
     //    System.out.println("checkValencesAndBond(" +
     //                       atomA.point3f + "," + atomB.point3f + ")");
-    int maxBondCountA = atomA.getMaximumAutoBondCount();
-    if (maxBondCountA == 0)
+    if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT ||
+        atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {
+      System.out.println("maximum auto bond count reached");
       return;
-    int maxBondCountB = atomB.getMaximumAutoBondCount();
-    if (maxBondCountB == 0)
-      return;
-    int currentBondCountA = atomA.getCurrentBondCount();
-    //    System.out.println("currentBondCountA=" + currentBondCountA);
-    boolean availableA = currentBondCountA < maxBondCountA;
-    int currentBondCountB = atomB.getCurrentBondCount();
-    //    System.out.println("currentBondCountB=" + currentBondCountB);
-    boolean availableB = currentBondCountB < maxBondCountB;
-    if (!availableA && availableB) {
-      //      System.out.println("a is not available but B is");
-      Bond bondToDiscard = atomA.getLongestBondToDiscard(atomB);
-      if (bondToDiscard == null)
-        return; // atomB is further away than any established bond
-      //      System.out.println("discarding from A");
-      deleteBond(bondToDiscard);
-    } else if (availableA && !availableB) {
-      //      System.out.println("B is not available but A is");
-      Bond bondToDiscard = atomB.getLongestBondToDiscard(atomA);
-      if (bondToDiscard == null)
-        return; // atomA is further away than any established bond
-      //      System.out.println("discarding from B");
-    } else if (!availableA && !availableB) {
-      //      System.out.println("neither is available");
-      Bond bondToDiscardA = atomA.getLongestBondToDiscard(atomB);
-      if (bondToDiscardA == null)
-        return;
-      Bond bondToDiscardB = atomB.getLongestBondToDiscard(atomA);
-      if (bondToDiscardB == null)
-        return;
-      deleteBond(bondToDiscardA);
-      deleteBond(bondToDiscardB);
-      //      System.out.println("discarding from both A & B");
     }
     addBond(atomA.bondMutually(atomB, order, viewer));
   }

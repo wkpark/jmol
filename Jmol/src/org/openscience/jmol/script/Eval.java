@@ -55,7 +55,7 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean haltExecution;
 
-  final static boolean logMessages = false;
+  final static boolean logMessages = true;
 
   public Eval(DisplayControl control) {
     compiler = new Compiler(this);
@@ -562,10 +562,15 @@ public class Eval implements Runnable {
   }
 
   BitSet getHydrogenSet() {
+    if (logMessages)
+      System.out.println("getHydrogenSet()");
     ChemFrame frame = control.getFrame();
     BitSet bsHydrogen = new BitSet();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
       Atom atom = frame.getJmolAtomAt(i);
+      if (logMessages)
+        System.out.println("atom#" + i + ".getAtomicNumber()->" +
+                           atom.getAtomicNumber());
       if (atom.getAtomicNumber() == 1)
         bsHydrogen.set(i);
     }

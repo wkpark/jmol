@@ -106,15 +106,11 @@ public class Distributor {
 
   public void setColorBond(Color colorBond, JmolAtomIterator iter) {
     while (iter.hasNext()) {
-      if (iter.allBonds()) {
-        Atom atom = iter.nextAtom();
-        System.out.println("allbonds for " + atom);
+      Atom atom = iter.nextAtom();
+      if (iter.allBonds())
         atom.atomShape.setColorAllBonds(colorBond);
-      } else {
-        Atom atom = iter.nextAtom();
-        System.out.println("one bonds for " + atom);
+      else
         atom.atomShape.setColorBond(colorBond, iter.indexBond());
-      }
     }
   }
 

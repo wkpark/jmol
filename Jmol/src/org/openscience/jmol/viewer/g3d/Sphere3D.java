@@ -159,27 +159,6 @@ public class Sphere3D {
     }
   }
 
-  /*
-  void render1(short colix, int diameter, int x, int y, int z) {
-    if (diameter >= maxSphereCache)
-      diameter = maxSphereCache;
-    int radius = (diameter + 1) / 2;
-    x -= radius;
-    y -= radius;
-    g3d.argbCurrent = Colix.getArgb(colix);
-    int offsetRows = semicircleIndex[diameter];
-    for (int i = diameter; --i >= 0; ++y) {
-      int n = semicircles[offsetRows++];
-      int numToPlot = n+n;
-      int offsetCols = semicircleIndex[numToPlot];
-      int numToSkip = diameter - n;
-      int xT = x + numToSkip;
-      while(--numToPlot >= 0)
-        g3d.plotPixelClipped(xT++, y, z - semicircles[offsetCols++]);
-    }
-  }
-  */
-  
   void render(short colix, int diameter, int x, int y, int z) {
     int radius = (diameter + 1) >> 1;
     int[] shades = Colix.getShades(colix);
@@ -219,21 +198,37 @@ public class Sphere3D {
       do {
         packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
-        if (zPixel < zbuf[offsetSE]) {
-          zbuf[offsetSE] = (short)zPixel;
-          pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+        if (zPixel <= zbuf[offsetSE]) {
+          if (zPixel < zbuf[offsetSE]) {
+            zbuf[offsetSE] = (short)zPixel;
+            pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+          } else {
+            g3d.averageOffsetArgb(offsetSE, shades[(packed >> 7) & 0x3F]);
+          }
         }
-        if (zPixel < zbuf[offsetSW]) {
-          zbuf[offsetSW] = (short)zPixel;
-          pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
+        if (zPixel <= zbuf[offsetSW]) {
+          if (zPixel < zbuf[offsetSW]) {
+            zbuf[offsetSW] = (short)zPixel;
+            pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
+          } else {
+            g3d.averageOffsetArgb(offsetSW, shades[(packed >> 13) & 0x3F]);
+          }
         }
-        if (zPixel < zbuf[offsetNE]) {
-          zbuf[offsetNE] = (short)zPixel;
-          pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+        if (zPixel <= zbuf[offsetNE]) {
+          if (zPixel < zbuf[offsetNE]) {
+            zbuf[offsetNE] = (short)zPixel;
+            pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+          } else {
+            g3d.averageOffsetArgb(offsetNE, shades[(packed >> 19) & 0x3F]);
+          }
         }
         if (zPixel < zbuf[offsetNW]) {
-          zbuf[offsetNW] = (short)zPixel;
-          pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+          if (zPixel < zbuf[offsetNW]) {
+            zbuf[offsetNW] = (short)zPixel;
+            pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+          } else {
+            g3d.averageOffsetArgb(offsetNW, shades[(packed >> 25) & 0x3F]);
+          }
         }
         ++offsetSE;
         --offsetSW;
@@ -274,23 +269,39 @@ public class Sphere3D {
         packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
         if (tSouthVisible) {
-          if (tEastVisible && zPixel < zbuf[offsetSE]) {
-            zbuf[offsetSE] = (short)zPixel;
-            pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+          if (tEastVisible && zPixel <= zbuf[offsetSE]) {
+            if (zPixel < zbuf[offsetSE]) {
+              zbuf[offsetSE] = (short)zPixel;
+              pbuf[offsetSE] = shades[(packed >> 7) & 0x3F];
+            } else {
+              g3d.averageOffsetArgb(offsetSE, shades[(packed >> 7) & 0x3F]);
+            }
           }
-          if (tWestVisible && zPixel < zbuf[offsetSW]) {
-            zbuf[offsetSW] = (short)zPixel;
-            pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
+          if (tWestVisible && zPixel <= zbuf[offsetSW]) {
+            if (zPixel < zbuf[offsetSW]) {
+              zbuf[offsetSW] = (short)zPixel;
+              pbuf[offsetSW] = shades[(packed >> 13) & 0x3F];
+            } else {
+              g3d.averageOffsetArgb(offsetSW, shades[(packed >> 13) & 0x3F]);
+            }
           }
         }
         if (tNorthVisible) {
-          if (tEastVisible && zPixel < zbuf[offsetNE]) {
-            zbuf[offsetNE] = (short)zPixel;
-            pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+          if (tEastVisible && zPixel <= zbuf[offsetNE]) {
+            if (zPixel < zbuf[offsetNE]) {
+              zbuf[offsetNE] = (short)zPixel;
+              pbuf[offsetNE] = shades[(packed >> 19) & 0x3F];
+            } else {
+              g3d.averageOffsetArgb(offsetNE, shades[(packed >> 19) & 0x3F]);
+            }
           }
-          if (tWestVisible && zPixel < zbuf[offsetNW]) {
-            zbuf[offsetNW] = (short)zPixel;
-            pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+          if (tWestVisible && zPixel <= zbuf[offsetNW]) {
+            if (zPixel < zbuf[offsetNW]) {
+              zbuf[offsetNW] = (short)zPixel;
+              pbuf[offsetNW] = shades[(packed >> 25) & 0x3F];
+            } else {
+              g3d.averageOffsetArgb(offsetNW, shades[(packed >> 25) & 0x3F]);
+            }
           }
         }
         ++offsetSE;

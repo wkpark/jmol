@@ -762,4 +762,10 @@ final public class Graphics3D {
       }
     }
   }
+
+  void averageOffsetArgb(int offset, int argb) {
+    pbuf[offset] =((((pbuf[offset] >> 1) & 0x007F7F7F) +
+                    ((argb >> 1) & 0xFF7F7F7F)) |
+                   (argb & 0xFF010101));
+  }
 }

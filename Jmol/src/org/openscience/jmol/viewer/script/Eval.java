@@ -1229,13 +1229,13 @@ public class Eval implements Runnable {
       break;
     case Token.bond:
     case Token.bonds:
-      viewer.setColorBondScript(getColorOrNoneParam(2));
+      viewer.setColorBond(getColorOrNoneParam(2));
       break;
     case Token.ssbonds:
-      viewer.setColorSsBondScript(getColorOrNoneParam(2));
+      viewer.setColorSsbond(getColorOrNoneParam(2));
       break;
     case Token.hbonds:
-      viewer.setColorHBondScript(getColorOrNoneParam(2));
+      viewer.setColorHbond(getColorOrNoneParam(2));
       break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));

@@ -44,7 +44,7 @@ public class StyleManager {
 
   public short marBond = 100;
   public void setMarBond(short marBond) {
-    this.marBond =marBond;
+    this.marBond = marBond;
   }
 
   public byte modeMultipleBond = JmolConstants.MULTIBOND_SMALL;

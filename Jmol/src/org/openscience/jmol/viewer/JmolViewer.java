@@ -541,18 +541,19 @@ final public class JmolViewer {
   public short getColixDotsSaddle() {
     return colorManager.colixDotsSaddle;
   }
-  
 
   public void setColorDotsConvex(Color color) {
     colorManager.setColorDotsConvex(color);
   }
+
   public short getColixDotsConvex() {
     return colorManager.colixDotsConvex;
   }
-  
+
   public void setColorDotsConcave(Color color) {
     colorManager.setColorDotsConcave(color);
   }
+
   public short getColixDotsConcave() {
     return colorManager.colixDotsConcave;
   }
@@ -637,18 +638,6 @@ final public class JmolViewer {
 
   public Color getColorFromString(String colorName) {
     return colorManager.getColorFromString(colorName);
-  }
-
-  public Color getColorBond() {
-    return colorManager.colorBond;
-  }
-
-  public short getColixBond(int order) {
-    if (order == JmolConstants.BOND_HYDROGEN)
-      return colorManager.colixHbond;
-    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
-      return colorManager.colixSsbond;
-    return colorManager.colixBond;
   }
 
   public void setSpecular(boolean specular) {
@@ -1302,16 +1291,30 @@ final public class JmolViewer {
     setShapeColor(JmolConstants.SHAPE_BALLS, palette, color);
   }
 
-  public void setColorBondScript(Color color) {
-    setShapeColor(JmolConstants.SHAPE_STICKS,
-                  JmolConstants.PALETTE_COLOR, color);
+  public void setColorBond(Color color) {
+    colorManager.setColorBond(color);
+    setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);
+  }
+  
+  public Color getColorBond() {
+    return colorManager.colorBond;
   }
 
-  public void setColorSsBondScript(Color color) {
+  public short getColixBond(int order) {
+    if (order == JmolConstants.BOND_HYDROGEN)
+      return colorManager.colixHbond;
+    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
+      return colorManager.colixSsbond;
+    return colorManager.colixBond;
+  }
+
+  public void setColorSsbond(Color color) {
+    colorManager.setColorSsbond(color);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "ssbondColor", color);
   }
   
-  public void setColorHBondScript(Color color) {
+  public void setColorHbond(Color color) {
+    colorManager.setColorHbond(color);
     setShapeProperty(JmolConstants.SHAPE_STICKS, "hbondColor", color);
   }
 
@@ -1329,6 +1332,11 @@ final public class JmolViewer {
 
   public boolean getHbondsBackbone() {
     return styleManager.hbondsBackbone;
+  }
+
+  public void setMarBond(short marBond) {
+    styleManager.setMarBond(marBond);
+    setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
   }
 
   public void setLabelScript(String strLabel) {
@@ -1390,10 +1398,6 @@ final public class JmolViewer {
     setShapeProperty(shapeType, "color", color);
   }
 
-  public void setSticksColor(Color color) {
-    setShapeColorProperty(JmolConstants.SHAPE_STICKS, color);
-  }
-  
   public Object getShapeProperty(int shapeType, String propertyName) {
     return modelManager.getShapeProperty(shapeType, propertyName);
   }
@@ -1407,9 +1411,12 @@ final public class JmolViewer {
       .intValue();
   }
 
+  public Color getColorShape(int shapeID) {
+    return (Color)modelManager.getShapeProperty(shapeID, "color");
+  }
+
   public short getColixShape(int shapeID) {
-    return g3d.getColix((Color)modelManager.getShapeProperty(shapeID,
-                                                             "color"));
+    return g3d.getColix(getColorShape(shapeID));
   }
 
   public int getShapeID(String shapeName) {

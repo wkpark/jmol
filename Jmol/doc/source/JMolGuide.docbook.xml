@@ -11,6 +11,23 @@
       displaying 3D chemical information.
     </para>
   </chapter>
+
+  <chapter>
+    <title>Command Line Options</title>
+    <section>
+      <para>
+        The program jmol has (at this moment) one command line
+        option: -script. De current syntax is:
+	<cmdsynopsis>
+	  <command>jmol</command>
+	  <arg>-script <arg choice="req">rasmol.script</arg></arg>
+	</cmdsynopsis>
+        This makes it possible to start jmol with a Rasmol script.
+        The syntax of these scripts is explained later in this
+        documentation.
+      </para>
+    </section>
+  </chapter>        
   
   <chapter>
     <title>Menu description</title>
@@ -316,6 +333,32 @@
       <section>
         <title>Jmol Console</title>
         <para>Shows the output to the System.err output stream.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Rasmol Scripts</title>
+    <para>
+      The scripting language within Jmol is inherited from another
+      3D viewer, Rasmol. Note that it this time, only a limited
+      amount of commands can be used. All commands mentioned
+      in this chapter do.
+    </para>
+    <section>
+      <title>General Commands</title>
+      <section>
+        <title>load</title>
+        <para>
+	  <cmdsynopsis>
+	    <command>load</command>
+	    <arg>format</arg>
+            <arg choice="req">filename</arg>
+	  </cmdsynopsis>
+	</para>
+        <para>
+          Currently accepted formats are PDB, CML and XYZ.
+        </para>
       </section>
     </section>
   </chapter>

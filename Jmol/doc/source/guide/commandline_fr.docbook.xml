@@ -1,14 +1,9 @@
 <!--
   French translation 
-  Translated from default version : commandline.docbook.xml (v 1.5)
+  Translated from default version : commandline.docbook.xml (v 1.6)
 -->
 <chapter id="commandlineoptions">
   <title>Options de la Ligne de Commande</title>
-  <para>
-    Avant de commencer &agrave; expliquer les divers options de ligne de
-    commande, je voudrais attirer votre attention sur cette commande
-    <cmdsynopsis><command>jmol</command> <arg>-h</arg></cmdsynopsis>.
-  </para>
   <para>
   Le programme Jmol a une option de la ligne de commander pour ex&eacute;cuter
   des scripts:
@@ -30,82 +25,48 @@
     </cmdsynopsis>
   </para>
   <section>
-    <title>Autres options utilisateur</title>
-    <section>
-      <title>-Duser.language</title>
-      <para>
-        En plus des options ci-dessus, il y a une option Java importante:
-        <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
-        Avec cette option la langue de l'IHM peut &ecirc;tre choisie.
-        Actuellement, les langages suivant sont support&eacute;s:
-        <literal>de</literal>,
-        <literal>en</literal>,
-        <literal>es</literal>,
-        <literal>fr</literal>,
-        <literal>nl</literal> et
-        <literal>pl</literal>.
-      </para>
-      <para>
-        Alternativement, vous pouvez aussi utiliser la variable d'environnement
-        <envar>LANG</envar> pour choisir la langue pr&eacute;f&eacute;r&eacute;e.
-        C'est habituel dans beaucoup de syst&egrave;mes UNIX, comme Linux.
-        Toutefois, il est connu que cel&agrave; ne marche pas sous Solaris
-        et l'option ci-dessus de la ligne de commande doit &ecirc;tre
-        utilis&eacute;e.
-      </para>
-    </section>
-    <section>
-      <title>-Ddisplay.speed</title>
-      <para>
-        L'option <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis>
-        peut &ecirc;tre utilis&eacute;e pour rendre compte de la vitesse
-        d'affichage en <emphasis>images par seconde</emphasis> au lieu d'en
-		millisecondes par image.
-      </para>
-    </section>
-    <section>
-      <title>-Xmx</title>
-      <para>
-        Avec cette option vous pouvez changer la taille maximum du tas que la
-        machine virtuelle Java peut adresser dans les syst&egrave;mes Java 1.4.
-        Par d&eacute;faut, elle est de 64 Mo. Pour de gros fichiers ce peut
-        &ecirc;tre insuffisant. En utilisant
-        <cmdsynopsis><arg>-Xm512</arg></cmdsynopsis> la taille du tas est
-        agrandie &agrave; un demi gigaoctet. Sur des syst&egrave;mes Java plus
-        anciens la syntaxe de cette option est diff&eacute;rente
-        (cf. <command>java --help</command>).
-      </para>
-    </section>
+    <title>-Duser.language</title>
+    <para>
+      En plus des options ci-dessus, il y a une option Java importante:
+      <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
+      Avec cette option la langue de l'IHM peut &ecirc;tre choisie.
+      Actuellement, les langages suivant sont support&eacute;s:
+      <literal>de</literal>,
+      <literal>en</literal>,
+      <literal>es</literal>,
+      <literal>fr</literal>,
+      <literal>nl</literal> et
+      <literal>pl</literal>.
+    </para>
+    <para>
+      Alternativement, vous pouvez aussi utiliser la variable d'environnement
+      <envar>LANG</envar> pour choisir la langue pr&eacute;f&eacute;r&eacute;e.
+      C'est habituel dans beaucoup de syst&egrave;mes UNIX, comme Linux.
+      Toutefois, il est connu que cel&agrave; ne marche pas sous Solaris
+      et l'option ci-dessus de la ligne de commande doit &ecirc;tre
+      utilis&eacute;e.
+    </para>
   </section>
   <section>
-    <title>Options pour D&eacute;veloppeurs/D&eacute;bug</title>
-    <section>
-      <title>-Dcdk.debugging</title>
-      <para>
-        L'option <cmdsynopsis><arg>-Dcdk.debugging=true</arg></cmdsynopsis>
-        peut &ecirc;tre utilis&eacute;e pour activer la sortie d'informations
-        de d&eacute;bug pour les classes qui utilisent le LoggingTool de CDK.
-        Quand des anomalies sont trouv&eacute;es, ceci peut &ecirc;tre
-        utilis&eacute; pour avoir une id&eacute;e de ce qui cause le
-        probl&egrave;.
-      </para>
-    </section>
-    <section>
-      <title>-Dcdk.debug.stdout</title>
-      <para>
-        L'option <cmdsynopsis><arg>-Dcdk.debug.stdout=true</arg></cmdsynopsis>
-        est utilis&eacute;e pour que la sortie des messages de log de CDK se
-        fasse sur STDOUT au lieu de cdk.log.
-      </para>
-    </section>
-    <section>
-      <title>-DJmolConsole</title>
-      <para>
-        Quelquefois il est plus pratique de ne pas utiliser la Console Jmol.
-		L'option <cmdsynopsis><arg>-DJmolConsole=false</arg></cmdsynopsis>
-        peut &ecirc;tre utilis&eacute;e pour ceci. Les messages de System.out
-        et System.err ne sont plus alors redirig&eacute;s vers la Console Jmol.
-      </para>
-    </section>
+    <title>-Ddisplay.speed</title>
+    <para>
+      L'option <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis>
+      peut &ecirc;tre utilis&eacute;e pour rendre compte de la vitesse
+      d'affichage en <emphasis>images par seconde</emphasis> au lieu d'en
+      millisecondes par image.
+    </para>
+  </section>
+  <section>
+    <title>-Xmx</title>
+    <para>
+      Avec cette option vous pouvez changer la taille maximum du tas que la
+      machine virtuelle Java peut adresser dans les syst&egrave;mes Java 1.4.
+      Par d&eacute;faut, elle est de 64 Mo. Pour de gros fichiers ce peut
+      &ecirc;tre insuffisant. En utilisant
+      <cmdsynopsis><arg>-Xmx512m</arg></cmdsynopsis> la taille du tas est
+      agrandie &agrave; un demi gigaoctet. Sur des syst&egrave;mes Java plus
+      anciens la syntaxe de cette option est diff&eacute;rente
+      (cf. <command>java --help</command>).
+    </para>
   </section>
 </chapter>

@@ -1,6 +1,6 @@
 <!--
   French translation 
-  Translated from default version : menus.docbook.xml (v 1.3)
+  Translated from default version : menus.docbook.xml (v 1.4)
 -->
 <chapter id="menudesc">
   <title>Description des Menus</title>
@@ -18,14 +18,17 @@
           <listitem><para>ACES II</para></listitem>
           <listitem><para>ADF - Amsterdam Density Functional</para></listitem>
           <listitem><para>
-            <ulink url="http://www.xml-cml.org/">CML v1.0 and 1.0.1</ulink>
+            <ulink url="http://www.xml-cml.org/">CML v2.0</ulink>
           </para></listitem>
           <listitem><para>GAMESS</para></listitem>
           <listitem><para>Gaussian 92/94/98</para></listitem>
           <listitem><para>Ghemical MM</para></listitem>
           <listitem><para>Jaguar</para></listitem>
           <listitem><para>MDL molfile</para></listitem>
-          <listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
+          <listitem><para>
+            <ulink url="http://www.pdb.org">PDB</ulink>
+          </para></listitem>
+          <listitem><para>CIF/mmCIF</para></listitem>
           <listitem><para>XYZ (single and multiple frame)</para></listitem>
         </itemizedlist>
       </para>
@@ -42,33 +45,24 @@
     <section>
       <title>Script...</title>
       <para>
-        Ouvre une fen&ecirc;tre o&ugrave; des commandes de script Rasmol
-        peuvent &ecirc;tre ex&eacute;cut&eacute;es.
+        Ouvre une fen&ecirc;tre o&ugrave; des commandes de script
+        Jmol/Rasmol/Chime peuvent &ecirc;tre ex&eacute;cut&eacute;es.
         <xref linkend="rasmol" />
         contient des informations sur les scripts RasMol/Chime.
       </para>
     </section>
-    <section>
-      <title>Enregistrer Sous...</title>
-      <para></para>
-    </section>
+    
     <section>
       <title>Exporter</title>
       <section>
         <title>Exporter -&gt; Exporter une Image...</title>
         <para>
-          Jmol peut exporter des images des types suivants:
+          Jmol peut exporter des images couleur 24 bits des types suivants:
           <itemizedlist>
-            <listitem><para>BMP</para></listitem>
-            <listitem><para>GIF</para></listitem>
             <listitem><para>JPG</para></listitem>
             <listitem><para>PNG</para></listitem>
             <listitem><para>PPM</para></listitem>
           </itemizedlist>
-        </para>
-        <para>
-          Il faut noter que les images GIF ne peuvent &ecirc;tre
-          export&eacute;es que si l'image affich&eacute;e est en 8 bits.
         </para>
       </section>
       <section>
@@ -112,40 +106,6 @@
       </para>
     </section>
     <section>
-      <title>Cr&eacute;er un cristal...</title>
-      <para>
-        Ouvre une bo&icirc;te de dialogue qui permet de construire un nouveau
-        cristal en partant du fichier actuel.
-      </para>
-      <para>
-        Cette bo&icirc;te de dialogue n'est active que si le fichier ne
-        contient pas d'information &agrave; propos de la structure du cristal.
-        Une fois que le cristal a &eacute;t&eacute; cr&eacute;&eacute;,
-        l'option Cr&eacute;er un critsal est d&eacute;sactiv&eacute;e mais
-        les informations de structure du cristal peuvent &ecirc;tre obtenues
-        en passant par la bo&icirc;te de dialogue Propri&eacute;t&eacute;s du
-        cristal dans le menu Extra.
-      </para>
-      <para>
-        Les bo&icirc;tes de dialogue Cr&eacute;er un Cristal dans le menu
-        Edition et Propri&eacute;t&eacute;s du Cristal dans le menu Extra sont
-        les m&ecirc;mes mais leur comportement est l&eacute;g&eacute;rement
-        diff&eacute;rent suivant d'o&ugrave; elles ont &eacute;t&eacute;
-        appel&eacute;es. Leur description est donn&eacute;e dans
-        <xref linkend="crystal" /> plus loin dans ce manuel.
-      </para>
-    </section>
-    <section>
-      <title>Propri&eacute;t&eacute;s d'Atome...</title>
-      <para>
-        Ce menu ouvre une bo&icirc;te de dialogue dans laquelle des
-        propri&eacute;t&eacute;s atomiques peuvent &ecirc;tre ajout&eacute;es
-        &agrave; un grand nombre de types d'atomes. Ces
-        propri&eacute;t&eacute;s incluent les couleurs utilis&eacute;es pour
-        d&eacute;crire les atomes.
-      </para>
-    </section>
-    <section>
       <title>Options...</title>
       <para>
         Ce menu ouvre une bo&icirc;te de dialogue pour modifier les
@@ -153,38 +113,6 @@
         Ces r&eacute;glages sont sauvegard&eacute;s d'une session &agrave;
         l'autre.
       </para>
-      <section>
-        <title>Onglet Affichage</title>
-        <para>
-          Dans cet onglet quelques r&eacute;glages d'affichage peuvent
-          &ecirc;tre modifi&eacute;s. Par d&eacute;faut, l'anti-aliasing est
-          d&eacute;sactiv&eacute;. L'activer am&eacute;liore la qualit&eacute;
-          des images de facon consid&eacute;rable mais r&eacute;duirea aussi
-          les performances.
-        </para>
-        <para>
-          Remarque: La JVM 1.3.1 qui est livr&eacute;e avec Macintosh OS X et
-          OS X 10.2 (Jaguar) a des anomalies fatales avec certaines
-          op&eacute;rations d'interpolation de pixle et d'anti-aliasing. En
-          cons&eacute;quence, vous pourriez &ecirc;tre oblig&eacute; de
-          d&eacute;sactiver l'utilisation de Java Graphics2D sur cette
-          plate-forme.
-        </para>
-        <para>
-          Remarque: La JVM 1.4.1 qui a &eacute;t&eacute; distribu&eacute;e par
-          Apple semble avoir r&eacute;solu quelques probl&egrave;mes pour
-          Jmol ... mais en a cr&eacute;&eacute; *beaucoup* d'autres :(
-        </para>
-      </section>
-      <section>
-        <title>Onglet Couleurs</title>
-        <para>
-          Dans cet onglet, des couleur g&eacute;n&eacute;rales d'affichage
-          peuvent &ecirc;tre modifi&eacute;es. Par exemple, la couleur de fond
-          et la couleur utilis&eacute;e pour mettre en surbrillance les atomes
-          s&eacute;lectionn&eacute;s.
-        </para>
-      </section>
     </section>
   </section>
   <section>
@@ -205,669 +133,15 @@
       Vous pouvez s&eacute;lectionner des atomes/liens individuels en utilisant
       le curseur de s&eacute;lection ou en utilisant des commandes de script.
     </para>
-    <section>
-      <title>Style d'Atome</title>
-      <section>
-        <title>Dessin Rapide</title>
-        <para>
-          Dessine des atomes sous la forme de cercles pleins.
-        </para>
-      </section>
-      <section>
-        <title>Ombr&eacute;</title>
-        <para>
-          Dessine des atomes sous la forme de sph&egrave;res ombr&eacute;es.
-        </para>
-      </section>
-      <section>
-        <title>Fil de Fer</title>	  
-        <para>
-		  Dessine des atomes sous la forme de contours de cercles.
-        </para>
-      </section>
-      <section>
-        <title>Invisible</title>
-        <para>
-          Les atomes ne sont pas dessin&eacute;s, mais sont suppos&eacute;s
-          avoir le m&ecirc;me rayon que ce qu'ils occupent. Ainsi les liens
-          sont dessin&eacute;s &agrave; la circonf&eacute;rence externe de
-          l'endroit o&ugrave; serait l'atome. Rapprocher de *Aucun*
-        </para>
-        <para>
-          Cette option peut &ecirc;tre utile quand elle est utilis&eacute;e
-          en conjonction avec les &eacute;tiquettes d'atomes pour afficher le
-          type d'atome.
-        </para>
-      </section>
-      <section>
-        <title>Aucun</title>
-        <para>
-          Les atomes ne sont pas dessin&eacute; et sont suppos&eacute;s
-          avoir un rayon de z&eacute;ro. Les liens sont dessin&eacute;s
-          jusqu'au centre des atomes.
-        </para>
-        <para>
-          Cette option peut &ecirc;tre tr&egrave;s utile quand elle est
-          utilis&eacute;e en conjonction avec les &eacute;tiquettes d'atomes
-          pour afficher le type d'atome.
-        </para>
-      </section>
-    </section>
-    <section>
-      <title>Style de Lien</title>
-      <section>
-        <title>Dessin Rapide</title>	  
-        <para>
-          Dessine les liens sous la forme de rectangles pleins.
-        </para>
-      </section>
-      <section>
-        <title>Ombr&eacute;</title>	  
-        <para>
-          Dessine les liens sous la forme de cylindres ombr&eacute;s.
-        </para>
-      </section>
-      <section>
-        <title>Fil de Fer</title>
-        <para>
-          Dessine les liens sous la forme de lignes.
-        </para>
-      </section>
-      <section>
-        <title>Bo&icirc;tes</title>
-        <para>
-          Dessine les liens sous la forme de contours de rectangles.
-          (plus support&eacute;)
-        </para>
-      </section>
-      <section>
-        <title>Aucun</title>
-        <para>
-          Les liens ne sont pas dessin&eacute;s.
-        </para>
-      </section>
-    </section>
-    <section>
-      <title>Texte</title>
-      <section>
-        <title>Aucune</title>	  
-        <para>
-          Aucune &eacute;tiquette d'atome n'est affich&eacute;e.
-        </para>
-      </section>
-      <section>
-        <title>Symboles Atomiques</title>	  
-        <para>
-          Les atomes sont &eacute;tiquett&eacute;s avec leur symbole
-          atomique.
-        </para>
-      </section>
-      <section>
-        <title>Types d'Atomes</title>
-        <para>
-          Les atomes sont &eacute;tiquett&eacute;s avec leur type d'atome.
-          (Quelle est la diff&eacute;rence entre Type d'Atome et Symbole
-          Atomique?)
-        </para>
-      </section>
-      <section>
-        <title>Num&eacute;ros d'Atomes</title>
-        <para>
-          Les atomes sont &eacute;tiquett&eacute;s avec leur num&eacute;ro
-          d'index.
-        </para>
-      </section>
-    </section>
-    <section>
-      <title>Coloration d'Atomes</title>
-      <section>
-        <title>Type d'Atome</title>
-        <para>
-          Les atomes sont colori&eacute;s en fonction de leur type. Les
-          couleurs par d&eacute;faut sont g&eacute;n&eacute;rallement les
-          couleurs CPK
-        </para>
-      </section>
-      <section>
-        <title>Charge Atomique</title>
-        <para>
-          Les atomes sont colori&eacute;s en fonction de leur charge
-          atomique. (Besoin d'un peu plus d'explications ici!)
-        </para>
-      </section>
-    </section>
-    <section>
-      <title>Rotation Fil de Fer</title>
-      <para>
-        Cette option peut &ecirc;tre coch&eacute;e si les perfomances ne
-        sont pas acceptables en manipulant de grosses mol&eacute;cules.
-        Quand cette option est coch&eacute;e; le rendu fil de fer est
-        utilis&eacute; pour afficher les atomes et les liens pendant les
-        op&eacute;rations de rotation, translation et zoom. La
-        mol&eacute;cule est dessin&eacute; en fonction des r&eacute;glages
-        courants quand la souris est rel&acirc;ch&eacute;e.
-      </para>
-    </section>
-    <section>
-      <title>Profondeur de la Perspective</title>
-      <para>
-        Cette option contr&ocirc;le le rendu avec la profondeur de la
-        perspective. Quand cette option est d&eacute;coch&eacute;e, les
-        mol&eacute;cules sont dessin&eacute;es selon une projection plane
-        orthogonale sur l'&eacute;cran. Quand cette option est coch&eacute;e,
-        les tailles et les distances sont ajust&eacute;es pour une
-        perspective de type cam&eacute;ra.
-      </para>
-      <para>
-        Pour un bon exemple de ceci, jetez un coup d'oeil &agrave; certaines
-        des structures cristallines, telles que
-        <filename>samples/CdSe_nanocrystal.xyz</filename>
-        ou <filename>samples/HfO2_on_Si_relax.in</filename>
-      </para>
-      <para>
-        Alternativement, vous pouvez activer la bo&icirc;te englobante
-        pour voir les effets de ce r&eacute;glage (voir ci-dessous).
-      </para>
-    </section>
-    <section>
-      <title>Axes</title>
-      <para>
-        Affiche les axes cart&eacute;siens avec l'origine au centre de la
-        bo&icirc;te englobante d&eacute;finie par les coordonn&eacute;es
-        extr&ecirc;mes de la mol&eacute;cule.
-      </para>
-      <para>
-        Il faut noter que l'axe Y positif est en haut, contrairement &agrave;
-        RasMol.
-      </para>
-    </section>
-    <section>
-      <title>Bo&icirc;te englobante</title>
-      <para>
-        Affiche la bo&icirc;te englobante, d&eacute;finie par les
-        coordonn&eacute;es extr&ecirc;mes des centres des atomes dans chacune
-        des trois dimensions.
-      </para>
-    </section>
-    <section>
-      <title>Hydrog&egrave;nes</title>
-      <para> 
-        Active/D&eacute;sactive l'affichage des atomes d'hydrog&egrave;ne.
-      </para>
-    </section>
-    <section>
-      <title>Vecteurs</title>
-      <para>
-        Contr&ocirc;le l'affichage des vecteurs vibratoires sous la forme
-        de moment dipolaire.
-      </para>
-    </section>
-    <section>
-      <title>Mesures</title>
-      <para>
-        Contr&ocirc;le l'affichage des mesures de distance, angle et torsion
-        dih&eacute;dral.
-      </para>
-    </section>
   </section>
   <section>
     <title>Le menu Vue</title>
     <section>
       <title>Face/Haut/Bas/Droite/Gauche</title>
       <para>
-        S'explique de soi-m&ecirc;me. Utilse avec les structures
+        S'explique de soi-m&ecirc;me. Utile avec les structures
         cristallines.
       </para>
-    </section>
-    <section>
-      <title>Transformer</title>
-      <para>
-        Applique une rotation AxisAngle autour de coordonn&eacute;es
-        sp&eacute;cifi&eacute;es par l'utilisateur.
-      </para>
-    </section>
-    <section>
-      <title>Definir le centre</title>
-      <para>
-        D&eacute;finit le centre de rotation de la mol&eacute;cule comme
-        &eacute;tant le centre g&eacute;om&eacute;trique des
-        mol&eacute;cules s&eacute;lectionn&eacute;es.
-      </para>
-      <para>
-        Si aucun n'atome n'est s&eacute;lectionn&eacute; alors le centre
-        est r&eacute;tabli au centre de la bo&icirc;te englobante
-        d&eacute;finie par les valeurs extr&ecirc;mes des centres des atomes
-        dans chacune des dimensions x,y et z. Il s'agit de la valeur par
-        d&eacute;faut.
-      </para>
-      <para>
-        Si un atome est s&eacute;lectionn&eacute; alors il devient le centre
-        de la rotation.
-      </para>
-      <para>
-        Si deux atomes ou plus sont s&eacute;lectionn&eacute;s alors le
-        centre devient le point d&eacute;fini par la moyenne des
-        coordonn&eacute;es x, y et z.
-      </para>
-      <para>
-        (Si vous pensez qu'il y a une meilleur d&eacute;finition pour ceci
-        (centre de gravit&eacute;?) alors faites le nous savoir et nous
-        pouvons &eacute;ventuellement changer ceci ou ajouter une nouvelle
-        d&eacute;finition.
-      </para>
-    </section>
-  </section>
-  <section>
-    <title>Le menu Mesure</title>
-    <section>
-      <title>Distance...</title>
-      <para>
-        Vous permet de s&eacute;lectionner deux atomes et d'afficher la
-        distance entre eux.
-      </para>
-    </section>
-    <section>
-      <title>Angle...</title>
-      <para>
-        Vous permet de choisir trois atomes et d'afficher l'angle
-        form&eacute; autour de l'atome central.
-      </para>
-    </section>
-    <section>
-      <title>Dih&eacute;dral...</title>
-      <para>
-        Vous permet de choisir quatre atomes et d'afficher l'angle
-        Dih&eacute;dral/Torsion entre les deux plans d&eacute;finis par les
-        atomes 1,2,3 et les atomes 2,3,4.
-      </para>
-    </section>
-    <section>
-      <title>Supprimer des Distance/Angle/Dih&eacute;dral</title>
-      <para>
-        Vous permet de supprimer une ou plusieurs mesures
-        distance/angle/dih&eacute;dral.
-      </para>
-    </section>
-    <section>
-      <title>Supprimer toutes les Distances/Angles/Dih&eacute;drals</title>
-      <para>
-        S'explique de soi-m&ecirc;me.
-      </para>
-    </section>
-    <section>
-      <title>Effacer toutes les Mesures...</title>
-      <para>
-        S'explique de soi-m&ecirc;me.
-      </para>
-    </section>
-    <section>
-      <title>Voir la Liste des Mesures...</title>
-      <para>
-        Affiche une liste hi&eacute;rarchique de toutes les mesures
-        d&eacute;finies.
-      </para>
-    </section>
-  </section>
-  <section>
-    <title>Le menu Extras</title>
-    <section>
-      <title>Animer...</title>
-      <para>
-        Certains formats de fichiers supportent plusieurs trames. Un fichier
-        contenant plus d'une trame est consid&eacute;r&eacute; comme une
-        animation. Cet &eacute;l&eacute;ment de menu affiche la bo&icirc;te
-        de dialogue d'animation qui vous permet de contr&ocirc;ler
-        l'animation.
-      </para>
-    </section>
-    <section>
-      <title>Faire vibrer...</title>
-      <para>
-        Si le mod&egrave;le mol&eacute;culaire contient des informations de
-        de fr&eacute;quence, les modes vibratoires peuvent &ecirc;tre
-        anim&eacute;s et contr&ocirc;l&eacute;s avec la bo&icirc;te de
-        dialogue Faire vibrer.
-      </para>
-      <para>
-        Il faut noter que Affichage->Vecteurs doit &ecirc;tre coch&eacute;
-        pour que les vecteurs vibratoires soient dessin&eacute;s.
-      </para>
-      <para>
-        De bons exemples sont
-        <filename>samples/phenylnitrene.g92.out</filename>
-        et <filename>samples/ammonia.adf.out</filename>
-      </para>
-    </section>
-    <section>
-      <title>Diagramme...</title>
-      <para>
-        Ceci ouvre une fen&ecirc;tre dans laquelle un trac&eacute;
-        &eacute;nergie par rapport &agrave; la trame est visualis&eacute;.
-        Cette option ne fonctionne actuellement qu'avec une animation CML
-        avec les &eacute;nergies d&eacute;finies pour chaque trame.
-      </para>
-      <para>
-        Un exmple est fourni: <filename>conformeren.cml</filename>.
-      </para>
-    </section>
-    <section>
-      <title id="crystal">Propri&eacute;t&eacute;s du Cristal...</title>
-      <para>
-        Ouvre la bo&icirc;te de dialogue de propri&eacute;t&eacute;s du
-        cristal.
-      </para>
-      <section>
-        <title>L'onglet Vecteurs Primaires.</title>
-        <para>
-          Les trois vecteurs primaires du cristal peuvent &ecirc;tre
-          d&eacute;finis de deux facons diff&eacute;rents: en utilisant une
-          repr&eacute;sentation soit "cart&eacute;sienne" soit
-          "cristallographique". Le choix de la repr&eacute;sentation est
-          seulement une question de convenance et il est toujours possible
-          de passer d'une repr&eacute;sentation &agrave; l'autre en
-          utilisant la liste d&eacute;roulante "Repr&eacute;sentation".
-          Toutefois, la repr&eacute;sentation cart&eacute;sienne permet
-          d'orienter librement le cristal dans l'espace tandis que la
-          repr&eacute;sentation cristallographique impose que le
-          c&ocirc;t&eacute; "a" soit parall&egrave;le &agrave; l'axe x et
-          que le c&ocirc;t&eacute; "b" soit dans le plan xy.
-        </para>
-        <section>
-          <title>Repr&eacute;sentation Cart&eacute;sienne.</title>	     
-          <para>
-            Il y a trois lignes contenant chacune deux champs. Chaque ligne
-            correspond &agrave; un vecteur primaire. Le premier champ
-            contient les composants x, y et z du vecteur
-            s&eacute;par&eacute;s par des virgules. Le deuxi&egrave;me champ
-            est un facteur multiplicatif pour le premier champ et est
-            simplement une question de convenance. L'unit&eacute; du vecteur
-            r&eacute;sultant est l'Anstrom. Quand les valeurs sont
-            &eacute;tablies, cliquer sur le bouton Appliquer mettra &agrave;
-            jour les donn&eacute;es dans la repr&eacute;sentation
-            cristallographique  et l'onglet Affichage.
-          </para>
-        </section>
-        <section>
-          <title>Repr&eacute;sentation Cristallographique</title>
-          <para>
-            Les champs a, b et c contiennent les trois longeurs des bords
-            (en Angstroms) du cristal. D&egrave;s que l'on clique sur le
-            bouton Appliquer, le c&ocirc;t&eacute; a sera rendu
-            parall&egrave;le &agrave; x and le c&ocirc;t&eacute; dans le
-            plan (x,y). Les champs alpha, beta et gamma contiennent les
-            angles (en degr&eacute;s) entre les bords a et b, b et c, et
-            b et a, respectivement.
-          </para>
-          <para>
-            Il faut noter que les positions atomiques sont suppos&eacute;es
-            &ecirc;tre en coordonn&eacute;es r&eacute;duites des vecteurs
-            primaires. Ainsi, par exemple, quand les vecteurs primaires
-            sont redimensionn&eacute;s, les atomes restent dans la m&ecirc;me
-            position relative.
-            Toutefois, quand un fichier ne contenant aucune information de
-            cristal (et donc pas vecteur primaire) est charg&eacute; dans
-            Jmol, les coordonn&eacute;es r&eacute;duites n'existent pas
-            encore. Dans ce cas la bo&icirc;te de dialogue Cristal est
-            uniquement disponible par l'&eacute;l&eacute;ment Cr&eacute;er
-            Cristal dans le menu Edition. Les vecteurs primaires doivent
-            &ecirc;tre saisis de facon &agrave; correspondre &agrave; la
-            position atomique d&eacute;finie dans le fichier d'entr&eacute;e.
-          </para>
-          <para>
-            Par exemple, le fichier <filename>bulk_Si.xyz</filename> dans le
-            r&eacute;pertoire sampls contient les positions atomiques du
-            silicone cristallin, i.e. un atome en (0, 0, 0) et un autre en
-            (1.347, 1.347, 1.347). Un groupe correct de vecteurs primaires
-            est (0.0 0.5 0.5), (0.5 0.0 0.5) et (0.5 0.5 0.0) avec un facteur
-            de multiplication de 5.387. Dans ce cas, la repr&eacute;sentation
-            cristallographique ne peut pas &ecirc;tre utilis&eacute;e pour
-            cr&eacute;er le cristal car un groupe de 3 vecteurs primaires
-            dont un est parall&egrave;le &agrave; x ne peut aboutir au
-            cristal de silicone avec les positions atomiques
-            sp&eacute;cifiques donn&eacute;es.
-          </para>
-        </section>
-      </section>
-      <section>
-        <title>L'Onglet Bo&icirc;te Cristalline.</title>
-        <para>
-          C'est l'endroit o&ugrave; d&eacute;finir le champ de visualisation
-          du cristal. Trois sous-onglets sont pr&eacute;sents: la Bo&icirc;te
-          Atome, la Bo&icirc;te Lien et la Bo&icirc;te Cellule Unitaire.
-          Dans chaque sous-onglet, deux champs sont pr&eacute;sents: les
-          coordonn&eacute;es minimum et maximum en vecteur de vecteurs
-          unitaires. Ils d&eacute;finissent un
-          parall&egrave;l&eacute;pip&egrave;de o&ugrave; la visualisation
-          prend place.
-        </para>
-        <para>
-          Par exemple, minimum = (0,0,0) et maximum = (1,1,2)
-          entra&icirc;nent 2 cellules unitaires align&eacute;es dans la
-          direction du troisi&egrave;me vecteur primaire. Des valeurs non
-          enti&egrave;res sont aussi accept&eacute;es.
-        </para>
-        <para>
-          Il est possible de d&eacute;finir un champ de visualisation pour
-          trois aspects diff&eacute;rents, les atomes, les liens et la
-          cellule unitaire:
-        </para>
-        <section>
-          <title>La Bo&icirc;te Atome</title>	     
-          <para>
-            Seuls les atomes du cristal dans la Bo&icirc;te Atome seront
-            affich&eacute;s. Si un atome est exactement sur une face, une
-            ar&ecirc;te ou un coin de la cellule unitaire, il sera
-            affich&eacute; respectivement 2, 4 ou 8 fois dans la cellule
-            unitaire, un pour chaque face, ar&ecirc;te, coin
-            &eacute;quivalent. Ceci est du &agrave; une limitation de Jmol
-            qui ne peut pas afficher un atome partiel. Le r&eacute;sultat est
-            que le nombre total d'atomes peut &ecirc;tre plus grand que celui
-            attendu (d'un point de vue cristallographique). Un autre effet
-            pervers peut &ecirc;tre vu dans le fichier exemple
-            <filename>slab_7Si_3Vac_2x_relax_2x1.out</filename>.
-            Si vous cr&eacute;er une animation avec de l'interpolation
-            d'images, l'interpolation aboutit &agrave; des trames
-            erron&eacute;es &agrave; cause du nombre diff&eacute;rent
-            d'atomes entre deux trames successives.
-          </para>
-          <para>
-            Si la case &agrave; cocher "Atomes origineux seulement" est
-            coch&eacute;e, seuls les atomes originaux, i.e. les atomes tels
-            que sp&eacute;cifi&eacute;s dans le fichier d'entr&eacute;e,
-            seront affich&eacute;.
-          </para>
-        </section>
-        <section>
-          <title>La Bo&icirc;te Lien</title>
-          <para>
-            Un lien entre deux atomes sera dessin&eacute; si ceux-ci sont
-            dans la Bo&icirc;te Lien. Bien s&ucirc;r, si la distance est
-            plus importante que le bond fudge<!-- TODO -->, aucun lien ne
-            sera dessin&eacute;.
-          </para>
-        </section>
-        <section>
-          <title>La Bo&icirc;te Cellule Unitaire</title>	     
-          <para>
-            Les trames de cellule unitaire<!-- TODO --> enti&egrave;rement
-            dans la zone sp&eacute;cifi&eacute;e. Des valeurs non
-            enti&egrave;res peuvent &ecirc;tre sp&eacute;cifi&eacute;es
-            mais sont inutiles.
-          </para>
-        </section>
-      </section>
-      <section>
-        <title>L'Onglet Vecteurs de Base.</title>
-        <para>
-          Dans cet onglet, vous trouverez la position atomique et le type
-          des atomes de base en coordon&eacute;es soit cart&eacute;siennes
-          (angstrom) soit treiilis (=r&eacute;duit) en fonction de ce qui
-          est s&eacute;lectionn&eacute; dans la liste d&eacute;roulante.
-        </para>
-      </section>
-      <section>
-        <title>L'Onglet de Trac&eacute; de Bande.</title>
-        <para>
-          Cet onglet vous permet de g&eacute;n&eacute;rer des trac&eacute;s
-          de bandes utilis&eacute;s pour repr&eacute;senter la structure
-          &eacute;lectronique de bande ou la courbe de dispersion de phonon
-          des cristaux. Pour le moment, les donn&eacute;es peuvent uniquement
-          &ecirc;tre charg&eacute;es depuis des fichiers de sortie ABINIT et
-          seules les bandes &eacute;lectroniques sont support&eacute;es.
-          Un example, <filename>Si_eband.out</filename>, peuvent &ecirc;tre
-          trouv&eacute; dans le r&eacute;pertoire samples. Ce fichier
-          contient deux groupes de donn&eacute;es. Seule le groupe de
-          donn&eacute;es 2 contient des informations pour un trac&eacute;
-          de bande.
-        </para>
-        <para>
-          Un trac&eacute; de bande ou diagramme de bande, repr&eacute;sente
-          l'&eacute;nergie &eacute;lectronique (la fr&eacute;quence de
-          phonon) d'un &eacute;tat (mode) par rapport &agrave; son
-          vecteur d'ondulations le long de lignes particuli&egrave;res.
-          Chaque ligne de la table en haut de l'onglet repr&eacute;sente
-          une telle ligne particuli&egrave;re. Le premier champ est un index
-          qui est utilis&eacute; pour r&eacute;f&eacute;rencer cette ligne
-          (on parlera d'"index de ligne" ci-dessous). Le deuxi&egrave;me
-          ("Origine") et quatri&egrave;me ("Fin") champs sont les positions
-          du premier et du dernier point de la ligne donn&eacute;e en
-          coordonn&eacute;es r&eacute;duites des vecteurs primaires
-          r&eacute;ciproques. Le troisi&egrave;me ("Texte Origine") et le
-          cinqui&egrave;me ("Texte Fin") champs sont les libell&eacute;s
-          du premier point et du dernier point respectivement. Ces deux
-          champs sont &eacute;ditables. Typiquement, ils sont
-          constitu&eacute;s d'une seule lettre ("X" par exemple). Les lettres
-          greques sont aussi support&eacute;es en mettant "\S" devant la
-          lettre (par exemple "\S G" donne la lettre greque Gamma). Une
-          description compl&egrave;te de la syntaxe est donn&eacute;e
-          ci-dessous dans <xref linkend="formatting" />. Le dernier champ
-          est le nombre total de points n dans cette ligne. Le premier point
-          a l'index 0 et le dernier point a l'index n-1. Sous cette table,
-          il y a un certain nombre de champs utilis&eacute;s pour adapter
-          l'aspect du trac&eacute;:
-        </para>
-        <itemizedlist>
-          <listitem><para>
-            R&eacute;solution: la r&eacute;solution horizontale du
-            trac&eacute; en pixels.
-          </para></listitem>
-          <listitem><para>
-            Ratio: le ratio y/x du trac&eacute;.
-          </para></listitem>
-          <listitem><para>
-            Taille de police 1: taille de police des valeurs des abscisses.
-          </para></listitem>
-          <listitem><para>
-            Taille de police 2: taille de police des valeurs des
-            ordonn&eacute;es.
-          </para></listitem>
-          <listitem><para>
-            Taille de police 3: taille de police des valeurs des
-            ordonn&eacute;es.
-          </para></listitem>
-          <listitem><para>
-            Unit&eacute;s d'&eacute;nergie: les unit&eacute;s de l'axe des
-            ordonn&eacute;es. Comme vous l'avez peut-&ecirc;tre not&eacute;,
-            les dimensions sont soit une &eacute;nergier soit une longueur
-            d'onde invers&eacute;e (correspondant &agrave; la longueur
-            d'onde qui aurait une lumi&eacute;re de cette &eacute;nergie).
-          </para></listitem>
-          <listitem><para>
-            Energie Minimum: l'&eacute;nergie minimum de l'axe des
-            ordonn&eacute;es.
-          </para></listitem>
-          <listitem><para>
-            Energie Maximum: l'&eacute;nergie maximum de l'axe des
-            ordonn&eacute;es.
-          </para></listitem>
-          <listitem><para>
-            Niveau de Fermi: une ligne horizontale sera trac&eacute; &agrave;
-            cette position.
-          </para></listitem>
-          <listitem><para>
-            La liste d&eacute;roulante Chiffres Fraction Fix/Exp:
-            Indique le format num&eacute;rique des valeurs des
-            ordonn&eacute;es - fixe ou exponentiel. Le nombre &agrave;
-            droite de la liste d&eacute;roulante est le nombre de chiffres
-            apr&egrave;s la virgule.
-          </para></listitem>
-          <listitem><para>
-            Graduations Verticales: le nombre de graduations sur l'axe des
-            ordonn&eacute;es.
-          </para></listitem>
-          <listitem><para>
-            Graduations Horizontales: le nombre de graduations sur l'axe
-            des abscisses.
-          </para></listitem>
-          <listitem><para>
-            Taille du S&eacute;parateur: la taille de la s&eacute;paration
-            entre deux sous-trac&eacute;s (voir ci-dessous ";").
-          </para></listitem>
-          <listitem><para>
-            Le Libell&eacute; Y: Le libell&eacute; de l'axe des
-            ordonn&eacute;es.
-          </para></listitem>
-          <listitem>
-            <para>
-              D&eacute;finir Trac&eacute;: d&eacute;finit la structure
-              du trac&eacute;.
-            </para>
-            <para>
-              La structure est esentiellement d&eacute;finie par une
-              cha&icirc;ne de caract&egrave;res qui est une liste
-              s&eacute;par&eacute;e par des virgules de num&eacute;ros de
-              ligne dans la table en haut de l'onglet. Par exemple "0,1,2"
-              avec le fichier exemple
-              <filename>Si_eband.out/dataset2</filename> dessinera un
-              trac&eacute; de bande continu le long du chemin
-              (0.5, 0.0, 0.0) - (0.0, 0.0, 0.0) - (0.0, 0.5, 0.5) -
-              (1.0, 1.0, 1.0) ou X - G - M - G.
-            </para>
-            <para>
-              Une virgule dans la liste peut &ecirc;tre remplac&eacute;e
-              par un";". Dans ce cas, le trac&eacute; n'est plus continu
-              mais une s&eacute;paration est dessin&eacute; (voir "Taille
-              du S&eacute;parateur" ci-dessus). Par exemple "0,1;2"
-              dessinera le diagramme de bande le long du chemin
-              X - G | M - G avec une s&eacute;paration entre le premier G
-              et M.
-            </para>
-            <para>
-              Une ligne partielle peut aussi &ecirc;tre dessin&eacute;e
-              en pr&eacute;cisant l'&eacute;tendu entre crochets. Par exemple
-              "0,1[0-7];2" ne dessinera la ligne 1 qu'entre les points 0 et
-              7. L'utilisateur doit conna&icirc;tre la position des points
-              tels que d&eacute;finis dans le fichier d'entr&eacute;e. Il
-              faut noter que l'&eacute;tendue maximum est [0, Nombre de
-              Points - 1] et est la valeur par d&eacute;faut.
-            </para>
-            <para>
-              Une ligne peut aussi &ecirc;tre dessin&eacute;e dans la
-              direction oppos&eacute;e. Pour ceci, un signe moins doit
-              &ecirc;tre mis devant le num&eacute;ro de ligne. Par exemple
-              "0,1;-2" dessinera un diagramme de band le long du chemin
-              X - G | G - M.
-            </para>
-          </listitem>
-        </itemizedlist>
-        <section>
-          <title id="formatting">Mise en forme du texte</title>
-          <para>
-            Une mise en forme de texte tr&egrave;s basique permet de
-            combiner des caract&egrave;res grecs et latins. Les
-            caract&egrave;res grecs sont obtenus en pr&eacute;fixant le
-            texte avec \S, les caract&egrave;res latins par \N. Si rien
-            n'est pr&eacute;cis&eacute;, les caract&egrave;res latins sont
-            utilis&eacute;s. Les caract&egrave;res superscript sont obtenus
-            avec un ^. Tous les caract&egrave;res suivant ce symbole sont
-            format&eacute;s en superscript. Pour revenir au mode normal
-            utiliser _. Plusieurs combinaison de ^ et _ sont possibles.
-          </para>
-          <para>
-            Par exemple : \S l \N \ ( \S m \N m^-1_ ).
-          </para>
-        </section>
-      </section>
     </section>
   </section>
   <section>
@@ -895,5 +169,3 @@
     </section>
   </section>
 </chapter>
-  
-  

@@ -1172,23 +1172,23 @@ final public class JmolViewer {
                    bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
+  /*
   public void setStyleMarBackboneScript(byte style, short mar) {
-    /*
     distributionManager.setStyleMar(style, mar,
                                     bondIteratorSelected(Bond.BACKBONE));
-    */
   }
+  */
 
   public void setStyleBondScript(byte style, byte bondType) {
     distributionManager.setStyle(style, bondIteratorSelected(bondType));
   }
 
-  public void setStyleBackboneScript(byte style) {
-    /*
+  /*
+    public void setStyleBackboneScript(byte style) {
     distributionManager.setStyle(style,
                                  bondIteratorSelected(Bond.BACKBONE));
-    */
   }
+  */
 
   public void setColorAtomScript(byte palette, Color color) {
     distributionManager.setColixAtom(palette, Colix.getColix(color),
@@ -1213,12 +1213,12 @@ final public class JmolViewer {
                 bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
   }
 
+  /*
   public void setColorBackboneScript(Color color) {
-    /*
     distributionManager.setColix(Colix.getColix(color),
                                  bondIteratorSelected(Bond.BACKBONE));
-    */
   }
+  */
 
   public void setLabelScript(String strLabel) {
     distributionManager.setLabel(strLabel, atomIteratorSelected());
@@ -1236,6 +1236,15 @@ final public class JmolViewer {
   public void setTraceColor(byte palette, Color color) {
     getFrame().setTraceColix(palette, Colix.getColix(color),
                              selectionManager.bsSelection);
+  }
+
+  public void setBackboneMar(short mar) {
+    getFrame().setBackboneMad((short)(mar*2), selectionManager.bsSelection);
+  }
+
+  public void setBackboneColor(byte palette, Color color) {
+    getFrame().setBackboneColix(palette, Colix.getColix(color),
+                                selectionManager.bsSelection);
   }
 
   public void setCartoonRadius(float radius) {

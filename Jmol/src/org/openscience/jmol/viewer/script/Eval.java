@@ -1020,43 +1020,31 @@ public class Eval implements Runnable {
 
   void backbone() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolConstants.STYLE_WIREFRAME;
     short mar = -1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      style = JmolConstants.STYLE_NONE;
+      mar = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = JmolConstants.STYLE_SHADED;
       break;
-    case Token.identifier:
-      String id = (String)statement[1].value;
-      if (id.equalsIgnoreCase("shaded")) {
-        viewer.setStyleBond(JmolConstants.STYLE_SHADED);
-        return;
-      }
     default:
       booleanOrNumberExpected();
     }
-    if (mar == -1)
-      viewer.setStyleBackboneScript(style);
-    else
-      viewer.setStyleMarBackboneScript(style, mar);
+    viewer.setBackboneMar(mar);
   }
-
+  
   void background() throws ScriptException {
     viewer.setColorBackground(getColorParam(1));
   }
@@ -1108,14 +1096,12 @@ public class Eval implements Runnable {
     case Token.dots:
       viewer.setColorDots(getColorOrNoneParam(2));
       break;
-    case Token.backbone:
-      viewer.setColorBackboneScript(getColorOrNoneParam(2));
-      break;
     case Token.monitor:
       viewer.setColorMeasurement(getColorParam(2));
       break;
     case Token.atom:
     case Token.trace:
+    case Token.backbone:
     case Token.strands:
     case Token.ribbons:
     case Token.cartoon:
@@ -1178,6 +1164,9 @@ public class Eval implements Runnable {
       break;
     case Token.trace:
       viewer.setTraceColor(palette, color);
+      break;
+    case Token.backbone:
+      viewer.setBackboneColor(palette, color);
       break;
     case Token.ribbons:
     case Token.strands:

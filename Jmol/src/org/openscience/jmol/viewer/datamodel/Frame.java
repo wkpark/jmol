@@ -219,6 +219,23 @@ public class Frame {
       trace.setColix(palette, colix, bsSelected);
   }
   
+  Backbone backbone;
+
+  public void setBackboneMad(short mad, BitSet bsSelected) {
+    if (mad != 0 && backbone == null)
+      backbone = new Backbone(viewer, this);
+    if (backbone != null)
+      backbone.setMad(mad, bsSelected);
+  }
+  
+  public void setBackboneColix(byte palette, short colix, BitSet bsSelected) {
+    if ((palette != JmolConstants.PALETTE_CPK || colix != 0)
+        && backbone == null)
+      backbone = new Backbone(viewer, this);
+    if (backbone != null)
+      backbone.setColix(palette, colix, bsSelected);
+  }
+  
   Cartoon cartoon;
 
   public void setCartoonMad(short mad, BitSet bsSelected) {

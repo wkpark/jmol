@@ -214,13 +214,13 @@ final public class JmolViewer {
   }
 
   public void rotateToX(int angleDegrees) {
-    rotateToX(toRadians(angleDegrees));
+    rotateToX(angleDegrees * radiansPerDegree);
   }
   public void rotateToY(int angleDegrees) {
-    rotateToY(toRadians(angleDegrees));
+    rotateToY(angleDegrees * radiansPerDegree);
   }
   public void rotateToZ(int angleDegrees) {
-    rotateToZ(toRadians(angleDegrees));
+    rotateToZ(angleDegrees * radiansPerDegree);
   }
 
   public void rotateByX(float angleRadians) {
@@ -236,18 +236,26 @@ final public class JmolViewer {
     refresh();
   }
   public void rotateByX(int angleDegrees) {
-    rotateByX(toRadians(angleDegrees));
+    rotateByX(angleDegrees * radiansPerDegree);
   }
   public void rotateByY(int angleDegrees) {
-    rotateByY(toRadians(angleDegrees));
+    rotateByY(angleDegrees * radiansPerDegree);
   }
   public void rotateByZ(int angleDegrees) {
-    rotateByZ(toRadians(angleDegrees));
+    rotateByZ(angleDegrees * radiansPerDegree);
+  }
+  /**
+   * note that RasMol is not consistent in its rotations
+   * In order to be 'backwards-compatible' we need a special
+   * rotateZ command to be script-compatible
+   * see manager/TransformManager.java for more details
+   */
+  public void rotateByZScript(int angleDegrees) {
+    transformManager.rotateByZScript(angleDegrees * radiansPerDegree);
+    refresh();
   }
 
-  public static float toRadians(int degrees) {
-    return (degrees * 2) * (float)(Math.PI / 360);
-  }
+  private static float radiansPerDegree = (float)(2 * Math.PI / 360);
 
   public void rotate(AxisAngle4f axisAngle) {
     transformManager.rotate(axisAngle);
@@ -417,12 +425,12 @@ final public class JmolViewer {
     refresh();
   }
 
-  public void setYAxisPointsUpwards(boolean yAxisPointsUpwards) {
-    transformManager.setYAxisPointsUpwards(yAxisPointsUpwards);
+  public void setOrientationRasMolChime(boolean orientationRasMolChime) {
+    transformManager.setOrientationRasMolChime(orientationRasMolChime);
     refresh();
   }
-  public boolean getYAxisPointsUpwards() {
-    return transformManager.yAxisPointsUpwards;
+  public boolean getOrientationRasMolChime() {
+    return transformManager.orientationRasMolChime;
   }
 
   public boolean getPerspectiveDepth() {
@@ -1256,8 +1264,8 @@ final public class JmolViewer {
       return getOversampleAlwaysEnabled();
     if (key.equals("oversampleStopped"))
       return getOversampleStoppedEnabled();
-    if (key.equals("yAxisPointsUpwards"))
-      return getYAxisPointsUpwards();
+    if (key.equals("orientationRasMolChime"))
+      return getOrientationRasMolChime();
     if (key.equals("testFlag1"))
       return getTestFlag1();
     if (key.equals("testFlag2"))
@@ -1292,8 +1300,8 @@ final public class JmolViewer {
       { setOversampleAlwaysEnabled(value); return; }
     if (key.equals("oversampleStopped"))
       { setOversampleStoppedEnabled(value); return; }
-    if (key.equals("yAxisPointsUpwards"))
-      { setYAxisPointsUpwards(value); return; }
+    if (key.equals("orientationRasMolChime"))
+      { setOrientationRasMolChime(value); return; }
     if (key.equals("testFlag1"))
       { setTestFlag1(value); return; }
     if (key.equals("testFlag2"))

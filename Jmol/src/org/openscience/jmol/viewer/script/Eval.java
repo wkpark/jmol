@@ -1181,7 +1181,7 @@ public class Eval implements Runnable {
       viewer.rotateByY(degrees);
       break;
     case Token.z:
-      viewer.rotateByZ(degrees);
+      viewer.rotateByZScript(degrees);
       break;
     }
   }

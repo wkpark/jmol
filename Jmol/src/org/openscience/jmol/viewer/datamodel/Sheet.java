@@ -27,10 +27,10 @@ import org.openscience.jmol.viewer.JmolConstants;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class Sheet extends Structure {
+public class Sheet extends AminoStructure {
 
-  Sheet(Polymer polymer, int polymerIndex, int polymerCount) {
-    super(polymer, JmolConstants.SECONDARY_STRUCTURE_SHEET,
+  Sheet(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
+    super(aminopolymer, JmolConstants.SECONDARY_STRUCTURE_SHEET,
           polymerIndex, polymerCount);
   }
 
@@ -38,13 +38,13 @@ public class Sheet extends Structure {
     if (axisA != null)
       return;
     if (polymerCount == 2) {
-      axisA = polymer.getResidueAlphaCarbonPoint(polymerIndex);
-      axisB = polymer.getResidueAlphaCarbonPoint(polymerIndex + 1);
+      axisA = aminopolymer.getResidueAlphaCarbonPoint(polymerIndex);
+      axisB = aminopolymer.getResidueAlphaCarbonPoint(polymerIndex + 1);
     } else {
       axisA = new Point3f();
-      polymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
       axisB = new Point3f();
-      polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
     }
 
     axisUnitVector = new Vector3f();
@@ -52,11 +52,11 @@ public class Sheet extends Structure {
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    polymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
+    aminopolymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
     if (! lowerNeighborIsHelixOrSheet())
       projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
+    aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
     if (! upperNeighborIsHelixOrSheet())
       projectOntoAxis(tempB);
     axisA = tempA;
@@ -70,11 +70,11 @@ public class Sheet extends Structure {
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
-      vectorCOSum.sub(polymer.getResiduePoint(polymerIndex, 3),
-                      polymer.getResiduePoint(polymerIndex, 2));
+      vectorCOSum.sub(aminopolymer.getResiduePoint(polymerIndex, 3),
+                      aminopolymer.getResiduePoint(polymerIndex, 2));
       for (int i = polymerCount; --i > 0; ) {
-        vectorCO.sub(polymer.getResiduePoint(polymerIndex + i, 3),
-                     polymer.getResiduePoint(polymerIndex + i, 2));
+        vectorCO.sub(aminopolymer.getResiduePoint(polymerIndex + i, 3),
+                     aminopolymer.getResiduePoint(polymerIndex + i, 2));
         if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)
           vectorCOSum.add(vectorCO);
         else

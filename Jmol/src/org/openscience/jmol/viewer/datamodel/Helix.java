@@ -28,10 +28,10 @@ import org.openscience.jmol.viewer.JmolConstants;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class Helix extends Structure {
+public class Helix extends AminoStructure {
 
-  Helix(Polymer polymer, int polymerIndex, int polymerCount) {
-    super(polymer, JmolConstants.SECONDARY_STRUCTURE_HELIX,
+  Helix(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
+    super(aminopolymer, JmolConstants.SECONDARY_STRUCTURE_HELIX,
           polymerIndex, polymerCount);
     //    System.out.println("new Helix('" + polymer.chain.chainID + "'," +
     //                       polymerIndex + "," + polymerCount + ")");
@@ -44,25 +44,25 @@ public class Helix extends Structure {
 
     axisA = new Point3f();
     if (lowerNeighborIsHelixOrSheet())
-      polymer.getAlphaCarbonMidPoint(polymerIndex, axisA);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex, axisA);
     else
-      polymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + 1, axisA);
 
     axisB = new Point3f();
     if (upperNeighborIsHelixOrSheet())
-      polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, axisB);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, axisB);
     else
-      polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount - 1, axisB);
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    polymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
+    aminopolymer.getAlphaCarbonMidPoint(polymerIndex, tempA);
     projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    polymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
+    aminopolymer.getAlphaCarbonMidPoint(polymerIndex + polymerCount, tempB);
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
@@ -84,9 +84,9 @@ public class Helix extends Structure {
   void calcCenter() {
     if (center == null) {
       int i = polymerIndex + polymerCount - 1;
-      center = new Point3f(polymer.getResidueAlphaCarbonPoint(i));
+      center = new Point3f(aminopolymer.getResidueAlphaCarbonPoint(i));
       while (--i >= polymerIndex)
-        center.add(polymer.getResidueAlphaCarbonPoint(i));
+        center.add(aminopolymer.getResidueAlphaCarbonPoint(i));
       center.scale(1f/polymerCount);
       //      System.out.println("structure center is at :" + center);
     }

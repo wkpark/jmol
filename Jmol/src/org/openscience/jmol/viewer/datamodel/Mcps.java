@@ -260,7 +260,7 @@ abstract class Mcps extends Shape {
     }
 
     void setMad(short mad, BitSet bsSelected) {
-      int[] atomIndices = polymer.getAtomIndices();
+      int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = polymerCount; --i >= 0; ) {
         if (bsSelected.get(atomIndices[i]))
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
@@ -270,7 +270,7 @@ abstract class Mcps extends Shape {
     }
 
     void setColix(byte palette, short colix, BitSet bsSelected) {
-      int[] atomIndices = polymer.getAtomIndices();
+      int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = polymerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex))

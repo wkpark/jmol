@@ -136,7 +136,7 @@ final public class Chain {
   public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < groupCount &&
         groups[groupIndex].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex].structure.
+      midPoint.set(groups[groupIndex].aminostructure.
                    getStructureMidPoint(groupIndex));
       /*
       System.out.println("" + groupIndex + "isHelixOrSheet" +
@@ -144,7 +144,7 @@ final public class Chain {
       */
     } else if (groupIndex > 0 &&
                groups[groupIndex - 1].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex - 1].structure.
+      midPoint.set(groups[groupIndex - 1].aminostructure.
                    getStructureMidPoint(groupIndex));
       /*
       System.out.println("" + groupIndex + "previous isHelixOrSheet" +

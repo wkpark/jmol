@@ -38,7 +38,7 @@ class BackboneRenderer extends McpsRenderer {
   }
   
   void renderTraceChain(Backbone.Bbchain bbchain) {
-    render1Chain(bbchain.polymerCount, bbchain.polymer.getAtomIndices(),
+    render1Chain(bbchain.polymerCount, bbchain.polymer.getLeadAtomIndices(),
                  bbchain.mads, bbchain.colixes);
   }
 

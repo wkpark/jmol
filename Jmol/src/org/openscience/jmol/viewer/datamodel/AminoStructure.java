@@ -27,9 +27,9 @@ package org.openscience.jmol.viewer.datamodel;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public abstract class Structure {
+public abstract class AminoStructure {
 
-  Polymer polymer;
+  AminoPolymer aminopolymer;
   byte type;
   int polymerIndex;
   int polymerCount;
@@ -38,9 +38,9 @@ public abstract class Structure {
   Vector3f axisUnitVector;
   Point3f[] segments;
 
-  Structure(Polymer polymer, byte type,
-               int polymerIndex, int polymerCount) {
-    this.polymer = polymer;
+  AminoStructure(AminoPolymer aminopolymer, byte type,
+                 int polymerIndex, int polymerCount) {
+    this.aminopolymer = aminopolymer;
     this.type = type;
     this.polymerIndex = polymerIndex;
     this.polymerCount = polymerCount;
@@ -62,7 +62,7 @@ public abstract class Structure {
     segments[0] = axisA;
     for (int i = polymerCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
-      polymer.getAlphaCarbonMidPoint(polymerIndex + i, point);
+      aminopolymer.getAlphaCarbonMidPoint(polymerIndex + i, point);
       projectOntoAxis(point);
     }
     for (int i = 0; i < segments.length; ++i) {
@@ -77,14 +77,14 @@ public abstract class Structure {
   boolean lowerNeighborIsHelixOrSheet() {
     if (polymerIndex == 0)
       return false;
-    return polymer.groups[polymerIndex - 1].isHelixOrSheet();
+    return aminopolymer.groups[polymerIndex - 1].isHelixOrSheet();
   }
 
   boolean upperNeighborIsHelixOrSheet() {
     int upperNeighborIndex = polymerIndex + polymerCount;
-    if (upperNeighborIndex == polymer.count)
+    if (upperNeighborIndex == aminopolymer.count)
       return false;
-    return polymer.groups[upperNeighborIndex].isHelixOrSheet();
+    return aminopolymer.groups[upperNeighborIndex].isHelixOrSheet();
   }
 
   final Vector3f vectorProjection = new Vector3f();
@@ -106,7 +106,7 @@ public abstract class Structure {
   }
 
   public int getIndex(Group group) {
-    Group[] groups = polymer.groups;
+    Group[] groups = aminopolymer.groups;
     int i;
     for (i = polymerCount; --i >= 0; )
       if (groups[polymerIndex + i] == group)

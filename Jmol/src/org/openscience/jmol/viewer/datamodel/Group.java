@@ -37,7 +37,7 @@ final public class Group {
   public Polymer polymer;
   public int seqcode;
   public short groupID;
-  public Structure structure;
+  public AminoStructure aminostructure;
   public int[] mainchainIndices;
 
   public Group(Chain chain,
@@ -51,12 +51,12 @@ final public class Group {
     this.polymer = polymer;
   }
 
-  public void setStructure(Structure structure) {
-    this.structure = structure;
+  public void setStructure(AminoStructure aminostructure) {
+    this.aminostructure = aminostructure;
   }
 
   public byte getStructureType() {
-    return structure == null ? 0 : structure.type;
+    return aminostructure == null ? 0 : aminostructure.type;
   }
   
   public boolean isGroup3(String group3) {
@@ -115,13 +115,13 @@ final public class Group {
   }
 
   public boolean isHelix() {
-    return structure != null &&
-      structure.type == JmolConstants.SECONDARY_STRUCTURE_HELIX;
+    return aminostructure != null &&
+      aminostructure.type == JmolConstants.SECONDARY_STRUCTURE_HELIX;
   }
 
   public boolean isHelixOrSheet() {
-    return structure != null &&
-      structure.type >= JmolConstants.SECONDARY_STRUCTURE_SHEET;
+    return aminostructure != null &&
+      aminostructure.type >= JmolConstants.SECONDARY_STRUCTURE_SHEET;
   }
 
   /****************************************************************
@@ -198,6 +198,10 @@ final public class Group {
     }
     mainchainIndices[atomid] = atomIndex;
     return true;
+  }
+
+  public int getLeadAtomIndex() {
+    return getAlphaCarbonIndex();
   }
 
   public int getAlphaCarbonIndex() {

@@ -25,10 +25,10 @@
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.JmolConstants;
 
-public class Turn extends Structure {
+public class Turn extends AminoStructure {
 
-  Turn(Polymer polymer, int polymerIndex, int polymerCount) {
-    super(polymer, JmolConstants.SECONDARY_STRUCTURE_TURN,
+  Turn(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
+    super(aminopolymer, JmolConstants.SECONDARY_STRUCTURE_TURN,
           polymerIndex, polymerCount);
   }
 }

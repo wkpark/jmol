@@ -48,7 +48,9 @@ class CartoonRenderer extends McpsRenderer {
   }
 
   void render1Chain(Polymer polymer, short[] mads, short[] colixes) {
-    initializeChain(polymer);
+    if (! (polymer instanceof AminoPolymer))
+      return;
+    initializeChain((AminoPolymer)polymer);
     clearPending();
     for (int i = 0; i < polymerCount; ++i) {
       if (mads[i] == 0)
@@ -75,50 +77,50 @@ class CartoonRenderer extends McpsRenderer {
   boolean[] isSpecials;
   Point3f[] cordMidPoints;
 
-  void initializeChain(Polymer polymer) {
-    polymerGroups = polymer.getGroups();
-    polymerCount = polymer.getCount();
+  void initializeChain(AminoPolymer aminopolymer) {
+    polymerGroups = aminopolymer.getGroups();
+    polymerCount = aminopolymer.getCount();
     isSpecials = frameRenderer.getTempBooleans(polymerCount);
-    cordMidPoints = calcRopeMidPoints(polymer);
+    cordMidPoints = calcRopeMidPoints(aminopolymer);
     screens = getScreens();
     alphas = getAlphas();
   }
 
-  Point3f[] calcRopeMidPoints(Polymer polymer) {
+  Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
     int midPointCount = polymerCount + 1;
     Point3f[] cordMidPoints = frameRenderer.getTempPoints(midPointCount);
     Group residuePrev = null;
-    Structure structurePrev = null;
+    AminoStructure aminostructurePrev = null;
     Point3f point;
     for (int i = 0; i < polymerCount; ++i) {
       point = cordMidPoints[i];
       Group residue = polymerGroups[i];
       if (isSpecials[i] = residue.isHelixOrSheet()) {
-        Structure structure = residue.structure;
-        point.set(i - 1 != structure.getPolymerIndex()
-                  ? structure.getAxisStartPoint()
-                  : structure.getAxisEndPoint());
+        AminoStructure aminostructure = residue.aminostructure;
+        point.set(i - 1 != aminostructure.getPolymerIndex()
+                  ? aminostructure.getAxisStartPoint()
+                  : aminostructure.getAxisEndPoint());
 
         //        if (i != structure.getStartResidueIndex()) {
         //          point.add(structure.getAxisEndPoint());
         //          point.scale(0.5f);
         //        }
         residuePrev = residue;
-        structurePrev = structure;
+        aminostructurePrev = aminostructure;
       } else {
-        if (structurePrev != null)
-          point.set(structurePrev.getAxisEndPoint());
+        if (aminostructurePrev != null)
+          point.set(aminostructurePrev.getAxisEndPoint());
         else
-          polymer.getAlphaCarbonMidPoint(i, point);
+          aminopolymer.getAlphaCarbonMidPoint(i, point);
         residuePrev = null;
-        structurePrev = null;
+        aminostructurePrev = null;
       }
     }
     point = cordMidPoints[polymerCount];
-    if (structurePrev != null)
-      point.set(structurePrev.getAxisEndPoint());
+    if (aminostructurePrev != null)
+      point.set(aminostructurePrev.getAxisEndPoint());
     else
-      polymer.getAlphaCarbonMidPoint(polymerCount, point);
+      aminopolymer.getAlphaCarbonMidPoint(polymerCount, point);
     return cordMidPoints;
   }
 
@@ -169,26 +171,26 @@ class CartoonRenderer extends McpsRenderer {
   Point3i screenC = new Point3i();
 
   void renderSpecialSegment(Group group, short colix, short mad) {
-    Structure structure = group.structure;
+    AminoStructure aminostructure = group.aminostructure;
     if (tPending) {
-      if (structure == structurePending &&
+      if (aminostructure == aminostructurePending &&
           mad == madPending &&
           colix == colixPending &&
-          structure.getIndex(group) == endIndexPending + 1) {
+          aminostructure.getIndex(group) == endIndexPending + 1) {
         ++endIndexPending;
         return;
       }
       renderPending();
     }
-    structurePending = structure;
-    startIndexPending = endIndexPending = structure.getIndex(group);
+    aminostructurePending = aminostructure;
+    startIndexPending = endIndexPending = aminostructure.getIndex(group);
     colixPending = colix;
     madPending = mad;
     tPending = true;
   }
 
   boolean tPending;
-  Structure structurePending;
+  AminoStructure aminostructurePending;
   int startIndexPending;
   int endIndexPending;
   short madPending;
@@ -201,9 +203,9 @@ class CartoonRenderer extends McpsRenderer {
 
   void renderPending() {
     if (tPending) {
-      Point3f[] segments = structurePending.getSegments();
+      Point3f[] segments = aminostructurePending.getSegments();
       boolean tEnd =
-        (endIndexPending == structurePending.getPolymerCount() - 1);
+        (endIndexPending == aminostructurePending.getPolymerCount() - 1);
 
       /*
       System.out.println("structurePending.getPolymerCount()=" +
@@ -213,7 +215,7 @@ class CartoonRenderer extends McpsRenderer {
                          " endIndexPending=" + endIndexPending);
       System.out.println("tEnd=" + tEnd);
       */
-      if (structurePending instanceof Helix)
+      if (aminostructurePending instanceof Helix)
         renderPendingHelix(segments[startIndexPending],
                            segments[endIndexPending],
                            segments[endIndexPending + 1],
@@ -273,7 +275,7 @@ class CartoonRenderer extends McpsRenderer {
    1, 4, 5, 3};
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
-    Sheet sheet = (Sheet)structurePending;
+    Sheet sheet = (Sheet)aminostructurePending;
     float scale = madPending / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale * 1.25f);
@@ -333,7 +335,7 @@ class CartoonRenderer extends McpsRenderer {
   final Point3f pointCorner = new Point3f();
 
   void drawBox(Point3f pointA, Point3f pointB) {
-    Sheet sheet = (Sheet)structurePending;
+    Sheet sheet = (Sheet)aminostructurePending;
     float scale = madPending / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale);

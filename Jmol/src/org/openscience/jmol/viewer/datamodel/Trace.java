@@ -35,14 +35,18 @@ public class Trace {
   JmolViewer viewer;
   JmolFrame frame;
   TraceRenderer traceRenderer;
+  boolean hasPdbRecords;
     
   Trace(JmolViewer viewer, JmolFrame frame,
         TraceRenderer traceRenderer) {
     this.viewer = viewer;
     this.frame = frame;
     this.traceRenderer = traceRenderer;
+    hasPdbRecords = frame.hasPdbRecords;
   }
 
   public void setTrace(float radius, BitSet bsSelected) {
+    if (! hasPdbRecords)
+      return;
   }
 }

@@ -26,7 +26,5 @@ public class FrameHandler{
         return cf.getFrame(which);
     }
 
-    public static String getInfo() {
-        return 
 }
         

@@ -462,13 +462,13 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
 				}
 				setFrame(currentFrame, true);
 			}
-			if (arg == "pause") {
+			if (arg.equals("pause")) {
 				stop();
 			}
-			if (arg == "play") {
+			if (arg.equals("play")) {
 				start();
 			}
-			if (arg == "save") {
+			if (arg.equals("save")) {
 				createVibration();
 				FileTyper ft = new FileTyper(saveChooser);
 				saveChooser.setAccessory(ft);
@@ -482,23 +482,34 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
 					File theFile = saveChooser.getSelectedFile();
 					if (theFile != null) {
 						try {
-							FileOutputStream os =
-								new FileOutputStream(theFile);
 							if (ft.getType().equals("XYZ (xmol)")) {
+								FileOutputStream os =
+									new FileOutputStream(theFile);
 								XYZSaver xyzs = new XYZSaver(vibFile, os);
 								xyzs.writeFile();
-							} else if (ft.getType().equals("PDB")) {
-
-								// PDBSaver ps = new PDBSaver(vibFile, os);
-								// ps.writeFile();
+								os.flush();
+								os.close();
 							} else if (ft.getType().equals("CML")) {
+								FileOutputStream os =
+									new FileOutputStream(theFile);
 								CMLSaver cs = new CMLSaver(vibFile, os);
 								cs.writeFile();
-							} else {
+								os.flush();
+								os.close();
+							} else if (ft.getType().equals("PDB")) {
+								javax.swing.JOptionPane.showMessageDialog(
+									null, "The PDB format is not currently supported."
+									+ "\nPlease use XYZ (.xyz) or CML (.cml)",
+									"File type error",
+									javax.swing.JOptionPane.ERROR_MESSAGE);
+							} else if (ft.getType().equals("Automatic")) {
+								javax.swing.JOptionPane.showMessageDialog(
+									null, "No file type found for file \""
+									+ theFile.getName() + "\"."
+									+ "\nPlease use XYZ (.xyz) or CML (.cml)",
+									"File type error",
+									javax.swing.JOptionPane.ERROR_MESSAGE);
 							}
-
-							os.flush();
-							os.close();
 
 						} catch (Exception exc) {
 							System.out.println(exc.toString());
@@ -506,7 +517,11 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
 					}
 				}
 			}
-			if (arg == "movie") {
+			if (arg.equals("movie")) {
+				javax.swing.JOptionPane.showMessageDialog(
+					null, "Saving movies is not yet implemented.",
+					"Incomplete implementation",
+					javax.swing.JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

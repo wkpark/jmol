@@ -327,21 +327,8 @@ public class JmolFrame {
       NonJavaSort.sortShapes(shapes);
     }
 
-    if (! control.getGraphics25DEnabled()) {
-      boolean slabEnabled = control.getSlabEnabled();
-      int slabValue = control.getSlabValue();
-      for (int i = 0; i < shapes.length; ++i) {
-        if (slabEnabled) {
-          if (shapes[i].z > slabValue)
-            continue;
-        }
-        shapes[i].render(g25d, control);
-      }
-    } else {
-      for (int i = shapes.length; --i >= 0 ; ) {
-        shapes[i].render(g25d, control);
-      }
-    }
+    for (int i = shapes.length; --i >= 0 ; )
+      shapes[i].render(g25d, control);
   }
 
   final static int lineGrowthIncrement = 16;

@@ -134,13 +134,10 @@ final public class DisplayControl {
   public final static byte TYPES =     2;
   public final static byte NUMBERS =   3;
 
-  public final static byte QUICKDRAW = 0;
-  public final static byte SHADING =   1;
-  public final static byte WIREFRAME = 2;
-  public final static byte INVISIBLE = 3; // for atoms
-  public final static byte BOX =       3; // for bonds
-  public final static byte NONE =      4;
-
+  public final static byte NONE      = 0;
+  public final static byte WIREFRAME = 1;
+  public final static byte SHADED    = 2;
+    
   public final static byte COLOR =     -1;
   public final static byte ATOMTYPE =   0;
   public final static byte ATOMCHARGE = 1;
@@ -381,12 +378,6 @@ final public class DisplayControl {
     transformManager.calcViewTransformMatrix();
   }
 
-  /*
-  public void transformPoint(Point3d pointAngstroms, Point3d pointScreen) {
-    transformManager.transformPoint(pointAngstroms, pointScreen);
-  }
-  */
-
   public Point3i transformPoint(Point3d pointAngstroms) {
     return transformManager.transformPoint(pointAngstroms);
   }
@@ -568,45 +559,8 @@ final public class DisplayControl {
     return colorManager.getColixAtom((Atom)atom);
   }
 
-  public short getColixAtom(Atom atom) {
-    return colorManager.getColixAtom(atom);
-  }
-
-  public short getColixAtom(byte mode, Atom atom) {
-    return colorManager.getColixAtom(mode, atom);
-  }
-
   public short getColixAtom(byte mode, JmolAtom atom) {
     return colorManager.getColixAtom(mode, (Atom)atom);
-  }
-
-  public Color getColorAtomOutline(byte style, Color color) {
-    return colorManager.getColorAtomOutline(style, color);
-  }
-
-  public short getColixAtomOutline(byte style, short colix) {
-    return colorManager.getColixAtomOutline(style, colix);
-  }
-
-  public void setShowDarkerOutline(boolean showDarkerOutline) {
-    colorManager.setShowDarkerOutline(showDarkerOutline);
-    refresh();
-  }
-
-  public boolean getShowDarkerOutline() {
-    return colorManager.showDarkerOutline;
-  }
-
-  public Color getDarker(Color color) {
-    return colorManager.getDarker(color);
-  }
-
-  public void setModeTransparentColors(boolean modeTransparentColors) {
-    colorManager.setModeTransparentColors(modeTransparentColors);
-  }
-
-  public short getColixTransparent(short colix) {
-    return colorManager.getColixTransparent(colix);
   }
 
   // note that colorBond could be null -- meaning inherit atom color
@@ -623,22 +577,6 @@ final public class DisplayControl {
 
   public Color getColorBond() {
     return colorManager.colorBond;
-  }
-
-  public short transparentRed() {
-    return getColixTransparent(Colix.RED);
-  }
-
-  public short transparentGreen() {
-    return getColixTransparent(Colix.GREEN);
-  }
-
-  public short transparentBlue() {
-    return getColixTransparent(Colix.BLUE);
-  }
-
-  public short transparentGrey() {
-    return getColixTransparent(Colix.GRAY);
   }
 
   /****************************************************************
@@ -1155,7 +1093,7 @@ final public class DisplayControl {
   }
 
   public void checkOversample() {
-    boolean tOversample = g25d.tEnabled &
+    boolean tOversample =
       (tOversampleAlways | (!repaintManager.inMotion & tOversampleStopped));
     repaintManager.setOversample(tOversample);
     transformManager.setOversample(tOversample);
@@ -1370,15 +1308,6 @@ final public class DisplayControl {
   /****************************************************************
    * Graphics25D
    ****************************************************************/
-
-  public boolean getGraphics25DEnabled() {
-    return g25d.tEnabled;
-  }
-
-  public void setGraphics25DEnabled(boolean value) {
-    g25d.setEnabled(value);
-    refresh();
-  }
 
   boolean tOversampleStopped;
   public boolean getOversampleStoppedEnabled() {
@@ -1646,20 +1575,8 @@ final public class DisplayControl {
     return labelManager.getLabelAtom(labelManager.styleLabel, (Atom)atom);
   }
 
-  public String getLabelAtom(Atom atom) {
-    return labelManager.getLabelAtom(labelManager.styleLabel, atom);
-  }
-
-  public String getLabelAtom(byte styleLabel, Atom atom) {
-    return labelManager.getLabelAtom(styleLabel, atom);
-  }
-
   public String getLabelAtom(byte styleLabel, JmolAtom atom) {
     return labelManager.getLabelAtom(styleLabel, (Atom)atom);
-  }
-
-  public String getLabelAtom(String strLabel, Atom atom) {
-    return labelManager.getLabelAtom(strLabel, atom);
   }
 
   public String getLabelAtom(String strLabel, JmolAtom atom) {

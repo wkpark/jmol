@@ -225,7 +225,8 @@ public class Cylinder25D {
   }
 
   void renderEndcaps() {
-    g25d.fillSphereCentered(colix1, colix1, xOrigin, yOrigin, zOrigin, diameter);
-    g25d.fillSphereCentered(colix2, colix2, xOrigin+dx, yOrigin+dy, zOrigin+dz, diameter);
+    g25d.fillSphereCentered(colix1, diameter, xOrigin, yOrigin, zOrigin);
+    g25d.fillSphereCentered(colix2, diameter,
+                            xOrigin+dx, yOrigin+dy, zOrigin+dz);
   }
 }

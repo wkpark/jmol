@@ -88,7 +88,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static boolean perspectiveDepth;
   private static boolean showAxes;
   private static boolean showBoundingBox;
-  private static boolean showDarkerOutline;
   private static boolean isLabelAtomColor;
   private static boolean isBondAtomColor;
   private static Color colorBackground;
@@ -113,7 +112,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static double VibrateAmplitudeScale;
   private static double VibrateVectorScale;
   private static int VibrationFrames;
-  private JButton bButton, oButton, pButton, tButton, eButton, vButton;
+  private JButton bButton, pButton, tButton, eButton, vButton;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
@@ -154,7 +153,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("perspectiveDepth", "true");
     props.put("showAxes", "false");
     props.put("showBoundingBox", "false");
-    props.put("showDarkerOutline", "true");
     props.put("isLabelAtomColor", "false");
     props.put("isBondAtomColor", "true");
     // mth 2003 05 20
@@ -170,8 +168,8 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("antialiasAlways", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
-    props.put("styleAtom", "1");
-    props.put("styleBond", "1");
+    props.put("styleAtom", "2");
+    props.put("styleBond", "2");
     props.put("styleLabel", "0");
     props.put("AtomPropsMode", "");
     props.put("percentVdwAtom", "20");
@@ -381,15 +379,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     atomPanel.add(atomStyleLabel, constraints);
     aRender = new JComboBox();
     aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aQDChoice"));
-    aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aSChoice"));
+        .getString("Prefs.aNoneChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.aWFChoice"));
     aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aInvisibleChoice"));
-    aRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.aNoneChoice"));
+        .getString("Prefs.aSChoice"));
     aRender.setSelectedIndex(control.getStyleAtom());
     aRender.addItemListener(new ItemListener() {
 
@@ -551,15 +545,11 @@ public class PreferencesDialog extends JDialog implements ActionListener {
           .getString("Prefs.bRenderStyleLabel")));
     bRender = new JComboBox();
     bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bQDChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bSChoice"));
+        .getString("Prefs.bNoneChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
         .getString("Prefs.bWFChoice"));
     bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bBoxChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bNoneChoice"));
+        .getString("Prefs.bSChoice"));
     bRender.setSelectedIndex(control.getStyleBond());
     bRender.addItemListener(new ItemListener() {
 
@@ -942,41 +932,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     backgroundPanel.add(bButton, BorderLayout.CENTER);
     colorPanel.add(backgroundPanel);
 
-    JPanel outlinePanel = new JPanel();
-    outlinePanel.setLayout(new BorderLayout());
-    outlinePanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.outlineLabel")));
-
-    showDarkerOutline = control.getShowDarkerOutline();
-    cbDarkerOutline =
-      guimap.newJCheckBox("Prefs.showDarkerOutline", showDarkerOutline);
-    cbDarkerOutline.addItemListener(checkBoxListener);
-    outlinePanel.add(cbDarkerOutline, BorderLayout.NORTH);
-
-    oButton = new JButton();
-    oButton.setBackground(colorOutline);
-    oButton.setToolTipText(JmolResourceHandler.getInstance()
-        .getString("Prefs.outlineToolTip"));
-    oButton.setEnabled(!showDarkerOutline);
-    ActionListener startOutlineChooser = new ActionListener() {
-
-      public void actionPerformed(ActionEvent e) {
-
-        Color color =
-          JColorChooser
-            .showDialog(oButton, JmolResourceHandler.getInstance()
-              .getString("Prefs.outlineChooserTitle"), colorOutline);
-        colorOutline = color;
-        oButton.setBackground(colorOutline);
-        control.setColorOutline(colorOutline);
-        props.put("colorOutline", Integer.toString(colorOutline.getRGB()));
-      }
-    };
-    oButton.addActionListener(startOutlineChooser);
-    outlinePanel.add(oButton, BorderLayout.CENTER);
-    colorPanel.add(outlinePanel);
-
     JPanel pickedPanel = new JPanel();
     pickedPanel.setLayout(new BorderLayout());
     pickedPanel
@@ -1295,9 +1250,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     // Color panel controls:
     bButton.setBackground(colorBackground);
-    cbDarkerOutline.setSelected(showDarkerOutline);
-    oButton.setBackground(colorOutline);
-    oButton.setEnabled(!showDarkerOutline);
     pButton.setBackground(colorSelection);
     cbIsLabelAtomColor.setSelected(isLabelAtomColor);
     tButton.setBackground(colorText);
@@ -1352,7 +1304,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     perspectiveDepth = Boolean.getBoolean("perspectiveDepth");
     showAxes = Boolean.getBoolean("showAxes");
     showBoundingBox = Boolean.getBoolean("showBoundingBox");
-    showDarkerOutline = Boolean.getBoolean("showDarkerOutline");
     colorBackground = Color.getColor("colorBackground");
     colorOutline = Color.getColor("colorOutline");
     colorSelection = Color.getColor("colorSelection");
@@ -1415,7 +1366,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setPerspectiveDepth(perspectiveDepth);
     control.setShowAxes(showAxes);
     control.setShowBoundingBox(showBoundingBox);
-    control.setShowDarkerOutline(showDarkerOutline);
     Vibrate.setAmplitudeScale(VibrateAmplitudeScale);
     Vibrate.setVectorScale(VibrateVectorScale);
     Vibrate.setNumberFrames(VibrationFrames);
@@ -1467,11 +1417,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         showMeasurements = isSelected;
         control.setShowMeasurements(showMeasurements);
         props.put("showMeasurements", strSelected);
-      } else if (key.equals("Prefs.showDarkerOutline")) {
-        showDarkerOutline = isSelected;
-        control.setShowDarkerOutline(showDarkerOutline);
-        props.put("showDarkerOutline", strSelected);
-        oButton.setEnabled(!showDarkerOutline);
       } else if (key.equals("Prefs.isLabelAtomColor")) {
         isLabelAtomColor = isSelected;
         control.setColorLabel(isLabelAtomColor ? null : colorText);

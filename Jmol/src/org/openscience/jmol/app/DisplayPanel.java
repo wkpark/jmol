@@ -159,17 +159,13 @@ public class DisplayPanel extends JPanel
   private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
   private aNoneAction anoneAction = new aNoneAction();
-  private aInvisibleAction ainvisibleAction = new aInvisibleAction();
-  private aQuickdrawAction aquickdrawAction = new aQuickdrawAction();
-  private aShadingAction ashadingAction = new aShadingAction();
   private aWireframeAction awireframeAction = new aWireframeAction();
+  private aShadingAction ashadingAction = new aShadingAction();
   private aChargeColorAction acchargeAction = new aChargeColorAction();
   private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
   private bNoneAction bnoneAction = new bNoneAction();
-  private bQuickdrawAction bquickdrawAction = new bQuickdrawAction();
-  private bShadingAction bshadingAction = new bShadingAction();
-  private bBoxAction bboxAction = new bBoxAction();
   private bWireframeAction bwireframeAction = new bWireframeAction();
+  private bShadingAction bshadingAction = new bShadingAction();
   private PlainAction plainAction = new PlainAction();
   private SymbolsAction symbolsAction = new SymbolsAction();
   private TypesAction typesAction = new TypesAction();
@@ -295,30 +291,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class aInvisibleAction extends AbstractAction {
-
-    public aInvisibleAction() {
-      super("ainvisible");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      control.setStyleAtom(DisplayControl.INVISIBLE);
-    }
-  }
-
-  class aQuickdrawAction extends AbstractAction {
-
-    public aQuickdrawAction() {
-      super("aquickdraw");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      control.setStyleAtom(DisplayControl.QUICKDRAW);
-    }
-  }
-
   class aShadingAction extends AbstractAction {
 
     public aShadingAction() {
@@ -327,7 +299,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleAtom(DisplayControl.SHADING);
+      control.setStyleAtom(DisplayControl.SHADED);
     }
   }
 
@@ -379,18 +351,6 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class bQuickdrawAction extends AbstractAction {
-
-    public bQuickdrawAction() {
-      super("bquickdraw");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      control.setStyleBond(DisplayControl.QUICKDRAW);
-    }
-  }
-
   class bShadingAction extends AbstractAction {
 
     public bShadingAction() {
@@ -399,19 +359,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      control.setStyleBond(DisplayControl.SHADING);
-    }
-  }
-
-  class bBoxAction extends AbstractAction {
-
-    public bBoxAction() {
-      super("bbox");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      control.setStyleBond(DisplayControl.BOX);
+      control.setStyleBond(DisplayControl.SHADED);
     }
   }
 
@@ -722,10 +670,8 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
-      aquickdrawAction, ashadingAction, awireframeAction,
-      ainvisibleAction, anoneAction, 
-      bquickdrawAction, bshadingAction, bwireframeAction,
-      bboxAction, bnoneAction,
+      anoneAction, awireframeAction, ashadingAction,
+      bnoneAction, bwireframeAction, bshadingAction,
       plainAction,
       symbolsAction, typesAction, numbersAction,
       bondsAction, atomsAction, hydrogensAction,

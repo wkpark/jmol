@@ -65,25 +65,18 @@ public class ColorManager {
 
   public Color colorSelection = Color.orange;
   public short colixSelection = Colix.ORANGE;
-  public Color colorSelectionTransparent;
-  public short colixSelectionTransparent;
+
   public void setColorSelection(Color c) {
-    if (colorSelection == null || !colorSelection.equals(c)) {
-      colorSelection = c;
-      colorSelectionTransparent = null;
-      colixSelectionTransparent = 0;
-    }
+    colorSelection = c;
+    colixSelection = Colix.getColix(c);
   }
+
   public Color getColorSelection() {
-    if (colorSelectionTransparent == null) {
-      colorSelectionTransparent = getColorTransparent(colorSelection);
-    }
-    return colorSelectionTransparent;
+    return colorSelection;
   }
+
   public short getColixSelection() {
-    if (colixSelectionTransparent == 0)
-      colixSelectionTransparent = Colix.getColix(getColorSelection());
-    return colixSelectionTransparent;
+    return colixSelection;
   }
 
   public Color colorRubberband = Color.pink;
@@ -181,65 +174,13 @@ public class ColorManager {
     if (mode > colorProfiles.size()) {
         return Color.white;
     }
-    Color color = ((AtomColorer)colorProfiles.elementAt(mode)).getAtomColor(atom);
-    if (modeTransparentColors)
-      color = getColorTransparent(color);
+    Color color =
+      ((AtomColorer)colorProfiles.elementAt(mode)).getAtomColor(atom);
     return color;
   }
 
   public short getColixAtom(byte mode, Atom atom) {
     return Colix.getColix(getColorAtom(mode, atom));
-  }
-
-  public Color getColorAtomOutline(byte style, Color color) {
-    Color outline =
-      (showDarkerOutline || style == DisplayControl.SHADING)
-      ? getDarker(color) : colorOutline;
-    if (modeTransparentColors)
-      outline = getColorTransparent(outline);
-    return outline;
-  }
-
-  public short getColixAtomOutline(byte style, short colix) {
-    short outline =
-      (showDarkerOutline || style == DisplayControl.SHADING)
-      ? Colix.getColixDarker(colix) : colixOutline;
-    return outline;
-  }
-
-  private Hashtable htDarker = new Hashtable();
-  public Color getDarker(Color color) {
-    Color darker = (Color) htDarker.get(color);
-    if (darker == null) {
-      darker = color.darker();
-      htDarker.put(color, darker);
-    }
-    return darker;
-  }
-
-  private boolean modeTransparentColors = false;
-  public void setModeTransparentColors(boolean modeTransparentColors) {
-    this.modeTransparentColors = modeTransparentColors;
-  }
-
-  private final static int transparency = 0x60;
-  private Hashtable htTransparent = new Hashtable();
-  public Color getColorTransparent(Color color) {
-    Color transparent = (Color) htTransparent.get(color);
-    if (transparent == null) {
-      if (control.getUseGraphics2D()) {
-        int argb = (color.getRGB() & 0x00FFFFFF) | (transparency << 24);
-        transparent = new Color (argb, true);
-      } else {
-        transparent = color;
-      }
-      htTransparent.put(color, transparent);
-    }
-    return transparent;
-  }
-
-  public short getColixTransparent(short colix) {
-    return Colix.getColix(getColorTransparent(Colix.getColor(colix)));
   }
 
   public void setColorBackground(String colorName) {
@@ -304,8 +245,5 @@ public class ColorManager {
   }
 
   public void flushCachedColors() {
-    colorSelectionTransparent = null;
-    htTransparent.clear();
-    htDarker.clear();
   }
 }

@@ -58,15 +58,11 @@ public class AtomRenderer {
     this.clip = clip;
 
     fastRendering = control.getFastRendering();
-    useGraphics2D = control.getUseGraphics2D();
     colixSelection = control.getColixSelection();
-    g25dEnabled = control.getGraphics25DEnabled();
   }
 
   boolean fastRendering;
-  boolean useGraphics2D;
   short colixSelection;
-  boolean g25dEnabled;
 
   JmolAtom atom;
   int x;
@@ -75,7 +71,6 @@ public class AtomRenderer {
   int diameter;
   byte styleAtom;
   short colix;
-  short colixOutline;
 
   int radius;
   int xUpperLeft;
@@ -92,14 +87,11 @@ public class AtomRenderer {
     xUpperLeft = x - radius;
     yUpperLeft = y - radius;
     colix = atomShape.colixAtom;
-    colixOutline = control.getColixAtomOutline(styleAtom, colix);
     if (control.hasSelectionHalo(atomShape))
       renderHalo();
     if (atomShape.marDots > 0)
       renderDots(atomShape.colixDots, atomShape.diameterDots);
-    if (styleAtom != DisplayControl.NONE &&
-        styleAtom != DisplayControl.INVISIBLE)
-      renderAtom();
+    renderAtom();
   }
 
   private void renderHalo() {
@@ -116,11 +108,11 @@ public class AtomRenderer {
   }
 
   private void renderAtom() {
-    if (styleAtom == DisplayControl.SHADING && !fastRendering)
-     g25d.fillSphereCentered(colixOutline, colix, x, y, z, diameter);
-    else if (fastRendering || styleAtom == DisplayControl.WIREFRAME)
-      g25d.drawCircleCentered(colix, x, y, z, diameter);
-    else
-      g25d.fillCircleCentered(colixOutline, colix, x, y, z, diameter);
+    if (diameter > 0) {
+      if (styleAtom == DisplayControl.SHADED && !fastRendering)
+        g25d.fillSphereCentered(colix, diameter, x, y, z);
+      else if (styleAtom != DisplayControl.NONE)
+        g25d.drawCircleCentered(colix, diameter, x, y, z);
+    }
   }
 }

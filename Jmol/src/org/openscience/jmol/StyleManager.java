@@ -36,7 +36,7 @@ public class StyleManager {
     this.control = control;
   }
 
-  public byte styleAtom = DisplayControl.QUICKDRAW;
+  public byte styleAtom = DisplayControl.SHADED;
   public void setStyleAtom(byte styleAtom) {
     this.styleAtom = styleAtom;
   }
@@ -46,7 +46,7 @@ public class StyleManager {
     this.percentVdwAtom = percentVdwAtom;
   }
 
-  public byte styleBond = DisplayControl.QUICKDRAW;
+  public byte styleBond = DisplayControl.SHADED;
   public void setStyleBond(byte styleBond) {
     this.styleBond = styleBond;
   }

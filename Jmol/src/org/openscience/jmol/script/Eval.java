@@ -951,27 +951,19 @@ public class Eval implements Runnable {
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = DisplayControl.SHADING;
+      style = DisplayControl.SHADED;
       break;
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = DisplayControl.SHADING;
+      style = DisplayControl.SHADED;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("shaded")) {
-        control.setStyleBond(DisplayControl.SHADING);
-        return;
-      }
-      if (id.equalsIgnoreCase("box")) {
-        control.setStyleBond(DisplayControl.BOX);
-        return;
-      }
-      if (id.equalsIgnoreCase("quickdraw")) {
-        control.setStyleBond(DisplayControl.QUICKDRAW);
+        control.setStyleBond(DisplayControl.SHADED);
         return;
       }
     default:
@@ -1483,7 +1475,7 @@ public class Eval implements Runnable {
 
   void spacefill() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = DisplayControl.SHADING;
+    byte style = DisplayControl.SHADED;
     short mar = -999;
     switch (tok) {
     case Token.on:
@@ -1513,14 +1505,6 @@ public class Eval implements Runnable {
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("shaded"))
         break;
-      if (id.equalsIgnoreCase("invisible")) {
-        style = DisplayControl.INVISIBLE;
-        break;
-      }
-      if (id.equalsIgnoreCase("quickdraw")) {
-        style = DisplayControl.QUICKDRAW;
-        break;
-      }
     default:
       booleanOrNumberExpected();
     }
@@ -1545,27 +1529,19 @@ public class Eval implements Runnable {
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = DisplayControl.SHADING;
+      style = DisplayControl.SHADED;
       break;
     case Token.decimal:
       double angstroms = ((Double)statement[1].value).doubleValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = DisplayControl.SHADING;
+      style = DisplayControl.SHADED;
       break;
     case Token.identifier:
       String id = (String)statement[1].value;
       if (id.equalsIgnoreCase("shaded")) {
-        control.setStyleBond(DisplayControl.SHADING);
-        return;
-      }
-      if (id.equalsIgnoreCase("box")) {
-        control.setStyleBond(DisplayControl.BOX);
-        return;
-      }
-      if (id.equalsIgnoreCase("quickdraw")) {
-        control.setStyleBond(DisplayControl.QUICKDRAW);
+        control.setStyleBond(DisplayControl.SHADED);
         return;
       }
     default:

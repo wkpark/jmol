@@ -40,8 +40,6 @@ final public class Graphics25D {
 
   DisplayControl control;
   Platform25D platform;
-  ShadedSphereRenderer shadedSphereRenderer;
-  ShadedBondRenderer shadedBondRenderer;
   Sphere25D sphere25d;
   Triangle25D triangle25d;
   Cylinder25D cylinder25d;
@@ -69,8 +67,6 @@ final public class Graphics25D {
   final static int zBackground = 32767;
   final static boolean forceAWT = false;
 
-  public boolean tEnabled = true;
-
   int argbCurrent;
   Font fontCurrent;
   FontMetrics fontmetricsCurrent;
@@ -84,19 +80,10 @@ final public class Graphics25D {
       platform = new Awt25D(control.getAwtComponent());
     }
       platform = new Awt25D(control.getAwtComponent());
-    this.shadedSphereRenderer = new ShadedSphereRenderer(control, this);
-    this.shadedBondRenderer = new ShadedBondRenderer(control, this);
     this.sphere25d = new Sphere25D(control, this);
     this.triangle25d = new Triangle25D(control, this);
     this.cylinder25d = new Cylinder25D(control, this);
     this.dots25d = new Dots25D(control, this);
-  }
-
-  public void setEnabled(boolean tEnable) {
-    if (this.tEnabled == tEnable)
-      return;
-    this.tEnabled = tEnable;
-    setSize(width, height);
   }
 
   public void setSize(int width, int height) {
@@ -120,17 +107,14 @@ final public class Graphics25D {
       zbuf = zbuf1 = zbuf4 = null;
       return;
     }
-    platform.allocateImage(width, height, tEnabled);
+    platform.allocateImage(width, height, true);
     g = platform.getGraphics();
-    pbuf = pbuf1 = pbuf4 = null;
-    zbuf = zbuf1 = zbuf4 = null;
-    if (tEnabled) {
-      pbuf = pbuf1 = platform.getPbuf();
-      zbuf = zbuf1 = new short[size1];
 
-      pbuf4 = new int[size4];
-      zbuf4 = new short[size4];
-    }
+    pbuf = pbuf1 = platform.getPbuf();
+    zbuf = zbuf1 = new short[size1];
+    
+    pbuf4 = new int[size4];
+    zbuf4 = new short[size4];
   }
 
   private void downSample() {
@@ -162,36 +146,20 @@ final public class Graphics25D {
   }
 
   public void setColor(Color color) {
-    if (! tEnabled) {
-      g.setColor(color);
-      return;
-    }
     argbCurrent = color.getRGB();
   }
 
   public void setArgb(int argb) {
-    if (! tEnabled) {
-      g.setColor(new Color(argb));
-      return;
-    }
     argbCurrent = argb;
   }
 
   public void setColix(short colix) {
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colix));
-      return;
-    }
     argbCurrent = Colix.getArgb(colix);
   }
 
   int[] imageBuf = new int[256];
 
   public void drawImage(Image image, int x, int y, int z) {
-    if (! tEnabled) {
-      g.drawImage(image, x, y, null);
-      return;
-    }
     int imageWidth = image.getWidth(null);
     int imageHeight = image.getHeight(null);
     int imageSize = imageWidth * imageHeight;
@@ -220,35 +188,11 @@ final public class Graphics25D {
     }
   }
 
-  public void drawImage(Image image, int x, int y, int z,
-                        int width, int height) {
-    if (! tEnabled) {
-      g.drawImage(image, x, y, width, height, null);
-      return;
-    }
-    System.out.println("drawImage(... width,height) not implemented");
-  }
-
-  public void drawCircleCentered(short colix, int x, int y, int z,
-                                 int diameter) {
+  public void drawCircleCentered(short colix, int diameter,
+                                 int x, int y, int z) {
     if (diameter == 0)
       return;
     int r = (diameter + 1) / 2;
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colix));
-      if (diameter <= 2) {
-        if (diameter == 1) {
-          g.drawLine(x, y, x, y);
-        } else {
-          g.drawLine(x-1, y, x, y);
-          --y;
-          g.drawLine(x-1, y, x, y);
-        }
-      } else {
-        g.drawOval(x - r, y - r, diameter-1, diameter-1);
-      }
-      return;
-    }
     argbCurrent = Colix.getArgb(colix);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       if (diameter <= 2) {
@@ -276,7 +220,7 @@ final public class Graphics25D {
           plotPixelClipped(x-1, y, z);
         }
       } else {
-        plotCircleCenteredClipped(x + r, y + r, z, r);
+        plotCircleCenteredClipped(x , y , z, diameter);
       }
     }
   }
@@ -286,11 +230,6 @@ final public class Graphics25D {
     if (diameter == 0)
       return;
     int r = (diameter + 1) / 2;
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colixFill));
-      g.fillOval(x - r, y - r, diameter, diameter);
-      return;
-    }
     argbCurrent = Colix.getArgb(colixFill);
     if (x >= r && x + r < width && y >= r && y + r < width) {
       plotFilledCircleCenteredUnclipped(x, y, z, diameter);
@@ -304,14 +243,6 @@ final public class Graphics25D {
     if (diameter == 0)
       return;
     int r = (diameter + 1) / 2;
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colixFill));
-      g.fillOval(x -= r, y -= r, diameter, diameter);
-      --diameter;
-      g.setColor(Colix.getColor(colixOutline));
-      g.drawOval(x, y, diameter, diameter);
-      return;
-    }
     argbCurrent = Colix.getArgb(colixOutline);
     if (x >= r && x + r < width && y >= r && y + r < height) {
       if (diameter <= 2) {
@@ -350,29 +281,15 @@ final public class Graphics25D {
 
   public void drawDotsCentered(short colixDots, 
                                int x, int y, int z, int diameterDots) {
-    if (! tEnabled)
-      return;
     dots25d.render(colixDots, diameterDots, x, y, z);
   }
 
-  public void fillSphereCentered(short colixOutline, short colixFill,
-                                 int x, int y, int z, int diameter) {
-    int r = (diameter + 1) / 2;
-    if (! tEnabled)
-      shadedSphereRenderer.render(x - r, y - r, z,
-                                  diameter,
-                                  Colix.getColor(colixFill),
-                                  Colix.getColor(colixOutline));
-    else
-      sphere25d.render(colixFill, diameter, x, y, z);
+  public void fillSphereCentered(short colix, int diameter,
+                                 int x, int y, int z) {
+    sphere25d.render(colix, diameter, x, y, z);
   }
 
   public void drawRect(short colix, int x, int y, int width, int height) {
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colix));
-      g.drawRect(x, y, width, height);
-      return;
-    }
     argbCurrent = Colix.getArgb(colix);
     int xRight = x + width;
     drawLine(x, y, 0, xRight, y, 0);
@@ -384,11 +301,6 @@ final public class Graphics25D {
 
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colix));
-      g.drawString(str, xBaseline, yBaseline);
-      return;
-    }
     argbCurrent = Colix.getArgb(colix);
     Text25D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(),
                  z, argbCurrent,
@@ -409,45 +321,21 @@ final public class Graphics25D {
 
 
   public void setFont(Font font) {
-    if (! tEnabled)
-      g.setFont(font);
-    else {
-      if (fontCurrent != font) {
-        fontCurrent = font;
-        fontmetricsCurrent = g.getFontMetrics(font);
-      }
+    if (fontCurrent != font) {
+      fontCurrent = font;
+      fontmetricsCurrent = g.getFontMetrics(font);
     }
   }
 
   public FontMetrics getFontMetrics(Font font) {
-    if (! tEnabled)
-      return g.getFontMetrics(font);
     if (font == fontCurrent)
       return fontmetricsCurrent;
     else
       return g.getFontMetrics(font);
   }
 
-  public void setClip(Shape shape) {
-    if (! tEnabled) {
-      g.setClip(shape);
-      return;
-    }
-    System.out.println("setClip(shape) not implemented for pbuf");
-  }
-
-  public void setClip(int x, int y, int width, int height) {
-    if (! tEnabled) {
-      g.setClip(x, y, width, height);
-      return;
-    }
-    System.out.println("setClip(x,y,width,height) not implemented for pbuf");
-  }
-
   // 3D specific routines
   public void beginRendering(boolean tOversample) {
-    if (! tEnabled)
-      return;
     if (tOversample) {
       width = width4;
       height = height4;
@@ -468,8 +356,6 @@ final public class Graphics25D {
   }
 
   public void endRendering() {
-    if (! tEnabled)
-      return;
     if (tOversample)
       downSample();
     platform.notifyEndOfRendering();
@@ -477,11 +363,11 @@ final public class Graphics25D {
 
   public void clearScreenBuffer(Color colorBackground,int xClip, int yClip,
                                 int widthClip, int heightClip) {
-    if (! tEnabled) {
-      g.setColor(colorBackground);
-      g.fillRect(xClip, yClip, widthClip, heightClip);
-      return;
-    }
+    // mth 2003 08 07
+    // this is the easiest and probably best place to take advantage
+    // of multiple processors
+    // have a thread whose repsonsibility it is to keep a buffer clean and
+    // ready to go.
     if (heightClip <= 0 || widthClip <= 0)
       return;
     int argbBackground = colorBackground.getRGB();
@@ -500,38 +386,8 @@ final public class Graphics25D {
     }
   }
 
-  private final static boolean applyLineInsideCorrection = true;
-
-  public void drawLineInside(int x1, int y1, int z1, int x2, int y2, int z2) {
-    if (applyLineInsideCorrection) {
-      if (x2 < x1) {
-        int xT = x1; x1 = x2; x2 = xT;
-        int yT = y1; y1 = y2; y2 = yT;
-        int zT = z1; z1 = z2; z2 = zT;
-      }
-      int dx = x2 - x1, dy = y2 - y1;
-      if (dy >= 0) {
-        if (dy <= dx)
-          --x2;
-        if (dx <= dy)
-          --y2;
-      } else {
-        if (-dy <= dx)
-          --x2;
-        if (dx <= -dy)
-          --y1;
-      }
-    }
-    drawLine(x1, y1, z1, x2, y2, z2);
-  }
-
   public void drawLine(short colix,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colix));
-      g.drawLine(x1, y1, x2, y2);
-      return;
-    }
     argbCurrent = Colix.getArgb(colix);
     drawLine(x1, y1, z1, x2, y2, z2);
   }
@@ -539,11 +395,11 @@ final public class Graphics25D {
   public void drawLine(short colix1, short colix2,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     if (colix1 == colix2) {
-      drawLine(colix1, x1, y1, z1, x2, y2, z2);
+      argbCurrent = Colix.getArgb(colix1);
+      drawLine(x1, y1, z1, x2, y2, z2);
       return;
     }
-    if (! tEnabled ||
-        x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
+    if (x1 < 0 || x1 >= width  || x2 < 0 || x2 >= width ||
         y1 < 0 || y1 >= height || y2 < 0 || y2 >= height) {
       int xMid = (x1 + x2) / 2;
       int yMid = (y1 + y2) / 2;
@@ -557,10 +413,6 @@ final public class Graphics25D {
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    if (! tEnabled) {
-      g.drawLine(x1, y1, x2, y2);
-      return;
-    }
     int cc1 = clipCode(x1, y1);
     int cc2 = clipCode(x2, y2);
     while ((cc1 | cc2) != 0) {
@@ -596,26 +448,6 @@ final public class Graphics25D {
     plotLineDeltaUnclipped(argbCurrent, x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
-  /*
-  public void drawLineDelta(int x1, int y1, int z1, int dx, int dy, int dz) {
-    drawLine(x1, y1, z1, x1 + dx, y1 + dy, z1 + dz);
-  }
-  */
-
-  public void drawPixel(int x, int y, int z) {
-    if (! tEnabled) {
-      g.drawLine(x, y, x, y);
-      return;
-    }
-    if (x >= 0 && x < width && y >= 0 && y < height) {
-      int offset = y * width + x;
-      if (z < zbuf[offset]) {
-        zbuf[offset] = (short)z;
-        pbuf[offset] = argbCurrent;
-      }
-    }
-  }
-
   public void drawPolygon4(short colixOutline, int[] ax, int[] ay, int[] az) {
     setColix(colixOutline);
     drawLine(ax[0], ay[0], az[0], ax[3], ay[3], az[3]);
@@ -632,11 +464,6 @@ final public class Graphics25D {
 
   public void fillPolygon4(short colixFill,
                            int[] ax, int[] ay, int[] az) {
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colixFill));
-      g.fillPolygon(ax, ay, 4);
-      return;
-    }
     // draw and then fill
     // make up for some deficiencies in the fill code
     drawPolygon4(colixFill, ax, ay, az);
@@ -653,11 +480,6 @@ final public class Graphics25D {
 
   public void fillPolygon4(Color colorFill,
                            int[] ax, int[] ay, int[] az) {
-    if (! tEnabled) {
-      g.setColor(colorFill);
-      g.fillPolygon(ax, ay, 4);
-      return;
-    }
     drawPolygon4(colorFill, ax, ay, az);
     System.arraycopy(ax, 0, triangle25d.ax, 0, 3);
     System.arraycopy(ay, 0, triangle25d.ay, 0, 3);
@@ -671,13 +493,6 @@ final public class Graphics25D {
 
   public void fillPolygon4(short colixOutline, short colixFill,
                            int[] ax, int[] ay, int[] az) {
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colixFill));
-      g.fillPolygon(ax, ay, 4);
-      g.setColor(Colix.getColor(colixOutline));
-      g.drawPolygon(ax, ay, 4);
-      return;
-    }
     drawPolygon4(colixOutline, ax, ay, az);
     fillPolygon4(colixFill, ax, ay, az);
   }
@@ -692,11 +507,6 @@ final public class Graphics25D {
     t = triangle25d.az;
     t[0] = z0; t[1] = z1; t[2] = z2;
 
-    if (! tEnabled) {
-      g.setColor(Colix.getColor(colix));
-      g.fillPolygon(triangle25d.ax, triangle25d.ay, 3);
-      return;
-    }
     triangle25d.fillTriangle();
   }
 
@@ -706,19 +516,7 @@ final public class Graphics25D {
                        x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
-  public void fillShadedPolygon4(short colix, int ax[], int ay[], int az[]) {
-    if (! tEnabled) {
-      shadedBondRenderer.render(Colix.getColor(colix), ax, ay, az);
-      return;
-    }
-    System.out.println("fillShadedPolygon4 with pbuf ?que?");
-  }
-
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {
-    if (! tEnabled) {
-      g.drawRect(x, y, width, height);
-      return;
-    }
     if (x < 0) {
       widthFill += x;
       if (widthFill <= 0)

@@ -113,8 +113,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       control.setShowAtoms(true);
       control.setPercentVdwAtom(20);
       control.zoomToPercent(100);
-      control.setStyleBond(DisplayControl.SHADING);
-      control.setStyleAtom(DisplayControl.SHADING);
+      control.setStyleBond(DisplayControl.SHADED);
+      control.setStyleAtom(DisplayControl.SHADED);
       
       control.setColorBackground(getParameter("bgcolor"));
       setStyle(getParameter("style"));
@@ -168,9 +168,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
    * mth 2003 02
    ****************************************************************/
 
-  private final String[] styleStrings = {"QUICKDRAW", "SHADED", "WIREFRAME"};
-  private final byte[] styles = {DisplayControl.QUICKDRAW,
-                                 DisplayControl.SHADING,
+  private final String[] styleStrings = {"SHADED", "WIREFRAME"};
+  private final byte[] styles = {DisplayControl.SHADED,
                                  DisplayControl.WIREFRAME};
 
   public void setStyle(String style) {

@@ -32,7 +32,6 @@ class Atom implements Cloneable {
   String atomName;
   int formalCharge = Integer.MIN_VALUE;
   float partialCharge = Float.NaN;
-  int scatterFactor = Integer.MIN_VALUE;
   float x = Float.NaN, y = Float.NaN, z = Float.NaN;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
@@ -70,7 +69,7 @@ class Atom implements Cloneable {
           break;
         default:
           char chSecond = atomName.charAt(ichFirst + 1);
-          if (isValidElementSymbol(chFirst, chSecond)) {
+          if (isValidElementSymbolNoCaseSecondChar(chFirst, chSecond)) {
             elementSymbol = "" + chFirst + chSecond;
             break;
           }

@@ -27,10 +27,9 @@ package org.jmol.adapter.smarter;
 
 class FractionalAtom extends Atom {
   FractionalAtom(String elementSymbol, String atomName,
-                 int scatterFactor, float a, float b, float c) {
+                 float a, float b, float c) {
     this.elementSymbol = elementSymbol;
     this.atomName = atomName;
-    this.scatterFactor = scatterFactor;
     this.x = a;
     this.y = b;
     this.z = c;

@@ -32,7 +32,7 @@ import java.io.BufferedReader;
 
 /**
  * A reader for SHELX output (RES) files. It does not read all information.
- * The list of fields that is read: TITL, REM, END, CELL, SPGR.
+ * The list of fields that is read: TITL, REM, END, CELL, SPGR, SFAC
  * In addition atoms are read.
  *
  * <p>A reader for SHELX files. It currently supports SHELXL.
@@ -46,8 +46,10 @@ import java.io.BufferedReader;
 class ShelxReader extends AtomSetCollectionReader {
 
   boolean endReached;
+  String[] sfacElementSymbols;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)
+    throws Exception {
     atomSetCollection = new AtomSetCollection("shelx");
     atomSetCollection.coordinatesAreFractional = true;
 
@@ -85,7 +87,7 @@ class ShelxReader extends AtomSetCollectionReader {
   }
 
   final static String[] supportedRecordTypes =
-  {"TITL", "CELL", "SPGR", "END "};
+  {"TITL", "CELL", "SPGR", "END ", "SFAC"};
 
   void processSupportedRecord(int recordIndex, String line)
     throws Exception {
@@ -101,6 +103,9 @@ class ShelxReader extends AtomSetCollectionReader {
       break;
     case 3: // END
       endReached = true;
+      break;
+    case 4: // SFAC
+      parseSfacElementSymbols(line);
       break;
     }
   }
@@ -118,6 +123,11 @@ class ShelxReader extends AtomSetCollectionReader {
     atomSetCollection.notionalUnitcell = notionalUnitcell;
   }
 
+  void parseSfacElementSymbols(String line) {
+    sfacElementSymbols = getTokens(line);
+    sfacElementSymbols[0] = null;
+  }
+
   void assumeAtomRecord(String line) {
     try {
       //    System.out.println("Assumed to contain an atom: " + line);
@@ -132,7 +142,10 @@ class ShelxReader extends AtomSetCollectionReader {
       
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = atomName;
-      atom.scatterFactor = scatterFactor;
+      if (sfacElementSymbols != null &&
+          scatterFactor > 0 &&
+          scatterFactor < sfacElementSymbols.length)
+        atom.elementSymbol = sfacElementSymbols[scatterFactor];
       atom.x = a;
       atom.y = b;
       atom.z = c;
@@ -146,7 +159,6 @@ class ShelxReader extends AtomSetCollectionReader {
     "ZERR",
     "LATT",
     "SYMM",
-    "SFAC",
     "DISP",
     "UNIT",
     "LAUE",

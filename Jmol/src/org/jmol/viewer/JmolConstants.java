@@ -291,6 +291,9 @@ final public class JmolConstants {
 
   private static Hashtable htElementMap;
 
+  /**
+   * First char must be upper case, second char accepts upper or lower case
+   */
   public static byte elementNumberFromSymbol(String elementSymbol) {
     if (htElementMap == null) {
       Hashtable map = new Hashtable();

@@ -218,8 +218,8 @@ public class Token {
   final static int ramprint     = showparam |  2;
   final static int rotation     = showparam |  3;
   // selected
-  final static int group        = showparam |  4;
-  final static int chain        = showparam |  5;
+  final static int group        = showparam |  4 | expression;
+  final static int chain        = showparam |  5 | expression;
   final static int atom         = showparam |  6;
   final static int sequence     = showparam |  7;
   final static int symmetry     = showparam |  8;
@@ -256,7 +256,7 @@ public class Token {
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atomproperty | 4;
-  final static int model        = atomproperty | 5 | showparam;
+  final static int model        = atomproperty | 5 | showparam | expression;
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;

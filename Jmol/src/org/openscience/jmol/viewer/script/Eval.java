@@ -1014,8 +1014,33 @@ public class Eval implements Runnable {
     }
   }
 
-  void withinInstruction(Token instruction, BitSet bs, BitSet bsResult) {
-    float distance = ((Float)instruction.value).floatValue();
+
+  void withinInstruction(Token instruction, BitSet bs, BitSet bsResult)
+    throws ScriptException {
+    Object withinSpec = instruction.value;
+    if (withinSpec instanceof Float) {
+      withinDistance(((Float)withinSpec).floatValue(), bs, bsResult);
+      return;
+    }
+    if (withinSpec instanceof String) {
+      String withinStr = (String)withinSpec;
+      if (withinStr.equals("group")) {
+        withinGroup(bs, bsResult);
+        return;
+      }
+      if (withinStr.equals("chain")) {
+        withinChain(bs, bsResult);
+        return;
+      }
+      if (withinStr.equals("model")) {
+        withinModel(bs, bsResult);
+        return;
+      }
+    }
+    evalError("Unrecognized within parameter:" + withinSpec);
+  }
+
+  void withinDistance(float distance, BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
     AtomIterator iterSelected = frame.getAtomIterator(bs);
     while (iterSelected.hasNext()) {
@@ -1024,6 +1049,18 @@ public class Eval implements Runnable {
       while (iterWithin.hasNext())
         bsResult.set(iterWithin.next().atomIndex);
     }
+  }
+
+  void withinGroup(BitSet bs, BitSet bsResult) {
+    System.out.println("withinGroup");
+  }
+
+  void withinChain(BitSet bs, BitSet bsResult) {
+    System.out.println("withinChain");
+  }
+
+  void withinModel(BitSet bs, BitSet bsResult) {
+    System.out.println("withinModel");
   }
 
   int getResno(Atom atom) {

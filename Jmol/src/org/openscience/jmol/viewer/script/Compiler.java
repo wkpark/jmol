@@ -540,6 +540,9 @@ class Compiler {
   private boolean numberExpected() {
     return compileError("number expected");
   }
+  private boolean numberOrKeywordExpected() {
+    return compileError("number or keyword expected");
+  }
   private boolean badRGBColor() {
     return compileError("bad [R,G,B] color");
   }
@@ -798,14 +801,21 @@ class Compiler {
     tokenNext();                             // WITHIN
     if (tokenNext().tok != Token.leftparen)  // (
       return leftParenthesisExpected();
-    Float distance;
+    Object distance;
     Token tokenDistance = tokenNext();       // distance
-    if (tokenDistance.tok == Token.integer)
+    switch(tokenDistance.tok) {
+    case Token.integer:
       distance = new Float((tokenDistance.intValue * 4) / 1000f);
-    else if (tokenDistance.tok == Token.decimal)
-      distance = (Float)tokenDistance.value;
-    else
-      return numberExpected();
+      break;
+    case Token.decimal:
+    case Token.group:
+    case Token.chain:
+    case Token.model:
+      distance = tokenDistance.value;
+      break;
+    default:
+      return numberOrKeywordExpected();
+    }
     if (tokenNext().tok != Token.opOr)       // ,
       return commaExpected();
     if (! clauseOr())                        // *expression*

@@ -29,6 +29,7 @@ import org.openscience.jmol.viewer.JmolStatusListener;
 import org.jmol.api.ModelAdapter;
 import org.jmol.adapter.cdk.CdkModelAdapter;
 import org.jmol.adapter.simple.SimpleModelAdapter;
+import org.jmol.adapter.smarter.SmarterModelAdapter;
 
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
@@ -173,8 +174,11 @@ public class Jmol extends JPanel {
     ModelAdapter modelAdapter;
     String adapter= System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
-      adapter = "simple";
-    if (adapter.equals("simple")) {
+      adapter = "smarter";
+    if (adapter.equals("smarter")) {
+      System.out.println("using Smarter Model Adapter");
+      modelAdapter = new SmarterModelAdapter();
+    } else if (adapter.equals("simple")) {
       System.out.println("using Simple Model Adapter");
       modelAdapter = new SimpleModelAdapter();
     } else if (adapter.equals("cdk")) {

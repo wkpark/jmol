@@ -41,7 +41,7 @@ public class MouseManager11 extends MouseManager
     component.addMouseMotionListener(this);
   }
 
-  public boolean handleEvent(Event e) {
+  public boolean handleOldJvm10Event(Event e) {
     System.out.println("MouseManager11 does not handle events");
     return false;
   }

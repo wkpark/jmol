@@ -46,7 +46,7 @@ public class MouseManager10 extends MouseManager {
 
   int xWhenPressed, yWhenPressed, modifiersWhenPressed;
 
-  public boolean handleEvent(Event e) {
+  public boolean handleOldJvm10Event(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers, clickCount = e.clickCount;
     long time = e.when;
     modifiers = applyLeftMouse(modifiers);

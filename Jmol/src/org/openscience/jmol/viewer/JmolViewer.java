@@ -142,8 +142,8 @@ final public class JmolViewer {
     return awtComponent;
   }
 
-  public boolean handleEvent(Event e) {
-    return mouseManager.handleEvent(e);
+  public boolean handleOldJvm10Event(Event e) {
+    return mouseManager.handleOldJvm10Event(e);
   }
 
   private boolean structuralChange = false;

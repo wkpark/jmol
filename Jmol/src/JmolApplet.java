@@ -333,7 +333,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public boolean handleEvent(Event e) {
     if (viewer == null)
       return false;
-    return viewer.handleEvent(e);
+    return viewer.handleOldJvm10Event(e);
   }
 
   // code to record last and average times

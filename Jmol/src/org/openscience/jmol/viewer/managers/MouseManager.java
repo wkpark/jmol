@@ -433,7 +433,7 @@ mol is a collaboratively developed visualization an    return ROTATE;
   }
   
 
-  public abstract boolean handleEvent(Event e);
+  public abstract boolean handleOldJvm10Event(Event e);
 
   // note that these two may *not* be consistent
   // this term refers to the count of what has actually been selected

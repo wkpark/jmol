@@ -40,13 +40,19 @@
 package org.openscience.jmol;
 
 import java.awt.Graphics;
+import java.awt.*;
 import java.util.*;
 
 public class ChemFrame {
     private static float bondFudge       = 1.12f;
-//      private static float ScreenScale;
     private static boolean AutoBond      = true;
     private static Matrix3D mat;
+    private static float[] axes = {0.0f,0.0f,0.0f, // axis vectors in
+                                   1.0f,0.0f,0.0f, // real space
+                                   0.0f,1.0f,0.0f,
+                                   0.0f,0.0f,1.0f};    
+
+    private static String[] AxesLabels = {"x","y","z"};
     /* 
        pickedAtoms and napicked are static because
        they deal with deformations or measurements that will persist
@@ -62,8 +68,10 @@ public class ChemFrame {
     String info;       // The title or info string for this frame.
     float[] vert;      // atom vertices in real space
     float[] vect;      // vert + dx  for vectors in real space
+
     int[] tvert;       // atom positions transformed to screen space
     int[] tvect;       // vector ends transformed to screen space
+    int[] taxes;       // axes transformed to screen space
     AtomType[] atoms;  // array of atom types
     Bond[] bonds;      // array of bonds
     Vector[] aProps;   // array of Vector of atom properties
@@ -117,15 +125,6 @@ public class ChemFrame {
     public boolean getMovingDrawMode(){
         return doingMoveDraw;
     }
-
-//      /**
-//       * Sets the screen scaling factor for zooming.
-//       *
-//       * @param ss the screenscale factor
-//       */
-//      public static void setScreenScale(float ss) {
-//          ScreenScale = ss;
-//      }
 
     static void setBondFudge(float bf) {
         bondFudge = bf;
@@ -519,6 +518,9 @@ public class ChemFrame {
         if (tvert == null || tvert.length < nvert * 3)
             tvert = new int[nvert * 3];
         mat.transform(vert, tvert, nvert);
+        if (taxes == null || taxes.length < 12)
+            taxes = new int[12];
+        mat.transform(axes, taxes, 4);
         if (hasVectors) {
             if (tvect == null || tvect.length < nvert * 3)
                 tvect = new int[nvert * 3];
@@ -538,6 +540,32 @@ public class ChemFrame {
             return;
         boolean drawHydrogen = settings.getShowHydrogens();
         transform();
+
+
+        if (settings.getShowAxes()) {
+
+            for (int i = 1; i < 4; i++) {
+
+                int x0 = taxes[0];
+                int y0 = taxes[1];
+                int x1 = taxes[i*3];
+                int y1 = taxes[i*3+1];
+                int sz = (int)settings.getScreenSize(taxes[i*3]+2);
+
+                ArrowLine al = new ArrowLine(g, x0, y0, x1, y1, false, true,
+                                             0, 3 + sz);
+            
+                Font font = new Font("Helvetica", Font.PLAIN, sz);
+                FontMetrics fontMetrics = g.getFontMetrics(font);
+                String s = AxesLabels[i-1];
+                int j = fontMetrics.stringWidth(s);
+                int k = fontMetrics.getAscent();
+                g.drawString(s,x1,y1);
+            }
+        }
+        
+
+
         int v[] = tvert;
         int zs[] = ZsortMap;
         if (zs == null) {
@@ -625,7 +653,7 @@ public class ChemFrame {
                                              tvect[j], tvect[j+1], 
                                              false, true,
                                              0, 
-                                             3+(int)(tvect[j+2]/settings.getVectorScreenScale()));
+                                             (int)settings.getScreenSize(tvect[j+2]));
             }
             
         }

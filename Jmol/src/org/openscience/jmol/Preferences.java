@@ -348,9 +348,11 @@ public class Preferences extends JDialog {
         JPanel choicesPanel = new JPanel();
         choicesPanel.setLayout(new GridLayout(0,4));
         choicesPanel.setBorder( new TitledBorder(jrh.getString("cLabel")));
-        cB = new JCheckBox(jrh.getString("cBLabel"), display.getSettings().getShowBonds());
+        cB = new JCheckBox(jrh.getString("cBLabel"), 
+                           display.getSettings().getShowBonds());
         cB.addItemListener(checkBoxListener);                       
-        cA = new JCheckBox(jrh.getString("cALabel"), display.getSettings().getShowAtoms());
+        cA = new JCheckBox(jrh.getString("cALabel"), 
+                           display.getSettings().getShowAtoms());
         cA.addItemListener(checkBoxListener);                       
         cV = new JCheckBox(jrh.getString("cVLabel"), 
                            display.getSettings().getShowVectors());
@@ -360,12 +362,12 @@ public class Preferences extends JDialog {
         cH.addItemListener(checkBoxListener);                       
         cD = new JCheckBox(jrh.getString("cDLabel"),false);
         cD.addItemListener(checkBoxListener);                       
-        cX = new JCheckBox(jrh.getString("cXLabel"),false);
+        cX = new JCheckBox(jrh.getString("cXLabel"),
+                           display.getSettings().getShowAxes());
         cX.addItemListener(checkBoxListener);                       
         cBB = new JCheckBox(jrh.getString("cBBLabel"),false);
         cBB.addItemListener(checkBoxListener);                       
         cD.setEnabled(false);
-        cX.setEnabled(false);
         cBB.setEnabled(false);
         choicesPanel.add(cB);
         choicesPanel.add(cA);
@@ -1201,6 +1203,7 @@ public class Preferences extends JDialog {
                 props.put("ShowDummies", new Boolean(ShowDummies).toString());
             } else if(cb.getText().equals(jrh.getString("cXLabel"))) {
                 ShowAxes = cb.isSelected();
+                display.getSettings().setShowAxes(ShowAxes);
                 props.put("ShowAxes", new Boolean(ShowAxes).toString());
             } else if(cb.getText().equals(jrh.getString("cBBLabel"))) {
                 ShowBoundingBox = cb.isSelected();

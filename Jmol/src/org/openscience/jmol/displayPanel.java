@@ -493,6 +493,7 @@ public class displayPanel extends JPanel
     private AtomsAction atomsAction = new AtomsAction();
     private VectorsAction vectorsAction = new VectorsAction();
     private HydrogensAction hydrogensAction = new HydrogensAction();
+    private AxesAction axesAction = new AxesAction();
     private SelectallAction selectallAction = new SelectallAction();    
     private DeselectallAction deselectallAction = new DeselectallAction();
     private WireFrameRotationAction wireframerotationAction = new WireFrameRotationAction();
@@ -543,6 +544,18 @@ public class displayPanel extends JPanel
         
         public void actionPerformed(ActionEvent e) {            
             settings.toggleHydrogens();
+            repaint();
+        }
+    }
+    class AxesAction extends AbstractAction {
+        
+        public AxesAction() {
+            super("axes");
+            this.setEnabled(true);
+        }
+        
+        public void actionPerformed(ActionEvent e) {            
+            settings.toggleAxes();
             repaint();
         }
     }
@@ -868,6 +881,7 @@ public class displayPanel extends JPanel
             xfac = 0.7f * (f1 < f2 ? f1 : f2) * scalefudge;        
             settings.setAtomScreenScale(xfac);
             settings.setBondScreenScale(xfac);
+            settings.setVectorScreenScale(xfac);      
             repaint();
         }
     }
@@ -911,6 +925,7 @@ public class displayPanel extends JPanel
             atomsAction,
             vectorsAction,
             hydrogensAction,
+            axesAction,
             selectallAction,
             deselectallAction,
             homeAction,

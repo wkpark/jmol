@@ -33,8 +33,6 @@ import java.util.Hashtable;
 import java.awt.Color;
 import java.awt.Component;
 
-//import javax.swing.*;
-
 public class AtomType {
 
   private BaseAtomType baseType;

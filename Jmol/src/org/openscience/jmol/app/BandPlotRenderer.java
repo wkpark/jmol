@@ -1,6 +1,7 @@
-package org.openscience.jmol;
+package org.openscience.jmol.app;
 
 import org.openscience.jmol.util.*;
+import org.openscience.jmol.*;
 
 import javax.swing.*;
 import java.awt.*;

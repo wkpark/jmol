@@ -17,7 +17,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol;
+package org.openscience.jmol.app;
+
+import org.openscience.jmol.*;
 
 import jas.hist.ScatterPlotSource;
 import jas.hist.ScatterEnumeration;

@@ -1,4 +1,4 @@
-package org.openscience.jmol;
+package org.openscience.jmol.app;
 
 import org.openscience.jmol.util.*;
 import javax.swing.*;

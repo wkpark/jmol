@@ -1,4 +1,4 @@
-package org.openscience.jmol;
+package org.openscience.jmol.app;
 
 import java.io.IOException;
 import org.openscience.jmol.util.*;

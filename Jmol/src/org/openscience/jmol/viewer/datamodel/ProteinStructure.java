@@ -32,18 +32,18 @@ abstract class ProteinStructure {
   AlphaCarbonPolymer acpolymer;
   byte type;
   int polymerIndex;
-  int polymerCount;
+  int monomerCount;
   Point3f center;
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
   Point3f[] segments;
 
   ProteinStructure(AlphaCarbonPolymer acpolymer, byte type,
-                   int polymerIndex, int polymerCount) {
+                   int polymerIndex, int monomerCount) {
     this.acpolymer = acpolymer;
     this.type = type;
     this.polymerIndex = polymerIndex;
-    this.polymerCount = polymerCount;
+    this.monomerCount = monomerCount;
   }
 
   void calcAxis() {
@@ -57,10 +57,10 @@ abstract class ProteinStructure {
     System.out.println("axisA=" + axisA.x + "," + axisA.y + "," + axisA.z);
     System.out.println("axisB=" + axisB.x + "," + axisB.y + "," + axisB.z);
     */
-    segments = new Point3f[polymerCount + 1];
-    segments[polymerCount] = axisB;
+    segments = new Point3f[monomerCount + 1];
+    segments[monomerCount] = axisB;
     segments[0] = axisA;
-    for (int i = polymerCount; --i > 0; ) {
+    for (int i = monomerCount; --i > 0; ) {
       Point3f point = segments[i] = new Point3f();
       acpolymer.getLeadMidPoint(polymerIndex + i, point);
       projectOntoAxis(point);
@@ -77,14 +77,14 @@ abstract class ProteinStructure {
   boolean lowerNeighborIsHelixOrSheet() {
     if (polymerIndex == 0)
       return false;
-    return acpolymer.groups[polymerIndex - 1].isHelixOrSheet();
+    return acpolymer.monomers[polymerIndex - 1].isHelixOrSheet();
   }
 
   boolean upperNeighborIsHelixOrSheet() {
-    int upperNeighborIndex = polymerIndex + polymerCount;
+    int upperNeighborIndex = polymerIndex + monomerCount;
     if (upperNeighborIndex == acpolymer.count)
       return false;
-    return acpolymer.groups[upperNeighborIndex].isHelixOrSheet();
+    return acpolymer.monomers[upperNeighborIndex].isHelixOrSheet();
   }
 
   final Vector3f vectorProjection = new Vector3f();
@@ -98,7 +98,7 @@ abstract class ProteinStructure {
   }
 
   int getPolymerCount() {
-    return polymerCount;
+    return monomerCount;
   }
 
   int getPolymerIndex() {
@@ -106,9 +106,9 @@ abstract class ProteinStructure {
   }
 
   int getIndex(Group group) {
-    Group[] groups = acpolymer.groups;
+    Group[] groups = acpolymer.monomers;
     int i;
-    for (i = polymerCount; --i >= 0; )
+    for (i = monomerCount; --i >= 0; )
       if (groups[polymerIndex + i] == group)
         break;
     return i;

@@ -38,7 +38,7 @@ final public class FrameBuilder {
   public FrameBuilder(JmolViewer viewer, ModelAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
-    this.groupBuilder = new GroupBuilder(viewer);
+    this.groupBuilder = new GroupBuilder(viewer, this);
   }
 
   protected void finalize() {

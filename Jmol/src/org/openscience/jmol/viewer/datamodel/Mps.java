@@ -104,7 +104,7 @@ abstract class Mps extends Shape {
     void setMad(short mad, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         Mpspolymer polymer = mpspolymers[i];
-        if (polymer.polymerCount > 0)
+        if (polymer.monomerCount > 0)
           polymer.setMad(mad, bsSelected);
       }
     }
@@ -112,7 +112,7 @@ abstract class Mps extends Shape {
     void setColix(byte palette, short colix, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         Mpspolymer polymer = mpspolymers[i];
-        if (polymer.polymerCount > 0)
+        if (polymer.monomerCount > 0)
           polymer.setColix(palette, colix, bsSelected);
       }
     }
@@ -133,8 +133,8 @@ abstract class Mps extends Shape {
     short madTurnRandom;
     short madDnaRna;
 
-    int polymerCount;
-    Group[] polymerGroups;
+    int monomerCount;
+    Monomer[] monomers;
     short[] colixes;
     short[] mads;
     
@@ -149,11 +149,11 @@ abstract class Mps extends Shape {
       this.madTurnRandom = (short)madTurnRandom;
       this.madDnaRna = (short)madDnaRna;
 
-      polymerCount = polymer == null ? 0 : polymer.getCount();
-      if (polymerCount > 0) {
-        colixes = new short[polymerCount];
-        mads = new short[polymerCount + 1];
-        polymerGroups = polymer.getGroups();
+      monomerCount = polymer == null ? 0 : polymer.getCount();
+      if (monomerCount > 0) {
+        colixes = new short[monomerCount];
+        mads = new short[monomerCount + 1];
+        monomers = polymer.getMonomers();
 
         leadMidpoints = polymer.getLeadMidpoints();
         wingVectors = polymer.getWingVectors();
@@ -171,7 +171,7 @@ abstract class Mps extends Shape {
         }
         // fall into;
       case -2: // trace structure
-        switch (polymerGroups[groupIndex].getProteinStructureType()) {
+        switch (monomers[groupIndex].getProteinStructureType()) {
         case JmolConstants.PROTEIN_STRUCTURE_SHEET:
         case JmolConstants.PROTEIN_STRUCTURE_HELIX:
           return madHelixSheet;
@@ -185,7 +185,7 @@ abstract class Mps extends Shape {
         {
           if (! hasTemperatureRange)
             calcTemperatureRange();
-          Atom atom = polymerGroups[groupIndex].getLeadAtom();
+          Atom atom = monomers[groupIndex].getLeadAtom();
           int bfactor100 = atom.getBfactor100(); // scaled by 1000
           int scaled = bfactor100 - temperatureMin;
           if (range == 0)
@@ -197,7 +197,7 @@ abstract class Mps extends Shape {
         }
       case -4: // trace displacement
         {
-          Atom atom = polymerGroups[groupIndex].getLeadAtom();
+          Atom atom = monomers[groupIndex].getLeadAtom();
           return // double it ... we are returning a diameter
             (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
         }
@@ -214,10 +214,10 @@ abstract class Mps extends Shape {
 
     void calcTemperatureRange() {
       temperatureMin = temperatureMax =
-        polymerGroups[0].getLeadAtom().getBfactor100();
-      for (int i = polymerCount; --i > 0; ) {
+        monomers[0].getLeadAtom().getBfactor100();
+      for (int i = monomerCount; --i > 0; ) {
         int temperature =
-          polymerGroups[i].getLeadAtom().getBfactor100();
+          monomers[i].getLeadAtom().getBfactor100();
         if (temperature < temperatureMin)
           temperatureMin = temperature;
         else if (temperature > temperatureMax)
@@ -231,17 +231,17 @@ abstract class Mps extends Shape {
 
     void setMad(short mad, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
-      for (int i = polymerCount; --i >= 0; ) {
+      for (int i = monomerCount; --i >= 0; ) {
         if (bsSelected.get(atomIndices[i]))
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
       }
-      if (polymerCount > 1)
-        mads[polymerCount] = mads[polymerCount - 1];
+      if (monomerCount > 1)
+        mads[monomerCount] = mads[monomerCount - 1];
     }
 
     void setColix(byte palette, short colix, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
-      for (int i = polymerCount; --i >= 0; ) {
+      for (int i = monomerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex))
           colixes[i] =

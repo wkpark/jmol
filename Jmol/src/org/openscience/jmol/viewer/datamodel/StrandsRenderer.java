@@ -71,8 +71,8 @@ class StrandsRenderer extends MpsRenderer {
     
     if (schain.wingVectors != null) {
       isNucleotidePolymer = schain.polymer instanceof NucleotidePolymer;
-      render1Chain(schain.polymerCount,
-                   schain.polymerGroups,
+      render1Chain(schain.monomerCount,
+                   schain.monomers,
                    schain.leadMidpoints,
                    schain.wingVectors,
                    schain.mads,
@@ -81,8 +81,8 @@ class StrandsRenderer extends MpsRenderer {
   }
 
 
-  void render1Chain(int polymerCount,
-                    Group[] groups, Point3f[] centers,
+  void render1Chain(int monomerCount,
+                    Monomer[] monomers, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     if (vectors == null)
       return;
@@ -90,36 +90,36 @@ class StrandsRenderer extends MpsRenderer {
     for (int i = strandCount >> 1; --i >= 0; ) {
       float f = (i * strandSeparation) + baseOffset;
       screens = calcScreens(centers, vectors, mads, f);
-      render1Strand(polymerCount, groups, mads, colixes, screens);
+      render1Strand(monomerCount, monomers, mads, colixes, screens);
       viewer.freeTempScreens(screens);
       screens = calcScreens(centers, vectors, mads, -f);
-      render1Strand(polymerCount, groups, mads, colixes, screens);
+      render1Strand(monomerCount, monomers, mads, colixes, screens);
       viewer.freeTempScreens(screens);
     }
     if ((strandCount & 1) != 0) {
       screens = calcScreens(centers, vectors, mads, 0f);
-      render1Strand(polymerCount, groups, mads, colixes, screens);
+      render1Strand(monomerCount, monomers, mads, colixes, screens);
       viewer.freeTempScreens(screens);
     }
   }
 
-  void render1Strand(int polymerCount, Group[] groups, short[] mads,
+  void render1Strand(int monomerCount, Monomer[] monomers, short[] mads,
                      short[] colixes, Point3i[] screens) {
-    for (int i = polymerCount; --i >= 0; )
+    for (int i = monomerCount; --i >= 0; )
       if (mads[i] > 0)
-        render1StrandSegment(polymerCount,
-                             groups[i], colixes[i], mads, screens, i);
+        render1StrandSegment(monomerCount,
+                             monomers[i], colixes[i], mads, screens, i);
   }
 
 
-  void render1StrandSegment(int polymerCount, Group group, short colix,
+  void render1StrandSegment(int monomerCount, Monomer monomer, short colix,
                             short[] mads, Point3i[] screens, int i) {
-    int iLast = polymerCount;
+    int iLast = monomerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
-      colix = group.getLeadAtom().colixAtom;
+      colix = monomer.getLeadAtom().colixAtom;
     g3d.drawHermite(colix, isNucleotidePolymer ? 4 : 7,
                     screens[iPrev], screens[i],
                     screens[iNext], screens[iNext2]);

@@ -35,17 +35,17 @@ import java.util.BitSet;
 abstract class Polymer {
 
   Model model;
-  Group[] groups;
+  Monomer[] monomers;
   int count;
 
   private int[] atomIndices;
 
-  Polymer(Model model, Group[] groups) {
+  Polymer(Model model, Monomer[] monomers) {
     this.model = model;
-    this.groups = groups;
-    this.count = groups.length;
+    this.monomers = monomers;
+    this.count = monomers.length;
     for (int i = count; --i >= 0; )
-      groups[i].setPolymer(this);
+      monomers[i].setPolymer(this);
   }
   
   // these arrays will be one longer than the polymerCount
@@ -57,33 +57,36 @@ abstract class Polymer {
 
   static Polymer allocatePolymer(Model model, Chain chain) {
     //    System.out.println("allocatePolymer()");
-    Group[] polymerGroups;
-    polymerGroups = getAminoGroups(chain);
-    if (polymerGroups != null) {
+    Monomer[] monomers;
+    monomers = getAminoMonomers(chain);
+    if (monomers != null) {
       //      System.out.println("an AminoPolymer");
-      return new AminoPolymer(model, polymerGroups);
+      return new AminoPolymer(model, monomers);
     }
-    polymerGroups = getAlphaCarbonGroups(chain);
-    if (polymerGroups != null) {
+    monomers = getAlphaCarbonMonomers(chain);
+    if (monomers != null) {
       //      System.out.println("an AlphaCarbonPolymer");
-      return new AlphaCarbonPolymer(model, polymerGroups);
+      return new AlphaCarbonPolymer(model, monomers);
     }
-    polymerGroups = getNucleotideGroups(chain);
-    if (polymerGroups != null) {
+    monomers = getNucleotideMonomers(chain);
+    if (monomers != null) {
       //      System.out.println("a NucleotidePolymer");
-      return new NucleotidePolymer(model, polymerGroups);
+      return new NucleotidePolymer(model, monomers);
     }
     //    System.out.println("no polymer");
     return null;
   }
 
-  static Group[] getAminoGroups(Chain chain) {
+  static Monomer[] getAminoMonomers(Chain chain) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     int count = 0;
     for (int i = 0; i < chain.groupCount; ++i ) {
       Group group = chainGroups[i];
-      if (! group.hasFullMainchain())
+      if (! (group instanceof Monomer))
+        continue;
+      Monomer monomer = (Monomer)group;
+      if (! monomer.hasFullMainchain())
         continue;
       ++count;
       if (firstNonMainchain == i)
@@ -91,24 +94,30 @@ abstract class Polymer {
     }
     if (count < 2)
       return null;
-    Group[] groups = new Group[count];
+    Monomer[] monomers = new Monomer[count];
     for (int i = 0, j = 0; i < chain.groupCount; ++i) {
       Group group = chainGroups[i];
-      if (! group.hasFullMainchain())
+      if (! (group instanceof Monomer))
         continue;
-      groups[j++] = group;
+      Monomer monomer = (Monomer)group;
+      if (! monomer.hasFullMainchain())
+        continue;
+      monomers[j++] = monomer;
     }
     //    System.out.println("is an AminoPolymer");
-    return groups;
+    return monomers;
   }
 
-  static Group[] getAlphaCarbonGroups(Chain chain) {
+  static Monomer[] getAlphaCarbonMonomers(Chain chain) {
     Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     int count = 0;
     for (int i = 0; i < chain.groupCount; ++i ) {
       Group group = chainGroups[i];
-      if (! group.hasAlphaCarbon())
+      if (! (group instanceof Monomer))
+        continue;
+      Monomer monomer = (Monomer)group;
+      if (! monomer.hasAlphaCarbon())
         continue;
       ++count;
       if (firstNonMainchain == i)
@@ -116,60 +125,69 @@ abstract class Polymer {
     }
     if (count < 2)
       return null;
-    Group[] groups = new Group[count];
+    Monomer[] monomers = new Monomer[count];
     for (int i = 0, j = 0; i < chain.groupCount; ++i) {
       Group group = chainGroups[i];
-      if (! group.hasAlphaCarbon())
+      if (! (group instanceof Monomer))
         continue;
-      groups[j++] = group;
+      Monomer monomer = (Monomer)group;
+      if (! monomer.hasAlphaCarbon())
+        continue;
+      monomers[j++] = monomer;
     }
-    System.out.println("is an AlphaCarbonPolymer");
-    return groups;
+    //    System.out.println("is an AminoPolymer");
+    return monomers;
   }
 
-  static Group[] getNucleotideGroups(Chain chain) {
+  static Monomer[] getNucleotideMonomers(Chain chain) {
     Group[] chainGroups = chain.groups;
     int firstNonNucleotide = 0;
     int count = 0;
     for (int i = 0; i < chain.groupCount; ++i ) {
       Group group = chainGroups[i];
-      if (! group.hasNucleotidePhosphorus())
+      if (! (group instanceof Monomer))
+        continue;
+      Monomer monomer = (Monomer)group;
+      if (! monomer.hasNucleotidePhosphorus())
         continue;
       ++count;
     }
     if (count < 2)
       return null;
-    Group[] groups = new Group[count];
+    Monomer[] monomers = new Monomer[count];
     for (int i = 0, j = 0; i < chain.groupCount; ++i) {
       Group group = chainGroups[i];
-      if (! group.hasNucleotidePhosphorus())
+      if (! (group instanceof Monomer))
         continue;
-      groups[j++] = group;
+      Monomer monomer = (Monomer)group;
+      if (! monomer.hasNucleotidePhosphorus())
+        continue;
+      monomers[j++] = monomer;
     }
-    System.out.println("is a NucleotidePolymer");
-    return groups;
+    //    System.out.println("is a NucleotidePolymer");
+    return monomers;
   }
   
   ////////////////////////////////////////////////////////////////
   // for now, a polymer only comes from a single chain
   ////////////////////////////////////////////////////////////////
   char getChainID() {
-    return groups[0].getChainID();
+    return monomers[0].getChainID();
   }
 
   int getCount() {
     return count;
   }
   
-  Group[] getGroups() {
-    return groups;
+  Monomer[] getMonomers() {
+    return monomers;
   }
   
   int[] getLeadAtomIndices() {
     if (atomIndices == null) {
       atomIndices = new int[count];
       for (int i = count; --i >= 0; )
-        atomIndices[i] = groups[i].getLeadAtomIndex();
+        atomIndices[i] = monomers[i].getLeadAtomIndex();
     }
     return atomIndices;
   }
@@ -177,7 +195,7 @@ abstract class Polymer {
   int getIndex(int seqcode) {
     int i;
     for (i = count; --i >= 0; )
-      if (groups[i].seqcode == seqcode)
+      if (monomers[i].seqcode == seqcode)
         break;
     return i;
   }

@@ -38,32 +38,32 @@ class TraceRenderer extends MpsRenderer {
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     Trace.Tchain tchain = (Trace.Tchain)mpspolymer;
     isNucleotidePolymer = tchain.polymer instanceof NucleotidePolymer;
-    polymerCount = tchain.polymerCount;
-    if (polymerCount == 0)
+    monomerCount = tchain.monomerCount;
+    if (monomerCount == 0)
       return;
-    polymerGroups = tchain.polymerGroups;
+    monomers = tchain.monomers;
     leadMidpoints = tchain.leadMidpoints;
-    leadMidpointScreens = calcScreenLeadMidpoints(polymerCount, leadMidpoints);
+    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
     render1Chain(tchain.mads,
                  tchain.colixes);
     viewer.freeTempScreens(leadMidpointScreens);
   }
 
-  int polymerCount;
+  int monomerCount;
 
-  Group[] polymerGroups;
+  Monomer[] monomers;
   Point3i[] leadMidpointScreens;
   Point3f[] leadMidpoints;
 
   void render1Chain(short[] mads, short[] colixes) {
-    for (int i = polymerCount; --i >= 0; ) {
+    for (int i = monomerCount; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
       short colix = colixes[i];
       if (colix == 0)
-        colix = polymerGroups[i].getLeadAtom().colixAtom;
+        colix = monomers[i].getLeadAtom().colixAtom;
       renderRopeSegment(colix, mads, i,
-                        polymerCount, polymerGroups,
+                        monomerCount, monomers,
                         leadMidpointScreens, null);
     }
   }

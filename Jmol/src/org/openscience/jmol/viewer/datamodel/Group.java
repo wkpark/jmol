@@ -31,7 +31,7 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
-final public class Group {
+public class Group {
 
   Chain chain;
   int seqcode;
@@ -40,78 +40,25 @@ final public class Group {
   int lastAtomIndex;
 
 
-  Polymer polymer;
-  ProteinStructure proteinstructure;
-
-  // FIXME - mth 2004 05 17
-  // these two arrays of indices need to be merged
-  // one is for amino acid residues
-  // the other is for nucleotide bases
-  int[] mainchainIndices;
-
-  int[] nucleotideIndices;
-  int atomIndexNucleotidePhosphorus = -1;
-  int atomIndexNucleotideWing = -1;
-  int atomIndexRnaO2Prime = -1;
-  int nucleicCount = 0;
-
-
-  short aminoBackboneHbondOffset = 0;
-
-  int distinguishingBits;
-
-
-  Group(Chain chain, int sequenceNumber, char insertionCode, String group3) {
+  Group(Chain chain, String group3, int sequenceNumber, char insertionCode,
+        int firstAtomIndex, int lastAtomIndex) {
     this.chain = chain;
     this.seqcode = getSeqcode(sequenceNumber, insertionCode);
     if (group3 == null)
       group3 = "";
     this.groupID = getGroupID(group3);
+    this.firstAtomIndex = firstAtomIndex;
+    this.lastAtomIndex = lastAtomIndex;
   }
 
   void freeze() {
-    switch (distinguishingBits) {
-    case JmolConstants.ATOMID_PROTEIN_MASK:
-    case JmolConstants.ATOMID_NUCLEIC_MASK: // DNA
-    case JmolConstants.ATOMID_RNA_MASK:
-      return;
-    default:
-      demoteImposterGroup();
-      //      System.out.println("demoting imposter group:" + this);
-    }
   }
 
-  void demoteImposterGroup() {
-    Atom[] atoms = chain.frame.atoms;
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
-      atoms[i].specialAtomID = -1;
-    distinguishingBits = 0;
-  }
-
-  void setPolymer(Polymer polymer) {
-    this.polymer = polymer;
-  }
-
-  void setStructure(ProteinStructure proteinstructure) {
-    this.proteinstructure = proteinstructure;
-  }
-
-  byte getProteinStructureType() {
-    if (proteinstructure != null)
-      return proteinstructure.type;
-    if (hasNucleotidePhosphorus()) {
-      if (atomIndexRnaO2Prime != -1)
-        return JmolConstants.PROTEIN_STRUCTURE_RNA;
-      return JmolConstants.PROTEIN_STRUCTURE_DNA;
-    }
-    return 0;
-  }
-  
-  public boolean isGroup3(String group3) {
+  public final boolean isGroup3(String group3) {
     return group3Names[groupID].equalsIgnoreCase(group3);
   }
 
-  String getGroup3() {
+  final String getGroup3() {
     return group3Names[groupID];
   }
 
@@ -119,19 +66,19 @@ final public class Group {
     return group3Names[groupID];
   }
 
-  int getSeqcode() {
+  final int getSeqcode() {
     return seqcode;
   }
 
-  String getSeqcodeString() {
+  final String getSeqcodeString() {
     return getSeqcodeString(seqcode);
   }
 
-  short getGroupID() {
+  final short getGroupID() {
     return groupID;
   }
 
-  boolean isGroup3Match(String strWildcard) {
+  final boolean isGroup3Match(String strWildcard) {
     int cchWildcard = strWildcard.length();
     int ichWildcard = 0;
     String group3 = group3Names[groupID];
@@ -158,23 +105,22 @@ final public class Group {
     return true;
   }
 
-  char getChainID() {
+  final char getChainID() {
     return chain.chainID;
   }
 
-  boolean isHelix() {
-    return proteinstructure != null &&
-      proteinstructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
+  byte getProteinStructureType() {
+    return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }
 
-  boolean isHelixOrSheet() {
-    return proteinstructure != null &&
-      proteinstructure.type >= JmolConstants.PROTEIN_STRUCTURE_SHEET;
-  }
+  public boolean isProtein() { return false; }
+  public boolean isNucleic() { return false; }
+  public boolean isDna() { return false; }
+  public boolean isRna() { return false; }
 
-  /****************************************************************
-   * static stuff for group ids
-   ****************************************************************/
+  ////////////////////////////////////////////////////////////////
+  // static stuff for group ids
+  ////////////////////////////////////////////////////////////////
 
   private static Hashtable htGroup = new Hashtable();
 
@@ -211,141 +157,9 @@ final public class Group {
     return -1;
   }
 
-  /*
-  void assignAtom(Atom atom) {
-    PdbAtom pdbAtom = new PdbAtom(this, atom.atomIndex, pdbRecord);
-    if (pdbAtom.atomID < JmolConstants.ATOMID_MAINCHAIN_MAX) {
-      if (! registerMainchainAtomIndex(pdbAtom.atomID, atom.atomIndex))
-        pdbAtom.atomID += JmolConstants.ATOMID_MAINCHAIN_IMPOSTERS;
-    }
-    return pdbAtom;
-  }
-  */
-
-  void registerAtom(Atom atom) {
-    int atomIndex = atom.atomIndex;
-    if (firstAtomIndex == -1)
-      firstAtomIndex = lastAtomIndex = atomIndex;
-    else if (++lastAtomIndex != atomIndex) {
-      System.out.println("Group atom registration out of sequence");
-      throw new NullPointerException();
-    }
-    byte specialAtomID = atom.getSpecialAtomID();
-    if (specialAtomID <= 0)
-      return;
-    if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
-      distinguishingBits |= 1 << specialAtomID;
-    if (specialAtomID < JmolConstants.ATOMID_DEFINING_PROTEIN_MAX) {
-      if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
-        atom.demoteSpecialAtomImposter();
-      return;
-    }
-    /*
-    if (specialAtomID < JmolConstants.ATOMID_DEFINING_NUCLEOTIDE_MAX) {
-      registerNucleicAtomIndex(specialAtomID, atom.atomIndex);
-      return;
-    }
-    */
-  }
-
-  boolean registerMainchainAtomIndex(short atomid, int atomIndex) {
-    if (mainchainIndices == null) {
-      mainchainIndices = new int[4];
-      for (int i = 4; --i >= 0; )
-        mainchainIndices[i] = -1;
-    }
-    if (mainchainIndices[atomid - 1] != -1) {
-      // my residue already has a mainchain atom with this atomid
-      // I must be an imposter
-      return false;
-    }
-    mainchainIndices[atomid - 1] = atomIndex;
-    return true;
-  }
-
-  Atom getLeadAtom() {
-    if (hasNucleotidePhosphorus())
-      return getNucleotidePhosphorusAtom();
-    return getAlphaCarbonAtom();
-    
-  }
-
-  int getLeadAtomIndex() {
-    if (hasNucleotidePhosphorus())
-      return atomIndexNucleotidePhosphorus;
-    return getAlphaCarbonIndex();
-  }
-
-  Atom getWingAtom() {
-    if (hasNucleotidePhosphorus())
-      return getNucleotideWingAtom();
-    return getCarbonylOxygenAtom();
-  }
-
-  int getWingAtomIndex() {
-    if (hasNucleotidePhosphorus())
-      return atomIndexNucleotideWing;
-    return getAlphaCarbonIndex();
-  }
-
-  int getAlphaCarbonIndex() {
-    if (mainchainIndices == null)
-      return -1;
-    return mainchainIndices[1];
-  }
-
-  int getCarbonylOxygenIndex() {
-    if (mainchainIndices == null)
-      return -1;
-    return mainchainIndices[3];
-  }
-
-  Atom getMainchainAtom(int i) {
-    int j;
-    if (mainchainIndices == null || (j = mainchainIndices[i]) == -1) {
-      System.out.println("I am a mainchain atom returning null because " +
-                         " mainchainIndices==null? " +
-                         (mainchainIndices == null));
-      System.out.println("chain '" + chain.chainID + "'");
-      System.out.println("group3=" + getGroup3());
-      System.out.println("sequence=" + getSeqcodeString());
-      return null;
-    }
-    return getAtomIndex(j);
-  }
-
-  Atom getNitrogenAtom() {
-    return getMainchainAtom(0);
-  }
-
-  Atom getAlphaCarbonAtom() {
-    return getMainchainAtom(1);
-  }
-
-  Atom getCarbonylCarbonAtom() {
-    return getMainchainAtom(2);
-  }
-
-  Atom getCarbonylOxygenAtom() {
-    return getMainchainAtom(3);
-  }
-
-  Point3f getAlphaCarbonPoint() {
-    return getMainchainAtom(1).point3f;
-  }
-
-  boolean hasAlphaCarbon() {
-    return (mainchainIndices != null) && (mainchainIndices[1] != -1);
-  }
-
-  boolean hasFullMainchain() {
-    if (mainchainIndices == null)
-      return false;
-    for (int i = 4; --i >= 0; )
-      if (mainchainIndices[i] == -1)
-        return false;
-    return true;
-  }
+  ////////////////////////////////////////////////////////////////
+  // seqcode stuff
+  ////////////////////////////////////////////////////////////////
 
   public static int getSeqcode(int sequenceNumber, char insertionCode) {
     if (sequenceNumber == Integer.MIN_VALUE)
@@ -365,175 +179,13 @@ final public class Group {
       : "" + (seqcode >> 8) + '^' + (char)(seqcode & 0xFF);
   }
 
-  boolean isProline() {
-    // this is the index into JmolConstants.predefinedGroup3Names
-    return groupID == JmolConstants.GROUPID_PROLINE;
+  public final void selectAtoms(BitSet bs) {
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+      bs.set(i);
   }
-
-  public void selectAtoms(BitSet bs) {
-    Frame frame = chain.model.mmset.frame;
-    Atom[] atoms = chain.frame.getAtoms();
-    for (int i = chain.frame.getAtomCount(); --i >= 0; ) {
-      Atom atom = atoms[i];
-      if (atom.getGroup() == this)
-        bs.set(i);
-    }
-  }
-
-  /*
-  void registerNucleicAtomIndex(short atomid, int atomIndex) {
-    if (atomid == JmolConstants.ATOMID_NUCLEOTIDE_PHOSPHORUS) {
-      if (atomIndexNucleotidePhosphorus < 0) {
-        ++nucleicCount;
-        atomIndexNucleotidePhosphorus = atomIndex;
-      }
-      return;
-    }
-    if (atomid == JmolConstants.ATOMID_NUCLEOTIDE_WING) {
-      if (atomIndexNucleotideWing < 0) {
-        ++nucleicCount;
-        atomIndexNucleotideWing = atomIndex;
-      }
-      return;
-    }
-    if (atomid == JmolConstants.ATOMID_RNA_O2PRIME)
-      atomIndexRnaO2Prime = atomIndex;
-    if (atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MIN &&
-        atomid < JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
-      if (nucleotideIndices == null)
-        allocateNucleotideIndices();
-      nucleotideIndices[atomid -
-                        JmolConstants.ATOMID_NUCLEOTIDE_MIN] =
-        atomIndex;
-    }
-    ++nucleicCount;
-  }
-
-
-  void allocateNucleotideIndices() {
-    nucleotideIndices =
-      new int[JmolConstants.ATOMID_NUCLEOTIDE_MAX -
-              JmolConstants.ATOMID_NUCLEOTIDE_MIN];
-    for (int i = nucleotideIndices.length; --i >= 0; )
-      nucleotideIndices[i] = -1;
-  }
-  */
-
-  Atom getNucleotidePhosphorusAtom() {
-    return getAtomIndex(atomIndexNucleotidePhosphorus);
-  }
-
-  Atom getNucleotideWingAtom() {
-    if (atomIndexNucleotidePhosphorus < 0)
-      return null;
-    return getAtomIndex(atomIndexNucleotideWing);
-  }
-
-  boolean hasNucleotidePhosphorus() {
-    return (atomIndexNucleotidePhosphorus >= 0 &&
-            atomIndexNucleotideWing >= 0 &&
-            nucleicCount > 5);
-  }
-
-  Atom getNucleotideAtomID(int atomid) {
-    return null;
-    /*
-    if (atomid < JmolConstants.ATOMID_NUCLEOTIDE_MIN ||
-        atomid >= JmolConstants.ATOMID_NUCLEOTIDE_MAX) {
-      System.out.println("getNucleotideAtomID out of bounds");
-      return null;
-    }
-    int index = atomid - JmolConstants.ATOMID_NUCLEOTIDE_MIN;
-    Atom atom = getAtomIndex(nucleotideIndices[index]);
-    if (atom == null)
-      System.out.println("getNucleotideAtomID(" + atomid + ") -> null ?" +
-                         " nucleotideIndices[" + index + "]=" +
-                         nucleotideIndices[index]);
-    return atom;
-    */
-  }
-
-  Atom getAtomIndex(int atomIndex) {
-    return (atomIndex < 0
-            ? null
-            : chain.frame.getAtomAt(atomIndex));
-  }
-
-  Atom getPurineN1() {
-    Atom n1 = ((groupID >= JmolConstants.GROUPID_PURINE_MIN &&
-                groupID <= JmolConstants.GROUPID_PURINE_LAST)
-               ? getNucleotideAtomID(JmolConstants.ATOMID_N1)
-               : null);
-    return n1;
-  }
-
-  Atom getPyrimidineN3() {
-    return ((groupID >= JmolConstants.GROUPID_PYRIMIDINE_MIN &&
-             groupID <= JmolConstants.GROUPID_PYRIMIDINE_LAST)
-            ? getNucleotideAtomID(JmolConstants.ATOMID_N3)
-            : null);
-  }
-            
-  boolean isGuanine() {
-    //    "@g _g=25,_g=26,_g>=39 & _g<=45,_g>=54 & _g<=56",
-    return (groupID == JmolConstants.GROUPID_GUANINE ||
-            groupID == JmolConstants.GROUPID_PLUS_GUANINE ||
-            (groupID >= JmolConstants.GROUPID_GUANINE_1_MIN &&
-             groupID <= JmolConstants.GROUPID_GUANINE_1_LAST) ||
-            (groupID >= JmolConstants.GROUPID_GUANINE_2_MIN &&
-             groupID <= JmolConstants.GROUPID_GUANINE_2_LAST));
-  }
-
-  void dumpNucleotideIndices() {
-    /*
-    System.out.println("dumpNucleotideIndices(" + this + "," + groupID + ")");
-    if (nucleotideIndices == null) {
-      System.out.println("  nucleotideIndices=null");
-    } else {
-      System.out.println("  ");
-      for (int i = 0; i < nucleotideIndices.length; ++i)
-        System.out.print(
-                         JmolConstants.specialAtomNames[JmolConstants.ATOMID_NUCLEOTIDE_MIN + i] + ":" + nucleotideIndices[i] + " ");
-      System.out.println("\n");
-    }
-    */
-  }
-
+  
   public String toString() {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }
 
-  ////////////////////////////////////////////////////////////////
-
-  void setAminoBackboneHbondOffset(int aminoBackboneHbondOffset) {
-    this.aminoBackboneHbondOffset = (short)aminoBackboneHbondOffset;
-  }
-  
-  int getAminoBackboneHbondOffset() {
-    return aminoBackboneHbondOffset;
-  }
-
-  ////////////////////////////////////////////////////////////////
-
-  public boolean isProtein() {
-    return ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
-            JmolConstants.ATOMID_PROTEIN_MASK);
-  }
-
-  public boolean isNucleic() { 
-   return ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
-            JmolConstants.ATOMID_NUCLEIC_MASK);
-  }
-
-  public boolean isDna() {
-    // this is a little tricky ... apply the RNA mask
-    // but then check to make sure that the O2 bit is turned off
-    return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
-            JmolConstants.ATOMID_NUCLEIC_MASK);
-  }
-
-  public boolean isRna() {
-    return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
-            JmolConstants.ATOMID_RNA_MASK);
-  }
 }

@@ -34,49 +34,49 @@ import java.util.BitSet;
 
 public class NucleotidePolymer extends Polymer {
 
-  NucleotidePolymer(Model model, Group[] groups) {
-    super(model, groups);
+  NucleotidePolymer(Model model, Monomer[] monomers) {
+    super(model, monomers);
   }
 
-  public Atom getNucleotidePhosphorusAtom(int groupIndex) {
-    return groups[groupIndex].getNucleotidePhosphorusAtom();
+  public Atom getNucleotidePhosphorusAtom(int monomerIndex) {
+    return monomers[monomerIndex].getNucleotidePhosphorusAtom();
   }
 
-  public Atom getLeadAtom(int groupIndex) {
-    return getNucleotidePhosphorusAtom(groupIndex);
+  public Atom getLeadAtom(int monomerIndex) {
+    return getNucleotidePhosphorusAtom(monomerIndex);
   }
 
-  public Point3f getLeadPoint(int groupIndex) {
-    return getLeadAtom(groupIndex).point3f;
+  public Point3f getLeadPoint(int monomerIndex) {
+    return getLeadAtom(monomerIndex).point3f;
   }
 
   boolean hasWingPoints() { return true; }
 
   Point3f getWingPoint(int polymerIndex) {
-    return groups[polymerIndex].getWingAtom().point3f;
+    return monomers[polymerIndex].getWingAtom().point3f;
   }
   
-  public void getStructureMidPoint(int groupIndex, Point3f midPoint) {
-    if (groupIndex < count &&
-        groups[groupIndex].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex].proteinstructure.
-                   getStructureMidPoint(groupIndex));
+  public void getStructureMidPoint(int monomerIndex, Point3f midPoint) {
+    if (monomerIndex < count &&
+        monomers[monomerIndex].isHelixOrSheet()) {
+      midPoint.set(monomers[monomerIndex].proteinstructure.
+                   getStructureMidPoint(monomerIndex));
       /*
-        System.out.println("" + groupIndex} + "isHelixOrSheet" +
+        System.out.println("" + monomerIndex} + "isHelixOrSheet" +
         midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
-    } else if (groupIndex > 0 &&
-               groups[groupIndex - 1].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex - 1].proteinstructure.
-                   getStructureMidPoint(groupIndex));
+    } else if (monomerIndex > 0 &&
+               monomers[monomerIndex - 1].isHelixOrSheet()) {
+      midPoint.set(monomers[monomerIndex - 1].proteinstructure.
+                   getStructureMidPoint(monomerIndex));
       /*
-        System.out.println("" + groupIndex + "previous isHelixOrSheet" +
+        System.out.println("" + monomerIndex + "previous isHelixOrSheet" +
         midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
     } else {
-      getLeadMidPoint(groupIndex, midPoint);
+      getLeadMidPoint(monomerIndex, midPoint);
       /*
-        System.out.println("" + groupIndex + "the alpha carbon midpoint" +
+        System.out.println("" + monomerIndex + "the alpha carbon midpoint" +
         midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
     }
@@ -103,14 +103,14 @@ public class NucleotidePolymer extends Polymer {
 
   void lookForHbonds(NucleotidePolymer other) {
     for (int i = count; --i >= 0; ) {
-      Group myNucleotide = groups[i];
+      Monomer myNucleotide = monomers[i];
       Atom myN1 = myNucleotide.getPurineN1();
       if (myN1 != null) {
         Atom bestN3 = null;
         float minDist2 = 5*5;
-        Group bestNucleotide = null;
+        Monomer bestNucleotide = null;
         for (int j = other.count; --j >= 0; ) {
-          Group otherNucleotide = other.groups[j];
+          Monomer otherNucleotide = other.monomers[j];
           Atom otherN3 = otherNucleotide.getPyrimidineN3();
           if (otherN3 != null) {
             float dist2 = myN1.point3f.distanceSquared(otherN3.point3f);

@@ -44,7 +44,7 @@ class Backbone extends Mps {
       short mad = (short)size;
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
       int[] atomIndices = polymer.getLeadAtomIndices();
-      for (int i = polymerCount - 1; --i >= 0; ) {
+      for (int i = monomerCount - 1; --i >= 0; ) {
         if ((bsSelected.get(atomIndices[i]) &&
              bsSelected.get(atomIndices[i + 1]))
             ||

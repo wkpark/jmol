@@ -30,11 +30,11 @@ import javax.vecmath.Vector3f;
 
 class Helix extends ProteinStructure {
 
-  Helix(AlphaCarbonPolymer acpolymer, int polymerIndex, int polymerCount) {
+  Helix(AlphaCarbonPolymer acpolymer, int polymerIndex, int monomerCount) {
     super(acpolymer, JmolConstants.PROTEIN_STRUCTURE_HELIX,
-          polymerIndex, polymerCount);
+          polymerIndex, monomerCount);
     //    System.out.println("new Helix('" + polymer.chain.chainID + "'," +
-    //                       polymerIndex + "," + polymerCount + ")");
+    //                       polymerIndex + "," + monomerCount + ")");
   }
 
   // copied from sheet -- not correct
@@ -50,9 +50,9 @@ class Helix extends ProteinStructure {
 
     axisB = new Point3f();
     if (upperNeighborIsHelixOrSheet())
-      acpolymer.getLeadMidPoint(polymerIndex + polymerCount, axisB);
+      acpolymer.getLeadMidPoint(polymerIndex + monomerCount, axisB);
     else
-      acpolymer.getLeadMidPoint(polymerIndex + polymerCount - 1, axisB);
+      acpolymer.getLeadMidPoint(polymerIndex + monomerCount - 1, axisB);
 
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
@@ -62,7 +62,7 @@ class Helix extends ProteinStructure {
     acpolymer.getLeadMidPoint(polymerIndex, tempA);
     projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    acpolymer.getLeadMidPoint(polymerIndex + polymerCount, tempB);
+    acpolymer.getLeadMidPoint(polymerIndex + monomerCount, tempB);
     projectOntoAxis(tempB);
     axisA = tempA;
     axisB = tempB;
@@ -83,11 +83,11 @@ class Helix extends ProteinStructure {
 
   void calcCenter() {
     if (center == null) {
-      int i = polymerIndex + polymerCount - 1;
+      int i = polymerIndex + monomerCount - 1;
       center = new Point3f(acpolymer.getResidueAlphaCarbonPoint(i));
       while (--i >= polymerIndex)
         center.add(acpolymer.getResidueAlphaCarbonPoint(i));
-      center.scale(1f/polymerCount);
+      center.scale(1f/monomerCount);
       //      System.out.println("structure center is at :" + center);
     }
   }

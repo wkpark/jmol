@@ -166,11 +166,8 @@ class SticksRenderer extends ShapeRenderer {
   }
     
   Atom getBackboneAtom(Atom atom) {
-    if (atom.group != null) {
-      Atom alpha = atom.group.getAlphaCarbonAtom();
-      if (alpha != null)
-        return alpha;
-    }
+    if (atom.group instanceof Monomer)
+      return ((Monomer)atom.group).getLeadAtom();
     return atom;
   }
 

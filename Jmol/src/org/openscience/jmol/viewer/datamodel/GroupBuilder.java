@@ -28,13 +28,14 @@ import org.openscience.jmol.viewer.*;
 
 final class GroupBuilder {
 
-  JmolViewer viewer;
+  final JmolViewer viewer;
+  final FrameBuilder frameBuilder;
 
   boolean hasPendingGroup;
-  Group currentGroup;
 
-  GroupBuilder(JmolViewer viewer) {
+  GroupBuilder(JmolViewer viewer, FrameBuilder frameBuilder) {
     this.viewer = viewer;
+    this.frameBuilder = frameBuilder;
   }
 
   void initializeBuild() {
@@ -43,32 +44,59 @@ final class GroupBuilder {
 
   void finalizeBuild() {
     hasPendingGroup = false;
-    currentGroup = null;
+    chain = null;
   }
 
-  void startBuildingGroup(Chain currentChain, String group3,
+  Chain chain;
+  String group3;
+  int groupSequenceNumber;
+  char groupInsertionCode;
+  int firstAtomIndex, lastAtomIndex;
+
+  void startBuildingGroup(Chain chain, String group3,
                           int groupSequenceNumber, char groupInsertionCode) {
     if (hasPendingGroup)
       throw new NullPointerException();
     hasPendingGroup = true;
-    currentGroup =
-      currentChain.allocateGroup(group3,
-                                 groupSequenceNumber, groupInsertionCode);
+    this.chain = chain;
+    this.group3 = group3;
+    this.groupSequenceNumber = groupSequenceNumber;
+    this.groupInsertionCode = groupInsertionCode;
+    firstAtomIndex = -1;
   }
 
 
   void registerAtom(Atom atom) {
     if (! hasPendingGroup)
       throw new NullPointerException();
-    atom.setGroup(currentGroup);
-    currentGroup.registerAtom(atom);
+    int atomIndex = atom.atomIndex;
+    if (firstAtomIndex < 0)
+      firstAtomIndex = lastAtomIndex = atomIndex;
+    else if (++lastAtomIndex != atomIndex) {
+      System.out.println("unexpected atom index while building group\n" +
+                         " expected:" + lastAtomIndex +
+                         " received:" + atomIndex);
+      throw new NullPointerException();
+    }
   }
 
 
 
   void finishBuildingGroup() {
-    if (hasPendingGroup) {
-      hasPendingGroup = false;
-    }
+    if (! hasPendingGroup)
+      return;
+    Group group = new Group(chain, group3,
+                            groupSequenceNumber, groupInsertionCode,
+                            firstAtomIndex, lastAtomIndex);
+    propogateGroup(group, firstAtomIndex, lastAtomIndex);
+    chain.addGroup(group);
+    hasPendingGroup = false;
+    chain = null;
+  }
+
+  void propogateGroup(Group group, int firstAtomIndex, int lastAtomIndex) {
+    Atom[] atoms = frameBuilder.atoms;
+    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
+      atoms[i].setGroup(group);
   }
 }

@@ -30,23 +30,23 @@ import javax.vecmath.Vector3f;
 class Sheet extends ProteinStructure {
 
   AminoPolymer aminopolymer;
-  Sheet(AminoPolymer aminopolymer, int polymerIndex, int polymerCount) {
+  Sheet(AminoPolymer aminopolymer, int polymerIndex, int monomerCount) {
     super(aminopolymer, JmolConstants.PROTEIN_STRUCTURE_SHEET,
-          polymerIndex, polymerCount);
+          polymerIndex, monomerCount);
     this.aminopolymer = aminopolymer;
   }
 
   void calcAxis() {
     if (axisA != null)
       return;
-    if (polymerCount == 2) {
+    if (monomerCount == 2) {
       axisA = aminopolymer.getResidueAlphaCarbonPoint(polymerIndex);
       axisB = aminopolymer.getResidueAlphaCarbonPoint(polymerIndex + 1);
     } else {
       axisA = new Point3f();
       aminopolymer.getLeadMidPoint(polymerIndex + 1, axisA);
       axisB = new Point3f();
-      aminopolymer.getLeadMidPoint(polymerIndex + polymerCount - 1, axisB);
+      aminopolymer.getLeadMidPoint(polymerIndex + monomerCount - 1, axisB);
     }
 
     axisUnitVector = new Vector3f();
@@ -58,7 +58,7 @@ class Sheet extends ProteinStructure {
     if (! lowerNeighborIsHelixOrSheet())
       projectOntoAxis(tempA);
     Point3f tempB = new Point3f();
-    aminopolymer.getLeadMidPoint(polymerIndex + polymerCount, tempB);
+    aminopolymer.getLeadMidPoint(polymerIndex + monomerCount, tempB);
     if (! upperNeighborIsHelixOrSheet())
       projectOntoAxis(tempB);
     axisA = tempA;
@@ -74,7 +74,7 @@ class Sheet extends ProteinStructure {
       Vector3f vectorCOSum = new Vector3f();
       vectorCOSum.sub(aminopolymer.getResiduePoint(polymerIndex, 3),
                       aminopolymer.getResiduePoint(polymerIndex, 2));
-      for (int i = polymerCount; --i > 0; ) {
+      for (int i = monomerCount; --i > 0; ) {
         vectorCO.sub(aminopolymer.getResiduePoint(polymerIndex + i, 3),
                      aminopolymer.getResiduePoint(polymerIndex + i, 2));
         if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)

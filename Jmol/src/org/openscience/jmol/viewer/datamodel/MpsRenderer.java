@@ -42,7 +42,7 @@ abstract class MpsRenderer extends ShapeRenderer {
         continue;
       for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0; ) {
         Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);
-        if (mpspolymer.polymerCount >= 2)
+        if (mpspolymer.monomerCount >= 2)
           renderMpspolymer(mpspolymer);
       }
     }
@@ -52,17 +52,17 @@ abstract class MpsRenderer extends ShapeRenderer {
 
   ////////////////////////////////////////////////////////////////
   // some utilities
-  final boolean[] calcIsSpecials(int polymerCount, Group[] polymerGroups) {
-    boolean[] isSpecials = viewer.allocTempBooleans(polymerCount + 1);
-    for (int i = polymerCount; --i >= 0; )
-      isSpecials[i] = polymerGroups[i].isHelixOrSheet();
-    isSpecials[polymerCount] = isSpecials[polymerCount - 1];
+  final boolean[] calcIsSpecials(int monomerCount, Monomer[] monomers) {
+    boolean[] isSpecials = viewer.allocTempBooleans(monomerCount + 1);
+    for (int i = monomerCount; --i >= 0; )
+      isSpecials[i] = monomers[i].isHelixOrSheet();
+    isSpecials[monomerCount] = isSpecials[monomerCount - 1];
     return isSpecials;
   }
 
 
-  final Point3i[] calcScreenLeadMidpoints(int polymerCount, Point3f[] leadMidpoints) {
-    int count = polymerCount + 1;
+  final Point3i[] calcScreenLeadMidpoints(int monomerCount, Point3f[] leadMidpoints) {
+    int count = monomerCount + 1;
     Point3i[] leadMidpointScreens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0; ) {
       viewer.transformPoint(leadMidpoints[i], leadMidpointScreens[i]);
@@ -72,11 +72,11 @@ abstract class MpsRenderer extends ShapeRenderer {
   }
 
   final void renderRopeSegment(short colix, short[] mads, int i,
-                               int polymerCount, Group[] polymerGroups,
+                               int monomerCount, Monomer[] monomers,
                                Point3i[] leadMidpointScreens, boolean[] isSpecials) {
     int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > polymerCount) iNext1 = polymerCount;
-    int iNext2 = i + 2; if (iNext2 > polymerCount) iNext2 = polymerCount;
+    int iNext1 = i + 1; if (iNext1 > monomerCount) iNext1 = monomerCount;
+    int iNext2 = i + 2; if (iNext2 > monomerCount) iNext2 = monomerCount;
     
     int madThis, madBeg, madEnd;
     madThis = madBeg = madEnd = mads[i];
@@ -89,7 +89,7 @@ abstract class MpsRenderer extends ShapeRenderer {
     int diameterBeg = viewer.scaleToScreen(leadMidpointScreens[i].z, madBeg);
     int diameterEnd = viewer.scaleToScreen(leadMidpointScreens[iNext1].z, madEnd);
     int diameterMid =
-      viewer.scaleToScreen(polymerGroups[i].getLeadAtom().getScreenZ(),
+      viewer.scaleToScreen(monomers[i].getLeadAtom().getScreenZ(),
                            madThis);
     g3d.fillHermite(colix, 4,
                     diameterBeg, diameterMid, diameterEnd,

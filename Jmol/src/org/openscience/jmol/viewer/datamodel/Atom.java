@@ -420,9 +420,11 @@ public final class Atom implements Bspt.Tuple {
     return group;
   }
 
+  /*
   Polymer getPolymer() {
     return group.polymer;
   }
+  */
 
   public Chain getChain() {
     return group.chain;

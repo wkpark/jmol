@@ -53,14 +53,10 @@ final public class Chain {
       groups[i].freeze();
   }
   
-  Group allocateGroup(String group3,
-                      int sequenceNumber, char insertionCode) {
-    Group group =
-      new Group(this, sequenceNumber, insertionCode, group3);
-
+  void addGroup(Group group) {
     if (groupCount == groups.length)
       groups = (Group[])Util.doubleLength(groups);
-    return groups[groupCount++] = group;
+    groups[groupCount++] = group;
   }
 
   Group getGroup(int groupIndex) {

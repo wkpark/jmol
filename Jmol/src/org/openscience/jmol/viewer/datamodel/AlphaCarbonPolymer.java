@@ -34,12 +34,12 @@ import java.util.BitSet;
 
 public class AlphaCarbonPolymer extends Polymer {
 
-  AlphaCarbonPolymer(Model model, Group[] groups) {
-    super(model, groups);
+  AlphaCarbonPolymer(Model model, Monomer[] monomers) {
+    super(model, monomers);
   }
 
   Atom getAlphaCarbonAtom(int groupIndex) {
-    return groups[groupIndex].getAlphaCarbonAtom();
+    return monomers[groupIndex].getAlphaCarbonAtom();
   }
 
   Atom getLeadAtom(int groupIndex) {
@@ -56,16 +56,16 @@ public class AlphaCarbonPolymer extends Polymer {
 
   void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < count &&
-        groups[groupIndex].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex].proteinstructure.
+        monomers[groupIndex].isHelixOrSheet()) {
+      midPoint.set(monomers[groupIndex].proteinstructure.
                    getStructureMidPoint(groupIndex));
       /*
         System.out.println("" + groupIndex} + "isHelixOrSheet" +
         midPoint.x + "," + midPoint.y + "," + midPoint.z);
       */
     } else if (groupIndex > 0 &&
-               groups[groupIndex - 1].isHelixOrSheet()) {
-      midPoint.set(groups[groupIndex - 1].proteinstructure.
+               monomers[groupIndex - 1].isHelixOrSheet()) {
+      midPoint.set(monomers[groupIndex - 1].proteinstructure.
                    getStructureMidPoint(groupIndex));
       /*
         System.out.println("" + groupIndex + "previous isHelixOrSheet" +
@@ -109,7 +109,7 @@ public class AlphaCarbonPolymer extends Polymer {
       return;
     }
     for (int i = polymerIndexStart; i <= polymerIndexEnd; ++i)
-      groups[i].setStructure(proteinstructure);
+      monomers[i].setStructure(proteinstructure);
   }
 
   boolean isProtein() {

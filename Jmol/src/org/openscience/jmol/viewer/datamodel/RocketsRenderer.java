@@ -52,20 +52,20 @@ class RocketsRenderer extends MpsRenderer {
       return;
     initializeChain((AminoPolymer)polymer);
     clearPending();
-    for (int i = 0; i < polymerCount; ++i) {
+    for (int i = 0; i < monomerCount; ++i) {
       if (mads[i] == 0)
         continue;
       short colix = colixes[i];
-      Group group = polymerGroups[i];
+      Monomer monomer = monomers[i];
       if (colix == 0)
-        colix = group.getLeadAtom().colixAtom;
-      if (group.isHelixOrSheet()) {
+        colix = monomer.getLeadAtom().colixAtom;
+      if (monomer.isHelixOrSheet()) {
         //        System.out.println("renderSpecialSegment[" + i + "]");
-        renderSpecialSegment(group, colix, mads[i]);
+        renderSpecialSegment(monomer, colix, mads[i]);
       } else {
         //        System.out.println("renderRopeSegment[" + i + "]");
         renderRopeSegment(colix, mads, i,
-                          polymerCount, polymerGroups,
+                          monomerCount, monomers,
                           screens, isSpecials);
       }
     }
@@ -75,29 +75,29 @@ class RocketsRenderer extends MpsRenderer {
     viewer.freeTempBooleans(isSpecials);
   }
 
-  int polymerCount;
-  Group[] polymerGroups;
+  int monomerCount;
+  Monomer[] monomers;
   Point3i[] screens;
   boolean[] isSpecials;
   Point3f[] cordMidPoints;
 
   void initializeChain(AminoPolymer aminopolymer) {
-    polymerGroups = aminopolymer.getGroups();
-    polymerCount = aminopolymer.getCount();
-    isSpecials = calcIsSpecials(polymerCount, polymerGroups);
+    monomers = aminopolymer.getMonomers();
+    monomerCount = aminopolymer.getCount();
+    isSpecials = calcIsSpecials(monomerCount, monomers);
     cordMidPoints = calcRopeMidPoints(aminopolymer);
     screens = getScreens();
   }
 
   Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
-    int midPointCount = polymerCount + 1;
+    int midPointCount = monomerCount + 1;
     Point3f[] cordMidPoints = viewer.allocTempPoints(midPointCount);
-    Group residuePrev = null;
+    Monomer residuePrev = null;
     ProteinStructure proteinstructurePrev = null;
     Point3f point;
-    for (int i = 0; i < polymerCount; ++i) {
+    for (int i = 0; i < monomerCount; ++i) {
       point = cordMidPoints[i];
-      Group residue = polymerGroups[i];
+      Monomer residue = monomers[i];
       if (isSpecials[i]) {
         ProteinStructure proteinstructure = residue.proteinstructure;
         point.set(i - 1 != proteinstructure.getPolymerIndex()
@@ -119,16 +119,16 @@ class RocketsRenderer extends MpsRenderer {
         proteinstructurePrev = null;
       }
     }
-    point = cordMidPoints[polymerCount];
+    point = cordMidPoints[monomerCount];
     if (proteinstructurePrev != null)
       point.set(proteinstructurePrev.getAxisEndPoint());
     else
-      aminopolymer.getLeadMidPoint(polymerCount, point);
+      aminopolymer.getLeadMidPoint(monomerCount, point);
     return cordMidPoints;
   }
 
   Point3i[] getScreens() {
-    int count = polymerCount + 1;
+    int count = monomerCount + 1;
     Point3i[] screens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0; ) {
       viewer.transformPoint(cordMidPoints[i], screens[i]);
@@ -141,20 +141,20 @@ class RocketsRenderer extends MpsRenderer {
   Point3i screenB = new Point3i();
   Point3i screenC = new Point3i();
 
-  void renderSpecialSegment(Group group, short colix, short mad) {
-    ProteinStructure proteinstructure = group.proteinstructure;
+  void renderSpecialSegment(Monomer monomer, short colix, short mad) {
+    ProteinStructure proteinstructure = monomer.proteinstructure;
     if (tPending) {
       if (proteinstructure == proteinstructurePending &&
           mad == madPending &&
           colix == colixPending &&
-          proteinstructure.getIndex(group) == endIndexPending + 1) {
+          proteinstructure.getIndex(monomer) == endIndexPending + 1) {
         ++endIndexPending;
         return;
       }
       renderPending();
     }
     proteinstructurePending = proteinstructure;
-    startIndexPending = endIndexPending = proteinstructure.getIndex(group);
+    startIndexPending = endIndexPending = proteinstructure.getIndex(monomer);
     colixPending = colix;
     madPending = mad;
     tPending = true;

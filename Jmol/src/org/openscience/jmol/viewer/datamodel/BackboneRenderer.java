@@ -38,13 +38,14 @@ class BackboneRenderer extends MpsRenderer {
   }
   
   void renderTraceChain(Backbone.Bbpolymer bbpolymer) {
-    render1Chain(bbpolymer.polymerCount, bbpolymer.polymer.getLeadAtomIndices(),
+    render1Chain(bbpolymer.monomerCount,
+                 bbpolymer.polymer.getLeadAtomIndices(),
                  bbpolymer.mads, bbpolymer.colixes);
   }
 
-  void render1Chain(int polymerCount, int[] atomIndices,
+  void render1Chain(int monomerCount, int[] atomIndices,
                     short[] mads, short[] colixes) {
-    for (int i = polymerCount - 1; --i >= 0; ) {
+    for (int i = monomerCount - 1; --i >= 0; ) {
       if (mads[i] == 0)
         continue;
       Atom atomA = frame.getAtomAt(atomIndices[i]);

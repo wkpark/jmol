@@ -76,8 +76,8 @@ class CartoonRenderer extends MpsRenderer {
   }
 
   boolean isNucleotidePolymer;
-  int polymerCount;
-  Group[] polymerGroups;
+  int monomerCount;
+  Monomer[] monomers;
   Point3f[] leadMidpoints;
   Vector3f[] wingVectors;
   short[] mads;
@@ -91,8 +91,8 @@ class CartoonRenderer extends MpsRenderer {
   void renderMpspolymer( Mps.Mpspolymer mpspolymer) {
     Cartoon.Cchain strandsChain = (Cartoon.Cchain)mpspolymer;
     if (strandsChain.wingVectors != null) {
-      polymerCount = strandsChain.polymerCount;
-      polymerGroups = strandsChain.polymerGroups;
+      monomerCount = strandsChain.monomerCount;
+      monomers = strandsChain.monomers;
       isNucleotidePolymer = strandsChain.polymer instanceof NucleotidePolymer;
       leadMidpoints = strandsChain.leadMidpoints;
       wingVectors = strandsChain.wingVectors;
@@ -105,29 +105,29 @@ class CartoonRenderer extends MpsRenderer {
 
   void render1Chain() {
 
-    isSpecials = calcIsSpecials(polymerCount, polymerGroups);
-    leadMidpointScreens = calcScreenLeadMidpoints(polymerCount, leadMidpoints);
+    isSpecials = calcIsSpecials(monomerCount, monomers);
+    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
     ribbonTopScreens = calcScreens(leadMidpoints, wingVectors, mads,
                              isNucleotidePolymer ? 1f / 1000 : 0.5f / 1000);
     ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
                                 isNucleotidePolymer ? 0f : -0.5f / 1000);
     boolean lastWasSpecial = false;
-    for (int i = polymerCount; --i >= 0; )
+    for (int i = monomerCount; --i >= 0; )
       if (mads[i] > 0) {
-        Group group = polymerGroups[i];
+        Monomer group = monomers[i];
         short colix = colixes[i];
         if (colix == 0)
           colix = group.getLeadAtom().colixAtom;
         boolean isSpecial = isSpecials[i];
         if (isSpecial) {
           if (lastWasSpecial)
-            render2StrandSegment(polymerCount, group, colix, mads, i);
+            render2StrandSegment(monomerCount, group, colix, mads, i);
           else
-            render2StrandArrowhead(polymerCount, group, colix, mads, i);
+            render2StrandArrowhead(monomerCount, group, colix, mads, i);
         }
         else
           renderRopeSegment(colix, mads, i,
-                            polymerCount, polymerGroups,
+                            monomerCount, monomers,
                             leadMidpointScreens, isSpecials);
         lastWasSpecial = isSpecial;
       }
@@ -137,9 +137,9 @@ class CartoonRenderer extends MpsRenderer {
     viewer.freeTempBooleans(isSpecials);
   }
   
-  void render2StrandSegment(int polymerCount, Group group, short colix,
+  void render2StrandSegment(int monomerCount, Monomer group, short colix,
                             short[] mads, int i) {
-    int iLast = polymerCount;
+    int iLast = monomerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
@@ -160,9 +160,9 @@ class CartoonRenderer extends MpsRenderer {
   final Point3i screenArrowBot = new Point3i();
   final Point3i screenArrowBotPrev = new Point3i();
 
-  void render2StrandArrowhead(int polymerCount, Group group, short colix,
+  void render2StrandArrowhead(int monomerCount, Monomer group, short colix,
                               short[] mads, int i) {
-    int iLast = polymerCount;
+    int iLast = monomerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;

@@ -250,7 +250,6 @@ support for assertions (which were introduced in 1.4).
       <and>
         <uptodate targetfile="${appjars.dir}/org/openscience/cdk">
           <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
-          <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
         </uptodate>
         <uptodate targetfile="build/cdkjars.timestamp"
                   srcfile="${appjars.dir}/org/openscience/cdk"/>
@@ -279,7 +278,6 @@ support for assertions (which were introduced in 1.4).
           <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
           <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
           <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
-          <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
         </uptodate>
         <uptodate targetfile="build/libjars.timestamp"
                   srcfile="${appjars.dir}"/>
@@ -291,7 +289,6 @@ support for assertions (which were introduced in 1.4).
       <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
       <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
       <srcfiles dir="${lib.dir}" includes="commons-cli-1.0.jar"/>
-      <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
     </uptodate>
   </target>
   
@@ -301,7 +298,6 @@ support for assertions (which were introduced in 1.4).
     <delete file="build/cdkjars.timestamp"/>
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jmol2cdk.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
     <touch file="build/cdkjars.timestamp"/>
   </target>
 
@@ -320,7 +316,6 @@ support for assertions (which were introduced in 1.4).
     <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/commons-cli-1.0.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
     <touch file="build/libjars.timestamp"/>
   </target>
 

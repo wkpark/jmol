@@ -35,6 +35,7 @@ import org.openscience.cdk.io.ChemObjectReader;
 import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.XYZWriter;
 import org.openscience.cdk.io.CMLWriter;
+import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.ui.JmolPopup;
@@ -86,6 +87,7 @@ public class Jmol extends JPanel {
   private FileTyper fileTyper;
   private JFileChooser exportChooser;
   private JmolPopup jmolpopup;
+  private CDKPluginManager pluginManager;
 
   private GuiMap guimap = new GuiMap();
   
@@ -211,6 +213,12 @@ public class Jmol extends JPanel {
 
     say("Initializing Measurements...");
     measurementTable = new MeasurementTable(viewer, frame);
+
+    // Setup Plugin system
+    say("Loading plugins...");
+    pluginManager = new CDKPluginManager(
+        ".jmol/plugins", "./jmol", new JmolEditBus(viewer)
+    );
 
     // install the command table
     say("Building Command Hooks...");
@@ -351,12 +359,24 @@ public class Jmol extends JPanel {
             + "1.1.2 or higher version VM!!!");
       }
 
+      // Adding console frame to grab System.out & System.err
+      consoleframe = new JFrame("Jmol Console");
+      try {
+          ConsoleTextArea consoleTextArea = new ConsoleTextArea();
+          consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
+          consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
+          java.awt.BorderLayout.CENTER);
+      } catch (IOException e) {
+          JTextArea errorTextArea = new JTextArea();
+          errorTextArea.setFont(java.awt.Font.decode("monospaced"));
+          consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
+          java.awt.BorderLayout.CENTER);
+          errorTextArea.append("Could not create ConsoleTextArea: " + e);
+      }
+
+      // Get a Jmol frame
       JFrame jmolFrame = new JFrame();
       jmol = getJmol(jmolFrame);
-
-      // Adding consoleframe to grab System.out & System.err
-      consoleframe = new JFrame("Jmol Console");
-
 
       // Open a file if one is given as an argument
       if (modelFilename != null)
@@ -376,19 +396,6 @@ public class Jmol extends JPanel {
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);
       t.printStackTrace();
-    }
-
-    try {
-      ConsoleTextArea consoleTextArea = new ConsoleTextArea();
-      consoleTextArea.setFont(java.awt.Font.decode("monospaced"));
-      consoleframe.getContentPane().add(new JScrollPane(consoleTextArea),
-          java.awt.BorderLayout.CENTER);
-    } catch (IOException e) {
-      JTextArea errorTextArea = new JTextArea();
-      errorTextArea.setFont(java.awt.Font.decode("monospaced"));
-      consoleframe.getContentPane().add(new JScrollPane(errorTextArea),
-          java.awt.BorderLayout.CENTER);
-      errorTextArea.append("Could not create ConsoleTextArea: " + e);
     }
 
     Point location = jmol.frame.getLocation();
@@ -673,33 +680,53 @@ public class Jmol extends JPanel {
    * definition of the menu from the associated resource file.
    */
   protected JMenuBar createMenubar() {
-
-    JMenuItem mi;
     JMenuBar mb = new JMenuBar();
-
-    String[] menuKeys =
-      tokenize(JmolResourceHandler.getInstance().getString("Jmol.menubar"));
-    for (int i = 0; i < menuKeys.length; i++) {
-      if (menuKeys[i].equals("-")) {
-        mb.add(Box.createHorizontalGlue());
-      } else {
-        JMenu m = createMenu(menuKeys[i], false);
-
-        if (m != null) {
-          mb.add(m);
-        }
-        String mnem = JmolResourceHandler.getInstance().getString("Jmol."
-                        + menuKeys[i] + mnemonicSuffix);
-        if (mnem != null) {
-          char mn = mnem.charAt(0);
-          m.setMnemonic(mn);
-        }
-
-      }
+    addNormalMenuBar(mb);
+    if (pluginManager != null) {
+        mb.add(pluginManager.getMenu());
     }
+    mb.add(Box.createHorizontalGlue());
+    addHelpMenuBar(mb);
     return mb;
   }
 
+  protected void addNormalMenuBar(JMenuBar menuBar) {
+    String[] menuKeys =
+      tokenize(JmolResourceHandler.getInstance().getString("Jmol.menubar"));
+    for (int i = 0; i < menuKeys.length; i++) {
+        if (menuKeys[i].equals("-")) {
+            menuBar.add(Box.createHorizontalGlue());
+        } else {
+            JMenu m = createMenu(menuKeys[i], false);
+            
+            if (m != null) {
+                menuBar.add(m);
+            }
+            String mnem = JmolResourceHandler.getInstance().getString("Jmol."
+                + menuKeys[i] + mnemonicSuffix);
+            if (mnem != null) {
+                char mn = mnem.charAt(0);
+                m.setMnemonic(mn);
+            }
+            
+        }
+    }
+  }
+  
+  protected void addHelpMenuBar(JMenuBar menuBar) {
+      String menuKey = "help";
+      JMenu m = createMenu(menuKey, false);
+      if (m != null) {
+          menuBar.add(m);
+      }
+      String mnem = JmolResourceHandler.getInstance().getString("Jmol."
+          + menuKey + mnemonicSuffix);
+      if (mnem != null) {
+          char mn = mnem.charAt(0);
+          m.setMnemonic(mn);
+      }
+  }
+      
   /**
    * Create a menu for the app.  By default this pulls the
    * definition of the menu from the associated resource file.

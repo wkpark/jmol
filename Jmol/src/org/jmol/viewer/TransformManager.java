@@ -170,6 +170,11 @@ class TransformManager {
     return 0;
   }
 
+  void translateCenterTo(int x, int y) {
+    xTranslation = x;
+    yTranslation = y;
+  }
+
   final AxisAngle4f axisangleT = new AxisAngle4f();
   final Vector3f vectorT = new Vector3f();
 

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -287,6 +287,10 @@ final public class Viewer extends JmolViewer {
 
   void translateByZPercent(float percent) {
     translateToZPercent(getTranslationZPercent() + percent);
+  }
+
+  void translateCenterTo(int x, int y) {
+    transformManager.translateCenterTo(x, y);
   }
 
   void zoomBy(int pixels) {
@@ -1226,8 +1230,19 @@ final public class Viewer extends JmolViewer {
 
   void setCenterBitSet(BitSet bsCenter) {
     modelManager.setCenterBitSet(bsCenter);
-    scaleFitToScreen();
+    if (! friedaSwitch)
+      scaleFitToScreen();
     refresh();
+  }
+
+  boolean friedaSwitch = false;
+
+  boolean getFriedaSwitch() {
+    return friedaSwitch;
+  }
+
+  void setFriedaSwitch(boolean friedaSwitch) {
+    this.friedaSwitch = friedaSwitch;
   }
 
   public void setCenterSelected() {
@@ -1971,6 +1986,8 @@ final public class Viewer extends JmolViewer {
       { setAxesOrientationRasmol(value); return; }
     if (key.equalsIgnoreCase("zeroBasedXyzRasmol"))
       { setZeroBasedXyzRasmol(value); return; }
+    if (key.equalsIgnoreCase("frieda"))
+      { setFriedaSwitch(value); return; }
     if (key.equalsIgnoreCase("testFlag1"))
       { setTestFlag1(value); return; }
     if (key.equalsIgnoreCase("testFlag2"))

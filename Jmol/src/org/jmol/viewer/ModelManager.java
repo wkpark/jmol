@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2005  The Jmol Development Team
+ * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,7 @@ import java.util.Properties;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
+import javax.vecmath.Point3i;
 
 class ModelManager {
 
@@ -219,6 +220,12 @@ class ModelManager {
         center.scale(1.0f / countSelected); // just divide by the quantity
       else
         center = null;
+    }
+    if (viewer.getFriedaSwitch()) {
+      if (center == null)
+        center = frame.getRotationCenterDefault();
+      Point3i newCenterScreen = viewer.transformPoint(center);
+      viewer.translateCenterTo(newCenterScreen.x, newCenterScreen.y);
     }
     frame.setRotationCenter(center);
   }

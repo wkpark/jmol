@@ -786,6 +786,11 @@ final class Frame {
     return rotationCenter;
   }
 
+  Point3f getRotationCenterDefault() {
+    findBounds();
+    return rotationCenterDefault;
+  }
+
   void increaseRotationRadius(float increaseInAngstroms) {
     rotationRadius += increaseInAngstroms;
   }

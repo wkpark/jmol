@@ -39,12 +39,12 @@ abstract class Monomer extends Group {
 
   Monomer(Chain chain, String group3,
           int sequenceNumber, char insertionCode,
-          int firstAtomIndex, int lastAtomIndex) {
+          int firstAtomIndex, int lastAtomIndex,
+          int interestingOffsetCount) {
     super(chain, group3, sequenceNumber, insertionCode,
           firstAtomIndex, lastAtomIndex);
-    int interestingCount = 2;
-    offsets = new byte[interestingCount];
-    for (int i = interestingCount; --i >= 0; )
+    offsets = new byte[interestingOffsetCount];
+    for (int i = interestingOffsetCount; --i >= 0; )
       offsets[i] = -1;
   }
 
@@ -125,45 +125,6 @@ abstract class Monomer extends Group {
   }
 
   ////////////////////////////////////////////////////////////////
-  // static stuff for group ids
-  ////////////////////////////////////////////////////////////////
-
-  private static Hashtable htGroup = new Hashtable();
-
-  static String[] group3Names = new String[128];
-  static short group3NameCount = 0;
-  
-  static {
-    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i)
-      addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
-  }
-
-  synchronized static short addGroup3Name(String group3) {
-    if (group3NameCount == group3Names.length)
-      group3Names = Util.doubleLength(group3Names);
-    short groupID = group3NameCount++;
-    group3Names[groupID] = group3;
-    htGroup.put(group3, new Short(groupID));
-    return groupID;
-  }
-
-  static short getGroupID(String group3) {
-    if (group3 == null)
-      return -1;
-    short groupID = lookupGroupID(group3);
-    return (groupID != -1) ? groupID : addGroup3Name(group3);
-  }
-
-  public static short lookupGroupID(String group3) {
-    if (group3 != null) {
-      Short boxedGroupID = (Short)htGroup.get(group3);
-      if (boxedGroupID != null)
-        return boxedGroupID.shortValue();
-    }
-    return -1;
-  }
-
-  ////////////////////////////////////////////////////////////////
   // try to get rid of these 
 
   Atom getNucleotideAtomID(int atomid) {
@@ -182,12 +143,6 @@ abstract class Monomer extends Group {
                          nucleotideIndices[index]);
     return atom;
     */
-  }
-
-  Atom getAtomIndex(int atomIndex) {
-    return (atomIndex < 0
-            ? null
-            : chain.frame.getAtomAt(atomIndex));
   }
 
   Atom getPurineN1() {
@@ -214,25 +169,4 @@ abstract class Monomer extends Group {
             (groupID >= JmolConstants.GROUPID_GUANINE_2_MIN &&
              groupID <= JmolConstants.GROUPID_GUANINE_2_LAST));
   }
-
-  /*
-  void dumpNucleotideIndices() {
-
-    System.out.println("dumpNucleotideIndices(" + this + "," + groupID + ")");
-    if (nucleotideIndices == null) {
-      System.out.println("  nucleotideIndices=null");
-    } else {
-      System.out.println("  ");
-      for (int i = 0; i < nucleotideIndices.length; ++i)
-        System.out.print(
-                         JmolConstants.specialAtomNames[JmolConstants.ATOMID_NUCLEOTIDE_MIN + i] + ":" + nucleotideIndices[i] + " ");
-      System.out.println("\n");
-    }
-  }
-  */
-  
-  public String toString() {
-    return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
-  }
-
 }

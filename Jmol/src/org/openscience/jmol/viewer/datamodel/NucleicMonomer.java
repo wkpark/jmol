@@ -75,7 +75,7 @@ public class NucleicMonomer extends Monomer {
                  int phosphorusIndex, int wingIndex,
                  int o2PrimeIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
-          firstAtomIndex, lastAtomIndex);
+          firstAtomIndex, lastAtomIndex, 2);
     this.hasRnaO2Prime = o2PrimeIndex >= 0;
 
     offsets[0] = (byte)(phosphorusIndex - firstAtomIndex);

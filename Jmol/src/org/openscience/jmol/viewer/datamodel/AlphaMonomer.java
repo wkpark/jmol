@@ -47,7 +47,7 @@ public class AlphaMonomer extends Monomer {
                int sequenceNumber, char insertionCode,
                int firstAtomIndex, int lastAtomIndex) {
     super(chain, group3, sequenceNumber, insertionCode,
-          firstAtomIndex, lastAtomIndex);
+          firstAtomIndex, lastAtomIndex, 2);
     offsets[0] = 0;
   }
 

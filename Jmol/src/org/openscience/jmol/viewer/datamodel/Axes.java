@@ -32,7 +32,9 @@ import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class Axes {
+import java.util.BitSet;
+
+public class Axes implements Graphic {
 
   JmolViewer viewer;
 
@@ -49,7 +51,7 @@ public class Axes {
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
 
-  public Axes(JmolViewer viewer) {
+  public Axes(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
     for (int i = 6; --i >= 0; )
       axisPoints[i] = new Point3f();
@@ -59,6 +61,7 @@ public class Axes {
     this.mode = mode;
     if (mode == JmolConstants.AXES_NONE)
       return;
+    System.out.println("setting originPoint!");
     originPoint.set(viewer.getBoundingBoxCenter());
     Point3f corner = viewer.getBoundingBoxCorner();
     for (int i = 6; --i >= 0; ) {
@@ -74,5 +77,11 @@ public class Axes {
       }
       axisPoint.add(originPoint);
     }
+  }
+
+  public void setMad(short mad, BitSet bsSelected) {
+  }
+  
+  public void setColix(byte palette, short colix, BitSet bsSelected) {
   }
 }

@@ -40,12 +40,11 @@ class BboxRenderer extends Renderer {
   }
 
   BboxRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   void render() {
-    Bbox bbox = frame.bbox;
+    Bbox bbox = (Bbox)graphic;
     if (! bbox.showBoundingBox)
       return;
     for (int i = 8; --i >= 0; )

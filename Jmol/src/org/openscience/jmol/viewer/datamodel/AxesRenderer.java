@@ -36,12 +36,8 @@ import javax.vecmath.Point3i;
 class AxesRenderer extends Renderer {
 
   AxesRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
-
-  final Point3i originScreen = new Point3i();
-  final Point3i[] axisScreens = new Point3i[6];
 
   final static int axisFontsize = 14;
 
@@ -50,16 +46,18 @@ class AxesRenderer extends Renderer {
 
   
   void render() {
-    Axes axes = frame.axes;
+    Axes axes = (Axes)graphic;
     if (axes.mode == JmolConstants.AXES_NONE)
       return;
+    final Point3i[] axisScreens = frameRenderer.getTempScreens(7);
+    final Point3i originScreen = axisScreens[6];
+
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = 6; --i >= 0; )
       viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);
-
+    
     short colixAxes = viewer.getColixAxes();
     short colixAxesText = viewer.getColixAxesText();
-    FrameRenderer frameRenderer = viewer.getFrameRenderer();
     for (int i = 6; --i >= 0; ) {
       g3d.drawDottedLine(colixAxes, originScreen, axisScreens[i]);
       String label = axisLabels[i];

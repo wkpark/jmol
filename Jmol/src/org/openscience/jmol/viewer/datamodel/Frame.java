@@ -210,6 +210,10 @@ public class Frame {
       return new Backbone(viewer, this);
     case JmolConstants.GRAPHIC_TRACE:
       return new Trace(viewer, this);
+    case JmolConstants.GRAPHIC_AXES:
+      return new Axes(viewer, this);
+    case JmolConstants.GRAPHIC_BBOX:
+      return new Bbox(viewer, this);
     }
     return null;
   }
@@ -271,21 +275,20 @@ public class Frame {
     if (strands != null)
       strands.setColix(palette, colix, bsSelected);
   }
-  
-  Axes axes;
+
   public void setModeAxes(byte modeAxes) {
-    if (modeAxes != JmolConstants.AXES_NONE && axes == null)
-      axes = new Axes(viewer);
-    if (axes != null)
-      axes.setMode(modeAxes);
+    if (modeAxes != JmolConstants.AXES_NONE)
+      checkGraphic(JmolConstants.GRAPHIC_AXES);
+    if (graphics[JmolConstants.GRAPHIC_AXES] != null)
+      ((Axes)graphics[JmolConstants.GRAPHIC_AXES]).setMode(modeAxes);
   }
 
-  Bbox bbox;
   public void setShowBoundingBox(boolean showBoundingBox) {
-    if (showBoundingBox && bbox == null)
-      bbox = new Bbox(viewer);
-    if (bbox != null)
-      bbox.setShowBoundingBox(showBoundingBox);
+    if (showBoundingBox)
+      checkGraphic(JmolConstants.GRAPHIC_BBOX);
+    if (graphics[JmolConstants.GRAPHIC_BBOX] != null)
+      ((Bbox)graphics[JmolConstants.GRAPHIC_BBOX])
+        .setShowBoundingBox(showBoundingBox);
   }
 
   Point3f centerBoundingBox;

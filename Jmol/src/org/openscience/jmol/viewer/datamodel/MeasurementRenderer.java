@@ -40,8 +40,7 @@ import java.awt.FontMetrics;
 class MeasurementRenderer extends Renderer {
 
   MeasurementRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   short colixDistance;

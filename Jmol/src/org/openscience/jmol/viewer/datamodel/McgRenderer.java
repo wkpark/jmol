@@ -35,14 +35,13 @@ import javax.vecmath.Point3i;
 abstract class McgRenderer extends Renderer {
 
   McgRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   void render() {
-    if (renderObject == null)
+    if (graphic == null)
       return;
-    Mcg mcg = (Mcg)renderObject;
+    Mcg mcg = (Mcg)graphic;
     for (int m = mcg.getModelCount(); --m >= 0; ) {
       Mcg.Model model = mcg.getMcgModel(m);
       for (int c = model.getChainCount(); --c >= 0; ) {

@@ -36,8 +36,7 @@ import javax.vecmath.Point3i;
 class StrandsRenderer extends Renderer {
 
   StrandsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   Strands strands;

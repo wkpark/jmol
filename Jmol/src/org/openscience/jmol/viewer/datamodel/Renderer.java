@@ -36,17 +36,22 @@ abstract class Renderer {
   JmolViewer viewer;
   FrameRenderer frameRenderer;
 
+  Renderer(JmolViewer viewer, FrameRenderer frameRenderer) {
+    this.viewer = viewer;
+    this.frameRenderer = frameRenderer;
+  }
+
   Graphics3D g3d;
   Rectangle rectClip;
   Frame frame;
-  Object renderObject;
+  Graphic graphic;
 
   void render(Graphics3D g3d, Rectangle rectClip,
-              Frame frame, Object renderObject) {
+              Frame frame, Graphic graphic) {
     this.g3d = g3d;
     this.rectClip = rectClip;
     this.frame = frame;
-    this.renderObject = renderObject;
+    this.graphic = graphic;
     render();
   }
 

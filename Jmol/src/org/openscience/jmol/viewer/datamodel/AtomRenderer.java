@@ -35,8 +35,7 @@ import java.awt.FontMetrics;
 class AtomRenderer extends Renderer {
 
   AtomRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   int minX, maxX, minY, maxY;

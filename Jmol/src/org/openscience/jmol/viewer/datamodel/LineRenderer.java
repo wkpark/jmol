@@ -33,12 +33,8 @@ import javax.vecmath.Point3i;
 
 class LineRenderer extends Renderer {
 
-  LineRenderer() {
-  }
-
   LineRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   final Point3i screenOrigin = new Point3i();

@@ -44,12 +44,8 @@ public class FrameRenderer {
   MeasurementRenderer measurementRenderer;
   DotsRenderer dotsRenderer;
   RibbonsRenderer ribbonsRenderer;
-  TraceRenderer traceRenderer;
-  BackboneRenderer backboneRenderer;
   CartoonRenderer cartoonRenderer;
   StrandsRenderer strandsRenderer;
-  AxesRenderer axesRenderer;
-  BboxRenderer bboxRenderer;
   LineRenderer lineRenderer;
   CellLineRenderer cellLineRenderer;
 
@@ -84,7 +80,7 @@ public class FrameRenderer {
     if (frame.ribbons != null) {
       if (ribbonsRenderer == null)
         ribbonsRenderer = new RibbonsRenderer(viewer, this);
-      ribbonsRenderer.render(g3d, rectClip, frame, frame.ribbons);
+      ribbonsRenderer.render(g3d, rectClip, frame, null);
     }
 
     for (int i = 0; i < JmolConstants.GRAPHIC_MAX; ++i) {
@@ -113,22 +109,12 @@ public class FrameRenderer {
     if (frame.cartoon != null) {
       if (cartoonRenderer == null)
         cartoonRenderer = new CartoonRenderer(viewer, this);
-      cartoonRenderer.render(g3d, rectClip, frame, frame.cartoon);
+      cartoonRenderer.render(g3d, rectClip, frame, null);
     }
     if (frame.strands != null) {
       if (strandsRenderer == null)
         strandsRenderer = new StrandsRenderer(viewer, this);
-      strandsRenderer.render(g3d, rectClip, frame, frame.strands);
-    }
-    if (frame.axes != null) {
-      if (axesRenderer == null)
-        axesRenderer = new AxesRenderer(viewer, this);
-      axesRenderer.render(g3d, rectClip, frame, frame.axes);
-    }
-    if (frame.bbox != null) {
-      if (bboxRenderer == null)
-        bboxRenderer = new BboxRenderer(viewer, this);
-      bboxRenderer.render(g3d, rectClip, frame, frame.bbox);
+      strandsRenderer.render(g3d, rectClip, frame, null);
     }
 
     if (frame.lineCount > 0) {
@@ -150,6 +136,10 @@ public class FrameRenderer {
       return new BackboneRenderer(viewer, this);
     case JmolConstants.GRAPHIC_TRACE:
       return new TraceRenderer(viewer, this);
+    case JmolConstants.GRAPHIC_AXES:
+      return new AxesRenderer(viewer, this);
+    case JmolConstants.GRAPHIC_BBOX:
+      return new BboxRenderer(viewer, this);
     }
     return null;
   }

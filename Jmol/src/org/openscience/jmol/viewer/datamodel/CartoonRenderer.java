@@ -36,8 +36,7 @@ import javax.vecmath.Vector3f;
 class CartoonRenderer extends Renderer {
 
   CartoonRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   Point3i s0 = new Point3i();

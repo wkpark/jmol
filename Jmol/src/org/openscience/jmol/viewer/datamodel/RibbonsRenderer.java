@@ -34,8 +34,7 @@ import java.awt.Rectangle;
 class RibbonsRenderer extends Renderer {
 
   RibbonsRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
+    super(viewer, frameRenderer);
   }
 
   void render() {

@@ -22,22 +22,13 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
+
 package org.openscience.jmol.viewer.datamodel;
 
-import org.openscience.jmol.viewer.*;
-import org.openscience.jmol.viewer.g3d.Graphics3D;
+import java.util.BitSet;
 
-import java.awt.Rectangle;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
+abstract public interface Graphic {
 
-class CellLineRenderer extends LineRenderer {
-
-  CellLineRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
-    super(viewer, frameRenderer);
-  }
-
-  void render() {
-    render(frame.cellLineCount, frame.cellLines);
-  }
+  abstract public void setMad(short mad, BitSet bsSelected);
+  abstract public void setColix(byte palette, short colix, BitSet bsSelected);
 }

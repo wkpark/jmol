@@ -1494,13 +1494,13 @@ public class CrystalPropertiesDialog extends JDialog
 	    if (fileChooserReturnVal == JFileChooser.APPROVE_OPTION) {
 	      // Draw the band plot as a PostScript
 	      try {
-		BandPlotEPSRenderer ebpr
+		BandPlotEPSRenderer ebprT
 		  = new BandPlotEPSRenderer
 		  (bandPlot,
 		   FieldReader.readField1(resolutionTXF),
 		   FieldReader.readField1(ratioTXF),
 		   chooser.getSelectedFile());
-		ebpr.generateEPS();
+		ebprT.generateEPS();
 		
 	      } catch (IOException ex) {
 		System.out.println ("Error while writing the file");

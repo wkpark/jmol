@@ -540,8 +540,10 @@ class PdbModel extends Model {
         return;
       int len = line.length();
       String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
-      if (atomicSymbol.length() == 0 ||
-          Character.isDigit(atomicSymbol.charAt(0))) {
+      int cchAtomicSymbol = atomicSymbol.length();
+      if (cchAtomicSymbol == 0 ||
+          Character.isDigit(atomicSymbol.charAt(0)) ||
+          (cchAtomicSymbol == 2 && Character.isDigit(atomicSymbol.charAt(1)))) {
         char ch13 = line.charAt(13);
         boolean isValid13 = isValidAtomicSymbolChar(ch13);
         char ch12 = line.charAt(12);

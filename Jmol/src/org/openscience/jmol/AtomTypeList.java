@@ -271,7 +271,7 @@ public class AtomTypeList {
             }
             // logger.debug("BaseAtomType: " + at.toString());
             atom.setMaxBondOrder(at.getMaxBondOrder());
-            atom.setMaxBondOrderSum(at.getMaxBondOrderSum());
+            atom.setBondOrderSum(at.getBondOrderSum());
             atom.setVanderwaalsRadius(at.getVanderwaalsRadius());
             atom.setCovalentRadius(at.getCovalentRadius());
             atom.setProperty("org.openscience.jmol.color", at.getColor());

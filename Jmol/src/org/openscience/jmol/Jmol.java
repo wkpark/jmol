@@ -51,7 +51,7 @@ class Jmol extends JPanel {
   private RecentFilesDialog recentFiles;
   protected ScriptWindow scriptWindow;
   protected static JFrame frame;
-  private ChemFile cf;
+  private ChemFile chemFile;
   private JFileChooser openChooser = new JFileChooser();
   private JFileChooser saveChooser = new JFileChooser();
   private JFileChooser exportChooser = new JFileChooser();
@@ -323,21 +323,23 @@ class Jmol extends JPanel {
 
     if (theFile != null) {
       frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+      ChemFile newChemFile = null;
+      
       try {
         FileInputStream is = new FileInputStream(theFile);
 
         if (typeHint.equals("PDB")) {
           ChemFileReader reader = new PDBReader(new InputStreamReader(is));
-          cf = reader.read();
+          chemFile = reader.read();
         } else if (typeHint.equals("CML")) {
           ChemFileReader reader = new CMLReader(theFile.toURL());
-          cf = ((CMLReader)reader).readValidated();
+          chemFile = ((CMLReader)reader).readValidated();
         } else if (typeHint.equals("XYZ (xmol)")) {
           ChemFileReader reader = new XYZReader(new InputStreamReader(is));
-          cf = reader.read();
+          chemFile = reader.read();
         } else if (typeHint.equals("Ghemical Molecular Dynamics")) {
           ChemFileReader reader = new GhemicalMMReader(new InputStreamReader(is));
-          cf = reader.read();
+          chemFile = reader.read();
         } else {
 
           // Try to automagically determine file type:
@@ -346,46 +348,50 @@ class Jmol extends JPanel {
           if (reader == null) {
             throw new JmolException("openFile", "Unknown file type");
           }
-          cf = reader.read();
+          chemFile = reader.read();
         }
 
-        if (cf != null) {
-          display.setChemFile(cf);
-          anim.setChemFile(cf);
-          vib.setChemFile(cf);
-          pg.setChemFile(cf);
-          frame.setTitle(theFile.getName());
-          apm.replaceList(cf.getAtomPropertyList());
-          mlist.clear();
-
-          chemicalShifts.setChemFile(cf, apm);
-          currentFileName = theFile.getName();
+        if (chemFile != null) {
+          if (chemFile.getNumberFrames() > 0) {
+            setChemFile(chemFile);
+            
+            frame.setTitle(theFile.getName());
+            currentFileName = theFile.getName();
+  
+            // Add the file to the recent files list
+            recentFiles.addFile(theFile.toString(), typeHint);
+          } else {
+            JOptionPane.showMessageDialog(Jmol.this,
+                  "The file \"" + theFile +"\" appears to be empty."
+                  + "\nIf this is in error, please contact the Jmol development team.",
+                  "Empty file", JOptionPane.ERROR_MESSAGE);
+          }
+        } else {
+          JOptionPane.showMessageDialog(Jmol.this,
+                "Unknown error reading file \"" + theFile +"\"."
+                + "\nPlease contact the Jmol development team.",
+                "Unknown error", JOptionPane.ERROR_MESSAGE);
         }
 
-        // Add the file to the recent files list
-        recentFiles.addFile(theFile.toString(), typeHint);
-        frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-      } catch (java.io.FileNotFoundException e2) {
+      } catch (java.io.FileNotFoundException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-                ("File not found: " + theFile));
-      } catch (JmolException e3) {
+                "Unable to find file \"" + theFile + "\"",
+                "File not found", JOptionPane.ERROR_MESSAGE);
+      } catch (JmolException ex) {
         JOptionPane.showMessageDialog(Jmol.this,
-                ("File type undetermined: " + theFile));
-      } catch (Exception exc) {
-        System.out.println(exc.toString());
-        exc.printStackTrace();
+                "Unable to determine type for file \"" + theFile + "\"",
+                "Unknown file type", JOptionPane.ERROR_MESSAGE);
+      } catch (Exception ex) {
+        JOptionPane.showMessageDialog(Jmol.this,
+                "Unexpected exception: " + ex.getMessage()
+                + "\nPlease contact the Jmol development team.",
+                "Unexpected error", JOptionPane.ERROR_MESSAGE);
+        ex.printStackTrace();
       } finally {
         frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
       }
       return;
     }
-  }
-
-  /** closes the current molecule
-   */
-  public void zap() {
-
-    // this is not possible at this moment
   }
 
   /**
@@ -394,7 +400,19 @@ class Jmol extends JPanel {
    * @see ChemFile
    */
   public ChemFile getCurrentFile() {
-    return cf;
+    return chemFile;
+  }
+
+  void setChemFile(ChemFile chemFile) {
+    this.chemFile = chemFile;
+    display.setChemFile(chemFile);
+    anim.setChemFile(chemFile);
+    vib.setChemFile(chemFile);
+    pg.setChemFile(chemFile);
+    apm.replaceList(chemFile.getAtomPropertyList());
+    mlist.clear();
+
+    chemicalShifts.setChemFile(chemFile, apm);
   }
 
   /**
@@ -880,7 +898,7 @@ class Jmol extends JPanel {
    * Actions defined by the Jmol class
    */
   private Action[] defaultActions = {
-    new NewAction(), new OpenAction(), new CloseAction(), new SaveAction(),
+    new NewAction(), new OpenAction(), new SaveAction(),
     new PrintAction(), new ExportAction(), new ExitAction(),
     new AboutAction(), new WhatsNewAction(), new UguideAction(),
     new AtompropsAction(), new ConsoleAction(),
@@ -989,18 +1007,6 @@ class Jmol extends JPanel {
         openFile(theFile, "");
         return;
       }
-    }
-  }
-
-  class CloseAction extends AbstractAction {
-
-    CloseAction() {
-      super(closeAction);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      System.out.print("About to zap... ");
-      zap();
     }
   }
 

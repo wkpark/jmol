@@ -31,29 +31,207 @@ import java.util.Vector;
 
 class Compiler {
 
-  Eval eval;
-  Token[] atokenCommand;
-
+  String filename;
   String script;
+
+  short[] lineNumbers;
+  short[] lineIndices;
+  Token[][] aatokenCompiled;
+
+  boolean error;
+  String errorMessage;
+  String errorLine;
+  
+  final boolean logMessages = false;
+
+  public boolean compile(String filename, String script) {
+    this.filename = filename;
+    this.script = script;
+    lineNumbers = lineIndices = null;
+    aatokenCompiled = null;
+    errorMessage = errorLine = null;
+    if (compile0())
+      return true;
+    int icharEnd;
+    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1 &&
+        (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
+      icharEnd = script.length();
+    errorLine = script.substring(ichCurrentCommand, icharEnd);
+    return false;
+  }
+
+  public short[] getLineNumbers() {
+    return lineNumbers;
+  }
+
+  public short[] getLineIndices() {
+    return lineIndices;
+  }
+
+  public Token[][] getAatokenCompiled() {
+    return aatokenCompiled;
+  }
+
+  public String getErrorMessage() {
+    String strError = errorMessage;
+    strError += " : " + errorLine + "\n";
+    if (filename != null)
+      strError += filename;
+    strError += " line#" + lineCurrent;
+    return strError;
+  }
+
   int cchScript;
   short lineCurrent;
 
   int ichToken;
   int cchToken;
   String strToken;
+  Token[] atokenCommand;
 
   int ichCurrentCommand;
 
-  short[] linenumbers;
-  short[] lineIndices;
+  boolean compile0() {
+    cchScript = script.length();
+    ichToken = 0;
+    lineCurrent = 1;
+    int lnLength = 8;
+    lineNumbers = new short[lnLength];
+    lineIndices = new short[lnLength];
+    error = false;
 
-  boolean error;
-  String errorMessage;
-  
-  final boolean logMessages = false;
+    Vector lltoken = new Vector();
+    Vector ltoken = new Vector();
+    Token tokenCommand = null;
+    int tokCommand = Token.nada;
 
-  Compiler(Eval eval) {
-    this.eval = eval;
+    for ( ; true; ichToken += cchToken) {
+      if (lookingAtLeadingWhitespace())
+        continue;
+      if (lookingAtComment())
+        continue;
+      boolean endOfLine = lookingAtEndOfLine();
+      if (endOfLine || lookingAtEndOfStatement()) {
+        if (tokCommand != Token.nada) {
+          if (! compileCommand(ltoken))
+            return false;
+          lltoken.addElement(atokenCommand);
+          int iCommand = lltoken.size();
+          if (iCommand == lnLength) {
+            short[] lnT = new short[lnLength * 2];
+            System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
+            lineNumbers = lnT;
+            lnT = new short[lnLength * 2];
+            System.arraycopy(lineIndices, 0, lnT, 0, lnLength);
+            lineIndices = lnT;
+            lnLength *= 2;
+          }
+          lineNumbers[iCommand] = lineCurrent;
+          lineIndices[iCommand] = (short) ichCurrentCommand;
+          ltoken.setSize(0);
+          tokCommand = Token.nada;
+        }
+        if (ichToken < cchScript) {
+          if (endOfLine)
+            ++lineCurrent;
+          continue;
+        }
+        break;
+      }
+      if (tokCommand != Token.nada) {
+        if (lookingAtString()) {
+          String str = script.substring(ichToken+1, ichToken+cchToken-1);
+          ltoken.addElement(new Token(Token.string, str));
+          continue;
+        }
+        if (tokCommand == Token.load && lookingAtLoadFormat()) {
+          String strFormat = script.substring(ichToken, ichToken + cchToken);
+          strFormat = strFormat.toLowerCase();
+          ltoken.addElement(new Token(Token.identifier, strFormat));
+          continue;
+        }
+        if ((tokCommand & Token.specialstring) != 0 &&
+            lookingAtSpecialString()) {
+          String str = script.substring(ichToken, ichToken + cchToken);
+          ltoken.addElement(new Token(Token.string, str));
+          continue;
+        }
+        if (lookingAtPositiveDecimal()) {
+          double value =
+            Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
+          ltoken.addElement(new Token(Token.decimal, new Double(value)));
+          continue;
+        }
+        if (lookingAtPositiveInteger() || 
+            ((tokCommand & Token.negativeints) != 0 &&
+             lookingAtNegativeInteger())) {
+          int val = Integer.parseInt(script.substring(ichToken,
+                                                      ichToken + cchToken));
+          ltoken.addElement(new Token(Token.integer, val, null));
+          continue;
+        }
+      }
+      if (lookingAtLookupToken()) {
+        String ident = script.substring(ichToken, ichToken + cchToken);
+        ident = ident.toLowerCase();
+        Token token = (Token) Token.map.get(ident);
+        if (token == null)
+          token = new Token(Token.identifier, ident);
+        switch (tokCommand) {
+        case Token.nada:
+          ichCurrentCommand = ichToken;
+          tokenCommand = token;
+          tokCommand = token.tok;
+          if ((tokCommand & Token.command) == 0)
+            return commandExpected();
+          break;
+        case Token.set:
+          if (ltoken.size() == 1) {
+            if ((token.tok & Token.setspecial) != 0) {
+              tokenCommand = token;
+              tokCommand = token.tok;
+              ltoken.removeAllElements();
+              break;
+            }
+            if ((token.tok & Token.setparam) == 0)
+              return cannotSet(ident);
+          }
+          break;
+        case Token.show:
+          if ((token.tok & Token.showparam) == 0)
+            return cannotShow(ident);
+          break;
+        case Token.define:
+          if (ltoken.size() == 1) {
+            // we are looking at the variable name
+            if (token.tok != Token.identifier &&
+                (token.tok & Token.predefinedset) != Token.predefinedset)
+              return invalidExpressionToken(ident);
+          } else {
+            // we are looking at the expression
+            if (token.tok != Token.identifier &&
+                (token.tok & Token.expression) == 0)
+              return invalidExpressionToken(ident);
+          }
+          break;
+        case Token.center:
+        case Token.restrict:
+        case Token.select:
+          if ((token.tok != Token.identifier) &&
+              (token.tok & Token.expression) == 0)
+            return invalidExpressionToken(ident);
+          break;
+        }
+        ltoken.addElement(token);
+        continue;
+      }
+      if (ltoken.size() == 0)
+        return commandExpected();
+      return unrecognizedToken();
+    }
+    aatokenCompiled = new Token[lltoken.size()][];
+    lltoken.copyInto(aatokenCompiled);
+    return true;
   }
 
   /*
@@ -286,165 +464,6 @@ class Compiler {
       break;
     }
     cchToken = ichT - ichToken;
-    return true;
-  }
-
-  public void compile() throws ScriptException {
-    if (compile1())
-      return;
-
-    int icharEnd;
-    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1 &&
-        (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
-      icharEnd = script.length();
-    String strLine = script.substring(ichCurrentCommand, icharEnd);
-    throw new ScriptException(errorMessage, strLine,
-                              eval.filename, lineCurrent);
-  }
-  
-  boolean compile1() {
-    script = eval.script;
-    cchScript = script.length();
-    ichToken = 0;
-    lineCurrent = 1;
-    int lnLength = 8;
-    linenumbers = new short[lnLength];
-    lineIndices = new short[lnLength];
-    error = false;
-
-    Vector lltoken = new Vector();
-    Vector ltoken = new Vector();
-    Token tokenCommand = null;
-    int tokCommand = Token.nada;
-
-    for ( ; true; ichToken += cchToken) {
-      if (lookingAtLeadingWhitespace())
-        continue;
-      if (lookingAtComment())
-        continue;
-      boolean endOfLine = lookingAtEndOfLine();
-      if (endOfLine || lookingAtEndOfStatement()) {
-        if (tokCommand != Token.nada) {
-          if (! compileCommand(ltoken))
-            return false;
-          lltoken.addElement(atokenCommand);
-          int iCommand = lltoken.size();
-          if (iCommand == lnLength) {
-            short[] lnT = new short[lnLength * 2];
-            System.arraycopy(linenumbers, 0, lnT, 0, lnLength);
-            linenumbers = lnT;
-            lnT = new short[lnLength * 2];
-            System.arraycopy(lineIndices, 0, lnT, 0, lnLength);
-            lineIndices = lnT;
-            lnLength *= 2;
-          }
-          linenumbers[iCommand] = lineCurrent;
-          lineIndices[iCommand] = (short) ichCurrentCommand;
-          ltoken.setSize(0);
-          tokCommand = Token.nada;
-        }
-        if (ichToken < cchScript) {
-          if (endOfLine)
-            ++lineCurrent;
-          continue;
-        }
-        break;
-      }
-      if (tokCommand != Token.nada) {
-        if (lookingAtString()) {
-          String str = script.substring(ichToken+1, ichToken+cchToken-1);
-          ltoken.addElement(new Token(Token.string, str));
-          continue;
-        }
-        if (tokCommand == Token.load && lookingAtLoadFormat()) {
-          String strFormat = script.substring(ichToken, ichToken + cchToken);
-          strFormat = strFormat.toLowerCase();
-          ltoken.addElement(new Token(Token.identifier, strFormat));
-          continue;
-        }
-        if ((tokCommand & Token.specialstring) != 0 &&
-            lookingAtSpecialString()) {
-          String str = script.substring(ichToken, ichToken + cchToken);
-          ltoken.addElement(new Token(Token.string, str));
-          continue;
-        }
-        if (lookingAtPositiveDecimal()) {
-          double value =
-            Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
-          ltoken.addElement(new Token(Token.decimal, new Double(value)));
-          continue;
-        }
-        if (lookingAtPositiveInteger() || 
-            ((tokCommand & Token.negativeints) != 0 &&
-             lookingAtNegativeInteger())) {
-          int val = Integer.parseInt(script.substring(ichToken,
-                                                      ichToken + cchToken));
-          ltoken.addElement(new Token(Token.integer, val, null));
-          continue;
-        }
-      }
-      if (lookingAtLookupToken()) {
-        String ident = script.substring(ichToken, ichToken + cchToken);
-        ident = ident.toLowerCase();
-        Token token = (Token) Token.map.get(ident);
-        if (token == null)
-          token = new Token(Token.identifier, ident);
-        switch (tokCommand) {
-        case Token.nada:
-          ichCurrentCommand = ichToken;
-          tokenCommand = token;
-          tokCommand = token.tok;
-          if ((tokCommand & Token.command) == 0)
-            return commandExpected();
-          break;
-        case Token.set:
-          if (ltoken.size() == 1) {
-            if ((token.tok & Token.setspecial) != 0) {
-              tokenCommand = token;
-              tokCommand = token.tok;
-              ltoken.removeAllElements();
-              break;
-            }
-            if ((token.tok & Token.setparam) == 0)
-              return cannotSet(ident);
-          }
-          break;
-        case Token.show:
-          if ((token.tok & Token.showparam) == 0)
-            return cannotShow(ident);
-          break;
-        case Token.define:
-          if (ltoken.size() == 1) {
-            // we are looking at the variable name
-            if (token.tok != Token.identifier &&
-                (token.tok & Token.predefinedset) != Token.predefinedset)
-              return invalidExpressionToken(ident);
-          } else {
-            // we are looking at the expression
-            if (token.tok != Token.identifier &&
-                (token.tok & Token.expression) == 0)
-              return invalidExpressionToken(ident);
-          }
-          break;
-        case Token.center:
-        case Token.restrict:
-        case Token.select:
-          if ((token.tok != Token.identifier) &&
-              (token.tok & Token.expression) == 0)
-            return invalidExpressionToken(ident);
-          break;
-        }
-        ltoken.addElement(token);
-        continue;
-      }
-      if (ltoken.size() == 0)
-        return commandExpected();
-      return unrecognizedToken();
-    }
-    eval.aatoken = new Token[lltoken.size()][];
-    lltoken.copyInto(eval.aatoken);
-    eval.linenumbers = linenumbers;
-    eval.lineIndices = lineIndices;
     return true;
   }
 

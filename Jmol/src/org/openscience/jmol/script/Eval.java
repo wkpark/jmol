@@ -55,42 +55,44 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean haltExecution;
 
-  final static boolean logMessages = false;
+  final static boolean logMessages = true;
 
   public Eval(DisplayControl control) {
-    compiler = new Compiler(this);
+    compiler = new Compiler();
     this.control = control;
     clearDefinitionsAndLoadPredefined();
   }
 
-  boolean load(String filename, String script, int scriptLevel) {
+  boolean loadScript(String filename, String script, int scriptLevel) {
     this.filename = filename;
     this.script = script;
     this.scriptLevel = scriptLevel;
     if (scriptLevel == scriptLevelMax)
       return TooManyScriptLevels(filename);
-    pc = 0;
-    error = false;
-    try {
-      compiler.compile();
-      return true;
-    } catch (ScriptException e) {
+    if (! compiler.compile(filename, script)) {
       error = true;
-      errorMessage = "" + e;
+      errorMessage = compiler.getErrorMessage();
       System.out.println(errorMessage);
       return false;
     }
+    error = false;
+    errorMessage = null;
+    pc = 0;
+    aatoken = compiler.getAatokenCompiled();
+    linenumbers = compiler.getLineNumbers();
+    lineIndices = compiler.getLineIndices();
+    return true;
   }
 
-  public boolean loadString(String script) {
-    return load(null, script, 0);
+  public boolean loadScriptString(String script) {
+    return loadScript(null, script, 0);
   }
 
-  public boolean loadFile(String filename) {
-    return loadFile(filename, 0);
+  public boolean loadScriptFile(String filename) {
+    return loadScriptFile(filename, 0);
   }
 
-  boolean loadFile(String filename, int scriptLevel) {
+  boolean loadScriptFile(String filename, int scriptLevel) {
     long timeBegin = 0;
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
@@ -115,7 +117,7 @@ public class Eval implements Runnable {
     if (logMessages)
       System.out.println("time to read file=" +
                          (int)(System.currentTimeMillis() - timeBegin));
-    boolean loaded = load(filename, script, scriptLevel);
+    boolean loaded = loadScript(filename, script, scriptLevel);
     if (logMessages)
       System.out.println("total time time to load=" +
                          (int)(System.currentTimeMillis() - timeBegin));
@@ -160,6 +162,7 @@ public class Eval implements Runnable {
   public String toString() {
     String str;
     str = "Eval\n";
+    str += " pc:" + pc + "\n";
     str += aatoken.length + " statements\n";
     for (int i = 0; i < aatoken.length; ++i) {
       str += " |";
@@ -179,8 +182,14 @@ public class Eval implements Runnable {
 
     int cPredef = Token.predefinitions.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++) {
-      script = Token.predefinitions[iPredef];
-      if (compiler.compile1()) {
+      String script = Token.predefinitions[iPredef];
+      if (compiler.compile("#predefinitions", script)) {
+        Token [][] aatoken = compiler.getAatokenCompiled();
+        if (aatoken.length != 1) {
+          System.out.println("predefinition does not have exactly 1 command:"
+                             + script);
+          continue;
+        }
         Token[] statement = aatoken[0];
         if (statement.length > 2) {
           int tok = statement[1].tok;
@@ -196,7 +205,7 @@ public class Eval implements Runnable {
         }
       } else {
         System.out.println("predefined set compile error:" + script +
-                           "\ncompile error:" + compiler.errorMessage);
+                           "\ncompile error:" + compiler.getErrorMessage());
       }
     }
   }
@@ -230,6 +239,7 @@ public class Eval implements Runnable {
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
       System.out.println("Eval.instructionDispatchLoop():" + timeBegin);
+      System.out.println(toString());
     }
     while (!haltExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
@@ -347,6 +357,9 @@ public class Eval implements Runnable {
         return;
       }
     }
+    System.out.println("terminating execution & haltExecution=" + haltExecution
+                       + " pc=" + pc + " aatoken.length=" + aatoken.length);
+    System.out.println(toString());
   }
 
   int getLinenumber() {
@@ -981,6 +994,8 @@ public class Eval implements Runnable {
     String errMsg = control.openFile(filename);
     if (errMsg != null)
       evalError(errMsg);
+    if (logMessages)
+      System.out.println("Successfully loaded:" + filename);
   }
 
   void monitor() throws ScriptException {
@@ -1063,7 +1078,7 @@ public class Eval implements Runnable {
       filenameExpected();
     String filename = (String)statement[1].value;
     Eval eval = new Eval(control);
-    if (eval.loadFile(filename, scriptLevel+1))
+    if (eval.loadScriptFile(filename, scriptLevel+1))
       eval.run();
     else
       errorLoadingScript(eval.errorMessage);

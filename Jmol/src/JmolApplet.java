@@ -226,7 +226,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
   }
 
   public void rasmolScriptInline(String script) {
-    String strError = control.eval(script);
+    String strError = control.evalString(script);
     setStatusMessage(strError);
   }
 

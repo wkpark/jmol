@@ -82,7 +82,7 @@ public class ScriptWindow extends JDialog
       input.setText(null);
 
       // execute script
-      if (eval.loadString(command))
+      if (eval.loadScriptString(command))
         eval.start();
       else {
         output.append(eval.errorMessage);

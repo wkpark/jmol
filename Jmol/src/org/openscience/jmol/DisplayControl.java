@@ -1049,16 +1049,16 @@ final public class DisplayControl {
 
   public String evalFile(String strFilename) {
     if (strFilename != null) {
-      if (! eval.loadFile(strFilename))
+      if (! eval.loadScriptFile(strFilename))
         return eval.getErrorMessage();
       eval.start();
     }
     return null;
   }
 
-  public String eval(String strScript) {
+  public String evalString(String strScript) {
     if (strScript != null) {
-      if (! eval.loadString(strScript))
+      if (! eval.loadScriptString(strScript))
         return eval.getErrorMessage();
       eval.start();
     }

@@ -412,7 +412,7 @@ public class Jmol extends JPanel {
           .showStatus(JmolResourceHandler.getInstance()
                       .getString("Executing script..."));
         Eval eval = jmol.control.getEval();
-        if (eval.loadFile(scriptFilename))
+        if (eval.loadScriptFile(scriptFilename))
           eval.run();
       }
     } catch (Throwable t) {

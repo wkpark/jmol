@@ -340,14 +340,7 @@ public class PovrayDialog extends JDialog {
       try {
         java.io.FileOutputStream os = new java.io.FileOutputStream(theFile);
 
-        PovraySaver povs = new PovraySaver(currentFile, os);
-        povs.setStyleController(style);
-        povs.setSettings(control.getSettings());
-        povs.setScale(control.getZoomScale());
-        povs.setRotateMatrix(control.getPovRotateMatrix());
-        povs.setTranslateMatrix(control.getPovTranslateMatrix());
-        povs.setSize(outputWidth, outputHeight);
-        povs.setBackgroundColor(control.getBackgroundColor());
+        PovraySaver povs = new PovraySaver(currentFile, os, style, control);
         povs.writeFile();
         os.flush();
         os.close();

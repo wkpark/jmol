@@ -22,7 +22,7 @@ package org.openscience.jmol.io;
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
 import org.openscience.jmol.Atom;
-import org.openscience.jmol.DisplaySettings;
+import org.openscience.jmol.DisplayControl;
 import java.util.Date;
 import java.awt.Color;
 import java.text.SimpleDateFormat;
@@ -47,16 +47,11 @@ import java.io.OutputStream;
  */
 public class PovraySaver extends FileSaver {
 
-  private DisplaySettings settings;
-  private String background = null;
-  private PovrayStyleWriter myStyle;
+  private DisplayControl control;
+  private PovrayStyleWriter style;
   private int framenumber = 0;
-  private float scalingFactor;
-  private Matrix4f matrixRotate;
-  private Matrix4f matrixTranslate;
   
   private float edge;
-  private int screenWidth, screenHeight;
   protected ChemFile cf;
 
   /**
@@ -65,94 +60,16 @@ public class PovraySaver extends FileSaver {
    * @param cf The <code>ChemFile</code> object that is being written.
    * @param out The <code>OutputStream</code> which will be written to.
    */
-  public PovraySaver(ChemFile cf, OutputStream out) throws IOException {
+  public PovraySaver(ChemFile cf, OutputStream out, PovrayStyleWriter style,
+                     DisplayControl control) throws IOException {
 
     super(cf, out);
 
     //Hack hack- keep a pointer of our own as FileSaver's is private
     this.cf = cf;
-    myStyle = new PovrayStyleWriter();
-  }
 
-  /**
-   * Sets the number of the actual frame that is written out, by
-   * default this is frame 1.
-   *
-   * @param framenumber THe frame number to write out.
-   */
-  public void setFramenumber(int framenumber) {
-    this.framenumber = framenumber;
-  }
-
-  /**
-   * Sets the background colour of the renderered scene to the
-   * colour given.
-   *
-   * @param bgColor The background color.
-   */
-  public void setBackgroundColor(Color bgColor) {
-    background = povrayColor(bgColor);
-  }
-
-  /**
-   * Set the <code>DisplaySettings</code> object for the saver.
-   *
-   * @param settings The <code>DisplaySettings</code> object to be set.
-   */
-  public void setSettings(DisplaySettings settings) {
-    this.settings = settings;
-  }
-
-  /**
-   * Sets the rotation matrix
-   *
-   * @param amat The rotation matrix to be set.
-   */
-  public void setRotateMatrix(Matrix4f matrixRotate) {
-    this.matrixRotate = new Matrix4f(matrixRotate);
-
-  }
-
-  /**
-   * Sets the translation matrix.
-   *
-   * @param tmat The translation matrix to be set.
-   */
-  public void setTranslateMatrix(Matrix4f matrixTranslate) {
-    this.matrixTranslate = new Matrix4f(matrixTranslate);
-  }
-
-  /**
-   * Sets the scale
-   *
-   * @param scalePixeslPerAngstrom The translation scaling factor.
-   */
-  public void setScale(float scalingFactor) {
-    this.scalingFactor = scalingFactor;
-  }
-
-  /**
-   * Sets the output size of the picture.
-   *
-   * @param width The width of the picture in pixels.
-   * @param height The Height of the picture in pixels.
-   */
-  public void setSize(int width, int height) {
-    this.screenWidth = width;
-    this.screenHeight = height;
-  }
-
-
-  /**
-   * Sets the style controller for this file to that given. Style
-   * controllers must subclass PovrayStyleWriter and control the
-   * appearence of the atoms and bonds.
-   *
-   * @param style The <code>PovrayStyleWriter</code> that will
-   *              control how the atoms and bonds appear.
-   */
-  public void setStyleController(PovrayStyleWriter style) {
-    myStyle = style;
+    this.style = style;
+    this.control = control;
   }
 
   public void writeFileStart(ChemFile cf, BufferedWriter w)
@@ -175,10 +92,10 @@ public class PovraySaver extends FileSaver {
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
     edge = cf.getRotationRadius() * 2;
     edge *= 1.1; // for some reason I need a little more margin
-    edge /= scalingFactor;
+    edge /= control.getZoomScale();
 
-    myStyle.setRotate(matrixRotate);
-    myStyle.setTranslate(matrixTranslate);
+    style.setRotate(control.getPovRotateMatrix());
+    style.setTranslate(control.getPovTranslateMatrix());
 
     Date now = new Date();
     SimpleDateFormat sdf =
@@ -206,8 +123,8 @@ public class PovraySaver extends FileSaver {
     w.write("// NOTE: if you plan to render at a different resoltion,\n");
     w.write("// be sure to update the following two lines to maintain\n");
     w.write("// the correct aspect ratio.\n" + "\n");
-    w.write("#declare Width = " + screenWidth + ";\n");
-    w.write("#declare Height = " + screenHeight + ";\n");
+    w.write("#declare Width = "+ control.getScreenDimension().width + ";\n");
+    w.write("#declare Height = "+ control.getScreenDimension().height + ";\n");
     w.write("#declare Ratio = Width / Height;\n");
     w.write("#declare zoom = " + edge + ";\n\n");
     w.write("camera{\n");
@@ -220,11 +137,9 @@ public class PovraySaver extends FileSaver {
     w.write("}\n");
     w.write("\n");
 
-    if (background != null) {
-      w.write("background { color " + background + " }\n");
-      w.write("\n");
-    }
-
+    w.write("background { color " +
+            povrayColor(control.getBackgroundColor()) + " }\n");
+    w.write("\n");
 
     w.write("light_source { < 0, 0, zoom> " + " rgb <1.0,1.0,1.0> }\n");
     w.write("light_source { < -zoom, zoom, zoom> "
@@ -232,15 +147,15 @@ public class PovraySaver extends FileSaver {
     w.write("\n");
     w.write("\n");
 
-    myStyle.writeAtomsAndBondsMacros(w, cf, settings.getAtomSphereFactor(),
-        settings.getBondWidth());
+    style.writeAtomsAndBondsMacros(w, cf, control.getAtomSphereFactor(),
+        control.getBondWidth());
 
-    boolean drawHydrogen = settings.getShowHydrogens();
+    boolean drawHydrogen = control.getShowHydrogens();
 
 
     try {
 
-      if (settings.getShowAtoms()) {
+      if (control.getShowAtoms()) {
 
         w.write("//***********************************************\n");
         w.write("// List of all of the atoms\n");
@@ -265,7 +180,7 @@ public class PovraySaver extends FileSaver {
           }
 
           if (write_out) {
-            myStyle.writeAtom(w, i, cf);
+            style.writeAtom(w, i, cf);
           }
 
           write_out = true;
@@ -276,7 +191,7 @@ public class PovraySaver extends FileSaver {
 
       /* write the bonds */
 
-      if (settings.getShowBonds()) {
+      if (control.getShowBonds()) {
 
         Hashtable bondsDrawn = new Hashtable();
 
@@ -294,7 +209,7 @@ public class PovraySaver extends FileSaver {
             Atom atom2 = (Atom) bondIter.nextElement();
             if ((bondsDrawn.get(atom2) == null)
                 || !bondsDrawn.get(atom2).equals(atom1)) {
-              myStyle.writeBond(w, atom1, atom2, cf);
+              style.writeBond(w, atom1, atom2, cf);
               bondsDrawn.put(atom1, atom2);
             }
           }

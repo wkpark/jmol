@@ -309,12 +309,13 @@ public class ModelManager {
                          "getBondingRadiusMilliAngstroms() returned " +
                          bondingRadius);
     }
-    if (atom.atomicCharge != 0) {
+    int charge = atom.getAtomicCharge();
+    if (charge != 0) {
       // ionicLookupTable is a sorted table of ionic keys
       // lookup doing a binary search
       // when found, return the corresponding value in ionicMars
       // if not found, just return covalent radius
-      short ionic = (short)((atom.atomicNumber << 4)+(atom.atomicCharge + 4));
+      short ionic = (short)((atom.atomicNumber << 4)+(charge + 4));
       int iMin = 0, iMax = JmolConstants.ionicLookupTable.length;
       while (iMin != iMax) {
         int iMid = (iMin + iMax) / 2;

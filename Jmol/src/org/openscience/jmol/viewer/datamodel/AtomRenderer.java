@@ -85,8 +85,11 @@ class AtomRenderer extends Renderer {
       return;
     boolean hasHalo = viewer.hasSelectionHalo(atom);
     int diameter = atom.diameter;
-    if (diameter == 0 && !hasHalo)
+    if (diameter == 0 && !hasHalo) {
+      atom.chargeAndFlags &= ~Atom.VISIBLE_FLAG;
       return;
+    }
+    atom.chargeAndFlags |= Atom.VISIBLE_FLAG;
     int effectiveDiameter = diameter;
     if (hasHalo) {
       int halowidth = diameter / 4;

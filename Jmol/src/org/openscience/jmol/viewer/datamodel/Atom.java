@@ -36,6 +36,8 @@ import javax.vecmath.Point3i;
 
 public class Atom implements Bspt.Tuple {
 
+  public final static byte VISIBLE_FLAG = 1;
+
   public int atomIndex;
   public Object clientAtom;
   public PdbAtom pdbAtom;
@@ -44,7 +46,7 @@ public class Atom implements Bspt.Tuple {
   short x, y, z;
   short diameter;
   public byte atomicNumber;
-  public byte atomicCharge;
+  byte chargeAndFlags;
   short marAtom;
   short colixAtom;
   Bond[] bonds;
@@ -58,7 +60,7 @@ public class Atom implements Bspt.Tuple {
     this.atomIndex = atomIndex;
     this.clientAtom = clientAtom;
     this.atomicNumber = (byte) viewer.getAtomicNumber(clientAtom);
-    this.atomicCharge = (byte) viewer.getAtomicCharge(clientAtom);
+    this.chargeAndFlags = (byte)(viewer.getAtomicCharge(clientAtom) << 4);
     this.colixAtom = viewer.getColixAtom(this);
     setMarAtom(viewer.getMarAtom());
     this.point3f = new Point3f(viewer.getAtomX(clientAtom),
@@ -271,7 +273,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public int getAtomicCharge() {
-    return atomicCharge;
+    return chargeAndFlags >> 4;
   }
 
   public int getAtomno() {

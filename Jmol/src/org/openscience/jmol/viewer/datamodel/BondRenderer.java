@@ -92,7 +92,9 @@ class BondRenderer extends Renderer {
       return;
     int order = bond.order;
     Atom atomA = bond.atom1;
+    atomA.chargeAndFlags |= Atom.VISIBLE_FLAG;
     Atom atomB = bond.atom2;
+    atomB.chargeAndFlags |= Atom.VISIBLE_FLAG;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,

@@ -458,6 +458,8 @@ public class Frame {
     int r2Nearest = Integer.MAX_VALUE;
     for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
+      if ((atom.chargeAndFlags & Atom.VISIBLE_FLAG) == 0)
+        continue;
       int dx = atom.x - x;
       int dx2 = dx * dx;
       if (dx2 > r2Nearest)

@@ -2196,6 +2196,7 @@ public class Eval implements Runnable {
    ****************************************************************/
 
   void set() throws ScriptException {
+    System.out.println("setting:" + statement[1].value);
     switch(statement[1].tok) {
     case Token.axes:
       setAxes();
@@ -2212,17 +2213,20 @@ public class Eval implements Runnable {
     case Token.color:
       setColor();
       break;
-    case Token.frank:
-      setFrank();
+    case Token.debugscript:
+      setDebugScript();
       break;
     case Token.display:
       setDisplay();
       break;
+    case Token.echo:
+      setEcho();
+      break;
     case Token.fontsize:
       setFontsize();
       break;
-    case Token.labeloffset:
-      setLabelOffset();
+    case Token.frank:
+      setFrank();
       break;
     case Token.hetero:
       setHetero();
@@ -2230,11 +2234,11 @@ public class Eval implements Runnable {
     case Token.hydrogen:
       setHydrogen();
       break;
+    case Token.labeloffset:
+      setLabelOffset();
+      break;
     case Token.monitor:
       setMonitor();
-      break;
-    case Token.debugscript:
-      setDebugScript();
       break;
     case Token.property:
       setProperty();
@@ -2364,6 +2368,14 @@ public class Eval implements Runnable {
     default:
       keywordExpected();
     }
+  }
+
+  void setEcho() throws ScriptException {
+    System.out.println("setEcho() called");
+    viewer.setShapeSize(JmolConstants.SHAPE_ECHO, 1);
+    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "target", "top");
+    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "color", Color.blue);
+    viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "echo", "top!");
   }
 
   void setFontsize() throws ScriptException {

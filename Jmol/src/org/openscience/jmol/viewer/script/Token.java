@@ -112,7 +112,7 @@ public class Token {
   final static int connect      = command |  7 | bool;
   final static int define       = command |  9 | expression;
   final static int dots         = command | 10 | bool;
-  final static int echo         = command | 11 | specialstring;
+  final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;
   final static int hbonds       = command | 13 | setparam | bool;
   final static int help         = command | 14;

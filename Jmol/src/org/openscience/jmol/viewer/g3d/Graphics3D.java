@@ -955,6 +955,23 @@ final public class Graphics3D {
     return Colix.getColix(color);
   }
 
+  public short getColix(String colorName) {
+    // FIXME mth 2004 03 15
+    // move this functionality from the color manager to Graphics3D
+    return getColix(viewer.getColorFromString(colorName));
+  }
+
+  public short getColix(Object obj) {
+    if (obj instanceof Color)
+      return getColix((Color)obj);
+    if (obj instanceof Integer)
+      return getColix(((Integer)obj).intValue());
+    if (obj instanceof String)
+      return getColix((String)obj);
+    System.out.println("?? getColix(" + obj + ")");
+    return HOTPINK;
+  }
+
   public Color getColor(short colix) {
     return Colix.getColor(colix >= 0 ? colix : changableColixMap[-colix]);
   }
@@ -1067,7 +1084,7 @@ final public class Graphics3D {
 
   public Font getFont(byte fontID) {
     int fontIndex = fontID & 0xFF;
-    if (fontIndex > fonts.length)
+    if (fontIndex >= fonts.length)
       growFontArrays(fontIndex);
     Font font = fonts[fontIndex];
     if (font == null) {
@@ -1078,9 +1095,17 @@ final public class Graphics3D {
     return font;
   }
 
+  public int getFontSize(byte fontID) {
+    return fontID & 63;
+  }
+
+  public String getFontFace(byte fontID) {
+    return fontfaces[(fontID >> 6) & 3];
+  }
+
   public FontMetrics getFontMetrics(byte fontID) {
     int fontIndex = fontID & 0xFF;
-    if (fontIndex > fontmetrix.length)
+    if (fontIndex >= fontmetrix.length)
       growFontArrays(fontIndex);
     FontMetrics fontmetrics = fontmetrix[fontIndex];
     if (fontmetrics == null)

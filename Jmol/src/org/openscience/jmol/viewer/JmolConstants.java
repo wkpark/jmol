@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre6d";
+  public final static String version = "10pre6e";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1995,12 +1995,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_BBCAGE   = 10;
   public final static int SHAPE_UCCAGE   = 11;
   public final static int SHAPE_FRANK    = 12;
-  public final static int SHAPE_MAX      = 13;
+  public final static int SHAPE_ECHO     = 13;
+  public final static int SHAPE_MAX      = 14;
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Labels", "Measures",
     "Backbone", "Trace", "Cartoon", "Strands", "Dots",
-    "Axes", "Bbcage", "Uccage", "Frank",
+    "Axes", "Bbcage", "Uccage", "Frank", "Echo"
   };
 
   // all of these things are compile-time constants
@@ -2025,6 +2026,4 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
-
-
 }

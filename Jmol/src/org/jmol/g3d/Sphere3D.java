@@ -147,6 +147,50 @@ class Sphere3D {
     }
   }
 
+  // thanks to nico for eliminating the function call to put up the pixels
+  void renderBigClipped(int[] shades, int diameter, int x, int y, int z) {
+    int radius = diameter / 2;
+    x -= radius;
+    y -= radius;
+    float r = diameter / 2.0f;
+    float r2 = r * r;
+    
+    float yF = -r + 0.5f;
+    int zMin = z - ((diameter + 1) >> 1);
+    int width = g3d.width;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int y0 = y;
+    int offsetPbufBeginLine = width * y + x;
+    for (int i = 0; i < diameter;
+         ++i, ++y0, ++yF, offsetPbufBeginLine += width) {
+      if ((y0 < 0) || (y0 >= g3d.height))
+      	continue;
+      float y2 = yF * yF;
+      float xF = -r + 0.5f;
+      int x0 = x;
+      int offsetPbuf = offsetPbufBeginLine;
+      for (int j = 0; j < diameter;
+           ++j, ++x0, ++xF, ++offsetPbuf) {
+      	if ((x0 < 0) || (x0 >= g3d.width))
+      	  continue;
+        if (zbuf[offsetPbuf] <= zMin)
+          continue;
+        float z2 = r2 - y2 - xF*xF;
+        if (z2 >= 0) {
+          float zF = (float)Math.sqrt(z2);
+          int z0 = z - (int)(zF + 0.5f);
+          if (zbuf[offsetPbuf] <= z0)
+            continue;
+          int intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, zF);
+          pbuf[offsetPbuf] = shades[intensity];
+          zbuf[offsetPbuf] = (short) z0;
+        }
+      }
+    }
+  }
+
+  /*
   void renderBigClipped(int[] shades, int diameter, int x, int y, int z) {
     int radius = diameter / 2;
     x -= radius;
@@ -172,6 +216,7 @@ class Sphere3D {
       }
     }
   }
+  */
 
   void render(short colix, int diameter, int x, int y, int z) {
     int[] shades = g3d.getShades(colix);

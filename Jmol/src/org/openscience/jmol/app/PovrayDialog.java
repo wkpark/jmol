@@ -923,9 +923,7 @@ public class PovrayDialog extends JDialog {
 
     commandLine =
       povrayPath +
-	  " +I\"" + savePath + basename + ".pov\"" +
-	  " +O\"" + savePath + basename + ".tga\"" +
-	  " +FT";
+	  " +I\"" + savePath + basename + ".pov\"";
 
     // Output format options
     if ((outputFormatBox != null) && (outputFormatBox.isSelected())) {

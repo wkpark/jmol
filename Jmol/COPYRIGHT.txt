@@ -1,64 +1,64 @@
-Copyright 2001  The Jmol Development Team
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
+Copyright 2001 The Jmol Development Team
 
-This program is distributed in the hope that it will be useful,
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+02111-1307  USA.
 
 
+This software uses several external libraries and resources:
 
-The copyrights for most portions of this software package are held
-by Jmol Development Team.  Other copyright holders include the following:
+JUnit
+  Used for unit testing. Distributed by the IBM Public License (see
+  doc/ibm.license.html). See http://www.junit.org/.
 
-Copyright (c) 1994-1997 Sun Microsystems, Inc.:
-  Matrix3D.java
-  TableMap.java
-  TableSorter.java
-Copyright (c) 1998 James R. Weeks and BioElectroMech:
-  JpegEncoder.java  (This software is based in part on the work of the 
-                     Independent JPEG Group.)
-Copyright(C) 1998 by Dean S. Jones (dean@gallant.com):
-  Icons  (see http://www.javalobby.org/jfa/projects/icons/index.html)
+Java CML Filter Library
+  Used for CML reading and writing. Distributed by GNU Public License (see
+  doc/gpl.license, and requires providing the source code (see
+  doc/jcfl-1.2.6-source.tar.gz). See http://www.openscience.org/~egonw/cml/.
 
-Other contributors to Jmol have not expressly copyrighted their 
-work, but are cited here to give credit where credit is due:
-  
-Ralph (ralph@truleigh.demon.co.uk): Splash.java 
-Simon Bromley:                      poshTableSorter.java
+AElfred
+  Used for XML parsing. Distributed free and without warranty.
+  Copyright (C) 1997,1998 by Microstar Software Ltd.
+  See http://www.microstar.com/aelfred.html.
 
-Since the source code is included in this distribution, you should
-consult the relevant files to learn the terms of the copyrights under
-which you may redistribute a given source file.  Most of the source
-code contributed to Jmol has nearly identical distribution
-restrictions to those that are imposed below.
+SAX
+  Used for event-based XML parsing. Distributed free and without warranty.
+  See http://www.megginson.com/SAX/.
 
-Jmol now includes jar files for 2 additional packages that aid in
-parsing CML files:
+Acme Image encoders
+  Used for exporting images in GIF and PPM formats. Distributed free and
+  without warranty. Copyright (C) 1996,1998 by Jef Poskanzer.
+  See http://www.acme.com/.
 
-    AElfred, is a Java-based XML parser from Microstar.  It is free
-             for both commercial and non-commercial use, and COMES
-             WITH NO WARRANTY.  Details on and source code for AElfred
-             are available at:  http://www.microstar.com/aelfred.html
+JPEG Encoder
+  Used for exporting images in JPEG format. Distributed free and without
+  warranty (see doc/jpegEncoder.license).
+  Copyright (c) 1998 James R. Weeks and BioElectroMech.
+  See http://www.obrador.com/essentialjpeg/.
 
-        SAX, is a free API for event-based XML parsing.  It is free
-             for both commercial and non-commercial use.  Details on
-             and source code for SAX are available at:
-             http://www.megginson.com/SAX/
+Java Analysis Studio
+  Used for graphs. Distributed by the GNU Lesser General Public License
+  (see doc/lgpl.license). See http://jas.freehep.org/.
 
-Jmol also includes jar files for the Acme Image encoders by Jef Poskanzer
-(http://www.acme.com) as well as the junit Java testing framework 
-(http://www.xprogramming.com/software.htm)
+Unofficial Java3D vecmath package
+  Used for linear algebra. Distributed free and without warranty.
+  Copyright (C) 1997,1998,1999 by Kenji Hiranabe.
+  See http://www.esm.co.jp/divisions/open-sys/java/vecmath/.
 
-The Ptolemy PtPlot Library (http://ptolemy.eecs.berkeley.edu/) is used for viewing plots. 
-Copyright (C) 1997-1999 The Regents of the University of California. 
-All rights reserved. 
+JFA Icon collection
+  Used for icons in menus and toolbars. Distributed free and without warranty.
+  Copyright (C) 1998 by Dean S. Jones.
+  See http://jfa.javalobby.org/projects/icons/
 

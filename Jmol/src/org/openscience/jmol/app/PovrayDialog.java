@@ -51,6 +51,7 @@ import javax.swing.JComponent;
 import javax.swing.InputVerifier;
 import java.io.FileNotFoundException;
 import java.io.File;
+import java.util.Vector;
 
 /**
  * A dialog for controling the creation of a povray input file from a
@@ -757,7 +758,6 @@ public class PovrayDialog extends JDialog {
   void goPressed() {
 
     // File theFile = new.getSelectedFile();
-    commandLine = commandLineField.getText();
     String filename = basename + ".pov";
     File theFile = new File(savePath, filename);
     if (theFile != null) {
@@ -773,7 +773,8 @@ public class PovrayDialog extends JDialog {
     }
     try {
       if (callPovray) {
-        Runtime.getRuntime().exec(commandLine);
+      	String[] commandLineArgs = getCommandLineArgs();
+        Runtime.getRuntime().exec(commandLineArgs);
       }
     } catch (java.io.IOException e) {
       System.out.println("Caught IOException in povray exec: " + e);
@@ -932,8 +933,8 @@ public class PovrayDialog extends JDialog {
     //        commandLine = commandLineField.getText();
 
     commandLine =
-      povrayPath +
-      " +I" + doubleQuoteIfContainsSpace(savePath + basename + ".pov");
+      doubleQuoteIfContainsSpace(povrayPath) +
+      " +I" + simpleQuoteIfContainsSpace(savePath + basename + ".pov");
 
     // Output format options
     String outputExtension = ".tga";
@@ -957,7 +958,7 @@ public class PovrayDialog extends JDialog {
     }
     commandLine +=
       " +O" +
-      doubleQuoteIfContainsSpace(savePath + basename + outputExtension) +
+      simpleQuoteIfContainsSpace(savePath + basename + outputExtension) +
       outputFileType;
     
     // Output alpha options
@@ -1001,7 +1002,57 @@ public class PovrayDialog extends JDialog {
     }
   }
 
-
+  /**
+   * @return Command line split into arguments
+   */
+  private String[] getCommandLineArgs() {
+  	
+    //Parsing command line
+    commandLine = commandLineField.getText();
+    Vector vector = new Vector();
+    int begin = 0;
+    int end = 0;
+    int doubleQuoteCount = 0;
+    while (end < commandLine.length()) {
+      if (commandLine.charAt(end) == '\"') {
+        doubleQuoteCount++;
+      }
+      if (Character.isSpaceChar(commandLine.charAt(end))) {
+        while ((begin < end) &&
+               (Character.isSpaceChar(commandLine.charAt(begin)))) {
+          begin++;
+        }
+        if (end > begin + 1) {
+          if (doubleQuoteCount % 2 == 0) {
+            vector.add(commandLine.substring(begin, end));
+            begin = end;
+          }
+        }
+      }
+      end++;
+    }
+    while ((begin < end) &&
+           (Character.isSpaceChar(commandLine.charAt(begin)))) {
+      begin++;
+    }
+    if (end > begin + 1) {
+      vector.add(commandLine.substring(begin, end));
+    }
+    
+    //Construct result
+    String[] args = new String[vector.size()];
+    for (int pos = 0; pos < vector.size(); pos++) {
+      args[pos] = vector.get(pos).toString();
+      System.out.println(args[pos]);
+      if ((args[pos].charAt(0) == '\"') &&
+          (args[pos].charAt(args[pos].length() - 1) == '\"')) {
+        args[pos] = args[pos].substring(1, args[pos].length() - 1);
+      }
+      System.out.println(args[pos]);
+    }
+    return args;
+  }
+  
   /**
    * Centers the dialog on the screen.
    */
@@ -1061,6 +1112,13 @@ public class PovrayDialog extends JDialog {
     for (int i = str.length(); --i >= 0; )
       if (str.charAt(i) == ' ')
         return "\"" + str + "\"";
+    return str;
+  }
+
+  String simpleQuoteIfContainsSpace(String str) {
+    for (int i = str.length(); --i >= 0; )
+      if (str.charAt(i) == ' ')
+        return "\'" + str + "\'";
     return str;
   }
 }

@@ -110,7 +110,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
-  private JCheckBox cH, cV, cM;
+  private JCheckBox cH, cM;
   private JCheckBox cbWireframeRotation, cbPerspectiveDepth;
   private JCheckBox cbShowAxes, cbShowBoundingBox;
   private JCheckBox cbAxesOrientationRasmol;
@@ -243,13 +243,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     cH = guimap.newJCheckBox("Prefs.showHydrogens",
                              viewer.getShowHydrogens());
     cH.addItemListener(checkBoxListener);
-    cV = guimap.newJCheckBox("Prefs.showVectors", viewer.getShowVectors());
-    cV.addItemListener(checkBoxListener);
     cM = guimap.newJCheckBox("Prefs.showMeasurements",
                              viewer.getShowMeasurements());
     cM.addItemListener(checkBoxListener);
     showPanel.add(cH);
-    showPanel.add(cV);
     showPanel.add(cM);
 
     constraints = new GridBagConstraints();
@@ -918,7 +915,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private void updateComponents() {
     // Display panel
     cH.setSelected(viewer.getShowHydrogens());
-    cV.setSelected(viewer.getShowVectors());
     cM.setSelected(viewer.getShowMeasurements());
 
     cbWireframeRotation.setSelected(viewer.getWireframeRotation());
@@ -1049,7 +1045,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setBondTolerance(bondTolerance);
     viewer.setAutoBond(autoBond);
     viewer.setShowHydrogens(showHydrogens);
-    viewer.setShowVectors(showVectors);
     viewer.setShowMeasurements(showMeasurements);
     viewer.setWireframeRotation(wireframeRotation);
     viewer.setPerspectiveDepth(perspectiveDepth);
@@ -1101,10 +1096,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         showHydrogens = isSelected;
         viewer.setShowHydrogens(showHydrogens);
         currentProperties.put("showHydrogens", strSelected);
-      } else if (key.equals("Prefs.showVectors")) {
-        showVectors = isSelected;
-        viewer.setShowVectors(showVectors);
-        currentProperties.put("showVectors", strSelected);
       } else if (key.equals("Prefs.showMeasurements")) {
         showMeasurements = isSelected;
         viewer.setShowMeasurements(showMeasurements);

@@ -1734,8 +1734,6 @@ final public class JmolViewer {
       return getShapeShow(JmolConstants.SHAPE_UCCAGE);
     if (key.equalsIgnoreCase("showHydrogens"))
       return getShowHydrogens();
-    if (key.equalsIgnoreCase("showVectors"))
-      return getShowVectors();
     if (key.equalsIgnoreCase("showMeasurements"))
       return getShowMeasurements();
     if (key.equalsIgnoreCase("showSelections"))
@@ -1775,8 +1773,6 @@ final public class JmolViewer {
       { setShowHydrogens(value); return; }
     if (key.equalsIgnoreCase("showHydrogens"))
       { setShowHydrogens(value); return; }
-    if (key.equalsIgnoreCase("showVectors"))
-      { setShowVectors(value); return; }
     if (key.equalsIgnoreCase("showMeasurements"))
       { setShowMeasurements(value); return; }
     if (key.equalsIgnoreCase("showSelections"))
@@ -1930,15 +1926,6 @@ final public class JmolViewer {
 
   public boolean getShowHydrogens() {
     return styleManager.showHydrogens;
-  }
-
-  public void setShowVectors(boolean showVectors) {
-    styleManager.setShowVectors(showVectors);
-    refresh();
-  }
-
-  public boolean getShowVectors() {
-    return styleManager.showVectors;
   }
 
   public void setShowMeasurements(boolean showMeasurements) {

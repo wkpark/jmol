@@ -151,7 +151,6 @@ public class DisplayPanel extends JPanel
   private aChargeColorAction acchargeAction = new aChargeColorAction();
   private aAtomTypeColorAction actypeAction = new aAtomTypeColorAction();
   private HydrogensAction hydrogensAction = new HydrogensAction();
-  private VectorsAction vectorsAction = new VectorsAction();
   private MeasurementsAction measurementsAction =
     new MeasurementsAction();
   private SelectallAction selectallAction = new SelectallAction();
@@ -172,19 +171,6 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
       viewer.setShowHydrogens(cbmi.isSelected());
-    }
-  }
-
-  class VectorsAction extends AbstractAction {
-
-    public VectorsAction() {
-      super("vectorsCheck");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShowVectors(cbmi.isSelected());
     }
   }
 
@@ -486,7 +472,6 @@ public class DisplayPanel extends JPanel
     //                       viewer.getWireframeRotation());
     guimap.setSelected("perspectiveCheck", viewer.getPerspectiveDepth());
     guimap.setSelected("hydrogensCheck", viewer.getShowHydrogens());
-    guimap.setSelected("vectorsCheck", viewer.getShowVectors());
     guimap.setSelected("measurementsCheck", viewer.getShowMeasurements());
     guimap.setSelected("axesCheck",
                        viewer.getShapeShow(JmolConstants.SHAPE_AXES));
@@ -500,7 +485,7 @@ public class DisplayPanel extends JPanel
       deleteAction, pickAction, rotateAction, zoomAction, xlateAction,
       frontAction, topAction, bottomAction, rightAction, leftAction,
       defineCenterAction,
-      hydrogensAction, vectorsAction, measurementsAction,
+      hydrogensAction, measurementsAction,
       selectallAction, deselectallAction,
       homeAction, wireframerotationAction, perspectiveAction,
       axesAction, boundboxAction,

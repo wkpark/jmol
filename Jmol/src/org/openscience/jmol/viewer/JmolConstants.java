@@ -1224,11 +1224,29 @@ final public class JmolConstants {
   public final static byte SECONDARY_STRUCTURE_SHEET = 2;
   public final static byte SECONDARY_STRUCTURE_HELIX = 3;
 
+  /****************************************************************
+   * In DRuMS, RasMol, and Chime, quoting from
+   * http://www.umass.edu/microbio/rasmol/rascolor.htm
+   *
+   *The RasMol structure color scheme colors the molecule by
+   *protein secondary structure.
+   *
+   *Structure                   Decimal RGB    Hex RGB
+   *Alpha helices  red-magenta  [255,0,128]    FF 00 80  *
+   *Beta strands   yellow       [255,200,0]    FF C8 00  *
+   *
+   *Turns          pale blue    [96,128,255]   60 80 FF
+   *Other          white        [255,255,255]  FF FF FF
+   *
+   **Values given in the 1994 RasMol 2.5 Quick Reference Card ([240,0,128]
+   *and [255,255,0]) are not correct for RasMol 2.6-beta-2a.
+   *This correction was made above on Dec 5, 1998.
+   ****************************************************************/
   public final static int[] argbsPdbStructure = {
-    0xFFFFFFFF, // white       STRUCTURE_NONE
-    0xFF4876FF, // RoyalBlue1  STRUCTURE_TURN
-    0xFFFFFF00, // yellow      STRUCTURE_SHEET
-    0xFFEE00EE, // magenta2    STRUCTURE_HELIX
+    0xFFFFFFFF, // STRUCTURE_NONE
+    0xFF6080FF, // STRUCTURE_TURN
+    0xFFFFC800, // STRUCTURE_SHEET
+    0xFFFF0080, // STRUCTURE_HELIX
   };
 
   public final static int argbPdbAminoDefault =  0xFFBEA06E; // tan

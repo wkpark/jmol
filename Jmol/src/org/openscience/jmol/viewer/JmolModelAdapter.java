@@ -48,43 +48,6 @@ import java.io.BufferedReader;
 public interface JmolModelAdapter {
   
 
-  /****************************************************************
-   * the capabilities
-   ****************************************************************/
-  /**
-   * Whether or not this client wants to implement getAtomicNumber(clientAtom)
-   * If not, then the JmolViewer will look up the atomicNumber using
-   * getAtomicSymbol(clientAtom).
-   * A client which implements getAtomicNumber() may still choose to
-   * return the value -1, thereby asking Jmol to map using getAtomicSymbol()
-   * @see #getAtomicNumber(Object clientAtom)
-   * @see #getAtomicSymbol(Object clientAtom)
-   */
-  public boolean suppliesAtomicNumber();
-
-  /**
-   * Whether or not this client wants to implement getAtomicSymbol(clientAtom)
-   * If not, then the JmolViewere will look up the atomicSymbol using
-   * getAtomicNumber(clientAtom)
-   * A client which implements getAtomicSymbol() may still choose to
-   * return the value null, thereby asking Jmol to map to the appropriate
-   * atomic symbol by using getAtomicNumber()
-   * The default atomic symbol table is included in this file for user
-   * reference
-   * Note that either getAtomicNumber(clientAtom) or
-   * getAtomicSymbol(clientAtom) must be implemented.
-   * @see #getAtomicSymbol(Object clientAtom)
-   * @see #getAtomicNumber(Object clientAtom)
-   */
-  public boolean suppliesAtomicSymbol();
-
-  /**
-   * Whether or not this client wants to implement getAtomTypeName(clientAtom)
-   * If suppliesAtomTypeName() returns false or getAtomTypeName returns nul
-   * then the atomicSymbol is substituted.
-   */
-  public boolean suppliesAtomTypeName();
-
   /*****************************************************************
    * file related
    ****************************************************************/

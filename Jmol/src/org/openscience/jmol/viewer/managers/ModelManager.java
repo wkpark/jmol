@@ -41,21 +41,12 @@ public class ModelManager {
 
   JmolViewer viewer;
   JmolModelAdapter modelAdapter;
-  boolean suppliesAtomicNumber;
-  boolean suppliesAtomicSymbol;
-  boolean suppliesAtomTypeName;
-  boolean suppliesVanderwaalsRadius;
-  boolean suppliesBondingRadius;
   final Frame nullFrame;
 
   public ModelManager(JmolViewer viewer, JmolModelAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
     this.nullFrame = new Frame(viewer);
-
-    suppliesAtomicNumber = modelAdapter.suppliesAtomicNumber();
-    suppliesAtomicSymbol = modelAdapter.suppliesAtomicSymbol();
-    suppliesAtomTypeName = modelAdapter.suppliesAtomTypeName();
   }
 
   public Object clientFile;
@@ -247,45 +238,28 @@ public class ModelManager {
   }
 
   public int getAtomicNumber(Object clientAtom) {
-    if (suppliesAtomicNumber) {
-      int atomicNumber = modelAdapter.getAtomicNumber(clientAtom);
-      if (atomicNumber < -1 ||
-          atomicNumber >= JmolConstants.atomicNumberMax) {
-        System.out.println("JmolModelAdapter.getAtomicNumber() returned " +
-                           atomicNumber);
-        return 0;
-      }
-      if (atomicNumber >= 0)
-        return atomicNumber;
+    int atomicNumber = modelAdapter.getAtomicNumber(clientAtom);
+    if (atomicNumber < -1 ||
+        atomicNumber >= JmolConstants.atomicNumberMax) {
+      System.out.println("JmolModelAdapter.getAtomicNumber() returned " +
+                         atomicNumber);
+      return 0;
     }
+    if (atomicNumber >= 0)
+      return atomicNumber;
     return mapAtomicSymbolToAtomicNumber(clientAtom);
   }
-
-  /*
-  public String getAtomicSymbol(Atom atom) {
-    if (suppliesAtomicSymbol) {
-      String atomicSymbol = modelAdapter.getAtomicSymbol(atom.clientAtom);
-      if (atomicSymbol != null)
-        return atomicSymbol;
-      System.out.println("JmolModelAdapter.getAtomicSymbol returned null");
-    }
-    return JmolConstants.atomicSymbols[atom.atomicNumber];
-  }
-  */
 
   public int getAtomicCharge(Object clientAtom) {
     return modelAdapter.getAtomicCharge(clientAtom);
   }
 
   public String getAtomTypeName(Atom atom) {
-    if (suppliesAtomTypeName) {
-      String atomTypeName = modelAdapter.getAtomTypeName(atom.clientAtom);
-      if (atomTypeName != null)
-        return atomTypeName;
-    }
-    if (atom.pdbAtom != null) {
+    String atomTypeName = modelAdapter.getAtomTypeName(atom.clientAtom);
+    if (atomTypeName != null)
+      return atomTypeName;
+    if (atom.pdbAtom != null)
       return atom.pdbAtom.getAtomPrettyName();
-    }
     return JmolConstants.atomicSymbols[atom.atomicNumber];
   }
 

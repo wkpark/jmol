@@ -37,13 +37,6 @@ import java.util.StringTokenizer;
 public class SimpleModelAdapter implements JmolModelAdapter {
 
   /****************************************************************
-   * the capabilities
-   ****************************************************************/
-  public boolean suppliesAtomicNumber() { return false; }
-  public boolean suppliesAtomicSymbol() { return true; }
-  public boolean suppliesAtomTypeName() { return false; }
-  
-  /****************************************************************
    * the file related methods
    ****************************************************************/
 
@@ -274,7 +267,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
   public float getAtomZ(Object clientAtom) {
     return ((Atom)clientAtom).z;
   }
-
 
   public String getPdbAtomRecord(Object clientAtom){
     return ((Atom)clientAtom).pdbAtomRecord;

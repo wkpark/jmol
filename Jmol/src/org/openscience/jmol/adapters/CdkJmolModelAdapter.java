@@ -63,13 +63,6 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   }
 
   /****************************************************************
-   * the capabilities
-   ****************************************************************/
-  public boolean suppliesAtomicNumber() { return true; }
-  public boolean suppliesAtomicSymbol() { return true; }
-  public boolean suppliesAtomTypeName() { return true; }
-  
-  /****************************************************************
    * the file related methods
    ****************************************************************/
 
@@ -390,14 +383,5 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     public float getPoint2Z() {
       return (float)point2.z;
     }
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // notifications
-  ////////////////////////////////////////////////////////////////
-  public void notifyAtomDeleted(Object clientAtom) {
-    System.out.println("CdkJmolModelAdapter has received notification" +
-                       " that an atom has been deleted");
-    // insert CDK code here
   }
 }

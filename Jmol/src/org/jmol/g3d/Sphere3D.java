@@ -163,18 +163,36 @@ class Sphere3D {
     short[] zbuf = g3d.zbuf;
     int y0 = y;
     int offsetPbufBeginLine = width * y + x;
-    for (int i = 0; i < diameter;
+    int iBegin = 0;
+    if (y < 0) {
+      iBegin = -y0;
+      y0 = 0;
+      yF += iBegin;
+      offsetPbufBeginLine += iBegin * width;
+    }
+    int iEnd = diameter;
+    if (y + iEnd > height) {
+      iEnd = height - y;
+    }
+    for (int i = iBegin; i < iEnd;
          ++i, ++y0, ++yF, offsetPbufBeginLine += width) {
-      if ((y0 < 0) || (y0 >= height))
-      	continue;
       float y2 = yF * yF;
       float xF = -r + 0.5f;
       int x0 = x;
       int offsetPbuf = offsetPbufBeginLine;
-      for (int j = 0; j < diameter;
+      int jBegin = 0;
+      if (x < 0) {
+      	jBegin = -x0;
+      	x0 = 0;
+      	xF += jBegin;
+      	offsetPbuf += jBegin;
+      }
+      int jEnd = diameter;
+      if (x + jEnd > width) {
+      	jEnd = width - x;
+      }
+      for (int j = jBegin; j < jEnd;
            ++j, ++x0, ++xF, ++offsetPbuf) {
-      	if ((x0 < 0) || (x0 >= g3d.width))
-      	  continue;
         if (zbuf[offsetPbuf] <= zMin)
           continue;
         float z2 = r2 - y2 - xF*xF;

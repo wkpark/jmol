@@ -30,7 +30,7 @@ import org.openscience.jmol.adapters.SimpleModelAdapter;
 //import org.openscience.jmol.adapters.CdkJmolModelAdapter;
 import org.openscience.jmol.ui.JmolPopup;
 
-import java.applet.Applet;
+import java.applet.*;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
@@ -48,6 +48,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   AppletCanvas canvas;
   JmolViewer viewer;
   JmolPopup jmolpopup;
+  String htmlName;
 
   private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
 
@@ -83,6 +84,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
 
   public void init() {
+    htmlName = getParameter("name");
+    JmolAppletRegistry.checkIn(htmlName, this);
+
     loadProperties();
     initWindows();
     initApplication();
@@ -261,6 +265,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void script(String script) {
+    System.out.println(htmlName + " will try to run:\n-----" + script + "\n-----\n");
     String strError = viewer.evalString(script);
     setStatusMessage(strError);
   }

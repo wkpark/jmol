@@ -53,7 +53,7 @@ public class PdbMolecule {
       Vector v = (Vector)ht.get(boxed);
       if (v == null)
         ht.put(boxed, v = new Vector());
-      v.add(pdbatom);
+      v.addElement(pdbatom);
     }
 
     for (int i = structureRecords.length; --i >= 0; ) {

@@ -977,12 +977,12 @@ public interface JmolModelAdapter {
     // xwindows colors
     // ' '->0 'A'->1, 'B'->2
     0xFF6B8E23, // OliveDrab
-    0xFFFF0000, // red
-    0xFF00FF00, // lime
     0xFF0000FF, // blue
-    0xFFFFFF00, // yellow
-    0xFFFF00FF, // magenta
     0xFF00FFFF, // cyan
+    0xFF00FF00, // lime
+    0xFFFFFF00, // yellow
+    0xFFFF0000, // red
+    0xFFFF00FF, // magenta
     0xFFFFA500, // orange
     0xFF87CEEB, // SkyBlue
     0xFF8B0000, // red4

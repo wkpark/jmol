@@ -727,6 +727,7 @@ class Compiler {
     case Token.asterisk:
     case Token.leftsquare:
     case Token.identifier:
+    case Token.colon:
       return clauseWildcard();
     case Token.leftparen:
       tokenNext();
@@ -827,8 +828,10 @@ class Compiler {
   }
 
   boolean clauseResName() {
-    if (tokPeek() == Token.asterisk) {
-      tokenNext();
+    int tokPeek = tokPeek();
+    if (tokPeek == Token.asterisk || tokPeek == Token.colon) {
+      if (tokPeek == Token.asterisk)
+        tokenNext();
       return addTokenToPostfix(Token.tokenAll);
     }
     Token tokenIdent = tokenNext();

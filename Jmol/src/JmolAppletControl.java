@@ -24,6 +24,7 @@
  */
 
 import java.applet.*;
+import org.openscience.jmol.applet.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -98,6 +99,8 @@ public class JmolAppletControl extends Applet {
   public void init() {
     context = getAppletContext();
     myName = getParam("name");
+    JmolAppletRegistry.checkIn(myName, this);
+
     targetName = getParam("target");
     typeName = getParamLowerCase("type");
     for (type = typeNames.length;
@@ -226,7 +229,7 @@ public class JmolAppletControl extends Applet {
   }
 
   private void notifyRadioPeers() {
-    for (Enumeration enum = context.getApplets(); enum.hasMoreElements(); ) {
+    for (Enumeration enum = JmolAppletRegistry.applets(); enum.hasMoreElements(); ) {
       Object peer = enum.nextElement();
       if (! (peer instanceof JmolAppletControl))
         continue;
@@ -259,7 +262,7 @@ public class JmolAppletControl extends Applet {
       System.out.println(typeName + " has no target?");
       return;
     }
-    Object targetApplet = context.getApplet(targetName);
+    Applet targetApplet = JmolAppletRegistry.lookup(targetName);
     if (targetApplet == null) {
       System.out.println("target " + targetName + " not found");
       return;

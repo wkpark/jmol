@@ -26,7 +26,6 @@ package org.openscience.jmol.applet;
 
 import org.openscience.jmol.viewer.JmolViewer;
 
-//import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Dimension;
 import java.awt.Canvas;

@@ -31,6 +31,9 @@
   <change contributor="JJ">
     MDL file reader.
   </change>
+  <change>
+    Fixed reading certain GAMESS and Dalton files. (bug #529999)
+  </change>
 </changes>
 
 <changes version="jmol-1.2">

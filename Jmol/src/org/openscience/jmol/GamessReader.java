@@ -214,8 +214,9 @@ public class GamessReader implements ChemFileReader {
       line = input.readLine();
     }
     line = input.readLine();
-    while (line.indexOf("FREQUENCY:") >= 0) {
-      StringReader freqValRead = new StringReader(line.substring(16));
+    while (line != null && line.indexOf("FREQUENCY:") >= 0) {
+      int colonIndex = line.indexOf(':');
+      StringReader freqValRead = new StringReader(line.substring(colonIndex+1));
       StreamTokenizer token = new StreamTokenizer(freqValRead);
       Vector vibs = new Vector();
       while (token.nextToken() != StreamTokenizer.TT_EOF) {
@@ -244,8 +245,6 @@ public class GamessReader implements ChemFileReader {
         line = input.readLine();
         StringReader vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
-        token.nextToken();
-
         // ignore first token
         token.nextToken();
 
@@ -253,6 +252,8 @@ public class GamessReader implements ChemFileReader {
         token.nextToken();
 
         // ignore third token
+        token.nextToken();
+
         for (int j = 0; j < currentVibs.length; ++j) {
           currentVectors[j] = new double[3];
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
@@ -264,9 +265,9 @@ public class GamessReader implements ChemFileReader {
         line = input.readLine();
         vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
+        // ignore first token
         token.nextToken();
 
-        // ignore first token
         for (int j = 0; j < currentVibs.length; ++j) {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[1] = token.nval;
@@ -277,9 +278,9 @@ public class GamessReader implements ChemFileReader {
         line = input.readLine();
         vectorRead = new StringReader(line);
         token = new StreamTokenizer(vectorRead);
+        // ignore first token
         token.nextToken();
 
-        // ignore first token
         for (int j = 0; j < currentVibs.length; ++j) {
           if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
             ((double[]) currentVectors[j])[2] = token.nval;
@@ -294,6 +295,9 @@ public class GamessReader implements ChemFileReader {
       }
       for (int i = 0; i < 15; ++i) {
         line = input.readLine();
+        if (line != null && line.indexOf("FREQUENCY:") >= 0) {
+          break;
+        }
       }
     }
   }

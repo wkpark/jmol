@@ -1,69 +1,39 @@
 #!/bin/sh
-#
-# Set JMOL_HOME and JAVA_HOME to match the appropriate installation 
-# directories on your system:
-#
-JMOL_HOME=${JMOL_HOME:-/home/maul/gezelter/gezelter/Jmol}
-#
-# Solaris:
-#JAVA_HOME=/usr/local/jdk1.2.2
-#JAVA_HOME=/usr/local/linux-jdk1.2
-JAVA_HOME=/usr/java
-#
-# FreeBSD:
-#JAVA_HOME=/usr/local/jdk1.1.8
-#
-# AIX:
-#JAVA_HOME=/usr/jdk_base
-#
-# IRIX:
-#JAVA_HOME=/usr/java
-# These 3 lines may or may not be helpful under IRIX:
-#JAVA_JIT_NO_GRA=true
-#JAVA_JIT_NO_FAST_JNI=true
-#export JAVA_JIT_NO_GRA JAVA_JIT_NO_FAST_JNI
-#
-# If you JDK doesn't implement native threads, comment out the next 2 lines:
-#
-THREADS_FLAG=${THREADS_FLAG:-native}
-export THREADS_FLAG
-#
-# If you have a specific JIT that you want to try, enable it here
-# (otherwise, comment out the next 2 lines):
-#
-JAVA_COMPILER=sunwjit
-export JAVA_COMPILER
-#
-####################################################################
-#
-# You shouldn't need to change anything else.
-#
-# Setting the CLASSPATH
-#
-CLASSPATH=${JMOL_HOME}/jars/jmol.jar
-#
-# Figure out what version of Java we are running
-#
-JVERL=`$JAVA_HOME/bin/java -version 2>&1`
-JVMin=`echo $JVERL | awk -F\" '{print $2}' | awk -F. '{print $2}'`
-# 
-# below Java 1.2, insert some classpath stuff for swing:
-#
-if [ "x$JVMin" = "x1" ]; then
-     echo "Using Java 1.1 classpath"
-     CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/classes.zip:$JAVA_HOME/lib/rt.jar:$JMOL_HOME/jars/swing.jar:$JMOL_HOME/jars/multi.jar
+
+# Collect -D options as java arguments
+command=java
+while [ `echo $1 | egrep '^-D' | wc -l` != 0 ]; do
+	command="$command $1"
+	shift
+done
+
+# Determine installation location
+if [ "$JMOL_HOME" = "" ]; then
+	binDir=${0%/*}
+	if [ "$binDir" = "$0" ]; then
+		# Ran from local directory
+		binDir=$PWD
+	fi
+	# Resolve symlinks.
+	program="$0"
+	while [ -L "$program" ]; do
+		ls=`/bin/ls -ld "$program"`
+		link=`/usr/bin/expr "$ls" : '.*-> \(.*\)$'`
+		if /usr/bin/expr "$link" : '.*/.*' > /dev/null; then
+		program="$link"
+		else
+		program="`/usr/bin/dirname $program`/$link"
+		fi
+	done
+	binDir=`dirname $program`
 fi
-#
-# Now post-fix some jar files on the end of the classpath:
-#
-CLASSPATH=$CLASSPATH:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/jas.jar
-export JMOL_HOME
-export CLASSPATH
-#
-if test -n "$JAVA_HOME"; then
-  export JAVA_HOME
-  PATH=${JAVA_HOME}/bin:${PATH}
-  export PATH
+
+JMOL_HOME=${JMOL_HOME:-$binDir}
+libDir=${JMOL_HOME}/jars
+
+if [ ! -e $libDir/jmol.jar ]; then
+	echo "Jmol could not find its installed files."
+	exit
 fi
-#
-$JAVA_HOME/bin/java -Djmol.home=$JMOL_HOME org.openscience.jmol.Jmol "$@"
+
+exec $command -Djmol.home="$JMOL_HOME" -cp $libDir/jmol.jar org.openscience.jmol.Jmol "$@"

@@ -1,24 +1,46 @@
 <project name="Jmol" default="main" basedir=".">
 
-	<property name="Jmol.home" value="${user.dir}"/>
-	<property name="source.dir" value="src"/>
-	<property name="classes.dir" value="classes"/>
-	<property name="dist.dir" value="dist"/>
-	<property name="docs.dir" value="api-docs"/>
+	<property name="version" value="0.7" />
+	<property name="Jmol.home" value="${user.dir}" />
+	<property name="source.dir" value="src" />
+	<property name="generatedSource.dir" value="generatedSource" />
+	<property name="lib.dir" value="jars" />
+	<property name="classes.dir" value="classes" />
+	<property name="dist.dir" value="dist" />
+	<property name="javadoc.dir" value="javadoc" />
 
-	<property name="classpath" value="jars/sax.jar:jars/aelfred.jar:jars/cml.jar:jars/Acme.jar:jars/vecmath1.1-1.12.jar:jars/junit.jar:jars/jas.jar"/>
+	<property name="docbook.dir" value="${user.dir}/../docbook" />
 
-	<property name="manifest" value="manifest"/>
+	<property name="classpath" value="${lib.dir}/sax.jar:${lib.dir}/aelfred.jar:${lib.dir}/cml.jar:${lib.dir}/Acme.jar:${lib.dir}/vecmath1.1-1.12.jar:${lib.dir}/junit.jar:${lib.dir}/jas.jar"/>
+
+	<property name="manifest" value="${source.dir}/manifest"/>
 	
 	<property name="build.compiler" value="classic"/>
 
-	<target name="main" depends="jar"/>
+	<target name="main" depends="init,jmolGuide,jar"/>
+	
+	<target name="init" >
+		<uptodate property="jmolGuilde.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
+			<srcfiles dir="doc/source" includes="JMolGuide.docbook.xml" />
+		</uptodate>
+		<uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
+			<srcfiles dir="src" includes="**/*.java" />
+		</uptodate>
+	</target>
 
-	<target name="classes">
+	<target name="jmolGuide" depends="init" unless="jmolGuilde.uptodate" >
+		<echo message="Generating user's guide" />
+		<mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
+		<java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" classname="com.icl.saxon.StyleSheet" classpath="${lib.dir}/saxon.jar" >
+			<arg value="${user.dir}/doc/source/JMolGuide.docbook.xml" />
+			<arg value="${docbook.dir}/html/chunk.xsl" />
+		</java>
+	</target>
+	
+	<target name="classes" depends="init">
 		<mkdir dir="${classes.dir}"/>
 		<javac srcdir="${source.dir}" destdir="${classes.dir}" classpath="${classpath}"
 			debug="off" deprecation="on"
-			excludes="**/pending/**,**/jmol/ColorCellEditor.java,**/jmol/FrameHandler.java,**/jmol/MeasurementFactory.java,**/jmol/XYZFile.java"
 		/>
 		<copy todir="${classes.dir}" >
 			<fileset dir="${source.dir}">
@@ -30,17 +52,25 @@
 				<include name="**/Data/*" />
 			</fileset>
 		</copy>
+		<copy todir="${classes.dir}" >
+			<fileset dir="${generatedSource.dir}">
+				<include name="**/*.jpg" />
+				<include name="**/*.gif" />
+				<include name="**/*.html" />
+			</fileset>
+		</copy>
 	</target>
 
-	<target name="jar" depends="classes">
-		<jar jarfile="jars/jmol.jar" >
+	<target name="jar" depends="init,jmolGuide,classes">
+		<jar jarfile="${lib.dir}/jmol.jar" manifest="${manifest}" >
 			<fileset dir="${classes.dir}" >
 				<exclude name="**/.*" />
 				<exclude name="**/Test*.class" />
 				<include name="**/jmol/**" />
 			</fileset>
 		</jar>
-		<jar jarfile="jars/JmolApplet.jar" >
+		
+		<jar jarfile="${lib.dir}/jmol-applet.jar" >
 			<fileset dir="${classes.dir}" >
 				<exclude name="**/.*" />
 				<include name="**/miniJmol/**" />
@@ -53,14 +83,16 @@
 	</target>
 
 	<target name="dist" depends="jar">
-		<mkdir dir="${dist.dir}/jmol"/>
-		<copy todir="${dist.dir}/jmol/jars" >
-			<fileset dir="jars">
+		<mkdir dir="${dist.dir}/jmol-${version}"/>
+		<copy todir="${dist.dir}/jmol-${version}/${lib.dir}" >
+			<fileset dir="${lib.dir}">
+				<exclude name="jmol-applet.jar" />
 				<exclude name="swing.jar" />
 				<exclude name="junit.jar" />
+				<exclude name="saxon.jar" />
 			</fileset>
 		</copy>
-		<copy todir="${dist.dir}/jmol" >
+		<copy todir="${dist.dir}/jmol-${version}" >
 			<fileset dir=".">
 				<include name="jmol" />
 				<include name="jmol.mac" />
@@ -68,8 +100,26 @@
 				<include name="*.txt" />
 			</fileset>
 		</copy>
-		<copy todir="${dist.dir}/jmol/samples" >
+		<copy todir="${dist.dir}/jmol-${version}/samples" >
 			<fileset dir="samples" />
+		</copy>
+		
+		<mkdir dir="${dist.dir}/jmol-applet-${version}"/>
+		<copy todir="${dist.dir}/jmol-applet-${version}/${lib.dir}" >
+			<fileset dir="${lib.dir}">
+				<exclude name="jmol.jar" />
+				<exclude name="jas.jar" />
+				<exclude name="Acme.jar" />
+				<exclude name="swing.jar" />
+				<exclude name="junit.jar" />
+				<exclude name="multi.jar" />
+				<exclude name="saxon.jar" />
+			</fileset>
+		</copy>
+		<copy todir="${dist.dir}/jmol-applet-${version}" >
+			<fileset dir=".">
+				<include name="*.txt" />
+			</fileset>
 		</copy>
 	</target>
 
@@ -84,11 +134,15 @@
 	</target>
 
 	<target name="clean">
+		<delete dir="${generatedSource.dir}"/>
 		<delete dir="${classes.dir}"/>
-	</target>
-
-	<target name="real_clean" depends="clean">
-		<delete dir="${docs.dir}"/>
+		<delete>
+			<fileset dir="${lib.dir}">
+				<include name="jmol.jar" />
+				<include name="jmol-applet.jar" />
+			</fileset>
+		</delete>
+		<delete dir="${javadoc.dir}"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 
@@ -100,10 +154,10 @@
 		<java fork="true" classpath="${classpath}:classes" classname="org.openscience.jmol.TestAll" />
 	</target>
 
-	<target name="docs">
-		<mkdir dir="${docs.dir}"/>
-		<javadoc destdir="${docs.dir}" classpath="${classpath}" sourcepath="src"
-			private="true" packagenames="org.openscience.jmol,org.openscience.miniJmol"
+	<target name="javadoc" depends="init" unless="javadoc.uptodate">
+		<mkdir dir="${javadoc.dir}"/>
+		<javadoc destdir="${javadoc.dir}" classpath="${classpath}" sourcepath="src"
+			private="true" packagenames="org.openscience.*"
 		/>
 	</target>
 

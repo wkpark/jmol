@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : JmolHistory.docbook.xml (v 1.42)
+  Translated from default version : JmolHistory.docbook.xml (v 1.43)
 -->
 <history>
 <contributors>
@@ -78,6 +78,14 @@
     <name>Rajarshi Guha</name><email>rxg218@psu.edu</email>
   </contributor>
 </contributors>
+
+<changes version="jmol-11pre?">
+  <change contributor="EW">
+    Am&#x00E9;lioration du CdkJmolAdpater: les propri&#x00E9;t&#x00E9;s
+    PDB sont maintenant support&#x00E9;es, ChemSequence/ChemModel is
+    mapp&#x00E9; sur AtomSetCollection/AtomSet.
+  </change>
+</changes>
 
 <changes version="jmol-10">
   <change contributor="MTH">

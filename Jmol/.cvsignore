@@ -1,6 +1,7 @@
 applet-classes
 classes
 build
+bin
 dist
 javadoc
 Jmol*.zip

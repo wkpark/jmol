@@ -148,7 +148,7 @@ final public class DisplayControl {
     return outlineColor;
   }
 
-  public Color pickedColor = Color.orange;
+  private Color pickedColor = Color.orange;
   private Color pickedTranslucentColor;
   public void setPickedColor(Color c) {
     if (pickedColor == null || !pickedColor.equals(c)) {
@@ -589,7 +589,7 @@ final public class DisplayControl {
     return backgroundColor;
   }
 
-  private boolean wireframeRotation = false;
+  public boolean wireframeRotation = false;
   public void setWireframeRotation(boolean wireframeRotation) {
     this.wireframeRotation = wireframeRotation;
     recalc();

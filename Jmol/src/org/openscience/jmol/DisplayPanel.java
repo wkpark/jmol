@@ -32,11 +32,13 @@ import javax.swing.event.MenuListener;
 import javax.swing.event.MenuEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 
@@ -46,6 +48,20 @@ import javax.swing.RepaintManager;
  */
 public class DisplayPanel extends JPanel
     implements MeasurementListListener, PropertyChangeListener {
+
+  private StatusBar status;
+  private GuiMap guimap;
+  private DisplayControl control;
+
+  public DisplayPanel(StatusBar status, GuiMap guimap,
+                      DisplayControl control) {
+    this.status = status;
+    this.guimap = guimap;
+    this.control = control;
+    if (System.getProperty("painttime", "false").equals("true"))
+      showPaintTime = true;
+  }
+
 
   private boolean rubberbandSelectionMode = false;
   private int bx, by, rtop, rbottom, rleft, rright;
@@ -69,17 +85,7 @@ public class DisplayPanel extends JPanel
   public static final int DELETE = 6;
   private int modeMouse = ROTATE;
 
-  private StatusBar status;
-
   private Measure measure = null;
-  private static DisplayControl control;
-
-  public DisplayPanel(StatusBar status, DisplayControl control) {
-    this.status = status;
-    this.control = control;
-    if (System.getProperty("painttime", "false").equals("true"))
-      showPaintTime = true;
-  }
 
   public DisplayControl getDisplayControl() {
     return control;
@@ -236,6 +242,7 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  /*
   public static void setBackgroundColor(Color bg) {
     control.setBackgroundColor(bg);
   }
@@ -243,6 +250,7 @@ public class DisplayPanel extends JPanel
   public static Color getBackgroundColor() {
     return control.getBackgroundColor();
   }
+  */
 
   public void paint(Graphics g) {
     if (showPaintTime)
@@ -378,7 +386,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      control.setShowVectors(cbmi.isSelected());
+      control.setShowHydrogens(cbmi.isSelected());
     }
   }
 
@@ -846,11 +854,8 @@ public class DisplayPanel extends JPanel
 
   MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
-        JMenu jm = (JMenu) e.getSource();
-        String menuText = jm.getText();
-        String displayLabel =
-          JmolResourceHandler.getInstance().getString("Jmol.displayLabel");
-        if (menuText.equals(displayLabel)) {
+        String menuKey = guimap.getKey(e.getSource());
+        if (menuKey.equals("display")) {
           setDisplayMenuState();
         }
       }
@@ -865,10 +870,19 @@ public class DisplayPanel extends JPanel
   }
 
   private void setDisplayMenuState() {
-    // Arrrrgh - I give up
-    // with the current menu construction scheme I don't see an easy way to
-    // set the state of the checkboxes to be consistent with the preferences
-    // dialog box
+    guimap.setSelected("wireframerotation", control.wireframeRotation);
+    guimap.setSelected("bonds", control.showBonds);
+    guimap.setSelected("atoms", control.showAtoms);
+    guimap.setSelected("vectors", control.showVectors);
+    guimap.setSelected("hydrogens", control.showHydrogens);
+    final String[] modeLabel = {"plain", "symbols", "types", "numbers"};
+    guimap.setSelected(modeLabel[control.labelMode], true);
+    final String[] modeAtom = {"aquickdraw", "ashading", "awireframe"};
+    guimap.setSelected(modeAtom[control.atomDrawMode], true);
+    final String[] modeBond = {"bquickdraw", "bshading", "bwireframe","bline"};
+    guimap.setSelected(modeBond[control.bondDrawMode], true);
+    final String[] modeColor = {"actype", "accharge"};
+    guimap.setSelected(modeColor[control.atomColorProfile], true);
   }
 
   public Action[] getActions() {

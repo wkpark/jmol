@@ -152,6 +152,8 @@ public class Jmol extends JPanel {
   private FileTyper fileTyper;
   private JFileChooser exportChooser;
 
+  private GuiMap guimap = new GuiMap();
+
   /**
    * The current file.
    */
@@ -236,7 +238,7 @@ public class Jmol extends JPanel {
     splash.showStatus(resourceHandler
         .translate("Initializing 3D display..."));
     control = new DisplayControl();
-    display = new DisplayPanel(status, control);
+    display = new DisplayPanel(status, guimap, control);
     control.setDisplayPanel(display);
     model.addPropertyChangeListener(display);
     splash.showStatus(resourceHandler
@@ -670,8 +672,7 @@ public class Jmol extends JPanel {
 
     JMenuItem mi;
     if (isRadio) {
-      mi = new JRadioButtonMenuItem(JmolResourceHandler.getInstance()
-          .getString("Jmol." + cmd + labelSuffix));
+      mi = guimap.newJRadioButtonMenuItem(cmd);
     } else {
       String checked = JmolResourceHandler.getInstance().getString("Jmol."
                          + cmd + checkSuffix);
@@ -680,11 +681,9 @@ public class Jmol extends JPanel {
         if (checked.equals("true")) {
           c = true;
         }
-        mi = new JCheckBoxMenuItem(JmolResourceHandler.getInstance()
-            .getString("Jmol." + cmd + labelSuffix), c);
+        mi = guimap.newJCheckBoxMenuItem(cmd, c);
       } else {
-        mi = new JMenuItem(JmolResourceHandler.getInstance().getString("Jmol."
-            + cmd + labelSuffix));
+        mi = guimap.newJMenuItem(cmd);
       }
     }
     String mnem = JmolResourceHandler.getInstance().getString("Jmol." + cmd
@@ -925,8 +924,7 @@ public class Jmol extends JPanel {
     }
 
     // Get label associated with this menu:
-    JMenu menu = new JMenu(JmolResourceHandler.getInstance().getString("Jmol."
-                   + key + labelSuffix));
+    JMenu menu = guimap.newJMenu(key);
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {
@@ -1026,7 +1024,7 @@ public class Jmol extends JPanel {
    * Suffix applied to the key used in resource file
    * lookups for a label.
    */
-  private static final String labelSuffix = "Label";
+  public static final String labelSuffix = "Label";
 
   /**
    * Suffix applied to the key used in resource file
@@ -1493,3 +1491,4 @@ public class Jmol extends JPanel {
   }
 
 }
+

@@ -529,7 +529,7 @@ public class AtomShape implements Shape {
         halowidth = 2;
       int halodiameter = diameter + 2 * halowidth;
       int haloradius = radius + halowidth;
-      g.setColor(control.pickedColor);
+      g.setColor(control.getPickedColor());
       g.fillOval(x - haloradius, y - haloradius, halodiameter, halodiameter);
     }
     Color color = getAtomColor(control, atom);

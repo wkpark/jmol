@@ -15,6 +15,12 @@
 <contributor id="FD"><name>Fabian Dortu</name><email>fabian.dortu@wanadoo.be</email></contributor>
 </contributors>
 
+<changes version="jmol-5">
+  <change contributor="EW">
+    Internationalized Jmol and added Dutch translation.
+  </change>
+</changes>
+
 <changes version="jmol-4">
   <change contributor="BS">
     Reading of MOPAC 97 and 2002 files. Formerly, only MOPAC 7 files worked.

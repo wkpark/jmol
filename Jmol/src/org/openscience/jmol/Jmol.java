@@ -270,7 +270,7 @@ class Jmol extends JPanel {
     splash.showStatus(resourceHandler.translate("Initializing Chemical Shifts..."));
     chemicalShifts.initialize(apm);
     model.addPropertyChangeListener(chemicalShifts);
-    
+
     splash.showStatus(resourceHandler.translate("Starting display..."));
     display.start();
 
@@ -893,7 +893,7 @@ class Jmol extends JPanel {
 
     // Get label associated with this menu:
     JMenu menu = new JMenu(JmolResourceHandler.getInstance().getString("Jmol."
-                   + key + "Label"));
+                   + key + labelSuffix));
 
     // Loop over the items in this menu:
     for (int i = 0; i < itemKeys.length; i++) {

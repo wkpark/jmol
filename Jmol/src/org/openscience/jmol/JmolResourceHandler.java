@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -24,6 +23,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import javax.swing.JComponent;
 import javax.swing.ImageIcon;
 
 /**
@@ -35,19 +35,24 @@ import javax.swing.ImageIcon;
 class JmolResourceHandler {
 
   private static JmolResourceHandler instance;
-
   private ResourceBundle resourceBundle;
+  private Locale locale;
 
   private JmolResourceHandler() {
-    String locale = System.getProperty("lang", "en_EN");
-    String lang = "en";
-    String country = "EN";
-    StringTokenizer st = new StringTokenizer(locale, "_");
-    if (st.hasMoreTokens()) lang = st.nextToken();
-    if (st.hasMoreTokens()) country = st.nextToken();
-    Locale l = new Locale(lang, country);
+    locale = Locale.getDefault();
+    String localeString = System.getProperty("user.language");
+    if (locale != null) {
+        String lang = "en";
+        String country = "US";
+        StringTokenizer st = new StringTokenizer(localeString, "_");
+        if (st.hasMoreTokens()) lang = st.nextToken();
+        if (st.hasMoreTokens()) country = st.nextToken();
+        locale = new Locale(lang, country);
+        Locale.setDefault(locale);
+        JComponent.setDefaultLocale(locale);
+    }
     resourceBundle =
-        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol", l);
+        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol", locale);
   }
 
   public static JmolResourceHandler getInstance() {
@@ -89,12 +94,12 @@ class JmolResourceHandler {
     return result;
   }
 
-  /** 
+  /**
    * A wrapper for easy detection which strins in the
    * source code are localized.
    */
   public synchronized String translate(String text) {
-    StringTokenizer st = new StringTokenizer(text);
+    StringTokenizer st = new StringTokenizer(text, " ");
     StringBuffer key = new StringBuffer();
     while (st.hasMoreTokens()) {
       key.append(st.nextToken());
@@ -104,6 +109,10 @@ class JmolResourceHandler {
     }
     String translatedText = getString(key.toString());
     return (translatedText != null) ? translatedText : text;
+  }
+
+  public synchronized Locale getLocale() {
+    return locale;
   }
 
   public synchronized Object getObject(String key) {

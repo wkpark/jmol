@@ -86,7 +86,8 @@ public class MeasurementList extends JDialog {
    */
   public MeasurementList(JFrame f, DisplayPanel dp) {
 
-    super(f, "Measurement List", false);
+    super(f, JmolResourceHandler.getInstance()
+          .translate("Measurement List"), false);
     this.display = dp;
     commands = new Hashtable();
     Action[] actions = getActions();
@@ -102,18 +103,18 @@ public class MeasurementList extends JDialog {
     mPanel.setLayout(new BorderLayout());
 
     top = new DefaultMutableTreeNode(JmolResourceHandler.getInstance()
-        .getString("MeasurementList.mLabel"));
+        .translate("MeasurementList.mLabel"));
     treeModel = new DefaultTreeModel(top);
 
     distances =
         new ListNode(JmolResourceHandler.getInstance()
-          .getString("MeasurementList.distanceLabel"), distanceList);
+          .translate("MeasurementList.distanceLabel"), distanceList);
     angles =
         new ListNode(JmolResourceHandler.getInstance()
-          .getString("MeasurementList.angleLabel"), angleList);
+          .translate("MeasurementList.angleLabel"), angleList);
     dihedrals =
         new ListNode(JmolResourceHandler.getInstance()
-          .getString("MeasurementList.dihedralLabel"), dihedralList);
+          .translate("MeasurementList.dihedralLabel"), dihedralList);
 
     treeModel.insertNodeInto(distances, top, top.getChildCount());
     treeModel.insertNodeInto(angles, top, top.getChildCount());
@@ -168,7 +169,8 @@ public class MeasurementList extends JDialog {
     });
     buttonPanel.add(xButton);
     xButton.setEnabled(false);
-    JButton dismiss = new JButton("Dismiss");
+    JButton dismiss = new JButton(JmolResourceHandler.getInstance()
+        .translate("Dismiss"));
     dismiss.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {

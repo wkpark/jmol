@@ -53,19 +53,19 @@ class RecentFilesDialog extends JDialog implements ActionListener,
   public RecentFilesDialog(java.awt.Frame boss) {
 
     super(boss, JmolResourceHandler.getInstance()
-        .getString("RecentFiles.windowTitle"), true);
+        .translate("RecentFiles.windowTitle"), true);
     props = new java.util.Properties();
     getFiles();
     getContentPane().setLayout(new java.awt.BorderLayout());
     JPanel buttonPanel = new JPanel();
     okButton =
         new JButton(JmolResourceHandler.getInstance()
-          .getString("RecentFiles.okLabel"));
+          .translate("RecentFiles.okLabel"));
     okButton.addActionListener(this);
     buttonPanel.add(okButton);
     cancelButton =
         new JButton(JmolResourceHandler.getInstance()
-          .getString("RecentFiles.cancelLabel"));
+          .translate("RecentFiles.cancelLabel"));
     cancelButton.addActionListener(this);
     buttonPanel.add(cancelButton);
     getContentPane().add("South", buttonPanel);

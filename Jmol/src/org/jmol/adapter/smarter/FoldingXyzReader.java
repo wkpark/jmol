@@ -38,7 +38,10 @@ import java.util.StringTokenizer;
  */
 
 class FoldingXyzReader extends AtomSetCollectionReader {
-    
+
+  // Enable / Disable features of the reader
+  private final static boolean useAutoBond = false;
+  
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
     atomSetCollection = new AtomSetCollection("Folding@Home");
@@ -49,7 +52,7 @@ class FoldingXyzReader extends AtomSetCollectionReader {
       	int modelAtomCount = Integer.parseInt(tokens.nextToken());
       	atomSetCollection.newAtomSet();
       	if (tokens.hasMoreTokens()) {
-      		atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
+      	  atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
       	}
       	readAtoms(reader, modelAtomCount);
       }
@@ -59,11 +62,16 @@ class FoldingXyzReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 	    
-  final float[] chargeAndOrVector = new float[4];
-  final boolean isNaN[] = new boolean[4];
-  
+  /**
+   * @param reader
+   * @param modelAtomCount
+   * @throws Exception
+   */
   void readAtoms(BufferedReader reader,
                  int modelAtomCount) throws Exception {
+  	// Stores bond informations
+  	int[][] bonds = new int[modelAtomCount][];
+  	
     for (int i = 0; i <= modelAtomCount; ++i) {
       String line = reader.readLine();
       if ((line != null) && (line.length() == 0)) {
@@ -75,16 +83,82 @@ class FoldingXyzReader extends AtomSetCollectionReader {
 	    parseInt(line);
 	    atom.atomName = parseToken(line, ichNextParse);
 	    if (atom.atomName != null) {
-	    	atom.elementSymbol = atom.atomName.substring(0, 1);
+	      int carCount = 1;
+          if ((atom.atomName.length() >= 2) &&
+              (Character.isLetter(atom.atomName.charAt(0))) &&
+			  (Character.isLetter(atom.atomName.charAt(1)))) {
+          	char c1 = Character.toUpperCase(atom.atomName.charAt(0));
+          	char c2 = Character.toLowerCase(atom.atomName.charAt(1));
+          	switch (c1) {
+          	case 'C':
+          	  switch (c2) {
+          	  case 'l':
+          	    carCount = 2;	
+          	  }
+          	}
+          }
+          atom.elementSymbol = atom.atomName.substring(0, carCount);
 	    }
 	    atom.x = parseFloat(line, ichNextParse);
 	    atom.y = parseFloat(line, ichNextParse);
 	    atom.z = parseFloat(line, ichNextParse);
-	    parseInt(line, ichNextParse);
+	    //parseInt(line, ichNextParse);
+	    
+	    // Memorise bond informations
+	    int bondCount = 0;
+	    bonds[i] = new int[5];
 	    int bondNum = Integer.MIN_VALUE;
 	    while ((bondNum = parseInt(line, ichNextParse)) > 0) {
-	      atomSetCollection.addNewBond(i, bondNum - 1);
+	      if (bondCount == bonds[i].length) {
+	      	bonds[i] = setLength(bonds[i], bondCount + 1); 
+	      }
+	      bonds[i][bondCount++] = bondNum - 1;
 	    }
+	    if (bondCount < bonds[i].length) {
+	      bonds[i] = setLength(bonds[i], bondCount);
+	    }
+      }
+    }
+    
+    // Bonds
+    if (!useAutoBond) {
+    
+      // Decide if first bond is relevant
+      int incorrectBonds = 0;
+      for (int origin = 0; origin < bonds.length; origin++) {
+      	if (bonds[origin].length > 0) {
+          boolean correct = false;
+          int destination = bonds[origin][0];
+          if ((destination >= 0) && (destination < bonds.length)) {
+            for (int j = 0; j < bonds[destination].length; j++) {
+              if (bonds[destination][j] == origin) {
+                correct = true;
+              }
+            }
+          }
+          if (!correct) {
+            incorrectBonds++;
+          }
+      	}
+      }
+      
+      // Create bond
+      int start = (incorrectBonds * 5) > bonds.length ? 1 : 0;
+      for (int origin = start; origin < bonds.length; origin++) {
+        for (int i = 0; i < bonds[origin].length; i++) {
+          boolean correct = false;
+          int destination = bonds[origin][i];
+          if ((destination >= 0) && (destination < bonds.length)) {
+          	for (int j = start; j < bonds[destination].length; j++) {
+          	  if (bonds[destination][j] == origin) {
+          	  	correct = true;
+          	  }
+          	}
+          }
+          if (correct && (destination > origin)) {
+          	atomSetCollection.addNewBond(origin, destination);
+          }
+        }
       }
     }
   }

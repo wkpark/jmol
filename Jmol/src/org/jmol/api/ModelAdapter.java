@@ -193,7 +193,7 @@ public abstract class ModelAdapter {
     public float getVectorY() { return Float.NaN; }
     public float getVectorZ() { return Float.NaN; }
     public float getBfactor() { return Float.NaN; }
-    public float getOccupancy() { return Float.NaN; }
+    public int getOccupancy() { return 100; }
     public String getPdbAtomRecord() { return null; }
     public Object getClientAtomReference() { return null; }
   }

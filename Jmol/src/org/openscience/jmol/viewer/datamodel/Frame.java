@@ -118,7 +118,7 @@ final public class Frame {
                       byte atomicNumber,
                       String atomName, 
                       int atomicCharge,
-                      float occupancy,
+                      int occupancy,
                       float bfactor,
                       float x, float y, float z,
                       String pdbAtomRecord,

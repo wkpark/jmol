@@ -62,7 +62,7 @@ public class Atom implements Bspt.Tuple {
               byte elementNumber,
               String atomName,
               int atomicCharge,
-              float occupancy,
+              int occupancy,
               float bfactor,
               float x, float y, float z,
               PdbFile pdbFile, String pdbAtomRecord) {
@@ -72,9 +72,11 @@ public class Atom implements Bspt.Tuple {
     this.modelNumber = (short)modelNumber;
     this.elementNumber = elementNumber;
     this.chargeAndFlags = (byte)(atomicCharge << 4);
-    this.occupancy = (occupancy == Float.NaN || occupancy >= 1.0f
-                      ? (byte) 100
-                      : (occupancy <= 0 ? (byte)0 : (byte)(occupancy * 100)));
+    this.occupancy = (occupancy < 0
+                      ? (byte)0
+                      : (occupancy > 100
+                         ? (byte)100
+                         : (byte)occupancy));
     this.bfactor100 =
       (bfactor == Float.NaN ? Short.MIN_VALUE : (short)(bfactor*100));
     this.atomName = atomName;

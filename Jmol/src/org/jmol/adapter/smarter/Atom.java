@@ -34,23 +34,9 @@ class Atom {
   float x, y, z;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
-  float occupancy = Float.NaN;
+  int occupancy = 100;
   String pdbAtomRecord;
 
   Atom() {
-  }
-
-  Atom(int modelNumber, String symbol, int charge, float occupancy,
-       float bfactor,
-       float x, float y, float z, String pdb) {
-    this.elementSymbol = symbol;
-    this.charge = charge;
-    this.occupancy = occupancy;
-    this.bfactor = bfactor;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.modelNumber = modelNumber;
-    this.pdbAtomRecord = pdb;
   }
 }

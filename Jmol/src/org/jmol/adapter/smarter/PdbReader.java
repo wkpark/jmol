@@ -169,11 +169,13 @@ class PdbReader extends ModelReader {
        * read the occupancy from cols 55-60 (1-based)
        * should be in the range 0.00 - 1.00
        ****************************************************************/
-      float occupancy = Float.NaN;
+      int occupancy = 100;
       if (len >= 60) {
         String occupancyField = line.substring(54, 60).trim();
-        if (occupancyField.length() > 0)
-          occupancy = Float.valueOf(occupancyField).floatValue();
+        if (occupancyField.length() > 0) {
+          float floatOcc = Float.valueOf(occupancyField).floatValue();
+          occupancy = (int)(floatOcc * 100);
+        }
       }
       
       /****************************************************************/

@@ -159,7 +159,7 @@ public class SmarterModelAdapter extends ModelAdapter {
     public float getVectorY() { return atom.vectorY; }
     public float getVectorZ() { return atom.vectorZ; }
     public float getBfactor() { return atom.bfactor; }
-    public float getOccupancy() { return atom.occupancy; }
+    public int getOccupancy() { return atom.occupancy; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 

@@ -229,7 +229,7 @@ public class SimpleModelAdapter extends ModelAdapter {
     public float getVectorY() { return atom.vectorY; }
     public float getVectorZ() { return atom.vectorZ; }
     public float getBfactor() { return atom.bfactor; }
-    public float getOccupancy() { return atom.occupancy; }
+    public int getOccupancy() { return atom.occupancy; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
@@ -271,7 +271,7 @@ class Atom {
   float x, y, z;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   float bfactor = Float.NaN;
-  float occupancy = Float.NaN;
+  int occupancy = 100;
   String pdbAtomRecord;
 
   Atom(int modelNumber, String symbol, int charge,
@@ -296,7 +296,7 @@ class Atom {
     this.z = z;
   }
 
-  Atom(int modelNumber, String symbol, int charge, float occupancy,
+  Atom(int modelNumber, String symbol, int charge, int occupancy,
        float bfactor,
        float x, float y, float z, String pdb) {
     this.elementSymbol = symbol;
@@ -669,11 +669,13 @@ class PdbModel extends Model {
        * read the occupancy from cols 55-60 (1-based)
        * should be in the range 0.00 - 1.00
        ****************************************************************/
-      float occupancy = Float.NaN;
+      int occupancy = 100;
       if (len >= 60) {
         String occupancyField = line.substring(54, 60).trim();
-        if (occupancyField.length() > 0)
-          occupancy = Float.valueOf(occupancyField).floatValue();
+        if (occupancyField.length() > 0) {
+          float floatOcc = Float.valueOf(occupancyField).floatValue();
+          occupancy = (int)(floatOcc * 100);
+        }
       }
       
       /****************************************************************/

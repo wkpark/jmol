@@ -353,18 +353,6 @@ final public class DisplayControl {
     return transformManager.transformPoint(pointAngstroms);
   }
 
-  /*
-  public int screenAtomDiameter(int z, Atom atom) {
-    return transformManager.screenAtomDiameter(z, atom,
-                                               styleManager.percentVdwAtom);
-  }
-
-  public int screenBondWidth(int z) {
-    return transformManager.screenBondWidth(z,
-                                            styleManager.percentAngstromBond);
-  }
-  */
-
   public double scaleToScreen(int z, double sizeAngstroms) {
     return transformManager.scaleToScreen(z, sizeAngstroms);
   }
@@ -1154,6 +1142,10 @@ final public class DisplayControl {
 
   public double getArrowHeadRadius() {
     return styleManager.arrowHeadRadius;
+  }
+
+  public boolean getDebugShowAxis() {
+    return false;
   }
 
   /****************************************************************

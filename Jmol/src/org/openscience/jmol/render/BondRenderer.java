@@ -51,6 +51,7 @@ public class BondRenderer {
     colorSelection = control.getColorSelection();
     showMultipleBonds = control.getShowMultipleBonds();
     modeMultipleBond = control.getModeMultipleBond();
+    showAxis = control.getDebugShowAxis();
   }
 
   boolean fastRendering;
@@ -58,6 +59,7 @@ public class BondRenderer {
   Color colorSelection;
   boolean showMultipleBonds;
   byte modeMultipleBond;
+  boolean showAxis;
 
   int x1, y1, z1;
   int x2, y2, z2;
@@ -208,8 +210,6 @@ public class BondRenderer {
     }
   }
 
-  private static final boolean showAxis = false;
-
   void initializeDebugColors() {
   }
 
@@ -236,13 +236,16 @@ public class BondRenderer {
     drawLineInside(g, xMid, yMid, xSurface2, ySurface2);
   }
 
+
+  int serial = 0;
+
   void polyBond(byte styleBond) {
     boolean bothColors = !sameColor;
 
     xAxis1 -= dxHalf1; yAxis1 -= dyHalf1;
     xAxis2 -= dxHalf2; yAxis2 -= dyHalf2;
-    // FIXME mth -- surface intersections are wrong
-    //    offsetAxis2 -= half2;
+    offsetAxis2 -= half2;
+    
     calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
@@ -258,7 +261,8 @@ public class BondRenderer {
     
     xAxis1 += dxWidth1; yAxis1 += dyWidth1;
     xAxis2 += dxWidth2; yAxis2 += dyWidth2;
-    // offsetAxis2 += width2;
+    offsetAxis2 += width2;
+
     calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
@@ -269,7 +273,7 @@ public class BondRenderer {
     // now, restore the axis points to their proper position
     xAxis1 -= dxOtherHalf1; yAxis1 -= dyOtherHalf1;
     xAxis2 -= dxOtherHalf2; yAxis2 -= dyOtherHalf2;
-    // offsetAxis2 -= otherHalf2;
+    offsetAxis2 -= otherHalf2;
 
     if (distanceExit >= mag2dLine / 2) {
       bothColors = false;
@@ -536,6 +540,7 @@ public class BondRenderer {
     dxStep2 = step2 * dy / mag2d; dyStep2 = step2 * -dx / mag2d;
 
     xAxis1 = x1; yAxis1 = y1;     xAxis2 = x2; yAxis2 = y2;
+    offsetAxis1 = offsetAxis2 = 0;
 
     if (bondOrder == 2) {
       offsetAxis1 = -step1 / 2; offsetAxis2 = -step2 / 2;
@@ -565,8 +570,8 @@ public class BondRenderer {
     dxOtherHalf1 = dxWidth1 - dxHalf1; dyOtherHalf1 = dyWidth1 - dyHalf1;
     dxOtherHalf2 = dxWidth2 - dxHalf2; dyOtherHalf2 = dyWidth2 - dyHalf2;
 
-    //    half2 = width2 / 2;
-    //    otherHalf2 = width2 - half2;
+    half2 = width2 / 2;
+    otherHalf2 = width2 - half2;
   }
 
   void stepAxisCoordinates() {
@@ -606,7 +611,7 @@ public class BondRenderer {
       ySurface1 = yAxis1 + dySlice1;
     }
 
-    // ensure that we stay inside;
+    // subtract 1 to ensure that we stay inside;
     int radius2Squared = radius2*radius2 - 1;
     int offset2Squared = offsetAxis2*offsetAxis2;
     distanceSurface2 = 0;
@@ -614,10 +619,10 @@ public class BondRenderer {
       distanceSurface2 = (int)(Math.sqrt(radius2Squared-offset2Squared));
       distanceSurface2 = distanceSurface2 * mag2d / mag3d;
     }
-    int dxSlice2 = distanceSurface2 * -dxLine / mag2dLine;
-    int dySlice2 = distanceSurface2 * -dyLine / mag2dLine;
-    xSurface2 = xAxis2 + dxSlice2;
-    ySurface2 = yAxis2 + dySlice2;
+    int dxSlice2 = distanceSurface2 * dxLine / mag2dLine;
+    int dySlice2 = distanceSurface2 * dyLine / mag2dLine;
+    xSurface2 = xAxis2 - dxSlice2;
+    ySurface2 = yAxis2 - dySlice2;
 
     if (showAxis) {
       dot(xSurface1, ySurface1, control.transparentBlue());
@@ -707,7 +712,12 @@ public class BondRenderer {
       Well, I tried for a while and could not figure it out,
       maybe some other day ... or somebody else
 
-      we need to calculate the factor 
+      we need to calculate the factor as a percentage of where
+      the brightest spot on the bond cylinder is located
+
+      I guess that I also need to know the orientation in the
+      z dimension to be able to calculate this ... maybe that
+      is my problem
       
     double mag = Math.sqrt(dxSlope*dxSlope + dySlope*dySlope);
     double cos = dxSlope / mag;

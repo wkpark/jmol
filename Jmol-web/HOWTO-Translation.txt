@@ -20,7 +20,15 @@ The files can be found in the Jmol source tree.
 3. Add the following line in the file /source/doc/.htaccess :
 AddLanguage [xx] .[xx]
 
-4. Copy the file /source/doc/project_en.xml to /source/doc/project_[xx].xml
+4. Add a flag icon for the new language : /source/doc/images/flags/[xx].png
+(See /source/docs/images/flags/README.txt for more informations)
+
+5. Add a line in the file /source/doc/language.xml file for the new language.
+Use the other languages as an example.
+
+6. In the /build.xml file, add the new language in the all.languages property.
+
+7. Copy the file /source/doc/project_en.xml to /source/doc/project_[xx].xml
 and translate it into the new language. Add the following 4 lines in the translated
 file to remember from which version this file was translated (for an example, you
 can look at /source/doc/project_fr.xml) :
@@ -29,14 +37,7 @@ can look at /source/doc/project_fr.xml) :
   Translated from default version : project_en.xml (v [CVS version of project_en.xml])
 -->
 
-5. In the /build.xml file, add the following lines to enable building the new
-language (place them in the same area as the other languages) :
-  	<antcall target="html_lang">
-  	  <param name="lang_value" value="[xx]"/>
-  	</antcall>
-
-
-6. For each index_en.xml file in the /source/doc directory and its subdirectories
+8. For each index_en.xml file in the /source/doc directory and its subdirectories
 copy it to index_[xx].xml and translate it into the new language. Add the following
 4 lines in the translated file to remember from which version this file was translated
 (for an example, you can look at index_fr.xml) :
@@ -50,15 +51,9 @@ several other xml files (antiAliasing_en.xml, ...). Copy each one to the appropr
 name (antiAliasing_[xx].xml) and translate. Also add the 4 lines to remember from
 which version this file was translated.
 
-7. For each index.en.html file in the /source/doc directory and its subdirectories
+9. For each index.en.html file in the /source/doc directory and its subdirectories
 copy it to index.[xx].html and translate it into the new language. Also add the 4
 lines to remember from which version this file was translated.
-
-8. Add a flag icon for the new language : /source/doc/images/flags/[xx].png
-(See /source/docs/images/flags/README.txt for more informations)
-
-9. Add a line in the file /source/doc/language.xml file for the new language.
-Use the other languages as an example.
 
 
 --> FINALLY <--

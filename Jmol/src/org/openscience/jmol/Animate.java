@@ -122,7 +122,8 @@ public class Animate extends JDialog implements ActionListener,
 
       // Interpolate to get extra frames
       ChemFrame[] extraFrames = new ChemFrame[numberExtraFrames];
-      int numberVertices = fromFrame.getNumberOfAtoms();
+      int numberVertices = Math.min(fromFrame.getNumberOfAtoms(),
+          toFrame.getNumberOfAtoms());
       for (int i = 0; i < numberExtraFrames; i++) {
         extraFrames[i] = new ChemFrame(numberVertices);
       }

@@ -38,9 +38,17 @@ public class AtomShape extends Shape {
   public int diameter;
   public int bondWidth;
   public byte styleAtom;
+  public byte[] stylesBond;
   
-  public AtomShape(Atom atom) {
+  public AtomShape(Atom atom, byte styleAtom, byte styleBond) {
     this.atom = atom;
+    this.styleAtom = styleAtom;
+    /*
+    int numBonds = atom.bondedAtoms.length;
+    stylesBond = new byte[numBonds];
+    while (--numBonds >= 0)
+      stylesBond[numBonds] = styleBond;
+    */
   }
 
   public String toString() {

@@ -3,7 +3,7 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2002  The Jmol Development Team
+ * Copyright (C) 2003  The Jmol Development Team
  *
  * Contact: jmol-developers@lists.sf.net
  *
@@ -35,31 +35,16 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.MemoryImageSource;
-import java.awt.image.Kernel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.Composite;
 import java.awt.AlphaComposite;
-import java.awt.Polygon;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Ellipse2D.Double;
 import java.awt.RenderingHints;
 import java.util.Enumeration;
-import java.util.Hashtable;
 
-import java.awt.GradientPaint;
-import java.awt.Paint;
-import java.awt.Point;
-
-import javax.vecmath.Point3d;
-import javax.vecmath.Matrix4d;
-
-/**
- * Graphical representation of an atom.
- *
- * @author Bradley A. Smith (bradley@baysmith.com)
- */
 public class AtomRenderer {
 
   DisplayControl control;
@@ -89,7 +74,7 @@ public class AtomRenderer {
   Color colorOutline;
 
   public void render(AtomShape atomShape) {
-    styleAtom = control.getStyleAtom();
+    styleAtom = atomShape.styleAtom;
     if (styleAtom == DisplayControl.NONE)
       return;
     atom = atomShape.atom;

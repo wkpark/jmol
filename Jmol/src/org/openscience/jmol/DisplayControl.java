@@ -611,6 +611,7 @@ final public class DisplayControl {
 
   public void setChemFile(ChemFile chemfile) {
     modelManager.setChemFile(chemfile);
+    styleManager.initializeAtomShapes();
     homePosition();
     // don't know if I need this firm refresh here or not
     refreshFirmly();
@@ -622,6 +623,10 @@ final public class DisplayControl {
 
   public ChemFrame getFrame() {
     return modelManager.chemframe;
+  }
+
+  public ChemFrame[] getFrames() {
+    return modelManager.getFrames();
   }
 
   public double getRotationRadius() {
@@ -650,8 +655,8 @@ final public class DisplayControl {
     return modelManager.numberOfAtoms();
   }
 
-  public Atom[] getFrameAtoms() {
-    return modelManager.getFrameAtoms();
+  public Atom[] getCurrentFrameAtoms() {
+    return modelManager.getCurrentFrameAtoms();
   }
 
   public void mlistChanged(MeasurementListEvent mle) {
@@ -816,7 +821,10 @@ final public class DisplayControl {
   }
 
   public void setStyleAtom(byte style) {
-    styleManager.setStyleAtom(style);
+    if (selectionManager.countSelection() == 0) 
+      styleManager.setStyleAtom(style);
+    else
+      styleManager.setStyleAtom(style, selectionManager.bsSelection);
     refresh();
   }
 

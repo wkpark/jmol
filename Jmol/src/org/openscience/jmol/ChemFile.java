@@ -1,5 +1,5 @@
 /*
- * Copyright 2002 The Jmol Development Team
+ * Copyright 2003 The Jmol Development Team
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import java.util.Enumeration;
  **/
 public class ChemFile {
 
-  private Vector frames = new Vector(1);
+  private ChemFrame[] frames = new ChemFrame[0];
   private boolean bondsEnabled = true;
   private Vector propertyList = new Vector();
 
@@ -53,10 +53,7 @@ public class ChemFile {
    * @param whichframe which frame to return
    */
   public ChemFrame getFrame(int whichframe) {
-    if (whichframe < frames.size()) {
-      return (ChemFrame) frames.elementAt(whichframe);
-    }
-    return null;
+    return frames[whichframe];
   }
 
   /**
@@ -65,7 +62,10 @@ public class ChemFile {
    * @param frame the frame to be added
    */
   public void addFrame(ChemFrame frame) {
-    frames.addElement(frame);
+    ChemFrame[] framesNew = new ChemFrame[frames.length + 1];
+    System.arraycopy(frames, 0, framesNew, 0, frames.length);
+    framesNew[frames.length] = frame;
+    frames = framesNew;
   }
 
   /**
@@ -75,16 +75,21 @@ public class ChemFile {
    * @param whichframe the index of the frame
    */
   public void setFrame(ChemFrame frame, int whichframe) {
-    if (whichframe < frames.size()) {
-      frames.setElementAt(frame, whichframe);
-    }
+    frames[whichframe] = frame;
   }
 
   /**
    * Returns the number of frames in this file.
    */
   public int getNumberOfFrames() {
-    return frames.size();
+    return frames.length;
+  }
+
+  /**
+   * Returns the array of all the frames
+   */
+  public ChemFrame[] getFrames() {
+    return frames;
   }
 
   /**
@@ -112,12 +117,11 @@ public class ChemFile {
   public Vector getAtomPropertyList() {
 
     Vector descriptions = new Vector();
-    Enumeration frameIter = frames.elements();
-    while (frameIter.hasMoreElements()) {
-      ChemFrame frame = (ChemFrame) frameIter.nextElement();
+    for (int iframe = 0; iframe < frames.length; ++iframe) {
+      ChemFrame frame = frames[iframe];
       if (frame.getNumberOfAtoms() > 0) {
         Enumeration properties =
-          ((org.openscience.jmol.Atom)frame.getAtomAt(0)).getProperties().elements();
+          frame.getJmolAtomAt(0).getProperties().elements();
         while (properties.hasMoreElements()) {
           PhysicalProperty property =
             (PhysicalProperty) properties.nextElement();
@@ -136,9 +140,8 @@ public class ChemFile {
   public Vector getFramePropertyList() {
 
     Vector descriptions = new Vector();
-    Enumeration frameIter = frames.elements();
-    while (frameIter.hasMoreElements()) {
-      ChemFrame frame = (ChemFrame) frameIter.nextElement();
+    for (int iframe = 0; iframe < frames.length; ++iframe) {
+      ChemFrame frame = frames[iframe];
       Enumeration properties = frame.getFrameProperties().elements();
       while (properties.hasMoreElements()) {
         PhysicalProperty property =

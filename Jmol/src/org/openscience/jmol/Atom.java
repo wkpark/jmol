@@ -56,7 +56,6 @@ public class Atom extends org.openscience.cdk.Atom {
     }
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
-    this.atomShape = new AtomShape(this);
   }
 
   /**
@@ -287,6 +286,10 @@ public class Atom extends org.openscience.cdk.Atom {
   }
 
   public AtomShape atomShape;
+  public void setAtomShape(AtomShape atomShape) {
+    this.atomShape = atomShape;
+  }
+
   public AtomShape getAtomShape() {
     return atomShape;
   }

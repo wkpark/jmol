@@ -86,8 +86,12 @@ public class ModelManager {
     return (chemframe == null) ? 0 : chemframe.getNumberOfAtoms();
   }
 
-  public Atom[] getFrameAtoms() {
+  public Atom[] getCurrentFrameAtoms() {
     return chemframe.getJmolAtoms();
+  }
+
+  public ChemFrame[] getFrames() {
+    return chemfile.getFrames();
   }
 
   public void mlistChanged(MeasurementListEvent mle) {

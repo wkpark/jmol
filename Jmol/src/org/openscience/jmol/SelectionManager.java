@@ -36,13 +36,16 @@ public class SelectionManager {
 
   private final BitSet bsNull = new BitSet();
   public final BitSet bsSelection = new BitSet();
+  public boolean empty = true;
 
   public void addSelection(int atomIndex) {
     bsSelection.set(atomIndex);
+    empty = false;
   }
 
   public void addSelection(BitSet set) {
     bsSelection.or(set);
+    empty = false;
   }
 
   public void toggleSelection(int atomIndex) {
@@ -50,6 +53,7 @@ public class SelectionManager {
       bsSelection.clear(atomIndex);
     else
       bsSelection.set(atomIndex);
+    empty = false;
   }
 
   public boolean isSelected(int atomIndex) {
@@ -57,24 +61,30 @@ public class SelectionManager {
   }
 
   public int countSelection() {
+    if (empty)
+      return 0;
     int count = 0;
     for (int i = 0, size = bsSelection.size(); i < size; ++i)
       if (bsSelection.get(i))
         ++count;
+    empty = (count == 0);
     return count;
   }
 
   public void selectAll() {
     for (int i = control.numberOfAtoms(); --i >= 0; )
       bsSelection.set(i);
+    empty = false;
   }
 
   public void clearSelection() {
     bsSelection.and(bsNull);
+    empty = true;
   }
 
   public void setSelectionSet(BitSet set) {
     bsSelection.and(bsNull);
     bsSelection.or(set);
+    empty = false;
   }
 }

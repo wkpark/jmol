@@ -24,7 +24,10 @@
  */
 package org.openscience.jmol;
 
+import org.openscience.jmol.render.AtomShape;
+
 import java.awt.Font;
+import java.util.BitSet;
 
 public class StyleManager {
 
@@ -32,6 +35,18 @@ public class StyleManager {
 
   public StyleManager(DisplayControl control) {
     this.control = control;
+  }
+
+  public void initializeAtomShapes() {
+    ChemFrame[] frames = control.getFrames();
+    for (int iframe = frames.length; --iframe >= 0; ) {
+      Atom[] atoms = frames[iframe].getJmolAtoms();
+      for (int iatom = atoms.length; --iatom >= 0; ) {
+        AtomShape atomShape =
+          new AtomShape(atoms[iatom], styleAtom, styleBond);
+        atoms[iatom].setAtomShape(atomShape);
+      }
+    }
   }
 
   public byte styleLabel = DisplayControl.NOLABELS;
@@ -43,18 +58,43 @@ public class StyleManager {
   public void setStyleAtom(byte style) {
     styleAtom = style;
     if (control.haveFile()) {
-      System.out.println("setting style:" + style);
-      int numAtoms = control.numberOfAtoms();
-      Atom[] atoms = control.getFrameAtoms();
-      while (--numAtoms >= 0) {
-        atoms[numAtoms].atomShape.setStyleAtom(style);
+      ChemFrame[] frames = control.getFrames();
+      for (int iframe = frames.length; --iframe >= 0; ) {
+        Atom[] atoms = frames[iframe].getJmolAtoms();
+        for (int iatom = atoms.length; --iatom >= 0; ) {
+          atoms[iatom].atomShape.setStyleAtom(style);
+        }
       }
     }
+  }
+
+  public void setStyleAtom(byte style, BitSet set) {
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; )
+      if (set.get(iatom))
+        atoms[iatom].atomShape.setStyleAtom(style);
   }
 
   public byte styleBond = DisplayControl.QUICKDRAW;
   public void setStyleBond(byte style) {
     styleBond = style;
+  }
+
+  public void setStyleBond(byte style, BitSet set, boolean bondmodeOr) {
+    /*
+      mth - work in progress
+    Atom[] atoms = control.getCurrentFrameAtoms();
+    for (int iatom = atoms.length; --iatom >= 0 ; ) {
+      if (! set.get(iatom))
+        continue;
+      Atom atom = atoms[iatom];
+      Atom[] bondedAtoms = atom.bondedAtoms;
+      for (int nbonds = bondedAtoms.length; --nbonds >= 0; ) {
+        if (set.get(bondedAtoms[nbonds]))
+          atom.atomshape.setStyleBond(style, nbonds);
+      }
+    }
+    */
   }
 
   public int percentAngstromBond = 10;

@@ -42,7 +42,7 @@ public class ChemFrame extends AtomContainer {
   private String info;     // The title or info string for this frame.
   private Atom[] atoms;    // array of atom types
   private Vector properties = new Vector();
-  private int numberAtoms = 0;
+  private int numberOfAtoms = 0;
 
   /**
    * Returns the list of distance measurements.
@@ -162,7 +162,7 @@ public class ChemFrame extends AtomContainer {
   public boolean hasAtomProperty(String description) {
 
     boolean result = false;
-    for (int i = 0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberOfAtoms; ++i) {
       if (atoms[i].hasProperty(description)) {
         result = true;
       }
@@ -221,12 +221,12 @@ public class ChemFrame extends AtomContainer {
   public int addAtom(BaseAtomType type, double x, double y, double z) {
 
     clearBounds();
-    int i = numberAtoms;
+    int i = numberOfAtoms;
     if (i >= atoms.length) {
-      increaseArraySizes(2 * atoms.length);
+      setAtomArraySize(2 * atoms.length);
     }
 
-    atoms[i] = new Atom(type, numberAtoms, x, y, z);
+    atoms[i] = new Atom(type, numberOfAtoms, x, y, z);
 
     if (DisplayControl.control.getAutoBond()) {
       for (int j = 0; j < i; j++) {
@@ -236,7 +236,7 @@ public class ChemFrame extends AtomContainer {
         }
       }
     }
-    return numberAtoms++;
+    return numberOfAtoms++;
   }
 
   /**
@@ -268,27 +268,27 @@ public class ChemFrame extends AtomContainer {
     clearBounds();
     // deteremine atomID
     int atomID = 0;
-    for (int i = 0; i < numberAtoms; i++) {
+    for (int i = 0; i < numberOfAtoms; i++) {
       if (atoms[i].hashCode() == a.hashCode()) {
         atomID = i;
-        i = numberAtoms;
+        i = numberOfAtoms;
       }
     }
-    for (int i = atomID; i < numberAtoms -1; i++) {
+    for (int i = atomID; i < numberOfAtoms -1; i++) {
       atoms[i] = atoms[i + 1];
     }
-    atoms[numberAtoms - 1] = null;
-    numberAtoms--;
+    atoms[numberOfAtoms - 1] = null;
+    numberOfAtoms--;
     rebond();
   }
 
   public void deleteAtom(int atomIndex) {
     clearBounds();
-    for (int i = atomIndex; i < numberAtoms -1; i++) {
+    for (int i = atomIndex; i < numberOfAtoms -1; i++) {
       atoms[i] = atoms[i + 1];
     }
-    atoms[numberAtoms - 1] = null;
-    numberAtoms--;
+    atoms[numberOfAtoms - 1] = null;
+    numberOfAtoms--;
     rebond();
   }
 
@@ -298,7 +298,7 @@ public class ChemFrame extends AtomContainer {
    *  @return the number of atoms in this frame.
    */
   public int getNumberOfAtoms() {
-    return numberAtoms;
+    return numberOfAtoms;
   }
 
   public double getGeometricRadius() {
@@ -357,7 +357,7 @@ public class ChemFrame extends AtomContainer {
   }
 
   public org.openscience.cdk.Atom[] getAtoms() {
-    Atom[] result = new Atom[numberAtoms];
+    Atom[] result = new Atom[numberOfAtoms];
     System.arraycopy(atoms, 0, result, 0, result.length);
     return result;
   }
@@ -367,6 +367,8 @@ public class ChemFrame extends AtomContainer {
   }
 
   public Atom[] getJmolAtoms() {
+   if (numberOfAtoms != atoms.length)
+      setAtomArraySize(numberOfAtoms);
     return atoms;
   }
   
@@ -396,12 +398,12 @@ public class ChemFrame extends AtomContainer {
      * 3. doesn't take into account the fact that hydrogens could be hidden
      *    you can select a region and get extra hydrogens
      */
-    if (numberAtoms <= 0)
+    if (numberOfAtoms <= 0)
       return -1;
     Atom atomNearest = null;
     int indexNearest = -1;
     int r2Nearest = Integer.MAX_VALUE;
-    for (int i = 0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberOfAtoms; ++i) {
       Atom atom = atoms[i];
       int dx = atom.getScreenX() - x;
       int dx2 = dx * dx;
@@ -424,7 +426,7 @@ public class ChemFrame extends AtomContainer {
   BitSet bsFoundRectangle = new BitSet();
   public BitSet findAtomsInRectangle(Rectangle rect) {
     bsFoundRectangle.clear();
-    for (int i = 0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberOfAtoms; ++i) {
       if (rect.contains(atoms[i].getScreenX(), atoms[i].getScreenY()))
         bsFoundRectangle.set(i);
     }
@@ -443,11 +445,11 @@ public class ChemFrame extends AtomContainer {
   /*
   public Atom[] findAtomsInRegion(int x1, int y1, int x2, int y2) {
 
-    if (numberAtoms <= 0) {
+    if (numberOfAtoms <= 0) {
       return new Atom[0];
     }
     Vector atomsInRegion = new Vector();
-    for (int i = 0; i < numberAtoms; i++) {
+    for (int i = 0; i < numberOfAtoms; i++) {
       if (isAtomInRegion(i, x1, y1, x2, y2)) {
         atomsInRegion.addElement(atoms[i]);
       }
@@ -481,13 +483,13 @@ public class ChemFrame extends AtomContainer {
    * outside the radius of the atom
    */
   public Atom getNearestAtom(int x, int y) {
-    if (numberAtoms <= 0) {
+    if (numberOfAtoms <= 0) {
       return null;
     }
     int dx, dy, dr2;
     Atom atomClosest = null;
     int r2Closest = Integer.MAX_VALUE;
-    for (int i = 0; i < numberAtoms; i++) {
+    for (int i = 0; i < numberOfAtoms; i++) {
       Atom atom = atoms[i];
       dx = atom.getScreenX() - x;
       dy = atom.getScreenY() - y;
@@ -516,7 +518,7 @@ public class ChemFrame extends AtomContainer {
    * Find the bounds of this model.
    */
   private void findBounds() {
-    if ((centerGeometric != null) || (atoms == null) || (numberAtoms <= 0))
+    if ((centerGeometric != null) || (atoms == null) || (numberOfAtoms <= 0))
       return;
     centerGeometric = centerRotation = calculateGeometricCenter();
     calculateAtomVectorMagnitudeRange();
@@ -525,7 +527,7 @@ public class ChemFrame extends AtomContainer {
 
   void calculateAtomVectorMagnitudeRange() {
     minAtomVectorMagnitude = maxAtomVectorMagnitude = -1;
-    for (int i = 0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberOfAtoms; ++i) {
       if (!atoms[i].hasVector())
         continue;
       double magnitude=atoms[i].getVectorMagnitude();
@@ -553,7 +555,7 @@ public class ChemFrame extends AtomContainer {
     double minY = position.y, maxY = minY;
     double minZ = position.z, maxZ = minZ;
 
-    for (int i = 1; i < numberAtoms; ++i) {
+    for (int i = 1; i < numberOfAtoms; ++i) {
       position = atoms[i].getPosition();
       double x = position.x;
       if (x < minX) { minX = x; }
@@ -587,7 +589,7 @@ public class ChemFrame extends AtomContainer {
     double radius = 0.0f;
     double atomSphereFactor =
       DisplayControl.control.getPercentVdwAtom() / 100.0;
-    for (int i = 0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberOfAtoms; ++i) {
       Atom atom = atoms[i];
       Point3d posAtom = atom.getPosition();
       double distAtom = center.distance(posAtom);
@@ -619,8 +621,8 @@ public class ChemFrame extends AtomContainer {
 
     // Do a n*(n-1) scan to get new bonds.
     if (DisplayControl.control.getAutoBond()) {
-      for (int i = 0; i < numberAtoms - 1; i++) {
-        for (int j = i; j < numberAtoms; j++) {
+      for (int i = 0; i < numberOfAtoms - 1; i++) {
+        for (int j = i; j < numberOfAtoms; j++) {
           if (Atom.closeEnoughToBond(atoms[i], atoms[j],
                                      DisplayControl.control.getBondFudge())) {
             addBond(i, j);
@@ -647,12 +649,13 @@ public class ChemFrame extends AtomContainer {
     return vibrations.elements();
   }
 
-  private void increaseArraySizes(int newArraySize) {
-
+  private void setAtomArraySize(int newArraySize) {
     Atom[] nat = new Atom[newArraySize];
-    System.arraycopy(atoms, 0, nat, 0, atoms.length);
+    int countToMove = atoms.length;
+    if (newArraySize < countToMove)
+      countToMove = newArraySize;
+    System.arraycopy(atoms, 0, nat, 0, countToMove);
     atoms = nat;
-
   }
 
   private boolean bondsEnabled;
@@ -688,13 +691,13 @@ public class ChemFrame extends AtomContainer {
    */
   public void clearBonds() {
 
-    for (int i = 0; i < numberAtoms; i++) {
+    for (int i = 0; i < numberOfAtoms; i++) {
       atoms[i].clearBondedAtoms();
     }
   }
 
   public void dumpAtoms(PrintStream out) {
-    for (int i = 0; i < numberAtoms; ++i) {
+    for (int i = 0; i < numberOfAtoms; ++i) {
       out.println(atoms[i].toString());
     }
   }

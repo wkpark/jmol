@@ -47,7 +47,7 @@ final public class Graphics3D {
   Cylinder3D cylinder3d;
   Graphics g;
 
-  boolean tOversample;
+  boolean tFullSceneAntialiasing;
   boolean tPaintingInProgress;
 
   int width,height;
@@ -89,6 +89,7 @@ final public class Graphics3D {
   }
 
   public void setSize(int width, int height) {
+    System.out.println("Graphics3D.setSize(" + width + "," + height + ")");
     width1 = this.width = width;
     xLast1 = xLast = width1 - 1;
     height1 = this.height = height;
@@ -115,8 +116,8 @@ final public class Graphics3D {
     pbuf = pbuf1 = platform.getPbuf();
     zbuf = zbuf1 = new short[size1];
     
-    pbuf4 = new int[size4];
-    zbuf4 = new short[size4];
+    //    pbuf4 = new int[size4];
+    //    zbuf4 = new short[size4];
   }
 
   private void downSample() {
@@ -336,8 +337,8 @@ final public class Graphics3D {
   }
 
   // 3D specific routines
-  public void beginRendering(boolean tOversample) {
-    if (tOversample) {
+  public void beginRendering(boolean tFullSceneAntialiasing) {
+    if (tFullSceneAntialiasing && zbuf4 != null) {
       width = width4;
       height = height4;
       xLast = xLast4;
@@ -352,11 +353,11 @@ final public class Graphics3D {
       pbuf = pbuf1;
       zbuf = zbuf1;
     }
-    this.tOversample = tOversample;
+    this.tFullSceneAntialiasing = tFullSceneAntialiasing;
   }
 
   public void endRendering() {
-    if (tOversample)
+    if (tFullSceneAntialiasing)
       downSample();
     platform.notifyEndOfRendering();
   }

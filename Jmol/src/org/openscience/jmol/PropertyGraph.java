@@ -56,8 +56,18 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
 
     super(f, "Property Graph", false);
 
+    makeNewGraph();
+  }
+
+  /**
+   * Instantiates a new content JPanel for this JDialog.
+   * Called when loading a new file.
+   */
+  private void makeNewGraph() {
     gl = new GridLayout(1, 0);
     panel = new JPanel(gl);
+
+    dataFound = false; // see findData()
 
     setContentPane(panel);
     setSize(500, 500);
@@ -104,6 +114,8 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
 
     if (hasGraphableProperties) {
       graphAction.setEnabled(true);
+      dataFound = false; // data must be redisplayed. see findData()
+      makeNewGraph();    // generate new (empty) JPanel.
     } else {
       graphAction.setEnabled(false);
     }
@@ -111,38 +123,42 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
 
   public void findData() {
 
-    if (hasGraphableProperties) {
+    if (!dataFound) {
 
-      int nGraphs = GPs.size();
-      int nPoints = inputFile.getNumberOfFrames();
+      if (hasGraphableProperties) {
 
-      gl.setRows(nGraphs);
+        int nGraphs = GPs.size();
+        int nPoints = inputFile.getNumberOfFrames();
 
-      double[][] data = new double[nGraphs][nPoints];
-      String[] titles = new String[nGraphs];
-      JASHist[] graphs = new JASHist[nGraphs];
+        gl.setRows(nGraphs);
 
-      for (int j = 0; j < nGraphs; j++) {
-        String desc = (String) GPs.elementAt(j);
+        double[][] data = new double[nGraphs][nPoints];
+        String[] titles = new String[nGraphs];
+        JASHist[] graphs = new JASHist[nGraphs];
 
-        titles[j] = new String(desc);
-        graphs[j] = new JASHist();
+        for (int j = 0; j < nGraphs; j++) {
+          String desc = (String) GPs.elementAt(j);
 
-        for (int i = 0; i < nPoints; i++) {
-          Vector fp = inputFile.getFrame(i).getFrameProperties();
-          Enumeration ef = fp.elements();
-          while (ef.hasMoreElements()) {
+          titles[j] = new String(desc);
+          graphs[j] = new JASHist();
 
-            PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
-            if (pf.getDescriptor().equals(desc)) {
-              data[j][i] = ((Double) pf.getProperty()).doubleValue();
+          for (int i = 0; i < nPoints; i++) {
+            Vector fp = inputFile.getFrame(i).getFrameProperties();
+            Enumeration ef = fp.elements();
+            while (ef.hasMoreElements()) {
+
+              PhysicalProperty pf = (PhysicalProperty) ef.nextElement();
+              if (pf.getDescriptor().equals(desc)) {
+                data[j][i] = ((Double) pf.getProperty()).doubleValue();
+              }
             }
           }
         }
-      }
-      for (int j = 0; j < nGraphs; j++) {
-        graphs[j].addData(new ArrayDataSource(data[j], titles[j])).show(true);
-        panel.add(graphs[j]);
+        for (int j = 0; j < nGraphs; j++) {
+          graphs[j].addData(new ArrayDataSource(data[j], titles[j])).show(true);
+          panel.add(graphs[j]);
+        }
+        dataFound = true;
       }
     }
   }
@@ -302,6 +318,11 @@ public class PropertyGraph extends JDialog implements PropertyChangeListener,
    * Does the dialog have any vibration data.
    */
   private boolean hasGraphableProperties;
+
+  /**
+   * Have the properties been added to the JPanel yet?
+   */
+  private boolean dataFound;
 
   /*
    * The Vector containing the list of Graphable Properties.

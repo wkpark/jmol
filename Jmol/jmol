@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/ksh
 
 # Collect -D options as java arguments
 command=java

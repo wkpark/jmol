@@ -72,15 +72,18 @@
       </p>
       <p>
 	Unzip the code using the tool of your choice. It will unzip into
-	a subdirectory.
+	a subdirectory of the current directory.
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
 	format as .zip : <b>jar xf Jmol10pre1.zip</b>
       </p>
       <p>
-	
-	
+	To run the jmol application you can type: <b>java -jar jmol.jar</b>
+	<br/>With most GUIs, you also be able to double-click on jmol.jar
+	to launch it. (If this doesn't work then create an association
+	for files with the extension .jar)
+      </p>
     </section>
   </body>
 </document>

@@ -84,6 +84,8 @@ public class PovrayDialog extends JDialog {
   private JFormattedTextField imageSizeTextWidth;
   private JLabel              imageSizeHeight;
   private JFormattedTextField imageSizeTextHeight;
+  private JCheckBox	          imageSizeRatioBox;
+  private JComboBox           imageSizeRatioCombo;
   
   private JCheckBox outputFormatBox;
   private JComboBox outputFormatCombo;
@@ -260,11 +262,13 @@ public class PovrayDialog extends JDialog {
     });
     imageBox.add(imageSizeBox);
     imageBox.add(Box.createHorizontalStrut(10));
+    Box imageSizeDetailBox = Box.createVerticalBox();
+    Box imageSizeXYBox = Box.createHorizontalBox();
     text = JmolResourceHandler.getStringX("Povray.imageSizeWidth");
     imageSizeWidth = new JLabel(text);
     text = JmolResourceHandler.getStringX("Povray.imageSizeWidthTip");
     imageSizeWidth.setToolTipText(text);
-    imageBox.add(imageSizeWidth);
+    imageSizeXYBox.add(imageSizeWidth);
     imageSizeTextWidth = new JFormattedTextField();
     imageSizeTextWidth.setValue(new Integer(outputWidth));
     imageSizeTextWidth.addPropertyChangeListener("value",
@@ -275,13 +279,13 @@ public class PovrayDialog extends JDialog {
         }
       }
     );
-    imageBox.add(imageSizeTextWidth);
-    imageBox.add(Box.createHorizontalStrut(10));
+    imageSizeXYBox.add(imageSizeTextWidth);
+    imageSizeXYBox.add(Box.createHorizontalStrut(10));
     text = JmolResourceHandler.getStringX("Povray.imageSizeHeight");
     imageSizeHeight = new JLabel(text);
     text = JmolResourceHandler.getStringX("Povray.imageSizeHeightTip");
     imageSizeHeight.setToolTipText(text);
-    imageBox.add(imageSizeHeight);
+    imageSizeXYBox.add(imageSizeHeight);
     imageSizeTextHeight = new JFormattedTextField();
     imageSizeTextHeight.setValue(new Integer(outputHeight));
     imageSizeTextHeight.addPropertyChangeListener("value",
@@ -292,7 +296,43 @@ public class PovrayDialog extends JDialog {
         }
       }
     );
-    imageBox.add(imageSizeTextHeight);
+    imageSizeXYBox.add(imageSizeTextHeight);
+    imageSizeXYBox.add(Box.createGlue());
+    imageSizeDetailBox.add(imageSizeXYBox);
+    Box imageSizeBox = Box.createHorizontalBox();
+    text = JmolResourceHandler.getStringX("Povray.imageSizeKeepRatio");
+    imageSizeRatioBox = new JCheckBox(text, true);
+    text = JmolResourceHandler.getStringX("Povray.imageSizeKeepRatioTip");
+    imageSizeRatioBox.setToolTipText(text);
+    imageSizeRatioBox.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        imageSizeChanged();
+        updateCommandLine();
+      }
+    });
+    imageSizeBox.add(imageSizeRatioBox);
+    imageSizeBox.add(Box.createHorizontalStrut(10));
+    imageSizeRatioCombo = new JComboBox();
+    text = JmolResourceHandler.getStringX("Povray.imageSizeRatioFree");
+    imageSizeRatioCombo.addItem(text);
+    text = JmolResourceHandler.getStringX("Povray.imageSizeRatioJmol");
+    imageSizeRatioCombo.addItem(text);
+    text = JmolResourceHandler.getStringX("Povray.imageSizeRatio4_3");
+    imageSizeRatioCombo.addItem(text);
+    text = JmolResourceHandler.getStringX("Povray.imageSizeRatio16_9");
+    imageSizeRatioCombo.addItem(text);
+    imageSizeRatioCombo.setSelectedIndex(1);
+    imageSizeRatioCombo.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        imageSizeChanged();
+        updateCommandLine();
+      }
+    });
+    imageSizeBox.add(imageSizeRatioCombo);
+    imageSizeBox.add(Box.createGlue());
+    imageSizeDetailBox.add(imageSizeBox);
+    imageSizeDetailBox.add(Box.createGlue());
+    imageBox.add(imageSizeDetailBox);
     imageBox.add(Box.createGlue());
     povOptionsBox.add(imageBox);
     imageSizeChanged();
@@ -785,6 +825,11 @@ public class PovrayDialog extends JDialog {
   void imageSizeChanged() {
   	if (imageSizeBox != null) {
   	  boolean selected = imageSizeBox.isSelected();
+  	  boolean ratioSelected = false;
+  	  if (imageSizeRatioBox != null) {
+  	    ratioSelected = imageSizeRatioBox.isSelected();
+  	    imageSizeRatioBox.setEnabled(selected);
+  	  }
   	  if (imageSizeWidth != null) {
   	    imageSizeWidth.setEnabled(selected);
   	  }
@@ -792,10 +837,34 @@ public class PovrayDialog extends JDialog {
   	    imageSizeTextWidth.setEnabled(selected);
   	  }
   	  if (imageSizeHeight != null) {
-  	    imageSizeHeight.setEnabled(selected);
+  	    imageSizeHeight.setEnabled(selected && !ratioSelected);
   	  }
   	  if (imageSizeTextHeight != null) {
-  	    imageSizeTextHeight.setEnabled(selected);
+  	    imageSizeTextHeight.setEnabled(selected && !ratioSelected);
+  	  }
+  	  if (imageSizeRatioCombo != null) {
+  	  	imageSizeRatioCombo.setEnabled(selected && ratioSelected);
+  	    if ((imageSizeTextWidth != null) && (imageSizeTextHeight != null)) {
+  	      int width = Integer.parseInt(
+  	        imageSizeTextWidth.getValue().toString());
+  	      int height;
+  	      switch (imageSizeRatioCombo.getSelectedIndex()) {
+  	      case 0: // Free
+  	        break;
+  	      case 1: // Jmol
+  	        height = (int)(((double) width) * outputHeight / outputWidth);
+  	        imageSizeTextHeight.setValue(new Integer(height));
+  	        break;
+  	      case 2: // 4/3
+  	        height = (int)(((double) width) * 3 / 4);
+  	        imageSizeTextHeight.setValue(new Integer(height));
+  	        break;
+  	      case 3: // 16/9
+  	        height = (int)(((double) width) * 9 / 16);
+  	        imageSizeTextHeight.setValue(new Integer(height));
+  	        break;
+  	      }
+  	    }
   	  }
   	}
   }

@@ -66,20 +66,21 @@ public class Hermite3D {
     int yT2 = (y3 - y1) * 7 / 8;
     int zT2 = (z3 - z1) * 7 / 8;
 
-    sA[0] = 0;
+    sA[0] = 0; dA[0] = diameter1;
     xA[0] = x1; yA[0] = y1; zA[0] = z1;
-    g3d.fillSphereCentered(colix, diameter1, x1, y1, z1);
-    sB[0] = 1;
+    sB[0] = 1; dB[0] = diameter2;
     xB[0] = x2; yB[0] = y2; zB[0] = z2;
-    g3d.fillSphereCentered(colix, diameter2, x2, y2, z2);
     int dDiameter = diameter2 - diameter1;
     sp = 0;
     do {
       int dx = xB[sp] - xA[sp];
-      if (dx < 0) dx = -dx;
       int dy = yB[sp] - yA[sp];
-      if (dy < 0) dy = -dy;
-      if (dx < 2 && dy < 2) {
+      int dist2 = dx*dx + dy*dy;
+      if (dist2 <= 2) {
+        // mth 2003 10 13
+        // I tried drawing short cylinder segments here,
+        // but drawing spheres was faster
+        g3d.fillSphereCentered(colix, dA[sp], xA[sp], yA[sp], zA[sp]);
         --sp;
       } else {
         float s = (sA[sp] + sB[sp]) / 2;
@@ -93,21 +94,24 @@ public class Hermite3D {
         int y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
         int z = (int) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
         int d = diameter1 + (int)(dDiameter * s);
-        g3d.fillSphereCentered(colix, d, x, y, z);
         xB[sp+1] = xB[sp];
         yB[sp+1] = yB[sp];
         zB[sp+1] = zB[sp];
         sB[sp+1] = sB[sp];
+        dB[sp+1] = dB[sp];
         xB[sp] = x;
         yB[sp] = y;
         zB[sp] = z;
         sB[sp] = s;
+        dB[sp] = d;
         ++sp;
         xA[sp] = x;
         yA[sp] = y;
         zA[sp] = z;
         sA[sp] = s;
+        dA[sp] = d;
       }
     } while (sp >= 0);
+    g3d.fillSphereCentered(colix, diameter2, x2, y2, z2);
   }
 }

@@ -55,7 +55,7 @@ public class Cylinder3D {
   
   private float[] samples = new float[32];
 
-  public void render(short colix1, short colix2, int diameter,
+  public void render(short colix1, short colix2, byte endcaps, int diameter,
                      int xOrigin, int yOrigin, int zOrigin,
                      int dx, int dy, int dz) {
     this.diameter = diameter;
@@ -132,7 +132,8 @@ public class Cylinder3D {
     */
 
     plotLastRotatedPoint();
-    renderEndcaps();
+    if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
+      renderSphericalEndcaps();
   }
 
   void rotateAndPlot(float x, float y) {
@@ -226,7 +227,7 @@ public class Cylinder3D {
     }
   }
 
-  void renderEndcaps() {
+  void renderSphericalEndcaps() {
     g3d.fillSphereCentered(colix1, diameter, xOrigin, yOrigin, zOrigin);
     g3d.fillSphereCentered(colix2, diameter,
                             xOrigin+dx, yOrigin+dy, zOrigin+dz);

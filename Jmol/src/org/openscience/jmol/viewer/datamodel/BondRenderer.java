@@ -141,7 +141,8 @@ class BondRenderer extends Renderer {
                       ? 0
                       : (bondOrder == 2) ? step / 2 : step);
         do {
-          g3d.fillCylinder(colix1, colix1, width, x1, y, z1, x1, y, z1);
+          g3d.fillCylinder(colix1, colix1, Graphics3D.ENDCAPS_SPHERICAL,
+                           width, x1, y, z1, x1, y, z1);
           y += step;
         } while (--bondOrder > 0);
       }
@@ -151,7 +152,8 @@ class BondRenderer extends Renderer {
       if (lineBond)
         g3d.drawLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
       else
-        g3d.fillCylinder(colix1, colix2, width, x1, y1, z1, x2, y2, z2);
+        g3d.fillCylinder(colix1, colix2, Graphics3D.ENDCAPS_SPHERICAL,
+                         width, x1, y1, z1, x2, y2, z2);
       return;
     }
     int dx2 = dx * dx;
@@ -175,7 +177,7 @@ class BondRenderer extends Renderer {
   }
 
   void cylinderBond() {
-    g3d.fillCylinder(colix1, colix2, width,
+    g3d.fillCylinder(colix1, colix2, Graphics3D.ENDCAPS_SPHERICAL, width,
                       xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
   }
 

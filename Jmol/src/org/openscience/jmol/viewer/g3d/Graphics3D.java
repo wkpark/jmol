@@ -461,12 +461,14 @@ final public class Graphics3D {
     line3d.drawLine(argb, xB, yB, zB, xC, yC, zC, false);
   }
 
-  public void fillCylinder(short colix1, short colix2, int w,
+  public final static byte ENDCAPS_NONE = 0;
+  public final static byte ENDCAPS_FLAT = 1;
+  public final static byte ENDCAPS_SPHERICAL = 2;
+
+  public void fillCylinder(short colix1, short colix2, byte endcaps,
+                           int diameter,
                            int x1, int y1, int z1, int x2, int y2, int z2) {
-    //    hermite3d.render(colix1, colix2, w,
-    //                     x1-40, y1-40, z1, x1, y1, z1, x2, y2, z2,
-    //                     x2+40, y2+40, z2+40);
-    cylinder3d.render(colix1, colix2, w,
+    cylinder3d.render(colix1, colix2, endcaps, diameter,
                       x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 

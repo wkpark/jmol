@@ -277,25 +277,22 @@ public class ColorManager {
       argb = JmolConstants.argbsCharge[i];
       break;
     case JmolConstants.PALETTE_STRUCTURE:
-      argb = JmolConstants.
-        argbsPdbStructure[atom.getProteinStructureType()];
+      argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
       break;
     case JmolConstants.PALETTE_AMINO:
       {
-        int groupID = atom.getGroupID();
-        argb = ((groupID >= 0 &&
-                groupID < JmolConstants.argbsPdbAmino.length)
-                ? JmolConstants.argbsPdbAmino[groupID]
-                : JmolConstants.argbPdbAminoDefault);
+        int index = atom.getGroupID();
+        if (index >= JmolConstants.GROUPID_AMINO_MAX)
+          index = 0;
+        argb = JmolConstants.argbsAmino[index];
         break;
       }
     case JmolConstants.PALETTE_SHAPELY:
       {
-        int groupID = atom.getGroupID();
-        argb = ((groupID >= 0 &&
-                 groupID < JmolConstants.argbsPdbShapely.length)
-                ? JmolConstants.argbsPdbShapely[groupID]
-                : JmolConstants.argbPdbShapelyDefault);
+        int index = atom.getGroupID();
+        if (index >= JmolConstants.GROUPID_AMINO_MAX)
+          index = 0;
+        argb = JmolConstants.argbsShapely[index];
         break;
       }
     case JmolConstants.PALETTE_CHAIN:

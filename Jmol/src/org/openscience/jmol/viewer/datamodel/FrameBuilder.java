@@ -33,10 +33,12 @@ final public class FrameBuilder {
 
   final JmolViewer viewer;
   final ModelAdapter adapter;
+  final GroupBuilder groupBuilder;
 
   public FrameBuilder(JmolViewer viewer, ModelAdapter adapter) {
     this.viewer = viewer;
     this.adapter = adapter;
+    this.groupBuilder = new GroupBuilder(viewer);
   }
 
   protected void finalize() {
@@ -84,6 +86,8 @@ final public class FrameBuilder {
               iterAtom.getVectorZ(),
               iterAtom.getClientAtomReference());
     }
+
+    groupBuilder.finishBuildingGroup();
     
     {
       ModelAdapter.BondIterator iterBond =
@@ -100,11 +104,11 @@ final public class FrameBuilder {
     if (iterStructure != null) 
       while (iterStructure.hasNext())
         frame.mmset.defineStructure(iterStructure.getStructureType(),
-                                       iterStructure.getChainID(),
-                                       iterStructure.getStartSequenceNumber(),
-                                       iterStructure.getStartInsertionCode(),
-                                       iterStructure.getEndSequenceNumber(),
-                                       iterStructure.getEndInsertionCode());
+                                    iterStructure.getChainID(),
+                                    iterStructure.getStartSequenceNumber(),
+                                    iterStructure.getStartInsertionCode(),
+                                    iterStructure.getEndSequenceNumber(),
+                                    iterStructure.getEndInsertionCode());
   
     frame.atomCount = atomCount;
     frame.atoms = atoms;
@@ -129,7 +133,6 @@ final public class FrameBuilder {
   Chain currentChain;
   int currentGroupSequenceNumber;
   char currentGroupInsertionCode;
-  Group currentGroup;
   
   int atomCount;
   Atom[] atoms;
@@ -147,7 +150,6 @@ final public class FrameBuilder {
     currentChainID = '\uFFFF';
     currentChain = null;
     currentGroupInsertionCode = '\uFFFF';
-    currentGroup = null;
 
     this.atomCount = 0;
     if (atomCountEstimate <= 0)
@@ -157,12 +159,12 @@ final public class FrameBuilder {
     this.bondCount = 0;
     bonds = new Bond[2 * atomCountEstimate];
     htAtomMap.clear();
+    groupBuilder.initializeBuild();
   }
 
   void finalizeBuild() {
     currentModel = null;
     currentChain = null;
-    currentGroup = null;
     atoms = null;
     clientAtomReferences = null;
     bonds = null;
@@ -198,9 +200,9 @@ final public class FrameBuilder {
         groupInsertionCode != currentGroupInsertionCode) {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
-      currentGroup =
-        currentChain.allocateGroup(group3,
-                                   groupSequenceNumber, groupInsertionCode);
+      groupBuilder.finishBuildingGroup();
+      groupBuilder.startBuildingGroup(currentChain, group3,
+                                      groupSequenceNumber, groupInsertionCode);
     }
     Atom atom = new Atom(viewer,
                          currentModelIndex,
@@ -214,8 +216,7 @@ final public class FrameBuilder {
                          isHetero, atomSerial, chainID,
                          vectorX, vectorY, vectorZ);
 
-    atom.setGroup(currentGroup);
-    currentGroup.registerAtom(atom);
+    groupBuilder.registerAtom(atom);
 
     if (atomCount == atoms.length)
       atoms = (Atom[])Util.setLength(atoms, atomCount + ATOM_GROWTH_INCREMENT);
@@ -233,7 +234,7 @@ final public class FrameBuilder {
   }
 
   void bondAtoms(Object atomUid1, Object atomUid2,
-                             int order) {
+                 int order) {
     Atom atom1 = (Atom)htAtomMap.get(atomUid1);
     if (atom1 == null) {
       System.out.println("bondAtoms cannot find atomUid1?");

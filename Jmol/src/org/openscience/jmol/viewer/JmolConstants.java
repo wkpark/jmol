@@ -1263,7 +1263,7 @@ final public class JmolConstants {
    *and [255,255,0]) are not correct for RasMol 2.6-beta-2a.
    *This correction was made above on Dec 5, 1998.
    ****************************************************************/
-  public final static int[] argbsPdbStructure = {
+  public final static int[] argbsStructure = {
     0xFFFFFFFF, // PROTEIN_STRUCTURE_NONE
     0xFF6080FF, // PROTEIN_STRUCTURE_TURN
     0xFFFFC800, // PROTEIN_STRUCTURE_SHEET
@@ -1272,8 +1272,8 @@ final public class JmolConstants {
     0xFFFD0162, // PROTEIN_STRUCTURE_RNA
   };
 
-  public final static int argbPdbAminoDefault =  0xFFBEA06E; // tan
-  public final static int[] argbsPdbAmino = {
+  public final static int[] argbsAmino = {
+    0xFFBEA06E, // default tan
     // note that these are the rasmol colors and names, not xwindows
     0xFFC8C8C8, // darkGrey   ALA
     0xFF145AFF, // blue       ARG
@@ -1296,12 +1296,16 @@ final public class JmolConstants {
     0xFF3232AA, // midBlue    TYR
     0xFF0F820F, // green      VAL
 
+    0xFFFF69B4, // pick a new color ASP/ASN ambiguous
+    0xFFFF69B4, // pick a new color GLU/GLN ambiguous
   };
 
-  public final static int argbPdbShapelyBackbone = 0xFFB8B8B8;
-  public final static int argbPdbShapelySpecial =  0xFF5E005E;
-  public final static int argbPdbShapelyDefault =  0xFFFF00FF;
-  public final static int[] argbsPdbShapely = {
+  // hmmm ... what is shapely backbone? seems interesting
+  public final static int argbShapelyBackbone = 0xFFB8B8B8;
+  public final static int argbShapelySpecial =  0xFF5E005E;
+  public final static int argbShapelyDefault =  0xFFFF00FF;
+  public final static int[] argbsShapely = {
+    0xFFFF00FF, // default
     // these are rasmol values, not xwindows colors
     0xFF8CFF8C, // ALA
     0xFF00007C, // ARG
@@ -1326,12 +1330,17 @@ final public class JmolConstants {
 
     0xFFFF00FF, // ASX
     0xFFFF00FF, // GLX
+    /*
+      FIXME - mth 2004 05 29
+      this is broken because it needs to be put in alignment with
+      the new groupID ordering
     0xFFFF00FF, // UNK
 
     0xFFA0A0FF, // A
     0xFFFF8C4B, // C
     0xFFFF7070, // G
     0xFFA0FFA0, // T
+    */
   };
 
   /**
@@ -1968,6 +1977,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
     if (colorSchemes.length != PALETTE_MAX) {
       System.out.println("colorSchemes wrong length");
+      throw new NullPointerException();
+    }
+    if (argbsAmino.length != GROUPID_AMINO_MAX) {
+      System.out.println("argbsAmino wrong length");
+      throw new NullPointerException();
+    }
+    if (argbsShapely.length != GROUPID_AMINO_MAX) {
+      System.out.println("argbsShapely wrong length");
       throw new NullPointerException();
     }
   }

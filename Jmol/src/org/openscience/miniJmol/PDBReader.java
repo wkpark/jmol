@@ -116,8 +116,8 @@ public class PDBReader implements ChemFileReader {
       if (command.equalsIgnoreCase("ATOM")
               || command.equalsIgnoreCase("HETATM")) {
 
-        String atype = new String(s.substring(13, 14).trim());
-        String sx = new String(s.substring(29, 38).trim());
+        String atype = new String(s.substring(12, 14).trim());
+        String sx = new String(s.substring(30, 38).trim());
         String sy = new String(s.substring(38, 46).trim());
         String sz = new String(s.substring(46, 54).trim());
 

@@ -142,10 +142,6 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
                     screens[iNext], screens[iNext2]);
   }
 
-
-
-
-
   void render2Strand(int polymerCount, PdbGroup[] groups, short[] mads,
                      short[] colixes, Point3i[] screensTop, Point3i[] screensBottom) {
     for (int i = polymerCount; --i >= 0; ){
@@ -169,6 +165,5 @@ class MeshRenderer extends McpsRenderer { // not current for Mcp class
                   screensBottom[iPrev], screensBottom[i],
                   screensBottom[iNext], screensBottom[iNext2]
                   );
-}
-
+  }
 }

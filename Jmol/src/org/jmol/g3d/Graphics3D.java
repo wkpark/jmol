@@ -271,6 +271,10 @@ final public class Graphics3D {
                        Xyzd.getX(xyzd), Xyzd.getY(xyzd), Xyzd.getZ(xyzd));
   }
 
+  public void fillSphereCentered(short colix, Point3i center, int diameter) {
+    fillSphereCentered(colix, diameter, center.x, center.y, center.z);
+  }
+
   public void fillSphereCentered(short colix, int diameter,
                                  int x, int y, int z) {
     if (z < slab)

@@ -29,6 +29,8 @@ import org.openscience.jmol.viewer.*;
 import org.jmol.g3d.*;
 import java.awt.Color;
 import java.util.BitSet;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /****************************************************************
  * Mcps stands for Model-Chain-Polymer-Shape
@@ -145,7 +147,52 @@ abstract class Mcps extends Shape {
         colixes = new short[polymerCount];
         mads = new short[polymerCount + 1];
         polymerGroups = polymer.getGroups();
+
+        centers = new Point3f[polymerCount + 1];
+        vectors = new Vector3f[polymerCount + 1];
+        calcCentersAndVectors(polymerCount, polymerGroups, centers, vectors);
       }
+    }
+
+    // these arrays will be one longer than the polymerCount
+    // we probably should have better names for these things
+    // holds center points between alpha carbons
+    Point3f[] centers;
+    // holds the vector that runs across the 'ribbon'
+    Vector3f[] vectors;
+
+    void calcCentersAndVectors(int count, PdbGroup[] groups,
+                               Point3f[] centers, Vector3f[] vectors) {
+      Vector3f vectorA = new Vector3f();
+      Vector3f vectorB = new Vector3f();
+      Vector3f vectorC = new Vector3f();
+      Vector3f vectorD = new Vector3f();
+      
+      Point3f alphaPointPrev, alphaPoint;
+      centers[0] = alphaPointPrev = alphaPoint =
+        groups[0].getAlphaCarbonAtom().point3f;
+      Vector3f previousVectorD = null;
+      for (int i = 1; i < count; ++i) {
+        alphaPointPrev = alphaPoint;
+        alphaPoint = groups[i].getAlphaCarbonAtom().point3f;
+        Point3f center = new Point3f(alphaPoint);
+        center.add(alphaPointPrev);
+        center.scale(0.5f);
+        centers[i] = center;
+        vectorA.sub(alphaPoint, alphaPointPrev);
+        vectorB.sub(groups[i-1].getCarbonylOxygenAtom().point3f,
+                    alphaPointPrev);
+        vectorC.cross(vectorA, vectorB);
+        vectorD.cross(vectorC, vectorA);
+        vectorD.normalize();
+        if (previousVectorD != null &&
+            previousVectorD.angle(vectorD) > Math.PI/2)
+          vectorD.scale(-1);
+        previousVectorD = vectors[i] = new Vector3f(vectorD);
+      }
+      vectors[0] = vectors[1];
+      vectors[count] = vectors[count - 1];
+      centers[count] = groups[count - 1].getAlphaCarbonAtom().point3f;
     }
 
     short getMadSpecial(short mad, int groupIndex) {

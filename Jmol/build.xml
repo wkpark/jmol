@@ -180,6 +180,7 @@
   <target name="check.cdkjars" id="check.cdkjars">
     <uptodate property="cdkjars.uptodate" targetfile="${appjars.dir}/org/openscience/cdk">
       <srcfiles dir="${lib.dir}" includes="jmol2cdk.jar"/>
+      <srcfiles dir="${lib.dir}" includes="dadml.jar"/>
     </uptodate>
   </target>
   
@@ -206,6 +207,7 @@
   <target name="cdkjars" id="cdkjars" depends="check.cdkjars" unless="cdkjars.uptodate">
     <mkdir dir="${appjars.dir}"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jmol2cdk.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/dadml.jar"/>
   </target>
 
   <target name="pluginjars" id="pluginjars" depends="check.pluginjars" unless="pluginjars.uptodate">

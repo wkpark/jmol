@@ -1,10 +1,18 @@
 .SUFFIXES: $(SUFFIXES) .jar .java .class
            JMOL_HOME=$(PWD)/..
            JAVA_HOME= /usr/j2se
+#
+#			For DEC Alpha:
+#			JAVA_HOME=/usr
+#
                JIKES= /usr/local/bin/jikes
                JAVAC= $(JAVA_HOME)/bin/javac
 # Choose a compiler here:
                   JC=$(JIKES)
+#
+#			For DEC Alpha:
+#			      JC=$(JAVAC)
+#
                 JAVA= $(JAVA_HOME)/bin/java
                  JAR= $(JAVA_HOME)/bin/jar
              JAVADOC= $(JAVA_HOME)/bin/javadoc -private
@@ -13,6 +21,10 @@
 #           Java 1.2 classpath:
 #
            CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar:${JMOL_HOME}/jars/jas.jar
+#
+#			Java 1.2 classpath for DEC Alpha
+#
+#           CLASSPATH=${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.1-1.12.jar:${JMOL_HOME}/jars/junit.jar:${JMOL_HOME}/jars/jas.jar
 #
 #           Java 1.1 classpath:
 #
@@ -95,33 +107,31 @@ SOURCES = org/openscience/jmol/Jmol.java \
 CLASSES = $(SOURCES:%.java=%.class)
 
 APPLET_SOURCES = org/openscience/miniJmol/JmolApplet.java \
+		org/openscience/miniJmol/Atom.java \
 		org/openscience/miniJmol/AtomTypeSet.java \
 		org/openscience/miniJmol/BaseAtomType.java \
-		org/openscience/miniJmol/CMLReader.java \
-		org/openscience/miniJmol/CMLHandler.java \
+		org/openscience/miniJmol/BondRenderer.java \
 		org/openscience/miniJmol/ChemFile.java \
+		org/openscience/miniJmol/ChemFileReader.java \
 		org/openscience/miniJmol/ChemFrame.java \
+		org/openscience/miniJmol/CMLHandler.java \
+		org/openscience/miniJmol/CMLReader.java \
 		org/openscience/miniJmol/DTDResolver.java \
+		org/openscience/miniJmol/Gaussian98Reader.java \
 		org/openscience/miniJmol/JMolCDO.java \
 		org/openscience/miniJmol/JmolBeanTest.java \
 		org/openscience/miniJmol/JmolSimpleBean.java \
 		org/openscience/miniJmol/Matrix3D.java \
 		org/openscience/miniJmol/PDBReader.java \
-		org/openscience/miniJmol/XYZReader.java \
-		org/openscience/miniJmol/displayPanel.java \
-		org/openscience/miniJmol/Atom.java \
-		org/openscience/miniJmol/BondRenderer.java \
-		org/openscience/miniJmol/ChemFileReader.java \
 		org/openscience/miniJmol/ReaderFactory.java \
-		org/openscience/miniJmol/PDBReader.java \
+		org/openscience/miniJmol/StatusDisplay.java \
 		org/openscience/miniJmol/XYZReader.java \
-		org/openscience/miniJmol/Gaussian98Reader.java
+		org/openscience/miniJmol/displayPanel.java
 
 APPLET_CLASSES = $(APPLET_SOURCES:%.java=%.class)
 
 APPLET_JMOL_SOURCES = org/openscience/jmol/FortranFormat.java \
 		org/openscience/jmol/PhysicalProperty.java \
-		org/openscience/jmol/ChemFileReader.java \
 		org/openscience/jmol/DisplaySettings.java
 
 APPLET_JMOL_CLASSES = $(APPLET_JMOL_SOURCES:%.java=%.class)

@@ -33,12 +33,12 @@ import java.awt.*;
 public class FormatedText { 
   
   //Font markers
-  public final static int FONT_SYMBOL = 0;
-  public final static int FONT_NORMAL = 1;
+  public final static int FONT_SYMBOL = 0;  // Greek characters
+  public final static int FONT_NORMAL = 1;  // Latin characters
   
   //Position markers
-  public final static int POS_NORMAL = 10;
-  public final static int POS_EXP = 11;
+  public final static int POS_EXP_P = 10;    // Superscript (exponent) position
+  public final static int POS_EXP_M = 11;    // Superscript (exponent) position
 
   String text;
   int fontSize;
@@ -57,30 +57,30 @@ public class FormatedText {
    * return a Vector containing easily usable formating information
    *
    * spaces are used as token separator
-   * \N : switch to NORMAL font
-   * \S : switch to SYMBOL font
-   * ^  : put in exponent 
-   * \  : (backslash space) put a space character
+   * /N     : switch to NORMAL font
+   * /S     : switch to SYMBOL font
+   * ^      : put in exponent 
+   * /      : (backslash space) put a space character
+   * \u2A68 : insert a unicode character
    *
    * For instance:
    *
-   * parse("Wavelength \ \S l \ \N ( cm^-1 )", 20) will return
+   * parse("Wavelength / /S l / /N ( cm^-1 _ )", 20) will return
    *
    * Vector(0) = FONT_NORMAL     (int)
-   * Vector(1) = POS_NORMAL
-   * Vector(2) = "Wavelength"    (String)
-   * Vector(3) = " "
-   * Vector(4) = FONT_SYMBOL
-   * Vector(5) = "l"             (this will give a lambda)
-   * Vector(6) = " "
-   * Vector(7) = FONT_NORMAL
-   * Vector(8) = "(cm"
-   * Vector(9) = POS_EXP
-   * Vector(10) = "-1"
-   * Vector(11)= POS_NORMAL
-   * Vector(12)= ")"
-   * Vector(13)= 234             (String width)
-   * Vector(14)= 22              (String height)
+   * Vector(1) = "Wavelength"    (String)
+   * Vector(2) = " "
+   * Vector(3) = FONT_SYMBOL
+   * Vector(4) = "l"             (this will give a lambda)
+   * Vector(5) = " "
+   * Vector(6) = FONT_NORMAL
+   * Vector(7) = "(cm"
+   * Vector(8) = POS_EXP_P
+   * Vector(9) = "-1"
+   * Vector(10)= POS_EXP_M
+   * Vector(11)= ")"
+   * Vector(12)= 234             (String width)
+   * Vector(13)= 22              (String height)
    */
   private Vector parse() {
         
@@ -90,37 +90,37 @@ public class FormatedText {
     int length=0;
     int height=0;
     
-    textDef.addElement(new Integer(FONT_NORMAL));
-    textDef.addElement(new Integer(POS_NORMAL));
+    textDef.addElement(new Integer(FONT_NORMAL)); // By default, we are in NORMAL mode.
     
-    st = new StringTokenizer(text, "\\^ ",true);
+    st = new StringTokenizer(text, "\\^ _",true);  // Remember that "\" must be escaped --> "\\"
     while (st.hasMoreTokens()) {
       s = st.nextToken();
       
-      if (s.equals("\\")) {
+      if (s.equals("\\")) {    // We found a backslash. We use this to introduce a PostScript symbol.
 	s = st.nextToken();
-	if (s.equals("S")) {
+	if (s.equals("S")) {   // If the character following the slash is a "S", we enter in SYMBOL mode.
 	  textDef.addElement(new Integer(FONT_SYMBOL));
-	} else if (s.equals("N")) {
+	} else if (s.equals("N")) {   // If the letter is "N", we enter in NORMAL mode.
 	  textDef.addElement(new Integer(FONT_NORMAL));	    
-	} else if (s.equals(" ")) {
+	} else if (s.equals(" ")) {  // If the letter is an "space", a space is drawn.
 	  textDef.addElement(" ");
+	} else if (s.equals("\\")) {  // If the letter is a "backslash", a backslash is drawn.
+	  textDef.addElement("\\");
 	}
-      } else if (s.equals("^")) {
-	textDef.addElement(new Integer(POS_EXP));
-      } else if (s.equals(" ")) {
+      } else if (s.equals("^")) {   // If a "^" is found, we *increase* the superscript (exponent) position by 1 level.
+	textDef.addElement(new Integer(POS_EXP_P));
+      } else if (s.equals("_")) {   // If a "_" is found, we *decrease* the superscript (exponent) position by 1 level.
+	textDef.addElement(new Integer(POS_EXP_M));
+      } else if (s.equals(" ")) { // a space is simply ignored. Use "\ " to draw a space
 	//Do nothing
       } else {
 	textDef.addElement(s); 
-	  
-	//Reset to normal
-	textDef.addElement(new Integer(POS_NORMAL));
       }
     } //end while
-      
+    
     return textDef;
   } //end parse 
-
+  
   private void computeWidth() {
     Frame dummyFrame = new Frame();
     Object token;

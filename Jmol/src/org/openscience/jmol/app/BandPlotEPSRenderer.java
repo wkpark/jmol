@@ -237,7 +237,8 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
     int sizePS = fontsize;
     
     double dx=0;    
-    double dy=0;
+    double dy=0; //is relative to previous position
+    int level=0; // level for the superscript/subscript position
     switch(align) {
     case ALIGN_LEFT: dx=0; break;
     case ALIGN_CENTER: dx=-width/2.0; break;
@@ -248,7 +249,6 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
     psLine = psLine + x + " " + y + " translate " 
       + rotation + " rotate 0 0 moveto ";     
     
-
     for (Enumeration e = textDef.elements() ; e.hasMoreElements() ;) {
       token = e.nextElement();
       if(token instanceof Integer) {
@@ -263,22 +263,37 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
 	  fontPS = "Symbol";
 	  sizePS = fontsize; 
 	  break;
-	case FormatedText.POS_NORMAL:
-	  f = new Font(f.getName(), Font.PLAIN, fontsize);
-	  sizePS = fontsize;
-	  dy=-dy;
-	  break;
-	case FormatedText.POS_EXP:
-	  dy = (double)fontsize *2/3;
+	case FormatedText.POS_EXP_P:
+	  if (level >= 0) {
+	    dy = (double)fontsize * 2/3;
+	    fontsize = (int)((double)fontsize * 1/2);
+	  } else {
+	    fontsize = fontsize * 2;
+	    dy = - (double)fontsize / 2 + (double)fontsize * 2/3;
+	  }
+	  level++;
 	  f = new Font(f.getName(), Font.PLAIN, 
-		       (int)((double)fontsize *1/2));
-	  sizePS = (int)((double)fontsize *1/2);
+		       (int)fontsize);
+	  sizePS = (int)fontsize;
 	  break;
-	}
+	case FormatedText.POS_EXP_M:
+	  if ( level > 0) {
+	    fontsize = fontsize * 2;
+	    dy = - (double)fontsize * 2/3;
+	  } else {
+	    dy = + (double)fontsize / 2 - (double)fontsize * 2/3;
+	    fontsize = (int)((double)fontsize * 1/2);
+	  }
+	  level--;
+	  f = new Font(f.getName(), Font.PLAIN, 
+		       (int)fontsize);
+	  sizePS = (int)fontsize;
+	  break;
+       	}
       } else if (token instanceof String) {
 	FontMetrics fm = dummyFrame.getFontMetrics(f);
 
-	// "(" and ")" must be "escaped" with "\(" and "\)" 
+	// "(" and ")" must be "escaped" with "\(" and "\)" in a PostScript file
 	// because have PostScrip signification. 
 	// The regexp seems complicated
 	// because:
@@ -286,23 +301,24 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
 	// java and in the regexp itself.
 	// *the paranthesis must be escaped in regexp.
 	tokenPS=(String)token;
-
+	
+	
         /*
           replaceAll is only available in JVM 1.4 and greater
           see substitute routine below
           I have not tested this, so please confirm that it works properly
-	tokenPS=tokenPS.replaceAll("\\(","\\\\(");
-	tokenPS=tokenPS.replaceAll("\\)","\\\\)");
+	  tokenPS=tokenPS.replaceAll("\\(","\\\\(");
+	  tokenPS=tokenPS.replaceAll("\\)","\\\\)");
         */
         tokenPS=replaceCharString(tokenPS, '(', "\\(");
         tokenPS=replaceCharString(tokenPS, ')', "\\)");
-	  
+	
 	psLine=psLine +
 	  "/" + fontPS + " findfont " +
 	  sizePS + " scalefont setfont " +
 	  dx + " " + dy + " rmoveto " +
 	  "(" + tokenPS + ")" + " show ";
-
+	
 	dx=0; // PostScript automaticaly increments its position
       }
     } //for on textDef elements

@@ -193,7 +193,8 @@ public class BandPlotG2DRenderer extends BandPlotRenderer  {
     Font f = new Font("Times-Roman", Font.PLAIN, fontsize);
 
     double dx=0;    
-    double dy=0;
+    double dy=0; //is absolute (but relative to the baseline)
+    int level=0; // level of the exponent (superscript, subscript, ...)
     switch(align) {
     case ALIGN_LEFT: dx=0; break;
     case ALIGN_CENTER: dx=-width/2.0; break;
@@ -206,7 +207,7 @@ public class BandPlotG2DRenderer extends BandPlotRenderer  {
     g2.transform(at);
 
     
-    
+    boolean nextTokenIsUnicode = false;
     for (Enumeration e = textDef.elements() ; e.hasMoreElements() ;) {
       token = e.nextElement();
       if(token instanceof Integer) {
@@ -218,21 +219,41 @@ public class BandPlotG2DRenderer extends BandPlotRenderer  {
 	case FormatedText.FONT_SYMBOL:
 	  f = new Font("Greek Poly Plain", Font.PLAIN, fontsize);
 	  g2.setFont(f);
+	  nextTokenIsUnicode = true;
 	  break;
-	case FormatedText.POS_NORMAL:
-	  f = new Font(f.getName(), Font.PLAIN, fontsize);
-	  dy=0;
+	case FormatedText.POS_EXP_P:
+	  if (level >= 0) {
+	    dy = dy - (double)fontsize * 2/3;
+	    fontsize = (int)((double)fontsize * 1/2);
+	  } else {
+	    fontsize = fontsize * 2;
+	    dy = dy + (double)fontsize / 2 - (double)fontsize * 2/3;
+	  }
+	  level++;
+	  f = new Font(f.getName(), Font.PLAIN, 
+		       (int)fontsize);
 	  g2.setFont(f);
 	  break;
-	case FormatedText.POS_EXP:
-	  dy=-(double)fontsize *2/3;
+	case FormatedText.POS_EXP_M:
+	  if ( level > 0) {
+	    fontsize = fontsize * 2;
+	    dy = dy + (double)fontsize * 2/3;
+	  } else {
+	    dy = dy - (double)fontsize / 2 + (double)fontsize * 2/3;
+	    fontsize = (int)((double)fontsize * 1/2);
+	  }
+	  level--;
 	  f = new Font(f.getName(), Font.PLAIN, 
-		       (int)((double)fontsize *1/2));
+		       (int)fontsize);
 	  g2.setFont(f);
 	  break;
 	}
       } else if (token instanceof String) {
 	FontMetrics fm = g2.getFontMetrics(f);
+	if (nextTokenIsUnicode) {
+	  token = CodeMapping.getUnicode((String)token);  
+	  nextTokenIsUnicode = false;
+      	}
 	g2.drawString((String)token,(int)(x + dx), (int)(y + dy));
 	dx = dx + fm.stringWidth((String)token);
       }

@@ -238,8 +238,8 @@ public class Units {
   
   public static String[] getFormatedEnergyList() {
     String[] list={"Energy \\ (J)", "Energy \\ (eV)", "Energy \\ (meV)", 
-		   "\\S l \\N \\ ( cm^-1 )",  "\\S l \\N \\ ( mm^-1 )",
-		   "\\S l \\N \\ ( \\S m \\N m^-1 )", "\\S l \\N \\ ( nm^-1 )"};
+		   "\\S l \\N \\ ( cm^-1_ )",  "\\S l \\N \\ ( mm^-1_ )",
+		   "\\S l \\N \\ ( \\S m \\N m^-1_ )", "\\S l \\N \\ ( nm^-1_ )"};
     return list;
   }
 

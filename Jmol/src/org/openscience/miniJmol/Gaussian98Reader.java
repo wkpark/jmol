@@ -20,8 +20,11 @@
  */
 package org.openscience.miniJmol;
 
-import java.io.*;
-import java.util.Vector;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
 
 /**
@@ -122,18 +125,16 @@ public class Gaussian98Reader implements ChemFileReader {
 			ChemFrame frame, StatusDisplay putStatus, int frameNum)
 				throws IOException {
 
-		String line;
 		StringBuffer stat = new StringBuffer();
-		String baseStat;
 		int statpos = 0;
 
 		stat.append("Reading Frame ");
 		stat.append(frameNum);
 		stat.append(": ");
-		baseStat = stat.toString();
+		String baseStat = stat.toString();
 		putStatus.setStatusMessage(stat.toString());
 
-		line = input.readLine();
+		String line = input.readLine();
 		line = input.readLine();
 		line = input.readLine();
 		line = input.readLine();
@@ -142,7 +143,7 @@ public class Gaussian98Reader implements ChemFileReader {
 			if ((line == null) || (line.indexOf("-----") >= 0)) {
 				break;
 			}
-			int atomicNumber;
+			int atomicNumber = 0;
 			StringReader sr = new StringReader(line);
 			StreamTokenizer token = new StreamTokenizer(sr);
 			token.nextToken();
@@ -164,9 +165,9 @@ public class Gaussian98Reader implements ChemFileReader {
 			token.nextToken();
 
 			// ignore third token
-			double x;
-			double y;
-			double z;
+			double x = 0.0;
+			double y = 0.0;
+			double z = 0.0;
 			if (token.nextToken() == StreamTokenizer.TT_NUMBER) {
 				x = token.nval;
 			} else {

@@ -1,57 +1,40 @@
 
 /*
- * @(#)JmolApplet.java    1.0 3/9/99
+ * Copyright 2001 The Jmol Development Team
  *
- * Copyright Thomas James Grey 1999
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Thomas James Grey grants you ("Licensee") a non-exclusive, royalty
- * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions
- * are met:
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * This software is provided "AS IS," without a warranty of any
- * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
- * EXCLUDED.  THOMAS JAMES GREY AND HIS LICENSORS SHALL NOT BE LIABLE
- * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
- * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
- * EVENT WILL THOMAS JAMES GREY OR HIS LICENSORS BE LIABLE FOR ANY
- * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
- * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
- * INABILITY TO USE SOFTWARE, EVEN IF THOMAS JAMES GREY HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
- * This software is not designed or intended for use in on-line
- * control of aircraft, air traffic, aircraft navigation or aircraft
- * communications; or in the design, construction, operation or
- * maintenance of any nuclear facility. Licensee represents and
- * warrants that it will not use or redistribute the Software for such
- * purposes.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-//MARK
 package org.openscience.miniJmol;
 
-import java.awt.event.*;
-import java.io.*;
+import java.awt.event.MouseListener;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.io.InputStream;
 import org.openscience.jmol.FortranFormat;
 
+/**
+ *  @author Bradley A. Smith (bradley@baysmith.com)
+ */
 public class JmolApplet extends java.applet.Applet
 		implements MouseListener, KeyListener, StatusDisplay {
 
-	public static String appletInfo =
+	private static String appletInfo =
 		"Jmol Applet.  Part of the OpenScience project.  See www.openscience.org/Jmol for more information";
 
-	public static String[][] paramInfo = {
+	private static String[][] paramInfo = {
 		{
 			"FORMAT", "string",
 			"Set this to CMLSTRING for an embedded CML string in the MODEL parameter, otherwise leave blank"
@@ -93,7 +76,7 @@ public class JmolApplet extends java.applet.Applet
 	private String helpMessage =
 		"Keys: S- change style; L- Show labels; B-Toggle Bonds";
 
-	private String AT_loc = "Data/AtomTypes.txt";
+	private String atomTypesFileName = "Data/AtomTypes.txt";
 
 	private boolean bondsEnabled = true;
 
@@ -128,16 +111,16 @@ public class JmolApplet extends java.applet.Applet
 		if (customViews != null) {
 			myBean.setCustomViews(customViews);
 		}
-		String WFR = getParameter("WIREFRAMEROTATION");
-		if ((WFR != null) && (WFR.equals("OFF"))) {
+		String wfr = getParameter("WIREFRAMEROTATION");
+		if ((wfr != null) && (wfr.equals("OFF"))) {
 			myBean.setWireframeRotation(false);
 		}
 
-		InputStream atis;
+		InputStream atis = null;
 		String atomtypes = getParameter("ATOMTYPES");
 		try {
 			if ((atomtypes == null) || (atomtypes.length() == 0)) {
-				atis = getClass().getResourceAsStream(AT_loc);
+				atis = getClass().getResourceAsStream(atomTypesFileName);
 			} else {
 				java.net.URL atURL = new java.net.URL(getDocumentBase(),
 										 atomtypes);
@@ -150,7 +133,7 @@ public class JmolApplet extends java.applet.Applet
 		String model = getParameter("MODEL");
 		if (model != null) {
 			try {
-				ChemFileReader cfr;
+				ChemFileReader cfr = null;
 				if ((getParameter("FORMAT") != null)
 						&& getParameter("FORMAT").toUpperCase()
 							.equals("CMLSTRING")) {
@@ -159,7 +142,7 @@ public class JmolApplet extends java.applet.Applet
 							.createReader(new java.io
 								.StringReader(cmlString));
 				} else {
-					java.net.URL modelURL;
+					java.net.URL modelURL = null;
 					try {
 						modelURL = new java.net.URL(getDocumentBase(), model);
 					} catch (java.net.MalformedURLException e) {
@@ -178,8 +161,7 @@ public class JmolApplet extends java.applet.Applet
 		}
 		myBean.addMouseListener(this);
 		myBean.addKeyListener(this);
-		String bg;
-		bg = getParameter("BCOLOUR");
+		String bg = getParameter("BCOLOUR");
 		if (bg != null) {
 			myBean.setBackgroundColour(bg);
 		} else {
@@ -189,8 +171,7 @@ public class JmolApplet extends java.applet.Applet
 			}
 		}
 
-		String fg;
-		fg = getParameter("FCOLOUR");
+		String fg = getParameter("FCOLOUR");
 		if (fg != null) {
 			myBean.setForegroundColour(fg);
 		} else {
@@ -444,7 +425,6 @@ public class JmolApplet extends java.applet.Applet
 
 	public void keyTyped(KeyEvent e) {
 
-		String key = e.getKeyText(e.getKeyChar());
 		String keyChar = new Character(e.getKeyChar()).toString();
 		if (keyChar.equals("s") || keyChar.equals("S")) {
 			mode++;
@@ -482,19 +462,20 @@ public class JmolApplet extends java.applet.Applet
 	/**
 	 * <b>For Javascript:<\b> Takes the argument, pharses it as an XYZ file and sets it as the current model.
 	 * For robustness EOL chars can be ignored and should then be replaced with % symbols.
-	 * @param hugeXYZString The whole of the molecule XYZ file as a single string.
-	 * @param aliasedEOL If 'T' then EOL chars should be replaced by % symbols otherwise 'F'.
+	 * @param xyzString The whole of the molecule XYZ file as a single string.
+	 * @param aliasedEndOfLine If 'T' then EOL chars should be replaced by % symbols otherwise 'F'.
 	 */
-	public void setModelToRenderFromXYZString(String hugeXYZString,
-			String aliasedEOL) {
+	public void setModelToRenderFromXYZString(String xyzString,
+			String aliasedEndOfLine) {
 
-		aliasedEOL = aliasedEOL.toUpperCase();
+		String aliasedEOL = aliasedEndOfLine.toUpperCase();
+		String hugeXYZString = xyzString;
 		if (aliasedEOL.equals("T")) {
 			hugeXYZString = recoverEOLSymbols(hugeXYZString);
 		}
 		try {
-			ChemFileReader cfr;
-			cfr = ReaderFactory
+			ChemFileReader cfr =
+				ReaderFactory
 					.createReader(new java.io.StringReader(hugeXYZString));
 			myBean.setModel(cfr.read(this, bondsEnabled));
 		} catch (java.io.IOException e) {
@@ -510,10 +491,8 @@ public class JmolApplet extends java.applet.Applet
 	public void setModelToRenderFromCMLString(String hugeCMLString) {
 
 		try {
-			ChemFileReader cfr;
-
-			//            String cmlString = convertEscapeChars(hugeCMLString);
-			cfr = ReaderFactory
+			ChemFileReader cfr =
+				ReaderFactory
 					.createReader(new java.io.StringReader(hugeCMLString));
 			myBean.setModel(cfr.read(this, bondsEnabled));
 		} catch (java.io.IOException e) {
@@ -528,8 +507,7 @@ public class JmolApplet extends java.applet.Applet
 	public void setModelToRenderFromURL(String modelURLString) {
 
 		try {
-			ChemFileReader cfr;
-			java.net.URL modelURL;
+			java.net.URL modelURL = null;
 			try {
 				modelURL = new java.net.URL(getDocumentBase(),
 						modelURLString);
@@ -537,7 +515,7 @@ public class JmolApplet extends java.applet.Applet
 				throw new RuntimeException(("Got MalformedURL for model: "
 						+ e.toString()));
 			}
-			cfr = ReaderFactory
+			ChemFileReader cfr = ReaderFactory
 					.createReader(new java.io
 						.InputStreamReader(modelURL.openStream()));
 			myBean.setModel(cfr.read(this, bondsEnabled));
@@ -589,18 +567,18 @@ public class JmolApplet extends java.applet.Applet
 
 	/**
 	 * <b>For Javascript:<\b> Causes Atoms to be shown or hidden.
-	 * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+	 * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
 	 */
-	public void setAtomsShown(String TorF) {
-		myBean.setAtomsShown(TorF);
+	public void setAtomsShown(String value) {
+		myBean.setAtomsShown(value);
 	}
 
 	/**
 	 * <b>For Javascript:<\b> Causes bonds to be shown or hidden.
-	 * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+	 * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
 	 */
-	public void setBondsShown(String TorF) {
-		myBean.setBondsShown(TorF);
+	public void setBondsShown(String value) {
+		myBean.setBondsShown(value);
 	}
 
 	/**

@@ -8,8 +8,12 @@
 
 package org.openscience.miniJmol;
 
-import java.util.*;
-import org.xml.sax.*;
+import java.util.Vector;
+import java.util.StringTokenizer;
+import java.util.Enumeration;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.AttributeList;
 import org.openscience.jmol.FortranFormat;
 
 public class CMLHandler extends org.xml.sax.HandlerBase {
@@ -42,8 +46,8 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 
 	private final String SYSTEMID = "CML-1999-05-15";
 
-	private int CurrentElement;
-	private String BUILTIN = "";
+	private int currentElement;
+	private String builtin = "";
 
 	private ChemFrame cf;
 	private Vector cfs;
@@ -57,12 +61,11 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 	private Vector z3;
 	private boolean bondsEnabled;
 
-	public CMLHandler(boolean ABondsEnabled) {
+	public CMLHandler(boolean bondsEnabled) {
 		cfs = new Vector();
 		frameNo = 0;
-		bondsEnabled = ABondsEnabled;
+		this.bondsEnabled = bondsEnabled;
 	}
-	;
 
 	public void startDocument() {
 	}
@@ -85,7 +88,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 			throws SAXException {
 
 		setCurrentElement(name);
-		switch (CurrentElement) {
+		switch (currentElement) {
 		case ATOM :
 			for (int i = 0; i < atts.getLength(); i++) {
 				if (atts.getName(i).equals("id")) {
@@ -97,7 +100,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 		case COORDINATE3 :
 			for (int i = 0; i < atts.getLength(); i++) {
 				if (atts.getName(i).equals("builtin")) {
-					BUILTIN = atts.getValue(i);
+					builtin = atts.getValue(i);
 				}
 			}
 			break;
@@ -105,7 +108,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 		case STRING :
 			for (int i = 0; i < atts.getLength(); i++) {
 				if (atts.getName(i).equals("builtin")) {
-					BUILTIN = atts.getValue(i);
+					builtin = atts.getValue(i);
 				}
 			}
 			break;
@@ -116,7 +119,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 		case STRINGARRAY :
 			for (int i = 0; i < atts.getLength(); i++) {
 				if (atts.getName(i).equals("builtin")) {
-					BUILTIN = atts.getValue(i);
+					builtin = atts.getValue(i);
 				}
 			}
 			break;
@@ -124,7 +127,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 		case FLOATARRAY :
 			for (int i = 0; i < atts.getLength(); i++) {
 				if (atts.getName(i).equals("builtin")) {
-					BUILTIN = atts.getValue(i);
+					builtin = atts.getValue(i);
 				}
 			}
 			break;
@@ -157,8 +160,8 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 	public void endElement(String name) {
 
 		setCurrentElement(name);
-		BUILTIN = "";
-		switch (CurrentElement) {
+		builtin = "";
+		switch (currentElement) {
 		case MOLECULE :
 			int atomcount = elsym.size();
 			if ((x3.size() == atomcount) && (y3.size() == atomcount)
@@ -190,15 +193,15 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 	public void characters(char ch[], int start, int length) {
 
 		String s = toString(ch, start, length).trim();
-		switch (CurrentElement) {
+		switch (currentElement) {
 		case STRING :
-			if (BUILTIN.equals("elementType")) {
+			if (builtin.equals("elementType")) {
 				elsym.addElement(s);
 			}
 			break;
 
 		case COORDINATE3 :
-			if (BUILTIN.equals("xyz3")) {
+			if (builtin.equals("xyz3")) {
 				try {
 					StringTokenizer st = new StringTokenizer(s);
 					x3.addElement(st.nextToken());
@@ -211,7 +214,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 			break;
 
 		case STRINGARRAY :
-			if (BUILTIN.equals("id")) {
+			if (builtin.equals("id")) {
 				try {
 					StringTokenizer st = new StringTokenizer(s);
 					while (st.hasMoreTokens()) {
@@ -220,7 +223,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 				} catch (Exception e) {
 					notify("CMLParsing error: " + e, SYSTEMID, 186, 1);
 				}
-			} else if (BUILTIN.equals("elementType")) {
+			} else if (builtin.equals("elementType")) {
 				try {
 					StringTokenizer st = new StringTokenizer(s);
 					while (st.hasMoreTokens()) {
@@ -233,7 +236,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 			break;
 
 		case FLOATARRAY :
-			if (BUILTIN.equals("x3")) {
+			if (builtin.equals("x3")) {
 				try {
 					StringTokenizer st = new StringTokenizer(s);
 					while (st.hasMoreTokens()) {
@@ -242,7 +245,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 				} catch (Exception e) {
 					notify("CMLParsing error: " + e, SYSTEMID, 205, 1);
 				}
-			} else if (BUILTIN.equals("y3")) {
+			} else if (builtin.equals("y3")) {
 				try {
 					StringTokenizer st = new StringTokenizer(s);
 					while (st.hasMoreTokens()) {
@@ -251,7 +254,7 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 				} catch (Exception e) {
 					notify("CMLParsing error: " + e, SYSTEMID, 213, 1);
 				}
-			} else if (BUILTIN.equals("z3")) {
+			} else if (builtin.equals("z3")) {
 				try {
 					StringTokenizer st = new StringTokenizer(s);
 					while (st.hasMoreTokens()) {
@@ -268,55 +271,54 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 	private void setCurrentElement(String name) {
 
 		if (name.equals("string")) {
-			CurrentElement = STRING;
+			currentElement = STRING;
 		} else if (name.equals("link")) {
-			CurrentElement = LINK;
+			currentElement = LINK;
 		} else if (name.equals("float")) {
-			CurrentElement = FLOAT;
+			currentElement = FLOAT;
 		} else if (name.equals("integer")) {
-			CurrentElement = INTEGER;
+			currentElement = INTEGER;
 		} else if (name.equals("stringArray")) {
-			CurrentElement = STRINGARRAY;
+			currentElement = STRINGARRAY;
 		} else if (name.equals("floatArray")) {
-			CurrentElement = FLOATARRAY;
+			currentElement = FLOATARRAY;
 		} else if (name.equals("integerArray")) {
-			CurrentElement = INTEGERARRAY;
+			currentElement = INTEGERARRAY;
 		} else if (name.equals("floatMatrix")) {
-			CurrentElement = FLOATMATRIX;
+			currentElement = FLOATMATRIX;
 		} else if (name.equals("coordinate2")) {
-			CurrentElement = COORDINATE2;
+			currentElement = COORDINATE2;
 		} else if (name.equals("coordinate3")) {
-			CurrentElement = COORDINATE3;
+			currentElement = COORDINATE3;
 		} else if (name.equals("angle")) {
-			CurrentElement = ANGLE;
+			currentElement = ANGLE;
 		} else if (name.equals("torsion")) {
-			CurrentElement = TORSION;
+			currentElement = TORSION;
 		} else if (name.equals("list")) {
-			CurrentElement = LIST;
+			currentElement = LIST;
 		} else if (name.equals("molecule")) {
-			CurrentElement = MOLECULE;
+			currentElement = MOLECULE;
 		} else if (name.equals("atom")) {
-			CurrentElement = ATOM;
+			currentElement = ATOM;
 		} else if (name.equals("atomArray")) {
-			CurrentElement = ATOMARRAY;
+			currentElement = ATOMARRAY;
 		} else if (name.equals("bond")) {
-			CurrentElement = BOND;
+			currentElement = BOND;
 		} else if (name.equals("bondArray")) {
-			CurrentElement = BONDARRAY;
+			currentElement = BONDARRAY;
 		} else if (name.equals("electron")) {
-			CurrentElement = ELECTRON;
+			currentElement = ELECTRON;
 		} else if (name.equals("reaction")) {
-			CurrentElement = REACTION;
+			currentElement = REACTION;
 		} else if (name.equals("crystal")) {
-			CurrentElement = CRYSTAL;
+			currentElement = CRYSTAL;
 		} else if (name.equals("sequence")) {
-			CurrentElement = SEQUENCE;
+			currentElement = SEQUENCE;
 		} else if (name.equals("feature")) {
-			CurrentElement = FEATURE;
+			currentElement = FEATURE;
 		} else {
-			CurrentElement = UNKNOWN;
+			currentElement = UNKNOWN;
 		}
-		;
 	}
 
 	public void error(String message, String systemId, int line, int column)

@@ -20,7 +20,9 @@
  */
 package org.openscience.miniJmol;
 
-import java.io.*;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * A factory for creating ChemFileReaders.
@@ -46,7 +48,7 @@ public abstract class ReaderFactory {
 			throws IOException {
 
 		BufferedReader buffer = new BufferedReader(input);
-		String line;
+		String line = null;
 
 		if (buffer.markSupported()) {
 
@@ -62,7 +64,6 @@ public abstract class ReaderFactory {
 			/* an integer-valued first line is a special test for XYZ files */
 
 			try {
-				Integer i = new Integer(line.trim());
 				return new XYZReader(buffer);
 			} catch (NumberFormatException nfe) {
 			}

@@ -40,9 +40,9 @@
 
 package org.openscience.miniJmol;
 
-import java.io.*;
-import java.util.Vector;
-import java.util.StringTokenizer;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.IOException;
 import org.openscience.jmol.FortranFormat;
 
 /**
@@ -77,17 +77,14 @@ public class PDBReader implements ChemFileReader {
 	public ChemFrame readFrame(StatusDisplay putStatus, boolean bondsEnabled)
 			throws IOException {
 
-		StringTokenizer st;
-
 		ChemFrame cf = new ChemFrame(bondsEnabled);
 
-		String s;		// temporary variable used to store data as we read it
+		String s = null;
 		StringBuffer stat = new StringBuffer();
-		String baseStat;
 		int statpos = 0;
 
 		stat.append("Reading File: ");
-		baseStat = stat.toString();
+		String baseStat = stat.toString();
 		putStatus.setStatusMessage(stat.toString());
 
 		while (true) {
@@ -100,7 +97,7 @@ public class PDBReader implements ChemFileReader {
 				break;
 			}
 
-			String command;
+			String command = null;
 
 			try {
 				command = new String(s.substring(0, 6).trim());

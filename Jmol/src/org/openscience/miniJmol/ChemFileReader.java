@@ -36,6 +36,6 @@ public interface ChemFileReader {
 	 * @return a ChemFile with the data.
 	 * @exception IOException if an I/O error occurs
 	 */
-	public ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
+	ChemFile read(StatusDisplay putStatus, boolean bondsEnabled)
 			throws IOException;
 }

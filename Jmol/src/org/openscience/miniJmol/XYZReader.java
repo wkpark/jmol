@@ -40,7 +40,9 @@
 
 package org.openscience.miniJmol;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.Reader;
 import java.util.Vector;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
@@ -99,11 +101,11 @@ public class XYZReader implements ChemFileReader {
 		StringBuffer stat = new StringBuffer();
 		String statBase = null;
 
-		String l = input.readLine();
-		if (l == null) {
+		String line = input.readLine();
+		if (line == null) {
 			return null;
 		}
-		StringTokenizer st = new StringTokenizer(l, "\t ,;");
+		StringTokenizer st = new StringTokenizer(line, "\t ,;");
 		String sn = st.nextToken();
 		na = Integer.parseInt(sn);
 		info = input.readLine();
@@ -120,17 +122,18 @@ public class XYZReader implements ChemFileReader {
 		ChemFrame cf = new ChemFrame(na, bondsEnabled);
 		cf.setInfo(info);
 
-		String s;		// temporary variable used to store data as we read it
-
 		for (int i = 0; i < na; i++) {
-			s = input.readLine();
-			if (s == null) {
+			line = input.readLine();
+			if (line == null) {
 				break;
 			}
-			if (!s.startsWith("#")) {
-				double x = 0.0f, y = 0.0f, z = 0.0f, c = 0.0f;
+			if (!line.startsWith("#")) {
+				double x = 0.0f;
+				double y = 0.0f;
+				double z = 0.0f;
+				double c = 0.0f;
 				double vect[] = new double[3];
-				st = new StringTokenizer(s, "\t ,;");
+				st = new StringTokenizer(line, "\t ,;");
 				boolean readcharge = false;
 				boolean readvect = false;
 				int nt = st.countTokens();

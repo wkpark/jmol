@@ -21,11 +21,9 @@
 package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
-import java.util.*;
 import java.awt.Graphics;
-import java.awt.*;
-import javax.swing.*;
-import javax.vecmath.Point3f;
+import java.awt.Polygon;
+import java.awt.Color;
 
 /**
  * Drawing methods for bonds.
@@ -42,9 +40,9 @@ public class BondRenderer {
 	 * Draws a bond on a particular graphics context.
 	 *
 	 * @param gc the Graphics context
-		 * @param atom1 the atom from which the bond is to be drawn
-		 * @param atom2 the atom to which the bond is to be drawn
-		 * @param settings the display settings
+			 * @param atom1 the atom from which the bond is to be drawn
+			 * @param atom2 the atom to which the bond is to be drawn
+			 * @param settings the display settings
 	 */
 	public void paint(Graphics gc, Atom atom1, Atom atom2,
 			DisplaySettings settings) {
@@ -59,9 +57,11 @@ public class BondRenderer {
 		int xmp = (x1 + x2) / 2;
 		int ymp = (y1 + y2) / 2;
 
-		double r1, r2;
-		int deltaX, deltaY;
-		double tmp;
+		double r1 = 0.0;
+		double r2 = 0.0;
+		int deltaX = 0;
+		int deltaY = 0;
+		double tmp = 0.0;
 
 		double run = (double) (x2 - x1);
 		double run2 = run * run;
@@ -148,9 +148,11 @@ public class BondRenderer {
 			tmp = Math.sqrt(halfbw * halfbw / (1 + slope * slope));
 
 			deltaX = (int) Math.round(tmp);
-			deltaY = (deltaX == 0)
-					 ? (int) Math.round(halfbw)
-					 : (int) Math.round(tmp * slope);
+			if (deltaX == 0) {
+				deltaY = (int) Math.round(halfbw);
+			} else {
+				deltaY = (int) Math.round(tmp * slope);
+			}
 
 			xpoints[0] = (x1 + dx1) + deltaX;
 			ypoints[0] = (y1 + dy1) + deltaY;
@@ -185,34 +187,34 @@ public class BondRenderer {
 			case DisplaySettings.SHADING :
 				for (int i = (int) (2.0 * halfbw); i > -1; i--) {
 					double len = i / (2.0 * halfbw);
-					int R1 =
+					int red1 =
 						(int) ((float) atom1.getType().getColor().getRed()
 							* (1.0f - len));
-					int G1 =
+					int green1 =
 						(int) ((float) atom1.getType().getColor().getGreen()
 							* (1.0f - len));
-					int B1 =
+					int blue1 =
 						(int) ((float) atom1.getType().getColor().getBlue()
 							* (1.0f - len));
 
 					// Bitwise masking to make color model:
-					int model1 = -16777216 | R1 << 16 | G1 << 8 | B1;
+					int model1 = -16777216 | red1 << 16 | green1 << 8 | blue1;
 
-					int R2 =
+					int red2 =
 						(int) ((float) atom2.getType().getColor().getRed()
 							* (1.0f - len));
-					int G2 =
+					int green2 =
 						(int) ((float) atom2.getType().getColor().getGreen()
 							* (1.0f - len));
-					int B2 =
+					int blue2 =
 						(int) ((float) atom2.getType().getColor().getBlue()
 							* (1.0f - len));
 
 					// Bitwise masking to make color model:
-					int model2 = -16777216 | R2 << 16 | G2 << 8 | B2;
+					int model2 = -16777216 | red2 << 16 | green2 << 8 | blue2;
 
 					double dX = Math.round(tmp);
-					double dY;
+					double dY = 0.0;
 					if ((int) dX == 0) {
 						dY = Math.round(halfbw);
 					} else {

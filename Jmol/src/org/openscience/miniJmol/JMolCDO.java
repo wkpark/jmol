@@ -8,7 +8,7 @@
 
 package org.openscience.miniJmol;
 
-import org.openscience.cdopi.*;
+import org.openscience.cdopi.ANIMATIONCDO;
 import java.util.Vector;
 import org.openscience.jmol.FortranFormat;
 
@@ -18,10 +18,10 @@ public final class JMolCDO extends ANIMATIONCDO {
 	private ChemFrame currentFrame;
 	private int frameNo;
 
-	private String atom_type;
-	private String atom_x;
-	private String atom_y;
-	private String atom_z;
+	private String atomType;
+	private String atomX;
+	private String atomY;
+	private String atomZ;
 
 	public JMolCDO() {
 		allFrames = new Vector();
@@ -138,21 +138,21 @@ public final class JMolCDO extends ANIMATIONCDO {
 	public void startAtom() {
 
 		System.out.println("startAtom");
-		atom_type = "";
-		atom_x = "";
-		atom_y = "";
-		atom_z = "";
+		atomType = "";
+		atomX = "";
+		atomY = "";
+		atomZ = "";
 	}
 
 	public void endAtom() {
 
-		System.out.println("endAtom: " + atom_type + " " + atom_x + " "
-				+ atom_y + " " + atom_z);
-		double x = FortranFormat.atof(atom_x.trim());
-		double y = FortranFormat.atof(atom_y.trim());
-		double z = FortranFormat.atof(atom_z.trim());
+		System.out.println("endAtom: " + atomType + " " + atomX + " " + atomY
+				+ " " + atomZ);
+		double x = FortranFormat.atof(atomX.trim());
+		double y = FortranFormat.atof(atomY.trim());
+		double z = FortranFormat.atof(atomZ.trim());
 		try {
-			currentFrame.addAtom(atom_type.trim(), (float) x, (float) y,
+			currentFrame.addAtom(atomType.trim(), (float) x, (float) y,
 					(float) z);
 		} catch (Exception e) {
 			System.out.println("JMolCDO error while adding atom: " + e);
@@ -163,16 +163,16 @@ public final class JMolCDO extends ANIMATIONCDO {
 
 		System.out.println("setAtomProp: " + type + "=" + value);
 		if (type.equals("type")) {
-			atom_type = value;
+			atomType = value;
 		}
 		if (type.equals("x3")) {
-			atom_x = value;
+			atomX = value;
 		}
 		if (type.equals("y3")) {
-			atom_y = value;
+			atomY = value;
 		}
 		if (type.equals("z3")) {
-			atom_z = value;
+			atomZ = value;
 		}
 	}
 

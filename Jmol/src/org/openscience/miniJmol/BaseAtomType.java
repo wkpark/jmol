@@ -144,8 +144,8 @@ public class BaseAtomType {
 
 		StringTokenizer st1 = new StringTokenizer(s1, "\t ,;");
 
-		String name = st1.nextToken();
-		BaseAtomType at = get(name);
+		String localName = st1.nextToken();
+		BaseAtomType at = get(localName);
 		at.root = st1.nextToken();
 		at.atomicNumber = Integer.parseInt(st1.nextToken());
 		at.mass = Double.valueOf(st1.nextToken()).doubleValue();
@@ -167,10 +167,10 @@ public class BaseAtomType {
 	/**
 	 * Sets the name.
 	 *
-	 * @param n the Name
+	 * @param name the name
 	 */
-	public void setName(String n) {
-		this.name = n;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -185,8 +185,8 @@ public class BaseAtomType {
 	 *
 	 * @param r the root
 	 */
-	public void setRoot(String r) {
-		this.root = r;
+	public void setRoot(String root) {
+		this.root = root;
 	}
 
 	/**
@@ -217,8 +217,8 @@ public class BaseAtomType {
 	 *
 	 * @param m the mass
 	 */
-	public void setMass(double m) {
-		this.mass = m;
+	public void setMass(double mass) {
+		this.mass = mass;
 	}
 
 	/**
@@ -281,9 +281,12 @@ public class BaseAtomType {
 			boolean nameEqual = name.equals(at.name);
 			boolean rootEqual = root.equals(at.root);
 			boolean atomicNumberEqual = atomicNumber == at.atomicNumber;
-			boolean massEqual = mass == at.mass;
-			boolean radiiEqual = (vdwRadius == at.vdwRadius)
-									 && (covalentRadius == at.covalentRadius);
+			boolean massEqual = (Math.abs(mass - at.mass)
+									<= Double.MIN_VALUE);
+			boolean radiiEqual =
+				(Math.abs(vdwRadius - at.vdwRadius) <= Double.MIN_VALUE)
+					&& (Math.abs(covalentRadius - at.covalentRadius)
+						<= Double.MIN_VALUE);
 			boolean colorEqual = color.equals(at.color);
 			return (nameEqual && rootEqual && atomicNumberEqual && massEqual
 					&& radiiEqual && colorEqual);

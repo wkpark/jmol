@@ -10,10 +10,13 @@ package org.openscience.miniJmol;
 
 import java.io.Reader;
 import java.io.IOException;
-import java.util.Vector;
 import java.util.Enumeration;
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
+import org.xml.sax.InputSource;
+import org.xml.sax.Parser;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.DocumentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.ParserFactory;
 
 /**
  * CML files contain a single ChemFrame object.

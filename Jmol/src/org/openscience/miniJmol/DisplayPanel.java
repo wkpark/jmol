@@ -1,6 +1,6 @@
 
 /*
- * @(#)displayPanel.java    1.0 98/08/27
+ * @(#)DisplayPanel.java    1.0 98/08/27
  *
  * Copyright (c) 1998 J. Daniel Gezelter All Rights Reserved.
  *
@@ -43,29 +43,43 @@ package org.openscience.miniJmol;
 import org.openscience.jmol.DisplaySettings;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.Matrix3D;
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.util.StringTokenizer;
+import java.util.NoSuchElementException;
 import javax.vecmath.Point3f;
 
-public class displayPanel extends Canvas
+public class DisplayPanel extends Canvas
 		implements java.awt.event.ComponentListener,
 			java.awt.event.ActionListener {
 
 	private String message = "Waiting for structure...";
 	private DisplaySettings settings;
-	private boolean Perspective = false;
-	private float FieldOfView;
+	private boolean perspective = false;
+	private float fieldOfView;
 	private boolean painted = false;
 	private boolean haveFile = false;
 	private boolean rubberband = false;
-	private boolean AntiAliased = false;
-	private int bx, by, rtop, rbottom, rleft, rright;
-	private int fileType;
+	private boolean antiAliased = false;
+	private int bx;
+	private int by;
+	private int rtop;
+	private int rbottom;
+	private int rleft;
+	private int rright;
 	private int nframes = 0;
 	private int frameIndex = -1;
-	private int prevx, prevy, outx, outy;
-	private float xtheta, ytheta, ztheta;
+	private int prevx;
+	private int prevy;
+	private int outx;
+	private int outy;
+	private float xtheta;
+	private float ytheta;
+	private float ztheta;
 	private Point3f useMinBound = new Point3f();
 	private Point3f useMaxBound = new Point3f();
 	private Matrix3D amat = new Matrix3D();		// Matrix to do mouse angular rotations.
@@ -75,10 +89,11 @@ public class displayPanel extends Canvas
 	private float zoomFactor = 0.7f;
 	private java.awt.Label frameLabel = null;
 	float[] quat = new float[4];
-	double mtmp[];
-	String names[];
-	Color colors[];
-	private double angle, prevangle;
+	double[] mtmp;
+	String[] names;
+	Color[] colors;
+	private double angle;
+	private double prevangle;
 	ChemFile cf;
 	ChemFrame md = null;
 	private float xfac0 = 1;	// Zoom factor determined by screen size/initial settings.
@@ -90,19 +105,19 @@ public class displayPanel extends Canvas
 	public static final int PICK = 3;
 	public static final int DEFORM = 4;
 	public static final int MEASURE = 5;
-	public static String customViewPrefix = "VIEW.";
-	public static String resetViewToken = "HOME";
-	public static String rotateToken = "ROTATE";
-	public static String frameToken = "FRAME";
-	public static String zoomToken = "ZOOM";
-	public static String translateToken = "TRANSLATE";
+	public static final String customViewPrefix = "VIEW.";
+	public static final String resetViewToken = "HOME";
+	public static final String rotateToken = "ROTATE";
+	public static final String frameToken = "FRAME";
+	public static final String zoomToken = "ZOOM";
+	public static final String translateToken = "TRANSLATE";
 
 	private int mode = ROTATE;
 	private static Color backgroundColor = (java.awt.Color.black);
 
 	//Added T.GREY for moveDraw support- should be true while mouse is dragged
 	private boolean mouseDragged = false;
-	private boolean WireFrameRotation = true;
+	private boolean wireFrameRotation = true;
 
 	//
 	//    private boolean showPopupMenu = true;
@@ -112,8 +127,9 @@ public class displayPanel extends Canvas
 
 	private int drawWidth;
 	private int drawHeight;
+	private int attribute1;
 
-	public displayPanel() {
+	public DisplayPanel() {
 
 		super();
 		resetView();
@@ -171,17 +187,16 @@ public class displayPanel extends Canvas
 	}
 
 	/*
-			rotationString is a string which can specify any rotation.
-			The string is formatted as "xrot,yrot,xrot".
-			There is no Z-rot, since any rotation can be created as a combination
-			of X-Y-X rotations, and this way is programmatically much easier !
-			Angles are in degrees.
+					rotationString is a string which can specify any rotation.
+					The string is formatted as "xrot,yrot,xrot".
+					There is no Z-rot, since any rotation can be created as a combination
+					of X-Y-X rotations, and this way is programmatically much easier !
+					Angles are in degrees.
 	*/
 	public void doRotationString(String rotationString) {
 
 		StringTokenizer st = new StringTokenizer(rotationString, ",", false);
 		float rotTheta = 0;
-		String token;
 
 		try {
 			rotTheta = (float) FortranFormat.atof(st.nextToken());
@@ -200,16 +215,12 @@ public class displayPanel extends Canvas
 	}
 
 	public void doZoomString(String zoomString) {
-		float zf;
-
-		zf = (float) FortranFormat.atof(zoomString);
+		float zf = (float) FortranFormat.atof(zoomString);
 		doZoom(zf);
 	}
 
 	public void doFrameString(String frameString) {
-		int frame;
-
-		frame = Integer.parseInt(frameString);
+		int frame = Integer.parseInt(frameString);
 		setFrame(frame);
 	}
 
@@ -220,7 +231,6 @@ public class displayPanel extends Canvas
 		StringTokenizer st = new StringTokenizer(translateString, ",", false);
 		float deltax = 0;
 		float deltay = 0;
-		String token;
 
 		try {
 			deltax = (float) FortranFormat.atof(st.nextToken());
@@ -236,12 +246,12 @@ public class displayPanel extends Canvas
 	}
 
 	/* Format is:
-			"FRAME=n;ROTATION=x,y,x;ZOOM=n;TRANSLATE=x,y"
+					"FRAME=n;ROTATION=x,y,x;ZOOM=n;TRANSLATE=x,y"
 	*/
 	public void doCustomViewString(String customView) {
 
 		StringTokenizer st = new StringTokenizer(customView, ";", false);
-		String viewToken;
+		String viewToken = null;
 
 		//              resetView();
 		try {
@@ -294,7 +304,7 @@ public class displayPanel extends Canvas
 	}
 
 	/*
-			This routine sets the initial zoom factor.
+					This routine sets the initial zoom factor.
 	*/
 	public void setZoomFactor(float factor) {
 		zoomFactor = factor * 0.7f;
@@ -314,11 +324,11 @@ public class displayPanel extends Canvas
 	}
 
 	public boolean getAntiAliased() {
-		return AntiAliased;
+		return antiAliased;
 	}
 
 	public void setAntiAliased(boolean aa) {
-		AntiAliased = aa;
+		antiAliased = aa;
 	}
 
 	public int getMode() {
@@ -377,9 +387,13 @@ public class displayPanel extends Canvas
 		}
 		float f1 = drawWidth / width;
 		float f2 = drawHeight / width;
-		xfac0 = zoomFactor * ((f1 < f2)
-							  ? f1
-							  : f2);
+		xfac0 = zoomFactor;
+		if (f1 < f2) {
+			xfac0 *= f1;
+		} else {
+			xfac0 *= f2;
+		}
+
 		matIsValid = false;
 		if (settings != null) {
 			settings.setBondScreenScale(xfac2 * xfac0);
@@ -469,7 +483,6 @@ public class displayPanel extends Canvas
 					}
 					painted = false;
 					repaint();
-					int n = md.getNpicked();
 				}
 			}
 
@@ -478,7 +491,7 @@ public class displayPanel extends Canvas
 		public void mouseReleased(MouseEvent e) {
 
 			//NEW LINE T.GREY
-			if (mouseDragged && WireFrameRotation) {
+			if (mouseDragged && wireFrameRotation) {
 				settings.setFastRendering(false);
 				if (painted) {
 					painted = false;
@@ -506,7 +519,7 @@ public class displayPanel extends Canvas
 			int y = e.getY();
 
 			//NEW LINE T.GREY
-			if (WireFrameRotation) {
+			if (wireFrameRotation) {
 				settings.setFastRendering(true);
 				mouseDragged = true;
 			}
@@ -515,10 +528,10 @@ public class displayPanel extends Canvas
 				/*
 				float[] spin_quat = new float[4];
 				Trackball tb = new Trackball(spin_quat,
-							(2.0f*x - drawWidth) / drawWidth,
-							(drawHeight-2.0f*y) / drawHeight,
-							(2.0f*prevx - drawWidth) / drawWidth,
-							(drawHeight-2.0f*prevy) / drawHeight);
+										(2.0f*x - drawWidth) / drawWidth,
+										(drawHeight-2.0f*y) / drawHeight,
+										(2.0f*prevx - drawWidth) / drawWidth,
+										(drawHeight-2.0f*prevy) / drawHeight);
 
 				tb.add_quats(spin_quat, quat, quat);
 				tb.build_rotmatrix(amat, quat);
@@ -544,10 +557,10 @@ public class displayPanel extends Canvas
 			}
 
 			if (mode == ZOOM) {
-				float xs = 1.0f + (float) (x - prevx) / (float) drawWidth;
-				float ys = 1.0f + (float) (prevy - y) / (float) drawHeight;
-				float s = (xs + ys) / 2.0f;
-				doZoom(s);
+				float xs = 1.0f + (float) (x - prevx) / drawWidth;
+				float ys = 1.0f + (float) (prevy - y) / drawHeight;
+				float scale = (xs + ys) / 2.0f;
+				doZoom(scale);
 			}
 
 			if (mode == PICK) {
@@ -573,9 +586,6 @@ public class displayPanel extends Canvas
 					}
 					painted = false;
 					repaint();
-					int n = md.getNpicked();
-
-					//                    status.setStatus(2, n + " Atoms Selected");
 				}
 			}
 
@@ -588,9 +598,9 @@ public class displayPanel extends Canvas
 
 		public void keyPressed(java.awt.event.KeyEvent e) {
 
-			if (e.getKeyCode() == e.VK_SHIFT) {
+			if (e.getKeyCode() == java.awt.event.KeyEvent.VK_SHIFT) {
 				mode = ZOOM;
-			} else if (e.getKeyCode() == e.VK_CONTROL) {
+			} else if (e.getKeyCode() == java.awt.event.KeyEvent.VK_CONTROL) {
 				mode = XLATE;
 			}
 		}
@@ -624,21 +634,21 @@ public class displayPanel extends Canvas
 	}
 
 	public void setPerspective(boolean p) {
-		Perspective = p;
+		perspective = p;
 		painted = false;
 	}
 
 	public boolean getPerspective() {
-		return Perspective;
+		return perspective;
 	}
 
 	public void setFieldOfView(float fov) {
-		FieldOfView = fov;
+		fieldOfView = fov;
 		painted = false;
 	}
 
 	public float getFieldOfView() {
-		return FieldOfView;
+		return fieldOfView;
 	}
 
 	public void update(Graphics g) {
@@ -647,7 +657,7 @@ public class displayPanel extends Canvas
 
 	public void paint(Graphics g) {
 
-		Graphics gps;
+		Graphics gps = null;
 
 		if (db == null) {
 			return;
@@ -791,12 +801,12 @@ public class displayPanel extends Canvas
 		return md.getShowAtoms();
 	}
 
-	public void setWireframeRotation(boolean OnOrOff) {
-		WireFrameRotation = OnOrOff;
+	public void setWireframeRotation(boolean on) {
+		wireFrameRotation = on;
 	}
 
 	public boolean getWireframeRotation() {
-		return WireFrameRotation;
+		return wireFrameRotation;
 	}
 
 }

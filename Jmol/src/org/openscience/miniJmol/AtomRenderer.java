@@ -23,12 +23,15 @@ package org.openscience.miniJmol;
 
 import org.openscience.jmol.PhysicalProperty;
 import org.openscience.jmol.DisplaySettings;
-import java.awt.*;
-import java.awt.image.*;
-import java.util.Vector;
+import java.awt.Canvas;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Image;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.MemoryImageSource;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import javax.vecmath.Point3f;
 
 /**
  * Drawing methods for atoms.
@@ -54,9 +57,9 @@ public class AtomRenderer {
 	 * Draws an atom on a particular graphics context.
 	 *
 	 * @param gc the Graphics context
-		 * @param atom the atom to be drawn
+			 * @param atom the atom to be drawn
 	 * @param picked whether or not the atom has been selected and gets a "halo"
-		 * @param settings the display settings
+			 * @param settings the display settings
 	 */
 	public void paint(Graphics gc, Atom atom, boolean picked,
 			DisplaySettings settings, boolean fastDraw) {
@@ -87,12 +90,12 @@ public class AtomRenderer {
 			break;
 
 		case DisplaySettings.SHADING :
-			Image shadedImage;
+			Image shadedImage = null;
 			if (ballImages.containsKey(atom.getType().getColor())) {
 				shadedImage =
 						(Image) ballImages.get(atom.getType().getColor());
 			} else {
-				shadedImage = SphereSetup(atom.getType().getColor(),
+				shadedImage = sphereSetup(atom.getType().getColor(),
 						settings);
 				ballImages.put(atom.getType().getColor(), shadedImage);
 			}
@@ -110,7 +113,7 @@ public class AtomRenderer {
 
 		if (settings.getLabelMode() != DisplaySettings.NOLABELS) {
 			int j = 0;
-			String s;
+			String s = null;
 			Font font = new Font("Helvetica", Font.PLAIN, radius);
 			gc.setFont(font);
 			FontMetrics fontMetrics = gc.getFontMetrics(font);
@@ -172,7 +175,7 @@ public class AtomRenderer {
 	 * @param settings the display settings used for the light source.
 	 * @returns an image of a shaded sphere.
 	 */
-	private static Image SphereSetup(Color ballColor,
+	private static Image sphereSetup(Color ballColor,
 			DisplaySettings settings) {
 
 		float v1[] = new float[3];
@@ -193,19 +196,19 @@ public class AtomRenderer {
 				v1[1] = k1;
 				float len1 = (float) Math.sqrt(k2 * k2 + k1 * k1);
 				if (len1 <= b) {
-					int R2 = 0;
-					int G2 = 0;
-					int B2 = 0;
-					v1[2] = (float) b * (float) Math.cos(Math.asin(len1 / b));
+					int red2 = 0;
+					int green2 = 0;
+					int blue2 = 0;
+					v1[2] = b * (float) Math.cos(Math.asin(len1 / b));
 					v1 = normalize(v1);
 					float len2 = (float) Math.abs((double) (v1[0]
 									 * lightsource[0]
 									 + v1[1] * lightsource[1]
 									 + v1[2] * lightsource[2]));
 					if (len2 < 0.995f) {
-						R2 = (int) ((float) ballColor.getRed() * len2);
-						G2 = (int) ((float) ballColor.getGreen() * len2);
-						B2 = (int) ((float) ballColor.getBlue() * len2);
+						red2 = (int) ((float) ballColor.getRed() * len2);
+						green2 = (int) ((float) ballColor.getGreen() * len2);
+						blue2 = (int) ((float) ballColor.getBlue() * len2);
 					} else {
 						v2[0] = lightsource[0] + 0.0f;
 						v2[1] = lightsource[1] + 0.0f;
@@ -216,19 +219,19 @@ public class AtomRenderer {
 						float len4 = 8.0f * len3 * len3 - 7.0f;
 						float len5 = 100.0f * len4;
 						len5 = Math.max(len5, 0.0f);
-						R2 = (int) ((float) (ballColor.getRed() * 155) * len2
-								+ 100.0 + len5);
-						G2 = (int) ((float) (ballColor.getGreen() * 155)
+						red2 = (int) ((float) (ballColor.getRed() * 155)
 								* len2 + 100.0 + len5);
-						B2 = (int) ((float) (ballColor.getBlue() * 155)
+						green2 = (int) ((float) (ballColor.getGreen() * 155)
 								* len2 + 100.0 + len5);
-						R2 = Math.min(R2, 255);
-						G2 = Math.min(G2, 255);
-						B2 = Math.min(B2, 255);
+						blue2 = (int) ((float) (ballColor.getBlue() * 155)
+								* len2 + 100.0 + len5);
+						red2 = Math.min(red2, 255);
+						green2 = Math.min(green2, 255);
+						blue2 = Math.min(blue2, 255);
 					}
 
 					// Bitwise masking to make model:
-					model[j] = -16777216 | R2 << 16 | G2 << 8 | B2;
+					model[j] = -16777216 | red2 << 16 | green2 << 8 | blue2;
 				} else {
 					model[j] = 0;
 				}
@@ -238,17 +241,17 @@ public class AtomRenderer {
 	}
 
 	/**
-		 * Returns a normalized vector for the float[3] given.
-		 */
+			 * Returns a normalized vector for the float[3] given.
+			 */
 	private static float[] normalize(float v[]) {
 
 		float len = (float) Math.sqrt(v[0] * v[0] + v[1] * v[1]
 						+ v[2] * v[2]);
 		float v2[] = new float[3];
-		if (len == 0.0F) {
-			v2[0] = 0.0F;
-			v2[1] = 0.0F;
-			v2[2] = 0.0F;
+		if (Math.abs(len - 0.0) < Double.MIN_VALUE) {
+			v2[0] = 0.0f;
+			v2[1] = 0.0f;
+			v2[2] = 0.0f;
 		} else {
 			v2[0] = v[0] / len;
 			v2[1] = v[1] / len;
@@ -259,7 +262,7 @@ public class AtomRenderer {
 
 	/**
 	 * The Canvas where all atoms will be drawn. This reference will be used for creating
-		 * and displaying the images for shaded atom spheres.
+			 * and displaying the images for shaded atom spheres.
 	 */
 	private static Canvas canvas;
 

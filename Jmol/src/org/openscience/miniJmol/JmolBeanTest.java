@@ -40,14 +40,14 @@
  */
 package org.openscience.miniJmol;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.BorderLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import java.awt.event.WindowEvent;
 
 public class JmolBeanTest {
 
-	static public void main(String[] args) {
+	public static void main(String[] args) {
 
 		JFrame myFrame = new JFrame();
 		JmolSimpleBean myXMLThing1 = new JmolSimpleBean();

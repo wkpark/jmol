@@ -41,12 +41,9 @@
 package org.openscience.miniJmol;
 
 import org.openscience.jmol.DisplaySettings;
-import java.util.Hashtable;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Subset version of JMol which appears as a componant and can be controlled with strings.
@@ -55,7 +52,7 @@ public class JmolSimpleBean extends java.awt.Panel
 		implements java.awt.event.ComponentListener {
 
 	private DisplaySettings settings = new DisplaySettings();
-	private displayPanel display;
+	private DisplayPanel display;
 	private ChemFile cf;
 	private java.awt.Panel animPanel = null;
 	private java.awt.Panel customViewPanel = null;
@@ -69,7 +66,7 @@ public class JmolSimpleBean extends java.awt.Panel
 
 		setLayout(new BorderLayout());
 
-		display = new displayPanel();
+		display = new DisplayPanel();
 		display.addComponentListener(this);
 		display.setDisplaySettings(settings);
 		add(display, "Center");
@@ -82,17 +79,21 @@ public class JmolSimpleBean extends java.awt.Panel
 	}
 
 	public void setZoomFactor(float factor) {
+
 		if (factor < 0.1f) {
-			factor = 0.1f;
+			display.setZoomFactor(0.1f);
+		} else {
+			display.setZoomFactor(factor);
 		}
-		display.setZoomFactor(factor);
 	}
 
 	public void setAtomSphereFactor(float factor) {
+
 		if (factor < 0.1f) {
-			factor = 0.1f;
+			settings.setAtomSphereFactor(0.2 * 0.1);
+		} else {
+			settings.setAtomSphereFactor(0.2 * factor);
 		}
-		settings.setAtomSphereFactor(0.2 * factor);
 	}
 
 	public void setCustomViews(String cv) {
@@ -106,15 +107,12 @@ public class JmolSimpleBean extends java.awt.Panel
 	 */
 	public void setModel(ChemFile cf) {
 
-		java.awt.Button btn;
-		java.awt.Label lbl;
-
 		if (cf.getNumberFrames() > 1) {
 			animPanel =
 					new java.awt
 						.Panel(new java.awt
 							.FlowLayout(java.awt.FlowLayout.LEFT));
-			btn = new java.awt.Button("Prev");
+			java.awt.Button btn = new java.awt.Button("Prev");
 			btn.setActionCommand("PREV");
 			btn.addActionListener(display);
 			animPanel.add(btn);
@@ -122,7 +120,7 @@ public class JmolSimpleBean extends java.awt.Panel
 			btn.setActionCommand("NEXT");
 			btn.addActionListener(display);
 			animPanel.add(btn);
-			lbl = new java.awt.Label();
+			java.awt.Label lbl = new java.awt.Label();
 			display.setFrameLabel(lbl);
 			animPanel.add(lbl);
 			add(animPanel, "South");
@@ -136,14 +134,13 @@ public class JmolSimpleBean extends java.awt.Panel
 							.FlowLayout(java.awt.FlowLayout.LEFT));
 			java.util.StringTokenizer st =
 				new java.util.StringTokenizer(customViews);
-			String viewName;
-			String viewData;
 			try {
-				viewName = st.nextToken("{");
+				String viewName = st.nextToken("{");
 				while (true) {
-					viewData = st.nextToken("}").substring(1);
-					btn = new java.awt.Button(viewName);
-					btn.setActionCommand(display.customViewPrefix + viewData);
+					String viewData = st.nextToken("}").substring(1);
+					java.awt.Button btn = new java.awt.Button(viewName);
+					btn.setActionCommand(DisplayPanel.customViewPrefix
+							+ viewData);
 					btn.addActionListener(display);
 					customViewPanel.add(btn);
 					viewName = st.nextToken("{").substring(1);
@@ -170,6 +167,25 @@ public class JmolSimpleBean extends java.awt.Panel
 			ats1.load(new java.io.FileInputStream(propertiesFile));
 		} catch (Exception e1) {
 			e1.printStackTrace();
+		}
+
+		typesReady = true;
+		ready = areWeReady();
+	}
+
+	/**
+	 * Takes the argument, reads it and allocates this as the current
+	 * atom types- eg radius etc.
+	 * @param propertiesURL The URL of the properties we want.
+	 */
+	public void setAtomPropertiesFromURL(URL propertiesURL) {
+
+		try {
+			AtomTypeSet ats1 = new AtomTypeSet();
+			ats1.load(propertiesURL.openStream());
+		} catch (java.io.IOException e1) {
+			System.err.println("Error loading atom properties from URL '"
+					+ propertiesURL + "': " + e1);
 		}
 
 		typesReady = true;
@@ -211,30 +227,11 @@ public class JmolSimpleBean extends java.awt.Panel
 	}
 
 	/**
-	 * Takes the argument, reads it and allocates this as the current
-	 * atom types- eg radius etc.
-	 * @param propertiesURL The URL of the properties we want.
-	 */
-	public void setAtomPropertiesFromURL(java.net.URL propertiesURL) {
-
-		try {
-			AtomTypeSet ats1 = new AtomTypeSet();
-			ats1.load(propertiesURL.openStream());
-		} catch (java.io.IOException e1) {
-			System.err.println("Error loading atom properties from URL '"
-					+ propertiesURL + "': " + e1);
-		}
-
-		typesReady = true;
-		ready = areWeReady();
-	}
-
-	/**
 	 * Set the background colour.
 	 * @param colourInHex The colour in the format #FF0000 for red etc
 	 */
 	public void setBackgroundColour(String colourInHex) {
-		display.setBackgroundColor(getColourFromHexString(colourInHex));
+		DisplayPanel.setBackgroundColor(getColourFromHexString(colourInHex));
 	}
 
 	/**
@@ -242,14 +239,14 @@ public class JmolSimpleBean extends java.awt.Panel
 	 * @param colour The colour
 	 */
 	public void setBackgroundColour(java.awt.Color colour) {
-		display.setBackgroundColor(colour);
+		DisplayPanel.setBackgroundColor(colour);
 	}
 
 	/**
 	 * Get the background colour.
 	 */
 	public java.awt.Color getBackgroundColour() {
-		return display.getBackgroundColor();
+		return DisplayPanel.getBackgroundColor();
 	}
 
 	/**
@@ -275,45 +272,20 @@ public class JmolSimpleBean extends java.awt.Panel
 		return display.getForegroundColor();
 	}
 
-	/*
-	 * Causes the drop down menu button not to be displayed in the
-	 * corner of the panel.
-	 * @param TorF if 'T' then button is displayed, if 'F' then it isn't
-	 *
-public void setPopupMenuButtonShown(String TorF){
-  display.setPopupMenuActive(getBooleanFromString(TorF));
-}
-
-*
-* Causes the drop down menu button not to be displayed in the corner of the panel.
-* @param TorF if true then button is displayed, if false then it isn't
-
-public void setPopupMenuButtonShown(boolean TorF){
-  display.setPopupMenuActive(TorF);
-}
-
-
-* Is the drop down menu button displayed in the corner of the panel?
-*
-public boolean getPopupMenuButtonShown(){
-  return display.getPopupMenuActive();
-}
-	*/
-
 	/**
 	 * Causes Atoms to be shown or hidden.
-	 * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+	 * @param value if 'T' then atoms are displayed, if 'F' then they aren't.
 	 */
-	public void setAtomsShown(String TorF) {
-		display.showAtoms(getBooleanFromString(TorF));
+	public void setAtomsShown(String value) {
+		display.showAtoms(getBooleanFromString(value));
 	}
 
 	/**
 	 * Causes Atoms to be shown or hidden.
-	 * @param TorF if true then atoms are displayed, if false then they aren't.
+	 * @param value if true then atoms are displayed, if false then they aren't.
 	 */
-	public void setAtomsShown(boolean TorF) {
-		display.showAtoms(TorF);
+	public void setAtomsShown(boolean value) {
+		display.showAtoms(value);
 	}
 
 	/**
@@ -325,18 +297,18 @@ public boolean getPopupMenuButtonShown(){
 
 	/**
 	 * Causes bonds to be shown or hidden.
-	 * @param TorF if 'T' then atoms are displayed, if 'F' then they aren't.
+	 * @param value if "T" then atoms are displayed, if "F" then they aren't.
 	 */
-	public void setBondsShown(String TorF) {
-		display.showBonds(getBooleanFromString(TorF));
+	public void setBondsShown(String value) {
+		display.showBonds(getBooleanFromString(value));
 	}
 
 	/**
 	 * Causes bonds to be shown or hidden.
-	 * @param TorF if true then bonds are displayed, if false then they aren't.
+	 * @param value if true then bonds are displayed, if false then they aren't.
 	 */
-	public void setBondsShown(boolean TorF) {
-		display.showBonds(TorF);
+	public void setBondsShown(boolean value) {
+		display.showBonds(value);
 	}
 
 	/**
@@ -471,7 +443,7 @@ public boolean getPopupMenuButtonShown(){
 
 	/**
 	 * Sets whether they view automatically goes to wireframe when they model is rotated.
-	 * @param doesIt String either 'T' or 'F'
+	 * @param doesIt String either "T" or "F"
 	 */
 	public void setAutoWireframe(String doesIt) {
 		display.setWireframeRotation(getBooleanFromString(doesIt));
@@ -531,7 +503,7 @@ public boolean getPopupMenuButtonShown(){
 	 * @param menuDesc Hmmm... See above!
 	 *
 	   public void setMenuDescriptionString(String menuDesc){
-		  display.setMenuDescription(menuDesc);
+			  display.setMenuDescription(menuDesc);
 	   }
 
 	*/
@@ -549,16 +521,16 @@ public boolean getPopupMenuButtonShown(){
 	}
 
 	/**
-	 * Returns true if passed 'T' and 'F' if passed false. Throws
-	 * IllegalArgumentException if parameter is not 'T' ot 'F'
-		 *
-	 * @param TorF String equal to either TorF
-		 */
-	protected boolean getBooleanFromString(String TorF) {
+	 * Returns true if passed "T" and "F" if passed false. Throws
+	 * IllegalArgumentException if parameter is not "T" ot "F"
+			 *
+	 * @param value String equal to either "T" or "F"
+			 */
+	protected boolean getBooleanFromString(String value) {
 
-		if (TorF.equalsIgnoreCase("T")) {
+		if (value.equalsIgnoreCase("T")) {
 			return true;
-		} else if (TorF.equalsIgnoreCase("F")) {
+		} else if (value.equalsIgnoreCase("F")) {
 			return false;
 		} else {
 			throw new IllegalArgumentException(
@@ -569,7 +541,7 @@ public boolean getPopupMenuButtonShown(){
 	/**
 	 * Turns a string in the form '#RRGGBB' eg. '#FFFFFF' is white,
 	 * into a colour
-		 */
+			 */
 	protected java.awt.Color getColourFromHexString(String colourName) {
 
 		if ((colourName == null) || (colourName.length() != 7)) {
@@ -578,15 +550,12 @@ public boolean getPopupMenuButtonShown(){
 		}
 		java.awt.Color colour = null;
 		try {
-			int red;
-			int green;
-			int blue;
 			String rdColour = "0x" + colourName.substring(1, 3);
 			String gnColour = "0x" + colourName.substring(3, 5);
 			String blColour = "0x" + colourName.substring(5, 7);
-			red = (Integer.decode(rdColour)).intValue();
-			green = (Integer.decode(gnColour)).intValue();
-			blue = (Integer.decode(blColour)).intValue();
+			int red = (Integer.decode(rdColour)).intValue();
+			int green = (Integer.decode(gnColour)).intValue();
+			int blue = (Integer.decode(blColour)).intValue();
 			colour = new java.awt.Color(red, green, blue);
 		} catch (NumberFormatException e) {
 			System.out.println(
@@ -606,12 +575,11 @@ public boolean getPopupMenuButtonShown(){
 
 		java.util.Vector v = new java.util.Vector();
 		java.util.StringTokenizer t = new java.util.StringTokenizer(input);
-		String cmd[];
 
 		while (t.hasMoreTokens()) {
 			v.addElement(t.nextToken());
 		}
-		cmd = new String[v.size()];
+		String[] cmd = new String[v.size()];
 		for (int i = 0; i < cmd.length; i++) {
 			cmd[i] = (String) v.elementAt(i);
 		}

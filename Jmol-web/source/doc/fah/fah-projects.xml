@@ -203,7 +203,7 @@
   <fah_proj number="238" name="p238_c20MUre99p"
     server="171.64.122.127" atoms="17368" preferred="29" deadline="42"
     credit="148" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="239" name="p239_NTL8MUre99p"
+  <fah_proj number="239" name="p239_NTL8MUre99p" file="y"
     server="171.64.122.127" atoms="3366" preferred="10" deadline="13"
     credit="42" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="240" name="p240_NTL4MUre99p"
@@ -2487,7 +2487,7 @@
   <fah_proj number="1592" name="p1592_LZIP-1598-1-85_pfold"
     server="171.64.122.129" atoms="34341" preferred="12" deadline="18"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1593" name="p1593_LZIP-1599-1-48_pfold"
+  <fah_proj number="1593" name="p1593_LZIP-1599-1-48_pfold" file="y"
     server="171.64.122.129" atoms="34341" preferred="12" deadline="18"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1594" name="p1594_LZIP-1599-2-8_pfold" file="y"
@@ -2516,7 +2516,7 @@
   <fah_proj number="1601" name="p1601_NTL8MUreGS"
     server="171.64.122.127" atoms="3366" preferred="10" deadline="13"
     credit="41" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="1602" name="p1602_NTL4MUreGS"
+  <fah_proj number="1602" name="p1602_NTL4MUreGS" file="y"
     server="171.64.122.127" atoms="3411" preferred="9" deadline="12"
     credit="38" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="1603" name="p1603_NTL1MUreGS"

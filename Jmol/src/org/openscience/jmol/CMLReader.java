@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2001 The Jmol Development Team
  *
@@ -60,7 +59,7 @@ public class CMLReader implements ChemFileReader {
    * Whether bonds are enabled in the files and frames read.
    */
   private boolean bondsEnabled = true;
-  
+
   /**
    * Sets whether bonds are enabled in the files and frames which are read.
    *
@@ -71,17 +70,20 @@ public class CMLReader implements ChemFileReader {
   }
 
   /**
-   * Read the CML data.
+   * Read the CML data with a validating parser.
+   *
+   * <p>Requires full gnujaxp.jar library. Not meant for
+   * use with applet.
    */
-  public ChemFile read() throws IOException {
+  public ChemFile readValidated() throws IOException {
 
     try {
       XMLReader parser = new gnu.xml.aelfred2.XmlReader();
       try {
-        parser.setFeature("http://xml.org/sax/features/validation", false);
-        System.out.println("Deactivated validation");
+        parser.setFeature("http://xml.org/sax/features/validation", true);
+        System.out.println("Activated validation");
       } catch (SAXException e) {
-        System.out.println("Cannot deactivate validation.");
+        System.out.println("Cannot activate validation.");
       }
       JMolCDO cdo = new JMolCDO();
       CMLHandler handler = new CMLHandler(cdo);
@@ -89,7 +91,42 @@ public class CMLReader implements ChemFileReader {
               new JMOLANIMATIONConvention(cdo));
       parser.setContentHandler(handler);
       parser.setEntityResolver(new CMLResolver());
-      // parser.setErrorHandler(new CMLErrorHandler());
+      parser.setErrorHandler(new CMLErrorHandler());
+      if (this.input != null) {
+        InputSource source = new InputSource(input);
+        parser.parse(source);
+      } else {
+        parser.parse(url.toString());
+      }
+      ChemFile file = new ChemFile(bondsEnabled);
+      Enumeration framesIter =
+        ((JMolCDO) handler.returnCDO()).returnChemFrames().elements();
+      while (framesIter.hasMoreElements()) {
+        file.addFrame((ChemFrame) framesIter.nextElement());
+        fireFrameRead();
+      }
+      return file;
+    } catch (SAXException ex) {
+      throw new IOException("CMLReader exception: " + ex);
+    }
+  }
+
+  /**
+   * Read the CML data with a non-validating parser.
+   *
+   * <p>Written for use in applet, but can be used in
+   * application too.
+   */
+  public ChemFile read() throws IOException {
+
+    try {
+      XMLReader parser = new gnu.xml.aelfred2.SAXDriver();
+      JMolCDO cdo = new JMolCDO();
+      CMLHandler handler = new CMLHandler(cdo);
+      ((CMLHandler) handler).registerConvention("JMOL-ANIMATION",
+              new JMOLANIMATIONConvention(cdo));
+      parser.setContentHandler(handler);
+      parser.setEntityResolver(new CMLResolver());
       if (this.input != null) {
         InputSource source = new InputSource(input);
         parser.parse(source);

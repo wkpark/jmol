@@ -2617,6 +2617,15 @@ public class Eval implements Runnable {
     case Token.off:
       viewer.setShowMeasurementLabels(false);
       break;
+    case Token.identifier:
+      String id = (String)statement[2].value;
+      if (id.equalsIgnoreCase("angstroms"))
+        viewer.setMeasureDistanceInAngstroms(true);
+      else if (id.equalsIgnoreCase("nanometers"))
+        viewer.setMeasureDistanceInAngstroms(false);
+      else
+        unrecognizedSetParameter();
+      break;
     default:
       viewer.setMeasurementMad(getSetAxesTypeMad());
     }

@@ -1963,6 +1963,14 @@ final public class JmolViewer {
     return styleManager.measurementMad;
   }
 
+  public void setMeasureDistanceInAngstroms(boolean inAngstroms) {
+    styleManager.setMeasureDistanceInAngstroms(inAngstroms);
+  }
+
+  public boolean getMeasureDistanceInAngstroms() {
+    return styleManager.measureDistanceInAngstroms;
+  }
+
   public void setWireframeRotation(boolean wireframeRotation) {
     styleManager.setWireframeRotation(wireframeRotation);
     // no need to refresh since we are not currently rotating

@@ -92,6 +92,11 @@ public class StyleManager {
     this.measurementMad = measurementMad;
   }
 
+  public boolean measureDistanceInAngstroms = false;
+  public void setMeasureDistanceInAngstroms(boolean inAngstroms) {
+    this.measureDistanceInAngstroms = inAngstroms;
+  }
+
   public String propertyStyleString = "";
   public void setPropertyStyleString(String s) {
     propertyStyleString = s;

@@ -373,7 +373,7 @@ public class Token {
     "load",              new Token(load,     varArgCount, "load"),
     "molecule",          new Token(molecule,           1, "molecule"),
     "monitor",           new Token(monitor,  varArgCount, "monitor"),
-    "measurement",       null,
+    "measure",           null,
     "pause",             new Token(pause,              0, "pause"),
     "wait",              null,
     "print",             new Token(print,              0, "print"),

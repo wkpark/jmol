@@ -274,57 +274,82 @@ public class FileManager {
     }
   }
 
-  class MonitorInputStream extends FilterInputStream {
-    int length;
-    int position;
-    int markPosition;
-    int readEventCount;
+}
 
-    MonitorInputStream(InputStream in, int length) {
-      super(in);
-      this.length = length;
-      this.position = 0;
-    }
+class MonitorInputStream extends FilterInputStream {
+  int length;
+  int position;
+  int markPosition;
+  int readEventCount;
+  long timeBegin;
 
-    public int read() throws IOException{
-      ++readEventCount;
-      int nextByte = super.read();
-      if (nextByte >= 0)
-        ++position;
-      return nextByte;
-    }
-
-    public int read(byte[] b) throws IOException {
-      ++readEventCount;
-      int cb = super.read(b);
-      if (cb > 0)
-        position += cb;
-      return cb;
-    }
-
-    public int read(byte[] b, int off, int len) throws IOException {
-      ++readEventCount;
-      int cb = super.read(b, off, len);
-      if (cb > 0)
-        position += cb;
-      return cb;
-    }
-
-    public long skip(long n) throws IOException {
-      long cb = super.skip(n);
-      // this will only work in relatively small files ... 2Gb
-      position = (int)(position + cb);
-      return cb;
-    }
-
-    public void mark(int readlimit) {
-      super.mark(readlimit);
-      markPosition = position;
-    }
-
-    public void reset() throws IOException {
-      position = markPosition;
-      super.reset();
-    }
+  MonitorInputStream(InputStream in, int length) {
+    super(in);
+    this.length = length;
+    this.position = 0;
+    timeBegin = System.currentTimeMillis();
   }
+
+  public int read() throws IOException{
+    ++readEventCount;
+    int nextByte = super.read();
+    if (nextByte >= 0)
+      ++position;
+    return nextByte;
+  }
+
+  public int read(byte[] b) throws IOException {
+    ++readEventCount;
+    int cb = super.read(b);
+    if (cb > 0)
+      position += cb;
+    return cb;
+  }
+
+  public int read(byte[] b, int off, int len) throws IOException {
+    ++readEventCount;
+    int cb = super.read(b, off, len);
+    if (cb > 0)
+      position += cb;
+    /*
+      System.out.println("" + getPercentageRead() + "% " +
+      getPosition() + " of " + getLength() + " in " +
+      getReadingTimeMillis());
+    */
+    return cb;
+  }
+
+  public long skip(long n) throws IOException {
+    long cb = super.skip(n);
+    // this will only work in relatively small files ... 2Gb
+    position = (int)(position + cb);
+    return cb;
+  }
+
+  public void mark(int readlimit) {
+    super.mark(readlimit);
+    markPosition = position;
+  }
+
+  public void reset() throws IOException {
+    position = markPosition;
+    super.reset();
+  }
+
+  int getPosition() {
+    return position;
+  }
+
+  int getLength() {
+    return length;
+  }
+
+  int getPercentageRead() {
+    return position * 100 / length;
+  }
+
+  int getReadingTimeMillis() {
+    return (int)(System.currentTimeMillis() - timeBegin);
+  }
+
 }

@@ -393,7 +393,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setCenterAsSelected();
+      viewer.setCenterBitSet(viewer.getBitSetSelection());
       setRotateMode();
       viewer.setSelectionHaloEnabled(false);
     }

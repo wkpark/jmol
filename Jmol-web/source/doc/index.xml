@@ -5,72 +5,72 @@
 
     <header>
       <p>
-      Jmol is a free, open source molecule viewer written in Java. It runs
-      as a standalone application and as a web browser applet.
+	Jmol is a free, open source molecule viewer written in Java. It runs
+	as a standalone application and as a web browser applet.
       </p>
       <p>
-      Jmol is a collaboratively developed visualization and measurement tool
-      for scientists and educators. New features being added on an ongoing
-      basis. Users are encouraged to modify it to fit their needs and to
-      contribute their changes to the project.
+	Jmol is a collaboratively developed visualization and measurement tool
+	for scientists and educators. New features being added on an ongoing
+	basis. Users are encouraged to modify it to fit their needs and to
+	contribute their changes to the project.
       </p>
     </header>
 
     <section title="Jmol v$VERSION$ Features">
       <p>
-        Jmol v$VERSION$ is the current stable release and has these
-        features:
+	Jmol v$VERSION$ is the current stable release and has these
+	features:
       </p>
       <ul>
-        <li>Available as both a Java application
-          and as a web browser applet</li>
-
-        <li>Supports RasMol/Chime scripting</li>
-
-        <li>Displays inter-atomic distances, bond
-          angles, and dihedral angles.</li>
-        
-        <li>Displays vectors (velocity, dipole, etc.),
-          charges, and atomic symbols.</li>
-        
-        <li>Can display unit cell boxes, and energy bands.</li>
-
-        <li>Animates the results of simulations.</li>
-        
-        <li>Animates the computed vibrational modes.</li>
-
-        <li>Reads many types of files: 
-          <a href="http://www.abinit.org/" TARGET="_top">ABINIT</a>,
-          <a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a>,
-          <a href="http://www.scm.com/" TARGET="_top">ADF</a>
-            (Amsterdam Density Functional),
-          <a href="http://journals.iucr.org/c/services/cifguide.html">CIF/mmCIF</a>,
-          <a href="http://www.xml-cml.org" TARGET="_top">CML 1/2</a>
-            (Chemical Markup Language),
-          <a href="http://www.kjemi.uio.no/software/dalton/dalton.html">Dalton</a>,
-          <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html" TARGET="_top">GAMESS</a>,
-          <a href="http://www.gaussian.com/" TARGET="_top">Gaussian 90/92/94/96/98/03</a>,
-          <a href="http://www.bioinformatics.org/ghemical/" TARGET="_top">Ghemical</a>,
-          HIN,
-          <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a>,
-          <a href="http://www.mdli.com/">MDL molfiles</a>,
-          MOPAC 7/97/2002,
-          <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a>,
-          VASP,
-          XYZ (XMol).
-        </li>
-
-        <li>Prints or exports images in these formats:
-          GIF, JPG, PPM, BMP, PNG, PDF,
-          PostScript, and PovRay (including animations).
-        </li>
-        
+	<li>Available as both a Java application
+	and as a web browser applet</li>
+	
+	<li>Supports RasMol/Chime scripting</li>
+	
+	<li>Displays inter-atomic distances, bond
+	angles, and dihedral angles.</li>
+	
+	<li>Displays vectors (velocity, dipole, etc.),
+	charges, and atomic symbols.</li>
+	
+	<li>Can display unit cell boxes, and energy bands.</li>
+	
+	<li>Animates the results of simulations.</li>
+	
+	<li>Animates the computed vibrational modes.</li>
+	
+	<li>Reads many types of files: 
+	<a href="http://www.abinit.org/" TARGET="_top">ABINIT</a>,
+	<a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a>,
+	<a href="http://www.scm.com/" TARGET="_top">ADF</a>
+	(Amsterdam Density Functional),
+	<a href="http://journals.iucr.org/c/services/cifguide.html">CIF/mmCIF</a>,
+	<a href="http://www.xml-cml.org" TARGET="_top">CML 1/2</a>
+	(Chemical Markup Language),
+	<a href="http://www.kjemi.uio.no/software/dalton/dalton.html">Dalton</a>,
+	<a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html" TARGET="_top">GAMESS</a>,
+	<a href="http://www.gaussian.com/" TARGET="_top">Gaussian 90/92/94/96/98/03</a>,
+	<a href="http://www.bioinformatics.org/ghemical/" TARGET="_top">Ghemical</a>,
+	HIN,
+	<a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a>,
+	<a href="http://www.mdli.com/">MDL molfiles</a>,
+	MOPAC 7/97/2002,
+	<a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a>,
+	VASP,
+	XYZ (XMol).
+	</li>
+	
+	<li>Prints or exports images in these formats:
+	GIF, JPG, PPM, BMP, PNG, PDF,
+	PostScript, and PovRay (including animations).
+	</li>
+	
       </ul>
     </section>
 
     <section title="Jmol v10 - a RasMol/Chime replacement">
       <p>
-        Jmol v10 is still under development and has not been officially
+	Jmol v10 is still under development and has not been officially
 	released.
       </p>
       <p>
@@ -86,7 +86,7 @@
 	users of the MDL Chime plug-in.
       </p>
       <p>
-        To get an early look at the prerelease Jmol v10 applet in
+	To get an early look at the prerelease Jmol v10 applet in
 	action take a look at the <a href="preview/">sneak preview</a>.
       </p>
       <p>
@@ -113,30 +113,32 @@
 
     <section title="Mailing Lists">
       <p>For users wanting help using Jmol, there is an email list at
-        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
-          jmol-users
-        </a> 
-        where you can share ideas and experiences, ask for help,
-        give us feedback, or discuss your requirements.
-        You can also browse the <a
-        href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users"
-          jmol-users archives
-        </a>.
+      <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
+	jmol-users
+      </a> 
+      where you can share ideas and experiences, ask for help,
+      give us feedback, or discuss your requirements.
+      You can also browse the
+      <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
+	jmol-users archives
+      </a>
+      .
       </p>
-
+      
       <p>For developers, there is an email list at 
-        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
-          jmol-developers
-        </a> 
-        where you can request new features or changes, 
-        discuss implementation, submit patches, or contribute code.
-        You can also browse the <a
-        href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers"
-          jmol-developers archives
-        </a>.
+      <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
+	jmol-developers
+      </a> 
+      where you can request new features or changes, 
+      discuss implementation, submit patches, or contribute code.
+      You can also browse the
+      <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
+	jmol-developers archives
+      </a>
+      .
       </p>
-
+      
     </section>
-
+    
   </body>
 </document>

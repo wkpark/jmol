@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index.xml (v 1.34)
+  Translated from default version : index_en.xml (v 1.1)
 -->
 <document>
   <body>
     <title>Jmol</title>
     <header>
-      <table border="1" width="600" bgcolor="#FFFAF0">
+      <table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
         <tr>
           <td><script>
             jmolApplet(300, "script script/promotion1.txt");
@@ -21,13 +21,16 @@
               de script Jmol/Rasmol/Chime.
             </p>
             <p>
-              Ce n'est <i>pas</i> un film, un diaporama ou une animation ...
+              Ce n'est <i>pas</i> un film, un diaporama ou un fichier image anim&#x00E9; ...
               Jmol est une applet interactive pour navigateur web.
             </p>
           </td>
         </tr>
       </table>
-      <br />
+      <p>
+        <i>Regardez les</i><a href="./demo/">pages de d&#x00E9;monstration</a>
+        <i>pour voir les boutons et les menus en action</i>
+      </p>
       <hr />
     </header>
     

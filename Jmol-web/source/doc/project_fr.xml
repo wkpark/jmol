@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   French translation 
-  Translated from default version : project.xml (v 1.20)
+  Translated from default version : project_en.xml (v 1.1)
 -->
+<!DOCTYPE somethingOrAnything [
+<!ENTITY language SYSTEM "language.xml" >
+]>
 <project name="Jmol">
 
   <title>Jmol</title>
@@ -15,10 +18,10 @@
             <img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/>
           </a>
         </td>
-        <td><br/></td>
+        &language;
         <td align="right" valign="center">
           <font size="2">
-            <a href="[root]/index.html">Home</a> |
+            <a href="[root]/">Home</a> |
             <a href="[root]/websites/">Sites web</a> |
             <a href="[root]/history/">Historique</a> |
             <a href="[root]/changes/">Modifications</a> |

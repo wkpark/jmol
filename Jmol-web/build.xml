@@ -20,16 +20,10 @@
     <mkdir    dir="${doc.dir}/images"/>
     <mkdir    dir="${build.html}"/>
 
-    <!-- Generate index html files -->
-    <style
-      basedir="${doc.dir}"
-      destdir="${build.html}"
-      style="${doc.dir}/style.xsl"
-      includes="**/index.xml">
-      <mapper type="glob" from="*.xml" to="*.en.html"/>
-      <param name="lang" expression="en"/>
-      <param name="project_xml" expression="project.xml"/>
-    </style>
+    <!-- Generate index html files for each language -->
+  	<antcall target="html_lang">
+  	  <param name="lang_value" value="en"/>
+  	</antcall>
   	<antcall target="html_lang">
   	  <param name="lang_value" value="fr"/>
   	</antcall>

@@ -268,7 +268,7 @@ final public class DisplayControl {
     recalc();
   }
 
-  public boolean fastRendering = false;;
+  public boolean fastRendering = false;
   public void setFastRendering(boolean fastRendering) {
     if (this.fastRendering != fastRendering) {
       this.fastRendering = fastRendering;
@@ -1100,4 +1100,36 @@ final public class DisplayControl {
   public void translateByZPercent(int percent) {
     translateToZPercent(getTranslationZPercent() + percent);
   }
+
+  public void setColorBackground(String colorName) {
+    setColorBackground(getColorFromHexString(colorName));
+  }
+
+  public void setColorForeground(String colorName) {
+    // what is this supposed to do?
+    // setColorForeground(getColorFromHexString(colorName));
+  }
+
+  public Color getColorFromHexString(String colourName) {
+
+    if ((colourName == null) || (colourName.length() != 7)) {
+      throw new IllegalArgumentException("Colour name: " + colourName
+          + " is either null ot not seven chars long");
+    }
+    java.awt.Color colour = null;
+    try {
+      String rdColour = "0x" + colourName.substring(1, 3);
+      String gnColour = "0x" + colourName.substring(3, 5);
+      String blColour = "0x" + colourName.substring(5, 7);
+      int red = (Integer.decode(rdColour)).intValue();
+      int green = (Integer.decode(gnColour)).intValue();
+      int blue = (Integer.decode(blColour)).intValue();
+      colour = new java.awt.Color(red, green, blue);
+    } catch (NumberFormatException e) {
+      System.out.println("MDLView: Error extracting colour, using white");
+      colour = Color.white;
+    }
+    return colour;
+  }
+
 }

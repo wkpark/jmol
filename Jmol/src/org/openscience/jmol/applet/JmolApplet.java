@@ -33,6 +33,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.ComponentListener;
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
 import org.openscience.jmol.io.ReaderProgress;
 import org.openscience.jmol.io.ReaderFactory;
 import org.openscience.jmol.StatusDisplay;
@@ -99,7 +101,7 @@ public class JmolApplet extends Applet implements StatusDisplay {
     "Keys: S- change style; L- Show labels; B-Toggle Bonds";
   private String errorMessage;
 
-  private String atomTypesFileName = "Data/AtomTypes.txt";
+  private String defaultAtomTypesFileName = "Data/AtomTypes.txt";
 
   private boolean bondsEnabled = true;
 
@@ -165,50 +167,35 @@ public class JmolApplet extends Applet implements StatusDisplay {
     if (customViews != null) {
       myBean.setCustomViews(customViews);
     }
-    String wfr = getParameter("WIREFRAMEROTATION");
-    if ((wfr != null) && (wfr.equalsIgnoreCase("OFF"))) {
-      myBean.setWireframeRotation(false);
-    }
     */
 
-    InputStream atis = null;
-    String atomtypes = getParameter("ATOMTYPES");
-    try {
-      if ((atomtypes == null) || (atomtypes.length() == 0)) {
-        atis = getClass().getResourceAsStream(atomTypesFileName);
-        if (atis == null) {
-          System.err.println("Unable to open the atom types resource \""
-              + atomTypesFileName + "\"");
-        }
-      } else {
-        java.net.URL atURL = new java.net.URL(getDocumentBase(), atomtypes);
-        atis = atURL.openStream();
-        if (atis == null) {
-          System.err.println("Unable to open the atom types URL \""
-              + atomTypesFileName + "\"");
-        }
-      }
-      System.out.println("reading atom properties from stream");
-      setAtomPropertiesFromStream(atis);
-    } catch (java.io.IOException ex) {
-      System.err.println("Error loading atom types: " + ex);
-    }
+    String wfr = getParameter("WIREFRAMEROTATION");
+    if (wfr != null &&
+        (wfr.equalsIgnoreCase("on") || wfr.equalsIgnoreCase("true"))) {
+      control.setWireframeRotation(true);
+
+    setBackgroundColor(getParameter("BCOLOR"));
+    setBackgroundColor(getParameter("BCOLOUR"));
+    setForegroundColor(getParameter("FCOLOR"));
+    setForegroundColor(getParameter("FCOLOUR"));
+
+    setAtomPropertiesFromFile(getParameter("ATOMTYPES"));
 
     String model = getParameter("MODEL");
+    String format = getParameter("FORMAT");
     if (model != null) {
       try {
         ChemFileReader cfr = null;
         ReaderProgress readerProgress = new ReaderProgress(this);
-        if ((getParameter("FORMAT") != null)
-            && getParameter("FORMAT").equalsIgnoreCase("CMLSTRING")) {
+        if (format != null && format.equalsIgnoreCase("CMLSTRING")) {
           StringBuffer cmlString = new StringBuffer();
           cmlString.append(convertEscapeChars(model));
           cfr = new CMLReader(new java.io.StringReader(cmlString.toString()));
           readerProgress.setFileName("CML string");
         } else {
-          java.net.URL modelURL = null;
+          URL modelURL = null;
           try {
-            modelURL = new java.net.URL(getDocumentBase(), model);
+            modelURL = new URL(getDocumentBase(), model);
             String fileName = modelURL.getFile();
             int fileNameIndex = fileName.lastIndexOf('/');
             if (fileNameIndex >= 0) {
@@ -230,56 +217,29 @@ public class JmolApplet extends Applet implements StatusDisplay {
         } else {
           setErrorMessage("Error: Unable to read input format");
         }
-      } catch (java.io.IOException e) {
+      } catch (IOException e) {
         e.printStackTrace();
       }
     }
+    
     /*
-    String bg = getParameter("BCOLOUR");
-    if (bg != null) {
-      myBean.setBackgroundColour(bg);
-    } else {
-      bg = getParameter("BCOLOR");
-      if (bg != null) {
-        myBean.setBackgroundColour(bg);
-      }
-    }
-
-    String fg = getParameter("FCOLOUR");
-    if (fg != null) {
-      myBean.setForegroundColour(fg);
-    } else {
-      fg = getParameter("FCOLOR");
-      if (fg != null) {
-        myBean.setForegroundColour(fg);
-      }
-    }
-    mode = QUICKDRAW;
-    String style = getParameter("STYLE");
-    if (style != null) {
+      mode = QUICKDRAW;
+      String style = getParameter("STYLE");
+      if (style != null) {
       mode = getDrawMode(style);
-    }
-    setRenderingStyle();
-
-    String pickmode = getParameter("PICKMODE");
-    if (pickmode != null) {
+      }
+      setRenderingStyle();
+      
+      String pickmode = getParameter("PICKMODE");
+      if (pickmode != null) {
       myBean.setPickingMode(pickmode);
-    }
-
-    String atomLabels = getParameter("ATOMLABELS");
-    if (atomLabels != null) {
+      }
+      
+      String atomLabels = getParameter("ATOMLABELS");
+      if (atomLabels != null) {
       myBean.setLabelRenderingStyle(atomLabels);
-    }
+      }
     */
-  }
-
-  public void setAtomPropertiesFromStream(InputStream is) {
-    try {
-      AtomTypeSet ats1 = new AtomTypeSet();
-      ats1.load(is);
-    } catch (java.io.IOException e1) {
-      System.err.println("Error loading atom properties from Stream'"
-          + is.toString() + "': " + e1);
     }
   }
 
@@ -564,8 +524,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeXYZString));
       cfr.setBondsEnabled(bondsEnabled);
-      //      myBean.setModel(cfr.read());
-    } catch (java.io.IOException e) {
+      control.setChemFile(cfr.read());
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
@@ -581,8 +541,8 @@ public class JmolApplet extends Applet implements StatusDisplay {
       ChemFileReader cfr =
         ReaderFactory.createReader(new java.io.StringReader(hugeCMLString));
       cfr.setBondsEnabled(bondsEnabled);
-      //      myBean.setModel(cfr.read());
-    } catch (java.io.IOException e) {
+      control.setChemFile(cfr.read());
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
@@ -592,41 +552,35 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * @param modelURL The URL of the model we want.
    */
   public void setModelToRenderFromURL(String modelURLString) {
-
-    System.out.println("setModelToRenderFromURL");
-    try {
-      java.net.URL modelURL = null;
-      try {
-        modelURL = new java.net.URL(getDocumentBase(), modelURLString);
-      } catch (java.net.MalformedURLException e) {
-        throw new RuntimeException(("Got MalformedURL for model: "
-            + e.toString()));
-      }
-      ChemFileReader cfr =
-        ReaderFactory
-          .createReader(new java.io.InputStreamReader(modelURL.openStream()));
-      cfr.setBondsEnabled(bondsEnabled);
-      control.setChemFile(cfr.read());
-    } catch (java.io.IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * <b>For Javascript:<\b> Takes the argument, reads it as a file and sets it as the current model.
-   * @param modelFile The filename of the model we want.
-   * @param type Either "XYZ", "CML" or "PDB"
-   */
-  public void setModelToRenderFromFile(String modelFile, String type) {
-    // setModelToRenderFromFile(modelFile, type);
+    control.openFile(modelURLString);
   }
 
   /**
    * <b>For Javascript:<\b> Takes the argument, reads it as a file and allocates this as the current atom types- eg radius etc.
-   * @param propertiesFile The filename of the properties we want.
+   * @param atomTypesFile The filename of the properties we want.
    */
-  public void setAtomPropertiesFromFile(String propertiesFile) {
-    //    myBean.setAtomPropertiesFromFile(propertiesFile);
+  public void setAtomPropertiesFromFile(String atomTypesFile) {
+
+    try {
+      InputStream atis = null;
+      if (atomTypesFile == null || atomTypesFile.length() == 0) {
+        atis = getClass().getResourceAsStream(defaultAtomTypesFileName);
+        atomTypesFile = defaultAtomTypesFileName + "(default)";
+      } else {
+        URL atURL = new URL(getDocumentBase(), atomTypesFile);
+        atis = atURL.openStream();
+      }
+      if (atis == null) {
+        System.err.println("Unable to open the atom types file:" +
+                           atomTypesFile);
+        return;
+      }
+      System.out.println("reading atom properties from " + atomTypesFile);
+      AtomTypeSet ats1 = new AtomTypeSet();
+      ats1.load(atis);
+    } catch (IOException e) {
+      System.err.println("IOException reading atom properties:" + e);
+    }
   }
 
   /**
@@ -641,16 +595,18 @@ public class JmolApplet extends Applet implements StatusDisplay {
    * <b>For Javascript:<\b> Set the background colour.
    * @param colourInHex The colour in the format #FF0000 for red etc
    */
-  public void setBackgroundColour(String colourInHex) {
-    //    myBean.setBackgroundColour(colourInHex);
+  public void setBackgroundColor(String colorInHex) {
+    if (colorInHex != null)
+      control.setColorBackground(colorInHex);
   }
 
   /**
    * <b>For Javascript:<\b> Set the foreground colour.
    * @param colourInHex The colour in the format #FF0000 for red etc
    */
-  public void setForegroundColour(String colourInHex) {
-    //    myBean.setForegroundColour(colourInHex);
+  public void setForegroundColor(String colorInHex) {
+    if (colorInHex != null)
+      control.setColorForeground(colorInHex);
   }
 
   /**

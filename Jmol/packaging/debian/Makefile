@@ -30,6 +30,7 @@ install:
 
 deb: clean
 	@echo "Building package for version ${VERSION}"
+	cp /tmp/jmol-${VERSION}.source.tar.gz /tmp/jmol_${VERSION}.orig.tar.gz
 	cd /tmp; tar zxvf jmol-${VERSION}.source.tar.gz
 	cp Makefile /tmp/jmol-${VERSION}/.
 	cp jmol /tmp/jmol-${VERSION}/.

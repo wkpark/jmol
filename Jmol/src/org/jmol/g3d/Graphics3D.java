@@ -37,6 +37,8 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
+import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 
 final public class Graphics3D {
@@ -290,6 +292,10 @@ final public class Graphics3D {
     fillSphereCentered(colix, diameter, screen.x, screen.y, screen.z);
   }
 
+  public void fillSphereCentered(short colix, int diameter, Point3f screen) {
+    fillSphereCentered(colix, diameter, (int)screen.x, (int)screen.y, (int)screen.z);
+  }
+
   public void drawRect(short colix, int x, int y, int z,
                        int width, int height) {
     argbCurrent = getArgb(colix);
@@ -496,6 +502,20 @@ final public class Graphics3D {
     triangle3d.fillTriangle();
   }
 
+  public void fillTriangle(short colix, Point3f screenA,
+                           Point3f screenB, Point3f screenC) {
+    calcSurfaceShade(colix, screenA, screenB, screenC);
+    int[] t;
+    t = triangle3d.ax;
+    t[0] = (int)screenA.x; t[1] = (int)screenB.x; t[2] = (int)screenC.x;
+    t = triangle3d.ay;
+    t[0] = (int)screenA.y; t[1] = (int)screenB.y; t[2] = (int)screenC.y;
+    t = triangle3d.az;
+    t[0] = (int)screenA.z; t[1] = (int)screenB.z; t[2] = (int)screenC.z;
+
+    triangle3d.fillTriangle();
+  }
+
   public void fillQuadrilateral(int argb,
                                 Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {
@@ -525,6 +545,22 @@ final public class Graphics3D {
     intensity = (intensity + 10) & 63;
   }
 
+
+  final Vector3f vectorAB = new Vector3f();
+  final Vector3f vectorAC = new Vector3f();
+  final Vector3f vectorNormal = new Vector3f();
+
+  void calcSurfaceShade(short colix, Point3f screenA,
+                        Point3f screenB, Point3f screenC) {
+    vectorAB.sub(screenB, screenA);
+    vectorAC.sub(screenC, screenA);
+    vectorNormal.cross(vectorAB, vectorAC);
+    int intensity =
+      vectorNormal.z >= 0
+      ? calcIntensity(vectorNormal.x, -vectorNormal.y, vectorNormal.z)
+      : calcIntensity(-vectorNormal.x, vectorNormal.y, -vectorNormal.z);
+    argbCurrent = getShades(colix)[intensity];
+  }
 
   public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {

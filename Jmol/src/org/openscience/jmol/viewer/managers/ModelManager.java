@@ -270,7 +270,7 @@ public class ModelManager {
         return atomTypeName;
     }
     if (atom.pdbAtom != null) {
-      return atom.pdbAtom.getAtomName();
+      return atom.pdbAtom.getAtomPrettyName();
     }
     return getAtomicSymbol(atom);
   }

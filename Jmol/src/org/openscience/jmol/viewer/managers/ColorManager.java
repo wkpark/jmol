@@ -46,10 +46,6 @@ public class ColorManager {
     suppliesAtomArgb = modelAdapter.suppliesAtomArgb();
     if (JmolConstants.argbsCpk.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! argbsCpk.length not consistent");
-    if (JmolConstants.argbsPdbAmino.length != Token.RESID_AMINO_MAX)
-      System.out.println("WARNING! argbsPdbAmino.length not consistent");
-    if (JmolConstants.argbsPdbShapely.length != Token.RESID_DNA_MAX)
-      System.out.println("WARNING! argbsPdbShapely.length not consistent");
   }
 
   public void setPaletteDefault(byte palette) {
@@ -245,18 +241,18 @@ public class ColorManager {
       break;
     case JmolConstants.PALETTE_AMINO:
       if (pdbatom != null) {
-        byte resid = pdbatom.getResID();
-        if (resid >= 0 && resid < Token.RESID_AMINO_MAX)
-          argb = JmolConstants.argbsPdbAmino[resid];
+        int resid = pdbatom.getResID();
+        argb = ((resid < JmolConstants.argbsPdbAmino.length)
+                ? JmolConstants.argbsPdbAmino[resid]
+                : JmolConstants.argbPdbAminoDefault);
       }
       break;
     case JmolConstants.PALETTE_SHAPELY:
       if (pdbatom != null) {
-        byte resid = pdbatom.getResID();
-        if (resid >= 0 && resid < Token.RESID_DNA_MAX)
-          argb = JmolConstants.argbsPdbShapely[resid];
-        else
-          argb = JmolConstants.argbPdbShapelyDefault;
+        int resid = pdbatom.getResID();
+        argb = ((resid < JmolConstants.argbsPdbShapely.length)
+                ? JmolConstants.argbsPdbShapely[resid]
+                : JmolConstants.argbPdbShapelyDefault);
       }
       break;
     case JmolConstants.PALETTE_CHAIN:

@@ -486,7 +486,10 @@ class PdbModel extends Model {
         String atomicSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
         if (atomicSymbol.length() == 0 ||
             Character.isDigit(atomicSymbol.charAt(0))) {
-          atomicSymbol = line.substring(12, 14).trim();
+          char ch12 = line.charAt(12);
+          atomicSymbol = ((ch12 == ' ' || Character.isDigit(ch12))
+                          ? line.substring(13, 14)
+                          : line.substring(12, 14));
         }
         float x =
           Float.valueOf(line.substring(30, 38).trim()).floatValue();

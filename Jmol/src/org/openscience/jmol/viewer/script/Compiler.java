@@ -871,7 +871,7 @@ class Compiler {
       if (strSpec.length() != 3)
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
-      byte resid = Token.getResid(strSpec);
+      int resid = Token.getResid(strSpec);
       if (resid != -1)
         generateResidueSpecCode(new Token(Token.spec_resid, resid, strSpec));
       else
@@ -923,7 +923,7 @@ class Compiler {
       }
     }
     String strUpper3 = strToken.substring(0, 3).toUpperCase();
-    byte resid;
+    int resid;
     if (strUpper3.charAt(0) == '?' ||
         strUpper3.charAt(1) == '?' ||
         strUpper3.charAt(2) == '?') {

@@ -597,33 +597,30 @@ final public class JmolConstants {
     0xFF4876FF, // RoyalBlue1  STRUCTURE_TURN
   };
 
+  public final static int argbPdbAminoDefault =  0xFFBEA06E; // tan
   public final static int[] argbsPdbAmino = {
     // note that these are the rasmol colors and names, not xwindows
-    0xFFC8C8C8, // darkGrey   "ALA", /* 8.4% */
-    0xFFEBEBEB, // lightGrey  "GLY", /* 8.3% */
-    0xFF0F820F, // green      "LEU", /* 8.0% */
-    0xFFFA9600, // orange     "SER", /* 7.5% */
-    0xFF0F820F, // green      "VAL", /* 7.1% */
-    0xFFFA9600, // orange     "THR", /* 6.4% */
-    0xFF145AFF, // blue       "LYS", /* 5.8% */
-    0xFFE60A0A, // brightRed  "ASP", /* 5.5% */
-    0xFF0F820F, // green      "ILE", /* 5.2% */
-    0xFF00DCDC, // cyan       "ASN", /* 4.9% */
-    0xFFE60A0A, // brightRed  "GLU", /* 4.9% */
-    0xFFDC9682, // mauve      "PRO", /* 4.4% */
-    0xFF145AFF, // blue       "ARG", /* 3.8% */
-    0xFF3232AA, // midBlue    "PHE", /* 3.7% */
-    0xFF00DCDC, // cyan       "GLN", /* 3.5% */
-    0xFF3232AA, // midBlue    "TYR", /* 3.5% */
-    0xFF8282D2, // paleBlue   "HIS", /* 2.3% */
-    0xFFE6E600, // yellow     "CYS", /* 2.0% */
-    0xFFE6E600, // yellow     "MET", /* 1.8% */
-    0xFFB45AB4, // purple     "TRP", /* 1.4% */
+    0xFFC8C8C8, // darkGrey   ALA
+    0xFF145AFF, // blue       ARG
+    0xFF00DCDC, // cyan       ASN
+    0xFFE60A0A, // brightRed  ASP
+    0xFFE6E600, // yellow     CYS
+    0xFF00DCDC, // cyan       GLN
+    0xFFE60A0A, // brightRed  GLU
+    0xFFEBEBEB, // lightGrey  GLY
+    0xFF8282D2, // paleBlue   HIS
+    0xFF0F820F, // green      ILE
+    0xFF0F820F, // green      LEU
+    0xFF145AFF, // blue       LYS
+    0xFFE6E600, // yellow     MET
+    0xFF3232AA, // midBlue    PHE
+    0xFFDC9682, // mauve      PRO
+    0xFFFA9600, // orange     SER
+    0xFFFA9600, // orange     THR
+    0xFFB45AB4, // purple     TRP
+    0xFF3232AA, // midBlue    TYR
+    0xFF0F820F, // green      VAL
 
-    0xFFBEA06E, // tan "ASX"
-    0xFFBEA06E, // tan "GLX"
-    0xFFBEA06E, // tan "PCA"
-    0xFFBEA06E, // tan "HYP",
   };
 
   public final static int argbPdbShapelyBackbone = 0xFFB8B8B8;
@@ -631,31 +628,30 @@ final public class JmolConstants {
   public final static int argbPdbShapelyDefault =  0xFFFF00FF;
   public final static int[] argbsPdbShapely = {
     // these are rasmol values, not xwindows colors
-    0xFF8CFF8C, // "ALA", /* 8.4% */
-    0xFFFFFFFF, // "GLY", /* 8.3% */
-    0xFF455E45, // "LEU", /* 8.0% */
-    0xFFFF7042, // "SER", /* 7.5% */
-    0xFFFF8CFF, // "VAL", /* 7.1% */
-    0xFFB84C00, // "THR", /* 6.4% */
-    0xFF4747B8, // "LYS", /* 5.8% */
-    0xFFA00042, // "ASP", /* 5.5% */
-    0xFF004C00, // "ILE", /* 5.2% */
-    0xFFFF7C70, // "ASN", /* 4.9% */
-    0xFF660000, // "GLU", /* 4.9% */
-    0xFF525252, // "PRO", /* 4.4% */
-    0xFF00007C, // "ARG", /* 3.8% */
-    0xFF534C52, // "PHE", /* 3.7% */
-    0xFFFF4C4C, // "GLN", /* 3.5% */
-    0xFF8C704C, // "TYR", /* 3.5% */
-    0xFF7070FF, // "HIS", /* 2.3% */
-    0xFFFFFF70, // "CYS", /* 2.0% */
-    0xFFB8A042, // "MET", /* 1.8% */
-    0xFF4F4600, // "TRP", /* 1.4% */
+    0xFF8CFF8C, // ALA
+    0xFF00007C, // ARG
+    0xFFFF7C70, // ASN
+    0xFFA00042, // ASP
+    0xFFFFFF70, // CYS
+    0xFFFF4C4C, // GLN
+    0xFF660000, // GLU
+    0xFFFFFFFF, // GLY
+    0xFF7070FF, // HIS
+    0xFF004C00, // ILE
+    0xFF455E45, // LEU
+    0xFF4747B8, // LYS
+    0xFFB8A042, // MET
+    0xFF534C52, // PHE
+    0xFF525252, // PRO
+    0xFFFF7042, // SER
+    0xFFB84C00, // THR
+    0xFF4F4600, // TRP
+    0xFF8C704C, // TYR
+    0xFFFF8CFF, // VAL
 
-    0xFFFF00FF, // "ASX"
-    0xFFFF00FF, // "GLX"
-    0xFFFF00FF, // "PCA"
-    0xFFFF00FF, // "HYP",
+    0xFFFF00FF, // ASX
+    0xFFFF00FF, // GLX
+    0xFFFF00FF, // UNK
 
     0xFFA0A0FF, // A
     0xFFFF8C4B, // C
@@ -1001,4 +997,54 @@ final public class JmolConstants {
     0xFFFF4500, // redorange
     0xFFF6F675, // yellowtint
   };
+
+  public final static String[] predefinedAtomNames4 = {
+    " N  ",  // 0
+    " CA ",
+    " C  ",
+    " O  ", // 3
+  };
+  
+  public final static String[] predefinedResidueNames3 = {
+    // taken from PDB spec
+    "ALA", // 0
+    "ARG",
+    "ASN",
+    "ASP",
+    "CYS",
+    "GLN",
+    "GLU",
+    "GLY",
+    "HIS",
+    "ILE",
+    "LEU",
+    "LYS",
+    "MET",
+    "PHE",
+    "PRO",
+    "SER",
+    "THR",
+    "TRP",
+    "TYR",
+    "VAL",
+    "ASX", // 20 ASP/ASN ambiguous
+    "GLX", // 21 GLU/GLN ambiguous
+    "UNK", // 22 unknown -- 22
+
+    "  A", // 23
+    "  C",
+    "  G",
+    "  T", // 26
+
+    // if you change these numbers you *must* update
+    // the predefined sets in script.Token.java
+    // water && solvent
+    "HOH", // 27
+    "DOD", // 28
+    // ions && solvent
+    "PO4", // 29 phosphate ions
+    "SO4", // 30 sulphate ions 
+    
+  };
+
 }

@@ -25,6 +25,7 @@
 
 package org.openscience.jmol.viewer.script;
 
+import org.openscience.jmol.viewer.JmolConstants;
 import java.util.Hashtable;
 
 public class Token {
@@ -497,9 +498,10 @@ public class Token {
     "@acyclic a,r,n,d,c,e,q,g,i,l,k,m,s,t,v",
     "@aliphatic a,g,i,l,v",
     "@alpha _atomid=1", // rasmol doc says "approximately *.CA" - whatever?
-    "@amino _resid<=23",
+    "@amino _resid<=22",
     "@aromatic h,f,w,y",
-    "@backbone amino & _atomid<=3,nucleic & _atomid>=7 & _atomid<=18",
+    //    "@backbone amino & _atomid<=3,nucleic & _atomid>=4 & _atomid<=15",
+    "@backbone amino & _atomid<=3",
     "@mainchain backbone",
     "@basic r,h,k",
     "@bonded _bondedcount>0",
@@ -515,7 +517,7 @@ public class Token {
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
     "@hydrophobic a,g,i,l,m,f,p,w,y,v",
-    "@ions _resid=48,_resid=49",
+    "@ions _resid=29,_resid=30",
     "@large r,e,q,h,i,l,k,m,f,w,y",
     "@ligand hetero & !solvent",
     "@medium n,d,c,p,t,v",
@@ -533,10 +535,10 @@ public class Token {
     //    "@sheet"
     "@sidechain (protein or nucleic) and !backbone", // doc & code inconsistent
     "@small a,g,s",
-    "@solvent _resid>=46 & _resid<=49", // water or ions
+    "@solvent _resid>=27 & _resid<=30", // water or ions
     "@surface !buried",
     //    "@turn",
-    "@water _resid=46,_resid=47", "@hoh water",
+    "@water _resid=27,_resid=28", "@hoh water",
 
     "@a ala",
     "@r arg",
@@ -642,194 +644,10 @@ public class Token {
       ((value == null) ? "" : ":" + value) + "]";
   }
 
-  // amino acids
-  public final static byte RESID_ALA =  0;
-  public final static byte RESID_GLY =  1;
-  public final static byte RESID_LEU =  2;
-  public final static byte RESID_SER =  3;
-  public final static byte RESID_VAL =  4;
-  public final static byte RESID_THR =  5;
-  public final static byte RESID_LYS =  6;
-  public final static byte RESID_ASP =  7;
-  public final static byte RESID_ILE =  8;
-  public final static byte RESID_ASN =  9;
-  public final static byte RESID_GLU = 10;
-  public final static byte RESID_PRO = 11;
-  public final static byte RESID_ARG = 12;
-  public final static byte RESID_PHE = 13;
-  public final static byte RESID_GLN = 14;
-  public final static byte RESID_TYR = 15;
-  public final static byte RESID_HIS = 16;
-  public final static byte RESID_CYS = 17;
-  public final static byte RESID_MET = 18;
-  public final static byte RESID_TRP = 19;
-
-  public final static byte RESID_ASX = 20;
-  public final static byte RESID_GLX = 21;
-  public final static byte RESID_PCA = 22;
-  public final static byte RESID_HYP = 23;
-
-  // FIXME mth -- in the rasmol source they have are using PCA as the
-  // last amino acid. What is the scoop on HYP?
-  public final static byte RESID_AMINO_MAX = 24;
-
-  // DNA Nucleotides
-  public final static byte RESID_A   = 24;
-  public final static byte RESID_C   = 25;
-  public final static byte RESID_G   = 26;
-  public final static byte RESID_T   = 27;
-
-  public final static byte RESID_DNA_MAX = 28;
-
-  // RNA Nucleotides
-  public final static byte RESID_U   = 28;
-  public final static byte RESID_PLUSU  = 29; // plus U
-  public final static byte RESID_I   = 30;
-  public final static byte RESID_1MA = 31;
-  public final static byte RESID_5MC = 32;
-  public final static byte RESID_OMC = 33; // Letter O not zero
-  public final static byte RESID_1MG = 34;
-  public final static byte RESID_2MG = 35;
-  public final static byte RESID_M2G = 36;
-  public final static byte RESID_7MG = 37;
-  public final static byte RESID_OMG = 38; // letter
-  public final static byte RESID_YG  = 39;
-  public final static byte RESID_H2U = 40;
-  public final static byte RESID_5MU = 42;
-  public final static byte RESID_PSU = 43;
-
-  public final static byte RESID_NUCLEOTIDES_LAST = 43;
-
-  //Miscellaneous
-  public final static byte RESID_UNK = 44;
-  public final static byte RESID_ACE = 45;
-  public final static byte RESID_FOR = 46;
-  public final static byte RESID_HOH = 47;
-  public final static byte RESID_DOD = 48;
-  public final static byte RESID_SO4 = 49;
-  public final static byte RESID_PO4 = 50;
-  public final static byte RESID_NAD = 51;
-  public final static byte RESID_COA = 52;
-  public final static byte RESID_NAP = 53;
-  public final static byte RESID_NDP = 54;
-
-  public final static byte RESID_MAX = 55;
-
-  private static String[] residues3 = {
-    // this table taken directly from RasMol source molecule.h
-    
-    /*===============*/
-    /*  Amino Acids  */
-    /*===============*/
-
-/* Ordered by Cumulative Frequency in Brookhaven *
- * Protein Databank, December 1991               */
-
-          "ALA", /* 8.4% */     "GLY", /* 8.3% */
-          "LEU", /* 8.0% */     "SER", /* 7.5% */
-          "VAL", /* 7.1% */     "THR", /* 6.4% */
-          "LYS", /* 5.8% */     "ASP", /* 5.5% */
-          "ILE", /* 5.2% */     "ASN", /* 4.9% */
-          "GLU", /* 4.9% */     "PRO", /* 4.4% */
-          "ARG", /* 3.8% */     "PHE", /* 3.7% */
-          "GLN", /* 3.5% */     "TYR", /* 3.5% */
-          "HIS", /* 2.3% */     "CYS", /* 2.0% */
-          "MET", /* 1.8% */     "TRP", /* 1.4% */
-
-          "ASX", "GLX", "PCA", "HYP",
-
-    /*===================*/
-    /*  DNA Nucleotides  */
-    /*===================*/
-          "  A", "  C", "  G", "  T",
-
-    /*===================*/
-    /*  RNA Nucleotides  */
-    /*===================*/
-          "  U", " +U", "  I", "1MA", 
-          "5MC", "OMC", "1MG", "2MG", 
-          "M2G", "7MG", "OMG", " YG", 
-          "H2U", "5MU", "PSU",
-
-    /*=================*/
-    /*  Miscellaneous  */ 
-    /*=================*/
-          "UNK", "ACE", "FOR", "HOH",
-          "DOD", "SO4", "PO4", "NAD",
-          "COA", "NAP", "NDP"  };
-
-  private static final Hashtable htResidue = new Hashtable();
-  static {
-    for (int i = 0; i < residues3.length; ++i) {
-      htResidue.put(residues3[i], new Integer(i));
-    }
-  }
-
-  public static String getResidue3(byte resid) {
-    return (resid < 0 || resid > RESID_MAX) ? "???" : residues3[resid];
-  }
-
-  public static byte getResid(String residue3) {
-    Integer res = (Integer)htResidue.get(residue3);
-    return (res == null) ? -1 : (byte)res.intValue();
-  }
-
-  public final static int ATOM_BACKBONE_MIN =  0;
-  public final static int ATOM_BACKBONE_MAX =  3;
-  public final static int ATOM_SHAPELY_MAX  =  7;
-  public final static int ATOM_NUCLEIC_BACKBONE_MIN =  7;
-  public final static int ATOM_NICLEIC_BACKBONE_MAX = 18;
-
-  final static String[] atomNames = {
-    "N",   "N",  // 0
-    "CA",  "C\u03B1",
-    "C",   "C",
-    "O",   "O", // 3
-    "C'",  "C'", // 4
-    "OT",  "OT", 
-    "S",   "S",
-    "P",   "P", // 7
-    "O1P", "O1P",
-    "O2P", "O2P",
-    "O5*", "O5'",
-    "C5*", "C5'",
-    "C4*", "C4'",
-    "O4*", "O4'",
-    "C3*", "C3'",
-    "O3*", "O3'",
-    "C2*", "C2'",
-    "O2*", "O2'",
-    "C1*", "C1'", // 18
-    "CA2", "C\u03B12",
-    "SG",  "S\u03B3",
-    "N1",  "N1",
-    "N2",  "N2", 
-    "N3",  "N3",
-    "N4",  "N4",
-    "N6",  "N6",
-    "O2",  "O2",
-    "O4",  "O4",
-    "O6",  "O6", // 28
-    // kludge for now -- need to come up with a better scheme
-    "CB",  "C\u03B2", // 29
-    "CG2", "C\u03B32",
-    "OG1", "O\u03B31",
-  };
-  
-  private static Hashtable htAtom = new Hashtable();
-  static {
-    for (int i = 0; i < atomNames.length/2; ++i) {
-      htAtom.put(atomNames[i*2], new Integer(i));
-    }
-  }
-
-  public static String getPdbAtomName(byte atomid) {
-    return (atomid < 0 || atomid >= atomNames.length/2)
-      ? "??" : atomNames[atomid*2 + 1];
-  }
-
-  public static byte getPdbAtomid(String strAtom) {
-    Integer iatom = (Integer)htAtom.get(strAtom);
-    return iatom == null ? -1 : (byte)iatom.intValue();
+  static int getResid(String strSpec) {
+    for (int i = JmolConstants.predefinedResidueNames3.length; --i >= 0; )
+      if (strSpec.equals(JmolConstants.predefinedResidueNames3[i]))
+          return i;
+    return -1;
   }
 }

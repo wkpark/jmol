@@ -290,6 +290,9 @@ public class BaseAtomType extends org.openscience.cdk.AtomType {
    * Draw color.
    */
   protected Color color = Color.white;
+  public Color getColor() {
+    return color;
+  }
 
   /**
    * Static pool of atom types.

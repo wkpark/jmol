@@ -71,13 +71,17 @@ public class AtomColors implements AtomColorer {
     /**
      * Returns the color for a certain atom type
      */
-    public Color getAtomColor(Atom a) {
-        Color c = Color.darkGray; // returned color if atom type not in hash
-        if (colors.containsKey(a.getID())) {
-            c = (Color)colors.get(a.getID());
-        }
-        return c;
-    }
+  public Color getAtomColor(Atom a) {
+    if (colors.containsKey(a.getID()))
+      return (Color)colors.get(a.getID());
+    // FIXME -- mth -- all this color stuff needs work
+    // the colors are already stored in the basetype
+    // the basetypes get read to populate the atom properties table
+    // but that does not happen in the applet
+    org.openscience.jmol.Atom jmolAtom;
+    jmolAtom = (org.openscience.jmol.Atom)a;
+    return jmolAtom.getType().getColor();
+  }
 
     /**
      * Returns the color for a certain atom type

@@ -141,7 +141,7 @@ public class ColorManager {
   }
 
   public Color getColorAtom(Atom atom) {
-    Color color = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
+    Color color = colorProfile.getAtomColor(atom);
     if (modeTransparentColors)
       color = getColorTransparent(color);
     return color;

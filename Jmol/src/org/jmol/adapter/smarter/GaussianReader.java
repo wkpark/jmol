@@ -234,6 +234,10 @@ class GaussianReader extends AtomSetCollectionReader {
         "Calculation "+calculationNumber+
         (scanPoint>=0?(SmarterJmolAdapter.PATH_SEPARATOR+"Scan Point "+scanPoint):"")+
         SmarterJmolAdapter.PATH_SEPARATOR+path);
+    // always make sure that I have a name for the atomset
+    // mostly needed if no "SCF Done" line follows the structure (e.g., last one
+    // in a scan...)
+    atomSetCollection.setAtomSetName("Last read atomset.");
   }
   
   /* SAMPLE FREQUENCY OUTPUT */

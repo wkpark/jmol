@@ -50,6 +50,8 @@ class Compiler {
   boolean error;
   String errorMessage;
   
+  final boolean logMessages = false;
+
   Compiler(Eval eval) {
     this.eval = eval;
   }
@@ -106,21 +108,24 @@ class Compiler {
   */
 
   boolean lookingAtLeadingWhitespace() {
-    System.out.println("lookingAtLeadingWhitespace");
+    if (logMessages)
+      System.out.println("lookingAtLeadingWhitespace");
     int ichT = ichToken;
     char ch;
     while (ichT < cchScript &&
            ((ch = script.charAt(ichT)) == ' ' || ch == '\t'))
       ++ichT;
     cchToken = ichT - ichToken;
-    System.out.println("leadingWhitespace cchScript=" + cchScript +
-                       " cchToken=" + cchToken);
+    if (logMessages)
+      System.out.println("leadingWhitespace cchScript=" + cchScript +
+                         " cchToken=" + cchToken);
     return cchToken > 0;
   }
 
   boolean lookingAtComment() {
-    System.out.println("lookingAtComment ichToken=" + ichToken +
-                       " cchToken=" + cchToken);
+    if (logMessages)
+      System.out.println("lookingAtComment ichToken=" + ichToken +
+                         " cchToken=" + cchToken);
     if (ichToken == cchScript || script.charAt(ichToken) != '#')
       return false;
     int ichT = ichToken + 1;
@@ -132,7 +137,8 @@ class Compiler {
   }
 
   boolean lookingAtEndOfLine() {
-    System.out.println("lookingAtEndOfLine");
+    if (logMessages)
+      System.out.println("lookingAtEndOfLine");
     if (ichToken == cchScript)
       return true;
     int ichT = ichToken;
@@ -177,7 +183,8 @@ class Compiler {
            (ch = script.charAt(ichT)) != '\r' && ch != '\n')
       ++ichT;
     cchToken = ichT - ichToken;
-    System.out.println("lookingAtSpecialString cchToken=" + cchToken);
+    if (logMessages)
+      System.out.println("lookingAtSpecialString cchToken=" + cchToken);
     return cchToken > 0;
   }
 

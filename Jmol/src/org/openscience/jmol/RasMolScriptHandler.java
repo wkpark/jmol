@@ -21,6 +21,7 @@
 package org.openscience.jmol;
 
 import java.util.StringTokenizer;
+import java.util.Enumeration;
 import java.io.File;
 import java.awt.Color;
 import javax.swing.JTextArea;
@@ -60,12 +61,26 @@ class RasMolScriptHandler {
                     if (st.hasMoreElements()) {
 			file = (String)st.nextElement();
 		    } else {
-                        param = "CML";
 			file = param;
+                        param = "CML";
 		    }
                     program.openFile(new File(file), param);
    	        } else {
 		    throw new RasMolScriptException("Error: omitted parameter.");
+		}
+            } else if (word.equals("colour") || word.equals("color")) {
+                if (st.hasMoreElements()) {
+                    String param = (String)st.nextElement();
+                    String color;
+                    if (st.hasMoreElements()) {
+			color = (String)st.nextElement();
+		    } else {
+			color = param;
+                        param = "atom";
+		    }
+                    setColor(param, color);
+   	        } else {
+		    throw new RasMolScriptException("Error: omitted colour.");
 		}
 	    } else if (word.equals("echo")) {
                 while (st.hasMoreElements()) {
@@ -92,6 +107,12 @@ class RasMolScriptHandler {
    	        } else {
 		    throw new RasMolScriptException("Error: omitted color.");
 		}
+	    } else if (word.equals("select")) {
+                if (st.hasMoreElements()) {
+		    select((String)st.nextElement());
+   	        } else {
+		    throw new RasMolScriptException("Error: omitted expression.");
+		}
 	    } else if (word.equals("list")) {
                 if (st.hasMoreElements()) {
 		    list((String)st.nextElement());
@@ -102,6 +123,13 @@ class RasMolScriptHandler {
                 if (output != null) {
 		    // script command is run from script window
 		    program.scriptWindow.hide();
+		} else {
+		    // script is run from command line
+		}
+	    } else if (word.equals("clear")) {
+                if (output != null) {
+		    // script command is run from script window
+		    output.setText();
 		} else {
 		    // script is run from command line
 		}
@@ -143,32 +171,76 @@ class RasMolScriptHandler {
 	}
     }
 
-    private void setBackgroundColor(String value)throws RasMolScriptException {
+    private void select(String value) throws RasMolScriptException {
+        if (value.equals("all") || value.equals("*")) {
+            program.display.md.selectAll();            
+	} else if (value.equals("none")) {
+            program.display.md.deselectAll();
+        } else if (value.indexOf(',') != -1) {
+            StringTokenizer st = new StringTokenizer(value, ",");
+            while (st.hasMoreElements()) {
+                String subexpr = (String)st.nextElement();
+		try {
+                    int atom = Integer.parseInt(subexpr);
+                    program.display.md.selectAtomByNumber(atom);
+		} catch (NumberFormatException e) {
+		    throw new RasMolScriptException("Error: invalid expression: " + subexpr);
+		}
+	    }        
+	} else {
+	    try {
+		int atom = Integer.parseInt(value);
+		program.display.md.selectAtomByNumber(atom);
+	    } catch (NumberFormatException e) {
+		throw new RasMolScriptException("Error: invalid expression: " + value);
+	    }
+	}
+    }
+
+    private Color getColor(String value) throws RasMolScriptException {
         if (value.equals("red")) {
-            program.display.setBackgroundColor(Color.red);
+            return Color.red;
 	} else if (value.equals("white")) {
-            program.display.setBackgroundColor(Color.white);
+            return Color.white;
 	} else if (value.equals("black")) {
-            program.display.setBackgroundColor(Color.black);
+            return Color.black;
 	} else if (value.equals("grey")) {
-            program.display.setBackgroundColor(Color.gray);
+            return Color.gray;
 	} else if (value.equals("blue")) {
-            program.display.setBackgroundColor(Color.blue);
+            return Color.blue;
 	} else if (value.equals("green")) {
-            program.display.setBackgroundColor(Color.green);
+            return Color.green;
 	} else if (value.equals("cyan")) {
-            program.display.setBackgroundColor(Color.cyan);
+            return Color.cyan;
 	} else if (value.equals("magenta")) {
-            program.display.setBackgroundColor(Color.magenta);
+            return Color.magenta;
 	} else if (value.equals("orange")) {
-            program.display.setBackgroundColor(Color.orange);
+            return Color.orange;
 	} else if (value.equals("pink")) {
-            program.display.setBackgroundColor(Color.pink);
+            return Color.pink;
 	} else if (value.equals("yellow")) {
-            program.display.setBackgroundColor(Color.yellow);
+            return Color.yellow;
 	} else {
 	    throw new RasMolScriptException("Unknown color: " + value);
 	} 
+    } 
+
+    private void setColor(String object, String value) throws RasMolScriptException {
+        if (object.equals("atom")) {
+	    // give selected atoms new colour
+	    Enumeration selectedAtoms = program.display.md.getSelectedAtoms().elements();
+	    while (selectedAtoms.hasMoreElements()) {
+                int atom = ((Integer)selectedAtoms.nextElement()).intValue();
+                println("atom " + atom + " selected.");
+		program.display.md.atoms[atom-1].getBaseAtomType().setColor(this.getColor(value));
+	    }
+        } else {
+            throw new RasMolScriptException("Error: unknown object: " + object);
+        }
+    }
+
+    private void setBackgroundColor(String value) throws RasMolScriptException {
+        program.display.setBackgroundColor(this.getColor(value));
     }
 
     private boolean checkBoolean(String value) throws RasMolScriptException {

@@ -659,7 +659,29 @@ public class ChemFrame {
             }                        
         }
     }
-    
+
+    /**
+     * return a Vector with selected atoms
+     */
+    public Vector getSelectedAtoms() {
+        Vector result = new Vector();
+        for (int i = 0; i < nvert; i++) {
+            if (pickedAtoms[i]) {
+                result.add(new Integer(i+1));
+	    };
+        }
+        return result;
+    }
+
+    /** 
+     * Add atom by its number
+     */
+    public void selectAtomByNumber(int atom) {
+        if (nvert <= 0 || atom > nvert) return;	
+        pickedAtoms[atom-1] = true;
+        napicked++;
+    }
+
     /** 
      * Add all atoms in this frame to the list of picked atoms
      */

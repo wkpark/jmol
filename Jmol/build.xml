@@ -13,9 +13,8 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="10pre24" />
+  <property name="version" value="10.00" />
 
-  <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
   <property name="lib.dir" value="jars" />
   <property name="plugin.dir" value="plugin-jars" />
@@ -25,11 +24,9 @@
   <property name="appletjars.dir" value="build/appletjars" />
   <property name="applet.classes.dir" value="build/applet-classes" />
   <property name="tests.dir" value="build/unit.tests" />
-  <property name="dist.dir" value="build/dist" />
-  <property name="sourcedist.dir" value="build/sourcedist" />
   <property name="javadoc.dir" value="javadoc" />
-  <property name="manifest" value="${source.dir}/manifest"/>
-  <property name="manifest-applet" value="${source.dir}/manifest"/>
+  <property name="manifest" value="src/manifest"/>
+  <property name="manifest-applet" value="src/manifest"/>
   <property name="docbook-xsl" value="docbook-xsl-1.61.2" />
 
   <!-- you can set this by defining it in ~/.jmol.build.properties -->
@@ -124,7 +121,7 @@
 	       classpath="${lib.dir}/saxon.jar"
 	       property="xsl.available"/>
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
-      <srcfiles dir="${source.dir}" includes="**/*.java, **/*.html" />
+      <srcfiles dir="src" includes="**/*.java, **/*.html" />
     </uptodate>
     <available file="${keystore.name}" property="keystore.present" />
     <!-- Optional proxy settings (if defined) -->
@@ -144,7 +141,7 @@
 
   <target id="classes" name="classes" depends="init">
     <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${source.dir}" destdir="${classes.dir}"
+    <javac srcdir="src" destdir="${classes.dir}"
 	   debug="${debug}" deprecation="${deprecation}"
 	   optimize="${optimization}" source="1.4">
       <classpath refid="project.class.path" />
@@ -152,7 +149,7 @@
       <exclude name="org/openscience/jmol/io/ShelXReader.java"/>
     </javac>
     <copy todir="${classes.dir}" >
-      <fileset dir="${source.dir}">
+      <fileset dir="src">
 	<include name="**/*.jpg" />
 	<include name="**/*.gif" />
 	<include name="**/*.html" />
@@ -182,7 +179,7 @@ is that if you say 'source=1.4' then one also cannot
 generate code for a 1.1 jvm, because of the special
 support for assertions (which were introduced in 1.4). 
     -->
-    <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
+    <javac srcdir="src" destdir="${applet.classes.dir}"
 	   debug="${debug}" deprecation="${deprecation}"
 	   optimize="${optimization}"
 	   source="1.3" target="1.1"
@@ -197,7 +194,7 @@ support for assertions (which were introduced in 1.4).
     
 
     <copy todir="${applet.classes.dir}" >
-      <fileset dir="${source.dir}">
+      <fileset dir="src">
 	<include name="**/ui/*.properties" />
       </fileset>
     </copy>
@@ -350,9 +347,11 @@ support for assertions (which were introduced in 1.4).
     </jar>
   </target>
 
-  <target name="dist" id="dist" depends="doc,jar,applet-jar">
-    <mkdir dir="${dist.dir}/jmol-${version}"/>
-    <copy todir="${dist.dir}/jmol-${version}" >
+  <target name="dist" id="dist" depends="doc,main">
+    <!-- first build binary distribution -->
+    <delete dir="build/dist/jmol-${version}"/>
+    <mkdir dir="build/dist/jmol-${version}"/>
+    <copy todir="build/dist/jmol-${version}" >
       <fileset dir=".">
 	<include name="Jmol.jar" />
 	<include name="JmolApplet.jar" />
@@ -363,46 +362,108 @@ support for assertions (which were introduced in 1.4).
 	<include name="*.txt" />
       </fileset>
     </copy>
-    <chmod perm="+x">
-      <fileset dir="${dist.dir}/jmol-${version}">
+    <chmod perm="ugo+rx">
+      <fileset dir="build/dist/jmol-${version}">
 	<include name="jmol"/>
 	<include name="jmol.sh"/>
 	<include name="jmol.bat"/>
       </fileset>
     </chmod>
-    <copy todir="${dist.dir}/jmol-${version}/samples" >
-      <fileset dir="samples" />
-    </copy>
-    <copy   file="build/doc/JmolDevelopersGuide.html"
-	    tofile="${dist.dir}/jmol-${version}/doc/JmolDevelopersGuide.html" />
-    <copy   file="build/doc/JmolHistory/ChangeLog.html"
-	    tofile="${dist.dir}/jmol-${version}/ChangeLog.html" />
-    <copy todir="${dist.dir}/jmol-${version}/doc/JmolUserGuide">
-      <fileset dir="build/doc/JmolUserGuide">
-	<include name="**/*.html" />
-      </fileset>
-    </copy>
-    <copy   file="build/doc/JmolAppletGuide.html"
-	    tofile="${dist.dir}/jmol-${version}/doc/JmolAppletGuide.html" />
 
-    <mkdir dir="${dist.dir}/jmol-applet-${version}"/>
-    <copy todir="${dist.dir}/jmol-applet-${version}" >
-      <fileset dir=".">
-	<include name="JmolApplet.jar" />
-	<include name="*.txt" />
+    <copy todir="build/dist/jmol-${version}" >
+      <fileset dir="./appletweb">
+	<include name="Jmol.js" />
       </fileset>
     </copy>
-    <copy todir="${dist.dir}/jmol-applet-${version}/doc/JmolUserGuide">
+
+   <!--
+    zip distributions to not retain file permissions
+    <zip zipfile="build/dist/jmol-${version}-binary.zip" basedir="build/dist"
+	 includes="jmol-${version}/**" />
+    -->
+
+    <tar tarfile="build/dist/jmol-${version}-binary.tgz"
+	 compression="gzip" >
+      <tarfileset dir="build/dist"
+		  excludes="*/jmol,*/jmol.sh"
+		  includes="jmol-${version}/**" />
+      <tarfileset dir="build/dist"
+		  mode="755"
+		  includes="*/jmol,*/jmol.sh" />
+    </tar>
+
+    <!-- then build source distribution -->
+
+    <copy todir="build/dist/jmol-${version}" >
+      <fileset dir=".">
+	<include name="applet.classes" />
+	<include name="build.xml" />
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/src" >
+      <fileset dir="src">
+	<exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/${lib.dir}" >
+      <fileset dir="${lib.dir}">
+	<exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/${plugin.dir}" >
+      <fileset dir="${plugin.dir}">
+	<exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/appletweb" >
+      <fileset dir="appletweb">
+	<exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/doc" >
+      <fileset dir="doc">
+	<exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/samples" >
+      <fileset dir="samples">
+	<exclude name="**/CVS"/>
+      </fileset>
+    </copy>
+
+    <copy   file="build/doc/JmolDevelopersGuide.html"
+	    tofile="build/dist/jmol-${version}/doc/JmolDevelopersGuide.html" />
+    <copy   file="build/doc/JmolHistory/ChangeLog.html"
+	    tofile="build/dist/jmol-${version}/ChangeLog.html" />
+    <copy todir="build/dist/jmol-${version}/doc/JmolUserGuide">
       <fileset dir="build/doc/JmolUserGuide">
 	<include name="**/*.html" />
       </fileset>
     </copy>
-    <copy   file="build/doc/JmolDevelopersGuide.html"
-	    tofile="${dist.dir}/jmol-applet-${version}/doc/JmolDevelopersGuide.html" />
     <copy   file="build/doc/JmolAppletGuide.html"
-	    tofile="${dist.dir}/jmol-applet-${version}/doc/JmolAppletGuide.html" />
-    <copy   file="build/doc/JmolHistory/ChangeLog.html"
-	    tofile="${dist.dir}/jmol-applet-${version}/ChangeLog.html" />
+	    tofile="build/dist/jmol-${version}/doc/JmolAppletGuide.html" />
+
+<!--
+    zip distributions to not retain file permissions
+    <zip zipfile="build/dist/jmol-${version}-full.zip" basedir="build/dist"
+	 includes="jmol-${version}/**" />
+    -->
+
+    <tar tarfile="build/dist/jmol-${version}-full.tgz"
+	 compression="gzip" >
+      <tarfileset dir="build/dist"
+		  excludes="*/jmol,*/jmol.sh"
+		  includes="jmol-${version}/**" />
+      <tarfileset dir="build/dist"
+		  mode="755"
+		  includes="*/jmol,*/jmol.sh" />
+    </tar>
   </target>
 
   <target name="check.jws" id="check.jws" depends="setup" unless="keystore.present" >
@@ -412,26 +473,26 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="dist-jws" id="dist-jws" depends="check.jws,dist" >
-    <copy todir="${dist.dir}/jmol-jws-${version}" >
-      <fileset dir="${source.dir}">
+    <copy todir="build/dist/jmol-jws-${version}" >
+      <fileset dir="src">
 	<include name="jmol.jnlp" />
       </fileset>
     </copy>
-    <mkdir dir="${dist.dir}/jmol-jws-${version}/${lib.dir}" />
-    <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
+    <mkdir dir="build/dist/jmol-jws-${version}/${lib.dir}" />
+    <copy todir="build/dist/jmol-jws-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
 	<include name="*.jar" />
 	<exclude name="junit.jar" />
 	<exclude name="saxon.jar" />
       </fileset>
     </copy>
-    <mkdir dir="${dist.dir}/jmol-jws-${version}/images" />
-    <copy todir="${dist.dir}/jmol-jws-${version}/images" flatten="yes" >
-      <fileset dir="${source.dir}">
+    <mkdir dir="build/dist/jmol-jws-${version}/images" />
+    <copy todir="build/dist/jmol-jws-${version}/images" flatten="yes" >
+      <fileset dir="src">
 	<include name="**/icon.jpg" />
       </fileset>
     </copy>
-    <ant antfile="../../../build.xml" dir="${dist.dir}/jmol-jws-${version}"
+    <ant antfile="../../../build.xml" dir="build/dist/jmol-jws-${version}"
 	 target="internal-dist-jws-sign" />
   </target>
   
@@ -451,115 +512,6 @@ support for assertions (which were introduced in 1.4).
     </signjar>
   </target>
   
-
-  <target name="dist.zip" id="dist.zip" depends="dist">
-    <zip zipfile="build/jmol-${version}.zip" basedir="${dist.dir}"
-	 includes="jmol-${version}/**" />
-  </target>
-
-  <target name="applet.dist.zip" id="applet.dist.zip" depends="dist">
-    <zip zipfile="build/jmol-applet-${version}.zip" basedir="${dist.dir}"
-	 includes="jmol-applet-${version}/**" />
-  </target>
-
-  <target name="dist.tar.gz" id="dist.tar.gz" depends="dist">
-    <tar tarfile="build/jmol-${version}.tar" basedir="${dist.dir}"
-	 excludes="**">
-      <!-- The excludes="**" attribute in the tag above is a workaround
-	   for a problem in Ant 1.3 -->
-      <tarfileset dir="${dist.dir}" mode="755">
-	<include name="jmol-${version}/jmol"/>
-	<include name="jmol-${version}/jmol.bat"/>
-      </tarfileset>
-      <tarfileset dir="${dist.dir}">
-	<include name="jmol-${version}/**"/>
-	<exclude name="jmol-${version}/jmol"/>
-	<exclude name="jmol-${version}/jmol.bat"/>
-      </tarfileset>
-    </tar>
-    <gzip zipfile="build/jmol-${version}.tar.gz"
-	  src="build/jmol-${version}.tar"/>
-    <delete file="build/jmol-${version}.tar" />
-  </target>
-
-  <target name="applet.dist.tar.gz" id="applet.dist.tar.gz" depends="dist">
-    <tar tarfile="build/jmol-applet-${version}.tar" basedir="${dist.dir}"
-	 includes="jmol-applet-${version}/**"/>
-    <gzip zipfile="build/jmol-applet-${version}.tar.gz"
-	  src="build/jmol-applet-${version}.tar"/>
-    <delete file="build/jmol-applet-${version}.tar" />
-  </target>
-
-  <target name="sourcedist" id="sourcedist" depends="doc">
-    <mkdir dir="${sourcedist.dir}/jmol-${version}"/>
-    <copy todir="${sourcedist.dir}/jmol-${version}/${lib.dir}" >
-      <fileset dir="${lib.dir}">
-	<include name="*.jar" />
-      </fileset>
-    </copy>
-    <copy todir="${sourcedist.dir}/jmol-${version}" >
-      <fileset dir=".">
-	<include name="*.txt" />
-	<include name="applet.classes" />
-	<include name="build.xml" />
-	<include name="jmol" />
-	<include name="jmol.bat" />
-	<include name="jmol.sh" />
-      </fileset>
-    </copy>
-    <copy todir="${sourcedist.dir}/jmol-${version}/${source.dir}" >
-      <fileset dir="${source.dir}">
-	<exclude name="**/CVS"/>
-      </fileset>
-    </copy>
-    <copy todir="${sourcedist.dir}/jmol-${version}/doc" >
-      <fileset dir="doc">
-	<exclude name="**/CVS"/>
-      </fileset>
-    </copy>
-    <copy todir="${sourcedist.dir}/jmol-${version}/samples" >
-      <fileset dir="samples">
-	<exclude name="**/CVS"/>
-      </fileset>
-    </copy>
-    <copy todir="${sourcedist.dir}/jmol-${version}/packaging" >
-      <fileset dir="packaging">
-	<exclude name="**/CVS"/>
-	<exclude name="rpm/dist"/>
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="sourcedist.zip" id="sourcedist.zip" depends="sourcedist">
-    <zip zipfile="build/jmol-${version}.source.zip"
-	 basedir="${sourcedist.dir}" includes="**" />
-  </target>
-
-  <target name="sourcedist.tar.gz" id="sourcedist.tar.gz" depends="sourcedist">
-    <tar tarfile="build/jmol-${version}.source.tar"
-	 basedir="${sourcedist.dir}" excludes="**">
-      <!-- The excludes="**" attribute in the tag above is a workaround
-	   for a problem in Ant 1.3 -->
-      <tarfileset dir="${sourcedist.dir}" mode="755">
-	<include name="jmol-${version}/jmol"/>
-	<include name="jmol-${version}/jmol.bat"/>
-      </tarfileset>
-      <tarfileset dir="${sourcedist.dir}">
-	<include name="jmol-${version}/**"/>
-	<exclude name="jmol-${version}/jmol"/>
-	<exclude name="jmol-${version}/jmol.bat"/>
-      </tarfileset>
-    </tar>
-    <gzip zipfile="build/jmol-${version}.source.tar.gz"
-	  src="build/jmol-${version}.source.tar"/>
-    <delete file="build/jmol-${version}.source.tar" />
-  </target>
-
-  <target id="main-dists" name="main-dists" description="Builds primary distributions."
-	  depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
-
-  <target id="applet-dists" name="applet-dists" description="Builds applet distributions."
-	  depends="applet.dist.zip,applet.dist.tar.gz"/>
 
   <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
@@ -706,19 +658,4 @@ support for assertions (which were introduced in 1.4).
     </java>
   </target>
 
-  <target name="betarelease" depends="doc,main">
-    <echo message="Generating beta test release"/>
-    <zip destfile="Jmol${version}.zip" >
-      <zipfileset dir="." prefix="Jmol${version}/">
-	<include name="Jmol.jar"/>
-	<include name="JmolApplet.jar"/>
-      </zipfileset>
-      <zipfileset dir="appletweb" prefix="Jmol${version}/">
-	<include name="Jmol.js"/>
-      </zipfileset>
-      <zipfileset dir="jars" prefix="Jmol${version}/">
-	<include name="gnujaxp.jar"/>
-      </zipfileset>
-    </zip>
-  </target>
 </project>

@@ -140,9 +140,9 @@ final class Line3D {
     }
   }
 
-  private final static int VISIBILITY_UNCLIPPED = 0;
-  private final static int VISIBILITY_CLIPPED = 1;
-  private final static int VISIBILITY_OFFSCREEN = 2;
+  final static int VISIBILITY_UNCLIPPED = 0;
+  final static int VISIBILITY_CLIPPED = 1;
+  final static int VISIBILITY_OFFSCREEN = 2;
 
   /**
    *<p>
@@ -220,7 +220,7 @@ int visibilityCheck(int x1, int y1, int z1, int x2, int y2, int z2) {
   final static int yLT = 2;
   final static int yGT = 1;
 
-  private final int clipCode(int x, int y, int z) {
+  final int clipCode(int x, int y, int z) {
     int code = 0;
     if (x < 0)
       code |= xLT;

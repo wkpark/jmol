@@ -37,16 +37,18 @@ package org.jmol.g3d;
  */
 class Triangle3D {
 
-  Graphics3D g3d;
+  final Graphics3D g3d;
+  final Line3D line3d;
 
-  int[] ax = new int[3];
-  int[] ay = new int[3];
-  int[] az = new int[3];
+  final int[] ax = new int[3];
+  final int[] ay = new int[3];
+  final int[] az = new int[3];
   
   Rgb16[] rgb16sGouraud;
 
   Triangle3D(Graphics3D g3d) {
     this.g3d = g3d;
+    this.line3d = g3d.line3d;
     rgb16sGouraud = new Rgb16[3];
     for (int i = 3; --i >= 0; )
       rgb16sGouraud[i] = new Rgb16();
@@ -74,6 +76,29 @@ class Triangle3D {
   
 
   void fillTriangle(boolean translucent, boolean useGouraud) {
+    int cc0 = line3d.clipCode(ax[0], ay[0], az[0]);
+    int cc1 = line3d.clipCode(ax[1], ay[1], az[1]);
+    int cc2 = line3d.clipCode(ax[2], ay[2], az[2]);
+    boolean clipped = (cc0 | cc1 | cc2) != 0;
+    if (clipped) {
+      if ((cc0 & cc1 & cc2) != 0) {
+        // all three corners are being clipped on the same dimension
+        return;
+      }
+      if ((line3d.visibilityCheck(ax[0], ay[0], az[0], ax[1], ay[1], az[1])
+           == Line3D.VISIBILITY_OFFSCREEN) &&
+          (line3d.visibilityCheck(ax[1], ay[1], az[1], ax[2], ay[2], az[2])
+           == Line3D.VISIBILITY_OFFSCREEN) &&
+          (line3d.visibilityCheck(ax[0], ay[0], az[0], ax[2], ay[2], az[2])
+           == Line3D.VISIBILITY_OFFSCREEN)) {
+        // this is not technically correct
+        // none of the edges are on-screen, but the corners could
+        // be on opposite sides of the screen, so that the screen
+        // is in the interior of the triangle
+        // we are not going to worry about that case
+          return;
+      }
+    }
     int iMinY = 0;
     if (ay[1] < ay[0]) iMinY = 1;
     if (ay[2] < ay[iMinY]) iMinY = 2;

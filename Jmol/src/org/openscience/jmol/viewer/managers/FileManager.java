@@ -93,6 +93,9 @@ public class FileManager {
   }
 
   public InputStream getInputStreamFromName(String name) {
+    classifyName(name);
+    if (errorMessage != null)
+      return null;
     if (isURL) {
       URL url = getURLFromName(name);
       if (url != null) {
@@ -121,8 +124,8 @@ public class FileManager {
   private File file;
   private String errorMessage;
 
-  private void getNames(String name) {
-    fullPathName = fileName = null;
+  private void classifyName(String name) {
+    errorMessage = fullPathName = fileName = null;
     isURL = false;
     if (name == null)
       return;
@@ -163,21 +166,13 @@ public class FileManager {
 
   public String openFile(String name) {
     System.out.println("openFile(" + name + ")");
-    errorMessage = null;
-    getNames(name);
+    InputStream istream = getInputStreamFromName(name);
     if (errorMessage != null)
       return errorMessage;
-    System.out.println(" fullPathName=" + fullPathName +
-                       " fileName=" + fileName);
-    InputStream istream = getInputStreamFromName(name);
-    System.out.println("returned from getInputStreamFromName");
-    if (errorMessage != null) {
-      System.out.println("well, the error is:" + errorMessage);
-      return errorMessage;
-    }
     if (istream == null)
-      return "error opening url/filename";
-    System.out.println("calling openInputStream");
+      return "error opening url/filename:" + name;
+    //    System.out.println(" fullPathName=" + fullPathName +
+    //                       " fileName=" + fileName);
     return openInputStream(fullPathName, fileName, istream);
   }
 

@@ -698,7 +698,8 @@ final public class JmolViewer {
    * delegated to FileManager
    ****************************************************************/
 
-  public void setAppletContext(URL documentBase, URL codeBase, String appletProxy) {
+  public void setAppletContext(URL documentBase, URL codeBase,
+                               String appletProxy) {
     fileManager.setAppletContext(documentBase, codeBase, appletProxy);
   }
 
@@ -1133,9 +1134,9 @@ final public class JmolViewer {
                                           modelName, clientFile);
   }
 
-  public void notifyFileNotLoaded(String fileName, String errorMsg) {
+  public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyFileNotLoaded(fileName, errorMsg);
+      jmolStatusListener.notifyFileNotLoaded(fullPathName, errorMsg);
   }
 
   public void manageScriptTermination() {

@@ -1411,9 +1411,9 @@ public class Jmol extends JPanel {
       pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }
 
-    public void notifyFileNotLoaded(String fileName, String errorMsg) {
+    public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
       JOptionPane.showMessageDialog(null,
-                                    fileName + '\n' + errorMsg,
+                                    fullPathName + '\n' + errorMsg,
                                     "File not loaded",
                                     JOptionPane.ERROR_MESSAGE);
     }

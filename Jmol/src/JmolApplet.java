@@ -156,7 +156,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
-      viewer.setPercentVdwAtom(getValue("defaultVanderwaalsPercentage", 20));
+      viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
       viewer.zoomToPercent(100);
       //      viewer.zoomToPercent(getValue("zoom", 100));
       viewer.setStyleBond(JmolViewer.SHADED);
@@ -183,7 +183,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
                                String modelName, Object clientFile) {
   }
 
-  public void notifyFileNotLoaded(String fileName, String errorMsg) {
+  public void notifyFileNotLoaded(String fullPathName, String errorMsg) {
     showStatus("File Error:" + errorMsg);
   }
 

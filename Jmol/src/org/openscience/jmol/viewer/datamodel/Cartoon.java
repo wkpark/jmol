@@ -31,13 +31,13 @@ import java.util.BitSet;
 
 class Cartoon extends Mcps {
 
-  Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
+  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
     return new Cchain(polymer);
   }
 
   class Cchain extends Mcps.Mcpschain {
 
-    Cchain(PdbPolymer polymer) {
+    Cchain(Polymer polymer) {
       super(polymer, -2, 3000, 500);
     }
   }

@@ -32,12 +32,12 @@ import java.util.BitSet;
 
 class Ribbons extends Mcps {
 
-  Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
+  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
     return new Schain(polymer);
   }
 
   class Schain extends Mcps.Mcpschain {
-    Schain(PdbPolymer polymer) {
+    Schain(Polymer polymer) {
       super(polymer, -2, 1500, 500);
     }
   }

@@ -41,7 +41,7 @@ public class Atom implements Bspt.Tuple {
 
   public int atomIndex;
   Frame frame; // maybe we can get rid of this ...
-  PdbGroup group; // ... if everybody has a group
+  Group group; // ... if everybody has a group
   short modelNumber; // we want this here for the BallsRenderer
   public Point3f point3f;
   long xyzd;
@@ -439,15 +439,15 @@ public class Atom implements Bspt.Tuple {
     return bfactor100;
   }
 
-  public PdbGroup getPdbGroup() {
+  public Group getGroup() {
     return group;
   }
 
-  public PdbPolymer getPdbPolymer() {
+  public Polymer getPolymer() {
     return group.polymer;
   }
 
-  public PdbChain getPdbChain() {
+  public Chain getChain() {
     return group.chain;
   }
 

@@ -27,9 +27,9 @@ package org.openscience.jmol.viewer.datamodel;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public abstract class PdbStructure {
+public abstract class Structure {
 
-  PdbPolymer polymer;
+  Polymer polymer;
   byte type;
   int polymerIndex;
   int polymerCount;
@@ -38,7 +38,7 @@ public abstract class PdbStructure {
   Vector3f axisUnitVector;
   Point3f[] segments;
 
-  PdbStructure(PdbPolymer polymer, byte type,
+  Structure(Polymer polymer, byte type,
                int polymerIndex, int polymerCount) {
     this.polymer = polymer;
     this.type = type;
@@ -105,8 +105,8 @@ public abstract class PdbStructure {
     return polymerIndex;
   }
 
-  public int getIndex(PdbGroup group) {
-    PdbGroup[] groups = polymer.groups;
+  public int getIndex(Group group) {
+    Group[] groups = polymer.groups;
     int i;
     for (i = polymerCount; --i >= 0; )
       if (groups[polymerIndex + i] == group)
@@ -135,7 +135,7 @@ public abstract class PdbStructure {
       calcSegments();
     /*
     Point3f point = segments[residueIndex - startResidueIndex];
-    System.out.println("PdbStructure.getStructureMidpoint(" +
+    System.out.println("Structure.getStructureMidpoint(" +
                        residueIndex + ") -> " +
                        point.x + "," + point.y + "," + point.z);
     */

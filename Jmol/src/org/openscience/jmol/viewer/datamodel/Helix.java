@@ -28,9 +28,9 @@ import org.openscience.jmol.viewer.JmolConstants;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class Helix extends PdbStructure {
+public class Helix extends Structure {
 
-  Helix(PdbPolymer polymer, int polymerIndex, int polymerCount) {
+  Helix(Polymer polymer, int polymerIndex, int polymerCount) {
     super(polymer, JmolConstants.SECONDARY_STRUCTURE_HELIX,
           polymerIndex, polymerCount);
     //    System.out.println("new Helix('" + polymer.chain.chainID + "'," +

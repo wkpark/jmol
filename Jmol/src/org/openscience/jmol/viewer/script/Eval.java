@@ -489,7 +489,7 @@ public class Eval implements Runnable {
         strbufLog.append(token.intValue);
         continue;
       case Token.spec_seqcode:
-        strbufLog.append(PdbGroup.getSeqcodeString(token.intValue));
+        strbufLog.append(Group.getSeqcodeString(token.intValue));
         continue;
       case Token.spec_chain:
         strbufLog.append(':');
@@ -497,7 +497,7 @@ public class Eval implements Runnable {
         continue;
       case Token.spec_resid:
         strbufLog.append('[');
-        strbufLog.append(PdbGroup.getGroup3((short)token.intValue));
+        strbufLog.append(Group.getGroup3((short)token.intValue));
         strbufLog.append(']');
         continue;
       case Token.spec_name_pattern:
@@ -509,9 +509,9 @@ public class Eval implements Runnable {
         strbufLog.append('.');
         break;
       case Token.spec_seqcode_range:
-        strbufLog.append(PdbGroup.getSeqcodeString(token.intValue));
+        strbufLog.append(Group.getSeqcodeString(token.intValue));
         strbufLog.append('-');
-        strbufLog.append(PdbGroup.getSeqcodeString(((Integer)token.value).intValue()));
+        strbufLog.append(Group.getSeqcodeString(((Integer)token.value).intValue()));
         break;
       case Token.within:
         strbufLog.append("within ");
@@ -862,7 +862,7 @@ public class Eval implements Runnable {
     }
     //    System.out.println("sequence number=" + seqNumber +
     //                       " insertionCode=" + insertionCode);
-    int seqcode = PdbGroup.getSeqcode(seqNumber, insertionCode);
+    int seqcode = Group.getSeqcode(seqNumber, insertionCode);
     //    System.out.println("seqcode=" + seqcode);
     BitSet bsSequence = getSpecSeqcode(seqcode);
     BitSet bsNameSequence = bsName;
@@ -1186,30 +1186,30 @@ public class Eval implements Runnable {
   void withinGroup(BitSet bs, BitSet bsResult) {
     //    System.out.println("withinGroup");
     Frame frame = viewer.getFrame();
-    PdbGroup pdbgroupLast = null;
+    Group groupLast = null;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (! bs.get(i))
         continue;
       Atom atom = frame.getAtomAt(i);
-      PdbGroup pdbgroup = atom.getPdbGroup();
-      if (pdbgroup != pdbgroupLast) {
-        pdbgroup.selectAtoms(bsResult);
-        pdbgroupLast = pdbgroup;
+      Group group = atom.getGroup();
+      if (group != groupLast) {
+        group.selectAtoms(bsResult);
+        groupLast = group;
       }
     }
   }
 
   void withinChain(BitSet bs, BitSet bsResult) {
     Frame frame = viewer.getFrame();
-    PdbChain pdbchainLast = null;
+    Chain chainLast = null;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (! bs.get(i))
         continue;
       Atom atom = frame.getAtomAt(i);
-      PdbChain pdbchain = atom.getPdbChain();
-      if (pdbchain != pdbchainLast) {
-        pdbchain.selectAtoms(bsResult);
-        pdbchainLast = pdbchain;
+      Chain chain = atom.getChain();
+      if (chain != chainLast) {
+        chain.selectAtoms(bsResult);
+        chainLast = chain;
       }
     }
   }

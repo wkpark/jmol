@@ -25,7 +25,7 @@
 
 package org.openscience.jmol.viewer.script;
 import org.jmol.g3d.Graphics3D;
-import org.openscience.jmol.viewer.datamodel.PdbGroup;
+import org.openscience.jmol.viewer.datamodel.Group;
 
 import java.util.Hashtable;
 import java.util.Vector;
@@ -176,7 +176,7 @@ class Compiler {
             Integer.parseInt(script.substring(ichToken,
                                               ichToken + cchToken - 2));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
-          int seqcode = PdbGroup.getSeqcode(seqNum, insertionCode);
+          int seqcode = Group.getSeqcode(seqNum, insertionCode);
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
           continue;
         }
@@ -1006,7 +1006,7 @@ class Compiler {
       if (strSpec == "")
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
-      int groupID = PdbGroup.lookupGroupID(strSpec);
+      int groupID = Group.lookupGroupID(strSpec);
       if (groupID != -1)
         generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
       else
@@ -1053,7 +1053,7 @@ class Compiler {
       try {
         int sequenceNum = Integer.parseInt(strResno);
         log("I parsed sequenceNum=" + sequenceNum);
-        seqcode = PdbGroup.getSeqcode(sequenceNum, ' ');
+        seqcode = Group.getSeqcode(sequenceNum, ' ');
       } catch (NumberFormatException e) {
         return generateResidueSpecCode(tokenIdent);
       }
@@ -1064,7 +1064,7 @@ class Compiler {
         strUpper3.charAt(1) == '?' ||
         strUpper3.charAt(2) == '?') {
       generateResidueSpecCode(new Token(Token.spec_name_pattern, strUpper3));
-    } else if ((groupID = PdbGroup.lookupGroupID(strUpper3)) != -1) {
+    } else if ((groupID = Group.lookupGroupID(strUpper3)) != -1) {
       generateResidueSpecCode(new Token(Token.spec_resid, groupID, strUpper3));
     } else {
       return generateResidueSpecCode(tokenIdent);
@@ -1119,7 +1119,7 @@ class Compiler {
     if (tokPeek == Token.seqcode)
       seqcode = tokenNext().intValue;
     else if (tokPeek == Token.integer)
-      seqcode = PdbGroup.getSeqcode(tokenNext().intValue, ' ');
+      seqcode = Group.getSeqcode(tokenNext().intValue, ' ');
     else
       return false;
     if (negative)

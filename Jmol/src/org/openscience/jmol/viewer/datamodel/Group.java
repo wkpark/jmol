@@ -31,27 +31,27 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import javax.vecmath.Point3f;
 
-final public class PdbGroup {
+final public class Group {
 
-  public PdbChain chain;
-  public PdbPolymer polymer;
+  public Chain chain;
+  public Polymer polymer;
   public int seqcode;
   public short groupID;
-  public PdbStructure structure;
+  public Structure structure;
   public int[] mainchainIndices;
 
-  public PdbGroup(PdbChain chain,
+  public Group(Chain chain,
                   int sequenceNumber, char insertionCode, String group3) {
     this.chain = chain;
     this.seqcode = getSeqcode(sequenceNumber, insertionCode);
     this.groupID = getGroupID(group3);
   }
 
-  public void setPolymer(PdbPolymer polymer) {
+  public void setPolymer(Polymer polymer) {
     this.polymer = polymer;
   }
 
-  public void setStructure(PdbStructure structure) {
+  public void setStructure(Structure structure) {
     this.structure = structure;
   }
 
@@ -174,7 +174,7 @@ final public class PdbGroup {
 
   void registerAtom(Atom atom) {
     /*
-    System.out.println("PdbGroup.registerAtom(atom) atom.atomID="+atom.atomID+
+    System.out.println("Group.registerAtom(atom) atom.atomID="+atom.atomID+
                        " atom.atomName=" + atom.atomName);
     */
     byte specialAtomID = atom.getSpecialAtomID();
@@ -271,7 +271,7 @@ final public class PdbGroup {
     Atom[] atoms = frame.getAtoms();
     for (int i = frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];
-      if (atom.getPdbGroup() == this)
+      if (atom.getGroup() == this)
         bs.set(i);
     }
   }

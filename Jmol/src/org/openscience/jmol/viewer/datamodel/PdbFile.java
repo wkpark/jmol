@@ -59,9 +59,9 @@ final public class PdbFile {
         (Structure[])Util.setLength(structures, structureCount + 10);
     structures[structureCount++] =
       new Structure(structureType, chainID,
-                    PdbGroup.getSeqcode(startSequenceNumber,
+                    Group.getSeqcode(startSequenceNumber,
                                         startInsertionCode),
-                    PdbGroup.getSeqcode(endSequenceNumber,
+                    Group.getSeqcode(endSequenceNumber,
                                         endInsertionCode));
   }
 
@@ -100,7 +100,7 @@ final public class PdbFile {
   char chainIDCurrent;
   int sequenceNumberCurrent;
   char insertionCodeCurrent;
-  PdbGroup groupCurrent;
+  Group groupCurrent;
 
   void setCurrentResidue(int modelNumber, char chainID,
                          int sequenceNumber, char insertionCode,
@@ -110,18 +110,18 @@ final public class PdbFile {
     sequenceNumberCurrent = sequenceNumber;
     insertionCodeCurrent = insertionCode;
     PdbModel model = getOrAllocateModel(modelNumber);
-    PdbChain chain = model.getOrAllocateChain(chainID);
+    Chain chain = model.getOrAllocateChain(chainID);
     groupCurrent = chain.allocateGroup(sequenceNumber, insertionCode, group3);
   }
 
   /*
-  public PdbGroup assignPdbGroup(Atom atom, String pdbRecord) {
+  public Group assignGroup(Atom atom, String pdbRecord) {
     char chainID = pdbRecord.charAt(21);
     int seqcode = Integer.MIN_VALUE;
     try {
       int sequenceNum = Integer.parseInt(pdbRecord.substring(22, 26).trim());
       char insertionCode = pdbRecord.charAt(26);
-      seqcode = PdbGroup.getSeqcode(sequenceNum, insertionCode);
+      seqcode = Group.getSeqcode(sequenceNum, insertionCode);
     } catch (NumberFormatException e) {
       System.out.println("bad residue number in: " + pdbRecord);
     }
@@ -136,7 +136,7 @@ final public class PdbFile {
   }
   */
 
-  public PdbGroup registerAtom(Atom atom, int modelNumber, char chainID,
+  public Group registerAtom(Atom atom, int modelNumber, char chainID,
                                int sequenceNumber, char insertionCode,
                                String group3) {
     /*
@@ -167,11 +167,11 @@ final public class PdbFile {
     temporary hack for backward compatibility with drawing code
   */
 
-  public PdbGroup[] getMainchain(int i) {
+  public Group[] getMainchain(int i) {
     return pdbmodels[0].getMainchain(i);
   }
 
-  public PdbChain getChain(int i) {
+  public Chain getChain(int i) {
     return pdbmodels[0].getChain(i);
   }
 

@@ -301,11 +301,11 @@ public class ColorManager {
       }
     case JmolConstants.PALETTE_CHAIN:
       int chain = atom.getChainID() & 0x1F;
-      if (chain >= JmolConstants.argbsPdbChainAtom.length)
-        chain = chain % JmolConstants.argbsPdbChainAtom.length;
+      if (chain >= JmolConstants.argbsChainAtom.length)
+        chain = chain % JmolConstants.argbsChainAtom.length;
       argb = (atom.isHetero()
-              ? JmolConstants.argbsPdbChainHetero
-              : JmolConstants.argbsPdbChainAtom)[chain];
+              ? JmolConstants.argbsChainHetero
+              : JmolConstants.argbsChainAtom)[chain];
       break;
     }
     if (argb == 0)

@@ -38,13 +38,13 @@ class Strands extends Mcps {
    * http://sgce.cbse.uab.edu/carson/papers/ribbons86/ribbons86.html
    ****************************************************************/
 
-  Mcps.Mcpschain allocateMcpschain(PdbPolymer polymer) {
+  Mcps.Mcpschain allocateMcpschain(Polymer polymer) {
     return new Schain(polymer);
   }
 
   class Schain extends Mcps.Mcpschain {
 
-    Schain(PdbPolymer polymer) {
+    Schain(Polymer polymer) {
       super(polymer, -2, 1500, 500);
     }
   }

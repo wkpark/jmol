@@ -80,7 +80,7 @@ class StrandsRenderer extends McpsRenderer {
 
 
   void render1Chain(int polymerCount,
-                    PdbGroup[] groups, Point3f[] centers,
+                    Group[] groups, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
@@ -96,7 +96,7 @@ class StrandsRenderer extends McpsRenderer {
     }
   }
 
-  void render1Strand(int polymerCount, PdbGroup[] groups, short[] mads,
+  void render1Strand(int polymerCount, Group[] groups, short[] mads,
                      short[] colixes, Point3i[] screens) {
     for (int i = polymerCount; --i >= 0; )
       if (mads[i] > 0)
@@ -105,7 +105,7 @@ class StrandsRenderer extends McpsRenderer {
   }
 
 
-  void render1StrandSegment(int polymerCount, PdbGroup group, short colix,
+  void render1StrandSegment(int polymerCount, Group group, short colix,
                             short[] mads, Point3i[] screens, int i) {
     int iLast = polymerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;

@@ -70,7 +70,7 @@ abstract class Mcps extends Shape {
       mcpsmodels[m].setColix(palette, colix, bs);
   }
 
-  abstract Mcpschain allocateMcpschain(PdbPolymer polymer);
+  abstract Mcpschain allocateMcpschain(Polymer polymer);
 
   void initialize() {
     if (mcpsmodels == null) {
@@ -126,17 +126,17 @@ abstract class Mcps extends Shape {
   }
 
   abstract class Mcpschain {
-    PdbPolymer polymer;
+    Polymer polymer;
     short madOn;
     short madHelixSheet;
     short madTurnRandom;
 
     int polymerCount;
-    PdbGroup[] polymerGroups;
+    Group[] polymerGroups;
     short[] colixes;
     short[] mads;
     
-    Mcpschain(PdbPolymer polymer, int madOn, int madHelixSheet, int madTurnRandom) {
+    Mcpschain(Polymer polymer, int madOn, int madHelixSheet, int madTurnRandom) {
       this.polymer = polymer;
       this.madOn = (short)madOn;
       this.madHelixSheet = (short)madHelixSheet;
@@ -161,7 +161,7 @@ abstract class Mcps extends Shape {
     // holds the vector that runs across the 'ribbon'
     Vector3f[] vectors;
 
-    void calcCentersAndVectors(int count, PdbGroup[] groups,
+    void calcCentersAndVectors(int count, Group[] groups,
                                Point3f[] centers, Vector3f[] vectors) {
       Vector3f vectorA = new Vector3f();
       Vector3f vectorB = new Vector3f();

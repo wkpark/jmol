@@ -1050,7 +1050,7 @@ final public class Frame {
   }
 
   void findGroupsPresent() {
-    PdbGroup groupLast = null;
+    Group groupLast = null;
     groupsPresent = new BitSet();
     for (int i = atomCount; --i >= 0; ) {
       if (groupLast != atoms[i].group) {

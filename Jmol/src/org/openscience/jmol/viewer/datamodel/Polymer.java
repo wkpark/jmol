@@ -32,21 +32,21 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
-final public class PdbPolymer {
+final public class Polymer {
 
-  PdbChain chain;
-  PdbGroup[] groups;
+  Chain chain;
+  Group[] groups;
   int count;
 
   private int[] atomIndices;
 
-  public PdbPolymer(PdbChain chain) {
+  public Polymer(Chain chain) {
     this.chain = chain;
 
-    PdbGroup[] chainGroups = chain.groups;
+    Group[] chainGroups = chain.groups;
     int firstNonMainchain = 0;
     for (int i = 0; i < chain.groupCount; ++i ) {
-      PdbGroup group = chainGroups[i];
+      Group group = chainGroups[i];
       if (! group.hasFullMainchain())
         continue;
       ++count;
@@ -59,9 +59,9 @@ final public class PdbPolymer {
       // either a complete match or the polymer is at the front of the chain
       groups = chainGroups;
     } else {
-      groups = new PdbGroup[count];
+      groups = new Group[count];
       for (int i = 0, j = 0; i < chain.groupCount; ++i) {
-        PdbGroup group = chainGroups[i];
+        Group group = chainGroups[i];
         if (! group.hasFullMainchain())
           continue;
         groups[j++] = group;
@@ -75,7 +75,7 @@ final public class PdbPolymer {
     return count;
   }
 
-  public PdbGroup[] getGroups() {
+  public Group[] getGroups() {
     return groups;
   }
 
@@ -158,7 +158,7 @@ final public class PdbPolymer {
       System.out.println("structure definition error");
       return;
     }
-    PdbStructure structure;
+    Structure structure;
     switch(type) {
     case JmolConstants.SECONDARY_STRUCTURE_HELIX:
       structure = new Helix(this, polymerIndexStart, structureCount);
@@ -197,7 +197,7 @@ final public class PdbPolymer {
     Point3f oxygenPoint;
     
     for (int i = 0; i < count; ++i) {
-      PdbGroup residue = groups[i];
+      Group residue = groups[i];
       /****************************************************************
        * This does not acount for the first nitrogen in the chain
        * is there some way to predict where it's hydrogen is?
@@ -221,7 +221,7 @@ final public class PdbPolymer {
   private final static double QConst = -332 * 0.42 * 0.2 * 1000;
 
   void bondAminoHydrogen(int indexDonor, Point3f hydrogenPoint) {
-    PdbGroup source = groups[indexDonor];
+    Group source = groups[indexDonor];
     Point3f sourceAlphaPoint = source.getAlphaCarbonPoint();
     Point3f sourceNitrogenPoint = source.getNitrogenAtom().point3f;
     int energyMin1 = 0;
@@ -233,7 +233,7 @@ final public class PdbPolymer {
         //        System.out.println(" i=" +i + " indexDonor=" + indexDonor);
         continue;
       }
-      PdbGroup target = groups[i];
+      Group target = groups[i];
       Point3f targetAlphaPoint = target.getAlphaCarbonPoint();
       float dist2 = sourceAlphaPoint.distanceSquared(targetAlphaPoint);
       if (dist2 > maxHbondAlphaDistance2)
@@ -256,7 +256,7 @@ final public class PdbPolymer {
   }
 
   int calcHbondEnergy(Point3f nitrogenPoint, Point3f hydrogenPoint,
-                      PdbGroup target) {
+                      Group target) {
     Point3f targetOxygenPoint = target.getCarbonylOxygenAtom().point3f;
     float distOH2 = targetOxygenPoint.distanceSquared(hydrogenPoint);
     if (distOH2 < minimumHbondDistance2)

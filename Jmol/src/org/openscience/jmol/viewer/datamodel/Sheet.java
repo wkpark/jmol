@@ -27,9 +27,9 @@ import org.openscience.jmol.viewer.JmolConstants;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class Sheet extends PdbStructure {
+public class Sheet extends Structure {
 
-  Sheet(PdbPolymer polymer, int polymerIndex, int polymerCount) {
+  Sheet(Polymer polymer, int polymerIndex, int polymerCount) {
     super(polymer, JmolConstants.SECONDARY_STRUCTURE_SHEET,
           polymerIndex, polymerCount);
   }

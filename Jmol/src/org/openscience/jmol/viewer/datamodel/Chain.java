@@ -31,36 +31,36 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-final public class PdbChain {
+final public class Chain {
 
   public PdbModel pdbmodel;
   public char chainID;
   int groupCount;
-  PdbGroup[] groups = new PdbGroup[16];
+  Group[] groups = new Group[16];
 
-  private PdbGroup[] mainchain;
-  private PdbPolymer polymer;
+  private Group[] mainchain;
+  private Polymer polymer;
 
-  public PdbChain(PdbModel pdbmodel, char chainID) {
+  public Chain(PdbModel pdbmodel, char chainID) {
     this.pdbmodel = pdbmodel;
     this.chainID = chainID;
   }
 
   void freeze() {
-    groups = (PdbGroup[])Util.setLength(groups, groupCount);
-    polymer = new PdbPolymer(this);
+    groups = (Group[])Util.setLength(groups, groupCount);
+    polymer = new Polymer(this);
   }
   
-  PdbGroup allocateGroup(int sequenceNumber, char insertionCode,
+  Group allocateGroup(int sequenceNumber, char insertionCode,
                          String group3) {
-    PdbGroup group = new PdbGroup(this, sequenceNumber, insertionCode, group3);
+    Group group = new Group(this, sequenceNumber, insertionCode, group3);
 
     if (groupCount == groups.length)
-      groups = (PdbGroup[])Util.doubleLength(groups);
+      groups = (Group[])Util.doubleLength(groups);
     return groups[groupCount++] = group;
   }
 
-  public PdbGroup getGroup(int groupIndex) {
+  public Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }
   
@@ -81,7 +81,7 @@ final public class PdbChain {
     int mainchainCount = 0;
     outer:
     for (int i = groupCount; --i >= 0; ) {
-      PdbGroup group = groups[i];
+      Group group = groups[i];
       int[] mainchainIndices = group.mainchainIndices;
       if (mainchainIndices == null) {
         System.out.println("group.mainchainIndices == null :-(");
@@ -97,13 +97,13 @@ final public class PdbChain {
     return mainchainCount;
   }
 
-  public PdbGroup[] getMainchain() {
+  public Group[] getMainchain() {
     if (mainchain == null) {
       int mainchainCount = mainchainHelper(false);
       if (mainchainCount == groupCount) {
         mainchain = groups;
       } else {
-        mainchain = new PdbGroup[mainchainCount];
+        mainchain = new Group[mainchainCount];
         if (mainchainCount > 0)
           mainchainHelper(true);
       }
@@ -111,14 +111,14 @@ final public class PdbChain {
     return mainchain;
   }
 
-  public PdbPolymer getPolymer() {
+  public Polymer getPolymer() {
     return polymer;
   }
 
   void addSecondaryStructure(byte type,
                              int startSeqcode, int endSeqcode) {
     if (polymer == null)
-      polymer = new PdbPolymer(this);
+      polymer = new Polymer(this);
     polymer.addSecondaryStructure(type, startSeqcode, endSeqcode);
   }
 
@@ -165,7 +165,7 @@ final public class PdbChain {
     Atom[] atoms = frame.getAtoms();
     for (int i = frame.getAtomCount(); --i >= 0; ) {
       Atom atom = atoms[i];
-      if (atom.getPdbChain() == this)
+      if (atom.getChain() == this)
         bs.set(i);
     }
   }

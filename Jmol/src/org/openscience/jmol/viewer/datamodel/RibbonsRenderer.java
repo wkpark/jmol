@@ -94,41 +94,44 @@ class RibbonsRenderer extends McpsRenderer { // not current for Mcp class
 
 
   void render1Chain(int polymerCount,
-                    PdbGroup[] groups, Point3f[] centers,
+                    Group[] groups, Point3f[] centers,
                     Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screensTop;
     Point3i[] screensBottom;
 
     int j = strandCount >> 1;
     float offset = (j * strandSeparation) + baseOffset;
-      screensTop = calcScreens(centers, vectors, mads, offset);
-      screensBottom = calcScreens(centers, vectors, mads, -offset);
-      render2Strand(polymerCount, groups, mads, colixes, screensTop, screensBottom);
+    screensTop = calcScreens(centers, vectors, mads, offset);
+    screensBottom = calcScreens(centers, vectors, mads, -offset);
+    render2Strand(polymerCount, groups, mads, colixes,
+                  screensTop, screensBottom);
   }
-
-  void render2Strand(int polymerCount, PdbGroup[] groups, short[] mads,
-                     short[] colixes, Point3i[] screensTop, Point3i[] screensBottom) {
-    for (int i = polymerCount; --i >= 0; ){
-      if (mads[i] > 0){
+  
+  void render2Strand(int polymerCount, Group[] groups,
+                     short[] mads, short[] colixes,
+                     Point3i[] screensTop, Point3i[] screensBottom) {
+    for (int i = polymerCount; --i >= 0; )
+      if (mads[i] > 0)
         render2StrandSegment(polymerCount,
-                             groups[i], colixes[i], mads, screensTop, screensBottom, i);}}
+                             groups[i], colixes[i], mads,
+                             screensTop, screensBottom, i);
   }
 
-  void render2StrandSegment(int polymerCount, PdbGroup group, short colix,
-                          short[] mads, Point3i[] screensTop, Point3i[] screensBottom, int i) {
-  int iLast = polymerCount;
-  int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
-  int iNext = i + 1; if (iNext > iLast) iNext = iLast;
-  int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
-  if (colix == 0)
-    colix = group.getAlphaCarbonAtom().colixAtom;
-
+  void render2StrandSegment(int polymerCount, Group group, short colix,
+                            short[] mads, Point3i[] screensTop,
+                            Point3i[] screensBottom, int i) {
+    int iLast = polymerCount;
+    int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
+    int iNext = i + 1; if (iNext > iLast) iNext = iLast;
+    int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
+    if (colix == 0)
+      colix = group.getAlphaCarbonAtom().colixAtom;
+    
     //change false -> true to fill in mesh
-  g3d.drawHermite(true, colix, 7, screensTop[iPrev], screensTop[i],
-                  screensTop[iNext], screensTop[iNext2],
-                  screensBottom[iPrev], screensBottom[i],
-                  screensBottom[iNext], screensBottom[iNext2]
-                  );
-}
-
+    g3d.drawHermite(true, colix, 7, screensTop[iPrev], screensTop[i],
+                    screensTop[iNext], screensTop[iNext2],
+                    screensBottom[iPrev], screensBottom[i],
+                    screensBottom[iNext], screensBottom[iNext2]
+                    );
+  }
 }

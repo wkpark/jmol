@@ -1334,7 +1334,7 @@ final public class JmolConstants {
 cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk off
    ****************************************************************/
 
-  public final static int[] argbsPdbChainAtom = {
+  public final static int[] argbsChainAtom = {
     // ' '->0 'A'->1, 'B'->2
     0xFFffffff, // ' ' & '0' white
     //
@@ -1368,7 +1368,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFB22222, // firebrick
   };
 
-  public final static int[] argbsPdbChainHetero = {
+  public final static int[] argbsChainHetero = {
     // ' '->0 'A'->1, 'B'->2
     0xFFffffff, // ' ' & '0' white
     //
@@ -1403,7 +1403,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   };
 
   /*
-  public final static int[] argbsPdbChainAtom = {
+  public final static int[] argbsChainAtom = {
     // ' '->0 'A'->1, 'B'->2
     // protein explorer colors
     0xFFffffff, // ' ' & '0' white - pewhite 0xFFffffff
@@ -1438,7 +1438,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     0xFFF5DEB3, // Z wheat
   };
 
-  public final static int[] argbsPdbChainHetero = {
+  public final static int[] argbsChainHetero = {
     // ' '->0 'A'->1, 'B'->2
     0xFFD0D0D0, // ' ' & '0' a light gray
     //

@@ -37,7 +37,7 @@ final public class PdbModel {
   public int modelNumber;
 
   private int chainCount = 0;
-  private PdbChain[] chains = new PdbChain[8];
+  private Chain[] chains = new Chain[8];
 
 
   public PdbModel(PdbFile pdbfile, int modelNumber) {
@@ -50,14 +50,14 @@ final public class PdbModel {
   }
 
   public void freeze() {
-    chains = (PdbChain[])Util.setLength(chains, chainCount);
+    chains = (Chain[])Util.setLength(chains, chainCount);
     for (int i = chainCount; --i >= 0; )
       chains[i].freeze();
   }
 
   public void addSecondaryStructure(byte type, char chainID,
                                     int startSeqcode, int endSeqcode) {
-    PdbChain chain = getChain(chainID);
+    Chain chain = getChain(chainID);
     if (chain != null)
       chain.addSecondaryStructure(type, startSeqcode, endSeqcode);
   }
@@ -73,29 +73,29 @@ final public class PdbModel {
     return groupCount;
   }
 
-  public PdbChain getChain(char chainID) {
+  public Chain getChain(char chainID) {
     for (int i = chainCount; --i >= 0; ) {
-      PdbChain chain = chains[i];
+      Chain chain = chains[i];
       if (chain.chainID == chainID)
         return chain;
     }
     return null;
   }
 
-  public PdbChain getChain(int chainIndex) {
+  public Chain getChain(int chainIndex) {
     return chains[chainIndex];
   }
 
-  PdbChain getOrAllocateChain(char chainID) {
-    PdbChain chain = getChain(chainID);
+  Chain getOrAllocateChain(char chainID) {
+    Chain chain = getChain(chainID);
     if (chain != null)
       return chain;
     if (chainCount == chains.length)
-      chains = (PdbChain[])Util.doubleLength(chains);
-    return chains[chainCount++] = new PdbChain(this, chainID);
+      chains = (Chain[])Util.doubleLength(chains);
+    return chains[chainCount++] = new Chain(this, chainID);
   }
   
-  public PdbGroup[] getMainchain(int chainIndex) {
+  public Group[] getMainchain(int chainIndex) {
     return chains[chainIndex].getMainchain();
   }
 

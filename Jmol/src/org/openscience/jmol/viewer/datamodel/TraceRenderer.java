@@ -50,7 +50,7 @@ class TraceRenderer extends McpsRenderer {
   Point3i[] screens;
   Atom[] alphas;
   
-  void render1Chain(int count, PdbGroup[] groups,
+  void render1Chain(int count, Group[] groups,
                     short[] mads, short[] colixes) {
     if (count > 0) {
       calcMidPoints(count, groups);
@@ -65,7 +65,7 @@ class TraceRenderer extends McpsRenderer {
     }
   }
 
-  void calcMidPoints(int count, PdbGroup[] groups) {
+  void calcMidPoints(int count, Group[] groups) {
     screens = frameRenderer.getTempScreens(count + 1);
     alphas = frameRenderer.getTempAtoms(count);
     Atom atomPrev = alphas[0] = groups[0].getAlphaCarbonAtom();

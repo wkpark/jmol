@@ -47,7 +47,7 @@ class CartoonRenderer extends McpsRenderer {
     render1Chain(cchain.polymer, cchain.mads, cchain.colixes);
   }
 
-  void render1Chain(PdbPolymer polymer, short[] mads, short[] colixes) {
+  void render1Chain(Polymer polymer, short[] mads, short[] colixes) {
     initializeChain(polymer);
     clearPending();
     for (int i = 0; i < polymerCount; ++i) {
@@ -56,7 +56,7 @@ class CartoonRenderer extends McpsRenderer {
       short colix = colixes[i];
       if (colix == 0)
         colix = alphas[i].colixAtom;
-      PdbGroup group = polymerGroups[i];
+      Group group = polymerGroups[i];
       if (group.isHelixOrSheet()) {
         //        System.out.println("renderSpecialSegment[" + i + "]");
         renderSpecialSegment(group, colix, mads[i]);
@@ -69,13 +69,13 @@ class CartoonRenderer extends McpsRenderer {
   }
 
   int polymerCount;
-  PdbGroup[] polymerGroups;
+  Group[] polymerGroups;
   Point3i[] screens;
   Atom[] alphas;
   boolean[] isSpecials;
   Point3f[] cordMidPoints;
 
-  void initializeChain(PdbPolymer polymer) {
+  void initializeChain(Polymer polymer) {
     polymerGroups = polymer.getGroups();
     polymerCount = polymer.getCount();
     isSpecials = frameRenderer.getTempBooleans(polymerCount);
@@ -84,17 +84,17 @@ class CartoonRenderer extends McpsRenderer {
     alphas = getAlphas();
   }
 
-  Point3f[] calcRopeMidPoints(PdbPolymer polymer) {
+  Point3f[] calcRopeMidPoints(Polymer polymer) {
     int midPointCount = polymerCount + 1;
     Point3f[] cordMidPoints = frameRenderer.getTempPoints(midPointCount);
-    PdbGroup residuePrev = null;
-    PdbStructure structurePrev = null;
+    Group residuePrev = null;
+    Structure structurePrev = null;
     Point3f point;
     for (int i = 0; i < polymerCount; ++i) {
       point = cordMidPoints[i];
-      PdbGroup residue = polymerGroups[i];
+      Group residue = polymerGroups[i];
       if (isSpecials[i] = residue.isHelixOrSheet()) {
-        PdbStructure structure = residue.structure;
+        Structure structure = residue.structure;
         point.set(i - 1 != structure.getPolymerIndex()
                   ? structure.getAxisStartPoint()
                   : structure.getAxisEndPoint());
@@ -168,8 +168,8 @@ class CartoonRenderer extends McpsRenderer {
   Point3i screenB = new Point3i();
   Point3i screenC = new Point3i();
 
-  void renderSpecialSegment(PdbGroup group, short colix, short mad) {
-    PdbStructure structure = group.structure;
+  void renderSpecialSegment(Group group, short colix, short mad) {
+    Structure structure = group.structure;
     if (tPending) {
       if (structure == structurePending &&
           mad == madPending &&
@@ -188,7 +188,7 @@ class CartoonRenderer extends McpsRenderer {
   }
 
   boolean tPending;
-  PdbStructure structurePending;
+  Structure structurePending;
   int startIndexPending;
   int endIndexPending;
   short madPending;

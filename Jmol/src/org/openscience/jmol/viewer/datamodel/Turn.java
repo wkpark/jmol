@@ -25,9 +25,9 @@
 package org.openscience.jmol.viewer.datamodel;
 import org.openscience.jmol.viewer.JmolConstants;
 
-public class Turn extends PdbStructure {
+public class Turn extends Structure {
 
-  Turn(PdbPolymer polymer, int polymerIndex, int polymerCount) {
+  Turn(Polymer polymer, int polymerIndex, int polymerCount) {
     super(polymer, JmolConstants.SECONDARY_STRUCTURE_TURN,
           polymerIndex, polymerCount);
   }

@@ -161,4 +161,9 @@ public class StyleManager {
     this.spinOn = spinOn;
     System.out.println("spinOn=" + spinOn);
   }
+
+  public boolean showFrank;
+  public void setShowFrank(boolean showFrank) {
+    this.showFrank = showFrank;
+  }
 }

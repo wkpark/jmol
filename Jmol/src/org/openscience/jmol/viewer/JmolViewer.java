@@ -1643,6 +1643,13 @@ final public class JmolViewer {
     return styleManager.spinOn;
   }
 
+  public void setShowFrank(boolean showFrank) {
+    styleManager.setShowFrank(showFrank);
+  }
+  public boolean getShowFrank() {
+    return styleManager.showFrank;
+  }
+
 
   /****************************************************************
    * delegated to LabelManager
@@ -1685,7 +1692,7 @@ final public class JmolViewer {
   public Font getFontOfSize(int points) {
     return labelManager.getFontOfSize(points);
   }
-  
+
   /****************************************************************
    * delegated to AxesManager
    ****************************************************************/

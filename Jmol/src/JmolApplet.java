@@ -219,6 +219,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       loadInline(getValue("loadInline", null));
       script(getValue("script", null));
 
+      viewer.setShowFrank(getBooleanValue("frank", true));
+
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
       messageCallback = getValue("MessageCallback", null);
@@ -231,7 +233,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
            pauseCallback != null ||
            pickCallback != null))
         System.out.println("WARNING!! MAYSCRIPT not found");
-
     }
     viewer.popHoldRepaint();
   }
@@ -304,7 +305,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     paint(g);
   }
 
-  public boolean showPaintTime = true;
+  public boolean showPaintTime = false;
 
   public void paint(Graphics g) {
     if (viewer == null) // it seems that this can happen at startup sometimes
@@ -320,7 +321,32 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       stopPaintClock();
       showTimes(10, 10, g);
     }
+    if (viewer.getShowFrank()) {
+      if (frankFont == null) {
+        frankFont = new Font(frankFontName, frankFontStyle, frankFontSize);
+        FontMetrics fm = getFontMetrics(frankFont);
+        frankWidth = fm.stringWidth(frankString);
+        frankDescent = fm.getDescent();
+      }
+      g.setFont(frankFont);
+      g.setColor(frankColor);
+      g.drawString(frankString,
+                   size.width - frankWidth - frankMargin,
+                   size.height - frankDescent - frankMargin);
+    }
   }
+
+  private final static Color frankColor = Color.gray;
+  private final static String frankString = "Jmol";
+  private final static String frankFontName = "Serif";
+  private final static int frankFontStyle = Font.BOLD;
+  private final static int frankFontSize = 14;
+  private final static int frankMargin = 4;
+  Font frankFont;
+  int frankWidth;
+  int frankDescent;
+  
+
 
   public boolean handleEvent(Event e) {
     if (viewer == null)

@@ -79,6 +79,8 @@ final public class Graphics3D {
   short colixBackgroundContrast;
   private final Rectangle rectClip = new Rectangle();
 
+  short colixCurrent;
+  int[] shadesCurrent;
   int argbCurrent;
   int argbNoisyUp, argbNoisyDn;
 
@@ -285,7 +287,19 @@ final public class Graphics3D {
    * @param colix the color index
    */
   public void setColix(short colix) {
+    colixCurrent = colix;
+    shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getArgb(colix);
+  }
+
+  public void setColixIntensity(short colix, int intensity) {
+    colixCurrent = colix;
+    shadesCurrent = getShades(colix);
+    argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
+  }
+
+  public void setIntensity(int intensity) {
+    argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
   }
 
   void setColorNoisy(short colix, int intensity) {
@@ -1146,6 +1160,11 @@ final public class Graphics3D {
 
   public void drawPixel(int x, int y, int z) {
     plotPixelClipped(x, y, z);
+  }
+
+  public void drawPixel(Point3i point, int normix) {
+    argbCurrent = shadesCurrent[normix3d.intensities[normix]];
+    plotPixelClipped(point);
   }
 
   /* ***************************************************************
@@ -2104,5 +2123,17 @@ final public class Graphics3D {
 
   public short getNormix(Vector3f vector) {
     return normix3d.getNormix(vector);
+  }
+
+  public Vector3f[] getGeodesicVertexVectors() {
+    return geodesic3d.getVertexVectors();
+  }
+
+  public int getGeodesicVertexCount(int level) {
+    return geodesic3d.getVertexCount(level);
+  }
+
+  public Vector3f[] getTransformedVertexVectors() {
+    return normix3d.getTransformedVectors();
   }
 }

@@ -388,6 +388,10 @@ class Normix3D {
                         : Shade3D.calcIntensity(-tv.x, tv.y, -tv.z));
     }
   }
+
+  Vector3f[] getTransformedVectors() {
+    return transformedVectors;
+  }
 }
 
 class Node {

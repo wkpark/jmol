@@ -78,15 +78,15 @@ import java.util.BitSet;
 
 class Surface extends Shape {
 
-  SurfaceRenderer dotsRenderer;
-
   short mad; // this is really just a true/false flag ... 0 vs non-zero
 
-  int dotsConvexMax; // the Max == the highest atomIndex with dots + 1
-  int[][] dotsConvexMaps;
+  private final static int GEODESIC_LEVEL = 3;
+
+  int surfaceConvexMax; // the Max == the highest atomIndex with surface + 1
+  int[][] surfaceConvexMaps;
   short[] colixesConvex;
-  Vector3f[] geodesicVertices;
-  int geodesicCount;
+  Vector3f[] geodesicVertexVectors;
+  int geodesicVertexCount;
   int[] geodesicMap;
   final static int[] mapNull = new int[0];
 
@@ -113,19 +113,17 @@ class Surface extends Shape {
   final Point3f pointT1 = new Point3f();
     
   void initShape() {
-    dotsRenderer =
-      (SurfaceRenderer)frame.getRenderer(JmolConstants.SHAPE_SURFACE);
-    geodesicVertices = dotsRenderer.geodesic.vertices;
-    geodesicCount = geodesicVertices.length;
-    geodesicMap = allocateBitmap(geodesicCount);
+    geodesicVertexVectors = g3d.getGeodesicVertexVectors();
+    geodesicVertexCount = g3d.getGeodesicVertexCount(GEODESIC_LEVEL);
+    geodesicMap = allocateBitmap(geodesicVertexCount);
   }
 
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     this.mad = mad;
     if (radiusP != viewer.getCurrentSolventProbeRadius()) {
-      dotsConvexMax = 0;
-      dotsConvexMaps = null;
+      surfaceConvexMax = 0;
+      surfaceConvexMaps = null;
       torusCount = 0;
       htTori = null;
       tori = null;
@@ -136,17 +134,17 @@ class Surface extends Shape {
     }
     int atomCount = frame.atomCount;
     // always delete old surfaces for selected atoms
-    if (dotsConvexMaps != null) {
+    if (surfaceConvexMaps != null) {
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i))
-          dotsConvexMaps[i] = null;
+          surfaceConvexMaps[i] = null;
       deleteUnnecessaryTori();
       deleteUnnecessaryCavities();
     }
     // now, calculate surface for selected atoms
     if (mad != 0) {
-      if (dotsConvexMaps == null) {
-        dotsConvexMaps = new int[atomCount][];
+      if (surfaceConvexMaps == null) {
+        surfaceConvexMaps = new int[atomCount][];
         colixesConvex = new short[atomCount];
       }
       for (int i = atomCount; --i >= 0; )
@@ -158,14 +156,14 @@ class Surface extends Shape {
           calcCavities();
         }
     }
-    if (dotsConvexMaps == null)
-      dotsConvexMax = 0;
+    if (surfaceConvexMaps == null)
+      surfaceConvexMax = 0;
     else {
-      // update this count to speed up dotsRenderer
+      // update this count to speed up surfaceRenderer
       int i;
-      for (i = atomCount; --i >= 0 && dotsConvexMaps[i] == null; )
+      for (i = atomCount; --i >= 0 && surfaceConvexMaps[i] == null; )
         {}
-      dotsConvexMax = i + 1;
+      surfaceConvexMax = i + 1;
     }
   }
 
@@ -284,17 +282,17 @@ class Surface extends Shape {
       map = new int[indexLast + 1];
       System.arraycopy(geodesicMap, 0, map, 0, count);
     }
-    dotsConvexMaps[indexI] = map;
+    surfaceConvexMaps[indexI] = map;
   }
 
   void calcConvexBits() {
-    setAllBits(geodesicMap, geodesicCount);
+    setAllBits(geodesicMap, geodesicVertexCount);
     if (neighborCount == 0)
       return;
     float combinedRadii = radiusI + radiusP;
     int iLastUsed = 0;
-    for (int iDot = geodesicCount; --iDot >= 0; ) {
-      pointT.set(geodesicVertices[iDot]);
+    for (int iDot = geodesicVertexCount; --iDot >= 0; ) {
+      pointT.set(geodesicVertexVectors[iDot]);
       pointT.scaleAdd(combinedRadii, centerI);
       int iStart = iLastUsed;
       do {
@@ -391,8 +389,8 @@ class Surface extends Shape {
     boolean torusDeleted = false;
     for (int i = torusCount; --i >= 0; ) {
       Torus torus = tori[i];
-      if (dotsConvexMaps[torus.indexII] == null &&
-          dotsConvexMaps[torus.indexJJ] == null) {
+      if (surfaceConvexMaps[torus.indexII] == null &&
+          surfaceConvexMaps[torus.indexJJ] == null) {
         torusDeleted = true;
         tori[i] = null;
       }
@@ -611,9 +609,9 @@ class Surface extends Shape {
     boolean cavityDeleted = false;
     for (int i = cavityCount; --i >= 0; ) {
       Cavity cavity = cavities[i];
-      if (dotsConvexMaps[cavity.ixI] == null &&
-          dotsConvexMaps[cavity.ixJ] == null &&
-          dotsConvexMaps[cavity.ixK] == null) {
+      if (surfaceConvexMaps[cavity.ixI] == null &&
+          surfaceConvexMaps[cavity.ixJ] == null &&
+          surfaceConvexMaps[cavity.ixK] == null) {
         cavityDeleted = true;
         cavities[i] = null;
       }

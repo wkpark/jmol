@@ -182,8 +182,12 @@ class Geodesic3D {
     }
   }
   
-  static short getVertexCount(int level) {
+  static int getVertexCount(int level) {
     return vertexCounts[level];
+  }
+
+  static Vector3f[] getVertexVectors() {
+    return vertexVectors;
   }
 
   static int getFaceCount(int level) {

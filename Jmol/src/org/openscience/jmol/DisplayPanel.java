@@ -1,5 +1,5 @@
 /*
- * @(#)displayPanel.java    1.0 98/08/27
+ * @(#)DisplayPanel.java    1.0 98/08/27
  *
  * Copyright (c) 1998 J. Daniel Gezelter All Rights Reserved.
  *
@@ -44,7 +44,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
-public class displayPanel extends JPanel 
+public class DisplayPanel extends JPanel 
     implements Runnable,MeasurementListListener {
 
     public static int X_AXIS = 1;
@@ -93,7 +93,7 @@ public class displayPanel extends JPanel
     private MeasurementList mlist = null;
     protected DisplaySettings settings;
 
-    public displayPanel(StatusBar status, DisplaySettings settings) {
+    public DisplayPanel(StatusBar status, DisplaySettings settings) {
         this.status = status;
 		this.settings = settings;
     }

@@ -96,9 +96,9 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
      * Creates a dialog. 
      *
      * @param f the parent frame
-     * @param dp the displayPanel in which the vibration will be displayed
+     * @param dp the DisplayPanel in which the vibration will be displayed
      */
-    public Vibrate(JFrame f, displayPanel dp) {
+    public Vibrate(JFrame f, DisplayPanel dp) {
         super(f, "Vibration", false);
         display = dp;
         JPanel container = new JPanel();
@@ -722,7 +722,7 @@ public class Vibrate extends JDialog implements ActionListener, Runnable {
      * Reference to the panel for displaying frames. Used to load and unload
      * the vibration ChemFile, and to set the frame to be displayed.
      */
-    private displayPanel display;
+    private DisplayPanel display;
     /**
      * Does the dialog have any vibration data.
      */

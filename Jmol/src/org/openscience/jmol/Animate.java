@@ -56,7 +56,7 @@ public class Animate extends JDialog implements ActionListener,Runnable {
     private boolean haveFile = false;
     private int nframes = 1;
     private int speed = 10;
-    private displayPanel display;
+    private DisplayPanel display;
 
     private boolean repeat = true;
 
@@ -247,9 +247,9 @@ public class Animate extends JDialog implements ActionListener,Runnable {
      * Constructor 
      *
      * @param f the parent frame
-     * @param dp the displayPanel in which the animation will take place
+     * @param dp the DisplayPanel in which the animation will take place
      */
-    public Animate(JFrame f, displayPanel dp) {
+    public Animate(JFrame f, DisplayPanel dp) {
         super(f, "Animation", false);
         this.display = dp;
         commands = new Hashtable();

@@ -59,7 +59,7 @@ public class MeasurementList extends JDialog {
     /** List of listeners */
     protected EventListenerList listenerList = new EventListenerList();
 
-    private displayPanel display;
+    private DisplayPanel display;
     private static JmolResourceHandler jrh;
     protected DefaultMutableTreeNode top;
     protected ListNode distances, angles, dihedrals;
@@ -87,9 +87,9 @@ public class MeasurementList extends JDialog {
      * Constructor 
      *
      * @param f the parent frame
-     * @param dp the displayPanel in which the animation will take place
+     * @param dp the DisplayPanel in which the animation will take place
      */
-    public MeasurementList(JFrame f, displayPanel dp) {
+    public MeasurementList(JFrame f, DisplayPanel dp) {
         super(f, "Measurement List", false);
         this.display = dp;
         commands = new Hashtable();

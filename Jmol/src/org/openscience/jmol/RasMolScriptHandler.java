@@ -179,11 +179,11 @@ class RasMolScriptHandler {
 			if (st.hasMoreElements()) {
 			    String angle = (String)st.nextElement();
 			    float f = Float.parseFloat(angle);
-                            int axisCode = displayPanel.X_AXIS;
+                            int axisCode = DisplayPanel.X_AXIS;
 			    if (axis.equals("y")) {
-				axisCode = displayPanel.Y_AXIS;
+				axisCode = DisplayPanel.Y_AXIS;
 			    } else if (axis.equals("z")) {
-				axisCode = displayPanel.Z_AXIS;
+				axisCode = DisplayPanel.Z_AXIS;
 			    }
 			    program.display.rotate(axisCode, f);
 			} else {

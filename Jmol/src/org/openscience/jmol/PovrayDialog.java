@@ -62,14 +62,14 @@ import javax.swing.border.*;
 
 public class PovrayDialog extends JDialog{
     private static JmolResourceHandler jrh = new JmolResourceHandler("Povray");
-    private displayPanel display;
+    private DisplayPanel display;
     private ChemFile currentFile;
     private boolean callPovray = true;
     /**
      * Creates a dialog. 
      *
      * @param f the parent frame
-     * @param dp the displayPanel in which the vibration will be displayed
+     * @param dp the DisplayPanel in which the vibration will be displayed
      */
 
     String savePath;
@@ -90,7 +90,7 @@ public class PovrayDialog extends JDialog{
     @param dp The interacting display we are reproducing (source of view angle info etc)
     @param bn The default name to base frame names on
 **/
-    public PovrayDialog(JFrame f, displayPanel dp, ChemFile cf, String bn) {
+    public PovrayDialog(JFrame f, DisplayPanel dp, ChemFile cf, String bn) {
         super(f, jrh.getString("povrayDialogTitle"), true);
         display = dp;
         currentFile = cf;

@@ -85,7 +85,7 @@ public class Preferences extends JDialog {
     private static double  VibrateAmplitudeScale;
     private static double  VibrateVectorScale;
     private static int     VibrationFrames;
-    private displayPanel display;
+    private DisplayPanel display;
     private static JmolResourceHandler jrh, defaults;
     private JButton bButton, oButton, pButton, tButton, vButton;
     private JRadioButton ceYes, ceNo, ufeYes, ufeNo, aaYes, aaNo;
@@ -154,7 +154,7 @@ public class Preferences extends JDialog {
         props = new Properties(props);
     }        
 
-    public Preferences(JFrame f, displayPanel dp) {
+    public Preferences(JFrame f, DisplayPanel dp) {
         super(f, "Preferences", false);
         this.display = dp;
         initVariables();
@@ -342,7 +342,7 @@ public class Preferences extends JDialog {
         pGroup.add(pNo);
         pPanel.add(pYes);
         pPanel.add(pNo);
-        pYes.setSelected(displayPanel.getPerspective());
+        pYes.setSelected(DisplayPanel.getPerspective());
         c.gridwidth = GridBagConstraints.REMAINDER;
         gridbag.setConstraints(pPanel,c);
         disp.add(pPanel);
@@ -400,7 +400,7 @@ public class Preferences extends JDialog {
             public void stateChanged(ChangeEvent e) {
                 JSlider source = (JSlider)e.getSource();
                 FieldOfView = source.getValue();
-                displayPanel.setFieldOfView(FieldOfView);
+                DisplayPanel.setFieldOfView(FieldOfView);
                 props.put("FieldOfView", Float.toString(FieldOfView));
             }
         });
@@ -782,7 +782,7 @@ public class Preferences extends JDialog {
                                                        backgroundColor);
                 backgroundColor = color;
                 bButton.setBackground(backgroundColor);
-                displayPanel.setBackgroundColor(backgroundColor);
+                DisplayPanel.setBackgroundColor(backgroundColor);
                 props.put("backgroundColor", Integer.toString(backgroundColor.getRGB()));
                 display.repaint();
                 
@@ -1049,8 +1049,8 @@ public class Preferences extends JDialog {
         } else {
             aaNo.setSelected(true);
         }
-        pYes.setSelected(displayPanel.getPerspective());
-        fovSlider.setValue((int) displayPanel.getFieldOfView());
+        pYes.setSelected(DisplayPanel.getPerspective());
+        fovSlider.setValue((int) DisplayPanel.getFieldOfView());
         cB.setSelected(display.getSettings().getShowBonds());
         cA.setSelected(display.getSettings().getShowAtoms());
         cV.setSelected(display.getSettings().getShowVectors());
@@ -1130,9 +1130,9 @@ public class Preferences extends JDialog {
         ArrowLine.setVectorColor(vectorColor);
         ArrowLine.setRadiusScale(ArrowHeadRadiusScale);
         ArrowLine.setLengthScale(ArrowHeadLengthScale);
-        displayPanel.setBackgroundColor(backgroundColor);
-        displayPanel.setFieldOfView(FieldOfView);
-        displayPanel.setPerspective(Perspective);
+        DisplayPanel.setBackgroundColor(backgroundColor);
+        DisplayPanel.setFieldOfView(FieldOfView);
+        DisplayPanel.setPerspective(Perspective);
         display.setAntiAliased(AntiAliased);        
         FileTyper.setUseFileExtensions(UseFileExtensions);
         ChemFrame.setBondFudge(BondFudge);
@@ -1256,12 +1256,12 @@ public class Preferences extends JDialog {
                 props.put("UseFileExtensions", new Boolean(UseFileExtensions).toString());
             } else if(rb.getText().equals(jrh.getString("pYesLabel"))) {
                 Perspective = rb.isSelected();
-                displayPanel.setPerspective(Perspective);
+                DisplayPanel.setPerspective(Perspective);
                 props.put("Perspective", new Boolean(Perspective).toString());
                 display.repaint();
             } else if(rb.getText().equals(jrh.getString("pNoLabel"))) {
                 Perspective = !rb.isSelected();
-                displayPanel.setPerspective(Perspective);
+                DisplayPanel.setPerspective(Perspective);
                 props.put("Perspective", new Boolean(Perspective).toString());
                 display.repaint();
             }

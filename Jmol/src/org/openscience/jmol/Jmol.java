@@ -57,7 +57,7 @@ class Jmol extends JPanel {
 
     private JScrollPane scroller;
     private JViewport port;
-    public static displayPanel display;
+    public static DisplayPanel display;
     public StatusBar status;
     private AtomPropsMenu apm;
     static AtomTypeTable atomTypeTable;
@@ -130,7 +130,7 @@ class Jmol extends JPanel {
 
         status = (StatusBar)createStatusBar();
         splash.showStatus("Initializing 3D display...");
-        display = new displayPanel(status, settings);
+        display = new DisplayPanel(status, settings);
         splash.showStatus("Initializing Preferences...");
         prefs = new Preferences(frame, display);
         splash.showStatus("Initializing Animate...");

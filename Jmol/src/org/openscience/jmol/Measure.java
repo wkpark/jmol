@@ -65,7 +65,7 @@ public class Measure extends JDialog {
     private int[] selection = {-1, -1, -1, -1};
     private ChemFile cf;
 
-    private displayPanel display;
+    private DisplayPanel display;
     private MeasurementList mlist;
 
     private static JmolResourceHandler jrh;
@@ -136,9 +136,9 @@ public class Measure extends JDialog {
      * Constructor 
      *
      * @param f the parent frame
-     * @param dp the displayPanel in which the animation will take place
+     * @param dp the DisplayPanel in which the animation will take place
      */
-    public Measure(JFrame f, displayPanel dp) {
+    public Measure(JFrame f, DisplayPanel dp) {
         super(f, "Measure", false);
         this.display = dp;
         commands = new Hashtable();
@@ -227,7 +227,7 @@ public class Measure extends JDialog {
             mButton.setText(jrh.getString("addLabel"));
         }            
         oldMode = display.getMode();
-        display.setMode(displayPanel.MEASURE);
+        display.setMode(DisplayPanel.MEASURE);
         disableActions();
         show();
     }

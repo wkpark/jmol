@@ -1502,7 +1502,7 @@ final public class JmolViewer {
 
   public String evalFile(String strFilename) {
     if (strFilename != null) {
-      if (! getEval().loadScriptFile(strFilename))
+      if (! getEval().loadScriptFile(strFilename, false))
         return eval.getErrorMessage();
       eval.start();
     }
@@ -1511,7 +1511,16 @@ final public class JmolViewer {
 
   public String evalString(String strScript) {
     if (strScript != null) {
-      if (! getEval().loadScriptString(strScript))
+      if (! getEval().loadScriptString(strScript, false))
+        return eval.getErrorMessage();
+      eval.start();
+    }
+    return null;
+  }
+
+  public String evalStringQuiet(String strScript) {
+    if (strScript != null) {
+      if (! getEval().loadScriptString(strScript, true))
         return eval.getErrorMessage();
       eval.start();
     }

@@ -111,7 +111,7 @@ public class AtomSetChooser extends JDialog
       int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
       int atomSetNumber = viewer.getModelNumber(atomSetIndex);
       // show the model in the viewer
-      viewer.evalString("frame " + atomSetNumber);
+      viewer.evalStringQuiet("frame " + atomSetNumber);
       // show the properties in the properties pane
       showProperties(viewer.getModelProperties(atomSetIndex));
     } else { // selected branch

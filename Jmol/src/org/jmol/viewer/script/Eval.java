@@ -75,6 +75,7 @@ public class Eval implements Runnable {
   Thread myThread;
   boolean terminationNotification;
   boolean interruptExecution;
+  boolean tQuiet;
 
   final static boolean logMessages = false;
 
@@ -143,7 +144,7 @@ public class Eval implements Runnable {
     return true;
   }
 
-  void clearState() {
+  void clearState(boolean tQuiet) {
     for (int i = scriptLevelMax; --i >= 0; )
       stack[i] = null;
     scriptLevel = 0;
@@ -151,15 +152,16 @@ public class Eval implements Runnable {
     errorMessage = null;
     terminationNotification = false;
     interruptExecution = false;
+    this.tQuiet = tQuiet;
   }
 
-  public boolean loadScriptString(String script) {
-    clearState();
+  public boolean loadScriptString(String script, boolean tQuiet) {
+    clearState(tQuiet);
     return loadScript(null, script);
   }
 
-  public boolean loadScriptFile(String filename) {
-    clearState();
+  public boolean loadScriptFile(String filename, boolean tQuiet) {
+    clearState(tQuiet);
     return loadScriptFileInternal(filename);
   }
 
@@ -298,8 +300,10 @@ public class Eval implements Runnable {
     timeEndExecution = System.currentTimeMillis();
     if (errorMessage == null && interruptExecution)
       errorMessage = "execution interrupted";
-    viewer.scriptStatus(errorMessage != null
-                        ? errorMessage : "Script completed");
+    if (errorMessage != null)
+      viewer.scriptStatus(errorMessage);
+    else if (! tQuiet)
+      viewer.scriptStatus("Script completed");
     clearMyThread();
     terminationNotification = true;
     viewer.popHoldRepaint();
@@ -2957,7 +2961,6 @@ public class Eval implements Runnable {
   void showString(String str) {
     System.out.println("show:" + str);
     viewer.scriptStatus(str);
-    
   }
 
   void showPdbHeader() {

@@ -1010,7 +1010,7 @@ public class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
-        viewer.evalString("load " + file.getAbsolutePath());
+        viewer.evalStringQuiet("load " + file.getAbsolutePath());
         return;
       }
     }
@@ -1341,7 +1341,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.evalString(e.getActionCommand());
+      viewer.evalStringQuiet(e.getActionCommand());
     }
   }
 }

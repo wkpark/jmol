@@ -142,7 +142,7 @@ abstract public class JmolPopup {
     public void actionPerformed(ActionEvent e) {
       String script = e.getActionCommand();
       if (script != null)
-        viewer.evalString(script);
+        viewer.evalStringQuiet(script);
     }
   }
 

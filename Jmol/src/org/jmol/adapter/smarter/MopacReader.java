@@ -142,7 +142,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       ++expectedAtomNumber;
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in coordinates");
-      String elementSymbol = parseToken(line, ichNextParse);
+      /*String elementSymbol = */parseToken(line, ichNextParse);
 
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
       atom.x = parseFloat(line, ichNextParse);

@@ -197,10 +197,10 @@ class CmlReader extends AtomSetCollectionReader {
           String attLocalName = atts.getLocalName(i);
           String attValue = atts.getValue(i);
           if ("title".equals(attLocalName)) {
-            collectionName = atts.getValue(i);
+            collectionName = attValue;
           } else if ("id".equals(attLocalName)) {
             if (collectionName != null) {
-              collectionName = atts.getValue(i);
+              collectionName = attValue;
             } // else: don't overwrite title!
           }
         }

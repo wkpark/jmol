@@ -37,21 +37,43 @@ abstract class Monomer extends Group {
 
   final byte[] offsets;
 
-  Monomer(Chain chain, String group3,
-          int sequenceNumber, char insertionCode,
+  Monomer(Chain chain, String group3, int seqcode,
           int firstAtomIndex, int lastAtomIndex,
-          int interestingOffsetCount) {
-    super(chain, group3, sequenceNumber, insertionCode,
-          firstAtomIndex, lastAtomIndex);
-    offsets = new byte[interestingOffsetCount];
-    for (int i = interestingOffsetCount; --i >= 0; )
-      offsets[i] = -1;
+          byte[] interestingAtomOffsets) {
+    super(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+    offsets = interestingAtomOffsets;
   }
 
   void setPolymer(Polymer polymer) {
     this.polymer = polymer;
   }
 
+  ////////////////////////////////////////////////////////////////
+
+  static byte[] scanForOffsets(int firstAtomIndex,
+                               int[] specialAtomIndexes,
+                               byte[] interestingAtomIDs,
+                               boolean[] required) {
+    int interestingCount = interestingAtomIDs.length;
+    byte[] offsets = new byte[interestingCount];
+    for (int i = interestingCount; --i >= 0; ) {
+      int atomID = interestingAtomIDs[i];
+      int atomIndex = specialAtomIndexes[atomID];
+      if (required[i] && atomIndex < 0)
+        return null;
+      int offset;
+      if (atomIndex < 0)
+        offset = 255;
+      else {
+        offset = atomIndex - firstAtomIndex;
+        if (offset < 0 || offset > 254)
+          throw new NullPointerException();
+      }
+      offsets[i] = (byte)offset;
+    }
+    return offsets;
+  }
+                        
   ////////////////////////////////////////////////////////////////
 
   boolean isAminoMonomer() { return false; }

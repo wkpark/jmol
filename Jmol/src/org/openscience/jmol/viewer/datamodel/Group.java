@@ -38,10 +38,10 @@ public class Group {
   int lastAtomIndex;
 
 
-  Group(Chain chain, String group3, int sequenceNumber, char insertionCode,
+  Group(Chain chain, String group3, int seqcode,
         int firstAtomIndex, int lastAtomIndex) {
     this.chain = chain;
-    this.seqcode = getSeqcode(sequenceNumber, insertionCode);
+    this.seqcode = seqcode;
     if (group3 == null)
       group3 = "";
     this.groupID = getGroupID(group3);

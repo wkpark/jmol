@@ -30,106 +30,58 @@ import javax.vecmath.Point3f;
 
 public class AminoMonomer extends AlphaMonomer {
 
+  final static byte[] interestingAminoAtomIDs = {
+    JmolConstants.ATOMID_ALPHA_CARBON,
+    JmolConstants.ATOMID_CARBONYL_OXYGEN,
+    JmolConstants.ATOMID_AMINO_NITROGEN,
+    JmolConstants.ATOMID_CARBONYL_CARBON,
+    JmolConstants.ATOMID_TERMINATING_OXT,
+  };
+
+  final static boolean[] requiredAminoAtomIDs = {
+    true,
+    true,
+    true,
+    true,
+    false,
+  };
+
   static Monomer
-    validateAndAllocate(Chain chain, String group3,
-                        int sequenceNumber, char insertionCode,
-                        int distinguishingBits, Atom[] atoms,
-                        int firstAtomIndex, int lastAtomIndex) {
-    int aminoNitrogenIndex = -1;
-    int alphaCarbonIndex = -1;
-    int carbonylCarbonIndex = -1;
-    int carbonylOxygenIndex = -1;
-    int terminatingOxtIndex = -1;
-
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i) {
-      Atom atom = atoms[i];
-      switch (atoms[i].specialAtomID) {
-      case JmolConstants.ATOMID_AMINO_NITROGEN:
-        if (aminoNitrogenIndex < 0) {
-          aminoNitrogenIndex = i;
-          continue;
-        }
-        break;
-      case JmolConstants.ATOMID_ALPHA_CARBON:
-        if (alphaCarbonIndex < 0) {
-          alphaCarbonIndex = i;
-          continue;
-        }
-        break;
-      case JmolConstants.ATOMID_CARBONYL_CARBON:
-        if (carbonylCarbonIndex < 0) {
-          carbonylCarbonIndex = i;
-          continue;
-        }
-        break;
-      case JmolConstants.ATOMID_CARBONYL_OXYGEN:
-        if (carbonylOxygenIndex < 0) {
-          carbonylOxygenIndex = i;
-          continue;
-        }
-        break;
-      case JmolConstants.ATOMID_TERMINATING_OXT:
-        if (terminatingOxtIndex < 0) {
-          terminatingOxtIndex = i;
-          continue;
-        }
-        break;
-      default:
-        continue;
-      }
-      atoms[i].specialAtomID = 0; // reset all imposters
-    }
-
-    // don't worry about the binary | operator
-    // this is just testing if anybody is less than 0
-    if ((aminoNitrogenIndex | alphaCarbonIndex |
-         carbonylCarbonIndex | carbonylOxygenIndex) < 0)
-      throw new NullPointerException();
-
+    validateAndAllocate(Chain chain, String group3, int seqcode,
+                        int firstAtomIndex, int lastAtomIndex,
+                        int[] specialAtomIndexes) {
+    byte[] offsets = scanForOffsets(firstAtomIndex, specialAtomIndexes,
+                                    interestingAminoAtomIDs,
+                                    requiredAminoAtomIDs);
+    if (offsets == null)
+      return null;
     AminoMonomer aminoMonomer =
-      new AminoMonomer(chain, group3, sequenceNumber, insertionCode,
-                       firstAtomIndex, lastAtomIndex,
-                       aminoNitrogenIndex, alphaCarbonIndex,
-                       carbonylCarbonIndex, carbonylOxygenIndex,
-                       terminatingOxtIndex);
+      new AminoMonomer(chain, group3, seqcode,
+                       firstAtomIndex, lastAtomIndex, offsets);
     return aminoMonomer;
   }
   
-  
-  AminoMonomer(Chain chain, String group3,
-               int sequenceNumber, char insertionCode,
-               int firstAtomIndex, int lastAtomIndex,
-               int aminoNitrogenIndex, int alphaCarbonIndex,
-               int carbonylCarbonIndex, int carbonylOxygenIndex,
-               int terminatingOxtIndex) {
-    super(chain, group3, sequenceNumber, insertionCode,
-          firstAtomIndex, lastAtomIndex);
-    offsets[0] = (byte)(alphaCarbonIndex - firstAtomIndex);
-    offsets[1] = (byte)(carbonylOxygenIndex - firstAtomIndex);
+  ////////////////////////////////////////////////////////////////
 
-    this.aminoNitrogenOffset = (byte)(aminoNitrogenIndex - firstAtomIndex);
-    this.carbonylCarbonOffset = (byte)(carbonylCarbonIndex - firstAtomIndex);
-    this.terminatingOxtOffset =
-      (byte)(terminatingOxtIndex < 0
-             ? -1 : terminatingOxtIndex - firstAtomIndex);
+  AminoMonomer(Chain chain, String group3, int seqcode,
+               int firstAtomIndex, int lastAtomIndex,
+               byte[] offsets) {
+    super(chain, group3, seqcode,
+          firstAtomIndex, lastAtomIndex, offsets);
   }
 
-  byte aminoNitrogenOffset;
-  byte carbonylCarbonOffset;
-  byte terminatingOxtOffset;
-  
   boolean isAminoMonomer() { return true; }
 
   Atom getNitrogenAtom() {
-    return getAtomFromOffset(aminoNitrogenOffset);
+    return getAtomFromOffsetIndex(2);
   }
 
   Point3f getNitrogenAtomPoint() {
-    return getAtomPointFromOffset(aminoNitrogenOffset);
+    return getAtomPointFromOffsetIndex(2);
   }
 
   Point3f getCarbonylCarbonAtomPoint() {
-    return getAtomPointFromOffset(carbonylCarbonOffset);
+    return getAtomPointFromOffsetIndex(3);
   }
 
   Atom getCarbonylOxygenAtom() {

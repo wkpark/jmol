@@ -1644,26 +1644,28 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
 
-  public final static int ATOMID_DEFINING_PROTEIN_MAX = 5;
-  public final static int ATOMID_DEFINING_NUCLEIC_MAX = 16;
+  public final static int ATOMID_MAX = specialAtomNames.length;
 
-  public final static int ATOMID_AMINO_NITROGEN = 1;
-  public final static int ATOMID_ALPHA_CARBON = 2;
-  public final static int ATOMID_CARBONYL_CARBON = 3;
-  public final static int ATOMID_CARBONYL_OXYGEN = 4;
-  public final static int ATOMID_NUCLEIC_PHOSPHORUS = 5;
-  public final static int ATOMID_TERMINATING_OXT = 32;
-  public final static int ATOMID_RNA_O2PRIME = 50;
-  public final static int ATOMID_N1 = 64;
-  public final static int ATOMID_N3 = 66;
-  public final static int ATOMID_O2 = 70;
-  public final static int ATOMID_O4 = 74;
-  public final static int ATOMID_O6 = 75;
-  public final static int ATOMID_N4 = 76;
-  public final static int ATOMID_N6 = 78;
-  public final static int ATOMID_N2 = 79;
+  public final static byte ATOMID_DEFINING_PROTEIN_MAX = 5;
+  public final static byte ATOMID_DEFINING_NUCLEIC_MAX = 16;
+
+  public final static byte ATOMID_AMINO_NITROGEN = 1;
+  public final static byte ATOMID_ALPHA_CARBON = 2;
+  public final static byte ATOMID_CARBONYL_CARBON = 3;
+  public final static byte ATOMID_CARBONYL_OXYGEN = 4;
+  public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 5;
+  public final static byte ATOMID_TERMINATING_OXT = 32;
+  public final static byte ATOMID_RNA_O2PRIME = 50;
+  public final static byte ATOMID_N1 = 64;
+  public final static byte ATOMID_N3 = 66;
+  public final static byte ATOMID_O2 = 70;
+  public final static byte ATOMID_O4 = 74;
+  public final static byte ATOMID_O6 = 75;
+  public final static byte ATOMID_N4 = 76;
+  public final static byte ATOMID_N6 = 78;
+  public final static byte ATOMID_N2 = 79;
   // this is currently defined as C6
-  public final static int ATOMID_NUCLEIC_WING = 69;
+  public final static byte ATOMID_NUCLEIC_WING = 69;
 
   // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
   public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;

@@ -28,27 +28,26 @@ import org.openscience.jmol.viewer.*;
 
 public class AlphaMonomer extends Monomer {
 
+  final static byte[] alphaOffsets = { 0 };
+
   static Monomer
-    validateAndAllocate(Chain chain, String group3,
-                        int sequenceNumber, char insertionCode,
-                        int distinguishingBits, Atom[] atoms,
-                        int firstAtomIndex, int lastAtomIndex) {
-    if (firstAtomIndex != lastAtomIndex)
+    validateAndAllocate(Chain chain, String group3, int seqcode,
+                        int firstIndex, int lastIndex,
+                        int[] specialAtomIndexes) {
+    if (firstIndex != lastIndex ||
+        specialAtomIndexes[JmolConstants.ATOMID_ALPHA_CARBON] != firstIndex)
       return null;
-    if (atoms[firstAtomIndex].specialAtomID !=
-        JmolConstants.ATOMID_ALPHA_CARBON) // better not happen
-      throw new NullPointerException();
-    return new AlphaMonomer(chain, group3, sequenceNumber, insertionCode,
-                            firstAtomIndex, lastAtomIndex);
+    return new AlphaMonomer(chain, group3, seqcode,
+                            firstIndex, lastIndex, alphaOffsets);
   }
   
-  
-  AlphaMonomer(Chain chain, String group3,
-               int sequenceNumber, char insertionCode,
-               int firstAtomIndex, int lastAtomIndex) {
-    super(chain, group3, sequenceNumber, insertionCode,
-          firstAtomIndex, lastAtomIndex, 2);
-    offsets[0] = 0;
+  ////////////////////////////////////////////////////////////////
+
+  AlphaMonomer(Chain chain, String group3, int seqcode,
+               int firstAtomIndex, int lastAtomIndex,
+               byte[] offsets) {
+    super(chain, group3, seqcode,
+          firstAtomIndex, lastAtomIndex, offsets);
   }
 
   boolean isAlphaMonomer() { return true; }

@@ -2,9 +2,13 @@
   <head>
     <title>jmol applet atoms demo</title>
     <script src="../jmol/Jmol.js"></script>
-    <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
+    <script>
+      jmolInitialize("../jmol",
+                     "../../browsercheck/unsupportedBrowser.html",
+                     "../../browsercheck/noJava.html");
+    </script>
     <table border="1">
       <tr>
 	<td>
@@ -13,7 +17,7 @@
 	    jmolApplet(400, "caffeine.xyz.gz");
 	  </script>
 	</td>
-	
+
 	<td>
 	  <form>
 	    <p>
@@ -25,9 +29,9 @@
 	    
 	    <script>
 	      jmolRadio("spacefill on",
-	                "spacefill on <i>or</i> cpk on <i>or</i> spacefill 100%<br />");
+	      "spacefill on <i>or</i> cpk on <i>or</i> spacefill 100%<br />");
 	      jmolRadio("spacefill off",
-	                "spacefill off <i>or</i> cpk off <i>or</i> spacefill 0 <i>or</i> spacefill 0%");
+	      "spacefill off <i>or</i> cpk off <i>or</i> spacefill 0 <i>or</i> spacefill 0%");
 	    </script>
 	    
 	    <p>

@@ -2,9 +2,13 @@
   <head>
     <title>jmol applet vibrations demo</title>
     <script src="../jmol/Jmol.js"></script>
-    <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
+    <script>
+      jmolInitialize("../jmol",
+                     "../../browsercheck/unsupportedBrowser.html",
+                     "../../browsercheck/noJava.html");
+    </script>
     <form>
       <table border="1">
 	<tr>

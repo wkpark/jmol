@@ -2,14 +2,15 @@
   <head>
     <title>UI Controls example</title>
     <script src="../jmol/Jmol.js"></script> <!-- REQUIRED -->
-    <script>
-      jmolSetCodebase("../jmol"); // REQUIRED
-      jmolSetAppletColor("skyblue"); // if you don't want black
-    </script>
   </head>
   <body>
-    <form> <!-- Netscape 4 requires that INPUT tags be enclosed in FORM tags -->
+    <form> <!-- form tags should always be used around UI controls -->
       <script>
+        jmolInitialize("../jmol",
+                       "../../browsercheck/unsupportedBrowser.html",
+                       "../../browsercheck/noJava.html");
+        jmolSetAppletColor("skyblue"); // if you don't want black
+
 	// 200x200 & file from another directory
 	jmolApplet(200, "../jssample0/caffeine.xyz");
 	jmolBr();

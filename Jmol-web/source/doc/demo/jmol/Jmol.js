@@ -31,13 +31,19 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 // Basic Scripting infrastruture
 ////////////////////////////////////////////////////////////////
 
-function jmolSetCodebase(codebase) {
-  _jmol.codebase = codebase ? codebase : ".";
-  if (_jmol.debugAlert)
-    alert("jmolCodebase=" + _jmol.codebase);
+function jmolInitialize(codebaseDirectory, unsupportedBrowserURL, noJavaURL) {
+  if (! codebase) {
+    alert("codebaseDirectory is a required parameter to jmolInitialize");
+    codebaseDirectory = ".";
+  }
+  jmolSetCodebase(codebaseDirectory);
+  jmolCheckBrowser(unsupportedBrowserURL) && jmolCheckJava(noJavaURL);
+  jmolOnloadResetForms();
+  _jmol.initialized = true;
 }
 
 function jmolSetAppletColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
+  _jmolInitCheck();
   _jmol.bgcolor = bgcolor;
   _jmol.boxbgcolor = boxbgcolor ? boxbgcolor : bgcolor;
   if (boxfgcolor)
@@ -53,23 +59,8 @@ function jmolSetAppletColor(bgcolor, boxfgcolor, progresscolor, boxbgcolor) {
           " progresscolor=" + _jmol.progresscolor);
 }
 
-function jmolIsNetscape47() {
-  return navigator.appName == "Netscape" && parseFloat(navigator.appVersion) >= 4.7;
-}
-
-function jmolBrowserCheck(level, nonCompliantUrl) {
-  alert("insidejmolBrowserCheck");
-  if (document.getElementById)
-    return;
-  if (jmolIsNetscape47())
-    return;
-  if (nonCompliantUrl)
-    document.location = nonCompliantUrl;
-  else
-    alert("your browser is not compliant");
-}
-
 function jmolApplet(size, modelFilename, script, nameSuffix) {
+  _jmolInitCheck();
   _jmolApplet(size, modelFilename, null, script, nameSuffix);
 }
 
@@ -77,11 +68,16 @@ function jmolApplet(size, modelFilename, script, nameSuffix) {
 // Basic controls
 ////////////////////////////////////////////////////////////////
 
-function jmolButton(script, label) {
+function jmolButton(script, label, id) {
+  _jmolInitCheck();
   var scriptIndex = _jmolAddScript(script);
   if (label == undefined || label == null)
     label = script.substring(0, 32);
-  var t = "<input type='button' value='" + label +
+  if (id == undefined || id == null)
+    id = "jmolButton" + _jmol.buttonCount;
+  ++_jmol.buttonCount;
+  var t = "<input type='button' name='" + id + "' id='" + id +
+          "' value='" + label +
           "' onClick='_jmolClick(" + scriptIndex + _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
@@ -92,7 +88,11 @@ function jmolButton(script, label) {
 }
 
 function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
-                      labelHtml, isChecked) {
+                      labelHtml, isChecked, id) {
+  _jmolInitCheck();
+  if (id == undefined || id == null)
+    id = "jmolCheckbox" + _jmol.checkboxCount;
+  ++_jmol.checkboxCount;
   if (scriptWhenChecked == undefined || scriptWhenChecked == null ||
       scriptWhenUnchecked == undefined || scriptWhenUnchecked == null) {
     alert("jmolCheckbox requires two scripts");
@@ -104,7 +104,8 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   }
   var indexChecked = _jmolAddScript(scriptWhenChecked);
   var indexUnchecked = _jmolAddScript(scriptWhenUnchecked);
-  var t = "<input type='checkbox' onClick='_jmolCbClick(this," +
+  var t = "<input type='checkbox' name='" + id + "' id='" + id +
+          "' onClick='_jmolCbClick(this," +
           indexChecked + "," + indexUnchecked + _jmol.targetText +
           ")' onMouseover='_jmolCbOver(this," + indexChecked + "," +
           indexUnchecked +
@@ -116,7 +117,8 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   document.write(t);
 }
 
-function jmolRadioGroup(arrayOfRadioButtons, separatorHtml) {
+function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName) {
+  _jmolInitCheck();
   var type = typeof arrayOfRadioButtons;
   if (type != "object" || type == null || ! arrayOfRadioButtons.length) {
     alert("invalid arrayOfRadioButtons");
@@ -124,16 +126,16 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml) {
   }
   if (separatorHtml == undefined || separatorHtml == null)
     separatorHtml = "&nbsp; ";
-  jmolStartNewRadioGroup();
   var length = arrayOfRadioButtons.length;
   var t = "";
+  jmolStartNewRadioGroup();
   for (var i = 0; i < length; ++i) {
     var radio = arrayOfRadioButtons[i];
     type = typeof radio;
     if (type == "object") {
-      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml);
+      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml, groupName);
     } else {
-      t += _jmolRadio(radio, null, null, separatorHtml);
+      t += _jmolRadio(radio, null, null, separatorHtml, groupName);
     }
   }
   if (_jmol.debugAlert)
@@ -141,9 +143,14 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml) {
   document.write(t);
 }
 
-function jmolLink(script, text) {
+function jmolLink(script, text, id) {
+  _jmolInitCheck();
+  if (id == undefined || id == null)
+    id = "jmolLink" + _jmol.linkCount;
+  ++_jmol.linkCount;
   var scriptIndex = _jmolAddScript(script);
-  var t = "<a href='javascript:_jmolClick(" + scriptIndex +
+  var t = "<a name='" + id + "' id='" + id + 
+          "' href='javascript:_jmolClick(" + scriptIndex +
           _jmol.targetText +
           ")' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true' onMouseout='_jmolMouseOut()' " +
@@ -153,16 +160,20 @@ function jmolLink(script, text) {
   document.write(t);
 }
 
-function jmolMenu(arrayOfMenuItems, size) {
+function jmolMenu(arrayOfMenuItems, size, id) {
+  _jmolInitCheck();
+  if (id == undefined || id == null)
+    id = "jmolMenu" + _jmol.menuCount;
+  ++_jmol.menuCount;
   var type = typeof arrayOfMenuItems;
-  if (type == "object" && type != null && arrayOfMenuItems.length) {
+  if (type != null && type == "object" && arrayOfMenuItems.length) {
     var length = arrayOfMenuItems.length;
     if (typeof size != "number" || size == 1)
       size = null;
     else if (size < 0)
       size = length;
     var sizeText = size ? " size='" + size + "' " : "";
-    var t = "<select name='" + _jmol.menuGroupCount++ +
+    var t = "<select name='" + id + "' id='" + id +
             "' onChange='_jmolMenuSelected(this" +
             _jmol.targetText + ")'" +
             sizeText + _jmol.menuCssText + ">";
@@ -242,53 +253,119 @@ function jmolStartNewRadioGroup() {
   ++_jmol.radioGroupCount;
 }
 
-function jmolRadio(script, labelHtml, isChecked, separatorHtml) {
-  var t = _jmolRadio(script, labelHtml, isChecked, separatorHtml);
+function jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName) {
+  _jmolInitCheck();
+  if (_jmol.radioGroupCount == 0)
+    ++_jmol.radioGroupCount;
+  var t = _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName);
   if (_jmol.debugAlert)
     alert(t);
   document.write(t);
 }
 
+function jmolInitializeBypass() {
+  _jmol.initialized = true;
+}
+
+function jmolSetCodebase(codebase) {
+  _jmol.codebase = codebase ? codebase : ".";
+  if (_jmol.debugAlert)
+    alert("jmolCodebase=" + _jmol.codebase);
+}
+
+function jmolCheckBrowser(unsupportedBrowserURL) {
+  if (_jmol.isBrowserCompliant)
+    return true;
+  if (unsupportedBrowserURL)
+    location.href = unsupportedBrowserURL;
+  else {
+    alert("Your web browser is not fully compatible with Jmol\n\n" +
+          "brower: " + _jmol.browser +
+          "   version: " + _jmol.browserVersion +
+          "   os: " + _jmol.os +
+          "\n\n" + _jmol.ua);
+  }
+  return false;
+}
+
+function jmolCheckJava(noJavaURL) {
+  if (_jmol.isJavaCompliant)
+    return true;
+  if (noJavaURL)
+    location.href = noJavaURL;
+  else {
+    alert("it seems that Java is not installed or is disabled");
+  }
+  return false;
+}
+
+function jmolOnloadResetForms() {
+  _jmol.previousOnloadHandler = window.onload;
+  window.onload =
+  function() {
+//    alert("onloadResetForms");
+    with (_jmol) {
+      if (buttonCount+checkboxCount+menuCount+radioCount+radioGroupCount > 0) {
+        var forms = document.forms;
+        if (!forms || forms.length == 0) {
+          alert("<form> tags seem to be missing\n" +
+                "Jmol/HTML input controls must be contained " +
+                "within form tags"
+//                + "\n\n" + forms + " forms.length=" + forms.length +
+//                " typeof=" + (typeof forms)
+                );
+        } else {
+          for (var i = forms.length; --i >= 0; )
+            forms[i].reset();
+        }
+      }
+      if (previousOnloadHandler)
+        previousOnloadHandler();
+    }
+  }
+}
+
 ////////////////////////////////////////////////////////////////
 // Cascading Style Sheet Class support
 ////////////////////////////////////////////////////////////////
+
 function jmolSetAppletCssClass(appletCssClass) {
-  if (_jmol.isDOM) {
+  if (_jmol.hasGetElementById) {
     _jmol.appletCssClass = appletCssClass;
     _jmol.appletCssText = appletCssClass ? "class='" + appletCssClass + "' " : "";
   }
 }
 
 function jmolSetButtonCssClass(buttonCssClass) {
-  if (_jmol.isDOM) {
+  if (_jmol.hasGetElementById) {
     _jmol.buttonCssClass = buttonCssClass;
     _jmol.buttonCssText = buttonCssClass ? "class='" + buttonCssClass + "' " : "";
   }
 }
 
 function jmolSetCheckboxCssClass(checkboxCssClass) {
-  if (_jmol.isDOM) {
+  if (_jmol.hasGetElementById) {
     _jmol.checkboxCssClass = checkboxCssClass;
     _jmol.checkboxCssText = checkboxCssClass ? "class='" + checkboxCssClass + "' " : "";
   }
 }
 
 function jmolSetRadioCssClass(radioCssClass) {
-  if (_jmol.isDOM) {
+  if (_jmol.hasGetElementById) {
     _jmol.radioCssClass = radioCssClass;
     _jmol.radioCssText = radioCssClass ? "class='" + radioCssClass + "' " : "";
   }
 }
 
 function jmolSetLinkCssClass(linkCssClass) {
-  if (_jmol.isDOM) {
+  if (_jmol.hasGetElementById) {
     _jmol.linkCssClass = linkCssClass;
     _jmol.linkCssText = linkCssClass ? "class='" + linkCssClass + "' " : "";
   }
 }
 
 function jmolSetMenuCssClass(menuCssClass) {
-  if (_jmol.isDOM) {
+  if (_jmol.hasGetElementById) {
     _jmol.menuCssClass = menuCssClass;
     _jmol.menuCssText = menuCssClass ? "class='" + menuCssClass + "' " : "";
   }
@@ -313,8 +390,12 @@ modelbase: ".",
 
 appletCount: 0,
 
+buttonCount: 0,
+checkboxCount: 0,
+linkCount: 0,
+menuCount: 0,
+radioCount: 0,
 radioGroupCount: 0,
-menuGroupCount: 0,
 
 appletCssClass: null,
 appletCssText: "",
@@ -336,51 +417,87 @@ scripts: [""],
 ua: navigator.userAgent.toLowerCase(),
 uaVersion: parseFloat(navigator.appVersion),
 
-isWin: false,
-isMac: false,
-isLinux: false,
-isUnix: false,
+os: "unknown",
+browser: "unknown",
+browserVersion: 0,
+hasGetElementById: !!document.getElementById,
+isJavaEnabled: navigator.javaEnabled(),
+isNetscape47Win: false,
 
-isNS47: false,
-safariIndex: false,
-isSafari12up: false,
-isDOM: !!document.getElementById,
+isBrowserCompliant: false,
+isJavaCompliant: false,
+isFullyCompliant: false,
 
-validJvm: false
+initialized: false,
+initChecked: false,
 
+previousOnloadHandler: null
 }
 
 with (_jmol) {
-// system information
-  isWin = ua.indexOf("win") != -1;
-  isMac = ua.indexOf("mac") != -1;
-  isLinux = ua.indexOf("linux") != -1;
-  isUnix = ua.indexOf("unix") != -1 ||
-           ua.indexOf("sunos") != -1 ||
-           ua.indexOf("bsd") != -1 ||
-           ua.indexOf("x11") != -1;
+  function _jmolTestUA(candidate) {
+    var ua = _jmol.ua;
+    var index = ua.indexOf(candidate);
+    if (index < 0)
+      return false;
+    _jmol.browser = candidate;
+    _jmol.browserVersion = parseFloat(ua.substring(index + candidate.length+1));
+    return true;
+  }
+  
+  function _jmolTestOS(candidate) {
+    if (_jmol.ua.indexOf(candidate) < 0)
+      return false;
+    _jmol.os = candidate;
+    return true;
+  }
+  
+  _jmolTestUA("konqueror") ||
+  _jmolTestUA("safari") ||
+  _jmolTestUA("omniweb") ||
+  _jmolTestUA("opera") ||
+  _jmolTestUA("webtv") ||
+  _jmolTestUA("icab") ||
+  _jmolTestUA("msie") ||
+  (_jmol.ua.indexOf("compatible") < 0 && _jmolTestUA("mozilla"));
+  
+  _jmolTestOS("linux") ||
+  _jmolTestOS("unix") ||
+  _jmolTestOS("mac") ||
+  _jmolTestOS("win");
 
-  isNS47 = navigator.appName == "Netscape" && uaVersion >= 4.7;
-  var safariIndex = ua.indexOf("safari/");
-  isSafari12up = safariIndex != -1 && parseFloat(ua.substring(safariIndex + 7)) >= 1.2;
+  isNetscape47Win = (os == "win" && browser == "mozilla" &&
+                     browserVersion >= 4.78 && browserVersion <= 4.8);
 
-  if (navigator.javaEnabled()) {
-    var plugins = navigator.plugins;
-    if (plugins) {
-      if (plugins.length == 0) {
-        // must be IE
-//        alert("you are IE");
-      } else {
-//        alert("plugins.length=" + plugins.length);
-        for (var i = 0; i < plugins.length; ++i) {
-          var plugin = plugins[i];
-//          alert(" name=" + plugin.name +
-//                " desc=" + plugin.description);
-        }
+  if (os != "mac") {
+    isBrowserCompliant = hasGetElementById || isNetscape47Win;
+  } else {
+    if (browser == "mozilla" && browserVersion >= 5) {
+      // miguel 2004 11 17
+      // checking the plugins array does not work because
+      // Netscape 7.2 OS X still has Java 1.3.1 listed even though
+      // javaplugin.sf.net is installed to upgrade to 1.4.2
+      try {
+        // miguel 2004 11 17
+        // Netscape 7.2 is not catching this exception
+        // so the variables isBrowserCompliant and isJavaCompliant are not set
+        // ... I suppose no harm done
+        var javaVersion = java.lang.System.getProperty("java.version");
+        isBrowserCompliant = javaVersion >= "1.4.2";
+      } catch (e) {
       }
+    } else {
+      isBrowserCompliant = hasGetElementById &&
+        !((browser == "msie") ||
+          (browser == "safari" && browserVersion < 125.1));
     }
   }
-};
+
+  // possibly more checks in the future for this
+  isJavaCompliant = isJavaEnabled;
+
+  isFullyCompliant = isBrowserCompliant && isJavaCompliant;
+}
 
 function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
   with (_jmol) {
@@ -412,7 +529,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       t += "  <param name='load' value='" +
            modelbase + "/" + modelFilename + "' />\n";
     else if (inlineModel)
-      t += "  <param name='inline' value='" + inlineModel + "' />\n";
+      t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
       t += "  <param name='script' value='" + script + "' />\n";
     t += "</applet>\n";
@@ -421,6 +538,16 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       alert(t);
     document.write(t);
   }
+}
+
+function _jmolInitCheck() {
+  if (_jmol.initChecked)
+    return;
+  _jmol.initChecked = true;
+  if (_jmol.initialized)
+    return;
+  alert("jmolInitialize({codebase}, {badBrowseURL}, {badJavaURL})\n" +
+        "  must be called before any other Jmol.js functions");
 }
 
 function _jmolConvertInline(model) {
@@ -445,7 +572,10 @@ function _jmolGetAppletSize(size) {
   return [width, height];
 }
 
-function _jmolRadio(script, labelHtml, isChecked, separatorHtml) {
+function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName) {
+  ++_jmol.radioCount;
+  if (groupName == undefined || groupName == null)
+    groupName = "jmolRadioGroup" + (_jmol.radioGroupCount - 1);
   if (!script)
     return "";
   if (labelHtml == undefined || labelHtml == null)
@@ -453,7 +583,7 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml) {
   if (! separatorHtml)
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
-  return "<input name='" + "jmolGroup" + _jmol.radioGroupCount +
+  return "<input name='" + groupName +
          "' type='radio' onClick='_jmolClick(" + scriptIndex +
          _jmol.targetText +
          ")' onMouseover='_jmolMouseOver(" + scriptIndex +
@@ -517,7 +647,7 @@ function _jmolMenuSelected(menuObject, targetSuffix) {
       }
     }
   }
-  _jmolOldBrowser();
+  alert("?Que? menu selected bug #8734");
 }
 
 function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
@@ -535,49 +665,4 @@ function _jmolMouseOver(scriptIndex) {
 function _jmolMouseOut() {
   window.status = " ";
   return true;
-}
-
-function _jmolOldBrowser() {
-  alert("Your outdated web browser does not support this operation");
-}
-
-function _testBrowserCheck() {
-  document.writeln("<pre>");
-  document.writeln("navigator.appName=" + navigator.appName);
-  document.writeln("navigator.userAgent=" + navigator.userAgent);
-  document.writeln("navigator.appVersion=" + navigator.appVersion);
-  var version = parseFloat(navigator.appVersion);
-  if (navigator.javaEnabled()) {
-    var plugins = navigator.plugins;
-    if (plugins) {
-      if (plugins.length == 0) {
-        document.writeln("you are IE");
-      } else if (navigator.appName == "Netscape" &&
-                 version >= 4.7 && version < 5.0) {
-        document.writeln("you are NS 4.7");
-      } else {
-        document.writeln("plugins.length=" + plugins.length);
-        for (var i = 0; i < plugins.length; ++i) {
-          var plugin = plugins[i];
-          var desc = plugin.description.toLowerCase();
-          document.writeln(" name=" + plugin.name +
-                " desc=" + desc);
-          var indexJava = desc.indexOf("java");
-          var indexPlugin = desc.indexOf("plug-in");
-          document.writeln(" indexJava=" + indexJava +
-                           " indexPlugin=" + indexPlugin);
-          if (indexJava >= 0 && indexPlugin >= 0) {
-	    var match = desc.match(/\d\.\d+\.\d+/);
-	    if (match) {
-              versionString = match[0];
-	      document.writeln(" FOUND JAVA " + versionString);
-            }
-          }
-        }
-      }
-    }
-  } else {
-    document.writeln("java not enabled");
-  }
-  document.writeln("</pre>");
 }

@@ -2,10 +2,14 @@
   <head>
     <title>Simple example</title>
     <script src="../jmol/Jmol.js"></script>
-    <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
-    <script>jmolApplet(200, "caffeine.xyz");</script>
+    <script>
+      jmolInitialize("../jmol",
+                     "../../browsercheck/unsupportedBrowser.html",
+                     "../../browsercheck/noJava.html");
+      jmolApplet(200, "caffeine.xyz");
+    </script>
   </body>
 </html>
 

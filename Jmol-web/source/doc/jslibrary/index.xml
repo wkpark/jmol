@@ -25,9 +25,20 @@
       </p>
       <p>
 	The Jmol.js library should work well with most web browsers
-	released this century. In addition, it generally works fine
-	with the Netscape 4.* series of browsers (from the previous
-	century). 
+	released this century. In addition, on Win32 platforms
+	it generally works fine	with the Netscape 4.* series of
+	browsers (from the previous century).
+      </p>
+      <p>
+	<i>Note that on Mac OS X, Internet Explorer is </i>not<i>
+	supported because it does not provide LiveConnect
+	communications between JavaScript and Java applets.
+	Also note that the Mozilla family of browsers (including
+	FireFox and Camino) must be configured to use Java 1.4.2
+	using </i>
+	<a href="http://javaplugin.sourceforge.net">
+	  javaplugin.sourceforge.net
+	</a>
       </p>
       <p>
 	There are a few circumstances under which you may choose
@@ -54,10 +65,12 @@
   <head>
     <title>Simple example</title>
     <script src="../jmol/Jmol.js"></script>
-    <script>jmolSetCodebase("../jmol");</script>
   </head>
   <body>
-    <script>jmolApplet(200, "caffeine.xyz");</script>
+    <script>
+      jmolInitialize("../jmol"); // REQUIRED
+      jmolApplet(200, "caffeine.xyz");
+    </script>
   </body>
 </html>
 ]]></pre>
@@ -75,14 +88,13 @@
   <head>
     <title>UI Controls example</title>
     <script src="../jmol/Jmol.js"></script> <!-- REQUIRED -->
-    <script>
-      jmolSetCodebase("../jmol"); // REQUIRED
-      jmolSetAppletColor("skyblue"); // if you don't want black
-    </script>
   </head>
   <body>
-    <form> <!-- Netscape 4 requires that INPUT tags be enclosed in FORM tags -->
+    <form> <!-- form tags must enclose button/checkbox/radio/menu controls -->
       <script>
+        jmolInitialize("../jmol"); // REQUIRED
+        jmolSetAppletColor("skyblue"); // if you don't want black
+
 	// 200x200 + file from another directory
 	jmolApplet(200, "../jssample0/caffeine.xyz");
 	jmolBr();
@@ -131,37 +143,38 @@
 	<li>
 	  Every web page within your site should refer to
 	  <code>../your-jmol-directory</code> using a relative
-	  url. You should <i>always</i> use relative paths. 
-	  Directory relative paths which start with . or .. are the best.
-	  Server relative paths which start with / are acceptable.
-	  Absolute URLs which start with http:// are a <b>bad</b> idea.
+	  url. Directory relative paths which start with . or ..
+	  should <i>always</i> be used. 
+	  Server relative paths which start with / <i>might</i> be
+	  acceptable in special circumstances.
+	  Absolute URLs which start with http:// are <b>evil</b> and
+	  should never be used.
 	</li>
 	<li>
-	  Every web page should contain the following HTML commands
-	  in the <code>head</code> section:<br />
+	  Every page must contain the
+	  following HTML command in the <code>head</code> section
+	  in order to include the Jmol.js library:<br />
 <pre><![CDATA[
   <head>
     ...
     <script src="../your-jmol-directory/Jmol.js"></script>
-    <script>jmolSetCodebase("../your-jmol-directory");</script>
     ...
   </head>
 ]]></pre>
-	  The first <code>script</code> tag includes the Jmol.js library. The second
-	  one tells the library where the JmolApplet is located. These need to be
-	  separate <code>script</code> statements because JavaScript will ignore
-	  the contents of the <code>script</code> body if the <code>src="..."</code>
-	  attribute is specified.
 	</li>
+        <li>
+	  Every page must contain a call to
+	  <code>jmolInitialize(codebaseDirectory {,...})</code>
+	  as the first call into the Jmol.js library. 
+	</li>
+
 	<li>
-	  If you want your pages to support Netscape 4 then you <i>must</i> include
-	  a <code>form</code> tag in your HTML code before making any calls to
-	  <code>jmolButton</code>, <code>jmolCheckbox</code>, etc. Otherwise,
-	  the controls will not show up in the browser. It does not have any
-	  negative impact on other browsers. (The Jmol.js library cannot automatically
-	  provide this tag because it introduces line breaks around the controls.)
-	  It is generally safe to open this tag immediately after the <code>body</code>
-	  tag and close it immediately before the <code>/body</code> tag. 
+	  Every page that contains buttons/checkboxes/radio buttons/menu
+	  controls must contain bracketing
+	  <code>&lt;form&gt;/&lt;/form&gt;</code> tags.
+	  It is generally safe to open this tag immediately
+	  after the <code>body</code> tag and close it
+	  immediately before the <code>/body</code> tag. 
 <pre><![CDATA[
   <body>
     <form>
@@ -174,31 +187,41 @@
       </ul>
     </section>
 
-    <section title="Basic Infrastructure Commands">
-      <section title="jmolSetCodebase">
-	<code>jmolSetCodebase(directory)</code>
-	Sets the location of the JmolApplet.jar file on your web server.
-	There should generally be one copy of the JmolApplet.jar file
-	on your server and all web pages should point to that one .jar
-	file. 	
+    <section title="Basic Scripting Commands">
+      <section title="jmolInitialize">
+	<code>
+	  jmolInitialize(codebaseDirectory,
+	  {unsupportedBrowserURL}, {noJavaURL})
+	</code>
+	Initializes the Jmol.js library and tests for browser compatibility.
+	<ul>
+	  <li>
+	    The call to <code>jmolInitialize()</code> must be within the
+	    <code>&lt;body&gt;</code> of the HTML page.
+	  </li>
+	  <li>
+	    The required <code>codebaseDirectory</code> parameter specifies
+	    the relative path of the directory containing the Jmol applet
+	    files.
+	  </li>
+	  <li>
+	    The optional <code>unsupportedBrowserURL</code> and
+	    <code>noJavaURL</code> parameters specify relative paths
+	    to HTML pages that should be shown to users with
+	    unsupported/noncompliant web browsers. If these URLs are
+	    not specified then those users will see an <code>alert</code>
+	    message.
+	  </li>
+	</ul>
       </section>
-      <section title="jmolSetAppletColor">
-	<code>jmolSetColor(bgcolor, {boxfgcolor}, {progresscolor}, {boxbgcolor})</code>
-	Used to set the background color of the applet. <code>bgcolor</code> is
-	specified using HTML "#RRGGBB" notation or as one of the 
-	<a href="http://www.webcolors.freeserve.co.uk/names140.htm" target="colors140">
-	  140 JavaScript color names
-	</a>.
-	<p>
-	  <i>Advanced: The text color and progress bar
-	  color for the Java Plug-in can optionally be set.</i>
-	</p>
-      </section>
+
       <section title="jmolApplet">
 	<code>jmolApplet(size, {modelFilename}, {script}, {nameSuffix})</code>
-	Allocates an JmolApplet. <code>size</code> should generally be an integer
-	pixel count in the range 100 to 800. <code>modelFilename</code> is the
-	name of a file (or a URL) on your web server. This can include a directory
+	Allocates an JmolApplet. <code>size</code> should generally be an
+	integer	pixel count in the range 100 to 800.
+	<code>modelFilename</code> is the name of a file
+	(or a relative URL to a cgi)
+	on your web server. This can include a directory
 	specification. <code>script</code> is a script that should be run
 	after the molecular model is loaded.
 	<p>
@@ -230,33 +253,45 @@
 	  </i>
 	</p>
       </section>
-    </section>
 
-    <section title="Basic Applet Controls">
       <section title="jmolButton">
-	<code>jmolButton(script, {label})</code>
+	<code>jmolButton(script, {label}, {id})</code>
 	<p>
 	  Draws a button with a text label. If <code>label</code> is
 	  not specified it defaults to the first 32 chars of the script.
 	  <code>script</code> is run when the button is pressed.
 	</p>
+	<p>
+	  <code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolButton0, jmolButton1, etc. 
+	</p>
       </section>
       <section title="jmolCheckbox">
-	<code>jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked, labelHtml, {isChecked})</code>
+	<code>
+	  jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
+	  labelHtml, {isChecked}, {id})
+	</code>
 	<p>
 	  Displays a checkbox. <code>scriptWhenChecked</code> is run when
 	  the checkbox is checked by the user. <code>scriptWhenUnchecked</code>
 	  is run when the user unchecks the checkbox. <code>labelHtml</code> is
 	  placed immediately after the checkbox. <code>isChecked</code> should
-	  be set to a non-false value if you want the default state 
+	  be set to a non-false value if you want the default state.
+	</p>
+	<p>
+	  <code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolCheckbox0, jmolCheckbox1, etc. 
 	</p>
       </section>
       <section title="jmolRadioGroup">
-	<code>jmolRadioGroup(arrayOfRadioButtons, {separatorHtml})</code>
+	<code>
+	  jmolRadioGroup(arrayOfRadioButtons, {separatorHtml}, {groupName})
+	</code>
 	<p>
 	  Used to put up a group of mutually-exclusive radio buttons.
-	  <code>arrayOfRadioButtons</code> is usually specified using the JavaScript
-	  square brackets [ entryA, entryB, ... ] notation. Each <code>entry</code>
+	  <code>arrayOfRadioButtons</code> is usually specified using
+	  the JavaScript square brackets [ entryA, entryB, ... ] notation.
+	  Each <code>entry</code>
 	  is generally another array which contains a script, a label, and an
 	  optional isChecked flag. If an <code>entry</code> is a single string
 	  instead of an array, then that string is used for both the script
@@ -269,16 +304,25 @@
 	  as the actual parameter. If <code>separatorHtml</code> is not
 	  specified it defaults to <code>"&lt;nbsp; "</code>
 	</p>
+	<p>
+	  <code>groupName</code> will be used as the common HTML name for
+	  all radio buttons in the group. It will default to jmolRadioGroup0,
+	  jmolRadioGroup1, etc. 
+	</p>
       </section>
       <section title="jmolLink">
-	<code>jmolLink(script, text)</code>
+	<code>jmolLink(script, text, {id})</code>
 	<p>
 	  <code>text</code> is written as a link. <code>script</code> is run
 	  when the user clicks on the link.
 	</p>
+	<p>
+	  <code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolLink0, jmolLink1, etc. 
+	</p>
       </section>
       <section title="jmolMenu">
-	<code>jmolMenu(arrayOfMenuItems, {menuHeight})</code>
+	<code>jmolMenu(arrayOfMenuItems, {menuHeight}, {id})</code>
 	<p>
 	  Used to display a menu of items along with associated scripts.
 	  <code>arrayOfMenuItems</code> is usually specified using the JavaScript
@@ -297,7 +341,33 @@
 	  will automatically be calculated to be the same length as the
 	  number of items, thereby eliminating any scrolling.
 	</p>
+	<p>
+	  <code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolMenu0, jmolMenu1, etc. 
+	</p>
       </section>
+    </section>
+    
+    <section title="Intermediate Scripting Commands">
+      <section title="jmolSetAppletColor">
+	<code>
+	  jmolSetColor(bgcolor,
+	               {boxfgcolor},
+	               {progresscolor},
+	               {boxbgcolor})
+	</code>
+	Used to set the background color of the applet. <code>bgcolor</code>
+	is specified using HTML "#RRGGBB" notation or as one of the 
+	<a href="http://www.webcolors.freeserve.co.uk/names140.htm"
+	   target="colors140">
+	  140 JavaScript color names
+	</a>.
+	<p>
+	  <i>Advanced: The text color and progress bar
+	  color for the Java Plug-in can optionally be set.</i>
+	</p>
+      </section>
+
       <section title="jmolHtml">
 	<code>jmolHtml(html)</code>
 	<p>
@@ -308,6 +378,7 @@
 	  <code>&lt;/script&gt;<i>html</i>&lt;script&gt;</code>
 	</p>
       </section>
+
       <section title="jmolBr">
 	<code>jmolBr()</code>
 	<p>
@@ -315,9 +386,29 @@
 	  same as <code>&lt;/script&gt;&lt;br /&gt;&lt;script&gt;</code>
 	</p>
       </section>
-    </section>
-    
-    <section title="Advanced Applet Scripting">
+      
+      <section title="jmolAppletInline">
+	<code>jmolApplet(size, inlineModel, {script}, {nameSuffix})</code>
+	<p>
+	  Creates an instance of the JmolApplet, but passes in the
+	  <i>contents</i> of the molecular model rather than
+	  a file name or URL. If you are not pulling your molecular
+	  model data from a database then you probably do not want
+	  to use this.
+	</p>
+      </section>
+
+      <section title="jmolLoadInline">
+	<code>jmolLoadInline(model, {targetSuffix})</code>
+	<p>
+	  Used in database applications where the molecular model
+	  is available as a string. This directly loads
+	  <code>model</code> into the applet. Note that this is
+	  <i>not</i> the file name ... it is the <i>contents</i> of
+	  the file.
+	</p>
+      </section>
+
       <section title="jmolScript">
 	<code>jmolScript(script, {targetSuffix})</code>
 	<p>
@@ -330,16 +421,10 @@
 	  instance.
 	</p>
       </section>
-      <section title="jmolLoadInline">
-	<code>jmolLoadInline(model, {targetSuffix})</code>
-	<p>
-	  Used in database applications where the molecular model
-	  is available as a string. This directly loads
-	  <code>model</code> into the applet. Note that this is
-	  <i>not</i> the file name ... it is the <i>contents</i> of
-	  the file.
-	</p>
-      </section>
+
+    </section>
+
+    <section title="Advanced Applet Scripting">
       <section title="jmolDebugAlert">
 	<code>jmolDebugAlert({enableAlerts})</code>
 	<p>
@@ -348,25 +433,18 @@
 	  pass in a <code>false</code> parameter to turn it off.
 	</p>
       </section>
-      <section title="jmolAppletInline">
-	<code>jmolApplet(size, inlineModel, {script}, {nameSuffix})</code>
-	<p>
-	  Creates an instance of the JmolApplet, but passes in the
-	  <i>contents</i> of the molecular model rather than
-	  a file name or URL. If you are not pulling your molecular
-	  model data from a database then you probably do not want
-	  to use this.
-	</p>
-      </section>
+
       <section title="jmolSetTarget">
 	<code>jmolSetTarget(targetSuffix)</code>
 	<p>
 	  Do not use this unless you are displaying multiple applets
 	  at the same time <i>and</i> your Jmol.js UI controls
 	  are not sequentially following their associated
-	  <code>jmolApplet</code> invocations. If you understood
-	  the previous statement then you can probably figure out what
-	  <code>jmolSetTarget</code> does. 
+	  <code>jmolApplet</code> invocations.
+	</p>
+	<p>
+	  If you understood the previous sentence then you can
+	  probably figure out what <code>jmolSetTarget</code> does. 
 	</p>
 	<p>
 	  All JmolApplets which are generated by the Jmol.js library
@@ -376,8 +454,12 @@
 	  do so with your calls to <code>jmolApplet</code>.
 	</p>
       </section>
+
       <section title="jmolRadio">
-	<code>jmolRadio(script, {labelHtml}, {isChecked}, {separatorHtml})</code>
+	<code>
+	  jmolRadio(script,
+	            {labelHtml}, {isChecked}, {separatorHtml})
+	</code>
 	<p>
 	  First, try very hard to use <code>jmolRadioGroup</code>.
 	  If your layout does not allow you to do that, then
@@ -394,6 +476,74 @@
 	  use <code>jmolRadioGroup</code>.
 	</p>
       </section>
+
+      <section title="jmolSetCodebase">
+	<code>jmolSetCodebase(directory)</code>
+	<p>
+	  This routine is called by <code>jmolInitialize()</code>.
+	  <i>Do not call this routine unless you want to explicitly
+	  avoid calling </i><code>jmolInitialize()</code><i> and you
+	  are prepared to defend your actions.</i>
+	</p>
+
+	<p>
+	  Sets the location of the JmolApplet.jar file on your web server.
+	  There should generally be one copy of the JmolApplet.jar file
+	  on your server and all web pages should point to that one .jar
+	  file.
+	</p>
+      </section>
+
+      <section title="jmolCheckBrowser">
+	<code>jmolCheckBrowser({unsupportedBrowserURL})</code>
+	<p>
+	  This routine is called by <code>jmolInitialize()</code>.
+	  <i>Do not call this routine unless you want to explicitly
+	  avoid calling </i><code>jmolInitialize()</code><i> and you
+	  are prepared to defend your actions.</i>
+	</p>
+
+	<p>
+	  Checks users web browser for compliance. If the browser is
+	  incapable of supporting Jmol then the page is redirected to
+	  <code>unsupportedBrowserURL</code>. If unspecified then
+	  an alert message is opened.
+	</p>
+      </section>
+
+      <section title="jmolCheckJava">
+	<code>jmolCheckJava({noJavaURL})</code>
+	<p>
+	  This routine is called by <code>jmolInitialize()</code>.
+	  <i>Do not call this routine unless you want to explicitly
+	  avoid calling </i><code>jmolInitialize()</code><i> and you
+	  are prepared to defend your actions.</i>
+	</p>
+
+	<p>
+	  Checks users web browser for Java capability. Assumes that
+	  <code>jmolCheckBrowser()</code> has already been called.
+	  If the browser does not have Java enabled then the
+	  page is redirected to <code>noJavaURL</code>.
+	  If unspecified then an alert message is opened.
+	</p>
+      </section>
+
+      <section title="jmolOnloadResetForms">
+	<code>jmolOnloadResetForms()</code>
+	<p>
+	  This routine is called by <code>jmolInitialize()</code>.
+	  <i>Do not call this routine unless you want to explicitly
+	  avoid calling </i><code>jmolInitialize()</code><i> and you
+	  are prepared to defend your actions.</i>
+	</p>
+	<p>
+	  Hooks the <code>window.onload</code> event so that
+	  forms will be reset when the user hits the reload/refresh
+	  button. 
+	</p>
+      </section>
+
     </section>
     
     <section title="Cascading Style Sheet support">

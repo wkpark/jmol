@@ -212,10 +212,10 @@ public class SimpleModelAdapter extends JmolModelAdapter {
     public float getX() { return atom.x; }
     public float getY() { return atom.y; }
     public float getZ() { return atom.z; }
-    public boolean hasVector() { return atom.vectorX != Float.NaN; };
     public float getVectorX() { return atom.vectorX; }
     public float getVectorY() { return atom.vectorY; }
     public float getVectorZ() { return atom.vectorZ; }
+    public float getBfactor() { return atom.bfactor; }
     public String getPdbAtomRecord() { return atom.pdbAtomRecord; }
   }
 
@@ -256,6 +256,7 @@ class Atom {
   int atomicCharge;
   float x, y, z;
   float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
+  float bfactor = Float.NaN;
   String pdbAtomRecord;
 
   Atom(int modelNumber, String symbol, int charge,
@@ -280,10 +281,11 @@ class Atom {
     this.z = z;
   }
 
-  Atom(int modelNumber, String symbol, int charge,
+  Atom(int modelNumber, String symbol, int charge, float bfactor,
        float x, float y, float z, String pdb) {
     this.elementSymbol = symbol;
     this.atomicCharge = charge;
+    this.bfactor = bfactor;
     this.x = x;
     this.y = y;
     this.z = z;
@@ -624,6 +626,18 @@ class PdbModel extends Model {
             charge = -charge;
         }
       }
+
+      /****************************************************************
+       * read the bfactor from cols 61-66 (1-based)
+       * 2+, 3-, etc
+       ****************************************************************/
+      float bfactor = Float.NaN;
+      if (len >= 66) {
+        String bfField = line.substring(60,66).trim();
+        if (bfField.length() > 0)
+          bfactor = Float.valueOf(bfField).floatValue();
+      }
+      
       /****************************************************************/
       int serial = Integer.parseInt(line.substring(6, 11).trim());
       /****************************************************************
@@ -642,7 +656,7 @@ class PdbModel extends Model {
         serialMap = t;
       }
       addAtom(new Atom(currentModelNumber, elementSymbol,
-                       charge, x, y, z, line));
+                       charge, bfactor, x, y, z, line));
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

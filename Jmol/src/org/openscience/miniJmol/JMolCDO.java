@@ -9,6 +9,7 @@ package org.openscience.miniJmol;
 
 import org.openscience.cdopi.*;
 import java.util.Vector;
+import org.openscience.jmol.FortranFormat;
 
 public final class JMolCDO implements CDOInterface {
     
@@ -37,18 +38,15 @@ public final class JMolCDO implements CDOInterface {
     public void endAnimation() {}
     
     public void startFrame() {
-        System.out.println("startFrame");
         frameNo++;
         currentFrame = new ChemFrame();
     }
 
     public void endFrame() {
-        System.out.println("endFrame");
         allFrames.addElement(currentFrame);
     }
 
     public void setFrameProperty(String type, String value) {
-        System.out.println("setFrameProperty: " + type + "=" + value);
         if (type.equals("title")) currentFrame.setInfo(value);
     }
 
@@ -59,7 +57,6 @@ public final class JMolCDO implements CDOInterface {
     public void endFragment() {}
  
     public void startAtom() {
-        System.out.println("startAtom");
         atom_type = "";
         atom_x = "";
         atom_y = "";
@@ -67,20 +64,17 @@ public final class JMolCDO implements CDOInterface {
     }
     
     public void endAtom() {
-        System.out.println("endAtom: " + atom_type + " " + atom_x + " " +
-                           atom_y + " " + atom_z);
         double x = FortranFormat.atof(atom_x.trim());
         double y = FortranFormat.atof(atom_y.trim());
         double z = FortranFormat.atof(atom_z.trim());
         try {
-            currentFrame.addVert(atom_type.trim(), (float) x, (float) y, (float) z);
+            currentFrame.addAtom(atom_type.trim(), (float) x, (float) y, (float) z);
         } catch (Exception e) {
             System.out.println("JMolCDO error while adding atom: " + e);
         }
     }
 
     public void setAtomProperty(String type, String value) {
-        System.out.println("setAtomProp: " + type + "=" + value);
         if (type.equals("type")) atom_type = value;
         if (type.equals("x3")) atom_x = value;
         if (type.equals("y3")) atom_y = value;

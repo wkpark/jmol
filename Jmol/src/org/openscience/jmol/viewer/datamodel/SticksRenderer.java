@@ -97,17 +97,23 @@ class SticksRenderer extends ShapeRenderer {
       return;
     int order = bond.order;
     Atom atomA = bond.atom1;
+    short colixAtomA = atomA.colixAtom;
     atomA.chargeAndFlags |= Atom.VISIBLE_FLAG;
     Atom atomB = bond.atom2;
+    short colixAtomB = atomB.colixAtom;
     atomB.chargeAndFlags |= Atom.VISIBLE_FLAG;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
         // then render the backbone version
+        /*
+          mth 2004 04 26
+          No, we are not going to do this any more
         render(bond, atomA, atomB);
+        */
         atomA = getBackboneAtom(atomA);
         atomB = getBackboneAtom(atomB);
-      } else if (hbondsBackbone && (order & JmolConstants.BOND_HYDROGEN) != 0) {
+      } else if (hbondsBackbone && (order & JmolConstants.BOND_HYDROGEN)!=0) {
         atomA = getBackboneAtom(atomA);
         atomB = getBackboneAtom(atomB);
       }
@@ -115,10 +121,11 @@ class SticksRenderer extends ShapeRenderer {
     if (!showHydrogens && (atomA.elementNumber == 1 ||
                            atomB.elementNumber == 1))
       return;
-    render(bond, atomA, atomB);
+    render(bond, colixAtomA, atomA, colixAtomB, atomB);
   }
 
-  void render(Bond bond, Atom atomA, Atom atomB) {
+  void render(Bond bond,
+              short colixAtomA, Atom atomA, short colixAtomB, Atom atomB) {
     this.atomA = atomA;
     long xyzd = atomA.xyzd;
     xA = Xyzd.getX(xyzd); yA = Xyzd.getY(xyzd); zA = Xyzd.getZ(xyzd);
@@ -130,8 +137,8 @@ class SticksRenderer extends ShapeRenderer {
     width = viewer.scaleToScreen((zA + zB)/2, bond.mad);
     colixA = colixB = bond.colix;
     if (colixA == 0) {
-      colixA = atomA.colixAtom;
-      colixB = atomB.colixAtom;
+      colixA = colixAtomA;
+      colixB = colixAtomB;
     }
     bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {

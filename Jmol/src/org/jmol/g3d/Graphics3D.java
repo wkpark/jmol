@@ -1106,6 +1106,13 @@ final public class Graphics3D {
     line3d.drawLine(argb, argb, xB, yB, zB, xC, yC, zC);
   }
 
+  public void drawTriangle(short colix, long xyzdA, long xyzdB, long xyzdC) {
+    drawTriangle(colix,
+                 Xyzd.getX(xyzdA), Xyzd.getY(xyzdA), Xyzd.getZ(xyzdA),
+                 Xyzd.getX(xyzdB), Xyzd.getY(xyzdB), Xyzd.getZ(xyzdB),
+                 Xyzd.getX(xyzdC), Xyzd.getY(xyzdC), Xyzd.getZ(xyzdC));
+  }
+
   public final static byte ENDCAPS_NONE = 0;
   public final static byte ENDCAPS_OPEN = 1;
   public final static byte ENDCAPS_FLAT = 2;
@@ -2170,6 +2177,10 @@ final public class Graphics3D {
 
   public short get2SidedNormix(Vector3f vector) {
     return normix3d.get2SidedNormix(vector);
+  }
+
+  public boolean isDirectedTowardsCamera(short normix) {
+    return normix3d.isDirectedTowardsCamera(normix);
   }
 
   public Vector3f[] getGeodesicVertexVectors() {

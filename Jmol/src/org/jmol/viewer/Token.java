@@ -344,6 +344,9 @@ class Token {
   final static int opaque       = misc | 40;
   final static int translucent  = misc | 41;
   final static int delete       = misc | 42;
+  final static int edges        = misc | 43;
+  final static int noedges      = misc | 44;
+  final static int frontedges   = misc | 45;
 
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -647,6 +650,9 @@ class Token {
     "opaque",       new Token(opaque,          "opaque"),
     "translucent",  new Token(translucent,     "translucent"),
     "delete",       new Token(delete,          "delete"),
+    "edges",        new Token(edges,           "edges"),
+    "noedges",      new Token(noedges,         "noedges"),
+    "frontedges",   new Token(frontedges,      "frontedges"),
   };
 
   static Hashtable map = new Hashtable();

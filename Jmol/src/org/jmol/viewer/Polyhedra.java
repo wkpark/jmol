@@ -35,6 +35,11 @@ class Polyhedra extends SelectionIndependentShape {
   Polyhedron[] polyhedrons = new Polyhedron[32];
   byte defaultAlpha = OPAQUE;
   float radius;
+  int drawEdges;
+
+  final static int EDGES_NONE = 0;
+  final static int EDGES_ALL = 1;
+  final static int EDGES_FRONT = 2;
 
   void initShape() {
   }
@@ -66,6 +71,18 @@ class Polyhedra extends SelectionIndependentShape {
     if ("opaque" == propertyName) {
       defaultAlpha = OPAQUE;
       setAlpha(OPAQUE, bs);
+      return;
+    }
+    if ("noedges" == propertyName) {
+      drawEdges = EDGES_NONE;
+      return;
+    }
+    if ("edges" == propertyName) {
+      drawEdges = EDGES_ALL;
+      return;
+    }
+    if ("frontedges" == propertyName) {
+      drawEdges = EDGES_FRONT;
       return;
     }
     if ("color" == propertyName) {

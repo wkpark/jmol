@@ -355,4 +355,9 @@ class Normix3D {
     faceNormixesArrays[level] = faceNormixes;
     return faceNormixes;
   }
+
+  boolean isDirectedTowardsCamera(short normix) {
+    // normix < 0 means a double sided normix, so always visible
+    return (normix < 0) || (transformedVectors[normix].z > 0);
+  }
 }

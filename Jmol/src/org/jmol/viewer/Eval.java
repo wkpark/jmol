@@ -3338,6 +3338,9 @@ class Eval implements Runnable {
       case Token.delete:
       case Token.opaque:
       case Token.translucent:
+      case Token.edges:
+      case Token.noedges:
+      case Token.frontedges:
         propertyName = (String)statement[i].value;
         break;
       case Token.decimal:

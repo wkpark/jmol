@@ -42,58 +42,55 @@ public class MeasureRenderer {
                                  DisplayControl control) {
     ChemFrame frame = control.getFrame();
     boolean showMeasurementLabels = control.getShowMeasurementLabels();
-    if (frame.getDistanceMeasurements() != null) {
-      Enumeration e = frame.getDistanceMeasurements().elements();
-      while (e.hasMoreElements()) {
-        Distance d = (Distance) e.nextElement();
-        int[] al = d.getAtomList();
-        int l = al[0];
-        int j = al[1];
-        try {
-          d.paint(g, control, showMeasurementLabels,
-                  frame.getJmolAtomAt(l), 
-                  frame.getJmolAtomAt(j));
-        } catch (Exception ex) {
-        }
+    Enumeration e;
+
+    e = control.getDistanceMeasurements().elements();
+    while (e.hasMoreElements()) {
+      Distance d = (Distance) e.nextElement();
+      int[] al = d.getAtomList();
+      int l = al[0];
+      int j = al[1];
+      try {
+        d.paint(g, control, showMeasurementLabels,
+                frame.getJmolAtomAt(l), 
+                frame.getJmolAtomAt(j));
+      } catch (Exception ex) {
       }
     }
-    if (frame.getAngleMeasurements() != null) {
-      Enumeration e = frame.getAngleMeasurements().elements();
-      while (e.hasMoreElements()) {
-        Angle an = (Angle) e.nextElement();
-        int[] al = an.getAtomList();
-        int l = al[0];
-        int j = al[1];
-        int k = al[2];
-        try {
-          an.paint(g, control, showMeasurementLabels,
-                   frame.getJmolAtomAt(l), 
-                   frame.getJmolAtomAt(j), 
-                   frame.getJmolAtomAt(k));
-        } catch (Exception ex) {
-        }
+
+    e = control.getAngleMeasurements().elements();
+    while (e.hasMoreElements()) {
+      Angle an = (Angle) e.nextElement();
+      int[] al = an.getAtomList();
+      int l = al[0];
+      int j = al[1];
+      int k = al[2];
+      try {
+        an.paint(g, control, showMeasurementLabels,
+                 frame.getJmolAtomAt(l), 
+                 frame.getJmolAtomAt(j), 
+                 frame.getJmolAtomAt(k));
+      } catch (Exception ex) {
       }
     }
-    if (frame.getDihedralMeasurements() != null) {
-      Enumeration e = frame.getDihedralMeasurements().elements();
-      while (e.hasMoreElements()) {
-        Dihedral dh = (Dihedral) e.nextElement();
-        int[] dhl = dh.getAtomList();
-        int l = dhl[0];
-        int j = dhl[1];
-        int k = dhl[2];
-        int m = dhl[3];
-        try {
-          dh.paint(g, control, showMeasurementLabels,
-                   frame.getJmolAtomAt(l), 
-                   frame.getJmolAtomAt(j),
-                   frame.getJmolAtomAt(k), 
-                   frame.getJmolAtomAt(m));
-        } catch (Exception ex) {
-        }
+
+    e = control.getDihedralMeasurements().elements();
+    while (e.hasMoreElements()) {
+      Dihedral dh = (Dihedral) e.nextElement();
+      int[] dhl = dh.getAtomList();
+      int l = dhl[0];
+      int j = dhl[1];
+      int k = dhl[2];
+      int m = dhl[3];
+      try {
+        dh.paint(g, control, showMeasurementLabels,
+                 frame.getJmolAtomAt(l), 
+                 frame.getJmolAtomAt(j),
+                 frame.getJmolAtomAt(k), 
+                 frame.getJmolAtomAt(m));
+      } catch (Exception ex) {
       }
     }
   }
-
 }
 

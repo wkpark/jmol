@@ -26,9 +26,9 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.app.MeasurementList;
-import org.openscience.jmol.app.MeasurementListEvent;
 
 import java.util.BitSet;
+import java.util.Vector;
 import javax.vecmath.Point3d;
 import java.awt.Rectangle;
 
@@ -48,7 +48,6 @@ public class ModelManager {
   public ChemFrame chemframe;
   public int nframes = 0;
   public MeasurementList mlist = null;
-
   public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
   public void setChemFile(ChemFile chemfile) {
@@ -57,9 +56,7 @@ public class ModelManager {
     nframes = chemfile.getNumberOfFrames();
     this.chemframe = chemfile.getFrame(0);
     Measurement.setChemFrame(chemframe);
-    if (mlist != null) {
-      mlistChanged(new MeasurementListEvent(mlist));
-    }
+    clearMeasurements();
     haveFile = true;
     pcs.firePropertyChange(DisplayControl.PROP_CHEM_FILE,
                            chemfilePrevious, chemfile);
@@ -105,9 +102,7 @@ public class ModelManager {
     ChemFrame chemframePrevious = this.chemframe;
     this.chemframe = chemframe;
     Measurement.setChemFrame(chemframe);
-    if (mlist != null) {
-      mlistChanged(new MeasurementListEvent(mlist));
-    }
+    clearMeasurements();
     pcs.firePropertyChange(DisplayControl.PROP_CHEM_FRAME,
                            chemframePrevious, chemframe);
   }
@@ -124,14 +119,15 @@ public class ModelManager {
     return chemfile.getFrames();
   }
 
-  public void mlistChanged(MeasurementListEvent mle) {
-    MeasurementList source = (MeasurementList) mle.getSource();
-    mlist = source;
-    chemframe.updateMlists(mlist.getDistanceList(),
-                           mlist.getAngleList(),
-                           mlist.getDihedralList());
-  }
+  public Vector distanceMeasurements = new Vector();
+  public Vector angleMeasurements = new Vector();
+  public Vector dihedralMeasurements = new Vector();
 
+  public void clearMeasurements() {
+    distanceMeasurements.removeAllElements();
+    angleMeasurements.removeAllElements();
+    dihedralMeasurements.removeAllElements();
+  }
 
   public void setCenterAsSelected() {
     int numberOfAtoms = numberOfAtoms();

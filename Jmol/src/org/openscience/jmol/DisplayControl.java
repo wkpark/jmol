@@ -25,7 +25,6 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.app.Measure;
-import org.openscience.jmol.app.MeasurementListEvent;
 
 import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
@@ -45,6 +44,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.util.Hashtable;
+import java.util.Vector;
 import java.util.BitSet;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4d;
@@ -816,8 +816,20 @@ final public class DisplayControl {
     return modelManager.getCurrentFrameAtoms();
   }
 
-  public void mlistChanged(MeasurementListEvent mle) {
-    modelManager.mlistChanged(mle);
+  public Vector getDistanceMeasurements() {
+    return modelManager.distanceMeasurements;
+  }
+
+  public Vector getAngleMeasurements() {
+    return modelManager.angleMeasurements;
+  }
+
+  public Vector getDihedralMeasurements() {
+    return modelManager.dihedralMeasurements;
+  }
+
+  public void clearMeasurements() {
+    modelManager.clearMeasurements();
   }
 
   public int findNearestAtomIndex(int x, int y) {

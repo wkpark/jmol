@@ -46,42 +46,6 @@ public class ChemFrame extends AtomContainer {
 
   private org.openscience.cdk.tools.AtomTypeFactory atf = null;
   
-  /**
-   * Returns the list of distance measurements.
-   */
-  public Vector getDistanceMeasurements() {
-    return dlist;
-  }
-
-  /**
-   * List of distance measurements.
-   */
-  private Vector dlist;
-
-  /**
-   * Returns the list of angle measurements.
-   */
-  public Vector getAngleMeasurements() {
-    return alist;
-  }
-
-  /**
-   * List of angle measurements.
-   */
-  private Vector alist;
-
-  /**
-   * Returns the list of dihedral measurements.
-   */
-  public Vector getDihedralMeasurements() {
-    return dhlist;
-  }
-
-  /**
-   * List of dihedral measurements.
-   */
-  private Vector dhlist;
-
   Point3d centerBoundingBox;
   Point3d cornerBoundingBox;
   private Point3d centerRotation;
@@ -183,12 +147,6 @@ public class ChemFrame extends AtomContainer {
    */
   public void setInfo(String info) {
     this.info = info;
-  }
-
-  public void updateMlists(Vector dlist, Vector alist, Vector dhlist) {
-    this.dlist = dlist;
-    this.alist = alist;
-    this.dhlist = dhlist;
   }
 
   /**

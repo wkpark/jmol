@@ -44,8 +44,7 @@ import javax.swing.JPanel;
 import javax.swing.RepaintManager;
 
 public class DisplayPanel extends JPanel
-  implements MeasurementListListener, PropertyChangeListener,
-             ComponentListener {
+  implements PropertyChangeListener, ComponentListener {
   private StatusBar status;
   private GuiMap guimap;
   private DisplayControl control;
@@ -100,10 +99,6 @@ public class DisplayPanel extends JPanel
     
   public ChemFrame getFrame() {
     return control.getFrame();
-  }
-
-  public void mlistChanged(MeasurementListEvent mle) {
-    control.mlistChanged(mle);
   }
 
   public void componentHidden(java.awt.event.ComponentEvent e) {

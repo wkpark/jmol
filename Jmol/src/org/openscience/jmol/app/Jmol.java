@@ -271,12 +271,12 @@ public class Jmol extends JPanel {
 
     splash.showStatus(resourceHandler
         .translate("Initializing Measurements..."));
-    mlist = new MeasurementList(frame, display);
+    mlist = new MeasurementList(frame, control);
     meas = new Measure(frame, control);
     meas.setMeasurementList(mlist);
     display.setMeasure(meas);
     control.setMeasureMouse(meas);
-    mlist.addMeasurementListListener(display);
+    //    mlist.addMeasurementListListener(display);
     port.add(display);
 
     // install the command table

@@ -19,6 +19,7 @@
  */
 package org.openscience.jmol.app;
 
+import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.render.Angle;
 import org.openscience.jmol.render.Distance;
 import org.openscience.jmol.render.Dihedral;
@@ -53,17 +54,13 @@ import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JButton;
 import javax.swing.AbstractButton;
-import javax.swing.event.EventListenerList;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeSelectionModel;
 
 public class MeasurementList extends JDialog {
 
-  /** List of listeners */
-  protected EventListenerList listenerList = new EventListenerList();
-
-  private DisplayPanel display;
+  private DisplayControl control;
   protected DefaultMutableTreeNode top;
   protected ListNode distances, angles, dihedrals;
   protected DefaultTreeModel treeModel;
@@ -71,9 +68,9 @@ public class MeasurementList extends JDialog {
   protected JButton xButton = new JButton(
     JmolResourceHandler.getInstance().translate("Delete Measurement"));
 
-  private Vector distanceList = new Vector(10);
-  private Vector angleList = new Vector(10);
-  private Vector dihedralList = new Vector(10);
+  private Vector distanceList;
+  private Vector angleList;
+  private Vector dihedralList;
 
   // The actions:
   private CDistanceAction cdistanceAction = new CDistanceAction();
@@ -89,11 +86,16 @@ public class MeasurementList extends JDialog {
    * @param f the parent frame
    * @param dp the DisplayPanel in which the animation will take place
    */
-  public MeasurementList(JFrame f, DisplayPanel dp) {
+  public MeasurementList(JFrame f, DisplayControl control) {
 
     super(f, JmolResourceHandler.getInstance()
           .translate("Measurement List"), false);
-    this.display = dp;
+    this.control = control;
+
+    distanceList = control.getDistanceMeasurements();
+    angleList = control.getAngleMeasurements();
+    dihedralList = control.getDihedralMeasurements();
+
     commands = new Hashtable();
     Action[] actions = getActions();
     for (int i = 0; i < actions.length; i++) {
@@ -200,7 +202,10 @@ public class MeasurementList extends JDialog {
     angles.update();
     dihedrals.update();
     treeModel.reload(top);
-    fireMlistChanged(new MeasurementListEvent(this));
+  }
+
+  private void notifyControl() {
+    control.refresh();
   }
 
   public Vector getDistanceList() {
@@ -223,8 +228,7 @@ public class MeasurementList extends JDialog {
     distanceList.addElement(d);
     distances.update();
     treeModel.reload(distances);
-    fireMlistChanged(new MeasurementListEvent(this));
-    display.repaint();
+    notifyControl();
   }
 
   public void addAngle(int atom1, int atom2, int atom3) {
@@ -236,8 +240,7 @@ public class MeasurementList extends JDialog {
     angleList.addElement(a);
     angles.update();
     treeModel.reload(angles);
-    fireMlistChanged(new MeasurementListEvent(this));
-    display.repaint();
+    notifyControl();
   }
 
   public void addDihedral(int atom1, int atom2, int atom3, int atom4) {
@@ -248,8 +251,7 @@ public class MeasurementList extends JDialog {
     dihedralList.addElement(d);
     dihedrals.update();
     treeModel.reload(dihedrals);
-    fireMlistChanged(new MeasurementListEvent(this));
-    display.repaint();
+    notifyControl();
   }
 
   public void clear() {
@@ -261,7 +263,7 @@ public class MeasurementList extends JDialog {
     angles.update();
     dihedrals.update();
     treeModel.reload(top);
-    fireMlistChanged(new MeasurementListEvent(this));
+    notifyControl();
   }
 
   public void clearDistanceList() {
@@ -269,8 +271,7 @@ public class MeasurementList extends JDialog {
     distanceList.removeAllElements();
     distances.update();
     treeModel.reload(distances);
-    fireMlistChanged(new MeasurementListEvent(this));
-    display.repaint();
+    notifyControl();
   }
 
   public void clearAngleList() {
@@ -278,8 +279,7 @@ public class MeasurementList extends JDialog {
     angleList.removeAllElements();
     angles.update();
     treeModel.reload(angles);
-    fireMlistChanged(new MeasurementListEvent(this));
-    display.repaint();
+    notifyControl();
   }
 
   public void clearDihedralList() {
@@ -287,8 +287,7 @@ public class MeasurementList extends JDialog {
     dihedralList.removeAllElements();
     dihedrals.update();
     treeModel.reload(dihedrals);
-    fireMlistChanged(new MeasurementListEvent(this));
-    display.repaint();
+    notifyControl();
   }
 
   public boolean deleteMatchingDistance(int i1, int i2) {
@@ -300,8 +299,7 @@ public class MeasurementList extends JDialog {
         distanceList.removeElement(d);
         distances.update();
         treeModel.reload(distances);
-        fireMlistChanged(new MeasurementListEvent(this));
-        display.repaint();
+        notifyControl();
         return true;
       }
     }
@@ -319,8 +317,7 @@ public class MeasurementList extends JDialog {
         angleList.removeElement(a);
         angles.update();
         treeModel.reload(angles);
-        fireMlistChanged(new MeasurementListEvent(this));
-        display.repaint();
+        notifyControl();
         return true;
       }
     }
@@ -338,8 +335,7 @@ public class MeasurementList extends JDialog {
         dihedralList.removeElement(dh);
         dihedrals.update();
         treeModel.reload(dihedrals);
-        fireMlistChanged(new MeasurementListEvent(this));
-        display.repaint();
+        notifyControl();
         return true;
       }
     }
@@ -391,55 +387,6 @@ public class MeasurementList extends JDialog {
           int[] at = dh.getAtomList();
           boolean b = deleteMatchingDihedral(at[0], at[1], at[2], at[3]);
         }
-      }
-    }
-  }
-
-  //
-  //  Managing Listeners
-  //
-
-  /**
-   * Add a listener to the list that's notified each time a change
-   * to the MeasurementList occurs.
-   *
-   * @param   l               the MeasurementListListener
-   */
-  public void addMeasurementListListener(MeasurementListListener l) {
-    listenerList.add(MeasurementListListener.class, l);
-  }
-
-  /**
-   * Remove a listener from the list that's notified each time a
-   * change to the MeasurementList occurs.
-   *
-   * @param   l               the MeasurementListListener
-   */
-  public void removeMeasurementListListener(MeasurementListListener l) {
-    listenerList.remove(MeasurementListListener.class, l);
-  }
-
-  //
-  //  Fire methods
-  //
-
-  /**
-   * Forward the given notification event to all
-   * MeasurementListListeners that registered themselves as
-   * listeners for this MeasurementList
-   * @see #addMeasurementListListener
-   * @see MeasurementListEvent
-   * @see EventListenerList */
-  public void fireMlistChanged(MeasurementListEvent e) {
-
-    // Guaranteed to return a non-null array
-    Object[] listeners = listenerList.getListenerList();
-
-    // Process the listeners last to first, notifying
-    // those that are interested in this event
-    for (int i = listeners.length - 2; i >= 0; i -= 2) {
-      if (listeners[i] == MeasurementListListener.class) {
-        ((MeasurementListListener) listeners[i + 1]).mlistChanged(e);
       }
     }
   }

@@ -30,8 +30,6 @@ import java.util.Hashtable;
 
 public class PdbAtom {
 
-  // FIXME mth -- a very quick/dirty/ugly implementation
-  // just to get some complex queries running
   public PdbGroup group;
   String name;
   short atomID;
@@ -132,6 +130,10 @@ public class PdbAtom {
 
   public int getTemperature() {
     return temperature;
+  }
+
+  public int getModelNumber() {
+    return 1;
   }
 
   public char getChainID() {

@@ -433,7 +433,7 @@ public class Eval implements Runnable {
       Token token = statement[i];
       switch (token.tok) {
       case Token.spec_model:
-        strbufLog.append("::");
+        strbufLog.append("/");
         // fall into
       case Token.spec_number:
       case Token.integer:
@@ -869,12 +869,17 @@ public class Eval implements Runnable {
     return lookupValue(variable, true);
   }
 
-  BitSet getSpecModel(int modelNum) {
-    System.out.println("warning! model specification not implemented");
+  BitSet getSpecModel(int modelNumber) {
+    Frame frame = viewer.getFrame();
     int n = viewer.getAtomCount();
     BitSet bsModel = new BitSet(n);
-    while (--n >= 0)
-      bsModel.set(n);      
+    for (int i = n; --i >= 0; ) {
+      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
+      if (pdbatom == null)
+        continue;
+      if (pdbatom.getModelNumber() == modelNumber)
+        bsModel.set(i);
+    }
     return bsModel;
   }
 

@@ -341,6 +341,10 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).getPdbRecord();
   }
 
+  public int getPdbModelNumber(Object clientAtom){
+    return 0;
+  }
+
   public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
     return null;
   }

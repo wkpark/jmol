@@ -347,6 +347,15 @@ public interface JmolModelAdapter {
    * @see #hasPdbRecords(Object clientFile, int frameNumber)
    */
   public String getPdbAtomRecord(Object clientAtom);
+
+  /**
+   * If hasPdbRecords(clientFile, frameNumber) returns true then the model
+   * number for individual <code>clientAtom</code>s are returned here.
+   * This is necessary because the model number is not part of the pdbRecord.
+   * @see #hasPdbRecords(Object clientFile, int frameNumber)
+   */
+  public int getPdbModelNumber(Object clientAtom);
+
   /**
    * If suppliesAtomArgb() returns false or if
    * getAtomArgb(clientAtom, colorScheme) returns 0 then the atom color

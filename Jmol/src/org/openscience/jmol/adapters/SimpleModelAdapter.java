@@ -276,6 +276,11 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     return ((Atom)clientAtom).pdbAtomRecord;
   }
 
+  public int getPdbModelNumber(Object clientAtom) {
+    Atom atom = (Atom)clientAtom;
+    return (atom.pdbAtomRecord != null) ? atom.pdbModelNumber : 0;
+  }
+
   public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
     Model model = (Model)clientFile;
     if (model.pdbStructureRecordCount == 0)
@@ -301,6 +306,8 @@ class Atom {
   String atomicSymbol;
   float x, y, z;
   String pdbAtomRecord;
+  int pdbModelNumber;
+
   Atom(String atomicSymbol, float x, float y, float z) {
     this.atomicSymbol = atomicSymbol;
     this.x = x;
@@ -308,11 +315,12 @@ class Atom {
     this.z = z;
   }
 
-  Atom(String atomicSymbol, float x, float y, float z, String pdb) {
+  Atom(String atomicSymbol, float x, float y, float z, int model, String pdb) {
     this.atomicSymbol = atomicSymbol;
     this.x = x;
     this.y = y;
     this.z = z;
+    this.pdbModelNumber = model;
     this.pdbAtomRecord = pdb;
   }
 
@@ -539,7 +547,7 @@ class PdbModel extends Model {
         System.arraycopy(serialMap, 0, t, 0, serialMap.length);
         serialMap = t;
       }
-      atoms[atomCount++] = new Atom(atomicSymbol, x, y, z, line);
+      atoms[atomCount++] = new Atom(atomicSymbol, x, y, z, 1, line);
       // note that values are +1 in this serial map
       serialMap[serial] = atomCount;
     } catch (NumberFormatException e) {

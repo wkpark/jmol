@@ -145,6 +145,10 @@ public class LabelManager {
         if (pdbatom != null)
           strLabel += pdbatom.getGroupSequence();
         break;
+      case 'M':
+        if (pdbatom != null)
+          strLabel += "/" + pdbatom.getModelNumber();
+        break;
       default:
         strLabel += "" + ch;
       }

@@ -307,6 +307,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
     return pdbRecord;
   }
 
+  public int getPdbModelNumber(Object clientAtom) {
+    return 0;
+  }
+
   public String[] getPdbStructureRecords(Object clientFile, int frameNumber) {
     ChemFile chemFile = (ChemFile)clientFile;
     ChemSequence chemSequence = chemFile.getChemSequence(0);

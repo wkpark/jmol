@@ -2,7 +2,8 @@
 
   <property name="version" value="9" />
   <property name="applet-version" value="9" />
-  <property name="jmol-dir" value="../Jmol-b6" />
+  <property name="jmol-jar-dir" value="../Jmol-b6" />
+  <property name="jmol-doc-dir" value="../Jmol-HEAD" />
   <property name="doc.dir" value="source/doc" />
   <property name="build.dir" value="build" />
   <property name="build.html" value="${build.dir}/html" />
@@ -31,11 +32,13 @@
                excludes="**/*.xml,**/*.xsl,**/*~" />
     </copy>
     <copy todir="${build.html}/jmol" overwrite="yes">
-      <fileset dir="${jmol-dir}" includes="JmolApplet.jar" />
-      <fileset dir="${jmol-dir}/appletweb" includes="JmolApplet.properties" />
+      <fileset dir="${jmol-jar-dir}"
+	       includes="JmolApplet.jar" />
+      <fileset dir="${jmol-jar-dir}/appletweb"
+	       includes="JmolApplet.properties" />
     </copy>
     <copy todir="${build.html}/docs" overwrite="yes">
-      <fileset dir="${jmol-dir}/build/doc" includes="**/*" />
+      <fileset dir="${jmol-doc-dir}/build/doc" includes="**/*" />
     </copy>
 
     <replace dir="${build.html}" includes="**/*.html">

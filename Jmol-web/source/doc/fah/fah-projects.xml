@@ -197,7 +197,7 @@
   <fah_proj number="236" name="p236_c24MUre99p"
     server="171.64.122.127" atoms="16841" preferred="36" deadline="52"
     credit="185" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="237" name="p237_c21MUre99p"
+  <fah_proj number="237" name="p237_c21MUre99p" file="y"
     server="171.64.122.127" atoms="17240" preferred="31" deadline="46"
     credit="160" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="238" name="p238_c20MUre99p"
@@ -1564,7 +1564,7 @@
   <fah_proj number="972" name="p972_fklig_dock_M24"
     server="171.64.122.132" atoms="1261" preferred="22" deadline="33"
     credit="122" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="973" name="p973_fkcomp_dock_M24"
+  <fah_proj number="973" name="p973_fkcomp_dock_M24" file="y"
     server="171.64.122.132" atoms="14923" preferred="15" deadline="23"
     credit="84" frames="100" code="DG" contact="guha"/>
   <fah_proj number="997"
@@ -2484,7 +2484,7 @@
   <fah_proj number="1591" name="p1591_LZIP-1598-0-12_pfold" file="y"
     server="171.64.122.129" atoms="34341" preferred="12" deadline="18"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1592" name="p1592_LZIP-1598-1-85_pfold"
+  <fah_proj number="1592" name="p1592_LZIP-1598-1-85_pfold" file="y"
     server="171.64.122.129" atoms="34341" preferred="12" deadline="18"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1593" name="p1593_LZIP-1599-1-48_pfold" file="y"
@@ -2541,9 +2541,15 @@
   <fah_proj number="1802" name="p1802_Collagen_POG10_restrained_unfolding" file="y"
     server="171.65.103.158" atoms="1116" preferred="16" deadline="23"
     credit="77" frames="100" code="A" contact="spark7"/>
+  <fah_proj number="1803" name="p1803_Collagen_POG10_refolding" file="y"
+    server="171.65.103.158" atoms="1116" preferred="14" deadline="21"
+    credit="69" frames="100" code="A" contact="spark7"/>
 
   <!-- Projects 1900 to 1999 -->
   <fah_proj number="1900" name="p1900_32_water_molecules" file="y"
+    server="171.64.122.113" atoms="96" preferred="12" deadline="19"
+    credit="125" frames="100" code="Q" contact="NA"/>
+  <fah_proj number="1901" name="p1901_32_water_molecules"
     server="171.64.122.113" atoms="96" preferred="12" deadline="19"
     credit="125" frames="100" code="Q" contact="NA"/>
     

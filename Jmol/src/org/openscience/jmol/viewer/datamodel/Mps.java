@@ -197,11 +197,11 @@ abstract class Mps extends Shape {
         }
       case -3: // trace temperature
         {
-          if (! hasTemperatureRange)
-            calcTemperatureRange();
+          if (! hasBfactorRange)
+            calcBfactorRange();
           Atom atom = monomers[groupIndex].getLeadAtom();
           int bfactor100 = atom.getBfactor100(); // scaled by 1000
-          int scaled = bfactor100 - temperatureMin;
+          int scaled = bfactor100 - bfactorMin;
           if (range == 0)
             return (short)0;
           float percentile = scaled / floatRange;
@@ -221,26 +221,26 @@ abstract class Mps extends Shape {
       return 0;
     }
 
-    boolean hasTemperatureRange = false;
-    int temperatureMin, temperatureMax;
+    boolean hasBfactorRange = false;
+    int bfactorMin, bfactorMax;
     int range;
     float floatRange;
 
-    void calcTemperatureRange() {
-      temperatureMin = temperatureMax =
+    void calcBfactorRange() {
+      bfactorMin = bfactorMax =
         monomers[0].getLeadAtom().getBfactor100();
       for (int i = monomerCount; --i > 0; ) {
-        int temperature =
+        int bfactor =
           monomers[i].getLeadAtom().getBfactor100();
-        if (temperature < temperatureMin)
-          temperatureMin = temperature;
-        else if (temperature > temperatureMax)
-          temperatureMax = temperature;
+        if (bfactor < bfactorMin)
+          bfactorMin = bfactor;
+        else if (bfactor > bfactorMax)
+          bfactorMax = bfactor;
       }
-      range = temperatureMax - temperatureMin;
+      range = bfactorMax - bfactorMin;
       floatRange = range;
-      System.out.println("temperature range=" + range);
-      hasTemperatureRange = true;
+      System.out.println("bfactor range=" + range);
+      hasBfactorRange = true;
     }
 
     void setMad(short mad, BitSet bsSelected) {

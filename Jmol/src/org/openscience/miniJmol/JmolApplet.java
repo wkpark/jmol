@@ -75,6 +75,7 @@ public class JmolApplet extends java.applet.Applet
 	int labelMode;
 	private String helpMessage =
 		"Keys: S- change style; L- Show labels; B-Toggle Bonds";
+	private String errorMessage;
 
 	private String atomTypesFileName = "Data/AtomTypes.txt";
 
@@ -154,7 +155,11 @@ public class JmolApplet extends java.applet.Applet
 							.createReader(new java.io
 								.InputStreamReader(modelURL.openStream()));
 				}
-				myBean.setModel(cfr.read(this, bondsEnabled));
+				if (cfr != null) {
+					myBean.setModel(cfr.read(this, bondsEnabled));
+				} else {
+					setErrorMessage("Error: Unable to read input format");
+				}
 			} catch (java.io.IOException e) {
 				e.printStackTrace();
 			}
@@ -199,7 +204,17 @@ public class JmolApplet extends java.applet.Applet
 	}
 
 	public void setStatusMessage(String statusMessage) {
-		showStatus(statusMessage);
+
+		if (errorMessage != null) {
+			showStatus(errorMessage);
+		} else {
+			showStatus(statusMessage);
+		}
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+		setStatusMessage(errorMessage);
 	}
 
 	/**
@@ -383,14 +398,14 @@ public class JmolApplet extends java.applet.Applet
 	 * Invoked when the mouse has been clicked on a component.
 	 */
 	public void mouseClicked(MouseEvent e) {
-		showStatus(helpMessage);
+		setStatusMessage(helpMessage);
 	}
 
 	/**
 	 * Invoked when the mouse enters a component.
 	 */
 	public void mouseEntered(MouseEvent e) {
-		showStatus(helpMessage);
+		setStatusMessage(helpMessage);
 	}
 
 	/**
@@ -429,26 +444,29 @@ public class JmolApplet extends java.applet.Applet
 		if (keyChar.equals("s") || keyChar.equals("S")) {
 			mode++;
 			mode %= drawModeNames.length;
-			showStatus("JmolApplet: Changing rendering style to "
+			setStatusMessage("JmolApplet: Changing rendering style to "
 					+ drawModeNames[mode]);
 			setRenderingStyle();
 		} else if (keyChar.equals("l") || keyChar.equals("L")) {
 			labelMode++;
 			labelMode %= 4;
 			if (labelMode == 0) {
-				showStatus("JmolApplet: Changing label style to NONE");
+				setStatusMessage("JmolApplet: Changing label style to NONE");
 				myBean.setLabelRenderingStyle("NONE");
 			} else if (labelMode == 1) {
-				showStatus("JmolApplet: Changing label style to SYMBOLS");
+				setStatusMessage(
+						"JmolApplet: Changing label style to SYMBOLS");
 				myBean.setLabelRenderingStyle("SYMBOLS");
 			} else if (labelMode == 2) {
-				showStatus("JmolApplet: Changing label style to TYPES");
+				setStatusMessage("JmolApplet: Changing label style to TYPES");
 				myBean.setLabelRenderingStyle("TYPES");
 			} else if (labelMode == 3) {
-				showStatus("JmolApplet: Changing label style to NUMBERS");
+				setStatusMessage(
+						"JmolApplet: Changing label style to NUMBERS");
 				myBean.setLabelRenderingStyle("NUMBERS");
 			} else {
-				showStatus("JmolApplet: Changing label style to default");
+				setStatusMessage(
+						"JmolApplet: Changing label style to default");
 				myBean.setBondRenderingStyle("NONE");
 			}
 		} else if ((bondsEnabled)
@@ -515,7 +533,8 @@ public class JmolApplet extends java.applet.Applet
 				throw new RuntimeException(("Got MalformedURL for model: "
 						+ e.toString()));
 			}
-			ChemFileReader cfr = ReaderFactory
+			ChemFileReader cfr =
+				ReaderFactory
 					.createReader(new java.io
 						.InputStreamReader(modelURL.openStream()));
 			myBean.setModel(cfr.read(this, bondsEnabled));

@@ -106,9 +106,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       control.setStyleBond(DisplayControl.SHADING);
       control.setStyleAtom(DisplayControl.SHADING);
       
-      setBackgroundColor(getParameter("bgcolor"));
-      setStyle(getParameter("style"));
-      setLabel(getParameter("label"));
+      control.setColorBackground(getParameter("bgcolor"));
+      style(getParameter("style"));
+      label(getParameter("label"));
       //      setAtomPropertiesFromFile(getParameter("atomTypes"));
 
       String wfr = getParameter("wireframeRotation");
@@ -138,6 +138,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   //METHODS FOR JAVASCRIPT
+
   /****************************************************************
    * These methods are intended for use from JavaScript via LiveConnect
    *
@@ -184,18 +185,13 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     //    myBean.setAtomPropertiesFromURL(propertiesURL);
   }
 
-  public void setBackgroundColor(String colorInHex) {
-    if (colorInHex != null && colorInHex.length() > 0)
-      control.setColorBackground(colorInHex);
-  }
-
 
   private final String[] styleStrings = {"QUICKDRAW", "SHADED", "WIREFRAME"};
   private final byte[] styles = {DisplayControl.QUICKDRAW,
                                  DisplayControl.SHADING,
                                  DisplayControl.WIREFRAME};
 
-  public void setStyle(String style) {
+  public void style(String style) {
     for (int i = 0; i < styleStrings.length; ++i) {
       if (styleStrings[i].equalsIgnoreCase(style)) {
         control.setStyleAtom(styles[i]);
@@ -210,7 +206,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
                                       DisplayControl.SYMBOLS,
                                       DisplayControl.NUMBERS};
 
-  public void setLabel(String style) {
+  public void label(String style) {
     for (int i = 0; i < labelStyles.length; ++i) {
       if (labelStyleStrings[i].equalsIgnoreCase(style)) {
         control.setStyleLabel(labelStyles[i]);

@@ -189,7 +189,8 @@ public class ColorManager {
   }
 
   public void setColorBackground(String colorName) {
-    setColorBackground(getColorFromString(colorName));
+    if (colorName != null && colorName.length() > 0)
+      setColorBackground(getColorFromString(colorName));
   }
 
   public void setColorForeground(String colorName) {

@@ -1,6 +1,7 @@
 org/openscience/jmol/applet/AppletCanvas.java
 org/openscience/jmol/applet/NonJavaSort.java
 org/openscience/jmol/BaseAtomType.java
+org/openscience/jmol/AtomTypeList.java
 org/openscience/jmol/JmolException.java
 org/openscience/jmol/DisplaySettings.java
 org/openscience/jmol/DisplayControl.java
@@ -29,6 +30,7 @@ org/openscience/jmol/UnitCellBox.java
 org/openscience/jmol/CrystalBox.java
 org/openscience/jmol/FortranFormat.java
 freeware/PrintfFormat.java
+org/openscience/jmol/JmolStatusListener.java
 org/openscience/jmol/AtomTypeSet.java
 org/openscience/jmol/StatusDisplay.java
 org/openscience/jmol/IntSet.java

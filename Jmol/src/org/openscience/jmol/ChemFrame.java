@@ -18,9 +18,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.app.Jmol;
 import org.openscience.cdk.AtomContainer;
-import org.openscience.cdk.tools.AtomTypeFactory;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
 import java.util.Vector;

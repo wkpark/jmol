@@ -317,4 +317,60 @@
       </para>
     </section>
   </chapter>
+  <chapter>
+    <title>JavaScript integration</title>
+    <para>
+      Using JavaScript commands embedded in web pages, you can control
+      the behavior of the Jmol applet. This flexibility enables you to
+      create complex user interactions that are controlled using standard
+      web page elements.
+    </para>
+    <section>
+      <title>Web Browser support</title>
+      <para>
+	The underlying technology that supports this is known as LiveConnect.
+	The LiveConnect layer provides the data and method conversion interface
+	between the JavaScript world and the Java world.
+      </para>
+      <para>
+	Netscape and Internet Explorer have both supported LiveConnect for
+	some time.
+      </para>
+      <para>
+	The Konqueror browser does not yet support LiveConnect.
+      </para>
+      <para>
+	Unfortunately, the news is not good for Macintosh OS X. Internet
+	Explorer does not support LiveConnect.
+	Neither does Safari (which is based upon Konqueror).
+	(I have not yet checked Netscape on OS X.)
+      </para>
+    </section>
+    <section>
+      <title>JavaScript API</title>
+      <section>
+	<title>document.jmol.load(String url)</title>
+	<para>
+	  The 'load' method allows you to load a different molecular
+	  model into the applet.
+	</para>
+      </section>
+      <section>
+	<title>document.jmol.loadInline(String model)</title>
+	<para>
+	  At times it may be more convenient to store the contents
+	  of the molecular model as a string in the HTML file itself.
+	  The 'loadInline' method allows you to load a molecular model
+	  of this type.
+	</para>
+      </section>
+      <section>
+	<title>document.jmol.style(String style)</title>
+	<para>
+	  Sets the atom/bond rendering style to one of 'SHADED',
+	  'QUICKDRAW' or 'WIREFRAME'
+	</para>
+      </section>
+    </section>
+  </chapter>
 </book>

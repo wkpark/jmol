@@ -97,7 +97,7 @@ public class AtomShape implements Shape {
   private static boolean showAtoms;
   private static boolean showHydrogens;
   private static boolean showBonds;
-  private static boolean fastRendering;
+  private static boolean wireframeRotation;
   private static boolean drawBondsToAtomCenters;
   private static int bondDrawMode;
   private static int atomDrawMode;
@@ -122,7 +122,7 @@ public class AtomShape implements Shape {
     showHydrogens = control.getShowHydrogens();
     showBonds = control.getShowBonds();
     labelMode = control.getLabelMode();
-    fastRendering = control.getFastRendering();
+    wireframeRotation = control.getFastRendering();
     drawBondsToAtomCenters = control.getDrawBondsToAtomCenters();
     halfBondWidth =
       (float)(0.5 * control.getBondWidth() * control.getBondScreenScale());
@@ -207,7 +207,7 @@ public class AtomShape implements Shape {
   // When this variable is set then a wireframe atom will behave
   // as though it is translucent. This allows you to see that the bonds
   // are being clipped when they are obscured by the atom
-  private static final boolean debugBondClipping = false;
+  private static final boolean showCoveredBonds = false;
 
   public void renderBond(Graphics g, Atom atom1, Atom atom2) {
     Color color1 = colorProfile.getColor(atom1);
@@ -217,7 +217,7 @@ public class AtomShape implements Shape {
     int dx = x2 - x1, dx2 = dx * dx;
     int dy = y2 - y1, dy2 = dy * dy;
     int magnitude2 = dx2 + dy2;
-    if ((magnitude2 <= 2) || (fastRendering && magnitude2 <= 49))
+    if ((magnitude2 <= 2) || (wireframeRotation && magnitude2 <= 49))
       return; // also avoid divide by zero when magnitude == 0
     if (showAtoms &&
         (atomDrawMode != DisplayControl.WIREFRAME) &&
@@ -229,8 +229,7 @@ public class AtomShape implements Shape {
     //  && and the centers of the bonds are very close
     //  && the diameter of the atom1 is >= 3
     // ... but I'm not going to do it right now
-    if (fastRendering ||
-
+    if ( //fastRendering || // fastRendering isn't any faster this way
         ((bondDrawMode == DisplayControl.LINE) && drawBondsToAtomCenters)) {
       if (color1.equals(color2)) {
         g.setColor(color1);
@@ -245,11 +244,6 @@ public class AtomShape implements Shape {
       }
       return;
     }
-    //    if (false && bondDrawMode == DisplaySettings.SHADING) {
-    //      shadingBondRenderer.paint(g2, atom2, atom1, settings);
-    //      shadingBondRenderer.paint(g2, atom1, atom2, settings);
-    //      return;
-    //    }
     int z1 = atom1.screenZ;
     int z2 = atom2.screenZ;
     int dz = z2 - z1;
@@ -269,7 +263,7 @@ public class AtomShape implements Shape {
     double cosine = magnitude / Math.sqrt(magnitude2 + dz2);
     int radius1Bond = (int)(radius1 * cosine);
     int radius2Bond = (int)(radius2 * cosine);
-    if (((atomDrawMode != DisplayControl.WIREFRAME) || debugBondClipping) &&
+    if (((atomDrawMode != DisplayControl.WIREFRAME) || !showCoveredBonds) &&
         (magnitude < radius1 + radius2Bond)) {
       // the shapes are solid and the front atom (radius1) has
       // completely obscured the bond
@@ -283,7 +277,7 @@ public class AtomShape implements Shape {
     int y2Bond = y2 - ((radius2Bond - arcFactor) * dy) / magnitude;
     int x1Edge;
     int y1Edge;
-    if ((atomDrawMode == DisplayControl.WIREFRAME) && !debugBondClipping) {
+    if ((atomDrawMode == DisplayControl.WIREFRAME) && showCoveredBonds) {
       x1Edge = x1Bond;
       y1Edge = y1Bond;
     } else {
@@ -291,7 +285,8 @@ public class AtomShape implements Shape {
       y1Edge = y1 + ((radius1 - arcFactor) * dy) / magnitude;
     }
 
-    if ((bondDrawMode == DisplayControl.LINE) ||
+    if (wireframeRotation ||
+        (bondDrawMode == DisplayControl.LINE) ||
         (halfBondWidth < .75f)) {
       drawLineBond(g,
                    x1Bond, y1Bond, color1,
@@ -555,7 +550,7 @@ public class AtomShape implements Shape {
     int diameter = atom.screenDiameter;
     int radius = diameter >> 1;
 
-    if (!fastRendering && control.isAtomPicked(atom)) {
+    if (!wireframeRotation && control.isAtomPicked(atom)) {
       int halo = radius + 5;
       int halo2 = 2 * halo;
       g.setColor(pickedColor);
@@ -571,14 +566,14 @@ public class AtomShape implements Shape {
           g.fillRect(x - radius, y - radius, diameter, diameter);
       }
     } else {
-      if (! fastRendering && (atomDrawMode == DisplayControl.SHADING)) {
+      if (! wireframeRotation && (atomDrawMode == DisplayControl.SHADING)) {
         renderShadedAtom(x, y, diameter, color);
         return;
       }
       // the area *drawn* by an oval is 1 larger than the area
       // *filled* by an oval
       --diameter;
-      if (!fastRendering &&
+      if (! wireframeRotation &&
           (atomDrawMode != DisplayControl.WIREFRAME)) {
         g.fillOval(x - radius, y - radius, diameter, diameter);
         g.setColor(getOutline(color));

@@ -1704,17 +1704,18 @@ final public class JmolConstants {
 
   public final static int GRAPHIC_BACKBONE = 0;
   public final static int GRAPHIC_TRACE    = 1;
-  public final static int GRAPHIC_AXES     = 2;
-  public final static int GRAPHIC_BBOX     = 3;
-  public final static int GRAPHIC_CARTOON  = 4;
-  public final static int GRAPHIC_STRANDS  = 5;
-  public final static int GRAPHIC_UNITCELL = 6;
-  public final static int GRAPHIC_DOTS     = 7;
+  public final static int GRAPHIC_CARTOON  = 2;
+  public final static int GRAPHIC_STRANDS  = 3;
+  public final static int GRAPHIC_DOTS     = 4;
+  public final static int GRAPHIC_MIN_SELECTION_INDEPENDENT = 5;
+  public final static int GRAPHIC_AXES     = 5;
+  public final static int GRAPHIC_BBOX     = 6;
+  public final static int GRAPHIC_UNITCELL = 7;
   public final static int GRAPHIC_MAX      = 8;
 
   public final static String[] graphicClassBases = {
-    "Backbone", "Trace", "Axes", "Bbox", "Cartoon", "Strands", "Unitcell",
-    "Dots"
+    "Backbone", "Trace", "Cartoon", "Strands", "Dots",
+    "Axes", "Bbox", "Unitcell",
   };
 
   // all of these things are compile-time constants

@@ -1308,12 +1308,19 @@ final public class JmolViewer {
   }
 
   public void setGraphicMad(int refGraphic, short mad) {
-    getFrame().setGraphicMad(refGraphic, mad, selectionManager.bsSelection);
+    getFrame().setGraphicMad(refGraphic, mad,
+                             refGraphic <
+                             JmolConstants.GRAPHIC_MIN_SELECTION_INDEPENDENT
+                             ? selectionManager.bsSelection
+                             : null);
   }
 
   public void setGraphicColor(int refGraphic, byte palette, Color color) {
     getFrame().setGraphicColix(refGraphic, palette, Colix.getColix(color),
-                               selectionManager.bsSelection);
+                             refGraphic <
+                             JmolConstants.GRAPHIC_MIN_SELECTION_INDEPENDENT
+                             ? selectionManager.bsSelection
+                             : null);
   }
 
   int strandsCount = 5;

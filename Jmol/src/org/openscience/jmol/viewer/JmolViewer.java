@@ -142,7 +142,6 @@ final public class JmolViewer {
 
   private boolean structuralChange = false;
 
-
   public void homePosition() {
     // FIXME -- need to hold repaint during this process, but first 
     // figure out the interaction with the current holdRepaint setting
@@ -1137,8 +1136,8 @@ final public class JmolViewer {
                                  bondIteratorSelected(Bond.BACKBONE));
   }
 
-  public void setColorAtomScript(byte scheme, Color color) {
-    distributionManager.setColixAtom(scheme, Colix.getColix(color),
+  public void setColorAtomScript(byte palette, Color color) {
+    distributionManager.setColixAtom(palette, Colix.getColix(color),
                                      atomIteratorSelected());
   }
 
@@ -1161,13 +1160,13 @@ final public class JmolViewer {
   }
 
   public void setTraceRadius(float radius) {
-    getFrame().setTraceValue((short)(radius * 1000),
-                             true, selectionManager.bsSelection);
+    getFrame().setTraceMad((short)(radius * 2000),
+                           selectionManager.bsSelection);
   }
 
-  public void setTraceColor(Color color) {
-    getFrame().setTraceValue(Colix.getColix(color),
-                             false, selectionManager.bsSelection);
+  public void setTraceColor(byte palette, Color color) {
+    getFrame().setTraceColor(palette, Colix.getColix(color),
+                             selectionManager.bsSelection);
   }
 
   boolean rasmolHydrogenSetting = true;

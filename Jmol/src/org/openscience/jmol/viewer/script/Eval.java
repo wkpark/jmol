@@ -459,6 +459,10 @@ public class Eval implements Runnable {
     evalError("color expected");
   }
 
+  void unrecognizedColorObject() throws ScriptException {
+    evalError("unrecognized color object");
+  }
+
   void unrecognizedExpression() throws ScriptException {
     evalError("runtime unrecognized expression");
   }
@@ -985,10 +989,10 @@ public class Eval implements Runnable {
     case Token.temperature:
     case Token.charge:
     case Token.user:
-      colorAtom(1);
+      colorObject(Token.atom, 1);
       break;
     case Token.atom:
-      colorAtom(2);
+      colorObject(Token.atom, 2);
       break;
     case Token.bond:
     case Token.bonds:
@@ -1004,7 +1008,7 @@ public class Eval implements Runnable {
       viewer.setColorBackboneScript(getColorOrNoneParam(2));
       break;
     case Token.trace:
-      viewer.setTraceColor(getColorOrNoneParam(2));
+      colorObject(Token.trace, 2);
       break;
     case Token.identifier:
 	String str = (String)statement[1].value;
@@ -1027,26 +1031,27 @@ public class Eval implements Runnable {
     }
   }
 
-  void colorAtom(int itoken) throws ScriptException {
-    byte scheme = JmolConstants.PALETTE_CPK;
+  void colorObject(int tokObject, int itoken) throws ScriptException {
+    byte palette = JmolConstants.PALETTE_CPK;
     Color color = null;
     switch (statement[itoken].tok) {
+    case Token.none:
     case Token.spacefill:
       break;
     case Token.charge:
-      scheme = JmolConstants.PALETTE_CHARGE;
+      palette = JmolConstants.PALETTE_CHARGE;
       break;
     case Token.structure:
-      scheme = JmolConstants.PALETTE_STRUCTURE;
+      palette = JmolConstants.PALETTE_STRUCTURE;
       break;
     case Token.amino:
-      scheme = JmolConstants.PALETTE_AMINO;
+      palette = JmolConstants.PALETTE_AMINO;
       break;
     case Token.shapely:
-      scheme = JmolConstants.PALETTE_SHAPELY;
+      palette = JmolConstants.PALETTE_SHAPELY;
       break;
     case Token.chain:
-      scheme = JmolConstants.PALETTE_CHAIN;
+      palette = JmolConstants.PALETTE_CHAIN;
       break;
 
     case Token.group:
@@ -1055,13 +1060,22 @@ public class Eval implements Runnable {
       notImplemented(itoken);
       return;
     case Token.colorRGB:
-      scheme = JmolConstants.PALETTE_COLOR;
+      palette = JmolConstants.PALETTE_COLOR;
       color = getColorParam(itoken);
       break;
     default:
         invalidArgument();
     }
-    viewer.setColorAtomScript(scheme, color);
+    switch(tokObject) {
+    case Token.atom:
+      viewer.setColorAtomScript(palette, color);
+      break;
+    case Token.trace:
+      viewer.setTraceColor(palette, color);
+      break;
+    default:
+      unrecognizedColorObject();
+    }
   }
 
   Hashtable variables = new Hashtable();

@@ -42,8 +42,9 @@ public class Trace {
   boolean initialized;
   int chainCount;
   Atom[][] chains;
-  short[][] marsChains;
+  short[][] madsChains;
   short[][] colixesChains;
+  Point3f[][] midPointsChains;
 
   Trace(JmolViewer viewer, Frame frame) {
     this.viewer = viewer;
@@ -52,33 +53,66 @@ public class Trace {
     pdbMolecule = frame.pdbMolecule;
   }
 
-  public void set(short value, boolean tMar, BitSet bsSelected) {
+  public void setMad(short mad, BitSet bsSelected) {
     if (! hasPdbRecords)
       return;
     if (! initialized)
       initialize();
-    short[][] valuesChains = (tMar ? marsChains : colixesChains);
     for (int i = chainCount; --i >= 0; ) {
       Atom[] alphas = chains[i];
-      short[] values = valuesChains[i];
+      short[] mads = madsChains[i];
       for (int j = alphas.length; --j >= 0; ) {
         Atom alpha = alphas[j];
         if (bsSelected.get(alpha.getAtomIndex()))
-          values[j] = value;
+          mads[j] = mad;
       }
     }
   }
 
+  public void setColor(byte palette, short colix, BitSet bsSelected) {
+    if (! hasPdbRecords)
+      return;
+    if (! initialized)
+      initialize();
+    boolean usePalette = (colix == 0);
+    for (int i = chainCount; --i >= 0; ) {
+      Atom[] alphas = chains[i];
+      short[] colixes = colixesChains[i];
+      for (int j = alphas.length; --j >= 0; ) {
+        Atom alpha = alphas[j];
+        if (bsSelected.get(alpha.getAtomIndex()))
+          colixes[j] = 
+            usePalette ? viewer.getColixAtomPalette(alpha, palette) : colix;
+      }
+    }
+  }
+  
   void initialize() {
     chains = pdbMolecule.getAlphaChains();
     chainCount = chains.length;
-    marsChains = new short[chainCount][];
+    madsChains = new short[chainCount][];
     colixesChains = new short[chainCount][];
+    midPointsChains = new Point3f[chainCount][];
     for (int i = chainCount; --i >= 0; ) {
       int chainLength = chains[i].length;
-      marsChains[i] = new short[chainLength];
+      madsChains[i] = new short[chainLength];
       colixesChains[i] = new short[chainLength];
+      calcMidPoints(chains[i],
+                    midPointsChains[i] = new Point3f[chainLength + 1]);
     }
     initialized = true;
+  }
+
+  void calcMidPoints(Atom[] alphas, Point3f[] midPoints) {
+    int chainLength = alphas.length;
+    Point3f atomPrevious = alphas[0].point3f;
+    midPoints[0] = atomPrevious;
+    for (int i = 1; i < chainLength; ++i) {
+      Point3f mid = midPoints[i] = new Point3f(atomPrevious);
+      atomPrevious = alphas[i].point3f;
+      mid.add(atomPrevious);
+      mid.scale(0.5f);
+    }
+    midPoints[chainLength] = atomPrevious;
   }
 }

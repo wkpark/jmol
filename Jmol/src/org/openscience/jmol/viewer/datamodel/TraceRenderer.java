@@ -30,6 +30,8 @@ import org.openscience.jmol.viewer.g3d.Graphics3D;
 import org.openscience.jmol.viewer.g3d.Colix;
 import org.openscience.jmol.viewer.g3d.Shade3D;
 import java.awt.Rectangle;
+import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
 class TraceRenderer extends Renderer {
 
@@ -37,38 +39,56 @@ class TraceRenderer extends Renderer {
     this.viewer = viewer;
   }
 
+  Point3i s0 = new Point3i();
+  Point3i s1 = new Point3i();
+  Point3i s2 = new Point3i();
+  Point3i s3 = new Point3i();
+
   void render(Graphics3D g3d, Rectangle rectClip, Frame frame) {
     Trace trace = frame.trace;
     if (trace == null || !trace.initialized)
       return;
     Atom[][] chains = trace.chains;
-    short[][] marsChains = trace.marsChains;
+    Point3f[][] midPointsChains = trace.midPointsChains;
+    short[][] madsChains = trace.madsChains;
     short[][] colixesChains = trace.colixesChains;
-    for (int i = chains.length; --i >= 0; ) {
-      Atom[] alphas = chains[i];
-      short[] mars = marsChains[i];
-      short[] colixes = colixesChains[i];
-      for (int j = alphas.length; --j > 0; ) {
-        int jPrev = j - 1;
-        int jPrev2 = j - 2;
-        if (jPrev2 < 0) jPrev2 = 0;
-        int jNext = j + 1;
-        if (jNext >= alphas.length) jNext = j;
-        Atom atom0 = alphas[jPrev2];
-        Atom atom1 = alphas[jPrev];
-        Atom atom2 = alphas[j];
-        Atom atom3 = alphas[jNext];
-        short colix = colixes[jPrev];
-        if (colix == 0)
-          colix = atom1.colixAtom;
-        int mad = mars[jPrev] * 2;
-        int diameter1 = viewer.scaleToScreen(atom1.z, mad);
-        int diameter2 = viewer.scaleToScreen(atom2.z, mad);
-        g3d.fillHermite(colix, diameter1, diameter2,
-                        atom0.x, atom0.y, atom0.z, atom1.x, atom1.y, atom1.z,
-                        atom2.x, atom2.y, atom2.z, atom3.x, atom3.y, atom3.z);
-      }
+    for (int i = chains.length; --i >= 0; )
+      renderChain(g3d, chains[i], midPointsChains[i],
+                  madsChains[i], colixesChains[i]);
+  }
+
+  void renderChain(Graphics3D g3d, Atom[] alphas, Point3f[] midPoints,
+                   short[] mads, short[] colixes) {
+    for (int i = alphas.length; --i >= 0; ) {
+      int mad = mads[i];
+      if (mad == 0)
+        continue;
+      calcScreenCoordinates(midPoints, i);
+      int diameter1 = viewer.scaleToScreen(s1.z, mad);
+      int diameter2 = viewer.scaleToScreen(s2.z, mad);
+      short colix = colixes[i];
+      if (colix == 0)
+        colix = alphas[i].colixAtom;
+      g3d.fillHermite(colix, diameter1, diameter2,
+                      s0.x, s0.y, s0.z, s1.x, s1.y, s1.z,
+                      s2.x, s2.y, s2.z, s3.x, s3.y, s3.z);
     }
+  }
+
+  void calcScreenCoordinates(Point3f[] midPoints, int i1) {
+    int i0 = i1 - 1;
+    int i2 = i1 + 1;
+    int i3 = i1 + 2;
+    viewer.transformPoint(midPoints[i1], s1);
+    if (i0 < 0)
+      s0.set(s1);
+    else
+      viewer.transformPoint(midPoints[i0], s0);
+    viewer.transformPoint(midPoints[i2], s2);
+    if (i3 == midPoints.length)
+      s3.set(s2);
+    else
+      viewer.transformPoint(midPoints[i3], s3);
   }
 }
 

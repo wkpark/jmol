@@ -203,13 +203,20 @@ public class Frame {
 
   Trace trace;
 
-  public void setTraceValue(short value, boolean tMar, BitSet bsSelected) {
-    if (value != 0 && trace == null)
+  public void setTraceMad(short mad, BitSet bsSelected) {
+    if (mad != 0 && trace == null)
       trace = new Trace(viewer, this);
     if (trace != null)
-      trace.set(value, tMar, bsSelected);
+      trace.setMad(mad, bsSelected);
   }
-
+  
+  public void setTraceColor(byte palette, short colix, BitSet bsSelected) {
+    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && trace == null)
+      trace = new Trace(viewer, this);
+    if (trace != null)
+      trace.setColor(palette, colix, bsSelected);
+  }
+  
   Axes axes;
   public void setModeAxes(byte modeAxes) {
     if (modeAxes != JmolConstants.AXES_NONE && axes == null)

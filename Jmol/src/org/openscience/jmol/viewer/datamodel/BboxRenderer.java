@@ -33,10 +33,10 @@ import javax.vecmath.Point3i;
 
 class BboxRenderer extends ShapeRenderer {
 
-  final Point3i[] bboxScreen = new Point3i[8];
+  final Point3i[] bboxScreens = new Point3i[8];
   {
     for (int i = 8; --i >= 0; )
-      bboxScreen[i] = new Point3i();
+      bboxScreens[i] = new Point3i();
   }
 
   void render() {
@@ -44,12 +44,24 @@ class BboxRenderer extends ShapeRenderer {
     short mad = bbox.mad;
     if (mad == 0)
       return;
-    for (int i = 8; --i >= 0; )
-      viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);
+    int zSum = 0;;
+    for (int i = 8; --i >= 0; ) {
+      viewer.transformPoint(bbox.bboxPoints[i], bboxScreens[i]);
+      zSum += bboxScreens[i].z;
+    }
+    int widthPixels = 0;
+    if (mad > 0)
+      widthPixels = viewer.scaleToScreen(zSum / 8, mad);
     short colix = bbox.colix;
-    for (int i = 0; i < 24; i += 2)
-      g3d.drawDottedLine(colix,
-                         bboxScreen[bbox.edges[i]],
-                         bboxScreen[bbox.edges[i+1]]);
+    for (int i = 0; i < 24; i += 2) {
+      if (mad < 0)
+        g3d.drawDottedLine(colix,
+                           bboxScreens[bbox.edges[i]],
+                           bboxScreens[bbox.edges[i+1]]);
+      else
+        g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, widthPixels,
+                         bboxScreens[bbox.edges[i]],
+                         bboxScreens[bbox.edges[i+1]]);
+    }
   }
 }

@@ -85,7 +85,7 @@ public class ABINITReader extends DefaultChemFileReader {
   protected BufferedReader inputBuffer;
 
   // The resulting CrystalFile
-  CrystalFile crystalFile = new CrystalFile();
+  CrystalFile crystalFile;
   
 
   /**
@@ -96,6 +96,7 @@ public class ABINITReader extends DefaultChemFileReader {
   public ABINITReader(Reader input) {
     super(input);
     this.inputBuffer = (BufferedReader) input;
+    crystalFile = new CrystalFile();
   }
 
 

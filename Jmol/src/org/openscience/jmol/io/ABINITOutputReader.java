@@ -19,11 +19,15 @@
 package org.openscience.jmol.io;
 
 import org.openscience.jmol.ChemFile;
+import org.openscience.jmol.CrystalFile;
+import org.openscience.jmol.CrystalBox;
+import org.openscience.jmol.UnitCellBox;
 import org.openscience.jmol.FortranFormat;
 import org.openscience.jmol.Energy;
 import org.openscience.jmol.EnergyBand;
-import org.openscience.jmol.CrystalBox;
-import org.openscience.jmol.UnitCellBox;
+
+import org.openscience.jmol.util.*;
+
 import java.util.Vector;
 import java.util.StringTokenizer;
 import java.lang.reflect.Array;
@@ -89,7 +93,7 @@ public class ABINITOutputReader extends ABINITReader {
   String info = "";
   String line;
   int count = 0;
-  double energy = 0.0f;
+  double energy = 1000000;
   Vector dataset = new Vector(0);  //Store the dataset numbers as a string
   int selectedDataset = 0;
   int enunit;
@@ -345,8 +349,10 @@ public class ABINITOutputReader extends ABINITReader {
     System.out.println("New Frame set!");
     
     //Add the Energy Property to the frame
-    crystalFile.getFrame(crystalFile.getNumberOfFrames()-1)
-      .addProperty(new Energy(energy));
+    if (energy != 1000000) {
+      crystalFile.getFrame(crystalFile.getNumberOfFrames()-1)
+	.addProperty(new Energy(energy));
+    }
   } //end setFrame()
   
   private void readFrames(String frameSep) throws IOException {
@@ -413,14 +419,15 @@ public class ABINITOutputReader extends ABINITReader {
 
 
   private void readEnergyBand() throws IOException {
-    EnergyBand energyBand = new EnergyBand();
+    EnergyBand energyBand = new EnergyBand(Units.EV);
     
     Point3d a = new Point3d();
     Point3d b;
     Point3d c;
     Point3d orig = new Point3d();
     Point3d end = new Point3d();
-    
+    String origName ="";
+    String endName = "";
 
     //Go to "Eigenvalues"
     nextAbinitToken(true);
@@ -472,8 +479,20 @@ public class ABINITOutputReader extends ABINITReader {
       inputBuffer.reset();
       nkptRead = nkptRead - nkptReadSinceLastMark;
       nkptReadSinceLastMark=0;
+
+
+      if (orig.x == 0.0f && orig.y == 0.0f && orig.z == 0.0f){
+	origName="\\S G";
+      } else {
+	origName="";
+      }
+      if (end.x == 0.0f && end.y == 0.0f && end.z == 0.0f){
+	endName="\\S G";
+      } else {
+	endName="";
+      }
       
-      energyBand.addKLine(orig,"",end,"",lkpt,nband); //create a new line
+      energyBand.addKLine(orig,origName,end,endName,lkpt,nband); //create a new line
 
       System.out.println("New K Line");
       for (int ikpt=0; ikpt < lkpt; ikpt++) {

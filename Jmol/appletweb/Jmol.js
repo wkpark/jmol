@@ -55,6 +55,8 @@ function jmolApplet(size, modelFilename, script, nameSuffix) {
     if (! nameSuffix)
       nameSuffix = appletCount;
     ++appletCount;
+    if (! script)
+      script = "select *";
     var sz = _jmolGetAppletSize(size);
     var t;
     t = "<applet name='jmol" + nameSuffix + "' id='jmol" + nameSuffix + 
@@ -150,11 +152,9 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   document.close();
 }
 
-function jmolRadio(script, groupName, isChecked, cssClass) {
-  if (! groupName) {
-    alert("jmolRadio requires a group name");
+function jmolRadio(groupName, script, isChecked, cssClass) {
+  if (!groupName || !script)
     return;
-  }
   var scriptIndex = _jmolAddScript(script);
   var cssText = cssClass ? "class='" + cssClass + "' " : "";
   var t = "<input name='" + groupName +

@@ -168,7 +168,6 @@ class Jmol extends JPanel {
             atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
         } catch(Exception e1) { }
         
-        ChemFrame.setAtomTypeTable(atomTypeTable);
         
         ft = new FileTyper(openChooser);
         openChooser.setAccessory(ft);        

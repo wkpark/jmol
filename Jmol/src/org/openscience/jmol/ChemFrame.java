@@ -43,7 +43,6 @@ import java.awt.Graphics;
 import java.util.*;
 
 public class ChemFrame {
-    private static AtomTypeTable atomTypeTable;
     private static float bondFudge       = 1.12f;
     private static float ScreenScale;
     private static boolean AutoBond      = true;
@@ -214,9 +213,6 @@ public class ChemFrame {
     static boolean getShowHydrogens() {
         return ShowHydrogens;
     }
-    static void setAtomTypeTable(AtomTypeTable att) {
-        atomTypeTable = att;
-    }
     static void setBondFudge(float bf) {
         bondFudge = bf;
     }
@@ -333,8 +329,7 @@ public class ChemFrame {
      * @param z the z coordinate of the new atom
      */                
     public int addVert(String name, float x, float y, float z) throws Exception {
-        AtomType type = atomTypeTable.get(name);
-        return addVert(type, x, y, z);
+        return addVert(new AtomType(BaseAtomType.get(name)), x, y, z);
     }
 
     /**
@@ -462,8 +457,11 @@ public class ChemFrame {
      * @param z the z coordinate of the new atom
      */                
     public int addVert(int atomicNumber, float x, float y, float z) throws Exception {
-        AtomType type = atomTypeTable.get(atomicNumber);
-        return addVert(type, x, y, z);
+		BaseAtomType baseType = BaseAtomType.get(atomicNumber);
+		if (baseType == null) {
+			return -1;
+		}
+        return addVert(new AtomType(baseType), x, y, z);
     }
 	
     /**
@@ -544,8 +542,7 @@ public class ChemFrame {
      * @param i the index of the atom
      */
     public AtomType getAtomType(int i) {
-        AtomType a = atoms[i];
-        return a;
+        return atoms[i] ;
     }
 
     /**

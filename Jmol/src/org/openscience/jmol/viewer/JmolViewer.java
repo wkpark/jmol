@@ -699,8 +699,8 @@ final public class JmolViewer {
    * delegated to FileManager
    ****************************************************************/
 
-  public void setAppletDocumentBase(URL base) {
-    fileManager.setAppletDocumentBase(base);
+  public void setAppletContext(URL documentBase, URL codeBase, String appletProxy) {
+    fileManager.setAppletContext(documentBase, codeBase, appletProxy);
   }
 
   public URL getURLFromName(String name) {

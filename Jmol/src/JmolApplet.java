@@ -26,7 +26,8 @@
 import org.openscience.jmol.applet.*;
 import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.JmolStatusListener;
-import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
+//import org.openscience.jmol.adapters.DeprecatedJmolModelAdapter;
+import org.openscience.jmol.adapters.XyzJmolModelAdapter;
 import org.openscience.jmol.ui.JmolPopup;
 
 import java.applet.Applet;
@@ -39,6 +40,8 @@ import java.awt.event.KeyAdapter;
 import java.io.InputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.PropertyResourceBundle;
+import java.util.MissingResourceException;
 
 public class JmolApplet extends Applet implements JmolStatusListener {
 
@@ -80,6 +83,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
 
   public void init() {
+    loadProperties();
     initWindows();
     initApplication();
   }
@@ -87,43 +91,90 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     canvas = new AppletCanvas();
-    viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter(), false);
+    //viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter(), false);
+    viewer = new JmolViewer(canvas, new XyzJmolModelAdapter(), false);
     canvas.setJmolViewer(viewer);
     viewer.setJmolStatusListener(this);
 
     jmolpopup = new JmolPopup(viewer, canvas);
 
-    viewer.setAppletDocumentBase(getDocumentBase());
+    viewer.setAppletContext(getDocumentBase(), getCodeBase(),
+                            getValue("JmolAppletProxy", null));
 
     setLayout(new java.awt.BorderLayout());
     add(canvas, "Center");
   }
 
+  PropertyResourceBundle appletProperties = null;
+
+  private void loadProperties() {
+    URL codeBase = getCodeBase();
+    try {
+      URL urlProperties = new URL(codeBase, "JmolApplet.properties");
+      appletProperties = new PropertyResourceBundle(urlProperties.openStream());
+    } catch (Exception ex) {
+      System.out.println("JmolApplet.loadProperties() -> " + ex);
+    }
+  }
+
+  private String getValue(String propertyName, String defaultValue) {
+    String stringValue = getParameter(propertyName);
+    if (stringValue != null)
+      return stringValue;
+    if (appletProperties != null) {
+      try {
+        stringValue = appletProperties.getString(propertyName);
+        return stringValue;
+      } catch (MissingResourceException ex) {
+      }
+    }
+    return defaultValue;
+  }
+
+  private int getValue(String propertyName, int defaultValue) {
+    String stringValue = getValue(propertyName, null);
+    if (stringValue != null)
+      try {
+        return Integer.parseInt(stringValue);
+      } catch (NumberFormatException ex) {
+        System.out.println(propertyName + ":" + stringValue + " is not an integer");
+      }
+    return defaultValue;
+  }
+
+  private double getValue(String propertyName, double defaultValue) {
+    String stringValue = getValue(propertyName, null);
+    if (stringValue != null)
+      try {
+        return (new Double(stringValue)).doubleValue();
+      } catch (NumberFormatException ex) {
+        System.out.println(propertyName + ":" + stringValue + " is not an integer");
+      }
+    return defaultValue;
+  }
+
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
-      viewer.setPercentVdwAtom(20);
+      viewer.setPercentVdwAtom(getValue("defaultVanderwaalsPercentage", 20));
       viewer.zoomToPercent(100);
+      //      viewer.zoomToPercent(getValue("zoom", 100));
       viewer.setStyleBond(JmolViewer.SHADED);
       viewer.setStyleAtom(JmolViewer.SHADED);
-      
-      viewer.setColorBackground(getParameter("bgcolor"));
-      setStyle(getParameter("style"));
-      setLabelStyle(getParameter("label"));
+      setStyle(getValue("style", "shaded"));
+      setLabelStyle(getValue("label", "none"));
+      viewer.setColorBackground(getValue("bgcolor", "white"));
+      String wfr = getValue("wireframeRotation", "false");
+      setWireframeRotation(wfr.equalsIgnoreCase("on") ||
+                           wfr.equalsIgnoreCase("true"));
 
-      String wfr = getParameter("wireframeRotation");
-      setWireframeRotation(wfr != null &&
-                           (wfr.equalsIgnoreCase("on") ||
-                            wfr.equalsIgnoreCase("true")));
-
-      String pd = getParameter("perspectiveDepth");
-      setPerspectiveDepth(pd == null ||
-                          pd.equalsIgnoreCase("on") ||
+      String pd = getValue("perspectiveDepth", "true");
+      setPerspectiveDepth(pd.equalsIgnoreCase("on") ||
                           pd.equalsIgnoreCase("true"));
       
-      load(getParameter("load"));
-      loadInline(getParameter("loadInline"));
-      script(getParameter("script"));
+      load(getValue("load", null));
+      loadInline(getValue("loadInline", null));
+      script(getValue("script", null));
     }
     viewer.popHoldRepaint();
   }
@@ -133,6 +184,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void notifyFileNotLoaded(String fileName, String errorMsg) {
+    showStatus("File Error->" + errorMsg);
   }
 
   public void setStatusMessage(String statusMessage) {
@@ -212,7 +264,10 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void load(String modelName) {
     if (modelName != null) {
+      System.out.println("trying to load:" + modelName);
       String strError = viewer.openFile(modelName);
+      System.out.println(strError != null ? strError : "no errors");
+
       setStatusMessage(strError);
     }
   }

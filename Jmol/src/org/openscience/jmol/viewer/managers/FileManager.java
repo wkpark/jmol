@@ -52,8 +52,14 @@ public class FileManager {
   }
 
   URL appletDocumentBase = null;
-  public void setAppletDocumentBase(URL base) {
-    appletDocumentBase = base;
+  URL appletCodeBase = null;
+  String appletProxy = null;
+
+  public void setAppletContext(URL documentBase, URL codeBase,
+                               String jmolAppletProxy) {
+    appletDocumentBase = documentBase;
+    appletCodeBase = codeBase;
+    appletProxy = jmolAppletProxy;
   }
 
   // mth jan 2003 -- there must be a better way for me to do this!?
@@ -70,16 +76,20 @@ public class FileManager {
       if (appletDocumentBase != null) {
         // we are running as an applet
         if (i < urlPrefixes.length)
-          name = "JmolAppletProxy.pl?url=" + URLEncoder.encode(name);
+          if (appletProxy != null)
+            name = appletProxy + "?url=" + URLEncoder.encode(name);
         System.out.println("an applet will try to open the URL:" + name);
         url = new URL(appletDocumentBase, name);
+        System.out.println("url becomes:" + url);
       } else {
         url = (i < urlPrefixes.length
                ? new URL(name)
                : new URL("file", null, name));
       }
     } catch (MalformedURLException e) {
+      System.out.println("MalformedURLException:" + e);
     }
+    System.out.println("returning url=" + url);
     return url;
   }
 
@@ -88,8 +98,11 @@ public class FileManager {
       URL url = getURLFromName(name);
       if (url != null) {
         try {
-          return url.openStream();
-        } catch (IOException e) {
+          System.out.println("getting ready to open url=" + url);
+          InputStream is = url.openStream();
+          return is;
+        } catch (Exception e) {
+          System.out.println("error doing a url.openStream:" + e.getMessage());
           errorMessage = e.getMessage();
         }
       }
@@ -153,10 +166,14 @@ public class FileManager {
     System.out.println(" fullPathName=" + fullPathName +
                        " fileName=" + fileName);
     InputStream istream = getInputStreamFromName(name);
-    if (errorMessage != null)
+    System.out.println("returned from getInputStreamFromName");
+    if (errorMessage != null) {
+      System.out.println("well, the error is:" + errorMessage);
       return errorMessage;
+    }
     if (istream == null)
       return "error opening url/filename";
+    System.out.println("calling openInputStream");
     return openInputStream(fullPathName, fileName, istream);
   }
 
@@ -167,6 +184,7 @@ public class FileManager {
   byte[] abMagic = new byte[4];
   private String openInputStream(String fullPathName, String fileName,
                                  InputStream istream) {
+    System.out.println("entering openInputStream");
     BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
     InputStream istreamToRead = bistream;
     bistream.mark(5);

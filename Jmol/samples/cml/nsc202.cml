@@ -1,4 +1,6 @@
-<list>
+<list xmlns="http://www.xml-cml.org/schema/cml2/core"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.xml-cml.org/schema/cml2/core cmlAll.xsd">
 <entry xmlns:src="http://xml.apache.org/xindice/Query" src:col="/db/wwmm/nci/entry" src:key="nci_000202.xml"><identifier version="0.932Beta" tautomeric="0">
    <basic>C14H8O8S2,15-13-7-3H-1H-5H-9(23(17,18)21H)11(7)14(16)12-8(13)4H-2H-6H-10(12)24(19,20)22H</basic>
    <charge />

@@ -26,7 +26,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 
 import java.awt.Rectangle;
 import java.awt.Font;
@@ -39,11 +39,11 @@ public class LabelRenderer {
     this.control = control;
   }
 
-  Graphics25D g25d;
+  Graphics3D g3d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
-    this.g25d = g25d;
+  public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
+    this.g3d = g3d;
     this.clip = clip;
     colixLabel = control.getColixLabel();
     isLabelAtomColor = colixLabel == 0;
@@ -59,15 +59,15 @@ public class LabelRenderer {
     Font font = control.getLabelFont(atomShape.diameter);
     if (font == null)
       return;
-    g25d.setFont(font);
-    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g3d.setFont(font);
+    FontMetrics fontMetrics = g3d.getFontMetrics(font);
     int ascent = fontMetrics.getAscent();
     int descent = fontMetrics.getDescent();
     int height = ascent + descent;
     
     int labelWidth = fontMetrics.stringWidth(strLabel);
     ++labelWidth; // bias rounding to the left;
-    g25d.drawString(strLabel,
+    g3d.drawString(strLabel,
                     isLabelAtomColor ? atomShape.colixAtom : colixLabel,
                     atomShape.x - labelWidth / 2,
                     atomShape.y - (height + 1) / 2 + ascent,
@@ -92,13 +92,13 @@ public class LabelRenderer {
           // but getLabelFont works with diameters
           // so divide the diameter by 2
           font = control.getLabelFont(atomShape.diameter / 2);
-          g25d.setFont(font);
+          g3d.setFont(font);
           String s = p.stringValue();
           if (s.length() > 5) {
             s = s.substring(0, 5);
           }
           int k = 2 + (int) (atomShape.diameter/2 / 1.4142136f);
-          g25d.drawString(s, colixLabel,
+          g3d.drawString(s, colixLabel,
                           atomShape.x + k, atomShape.y - k,
                           atomShape.z - atomShape.diameter/2 - 2);
         }
@@ -111,8 +111,8 @@ public class LabelRenderer {
                                  int x, int y, int z,
                                  int xOffset, int yOffset) {
     Font font = control.getFontOfSize(points);
-    g25d.setFont(font);
-    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g3d.setFont(font);
+    FontMetrics fontMetrics = g3d.getFontMetrics(font);
     int labelHeight = fontMetrics.getAscent();
     labelHeight -= 2; // this should not be necessary, but looks like it is;
     if (yOffset > 0)
@@ -127,15 +127,15 @@ public class LabelRenderer {
       x -= fontMetrics.stringWidth(label) / 2;
     else
       x += xOffset - fontMetrics.stringWidth(label);
-    g25d.drawString(label, colix, x, y, z);
+    g3d.drawString(label, colix, x, y, z);
   }
 
   public void renderStringOutside(String label, short colix, int points,
                                   int x, int y, int z) {
-    g25d.setColix(colix);
+    g3d.setColix(colix);
     Font font = control.getFontOfSize(points);
-    g25d.setFont(font);
-    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g3d.setFont(font);
+    FontMetrics fontMetrics = g3d.getFontMetrics(font);
     int labelAscent = fontMetrics.getAscent();
     int labelWidth = fontMetrics.stringWidth(label);
     int xLabelCenter, yLabelCenter;
@@ -153,7 +153,7 @@ public class LabelRenderer {
     }
     int xLabelBaseline = xLabelCenter - labelWidth / 2;
     int yLabelBaseline = yLabelCenter + labelAscent / 2;
-    g25d.drawString(label, colix, xLabelBaseline, yLabelBaseline, z);
+    g3d.drawString(label, colix, xLabelBaseline, yLabelBaseline, z);
   }
 }
 

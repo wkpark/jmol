@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.*;
 
@@ -31,16 +31,16 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Cylinder25D {
+public class Cylinder3D {
 
   static int foo = 0;
 
   DisplayControl control;
-  Graphics25D g25d;
+  Graphics3D g3d;
 
-  public Cylinder25D(DisplayControl control, Graphics25D g25d) {
+  public Cylinder3D(DisplayControl control, Graphics3D g3d) {
     this.control = control;
-    this.g25d = g25d;
+    this.g3d = g3d;
   }
 
   private short colix1, colix2;
@@ -61,7 +61,7 @@ public class Cylinder25D {
     this.diameter = diameter;
     if (this.diameter <= 1) {
       if (this.diameter == 1)
-        g25d.plotLineDelta(colix1, colix2, xOrigin, yOrigin, zOrigin, dx, dy, dz);
+        g3d.plotLineDelta(colix1, colix2, xOrigin, yOrigin, zOrigin, dx, dy, dz);
       return;
     }
     this.xOrigin = xOrigin; this.yOrigin = yOrigin; this.zOrigin = zOrigin;
@@ -161,7 +161,7 @@ public class Cylinder25D {
       y = (int)(yF + (yF < 0 ? -0.5f : 0.5f));
     }
     z = (int)(zF + 0.5f);
-    int intensity = Shade25D.calcIntensity(xF, yF, zF);
+    int intensity = Shade3D.calcIntensity(xF, yF, zF);
     if (x == xLast && y == yLast) {
       zLast += z;
       intensityLast += intensity;
@@ -183,7 +183,7 @@ public class Cylinder25D {
         intensityLast = (intensityLast + countLast/2) / countLast;
       }
       //      System.out.println("plot " + xLast + "," + yLast);
-      g25d.plotLineDelta(shades1[intensityLast], shades2[intensityLast],
+      g3d.plotLineDelta(shades1[intensityLast], shades2[intensityLast],
                          xOrigin + xLast, yOrigin + yLast,
                          zOrigin - zLast,
                          dx, dy, dz);
@@ -210,7 +210,7 @@ public class Cylinder25D {
                            " last=" + xLast + "," + yLast + " -> " +
                            xInterpolate + "," + yInterpolate);
         */
-        g25d.plotLineDelta(shades1[intensityInterpolate],
+        g3d.plotLineDelta(shades1[intensityInterpolate],
                            shades2[intensityInterpolate],
                            xOrigin + xInterpolate,
                            yOrigin + yInterpolate,
@@ -226,8 +226,8 @@ public class Cylinder25D {
   }
 
   void renderEndcaps() {
-    g25d.fillSphereCentered(colix1, diameter, xOrigin, yOrigin, zOrigin);
-    g25d.fillSphereCentered(colix2, diameter,
+    g3d.fillSphereCentered(colix1, diameter, xOrigin, yOrigin, zOrigin);
+    g3d.fillSphereCentered(colix2, diameter,
                             xOrigin+dx, yOrigin+dy, zOrigin+dz);
   }
 }

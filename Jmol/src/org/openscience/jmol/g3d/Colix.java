@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.*;
 
@@ -123,7 +123,7 @@ public class Colix {
   public static int[] getShades(short colix) {
     int[] shades = ashades[colix];
     if (shades == null)
-      shades = ashades[colix] = Shade25D.getShades(acolor[colix]);
+      shades = ashades[colix] = Shade3D.getShades(acolor[colix]);
     return shades;
   }
 
@@ -131,7 +131,7 @@ public class Colix {
     short darker = acolixDarker[colix];
     if (darker == 0)
       darker = acolixDarker[colix] =
-        getColix(getShades(colix)[Shade25D.shadeDarker]);
+        getColix(getShades(colix)[Shade3D.shadeDarker]);
     return darker;
   }
 }

@@ -26,8 +26,8 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
-import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.g3d.Graphics3D;
+import org.openscience.jmol.g3d.Colix;
 
 import java.awt.Rectangle;
 
@@ -38,11 +38,11 @@ public class BondRenderer {
     this.control = control;
   }
 
-  Graphics25D g25d;
+  Graphics3D g3d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
-    this.g25d = g25d;
+  public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
+    this.g3d = g3d;
     this.clip = clip;
 
     fastRendering = control.getFastRendering();
@@ -73,7 +73,7 @@ public class BondRenderer {
     if (halowidth < 4) halowidth = 4;
     if (halowidth > 10) halowidth = 10;
     int halodiameter = width + 2 * halowidth;
-    g25d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
+    g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
   public void render(AtomShape atomShape1, AtomShape atomShape2, int order,
@@ -133,7 +133,7 @@ public class BondRenderer {
                       ? 0
                       : (bondOrder == 2) ? step / 2 : step);
         do {
-          g25d.fillCylinder(colix1, colix1, width, x1, y, z1, x1, y, z1);
+          g3d.fillCylinder(colix1, colix1, width, x1, y, z1, x1, y, z1);
           y += step;
         } while (--bondOrder > 0);
       }
@@ -141,9 +141,9 @@ public class BondRenderer {
     }
     if (bondOrder == 1) {
       if (lineBond)
-        g25d.drawLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
+        g3d.drawLine(colix1, colix2, x1, y1, z1, x2, y2, z2);
       else
-        g25d.fillCylinder(colix1, colix2, width, x1, y1, z1, x2, y2, z2);
+        g3d.fillCylinder(colix1, colix2, width, x1, y1, z1, x2, y2, z2);
       return;
     }
     int dx2 = dx * dx;
@@ -163,11 +163,11 @@ public class BondRenderer {
   }
 
   void lineBond() {
-    g25d.drawLine(colix1, colix2, xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
+    g3d.drawLine(colix1, colix2, xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
   }
 
   void cylinderBond() {
-    g25d.fillCylinder(colix1, colix2, width,
+    g3d.fillCylinder(colix1, colix2, width,
                       xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
   }
 

@@ -26,8 +26,8 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
-import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.g3d.Graphics3D;
+import org.openscience.jmol.g3d.Colix;
 import org.openscience.jmol.ProteinProp;
 
 import java.awt.Rectangle;
@@ -263,7 +263,7 @@ public class AtomShape extends Shape implements Bspt.Tuple {
     */
   }
 
-  public void render(Graphics25D g25d, DisplayControl control) {
+  public void render(Graphics3D g3d, DisplayControl control) {
     if (atomicNumber == 1 && !control.getShowHydrogens())
       return;
     renderBonds(control);

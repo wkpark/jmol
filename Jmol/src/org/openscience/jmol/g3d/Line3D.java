@@ -22,23 +22,23 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.DisplayControl;
 
-final class Line25D {
+final class Line3D {
 
-  Graphics25D g25d;
+  Graphics3D g3d;
 
-  Line25D(DisplayControl control, Graphics25D g25d) {
-    this.g25d = g25d;
+  Line3D(DisplayControl control, Graphics3D g3d) {
+    this.g3d = g3d;
   }
 
   void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     int cc1 = clipCode(x1, y1);
     int cc2 = clipCode(x2, y2);
-    int xLast = g25d.xLast;
-    int yLast = g25d.yLast;
+    int xLast = g3d.xLast;
+    int yLast = g3d.yLast;
     while ((cc1 | cc2) != 0) {
       if ((cc1 & cc2) != 0)
         return;
@@ -69,7 +69,7 @@ final class Line25D {
         cc2 = clipCode(x2, y2);
       }
     }
-    plotLineDeltaUnclipped(g25d.argbCurrent,
+    plotLineDeltaUnclipped(g3d.argbCurrent,
                            x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
   }
 
@@ -82,21 +82,21 @@ final class Line25D {
     int code = 0;
     if (x < 0)
       code |= 8;
-    else if (x >= g25d.width)
+    else if (x >= g3d.width)
       code |= 4;
 
     if (y < 0)
       code |= 2;
-    else if (y >= g25d.height)
+    else if (y >= g3d.height)
       code |= 1;
     return code;
   }
 
   void plotLineDeltaUnclipped(int argb,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
-    int width = g25d.width;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width;
     int offset = y1 * width + x1;
     if (z1 < zbuf[offset]) {
       zbuf[offset] = (short)z1;
@@ -174,9 +174,9 @@ final class Line25D {
 
   void plotLineDeltaUnclippedGradient(int argb1, int argb2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
-    int width = g25d.width;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width;
 
     int r1 = (argb1 >> 16) & 0xFF;
     int g1 = (argb1 >> 8) & 0xFF;
@@ -305,9 +305,9 @@ final class Line25D {
 
   void plotLineDeltaUnclipped(int argb1, int argb2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
-    int width = g25d.width;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width;
     int offset = y1 * width + x1;
     if (z1 < zbuf[offset]) {
       zbuf[offset] = (short)z1;
@@ -385,10 +385,10 @@ final class Line25D {
 
   void plotLineDeltaClipped(int argb1, int argb2,
                             int x1, int y1, int z1, int dx, int dy, int dz) {
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
-    int width = g25d.width;
-    int height = g25d.height;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width;
+    int height = g3d.height;
     int offset = y1 * width + x1;
     if (x1 >= 0 && x1 < width &&
         y1 >= 0 && y1 < height) {

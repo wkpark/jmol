@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -33,7 +33,7 @@ import java.awt.image.WritableRaster;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 
-final public class Swing25D implements Platform25D{
+final public class Swing3D implements Platform3D{
 
   int width, height;
   BufferedImage bi;

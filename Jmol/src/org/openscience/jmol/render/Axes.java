@@ -25,7 +25,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -103,12 +103,12 @@ public class Axes {
       z = screen.z;
     }
 
-    public void render(Graphics25D g25d, DisplayControl control) {
+    public void render(Graphics3D g3d, DisplayControl control) {
       short colix = control.getColixAxes();
       for (int i = 0; i < 6; ++i) {
         AxisShape axis = axisShapes[i];
         if (axis.z <= z)
-          g25d.drawLine(colix, x, y, z, axis.x, axis.y, axis.z);
+          g3d.drawLine(colix, x, y, z, axis.x, axis.y, axis.z);
       }
     }
   }
@@ -132,9 +132,9 @@ public class Axes {
       z = screen.z;
     }
   
-    public void render(Graphics25D g25d, DisplayControl control) {
+    public void render(Graphics3D g3d, DisplayControl control) {
       if (z > originShape.z) {
-        g25d.drawLine(control.getColixAxes(), x, y, z,
+        g3d.drawLine(control.getColixAxes(), x, y, z,
                       originShape.x, originShape.y, originShape.z);
       }
       if (label != null)

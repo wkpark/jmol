@@ -22,12 +22,12 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import java.awt.Graphics;
 import java.awt.Image;
 
-public interface Platform25D {
+public interface Platform3D {
 
   public void allocateImage(int width, int height, boolean useAlphaChannel);
   public Image getImage();

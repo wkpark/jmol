@@ -22,7 +22,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.Java12;
@@ -36,16 +36,16 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Shape;
 
-final public class Graphics25D {
+final public class Graphics3D {
 
   DisplayControl control;
-  Platform25D platform;
-  Line25D line25d;
-  Circle25D circle25d;
-  Sphere25D sphere25d;
-  Triangle25D triangle25d;
-  Cylinder25D cylinder25d;
-  Dots25D dots25d;
+  Platform3D platform;
+  Line3D line25d;
+  Circle3D circle25d;
+  Sphere3D sphere25d;
+  Triangle3D triangle25d;
+  Cylinder3D cylinder25d;
+  Dots3D dots25d;
   Graphics g;
 
   boolean tOversample;
@@ -73,21 +73,21 @@ final public class Graphics25D {
   Font fontCurrent;
   FontMetrics fontmetricsCurrent;
 
-  public Graphics25D(DisplayControl control) {
+  public Graphics3D(DisplayControl control) {
     this.control = control;
     this.g = g;
     if (control.jvm12orGreater && ! forceAWT ) {
-      platform = new Swing25D();
+      platform = new Swing3D();
     } else {
-      platform = new Awt25D(control.getAwtComponent());
+      platform = new Awt3D(control.getAwtComponent());
     }
-    platform = new Awt25D(control.getAwtComponent());
-    this.line25d = new Line25D(control, this);
-    this.circle25d = new Circle25D(control, this);
-    this.sphere25d = new Sphere25D(control, this);
-    this.triangle25d = new Triangle25D(control, this);
-    this.cylinder25d = new Cylinder25D(control, this);
-    this.dots25d = new Dots25D(control, this);
+    platform = new Awt3D(control.getAwtComponent());
+    this.line25d = new Line3D(control, this);
+    this.circle25d = new Circle3D(control, this);
+    this.sphere25d = new Sphere3D(control, this);
+    this.triangle25d = new Triangle3D(control, this);
+    this.cylinder25d = new Cylinder3D(control, this);
+    this.dots25d = new Dots3D(control, this);
   }
 
   public void setSize(int width, int height) {
@@ -306,7 +306,7 @@ final public class Graphics25D {
   public void drawString(String str, short colix,
                          int xBaseline, int yBaseline, int z) {
     argbCurrent = Colix.getArgb(colix);
-    Text25D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(),
+    Text3D.plot(xBaseline, yBaseline - fontmetricsCurrent.getAscent(),
                  z, argbCurrent,
                  str, fontCurrent, this, control.getAwtComponent());
   }

@@ -23,14 +23,14 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.MemoryImageSource;
 
-final public class Awt25D implements Platform25D {
+final public class Awt3D implements Platform3D {
 
   Component component;
   int width, height;
@@ -41,7 +41,7 @@ final public class Awt25D implements Platform25D {
   Image imageFontOps; // this image & graphics are used for font operations;
   int[] pbuf;
 
-  public Awt25D(Component component) {
+  public Awt3D(Component component) {
     this.component = component;
   }
 

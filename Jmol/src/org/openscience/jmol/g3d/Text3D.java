@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.*;
 
@@ -36,7 +36,7 @@ import java.awt.Graphics;
 import java.awt.image.PixelGrabber;
 import java.util.Hashtable;
 
-public class Text25D {
+public class Text3D {
   /*
     we have a few problems here
     a message is probably going to vary in size with z depth
@@ -60,7 +60,7 @@ public class Text25D {
   int size;
   int[] bitmap;
 
-  public Text25D(String text, Font font, Component component) {
+  public Text3D(String text, Font font, Component component) {
     if (g == null)
       checkImageBufferSize(component, 128, 16);
     calcMetrics(text, font);
@@ -161,34 +161,34 @@ public class Text25D {
   
   // FIXME mth
   // we have a synchronization issue/race condition  here with multiple
-  // so only one Text25D can be generated at a time
+  // so only one Text3D can be generated at a time
 
-  synchronized static Text25D getText25D(String text, Font font,
+  synchronized static Text3D getText3D(String text, Font font,
                                          Component component) {
     int size = font.getSize();
-    Text25D[] at25d = (Text25D[])htText.get(text);
+    Text3D[] at25d = (Text3D[])htText.get(text);
     if (at25d != null) {
       if (size <= at25d.length) {
-        Text25D t25d = at25d[size - 1];
+        Text3D t25d = at25d[size - 1];
         if (t25d != null)
           return t25d;
       } else {
-        Text25D[] at25dNew = new Text25D[size + 8];
+        Text3D[] at25dNew = new Text3D[size + 8];
         System.arraycopy(at25d, 0, at25dNew, 0, at25d.length);
         at25d = at25dNew;
         htText.put(text, at25d);
       }
     } else {
-      at25d = new Text25D[size + 8];
+      at25d = new Text3D[size + 8];
       htText.put(text, at25d);
     }
-    return at25d[size - 1] = new Text25D(text, font, component);
+    return at25d[size - 1] = new Text3D(text, font, component);
   }
 
   public static void plot(int x, int y, int z, int argb,
-                          String text, Font font, Graphics25D g25d,
+                          String text, Font font, Graphics3D g3d,
                           Component component) {
-    Text25D text25d = getText25D(text, font, component);
+    Text3D text25d = getText3D(text, font, component);
     int offset = 0;
     int shiftregister = 0;
     int i = 0, j = 0;
@@ -202,7 +202,7 @@ public class Text25D {
           offset += skip;
         } else {
           if (shiftregister < 0)
-            g25d.plotPixelClipped(argb, x + j, y + i, z);
+            g3d.plotPixelClipped(argb, x + j, y + i, z);
           shiftregister <<= 1;
           ++offset;
           ++j;

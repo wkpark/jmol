@@ -26,7 +26,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 import java.awt.Rectangle;
 
 public class AtomRenderer {
@@ -36,11 +36,11 @@ public class AtomRenderer {
     this.control = control;
   }
 
-  Graphics25D g25d;
+  Graphics3D g3d;
   Rectangle clip;
 
-  public void setGraphicsContext(Graphics25D g25d, Rectangle clip) {
-    this.g25d = g25d;
+  public void setGraphicsContext(Graphics3D g3d, Rectangle clip) {
+    this.g3d = g3d;
     this.clip = clip;
 
     fastRendering = control.getFastRendering();
@@ -84,19 +84,19 @@ public class AtomRenderer {
     if (halowidth > 10) halowidth = 10;
     int halodiameter = diameter + 2 * halowidth;
     int haloradius = (halodiameter + 1) / 2;
-    g25d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
+    g3d.fillCircleCentered(colixSelection, x, y, z+1, halodiameter);
   }
 
   private void renderDots(short colixDots, int diameterDots) {
-    g25d.drawDotsCentered(colixDots, x, y, z, diameterDots);
+    g3d.drawDotsCentered(colixDots, x, y, z, diameterDots);
   }
 
   private void renderAtom() {
     if (diameter > 0) {
       if (styleAtom == DisplayControl.SHADED && !fastRendering)
-        g25d.fillSphereCentered(colix, diameter, x, y, z);
+        g3d.fillSphereCentered(colix, diameter, x, y, z);
       else if (styleAtom != DisplayControl.NONE)
-        g25d.drawCircleCentered(colix, diameter, x, y, z);
+        g3d.drawCircleCentered(colix, diameter, x, y, z);
     }
   }
 }

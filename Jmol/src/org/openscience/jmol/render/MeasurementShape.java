@@ -26,7 +26,7 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.MeasurementInterface;
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -92,12 +92,12 @@ public class MeasurementShape extends LineShape
     strMeasurement = dihedralFormat.sprintf(dihedral);
   }
 
-  public void render(Graphics25D g25d, DisplayControl control) {
-    control.maybeDottedStroke(g25d);
-    g25d.drawLine(control.getColixDistance(), x, y, z, xEnd, yEnd, zEnd);
-    control.defaultStroke(g25d);
+  public void render(Graphics3D g3d, DisplayControl control) {
+    control.maybeDottedStroke(g3d);
+    g3d.drawLine(control.getColixDistance(), x, y, z, xEnd, yEnd, zEnd);
+    control.defaultStroke(g3d);
     if (control.getShowMeasurementLabels())
-      paintMeasurementString(g25d, control);
+      paintMeasurementString(g3d, control);
   }
 
 
@@ -114,15 +114,15 @@ public class MeasurementShape extends LineShape
     return distanceFormat.sprintf(dist);
   }
 
-  void paintMeasurementString(Graphics25D g25d, DisplayControl control) {
+  void paintMeasurementString(Graphics3D g3d, DisplayControl control) {
     Font font = control.getMeasureFont(10);
-    g25d.setFont(font);
-    FontMetrics fontMetrics = g25d.getFontMetrics(font);
+    g3d.setFont(font);
+    FontMetrics fontMetrics = g3d.getFontMetrics(font);
     int j = fontMetrics.stringWidth(strMeasurement);
     int xT = (x + xEnd) / 2;
     int yT = (y + yEnd) / 2;
     int zT = (z + zEnd) / 2;
-    g25d.drawString(strMeasurement, control.getColixDistance(), xT, yT, zT);
+    g3d.drawString(strMeasurement, control.getColixDistance(), xT, yT, zT);
   }
 
   public int[] getAtomList() {

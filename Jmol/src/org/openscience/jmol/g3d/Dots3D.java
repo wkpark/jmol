@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.DisplayControl;
 
@@ -31,13 +31,13 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Dots25D {
+public class Dots3D {
 
   DisplayControl control;
-  Graphics25D g25d;
-  public Dots25D(DisplayControl control, Graphics25D g25d) {
+  Graphics3D g3d;
+  public Dots3D(DisplayControl control, Graphics3D g3d) {
     this.control = control;
-    this.g25d = g25d;
+    this.g3d = g3d;
   }
 
   final static int numLatitude = 16;
@@ -69,10 +69,10 @@ public class Dots25D {
         double xD = r * Math.sin(theta);
         int xT = (int)(xD + (xD >= 0 ? 0.5 : -0.5));
         int h = (int)(r * Math.cos(theta));
-        g25d.plotPixelClipped(argb, x + xT, y + yT, z - h);
-        g25d.plotPixelClipped(argb, x + xT, y - yT, z - h);
-        g25d.plotPixelClipped(argb, x - xT, y + yT, z - h);
-        g25d.plotPixelClipped(argb, x - xT, y - yT, z - h);
+        g3d.plotPixelClipped(argb, x + xT, y + yT, z - h);
+        g3d.plotPixelClipped(argb, x + xT, y - yT, z - h);
+        g3d.plotPixelClipped(argb, x - xT, y + yT, z - h);
+        g3d.plotPixelClipped(argb, x - xT, y - yT, z - h);
       }
     }
   }

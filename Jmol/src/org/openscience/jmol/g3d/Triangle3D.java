@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.*;
 
@@ -31,18 +31,18 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Triangle25D {
+public class Triangle3D {
 
   DisplayControl control;
-  Graphics25D g25d;
+  Graphics3D g3d;
 
   int ax[] = new int[4];
   int ay[] = new int[4];
   int az[] = new int[4];
 
-  public Triangle25D(DisplayControl control, Graphics25D g25d) {
+  public Triangle3D(DisplayControl control, Graphics3D g3d) {
     this.control = control;
-    this.g25d = g25d;
+    this.g3d = g3d;
   }
 
   /****************************************************************
@@ -172,20 +172,20 @@ public class Triangle25D {
       y = 0;
     }
     while (--dy >= 0) {
-      if (y >= g25d.height)
+      if (y >= g3d.height)
         return;
       int xLeft = axLeft[i];
       if (xLeft < 0)
         xLeft = 0;
       int xRight = axRight[i];
-      if (xRight >= g25d.width)
-        xRight = g25d.width - 1;
+      if (xRight >= g3d.width)
+        xRight = g3d.width - 1;
       int nPix = xRight - xLeft;
       if (nPix > 0) {
         // FIXME mth 2003 06 09
         // z is not correct
         // needs to change from azLeft[i] to azRight[i]
-        g25d.plotPixelsUnclipped(nPix, xLeft, y, azLeft[i]);
+        g3d.plotPixelsUnclipped(nPix, xLeft, y, azLeft[i]);
       }
       ++y;
       ++i;

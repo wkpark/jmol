@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol;
 
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 
 import java.awt.Image;
 import java.awt.Graphics;
@@ -145,8 +145,8 @@ public class RepaintManager {
     this.tOversample = tOversample;
   }
 
-  public void render(Graphics25D g25d, Rectangle rectClip) {
-    g25d.beginRendering(tOversample);
+  public void render(Graphics3D g3d, Rectangle rectClip) {
+    g3d.beginRendering(tOversample);
     if (tOversample) {
       rectOversample.x = rectClip.x << 1;
       rectOversample.y = rectClip.y << 1;
@@ -154,17 +154,17 @@ public class RepaintManager {
       rectOversample.height = rectClip.height << 1;
       rectClip = rectOversample;
     }
-    g25d.clearScreenBuffer(control.getColorBackground(),
+    g3d.clearScreenBuffer(control.getColorBackground(),
                            rectClip.x, rectClip.y,
                            rectClip.width, rectClip.height);
-    control.setGraphicsContext(g25d, rectClip);
-    control.getJmolFrame().render(g25d, control);
+    control.setGraphicsContext(g3d, rectClip);
+    control.getJmolFrame().render(g3d, control);
 
     Rectangle band = control.getRubberBandSelection();
     if (band != null)
-      g25d.drawRect(control.getColixRubberband(),
+      g3d.drawRect(control.getColixRubberband(),
                     band.x, band.y, band.width, band.height);
-    g25d.endRendering();
+    g3d.endRendering();
     notifyRepainted();
   }
 }

@@ -23,7 +23,7 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.*;
 
@@ -31,10 +31,10 @@ import java.awt.Component;
 import java.awt.image.MemoryImageSource;
 import java.util.Hashtable;
 
-public class Sphere25D {
+public class Sphere3D {
 
   DisplayControl control;
-  Graphics25D g25d;
+  Graphics3D g3d;
   byte[] semicircles;
   int[] semicircleIndex;
 
@@ -42,9 +42,9 @@ public class Sphere25D {
   final static int shiftDivFoo = 9;
   short[] heightsFoo;
 
-  public Sphere25D(DisplayControl control, Graphics25D g25d) {
+  public Sphere3D(DisplayControl control, Graphics3D g3d) {
     this.control = control;
-    this.g25d = g25d;
+    this.g3d = g3d;
 
     /*
     semicircles = new byte[127*256 + 128];
@@ -70,7 +70,7 @@ public class Sphere25D {
     int radius = (diameter + 1) / 2;
     float r = diameter / 2.0f;
     float radius2 = r * r;
-    g25d.argbCurrent = Colix.getArgb(colix);
+    g3d.argbCurrent = Colix.getArgb(colix);
     int xUL = xC - radius;
     int yUL = yC - radius;
     int[] shades = Colix.getShades(colix);
@@ -84,10 +84,10 @@ public class Sphere25D {
         float z2 = radius2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = Shade25D.calcIntensity(xF, yF, zF);
+          int intensity = Shade3D.calcIntensity(xF, yF, zF);
           int x = xUL + j;
           int z = zC - (int)(zF + 0.5f);
-          g25d.plotPixelClipped(shades[intensity],
+          g3d.plotPixelClipped(shades[intensity],
                                 x, y, z);
         }
       }
@@ -103,9 +103,9 @@ public class Sphere25D {
     
     float yF = -r + 0.5f;
     int zMin = z - ((diameter + 1) >> 1);
-    int width = g25d.width;
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
+    int width = g3d.width;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
     int y0 = y;
     int offsetPbufBeginLine = width * y + x;
     for (int i = 0; i < diameter;
@@ -124,7 +124,7 @@ public class Sphere25D {
           int z0 = z - (int)(zF + 0.5f);
           if (zbuf[offsetPbuf] <= z0)
             continue;
-          int intensity = Shade25D.calcIntensity(xF, yF, zF);
+          int intensity = Shade3D.calcIntensity(xF, yF, zF);
           pbuf[offsetPbuf] = shades[intensity];
           zbuf[offsetPbuf] = (short) z0;
         }
@@ -150,9 +150,9 @@ public class Sphere25D {
         float z2 = r2 - y2 - xF*xF;
         if (z2 >= 0) {
           float zF = (float)Math.sqrt(z2);
-          int intensity = Shade25D.calcIntensity(xF, yF, zF);
+          int intensity = Shade3D.calcIntensity(xF, yF, zF);
           int z0 = z - (int)(zF + 0.5f);
-          g25d.plotPixelClipped(shades[intensity],
+          g3d.plotPixelClipped(shades[intensity],
                                 x0, y0, z0);
         }
       }
@@ -166,7 +166,7 @@ public class Sphere25D {
     int radius = (diameter + 1) / 2;
     x -= radius;
     y -= radius;
-    g25d.argbCurrent = Colix.getArgb(colix);
+    g3d.argbCurrent = Colix.getArgb(colix);
     int offsetRows = semicircleIndex[diameter];
     for (int i = diameter; --i >= 0; ++y) {
       int n = semicircles[offsetRows++];
@@ -175,7 +175,7 @@ public class Sphere25D {
       int numToSkip = diameter - n;
       int xT = x + numToSkip;
       while(--numToPlot >= 0)
-        g25d.plotPixelClipped(xT++, y, z - semicircles[offsetCols++]);
+        g3d.plotPixelClipped(xT++, y, z - semicircles[offsetCols++]);
     }
   }
   */
@@ -183,22 +183,22 @@ public class Sphere25D {
   void render(short colix, int diameter, int x, int y, int z) {
     if (diameter <= 1) {
       if (diameter == 1)
-        g25d.plotPixelClipped(colix, x, y, z);
+        g3d.plotPixelClipped(colix, x, y, z);
       return;
     }
     int radius = (diameter + 1) >> 1;
     int[] shades = Colix.getShades(colix);
     if (diameter >= maxSphereCache) {
-      if (x-radius < 0 || x+radius >= g25d.width ||
-          y-radius < 0 || y+radius >= g25d.height)
+      if (x-radius < 0 || x+radius >= g3d.width ||
+          y-radius < 0 || y+radius >= g3d.height)
         renderBigClipped(shades, diameter, x, y, z);
       else
         renderBigUnclipped(shades, diameter, x, y, z);
       return;
     } 
     int[] ss = getSphereShape(diameter);
-    if (x-radius < 0 || x+radius >= g25d.width ||
-        y-radius < 0 || y+radius >= g25d.height)
+    if (x-radius < 0 || x+radius >= g3d.width ||
+        y-radius < 0 || y+radius >= g3d.height)
       renderShapeClipped(shades, ss, diameter, x, y, z);
     else
       renderShapeUnclipped(shades, ss, diameter, x, y, z);
@@ -207,10 +207,10 @@ public class Sphere25D {
 
   void renderShapeUnclipped(int[] shades, int[] sphereShape,
                             int diameter, int x, int y, int z) {
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
     int offsetSphere = 0;
-    int width = g25d.width;
+    int width = g3d.width;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = width * y + x;
     int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
@@ -252,11 +252,11 @@ public class Sphere25D {
 
   void renderShapeClipped(int[] shades, int[] sphereShape,
                           int diameter, int x, int y, int z) {
-    int[] pbuf = g25d.pbuf;
-    short[] zbuf = g25d.zbuf;
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
     int offsetSphere = 0;
-    int width = g25d.width;
-    int height = g25d.height;
+    int width = g3d.width;
+    int height = g3d.height;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = width * y + x;
     int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
@@ -332,7 +332,7 @@ public class Sphere25D {
     float z2 = radius2 - x*x - y*y;
     if (z2 < 0)
       return -1;
-    return Shade25D.calcIntensity(x, y, (float)Math.sqrt(z2));
+    return Shade3D.calcIntensity(x, y, (float)Math.sqrt(z2));
   }
 
   byte calcIntensity(float x, float y, float radius2) {

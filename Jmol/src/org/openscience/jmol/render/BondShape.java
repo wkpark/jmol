@@ -26,8 +26,8 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.g25d.Graphics25D;
-import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.g3d.Graphics3D;
+import org.openscience.jmol.g3d.Colix;
 
 import java.awt.Rectangle;
 

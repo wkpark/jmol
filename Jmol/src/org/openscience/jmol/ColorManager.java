@@ -1,3 +1,4 @@
+
 /* $RCSfile$
  * $Author$
  * $Date$
@@ -25,7 +26,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.render.AtomShape;
-import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.g3d.Colix;
 
 import java.awt.Color;
 import java.util.Hashtable;

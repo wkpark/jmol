@@ -36,8 +36,8 @@ import org.openscience.jmol.render.AtomShapeIterator;
 import org.openscience.jmol.render.BondShape;
 import org.openscience.jmol.render.BondShapeIterator;
 import org.openscience.jmol.script.Eval;
-import org.openscience.jmol.g25d.Graphics25D;
-import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.g3d.Graphics3D;
+import org.openscience.jmol.g3d.Colix;
 
 import java.awt.MenuItem;
 import java.awt.PopupMenu;
@@ -85,7 +85,7 @@ final public class DisplayControl {
   public Distributor distributor;
   public Eval eval;
   public Java12 java12;
-  public Graphics25D g25d;
+  public Graphics3D g3d;
 
   public JmolClientAdapter clientAdapter;
 
@@ -125,7 +125,7 @@ final public class DisplayControl {
     if (jvm12orGreater)
       java12 = new Java12(this);
 
-    g25d = new Graphics25D(this);
+    g3d = new Graphics3D(this);
   
   }
 
@@ -158,11 +158,11 @@ final public class DisplayControl {
     refresh();
   }
 
-  public void setGraphicsContext(Graphics25D g25d, Rectangle rectClip) {
-    atomRenderer.setGraphicsContext(g25d, rectClip);
-    bondRenderer.setGraphicsContext(g25d, rectClip);
-    labelRenderer.setGraphicsContext(g25d, rectClip);
-    maybeEnableAntialiasing(g25d);
+  public void setGraphicsContext(Graphics3D g3d, Rectangle rectClip) {
+    atomRenderer.setGraphicsContext(g3d, rectClip);
+    bondRenderer.setGraphicsContext(g3d, rectClip);
+    labelRenderer.setGraphicsContext(g3d, rectClip);
+    maybeEnableAntialiasing(g3d);
   }
 
   public boolean hasStructuralChange() {
@@ -430,7 +430,7 @@ final public class DisplayControl {
     dimCurrent = dim;
     transformManager.setScreenDimension(dim.width, dim.height);
     transformManager.scaleFitToScreen();
-    g25d.setSize(dim.width, dim.height);
+    g3d.setSize(dim.width, dim.height);
   }
 
   public Dimension getScreenDimension() {
@@ -1064,12 +1064,12 @@ final public class DisplayControl {
   public Image renderScreenImage(Rectangle rectClip) {
     if (eval.hasTerminationNotification())
       manageScriptTermination();
-    repaintManager.render(g25d, rectClip);
-    return g25d.getScreenImage();
+    repaintManager.render(g3d, rectClip);
+    return g3d.getScreenImage();
   }
 
   public Image getScreenImage() {
-    return g25d.getScreenImage();
+    return g3d.getScreenImage();
   }
 
   public void checkOversample() {
@@ -1088,19 +1088,19 @@ final public class DisplayControl {
    * routines for java12
    ****************************************************************/
   
-  private void maybeEnableAntialiasing(Graphics25D g25d) {
+  private void maybeEnableAntialiasing(Graphics3D g3d) {
     if (repaintManager.useGraphics2D)
-      g25d.enableAntialiasing(repaintManager.enableAntialiasing());
+      g3d.enableAntialiasing(repaintManager.enableAntialiasing());
   }
 
-  public void maybeDottedStroke(Graphics25D g25d) {
+  public void maybeDottedStroke(Graphics3D g3d) {
     if (repaintManager.useGraphics2D)
-      g25d.dottedStroke();
+      g3d.dottedStroke();
   }
 
-  public void defaultStroke(Graphics25D g25d) {
+  public void defaultStroke(Graphics3D g3d) {
     if (repaintManager.useGraphics2D)
-      g25d.defaultStroke();
+      g3d.defaultStroke();
   }
 
   /****************************************************************
@@ -1290,7 +1290,7 @@ final public class DisplayControl {
   }
 
   /****************************************************************
-   * Graphics25D
+   * Graphics3D
    ****************************************************************/
 
   boolean tOversampleStopped;

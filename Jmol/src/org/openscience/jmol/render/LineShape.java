@@ -25,7 +25,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.*;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 
 //import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -72,8 +72,8 @@ public class LineShape extends Shape {
       z = zEnd;
   }
   
-  public void render(Graphics25D g25d, DisplayControl control) {
-    g25d.drawLine(control.getColixVector(), x, y, z, xEnd, yEnd, zEnd);
+  public void render(Graphics3D g3d, DisplayControl control) {
+    g3d.drawLine(control.getColixVector(), x, y, z, xEnd, yEnd, zEnd);
   }
 }
 

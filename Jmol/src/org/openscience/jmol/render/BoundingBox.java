@@ -25,7 +25,7 @@
 package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -98,7 +98,7 @@ public class BoundingBox {
       z = screen.z;
     }
   
-    public void render(Graphics25D g25d, DisplayControl control) {
+    public void render(Graphics3D g3d, DisplayControl control) {
       // the points I am connected with are at the indices obtained
       // by XORing each of the three bits of my index
       short colix = control.getColixAxes();
@@ -106,7 +106,7 @@ public class BoundingBox {
         int indexOther = myIndex ^ i;
         BboxShape bboxOther = bboxShapes[indexOther];
         if (z > bboxOther.z || (z == bboxOther.z && myIndex > indexOther))
-          g25d.drawLine(colix, x, y, z, bboxOther.x, bboxOther.y, bboxOther.z);
+          g3d.drawLine(colix, x, y, z, bboxOther.x, bboxOther.y, bboxOther.z);
       }
     }
   }

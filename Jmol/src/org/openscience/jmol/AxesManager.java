@@ -26,7 +26,7 @@ package org.openscience.jmol;
 
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
-import org.openscience.jmol.g25d.Colix;
+import org.openscience.jmol.g3d.Colix;
 
 public class AxesManager {
 

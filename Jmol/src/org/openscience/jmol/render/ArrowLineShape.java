@@ -24,7 +24,7 @@
  */
 package org.openscience.jmol.render;
 
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 import org.openscience.jmol.DisplayControl;
 
 import java.awt.Rectangle;
@@ -47,9 +47,9 @@ public class ArrowLineShape extends LineShape {
     headWidthAngstroms = pointOrigin.distance(this.pointEnd) / widthDivisor;
   }
 
-  public void render(Graphics25D g25d, DisplayControl control) {
+  public void render(Graphics3D g3d, DisplayControl control) {
     short colixVector = control.getColixVector();
-    g25d.drawLine(colixVector, x, y, z, xEnd, yEnd, zEnd);
+    g3d.drawLine(colixVector, x, y, z, xEnd, yEnd, zEnd);
 
     int dx = xEnd - x, xHead = xEnd - (dx / shaftDivisor);
     int dy = yEnd - y, yHead = yEnd - (dy / shaftDivisor);
@@ -73,7 +73,7 @@ public class ArrowLineShape extends LineShape {
     ax[1] = xHead - dxHead/2; ax[3] = ax[1] + dxHead;
     ay[1] = yHead - dyHead/2; ay[3] = ay[1] + dyHead;
     az[1] = zHead;            az[3] = zHead;
-    g25d.fillPolygon4(colixVector, ax, ay, az);
+    g3d.fillPolygon4(colixVector, ax, ay, az);
   }
 }
 

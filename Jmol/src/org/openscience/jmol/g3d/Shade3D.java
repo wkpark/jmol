@@ -23,14 +23,14 @@
  *  02111-1307  USA.
  */
 
-package org.openscience.jmol.g25d;
+package org.openscience.jmol.g3d;
 
 import org.openscience.jmol.*;
 
 import java.awt.Color;
 import java.util.Hashtable;
 
-public class Shade25D {
+public class Shade3D {
 
   public final static byte shadeAmbient = 0;
   public static final byte shadeNormal = 24;
@@ -60,30 +60,30 @@ public class Shade25D {
   Color color;
   int[] shades = new int[shadeMax];
 
-  private Shade25D(Color color) {
+  private Shade3D(Color color) {
     this.color = color;
     calcShades(color.getRGB());
   }
 
   private static Hashtable htCache = new Hashtable();
 
-  public static Shade25D getShade(Color color) {
-    Shade25D shade = (Shade25D) htCache.get(color);
+  public static Shade3D getShade(Color color) {
+    Shade3D shade = (Shade3D) htCache.get(color);
     if (shade == null) {
-      shade = new Shade25D(color);
+      shade = new Shade3D(color);
       htCache.put(color, shade);
     }
     return shade;
   }
 
-  public Shade25D getShade(int rgb) {
+  public Shade3D getShade(int rgb) {
     return getShade(new Color(rgb));
   }
 
   public static int[] getShades(Color color) {
-    Shade25D sp = (Shade25D) htCache.get(color);
+    Shade3D sp = (Shade3D) htCache.get(color);
     if (sp == null) {
-      sp = new Shade25D(color);
+      sp = new Shade3D(color);
       htCache.put(color, sp);
     }
     return sp.shades;

@@ -27,7 +27,7 @@ package org.openscience.jmol.render;
 
 import org.openscience.jmol.DisplayControl;
 import org.openscience.jmol.ProteinProp;
-import org.openscience.jmol.g25d.Graphics25D;
+import org.openscience.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3d;
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -314,7 +314,7 @@ public class JmolFrame {
     return radius;
   }
 
-  public void render(Graphics25D g25d, DisplayControl control) {
+  public void render(Graphics3D g3d, DisplayControl control) {
     if (atomShapeCount <= 0)
       return;
     if (shapes == null || control.hasStructuralChange()) {
@@ -380,7 +380,7 @@ public class JmolFrame {
     */
     
     for (int i = shapes.length; --i >= 0 ; )
-      shapes[i].render(g25d, control);
+      shapes[i].render(g3d, control);
   }
 
   final static int lineGrowthIncrement = 16;

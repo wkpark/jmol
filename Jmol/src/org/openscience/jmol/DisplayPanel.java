@@ -78,6 +78,7 @@ public class DisplayPanel extends JPanel
   public static final int PICK = 3;
   public static final int DEFORM = 4;
   public static final int MEASURE = 5;
+  public static final int DELETE = 6;
   private int mode = ROTATE;
   private static Color backgroundColor = null;
   StatusBar status;
@@ -283,9 +284,9 @@ public class DisplayPanel extends JPanel
     }
 
     public void mouseClicked(MouseEvent e) {
-
-      if (mode == PICK) {
-        if (haveFile) {
+    
+      if (haveFile) {
+        if (mode == PICK) {
           if (e.isShiftDown()) {
             md.shiftSelectAtom(e.getX(), e.getY());
           } else {
@@ -294,9 +295,11 @@ public class DisplayPanel extends JPanel
           repaint();
           int n = md.getNpicked();
           status.setStatus(2, n + " Atoms Selected");
-        }
-      } else if (mode == MEASURE) {
-        if (haveFile) {
+        } else if (mode == DELETE) {
+          md.deleteSelectedAtom(e.getX(), e.getY());
+          repaint(); // this seems to have no effect...
+          status.setStatus(2, "Atom Deleted");
+        } else if (mode == MEASURE) {
           m.firePicked(md.pickMeasuredAtom(e.getX(), e.getY()));
         }
       }
@@ -532,6 +535,7 @@ public class DisplayPanel extends JPanel
 
   // The actions:
 
+  private DeleteAction deleteAction = new DeleteAction();
   private PickAction pickAction = new PickAction();
   private RotateAction rotateAction = new RotateAction();
   private ZoomAction zoomAction = new ZoomAction();
@@ -757,6 +761,21 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  class DeleteAction extends AbstractAction {
+
+    public DeleteAction() {
+      super("delete");
+      this.setEnabled(true);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+
+      // switch mode;
+      mode = DELETE;
+      status.setStatus(1, "Delete Atoms");
+    }
+  }
+
   class RotateAction extends AbstractAction {
 
     public RotateAction() {
@@ -978,7 +997,7 @@ public class DisplayPanel extends JPanel
   public Action[] getActions() {
 
     Action[] defaultActions = {
-      pickAction, rotateAction, zoomAction, xlateAction, frontAction,
+      deleteAction, pickAction, rotateAction, zoomAction, xlateAction, frontAction,
       topAction, bottomAction, rightAction, leftAction, aquickdrawAction,
       ashadingAction, awireframeAction, bquickdrawAction, bshadingAction,
       blineAction, bwireframeAction, plainAction, symbolsAction, typesAction,

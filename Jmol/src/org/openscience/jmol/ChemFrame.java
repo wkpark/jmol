@@ -316,6 +316,21 @@ public class ChemFrame {
   }
 
   /**
+   * Deletes an Atom from the frame
+   */
+  public void deleteAtom(int atomID) {
+    for (int i=atomID; i<numberAtoms; i++) {
+      atoms[i] = atoms[i+1];
+    }
+    numberAtoms--;
+    try {
+      rebond();
+    } catch (Exception e) {
+      // could not rebond atoms
+    }
+  }
+
+  /**
    * returns the number of atoms in the ChemFrame
    */
   public int getNumberOfAtoms() {
@@ -487,6 +502,23 @@ public class ChemFrame {
         pickedAtoms[i] = false;
       }
     }
+  }
+
+  /**
+   * Clear out the list of picked atoms, find the nearest atom to a
+   * set of screen coordinates and add this new atom to the picked
+   * list.
+   *
+   * @param x the screen x coordinate of the selection point
+   * @param y the screen y coordinate of the selection point
+   */
+  public void deleteSelectedAtom(int x, int y) {
+
+    int smallest = getNearestAtom(x, y);
+    if (smallest < 0) {
+      return;
+    }
+    deleteAtom(smallest);
   }
 
   /**

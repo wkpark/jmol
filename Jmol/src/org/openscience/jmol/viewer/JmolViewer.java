@@ -455,7 +455,7 @@ final public class JmolViewer {
   public void setScreenDimension(Dimension dim) {
     if (dim.equals(dimCurrent))
       return;
-    dimCurrent = dim;
+    dimCurrent = new Dimension(dim);
     transformManager.setScreenDimension(dim.width, dim.height);
     transformManager.scaleFitToScreen();
     g3d.setSize(dim.width, dim.height);

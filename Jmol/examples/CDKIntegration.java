@@ -22,10 +22,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  *  02111-1307  USA.
  */
-import org.jmol.api.JmolAdapter;
+import org.jmol.api.*;
 import org.jmol.adapter.cdk.CdkJmolAdapter;
-import org.jmol.viewer.JmolViewer;
-import org.jmol.viewer.JmolStatusListener;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -85,7 +83,7 @@ class JmolPanel extends JPanel {
     JmolPanel() {
         // use CDK IO
         adapter = new CdkJmolAdapter(null);
-        viewer = new JmolViewer(this, adapter);
+        viewer = JmolViewer.allocateViewer(this, adapter);
     }
     
     public JmolViewer getViewer() {

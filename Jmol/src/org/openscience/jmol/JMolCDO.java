@@ -91,4 +91,18 @@ public final class JMolCDO implements CDOInterface {
         return allFrames;
     }
 
+    public void setDocumentProperty(String type, String value) {
+	}
+	public void setMoleculeProperty(String type, String value) {
+	}
+    public void setFragmentProperty(String type, String value) {
+	}
+    public void setAnimationProperty(String type, String value) {
+	}
+    public void setBondProperty(String type, String value) {
+	}
+    public void startBond() {
+	}
+    public void endBond() {
+	}
 }

@@ -63,16 +63,25 @@ class JmolResourceHandler {
         baseKey = string;
     }
     
-    synchronized ImageIcon getIcon(String key) {
-        String iname = null;  // Image name
-        try {
-            iname = "org/openscience/jmol/images/" + rb.getString(getQualifiedKey(key));
-        } catch (MissingResourceException e) {}
-        if (iname != null) {            
-            return new ImageIcon(ClassLoader.getSystemResource(iname));
-        }
-        return null;
-    }
+	synchronized ImageIcon getIcon(String key) {
+		String iname = null;  // Image name
+		String resourceName = null;
+		try {
+			resourceName = rb.getString(getQualifiedKey(key));
+			iname = "org/openscience/jmol/images/" + resourceName;
+		} catch (MissingResourceException e) {
+			// Ignore
+		}
+		if (iname != null) {
+			URL imageUrl = ClassLoader.getSystemResource(iname);
+			if (imageUrl != null) {
+				return new ImageIcon(imageUrl);
+			} else {
+				System.err.println("Warning: unable to load " + resourceName + " for icon " + key + ".");
+			}
+		}
+		return null;
+	}
 
     synchronized String getString(String string) {
         String ret = null;

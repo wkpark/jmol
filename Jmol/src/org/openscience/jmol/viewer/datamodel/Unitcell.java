@@ -24,6 +24,7 @@
  */
 package org.openscience.jmol.viewer.datamodel;
 
+import org.openscience.cdk.geometry.CrystalGeometryTools;
 import org.openscience.jmol.viewer.*;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 import javax.vecmath.Point3f;
@@ -53,15 +54,24 @@ public class Unitcell extends Graphic {
       beta  = notionalUnitcell[4];
       gamma = notionalUnitcell[5];
       // these vertices are wrong, but it is the best that mth can do
+      double[][] cart = CrystalGeometryTools.notionalToCartesian(a,b,c,alpha,beta,gamma);
       vertices = new Point3f[] {
         new Point3f(0, 0, 0),
-        new Point3f(0, 0, a),
-        new Point3f(0, b, 0),
-        new Point3f(0, b, a),
-        new Point3f(c, 0, 0),
-        new Point3f(c, 0, a),
-        new Point3f(c, b, 0),
-        new Point3f(c, b, a),
+        new Point3f((float)cart[0][0], (float)cart[0][1], (float)cart[0][2]), // a
+        new Point3f((float)cart[1][0], (float)cart[1][1], (float)cart[1][2]), // b
+        new Point3f((float)cart[0][0] + (float)cart[1][0], 
+                    (float)cart[0][1] + (float)cart[1][1], 
+                    (float)cart[0][2] + (float)cart[1][2]), // a+b
+        new Point3f((float)cart[2][0], (float)cart[2][1], (float)cart[2][2]), // c
+        new Point3f((float)cart[0][0] + (float)cart[2][0], 
+                    (float)cart[0][1] + (float)cart[2][1], 
+                    (float)cart[0][2] + (float)cart[2][2]), // a+c
+        new Point3f((float)cart[1][0] + (float)cart[2][0], 
+                    (float)cart[1][1] + (float)cart[2][1], 
+                    (float)cart[1][2] + (float)cart[2][2]), // b+c
+        new Point3f((float)cart[0][0] + (float)cart[1][0] + (float)cart[2][0], 
+                    (float)cart[0][1] + (float)cart[1][1] + (float)cart[2][1], 
+                    (float)cart[0][2] + (float)cart[1][2] + (float)cart[2][2]), // a+b+c
       };
       /****************************************************************
        * all your changes should be above this line

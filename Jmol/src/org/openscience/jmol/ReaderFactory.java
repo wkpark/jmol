@@ -117,23 +117,5 @@ public abstract class ReaderFactory {
     return null;
   }
 
-  static String getLine(BufferedReader buffer) throws IOException {
-
-    StringBuffer sb1 = new StringBuffer();
-    int c1 = buffer.read();
-    while ((c1 > 0)
-            && ((c1 == '\n') || (c1 == '\r') || (c1 == ' ')
-              || (c1 == '\t'))) {
-      c1 = buffer.read();
-    }
-    while ((c1 > 0) && (c1 != '\n') && (c1 != '\r') && (c1 != '>')) {
-      sb1.append((char) c1);
-      c1 = buffer.read();
-    }
-    if (c1 == '>') {
-      sb1.append((char) c1);
-    }
-    return sb1.toString();
-  }
 }
 

@@ -64,9 +64,9 @@ class JmolResourceHandler {
       ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol", locale);
 
     try {
-      generalResourceBundle = new PropertyResourceBundle(getClass()
-        .getClassLoader()
-          .getResourceAsStream("org/openscience/jmol/Properties/Jmol-resources.properties"));
+      String t = "/org/openscience/jmol/Properties/Jmol-resources.properties";
+      generalResourceBundle =
+        new PropertyResourceBundle(getClass().getResourceAsStream(t));
     } catch (IOException ex) {
       throw new RuntimeException(ex.toString());
     }

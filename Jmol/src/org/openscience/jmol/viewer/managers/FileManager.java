@@ -68,11 +68,14 @@ public class FileManager {
   }
 
   public void openFile(String name) {
+    System.out.println("FileManager.openFile(" + name + ")");
     nameAsGiven = name;
     openErrorMessage = fullPathName = fileName = null;
     classifyName(name);
-    if (openErrorMessage != null)
+    if (openErrorMessage != null) {
+      System.out.println("openErrorMessage=" + openErrorMessage);
       return;
+      }
     fileOpenThread = new FileOpenThread(fullPathName, name);
     fileOpenThread.run();
   }
@@ -219,12 +222,15 @@ public class FileManager {
           openInputStream(fullPathName, fileName, (InputStream) t);
         }
       }
+      if (errorMessage != null)
+        System.out.println("error opening " + fullPathName + "\n" + errorMessage);
       terminated = true;
     }
 
     byte[] abMagic = new byte[4];
     private void openInputStream(String fullPathName, String fileName,
                                  InputStream istream) {
+      System.out.println("FileOpenThread.openInputStream(" + fullPathName + ")");
       BufferedInputStream bistream = new BufferedInputStream(istream, 8192);
       InputStream istreamToRead = bistream;
       bistream.mark(5);

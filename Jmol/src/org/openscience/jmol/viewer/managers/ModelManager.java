@@ -258,6 +258,7 @@ public class ModelManager {
     return mapAtomicSymbolToAtomicNumber(clientAtom);
   }
 
+  /*
   public String getAtomicSymbol(Atom atom) {
     if (suppliesAtomicSymbol) {
       String atomicSymbol = modelAdapter.getAtomicSymbol(atom.clientAtom);
@@ -267,6 +268,7 @@ public class ModelManager {
     }
     return JmolConstants.atomicSymbols[atom.atomicNumber];
   }
+  */
 
   public int getAtomicCharge(Object clientAtom) {
     return modelAdapter.getAtomicCharge(clientAtom);
@@ -281,7 +283,7 @@ public class ModelManager {
     if (atom.pdbAtom != null) {
       return atom.pdbAtom.getAtomPrettyName();
     }
-    return getAtomicSymbol(atom);
+    return JmolConstants.atomicSymbols[atom.atomicNumber];
   }
 
   public short getVanderwaalsMar(Atom atom) {

@@ -261,7 +261,7 @@ public class Atom implements Bspt.Tuple {
   }
 
   public String getAtomicSymbol() {
-    return frame.viewer.getAtomicSymbol(this);
+    return JmolConstants.atomicSymbols[atomicNumber];
   }
 
   public String getAtomTypeName() {

@@ -1799,9 +1799,11 @@ final public class JmolViewer {
     return modelManager.getAtomicNumber(clientAtom);
   }
 
+  /*
   public String getAtomicSymbol(Atom atom) {
     return modelManager.getAtomicSymbol(atom);
   }
+  */
 
   public int getAtomicCharge(Object clientAtom) {
     return modelManager.getAtomicCharge(clientAtom);

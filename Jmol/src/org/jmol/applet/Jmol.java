@@ -32,7 +32,6 @@ import org.openscience.jmol.ui.JmolPopup;
 
 import netscape.javascript.JSObject;
 
-import java.applet.*;
 import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -71,7 +70,7 @@ import java.net.MalformedURLException;
 
 */
 
-public class JmolApplet extends Applet {
+public class Jmol {
 
   JmolViewer viewer;
   boolean jvm12orGreater;
@@ -82,6 +81,8 @@ public class JmolApplet extends Applet {
   JmolAppletRegistry appletRegistry;
 
   MyStatusListener myStatusListener;
+
+  Wrapper wrapper;
 
   /*
    * miguel 2004 11 29
@@ -115,35 +116,45 @@ public class JmolApplet extends Applet {
     "Jmol Applet.  Part of the OpenScience project. " +
     "See jmol.sourceforge.net for more information";
 
+  Jmol (Wrapper wrapper) {
+    this.wrapper = wrapper;
+    init();
+  }
+
   public void init() {
     htmlName = getParameter("name");
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (! ms.equalsIgnoreCase("false"));
-    appletRegistry = new JmolAppletRegistry(htmlName, mayScript, this);
+    appletRegistry = new JmolAppletRegistry(htmlName, mayScript, wrapper);
 
     initWindows();
     initApplication();
 
+  }
+
+  String getParameter(String paramName) {
+    return wrapper.getParameter(paramName);
   }
   
   public void initWindows() {
 
     // to enable CDK
     //    viewer = new JmolViewer(this, new CdkJmolAdapter(null));
-    viewer = JmolViewer.allocateViewer(this, new SmarterJmolAdapter(null));
+    viewer = JmolViewer.allocateViewer(wrapper, new SmarterJmolAdapter(null));
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
 
-    viewer.setAppletContext(getDocumentBase(), getCodeBase(),
+    viewer.setAppletContext(wrapper.getDocumentBase(),
+                            wrapper.getCodeBase(),
                             getValue("JmolAppletProxy", null));
 
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
-      jvm12 = new Jvm12(this, viewer);
+      jvm12 = new Jvm12(wrapper, viewer);
 
     if (mayScript) {
       try {
-        jsoWindow = JSObject.getWindow(this);
+        jsoWindow = JSObject.getWindow(wrapper);
         if (jsoWindow == null)
           System.out.println("jsoWindow return null ... no JavaScript callbacks :-(");
       } catch (Exception e) {
@@ -271,7 +282,7 @@ public class JmolApplet extends Applet {
   }
 
   void showStatusAndConsole(String message) {
-    showStatus(message);
+    wrapper.showStatus(message);
     consoleMessage(message);
   }
 
@@ -286,7 +297,7 @@ public class JmolApplet extends Applet {
       return;
     if (showPaintTime)
       startPaintClock();
-    Dimension size = jvm12orGreater ? jvm12.getSize() : size();
+    Dimension size = jvm12orGreater ? jvm12.getSize() : wrapper.size();
     viewer.setScreenDimension(size);
     Rectangle rectClip =
       jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
@@ -461,17 +472,11 @@ public class JmolApplet extends Applet {
     if (viewer.getOperatingSystemName().equals("Mac OS") &&
         viewer.getJavaVersion().equals("1.1.5"))
       return;
-    new Thread(new LoadPopupThread(this)).start();
+    new Thread(new LoadPopupThread()).start();
   }
 
   class LoadPopupThread implements Runnable {
 
-    JmolApplet jmolApplet;
-    
-    LoadPopupThread(JmolApplet jmolApplet) {
-      this.jmolApplet = jmolApplet;
-    }
-    
     public void run() {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       // long beginTime = System.currentTimeMillis();
@@ -565,7 +570,7 @@ public class JmolApplet extends Applet {
       if (urlString != null && urlString.length() > 0) {
         try {
           URL url = new URL(urlString);
-          getAppletContext().showDocument(url, "_blank");
+          wrapper.getAppletContext().showDocument(url, "_blank");
         } catch (MalformedURLException mue) {
           showStatusAndConsole("Malformed URL:" + urlString);
         }

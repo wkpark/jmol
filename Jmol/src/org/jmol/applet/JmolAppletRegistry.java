@@ -107,10 +107,12 @@ public class JmolAppletRegistry {
       System.out.println("no targetName specified");
       return;
     }
-    if (tryDirect(targetName, script, buttonCallback) ||
-        tryJavaScript(targetName, script, buttonCallback)) {
+    if (tryDirect(targetName, script, buttonCallback))
       return;
-    }
+    /*
+    if (tryJavaScript(targetName, script, buttonCallback))
+      return;
+    */
     System.out.println("unable to find target:" + targetName);
   }
 
@@ -126,17 +128,18 @@ public class JmolAppletRegistry {
       System.out.println("tryDirect failed to find applet:" + targetName);
       return false;
     }
-    if (! (target instanceof JmolApplet)) {
+    if (! (target instanceof Wrapper)) {
       System.out.println("target " + targetName + " is not a JmolApplet");
       return true;
     }
-    JmolApplet targetJmolApplet = (JmolApplet)target;
+    Wrapper targetJmolApplet = (Wrapper)target;
     targetJmolApplet.scriptButton((buttonCallback == null
                                    ? null : getJsoWindow()),
                                   name, script, buttonCallback);
     return true;
   }
 
+  /*
   private boolean tryJavaScript(String targetName, String script,
                                    String buttonCallback) {
     if (mayScript) {
@@ -181,4 +184,5 @@ public class JmolAppletRegistry {
     " }" +
     " a.scriptButton(w,n,s,b);" +
     "}\n";
+  */
 }

@@ -31,5 +31,5 @@
  * see org.jmol.applet.JmolApplet
  *
  */
-public class JmolApplet extends org.jmol.applet.JmolApplet {
+public class JmolApplet extends org.jmol.applet.Wrapper {
 }

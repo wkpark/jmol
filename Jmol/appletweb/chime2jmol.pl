@@ -9,8 +9,8 @@ sub handleEmbed;
 sub handleEnd;
 sub usage;
 
-use vars qw/$opt_v $opt_a $opt_s $opt_c $opt_d/;
-getopts('va:s:cd:') or usage();
+use vars qw/$opt_v $opt_a $opt_s $opt_c $opt_d $opt_b/;
+getopts('va:s:cd:b:') or usage();
 
 ($opt_s && $opt_d) or usage();
 
@@ -31,11 +31,11 @@ if (-e $opt_d) {
 }
 
 my $archive = "JmolApplet.jar";
-if ($opt_a) {
-    $opt_a =~ s|/$||; # remove trailing slash
-    $archive = "$opt_a/$archive";
-}
+$archive = $opt_a if $opt_a;
 print "archive is $archive\n" if $opt_v;
+
+my $codebase = $opt_b;
+print "codebase is $codebase\n" if $codebase && $opt_v;
 
 my $baseDirectory;
 my @files;
@@ -58,6 +58,7 @@ for my $directory (@directories) {
 }
 
 for my $file (@files) {
+    next if $file =~  /\~$/; # ignore emacs files
     print "processing $file\n" if $opt_v;
     processFile("$baseDirectory$file", "$opt_d$file");
 }
@@ -158,33 +159,34 @@ sub writeCommentedEmbed {
 
 sub writeJmolApplet {
     print OUTPUT
-	"  <applet name=$name code=JmolApplet\n" .
-	"          archive=$archive\n"
+	"  <applet name=$name code='JmolApplet' archive='$archive'\n"
 	if $name;
     print OUTPUT
-	"  <applet code=JmolApplet archive=$archive\n"
+	"  <applet code='JmolApplet' archive='$archive'\n"
 	unless $name;
     print OUTPUT
-	"          width=$width height=$height mayscript >\n";
+	"          codebase='$codebase'\n" if $codebase;
     print OUTPUT
-	"    <param name=emulate value=chime >\n";
+	"          width='$width' height='$height' mayscript='true' >\n";
     print OUTPUT
-	"    <param name=bgcolor value=$bgcolor >\n" if $bgcolor;
+	"    <param name='emulate' value='chime' />\n";
     print OUTPUT
-	"    <param name=load    value=$src >\n" if $src;
+	"    <param name='bgcolor' value='$bgcolor' />\n" if $bgcolor;
     print OUTPUT
-	"    <param name=script  value=$script >\n" if $script;
+	"    <param name='load'    value='$src' />\n" if $src;
     print OUTPUT
-	"    <param name=LoadStructCallback value=$loadStructCallback >\n"
+	"    <param name='script'  value='$script' />\n" if $script;
+    print OUTPUT
+	"    <param name='LoadStructCallback' value='$loadStructCallback' />\n"
 	if $loadStructCallback;
     print OUTPUT
-	"    <param name=MessageCallback    value=$messageCallback >\n"
+	"    <param name='MessageCallback'    value='$messageCallback' />\n"
 	if $messageCallback;
     print OUTPUT
-	"    <param name=PauseCallback      value=$pauseCallback >\n"
+	"    <param name='PauseCallback'      value='$pauseCallback' />\n"
 	if $pauseCallback;
     print OUTPUT
-	"    <param name=PickCallback       value=$pickCallback >\n"
+	"    <param name=PickCallback       value=$pickCallback />\n"
 	if $pickCallback;
     print OUTPUT
 	"  </applet>\n";
@@ -193,36 +195,38 @@ sub writeJmolApplet {
 sub writeButtonControl {
     my ($controlType, $group);
     if ($button =~ /push/i) {
-	$controlType = "'chimePush'";
+	$controlType = "chimePush";
     } elsif ($button =~ /toggle/i) {
-	$controlType = "'chimeToggle'";
+	$controlType = "chimeToggle";
     } elsif ($button =~ /radio(\d+)/i) {
-	$controlType = "'chimeRadio'";
+	$controlType = "chimeRadio";
 	$group = $1;
     }
     my $buttonScript = $script || $src;
     print OUTPUT
-	"  <applet name=$name code=JmolAppletControl archive=$archive\n"
+	"  <applet name=$name code='JmolAppletControl' archive='$archive'\n"
 	if $name;
     print OUTPUT
-	"  <applet code=JmolAppletControl archive=$archive\n"
+	"  <applet code='JmolAppletControl' archive='$archive'\n"
 	unless $name;
     print OUTPUT
-	"          width=$width height=$height mayscript >\n";
+	"          codebase='$codebase'\n" if $codebase;
     print OUTPUT
-	"    <param name=target value=$target >\n".
-	"    <param name=type   value=$controlType >\n";
+	"          width='$width' height='$height' mayscript='true' >\n";
     print OUTPUT
-	"    <param name=group  value=$group >\n"
+	"    <param name='target' value=$target />\n".
+	"    <param name='type'   value='$controlType' />\n";
+    print OUTPUT
+	"    <param name='group'  value='$group' />\n"
 	if $group;
     print OUTPUT
-	"    <param name=script value=$buttonScript >\n"
+	"    <param name='script' value=$buttonScript />\n"
 	if $buttonScript;
     print OUTPUT
-	"    <param name=altscript value=$altscript >\n"
+	"    <param name='altscript' value=$altscript />\n"
 	if $altscript;
     print OUTPUT
-	"    <param name=ButtonCallback value=$buttonCallback >\n"
+	"    <param name='ButtonCallback' value=$buttonCallback />\n"
 	if $buttonCallback;
     print OUTPUT
 	"  </applet>\n";
@@ -258,7 +262,8 @@ sub usage {
     -s <source directory>
     -d <destination directory>
     -c Clear destination directory
-    -a <archive> specify alternate archive parameter
+    -a <archive> specify alternate archive name
+    -b <path> specify codebase
     -v Verbose
 END
     exit;

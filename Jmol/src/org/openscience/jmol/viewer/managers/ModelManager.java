@@ -205,8 +205,6 @@ public class ModelManager {
    ****************************************************************/
 
   int[] shapeSizes = new int[JmolConstants.SHAPE_MAX];
-  byte[] shapePalettes = new byte[JmolConstants.SHAPE_MAX];
-  short[] shapeColixes = new short[JmolConstants.SHAPE_MAX];
   Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
   public void setShapeSize(int shapeType, int size, BitSet bsSelected) {
@@ -217,22 +215,6 @@ public class ModelManager {
   
   public int getShapeSize(int shapeType) {
     return shapeSizes[shapeType];
-  }
-  
-  public void setShapeColix(int shapeType, byte palette, 
-                            short colix, BitSet bsSelected) {
-    shapePalettes[shapeType] = palette;
-    shapeColixes[shapeType] = colix;
-    if (frame != null)
-      frame.setShapeColix(shapeType, palette, colix, bsSelected);
-  }
-  
-  public byte getShapePalette(int shapeType) {
-    return shapePalettes[shapeType];
-  }
-  
-  public short getShapeColix(int shapeType) {
-    return shapeColixes[shapeType];
   }
   
   private static final Object NULL_SURROGATE = new Object();

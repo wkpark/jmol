@@ -260,18 +260,10 @@ final public class Frame {
       shapes[shapeType].setSize(size, bsSelected);
   }
 
-  public void setShapeColix(int shapeType, byte palette,
-                              short colix, BitSet bsSelected) {
-    if (palette != JmolConstants.PALETTE_CPK || colix != 0)
-      checkShape(shapeType);
-    if (shapes[shapeType] != null)
-      shapes[shapeType].setColix(palette, colix, bsSelected);
-  }
-
   public void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
-    checkShape(shapeType);
-    shapes[shapeType].setProperty(propertyName, value, bsSelected);
+    if (shapes[shapeType] != null)
+      shapes[shapeType].setProperty(propertyName, value, bsSelected);
   }
 
   Point3f averageAtomPoint;

@@ -1339,21 +1339,21 @@ final public class JmolViewer {
     return selectionManager.bsSelection;
   }
 
-  public void setShapeShow(int shapeType, boolean show) {
-    setShapeSize(shapeType, show ? -1 : 0);
+  public void setShapeShow(int shapeID, boolean show) {
+    setShapeSize(shapeID, show ? -1 : 0);
   }
   
-  public boolean getShapeShow(int shapeType) {
-    return getShapeSize(shapeType) != 0;
+  public boolean getShapeShow(int shapeID) {
+    return getShapeSize(shapeID) != 0;
   }
   
-  public void setShapeSize(int shapeType, int size) {
-    modelManager.setShapeSize(shapeType, size, selectionManager.bsSelection);
+  public void setShapeSize(int shapeID, int size) {
+    modelManager.setShapeSize(shapeID, size, selectionManager.bsSelection);
     refresh();
   }
   
-  public int getShapeSize(int shapeType) {
-    return modelManager.getShapeSize(shapeType);
+  public int getShapeSize(int shapeID) {
+    return modelManager.getShapeSize(shapeID);
   }
   
   public byte getPalette(String colorScheme) {
@@ -1366,19 +1366,22 @@ final public class JmolViewer {
     return palette;
   }
 
-  public void setShapeColor(int shapeType, byte palette, Color color) {
-    modelManager.setShapeColix(shapeType, palette, g3d.getColix(color),
-                               selectionManager.bsSelection);
+  public void setShapeColor(int shapeID, byte palette, Color color) {
+    if (palette == JmolConstants.PALETTE_COLOR) {
+      modelManager.setShapeProperty(shapeID, "colorScheme", null, null);
+      modelManager.setShapeProperty(shapeID, "color", color,
+                                    selectionManager.bsSelection);
+    } else {
+      modelManager.setShapeProperty(shapeID, "colorScheme",
+                                    JmolConstants.colorSchemes[palette],
+                                    selectionManager.bsSelection);
+    }
     refresh();
   }
   
-  public byte getShapePalette(int shapeType) {
-    return modelManager.getShapePalette(shapeType);
-  }
-  
-  public void setShapeProperty(int shapeType,
+  public void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
-    modelManager.setShapeProperty(shapeType, propertyName, value,
+    modelManager.setShapeProperty(shapeID, propertyName, value,
                                   selectionManager.bsSelection);
     refresh();
   }
@@ -1395,18 +1398,27 @@ final public class JmolViewer {
     return modelManager.getShapeProperty(shapeType, propertyName);
   }
 
-  public Color getShapePropertyAsColor(int shapeType, String propertyName) {
-    return (Color)modelManager.getShapeProperty(shapeType, propertyName);
+  public Color getShapePropertyAsColor(int shapeID, String propertyName) {
+    return (Color)modelManager.getShapeProperty(shapeID, propertyName);
   }
 
-  public int getShapePropertyAsInt(int shapeType, String propertyName) {
-    return ((Integer)modelManager.getShapeProperty(shapeType, propertyName))
+  public int getShapePropertyAsInt(int shapeID, String propertyName) {
+    return ((Integer)modelManager.getShapeProperty(shapeID, propertyName))
       .intValue();
   }
 
-  public short getColixShape(int shapeType) {
-    return g3d.getColix((Color)modelManager.getShapeProperty(shapeType,
+  public short getColixShape(int shapeID) {
+    return g3d.getColix((Color)modelManager.getShapeProperty(shapeID,
                                                              "color"));
+  }
+
+  public int getShapeID(String shapeName) {
+    for (int i = JmolConstants.SHAPE_MAX; --i >= 0; )
+      if (JmolConstants.shapeClassBases[i].equals(shapeName))
+        return i;
+    String msg = "Unrecognized shape name:" + shapeName;
+    System.out.println(msg);
+    throw new NullPointerException(msg);
   }
 
   public short getColix(Color color) {

@@ -37,18 +37,6 @@ public class Balls extends Shape {
         atoms[i].setMadAtom(mad);
   }
 
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    boolean useColorProfile = colix == 0;
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; )
-      if (bsSelected.get(i)) {
-        Atom atom = atoms[i];
-        short colixT = (useColorProfile
-                        ? viewer.getColixAtomPalette(atom, palette) : colix);
-        atom.setColixAtom(colixT);
-      }
-  }
-
   public void setProperty(String propertyName, Object value, BitSet bs) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;

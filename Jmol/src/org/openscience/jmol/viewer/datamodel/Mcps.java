@@ -44,19 +44,15 @@ abstract public class Mcps extends Shape {
     pdbFile = frame.pdbFile;
   }
 
-  public void setMad(short mad, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
+    short mad = (short) size;
     initialize();
     for (int m = models.length; --m >= 0; )
       models[m].setMad(mad, bsSelected);
   }
   
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    initialize();
-    for (int m = models.length; --m >= 0; )
-      models[m].setColix(palette, colix, bsSelected);
-  }
-
   public void setProperty(String propertyName, Object value, BitSet bs) {
+    initialize();
     byte palette = 0;
     short colix = 0;
     if (propertyName.equals("colorScheme")) {
@@ -69,7 +65,6 @@ abstract public class Mcps extends Shape {
     } else {
       return;
     }
-    initialize();
     for (int m = models.length; --m >= 0; )
       models[m].setColix(palette, colix, bs);
   }

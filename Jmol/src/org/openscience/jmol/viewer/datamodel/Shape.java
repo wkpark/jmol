@@ -46,9 +46,6 @@ abstract public class Shape {
   public void setSize(int size, BitSet bsSelected) {
   }
 
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-  }
-
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     System.out.println("unassigned property:" + propertyName + ":" + value);

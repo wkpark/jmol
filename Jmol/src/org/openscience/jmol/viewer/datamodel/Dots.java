@@ -177,18 +177,6 @@ public class Dots extends Shape {
     }
   }
 
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    for (int i = frame.atomCount; --i >= 0; ) {
-      if (bsSelected.get(i)) {
-        System.out.println("setting atom " + i + " to " + colix);
-        colixes[i] =
-          palette > JmolConstants.PALETTE_CPK
-          ? viewer.getColixAtomPalette(frame.getAtomAt(i), palette)
-          : colix;
-      }
-    }
-  }
-
   public void setProperty(String propertyName, Object value, BitSet bs) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;

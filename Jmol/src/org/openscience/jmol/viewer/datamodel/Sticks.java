@@ -37,10 +37,6 @@ public class Sticks extends Shape {
     setMadBond(mad, JmolConstants.BOND_COVALENT, bsSelected);
   }
   
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    setColixBond(colix, JmolConstants.BOND_COVALENT, bsSelected);
-  }
-  
   public void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
     if (propertyName.equals("color")) {

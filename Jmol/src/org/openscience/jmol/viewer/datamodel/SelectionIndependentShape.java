@@ -39,11 +39,6 @@ abstract public class SelectionIndependentShape extends Shape {
     this.mad = (short)size;
   }
   
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    if (palette == JmolConstants.PALETTE_COLOR)
-      this.colix = colix;
-  }
-
   public void setProperty(String propertyName, Object value, BitSet bs) {
     if (propertyName.equals("color"))
       colix = viewer.getColix((Color)value);

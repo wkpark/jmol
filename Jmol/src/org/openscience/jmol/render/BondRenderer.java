@@ -52,6 +52,7 @@ public class BondRenderer {
     showMultipleBonds = control.getShowMultipleBonds();
     modeMultipleBond = control.getModeMultipleBond();
     showAxis = control.getDebugShowAxis();
+    g25dEnabled = control.getGraphics25DEnabled();
   }
 
   boolean fastRendering;
@@ -60,6 +61,7 @@ public class BondRenderer {
   boolean showMultipleBonds;
   byte modeMultipleBond;
   boolean showAxis;
+  boolean g25dEnabled;
 
   int x1, y1, z1;
   int x2, y2, z2;
@@ -153,14 +155,14 @@ public class BondRenderer {
         (fastRendering || styleBond == control.WIREFRAME)) {
       g25d.setColor(color1);
       if (sameColor) {
-        drawLineInside(g25d, x1, y1, z1, x2, y2, z2);
+        g25d.drawLineInside(x1, y1, z1, x2, y2, z2);
       } else {
         int xMid = (x1 + x2) / 2;
         int yMid = (y1 + y2) / 2;
         int zMid = (z1 + z2) / 2;
-        drawLineInside(g25d, x1, y1, z1, xMid, yMid, zMid);
+        g25d.drawLineInside(x1, y1, z1, xMid, yMid, zMid);
         g25d.setColor(color2);
-        drawLineInside(g25d, xMid, yMid, zMid, x2, y2, z2);
+        g25d.drawLineInside(xMid, yMid, zMid, x2, y2, z2);
       }
       return;
     }
@@ -193,6 +195,8 @@ public class BondRenderer {
     while (true) {
       if (lineBond)
         lineBond();
+      else if (g25dEnabled && styleBond == control.SHADING)
+        cylinderBond();
       else
         polyBond(styleBond);
       if (--bondOrder == 0)
@@ -220,6 +224,21 @@ public class BondRenderer {
   int xExit, yExit, zExit;
 
   void lineBond() {
+    if (g25dEnabled) {
+      if (sameColor) {
+        g25d.setColor(color1);
+        g25d.drawLineInside(xAxis1, yAxis1, z1, xAxis2, yAxis2, z2);
+      } else {
+        int xMid = (xAxis1 + xAxis2) / 2;
+        int yMid = (yAxis1 + yAxis2) / 2;
+        int zMid = (zAxis1 + zAxis2) / 2;
+        g25d.setColor(color1);
+        g25d.drawLineInside(xAxis1, yAxis1, z1, xMid, yMid, zMid);
+        g25d.setColor(color2);
+        g25d.drawLineInside(xMid, yMid, zMid, xAxis2, yAxis2, z2);
+      }
+      return;
+    }
     calcMag2dLine();
     calcSurfaceIntersections();
     calcExitPoint();
@@ -227,17 +246,33 @@ public class BondRenderer {
       if (distanceExit + distanceSurface2 >= mag2dLine)
         return;
       g25d.setColor(color2);
-      drawLineInside(g25d, xExit, yExit, zExit,
-                     xSurface2, ySurface2, zSurface2);
+      g25d.drawLineInside(xExit, yExit, zExit,
+                          xSurface2, ySurface2, zSurface2);
       return;
     }
     int xMid = (xAxis1 + xAxis2) / 2;
     int yMid = (yAxis1 + yAxis2) / 2;
     int zMid = (zAxis1 + zAxis2) / 2;
     g25d.setColor(color1);
-    drawLineInside(g25d, xExit, yExit, zExit, xMid, yMid, zMid);
+    g25d.drawLineInside(xExit, yExit, zExit, xMid, yMid, zMid);
     g25d.setColor(color2);
-    drawLineInside(g25d, xMid, yMid, zMid, xSurface2, ySurface2, zSurface2);
+    g25d.drawLineInside(xMid, yMid, zMid, xSurface2, ySurface2, zSurface2);
+  }
+
+  void cylinderBond() {
+    if (sameColor) {
+      g25d.fillCylinder(color1,
+                        xAxis1, yAxis1, z1, width1, xAxis2, yAxis2, z2, width2);
+    } else {
+      int xMid = (xAxis1 + xAxis2) / 2;
+      int yMid = (yAxis1 + yAxis2) / 2;
+      int zMid = (zAxis1 + zAxis2) / 2;
+      int wMid = (width1 + width2) / 2;
+      g25d.fillCylinder(color1,
+                        xAxis1, yAxis1, z1, width1, xMid, yMid, zMid, wMid);
+      g25d.fillCylinder(color2, xMid, yMid, zMid, wMid,
+                        xAxis2, yAxis2, z2, width2);
+    }
   }
 
 
@@ -317,7 +352,7 @@ public class BondRenderer {
       g25d.drawPolygon4(color, axPoly, ayPoly, azPoly);
       break;
     case DisplayControl.SHADING:
-      g25d.fillCylinder4(color, axPoly, ayPoly, azPoly);
+      g25d.fillShadedPolygon4(color, axPoly, ayPoly, azPoly);
       break;
     case DisplayControl.QUICKDRAW:
       g25d.fillPolygon4(outline, color, axPoly, ayPoly, azPoly);
@@ -338,32 +373,6 @@ public class BondRenderer {
       g25d.fillCircleCentered(outline, color, x, y, z, diameter);
     else if (styleBond == DisplayControl.QUICKDRAW)
       g25d.fillCircleCentered(outline, color, x, y, z, diameter);
-  }
-
-  private final static boolean applyLineInsideCorrection = true;
-
-  void drawLineInside(Graphics25D g25d,
-                      int x1, int y1, int z1, int x2, int y2, int z2) {
-    if (applyLineInsideCorrection) {
-      if (x2 < x1) {
-        int xT = x1; x1 = x2; x2 = xT;
-        int yT = y1; y1 = y2; y2 = yT;
-        int zT = z1; z1 = z2; z2 = zT;
-      }
-      int dx = x2 - x1, dy = y2 - y1;
-      if (dy >= 0) {
-        if (dy <= dx)
-          --x2;
-        if (dx <= dy)
-          --y2;
-      } else {
-        if (-dy <= dx)
-          --x2;
-        if (dx <= -dy)
-          --y1;
-      }
-    }
-    g25d.drawLine(x1, y1, z1, x2, y2, z2);
   }
 
   private final Hashtable htShades = new Hashtable();

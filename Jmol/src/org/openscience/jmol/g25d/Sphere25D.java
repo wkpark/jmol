@@ -42,23 +42,73 @@ public class Sphere25D {
     this.g25d = g25d;
   }
 
-  void paintSphereShape(int x, int y, int z, int diameter, Color color) {
+  void render(Color color, int diameter, int x, int y, int z) {
+    if (diameter >= maxSphereCache)
+      diameter = maxSphereCache;
+    int radius = (diameter + 1) / 2;
+    if (x-radius < 0 || x+radius >= g25d.width ||
+        y-radius < 0 || y+radius >= g25d.height)
+      renderClipped(color, diameter, x, y, z);
+    else
+      renderUnclipped(color, diameter, x, y, z);
+  }
+
+  void renderClipped(Color color, int diameter, int x, int y, int z) {
+    if (diameter >= maxSphereCache)
+      diameter = maxSphereCache;
     int argb = color.getRGB();
+    if (diameter >= maxSphereCache)
+      diameter = maxSphereCache;
     x -= (diameter + 1) / 2;
     y -= (diameter + 1) / 2;
     SphereShape ss = getSphereShape(diameter);
     byte[] intensities = ss.intensities;
     byte[] heights = ss.heights;
     int[] shades = Shade25D.getShades(argb);
-    int offset = 0;
+    int offsetSphere = 0;
     for (int i = 0; i < diameter; ++i) 
       for (int j = 0; j < diameter; ++j) {
-        int intensity = intensities[offset];
+        int intensity = intensities[offsetSphere];
         if (intensity >= 0)
           g25d.plotPixelClipped(shades[intensity],
-                                x+i, y+j, z - heights[offset]);
-        ++offset;
+                                x+i, y+j, z - heights[offsetSphere]);
+        ++offsetSphere;
       }
+  }
+
+  void renderUnclipped(Color color, int diameter, int x, int y, int z) {
+    if (diameter >= maxSphereCache)
+      diameter = maxSphereCache;
+    int argb = color.getRGB();
+    if (diameter >= maxSphereCache)
+      diameter = maxSphereCache;
+    x -= (diameter + 1) / 2;
+    y -= (diameter + 1) / 2;
+    SphereShape ss = getSphereShape(diameter);
+    byte[] intensities = ss.intensities;
+    byte[] heights = ss.heights;
+    int[] shades = Shade25D.getShades(argb);
+    int[] pbuf = g25d.pbuf;
+    short[] zbuf = g25d.zbuf;
+    int offsetSphere = 0;
+    int width = g25d.width;
+    int offsetPbuf = width * y + x;
+    int scanlineIncrement = width - diameter;
+    for (int i = diameter; --i >= 0; ) {
+      for (int j = diameter; --j >= 0; ) {
+        int intensity = intensities[offsetSphere];
+        if (intensity >= 0) {
+          short zPixel = (short)(z - heights[offsetSphere]);
+          if (zPixel < zbuf[offsetPbuf]) {
+            zbuf[offsetPbuf] = zPixel;
+            pbuf[offsetPbuf] = shades[intensity];
+          }
+        }
+        ++offsetSphere;
+        ++offsetPbuf;
+      }
+      offsetPbuf += scanlineIncrement;
+    }
   }
 
   static final double[] lightSource = {-1, -1, 1.5};
@@ -70,7 +120,7 @@ public class Sphere25D {
   final static int intensityNormal = Shade25D.shadeNormal;
   final static int intensityMax = Shade25D.shadeMax;
 
-  final static int maxSphereCache = 64;
+  final static int maxSphereCache = 128;
   static SphereShape[] sphereShapeCache = new SphereShape[maxSphereCache];
 
   SphereShape getSphereShape(int diameter) {

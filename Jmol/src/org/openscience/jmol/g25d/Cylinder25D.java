@@ -42,6 +42,70 @@ public class Cylinder25D {
     this.g25d = g25d;
   }
 
+  void renderClipped(Color color, int diameter, int x1, int y1, int z1,
+                     int dx, int dy, int dz) {
+    Sphere25D sphere25d = g25d.sphere25d;
+    sphere25d.render(color, diameter, x1, y1, z1);
+    if (dx == 0 && dy == 0)
+      return;
+
+    int xCurrent = x1;
+    int yCurrent = y1;
+    int xIncrement = 1;
+    int yIncrement = 1;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      yIncrement = -1;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      int n = dx;
+      do {
+        xCurrent += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          yCurrent += yIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        sphere25d.render(color, diameter, xCurrent, yCurrent, zCurrent);
+      } while (--n > 0);
+      return;
+    }
+    int roundingFactor = dy - 1;
+    if (dy < 0) roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+    int twoDyAccumulatedXError = 0;
+    int n = dy;
+    do {
+      yCurrent += yIncrement;
+      zCurrentScaled += zIncrementScaled;
+      twoDyAccumulatedXError += twoDx;
+      if (twoDyAccumulatedXError > dy) {
+        xCurrent += xIncrement;
+        twoDyAccumulatedXError -= twoDy;
+      }
+      int zCurrent = zCurrentScaled >> 10;
+      sphere25d.render(color, diameter, xCurrent, yCurrent, zCurrent);
+    } while (--n > 0);
+  }
+
+  // test code
+  /*
   void paintCylinderShape(int x1, int y1, int z1, int x2, int y2, int z2,
                           int diameter, Color color) {
     int x = (x1 + x2) / 2;
@@ -52,6 +116,7 @@ public class Cylinder25D {
     Color shaded = new Color(shades[intensity]);
     g25d.fillCircleCentered(shaded, shaded, x, y, z, diameter);
   }
+  */
 
 
   int getIntensity(int x1, int y1, int z1, int x2, int y2, int z2) {

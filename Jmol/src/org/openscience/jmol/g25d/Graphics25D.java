@@ -291,7 +291,7 @@ final public class Graphics25D {
       shadedSphereRenderer.render(x - r, y - r, z,
                                   diameter, colorFill, colorOutline);
     else
-      sphere25d.paintSphereShape(x, y, z, diameter, colorFill);
+      sphere25d.render(colorFill, diameter, x, y, z);
   }
 
   public void drawRect(int x, int y, int width, int height) {
@@ -384,6 +384,31 @@ final public class Graphics25D {
     }
   }
 
+  private final static boolean applyLineInsideCorrection = true;
+
+  public void drawLineInside(int x1, int y1, int z1, int x2, int y2, int z2) {
+    if (applyLineInsideCorrection) {
+      if (x2 < x1) {
+        int xT = x1; x1 = x2; x2 = xT;
+        int yT = y1; y1 = y2; y2 = yT;
+        int zT = z1; z1 = z2; z2 = zT;
+      }
+      int dx = x2 - x1, dy = y2 - y1;
+      if (dy >= 0) {
+        if (dy <= dx)
+          --x2;
+        if (dx <= dy)
+          --y2;
+      } else {
+        if (-dy <= dx)
+          --x2;
+        if (dx <= -dy)
+          --y1;
+      }
+    }
+    drawLine(x1, y1, z1, x2, y2, z2);
+  }
+
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     if (! usePbuf) {
       g.drawLine(x1, y1, x2, y2);
@@ -465,13 +490,19 @@ final public class Graphics25D {
     fillPolygon4(colorFill, ax, ay, az);
   }
 
-  public void fillCylinder4(Color color, int ax[], int ay[], int az[]) {
+  public void fillCylinder(Color color,
+                           int x1, int y1, int z1, int w1,
+                           int x2, int y2, int z2, int w2) {
+    cylinder25d.renderClipped(color, (w1 + w2) / 2,
+                              x1, y1, z1, x2 - x1, y2 - y1, z2 - z1);
+  }
+
+  public void fillShadedPolygon4(Color color, int ax[], int ay[], int az[]) {
     if (! usePbuf) {
       shadedBondRenderer.render(color, ax, ay, az);
       return;
     }
-    cylinder25d.paintCylinderShape(ax[0], ay[0], az[0], ax[1], ay[1], az[1],
-                                   15, color);
+    System.out.println("fillShadedPolygon4 with pbuf ?que?");
   }
 
   public void fillRect(int x, int y, int z, int widthFill, int heightFill) {
@@ -567,6 +598,14 @@ final public class Graphics25D {
     if (z < zbuf[offset]) {
       zbuf[offset] = (short)z;
       pbuf[offset] = argbCurrent;
+    }
+  }
+
+  void plotPixelUnclipped(int argb, int x, int y, int z) {
+    int offset = y * width + x;
+    if (z < zbuf[offset]) {
+      zbuf[offset] = (short)z;
+      pbuf[offset] = argb;
     }
   }
 

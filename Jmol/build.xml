@@ -163,8 +163,15 @@
 	</target>
 
 	<target name="dist.tar.gz" depends="dist">
-		<tar tarfile="jmol-${version}.tar" basedir="${dist.dir}"
-			includes="jmol-${version}/**"/>
+		<tar tarfile="jmol-${version}.tar" basedir="${dist.dir}">
+			<tarfileset dir="${dist.dir}" mode="755">
+				<include name="jmol-${version}/jmol"/>
+				<include name="jmol-${version}/jmol.bat"/>
+			</tarfileset>
+			<tarfileset dir="${dist.dir}">
+				<include name="jmol-${version}/**"/>
+			</tarfileset>
+		</tar>
 		<gzip zipfile="jmol-${version}.tar.gz" src="jmol-${version}.tar"/>
 		<delete file="jmol-${version}.tar" />
 		
@@ -210,9 +217,17 @@
 	</target>
 
 	<target name="sourcedist.tar.gz" depends="sourcedist">
-		<tar tarfile="jmol.source.tar" basedir="${sourcedist.dir}" includes="**"/>
+		<tar tarfile="jmol-${version}.source.tar" basedir="${dist.dir}">
+			<tarfileset dir="${dist.dir}" mode="755">
+				<include name="jmol-${version}/jmol"/>
+				<include name="jmol-${version}/jmol.bat"/>
+			</tarfileset>
+			<tarfileset dir="${dist.dir}">
+				<include name="jmol-${version}/**"/>
+			</tarfileset>
+		</tar>
 		<gzip zipfile="jmol-${version}.source.tar.gz" src="jmol.source.tar"/>
-		<delete file="jmol.source.tar" />
+		<delete file="jmol-${version}.source.tar" />
 	</target>
 
 	<target name="clean">

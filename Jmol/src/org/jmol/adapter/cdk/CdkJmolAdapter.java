@@ -40,6 +40,13 @@ import org.openscience.cdk.io.ReaderFactory;
 import org.openscience.cdk.io.ChemObjectReader;
 import java.io.IOException;
 
+/**
+ * Provides an interface to CDK IO and CDK data classes. The
+ * <code>openBufferedReader</code> uses the ReaderFactory to get an CDK Reader.
+ * The <code>getAtomIterator</code> and other methods that act on a
+ * <code>clientFile</code> accept <code>AtomContainer</code>s and 
+ * <code>ChemFile</code>s.
+ */
 public class CdkJmolAdapter extends JmolAdapter {
 
   public final static String ATOM_SET_INDEX = "org.jmol.adapter.cdk.ATOM_SET_INDEX";
@@ -96,26 +103,18 @@ public class CdkJmolAdapter extends JmolAdapter {
 
   public String getFileTypeName(Object clientFile) {
     AtomContainer atomContainer = getAtomContainer(clientFile);
-    if ((atomContainer.getAtomCount() > 0 &&
+    if ((atomContainer != null && atomContainer.getAtomCount() > 0 &&
          atomContainer.getAtomAt(0).getProperty("pdb.record") != null))
       return "pdb";
     return "other";
   }
 
   public String getAtomSetCollectionName(Object clientFile) {
-    if (clientFile instanceof ChemFile) {
-      Object title = ((ChemFile)clientFile).getProperty(CDKConstants.TITLE);
+    if (clientFile instanceof ChemObject) {
+      Object title = ((ChemObject)clientFile).getProperty(CDKConstants.TITLE);
       if (title != null) {
         System.out.println("Setting model name to title");
         return title.toString();
-      }
-      // try to recurse
-      AtomContainer container = getAtomContainer(clientFile);
-      if (container != null) {
-        Object moleculeTitle = container.getProperty(CDKConstants.TITLE);
-        if (moleculeTitle != null) {
-          return moleculeTitle.toString();
-        }
       }
     }
     return null;
@@ -126,36 +125,49 @@ public class CdkJmolAdapter extends JmolAdapter {
    * **************************************************************/
 
   public int getAtomSetCount(Object clientFile) {
-    ChemFile chemFile = (ChemFile)clientFile;
-    ChemSequence chemSequence = chemFile.getChemSequence(0);
-    if (chemSequence != null) {
-      return chemSequence.getChemModelCount();
+    if (clientFile instanceof AtomContainer) {
+      return 1;
+    } else if (clientFile instanceof ChemFile) {
+      ChemFile chemFile = (ChemFile)clientFile;
+      ChemSequence chemSequence = chemFile.getChemSequence(0);
+      if (chemSequence != null) {
+        return chemSequence.getChemModelCount();
+      }
+      return super.getAtomSetCount(clientFile);
+    } else {
+      return 0;
     }
-    return super.getAtomSetCount(clientFile);
   }
    
   private AtomContainer getAtomContainer(Object clientFile) {
-    ChemFile chemFile = (ChemFile)clientFile;
-    ChemSequence chemSequence = chemFile.getChemSequence(0);
-    ChemModel[] chemModels = chemSequence.getChemModels();
-    AtomContainer superMolecule = new AtomContainer();
-    for (int i=0; i<chemModels.length; i++) {
-        ChemModel chemModel = chemModels[i];
-        ChemModelManipulator.setAtomProperties(chemModel, ATOM_SET_INDEX, new Integer(i));
-        SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
-        Crystal crystal = chemModel.getCrystal();
-        if (setOfMolecules != null) {
-            superMolecule.add(SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules));
-        } else if (crystal != null) {
-            // create 3D coordinates before returning the object
-            CrystalGeometryTools.fractionalToCartesian(crystal);
-            superMolecule.add(crystal);
-        } else {
-            System.out.println("Cannot display data in model");
-            return null;
-        }
+    if (clientFile instanceof AtomContainer) {
+      return (AtomContainer)clientFile;
+    } else if (clientFile instanceof ChemFile) {
+      ChemFile chemFile = (ChemFile)clientFile;
+      ChemSequence chemSequence = chemFile.getChemSequence(0);
+      ChemModel[] chemModels = chemSequence.getChemModels();
+      AtomContainer superMolecule = new AtomContainer();
+      for (int i=0; i<chemModels.length; i++) {
+          ChemModel chemModel = chemModels[i];
+          ChemModelManipulator.setAtomProperties(chemModel, ATOM_SET_INDEX, new Integer(i));
+          SetOfMolecules setOfMolecules = chemModel.getSetOfMolecules();
+          Crystal crystal = chemModel.getCrystal();
+          if (setOfMolecules != null) {
+              superMolecule.add(SetOfMoleculesManipulator.getAllInOneContainer(setOfMolecules));
+          } else if (crystal != null) {
+              // create 3D coordinates before returning the object
+              CrystalGeometryTools.fractionalToCartesian(crystal);
+              superMolecule.add(crystal);
+          } else {
+              System.out.println("Cannot display data in model");
+              return null;
+          }
+      }
+      return superMolecule;
+    } else {
+      System.out.println("Cannot display data in model: clientFile must be instance of AtomContainer or ChemFile");
+      return null;
     }
-    return superMolecule;
   }
 
   public int getEstimatedAtomCount(Object clientFile) {
@@ -180,9 +192,8 @@ public class CdkJmolAdapter extends JmolAdapter {
   */
 
   public float[] getNotionalUnitcell(Object clientFile) {
-    AtomContainer container = getAtomContainer(clientFile);
-    if (container instanceof Crystal) {
-        Crystal crystal = (Crystal)container;
+    if (clientFile instanceof Crystal) {
+        Crystal crystal = (Crystal)clientFile;
         double[] notional = CrystalGeometryTools.cartesianToNotional(
             crystal.getA(), crystal.getB(), crystal.getC()
         );

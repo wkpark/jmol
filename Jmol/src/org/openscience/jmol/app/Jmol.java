@@ -34,6 +34,8 @@ import org.openscience.jmol.adapters.XyzJmolModelAdapter;
 import org.openscience.jmol.*;
 import org.openscience.cdk.io.ChemObjectReader;
 import org.openscience.cdk.io.ReaderFactory;
+import org.openscience.cdk.io.XYZWriter;
+import org.openscience.cdk.io.CMLWriter;
 import org.openscience.jmol.io.ChemFileReader;
 import org.openscience.jmol.io.PdbSaver;
 import org.openscience.jmol.ui.JmolPopup;
@@ -77,6 +79,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -1155,22 +1158,31 @@ public class Jmol extends JPanel {
         File file = saveChooser.getSelectedFile();
         if (file != null) {
           try {
-            FileOutputStream os = new FileOutputStream(file);
-
+            ChemFile chemFile = (ChemFile)viewer.getClientFile();
             if (fileTyper.getType().equals("XYZ (xmol)")) {
-                System.err.println("FIXME: this should use the CDK XYZWriter");
+                FileWriter writer = new FileWriter(file);
+                int frameCount = chemFile.getNumberOfFrames();
+                // note, that it only saves the first frame
+                ChemFrame chemFrame = chemFile.getFrame(0);
+                XYZWriter xyzwriter = new XYZWriter(writer);
+                xyzwriter.write(chemFrame);
+                xyzwriter.close();
             } else if (fileTyper.getType().equals("PDB")) {
-              PdbSaver ps = new PdbSaver((ChemFile)viewer.getClientFile(),
-                                         os);
-              ps.writeFile();
+                FileOutputStream os = new FileOutputStream(file);
+                PdbSaver ps = new PdbSaver(chemFile, os);
+                ps.writeFile();
+                os.flush();
+                os.close();
             } else if (fileTyper.getType().equals("CML")) {
-                System.err.println("FIXME: this should use the CDK CMLWriter");
+                FileWriter writer = new FileWriter(file);
+                int frameCount = chemFile.getNumberOfFrames();
+                // note, that it only saves the first frame
+                ChemFrame chemFrame = chemFile.getFrame(0);
+                CMLWriter cmlwriter = new CMLWriter(writer);
+                cmlwriter.write(chemFrame);
+                cmlwriter.close();
             } else {
             }
-
-            os.flush();
-            os.close();
-
           } catch (Exception exc) {
             status.setStatus(1, "Exception:");
             status.setStatus(2, exc.toString());

@@ -3,368 +3,400 @@
   PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
          "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <book id="jmol-devel-guide">
-<bookinfo>
-<title>Jmol Developer's Guide</title>
-</bookinfo>
+  <bookinfo>
+    <title>Jmol Developer's Guide</title>
+  </bookinfo>
 
-<chapter id="BuildingJmol">
-<title>Building Jmol</title>
-<para>Prerequisites:
-<itemizedlist>
-<listitem><para> Java 2 JDK (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>) </para></listitem>
-<listitem><para> Apache Ant (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>) </para></listitem>
-<listitem><para> DocBook XSL (<ulink url="http://sourceforge.net/project/showfiles.php?group_id=21935">http://sourceforge.net/project/showfiles.php?group_id=21935</ulink>) </para></listitem>
-<listitem><para> Jmol source code </para></listitem>
-</itemizedlist>
+  <chapter id="BuildingJmol">
+    <title>Building Jmol</title>
+    <para>Prerequisites:
+      <itemizedlist>
+        <listitem>
+          <para>Java 2 JDK (<ulink url="http://java.sun.com/">http://java.sun.com/</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+          <para>Apache Ant (<ulink url="http://jakarta.apache.org/ant">http://jakarta.apache.org/ant</ulink>)
+          </para>
+        </listitem>
+        <listitem>
+          <para>DocBook XSL (<ulink url="http://sourceforge.net/project/showfiles.php?group_id=21935">http://sourceforge.net/project/showfiles.php?group_id=21935</ulink>) </para></listitem>
+        <listitem>
+          <para>Jmol source code </para>
+        </listitem>
+      </itemizedlist>
+      The Jmol source code can be either downloaded
+      (see <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge project files</ulink>)
+      or checked out from the CVS repository
+      (see <ulink url="http://sourceforge.net/cvs/?group_id=23629">SourceForge CVS access</ulink>).
+    </para>
 
-The Jmol source code can be either downloaded
-(see <ulink url="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge project files</ulink>)
-or checked out from the CVS repository
-(see <ulink url="http://sourceforge.net/cvs/?group_id=23629">SourceForge CVS access</ulink>).
-</para>
+    <para>Once you have all the prerequisites, Jmol can be built from the top
+      source directory with the following command:
+    </para>
 
-<para>Once you have all the prerequisites, Jmol can be built from the top
-source directory with the following command:
-</para>
+    <para>On Unix,
+      <programlisting>
+        <prompt>/home/user/programming/Jmol&gt;</prompt> <command>ant -Ddocbook.dir=/home/user/programming/docbook-xsl</command>
+      </programlisting>
+    </para>
 
-<para>On Unix,
-<programlisting>
-	<prompt>/home/user/programming/Jmol&gt;</prompt> <command>ant -Ddocbook.dir=/home/user/programming/docbook-xsl</command>
-</programlisting>
-</para>
+    <para>On Windows,
+      <programlisting>
+        <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Ddocbook.dir=h:\programming\docbook-xsl</command>
+      </programlisting>
+    </para>
 
-<para>On Windows,
-<programlisting>
-	<prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Ddocbook.dir=h:\programming\docbook-xsl</command>
-</programlisting>
-</para>
+    <para>
+      where <parameter class="command">docbook.dir</parameter> is set equal to the absolute path of
+      the DocBook XSL.
+    </para>
 
-<para>
-where <parameter class="command">docbook.dir</parameter> is set equal to the absolute path of
-the DocBook XSL.
-</para>
-</chapter>
+    <section>
+      <title>Compiling with different JVM's</title>
+      <section>
+        <title>Compiling with Java 1.2</title>
+        <para>
+          The applet needs to be compiled with javac 1.2, to be compatible with most browsers.
+          This can be done by doing:
+          <programlisting>
+            <prompt>h:\programming\Jmol&gt;</prompt> <command>setenv JAVA_HOME /path/to/java1.2</command>
+            <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Dbuild.compiler=classic</command>
+          </programlisting>
+        </para>
+      </section>
+      <section>
+        <title>Compiling with Java 1.3/1.4</title>
+        <para>
+          The applet needs to be compiled with javac 1.3/1.4, to be compatible with most browsers.
+          This can be done by doing:
+          <programlisting>
+            <prompt>h:\programming\Jmol&gt;</prompt> <command>setenv JAVA_HOME /path/to/java1.4</command>
+            <prompt>h:\programming\Jmol&gt;</prompt> <command>ant -Dbuild.compiler=javac1.4</command>
+          </programlisting>
+          And similar for javac1.3.
+        </para>
+      </section>
+    </section>
+  </chapter>
 
-<chapter id="RunningJmol">
-<title>Running Jmol</title>
-<para>
-On Unix, the development version of Jmol is run by simply executing
-the jmol script in the Jmol development directory.
-</para>
+  <chapter id="RunningJmol">
+    <title>Running Jmol</title>
+    <para>
+      On Unix, the development version of Jmol is run by simply executing
+      the jmol script in the Jmol development directory.
+    </para>
 
-<para>
-On Windows, the environment variable JMOL_HOME must be set to the development
-directory, and then the jmol.bat script can be executed. For example:
+    <para>
+      On Windows, the environment variable JMOL_HOME must be set to the development
+      directory, and then the jmol.bat script can be executed. For example:
+      <programlisting>
+        <prompt>H:\programming\Jmol&gt;</prompt> <command>set JMOL_HOME=h:\programming\Jmol</command>
+        <prompt>H:\programming\Jmol&gt;</prompt> <command>jmol.bat</command>
+      </programlisting>
+    </para>
+  </chapter>
 
-<programlisting>
-	<prompt>H:\programming\Jmol&gt;</prompt> <command>set JMOL_HOME=h:\programming\Jmol</command>
-	<prompt>H:\programming\Jmol&gt;</prompt> <command>jmol.bat</command>
-</programlisting>
+  <chapter id="CodingStandard">
+    <title>Coding Standard</title>
+    <para>
+      Jmol source code should be written in a style which adheres to
+      <ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">"The 
+      Elements of Java Style" by Vermeulen, et al</ulink>.
+    </para>
+  </chapter>
 
-</para>
-</chapter>
+  <chapter id="Releasing">
+    <title>Making a release</title>
+    <para>
+      Making releases is currently one of the core responsibilities of
+      the project leader. A release primarily consists of the .zip and
+      .tar.gz distributions. Binary packages are not part of the Jmol
+      release, but the release manager will inform the packagers in time
+      to make binary packages.
+    </para>
+    <para>
+      A Jmol release consists of both the application
+      <emphasis>and</emphasis> the applet. Both must work as expected.
+    </para>
+    <section>
+      <title>Testing before release</title>
+      <para>
+        In the <filename class="directory">samples/</filename>
+        directory a number of test files are located for the input
+        filters. All files in that directory must be checked to be
+        readable before every release.
+      </para>
+      <para>
+        The following table names all files, the reader classes which
+        should read it, and the <emphasis>Extra</emphasis>
+        windows that should be available.
+        <informaltable>
+          <tgroup cols="3">
+            <thead>
+              <row>
+                <entry><para>filename</para></entry>
+                <entry><para>reader</para></entry>
+                <entry><para>extra</para></entry>
+              </row>
+            </thead>
+            <tbody>
+            <row>
+              <entry><para>1crn.pdb</para></entry>
+              <entry><para>PDBReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>4-cyanopheylnitrene-Benzazirine-TS.g94.out</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para>Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ammonia.adf.out</para></entry>
+              <entry><para>ADFReader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>azt.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>bulk_Si.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+            </row>
+            <row>
+              <entry><para>caffeine.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>CdSe_nanocrystal.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>ch3oh_ace.out</para></entry>
+              <entry><para>Aces2Reader</para></entry>
+              <entry><para>Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ch3oh_g94.out</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>ch3oh_gam.out</para></entry>
+              <entry><para>GamessReader</para></entry>
+              <entry><para>Vibrate</para></entry>
+            </row>
+            <row>
+              <entry><para>cholesterol.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+            </row>
+            <row>
+              <entry><para>Cl2O.log</para></entry>
+              <entry><para>GamessReader</para></entry>
+              <entry><para>Animate</para></entry>
+            </row>
+            <row>
+              <entry><para>conformeren.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para>Animate, Graph</para></entry>
+              </row>
+              <row>
+              <entry><para>cs2.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>cyclohexane_chair.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>cyclohexane_movie.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>ddt.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>diels-alder_movie.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>dna.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>estron.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>ethanol.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>ethene.mm1gp</para></entry>
+              <entry><para>ChemicalMMReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>frame_1.res</para></entry>
+              <entry><para>ShelXReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>g98.out</para></entry>
+              <entry><para>Gaussian98Reader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+              </row>
+              <row>
+              <entry><para>glycine-crystal.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>HfO2_mol_opt.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>HfO2_on_Si_relax.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>met-enkaphalin_movie.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>methanol1.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>methanol2.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>pdhch3.in</para></entry>
+              <entry><para>Jaguar Input is not yet supported</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>phenol-without-para-G.g98.out</para></entry>
+              <entry><para>Gaussian98Reader</para></entry>
+              <entry><para>Animate, Vibrate</para></entry>
+              </row>
+              <row>
+              <entry><para>phenylnitrene.g92.out</para></entry>
+              <entry><para>Gaussian92Reader</para></entry>
+              <entry><para>Vibrate</para></entry>
+              </row>
+              <row>
+              <entry><para>phenylnitrene.g94.out</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>slab_7Si_3Vac_2x.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>slab_7Si_3Vac_2x_relax_2x1.out</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal, Animate, Graph</para></entry>
+              </row>
+              <row>
+              <entry><para>SN1_reaction.cml</para></entry>
+              <entry><para>CMLReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>SN1_reaction.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>SN2_reaction.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para>Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>t54.in</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal</para></entry>
+              </row>
+              <row>
+              <entry><para>taxol.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>test.mol</para></entry>
+              <entry><para>MdlReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>tms.log</para></entry>
+              <entry><para>Gaussian94Reader</para></entry>
+              <entry><para>Animate, Chemical Shift</para></entry>
+              </row>
+              <row>
+              <entry><para>toluene.pdb</para></entry>
+              <entry><para>PDBReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>viagra.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+              <row>
+              <entry><para>zeolite_AFl.out</para></entry>
+              <entry><para>ABINITReader</para></entry>
+              <entry><para>Crystal, Graph, Animate</para></entry>
+              </row>
+              <row>
+              <entry><para>zoloft.xyz</para></entry>
+              <entry><para>XYZReader</para></entry>
+              <entry><para></para></entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+      </para>
+    </section>
+  </chapter>
 
-<chapter id="CodingStandard">
-<title>Coding Standard</title>
-<para>
-Jmol source code should be written in a style which adheres to
-<ulink url="http://www.amazon.com/exec/obidos/ASIN/0521777682">
-"The Elements of Java Style" by Vermeulen, et al</ulink>.
-</para>
-</chapter>
-
-<chapter id="Releasing">
-<title>Making a release</title>
-<para>
-Making releases is currently one of the core responsibilities of
-the project leader. A release primarily consists of the .zip and
-.tar.gz distributions. Binary packages are not part of the Jmol
-release, but the release manager will inform the packagers in time
-to make binary packages.
-</para>
-<para>
-A Jmol release consists of both the application
-<emphasis>and</emphasis> the applet. Both must work as expected.
-</para>
-<section>
-  <title>Testing before release</title>
-  <para>
-    In the <filename class="directory">samples/</filename>
-    directory a number of test files are located for the input
-    filters. All files in that directory must be checked to be
-    readable before every release.
-  </para>
-  <para>
-    The following table names all files, the reader classes which
-    should read it, and the <emphasis>Extra</emphasis>
-    windows that should be available.
-    <informaltable>
-      <tgroup cols="3">
-        <thead>
-          <row>
-            <entry><para>filename</para></entry>
-            <entry><para>reader</para></entry>
-            <entry><para>extra</para></entry>
-          </row>
-        </thead>
-        <tbody>
-        <row>
-          <entry><para>1crn.pdb</para></entry>
-          <entry><para>PDBReader</para></entry>
-          <entry><para></para></entry>
-        </row>
-        <row>
-          <entry><para>4-cyanopheylnitrene-Benzazirine-TS.g94.out</para></entry>
-          <entry><para>Gaussian94Reader</para></entry>
-          <entry><para>Vibrate</para></entry>
-        </row>
-        <row>
-          <entry><para>ammonia.adf.out</para></entry>
-          <entry><para>ADFReader</para></entry>
-          <entry><para>Animate, Vibrate</para></entry>
-        </row>
-        <row>
-          <entry><para>azt.xyz</para></entry>
-          <entry><para>XYZReader</para></entry>
-          <entry><para></para></entry>
-        </row>
-        <row>
-          <entry><para>bulk_Si.in</para></entry>
-          <entry><para>ABINITReader</para></entry>
-          <entry><para>Crystal</para></entry>
-        </row>
-        <row>
-          <entry><para>caffeine.xyz</para></entry>
-          <entry><para>XYZReader</para></entry>
-          <entry><para></para></entry>
-        </row>
-          <row>
-            <entry><para>CdSe_nanocrystal.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-          </row>
-          <row>
-            <entry><para>ch3oh_ace.out</para></entry>
-            <entry><para>Aces2Reader</para></entry>
-            <entry><para>Vibrate</para></entry>
-          </row>
-          <row>
-            <entry><para>ch3oh_g94.out</para></entry>
-            <entry><para>Gaussian94Reader</para></entry>
-            <entry><para>Animate, Vibrate</para></entry>
-          </row>
-          <row>
-            <entry><para>ch3oh_gam.out</para></entry>
-            <entry><para>GamessReader</para></entry>
-            <entry><para>Vibrate</para></entry>
-          </row>
-          <row>
-            <entry><para>cholesterol.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-          </row>
-          <row>
-            <entry><para>Cl2O.log</para></entry>
-            <entry><para>GamessReader</para></entry>
-            <entry><para>Animate</para></entry>
-          </row>
-          <row>
-            <entry><para>conformeren.cml</para></entry>
-            <entry><para>CMLReader</para></entry>
-            <entry><para>Animate, Graph</para></entry>
-            </row>
-            <row>
-            <entry><para>cs2.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>cyclohexane_chair.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>cyclohexane_movie.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para>Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>ddt.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>diels-alder_movie.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para>Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>dna.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>estron.cml</para></entry>
-            <entry><para>CMLReader</para></entry>
-            <entry><para>Crystal</para></entry>
-            </row>
-            <row>
-            <entry><para>ethanol.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>ethene.mm1gp</para></entry>
-            <entry><para>ChemicalMMReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>frame_1.res</para></entry>
-            <entry><para>ShelXReader</para></entry>
-            <entry><para>Crystal</para></entry>
-            </row>
-            <row>
-            <entry><para>g98.out</para></entry>
-            <entry><para>Gaussian98Reader</para></entry>
-            <entry><para>Animate, Vibrate</para></entry>
-            </row>
-            <row>
-            <entry><para>glycine-crystal.cml</para></entry>
-            <entry><para>CMLReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>HfO2_mol_opt.in</para></entry>
-            <entry><para>ABINITReader</para></entry>
-            <entry><para>Crystal</para></entry>
-            </row>
-            <row>
-            <entry><para>HfO2_on_Si_relax.in</para></entry>
-            <entry><para>ABINITReader</para></entry>
-            <entry><para>Crystal</para></entry>
-            </row>
-            <row>
-            <entry><para>met-enkaphalin_movie.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para>Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>methanol1.cml</para></entry>
-            <entry><para>CMLReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>methanol2.cml</para></entry>
-            <entry><para>CMLReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>pdhch3.in</para></entry>
-            <entry><para>Jaguar Input is not yet supported</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>phenol-without-para-G.g98.out</para></entry>
-            <entry><para>Gaussian98Reader</para></entry>
-            <entry><para>Animate, Vibrate</para></entry>
-            </row>
-            <row>
-            <entry><para>phenylnitrene.g92.out</para></entry>
-            <entry><para>Gaussian92Reader</para></entry>
-            <entry><para>Vibrate</para></entry>
-            </row>
-            <row>
-            <entry><para>phenylnitrene.g94.out</para></entry>
-            <entry><para>Gaussian94Reader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>slab_7Si_3Vac_2x.in</para></entry>
-            <entry><para>ABINITReader</para></entry>
-            <entry><para>Crystal</para></entry>
-            </row>
-            <row>
-            <entry><para>slab_7Si_3Vac_2x_relax_2x1.out</para></entry>
-            <entry><para>ABINITReader</para></entry>
-            <entry><para>Crystal, Animate, Graph</para></entry>
-            </row>
-            <row>
-            <entry><para>SN1_reaction.cml</para></entry>
-            <entry><para>CMLReader</para></entry>
-            <entry><para>Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>SN1_reaction.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para>Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>SN2_reaction.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para>Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>t54.in</para></entry>
-            <entry><para>ABINITReader</para></entry>
-            <entry><para>Crystal</para></entry>
-            </row>
-            <row>
-            <entry><para>taxol.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>test.mol</para></entry>
-            <entry><para>MdlReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>tms.log</para></entry>
-            <entry><para>Gaussian94Reader</para></entry>
-            <entry><para>Animate, Chemical Shift</para></entry>
-            </row>
-            <row>
-            <entry><para>toluene.pdb</para></entry>
-            <entry><para>PDBReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>viagra.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-            <row>
-            <entry><para>zeolite_AFl.out</para></entry>
-            <entry><para>ABINITReader</para></entry>
-            <entry><para>Crystal, Graph, Animate</para></entry>
-            </row>
-            <row>
-            <entry><para>zoloft.xyz</para></entry>
-            <entry><para>XYZReader</para></entry>
-            <entry><para></para></entry>
-            </row>
-          </tbody>
-      </tgroup>
-    </informaltable>
-  </para>
-</section>
-
-</chapter>
-
-<chapter id="Packaging">
-<title>Packaging</title>
-<para>
-Distribution packages will be made for any platform for which a
-developer promises to provide support. File used to create packages
-should be commited to CVS under the Jmol/packaging
-directory. Currently the following packages are available:
-<itemizedlist>
-<listitem><para> RPM (by Bradley Smith) </para></listitem>
-<listitem><para> Debian (by Egon Willighagen) </para></listitem>
-<listitem><para> MacOS (by Dan Gezelter) </para></listitem>
-</itemizedlist>
-</para>
-</chapter>
+  <chapter id="Packaging">
+    <title>Packaging</title>
+    <para>
+      Distribution packages will be made for any platform for which a
+      developer promises to provide support. File used to create packages
+      should be commited to CVS under the Jmol/packaging
+      directory. Currently the following packages are available:
+      <itemizedlist>
+        <listitem><para>RPM (by Bradley Smith) </para></listitem>
+        <listitem><para>Debian (by Egon Willighagen) </para></listitem>
+        <listitem><para>MacOS (by Dan Gezelter) </para></listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
 
 </book>
 

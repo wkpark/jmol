@@ -123,6 +123,7 @@ class Jmol extends JPanel {
   private Animate anim;
   private Vibrate vib;
   private CrystalPropertiesDialog crystprop;
+  private MakeCrystal makecrystal;
   private PropertyGraph pg;
   private Measure meas;
   private MeasurementList mlist;
@@ -231,6 +232,8 @@ class Jmol extends JPanel {
     splash.showStatus(resourceHandler.translate("Initializing Crystal..."));
     crystprop = new CrystalPropertiesDialog(model, frame);
     model.addPropertyChangeListener(crystprop);
+    makecrystal = new MakeCrystal(model, crystprop);
+    model.addPropertyChangeListener(makecrystal);
     splash.showStatus(resourceHandler
         .translate("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
@@ -600,6 +603,7 @@ class Jmol extends JPanel {
     actions.addAll(Arrays.asList(mlist.getActions()));
     actions.addAll(Arrays.asList(vib.getActions()));
     actions.addAll(Arrays.asList(crystprop.getActions()));
+    actions.addAll(Arrays.asList(makecrystal.getActions()));
     actions.addAll(Arrays.asList(pg.getActions()));
 
     return (Action[]) actions.toArray(new Action[0]);
@@ -1160,15 +1164,18 @@ class Jmol extends JPanel {
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     PrintJob pJob = tk.getPrintJob(frame, "Jmol Print Job", null);
-    Graphics pg = pJob.getGraphics();
 
-    if (pg != null) {
-      display.print(pg);
+    if (pJob != null) {
+      Graphics pg = pJob.getGraphics();
+      if (pg != null) {
+        display.print(pg);
 
-      // Flush the print job
-      pg.dispose();
+        // Flush the print job
+        pg.dispose();
+      }
+      pJob.end();
     }
-
+  
   }
 
   class OpenAction extends NewAction {

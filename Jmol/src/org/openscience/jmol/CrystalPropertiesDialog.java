@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright 2002 The Jmol Development Team
  *
@@ -233,16 +231,16 @@ public class CrystalPropertiesDialog extends JDialog
       public void actionPerformed(ActionEvent e) {
         commitChange();
         updateDialog();
-	crystpropAction.setEnabled(true);
-	thisDialog.setVisible(false);
+        crystpropAction.setEnabled(true);
+        thisDialog.setVisible(false);
       }
     });
 
 
     jCancelButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-	crystpropAction.setEnabled(true);
-	thisDialog.setVisible(false);
+        crystpropAction.setEnabled(true);
+        thisDialog.setVisible(false);
       }
     });
 
@@ -407,6 +405,25 @@ public class CrystalPropertiesDialog extends JDialog
         ((JTextField) (jAtomBox.elementAt(i))).setEditable(true);
         ((JTextField) (jBondBox.elementAt(i))).setEditable(true);
         ((JTextField) (jUnitBox.elementAt(i))).setEditable(true);
+      }
+    }
+  }    //end setCrystalBoxState
+  
+  
+  /**
+   * Make usage or not of atomBox, bondBox, unitBox 
+   * Depends of origAtomsOnly state
+   */
+  protected void setCrystalBoxState() {
+
+    //Set what is editable depending on the checkbox value
+    if (origAtomsOnly.isSelected()) {
+      for (int i = 0; i < 2; i++) {
+        ((JTextField) (jAtomBox.elementAt(i))).setEditable(false);
+      }
+    } else {
+      for (int i = 0; i < 2; i++) {
+        ((JTextField) (jAtomBox.elementAt(i))).setEditable(true);
       }
     }
   }    //end setCrystalBoxState
@@ -791,8 +808,11 @@ public class CrystalPropertiesDialog extends JDialog
     c.weighty = 1.0;
     c.anchor = GridBagConstraints.NORTHWEST;
     c.fill = GridBagConstraints.NONE;
+    c.gridheight = 4;
+    c.gridwidth= GridBagConstraints.REMAINDER;
+    gridbag.setConstraints(origAtomsOnly, c);
+    jAtomBoxPanel.add(origAtomsOnly);
     c.gridwidth = 2;
-    c.gridheight = 3;
     gridbag.setConstraints((JLabel) jAtomBoxLabel.elementAt(0), c);
     jAtomBoxPanel.add((JLabel) jAtomBoxLabel.elementAt(0));
     c.gridwidth = GridBagConstraints.REMAINDER;
@@ -1194,7 +1214,7 @@ public class CrystalPropertiesDialog extends JDialog
   }    //end class BasisVTableModel
 
   class EnergyLinesTableModel extends AbstractTableModel {
-    
+
     private String[] columnNames = {
       JmolResourceHandler.getInstance().translate("Line Number"),
       JmolResourceHandler.getInstance().translate("Origin"),
@@ -1205,6 +1225,91 @@ public class CrystalPropertiesDialog extends JDialog
     };
     
     
+    public void setData(Object[][] data) {
+      this.data = data;
+    }
+
+    public int getColumnCount() {
+      return columnNames.length;
+    }
+    
+    public int getRowCount() {
+      return data.length;
+    }
+
+    public String getColumnName(int col) {
+      return columnNames[col];
+    }
+    
+    public Object getValueAt(int row, int col) {
+      return data[row][col];
+    }
+    
+    public Class getColumnClass(int c) {
+      return getValueAt(0, c).getClass();
+    }
+    
+    public boolean isCellEditable(int row, int col) {
+      
+      //Note that the data/cell address is constant,
+      //no matter where the cell appears onscreen.
+      if (col < 5) {    //no cell editable
+        return false;
+      } else {
+        return true;
+      }
+    }
+    
+    public void setValueAt(Object value, int row, int col) {
+      data[row][col] = value;
+      fireTableCellUpdated(row, col);
+      System.out.println("Table Updated");
+      
+    }
+    
+  }    //end class EnergyLinesTableModel
+  
+  class EnergyLineTableModel extends AbstractTableModel {
+    
+    private String[] columnNames = {
+      JmolResourceHandler.getInstance().translate("Point Number"),
+      "kx", "ky", "kz" };
+    private Object[][] data = {
+    };
+    
+    
+    public void setData(Object[][] data) {
+      this.data = data;
+    }
+
+    public int getColumnCount() {
+      return columnNames.length;
+    }
+
+    public int getRowCount() {
+      return data.length;
+    }
+
+    public String getColumnName(int col) {
+      return columnNames[col];
+    }
+
+    public Object getValueAt(int row, int col) {
+      return data[row][col];
+    }
+
+  class EnergyLinesTableModel extends AbstractTableModel {
+
+    private String[] columnNames = {
+      JmolResourceHandler.getInstance().translate("Line Number"),
+      JmolResourceHandler.getInstance().translate("Origin"),
+      JmolResourceHandler.getInstance().translate("End"),
+      JmolResourceHandler.getInstance().translate("Number Of Points")
+    };
+    private Object[][] data = {
+    };
+
+
     public void setData(Object[][] data) {
       this.data = data;
     }
@@ -1297,9 +1402,9 @@ public class CrystalPropertiesDialog extends JDialog
       data[row][col] = value;
       fireTableCellUpdated(row, col);
       System.out.println("Table Updated");
-      
+
     }
-    
+
   }    //end class EnergyLineTableModel
 
   private void commitChange() {
@@ -1317,7 +1422,7 @@ public class CrystalPropertiesDialog extends JDialog
 
     // Read text from the various text fields
     // and set it in the CrystalFile object.
-    
+
     rprim = readField3(jRprim);
     acell = readField1(jAcell);
     edges = readField1(jEdges);
@@ -1389,7 +1494,7 @@ public class CrystalPropertiesDialog extends JDialog
   }    //end commitChange()
 
   private void updateDialog() {
-    
+
     
     // Reput(or put it for the first time)
     // the text in the box so that the user
@@ -1592,23 +1697,27 @@ public class CrystalPropertiesDialog extends JDialog
       basisApplyTo.setSelectedIndex(0);
     }
 
+    //Hide CystalPropertiesDialog if we have a normal ChemFile
+    if (!hasCrystalInfo) {
+      thisDialog.setVisible(false);
+    }
 
     // Set if the crystprop Action is enabled 
     // or not (appear black or gray in the menu)
     if (this.isShowing()) {                 //the Crystal dialog is open
       crystpropAction.setEnabled(false);    //appear gray (disabled)
-    } else {
-      crystpropAction.setEnabled(true);     //appear black (enabled)
+    } else if (!hasCrystalInfo) {
+      crystpropAction.setEnabled(false);    //appear gray (disabled)
+    } else if (hasCrystalInfo && !this.isShowing()) {
+      crystpropAction.setEnabled(true);  //appear black (enabled)
     }
     hasFile = true;
-
+    
     //Need to refresh the dialog box in case the dialog was open
     //when a new file was loaded.
     updateCurrentFrameIndex();
     updateDialog();
-
-
-  }
+  } //end setChemFile(ChemFile)
 
 
   /**
@@ -1638,9 +1747,14 @@ public class CrystalPropertiesDialog extends JDialog
 
     //restoreInFile();
     this.setVisible(false);
-    crystpropAction.setEnabled(true);
+    if (hasCrystalInfo) {
+      crystpropAction.setEnabled(true);
+    } else {
+      crystpropAction.setEnabled(false);
+      MakeCrystal.setEnabled(true);
+    }
   }
-
+  
 
   /**
    * Describe <code>actionPerformed</code> method here.
@@ -1672,7 +1786,8 @@ public class CrystalPropertiesDialog extends JDialog
 
       //The crystprop dialog is no more available because already opened
       this.setEnabled(false);
-
+      //The Makecrytal action is no more available...
+      MakeCrystal.setEnabled(false);
 
       //Update the content of the dialog box
       updateCurrentFrameIndex();

@@ -59,8 +59,8 @@ public class ChemFrameRenderer {
       previousFrameHashCode = hcFrame;
       previousSettingsHashCode = hcSettings;
       previousNumberAtoms = numAtoms;
-      shapesList.clear();
-      transformables.clear();
+      shapesList.removeAllElements();
+      transformables.removeAllElements();
       transformables.add(frame);
       double maxMagnitude = -1.0;
       double minMagnitude = Double.MAX_VALUE;

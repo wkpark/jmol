@@ -23,8 +23,7 @@ Instructions:
   main directory.
 
   For information about building Jmol from the source, please read the
-  Jmol Developers Guide
-  (http://sourceforge.net/docman/display_doc.php?docid=5308&group_id=23629).
+  Jmol Developers Guide in doc/.
   
 Please report any problems to the developers at
 http://jmol.sourceforge.net/.

@@ -16,8 +16,8 @@
   <chapter id="commandlineoptions">
     <title>Command Line Options</title>
     <para>
-      The program jmol has (at this moment) one command line
-      option: <cmdsynopsis><arg>-script</arg></cmdsynopsis>. The current syntax is:
+      The program jmol has a command line option to run scripts:
+      <cmdsynopsis><arg>-script</arg></cmdsynopsis>. The current syntax is:
       <cmdsynopsis>
         <command>jmol</command>
         <arg>-script <arg choice="req"><replaceable>rasmol.script</replaceable></arg></arg>
@@ -61,15 +61,17 @@
         <para>
           Open files in Jmol. Jmol can read files of the following types:
           <itemizedlist>
+            <listitem><para><ulink url="http://www.abinit.org/">ABINIT</ulink></para></listitem>
             <listitem><para>ACES II</para></listitem>
             <listitem><para>ADF - Amsterdam Density Functional</para></listitem>
+            <listitem><para><ulink url="http://www.xml-cml.org/">CML v1.0 and 1.0.1</ulink></para></listitem>
             <listitem><para>GAMESS</para></listitem>
             <listitem><para>Gaussian 92/94/98</para></listitem>
-            <listitem><para>XYZ (single and multiple frame)</para></listitem>
-            <listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
-            <listitem><para><ulink url="http://www.xml-cml.org/">CML</ulink></para></listitem>
             <listitem><para>Ghemical MM</para></listitem>
-            <listitem><para><ulink url="http://www.abinit.org/">ABINIT</ulink></para></listitem>
+            <listitem><para>Jaguar</para></listitem>
+            <listitem><para>MDL molfile</para></listitem>
+            <listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
+            <listitem><para>XYZ (single and multiple frame)</para></listitem>
           </itemizedlist>
         </para>
       </section>
@@ -119,6 +121,9 @@
           <title>Export -&gt; Render in pov-ray...</title>
           <para>
           For high quality images, Jmol interfaces with the POV-Ray ray tracer.
+          To use this feature, you must have the <command>povray</command> command
+          line utility installed. You can download it from
+          <ulink url="http://www.povray.org/">www.povray.org/</ulink>.
           </para>
         </section>
       </section>

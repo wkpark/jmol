@@ -7,6 +7,9 @@ org/openscience/jmol/Bond.java
 org/openscience/jmol/Vibration.java
 org/openscience/jmol/ChemFrame.java
 org/openscience/jmol/ChemFile.java
+org/openscience/jmol/Crystal.java
+org/openscience/jmol/CrystalFile.java
+org/openscience/jmol/CrystalFrame.java
 org/openscience/jmol/AtomRenderer.java
 org/openscience/jmol/QuickdrawAtomRenderer.java
 org/openscience/jmol/WireframeAtomRenderer.java
@@ -65,4 +68,7 @@ org/openscience/jmol/ChargeColorProfile.java
 org/openscience/jmol/ColorProfile.java
 org/openscience/jmol/DefaultColorProfile.java
 org/openscience/jmol/IntSet.java
-
+org/openscience/jmol/Transformable.java
+org/openscience/jmol/ABINITReader.java
+org/openscience/jmol/GhemicalMMReader.java
+org/openscience/jmol/ShelXReader.java

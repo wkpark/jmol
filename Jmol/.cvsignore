@@ -1,4 +1,5 @@
 applet-classes
 classes
+build
 dist
-generatedSource
+javadoc

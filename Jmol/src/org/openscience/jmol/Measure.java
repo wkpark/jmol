@@ -400,7 +400,13 @@ public class Measure extends JDialog {
       }
       break;
     }
-    close();
+    
+    mtm.wipe();
+    for (int i = 0; i < 4; i++) {
+      selection[i] = -1;
+    }
+    table.setRowSelectionInterval(0, 0);
+    mtm.fireTableDataChanged();
   }
 
   public void enableActions() {

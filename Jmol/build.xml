@@ -2,7 +2,7 @@
 
   <property file="${user.home}/.jmol.build.properties" />
 
-  <property name="version" value="4" />
+  <property name="version" value="5" />
   <property name="source.dir" value="src" />
   <property name="tests.source.dir" value="source-tests" />
   <property name="build.dir" value="build" />
@@ -37,7 +37,8 @@
   </target>
 
   <target name="setup" >
-    <uptodate property="jmolGuide.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
+    <uptodate property="jmolGuide.uptodate" 
+      targetfile="${generatedSource.dir}/org/openscience/jmol/Data/guide/index.html">
       <srcfiles dir="${doc.dir}/source" includes="JmolGuide.docbook.xml" />
     </uptodate>
     <uptodate property="jmolHistory.uptodate" targetfile="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html">
@@ -46,6 +47,10 @@
     <uptodate property="jmolDevelopersGuide.uptodate"
         targetfile="${doc.dir}/JmolDevelopersGuide.html">
       <srcfiles dir="${doc.dir}/source" includes="JmolDevelopersGuide.docbook.xml" />
+    </uptodate>
+    <uptodate property="jmolAppletGuide.uptodate"
+        targetfile="${doc.dir}/JmolAppletGuide.html">
+      <srcfiles dir="${doc.dir}/source" includes="JmolAppletGuide.docbook.xml" />
     </uptodate>
     <available file="${docbook.dir}" property="docbook.dir.present"/>
     <available classname="com.icl.saxon.StyleSheet"
@@ -80,7 +85,7 @@
     <echo message="XSLT class 'com.icl.saxon.StyleSheet' not found." />
     <antcall target="initFailure" />
   </target>
-  
+
   <target name="jmolGuide" depends="init" unless="jmolGuide.uptodate" >
     <echo message="Generating user's guide" />
     <mkdir dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
@@ -107,7 +112,7 @@
     </java>
   </target>
 
-  <target name="doc" depends="jmolDevelopersGuide,javadoc" />
+  <target name="doc" depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc" />
   
   <target name="jmolDevelopersGuide" depends="init" unless="jmolDevelopersGuide.uptodate" >
     <echo message="Generating developer's guide" />
@@ -120,7 +125,19 @@
       <arg value="${docbook.dir}/html/docbook.xsl" />
     </java>
   </target>
-  
+
+  <target name="jmolAppletGuide" depends="init" unless="jmolAppletGuide.uptodate" >
+    <echo message="Generating applet guide" />
+    <java fork="true" dir="${doc.dir}"
+        classname="com.icl.saxon.StyleSheet"
+        classpath="${lib.dir}/saxon.jar" >
+      <arg value="-o" />
+      <arg value="${user.dir}/${doc.dir}/JmolAppletGuide.html" />
+      <arg value="${user.dir}/${doc.dir}/source/JmolAppletGuide.docbook.xml" />
+      <arg value="${docbook.dir}/html/docbook.xsl" />
+    </java>
+  </target>
+
   <target name="classes" depends="init,jmolGuide,jmolHistory">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
@@ -161,7 +178,7 @@
     </copy>
   </target>
 
-  <target name="applet-classes" >
+  <target name="applet-classes" depends="jmolAppletGuide">
     <mkdir dir="${applet.classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
         debug="on" deprecation="on" target="1.1"
@@ -189,7 +206,7 @@
       </fileset>
     </jar>
   </target>
-  
+
   <target name="applet-jar" depends="applet-classes">
     <jar jarfile="${lib.dir}/jmol-applet.jar" >
       <fileset dir="${applet.classes.dir}" >
@@ -228,7 +245,14 @@
     <copy todir="${dist.dir}/jmol-${version}/samples" >
       <fileset dir="samples" />
     </copy>
-    
+    <copy   file="doc/JmolDevelopersGuide.html"
+          tofile="${dist.dir}/jmol-${version}/${doc.dir}/JmolDevelopersGuide.html" />
+    <copy   file="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html"
+          tofile="${dist.dir}/jmol-${version}/ChangeLog.html" />
+    <copy todir="${dist.dir}/jmol-${version}/${doc.dir}/UserGuide" >
+      <fileset dir="${generatedSource.dir}/org/openscience/jmol/Data/guide" />
+    </copy>
+
     <mkdir dir="${dist.dir}/jmol-applet-${version}"/>
     <copy todir="${dist.dir}/jmol-applet-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
@@ -242,6 +266,9 @@
         <exclude name="gnujaxp.jar" />
         <exclude name="baysmith-io.jar" />
         <exclude name="itext-0.94.jar" />
+        <exclude name="cdk-core.jar" />
+        <exclude name="cdk-extra.jar" />
+        <exclude name="cdk-libio.jar" />
       </fileset>
     </copy>
     <copy todir="${dist.dir}/jmol-applet-${version}" >
@@ -249,6 +276,10 @@
         <include name="*.txt" />
       </fileset>
     </copy>
+    <copy   file="doc/JmolAppletGuide.html"
+          tofile="${dist.dir}/jmol-applet-${version}/${doc.dir}/JmolAppletGuide.html" />
+    <copy   file="${generatedSource.dir}/org/openscience/jmol/Data/ChangeLog.html"
+          tofile="${dist.dir}/jmol-applet-${version}/ChangeLog.html" />
   </target>
 
   <target name="check.jws" depends="setup" unless="keystore.present" >
@@ -305,7 +336,9 @@
   <target name="dist.zip" depends="dist">
     <zip zipfile="${build.dir}/jmol-${version}.zip" basedir="${dist.dir}"
       includes="jmol-${version}/**" />
-    
+  </target>
+
+  <target name="applet.dist.zip" depends="dist">
     <zip zipfile="${build.dir}/jmol-applet-${version}.zip" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**" />
   </target>
@@ -328,7 +361,9 @@
     <gzip zipfile="${build.dir}/jmol-${version}.tar.gz"
         src="${build.dir}/jmol-${version}.tar"/>
     <delete file="${build.dir}/jmol-${version}.tar" />
-    
+  </target>
+
+  <target name="applet.dist.tar.gz" depends="dist">
     <tar tarfile="${build.dir}/jmol-applet-${version}.tar" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**"/>
     <gzip zipfile="${build.dir}/jmol-applet-${version}.tar.gz"
@@ -393,6 +428,9 @@
 
   <target name="main-dists" description="Builds primary distributions."
       depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
+
+  <target name="applet-dists" description="Builds applet distributions."
+      depends="applet.dist.zip,applet.dist.tar.gz"/>
 
   <target name="clean">
     <delete dir="${classes.dir}"/>

@@ -9,12 +9,12 @@
   <links>
     <table width="100%">
       <tr>
-        <td align="left" valign="center">
+        <td align="left" valign="middle">
           <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg"
 	     border="0" alt="Jmol"/></a>
           &language;
         </td>
-        <td align="right" valign="center">
+        <td align="right" valign="middle">
           <font size="2">
 	    <a href="[root]/">Home</a> 
 	    | <a href="[root]/websites/">Websites</a>
@@ -49,7 +49,7 @@
 	    </a>
 	    |
 	    <a href=
-	       "http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133"
+	       "http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133"
 	       >Bug Database
 	    </a>
 	  </font>

@@ -44,6 +44,9 @@
     </xsl:if>
   </xsl:template>
 
+  <xsl:template match="header">
+    <xsl:apply-templates/>
+  </xsl:template>
 
   <!-- Process a section in the document. Nested sections are supported -->
   <xsl:template match="document//section">
@@ -128,7 +131,7 @@
           <tr>
             <td align="center">
               <xsl:for-each select="$project/notice">
-                <small><xsl:copy-of select="."/><br/>&#xA0;<br/></small>
+                <small><xsl:copy-of select="self::node()[* or @*]"/><br/>&#xA0;<br/></small>
               </xsl:for-each>
             </td>
           </tr>
@@ -140,6 +143,9 @@
 	<xsl:text disable-output-escaping="yes">&lt;/html&gt;</xsl:text>
   </xsl:template>
 
+  <xsl:template match="links">
+    <xsl:apply-templates/>
+  </xsl:template>
 
   <!-- UL is processed into a table using graphical bullets -->
 <!--

@@ -25,35 +25,35 @@
               </tr>
               <tr>
                 <td><label>Project:</label></td>
-                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Project Name:</label></td>
-                <td><input type='text' name='infoName' id='infoName' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Credit:</label></td>
-                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Number of atoms:</label></td>
-                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Preferred:</label></td>
-                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Final deadline:</label></td>
-                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Frames:</label></td>
-                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Code:</label></td>
-                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td align="left" colspan="2">

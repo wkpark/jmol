@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   French translation 
-  Translated from default version : project_en.xml (v 1.2)
+  Translated from default version : project_en.xml (v 1.3)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY language SYSTEM "language.xml" >
@@ -13,11 +13,11 @@
   <links>
     <table width="100%">
       <tr>
-        <td align="left" valign="center">
+        <td align="left" valign="middle">
           <a href="[root]/"><img src="[images]/Jmol_smallLogo.jpg" border="0" alt="Jmol"/></a>
           &language;
         </td>
-        <td align="right" valign="center">
+        <td align="right" valign="middle">
           <font size="2">
             <a href="[root]/">Home</a> |
             <a href="[root]/websites/">Sites web</a> |
@@ -44,7 +44,7 @@
             <a href="http://sourceforge.net/projects/jmol">
               Page Sourceforge du Projet
             </a> |
-            <a href="http://sourceforge.net/tracker/?group_id=23629&amp;atid=379133">
+            <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
               Base des anomalies
             </a>
           </font>

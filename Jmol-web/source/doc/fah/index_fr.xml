@@ -1,4 +1,8 @@
 <?xml version="1.0"?>
+<!--
+  French translation 
+  Translated from default version : index_en.xml (v 1.4)
+-->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
 ]>
@@ -25,35 +29,35 @@
               </tr>
               <tr>
                 <td><label>Projet:</label></td>
-                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoNumber' id='infoNumber' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Nom du Projet:</label></td>
-                <td><input type='text' name='infoName' id='infoName' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoName' id='infoName' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Cr&#x00E9;dit:</label></td>
-                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoCredit' id='infoCredit' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Nombre d'atomes:</label></td>
-                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoAtoms' id='infoAtoms' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Pr&#x00E9;f&#x00E9;r&#x00E9;:</label></td>
-                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoPreferred' id='infoPreferred' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Dur&#x00E9;e limite:</label></td>
-                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoDeadline' id='infoDeadline' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Frames:</label></td>
-                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoFrames' id='infoFrames' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td><label>Code:</label></td>
-                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='true' /></td>
+                <td><input type='text' name='infoCode' id='infoCode' size='50' readonly='readonly' /></td>
               </tr>
               <tr>
                 <td align="left" colspan="2">

@@ -192,7 +192,21 @@ class CmlReader extends AtomSetCollectionReader {
       /* */
       if ("molecule".equals(localName)) {
         atomSetCollection.newAtomSet();
-        // FIXME ... CML must have some kind of atomSetName here
+        String collectionName = null;
+        for (int i = atts.getLength(); --i >= 0; ) {
+          String attLocalName = atts.getLocalName(i);
+          String attValue = atts.getValue(i);
+          if ("title".equals(attLocalName)) {
+            collectionName = atts.getValue(i);
+          } else if ("id".equals(attLocalName)) {
+            if (collectionName != null) {
+              collectionName = atts.getValue(i);
+            } // else: don't overwrite title!
+          }
+          if (collectionName != null) {
+            atomSetCollection.setAtomSetName(collectionName);
+          }
+        }
         return;
       }
       if ("atom".equals(localName)) {

@@ -22,6 +22,10 @@
     Jmol can now also read files in non-CML with the command "jmol &lt;filename&gt;".
     Implements feature request 555462.
   </change>
+  <change contributor="EW">
+    The PDB reader now also parses CONECT fields and implements Rasmol's perception of
+    bond orders.
+  </change>
 </changes>
 
 <changes version="jmol-3">

@@ -33,6 +33,7 @@ import org.openscience.jmol.render.AtomColors;
 import java.awt.Color;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Vector;
 
 public class ColorManager {
 
@@ -40,11 +41,11 @@ public class ColorManager {
 
   ColorManager(DisplayControl control) {
     this.control = control;
+    colorProfiles.addElement(AtomColors.getInstance());
+    colorProfiles.addElement(new PartialAtomicChargeColors());
   }
 
-  private final AtomColorer[] colorProfiles =
-  { AtomColors.getInstance(),
-    new PartialAtomicChargeColors()};
+  private Vector colorProfiles = new Vector();;
 
   public byte modeAtomColorProfile = DisplayControl.ATOMTYPE;
   public void setModeAtomColorProfile(byte mode) {
@@ -138,7 +139,10 @@ public class ColorManager {
   }
 
   public Color getColorAtom(byte mode, Atom atom) {
-    Color color = colorProfiles[mode].getAtomColor(atom);
+    if (mode > colorProfiles.size()) {
+        return Color.WHITE;
+    }
+    Color color = ((AtomColorer)colorProfiles.elementAt(mode)).getAtomColor(atom);
     if (modeTransparentColors)
       color = getColorTransparent(color);
     return color;

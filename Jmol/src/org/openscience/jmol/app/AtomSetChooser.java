@@ -147,13 +147,40 @@ public class AtomSetChooser extends JDialog
    * buildFrame method.
    */
   private void createTreeModel() {
+    String key=null, separator=null;
     DefaultMutableTreeNode root =
       new DefaultMutableTreeNode(viewer.getModelSetName());
+    // first determine whether we have a PATH_KEY in the modelSetProperties
+    Properties modelSetProperties = viewer.getModelSetProperties();
+    if (modelSetProperties != null) {
+      key = modelSetProperties.getProperty("PATH_KEY");
+      separator = modelSetProperties.getProperty("PATH_SEPARATOR");
+    }
+    if (key == null || separator == null) {
+      System.out.println("No PATH info found in the atomSetCollectionProperties "
+         + modelSetProperties);
+      // make a flat hierarchy
+      for (int atomSetIndex = 0, count = viewer.getModelCount();
+           atomSetIndex < count; ++atomSetIndex) {
+        root.add(new AtomSet(atomSetIndex,
+                 viewer.getModelName(atomSetIndex)));
+      }
+    } else {
     // flat: add every AtomSet to the root
-    for (int atomSetIndex = 0, count = viewer.getModelCount();
-         atomSetIndex < count; ++atomSetIndex) {
-      root.add(new AtomSet(atomSetIndex, viewer.getModelName(atomSetIndex))
-               );
+      for (int atomSetIndex = 0, count = viewer.getModelCount();
+           atomSetIndex < count; ++atomSetIndex) {
+        String path = viewer.getModelProperty(atomSetIndex,key);
+        if (path == null) {
+          // no path, so add it to the root
+          root.add(new AtomSet(atomSetIndex,
+                   viewer.getModelName(atomSetIndex)));
+        } else {
+          DefaultMutableTreeNode current = root;
+          // LEFT OFF HERE for now, keep it flat
+          root.add(new AtomSet(atomSetIndex,
+                   viewer.getModelName(atomSetIndex)));
+        }
+      }
     }
     treeModel.setRoot(root);
     treeModel.reload();

@@ -242,6 +242,13 @@ class AtomSetCollection {
     return index;
   }
   
+  /**
+   * Sets a property for the AtomSetCollection
+   */
+  void setAtomSetCollectionProperty(String key, String value) {
+    atomSetCollectionProperties.setProperty(key,value);
+  }
+  
   ////////////////////////////////////////////////////////////////
   // atomSet stuff
   ////////////////////////////////////////////////////////////////

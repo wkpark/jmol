@@ -28,12 +28,21 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 
 /**
- * Reader for Gaussian 94/98/03 file formats.
+ * Reader for Gaussian 94/98/03 output files.
  *
  **/
 class GaussianReader extends AtomSetCollectionReader {
+  /** Key for path property in AtomSetProperties.
+   *
+   * <p>Should really be part of the JmolAdapter itself so that
+   * any adapter can use the same path as the JmolViewer...
+   */
+  private final static String PATH_KEY = ".PATH";
+  private final static String PATH_SEPARATOR =
+    System.getProperty("path.separator");
+  
   /**
-   *  Word index of atomic number in line with atom coordinates in an
+   * Word index of atomic number in line with atom coordinates in an
    * orientation block.
    */
   private final static int STD_ORIENTATION_ATOMIC_NUMBER_OFFSET = 1;
@@ -49,14 +58,15 @@ class GaussianReader extends AtomSetCollectionReader {
    */
   private int firstCoordinateOffset = 3;
   
-  /**
-   * Calculated SCF energy with units.
-   */
+  /** Calculated SCF energy with units. */
   private String scfEnergy = "";
   /**
    * Key of the type of SCF energy calculated, e.g., E(RB+HF-PW91).
    */
   private String scfKey = "";
+    
+  /** The number of the calculation being interpreted */
+  private int calculationNumber = 1;
   
   /**
    * Reads a Collection of AtomSets from a BufferedReader.
@@ -87,6 +97,13 @@ class GaussianReader extends AtomSetCollectionReader {
     throws Exception {
 
     atomSetCollection = new AtomSetCollection("gaussian");
+    
+    // add the properties for unraveling a path as properties for the
+    // whole atomSetCollection. This way the AtomSetChooser knows how
+    // to 'group' atomSets.
+    atomSetCollection.setAtomSetCollectionProperty("PATH_KEY",PATH_KEY);
+    atomSetCollection.setAtomSetCollectionProperty("PATH_SEPARATOR",
+       PATH_SEPARATOR);
 
     try {
       String line;
@@ -113,9 +130,6 @@ class GaussianReader extends AtomSetCollectionReader {
           readAtoms(reader, line);
         } else if (line.startsWith(" SCF Done:")) {
           readSCFDone(reader,line, nOrientations);
-          atomSetCollection.
-            atomSetProperties[atomSetCollection.currentAtomSetIndex].
-            list(System.out);
         } else if (line.startsWith(" Harmonic frequencies")) {
           readFrequencies(reader);
         } else if (line.startsWith(" Total atomic charges:") ||
@@ -124,6 +138,8 @@ class GaussianReader extends AtomSetCollectionReader {
           // the molecule since it does not list the values for the
           // dummy atoms in the z-matrix
           readPartialCharges(reader);
+        } else if (line.startsWith(" Normal termination of Gaussian")) {
+          ++calculationNumber;
         } else if (lineNum < 20) {
           if (line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
             firstCoordinateOffset = 2;
@@ -138,6 +154,8 @@ class GaussianReader extends AtomSetCollectionReader {
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
     }
+    atomSetCollection.atomSetCollectionProperties.list(System.out);
+    
     return atomSetCollection;
   }
  
@@ -150,7 +168,7 @@ class GaussianReader extends AtomSetCollectionReader {
    * for the atomSet.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
-   * @param line The input line.
+   * @param line The input line containing SCF Done:.
    * @param nOrientations The number of orientations read that need to have
    *           these results associated with them.
    **/
@@ -179,7 +197,7 @@ class GaussianReader extends AtomSetCollectionReader {
   }
   
   /**
-   * Sets the same properties for the last atomSets.
+   * Sets the same properties for the last n atomSets.
    * @param key The key for the property
    * @param value The value of the property
    * @param n The number of last AtomSets that need these set
@@ -220,6 +238,7 @@ class GaussianReader extends AtomSetCollectionReader {
   private void readAtoms(BufferedReader reader, String line) throws Exception {
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(line.trim());
+    String path = getTokens(line)[0];
     discardLines(reader, 4);
     String tokens[];
     while ((line = reader.readLine()) != null &&
@@ -235,6 +254,9 @@ class GaussianReader extends AtomSetCollectionReader {
       atom.y = parseFloat(tokens[++offset]);
       atom.z = parseFloat(tokens[++offset]);
     }
+    // the Path will be the calculation number and the type of orientation
+    atomSetCollection.setAtomSetProperty(PATH_KEY,
+      calculationNumber+PATH_SEPARATOR+path);
   }
 
 /* SAMPLE FREQUENCY OUTPUT */
@@ -280,8 +302,8 @@ class GaussianReader extends AtomSetCollectionReader {
    * Interprets the Harmonic frequencies section.
    *
    * <p>The vectors are added to a clone of the last read AtomSet.
-   * Only the Frequencies, reducede masses, force constants and IR intensities
-   * are set a properties for each of the frequency type AtomSet generated.
+   * Only the Frequencies, reduced masses, force constants and IR intensities
+   * are set as properties for each of the frequency type AtomSet generated.
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    **/
@@ -337,19 +359,14 @@ class GaussianReader extends AtomSetCollectionReader {
         atomSetCollection.setAtomSetProperty("Reduced Mass",red_masses[i]+" AMU");
         atomSetCollection.setAtomSetProperty("Force Constant",frc_consts[i]+" mDyne/A");
         atomSetCollection.setAtomSetProperty("IR Intensity",intensities[i]+" KM/Mole");
-        // show the properties we have so far:
-        atomSetCollection.atomSetProperties[atomSetCollection.currentAtomSetIndex]
-           .list(System.out);
+        atomSetCollection.setAtomSetProperty(PATH_KEY,
+          calculationNumber+PATH_SEPARATOR+"Frequencies");
       }
       
       int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       int firstModelAtom =
         atomSetCollection.atomCount - frequencyCount * atomCount;
 
-      System.out.println("atomCount=" + atomCount +
-                         " frequencyCount=" + frequencyCount +
-                         " firstModelAtom=" + firstModelAtom);
-      
       // position to start reading the displacement vectors
       discardLinesUntilStartsWith(reader, " Atom AN");
       

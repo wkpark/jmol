@@ -29,7 +29,11 @@ public class BandPlotEPSRenderer extends BandPlotRenderer {
     super(bandPlot, scalex, ratio);
 
     //ebp = energyBandPlot;
-    this.file = new FileOutputStream(file);
+    try {
+      this.file = new FileOutputStream(file);
+    } catch (IOException ioe) {
+      throw new FileNotFoundException("" + file);
+    }
     w = new BufferedWriter(new OutputStreamWriter(this.file), 1024);
   }
   

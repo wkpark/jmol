@@ -146,12 +146,12 @@ public class BandPlot {
 	      switch (s.charAt(0)) {
 	      case ',': 
 		flag = WAIT_LINEINDEX;
-		section.endDelimiter = BandPlotSection.VLINE;
+		section.endDelimiter = VLINE;
 		reverse=false;
 		break;
 	      case ';':
 		flag = WAIT_LINEINDEX;	
-		section.endDelimiter = BandPlotSection.BIGSEP;
+		section.endDelimiter = BIGSEP;
 		bigSepNumber++;
 		reverse=false;
 		break;
@@ -267,6 +267,10 @@ public class BandPlot {
   } //end parse
   
   
+  final static int NONE = 0;
+  final static int VLINE = 1;
+  final static int BIGSEP = 2;
+
   class BandPlotSection {
     int lineIndex;
     int origIndex;
@@ -274,9 +278,6 @@ public class BandPlot {
     int endIndex;
     String endName;
     int endDelimiter;
-    final static int NONE = 0;
-    final static int VLINE = 1;
-    final static int BIGSEP = 2;
     
     BandPlotSection(int lineIndex, boolean reverse) {
       this.lineIndex = lineIndex;

@@ -100,12 +100,12 @@ abstract class BandPlotRenderer {
       drawHorizontalSeparation(1, xold, x);      
 
       switch (plotSection.endDelimiter) {
-      case BandPlot.BandPlotSection.NONE:
+      case BandPlot.NONE:
 	break;
-      case BandPlot.BandPlotSection.VLINE: 
+      case BandPlot.VLINE: 
 	drawVerticalSeparation(1);
 	break;
-      case BandPlot.BandPlotSection.BIGSEP:
+      case BandPlot.BIGSEP:
 	sepFlag=1;
 	drawVerticalSeparation(2);
 	drawVerticalTics(ebp.nvtics,true,1);

@@ -48,7 +48,9 @@ class RepaintManager {
 
   boolean setDisplayModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
-    if (modelIndex < 0 || modelIndex >= frame.getModelCount())
+    if (frame == null ||
+        modelIndex < 0 ||
+        modelIndex >= frame.getModelCount())
       displayModelIndex = -1;
     else
       displayModelIndex = modelIndex;

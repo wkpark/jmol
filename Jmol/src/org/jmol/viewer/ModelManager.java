@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.viewer.datamodel.Frame;
-import org.jmol.viewer.datamodel.FrameBuilder;
 import org.jmol.viewer.datamodel.Atom;
 
 import java.util.BitSet;
@@ -40,16 +39,11 @@ import java.awt.Color;
 class ModelManager {
 
   final JmolViewer viewer;
-  final JmolAdapter modelAdapter;
+  final JmolAdapter adapter;
 
-  final Frame nullFrame;
-  final FrameBuilder frameBuilder;
-
-  ModelManager(JmolViewer viewer, JmolAdapter modelAdapter) {
+  ModelManager(JmolViewer viewer, JmolAdapter adapter) {
     this.viewer = viewer;
-    this.modelAdapter = modelAdapter;
-    nullFrame = new Frame(viewer, "null");
-    frameBuilder = new FrameBuilder(viewer, modelAdapter);
+    this.adapter = adapter;
   }
 
   String fullPathName;
@@ -71,25 +65,25 @@ class ModelManager {
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
-      modelSetName = modelAdapter.getAtomSetCollectionName(clientFile);
+      modelSetName = adapter.getAtomSetCollectionName(clientFile);
       if (modelSetName != null) {
         modelSetName = modelSetName.trim();
         if (modelSetName.length() == 0)
           modelSetName = null;
       }
-      modelFileHeader = modelAdapter.getFileHeader(clientFile);
-      frame = frameBuilder.buildFrame(clientFile);
+      modelFileHeader = adapter.getFileHeader(clientFile);
+      frame = new Frame(viewer, adapter, clientFile);
       haveFile = true;
     }
   }
 
   String getClientAtomStringProperty(Object clientAtom,
                                             String propertyName) {
-    return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
+    return adapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
 
   Frame getFrame() {
-    return (frame == null) ? nullFrame : frame;
+    return frame;
   }
 
   JmolAdapter getExportJmolAdapter() {

@@ -32,12 +32,14 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.awt.Rectangle;
 
 final public class Frame {
 
-  JmolViewer viewer;
+  final JmolViewer viewer;
+  final JmolAdapter adapter;
   FrameRenderer frameRenderer;
   // NOTE: these strings are interned and are lower case
   // therefore, we can do == comparisions against string constants
@@ -81,18 +83,368 @@ final public class Frame {
   int bfactor100Lo;
   int bfactor100Hi;
 
-  public Frame(JmolViewer viewer, String modelTypeName) {
+  public Frame(JmolViewer viewer, JmolAdapter adapter, Object clientFile) {
     this.viewer = viewer;
+    this.adapter = adapter;
+
+    long timeBegin = System.currentTimeMillis();
+    String fileTypeName = adapter.getFileTypeName(clientFile);
     // NOTE: these strings are interned and are lower case
     // therefore, we can do == comparisions against string constants
     // if (modelTypeName == "xyz") { }
-    this.modelTypeName = modelTypeName.toLowerCase().intern();
+    this.modelTypeName = fileTypeName.toLowerCase().intern();
     mmset = new Mmset(this);
     this.frameRenderer = viewer.getFrameRenderer();
     this.g3d = viewer.g3d;
 
+
+    initializeBuild(adapter.getEstimatedAtomCount(clientFile));
+
+    /****************************************************************
+     * crystal cell must come first, in case atom coordinates
+     * need to be transformed to fit in the crystal cell
+     ****************************************************************/
+    fileCoordinatesAreFractional =
+      adapter.coordinatesAreFractional(clientFile);
+    setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile));
+    setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile));
+    setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
+
+    currentModelIndex = -1;
+    int modelCount = adapter.getAtomSetCount(clientFile);
+    setModelCount(modelCount);
+    for (int i = 0; i < modelCount; ++i) {
+      int modelNumber = adapter.getAtomSetNumber(clientFile, i);
+      String modelName = adapter.getAtomSetName(clientFile, i);
+      if (modelName == null)
+        modelName = "" + modelNumber;
+      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
+      setModelNameNumberProperties(i, modelName, modelNumber,
+                                         modelProperties);
+    }
+
+    for (JmolAdapter.AtomIterator iterAtom =
+           adapter.getAtomIterator(clientFile);
+         iterAtom.hasNext(); ) {
+      byte elementNumber = (byte)iterAtom.getElementNumber();
+      if (elementNumber <= 0)
+        elementNumber = JmolConstants.
+          elementNumberFromSymbol(iterAtom.getElementSymbol());
+      addAtom(iterAtom.getAtomSetIndex(),
+              iterAtom.getUniqueID(),
+              elementNumber,
+              iterAtom.getAtomName(),
+              iterAtom.getFormalCharge(),
+              iterAtom.getPartialCharge(),
+              iterAtom.getOccupancy(),
+              iterAtom.getBfactor(),
+              iterAtom.getX(), iterAtom.getY(), iterAtom.getZ(),
+              iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
+              iterAtom.getChainID(),
+              iterAtom.getGroup3(),
+              iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(),
+              iterAtom.getVectorX(), iterAtom.getVectorY(),
+              iterAtom.getVectorZ(),
+              iterAtom.getClientAtomReference());
+    }
+
+    fileHasHbonds = false;
+    
+    {
+      JmolAdapter.BondIterator iterBond =
+        adapter.getBondIterator(clientFile);
+      if (iterBond != null)
+        while (iterBond.hasNext())
+          bondAtoms(iterBond.getAtomUniqueID1(),
+                    iterBond.getAtomUniqueID2(),
+                    iterBond.getEncodedOrder());
+    }
+
+    JmolAdapter.StructureIterator iterStructure =
+      adapter.getStructureIterator(clientFile);
+    if (iterStructure != null) 
+      while (iterStructure.hasNext())
+        defineStructure(iterStructure.getStructureType(),
+                              iterStructure.getStartChainID(),
+                              iterStructure.getStartSequenceNumber(),
+                              iterStructure.getStartInsertionCode(),
+                              iterStructure.getEndChainID(),
+                              iterStructure.getEndSequenceNumber(),
+                              iterStructure.getEndInsertionCode());
+    doUnitcellStuff();
+    doAutobond();
+    finalizeGroupBuild();
+    buildPolymers();
+    freeze();
+    long msToBuild = System.currentTimeMillis() - timeBegin;
+    //    System.out.println("Build a frame:" + msToBuild + " ms");
+    adapter.finish(clientFile);
+    finalizeBuild();
+    dumpAtomSetNameDiagnostics(clientFile);
   }
 
+  void dumpAtomSetNameDiagnostics(Object clientFile) {
+    int frameModelCount = getModelCount();
+    int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
+    System.out.println("----------------\n" +
+                       "debugging of AtomSetName stuff\n" +
+                       "\nframeModelCount=" + frameModelCount +
+                       "\nadapterAtomSetCount=" + adapterAtomSetCount +
+                       "\n -- \n"
+                       );
+    for (int i = 0; i < adapterAtomSetCount; ++i) {
+      System.out.println("atomSetName[" + i + "]=" +
+                         adapter.getAtomSetName(clientFile, i) +
+                         " atomSetNumber[" + i + "]=" +
+                         adapter.getAtomSetNumber(clientFile, i));
+                         
+    }
+  }
+
+  private final static int ATOM_GROWTH_INCREMENT = 2000;
+
+  int currentModelIndex;
+  Model currentModel;
+  char currentChainID;
+  Chain currentChain;
+  int currentGroupSequenceNumber;
+  char currentGroupInsertionCode;
+  
+  private final Hashtable htAtomMap = new Hashtable();
+
+
+  void initializeBuild(int atomCountEstimate) {
+    currentModel = null;
+    currentChainID = '\uFFFF';
+    currentChain = null;
+    currentGroupInsertionCode = '\uFFFF';
+
+    if (atomCountEstimate <= 0)
+      atomCountEstimate = ATOM_GROWTH_INCREMENT;
+    atoms = new Atom[atomCountEstimate];
+    bonds = new Bond[2 * atomCountEstimate];
+    htAtomMap.clear();
+    initializeGroupBuild();
+  }
+
+  void finalizeBuild() {
+    currentModel = null;
+    currentChain = null;
+    htAtomMap.clear();
+  }
+
+
+  void addAtom(int modelIndex, Object atomUid,
+               byte atomicNumber,
+               String atomName, 
+               int formalCharge, float partialCharge,
+               int occupancy,
+               float bfactor,
+               float x, float y, float z,
+               boolean isHetero, int atomSerial, char chainID,
+               String group3,
+               int groupSequenceNumber, char groupInsertionCode,
+               float vectorX, float vectorY, float vectorZ,
+               Object clientAtomReference) {
+    if (modelIndex != currentModelIndex) {
+      System.out.println("modelIndex=" + modelIndex);
+      currentModel = mmset.getModel(modelIndex);
+      System.out.println("currentModel=" + currentModel);
+      currentModelIndex = modelIndex;
+      currentChainID = '\uFFFF';
+    }
+    if (chainID != currentChainID) {
+      currentChainID = chainID;
+      currentChain = currentModel.getOrAllocateChain(chainID);
+      currentGroupInsertionCode = '\uFFFF';
+    }
+    if (groupSequenceNumber != currentGroupSequenceNumber ||
+        groupInsertionCode != currentGroupInsertionCode) {
+      currentGroupSequenceNumber = groupSequenceNumber;
+      currentGroupInsertionCode = groupInsertionCode;
+      startGroup(currentChain, group3,
+                 groupSequenceNumber, groupInsertionCode, atomCount);
+    }
+    if (atomCount == atoms.length)
+      atoms =
+        (Atom[])Util.setLength(atoms,
+                               atomCount + ATOM_GROWTH_INCREMENT);
+    Atom atom = new Atom(viewer,
+                         currentModelIndex,
+                         atomCount,
+                         atomicNumber,
+                         atomName,
+                         formalCharge, partialCharge,
+                         occupancy,
+                         bfactor,
+                         x, y, z,
+                         isHetero, atomSerial, chainID,
+                         vectorX, vectorY, vectorZ);
+
+    atoms[atomCount] = atom;
+    if (clientAtomReference != null) {
+      if (clientAtomReferences == null)
+        clientAtomReferences = new Object[atoms.length];
+      else if (clientAtomReferences.length <= atomCount)
+        clientAtomReferences =
+          (Object[])Util.setLength(clientAtomReferences,
+                                   atoms.length);
+      clientAtomReferences[atomCount] = clientAtomReference;
+    }
+    ++atomCount;
+    htAtomMap.put(atomUid, atom);
+  }
+
+  void bondAtoms(Object atomUid1, Object atomUid2, int order) {
+    Atom atom1 = (Atom)htAtomMap.get(atomUid1);
+    if (atom1 == null) {
+      System.out.println("bondAtoms cannot find atomUid1?");
+      return;
+    }
+    Atom atom2 = (Atom)htAtomMap.get(atomUid2);
+    if (atom2 == null) {
+      System.out.println("bondAtoms cannot find atomUid2?");
+      return;
+    }
+    if (bondCount == bonds.length)
+      bonds = (Bond[])Util.setLength(bonds,
+                                     bondCount + 2 * ATOM_GROWTH_INCREMENT);
+    // note that if the atoms are already bonded then
+    // Atom.bondMutually(...) will return null
+    Bond bond = atom1.bondMutually(atom2, order, viewer);
+    if (bond != null) {
+      bonds[bondCount++] = bond;
+      if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+        fileHasHbonds = true;
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // special handling for groups
+  ////////////////////////////////////////////////////////////////
+
+  final static int defaultGroupCount = 32;
+  Chain[] chains = new Chain[defaultGroupCount];
+  String[] group3s = new String[defaultGroupCount];
+  int[] seqcodes = new int[defaultGroupCount];
+  int[] firstAtomIndexes = new int[defaultGroupCount];
+
+  final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
+
+  void initializeGroupBuild() {
+    groupCount = 0;
+  }
+
+  void finalizeGroupBuild() {
+    // run this loop in increasing order so that the
+    // groups get defined going up
+    groups = new Group[groupCount];
+    for (int i = 0; i < groupCount; ++i) {
+      distinguishAndPropogateGroup(i, chains[i], group3s[i], seqcodes[i],
+                                   firstAtomIndexes[i],
+                                   (i == groupCount - 1
+                                    ? atomCount
+                                    : firstAtomIndexes[i + 1]));
+      chains[i] = null;
+      group3s[i] = null;
+    }
+  }
+
+  void startGroup(Chain chain, String group3,
+                  int groupSequenceNumber, char groupInsertionCode,
+                  int firstAtomIndex) {
+    if (groupCount == group3s.length) {
+      chains = (Chain[])Util.doubleLength(chains);
+      group3s = Util.doubleLength(group3s);
+      seqcodes = Util.doubleLength(seqcodes);
+      firstAtomIndexes = Util.doubleLength(firstAtomIndexes);
+    }
+    firstAtomIndexes[groupCount] = firstAtomIndex;
+    chains[groupCount] = chain;
+    group3s[groupCount] = group3;
+    seqcodes[groupCount] =
+      Group.getSeqcode(groupSequenceNumber, groupInsertionCode);
+    ++groupCount;
+  }
+
+  void distinguishAndPropogateGroup(int groupIndex,
+                                    Chain chain, String group3, int seqcode,
+                                    int firstAtomIndex, int maxAtomIndex) {
+    //    System.out.println("distinguish & propogate group:" +
+    //                       " group3:" + group3 +
+    //                       " seqcode:" + Group.getSeqcodeString(seqcode) +
+    //                       " firstAtomIndex:" + firstAtomIndex +
+    //                       " maxAtomIndex:" + maxAtomIndex);
+    int distinguishingBits = 0;
+    // clear previous specialAtomIndexes
+    for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )
+      specialAtomIndexes[i] = Integer.MIN_VALUE;
+    
+    for (int i = maxAtomIndex; --i >= firstAtomIndex; ) {
+      int specialAtomID = atoms[i].specialAtomID;
+      if (specialAtomID > 0) {
+        if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
+          distinguishingBits |= 1 << specialAtomID;
+        specialAtomIndexes[specialAtomID] = i;
+      }
+    }
+
+    int lastAtomIndex = maxAtomIndex - 1;
+    if (lastAtomIndex < firstAtomIndex)
+      throw new NullPointerException();
+
+    Group group = null;
+    //    System.out.println("distinguishingBits=" + distinguishingBits);
+    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
+        JmolConstants.ATOMID_PROTEIN_MASK) {
+      //      System.out.println("may be an AminoMonomer");
+      group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
+                                               firstAtomIndex, lastAtomIndex,
+                                               specialAtomIndexes, atoms);
+    } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+      //      System.out.println("AlphaMonomer.validateAndAllocate");
+      group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
+                                               firstAtomIndex, lastAtomIndex,
+                                               specialAtomIndexes,
+                                               atoms);
+    } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
+                JmolConstants.ATOMID_NUCLEIC_MASK)) {
+      group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
+                                                 firstAtomIndex, lastAtomIndex,
+                                                 specialAtomIndexes,
+                                                 atoms);
+    } else if (distinguishingBits ==
+               JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
+      // System.out.println("PhosphorusMonomer.validateAndAllocate");
+      group =
+        PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
+                                              firstAtomIndex, lastAtomIndex,
+                                              specialAtomIndexes, atoms);
+    }
+    if (group == null)
+      group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+
+    chain.addGroup(group);
+    groups[groupIndex] = group;
+
+    ////////////////////////////////////////////////////////////////
+    for (int i = maxAtomIndex; --i >= firstAtomIndex; )
+      atoms[i].setGroup(group);
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  void buildPolymers() {
+    for (int i = 0; i < groupCount; ++i) {
+      Group group = groups[i];
+      if (group instanceof Monomer) {
+        Monomer monomer = (Monomer)group;
+        if (monomer.polymer == null)
+          Polymer.allocatePolymer(groups, i);
+      }
+    }
+  }
+////////////////////////////////////////////////////////////////
   FrameExportJmolAdapter exportJmolAdapter;
 
   public JmolAdapter getExportJmolAdapter() {

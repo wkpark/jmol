@@ -68,17 +68,17 @@ class Polyhedra extends SelectionIndependentShape {
     }
     if ("color" == propertyName) {
       colix = g3d.getColix(value);
-      System.out.println("color polyhedra:" + colix);
+      //      System.out.println("color polyhedra:" + colix);
       setColix(colix, bs);
       return;
     }
     if ("radius" == propertyName) {
       radius = ((Float)value).floatValue();
-      System.out.println("Polyhedra radius=" + radius);
+      //      System.out.println("Polyhedra radius=" + radius);
       return;
     }
     if ("expression" == propertyName) {
-      System.out.println("polyhedra expression");
+      //      System.out.println("polyhedra expression");
       BitSet bsVertices = (BitSet)value;
       deletePolyhedra(bs);
       buildRadiusPolyhedra(bs, radius, bsVertices);
@@ -201,7 +201,6 @@ class Polyhedra extends SelectionIndependentShape {
         break;
       }
     }
-    System.out.println("otherAtomCount=" + otherAtomCount);
     Polyhedron p = null;
     if (otherAtomCount == 4 || otherAtomCount == 6)
       p = new Polyhedron(atom, otherAtomCount, otherAtoms);

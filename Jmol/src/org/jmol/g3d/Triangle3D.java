@@ -282,18 +282,12 @@ class Triangle3D {
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
-    if (! useGouraud) {
-      for ( ; --numLines >= 0; ++y, ++i) {
-        int xW = axW[i];
-        g3d.plotNoisyPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i],
-                                   tScreened);
-      }
-    } else {
-      for ( ; --numLines >= 0; ++y, ++i) {
-        int xW = axW[i];
-        g3d.plotGouraudPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i],
-                                     rgb16sW[i], rgb16sE[i], tScreened);
-      }
+    for ( ; --numLines >= 0; ++y, ++i) {
+      int xW = axW[i];
+      g3d.plotPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i],
+                            tScreened,
+                            useGouraud ? rgb16sW[i] : null,
+                            useGouraud ? rgb16sE[i] : null);
     }
   }
 

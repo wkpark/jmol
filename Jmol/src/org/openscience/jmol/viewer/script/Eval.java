@@ -678,6 +678,23 @@ public class Eval implements Runnable {
     return statement[index].intValue;
   }
 
+  float floatParameter(int index) throws ScriptException {
+    if (index >= statementLength)
+      badArgumentCount();
+    float floatValue = 0;
+    switch (statement[index].tok) {
+    case Token.integer:
+      floatValue = statement[index].intValue;
+      break;
+    case Token.decimal:
+      floatValue = ((Float)statement[index].value).floatValue();
+      break;
+    default:
+      numberExpected();
+    }
+    return floatValue;
+  }
+
   boolean getSetBoolean() throws ScriptException {
     checkLength3();
     switch (statement[2].tok) {
@@ -707,7 +724,7 @@ public class Eval implements Runnable {
       mad = (short)diameterPixels;
       break;
     case Token.decimal:
-      float angstroms = ((Float)statement[2].value).floatValue();
+      float angstroms = floatParameter(2);
       if (angstroms >= 2)
         numberOutOfRange();
       mad = (short)(angstroms * 1000 * 2);
@@ -1433,7 +1450,7 @@ public class Eval implements Runnable {
     // this should be an object which is either a Color or a String
     byte palette = JmolConstants.PALETTE_CPK;
     Color color = null;
-    if (statement.length <= itoken)
+    if (itoken >= statementLength)
       badArgumentCount();
     switch (statement[itoken].tok) {
     case Token.none:
@@ -1764,18 +1781,15 @@ public class Eval implements Runnable {
   void move() throws ScriptException {
     if (statementLength < 10 || statementLength > 12)
       badArgumentCount();
-    for (int i = 1; i < statementLength; ++i)
-      if (statement[i].tok != Token.integer)
-        integerExpected();
-    int dRotX = statement[1].intValue;
-    int dRotY = statement[2].intValue;
-    int dRotZ = statement[3].intValue;
-    int dZoom = statement[4].intValue;
-    int dTransX = statement[5].intValue;
-    int dTransY = statement[6].intValue;
-    int dTransZ = statement[7].intValue;
-    int dSlab = statement[8].intValue;
-    int secondsTotal = statement[9].intValue;
+    int dRotX = intParameter(1);
+    int dRotY = intParameter(2);
+    int dRotZ = intParameter(3);
+    int dZoom = intParameter(4);
+    int dTransX = intParameter(5);
+    int dTransY = intParameter(6);
+    int dTransZ = intParameter(7);
+    int dSlab = intParameter(8);
+    float floatSecondsTotal = floatParameter(9);
     int fps = 30, maxAccel = 5;
     if (statementLength > 10) {
       fps = statement[10].intValue;
@@ -1791,7 +1805,7 @@ public class Eval implements Runnable {
 
     long timeBegin = System.currentTimeMillis();
     int timePerStep = 1000 / fps;
-    int totalSteps = fps * secondsTotal;
+    int totalSteps = (int)(fps * floatSecondsTotal);
     float radiansPerDegreePerStep = (float)Math.PI / 180 / totalSteps;
     float radiansXStep = radiansPerDegreePerStep * dRotX;
     float radiansYStep = radiansPerDegreePerStep * dRotY;
@@ -1886,7 +1900,7 @@ public class Eval implements Runnable {
       }
       break;
     case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
+      float angstroms = floatParameter(1);
       if (angstroms > 3)
         numberOutOfRange();
       mad = (short)(angstroms * 1000 * 2);
@@ -1923,7 +1937,7 @@ public class Eval implements Runnable {
       mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
+      float angstroms = floatParameter(1);
       if (angstroms > 3)
         numberOutOfRange();
       mad = (short)(angstroms * 1000 * 2);
@@ -1950,7 +1964,7 @@ public class Eval implements Runnable {
       mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
+      float angstroms = floatParameter(1);
       if (angstroms >= 2)
         numberOutOfRange();
       mad = (short)(angstroms * 1000 * 2);
@@ -1978,7 +1992,7 @@ public class Eval implements Runnable {
       mad = (short)(radiusRasMol * 4 * 2);
       break;
     case Token.decimal:
-      float angstroms = ((Float)statement[1].value).floatValue();
+      float angstroms = floatParameter(1);
       if (angstroms >= 2)
         numberOutOfRange();
       mad = (short)(angstroms * 1000 * 2);
@@ -2006,7 +2020,7 @@ public class Eval implements Runnable {
         mad = (short)diameterPixels;
         break;
       case Token.decimal:
-        float angstroms = ((Float)statement[1].value).floatValue();
+        float angstroms = floatParameter(1);
         if (angstroms > 3)
           numberOutOfRange();
         mad = (short)(angstroms * 1000 * 2);
@@ -2027,7 +2041,7 @@ public class Eval implements Runnable {
 
   void vectorScale() throws ScriptException {
     checkLength3();
-    float scale = getFloat(2);
+    float scale = floatParameter(2);
     if (scale < -10 || scale > 10)
       numberOutOfRange();
     viewer.setVectorScale(scale);
@@ -2083,7 +2097,9 @@ public class Eval implements Runnable {
       unrecognizedSubcommand();
     }
     viewer.setAnimationReplayMode(animationMode,
-                                  getFloat(3), getFloat(4), getFloat(5));
+                                  floatParameter(3),
+                                  floatParameter(4),
+                                  floatParameter(5));
   }
 
   void vibration() throws ScriptException {
@@ -2095,7 +2111,7 @@ public class Eval implements Runnable {
       float period = 2;
       if (statementLength >= 3) {
         checkLength3();
-        period = getFloat(2);
+        period = floatParameter(2);
       }
       viewer.setVibrationPeriod(period);
       viewer.setVibrationT(0f);
@@ -2107,23 +2123,6 @@ public class Eval implements Runnable {
     default:
       unrecognizedSubcommand();
     }
-  }
-
-  float getFloat(int index) throws ScriptException {
-    float f = 0;
-    if (index < statementLength) {
-      switch (statement[index].tok) {
-      case Token.integer:
-        f = statement[index].intValue;
-        break;
-      case Token.decimal:
-        f = ((Float)statement[index].value).floatValue();
-        break;
-      default:
-        numberExpected();
-      }
-    }
-    return f;
   }
 
   void animationDirection() throws ScriptException {

@@ -40,11 +40,11 @@ import java.util.Properties;
 import java.util.Enumeration;
 
 /**
- * A JDialog that allows for choosing an Atomset to view.
+ * A JFrame that allows for choosing an Atomset to view.
  * 
  * @author Ren&eacute; Kanters, University of Richmond
  */
-public class AtomSetChooser extends JDialog
+public class AtomSetChooser extends JFrame
 implements TreeSelectionListener, PropertyChangeListener,
 ActionListener, ChangeListener, Runnable {
   
@@ -146,7 +146,8 @@ ActionListener, ChangeListener, Runnable {
  
   
   public AtomSetChooser(JmolViewer viewer, JFrame frame) {
-    super(frame,"AtomSetChooser", false);
+ //   super(frame,"AtomSetChooser", false);
+    super("AtomSetChooser");
     this.viewer = viewer;
     
     // initialize the treeModel
@@ -155,6 +156,7 @@ ActionListener, ChangeListener, Runnable {
     layoutWindow(getContentPane());
     pack();
     setLocationRelativeTo(frame);
+    
   }
   
   private void layoutWindow(Container container) {

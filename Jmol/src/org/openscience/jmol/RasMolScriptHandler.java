@@ -281,7 +281,7 @@ class RasMolScriptHandler {
   private void list(String objectType) throws RasMolScriptException {
 
     if (objectType.equals("atoms")) {
-      for (int i = 0; i < program.display.md.getAtomCount(); i++) {
+      for (int i = 0; i < program.display.md.getNumberOfAtoms(); i++) {
         StringBuffer sb = new StringBuffer();
         sb.append("  ");
         sb.append(i + 1);

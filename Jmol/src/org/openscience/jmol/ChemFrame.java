@@ -332,6 +332,8 @@ public class ChemFrame {
 
   /**
    * returns the number of atoms in the ChemFrame
+   *
+   *  @return the number of atoms in this frame.
    */
   public int getNumberOfAtoms() {
     return numberAtoms;
@@ -342,15 +344,6 @@ public class ChemFrame {
    */
   public Atom[] getAtoms() {
     return atoms;
-  }
-
-  /**
-   *  Returns the number of atoms in this frame.
-   *
-   *  @return the number of atoms in this frame.
-   */
-  public int getAtomCount() {
-    return numberAtoms;
   }
 
   public float getXMin() {
@@ -684,9 +677,7 @@ public class ChemFrame {
   public void rebond() throws Exception {
 
     // Clear the currently existing bonds.
-    for (int i = 0; i < numberAtoms; i++) {
-      atoms[i].clearBondedAtoms();
-    }
+    clearBonds();
 
     // Do a n*(n-1) scan to get new bonds.
     if (AutoBond) {

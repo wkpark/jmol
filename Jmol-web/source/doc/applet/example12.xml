@@ -1,0 +1,19 @@
+<![CDATA[
+<applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
+        codebase="[codebase]"
+        width="350" height="350" mayscript="true">
+  <param name="load"   value="SN1_reaction.cml">
+</applet>
+<form>
+  <input type="button" value="rewind"
+         onClick="document.anim.script('animate rewind')">
+  <input type="button" value="prev"
+         onClick="document.anim.script('animate prev')">
+  <input type="button" value="next"
+         onClick="document.anim.script('animate next')">
+  <input type="button" value="play"
+         onClick="document.anim.script('animate play')">
+  <input type="button" value="revplay"
+         onClick="document.anim.script('animate revplay')">
+</form>
+]]>

@@ -1,4 +1,20 @@
 <?xml version="1.0"?>
+<!DOCTYPE somethingOrAnything [
+<!ENTITY example01 SYSTEM "example01.xml" >
+<!ENTITY example02 SYSTEM "example02.xml" >
+<!ENTITY example03 SYSTEM "example03.xml" >
+<!ENTITY example04 SYSTEM "example04.xml" >
+<!ENTITY example05 SYSTEM "example05.xml" >
+<!ENTITY example06 SYSTEM "example06.xml" >
+<!ENTITY example07 SYSTEM "example07.xml" >
+<!ENTITY example08 SYSTEM "example08.xml" >
+<!ENTITY example09 SYSTEM "example09.xml" >
+<!ENTITY example10 SYSTEM "example10.xml" >
+<!ENTITY example11 SYSTEM "example11.xml" >
+<!ENTITY example12 SYSTEM "example12.xml" >
+<!ENTITY example13 SYSTEM "example13.xml" >
+<!ENTITY example14 SYSTEM "example14.xml" >
+]>
 <document>
   <body>
     <title>Jmol Applet</title>
@@ -42,24 +58,12 @@
       load molecules into the applet. See the
       <a href="../scripting">Scripting</a> page for more information.
 
-<appletExample>
-<![CDATA[<applet name="jmol" code="JmolApplet" archive="JmolApplet.jar"
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="caffeine.xyz"/>
-</applet>]]>
-</appletExample>
+      <appletExample>&example01;</appletExample>
       </p>
 
       <p>The following applet displays a CML (Chemical Markup Language) file. 
       
-<appletExample>
-<![CDATA[<applet name="jmol2" code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-</applet>]]>
-</appletExample>
+      <appletExample>&example02;</appletExample>
       </p>
 
       <p>Some types of molecular data can be embedded in the HTML
@@ -70,42 +74,14 @@
       the PARAM VALUE attribute, combined with the double quotes in the
       CML source code.
       
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="loadInline" value='
-<molecule id="methanol">
-  <atomArray atomID="a1 a2 a3 a4 a5 a6"
-    elementType="C O H H H H"
-    x3="-0.748 0.558 -1.293 -1.263 -0.699 0.716"
-    y3="-0.015 0.420  0.202  0.754 -0.934 1.404"
-    z3="0.024 -0.278 -0.901  0.600  0.609 0.137"/>
-</molecule>
-'/>
-</applet>]]>
-</appletExample>
+      <appletExample>&example03;</appletExample>
       </p>
 
     <p>The use of &lt; characters in attribute values lead to invalid (X)HTML code, but all
     browsers seem to accept it. If valid X(HTML) code is important to you, you need to escape
     all &lt;'s with &amp;lt;, as in:
 
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar"
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="loadInline" value='
-&lt;molecule id="methanol">
-  &lt;atomArray atomID="a1 a2 a3 a4 a5 a6"
-    elementType="C O H H H H"
-    x3="-0.748 0.558 -1.293 -1.263 -0.699 0.716"
-    y3="-0.015 0.420  0.202  0.754 -0.934 1.404"
-    z3="0.024 -0.278 -0.901  0.600  0.609 0.137"/>
-&lt;/molecule>
-'/>
-</applet>]]>
-</appletExample>
+      <appletExample>&example04;</appletExample>
       </p>
     </section>
 
@@ -140,14 +116,7 @@
 	  hexadecimal color specification (#RRGGBB) or one of the sixteen
 	  sRGB color names (black silver gray white maroon red purple
 	  fuchsia green lime olive yellow navy blue teal aqua).
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="bgcolor" value="#00A0A0">/
-</applet>]]>
-</appletExample>
+          <appletExample>&example05;</appletExample>
         </param>
         
         <param name="style">
@@ -160,22 +129,8 @@
             <li>wireframe</li>
 	    <li>quickdraw <i>deprecated</i></li>
           </ul>
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="style" value="shaded"/>
-</applet>]]>
-</appletExample>
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="style" value="wireframe"/>
-</applet>]]>
-</appletExample>
+          <appletExample>&example06;</appletExample>
+          <appletExample>&example07;</appletExample>
         </param>
         
         <param name="label">
@@ -188,22 +143,8 @@
             <dt>symbol</dt> <dd>label atoms with their atomic symbol.</dd>
             <dt>number</dt> <dd>label atoms with their number.</dd>
           </dl>
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="label" value="symbol"/>
-</applet>]]>
-</appletExample>
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="label" value="number"/>
-</applet>]]>
-</appletExample>
+          <appletExample>&example08;</appletExample>
+          <appletExample>&example09;</appletExample>
         </param>
         
         <param name="wireframeRotation">
@@ -214,14 +155,7 @@
             <li>true</li>
             <li>false &lt;default&gt;</li>
           </ul>
-        <appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="wireframeRotation" value="true"/>
-</applet>]]>
-</appletExample>
+        <appletExample>&example10;</appletExample>
 </param>
 
         <param name="script">
@@ -231,14 +165,7 @@
 	  you <i>must</i> separate script statements with a semicolon
 	  character, even though they may be on multiple lines in your
 	  HTML file.
-        <appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar" 
-        codebase="[codebase]"
-        width="200" height="200" mayscript="true">
-  <param name="load" value="methanol1.cml"/>
-  <param name="script" value="rotate y 10; loop 1"/>
-</applet>]]>
-</appletExample>
+        <appletExample>&example11;</appletExample>
 </param>
 
       </appletParameterList>
@@ -272,69 +199,19 @@
     <section title="Animation examples">
       <p>A carbon-cation rearrangement reaction
 
-<appletExample>
-<![CDATA[
-  <applet name="anim" code="JmolApplet" archive="JmolApplet.jar"
-          codebase="[codebase]"
-          width="350" height="350" mayscript="true">
-    <param name="load"   value="SN1_reaction.cml">
-  </applet>
-  <form>
-    <input type="button" value="rewind"
-           onClick="document.anim.script('animate rewind')">
-    <input type="button" value="prev"
-           onClick="document.anim.script('animate prev')">
-    <input type="button" value="next"
-           onClick="document.anim.script('animate next')">
-    <input type="button" value="play"
-           onClick="document.anim.script('animate play')">
-    <input type="button" value="revplay"
-           onClick="document.anim.script('animate revplay')">
-  </form>
- ]]>
-</appletExample>
+      <appletExample>&example12;</appletExample>
       </p>
 
       <p>Rotamers of ethane
       
-<appletExample>
-<![CDATA[
-  <script>
-  function play2(script) {
-    document.anim2.script(script);
-  }
-  </script>
-<applet name="anim2" code="JmolApplet" archive="JmolApplet.jar"
-    codebase="[codebase]"
-    width="350" height="350" mayscript="true">
-  <param name="load" value="conformeren.cml"/>
-</applet>
-  <form>
-    <input type="button" value="rewind"  onClick="play2('animate rewind')">
-    <input type="button" value="prev"    onClick="play2('animate prev')">
-    <input type="button" value="next"    onClick="play2('animate next')">
-    <input type="button" value="play"    onClick="play2('animate play')">
-    <input type="button" value="revplay" onClick="play2('animate revplay')">
-  </form>
-]]>
-</appletExample>
+      <appletExample>&example13;</appletExample>
       </p>
     </section>
     
     <section title="Examples with other file formats">
       <p>Aspirin in MDL mol file format
       
-<appletExample>
-<![CDATA[<applet code="JmolApplet" archive="JmolApplet.jar"
-    codebase="[codebase]"
-    width="350" height="350" mayscript="true">
-  <param name="load" value="aspirina.mol"/>
-  <param name="bgcolor" value="navy"/>
-  <param name="label"   value="symbol"/>
-  <param name="wireframeRotation" value="true"/>
-</applet>
-]]>
-</appletExample>
+      <appletExample>&example14;</appletExample>
       </p>
 
       <p>The <a href="../scripting">Scripting</a> page demonstrates

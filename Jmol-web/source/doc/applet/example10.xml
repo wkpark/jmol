@@ -1,0 +1,8 @@
+<![CDATA[
+<applet code="JmolApplet" archive="JmolApplet.jar" 
+        codebase="[codebase]"
+        width="200" height="200" mayscript="true">
+  <param name="load" value="methanol1.cml"/>
+  <param name="wireframeRotation" value="true"/>
+</applet>
+]]>

@@ -1,0 +1,10 @@
+<![CDATA[
+<applet code="JmolApplet" archive="JmolApplet.jar"
+    codebase="[codebase]"
+    width="350" height="350" mayscript="true">
+  <param name="load" value="aspirina.mol"/>
+  <param name="bgcolor" value="navy"/>
+  <param name="label"   value="symbol"/>
+  <param name="wireframeRotation" value="true"/>
+</applet>
+]]>

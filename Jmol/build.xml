@@ -252,10 +252,21 @@
     <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
     <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
       <patternset>
+        <include name="**/Tuple2d.class"/>
+        <include name="**/Point2d.class"/>
+        <include name="**/Tuple3f.class"/>
         <include name="**/Tuple3d.class"/>
-        <include name="**/Vector3d.class"/>
+        <include name="**/Point3f.class"/>
         <include name="**/Point3d.class"/>
-        <include name="**/Matrix3d.class"/>
+        <include name="**/Tuple4f.class"/>
+        <include name="**/Tuple4d.class"/>
+        <include name="**/Point4d.class"/>
+        <include name="**/Vector3f.class"/>
+        <include name="**/Vector3d.class"/>
+        <include name="**/Vector4d.class"/>
+        <include name="**/Matrix4d.class"/>
+        <include name="**/Quat4f.class"/>
+        <include name="**/Quat4d.class"/>
       </patternset>
     </unjar>
   </target>
@@ -491,6 +502,7 @@
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${tests.classes.dir}"/>
     <delete dir="${appjars.dir}"/>
+    <delete dir="${appletjars.dir}"/>
     <delete>
       <fileset dir="${lib.dir}">
         <include name="jmol.jar" />

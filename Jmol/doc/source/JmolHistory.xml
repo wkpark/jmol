@@ -18,6 +18,9 @@
   <change contributor="CR">
     Export of BMP and PNG images.
   </change>
+  <change contributor="BS, JJ">
+    Rendering of multiple bonds.
+  </change>
 </changes>
 
 <changes version="jmol-2">

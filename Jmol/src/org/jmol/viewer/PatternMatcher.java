@@ -78,81 +78,110 @@ class PatternMatcher {
    * @param atomNum Current atom of the pattern
    */
   private void searchMatch(BitSet bs, SmilesMolecule pattern, int atomNum) {
-    System.out.println("Begin match:" + atomNum);
+    //System.out.println("Begin match:" + atomNum);
     SmilesAtom patternAtom = pattern.getAtom(atomNum);
-    for (int i = 0; i < atomCount; i++) {
-      boolean canMatch = true;
-      Atom atom = frame.getAtomAt(i);
-
-      // Check symbol
-      if ((!patternAtom.getSymbol().equals("*")) &&
-          (!patternAtom.getSymbol().equals(atom.getElementSymbol()))) {
-        canMatch = false;
-      }
-      // Check atomic mass : NO because Jmol doesn't know about atomic mass
-      // Check charge
-      if (patternAtom.getCharge() != atom.getFormalCharge()) {
-        canMatch = false;
-      }
-      
-      // Check bonds
-      for (int j = 0; j < patternAtom.getBondsCount(); j++) {
-        SmilesBond patternBond = patternAtom.getBond(j);
-        // Check only if the current atom is the second atom of the bond
-        if (patternBond.getAtom2() == patternAtom) {
-          int matchingAtom = patternBond.getAtom1().getMatchingAtom();
-          Bond[] bonds = atom.getBonds();
-          boolean bondFound = false;
-          for (int k = 0; k < bonds.length; k++) {
-            if ((bonds[k].getAtom1().atomIndex == matchingAtom) ||
-                (bonds[k].getAtom2().atomIndex == matchingAtom)) {
-              switch (patternBond.getBondType()) {
-              case SmilesBond.TYPE_AROMATIC:
-                if ((bonds[k].getOrder() & JmolConstants.BOND_AROMATIC_MASK) != 0) {
-                  bondFound = true;
-                }
-                break;
-              case SmilesBond.TYPE_DOUBLE:
-                if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_DOUBLE) != 0) {
-                  bondFound = true;
-                }
-                break;
-              case SmilesBond.TYPE_SINGLE:
-                if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_SINGLE) != 0) {
-                  bondFound = true;
-                }
-                break;
-              case SmilesBond.TYPE_TRIPLE:
-                if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_TRIPLE) != 0) {
-                  bondFound = true;
-                }
-                break;
-              case SmilesBond.TYPE_UNKOWN:
-                bondFound = true;
-                break;
-              }
-            }
+    for (int i = 0; i < patternAtom.getBondsCount(); i++) {
+      SmilesBond patternBond = patternAtom.getBond(i);
+      if (patternBond.getAtom2() == patternAtom) {
+        int matchingAtom = patternBond.getAtom1().getMatchingAtom();
+        Atom atom = frame.getAtomAt(matchingAtom);
+        Bond[] bonds = atom.getBonds();
+        for (int j = 0; j < bonds.length; j++) {
+          if (bonds[j].getAtom1().atomIndex == matchingAtom) {
+            searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtom2().atomIndex);
           }
-          if (!bondFound) {
-            canMatch = false;
+          if (bonds[j].getAtom2().atomIndex == matchingAtom) {
+            searchMatch(bs, pattern, patternAtom, atomNum, bonds[j].getAtom1().atomIndex);
           }
         }
-      }
-      
-      // Finish matching
-      if (canMatch) {
-        patternAtom.setMatchingAtom(i);
-        if (atomNum + 1 < pattern.getAtomsCount()) {
-          searchMatch(bs, pattern, atomNum + 1);
-        } else {
-          for (int k = 0; k < pattern.getAtomsCount(); k++) {
-            SmilesAtom matching = pattern.getAtom(k);
-            bs.set(matching.getMatchingAtom());
-          }
-        }
-        patternAtom.setMatchingAtom(-1);
+        return;
       }
     }
-    System.out.println("End match:" + atomNum);
+    for (int i = 0; i < atomCount; i++) {
+      searchMatch(bs, pattern, patternAtom, atomNum, i);
+    }
+    //System.out.println("End match:" + atomNum);
+  }
+  
+  private void searchMatch(BitSet bs, SmilesMolecule pattern, SmilesAtom patternAtom, int atomNum, int i) {
+    // Check that an atom is not used twice
+    for (int j = 0; j < atomNum; j++) {
+      SmilesAtom previousAtom = pattern.getAtom(j);
+      if (previousAtom.getMatchingAtom() == i) {
+        return;
+      }
+    }
+    
+    boolean canMatch = true;
+    Atom atom = frame.getAtomAt(i);
+
+    // Check symbol
+    if ((!patternAtom.getSymbol().equals("*")) &&
+        (!patternAtom.getSymbol().equals(atom.getElementSymbol()))) {
+      canMatch = false;
+    }
+    // Check atomic mass : NO because Jmol doesn't know about atomic mass
+    // Check charge
+    if (patternAtom.getCharge() != atom.getFormalCharge()) {
+      canMatch = false;
+    }
+
+    // Check bonds
+    for (int j = 0; j < patternAtom.getBondsCount(); j++) {
+      SmilesBond patternBond = patternAtom.getBond(j);
+      // Check only if the current atom is the second atom of the bond
+      if (patternBond.getAtom2() == patternAtom) {
+        int matchingAtom = patternBond.getAtom1().getMatchingAtom();
+        Bond[] bonds = atom.getBonds();
+        boolean bondFound = false;
+        for (int k = 0; k < bonds.length; k++) {
+          if ((bonds[k].getAtom1().atomIndex == matchingAtom) ||
+              (bonds[k].getAtom2().atomIndex == matchingAtom)) {
+            switch (patternBond.getBondType()) {
+            case SmilesBond.TYPE_AROMATIC:
+              if ((bonds[k].getOrder() & JmolConstants.BOND_AROMATIC_MASK) != 0) {
+                bondFound = true;
+              }
+              break;
+            case SmilesBond.TYPE_DOUBLE:
+              if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_DOUBLE) != 0) {
+                bondFound = true;
+              }
+              break;
+            case SmilesBond.TYPE_SINGLE:
+              if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_SINGLE) != 0) {
+                bondFound = true;
+              }
+              break;
+            case SmilesBond.TYPE_TRIPLE:
+              if ((bonds[k].getOrder() & JmolConstants.BOND_COVALENT_TRIPLE) != 0) {
+                bondFound = true;
+              }
+              break;
+            case SmilesBond.TYPE_UNKOWN:
+              bondFound = true;
+              break;
+            }
+          }
+        }
+        if (!bondFound) {
+          canMatch = false;
+        }
+      }
+    }
+
+    // Finish matching
+    if (canMatch) {
+      patternAtom.setMatchingAtom(i);
+      if (atomNum + 1 < pattern.getAtomsCount()) {
+        searchMatch(bs, pattern, atomNum + 1);
+      } else {
+        for (int k = 0; k < pattern.getAtomsCount(); k++) {
+          SmilesAtom matching = pattern.getAtom(k);
+          bs.set(matching.getMatchingAtom());
+        }
+      }
+      patternAtom.setMatchingAtom(-1);
+    }
   }
 }

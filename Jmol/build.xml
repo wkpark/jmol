@@ -456,13 +456,14 @@ support for assertions (which were introduced in 1.4).
     <jar jarfile="JmolApplet5.jar" manifest="manifest/applet5.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/openscience/jmol/**" />
-	<include name="org/jmol/bspt/**" />
+        <include name="org/jmol/bspt/**" />
       </fileset>
     </jar>
 
     <jar jarfile="JmolApplet6.jar" manifest="manifest/applet6.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/viewer/**" />
+        <include name="org/jmol/smiles/**" />
       </fileset>
     </jar>
 

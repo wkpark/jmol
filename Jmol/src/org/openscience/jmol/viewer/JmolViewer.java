@@ -144,6 +144,7 @@ final public class JmolViewer {
   public final static byte TYPES =     2;
   public final static byte NUMBERS =   3;
 
+  public final static byte DELETED   = -1;
   public final static byte NONE      = 0;
   public final static byte WIREFRAME = 1;
   public final static byte SHADED    = 2;
@@ -605,7 +606,7 @@ final public class JmolViewer {
   public boolean hasSelectionHalo(AtomShape atomShape) {
     return
       selectionHaloEnabled &&
-      !repaintManager.fastRendering &&
+      !repaintManager.wireframeRotating &&
       isSelected(atomShape);
   }
 
@@ -877,11 +878,8 @@ final public class JmolViewer {
   }
 
   public void deleteAtom(int atomIndex) {
-    // FIXME mth -- after a delete operation, all the sets are messed up
-    clearSelection();
-    clearMeasurements();
-    eval.clearDefinitionsAndLoadPredefined();
-    //
+    if (measurementManager.deleteMeasurementsReferencing(atomIndex))
+      notifyMeasurementsChanged();
     modelManager.deleteAtom(atomIndex);
     //            status.setStatus(2, "Atom deleted"); 
     selectAll();
@@ -946,21 +944,16 @@ final public class JmolViewer {
     return deleted;
   }
 
-  public void measureSelection(int iatom) {
-    if (jmolStatusListener != null)
-      jmolStatusListener.measureSelection(iatom);
-  }
-
   /****************************************************************
    * delegated to RepaintManager
    ****************************************************************/
 
-  public void setFastRendering(boolean fastRendering) {
-    repaintManager.setFastRendering(fastRendering);
+  public void setWireframeRotating(boolean wireframeRotating) {
+    repaintManager.setWireframeRotating(wireframeRotating);
   }
 
-  public boolean getFastRendering() {
-    return repaintManager.fastRendering;
+  public boolean getWireframeRotating() {
+    return repaintManager.wireframeRotating;
   }
 
   public void setInMotion(boolean inMotion) {
@@ -1156,6 +1149,16 @@ final public class JmolViewer {
   public void scriptStatus(String strStatus) {
     if (jmolStatusListener != null)
       jmolStatusListener.scriptStatus(strStatus);
+  }
+
+  public void measureSelection(int iatom) {
+    if (jmolStatusListener != null)
+      jmolStatusListener.measureSelection(iatom);
+  }
+
+  public void notifyMeasurementsChanged() {
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyMeasurementsChanged();
   }
 
   /****************************************************************

@@ -40,26 +40,20 @@ public class RepaintManager {
     this.viewer = viewer;
   }
 
-  public boolean fastRendering = false;
-  public void setFastRendering(boolean fastRendering) {
-    this.fastRendering = fastRendering;
+  public boolean wireframeRotating = false;
+  public void setWireframeRotating(boolean wireframeRotating) {
+    this.wireframeRotating = wireframeRotating;
   }
 
   public boolean inMotion = false;
 
   public void setInMotion(boolean inMotion) {
-    if (this.inMotion != inMotion && viewer.getWireframeRotation())
-      setFastRendering(inMotion);
-    this.inMotion = inMotion;
-    /*
-    if (!inMotion &&
-        (viewer.getWireframeRotation() ||
-         (useGraphics2D && wantsAntialias && !wantsAntialiasAlways))) {
-      refresh();
+    if (this.inMotion != inMotion && viewer.getWireframeRotation()) {
+      setWireframeRotating(inMotion);
+      if (!inMotion)
+        refresh();
     }
-    */
-    if (!inMotion)
-      refresh();
+    this.inMotion = inMotion;
   }
 
   public Image takeSnapshot() {

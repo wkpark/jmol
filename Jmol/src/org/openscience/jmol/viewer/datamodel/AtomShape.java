@@ -130,6 +130,18 @@ public class AtomShape implements Bspt.Tuple {
     }
   }
 
+  public void deleteAllBonds() {
+    if (bonds == null)
+      return;
+    System.out.println("bonds.length=" + bonds.length);
+    for (int i = bonds.length; --i >= 0; )
+      frame.deleteBond(bonds[i]);
+    if (bonds != null) {
+      System.out.println("bond delete error");
+      throw new NullPointerException();
+    }
+  }
+
   public void deleteBond(BondShape bondShape) {
     for (int i = bonds.length; --i >= 0; )
       if (bonds[i] == bondShape) {
@@ -139,6 +151,7 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public void deleteBond(int i) {
+    System.out.println("deleting bond " + i);
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;
@@ -159,8 +172,9 @@ public class AtomShape implements Bspt.Tuple {
 
   public int getBondedAtomIndex(int bondIndex) {
     BondShape bond = bonds[bondIndex];
-    return (((bond.atomShape1 == this) ? bond.atomShape2 : bond.atomShape1).atomIndex
-            & 0xFFFF);
+    return (((bond.atomShape1 == this)
+             ? bond.atomShape2
+             : bond.atomShape1).atomIndex & 0xFFFF);
   }
 
   /*
@@ -183,25 +197,31 @@ public class AtomShape implements Bspt.Tuple {
    */
 
   public void setStyleAtom(byte styleAtom) {
-    this.styleAtom = styleAtom;
+    if (this.styleAtom == JmolViewer.DELETED) return;
+      this.styleAtom = styleAtom;
   }
 
   public void setMarAtom(short marAtom) {
+    if (this.styleAtom == JmolViewer.DELETED) return;
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom));
+                        frame.viewer.getVanderwaalsRadius(atomicNumber,
+                                                          clientAtom));
     this.marAtom = marAtom;
   }
 
   public void setStyleMarAtom(byte styleAtom, short marAtom) {
+    if (this.styleAtom == JmolViewer.DELETED) return;
     this.styleAtom = styleAtom;
     if (marAtom < 0)
       marAtom = (short)((-10 * marAtom) *
-                        frame.viewer.getVanderwaalsRadius(atomicNumber, clientAtom));
+                        frame.viewer.getVanderwaalsRadius(atomicNumber,
+                                                          clientAtom));
     this.marAtom = marAtom;
   }
         
   public void setColixMarDots(short colixDots, short marDots) {
+    if (this.styleAtom == JmolViewer.DELETED) return;
     this.colixDots = colixDots;
     if (marDots < 0)
       marDots = (short)((-10 * marDots) *
@@ -210,7 +230,7 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public int getRasMolRadius() {
-    if (styleAtom == JmolViewer.NONE)
+    if (styleAtom <= JmolViewer.NONE)
       return 0;
     return marAtom / 4;
   }
@@ -295,7 +315,8 @@ public class AtomShape implements Bspt.Tuple {
   }
 
   public double getRadius() {
-    if (styleAtom == JmolViewer.NONE) return 0;
+    if (styleAtom <= JmolViewer.NONE)
+      return 0;
     double radius = marAtom / 1000.0;
     if (styleAtom == JmolViewer.WIREFRAME) return -radius;
     return radius;
@@ -305,4 +326,11 @@ public class AtomShape implements Bspt.Tuple {
     return pprop;
   }
 
+  public Object markDeleted() {
+    deleteAllBonds();
+    styleAtom = JmolViewer.DELETED;
+    Object clientAtom = this.clientAtom;
+    this.clientAtom = null;
+    return clientAtom;
+  }
 }

@@ -215,4 +215,11 @@ public class XyzJmolModelAdapter implements JmolModelAdapter {
       }
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // notifications
+  ////////////////////////////////////////////////////////////////
+  public void notifyAtomDeleted(Object clientAtom) {
+    // insert CDK code here
+  }
 }

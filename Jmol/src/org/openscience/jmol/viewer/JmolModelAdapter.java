@@ -355,6 +355,12 @@ public interface JmolModelAdapter {
    */
   public Color getAtomColor(Object clientAtom, int colorScheme);
 
+  /**
+   * This method gets called when the user deletes an atom.
+   * In some cases, the client may want to update its own data structures.
+   */
+  public void notifyAtomDeleted(Object clientAtom);
+
   /*
    ****************************************************************
    * these tables are here so that a client can have easy access to them

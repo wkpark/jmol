@@ -130,4 +130,19 @@ public class MeasurementManager {
       if (measurementShapes[i].atomIndices.length == count)
         frame.deleteMeasurementShape(i);
   }
+
+  public boolean deleteMeasurementsReferencing(int atomIndexDeleted) {
+    boolean measurementDeleted = false;
+    MeasurementShape[] measurementShapes = frame.getMeasurementShapes();
+    for (int i = frame.getMeasurementShapeCount(); --i >= 0; ) {
+      int[] atomIndices = measurementShapes[i].atomIndices;
+      for (int j = atomIndices.length; --j >= 0; )
+        if (atomIndices[j] == atomIndexDeleted) {
+          deleteMeasurement(i);
+          measurementDeleted = true;
+          break;
+        }
+    }
+    return measurementDeleted;
+  }
 }

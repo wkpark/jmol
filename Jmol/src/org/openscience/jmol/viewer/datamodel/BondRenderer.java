@@ -45,14 +45,14 @@ public class BondRenderer {
     this.g3d = g3d;
     this.clip = clip;
 
-    fastRendering = viewer.getFastRendering();
+    wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
     showHydrogens = viewer.getShowHydrogens();
   }
 
-  boolean fastRendering;
+  boolean wireframeRotating;
   short colixSelection;
   boolean showMultipleBonds;
   byte modeMultipleBond;
@@ -113,7 +113,7 @@ public class BondRenderer {
 
   private void renderBond() {
     boolean lineBond = (styleBond == viewer.WIREFRAME ||
-                        fastRendering ||
+                        wireframeRotating ||
                         width <= 1);
     dx = x2 - x1;
     dy = y2 - y1;

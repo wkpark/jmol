@@ -85,9 +85,12 @@ public class BondShape {
     return (order & BACKBONE) != 0;
   }
 
-  public void delete() {
-    atomShape1.deleteBond(this);
-    atomShape2.deleteBond(this);
+  public void deleteAtomReferences() {
+    if (atomShape1 != null)
+      atomShape1.deleteBond(this);
+    if (atomShape2 != null)
+      atomShape2.deleteBond(this);
+    atomShape1 = atomShape2 = null;
   }
 
   public void setStyle(byte style) {

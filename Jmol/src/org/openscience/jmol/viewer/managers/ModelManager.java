@@ -216,9 +216,8 @@ public class ModelManager {
   }
 
   public void deleteAtom(int atomIndex) {
-    throw new NullPointerException();
-    // not implemented
-    //    frame.deleteAtom(atomIndex);
+    Object clientAtom = frame.deleteAtom(atomIndex);
+    jmolModelAdapter.notifyAtomDeleted(clientAtom);
   }
 
   public int findNearestAtomIndex(int x, int y) {

@@ -39,7 +39,7 @@ public class AtomRenderer {
   Graphics3D g3d;
   Rectangle clip;
   int minX, maxX, minY, maxY;
-  boolean fastRendering;
+  boolean wireframeRotating;
   boolean showHydrogens;
   short colixSelection;
 
@@ -53,7 +53,7 @@ public class AtomRenderer {
     minY = clip.y;
     maxY = minY + clip.height;
 
-    fastRendering = viewer.getFastRendering();
+    wireframeRotating = viewer.getWireframeRotating();
     colixSelection = viewer.getColixSelection();
     showHydrogens = viewer.getShowHydrogens();
   }
@@ -66,6 +66,8 @@ public class AtomRenderer {
     if (!showHydrogens && atomShape.atomicNumber == 1)
       return;
     styleAtom = atomShape.styleAtom;
+    if (styleAtom <= JmolViewer.NONE)
+      return;
     x = atomShape.x;
     y = atomShape.y;
     z = atomShape.z;
@@ -100,9 +102,9 @@ public class AtomRenderer {
 
   private void renderAtom() {
     if (diameter > 0) {
-      if (styleAtom == JmolViewer.SHADED && !fastRendering)
+      if (styleAtom == JmolViewer.SHADED && !wireframeRotating)
         g3d.fillSphereCentered(colix, diameter, x, y, z);
-      else if (styleAtom != JmolViewer.NONE)
+      else
         g3d.drawCircleCentered(colix, diameter, x, y, z);
     }
   }

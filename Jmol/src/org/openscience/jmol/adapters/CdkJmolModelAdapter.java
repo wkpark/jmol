@@ -285,4 +285,13 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
       return (Color)atom.getProperty("org.openscience.jmol.color");
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // notifications
+  ////////////////////////////////////////////////////////////////
+  public void notifyAtomDeleted(Object clientAtom) {
+    System.out.println("CdkJmolModelAdapter has received notification" +
+                       " that an atom has been deleted");
+    // insert CDK code here
+  }
 }

@@ -1444,6 +1444,10 @@ public class Jmol extends JPanel {
     public void measureSelection(int atomIndex) {
       measurementTable.firePicked(atomIndex);
     }
+
+    public void notifyMeasurementsChanged() {
+      measurementTable.updateTables();
+    }
   }
 
 }

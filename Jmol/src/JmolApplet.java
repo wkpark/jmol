@@ -208,6 +208,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void measureSelection(int atomIndex) {
   }
 
+  public void notifyMeasurementsChanged() {
+  }
+
   //METHODS FOR JAVASCRIPT
 
   /****************************************************************

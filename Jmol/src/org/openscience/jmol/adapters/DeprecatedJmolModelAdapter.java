@@ -326,4 +326,11 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
         }
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // notifications
+  ////////////////////////////////////////////////////////////////
+  public void notifyAtomDeleted(Object clientAtom) {
+    // insert CDK code here
+  }
 }

@@ -140,9 +140,7 @@ public class MeasurementTable extends JDialog {
     measureButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           viewer.defineMeasurement(pickedAtomCount, pickedAtoms);
-          updateMeasurementTableData();
-          pickedAtomCount = 0;
-          updatePickingTableData();
+          updateTables();
         }
       });
     measureButton.setVisible(false);
@@ -401,5 +399,11 @@ public class MeasurementTable extends JDialog {
       pickedAtoms[pickedAtomCount++] = atomIndex;
       updatePickingTableData();
     }
+  }
+
+  public void updateTables() {
+    updateMeasurementTableData();
+    pickedAtomCount = 0;
+    updatePickingTableData();
   }
 }

@@ -43,5 +43,7 @@ public interface JmolStatusListener {
   public void handlePopupMenu(MouseEvent e);
 
   public void measureSelection(int iatom);
-  
+
+  public void notifyMeasurementsChanged();
+
 }

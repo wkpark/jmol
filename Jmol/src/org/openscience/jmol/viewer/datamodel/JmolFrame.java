@@ -572,7 +572,8 @@ public class JmolFrame {
       bspt = new Bspt(3);
       for (int i = atomShapeCount; --i >= 0; ) {
         AtomShape atom = atomShapes[i];
-        bspt.addTuple(atom);
+        if (atom.styleAtom >= JmolViewer.NONE) // don't add deleted atoms
+          bspt.addTuple(atom);
       }
     }
     return bspt;
@@ -693,10 +694,23 @@ public class JmolFrame {
 
   public void deleteAllBonds() {
     for (int i = bondShapeCount; --i >= 0; ) {
-      bondShapes[i].delete();
+      bondShapes[i].deleteAtomReferences();
       bondShapes[i] = null;
     }
     bondShapeCount = 0;
+  }
+
+  public void deleteBond(BondShape bond) {
+    // what a disaster ... I hate doing this
+    for (int i = bondShapeCount; --i >= 0; ) {
+      if (bondShapes[i] == bond) {
+        bondShapes[i].deleteAtomReferences();
+        System.arraycopy(bondShapes, i+1, bondShapes, i,
+                         bondShapeCount - i - 1);
+        --bondShapeCount;
+        bondShapes[bondShapeCount] = null;
+      }
+    }
   }
 
   public void deleteCovalentBonds() {
@@ -709,10 +723,15 @@ public class JmolFrame {
           bondShapes[i] = null;
         }
       } else {
-        bond.delete();
+        bond.deleteAtomReferences();
         bondShapes[i] = null;
       }
     }
     bondShapeCount = indexNoncovalent;
+  }
+
+  public Object deleteAtom(int atomIndex) { // returns the clientAtom
+    clearBspt();
+    return atomShapes[atomIndex].markDeleted();
   }
 }

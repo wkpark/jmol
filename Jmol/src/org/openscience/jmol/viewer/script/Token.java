@@ -779,54 +779,51 @@ public class Token {
   public final static int ATOM_NICLEIC_BACKBONE_MAX = 18;
 
   final static String[] atomNames = {
-    "N",   // 0
-    "CA",
-    "C",
-    "O",   // 3
-    "C'",  // 4
-    "OT",
-    "S",
-    "P",   // 7
-    "O1P",
-    "O2P",
-    "O5*",
-    "C5*",
-    "C4*",
-    "O4*",
-    "C3*",
-    "O3*",
-    "C2*",
-    "O2*",
-    "C1*", // 18
-    "CA2", 
-    "SG",
-    "N1",
-    "N2",
-    "N3",
-    "N4",
-    "N6",
-    "O2",
-    "O4",
-    "O6", // 28
-    "CB", // 29
+    "N",   "N",  // 0
+    "CA",  "C\u03B1",
+    "C",   "C",
+    "O",   "O", // 3
+    "C'",  "C'", // 4
+    "OT",  "OT", 
+    "S",   "S",
+    "P",   "P", // 7
+    "O1P", "O1P",
+    "O2P", "O2P",
+    "O5*", "O5'",
+    "C5*", "C5'",
+    "C4*", "C4'",
+    "O4*", "O4'",
+    "C3*", "C3'",
+    "O3*", "O3'",
+    "C2*", "C2'",
+    "O2*", "O2'",
+    "C1*", "C1'", // 18
+    "CA2", "C\u03B12",
+    "SG",  "S\u03B3",
+    "N1",  "N1",
+    "N2",  "N2", 
+    "N3",  "N3",
+    "N4",  "N4",
+    "N6",  "N6",
+    "O2",  "O2",
+    "O4",  "O4",
+    "O6",  "O6", // 28
+    // kludge for now -- need to come up with a better scheme
+    "CB",  "C\u03B2", // 29
+    "CG2", "C\u03B32",
+    "OG1", "O\u03B31",
   };
   
   private static Hashtable htAtom = new Hashtable();
   static {
-    for (int i = 0; i < atomNames.length; ++i) {
-      htAtom.put(atomNames[i], new Integer(i));
+    for (int i = 0; i < atomNames.length/2; ++i) {
+      htAtom.put(atomNames[i*2], new Integer(i));
     }
   }
 
   public static String getPdbAtomName(byte atomid) {
-    switch (atomid) {
-    case 1:
-      return "C\u03B1";
-    case 29:
-      return "C\u03B2";
-    }
-    return (atomid < 0 || atomid >= atomNames.length)
-      ? "??" : atomNames[atomid];
+    return (atomid < 0 || atomid >= atomNames.length/2)
+      ? "??" : atomNames[atomid*2 + 1];
   }
 
   public static byte getPdbAtomid(String strAtom) {

@@ -78,9 +78,9 @@ public class LabelManager {
     */
   }
 
-  public int pointsLabelFontSize = 12;
+  public int pointsLabelFontSize = 13;
   public void setLabelFontSize(int points) {
-    this.pointsLabelFontSize = points <= 0 ? 12 : points;
+    this.pointsLabelFontSize = points <= 0 ? 13 : points;
   }
 
   public String getLabelAtom(byte styleLabel, AtomShape atomShape,

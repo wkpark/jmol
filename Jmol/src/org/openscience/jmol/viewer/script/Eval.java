@@ -1702,7 +1702,7 @@ public class Eval implements Runnable {
         numberOutOfRange();
     }
     // this is a kludge/hack to be somewhat compatible with RasMol
-    viewer.setLabelFontSize(fontsize + 4);
+    viewer.setLabelFontSize(fontsize + 5);
   }
 
   void setHetero() throws ScriptException {

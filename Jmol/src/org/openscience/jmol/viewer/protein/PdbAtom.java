@@ -46,7 +46,7 @@ public class PdbAtom {
     this.recordPdb = recordPdb;
 
     resid = Token.getResid(recordPdb.substring(17, 20));
-    atomid = Token.getAtomid(getName());
+    atomid = Token.getPdbAtomid(getName());
   }
 
   public boolean isHetero() {
@@ -57,7 +57,7 @@ public class PdbAtom {
     return recordPdb.regionMatches(true, 17, residue, 0, 3);
   }
 
-  public String getName () {
+  public String getName() {
     return recordPdb.substring(12, 16).trim();
   }
 
@@ -83,8 +83,8 @@ public class PdbAtom {
   }
 
   public String getAtomName() {
-    if (atomid > -1)
-      return Token.getAtomName(atomid);
+    if (atomid >= 0)
+      return Token.getPdbAtomName(atomid);
     return getName();
   }
 

@@ -78,15 +78,16 @@ class GaussianReader extends ModelReader {
     }
   }
 
+  int baseAtomCount;
   void readFrequencies(BufferedReader reader) throws Exception {
     discardLines(reader, 4);
-    int atomCount = model.atomCount;
+    baseAtomCount = model.atomCount;
     int modelNumber = 1;
     String line;
     while ((line = reader.readLine()) != null &&
            line.startsWith(" Frequencies --")) {
       discardLines(reader, 6);
-      for (int i = 0; i < atomCount; ++i) {
+      for (int i = 0; i < baseAtomCount; ++i) {
         line = reader.readLine();
         int atomCenterNumber = parseInt(line, 0, 4);
         for (int j = 0, col = 11; j < 3; ++j, col += 23) {
@@ -96,9 +97,7 @@ class GaussianReader extends ModelReader {
           recordAtomVector(modelNumber + j, atomCenterNumber, x, y, z);
         }
       }
-      if (true)
-        return;
-      discardLines(reader, 2);
+     discardLines(reader, 2);
       modelNumber += 3;
     }
   }
@@ -107,17 +106,26 @@ class GaussianReader extends ModelReader {
                         float x, float y, float z) {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return;
-    if (modelNumber != 1)
+    if (atomCenterNumber <= 0 || atomCenterNumber > baseAtomCount)
       return;
-    if (atomCenterNumber <= 0 || atomCenterNumber > model.atomCount)
-      return;
-    Atom atom = model.atoms[atomCenterNumber - 1];
+    if (atomCenterNumber == 1) {
+      if (modelNumber > 1)
+        createNewModel(modelNumber);
+    }
+    Atom atom = model.atoms[(modelNumber - 1) * baseAtomCount +
+                            atomCenterNumber - 1];
     atom.vectorX = x;
     atom.vectorY = y;
     atom.vectorZ = z;
-    System.out.println(" model:" + modelNumber +
-                       " atom:" + atomCenterNumber +
-                       " @ " + x + "," + y + "," + z);
+  }
+
+  void createNewModel(int modelNumber) {
+    System.out.println("creating new model:" + modelNumber);
+    Atom[] atoms = model.atoms;
+    for (int i = 0; i < baseAtomCount; ++i) {
+      Atom atomNew = model.newCloneAtom(atoms[i]);
+      atomNew.modelNumber = modelNumber;
+    }
   }
 
   void discardLines(BufferedReader reader, int nLines) throws Exception {

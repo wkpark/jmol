@@ -25,7 +25,7 @@
 
 package org.jmol.adapter.smarter;
 
-class Atom {
+class Atom implements Cloneable {
   int modelNumber = 1;
   String elementSymbol;
   byte elementNumber = -1;
@@ -45,6 +45,14 @@ class Atom {
   String pdbAtomRecord;
 
   Atom() {
+  }
+
+  Atom cloneAtom() {
+    try {
+      return (Atom)super.clone();
+    } catch (CloneNotSupportedException cnse) {
+      return null;
+    }
   }
 
   String getElementSymbol() {

@@ -73,6 +73,12 @@ class Model {
     atomNameMap.clear();
   }
 
+  Atom newCloneAtom(Atom atom) {
+    Atom clone = atom.cloneAtom();
+    addAtom(clone);
+    return clone;
+  }
+
   Atom newAtom() {
     Atom atom = new Atom();
     addAtom(atom);

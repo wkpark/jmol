@@ -1,0 +1,46 @@
+<chapter id="commandlineoptions">
+<title>Command Line Options</title>
+<para>
+  The program jmol has a command line option to run scripts:
+  <cmdsynopsis><arg>-script</arg></cmdsynopsis>. The current syntax is:
+    <cmdsynopsis>
+      <command>jmol</command>
+      <arg>-script <arg choice="req"><replaceable>rasmol.script</replaceable></arg></arg>
+    </cmdsynopsis>
+    This makes it possible to start jmol with a Rasmol script.
+    The syntax of these scripts is explained in <link linkend="rasmol" endterm="rasmol.title" />.
+  </para>
+  <para>
+    Alternatively, jmol can be started with one argument, being a file name:
+    <cmdsynopsis>
+      <command>jmol</command>
+      <arg choice="req"><replaceable>file</replaceable></arg>
+    </cmdsynopsis>
+  </para>
+  <section>
+    <title>Java Options</title>
+    <section>
+      <title>-Duser.language</title>
+      <para>
+	In addition to the above command line options there is also one
+	important Java option: <cmdsynopsis><arg>-Duser.language</arg></cmdsynopsis>.
+	With this option the GUI language can be set. At this moment
+	these languages are supported: <literal>en</literal>, <literal>es</literal>, and <literal>nl</literal>.
+      </para>
+      <para>
+	Alternatively, you can also use the <envar>LANG</envar> environment
+	variable for setting the prefered language. This is common in many
+	UNIX systems, like Linux. However, it is known not to work on
+	Solaris and the above command line option must be used.
+      </para>
+    </section>
+    <section>
+      <title>-Ddisplay.speed</title>
+      <para>
+	The <cmdsynopsis><arg>-Ddisplay.speed=fps</arg></cmdsynopsis> option can be used
+	to reporting the display speed in <emphasis>frames per second</emphasis> instead
+	of milliseconds per frame.
+      </para>
+    </section>
+  </section>
+</chapter>

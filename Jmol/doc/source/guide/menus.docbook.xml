@@ -1,0 +1,484 @@
+<chapter id="menudesc">
+<title>Menu description</title>
+<section>
+  <title>The File menu</title>
+  <section>
+    <title>Open</title>
+    <para>
+      Open files in Jmol. Jmol can read files of the following types:
+      <itemizedlist>
+	<listitem><para><ulink url="http://www.abinit.org/">ABINIT</ulink></para></listitem>
+	<listitem><para>ACES II</para></listitem>
+	<listitem><para>ADF - Amsterdam Density Functional</para></listitem>
+	<listitem><para><ulink url="http://www.xml-cml.org/">CML v1.0 and 1.0.1</ulink></para></listitem>
+	<listitem><para>GAMESS</para></listitem>
+	<listitem><para>Gaussian 92/94/98</para></listitem>
+	<listitem><para>Ghemical MM</para></listitem>
+	<listitem><para>Jaguar</para></listitem>
+	<listitem><para>MDL molfile</para></listitem>
+	<listitem><para>PDB (ATOM and HETATM entries only)</para></listitem>
+	<listitem><para>XYZ (single and multiple frame)</para></listitem>
+      </itemizedlist>
+    </para>
+  </section>
+  <section>
+    <title>Recent Files...</title>
+    <para>
+      Brings up a dialog with a list of the
+      files the program has been asked to
+      open recently. The file can be opened
+      again by selecting it and clicking the
+      Open button.
+    </para>
+  </section>
+  <section>
+    <title>Script...</title>
+    <para>
+      Opens a window where Rasmol scripting commands can be executed.
+      <xref linkend="rasmol" />
+      contains information about RasMol/Chime Scripts.
+    </para>
+  </section>
+  <section>
+    <title>Save As...</title>
+    <para> </para>
+  </section>
+  <section>
+    <title>Export</title>
+    
+    <section>
+      <title>Export -&gt; Export Image...</title>
+      <para>
+	Jmol can export images of the following types:
+	<itemizedlist>
+	  <listitem><para>BMP</para></listitem>
+	  <listitem><para>GIF</para></listitem>
+	  <listitem><para>JPG</para></listitem>
+	  <listitem><para>PNG</para></listitem>
+	  <listitem><para>PPM</para></listitem>
+	</itemizedlist>
+      </para>
+      <para>
+	Note that GIF pictures can only be exported if the
+	displayed image is 8 bit.
+      </para>
+    </section>
+    
+    <section>
+      <title>Export -&gt; Render in pov-ray...</title>
+      <para>
+	For high quality images, Jmol interfaces with the POV-Ray ray tracer.
+	To use this feature, you must have the <command>povray</command> command
+	line utility installed. You can download it from
+	<ulink url="http://www.povray.org/">www.povray.org/</ulink>.
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Print</title>
+      <para> 
+	Postscript files can be exported directly to printer and to file.
+      </para>
+    </section>
+    <section>
+      <title>Exit</title>
+      <para>Quits this Jmol session.</para>
+    </section>
+  </section>
+  <section>
+    <title>The Edit menu</title>
+    <section>
+      <title>Select All</title>
+      <para>
+	Selects all atoms in the view screen.
+      </para>
+    </section>
+    <section>
+      <title>Deselect All</title>
+      <para> 
+	Deselects all atoms in the view screen.
+      </para>
+    </section>
+    <section>
+      <title>Atom Properties...</title>
+      <para> 
+	This menu opens a dialog in which atomic properties can be added to
+	a large number of atom types. These properties include
+	the colors used to depict atoms.
+      </para>
+    </section>
+    <section>
+      <title>Preferences...</title>
+      <para>
+	This menu opens a dialog to change settings and make user customized
+	preferences. These settings are saved from one session to the next
+      </para>
+      <section>
+	<title>Display Tab</title>
+	<para>
+	  In these frame a few display settings can be changed. By default
+	  anti-aliasing is turned off. Turning it on improves the images
+	  considerably but will also reduce performance.
+	</para>
+	<para>
+	  Note: The 1.3.1 JVM which ships with Macintosh OS X and OS X 10.2
+	  (Jaguar) has crash bugs with some pixel interpolation and
+	  anti-aliasing operations. Therefore, you may need to disable the
+	  use of Java Graphics2D on this platform. 
+	</para>
+      </section>
+      <section>
+	<title>Colors Tab</title>
+	<para>
+	  In these frame some general display colors can be changed.
+	  Like the background color, and the color used to highlight
+	  selected atoms.
+	</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>The Display menu</title>
+    <para>
+      In this menu display settings/styles can be changed.
+    </para>
+    <section>
+      <title>Atom Style</title>
+      <section>
+	<title>Quick Draw</title>
+	<para>
+	  Renders atoms as filled circles.
+	</para>
+      </section>
+      <section>
+	<title>Shaded</title>
+	<para>
+	  Renders atoms as shaded spheres.
+	</para>
+      </section>
+      <section>
+	<title>Wire Frame</title>	  
+	<para>
+	  Renders atoms as circle outlines.
+	</para>
+      </section>
+      <section>
+	<title>Invisible</title>
+	<para>
+	  Atoms are not drawn, but are assumed to have the same radius that
+	  they would occupy. So bonds are drawn to the outer circumference
+	  of where the atom would be. Compare with *None*
+	</para>
+	<para>
+	  This option can be useful when used in conjunction with 
+	  atom labels to display atom type.
+	</para>
+      </section>
+      <section>
+	<title>None</title>
+	<para>
+	  Atoms are not drawn and are assumed to have a radius of zero.
+	  Bonds are drawn to atom centers. 
+	</para>
+	<para>
+	  This option can be very useful when use in conjunction with 
+	  atom labels to display atom type.
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Bond Style</title>
+      <section>
+	<title>Quick Draw</title>	  
+	<para>
+	  Renders bonds as filled rectangles.
+	</para>
+      </section>
+      <section>
+	<title>Shaded</title>	  
+	<para>
+	  Renders bonds as shaded cylinders.
+	</para>
+      </section>
+      <section>
+	<title>Wire Frame</title>
+	<para>
+	  Renders bonds as lines.
+	</para>
+      </section>
+      <section>
+	<title>Boxes</title>
+	<para>
+	  Renders bonds as rectangle outlines.
+	</para>
+      </section>
+      <section>
+	<title>None</title>
+	<para>
+	  Bonds are not drawn. 
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Atom Labels</title>
+      <section>
+	<title>None</title>	  
+	<para>
+	  No atom labels is shown.
+	</para>
+      </section>
+      <section>
+	<title>Atomic Symbols</title>	  
+	<para>
+	  Atoms are labeled with their atomic symbol.
+	</para>
+      </section>
+      <section>
+	<title>Atom Types</title>
+	<para>
+	  Atoms are labeled with their atom type.
+	  (What is the difference between Atom Type and Atom Symbol?)
+	</para>
+      </section>
+      <section>
+	<title>Atom Numbers</title>
+	<para>
+	  Atoms are labeled with index numbers.
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Atom Coloring</title>
+      <section>
+	<title>Atom Type</title>
+	<para>
+	  Atoms are colored based upon their type. Default colors are
+	  generally CPK colors
+	</para>
+      </section>
+      <section>
+	<title>Atomic Charge</title>
+	<para>
+	  Atoms are colored based upon atomic charge. (Need more
+	  explanation here!)
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>Wireframe Rotation</title>
+      <para>
+	This option may be checked if performance is unacceptable when
+	manipulating large molecules. 
+	When this option is checked, wireframe rendering is used for
+	displayed atoms and bonds during rotations, translations, and
+	zoom operations. The molecule is rendered according to the current
+	settings when the mouse is released.
+      </para>
+    </section>
+    <section>
+      <title>Perspective Depth</title>
+      <para>
+	This option controls rendering with perspective depth. When this
+	option is unchecked molecules are rendered as a flat projection
+	onto the screen. When checked, sizes and distances are adjusted
+	for a camara perspective.
+      </para>
+      <para>
+	For a good example of this take a look at some of the crystal
+	structures, such as <filename>samples/CdSe_nanocrystal.xyz</filename>
+	or <filename>samples/HfO2_on_Si_relax.in</filename>
+      </para>
+      <para>
+	Alternatively, turn on the bounding box (see below).
+      </para>
+    </section>
+    <section>
+      <title>Axes</title>
+      <para>
+	Displays cartesian axes with the origin at the center of the
+	bounding box defined by the extreme coordinates of the molecule.
+      </para>
+      <para>
+	Note that the positive Y axis is at the top, unlike RasMol.
+      </para>
+    </section>
+    <section>
+      <title>Bounding Box</title>
+      <para>
+	Displays the bounding box, defined by the extreme coordinates
+	of the centers of the atoms in each of the three dimensions.
+      </para>
+    </section>
+    <section>
+      <title>Hydrogens</title>
+      <para> 
+	Turns on/off the display of hydrogen atoms.
+      </para>
+    </section>
+    <section>
+      <title>Vectors</title>
+      <para>
+	Controls the display of vibrational vectors as dipole moments.
+      </para>
+    </section>
+    <section>
+      <title>Measurements</title>
+      <para>
+	Controls the display of distance, angle, and dihedral torsion
+	measurements. 
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>The View menu</title>
+    <section>
+      <title>Front/Top/Bottom/Right/Left</title>
+      <para>
+	Self explanatory. Useful with crystal structures. 
+      </para>
+    </section>
+    <section>
+      <title>Transform</title>
+      <para>
+	Applies an AxisAngle rotation about user-specified coordinates.
+      </para>
+    </section>
+    <section>
+      <title>Define center</title>
+      <para>
+	Defines the center of rotation for the molecule to be the
+	geometric center of the selected molecules.
+      </para>
+      <para>
+	If no atoms are selected the the center is reset to the center
+	of the bounding box defined by the extreme atom centerpoints
+	in each of the x, y, and z dimensions. This is the default.
+      </para>
+      <para>
+	If one atom is selected then it becomes the center of rotation.
+      </para>
+      <para>
+	If two or more atoms are selected then the center becomes the point
+	defined by the mean of the x, y, and z coordinates.
+      </para>
+      <para>
+	{If you think there is a better definition for this
+	(center of gravity? center of the bounding box?)
+	then let us know and we can either change this or add a
+	new definition.}
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>The Measure menu</title>
+    <section>
+      <title>Distance...</title>
+      <para>
+	Allows you to choose two atoms and display the distance between them.
+      </para>
+    </section>
+    <section>
+      <title>Angle...</title>
+      <para>
+	Allows you to choose three atoms and display the angle formed about
+	the center atom.
+      </para>
+    </section>
+    <section>
+      <title>Dihedral...</title>
+      <para>
+	Allows you to choose four atoms and display the Dihedral/Torsion
+	angle between the two planes defined by atoms 1,2,3 and atoms 2,3,4.
+      </para>
+    </section>
+    <section>
+      <title>Delete Distance/Angle/Dihedral</title>
+      <para>
+	Allows you to delete one or more distance/angle/dihedral
+	measurements.
+      </para>
+    </section>
+    <section>
+      <title>Clear all Distances/Angles/Dihedrals</title>
+      <para>
+	Self explanatory.
+      </para>
+    </section>
+    <section>
+      <title>Clear all Measurements...</title>
+      <para>
+	Self explanatory.
+      </para>
+    </section>
+    <section>
+      <title>View Measurement List...</title>
+      <para>
+	Displays a hierarchical list of all defined measurements.
+      </para>
+    </section>
+  </section>
+  <section>
+    <title>The Extras menu</title>
+    <section>
+      <title>Animate...</title>
+      <para>
+	Some file formats support multiple frames. A file containing more
+	than one frame is considered an animation. This menu item brings
+	up the animation dialog box which allows you to control the
+	animation playback. 
+      </para>
+    </section>
+    <section>
+      <title>Vibrate...</title>
+      <para>
+	If the molecular model contains frequency information, the
+	vibrational modes can be animated and controlled with the
+	vibrate dialog box. 
+      </para>
+      <para>
+	Note that Display->Vectors should be checked in order to render
+	vibrational vectors. 
+      </para>
+      <para>
+	Good examples are <filename>samples/phenylnitrene.g92.out</filename>
+	and <filename>samples/ammonia.adf.out</filename>
+      </para>
+    </section>
+    <section>
+      <title>Graph...</title>
+      <para>This opens a window in which a energy versus frames plot
+	is viewed. This option currently only works when reading a
+	CML animation with energies given for each frame.</para>
+	<para>An example file is supplied: conformeren.cml.</para>
+      </section>
+      <section>
+	<title>Crystal Properties...</title>
+	<para>
+	  Opens the crystal properties dialog box. 
+	</para>
+      </section>
+    </section>
+    <section>
+      <title>The Help menu</title>
+      <section>
+	<title>About Jmol</title>
+	<para>Popups a window with copyright notice for this software.</para>
+      </section>
+      <section>
+	<title>User Guide</title>
+	<para>Shows this documentation.</para>
+      </section>
+      <section>
+	<title>What's New</title>
+	<para>Shows the changes from version to version.</para>
+      </section>
+      <section>
+	<title>Jmol Console</title>
+	<para>
+	  Shows the output to the System.out and System.err output streams.
+	</para>
+      </section>
+    </section>
+  </chapter>
+  
+  

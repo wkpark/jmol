@@ -2,10 +2,10 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
                       "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd"
 [
-<!ENTITY appletIntro      SYSTEM "appletIntro.docbook.xml">
-<!ENTITY appletBrowsers   SYSTEM "appletBrowsers.docbook.xml">
-<!ENTITY appletUsage      SYSTEM "appletUsage.docbook.xml">
-<!ENTITY appletJavaScript SYSTEM "appletJavaScript.docbook.xml">
+<!ENTITY appletIntro      SYSTEM "applet/intro.docbook.xml">
+<!ENTITY appletBrowsers   SYSTEM "applet/browsers.docbook.xml">
+<!ENTITY appletUsage      SYSTEM "applet/usage.docbook.xml">
+<!ENTITY appletJavaScript SYSTEM "applet/javascript.docbook.xml">
 ]
 >
 <book id="jmol-applet-guide">

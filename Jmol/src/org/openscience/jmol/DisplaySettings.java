@@ -80,6 +80,10 @@ public class DisplaySettings {
    */
   public static final int ATOMCHARGE = 1;
 
+  /**
+   * Whether to draw anti-aliased lines.
+   */
+  private boolean antiAliased = false;
 
   /**
    * Returns whether these settings are equal to another.
@@ -124,7 +128,8 @@ public class DisplaySettings {
         && atomZOffset == otherSettings.atomZOffset
         && atomDepthFactor == otherSettings.atomDepthFactor
         && atomSphereFactor == otherSettings.atomSphereFactor
-        && doFastRendering == otherSettings.doFastRendering;
+        && doFastRendering == otherSettings.doFastRendering
+        && antiAliased == otherSettings.antiAliased;
   }
   
   /**
@@ -158,6 +163,7 @@ public class DisplaySettings {
     long longValue = Double.doubleToLongBits(atomSphereFactor);
     result = 37*result + (int)(longValue ^ (longValue >>>32));
     result = 37*result + (doFastRendering ? 0 : 1);
+    result = 37*result + (antiAliased ? 0 : 1);
     return result;
   }
 
@@ -676,6 +682,22 @@ public class DisplaySettings {
    * Atom sphere factor.
    */
   private double atomSphereFactor = 0.2;
+
+  /**
+   * Returns whether anti-aliased lines will be drawn.
+   */
+  public boolean isAntiAliased() {
+    return antiAliased;
+  }
+
+  /**
+   * Sets whether anti-aliased lines will be drawn.
+   *
+   * @param on if true then anti-aliasing will be turned on.
+   */
+  public void setAntiAliased(boolean on) {
+    antiAliased = on;
+  }
 
   /**
    * Sets the fast rendering flag.

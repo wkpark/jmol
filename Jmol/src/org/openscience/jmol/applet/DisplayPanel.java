@@ -50,7 +50,6 @@ public class DisplayPanel extends Canvas
   private boolean painted = false;
   private boolean haveFile = false;
   private boolean rubberband = false;
-  private boolean antiAliased = false;
   private int bx;
   private int by;
   private int rtop;
@@ -309,14 +308,6 @@ public class DisplayPanel extends Canvas
   // Make sure AWT knows we repaint the entire canvas.
   public boolean isOpaque() {
     return true;
-  }
-
-  public boolean getAntiAliased() {
-    return antiAliased;
-  }
-
-  public void setAntiAliased(boolean aa) {
-    antiAliased = aa;
   }
 
   public int getMode() {

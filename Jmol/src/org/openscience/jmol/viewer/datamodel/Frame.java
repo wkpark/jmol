@@ -65,6 +65,7 @@ final public class Frame {
   Matrix3f matrixFractionalToEuclidean;
 
   boolean hasVibrationVectors;
+  boolean fileHasHbonds;
 
   boolean structuresDefined;
 
@@ -135,6 +136,8 @@ final public class Frame {
 
     checkShape(JmolConstants.SHAPE_BALLS);
     checkShape(JmolConstants.SHAPE_STICKS);
+    if (fileHasHbonds)
+      checkShape(JmolConstants.SHAPE_HSTICKS);
   }
 
   void hackAtomSerialNumbersForAnimations() {

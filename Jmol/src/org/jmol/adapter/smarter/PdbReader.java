@@ -275,8 +275,8 @@ class PdbReader extends ModelReader {
             continue;
           }
         }
-        if (i >= 4)
-          logger.log("hbond:" + sourceIndex + "->" + targetIndex);
+        //        if (i >= 4)
+        //          logger.log("hbond:" + sourceIndex + "->" + targetIndex);
         model.addBond(new Bond(sourceIndex, targetIndex,
                                i < 4
                                ? 1 : ModelAdapter.ORDER_HBOND));

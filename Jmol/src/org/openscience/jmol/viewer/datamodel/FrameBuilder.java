@@ -42,6 +42,8 @@ final public class FrameBuilder {
   protected void finalize() {
   }
 
+  boolean fileHasHbonds;
+
   public Frame buildFrame(Object clientFile) {
     long timeBegin = System.currentTimeMillis();
     String fileTypeName = adapter.getFileTypeName(clientFile);
@@ -85,6 +87,7 @@ final public class FrameBuilder {
               iterAtom.getClientAtomReference());
     }
 
+    fileHasHbonds = false;
     {
       ModelAdapter.BondIterator iterBond =
         adapter.getBondIterator(clientFile);
@@ -112,6 +115,7 @@ final public class FrameBuilder {
     frame.clientAtomReferences = clientAtomReferences;
     frame.bondCount = bondCount;
     frame.bonds = bonds;
+    frame.fileHasHbonds = fileHasHbonds;
 
     frame.doUnitcellStuff();
     frame.doAutobond();
@@ -249,8 +253,11 @@ final public class FrameBuilder {
     // note that if the atoms are already bonded then
     // Atom.bondMutually(...) will return null
     Bond bond = atom1.bondMutually(atom2, order, viewer);
-    if (bond != null)
+    if (bond != null) {
       bonds[bondCount++] = bond;
+      if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+        fileHasHbonds = true;
+    }
   }
 
   ////////////////////////////////////////////////////////////////

@@ -230,8 +230,9 @@ public class BondRenderer {
     if (!lineBond && width1 < 2) {
       // if the bonds are narrow ...
       // just draw lines that are the color of the outline
-      colix1 = outline1;
-      colix2 = outline2;
+      // nope, just leave the color alone
+      // colix1 = outline1;
+      // colix2 = outline2;
       lineBond = true;
     }
     resetAxisCoordinates(lineBond);

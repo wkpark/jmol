@@ -180,7 +180,7 @@ public class Shade25D {
   static final float[] vectTemp = new float[3];
   static final float[] vectReflection = new float[3];
 
-  static synchronized byte calcIntensity(float x, float y, float z) {
+  public static synchronized byte calcIntensity(float x, float y, float z) {
 
     vectNormal[0] = x;
     vectNormal[1] = y;

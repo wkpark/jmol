@@ -44,7 +44,7 @@ public class Cylinder25D {
 
   void test(short colix1, short colix2,int diameter,
             int x, int y, int z, int dx, int dy, int dz) {
-    if (true)
+    if (false)
       return;
     CylinderShape cs = new CylinderShape(diameter,
                                          x, y, z,
@@ -62,6 +62,8 @@ public class Cylinder25D {
 
   void renderClipped(short colix1, short colix2, int diameter,
                      int x1, int y1, int z1, int dx, int dy, int dz) {
+    if (true)
+      return;
     Sphere25D sphere25d = g25d.sphere25d;
     sphere25d.render(colix1, diameter, x1, y1, z1);
     if (dx == 0 && dy == 0)
@@ -134,7 +136,8 @@ public class Cylinder25D {
 
     boolean tLine;
     int x1, y1, x2, y2;
-    int radius2; // radius squared
+    float radiusF2; // radius squared
+    float radiusF;
     int diameter;
     int dx, dy, dz;
 
@@ -152,12 +155,15 @@ public class Cylinder25D {
     int xN, yN, xNE, yNE, xE, yE, xSE, ySE, xS, yS;
 
     int ibRaster;
+    int xLast, yLast;
     byte[] raster; // this raster stores quads of <x,y,z,shade>
 
     int xOrigin, yOrigin, zOrigin;
 
     public CylinderShape(int diameter, int xOrigin, int yOrigin, int zOrigin,
                          int dx, int dy, int dz) {
+      diameter *= 2;
+
       radius3d2 = (diameter*diameter) / 4.0;
       int mag2d2 = dx*dx + dy*dy;
       mag2df = (float)Math.sqrt(mag2d2);
@@ -167,7 +173,7 @@ public class Cylinder25D {
       this._2a = this.diameter = diameter;
       tEven = (diameter & 1) == 0;
       this._2b = diameter - diameter * mag2d / mag3d;
-      this.radius2 = ((diameter * diameter) + 2) / 4;
+      this.radiusF2 = (diameter * diameter) / 4.0f;
 
       this.dxTheta = this.dx = dx;
       this.dyTheta = -(this.dy = dy);
@@ -335,7 +341,8 @@ public class Cylinder25D {
 
     void allocRaster() {
       ibRaster = 0;
-      raster = new byte[_2a * 3 * 2];
+      yLast = -9999;
+      raster = new byte[_2a * 3 * 2 + 16];
     }
 
     void reallocRaster() {
@@ -461,22 +468,32 @@ public class Cylinder25D {
 
     void render(short colix1, short colix2,
                 int x, int y, int z, int dx, int dy, int dz) {
+      /*
       System.out.println("cylinder (" + x + "," + y + "," + z + ") -> ("
                          + dx + "," + dy + "," + dz + " diameter=" + diameter);
+      */
       int[] shades1 = Colix.getShades(colix1);
       int[] shades2 = Colix.getShades(colix2);
       if (tLine) {
         plotEdgewiseCylinder(shades1, shades2, x1, y1, x2, y2);
         return;
       }
-      for (int i = 0; i < ibRaster; i += 3) {
-        int x0 = raster[i];
+      for (int i = 0; i < ibRaster; i += 4) {
+        int x0 = raster[i  ];
         int y0 = raster[i+1];
         int z0 = raster[i+2];
+        int count = raster[i+3];
+        // remember that my z buffer coordinates run in the other direction
+        // so negate
         int intensity1 = Shade25D.getIntensity(x0, y0, -z0);
-        int intensity2 = Shade25D.getIntensity(x0, y0, z0);
+        int intensity2 = Shade25D.getIntensity(-x0, -y0, z0);
+        x0 /= 2*count;
+        y0 /= 2*count;
+        z0 /= 2*count;
+        /*
         System.out.println("x,y,z=" + x0 + "," + y0 + "," + z0 +
                            " intensity1=" + intensity1 + " intensity2=" + intensity2);
+        */
         g25d.plotLineDelta(shades1[intensity1], shades2[intensity1],
                            //x + ((x0 > 0 && tEven) ? x0 - 1 : x0),
                            x + x0,
@@ -501,11 +518,19 @@ public class Cylinder25D {
       if (xR <= 0 ^ dz >= 0)
         z = -z;
 
-      if (ibRaster == raster.length)
-        reallocRaster();
-      raster[ibRaster++] = (byte)x;
-      raster[ibRaster++] = (byte)y;
-      raster[ibRaster++] = (byte)z;
+      if (x/2 == xLast/2 && y/2 == yLast/2) {
+        raster[ibRaster - 4] += x;
+        raster[ibRaster - 3] += y;
+        raster[ibRaster - 2] += z;
+        ++raster[ibRaster - 1];
+      } else {
+        if ((ibRaster + 4) >= raster.length)
+          reallocRaster();
+        raster[ibRaster++] = (byte)(xLast = x);
+        raster[ibRaster++] = (byte)(yLast = y);
+        raster[ibRaster++] = (byte)z;
+        raster[ibRaster++] = (byte)1;
+      }
     }
 
     /****************************************************************
@@ -514,6 +539,7 @@ public class Cylinder25D {
      ****************************************************************/
 
     void calcLineFactors() {
+      diameter /= 2;
       int radius = (diameter + 1) / 2; // add one here to control rounding properly
       x1 = -(radius * -dy) / mag2d;
       y1 = -(radius * dx) / mag2d;
@@ -584,12 +610,16 @@ public class Cylinder25D {
     }
 
     void plotEdgewise1(int x, int y) {
-      int z2 = radius2 - (x*x + y*y);
-      int z = (z2 <= 0) ? 0 : (int)(Math.sqrt(z2) + 0.5);
-
-      byte intensity = Shade25D.getIntensity(x, y, z);
+      float z2 = radiusF2 - (x*x + y*y);
+      float zF = (z2 <= 0) ? 0 : (float)Math.sqrt(z2);
+      byte intensity = Shade25D.calcIntensity(x, y, zF);
+      int z = (int)(zF + 0.5f);
       g25d.plotLineDelta(shades1[intensity], shades2[intensity],
                          xOrigin + x, yOrigin + y, zOrigin - z, dx, dy, dz);
+      /*
+      System.out.println("plotEdgewise1:" + x + "," + y + "," + zF +
+                         " intensity=" + intensity);
+      */
     }
   }
 

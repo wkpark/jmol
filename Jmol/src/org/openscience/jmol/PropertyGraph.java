@@ -72,7 +72,6 @@ public class PropertyGraph extends JDialog implements ActionListener {
    */
   public void setChemFile(ChemFile inputFile) {
 
-    System.err.println("Checking for viewable properties...");
     if (isVisible()) {
       setVisible(false);
     }

@@ -145,13 +145,16 @@ class ModelResolver {
   final static String[] hinRecords = 
   {"mol "};
 
+  final static String[] mdlRecords = 
+  {"$MDL "};
+
   final static String[][] startsWithRecords =
   { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
-    jaguarRecords, hinRecords };
+    jaguarRecords, hinRecords , mdlRecords};
 
   final static String[] startsWithFormats =
   { "Pdb", "Shelx", "Cif", "GhemicalMM",
-    "Jaguar", "Hin" };
+    "Jaguar", "Hin", "Mol" };
 
   ////////////////////////////////////////////////////////////////
   // contains formats
@@ -159,7 +162,7 @@ class ModelResolver {
   
   final static String[] cmlRecords =
   { "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
-    "<list>", "<entry", "<identifier" };
+    "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
 
   final static String[] gaussianRecords =
   { "Entering Gaussian System", "1998 Gaussian, Inc." };

@@ -264,7 +264,7 @@ class Jmol extends JPanel {
 
       // Open a file if on is given as an argument
       if (initialFile != null) {
-        window.openFile(initialFile, "CML");
+        window.openFile(initialFile, "LetJmolDetermine");
       }
 
       // Oke, by now it is time to execute the script

@@ -150,7 +150,7 @@
 		<java fork="true" classpath="${classpath}:classes" classname="org.openscience.jmol.Jmol" />
 	</target>
 
-	<target name="run_tests" depends="classes">
+	<target name="runtests" depends="classes">
 		<java fork="true" classpath="${classpath}:classes" classname="org.openscience.jmol.TestAll" />
 	</target>
 

@@ -1,23 +1,21 @@
+
 /*
- * @(#)RasMolScriptHandler.java    1.0 2000/11/30
- *
- * Copyright (c) 2000  Egon L. Willighagen All Rights Reserved.
+ * Copyright (C) 2001  The Jmol Development Team
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- * 
- **/
+ */
 package org.openscience.jmol;
 
 import java.util.*;
@@ -31,7 +29,9 @@ import javax.swing.JTextArea;
  *
  *     jmol -script <rasmol.script>
  *
-**/
+ *  @author Bradley A. Smith (bradley@baysmith.com)
+ *  @author Egon L. Willighagen
+ */
 class RasMolScriptHandler {
 
     private Jmol program;
@@ -246,12 +246,12 @@ class RasMolScriptHandler {
 
     private void list(String objectType) throws RasMolScriptException {
         if (objectType.equals("atoms")) {
-	    for (int i=0; i<program.display.md.nvert; i++) {
+	    for (int i=0; i<program.display.md.getAtomCount(); i++) {
                 StringBuffer sb = new StringBuffer();
                 sb.append("  ");
 		sb.append(i + 1);
 		sb.append(" ");
-		sb.append(program.display.md.atoms[i].getBaseAtomType().getRoot());
+		sb.append(program.display.md.getAtomAt(i).getBaseAtomType().getRoot());
 		println(sb.toString());
 	    }
 	} else {
@@ -321,12 +321,12 @@ class RasMolScriptHandler {
 	    Enumeration selectedAtoms = program.display.md.getSelectedAtoms().elements();
 	    while (selectedAtoms.hasMoreElements()) {
                 int atom = ((Integer)selectedAtoms.nextElement()).intValue();
-		program.display.md.atoms[atom-1].setColor(this.getColor(value));
+		program.display.md.getAtomAt(atom-1).setColor(this.getColor(value));
 	    }
 
 	    // reset bond colors
-	    for (int i=0; i<program.display.md.nbonds; i++) {
-		program.display.md.bonds[i].resetColors();
+	    for (int i=0; i<program.display.md.getBondCount(); i++) {
+		program.display.md.getBondAt(i).resetColors();
 	    }
         } else {
             throw new RasMolScriptException("Error: unknown object: " + object);

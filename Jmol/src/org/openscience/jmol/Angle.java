@@ -115,9 +115,9 @@ class Angle extends Measurement implements MeasurementInterface {
     public float getAvgRadius(DisplaySettings settings, int z1, int z2, int z3) {
         if (cf == null) return 0.0f;
         
-        BaseAtomType a = cf.getAtomType(Atoms[0]).getBaseAtomType();
-        BaseAtomType b = cf.getAtomType(Atoms[1]).getBaseAtomType();
-        BaseAtomType c = cf.getAtomType(Atoms[2]).getBaseAtomType();
+        BaseAtomType a = cf.getAtomAt(Atoms[0]).getBaseAtomType();
+        BaseAtomType b = cf.getAtomAt(Atoms[1]).getBaseAtomType();
+        BaseAtomType c = cf.getAtomAt(Atoms[2]).getBaseAtomType();
         
         return (settings.getCircleRadius(z1, a.getVdwRadius()) + 
                 settings.getCircleRadius(z2, b.getVdwRadius()) + 

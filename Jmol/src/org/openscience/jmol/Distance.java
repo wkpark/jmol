@@ -1,46 +1,29 @@
-/*
- * @(#)Distance.java    2.0 99/08/13
- *
- * Copyright (c) 1999 J. Daniel Gezelter All Rights Reserved.
- *
- * J. Daniel Gezelter grants you ("Licensee") a non-exclusive, royalty
- * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions 
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * This software is provided "AS IS," without a warranty of any
- * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
- * EXCLUDED.  J. DANIEL GEZELTER AND HIS LICENSORS SHALL NOT BE LIABLE
- * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
- * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
- * EVENT WILL J. DANIEL GEZELTER OR HIS LICENSORS BE LIABLE FOR ANY
- * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
- * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
- * INABILITY TO USE SOFTWARE, EVEN IF J. DANIEL GEZELTER HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
- * This software is not designed or intended for use in on-line
- * control of aircraft, air traffic, aircraft navigation or aircraft
- * communications; or in the design, construction, operation or
- * maintenance of any nuclear facility. Licensee represents and
- * warrants that it will not use or redistribute the Software for such
- * purposes.  
- */
 
+/*
+ * Copyright (C) 2001  The Jmol Development Team
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package org.openscience.jmol;
 
 import java.awt.*;
 
+/**
+ *  @author  Bradley A. Smith (bradley@baysmith.com)
+ *  @author  J. Daniel Gezelter
+ */
 class Distance extends Measurement implements MeasurementInterface {
 
     private int[] Atoms = new int[2];
@@ -104,8 +87,8 @@ class Distance extends Measurement implements MeasurementInterface {
     public float getAvgRadius(DisplaySettings settings, int z1, int z2) {
         if (cf == null) return 0.0f;
         
-        BaseAtomType a = cf.getAtomType(Atoms[0]).getBaseAtomType();
-        BaseAtomType b = cf.getAtomType(Atoms[1]).getBaseAtomType();
+        BaseAtomType a = cf.getAtomAt(Atoms[0]).getBaseAtomType();
+        BaseAtomType b = cf.getAtomAt(Atoms[1]).getBaseAtomType();
         
         return (settings.getCircleRadius(z1, a.getVdwRadius()) + settings.getCircleRadius(z2, b.getVdwRadius()))/2.0f;
     }          
@@ -159,3 +142,43 @@ class Distance extends Measurement implements MeasurementInterface {
         computed = true;        
     }    
 }
+
+/*
+ * @(#)Distance.java    2.0 99/08/13
+ *
+ * Copyright (c) 1999 J. Daniel Gezelter All Rights Reserved.
+ *
+ * J. Daniel Gezelter grants you ("Licensee") a non-exclusive, royalty
+ * free, license to use, modify and redistribute this software in
+ * source and binary code form, provided that the following conditions 
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * This software is provided "AS IS," without a warranty of any
+ * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
+ * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
+ * EXCLUDED.  J. DANIEL GEZELTER AND HIS LICENSORS SHALL NOT BE LIABLE
+ * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
+ * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
+ * EVENT WILL J. DANIEL GEZELTER OR HIS LICENSORS BE LIABLE FOR ANY
+ * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
+ * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
+ * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
+ * INABILITY TO USE SOFTWARE, EVEN IF J. DANIEL GEZELTER HAS BEEN
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ *
+ * This software is not designed or intended for use in on-line
+ * control of aircraft, air traffic, aircraft navigation or aircraft
+ * communications; or in the design, construction, operation or
+ * maintenance of any nuclear facility. Licensee represents and
+ * warrants that it will not use or redistribute the Software for such
+ * purposes.  
+ */
+

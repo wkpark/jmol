@@ -322,7 +322,7 @@ public class DisplaySettings {
 	 * when displaying a ChemFrame
 	 */
 	public void toggleVectors() {
-		ShowVectors = !ShowVectors;
+		setShowVectors(!getShowVectors());
 	}
 
 	/**

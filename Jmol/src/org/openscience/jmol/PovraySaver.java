@@ -1,48 +1,33 @@
-/*
- * @(#)PovraySaver.java    1.0 99/06/09
- *
- * Copyright (c) 1999 THOMAS JAMES GREY All Rights Reserved.
- *
- * Thomas James Grey grants you ("Licensee") a non-exclusive, royalty
- * free, license to use, modify and redistribute this software in
- * source and binary code form, provided that the following conditions 
- * are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * This software is provided "AS IS," without a warranty of any
- * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
- * EXCLUDED.  THOMAS JAMES GREY AND HIS LICENSORS SHALL NOT BE LIABLE
- * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
- * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
- * EVENT WILL THOMAS JAMES GREY OR HIS LICENSORS BE LIABLE FOR ANY
- * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
- * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
- * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
- * INABILITY TO USE SOFTWARE, EVEN IF THOMAS JAMES GREY HAS BEEN
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
- *
- * This software is not designed or intended for use in on-line
- * control of aircraft, air traffic, aircraft navigation or aircraft
- * communications; or in the design, construction, operation or
- * maintenance of any nuclear facility. Licensee represents and
- * warrants that it will not use or redistribute the Software for such
- * purposes.  
- */
 
+/*
+ * Copyright (C) 2001  The Jmol Development Team
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package org.openscience.jmol;
 
 import java.util.Vector;
 import java.io.*;
-/** Generates files for viewing in the freeware povray reaytracer (http://www.povray.org)<p>
-    The types of atoms and bonds is controlled by PovrayStyleWriter**/
+/**
+ *  Generates files for viewing in the freeware povray reaytracer
+ *  (http://www.povray.org)
+ *  <p>The types of atoms and bonds is controlled by PovrayStyleWriter
+ *
+ *  @author Bradley A. Smith (bradley@baysmith.com)
+ *  @author Thomas James Grey
+ */
 public class PovraySaver extends FileSaver{
     
     private String viewMat = null;
@@ -150,7 +135,7 @@ public class PovraySaver extends FileSaver{
             
             for (int i = 0; i < cf.getNvert(); i++) {
                 
-                BaseAtomType a = cf.getAtomType(i).getBaseAtomType();
+                BaseAtomType a = cf.getAtomAt(i).getBaseAtomType();
                 st = a.getName();
 
                 myStyle.writeAtom(w,i,cf);
@@ -218,3 +203,43 @@ public class PovraySaver extends FileSaver{
         return "rgb<"+((float)col.getRed()/tff)+","+((float)col.getGreen()/tff)+","+((float)col.getBlue()/tff)+">";
     }
 }
+
+/*
+ * @(#)PovraySaver.java    1.0 99/06/09
+ *
+ * Copyright (c) 1999 THOMAS JAMES GREY All Rights Reserved.
+ *
+ * Thomas James Grey grants you ("Licensee") a non-exclusive, royalty
+ * free, license to use, modify and redistribute this software in
+ * source and binary code form, provided that the following conditions 
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * This software is provided "AS IS," without a warranty of any
+ * kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
+ * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
+ * EXCLUDED.  THOMAS JAMES GREY AND HIS LICENSORS SHALL NOT BE LIABLE
+ * FOR ANY DAMAGES SUFFERED BY LICENSEE AS A RESULT OF USING,
+ * MODIFYING OR DISTRIBUTING THE SOFTWARE OR ITS DERIVATIVES. IN NO
+ * EVENT WILL THOMAS JAMES GREY OR HIS LICENSORS BE LIABLE FOR ANY
+ * LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT, SPECIAL,
+ * CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER CAUSED AND
+ * REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
+ * INABILITY TO USE SOFTWARE, EVEN IF THOMAS JAMES GREY HAS BEEN
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+ *
+ * This software is not designed or intended for use in on-line
+ * control of aircraft, air traffic, aircraft navigation or aircraft
+ * communications; or in the design, construction, operation or
+ * maintenance of any nuclear facility. Licensee represents and
+ * warrants that it will not use or redistribute the Software for such
+ * purposes.  
+ */
+

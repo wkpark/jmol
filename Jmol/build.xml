@@ -132,6 +132,8 @@
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${source.dir}">
         <include name="**/applet/Data/*" />
+        <include name="**/*.dtd" />
+        <include name="**/*.txt" />
       </fileset>
     </copy>
   </target>

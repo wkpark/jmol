@@ -42,7 +42,8 @@ final class Line3D {
       plotLineDeltaUnclipped(argbA, argbB, xA, yA, zA, dxBA, dyBA, dzBA);
       break;
     case VISIBILITY_CLIPPED:
-      plotLineDeltaClipped(argbA, argbB, xA, yA, zA, dxBA, dyBA, dzBA);
+      plotLineDeltaClipped(argbA, argbB,
+                           xA, yA, zA, dxBA, dyBA, dzBA);
     }
   }
 
@@ -457,6 +458,105 @@ final class Line3D {
   }
   */
 
+  void plotLineDeltaUnclipped(int[] shades1, int[] shades2, int fp8Intensity,
+                              int x1, int y1, int z1, int dx, int dy, int dz) {
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width;
+    int offset = y1 * width + x1;
+    int intensity = fp8Intensity >> 8;
+    int intensityUp =
+      (intensity < Shade3D.shadeLast ? intensity + 1 : intensity);
+    int intensityDn =
+      (intensity > 0 ? intensity - 1 : intensity);
+    int fp8Fraction = fp8Intensity & 0xFF;
+    int argb1 = shades1[intensity];
+    int argb1Up = shades1[intensityUp];
+    int argb1Dn = shades1[intensityDn];
+    int argb2 = shades2[intensity];
+    int argb2Up = shades2[intensityUp];
+    int argb2Dn = shades2[intensityDn];
+    if (z1 < zbuf[offset]) {
+      zbuf[offset] = (short)z1;
+      pbuf[offset] = argb1;
+    }
+    if (dx == 0 && dy == 0)
+      return;
+
+    // int xCurrent = x1;
+    // int yCurrent = y1;
+    int xIncrement = 1;
+    // int yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      // yIncrement = -1;
+      yOffsetIncrement = -width;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
+        // xCurrent += xIncrement;
+        offset += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          // yCurrent += yIncrement;
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          int rand8 = Shade3D.nextRandom8Bit();
+          pbuf[offset] =
+            (n > nMid
+             ? (rand8 < 85 ? argb1Dn : (rand8 > 170 ? argb1Up : argb1))
+             : (rand8 < 85 ? argb2Dn : (rand8 > 170 ? argb2Up : argb2)));
+        }
+      }
+    } else {
+      int roundingFactor = dy - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+      int twoDyAccumulatedXError = 0;
+      for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        // yCurrent += yIncrement;
+        offset += yOffsetIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          // xCurrent += xIncrement;
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        int zCurrent = zCurrentScaled >> 10;
+        if (zCurrent < zbuf[offset]) {
+          zbuf[offset] = (short)zCurrent;
+          int rand8 = Shade3D.nextRandom8Bit();
+          pbuf[offset] =
+            (n > nMid
+             ? (rand8 < 85 ? argb1Dn : (rand8 > 170 ? argb1Up : argb1))
+             : (rand8 < 85 ? argb2Dn : (rand8 > 170 ? argb2Up : argb2)));
+        }
+      }
+    }
+  }
+
+
   void plotLineDeltaUnclipped(int argb1, int argb2,
                               int x1, int y1, int z1, int dx, int dy, int dz) {
     int[] pbuf = g3d.pbuf;
@@ -535,8 +635,98 @@ final class Line3D {
     }
   }
 
-  void plotLineDeltaClipped(int argb1, int argb2,
+  void plotLineDeltaClipped(int argb1, int argb2, 
                             int x1, int y1, int z1, int dx, int dy, int dz) {
+    int[] pbuf = g3d.pbuf;
+    short[] zbuf = g3d.zbuf;
+    int width = g3d.width, height = g3d.height, slab = g3d.slab;
+    int offset = y1 * width + x1;
+    if (x1 >= 0 && x1 < width &&
+        y1 >= 0 && y1 < height) {
+      if (z1 >= slab && z1 < zbuf[offset]) {
+        zbuf[offset] = (short)z1;
+        pbuf[offset] = argb1;
+      }
+    }
+    if (dx == 0 && dy == 0)
+      return;
+
+    int xCurrent = x1;
+    int yCurrent = y1;
+    int xIncrement = 1;
+    int yIncrement = 1;
+    int yOffsetIncrement = width;
+
+    if (dx < 0) {
+      dx = -dx;
+      xIncrement = -1;
+    }
+    if (dy < 0) {
+      dy = -dy;
+      yIncrement = -1;
+      yOffsetIncrement = -width;
+    }
+    int twoDx = dx + dx, twoDy = dy + dy;
+
+    // the z dimension and the z increment are stored with a fractional
+    // component in the bottom 10 bits.
+    int zCurrentScaled = z1 << 10;
+    if (dy <= dx) {
+      int roundingFactor = dx - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dx;
+      int twoDxAccumulatedYError = 0;
+      for (int n = dx - 1, nMid = n / 2; --n >= 0; ) {
+        xCurrent += xIncrement;
+        offset += xIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDxAccumulatedYError += twoDy;
+        if (twoDxAccumulatedYError > dx) {
+          yCurrent += yIncrement;
+          offset += yOffsetIncrement;
+          twoDxAccumulatedYError -= twoDx;
+        }
+        if (xCurrent >= 0 && xCurrent < width &&
+            yCurrent >= 0 && yCurrent < height) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = n > nMid ? argb1 : argb2;
+          }
+        }
+      }
+    } else {
+      int roundingFactor = dy - 1;
+      if (dz < 0) roundingFactor = -roundingFactor;
+      int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
+      int twoDyAccumulatedXError = 0;
+      for (int n = dy - 1, nMid = n / 2; --n >= 0; ) {
+        yCurrent += yIncrement;
+        offset += yOffsetIncrement;
+        zCurrentScaled += zIncrementScaled;
+        twoDyAccumulatedXError += twoDx;
+        if (twoDyAccumulatedXError > dy) {
+          xCurrent += xIncrement;
+          offset += xIncrement;
+          twoDyAccumulatedXError -= twoDy;
+        }
+        if (xCurrent >= 0 && xCurrent < width &&
+            yCurrent >= 0 && yCurrent < height) {
+          int zCurrent = zCurrentScaled >> 10;
+          if (zCurrent >= slab && zCurrent < zbuf[offset]) {
+            zbuf[offset] = (short)zCurrent;
+            pbuf[offset] = n > nMid ? argb1 : argb2;
+          }
+        }
+      }
+    }
+  }
+
+  void plotLineDeltaClipped(int[] shades1, int[] shades2, int fp8Intensity,
+                            int x1, int y1, int z1, int dx, int dy, int dz) {
+    int intensity = fp8Intensity >> 8;
+    int argb1 = shades1[intensity];
+    int argb2 = shades2[intensity];
     int[] pbuf = g3d.pbuf;
     short[] zbuf = g3d.zbuf;
     int width = g3d.width, height = g3d.height, slab = g3d.slab;

@@ -55,9 +55,9 @@ final class Shade3D {
   // set specular on|off
   static boolean specularOn = true;
   // set specular 0-100
-  static float intensitySpecular = 0.25f;
-  // set specpower -6
-  static int specularExponent = 6;
+  static float intensitySpecular = 0.22f;
+  // set specpower -5
+  static int specularExponent = 5;
   // set specpower 0-100
   static float intenseFraction = 0.5f;
   // set diffuse 0-100

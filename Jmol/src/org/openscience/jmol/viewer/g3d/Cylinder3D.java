@@ -151,6 +151,7 @@ class Cylinder3D {
   void plotRaster(int i) {
     int fp8Up = fp8IntensityUp[i];
     int iUp = fp8Up >> 8;
+    int iUpNext = iUp < Shade3D.shadeLast ? iUp + 1 : iUp;
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +
@@ -163,7 +164,7 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
       g3d.plotPixelClipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);
     }
-    g3d.plotLineDelta(shadesA[iUp], shadesB[iUp],
+    g3d.plotLineDelta(shadesA, shadesB, fp8Up, 
                       xA + x, yA + y, zA - z,
                       dxB, dyB, dzB);
     if (endcaps == Graphics3D.ENDCAPS_OPEN) {
@@ -352,18 +353,16 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, xUp, yUp, zUp);
       g3d.plotPixelClipped(argbEndcap, xDn, yDn, zDn);
     }
-    int fp8Up = fp8IntensityUp[i];
-    int iUp = fp8Up >> 8;
     /*
     System.out.println("plotRaster " + i + " (" + xRaster[i] + "," +
                        yRaster[i] + "," + zRaster[i] + ")" +
                        " iUp=" + iUp);
     */
-    int argb = shadesA[iUp];
-    g3d.plotLineDelta(argb, argb,
+    int fp8Up = fp8IntensityUp[i];
+    g3d.plotLineDelta(shadesA, shadesA, fp8Up,
                       xUp, yUp, zUp, xTip - xUp, yTip - yUp, zTip - zUp);
     if (! (endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
-      argb = shadesA[0];
+      int argb = shadesA[0];
       g3d.plotLineDelta(argb, argb,
                         xDn, yDn, zDn, xTip - xDn, yTip - yDn, zTip - zDn);
     }

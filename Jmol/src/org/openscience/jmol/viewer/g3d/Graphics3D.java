@@ -834,6 +834,18 @@ final public class Graphics3D {
     }
   }
   
+  void plotLineDelta(int[] shades1, int[] shades2, int fp8Intensity,
+                     int x, int y, int z, int dx, int dy, int dz) {
+    if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||
+        y < 0 || y >= height || y + dy < 0 || y + dy >= height ||
+        z < slab || z + dz < slab)
+      line3d.plotLineDeltaClipped(shades1, shades2, fp8Intensity,
+                                  x, y, z, dx, dy, dz);
+    else 
+      line3d.plotLineDeltaUnclipped(shades1, shades2, fp8Intensity,
+                                    x, y, z, dx, dy, dz);
+  }
+
   void plotLineDelta(int argb1, int argb2,
                      int x, int y, int z, int dx, int dy, int dz) {
     if (x < 0 || x >= width || x + dx < 0 || x + dx >= width ||

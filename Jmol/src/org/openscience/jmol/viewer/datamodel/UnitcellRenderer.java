@@ -36,7 +36,8 @@ class UnitcellRenderer extends ShapeRenderer {
 
   void render() {
     Unitcell unitcell = (Unitcell)shape;
-    if (! unitcell.show || ! unitcell.hasUnitcell)
+    short mad = unitcell.mad;
+    if (mad == 0 || ! unitcell.hasUnitcell)
       return;
     Point3i[] screens = frameRenderer.getTempScreens(8);
     for (int i = 8; --i >= 0; )

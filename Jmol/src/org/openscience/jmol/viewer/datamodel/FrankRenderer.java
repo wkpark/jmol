@@ -46,7 +46,8 @@ class FrankRenderer extends ShapeRenderer {
 
   void render() {
     Frank frank = (Frank)shape;
-    if (! frank.show)
+    short mad = frank.mad;
+    if (mad == 0)
       return;
 
     if (frankFont == null) {

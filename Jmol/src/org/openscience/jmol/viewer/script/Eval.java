@@ -2012,7 +2012,7 @@ public class Eval implements Runnable {
       setScale3d();
       break;
     case Token.unitcell:
-      setShapeShow(JmolConstants.SHAPE_UNITCELL);
+      setUnitcell();
       break;
       // not implemented
     case Token.backfade:
@@ -2043,6 +2043,21 @@ public class Eval implements Runnable {
                        getSetBooleanOrMad());
   }
 
+  void setBoundbox() throws ScriptException {
+    viewer.setShapeMad(JmolConstants.SHAPE_BBOX,
+                       getSetBooleanOrMad());
+  }
+
+  void setUnitcell() throws ScriptException {
+    viewer.setShapeMad(JmolConstants.SHAPE_UNITCELL,
+                       getSetBooleanOrMad());
+  }
+
+  void setFrank() throws ScriptException {
+    viewer.setShapeMad(JmolConstants.SHAPE_FRANK,
+                       getSetBooleanOrMad());
+  }
+
   void setBondmode() throws ScriptException {
     checkLength3();
     boolean bondmodeOr = false;
@@ -2060,14 +2075,6 @@ public class Eval implements Runnable {
 
   void setBonds() throws ScriptException {
     viewer.setShowMultipleBonds(getSetBoolean());
-  }
-
-  void setBoundbox() throws ScriptException {
-    viewer.setShapeShow(JmolConstants.SHAPE_BBOX, getSetBoolean());
-  }
-
-  void setFrank() throws ScriptException {
-    viewer.setShapeShow(JmolConstants.SHAPE_FRANK, getSetBoolean());
   }
 
   void setDisplay() throws ScriptException {

@@ -41,7 +41,8 @@ class BboxRenderer extends ShapeRenderer {
 
   void render() {
     Bbox bbox = (Bbox)shape;
-    if (! bbox.show)
+    short mad = bbox.mad;
+    if (mad == 0)
       return;
     for (int i = 8; --i >= 0; )
       viewer.transformPoint(bbox.bboxPoints[i], bboxScreen[i]);

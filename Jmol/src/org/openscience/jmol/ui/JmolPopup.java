@@ -148,7 +148,7 @@ abstract public class JmolPopup {
       String script = e.getActionCommand();
       if (script != null) {
         if (script.startsWith("http://")) {
-          ;
+          //
         } else if (script.length() != 0) {
           viewer.evalStringQuiet(script);
         }

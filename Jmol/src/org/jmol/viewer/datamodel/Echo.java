@@ -182,7 +182,7 @@ public class Echo extends Shape {
     void render(Graphics3D g3d) {
       if (text == null)
         return;
-      int x = g3d.width - width - 1;
+      int x = g3d.getRenderWidth() - width - 1;
       if (align == CENTER)
         x /= 2;
       else if (align == LEFT)
@@ -192,9 +192,9 @@ public class Echo extends Shape {
       if (valign == TOP)
         y = ascent;
       else if (valign == MIDDLE) // baseline is at the middle
-        y = g3d.height / 2;
+        y = g3d.getRenderHeight() / 2;
       else
-        y = g3d.height - descent - 1;
+        y = g3d.getRenderHeight() - descent - 1;
 
       g3d.setFont(font3d);
       g3d.drawString(text, colix, x, y, 0);

@@ -50,7 +50,7 @@ final public class Graphics3D {
   boolean tFullSceneAntialiasing;
   boolean tPaintingInProgress;
 
-  public int width,height;
+  int width,height;
   int slab, depth;
   int xLast, yLast;
   int[] pbuf;
@@ -94,6 +94,26 @@ final public class Graphics3D {
     pbuf = pbuf1 = null;
     zbuf = zbuf1 = null;
     platform.releaseBuffers();
+  }
+
+  public boolean fullSceneAntialiasRendering() {
+    return false;
+  }
+
+  public int getWindowWidth() {
+    return width;
+  }
+
+  public int getWindowHeight() {
+    return height;
+  }
+
+  public int getRenderWidth() {
+    return width;
+  }
+
+  public int getRenderHeight() {
+    return height;
   }
 
   public void setBackground(short colix) {

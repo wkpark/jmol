@@ -48,10 +48,16 @@ public class Frank extends SelectionIndependentShape {
   }
 
   boolean wasClicked(int x, int y) {
-    return (g3d.width > 0 &&
-            g3d.height > 0 &&
-            x > g3d.width - frankWidth - frankMargin &&
-            y > g3d.height - frankAscent - frankMargin);
+    int width = g3d.getRenderWidth();
+    int height = g3d.getRenderHeight();
+    if (g3d.fullSceneAntialiasRendering()) {
+      x *= 2;
+      y *= 2;
+    }
+    return (width > 0 &&
+            height > 0 &&
+            x > width - frankWidth - frankMargin &&
+            y > height - frankAscent - frankMargin);
   }
 
   void calcMetrics() {

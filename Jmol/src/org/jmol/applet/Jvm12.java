@@ -50,18 +50,19 @@ class Jvm12 {
 
   void showConsole(boolean showConsole) {
     System.out.println("Jvm12.showConsole(" + showConsole + ")");
-    if (console == null && !showConsole)
-      return;
-    if (console == null)
-      {
-        System.out.println("getting ready to allocate console");
-      console = new Console(awtComponent, viewer);
+    if (! showConsole) {
+      if (console != null) {
+        console.setVisible(false);
+        console = null;
       }
-    console.setVisible(showConsole);
+      return;
+    }
+    if (console == null)
+      console = new Console(awtComponent, viewer, this);
+    console.setVisible(true);
   }
 
   void consoleMessage(String message) {
-    System.out.println("Jvm12.consoleMessage(" + message + ")");
     if (console != null)
       console.output(message);
   }

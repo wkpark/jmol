@@ -39,4 +39,39 @@ class Atom {
 
   Atom() {
   }
+
+  String getElementSymbol() {
+    if (elementSymbol == null)
+      if (atomName != null) {
+        int len = atomName.length();
+        int ichFirst = 0;
+        char chFirst = 0;
+        while (ichFirst < len &&
+               !isValidFirstSymbolChar(chFirst = atomName.charAt(ichFirst)))
+          ++ichFirst;
+        switch(len - ichFirst) {
+        case 0:
+          break;
+        case 1:
+          elementSymbol = atomName.substring(ichFirst, len);
+          break;
+        default:
+          char chSecond = atomName.charAt(ichFirst + 1);
+          boolean secondValid = isValidSecondSymbolChar(chFirst, chSecond);
+          elementSymbol =
+            atomName.substring(ichFirst, ichFirst + (secondValid ? 2 : 1));
+        }
+      }
+    return elementSymbol;
+  }
+
+  static boolean isValidFirstSymbolChar(char ch) {
+    // make this a little more restricive later, if you want
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+  }
+  
+  static boolean isValidSecondSymbolChar(char chFirst, char ch) {
+    // is the second char valid, given the first
+    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
+  }
 }

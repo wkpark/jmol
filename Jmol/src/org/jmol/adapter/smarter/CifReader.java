@@ -12,9 +12,9 @@
  * as published by the Free Software Foundation; either version 2.1
  * of the License, or (at your option) any later version.
  * All we ask is that proper credit is given for our work, which includes
- * - but is not limited to - adding the above copyright notice to the beginning
- * of your source code files, and to any copyright notice that you may distribute
- * with programs based on this work.
+ * - but is not limited to - adding the above copyright notice to the
+ * beginning of your source code files, and to any copyright notice
+ * that you may distribute with programs based on this work.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -121,7 +121,7 @@ public class CifReader extends ModelReader {
   }
 
   final static String[] atomFields = {
-    "NADA", // this will not match 
+    null, // this will not match 
     "_atom_site.type_symbol",
     "_atom_site_label",
     "_atom_site_label_atom_id",
@@ -147,25 +147,33 @@ public class CifReader extends ModelReader {
     String line = firstLine;
     int fieldCount = 0;
     int[] fieldTypes = new int[100]; // should be enough
-    boolean hasParsableInformation = false;
+    boolean[] fieldReferencedFlags = new boolean[atomFields.length];
     for (;
          line != null && line.length() > 0 && line.charAt(0) == '_';
          ++fieldCount, line = reader.readLine().trim()) {
-      for (int i = atomFields.length; --i >= 0; )
+      for (int i = atomFields.length; --i > 0; ) // only > 0, not >= 0
         if (line.equals(atomFields[i])) {
-          hasParsableInformation = true;
+          fieldReferencedFlags[i] = true;
           fieldTypes[fieldCount] = i;
           break;
         }
       logger.log("unrecognized atom field", line);
     }
 
-    if (hasParsableInformation == false ) {
-      logger.log("No parsable info found :-(");
-      skipUntilEmptyOrCommentLine(line);
+    // now that headers are parsed, check to see if we want
+    // cartesian or fractional coordinates;
+    if (fieldReferencedFlags[CARTN_X]) {
+      for (int i = FRACT_X; i < FRACT_Z; ++i)
+        disableField(fieldCount, fieldTypes, i);
+    } else if (fieldReferencedFlags[FRACT_X]) {
+      model.coordinatesAreFractional = true;
+      for (int i = CARTN_X; i < CARTN_Z; ++i)
+        disableField(fieldCount, fieldTypes, i);
+    } else {
+      logger.log("no atom coordinates found?");
       return;
     }
-    // now that headers are parsed, read the data
+
     for (;
          line != null && line.length() > 0 && line.charAt(0) != '#';
          line = reader.readLine().trim()) {
@@ -201,5 +209,11 @@ public class CifReader extends ModelReader {
         }
       }
     }
+  }
+
+  void disableField(int fieldCount, int[] fieldTypes, int fieldIndex) {
+    for (int i = fieldCount; --i >= 0; )
+      if (fieldTypes[i] == fieldIndex)
+        fieldTypes[i] = 0;
   }
 }

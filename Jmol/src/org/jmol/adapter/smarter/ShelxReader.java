@@ -148,6 +148,7 @@ class ShelxReader extends ModelReader {
       float c = parseFloat(st.nextToken());
       // skip the rest
       
+      /*
       String elementSymbol;
       if (atomName.length() > 1 &&
           Character.isDigit(atomName.charAt(1))) {
@@ -159,10 +160,14 @@ class ShelxReader extends ModelReader {
       } else {
         elementSymbol = atomName.substring(0, 2);
       }
-      
-      Atom atom = new FractionalAtom(elementSymbol, atomName,
-                                     scatterFactor, a, b, c);
-      model.addAtom(atom);
+      */
+
+      Atom atom = model.newAtom();
+      atom.atomName = atomName;
+      atom.scatterFactor = scatterFactor;
+      atom.x = a;
+      atom.y = b;
+      atom.z = c;
     } catch (Exception ex) {
       logger.log("Exception", ex, line);
     }

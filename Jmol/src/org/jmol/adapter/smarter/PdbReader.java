@@ -111,10 +111,6 @@ class PdbReader extends ModelReader {
     return model;
   }
 
-  boolean isValidAtomicSymbolChar(char ch) {
-    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
-  }
-
   void atom() {
     try {
       // for now, we are only taking alternate location 'A'
@@ -122,19 +118,40 @@ class PdbReader extends ModelReader {
       if (charAlternateLocation != ' ' && charAlternateLocation != 'A')
         return;
       int len = lineLength;
-      String elementSymbol = (len >= 78 ? line.substring(76, 78).trim() : "");
-      int cchAtomicSymbol = elementSymbol.length();
-      if (cchAtomicSymbol == 0 ||
-          Character.isDigit(elementSymbol.charAt(0)) ||
-          (cchAtomicSymbol == 2 && Character.isDigit(elementSymbol.charAt(1)))) {
-        char ch13 = line.charAt(13);
-        boolean isValid13 = isValidAtomicSymbolChar(ch13);
-        char ch12 = line.charAt(12);
-        if (isValidAtomicSymbolChar(ch12))
-          elementSymbol = isValid13 ? "" + ch12 + ch13 : "" + ch12;
-        else
-          elementSymbol = isValid13 ? "" + ch13 : "Xx";
+      /****************************************************************
+       * extract elementSymbol
+       ****************************************************************/
+      String elementSymbol = null;
+      if (len >= 78) {
+        String candidate = line.substring(76, 78).trim();
+        int candidateLength = candidate.length();
+        if (candidateLength > 0) {
+          char chFirst = candidate.charAt(0);
+          if (Atom.isValidFirstSymbolChar(chFirst) &&
+              (candidateLength == 1 ||
+               (candidateLength == 2 &&
+                Atom.isValidSecondSymbolChar(chFirst, candidate.charAt(1)))))
+            elementSymbol = candidate;
+        }
       }
+      if (elementSymbol == null) {
+        char ch12 = line.charAt(12);
+        char ch13 = line.charAt(13);
+        if (Atom.isValidFirstSymbolChar(ch12)) {
+          if (Atom.isValidSecondSymbolChar(ch12, ch13))
+            elementSymbol = "" + ch12 + ch13;
+          else
+            elementSymbol = "" + ch12;
+        } else if (Atom.isValidFirstSymbolChar(ch13))
+          elementSymbol = "" + ch13;
+        else
+          elementSymbol = "Xx";
+      }
+      /****************************************************************
+       * atomName
+       ****************************************************************/
+      String rawAtomName = line.substring(12, 16);
+      String atomName = rawAtomName.trim();
       /****************************************************************
        * calculate the charge from cols 79 & 80 (1-based)
        * 2+, 3-, etc
@@ -154,25 +171,16 @@ class PdbReader extends ModelReader {
       /****************************************************************
        * read the bfactor from cols 61-66 (1-based)
        ****************************************************************/
-      float bfactor = Float.NaN;
-      if (len >= 66) {
-        String bfField = line.substring(60,66).trim();
-        if (bfField.length() > 0)
-          bfactor = Float.valueOf(bfField).floatValue();
-      }
+      float bfactor = parseFloat(line, 60, 66);
 
       /****************************************************************
        * read the occupancy from cols 55-60 (1-based)
        * should be in the range 0.00 - 1.00
        ****************************************************************/
       int occupancy = 100;
-      if (len >= 60) {
-        String occupancyField = line.substring(54, 60).trim();
-        if (occupancyField.length() > 0) {
-          float floatOcc = Float.valueOf(occupancyField).floatValue();
-          occupancy = (int)(floatOcc * 100);
-        }
-      }
+      float floatOccupancy = parseFloat(line, 54, 60);
+      if (floatOccupancy != Float.NaN)
+        occupancy = (int)(floatOccupancy * 100);
       
       /****************************************************************/
       int serial = parseInt(line, 6, 11);
@@ -190,7 +198,8 @@ class PdbReader extends ModelReader {
       }
       Atom atom = model.newAtom();
       atom.modelNumber = currentModelNumber;
-      atom.elementSymbol = elementSymbol.intern();
+      atom.elementSymbol = elementSymbol;
+      atom.atomName = atomName;
       atom.charge = charge;
       atom.occupancy = occupancy;
       atom.bfactor = bfactor;
@@ -267,7 +276,8 @@ class PdbReader extends ModelReader {
      *  1 -  6       Record name    "MODEL "
      * 11 - 14       Integer        serial        Model serial number.
      *
-     * but I received a file with the serial number right after the word MODEL :-(
+     * but I received a file with the serial
+     * number right after the word MODEL :-(
      ****************************************************************/
     try {
       int startModelColumn = 6; // should be 10 0-based

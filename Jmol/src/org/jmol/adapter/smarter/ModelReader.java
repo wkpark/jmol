@@ -40,17 +40,29 @@ abstract class ModelReader {
   abstract Model readModel(BufferedReader reader) throws Exception;
 
   static float parseFloat(String str) {
-    return parseFloat(str, 0, str.length());
+    return parseFloatChecked(str, 0, str.length());
   }
 
   static float parseFloat(String str, int ich) {
-    return parseFloat(str, ich, str.length());
+    int cch = str.length();
+    if (ich >= cch)
+      return Integer.MIN_VALUE;
+    return parseFloatChecked(str, ich, cch);
+  }
+
+  static float parseFloat(String str, int ichStart, int ichMax) {
+    int cch = str.length();
+    if (ichMax > cch)
+      ichMax = cch;
+    if (ichStart >= ichMax)
+      return Integer.MIN_VALUE;
+    return parseFloatChecked(str, ichStart, ichMax);
   }
 
   static float[] decimalScale =
   {0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f, 0.000001f, 0.0000001f, 0.00000001f};
 
-  static float parseFloat(String str, int ichStart, int ichMax) {
+  static float parseFloatChecked(String str, int ichStart, int ichMax) {
     boolean digitSeen = false;
     float value = 0;
     int ich = ichStart;
@@ -86,14 +98,26 @@ abstract class ModelReader {
   }
   
   static int parseInt(String str) {
-    return parseInt(str, 0, str.length());
+    return parseIntChecked(str, 0, str.length());
   }
 
   static int parseInt(String str, int ich) {
-    return parseInt(str, ich, str.length());
+    int cch = str.length();
+    if (ich >= cch)
+      return Integer.MIN_VALUE;
+    return parseIntChecked(str, ich, cch);
   }
 
   static int parseInt(String str, int ichStart, int ichMax) {
+    int cch = str.length();
+    if (ichMax > cch)
+      ichMax = cch;
+    if (ichStart >= ichMax)
+      return Integer.MIN_VALUE;
+    return parseIntChecked(str, ichStart, ichMax);
+  }
+
+  static int parseIntChecked(String str, int ichStart, int ichMax) {
     boolean digitSeen = false;
     int value = 0;
     int ich = ichStart;

@@ -242,7 +242,7 @@ public class PdbGroup {
   public static String getSeqcodeString(int seqcode) {
     return (seqcode & 0xFF) == 0
       ? "" + (seqcode >> 8)
-      : "" + (seqcode >> 8) + (char)(' ' + (seqcode & 0xFF));
+      : "" + (seqcode >> 8) + '^' + (char)(' ' + (seqcode & 0xFF));
   }
 
   public boolean isProline() {

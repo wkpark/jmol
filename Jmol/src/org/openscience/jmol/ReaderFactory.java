@@ -56,7 +56,7 @@ public abstract class ReaderFactory {
       buffer.reset();
       
       // If XML, assume CML.
-      if (line.startsWith("<?xml")) {
+      if (line != null && line.startsWith("<?xml")) {
         return new CMLReader(buffer);
       }
 
@@ -65,7 +65,7 @@ public abstract class ReaderFactory {
       
       // If the first line contains mm1gp, then the file is identified
       // as a Ghemical Molecular Dynamics file
-      if (line.indexOf("mm1gp") >= 0) {
+      if (line != null && line.indexOf("mm1gp") >= 0) {
         return new GhemicalMMReader(buffer);
       }
 
@@ -82,8 +82,10 @@ public abstract class ReaderFactory {
 
       // An integer on the first line is a special test for XYZ files
       try {
-        new Integer(line.trim());
-        return new XYZReader(buffer);
+        if (line != null) {
+          new Integer(line.trim());
+          return new XYZReader(buffer);
+        }
       } catch (NumberFormatException nfe) {
         // Integer not found on first line; therefore not a XYZ file
       }

@@ -28,6 +28,7 @@ import org.openscience.jmol.render.AtomRenderer;
 import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
 import org.openscience.jmol.render.Axes;
+import org.openscience.jmol.render.BoundingBox;
 
 import java.awt.Image;
 import java.awt.Color;
@@ -1222,16 +1223,30 @@ final public class DisplayControl {
     refresh();
   }
 
-  public void recalcAxes() {
-    axesManager.recalc();
-  }
-
   public byte getModeAxes() {
     return axesManager.modeAxes;
   }
 
+  public void recalcAxes() {
+    axesManager.recalc();
+  }
+
   public Axes getAxes() {
     return axesManager.axes;
+  }
+
+  public void setShowBoundingBox(boolean showBoundingBox) {
+    axesManager.setShowBoundingBox(showBoundingBox);
+    structuralChange = true;
+    refresh();
+  }
+
+  public boolean getShowBoundingBox() {
+    return axesManager.showBoundingBox;
+  }
+
+  public BoundingBox getBoundingBox() {
+    return axesManager.bbox;
   }
 
   public Color getColorAxes() {

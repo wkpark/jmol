@@ -80,7 +80,13 @@ public class ChemFrameRenderer {
         for (int i = shapes.length; --i >= 0; )
           shapesVector.addElement(shapes[i]);
       }
-      
+      if (control.getShowBoundingBox()) {
+        BoundingBox bbox = control.getBoundingBox();
+        Shape[] shapes = bbox.getBboxShapes();
+        for (int i = shapes.length; --i >= 0; )
+          shapesVector.addElement(shapes[i]);
+      }
+
       if (frame instanceof CrystalFrame) {
         CrystalFrame crystalFrame = (CrystalFrame) frame;
         double[][] rprimd = crystalFrame.getRprimd();

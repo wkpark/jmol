@@ -25,6 +25,7 @@
 package org.openscience.jmol;
 
 import org.openscience.jmol.render.Axes;
+import org.openscience.jmol.render.BoundingBox;
 import java.awt.Color;
 
 public class AxesManager {
@@ -32,14 +33,15 @@ public class AxesManager {
   DisplayControl control;
 
   public Axes axes;
+  public BoundingBox bbox;
 
   public AxesManager(DisplayControl control) {
     this.control = control;
 
     axes = new Axes(control);
-    Color co = control.getColorTransparent(Color.gray);
-    setColorAxes(co);
-    setColorAxesText(co);
+    bbox = new BoundingBox(control);
+    setColorAxes(Color.lightGray);
+    setColorAxesText(Color.lightGray);
   }
 
   public byte modeAxes = DisplayControl.AXES_NONE;
@@ -48,8 +50,16 @@ public class AxesManager {
     recalc();
   }
 
+  public boolean showBoundingBox = false;
+  public void setShowBoundingBox(boolean showBoundingBox) {
+    this.showBoundingBox = showBoundingBox;
+    recalc();
+  }
+
   public void recalc() {
     axes.recalc(modeAxes);
+    if (showBoundingBox)
+      bbox.recalc();
   }
 
   public Color colorAxes;

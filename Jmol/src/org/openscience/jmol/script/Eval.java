@@ -1000,6 +1000,9 @@ public class Eval implements Runnable {
     case Token.bonds:
       setBonds();
       break;
+    case Token.boundbox:
+      setBoundbox();
+      break;
     case Token.display:
       setDisplay();
       break;
@@ -1009,7 +1012,6 @@ public class Eval implements Runnable {
       // not implemented
     case Token.ambient:
     case Token.backfade:
-    case Token.boundbox:
     case Token.cartoon:
     case Token.hbonds:
     case Token.hetero:
@@ -1171,6 +1173,21 @@ public class Eval implements Runnable {
       }
     }
     control.setShowMultipleBonds(showMultipleBonds);
+  }
+
+  void setBoundbox() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    boolean showBoundingBox = false;
+    switch (statement[2].tok) {
+    case Token.on:
+      showBoundingBox = true;
+    case Token.off:
+      break;
+    default:
+      booleanExpected();
+    }
+    control.setShowBoundingBox(showBoundingBox);
   }
 
   void setDisplay() throws ScriptException {

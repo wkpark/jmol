@@ -487,7 +487,8 @@ final public class DisplayControl {
   }
 
   public void maybeEnableAntialiasing(Graphics g) {
-    if (useGraphics2D && wantsAntialiased && !mouseDragged) {
+    if (useGraphics2D && wantsAntialias &&
+        (wantsAntialiasAlways || !mouseDragged)) {
       Graphics2D g2d = (Graphics2D) g;
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                            RenderingHints.VALUE_ANTIALIAS_ON);
@@ -587,14 +588,13 @@ final public class DisplayControl {
   }
 
   public boolean jvm12orGreater = false;
-  private boolean wantsGraphics2D = true;
   public boolean useGraphics2D = false;
-  public boolean wantsAntialiased = false;
+  public boolean wantsGraphics2D = true;
+  public boolean wantsAntialias = true;
+  public boolean wantsAntialiasAlways = false;
   public void setJvm12orGreater(boolean jvm12orGreater) {
     this.jvm12orGreater = jvm12orGreater;
     useGraphics2D = jvm12orGreater && wantsGraphics2D;
-    // kludge for now -- doesn't work with dynamic preference panel changes
-    wantsAntialiased = settings.isAntiAliased();
   }
 
   public void setWantsGraphics2D(boolean wantsGraphics2D) {
@@ -606,8 +606,16 @@ final public class DisplayControl {
     }
   }
 
-  public void setWantsAntialiased(boolean wantsAntialiased) {
-    this.wantsAntialiased = wantsAntialiased;
+  public void setWantsAntialias(boolean wantsAntialias) {
+    if (this.wantsAntialias != wantsAntialias) {
+      this.wantsAntialias = wantsAntialias;
+      recalc();
+    }
+  }
+
+  public void setWantsAntialiasAlways(boolean wantsAntialiasAlways) {
+    this.wantsAntialiasAlways = wantsAntialiasAlways;
+    // no need to recalc in this state since we aren't doing anything
   }
 
   public Image takeSnapshot() {

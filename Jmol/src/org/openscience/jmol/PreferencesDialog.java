@@ -73,6 +73,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
   private static boolean AutoBond;
   private static boolean Perspective;
+  private static boolean graphics2D;
+  private static boolean antialias;
+  private static boolean antialiasAlways;
   private static boolean showAtoms;
   private static boolean showBonds;
   private static boolean showHydrogens;
@@ -100,7 +103,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private static int VibrationFrames;
   private DisplayControl control;
   private JButton bButton, oButton, pButton, tButton, vButton;
-  private JRadioButton antiAliasedYes, antiAliasedNo;
   private JRadioButton pYes, pNo, abYes, abNo;
   private JComboBox aRender, aLabel, aProps, bRender, cRender;
   private JSlider fovSlider, sfSlider;
@@ -110,6 +112,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JSlider vfSlider;
   private JCheckBox cB, cA, cV, cH;
   private JCheckBox cbDarkerOutline;
+  private JCheckBox cbGraphics2D, cbAntialias, cbAntialiasAlways;
   private static Properties props;
 
   // The actions:
@@ -136,7 +139,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     props.put("showHydrogens", "true");
     props.put("showVectors", "false");
     props.put("showDarkerOutline", "false");
-    props.put("AntiAliased", "false");
+    props.put("graphics2D", "true");
+    props.put("antialias", "true");
+    props.put("antialiasAlways", "false");
     props.put("Perspective", "false");
     props.put("FieldOfView", "20.0");
     props.put("AtomRenderMode", "0");
@@ -229,22 +234,37 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     disp.setLayout(gridbag);
     GridBagConstraints constraints;
 
-    JLabel antiAliasedLabel = new JLabel(JmolResourceHandler.getInstance()
-        .getString("Prefs.antiAliasedLabel"));
-    constraints = new GridBagConstraints();
-    disp.add(antiAliasedLabel, constraints);
-        
-    ButtonGroup antiAliasedGroup = new ButtonGroup();
-    antiAliasedYes = new JRadioButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.antiAliasedYesLabel"));
-    antiAliasedNo = new JRadioButton(JmolResourceHandler.getInstance()
-        .getString("Prefs.antiAliasedNoLabel"));
-    antiAliasedGroup.add(antiAliasedYes);
-    antiAliasedGroup.add(antiAliasedNo);
-    constraints = new GridBagConstraints();
-    disp.add(antiAliasedYes, constraints);
-    disp.add(antiAliasedNo, constraints);
+    JPanel g2dPanel = new JPanel();
+    g2dPanel.setLayout(new GridLayout(0, 4));
+    g2dPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance()
+          .getString("Prefs.graphics2DPanelLabel")));
+    graphics2D = control.wantsGraphics2D;
+    cbGraphics2D = new JCheckBox(JmolResourceHandler.getInstance()
+                                .getString("Prefs.graphics2DLabel"),
+                                 graphics2D);
+    cbGraphics2D.addItemListener(checkBoxListener);
+    antialias = control.wantsAntialias;
+    cbAntialias = new JCheckBox(JmolResourceHandler.getInstance()
+                                .getString("Prefs.antialiasLabel"),
+                                antialias);
+    cbAntialias.addItemListener(checkBoxListener);
+    antialiasAlways = control.wantsAntialiasAlways;
+    cbAntialiasAlways = new JCheckBox(JmolResourceHandler.getInstance()
+                                      .getString("Prefs.antialiasAlwaysLabel"),
+                                      antialiasAlways);
+    cbAntialiasAlways.addItemListener(checkBoxListener);
+    g2dPanel.add(cbGraphics2D);
+    g2dPanel.add(cbAntialias);
+    g2dPanel.add(cbAntialiasAlways);
+    setEnabledGraphics();
     
+    constraints = new GridBagConstraints();
+    constraints.gridwidth = GridBagConstraints.REMAINDER;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.weightx = 1.0;
+    disp.add(g2dPanel, constraints);
+
+        
     JLabel filler = new JLabel();
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
@@ -680,8 +700,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         ArrowHeadSize = source.getValue() / 100.0f;
         control.setArrowHeadSize(ArrowHeadSize);
         props.put("ArrowHeadSize", Double.toString(ArrowHeadSize));
-        // FIXME -- arrow settings should be like all other settings
-        control.refresh();
       }
     });
     ahPanel.add(ahSlider, BorderLayout.SOUTH);
@@ -1090,12 +1108,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   }
 
   private void updateComponents() {
-    // Display panel controls:
-    if (control.wantsAntialiased) {
-      antiAliasedYes.setSelected(true);
-    } else {
-      antiAliasedNo.setSelected(true);
-    }
+    cbGraphics2D.setSelected(control.wantsGraphics2D);
+    cbAntialias.setSelected(control.wantsAntialias);
+    cbAntialiasAlways.setSelected(control.wantsAntialiasAlways);
     cB.setSelected(control.getShowBonds());
     cA.setSelected(control.getShowAtoms());
     cV.setSelected(control.getShowVectors());
@@ -1134,11 +1149,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   }
 
   private void save() {
-    
-    boolean antiAliased = antiAliasedYes.isSelected();
-    control.setAntiAliased(antiAliased);
-    props.put("AntiAliased", new Boolean(antiAliased).toString());
-    
     try {
       FileOutputStream fileOutputStream =
         new FileOutputStream(Jmol.UserPropsFile);
@@ -1166,6 +1176,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     AutoBond = Boolean.getBoolean("AutoBond");
     Perspective = Boolean.getBoolean("Perspective");
+    graphics2D = Boolean.getBoolean("graphics2D");
+    antialias = Boolean.getBoolean("antialias");
+    antialiasAlways = Boolean.getBoolean("antialiasAlways");
     showAtoms = Boolean.getBoolean("showAtoms");
     showBonds = Boolean.getBoolean("showBonds");
     showHydrogens = Boolean.getBoolean("showHydrogens");
@@ -1213,7 +1226,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     control.setArrowHeadSize(ArrowHeadSize);
     control.setArrowLengthScale(ArrowLengthScale);
     control.setBackgroundColor(backgroundColor);
-    control.setAntiAliased(Boolean.getBoolean("AntiAliased"));
+    control.setWantsGraphics2D(graphics2D);
+    control.setWantsAntialias(antialias);
+    control.setWantsAntialiasAlways(antialiasAlways);
     control.setBondFudge(BondFudge);
     control.setAutoBond(AutoBond);
     control.setShowAtoms(showAtoms);
@@ -1289,19 +1304,34 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         props.put("showDarkerOutline",
                   new Boolean(showDarkerOutline).toString());
         oButton.setEnabled(!showDarkerOutline);
+      } else if (cb.getText()
+                 .equals(JmolResourceHandler.getInstance().
+                         getString("Prefs.graphics2DLabel"))) {
+        graphics2D = cb.isSelected();
+        control.setWantsGraphics2D(graphics2D);
+        props.put("graphics2D", new Boolean(graphics2D).toString());
+        setEnabledGraphics();
+      } else if (cb.getText()
+                 .equals(JmolResourceHandler.getInstance().
+                         getString("Prefs.antialiasLabel"))) {
+        antialias = cb.isSelected();
+        control.setWantsAntialias(antialias);
+        props.put("antialias", new Boolean(antialias).toString());
+        setEnabledGraphics();
+      } else if (cb.getText()
+                 .equals(JmolResourceHandler.getInstance().
+                         getString("Prefs.antialiasAlwaysLabel"))) {
+        antialiasAlways = cb.isSelected();
+        control.setWantsAntialiasAlways(antialiasAlways);
+        props.put("antialiasAlways", new Boolean(antialiasAlways).toString());
       }
     }
   };
 
-  ItemListener radioButtonListener = new ItemListener() {
-
-    Component c;
-    AbstractButton b;
-
-    public void itemStateChanged(ItemEvent e) {
-
-    }
-  };
+  private void setEnabledGraphics() {
+    cbAntialias.setEnabled(graphics2D);
+    cbAntialiasAlways.setEnabled(graphics2D && antialias);
+  }
 
   private JButton applyButton;
   private JButton resetButton;

@@ -92,9 +92,11 @@
         <xsl:otherwise><title><xsl:value-of select="$project/title"/></title></xsl:otherwise>
       </xsl:choose>
       <link rel="stylesheet" type="text/css" href="[root]/default.css"/>
+      <script src="jmol/Jmol.js"></script>
     </head>
 
     <body>
+      <script>jmolInitialize("jmol");</script>
       <table border="0" cellpadding="0" cellspacing="0" width="100%">
         <tr>
           <td valign="top">

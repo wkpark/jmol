@@ -1,0 +1,113 @@
+load model/jmol.mol.gz;
+set frank off;
+spacefill off; wireframe off;
+set echo top center; font echo 24; color echo white
+echo "The future ..."
+delay 3
+set echo middle center; font echo 24; color echo white
+echo "of molecular visualization"
+delay 3
+set echo bottom center; font echo 24; color echo white
+echo "... has arrived ..."
+delay 5
+#
+set echo off;
+set echo middle center; font echo 60 serif bold; color echo yellow
+echo "Jmol"
+delay 2
+set echo off;
+color atoms gold; color bonds yellow
+zoom 10;
+wireframe .25; spacefill .3;
+moveto 1 0 0 0 0 140;
+delay 2;
+moveTo 1 5 345 939 79.5 24 51 57
+
+script script/smallMolecules.txt
+set echo off;
+restrict none;
+set echo off;
+set echo top center; font echo 20; color echo cyan
+echo "This is *not* a movie ..."
+delay 2;
+set echo middle center; font echo 20;
+echo "... this is reality ..."
+delay 2;
+set echo bottom center; font echo 20
+color echo lime
+echo "virtual reality for chemistry"
+delay 2;
+#
+set echo off;
+set echo middle center; font echo 60 serif bold; color echo yellow
+echo "Jmol"
+delay 4
+#
+set echo off;
+
+script script/proteins.txt
+restrict none;
+set echo off;
+set echo top center; font echo 20; color echo dodgerblue
+echo "Web browser applet ..."
+delay 2;
+set echo middle center; font echo 20; color echo violet
+echo "*no* client installation"
+delay 2;
+set echo bottom center; font echo 20; color echo orange
+echo "... easy to deploy"
+delay 2;
+#
+set echo off;
+set echo middle center; font echo 60 serif bold; color echo yellow
+echo "Jmol"
+delay 4
+#
+
+script script/dna.txt
+set echo off;
+set echo top center; font echo 20; color echo khaki
+echo "Primary school, secondary school"
+delay 2;
+set echo middle center; font echo 20; color echo coral
+echo "college, university, research,"
+delay 2;
+set echo bottom center; font echo 20; color echo gold
+echo "chemical database ... you need"
+delay 2;
+#
+set echo off;
+set echo middle center; font echo 60 serif bold; color echo yellow
+echo "Jmol"
+delay 4
+#
+
+script script/macromolecules.txt
+
+set echo off
+set echo top center; font echo 20; color echo pink
+echo "Open Source, *free* software"
+delay 2;
+set echo middle center; font echo 20; color echo violet
+echo "... guaranteed to be fun ..."
+delay 2;
+set echo bottom center; font echo 20; color echo orange
+echo "... or your money back"
+delay 2;
+#
+set echo off;
+set echo middle center; font echo 60 serif bold; color echo yellow
+echo "Jmol"
+delay 4
+#
+
+load model/jmol.mol.gz;
+set frank off
+
+color atoms gold; color bonds yellow
+wireframe .25; spacefill .3;
+moveTo 0 -245 -957 157 176.4 16 -55 -56;
+moveTo 1 337 -276 900 81.7 35 -28 -16;
+moveTo 1 -661 120 -741 50.3 64 14 -17;
+moveTo 1 0 0 1000 39.0 102 16 20;
+moveTo 1 0 0 0 0 140;

@@ -3,6 +3,9 @@
   <body>
     <title>Jmol</title>
 
+    <html-head>
+      <script src="jmol/Jmol.js"></script>
+    </html-head>
     <header>
       <p>
 	Jmol is a free, open source molecule viewer for students,
@@ -35,6 +38,9 @@
     </section>
 
     <section title="Jmol Version 10 will soon be released">
+      <script>
+	jmolApplet(300, "script script/promotion1.txt");
+      </script>
       <p>
 	Jmol Version 10 will be released before the end of December 2004.
       </p>

@@ -72,6 +72,7 @@ class CmlReader extends ModelReader {
 
     int moleculeCount = 0;
     Atom atom;
+    float[] notionalUnitcell;
     
     // the same atom array gets reused
     // it will grow to the maximum length;
@@ -85,6 +86,20 @@ class CmlReader extends ModelReader {
     int tokenCount;
     String[] tokens = new String[16];
 
+    // this param is used to keep track of the parent element type
+    int elementContext;
+    final static int UNSET = 0;
+    final static int CRYSTAL = 1;
+    final static int ATOM = 2;
+
+    // this param is used to signal that chars should be kept
+    boolean keepChars;
+    String chars;
+    
+    // do some bookkeeping of attrib value across the element
+    String dictRef;
+    String title;
+    
     // this routine breaks out all the tokens in a string
     // results are placed into the tokens array
     void breakOutTokens(String str) {
@@ -177,6 +192,22 @@ class CmlReader extends ModelReader {
           atomArray[j].modelNumber = moleculeCount;
         return;
       }
+      if ("crystal".equals(qName)) {
+        elementContext = CRYSTAL;
+        notionalUnitcell = new float[6];
+        return;
+      }
+      if ("scalar".equals(qName)) {
+        for (int i=0; i<atts.getLength(); i++) {
+          if ("title".equals(atts.getLocalName(i))) {
+            title = atts.getValue(i);
+          } else if ("dictRef".equals(atts.getLocalName(i))) {
+            dictRef = atts.getValue(i);
+          }
+        }
+        keepChars = true;
+        return;
+      }
     }
 
     public void endElement(String uri, String localName,
@@ -191,6 +222,39 @@ class CmlReader extends ModelReader {
           model.addAtom(atom);
         }
         atom = null;
+        elementContext = UNSET;
+        return;
+      }
+      if ("crystal".equals(qName)) {
+        elementContext = UNSET;
+        model.notionalUnitcell = notionalUnitcell;
+        return;
+      }
+      if ("scalar".equals(qName)) {
+        if (elementContext == CRYSTAL) {
+          System.out.println("CRYSTAL atts.title: " + title);
+          if ("a".equals(title)) {
+            notionalUnitcell[0] = parseFloat(chars);
+          } else if ("b".equals(title)) {
+            notionalUnitcell[1] = parseFloat(chars);
+          } else if ("c".equals(title)) {
+            notionalUnitcell[2] = parseFloat(chars);
+          } else if ("alpha".equals(title)) {
+            notionalUnitcell[3] = parseFloat(chars);
+          } else if ("beta".equals(title)) {
+            notionalUnitcell[4] = parseFloat(chars);
+          } else if ("gamma".equals(title)) {
+            notionalUnitcell[5] = parseFloat(chars);
+          }
+        } else if (elementContext == ATOM) {
+          if ("jmol:charge".equals(dictRef)) {
+            // atom.partialCharge = parseFloat(chars);
+          }
+        }
+        keepChars = false;
+        title = null;
+        dictRef = null;
+        chars = null;
         return;
       }
       if ("atomArray".equals(qName)) {
@@ -205,8 +269,14 @@ class CmlReader extends ModelReader {
     }
 
     public void characters(char[] ch, int start, int length) {
-      // characters are not used at this time
       // System.out.println("End chars");
+      if (keepChars) {
+          if (chars == null) {
+              chars = new String(ch, start, length);
+          } else {
+              chars += new String(ch, start, length);
+          }
+      }
     }
     
     // Methods for entity resolving, e.g. getting a DTD resolved

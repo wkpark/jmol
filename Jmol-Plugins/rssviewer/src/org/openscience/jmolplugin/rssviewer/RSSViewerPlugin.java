@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -114,14 +115,17 @@ public class RSSViewerPlugin implements JmolPluginInterface {
                 if (nodeInfo instanceof RSSChannelNode) {
                     RSSChannelNode rssNode = (RSSChannelNode)nodeInfo;
                     System.out.println("Should load this RSS now: " + nodeInfo.toString());
-                    InputStream is = rssNode.getURL().openStream();
-                    InputStreamReader isReader = new InputStreamReader(is);
-                    ChemicalRSSReader reader = new ChemicalRSSReader(isReader);
                     ChemSequence channelItems = null;
                     try {
+                        InputStream is = rssNode.getURL().openStream();
+                        InputStreamReader isReader = new InputStreamReader(is);
+                        ChemicalRSSReader reader = new ChemicalRSSReader(isReader);
                         channelItems = (ChemSequence)reader.read(new ChemSequence());
                     } catch (CDKException exception) {
                         System.out.println("Error while reading RSS file");
+                        exception.printStackTrace();
+                    } catch (IOException exception) {
+                        System.out.println("IOException while reading RSS file");
                         exception.printStackTrace();
                     }
                     if (channelItems != null) {

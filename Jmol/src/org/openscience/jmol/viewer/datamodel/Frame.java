@@ -58,6 +58,8 @@ public class Frame {
   public Matrix3f crystalScaleMatrixTranspose;
   public Vector3f crystalTranslateVector;
   public Matrix3f matrixUnitcellToOrthogonal;
+  public Matrix3f matrixEuclideanToFractional;
+  public Matrix3f matrixFractionalToEuclidean;
 
   public Frame(JmolViewer viewer, int atomCount,
                    int modelType, boolean hasPdbRecords) {
@@ -82,7 +84,7 @@ public class Frame {
   public void freeze() {
     htAtomMap = null;
     if (crystalScaleMatrix != null)
-      putAtomsInsideUnitcell();
+      doUnitcellStuff();
     if (viewer.getAutoBond()) {
       if ((bondCount == 0) ||
           (hasPdbRecords && (bondCount < (atomCount / 2))))
@@ -127,7 +129,7 @@ public class Frame {
   }
 
   public Point3f getAtomPoint3f(int atomIndex) {
-    return atoms[atomIndex].getPoint3f();
+    return atoms[atomIndex].point3f;
   }
 
   public PdbAtom getPdbAtom(int atomIndex) {
@@ -303,33 +305,10 @@ public class Frame {
   }
 
   private void calcBoundingBox() {
-    // bounding box is defined as the center of the cartesian coordinates
-    // as stored in the file
-    // Note that this is not really the geometric center of the molecule
-    // ... for this we would need to do a Minimal Enclosing Sphere calculation
-    float minX, minY, minZ, maxX, maxY, maxZ;
-    Point3f point;
-    point = atoms[0].getPoint3f();
-    minX = maxX = point.x;
-    minY = maxY = point.y;
-    minZ = maxZ = point.z;
-    
-    for (int i = atomCount; --i > 0; ) {
-      // note that the 0 element was set above
-      point = atoms[i].getPoint3f();
-      float t;
-      t = point.x;
-      if (t < minX) { minX = t; }
-      else if (t > maxX) { maxX = t; }
-      t = point.y;
-      if (t < minY) { minY = t; }
-      else if (t > maxY) { maxY = t; }
-      t = point.z;
-      if (t < minZ) { minZ = t; }
-      else if (t > maxZ) { maxZ = t; }
-    }
-    Point3f pointMax = new Point3f(maxX, maxY, maxZ);
-    Point3f pointMin = new Point3f(minX, minY, minZ);
+    Point3f pointMin = new Point3f();
+    Point3f pointMax = new Point3f();
+    calcAtomsMinMax(pointMin, pointMax);
+
     for (int i = JmolConstants.SHAPE_MAX; --i >= 0; ) {
       Shape g = shapes[i];
       if (g != null)
@@ -867,20 +846,96 @@ public class Frame {
     return frameRenderer.getRenderer(refShape);
   }
 
+  void doUnitcellStuff() {
+    constructFractionalMatrices();
+    putAtomsInsideUnitcell();
+  }
+
+  void constructFractionalMatrices() {
+    matrixEuclideanToFractional = new Matrix3f();
+    matrixEuclideanToFractional.transpose(crystalScaleMatrix);
+    System.out.println("matrixEuclideanToFractional\n" +
+                       matrixEuclideanToFractional);
+    matrixFractionalToEuclidean = new Matrix3f();
+    matrixFractionalToEuclidean.invert(matrixEuclideanToFractional);
+    System.out.println("matrixFractionalToEuclidean\n" +
+                       matrixFractionalToEuclidean);
+  }
+
   void putAtomsInsideUnitcell() {
-    System.out.println("moving them :-)");
-    for (int i = atomCount; --i >= 0; ) {
-      putAtomInsideUnitcell(atoms[i]);
-    }
+    /****************************************************************
+     * find connected-sets ... aka 'molecules'
+     * convert to fractional coordinates
+     * for each connected-set
+     *   find its center
+     *   if the center is outside the unitcell
+     *     move the atoms
+     * convert back to euclidean coordinates
+     ****************************************************************/
+    convertEuclideanToFractional();
+    // but for now, just do one connected-set
+    Point3f adjustment = findFractionalAdjustment();
+    if (adjustment.x != 0 || adjustment.y != 0 || adjustment.z != 0)
+      applyFractionalAdjustment(adjustment);
+    convertFractionalToEuclidean();
     System.out.println("moved them :-)");
   }
 
-  void putAtomInsideUnitcell(Atom atom) {
-    Point3f point = atom.point3f;
-    /*
-    point.x += 1000;
-    point.y += 1000;
-    point.z += 1000;
-    */
+  void convertEuclideanToFractional() {
+    for (int i = atomCount; --i >= 0; )
+      matrixEuclideanToFractional.transform(atoms[i].point3f);
+  }
+
+  void convertFractionalToEuclidean() {
+    for (int i = atomCount; --i >= 0; )
+      matrixFractionalToEuclidean.transform(atoms[i].point3f);
+  }
+
+  Point3f findFractionalAdjustment() {
+    Point3f pointMin = new Point3f();
+    Point3f pointMax = new Point3f();
+    calcAtomsMinMax(pointMin, pointMax);
+    pointMin.add(pointMax);
+    pointMin.scale(0.5f);
+
+    Point3f fractionalCenter = pointMin;
+    System.out.println("fractionalCenter=" + fractionalCenter);
+    Point3f adjustment = pointMax;
+    adjustment.set((float)Math.floor(fractionalCenter.x),
+                   (float)Math.floor(fractionalCenter.y),
+                   (float)Math.floor(fractionalCenter.z));
+    return adjustment;
+  }
+
+  void applyFractionalAdjustment(Point3f adjustment) {
+    System.out.println("applyFractionalAdjustment(" + adjustment + ")");
+    for (int i = atomCount; --i >= 0; )
+      atoms[i].point3f.sub(adjustment);
+  }
+
+  void calcAtomsMinMax(Point3f pointMin, Point3f pointMax) {
+    float minX, minY, minZ, maxX, maxY, maxZ;
+    Point3f pointT;
+    pointT = atoms[0].point3f;
+    minX = maxX = pointT.x;
+    minY = maxY = pointT.y;
+    minZ = maxZ = pointT.z;
+    
+    for (int i = atomCount; --i > 0; ) {
+      // note that the 0 element was set above
+      pointT = atoms[i].point3f;
+      float t;
+      t = pointT.x;
+      if (t < minX) { minX = t; }
+      else if (t > maxX) { maxX = t; }
+      t = pointT.y;
+      if (t < minY) { minY = t; }
+      else if (t > maxY) { maxY = t; }
+      t = pointT.z;
+      if (t < minZ) { minZ = t; }
+      else if (t > maxZ) { maxZ = t; }
+    }
+    pointMin.set(minX, minY, minZ);
+    pointMax.set(maxX, maxY, maxZ);
   }
 }

@@ -43,33 +43,21 @@ class PolyhedraRenderer extends ShapeRenderer {
     byte[] faces;
     switch(vertices.length) {
     case 6:
-      faces = octahedronFaces;
+      faces = Polyhedra.octahedronFaces;
       break;
     case 4:
-      for (int i = 0, j = 0; i < 4; ++i) {
-        renderFace(colix, p.alpha, p.normixes[i],
-                   vertices[Polyhedra.tetrahedronFaces[j++]],
-                   vertices[Polyhedra.tetrahedronFaces[j++]],
-                   vertices[Polyhedra.tetrahedronFaces[j++]]);
-      }
-      return;
+      faces = Polyhedra.tetrahedronFaces;
+      break;
     default:
       System.out.println("?Que? vertices.length=" + vertices.length);
       return;
     }
-    for (int i = 0; i < faces.length; )
-      renderFace(colix, p.alpha, vertices[faces[i++]],
-                 vertices[faces[i++]], vertices[faces[i++]]);
-  }
 
-  final static byte[] tetrahedronFaces =
-  { 0,1,2, 0,1,3, 0,2,3, 1,2,3 };
-  final static byte[] octahedronFaces =
-  { 0,1,2, 0,2,3, 0,3,4, 0,4,1, 5,2,1, 5,3,2, 5,4,3, 5,1,4 };
-
-  void renderFace(short colix, byte alpha,
-                  Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(colix, alpha, atomA.xyzd, atomB.xyzd, atomC.xyzd);
+    for (int i = 0, j = 0; j < faces.length; )
+      renderFace(colix, p.alpha, p.normixes[i++],
+                 vertices[faces[j++]],
+                 vertices[faces[j++]],
+                 vertices[faces[j++]]);
   }
 
   void renderFace(short colix, byte alpha, short normix,

@@ -213,49 +213,91 @@ class Polyhedra extends SelectionIndependentShape {
   final Vector3f faceNormalT = new Vector3f();
   //                                      0        1        2        3
   final static byte[] tetrahedronFaces = { 1,2,3, 0,2,3, 0,1,3, 0,1,2 };
-  final static short[] tetrahedronNormixes = new short[4];
+  final static byte[] octahedronFaces =
+  { 0,1,2, 0,2,3, 0,3,4, 0,4,1, 5,2,1, 5,3,2, 5,4,3, 5,1,4 };
+
+  final static short[] polyhedronNormixes = new short[8];
 
   Polyhedron validatePolyhedron(Atom atom, int vertexCount,
                                 Atom[] otherAtoms) {
-    if (vertexCount == 4)
-      return validateTetrahedron(atom, otherAtoms);
-    if (vertexCount == 6)
-      return validateOctahedron(atom, otherAtoms);
-    return null;
-  }
-
-  Polyhedron validateTetrahedron(Atom atom, Atom[] otherAtoms) {
+    byte[] faces;
+    if (vertexCount == 6) {
+      arrangeOctahedronVertices(atom, otherAtoms);
+      faces = octahedronFaces;
+    } else if (vertexCount == 4) {
+      faces = tetrahedronFaces;
+    } else
+      return null;
     Point3f pointCentral = atom.point3f;
-    for (int i = 0, j = 0; i < 4; ++i) {
-      Point3f pointA = otherAtoms[tetrahedronFaces[j++]].point3f;
-      Point3f pointB = otherAtoms[tetrahedronFaces[j++]].point3f;
-      Point3f pointC = otherAtoms[tetrahedronFaces[j++]].point3f;
+    for (int i = 0, j = 0; i < vertexCount; ++i) {
+      int indexA = faces[j++];
+      Point3f pointA = otherAtoms[indexA].point3f;
+      int indexB = faces[j++];
+      Point3f pointB = otherAtoms[indexB].point3f;
+      int indexC = faces[j++];
+      Point3f pointC = otherAtoms[indexC].point3f;
       vectorAB.sub(pointB, pointA);
       vectorAC.sub(pointC, pointA);
       faceNormalT.cross(vectorAB, vectorAC);
       vectorXA.sub(pointCentral, pointA);
       float whichSideCentral = faceNormalT.dot(vectorXA);
-      vectorXA.sub(otherAtoms[i].point3f, pointA);
-      float whichSideOpposite = faceNormalT.dot(vectorXA);
-      short normix;
-      if (whichSideCentral > 0 && whichSideOpposite > 0)
-        normix = g3d.getInverseNormix(faceNormalT);
-      else if (whichSideCentral < 0 && whichSideOpposite < 0)
-        normix = g3d.getNormix(faceNormalT);
-      else
+      if (whichSideCentral == 0)
         return null;
-      tetrahedronNormixes[i] = normix;
+      boolean centralNegative = whichSideCentral < 0;
+      for (int k = vertexCount; --k >= 0; ) {
+        if (k == indexA || k == indexB || k == indexC)
+          continue;
+        vectorXA.sub(otherAtoms[k].point3f, pointA);
+        float whichSideOpposite = faceNormalT.dot(vectorXA);
+        short normix;
+        if (centralNegative) {
+          if (whichSideOpposite >= 0)
+            return null;
+          normix = g3d.getNormix(faceNormalT);
+        } else {
+          if (whichSideOpposite <= 0)
+            return null;
+          normix = g3d.getInverseNormix(faceNormalT);
+        }
+        polyhedronNormixes[i] = normix;
+      }
     }
-    Polyhedron p = new Polyhedron(atom, 4, otherAtoms, tetrahedronNormixes);
-    return p;
+    return new Polyhedron(atom, vertexCount, faces.length / 3,
+                          otherAtoms, polyhedronNormixes);
   }
 
-  final static byte[] octahedronFaces =
-  { 0,1,2, 0,2,3, 0,3,4, 0,4,1, 5,2,1, 5,3,2, 5,4,3, 5,1,4 };
+  final Atom[] otherAtomsT = new Atom[6];
 
-  Polyhedron validateOctahedron(Atom atom, Atom[] otherAtoms) {
-    Polyhedron p = new Polyhedron(atom, 6, otherAtoms, null);
-    return p;
+  void arrangeOctahedronVertices(Atom centralAtom, Atom[] otherAtoms) {
+    for (int i = 6; --i >= 0; )
+      otherAtomsT[i] = otherAtoms[i];
+    Atom atom0 = getFarthestAtom(centralAtom, otherAtomsT);
+    otherAtoms[0] = atom0;
+    otherAtoms[5] = getFarthestAtom(atom0, otherAtomsT);
+    Atom atom1 = getFarthestAtom(atom0, otherAtomsT);
+    otherAtoms[1] = atom1;
+    otherAtoms[3] = getFarthestAtom(atom1, otherAtomsT);
+    otherAtoms[2] = getFarthestAtom(atom1, otherAtomsT);
+    otherAtoms[4] = getFarthestAtom(atom1, otherAtomsT);
+  }
+
+  Atom getFarthestAtom(Atom atomA, Atom[] atoms) {
+    Point3f point3f = atomA.point3f;
+    float dist2Max = 0;
+    int indexFarthest = -1;
+    for (int i = atoms.length; --i >= 0; ) {
+      Atom atom = atoms[i];
+      if (atom != null) {
+        float dist2 = point3f.distance(atom.point3f);
+        if (dist2 > dist2Max) {
+          dist2Max = dist2;
+          indexFarthest = i;
+        }
+      }
+    }
+    Atom atomFarthest = atoms[indexFarthest];
+    atoms[indexFarthest] = null;
+    return atomFarthest;
   }
 
   final static byte TRANSLUCENT = (byte)0x80;
@@ -269,60 +311,18 @@ class Polyhedra extends SelectionIndependentShape {
     final short[] normixes;
     short polyhedronColix;
 
-    Polyhedron(Atom centralAtom, int vertexCount, Atom[] otherAtoms,
-               short[] normixes) {
+    Polyhedron(Atom centralAtom, int vertexCount, int faceCount,
+               Atom[] otherAtoms, short[] normixes) {
       this.centralAtom = centralAtom;
       this.vertices = new Atom[vertexCount];
       this.visible = true;
       this.alpha = defaultAlpha;
       this.polyhedronColix = colix;
-      if (normixes == null)
-        this.normixes = null;
-      else {
-        this.normixes = new short[vertexCount];
-        for (int i = vertexCount; --i >= 0; )
-          this.normixes[i] = normixes[i];
-      }
-      if (vertexCount == 6)
-        copyOctahedronVertices(otherAtoms);
-      else {
-        for (int i = vertexCount; --i >= 0; )
-          this.vertices[i] = otherAtoms[i];
-      }
-    }
-
-    void copyOctahedronVertices(Atom[] otherAtoms) {
-      int i;
-      i = getFarthestAtomIndex(centralAtom.point3f, otherAtoms);
-      vertices[0] = otherAtoms[i];
-      otherAtoms[i] = null;
-      foo(0, 5, otherAtoms);
-      foo(0, 1, otherAtoms);
-      foo(1, 3, otherAtoms);
-      foo(1, 2, otherAtoms);
-      foo(1, 4, otherAtoms);
-    }
-  
-    void foo(int i, int j, Atom[] atoms) {
-      int k = getFarthestAtomIndex(vertices[i].point3f, atoms);
-      vertices[j] = atoms[k];
-      atoms[k] = null;
-    }
-    
-    int getFarthestAtomIndex(Point3f point3f, Atom[] atoms) {
-      float dist2Max = 0;
-      int indexFarthest = -1;
-      for (int i = atoms.length; --i >= 0; ) {
-        Atom atom = atoms[i];
-        if (atom != null) {
-          float dist2 = point3f.distance(atom.point3f);
-          if (dist2 > dist2Max) {
-            dist2Max = dist2;
-            indexFarthest = i;
-          }
-        }
-      }
-    return indexFarthest;
+      this.normixes = new short[faceCount];
+      for (int i = vertexCount; --i >= 0; )
+        vertices[i] = otherAtoms[i];
+      for (int i = faceCount; --i >= 0; )
+        this.normixes[i] = normixes[i];
     }
   }
 }

@@ -75,6 +75,17 @@
         To get an early look at the prerelease Jmol v10 applet in
 	action take a look at the <a href="preview/">sneak preview</a>.
       </p>
+      <p>
+	Our target release schedule is:
+	<ul>
+	  <li>November - public test release</li>
+	  <li>December - official Jmol v10 release</li>
+	</ul>
+	<i>
+	  If you </i>just can't wait<i> go to
+	  the <a href="download">download</a> page and pull it out of CVS.
+	</i>
+      </p>
     </section>
 
     <section title="Mailing Lists">

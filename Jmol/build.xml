@@ -281,7 +281,7 @@
         <include name="**/icon.jpg" />
       </fileset>
     </copy>
-    <ant antfile="../../build.xml" dir="${dist.dir}/jmol-jws-${version}"
+    <ant antfile="../../../build.xml" dir="${dist.dir}/jmol-jws-${version}"
         target="internal-dist-jws-sign" />
   </target>
   

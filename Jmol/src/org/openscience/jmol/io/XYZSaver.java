@@ -26,7 +26,6 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.Charge;
 import org.openscience.jmol.Atom;
 import org.openscience.jmol.FortranFormat;
 import javax.vecmath.Point3d;
@@ -40,6 +39,8 @@ import java.io.OutputStream;
  */
 public class XYZSaver extends FileSaver {
 
+  private final String CHARGEDESCRIPTION = "Atomic Charge";
+  
   /**
    * Constructor.
    * @param cf the ChemFile to dump.
@@ -70,7 +71,7 @@ public class XYZSaver extends FileSaver {
     int na = 0;
     String info = "";
     String st = "";
-    boolean writecharge = cf.hasAtomProperty(Charge.DESCRIPTION);
+    boolean writecharge = cf.hasAtomProperty(CHARGEDESCRIPTION);
 
     try {
 
@@ -97,8 +98,8 @@ public class XYZSaver extends FileSaver {
               + new Double(pos[2]).toString();
 
         if (writecharge) {
-          Charge ct = (Charge) a.getProperty(Charge.DESCRIPTION);
-          st = st + "\t" + ct.stringValue();
+          double ct = a.getCharge();
+          st = st + "\t" + ct;
         }
 
         if (a.getVector() != null) {

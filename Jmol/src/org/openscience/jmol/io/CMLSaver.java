@@ -1,6 +1,11 @@
-
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -21,7 +26,6 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.Charge;
 import org.openscience.jmol.Atom;
 import java.util.Vector;
 import java.io.BufferedWriter;
@@ -36,6 +40,8 @@ import java.io.OutputStream;
  *  @author  Egon Willighagen
  */
 public class CMLSaver extends FileSaver {
+
+  private final String CHARGEDESCRIPTION = "Atomic Charge";
 
   private static int MODEL = 1;
   private static int ANIMATION = 2;
@@ -97,7 +103,7 @@ public class CMLSaver extends FileSaver {
    */
   public void writeFrame(ChemFrame cf, BufferedWriter w) throws IOException {
 
-    boolean writecharge = cf.hasAtomProperty(Charge.DESCRIPTION);
+    boolean writecharge = cf.hasAtomProperty(CHARGEDESCRIPTION);
 
     frame_count++;
 
@@ -164,8 +170,8 @@ public class CMLSaver extends FileSaver {
         if (formalCharges.length() > 0) {
           formalCharges.append(" ");
         }
-        Charge ct = (Charge) cf.getAtomAt(i).getProperty(Charge.DESCRIPTION);
-        formalCharges.append(ct.stringValue());
+        double ct = cf.getAtomAt(i).getCharge();
+        formalCharges.append(ct);
       }
     }
     w.write("  <atomArray>");

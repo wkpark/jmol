@@ -1,5 +1,11 @@
-/*
- * Copyright 2002 The Jmol Development Team
+/* $RCSfile$
+ * $Author$
+ * $Date$
+ * $Revision$
+ *
+ * Copyright (C) 2002  The Jmol Development Team
+ *
+ * Contact: jmol-developers@lists.sf.net
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -20,7 +26,6 @@ package org.openscience.jmol.io;
 
 import org.openscience.jmol.ChemFile;
 import org.openscience.jmol.ChemFrame;
-import org.openscience.jmol.Charge;
 import org.openscience.jmol.FortranFormat;
 import java.util.StringTokenizer;
 import javax.vecmath.Point3d;
@@ -154,7 +159,7 @@ public class XYZReader extends DefaultChemFileReader {
 
           if ((numberTokens == 5) || (numberTokens > 7)) {
             double c = FortranFormat.atof(st.nextToken());
-            frame.getAtomAt(atomIndex).addProperty(new Charge(c));
+            frame.getAtomAt(atomIndex).setCharge(c);
           }
 
           if (numberTokens >= 7) {

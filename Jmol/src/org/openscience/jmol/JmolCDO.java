@@ -199,23 +199,22 @@ public final class JmolCDO extends ANIMATIONCDO {
     double x = FortranFormat.atof(atomX.trim());
     double y = FortranFormat.atof(atomY.trim());
     double z = FortranFormat.atof(atomZ.trim());
-    
+
     try {
-      int index = currentFrame.addAtom(atomType.trim(), x, y,
-				       z);
+      int index = currentFrame.addAtom(atomType.trim(), x, y, z);
       if (partialCharge.length() > 0) {
-	System.out.println("Adding charge for atom " + index);
-	double c = FortranFormat.atof(partialCharge);
-	currentFrame.getAtomAt(index).addProperty(new Charge(c));
+        System.out.println("Adding charge for atom " + index);
+        double c = FortranFormat.atof(partialCharge);
+        currentFrame.getAtomAt(index).setCharge(c);
       } else {
-	System.out.println("Not adding charge for atom " + index);
+        System.out.println("Not adding charge for atom " + index);
       }
     } catch (Exception e) {
       System.out.println("JMolCDO error while adding atom: " + e);
-    
+
     }
   }
-  
+
   public void setAtomProperty(String type, String value) {
 
     if (type.equals("type")) {

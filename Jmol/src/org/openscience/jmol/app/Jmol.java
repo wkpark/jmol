@@ -71,6 +71,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
@@ -165,6 +166,9 @@ public class Jmol extends JPanel {
   private static int numWindows = 0;
   private static Dimension screenSize = null;
 
+  private PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+
   /**
    * The current file.
    */
@@ -246,12 +250,11 @@ public class Jmol extends JPanel {
       System.out.println("using CDK Model Adapter");
       modelAdapter = new CdkJmolModelAdapter();
     }
-    boolean firePropertyChanges = false;
 
-    viewer = new JmolViewer(display, modelAdapter, firePropertyChanges);
+    viewer = new JmolViewer(display, modelAdapter);
     display.setViewer(viewer);
 
-    //    viewer.addPropertyChangeListener(display);
+    //    pcs.addPropertyChangeListener(display);
     say("Initializing Preferences...");
     preferencesDialog = new PreferencesDialog(frame, guimap, viewer);
     say("Initializing Animate...");
@@ -259,17 +262,17 @@ public class Jmol extends JPanel {
     // mth 2003 08 15
     // get rid of this property change listener for Animate.java
     // may break animations
-    viewer.addPropertyChangeListener(anim);
+    // pcs.addPropertyChangeListener(anim);
     say("Initializing Vibrate...");
     vib = new Vibrate(viewer, frame);
-    viewer.addPropertyChangeListener(vib);
+    // pcs.addPropertyChangeListener(vib);
     say("Initializing Crystal...");
     crystprop = new CrystalPropertiesDialog(viewer, frame);
-    viewer.addPropertyChangeListener(crystprop);
+    // pcs.addPropertyChangeListener(crystprop);
     makecrystal = new MakeCrystal(viewer, crystprop);
-    viewer.addPropertyChangeListener(makecrystal);
+    // pcs.addPropertyChangeListener(makecrystal);
     transform = new TransformDialog(viewer, frame);
-    viewer.addPropertyChangeListener(transform);
+    // pcs.addPropertyChangeListener(transform);
     say("Initializing Recent Files...");
     recentFiles = new RecentFilesDialog(frame);
     say("Initializing Script Window...");
@@ -278,7 +281,7 @@ public class Jmol extends JPanel {
     viewer.setJmolStatusListener(new MyJmolStatusListener());
     say("Initializing Property Graph...");
     pg = new PropertyGraph(frame);
-    viewer.addPropertyChangeListener(pg);
+    // pcs.addPropertyChangeListener(pg);
 
     say("Initializing Measurements...");
     mlist = new MeasurementList(frame, viewer);
@@ -321,7 +324,7 @@ public class Jmol extends JPanel {
 
     say("Initializing Chemical Shifts...");
     chemicalShifts.initialize(apm);
-    viewer.addPropertyChangeListener(chemicalShifts);
+    // pcs.addPropertyChangeListener(chemicalShifts);
 
     say("Starting display...");
     display.start();
@@ -337,16 +340,11 @@ public class Jmol extends JPanel {
     exportChooser = new JFileChooser();
     exportChooser.setCurrentDirectory(currentDir);
 
-    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
-                                      saveAction);
-    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
-                                      exportAction);
-    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
-                                      povrayAction);
-    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
-                                      pdfAction);
-    viewer.addPropertyChangeListener(JmolViewer.PROP_CHEM_FILE,
-                                      printAction);
+    pcs.addPropertyChangeListener(chemFileProperty, saveAction);
+    pcs.addPropertyChangeListener(chemFileProperty, exportAction);
+    pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
+    pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
+    pcs.addPropertyChangeListener(chemFileProperty, printAction);
 
     jmolpopup = new JmolPopup(viewer, display);
 
@@ -1374,7 +1372,7 @@ public class Jmol extends JPanel {
     return new File(System.getProperty("user.dir"));
   }
 
-  public static final String openFileProperty = "openFile";
+  public static final String chemFileProperty = "chemFile";
 
   private abstract class MoleculeDependentAction extends AbstractAction
       implements PropertyChangeListener {
@@ -1386,7 +1384,7 @@ public class Jmol extends JPanel {
 
     public void propertyChange(PropertyChangeEvent event) {
 
-      if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
+      if (event.getPropertyName().equals(chemFileProperty)) {
         if (event.getNewValue() != null) {
           setEnabled(true);
         } else {
@@ -1398,7 +1396,7 @@ public class Jmol extends JPanel {
 
   class MyJmolStatusListener implements JmolStatusListener {
     public void notifyFileLoaded(String fullPathName, String fileName,
-                                 String modelName) {
+                                 String modelName, Object clientFile) {
       String title = modelName;
       if (title == null)
         title = fileName;
@@ -1406,6 +1404,7 @@ public class Jmol extends JPanel {
         title = "Jmol";
       frame.setTitle(title);
       recentFiles.notifyFileOpen(fullPathName);
+      pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }
 
     public void notifyFileNotLoaded(String fileName, String errorMsg) {

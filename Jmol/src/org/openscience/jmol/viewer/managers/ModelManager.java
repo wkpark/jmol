@@ -35,9 +35,6 @@ import javax.vecmath.Point3d;
 import java.awt.Rectangle;
 import java.awt.Color;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-
 public class ModelManager {
 
   JmolViewer viewer;
@@ -83,8 +80,6 @@ public class ModelManager {
   public JmolFrame jmolFrame;
   public JmolFrame[] jmolFrames;
 
-  //  public PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
     System.out.println("setClientFile:" + fileName);
@@ -111,9 +106,7 @@ public class ModelManager {
       jmolFrames = new JmolFrame[frameCount];
       haveFile = true;
     }
-    //    pcs.firePropertyChange(JmolViewer.PROP_CHEM_FILE,
-    //                     clientFilePrevious, clientFile);
-    viewer.notifyFileLoaded(fullPathName, fileName, modelName);
+    viewer.notifyFileLoaded(fullPathName, fileName, modelName, clientFile);
   }
 
   public Object getClientFile() {
@@ -229,24 +222,6 @@ public class ModelManager {
 
   public BitSet findAtomsInRectangle(Rectangle rectRubber) {
     return jmolFrame.findAtomsInRectangle(rectRubber);
-  }
-
-  public void addPropertyChangeListener(PropertyChangeListener pcl) {
-    //    pcs.addPropertyChangeListener(pcl);
-  }
-
-  public void addPropertyChangeListener(String prop,
-                                        PropertyChangeListener pcl) {
-    //    pcs.addPropertyChangeListener(prop, pcl);
-  }
-
-  public void removePropertyChangeListener(PropertyChangeListener pcl) {
-    //    pcs.removePropertyChangeListener(pcl);
-  }
-
-  public void removePropertyChangeListener(String prop,
-                                           PropertyChangeListener pcl) {
-    //    pcs.removePropertyChangeListener(prop, pcl);
   }
 
   /****************************************************************

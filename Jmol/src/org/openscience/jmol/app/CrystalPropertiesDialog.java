@@ -2177,7 +2177,7 @@ public class CrystalPropertiesDialog extends JDialog
    */
   public void propertyChange(PropertyChangeEvent event) {
 
-    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(Jmol.chemFileProperty)) {
       if (event.getNewValue() != chemFile) {
 	setChemFile((ChemFile) event.getNewValue());
       }

@@ -28,7 +28,7 @@ import java.awt.event.MouseEvent;
 
 public interface JmolStatusListener {
   public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName);
+                               String modelName, Object clientFile);
 
   public void notifyFileNotLoaded(String fileName, String errorMsg);
 

@@ -91,8 +91,8 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initWindows() {
 
     canvas = new AppletCanvas();
-    //viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter(), false);
-    viewer = new JmolViewer(canvas, new XyzJmolModelAdapter(), false);
+    //viewer = new JmolViewer(canvas, new DeprecatedJmolModelAdapter());
+    viewer = new JmolViewer(canvas, new XyzJmolModelAdapter());
     canvas.setJmolViewer(viewer);
     viewer.setJmolStatusListener(this);
 
@@ -180,7 +180,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   }
 
   public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName) {
+                               String modelName, Object clientFile) {
   }
 
   public void notifyFileNotLoaded(String fileName, String errorMsg) {

@@ -154,7 +154,7 @@ public class MakeCrystal
 
   public void propertyChange(PropertyChangeEvent event) {
 
-    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(Jmol.chemFileProperty)) {
       setChemFile((ChemFile) event.getNewValue());
     }
   } 

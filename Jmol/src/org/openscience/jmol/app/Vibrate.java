@@ -917,7 +917,7 @@ public class Vibrate extends JDialog implements ActionListener,
 
   public void propertyChange(PropertyChangeEvent event) {
     
-    if (event.getPropertyName().equals(JmolViewer.PROP_CHEM_FILE)) {
+    if (event.getPropertyName().equals(Jmol.chemFileProperty)) {
       if (event.getNewValue() != inputFile && event.getNewValue() != vibFile) {
         setChemFile((ChemFile) event.getNewValue());
       }

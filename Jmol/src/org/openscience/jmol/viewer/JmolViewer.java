@@ -51,7 +51,6 @@ import java.net.URL;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.File;
-import java.beans.PropertyChangeListener;
 import java.awt.event.MouseEvent;
 
 /****************************************************************
@@ -101,15 +100,11 @@ final public class JmolViewer {
 
   JmolStatusListener jmolStatusListener;
 
-  boolean firePropertyChanges;
-
   public JmolViewer(Component awtComponent,
-                    JmolModelAdapter jmolModelAdapter,
-                    boolean firePropertyChanges) {
+                    JmolModelAdapter jmolModelAdapter) {
 
     this.awtComponent = awtComponent;
     this.jmolModelAdapter = jmolModelAdapter;
-    this.firePropertyChanges = firePropertyChanges;
 
     strJvmVersion = System.getProperty("java.version");
     jvm12orGreater = (strJvmVersion.compareTo("1.2") >= 0);
@@ -727,8 +722,6 @@ final public class JmolViewer {
    * delegated to ModelManager
    ****************************************************************/
 
-  public static final String PROP_CHEM_FILE = "chemFile";
-
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
     pushHoldRepaint();
@@ -885,28 +878,6 @@ final public class JmolViewer {
     selectAll();
     structuralChange = true;
     refresh();
-  }
-
-  public void addPropertyChangeListener(PropertyChangeListener pcl) {
-    if (firePropertyChanges)
-      modelManager.addPropertyChangeListener(pcl);
-  }
-
-  public void addPropertyChangeListener(String prop,
-                                        PropertyChangeListener pcl) {
-    if (firePropertyChanges)
-      modelManager.addPropertyChangeListener(prop, pcl);
-  }
-
-  public void removePropertyChangeListener(PropertyChangeListener pcl) {
-    if (firePropertyChanges)
-      modelManager.removePropertyChangeListener(pcl);
-  }
-
-  public void removePropertyChangeListener(String prop,
-                                           PropertyChangeListener pcl) {
-    if (firePropertyChanges)
-      modelManager.removePropertyChangeListener(prop, pcl);
   }
 
   /****************************************************************
@@ -1128,9 +1099,10 @@ final public class JmolViewer {
   }
 
   public void notifyFileLoaded(String fullPathName, String fileName,
-                               String modelName) {
+                               String modelName, Object clientFile) {
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyFileLoaded(fullPathName, fileName, modelName);
+      jmolStatusListener.notifyFileLoaded(fullPathName, fileName,
+                                          modelName, clientFile);
   }
 
   public void notifyFileNotLoaded(String fileName, String errorMsg) {

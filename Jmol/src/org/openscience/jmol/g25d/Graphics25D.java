@@ -111,8 +111,11 @@ final public class Graphics25D {
   }
 
   public void setColor(Color color) {
+    if (! usePbuf) {
+      g.setColor(color);
+      return;
+    }
     argbCurrent = color.getRGB();
-    g.setColor(color);
   }
 
   int[] imageBuf = new int[256];
@@ -152,7 +155,10 @@ final public class Graphics25D {
 
   public void drawImage(Image image, int x, int y, int z,
                         int width, int height) {
-    g.drawImage(image, x, y, width, height, null);
+    if (! usePbuf) {
+      g.drawImage(image, x, y, width, height, null);
+      return;
+    }
   }
 
   public void drawCircleCentered(Color color, int x, int y, int z,

@@ -935,6 +935,7 @@ final public class JmolViewer {
   public void openReader(String fullPathName, String name, Reader reader) {
     clear();
     fileManager.openReader(fullPathName, name, reader);
+    getOpenFileError();
   }
   
   public String getOpenFileError() {

@@ -206,13 +206,16 @@ public class RepaintManager {
 
   public void pushHoldRepaint() {
     ++holdRepaint;
+    //    System.out.println("pushHoldRepaint:" + holdRepaint);
   }
 
   public void popHoldRepaint() {
-    if (--holdRepaint <= 0) {
+    --holdRepaint;
+    //    System.out.println("popHoldRepaint:" + holdRepaint);
+    if (holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
-      //      System.out.println("popHoldRepaint called awtComponent.repaint()");
+      // System.out.println("popHoldRepaint called awtComponent.repaint()");
       viewer.awtComponent.repaint();
     }
   }
@@ -226,8 +229,9 @@ public class RepaintManager {
     if (repaintPending)
       return;
     repaintPending = true;
-    if (holdRepaint == 0)
+    if (holdRepaint == 0) {
       viewer.awtComponent.repaint();
+    }
   }
 
   public synchronized void requestRepaintAndWait() {

@@ -155,10 +155,6 @@ final public class Graphics3D {
     return platform.hasContent();
   }
 
-  public Image getScreenImage() {
-    return platform.imagePixelBuffer;
-  }
-
   public void setColor(Color color) {
     argbCurrent = color.getRGB();
   }
@@ -379,10 +375,17 @@ final public class Graphics3D {
       //        downSample();
       platform.notifyEndOfRendering();
       currentlyRendering = false;
-      platform.clearScreenBufferThreaded();
     }
   }
   
+  public Image getScreenImage() {
+    return platform.imagePixelBuffer;
+  }
+
+  public void releaseScreenImage() {
+    platform.clearScreenBufferThreaded();
+  }
+
   public void drawDashedLine(short colix, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb = getArgb(colix);

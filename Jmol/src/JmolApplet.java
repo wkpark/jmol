@@ -289,13 +289,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
 
   public void update(Graphics g) {
     //    System.out.println("update called");
-    paint(g);
-  }
-
-  public boolean showPaintTime = false;
-
-  public void paint(Graphics g) {
-    //    System.out.println("paint called");
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
     if (showPaintTime)
@@ -311,10 +304,18 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     } catch (InterruptedException ie) {
     }
     */
+
     if (showPaintTime) {
       stopPaintClock();
       showTimes(10, 10, g);
     }
+  }
+
+  public boolean showPaintTime = false;
+
+  public void paint(Graphics g) {
+    //    System.out.println("paint called");
+    update(g);
   }
 
   private final static Color frankColor = Color.gray;

@@ -215,7 +215,7 @@ public class AtomShape extends Shape {
       AtomShape atomShapeOther = atomOther.getAtomShape();
       int zOther = atomShapeOther.z;
       if ((control.getShowHydrogens() || !atomOther.isHydrogen()) &&
-          ((z > zOther) ||
+          ((z < zOther) ||
            (z==zOther && atom.getAtomNumber()>atomOther.getAtomNumber())) &&
           isBondClipVisible(control.bondRenderer.clip,
                             x, y, atomShapeOther.x, atomShapeOther.y)) {

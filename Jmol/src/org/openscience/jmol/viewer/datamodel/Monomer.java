@@ -34,7 +34,6 @@ import javax.vecmath.Point3f;
 abstract class Monomer extends Group {
 
   Polymer polymer;
-  ProteinStructure proteinstructure;
 
   byte leadAtomOffset;
   byte wingAtomOffset = -1;
@@ -69,7 +68,6 @@ abstract class Monomer extends Group {
   }
 
   ////////////////////////////////////////////////////////////////
-  //
 
   boolean isAminoMonomer() { return false; }
   boolean isAlphaMonomer() { return false; }
@@ -78,71 +76,16 @@ abstract class Monomer extends Group {
   public boolean isRna() { return false; }
   final public boolean isProtein() { return isAlphaMonomer(); }
   final public boolean isNucleic() { return isNucleicMonomer(); }
-  //
+
   ////////////////////////////////////////////////////////////////
 
-  void setStructure(ProteinStructure proteinstructure) {
-    this.proteinstructure = proteinstructure;
-  }
+  void setStructure(ProteinStructure proteinstructure) { };
+  ProteinStructure getProteinStructure() { return null; };
+  byte getProteinStructureType() { return 0; };
+  boolean isHelix() { return false; }
+  boolean isHelixOrSheet() { return false; }
 
-  byte getProteinStructureType() {
-    if (proteinstructure != null)
-      return proteinstructure.type;
-    if (isNucleic())
-      return (isRna()
-              ? JmolConstants.PROTEIN_STRUCTURE_RNA
-              : JmolConstants.PROTEIN_STRUCTURE_DNA);
-    return 0;
-  }
-  
-  boolean isHelix() {
-    return proteinstructure != null &&
-      proteinstructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
-  }
-
-  boolean isHelixOrSheet() {
-    return proteinstructure != null &&
-      proteinstructure.type >= JmolConstants.PROTEIN_STRUCTURE_SHEET;
-  }
-
-  /****************************************************************
-   * static stuff for group ids
-   ****************************************************************/
-
-  private static Hashtable htGroup = new Hashtable();
-
-  static String[] group3Names = new String[128];
-  static short group3NameCount = 0;
-  
-  static {
-    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i)
-      addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
-  }
-
-  synchronized static short addGroup3Name(String group3) {
-    if (group3NameCount == group3Names.length)
-      group3Names = Util.doubleLength(group3Names);
-    short groupID = group3NameCount++;
-    group3Names[groupID] = group3;
-    htGroup.put(group3, new Short(groupID));
-    return groupID;
-  }
-
-  static short getGroupID(String group3) {
-    if (group3 == null)
-      return -1;
-    short groupID = lookupGroupID(group3);
-    return (groupID != -1) ? groupID : addGroup3Name(group3);
-  }
-
-  public static short lookupGroupID(String group3) {
-    if (group3 != null) {
-      Short boxedGroupID = (Short)htGroup.get(group3);
-      if (boxedGroupID != null)
-        return boxedGroupID.shortValue();
-    }
-    return -1;
-  }
+  ////////////////////////////////////////////////////////////////
 
   final Atom getAtomFromOffset(byte offset) {
     if (offset == -1)
@@ -182,11 +125,46 @@ abstract class Monomer extends Group {
   }
 
   ////////////////////////////////////////////////////////////////
-  // try to get rid of these 
+  // static stuff for group ids
+  ////////////////////////////////////////////////////////////////
 
-  Atom getNucleotidePhosphorusAtom() {
-    return getAtomIndex(atomIndexNucleotidePhosphorus);
+  private static Hashtable htGroup = new Hashtable();
+
+  static String[] group3Names = new String[128];
+  static short group3NameCount = 0;
+  
+  static {
+    for (int i = 0; i < JmolConstants.predefinedGroup3Names.length; ++i)
+      addGroup3Name(JmolConstants.predefinedGroup3Names[i]);
   }
+
+  synchronized static short addGroup3Name(String group3) {
+    if (group3NameCount == group3Names.length)
+      group3Names = Util.doubleLength(group3Names);
+    short groupID = group3NameCount++;
+    group3Names[groupID] = group3;
+    htGroup.put(group3, new Short(groupID));
+    return groupID;
+  }
+
+  static short getGroupID(String group3) {
+    if (group3 == null)
+      return -1;
+    short groupID = lookupGroupID(group3);
+    return (groupID != -1) ? groupID : addGroup3Name(group3);
+  }
+
+  public static short lookupGroupID(String group3) {
+    if (group3 != null) {
+      Short boxedGroupID = (Short)htGroup.get(group3);
+      if (boxedGroupID != null)
+        return boxedGroupID.shortValue();
+    }
+    return -1;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // try to get rid of these 
 
   Atom getNucleotideAtomID(int atomid) {
     return null;
@@ -237,8 +215,9 @@ abstract class Monomer extends Group {
              groupID <= JmolConstants.GROUPID_GUANINE_2_LAST));
   }
 
+  /*
   void dumpNucleotideIndices() {
-    /*
+
     System.out.println("dumpNucleotideIndices(" + this + "," + groupID + ")");
     if (nucleotideIndices == null) {
       System.out.println("  nucleotideIndices=null");
@@ -249,9 +228,9 @@ abstract class Monomer extends Group {
                          JmolConstants.specialAtomNames[JmolConstants.ATOMID_NUCLEOTIDE_MIN + i] + ":" + nucleotideIndices[i] + " ");
       System.out.println("\n");
     }
-    */
   }
-
+  */
+  
   public String toString() {
     return "[" + getGroup3() + "-" + getSeqcodeString() + "]";
   }

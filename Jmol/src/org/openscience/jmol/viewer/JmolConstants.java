@@ -31,7 +31,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2004 The Jmol Development Team";
-  public final static String version = "10pre10e";
+  public final static String version = "10pre10f";
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
 
@@ -1611,7 +1611,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
    
     // everything before this (not 0, but 1 - 63) is backbone
 
-    // nucleic acide bases
+    // nucleic acid bases
     //
     "N1",   // 64
     "C2",   // 65

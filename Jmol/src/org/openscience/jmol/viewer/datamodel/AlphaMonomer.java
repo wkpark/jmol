@@ -51,4 +51,26 @@ public class AlphaMonomer extends Monomer {
   }
 
   boolean isAlphaMonomer() { return true; }
+
+  ProteinStructure proteinStructure;
+  void setStructure(ProteinStructure proteinStructure) {
+    this.proteinStructure = proteinStructure;
+  }
+
+  ProteinStructure getProteinStructure() { return proteinStructure; }
+
+  byte getProteinStructureType() {
+    return proteinStructure == null ? 0 : proteinStructure.type;
+  }
+
+  boolean isHelix() {
+    return proteinStructure != null &&
+      proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
+  }
+
+  boolean isHelixOrSheet() {
+    return proteinStructure != null &&
+      proteinStructure.type >= JmolConstants.PROTEIN_STRUCTURE_SHEET;
+  }
+
 }

@@ -99,7 +99,7 @@ class RocketsRenderer extends MpsRenderer {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
       if (isSpecials[i]) {
-        ProteinStructure proteinstructure = residue.proteinstructure;
+        ProteinStructure proteinstructure = residue.getProteinStructure();
         point.set(i - 1 != proteinstructure.getMonomerIndex()
                   ? proteinstructure.getAxisStartPoint()
                   : proteinstructure.getAxisEndPoint());
@@ -142,7 +142,7 @@ class RocketsRenderer extends MpsRenderer {
   Point3i screenC = new Point3i();
 
   void renderSpecialSegment(Monomer monomer, short colix, short mad) {
-    ProteinStructure proteinstructure = monomer.proteinstructure;
+    ProteinStructure proteinstructure = monomer.getProteinStructure();
     if (tPending) {
       if (proteinstructure == proteinstructurePending &&
           mad == madPending &&

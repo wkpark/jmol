@@ -39,36 +39,32 @@ public class NucleotidePolymer extends Polymer {
   }
 
   public Atom getNucleotidePhosphorusAtom(int monomerIndex) {
-    return monomers[monomerIndex].getNucleotidePhosphorusAtom();
+    return monomers[monomerIndex].getLeadAtom();
   }
 
   boolean hasWingPoints() { return true; }
 
+  /*
   public void getStructureMidPoint(int monomerIndex, Point3f midPoint) {
     if (monomerIndex < count &&
         monomers[monomerIndex].isHelixOrSheet()) {
       midPoint.set(monomers[monomerIndex].proteinstructure.
                    getStructureMidPoint(monomerIndex));
-      /*
-        System.out.println("" + monomerIndex} + "isHelixOrSheet" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
+      //    System.out.println("" + monomerIndex} + "isHelixOrSheet" +
+      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
     } else if (monomerIndex > 0 &&
                monomers[monomerIndex - 1].isHelixOrSheet()) {
       midPoint.set(monomers[monomerIndex - 1].proteinstructure.
                    getStructureMidPoint(monomerIndex));
-      /*
-        System.out.println("" + monomerIndex + "previous isHelixOrSheet" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
+      //    System.out.println("" + monomerIndex + "previous isHelixOrSheet" +
+      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
     } else {
       getLeadMidPoint(monomerIndex, midPoint);
-      /*
-        System.out.println("" + monomerIndex + "the alpha carbon midpoint" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
+      //   System.out.println("" + monomerIndex + "the alpha carbon midpoint" +
+      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
     }
   }
+  */
 
   void addSecondaryStructure(byte type,
                              int startSeqcode, int endSeqcode) {

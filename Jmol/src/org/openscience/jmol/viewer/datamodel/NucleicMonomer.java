@@ -38,31 +38,24 @@ public class NucleicMonomer extends Monomer {
     int wingIndex = -1;
     int o2PrimeIndex = -1;
 
-    for (int i = firstAtomIndex; i <= lastAtomIndex; ++i) {
+    int n1Index = -1;
+
+    for (int i = lastAtomIndex; i >= firstAtomIndex; --i) {
       Atom atom = atoms[i];
       switch (atoms[i].specialAtomID) {
       case JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS:
-        if (phosphorusIndex < 0) {
-          phosphorusIndex = i;
-          continue;
-        }
+        phosphorusIndex = i;
         break;
       case JmolConstants.ATOMID_NUCLEIC_WING:
-        if (wingIndex < 0) {
-          wingIndex = i;
-          continue;
-        }
+        wingIndex = i;
         break;
       case JmolConstants.ATOMID_RNA_O2PRIME:
-        if (o2PrimeIndex < 0) {
-          o2PrimeIndex = i;
-          continue;
-        }
+        o2PrimeIndex = i;
         break;
-      default:
-        continue;
+      case JmolConstants.ATOMID_N1:
+        n1Index = i;
+        break;
       }
-      atoms[i].specialAtomID = 0; // reset all imposters
     }
 
     // this is just testing if anybody is less than 0
@@ -96,4 +89,10 @@ public class NucleicMonomer extends Monomer {
   public boolean isDna() { return ! hasRnaO2Prime; }
 
   public boolean isRna() { return hasRnaO2Prime; }
+
+  byte getProteinStructureType() {
+    return (hasRnaO2Prime
+            ? JmolConstants.PROTEIN_STRUCTURE_RNA
+            : JmolConstants.PROTEIN_STRUCTURE_DNA);
+  }
 }

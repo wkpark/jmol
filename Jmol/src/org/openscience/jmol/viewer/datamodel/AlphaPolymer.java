@@ -38,31 +38,27 @@ public class AlphaPolymer extends Polymer {
     super(model, monomers);
   }
 
+  /*
   void getStructureMidPoint(int groupIndex, Point3f midPoint) {
     if (groupIndex < count &&
         monomers[groupIndex].isHelixOrSheet()) {
       midPoint.set(monomers[groupIndex].proteinstructure.
                    getStructureMidPoint(groupIndex));
-      /*
-        System.out.println("" + groupIndex} + "isHelixOrSheet" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
+      //    System.out.println("" + groupIndex} + "isHelixOrSheet" +
+      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
     } else if (groupIndex > 0 &&
                monomers[groupIndex - 1].isHelixOrSheet()) {
       midPoint.set(monomers[groupIndex - 1].proteinstructure.
                    getStructureMidPoint(groupIndex));
-      /*
-        System.out.println("" + groupIndex + "previous isHelixOrSheet" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
+      //    System.out.println("" + groupIndex + "previous isHelixOrSheet" +
+      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
     } else {
       getLeadMidPoint(groupIndex, midPoint);
-      /*
-        System.out.println("" + groupIndex + "the alpha carbon midpoint" +
-        midPoint.x + "," + midPoint.y + "," + midPoint.z);
-      */
+      //    System.out.println("" + groupIndex + "the alpha carbon midpoint" +
+      //    midPoint.x + "," + midPoint.y + "," + midPoint.z);
     }
   }
+  */
 
   void addSecondaryStructure(byte type,
                              int startSeqcode, int endSeqcode) {

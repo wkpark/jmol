@@ -8,8 +8,10 @@
   <property name="build.dir" value="build" />
   <property name="generatedSource.dir" value="${build.dir}/generatedSource" />
   <property name="lib.dir" value="jars" />
+  <property name="appjars.dir" value="appjars" />
   <property name="classes.dir" value="${build.dir}/classes" />
   <property name="tests.classes.dir" value="${build.dir}/classes-tests" />
+  <property name="appletjars.dir" value="appletjars" />
   <property name="applet.classes.dir" value="${build.dir}/applet-classes" />
   <property name="tests.dir" value="${build.dir}/unit.tests" />
   <property name="dist.dir" value="${build.dir}/dist" />
@@ -196,7 +198,33 @@
     </copy>
   </target>
 
-  <target name="jar" depends="init,classes">
+  <target name="check.appjars">
+    <uptodate property="appjars.uptodate"
+      targetfile="${appjars.dir}">
+      <srcfiles dir="${lib.dir}" includes="jmolcdk.jar"/>
+      <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
+      <srcfiles dir="${lib.dir}" includes="Acme.jar"/>
+      <srcfiles dir="${lib.dir}" includes="gnujaxp.jar"/>
+      <srcfiles dir="${lib.dir}" includes="multi.jar"/>
+      <srcfiles dir="${lib.dir}" includes="jas.jar"/>
+      <srcfiles dir="${lib.dir}" includes="itext-0.94.jar"/>
+      <srcfiles dir="${lib.dir}" includes="JSX1.0.6.0.jar"/>
+    </uptodate>
+  </target>
+  <target name="appjars" depends="check.appjars" unless="appjars.uptodate">
+    <delete dir="${appjars.dir}"/>
+    <mkdir dir="${appjars.dir}"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/Acme.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/gnujaxp.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/multi.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/jas.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
+    <unjar dest="${appjars.dir}" src="${lib.dir}/JSX1.0.6.0.jar"/>
+  </target>
+
+  <target name="jar" depends="init,classes,appjars">
     <jar jarfile="${lib.dir}/jmol.jar" manifest="${manifest}" >
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -206,15 +234,39 @@
         <include name="com/**" />
         <include name="freeware/**" />
       </fileset>
+      <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
   </target>
 
-  <target name="applet-jar" depends="applet-classes">
-    <jar jarfile="${lib.dir}/jmol-applet.jar" >
+  <target name="check.appletjars">
+    <uptodate property="appletjars.uptodate"
+      targetfile="${appletjars.dir}">
+      <srcfiles dir="${lib.dir}" includes="jmolcdk.jar"/>
+      <srcfiles dir="${lib.dir}" includes="vecmath1.2-1.14.jar"/>
+    </uptodate>
+  </target>
+  <target name="appletjars" depends="check.appletjars"
+         unless="appletjars.uptodate">
+    <delete dir="${appletjars.dir}"/>
+    <mkdir dir="${appletjars.dir}"/>
+    <unjar dest="${appletjars.dir}" src="${lib.dir}/jmolcdk.jar"/>
+    <unjar dest="${appletjars.dir}" src="${lib.dir}/vecmath1.2-1.14.jar">
+      <patternset>
+        <include name="**/Tuple3d.class"/>
+        <include name="**/Vector3d.class"/>
+        <include name="**/Point3d.class"/>
+        <include name="**/Matrix3d.class"/>
+      </patternset>
+    </unjar>
+  </target>
+
+  <target name="applet-jar" depends="applet-classes,appletjars">
+    <jar jarfile="${lib.dir}/JmolApplet.jar" >
       <fileset dir="${applet.classes.dir}" >
         <exclude name="**/.*" />
         <include name="**/jmol/**" />
-        </fileset>
+      </fileset>
+      <fileset dir="${appletjars.dir}" includes="**/*"/>
     </jar>
   </target>
 
@@ -222,7 +274,7 @@
     <mkdir dir="${dist.dir}/jmol-${version}"/>
     <copy todir="${dist.dir}/jmol-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-        <exclude name="jmol-applet.jar" />
+        <exclude name="JmolApplet.jar" />
         <exclude name="swing.jar" />
         <exclude name="junit.jar" />
         <exclude name="saxon.jar" />
@@ -300,7 +352,7 @@
     <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
         <include name="*.jar" />
-        <exclude name="jmol-applet.jar" />
+        <exclude name="JmolApplet.jar" />
         <exclude name="gnujaxp-saxonly.jar" />
         <exclude name="swing.jar" />
         <exclude name="junit.jar" />
@@ -438,10 +490,11 @@
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${tests.classes.dir}"/>
+    <delete dir="${appjars.dir}"/>
     <delete>
       <fileset dir="${lib.dir}">
         <include name="jmol.jar" />
-        <include name="jmol-applet.jar" />
+        <include name="JmolApplet.jar" />
       </fileset>
     </delete>
   </target>

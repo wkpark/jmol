@@ -32,6 +32,7 @@ import java.awt.Rectangle;
 import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.GridLayout;
+import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -49,18 +50,16 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 
-public class ScriptWindow extends JDialog
-    implements ActionListener, EnterListener {
+public final class ScriptWindow extends JDialog
+    implements ActionListener, EnterListener{
 
   private ConsoleTextPane console;
   private JButton closeButton;
   private JButton runButton;
   private JButton haltButton;
   JmolViewer viewer;
-
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
 
     super(frame, "Rasmol Scripts", false);
@@ -74,6 +73,8 @@ public class ScriptWindow extends JDialog
     container.setLayout(new BorderLayout());
 
     console = new ConsoleTextPane(this);
+    
+    
     console.setPrompt();
     container.add(new JScrollPane(console), BorderLayout.CENTER);
 
@@ -147,9 +148,12 @@ public class ScriptWindow extends JDialog
       viewer.haltScriptExecution();
     }
   }
+  
 }
 
 class ConsoleTextPane extends JTextPane {
+
+  private CommandHistory commandHistory = new CommandHistory(20);
 
   ConsoleDocument consoleDoc;
   EnterListener enterListener;
@@ -162,7 +166,9 @@ class ConsoleTextPane extends JTextPane {
  }
 
   public String getCommandString() {
-    return consoleDoc.getCommandString();
+    String cmd = consoleDoc.getCommandString();
+    commandHistory.addCommand(cmd);
+    return cmd;
   }
 
   public void setPrompt() {
@@ -193,6 +199,86 @@ class ConsoleTextPane extends JTextPane {
     if (enterListener != null)
       enterListener.enterPressed();
   }
+  
+  
+  
+   /* (non-Javadoc)
+    * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
+    */
+    
+   /**
+    * Custom key event processing for command history implementation.
+    * 
+    * Captures key up and key down strokes to call command history
+    * and redefines the same events with control down to allow
+    * caret vertical shift.
+    * 
+    * @see java.awt.Component#processKeyEvent(java.awt.event.KeyEvent)
+    */
+   protected void processKeyEvent(KeyEvent ke)
+   {
+      // Id Control key is down, captures events does command
+      // history recall and inhibits caret vertical shift.
+      if (ke.getKeyCode() == KeyEvent.VK_UP
+         && ke.getID() == KeyEvent.KEY_PRESSED
+         && !ke.isControlDown())
+      {
+         recallCommand(true);
+      }
+      else if (
+         ke.getKeyCode() == KeyEvent.VK_DOWN
+            && ke.getID() == KeyEvent.KEY_PRESSED
+            && !ke.isControlDown())
+      {
+         recallCommand(false);
+      }
+      // If Control key is down, redefines the event as if it 
+      // where a key up or key down stroke without modifiers.  
+      // This allows to move the caret up and down
+      // with no command history recall.
+      else if (
+         (ke.getKeyCode() == KeyEvent.VK_DOWN
+            || ke.getKeyCode() == KeyEvent.VK_UP)
+            && ke.getID() == KeyEvent.KEY_PRESSED
+            && ke.isControlDown())
+      {
+         super
+            .processKeyEvent(new KeyEvent(
+               (Component) ke.getSource(),
+               ke.getID(),
+               ke.getWhen(),
+               0,         // No modifiers
+               ke.getKeyCode(), 
+               ke.getKeyChar(), 
+               ke.getKeyLocation()));
+      }
+      // Standard processing for other events.
+      else
+      {
+         super.processKeyEvent(ke);
+      }
+   }
+
+   /**
+    * Recall command histoy.
+    * 
+    * @param up - history up or down
+    */
+   private final void recallCommand(boolean up)
+   {
+      String cmd = up?commandHistory.getCommandUp():commandHistory.getCommandDown();
+      
+      try
+       {
+           consoleDoc.replaceCommand(cmd);
+            
+       }
+       catch (BadLocationException e)
+       {
+          e.printStackTrace();
+       }    
+   }
+  
 }
 
 class ConsoleDocument extends DefaultStyledDocument {
@@ -336,6 +422,22 @@ class ConsoleDocument extends DefaultStyledDocument {
     super.replace(offs, length, str, attUserInput);
     consoleTextPane.setCaretPosition(offs + str.length());
   }
+  
+   /**
+    * Replaces current command on script.
+    * 
+    * @param newCommand mew command value
+    * 
+    * @throws BadLocationException
+    */
+   void replaceCommand(String newCommand) throws BadLocationException
+   {
+      replace(
+         offsetAfterPrompt,
+         getLength() - offsetAfterPrompt,
+         newCommand,
+         attUserInput);
+   }
 }
 
 interface EnterListener {

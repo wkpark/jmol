@@ -240,30 +240,6 @@ class SurfaceRenderer extends ShapeRenderer {
     return dotCount;
   }
 
-  /**
-   * So, I need some help with this.
-   * I cannot think of a good way to render this cavity.
-   * The shapes are spherical triangle, but are very irregular.
-   * In the center of aromatic rings there are 2-4 ... which looks ugly
-   * So, if you have an idea how to render this, please let me know.
-   */
-
-  final static byte nearI = (byte)(1 << 0);
-  final static byte nearJ = (byte)(1 << 1);
-  final static byte nearK = (byte)(1 << 2);
-
-  final static byte[] nearAssociations = {
-    nearI | nearJ | nearK,
-
-    nearI, nearJ, nearK,
-    nearI | nearJ, nearJ | nearK, nearK | nearI,
-    nearI, nearJ, nearJ, nearK, nearK, nearI,
-    // index 13 starts here
-    nearI, nearJ, nearK,
-    nearI | nearJ, nearJ | nearK, nearK | nearI,
-    nearI, nearJ, nearJ, nearK, nearK, nearI,
-  };
-
   void renderCavity(Surface.Cavity cavity,
                     Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
     Point3f[] points = cavity.points;

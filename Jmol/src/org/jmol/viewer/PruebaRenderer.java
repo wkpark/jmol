@@ -26,40 +26,46 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 
 class PruebaRenderer extends ShapeRenderer {
 
-  final Point3f[] points = {
-    new Point3f(0, 0, 0),
-    new Point3f(2, 0, 0),
-    new Point3f(2, 2, 0),
-    new Point3f(0, 2, 0),
-  };
-
-  final Point3i[] screens = new Point3i[points.length];
-  {
-    for (int i = screens.length; --i >= 0; )
-      screens[i] = new Point3i();
-  }
+  private final static int level = 1;
 
   void render() {
-    //Prueba prueba = (Prueba)shape;
+    Prueba prueba = (Prueba)shape;
+    short colix = prueba.colix;
 
-    System.out.println("################################################################");
-    System.out.println(" screens[0]=" + screens[0] +
-                       " screens[1]=" + screens[1] +
-                       " screens[2]=" + screens[2]);
-    viewer.transformPoints(points, screens);
-    g3d.fillTriangle(0xFFFF0000, screens[0], screens[1], screens[2]);
-    //    g3d.fillTriangle(0xFF00FFFF, screens[0], screens[2], screens[3]);
-    /*
-    g3d.drawHermite(true, prueba.colix, 7,
-                    screens[0], screens[0],
-                    screens[1], screens[1],
-                    screens[3], screens[3],
-                    screens[2], screens[2]
-                    );
-    */
+    int vertexCount = g3d.getGeodesicVertexCount(level);
+    Vector3f[] vectors = g3d.getGeodesicVertexVectors();
+    Vector3f[] tvs = g3d.getTransformedVertexVectors();
+    Point3i[] screens = viewer.allocTempScreens(vertexCount);
+    short[] geodesicFaceVertexes = g3d.getGeodesicFaceVertexes(level);
+    int geodesicFaceCount = g3d.getGeodesicFaceCount(level);
+      
+    calcScreens(vertexCount, tvs, screens);
+
+    for (int i = geodesicFaceCount, j = 0; --i >= 0; ) {
+      short vA = geodesicFaceVertexes[j++];
+      short vB = geodesicFaceVertexes[j++];
+      short vC = geodesicFaceVertexes[j++];
+      g3d.fillTriangle(colix, false,
+                       screens[vA], vA,
+                       screens[vB], vB,
+                       screens[vC], vC);
+    }
+    viewer.freeTempScreens(screens);
+  }
+
+  void calcScreens(int count, Vector3f[] tvs, Point3i[] screens) {
+    float scaledRadius = viewer.scaleToScreen(1000, 1f);
+    for (int i = count; --i >= 0; ) {
+      Vector3f tv = tvs[i];
+      Point3i screen = screens[i];
+      screen.x = 150 + (int)(scaledRadius * tv.x);
+      screen.y = 150 - (int)(scaledRadius * tv.y); // y inverted on screen!
+      screen.z = 1000 - (int)(scaledRadius * tv.z); // smaller z comes to me
+    }
   }
 }

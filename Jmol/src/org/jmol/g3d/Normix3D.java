@@ -234,7 +234,22 @@ class Normix3D {
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
       rotationMatrix.transform(Geodesic3D.vertexVectors[i], tv);
-      intensities[i] = Shade3D.calcIntensity(tv.x, tv.y, tv.z);
+      float x = tv.x;
+      float y = -tv.y;
+      float z = tv.z;
+      /*
+        enable this code in order to allow
+        lighting of the inside of surfaces.
+        but they probably should not be specular
+        and light source should be from another position ... like a headlamp
+        
+      if (z < 0) {
+        x = -x;
+        y = -y;
+        z = -z;
+      }
+      */
+      intensities[i] = Shade3D.calcIntensityNormalized(x, y, z);
     }
   }
 

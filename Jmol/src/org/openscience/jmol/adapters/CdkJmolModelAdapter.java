@@ -210,6 +210,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
 
   public JmolModelAdapter.LineIterator
     getCrystalCellIterator(Object clientFile, int frameNumber) {
+    AtomContainer container = getAtomContainer(clientFile, frameNumber);
+    if (container instanceof Crystal) {
+      return new CrystalCellIterator((Crystal)container);
+    }
     return null;
   }
 
@@ -321,6 +325,53 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
      */
     public Color getAtomColor(org.openscience.cdk.Atom atom) {
       return (Color)atom.getProperty("org.openscience.jmol.color");
+    }
+  }
+
+  class CrystalCellIterator extends JmolModelAdapter.LineIterator {
+    Crystal crystal;
+    Point3d point1, point2;
+    int ibox;
+      
+    CrystalCellIterator(Crystal crystal) {
+      this.crystal = crystal;
+      ibox=0;
+    }
+
+    public boolean hasNext() {
+      return (ibox < 3);
+    }
+
+    public void moveNext() {
+      point1 = new Point3d(0.0, 0.0, 0.0);
+      double[] axis = {0.0, 0.0, 0.0};
+      if (ibox == 0) {
+          axis = crystal.getA();
+      } else if (ibox == 1) {
+          axis = crystal.getB();
+      } else if (ibox == 2) {
+          axis = crystal.getC();
+      }
+      point2 = new Point3d(axis[0], axis[1], axis[2]);
+      ibox++;
+    }
+    public float getPoint1X() {
+      return (float)point1.x;
+    }
+    public float getPoint1Y() {
+      return (float)point1.y;
+    }
+    public float getPoint1Z() {
+      return (float)point1.z;
+    }
+    public float getPoint2X() {
+      return (float)point2.x;
+    }
+    public float getPoint2Y() {
+      return (float)point2.y;
+    }
+    public float getPoint2Z() {
+      return (float)point2.z;
     }
   }
 

@@ -117,12 +117,14 @@ class Pmesh extends SelectionIndependentShape {
       return;
     }
     if ("color" == propertyName) {
-      colix = g3d.getColix(value);
-      if (currentMesh != null)
-        currentMesh.meshColix = colix;
-      else {
-        for (int i = meshCount; --i >= 0; )
-          meshes[i].meshColix = colix;
+      if (value != null) {
+        colix = g3d.getColix(value);
+        if (currentMesh != null)
+          currentMesh.meshColix = colix;
+        else {
+          for (int i = meshCount; --i >= 0; )
+            meshes[i].meshColix = colix;
+        }
       }
       return;
     }

@@ -1697,7 +1697,8 @@ final public class Viewer extends JmolViewer {
   }
 
   void setShapeColor(int shapeID, byte palette, Color color) {
-    if (palette == JmolConstants.PALETTE_COLOR) {
+    if (palette == JmolConstants.PALETTE_COLOR ||
+        palette == JmolConstants.PALETTE_NONE_CPK) {
       modelManager.setShapeProperty(shapeID, "colorScheme", null,
                                     selectionManager.bsSelection);
       modelManager.setShapeProperty(shapeID, "color", color,
@@ -1713,7 +1714,7 @@ final public class Viewer extends JmolViewer {
     }
     refresh();
   }
-  
+
   void setShapeProperty(int shapeID,
                                String propertyName, Object value) {
 

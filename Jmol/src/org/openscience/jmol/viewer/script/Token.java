@@ -207,10 +207,11 @@ public class Token {
   final static int molsurface   = setparam | 27;
   final static int debugscript  = setparam | 28;
   final static int fps          = setparam | 29;
+  final static int scale3d      = setparam | 30;
   // jmol extensions
-  final static int property     = setparam | 30;
-  final static int diffuse      = setparam | 31;
-  final static int labeloffset  = setparam | 32;
+  final static int property     = setparam | 31;
+  final static int diffuse      = setparam | 32;
+  final static int labeloffset  = setparam | 33;
 
   final static int information  = showparam |  0;
   final static int phipsi       = showparam |  1;
@@ -421,6 +422,7 @@ public class Token {
     "molsurface",   new Token(molsurface,      "molsurface"),
     "debugscript",  new Token(debugscript,     "debugscript"),
     "fps",          new Token(fps,             "fps"),
+    "scale3d",      new Token(scale3d,         "scale3d"),
 
     // jmol extensions
     "property",     new Token(property,        "property"),

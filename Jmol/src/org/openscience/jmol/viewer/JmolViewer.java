@@ -448,6 +448,10 @@ final public class JmolViewer {
     return screenHeight;
   }
 
+  public void setScaleAngstromsPerInch(float angstromsPerInch) {
+    transformManager.setScaleAngstromsPerInch(angstromsPerInch);
+  }
+
   public void setSlabValue(int slabValue) {
     g3d.setSlabValue(slabValue);
   }

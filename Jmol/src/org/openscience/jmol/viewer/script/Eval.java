@@ -1958,7 +1958,9 @@ public class Eval implements Runnable {
     case Token.hbonds:
       setHbonds();
       break;
-
+    case Token.scale3d:
+      setScale3d();
+      break;
       // not implemented
     case Token.backfade:
     case Token.cartoon:
@@ -2091,7 +2093,7 @@ public class Eval implements Runnable {
       probeRadius = ((Float)statement[2].value).floatValue();
       break;
     case Token.integer:
-      int radiusRasMol = statement[1].intValue;
+      int radiusRasMol = statement[2].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       probeRadius = radiusRasMol * 4 / 1000f;
@@ -2186,6 +2188,23 @@ public class Eval implements Runnable {
       invalidArgument();
     }
     viewer.setHbondsBackbone(hbondsBackbone);
+  }
+
+  void setScale3d() throws ScriptException {
+    if (statement.length != 3)
+      badArgumentCount();
+    float angstromsPerInch = 0;
+    switch (statement[2].tok) {
+    case Token.decimal:
+      angstromsPerInch = ((Float)statement[2].value).floatValue();
+      break;
+    case Token.integer:
+      angstromsPerInch = statement[2].intValue;
+      break;
+    default:
+      numberExpected();
+    }
+    viewer.setScaleAngstromsPerInch(angstromsPerInch);
   }
 
   /****************************************************************

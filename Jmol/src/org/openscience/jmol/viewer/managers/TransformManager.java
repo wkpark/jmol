@@ -214,6 +214,11 @@ public class TransformManager {
     }
   }
 
+  public void setScaleAngstromsPerInch(float angstromsPerInch) {
+    scalePixelsPerAngstrom =
+      scaleDefaultPixelsPerAngstrom = 72 / angstromsPerInch;
+  }
+
   /****************************************************************
    SLAB
   ****************************************************************/

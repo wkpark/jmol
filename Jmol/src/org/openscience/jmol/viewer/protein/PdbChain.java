@@ -45,7 +45,6 @@ public class PdbChain {
       System.arraycopy(residues, 0, t, 0, residueCount);
       residues = t;
     }
-    System.out.println("chain: " + chainID + " has length=" + residues.length);
   }
 
   void addResidue(PdbResidue residue) {
@@ -90,8 +89,6 @@ public class PdbChain {
   }
 
   void propogateSecondaryStructure(byte type, int startResidueNumber, int endResidueNumber) {
-    System.out.println("chainID=" + chainID + " type=" + type + " " + startResidueNumber + "->"
-                       + endResidueNumber);
     for (int i = residueCount; --i >= 0; ) {
       PdbResidue residue = residues[i];
       int resNumber = residue.resNumber;

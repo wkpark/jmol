@@ -43,13 +43,11 @@ public class PdbMolecule {
   }
 
   public void freeze() {
-    System.out.println("PdbMolecule.freeze() called");
     if (chainCount != chains.length) {
       PdbChain[] t = new PdbChain[chainCount];
       System.arraycopy(chains, 0, t, 0, chainCount);
       chains = t;
     }
-    System.out.println("chainCount=" + chainCount);
     for (int i = chainCount; --i >= 0; )
       chains[i].freeze();
     propogateSecondaryStructure();
@@ -65,18 +63,15 @@ public class PdbMolecule {
       int startIndex = 0;
       int endIndex = 0;
       if (structure.startsWith("HELIX ")) {
-        System.out.println("HELIX");
         type = PdbResidue.STRUCTURE_HELIX;
         startIndex = 21;
         endIndex = 33;
       } else if (structure.startsWith("SHEET ")) {
-        System.out.println("SHEET");
         type = PdbResidue.STRUCTURE_SHEET;
         chainIDIndex = 21;
         startIndex = 22;
         endIndex = 33;
       } else if (structure.startsWith("TURN  ")) {
-        System.out.println("TURN");
         type = PdbResidue.STRUCTURE_TURN;
         startIndex = 20;
         endIndex = 31;
@@ -92,8 +87,6 @@ public class PdbMolecule {
         System.out.println("secondary structure record error");
         continue;
       }
-
-      System.out.println("start=" + start + " end=" + end);
 
       PdbChain chain = getPdbChain(structure.charAt(chainIDIndex));
       if (chain == null) {

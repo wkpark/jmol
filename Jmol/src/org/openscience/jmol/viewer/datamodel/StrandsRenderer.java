@@ -85,7 +85,8 @@ class StrandsRenderer extends Renderer {
 
     strandCount = viewer.getStrandsCount();
     strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
-    baseOffset = ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
+    baseOffset =
+      ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
 
     if (strands == null || !strands.initialized)
       return;
@@ -102,8 +103,8 @@ class StrandsRenderer extends Renderer {
     }
   }
   
-  void render1Chain(PdbResidue[] mainchain, Point3f[] centers, Vector3f[] vectors,
-                    short[] mads, short[] colixes) {
+  void render1Chain(PdbResidue[] mainchain, Point3f[] centers,
+                    Vector3f[] vectors, short[] mads, short[] colixes) {
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0; ) {
       float f = (i * strandSeparation) + baseOffset;
@@ -133,6 +134,7 @@ class StrandsRenderer extends Renderer {
     int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
     if (colix == 0)
       colix = residue.getAlphaCarbonAtom().colixAtom;
-    g3d.drawHermite(colix, screens[iPrev], screens[i], screens[iNext], screens[iNext2]);
+    g3d.drawHermite(colix, screens[iPrev], screens[i],
+                    screens[iNext], screens[iNext2]);
   }
 }

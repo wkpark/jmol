@@ -53,7 +53,7 @@ class CmlReader extends ModelReader {
 
     System.out.println("setting features");
     xmlr.setFeature("http://xml.org/sax/features/validation", false);
-    xmlr.setFeature("http://xml.org/sax/features/namespaces", false);
+    xmlr.setFeature("http://xml.org/sax/features/namespaces", true);
     xmlr.setEntityResolver(cmlh);
     xmlr.setContentHandler(cmlh);
     xmlr.setErrorHandler(cmlh);
@@ -66,7 +66,6 @@ class CmlReader extends ModelReader {
     return model;
   }
 
-  boolean inAtomContext = false;
   int charactersState;
 
   final static int DISCARD = 0;
@@ -102,8 +101,8 @@ class CmlReader extends ModelReader {
         ++moleculeCount;
         return;
       }
+      System.out.println("OK 104");
       if ("atom".equals(qName)) {
-        inAtomContext = true;
         atom = new Atom();
         for (int i=0; i<atts.getLength(); i++) {
             if ("id".equals(atts.getLocalName(i))) {
@@ -121,43 +120,47 @@ class CmlReader extends ModelReader {
         atom.modelNumber = moleculeCount;
         return;
       }
+      System.out.println("OK 123");
       if ("atomArray".equals(qName)) {
-        inAtomContext = true;
         atomArray = new Atom[0];
         for (int i=0; i<atts.getLength(); i++) {
+            System.out.println("OK 127: " + atts.getValue(i));
             if ("atomID".equals(atts.getLocalName(i))) {
                 String[] strings = breakOutStrings(atts.getValue(i));
+                System.out.println("OK 132: " + strings.length);
                 if (strings.length > atomArray.length)
-                    initLargerAromArray(atomArray.length);
+                    initLargerAromArray(strings.length);
+                System.out.println("OK 132: " + atomArray.length);
                 for (int j = 0; j < strings.length; ++j)
                     atomArray[j].atomName = strings[j];
             } else if ("x3".equals(atts.getLocalName(i))) {
                 String[] strings = breakOutStrings(atts.getValue(i));
                 if (strings.length > atomArray.length)
-                    initLargerAromArray(atomArray.length);
+                    initLargerAromArray(strings.length);
                 for (int j = 0; j < strings.length; ++j)
                     atomArray[j].x = parseFloat(strings[j]);
             } else if ("y3".equals(atts.getLocalName(i))) {
                 String[] strings = breakOutStrings(atts.getValue(i));
                 if (strings.length > atomArray.length)
-                    initLargerAromArray(atomArray.length);
+                    initLargerAromArray(strings.length);
                 for (int j = 0; j < strings.length; ++j)
                     atomArray[j].y = parseFloat(strings[j]);
             } else if ("z3".equals(atts.getLocalName(i))) {
                 String[] strings = breakOutStrings(atts.getValue(i));
                 if (strings.length > atomArray.length)
-                    initLargerAromArray(atomArray.length);
+                    initLargerAromArray(strings.length);
                 for (int j = 0; j < strings.length; ++j)
                     atomArray[j].z = parseFloat(strings[j]);
             } else if ("elementType".equals(atts.getLocalName(i))) {
                 String[] strings = breakOutStrings(atts.getValue(i));
                 if (strings.length > atomArray.length)
-                    initLargerAromArray(atomArray.length);
+                    initLargerAromArray(strings.length);
                 for (int j = 0; j < strings.length; ++j)
                     atomArray[j].elementSymbol = strings[j];
             }
         }
-        atom.modelNumber = moleculeCount;
+        for (int j = 0; j < atomArray.length; ++j)
+          atomArray[j].modelNumber = moleculeCount;
         return;
       }
     }
@@ -168,7 +171,6 @@ class CmlReader extends ModelReader {
                          "," + qName + ")");
       try {
         if ("atom".equals(qName)) {
-          inAtomContext = false;
           if (atom.elementSymbol != null &&
               ! Float.isNaN(atom.z)) {
             model.addAtom(atom);
@@ -196,6 +198,7 @@ class CmlReader extends ModelReader {
         chars = str;
       else
         chars += str;
+      System.out.println("End chars");
     }
     
     // Methods for entity resolving, e.g. getting an DTD resolved
@@ -218,9 +221,11 @@ class CmlReader extends ModelReader {
     }
 
     String[] breakOutStrings(String chars) {
+      System.out.println("OK 222");
       StringTokenizer st = new StringTokenizer(chars);
       int stringCount = st.countTokens();
       String[] strings = new String[stringCount];
+      System.out.println("OK 226, stringCount: " + stringCount);
       for (int i = 0; i < stringCount; ++i) {
         try {
           strings[i] = st.nextToken();
@@ -228,14 +233,27 @@ class CmlReader extends ModelReader {
           strings[i] = null;
         }
       }
+      System.out.println("OK 234");
       return strings;
     }
     
     void initLargerAromArray(int atomArrayLength) {
       int currentLength = atomArray.length;
-      Atom[] newatoms = new Atom[atomArrayLength];
-      System.arraycopy(atomArray, 0, newatoms, 0, currentLength);
-      atomArray = newatoms;
+      if (currentLength > 0) {
+        System.out.println("Enlarging atomArray to " + atomArrayLength);
+        Atom[] newatoms = new Atom[atomArrayLength];
+        System.arraycopy(atomArray, 0, newatoms, 0, currentLength);
+        atomArray = newatoms;
+        for (int i=currentLength; i<atomArrayLength; i++) {
+          atomArray[i] = new Atom();
+        }
+      } else {
+        System.out.println("Creating new atomArray of size " + atomArrayLength);
+        atomArray = new Atom[atomArrayLength];
+        for (int i=0; i<atomArrayLength; i++) {
+          atomArray[i] = new Atom();
+        }
+      }
     }
 
     public void error (SAXParseException exception) throws SAXException {

@@ -52,7 +52,53 @@
   <contributor id="AS">
     <name>Agust&#x00ED; S&#x00E1;nchez</name><email>asanc@users.sourceforge.net</email>
   </contributor>
+  <contributor id="CPY">
+    <name>Chih-Peng Yang</name><email>cpyang@siraya.net</email>
+  </contributor>
+  <contributor id="RG">
+    <name>Rajarshi Guha</name><email>rxg218@psu.edu</email>
+  </contributor>
 </contributors>
+
+<changes version="jmol-10">
+  <changes contributor="MTH">
+    Rewritten and improved renderer engine.
+  </changes>
+  <changes contributor="MTH">
+    Rewritten scripting engine with full Chime support.
+  </changes>
+</changes>
+
+<changes version="jmol-9">
+  <change contributor="EW">
+    Activated a plugin architecture for CDK plugins.
+  </change>
+  <change contributor="EW">
+    Fixed a number of IO bugs (closes #783663, #823957 and #826934)
+  </change>
+  <change contributor="EW">
+    Fixed run target in Ant build.xml.
+  </change>
+  <change contributor="EW">
+    Added feedback on memory usage to statusbar.
+  </change>
+  <change contributor="RG">
+    Added reader and writer for HIN (HyperChem) format
+  </change>
+  <change contributor="EW">
+    Added help button in script window.
+  </change>
+  <change contributor="EW">
+    Added license item in help menu.
+  </change>
+  <change contributor="EW">
+    Fixed calculation of unit cell angles in crystal property box
+    (closes #865393 and #863644).
+  </change>
+  <change contributor="EW">
+    Fixed reading of unit cell angles from ShelX files.
+  </change>
+</changes>
 
 <changes version="jmol-8">
   <change contributor="EW">
@@ -67,6 +113,9 @@
   <change contributor="AS">
     Implemented a script command history.
   </change>
+  <change contributor="MTH">
+    Fixed ReaderFactory buffer.reset() problem (closes #799963)
+  </change>
   <change contributor="EW">
     Fixed reading of CML2 style crystal data (closes #792091), and detection of CML
     files without the XML declaration.
@@ -79,6 +128,13 @@
   </change>
   <change contributor="MTH">
     Added JmolAppletProxy to allow applets to fetch remote files.
+  </change>
+  <change contributor="CPY">
+    Added Chinese GUI translation.
+  </change>
+  <change contributor="EW">
+    Added CIF/mmCIF reader with minimal features. Reads unit cell parameters, and atomic
+    coordinates, but not space group symmetry operations (effectively only P1 correctly).
   </change>
 </changes>
 

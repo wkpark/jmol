@@ -39,7 +39,7 @@ import javax.vecmath.Point3i;
 final public class Graphics3D {
 
   JmolViewer viewer;
-  Platform3D platform;
+  Awt3D awt;
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;
@@ -74,7 +74,7 @@ final public class Graphics3D {
   public Graphics3D(JmolViewer viewer) {
     this.viewer = viewer;
     this.g = g;
-    platform = new Awt3D(viewer.getAwtComponent());
+    awt = new Awt3D(viewer.getAwtComponent());
     this.line3d = new Line3D(viewer, this);
     this.circle3d = new Circle3D(viewer, this);
     this.sphere3d = new Sphere3D(viewer, this);
@@ -104,10 +104,10 @@ final public class Graphics3D {
       zbuf = zbuf1 = zbuf4 = null;
       return;
     }
-    platform.allocateImage(width, height, true);
-    g = platform.getGraphics();
+    awt.allocateImage(width, height, true);
+    g = awt.getGraphics();
 
-    pbuf = pbuf1 = platform.getPbuf();
+    pbuf = pbuf1 = awt.getPbuf();
     zbuf = zbuf1 = new short[size1];
     
     //    pbuf4 = new int[size4];
@@ -139,7 +139,7 @@ final public class Graphics3D {
   }
 
   public Image getScreenImage() {
-    return platform.getImage();
+    return awt.getImage();
   }
 
   public void setColor(Color color) {
@@ -353,7 +353,7 @@ final public class Graphics3D {
   public void endRendering() {
     if (tFullSceneAntialiasing)
       downSample();
-    platform.notifyEndOfRendering();
+    awt.notifyEndOfRendering();
   }
 
   public void clearScreenBuffer(Color colorBackground,int xClip, int yClip,

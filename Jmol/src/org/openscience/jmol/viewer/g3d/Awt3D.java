@@ -30,7 +30,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.MemoryImageSource;
 
-final public class Awt3D implements Platform3D {
+final public class Awt3D {
 
   Component component;
   int width, height;

@@ -204,7 +204,7 @@ class PdbReader extends ModelReader {
       atom.modelNumber = currentModelNumber;
       atom.elementSymbol = elementSymbol;
       atom.atomName = atomName;
-      atom.charge = charge;
+      atom.formalCharge = charge;
       atom.occupancy = occupancy;
       atom.bfactor = bfactor;
       atom.x = x; atom.y = y; atom.z = z;

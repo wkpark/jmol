@@ -62,7 +62,7 @@ class MolReader extends ModelReader {
       }
       Atom atom = model.newAtom();
       atom.elementSymbol = elementSymbol;
-      atom.charge = charge;
+      atom.formalCharge = charge;
       atom.x = x; atom.y = y; atom.z = z;
     }
   }

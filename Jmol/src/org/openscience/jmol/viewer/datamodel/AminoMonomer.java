@@ -33,10 +33,11 @@ public class AminoMonomer extends AlphaMonomer {
   // negative values are optional
   final static byte[] interestingAminoAtomIDs = {
     JmolConstants.ATOMID_ALPHA_CARBON,      // 0 CA alpha carbon
-    JmolConstants.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
+    ~JmolConstants.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
     JmolConstants.ATOMID_AMINO_NITROGEN,    // 2 N
     JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C
     ~JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
+    ~JmolConstants.ATOMID_O1,               // 5 O1
   };
 
   static Monomer
@@ -45,8 +46,16 @@ public class AminoMonomer extends AlphaMonomer {
                         int[] specialAtomIndexes, Atom[] atoms) {
     byte[] offsets = scanForOffsets(firstAtomIndex, specialAtomIndexes,
                                     interestingAminoAtomIDs);
-    if (offsets == null ||
-        ! isBondedCorrectly(firstAtomIndex, offsets, atoms))
+    if (offsets == null)
+      return null;
+    if (specialAtomIndexes[JmolConstants.ATOMID_CARBONYL_OXYGEN] < 0) {
+      int carbonylOxygenIndex = specialAtomIndexes[JmolConstants.ATOMID_O1];
+      System.out.println("I see someone who does not have a carbonyl oxygen");
+      if (carbonylOxygenIndex < 0)
+        return null;
+      offsets[1] = (byte)(carbonylOxygenIndex - firstAtomIndex);
+    }
+    if (! isBondedCorrectly(firstAtomIndex, offsets, atoms))
       return null;
     AminoMonomer aminoMonomer =
       new AminoMonomer(chain, group3, seqcode,

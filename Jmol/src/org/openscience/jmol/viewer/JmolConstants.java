@@ -1586,7 +1586,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "N",   //  1 - amino nitrogen
     "CA",  //  2 - alpha carbon
     "C",   //  3 - carbonyl carbon
-    "O",   //  4 - carbonyl oxygen
+    null, // used to be carbonyl oxygen, now can be O or O1
 
     // nucleic acid backbone sugar
     //
@@ -1603,7 +1603,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     // ... But we need to distinguish phosphorus separately because
     // it could be found in phosphorus-only nucleic polymers
-    
 
     // reserved for future expansion ... lipids & carbohydrates
     null, null, null,       // 13 - 15
@@ -1631,8 +1630,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "1HA", // 38 - H on alpha carbon in Gly only
     "2HA", // 39 - 1ALE calls the two GLY hdrogens 1HA & 2HA
 
-    null,  // 40
-    null,  // 41
+    "O",   // 40 - carbonyl oxygen
+    "O1",  // 41 - carbonyl oxygen in some protein residues (4THN)
     null,  // 42
     null,  // 43
     null,  // 44
@@ -1717,11 +1716,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_AMINO_NITROGEN  = 1;
   public final static byte ATOMID_ALPHA_CARBON    = 2;
   public final static byte ATOMID_CARBONYL_CARBON = 3;
-  public final static byte ATOMID_CARBONYL_OXYGEN = 4;
   public final static byte ATOMID_O5_PRIME        = 5;
   public final static byte ATOMID_O3_PRIME        = 9;
   public final static byte ATOMID_NUCLEIC_PHOSPHORUS = 12;
   public final static byte ATOMID_TERMINATING_OXT = 32;
+  public final static byte ATOMID_CARBONYL_OXYGEN = 40;
+  public final static byte ATOMID_O1              = 41;
   public final static byte ATOMID_H5T_TERMINUS    = 45;
   public final static byte ATOMID_O5T_TERMINUS    = 46;
   public final static byte ATOMID_RNA_O2PRIME     = 50;
@@ -1747,8 +1747,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // this is currently defined as C6
   public final static byte ATOMID_NUCLEIC_WING = 69;
 
-  // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
-  public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;
+  // this is entries 1 through 3 ... 3 bits ... N, CA, C
+  public final static int ATOMID_PROTEIN_MASK = 0x07 << 1;
   // this is for groups that only contain an alpha carbon
   public final static int ATOMID_ALPHA_ONLY_MASK = 1 << ATOMID_ALPHA_CARBON;
   // this is entries 5 through through 11 ... 7 bits

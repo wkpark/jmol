@@ -164,7 +164,7 @@
 	</li>
         <li>
 	  Every page must contain a call to
-	  <code>jmolInitialize(codebaseDirectory {,...})</code>
+	  <code>jmolInitialize(codebaseDirectory)</code>
 	  as the first call into the Jmol.js library. 
 	</li>
 
@@ -190,29 +190,14 @@
     <section title="Basic Scripting Commands">
       <section title="jmolInitialize">
 	<code>
-	  jmolInitialize(codebaseDirectory,
-	  {unsupportedBrowserURL}, {noJavaURL})
+	  jmolInitialize(codebaseDirectory)
 	</code>
-	Initializes the Jmol.js library and tests for browser compatibility.
-	<ul>
-	  <li>
-	    The call to <code>jmolInitialize()</code> must be within the
-	    <code>&lt;body&gt;</code> of the HTML page.
-	  </li>
-	  <li>
-	    The required <code>codebaseDirectory</code> parameter specifies
-	    the relative path of the directory containing the Jmol applet
-	    files.
-	  </li>
-	  <li>
-	    The optional <code>unsupportedBrowserURL</code> and
-	    <code>noJavaURL</code> parameters specify relative paths
-	    to HTML pages that should be shown to users with
-	    unsupported/noncompliant web browsers. If these URLs are
-	    not specified then those users will see an <code>alert</code>
-	    message.
-	  </li>
-	</ul>
+	Initializes the Jmol.js JavaScript library. The call to
+	<code>jmolInitialize()</code> must be within the
+	<code>&lt;body&gt;</code> of the HTML page. 
+	The required <code>codebaseDirectory</code> parameter specifies
+	the relative path of the directory containing the Jmol applet
+	files.
       </section>
 
       <section title="jmolApplet">
@@ -477,89 +462,35 @@
 	</p>
       </section>
 
-      <section title="jmolInitializeBypass">
-	<code>jmolInitializeBypass()</code>
-	<p>
-	  This routine can be called if you wish to bypass the
-	  normal Jmol.js JavaScript library initialization. It
-	  simply sets a flag so that the other library entry
-	  points do not complain that the library was not
-	  initialized.
-	</p>
-	<p>
-	  The normal <code>jmolInitialize()</code> routine
-	  calls <code>jmolSetCodeBase()</code>,
-	  <code>jmolCheckBrowser()</code>, and
-	  <code>jmolOnloadResetForms()</code>. This routine
-	  exists to support the <i>rare</i> case where someone
-	  wants to bypass this normal initialization sequence. 
-	</p>
-      </section>
-
-      <section title="jmolSetCodebase">
-	<code>jmolSetCodebase(directory)</code>
-	<p>
-	  This routine is called by <code>jmolInitialize()</code>.
-	  <i>Do not call this routine unless you want to explicitly
-	  avoid calling </i><code>jmolInitialize()</code><i> and you
-	  are prepared to defend your actions.</i>
-	</p>
-
-	<p>
-	  Sets the location of the JmolApplet.jar file on your web server.
-	  There should generally be one copy of the JmolApplet.jar file
-	  on your server and all web pages should point to that one .jar
-	  file.
-	</p>
-      </section>
-
       <section title="jmolCheckBrowser">
-	<code>jmolCheckBrowser({unsupportedBrowserURL})</code>
+	<code>jmolCheckBrowser(action, urlOrMessage, nowOrOnClick)</code>
 	<p>
-	  This routine is called by <code>jmolInitialize()</code>.
-	  <i>Do not call this routine unless you want to explicitly
-	  avoid calling </i><code>jmolInitialize()</code><i> and you
-	  are prepared to defend your actions.</i>
-	</p>
-
-	<p>
-	  Checks users web browser for compliance. If the browser is
-	  incapable of supporting Jmol then the page is redirected to
-	  <code>unsupportedBrowserURL</code>. If unspecified then
-	  an alert message is opened.
-	</p>
-      </section>
-
-      <section title="jmolCheckJava">
-	<code>jmolCheckJava({noJavaURL})</code>
-	<p>
-	  This routine is called by <code>jmolInitialize()</code>.
-	  <i>Do not call this routine unless you want to explicitly
-	  avoid calling </i><code>jmolInitialize()</code><i> and you
-	  are prepared to defend your actions.</i>
-	</p>
-
-	<p>
-	  Checks users web browser for Java capability. Assumes that
-	  <code>jmolCheckBrowser()</code> has already been called.
-	  If the browser does not have Java enabled then the
-	  page is redirected to <code>noJavaURL</code>.
-	  If unspecified then an alert message is opened.
-	</p>
-      </section>
-
-      <section title="jmolOnloadResetForms">
-	<code>jmolOnloadResetForms()</code>
-	<p>
-	  This routine is called by <code>jmolInitialize()</code>.
-	  <i>Do not call this routine unless you want to explicitly
-	  avoid calling </i><code>jmolInitialize()</code><i> and you
-	  are prepared to defend your actions.</i>
+	  Checks users web browser for compliance and compatibility
+	  with Jmol.
 	</p>
 	<p>
-	  Hooks the <code>window.onload</code> event so that
-	  forms will be reset when the user hits the reload/refresh
-	  button. 
+	  <code>action</code> is a string which is one of
+	  "popup", "redirect", or "alert". "popup" will bring up
+	  another browser window with the URL specified in
+	  <code>urlOrMessage</code>. "redirect" will redirect the
+	  existing page to the URL specified in
+	  <code>urlOrMessage</code>. "alert" will bring up a
+	  JavaScript alert message box with the 
+	  text message specified in <code>urlOrMessage</code>.
+	</p>
+	<p>
+	  <code>nowOrOnClick</code> is a string saying either
+	  "now" or "onClick". It specifies when the browser
+	  check is to take place. "now" specifies that the
+	  check is to take place immediately. "onClick" indicates
+	  that the check is to take place the first time a
+	  control such as a <code>jmolButton()</code> is clicked.
+	  <code>nowOrOnClick</code> defaults to "onClick";
+	</p>
+	<p>
+	  If this call is not made then a default alert
+	  message is displayed when a user with non-compliant
+	  browser clicks on a jmol control. 
 	</p>
       </section>
 

@@ -1976,7 +1976,7 @@
   <fah_proj number="1246" name="p1246_fsnat_305K_3P-RF" file="y"
     server="171.64.122.116" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1247" name="p1247_fsunf_305K_3P-RF"
+  <fah_proj number="1247" name="p1247_fsunf_305K_3P-RF" file="y"
     server="171.64.122.116" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1248" name="p1248_fsnat_305K_3P-PME" file="y"
@@ -2057,7 +2057,7 @@
   <fah_proj number="1273" name="p1273_proj1273_A21ext_d15_99phi" file="y"
     server="171.65.103.155" atoms="8442" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1274" name="p1274_proj1274_A21nat_d15_99phi"
+  <fah_proj number="1274" name="p1274_proj1274_A21nat_d15_99phi" file="y"
     server="171.65.103.155" atoms="8433" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1275" name="p1275_proj1275_A21ext_d19_99phi" file="y"

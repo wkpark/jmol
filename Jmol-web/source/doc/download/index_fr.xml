@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index.xml (v 1.2)
+  Translated from default version : index.xml (v 1.4)
 -->
 <document>
   <body>
@@ -22,26 +22,10 @@
           </li>
         </ul>
         Des versions de tests sont aussi disponibles de temps en temps au m&#x00EA;me endroit.
-<!--      
-        Avec un certain d&#x00E9;lai, les packages binaires et sources
-        sont disponibles, aussi bien sur Debian GNU/Linux (voir ci-dessous)
-        que sur Suse/redHat Linux.
       </p>
-      <h4>Debian Apt-get</h4>
       <p>
-        Les utilisateurs de Debian peuvent aussi r&#x00E9;cup&#x00E9;rer
-        le package avec apt-get depuis
-        <a href="http://debian.wgdd.de/">debian.wgdd.de/</a>
-        en ajoutant:
-        <pre><tt>
-deb <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
-deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a> unstable main contrib non-free
-        </tt></pre>
-        &#x00E0; /etc/apt/sources.list, et en faisant 'apt-get update &amp;&amp; apt-get install jmol/unstable'. 
-        Le repository a &#x00E9;t&#x00E9; modifi&#x00E9;, parce que
-        <a href="http://mentors.debian.net/">mentors.debian.net</a>
-        ne fournit plus les packages binaires.
--->
+        Des informations sur les packages binaires pour Linux sont sur le
+        <a href="http://wiki.jmol.org/JmolSupport/Linux">Wiki de Jmol</a>.
       </p>
     </section>
 

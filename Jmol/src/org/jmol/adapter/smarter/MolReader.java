@@ -38,8 +38,8 @@ class MolReader extends ModelReader {
     reader.readLine();
     reader.readLine();
     String countLine = reader.readLine();
-    int atomCount = Integer.parseInt(countLine.substring(0, 3).trim());
-    int bondCount = Integer.parseInt(countLine.substring(3, 6).trim());
+    int atomCount = parseInt(countLine, 0, 3);
+    int bondCount = parseInt(countLine, 3, 6);
     readAtoms(reader, atomCount);
     readBonds(reader, bondCount);
     return model;
@@ -51,12 +51,12 @@ class MolReader extends ModelReader {
     for (int i = 0; i < atomCount; ++i) {
       String line = reader.readLine();
       String elementSymbol = line.substring(31,34).trim().intern();
-      float x = Float.valueOf(line.substring( 0,10).trim()).floatValue();
-      float y = Float.valueOf(line.substring(10,20).trim()).floatValue();
-      float z = Float.valueOf(line.substring(20,30).trim()).floatValue();
+      float x = parseFloat(line,  0, 10);
+      float y = parseFloat(line, 10, 20);
+      float z = parseFloat(line, 20, 30);
       int charge = 0;
       if (line.length() >= 39) {
-        int chargeCode = Integer.parseInt(line.substring(36, 39).trim());
+        int chargeCode = parseInt(line, 36, 39);
         if (chargeCode != 0)
           charge = 4 - chargeCode;
       }
@@ -71,9 +71,9 @@ class MolReader extends ModelReader {
     throws Exception {
     for (int i = 0; i < bondCount; ++i) {
       String line = reader.readLine();
-      int atomIndex1 = Integer.parseInt(line.substring(0, 3).trim());
-      int atomIndex2 = Integer.parseInt(line.substring(3, 6).trim());
-      int order = Integer.parseInt(line.substring(6, 9).trim());
+      int atomIndex1 = parseInt(line, 0, 3);
+      int atomIndex2 = parseInt(line, 3, 6);
+      int order = parseInt(line, 6, 9);
       if (order == 4)
         order = ModelAdapter.ORDER_AROMATIC;
       model.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));

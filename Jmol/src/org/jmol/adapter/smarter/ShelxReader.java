@@ -116,10 +116,10 @@ class ShelxReader extends ModelReader {
      */
     StringTokenizer st = new StringTokenizer(restOfLine);
 
-    float wavelength = floatFromString(st.nextToken());
+    float wavelength = parseFloat(st.nextToken());
     float[] notionalUnitcell = new float[6];
     for (int i = 0; i < 6; ++i)
-      notionalUnitcell[i] = floatFromString(st.nextToken());
+      notionalUnitcell[i] = parseFloat(st.nextToken());
     model.wavelength = wavelength;
     model.notionalUnitcell = notionalUnitcell;
   }
@@ -142,10 +142,10 @@ class ShelxReader extends ModelReader {
       // a SHELX command is an atom
       StringTokenizer st = new StringTokenizer(line);
       String atomName = st.nextToken();
-      int scatterFactor = intFromString(st.nextToken());
-      float a = floatFromString(st.nextToken());
-      float b = floatFromString(st.nextToken());
-      float c = floatFromString(st.nextToken());
+      int scatterFactor = parseInt(st.nextToken());
+      float a = parseFloat(st.nextToken());
+      float b = parseFloat(st.nextToken());
+      float c = parseFloat(st.nextToken());
       // skip the rest
       
       String elementSymbol;

@@ -41,9 +41,9 @@ class JmeReader extends ModelReader {
     try {
       line = reader.readLine();
       tokenizer = new StringTokenizer(line, "\t ");
-      int atomCount = Integer.parseInt(tokenizer.nextToken());
+      int atomCount = parseInt(tokenizer.nextToken());
       System.out.println("atomCount=" + atomCount);
-      int bondCount = Integer.parseInt(tokenizer.nextToken());
+      int bondCount = parseInt(tokenizer.nextToken());
       model.setModelName("JME");
       readAtoms(atomCount);
       readBonds(bondCount);
@@ -62,8 +62,8 @@ class JmeReader extends ModelReader {
       String elementSymbol = (indexColon > 0
                               ? strAtom.substring(0, indexColon)
                               : strAtom).intern();
-      float x = Float.valueOf(tokenizer.nextToken()).floatValue();
-      float y = Float.valueOf(tokenizer.nextToken()).floatValue();
+      float x = parseFloat(tokenizer.nextToken());
+      float y = parseFloat(tokenizer.nextToken());
       float z = 0;
       Atom atom = model.newAtom();
       atom.elementSymbol = elementSymbol;
@@ -73,9 +73,9 @@ class JmeReader extends ModelReader {
 
   void readBonds(int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
-      int atomIndex1 = Integer.parseInt(tokenizer.nextToken());
-      int atomIndex2 = Integer.parseInt(tokenizer.nextToken());
-      int order = Integer.parseInt(tokenizer.nextToken());
+      int atomIndex1 = parseInt(tokenizer.nextToken());
+      int atomIndex2 = parseInt(tokenizer.nextToken());
+      int order = parseInt(tokenizer.nextToken());
       //      System.out.println("bond "+atomIndex1+"->"+atomIndex2+" "+order);
       if (order < 1) {
         //        System.out.println("Stereo found:" + order);

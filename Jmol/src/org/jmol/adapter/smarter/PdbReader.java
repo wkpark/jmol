@@ -175,16 +175,13 @@ class PdbReader extends ModelReader {
       }
       
       /****************************************************************/
-      int serial = Integer.parseInt(line.substring(6, 11).trim());
+      int serial = parseInt(line, 6, 11);
       /****************************************************************
        * coordinates
        ****************************************************************/
-      float x =
-        Float.valueOf(line.substring(30, 38).trim()).floatValue();
-      float y =
-        Float.valueOf(line.substring(38, 46).trim()).floatValue();
-      float z =
-        Float.valueOf(line.substring(46, 54).trim()).floatValue();
+      float x = parseFloat(line, 30, 38);
+      float y = parseFloat(line, 38, 46);
+      float z = parseFloat(line, 46, 54);
       /****************************************************************/
       if (serial >= serialMap.length) {
         int[] t = new int[serial + 500];
@@ -211,7 +208,7 @@ class PdbReader extends ModelReader {
     int sourceSerial = -1;
     int sourceIndex = -1;
     try {
-      sourceSerial = Integer.parseInt(line.substring(6, 11).trim());
+      sourceSerial = parseInt(line, 6, 11);
       sourceIndex = serialMap[sourceSerial] - 1;
       if (sourceIndex < 0)
         return;
@@ -219,7 +216,7 @@ class PdbReader extends ModelReader {
       for (int i = 0; i < 9; i += (i == 5 ? 2 : 1)) {
       //      for (int i = 0; i < 4; i += (i == 5 ? 2 : 1)) {
         int targetSerial = getTargetSerial(i);
-        if (targetSerial == -1)
+        if (targetSerial < 0)
           continue;
         int targetIndex = serialMap[targetSerial] - 1;
         if (targetIndex < 0)
@@ -246,17 +243,9 @@ class PdbReader extends ModelReader {
   int getTargetSerial(int i) {
     int offset = i * 5 + 11;
     int offsetEnd = offset + 5;
-    if (offsetEnd <= lineLength) {
-      String str = line.substring(offset, offsetEnd).trim();
-      if (str.length() > 0) {
-        try {
-          int target = Integer.parseInt(str);
-          return target;
-        } catch (NumberFormatException e) {
-        }
-      }
-    }
-    return -1;
+    if (offsetEnd <= lineLength)
+      return parseInt(line, offset, offsetEnd);
+    return Integer.MIN_VALUE;
   }
 
   void structure() {
@@ -285,8 +274,7 @@ class PdbReader extends ModelReader {
       int endModelColumn = 14;
       if (endModelColumn > lineLength)
         endModelColumn = lineLength;
-      int modelNumber =
-        Integer.parseInt(line.substring(startModelColumn, endModelColumn).trim());
+      int modelNumber = parseInt(line, startModelColumn, endModelColumn);
       if (modelNumber != currentModelNumber + 1)
         logger.log("Model number sequence seems confused");
       currentModelNumber = modelNumber;
@@ -314,9 +302,7 @@ class PdbReader extends ModelReader {
   }
 
   float getFloat(int ich, int cch) throws Exception {
-    String strFloat = line.substring(ich, ich+cch).trim();
-    float value = Float.valueOf(strFloat).floatValue();
-    return value;
+    return parseFloat(line, ich, ich+cch);
   }
 
   void scale(int n) throws Exception {

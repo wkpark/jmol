@@ -39,11 +39,83 @@ abstract class ModelReader {
 
   abstract Model readModel(BufferedReader reader) throws Exception;
 
-  static float floatFromString(String str) throws NumberFormatException {
-    return Float.valueOf(str).floatValue();
+  static float parseFloat(String str) {
+    return parseFloat(str, 0, str.length());
+  }
+
+  static float parseFloat(String str, int ich) {
+    return parseFloat(str, ich, str.length());
+  }
+
+  static float[] decimalScale =
+  {0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f, 0.000001f, 0.0000001f, 0.00000001f};
+
+  static float parseFloat(String str, int ichStart, int ichMax) {
+    boolean digitSeen = false;
+    float value = 0;
+    int ich = ichStart;
+    while (ich < ichMax && str.charAt(ich) == ' ')
+      ++ich;
+    boolean negative = false;
+    if (ich < ichMax && str.charAt(ich) == '-') {
+      ++ich;
+      negative = true;
+    }
+    char ch = 0;
+    while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
+      value = value * 10 + (ch - '0');
+      ++ich;
+      digitSeen = true;
+    }
+    if (ch == '.') {
+      int iscale = 0;
+      while (++ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
+        if (iscale < decimalScale.length)
+          value += (ch - '0') * decimalScale[iscale];
+        ++iscale;
+        digitSeen = true;
+      }
+    }
+    if (! digitSeen)
+      value = Integer.MIN_VALUE;
+    else if (negative)
+      value = -value;
+    //    System.out.println("parseFloat(" + str + "," + ichStart + "," +
+    //                       ichMax + ") -> " + value);
+    return value;
   }
   
-  static int intFromString(String str) throws NumberFormatException {
-    return Integer.parseInt(str);
+  static int parseInt(String str) {
+    return parseInt(str, 0, str.length());
+  }
+
+  static int parseInt(String str, int ich) {
+    return parseInt(str, ich, str.length());
+  }
+
+  static int parseInt(String str, int ichStart, int ichMax) {
+    boolean digitSeen = false;
+    int value = 0;
+    int ich = ichStart;
+    while (ich < ichMax && str.charAt(ich) == ' ')
+      ++ich;
+    boolean negative = false;
+    if (ich < ichMax && str.charAt(ich) == '-') {
+      negative = true;
+      ++ich;
+    }
+    char ch;
+    while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
+      value = value * 10 + (ch - '0');
+      digitSeen = true;
+      ++ich;
+    }
+    if (! digitSeen)
+      value = Integer.MIN_VALUE;
+    else if (negative)
+      value = -value;
+    //    System.out.println("parseInt(" + str + "," + ichStart + "," +
+    //                       ichMax + ") -> " + value);
+    return value;
   }
 }

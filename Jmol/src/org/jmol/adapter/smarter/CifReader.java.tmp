@@ -44,20 +44,18 @@ public class CifReader extends ModelReader {
   float[] notionalUnitcell;
 
   
-  float a = Float.NaN;
-  float b = Float.NaN;
-  float c = Float.NaN;
-  float alpha = Float.NaN;
-  float beta = Float.NaN;
-  float gamma = Float.NaN;
-  
+  void initialize() {
+    notionalUnitcell = new float[6];
+    for (int i = 6; --i >= 0; )
+      notionalUnitcell[i] = Float.NaN;
+  }
+
   /**
    * Create an CIF like file reader.
    *
    * @param input source of CIF data
    */
-  Model readModel(BufferedReader reader, ModelAdapter.Logger logger)
-    throws Exception {
+  Model readModel(BufferedReader reader) throws Exception {
     this.logger = logger;
     model = new Model(ModelAdapter.MODEL_TYPE_OTHER);
     
@@ -273,15 +271,6 @@ public class CifReader extends ModelReader {
         return returnVal;
     }
 
-  private float parseFloat(String line, int startIndex) {
-    float value = 0;
-    int ich = startIndex;
-    int cch = line.length();
-    char ch;
-    while (cch < line.length && (ch = line.charAt(ich)) == ' ')
-      ++ich;
-  }
-    
     private String extractFirstLetters(String value) {
         StringBuffer result = new StringBuffer();
         for (int i=0; i<value.length(); i++) {

@@ -72,13 +72,12 @@ class XyzReader extends ModelReader {
       StringTokenizer tokenizer =
         new StringTokenizer(reader.readLine(), "\t ");
       String elementSymbol = tokenizer.nextToken().intern();
-      float x = Float.valueOf(tokenizer.nextToken()).floatValue();
-      float y = Float.valueOf(tokenizer.nextToken()).floatValue();
-      float z = Float.valueOf(tokenizer.nextToken()).floatValue();
+      float x = parseFloat(tokenizer.nextToken());
+      float y = parseFloat(tokenizer.nextToken());
+      float z = parseFloat(tokenizer.nextToken());
       int j;
       for (j = 0; j < 4 && tokenizer.hasMoreTokens(); ++j)
-        chargeAndOrVector[j] =
-          Float.valueOf(tokenizer.nextToken()).floatValue();
+        chargeAndOrVector[j] = parseFloat(tokenizer.nextToken());
       int charge = (j == 1 || j == 4) ? (int)chargeAndOrVector[0] : 0;
       float vectorX, vectorY, vectorZ;
       vectorX = vectorY = vectorZ = Float.NaN;

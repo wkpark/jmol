@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -273,27 +273,47 @@ class SurfaceRenderer extends ShapeRenderer {
                     Atom[] atoms, short[] colixes, int[][] surfaceConvexMaps) {
     Point3f[] points = cavity.points;
     short[] normixes = cavity.normixes;
-    for (int i = 4; --i >= 0; )
+    for (int i = points.length; --i >= 0; )
       viewer.transformPoint(points[i], screens[i]);
-    
+
     short colix1 = getColix(cavity.colixI, colixes, atoms, cavity.ixI);
     short colix2 = getColix(cavity.colixJ, colixes, atoms, cavity.ixJ);
     short colix3 = getColix(cavity.colixK, colixes, atoms, cavity.ixK);
-    short colix0 = Graphics3D.YELLOW;
+    short colixCenter = Graphics3D.YELLOW;
                         
+    Point3i screenCenter = screens[0];
+    short normixCenter = normixes[0];
 
-    g3d.fillTriangle(false,
-                     screens[0], colix0, normixes[0],
-                     screens[1], colix1, normixes[1],
-                     screens[2], colix2, normixes[2]);
-    g3d.fillTriangle(false,
-                     screens[0], colix0, normixes[0],
-                     screens[2], colix2, normixes[2],
-                     screens[3], colix3, normixes[3]);
-    g3d.fillTriangle(false,
-                     screens[0], colix0, normixes[0],
-                     screens[1], colix1, normixes[1],
-                     screens[3], colix3, normixes[3]);
+    for (int i = 1; i < points.length; ++i) {
+      int j = i + 1;
+      if (j == points.length)
+        j = 1;
+      short colix = Graphics3D.YELLOW;
+      switch(i) {
+      case 1:
+        colix = Graphics3D.GREEN;
+        break;
+      case 2:
+        colix = Graphics3D.PINK;
+        break;
+      case 3:
+        colix = Graphics3D.ORANGE;
+        break;
+      case 4:
+        colix = Graphics3D.CYAN;
+        break;
+      case 5:
+        colix = Graphics3D.MAGENTA;
+        break;
+        
+      default:
+        colix = Graphics3D.WHITE;
+      }
+      g3d.fillTriangle(false,
+                       screenCenter, Graphics3D.RED, normixCenter,
+                       screens[i], colix, normixes[i],
+                       screens[j], colix, normixes[j]);
+    }
   }
   
   final static boolean getBit(int[] bitmap, int i) {

@@ -3,9 +3,9 @@
  * $Date$
  * $Revision$
  *
- * Copyright (C) 2003-2004  The Jmol Development Team
+ * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
- * Contact: jmol-developers@lists.sf.net
+ * Contact: miguel@jmol.org
  *
  *  This library is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU Lesser General Public
@@ -691,6 +691,8 @@ class Surface extends Shape {
     1, 6, 12
   };
 
+  private final static float radiansPerSegment = 15 * 2*(float)Math.PI/360;
+
   class Cavity {
     final int ixI, ixJ, ixK;
     final Point3f[] points;
@@ -700,44 +702,65 @@ class Surface extends Shape {
     Cavity() {
       ixI = indexI; ixJ = indexJ; ixK = indexK;
 
-      normixes = new short[4];
-      points = new Point3f[25];
-      for (int i = 25; --i >= 0; )
-        points[i] = new Point3f();
-
       vectorPI.sub(centerI, probeIJK);
       vectorPI.normalize();
-      points[1].scaleAdd(radiusP, vectorPI, probeIJK);
-      normixes[1] = g3d.getNormix(vectorPI);
-      
       vectorPJ.sub(centerJ, probeIJK);
       vectorPJ.normalize();
-      points[2].scaleAdd(radiusP, vectorPJ, probeIJK);
-      normixes[2] = g3d.getNormix(vectorPJ);
-      
       vectorPK.sub(centerK, probeIJK);
       vectorPK.normalize();
-      points[3].scaleAdd(radiusP, vectorPK, probeIJK);
-      normixes[3] = g3d.getNormix(vectorPK);
-
+      float radiansIJ = vectorPI.angle(vectorPJ);
+      int segmentsIJ = (int)(radiansIJ / radiansPerSegment);
+      if (segmentsIJ == 0)
+        ++segmentsIJ;
+      float radiansJK = vectorPJ.angle(vectorPK);
+      int segmentsJK = (int)(radiansJK / radiansPerSegment);
+      if (segmentsJK == 0)
+        ++segmentsJK;
+      float radiansKI = vectorPK.angle(vectorPI);
+      int segmentsKI = (int)(radiansKI / radiansPerSegment);
+      if (segmentsKI == 0)
+        ++segmentsKI;
+      
+      int pointCount = 1 + segmentsIJ + segmentsJK + segmentsKI;
+      normixes = new short[pointCount];
+      points = new Point3f[pointCount];
+      for (int i = pointCount; --i >= 0; )
+        points[i] = new Point3f();
+      
       vectorT.add(vectorPI, vectorPJ);
       vectorT.add(vectorPK);
       vectorT.normalize();
       points[0].scaleAdd(radiusP, vectorT, probeIJK);
       normixes[0] = g3d.getNormix(vectorT);
 
-      for (int i = 0; i < gcSplits.length; i += 3)
-        splitGreatCircle(gcSplits[i], gcSplits[i + 1], gcSplits[i + 2]);
-      for (int i = 13; i < 25; ++i)
-        splitGreatCircle(0, i - 12, i);
+      addSegments(radiansIJ, segmentsIJ, vectorPI, vectorPJ,
+                  points, normixes, 1);
+      addSegments(radiansJK, segmentsJK, vectorPJ, vectorPK,
+                  points, normixes, 1 + segmentsIJ);
+      addSegments(radiansKI, segmentsKI, vectorPK, vectorPI,
+                  points, normixes, 1 + segmentsIJ + segmentsJK);
+      for (int i = 0; i < points.length; ++i) {
+        System.out.println("points[" + i + "]=" + points[i]);
+      }
     }
 
-    void splitGreatCircle(int indexA, int indexB, int indexMiddle) {
-      vectorT.sub(points[indexA], probeIJK);
-      vectorT1.sub(points[indexB], probeIJK);
-      vectorT.add(vectorT1);
-      vectorT.normalize();
-      points[indexMiddle].scaleAdd(radiusP, vectorT, probeIJK);
+    void addSegments(float radians, float segments, Vector3f v1, Vector3f v2,
+                     Point3f[] points, short[] normixes, int index) {
+      points[index].scaleAdd(radiusP, v1, probeIJK);
+      normixes[index] = g3d.getNormix(v1);
+      if (segments == 1)
+        return;
+      vectorT.cross(v1, v2);
+      aaT.set(vectorT, 0);
+      float radiansPerSegment = radians / segments;
+      for (int i = 0, j = index + i; i < segments; ++i, ++j) {
+        aaT.angle =  i * radiansPerSegment;
+        matrixT.set(aaT);
+        vectorT.set(v1);
+        matrixT.transform(vectorT, vectorT1);
+        points[j].scaleAdd(radiusP, vectorT1, probeIJK);
+        normixes[j] = g3d.getNormix(vectorT1);
+      }
     }
   }
 

@@ -177,7 +177,6 @@ final class Shade3D {
     as defined by D. H. Lehmer and described by Donald E. Knuth in
     The Art of Computer Programming,
     Volume 2: Seminumerical Algorithms, section 3.2.1.
-  */
 
   // this doesn't really need to be synchronized
   // no serious harm done if two threads write seed at the same time
@@ -186,6 +185,14 @@ final class Shade3D {
     seed = (seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1);
     //    return (int)(seed >>> (48 - bits));
     return (int)(seed >>> 40);
+  }
+  */
+
+  /* uses RANDU algorithm ... bad randomness but cheap */
+  static int seed = 0x12345679; // turn lo bit on
+  static int nextRandom8Bit() {
+    seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+    return seed >> 23;
   }
 
 

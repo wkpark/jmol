@@ -4,7 +4,8 @@
     <title>Jmol</title>
 
     <header>
-      <table border="1" width="600" bgcolor="#FFFAF0">
+      <table border="1" width="600" bgcolor="#FFFAF0"
+	     cellpadding="10">
 	<tr>
 	  <td><script>
 	    jmolApplet(300, "script script/promotion1.txt");
@@ -15,16 +16,19 @@
 	    </p>
 	    <p>
 	      It is running a script written in
-	      the Jmol/Rasmol/Chime scripting language.
+	      the Jmol/RasMol/Chime scripting language.
 	    </p>
 	    <p>
-	      It is <i>not</i> a movie, slide show, or animation ...
+	      It is <i>not</i> a movie, slide show, or animated image file ...
 	      Jmol is an interactive web browser applet.
 	    </p>
 	  </td>
 	</tr>
       </table>
-      <br />
+      <p>
+	<i>Check out the </i><a href="./demo/">Demonstration pages</a>
+	<i>to see buttons and menus in action</i>
+      </p>
       <hr />
     </header>
     

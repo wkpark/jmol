@@ -43,6 +43,25 @@ echo "Jmol"
 delay 4
 #
 set echo off;
+restrict none;
+set echo off;
+set echo top center; font echo 18; color echo blueviolet
+echo "RasMol/Chime script compatibility"
+delay 2;
+set echo middle center; font echo 20; color echo springgreen
+echo "Button/menu control"
+delay 2;
+set echo bottom center; font echo 22; color echo lavenderblush
+echo "for building tutorials"
+delay 3;
+#
+set echo off;
+set echo middle center; font echo 60 serif bold; color echo yellow
+echo "Jmol"
+delay 4
+#
+
+set echo off;
 
 script script/proteins.txt
 restrict none;

@@ -32,6 +32,10 @@ var undefined; // for IE 5 ... wherein undefined is undefined
 ////////////////////////////////////////////////////////////////
 
 function jmolInitialize(codebaseDirectory) {
+  if (_jmol.initialized) {
+    alert("jmolInitialize() should only be called *ONCE* within a page");
+    return;
+  }
   if (! codebaseDirectory) {
     alert("codebaseDirectory is a required parameter to jmolInitialize");
     codebaseDirectory = ".";
@@ -502,7 +506,7 @@ function _jmolApplet(size, modelFilename, inlineModel, script, nameSuffix) {
       t += "  <param name='loadInline' value='" + inlineModel + "' />\n";
     if (script)
       t += "  <param name='script' value='" + script + "' />\n";
-    t += "</applet>\n";
+    t += "</applet>";
     jmolSetTarget(nameSuffix);
     ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)

@@ -70,12 +70,24 @@
       </section>
     </section>
     
-    <section title="Jmol10pre20">
+    <section title="Jmol10pre21">
       <p>
-	Jmol version 10 pre-release 20 was released on Sat 27 Nov 2004.
+	Jmol version 10 pre-release 21 was released on Tue 30 Nov 2004.
 	<ul>
 	  <li>
-	    work on Jmol.js JavaScript library
+	    workaround for Safari/OS X bug that caused button problems
+	  </li>
+	  <li>
+	    work on Jmol.js library ... more forgiving with some non-compliant browsers
+	  </li>
+	  <li>
+	    autobond maximum bonding limits effectively removed
+	  </li>
+	  <li>
+	    'color group' implemented to RasMol compliance
+	  </li>
+	  <li>
+	    'set picking select' behaves like RasMol/Chime
 	  </li>
 	  <li>
 	    other bug fixes
@@ -83,17 +95,17 @@
 	</ul>
       </p>
       <p>
-	<a href="Jmol10pre20.zip">
+	<a href="Jmol10pre21.zip">
 	  <font size="+1">
 	    <i>Give me the code!</i>
-	    Jmol10pre20.zip
+	    Jmol10pre21.zip
 	  </font>
 	</a>
       </p>
       <p>
-	<a href="Jmol10pre19.zip">
+	<a href="Jmol10pre20.zip">
 	  <font size="-1">
-	    <i>Give me the old code</i> Jmol10pre19.zip
+	    <i>Give me the old code</i> Jmol10pre20.zip
 	  </font>
 	</a>
       </p>
@@ -103,7 +115,7 @@
       </p>
       <p>
 	The Java <b>jar</b> tool will work fine since a .jar is the same
-	format as .zip : <b>jar xf Jmol10pre20.zip</b>
+	format as .zip : <b>jar xf Jmol10pre21.zip</b>
       </p>
       <p>
 	To run the jmol application you can type: <b>java -jar Jmol.jar</b>

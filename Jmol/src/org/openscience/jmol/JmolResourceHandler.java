@@ -18,8 +18,10 @@
  */
 package org.openscience.jmol;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import javax.swing.JComponent;
@@ -34,11 +36,19 @@ import javax.swing.ImageIcon;
 class JmolResourceHandler {
 
   private static JmolResourceHandler instance;
-  private ResourceBundle resourceBundle;
+  private ResourceBundle stringsResourceBundle;
+  private ResourceBundle generalResourceBundle;
 
   private JmolResourceHandler() {
-    resourceBundle =
-        ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
+    stringsResourceBundle =
+      ResourceBundle.getBundle("org.openscience.jmol.Properties.Jmol");
+    try {
+      generalResourceBundle = new PropertyResourceBundle(getClass()
+        .getClassLoader()
+          .getResourceAsStream("org/openscience/jmol/Properties/Jmol-resources.properties"));
+    } catch (IOException ex) {
+      throw new RuntimeException(ex.toString());
+    }
   }
 
   public static JmolResourceHandler getInstance() {
@@ -50,15 +60,14 @@ class JmolResourceHandler {
 
   public synchronized ImageIcon getIcon(String key) {
 
-    String imageName = null;
     String resourceName = null;
     try {
       resourceName = getString(key);
-      imageName = "org/openscience/jmol/images/" + resourceName;
     } catch (MissingResourceException e) {
     }
 
-    if (imageName != null) {
+    if (resourceName != null) {
+      String imageName = "org/openscience/jmol/images/" + resourceName;
       URL imageUrl = this.getClass().getClassLoader().getResource(imageName);
       if (imageUrl != null) {
         return new ImageIcon(imageUrl);
@@ -74,8 +83,14 @@ class JmolResourceHandler {
 
     String result = null;
     try {
-      result = resourceBundle.getString(key);
+      result = stringsResourceBundle.getString(key);
     } catch (MissingResourceException e) {
+    }
+    if (result == null) {
+      try {
+        result = generalResourceBundle.getString(key);
+      } catch (MissingResourceException e) {
+      }
     }
     return result;
   }
@@ -95,16 +110,6 @@ class JmolResourceHandler {
     }
     String translatedText = getString(key.toString());
     return (translatedText != null) ? translatedText : text;
-  }
-
-  public synchronized Object getObject(String key) {
-
-    Object result = null;
-    try {
-      result = resourceBundle.getObject(key);
-    } catch (MissingResourceException e) {
-    }
-    return result;
   }
 
 }

@@ -1,6 +1,6 @@
 
 package org.openscience.jmol;
-
+import org.openscience.jmol.util.*;
 import java.util.Vector;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix3d;
@@ -233,8 +233,6 @@ public class CrystalFile extends ChemFile {
     // Generate a list of equivalent atoms.
     generateAtoms(crystalFAtomRedPos, crystalFrame, frameEquivAtoms);
 
-
-
     //Compute the coordinates of the unit cell box frames.
     boxEdges = generateUnitBoxFrame();
 
@@ -251,6 +249,10 @@ public class CrystalFile extends ChemFile {
 
       //store in reduced coordinate in *this* object
       this.crystalAtomRedPos.setElementAt(crystalFAtomRedPos, whichframe);
+
+      //store the PhysicalProperties 
+      crystalFrame.setFrameProperties
+	(getFrame(whichframe).getFrameProperties());
 
       //store in cartesian coordinate in *super* object    
       super.setFrame(crystalFrame, whichframe);
@@ -299,7 +301,7 @@ public class CrystalFile extends ChemFile {
     //coordinate (atomCrystCoord) in cartesian atomic 
     //position (atomPos) 
 
-    op.transpose(arrayToMatrix3d(unitCellBoxS.getRprimd()));
+    op.transpose(MathUtil.arrayToMatrix3d(unitCellBoxS.getRprimd()));
 
 
     int atomCrystalIndex = 0;
@@ -317,12 +319,12 @@ public class CrystalFile extends ChemFile {
 	minc = 0;
 	maxc = 0;
       } else {
-	mina = intSup(atomBox[0][0] - unitCellAtomRedPos[at][0]);
-	maxa = intInf(atomBox[1][0] - unitCellAtomRedPos[at][0]);
-	minb = intSup(atomBox[0][1] - unitCellAtomRedPos[at][1]);
-	maxb = intInf(atomBox[1][1] - unitCellAtomRedPos[at][1]);
-	minc = intSup(atomBox[0][2] - unitCellAtomRedPos[at][2]);
-	maxc = intInf(atomBox[1][2] - unitCellAtomRedPos[at][2]);
+	mina = MathUtil.intSup(atomBox[0][0] - unitCellAtomRedPos[at][0]);
+	maxa = MathUtil.intInf(atomBox[1][0] - unitCellAtomRedPos[at][0]);
+	minb = MathUtil.intSup(atomBox[0][1] - unitCellAtomRedPos[at][1]);
+	maxb = MathUtil.intInf(atomBox[1][1] - unitCellAtomRedPos[at][1]);
+	minc = MathUtil.intSup(atomBox[0][2] - unitCellAtomRedPos[at][2]);
+	maxc = MathUtil.intInf(atomBox[1][2] - unitCellAtomRedPos[at][2]);
       }
       
       for (int i = mina; i <= maxa; i++) {
@@ -337,7 +339,7 @@ public class CrystalFile extends ChemFile {
             crystalFAtomRedPos.addElement(newAtomRedPos);
 
             double[] newAtomCartPos = new double[3];
-            newAtomCartPos = mulVec(op, newAtomRedPos);
+            newAtomCartPos = MathUtil.mulVec(op, newAtomRedPos);
 
             crystalFrame.addAtom(unitCellBoxS.getAtomType(at),
                 newAtomCartPos[0], newAtomCartPos[1], newAtomCartPos[2]);
@@ -407,15 +409,15 @@ public class CrystalFile extends ChemFile {
     //coordinate (atomCrystCoord) in cartesian atomic 
     //position (atomPos) 
 
-    op.transpose(arrayToMatrix3d(unitCellBoxS.getRprimd()));
+    op.transpose(MathUtil.arrayToMatrix3d(unitCellBoxS.getRprimd()));
 
     double[] redEdge = new double[3];
     double[] cartEdge;
 
-    for (int i = intSup(unitBox[0][0]); i <= intInf(unitBox[1][0]) - 1; i++) {
-      for (int j = intSup(unitBox[0][1]); j <= intInf(unitBox[1][1]) - 1;
+    for (int i = MathUtil.intSup(unitBox[0][0]); i <= MathUtil.intInf(unitBox[1][0]) - 1; i++) {
+      for (int j = MathUtil.intSup(unitBox[0][1]); j <= MathUtil.intInf(unitBox[1][1]) - 1;
           j++) {
-        for (int k = intSup(unitBox[0][2]); k <= intInf(unitBox[1][2]) - 1;
+        for (int k = MathUtil.intSup(unitBox[0][2]); k <= MathUtil.intInf(unitBox[1][2]) - 1;
             k++) {
 
           for (int l = 0; l < boxEdgesTemplate.size(); l++) {
@@ -423,7 +425,7 @@ public class CrystalFile extends ChemFile {
             redEdge[1] = ((Point3d) boxEdgesTemplate.elementAt(l)).y + j;
             redEdge[2] = ((Point3d) boxEdgesTemplate.elementAt(l)).z + k;
 
-            cartEdge = mulVec(op, redEdge);
+            cartEdge = MathUtil.mulVec(op, redEdge);
 
             boxEdges.addElement(new Point3d(cartEdge[0], cartEdge[1],
                 cartEdge[2]));
@@ -493,90 +495,7 @@ public class CrystalFile extends ChemFile {
   }
 
 
-  //Pure mathematical method
 
-  /**
-   * Multiply the matrix "mat" by the vector "vec".
-   * The result is vector.
-   */
-  private double[] mulVec(Matrix3d mat, double[] vec) {
-
-    double[] result = new double[3];
-    result[0] = mat.m00 * vec[0] + mat.m01 * vec[1] + mat.m02 * vec[2];
-    result[1] = mat.m10 * vec[0] + mat.m11 * vec[1] + mat.m12 * vec[2];
-    result[2] = mat.m20 * vec[0] + mat.m21 * vec[1] + mat.m22 * vec[2];
-    return result;
-  }
-
-
-  /**
-   * Given a <code>double</code> f, return the closest superior integer
-   *
-   */
-  private int intSup(double f) {
-
-    if (f <= 0) {
-      return (int) f;
-    } else {
-      return (int) f + 1;
-    }
-
-  }
-
-  int intInf(double f) {
-
-    if (f < 0) {
-      return (int) f - 1;
-    } else {
-      return (int) f;
-    }
-  }
-
-  /**
-   * Convert a <code>Matrix3d</code> to a <code>double[3][3]</code>.
-   *
-   */
-  private double[][] matrix3fToArray(Matrix3d matrix3f) {
-
-    double[][] array = new double[3][3];
-
-    array[0][0] = matrix3f.m00;
-    array[0][1] = matrix3f.m01;
-    array[0][2] = matrix3f.m02;
-
-    array[1][0] = matrix3f.m10;
-    array[1][1] = matrix3f.m11;
-    array[1][2] = matrix3f.m12;
-
-    array[2][0] = matrix3f.m20;
-    array[2][1] = matrix3f.m21;
-    array[2][2] = matrix3f.m22;
-
-    return array;
-  }
-
-  /**
-   * Convert a <code>double[3][3]</code> to a <code>Matrix3d</code>.
-   *
-   */
-  private Matrix3d arrayToMatrix3d(double[][] array) {
-
-    Matrix3d matrix3f = new Matrix3d();
-
-    matrix3f.m00 = array[0][0];
-    matrix3f.m01 = array[0][1];
-    matrix3f.m02 = array[0][2];
-
-    matrix3f.m10 = array[1][0];
-    matrix3f.m11 = array[1][1];
-    matrix3f.m12 = array[1][2];
-
-    matrix3f.m20 = array[2][0];
-    matrix3f.m21 = array[2][1];
-    matrix3f.m22 = array[2][2];
-
-    return matrix3f;
-  }
 
 
 }    //end class CrystalFile

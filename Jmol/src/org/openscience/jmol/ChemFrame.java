@@ -122,6 +122,15 @@ public class ChemFrame {
   }
 
   /**
+   * Set the <code>PhysicalProperty</code>'s associated with this frame.
+   *
+   * @param a Vector of <code>PhysicalProperty</code>
+   */
+  public void setFrameProperties(Vector properties) {
+    this.properties = properties;
+  }
+  
+  /**
    * Adds a <code>PhysicalProperty</code> to this frame if not already defined.
    * If a <code>PhysicalProperty</code> with the same description already
    * exists, the property is not added.

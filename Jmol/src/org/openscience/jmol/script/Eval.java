@@ -56,7 +56,7 @@ public class Eval implements Runnable {
   DisplayControl control;
   Thread myThread;
   boolean terminationNotification;
-  boolean haltExecution;
+  boolean interruptExecution;
 
   final static boolean logMessages = false;
 
@@ -66,17 +66,23 @@ public class Eval implements Runnable {
     clearDefinitionsAndLoadPredefined();
   }
 
-  public void start() {
+  public synchronized void start() {
     if (myThread == null) {
-      haltExecution = false;
       myThread = new Thread(this);
+      interruptExecution = false;
       myThread.start();
     }
   }
 
-  public void haltExecution() {
-    if (myThread != null)
-      haltExecution = true;
+  public synchronized void haltExecution() {
+    if (myThread != null) {
+      interruptExecution = true;
+      myThread.interrupt();
+    }
+  }
+
+  synchronized void clearMyThread() {
+    myThread = null;
   }
 
   public boolean isActive() {
@@ -238,7 +244,9 @@ public class Eval implements Runnable {
       System.out.println(errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
-    myThread = null;
+    if (errorMessage == null && interruptExecution)
+      errorMessage = "execution interrupted";
+    clearMyThread();
     terminationNotification = true;
     control.popHoldRepaint();
   }
@@ -250,7 +258,7 @@ public class Eval implements Runnable {
       System.out.println("Eval.instructionDispatchLoop():" + timeBegin);
       System.out.println(toString());
     }
-    while (!haltExecution && pc < aatoken.length) {
+    while (!interruptExecution && pc < aatoken.length) {
       statement = aatoken[pc++];
       Token token = statement[0];
       switch (token.tok) {
@@ -271,8 +279,7 @@ public class Eval implements Runnable {
         break;
       case Token.exit:
       case Token.quit: // in rasmol quit actually exits the program
-        haltExecution = true;
-        break;
+        return;
       case Token.label:
         label();
         break;
@@ -1205,7 +1212,7 @@ public class Eval implements Runnable {
     control.setInMotion(true);
     if (totalSteps == 0)
       totalSteps = 1; // to catch a zero secondsTotal parameter
-    for (int i = 1; i <= totalSteps; ++i) {
+    for (int i = 1; i <= totalSteps && !interruptExecution; ++i) {
       if (dRotX != 0)
         control.rotateByX(radiansXStep);
       if (dRotY != 0)
@@ -1232,7 +1239,6 @@ public class Eval implements Runnable {
           try {
             Thread.sleep(timeToSleep);
           } catch (InterruptedException e) {
-            break;
           }
         }
       }

@@ -1068,6 +1068,10 @@ final public class DisplayControl {
     return null;
   }
 
+  public void haltScriptExecution() {
+    eval.haltExecution();
+  }
+
   public void setStyleMarAtomScript(byte style, short mar) {
     distributor.setStyleMarAtom(style, mar, iterAtom());
   }

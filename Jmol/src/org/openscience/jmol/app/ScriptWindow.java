@@ -51,8 +51,9 @@ public class ScriptWindow extends JDialog
     implements ActionListener, EnterListener {
 
   private ConsoleTextPane console;
-  private JTextField input;
   private JButton closeButton;
+  private JButton runButton;
+  private JButton haltButton;
   DisplayControl control;
 
   public ScriptWindow(DisplayControl control, JFrame frame) {
@@ -73,9 +74,19 @@ public class ScriptWindow extends JDialog
 
     JPanel buttonPanel = new JPanel();
     container.add(buttonPanel, BorderLayout.SOUTH);
+
     closeButton = new JButton("Close");
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
+
+    runButton = new JButton("Run");
+    runButton.addActionListener(this);
+    buttonPanel.add(runButton);
+
+    haltButton = new JButton("Halt");
+    haltButton.addActionListener(this);
+    buttonPanel.add(haltButton);
+    haltButton.setEnabled(false);
   }
 
   public void scriptEcho(String strEcho) {
@@ -88,41 +99,40 @@ public class ScriptWindow extends JDialog
     if (strMsg != null) {
       console.outputError(strMsg);
     }
+    runButton.setEnabled(true);
+    haltButton.setEnabled(false);
   }
 
   public void enterPressed() {
-    executeCommand();
+    runButton.doClick(100);
+    //    executeCommand();
   }
 
   void executeCommand() {
-    String strCommand = console.getCommandString();    
+    String strCommand = console.getCommandString().trim();
     console.appendNewline();
     console.setPrompt();
-    String strErrorMessage = control.evalString(strCommand);
-    if (strErrorMessage != null)
-      console.outputError(strErrorMessage);
+    if (strCommand.length() > 0) {
+      String strErrorMessage = control.evalString(strCommand);
+      if (strErrorMessage != null)
+        console.outputError(strErrorMessage);
+      else {
+        runButton.setEnabled(false);
+        haltButton.setEnabled(true);
+      }
+    }
+    console.grabFocus();
   }
 
   public void actionPerformed(ActionEvent e) {
-
-    if (e.getSource() == closeButton) {
+    Object source = e.getSource();
+    if (source == closeButton) {
       hide();
-    } else {
-      String command = input.getText();
-      console.appendCommand(command);
-      input.setText(null);
-
-      String strErrorMessage = control.evalString(command);
-      if (strErrorMessage != null) {
-        console.outputError(strErrorMessage);
-        console.setPrompt();
-      }
+    } else if (source == runButton) {
+      executeCommand();
+    } else if (source == haltButton) {
+      control.haltScriptExecution();
     }
-  }
-
-  public void hide() {
-    //    eval.haltExecution();
-    super.hide();
   }
 }
 
@@ -207,7 +217,7 @@ class ConsoleDocument extends DefaultStyledDocument {
 
   void setPrompt() {
     try {
-      super.insertString(getLength(), "# ", attPrompt);
+      super.insertString(getLength(), "$ ", attPrompt);
       offsetAfterPrompt = getLength();
       positionBeforePrompt = createPosition(offsetAfterPrompt - 2);
       consoleTextPane.setCaretPosition(offsetAfterPrompt);

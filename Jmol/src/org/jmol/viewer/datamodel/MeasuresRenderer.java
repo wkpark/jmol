@@ -51,8 +51,6 @@ class MeasuresRenderer extends ShapeRenderer {
 
     colixDistance = measures.colix;
     measurementMad = measures.mad;
-    System.out.println("MeasuresRenderer.render: measurementMad=" +
-                       measurementMad);
     font3d = measures.font3d;
     showMeasurementNumbers = measures.showMeasurementNumbers;
     

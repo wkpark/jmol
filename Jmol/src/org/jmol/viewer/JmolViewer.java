@@ -84,6 +84,7 @@ final public class JmolViewer {
   public RepaintManager repaintManager;
   public StyleManager styleManager;
   public TempManager tempManager;
+  public PickingManager pickingManager;
   public Eval eval;
   public Graphics3D g3d;
 
@@ -137,6 +138,7 @@ final public class JmolViewer {
     modelManager = new ModelManager(this, modelAdapter);
     styleManager = new StyleManager(this);
     tempManager = new TempManager(this);
+    pickingManager = new PickingManager(this);
   }
 
   public Component getAwtComponent() {
@@ -901,11 +903,7 @@ final public class JmolViewer {
    ****************************************************************/
 
   public void setModeMouse(int modeMouse) {
-    mouseManager.setMode(modeMouse);
-  }
-
-  public int getModeMouse() {
-    return mouseManager.modeMouse;
+    // deprecated
   }
 
   public Rectangle getRubberBandSelection() {
@@ -1165,6 +1163,7 @@ final public class JmolViewer {
 
   public void setCenter(Point3f center) {
     modelManager.setRotationCenter(center);
+    refresh();
   }
 
   public Point3f getCenter() {
@@ -1565,6 +1564,19 @@ final public class JmolViewer {
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
   }
 
+  public void togglePickingLabel(int atomIndex) {
+    if (atomIndex != -1) {
+      // hack to force it to load
+      setShapeSize(JmolConstants.SHAPE_LABELS,
+                   styleManager.pointsLabelFontSize);
+      modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS,
+                                    "pickingLabel",
+                                    new Integer(atomIndex), null);
+      refresh();
+    }
+  }
+
+
   public BitSet getBitSetSelection() {
     return selectionManager.bsSelection;
   }
@@ -1769,10 +1781,22 @@ final public class JmolViewer {
       jmolStatusListener.notifyMeasurementsChanged();
   }
 
-  public void notifyPicked(int atomIndex) {
+  public void atomPicked(int atomIndex) {
+    pickingManager.atomPicked(atomIndex);
+  }
+
+  public void notifyAtomPicked(int atomIndex) {
     if (atomIndex != -1 && jmolStatusListener != null)
       jmolStatusListener.notifyAtomPicked(atomIndex,
                                           modelManager.getAtomInfo(atomIndex));
+  }
+
+  public void setPickingMode(int pickingMode) {
+    pickingManager.setPickingMode(pickingMode);
+  }
+
+  public String getAtomInfo(int atomIndex) {
+    return modelManager.getAtomInfo(atomIndex);
   }
 
   /****************************************************************

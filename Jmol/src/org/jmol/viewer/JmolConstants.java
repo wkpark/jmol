@@ -89,6 +89,27 @@ final public class JmolConstants {
   public final static short madMultipleBondSmallMaximum = 500;
 
   /**
+   * picking modes
+   */
+  public final static int PICKING_OFF =      0;
+  public final static int PICKING_IDENT =    1;
+  public final static int PICKING_DISTANCE = 2;
+  public final static int PICKING_MONITOR =  3;
+  public final static int PICKING_ANGLE =    4;
+  public final static int PICKING_TORSION =  5;
+  public final static int PICKING_LABEL =    6;
+  public final static int PICKING_CENTER =   7;
+  public final static int PICKING_COORD =    8;
+  public final static int PICKING_BOND =     9;
+  public final static int PICKING_ATOM =    10;
+  public final static int PICKING_GROUP =   11;
+  public final static int PICKING_CHAIN =   12;
+
+  public final static String[] pickingModeNames = {
+    "off", "ident", "distance", "monitor", "angle", "torsion", "label",
+    "center", "coord", "bond", "atom", "group", "chain" };
+
+  /**
    * listing of model types
    */
   public final static int MODEL_TYPE_OTHER = 0;

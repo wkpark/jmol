@@ -139,5 +139,29 @@ public class Labels extends Shape {
         }
       return;
     }
+
+    if ("pickingLabel" == propertyName) {
+      // toggle
+      int atomIndex = ((Integer)value).intValue();
+      if (strings != null &&
+          strings.length > atomIndex &&
+          strings[atomIndex] != null) {
+        strings[atomIndex] = null;
+      } else {
+        String strLabel;
+        if (viewer.getModelCount() > 1)
+          strLabel = "[%n]%r:%c.%a/%M";
+        else if (viewer.getChainCount() > 1)
+          strLabel = "[%n]%r:%c.%a";
+        else if (viewer.getGroupCount() <= 1)
+          strLabel = "%e%i";
+        else
+          strLabel = "[%n]%r.%a";
+        Atom atom = atoms[atomIndex];
+        strings = Util.ensureLength(strings, atomIndex + 1);
+        strings[atomIndex] = atom.formatLabel(strLabel);
+      }
+      return;
+    }
   }
 }

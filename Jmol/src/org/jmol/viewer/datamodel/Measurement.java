@@ -63,27 +63,31 @@ public class Measurement {
       }
     if (count < 2)
       return;
-    Point3f pointA = getAtomPoint3f(1);
-    Point3f pointB = getAtomPoint3f(2);
-    Point3f pointC = null;
-    Point3f pointD = null;
     switch (count) {
     case 2:
-      strMeasurement = formatDistance(pointA.distance(pointB));
+      float distance = frame.getDistance(countPlusIndices[1],
+                                         countPlusIndices[2]);
+      strMeasurement = formatDistance(distance);
       break;
     case 3:
-      pointC = getAtomPoint3f(3);
+      float degrees = frame.getAngle(countPlusIndices[1],
+                                     countPlusIndices[2],
+                                     countPlusIndices[3]);
+      strMeasurement = formatAngle(degrees);
+
+      Point3f pointA = getAtomPoint3f(1);
+      Point3f pointB = getAtomPoint3f(2);
+      Point3f pointC = getAtomPoint3f(3);
+
       Vector3f vectorBA = new Vector3f();
       Vector3f vectorBC = new Vector3f();
       vectorBA.sub(pointA, pointB);
       vectorBC.sub(pointC, pointB);
-      float angle = vectorBA.angle(vectorBC);
-      float degrees = toDegrees(angle);
-      strMeasurement = formatAngle(degrees);
+      float radians = vectorBA.angle(vectorBC);
 
       Vector3f vectorAxis = new Vector3f();
       vectorAxis.cross(vectorBA, vectorBC);
-      aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, angle);
+      aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
 
       vectorBA.normalize();
       vectorBA.scale(0.5f);
@@ -91,9 +95,11 @@ public class Measurement {
 
       break;
     case 4:
-      pointC = getAtomPoint3f(3);
-      pointD = getAtomPoint3f(4);
-      float torsion = computeTorsion(pointA, pointB, pointC, pointD);
+      float torsion = frame.getTorsion(countPlusIndices[1],
+                                       countPlusIndices[2],
+                                       countPlusIndices[3],
+                                       countPlusIndices[4]);
+
       strMeasurement = formatAngle(torsion);
       break;
     default:

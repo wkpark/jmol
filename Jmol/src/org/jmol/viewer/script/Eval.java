@@ -2520,6 +2520,9 @@ public class Eval implements Runnable {
     case Token.unitcell:
       setUnitcell();
       break;
+    case Token.picking:
+      setPicking();
+      break;
       // not implemented
     case Token.backfade:
     case Token.cartoon:
@@ -2527,7 +2530,6 @@ public class Eval implements Runnable {
     case Token.kinemage:
     case Token.menus:
     case Token.mouse:
-    case Token.picking:
     case Token.shadow:
     case Token.slabmode:
     case Token.transparent:
@@ -2827,6 +2829,76 @@ public class Eval implements Runnable {
       numberExpected();
     }
     viewer.setScaleAngstromsPerInch(angstromsPerInch);
+  }
+
+  void setPicking() throws ScriptException {
+    int pickingMode = JmolConstants.PICKING_IDENT;
+    if (statementLength >= 3) {
+      switch (statement[2].tok) {
+      case Token.none:
+      case Token.off:
+        pickingMode = JmolConstants.PICKING_OFF;
+        //fall into
+      case Token.on:
+        break;
+      case Token.ident:
+        pickingMode = JmolConstants.PICKING_IDENT;
+        break;
+      case Token.distance:
+        pickingMode = JmolConstants.PICKING_DISTANCE;
+        break;
+      case Token.monitor:
+        pickingMode = JmolConstants.PICKING_MONITOR;
+        break;
+      case Token.angle:
+        pickingMode = JmolConstants.PICKING_ANGLE;
+        break;
+      case Token.torsion:
+        pickingMode = JmolConstants.PICKING_TORSION;
+        break;
+      case Token.label:
+        pickingMode = JmolConstants.PICKING_LABEL;
+        break;
+      case Token.center:
+        pickingMode = JmolConstants.PICKING_CENTER;
+        break;
+      case Token.coord:
+        pickingMode = JmolConstants.PICKING_COORD;
+        break;
+      case Token.bond:
+        pickingMode = JmolConstants.PICKING_BOND;
+        break;
+      case Token.atom:
+        pickingMode = JmolConstants.PICKING_ATOM;
+        break;
+      case Token.group:
+        pickingMode = JmolConstants.PICKING_GROUP;
+        break;
+      case Token.chain:
+        pickingMode = JmolConstants.PICKING_CHAIN;
+        break;
+      case Token.select:
+        pickingMode = JmolConstants.PICKING_ATOM;
+        if (statementLength == 4) {
+          switch (statement[3].tok) {
+          case Token.chain:
+            pickingMode = JmolConstants.PICKING_CHAIN;
+            // fall into
+          case Token.atom:
+            break;
+          case Token.group:
+            pickingMode = JmolConstants.PICKING_GROUP;
+            break;
+          default:
+            invalidArgument();
+          }
+        }
+        break;
+      default:
+        invalidArgument();
+      }
+    }
+    viewer.setPickingMode(pickingMode);
   }
 
   /****************************************************************

@@ -1051,4 +1051,87 @@ final public class Frame {
       calcBfactorRange();
     return bfactor100Hi;
   }
+
+  ////////////////////////////////////////////////////////////////
+  // measurements
+  ////////////////////////////////////////////////////////////////
+
+  public float getDistance(int atomIndexA, int atomIndexB) {
+    return atoms[atomIndexA].point3f.distance(atoms[atomIndexB].point3f);
+  }
+
+  Vector3f vectorBA;
+  Vector3f vectorBC;
+
+  public float getAngle(int atomIndexA, int atomIndexB, int atomIndexC) {
+    if (vectorBA == null) {
+      vectorBA = new Vector3f();
+      vectorBC = new Vector3f();
+    }
+    Point3f pointA = atoms[atomIndexA].point3f;
+    Point3f pointB = atoms[atomIndexB].point3f;
+    Point3f pointC = atoms[atomIndexC].point3f;
+    vectorBA.sub(pointA, pointB);
+    vectorBC.sub(pointC, pointB);
+    float angle = vectorBA.angle(vectorBC);
+    float degrees = toDegrees(angle);
+    return degrees;
+  }
+
+  public float getTorsion(int atomIndexA, int atomIndexB,
+                          int atomIndexC, int atomIndexD) {
+    return computeTorsion(atoms[atomIndexA].point3f,
+                          atoms[atomIndexB].point3f,
+                          atoms[atomIndexC].point3f,
+                          atoms[atomIndexD].point3f);
+  }
+
+  static float toDegrees(float angleRadians) {
+    return angleRadians * 180 / (float)Math.PI;
+  }
+
+  static float computeTorsion(Point3f p1, Point3f p2,
+                              Point3f p3, Point3f p4) {
+
+    float ijx = p1.x - p2.x;
+    float ijy = p1.y - p2.y;
+    float ijz = p1.z - p2.z;
+
+    float kjx = p3.x - p2.x;
+    float kjy = p3.y - p2.y;
+    float kjz = p3.z - p2.z;
+
+    float klx = p3.x - p4.x;
+    float kly = p3.y - p4.y;
+    float klz = p3.z - p4.z;
+
+    float ax = ijy * kjz - ijz * kjy;
+    float ay = ijz * kjx - ijx * kjz;
+    float az = ijx * kjy - ijy * kjx;
+    float cx = kjy * klz - kjz * kly;
+    float cy = kjz * klx - kjx * klz;
+    float cz = kjx * kly - kjy * klx;
+
+    float ai2 = 1f / (ax * ax + ay * ay + az * az);
+    float ci2 = 1f / (cx * cx + cy * cy + cz * cz);
+
+    float ai = (float)Math.sqrt(ai2);
+    float ci = (float)Math.sqrt(ci2);
+    float denom = ai * ci;
+    float cross = ax * cx + ay * cy + az * cz;
+    float cosang = cross * denom;
+    if (cosang > 1) {
+      cosang = 1;
+    }
+    if (cosang < -1) {
+      cosang = -1;
+    }
+
+    float torsion = toDegrees((float)Math.acos(cosang));
+    float dot  =  ijx*cx + ijy*cy + ijz*cz;
+    float absDot =  (float)Math.abs(dot);
+    torsion = (dot/absDot > 0) ? torsion : -torsion;
+    return torsion;
+  }
+
 }

@@ -64,21 +64,6 @@ public abstract class MouseManager {
     hoverWatcherThread.start();
   }
 
-  public static final String[] modeNames = {
-    "ROTATE", "ZOOM", "XLATE", "PICK", "DELETE", "MEASURE", "DEFORM",
-    "ROTATE_Z", "SLAB_PLANE"};
-
-  public int modeMouse = JmolConstants.MOUSE_ROTATE;
-  public void setMode(int mode) {
-    if (logMouseEvents)
-      System.out.println("MouseManager.setMode(" + modeNames[mode] + ")");
-    modeMouse = mode;
-  }
-
-  public int getMode() {
-    return modeMouse;
-  }
-
   public Rectangle getRubberBand() {
     if (!rubberbandSelectionMode)
       return null;
@@ -237,6 +222,9 @@ public abstract class MouseManager {
   }
 
   void mouseSingleClick(int x, int y, int modifiers, int nearestAtomIndex) {
+    if (logMouseEvents)
+      System.out.println("mouseSingleClick("+x+","+y+","+modifiers+
+                         " nearestAtom=" + nearestAtomIndex);
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       if (viewer.frankClicked(x, y)) {
@@ -246,7 +234,7 @@ public abstract class MouseManager {
       if (measurementMode) {
         addToMeasurement(nearestAtomIndex, false);
       } else {
-        viewer.notifyPicked(nearestAtomIndex);
+        viewer.atomPicked(nearestAtomIndex);
       }
       break;
     }

@@ -62,6 +62,7 @@ public abstract class ReaderFactory {
 
       // If XML, assume CML.
       if ((line != null) && line.startsWith("<?xml")) {
+        System.out.println("ReaderFactory: CMLReader");
         return new CMLReader(buffer);
       }
 
@@ -74,6 +75,7 @@ public abstract class ReaderFactory {
         ++lineCount;
         if (line != null && line.indexOf("natom") >= 0) {
           buffer.reset();
+          System.out.println("ReaderFactory: ABINITReader");
           return new ABINITReader(buffer);
         }
       }
@@ -85,6 +87,7 @@ public abstract class ReaderFactory {
       // If the first line contains mm1gp, then the file is identified
       // as a Ghemical Molecular Dynamics file
       if ((line != null) && (line.indexOf("mm1gp") >= 0)) {
+        System.out.println("ReaderFactory: ChemicalMMReader");
         return new GhemicalMMReader(buffer);
       }
 
@@ -122,6 +125,7 @@ public abstract class ReaderFactory {
           }
         }
         if (mdlFile) {
+          System.out.println("ReaderFactory: MdlReader");
           return new MdlReader(buffer);
         }
       }
@@ -146,6 +150,7 @@ public abstract class ReaderFactory {
         }
       }
       if (xyzFile) {
+        System.out.println("ReaderFactory: XYZReader");
         return new XYZReader(buffer);
       }
 
@@ -156,40 +161,56 @@ public abstract class ReaderFactory {
     /* Search file for a line containing an identifying keyword */
     while (buffer.ready() && (line != null)) {
       if (line.indexOf("Gaussian 98:") >= 0) {
+        System.out.println("ReaderFactory: Gaussian98Reader");
         return new Gaussian98Reader(buffer);
       } else if (line.indexOf("Gaussian 95:") >= 0) {
+        System.out.println("ReaderFactory: Gaussian95Reader");
         return new Gaussian94Reader(buffer);
       } else if (line.indexOf("Gaussian 94:") >= 0) {
+        System.out.println("ReaderFactory: Gaussian94Reader");
         return new Gaussian94Reader(buffer);
       } else if (line.indexOf("Gaussian 92:") >= 0) {
+        System.out.println("ReaderFactory: Gaussian92Reader");
         return new Gaussian92Reader(buffer);
       } else if (line.indexOf("Gaussian G90") >= 0) {
+        System.out.println("ReaderFactory: Gaussian90Reader");
         return new Gaussian90Reader(buffer);
       } else if (line.indexOf("GAMESS") >= 0) {
+        System.out.println("ReaderFactory: GamessReader");
         return new GamessReader(buffer);
       } else if (line.indexOf("ACES2") >= 0) {
+        System.out.println("ReaderFactory: Aces2Reader");
         return new Aces2Reader(buffer);
       } else if (line.indexOf("Amsterdam Density Functional") >= 0) {
+        System.out.println("ReaderFactory: ADFReader");
         return new ADFReader(buffer);
       } else if (line.indexOf("DALTON") >= 0) {
+        System.out.println("ReaderFactory: DaltonReader");
         return new DaltonReader(buffer);
       } else if (line.indexOf("Jaguar") >= 0) {
+        System.out.println("ReaderFactory: JaguarReader");
         return new JaguarReader(buffer);
       } else if (line.indexOf("MOPAC:  VERSION  7.00") >= 0) {
+        System.out.println("ReaderFactory: Mopac7Reader");
         return new Mopac7Reader(buffer);
       } else if ((line.indexOf("MOPAC  97.00") >= 0)
           || (line.indexOf("MOPAC2002") >= 0)) {
+        System.out.println("ReaderFactory: Mopac97Reader");
         return new Mopac97Reader(buffer);
       } else if (line.startsWith("HEADER")) {
+        System.out.println("ReaderFactory: PDBReader");
         return new PDBReader(buffer);
       } else if (line.startsWith("molstruct")) {
+        System.out.println("ReaderFactory: CACheReader");
         return new CACheReader(buffer);
       } else if (line.startsWith("ZERR ")) {
         buffer.reset();
+        System.out.println("ReaderFactory: ShelXReader");
         return new ShelXReader(buffer);
       }
       line = buffer.readLine();
     }
+    System.out.println("ReaderFactory: Formut undertemined");
     return null;
   }
 

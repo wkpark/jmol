@@ -375,6 +375,9 @@ public class Eval implements Runnable {
       case Token.spin:
         spin();
         break;
+      case Token.ssbonds:
+        ssbonds();
+        break;
 
         // not implemented
       case Token.bond:
@@ -388,7 +391,6 @@ public class Eval implements Runnable {
       case Token.renumber:
       case Token.save:
       case Token.show:
-      case Token.ssbonds:
       case Token.star:
       case Token.stereo:
       case Token.structure:
@@ -1088,6 +1090,9 @@ public class Eval implements Runnable {
     case Token.bonds:
       viewer.setColorBondScript(getColorOrNoneParam(2));
       break;
+    case Token.ssbonds:
+      viewer.setColorSsBondScript(getColorOrNoneParam(2));
+      break;
     case Token.label:
       viewer.setColorLabel(getColorOrNoneParam(2));
       break;
@@ -1119,7 +1124,6 @@ public class Eval implements Runnable {
 	break;
     case Token.ribbons:
     case Token.hbonds:
-    case Token.ssbonds:
       notImplemented(1);
       break;
     default:
@@ -1694,6 +1698,36 @@ public class Eval implements Runnable {
       booleanOrNumberExpected();
     }
     viewer.setStyleMarBondScript(style, mar);
+  }
+
+  void ssbonds() throws ScriptException {
+    int tok = statement[1].tok;
+    byte style = JmolConstants.STYLE_WIREFRAME;
+    short mar = 100;
+    switch (tok) {
+    case Token.on:
+      break;
+    case Token.off:
+      style = JmolConstants.STYLE_NONE;
+      break;
+    case Token.integer:
+      int radiusRasMol = statement[1].intValue;
+      if (radiusRasMol >= 500)
+        numberOutOfRange();
+      mar = (short)(radiusRasMol * 4);
+      style = JmolConstants.STYLE_SHADED;
+      break;
+    case Token.decimal:
+      float angstroms = ((Float)statement[1].value).floatValue();
+      if (angstroms >= 2)
+        numberOutOfRange();
+      mar = (short)(angstroms * 1000);
+      style = JmolConstants.STYLE_SHADED;
+      break;
+    default:
+      booleanOrNumberExpected();
+    }
+    viewer.setStyleMarSsBondScript(style, mar);
   }
 
   void animate() throws ScriptException {

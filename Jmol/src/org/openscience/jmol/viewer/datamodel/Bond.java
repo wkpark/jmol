@@ -55,7 +55,7 @@ public class Bond {
   public final static byte STEREO_NEAR = (1 << 2) | 1;
   public final static byte STEREO_FAR  = (1 << 2) | 2;
   public final static byte AROMATIC    = (1 << 3) | 1;
-  public final static byte SULFUR      = (1 << 4) | 1;
+  public final static byte SULFUR      = 1 << 4;
   public final static byte HYDROGEN    = 1 << 5;
   public final static byte BACKBONE    = 1 << 6;
 
@@ -76,6 +76,10 @@ public class Bond {
       throw new NullPointerException();
     this.atom1 = atom1;
     this.atom2 = atom2;
+    if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16) {
+      System.out.println("An SS bond!");
+      order |= SULFUR;
+    }
     this.order = (byte)order;
     this.style = style;
     this.mar = mar;
@@ -83,18 +87,11 @@ public class Bond {
   }
 
   public Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
-    if (atom1 == null)
-      throw new NullPointerException();
-    if (atom2 == null)
-      throw new NullPointerException();
-    this.atom1 = atom1;
-    this.atom2 = atom2;
-    this.order = (byte)order;
-    this.style = (order == BACKBONE
-                  ? JmolConstants.STYLE_NONE
-                  : viewer.getStyleBond());
-    this.mar = viewer.getMarBond();
-    this.colix = viewer.getColixBond();
+    this(atom1, atom2, order,
+         (order == BACKBONE
+          ? JmolConstants.STYLE_NONE
+          : viewer.getStyleBond()),
+         viewer.getMarBond(), viewer.getColixBond());
   }
 
   public boolean isCovalent() {

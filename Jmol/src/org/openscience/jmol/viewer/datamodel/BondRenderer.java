@@ -119,6 +119,8 @@ class BondRenderer extends Renderer {
   }
 
   int getRenderBondOrder(int order) {
+    if ((order & Bond.SULFUR) != 0)
+      order &= ~Bond.SULFUR;
     if ((order & Bond.COVALENT) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||

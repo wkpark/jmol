@@ -30,7 +30,7 @@ import java.io.File;
 public class ImageTyper extends JPanel {
 
   private String[] Choices = {
-    "GIF", "JPEG", "PPM"
+    "BMP", "GIF", "JPEG", "PNG", "PPM"
   };
   private int def = 0;
   private String result = Choices[def];

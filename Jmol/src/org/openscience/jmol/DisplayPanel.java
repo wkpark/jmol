@@ -185,7 +185,10 @@ public class DisplayPanel extends JPanel
       int x = e.getX();
       int y = e.getY();
 
-      control.setMouseDragged(true);
+      if (! control.mouseDragged) {
+        control.setMouseDragged(true);
+        resetTimes();
+      }
       switch (modeMouse) {
       case ROTATE:
         control.rotateBy(x - prevMouseX, y - prevMouseY);
@@ -896,36 +899,23 @@ public class DisplayPanel extends JPanel
   }
 
   // code to record last and average times
-  // last and average times are shown in the status window
+  // last and average of all the previous times are shown in the status window
 
-  final static int maxTimes = 50; // how many samples in the average
-  private static int cTimes = 0;
-  private static int longestTime = 0;
-  private static int lastTime = 0;
-  private static int iTimes = 0;
-  private static int totalTime = 0;
-  private static int[] aTimes = new int[maxTimes];
+  private static int timeLast = 0;
+  private static int timeCount;
+  private static int timeTotal;
 
   private void resetTimes() {
-    cTimes = iTimes = totalTime = longestTime = lastTime = 0;
+    timeCount = timeTotal = 0;
+    timeLast = -1;
   }
 
   private void recordTime(int time) {
-    if (time == lastTime)
-      return;
-    if (cTimes < maxTimes) {
-      totalTime += time;
-      aTimes[cTimes++] = time;
-    } else {
-      totalTime -= aTimes[iTimes];
-      totalTime += time;
-      aTimes[iTimes] = time;
-      if (++iTimes == maxTimes)
-        iTimes = 0;
+    if (timeLast != -1) {
+      timeTotal += timeLast;
+      ++timeCount;
     }
-    lastTime = time;
-    if (time > longestTime)
-      longestTime = time;
+    timeLast = time;
   }
 
   private long timeBegin;
@@ -941,6 +931,8 @@ public class DisplayPanel extends JPanel
   }
 
   private String fmt(int num) {
+    if (num < 0)
+      return "---";
     if (num < 10)
       return "  " + num;
     if (num < 100)
@@ -948,10 +940,12 @@ public class DisplayPanel extends JPanel
     return "" + num;
   }
 
-  // FIXME -- avg of the last set of rotations, not a moving avg
   private void showTimes() {
-    int timeAverage = totalTime / cTimes;
-    status.setStatus(3, fmt(lastTime) + "ms : " + fmt(timeAverage) + "ms");
+    int timeAverage =
+      (timeCount == 0)
+      ? -1
+      : (timeTotal + timeCount/2) / timeCount; // round, don't truncate
+    status.setStatus(3, fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms");
   }
 
   public final static int X_AXIS = 1;

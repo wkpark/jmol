@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Preview</title>
+    
+    <section title="What the next generation Jmol will look like">
+
+      <p>
+        Early this year, Miguel Howard decided to completely rewrite the
+        rendering engine, to provide true 3D capabilities. These pages
+        are previewing the Jmol applet using that engine.
+      </p>
+      
+      <p>
+        The pages demo the capabilities of rendering 
+        <a href="preview_atoms.html">atoms</a>, 
+        <a href="preview_bonds.html">bonds</a>, 
+        <a href="preview_trace.html">biochemical concepts</a>, 
+        <a href="preview_dots.html">dotted surfaces</a>,
+        and there is 
+        <a href="demo/bwhite/index.html">one page</a>,
+        that shows the ability of the Jmol
+        applet to completely replace the Chime plugin in webpages.
+      </p>
+
+    </section>
+
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

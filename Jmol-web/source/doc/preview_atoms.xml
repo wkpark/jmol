@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+  <body>
+    <title>Preview Atom Rendering</title>
+    
+    <section title="New Atom Rendering options">
+
+    <table border="1">
+    <tr>
+    <td>
+    <h2>caffeine</h2>
+    <appletExample>
+    <![CDATA[
+<applet name="jmol" code="JmolApplet" archive="head/JmolApplet.jar"
+  width="300" height="300" mayscript="true" >
+  <param name="emulate"   value="chime" />
+  <param name="load"      value="caffeine.xyz.gz" />
+</applet>]]>
+    </appletExample>
+    </td>
+
+<td>
+If you use <b>&lt;param name='emulate' value='chime' /&gt;</b> then atoms
+are not show by default. The RasMol scripting language has two synonymous
+commands to control atom size, <b>spacefill</b> and <b>cpk</b>
+(for Corey, Pauling, and Koltun). The commands are aliases and run
+exactly the same code. <br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="spacefill on" />
+  <param name="target" value="jmol" />
+  <param name="script" value="spacefill on" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="spacefill off" />
+  <param name="target" value="jmol" />
+  <param name="script" value="spacefill off" />
+</applet><br />
+
+The default size is 100% of the vanderWaals radius. If you want to specify
+a size then you can do so in Angstroms. Note that the last button specifies "1.0" instead of the integer "1".
+This is important because integer values specify
+<i>RasMol units (1/250th Angstrom)</i><br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="cpk 0.25" />
+  <param name="target" value="jmol" />
+  <param name="script" value="cpk 0.25" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="cpk 0.5" />
+  <param name="target" value="jmol" />
+  <param name="script" value="cpk 0.5" />
+</applet><br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="cpk 0.75" />
+  <param name="target" value="jmol" />
+  <param name="script" value="cpk 0.75" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="cpk 1.0" />
+  <param name="target" value="jmol" />
+  <param name="script" value="cpk 1.0" />
+</applet><br />
+
+As an extension to the RasMol scripting language, Jmol allows you to specify
+your size as a percentage of the vanderWaals radius. <br />
+
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="spacefill 25%" />
+  <param name="target" value="jmol" />
+  <param name="script" value="spacefill 25%" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="cpk 50%" />
+  <param name="target" value="jmol" />
+  <param name="script" value="cpk 50%" />
+</applet><br />
+
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="cpk 75%" />
+  <param name="target" value="jmol" />
+  <param name="script" value="cpk 75%" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="spacefill 100%" />
+  <param name="target" value="jmol" />
+  <param name="script" value="spacefill 100%" />
+</applet><br />
+
+By default, atoms have CPK colors, from the same guys with the same
+physical models. You can explicitly assign atom colors using JavaScript
+standard color names or RGB values. <br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="color atoms forestgreen" />
+  <param name="target" value="jmol" />
+  <param name="script" value="color atoms forestgreen" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="color atoms [0, 255, 0]"/>
+  <param name="target" value="jmol" />
+  <param name="script" value="color atoms [0, 255, 0]" />
+</applet><br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="color atoms [xB22222]" />
+  <param name="target" value="jmol" />
+  <param name="script" value="color atoms [xB22222]" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="color atoms cpk" />
+  <param name="target" value="jmol" />
+  <param name="script" value="color atoms cpk" />
+</applet> <br />
+Script commands operate on the currently selected set of atoms. <br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="select carbon" />
+  <param name="target" value="jmol" />
+  <param name="script" value="select carbon" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="select nitrogen" />
+  <param name="target" value="jmol" />
+  <param name="script" value="select nitrogen" />
+</applet><br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="select oxygen" />
+  <param name="target" value="jmol" />
+  <param name="script" value="select oxygen" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="select hydrogen" />
+  <param name="target" value="jmol" />
+  <param name="script" value="select hydrogen" />
+</applet><br />
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="select nitrogen or oxygen" />
+  <param name="target" value="jmol" />
+  <param name="script" value="select nitrogen or oxygen" />
+</applet>
+<applet code="JmolAppletControl" archive="head/JmolApplet.jar"
+  height="20" width="200" mayscript="true" >
+  <param name="type"  value="button" />
+  <param name="label"  value="select all" />
+  <param name="target" value="jmol" />
+  <param name="script" value="select all" />
+</applet> <br />
+
+</td>
+
+</tr>
+</table>
+
+    </section>
+
+  </body>
+</document>
+
+
+
+
+
+
+
+
+

@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Matrix4f;
+import org.openscience.cdk.tools.IsotopeFactory;
 
 /**
  * Stores and manipulations information and properties of
@@ -31,8 +32,14 @@ import javax.vecmath.Matrix4f;
  */
 public class Atom extends org.openscience.cdk.Atom {
 
-  public Atom(BaseAtomType at) {
+   public Atom(BaseAtomType at) {
     super(at.getName());
+    try {
+        IsotopeFactory.getInstance().configure(this);
+    } catch (Exception e) {
+        // failed to configure atom
+        System.err.println("Error configuration of atom: " + at.getName());
+    }
     this.atomType = new AtomType(at);
   }
 
@@ -44,6 +51,12 @@ public class Atom extends org.openscience.cdk.Atom {
   public Atom(BaseAtomType atomType, int atomNumber,
               float x, float y, float z) {
     super(atomType.getName(), new Point3d(x, y, z));
+    try {
+        IsotopeFactory.getInstance().configure(this);
+    } catch (Exception e) {
+        // failed to configure atom
+        System.err.println("Error configuration of atom: " + atomType.getName());
+    }
     this.atomType = new AtomType(atomType);
     this.atomNumber = atomNumber;
   }

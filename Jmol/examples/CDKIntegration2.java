@@ -24,8 +24,8 @@
  */
 import org.jmol.api.JmolAdapter;
 import org.jmol.adapter.cdk.CdkJmolAdapter;
-import org.jmol.viewer.JmolViewer;
-import org.jmol.viewer.JmolStatusListener;
+import org.jmol.api.JmolViewer;
+import org.jmol.api.JmolStatusListener;
 
 import org.openscience.cdk.*;
 
@@ -108,7 +108,7 @@ class JmolPanel extends JPanel {
     JmolPanel() {
         // use CDK IO
         adapter = new CdkJmolAdapter(null);
-        viewer = new JmolViewer(this, adapter);
+        viewer = new JmolViewer.allocateViewer(this, adapter);
     }
     
     public JmolViewer getViewer() {

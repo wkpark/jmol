@@ -388,7 +388,7 @@ public class BaseAtomType {
   /**
    * Draw color.
    */
-  protected Color color;
+  protected Color color = Color.white;
 
   /**
    * Static pool of atom types.

@@ -17,6 +17,7 @@
       <ul>
       <li>Reads many types of files.</li>
       <ul>
+        <li> <a href="http://www.abinit.org/" TARGET="_top">ABINIT</a> </li>
         <li> <a href="http://www.qtp.ufl.edu/Aces2/" TARGET="_top">ACES II</a> </li>
         <li> <a href="http://www.scm.com/" TARGET="_top">ADF</a> (Amsterdam Density Functional)</li>
         <li> <a href="http://www.xml-cml.org" TARGET="_top">CML</a> (Chemical Markup Language)</li>
@@ -27,7 +28,7 @@
         <li> <a href="http://www.schrodinger.com/Products/jaguar.html">Jaguar</a> </li>
         <li> <a href="http://www.mdli.com/">MDL molfiles</a> </li>
         <li> MOPAC 7/97/2002</li>
-        <li> <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a> (ATOM and HETATM entries only) </li>
+        <li> <a href="http://www.rcsb.org/pdb/" TARGET="_top">PDB</a></li>
         <li> XYZ (XMol) </li>
       </ul>
 
@@ -52,6 +53,7 @@
             <li>PPM</li>
             <li>BMP</li>
             <li>PNG</li>
+            <li>PDF</li>
           </ul>
         </li>
       </ul>

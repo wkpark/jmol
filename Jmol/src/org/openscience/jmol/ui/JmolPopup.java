@@ -28,8 +28,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.StringTokenizer;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 import java.util.BitSet;
 import java.util.Hashtable;
 
@@ -42,9 +40,6 @@ abstract public class JmolPopup {
 
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
-
-  ResourceBundle rbStructure;
-  ResourceBundle rbWords;
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -60,16 +55,8 @@ abstract public class JmolPopup {
 
 
   void build(Object popupMenu) {
-    rbStructure = ResourceBundle.getBundle("org.openscience.jmol.ui." +
-                                           "JmolPopupStructure");
-    rbWords = ResourceBundle.getBundle("org.openscience.jmol.ui." +
-                                       "JmolPopupWords");
-
-    addMenuItems("popupMenu", popupMenu);
+    addMenuItems("popupMenu", popupMenu, new PopupResourceBundle());
     addVersionAndDate();
-
-    rbWords = null;
-    rbStructure = null;
   }
 
   public void updateComputedMenus() {
@@ -112,8 +99,9 @@ abstract public class JmolPopup {
     addMenuItem(JmolConstants.date);
   }
 
-  private void addMenuItems(String key, Object menu) {
-    String value = getValue(key);
+  private void addMenuItems(String key, Object menu,
+                            PopupResourceBundle popupResourceBundle) {
+    String value = popupResourceBundle.getStructure(key);
     if (value == null) {
       addMenuItem(menu, "#" + key, null);
       return;
@@ -121,7 +109,7 @@ abstract public class JmolPopup {
     StringTokenizer st = new StringTokenizer(value);
     while (st.hasMoreTokens()) {
       String item = st.nextToken();
-      String word = getWord(item);
+      String word = popupResourceBundle.getWord(item);
       if (item.endsWith("Menu")) {
         Object subMenu = newMenu(word);
         if ("elementsComputedMenu".equals(item))
@@ -129,7 +117,7 @@ abstract public class JmolPopup {
         else if ("aaresiduesComputedMenu".equals(item))
           aaresiduesComputedMenu = subMenu;
         else
-          addMenuItems(item, subMenu);
+          addMenuItems(item, subMenu, popupResourceBundle);
         addMenuSubMenu(menu, subMenu);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
@@ -138,33 +126,12 @@ abstract public class JmolPopup {
           String basename = item.substring(0, item.length() - 8);
           addCheckboxMenuItem(menu, word, basename);
        } else {
-          addMenuItem(menu, word, getScriptValue(item));
+          addMenuItem(menu, word, popupResourceBundle.getStructure(item));
         }
       }
     }
   }
   
-  private String getValue(String key) {
-    try {
-      return rbStructure.getString(key);
-    } catch (MissingResourceException e) {
-      return null;
-    }
-  }
-
-  private String getScriptValue(String key) {
-    return getValue(key);
-  }
-
-  private String getWord(String key) {
-    String str = key;
-    try {
-      str = rbWords.getString(key);
-    } catch (MissingResourceException e) {
-    }
-    return str;
-  }
-
   Hashtable htCheckbox = new Hashtable();
 
   void rememberCheckbox(String key, Object checkboxMenuItem) {

@@ -627,7 +627,9 @@ public class Animate extends JDialog implements ActionListener,
    */
   synchronized void setFrame(int which, boolean setSlider) {
 
+    /*
     viewer.setFrame(which);
+    */
     /*
     System.out.println("which=" + which);
     ChemFile file = (ChemFile)viewer.getClientFile();

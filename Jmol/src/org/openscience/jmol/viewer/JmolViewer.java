@@ -889,7 +889,6 @@ final public class JmolViewer {
     // for when CdkEditBus calls this directly
     pushHoldRepaint();
     modelManager.setClientFile(fullPathName, fileName, clientFile);
-    setFrame(0);
     homePosition();
     // don't know if I need this firm refresh here or not
     // FIXME mth -- we need to clear definitions when we open a new file
@@ -904,10 +903,6 @@ final public class JmolViewer {
     modelManager.setClientFile(null, null, null);
     clearMeasurements();
     refresh();
-  }
-
-  public int getFrameCount() {
-    return modelManager.getFrameCount();
   }
 
   public String getModelName() {
@@ -997,19 +992,8 @@ final public class JmolViewer {
   }
 
   public int getNumberOfFrames() {
-    return modelManager.getFrameCount();
-  }
-
-  public void setFrame(int frameNumber) {
-    modelManager.setFrame(frameNumber);
-    measurementManager.setFrame(getFrame());
-    selectAll();
-    structuralChange = true;
-    refresh();
-  }
-
-  public int getCurrentFrameNumber() {
-    return modelManager.getCurrentFrameNumber();
+    // FIXME
+    return 1;
   }
 
   public int getAtomCount() {

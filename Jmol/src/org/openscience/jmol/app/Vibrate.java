@@ -388,7 +388,9 @@ public class Vibrate extends JDialog implements ActionListener,
    */
   private void setFrame(int which, boolean setSlider) {
 
+    /*
     viewer.setFrame(which);
+    */
     if (setSlider) {
       progressSlider.setValue(which + 1);
     }

@@ -56,23 +56,18 @@ public class ModelManager {
   public String fileName;
   public String modelName;
   public String modelHeader;
-  public int frameCount = 0;
-  public int atomCount = 0;
+  //  public int frameCount = 0;
   public boolean haveFile = false;
-  public int currentFrameNumber;
+  //  public int currentFrameNumber;
   public Frame frame;
-  public Frame[] frames;
+  //  public Frame[] frames;
 
   public void setClientFile(String fullPathName, String fileName,
                             Object clientFile) {
     if (clientFile == null) {
       fullPathName = fileName = modelName = modelHeader = null;
-      frameCount = 0;
-      currentFrameNumber = -1;
       frame = null;
-      atomCount = 0;
       haveFile = false;
-      frames = null;
     } else {
       this.fullPathName = fullPathName;
       this.fileName = fileName;
@@ -84,9 +79,7 @@ public class ModelManager {
       }
       modelName = modelAdapter.getModelName(clientFile);
       modelHeader = modelAdapter.getModelHeader(clientFile);
-      frameCount = 1;
-      frames = new Frame[frameCount];
-      frames[0] = frameBuilder.buildFrame(clientFile);
+      frame = frameBuilder.buildFrame(clientFile);
 
       haveFile = true;
     }
@@ -128,44 +121,23 @@ public class ModelManager {
     return frame.getBoundingBoxCornerVector();
   }
 
-  public int getFrameCount() {
-    return frameCount;
-  }
-
-  public int getCurrentFrameNumber() {
-    return currentFrameNumber;
-  }
-
-  public void setFrame(int frameNumber) {
-    if (haveFile && frameNumber >= 0 && frameNumber < frameCount) {
-      currentFrameNumber = frameNumber;
-      frame = frames[frameNumber];
-      atomCount = frame.getAtomCount();
-    }
-  }
-
   public int getAtomCount() {
-    return atomCount;
+    return frame.getAtomCount();
   }
 
   public int getBondCount() {
     return frame.getBondCount();
   }
 
-  public Point3f getPoint3f(int atomIndex) {
-    return frame.getAtomAt(atomIndex).getPoint3f();
-  }
-
   public void setCenterAsSelected() {
-    int atomCount = getAtomCount();
     int countSelected = 0;
     Point3f  center = new Point3f(); // defaults to 0,00,
     BitSet bsSelection = viewer.getSelectionSet();
-    for (int i = 0; i < atomCount; ++i) {
+    for (int i = getAtomCount(); --i >= 0; ) {
       if (!bsSelection.get(i))
         continue;
       ++countSelected;
-      center.add(getPoint3f(i));
+      center.add(frame.getAtomPoint3f(i));
     }
     if (countSelected > 0) {
       center.scale(1.0f / countSelected); // just divide by the quantity

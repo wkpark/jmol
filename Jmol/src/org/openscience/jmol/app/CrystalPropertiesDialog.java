@@ -1812,7 +1812,10 @@ public class CrystalPropertiesDialog extends JDialog
       
       
       
-      int frameCount = viewer.getFrameCount();
+      /*
+        int frameCount = viewer.getFrameCount();
+      */
+      int frameCount = 1;
       for (int i = 0; i < frameCount; i++) {
 	
 	//set Primitive Vectors
@@ -1965,7 +1968,9 @@ public class CrystalPropertiesDialog extends JDialog
     hasFile = true;
 
     viewer.openClientFile(null, "CrystalProp", this.chemFile);
+    /*
     viewer.setFrame(currentFrameIndex);
+    */
 
     //The chemfile is updated globally.
     //jmol.setChemFile(this.chemFile);

@@ -61,10 +61,7 @@ public class AtomColors implements AtomColorer {
      */
     public Color getAtomColor(Atom a) {
         Object o = a.getProperty("org.openscience.jmol.color");
-        if (o == null) {
-            // no color set. return white
-            return Color.white;
-        } else if (o instanceof Color) {
+        if (o instanceof Color) {
             return (Color)o;
         } else {
             // no color set. return white

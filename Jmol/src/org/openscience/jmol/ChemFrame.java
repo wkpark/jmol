@@ -494,8 +494,8 @@ public class ChemFrame extends AtomContainer {
       Atom atom = atoms[i];
       Point3d posAtom = atom.getPosition();
       double distAtom = center.distance(posAtom);
-      double radiusVDW = atom.getType().getVdwRadius();
-      double distVdw = distAtom + (radiusVDW * atomSphereFactor);
+      double radiusVdw = atom.getVanderwaalsRadius();
+      double distVdw = distAtom + (radiusVdw * atomSphereFactor);
       
       if (distVdw > radius)
         radius = distVdw;

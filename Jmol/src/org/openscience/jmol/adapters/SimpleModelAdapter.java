@@ -317,6 +317,7 @@ abstract class Model {
   Bond[] bonds = new Bond[1024];
   String errorMessage;
   String fileHeader;
+
   float[] notionalUnitcell;
   float[] pdbScaleMatrix;
   float[] pdbScaleTranslate;
@@ -530,6 +531,8 @@ class PdbModel extends Model {
   int currentModelNumber;
   int[] serialMap = new int[512];
 
+  boolean isNMRdata;
+
   PdbModel(BufferedReader reader) throws Exception {
     atoms = new Atom[512];
     bonds = new Bond[32];
@@ -581,6 +584,10 @@ class PdbModel extends Model {
         accumulatingHeader = false;
         continue;
       }
+      if (line.startsWith("EXPDTA")) {
+        expdta();
+        continue;
+      }
       if (line.startsWith("HEADER") && lineLength >= 66) {
         setModelName(line.substring(62, 66));
         continue;
@@ -590,6 +597,8 @@ class PdbModel extends Model {
       }
     }
     serialMap = null;
+    if (isNMRdata)
+      notionalUnitcell = pdbScaleMatrix = pdbScaleTranslate = null;
   }
 
   boolean isValidAtomicSymbolChar(char ch) {
@@ -818,5 +827,11 @@ class PdbModel extends Model {
       pdbScaleMatrix = null;
       System.out.println("scale3 died");
     }
+  }
+
+  void expdta() {
+    String technique = line.substring(10).trim().toLowerCase();
+    if (technique.regionMatches(true, 0, "nmr", 0, 3))
+      isNMRdata = true;
   }
 }

@@ -228,9 +228,9 @@ public class JmolAppletControl extends Applet {
   }
 
   private void notifyRadioPeers() {
-    for (Enumeration enum = appletRegistry.applets();
-         enum.hasMoreElements(); ) {
-      Object peer = enum.nextElement();
+    for (Enumeration e = appletRegistry.applets();
+         e.hasMoreElements(); ) {
+      Object peer = e.nextElement();
       if (! (peer instanceof JmolAppletControl))
         continue;
       JmolAppletControl controlPeer = (JmolAppletControl)peer;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   Italian translation 
-  Translated from default version : index_en.xml (v 1.5)
+  Translated from default version : index_en.xml (v 1.6)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -74,7 +74,7 @@
               <tr>
                 <td align="left" colspan="2">
                   <small><i>
-                    Se disponete di file .xyz dei progetti mancanti, inviateli a nicove@users.sourceforge.net, grazie
+                    Se disponete di file <b>current.xyz</b> dei progetti mancanti, inviateli a nicove@users.sourceforge.net, grazie
                   </i></small>
                 </td>
               </tr>

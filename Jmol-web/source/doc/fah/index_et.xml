@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
   Estonian translation 
-  Translated from default version : index_en.xml (v 1.5)
+  Translated from default version : index_en.xml (v 1.6)
 -->
 <!DOCTYPE somethingOrAnything [
 <!ENTITY projects SYSTEM "fah-projects.xml" >
@@ -74,7 +74,7 @@
               <tr>
                 <td align="left" colspan="2">
                   <small><i>
-                    Kui sul on puuduvate projektide current.xyz faile, siis, palun, saada need nicove@users.sourceforge.net
+                    Kui sul on puuduvate projektide <b>current.xyz</b> faile, siis, palun, saada need nicove@users.sourceforge.net
                   </i></small>
                 </td>
               </tr>

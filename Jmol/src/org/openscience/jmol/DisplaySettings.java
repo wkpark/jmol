@@ -28,7 +28,7 @@ import java.beans.PropertyChangeSupport;
  *
  * @author Bradley A. Smith (bradley@baysmith.com).
  */
-public class DisplaySettings {
+public class DisplaySettings implements Cloneable {
 
   /**
    * Display no labels.
@@ -812,4 +812,13 @@ public class DisplaySettings {
 
   private PropertyChangeSupport changeSupport =
     new PropertyChangeSupport(this);
+
+  public DisplaySettings copy() {
+    DisplaySettings dsNew = null;
+    try {
+      dsNew = (DisplaySettings) clone();
+    } catch (CloneNotSupportedException e) {}
+    return dsNew;
+  }
 }
+

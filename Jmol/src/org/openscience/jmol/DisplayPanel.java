@@ -24,6 +24,7 @@ import java.awt.RenderingHints;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
@@ -39,6 +40,7 @@ import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.RepaintManager;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Vector3d;
 
@@ -47,26 +49,40 @@ import javax.vecmath.Vector3d;
  *  @author  J. Daniel Gezelter
  */
 public class DisplayPanel extends JPanel
-    implements Runnable, MeasurementListListener, PropertyChangeListener {
+    implements MeasurementListListener, PropertyChangeListener {
 
-  public static int X_AXIS = 1;
-  public static int Y_AXIS = 2;
-  public static int Z_AXIS = 3;
+  public final static int X_AXIS = 1;
+  public final static int Y_AXIS = 2;
+  public final static int Z_AXIS = 3;
 
-  private boolean painted = false;
-  private boolean initialized = false;
   private boolean haveFile = false;
-  private boolean rubberband = false;
+  private boolean rubberbandSelectionMode = false;
   private int bx, by, rtop, rbottom, rleft, rright;
   private int nframes = 0;
   private static int prevx, prevy, outx, outy;
-  private static Matrix4d amat = new Matrix4d();    // Matrix to do mouse angular rotations.
-  private static Matrix4d tmat = new Matrix4d();    // Matrix to do translations.
-  private static Matrix4d zmat = new Matrix4d();    // Matrix to do zooming.
-  float[] quat = new float[4];
-  double[] mtmp;
-  String[] names;
-  Color[] colors;
+
+  private static Dimension dimCurrent = null;    // current pane dimension
+  private static Object monitorRecalc = new Object();
+  private static int numEvent = 0;               // event number
+  private static Matrix4d transformEvent = null; // view transform of the event
+  private static DisplaySettings settingsEvent = null; // settings
+  private static Dimension dimEvent = null;      // dim at time of the event
+  private static int numRecalc = 0;              // event number for recalc
+  private static Matrix4d transformRecalc = null;// transform for recalc
+  private static DisplaySettings settingsRecalc = null; // settings
+  private static Dimension dimRecalc = null;     // for the recalc thread
+  private static BufferedImage biRecalc = null;  // offscreen buffer image
+  private static Thread threadRecalc = null;     // the recalc thread itself
+  private static Object monitorRepaint = new Object();
+  private static int numRepaint = 0;             // event num to be repainted
+  private static Dimension dimRepaint = null;    // dim of repaint buffer
+  private static BufferedImage biRepaint = null; // repaint buffer
+
+
+  private static Matrix4d amat = new Matrix4d(); // mouse angular rotations.
+  private static Matrix4d tmat = new Matrix4d(); // Matrix to do translations.
+  private static Matrix4d zmat = new Matrix4d(); // Matrix to do zooming.
+
   ChemFile cf;
   ChemFrame md;
   private float xfac, xmin, xmax, ymin, ymax, zmin, zmax;
@@ -84,7 +100,7 @@ public class DisplayPanel extends JPanel
 
   //Added T.GREY for moveDraw support- should be true while mouse is dragged
   private boolean mouseDragged = false;
-  private boolean WireFrameRotation = false;
+  private boolean wireFrameRotation = false;
   private boolean movingDrawMode = false;
   private Measure m = null;
   private MeasurementList mlist = null;
@@ -110,14 +126,23 @@ public class DisplayPanel extends JPanel
   }
 
   public void start() {
-    new Thread(this).start();
     AtomType.setJPanel(this);
     this.addMouseListener(new MyAdapter());
     this.addMouseMotionListener(new MyMotionAdapter());
+
+    RepaintManager.currentManager(null).setDoubleBufferingEnabled(false);
+
+    // it is important that these be initialized to identity matrices
+    // before any rendering or transformations take place
+    amat.setIdentity();
+    tmat.setIdentity();
+    zmat.setIdentity();
+
+    threadRecalc = new Thread(new Recalc());
+    threadRecalc.start();
   }
 
   public void setChemFile(ChemFile cf) {
-
     this.cf = cf;
     haveFile = true;
     nframes = cf.getNumberOfFrames();
@@ -162,6 +187,16 @@ public class DisplayPanel extends JPanel
    */
   public Matrix4d getViewTransformMatrix() {
 
+    /*
+    System.out.println("amat:");
+    System.out.println(amat);
+    System.out.println("tmat:");
+    System.out.println(tmat);
+    System.out.println("zmat:");
+    System.out.println(zmat);
+    */
+
+
     Matrix4d viewMatrix = new Matrix4d();
     viewMatrix.setIdentity();
     Matrix4d matrix = new Matrix4d();
@@ -177,9 +212,21 @@ public class DisplayPanel extends JPanel
     viewMatrix.mul(tmat, viewMatrix);
     viewMatrix.mul(zmat, viewMatrix);
     matrix.setZero();
-    matrix.setTranslation(new Vector3d(getSize().width / 2,
-        getSize().height / 2, getSize().width / 2));
+    matrix.setTranslation(new Vector3d(dimCurrent.width / 2,
+        dimCurrent.height / 2, dimCurrent.width / 2));
     viewMatrix.add(matrix);
+    /*
+    System.out.println(" xmin=" + xmin +
+                       " xmax=" + xmax +
+                       " ymin=" + ymin +
+                       " ymax=" + ymax +
+                       " zmin=" + zmin +
+                       " zmax=" + zmax +
+                       " xfac=" + xfac +
+                       " width=" + width +
+                       " height=" + height);
+    System.out.println(viewMatrix);
+    */
     return viewMatrix;
   }
 
@@ -203,8 +250,8 @@ public class DisplayPanel extends JPanel
     if (zw > xw) {
       xw = zw;
     }
-    float f1 = getSize().width / xw;
-    float f2 = getSize().height / xw;
+    float f1 = dimCurrent.width / xw;
+    float f2 = dimCurrent.height / xw;
     if (f1 < f2) {
       xfac = f1;
     } else {
@@ -214,7 +261,6 @@ public class DisplayPanel extends JPanel
     settings.setAtomScreenScale(xfac);
     settings.setBondScreenScale(xfac);
     settings.setVectorScreenScale(xfac);
-    repaint();
   }
 
   public void setFrame(int fr) {
@@ -223,7 +269,7 @@ public class DisplayPanel extends JPanel
       if (fr < nframes) {
         setFrame(cf.getFrame(fr));
       }
-      repaint();
+      recalc();
     }
   }
 
@@ -234,25 +280,15 @@ public class DisplayPanel extends JPanel
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
-    repaint();
+    recalc();
   }
 
   public ChemFrame getFrame() {
     return md;
   }
 
-  public void run() {
-
-    try {
-      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    repaint();
-  }
-
-  public void stop() {
-  }
+  //  public void stop() {
+  //  }
 
   public void mlistChanged(MeasurementListEvent mle) {
     MeasurementList source = (MeasurementList) mle.getSource();
@@ -269,7 +305,7 @@ public class DisplayPanel extends JPanel
       prevy = e.getY();
 
       if (mode == PICK) {
-        rubberband = true;
+        rubberbandSelectionMode = true;
         bx = e.getX();
         rright = bx;
         rleft = bx;
@@ -293,10 +329,10 @@ public class DisplayPanel extends JPanel
               settings.clearPickedAtoms();
               settings.addPickedAtom(atom);
             }
-            repaint();
+            recalc();
           } else if (mode == DELETE) {
             md.deleteAtom(atom.getAtomNumber());
-            repaint();
+            recalc();
             status.setStatus(2, "Atom deleted");
           } else if (mode == MEASURE) {
             m.firePicked(atom.getAtomNumber());
@@ -308,22 +344,19 @@ public class DisplayPanel extends JPanel
 
     public void mouseReleased(MouseEvent e) {
 
-      if (mouseDragged && WireFrameRotation) {
+      if (mouseDragged && wireFrameRotation) {
         settings.setFastRendering(false);
         movingDrawMode = false;
-        if (painted) {
-          painted = false;
-          repaint();
-        }
         mouseDragged = false;
+        recalc();
       }
 
       outx = e.getX();
       outy = e.getY();
 
       if (mode == PICK) {
-        rubberband = false;
-        repaint();
+        rubberbandSelectionMode = false;
+        recalc();
       }
 
     }
@@ -336,27 +369,14 @@ public class DisplayPanel extends JPanel
       int x = e.getX();
       int y = e.getY();
 
-      if (WireFrameRotation) {
+      if (wireFrameRotation) {
         settings.setFastRendering(true);
         movingDrawMode = true;
         mouseDragged = true;
       }
       if (mode == ROTATE) {
-
-        /*
-        float[] spin_quat = new float[4];
-        Trackball tb = new Trackball(spin_quat,
-                                (2.0f*x - getSize().width) / getSize().width,
-                                (getSize().height-2.0f*y) / getSize().height,
-                                (2.0f*prevx - getSize().width) / getSize().width,
-                                (getSize().height-2.0f*prevy) / getSize().height);
-
-        tb.add_quats(spin_quat, quat, quat);
-        tb.build_rotmatrix(amat, quat);
-
-        */
-        double xtheta = (y - prevy) * (2.0 * Math.PI / getSize().width);
-        double ytheta = (x - prevx) * (2.0 * Math.PI / getSize().height);
+        double xtheta = (y - prevy) * (2.0 * Math.PI / dimCurrent.width);
+        double ytheta = (x - prevx) * (2.0 * Math.PI / dimCurrent.height);
         Matrix4d matrix = new Matrix4d();
         matrix.rotX(xtheta);
         amat.mul(matrix, amat);
@@ -373,8 +393,8 @@ public class DisplayPanel extends JPanel
       }
 
       if (mode == ZOOM) {
-        float xs = 1.0f + (float) (x - prevx) / (float) getSize().width;
-        float ys = 1.0f + (float) (prevy - y) / (float) getSize().height;
+        float xs = 1.0f + (float) (x - prevx) / (float) dimCurrent.width;
+        float ys = 1.0f + (float) (prevy - y) / (float) dimCurrent.height;
         float s = (xs + ys) / 2.0f;
         Matrix4d matrix = new Matrix4d();
         matrix.setElement(0, 0, s);
@@ -412,14 +432,11 @@ public class DisplayPanel extends JPanel
             settings.clearPickedAtoms();
             settings.addPickedAtoms(selectedAtoms);
           }
-          repaint();
         }
       }
 
-      if (painted) {
-        painted = false;
-        repaint();
-      }
+      recalc();
+
       prevx = x;
       prevy = y;
     }
@@ -445,19 +462,6 @@ public class DisplayPanel extends JPanel
 
   public void paint(Graphics g) {
 
-    if (settings.isAntiAliased() && !movingDrawMode) {
-      String vers = System.getProperty("java.version");
-      if (vers.compareTo("1.2") >= 0) {
-
-        //comment out the next 5 lines if compiling under 1.1
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_RENDERING,
-            RenderingHints.VALUE_RENDER_QUALITY);
-      }
-    }
-
     if (backgroundColor == null) {
       setBackgroundColor();
     }
@@ -465,53 +469,43 @@ public class DisplayPanel extends JPanel
     Color bg = backgroundColor;
     Color fg = getForeground();
 
+    // there may be a better place for this ...
+    // like when the window gets sized
+    dimCurrent = getSize();
+
     if (md == null) {
       g.setColor(bg);
-      g.fillRect(0, 0, getSize().width, getSize().height);
+      g.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
     } else {
-      if (!initialized) {
-
-        /*
-          start with the unit matrix
-        */
-        amat.setIdentity();
-        tmat.setIdentity();
-        zmat.setIdentity();
-        quat[0] = 0.0f;
-        quat[1] = 0.0f;
-        quat[2] = 0.0f;
-        quat[3] = 1.0f;
-        initialized = true;
+      synchronized(monitorRepaint) {
+        if (biRepaint != null) {
+          int x = 0;
+          int y = 0;
+          if ((dimCurrent.width != dimRepaint.width) ||
+              (dimCurrent.height != dimRepaint.height)) {
+            // window has been resized, so center image
+            g.setColor(bg);
+            g.fillRect(0, 0, dimCurrent.width, dimCurrent.height);
+            x = (dimCurrent.width - dimRepaint.width) / 2;
+            y = (dimCurrent.height - dimRepaint.height) / 2;
+          }
+          g.drawImage(biRepaint, x, y, null);
+        }
       }
-      Matrix4d matrix = getViewTransformMatrix();
-      settings.setAtomZOffset(getSize().width / 2);
-
-      g.setColor(bg);
-      g.fillRect(0, 0, getSize().width, getSize().height);
-      g.setColor(fg);
-
-      frameRenderer.paint(g, md, settings, matrix);
-      measureRenderer.paint(g, md, settings);
-      if (rubberband) {
+      if (rubberbandSelectionMode) {
         g.setColor(fg);
         g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
       }
-      painted = true;
-
     }
   }
 
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
   MeasureRenderer measureRenderer = new MeasureRenderer();
 
-  public boolean isPainting() {
-    return !painted;
-  }
-
   public Image takeSnapshot() {
 
-    Image snapImage = createImage(this.getSize().width,
-                        this.getSize().height);
+    Image snapImage = createImage(this.dimCurrent.width,
+                        this.dimCurrent.height);
     Graphics snapGraphics = snapImage.getGraphics();
     paint(snapGraphics);
     return snapImage;
@@ -561,7 +555,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.toggleBonds();
-      repaint();
+      recalc();
     }
   }
 
@@ -575,7 +569,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       settings.toggleAtoms();
       settings.toggleDrawBondsToAtomCenters();
-      repaint();
+      recalc();
     }
   }
 
@@ -588,7 +582,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.toggleVectors();
-      repaint();
+      recalc();
     }
   }
 
@@ -601,7 +595,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.toggleHydrogens();
-      repaint();
+      recalc();
     }
   }
 
@@ -616,7 +610,7 @@ public class DisplayPanel extends JPanel
 
       if (haveFile) {
         settings.addPickedAtoms(md.getAtoms());
-        repaint();
+        recalc();
       }
     }
   }
@@ -632,7 +626,7 @@ public class DisplayPanel extends JPanel
 
       if (haveFile) {
         settings.clearPickedAtoms();
-        repaint();
+        recalc();
       }
     }
   }
@@ -646,7 +640,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
-      repaint();
+      recalc();
     }
   }
 
@@ -659,7 +653,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setAtomDrawMode(DisplaySettings.SHADING);
-      repaint();
+      recalc();
     }
   }
 
@@ -672,7 +666,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setAtomDrawMode(DisplaySettings.WIREFRAME);
-      repaint();
+      recalc();
     }
   }
 
@@ -685,7 +679,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setAtomColorProfile(DisplaySettings.ATOMCHARGE);
-      repaint();
+      recalc();
     }
   }
 
@@ -698,7 +692,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setAtomColorProfile(DisplaySettings.ATOMTYPE);
-      repaint();
+      recalc();
     }
   }
 
@@ -711,7 +705,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setBondDrawMode(DisplaySettings.QUICKDRAW);
-      repaint();
+      recalc();
     }
   }
 
@@ -724,7 +718,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setBondDrawMode(DisplaySettings.SHADING);
-      repaint();
+      recalc();
     }
   }
 
@@ -737,7 +731,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setBondDrawMode(DisplaySettings.LINE);
-      repaint();
+      recalc();
     }
   }
 
@@ -750,7 +744,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setBondDrawMode(DisplaySettings.WIREFRAME);
-      repaint();
+      recalc();
     }
   }
 
@@ -838,7 +832,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       amat.setIdentity();
-      repaint();
+      recalc();
     }
   }
 
@@ -851,7 +845,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       amat.rotX(Math.toRadians(90.0));
-      repaint();
+      recalc();
     }
   }
 
@@ -864,7 +858,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       amat.rotX(Math.toRadians(-90.0));
-      repaint();
+      recalc();
     }
   }
 
@@ -877,7 +871,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       amat.rotY(Math.toRadians(90.0));
-      repaint();
+      recalc();
     }
   }
 
@@ -890,7 +884,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       amat.rotY(Math.toRadians(-90.0));
-      repaint();
+      recalc();
     }
   }
 
@@ -903,7 +897,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setLabelMode(DisplaySettings.NOLABELS);
-      repaint();
+      recalc();
     }
   }
 
@@ -916,7 +910,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setLabelMode(DisplaySettings.SYMBOLS);
-      repaint();
+      recalc();
     }
   }
 
@@ -929,7 +923,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setLabelMode(DisplaySettings.TYPES);
-      repaint();
+      recalc();
     }
   }
 
@@ -942,7 +936,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       settings.setLabelMode(DisplaySettings.NUMBERS);
-      repaint();
+      recalc();
     }
   }
 
@@ -974,8 +968,8 @@ public class DisplayPanel extends JPanel
         if (zw > xw) {
           xw = zw;
         }
-        float f1 = getSize().width / xw;
-        float f2 = getSize().height / xw;
+        float f1 = dimCurrent.width / xw;
+        float f2 = dimCurrent.height / xw;
         if (f1 < f2) {
           xfac = f1;
         } else {
@@ -986,7 +980,7 @@ public class DisplayPanel extends JPanel
         settings.setBondScreenScale(xfac);
         settings.setVectorScreenScale(xfac);
       }
-      repaint();
+      recalc();
     }
   }
 
@@ -999,7 +993,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      WireFrameRotation = cbmi.isSelected();
+      wireFrameRotation = cbmi.isSelected();
     }
   }
 
@@ -1047,5 +1041,103 @@ public class DisplayPanel extends JPanel
     }
   }
 
+  public void recalc() {
+    synchronized(monitorRecalc) {
+      ++numEvent;
+      transformEvent = getViewTransformMatrix();
+      settingsEvent = settings.copy();
+      dimEvent = dimCurrent;
+      monitorRecalc.notify();
+    }
+  }
+
+  class Recalc extends Thread {
+
+    void swapRecalcAndRepaintBuffers() {
+      synchronized(monitorRepaint) {
+        Dimension dimT = dimRepaint;
+        BufferedImage biT = biRepaint;
+        dimRepaint = dimRecalc;
+        biRepaint = biRecalc;
+        numRepaint = numRecalc;
+        dimRecalc = dimT;
+        biRecalc = biT;
+      }
+    }
+
+    void checkBufferedImageSize() {
+      if ((dimEvent.width <= 0) || (dimEvent.height <= 0))
+        return;
+      if ((dimRecalc == null) ||
+          (dimRecalc.width != dimEvent.width) ||
+          (dimRecalc.height != dimEvent.height)) {
+        dimRecalc = dimEvent;
+        biRecalc = new BufferedImage(dimRecalc.width,
+                                     dimRecalc.height,
+                                     BufferedImage.TYPE_INT_ARGB);
+      }
+    }
+
+    public void run() {
+      numEvent = numRecalc = 0;
+      while (true) {
+        synchronized(monitorRecalc) {
+          //System.out.println("numEvent=" + numEvent + " numRecalc=" + numRecalc);
+          if (numEvent == numRecalc) {
+            try {
+              //System.out.println(" ... waiting");
+              monitorRecalc.wait();
+            } catch (InterruptedException e) {
+              return;
+            }
+          }
+          if (numEvent == numRecalc) {
+            System.out.println("?Que?");
+          }
+          numRecalc = numEvent;
+          transformRecalc = transformEvent;
+          settingsRecalc = settingsEvent;
+        }
+        renderRepaintBuffer();
+        swapRecalcAndRepaintBuffers();
+        repaint();
+      }
+    }
+
+    void renderRepaintBuffer() {
+      checkBufferedImageSize();
+      Graphics2D g2 = biRecalc.createGraphics();
+      if (settingsRecalc.isAntiAliased() && !movingDrawMode) {
+        String vers = System.getProperty("java.version");
+        if (vers.compareTo("1.2") >= 0) {
+
+          //comment out the next 5 lines if compiling under 1.1
+          g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                              RenderingHints.VALUE_ANTIALIAS_ON);
+          g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+                              RenderingHints.VALUE_RENDER_QUALITY);
+        }
+      }
+      else {
+          g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                              RenderingHints.VALUE_ANTIALIAS_OFF);
+          g2.setRenderingHint(RenderingHints.KEY_RENDERING,
+                              RenderingHints.VALUE_RENDER_SPEED);
+      }
+
+      g2.setColor(backgroundColor);
+      g2.fillRect(0, 0, dimRecalc.width, dimRecalc.height);
+      if ((md != null) &&
+          (settingsRecalc != null) &&
+          (transformRecalc != null)) {
+        // mth - this is used to calculate screen atom diameters
+        // I don't yet understand why it isn't part of the transform
+        settingsRecalc.setAtomZOffset(dimRecalc.width / 2);
+
+        frameRenderer.paint(g2, md, settingsRecalc, transformRecalc);
+        measureRenderer.paint(g2, md, settingsRecalc);
+      }
+    }
+  }
 }
 

@@ -59,9 +59,9 @@ public class ModelManager {
     suppliesVanderwaalsRadius = modelAdapter.suppliesVanderwaalsRadius();
     suppliesCovalentRadius = modelAdapter.suppliesCovalentRadius();
 
-    if (JmolModelAdapter.vanderwaalsRadii.length != JmolModelAdapter.atomicNumberMax)
+    if (JmolConstants.vanderwaalsRadii.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! vanderwaalsRadii.length not consistent");
-    if (JmolModelAdapter.covalentRadii.length != JmolModelAdapter.atomicNumberMax)
+    if (JmolConstants.covalentRadii.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! covalentRadii.length not consistent");
   }
 
@@ -242,7 +242,7 @@ public class ModelManager {
     if (suppliesAtomicNumber) {
       int atomicNumber = modelAdapter.getAtomicNumber(clientAtom);
       if (atomicNumber < -1 ||
-          atomicNumber >= JmolModelAdapter.atomicNumberMax) {
+          atomicNumber >= JmolConstants.atomicNumberMax) {
         System.out.println("JmolModelAdapter.getAtomicNumber() returned " +
                            atomicNumber);
         return 0;
@@ -260,7 +260,7 @@ public class ModelManager {
         return atomicSymbol;
       System.out.println("JmolModelAdapter.getAtomicSymbol returned null");
     }
-    return JmolModelAdapter.atomicSymbols[atom.atomicNumber];
+    return JmolConstants.atomicSymbols[atom.atomicNumber];
   }
 
   public String getAtomTypeName(Atom atom) {
@@ -283,7 +283,7 @@ public class ModelManager {
       System.out.println("JmolClientAdapter.getVanderwaalsRadius() returned " +
                          vanderwaalsRadius);
     }
-    return JmolModelAdapter.vanderwaalsRadii[atom.atomicNumber];
+    return JmolConstants.vanderwaalsRadii[atom.atomicNumber];
   }
 
   public float getCovalentRadius(Atom atom) {
@@ -294,7 +294,7 @@ public class ModelManager {
       System.out.println("JmolClientAdapter.getCovalentRadius() returned " +
                          covalentRadius);
     }
-    return JmolModelAdapter.covalentRadii[atom.atomicNumber];
+    return JmolConstants.covalentRadii[atom.atomicNumber];
   }
 
   public String getPdbAtomRecord(Object clientAtom) {
@@ -315,9 +315,9 @@ public class ModelManager {
   private int mapAtomicSymbolToAtomicNumber(Object clientAtom) {
     if (htAtomicMap == null) {
       Hashtable map = new Hashtable();
-      for (int atomicNumber = JmolModelAdapter.atomicNumberMax;
+      for (int atomicNumber = JmolConstants.atomicNumberMax;
            --atomicNumber >= 0; )
-        map.put(JmolModelAdapter.atomicSymbols[atomicNumber],
+        map.put(JmolConstants.atomicSymbols[atomicNumber],
                 new Integer(atomicNumber));
       htAtomicMap = map;
     }

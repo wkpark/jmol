@@ -70,7 +70,7 @@ public class Frame {
   }
 
   public Frame(JmolViewer viewer) {
-    this(viewer, JmolModelAdapter.MODEL_TYPE_OTHER, false);
+    this(viewer, JmolConstants.MODEL_TYPE_OTHER, false);
   }
 
   public void finalize() {

@@ -44,11 +44,11 @@ public class ColorManager {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
     suppliesAtomArgb = modelAdapter.suppliesAtomArgb();
-    if (JmolModelAdapter.argbsCpk.length != JmolModelAdapter.atomicNumberMax)
+    if (JmolConstants.argbsCpk.length != JmolConstants.atomicNumberMax)
       System.out.println("WARNING! argbsCpk.length not consistent");
-    if (JmolModelAdapter.argbsPdbAmino.length != Token.RESID_AMINO_MAX)
+    if (JmolConstants.argbsPdbAmino.length != Token.RESID_AMINO_MAX)
       System.out.println("WARNING! argbsPdbAmino.length not consistent");
-    if (JmolModelAdapter.argbsPdbShapely.length != Token.RESID_DNA_MAX)
+    if (JmolConstants.argbsPdbShapely.length != Token.RESID_DNA_MAX)
       System.out.println("WARNING! argbsPdbShapely.length not consistent");
   }
 
@@ -540,38 +540,38 @@ public class ColorManager {
       System.out.println("JmolModelAdapter.getColorAtom returned null");
     }
     switch (palette) {
-    case JmolModelAdapter.COLORSCHEME_CPK:
-      argb = JmolModelAdapter.argbsCpk[atom.atomicNumber];
+    case JmolConstants.PALETTE_CPK:
+      argb = JmolConstants.argbsCpk[atom.atomicNumber];
       break;
-    case JmolModelAdapter.COLORSCHEME_PDB_STRUCTURE:
+    case JmolConstants.PALETTE_STRUCTURE:
       if (pdbatom != null)
-        argb = JmolModelAdapter.argbsPdbStructure[pdbatom.structureType];
+        argb = JmolConstants.argbsPdbStructure[pdbatom.structureType];
       break;
-    case JmolModelAdapter.COLORSCHEME_PDB_AMINO:
+    case JmolConstants.PALETTE_AMINO:
       if (pdbatom != null) {
         byte resid = pdbatom.getResID();
         if (resid >= 0 && resid < Token.RESID_AMINO_MAX)
-          argb = JmolModelAdapter.argbsPdbAmino[resid];
+          argb = JmolConstants.argbsPdbAmino[resid];
       }
       break;
-    case JmolModelAdapter.COLORSCHEME_PDB_SHAPELY:
+    case JmolConstants.PALETTE_SHAPELY:
       if (pdbatom != null) {
         byte resid = pdbatom.getResID();
         if (resid >= 0 && resid < Token.RESID_DNA_MAX)
-          argb = JmolModelAdapter.argbsPdbShapely[resid];
+          argb = JmolConstants.argbsPdbShapely[resid];
         else
-          argb = JmolModelAdapter.argbPdbShapelyDefault;
+          argb = JmolConstants.argbPdbShapelyDefault;
       }
       break;
-    case JmolModelAdapter.COLORSCHEME_PDB_CHAIN:
+    case JmolConstants.PALETTE_CHAIN:
       if (pdbatom != null) {
         int chain = pdbatom.getChain() & 0x07;
         argb = (pdbatom.isHetero()
-                ? JmolModelAdapter.argbsPdbChainHetero
-                : JmolModelAdapter.argbsPdbChainAtom)[chain];
+                ? JmolConstants.argbsPdbChainHetero
+                : JmolConstants.argbsPdbChainAtom)[chain];
       }
       break;
-    case JmolModelAdapter.COLORSCHEME_CHARGE:
+    case JmolConstants.PALETTE_CHARGE:
       break;
     }
     if (argb == 0)

@@ -58,10 +58,10 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   AtomColorer[] colorSchemes;
 
   public CdkJmolModelAdapter() {
-    colorSchemes = new AtomColorer[JmolModelAdapter.COLORSCHEME_MAX];
-    colorSchemes[JmolModelAdapter.COLORSCHEME_CPK] =
+    colorSchemes = new AtomColorer[JmolConstants.PALETTE_MAX];
+    colorSchemes[JmolConstants.PALETTE_CPK] =
       new DefaultCdkAtomColors();
-    colorSchemes[JmolModelAdapter.COLORSCHEME_CHARGE] =
+    colorSchemes[JmolConstants.PALETTE_CHARGE] =
       new PartialAtomicChargeColors();
   }
 
@@ -124,7 +124,7 @@ public class CdkJmolModelAdapter implements JmolModelAdapter {
   public int getModelType(Object clientFile) {
     // this need to return MODEL_TYPE_PDB
     // or MODEL_TYPE_XYZ, as appropriate
-    return JmolModelAdapter.MODEL_TYPE_OTHER;
+    return JmolConstants.MODEL_TYPE_OTHER;
   }
 
   public String getModelName(Object clientFile) {

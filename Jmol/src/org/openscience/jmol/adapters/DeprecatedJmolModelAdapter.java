@@ -52,10 +52,10 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
   AtomColorer[] colorSchemes;
 
   public DeprecatedJmolModelAdapter() {
-    colorSchemes = new AtomColorer[JmolModelAdapter.COLORSCHEME_MAX];
-    colorSchemes[JmolModelAdapter.COLORSCHEME_CPK] =
+    colorSchemes = new AtomColorer[JmolConstants.PALETTE_MAX];
+    colorSchemes[JmolConstants.PALETTE_CPK] =
       new DefaultCdkAtomColors();
-    colorSchemes[JmolModelAdapter.COLORSCHEME_CHARGE] =
+    colorSchemes[JmolConstants.PALETTE_CHARGE] =
       new PartialAtomicChargeColors();
   }
 
@@ -96,7 +96,7 @@ public class DeprecatedJmolModelAdapter implements JmolModelAdapter {
   }
 
   public int getModelType(Object clientFile) {
-    return JmolModelAdapter.MODEL_TYPE_OTHER;
+    return JmolConstants.MODEL_TYPE_OTHER;
   }
 
   public String getModelName(Object clientFile) {

@@ -135,10 +135,10 @@ public class SimpleModelAdapter implements JmolModelAdapter {
 
   public int getModelType(Object clientFile) {
     if (clientFile instanceof PdbModel)
-      return JmolModelAdapter.MODEL_TYPE_PDB;
+      return JmolConstants.MODEL_TYPE_PDB;
     if (clientFile instanceof XyzModel)
-      return JmolModelAdapter.MODEL_TYPE_XYZ;
-    return JmolModelAdapter.MODEL_TYPE_OTHER;
+      return JmolConstants.MODEL_TYPE_XYZ;
+    return JmolConstants.MODEL_TYPE_OTHER;
   }
 
   public String getModelName(Object clientFile) {
@@ -429,7 +429,7 @@ class JmeModel extends Model {
       if (order < 1) {
         System.out.println("Stereo found:" + order);
         order = ((order == -1)
-                 ? JmolModelAdapter.STEREO_NEAR : JmolModelAdapter.STEREO_FAR);
+                 ? JmolConstants.BOND_STEREO_NEAR : JmolConstants.BOND_STEREO_FAR);
       }
       bonds[i] = new Bond(atomIndex1-1, atomIndex2-1, order);
     }

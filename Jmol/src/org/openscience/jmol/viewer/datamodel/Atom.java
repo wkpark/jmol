@@ -263,7 +263,7 @@ public boolean isBonded(Atom atomOther) {
     if (pdbatom != null)
       return pdbatom.getAtomNumber();
     return getAtomIndex() +
-      (frame.modelType == JmolModelAdapter.MODEL_TYPE_XYZ ? 0 : 1);
+      (frame.modelType == JmolConstants.MODEL_TYPE_XYZ ? 0 : 1);
   }
 
   public Point3f getPoint3f() {

@@ -91,6 +91,8 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/PhysicalProperty.java \
 		org/openscience/jmol/Preferences.java \
 		org/openscience/jmol/PropertyGraph.java \
+                org/openscience/jmol/RasMolScriptException.java \
+                org/openscience/jmol/RasMolScriptHandler.java \
 		org/openscience/jmol/ReaderFactory.java \
                 org/openscience/jmol/SharcReader.java \
                 org/openscience/jmol/SharcShielding.java \

@@ -150,7 +150,7 @@ class ModelResolver {
   ////////////////////////////////////////////////////////////////
   
   final static String[] cmlRecords =
-  { "<atom", "<molecule", "<reaction", "<cml", "<bond", "\"cml.dtd\""};
+  { "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\""};
 
   final static String[] gaussianRecords =
   { "Entering Gaussian System", "1998 Gaussian, Inc." };

@@ -63,6 +63,5 @@ public class JmolPopup {
       popupSwing.updateElementComputedMenu(elementsPresentBitSet);
     else
       popupAwt.updateElementComputedMenu(elementsPresentBitSet);
-      
   }
 }

@@ -1,20 +1,26 @@
 <project name="Jmol" default="main" basedir=".">
 
-  <!-- added for Debian -->
-  <property name="build.compiler" value="jikes"/>
+  <property file="${user.home}/.jmol.build.properties" />
 
-  <property name="version" value="3" />
+  <property name="version" value="4" />
   <property name="source.dir" value="src" />
-  <property name="generatedSource.dir" value="generatedSource" />
+  <property name="tests.source.dir" value="source-tests" />
+  <property name="build.dir" value="build" />
+  <property name="generatedSource.dir" value="${build.dir}/generatedSource" />
   <property name="lib.dir" value="jars" />
-  <property name="classes.dir" value="classes" />
-  <property name="applet.classes.dir" value="applet-classes" />
-  <property name="dist.dir" value="dist" />
-  <property name="sourcedist.dir" value="sourcedist" />
+  <property name="classes.dir" value="${build.dir}/classes" />
+  <property name="tests.classes.dir" value="${build.dir}/classes-tests" />
+  <property name="applet.classes.dir" value="${build.dir}/applet-classes" />
+  <property name="tests.dir" value="${build.dir}/unit.tests" />
+  <property name="dist.dir" value="${build.dir}/dist" />
+  <property name="sourcedist.dir" value="${build.dir}/sourcedist" />
   <property name="doc.dir" value="doc" />
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
-  <property name="docbook.dir" value="${user.dir}/../docbook-xsl" />
+  <property name="docbook.dir" value="Must be set by user." />
+  <property name="keystore.name" value="Must be set by user." />
+
+  <property file="proxy.properties" />
 
   <path id="project.class.path">
     <fileset dir="${lib.dir}">
@@ -29,7 +35,7 @@
   
   <target name="main" depends="init,jar,applet-jar"/>
   
-  <target name="init"/> <!-- Debian uses xsltproc -->
+  <target name="init" depends="check.docbook,check.xsl" />
   
   <target name="initFailure">
     <fail message="Init failed. See messages above." />
@@ -48,11 +54,25 @@
     </uptodate>
     <available file="${docbook.dir}" property="docbook.dir.present"/>
     <available classname="com.icl.saxon.StyleSheet"
-      classpath="${lib.dir}/saxon.jar"
+      classpath="/usr/share/java/saxon.jar"
       property="xsl.available"/>
     <uptodate property="javadoc.uptodate" targetfile="${javadoc.dir}/index.html">
       <srcfiles dir="${source.dir}" includes="**/*.java" />
     </uptodate>
+    <available file="${keystore.name}" property="keystore.present" />
+    <!-- Optional proxy settings (if defined) -->
+    <condition property="proxyHost"
+        value="-Dhttp.proxyHost=${http.proxyHost}" >
+      <not>
+        <equals arg1="http.proxyHost" arg2="" />
+      </not>
+    </condition>
+    <condition property="proxyPort"
+        value="-Dhttp.proxyPort=${http.proxyPort}" >
+      <not>
+        <equals arg1="http.proxyPort" arg2="" />
+      </not>
+    </condition>
   </target>
 
   <target name="check.docbook" depends="setup" unless="docbook.dir.present" >
@@ -72,6 +92,8 @@
     <java fork="true" dir="${generatedSource.dir}/org/openscience/jmol/Data/guide"
         classname="com.icl.saxon.StyleSheet"
         classpath="${lib.dir}/saxon.jar" >
+      <jvmarg value="${proxyHost}" />
+      <jvmarg value="${proxyPort}" />
       <arg value="${user.dir}/${doc.dir}/source/JmolGuide.docbook.xml" />
       <arg value="${docbook.dir}/html/chunk.xsl" />
     </java>
@@ -130,6 +152,20 @@
     </copy>
   </target>
   
+  <target name="compile.tests" depends="classes">
+    <mkdir dir="${tests.classes.dir}"/>
+    <javac srcdir="${tests.source.dir}" destdir="${tests.classes.dir}"
+        debug="on" deprecation="on">
+      <classpath location="${classes.dir}" />
+      <classpath refid="project.class.path" />
+    </javac>
+    <copy todir="${tests.classes.dir}" >
+      <fileset dir="${tests.source.dir}">
+        <include name="**/Test-*" />
+      </fileset>
+    </copy>
+  </target>
+
   <target name="applet-classes" >
     <mkdir dir="${applet.classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
@@ -176,6 +212,8 @@
         <exclude name="swing.jar" />
         <exclude name="junit.jar" />
         <exclude name="saxon.jar" />
+        <exclude name="gnujaxp-saxonly.jar" />
+        <exclude name="baysmith-io.jar" />
       </fileset>
     </copy>
     <copy todir="${dist.dir}/jmol-${version}" >
@@ -206,6 +244,9 @@
         <exclude name="junit.jar" />
         <exclude name="multi.jar" />
         <exclude name="saxon.jar" />
+        <exclude name="gnujaxp.jar" />
+        <exclude name="baysmith-io.jar" />
+        <exclude name="itext-0.94.jar" />
       </fileset>
     </copy>
     <copy todir="${dist.dir}/jmol-applet-${version}" >
@@ -215,16 +256,68 @@
     </copy>
   </target>
 
+  <target name="check.jws" depends="setup" unless="keystore.present" >
+    <echo message="Keystore '${keystore.name}' not found." />
+    <echo message="Please set with the argument '-Dkeystore.name=file'." />
+    <antcall target="initFailure" />
+  </target>
+
+  <target name="dist-jws" depends="check.jws,dist" >
+    <copy todir="${dist.dir}/jmol-jws-${version}" >
+      <fileset dir="${source.dir}">
+        <include name="jmol.jnlp" />
+      </fileset>
+    </copy>
+    <mkdir dir="${dist.dir}/jmol-jws-${version}/${lib.dir}" />
+    <copy todir="${dist.dir}/jmol-jws-${version}/${lib.dir}" >
+      <fileset dir="${lib.dir}">
+        <include name="*.jar" />
+        <exclude name="jmol-applet.jar" />
+        <exclude name="gnujaxp-saxonly.jar" />
+        <exclude name="swing.jar" />
+        <exclude name="junit.jar" />
+        <exclude name="saxon.jar" />
+        <exclude name="baysmith-io.jar" />
+      </fileset>
+    </copy>
+    <mkdir dir="${dist.dir}/jmol-jws-${version}/images" />
+    <copy todir="${dist.dir}/jmol-jws-${version}/images" flatten="yes" >
+      <fileset dir="${source.dir}">
+        <include name="**/icon.jpg" />
+      </fileset>
+    </copy>
+    <ant antfile="../../../build.xml" dir="${dist.dir}/jmol-jws-${version}"
+        target="internal-dist-jws-sign" />
+  </target>
+  
+  <!--
+    This target should be only used internally within the build.xml. It is a
+    workaround for a bugs in the fileset feature of the signjar task. See bugs
+    5230 and 6988.
+  -->
+  <target name="internal-dist-jws-sign" >
+    <signjar alias="${keystore.alias}" 
+        storepass="${keystore.password}" 
+        keystore="${keystore.name}" >
+      <fileset dir="../jmol-jws-${version}">
+        <include name="**/*.jar" />
+        <exclude name="**/.AppleDouble/**" />
+      </fileset>
+    </signjar>
+  </target>
+  
+
   <target name="dist.zip" depends="dist">
-    <zip zipfile="jmol-${version}.zip" basedir="${dist.dir}"
+    <zip zipfile="${build.dir}/jmol-${version}.zip" basedir="${dist.dir}"
       includes="jmol-${version}/**" />
     
-    <zip zipfile="jmol-applet-${version}.zip" basedir="${dist.dir}"
+    <zip zipfile="${build.dir}/jmol-applet-${version}.zip" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**" />
   </target>
 
   <target name="dist.tar.gz" depends="dist">
-    <tar tarfile="jmol-${version}.tar" basedir="${dist.dir}" excludes="**">
+    <tar tarfile="${build.dir}/jmol-${version}.tar" basedir="${dist.dir}"
+        excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
            for a problem in Ant 1.3 -->
       <tarfileset dir="${dist.dir}" mode="755">
@@ -237,13 +330,15 @@
         <exclude name="jmol-${version}/jmol.bat"/>
       </tarfileset>
     </tar>
-    <gzip zipfile="jmol-${version}.tar.gz" src="jmol-${version}.tar"/>
-    <delete file="jmol-${version}.tar" />
+    <gzip zipfile="${build.dir}/jmol-${version}.tar.gz"
+        src="${build.dir}/jmol-${version}.tar"/>
+    <delete file="${build.dir}/jmol-${version}.tar" />
     
-    <tar tarfile="jmol-applet-${version}.tar" basedir="${dist.dir}"
+    <tar tarfile="${build.dir}/jmol-applet-${version}.tar" basedir="${dist.dir}"
       includes="jmol-applet-${version}/**"/>
-    <gzip zipfile="jmol-applet-${version}.tar.gz" src="jmol-applet-${version}.tar"/>
-    <delete file="jmol-applet-${version}.tar" />
+    <gzip zipfile="${build.dir}/jmol-applet-${version}.tar.gz"
+        src="${build.dir}/jmol-applet-${version}.tar"/>
+    <delete file="${build.dir}/jmol-applet-${version}.tar" />
   </target>
 
   <target name="sourcedist">
@@ -256,10 +351,14 @@
     <copy todir="${sourcedist.dir}/jmol-${version}" >
       <fileset dir=".">
         <include name="*" />
+        <exclude name="${build.dir}" />
       </fileset>
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${source.dir}" >
       <fileset dir="${source.dir}" />
+    </copy>
+    <copy todir="${sourcedist.dir}/jmol-${version}/${tests.source.dir}" >
+      <fileset dir="${tests.source.dir}" />
     </copy>
     <copy todir="${sourcedist.dir}/jmol-${version}/${doc.dir}" >
       <fileset dir="${doc.dir}" />
@@ -273,12 +372,13 @@
   </target>
 
   <target name="sourcedist.zip" depends="sourcedist">
-    <zip zipfile="jmol-${version}.source.zip" basedir="${sourcedist.dir}" includes="**" />
+    <zip zipfile="${build.dir}/jmol-${version}.source.zip"
+        basedir="${sourcedist.dir}" includes="**" />
   </target>
 
   <target name="sourcedist.tar.gz" depends="sourcedist">
-    <tar tarfile="jmol-${version}.source.tar" basedir="${sourcedist.dir}"
-        excludes="**">
+    <tar tarfile="${build.dir}/jmol-${version}.source.tar"
+        basedir="${sourcedist.dir}" excludes="**">
       <!-- The excludes="**" attribute in the tag above is a workaround
            for a problem in Ant 1.3 -->
       <tarfileset dir="${sourcedist.dir}" mode="755">
@@ -291,29 +391,31 @@
         <exclude name="jmol-${version}/jmol.bat"/>
       </tarfileset>
     </tar>
-    <gzip zipfile="jmol-${version}.source.tar.gz" src="jmol-${version}.source.tar"/>
-    <delete file="jmol-${version}.source.tar" />
+    <gzip zipfile="${build.dir}/jmol-${version}.source.tar.gz"
+        src="${build.dir}/jmol-${version}.source.tar"/>
+    <delete file="${build.dir}/jmol-${version}.source.tar" />
   </target>
 
+  <target name="main-dists" description="Builds primary distributions."
+      depends="dist.zip,dist.tar.gz,sourcedist.zip,sourcedist.tar.gz"/>
+
   <target name="clean">
-    <delete dir="${generatedSource.dir}"/>
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
+    <delete dir="${tests.classes.dir}"/>
     <delete>
       <fileset dir="${lib.dir}">
         <include name="jmol.jar" />
         <include name="jmol-applet.jar" />
       </fileset>
-      <fileset dir=".">
-        <include name="jmol-*.zip" />
-        <include name="jmol-*.tar.gz" />
-      </fileset>
     </delete>
-    <delete dir="${javadoc.dir}"/>
-    <delete dir="${dist.dir}"/>
-    <delete dir="${sourcedist.dir}"/>
   </target>
 
+  <target name="spotless" depends="clean">
+    <delete dir="${build.dir}"/>
+    <delete dir="${javadoc.dir}"/>
+  </target>
+  
   <target name="run" depends="classes">
     <java fork="true" classname="org.openscience.jmol.Jmol">
       <classpath location="classes" />
@@ -321,11 +423,16 @@
     </java>
   </target>
 
-  <target name="runtests" depends="classes">
-    <java fork="true" classname="org.openscience.jmol.TestAll">
-      <classpath location="classes" />
+  <property name="testName" value="org.openscience.jmol.JmolTests" />
+  <target name="test" depends="compile.tests" description="Tests Jmol.">
+    <mkdir dir="${tests.dir}" />
+    <junit fork="yes" dir="${tests.dir}" printsummary="yes" haltonfailure="yes">
+      <formatter type="plain" useFile="no" />
+      <classpath path="${classes.dir}" />
+      <classpath path="${tests.classes.dir}" />
       <classpath refid="project.class.path" />
-    </java>
+      <test name="${testName}" />
+    </junit>
   </target>
 
   <target name="javadoc" depends="init" unless="javadoc.uptodate">

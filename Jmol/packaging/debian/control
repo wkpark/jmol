@@ -1,5 +1,5 @@
 Source: jmol
-Build-Depends: ant (>= 1.4), jikes, docbook-xsl, xsltproc, lib-saxon-java, junit
+Build-Depends: ant (>= 1.5), jikes, docbook-xsl (>= 1.54.1), xsltproc, lib-saxon-java, junit
 Section: x11
 Priority: optional
 Maintainer: Egon Willighagen <egonw@sci.kun.nl>

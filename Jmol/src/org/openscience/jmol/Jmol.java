@@ -141,6 +141,7 @@ public class Jmol extends JPanel {
   private Vibrate vib;
   private CrystalPropertiesDialog crystprop;
   private MakeCrystal makecrystal;
+  private TransformDialog transform;
   private PropertyGraph pg;
   private Measure meas;
   private MeasurementList mlist;
@@ -255,6 +256,8 @@ public class Jmol extends JPanel {
     model.addPropertyChangeListener(crystprop);
     makecrystal = new MakeCrystal(model, crystprop);
     model.addPropertyChangeListener(makecrystal);
+    transform = new TransformDialog(model, frame, this);
+    model.addPropertyChangeListener(transform);
     splash.showStatus(resourceHandler
         .translate("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
@@ -619,6 +622,7 @@ public class Jmol extends JPanel {
     actions.addAll(Arrays.asList(vib.getActions()));
     actions.addAll(Arrays.asList(crystprop.getActions()));
     actions.addAll(Arrays.asList(makecrystal.getActions()));
+    actions.addAll(Arrays.asList(transform.getActions()));
     actions.addAll(Arrays.asList(pg.getActions()));
 
     return (Action[]) actions.toArray(new Action[0]);

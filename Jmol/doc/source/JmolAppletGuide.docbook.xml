@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "../xml-dtd-4.2/docbookx.dtd"
+  "../../build/docbook-xml/docbookx.dtd"
 [
 <!ENTITY appletIntro        SYSTEM "applet/intro.docbook.xml">
 <!ENTITY appletBrowsers     SYSTEM "applet/browsers.docbook.xml">

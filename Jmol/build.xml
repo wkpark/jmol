@@ -64,7 +64,7 @@
 	      targetfile="build/${docbook-xsl}"
 	      srcfile="doc/${docbook-xsl}.tar.gz" />
     <uptodate property="docbook-xml.uptodate"
-	      targetfile="build/${docbook-xml}"
+	      targetfile="build/docbook-xml"
 	      srcfile="doc/${docbook-xml}.zip" />
 
     <condition property="jmolGuide.uptodate">
@@ -612,9 +612,9 @@ support for assertions (which were introduced in 1.4).
   </target>
 
   <target name="check.docbook-xml" depends="setup" unless="docbook-xml.uptodate" >
-    <delete dir="build/${docbook-xml}" />
-    <mkdir dir="build/${docbook-xml}" />
-    <unzip src="doc/${docbook-xml}.zip" dest="build/${docbook-xml}" />
+    <delete dir="build/docbook-xml" />
+    <mkdir dir="build/docbook-xml" />
+    <unzip src="doc/${docbook-xml}.zip" dest="build/docbook-xml" />
   </target>
 
   <target name="check.xsl" depends="setup" unless="xsl.available" >

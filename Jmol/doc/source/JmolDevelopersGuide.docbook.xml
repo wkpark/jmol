@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-  "../../build/docbook-xml-4.3/docbookx.dtd"
+  "../../build/docbook-xml/docbookx.dtd"
 >
 <book id="jmol-devel-guide">
   <bookinfo>

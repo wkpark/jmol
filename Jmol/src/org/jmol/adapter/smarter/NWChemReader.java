@@ -26,6 +26,7 @@
 package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 
 /**
  * A reader for NWChem 4.6
@@ -396,16 +397,21 @@ class NWChemReader extends AtomSetCollectionReader {
    **/
   private void readFrequencies(BufferedReader reader) throws Exception {
     String line, tokens[];
-    
+ 
+    String path = "Task " + taskNumber +
+      SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies";
+
     // position myself to read the atom information, i.e., structure
     discardLinesUntilContains(reader,"Atom information");
     discardLines(reader, 2);
     line = reader.readLine();
     atomSetCollection.newAtomSet();
+    atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
     do {
       tokens = getTokens(line);
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = tokens[0];
+      atom.atomName = fixTag(tokens[0]);
+//      atom.elementSymbol = tokens[0];
       atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
       atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
       atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
@@ -434,8 +440,17 @@ class NWChemReader extends AtomSetCollectionReader {
       // clone the last atom set nFreq-1 times the first time, later nFreq times.
       for (int fIndex=(firstTime?1:0); fIndex < nFreq; fIndex++) {
         atomSetCollection.cloneLastAtomSet();
+        atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
       }
       firstTime = false;
+      
+      // assign the frequency values to each atomset's name and property
+      for (int i=0; i<nFreq; ++i) {
+        int idx = firstFrequencyAtomSetIndex + totalFrequencies + i;
+        String frequencyString = tokens[i] + " cm**-1";
+        atomSetCollection.setAtomSetName(frequencyString, idx);
+        atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
+      }
       
       // firstModelAtom is the index in atomSetCollection.atoms that has the
       // first atom of the first model where the first to be read vibration
@@ -469,21 +484,23 @@ class NWChemReader extends AtomSetCollectionReader {
     }
     
     // now set the names and properties of the atomsets associated with
-    // the frequencies 
-    discardLinesUntilContains(reader, "Projected Infra Red Intensities");
-    discardLines(reader, 2);
-    String path = "Task " + taskNumber +
-                  SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies";
-    for (int i=totalFrequencies, idx=firstFrequencyAtomSetIndex; --i>=0; idx++) {
-      line = reader.readLine();
-      tokens = getTokens(line);
-      String frequencyString = tokens[1] + " cm**-1";
-      atomSetCollection.setAtomSetName(frequencyString, idx);
-      atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
-      atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5] + " KM/mol", idx);
-      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path, idx);
-//      atomSetCollection.setAtomSetProperty("vector","frequency");
-   }
+    // the frequencies
+    // NB this is not always there: try/catch and possibly set freq value again  
+    try {
+      discardLinesUntilContains(reader, "Projected Infra Red Intensities");
+      discardLines(reader, 2);
+      for (int i=totalFrequencies, idx=firstFrequencyAtomSetIndex; --i>=0; idx++) {
+        line = reader.readLine();
+        tokens = getTokens(line);
+        String frequencyString = tokens[1] + " cm**-1";
+        atomSetCollection.setAtomSetName(frequencyString, idx);
+        atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
+        atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5] + " KM/mol", idx);
+        //      atomSetCollection.setAtomSetProperty("vector","frequency");
+      }
+    } catch (Exception e) {
+      // If exception was thrown, don't do anything here...
+    }
   }
   
   /**
@@ -512,13 +529,18 @@ class NWChemReader extends AtomSetCollectionReader {
    * from it in the {@link Atom}.
    *<p> The result is that a tag that started with Bq (case insensitive) will
    * be renamed to have the Bq removed and '-Bq' appended to it.
+   * <br>A tag consisting only of Bq (case insensitive) will return X. This
+   * can happen in a frequency analysis.
    * 
    * @param tag the tag to be modified
    * @return a possibly modified tag
    **/
   private String fixTag(String tag) {
+    String lctag = tag.toLowerCase();
     // make sure that Bq's are not interpreted as boron
-    if (tag.toLowerCase().startsWith("bq"))
+    if (lctag.equals("bq"))
+      return "X";
+    if (lctag.startsWith("bq"))
       return tag.substring(2)+"-Bq";
     return tag;
   }

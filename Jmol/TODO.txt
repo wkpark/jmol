@@ -1,0 +1,7 @@
+To Be Done before 0.7:
+======================
+* Highlighting of dot corresponding to current frame in Energy vs. Frames plot.
+
+To Be Done later:
+=================
+* Calculate additional points in Energy vs. Frames plot to view a smoother sinoid function

@@ -34,6 +34,7 @@ import java.awt.image.PixelGrabber;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Shape;
+import javax.vecmath.Point3i;
 
 final public class Graphics3D {
 
@@ -707,4 +708,21 @@ final public class Graphics3D {
       }
     }
   }
+
+    public void plotPoint(Point3i point) {
+	int x = point.x;
+	if (x < 0 || x >= width)
+	    return;
+	int y = point.y;
+	if (y < 0 || y >= height)
+	    return;
+	int z = point.z;
+	if (z < 0 || z >= 8192)
+	    return;
+	int offset = y * width + x;
+	if (z < zbuf[offset]) {
+	    zbuf[offset] = (short)z;
+	    pbuf[offset] = argbCurrent;
+	}
+    }
 }

@@ -28,9 +28,11 @@ import org.openscience.jmol.viewer.JmolViewer;
 import org.openscience.jmol.viewer.g3d.Graphics3D;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.AxisAngle4f;
 
-//import freeware.PrintfFormat;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
@@ -39,11 +41,18 @@ public class MeasurementShape extends LineShape {
   public int[] atomIndices;
   public String strMeasurement;
 
+    public Point3f center, pointT;
+    Vector3f vector21, vector23, vectorAxis;
+    public int count;
+    AxisAngle4f aa, aaT;
+    Matrix3f matrixT;
+
   public MeasurementShape(JmolViewer viewer, int count, int[] atomIndices) {
     Point3f point1 = viewer.getPoint3f(atomIndices[0]);
     Point3f point2 = viewer.getPoint3f(atomIndices[1]);
     Point3f point3 = null;
     Point3f point4 = null;
+    this.count = count;
     switch (count) {
     case 2:
       strMeasurement = formatDistance(point1.distance(point2));;
@@ -53,12 +62,13 @@ public class MeasurementShape extends LineShape {
       break;
     case 3:
       point3 = viewer.getPoint3f(atomIndices[2]);
-      Vector3f vector12 = new Vector3f(point1);
-      vector12.sub(point2);
-      Vector3f vector32 = new Vector3f(point3);
-      vector32.sub(point2);
-      float angle = toDegrees(vector12.angle(vector32));
-      strMeasurement = formatAngle(angle);
+      vector21 = new Vector3f(point1);
+      vector21.sub(point2);
+      vector23 = new Vector3f(point3);
+      vector23.sub(point2);
+      float angle = vector21.angle(vector23);
+      float degrees = toDegrees(angle);
+      strMeasurement = formatAngle(degrees);
 
       pointOrigin = new Point3f(point1);
       pointOrigin.scaleAdd(3, point2);
@@ -66,6 +76,16 @@ public class MeasurementShape extends LineShape {
       pointEnd = new Point3f(point3);
       pointEnd.scaleAdd(3, point2);
       pointEnd.scale(0.25f);
+
+      center = point2;
+
+      vectorAxis = new Vector3f();
+      vectorAxis.cross(vector21, vector23);
+      aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, angle);
+
+      pointT = new Point3f();
+      aaT = new AxisAngle4f();
+      matrixT = new Matrix3f();
       break;
     case 4:
       point3 = viewer.getPoint3f(atomIndices[2]);
@@ -89,9 +109,44 @@ public class MeasurementShape extends LineShape {
   }
 
   public void render(Graphics3D g3d, JmolViewer viewer) {
-    g3d.drawDottedLine(viewer.getColixDistance(), x, y, z, xEnd, yEnd, zEnd);
-    if (viewer.getShowMeasurementLabels())
-      paintMeasurementString(g3d, viewer);
+      if (count == 3) {
+	  renderArc(g3d, viewer);
+      } else {
+	  g3d.drawDottedLine(viewer.getColixDistance(),
+			     x, y, z, xEnd, yEnd, zEnd);
+	  if (viewer.getShowMeasurementLabels())
+	      paintMeasurementString(g3d, viewer);
+      }
+  }
+
+  public void renderArc(Graphics3D g3d, JmolViewer viewer) {
+      g3d.setColix(viewer.getColixDistance());
+      int dotCount = 32;
+      float stepAngle = aa.angle / dotCount;
+      aaT.set(aa);
+      for (int i = dotCount; --i >= 0; ) {
+	  aaT.angle = i * stepAngle;
+	  matrixT.set(aaT);
+	  pointT.set(vector21);
+	  matrixT.transform(pointT);
+	  pointT.add(center);
+	  g3d.plotPoint(viewer.transformPoint(pointT));
+      }
+      int xC, yC, zC;
+      Point3i screen = viewer.transformPoint(center);
+      xC = screen.x; yC = screen.y; zC = screen.z;
+      pointT.set(vector21);
+      pointT.scale(1.5f);
+      pointT.add(center);
+      screen = viewer.transformPoint(pointT);
+      g3d.drawDottedLine(viewer.getColixDistance(),
+			 xC, yC, zC, screen.x, screen.y, screen.z);
+      pointT.set(vector23);
+      pointT.scale(1.5f);
+      pointT.add(center);
+      screen = viewer.transformPoint(pointT);
+      g3d.drawDottedLine(viewer.getColixDistance(),
+			 xC, yC, zC, screen.x, screen.y, screen.z);
   }
 
 

@@ -20,11 +20,16 @@
     <fileset dir="${lib.dir}">
       <include name="*.jar" />
     </fileset>
+    <!-- added for Debian -->
+    <fileset dir="/usr/share/java">
+      <include name="junit.jar" />
+      <include name="saxon.jar" />
+    </fileset>
   </path>
   
   <target name="main" depends="init,jar,applet-jar"/>
   
-  <target name="init" depends="check.docbook,check.xsl" />
+  <target name="init"/> <!-- Debian uses xsltproc -->
   
   <target name="initFailure">
     <fail message="Init failed. See messages above." />

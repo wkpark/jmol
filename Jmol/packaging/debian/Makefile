@@ -29,13 +29,18 @@ install:
 	@install ./src/org/openscience/jmol/Data/guide/* ${HTMLDOC}
 
 setup: clean
-	@echo "Building package for version ${VERSION}"
-	# cp /tmp/jmol-${VERSION}.source.tar.gz /tmp/jmol_${VERSION}.orig.tar.gz
+	@echo "Setting up build dir for version ${VERSION}"
 	cd /tmp; tar zxvf jmol-${VERSION}.source.tar.gz
+	@echo " ... copying debian specific files"
 	cp Makefile /tmp/jmol-${VERSION}/.
 	cp jmol /tmp/jmol-${VERSION}/.
 	cp -R ../debian /tmp/jmol-${VERSION}/.
 	cp -R build.xml /tmp/jmol-${VERSION}/.
+	@echo " ... removing files provided by other Debian packages"
+	rm -f /tmp/jmol-${VERSION}/jars/junit.jar
+	rm -f /tmp/jmol-${VERSION}/jars/saxon.jar
+	@echo " ... removing unneeded files"
+	rm -f /tmp/jmol-${VERSION}/jars/gnujaxp-saxonly.jar
 
 guide:
 	@echo "Compiling Jmol guide..."
@@ -43,4 +48,5 @@ guide:
 	cd /tmp/jmol-${VERSION}/src/org/openscience/jmol/Data/guide; xsltproc --nonet --novalid /usr/share/sgml/docbook/stylesheet/xsl/nwalsh/html/chunk.xsl ../../../../../../doc/source/JMolGuide.docbook.xml
 
 deb: setup guide
+	@echo "Building package for version ${VERSION}"
 	cd /tmp/jmol-${VERSION}; dpkg-buildpackage -rfakeroot

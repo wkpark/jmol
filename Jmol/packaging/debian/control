@@ -1,5 +1,5 @@
 Source: jmol
-Build-Depends: ant (>= 1.4), jikes, docbook-xsl, xsltproc
+Build-Depends: ant (>= 1.4), jikes, docbook-xsl, xsltproc, lib-saxon-java, junit
 Section: x11
 Priority: optional
 Maintainer: Egon Willighagen <egonw@sci.kun.nl>
@@ -7,7 +7,7 @@ Standards-Version: 3.1.1
 
 Package: jmol
 Architecture: any
-Depends: java-virtual-machine, lib-sax-java
+Depends: java-virtual-machine, lib-sax-java, junit, lib-saxon-java
 Description: a 3D molecule viewer and editor.
  Jmol is a Free, Open Source molecule viewer and editor. It is a collaboratively 
  developed visualization and measurement tool for chemical scientists. Jmol is an 

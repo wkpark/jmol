@@ -927,6 +927,39 @@ final public class JmolViewer {
     return null;
   }
 
+  /****************************************************************
+   * This is the method that should be used to extract the model
+   * data from Jmol.
+   * Note that the API provided by JmolModelAdapter is used to
+   * import data into Jmol and to export data out of Jmol.
+   *
+   * When exporting, a few of the methods in JmolModelAdapter do
+   * not make sense.
+   *   openBufferedReader(...)
+   * Others may be implemented in the future, but are not currently
+   *   all pdb specific things
+   * Just pass in null for the methods that want a clientFile.
+   * The main methods to use are
+   *   getFrameCount(null) -> currently always returns 1
+   *   getAtomCount(null, 0)
+   *   getAtomIterator(null, 0)
+   *   getBondIterator(null, 0)
+   *
+   * The AtomIterator and BondIterator return Objects as unique IDs
+   * to identify the atoms.
+   *   atomIterator.getAtomUid()
+   *   bondIterator.getAtomUid1() & bondIterator.getAtomUid2()
+   * The ExportModelAdapter will return the 0-based atom index as
+   * a boxed Integer. That means that you can cast the results to get
+   * a zero-based atom index
+   *  int atomIndex = ((Integer)atomIterator.getAtomUid()).intValue();
+   * ...
+   *  int bondedAtom1 = ((Integer)bondIterator.getAtomUid1()).intValue();
+   *  int bondedAtom2 = ((Integer)bondIterator.getAtomUid2()).intValue();
+   *
+   * post questions to jmol-developers@lists.sf.net
+   ****************************************************************/
+
   public JmolModelAdapter getExportModelAdapter() {
     return modelManager.getExportModelAdapter();
   }

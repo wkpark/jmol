@@ -832,19 +832,21 @@ final public class JmolViewer {
     refresh();
   }
 
+  /*
   public boolean isSelected(Atom atom) {
     return selectionManager.isSelected(atom.atomIndex);
   }
+  */
 
   public boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
   }
 
-  public boolean hasSelectionHalo(Atom atom) {
+  public boolean hasSelectionHalo(int atomIndex) {
     return
       selectionHaloEnabled &&
       !repaintManager.wireframeRotating &&
-      isSelected(atom);
+      selectionManager.isSelected(atomIndex);
   }
 
   public boolean selectionHaloEnabled = false;

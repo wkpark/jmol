@@ -35,10 +35,9 @@ import javax.vecmath.AxisAngle4f;
 public class Measurement {
 
   Frame frame;
-  // FIXME ... make this not public
   int count;
-  public int[] countPlusIndices;
-  public String strMeasurement;
+  int[] countPlusIndices;
+  String strMeasurement;
 
   AxisAngle4f aa;
   Point3f pointArc;

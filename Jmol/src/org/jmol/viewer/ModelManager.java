@@ -380,11 +380,11 @@ String getAtomInfoChime(int i) {
   }
 
   Point3f getBondPoint3f1(int i) {
-    return frame.getBondAt(i).atom1.getPoint3f();
+    return frame.getBondAt(i).getAtom1().getPoint3f();
   }
 
   Point3f getBondPoint3f2(int i) {
-    return frame.getBondAt(i).atom2.getPoint3f();
+    return frame.getBondAt(i).getAtom2().getPoint3f();
   }
 
   float getBondRadius(int i) {

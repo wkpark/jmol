@@ -72,7 +72,7 @@ class BallsRenderer extends ShapeRenderer {
       return;
     long xyzd = atom.xyzd;
     int diameter = Xyzd.getD(xyzd);
-    boolean hasHalo = viewer.hasSelectionHalo(atom);
+    boolean hasHalo = viewer.hasSelectionHalo(atom.atomIndex);
     if (diameter == 0 && !hasHalo) {
       atom.formalChargeAndFlags &= ~Atom.VISIBLE_FLAG;
       return;

@@ -54,7 +54,19 @@ final public class Frame {
 
   int atomCount;
   Atom[] atoms;
+  ////////////////////////////////////////////////////////////////
+  // these may or may not be allocated
+  // depending upon the AtomSetCollection characteristics
   Object[] clientAtomReferences;
+  Vector3f[] vibrationVectors;
+  byte[] occupancies;
+  short[] bfactor100s;
+  float[] partialCharges;
+  String[] atomNames;
+  int[] atomSerials;
+  byte[] specialAtomIDs;
+  ////////////////////////////////////////////////////////////////
+
   int bondCount;
   Bond[] bonds;
   private final static int growthIncrement = 250;
@@ -266,10 +278,10 @@ final public class Frame {
                  groupSequenceNumber, groupInsertionCode, atomCount);
     }
     if (atomCount == atoms.length)
-      atoms =
-        (Atom[])Util.setLength(atoms,
-                               atomCount + ATOM_GROWTH_INCREMENT);
+      growAtomArrays();
+
     Atom atom = new Atom(viewer,
+                         this,
                          currentModelIndex,
                          atomCount,
                          atomicNumber,
@@ -279,18 +291,10 @@ final public class Frame {
                          bfactor,
                          x, y, z,
                          isHetero, atomSerial, chainID,
-                         vectorX, vectorY, vectorZ);
+                         vectorX, vectorY, vectorZ,
+                         clientAtomReference);
 
     atoms[atomCount] = atom;
-    if (clientAtomReference != null) {
-      if (clientAtomReferences == null)
-        clientAtomReferences = new Object[atoms.length];
-      else if (clientAtomReferences.length <= atomCount)
-        clientAtomReferences =
-          (Object[])Util.setLength(clientAtomReferences,
-                                   atoms.length);
-      clientAtomReferences[atomCount] = clientAtomReference;
-    }
     ++atomCount;
     htAtomMap.put(atomUid, atom);
   }
@@ -317,6 +321,29 @@ final public class Frame {
       if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
         fileHasHbonds = true;
     }
+  }
+
+  void growAtomArrays() {
+    int newLength = atomCount + ATOM_GROWTH_INCREMENT;
+    atoms = (Atom[])Util.setLength(atoms, newLength);
+    if (clientAtomReferences != null)
+      clientAtomReferences =
+        (Object[])Util.setLength(clientAtomReferences, newLength);
+    if (vibrationVectors != null)
+      vibrationVectors = 
+        (Vector3f[])Util.setLength(vibrationVectors, newLength);
+    if (occupancies != null)
+      occupancies = Util.setLength(occupancies, newLength);
+    if (bfactor100s != null)
+      bfactor100s = Util.setLength(bfactor100s, newLength);
+    if (partialCharges != null)
+      partialCharges = Util.setLength(partialCharges, newLength);
+    if (atomNames != null)
+      atomNames = Util.setLength(atomNames, newLength);
+    if (atomSerials != null)
+      atomSerials = Util.setLength(atomSerials, newLength);
+    if (specialAtomIDs != null)
+      specialAtomIDs = Util.setLength(specialAtomIDs, newLength);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -380,12 +407,14 @@ final public class Frame {
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0; )
       specialAtomIndexes[i] = Integer.MIN_VALUE;
     
-    for (int i = maxAtomIndex; --i >= firstAtomIndex; ) {
-      int specialAtomID = atoms[i].specialAtomID;
-      if (specialAtomID > 0) {
-        if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
-          distinguishingBits |= 1 << specialAtomID;
-        specialAtomIndexes[specialAtomID] = i;
+    if (specialAtomIDs != null) {
+      for (int i = maxAtomIndex; --i >= firstAtomIndex; ) {
+        int specialAtomID = specialAtomIDs[i];
+        if (specialAtomID > 0) {
+          if (specialAtomID <  JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
+            distinguishingBits |= 1 << specialAtomID;
+          specialAtomIndexes[specialAtomID] = i;
+        }
       }
     }
 
@@ -457,24 +486,33 @@ final public class Frame {
 
     ////////////////////////////////////////////////////////////////
     // resize arrays
-    if (atomCount < atoms.length)
+    if (atomCount < atoms.length) {
       atoms = (Atom[])Util.setLength(atoms, atomCount);
-    if (clientAtomReferences != null &&
-        atomCount < clientAtomReferences.length)
-      clientAtomReferences =
-        (Object[])Util.setLength(clientAtomReferences, atomCount);
+      if (clientAtomReferences != null)
+        clientAtomReferences =
+          (Object[])Util.setLength(clientAtomReferences, atomCount);
+      if (vibrationVectors != null)
+        vibrationVectors = 
+          (Vector3f[])Util.setLength(vibrationVectors, atomCount);
+      if (occupancies != null)
+        occupancies = Util.setLength(occupancies, atomCount);
+      if (bfactor100s != null)
+        bfactor100s = Util.setLength(bfactor100s, atomCount);
+      if (partialCharges != null)
+        partialCharges = Util.setLength(partialCharges, atomCount);
+      if (atomNames != null)
+        atomNames = Util.setLength(atomNames, atomCount);
+      if (atomSerials != null)
+        atomSerials = Util.setLength(atomSerials, atomCount);
+      if (specialAtomIDs != null)
+        specialAtomIDs = Util.setLength(specialAtomIDs, atomCount);
+    }
     if (bondCount < bonds.length)
       bonds = (Bond[])Util.setLength(bonds, bondCount);
 
     ////////////////////////////////////////////////////////////////
     // see if there are any vectors
-    for (int i = atomCount; --i >= 0; )
-      if (atoms[i].vibrationVector != null) {
-        hasVibrationVectors = true;
-        break;
-      }
-
-    System.out.println("hasVibrationVectors:" + hasVibrationVectors);
+    hasVibrationVectors = vibrationVectors != null;
 
     ////////////////////////////////////////////////////////////////
     //
@@ -497,19 +535,19 @@ final public class Frame {
 
   void hackAtomSerialNumbersForAnimations() {
     // first, validate that all atomSerials are NaN
-    for (int i = atomCount; --i >= 0; )
-      if (atoms[i].atomSerial != Integer.MIN_VALUE)
-        return;
+    if (atomSerials != null)
+      return;
     // now, we'll assign 1-based atom numbers within each model
     int lastModelIndex = Integer.MAX_VALUE;
     int modelAtomIndex = 0;
+    atomSerials = new int[atomCount];
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atoms[i];
       if (atom.modelIndex != lastModelIndex) {
         lastModelIndex = atom.modelIndex;
         modelAtomIndex = 1;
       }
-      atom.atomSerial = modelAtomIndex++;
+      atomSerials[i] = modelAtomIndex++;
     }
   }
 

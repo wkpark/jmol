@@ -38,33 +38,22 @@ import javax.vecmath.Point3i;
 public final class Atom implements Bspt.Tuple {
 
   final static byte VISIBLE_FLAG = 0x01;
+  final static byte VIBRATION_VECTOR_FLAG = 0x02;
+  final static byte IS_HETERO_FLAG = 0x04;
 
   Group group;
-  public int atomIndex;
-  public short modelIndex; // we want this here for the BallsRenderer
-  public Point3f point3f;
+  int atomIndex;
+  Point3f point3f;
   long xyzd;
-  //  private short x, y, z;
-  //  private short diameter;
-  public byte elementNumber;
+  short modelIndex; // we want this here for the BallsRenderer
+  byte elementNumber;
   byte formalChargeAndFlags;
-  // maybe move this out of here ... the value is almost always 100
-  byte occupancy;
-  Vector3f vibrationVector;
-  short bfactor100;
   short madAtom;
   short colixAtom;
   Bond[] bonds;
 
-  boolean isHetero; // pack this bit someplace
-
-  /* move these out of here */
-  int atomSerial;
-  public String atomName;
-  byte specialAtomID;
-  float partialCharge;
-
   Atom(JmolViewer viewer,
+       Frame frame,
        int modelIndex,
        int atomIndex,
        byte elementNumber,
@@ -74,33 +63,73 @@ public final class Atom implements Bspt.Tuple {
        float bfactor,
        float x, float y, float z,
        boolean isHetero, int atomSerial, char chainID,
-       float vibrationX, float vibrationY, float vibrationZ) {
+       float vibrationX, float vibrationY, float vibrationZ,
+       Object clientAtomReference) {
     this.modelIndex = (short)modelIndex;
     this.atomIndex = atomIndex;
     this.elementNumber = elementNumber;
     if (formalCharge == Integer.MIN_VALUE)
       formalCharge = 0;
     this.formalChargeAndFlags = (byte)(formalCharge << 4);
-    this.partialCharge = partialCharge; // temporarily here
-    this.occupancy = (occupancy < 0
-                      ? (byte)0
-                      : (occupancy > 100
-                         ? (byte)100
-                         : (byte)occupancy));
-    this.bfactor100 =
-      (Float.isNaN(bfactor) ? Short.MIN_VALUE : (short)(bfactor*100));
-    this.atomSerial = atomSerial;
-    this.atomName = (atomName == null ? null : atomName.intern());
-    specialAtomID = lookupSpecialAtomID(atomName);
     this.colixAtom = viewer.getColixAtom(this);
     setMadAtom(viewer.getMadAtom());
     this.point3f = new Point3f(x, y, z);
-    this.isHetero = isHetero;
-    // this does not belong here
-    // put it in the higher level and pass in the group
+    if (isHetero)
+      formalChargeAndFlags |= IS_HETERO_FLAG;
+
+    if (atomName != null) {
+      if (frame.atomNames == null)
+        frame.atomNames = new String[frame.atoms.length];
+      frame.atomNames[atomIndex] = atomName.intern();
+    }
+
+    byte specialAtomID = lookupSpecialAtomID(atomName);
+    if (specialAtomID != 0) {
+      if (frame.specialAtomIDs == null)
+        frame.specialAtomIDs = new byte[frame.atoms.length];
+      frame.specialAtomIDs[atomIndex] = specialAtomID;
+    }
+
+    if (occupancy < 0)
+      occupancy = 0;
+    else if (occupancy > 100)
+      occupancy = 100;
+    if (occupancy != 100) {
+      if (frame.occupancies == null)
+        frame.occupancies = new byte[frame.atoms.length];
+      frame.occupancies[atomIndex] = (byte)occupancy;
+    }
+
+    if (atomSerial != Integer.MIN_VALUE) {
+      if (frame.atomSerials == null)
+        frame.atomSerials = new int[frame.atoms.length];
+      frame.atomSerials[atomIndex] = atomSerial;
+    }
+
+    if (! Float.isNaN(partialCharge)) {
+      if (frame.partialCharges == null)
+        frame.partialCharges = new float[frame.atoms.length];
+      frame.partialCharges[atomIndex] = partialCharge;
+    }
+
+    if (! Float.isNaN(bfactor) && bfactor != 0) {
+      if (frame.bfactor100s == null)
+        frame.bfactor100s = new short[frame.atoms.length];
+      frame.bfactor100s[atomIndex] = (short)(bfactor * 100);
+    }
+
     if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
         !Float.isNaN(vibrationZ)) {
-      vibrationVector = new Vector3f(vibrationX, vibrationY, vibrationZ);
+      if (frame.vibrationVectors == null)
+        frame.vibrationVectors = new Vector3f[frame.atoms.length];
+      frame.vibrationVectors[atomIndex] = 
+        new Vector3f(vibrationX, vibrationY, vibrationZ);
+      formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
+    }
+    if (clientAtomReference != null) {
+      if (frame.clientAtomReferences == null)
+        frame.clientAtomReferences = new Object[frame.atoms.length];
+      frame.clientAtomReferences[atomIndex] = clientAtomReference;
     }
   }
 
@@ -220,7 +249,7 @@ public final class Atom implements Bspt.Tuple {
   void setMadAtom(short madAtom) {
     if (this.madAtom == JmolConstants.MAR_DELETED) return;
     if (madAtom == -1000) { // temperature
-      int diameter = bfactor100 * 10 * 2;
+      int diameter = getBfactor100() * 10 * 2;
       if (diameter > 4000)
         diameter = 4000;
       madAtom = (short)diameter;
@@ -256,6 +285,11 @@ public final class Atom implements Bspt.Tuple {
     this.colixAtom = colixAtom;
   }
 
+  Vector3f getVibrationVector() {
+    Vector3f[] vibrationVectors = group.chain.frame.vibrationVectors;
+    return vibrationVectors == null ? null : vibrationVectors[atomIndex];
+  }
+
   void setLabel(String strLabel) {
     group.chain.frame.setLabel(strLabel, atomIndex);
   }
@@ -266,7 +300,14 @@ public final class Atom implements Bspt.Tuple {
   void transform(JmolViewer viewer) {
     if (madAtom == JmolConstants.MAR_DELETED)
       return;
-    Point3i screen = viewer.transformPoint(point3f, vibrationVector);
+    Point3i screen;
+    Vector3f[] vibrationVectors;
+    if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
+        (vibrationVectors = group.chain.frame.vibrationVectors) == null)
+      screen = viewer.transformPoint(point3f);
+    else 
+      screen = viewer.transformPoint(point3f, vibrationVectors[atomIndex]);
+
     int z = screen.z;
     z = ((z < MIN_Z)
          ? MIN_Z
@@ -277,7 +318,7 @@ public final class Atom implements Bspt.Tuple {
     xyzd = Xyzd.getXyzd(screen.x, screen.y, z, diameter);
   }
 
-  public int getElementNumber() {
+  public byte getElementNumber() {
     return elementNumber;
   }
 
@@ -285,13 +326,20 @@ public final class Atom implements Bspt.Tuple {
     return JmolConstants.elementSymbols[elementNumber];
   }
 
+  String getAtomNameOrNull() {
+    String[] atomNames = group.chain.frame.atomNames;
+    return atomNames == null ? null : atomNames[atomIndex];
+  }
+
   public String getAtomName() {
-    return (atomName != null
-            ? atomName : JmolConstants.elementSymbols[elementNumber]);
+    String atomName = getAtomNameOrNull();
+    return
+      atomName != null ? atomName : JmolConstants.elementSymbols[elementNumber];
   }
   
   String getPdbAtomName4() {
-    return atomName == null ? "" : atomName;
+    String atomName = getAtomNameOrNull();
+    return atomName != null ? atomName : "";
   }
 
   String getGroup3() {
@@ -311,6 +359,7 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public boolean isAtomNameMatch(String strPattern) {
+    String atomName = getAtomNameOrNull();
     int cchAtomName = atomName == null ? 0 : atomName.length();
     int cchPattern = strPattern.length();
     int ich;
@@ -326,8 +375,9 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public int getAtomNumber() {
-    if (atomSerial != Integer.MIN_VALUE)
-      return atomSerial;
+    int[] atomSerials = group.chain.frame.atomSerials;
+    if (atomSerials != null)
+      return atomSerials[atomIndex];
     if (group.chain.frame.modelTypeName == "xyz" &&
         group.chain.frame.viewer.getZeroBasedXyzRasmol())
       return atomIndex;
@@ -335,7 +385,7 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public boolean isHetero() {
-    return isHetero;
+    return (formalChargeAndFlags & IS_HETERO_FLAG) != 0;
   }
 
   public int getFormalCharge() {
@@ -347,7 +397,8 @@ public final class Atom implements Bspt.Tuple {
   }
 
   public float getPartialCharge() {
-    return partialCharge;
+    float[] partialCharges = group.chain.frame.partialCharges;
+    return partialCharges == null ? 0 : partialCharges[atomIndex];
   }
 
   public Point3f getPoint3f() {
@@ -441,15 +492,17 @@ public final class Atom implements Bspt.Tuple {
 
   // a percentage value in the range 0-100
   public int getOccupancy() {
-    return occupancy;
+    byte[] occupancies = group.chain.frame.occupancies;
+    return occupancies == null ? 100 : occupancies[atomIndex];
   }
 
   // This is called bfactor100 because it is stored as an integer
   // 100 times the bfactor(temperature) value
   public int getBfactor100() {
-    if (bfactor100 == Short.MIN_VALUE)
+    short[] bfactor100s = group.chain.frame.bfactor100s;
+    if (bfactor100s == null)
       return 0;
-    return bfactor100;
+    return bfactor100s[atomIndex];
   }
 
   public Group getGroup() {
@@ -460,11 +513,9 @@ public final class Atom implements Bspt.Tuple {
     return group.getPolymerLength();
   }
 
-  /*
-  Polymer getPolymer() {
-    return group.polymer;
+  public int getAtomIndex() {
+    return atomIndex;
   }
-  */
 
   public Chain getChain() {
     return group.chain;
@@ -472,6 +523,10 @@ public final class Atom implements Bspt.Tuple {
 
   Model getModel() {
     return group.chain.model;
+  }
+
+  public int getModelIndex() {
+    return modelIndex;
   }
   
   String getClientAtomStringProperty(String propertyName) {
@@ -519,11 +574,12 @@ public final class Atom implements Bspt.Tuple {
   }
   
   public byte getSpecialAtomID() {
-    return specialAtomID;
+    byte[] specialAtomIDs = group.chain.frame.specialAtomIDs;
+    return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
   }
 
   void demoteSpecialAtomImposter() {
-    specialAtomID = -1;
+    group.chain.frame.specialAtomIDs[atomIndex] = 0;
   }
   
   /* ***************************************************************
@@ -652,11 +708,7 @@ public final class Atom implements Bspt.Tuple {
           strT = "0";
         break;
       case 'P':
-        float partialCharge = getPartialCharge();
-        if (Float.isNaN(partialCharge))
-          strT = "?";
-        else
-          strT = "" + partialCharge;
+        strT = "" + getPartialCharge();
         break;
       case 'V':
         strT = "" + getVanderwaalsRadiusFloat();
@@ -669,7 +721,7 @@ public final class Atom implements Bspt.Tuple {
         strT = "" + (getBfactor100() / 100.0);
         break;
       case 'q':
-        strT = "" + occupancy;
+        strT = "" + getOccupancy();
         break;
       case 'c': // these two are the same
       case 's':
@@ -736,6 +788,7 @@ public final class Atom implements Bspt.Tuple {
       info.append(":");
       info.append(chainID);
     }
+    String atomName = getAtomNameOrNull();
     if (atomName != null) {
       if (info.length() > 0)
         info.append(".");

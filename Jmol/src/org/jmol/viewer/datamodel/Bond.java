@@ -30,8 +30,8 @@ import java.awt.Rectangle;
 
 public class Bond {
 
-  public Atom atom1;
-  public Atom atom2;
+  Atom atom1;
+  Atom atom2;
   short order;
   short mad;
   short colix;
@@ -88,6 +88,14 @@ public class Bond {
 
   void setOrder(short order) {
     this.order = order;
+  }
+
+  public Atom getAtom1() {
+    return atom1;
+  }
+
+  public Atom getAtom2() {
+    return atom2;
   }
 
   public float getRadius() {

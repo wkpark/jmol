@@ -1190,7 +1190,7 @@ public class Eval implements Runnable {
   void selectModelIndexAtoms(int modelIndex, BitSet bsResult) {
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; )
-      if (frame.getAtomAt(i).modelIndex == modelIndex)
+      if (frame.getAtomAt(i).getModelIndex() == modelIndex)
         bsResult.set(i);
   }
 
@@ -1327,7 +1327,7 @@ public class Eval implements Runnable {
         AtomIterator iterWithin =
           frame.getWithinIterator(atom, distance);
         while (iterWithin.hasNext())
-          bsResult.set(iterWithin.next().atomIndex);
+          bsResult.set(iterWithin.next().getAtomIndex());
       }
     }
   }
@@ -1368,7 +1368,7 @@ public class Eval implements Runnable {
     int modelIndexLast = -1;
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       if (bs.get(i)) {
-        int modelIndex = frame.getAtomAt(i).modelIndex;
+        int modelIndex = frame.getAtomAt(i).getModelIndex();
         if (modelIndex != modelIndexLast) {
           selectModelIndexAtoms(modelIndex, bsResult);
           modelIndexLast = modelIndex;

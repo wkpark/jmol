@@ -44,10 +44,12 @@ class VectorsRenderer extends ShapeRenderer {
     for (int i = frame.atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       if (mads[i] == 0 ||
-          atom.vibrationVector == null ||
           (displayModelIndex >= 0 && atom.modelIndex != displayModelIndex))
         continue;
-      if (transform(mads[i], atom))
+      Vector3f vibrationVector = atom.getVibrationVector();
+      if (vibrationVector == null)
+        continue;
+      if (transform(mads[i], atom, vibrationVector))
         renderVector(colixes[i], atom);
     }
   }
@@ -63,7 +65,7 @@ class VectorsRenderer extends ShapeRenderer {
 
   final static float arrowHeadBase = 0.8f;
 
-  boolean transform(short mad, Atom atom) {
+  boolean transform(short mad, Atom atom, Vector3f vibrationVector) {
     if (atom.madAtom == JmolConstants.MAR_DELETED)
       return false;
 
@@ -86,15 +88,15 @@ class VectorsRenderer extends ShapeRenderer {
 
     // to have the vectors move when vibration is turned on
     float vectorScale = viewer.getVectorScale();
-    pointVectorEnd.scaleAdd(vectorScale, atom.vibrationVector, atom.point3f);
-    viewer.transformPoint(pointVectorEnd, atom.vibrationVector,
+    pointVectorEnd.scaleAdd(vectorScale, vibrationVector, atom.point3f);
+    viewer.transformPoint(pointVectorEnd, vibrationVector,
                           screenVectorEnd);
     diameter = (mad <= 20)
       ? mad
       : viewer.scaleToScreen(screenVectorEnd.z, mad);
     pointArrowHead.scaleAdd(vectorScale * arrowHeadBase,
-                            atom.vibrationVector, atom.point3f);
-    viewer.transformPoint(pointArrowHead, atom.vibrationVector,
+                            vibrationVector, atom.point3f);
+    viewer.transformPoint(pointArrowHead, vibrationVector,
                           screenArrowHead);
     headWidthPixels = diameter * 3 / 2;
     if (headWidthPixels < diameter + 2)

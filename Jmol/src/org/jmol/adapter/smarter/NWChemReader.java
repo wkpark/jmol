@@ -29,19 +29,12 @@ import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 class NWChemReader extends ModelReader {
-  // offset of atomic number in coordinate line
-  private final static int STD_ORIENTATION_ATOMIC_NUMBER_OFFSET = 1;
+
   // multiplication factor to go from AU to Angstrom
-  private final static float AU2ANGSTROM = (float) (1.0/1.889725989);
-  
-  // the offset of the first X vector of the first frequency in the frequency output
-  private final static int FREQ_FIRST_VECTOR_OFFSET = 2;
+  private final static float AU2ANGSTROM = (float) (1.0/1.889725989);  
   
   private int atomCount  = 0;  // the number of atoms in the last read model
-  private int modelCount = 0;  // the number of models I have
-  private int lastModelEnd = 0; // last atom index of last model
-                                // need this (since I can not use model.atoms.length)
-  
+  private int modelCount = 0;  // the number of models I have  
   // it looks like model numbers really need to start with 1 and not 0 otherwise
   // a single frequency calculation can not go to the first frequency
   
@@ -80,8 +73,6 @@ class NWChemReader extends ModelReader {
   }
 
 // NWChem Output coordinates
-// NB Tag can be (BQ|X)(ElementName)[\w]
-// I can not just directly assign the tag value to the elementSymbol of the atom...
 /*
   Output coordinates in angstroms (scale by  1.889725989 to convert to a.u.)
 
@@ -110,11 +101,10 @@ class NWChemReader extends ModelReader {
 			atom.z = parseFloat(tokens[5]);
 			++atomCount;
     }
-		lastModelEnd += atomCount;
   }
   
 // NWChem Gradients output
-// The tag here is same format at in the output coordinates above.
+// The 'atom' is really a Tag (as above)
 /*
                          UHF ENERGY GRADIENTS
 
@@ -149,7 +139,6 @@ class NWChemReader extends ModelReader {
 			atom.vectorZ = -parseFloat(tokens[7]);
 			++atomCount;
     }
-		lastModelEnd += atomCount;
   }
 
 
@@ -239,8 +228,8 @@ class NWChemReader extends ModelReader {
 			atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
 			atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
 			++atomCount;
-    } while ( ((line=reader.readLine())!=null) && line.indexOf("---")<0 );  
-    lastModelEnd += atomCount;
+    } while ( ((line=reader.readLine()) != null) &&
+              (line.indexOf("---") < 0) );  
     
     // now we are ready to put the vibrations on the structure(s)
     int modelNumber = modelCount; // the number of models before I start adding vectors
@@ -268,7 +257,10 @@ class NWChemReader extends ModelReader {
       }
       for (int i = nNewModels; --i >= 0; )
         duplicateLastModel();
-      int firstModelAtom = lastModelEnd - nFreq*atomCount;
+
+      // firstModelAtom is the index in model.atoms that has the first atom
+      // of the first model where the first to be read vibration needs to go
+      int firstModelAtom = model.atomCount - nFreq*atomCount;
       
       discardLines(reader, 1);      // skip over empty line
       
@@ -278,25 +270,18 @@ class NWChemReader extends ModelReader {
         line = reader.readLine();
         tokens = getTokens(line);
         for (int j = 0; j < nFreq; ++j) {
-          try {
-            int atomOffset = firstModelAtom+j*atomCount + i/3;
-            Atom atom = model.atoms[atomOffset];
-            float val = parseFloat(tokens[j+1]);
-            switch (i%3) {
-              case 0:
-                atom.vectorX = val;
-                break;
-               case 1:
-                 atom.vectorY = val;
-                 break;
-               case 2:
-                 atom.vectorZ = val;
-             }
-          }
-          catch (NumberFormatException e)
-          {
-            System.out.println("NumberFormatException in " + line);
-          }
+					Atom atom = model.atoms[firstModelAtom+j*atomCount + i/3];
+					float val = parseFloat(tokens[j+1]);
+					switch (i%3) {
+						case 0:
+							atom.vectorX = val;
+							break;
+						 case 1:
+							 atom.vectorY = val;
+							 break;
+						 case 2:
+							 atom.vectorZ = val;
+					 }
         }
       }
       modelNumber += nFreq;
@@ -314,13 +299,12 @@ class NWChemReader extends ModelReader {
 // duplicate the last model 
   private void duplicateLastModel() {
     Atom[] atoms = model.atoms;
-    int offset = lastModelEnd - atomCount;
+    int offset = model.atomCount - atomCount;
     modelCount++;  // new count of models is increased
     for (int i = 0; i < atomCount; ++i) {
       Atom atomNew = model.newCloneAtom(atoms[offset+i]);
       atomNew.modelNumber = modelCount;  // associate the new model number with the atoms
     }
-    lastModelEnd += atomCount;
   }
 
 }

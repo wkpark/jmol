@@ -39,7 +39,7 @@ class MouseManager10 extends MouseManager {
     return ((modifiers & MIDDLE_RIGHT) == 0)  ? (modifiers | LEFT) : modifiers;
   }
 
-  int xWhenPressed, yWhenPressed, modifiersWhenPressed;
+  int xWhenPressed, yWhenPressed, modifiersWhenPressed10;
 
   boolean handleOldJvm10Event(Event e) {
     int x = e.x, y = e.y, modifiers = e.modifiers;
@@ -47,7 +47,7 @@ class MouseManager10 extends MouseManager {
     modifiers = applyLeftMouse(modifiers);
     switch (e.id) {
     case Event.MOUSE_DOWN:
-      xWhenPressed = x; yWhenPressed = y; modifiersWhenPressed = modifiers;
+      xWhenPressed = x; yWhenPressed = y; modifiersWhenPressed10 = modifiers;
       mousePressed(time, x, y, modifiers, false);
       break;
     case Event.MOUSE_DRAG:
@@ -66,7 +66,7 @@ class MouseManager10 extends MouseManager {
       mouseReleased(time, x, y, modifiers);
       // simulate a mouseClicked event for us
       if (x == xWhenPressed && y == yWhenPressed &&
-          modifiers == modifiersWhenPressed) {
+          modifiers == modifiersWhenPressed10) {
         // the underlying code will turn this into dbl clicks for us
         mouseClicked(time, x, y, modifiers, 1);
       }

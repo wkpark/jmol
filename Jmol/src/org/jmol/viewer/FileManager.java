@@ -377,18 +377,18 @@ class FileManager {
   class FileOpenThread implements Runnable {
     boolean terminated;
     String errorMessage;
-    String fullPathName;
-    String nameAsGiven;
+    String fullPathNameInThread;
+    String nameAsGivenInThread;
     Object clientFile;
     Reader reader;
 
     FileOpenThread(String fullPathName, String nameAsGiven) {
-      this.fullPathName = fullPathName;
-      this.nameAsGiven = nameAsGiven;
+      this.fullPathNameInThread = fullPathName;
+      this.nameAsGivenInThread = nameAsGiven;
     }
 
     FileOpenThread(String name, Reader reader) {
-      nameAsGiven = fullPathName = name;
+      nameAsGivenInThread = fullPathNameInThread = name;
       this.reader = reader;
     }
 
@@ -396,17 +396,17 @@ class FileManager {
       if (reader != null) {
         openReader(reader);
       } else {
-        Object t = getInputStreamOrErrorMessageFromName(nameAsGiven);
+        Object t = getInputStreamOrErrorMessageFromName(nameAsGivenInThread);
         if (! (t instanceof InputStream)) {
           errorMessage = (t == null
-                          ? "error opening:" + nameAsGiven
+                          ? "error opening:" + nameAsGivenInThread
                           : (String)t);
         } else {
-          openInputStream(fullPathName, fileName, (InputStream) t);
+          openInputStream(fullPathNameInThread, fileName, (InputStream) t);
         }
       }
       if (errorMessage != null)
-        System.out.println("error opening " + fullPathName + "\n" + errorMessage);
+        System.out.println("error opening " + fullPathNameInThread + "\n" + errorMessage);
       terminated = true;
     }
 
@@ -433,7 +433,7 @@ class FileManager {
 
     private void openReader(Reader reader) {
       Object clientFile =
-        modelAdapter.openBufferedReader(fullPathName,
+        modelAdapter.openBufferedReader(fullPathNameInThread,
                                         new BufferedReader(reader));
       if (clientFile instanceof String)
         errorMessage = (String)clientFile;

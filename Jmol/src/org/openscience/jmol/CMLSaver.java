@@ -61,11 +61,9 @@ public class CMLSaver extends FileSaver {
           throws IOException {
 
     // Preamble for CML Files
-    w.write("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n");
-    w.write("<!DOCTYPE molecule SYSTEM \"cml.dtd\" [\n");
-    w.write("  <!ATTLIST list convention CDATA #IMPLIED>\n");
-    w.write("]>\n");
-
+    w.write("<?xml version=\"1.0\" ?>");
+    w.newLine();
+    
     if (mode == ANIMATION) {
       w.write("<list convention=\"");
       if (mode == ANIMATION) {
@@ -73,7 +71,8 @@ public class CMLSaver extends FileSaver {
       } else {
         w.write("JMOL-MODEL");
       }
-      w.write("\">\n");
+      w.write("\">");
+      w.newLine();
     }
   }
 
@@ -94,13 +93,15 @@ public class CMLSaver extends FileSaver {
 
     frame_count++;
 
-    w.write("<molecule id=\"FRAME" + frame_count + "\">\n");
+    w.write("<molecule id=\"FRAME" + frame_count + "\">");
+    w.newLine();
 
     String name = cf.getInfo();
     if (name == null) {
       name = "unknown";
     }
-    w.write("  <string title=\"COMMENT\">" + name + "</string>\n");
+    w.write("  <string title=\"COMMENT\">" + name + "</string>");
+    w.newLine();
 
     String ids = "";
     String elementTypes = "";
@@ -108,7 +109,8 @@ public class CMLSaver extends FileSaver {
     String y3s = "";
     String z3s = "";
     String formalCharges = "";
-
+    String lineSeparator = System.getProperty("line.separator");
+    
     int count = 0;
 
     for (int i = 0; i < cf.getNumberOfAtoms(); i++) {
@@ -140,9 +142,9 @@ public class CMLSaver extends FileSaver {
 
       if ((++count == 5) && (i + 1 < cf.getNumberOfAtoms())) {
         count = 0;
-        x3s += "\n     ";
-        y3s += "\n     ";
-        z3s += "\n     ";
+        x3s += lineSeparator + "     ";
+        y3s += lineSeparator + "     ";
+        z3s += lineSeparator + "     ";
       }
 
       if (writecharge) {
@@ -153,28 +155,49 @@ public class CMLSaver extends FileSaver {
         formalCharges += ct.stringValue();
       }
     }
-    w.write("  <atomArray>\n");
-    w.write("    <stringArray builtin=\"id\">\n");
-    w.write("      " + ids + "\n");
-    w.write("    </stringArray>\n");
-    w.write("    <stringArray builtin=\"elementType\">\n");
-    w.write("      " + elementTypes + "\n");
-    w.write("    </stringArray>\n");
-    w.write("    <floatArray builtin=\"x3\">\n");
-    w.write("      " + x3s + "\n");
-    w.write("    </floatArray>\n");
-    w.write("    <floatArray builtin=\"y3\">\n");
-    w.write("      " + y3s + "\n");
-    w.write("    </floatArray>\n");
-    w.write("    <floatArray builtin=\"z3\">\n");
-    w.write("      " + z3s + "\n");
-    w.write("    </floatArray>\n");
+    w.write("  <atomArray>");
+    w.newLine();
+    w.write("    <stringArray builtin=\"id\">");
+    w.newLine();
+    w.write("      " + ids + "");
+    w.newLine();
+    w.write("    </stringArray>");
+    w.newLine();
+    w.write("    <stringArray builtin=\"elementType\">");
+    w.newLine();
+    w.write("      " + elementTypes + "");
+    w.newLine();
+    w.write("    </stringArray>");
+    w.newLine();
+    w.write("    <floatArray builtin=\"x3\">");
+    w.newLine();
+    w.write("      " + x3s + "");
+    w.newLine();
+    w.write("    </floatArray>");
+    w.newLine();
+    w.write("    <floatArray builtin=\"y3\">");
+    w.newLine();
+    w.write("      " + y3s + "");
+    w.newLine();
+    w.write("    </floatArray>");
+    w.newLine();
+    w.write("    <floatArray builtin=\"z3\">");
+    w.newLine();
+    w.write("      " + z3s + "");
+    w.newLine();
+    w.write("    </floatArray>");
+    w.newLine();
     if (writecharge) {
-      w.write("    <floatArray builtin=\"formalCharge\">\n");
-      w.write("      " + formalCharges + "\n");
-      w.write("    </floatArray>\n");
+      w.write("    <floatArray builtin=\"formalCharge\">");
+      w.newLine();
+      w.write("      " + formalCharges + "");
+      w.newLine();
+      w.write("    </floatArray>");
+      w.newLine();
     }
-    w.write("  </atomArray>\n");
-    w.write("</molecule>\n");
+    w.write("  </atomArray>");
+    w.newLine();
+    w.write("</molecule>");
+    w.newLine();
   }
 }

@@ -883,120 +883,116 @@ final public class JmolConstants {
    * so I made them HotPink.
    */
   public final static int[] argbsCpk = {
-    0xFFFF69B4, // HotPink        Xx   0
-    //    0xFFFFFAF0, // floralwhite 0xFFFFFAF0
-    0xFFE0E0E0, // grey88          H   1
-    //    0xFFF0FFFF, // azure           H   1
-    //    0xFFF0F8FF, // AliceBlue    H   1
-    0xFFFFC0CB, // pink           He   2
-    0xFFB22222, // firebrick      Li   3
-    0xFF228B22, // ForestGreen    Be   4
-    0xFF00FF00, // green           B   5
-    0xFF708090, // SlateGray       C   6
-    //0xFF545454, // grey33          C   6
-    0xFF00BFFF, // DeepSkyBlue     N   7
-    0xFFEE0000, // red2            O   8
-    0xFFDAA520, // goldenrod       F   9 change me
-    0xFFFF69B4, // HotPink        Ne  10 change me
-    0xFF0000FF, // blue           Na  11
-    0xFF228B22, // ForestGreen    Mg  12
-    0xFFBFBFBF, // grey75         Al  13
-    0xFFDAA520, // goldenrod      Si  14
-    0xFFFFA500, // orange          P  15
-    0xFFFFFF00, // yellow          S  16
-    0xFF00FF00, // green          Cl  17
-    0xFFFFC0CB, // HotPink        Ar  18 change me
-    0xFFFF1493, // DeepPink        K  19
-    0xFF7F7F7F, // grey50         Ca  20
-    0xFFBFBFBF, // grey75         Sc  21
-    0xFFBFBFBF, // grey75         Ti  22
-    0xFFBFBFBF, // grey75          V  23
-    0xFFBFBFBF, // grey75         Cr  24
-    0xFFBFBFBF, // grey75         Mn  25
-    0xFFFFA500, // orange         Fe  26
-    0xFFA52A2A, // brown          Co  27
-    0xFFA52A2A, // brown          Ni  28
-    0xFFA52A2A, // brown          Cu  29
-    0xFFA52A2A, // brown          Zn  30
-    0xFFA52A2A, // brown          Ga  31
-    0xFF556B2F, // DarkOliveGreen Ge  32
-    0xFFFDF5E6, // OldLace        As  33
-    0xFF98FB98, // PaleGreen      Se  34
-    0xFFA52A2A, // brown          Br  35
-    0xFF32CD32, // LimeGreen      Kr  36
-    0xFFA52A2A, // brown          Rb  37
-    0xFFBFBFBF, // grey75         Sr  38
-    0xFFBFBFBF, // grey75         Y	  9
-    0xFFBFBFBF, // grey75         Zr  40
-    0xFFBFBFBF, // grey75         Nb  41
-    0xFFFF7F50, // coral          Mo  42
-    0xFFBFBFBF, // grey75         Tc  43
-    0xFFBFBFBF, // grey75         Ru  44
-    0xFFBFBFBF, // grey75         Rh  45
-    0xFFBFBFBF, // grey75         Pd  46
-    0xFFBFBFBF, // grey75         Ag  47
-    0xFFFF8C00, // DarkOrange     Cd  48
-    0xFFBFBFBF, // grey75         In  49
-    0xFFBFBFBF, // grey75         Sn  50
-    0xFFBFBFBF, // grey75         Sb  51
-    0xFFBFBFBF, // grey75         Te  52
-    0xFFA020F0, // purple          I  53
-    0xFFFF69B4, // HotPink        Xe  54
-    0xFFA52A2A, // brown          Cs  55
-    0xFFBFBFBF, // grey75         Ba  56
-    0xFFBFBFBF, // grey75         La  57
-    0xFFFF6575, // ??         Ce  58
-    0xFFFF6575, //            Pr  59
-    0xFFFF6575, //            Nd  60
-    0xFFFF6575, //            Pm  61
-    0xFFFF6575, //            Sm  62
-    0xFFFF6575, //            Eu  63
-    0xFFFF6575, //            Gd  64
-    0xFFFF6575, //            Tb  65
-    0xFFFF6575, //            Dy  66
-    0xFFFF6575, //            Ho  67
-    0xFFFF6575, //            Er  68
-    0xFFFF6575, //            Tm  69
-    0xFFFF6575, //            Yb  70
-    0xFFBFBFBF, // grey75         Lu  71
-    0xFFBFBFBF, // grey75         Hf  72
-    0xFFBFBFBF, // grey75         Ta  73
-    0xFF40E0D0, // turquoise       W  74
-    0xFFBFBFBF, // grey75         Re  75
-    0xFFBFBFBF, // grey75         Os  76
-    0xFFBFBFBF, // grey75         Ir  77
-    0xFFBFBFBF, // grey75         Pt  78
-    0xFFFFD700, // gold           Au  79
-    0xFFBFBFBF, // grey75         Hg  80
-    0xFFBFBFBF, // grey75         Tl  81
-    0xFFBFBFBF, // grey75         Pb  82
-    0xFFFFB5C5, // pink1          Bi  83
-    0xFFFF6575, //            Po  84
-    0xFFFF6575, //            At  85
-    0xFFFF6575, //            Rn  86
-    0xFFFF6575, //            Fr  87
-    0xFFFF6575, //            Ra  88
-    0xFFFF6575, //            Ac  89
-    0xFFFF6575, //            Th  90
-    0xFFFF6575, //            Pa  91
-    0xFFFF6575, //             U  92
-    0xFFFF6575, //            Np  93
-    0xFFFF6575, //            Pu  94
-    0xFFFF6575, //            Am  95
-    0xFFFF6575, //            Cm  96
-    0xFFFF6575, //            Bk  97
-    0xFFFF6575, //            Cf  98
-    0xFFFF6575, //            Es  99
-    0xFFFF6575, //            Fm 100
-    0xFFFF6575, //            Md 101
-    0xFFFF6575, //            No 102
-    0xFFFF6575, //            Lr 103
-    0xFFFF6575, //            Rf 104
-    0xFFFF6575, //            Db 105
-    0xFFFF6575, //            Sg 106
-    0xFFFF6575, //            Bh 107
-    0xFFFF6575, //            Hs 108
-    0xFFFF6575, //            Mt 109
+    0xFFFF1493, // Xx 0
+    0xFFFFFFFF, // H  1
+    0xFFFFC0CB, // He 2
+    0xFFB22222, // Li 3
+    0xFFFF1493, // Be 4
+    0xFF00FF00, // B  5
+    0xFFC8C8C8, // C  6
+    0xFF8F8FFF, // N  7
+    0xFFF00000, // O  8
+    0xFFDAA520, // F  9
+    0xFFFF1493, // Ne 10
+    0xFF0000FF, // Na 11
+    0xFF228B22, // Mg 12
+    0xFF808090, // Al 13
+    0xFFDAA520, // Si 14
+    0xFFFFA500, // P  15
+    0xFFFFC832, // S  16
+    0xFF00FF00, // Cl 17
+    0xFFFF1493, // Ar 18
+    0xFFFF1493, // K  19
+    0xFF808090, // Ca 20
+    0xFFFF1493, // Sc 21
+    0xFF808090, // Ti 22
+    0xFFFF1493, // V  23
+    0xFF808090, // Cr 24
+    0xFF808090, // Mn 25
+    0xFFFFA500, // Fe 26
+    0xFFFF1493, // Co 27
+    0xFFA52A2A, // Ni 28
+    0xFFA52A2A, // Cu 29
+    0xFFA52A2A, // Zn 30
+    0xFFFF1493, // Ga 31
+    0xFFFF1493, // Ge 32
+    0xFFFF1493, // As 33
+    0xFFFF1493, // Se 34
+    0xFFA52A2A, // Br 35
+    0xFFFF1493, // Kr 36
+    0xFFFF1493, // Rb 37
+    0xFFFF1493, // Sr 38
+    0xFFFF1493, // Y  39
+    0xFFFF1493, // Zr 40
+    0xFFFF1493, // Nb 41
+    0xFFFF1493, // Mo 42
+    0xFFFF1493, // Tc 43
+    0xFFFF1493, // Ru 44
+    0xFFFF1493, // Rh 45
+    0xFFFF1493, // Pd 46
+    0xFF808090, // Ag 47
+    0xFFFF1493, // Cd 48
+    0xFFFF1493, // In 49
+    0xFFFF1493, // Sn 50
+    0xFFFF1493, // Sb 51
+    0xFFFF1493, // Te 52
+    0xFFA020F0, // I  53
+    0xFFFF1493, // Xe 54
+    0xFFFF1493, // Cs 55
+    0xFFFFA500, // Ba 56
+    0xFFFF1493, // La 57
+    0xFFFF1493, // Ce 58
+    0xFFFF1493, // Pr 59
+    0xFFFF1493, // Nd 60
+    0xFFFF1493, // Pm 61
+    0xFFFF1493, // Sm 62
+    0xFFFF1493, // Eu 63
+    0xFFFF1493, // Gd 64
+    0xFFFF1493, // Tb 65
+    0xFFFF1493, // Dy 66
+    0xFFFF1493, // Ho 67
+    0xFFFF1493, // Er 68
+    0xFFFF1493, // Tm 69
+    0xFFFF1493, // Yb 70
+    0xFFFF1493, // Lu 71
+    0xFFFF1493, // Hf 72
+    0xFFFF1493, // Ta 73
+    0xFFFF1493, // W  74
+    0xFFFF1493, // Re 75
+    0xFFFF1493, // Os 76
+    0xFFFF1493, // Ir 77
+    0xFFFF1493, // Pt 78
+    0xFFDAA520, // Au 79
+    0xFFFF1493, // Hg 80
+    0xFFFF1493, // Tl 81
+    0xFFFF1493, // Pb 82
+    0xFFFF1493, // Bi 83
+    0xFFFF1493, // Po 84
+    0xFFFF1493, // At 85
+    0xFFFF1493, // Rn 86
+    0xFFFF1493, // Fr 87
+    0xFFFF1493, // Ra 88
+    0xFFFF1493, // Ac 89
+    0xFFFF1493, // Th 90
+    0xFFFF1493, // Pa 91
+    0xFFFF1493, // U  92
+    0xFFFF1493, // Np 93
+    0xFFFF1493, // Pu 94
+    0xFFFF1493, // Am 95
+    0xFFFF1493, // Cm 96
+    0xFFFF1493, // Bk 97
+    0xFFFF1493, // Cf 98
+    0xFFFF1493, // Es 99
+    0xFFFF1493, // Fm 100
+    0xFFFF1493, // Md 101
+    0xFFFF1493, // No 102
+    0xFFFF1493, // Lr 103
+    0xFFFF1493, // Rf 104
+    0xFFFF1493, // Db 105
+    0xFFFF1493, // Sg 106
+    0xFFFF1493, // Bh 107
+    0xFFFF1493, // Hs 108
+    0xFFFF1493, // Mt 109
   };
 
   static {

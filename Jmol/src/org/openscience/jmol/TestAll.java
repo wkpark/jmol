@@ -38,7 +38,6 @@ public class TestAll {
 	public static Test suite() {
 		TestSuite suite = new TestSuite();
 		suite.addTest(TestBaseAtomType.suite());
-		suite.addTest(TestBaseAtomTypeBeanInfo.suite());
 		suite.addTest(TestAtomType.suite());
 		suite.addTest(TestAtomTypeSet.suite());
 		suite.addTest(TestAtomTypesModel.suite());

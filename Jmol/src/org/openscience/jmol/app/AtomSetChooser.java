@@ -36,7 +36,6 @@ import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import java.text.DecimalFormat;
 import java.util.Properties;
 import java.util.Enumeration;
 
@@ -49,17 +48,13 @@ public class AtomSetChooser extends JDialog
 implements TreeSelectionListener, PropertyChangeListener,
 ActionListener, ChangeListener, Runnable {
   
-  // I use this to make sure that a script gets a decimal.
-  // Some script commands act different depending on whether the number is
-  // a decimal or an integer.
-  private static DecimalFormat threeDigits = new DecimalFormat("0.000");
-  
   private Thread animThread = null;
   
   private JTextArea propertiesTextArea;
   private JTree tree;
   private DefaultTreeModel treeModel;
   private JmolViewer viewer;
+  private JCheckBox repeatCheckBox;
   private JSlider selectSlider;
   private JLabel infoLabel;
   private JSlider fpsSlider;
@@ -127,17 +122,13 @@ ActionListener, ChangeListener, Runnable {
   private static final float PERIOD_VALUE = 0.5f;
 
   /**
-   * Precision of the vector radius slider
+   * Maximum value for vector radius.
    */
-  private static final float RADIUS_PRECISION = 0.01f;
-  /**
-   * Maximum value for vector radius. Should be in preferences?
-   */
-  private static final float RADIUS_MAX = 1.0f;
+  private static final int RADIUS_MAX = 19;
   /**
    * Initial value of vector radius. Should be in preferences?
    */
-  private static final float RADIUS_VALUE = 0.05f;
+  private static final int RADIUS_VALUE = 3;
 
   /**
    * Precision of the vector scale slider
@@ -232,7 +223,7 @@ ActionListener, ChangeListener, Runnable {
     cpsPanel.setLayout(new BorderLayout());
     cpsPanel.setBorder(new TitledBorder(
         JmolResourceHandler.translateX("AtomSetChooser.collection.select.label")));
-    selectSlider = new JSlider(0,0,0);
+    selectSlider = new JSlider(0, 0, 0);
     selectSlider.addChangeListener(this);
     selectSlider.setMajorTickSpacing(5);
     selectSlider.setMinorTickSpacing(1);
@@ -243,9 +234,15 @@ ActionListener, ChangeListener, Runnable {
     // panel with controller and fps
     JPanel row = new JPanel();
     collectionPanel.add(row);
-    row.setLayout(new BoxLayout(row,BoxLayout.X_AXIS));
+    row.setLayout(new BoxLayout(row, BoxLayout.X_AXIS));
+    // repeat check box to be added to the controller
+    repeatCheckBox = new JCheckBox(
+        JmolResourceHandler.translateX("AtomSetChooser.collection.repeat.label"),
+        false);
+    JPanel vcrpanel = createVCRController("collection");
+    vcrpanel.add(repeatCheckBox, 0); // put the repeat text box in the vcr control
     // VCR-like play controller
-    row.add(createVCRController("collection"));
+    row.add(vcrpanel);
     // fps slider
     JPanel fpsPanel = new JPanel();
     row.add(fpsPanel);
@@ -255,7 +252,7 @@ ActionListener, ChangeListener, Runnable {
     fpsPanel.setLayout(new BorderLayout());
     fpsPanel.setBorder(new TitledBorder(
         JmolResourceHandler.translateX("AtomSetChooser.collection.fps.label")));
-    fpsSlider = new JSlider(0,FPS_MAX,fps);
+    fpsSlider = new JSlider(0, FPS_MAX, fps);
     fpsSlider.setMajorTickSpacing(5);
     fpsSlider.setMinorTickSpacing(1);
     fpsSlider.setPaintTicks(true);
@@ -280,10 +277,13 @@ ActionListener, ChangeListener, Runnable {
     radiusPanel.setLayout(new BorderLayout());
     radiusPanel.setBorder(new TitledBorder(
         JmolResourceHandler.translateX("AtomSetChooser.vector.radius.label")));
-    radiusSlider = new JSlider(0, (int)(RADIUS_MAX/RADIUS_PRECISION),
-        (int) (RADIUS_VALUE/RADIUS_PRECISION));
+    radiusSlider = new JSlider(0, RADIUS_MAX, RADIUS_VALUE);
+    radiusSlider.setMajorTickSpacing(5);
+    radiusSlider.setMinorTickSpacing(1);
+    radiusSlider.setPaintTicks(true);
+    radiusSlider.setSnapToTicks(true);
     radiusSlider.addChangeListener(this);
-    viewer.evalStringQuiet("vector "+ threeDigits.format(RADIUS_VALUE));
+    viewer.evalStringQuiet("vector "+ RADIUS_VALUE);
     radiusPanel.add(radiusSlider);
     row1.add(radiusPanel);
     // controller for the vector scale
@@ -536,7 +536,10 @@ ActionListener, ChangeListener, Runnable {
       else
         viewer.setAnimationFps(value);
     }  else if (src == radiusSlider) {
-      viewer.evalStringQuiet("vector " + threeDigits.format(value*RADIUS_PRECISION));
+      if (value == 0)
+        radiusSlider.setValue(1); // make sure I never set it to 0..
+      else
+        viewer.evalStringQuiet("vector " + value);
     } else if (src == scaleSlider) {
 //      viewer.setVectorScale(value*SCALE_PRECISION); // no update: use script
       viewer.evalStringQuiet("vector scale "+value*SCALE_PRECISION);
@@ -678,8 +681,18 @@ ActionListener, ChangeListener, Runnable {
     while (animThread == myThread) {
       // since user can change the tree selection, I need to treat
       // all variables as volatile.
-      if (currentIndex >= 0) {
-        currentIndex = (++currentIndex)%indexes.length;
+      if (currentIndex < 0) {
+        animThread = null; // kill thread if I don't have a proper index
+      } else {
+        ++currentIndex;
+        if (currentIndex == indexes.length) {
+          if (repeatCheckBox.isSelected())
+            currentIndex = 0;  // repeat at 0
+          else {
+            currentIndex--;    // went 1 too far, step back
+            animThread = null; // stop the animation thread
+          }
+        }
         setAtomSet(indexes[currentIndex],true);
         try {
           // sleep for the amount of time required for the fps setting
@@ -693,4 +706,5 @@ ActionListener, ChangeListener, Runnable {
       }
     }
   }
+  
 }

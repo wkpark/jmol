@@ -58,10 +58,10 @@ class GaussianReader extends AtomSetCollectionReader {
    */
   private String scfKey = "";
   
-  /** The number of the calculation being interpreted */
+  /** The number of the calculation being interpreted. */
   private int calculationNumber = 1;
   
-  /** The scan point. -1 denotes no scan information */
+  /**  The scan point, where -1 denotes no scan information. */
   private int scanPoint = -1;
   
   /**

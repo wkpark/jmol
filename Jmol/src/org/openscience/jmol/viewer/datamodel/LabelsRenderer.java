@@ -37,22 +37,22 @@ class LabelsRenderer extends ShapeRenderer {
   // offsets are from the font baseline
   int labelOffsetX;
   int labelOffsetY;
+  int fontSizePrevious = -1;
   Font labelFont;
   FontMetrics labelFontMetrics;
-  int labelFontAscent;
+  int defaultFontSize;
 
   void render() {
     labelOffsetX = viewer.getLabelOffsetX();
     labelOffsetY = viewer.getLabelOffsetY();
-    labelFont = viewer.getLabelFont();
-    labelFontMetrics = g3d.getFontMetrics(labelFont);
-    labelFontAscent = labelFontMetrics.getAscent();
+    defaultFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
 
-    g3d.setFont(labelFont);
+    fontSizePrevious = -1;
 
     Labels labels = (Labels)shape;
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
+    byte[] fontSizes = labels.fontSizes;
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
@@ -65,6 +65,17 @@ class LabelsRenderer extends ShapeRenderer {
       if (displayModel != 0 && atom.modelNumber != displayModel)
         continue;
       short colix = colixes == null || i >= colixes.length ? 0 : colixes[i];
+      int fontSize =
+        ((fontSizes == null || i >= fontSizes.length || fontSizes[i] == 0)
+         ? defaultFontSize
+         : fontSizes[i]);
+      if (fontSize != fontSizePrevious) {
+        System.out.println("setting font to be of size " + fontSize);
+        Font font = labelFont = viewer.getFontOfSize(fontSize);
+        g3d.setFont(font);
+        labelFontMetrics = g3d.getFontMetrics();
+        fontSizePrevious = fontSize;
+      }
       renderLabel(atom, label, colix);
     }
   }
@@ -95,7 +106,7 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelOffsetY > 0) {
       yOffset = labelOffsetY;
     } else {
-      yOffset = -labelFontAscent;
+      yOffset = -labelFontMetrics.getAscent();
       if (labelOffsetY == 0)
         yOffset /= 2;
       else

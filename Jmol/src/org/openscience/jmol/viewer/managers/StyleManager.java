@@ -156,22 +156,20 @@ public class StyleManager {
   /****************************************************************
    * label related
    ****************************************************************/
-  public String strFontFace = "SansSerif";
+  public String strFontFace = JmolConstants.LABEL_DEFAULT_FONTFACE;
   public void setFontFace(String strFontFace) {
     this.strFontFace = strFontFace;
   }
 
-  public final static int pointsMin = 6;
-  public final static int pointsMax = 52;
-
-  Font[] fonts = new Font[pointsMax - pointsMin + 1];
+  Font[] fonts = new Font[JmolConstants.LABEL_MAXIMUM_FONTSIZE -
+                          JmolConstants.LABEL_MINIMUM_FONTSIZE + 1];
 
   public Font getFontOfSize(int points) {
-    if (points < pointsMin)
-      points = pointsMin;
-    else if (points > pointsMax)
-      points = pointsMax;
-    int index = points - pointsMin;
+    if (points < JmolConstants.LABEL_MINIMUM_FONTSIZE)
+      points = JmolConstants.LABEL_MINIMUM_FONTSIZE;
+    else if (points > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
+      points = JmolConstants.LABEL_MAXIMUM_FONTSIZE;
+    int index = points - JmolConstants.LABEL_MINIMUM_FONTSIZE;
     Font font = fonts[index];
     if (font == null)
       font = fonts[index] = new Font(strFontFace, Font.PLAIN, points);
@@ -186,13 +184,13 @@ public class StyleManager {
     return getFontOfSize(pointsLabelFontSize);
   }
 
-  public int pointsLabelFontSize = 13;
+  public int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
   public void setLabelFontSize(int points) {
-    this.pointsLabelFontSize = points <= 0 ? 13 : points;
+    this.pointsLabelFontSize = points <= 0 ? JmolConstants.LABEL_DEFAULT_FONTSIZE : points;
   }
 
-  public int labelOffsetX = 4;
-  public int labelOffsetY = 4;
+  public int labelOffsetX = JmolConstants.LABEL_DEFAULT_X_OFFSET;
+  public int labelOffsetY = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
   public void setLabelOffset(int offsetX, int offsetY) {
     labelOffsetX = offsetX;
     labelOffsetY = offsetY;

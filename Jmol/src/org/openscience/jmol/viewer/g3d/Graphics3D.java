@@ -316,6 +316,10 @@ final public class Graphics3D {
     }
   }
 
+  public FontMetrics getFontMetrics() {
+      return fontmetricsCurrent;
+  }
+
   public FontMetrics getFontMetrics(Font font) {
     if (font == fontCurrent)
       return fontmetricsCurrent;

@@ -25,6 +25,7 @@
 
 package org.openscience.jmol.viewer.datamodel;
 
+import org.openscience.jmol.viewer.JmolConstants;
 import org.openscience.jmol.viewer.pdb.PdbAtom;
 
 import java.awt.Color;
@@ -68,6 +69,22 @@ public class Labels extends Shape {
         }
       return;
     }
+    
+    if ("fontsize".equals(propertyName)) {
+      System.out.println("label fontsize being set");
+      int fontsize = ((Integer)value).intValue();
+      for (int i = frame.atomCount; --i >= 0; )
+        if (bsSelected.get(i)) {
+          if (fontSizes == null || i >= fontSizes.length) {
+            if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE)
+              continue;
+            fontSizes = ensureMinimumLengthArray(fontSizes, i + 1);
+          }
+          fontSizes[i] = (byte)fontsize;
+          System.out.println("set 1");
+        }
+      return;
+    }
   }
 
   static String[] ensureMinimumLengthArray(String[] stringArray, int minimumLength) {
@@ -87,6 +104,16 @@ public class Labels extends Shape {
       return shortArray;
     short[] t = new short[minimumLength];
     System.arraycopy(shortArray, 0, t, 0, shortArray.length);
+    return t;
+  }
+
+  static byte[] ensureMinimumLengthArray(byte[] byteArray, int minimumLength) {
+    if (byteArray == null)
+      return new byte[minimumLength];
+    if (byteArray.length >= minimumLength)
+      return byteArray;
+    byte[] t = new byte[minimumLength];
+    System.arraycopy(byteArray, 0, t, 0, byteArray.length);
     return t;
   }
 

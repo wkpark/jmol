@@ -2280,14 +2280,18 @@ public class Eval implements Runnable {
   }
 
   void setFontsize() throws ScriptException {
-    int fontsize = 8;
+    int fontsize = 13;
     if (statementLength == 3) {
       fontsize=getSetInteger();
-      if (fontsize > 72)
+      if (fontsize < JmolConstants.LABEL_MINIMUM_FONTSIZE ||
+          fontsize > JmolConstants.LABEL_MAXIMUM_FONTSIZE)
         numberOutOfRange();
     }
     // this is a kludge/hack to be somewhat compatible with RasMol
-    viewer.setLabelFontSize(fontsize + 5);
+    // but I am deprecating it for now ... mth 2004 03 12
+    //    viewer.setLabelFontSize(fontsize + 5);
+    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "fontsize",
+                            new Integer(fontsize));
   }
 
   void setLabelOffset() throws ScriptException {

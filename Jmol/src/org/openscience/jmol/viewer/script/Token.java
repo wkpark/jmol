@@ -322,6 +322,10 @@ public class Token {
   final static int selected    = predefinedset | 3 | showparam;
   final static int solvent     = predefinedset | 4 | setparam;
   final static int sidechain   = predefinedset | 5;
+  final static int protein     = predefinedset | 6;
+  final static int nucleic     = predefinedset | 7;
+  final static int dna         = predefinedset | 8;
+  final static int rna         = predefinedset | 9;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -566,6 +570,11 @@ public class Token {
     "%",            new Token(percent,         "%"),
     "dotted",       new Token(dotted,          "dotted"),
     "sidechain",    new Token(sidechain,       "sidechain"),
+    "protein",      new Token(protein,         "protein"),
+    "nucleic",      new Token(nucleic,         "nucleic"),
+    "dna",          new Token(dna,             "dna"),
+    "rna",          new Token(rna,             "rna"),
+
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),
     "jmol",         new Token(jmol,            "jmol"),

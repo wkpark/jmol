@@ -734,4 +734,22 @@ public final class Atom implements Bspt.Tuple {
   int getScreenY() { return Xyzd.getY(xyzd); }
   int getScreenZ() { return Xyzd.getZ(xyzd); }
   int getScreenD() { return Xyzd.getD(xyzd); }
+
+  ////////////////////////////////////////////////////////////////
+
+  public boolean isProtein() {
+    return group.isProtein();
+  }
+
+  public boolean isNucleic() {
+    return group.isNucleic();
+  }
+
+  public boolean isDna() {
+    return group.isDna();
+  }
+  
+  public boolean isRna() {
+    return group.isRna();
+  }
 }

@@ -55,6 +55,8 @@ final public class Group {
 
   short aminoBackboneHbondOffset = 0;
 
+  int distinguishingBits;
+
 
   Group(Frame frame, Chain chain,
                   int sequenceNumber, char insertionCode, String group3) {
@@ -208,6 +210,8 @@ final public class Group {
     byte specialAtomID = atom.getSpecialAtomID();
     if (specialAtomID <= 0)
       return;
+    if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX)
+      distinguishingBits |= 1 << specialAtomID;
     if (specialAtomID < JmolConstants.ATOMID_DEFINING_PROTEIN_MAX) {
       if (! registerMainchainAtomIndex(specialAtomID, atom.atomIndex))
         atom.demoteSpecialAtomImposter();
@@ -484,5 +488,29 @@ final public class Group {
   
   int getAminoBackboneHbondOffset() {
     return aminoBackboneHbondOffset;
+  }
+
+  ////////////////////////////////////////////////////////////////
+
+  public boolean isProtein() {
+    return ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) ==
+            JmolConstants.ATOMID_PROTEIN_MASK);
+  }
+
+  public boolean isNucleic() {
+    return ((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) ==
+            JmolConstants.ATOMID_NUCLEIC_MASK);
+  }
+
+  public boolean isDna() {
+    // this is a little tricky ... apply the RNA mask
+    // but then check to make sure that the O2 bit is turned off
+    return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
+            JmolConstants.ATOMID_NUCLEIC_MASK);
+  }
+
+  public boolean isRna() {
+    return ((distinguishingBits & JmolConstants.ATOMID_RNA_MASK) ==
+            JmolConstants.ATOMID_RNA_MASK);
   }
 }

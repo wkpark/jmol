@@ -801,6 +801,18 @@ public class Eval implements Runnable {
       case Token.spec_model:
         stack[sp++] = getSpecModel(instruction.intValue);
         break;
+      case Token.protein:
+        stack[sp++] = getProteinSet();
+        break;
+      case Token.nucleic:
+        stack[sp++] = getNucleicSet();
+        break;
+      case Token.dna:
+        stack[sp++] = getDnaSet();
+        break;
+      case Token.rna:
+        stack[sp++] = getRnaSet();
+        break;
       case Token.y:
       case Token.amino:
       case Token.backbone:
@@ -935,6 +947,42 @@ public class Eval implements Runnable {
         bsHydrogen.set(i);
     }
     return bsHydrogen;
+  }
+
+  BitSet getProteinSet() {
+    Frame frame = viewer.getFrame();
+    BitSet bsProtein = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isProtein())
+        bsProtein.set(i);
+    return bsProtein;
+  }
+
+  BitSet getNucleicSet() {
+    Frame frame = viewer.getFrame();
+    BitSet bsNucleic = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isNucleic())
+        bsNucleic.set(i);
+    return bsNucleic;
+  }
+
+  BitSet getDnaSet() {
+    Frame frame = viewer.getFrame();
+    BitSet bsDna = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isDna())
+        bsDna.set(i);
+    return bsDna;
+  }
+
+  BitSet getRnaSet() {
+    Frame frame = viewer.getFrame();
+    BitSet bsRna = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0; )
+      if (frame.getAtomAt(i).isRna())
+        bsRna.set(i);
+    return bsRna;
   }
 
   /*

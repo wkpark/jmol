@@ -1635,17 +1635,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
 
-  // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
-  public final int ATOMID_MASK_REQUIRED_ATOMS_PROTEIN = 0x0F << 1;
-  // this is entries 5 through through 15 ... 11 bits
-  public final int ATOMID_MASK_REQUIRED_ATOMS_NUCLEOTIDE = 0x07FF << 5;
-  // this is the MAX of the backbone ... everything < MAX is backbone
-  public final int ATOMID_BACKBONE_MAX = 64;
-
   public final static int ATOMID_DEFINING_PROTEIN_MAX = 5;
-  public final static int ATOMID_DEFINING_NUCLEOTIDE_MAX = 16;
+  public final static int ATOMID_DEFINING_NUCLEIC_MAX = 16;
 
-  public final static int ATOMID_NUCLEOTIDE_PHOSPHORUS = 5;
+  public final static int ATOMID_NUCLEIC_PHOSPHORUS = 5;
   public final static int ATOMID_RNA_O2PRIME = 50;
   public final static int ATOMID_N1 = 64;
   public final static int ATOMID_N3 = 66;
@@ -1656,6 +1649,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int ATOMID_N6 = 78;
   public final static int ATOMID_N2 = 79;
   public final static int ATOMID_NUCLEOTIDE_WING = 69;
+
+  // this is entries 1 through 4 ... 4 bits ... N, CA, C, O
+  public final static int ATOMID_PROTEIN_MASK = 0x0F << 1;
+  // this is entries 5 through through 15 ... 11 bits
+  public final static int ATOMID_NUCLEIC_MASK = 0x07FF << 5;
+  // RNA also includes the O2'
+  public final static int ATOMID_RNA_MASK =
+    ATOMID_NUCLEIC_MASK | ATOMID_RNA_O2PRIME;
+  // this is the MAX of the backbone ... everything < MAX is backbone
+  public final static int ATOMID_DISTINGUISHING_ATOM_MAX = 32;
+  public final static int ATOMID_BACKBONE_MAX = 64;
 
   /*
   // some pdbfiles do not have sidechain atoms labeled properly
@@ -1810,8 +1814,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // protein related
     //
+    // protein is pre-defined
     "@amino _g>0 & _g<=23",
-    "@protein amino", // + common post-translational modifications ??
     "@acidic asp,glu",
     "@basic arg,his,lys",
     "@charged acidic,basic",
@@ -1842,11 +1846,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
     //
     // nucleic acid related
-    //
-    "@nucleic within(group,(_a>=8 & _a<=30))",
-    "@rna nucleic & within(group,_a=15)",
-    "@dna nucleic & !within(group,(_a=16,_a=31))",
 
+    // nucleic, rna, and dna are hard-wired
+    //
     "@c _g=30,_g=31,_g=38,_g=39,_g>=61 & _g<=63",
     "@g _g=26,_g=27,_g>=40 & _g<=46,_g>=55 & _g<=57",
     "@cg c,g",
@@ -1870,10 +1872,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     // structure related
     //
-    "@alpha _a=1", // rasmol doc says "approximately *.CA" - whatever?
+    "@alpha amino & _a=2", // rasmol doc says "approximately *.CA" - whatever?
     "@backbone amino & _a<=4,nucleic & (_a>=9 & _a<=31)",
-    "@sidechain (protein,nucleic) & !backbone", // doc & code inconsistent
-    "@base nucleic & !backbone",
+    "@sidechain (protein,nucleic) & _a>=64",
+    "@base nucleic & _a>=64",
 
     "@turn _structure=1",
     "@sheet _structure=2",

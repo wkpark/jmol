@@ -77,7 +77,7 @@ public class ChemFrame {
     int[] ZsortMap;
     int nvert = 0;
     int nbonds, maxbonds, maxvert;
-    int maxbpa = 10;     // maximum number of bonds per atom
+    int maxbpa = 12;     // maximum number of bonds per atom
     int[] nBpA;          // number of bonds per atom
     int[][] inBonds;     // atom i's membership in it's jth bond points 
                          // to which bond?
@@ -425,9 +425,9 @@ public class ChemFrame {
                 int na = nBpA[i] + 1;
                 int nb = nBpA[j] + 1;
 
-                if (na >= maxbonds) throw new JmolException("ChemFrame.rebond",
+                if (na >= maxbpa) throw new JmolException("ChemFrame.rebond",
                                                             "max bonds per atom exceeded");
-                if (nb >= maxbonds) throw new JmolException("ChemFrame.rebond",
+                if (nb >= maxbpa) throw new JmolException("ChemFrame.rebond",
                                                             "max bonds per atom exceeded");
                 
                 inBonds[i][na-1] = k;

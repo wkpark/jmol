@@ -13,7 +13,7 @@
            CLASSPATH=${JAVA_HOME}/jre/lib/rt.jar:${JMOL_HOME}/src:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.2-1.14.jar:${JMOL_HOME}/jars/junit.jar
 #
 # Java 1.1 classpath:
-#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JAVA_HOME}/lib/rt.jar:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar${JMOL_HOME}/jars/vecmath1.2-1.14.jar:${JMOL_HOME}/jars/junit.jar
+#           CLASSPATH=${JAVA_HOME}/lib/classes.zip:${JMOL_HOME}/src:${JAVA_HOME}/lib/rt.jar:${JMOL_HOME}/jars/swing.jar:${JMOL_HOME}/jars/multi.jar:${JMOL_HOME}/jars/sax.jar:${JMOL_HOME}/jars/aelfred.jar:${JMOL_HOME}/jars/cml.jar:${JMOL_HOME}/jars/Acme.jar:${JMOL_HOME}/jars/vecmath1.2-1.14.jar:${JMOL_HOME}/jars/junit.jar
 #
 # put Jmol.java first, so that compilation is fast
 #

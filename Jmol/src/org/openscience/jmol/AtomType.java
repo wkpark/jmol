@@ -86,9 +86,9 @@ public class AtomType {
     private static double sphereFactor = 0.2;  /* static vars, once for each 
                                                   class, not once per instance
                                                   of class */
-	/**
-	 * Pool of atom images for shaded renderings.
-	 */
+    /**
+     * Pool of atom images for shaded renderings.
+     */
     private static Hashtable ballImages = new Hashtable();
     
     /**
@@ -248,15 +248,15 @@ public class AtomType {
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
         case DisplaySettings.SHADING:
-			Image shadedImage;
-			if (ballImages.containsKey(baseType.getColor())) {
-				shadedImage = (Image)ballImages.get(baseType.getColor());
-			} else {
+            Image shadedImage;
+            if (ballImages.containsKey(baseType.getColor())) {
+                shadedImage = (Image)ballImages.get(baseType.getColor());
+            } else {
                 shadedImage = SphereSetup(baseType.getColor());
-				ballImages.put(baseType.getColor(), shadedImage);
+                ballImages.put(baseType.getColor(), shadedImage);
             }
             gc.drawImage(shadedImage, x - radius, y - radius, diameter,
-						 diameter, jpanel);
+                         diameter, jpanel);
             break;
         default:
             gc.setColor(baseType.getColor());

@@ -358,8 +358,7 @@ public class Measure extends JDialog {
     switch (measure) {
     case ANGLE :
       if (action == ADD) {
-        Angle a = new Angle(selection[0], selection[1], selection[2]);
-        mlist.addAngle(a);
+        mlist.addAngle(selection[0], selection[1], selection[2]);
       } else {
         boolean ok = mlist.deleteMatchingAngle(selection[0], selection[1],
                        selection[2]);
@@ -376,9 +375,8 @@ public class Measure extends JDialog {
 
     case DIHEDRAL :
       if (action == ADD) {
-        Dihedral d = new Dihedral(selection[0], selection[1], selection[2],
-                       selection[3]);
-        mlist.addDihedral(d);
+        mlist.addDihedral(selection[0], selection[1],
+                          selection[2], selection[3]);
       } else {
         boolean ok = mlist.deleteMatchingDihedral(selection[0], selection[1],
                        selection[2], selection[3]);
@@ -395,8 +393,7 @@ public class Measure extends JDialog {
 
     default :
       if (action == ADD) {
-        Distance ds = new Distance(selection[0], selection[1]);
-        mlist.addDistance(ds);
+        mlist.addDistance(selection[0], selection[1]);
       } else {
         boolean ok = mlist.deleteMatchingDistance(selection[0], selection[1]);
         if (!ok) {

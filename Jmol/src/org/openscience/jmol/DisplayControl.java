@@ -955,13 +955,19 @@ final public class DisplayControl {
     return structuralChange;
   }
 
-  public void defineDistanceMeasure(int atom1, int atom2) {
-    System.out.println("define distance measure not implemented " +
-                       atom1 + "<->" + atom2);
-    /*
-    Distance ds = new Distance(a1, a2);
-    mlist.addDistance(ds);
-    */
+  public void defineMeasure(int atom1, int atom2) {
+    mlist.addDistance(atom1, atom2);
+    recalc();
+  }
+
+  public void defineMeasure(int atom1, int atom2, int atom3) {
+    mlist.addAngle(atom1, atom2, atom3);
+    recalc();
+  }
+
+  public void defineMeasure(int atom1, int atom2, int atom3, int atom4) {
+    mlist.addDihedral(atom1, atom2, atom3, atom4);
+    recalc();
   }
 
   public void resetStructuralChange() {

@@ -647,18 +647,32 @@ public class Eval implements Runnable {
       if (statement[1].tok == Token.on)
         control.setShowMeasurements(true);
       else if (statement[1].tok == Token.off)
-        control.setShowMeasurements(true);
+        control.setShowMeasurements(false);
       else
         booleanExpected();
       return;
     }
-    if (statement.length != 3)
+    if (statement.length < 3 || statement.length > 5)
       badArgumentCount();
-    if (statement[1].tok != Token.integer ||
-        statement[2].tok != Token.integer)
-      integerExpected();
-    control.defineDistanceMeasure(statement[1].intValue,
-                                  statement[2].intValue);
+    for (int i = 1; i < statement.length; ++i) {
+      if (statement[i].tok != Token.integer)
+        integerExpected();
+    }
+    int arg1 = statement[1].intValue;
+    int arg2 = statement[2].intValue;
+    // FIXME -- this has a bug because the atom numbers are wrong
+    // problem is actually in DisplayControl.defineDistanceMeasure
+    switch(statement.length) {
+    case 3:
+      control.defineMeasure(arg1, arg2);
+      break;
+    case 4:
+      control.defineMeasure(arg1, arg2, statement[3].intValue);
+      break;
+    case 5:
+      control.defineMeasure(arg1, arg2, statement[3].intValue,
+                            statement[4].intValue);
+    }
   }
 
   void refresh() throws ScriptException {

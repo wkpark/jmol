@@ -215,13 +215,20 @@ public class MeasurementList extends JDialog {
     return dihedralList;
   }
 
-  public void addDistance(Distance d) {
+  public void addDistance(int atom1, int atom2) {
+    addDistance(new Distance(atom1, atom2));
+  }
 
+  public void addDistance(Distance d) {
     distanceList.addElement(d);
     distances.update();
     treeModel.reload(distances);
     fireMlistChanged(new MeasurementListEvent(this));
     display.repaint();
+  }
+
+  public void addAngle(int atom1, int atom2, int atom3) {
+    addAngle(new Angle(atom1, atom2, atom3));
   }
 
   public void addAngle(Angle a) {
@@ -233,8 +240,11 @@ public class MeasurementList extends JDialog {
     display.repaint();
   }
 
-  public void addDihedral(Dihedral d) {
+  public void addDihedral(int atom1, int atom2, int atom3, int atom4) {
+    addDihedral(new Dihedral(atom1, atom2, atom3, atom4));
+  }
 
+  public void addDihedral(Dihedral d) {
     dihedralList.addElement(d);
     dihedrals.update();
     treeModel.reload(dihedrals);

@@ -359,21 +359,26 @@ class BondRenderer extends Renderer {
   void drawDashed(boolean lineBond, boolean shortDotted,
                   int xA, int yA, int zA,
                   int xB, int yB, int zB) {
-    System.out.println("drawDashed shortDotted=" + shortDotted);
-    if (shortDotted) {
-      int dx = (xB - xA) >> 3;
-      int dy = (yB - yA) >> 3;
-      int dz = (yB - yA) >> 3;
-      xA += dx; yA += dy; zA += dz;
-      xB -= dx; yB -= dy; zB -= dz;
-      System.out.println(" dx=" + dx + " dy=" + dy + " dz=" + dz);
+    int dx = xB - xA;
+    int dy = yB - yA;
+    int dz = zB - zA;
+    int i = 2;
+    while (i <= 9) {
+      int xS = xA + (dx * i) / 12;
+      int yS = yA + (dy * i) / 12;
+      int zS = zA + (dy * i) / 12;
+      i += 3;
+      int xE = xA + (dx * i) / 12;
+      int yE = yA + (dy * i) / 12;
+      int zE = zA + (dy * i) / 12;
+      i += 2;
+      if (lineBond)
+        g3d.drawLine(colixA, colixB, xS, yS, zS, xE, yE, zE);
+      else 
+        g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, width,
+                         xS, yS, zS, xE, yE, zE);
     }
-    if (lineBond)
-      g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
-    else 
-      drawDottedCylinder(colixA, colixB, width, xA, yA, zA, xB, yB, zB);
   }
-
 }
 
 

@@ -61,6 +61,7 @@ public class RepaintManager {
     //    System.out.println("display modelID=" + modelID);
     displayModelID = modelID;
     displayModelIndex = i;
+    viewer.notifyFrameChanged(displayModelIndex);
     return true;
   }
 

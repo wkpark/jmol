@@ -195,7 +195,7 @@ public class FileManager {
 
     FileOpenThread(String name, Reader reader) {
       nameAsGiven = fullPathName = name;
-      openReader(reader);
+      this.reader = reader;
     }
 
     public void run() {

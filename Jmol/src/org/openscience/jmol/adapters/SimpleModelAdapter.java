@@ -91,7 +91,6 @@ public class SimpleModelAdapter implements JmolModelAdapter {
     throws Exception {
     bufferedReader.mark(512);
     String line1 = bufferedReader.readLine();
-    System.out.println("DetermineModel:" + line1);
     String line2 = bufferedReader.readLine();
     String line3 = bufferedReader.readLine();
     String line4 = bufferedReader.readLine();

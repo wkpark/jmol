@@ -140,7 +140,7 @@ applet: $(APPLET_CLASSES) $(APPLET_JMOL_CLASSES)
 tests: $(TEST_CLASSES)
 
 applet_archive: applet
-	jar uvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES)
+	jar cvf ../jars/JmolApplet.jar org/openscience/miniJmol/*.class $(APPLET_JMOL_CLASSES)
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar

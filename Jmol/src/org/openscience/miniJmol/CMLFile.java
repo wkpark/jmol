@@ -12,7 +12,7 @@ import java.util.Vector;
 import java.util.StringTokenizer;
 import org.xml.sax.*;
 import org.xml.sax.helpers.*;
-import com.ibm.xml.parsers.*;
+//import com.ibm.xml.parsers.*;
 
 public class CMLFile extends ChemFile {
 
@@ -29,12 +29,12 @@ public class CMLFile extends ChemFile {
         super();
         atlu = at;
         InputSource input = new InputSource(is);
-        Parser parser = new SAXParser();
+        Parser parser = ParserFactory.makeParser("com.microstar.xml.SAXDriver");
         //EntityResolver resolver = new DTDResolver();
         EntityResolver resolver = new DTDResolver();
         DocumentHandler handler = new CMLHandler(atlu);
 	//        parser.setEntityResolver(resolver);
-                parser.setEntityResolver(resolver);
+		parser.setEntityResolver(resolver);
         parser.setDocumentHandler(handler);
 	parser.parse(input);
         frames = ((CMLHandler)handler).returnChemFrames ();

@@ -276,12 +276,13 @@ public class Token {
   final static int shapely      = misc | 18;
   final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
-  final static int spec_name            = misc | 21;
-  final static int spec_number          = misc | 22;
-  final static int spec_number_range    = misc | 23;
-  final static int spec_chain           = misc | 24;
-  final static int spec_model           = misc | 25;
-  final static int spec_atom            = misc | 26;
+  final static int spec_resid           = misc | 21;
+  final static int spec_name_pattern    = misc | 22;
+  final static int spec_number          = misc | 23;
+  final static int spec_number_range    = misc | 24;
+  final static int spec_chain           = misc | 25;
+  final static int spec_model           = misc | 26;
+  final static int spec_atom            = misc | 27;
 
   final static int amino       = predefinedset | 0;
   final static int hetero      = predefinedset | 1 | setparam;
@@ -292,6 +293,7 @@ public class Token {
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
+  final static Token tokenElemno = new Token(elemno, "elemno");
 
   final static Object[] arrayPairs  = {
     // commands
@@ -442,7 +444,8 @@ public class Token {
     "]",            new Token(rightsquare, "]"),
     ":",            new Token(colon, ":"),
     "atomno",       new Token(atomno, "atomno"),
-    "elemno",       new Token(elemno, "elemno"),
+    "elemno",       tokenElemno,
+    "_e",           tokenElemno,
     "resno",        new Token(resno, "resno"),
     "temperature",  new Token(temperature, "temperature"),
     "_bondedcount", new Token(_bondedcount, "_bondedcount"),
@@ -533,65 +536,83 @@ public class Token {
     //    "@turn",
     "@water _resid=46,_resid=47", "@hoh water",
 
-    "@ala _resid=0", "@a ala",
-    "@gly _resid=1", "@g gly",
-    "@leu _resid=2", "@l leu",
-    "@ser _resid=3", "@s ser",
-    "@val _resid=4", "@v val",
-    "@thr _resid=5", "@t thr",
-    "@lys _resid=6", "@k lys",
-    "@asp _resid=7", "@d asp",
-    "@ile _resid=8", "@i ile",
-    "@asn _resid=9", "@n asn",
-    "@glu _resid=10", "@e glu",
-    "@pro _resid=11", "@p pro",
-    "@arg _resid=12", "@r arg",
-    "@phe _resid=13", "@f phe",
-    "@gln _resid=14", "@q gln",
-    "@tyr _resid=15", "@y tyr",
-    "@his _resid=16", "@h his",
-    "@cys _resid=17", "@c cys",
-    "@met _resid=18", "@m met",
-    "@trp _resid=19", "@w trp",
+    "@a ala",
+    "@r arg",
+    "@n asn",
+    "@d asp",
+    "@c cys",
+    "@e glu",
+    "@q gln",
+    "@g gly",
+    "@h his",
+    "@i ile",
+    "@l leu",
+    "@k lys",
+    "@m met",
+    "@f phe",
+    "@p pro",
+    "@s ser",
+    "@t thr",
+    "@w trp",
+    "@y tyr",
+    "@v val",
 
-    // "@hydrogen elemno=1", handled specially
-    "@helium elemno=2",
-    "@lithium elemno=3",
-    "@beryllium elemno=4",
-    "@barium elemno=5",
-    "@carbon elemno=6",
-    "@nitrogen elemno=7",
-    "@oxygen elemno=8",
-    "@fluorine elemno=9",
-    "@neon elemno=10",
-    "@sodium elemno=11",
-    "@magnesium elemno=12",
-    "@aluminum elemno=13",  //US
-    "@aluminium elemno=13", //UK
-    "@silicon elemno=14",
-    "@phosphorus elemno=15",
-    "@sulfur elemno=16",   //US
-    "@sulphur elemno=16",   //UK
-    "@chlorine elemno=17",
-    "@argon elemno=18",
-    "@potassium elemno=19",
-    "@calcium elemno=20",
-    "@scandium elemno=21",
-    "@titanium elemno=22",
-    "@vanadium elemno=23",
-    "@chromium elemno=24",
-    "@manganese elemno=25",
-    "@iron elemno=26",
-    "@cobolt elemno=27",
-    "@nickel elemno=28",
-    "@copper elemno=29",
-    "@zinc elemno=30",
-    "@gallium elemno=31",
-    "@germanium elemno=32",
-    "@arsenic elemno=33",
-    "@selenium elemno=34",
-    "@bromine elemno=35",
-    "@krypton elemno=36",
+    // "@hydrogen _e=1", handled specially
+    "@helium _e=2",
+    "@lithium _e=3",
+    "@beryllium _e=4",
+    "@barium _e=5",
+    "@carbon _e=6",
+    "@nitrogen _e=7",
+    "@oxygen _e=8",
+    "@fluorine _e=9",
+    "@neon _e=10",
+    "@sodium _e=11",
+    "@magnesium _e=12",
+    "@aluminum _e=13",  //US
+    "@aluminium _e=13", //UK
+    "@silicon _e=14",
+    "@phosphorus _e=15",
+    "@sulfur _e=16",   //US
+    "@sulphur _e=16",   //UK
+    "@chlorine _e=17",
+    "@argon _e=18",
+    "@potassium _e=19",
+    "@calcium _e=20",
+    "@scandium _e=21",
+    "@titanium _e=22",
+    "@vanadium _e=23",
+    "@chromium _e=24",
+    "@manganese _e=25",
+    "@iron _e=26",
+    "@cobolt _e=27",
+    "@nickel _e=28",
+    "@copper _e=29",
+    "@zinc _e=30",
+    "@gallium _e=31",
+    "@germanium _e=32",
+    "@arsenic _e=33",
+    "@selenium _e=34",
+    "@bromine _e=35",
+    "@krypton _e=36",
+    "@rubidium _e=37",
+    "@strontium _e=38",
+    "@yttrium _e=39",
+    "@zirconium _e=40",
+    "@niobioum _e=41",
+    "@molybdenum _e=42",
+    "@technetium _e=43",
+    "@ruthenium _e=44",
+    "@rhodium _e=45",
+    "@palladium _e=46",
+    "@silver _e=47",
+    "@cadmium _e=48",
+    "@indium _e=49",
+    "@tin _e=50",
+    "@antimony _e=51",
+    "@tellurium _e=52",
+    "@iodine _e=53",
+    "@xenon _e=54",
     // that is enough for now
   };
 

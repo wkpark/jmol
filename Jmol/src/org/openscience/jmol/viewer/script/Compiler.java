@@ -500,7 +500,7 @@ class Compiler {
     return compileError("comma expected");
   }
   private boolean unrecognizedExpressionToken() {
-    return compileError("unrecognized expression token");
+    return compileError("unrecognized expression token:" + valuePeek());
   }
   private boolean integerExpectedAfterHyphen() {
     return compileError("integer expected after hyphen");
@@ -666,6 +666,12 @@ class Compiler {
     return atokenInfix[itokenInfix++];
   }
 
+  Object valuePeek() {
+    if (itokenInfix == atokenInfix.length)
+      return null;
+    return atokenInfix[itokenInfix].value;
+  }
+
   int tokPeek() {
     if (itokenInfix == atokenInfix.length)
       return 0;
@@ -726,13 +732,14 @@ class Compiler {
     case Token.identifier:
     case Token.colon:
       return clauseResidueSpec();
-    case Token.all:
-    case Token.none:
-      return addTokenToPostfix(tokenNext());
     default:
       int tok = tokPeek();
       if ((tok & Token.predefinedset) != Token.predefinedset)
         break;
+      // fall into the code and below and just add the token
+    case Token.all:
+    case Token.none:
+      return addTokenToPostfix(tokenNext());
     case Token.leftparen:
       tokenNext();
       if (! clauseOr())
@@ -778,13 +785,24 @@ class Compiler {
       return commaExpected();
     if (! clauseOr())                        // *expression*
       return false;
-    if (tokenNext().tok != Token.rightparen) // )
+    if (tokenNext().tok != Token.rightparen) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));
   }
 
+  boolean residueSpecCodeGenerated;
+
+  boolean generateResidueSpecCode(Token token) {
+    addTokenToPostfix(token);
+    if (residueSpecCodeGenerated)
+        addTokenToPostfix(Token.tokenAnd);
+    residueSpecCodeGenerated = true;
+    return true;
+  }
+
   boolean clauseResidueSpec() {
     boolean specSeen = false;
+    residueSpecCodeGenerated= false;
     int tok = tokPeek();
     if (tok == Token.asterisk ||
         tok == Token.leftsquare ||
@@ -801,8 +819,6 @@ class Compiler {
       log("I see a residue number");
       if (! clauseResNumSpec())
         return false;
-      if (specSeen)
-        addTokenToPostfix(Token.tokenAnd);
       specSeen = true;
       tok = tokPeek();
     }
@@ -812,8 +828,6 @@ class Compiler {
         tok == Token.integer) {
       if (! clauseChainSpec())
         return false;
-      if (specSeen)
-        addTokenToPostfix(Token.tokenAnd);
       specSeen = true;
       tok = tokPeek();
     }
@@ -822,30 +836,29 @@ class Compiler {
         tok == Token.integer) {
       if (! clauseModelSpec())
         return false;
-      if (specSeen)
-        addTokenToPostfix(Token.tokenAnd);
       specSeen = true;
       tok = tokPeek();
     }
     if (tok == Token.dot) {
       if (!clauseAtomSpec())
         return false;
-      if (specSeen)
-        addTokenToPostfix(Token.tokenAnd);
       specSeen = true;
       tok = tokPeek();
     }
     if (!specSeen)
       return residueSpecificationExpected();
+    if (!residueSpecCodeGenerated) {
+      // nobody generated any code, so everybody was a * (or equivalent)
+      addTokenToPostfix(Token.tokenAll);
+    }
     return true;
   }
 
   boolean clauseResNameSpec() {
     int tokPeek = tokPeek();
-    if (tokPeek == Token.asterisk || tokPeek == Token.colon) {
-      if (tokPeek == Token.asterisk)
-        tokenNext();
-      return addTokenToPostfix(Token.tokenAll);
+    if (tokPeek == Token.asterisk) {
+      tokenNext();
+      return true;
     }
     Token tokenIdent = tokenNext();
     if (tokenIdent.tok == Token.leftsquare) {
@@ -859,11 +872,9 @@ class Compiler {
       strSpec = strSpec.toUpperCase();
       byte resid = Token.getResid(strSpec);
       if (resid != -1)
-        addTokenToPostfix(new Token(Token.opEQ,
-                                    Token._resid,
-                                    new Integer(resid)));
+        generateResidueSpecCode(new Token(Token.spec_resid, resid, strSpec));
       else
-        addTokenToPostfix(new Token(Token.spec_name, strSpec));
+        generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
       return tokenNext().tok == Token.rightsquare;
     }
     return processIdentifier(tokenIdent);
@@ -880,12 +891,12 @@ class Compiler {
 
     // too short to be an atom specification? 
     if (cchToken < 3)
-      return addTokenToPostfix(tokenIdent);
+      return generateResidueSpecCode(tokenIdent);
     // has characters where there should be digits?
     // but don't look at last character because it could be chain spec
     for (int i = 3; i < cchToken-1; ++i)
       if (!Character.isDigit(strToken.charAt(i)))
-        return addTokenToPostfix(tokenIdent);
+        return generateResidueSpecCode(tokenIdent);
     log("still here looking at:" + strToken);
 
     // still might be an identifier ... so be careful
@@ -907,7 +918,7 @@ class Compiler {
         resno = Integer.parseInt(strResno);
         log("I parsed resno=" + resno);
       } catch (NumberFormatException e) {
-        return addTokenToPostfix(tokenIdent);
+        return generateResidueSpecCode(tokenIdent);
       }
     }
     String strUpper3 = strToken.substring(0, 3).toUpperCase();
@@ -915,27 +926,20 @@ class Compiler {
     if (strUpper3.charAt(0) == '?' ||
         strUpper3.charAt(1) == '?' ||
         strUpper3.charAt(2) == '?') {
-      addTokenToPostfix(new Token(Token.spec_name, strUpper3));
+      generateResidueSpecCode(new Token(Token.spec_name_pattern, strUpper3));
     } else if ((resid = Token.getResid(strUpper3)) != -1) {
-      addTokenToPostfix(new Token(Token.opEQ,
-                                  Token._resid,
-                                  new Integer(resid)));
+      generateResidueSpecCode(new Token(Token.spec_resid, resid, strUpper3));
     } else {
-      return addTokenToPostfix(tokenIdent);
+      return generateResidueSpecCode(tokenIdent);
     }
     log(" I see a residue name:" + strUpper3 +
                        " resno=" + resno +
                        " chain=" + chain);
 
-    if (resno != -1) {
-      
-      addTokenToPostfix(new Token(Token.spec_number, resno, "spec_number"));
-      addTokenToPostfix(Token.tokenAnd);
-    }
-    if (chain != '?') {
-      addTokenToPostfix(new Token(Token.spec_chain, chain, "spec_chain"));
-      addTokenToPostfix(Token.tokenAnd);
-    }
+    if (resno != -1)
+      generateResidueSpecCode(new Token(Token.spec_number, resno, "spec_number"));
+    if (chain != '?')
+      generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
     return true;
   }
 
@@ -943,7 +947,7 @@ class Compiler {
     log("clauseResNumSpec()");
     if (tokPeek() == Token.asterisk) {
       tokenNext();
-      return addTokenToPostfix(Token.tokenAll);
+      return true;
     }
     boolean negativeInt1 = false;
     if (tokPeek() == Token.hyphen) {
@@ -956,8 +960,8 @@ class Compiler {
     int resNum1 = (negativeInt1 ? -tokenInt1.intValue : tokenInt1.intValue);
     log("resNum1=" + resNum1);
     if (tokPeek() != Token.hyphen)
-      return addTokenToPostfix(new Token(Token.spec_number,
-                                         resNum1, "spec_number"));
+      return generateResidueSpecCode(new Token(Token.spec_number,
+                                               resNum1, "spec_number"));
     log("seems to be a range");
     tokenNext(); // throw away range hyphen
     // now look for negative int hyphen
@@ -977,8 +981,8 @@ class Compiler {
     if (max < min) {
       int intT = max; max = min; min = intT;
     }
-    return addTokenToPostfix(new Token(Token.spec_number_range,
-                                       min, new Integer(max)));
+    return generateResidueSpecCode(new Token(Token.spec_number_range,
+                                             min, new Integer(max)));
   }
 
   boolean clauseChainSpec() {
@@ -986,7 +990,7 @@ class Compiler {
       tokenNext();
     if (tokPeek() == Token.asterisk) {
       tokenNext();
-      return addTokenToPostfix(Token.tokenAll);
+      return true;
     }
     Token tokenChain = tokenNext();
     char chain;
@@ -1000,11 +1004,11 @@ class Compiler {
         return invalidChainSpecification();
       chain = strChain.charAt(0);
       if (chain == '?')
-        return addTokenToPostfix(Token.tokenAll);
+        return true;
     } else
       return invalidChainSpecification();
 
-    return addTokenToPostfix(new Token(Token.spec_chain, chain, "spec_chain"));
+    return generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
   }
 
   boolean clauseModelSpec() {
@@ -1012,14 +1016,13 @@ class Compiler {
       tokenNext();
     if (tokPeek() == Token.asterisk) {
       tokenNext();
-      return addTokenToPostfix(Token.tokenAll);
+      return true;
     }
     Token tokenModel = tokenNext();
     if (tokenModel.tok != Token.integer)
       return invalidModelSpecification();
-    return
-      addTokenToPostfix(new Token(Token.spec_model,
-                                  tokenModel.intValue, "spec_model"));
+    return generateResidueSpecCode(new Token(Token.spec_model,
+                                             tokenModel.intValue, "spec_model"));
   }
 
   boolean clauseAtomSpec() {
@@ -1030,7 +1033,7 @@ class Compiler {
       return true;
     if (tokenAtomSpec.tok != Token.identifier)
       return invalidAtomSpecification();
-    return addTokenToPostfix(new Token(Token.spec_atom, tokenAtomSpec.value));
+    return generateResidueSpecCode(new Token(Token.spec_atom, tokenAtomSpec.value));
   }
 
   boolean compileColorParam() {

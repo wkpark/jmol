@@ -215,9 +215,6 @@ public class Eval implements Runnable {
   public void clearDefinitionsAndLoadPredefined() {
     variables.clear();
 
-    if (true)
-      return;
-
     int cPredef = Token.predefinitions.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++) {
       String script = Token.predefinitions[iPredef];
@@ -578,8 +575,11 @@ public class Eval implements Runnable {
       case Token.hydrogen:
         stack[sp++] = getHydrogenSet();
         break;
-      case Token.spec_name:
+      case Token.spec_name_pattern:
         stack[sp++] = getSpecName((String)instruction.value);
+        break;
+      case Token.spec_resid:
+        stack[sp++] = getSpecResid(instruction.intValue);
         break;
       case Token.spec_number:
         stack[sp++] = getSpecNumber(instruction.intValue);
@@ -680,6 +680,19 @@ public class Eval implements Runnable {
       if (pdbatom == null)
         continue;
       if (pdbatom.isResidueNameMatch(resNameSpec))
+        bsRes.set(i);
+    }
+    return bsRes;
+  }
+
+  BitSet getSpecResid(int resid) {
+    BitSet bsRes = new BitSet();
+    JmolFrame frame = viewer.getJmolFrame();
+    for (int i = viewer.getAtomCount(); --i >= 0; ) {
+      PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
+      if (pdbatom == null)
+        continue;
+      if (pdbatom.getResID() == resid)
         bsRes.set(i);
     }
     return bsRes;

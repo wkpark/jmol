@@ -60,14 +60,8 @@ final public class Graphics3D {
   short[] zbuf;
 
   int width1, height1, size1;
-  int xLast1, yLast1;
   int[] pbuf1;
   short[] zbuf1;
-
-  int width4, height4, size4;
-  int xLast4, yLast4;
-  int[] pbuf4;
-  short[] zbuf4;
 
   short colixBackground;
   int argbBackground;
@@ -85,6 +79,7 @@ final public class Graphics3D {
     } else {
       platform = new Awt3D(awtComponent);
     }
+    platform.initialize();
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
@@ -105,32 +100,19 @@ final public class Graphics3D {
     if (dim.width == width && dim.height == height)
       return;
     width1 = width = dim.width;
-    xLast1 = xLast = width1 - 1;
+    xLast = width1 - 1;
     height1 = height = dim.height;
-    yLast1 = yLast = height - 1;
+    yLast = height - 1;
     size1 = width1 * height1;
-
-    width4 = width + width;
-    xLast4 = width4 - 1;
-    height4 = height + height;
-    yLast4 = height4 - 1;
-    size4 = width4 * height4;
-
-    if (size1 == 0) {
-      pbuf = pbuf1 = pbuf4 = null;
-      zbuf = zbuf1 = zbuf4 = null;
-      return;
-    } else {
-      platform.allocateBuffers(width, height);
-      pbuf = pbuf1 = platform.pBuffer;
-      zbuf = zbuf1 = platform.zBuffer;
-    }
-    System.out.println("returning from Graphics3D.setSize()");
+    pbuf = pbuf1 = null;
+    zbuf = zbuf1 = null;
+    platform.releaseBuffers();
   }
 
   public void setBackground(short colix) {
     colixBackground = colix;
     argbBackground = getArgb(colix);
+    platform.setBackground(argbBackground);
   }
   
   public void setRectClip(Rectangle clip) {
@@ -157,6 +139,7 @@ final public class Graphics3D {
     this.slab = slab;
   }
 
+  /*
   private void downSample() {
     int[] pbuf1 = this.pbuf1;
     int[] pbuf4 = this.pbuf4;
@@ -180,6 +163,7 @@ final public class Graphics3D {
       offset4 += width4;
     }
   }
+  */
 
   public Image getScreenImage() {
     return platform.imagePixelBuffer;
@@ -368,34 +352,43 @@ final public class Graphics3D {
     if (currentlyRendering)
       endRendering();
     currentlyRendering = true;
+    if (pbuf == null) {
+      platform.allocateBuffers(width, height);
+      pbuf = pbuf1 = platform.pBuffer;
+      zbuf = zbuf1 = platform.zBuffer;
+      System.out.println("calling platform.clearScreenBuffer()");
+      platform.clearScreenBuffer();
+    }
+    /*
     if (tFullSceneAntialiasing && zbuf4 != null) {
       width = width4;
+      xLast = width - 1;
       height = height4;
-      xLast = xLast4;
-      yLast = yLast4;
+      yLast = height - 1;
       pbuf = pbuf4;
       zbuf = zbuf4;
     } else {
       width = width1;
+      xLast = width - 1;
       height = height1;
-      xLast = xLast1;
-      yLast = yLast1;
+      yLast = height - 1;
       pbuf = pbuf1;
       zbuf = zbuf1;
     }
+    */
     this.tFullSceneAntialiasing = tFullSceneAntialiasing;
-    platform.clearScreenBuffer(argbBackground, rectClip);
   }
 
   public void endRendering() {
     if (currentlyRendering) {
-      if (tFullSceneAntialiasing)
-        downSample();
+      //      if (tFullSceneAntialiasing)
+      //        downSample();
       platform.notifyEndOfRendering();
       currentlyRendering = false;
+      platform.clearScreenBufferThreaded();
     }
   }
-
+  
   public void drawDashedLine(short colix, int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     int argb = getArgb(colix);

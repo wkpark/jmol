@@ -45,13 +45,10 @@ final class Swing3D extends Platform3D {
     imagePixelBuffer = bi;
   }
 
-  void clearScreenBuffer(int argbBackground, Rectangle rectClip) {
-    if (((rectClip.width ^ width) | (rectClip.height ^ height) |
-         rectClip.x | rectClip.y) == 0) {
-      Arrays.fill(zBuffer, ZBUFFER_BACKGROUND);
+  void clearScreenBuffer(int argbBackground) {
+    if (pBuffer != null) {
       Arrays.fill(pBuffer, argbBackground);
-    } else {
-      super.clearScreenBuffer(argbBackground, rectClip);
+      Arrays.fill(zBuffer, ZBUFFER_BACKGROUND);
     }
   }
 

@@ -59,6 +59,17 @@ final class Awt3D extends Platform3D implements ImageProducer {
     return component.createImage(widthOffscreen, heightOffscreen);
   }
 
+  void clearScreenBuffer(int argbBackground) {
+    for (int i = width; --i >= 0; ) {
+      zBuffer[i] = ZBUFFER_BACKGROUND;
+      pBuffer[i] = argbBackground;
+    }
+    for (int i = height, offset = size; --i > 0; offset -= width) {
+      System.arraycopy(pBuffer, 0, pBuffer, offset, width);
+      System.arraycopy(zBuffer, 0, zBuffer, offset, width);
+    }
+  }
+
   public synchronized void addConsumer(ImageConsumer ic) {
     startProduction(ic);
   }

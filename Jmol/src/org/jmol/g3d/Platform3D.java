@@ -37,9 +37,18 @@ abstract class Platform3D {
   Image imagePixelBuffer;
   int[] pBuffer;
   short[] zBuffer;
+  int argbBackground;
+
   int widthOffscreen, heightOffscreen;
   Image imageOffscreen;
   Graphics gOffscreen;
+
+  ClearingThread clearingThread;
+
+  final void initialize() {
+    clearingThread = new ClearingThread();
+    clearingThread.start();
+  }
 
   final static short ZBUFFER_BACKGROUND = 32767;
 
@@ -50,41 +59,37 @@ abstract class Platform3D {
     this.height = height;
     size = width * height;
     zBuffer = new short[size];
-    if (imagePixelBuffer != null)
-      imagePixelBuffer.flush();
     allocatePixelBuffer();
   }
 
-  void clearScreenBuffer(int argbBackground, Rectangle rectClip) {
-    int offsetSrc = rectClip.y * width + rectClip.x;
-    int countPerLine = rectClip.width;
-    int offsetT = offsetSrc;
-    for (int i = countPerLine; --i >= 0; ) {
-      zBuffer[offsetT] = ZBUFFER_BACKGROUND;
-      pBuffer[offsetT++] = argbBackground;
+  void releaseBuffers() {
+    width = height = size = -1;
+    if (imagePixelBuffer != null) {
+      imagePixelBuffer.flush();
+      imagePixelBuffer = null;
     }
-    int offsetDst = offsetSrc + width;
-    for (int nLines = rectClip.height-1; --nLines >= 0; offsetDst += width) {
-      if (offsetDst + countPerLine > pBuffer.length) {
-        System.out.println("\nPlatform3D.clearScreenBuffer dst out of bounds!" +
-                           "\npBuffer.length=" + pBuffer.length + 
-                           "\noffsetDst=" + offsetDst +
-                           "\ncountPerLine=" + countPerLine +
-                           "\nrectClip.x=" + rectClip.x +
-                           "\nrectClip.y=" + rectClip.y +
-                           "\nrectClip.width=" + rectClip.width +
-                           "\nrectClip.height=" + rectClip.height +
-                           "\noffsetSrc=" + offsetSrc +
-                           "\nwidth=" + width +
-                           "\nheight=" + height +
-                           "\nsize=" + size +
-                           "zBuffer.length=" + zBuffer.length);
-      }
-      System.arraycopy(pBuffer, offsetSrc, pBuffer, offsetDst, countPerLine);
-      System.arraycopy(zBuffer, offsetSrc, zBuffer, offsetDst, countPerLine);
+    pBuffer = null;
+    zBuffer = null;
+  }
+
+  void setBackground(int argbBackground) {
+    if (this.argbBackground != argbBackground) {
+      this.argbBackground = argbBackground;
+      clearScreenBuffer();
     }
   }
 
+  abstract void clearScreenBuffer(int argbBackground);
+  
+  final void clearScreenBuffer() {
+    clearingThread.clearThreaded();
+    clearingThread.waitUntilCleared();
+  }
+
+  final void clearScreenBufferThreaded() {
+    clearingThread.clearThreaded();
+  }
+  
   void notifyEndOfRendering() {
   }
 
@@ -93,9 +98,9 @@ abstract class Platform3D {
       checkOffscreenSize(16, 64);
     return gOffscreen.getFontMetrics(font);
   }
-
+  
   abstract Image allocateOffscreenImage(int width, int height);
-
+  
   void checkOffscreenSize(int width, int height) {
     if (width <= widthOffscreen && height <= heightOffscreen)
       return;
@@ -109,5 +114,53 @@ abstract class Platform3D {
       heightOffscreen = (height + 15) & ~15;
     imageOffscreen = allocateOffscreenImage(widthOffscreen, heightOffscreen);
     gOffscreen = imageOffscreen.getGraphics();
+  }
+
+  class ClearingThread extends Thread implements Runnable {
+
+    boolean bufferReady = false;
+    boolean clientIsWaiting = false;
+
+    synchronized void waitOnClearingMonitor() {
+      try {
+        wait();
+      } catch (InterruptedException ie) {
+      }
+    }
+    
+    synchronized void clearThreaded() {
+      bufferReady = false;
+      notify();
+    }
+
+    synchronized void waitUntilCleared() {
+      if (! bufferReady) {
+        clientIsWaiting = true;
+        do {
+          waitOnClearingMonitor();
+        } while (! bufferReady);
+      }
+      clientIsWaiting = false;
+    }
+    
+    synchronized void notifyWaitingClient() {
+      if (clientIsWaiting)
+        notify();
+    }
+    
+    public void run() {
+      System.out.println("running clearing thread");
+      while (true) {
+        while (bufferReady)
+          waitOnClearingMonitor();
+        int bg;
+        do {
+          bg = argbBackground;
+          clearScreenBuffer(bg);
+        } while (bg != argbBackground); // color changed underneath us
+        bufferReady = true;
+        notifyWaitingClient();
+      }
+    }
   }
 }

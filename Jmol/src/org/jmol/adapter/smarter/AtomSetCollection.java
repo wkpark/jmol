@@ -63,9 +63,10 @@ class AtomSetCollection {
   AtomSetCollection(String fileTypeName) {
     this.fileTypeName = fileTypeName;
     // set the default PATH properties as defined in the SmarterJmolAdapter
-    atomSetCollectionProperties.setProperty("PATH_KEY",SmarterJmolAdapter.PATH_KEY);
-    atomSetCollectionProperties.setProperty("PATH_SEPARATOR",
-        SmarterJmolAdapter.PATH_SEPARATOR);
+    atomSetCollectionProperties.put("PATH_KEY",
+                                    SmarterJmolAdapter.PATH_KEY);
+    atomSetCollectionProperties.put("PATH_SEPARATOR",
+                                    SmarterJmolAdapter.PATH_SEPARATOR);
   }
 
   protected void finalize() {
@@ -250,7 +251,7 @@ class AtomSetCollection {
    * @param value The property value.
    */
   void setAtomSetCollectionProperty(String key, String value) {
-    atomSetCollectionProperties.setProperty(key,value);
+    atomSetCollectionProperties.put(key, value);
   }
   
   ////////////////////////////////////////////////////////////////
@@ -320,7 +321,7 @@ class AtomSetCollection {
     // lazy instantiation of the Properties object
     if (atomSetProperties[atomSetIndex] == null)
       atomSetProperties[atomSetIndex] = new Properties();
-    atomSetProperties[atomSetIndex].setProperty(key,value);
+    atomSetProperties[atomSetIndex].put(key, value);
   }
 
 /*

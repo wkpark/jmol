@@ -214,6 +214,7 @@
       <srcfiles dir="${lib.dir}" includes="JSX1.0.6.0.jar"/>
     </uptodate>
   </target>
+  
   <target name="appjars" depends="check.appjars" unless="appjars.uptodate">
     <delete dir="${appjars.dir}"/>
     <mkdir dir="${appjars.dir}"/>
@@ -224,7 +225,6 @@
     <unjar dest="${appjars.dir}" src="${lib.dir}/multi.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/jas.jar"/>
     <unjar dest="${appjars.dir}" src="${lib.dir}/itext-0.94.jar"/>
-    <unjar dest="${appjars.dir}" src="${lib.dir}/JSX1.0.6.0.jar"/>
   </target>
 
   <target name="jar" depends="init,classes,appjars">

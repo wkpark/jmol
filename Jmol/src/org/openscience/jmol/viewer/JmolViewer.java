@@ -1198,27 +1198,26 @@ final public class JmolViewer {
     distributionManager.setMarAtom(mar, atomIteratorSelected());
   }
 
-  public void setStyleMarBondScript(byte style, short mar) {
+  public void setMarBond(short mar, byte bondTypeMask) {
     distributionManager
-      .setStyleMarBond(style, mar,
-                       bondIteratorSelected(JmolConstants.BOND_COVALENT));
+      .setMarBond(mar, bondIteratorSelected(bondTypeMask));
   }
 
-  public void setStyleMarSsBondScript(byte style, short mar) {
-    distributionManager
-      .setStyleMarBond(style, mar,
-                       bondIteratorSelected(JmolConstants.BOND_SULFUR_MASK));
+  public void setMarBondAll(short mar) {
+    setMarBond(mar, JmolConstants.BOND_ALL_MASK);
   }
 
-  public void setStyleMarHBondScript(byte style, short mar) {
+  public void setMarBond(short mar) {
+    setMarBond(mar, JmolConstants.BOND_COVALENT);
+  }
+  
+  public void setMarSsBond(short mar) {
+    setMarBond(mar, JmolConstants.BOND_SULFUR_MASK);
+  }
+
+  public void setMarHBond(short mar) {
     getFrame().calcHbonds();
-    distributionManager
-      .setStyleMarBond(style, mar,
-                       bondIteratorSelected(JmolConstants.BOND_HYDROGEN));
-  }
-
-  public void setStyleBondScript(byte style, byte bondType) {
-    distributionManager.setStyleBond(style, bondIteratorSelected(bondType));
+    setMarBond(mar, JmolConstants.BOND_HYDROGEN);
   }
 
   public void setColorAtomScript(byte palette, Color color) {
@@ -1556,26 +1555,14 @@ final public class JmolViewer {
     return styleManager.percentVdwAtom;
   }
 
+  public void setMarBondPreferences(short milliAngstromsRadius) {
+    styleManager.setMarBond(milliAngstromsRadius);
+    setMarBond(milliAngstromsRadius);
+    refresh();
+  }
+
   public short getMarAtom() {
     return (short)-styleManager.percentVdwAtom;
-  }
-
-  public void setStyleBond(byte style) {
-    styleManager.setStyleBond(style);
-    distributionManager
-      .setStyleBond(style, bondIteratorSelected(JmolConstants.BOND_COVALENT));
-    refresh();
-  }
-
-  public byte getStyleBond() {
-    return styleManager.styleBond;
-  }
-
-  public void setMarBond(short marBond) {
-    styleManager.setMarBond(marBond);
-    distributionManager
-      .setMarBond(marBond, bondIteratorSelected(JmolConstants.BOND_COVALENT));
-    refresh();
   }
 
   public short getMarBond() {

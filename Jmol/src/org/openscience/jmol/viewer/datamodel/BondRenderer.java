@@ -56,7 +56,6 @@ class BondRenderer extends Renderer {
   short colixA, colixB;
   int width;
   int bondOrder;
-  byte styleBond;
   short marBond;
   
   private void renderHalo() {
@@ -89,15 +88,15 @@ class BondRenderer extends Renderer {
   }
 
   void render(Bond bond) {
-    this.styleBond = bond.style;
-    if (styleBond == JmolConstants.STYLE_NONE)
+    if ((marBond = bond.mar) == 0)
       return;
     int order = bond.order;
     Atom atomA = bond.atom1;
     Atom atomB = bond.atom2;
     if (bondsBackbone) {
       if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
-        // for ssbonds, always render the sidechain, then render the backbone version
+        // for ssbonds, always render the sidechain,
+        // then render the backbone version
         render(bond, atomA, atomB);
         atomA = getBackboneAtom(atomA);
         atomB = getBackboneAtom(atomB);
@@ -120,7 +119,6 @@ class BondRenderer extends Renderer {
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB)/2, bond.mar * 2);
-    marBond = bond.mar;
     colixA = colixB = bond.colix;
     if (colixA == 0) {
       colixA = atomA.colixAtom;
@@ -172,9 +170,7 @@ class BondRenderer extends Renderer {
   }
 
   private void renderCylinder(int dottedMask) {
-    boolean lineBond = (styleBond == JmolConstants.STYLE_WIREFRAME ||
-                        wireframeRotating ||
-                        width <= 1);
+    boolean lineBond = (wireframeRotating || width <= 1);
     if (dx == 0 && dy == 0) {
       // end-on view
       if (! lineBond) {
@@ -231,7 +227,7 @@ class BondRenderer extends Renderer {
 
   void resetAxisCoordinates(boolean lineBond) {
     cylinderNumber = 0;
-    int space = width / 8 + 3;
+    int space = mag2d >> 3;
     int step = width + space;
     dxStep = step * dy / mag2d; dyStep = step * -dx / mag2d;
 
@@ -414,9 +410,7 @@ class BondRenderer extends Renderer {
   }
 
   void renderHbondDashed() {
-    boolean lineBond = (styleBond == JmolConstants.STYLE_WIREFRAME ||
-                        wireframeRotating ||
-                        width <= 1);
+    boolean lineBond = (wireframeRotating || width <= 1);
    int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;

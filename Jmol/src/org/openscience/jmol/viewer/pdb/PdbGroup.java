@@ -42,6 +42,7 @@ public class PdbGroup {
     this.chain = chain;
     this.seqcode = seqcode;
     this.groupID = getGroupID(group3);
+    System.out.println("group3:" + group3 + " groupID=" + groupID);
   }
 
   public void setPolymer(PdbPolymer polymer) {
@@ -81,17 +82,27 @@ public class PdbGroup {
   }
 
   public boolean isGroup3Match(String strWildcard) {
-    if (strWildcard.length() != 3) {
-      System.err.println("group wildcard length != 3");
-      return false;
-    }
+    int cchWildcard = strWildcard.length();
+    int ichWildcard = 0;
     String group3 = group3Names[groupID];
     int cchGroup3 = group3.length();
-    for (int i = 0; i < 3; ++i) {
-      char charWild = strWildcard.charAt(i);
+    if (cchWildcard < cchGroup3)
+      return false;
+    while (cchWildcard > cchGroup3) {
+      // wildcard is too long
+      // so strip '?' from the beginning and the end, if possible
+      if (strWildcard.charAt(ichWildcard) == '?') {
+        ++ichWildcard;
+      } else if (strWildcard.charAt(ichWildcard + cchWildcard - 1) != '?') {
+        return false;
+      }
+      --cchWildcard;
+    }
+    for (int i = cchGroup3; --i >= 0; ) {
+      char charWild = strWildcard.charAt(ichWildcard + i);
       if (charWild == '?')
         continue;
-      if (i >= cchGroup3 || charWild != group3.charAt(i))
+      if (charWild != group3.charAt(i))
         return false;
     }
     return true;

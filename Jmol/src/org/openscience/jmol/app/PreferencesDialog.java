@@ -95,7 +95,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private Color colorMeasurement;
   private byte modeAtomColorProfile;
   private byte styleLabel;
-  private byte styleBond;
   private float minBondDistance;
   private float bondTolerance;
   private short marBond;
@@ -106,9 +105,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   private JButton bButton, pButton, tButton, eButton, vButton;
   private JButton measurementColorButton;
   private JRadioButton pYes, pNo, abYes, abNo;
-  private JComboBox aLabel, aProps, bRender, cRender;
-  private JSlider fovSlider, sfSlider;
-  private JSlider bdSlider, bwSlider, btSlider, ahSlider, arSlider, alSlider;
+  private JComboBox aLabel, aProps, cRender;
+  private JSlider vdwPercentSlider;
+  private JSlider bdSlider, bwSlider, btSlider;
   private JSlider vasSlider;
   private JSlider vvsSlider;
   private JSlider vfSlider;
@@ -135,7 +134,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     "showAxes",                       "false",
     "showBoundingBox",                "false",
     "orientationRasMolChime",         "true",
-    "styleBond",                      "2",
     "styleLabel",                     "0",
     "percentVdwAtom",                 "20",
     "autoBond",                       "true",
@@ -158,10 +156,10 @@ public class PreferencesDialog extends JDialog implements ActionListener {
   final static String[] rasmolOverrides = {
     "colorBackground",                "0",
     "isLabelAtomColor",               "true",
-    "styleBond",                      "1",
     "colorVector",                    "16777215",
     "colorMeasurement",               "16777215",
     "percentVdwAtom",                 "0",
+    "marBond",                        "1",
   };
 
   private JmolViewer viewer;
@@ -340,14 +338,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     JLabel sfLabel = new JLabel(JmolResourceHandler.getInstance()
         .getString("Prefs.atomSizeExpl"), JLabel.CENTER);
     sfPanel.add(sfLabel, BorderLayout.NORTH);
-    sfSlider =
+    vdwPercentSlider =
       new JSlider(JSlider.HORIZONTAL, 0, 100, viewer.getPercentVdwAtom());
-    sfSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
-    sfSlider.setPaintTicks(true);
-    sfSlider.setMajorTickSpacing(20);
-    sfSlider.setMinorTickSpacing(10);
-    sfSlider.setPaintLabels(true);
-    sfSlider.addChangeListener(new ChangeListener() {
+    vdwPercentSlider.putClientProperty("JSlider.isFilled", Boolean.TRUE);
+    vdwPercentSlider.setPaintTicks(true);
+    vdwPercentSlider.setMajorTickSpacing(20);
+    vdwPercentSlider.setMinorTickSpacing(10);
+    vdwPercentSlider.setPaintLabels(true);
+    vdwPercentSlider.addChangeListener(new ChangeListener() {
 
       public void stateChanged(ChangeEvent e) {
 
@@ -357,7 +355,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
         currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
       }
     });
-    sfPanel.add(sfSlider, BorderLayout.CENTER);
+    sfPanel.add(vdwPercentSlider, BorderLayout.CENTER);
     constraints = new GridBagConstraints();
     constraints.gridwidth = GridBagConstraints.REMAINDER;
     constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -441,33 +439,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     c.weightx = 1.0;
     c.weighty = 1.0;
 
-    JPanel renderPanel = new JPanel();
-    renderPanel.setLayout(new BoxLayout(renderPanel, BoxLayout.Y_AXIS));
-    renderPanel
-        .setBorder(new TitledBorder(JmolResourceHandler.getInstance()
-          .getString("Prefs.bRenderStyleLabel")));
-    bRender = new JComboBox();
-    bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bNoneChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bWFChoice"));
-    bRender.addItem(JmolResourceHandler.getInstance()
-        .getString("Prefs.bSChoice"));
-    bRender.setSelectedIndex(viewer.getStyleBond());
-    bRender.addItemListener(new ItemListener() {
-
-      public void itemStateChanged(ItemEvent e) {
-
-        JComboBox source = (JComboBox) e.getSource();
-        styleBond = (byte)source.getSelectedIndex();
-        viewer.setStyleBond(styleBond);
-        currentProperties.put("styleBond", "" + styleBond);
-      }
-    });
-    renderPanel.add(bRender);
-    gridbag.setConstraints(renderPanel, c);
-    bondPanel.add(renderPanel);
-
     JPanel autobondPanel = new JPanel();
     autobondPanel.setLayout(new BoxLayout(autobondPanel, BoxLayout.Y_AXIS));
     autobondPanel
@@ -531,7 +502,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         marBond = (short)source.getValue();
-        viewer.setMarBond(marBond);
+        viewer.setMarBondPreferences(marBond);
         currentProperties.put("marBond", "" + marBond);
       }
     });
@@ -1015,10 +986,9 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
     // Atom panel controls: 
     aLabel.setSelectedIndex(viewer.getStyleLabel());
-    sfSlider.setValue(viewer.getPercentVdwAtom());
+    vdwPercentSlider.setValue(viewer.getPercentVdwAtom());
 
     // Bond panel controls:
-    bRender.setSelectedIndex(viewer.getStyleBond());
     abYes.setSelected(viewer.getAutoBond());
     bwSlider.setValue(viewer.getMarBond());
     bdSlider.setValue((int) (100 * viewer.getMinBondDistance()));
@@ -1102,7 +1072,6 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     colorVector = Color.getColor("colorVector");
     colorMeasurement = Color.getColor("colorMeasurement");
     styleLabel = (byte)Integer.getInteger("styleLabel").intValue();
-    styleBond = (byte)Integer.getInteger("styleBond").intValue();
     VibrationFrames = Integer.getInteger("VibrationFrames").intValue();
 
     minBondDistance =
@@ -1124,8 +1093,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     viewer.setPercentVdwAtom(percentVdwAtom);
     viewer.setStyleLabel(styleLabel);
     //viewer.setPropertyStyleString(AtomPropsMode);
-    viewer.setStyleBond(styleBond);
-    viewer.setMarBond(marBond);
+    viewer.setMarBondPreferences(marBond);
     viewer.setColorVector(colorVector);
     viewer.setColorMeasurement(colorMeasurement);
     viewer.setColorBackground(colorBackground);

@@ -89,7 +89,7 @@ public class PovraySaver {
     out("#declare minScreenDimension = " + minScreenDimension + ";\n");
     out("#declare Ratio = Width / Height;\n");
     out("#declare zoom = " + zoom + ";\n");
-    out("#declare wireRadius = 1 / minScreenDimension * zoom;\n");
+    //    out("#declare wireRadius = 1 / minScreenDimension * zoom;\n");
     out("camera{\n");
     out("  location < 0, 0, zoom>\n" + "\n");
     out("  // Ratio is negative to switch povray to\n");
@@ -167,10 +167,12 @@ public class PovraySaver {
         " sphere{<X,Y,Z>,RADIUS\n" +
         "  pigment{rgb<R,G,B>}}\n" + 
         "#end\n\n");
+    /*
     out("#macro ring(X,Y,Z,RADIUS,R,G,B)\n" +
         " torus{RADIUS,wireRadius pigment{rgb<R,G,B>}" +
         " translate<X,Z,-Y> rotate<90,0,0>}\n" +
         "#end\n\n");
+    */
     out("#macro bond1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
         " cylinder{<X1,Y1,Z1>,<X2,Y2,Z2>,RADIUS\n" +
         "  pigment{rgb<R,G,B>}}\n" +
@@ -189,6 +191,7 @@ public class PovraySaver {
         "  sphere{<X2,Y2,Z2>,RADIUS\n" +
         "   pigment{rgb<R2,G2,B2>}}\n" +
         "#end\n\n");
+    /*
     out("#macro wire1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
         " cylinder{<X1,Y1,Z1>,<X2,Y2,Z2>,wireRadius\n" +
         "  pigment{rgb<R,G,B>}}\n" +
@@ -199,6 +202,7 @@ public class PovraySaver {
         " cylinder{<XC, YC, ZC>, <X2, Y2, Z2>, wireRadius\n" +
         "  pigment{rgb<R2,G2,B2>}}\n" +
         "#end\n\n");
+    */
     out("#macro dblbond1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
         "#local dx = X2 - X1;\n" +
         "#local dy = Y2 - Y1;\n" +
@@ -268,6 +272,7 @@ public class PovraySaver {
         "bond2(X1-offX,Y1-offY,Z1,XC-offX,YC-offY,ZC,X2-offX,Y2-offY,Z2,\n"+
         "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
         "#end\n\n");
+    /*
     out("#macro dblwire1(X1,Y1,Z1,X2,Y2,Z2,RADIUS,R,G,B)\n" +
         "#local dx = X2 - X1;\n" +
         "#local dy = Y2 - Y1;\n" +
@@ -337,6 +342,7 @@ public class PovraySaver {
         "wire2(X1-offX,Y1-offY,Z1,XC-offX,YC-offY,ZC,X2-offX,Y2-offY,Z2,\n"+
         "      RADIUS,R1,G1,B1,R2,G2,B2)\n" +
         "#end\n\n");
+    */
   }
 
   Point3f point1 = new Point3f();
@@ -382,12 +388,7 @@ public class PovraySaver {
     else if (order == 3)
       out("trp");
 
-    if (radius > 0) {
-      out("bond");
-    } else {
-      out("wire");
-      radius = -radius;
-    }
+    out("bond");
 
     if (color1.equals(color2)) {
       out("1("+x1+","+y1+","+z1+","+x2+","+y2+","+z2+",\n" +

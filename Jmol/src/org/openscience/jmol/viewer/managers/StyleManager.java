@@ -37,19 +37,9 @@ public class StyleManager {
     this.viewer = viewer;
   }
 
-  public byte styleAtom = JmolConstants.STYLE_SHADED;
-  public void setStyleAtom(byte styleAtom) {
-    this.styleAtom = styleAtom;
-  }
-
   public int percentVdwAtom = 20;
   public void setPercentVdwAtom(int percentVdwAtom) {
     this.percentVdwAtom = percentVdwAtom;
-  }
-
-  public byte styleBond = JmolConstants.STYLE_SHADED;
-  public void setStyleBond(byte styleBond) {
-    this.styleBond = styleBond;
   }
 
   public short marBond = 100;
@@ -123,7 +113,6 @@ public class StyleManager {
 
   public void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setStyleBond(JmolConstants.STYLE_SHADED);
     viewer.setColorBackground(Color.white);
     viewer.setColorMeasurement(Color.black);
     viewer.setColorLabel(Color.black);
@@ -131,7 +120,6 @@ public class StyleManager {
 
   public void setRasmolDefaults() {
     setCommonDefaults();
-    viewer.setStyleBond(JmolConstants.STYLE_WIREFRAME);
     viewer.setColorBackground(Color.black);
     viewer.setColorMeasurement(Color.white);
     viewer.setColorLabel(null);

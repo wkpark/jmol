@@ -747,10 +747,7 @@ public class Eval implements Runnable {
 
   BitSet getSpecName(String resNameSpec) {
     BitSet bsRes = new BitSet();
-    if (resNameSpec.length() != 3) {
-      viewer.scriptStatus("residue name spec != 3 :" + resNameSpec);
-      return bsRes;
-    }
+    System.out.println("getSpecName:" + resNameSpec);
     Frame frame = viewer.getFrame();
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
@@ -833,6 +830,7 @@ public class Eval implements Runnable {
   BitSet getResidueWildcard(String strWildcard) {
     Frame frame = viewer.getFrame();
     BitSet bsResidue = new BitSet();
+    System.out.println("getResidueWildcard:" + strWildcard);
     for (int i = viewer.getAtomCount(); --i >= 0; ) {
       PdbAtom pdbatom = frame.getAtomAt(i).getPdbAtom();
       if (pdbatom == null)
@@ -1250,8 +1248,7 @@ public class Eval implements Runnable {
     viewer.invertSelection();
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
-    viewer.setStyleBondScript(JmolConstants.STYLE_NONE,
-                              JmolConstants.BOND_ALL_MASK);
+    viewer.setMarBondAll((short)0);
     viewer.setBondSelectionModeOr(bondmode);
     viewer.setMarAtom((short)0);
     viewer.setLabelScript(null);
@@ -1620,10 +1617,6 @@ public class Eval implements Runnable {
     case Token.temperature:
       mar = -1000;
       break;
-    case Token.identifier:
-      String id = (String)statement[1].value;
-      if (id.equalsIgnoreCase("shaded"))
-        break;
     default:
       booleanOrNumberExpected();
     }
@@ -1632,98 +1625,83 @@ public class Eval implements Runnable {
 
   void wireframe() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolConstants.STYLE_WIREFRAME;
-    short mar = 100;
+    short mar = 1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      style = JmolConstants.STYLE_NONE;
+      mar = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = JmolConstants.STYLE_SHADED;
       break;
-    case Token.identifier:
-      String id = (String)statement[1].value;
-      if (id.equalsIgnoreCase("shaded")) {
-        viewer.setStyleBond(JmolConstants.STYLE_SHADED);
-        return;
-      }
     default:
       booleanOrNumberExpected();
     }
-    viewer.setStyleMarBondScript(style, mar);
+    viewer.setMarBond(mar);
   }
 
   void ssbonds() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolConstants.STYLE_WIREFRAME;
-    short mar = 100;
+    short mar = 1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      style = JmolConstants.STYLE_NONE;
+      mar = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = JmolConstants.STYLE_SHADED;
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setStyleMarSsBondScript(style, mar);
+    viewer.setMarSsBond(mar);
   }
 
   void hbonds() throws ScriptException {
     int tok = statement[1].tok;
-    byte style = JmolConstants.STYLE_WIREFRAME;
-    short mar = 100;
+    short mar = 1;
     switch (tok) {
     case Token.on:
       break;
     case Token.off:
-      style = JmolConstants.STYLE_NONE;
+      mar = 0;
       break;
     case Token.integer:
       int radiusRasMol = statement[1].intValue;
       if (radiusRasMol >= 500)
         numberOutOfRange();
       mar = (short)(radiusRasMol * 4);
-      style = JmolConstants.STYLE_SHADED;
       break;
     case Token.decimal:
       float angstroms = ((Float)statement[1].value).floatValue();
       if (angstroms >= 2)
         numberOutOfRange();
       mar = (short)(angstroms * 1000);
-      style = JmolConstants.STYLE_SHADED;
       break;
     default:
       booleanOrNumberExpected();
     }
-    viewer.setStyleMarHBondScript(style, mar);
+    viewer.setMarHBond(mar);
   }
 
   void animate() throws ScriptException {

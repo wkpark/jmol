@@ -48,12 +48,11 @@ public class Bond {
   public Atom atom1;
   public Atom atom2;
   byte order;
-  byte style;
   short mar;
   short colix;
 
-  public Bond(Atom atom1, Atom atom2,
-              int order, byte style, short mar, short colix) {
+  public Bond(Atom atom1, Atom atom2, int order,
+              short mar, short colix) {
     if (atom1 == null)
       throw new NullPointerException();
     if (atom2 == null)
@@ -63,13 +62,12 @@ public class Bond {
     if (atom1.atomicNumber == 16 && atom2.atomicNumber == 16)
       order |= JmolConstants.BOND_SULFUR_MASK;
     this.order = (byte)order;
-    this.style = style;
     this.mar = mar;
     this.colix = colix;
   }
 
   public Bond(Atom atom1, Atom atom2, int order, JmolViewer viewer) {
-    this(atom1, atom2, order, viewer.getStyleBond(),
+    this(atom1, atom2, order, 
          viewer.getMarBond(), viewer.getColixBond(order));
   }
 
@@ -93,16 +91,7 @@ public class Bond {
     atom1 = atom2 = null;
   }
 
-  public void setStyle(byte style) {
-    this.style = style;
-  }
-
   public void setMar(short mar) {
-    this.mar = mar;
-  }
-
-  public void setStyleMar(byte style, short mar) {
-    this.style = style;
     this.mar = mar;
   }
 
@@ -111,11 +100,7 @@ public class Bond {
   }
 
   public float getRadius() {
-    if (style == JmolConstants.STYLE_NONE) return 0;
-    float radius = mar/1000f;
-    if (style == JmolConstants.STYLE_WIREFRAME)
-      return -radius;
-    return radius;
+    return mar / 1000f;
   }
 
   public byte getOrder() {

@@ -898,9 +898,6 @@ class Compiler {
         return residueSpecificationExpected();
       String ident = (String)tokenIdent.value;
       strSpec = (strSpec == null) ? ident : strSpec + ident;
-      // to deal with nucleotide groups, left-space-pad to 3 characters
-      if (strSpec.length() < 3)
-        strSpec = "   ".substring(0, 3 - strSpec.length()) + strSpec;
       strSpec = strSpec.toUpperCase();
       int groupID = PdbGroup.lookupGroupID(strSpec);
       if (groupID != -1)

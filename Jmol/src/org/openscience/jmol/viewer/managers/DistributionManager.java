@@ -47,19 +47,9 @@ public class DistributionManager {
       iter.next().setMarAtom(marAtom);
   }
 
-  public void setStyleBond(byte styleBond, BondIterator iter) {
-    while (iter.hasNext())
-      iter.next().setStyle(styleBond);
-  }
-
   public void setMarBond(short marBond, BondIterator iter) {
     while (iter.hasNext())
       iter.next().setMar(marBond);
-  }
-
-  public void setStyleMarBond(byte style, short mar, BondIterator iter) {
-    while (iter.hasNext())
-      iter.next().setStyleMar(style, mar);
   }
 
   public void setColix(short colixBond, BondIterator iter) {

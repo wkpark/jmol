@@ -205,8 +205,6 @@ public class JmolApplet extends Applet implements JmolStatusListener {
       } else {
         viewer.setJmolDefaults();
         viewer.setPercentVdwAtom(getValue("vdwPercent", 20));
-        setStyle(getValue("style", "shaded"));
-        setLabelStyle(getValue("label", "none"));
         viewer.setColorBackground(getValue("bgcolor", "white"));
         viewer.setWireframeRotation(getBooleanValue("wireframeRotation",
                                                     false));
@@ -441,6 +439,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
    * these routines are all DEPRECATED
    ****************************************************************/
 
+  /*
   private final String[] styleStrings = {"SHADED", "WIREFRAME"};
   private final byte[] styles = {JmolConstants.STYLE_SHADED,
                                  JmolConstants.STYLE_WIREFRAME};
@@ -476,6 +475,7 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void setWireframeRotation(boolean wireframeRotation) {
     viewer.setWireframeRotation(wireframeRotation);
   }
+  */
 
   private final Object[] buttonCallbackBefore = { null, new Boolean(false)};
   private final Object[] buttonCallbackAfter = { null, new Boolean(true)};

@@ -301,7 +301,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleBond(JmolConstants.STYLE_NONE);
+      viewer.setMarBond((short)0);
+      viewer.refresh();
     }
   }
 
@@ -313,7 +314,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleBond(JmolConstants.STYLE_SHADED);
+      viewer.setMarBond(viewer.getMarBond());
+      viewer.refresh();
     }
   }
 
@@ -325,7 +327,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setStyleBond(JmolConstants.STYLE_WIREFRAME);
+      viewer.setMarBond((short)1);
+      viewer.refresh();
     }
   }
 

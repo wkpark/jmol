@@ -66,7 +66,6 @@ final public class Graphics3D {
   short[] zbuf4;
 
   final static int zBackground = 32767;
-  final static boolean forceAWT = false;
 
   int argbCurrent;
   Font fontCurrent;
@@ -75,11 +74,6 @@ final public class Graphics3D {
   public Graphics3D(JmolViewer viewer) {
     this.viewer = viewer;
     this.g = g;
-    if (viewer.jvm12orGreater && ! forceAWT ) {
-      platform = new Swing3D();
-    } else {
-      platform = new Awt3D(viewer.getAwtComponent());
-    }
     platform = new Awt3D(viewer.getAwtComponent());
     this.line3d = new Line3D(viewer, this);
     this.circle3d = new Circle3D(viewer, this);

@@ -30,8 +30,17 @@ import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import java.text.NumberFormat;
 
 class UccageRenderer extends ShapeRenderer {
+
+  NumberFormat nf;
+  byte fid;
+
+  void initRenderer() {
+    nf = NumberFormat.getInstance();
+    fid = Graphics3D.getFontFid("Monospaced", 12);
+  }
 
   void render() {
     Uccage uccage = (Uccage)shape;
@@ -59,11 +68,15 @@ class UccageRenderer extends ShapeRenderer {
     }
     */
 
-    g3d.drawString("a=" + uccage.a, colix, 5, 15, 0);
-    g3d.drawString("b=" + uccage.b, colix, 5, 30, 0);
-    g3d.drawString("c=" + uccage.c, colix, 5, 45, 0);
-    g3d.drawString("alpha=" + uccage.alpha, colix, 5, 60, 0);
-    g3d.drawString("beta =" + uccage.beta,  colix, 5, 75, 0);
-    g3d.drawString("gamma=" + uccage.gamma, colix, 5, 90, 0);
+    g3d.setFont(fid);
+    nf.setMaximumFractionDigits(3);
+    nf.setMinimumFractionDigits(3);
+    g3d.drawString("a=" + nf.format(uccage.a) + "\u00C5", colix, 5, 15, 0);
+    g3d.drawString("b=" + nf.format(uccage.b) + "\u00C5", colix, 5, 30, 0);
+    g3d.drawString("c=" + nf.format(uccage.c) + "\u00C5", colix, 5, 45, 0);
+    nf.setMaximumFractionDigits(1);
+    g3d.drawString("\u03B1=" + nf.format(uccage.alpha) + "\u00B0", colix, 5, 60, 0);
+    g3d.drawString("\u03B2=" + nf.format(uccage.beta)  + "\u00B0", colix, 5, 75, 0);
+    g3d.drawString("\u03B3=" + nf.format(uccage.gamma) + "\u00B0", colix, 5, 90, 0);
   }
 }

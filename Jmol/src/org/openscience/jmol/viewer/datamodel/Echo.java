@@ -191,7 +191,7 @@ public class Echo extends Shape {
       else
         y = g3d.height - descent - 1;
 
-      g3d.setFont3D(font3d);
+      g3d.setFont(font3d);
       g3d.drawString(text, colix, x, y, 0);
     }
   }

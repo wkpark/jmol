@@ -31,16 +31,16 @@ import org.jmol.g3d.*;
 class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
-  byte fontBidPrevious;
+  byte fidPrevious;
   Font3D font3d;
 
   void render() {
-    fontBidPrevious = 0;
+    fidPrevious = 0;
 
     Labels labels = (Labels)shape;
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
-    byte[] fontBids = labels.fontBids;
+    byte[] fids = labels.fids;
     short[] offsets = labels.offsets;
     if (labelStrings == null)
       return;
@@ -54,14 +54,14 @@ class LabelsRenderer extends ShapeRenderer {
       if (displayModel != 0 && atom.modelNumber != displayModel)
         continue;
       short colix = colixes == null || i >= colixes.length ? 0 : colixes[i];
-      byte fontBid =
-        ((fontBids == null || i >= fontBids.length || fontBids[i] == 0)
-         ? labels.defaultFont3D.bid
-         : fontBids[i]);
-      if (fontBid != fontBidPrevious) {
-        g3d.setFont3D(fontBid);
-        font3d = g3d.getFont3D();
-        fontBidPrevious = fontBid;
+      byte fid =
+        ((fids == null || i >= fids.length || fids[i] == 0)
+         ? labels.defaultFont3D.fid
+         : fids[i]);
+      if (fid != fidPrevious) {
+        g3d.setFont(fid);
+        font3d = g3d.getFont3DCurrent();
+        fidPrevious = fid;
       }
       short offset = offsets == null || i >= offsets.length ? 0 : offsets[i];
       int xOffset, yOffset;

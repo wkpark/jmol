@@ -29,17 +29,17 @@ import java.awt.FontMetrics;
 
 final public class Font3D {
 
-  public final byte bid;
+  public final byte fid;
   public final String fontFace;
   public final String fontStyle;
   public final short fontSize;
   public final Font font;
   public final FontMetrics fontMetrics;
 
-  private Font3D(byte bid,
+  private Font3D(byte fid,
                  int idFontFace, int idFontStyle, int fontSize,
                  Font font, FontMetrics fontMetrics) {
-    this.bid = bid;
+    this.fid = fid;
     this.fontFace = fontFaces[idFontFace];
     this.fontStyle = fontStyles[idFontStyle];
     this.fontSize = (short)fontSize;

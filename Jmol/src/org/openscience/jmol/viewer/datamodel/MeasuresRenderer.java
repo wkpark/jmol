@@ -204,7 +204,7 @@ class MeasuresRenderer extends ShapeRenderer {
     String strMeasurement = measurement.strMeasurement;
     if (strMeasurement == null)
       return;
-    g3d.setFont3D(font3d);
+    g3d.setFont(font3d);
     FontMetrics fontMetrics = font3d.fontMetrics;
     int j = fontMetrics.stringWidth(strMeasurement);
     g3d.drawString(strMeasurement, colix,

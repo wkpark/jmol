@@ -35,7 +35,7 @@ public class Labels extends Shape {
 
   String[] strings;
   short[] colixes;
-  byte[] fontBids;
+  byte[] fids;
   short[] offsets;
 
   Font3D defaultFont3D;
@@ -82,26 +82,26 @@ public class Labels extends Shape {
     if ("fontsize" == propertyName) {
       int fontsize = ((Integer)value).intValue();
       if (fontsize == JmolConstants.LABEL_DEFAULT_FONTSIZE) {
-        fontBids = null;
+        fids = null;
         return;
       }
-      byte bid = g3d.getFont3D(fontsize).bid;
-      fontBids = Util.ensureLength(fontBids, frame.atomCount);
+      byte fid = g3d.getFontFid(fontsize);
+      fids = Util.ensureLength(fids, frame.atomCount);
       for (int i = frame.atomCount; --i >= 0; )
-        fontBids[i] = bid;
+        fids[i] = fid;
       return;
     }
     
     if ("font" == propertyName) {
-      byte bid = ((Font3D)value).bid;
+      byte fid = ((Font3D)value).fid;
       for (int i = frame.atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          if (fontBids == null || i >= fontBids.length) {
-            if (bid == defaultFont3D.bid)
+          if (fids == null || i >= fids.length) {
+            if (fid == defaultFont3D.fid)
               continue;
-            fontBids = Util.ensureLength(fontBids, i + 1);
+            fids = Util.ensureLength(fids, i + 1);
           }
-          fontBids[i] = bid;
+          fids[i] = fid;
         }
       return;
     }

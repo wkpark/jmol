@@ -168,7 +168,7 @@ public class Eval implements Runnable {
     return str;
   }
 
-  private void clearDefinitionsAndLoadPredefined() {
+  public void clearDefinitionsAndLoadPredefined() {
     // FIXME mth -- need to call this when a new file is loaded!
     variables.clear();
 
@@ -500,8 +500,18 @@ public class Eval implements Runnable {
       case Token.hetero:
         stack[sp++] = getHeteroSet();
         break;
-      case Token.residue_wildcard:
-        stack[sp++] = getResidueWildcard((String)instruction.value);
+      case Token.spec_name:
+        stack[sp++] = getSpecName((String)instruction.value);
+        break;
+      case Token.spec_number:
+        stack[sp++] = getSpecNumber(instruction.intValue);
+        break;
+      case Token.spec_chain:
+        stack[sp++] = getSpecChain((char)instruction.intValue);
+        break;
+      case Token.spec_atom:
+        stack[sp++] = getSpecAtom((String)instruction.value);
+        break;
       case Token.y:
       case Token.identifier:
         String variable = (String)instruction.value;
@@ -622,6 +632,26 @@ public class Eval implements Runnable {
         bsResidue.set(i);
     }
     return bsResidue;
+  }
+
+  BitSet getSpecName(String nameSpec) {
+    System.out.println("not implemented getSpecName:" + nameSpec);
+    return new BitSet();
+  }
+
+  BitSet getSpecNumber(int number) {
+    System.out.println("not implemented getSpecNumber:" + number);
+    return new BitSet();
+  }
+
+  BitSet getSpecChain(char chain) {
+    System.out.println("not implemented getSpecChain:" + chain);
+    return new BitSet();
+  }
+
+  BitSet getSpecAtom(String atomSpec) {
+    System.out.println("not implemented getSpecAtom:" + atomSpec);
+    return new BitSet();
   }
 
   BitSet getResidueWildcard(String strWildcard) {

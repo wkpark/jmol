@@ -50,7 +50,7 @@ public class ScriptWindow extends JDialog
 
     super(frame, "Rasmol Scripts", false);
     this.control = control;
-    this.eval = new Eval(control);
+    this.eval = control.getEval();
     getContentPane().setLayout(new BorderLayout());
     output = new JTextArea(20, 30);
     output.setEditable(false);

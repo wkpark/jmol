@@ -224,7 +224,6 @@ class Token {
   final static int plus         = expression |  7;
   final static int pick         = expression |  8;
   final static int asterisk     = expression |  9;
-  final static int questionmark = expression | 10;
   final static int dot          = expression | 11;
   final static int leftsquare   = expression | 12;
   final static int rightsquare  = expression | 13;
@@ -267,9 +266,10 @@ class Token {
   final static int shapely      = misc | 18;
   final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
-  final static int residue_wildcard = misc | 21;
-  final static int residue_number   = misc | 22;
-  final static int residue_chain    = misc | 23;
+  final static int spec_name     = misc | 21;
+  final static int spec_number   = misc | 22;
+  final static int spec_chain    = misc | 23;
+  final static int spec_atom     = misc | 24;
 
   final static int alpha       = predefinedset |  0;
   final static int amino       = predefinedset |  1;
@@ -288,6 +288,7 @@ class Token {
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
+  final static Token tokenAnd = new Token(opAnd, "and");
 
   final static Object[] arrayPairs  = {
     // commands
@@ -408,7 +409,7 @@ class Token {
     "(",            new Token(leftparen, "("),
     ")",            new Token(rightparen, ")"),
     "-",            new Token(hyphen, "-"),
-    "and",          new Token(opAnd, "and"),
+    "and",          tokenAnd,
     "&",            null,
     "or",           new Token(opOr, "or"),
     ",",            null,
@@ -427,7 +428,6 @@ class Token {
     "within",       new Token(within, "within"),
     "+",            new Token(plus, "+"),
     "pick",         new Token(pick, "pick"),
-    "?",            new Token(questionmark, "?"),
     ".",            new Token(dot, "."),
     "[",            new Token(leftsquare,  "["),
     "]",            new Token(rightsquare, "]"),

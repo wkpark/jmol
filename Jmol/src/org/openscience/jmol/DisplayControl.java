@@ -29,6 +29,7 @@ import org.openscience.jmol.render.BondRenderer;
 import org.openscience.jmol.render.LabelRenderer;
 import org.openscience.jmol.render.Axes;
 import org.openscience.jmol.render.BoundingBox;
+import org.openscience.jmol.script.Eval;
 
 import java.awt.Image;
 import java.awt.Color;
@@ -66,6 +67,7 @@ final public class DisplayControl {
   public BondRenderer bondRenderer;
   public LabelRenderer labelRenderer;
   public Distributor distributor;
+  public Eval eval;
 
   public String strJvmVersion;
   public boolean jvm12orGreater = false;
@@ -94,6 +96,8 @@ final public class DisplayControl {
     atomRenderer = new AtomRenderer(this);
     bondRenderer = new BondRenderer(this);
     labelRenderer = new LabelRenderer(this);
+
+    eval = new Eval(this);
   }
 
   public Component getAwtComponent() {
@@ -712,6 +716,9 @@ final public class DisplayControl {
     distributor.initializeAtomShapes();
     homePosition();
     // don't know if I need this firm refresh here or not
+    // FIXME mth -- we need to clear definitions when we open a new file
+    // but perhaps not if we are in the midst of executing a script?
+    eval.clearDefinitionsAndLoadPredefined();
     refreshFirmly();
   }
 
@@ -934,6 +941,10 @@ final public class DisplayControl {
   /****************************************************************
    * routines for script support
    ****************************************************************/
+
+  public Eval getEval() {
+    return eval;
+  }
 
   public void scriptEcho(String str) {
     // FIXME -- if there is a script window it should go there

@@ -65,12 +65,13 @@ public abstract class ReaderFactory {
         return new CMLReader(buffer);
       }
 
-      // Abinit
-      // We test the presence of an essential keywords,
-      // for instance 'natom'.
-      buffer.mark(1024 * 1024);
-      while ((buffer.ready()) && (line != null)) {
+      // Abinit file if the essential keyword 'natom'
+      // is found in the first 100 lines.
+      buffer.mark(1 << 16);
+      int lineCount = 0;
+      while ((lineCount < 100) && (line != null)) {
         line = buffer.readLine();
+        ++lineCount;
         if (line != null && line.indexOf("natom") >= 0) {
           buffer.reset();
           return new ABINITReader(buffer);

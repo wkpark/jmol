@@ -51,23 +51,15 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
     File f = null;
     private JFileChooser myChooser;
     private JComboBox cb;
-    private JRadioButton sYes, sNo;
-    private boolean GaussianComputeShifts;
     private static boolean UseFileExtensions = true;
     private static JmolResourceHandler jrh;
     
     static {
         jrh = new JmolResourceHandler("FileTyper");
     }
-    private String[] extensions = {"",
-                                   "XYZ", 
-                                   "PDB", 
-                                   "LOG",
-                                   "CML"};
     private String[] Choices = {jrh.getString("Automatic"),
                                 jrh.getString("XYZ"), 
                                 jrh.getString("PDB"), 
-                                jrh.getString("Gaussian"),
                                 jrh.getString("CML")};
     // Default is the first one:
     private int def = 0;
@@ -114,70 +106,18 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
                 public void itemStateChanged(ItemEvent e) {
                     JComboBox source = (JComboBox)e.getSource();
                     result = (String)source.getSelectedItem();
-                    int resultNo = source.getSelectedIndex();
-                    if (resultNo > 0){
-                        //myChooser.setFileFilter(new JmolFileFilter(extensions[resultNo],
-                        //                                      result,true));
-                    }
-                    if (result.equals(jrh.getString("Gaussian"))) {
-                        sYes.setEnabled(true);
-                        sNo.setEnabled(true);
-                    } else {
-                        sYes.setEnabled(false);
-                        sNo.setEnabled(false);
-                    }
                 }
             });
         add(cbPanel,BorderLayout.CENTER); // Change to NORTH if other controls
-        
-        JPanel sPanel = new JPanel();
-        sPanel.setLayout(new BoxLayout(sPanel, BoxLayout.Y_AXIS));
-        sPanel.setBorder(new TitledBorder(jrh.getString("ShieldTitle")));
-        ButtonGroup sGroup = new ButtonGroup();
-        sYes = new JRadioButton(jrh.getString("sYesLabel"));
-        sNo = new JRadioButton(jrh.getString("sNoLabel"));
-        sYes.addItemListener(rbListener);
-        sNo.addItemListener(rbListener);
-        sGroup.add(sYes);
-        sGroup.add(sNo);
-        sPanel.add(sYes);
-        sPanel.add(sNo);
-        sNo.setSelected(true);
-        sYes.setEnabled(false);
-        sNo.setEnabled(false);
-        add(sPanel,BorderLayout.SOUTH);
-        
+                
         fc.addPropertyChangeListener(this);
     }
-    
-    ItemListener rbListener = new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                JRadioButton rb = (JRadioButton) e.getSource();
-                if(rb.getText().equals(jrh.getString("sYesLabel"))) { 
-                    GaussianComputeShifts = false;
-                } else if(rb.getText().equals(jrh.getString("sNoLabel"))) {
-                    GaussianComputeShifts = true;
-                }
-            }
-        };
     
     /**
      * returns the file type which contains the user's choice 
      */
     public String getType() {
         return result;
-    }
-    
-    /**
-     * If the selected file is a Gaussian log file, should we compute
-     * Chemical Shifts?  Or should we leave the raw shielding values?
-     */
-    public boolean computeShifts() {
-        boolean c = false;
-        if (result.equals(jrh.getString("Gaussian"))) {
-            c = GaussianComputeShifts;
-        }
-        return c;
     }
     
     public void propertyChange(PropertyChangeEvent e) {
@@ -195,12 +135,8 @@ public class FileTyper extends JPanel implements PropertyChangeListener {
                     cb.setSelectedIndex(1); 
                 } else if (fname.endsWith("pdb")) {
                     cb.setSelectedIndex(2);
-                } else if (fname.endsWith("log")) {
-                    cb.setSelectedIndex(3);
-                } else if (fname.endsWith("out")) {
-                    cb.setSelectedIndex(0);
                 } else if (fname.endsWith("cml")) {
-                    cb.setSelectedIndex(4);
+                    cb.setSelectedIndex(3);
                 } else{
                     cb.setSelectedIndex(0);
                 }

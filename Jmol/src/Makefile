@@ -54,7 +54,6 @@ SOURCES = org/openscience/jmol/Jmol.java \
 		org/openscience/jmol/Gaussian92Reader.java \
 		org/openscience/jmol/Gaussian94Reader.java \
 		org/openscience/jmol/Gaussian98Reader.java \
-		org/openscience/jmol/GaussianFile.java \
 		org/openscience/jmol/HelpDialog.java \
 		org/openscience/jmol/ImageTyper.java \
 		org/openscience/jmol/JMolCDO.java \
@@ -157,7 +156,7 @@ applet_archive: applet
 
 archive: application
 	/bin/rm -f ../jars/jmol.jar
-	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/NMRReferences org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/doc/*.html  org/openscience/jmol/Data/*.html
+	$(JAR) cvmf manifest ../jars/jmol.jar org/openscience/jmol/*.class  org/openscience/jmol/images/*.gif org/openscience/jmol/images/*.jpg org/openscience/jmol/Properties/Jmol.properties org/openscience/jmol/Data/AtomTypes org/openscience/jmol/Data/cml.dtd org/openscience/jmol/Data/doc/*.html  org/openscience/jmol/Data/*.html
 	chmod 664 ../jars/jmol.jar
 
 # suggested by Christoph Steinbeck:

@@ -264,8 +264,6 @@ class Jmol extends JPanel {
                 } else if (typeHint.equals("CML")) {
                     ChemFileReader reader = new CMLReader(new InputStreamReader(is));
                     cf = reader.read();
-                } else if(typeHint.equals("Gaussian log file")){
-                    cf = new GaussianFile(is, ft.computeShifts());
                 } else if(typeHint.equals("XYZ (xmol)")) {
                     ChemFileReader reader = new XYZReader(new InputStreamReader(is)); 
                     cf = reader.read();

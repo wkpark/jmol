@@ -28,7 +28,7 @@
   <property name="javadoc.dir" value="javadoc" />
   <property name="manifest" value="${source.dir}/manifest"/>
   <property name="manifest-applet" value="${source.dir}/manifest"/>
-  <property name="docbook-xsl" value="docbook-xsl-1.55.0" />
+  <property name="docbook-xsl" value="docbook-xsl-1.61.2" />
   <property name="docbook.dir"
             value="${user.dir}/${build.dir}/${docbook-xsl}" />
   <!-- you can set this by defining it in ~/.jmol.build.properties -->

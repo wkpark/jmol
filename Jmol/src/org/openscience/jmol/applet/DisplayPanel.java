@@ -181,13 +181,13 @@ public class DisplayPanel extends Canvas
     try {
       rotTheta = (float) FortranFormat.atof(st.nextToken());
       Matrix4d matrix = new Matrix4d();
-      matrix.rotY(Math.toRadians(rotTheta));
+      matrix.rotY(rotTheta*Math.PI/180.0);
       amat.mul(matrix, amat);
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotX(Math.toRadians(rotTheta));
+      matrix.rotX(rotTheta*Math.PI/180.0);
       amat.mul(matrix, amat);
       rotTheta = (float) FortranFormat.atof(st.nextToken());
-      matrix.rotZ(Math.toRadians(rotTheta));
+      matrix.rotZ(rotTheta*Math.PI/180.0);
       amat.mul(matrix, amat);
     } catch (NoSuchElementException E) {
     }

@@ -232,7 +232,7 @@ class JaguarReader implements ChemFileReader {
    * @param l the reader listener to remove.
    */
   public void removeReaderListener(ReaderListener l) {
-    listenerList.remove(l);
+    listenerList.removeElement(l);
   }
   
   /**

@@ -21,7 +21,6 @@ package org.openscience.jmol;
 
 import java.util.Vector;
 import java.util.Enumeration;
-import java.util.HashSet;
 
 public class ChemFile {
 
@@ -97,7 +96,7 @@ public class ChemFile {
    * Returns a list of the names of atom properties on frames in this file.
    */
   public Vector getAtomPropertyList() {
-    HashSet descriptions = new HashSet();
+    Vector descriptions = new Vector();
     Enumeration frameIter = frames.elements();
     while (frameIter.hasMoreElements()) {
       ChemFrame frame = (ChemFrame) frameIter.nextElement();
@@ -105,28 +104,32 @@ public class ChemFile {
         Enumeration properties = frame.getAtomAt(0).getProperties().elements();
         while (properties.hasMoreElements()) {
           PhysicalProperty property = (PhysicalProperty) properties.nextElement();
-          descriptions.add(property.getDescriptor());
+          if (!descriptions.contains(property.getDescriptor())) {
+            descriptions.addElement(property.getDescriptor());
+          }
         }
       }
     }
-    return new Vector(descriptions);
+    return descriptions;
   }
 
   /**
    * Returns a list of the names of frame properties in this file.
    */
   public Vector getFramePropertyList() {
-    HashSet descriptions = new HashSet();
+    Vector descriptions = new Vector();
     Enumeration frameIter = frames.elements();
     while (frameIter.hasMoreElements()) {
       ChemFrame frame = (ChemFrame) frameIter.nextElement();
       Enumeration properties = frame.getFrameProperties().elements();
       while (properties.hasMoreElements()) {
         PhysicalProperty property = (PhysicalProperty) properties.nextElement();
-        descriptions.add(property.getDescriptor());
+          if (!descriptions.contains(property.getDescriptor())) {
+            descriptions.addElement(property.getDescriptor());
+          }
       }
     }
-    return new Vector(descriptions);
+    return descriptions;
   }
 
 }

@@ -488,6 +488,7 @@ public class DisplayPanel extends JPanel
       g.setColor(fg);
 
       frameRenderer.paint(g, md, settings);
+      measureRenderer.paint(g, md, settings);
       if (rubberband) {
         g.setColor(fg);
         g.drawRect(rleft, rtop, rright - rleft, rbottom - rtop);
@@ -498,6 +499,7 @@ public class DisplayPanel extends JPanel
   }
 
   ChemFrameRenderer frameRenderer = new ChemFrameRenderer();
+  MeasureRenderer measureRenderer = new MeasureRenderer();
   
   public boolean isPainting() {
     return !painted;

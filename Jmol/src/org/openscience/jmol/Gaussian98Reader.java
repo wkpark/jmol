@@ -26,7 +26,6 @@ import java.io.BufferedReader;
 import java.io.StringReader;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import javax.swing.event.EventListenerList;
 
 /**
  * A reader for Gaussian98 output.
@@ -358,7 +357,7 @@ public class Gaussian98Reader implements ChemFileReader {
    * @param l the reader listener to remove.
    */
   public void removeReaderListener(ReaderListener l) {
-    listenerList.remove(l);
+    listenerList.removeElement(l);
   }
   
   /**

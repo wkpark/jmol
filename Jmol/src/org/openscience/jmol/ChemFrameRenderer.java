@@ -43,48 +43,25 @@ public class ChemFrameRenderer {
     }
     boolean drawHydrogen = settings.getShowHydrogens();
     frame.transform();
-
-
-    int zs[] = ZsortMap;
-    if (zs == null) {
-      ZsortMap = zs = new int[frame.getNumberOfAtoms()];
-      for (int i = frame.getNumberOfAtoms(); --i >= 0; ) {
-        zs[i] = i;
-      }
-    }
-
-    //Added by T.GREY for quick-draw on move support
-    if (!settings.getFastRendering()) {
-
-      /*
-       * I use a bubble sort since from one iteration to the next, the sort
-       * order is pretty stable, so I just use what I had last time as a
-       * "guess" of the sorted order.  With luck, this reduces O(N log N)
-       * to O(N)
-       */
-
-      for (int i = frame.getNumberOfAtoms() - 1; --i >= 0; ) {
-        boolean flipped = false;
-        for (int j = 0; j <= i; j++) {
-          int a = zs[j];
-          int b = zs[j + 1];
-          if (frame.getAtoms()[a].getScreenPosition().z > frame.getAtoms()[b].getScreenPosition().z) {
-            zs[j + 1] = a;
-            zs[j] = b;
-            flipped = true;
-          }
-        }
-        if (!flipped) {
-          break;
-        }
-      }
-    }
-    if (frame.getNumberOfAtoms() <= 0) {
-      return;
-    }
+		if (!settings.getFastRendering() || atomReferences == null) {
+			if (atomReferences == null || atomReferences.length != frame.getNumberOfAtoms()) {
+				atomReferences = new AtomReference[frame.getNumberOfAtoms()];
+				for (int i=0; i < atomReferences.length; ++i) {
+					atomReferences[i] = new AtomReference();
+				}
+			}
+			for (int i=0; i < frame.getNumberOfAtoms(); ++i) {
+				atomReferences[i].index = i;
+				atomReferences[i].z = frame.getAtoms()[i].getScreenPosition().z;
+			}
+			
+			if (frame.getNumberOfAtoms() > 1) {
+				sorter.sort(atomReferences);
+			}
+		}
 
     for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
-      int j = zs[i];
+      int j = atomReferences[i].index;
       Atom atom = frame.getAtoms()[j];
       if (drawHydrogen
             || (atom.getType().getAtomicNumber() != 1)) {
@@ -141,69 +118,6 @@ public class ChemFrameRenderer {
 
     }
 
-    if (frame.getDistanceMeasurements() != null) {
-      for (Enumeration e = frame.getDistanceMeasurements().elements(); e.hasMoreElements(); ) {
-        Distance d = (Distance) e.nextElement();
-        int[] al = d.getAtomList();
-        int l = al[0];
-        int j = al[1];
-        try {
-          d.paint(g, settings, (int) frame.getAtoms()[l].getScreenPosition().x,
-            (int) frame.getAtoms()[l].getScreenPosition().y,
-              (int) frame.getAtoms()[l].getScreenPosition().z,
-                (int) frame.getAtoms()[j].getScreenPosition().x,
-                  (int) frame.getAtoms()[j].getScreenPosition().y,
-                    (int) frame.getAtoms()[j].getScreenPosition().z);
-        } catch (Exception ex) {
-        }
-      }
-    }
-    if (frame.getAngleMeasurements() != null) {
-      for (Enumeration e = frame.getAngleMeasurements().elements(); e.hasMoreElements(); ) {
-        Angle an = (Angle) e.nextElement();
-        int[] al = an.getAtomList();
-        int l = al[0];
-        int j = al[1];
-        int k = al[2];
-        try {
-          an.paint(g, settings, (int) frame.getAtoms()[l].getScreenPosition().x,
-            (int) frame.getAtoms()[l].getScreenPosition().y,
-              (int) frame.getAtoms()[l].getScreenPosition().z,
-                (int) frame.getAtoms()[j].getScreenPosition().x,
-                  (int) frame.getAtoms()[j].getScreenPosition().y,
-                    (int) frame.getAtoms()[j].getScreenPosition().z,
-                      (int) frame.getAtoms()[k].getScreenPosition().x,
-                        (int) frame.getAtoms()[k].getScreenPosition().y,
-                          (int) frame.getAtoms()[k].getScreenPosition().z);
-        } catch (Exception ex) {
-        }
-      }
-    }
-    if (frame.getDihedralMeasurements() != null) {
-      for (Enumeration e = frame.getDihedralMeasurements().elements(); e.hasMoreElements(); ) {
-        Dihedral dh = (Dihedral) e.nextElement();
-        int[] dhl = dh.getAtomList();
-        int l = dhl[0];
-        int j = dhl[1];
-        int k = dhl[2];
-        int m = dhl[3];
-        try {
-          dh.paint(g, settings, (int) frame.getAtoms()[l].getScreenPosition().x,
-            (int) frame.getAtoms()[l].getScreenPosition().y,
-              (int) frame.getAtoms()[l].getScreenPosition().z,
-                (int) frame.getAtoms()[j].getScreenPosition().x,
-                  (int) frame.getAtoms()[j].getScreenPosition().y,
-                    (int) frame.getAtoms()[j].getScreenPosition().z,
-                      (int) frame.getAtoms()[k].getScreenPosition().x,
-                        (int) frame.getAtoms()[k].getScreenPosition().y,
-                          (int) frame.getAtoms()[k].getScreenPosition().z,
-                            (int) frame.getAtoms()[m].getScreenPosition().x,
-                              (int) frame.getAtoms()[m].getScreenPosition().y,
-                                (int) frame.getAtoms()[m].getScreenPosition().z);
-        } catch (Exception ex) {
-        }
-      }
-    }
   }
   
   /**
@@ -216,6 +130,25 @@ public class ChemFrameRenderer {
    */
   private BondRenderer bondRenderer = new BondRenderer();
   
-  private int[] ZsortMap;
+	class AtomReference {
+		int index = 0;
+		float z = 0.0f;
+	}
+
+	AtomReference[] atomReferences;
+
+	HeapSorter sorter = new HeapSorter( new HeapSorter.Comparator() {
+		public int compare(Object atom1, Object atom2) {
+			AtomReference a1 = (AtomReference) atom1;
+			AtomReference a2 = (AtomReference) atom2;
+			if (a1.z < a2.z) {
+				return -1;
+			} else if (a1.z > a2.z) {
+				return 1;
+			}
+			return 0;
+		}
+	});
+
 }
 

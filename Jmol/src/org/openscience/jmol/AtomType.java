@@ -26,12 +26,12 @@ import java.awt.image.MemoryImageSource;
 import java.awt.*;
 import java.util.Vector;
 import java.util.Hashtable;
-import javax.swing.*;
+//import javax.swing.*;
 
 public class AtomType {
 
   private BaseAtomType baseType;
-  private static JPanel jpanel;
+  private static Component jpanel;
 
   /** color is specified also at atom itself.
    *  if color == null then it uses the color of
@@ -49,7 +49,7 @@ public class AtomType {
    *
    * @param jp the JPanel
    */
-  public static void setJPanel(JPanel jp) {
+  public static void setJPanel(Component jp) {
     jpanel = jp;
   }
 

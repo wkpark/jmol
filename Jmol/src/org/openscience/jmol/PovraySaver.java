@@ -21,9 +21,9 @@ package org.openscience.jmol;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Hashtable;
 import java.util.Vector;
 import java.util.Enumeration;
-import java.util.HashMap;
 import javax.vecmath.Matrix4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
@@ -302,7 +302,7 @@ public class PovraySaver extends FileSaver {
 
       if (settings.getShowBonds()) {
 
-        HashMap bondsDrawn = new HashMap();
+        Hashtable bondsDrawn = new Hashtable();
         
         w.write("\n");
         w.write("\n");

@@ -44,8 +44,8 @@ public class ChemFrame {
      they deal with deformations or measurements that will persist
      across frames.
   */
-  private static boolean[] pickedAtoms;
-  private static int napicked;
+  private boolean[] pickedAtoms;
+  private int napicked;
 
   // This stuff can vary for each frame in the dynamics:
 
@@ -58,6 +58,9 @@ public class ChemFrame {
    * Returns whether the atom at the given index is picked.
    */
   boolean isAtomPicked(int index) {
+    if (index >= pickedAtoms.length) {
+      throw new IllegalArgumentException("isAtomPicked(): atom index to large");
+    }
     return pickedAtoms[index];
   }
   
@@ -111,7 +114,7 @@ public class ChemFrame {
    * returns the number of atoms that are currently in the "selected"
    * list for future operations
    */
-  public static int getNpicked() {
+  public int getNpicked() {
     return napicked;
   }
 
@@ -408,7 +411,7 @@ public class ChemFrame {
     Vector result = new Vector();
     for (int i = 0; i < numberAtoms; i++) {
       if (pickedAtoms[i]) {
-        result.add(new Integer(i + 1));
+        result.addElement(new Integer(i + 1));
       }
       ;
     }
@@ -471,6 +474,9 @@ public class ChemFrame {
   public void selectAtom(int x, int y) {
 
     int smallest = getNearestAtom(x, y);
+    if (smallest < 0) {
+      return;
+    }
     if (pickedAtoms[smallest]) {
       pickedAtoms[smallest] = false;
       napicked = 0;
@@ -684,14 +690,13 @@ public class ChemFrame {
 
   private void increaseArraySizes(int newArraySize) {
 
-    Atom nat[] = new Atom[newArraySize];
+    Atom[] nat = new Atom[newArraySize];
     System.arraycopy(atoms, 0, nat, 0, atoms.length);
     atoms = nat;
 
-    boolean np[] = new boolean[newArraySize];
-    System.arraycopy(pickedAtoms, 0, np, 0, pickedAtoms.length);
-    pickedAtoms = np;
-
+    boolean[] newPickedAtoms = new boolean[newArraySize];
+    System.arraycopy(pickedAtoms, 0, newPickedAtoms, 0, pickedAtoms.length);
+    pickedAtoms = newPickedAtoms;
   }
 
   private boolean bondsEnabled;
@@ -701,7 +706,11 @@ public class ChemFrame {
   }
 
   public void setPickedAtoms(boolean[] newPickedAtoms) {
-    pickedAtoms = newPickedAtoms;
+    int copyLength = newPickedAtoms.length;
+    if (copyLength > pickedAtoms.length) {
+      copyLength = pickedAtoms.length;
+    }
+    System.arraycopy(newPickedAtoms, 0, pickedAtoms, 0, copyLength);
   }
 
   /**

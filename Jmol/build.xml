@@ -5,6 +5,7 @@
   <property name="generatedSource.dir" value="generatedSource" />
   <property name="lib.dir" value="jars" />
   <property name="classes.dir" value="classes" />
+  <property name="applet.classes.dir" value="applet-classes" />
   <property name="dist.dir" value="dist" />
   <property name="sourcedist.dir" value="sourcedist" />
   <property name="doc.dir" value="doc" />
@@ -18,7 +19,7 @@
     </fileset>
   </path>
   
-  <target name="main" depends="init,jar"/>
+  <target name="main" depends="init,jar,applet-jar"/>
   
   <target name="init" depends="check.docbook,check.xsl" />
   
@@ -120,6 +121,20 @@
       </fileset>
     </copy>
   </target>
+  
+  <target name="applet-classes" >
+    <mkdir dir="${applet.classes.dir}"/>
+    <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
+        debug="off" deprecation="on" target="1.1"
+        includesfile="applet.classes">
+      <classpath refid="project.class.path" />
+    </javac>
+    <copy todir="${applet.classes.dir}" >
+      <fileset dir="${source.dir}">
+        <include name="**/applet/Data/*" />
+      </fileset>
+    </copy>
+  </target>
 
   <target name="jar" depends="init,classes">
     <jar jarfile="${lib.dir}/jmol.jar" manifest="${manifest}" >
@@ -132,17 +147,18 @@
         <include name="freeware/**" />
       </fileset>
     </jar>
-    
+  </target>
+  
+  <target name="applet-jar" depends="applet-classes">
     <jar jarfile="${lib.dir}/jmol-applet.jar" >
-      <fileset dir="${classes.dir}" >
+      <fileset dir="${applet.classes.dir}" >
         <exclude name="**/.*" />
-        <include name="**/jmol/applet/**" />
         <include name="**/jmol/**" />
         </fileset>
     </jar>
   </target>
 
-  <target name="dist" depends="jar">
+  <target name="dist" depends="jar,applet-jar">
     <mkdir dir="${dist.dir}/jmol-${version}"/>
     <copy todir="${dist.dir}/jmol-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
@@ -277,6 +293,7 @@
   <target name="clean">
     <delete dir="${generatedSource.dir}"/>
     <delete dir="${classes.dir}"/>
+    <delete dir="${applet.classes.dir}"/>
     <delete>
       <fileset dir="${lib.dir}">
         <include name="jmol.jar" />

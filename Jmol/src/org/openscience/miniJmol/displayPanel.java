@@ -95,7 +95,7 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
       setBackground(java.awt.Color.black);
       backgroundColor = (java.awt.Color.black);
       setForeground(java.awt.Color.white);
-		AtomType.setCanvas(this);
+		AtomRenderer.setCanvas(this);
         this.addMouseListener(new MyAdapter());            
         this.addComponentListener(this);
         this.addMouseMotionListener(new MyMotionAdapter());            
@@ -642,21 +642,13 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
 			settings.setBondScreenScale(xfac); 
 			settings.setAtomScreenScale(xfac);
       }else if (command.equals(labelsNoneCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.NOLABELS);
-        }
+	  settings.setLabelMode(DisplaySettings.NOLABELS);
       }else if (command.equals(labelsSymbolsCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.SYMBOLS);
-        }
+	  settings.setLabelMode(DisplaySettings.SYMBOLS);
       }else if (command.equals(labelsTypesCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.TYPES);
-        }
+	  settings.setLabelMode(DisplaySettings.TYPES);
       }else if (command.equals(labelsNumbersCommand)){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setLabelMode(AtomType.NUMBERS);
-        }
+	  settings.setLabelMode(DisplaySettings.NUMBERS);
       }else if (command.equals(wireframeRotationCommand)){
             WireFrameRotation = !WireFrameRotation;
       }else{
@@ -697,20 +689,6 @@ public class displayPanel extends Canvas implements java.awt.event.ComponentList
       return md.getShowAtoms();
     }
 
-    public void showVectors(boolean doWe){
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setShowVectors(doWe);
-        }
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public boolean getShowVectors(){
-      return md.getShowVectors();
-    }
-    
     public void setWireframeRotation(boolean OnOrOff){
             WireFrameRotation = OnOrOff;
     }

@@ -272,27 +272,6 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
    }
 
 /**
- * Causes Vectors to be shown or hidden.
- * @param TorF if 'T' then vectors are displayed, if 'F' then they aren't.
- */
-   public void setVectorsShown(String TorF){
-      display.showVectors(getBooleanFromString(TorF));
-   }
-/**
- * Causes vectors to be shown or hidden.
- * @param TorF if true then vectors are displayed, if false then they aren't.
- */
-   public void setVectorsShown(boolean TorF){
-      display.showVectors(TorF);
-   }
-/**
- * Are vectors being shown or hidden?
- */
-   public boolean getVectorsShown(){
-      return display.getShowVectors();
-   }
-
-/**
  * Sets the rendering mode for atoms. Valid values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
  */
    public void setAtomRenderingStyle(String style){

@@ -92,7 +92,7 @@ public class Splash extends Window {
         return;
       }
       g.setColor(BORDERCOLOR);
-      g.fillRect(BORDERSIZE, statusTop, imgWidth, textY);
+      g.fillRect(BORDERSIZE, statusTop, imgWidth + BORDERSIZE, textY);
       g.setColor(TEXTCOLOR);
       g.drawString(status, BORDERSIZE, textY);
     }

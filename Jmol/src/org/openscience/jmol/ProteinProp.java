@@ -32,12 +32,15 @@ public class ProteinProp {
   // just to get some complex queries running
   public String recordPdb;
   byte resid;
+  byte atomID;
 
   public ProteinProp(String recordPdb) {
     this.recordPdb = recordPdb;
 
     Integer resInt = (Integer)htResidue.get(recordPdb.substring(17, 20));
     resid = (resInt != null) ? (byte)resInt.intValue() : -1;
+    Integer atomInt = (Integer)htAtom.get(getName());
+    atomID = (atomInt != null) ? (byte)atomInt.intValue() : -1;
   }
 
   public boolean isHetero() {
@@ -58,6 +61,16 @@ public class ProteinProp {
 
   public byte getResID() {
     return resid;
+  }
+
+  public byte getAtomID() {
+    return atomID;
+  }
+
+  public String getAtomName() {
+    if (atomID > -1)
+      return atomNames[atomID];
+    return getName();
   }
 
   public boolean isResidueNameMatch(String strWildcard) {
@@ -100,10 +113,6 @@ public class ProteinProp {
     return recordPdb.charAt(21);
   }
 
-  public boolean isAmino() {
-    return resid != -1 && resid < 23;
-  }
-
   static String[] residues = {
     // tabel taken from rasmol source molecule.h
           "ALA", /* 8.4% */     "GLY", /* 8.3% */
@@ -143,6 +152,51 @@ public class ProteinProp {
   static {
     for (int i = 0; i < residues.length; ++i) {
       htResidue.put(residues[i], new Integer(i));
+    }
+  }
+
+  public final static int ATOM_BACKBONE_MIN =  0;
+  public final static int ATOM_BACKBONE_MAX =  3;
+  public final static int ATOM_SHAPELY_MAX  =  7;
+  public final static int ATOM_NUCLEIC_BACKBONE_MIN =  7;
+  public final static int ATOM_NICLEIC_BACKBONE_MAX = 18;
+
+  static String[] atomNames = {
+    "N",   // 0
+    "CA",
+    "C",
+    "O",   // 3
+    "C'",  // 4
+    "OT",
+    "S",
+    "P",   // 7
+    "O1P",
+    "O2P",
+    "O5*",
+    "C5*",
+    "C4*",
+    "O4*",
+    "C3*",
+    "O3*",
+    "C2*",
+    "O2*",
+    "C1*",
+    "CA2",
+    "SG",
+    "N1",
+    "N2",
+    "N3",
+    "N4",
+    "N6",
+    "O2",
+    "O4",
+    "O6"
+  };
+  
+  private static Hashtable htAtom = new Hashtable();
+  static {
+    for (int i = 0; i < atomNames.length; ++i) {
+      htAtom.put(atomNames[i], new Integer(i));
     }
   }
 }

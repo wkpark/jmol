@@ -494,11 +494,11 @@ public class Eval implements Runnable {
       case Token.selected:
         stack[sp++] = copyBitSet(control.getSelectionSet());
         break;
-      case Token.hydrogen:
-        stack[sp++] = getHydrogenSet();
-        break;
       case Token.hetero:
         stack[sp++] = getHeteroSet();
+        break;
+      case Token.hydrogen:
+        stack[sp++] = getHydrogenSet();
         break;
       case Token.spec_name:
         stack[sp++] = getSpecName((String)instruction.value);
@@ -513,6 +513,9 @@ public class Eval implements Runnable {
         stack[sp++] = getSpecAtom((String)instruction.value);
         break;
       case Token.y:
+      case Token.amino:
+      case Token.backbone:
+      case Token.solvent:
       case Token.identifier:
         String variable = (String)instruction.value;
         BitSet value = lookupValue(variable, false);
@@ -528,24 +531,6 @@ public class Eval implements Runnable {
       case Token.opNE:
         bs = stack[sp++] = new BitSet();
         comparatorInstruction(instruction, bs);
-        break;
-      case Token.amino:
-        stack[sp++] = getAllAminosSet();
-        break;
-      case Token.backbone:
-      case Token.alpha:
-      case Token.cystine:
-      case Token.helix:
-      case Token.ions:
-      case Token.ligand:
-      case Token.protein:
-      case Token.sheet:
-      case Token.sidechain:
-      case Token.solvent:
-      case Token.turn:
-        System.out.println("expression instruction not implemented:" +
-                           instruction.value);
-        stack[sp++] = new BitSet();
         break;
       default:
         unrecognizedExpression();
@@ -565,17 +550,6 @@ public class Eval implements Runnable {
     }
   }
 
-  BitSet getHydrogenSet() {
-    ChemFrame frame = control.getFrame();
-    BitSet bsHydrogen = new BitSet();
-    for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      Atom atom = frame.getJmolAtomAt(i);
-      if (atom.getAtomicNumber() == 1)
-        bsHydrogen.set(i);
-    }
-    return bsHydrogen;
-  }
-
   BitSet getHeteroSet() {
     ChemFrame frame = control.getFrame();
     BitSet bsHetero = new BitSet();
@@ -587,15 +561,15 @@ public class Eval implements Runnable {
     return bsHetero;
   }
 
-  BitSet getAllAminosSet() {
+  BitSet getHydrogenSet() {
     ChemFrame frame = control.getFrame();
-    BitSet bsAllAminos = new BitSet();
+    BitSet bsHydrogen = new BitSet();
     for (int i = control.numberOfAtoms(); --i >= 0; ) {
-      ProteinProp pprop = frame.getJmolAtomAt(i).getProteinProp();
-      if (pprop != null && pprop.isAmino())
-        bsAllAminos.set(i);
+      Atom atom = frame.getJmolAtomAt(i);
+      if (atom.getAtomicNumber() == 1)
+        bsHydrogen.set(i);
     }
-    return bsAllAminos;
+    return bsHydrogen;
   }
 
   BitSet getResidueSet(String strResidue) {
@@ -717,12 +691,17 @@ public class Eval implements Runnable {
       case Token.resno:
         propertyValue = getResno(atom);
         if (propertyValue == -1)
-          return;
+          continue;
         break;
       case Token._resid:
        propertyValue = getResID(atom);
         if (propertyValue == -1)
-          return;
+          continue;
+        break;
+      case Token._atomid:
+       propertyValue = getAtomID(atom);
+        if (propertyValue == -1)
+          continue;
         break;
       case Token.radius:
         propertyValue = atom.getAtomShape().getRasMolRadius();
@@ -811,6 +790,13 @@ public class Eval implements Runnable {
     if (pprop == null)
       return -1;
     return pprop.getResID();
+  }
+
+  int getAtomID(Atom atom) {
+    ProteinProp pprop = atom.getProteinProp();
+    if (pprop == null)
+      return -1;
+    return pprop.getAtomID();
   }
 
 

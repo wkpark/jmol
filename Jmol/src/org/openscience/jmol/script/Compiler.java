@@ -661,6 +661,7 @@ class Compiler {
     case Token.temperature:
     case Token._bondedcount:
     case Token._resid:
+    case Token._atomid:
       return clauseComparator();
     case Token.within:
       return clauseWithin();

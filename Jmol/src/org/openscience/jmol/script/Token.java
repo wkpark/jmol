@@ -236,6 +236,7 @@ class Token {
   final static int temperature  = atomproperty | 3;
   final static int _bondedcount = atomproperty | 4;
   final static int _resid       = atomproperty | 5;
+  final static int _atomid      = atomproperty | 6;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -271,20 +272,11 @@ class Token {
   final static int spec_chain    = misc | 23;
   final static int spec_atom     = misc | 24;
 
-  final static int alpha       = predefinedset |  0;
-  final static int amino       = predefinedset |  1;
-  final static int cystine     = predefinedset |  2;
-  final static int helix       = predefinedset |  3;
-  final static int hetero      = predefinedset |  4 | setparam;
-  final static int hydrogen    = predefinedset |  5 | setparam;
-  final static int ions        = predefinedset |  6;
-  final static int ligand      = predefinedset |  7;
-  final static int protein     = predefinedset |  8;
-  final static int selected    = predefinedset |  9 | showparam;
-  final static int sheet       = predefinedset | 10;
-  final static int sidechain   = predefinedset | 11;
-  final static int solvent     = predefinedset | 12 | setparam;
-  final static int turn        = predefinedset | 13;
+  final static int amino       = predefinedset | 0;
+  final static int hetero      = predefinedset | 1 | setparam;
+  final static int hydrogen    = predefinedset | 2 | setparam;
+  final static int selected    = predefinedset | 3 | showparam;
+  final static int solvent     = predefinedset | 4 | setparam;
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -438,6 +430,7 @@ class Token {
     "temperature",  new Token(temperature, "temperature"),
     "_bondedcount", new Token(_bondedcount, "_bondedcount"),
     "_resid",       new Token(_resid, "_resid"),
+    "_atomid",      new Token(_atomid, "_atomid"),
 
     "off",          new Token(off, 0, "off"),
     "false",        null,
@@ -467,64 +460,11 @@ class Token {
 
     "restore",           new Token(restore,    "restore"),
   
-    "alpha",        new Token(alpha,           "alpha"),
     "amino",        new Token(amino,           "amino"),
-    "cystine",      new Token(cystine,         "cystine"),
-    "helix",        new Token(helix,           "helix"),
     "hetero",       new Token(hetero,          "hetero"),
     "hydrogen",     new Token(hydrogen,        "hydrogen"),
-    "ions",         new Token(ions,            "ions"),
-    "ligand",       new Token(ligand,          "ligand"),
-    "protein",      new Token(protein,         "protein"),
     "selected",     new Token(selected,        "selected"),
-    "sheet",        new Token(sheet,           "sheet"),
-    "sidechain",    new Token(sidechain,       "sidechain"),
     "solvent",      new Token(solvent,         "solvent"),
-    "turn",         new Token(turn,            "turn"),
-
-    /*
-    "ala",       new Token(ala,                "ALA"),
-    "a",         null,
-    "arg",       new Token(arg,                "ARG"),
-    "r",         null,
-    "asn",       new Token(asn,                "ASN"),
-    "n",         null,
-    "asp",       new Token(asp,                "ASP"),
-    "d",         null,
-    "cys",       new Token(cys,                "CYS"),
-    "c",         null,
-    "glu",       new Token(glu,                "GLU"),
-    "e",         null,
-    "gln",       new Token(gln,                "GLN"),
-    "q",         null,
-    "gly",       new Token(gly,                "GLY"),
-    "g",         null,
-    "his",       new Token(his,                "HIS"),
-    "h",         null,
-    "ile",       new Token(ile,                "ILE"),
-    "i",         null,
-    "leu",       new Token(leu,                "LEU"),
-    "l",         null,
-    "lys",       new Token(lys,                "LYS"),
-    "k",         null,
-    "met",       new Token(met,                "MET"),
-    "m",         null,
-    "phe",       new Token(phe,                "PHE"),
-    "f",         null,
-    "pro",       new Token(pro,                "PRO"),
-    "p",         null,
-    "ser",       new Token(ser,                "SER"),
-    "s",         null,
-    "thr",       new Token(thr,                "THR"),
-    "t",         null,
-    "trp",       new Token(trp,                "TRP"),
-    "w",         null,
-    "tyr",       new Token(tyr,                "TYR"),
-    */
-    /*
-    "val",       new Token(val,                "VAL"),
-    "v",         null,
-    */
 
     "black",      new Token(colorRGB, 0x000000, "black"),
     "blue",       new Token(colorRGB, 0x0000FF, "blue"),
@@ -557,27 +497,28 @@ class Token {
     "@acidic d,e",
     "@acyclic a,r,n,d,c,e,q,g,i,l,k,m,s,t,v",
     "@aliphatic a,g,i,l,v",
-    //    "@alpha approximatly *.CA", // whatever that means
-    //    "@amino",
+    "@alpha _atomid=1", // rasmol doc says "approximately *.CA" - whatever?
+    "@amino _resid<=23",
     "@aromatic h,f,w,y",
-    "@backbone (protein or nucleic) & !sidechain", "@mainchain backbone",
+    "@backbone amino & _atomid<=3,nucleic & _atomid>=7 & _atomid<=18",
+    "@mainchain backbone",
     "@basic r,h,k",
     "@bonded _bondedcount>0",
-    "@buried a,c,i,l,m,f,w,v", // doesn't seem right to me
+    "@buried a,c,i,l,m,f,w,v",
     "@cg c,g",
     "@charged acidic,basic",
     "@cyclic h,f,p,w,y",
     //    "@cystine",
     //    "@helix",
-    //    "@hetero",
+    //    "@hetero", handled specially
     // doc on hydrophobic is inconsistent
     // text description of hydrophobic says this
     //    "@hydrophobic ala,leu,val,ile,pro,phe,met,trp",
     // table says this
     "@hydrophobic a,g,i,l,m,f,p,w,y,v",
-    //    "@ions",
+    "@ions _resid=48,_resid=49",
     "@large r,e,q,h,i,l,k,m,f,w,y",
-    //    "@ligand",
+    "@ligand hetero & !solvent",
     "@medium n,d,c,p,t,v",
     // doc is inconsistent
     // is h basic or neutral
@@ -586,17 +527,17 @@ class Token {
     "@nucleic a,c,g,t",
     "@polar !hydrophobic",
     "@positive basic",
-    //    "@protein amino + common post-translational modifications",
+    "@protein amino", // + common post-translational modifications ??
     "@purine a,g",
     "@pyrimidine c,t",
     // selected - special and is handled at runtime
     //    "@sheet"
-    //    "@sidechain (protein or nucleic) and !backbone",
+    "@sidechain (protein or nucleic) and !backbone", // doc & code inconsistent
     "@small a,g,s",
-    "@solvent water,ions",
+    "@solvent _resid>=46 & _resid<=49", // water or ions
     "@surface !buried",
     //    "@turn",
-    "@water _resid=47", "@hoh water",
+    "@water _resid=46,_resid=47", "@hoh water",
 
     "@ala _resid=0", "@a ala",
     "@gly _resid=1", "@g gly",
@@ -619,7 +560,7 @@ class Token {
     "@met _resid=18", "@m met",
     "@trp _resid=19", "@w trp",
 
-    // "@hydrogen elemno=1",
+    // "@hydrogen elemno=1", handled specially
     "@helium elemno=2",
     "@lithium elemno=3",
     "@beryllium elemno=4",

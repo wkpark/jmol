@@ -9,6 +9,7 @@ package org.openscience.miniJmol;
 
 import java.util.*;
 import org.xml.sax.*;
+import org.openscience.jmol.FortranFormat;
 
 public class CMLHandler extends org.xml.sax.HandlerBase {
 
@@ -76,14 +77,12 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
 
   public void startElement (String name, AttributeList atts)
     throws SAXException {
-      System.out.println ("name = " + name);
     setCurrentElement(name);
     switch (CurrentElement) {
       case ATOM :        
         for (int i = 0; i < atts.getLength(); i++) {
           if (atts.getName(i).equals("id")) {
             elid.addElement(atts.getValue(i));
-  	    warn("New atom found: " + atts.getValue(i));
 	  }
         }
         break;
@@ -91,7 +90,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         for (int i = 0; i < atts.getLength(); i++) {
           if (atts.getName(i).equals("builtin")) {
             BUILTIN = atts.getValue(i);
-	    warn("Valid element coord found, builtin: " + atts.getValue(i));
 	  }
         }
         break;
@@ -126,7 +124,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         for (int i = 0; i < atts.getLength(); i++) {
           if (atts.getName(i).equals("id")) cf.setInfo(atts.getValue(i));
         }
-	System.out.println("New Frame found: " + frameNo);
         break;
     case LIST :
         for (int i = 0; i < atts.getLength(); i++) {
@@ -139,7 +136,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
     
     public void endElement (String name) {
 	setCurrentElement(name);
-	System.out.println ("End ELEMENT " + name);
     BUILTIN = "";
     switch (CurrentElement) {
       case MOLECULE :
@@ -147,7 +143,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         if ((x3.size() == atomcount) &&
             (y3.size() == atomcount) &&
             (z3.size() == atomcount)) {
-	  warn("About to add info to ChemFrame.");
           Enumeration atoms = elsym.elements();
           Enumeration x3s = x3.elements();
           Enumeration y3s = y3.elements();
@@ -159,17 +154,14 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
             double z = FortranFormat.atof((String)z3s.nextElement());
      
             try {
-		System.out.println (atype + " " + x);
-              cf.addVert(atype, (float) x, (float) y, (float) z);
+              cf.addAtom(atype, (float) x, (float) y, (float) z);
             } catch (Exception e) {
 		e.printStackTrace ();
               notify("CMLhandler error while adding atom: " + e, SYSTEMID, 149,1);
             } 
           }
         }
-	warn("About to add ChemFrame to list.");	
 	cfs.addElement(cf);
-	warn("Current size cfs: " + cfs.size());
         break;
     }
   }
@@ -179,13 +171,11 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
     switch (CurrentElement) {
       case STRING :
 	if (BUILTIN.equals("elementType")) {
-	  warn("New elementType found.");
           elsym.addElement(s);	
 	}
 	break;
       case COORDINATE3 :
         if (BUILTIN.equals("xyz3")) {
-	  warn("New coord found." + s);
           try {	  
             StringTokenizer st = new StringTokenizer(s);
             x3.addElement(st.nextToken());
@@ -198,7 +188,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         break;
       case STRINGARRAY :
         if (BUILTIN.equals("id")) {
-	  warn("New id found.");
           try {	  
             StringTokenizer st = new StringTokenizer(s);
             while (st.hasMoreTokens()) elid.addElement(st.nextToken());
@@ -206,7 +195,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
             notify("CMLParsing error: " + e, SYSTEMID, 186,1);
           }
 	} else if (BUILTIN.equals("elementType")) {
-	  warn("New elementTypes found.");
           try {	  
             StringTokenizer st = new StringTokenizer(s);
             while (st.hasMoreTokens()) elsym.addElement(st.nextToken());
@@ -217,7 +205,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
         break;
       case FLOATARRAY :
         if (BUILTIN.equals("x3")) {
-	  warn("New floatArray found.");
           try {	  
             StringTokenizer st = new StringTokenizer(s);
             while (st.hasMoreTokens()) x3.addElement(st.nextToken());
@@ -225,7 +212,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
             notify("CMLParsing error: " + e, SYSTEMID, 205,1);
           }
 	} else if (BUILTIN.equals("y3")) {
-	  warn("New floatArray found.");
           try {	  
             StringTokenizer st = new StringTokenizer(s);
             while (st.hasMoreTokens()) y3.addElement(st.nextToken());
@@ -233,7 +219,6 @@ public class CMLHandler extends org.xml.sax.HandlerBase {
             notify("CMLParsing error: " + e, SYSTEMID, 213,1);
           }
 	} else if (BUILTIN.equals("z3")) {
-	  warn("New floatArray found.");
           try {	  
             StringTokenizer st = new StringTokenizer(s);
             while (st.hasMoreTokens()) z3.addElement(st.nextToken());

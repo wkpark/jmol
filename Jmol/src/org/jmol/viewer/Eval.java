@@ -3293,6 +3293,7 @@ class Eval implements Runnable {
 
   void polyhedra() throws ScriptException {
     viewer.setShapeSize(JmolConstants.SHAPE_POLYHEDRA, 1);
+    boolean radiusSeen = false, expressionSeen = false;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -3306,10 +3307,14 @@ class Eval implements Runnable {
         propertyName = (String)statement[i].value;
         break;
       case Token.decimal:
-        propertyName = "distance";
+        radiusSeen = true;
+        propertyName = "radius";
         propertyValue = statement[i].value;
         break;
       case Token.expressionBegin:
+        if (! radiusSeen)
+          evalError("radius expected");
+        expressionSeen = true;
         propertyName = "expression";
         propertyValue = expression(statement, i);
         // hack for now;
@@ -3321,5 +3326,8 @@ class Eval implements Runnable {
       viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
                               propertyName, propertyValue);
     }
+    if (radiusSeen && !expressionSeen)
+      viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA,
+                              "expression", null);
   }
 }

@@ -33,6 +33,7 @@ class Polyhedra extends SelectionIndependentShape {
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
   byte defaultAlpha = OPAQUE;
+  float radius;
 
   void initShape() {
   }
@@ -40,7 +41,7 @@ class Polyhedra extends SelectionIndependentShape {
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("bonds" == propertyName) {
       deletePolyhedra(bs);
-      buildPolyhedra(bs);
+      buildBondsPolyhedra(bs);
       return;
     }
     if ("delete" == propertyName) {
@@ -71,27 +72,18 @@ class Polyhedra extends SelectionIndependentShape {
       setColix(colix, bs);
       return;
     }
-    if ("distance" == propertyName) {
-      float distance = ((Float)value).floatValue();
-      System.out.println("Polyhedra distance=" + distance);
+    if ("radius" == propertyName) {
+      radius = ((Float)value).floatValue();
+      System.out.println("Polyhedra radius=" + radius);
       return;
     }
     if ("expression" == propertyName) {
       System.out.println("polyhedra expression");
+      BitSet bsVertices = (BitSet)value;
+      deletePolyhedra(bs);
+      buildRadiusPolyhedra(bs, radius, bsVertices);
       return;
     }
-  }
-
-  void buildPolyhedra(BitSet bs) {
-    for (int i = frame.atomCount; --i >= 0; )
-      if (bs.get(i))
-        build1(i);
-  }
-
-  void build1(int atomIndex) {
-    Polyhedron p = constructPolyhedron(atomIndex);
-    if (p != null)
-      savePolyhedron(p);
   }
 
   void deletePolyhedra(BitSet bs) {
@@ -142,11 +134,21 @@ class Polyhedra extends SelectionIndependentShape {
     polyhedrons[polyhedronCount++] = p;
   }
 
+  void buildBondsPolyhedra(BitSet bs) {
+    for (int i = frame.atomCount; --i >= 0; ) {
+      if (bs.get(i)) {
+        Polyhedron p = constructBondsPolyhedron(i);
+        if (p != null)
+          savePolyhedron(p);
+      }
+    }
+  }
+
   Atom[] otherAtoms = new Atom[6];
 
   final static boolean CHECK_ELEMENT = false;
 
-  Polyhedron constructPolyhedron(int atomIndex) {
+  Polyhedron constructBondsPolyhedron(int atomIndex) {
     Atom atom = frame.getAtomAt(atomIndex);
     Bond[] bonds = atom.bonds;
     byte bondedElementNumber = -1;
@@ -169,6 +171,43 @@ class Polyhedra extends SelectionIndependentShape {
       return p;
     }
     return null;
+  }
+
+  void buildRadiusPolyhedra(BitSet bs, float radius, BitSet bsVertices) {
+    for (int i = frame.atomCount; --i >= 0; ) {
+      if (bs.get(i)) {
+        Polyhedron p = constructRadiusPolyhedron(i, radius, bsVertices);
+        if (p != null)
+          savePolyhedron(p);
+      }
+    }
+  }
+
+  Polyhedron constructRadiusPolyhedron(int atomIndex, float radius,
+                                         BitSet bsVertices) {
+    Atom atom = frame.getAtomAt(atomIndex);
+    int otherAtomCount = 0;
+    AtomIterator withinIterator = frame.getWithinIterator(atom, radius);
+    while (withinIterator.hasNext()) {
+      Atom other = withinIterator.next();
+      if (other == atom)
+        continue;
+      if (bsVertices != null && !bsVertices.get(other.atomIndex))
+        continue;
+      if (otherAtomCount < 6)
+        otherAtoms[otherAtomCount++] = other;
+      else {
+        ++otherAtomCount;
+        break;
+      }
+    }
+    System.out.println("otherAtomCount=" + otherAtomCount);
+    Polyhedron p = null;
+    if (otherAtomCount == 4 || otherAtomCount == 6)
+      p = new Polyhedron(atom, otherAtomCount, otherAtoms);
+    for (int i = 6; --i >= 0; )
+      otherAtoms[i] = null;
+    return p;
   }
 
   final static byte TRANSPARENT = (byte)0x80;

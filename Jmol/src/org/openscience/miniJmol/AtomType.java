@@ -80,10 +80,10 @@ public class AtomType {
     */
     private static float lightsource[] = { 1.0f, -1.0f, 2.0f};
 
-    private static float screenScale = 1.0f;
-    private static int zOffset = 1;
-    private static float depthFactor = 0.33f;
-    private static double sphereFactor = 0.2;  /* static vars, once for each 
+    private float screenScale = 1.0f;
+    private int zOffset = 1;
+    private float depthFactor = 0.33f;
+    private double sphereFactor = 0.2;  /* static vars, once for each 
                                                   class, not once per instance
                                                   of class */
 	/**
@@ -105,23 +105,23 @@ public class AtomType {
      *
      * @param ss the screen scale
      */
-    public static void setScreenScale(float ss) {
+    public void setScreenScale(float ss) {
         screenScale = ss;
     }
 
-    public static void setZoffset(int z) {
+    public void setZoffset(int z) {
         zOffset = z;
     }
 
-    public static void setDepthFactor(float df) {
+    public void setDepthFactor(float df) {
         depthFactor = df;
     }
 
-    public static void setSphereFactor(double sf) {
+    public void setSphereFactor(double sf) {
         sphereFactor = sf;
     }    
 
-    public static double getSphereFactor() {
+    public double getSphereFactor() {
         return sphereFactor;
     }
 
@@ -232,17 +232,17 @@ public class AtomType {
      *
      */
     public void paint(Graphics gc, int x, int y, int z, int n, 
-                      Vector props, boolean picked) {
+                      Vector props, boolean picked, DisplaySettings settings) {
         int diameter = (int) (2.0f*getCircleRadius(z));
         int radius = diameter >> 1;
 
         if (picked) {
             int halo = radius + 5;
             int halo2 = 2 * halo;
-            gc.setColor(DisplaySettings.getPickedColor());
+            gc.setColor(settings.getPickedColor());
             gc.fillOval(x - halo, y - halo, halo2, halo2);
         }
-        switch( DisplaySettings.getAtomDrawMode() ) {
+        switch( settings.getAtomDrawMode() ) {
         case DisplaySettings.WIREFRAME:
             gc.setColor(baseType.getColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
@@ -261,21 +261,21 @@ public class AtomType {
         default:
             gc.setColor(baseType.getColor());
             gc.fillOval(x - radius, y - radius, diameter, diameter);
-            gc.setColor(DisplaySettings.getOutlineColor());
+            gc.setColor(settings.getOutlineColor());
             gc.drawOval(x - radius, y - radius, diameter, diameter);
             break;
         }
 
-        if (DisplaySettings.getLabelMode() != DisplaySettings.NOLABELS) {
+        if (settings.getLabelMode() != DisplaySettings.NOLABELS) {
             int j = 0;
             String s;
             Font font = new Font("Helvetica", Font.PLAIN, radius);
             gc.setFont(font);
             FontMetrics fontMetrics = gc.getFontMetrics(font);
             int k = fontMetrics.getAscent();
-            gc.setColor(DisplaySettings.getTextColor());
+            gc.setColor(settings.getTextColor());
                 
-            switch( DisplaySettings.getLabelMode() ) {
+            switch( settings.getLabelMode() ) {
             case DisplaySettings.SYMBOLS:
                 j = fontMetrics.stringWidth(baseType.getRoot());
                 gc.drawString(baseType.getRoot(), x-j/2, y+k/2); 
@@ -294,16 +294,16 @@ public class AtomType {
             }
         }
 
-        if (!DisplaySettings.getPropertyMode().equals("")) {
+        if (!settings.getPropertyMode().equals("")) {
             // check to make sure this atom has this property:
             for (int i = 0; i < props.size(); i++) {
                 PhysicalProperty p = (PhysicalProperty)props.elementAt(i);
-                if (p.getDescriptor().equals(DisplaySettings.getPropertyMode())) {
+                if (p.getDescriptor().equals(settings.getPropertyMode())) {
                     // OK, we had this property.  Let's draw the value on 
                     // screen:
                     Font font = new Font("Helvetica", Font.PLAIN, radius/2);
                     gc.setFont(font);
-                    gc.setColor(DisplaySettings.getTextColor());
+                    gc.setColor(settings.getTextColor());
                     String s = p.stringValue();
                     if (s.length() > 5) 
                         s = s.substring(0,5);

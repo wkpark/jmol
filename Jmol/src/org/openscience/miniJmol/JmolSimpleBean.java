@@ -52,6 +52,7 @@ import java.awt.event.ActionEvent;
 **/
 public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.ComponentListener{
 
+	private DisplaySettings settings = new DisplaySettings();
     private displayPanel display;
     private ChemFile cf;
 
@@ -64,6 +65,7 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
 
        display = new displayPanel();
        display.addComponentListener(this);
+	   display.setDisplaySettings(settings);
        add(display,"Center");
        setBackgroundColour("#FFFFFF");
        setForegroundColour("#000000");
@@ -295,24 +297,25 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
    public void setAtomRenderingStyle(String style){
       if (style.equalsIgnoreCase("QUICKDRAW")){
-       display.setAtomQuickDraw();
+		  settings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
       }else if (style.equalsIgnoreCase("SHADED")){
-       display.setAtomShaded();
+		  settings.setAtomDrawMode(DisplaySettings.SHADING);
       }else if (style.equalsIgnoreCase("WIREFRAME")){
-       display.setAtomWireframe();
+		  settings.setAtomDrawMode(DisplaySettings.WIREFRAME);
       }else{
         throw new IllegalArgumentException("Unknown atom rendering style: "+style);
       }
+	  display.repaint();
    }
 /**
  * Gets the rendering mode for atoms. Values are 'QUICKDRAW', 'SHADED' and 'WIREFRAME'. 
  */
    public String getAtomRenderingStyleDescription(){
-      if (display.getAtomRenderMode()== DisplaySettings.QUICKDRAW){
+      if (settings.getAtomDrawMode()== DisplaySettings.QUICKDRAW){
        return("QUICKDRAW");
-      }else if (display.getAtomRenderMode()== DisplaySettings.SHADING){
+      }else if (settings.getAtomDrawMode()== DisplaySettings.SHADING){
        return("SHADED");
-      }else if (display.getAtomRenderMode()== DisplaySettings.WIREFRAME){
+      }else if (settings.getAtomDrawMode()== DisplaySettings.WIREFRAME){
        return("WIREFRAME");
       }
       return "NULL";
@@ -323,28 +326,29 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
    public void setBondRenderingStyle(String style){
       if (style.equalsIgnoreCase("QUICKDRAW")){
-       display.setBondQuickDraw();
+		  settings.setBondDrawMode(DisplaySettings.QUICKDRAW);
       }else if (style.equalsIgnoreCase("SHADED")){
-       display.setBondShaded();
+		  settings.setBondDrawMode(DisplaySettings.SHADING);
       }else if (style.equalsIgnoreCase("LINE")){
-       display.setBondLine();
+		  settings.setBondDrawMode(DisplaySettings.LINE);
       }else if (style.equalsIgnoreCase("WIREFRAME")){
-       display.setBondWireframe();
+		  settings.setBondDrawMode(DisplaySettings.WIREFRAME);
       }else{
         throw new IllegalArgumentException("Unknown bond rendering style: "+style);
       }
+	  display.repaint();
    }
 /**
  * Gets the rendering mode for bonds. Values are 'QUICKDRAW', 'SHADED', 'LINE' and 'WIREFRAME'. 
  */
    public String getBondRenderingStyleDescription(){
-      if (display.getBondRenderMode()== Bond.QUICKDRAW){
+      if (settings.getBondDrawMode()== DisplaySettings.QUICKDRAW){
        return("QUICKDRAW");
-      }else if (display.getBondRenderMode()== Bond.SHADING){
+      }else if (settings.getBondDrawMode()== DisplaySettings.SHADING){
        return("SHADED");
-      }else if (display.getBondRenderMode()== Bond.LINE){
+      }else if (settings.getBondDrawMode()== DisplaySettings.LINE){
        return("LINE");
-      }else if (display.getBondRenderMode()== Bond.WIREFRAME){
+      }else if (settings.getBondDrawMode()== DisplaySettings.WIREFRAME){
        return("WIREFRAME");
       }
       return "NULL";
@@ -355,28 +359,29 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
  */
    public void setLabelRenderingStyle(String style){
       if (style.equalsIgnoreCase("NONE")){
-       display.setLabelsToNone();
+		  settings.setLabelMode(DisplaySettings.NOLABELS);
       }else if (style.equalsIgnoreCase("SYMBOLS")){
-       display.setLabelsToSymbols();
+		  settings.setLabelMode(DisplaySettings.SYMBOLS);
       }else if (style.equalsIgnoreCase("TYPES")){
-       display.setLabelsToTypes();
+		  settings.setLabelMode(DisplaySettings.TYPES);
       }else if (style.equalsIgnoreCase("NUMBERS")){
-       display.setLabelsToAtomNumbers();
+		  settings.setLabelMode(DisplaySettings.NUMBERS);
       }else{
         throw new IllegalArgumentException("Unknown label rendering style: "+style);
       }
+	  display.repaint();
    }
 /**
  * Gets the rendering mode for labels. Values are 'NONE', 'SYMBOLS', 'TYPES' and 'NUMBERS'. 
  */
    public String getLabelRenderingStyleDescription(){
-      if (DisplaySettings.getLabelMode()== DisplaySettings.NOLABELS){
+      if (settings.getLabelMode()== DisplaySettings.NOLABELS){
        return("NONE");
-      }else if (DisplaySettings.getLabelMode()== DisplaySettings.SYMBOLS){
+      }else if (settings.getLabelMode()== DisplaySettings.SYMBOLS){
        return("SYMBOLS");
-      }else if (DisplaySettings.getLabelMode()== DisplaySettings.TYPES){
+      }else if (settings.getLabelMode()== DisplaySettings.TYPES){
        return("TYPES");
-      }else if (DisplaySettings.getLabelMode()== DisplaySettings.NUMBERS){
+      }else if (settings.getLabelMode()== DisplaySettings.NUMBERS){
        return("NUMBERS");
       }
       return "NULL";
@@ -455,7 +460,6 @@ public class JmolSimpleBean extends java.awt.Panel implements java.awt.event.Com
          whyArentWeReady();
       }
       display.setChemFile(cf);
-      display.start();        
     }
 
     private ChemFile loadModelFromURL(String URL, String type){

@@ -44,7 +44,6 @@ import javax.swing.*;
 
 class ArrowLine {
 
-    private static JPanel jpanel;
     private static float screenScale;
     private static Color vectorColor = Color.black;
 
@@ -62,11 +61,6 @@ class ArrowLine {
         
     static int[] xpoints = new int[4];
     static int[] ypoints = new int[4];
-
-    
-    static void setJPanel(JPanel jp) {
-        jpanel = jp;
-    }
 
     static void setVectorColor(Color c) {
         vectorColor = c;

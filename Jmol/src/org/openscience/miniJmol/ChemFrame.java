@@ -557,7 +557,7 @@ public class ChemFrame {
      *
      * @param g the Graphics context to paint to
      */
-    public synchronized void paint(Graphics g) {
+    public synchronized void paint(Graphics g, DisplaySettings settings) {
         if (vert == null || nvert <= 0)
             return;
         transform();
@@ -617,13 +617,13 @@ public class ChemFrame {
                             bonds[which].paint(g,
                                                v[j], v[j+1], v[j+2],
                                                v[l], v[l+1], v[l+2],
-                                               doingMoveDraw);
+                                               settings, doingMoveDraw);
                         } else {
                             l = 3 * bondEnd1[which];
                             bonds[which].paint(g,
                                                v[l], v[l+1], v[l+2],
                                                v[j], v[j+1], v[j+2],
-                                               doingMoveDraw);
+                                               settings, doingMoveDraw);
                         }
                         
                     }
@@ -632,7 +632,7 @@ public class ChemFrame {
             //Added by T.GREY for quick-draw on move support
             if (ShowAtoms && !doingMoveDraw)
                 atoms[j/3].paint(g, v[j], v[j + 1], v[j + 2], j/3 + 1, 
-                                 aProps[j/3], pickedAtoms[j/3]);
+                                 aProps[j/3], pickedAtoms[j/3], settings);
             
             if (ShowVectors && hasVectors) {
                 ArrowLine al = new ArrowLine(g, v[j], v[j+1], 
@@ -668,20 +668,6 @@ public class ChemFrame {
         */
     }
 
-    public void setCanvas(java.awt.Canvas jp){
-         for (int i=0;i<nvert;i++){
-             atoms[i].setCanvas(jp);
-         }
-    }
-    public void setLabelMode(int mode){
-		DisplaySettings.setLabelMode(mode);
-    }
-    public void setAtomRenderMode(int mode){
-		DisplaySettings.setAtomDrawMode(mode);
-    }
-    public void setBondRenderMode(int mode){
-		DisplaySettings.setBondDrawMode(mode);
-    }
     public void setAtomScreenScale(float ss){
          for (int i=0;i<nvert;i++){
              atoms[i].setScreenScale(ss);

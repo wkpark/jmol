@@ -48,27 +48,8 @@ import javax.swing.*;
 
 public class Bond {
 
-    private JPanel jpanel;
     private float screenScale;
-    /**
-     * QUICKDRAW mode draws a filled circle
-     */
-    public static final int QUICKDRAW = 0;
-    /**
-     * SHADING mode draws a lighted sphere
-     */
-    public static final int SHADING = 1;
-    /**
-     * WIREFRAME mode draws a transparent circle
-     */
-    public static final int WIREFRAME = 2;
-    /**
-     * LINE mode draws a line
-     */
-    public static final int LINE = 3;
-    private int DrawMode = QUICKDRAW;
     private boolean bondsToAtomCenters = false;
-    private Color outlineColor = Color.black;
     private float Smoothness=0.7f;
     private double bondwidth = 0.1;   /* static vars, once for each 
                                                 class, not once per instance
@@ -76,10 +57,6 @@ public class Bond {
     private AtomType at1, at2;
     private Color col1, col2;
     
-    public void setJPanel(JPanel jp) {
-        jpanel = jp;
-    }
-
     public void setScreenScale(float ss) {
         screenScale = ss;
     }
@@ -92,29 +69,29 @@ public class Bond {
         return bondwidth;
     }
 
-    public void setQuickDraw() {
-        DrawMode = QUICKDRAW;
-    }
+//      public void setQuickDraw() {
+//          DrawMode = DisplaySettings.QUICKDRAW;
+//      }
 
-    public void setShading() {
-        DrawMode = SHADING;
-    }
+//      public void setShading() {
+//          DrawMode = DisplaySettings.SHADING;
+//      }
 
-    public void setLine() {
-        DrawMode = LINE;
-    }
+//      public void setLine() {
+//          DrawMode = DisplaySettings.LINE;
+//      }
 
-    public void setWireFrame() {
-        DrawMode = WIREFRAME;
-    }
+//      public void setWireFrame() {
+//          DrawMode = DisplaySettings.WIREFRAME;
+//      }
 
-    public void setRenderMode(int i) {
-        DrawMode = i;
-    }
+//      public void setRenderMode(int i) {
+//          DrawMode = i;
+//      }
 
-    public int getRenderMode() {
-        return DrawMode;
-    }
+//      public int getRenderMode() {
+//          return DrawMode;
+//      }
 
     public void toggleBondsToAtomCenters() {
         bondsToAtomCenters = !bondsToAtomCenters;
@@ -128,13 +105,13 @@ public class Bond {
         return bondsToAtomCenters;
     }
 
-    public void setOutlineColor(Color c) {
-        outlineColor = c;
-    }
+//      public void setOutlineColor(Color c) {
+//          outlineColor = c;
+//      }
 
-    public Color getOutlineColor() {
-        return outlineColor;
-    }
+//      public Color getOutlineColor() {
+//          return outlineColor;
+//      }
 
 
     public Bond(AtomType at1, AtomType at2) {
@@ -145,13 +122,13 @@ public class Bond {
     }        
 
     public void paint(Graphics gc, int x1, int y1, int z1, 
-                      int x2, int y2, int z2) {
-        paint(gc, x1, y1, z1, x2, y2, z2, false);
+                      int x2, int y2, int z2, DisplaySettings settings) {
+        paint(gc, x1, y1, z1, x2, y2, z2, settings, false);
     }
 
     //useLine added by T.GREY- enforces line mode!
     public void paint(Graphics gc, int x1, int y1, int z1, 
-                      int x2, int y2, int z2, boolean useLine) {
+                      int x2, int y2, int z2, DisplaySettings settings, boolean useLine) {
         
         int xmp = (x1+x2)/2;        
         int ymp = (y1+y2)/2;
@@ -216,7 +193,7 @@ public class Bond {
         }
 
         // Duck out quickly if just line mode:
-	if (DrawMode == LINE || useLine){
+	if (settings.getBondDrawMode() == DisplaySettings.LINE || useLine){
             gc.setColor(col1);
             gc.drawLine(x1+dx1, y1+dy1, xmp, ymp);
             gc.setColor(col2);
@@ -262,14 +239,14 @@ public class Bond {
 	    
 	    Polygon poly2 = new Polygon(xpoints, ypoints, 4);
 
-            switch( DrawMode ) {
-            case WIREFRAME:
+            switch( settings.getBondDrawMode() ) {
+            case DisplaySettings.WIREFRAME:
                 gc.setColor(col1);
                 gc.drawPolygon(poly1);
                 gc.setColor(col2);
                 gc.drawPolygon(poly2);
                 break;
-            case SHADING:
+            case DisplaySettings.SHADING:
                 for (int i = (int)(2.0*halfbw); i > -1 ; i--) {
                     double len = i / (2.0*halfbw);
                     // System.out.println("len = " + len);
@@ -343,11 +320,11 @@ public class Bond {
             default:
                 gc.setColor(col1);
                 gc.fillPolygon(poly1);
-                gc.setColor(outlineColor);
+                gc.setColor(settings.getOutlineColor());
                 gc.drawPolygon(poly1);
                 gc.setColor(col2);
                 gc.fillPolygon(poly2);
-                gc.setColor(outlineColor);
+                gc.setColor(settings.getOutlineColor());
                 gc.drawPolygon(poly2);
                 break;
             }

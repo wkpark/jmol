@@ -44,7 +44,8 @@ import java.awt.event.*;
 //import javax.swing.*;
 //import javax.swing.text.*;
 
-public class displayPanel extends Canvas implements Runnable, java.awt.event.ComponentListener{
+public class displayPanel extends Canvas implements java.awt.event.ComponentListener{
+	private DisplaySettings settings;
     private boolean Perspective;
     private float FieldOfView;
     private boolean painted = false;
@@ -86,8 +87,6 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
 //    private int popButtonSideLength =10;
 //    private javax.swing.JPopupMenu popup;
       private java.awt.Image db;
-      private int width;
-      private int height;
 
     public displayPanel() {
       super();
@@ -96,6 +95,13 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
       setBackground(java.awt.Color.black);
       backgroundColor = (java.awt.Color.black);
       setForeground(java.awt.Color.white);
+		AtomType.setCanvas(this);
+        this.addMouseListener(new MyAdapter());            
+        this.addComponentListener(this);
+        this.addMouseMotionListener(new MyMotionAdapter());            
+        this.addKeyListener(new MyKeyListener());            
+        java.awt.Dimension s = this.getSize();
+		db = createImage(s.width, s.height);
     }
 
     public boolean getAntiAliased() {
@@ -114,6 +120,10 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
         this.mode = mode;
     }
 
+    public void setDisplaySettings(DisplaySettings settings) {
+        this.settings = settings;
+    }
+
 //   public boolean getPopupMenuActive(){
 //       return showPopupMenu;
 //   }
@@ -126,20 +136,6 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
 //       }
 //   }
    
-    public void start() {
-        new Thread(this).start();
-        for (int i=0;i<nframes;i++){
-          cf.getFrame(i).setCanvas(this);
-        }
-        this.addMouseListener(new MyAdapter());            
-        this.addComponentListener(this);
-        this.addMouseMotionListener(new MyMotionAdapter());            
-        this.addKeyListener(new MyKeyListener());            
-        java.awt.Dimension s = this.getSize();
-        width = s.width;
-        height = s.height;
-       db = createImage(width, height);
-    }
 
     public void setChemFile(ChemFile cf) {
         this.cf = cf;
@@ -192,18 +188,6 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
         return md;
     }
     
-    public void run() {
-        try {
-            Thread.currentThread().setPriority(Thread.MIN_PRIORITY); 
-        } catch (Exception e){
-            e.printStackTrace();
-        } 
-        repaint();
-    }
-
-    public void stop() {
-    }
-
     class MyAdapter extends MouseAdapter {
 
         public void mouseEntered(MouseEvent e) {
@@ -406,23 +390,14 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
         return FieldOfView;
     }
 
-    public int getAtomRenderMode(){
-       return DisplaySettings.getAtomDrawMode();
-    }
-
-    public int getBondRenderMode(){
-       return DisplaySettings.getBondDrawMode();
-    }
-
-    public int getLabelMode(){
-       return DisplaySettings.getLabelMode();
-    }
-
     public void update(Graphics g){
         paint(g);
     }
 
     public void paint(Graphics g){
+		if (db == null) {
+			return;
+		}
        paintBuffer(db.getGraphics());
        g.drawImage(db,0,0,this);
     }
@@ -471,7 +446,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
             g.fillRect(0,0,getSize().width,getSize().height); 
             g.setColor(fg);
 
-            md.paint(g);
+            md.paint(g, settings);
             if (rubberband) {
                 g.setColor(fg);
                 g.drawRect(rleft, rtop, rright-rleft, rbottom-rtop);
@@ -503,9 +478,7 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
 //    Invoked when component has been resized. 
         requestFocus();
         java.awt.Dimension s = this.getSize();
-        width = s.width;
-        height = s.height;
-        db = createImage(width, height);
+        db = createImage(s.width, s.height);
     }
 
     public void componentShown(java.awt.event.ComponentEvent e) {
@@ -740,95 +713,6 @@ public class displayPanel extends Canvas implements Runnable, java.awt.event.Com
 
     public boolean getShowVectors(){
       return md.getShowVectors();
-    }
-
-
-    public void setAtomQuickDraw(){
-		DisplaySettings.setAtomDrawMode(DisplaySettings.QUICKDRAW);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setAtomShaded(){
-		DisplaySettings.setAtomDrawMode(DisplaySettings.SHADING);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setAtomWireframe(){
-		DisplaySettings.setAtomDrawMode(DisplaySettings.WIREFRAME);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setBondQuickDraw(){
-		DisplaySettings.setBondDrawMode(DisplaySettings.QUICKDRAW);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setBondShaded(){
-		DisplaySettings.setBondDrawMode(DisplaySettings.SHADING);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setBondLine(){
-		DisplaySettings.setBondDrawMode(DisplaySettings.LINE);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setBondWireframe(){
-		DisplaySettings.setBondDrawMode(DisplaySettings.WIREFRAME);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setLabelsToNone(){
-		DisplaySettings.setLabelMode(DisplaySettings.NOLABELS);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setLabelsToSymbols(){
-		DisplaySettings.setLabelMode(DisplaySettings.SYMBOLS);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setLabelsToTypes(){
-		DisplaySettings.setLabelMode(DisplaySettings.TYPES);
-      if (painted){
-        painted = false;
-      }
-      repaint();
-    }
-
-    public void setLabelsToAtomNumbers(){
-		DisplaySettings.setLabelMode(DisplaySettings.NUMBERS);
-      if (painted){
-        painted = false;
-      }
-      repaint();
     }
     
     public void setWireframeRotation(boolean OnOrOff){

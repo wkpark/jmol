@@ -195,8 +195,7 @@ public class BondRenderer {
                       ? 0
                       : (bondOrder == 2) ? step1 / 2 : step1);
         do {
-          g25d.fillSphereCentered(control.getColixAtomOutline(styleBond, colix1),
-                                  colix1, x1, y, z1, width1);
+          g25d.fillCylinder(colix1, colix1, width1, x1, y, z1, x1, y, z1);
           y += step1;
         } while (--bondOrder > 0);
       }

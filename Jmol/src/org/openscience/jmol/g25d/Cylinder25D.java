@@ -103,7 +103,8 @@ public class Cylinder25D {
           twoDxAccumulatedYError -= twoDx;
         }
         int zCurrent = zCurrentScaled >> 10;
-        sphere25d.render(n > nMid ? colix1 : colix2, diameter, xCurrent, yCurrent, zCurrent);
+        sphere25d.render(n > nMid ? colix1 : colix2,
+                         diameter, xCurrent, yCurrent, zCurrent);
       } while (--n > 0);
       return;
     }
@@ -122,7 +123,8 @@ public class Cylinder25D {
         twoDyAccumulatedXError -= twoDy;
       }
       int zCurrent = zCurrentScaled >> 10;
-      sphere25d.render(n > nMid ? colix1 : colix2, diameter, xCurrent, yCurrent, zCurrent);
+      sphere25d.render(n > nMid ? colix1 : colix2,
+                       diameter, xCurrent, yCurrent, zCurrent);
     } while (--n > 0);
   }
 
@@ -136,10 +138,11 @@ public class Cylinder25D {
 
     boolean tLine;
     int x1, y1, x2, y2;
-    float radiusF2; // radius squared
     float radiusF;
     int diameter;
     int dx, dy, dz;
+
+    boolean tCircle;
 
     boolean tEven; // to apply correction
 
@@ -150,7 +153,7 @@ public class Cylinder25D {
     long twoA, twoB, twoC, _Adiv4, _Bdiv4;
     double scaleFactor;
 
-    double radius3d2; // radius 3d squared
+    float radius3d2; // radius 3d squared
 
     int xN, yN, xNE, yNE, xE, yE, xSE, ySE, xS, yS;
 
@@ -163,8 +166,8 @@ public class Cylinder25D {
     public CylinderShape(int diameter, int xOrigin, int yOrigin, int zOrigin,
                          int dx, int dy, int dz) {
       diameter *= 2;
-
-      radius3d2 = (diameter*diameter) / 4.0;
+      radiusF = diameter / 2.0f;
+      radius3d2 = radiusF * radiusF;
       int mag2d2 = dx*dx + dy*dy;
       mag2df = (float)Math.sqrt(mag2d2);
       mag2d = (int)(mag2df + 0.5f);
@@ -172,8 +175,7 @@ public class Cylinder25D {
       int mag3d = (int)(Math.sqrt(mag3d2) + 0.5);
       this._2a = this.diameter = diameter;
       tEven = (diameter & 1) == 0;
-      this._2b = diameter - diameter * mag2d / mag3d;
-      this.radiusF2 = (diameter * diameter) / 4.0f;
+      this._2b = diameter - ((mag3d == 0) ? 0 : diameter * mag2d / mag3d);
 
       this.dxTheta = this.dx = dx;
       this.dyTheta = -(this.dy = dy);
@@ -199,11 +201,16 @@ public class Cylinder25D {
           return;
         }
       }
-      tLine = true;
-      calcLineFactors();
+      if (_2a == _2b) {
+        tCircle = true;
+      } else {
+        tLine = true;
+        calcLineFactors();
+      }
     }
 
     void calcEllipseFactors() {
+
       int dx2 = dxTheta*dxTheta;
       int dy2 = dyTheta*dyTheta;
       int dx2_plus_dy2=dx2+dy2;
@@ -477,6 +484,9 @@ public class Cylinder25D {
       if (tLine) {
         plotEdgewiseCylinder(shades1, shades2, x1, y1, x2, y2);
         return;
+      } else if (tCircle) {
+        g25d.drawCircleCentered(colix1 , x, y, z, diameter / 2);
+        return;
       }
       for (int i = 0; i < ibRaster; i += 4) {
         int x0 = raster[i  ];
@@ -511,7 +521,7 @@ public class Cylinder25D {
 
     void recordCoordinate(int x, int y) {
       int z = 0;
-      double t = radius3d2 - (x*x + y*y);
+      float t = radius3d2 - (x*x + y*y);
       if (t > 0)
         z = (int)(Math.sqrt(t) + 0.5);
       int xR = x*dx + y*dy;
@@ -540,7 +550,9 @@ public class Cylinder25D {
 
     void calcLineFactors() {
       diameter /= 2;
-      int radius = (diameter + 1) / 2; // add one here to control rounding properly
+      radiusF = diameter / 2.0f;
+      radius3d2 = radiusF * radiusF;
+      int radius = (diameter + 1) / 2;
       x1 = -(radius * -dy) / mag2d;
       y1 = -(radius * dx) / mag2d;
       x2 = x1 + (diameter * -dy) / mag2d;
@@ -610,13 +622,16 @@ public class Cylinder25D {
     }
 
     void plotEdgewise1(int x, int y) {
-      float z2 = radiusF2 - (x*x + y*y);
+      float xF = x + 0.5f;
+      float yF = y + 0.5f;
+      float z2 = radius3d2 - (xF*xF + yF*yF);
       float zF = (z2 <= 0) ? 0 : (float)Math.sqrt(z2);
-      byte intensity = Shade25D.calcIntensity(x, y, zF);
+      byte intensity = Shade25D.calcIntensity(xF, yF, zF);
       int z = (int)(zF + 0.5f);
       g25d.plotLineDelta(shades1[intensity], shades2[intensity],
                          xOrigin + x, yOrigin + y, zOrigin - z, dx, dy, dz);
       /*
+      System.out.println("diameter=" + diameter + " radius=" + radiusF);
       System.out.println("plotEdgewise1:" + x + "," + y + "," + zF +
                          " intensity=" + intensity);
       */

@@ -69,7 +69,7 @@ final public class Graphics25D {
   final static int zBackground = 32767;
   final static boolean forceAWT = false;
 
-  public boolean tEnabled = false;
+  public boolean tEnabled = true;
 
   int argbCurrent;
   Font fontCurrent;

@@ -338,16 +338,18 @@ public class Sphere25D {
   byte calcIntensity(float x, float y, float radius2) {
     int count = 0;
     int intensitySum = 0;
-    for (float i = -.17f; i < 0; i += .34f)
-      for (float j = -.17f; j < 0; j += .34f) {
+    for (float i = -.17f; i < .18f; i += .34f)
+      for (float j = -.17f; j < .18; j += .34f) {
         int intensity = calcIntensity1(x + i, y + j, radius2);
         if (intensity >= 0) {
           intensitySum += intensity;
           ++count;
         }
       }
-    if (count == 0)
+    if (count == 0) {
+      System.out.println("count is 0 ... why am I here?");
       return -1;
+    }
     return (byte)((intensitySum + count/2) / count);
   }
 

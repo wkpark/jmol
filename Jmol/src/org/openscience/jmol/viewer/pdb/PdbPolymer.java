@@ -43,7 +43,7 @@ public class PdbPolymer {
     int firstNonMainchain = 0;
     for (int i = 0; i < chain.groupCount; ++i ) {
       PdbGroup group = chainGroups[i];
-      if (! group.hasFullMainchain())
+      if (group == null || ! group.hasFullMainchain())
         continue;
       ++count;
       if (firstNonMainchain == i)
@@ -58,7 +58,7 @@ public class PdbPolymer {
       groups = new PdbGroup[count];
       for (int i = 0, j = 0; i < chain.groupCount; ++i) {
         PdbGroup group = chainGroups[i];
-        if (! group.hasFullMainchain())
+        if (group == null || !group.hasFullMainchain())
           continue;
         groups[j++] = group;
       }

@@ -55,7 +55,6 @@ class Jmol extends JPanel {
   private JFileChooser openChooser = new JFileChooser();
   private JFileChooser saveChooser = new JFileChooser();
   private JFileChooser exportChooser = new JFileChooser();
-  private FileTyper ft;
 
   public static File UserPropsFile;
   public static File UserAtypeFile;
@@ -181,8 +180,6 @@ class Jmol extends JPanel {
     splash.showStatus("Reading AtomTypes...");
     atomTypeTable = new AtomTypeTable(frame, UserAtypeFile);
     splash.showStatus("Setting up File Choosers...");
-    ft = new FileTyper(openChooser);
-    openChooser.setAccessory(ft);
     File currentDir = getUserDirectory();
     openChooser.setCurrentDirectory(currentDir);
     saveChooser.setCurrentDirectory(currentDir);
@@ -989,10 +986,9 @@ class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File theFile = openChooser.getSelectedFile();
-        openFile(theFile, ft.getType());
+        openFile(theFile, "");
         return;
       }
-      JOptionPane.showMessageDialog(Jmol.this, "No file chosen");
     }
   }
 
@@ -1046,7 +1042,8 @@ class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
 
       Frame frame = getFrame();
-      FileTyper ft = new FileTyper(saveChooser);
+      FileTyper ft = new FileTyper();
+      saveChooser.addPropertyChangeListener(ft);
       saveChooser.setAccessory(ft);
       int retval = saveChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {

@@ -26,104 +26,93 @@ import java.beans.*;
 import java.awt.*;
 import java.io.File;
 
-public class FileTyper extends JPanel implements PropertyChangeListener {
+public class FileTyper extends JPanel implements PropertyChangeListener,
+    ItemListener {
 
-  File f = null;
-  private JFileChooser myChooser;
-  private JComboBox cb;
-  private static boolean UseFileExtensions = true;
+  private JComboBox fileTypeComboBox;
+  private static boolean useFileExtensions = true;
 
-  private String[] Choices = {
-    JmolResourceHandler.getInstance().getString("FileTyper.Automatic"), JmolResourceHandler.getInstance().getString("FileTyper.XYZ"), JmolResourceHandler.getInstance().getString("FileTyper.PDB"),
-    JmolResourceHandler.getInstance().getString("FileTyper.CML"), JmolResourceHandler.getInstance().getString("FileTyper.GhemicalMM")
+  private String[] choices = {
+    JmolResourceHandler.getInstance().getString("FileTyper.XYZ"),
+    JmolResourceHandler.getInstance().getString("FileTyper.PDB"),
+    JmolResourceHandler.getInstance().getString("FileTyper.CML"),
   };
 
   // Default is the first one:
-  private int def = 0;
-  private String result = Choices[def];
+  private int defaultTypeIndex = 0;
+  private String fileType = choices[defaultTypeIndex];
 
   /**
-   * Should we use the file extension to set the file type????
+   * Whether to use the file extension to set the file type.
    *
-   * @param ufe boolean controlling the behavior of this component
+   * @param on if true file extensions are used.
    */
-  public static void setUseFileExtensions(boolean ufe) {
-    UseFileExtensions = ufe;
+  public static void setUseFileExtensions(boolean on) {
+    useFileExtensions = on;
   }
 
   /**
-   * Are we using the file extension to set the file type????
+   * Whether file extensions are used to set the file type.
    */
   public static boolean getUseFileExtensions() {
-    return UseFileExtensions;
+    return useFileExtensions;
   }
 
   /**
    * A simple panel with a combo box for allowing the user to choose
    * the input file type.
    *
-   * @param fc the file chooser
+   * @param fileChooser the file chooser
    */
-  public FileTyper(JFileChooser fc) {
-
-    myChooser = fc;
+  public FileTyper() {
 
     setLayout(new BorderLayout());
 
-    JPanel cbPanel = new JPanel();
-    cbPanel.setLayout(new FlowLayout());
-    cbPanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("FileTyper.Title")));
-    cb = new JComboBox();
-    for (int i = 0; i < Choices.length; i++) {
-      cb.addItem(Choices[i]);
+    JPanel fileTypePanel = new JPanel();
+    fileTypePanel.setLayout(new FlowLayout());
+    fileTypePanel.setBorder(new TitledBorder(JmolResourceHandler.getInstance().getString("FileTyper.Title")));
+    fileTypeComboBox = new JComboBox();
+    for (int i = 0; i < choices.length; i++) {
+      fileTypeComboBox.addItem(choices[i]);
     }
-    cbPanel.add(cb);
-    cb.setSelectedIndex(def);
-    cb.addItemListener(new ItemListener() {
-
-      public void itemStateChanged(ItemEvent e) {
-        JComboBox source = (JComboBox) e.getSource();
-        result = (String) source.getSelectedItem();
-      }
-    });
-    add(cbPanel, BorderLayout.CENTER);    // Change to NORTH if other controls
-
-    fc.addPropertyChangeListener(this);
+    fileTypePanel.add(fileTypeComboBox);
+    fileTypeComboBox.setSelectedIndex(defaultTypeIndex);
+    fileTypeComboBox.addItemListener(this);
+    add(fileTypePanel, BorderLayout.CENTER);
   }
 
   /**
-   * returns the file type which contains the user's choice
+   * Returns the file type which contains the user's choice
    */
   public String getType() {
-    return result;
+    return fileType;
   }
 
-  public void propertyChange(PropertyChangeEvent e) {
+  public void itemStateChanged(ItemEvent event) {
+    if (event.getSource() == fileTypeComboBox) {
+      fileType = (String) fileTypeComboBox.getSelectedItem();
+    }
+  }
 
-    String prop = e.getPropertyName();
-    if (prop == JFileChooser.SELECTED_FILE_CHANGED_PROPERTY) {
-      f = (File) e.getNewValue();
-      String fname = f.toString().toLowerCase();
-      System.out.println(fname);
-      String lastSection = f.getName();
-      if (lastSection.startsWith("*.")) {
-        String type = lastSection.substring(2);
-
-        //myChooser.setFileFilter(new JmolFileFilter(type,null,true));
-      } else if (UseFileExtensions) {
-        if (fname.endsWith("xyz")) {
-          cb.setSelectedIndex(1);
-        } else if (fname.endsWith("pdb")) {
-          cb.setSelectedIndex(2);
-        } else if (fname.endsWith("cml")) {
-          cb.setSelectedIndex(3);
-        } else if (fname.endsWith("mm1gp")) {
-          cb.setSelectedIndex(4);
+  public void propertyChange(PropertyChangeEvent event) {
+    
+    String property = event.getPropertyName();
+    if (useFileExtensions) {
+      if (property.equals(JFileChooser.SELECTED_FILE_CHANGED_PROPERTY)) {
+        File file = (File) event.getNewValue();
+        String fileName = file.toString().toLowerCase();
+        if (fileName.endsWith("xyz")) {
+          fileTypeComboBox.setSelectedIndex(0);
+        } else if (fileName.endsWith("pdb")) {
+          fileTypeComboBox.setSelectedIndex(1);
+        } else if (fileName.endsWith("cml")) {
+          fileTypeComboBox.setSelectedIndex(2);
         } else {
-          cb.setSelectedIndex(0);
+          fileTypeComboBox.setSelectedIndex(0);
         }
       }
     }
   }
+  
 }
 

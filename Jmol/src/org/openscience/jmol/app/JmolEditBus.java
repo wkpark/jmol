@@ -72,7 +72,7 @@ public class JmolEditBus implements CDKEditBus {
             return;
         }
         try {
-            AtomTypeFactory factory = AtomTypeFactory.getInstance("jmol_atomtypes.txt");
+            AtomTypeFactory factory = AtomTypeFactory.getInstance("org/openscience/cdk/config/data/jmol_atomtypes.txt");
             for (int i=0; i<atoms.length; i++) {
                 try {
                     factory.configure(atoms[i]);

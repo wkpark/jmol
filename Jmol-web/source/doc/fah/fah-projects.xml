@@ -1458,7 +1458,7 @@
   <fah_proj number="960" name="p960_pa_nat_sf2" file="y"
     server="171.65.103.153" atoms="737" preferred="8" deadline="13"
     credit="48" frames="100" code="G" contact="guha"/>
-  <fah_proj number="961" name="p961_pa_f31g_drf2"
+  <fah_proj number="961" name="p961_pa_f31g_drf2" file="y"
     server="171.64.122.132" atoms="724" preferred="8" deadline="13"
     credit="48" frames="100" code="G" contact="guha"/>
   <fah_proj number="997"
@@ -1988,7 +1988,7 @@
   <fah_proj number="1248" name="p1248_fsnat_305K_3P-PME" file="y"
     server="171.64.122.116" atoms="6414" preferred="31" deadline="45"
     credit="159" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1249" name="p1249_fsunf_305K_3P-PME"
+  <fah_proj number="1249" name="p1249_fsunf_305K_3P-PME" file="y"
     server="171.64.122.116" atoms="6384" preferred="31" deadline="45"
     credit="159" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1250" name="p1250_A7ext_298K_94" file="y"

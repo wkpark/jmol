@@ -125,9 +125,7 @@ public abstract class ModelAdapter {
    * by the Protein Data Bank.
    * @see <a href='http://www.rcsb.org/pdb'>www.rcsb.org/pdb</a>
    */
-  public boolean hasPdbRecords(Object clientFile) {
-    return false;
-  }
+  public boolean hasPdbRecords(Object clientFile) { return false; }
 
   /**
    * If hasPdbRecords(clientFile, frameNumber) returns true then structural
@@ -136,10 +134,7 @@ public abstract class ModelAdapter {
    * .pdb file.
    * @see #hasPdbRecords(Object clientFile)
    */
-  public String[] getPdbStructureRecords(Object clientFile) {
-    return null;
-  }
-
+  public String[] getPdbStructureRecords(Object clientFile) { return null; }
 
   /**
    * This method returns the parameters that define a crystal unitcell
@@ -149,17 +144,14 @@ public abstract class ModelAdapter {
    * alpha, beta, gamma : degrees
    * if there is no unit cell data then return null
    */
-  public float[] getNotionalUnitcell(Object clientFile) {
-    return null;
-  }
 
-  public float[] getPdbScaleMatrix(Object clientFile) {
-    return null;
-  }
+  public boolean coordinatesAreFractional(Object clientFile) { return false; }
 
-  public float[] getPdbScaleTranslate(Object clientFile) {
-    return null;
-  }
+  public float[] getNotionalUnitcell(Object clientFile) { return null; }
+
+  public float[] getPdbScaleMatrix(Object clientFile) { return null; }
+
+  public float[] getPdbScaleTranslate(Object clientFile) { return null; }
 
   public String getClientAtomStringProperty(Object clientAtom,
                                             String propertyName) {
@@ -178,9 +170,7 @@ public abstract class ModelAdapter {
    * rebonding code to build bonds between atoms.
    * @see BondIterator
    */
-  public BondIterator getBondIterator(Object clientFile) {
-    return null;
-  }
+  public BondIterator getBondIterator(Object clientFile) { return null; }
 
   /****************************************************************
    * AtomIterator is used to enumerate all the <code>clientAtom</code>

@@ -31,7 +31,6 @@ class Model {
   int atomCount;
   int bondCount;
   String modelName;
-  boolean cartesianCoordinates = true;
   Atom[] atoms = new Atom[512];
   Bond[] bonds = new Bond[0];
   String errorMessage;
@@ -39,6 +38,7 @@ class Model {
 
   String spaceGroup;
   float wavelength = Float.NaN;
+  boolean coordinatesAreFractional;
   float[] notionalUnitcell;
   float[] pdbScaleMatrix;
   float[] pdbScaleTranslate;

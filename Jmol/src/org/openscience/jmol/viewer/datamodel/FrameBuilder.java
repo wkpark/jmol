@@ -54,10 +54,11 @@ final public class FrameBuilder {
      * crystal cell must come first, in case atom coordinates
      * need to be transformed to fit in the crystal cell
      ****************************************************************/
+    frame.fileCoordinatesAreFractional =
+      adapter.coordinatesAreFractional(clientFile);
     frame.setNotionalUnitcell(adapter.getNotionalUnitcell(clientFile));
     frame.setPdbScaleMatrix(adapter.getPdbScaleMatrix(clientFile));
     frame.setPdbScaleTranslate(adapter.getPdbScaleTranslate(clientFile));
-
 
     for (ModelAdapter.AtomIterator iterAtom =
            adapter.getAtomIterator(clientFile);

@@ -103,6 +103,10 @@ public class SmarterModelAdapter extends ModelAdapter {
     return t;
   }
 
+  public boolean coordinatesAreFractional(Object clientFile) {
+    return ((Model)clientFile).coordinatesAreFractional;
+  }
+
   public float[] getNotionalUnitcell(Object clientFile) {
     return ((Model)clientFile).notionalUnitcell;
   }

@@ -59,6 +59,7 @@ final public class Frame {
   Object[] clientAtomReferences;
   int bondCount = 0;
   public Bond[] bonds;
+  boolean fileCoordinatesAreFractional;
   public float[] notionalUnitcell;
   public Matrix3f matrixNotional;
   public Matrix3f pdbScaleMatrix;
@@ -948,6 +949,8 @@ final public class Frame {
 
   void doUnitcellStuff() {
     constructFractionalMatrices();
+    if (fileCoordinatesAreFractional)
+      convertFractionalToEuclidean();
     /*
       mth 2004 03 06
       We do not want to pack the unitcell automatically.

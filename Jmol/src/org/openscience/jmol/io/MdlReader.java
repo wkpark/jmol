@@ -102,7 +102,7 @@ public class MdlReader extends DefaultChemFileReader {
       double z = Double.valueOf(line.substring(20, 30).trim()).doubleValue();
       String atomSymbol = line.substring(31, 34).trim();
 
-      frame.addAtom(atomSymbol, x, y, z);
+      frame.addAtom(atomSymbol, x, y, z, null);
     }
 
     // Read bonds

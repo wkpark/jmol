@@ -155,7 +155,7 @@ public class XYZReader extends DefaultChemFileReader {
           y = convertToDouble(sy, readingBohr);
           z = convertToDouble(sz, readingBohr);
 
-          int atomIndex = frame.addAtom(aname, x, y, z);
+          int atomIndex = frame.addAtom(aname, x, y, z, null);
 
           if ((numberTokens == 5) || (numberTokens > 7)) {
             double c = FortranFormat.atof(st.nextToken());

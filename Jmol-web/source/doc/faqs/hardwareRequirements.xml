@@ -2,10 +2,9 @@
   <section title="What are the minimum hardware requirements?">
     <p>
       400 Mhz CPU + 128 Mb RAM<br />
-      There is no absolute minimum. Performance is a function of
-      molecule size, window size, and image complexity. <br />
-      (On MacOS 9 you need more horsepower to make up for poor
-      Java performance.) 
+      There is no absolute minimum. This is a practical minimum.
+      Performance is a function of
+      molecule size, window size, and image complexity.
     </p>
   </section>
   

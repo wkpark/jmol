@@ -38,8 +38,8 @@
    title="What shapes does Jmol support for protein secondary structure?">
     <p>
       Using RasMol/Chime terminology, Jmol current supports
-      <b>backbone</b>, <b>trace</b>, and <b>strands</b>.
-      Jmol does not yet support <b>ribbons</b> or <b>cartoons</b>.
+      <b>backbone</b>, <b>trace</b>, <b>strands</b>, <b>meshribbons</b>,
+      <b>ribbons</b>, and <b>cartoons</b>.
     </p>
   </section>
 </section>

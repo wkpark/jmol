@@ -12,7 +12,7 @@
 
       <p>
 	If you are running Microsoft Internet Explorer on the Windows
-	operating system we recommend that you upgrade to the Sun
+	operating system you should upgrade to the Sun
 	Java Virtual Machine by visiting
 	<a href="http://www.java.com/">www.java.com</a>.
       </p>
@@ -26,15 +26,7 @@
       
     </section>
 
-    <section title="Jmol v10 beta test program">
-      <p>
-	If you are interested in participating in the Jmol v10 beta test
-	then you can download it from
-	<a href="../betatest/">here</a>.
-      </p>
-    </section>
-
-    <section title="Downloading Jmol version 9">
+    <section title="Downloading Jmol">
       <p>The current official release is version $VERSION$.</p>
       <p>It can be downloaded using the following links:
       <ul>
@@ -57,17 +49,6 @@ deb-src <a href="http://debian.wgdd.de/debian/">http://debian.wgdd.de/debian</a>
         The repository has changed, because <a href="http://mentors.debian.net/">mentors.debian.net</a> 
         will no longer provide binary-packages.
       </p>
-    </section>
-
-    <section title="Downloading the applet">
-      <p>The current release is version $VERSION$.</p>
-      <p>To use the applet, you must first download the applet distribution and
-      extract the files. It can be downloaded from <a
-      href="http://sourceforge.net/project/showfiles.php?group_id=23629">SourceForge</a>.
-      </p>
-
-      <p>JmolApplet.jar contains all the classes needed to support the
-      Jmol applet. No other jar files are needed. </p>
     </section>
 
     <section title="CVS Access">

@@ -11,15 +11,6 @@
   <body>
     <title>Jmol FAQs</title>
 
-    <header>
-      <p>
-	<b>
-	  Information on this page relates to the upcoming release
-	  Jmol v10 release that is currently in beta test.
-	</b>
-      </p>
-    </header>
-
     &appletRequirements;
 
     &hardwareRequirements;
@@ -32,18 +23,5 @@
 
     &appletDeployment;
 
-    <section title="Jmol v10">
-      <section title="When will Jmol v10 be released?">
-	<p>
-	  Jmol v10 is currently in public test release.
-	  We hoped to have an official Jmol v10 release in December 2003.
-	  We now aim at later this year.
-	</p>
-	<p>
-	  To participate in the test program go to
-	  <a href="../betatest">Beta Test</a>.
-	</p>
-      </section>
-    </section>
   </body>
 </document>

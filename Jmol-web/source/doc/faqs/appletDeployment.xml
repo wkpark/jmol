@@ -135,12 +135,20 @@
   <a name="loadInline" />
   <section title="I am having problems with loadInline">
     <p>
+      <i>You should probably use the
+      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
+    </p>
+    <p>
       Make sure you make a clear distinction between the
       loadInline <i>param tag</i> and the loadLine <i>method</i>.
     </p>
   </section>
 
   <section title="The loadInline param does not seem to work">
+    <p>
+      <i>You should probably use the
+      <a href="../jslibrary/">Jmol.js JavaScript Library</a></i>
+    </p>
     <p>
       Unfortunately, the mechanism for the loadInline param tag is rather
       ugly ... the HTML specification causes a few problems for us.
@@ -155,12 +163,14 @@
       Jmol has a special syntax to work around this issue. 
       you put a vertical bar beginning of each line ... like this:
       <code>
+<pre>
 	...
 	&lt;param name="loadInline" value="
 |put your
 |molecular model
 |data here
 " /&gt;
+</pre>
       </code>
       The JmolApplet will replace the vertical bars with a newline character.
       (Any white space up through the first vertical bar is removed).

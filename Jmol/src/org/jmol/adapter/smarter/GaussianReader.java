@@ -73,24 +73,57 @@ class GaussianReader extends ModelReader {
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         continue;
       Atom atom = model.newAtom();
-      atom.atomName = centerNumber;
       atom.elementNumber = (byte)elementNumber;
       atom.x = x; atom.y = y; atom.z = z;
-      model.mapAtomName(atom);
     }
   }
 
   void readFrequencies(BufferedReader reader) throws Exception {
-    discardLines(reader, 5);
+    discardLines(reader, 4);
+    int atomCount = model.atomCount;
+    int modelNumber = 1;
     String line;
     while ((line = reader.readLine()) != null &&
            line.startsWith(" Frequencies --")) {
+      discardLines(reader, 6);
+      for (int i = 0; i < atomCount; ++i) {
+        line = reader.readLine();
+        int atomCenterNumber = parseInt(line, 0, 4);
+        for (int j = 0, col = 11; j < 3; ++j, col += 23) {
+          float x = parseFloat(line, col     , col +  6);
+          float y = parseFloat(line, col +  7, col + 13);
+          float z = parseFloat(line, col + 14, col + 20);
+          recordAtomVector(modelNumber + j, atomCenterNumber, x, y, z);
+        }
+      }
+      if (true)
+        return;
+      discardLines(reader, 2);
+      modelNumber += 3;
     }
   }
 
+  void recordAtomVector(int modelNumber, int atomCenterNumber,
+                        float x, float y, float z) {
+    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+      return;
+    if (modelNumber != 1)
+      return;
+    if (atomCenterNumber <= 0 || atomCenterNumber > model.atomCount)
+      return;
+    Atom atom = model.atoms[atomCenterNumber - 1];
+    atom.vectorX = x;
+    atom.vectorY = y;
+    atom.vectorZ = z;
+    System.out.println(" model:" + modelNumber +
+                       " atom:" + atomCenterNumber +
+                       " @ " + x + "," + y + "," + z);
+  }
+
   void discardLines(BufferedReader reader, int nLines) throws Exception {
+    System.out.println("discardLines:");
     for (int i = nLines; --i >= 0; )
-      reader.readLine();
+      System.out.println(reader.readLine());
   }
   
 }

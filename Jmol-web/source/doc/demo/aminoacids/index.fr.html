@@ -1,0 +1,102 @@
+<!--
+  French translation 
+  Translated from default version : index.en.html (v 1.2)
+-->
+<html>
+  <head>
+    <title>D&#x00E9;monstration applet jmol amino-acides</title>
+    <script src="../../jmol/Jmol.js"></script>
+  </head>
+  <body>
+    <script>
+      jmolInitialize("../../jmol");
+      jmolCheckBrowser("popup", "../../browsercheck", "onClick");
+    </script>
+    <form>
+      <table border="1">
+        <tr>
+          <td>
+            <h2>amino acides</h2>
+            <script>jmolApplet(350);</script>
+          </td>
+          <td>
+            <script>
+              var doc = document;
+              function writeAminoControl(basename, label) {
+                doc.open(); doc.writeln("<td>"); doc.close();
+
+                jmolButton("load " + basename + ".pdb.gz", "X");
+                doc.open();
+                doc.writeln(" ");
+                doc.writeln(label);
+                doc.writeln("</td>");
+                doc.close();
+              }
+	      
+              doc.writeln("<table border=0><tr>");
+              writeAminoControl('ala', 'ala - alanine');
+              writeAminoControl('arg', 'arg - arginine');
+              writeAminoControl('asn', 'asn - asparagine');
+              writeAminoControl('asp', 'asp - aspartate');
+              doc.writeln("</tr><tr>");
+              writeAminoControl('cys', 'cys - cystine');
+              writeAminoControl('gln', 'gln - glutamine');
+              writeAminoControl('glu', 'glu - glutamate');
+              writeAminoControl('gly', 'gly - glycine');
+              doc.writeln("</tr><tr>");
+              writeAminoControl('his', 'his - histidine');
+              writeAminoControl('ile', 'ile - isoleucine');
+              writeAminoControl('leu', 'leu - leucine');
+              writeAminoControl('lys', 'lys - lysine');
+              doc.writeln("</tr><tr>");
+              writeAminoControl('met', 'met - methionine');
+              writeAminoControl('phe', 'phe - phenylalanine');
+              writeAminoControl('pro', 'pro - proline');
+              writeAminoControl('ser', 'ser - serine');
+              doc.writeln("</tr><tr>");
+              writeAminoControl('thr', 'thr - threonine');
+              writeAminoControl('trp', 'trp - tryptophan');
+              writeAminoControl('tyr', 'tyr - tyrosine');
+              writeAminoControl('val', 'val - valine');
+              doc.writeln("</tr></table>")
+
+              function writeScriptControl(script) {
+                jmolButton(script);
+                jmolHtml(" ");
+              }
+
+              doc.writeln("<br /><hr />");
+
+              writeScriptControl('select *');
+              writeScriptControl('select mainchain');
+              writeScriptControl('select sidechain');
+              doc.writeln("<br /><hr />");
+
+              writeScriptControl('wireframe on');
+              writeScriptControl('wireframe 0.1');
+              writeScriptControl('wireframe 0.2');
+              doc.writeln("<br /><hr />");
+
+              writeScriptControl('cpk off');
+              writeScriptControl('cpk 20%');
+              writeScriptControl('cpk on');
+              doc.writeln("<br /><hr />");
+
+              writeScriptControl('label %a');
+              writeScriptControl('label %n');
+              writeScriptControl('label off');
+              doc.writeln("<br /><hr />");
+              writeScriptControl('color label white');
+              writeScriptControl('color label none');
+              doc.writeln("<br /><hr />");
+
+              writeScriptControl('color atoms cpk');
+              writeScriptControl('color atoms amino');
+              doc.writeln("<br />");
+            </script>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>

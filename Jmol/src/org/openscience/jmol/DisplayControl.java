@@ -877,12 +877,18 @@ final public class DisplayControl {
   }
 
   public Color getAtomColor(Atom atom) {
-    return colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
+    Color color = colorProfile.getAtomColor((org.openscience.cdk.Atom)atom);
+    if (modeTransparentColors)
+      color = getTransparent(color);
+    return color;
   }
 
   public Color getAtomOutlineColor(Color color) {
-    return (showDarkerOutline || atomDrawMode == SHADING)
+    Color outline = (showDarkerOutline || atomDrawMode == SHADING)
       ? getDarker(color) : outlineColor;
+    if (modeTransparentColors)
+      outline = getTransparent(outline);
+    return outline;
   }
 
   private Hashtable htDarker = new Hashtable();
@@ -893,5 +899,22 @@ final public class DisplayControl {
       htDarker.put(color, darker);
     }
     return darker;
+  }
+
+  private boolean modeTransparentColors = false;
+  public void setModeTransparentColors(boolean modeTransparentColors) {
+    this.modeTransparentColors = modeTransparentColors;
+  }
+
+  private final static int transparency = 0x40;
+  private Hashtable htTransparent = new Hashtable();
+  public Color getTransparent(Color color) {
+    Color transparent = (Color) htTransparent.get(color);
+    if (transparent == null) {
+      int argb = (color.getRGB() & 0x00FFFFFF) | (transparency << 24);
+      transparent = new Color (argb, true);
+      htTransparent.put(color, transparent);
+    }
+    return transparent;
   }
 }

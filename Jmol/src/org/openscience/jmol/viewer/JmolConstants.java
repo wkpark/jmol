@@ -1649,6 +1649,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_DEFINING_PROTEIN_MAX = 5;
   public final static byte ATOMID_DEFINING_NUCLEIC_MAX = 16;
 
+  ////////////////////////////////////////////////////////////////
+  // currently, ATOMIDs must be >= 0 && <= 127
+  // if we need more then we can go to 255 by:
+  //  1. applying 0xFF mask ... as in atom.specialAtomID & 0xFF;
+  //  2. change the interesting atoms table to be shorts
+  //     so that we can store negative numbers
+  ////////////////////////////////////////////////////////////////
+
   public final static byte ATOMID_AMINO_NITROGEN = 1;
   public final static byte ATOMID_ALPHA_CARBON = 2;
   public final static byte ATOMID_CARBONYL_CARBON = 3;
@@ -1673,6 +1681,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_N6 = 78;
   public final static byte ATOMID_N2 = 79;
   public final static byte ATOMID_S4 = 80;
+
   // this is currently defined as C6
   public final static byte ATOMID_NUCLEIC_WING = 69;
 

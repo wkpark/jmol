@@ -30,20 +30,13 @@ import javax.vecmath.Point3f;
 
 public class AminoMonomer extends AlphaMonomer {
 
+  // negative values are optional
   final static byte[] interestingAminoAtomIDs = {
-    JmolConstants.ATOMID_ALPHA_CARBON,
-    JmolConstants.ATOMID_CARBONYL_OXYGEN,
-    JmolConstants.ATOMID_AMINO_NITROGEN,
-    JmolConstants.ATOMID_CARBONYL_CARBON,
-    JmolConstants.ATOMID_TERMINATING_OXT,
-  };
-
-  final static boolean[] requiredAminoAtomIDs = {
-    true,
-    true,
-    true,
-    true,
-    false,
+    JmolConstants.ATOMID_ALPHA_CARBON,      // 0 CA alpha carbon
+    JmolConstants.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
+    JmolConstants.ATOMID_AMINO_NITROGEN,    // 2 N
+    JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C
+    -JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
   };
 
   static Monomer
@@ -51,8 +44,7 @@ public class AminoMonomer extends AlphaMonomer {
                         int firstAtomIndex, int lastAtomIndex,
                         int[] specialAtomIndexes) {
     byte[] offsets = scanForOffsets(firstAtomIndex, specialAtomIndexes,
-                                    interestingAminoAtomIDs,
-                                    requiredAminoAtomIDs);
+                                    interestingAminoAtomIDs);
     if (offsets == null)
       return null;
     AminoMonomer aminoMonomer =

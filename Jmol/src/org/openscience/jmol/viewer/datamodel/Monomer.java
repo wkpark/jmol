@@ -52,15 +52,19 @@ abstract class Monomer extends Group {
 
   static byte[] scanForOffsets(int firstAtomIndex,
                                int[] specialAtomIndexes,
-                               byte[] interestingAtomIDs,
-                               boolean[] required) {
+                               byte[] interestingAtomIDs) {
     int interestingCount = interestingAtomIDs.length;
     byte[] offsets = new byte[interestingCount];
     for (int i = interestingCount; --i >= 0; ) {
+      int atomIndex;
       int atomID = interestingAtomIDs[i];
-      int atomIndex = specialAtomIndexes[atomID];
-      if (required[i] && atomIndex < 0)
-        return null;
+      if (atomID < 0) {
+        atomIndex = specialAtomIndexes[-atomID]; // optional
+      } else {
+        atomIndex = specialAtomIndexes[atomID];  // required
+        if (atomIndex < 0)
+          return null;
+      }
       int offset;
       if (atomIndex < 0)
         offset = 255;

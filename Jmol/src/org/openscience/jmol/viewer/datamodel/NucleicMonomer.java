@@ -28,60 +28,33 @@ import org.openscience.jmol.viewer.*;
 
 public class NucleicMonomer extends Monomer {
 
+  // negative values are optional
   final static byte[] interestingNucleicAtomIDs = {
-    JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,
-    JmolConstants.ATOMID_NUCLEIC_WING,
+    JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,     // 0 P  the lead, phosphorus
+    JmolConstants.ATOMID_NUCLEIC_WING,           // 1 the wing man, c6
 
-    JmolConstants.ATOMID_RNA_O2PRIME,
+    -JmolConstants.ATOMID_RNA_O2PRIME, // 2  O2' for RNA
 
-    JmolConstants.ATOMID_N1,
-    JmolConstants.ATOMID_C2,
-    JmolConstants.ATOMID_N3,
-    JmolConstants.ATOMID_C4,
-    JmolConstants.ATOMID_C5,
-    JmolConstants.ATOMID_C6,
+    JmolConstants.ATOMID_N1,   //  3 N1
+    JmolConstants.ATOMID_C2,   //  4 C2
+    JmolConstants.ATOMID_N3,   //  5 N3
+    JmolConstants.ATOMID_C4,   //  6 C4
+    JmolConstants.ATOMID_C5,   //  7 C5
+    JmolConstants.ATOMID_C6,   //  8 C6
 
-    JmolConstants.ATOMID_O2,
+    -JmolConstants.ATOMID_O2,  //  9 O2
 
-    JmolConstants.ATOMID_N7,
-    JmolConstants.ATOMID_C8,
-    JmolConstants.ATOMID_N9,
+    -JmolConstants.ATOMID_N7,  // 10 N7
+    -JmolConstants.ATOMID_C8,  // 11 C8
+    -JmolConstants.ATOMID_N9,  // 12 C9
 
-    JmolConstants.ATOMID_O4,  // U & ! C5M
-    JmolConstants.ATOMID_O6,  // I & ! N2
-    JmolConstants.ATOMID_N4,  // C
-    JmolConstants.ATOMID_C5M, // T
-    JmolConstants.ATOMID_N6,  // A
-    JmolConstants.ATOMID_N2,  // G
-    JmolConstants.ATOMID_S4,  // tU
-  };
-
-  final static boolean[] requiredNucleicAtomIDs = {
-    true,  //  0 - P
-    true,  //  1 - whatever the Wing is ... currently C6
-
-    false, //  2 - O2' - for RNA
-
-    true,  //  3 - N1
-    true,  //  4 - C2,
-    true,  //  5 - N3,
-    true,  //  6 - C4,
-    true,  //  7 - C5,
-    true,  //  8 - C6,
-
-    false, //  9 - O2 for pyrimidines
-
-    false, // 10 - N7 for purines
-    false, // 11 - C8 for purines
-    false, // 12 - N9 for purines
-
-    false, // 13 JmolConstants.ATOMID_O4,  // U & ! C5M
-    false, // 14 JmolConstants.ATOMID_O6,  // I & ! N2
-    false, // 15 JmolConstants.ATOMID_N4,  // C
-    false, // 16 JmolConstants.ATOMID_C5M, // T
-    false, // 17 JmolConstants.ATOMID_N6,  // A
-    false, // 18 JmolConstants.ATOMID_N2,  // G
-    false, // 19 JmolConstants.ATOMID_S4,  // tU
+    -JmolConstants.ATOMID_O4,  // 13 O4   U (& ! C5M)
+    -JmolConstants.ATOMID_O6,  // 14 O6   I (& ! N2)
+    -JmolConstants.ATOMID_N4,  // 15 N4   C
+    -JmolConstants.ATOMID_C5M, // 16 C5M  T
+    -JmolConstants.ATOMID_N6,  // 17 N6   A
+    -JmolConstants.ATOMID_N2,  // 18 N2   G
+    -JmolConstants.ATOMID_S4,  // 19 S4   tU
   };
 
   static Monomer
@@ -91,8 +64,8 @@ public class NucleicMonomer extends Monomer {
 
     byte[] offsets = scanForOffsets(firstAtomIndex,
                                     specialAtomIndexes,
-                                    interestingNucleicAtomIDs,
-                                    requiredNucleicAtomIDs);
+                                    interestingNucleicAtomIDs);
+
     if (offsets == null)
       return null;
     NucleicMonomer nucleicMonomer =

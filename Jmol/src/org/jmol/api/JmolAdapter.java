@@ -27,7 +27,6 @@ package org.jmol.api;
 
 import java.io.BufferedReader;
 import java.util.Properties;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
@@ -156,13 +155,6 @@ public abstract class JmolAdapter {
     return null;
   }
   
-  /**
-   * The tree model of the collection of atomsets.
-   */
-   public DefaultMutableTreeNode getAtomSetCollectionTree(Object clientFile) {
-     return null;
-   }
-
   /**
    * The estimated number of atoms contained in the file.
    * Just return -1 if you don't know (or don't want to figure it out)

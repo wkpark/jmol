@@ -26,10 +26,11 @@
 package org.openscience.jmol.app;
 
 import org.jmol.viewer.*;
-import org.jmol.api.AtomSet;
+import org.jmol.viewer.managers.ModelManager;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JDialog;
@@ -42,6 +43,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreeSelectionModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -50,10 +52,9 @@ public class AtomSetChooser extends JDialog
   
   private JEditorPane propertiesPane;
   private JTree tree;
-  private DefaultMutableTreeNode rootNode;
   private DefaultTreeModel treeModel;
   private JmolViewer viewer;
-  private JButton refreshButton;
+  private JButton recreateButton;
   
   public AtomSetChooser(JmolViewer viewer, JFrame frame) {
     super(frame,"AtomSetChooser", false);
@@ -67,9 +68,14 @@ public class AtomSetChooser extends JDialog
     // setup the container like the TreeDemo.java from the Java Tutorial
     container.setLayout(new BorderLayout());
 
-    rootNode = new DefaultMutableTreeNode("File");
+    // create the root for the treeModel only, later this gets set
+    // to the tree based on the frame.
+    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("File");
     treeModel = new DefaultTreeModel(rootNode);
     tree = new JTree(treeModel);
+    // only allow single selection (may want to change this later?)
+    tree.getSelectionModel().setSelectionMode
+            (TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.addTreeSelectionListener(this);
     
     // create the scroll pane and add the tree to it.
@@ -85,23 +91,28 @@ public class AtomSetChooser extends JDialog
     splitPane.setTopComponent(treeView);
     splitPane.setBottomComponent(propertiesView);
    
+    // set the dimensions of the views
+    Dimension minimumSize = new Dimension(100, 50);
+    treeView.setMinimumSize(minimumSize);
+    propertiesView.setMinimumSize(minimumSize);
+    splitPane.setDividerLocation(100);
+    splitPane.setPreferredSize(new Dimension(500,300));
+    
+    // now we are ready to add the split frame
     container.add(splitPane,BorderLayout.CENTER);
     
     JPanel buttonPanel = new JPanel();
     container.add(buttonPanel, BorderLayout.SOUTH);
     
-    refreshButton = new JButton("Refresh");
-    refreshButton.addActionListener(
+    recreateButton = new JButton("Recreate");
+    recreateButton.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          refreshTreeModel();
+          createTreeModel();
         }
       }
     );
-    buttonPanel.add(refreshButton);
-
-    // Now refresh the tree
-    refreshTreeModel();
+    buttonPanel.add(recreateButton);
   }
   
   public void valueChanged(TreeSelectionEvent e) {
@@ -110,15 +121,13 @@ public class AtomSetChooser extends JDialog
     
     if (node ==  null) return;
     
-    Object nodeObject = node.getUserObject();
     if (node.isLeaf()) {
-      Object clientFile = viewer.modelManager.getClientFile();
-      AtomSet atomSet  = (AtomSet) nodeObject;
-// HELP I don't know how to get the 'clientFile' in order to get the atomSetNumber for the frame to show...
-//      so I added a getClientFile() and clientField field to the ModelManager
-      int atomSetIndex = atomSet.getAtomSetIndex();
-      int atomSetNumber = viewer.modelAdapter.getAtomSetNumber(clientFile,atomSetIndex);
+      ModelManager mm = viewer.modelManager;
+      int atomSetIndex = ((AtomSet) node).getAtomSetIndex();
+      int atomSetNumber = mm.getModelNumber(atomSetIndex);
       viewer.evalString("frame " + atomSetNumber);      
+      // Currently I don't see how I can get a hold of the properties that
+      // were read.
       propertiesPane.setText("Properties to be shown later...");
     } else { // selected brach
       propertiesPane.setText("Clicked on a branch");
@@ -126,18 +135,58 @@ public class AtomSetChooser extends JDialog
   }
   
   /**
-   * Gets the AtomSetCollectionTree from the modelAdapter.
+   * Creates the treeModel of the AtomSets the ModelManager knows about.
+   *
+   * <p>Since we can not get a direct DefaultMutableTreeNode from the
+   * adapter, we'll have to build it ourselves, which currently is a
+   * completely flat tree.
+   * <p>The construction of the tree should probably really be in the
+   * FrameManager, so it is automatically done when the file is loaded
+   * and only needs to be done once. Or it could be added to the ModelManager's
+   * buildFrame method.
    */
-  void refreshTreeModel() {
-    Object clientFile = viewer.modelManager.getClientFile();
-    if (clientFile != null) {
-      // set the new root of the tree
-      treeModel.setRoot(viewer.modelAdapter.getAtomSetCollectionTree(clientFile));
-      treeModel.reload();
-      propertiesPane.setText("Tree refreshed.");
-    } else {
-      propertiesPane.setText("No file opened.");
+  public void createTreeModel() {
+    ModelManager mm = viewer.modelManager;
+    DefaultMutableTreeNode root = new DefaultMutableTreeNode(
+//      new DefaultMutableTreeNode(mm.fileName)
+      mm.fileName
+    );
+    // flat: add every AtomSet to the root
+    for (int counter = mm.getModelCount(), atomSetIndex=0; --counter>=0; atomSetIndex++) {
+      root.add(
+          new AtomSet(atomSetIndex,mm.getModelName(atomSetIndex))
+      );
     }
+    treeModel.setRoot(root);
+    treeModel.reload();
+  }
+  
+  /**
+   * Objects in the AtomSetChooser tree
+   */
+  private class AtomSet extends DefaultMutableTreeNode {
+    /**
+     * The index of that AtomSet
+     */
+    private int atomSetIndex;
+    /**
+     * The name of the AtomSet
+     */
+    private String atomSetName;
+  
+    public AtomSet(int atomSetIndex, String atomSetName) {
+      this.atomSetIndex = atomSetIndex;
+      this.atomSetName = atomSetName;
+    }
+    
+    public int getAtomSetIndex() {
+      return atomSetIndex;
+    }
+    
+    public String toString() {
+      return atomSetName;
+    }
+    
   }
   
 }

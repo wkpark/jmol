@@ -56,6 +56,14 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.HelpFormatter;
 
 public class Jmol extends JPanel {
 
@@ -345,13 +353,38 @@ public class Jmol extends JPanel {
     String modelFilename = null;
     String scriptFilename = null;
 
-    if (args.length == 2) {
-      String s = args[0];
-      if (s.equals("-script"))
-        scriptFilename = args[1];
+    Options options = new Options();
+    options.addOption("h", "help", false, "give this help page");
+    options.addOption(
+        OptionBuilder.withLongOpt("script").
+                      withDescription("script to run").
+                      withValueSeparator('=').
+                      hasArg().
+                      create()
+    );
+    options.addOption(
+        OptionBuilder.withArgName("property=value").
+                      hasArg().
+                      withValueSeparator().
+                      withDescription(
+"supported are: user.language=[EN|ES|NL], display.speed=fps, " +
+"and cdk.debugging=[true|false], JmolConsole=[true|false]").
+                      create("D")
+    );
+    
+    CommandLine line = null;
+    try {
+        CommandLineParser parser = new PosixParser();
+        line = parser.parse(options, args);
+    } catch (ParseException exception) {
+        System.err.println("Unexpected exception: " + exception.toString());
     }
-    if (args.length == 1)
-      modelFilename = args[0];
+
+    if (line.hasOption("h")) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("Jmol", options);
+        System.exit(0);
+    }
 
     try {
       String vers = System.getProperty("java.version");
@@ -363,6 +396,15 @@ public class Jmol extends JPanel {
       // Get a Jmol frame
       JFrame jmolFrame = new JFrame();
       jmol = getJmol(jmolFrame);
+
+      // Process command line arguments
+      args = line.getArgs();
+      if (args.length > 0) {
+          modelFilename = args[0];
+      }
+      if (line.hasOption("script")) {
+          scriptFilename = line.getOptionValue("script");
+      }
 
       // Open a file if one is given as an argument
       if (modelFilename != null)

@@ -1,5 +1,5 @@
 
-Copyright 1998-2003 The Jmol Development Team
+Copyright 1998-2004 The Jmol Development Team
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -61,4 +61,9 @@ JFA Icon collection
   Used for icons in menus and toolbars. Distributed free and without warranty.
   Copyright (C) 1998 by Dean S. Jones.
   See http://jfa.javalobby.org/projects/icons/
+
+Jakarta Commons CLI
+  Used for parsing command line optinos. Distributed with The Apache Software
+  License, Version 1.1. Copyright (c) 1999-2001 The Apache Software Foundation.
+  See http://jakarta.apache.org/commons/cli/.
 

@@ -204,4 +204,13 @@ public class PdbGroup {
     return getMainchainAtom(1).point3f;
   }
 
+  boolean hasFullMainchain() {
+    if (mainchainIndices == null)
+      return false;
+    for (int i = 4; --i >= 0; )
+      if (mainchainIndices[i] == -1)
+        return false;
+    return true;
+  }
+
 }

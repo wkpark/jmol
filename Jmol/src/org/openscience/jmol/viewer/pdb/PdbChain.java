@@ -37,6 +37,7 @@ public class PdbChain {
   int groupCount;
   PdbGroup[] groups = new PdbGroup[16];
   PdbGroup[] mainchain;
+  PdbPolymer polymer;
 
   public PdbChain(PdbModel model, char chainID) {
     this.model = model;
@@ -126,6 +127,12 @@ public class PdbChain {
       }
     }
     return mainchain;
+  }
+
+  public PdbPolymer getPolymer() {
+    if (polymer == null)
+      polymer = new PdbPolymer(this);
+    return polymer;
   }
 
   void addSecondaryStructure(byte type,

@@ -13,6 +13,9 @@
   <contributor id="NV">
     <name>Nicolas Vervelle</name><email>nvervell@club-internet.fr</email>
   </contributor>
+  <contributor id="ST">
+    <name>Simon Tyrrell</name><email>smt40@cam.ac.uk</email>
+  </contributor>
   <contributor id="OS">
     <name>Oliver Stuker</name><email>revilo@oc38.uni-paderborn.de</email>
   </contributor>
@@ -88,6 +91,15 @@
   </change>
   <change contributor="MTH">
     Added Unicode support in scripts.
+  </change>
+  <change contrubutor="MTH">
+    Added rendering of mesh surfaces.
+  </change>
+  <change contributor="MTH">
+    Added rendering of polyhedrals.
+  </change>
+  <change contributor="ST">
+    Added Drag-and-Drop to the application.
   </change>
 </changes>
 

@@ -38,6 +38,7 @@ import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import com.obrador.JpegEncoder;
 import java.awt.*;
+import java.awt.dnd.DropTarget;
 import java.awt.event.*;
 import java.awt.print.*;
 import java.beans.*;
@@ -280,6 +281,30 @@ public class Jmol extends JPanel {
     // Repositionning windows
     historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow);
     
+    say("Setting up Drag-and-Drop...");
+    FileDropper dropper = new FileDropper ();
+    final JFrame f = frame;
+    dropper.addPropertyChangeListener (new PropertyChangeListener () {
+        
+        public void propertyChange (PropertyChangeEvent evt) {
+            f.setCursor (Cursor.getPredefinedCursor (Cursor.WAIT_CURSOR));
+            
+            if (evt.getPropertyName ().equals (FileDropper.FD_PROPERTY_FILENAME)) {
+                final String filename = evt.getNewValue ().toString ();
+                
+                viewer.openFile(filename);
+                viewer.getOpenFileError();
+            } else if (evt.getPropertyName ().equals (FileDropper.FD_PROPERTY_INLINE)) {
+                final String inline = evt.getNewValue().toString();
+                viewer.openStringInline(inline);
+            }
+            
+            f.setCursor (Cursor.getDefaultCursor ());
+        }
+    });
+    
+    DropTarget target = new DropTarget (this, dropper);
+
     // splash.showStatus(jrh.translate("Launching main frame..."));
     say("Launching main frame...");
   }

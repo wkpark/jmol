@@ -122,6 +122,9 @@ public class PickingManager {
     case JmolConstants.PICKING_CENTER:
       viewer.setCenter(frame.getAtomPoint3f(atomIndex));
       break;
+    case JmolConstants.PICKING_SELECT_ATOM:
+      viewer.toggleSelection(atomIndex);
+      break;
     }
   }
 

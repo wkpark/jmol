@@ -2869,25 +2869,25 @@ public class Eval implements Runnable {
         pickingMode = JmolConstants.PICKING_BOND;
         break;
       case Token.atom:
-        pickingMode = JmolConstants.PICKING_ATOM;
+        pickingMode = JmolConstants.PICKING_SELECT_ATOM;
         break;
       case Token.group:
-        pickingMode = JmolConstants.PICKING_GROUP;
+        pickingMode = JmolConstants.PICKING_SELECT_GROUP;
         break;
       case Token.chain:
-        pickingMode = JmolConstants.PICKING_CHAIN;
+        pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
         break;
       case Token.select:
-        pickingMode = JmolConstants.PICKING_ATOM;
+        pickingMode = JmolConstants.PICKING_SELECT_ATOM;
         if (statementLength == 4) {
           switch (statement[3].tok) {
           case Token.chain:
-            pickingMode = JmolConstants.PICKING_CHAIN;
+            pickingMode = JmolConstants.PICKING_SELECT_CHAIN;
             // fall into
           case Token.atom:
             break;
           case Token.group:
-            pickingMode = JmolConstants.PICKING_GROUP;
+            pickingMode = JmolConstants.PICKING_SELECT_GROUP;
             break;
           default:
             invalidArgument();

@@ -39,7 +39,7 @@ public class ChemFrameRenderer {
    */
   public synchronized void paint(Graphics g, ChemFrame frame, DisplaySettings settings) {
 
-    if ((frame.getAtoms() == null) || (frame.getNumberOfAtoms() <= 0)) {
+    if (frame.getNumberOfAtoms() <= 0) {
       return;
     }
     boolean drawHydrogen = settings.getShowHydrogens();
@@ -53,7 +53,7 @@ public class ChemFrameRenderer {
 			}
 			for (int i=0; i < frame.getNumberOfAtoms(); ++i) {
 				atomReferences[i].index = i;
-				atomReferences[i].z = frame.getAtoms()[i].getScreenPosition().z;
+				atomReferences[i].z = frame.getAtomAt(i).getScreenPosition().z;
 			}
 			
 			if (frame.getNumberOfAtoms() > 1) {
@@ -81,7 +81,7 @@ public class ChemFrameRenderer {
     BondRenderer bondRenderer = getBondRenderer(settings);
     for (int i = 0; i < frame.getNumberOfAtoms(); ++i) {
       int j = atomReferences[i].index;
-      Atom atom = frame.getAtoms()[j];
+      Atom atom = frame.getAtomAt(j);
       if (drawHydrogen
             || (atom.getType().getAtomicNumber() != 1)) {
         if (settings.getShowBonds()) {

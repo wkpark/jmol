@@ -46,12 +46,12 @@ public class MeasureRenderer {
         int l = al[0];
         int j = al[1];
         try {
-          d.paint(g, settings, (int) frame.getAtoms()[l].getScreenPosition().x,
-            (int) frame.getAtoms()[l].getScreenPosition().y,
-              (int) frame.getAtoms()[l].getScreenPosition().z,
-                (int) frame.getAtoms()[j].getScreenPosition().x,
-                  (int) frame.getAtoms()[j].getScreenPosition().y,
-                    (int) frame.getAtoms()[j].getScreenPosition().z);
+          d.paint(g, settings, (int) frame.getAtomAt(l).getScreenPosition().x,
+            (int) frame.getAtomAt(l).getScreenPosition().y,
+              (int) frame.getAtomAt(l).getScreenPosition().z,
+                (int) frame.getAtomAt(j).getScreenPosition().x,
+                  (int) frame.getAtomAt(j).getScreenPosition().y,
+                    (int) frame.getAtomAt(j).getScreenPosition().z);
         } catch (Exception ex) {
         }
       }
@@ -65,15 +65,15 @@ public class MeasureRenderer {
         int j = al[1];
         int k = al[2];
         try {
-          an.paint(g, settings, (int) frame.getAtoms()[l].getScreenPosition().x,
-            (int) frame.getAtoms()[l].getScreenPosition().y,
-              (int) frame.getAtoms()[l].getScreenPosition().z,
-                (int) frame.getAtoms()[j].getScreenPosition().x,
-                  (int) frame.getAtoms()[j].getScreenPosition().y,
-                    (int) frame.getAtoms()[j].getScreenPosition().z,
-                      (int) frame.getAtoms()[k].getScreenPosition().x,
-                        (int) frame.getAtoms()[k].getScreenPosition().y,
-                          (int) frame.getAtoms()[k].getScreenPosition().z);
+          an.paint(g, settings, (int) frame.getAtomAt(l).getScreenPosition().x,
+            (int) frame.getAtomAt(l).getScreenPosition().y,
+              (int) frame.getAtomAt(l).getScreenPosition().z,
+                (int) frame.getAtomAt(j).getScreenPosition().x,
+                  (int) frame.getAtomAt(j).getScreenPosition().y,
+                    (int) frame.getAtomAt(j).getScreenPosition().z,
+                      (int) frame.getAtomAt(k).getScreenPosition().x,
+                        (int) frame.getAtomAt(k).getScreenPosition().y,
+                          (int) frame.getAtomAt(k).getScreenPosition().z);
         } catch (Exception ex) {
         }
       }
@@ -88,18 +88,18 @@ public class MeasureRenderer {
         int k = dhl[2];
         int m = dhl[3];
         try {
-          dh.paint(g, settings, (int) frame.getAtoms()[l].getScreenPosition().x,
-            (int) frame.getAtoms()[l].getScreenPosition().y,
-              (int) frame.getAtoms()[l].getScreenPosition().z,
-                (int) frame.getAtoms()[j].getScreenPosition().x,
-                  (int) frame.getAtoms()[j].getScreenPosition().y,
-                    (int) frame.getAtoms()[j].getScreenPosition().z,
-                      (int) frame.getAtoms()[k].getScreenPosition().x,
-                        (int) frame.getAtoms()[k].getScreenPosition().y,
-                          (int) frame.getAtoms()[k].getScreenPosition().z,
-                            (int) frame.getAtoms()[m].getScreenPosition().x,
-                              (int) frame.getAtoms()[m].getScreenPosition().y,
-                                (int) frame.getAtoms()[m].getScreenPosition().z);
+          dh.paint(g, settings, (int) frame.getAtomAt(l).getScreenPosition().x,
+            (int) frame.getAtomAt(l).getScreenPosition().y,
+              (int) frame.getAtomAt(l).getScreenPosition().z,
+                (int) frame.getAtomAt(j).getScreenPosition().x,
+                  (int) frame.getAtomAt(j).getScreenPosition().y,
+                    (int) frame.getAtomAt(j).getScreenPosition().z,
+                      (int) frame.getAtomAt(k).getScreenPosition().x,
+                        (int) frame.getAtomAt(k).getScreenPosition().y,
+                          (int) frame.getAtomAt(k).getScreenPosition().z,
+                            (int) frame.getAtomAt(m).getScreenPosition().x,
+                              (int) frame.getAtomAt(m).getScreenPosition().y,
+                                (int) frame.getAtomAt(m).getScreenPosition().z);
         } catch (Exception ex) {
         }
       }

@@ -343,13 +343,6 @@ public class ChemFrame {
     return numberAtoms;
   }
 
-  /**
-   * Returns the atoms in this frame.
-   */
-  public Atom[] getAtoms() {
-    return atoms;
-  }
-  
   public float getXMin() {
     if (min == null) {
       findBounds();

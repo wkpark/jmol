@@ -99,7 +99,7 @@
   <target name="classes" depends="init,jmolGuide,jmolHistory">
     <mkdir dir="${classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${classes.dir}"
-        debug="off" deprecation="on">
+        debug="on" deprecation="on">
       <classpath refid="project.class.path" />
     </javac>
     <copy todir="${classes.dir}" >
@@ -125,7 +125,7 @@
   <target name="applet-classes" >
     <mkdir dir="${applet.classes.dir}"/>
     <javac srcdir="${source.dir}" destdir="${applet.classes.dir}"
-        debug="off" deprecation="on" target="1.1"
+        debug="on" deprecation="on" target="1.1"
         includesfile="applet.classes">
       <classpath refid="project.class.path" />
     </javac>

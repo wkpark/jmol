@@ -33,7 +33,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
-class CartoonRenderer extends Renderer {
+class CartoonRenderer extends McgRenderer {
 
   CartoonRenderer(JmolViewer viewer, FrameRenderer frameRenderer) {
     super(viewer, frameRenderer);
@@ -47,19 +47,15 @@ class CartoonRenderer extends Renderer {
 
   Cartoon cartoon;
 
-  void render() {
-    this.cartoon = frame.cartoon;
-
-    if (cartoon == null || !cartoon.initialized)
-      return;
-    PdbFile pdbFile = cartoon.pdbFile;
-    short[][] madsChains = cartoon.madsChains;
-    short[][] colixesChains = cartoon.colixesChains;
-    for (int i = cartoon.chainCount; --i >= 0; )
-      render1Chain(pdbFile.getChain(i),
-                   madsChains[i], colixesChains[i]);
+  void renderMcgChain(Mcg.Chain mcgChain) {
+    renderCartoonChain((Cartoon.Chain)mcgChain);
   }
-  
+
+  void renderCartoonChain(Cartoon.Chain cartoonChain) {
+    render1Chain(cartoonChain.pdbChain,
+                 cartoonChain.mads, cartoonChain.colixes);
+  }
+
   int residueCount;
   PdbGroup[] residues;
   Point3i[] screens;

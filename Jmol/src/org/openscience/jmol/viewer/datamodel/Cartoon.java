@@ -32,77 +32,60 @@ import org.openscience.jmol.viewer.pdb.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-public class Cartoon {
-
-  JmolViewer viewer;
-  Frame frame;
-  boolean hasPdbRecords;
-  PdbFile pdbFile;
-
-  boolean initialized;
-  int chainCount;
-  short[][] madsChains;
-  short[][] colixesChains;
+public class Cartoon extends Mcg {
 
   Cartoon(JmolViewer viewer, Frame frame) {
-    this.viewer = viewer;
-    this.frame = frame;
-    hasPdbRecords = frame.hasPdbRecords;
-    pdbFile = frame.pdbFile;
+    super(viewer, frame);
+  }
+  
+  Mcg.Chain allocateMcgChain(PdbChain pdbChain) {
+    return new Chain(pdbChain);
   }
 
-  public void setMad(short mad, BitSet bsSelected) {
-    if (! hasPdbRecords)
-      return;
-    initialize();
-    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
-      short[] mads = madsChains[i];
-      PdbGroup[] mainchain = pdbFile.getMainchain(i);
-      for (int j = mainchain.length; --j >= 0; ) {
-        if (bsSelected.get(mainchain[j].getAlphaCarbonIndex()))
+  class Chain extends Mcg.Chain {
+    int mainchainLength;
+    PdbGroup[] mainchain;
+    Frame frame;
+    short[] colixes;
+    short[] mads;
+
+    Chain(PdbChain pdbChain) {
+      super(pdbChain);
+      frame = pdbChain.model.file.frame;
+      mainchain = pdbChain.getMainchain();
+      mainchainLength = mainchain.length;
+      if (mainchainLength > 0) {
+        colixes = new short[mainchainLength];
+        mads = new short[mainchainLength + 1];
+      }
+    }
+
+    public void setMad(short mad, BitSet bsSelected) {
+      for (int i = mainchainLength; --i >= 0; ) {
+        if (bsSelected.get(mainchain[i].getAlphaCarbonIndex()))
           if (mad < 0) {
             // -2.0 angstrom diameter -> -4000 milliangstroms diameter
             if (mad == -4000)
-              mads[j] = 1000; // cartoon temperature goes here
+              mads[i] = 1000; // cartoon temperature goes here
             else
-              mads[j] = (short)(mainchain[j].isHelixOrSheet() ? 3000 : 500);
+              mads[i] = (short)(mainchain[i].isHelixOrSheet() ? 3000 : 500);
           } else {
-            mads[j] = mad;
+            mads[i] = mad;
           }
       }
-      mads[mainchain.length] = mads[mainchain.length - 1];
+      if (mainchainLength > 0)
+        mads[mainchainLength] = mads[mainchainLength - 1];
     }
-  }
 
-  public void setColix(byte palette, short colix, BitSet bsSelected) {
-    if (! hasPdbRecords)
-      return;
-    initialize();
-    for (int i = pdbFile.getChainCount(); --i >= 0; ) {
-      short[] colixes = colixesChains[i];
-      PdbGroup[] mainchain = pdbFile.getMainchain(i);
-      for (int j = mainchain.length; --j >= 0; ) {
-        int atomIndex = mainchain[j].getAlphaCarbonIndex();
+    public void setColix(byte palette, short colix, BitSet bsSelected) {
+      for (int i = mainchainLength; --i >= 0; ) {
+        int atomIndex = mainchain[i].getAlphaCarbonIndex();
         if (bsSelected.get(atomIndex))
-          colixes[j] =
-            (palette != JmolConstants.PALETTE_CPK
-             ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
-             : colix);
+          colixes[i] =
+            palette > JmolConstants.PALETTE_CPK
+            ? viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette)
+            : colix;
       }
-    }
-  }
-
-  void initialize() {
-    if (! initialized) {
-      chainCount = pdbFile.getChainCount();
-      madsChains = new short[chainCount][];
-      colixesChains = new short[chainCount][];
-      for (int i = chainCount; --i >= 0; ) {
-        int chainLength = pdbFile.getMainchain(i).length;
-        madsChains[i] = new short[chainLength + 1];
-        colixesChains[i] = new short[chainLength];
-      }
-      initialized = true;
     }
   }
 }

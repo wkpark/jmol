@@ -1148,5 +1148,6 @@ final public class JmolConstants {
   public final static int GRAPHIC_TRACE    = 1;
   public final static int GRAPHIC_AXES     = 2;
   public final static int GRAPHIC_BBOX     = 3;
-  public final static int GRAPHIC_MAX = 4;
+  public final static int GRAPHIC_CARTOON  = 4;
+  public final static int GRAPHIC_MAX = 5;
 }

@@ -214,6 +214,8 @@ public class Frame {
       return new Axes(viewer, this);
     case JmolConstants.GRAPHIC_BBOX:
       return new Bbox(viewer, this);
+    case JmolConstants.GRAPHIC_CARTOON:
+      return new Cartoon(viewer, this);
     }
     return null;
   }
@@ -248,22 +250,6 @@ public class Frame {
       graphics[refGraphic].setColix(palette, colix, bsSelected);
   }
 
-  Cartoon cartoon;
-
-  public void setCartoonMad(short mad, BitSet bsSelected) {
-    if (mad != 0 && cartoon == null)
-      cartoon = new Cartoon(viewer, this);
-    if (cartoon != null)
-      cartoon.setMad(mad, bsSelected);
-  }
-  
-  public void setCartoonColix(byte palette, short colix, BitSet bsSelected) {
-    if ((palette != JmolConstants.PALETTE_CPK || colix != 0) && cartoon == null)
-      cartoon = new Cartoon(viewer, this);
-    if (cartoon != null)
-      cartoon.setColix(palette, colix, bsSelected);
-  }
-  
   Strands strands;
 
   public void setStrandsMad(short mad, BitSet bsSelected) {

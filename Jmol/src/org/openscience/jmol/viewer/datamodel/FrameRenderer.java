@@ -44,7 +44,6 @@ public class FrameRenderer {
   MeasurementRenderer measurementRenderer;
   DotsRenderer dotsRenderer;
   RibbonsRenderer ribbonsRenderer;
-  CartoonRenderer cartoonRenderer;
   StrandsRenderer strandsRenderer;
   LineRenderer lineRenderer;
   CellLineRenderer cellLineRenderer;
@@ -105,12 +104,12 @@ public class FrameRenderer {
         backboneRenderer = new BackboneRenderer(viewer, this);
       backboneRenderer.render(g3d, rectClip, frame, frame.backbone);
     }
-    */
     if (frame.cartoon != null) {
       if (cartoonRenderer == null)
         cartoonRenderer = new CartoonRenderer(viewer, this);
       cartoonRenderer.render(g3d, rectClip, frame, null);
     }
+    */
     if (frame.strands != null) {
       if (strandsRenderer == null)
         strandsRenderer = new StrandsRenderer(viewer, this);
@@ -140,6 +139,8 @@ public class FrameRenderer {
       return new AxesRenderer(viewer, this);
     case JmolConstants.GRAPHIC_BBOX:
       return new BboxRenderer(viewer, this);
+    case JmolConstants.GRAPHIC_CARTOON:
+      return new CartoonRenderer(viewer, this);
     }
     return null;
   }

@@ -1220,16 +1220,6 @@ final public class JmolViewer {
                                selectionManager.bsSelection);
   }
 
-  public void setCartoonRadius(float radius) {
-    getFrame().setCartoonMad((short)(radius * 2000),
-                             selectionManager.bsSelection);
-  }
-
-  public void setCartoonColor(byte palette, Color color) {
-    getFrame().setCartoonColix(palette, Colix.getColix(color),
-                               selectionManager.bsSelection);
-  }
-
   public void setStrandsWidth(float width) {
     getFrame().setStrandsMad((short)(width * 1000),
                              selectionManager.bsSelection);

@@ -1439,11 +1439,14 @@ public class Eval implements Runnable {
     case Token.identifier:
 	String str = (String)statement[1].value;
 	if (str.equalsIgnoreCase("dotsConvex"))
-	    viewer.setColorDotsConvex(getColorOrNoneParam(2));
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConvex",
+                                  getColorOrNoneParam(2));
 	else if (str.equalsIgnoreCase("dotsConcave"))
-	    viewer.setColorDotsConcave(getColorOrNoneParam(2));
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorConcave",
+                                  getColorOrNoneParam(2));
 	else if (str.equalsIgnoreCase("dotsSaddle"))
-	    viewer.setColorDotsSaddle(getColorOrNoneParam(2));
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorSaddle",
+                                  getColorOrNoneParam(2));
 	else
 	    invalidArgument();
 	break;
@@ -1453,6 +1456,7 @@ public class Eval implements Runnable {
   }
 
   void colorObject(int tokObject, int itoken) throws ScriptException {
+    System.out.println(" colorObject"); 
     // I do not like this 'palette' scheme
     // I need to change it so that you can pass either a java.awt.Color
     // or an object that uniquely identifies the various palettes
@@ -1463,6 +1467,7 @@ public class Eval implements Runnable {
       badArgumentCount();
     switch (statement[itoken].tok) {
     case Token.none:
+      System.out.println(" color none");
     case Token.cpk:
       break;
     case Token.formalCharge:

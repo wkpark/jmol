@@ -86,7 +86,7 @@ public class Dots extends Shape {
 
   int dotsConvexMax; // the Max == the highest atomIndex with dots + 1
   int[][] dotsConvexMaps;
-  short[] colixes;
+  short[] colixesConvex;
   Vector3f[] geodesicVertices;
   int geodesicCount;
   int[] geodesicMap;
@@ -147,11 +147,10 @@ public class Dots extends Shape {
     if (mad != 0) {
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
-        colixes = new short[atomCount];
+        colixesConvex = new short[atomCount];
       }
       for (int i = atomCount; --i >= 0; )
         if (bsSelected.get(i)) {
-          colixes[i] = viewer.getColixDotsConvex();
           setAtomI(i);
           getNeighbors(bsSelected);
           calcConvexMap();
@@ -169,22 +168,75 @@ public class Dots extends Shape {
   void setProperty(String propertyName, Object value, BitSet bs) {
     int atomCount = frame.atomCount;
     Atom[] atoms = frame.atoms;
-    if ("color".equals(propertyName)) {
+    if ("color" == propertyName) {
+      System.out.println("Dots.setProperty('color')");
+      setProperty("colorConvex", value, bs);
+      setProperty("colorConcave", value, bs);
+      setProperty("colorSaddle", value, bs);
+    }
+    if ("colorConvex" == propertyName) {
+      System.out.println("Dots.setProperty('colorConvex')");
       short colix = g3d.getColix(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
-          colixes[i] = colix;
+          colixesConvex[i] = colix;
       return;
     }
-    if ("colorScheme".equals(propertyName)) {
+    if ("colorSaddle" == propertyName) {
+      short colix = g3d.getColix(value);
+      for (int i = torusCount; --i >= 0; ) {
+        Torus torus = tori[i];
+        if (bs.get(torus.indexI))
+          torus.colixI = colix;
+        if (bs.get(torus.indexJ))
+          torus.colixJ = colix;
+      }
+      return;
+    }
+    if ("colorConcave" == propertyName) {
+      short colix = g3d.getColix(value);
+      for (int i = cavityCount; --i >= 0; ) {
+        Cavity cavity = cavities[i];
+        if (bs.get(cavity.ixI))
+          cavity.colixI = colix;
+        if (bs.get(cavity.ixJ))
+          cavity.colixJ = colix;
+        if (bs.get(cavity.ixK))
+          cavity.colixK = colix;
+      }
+      return;
+    }
+    if ("colorScheme" == propertyName) {
       if (value != null) {
         byte palette = viewer.getPalette((String)value);
         for (int i = atomCount; --i >= 0; ) {
           if (bs.get(i)) {
             Atom atom = atoms[i];
-            atom.setColixAtom(viewer.getColixAtomPalette(atom, palette));
+            colixesConvex[i] = viewer.getColixAtomPalette(atom, palette);
           }
         }
+        for (int i = torusCount; --i >= 0; ) {
+          Torus torus = tori[i];
+          if (bs.get(torus.indexI))
+            torus.colixI = viewer.getColixAtomPalette(atoms[torus.indexI],
+                                                      palette);
+          if (bs.get(torus.indexJ))
+            torus.colixJ = viewer.getColixAtomPalette(atoms[torus.indexJ],
+                                                      palette);
+        }
+        for (int i = cavityCount; --i >= 0; ) {
+          Cavity cavity = cavities[i];
+          if (bs.get(cavity.ixI))
+            cavity.colixI = viewer.getColixAtomPalette(atoms[cavity.ixI],
+                                                       palette);
+          if (bs.get(cavity.ixJ))
+            cavity.colixJ = viewer.getColixAtomPalette(atoms[cavity.ixJ],
+                                                       palette);
+          if (bs.get(cavity.ixK))
+            cavity.colixK = viewer.getColixAtomPalette(atoms[cavity.ixK],
+                                                       palette);
+        }
+        return;
       }
       return;
     }
@@ -404,6 +456,7 @@ public class Dots extends Shape {
     float outerAngle;
     long probeMap;
     AxisAngle4f aaRotate;
+    short colixI, colixJ;
 
     Torus(Point3f centerI, int indexI, Point3f centerJ, int indexJ,
           Point3f center, float radius) {
@@ -638,6 +691,7 @@ public class Dots extends Shape {
   class Cavity {
     final int ixI, ixJ, ixK;
     final Point3f[] points;
+    short colixI, colixJ, colixK;
 
     Cavity() {
       ixI = indexI; ixJ = indexJ; ixK = indexK;

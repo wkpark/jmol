@@ -55,7 +55,7 @@ public class ColorManager {
       viewer.setColorBackground(Color.black);
       viewer.setColorMeasurement(Color.white);
       viewer.setColorLabel(Color.white);
-      viewer.setColorDots(null);
+      viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else if (colorScheme.equals("rasmol")) {
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
       argbsCpk = new int[JmolConstants.argbsCpk.length];
@@ -71,7 +71,7 @@ public class ColorManager {
       viewer.setColorBackground(Color.black);
       viewer.setColorMeasurement(Color.white);
       viewer.setColorLabel(null);
-      viewer.setColorDots(null);
+      viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, null);
     } else {
       System.out.println("unrecognized color scheme");
       return;

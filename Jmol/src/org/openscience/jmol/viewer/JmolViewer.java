@@ -390,6 +390,10 @@ final public class JmolViewer {
     transformManager.transformVector(vectorAngstroms, vectorTransformed);
   }
 
+  public float getScalePixelsPerAngstrom() {
+    return transformManager.scalePixelsPerAngstrom;
+  }
+
   public float scaleToScreen(int z, float sizeAngstroms) {
     return transformManager.scaleToScreen(z, sizeAngstroms);
   }
@@ -576,14 +580,9 @@ final public class JmolViewer {
     refresh();
   }
   
-  public void setColorDots(Color color) {
-    setColorDotsConvex(color);
-    setColorDotsConcave(color);
-    setColorDotsSaddle(color);
-  }
-  
   public void setColorDotsSaddle(Color color) {
     colorManager.setColorDotsSaddle(color);
+    setShapeProperty(JmolConstants.SHAPE_DOTS, "dotssaddle", color);
   }
 
   public short getColixDotsSaddle() {
@@ -592,6 +591,7 @@ final public class JmolViewer {
 
   public void setColorDotsConvex(Color color) {
     colorManager.setColorDotsConvex(color);
+    setShapeProperty(JmolConstants.SHAPE_DOTS, "dotsconvex", color);
   }
 
   public short getColixDotsConvex() {
@@ -600,6 +600,7 @@ final public class JmolViewer {
 
   public void setColorDotsConcave(Color color) {
     colorManager.setColorDotsConcave(color);
+    setShapeProperty(JmolConstants.SHAPE_DOTS, "dotsconcave", color);
   }
 
   public short getColixDotsConcave() {
@@ -1535,11 +1536,15 @@ final public class JmolViewer {
   }
 
   public void setShapeColor(int shapeID, byte palette, Color color) {
+    System.out.println("setShapeColor()");
     if (palette == JmolConstants.PALETTE_COLOR) {
-      modelManager.setShapeProperty(shapeID, "colorScheme", null, null);
+      System.out.println("PALETTE_COLOR");
+      modelManager.setShapeProperty(shapeID, "colorScheme", null,
+                                    selectionManager.bsSelection);
       modelManager.setShapeProperty(shapeID, "color", color,
                                     selectionManager.bsSelection);
     } else {
+      System.out.println("other PALETTE");
       modelManager.setShapeProperty(shapeID, "colorScheme",
                                     JmolConstants.colorSchemes[palette],
                                     selectionManager.bsSelection);

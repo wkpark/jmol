@@ -36,9 +36,7 @@ import javax.vecmath.*;
 class DotsRenderer extends ShapeRenderer {
 
   boolean perspectiveDepth;
-  short colixConcave;
-  short colixSaddle;
-  int pixelsPerAngstrom;
+  int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
 
   Geodesic geodesic;
@@ -57,9 +55,8 @@ class DotsRenderer extends ShapeRenderer {
 
   void render() {
     perspectiveDepth = viewer.getPerspectiveDepth();
-    colixConcave = viewer.getColixDotsConcave();
-    colixSaddle = viewer.getColixDotsSaddle();
-    pixelsPerAngstrom = (int)viewer.scaleToScreen(0, 1f);
+    scalePixelsPerAngstrom = (int)viewer.getScalePixelsPerAngstrom();
+    System.out.println("scalePixelsPerAngstrom=" + scalePixelsPerAngstrom);
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
 
 
@@ -69,22 +66,22 @@ class DotsRenderer extends ShapeRenderer {
       return;
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
-    short[] colixes = dots.colixes;
+    short[] colixesConvex = dots.colixesConvex;
     for (int i = dots.dotsConvexMax; --i >= 0; ) {
       int[] map = dotsConvexMaps[i];
       if (map != null && map != mapNull)
-        renderConvex(atoms[i], colixes[i], map);
+        renderConvex(atoms[i], colixesConvex[i], map);
     }
     Dots.Torus[] tori = dots.tori;
     for (int i = dots.torusCount; --i >= 0; )
-      renderTorus(tori[i], atoms, colixes, dotsConvexMaps);
+      renderTorus(tori[i], atoms, colixesConvex, dotsConvexMaps);
     Dots.Cavity[] cavities = dots.cavities;
     if (false) {
       System.out.println("concave surface rendering currently disabled");
       return;
     }
     for (int i = dots.cavityCount; --i >= 0; )
-      renderCavity(cavities[i], atoms, colixes, dotsConvexMaps);
+      renderCavity(cavities[i], atoms, colixesConvex, dotsConvexMaps);
   }
 
   void renderConvex(Atom atom, short colix, int[] visibilityMap) {
@@ -112,11 +109,11 @@ class DotsRenderer extends ShapeRenderer {
                    Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
     if (dotsConvexMaps[torus.indexI] != null)
       renderTorusHalf(torus,
-                      getColix(colixSaddle, colixes, atoms, torus.indexI),
+                      getColix(torus.colixI, colixes, atoms, torus.indexI),
                       false);
     if (dotsConvexMaps[torus.indexJ] != null)
       renderTorusHalf(torus,
-                      getColix(colixSaddle, colixes, atoms, torus.indexJ),
+                      getColix(torus.colixJ, colixes, atoms, torus.indexJ),
                       true);
   }
 
@@ -161,24 +158,24 @@ class DotsRenderer extends ShapeRenderer {
   }
 
   int getTorusIncrement() {
-    if (pixelsPerAngstrom <= 4)
+    if (scalePixelsPerAngstrom <= 5)
       return 16;
-    if (pixelsPerAngstrom <= 8)
+    if (scalePixelsPerAngstrom <= 10)
       return 8;
-    if (pixelsPerAngstrom <= 16)
+    if (scalePixelsPerAngstrom <= 20)
       return 4;
-    if (pixelsPerAngstrom <= 32)
+    if (scalePixelsPerAngstrom <= 40)
       return 2;
     return 1;
   }
 
   int getTorusOuterDotCount() {
     int dotCount = 8;
-    if (pixelsPerAngstrom > 4) {
+    if (scalePixelsPerAngstrom > 5) {
       dotCount = 16;
-      if (pixelsPerAngstrom > 8) {
+      if (scalePixelsPerAngstrom > 10) {
         dotCount = 32;
-        if (pixelsPerAngstrom > 16) {
+        if (scalePixelsPerAngstrom > 20) {
           dotCount = 64;
         }
       }
@@ -214,15 +211,15 @@ class DotsRenderer extends ShapeRenderer {
                     Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
     Point3f[] points = cavity.points;
     if (dotsConvexMaps[cavity.ixI] != null) {
-      g3d.setColix(getColix(colixConcave, colixes, atoms, cavity.ixI));
+      g3d.setColix(getColix(cavity.colixI, colixes, atoms, cavity.ixI));
       renderCavityThird(points, 0);
     }
     if (dotsConvexMaps[cavity.ixJ] != null) {
-      g3d.setColix(getColix(colixConcave, colixes, atoms, cavity.ixJ));
+      g3d.setColix(getColix(cavity.colixJ, colixes, atoms, cavity.ixJ));
       renderCavityThird(points, 1);
     }
     if (dotsConvexMaps[cavity.ixK] != null) {
-      g3d.setColix(getColix(colixConcave, colixes, atoms, cavity.ixK));
+      g3d.setColix(getColix(cavity.colixK, colixes, atoms, cavity.ixK));
       renderCavityThird(points, 2);
     }
   }
@@ -356,13 +353,13 @@ class DotsRenderer extends ShapeRenderer {
     void calcScreenPoints(int[] visibilityMap, float radius,
 			  int x, int y, int z) {
       int dotCount = 12;
-      if (pixelsPerAngstrom > 4) {
+      if (scalePixelsPerAngstrom > 5) {
         dotCount = 42;
-        if (pixelsPerAngstrom > 8) {
+        if (scalePixelsPerAngstrom > 10) {
           dotCount = 162;
-          if (pixelsPerAngstrom > 16) {
+          if (scalePixelsPerAngstrom > 20) {
             dotCount = 642;
-            //		  if (pixelsPerAngstrom > 32)
+            //		  if (scalePixelsPerAngstrom > 32)
             //		      dotCount = 2562;
           }
         }

@@ -79,8 +79,8 @@ class Triangle3D {
     int cc0 = line3d.clipCode(ax[0], ay[0], az[0]);
     int cc1 = line3d.clipCode(ax[1], ay[1], az[1]);
     int cc2 = line3d.clipCode(ax[2], ay[2], az[2]);
-    boolean clipped = (cc0 | cc1 | cc2) != 0;
-    if (clipped) {
+    boolean isClipped = (cc0 | cc1 | cc2) != 0;
+    if (isClipped) {
       if ((cc0 & cc1 & cc2) != 0) {
         // all three corners are being clipped on the same dimension
         return;
@@ -156,7 +156,7 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
-    fillRaster(yMin, nLines, translucent, useGouraud);
+    fillRaster(yMin, nLines, translucent, useGouraud, isClipped);
   }
 
   private final static int DEFAULT = 64;
@@ -272,9 +272,13 @@ class Triangle3D {
     }
   }
 
-  void fillRaster(int y, int numLines, boolean tScreened, boolean useGouraud) {
+  static int bar;
+
+  void fillRaster(int y, int numLines, boolean tScreened, boolean useGouraud,
+                  boolean isClipped) {
     //    System.out.println("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
+    ++bar;
     if (y < 0) {
       numLines += y;
       i -= y;
@@ -282,12 +286,30 @@ class Triangle3D {
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
-    for ( ; --numLines >= 0; ++y, ++i) {
-      int xW = axW[i];
-      g3d.plotPixelsClipped(axE[i] - xW + 1, xW, y, azW[i], azE[i],
-                            tScreened,
-                            useGouraud ? rgb16sW[i] : null,
-                            useGouraud ? rgb16sE[i] : null);
+    if (isClipped) {
+      for ( ; --numLines >= 0; ++y, ++i) {
+        int xW = axW[i];
+        int pixelCount = axE[i] - xW + 1;
+        if (pixelCount > 0)
+          g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
+                                tScreened,
+                                useGouraud ? rgb16sW[i] : null,
+                                useGouraud ? rgb16sE[i] : null);
+      }
+    } else {
+      for ( ; --numLines >= 0; ++y, ++i) {
+        int xW = axW[i];
+        int pixelCount = axE[i] - xW + 1;
+        // miguel 2005 01 13
+        // not sure exactly why we are getting pixel counts of 0 here
+        // it means that the east/west lines are crossing by 1
+        // something must be going wrong with the scaled addition
+        if (pixelCount > 0)
+          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
+                                  tScreened,
+                                  useGouraud ? rgb16sW[i] : null,
+                                  useGouraud ? rgb16sE[i] : null);
+      }
     }
   }
 

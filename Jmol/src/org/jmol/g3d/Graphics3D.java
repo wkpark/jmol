@@ -1322,6 +1322,62 @@ final public class Graphics3D {
     }
   }
 
+  void plotPixelsUnclipped(int count, int x, int y,
+                           int zAtLeft, int zPastRight,
+                           boolean tScreened,
+                           Rgb16 rgb16Left, Rgb16 rgb16Right) {
+    int seed = (x << 16) + (y << 1) ^ 0x33333333;
+    // scale the z coordinates;
+    int zScaled = (zAtLeft << 10) + (1 << 9);
+    int dz = zPastRight - zAtLeft;
+    int roundFactor = count / 2;
+    int zIncrementScaled =
+      ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
+    boolean flipflop = ((x ^ y) & 1) == 0;
+    int offsetPbuf = y * width + x;
+    if (rgb16Left == null) {
+      while (--count >= 0) {
+        if (!tScreened || (flipflop = !flipflop)) {
+          int z = zScaled >> 10;
+          if (z < zbuf[offsetPbuf]) {
+            zbuf[offsetPbuf] = (short)z;
+            seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+            int bits = (seed >> 16) & 0x07;
+            pbuf[offsetPbuf] = (bits == 0
+                                ? argbNoisyDn
+                                : (bits == 1 ? argbNoisyUp : argbCurrent));
+          }
+        }
+        ++offsetPbuf;
+        zScaled += zIncrementScaled;
+      }
+    } else {
+      int rScaled = rgb16Left.rScaled << 8;
+      int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
+      int gScaled = rgb16Left.gScaled;
+      int gIncrement = (rgb16Right.gScaled - gScaled) / count;
+      int bScaled = rgb16Left.bScaled;
+      int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+      while (--count >= 0) {
+        if (!tScreened || (flipflop = !flipflop)) {
+          int z = zScaled >> 10;
+          if (z < zbuf[offsetPbuf]) {
+            zbuf[offsetPbuf] = (short)z;
+            pbuf[offsetPbuf] = (0xFF000000 |
+                                (rScaled & 0xFF0000) |
+                                (gScaled & 0xFF00) |
+                                ((bScaled >> 8) & 0xFF));
+          }
+        }
+        ++offsetPbuf;
+        zScaled += zIncrementScaled;
+        rScaled += rIncrement;
+        gScaled += gIncrement;
+        bScaled += bIncrement;
+      }
+    }
+  }
+
   void plotPixelsUnclipped(int count, int x, int y, int z, boolean tScreened) {
     int offsetPbuf = y * width + x;
     if (! tScreened) {

@@ -140,46 +140,46 @@
     credit="135" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="213"
     credit="6.4"/>
-  <fah_proj number="214" name="p214_villin4Mure"
+  <fah_proj number="214" name="p214_villin4Mure" file="y"
     server="171.64.122.124" atoms="6130" preferred="16" deadline="22"
     credit="64" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="215" name="p215_villin1Murea"
+  <fah_proj number="215" name="p215_villin1Murea" file="y"
     server="171.64.122.124" atoms="6127" preferred="14" deadline="20"
     credit="54" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="216" name="p216_villin0Murea"
+  <fah_proj number="216" name="p216_villin0Murea" file="y"
     server="171.64.122.124" atoms="6409" preferred="14" deadline="20"
     credit="54" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="217" name="p217_c28Murea"
+  <fah_proj number="217" name="p217_c28Murea" file="y"
     server="171.64.122.124" atoms="18111" preferred="46" deadline="68"
     credit="236" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="218" name="p218_c24Murea"
+  <fah_proj number="218" name="p218_c24Murea" file="y"
     server="171.64.122.124" atoms="16841" preferred="38" deadline="54"
     credit="186" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="219" name="p219_c21Murea"
     server="171.64.122.124" atoms="17240" preferred="34" deadline="48"
     credit="160" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="220" name="p220_c20Murea"
+  <fah_proj number="220" name="p220_c20Murea" file="y"
     server="171.64.122.124" atoms="17368" preferred="32" deadline="44"
     credit="148" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="221" name="p221_NTL98Murea"
+  <fah_proj number="221" name="p221_NTL98Murea" file="y"
     server="171.64.122.124" atoms="3366" preferred="12" deadline="20"
     credit="42" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="223" name="p223_NTL94Murea"
+  <fah_proj number="223" name="p223_NTL94Murea" file="y"
     server="171.64.122.124" atoms="3411" preferred="10" deadline="20"
     credit="38" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="224" name="p224_NTL91Murea"
     server="171.64.122.124" atoms="3403" preferred="10" deadline="20"
     credit="34" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="227" name="p227_NTL90Murea"
+  <fah_proj number="227" name="p227_NTL90Murea" file="y"
     server="171.64.122.124" atoms="3418" preferred="10" deadline="20"
     credit="32" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="230" name="p230_villin8Murea4nmBox"
+  <fah_proj number="230" name="p230_villin8Murea4nmBox" file="y"
     server="171.64.122.124" atoms="6372" preferred="18" deadline="26"
     credit="78" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="231" name="p231_vil4MUre99p"
+  <fah_proj number="231" name="p231_vil4MUre99p" file="y"
     server="171.64.122.124" atoms="6130" preferred="14" deadline="19"
     credit="64" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="233" name="p233_vil1MUre99p"
+  <fah_proj number="233" name="p233_vil1MUre99p" file="y"
     server="171.64.122.124" atoms="6127" preferred="12" deadline="17"
     credit="53" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="234" name="p234_vil0MUre99p" file="y"
@@ -209,10 +209,10 @@
   <fah_proj number="242" name="p242_NTL0MUre99p"
     server="171.64.122.127" atoms="3418" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="243" name="p243_vil8MUreGS"
+  <fah_proj number="243" name="p243_vil8MUreGS" file="y"
     server="171.64.122.127" atoms="6372" preferred="16" deadline="23"
     credit="78" frames="100" code="G" contact="rbrandman"/>
-  <fah_proj number="244" name="p244_vil4MUreGS"
+  <fah_proj number="244" name="p244_vil4MUreGS" file="y"
     server="171.64.122.127" atoms="6130" preferred="14" deadline="19"
     credit="63" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="245" name="p245_vil1MUreGS"
@@ -232,7 +232,7 @@
     credit="158" frames="100" code="G" contact="rbrandman"/>
   <fah_proj number="250"
     credit="53.3"/>
-  <fah_proj number="251" name="p251_gnra_dd_erf_e0.5_c18"
+  <fah_proj number="251" name="p251_gnra_dd_erf_e0.5_c18" file="y"
     server="171.64.122.114" atoms="400" preferred="5" deadline="10"
     credit="18" frames="100" code="G" contact="sungjoo"/>
   <fah_proj number="252" name="p252_UUUA Na+ stacked"
@@ -247,10 +247,10 @@
   <fah_proj number="255" name="p255_p341_gnra_den"
     server="171.64.122.114" atoms="12166" preferred="16" deadline="23"
     credit="77" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="256" name="p256_p341_gnra_den"
+  <fah_proj number="256" name="p256_p341_gnra_den" file="y"
     server="171.64.122.114" atoms="12166" preferred="16" deadline="23"
     credit="76" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="257" name="p257_pfold_p254_r0"
+  <fah_proj number="257" name="p257_pfold_p254_r0" file="y"
     server="171.64.122.114" atoms="12166" preferred="5" deadline="10"
     credit="15" frames="100" code="G" contact="sungjoo"/>
   <fah_proj number="258" name="p258_NpN"
@@ -259,16 +259,16 @@
   <fah_proj number="259" name="p259_4Na_Mg"
     server="171.64.122.114" atoms="4193" preferred="20" deadline="29"
     credit="98" frames="100" code="G" contact="sungjoo" />
-  <fah_proj number="260" name="p260_gnra_dd_erf_e0.5_c18"
+  <fah_proj number="260" name="p260_gnra_dd_erf_e0.5_c18" file="y"
     server="171.64.122.114" atoms="400" preferred="6" deadline="10"
     credit="22" frames="100" code="G" contact="sungjoo" />
-  <fah_proj number="261" name="p261_1ryp_gggg"
+  <fah_proj number="261" name="p261_1ryp_gggg" file="y"
     server="171.67.89.154" atoms="119507" preferred="35" deadline="52"
     credit="366" frames="100" code="G" contact="sungjoo" />
   <fah_proj number="262" name="p262_ch3cn" file="y"
     server="171.64.122.114" atoms="7248" preferred="30" deadline="43"
     credit="152" frames="100" code="G" contact="sidnasty"/>
-  <fah_proj number="263" name="p263_chcl3"
+  <fah_proj number="263" name="p263_chcl3" file="y"
     server="171.64.122.114" atoms="11626" preferred="42" deadline="62"
     credit="221" frames="100" code="G" contact="sidnasty"/>
   <fah_proj number="264" name="p264_ch3oh" file="y"
@@ -286,7 +286,7 @@
   <fah_proj number="268" name="p268_ch3oh" file="y"
     server="171.64.122.114" atoms="10134" preferred="39" deadline="58"
     credit="206" frames="100" code="G" contact="sidnasty"/>
-  <fah_proj number="269" name="p269_h2o"
+  <fah_proj number="269" name="p269_h2o" file="y"
     server="171.64.122.114" atoms="12153" preferred="29" deadline="42"
     credit="146" frames="100" code="G" contact="sidnasty"/>
   <fah_proj number="272"
@@ -357,7 +357,7 @@
   <fah_proj number="294" name="p294_" file="y"
     server="171.64.122.110" atoms="12280" preferred="87" deadline="130"
     credit="469" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="295" name="p295_polyQ_beta-helix"
+  <fah_proj number="295" name="p295_polyQ_beta-helix" file="y"
     server="171.64.122.110" atoms="12280" preferred="45" deadline="65"
     credit="234" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="296" name="p296_polyQ44 in water"
@@ -420,13 +420,13 @@
     credit="51.4"/>
   <fah_proj number="332"
     credit="51.4"/>
-  <fah_proj number="333"
+  <fah_proj number="333" name="p333_unf_289" file="y"
     credit="51.4"/>
   <fah_proj number="334"
     credit="51.4"/>
   <fah_proj number="335"
     credit="51.4"/>
-  <fah_proj number="336"
+  <fah_proj number="336" name="p336_unf_337" file="y"
     credit="51.4"/>
   <fah_proj number="337"
     credit="51.4"/>
@@ -536,7 +536,7 @@
     credit="9.56"/>
   <fah_proj number="395"
     credit="9.56"/>
-  <fah_proj number="396"
+  <fah_proj number="396" name="p396_6tna_p76" file="y"
     credit="9.56"/>
   <fah_proj number="397"
     credit="4.78"/>
@@ -628,31 +628,31 @@
     credit="6"/>
   <fah_proj number="516"
     credit="6"/>
-  <fah_proj number="520" name="p520_BBA5_pf"
+  <fah_proj number="520" name="p520_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="521" name="p521_BBA5_pf"
+  <fah_proj number="521" name="p521_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="522" name="p522_BBA5_pf"
+  <fah_proj number="522" name="p522_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="523" name="p523_BBA5_pf"
+  <fah_proj number="523" name="p523_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="524" name="p524_BBA5_pf"
+  <fah_proj number="524" name="p524_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="525" name="p525_BBA5_pf"
+  <fah_proj number="525" name="p525_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="526" name="p526_BBA5_pf"
+  <fah_proj number="526" name="p526_BBA5_pf" file="y"
     preferred="10"
     credit="44" frames="100"/>
-  <fah_proj number="529" name="p529_BBA5_N"
+  <fah_proj number="529" name="p529_BBA5_N" file="y"
     server="171.67.89.148" atoms="12200" preferred="10" deadline="15"
     credit="46" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="530" name="p530_BBA5_N"
+  <fah_proj number="530" name="p530_BBA5_N" file="y"
     server="171.65.103.148" atoms="12200" preferred="10" deadline="14"
     credit="44" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="531"
@@ -682,16 +682,16 @@
   <fah_proj number="542" name="p542_BBA5_ext"
     preferred="10"
     credit="46" frames="100"/>
-  <fah_proj number="543" name="p543_BBA5_ext"
+  <fah_proj number="543" name="p543_BBA5_ext" file="y"
     server="171.65.103.148" atoms="12200" preferred="10" deadline="14"
     credit="44" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="544" name="p544_BBA5"
+  <fah_proj number="544" name="p544_BBA5" file="y"
     server="171.64.122.113" atoms="12200" preferred="11" deadline="15"
     credit="47" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="545" name="p545_BBA5"
+  <fah_proj number="545" name="p545_BBA5" file="y"
     server="171.64.122.113" atoms="12200" preferred="11" deadline="15"
     credit="47" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="546" name="p546_BBA5"
+  <fah_proj number="546" name="p546_BBA5" file="y"
     server="171.64.122.113" atoms="12200" preferred="11" deadline="15"
     credit="47" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="547"
@@ -699,7 +699,7 @@
   <fah_proj number="548" name="p548_BBA5_ext"
     preferred="6"
     credit="23" frames="100"/>
-  <fah_proj number="549" name="p549_BBA5"
+  <fah_proj number="549" name="p549_BBA5" file="y"
     server="171.64.122.113" atoms="12200" preferred="11" deadline="15"
     credit="47" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="553"
@@ -713,10 +713,10 @@
     credit="33" frames="100"/>
   <fah_proj number="557"
     credit="9"/>
-  <fah_proj number="558" name="p558_BBA5_pf"
+  <fah_proj number="558" name="p558_BBA5_pf" file="y"
     server="171.64.122.123" atoms="12200" preferred="11" deadline="15"
     credit="47" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="559" name="p559_BBA5_N"
+  <fah_proj number="559" name="p559_BBA5_N" file="y"
     server="171.64.122.113" atoms="12200" preferred="10" deadline="15"
     credit="46" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="560"
@@ -725,7 +725,7 @@
     credit="0.6"/>
   <fah_proj number="562"
     credit="0.6"/>
-  <fah_proj number="563" name="p563_BBA5_ext"
+  <fah_proj number="563" name="p563_BBA5_ext" file="y"
     server="171.64.122.123" atoms="12200" preferred="6" deadline="10"
     credit="23" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="564"
@@ -737,16 +737,16 @@
   <fah_proj number="567" name="p567_BBA5"
     preferred="15"
     credit="33" frames="100"/>
-  <fah_proj number="568" name="p568_BBA5_N"
+  <fah_proj number="568" name="p568_BBA5_N" file="y"
     server="171.64.122.113" atoms="12200" preferred="6" deadline="10"
     credit="23" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="569" name="p569_BBA5_ext"
+  <fah_proj number="569" name="p569_BBA5_ext" file="y"
     server="171.67.89.148" atoms="12200" preferred="10" deadline="15"
     credit="46" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="570" name="p570_BBalphaUA"
     preferred="25"
     credit="36" frames="100"/>
-  <fah_proj number="571" name="p571_L939_K12M_nat"
+  <fah_proj number="571" name="p571_L939_K12M_nat" file="y"
     server="171.67.89.148" atoms="15367" preferred="25" deadline="60"
     credit="66" frames="100" code="G" contact="ymrhee"/>
   <fah_proj number="572" name="p572_L939_K12M"
@@ -779,16 +779,16 @@
   <fah_proj number="582" name="p582_BBA5_tip4pEW"
     server="171.65.103.148" atoms="16138" preferred="52" deadline="78"
     credit="277" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="583" name="p583_BBA5/GBSA"
+  <fah_proj number="583" name="p583_BBA5/GBSA" file="y"
     server="171.65.103.148" atoms="385" preferred="9.5" deadline="13.25"
     credit="42" frames="100" code="A" contact="ymrhee"/>
-  <fah_proj number="584" name="p584_BBA5/TIP3P"
+  <fah_proj number="584" name="p584_BBA5/TIP3P" file="y"
     server="171.65.103.148" atoms="12200" preferred="18" deadline="26"
     credit="88" frames="100" code="A" contact="ymrhee"/>
   <fah_proj number="585"
     preferred="32"
     credit="215" frames="100"/>
-  <fah_proj number="586" name="p586_BBA5/POL3"
+  <fah_proj number="586" name="p586_BBA5/POL3" file="y"
     server="171.64.122.113" atoms="12200" preferred="32" deadline="47"
     credit="215" frames="100" code="A" contact="ymrhee"/>
   <fah_proj number="587" name="p587_BBA5_pf"
@@ -797,10 +797,10 @@
   <fah_proj number="588" name="p588_BBA5/m20"
     server="171.64.122.113" atoms="12200" preferred="42" deadline="62"
     credit="230" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="589" name="p589_BBA5/M24"
+  <fah_proj number="589" name="p589_BBA5/M24" file="y"
     server="171.64.122.113" atoms="12200" preferred="42" deadline="62"
     credit="230" frames="100" code="G" contact="ymrhee"/>
-  <fah_proj number="590" name="p590_BBA5_pf"
+  <fah_proj number="590" name="p590_BBA5_pf" file="y"
     server="171.65.103.148" atoms="385" preferred="19" deadline="28"
     credit="93" frames="250" code="T" contact="ymrhee"/>
   <fah_proj number="591" name="p591_BBA5_pf"
@@ -901,10 +901,10 @@
   <fah_proj number="637" name="p637_villin_c1_ext"
     server="171.64.122.121" atoms="403" preferred="27" deadline="27"
     credit="138" frames="400" code="T" contact="NA"/>
-  <fah_proj number="638" name="p638_L939_K12M_ext"
+  <fah_proj number="638" name="p638_L939_K12M_ext" file="y"
     server="171.64.122.143" atoms="393" preferred="45" deadline="67"
     credit="239" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="639" name="p639_L939_K12M_nat"
+  <fah_proj number="639" name="p639_L939_K12M_nat" file="y"
     server="171.64.122.143" atoms="393" preferred="45" deadline="67"
     credit="239" frames="400" code="T" contact="csnow"/>
   <fah_proj number="640"
@@ -996,7 +996,7 @@
     credit="242" frames="400" code="T" contact="csnow"/>
   <fah_proj number="679"
     credit="23.6"/>
-  <fah_proj number="680" name="p680_L939_K12M_414K"
+  <fah_proj number="680" name="p680_L939_K12M_414K" file="y"
     server="171.64.122.143" atoms="393" preferred="45" deadline="67"
     credit="237" frames="400" code="T" contact="csnow"/>
   <fah_proj number="681"
@@ -1030,19 +1030,19 @@
   <fah_proj number="692" name="p692_L939_K12M_int"
     server="171.64.122.143" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="693" name="p693_L939_WT_Nat"
+  <fah_proj number="693" name="p693_L939_WT_Nat" file="y"
     server="171.64.122.119" atoms="397" preferred="46" deadline="69"
     credit="244" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="694" name="p694_L939_wt_ext"
+  <fah_proj number="694" name="p694_L939_wt_ext" file="y"
     server="171.64.122.119" atoms="397" preferred="25" deadline="37"
     credit="236" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="695" name="p695_L939_WT_Nat_444K"
+  <fah_proj number="695" name="p695_L939_WT_Nat_444K" file="y"
     server="171.64.122.119" atoms="397" preferred="45" deadline="66"
     credit="235" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="696" name="p696_L939_K12M_Raleigh"
+  <fah_proj number="696" name="p696_L939_K12M_Raleigh" file="y"
     server="171.64.122.119" atoms="393" preferred="45" deadline="66"
     credit="235" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="697" name="p697_L939_WT_Raleigh"
+  <fah_proj number="697" name="p697_L939_WT_Raleigh" file="y"
     server="171.64.122.119" atoms="397" preferred="45" deadline="67"
     credit="238" frames="400" code="T" contact="csnow"/>
   <fah_proj number="698" name="p698_L939_K12M_600K"
@@ -1097,7 +1097,7 @@
   <fah_proj number="731" name="p731_BBA5_md" file="y"
     server="171.67.89.152" atoms="245" preferred="7" deadline="10"
     credit="25" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="732" name="p732_BBA5_sd_h2o"
+  <fah_proj number="732" name="p732_BBA5_sd_h2o" file="y"
     server="171.67.89.152" atoms="245" preferred="7" deadline="10"
     credit="27" frames="100" code="G" contact="vvishal"/>
   <fah_proj number="733" name="p733_villin_md"
@@ -1106,16 +1106,16 @@
   <fah_proj number="734" name="p734_villin_sd_h2o"
     preferred="6"
     credit="21" frames="100"/>
-  <fah_proj number="735" name="p735_Protein"
+  <fah_proj number="735" name="p735_Protein" file="y"
     server="171.67.89.152" atoms="16055" preferred="47" deadline="71"
     credit="256" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="736" name="p736_Protein"
+  <fah_proj number="736" name="p736_Protein" file="y"
     server="171.65.103.152" atoms="16055" preferred="24" deadline="36"
     credit="128" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="737" name="p737_Protein"
+  <fah_proj number="737" name="p737_Protein" file="y"
     server="171.67.89.152" atoms="16055" preferred="24" deadline="36"
     credit="128" frames="100" code="G" contact="vvishal"/>
-  <fah_proj number="738" name="p738_villingb"
+  <fah_proj number="738" name="p738_villingb" file="y"
     server="171.65.103.152" atoms="602" preferred="6" deadline="10"
     credit="23" frames="50" code="T" contact="vvishal"/>
   <fah_proj number="739" name="p739_gsgs_md"
@@ -1222,9 +1222,9 @@
     credit="32"/>
   <fah_proj number="847"
     credit="32"/>
-  <fah_proj number="848"
+  <fah_proj number="848" name="p848_p53dimer848" file="y"
     credit="32"/>
-  <fah_proj number="849"
+  <fah_proj number="849" name="p849_p53dimer849" file="y"
     credit="32"/>
   <fah_proj number="850"
     credit="32"/>
@@ -1234,7 +1234,7 @@
     credit="32"/>
   <fah_proj number="853"
     credit="32"/>
-  <fah_proj number="854" name="p854_p53dimer854"
+  <fah_proj number="854" name="p854_p53dimer854" file="y"
     server="171.64.122.121" atoms="12248" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="855" name="p855_p53dimer855"
@@ -1262,16 +1262,16 @@
   <fah_proj number="863" name="p863_p53dimer863"
     server="171.64.122.121" atoms="12197" preferred="8" deadline="10"
     credit="31" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="864" name="p864_p53dimer864"
+  <fah_proj number="864" name="p864_p53dimer864" file="y"
     server="171.64.122.108" atoms="12179" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="865" name="p865_p53dimer865"
     server="171.64.122.108" atoms="12212" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="866" name="p866_p53dimer866"
+  <fah_proj number="866" name="p866_p53dimer866" file="y"
     server="171.64.122.108" atoms="12194" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="867" name="p867_p53dimer867"
+  <fah_proj number="867" name="p867_p53dimer867" file="y"
     server="171.64.122.108" atoms="12197" preferred="30" deadline="44"
     credit="155" frames="100" code="G" contact="ltchong"/>
   <fah_proj number="868" name="p868_p53dimer868"
@@ -1286,10 +1286,10 @@
   <fah_proj number="871" name="p871_p53tet871"
     server="171.64.122.108" atoms="12286" preferred="32" deadline="47"
     credit="164" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="872" name="p872_p53dimer872"
+  <fah_proj number="872" name="p872_p53dimer872" file="y"
     server="171.65.103.157" atoms="12179" preferred="6" deadline="9"
     credit="31" frames="100" code="G" contact="ltchong"/>
-  <fah_proj number="873" name="p873_p53dimer873"
+  <fah_proj number="873" name="p873_p53dimer873" file="y"
     server="171.65.103.157" atoms="12173" preferred="6" deadline="9"
     credit="31" frames="100" code="G" contact="ltchong"/>
 
@@ -1308,10 +1308,10 @@
     credit="14"/>
   <fah_proj number="908"
     credit="13"/>
-  <fah_proj number="909" name="p909_vill_str0"
+  <fah_proj number="909" name="p909_vill_str0" file="y"
     server="171.64.122.144" atoms="17614" preferred="9" deadline="13"
     credit="41" frames="100" code="G" contact="guha"/>
-  <fah_proj number="910" name="p910_vill_str0_rf"
+  <fah_proj number="910" name="p910_vill_str0_rf" file="y"
     server="171.64.122.144" atoms="17614" preferred="8" deadline="12"
     credit="35" frames="100" code="G" contact="guha"/>
   <fah_proj number="911"
@@ -1350,19 +1350,19 @@
   <fah_proj number="923" name="p923_prot_a_nat"
     server="171.67.89.151" atoms="737" preferred="11" deadline="15"
     credit="48" frames="100" code="G" contact="guha"/>
-  <fah_proj number="924" name="p924_prot_a_unf"
+  <fah_proj number="924" name="p924_prot_a_unf" file="y"
     server="171.67.89.151" atoms="737" preferred="11" deadline="15"
     credit="48" frames="100" code="G" contact="guha"/>
-  <fah_proj number="925" name="p925_n910pf"
+  <fah_proj number="925" name="p925_n910pf" file="y"
     server="171.67.89.151" atoms="17614" preferred="8" deadline="11"
     credit="34" frames="100" code="G" contact="guha"/>
-  <fah_proj number="926" name="p926_n909pf"
+  <fah_proj number="926" name="p926_n909pf" file="y"
     server="171.67.89.151" atoms="17614" preferred="9" deadline="13"
     credit="41" frames="100" code="G" contact="guha"/>
-  <fah_proj number="927" name="p927_pa_sa_nat"
+  <fah_proj number="927" name="p927_pa_sa_nat" file="y"
     server="171.67.89.153" atoms="737" preferred="16" deadline="25"
     credit="91" frames="100" code="G" contact="guha"/>
-  <fah_proj number="928" name="p928_pa_sa_fold"
+  <fah_proj number="928" name="p928_pa_sa_fold" file="y"
     server="171.67.89.153" atoms="737" preferred="16" deadline="25"
     credit="91" frames="100" code="G" contact="guha"/>
   <fah_proj number="930" name="p930_fkbound_l02"
@@ -1383,13 +1383,13 @@
   <fah_proj number="935" name="p935_LG2 in water"
     server="171.65.103.151" atoms="1558" preferred="14" deadline="21"
     credit="68" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="936" name="p936_fkfe2_all"
+  <fah_proj number="936" name="p936_fkfe2_all" file="y"
     server="171.65.103.151" atoms="14908" preferred="15" deadline="30"
     credit="107" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="937" name="p937_fecompH14"
+  <fah_proj number="937" name="p937_fecompH14" file="y"
     server="171.67.89.153" atoms="14908" preferred="16" deadline="23"
     credit="78" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="938" name="p938_fkmd_H14"
+  <fah_proj number="938" name="p938_fkmd_H14" file="y"
     server="171.67.89.153" atoms="14907" preferred="16" deadline="22"
     credit="75" frames="100" code="DG" contact="guha"/>
   <fah_proj number="940" name="p940_AK12"
@@ -1413,22 +1413,22 @@
   <fah_proj number="946" name="p946_AK37"
     preferred="24"
     credit="119" frames="100"/>
-  <fah_proj number="947" name="p947_AK42"
+  <fah_proj number="947" name="p947_AK42" file="y"
     preferred="34"
     credit="177" frames="100"/>
-  <fah_proj number="948" name="p948_AKb12"
+  <fah_proj number="948" name="p948_AKb12" file="y"
     server="171.65.103.153" atoms="2046" preferred="5" deadline="10"
     credit="17" frames="100" code="G" contact="guha"/>
-  <fah_proj number="949" name="p949_AKb12PP"
+  <fah_proj number="949" name="p949_AKb12PP" file="y"
     server="171.65.103.153" atoms="4821" preferred="9" deadline="12"
     credit="38" frames="100" code="G" contact="guha"/>
-  <fah_proj number="950" name="p950_AKb17"
+  <fah_proj number="950" name="p950_AKb17" file="y"
     server="171.65.103.153" atoms="3271" preferred="7" deadline="10"
     credit="27" frames="100" code="G" contact="guha"/>
   <fah_proj number="951" name="p951_AKb22"
     server="171.65.103.153" atoms="4304" preferred="8" deadline="12"
     credit="36" frames="100" code="G" contact="guha"/>
-  <fah_proj number="952" name="p952_AKb27"
+  <fah_proj number="952" name="p952_AKb27" file="y"
     server="171.65.103.153" atoms="6121" preferred="11" deadline="15"
     credit="49" frames="100" code="G" contact="guha"/>
   <fah_proj number="953" name="p953_AKb32"
@@ -1463,7 +1463,7 @@
   <!-- Projects 1000 to 1099 -->
   <fah_proj number="1001"
     credit="41.1"/>
-  <fah_proj number="1002"
+  <fah_proj number="1002" name="p1002_ppg10_273" file="y"
     credit="41.1"/>
   <fah_proj number="1003"
     credit="41.1"/>
@@ -1484,7 +1484,7 @@
   <fah_proj number="1013" name="p1013_"
     preferred="13"
     credit="58" frames="100"/>
-  <fah_proj number="1014" name="p1014_a21nat_289_dd19"
+  <fah_proj number="1014" name="p1014_a21nat_289_dd19" file="y"
     server="171.67.89.149" atoms="132" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1015" name="p1015_a21unf_289_dd19"
@@ -1496,7 +1496,7 @@
   <fah_proj number="1017" name="p1017_a21unf_321_dd19"
     server="171.67.89.149" atoms="132" preferred="9" deadline="13"
     credit="32" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1018" name="p1018_a21nat_353_dd19"
+  <fah_proj number="1018" name="p1018_a21nat_353_dd19" file="y"
     server="171.67.89.149" atoms="132" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1019" name="p1019_a21unf_353_dd19"
@@ -1582,127 +1582,127 @@
   <fah_proj number="1053" name="p1053_unf96_337"
     preferred="13"
     credit="59" frames="100"/>
-  <fah_proj number="1054" name="p1054_FSnat_305_99"
+  <fah_proj number="1054" name="p1054_FSnat_305_99" file="y"
     server="171.67.89.149" atoms="6414" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1055" name="p1055_FSunf_305_99"
+  <fah_proj number="1055" name="p1055_FSunf_305_99" file="y"
     server="171.67.89.149" atoms="6384" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1056" name="p1056_A21nat_305_99"
+  <fah_proj number="1056" name="p1056_A21nat_305_99" file="y"
     server="171.67.89.149" atoms="6426" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1057" name="p1057_A21unf_305_99"
+  <fah_proj number="1057" name="p1057_A21unf_305_99" file="y"
     server="171.67.89.149" atoms="6399" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1058" name="p1058_FSnat_273_99"
+  <fah_proj number="1058" name="p1058_FSnat_273_99" file="y"
     server="171.67.89.149" atoms="6414" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1059" name="p1059_FSunf_273_99"
+  <fah_proj number="1059" name="p1059_FSunf_273_99" file="y"
     server="171.67.89.149" atoms="6384" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1060" name="p1060_A21nat_273_99"
+  <fah_proj number="1060" name="p1060_A21nat_273_99" file="y"
     server="171.67.89.149" atoms="6426" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1061" name="p1061_A21unf_273_99"
+  <fah_proj number="1061" name="p1061_A21unf_273_99" file="y"
     server="171.67.89.149" atoms="6399" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1062" name="p1062_FSnat_337_99"
+  <fah_proj number="1062" name="p1062_FSnat_337_99" file="y"
     server="171.67.89.149" atoms="6414" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1063" name="p1063_FSunf_337_99"
+  <fah_proj number="1063" name="p1063_FSunf_337_99" file="y"
     server="171.67.89.149" atoms="6384" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1064" name="p1064_A21nat_337_99"
+  <fah_proj number="1064" name="p1064_A21nat_337_99" file="y"
     server="171.67.89.149" atoms="6426" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1065" name="p1065_A21unf_337_99"
+  <fah_proj number="1065" name="p1065_A21unf_337_99" file="y"
     server="171.67.89.149" atoms="6399" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1066" name="p1066_FSnat_305_99"
+  <fah_proj number="1066" name="p1066_FSnat_305_99" file="y"
     server="171.67.89.149" atoms="6414" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1067" name="p1067_FSunf_305_99"
+  <fah_proj number="1067" name="p1067_FSunf_305_99" file="y"
     server="171.67.89.149" atoms="6384" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1068" name="p1068_A21nat_305_99"
+  <fah_proj number="1068" name="p1068_A21nat_305_99" file="y"
     server="171.67.89.149" atoms="6426" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1069" name="p1069_A21unf_305_99"
+  <fah_proj number="1069" name="p1069_A21unf_305_99" file="y"
     server="171.67.89.149" atoms="6399" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1070" name="p1070_nat_273_dd19"
+  <fah_proj number="1070" name="p1070_nat_273_dd19" file="y"
     server="171.67.89.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1071" name="p1071_den_273_dd19"
+  <fah_proj number="1071" name="p1071_den_273_dd19" file="y"
     server="171.67.89.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1072" name="p1072_nat_305_dd19"
+  <fah_proj number="1072" name="p1072_nat_305_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1073" name="p1073_den_305_dd19"
+  <fah_proj number="1073" name="p1073_den_305_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1074" name="p1074_nat_337_dd19"
+  <fah_proj number="1074" name="p1074_nat_337_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1075" name="p1075_den_337_dd19"
+  <fah_proj number="1075" name="p1075_den_337_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1076" name="p1076_nat_273_dd19"
+  <fah_proj number="1076" name="p1076_nat_273_dd19" file="y"
     server="171.67.89.149" atoms="132" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1077" name="p1077_den_273_dd19"
+  <fah_proj number="1077" name="p1077_den_273_dd19" file="y"
     server="171.67.89.149" atoms="132" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1078" name="p1078_nat_305_dd19"
+  <fah_proj number="1078" name="p1078_nat_305_dd19" file="y"
     server="171.65.103.149" atoms="132" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1079" name="p1079_den_305_dd19"
+  <fah_proj number="1079" name="p1079_den_305_dd19" file="y"
     server="171.65.103.149" atoms="132" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1080" name="p1080_nat_337_dd19"
+  <fah_proj number="1080" name="p1080_nat_337_dd19" file="y"
     server="171.67.89.149" atoms="132" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1081" name="p1081_den_337_dd19"
     server="171.67.89.149" atoms="132" preferred="8" deadline="11"
     credit="32" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1082" name="p1082_nat_289_dd19"
+  <fah_proj number="1082" name="p1082_nat_289_dd19" file="y"
     server="171.67.89.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1083" name="p1083_unf_289_dd19"
+  <fah_proj number="1083" name="p1083_unf_289_dd19" file="y"
     server="171.67.89.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1084" name="p1084_nat_321_dd19"
+  <fah_proj number="1084" name="p1084_nat_321_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1085" name="p1085_unf_321_dd19"
+  <fah_proj number="1085" name="p1085_unf_321_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1086" name="p1086_nat_353_dd19"
+  <fah_proj number="1086" name="p1086_nat_353_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1087" name="p1087_unf_353_dd19"
+  <fah_proj number="1087" name="p1087_unf_353_dd19" file="y"
     server="171.65.103.149" atoms="165" preferred="9" deadline="13"
     credit="39" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1088" name="p1088_FSnat_305_94psi"
+  <fah_proj number="1088" name="p1088_FSnat_305_94psi" file="y"
     server="171.65.103.155" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1089" name="p1089_FSunf_305_94psi"
+  <fah_proj number="1089" name="p1089_FSunf_305_94psi" file="y"
     server="171.65.103.155" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1090" name="p1090_RN24_extended"
+  <fah_proj number="1090" name="p1090_RN24_extended" file="y"
     server="171.64.122.116" atoms="8616" preferred="19" deadline="27"
     credit="91" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1091" name="p1091_RN24_helix"
+  <fah_proj number="1091" name="p1091_RN24_helix" file="y"
     server="171.64.122.116" atoms="8478" preferred="19" deadline="27"
     credit="91" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1092" name="p1092_RN24_hairpin"
+  <fah_proj number="1092" name="p1092_RN24_hairpin" file="y"
     server="171.64.122.116" atoms="8478" preferred="19" deadline="27"
     credit="91" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1093" name="p1093_RN24_sheet"
+  <fah_proj number="1093" name="p1093_RN24_sheet" file="y"
     server="171.64.122.116" atoms="8616" preferred="19" deadline="27"
     credit="91" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1094" name="p1094_RN24_helix_350"
+  <fah_proj number="1094" name="p1094_RN24_helix_350" file="y"
     server="171.64.122.116" atoms="8478" preferred="19" deadline="27"
     credit="91" frames="100" code="G" contact="esorin"/>
 
@@ -1716,13 +1716,13 @@
   <fah_proj number="1102" name="p1102_Kiefhaber_3"
     server="171.64.122.112" atoms="100" preferred="10"
     credit="42" frames="200" code="T" contact="csnow"/>
-  <fah_proj number="1103" name="p1103_Kiefhaber_4"
+  <fah_proj number="1103" name="p1103_Kiefhaber_4" file="y"
     server="171.64.122.112" atoms="113" preferred="10"
     credit="45" frames="200" code="T" contact="csnow"/>
   <fah_proj number="1104" name="p1104_Kiefhaber_5"
     server="171.64.122.112" atoms="126" preferred="11"
     credit="49" frames="200" code="T" contact="csnow"/>
-  <fah_proj number="1105" name="p1105_Kiefhaber_8"
+  <fah_proj number="1105" name="p1105_Kiefhaber_8" file="y"
     server="171.64.122.112" atoms="165" preferred="9"
     credit="36" frames="100" code="T" contact="csnow"/>
   <fah_proj number="1106" name="p1106_Kiefhaber_10" file="y"
@@ -1746,7 +1746,7 @@
   <fah_proj number="1112" name="p1112_L939_K12M_nat_min1_355K"
     server="171.64.122.120" atoms="393" preferred="50" deadline="50"
     credit="249" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1113" name="p1113_ribo_solvent1"
+  <fah_proj number="1113" name="p1113_ribo_solvent1" file="y"
     server="171.67.89.154" atoms="76754" preferred="38" deadline="57"
     credit="40" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1114" name="p1114_L939_K12M_503K_50V" file="y"
@@ -1773,10 +1773,10 @@
   <fah_proj number="1121" name="p1121_L939_K12M_503K_300V"
     server="171.64.122.120" atoms="393" preferred="44" deadline="65"
     credit="231" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1122" name="p1122_ribo_solvent2"
+  <fah_proj number="1122" name="p1122_ribo_solvent2" file="y"
     server="171.65.103.157" atoms="84764" preferred="38" deadline="57"
     credit="40" frames="100" code="G" contact="csnow"/>
-  <fah_proj number="1123" name="p1123_L939_K12M_429K"
+  <fah_proj number="1123" name="p1123_L939_K12M_429K" file="y"
     server="171.64.122.120" atoms="393" preferred="45" deadline="67"
     credit="237" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1124" name="p1124_p678_L939_K12M_355K"
@@ -1791,22 +1791,22 @@
   <fah_proj number="1127" name="p1127_L939_K12M_503K_9100V"
     server="171.64.122.120" atoms="393" preferred="44" deadline="65"
     credit="231" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1128" name="p1128_L939_K12M_503K_400V"
+  <fah_proj number="1128" name="p1128_L939_K12M_503K_400V" file="y"
     server="171.64.122.120" atoms="393" preferred="44" deadline="65"
     credit="231" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1129" name="p1129_L939_K12M_503K_600V"
     server="171.64.122.120" atoms="393" preferred="44" deadline="65"
     credit="231" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1130" name="p1130_L939_K12M_355K"
+  <fah_proj number="1130" name="p1130_L939_K12M_355K" file="y"
     server="171.64.122.143" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1131" name="p1131_L939_K12M_355K"
+  <fah_proj number="1131" name="p1131_L939_K12M_355K" file="y"
     server="171.64.122.143" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1132" name="p1132_L939_K12M_355K" file="y"
     server="171.64.122.143" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1133" name="p1133_L939_K12M_355K"
+  <fah_proj number="1133" name="p1133_L939_K12M_355K" file="y"
     server="171.64.122.143" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1134" name="p1134_RIBO_FSpeptide_EXT" file="y"
@@ -1818,7 +1818,7 @@
   <fah_proj number="1136" name="p1136_p1130_L939_K12M_355K"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1137" name="p1137_p1131_L939_K12M_355K"
+  <fah_proj number="1137" name="p1137_p1131_L939_K12M_355K" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
   <fah_proj number="1138" name="p1138_p1132_L939_K12M_355K" file="y"
@@ -1827,7 +1827,7 @@
   <fah_proj number="1139" name="p1139_p1133_L939_K12M_355K" file="y"
     server="171.64.122.133" atoms="393" preferred="46" deadline="68"
     credit="241" frames="400" code="T" contact="csnow"/>
-  <fah_proj number="1140" name="p1140_RIBO_FSpeptide_EXT_nospring"
+  <fah_proj number="1140" name="p1140_RIBO_FSpeptide_EXT_nospring" file="y"
     server="171.65.103.156" atoms="84665" preferred="56" deadline="82"
     credit="600" frames="100" code="G" contact="csnow"/>
   <fah_proj number="1141" name="p1141_RIBO_FSpeptide_HEL_nospring" file="y"
@@ -1892,7 +1892,7 @@
   <fah_proj number="1218" name="p1218_Fsnat99p_gbsa305K" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
-  <fah_proj number="1219" name="p1219_Fsden99p_gbsa305K"
+  <fah_proj number="1219" name="p1219_Fsden99p_gbsa305K" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
   <fah_proj number="1220" name="p1220_A21nat94s_gbsa305K"
@@ -1913,7 +1913,7 @@
   <fah_proj number="1225" name="p1225_A21den99ps_gbsa305K"
     server="171.64.122.111" atoms="222" preferred="13" deadline="19"
     credit="63" frames="500" code="T" contact="esorin"/>
-  <fah_proj number="1226" name="p1226_Fsnat99ps_gbsa305K"
+  <fah_proj number="1226" name="p1226_Fsnat99ps_gbsa305K" file="y"
     server="171.64.122.111" atoms="264" preferred="18" deadline="26"
     credit="88" frames="500" code="T" contact="esorin"/>
   <fah_proj number="1227" name="p1227_Fsden99ps_gbsa305K"
@@ -1931,19 +1931,19 @@
   <fah_proj number="1231" name="p1231_A21unf_305_99p_M24"
     server="171.65.103.155" atoms="6399" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1232" name="p1232_fsnat_305_99p_mod"
+  <fah_proj number="1232" name="p1232_fsnat_305_99p_mod" file="y"
     server="171.65.103.155" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1233" name="p1233_fsunf_305_99p_mod"
     server="171.65.103.155" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1234" name="p1234_A21nat_305_99p_mod"
+  <fah_proj number="1234" name="p1234_A21nat_305_99p_mod" file="y"
     server="171.65.103.155" atoms="6426" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1235" name="p1235_A21unf_305_99p_mod"
     server="171.65.103.155" atoms="6399" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1236" name="p1236_fsnat_305_99p_M20"
+  <fah_proj number="1236" name="p1236_fsnat_305_99p_M20" file="y"
     server="171.65.103.155" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1237" name="p1237_fsunf_305_99p_M20"
@@ -1964,13 +1964,13 @@
   <fah_proj number="1242" name="p1242_fsnat_305_99p_M23"
     server="171.65.103.155" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1243" name="p1243_fsunf_305_99p_M23"
+  <fah_proj number="1243" name="p1243_fsunf_305_99p_M23" file="y"
     server="171.65.103.155" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1244" name="p1244_fsnat_305_99p_M25"
     server="171.65.103.155" atoms="6414" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1245" name="p1245_fsunf_305_99p_M25"
+  <fah_proj number="1245" name="p1245_fsunf_305_99p_M25" file="y"
     server="171.65.103.155" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1246" name="p1246_fsnat_305K_3P-RF"
@@ -1979,28 +1979,28 @@
   <fah_proj number="1247" name="p1247_fsunf_305K_3P-RF"
     server="171.64.122.116" atoms="6384" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1248" name="p1248_fsnat_305K_3P-PME"
+  <fah_proj number="1248" name="p1248_fsnat_305K_3P-PME" file="y"
     server="171.64.122.116" atoms="6414" preferred="31" deadline="45"
     credit="159" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1249" name="p1249_fsunf_305K_3P-PME"
     server="171.64.122.116" atoms="6384" preferred="31" deadline="45"
     credit="159" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1250" name="p1250_A7ext_298K_94"
+  <fah_proj number="1250" name="p1250_A7ext_298K_94" file="y"
     server="171.67.89.155" atoms="4167" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1251" name="p1251_A7hel_298K_94"
+  <fah_proj number="1251" name="p1251_A7hel_298K_94" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1252" name="p1252_A7pp2_298K_94"
+  <fah_proj number="1252" name="p1252_A7pp2_298K_94" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1253" name="p1253_A7ext_298K_GS"
+  <fah_proj number="1253" name="p1253_A7ext_298K_GS" file="y"
     server="171.67.89.155" atoms="4167" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1254" name="p1254_A7hel_298K_GS"
+  <fah_proj number="1254" name="p1254_A7hel_298K_GS" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1255" name="p1255_A7pp2_298K_GS"
+  <fah_proj number="1255" name="p1255_A7pp2_298K_GS" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1256" name="p1256_A7ext_298K_96"
@@ -2009,7 +2009,7 @@
   <fah_proj number="1257" name="p1257_A7hel_298K_96"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1258" name="p1258_A7pp2_298K_96"
+  <fah_proj number="1258" name="p1258_A7pp2_298K_96" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1259" name="p1259_A7ext_298K_99"
@@ -2021,31 +2021,31 @@
   <fah_proj number="1261" name="p1261_A7pp2_298K_99"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1262" name="p1262_A7ext_298K_99p"
+  <fah_proj number="1262" name="p1262_A7ext_298K_99p" file="y"
     server="171.67.89.155" atoms="4167" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1263" name="p1263_A7hel_298K_99p"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1264" name="p1264_A7pp2_298K_99p"
+  <fah_proj number="1264" name="p1264_A7pp2_298K_99p" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1265" name="p1265_A7ext_298K_94pp"
+  <fah_proj number="1265" name="p1265_A7ext_298K_94pp" file="y"
     server="171.67.89.155" atoms="4167" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1266" name="p1266_A7hel_298K_94pp"
+  <fah_proj number="1266" name="p1266_A7hel_298K_94pp" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1267" name="p1267_A7pp2_298K_94pp"
+  <fah_proj number="1267" name="p1267_A7pp2_298K_94pp" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1268" name="p1268_A7ext_298K_99ps"
     server="171.67.89.155" atoms="4167" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1269" name="p1269_A7hel_298K_99ps"
+  <fah_proj number="1269" name="p1269_A7hel_298K_99ps" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1270" name="p1270_A7pp2_298K_99ps"
+  <fah_proj number="1270" name="p1270_A7pp2_298K_99ps" file="y"
     server="171.67.89.155" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1271" name="p1271_proj1271_A21ext_d11_99phi"
@@ -2060,13 +2060,13 @@
   <fah_proj number="1274" name="p1274_proj1274_A21nat_d15_99phi"
     server="171.65.103.155" atoms="8433" preferred="17" deadline="25"
     credit="83" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1275" name="p1275_proj1275_A21ext_d19_99phi"
+  <fah_proj number="1275" name="p1275_proj1275_A21ext_d19_99phi" file="y"
     server="171.65.103.155" atoms="11828" preferred="10" deadline="14"
     credit="46" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1276" name="p1276_proj1276_A21nat_d19_99phi"
     server="171.65.103.155" atoms="11756" preferred="10" deadline="14"
     credit="46" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1277" name="p1277_proj1277_A21ext_d22_99phi"
+  <fah_proj number="1277" name="p1277_proj1277_A21ext_d22_99phi" file="y"
     server="171.65.103.155" atoms="14585" preferred="13" deadline="18"
     credit="59" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1278" name="p1278_proj1278_A21nat_d22_99phi"
@@ -2081,7 +2081,7 @@
   <fah_proj number="1281" name="p1281_A21ext_d13_99phi" file="y"
     server="171.65.103.155" atoms="7025" preferred="15" deadline="22"
     credit="72" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1282" name="p1282_A21nat_d13_99phi"
+  <fah_proj number="1282" name="p1282_A21nat_d13_99phi" file="y"
     server="171.65.103.155" atoms="7091" preferred="15" deadline="22"
     credit="72" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1288" name="p1288_A21nat_305K_amber94s"
@@ -2128,76 +2128,76 @@
   <fah_proj number="1301" name="p1301_1RYP_AAAA_UM" file="y"
     server="171.67.89.154" atoms="119496" preferred="24" deadline="35"
     credit="242" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1302" name="p1302_1ryp_AAAA_free"
+  <fah_proj number="1302" name="p1302_1ryp_AAAA_free" file="y"
     server="171.67.89.154" atoms="119496" preferred="24" deadline="35"
     credit="242" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1303" name="p1303_1ryp_aaaa_fr_dg_2fs"
+  <fah_proj number="1303" name="p1303_1ryp_aaaa_fr_dg_2fs" file="y"
     server="171.67.89.154" atoms="119496" preferred="65" deadline="96"
     credit="517" frames="100" code="DG" contact="sungjoo"/>
-  <fah_proj number="1304" name="p1304_1RYP_solv2_2fs"
+  <fah_proj number="1304" name="p1304_1RYP_solv2_2fs" file="y"
     server="171.65.103.154" atoms="165544" preferred="17" deadline="24"
     credit="162" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1305" name="p1305_1ryp_sv2_a4_2.5fs"
+  <fah_proj number="1305" name="p1305_1ryp_sv2_a4_2.5fs" file="y"
     server="171.67.89.154" atoms="165495" preferred="60" deadline="89"
     credit="634" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1306" name="p1306_1ryp_sv2_a4_fr_2fs"
+  <fah_proj number="1306" name="p1306_1ryp_sv2_a4_fr_2fs" file="y"
     server="171.65.103.154" atoms="165495" preferred="31" deadline="46"
     credit="320" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1307" name="p1307_1ryp_sv2_a4_prep_k1000_2fs"
+  <fah_proj number="1307" name="p1307_1ryp_sv2_a4_prep_k1000_2fs" file="y"
     server="171.67.89.154" atoms="165495" preferred="9" deadline="13"
     credit="80" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1308" name="p1308_1ryp_sv2_a4_k150_2fs"
+  <fah_proj number="1308" name="p1308_1ryp_sv2_a4_k150_2fs" file="y"
     server="171.65.103.154" atoms="165495" preferred="31" deadline="46"
     credit="320" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1309" name="p1309_1RYP_sv2_L4_fr_2fs"
+  <fah_proj number="1309" name="p1309_1RYP_sv2_L4_fr_2fs" file="y"
     server="171.65.103.154" atoms="165510" preferred="31" deadline="45"
     credit="316" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1310" name="p1310_1RYP_sv2_L4_k150_2fs"
+  <fah_proj number="1310" name="p1310_1RYP_sv2_L4_k150_2fs" file="y"
     server="171.65.103.154" atoms="165510" preferred="31" deadline="45"
     credit="316" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1311" name="p1311_1fnt_a10_91ps_CMnone"
+  <fah_proj number="1311" name="p1311_1fnt_a10_91ps_CMnone" file="y"
     server="171.65.103.154" atoms="90068" preferred="25" deadline="37"
     credit="254" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1312" name="p1312_1fnt_a10_0.01ps-1"
+  <fah_proj number="1312" name="p1312_1fnt_a10_0.01ps-1" file="y"
     server="171.65.103.154" atoms="90068" preferred="25" deadline="37"
     credit="254" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1313" name="p1313_1fnt_a2_9.1ps-1_uf"
+  <fah_proj number="1313" name="p1313_1fnt_a2_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90020" preferred="22" deadline="33"
     credit="302" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1314" name="p1314_1fnt_a3_9.1ps-1_uf"
+  <fah_proj number="1314" name="p1314_1fnt_a3_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90026" preferred="22" deadline="33"
     credit="302" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1315" name="p1315_1fnt_a4_9.1ps-1_uf"
+  <fah_proj number="1315" name="p1315_1fnt_a4_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90032" preferred="22" deadline="33"
     credit="302" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1316" name="p1316_1fnt_a6_9.1ps-1_uf"
+  <fah_proj number="1316" name="p1316_1fnt_a6_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90044" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1317" name="p1317_1fnt_a8_9.1ps-1_uf"
+  <fah_proj number="1317" name="p1317_1fnt_a8_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90056" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1318" name="p1318_1fnt_a9_9.1ps-1_uf"
+  <fah_proj number="1318" name="p1318_1fnt_a9_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90062" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1319" name="p1319_1fnt_a10_9.1ps-1_uf"
+  <fah_proj number="1319" name="p1319_1fnt_a10_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90068" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
   <fah_proj number="1320" name="p1320_1fnt_a12_9.1ps-1_uf"
     server="171.65.103.154" atoms="90080" preferred="25" deadline="37"
     credit="343" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1321" name="p1321_1fnt_a16_9.1ps-1_uf"
+  <fah_proj number="1321" name="p1321_1fnt_a16_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90104" preferred="25" deadline="37"
     credit="346" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1322" name="p1322_1fnt_a20_9.1ps-1_uf"
+  <fah_proj number="1322" name="p1322_1fnt_a20_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90128" preferred="22" deadline="33"
     credit="302" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1323" name="p1323_1fnt_a25_9.1ps-1_uf"
+  <fah_proj number="1323" name="p1323_1fnt_a25_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90158" preferred="23" deadline="33"
     credit="308" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1324" name="p1324_1fnt_a30_9.1ps-1_uf"
+  <fah_proj number="1324" name="p1324_1fnt_a30_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90188" preferred="23" deadline="33"
     credit="305" frames="100" code="G" contact="sungjoo"/>
-  <fah_proj number="1325" name="p1325_1fnt_a40_9.1ps-1_uf"
+  <fah_proj number="1325" name="p1325_1fnt_a40_9.1ps-1_uf" file="y"
     server="171.65.103.154" atoms="90248" preferred="23" deadline="33"
     credit="310" frames="100" code="G" contact="sungjoo"/>
 
@@ -2211,7 +2211,7 @@
   <fah_proj number="1402" name="p1402_Q26x3 in water"
     server="171.64.122.123" atoms="12336" preferred="50" deadline="74"
     credit="264" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1403" name="p1403_Q36 in water"
+  <fah_proj number="1403" name="p1403_Q36 in water" file="y"
     server="171.64.122.123" atoms="12279" preferred="44" deadline="65"
     credit="230" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1404" name="p1404_Q36x2 in water"
@@ -2220,16 +2220,16 @@
   <fah_proj number="1405" name="p1405_polyQ44 in water"
     server="171.64.122.123" atoms="12280" preferred="45" deadline="65"
     credit="234" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1406" name="p1406_Q44x2 in water"
+  <fah_proj number="1406" name="p1406_Q44x2 in water" file="y"
     server="171.64.122.123" atoms="12368" preferred="50" deadline="74"
     credit="266" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1407" name="p1407_polyQ20x2 in water"
     server="171.64.122.123" atoms="12278" preferred="45" deadline="66"
     credit="235" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1408" name="p1408_Q20x4 in water"
+  <fah_proj number="1408" name="p1408_Q20x4 in water" file="y"
     server="171.64.122.123" atoms="12337" preferred="50" deadline="73"
     credit="261" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1409" name="p1409_polyQ26 in water"
+  <fah_proj number="1409" name="p1409_polyQ26 in water" file="y"
     server="171.64.122.123" atoms="12271" preferred="43" deadline="64"
     credit="228" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1410" name="p1410_Q26x2 in water"
@@ -2238,7 +2238,7 @@
   <fah_proj number="1411" name="p1411_Q26x3 in water"
     server="171.64.122.123" atoms="12336" preferred="50" deadline="74"
     credit="264" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1412" name="p1412_polyQ36 in water"
+  <fah_proj number="1412" name="p1412_polyQ36 in water" file="y"
     server="171.64.122.123" atoms="12279" preferred="44" deadline="65"
     credit="230" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1413" name="p1413_polyQ36x2 in water"
@@ -2247,7 +2247,7 @@
   <fah_proj number="1414"
     preferred="45"
     credit="234" frames="100"/>
-  <fah_proj number="1415" name="p1415_Q88 in water"
+  <fah_proj number="1415" name="p1415_Q88 in water" file="y"
     server="171.64.122.110" atoms="12368" preferred="50" deadline="74"
     credit="266" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1475" name="p1475_tet1_03_1" file="y"

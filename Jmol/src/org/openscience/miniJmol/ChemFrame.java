@@ -39,51 +39,12 @@
 
 package org.openscience.miniJmol;
 
+import org.openscience.jmol.PhysicalProperty;
 import java.awt.Graphics;
 import java.util.*;
 import javax.vecmath.Point3f;
 
 public class ChemFrame {
-    private float bondFudge       = 1.12f;
-    private float ScreenScale;
-    private boolean AutoBond      = true;
-    private boolean ShowBonds     = true;
-    private boolean ShowAtoms     = true;
-    private boolean ShowHydrogens = true;
-    private Matrix3D mat;
-    /* 
-       pickedAtoms and napicked are static because
-       they deal with deformations or measurements that will persist
-       across frames.  
-    */
-    private static boolean[] pickedAtoms;
-    private static int napicked;
-// Added by T.GREY for quick drawing on atom movement
-    private static boolean doingMoveDraw = false;
-
-
-    // This stuff can vary for each frame in the dynamics:
-
-    String info;       // The title or info string for this frame.
-	/**
-	 * Array of atoms.
-	 */
-	private Atom[] atoms;
-	/**
-	 * Number of atoms in frame.
-	 */
-    private int numberAtoms = 0;
-	private float[] bufferedAtomZs;
-    private int[] zSortedAtomIndicies;
-	private AtomRenderer atomRenderer = new AtomRenderer();
-	private BondRenderer bondRenderer = new BondRenderer();
-
-    Vector[] aProps;   // array of Vector of atom properties
-    Vector frameProps; // Vector of all the properties present in this frame
-    boolean hasProperties = false;
-
-    float xmin, xmax, ymin, ymax, zmin, zmax;
-
     /**
      * returns the number of atoms that are currently in the "selected"
      * list for future operations
@@ -114,23 +75,6 @@ public class ChemFrame {
      */
     public void toggleHydrogens() {
         ShowHydrogens = !ShowHydrogens;
-    }
-
-    // Added by T.GREY for quick drawing on atom movement
-    /**
-     * Sets whether we are in ultra-hasty on the move drawing mode
-     * @PARAM movingOn If true then turns on quick mode, if false then turns it off (if its on)
-     */
-    public void setMovingDrawMode(boolean movingOn){
-        doingMoveDraw = movingOn;
-    }
-    
-    // Added by T.GREY for quick drawing on atom movement
-    /**
-     * Gets whether we are in ultra-hasty on the move drawing mode
-     */
-    public boolean getMovingDrawMode(){
-        return doingMoveDraw;
     }
 
     /**
@@ -218,7 +162,6 @@ public class ChemFrame {
         frameProps = new Vector();
         atoms = new Atom[na];
         bufferedAtomZs = new float[atoms.length];
-        aProps = new Vector[atoms.length];
         pickedAtoms = new boolean[atoms.length];
         for (int i = 0; i < pickedAtoms.length; ++i) {
             pickedAtoms[i] = false;
@@ -266,8 +209,8 @@ public class ChemFrame {
      * @param y the y coordinate of the new atom
      * @param z the z coordinate of the new atom
      */                
-    public int addVert(String name, float x, float y, float z) throws Exception {
-        return addVert(BaseAtomType.get(name), x, y, z);
+    public int addAtom(String name, float x, float y, float z) {
+        return addAtom(BaseAtomType.get(name), x, y, z);
     }
 
     /**
@@ -279,14 +222,13 @@ public class ChemFrame {
      * @param y the y coordinate of the new atom
      * @param z the z coordinate of the new atom
      */                
-    public int addVert(BaseAtomType type, float x, float y, float z) throws Exception {
+    public int addAtom(BaseAtomType type, float x, float y, float z) {
 		Point3f inputCoordinate = new Point3f(x, y, z);
         if (numberAtoms >= atoms.length) {
 			increaseArraySizes(2*atoms.length);
 		}
 
         atoms[numberAtoms] = new Atom(type, new Point3f(x, y, z), numberAtoms);
-        aProps[numberAtoms] = new Vector();
                       
         for (int j = 0; j < numberAtoms ; j++ ) {
 			if (Atom.closeEnoughToBond(atoms[numberAtoms], atoms[j], bondFudge)) {
@@ -307,12 +249,12 @@ public class ChemFrame {
      * @param y the y coordinate of the new atom
      * @param z the z coordinate of the new atom
      */                
-    public int addVert(int atomicNumber, float x, float y, float z) throws Exception {
+    public int addAtom(int atomicNumber, float x, float y, float z) {
         BaseAtomType baseType = BaseAtomType.get(atomicNumber);
 		if (baseType == null) {
 			return -1;
 		}
-        return addVert(baseType, x, y, z);
+        return addAtom(baseType, x, y, z);
     }
 	
     /**
@@ -325,12 +267,11 @@ public class ChemFrame {
      * @param z the z coordinate of the new atom  
      * @param props a Vector containing the properties of this atom
      */                
-    public int addPropertiedVert(String name, float x, float y, float z, 
-                                 Vector props) throws Exception {
+    public int addAtom(String name, float x, float y, float z, 
+                                 Vector props) {
 
-        hasProperties = true;
-        int i = addVert(name, x, y, z);
-        aProps[i] = props;
+        int i = addAtom(name, x, y, z);
+		atoms[i].setProperties(props);
 
         for (int j = 0; j < props.size(); j++) {
             PhysicalProperty p = (PhysicalProperty) props.elementAt(j);
@@ -347,20 +288,19 @@ public class ChemFrame {
 
 
     /** 
-     * returns the number of atoms in the ChemFrame
+     * Returns the number of atoms in the ChemFrame
      */
-    public int getNvert() {
+    public int getNumberAtoms() {
         return numberAtoms;
     }
 
     /**
-     * returns the properties of the i'th atom
+     * Returns the properties of an atom.
      * 
      * @param i the index of the atom
      */
-    public Vector getVertProps(int i) {
-        Vector prps = aProps[i];
-        return prps;
+    public Vector getAtomProperties(int i) {
+        return atoms[i].getProperties();
     }
 
     /** 
@@ -380,55 +320,29 @@ public class ChemFrame {
      * space.  
      *
      * @param g the Graphics context to paint to
+	 * @param settings the display settings
      */
     public synchronized void paint(Graphics g, DisplaySettings settings) {
         if (atoms == null || numberAtoms <= 0) {
             return;
 		}
         transform();
-        if (zSortedAtomIndicies == null || zSortedAtomIndicies.length != numberAtoms) {
-            zSortedAtomIndicies = new int[numberAtoms];
-            for (int i = 0; i < numberAtoms; ++i) {
-                zSortedAtomIndicies[i] = i;
-			}
-        }
-
 		//Added by T.GREY for quick-draw on move support
-        if (!doingMoveDraw){
-            
-            /*
-             * I use a bubble sort since from one iteration to the next, the sort
-             * order is pretty stable, so I just use what I had last time as a
-             * "guess" of the sorted order.  With luck, this reduces O(N log N)
-             * to O(N)
-             */
-            
-            for (int i = numberAtoms - 1; --i >= 0;) {
-                boolean flipped = false;
-                for (int j = 0; j <= i; j++) {
-                    int a = zSortedAtomIndicies[j];
-                    int b = zSortedAtomIndicies[j + 1];
-                    if (bufferedAtomZs[a] > bufferedAtomZs[b]) {
-                        zSortedAtomIndicies[j + 1] = a;
-                        zSortedAtomIndicies[j] = b;
-                        flipped = true;
-                    }
-                }
-                if (!flipped)
-                    break;
-            }
+        if (!settings.getFastRendering()){
+            sortAtoms();
         }
         for (int i = 0; i < numberAtoms; i++) {
             int j = zSortedAtomIndicies[i];
 			Enumeration bondIter = atoms[j].getBondedAtoms();
 			while (bondIter.hasMoreElements()) {
 				bondRenderer.paint(g, atoms[j], (Atom)bondIter.nextElement(),
-								   settings, doingMoveDraw);
+								   settings);
 			}
             //Added by T.GREY for quick-draw on move support
-            if (ShowAtoms && !doingMoveDraw) {
+            if (ShowAtoms && !settings.getFastRendering()) {
 				atomRenderer.paint(g, atoms[j],
-								   aProps[j], pickedAtoms[j], settings);
+								   pickedAtoms[j],
+								   settings);
 			}
         }
     }
@@ -586,41 +500,39 @@ public class ChemFrame {
     }
     
     /** 
-     * Find the bounding box of this model 
+     * Find the bounds of this model.
      */
-    public void findBB() {
+    public void findBounds() {
 		if (atoms == null || numberAtoms <= 0) {
             return;
 		}
-        float xmin = atoms[0].getPosition().x;
-		float xmax = xmin;
-        float ymin = atoms[0].getPosition().y;
-		float ymax = ymin;
-        float zmin = atoms[0].getPosition().z;
-		float zmax = zmin;
+		min = new Point3f(atoms[0].getPosition());
+		max = new Point3f(min);
 		for (int i=1; i < numberAtoms; ++i) {
             float x = atoms[i].getPosition().x;
-            if (x < xmin)  xmin = x;
-            if (x > xmax)  xmax = x;
+            if (x < min.x)  min.x = x;
+            if (x > max.x)  max.x = x;
             float y = atoms[i].getPosition().y;
-            if (y < ymin)  ymin = y;
-            if (y > ymax)  ymax = y;
+            if (y < min.y)  min.y = y;
+            if (y > max.y)  max.y = y;
             float z = atoms[i].getPosition().z;
-            if (z < zmin)  zmin = z;
-            if (z > zmax)  zmax = z;
+            if (z < min.z)  min.z = z;
+            if (z > max.z)  max.z = z;
         }
-        this.xmax = xmax;
-        this.xmin = xmin;
-        this.ymax = ymax;
-        this.ymin = ymin;
-        this.zmax = zmax;
-        this.zmin = zmin;
     }
+
+	public Point3f getMinimumBounds() {
+		return min;
+	}
+
+	public Point3f getMaximumBounds() {
+		return max;
+	}
 
     /** 
      * Walk through this frame and find all bonds again.
      */
-    public void rebond() throws Exception {
+    public void rebond() {
         // Clear the currently existing bonds.
         for (int i = 0; i < numberAtoms; i++) {
 			atoms[i].clearBondedAtoms();
@@ -637,8 +549,6 @@ public class ChemFrame {
     }
 
 	private void increaseArraySizes(int newArraySize) {
-		System.out.println("Increasing array sizes to " + newArraySize);
-		
 		Atom newAtoms[] = new Atom[newArraySize];
 		System.arraycopy(atoms, 0, newAtoms, 0, atoms.length);
 		atoms = newAtoms;
@@ -647,12 +557,89 @@ public class ChemFrame {
 		System.arraycopy(bufferedAtomZs, 0, newAtomZs, 0, bufferedAtomZs.length);
 		bufferedAtomZs = newAtomZs;
 		
-		Vector nap[] = new Vector[newArraySize];
-		System.arraycopy(aProps, 0, nap, 0, aProps.length);
-		aProps = nap;
-		
 		boolean np[] = new boolean[newArraySize];
 		System.arraycopy(pickedAtoms, 0, np, 0, pickedAtoms.length);
 		pickedAtoms = np;
 	}
+
+	private void sortAtoms() {
+        if (zSortedAtomIndicies == null || zSortedAtomIndicies.length != numberAtoms) {
+            zSortedAtomIndicies = new int[numberAtoms];
+            for (int i = 0; i < numberAtoms; ++i) {
+                zSortedAtomIndicies[i] = i;
+			}
+        }
+
+		/*
+		 * I use a bubble sort since from one iteration to the next, the sort
+		 * order is pretty stable, so I just use what I had last time as a
+		 * "guess" of the sorted order.  With luck, this reduces O(N log N)
+		 * to O(N)
+		 */
+		
+		for (int i = numberAtoms - 1; --i >= 0;) {
+			boolean flipped = false;
+			for (int j = 0; j <= i; j++) {
+				int a = zSortedAtomIndicies[j];
+				int b = zSortedAtomIndicies[j+1];
+				if (bufferedAtomZs[a] > bufferedAtomZs[b]) {
+					zSortedAtomIndicies[j+1] = a;
+					zSortedAtomIndicies[j] = b;
+					flipped = true;
+				}
+			}
+			if (!flipped) {
+				break;
+			}
+		}
+	}
+
+    private float bondFudge       = 1.12f;
+    private float ScreenScale;
+    private boolean AutoBond      = true;
+    private boolean ShowBonds     = true;
+    private boolean ShowAtoms     = true;
+    private boolean ShowHydrogens = true;
+    private Matrix3D mat;
+    private boolean[] pickedAtoms;
+    private int napicked;
+
+    // This stuff can vary for each frame in the dynamics:
+
+	/**
+	 * Information string for this frame.
+	 */
+    String info;
+	/**
+	 * Array of atoms.
+	 */
+	private Atom[] atoms;
+	/**
+	 * Number of atoms in frame.
+	 */
+    private int numberAtoms = 0;
+	/**
+	 * Z coordinates of the atoms, buffered for quick access.
+	 */
+	private float[] bufferedAtomZs;
+	/**
+	 * Array of atom indicies sorted by Z coordinate.
+	 */
+    private int[] zSortedAtomIndicies;
+	/**
+	 * Renderer for atoms.
+	 */
+	private AtomRenderer atomRenderer = new AtomRenderer();
+	/**
+	 * Renderer for bonds.
+	 */
+	private BondRenderer bondRenderer = new BondRenderer();
+
+	/**
+	 * List of all atom properties contained by atoms in this frame.
+	 */
+    private Vector frameProps;
+
+	private Point3f min;
+	private Point3f max;
 }

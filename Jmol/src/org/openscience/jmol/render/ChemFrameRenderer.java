@@ -50,15 +50,12 @@ public class ChemFrameRenderer {
     if (numAtoms <= 0) {
       return;
     }
-    int hcFrame = frame.hashCode();
     if (shapes == null || // did not do shapes yet
         control.hasStructuralChange() || 
-        // FIXME -- these should be part of hasStructuralChange
-        hcFrame != previousFrameHashCode || // frame itself is changed
+        // FIXME -- this should be part of hasStructuralChange
         numAtoms != previousNumberAtoms // #atoms changed (e.g. a delete)
        ) {
       control.resetStructuralChange();
-      previousFrameHashCode = hcFrame;
       previousNumberAtoms = numAtoms;
       shapesList.clear();
       for (int i = 0; i < numAtoms; ++i) {
@@ -121,7 +118,6 @@ public class ChemFrameRenderer {
     }
   }
 
-  private int previousFrameHashCode;
   private int previousNumberAtoms;
 
   private Shape[] shapes = null;

@@ -582,6 +582,7 @@ final public class DisplayControl {
     if (mlist != null) {
       mlistChanged(new MeasurementListEvent(mlist));
     }
+    structuralChange = true;
     clearSelection();
     recalc();
   }

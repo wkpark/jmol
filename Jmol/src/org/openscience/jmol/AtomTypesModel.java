@@ -50,11 +50,15 @@ class AtomTypesModel extends AbstractTableModel {
     protected int nextEmptyRow = 0;
     protected int numRows = 0;
     
-    static final public String[] names = {"Atom Type", "Base\nAtom Type", 
+    protected static final String[] names = {"Atom Type", "Base\nAtom Type", 
                                           "Atomic\nNumber", "Atomic\nMass", 
                                           "Van derWaals\nRadius",
                                           "Covalent\nRadius", "Color"};
-
+	protected static final Class[] classes = {String.class, String.class,
+											  Integer.class, Double.class,
+											  Double.class,
+											  Double.class, Color.class};
+											  
     protected Vector data = null;
 
     public AtomTypesModel() {
@@ -84,15 +88,21 @@ class AtomTypesModel extends AbstractTableModel {
         }
     }
 
-    public boolean isCellEditable(int row, int col) {
-        if (row < START_NUM_ROWS && row > numRows) 
-            return false;
-        else 
+	/**
+	 * Returns whether a specified cell is editable. All valid rows and columns will be
+	 * editable, except column 0.
+	 */
+    public boolean isCellEditable(int row, int column) {
+		boolean isNotColumn0 = column != 0;
+		if (isValidRow(row) && isValidColumn(column) && isNotColumn0) {
             return true;
+		} else {
+            return false;
+		}
     }
-    
+
     public void setValueAt(Object o, int row, int col) {
-		AtomType at = (AtomType)data.elementAt(row);
+		BaseAtomType at = (BaseAtomType)data.elementAt(row);
 		switch (col) {
 		case 1:            
 			at.setRoot((String)o);
@@ -104,7 +114,7 @@ class AtomTypesModel extends AbstractTableModel {
 			at.setMass(((Double)o).doubleValue());
 			break;
 		case 4:
-			at.setvdWRadius(((Double)o).doubleValue());
+			at.setVdwRadius(((Double)o).doubleValue());
 			break;
 		case 5:
 			at.setCovalentRadius(((Double)o).doubleValue());
@@ -118,7 +128,7 @@ class AtomTypesModel extends AbstractTableModel {
     
     public synchronized Object getValueAt(int row, int column) {
         try {
-            AtomType at = (AtomType)data.elementAt(row);
+            BaseAtomType at = (BaseAtomType)data.elementAt(row);
             switch (column) {
             case 0:
                 return at.getName();
@@ -129,7 +139,7 @@ class AtomTypesModel extends AbstractTableModel {
             case 3:
                 return new Double(at.getMass());
             case 4:
-                return new Double(at.getvdWRadius());
+                return new Double(at.getVdwRadius());
             case 5:
                 return new Double(at.getCovalentRadius());
             case 6:
@@ -141,36 +151,22 @@ class AtomTypesModel extends AbstractTableModel {
     }
 
     public Class getColumnClass(int column) {
-        String s = "0";
-        Integer i = new Integer(0);
-        Double d = new Double(0.0);
-        Color c = new Color(0,0,0);
-        switch (column) {
-        case 2:
-            return i.getClass();
-        case 3:
-            return d.getClass();
-        case 4:
-            return d.getClass();
-        case 5:
-            return d.getClass();
-        case 6:
-            return c.getClass();
-        default:
-            return s.getClass();
-        }
+		if (column >= 0 && column < classes.length) {
+			return classes[column];
+		}
+		return String.class;
     }
             
-    public synchronized void updateAtomType(AtomType atomType) {
+    public synchronized void updateAtomType(BaseAtomType atomType) {
         String name = atomType.getName(); 
-        AtomType at = null;
+        BaseAtomType at = null;
         int index = -1; 
         boolean found = false;
         boolean addedRow = false;
         
         int i = 0;
         while (!found && (i < nextEmptyRow)) {
-            at = (AtomType)data.elementAt(i);
+            at = (BaseAtomType)data.elementAt(i);
             if (name.equals(at.getName())) {
                 found = true;
                 index = i;
@@ -218,10 +214,10 @@ class AtomTypesModel extends AbstractTableModel {
 	/**
 	 * Returns the first occurence of an AtomType with the given name.
 	 */
-    public AtomType get(String name) {
+    public BaseAtomType get(String name) {
 		if (name != null) {
 			for (Enumeration e = data.elements() ; e.hasMoreElements() ;) {
-				AtomType at = (AtomType) e.nextElement();
+				BaseAtomType at = (BaseAtomType) e.nextElement();
 				if (name.equalsIgnoreCase(at.getName())) {
 					return at;
 				}
@@ -233,9 +229,9 @@ class AtomTypesModel extends AbstractTableModel {
 	/**
 	 * Returns the first occurence of an AtomType with the given atomic number.
 	 */
-    public AtomType get(int atomicNumber) {
+    public BaseAtomType get(int atomicNumber) {
         for (Enumeration e = data.elements() ; e.hasMoreElements() ;) {
-            AtomType at = (AtomType) e.nextElement();
+            BaseAtomType at = (BaseAtomType) e.nextElement();
             if (atomicNumber == at.getAtomicNumber()) {
                 return at;
             }
@@ -247,5 +243,19 @@ class AtomTypesModel extends AbstractTableModel {
         return data.elements();
     }
 
+	/**
+	 * Returns whether the row index is valid.
+	 */
+	boolean isValidRow(int row) {
+		return row >= 0 && row < numRows;
+	}
+
+	/**
+	 * Returns whether the column index is valid.
+	 */
+	boolean isValidColumn(int column) {
+		return column >= 0 && column < names.length;
+	}
+    
 }
 

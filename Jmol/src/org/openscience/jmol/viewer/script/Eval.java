@@ -805,6 +805,7 @@ public class Eval implements Runnable {
       case Token.backbone:
       case Token.solvent:
       case Token.identifier:
+      case Token.sidechain:
         stack[sp++] = lookupIdentifierValue((String)instruction.value);
         break;
       case Token.opLT:

@@ -1019,6 +1019,12 @@ final public class DisplayControl {
   }
 
   public void render(Graphics g, Rectangle rectClip) {
+    if (eval.hasTerminationNotification()) {
+      System.out.println("terminated with message:" +
+                         eval.getErrorMessage() +
+                         " in " + eval.getExecutionWalltime() + " ms");
+      eval.resetTerminationNotification();
+    }
     repaintManager.render(g, rectClip);
   }
 

@@ -116,9 +116,14 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   String pauseCallback;
   String pickCallback;
 
+  final static boolean REQUIRE_PROGRESSBAR = true;
+  boolean hasProgressBar;
+  int paintCounter;
+
   public String getAppletInfo() {
     return appletInfo;
   }
+
   private static String appletInfo =
     "Jmol Applet.  Part of the OpenScience project. " +
     "See jmol.sourceforge.net for more information";
@@ -228,6 +233,9 @@ public class JmolApplet extends Applet implements JmolStatusListener {
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
+      // REQUIRE that the progressbar be shown
+      boolean hasProgressBar = getBooleanValue("progressbar", false);
+
       // should the popupMenu be loaded ?
       boolean popupMenu = getBooleanValue("popupMenu", true);
       if (popupMenu)
@@ -353,7 +361,15 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     viewer.setScreenDimension(size);
     Rectangle rectClip =
       jvm12orGreater ? jvm12.getClipBounds(g) : g.getClipRect();
-    viewer.renderScreenImage(g, size, rectClip);
+    ++paintCounter;
+    if (REQUIRE_PROGRESSBAR &&
+        !hasProgressBar &&
+        (paintCounter & 1) == 0) {
+      printProgressbarMessage(g);
+      viewer.notifyRepainted();
+    } else {
+      viewer.renderScreenImage(g, size, rectClip);
+    }
     /*
     try {
       Thread.sleep(1000);
@@ -364,6 +380,28 @@ public class JmolApplet extends Applet implements JmolStatusListener {
     if (showPaintTime) {
       stopPaintClock();
       showTimes(10, 10, g);
+    }
+  }
+
+  final static String[] progressbarMsgs = {
+    "progressbar is REQUIRED",
+    "",
+    "<applet code='JmolApplet' ... >",
+    "  <param name='progressbar' value='true' />",
+    "  <param name='progresscolor' value='blue' />",
+    "  <param name='boxmessage' value='your-favorite-message' />",
+    "  <param name='boxbgcolor' value='#112233' />",
+    "  <param name='boxfgcolor' value='#778899' />",
+    "   ...",
+    "</applet>",
+  };
+
+  private void printProgressbarMessage(Graphics g) {
+    g.setColor(Color.yellow);
+    g.fillRect(0, 0, 10000, 10000);
+    g.setColor(Color.black);
+    for (int i = 0, y = 13; i < progressbarMsgs.length; ++i, y += 13) {
+      g.drawString(progressbarMsgs[i], 10, y);
     }
   }
 
